@@ -3,6 +3,7 @@ module Eventi where
 
 import Control.Monad.State 
 import Codec.Crypto.RSA
+import Control.Arrow
 import Data.Maybe
 import Data.List
 import Control.Applicative
@@ -11,107 +12,75 @@ import qualified Text.ParserCombinators.ReadP as P
 import Text.CSV
 import Data.Set as S
 import Data.Map as M
+import Data.ByteString.Lazy.Char8
+import qualified Text.CSV
 
-type Valore = Double
 
-newtype User = User String deriving (Eq,Ord)
-instance Read User where
-	readsPrec _ = P.readP_to_S  (P.skipSpaces >> User <$> P.munch1 (isAlphaNum))
-instance Show User where
-	show (User u) = u
-newtype Bene = Bene String deriving (Eq,Ord)
-instance Show Bene where
-	show (Bene o) = o
-instance Read Bene where
-	readsPrec _ = P.readP_to_S  (P.skipSpaces >> Bene <$> P.munch1 (isAlphaNum))
-
-deriving instance Read PublicKey
+import Crypto 
+import Fields
 
 data Evento
-	= Accredito User User Valore -- ^ il firmante ha ricevuto denaro
-	| Richiesta User User Bene Valore 	-- ^ 
-	| Apertura User Bene 
-	| Membro User User
-	| Saldo User User Valore
-	| Responsabile User User PublicKey
-	| Chiusura User Bene 
-	| Fallimento User Bene
-	deriving (Read,Show)
-
-type Storia = [Evento]
+	= Accredito 	{tempo :: Tempo, resp :: User, membro :: User , valore :: Valore, firma :: Firma} -- ^ il firmante ha ricevuto denaro
+	| Richiesta 	{tempo :: Tempo, resp :: User, membro :: User, bene :: Bene, valore :: Valore, firma :: Firma}	-- ^ 
+	| Apertura 	{tempo :: Tempo, resp :: User, bene :: Bene, firma :: Firma}
+	| Membro 	{tempo :: Tempo, resp :: User, membro :: User, firma :: Firma}
+	| Saldo 	{tempo :: Tempo, resp :: User, membro :: User, valore :: Valore, firma :: Firma}
+	| Responsabile 	{tempo :: Tempo, resp :: User, membro :: User, publicKey :: PublicKey, firma :: Firma}
+	| Chiusura 	{tempo :: Tempo, resp :: User, bene :: Bene, firma :: Firma}
+	| Fallimento 	{tempo :: Tempo, resp :: User, bene :: Bene, firma :: Firma}
+	| Bootstrap 	{membro :: User, publicKey :: PublicKey}
 
 
-data Report  = Fallito {bene :: Bene} | Successo {bene :: Bene} deriving (Eq,Ord,Show,Read)
+instance Read Evento where
+	readsPrec _ s = case parseCSV "read instance" s of
+		Right (("Bootstrap":n:[pk]):_) -> [(Bootstrap (read n) (read pk),"")]
+		Right (("Richiesta":t:r:m:b:v:f:[]):_) -> [(Richiesta (read t) (read r) (read m) (read b) (read v) (read f),"")]
+		Left t -> error $ show t
+instance Show Evento where		
+	show (Membro t r u f) = (printCSV. return) ["Membro", show t, show r, show u, show f]
+	show (Responsabile t r u pk f) = (printCSV. return) ["Responsabile", show t, show r, show u, show pk, show f]
+	show (Apertura t r o f) = (printCSV. return) ["Apertura", show t, show r, show o, show f]
+	show (Chiusura t r o f) = (printCSV. return) ["Chiusura", show t, show r, show o, show f]
+	show (Accredito t r u v f) = (printCSV. return) ["Accredito", show t, show r, show u , show v, show f]
+	show (Richiesta t r u v o f) = (printCSV. return) ["Richiesta", show t, show r ,show u, show v, show o, show f]
+	show (Saldo t r u v f) = (printCSV. return) ["Saldo", show t, show r, show u , show v, show f]
+	show (Bootstrap u pk) = (printCSV. return) ["Bootstrap", show u, show pk]
+	
+
+	
+
+type Conoscenza = [Evento]
+
+type Chiavi = Map User PublicKey
+
+data Report  = Fallito {beneR :: Bene} | Successo {beneR :: Bene} deriving (Eq,Ord,Show,Read)
 
 data Beni = Beni {aperti :: Map Bene [Evento] , chiusi 	:: Set Report} deriving (Read,Show)
 
 tuttibeni :: Beni -> Set Bene
-tuttibeni (Beni as cs) = S.union (S.fromList $ M.keys as) (S.map bene cs)
+tuttibeni (Beni as cs) = S.union (S.fromList $ M.keys as) (S.map beneR cs)
 
 data Conti = Conti {conti_membri, conti_responsabili	:: Map User Valore} deriving (Read,Show)
 
 type Membri = Set User
 type Responsabili = Set User
 
-data Knowledge = Knowledge {beni :: Beni, conti :: Conti, membri :: Membri, responsabili :: Responsabili} deriving (Read,Show)
+data Extract = Extract {beni :: Beni, conti :: Conti, membri :: Membri, responsabili :: Responsabili} deriving (Read,Show)
 
-emptyKnowledge :: Knowledge
-emptyKnowledge = Knowledge (Beni M.empty S.empty) (Conti M.empty M.empty) S.empty S.empty
+emptyExtract :: Extract
+emptyExtract = Extract (Beni M.empty S.empty) (Conti M.empty M.empty) S.empty S.empty
 
-validate :: Evento -> State Knowledge Bool
-validate m@(Membro _ _) = modify (step m) >> return True
-validate r@(Responsabile _ _ _) = modify (step r) >> return True
-validate s@(Saldo _ _ _) = modify (step s) >> return True
-validate a@(Accredito _ m _) = do
-	ms <- membri <$> get
-	if m `S.member` ms then do	
-		modify $ step a 
-		return True
-	 else return False
-validate a@(Apertura _ o) = do
-	bs <- tuttibeni . beni <$> get
-	if o `S.member` bs then return False
-		else modify (step a) >> return True
-validate c@(Chiusura _ o) = do
-	as <- aperti . beni <$> get
-	if not (o `S.member` as) then return False
-		else modify (step c) >> return True
+partitionM :: Monad m => (a -> m Bool) -> [a] -> m ([a],[a])
+partitionM f [] = return ([],[])
+partitionM f (x:xs) = do
+	r <- f x 
+	br <- partitionM f $ xs
+	return . (if r then first (x:) else second (x:)) $ br
 
-validate f@(Fallimento _ o) = do
-	as <- aperti . beni <$> get
-	if not (o `S.member` as) then return False
-		else modify (step f) >> return True
-validate r@(Richiesta _ m o v) = do
-	Knowledge bs@(Beni as _) cs@(Conti cms _) ms rs <- get 
-	if and [m `S.member` ms, o `S.member` as, M.findWithDefault 0 m cms >= v] then do
-		modify (step r) >> return True
-		else return False
+type Validator = Evento -> State Extract Bool
+type Rigetto = Conoscenza
+validate :: Validator -> Conoscenza -> ((Conoscenza,Rigetto),Extract)
+validate v xs = runState (partitionM v xs) emptyExtract
 
-	
------------------------------ summarizing knowledge from a list of valid events ------------------------------------------------
-
-
-
-
-mkKnowledge :: Storia -> Knowledge
-mkKnowledge = foldr step emptyKnowledge
-
-modifica :: (Valore -> Valore) -> User -> Map User Valore -> Map User Valore
-modifica dv m = M.insertWith (const dv) m (dv 0)
-
-step :: Evento -> Knowledge -> Knowledge
-step (Membro _ m) 		k@(Knowledge _ _ ms _) = k{membri = m `S.insert` ms} 
-step (Responsabile _ m _) 	k@(Knowledge _ _ _ rs) = k{responsabili = m `S.insert` rs} 
--- accredita sul conto  del responsabile e sul conto del membro
-step (Accredito r m v) 		k@(Knowledge _ (Conti cms crs) _ _) =  k{conti = Conti (modifica (+v) m cms) (modifica (+v) r crs)}
--- accredita sul conto del primo responsabile e scredita sul secondo
-step (Saldo r1 r2 v)  		k@(Knowledge _ (Conti cms crs) _ _) =  k{conti = Conti cms (modifica (flip (-) v) r2  . modifica (+v) r1 $ crs)}
-step (Fallimento _ o) 		k@(Knowledge (Beni vs as) _ _ _ ) = k{beni = Beni vs (S.insert (Fallito o) as)}
-step (Chiusura r o)  		k@(Knowledge (Beni vs as) _ _ _ ) = k{beni = Beni vs (S.insert (Successo o) as)}
-step (Apertura r o)  		k@(Knowledge (Beni vs as) _ _ _ ) = 
-	if Fallito o `S.member` as || Successo o `S.member` as then k else k{beni = Beni (S.insert o vs) as}
-step (Richiesta r m o v) 	k@(Knowledge b@(Beni vs as) (Conti cms crs)  _ _ ) 
-	| Fallito o `S.member` as = k
-	| Successo o `S.member` as = k{conti = Conti (modifica (flip (-) v) m cms) (modifica (flip (-) v) r crs)}
-	| otherwise = k{conti = Conti (modifica (flip (-) v) m cms) crs} -- denaro impegnato ma non ancora speso
-
+verifica :: Validator
+verifica = undefined 
