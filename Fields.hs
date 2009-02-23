@@ -7,6 +7,7 @@ import Data.Char
 import Control.Applicative
 import Codec.Crypto.RSA
 import Data.ByteString.Lazy.Char8 
+import System.Time
 
 
 deriving instance Read PublicKey
@@ -32,8 +33,10 @@ instance Read Bene where
 	readsPrec _ = P.readP_to_S  (P.skipSpaces >> Bene <$> P.munch1 (isAlphaNum))
 
 data Mese = Gennaio | Febbraio | Marzo | Aprile | Maggio | Giugno | Luglio | Agosto | Settembre | Ottobre | Novembre | Dicembre 
-	deriving (Show,Read,Eq)
+	deriving (Show,Read,Eq,Enum)
 newtype Tempo = Tempo (Int, Mese, Int) deriving Eq
+fromClockTime :: CalendarTime -> Tempo
+fromClockTime c = Tempo (ctDay c, toEnum . fromEnum .ctMonth $ c, ctYear $ c)
 instance Show Tempo where
 	show (Tempo (g,m,a)) = show g ++ " " ++ show m ++ " " ++ show a
 instance Read Tempo where
