@@ -56,5 +56,34 @@ vSaldo (Saldo _ r1 r2 v _) est = controlloResponsabile r2 est >> Right
 	(est{conti_responsabili = modifica (+v) r1 0 . modifica (subtract v) r2 0 $ conti_responsabili est})
 vSaldo _ est = Right est
 ------------------------------------------------------------------------------
+vOrdine ::Componente
+vOrdine (Apertura _ _ o _) est = do
+	controlloOrdineNuovo o est 
+	return . Right $ est {aperti = M.insert o [] $ aperti est}
 
+vOrdine (Chiusura _ _ o _) est = do
+	controllaOrdineAperto o est 
+	return . Right $ est {
+		aperti = M.delete o $ aperti est,
+		chiusi = S.insert (Successo o) $ chiusi est
+		}
+
+vOrdine (Fallimento _ _ o _) est = do
+	controllaOrdineAperto o est
+	return . Right $ est {
+		aperti = M.delete o $ aperti est,
+		chiusi = S.insert (Fallito o) $ chiusi est,
+		conti_membri = foldr (\r -> modifica (subtract (valore r)) m 0) (conti_membri est) (aperti est ! o)
+		}
+		
+controllaCopertura o m v est = if conti_membri est ! m > v then Right ()
+	else Left "copertura economica non sufficiente per " ++ show m " nella richiesta per il bene " ++ show o
+
+vOrdine r@(Richiesta _ _ m o v _) est = do
+	controllaOrdineAperto o est
+	controllaCopertura m v est
+	return . Right $ est {
+		aperti = M.insertWith (++) o [r] $ aperti est,
+		conti_membri = modifica (subtract v) m 0 $ conti_membri est
+		}
 
