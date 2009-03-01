@@ -15,13 +15,16 @@ type Responsabile = PublicKey
 deriving instance Read PublicKey
 deriving instance Ord PublicKey
 deriving instance Eq PublicKey
+deriving instance Read PrivateKey
+deriving instance Ord PrivateKey
+deriving instance Eq PrivateKey
 
-newtype User = User String deriving (Eq,Ord)
-instance Read User where
-	readsPrec _ = P.readP_to_S  (P.skipSpaces >> User <$> P.munch1 (isAlphaNum))
+newtype Membro = Membro String deriving (Eq,Ord)
+instance Read Membro where
+	readsPrec _ = P.readP_to_S  (P.skipSpaces >> Membro <$> P.munch1 (isAlphaNum))
 
-instance Show User where
-	show (User u) = u
+instance Show Membro where
+	show (Membro u) = u
 newtype Bene = Bene String deriving (Eq,Ord)
 instance Show Bene where
 	show (Bene o) = o
