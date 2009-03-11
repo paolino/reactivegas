@@ -12,101 +12,84 @@ import Control.Monad.Writer
 import qualified Data.Map as M
 import qualified Data.Set as S
 import Data.Either
+import Data.Maybe
 
 import Codec.Crypto.RSA
 
-import Componenti 
-import Eventi
-import Fields
+import Componenti (validaEvento)
+import Eventi 
+import Bugs
 import UI
-
-------------------------------------------------
-------------------------------------------------
-type Signing  = Reader (Tempo,Utente)
-contestualmente :: (Tempo,Utente) -> Signing a -> a
-contestualmente = flip runReader
-
-firmo :: Evento ->  Signing Evento
-firmo ev  =  do	(t,Utente u pu (Just pr)) <- ask 
-		let 	ev' = ev{tempo = t} 
-			ev'' = ev'{responsabile = u}
-		return $ ev''{firma = Firma (sign pr (image ev''))}
+import Control.Parallel.Strategies
 
 
----- un set di creatori di eventi sotto l'ambiente reale, un utente e un tempo attuale.
-uResponsabile m pk 	= firmo (Responsabile undefined undefined m pk undefined)
-uMembro m 		= firmo (Membro undefined undefined m undefined)
-uAccredito m v 		= firmo (Accredito undefined undefined m v undefined)
-uSaldo m v 		= firmo (Saldo undefined undefined m v undefined)
-uApertura o t 		= firmo (Apertura undefined undefined o t undefined)
-uChiusura o 		= firmo (Chiusura undefined undefined o undefined)
-uFallimento o 		= firmo (Fallimento undefined undefined o undefined)
-uRichiesta m o v 	= firmo (Richiesta undefined undefined m o v undefined)
-uBootstrap m pk 	= return $ Bootstrap m pk
-----------------------------------------------------------------------------
--------------------------------------------------------------------------------------
-deriving instance Read PrivateKey
-loadPrivata :: String -> IO PrivateKey
-loadPrivata s = read <$> readFile s
+load :: Read a => String -> IO a
+load s = read <$> (readFile s >>= \e -> rnf e `seq` return e)
 
-loadConoscenza :: String -> [Componente] -> IO Estratto
-loadConoscenza s cs = (fst . valida (validaEvento cs) . map read . lines) <$> readFile s
 
-loadTempo :: IO Tempo
-loadTempo = fromClockTime <$> (getClockTime >>= toCalendarTime)
-	
-data Utente = Utente {user :: User, pu :: PublicKey, pr :: Maybe PrivateKey}
+loadEstratto :: String -> IO Estratto
+loadEstratto s = load s 
 
-addEvent :: Estratto -> ReaderT (Tempo,Utente,[Componente]) (WriterT [Evento] IO) Estratto
+newtype WEvento = WEvento String
+instance Show WEvento where
+	show (WEvento s) = s
+
+addEvent :: Estratto -> ReaderT PublicKey IO (Estratto,Maybe (Evento))
 addEvent est = do
 	evf <- liftIO $ do 
-		n <- untilIn "Nuovo evento" ["Accredito","Richiesta","Saldo","Apertura","Chiusura","Fallimento"]
+		n <- untilIn "Nuovo evento" $ map WEvento
+			["Accredito","Richiesta","Saldo","Novizio","Nick","Apertura","Chiusura","Fallimento"]
 		case n of 
-			"Accredito" -> do
+			WEvento "Accredito" -> do
 				m <- untilIn "Accredito per " (S.elems $ membri est)
 				z <- untilParse $ "Accredito per " ++ show m ++ " di euro "
-				return $ uAccredito m z
-			"Richiesta" -> do
+				return $ Accredito m z
+			WEvento "Richiesta" -> do
 				m <- untilIn "Richiesta d'ordine per " (S.elems $ membri est)
 				o <- untilIn ("Richiesta d'ordine per " ++ show m ++ " sul bene ") (M.keys $ aperti est)
 				z <- untilParse $ "Richiesta d'ordine per " 
 					++ show m ++ " sul bene " ++ show o ++ " del valore di "
-				return $ uRichiesta m o z
-			"Saldo" -> do
+				return $ Richiesta m o z
+			WEvento "Saldo" -> do
 				r <- untilIn "Saldo ricevuto da " (M.keys $ responsabili est)
 				v <- untilParse $ "Saldo ricevuto da " ++ show r ++ " di euro "
-				return $ uSaldo r v
-			"Membro" -> do 
+				return $ Saldo r v
+			WEvento "Novizio" -> do 
 				r <- untilParse $ "Nuovo membro di nome "
-				return $ uMembro r
-			"Responsabile" -> do
-				r <- untilIn "Nuovo responsabile di nome " (M.keys $ responsabili est)
-				pu <- untilParse $ "Nuovo responsabile di nome " ++ show r ++ " con chiave "
-				return $ uResponsabile r pu
-			"Apertura" -> do
+				return $ Novizio r
+			WEvento "Nick" -> do
+				r <- untilParse $ "Il mio nome e' "
+				return $ Nick r 
+			WEvento "Apertura" -> do
 				o <- untilNotIn "Nuovo ordine per il bene " (S.elems $ tuttibeni est)
-				t <- untilParse $ "Nuovo ordine per il bene " ++ show o ++ " con data ultima "
-				return $ uApertura o t
-			"Chiusura" -> do
+				return $ Apertura o 
+			WEvento "Chiusura" -> do
 				o <- untilIn "Chiusura ordine per il bene " (M.keys $ aperti est)
-				return $ uChiusura o
-			"Fallimento" -> do
+				return $ Chiusura o
+			WEvento "Fallimento" -> do
 				o <- untilIn "Fallimento ordine per il bene " (M.keys $ aperti est)
-				return $ uFallimento o
+				return $ Fallimento o
 
 			_	-> error "non implementato"
-			
-	(t,u,cs) <- ask			
-	let 	(est',rs) = runWriter $ validaEvento cs (runReader evf (t,u)) est  
+	pu <- ask			
+	let 	(est',rs) = runWriter $ validaEvento (pu,evf) est  
 	case rs of 
-		[Left (e,t)] -> liftIO $ print t
-		[Right e] -> tell [e]
-	return est'
+		[Left (_,t)] -> liftIO $ print t >> return (est, Nothing)
+		[Right e] -> return (est', Just e)
+
+command xs est = do 	d <- liftIO $ untilIn "Comando" [WEvento "Fine", WEvento "Evento", WEvento "Resoconto", WEvento "Patch"]
+			case d of 
+				WEvento "Fine" -> return (xs,est)
+				WEvento "Evento" -> do
+					(est',x) <- addEvent est
+					case x of 
+						Just e -> command (x:xs) est'
+						Nothing -> command xs est
+				WEvento "Resoconto" -> liftIO (mapM_  print $ xs) >> command xs est
 
 
 main = do
-	t <- loadTempo
-	pr <- loadPrivata "paolino.priv"
-	let cs = [vTempoCorretto t, vResponsabile, vMembro, vSaldo]
-	e <- loadConoscenza "prova.csv" cs
-	runWriterT (runReaderT (addEvent e) (t,Utente (User "paolino") undefined (Just pr) ,cs))  >>= print
+	--pr <- loadPrivata "paolino.priv"
+	pu <- load "paolino.publ"
+	est <- loadEstratto "estratto"
+	runReaderT (command [] est) pu >>= writeFile "estratto" . show . snd

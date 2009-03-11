@@ -1,72 +1,104 @@
-{-# LANGUAGE StandaloneDeriving,TypeSynonymInstances #-}
-module Integrity where
+module Integrity (mkIntegrity, Integrity, mkRPatch , RPatch, mkPatch , Patch, takeIntegrity) where
 
-import Control.Monad.Error
-import Data.List ((\\))
+import Control.Monad.Error ()
+import Control.Monad (liftM2)
+import Control.Monad.Reader (lift, ReaderT, runReaderT, ask)
+import Control.Applicative ((<$>))
+import qualified Data.Map as M (singleton, keys)
 
 import qualified Data.ByteString.Lazy.Char8 as B (pack,ByteString)
 
-import Codec.Crypto.RSA
+import Codec.Crypto.RSA (sign, verify, PublicKey, PrivateKey)
 
-import Fields
+import Bugs
+import Eventi (Estratto (..), Eventi, vuoto, Logico)
 
-type Firma = B.ByteString
-type User = PublicKey
+type Firma = B.ByteString 
 
--- | un responsabile crea una patch con la sua chiave pubblica , un lista di eventi, e una firma degli eventi, 
--- concatenati con la conoscenza visionata
-data RPatch a = RPatch {
-	responsabile :: User, 
-	eventi :: [a], 
-	firmaR :: Firma
+data Conoscenza 
+	= Conoscenza Int Patch Conoscenza 
+	| Base PublicKey PublicKey 
+	deriving (Show,Read)
+
+unfoldConoscenza (Base _ _) = []
+unfoldConoscenza (Conoscenza n p c') = (p,n) : unfoldConoscenza c'
+
+data Integrity = Integrity {
+	conoscenza :: Conoscenza, 
+	padrone :: PublicKey, 
+	estratto :: Estratto 
+	}
+
+-- | l'environment per le computazioni di integrita'
+type Env = ReaderT Integrity (Either String)
+
+mkIntegrity :: Conoscenza -> [Patch] -> Either String Integrity 
+mkIntegrity b@(Base m u) = foldl valida (Right $ Integrity b m start) . zip [0..] where
+	start = vuoto {responsabili = M.singleton u Nothing} -- let first respo in 
+	valida ei (n, p) = do
+		i <- ei
+		runReaderT (validazionePatch p) i
+		return i{conoscenza = Conoscenza n p (conoscenza i)}
+mkIntegrity _ = const $ Left "mkIntegrity: inizializzazione della conoscenza con qualcosa di diverso da una Base"
+
+
+-- | le patch per aggiornare una conoscenza
+takeIntegrity :: Int -> Env [Patch]
+takeIntegrity n = reverse . map fst . takeWhile ((>=) n . snd) 
+	. unfoldConoscenza . conoscenza <$> ask
+
+data RPatch = RPatch {
+	responsabile :: PublicKey,  -- ^ chi ha prodotto gli eventi
+	eventi :: [Logico], 	-- ^ gli eventi prodotti 
+	firmaR :: Firma		-- ^ la firma degli eventi contro la conoscenza usata
 	} deriving (Show,Read)
 
-data Patch a = Patch {
-	patches :: [RPatch a], 
-	nuovi :: [User],
-	firma :: Firma 
+data Patch = Patch {
+	patches :: [RPatch], -- ^ le patch  ricevute dai responsabili
+	firma :: Firma -- ^ la controfirma del sincronizzatore sulle rpatch contro la conoscenza
 	} deriving (Show,Read)
-
-data Conoscenza a = Conoscenza (Patch a) (Conoscenza a) | Base User deriving (Show,Read)
-
-data Chiavi = Chiavi {master :: User, responsabili :: [User]} deriving Show
-
+---------------------------------------------------------------------
 
 hash :: Show a => a -> B.ByteString
 hash = B.pack . show
 
-test :: String -> Bool -> Either String ()
-test s t = if t then Right () else Left s
+test :: String -> Bool -> Env ()
+test s t = if t then return () else lift . Left $ s
 
-validazioneS :: Show a => Conoscenza a -> Either String Chiavi
-validazioneS (Base u) = return (Chiavi u [])
-validazioneS (Conoscenza (Patch ps us f) c) = do
-		Chiavi ks us' <- validazioneRs ps c
-		test "firma superutente errata" (verify ks (hash ((ps,us),c)) f)
-		Right $ Chiavi ks (us' ++ us)
+validazionePatch :: Patch -> Env ()
+validazionePatch (Patch ps f) = do
+		mapM_ validazioneRPatch ps 
+		Integrity c ks _ <- ask 
+		test "firma superutente errata" (verify ks (hash (ps,c)) f)
 
-validazioneRs :: Show a => [RPatch a] -> Conoscenza a -> Either String Chiavi
-validazioneRs ps c = do
-		let 	u (RPatch r es f) = (r, verify r (hash (es,c)) f)
-			(rs,ts) = unzip . map u $ ps 
-		Chiavi ks us <- validazioneS c
-		test "responsabili sconosciuti" (null $ rs \\ us)
-		test "firme responsabili errate" (and ts)
-		Right $ Chiavi ks us
+validazioneRPatch  :: RPatch -> Env ()
+validazioneRPatch (RPatch r es f) = do
+		Integrity c _ est <- ask
+		test "responsabile sconosciuto" (not $ r `elem` (M.keys $ responsabili est))
+		test "firma responsabile errata" (verify r (hash (es,c)) f)
 
-mkRPatch :: Show a => [a] -> User -> PrivateKey -> Conoscenza a -> Either String (RPatch a)
-mkRPatch es u ks c = let rp = RPatch u es . sign ks $ hash (es,c) in 
-	validazioneRs [rp] c >> Right rp 
+mkRPatch :: [Logico] -> PublicKey -> PrivateKey -> Env RPatch
+mkRPatch es pu pr = do 	c <- conoscenza <$> ask
+			liftM2 (>>) validazioneRPatch return $ 
+				RPatch pu es . sign pr $ hash (es,c) 
 
-mkPatch :: Show a => [RPatch a] -> [User] -> PrivateKey -> Conoscenza a -> Either String (Patch a)
-mkPatch ps us ks c = let p = Patch ps us . sign ks $ hash ((ps,us),c) in 
-		validazioneS (Conoscenza p c) >> Right p
+mkPatch :: [RPatch] -> PrivateKey -> Env Patch
+mkPatch ps pr = do 	c <-  conoscenza <$> ask
+			liftM2 (>>) validazionePatch return $ 
+				Patch ps . sign pr $ hash (ps,c) 
 
-render :: Ord a => Conoscenza a -> [Either (User,a) [User]]
-render (Base _) = []
-render (Conoscenza (Patch ps ns _) c) = render c ++ [Right ns] ++ map Left (foldr1 mix zs) where
+---------------------------------------------------------------------------------------------------------
+
+render :: Conoscenza -> Eventi
+render (Base m us) = []
+render (Conoscenza _ (Patch ps _) c) = render c ++ foldr1 mix zs where
 	zs = map (liftM2 zip (repeat . responsabile) eventi) ps
 	mix [] [] = []
 	mix [] ys = ys
 	mix xs [] = xs
 	mix xs@(x@(_,ex):xt) ys@(y@(_,ey):yt) = if ex <= ey then x : mix xt ys else y : mix xs yt
+
+----------------------------------------------------------------------------------------
+
+
+			

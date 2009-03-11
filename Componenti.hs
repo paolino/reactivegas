@@ -1,41 +1,42 @@
 {-# LANGUAGE StandaloneDeriving #-}
 module Componenti where
 
-import Control.Arrow
-import Codec.Crypto.RSA
-import qualified Data.ByteString.Lazy.Char8 as B
+import Control.Monad.Writer (tell)
+import Control.Monad
 import qualified Data.Map as M
 import qualified Data.Set as S
-import Data.List
-import Data.Either
-import Control.Applicative
 
 import Eventi
-import Fields
-import Lib (modifica)
+import Bugs
+import Lib (modifica, injectM)
 
 --------------------------------------------------------------------------------------------------
 
-nuovoResponsabile r pk est = est {responsabili = M.insert pk r (responsabili est)}
+bool t f x = if x then t else f
 
-vResponsabile :: Componente
-vResponsabile (pk, Responsabile r) = Right . nuovoResponsabile r pk 
-vResponsabile _ = Right 
-----------------------------------------------------------------------------------------------
+type Componente = Evento -> Estratto -> Either String Estratto
+
+setResponsabile pk m est = est {responsabili = M.insert pk (Just m) (responsabili est)}
+
+controlloEsistenzaResponsabile pk est = bool (Right est) (Left "il responsabile non esiste") $ pk `M.member` responsabili est 
+
+controlloNonEsistenzaResponsabile pk est = bool (Left "il responsabile esiste") (Right est) $ pk `M.member` responsabili est
+
 nuovoMembro m est = est {membri = S.insert m (membri est)}
-controlloMembro m est = case S.member m (membri est) of
-	False -> Left $ "il membro " ++ show m ++ " e' sconosciuto"
-	True -> Right est
 
-vMembro :: Componente
-vMembro (_,Membro m ) = Right . nuovoMembro m 
-vMembro (_,Accredito m _ ) = controlloMembro m 
-vMembro (_,Richiesta m _ _) = controlloMembro m
-vMembro _ = Right
+controlloMembro m est = bool (Right est) (Left $ "il membro " ++ show m ++ " e' sconosciuto") $ S.member m (membri est) 
+
+vIdentita :: Componente
+vIdentita (_,Novizio m ) = Right . nuovoMembro m 
+vIdentita (r,Nick m) =  Right . setResponsabile r m
+vIdentita (_,Accredito m _ ) = controlloMembro m 
+vIdentita (_,Richiesta m _ _) = controlloMembro m
+vIdentita (_,Saldo r _) = controlloEsistenzaResponsabile r
+vIdentita _ = Right
+
 -----------------------------------------------------------------------------------------------
 vMovimenti :: Componente
 vMovimenti (r1 ,Saldo r2 v ) est = do
-	-- controlloResponsabile r2 est 
 	Right $ est{conti_responsabili = modifica (+v) r1 0 . modifica (subtract v) r2 0 $ conti_responsabili est}
 vMovimenti (r, Accredito m v ) est = do
 	Right $ est{
@@ -78,4 +79,58 @@ vOrdine (_, r@(Richiesta m o v)) est = do
 		conti_membri = modifica (subtract v) m 0 $ conti_membri est
 		}
 vOrdine _ est = Right est
+-----------------------------------------------------------------------------------
+controlloPromuovendo re est = bool (Right est) (Left "responsabile non in promozione") $ re `M.member` promuovendi est 
+controlloNonPromuovendo re est = bool (Left "responsabile in promozione") (Right est) $ re `M.member` promuovendi est 
+controlloLicenziando re est = bool (Right est) (Left "responsabile non in licenziamento") $ re `M.member` licenziandi est
+controlloNonLicenziando re est = bool (Left "responsabile in licenziamento") (Right est) $ re `M.member` licenziandi est
+promozione t re r est =	do
+	controlloPromuovendo re est
+	let 	ps = promuovendi est
+	Right $ if M.size (ps M.! re) >= M.size (responsabili est) `div` 2 
+		then est{
+			promuovendi = M.delete re ps,
+			responsabili = M.insert re Nothing (responsabili est)
+			}
+		else est {promuovendi = M.insertWith M.union re (M.singleton r t) ps}
+
+licenziamento t re r est = do
+	controlloLicenziando re est
+	let 	ls = licenziandi est
+	Right $ if M.size (ls M.! re) >= M.size (responsabili est) `div` 2 
+		then est {
+			licenziandi = M.delete re ls,
+			responsabili = M.delete re $ responsabili est
+			}
+		else est {licenziandi = M.insertWith M.union re (M.singleton r t) ls}
+
+
+vAmministrativo (r,e@(Promozione re)) est = do
+	controlloNonEsistenzaResponsabile re est
+	controlloNonPromuovendo re est
+	Right $ est {promuovendi = M.insert re (M.singleton r True) $ promuovendi est}
+
+vAmministrativo (r,e@(Licenziamento re)) est = do
+	controlloEsistenzaResponsabile re est
+	controlloNonLicenziando re est
+	Right $ est {licenziandi = M.insert re (M.singleton r True) $ licenziandi est}
+		
+
+vAmministrativo (r,e@(Assenso re)) est = liftM2 mplus (promozione True re r) (licenziamento True re r) est
+vAmministrativo (r,e@(Dissenso re)) est = liftM2 mplus (promozione False re r) (licenziamento False re r) est
+vAmministrativo _ est = Right est
+
+vAttesa (r,_) est = if all (elem r) dichiarazioni
+	then Right est
+	else Left "mancano dichiarazioni amministrative"
+	where dichiarazioni = concatMap (map M.keys . M.elems) [promuovendi est, licenziandi est]
+	
+
+componenti :: [Componente]
+componenti = [vAttesa, vAmministrativo, vIdentita, vOrdine, vMovimenti]
+
+validaEvento :: Validatore
+validaEvento e s = case injectM s (map ($e) componenti) of 	
+			Left t -> tell [Left (e,t)] >> return s
+			Right s' -> tell [Right e] >> return s'
 

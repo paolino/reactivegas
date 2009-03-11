@@ -2,6 +2,7 @@ module Lib where
 
 import Control.Arrow
 import Control.Monad
+import Control.Concurrent.STM
 import qualified Data.Map as M
 
 
@@ -25,3 +26,5 @@ modifica f k z m = case k `M.member` m of
 	True -> M.insertWith (const f) k undefined m
 	False -> M.insert k (f z) m 
 
+modifyTVar :: (a -> a) -> TVar a -> STM ()
+modifyTVar f x = readTVar x >>= writeTVar x . f
