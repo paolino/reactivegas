@@ -32,10 +32,11 @@ main = do
 				case uri of 
 					"/" -> readFile "Pagine/index.html" >>= 
 						return . Response 202 [("Mime-type","text/html")]
-					q -> do l <- readFile q 
-						let mt = if ".jpg" `isSuffixOf` q then Just ("Mime-type","image/jpg")
+					q -> do print q
+						l <- readFile $ "Pagine/" ++ q 
+						let mt = if ".jpg" `isSuffixOf` q then Just ("Content-type","image/jpg")
 						  		else Nothing
-						return $ case mt of 	Just mt -> Response 202 [mt] l
+						return $ case mt of 	Just mt -> Response 200 [mt] l
 									Nothing -> Response 404 [] 
 										"Estensione del file sconosciuta"
 			in Just <$> catch k (\(_::IOException) -> return $ Response 404 [] "Errore di IO")
