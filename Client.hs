@@ -12,36 +12,34 @@ import Control.Monad.Error
 import Control.Monad
 import Control.Exception
 import JSON
+import Text.JSON
 
-matcher :: [Request -> IO (Maybe Response)] -> Request -> IO Response
-matcher zs x = liftM fromJust . foldr1 (liftM2 mplus) . map ($ x) $ zs
+dispatch :: String -> Maybe (Estratto -> String -> String)
+dispatch x = snd <$> find (flip isPrefixOf x . fst) fs where
+	fs =  [	
+		("/api/estratto/conti_membri" , jconti_membri),
+		("/api/estratto/membri" , jmembri),
+		("/api/estratto/aperti" , japerti), 
+		("/api/estratto/conti_responsabili" , jconti_responsabili),
+		("/api/estratto/responsabili"  ,jresponsabili)
+		]
 
-main = do
-	let	serveDynamic r@(Request _ (isPrefixOf "/api/" . uriPath -> True) _ _) = Just <$> do 
-			let z =  uriPath $ reqURI r 
-			estratto <- read <$> readFile "estratto"
-			case z of	
-				(isPrefixOf "/api/estratto/" -> True) -> case z of
-					(isPrefixOf "/api/estratto/conti_membri" -> True) ->
-						return $ Response 200 [] (show (jconti_membri estratto))
-					_ -> return $ Response 404 [] ("non so rispondere a " ++ z)
-				_ -> return $ Response 404 [] ("non so rispondere a " ++ z)
-		serveDynamic _ = return Nothing
-		serveStatic (Request _ (uriPath -> uri) _ _) = 
-			let k = do 
-				case uri of 
-					"/" -> readFile "Pagine/index.html" >>= 
-						return . Response 202 [("Mime-type","text/html")]
-					q -> do print q
-						l <- readFile $ "Pagine/" ++ q 
-						let mt = if ".jpg" `isSuffixOf` q then Just ("Content-type","image/jpg")
-						  		else Nothing
-						return $ case mt of 	Just mt -> Response 200 [mt] l
-									Nothing -> Response 404 [] 
-										"Estensione del file sconosciuta"
-			in Just <$> catch k (\(_::IOException) -> return $ Response 404 [] "Errore di IO")
-		serveStatic _ = return Nothing
-		wtf _ = return $ Just (Response 404 [] "Senza URI :(")
-
-	initServer 9090 $ matcher [serveDynamic,serveStatic,wtf]
+main = initServer 9090 serve where
+	serve r@(Request _ (isPrefixOf "/api/" . uriPath -> True) _ _) = 
+		let 	z =  uriPath $ reqURI r 
+		in do	estratto <- read <$> readFile "estratto"
+			return $ case dispatch z of
+				Just ss -> Response 200 [] (ss estratto "")
+				Nothing -> Response 404 [] ("funzione non implementata: " ++ z)
+	serve (Request _ (uriPath -> uri) _ _) = 
+		let k = case uri of 
+				"/" -> readFile "Pagine/index.html" >>= 
+					return . Response 200 [("Mime-type","text/html")]
+				q -> do	l <- readFile $ "Pagine/" ++ q
+					let mt = if ".jpg" `isSuffixOf` q then Just ("Content-type","image/jpg")
+					  		else Nothing
+					return $ case mt of 	Just mt -> Response 200 [mt] l
+								Nothing -> Response 404 [] 
+									"Estensione del file sconosciuta"
+		in catch k (\(_::IOException) -> return $ Response 404 [] "Errore di IO")
 

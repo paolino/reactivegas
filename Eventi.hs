@@ -14,19 +14,19 @@ import qualified Data.ByteString.Lazy.Char8 as B
 import qualified Text.ParserCombinators.ReadP as P
 import qualified Data.Set as S
 import qualified Data.Map as M
-import Codec.Crypto.RSA (PublicKey)
+import Codec.Crypto.RSA (PublicKey, public_n)
 import Lib (injectM)
 
 import Bugs
 type Responsabile = PublicKey
-
+prettyResponsabile = take 6 . show . public_n
 newtype Membro = Membro {unMembro :: String} deriving (Eq,Ord)
 instance Read Membro where
 	readsPrec _ = P.readP_to_S  (P.skipSpaces >> Membro <$> P.munch1 (isAlphaNum))
 
 instance Show Membro where
 	show (Membro u) = u
-newtype Bene = Bene String deriving (Eq,Ord)
+newtype Bene = Bene {unBene :: String} deriving (Eq,Ord)
 instance Show Bene where
 	show (Bene o) = o
 instance Read Bene where
