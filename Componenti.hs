@@ -125,7 +125,6 @@ vAttesa (r,_) est = if all (elem r) dichiarazioni
 	else Left "mancano dichiarazioni amministrative"
 	where dichiarazioni = concatMap (map M.keys . M.elems) [promuovendi est, licenziandi est]
 	
-
 componenti :: [Componente]
 componenti = [vAttesa, vAmministrativo, vIdentita, vOrdine, vMovimenti]
 

@@ -14,5 +14,10 @@ japerti = showJSArray  . map (showJSON . unBene)  . M.keys . aperti
 jresponsabili = showJSObject . toJSObject  . (map (prettyResponsabile *** (showJSON . unMembro . fromJust)) . filter (isJust . snd)) . 
 	M.toList . responsabili
 
-
-
+{-
+jbuild e [] = showJSArray $ 
+	map showJSON ["Accredito","Richiesta","Membro","Apertura","Chiusura","Fallimento","Saldo"] ""
+jbuild e ["Accredito"] = jmembri e ""
+jbuild e ["Accredito",m] = showJSON "Numero"
+jbuild e ["Accredito",m,n] = 
+-}
