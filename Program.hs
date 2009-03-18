@@ -1,4 +1,6 @@
-{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE StandaloneDeriving, ScopedTypeVariables #-}
+import Prelude hiding (catch)
+import Control.Exception
 import System.Random
 import System.Console.GetOpt
 import System.Environment
@@ -91,5 +93,5 @@ command xs est = do 	d <- liftIO $ untilIn "Comando" [WEvento "Fine", WEvento "E
 main = do
 	--pr <- loadPrivata "paolino.priv"
 	pu <- load "paolino.publ"
-	est <- loadEstratto "estratto"
+	est <- loadEstratto "estratto" `catch` (\(_::IOException) -> return vuoto)
 	runReaderT (command [] est) pu >>= writeFile "estratto" . show . snd

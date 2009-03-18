@@ -21,13 +21,14 @@ setResponsabile pk m est = est {responsabili = M.insert pk (Just m) (responsabil
 controlloEsistenzaResponsabile pk est = bool (Right est) (Left "il responsabile non esiste") $ pk `M.member` responsabili est 
 
 controlloNonEsistenzaResponsabile pk est = bool (Left "il responsabile esiste") (Right est) $ pk `M.member` responsabili est
+controlloNonEsistenzaMembro pk est = bool (Left "il membro gia' esiste") (Right est) $ pk `S.member` membri est
 
 nuovoMembro m est = est {membri = S.insert m (membri est)}
 
 controlloMembro m est = bool (Right est) (Left $ "il membro " ++ show m ++ " e' sconosciuto") $ S.member m (membri est) 
 
 vIdentita :: Componente
-vIdentita (_,Novizio m ) = Right . nuovoMembro m 
+vIdentita (_,Novizio m ) = \est -> controlloNonEsistenzaMembro m est >>= Right . nuovoMembro m 
 vIdentita (r,Nick m) =  Right . setResponsabile r m
 vIdentita (_,Accredito m _ ) = controlloMembro m 
 vIdentita (_,Richiesta m _ _) = controlloMembro m
@@ -57,7 +58,7 @@ controllaOrdineAperto o est = case M.lookup o (aperti est) of
 vOrdine ::Componente
 vOrdine (_ , Apertura o) est = do
 	controlloOrdineNuovo o est 
-	Right $ est {aperti = M.insert o [] $ aperti est}
+	Right $ est {aperti = M.insert o M.empty $ aperti est}
 vOrdine (_, Chiusura o) est = do
 	controllaOrdineAperto o est 
 	Right $ est {
@@ -69,13 +70,13 @@ vOrdine (_, Fallimento o) est = do
 	Right $ est {
 		aperti = M.delete o $ aperti est,
 		chiusi = S.insert (Fallito o) $ chiusi est,
-		conti_membri = foldr (\r -> modifica (subtract (valore r)) (membro r) 0) (conti_membri est) (aperti est M.! o)
+		conti_membri = foldr (\(m,v) -> modifica (subtract v) m 0) (conti_membri est) (M.assocs $ aperti est M.! o)
 		}
 vOrdine (_, r@(Richiesta m o v)) est = do
 	controllaOrdineAperto o est
 	controllaCopertura m o v est
 	Right $ est {
-		aperti = M.insertWith (++) o [r] $ aperti est,
+		aperti = M.insertWith (M.unionWith (+)) o (M.singleton (membro r) (valore r)) $ aperti est,
 		conti_membri = modifica (subtract v) m 0 $ conti_membri est
 		}
 vOrdine _ est = Right est
@@ -133,3 +134,11 @@ validaEvento e s = case injectM s (map ($e) componenti) of
 			Left t -> tell [Left (e,t)] >> return s
 			Right s' -> tell [Right e] >> return s'
 
+valido :: Evento -> Estratto -> Either String Estratto
+valido ev est = injectM est (map ($ev) componenti)
+
+espandi :: Eventi -> Estratto -> (Estratto,[(Evento,Maybe String)])
+espandi evs est = foldl f (est,[]) evs where
+	f (est,errs) ev = case valido ev est of
+					Left err -> (est,(ev,Just err):errs) 
+					Right est' -> (est',(ev,Nothing):errs)

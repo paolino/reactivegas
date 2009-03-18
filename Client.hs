@@ -1,215 +1,84 @@
-{-# LANGUAGE ViewPatterns, ScopedTypeVariables #-}
+{-# LANGUAGE ViewPatterns, ScopedTypeVariables, NoMonomorphismRestriction #-}
 import Prelude hiding (catch)
-import Integrity
-import Eventi
 import Network.Shed.Httpd
 import Control.Applicative
 import Control.Concurrent.STM
+import Control.Parallel.Strategies
 import Network.URI
 import Data.List
 import Data.Maybe
 import Control.Monad.Error
-import Control.Monad
+import Control.Monad.Reader
+import Control.Arrow
 import Control.Exception
-import JSON
+import Codec.Crypto.RSA
 import Text.JSON
+import MIME
 
-dispatch :: String -> Maybe (Estratto -> String -> String)
-dispatch x = snd <$> find (flip isPrefixOf x . fst) fs where
-	fs =  [	
-		("/api/estratto/conti_membri" , jconti_membri),
-		("/api/estratto/membri" , jmembri),
-		("/api/estratto/aperti" , japerti), 
-		("/api/estratto/conti_responsabili" , jconti_responsabili),
-		("/api/estratto/responsabili"  ,jresponsabili)
-		]
+import qualified Data.Map as M
+import qualified Data.Set as S
+import Costruzione
+import Componenti
+import Integrity
+import Eventi
+import Debug.Trace
+
+
+load :: Read a => String -> IO a
+load s = read <$> (readFile s >>= \e -> rnf e `seq` return e)
+
+instance JSON Logico where
+	readJSON _ = Error "no way to parse a logico"
+	showJSON x = JSString $ toJSString (show x)
+instance JSON Bene where
+	readJSON (JSString s) = Ok (Bene $ fromJSString s)
+	readJSON _ 		= Text.JSON.Error "failed parsing a Membro"
+	showJSON (Bene s) = JSString $ toJSString s
+
+instance JSON Membro where
+	readJSON (JSString s) = Ok (Membro $ fromJSString s)
+	readJSON _ 		= Text.JSON.Error "failed parsing a Membro"
+	showJSON (Membro s) = JSString $ toJSString s
+instance JSON PublicKey where
+	readJSON _ = Error "no way to parse to a public key"
+	showJSON = JSString . toJSString . take 6 . show . public_n
+
+
+inizia x = isPrefixOf x . uriPath 
+positivo = return . Response 200 [] . encode
+negativo = return . Response 404 [] . encode
+
+boot = do	evs <- load "logici" :: IO [Logico]
+		pu <- read <$> readFile "utente.publ"
+		(e,errs) <- espandi (map ((,) pu) evs) <$> read <$> readFile "estratto" 
+		return (e,errs)
 
 main = initServer 9090 serve where
-	serve r@(Request _ (isPrefixOf "/api/estratto" . uriPath -> True) _ _) = 
-		let 	z =  uriPath $ reqURI r 
-		in do	estratto <- read <$> readFile "estratto"
-			return $ case dispatch z of
-				Just ss -> Response 200 [] (ss estratto "")
-				Nothing -> Response 404 [] ("funzione non implementata: " ++ z)
+	serve r@(Request _ (inizia "/api/estratto" -> True) _ _) = 
+		let 	dispatch x z = (\(_,a) -> a z) <$> find (\(l,_) ->  x `isPrefixOf` l) fs 
+			fs =  [	
+				("/api/estratto/conti_membri", positivo . conti_membri),
+				("/api/estratto/membri", positivo . membri),
+				("/api/estratto/aperti", positivo . aperti), 
+				("/api/estratto/conti_responsabili", positivo . conti_responsabili),
+				("/api/estratto/responsabili" ,positivo . responsabili)
+				]
+		in boot >>= maybe (negativo "domanda non implementata") id . dispatch (uriPath $ reqURI r) . fst
+	serve r@(Request _ (inizia "/api/costruzione" -> True) _ _) = do
+		(e,errs) <- boot
+		case (lookup "costruzione" . queryToArguments . uriQuery . reqURI $ r) >>= parse of 
+			Nothing -> negativo "evento non accettato"
+			Just (Fine ev) -> do
+				writeFile "logici" (show . sort $ ev:map (snd . fst) errs) 
+				positivo  "evento inserito"
+			Just (Continua ss f) -> positivo $ runReader f e
+	
+	serve r@(Request _ (inizia "/api/eventi/lista" -> True) _ _) = boot >>= positivo . snd
+
 	serve (Request _ (uriPath -> uri) _ _) =
 		let uri' = if uri == "/" then "/index.html" else uri in
 		(Response 200 [("Content-type",maybe "text/plain" id (parseExtension uri'))] <$> 
 			(print uri' >> readFile ("Pagine" ++ uri')))
 			`catch`
 		(\(_::IOException) -> return $ Response 404 [] "Errore di IO")
-
-parseExtension :: String -> Maybe String
-parseExtension x = snd <$> find (flip isSuffixOf x . fst) fs where
-	fs = [ 
-		("ai",  	"application/postscript"),
-		("aif", 	"audio/x-aiff"),
-		("aifc", 	"audio/x-aiff"),
-		("aiff", 	"audio/x-aiff"),
-		("asc", 	"text/plain"),
-		("atom", 	"application/atom+xml"),
-		("au", 	"audio/basic"),
-		("avi", 	"video/x-msvideo"),
-		("bcpio", 	"application/x-bcpio"),
-		("bin", 	"application/octet-stream"),
-		("bmp", 	"image/bmp"),
-		("cdf", 	"application/x-netcdf"),
-		("cgm", 	"image/cgm"),
-		("class", 	"application/octet-stream"),
-		("cpio", 	"application/x-cpio"),
-		("cpt", 	"application/mac-compactpro"),
-		("csh", 	"application/x-csh"),
-		("css", 	"text/css"),
-		("dcr", 	"application/x-director"),
-		("dif", 	"video/x-dv"),
-		("dir", 	"application/x-director"),
-		("djv", 	"image/vnd.djvu"),
-		("djvu", 	"image/vnd.djvu"),
-		("dll", 	"application/octet-stream"),
-		("dmg", 	"application/octet-stream"),
-		("dms", 	"application/octet-stream"),
-		("doc", 	"application/msword"),
-		("dtd", 	"application/xml-dtd"),
-		("dv", 	"video/x-dv"),
-		("dvi", 	"application/x-dvi"),
-		("dxr", 	"application/x-director"),
-		("eps", 	"application/postscript"),
-		("etx", 	"text/x-setext"),
-		("exe", 	"application/octet-stream"),
-		("ez", 	"application/andrew-inset"),
-		("gif", 	"image/gif"),
-		("gram", 	"application/srgs"),
-		("grxml", 	"application/srgs+xml"),
-		("gtar", 	"application/x-gtar"),
-		("hdf", 	"application/x-hdf"),
-		("hqx", 	"application/mac-binhex40"),
-		("htm", 	"text/html"),
-		("html", 	"text/html"),
-		("ice", 	"x-conference/x-cooltalk"),
-		("ico", 	"image/x-icon"),
-		("ics", 	"text/calendar"),
-		("ief", 	"image/ief"),
-		("ifb", 	"text/calendar"),
-		("iges", 	"model/iges"),
-		("igs", 	"model/iges"),
-		("jnlp", 	"application/x-java-jnlp-file"),
-		("jp2", 	"image/jp2"),
-		("jpe", 	"image/jpeg"),
-		("jpeg", 	"image/jpeg"),
-		("jpg", 	"image/jpeg"),
-		("js", 	"application/x-javascript"),
-		("kar", 	"audio/midi"),
-		("latex", 	"application/x-latex"),
-		("lha", 	"application/octet-stream"),
-		("lzh", 	"application/octet-stream"),
-		("m3u", 	"audio/x-mpegurl"),
-		("m4a", 	"audio/mp4a-latm"),
-		("m4b", 	"audio/mp4a-latm"),
-		("m4p", 	"audio/mp4a-latm"),
-		("m4u", 	"video/vnd.mpegurl"),
-		("m4v", 	"video/x-m4v"),
-		("mac", 	"image/x-macpaint"),
-		("man", 	"application/x-troff-man"),
-		("mathml", 	"application/mathml+xml"),
-		("me", 	"application/x-troff-me"),
-		("mesh", 	"model/mesh"),
-		("mid", 	"audio/midi"),
-		("midi", 	"audio/midi"),
-		("mif", 	"application/vnd.mif"),
-		("mov", 	"video/quicktime"),
-		("movie", 	"video/x-sgi-movie"),
-		("mp2", 	"audio/mpeg"),
-		("mp3", 	"audio/mpeg"),
-		("mp4", 	"video/mp4"),
-		("mpe", 	"video/mpeg"),
-		("mpeg", 	"video/mpeg"),
-		("mpg", 	"video/mpeg"),
-		("mpga", 	"audio/mpeg"),
-		("ms", 	"application/x-troff-ms"),
-		("msh", 	"model/mesh"),
-		("mxu", 	"video/vnd.mpegurl"),
-		("nc", 	"application/x-netcdf"),
-		("oda", 	"application/oda"),
-		("ogg", 	"application/ogg"),
-		("pbm", 	"image/x-portable-bitmap"),
-		("pct", 	"image/pict"),
-		("pdb", 	"chemical/x-pdb"),
-		("pdf", 	"application/pdf"),
-		("pgm", 	"image/x-portable-graymap"),
-		("pgn", 	"application/x-chess-pgn"),
-		("pic", 	"image/pict"),
-		("pict", 	"image/pict"),
-		("png", 	"image/png"),
-		("pnm", 	"image/x-portable-anymap"),
-		("pnt", 	"image/x-macpaint"),
-		("pntg", 	"image/x-macpaint"),
-		("ppm", 	"image/x-portable-pixmap"),
-		("ppt", 	"application/vnd.ms-powerpoint"),
-		("ps", 	"application/postscript"),
-		("qt", 	"video/quicktime"),
-		("qti", 	"image/x-quicktime"),
-		("qtif", 	"image/x-quicktime"),
-		("ra", 	"audio/x-pn-realaudio"),
-		("ram", 	"audio/x-pn-realaudio"),
-		("ras", 	"image/x-cmu-raster"),
-		("rdf", 	"application/rdf+xml"),
-		("rgb", 	"image/x-rgb"),
-		("rm", 	"application/vnd.rn-realmedia"),
-		("roff", 	"application/x-troff"),
-		("rtf", 	"text/rtf"),
-		("rtx", 	"text/richtext"),
-		("sgm", 	"text/sgml"),
-		("sgml", 	"text/sgml"),
-		("sh", 	"application/x-sh"),
-		("shar", 	"application/x-shar"),
-		("silo", 	"model/mesh"),
-		("sit", 	"application/x-stuffit"),
-		("skd", 	"application/x-koan"),
-		("skm", 	"application/x-koan"),
-		("skp", 	"application/x-koan"),
-		("skt", 	"application/x-koan"),
-		("smi", 	"application/smil"),
-		("smil", 	"application/smil"),
-		("snd", 	"audio/basic"),
-		("so", 	"application/octet-stream"),
-		("spl", 	"application/x-futuresplash"),
-		("src", 	"application/x-wais-source"),
-		("sv4cpio", 	"application/x-sv4cpio"),
-		("sv4crc", 	"application/x-sv4crc"),
-		("svg", 	"image/svg+xml"),
-		("swf", 	"application/x-shockwave-flash"),
-		("t", 	"application/x-troff"),
-		("tar", 	"application/x-tar"),
-		("tcl", 	"application/x-tcl"),
-		("tex", 	"application/x-tex"),
-		("texi", 	"application/x-texinfo"),
-		("texinfo", 	"application/x-texinfo"),
-		("tif", 	"image/tiff"),
-		("tiff", 	"image/tiff"),
-		("tr", 	"application/x-troff"),
-		("tsv", 	"text/tab-separated-values"),
-		("txt", 	"text/plain"),
-		("ustar", 	"application/x-ustar"),
-		("vcd", 	"application/x-cdlink"),
-		("vrml", 	"model/vrml"),
-		("vxml", 	"application/voicexml+xml"),
-		("wav", 	"audio/x-wav"),
-		("wbmp", 	"image/vnd.wap.wbmp"),
-		("wbmxl", 	"application/vnd.wap.wbxml"),
-		("wml", 	"text/vnd.wap.wml"),
-		("wmlc", 	"application/vnd.wap.wmlc"),
-		("wmls", 	"text/vnd.wap.wmlscript"),
-		("wmlsc", 	"application/vnd.wap.wmlscriptc"),
-		("wrl", 	"model/vrml"),
-		("xbm", 	"image/x-xbitmap"),
-		("xht", 	"application/xhtml+xml"),
-		("xhtml", 	"application/xhtml+xml"),
-		("xls", 	"application/vnd.ms-excel"),
-		("xml", 	"application/xml"),
-		("xpm", 	"image/x-xpixmap"),
-		("xsl", 	"application/xml"),
-		("xslt", 	"application/xslt+xml"),
-		("xul", 	"application/vnd.mozilla.xul+xml"),
-		("xwd", 	"image/x-xwindowdump"),
-		("xyz", 	"chemical/x-xyz"),
-		("zip", 	"application/zip")
-		]
+		

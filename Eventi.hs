@@ -19,7 +19,7 @@ import Lib (injectM)
 
 import Bugs
 type Responsabile = PublicKey
-prettyResponsabile = take 6 . show . public_n
+
 newtype Membro = Membro {unMembro :: String} deriving (Eq,Ord)
 instance Read Membro where
 	readsPrec _ = P.readP_to_S  (P.skipSpaces >> Membro <$> P.munch1 (isAlphaNum))
@@ -59,7 +59,7 @@ tuttibeni :: Estratto -> S.Set Bene
 tuttibeni est = S.union (S.fromList $ M.keys (aperti est)) (S.map beneR (chiusi est))
 
 data Estratto = Estratto {
-	aperti 			:: M.Map Bene [Logico],
+	aperti 			:: M.Map Bene (M.Map Membro Valore),
 	chiusi 			:: S.Set Report,
 	conti_membri 		:: M.Map Membro Valore, 
 	conti_responsabili 	:: M.Map Responsabile Valore,
@@ -69,6 +69,7 @@ data Estratto = Estratto {
 	licenziandi		:: M.Map Responsabile (M.Map Responsabile Bool)
 	} deriving (Read,Show)
 
+
 type Responso = Either (Evento,String) Evento
 
 type Validatore = Evento -> Estratto -> Writer [Responso] Estratto
@@ -77,4 +78,5 @@ valida :: Validatore -> Eventi -> (Estratto,[Responso])
 valida v xs = runWriter $ injectM vuoto (map v xs) 
 
 vuoto = Estratto M.empty S.empty M.empty M.empty S.empty M.empty M.empty M.empty
+
 
