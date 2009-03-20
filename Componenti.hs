@@ -81,6 +81,7 @@ vOrdine (_, r@(Richiesta m o v)) est = do
 		}
 vOrdine _ est = Right est
 -----------------------------------------------------------------------------------
+{-
 controlloPromuovendo re est = bool (Right est) (Left "responsabile non in promozione") $ re `M.member` promuovendi est 
 controlloNonPromuovendo re est = bool (Left "responsabile in promozione") (Right est) $ re `M.member` promuovendi est 
 controlloLicenziando re est = bool (Right est) (Left "responsabile non in licenziamento") $ re `M.member` licenziandi est
@@ -126,8 +127,9 @@ vAttesa (r,_) est = if all (elem r) dichiarazioni
 	else Left "mancano dichiarazioni amministrative"
 	where dichiarazioni = concatMap (map M.keys . M.elems) [promuovendi est, licenziandi est]
 	
+-}
 componenti :: [Componente]
-componenti = [vAttesa, vAmministrativo, vIdentita, vOrdine, vMovimenti]
+componenti = [ vIdentita, vOrdine, vMovimenti]
 
 validaEvento :: Validatore
 validaEvento e s = case injectM s (map ($e) componenti) of 	

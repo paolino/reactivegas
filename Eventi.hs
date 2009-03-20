@@ -10,6 +10,7 @@ import Data.List
 import Control.Applicative
 import Data.Char
 import qualified Data.ByteString.Lazy.Char8 as B
+import Codec.Binary.UTF8.String
 
 import qualified Text.ParserCombinators.ReadP as P
 import qualified Data.Set as S
@@ -21,16 +22,17 @@ import Bugs
 type Responsabile = PublicKey
 
 newtype Membro = Membro {unMembro :: String} deriving (Eq,Ord)
-instance Read Membro where
-	readsPrec _ = P.readP_to_S  (P.skipSpaces >> Membro <$> P.munch1 (isAlphaNum))
 
+instance Read Membro where
+	readsPrec k = map (first Membro) . readsPrec k 
 instance Show Membro where
-	show (Membro u) = u
+	show (Membro b) = "\"" ++ b ++ "\""
+
 newtype Bene = Bene {unBene :: String} deriving (Eq,Ord)
-instance Show Bene where
-	show (Bene o) = o
 instance Read Bene where
-	readsPrec _ = P.readP_to_S  (P.skipSpaces >> Bene <$> P.munch1 (isAlphaNum))
+	readsPrec k = map (first Bene) . readsPrec k 
+instance Show Bene where
+	show (Bene b) =  "\"" ++ b ++ "\""
 
 type Valore = Double
 --------------------------------------------------------------------------------
@@ -64,9 +66,12 @@ data Estratto = Estratto {
 	conti_membri 		:: M.Map Membro Valore, 
 	conti_responsabili 	:: M.Map Responsabile Valore,
 	membri 			:: S.Set Membro, 
-	responsabili 		:: M.Map Responsabile (Maybe Membro),
-	promuovendi		:: M.Map Responsabile (M.Map Responsabile Bool),
-	licenziandi		:: M.Map Responsabile (M.Map Responsabile Bool)
+	responsabili 		:: M.Map Responsabile (Maybe Membro)
+	--seme			:: B.ByteString
+	--sincronizzatore 	:: PublicKey
+	--fiducia			:: [(Public
+	-- promuovendi		:: M.Map Responsabile (M.Map Responsabile Bool),
+	-- licenziandi		:: M.Map Responsabile (M.Map Responsabile Bool)
 	} deriving (Read,Show)
 
 
@@ -77,6 +82,6 @@ type Validatore = Evento -> Estratto -> Writer [Responso] Estratto
 valida :: Validatore -> Eventi -> (Estratto,[Responso])
 valida v xs = runWriter $ injectM vuoto (map v xs) 
 
-vuoto = Estratto M.empty S.empty M.empty M.empty S.empty M.empty M.empty M.empty
+vuoto = Estratto M.empty S.empty M.empty M.empty S.empty M.empty -- M.empty M.empty
 
 
