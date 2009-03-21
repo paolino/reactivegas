@@ -38,18 +38,15 @@ type Valore = Double
 --------------------------------------------------------------------------------
 
 data Logico
-	= Dissenso	{responsabile :: Responsabile} 
-	| Assenso	{responsabile :: Responsabile}
-	| Nick		{membro :: Membro}
-	| Novizio 	{membro :: Membro}
-	| Apertura 	{bene :: Bene }
-	| Accredito 	{membro :: Membro , valore :: Valore} 
+	= Nick		{membro :: Membro} -- ^ imposta il nick name per il responsabile
+	| Novizio 	{membro :: Membro} -- ^ inserisce il nome di un membro
+	| Apertura 	{bene :: Bene }	-- ^ apre un nuovo acquisto
+	| Accredito 	{membro :: Membro , valore :: Valore} -- ^ dichiara un accredito verso un membro
 	| Richiesta 	{membro :: Membro, bene :: Bene, valore :: Valore}	
 	| Chiusura 	{bene :: Bene}
 	| Fallimento 	{bene :: Bene}
 	| Saldo 	{responsabile :: Responsabile , valore :: Valore} 
-	| Promozione	{responsabile :: Responsabile}
-	| Licenziamento	{responsabile :: Responsabile} deriving (Eq,Ord, Show, Read)
+	deriving (Eq,Ord, Show, Read)
 
 
 type Evento = (Responsabile, Logico)
@@ -67,11 +64,6 @@ data Estratto = Estratto {
 	conti_responsabili 	:: M.Map Responsabile Valore,
 	membri 			:: S.Set Membro, 
 	responsabili 		:: M.Map Responsabile (Maybe Membro)
-	--seme			:: B.ByteString
-	--sincronizzatore 	:: PublicKey
-	--fiducia			:: [(Public
-	-- promuovendi		:: M.Map Responsabile (M.Map Responsabile Bool),
-	-- licenziandi		:: M.Map Responsabile (M.Map Responsabile Bool)
 	} deriving (Read,Show)
 
 

@@ -2,7 +2,11 @@
 module Componenti where
 
 import Control.Monad.Writer (tell)
+import Control.Arrow
 import Control.Monad
+import Data.Function
+import Data.Ord
+import Data.List
 import qualified Data.Map as M
 import qualified Data.Set as S
 
@@ -140,7 +144,7 @@ valido :: Evento -> Estratto -> Either String Estratto
 valido ev est = injectM est (map ($ev) componenti)
 
 espandi :: Eventi -> Estratto -> (Estratto,[(Evento,Maybe String)])
-espandi evs est = foldl f (est,[]) evs where
+espandi evs est = second reverse . foldl f (est,[]) $ sortBy (compare `on` snd) evs where
 	f (est,errs) ev = case valido ev est of
 					Left err -> (est,(ev,Just err):errs) 
 					Right est' -> (est',(ev,Nothing):errs)
