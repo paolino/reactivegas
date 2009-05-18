@@ -23,8 +23,6 @@ import System.IO
 import Codec.Binary.UTF8.String
 import Control.Monad.Error
 import System.Directory
-import Codec.Crypto.RSA
-import qualified Data.ByteString.Lazy.Char8 as B
 
 import MakePatch 
 -----------------------------------------
@@ -45,9 +43,7 @@ s0 responsabilediboot = (
 	replicate (length reattori) $ nodoVuoto
 	) :: (T,[SNodo T Utente])
 
-main =  do	s  <- readFile "stato" -- leggiamo lo stato relativo alla patch n
-		hSetBuffering stdout NoBuffering 
-		(u,prk,reverse -> es) <- runBuildingPatch priorities makers stampaLogs reattori s 
-		(read -> pu :: PublicKey)  <- readFile $ u ++ ".publ"
-		writeFile (u ++ ".patch") (show (pu,sign prk (B.pack $ s ++ concat es),es))
-
+main =  do	putStrLn "nome del primo utente (la sua chiave pubblica deve essere nella directory): "
+		l <- getLine
+		s  <- readFile $ l ++ ".publ" -- leggiamo lo stato relativo alla patch n
+		writeFile "stato" (show $ s0 (l,read s))
