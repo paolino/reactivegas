@@ -7,7 +7,7 @@ import Codec.Crypto.RSA
 import qualified Data.ByteString.Lazy.Char8 as B
 
 import MakePatch 
-import Server
+import Rete
 import Applicazione
 -----------------------------------------
 

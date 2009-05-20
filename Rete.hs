@@ -1,5 +1,5 @@
 {-# LANGUAGE StandaloneDeriving, ExistentialQuantification, ScopedTypeVariables #-}
-module Network where
+module Rete where
 import Prelude hiding (catch)
 import Codec.Crypto.RSA
 import Data.Digest.Pure.SHA

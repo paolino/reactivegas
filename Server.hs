@@ -11,7 +11,7 @@ import System.IO
 import Control.Exception
 
 import qualified Data.ByteString.Lazy.Char8 as B
-import Server
+import Rete
 import Lib0
 maxdb = 1000
 maxthreads = 1000
