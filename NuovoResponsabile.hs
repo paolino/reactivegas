@@ -5,8 +5,10 @@ import System.Random (newStdGen)
 import Codec.Crypto.RSA (generateKeyPair)
 import Control.Applicative
 import Codec.Binary.UTF8.String
+import System.IO
 
-main =  do	putStr "nome:"
+main =  do	hSetBuffering stdout NoBuffering
+		putStr "nome:"
 		l <- getLine
 		let (p1,p2) = (l ++ ".priv", l ++ ".publ")
 		(pu,pr,_) <- flip generateKeyPair 512 <$> newStdGen
