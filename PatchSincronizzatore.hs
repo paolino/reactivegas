@@ -30,8 +30,9 @@ main =  do	ls <- getArgs
 			[x,z] -> do
 				s' <- aggiornaStato puk s [(f,ps')]
 				let ws = map snd . responsabiliQ $ s'
+				r <- query x (read z) (show $ GroupPatch (s',f,ps',ws)) 
+				putStrLn r
 				writeFile "stato" s'
-				query x (read z) (show $ GroupPatch (s,f,ws)) >>= putStrLn
 
 		
 

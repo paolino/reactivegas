@@ -17,14 +17,17 @@ main =  do
 	g <- read <$> readFile "sincronizzatore.publ"
 	ls <- getArgs
 	ps <- case ls of 
-		[x,z] -> query x (read z) (show $ Aggiornamento s)				
+		[x,z] -> query x (read z) (show $ Aggiornamento s)	
+	print ps
 	s' <- aggiornaStato g s ps 
 	writeFile "stato" s'
 	ls <- getArgs
 	hSetBuffering stdout NoBuffering 
 	(u,prk,reverse -> es) <- runBuildingPatch priorities makers stampaLogs reattori s' 
 	pu <- read <$> (readFile $ u ++ ".publ")
+	print s
+	print es
 	let r = (pu,sign prk (B.pack $ s ++ concat es),es)
-	() <- case ls of
+	s <- case ls of
 		[x,z] -> query x (read z) $ show (Patch r) 
-	return ()
+	putStrLn s
