@@ -17,22 +17,20 @@ import Anagrafe
 -----------------------------------------
 
 
-main =  do	ls <- getArgs
+main =  do	[x,z] <- getArgs
 		s  <- readFile "stato"
 		prk <- read <$> readFile "sincronizzatore.priv"					
 		(puk :: PublicKey) <- read <$> readFile "sincronizzatore.publ"					
-		ps <- case ls of
-			[x,z] -> query x (read z) (show $ UPS)
-		let 	ps' = filter (\((pu,firma,es)::UP) -> pu `elem` map snd (responsabiliQ s) && 
+		ps <-  query x (read z) (show $ UPS)
+		let 	ps' = filter (\((pu,firma,es)::UP) -> pu `elem` responsabiliQ s && 
 				verify pu (B.pack (s ++ concat es)) firma) ps
-			f = sign prk (B.pack $ s ++ show ps')
-		case ls of
-			[x,z] -> do
-				s' <- aggiornaStato puk s [(f,ps')]
-				let ws = map snd . responsabiliQ $ s'
-				r <- query x (read z) (show $ GroupPatch (s',f,ps',ws)) 
-				putStrLn r
-				writeFile "stato" s'
+			f0 = sign prk (B.pack $ s ++ show ps') 
+		s' <- aggiornaStato puk s [(f0 ,ps')]
+		let 	ws = responsabiliQ $ s'
+			f1 = sign prk (B.pack $ s ++ show ws)
+		r <- query x (read z) (show $ GroupPatch (s',f0 ,ws, f1)) 
+		putStrLn r
+		writeFile "stato" s'
 
 		
 

@@ -48,7 +48,7 @@ s0 responsabilediboot = (
 	replicate (length reattori) $ nodoVuoto
 	) :: (T,[SNodo T Utente])
 
-responsabiliQ s = responsabili . fst $ (read s :: Q)
+responsabiliQ s = map snd . responsabili . fst $ (read s :: Q)
 aggiornaStato g = let
 	r stato (firma,ps) = do
 		when (not $ verify g (B.pack $ stato ++ show ps) firma) $ error "errore di integrita della patch di gruppo" 

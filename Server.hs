@@ -61,12 +61,12 @@ nuovaUP :: UP -> Query (Either String String)
 nuovaUP up@(puk,firma,es) (Board tvdb tvups tvvs _) = do
 	db <- readTVar tvdb	
 	case db of
-		[] -> return $ Left "Servizio non inizializzato"
+		[] -> return $ Left "Server: Servizio non inizializzato"
 		_ -> do 
 			(s, ups) <- readTVar tvups 
 			vs <- readTVar tvvs
 			case puk `elem` vs of
-				False -> return $ Left "Responsabile sconosciuto"
+				False -> return $ Left "Server: Responsabile sconosciuto"
 				True -> case verify puk (B.pack $ s ++ concat es) firma of
 					False -> return $ Left "Server: Patch non integra"
 					True -> do 
@@ -74,17 +74,19 @@ nuovaUP up@(puk,firma,es) (Board tvdb tvups tvvs _) = do
 						return $ Right "Server: Patch accettata"
 type Firmante = [UP] -> GP
 
-nuovaGP :: PublicKey -> (String,B.ByteString,[UP],[PublicKey]) -> Query (Either String String)
-nuovaGP puk (s',firma,ups,ws) (Board tvdb tvups tvvs _) = do
+nuovaGP :: PublicKey -> (String,B.ByteString,[PublicKey],B.ByteString) -> Query (Either String String)
+nuovaGP puk (s',firma0,ws,firma1) (Board tvdb tvups tvvs _) = do
 	db <- readTVar tvdb
-	(s,_) <- readTVar tvups
-	case verify puk (B.pack (s ++ show ups)) firma of
-		False -> return (Left "Server: Test di integrita fallito")
-		True -> do
-			writeTVar tvups (s',[])
-			writeTVar tvdb (reverse . take maxdb . reverse $ db ++ [(s,(firma,ups))])
-			writeTVar tvvs ws
-			return (Right "Server: Aggiornato")
+	(s,ups) <- readTVar tvups
+	case verify puk (B.pack (s ++ show ups)) firma0 of
+		False -> return (Left "Server: Test di integrita patches fallito")
+		True -> case verify puk (B.pack (s ++ show ws)) firma1 of
+			False -> return (Left "Server: Test di integrita responsabili validi fallito")
+			True -> do
+				writeTVar tvups (s',[])
+				writeTVar tvdb (reverse . take maxdb . reverse $ db ++ [(s,(firma0,ups))])
+				writeTVar tvvs ws
+				return (Right "Server: Aggiornato")
 
 leggiUPS :: Query [UP]
 leggiUPS (Board _ tvups _ _) = snd <$> readTVar tvups
@@ -97,7 +99,7 @@ protocol puk x z = case reads x of
 	[(Patch y,_)] -> fmap PBox <$> nuovaUP y z
 	[(UPS,_)] -> Right . PBox  <$> leggiUPS z
 	[(GroupPatch y,_)] -> fmap PBox <$> nuovaGP puk y z 
-
+	[(Validi,_)] -> Right . PBox <$> readTVar (validi z)
 server puk p b@(Board _ _ _ tvnt) = do
 	s <- listenOn (PortNumber (fromIntegral  p))
 	let t = do
@@ -118,7 +120,6 @@ server puk p b@(Board _ _ _ tvnt) = do
 	forever t  `finally` sClose s
 	
 main = do
-	s <- readFile "stato"
 	puk <- read <$> readFile "sincronizzatore.publ"
 	b <- readBoard `catch` (\(_::IOException) -> readFile "stato" >>= mkBoard )
 	server puk 9090 b
