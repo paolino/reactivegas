@@ -8,6 +8,7 @@ applicativi:NuovoResponsabile.hs PatchSincronizzatore.hs PatchResponsabile.hs St
 clean:
 	rm *.o 
 	rm *.hi
+	rm `find . -maxdepth 1 -perm -u=x -type f`
 git:
 	git add *.hs
 	git add README
