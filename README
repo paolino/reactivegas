@@ -1,0 +1,10 @@
+Questo é un promemoria , leggete la documentazione su github , progetto reactivegas
+
+Il pacchetto comprende 5 applicativi
+
+NuovoResponsabile: crea le chiavi per un nuovo nome, utile per istanziare il sincronizzatore (nome paricolare) o un utente qualsiasi
+StatoIniziale: crea uno stato iniziale per un gruppo nuovo
+Server: un servizio che gira sulla 9090 per aiutare lo scambio delle patch tra responsabili e sincronizzatore
+PatchResponsabile : aggiorna lo stato interrogando il servizio , crea e registra una patch responsabile 
+PatchSincronizzatore : l'azione che deve eseguire il sincronizzatore per aggiornare lo stato del gruppo con le patch responsabile giunte al servizio
+
