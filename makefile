@@ -21,3 +21,6 @@ release:applicativi
 	cp NuovoResponsabile PatchResponsabile PatchSincronizzatore Server StatoIniziale release
 	tar cjvf release.tbz release
 	rm -rf release
+edit:
+	gvim *.hs README LICENSE
+
