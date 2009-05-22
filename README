@@ -11,17 +11,23 @@ PatchSincronizzatore : l'azione che deve eseguire il sincronizzatore per aggiorn
 Tutoriale
 
 	Creazione delle chiavi per il gruppo responsabili.
+		Ogni responsabile crea la suo coppia di chiavi e manda quella pubblica al sincronizzatore
 
 	Creazione dello stato iniziale
+		Il sincronizzatore crea lo stato iniziale con le chiavi raccolte dai coresponsabili
+		Vengono creati "stato"  e "stato.rif"
 
 	Creazione delle chiavi di sincronizzatore
+		Il sincronizzatore crea le chiavi con nome sincronizzatore,  sincronizzatore.publ e sincronizzatore.priv
 
-	Boot del servizio
+	Boot del servizio sul socket <host> <port>
+		Il sincronizzatore manda stato e sincronizzatore.publ a tutti i responsabili e stato.rif e sincronizzatore.publ all'amministratore
+		del servizio.
+		L'amministratore lancia Server nella directory con stato.rif e sincronizzatore.publ
 
 	Aggiornamento iniziale
+		Il sincronizzatore effettua la prima PatchSincronizzatore <host> <port>.
+		Ora tutti possono cominciare a mandare PatchResponsabile <host> <port>
 
 
-Prima di tutto occorre creare le chiavi di sincronizzatore.
-Un responsabile qualsiasi che si prende la briga di effettuare le sincronizzazioni lancia sulla sua macchina NuoveChiavi specificando come nome, quando richiesto,
-il nome "sincronizzatore".Troverá nella stessa cartella dove ha lanciato il programma sincronizzatore.publ sincronizzatore.priv
-Server va lanciato su una macchina sempre connessa alla rete , con aperta la porta 9090 in ingresso
+

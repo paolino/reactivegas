@@ -1,9 +1,0 @@
-Per la versione beta 0.0.1 ....
-
-Completare il set di applicazioni con
-	AggiornaStato -- il programma in mano ai responsabili per aggiornare lo stato con le patch di sincronizzazione
-	CreaPatchSincronizzazione -- il programma in mano al  responsabile di sincronizzazione per formare una patch che comprende le patch utente ricevute
-
-Creare un pacchetto comprendente i 5 eseguibili per sistemi linux (e windows , possibilmente)
-
-

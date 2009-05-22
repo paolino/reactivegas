@@ -1,14 +1,14 @@
-applicativi:NuovoResponsabile.hs PatchSincronizzatore.hs PatchResponsabile.hs StatoIniziale.hs Server.hs
-	ghc --make NuovoResponsabile
+applicativi:NuoveChiavi.hs PatchSincronizzatore.hs PatchResponsabile.hs StatoIniziale.hs Server.hs
+	ghc --make NuoveChiavi
 	ghc --make PatchSincronizzatore
 	ghc --make PatchResponsabile
 	ghc --make Server
 	ghc --make StatoIniziale
-	cp NuovoResponsabile PatchResponsabile PatchSincronizzatore Server StatoIniziale Applicazioni
+	cp NuoveChiavi PatchResponsabile PatchSincronizzatore Server StatoIniziale Applicazioni
 clean:
-	rm *.o 
-	rm *.hi
-	rm `find . -maxdepth 1 -perm -u=x -type f`
+	rm -f *.o 
+	rm -f *.hi
+	rm -f `find . -maxdepth 1 -perm -u=x -type f`
 git:
 	git add *.hs
 	git add README
@@ -18,7 +18,7 @@ git:
 	git push
 release:applicativi
 	mkdir release
-	cp NuovoResponsabile PatchResponsabile PatchSincronizzatore Server StatoIniziale release
+	cp NuoveChiavi PatchResponsabile PatchSincronizzatore Server StatoIniziale release
 	tar cjvf release.tbz release
 	rm -rf release
 edit:

@@ -26,6 +26,7 @@ import Codec.Binary.UTF8.String
 import Control.Monad.Error
 import System.Directory
 import Codec.Crypto.RSA
+import Data.Digest.Pure.SHA
 import qualified Data.ByteString.Lazy.Char8 as B
 
 import MakePatch 
@@ -51,12 +52,13 @@ s0 responsabilediboot = (
 responsabiliQ s = map snd . responsabili . fst $ (read s :: Q)
 aggiornaStato g = let
 	r stato (firma,ps) = do
-		when (not $ verify g (B.pack $ stato ++ show ps) firma) $ error "errore di integrita della patch di gruppo" 
+		let h = showDigest . sha512 $ B.pack $ stato
+		when (not $ verify g (B.pack $ h ++ show ps) firma) $ error "errore di integrita della patch di gruppo" 
 		let 	(t,_):: (T,[SNodo T Utente]) = read stato
 			rs = map (snd &&& fst) $ responsabili t 
 			zs = map (\(puk,_,es) -> zip (repeat (fromJust $ lookup puk rs)) es) ps
 		when (not $ all (\(puk,_,_) -> puk `elem` map fst rs) ps ) $ error "la patch di gruppo contiene eventi da un utente sconosciuto"
-		when (not $ all (\(puk,firma,es) -> verify puk (B.pack $ stato ++ concat es) firma) ps) $ 
+		when (not $ all (\(puk,firma,es) -> verify puk (B.pack $ h ++ concat es) firma) ps) $ 
 			error "la patch di gruppo contiene una patch di responsabile non integra"
 		(_,stato',logs) <- runProgramma reattori stato (caricaEventi priorities (concat zs))
 		stampaLogs logs
