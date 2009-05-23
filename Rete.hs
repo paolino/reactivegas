@@ -16,6 +16,8 @@ import Lib0
 type UP = (PublicKey,B.ByteString,[String])
 
 data Protocol = Aggiornamento String | Patch UP | UPS | GroupPatch (String,B.ByteString,[PublicKey],B.ByteString) | Validi  deriving (Read,Show)
+type SelectorProtocol  = (PublicKey,Protocol)
+
 data PBox = forall a . Show a => PBox a 
 instance Show PBox where 
 	show (PBox a) = show a

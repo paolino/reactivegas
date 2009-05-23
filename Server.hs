@@ -7,6 +7,9 @@ import Control.Concurrent.STM
 import Control.Applicative
 import Network
 import System.IO
+import System.Directory
+import System.FilePath
+import Data.Maybe
 
 import Control.Arrow
 import Control.Exception
@@ -25,89 +28,118 @@ type GP = (String,(B.ByteString,[UP]))
 type DB = [GP]
 
 
-data Board = Board {gpatches:: TVar DB, nuovo :: TVar (String,[UP]) , validi :: TVar [PublicKey], nt :: TVar Int}
+type BoardValue = (DB,(String,[UP]),[PublicKey])
+mkBoardValue :: String -> [PublicKey] -> BoardValue
+mkBoardValue x ys = ([],(x,[]),ys)
 
+data Board = Board {gpatches:: TVar DB, nuovo :: TVar (String,[UP]) , validi :: TVar [PublicKey]}
 
-writeBoard (Board db ups ws _) = do
-	(db,ups,ws) <- atomically $ do
+data  Boards = Boards {boards :: TVar [(PublicKey,Board)], nt :: TVar Int}
+
+writeBoard (Board db ups ws) = do
 		db <- readTVar db
 		ups <- readTVar ups
 		ws <- readTVar ws
 		return (db,ups,ws)
-	writeFile "server.stato" $ show (db,ups,ws)
+		
+writeBoards (Boards bs _) = do
+	r <- atomically $ do 
+		(unzip -> (puks,bs'))  <- readTVar bs 
+		zip puks <$> mapM writeBoard bs'
+	writeFile "server.stato" $ show r
 
-readBoard = do
-	(db,ups,ws) <- read <$> readFile "server.stato"
-	atomically $ do
+readBoard (db,ups,ws) = do
 		db <- newTVar db
 		ups <- newTVar ups
 		vs <- newTVar ws
-		nt <- newTVar 0
-		return $ Board db ups vs nt
+		return $ Board db ups vs 
 
-type Cambiamento = Board -> STM ()
-type Query a = Board -> STM a
+readBoards :: IO (Boards)		
+readBoards = do
+	(unzip -> (puks,bs)) <- read <$> readFile "server.stato" 
+	atomically $ do
+		bs' <- mapM readBoard bs
+		bs'' <- newTVar (zip puks bs')
+		Boards bs'' <$>  newTVar 0
 
-mkBoard s0 = atomically $ do
-	db <- newTVar []
-	ups <- newTVar (s0,[])
-	vs <- newTVar []
-	nt <- newTVar 0
-	return $ Board db ups vs nt
+mkBoards = atomically $ liftM2 Boards (newTVar []) (newTVar 0)
 
+type Gruppo = (PublicKey,BoardValue)
+
+presences :: IO [Gruppo]
+presences = do
+	ls <- getDirectoryContents "."
+	map read <$> mapM readFile (filter (\x -> takeExtension x == ".gruppo") ls)
+
+aggiornaGruppi :: TVar [(PublicKey,Board)] -> [Gruppo] -> STM ()
+aggiornaGruppi tv ls = do
+	attivi <-  readTVar tv
+	ns <- forM (filter (\(i,_) -> not $ i `elem` map fst attivi) ls) $ \(i,b) -> (,) i <$> readBoard  b
+	writeTVar tv (filter (\(i,_)  ->  i `elem` map fst ls) attivi ++ ns) 
+
+updateService t (Boards bs _) = forever $ do
+	threadDelay (t*1000000)
+	ls <- presences
+	atomically $ aggiornaGruppi bs ls
+--------------------------------------------------------------------
+	
 checkInizializzato tvdb = do 
 	db <- lift $ readTVar tvdb 
 	when (null db) $ throwError "Server: Servizio non inizializzato"
 
-aggiornamento :: String -> Query (Either String [(B.ByteString,[UP])])
-aggiornamento x (Board tvdb tvups _ _) = do
-	runErrorT $ do
-		checkInizializzato tvdb
-		db <- lift $ readTVar tvdb
-		case  map snd . snd . break ((== x).fst) $ db of 
-			[] -> do 	(h,_) <- lift $ readTVar tvups
-					when (h /= x) $ throwError "Server: lo stato a cui ci si riferisce non esiste"
-					return []
-			rs -> return rs
+aggiornamento :: String -> Board -> ErrorT String STM [(B.ByteString,[UP])]
+aggiornamento x (Board tvdb tvups _ ) = do
+	checkInizializzato tvdb
+	db <- lift $ readTVar tvdb
+	case  map snd . snd . break ((== x).fst) $ db of 
+		[] -> do 	(h,_) <- lift $ readTVar tvups
+				when (h /= x) $ throwError "Server: lo stato a cui ci si riferisce non esiste"
+				return []
+		rs -> return rs
 				
-nuovaUP :: UP -> Query (Either String String)
-nuovaUP up@(puk,firma,es) (Board tvdb tvups tvvs _) = do
-	runErrorT $ do
-		checkInizializzato tvdb
-		(s, ups) <- lift $ readTVar tvups 
-		vs <- lift $ readTVar tvvs
-		when (not $ puk `elem` vs) $ throwError "Server: Responsabile sconosciuto"
-		when (not $ verify puk (B.pack $ s ++ concat es) firma)  $ throwError "Server: Patch non integra"
-		lift $ writeTVar tvups (s, up: ups)
-		return  "Server: Patch accettata"
+-- nuovaUP :: UP -> Query (Either String String)
+nuovaUP up@(puk,firma,es) (Board tvdb tvups tvvs ) = do
+	checkInizializzato tvdb
+	(s, ups) <- lift $ readTVar tvups 
+	vs <- lift $ readTVar tvvs
+	when (not $ puk `elem` vs) $ throwError "Server: Responsabile sconosciuto"
+	when (not $ verify puk (B.pack $ s ++ concat es) firma)  $ throwError "Server: Patch non integra"
+	lift $ writeTVar tvups (s, up: ups)
+	return  "Server: Patch accettata"
 		
-nuovaGP :: PublicKey -> (String,B.ByteString,[PublicKey],B.ByteString) -> Query (Either String String)
-nuovaGP puk (s',firma0,ws,firma1) (Board tvdb tvups tvvs _) = do
-	db <- readTVar tvdb
-	(s,ups) <- readTVar tvups
-	runErrorT $ do 
-		when (null ups) $ throwError "Server: nessuna patch responsabile ricevuta dall'ultima patch sincronizzatore"
-		when (not $  verify puk (B.pack (s ++ show ups)) firma0) $ throwError "Server: Test di integrita patches fallito"
-		when (not $ verify puk (B.pack (s ++ show ws)) firma1) $ throwError "Server: Test di integrita responsabili validi fallito"
-		lift $ do	writeTVar tvups (s',[])
-				writeTVar tvdb (reverse . take maxdb . reverse $ db ++ [(s,(firma0,ups))])
-				writeTVar tvvs ws
-		return "Server: Aggiornato"
+-- nuovaGP :: PublicKey -> (String,B.ByteString,[PublicKey],B.ByteString) -> Query (Either String String)
+nuovaGP puk (s',firma0,ws,firma1) (Board tvdb tvups tvvs ) = do
+	db <- lift $ readTVar tvdb
+	(s,ups) <- lift $ readTVar tvups
+	when (null ups) $ throwError "Server: nessuna patch responsabile ricevuta dall'ultima patch sincronizzatore"
+	when (not $  verify puk (B.pack (s ++ show ups)) firma0) $ throwError "Server: Test di integrita patches fallito"
+	when (not $ verify puk (B.pack (s ++ show ws)) firma1) $ throwError "Server: Test di integrita responsabili validi fallito"
+	lift $ do	writeTVar tvups (s',[])
+			writeTVar tvdb (reverse . take maxdb . reverse $ db ++ [(s,(firma0,ups))])
+			writeTVar tvvs ws
+	return "Server: Aggiornato"
 
-leggiUPS :: Query [UP]
-leggiUPS (Board _ tvups _ _) = snd <$> readTVar tvups
+-- leggiUPS :: Query [UP]
+leggiUPS (Board _ tvups _ ) = snd <$> lift (readTVar tvups)
+----------------------------------------------------------------
 
+protocol :: String -> Boards -> STM (Either String PBox)
+protocol x (Boards tvbs _) = runErrorT $ 
+	case reads x of 
+		[] -> throwError "Server: Errore di protocollo"
+		[((puk,l),_)] -> do
+			bs  <- lift $ readTVar tvbs
+			when (not $ puk `elem` map fst bs) $ throwError "Server: richiesta su un gruppo non attivo"
+			let b = fromJust $ lookup puk bs
+			case l of
+				Aggiornamento y -> PBox <$> aggiornamento y b
+				Patch y -> PBox <$> nuovaUP y b
+				UPS -> PBox  <$> leggiUPS b
+				GroupPatch y -> PBox <$> nuovaGP puk y b
+				Validi -> PBox <$> lift (readTVar (validi b))
+				
 
-protocol :: PublicKey -> String -> Query (Either String PBox)
-protocol puk x z = case reads x of 
-	[] -> return (Left "Server: Errore di protocollo")
-	[(Aggiornamento y,_)] -> fmap  PBox <$> aggiornamento y z
-	[(Patch y,_)] -> fmap PBox <$> nuovaUP y z
-	[(UPS,_)] -> Right . PBox  <$> leggiUPS z
-	[(GroupPatch y,_)] -> fmap PBox <$> nuovaGP puk y z 
-	[(Validi,_)] -> Right . PBox <$> readTVar (validi z)
-
-server puk p b@(Board _ _ _ tvnt) = do
+server p b@(Boards _ tvnt) = do
 	s <- listenOn (PortNumber (fromIntegral  p))
 	let t = do
 		nt <- atomically (readTVar tvnt)
@@ -117,16 +149,15 @@ server puk p b@(Board _ _ _ tvnt) = do
 			forkIO $ do
 				flip finally (hClose h) $ do
 					x <- hGetLine h
-					l <- atomically (protocol puk x b)
-					writeBoard b
+					l <- atomically (protocol x b)
+					writeBoards b
 					hPutStrLn h (show l)
 				nt <- atomically (readTVar tvnt)
 				atomically (writeTVar tvnt (nt - 1))	
 			return ()
 		 else threadDelay 1000000
 	forever t  `finally` sClose s
-	
 main = do
-	puk <- read <$> readFile "sincronizzatore.publ"
-	b <- readBoard `catch` (\(_::IOException) ->  readFile "stato.rif" >>= mkBoard )
-	server puk 9090 b
+	b <- readBoards `catch` (\(_::IOException) -> mkBoards )
+	server 9090 b
+
