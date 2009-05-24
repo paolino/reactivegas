@@ -19,9 +19,9 @@ main =  do
 	let h = showDigest $ sha512 $ B.pack s
 	g <- read <$> readFile "sincronizzatore.publ"
 	[x,z] <- getArgs
-	ps <- query x (read z) (show $ Aggiornamento h)	
+	ps <- query x (read z) (show $ (g,Aggiornamento h))
 	s' <- aggiornaStato g s ps 
-	vs <- query x (read z) (show $ Validi)
+	vs <- query x (read z) (show $ (g,Validi))
 	when (responsabiliQ s' /= vs) $ error "Il sicronizzatore sta truffando sui responsabili validi"
 	writeFile "stato" s'
 	hSetBuffering stdout NoBuffering 
@@ -29,5 +29,5 @@ main =  do
 	pu <- read <$> (readFile $ u ++ ".publ")
 	let h = showDigest $ sha512 $ B.pack s'
 	let r = (pu,sign prk (B.pack $ h ++ concat es),es)
-	s <- query x (read z) $ show (Patch r) 
+	s <- query x (read z) $ show (g,Patch r) 
 	putStrLn s

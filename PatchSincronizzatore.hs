@@ -23,7 +23,7 @@ main =  do	[x,z] <- getArgs
 		let h = showDigest $ sha512 $ B.pack s
 		prk <- read <$> readFile "sincronizzatore.priv"					
 		(puk :: PublicKey) <- read <$> readFile "sincronizzatore.publ"					
-		ps <-  query x (read z) (show $ UPS)
+		ps <-  query x (read z) (show $ (puk,UPS))
 		let 	ps' = filter (\((pu,firma,es)::UP) -> pu `elem` responsabiliQ s && 
 				verify pu (B.pack (h ++ concat es)) firma) ps
 			f0 = sign prk (B.pack $ h ++ show ps') 
@@ -31,7 +31,7 @@ main =  do	[x,z] <- getArgs
 		let 	ws = responsabiliQ $ s'
 			f1 = sign prk (B.pack $ h ++ show ws)
 		let h = showDigest $ sha512 $ B.pack s'
-		r <- query x (read z) (show $ GroupPatch (h,f0 ,ws, f1)) 
+		r <- query x (read z) (show $ (puk,GroupPatch (h,f0 ,ws, f1)))
 		putStrLn r
 		writeFile "stato" s'
 

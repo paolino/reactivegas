@@ -69,7 +69,8 @@ type Gruppo = (PublicKey,BoardValue)
 presences :: IO [Gruppo]
 presences = do
 	ls <- getDirectoryContents "."
-	map read <$> mapM readFile (filter (\x -> takeExtension x == ".gruppo") ls)
+	z <- map read <$> mapM readFile (filter (\x -> takeExtension x == ".gruppo") ls)
+	return z
 
 aggiornaGruppi :: TVar [(PublicKey,Board)] -> [Gruppo] -> STM ()
 aggiornaGruppi tv ls = do
@@ -79,8 +80,9 @@ aggiornaGruppi tv ls = do
 
 updateService t (Boards bs _) = forever $ do
 	threadDelay (t*1000000)
-	ls <- presences
-	atomically $ aggiornaGruppi bs ls
+	ls <- presences `catch` (\(e::SomeException) -> print e >> return [])
+	(atomically $ aggiornaGruppi bs ls) `catch` (\(e::SomeException) -> print e)
+
 --------------------------------------------------------------------
 	
 checkInizializzato tvdb = do 
@@ -111,7 +113,7 @@ nuovaUP up@(puk,firma,es) (Board tvdb tvups tvvs ) = do
 nuovaGP puk (s',firma0,ws,firma1) (Board tvdb tvups tvvs ) = do
 	db <- lift $ readTVar tvdb
 	(s,ups) <- lift $ readTVar tvups
-	when (null ups) $ throwError "Server: nessuna patch responsabile ricevuta dall'ultima patch sincronizzatore"
+	when (null ups && not (null db)) $ throwError "Server: nessuna patch responsabile ricevuta dall'ultima patch sincronizzatore"
 	when (not $  verify puk (B.pack (s ++ show ups)) firma0) $ throwError "Server: Test di integrita patches fallito"
 	when (not $ verify puk (B.pack (s ++ show ws)) firma1) $ throwError "Server: Test di integrita responsabili validi fallito"
 	lift $ do	writeTVar tvups (s',[])
@@ -159,5 +161,6 @@ server p b@(Boards _ tvnt) = do
 	forever t  `finally` sClose s
 main = do
 	b <- readBoards `catch` (\(_::IOException) -> mkBoards )
+	forkIO (updateService 4 b)
 	server 9090 b
 
