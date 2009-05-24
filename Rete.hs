@@ -14,6 +14,13 @@ import qualified Data.ByteString.Lazy.Char8 as B
 import Lib0
 
 type UP = (PublicKey,B.ByteString,[String])
+type GP = (String,(B.ByteString,[UP]))
+type DB = [GP]
+
+
+type BoardValue = (DB,(String,[UP]),[PublicKey])
+mkBoardValue :: String -> [PublicKey] -> BoardValue
+mkBoardValue x ys = ([],(x,[]),ys)
 
 data Protocol = Aggiornamento String | Patch UP | UPS | GroupPatch (String,B.ByteString,[PublicKey],B.ByteString) | Validi  deriving (Read,Show)
 type SelectorProtocol  = (PublicKey,Protocol)

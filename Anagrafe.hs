@@ -23,7 +23,7 @@ eventoValidato  (r,a) = (\f -> conFallimento (esistenzaResponsabile r >> f r), a
 data Anagrafe = Anagrafe [Utente] deriving (Show,Read)
 utenti = (\(Anagrafe us) -> us) . see
 
-statoInizialeAnagrafe uno x = Anagrafe [fst uno] .< Responsabili [uno] [] .< x
+statoInizialeAnagrafe unos x = Anagrafe (map fst unos) .< Responsabili unos [] .< x
 
 type Responsabile = (Utente,Chiave)
 

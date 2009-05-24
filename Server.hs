@@ -24,13 +24,6 @@ import Control.Monad.Error
 maxdb = 1000
 maxthreads = 1000
 
-type GP = (String,(B.ByteString,[UP]))
-type DB = [GP]
-
-
-type BoardValue = (DB,(String,[UP]),[PublicKey])
-mkBoardValue :: String -> [PublicKey] -> BoardValue
-mkBoardValue x ys = ([],(x,[]),ys)
 
 data Board = Board {gpatches:: TVar DB, nuovo :: TVar (String,[UP]) , validi :: TVar [PublicKey]}
 
@@ -161,6 +154,6 @@ server p b@(Boards _ tvnt) = do
 	forever t  `finally` sClose s
 main = do
 	b <- readBoards `catch` (\(_::IOException) -> mkBoards )
-	forkIO (updateService 4 b)
+	forkIO (updateService 5 b)
 	server 9090 b
 

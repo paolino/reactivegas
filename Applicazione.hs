@@ -40,12 +40,12 @@ type T = Servizio Impegni :*: StatoOrdini :*: Conti :*: Saldi :*: Servizio Assen
 reattori = [reazioneAnagrafe :: Reazione T ParserConRead Utente,reazioneAccredito,reazioneOrdine,reazioneLogger] 
 
 type Q = (T,[SNodo T Utente])
-s0 responsabilediboot = (
+s0 responsabilidiboot = (
 	statoInizialeServizio . 
 	statoInizialeOrdini . 
 	statoInizialeAccredito . 
 	statoInizialeServizio . 
-	statoInizialeAnagrafe responsabilediboot $ (), 
+	statoInizialeAnagrafe responsabilidiboot $ (), 
 	replicate (length reattori) $ nodoVuoto
 	) :: (T,[SNodo T Utente])
 
