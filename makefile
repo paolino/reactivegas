@@ -1,10 +1,10 @@
-applicativi:NuoveChiavi.hs PatchSincronizzatore.hs PatchResponsabile.hs StatoIniziale.hs Server.hs
-	ghc --make NuoveChiavi
-	ghc --make PatchSincronizzatore
-	ghc --make PatchResponsabile
+applicativi:Chiavi.hs Sincronizza.hs Eventi.hs Inizio.hs Server.hs
+	ghc --make Chiavi
+	ghc --make Sincronizza
+	ghc --make Eventi
 	ghc --make Server
-	ghc --make StatoIniziale
-	cp NuoveChiavi PatchResponsabile PatchSincronizzatore Server StatoIniziale Applicazioni
+	ghc --make Inizio
+	cp Chiavi Eventi Sincronizza Server Inizio Applicazioni
 clean:
 	rm -f *.o 
 	rm -f *.hi
@@ -18,9 +18,9 @@ git:
 	git push
 release:applicativi
 	mkdir release
-	cp NuoveChiavi PatchResponsabile PatchSincronizzatore Server StatoIniziale release
+	cp Chiavi Eventi Sincronizza Server Inizio release
 	tar cjvf release.tbz release
 	rm -rf release
 edit:
-	gvim *.hs README LICENSE
+	gvim *.hs README LICENSE makefile
 

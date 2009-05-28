@@ -14,16 +14,13 @@ import qualified Data.ByteString.Lazy.Char8 as B
 import Rete
 main =  do	ls <- getDirectoryContents "."
 		hSetBuffering stdout NoBuffering
-		putStr "Nome del gruppo:"
-		l <- getLine
 		let 	rs = filter ((/=) "sincronizzatore.publ") . filter ((==) ".publ". takeExtension) $ ls
-			ns = map takeBaseName rs
-		puks  <- forM rs $ \r -> do
-			read <$> readFile r
-
-		let 	rs = zip ns puks
-			s = show $ s0 rs
+		puks  <- forM rs $ \r -> read <$> readFile r
+		let	s = show $ s0 (zip ( map takeBaseName rs) puks)
 		writeFile "stato" s
 		p <- read <$> readFile "sincronizzatore.publ"
+		putStr "Nome del gruppo:"
+		l <- getLine
 		writeFile (l ++ ".gruppo") $ show (p :: PublicKey , mkBoardValue (showDigest . sha512 $ B.pack s) puks)
+
 
