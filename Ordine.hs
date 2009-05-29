@@ -39,8 +39,8 @@ reazioneOrdine = soloEsterna reattoreOrdine where
 		logga $  "per il bene " ++ show b ++ " aperto l'ordine numero " ++ show l
 		return (True,([z t],[]))
 
-makeAperturaOrdine k = [("evento di apertura ordini per un nuovo bene", eventoApertura)] where
-	eventoApertura = do
+makeAperturaOrdine = [eventoApertura] where
+	eventoApertura k = (,) "evento di apertura ordini per un nuovo bene" $ do
 		n <- parametro (Libero "nome del nuovo bene in acquisto")
 		return $ show (AperturaOrdine n)
 

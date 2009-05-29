@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleContexts, ViewPatterns #-}
+{-# LANGUAGE FlexibleContexts, ViewPatterns, NoMonomorphismRestriction #-}
 
 -- modulo di implementazione della funzionalitá dell'impegno economico. La funzionalitá é generalizzata sull'obbiettivo dell'impegno, infatti
 -- esponiamo l'interfaccia programmazioneImpegno. La gestione dello stato é fornita dal modulo di Servizio come in tutti i moduli higher order.
@@ -108,23 +108,20 @@ programmazioneImpegno q ur  = do
 			
 	return (l, \t -> Reazione (Nothing,reattoreImpegno t) )
 
-makeEventiImpegno k = [(,) "evento di fine impegno" eventoFineImpegno,
-	(,) "evento di fallimento raccolta impegni" eventoFallimentoImpegno, 
-	(,) "evento di impegno" eventoImpegno
-	] where
-        eventoFineImpegno = do
+makeEventiImpegno = [ eventoFineImpegno, eventoFallimentoImpegno ,  eventoImpegno] where
+        eventoFineImpegno k = (,) "evento di fine impegno" $ do
                 s <- ask
 		let e = elencoSottoStati (undefined :: Impegni) s
 		when (null e) $ k "nessuna raccolta di impegni attiva"
                 n <- parametro . Scelta "selezione raccolta impegni da chiuder" $ (map (snd &&& fst) e)
                 return $ show (FineImpegno n)
-        eventoFallimentoImpegno = do
+        eventoFallimentoImpegno k = (,) "evento di fallimento raccolta impegni" $ do
                 s <- ask
 		let e = elencoSottoStati (undefined :: Impegni) s
 		when (null e) $ k "nessuna raccolta di impegni attiva"
                 n <- parametro . Scelta "selezione raccolta da far fallire" $ (map (snd &&& fst) e)
                 return $ show (FallimentoImpegno n)
-        eventoImpegno = do
+        eventoImpegno k = (,) "evento di impegno" $ do
                 s <- ask
 		let e = elencoSottoStati (undefined :: Impegni) s
 		when (null e) $ k "nessuna raccolta di impegni attiva"
