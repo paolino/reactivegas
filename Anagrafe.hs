@@ -98,13 +98,13 @@ makeEventiAnagrafe = [eventoNuovoUtente, eventoElezioneResponsabile,eventoElimin
         eventoElezioneResponsabile k = (,) "evento di elezione responsabile" $ \s -> do
 		let disponibili = utenti s \\ map fst (responsabili s)
 		when (null disponibili) $ k "nessun utente disponibile"
-                n <- parametro . Scelta "selezione eleggibile" $ (map (show &&& id) $ disponibili)
+                n <- parametro . Scelta "selezione eleggibile" $ (map (id &&& id) $ disponibili)
                 m <- parametro (Libero "il modulo della chiave pubblica")
                 return $ show (ElezioneResponsabile (n,m))
 
         eventoEliminazioneResponsabile k = (,) "evento di eliminazione responsabile" $ \s -> do
 		when (null $ responsabili s) $ k "nessun utente disponibile"
-                n <- parametro . Scelta "selezione responsabile" . map (show &&& id) $ responsabili s
+                n <- parametro . Scelta "selezione responsabile" . map (fst &&& id) $ responsabili s
                 return $ show (EliminazioneResponsabile (fst n))
 
 

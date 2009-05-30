@@ -19,6 +19,6 @@ d1 (eliminazioneResponsabile -> Just (u,w)) = Just (Logger "ahi, comportato male
 d1 _ = Nothing
 d2 (fallimentoImpegno -> Just (u,v)) = Just (Logger $ u ++ " ha fatto un danno :)")
 d2 _ = Nothing
-d3 (eventoRifiutato -> Just x) = Just (Logger $  "l'evento non ha modificato la realtá")
+d3 (eventoRifiutato -> Just x) = Just (Logger $  encodeString "l'evento non ha modificato la realtá")
 reazioneLogger = Reazione (Just [Deviatore d1, Deviatore d2, Deviatore d3], \x ->  either (\(Logger x) -> logInserimento x) (\(_,()) ->  return ()) x 
 									>> return (Just (True,nessunEffetto))) 

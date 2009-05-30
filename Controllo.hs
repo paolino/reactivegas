@@ -14,6 +14,7 @@ import Core (Nodo, runInserzione , inserimentoCompleto, Reazione, mkNodi, reatto
 import Serializzazione (serializza, deserializza)
 import Prioriti
 import Text.PrettyPrint
+import Codec.Binary.UTF8.String
 
 type Log d = [([(d,String)],String)]
 -- ---------------------------------------------
@@ -80,6 +81,6 @@ passa xs = let 	h = map ((head . head) &&& map tail) . groupBy ((==) `on` head)
 			if null . head $ y then const Leaf <$> y -- una lista di liste vuote é una lista di Leaf
 				else Node . second passa <$>  h y -- ogni sottosequenza di una lista  di liste piene che ha 
 					-- la stessa testa é un nodo. ricorsivamente analizziamo il resto
-stampaLogs = 	putStrLn . showTrees . map (\(as,b) -> (map (\(d,e) -> show d ++ ":" ++ e) as) ++ ["------> " ++ b])
+stampaLogs = 	putStrLn . decodeString . showTrees . map (\(as,b) -> (map (\(d,e) -> show d ++ ":" ++ e) as) ++ ["------> " ++ b])
 ----------------------------------------
 

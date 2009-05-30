@@ -58,13 +58,13 @@ makeAccredito = [eventoAccredito , eventoSaldo] where
 
 	eventoAccredito k = (,) "evento di accredito" $ \s -> do
 	    when (null $ utenti s) $ k "nessun utente disponibile"
-	    u <- parametro (Scelta "selezione utente". map (show &&& id) . utenti  $ s)
+	    u <- parametro (Scelta "selezione utente". map (id &&& id) . utenti  $ s)
 	    n <- parametro (Libero "la somma da accreditare")
 	    return $ show (Accredito u n)
 
 	eventoSaldo k =  (,) "evento di saldo" $ \s -> do
 	    when (null $ utenti s) $ k "nessun responsabile disponibile"
-	    u <- parametro (Scelta "selezione responsabile" . map (show &&& id) . responsabili $ s)
+	    u <- parametro (Scelta "selezione responsabile" . map (fst &&& id) . responsabili $ s)
 	    n <- parametro (Libero "la somma ricevuta")
 	    return $ show (Saldo (fst u) n)
 
