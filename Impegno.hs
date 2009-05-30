@@ -109,20 +109,17 @@ programmazioneImpegno q ur  = do
 	return (l, \t -> Reazione (Nothing,reattoreImpegno t) )
 
 makeEventiImpegno = [ eventoFineImpegno, eventoFallimentoImpegno ,  eventoImpegno] where
-        eventoFineImpegno k = (,) "evento di fine impegno" $ do
-                s <- ask
+        eventoFineImpegno k = (,) "evento di fine impegno" $ \s -> do
 		let e = elencoSottoStati (undefined :: Impegni) s
 		when (null e) $ k "nessuna raccolta di impegni attiva"
                 n <- parametro . Scelta "selezione raccolta impegni da chiuder" $ (map (snd &&& fst) e)
                 return $ show (FineImpegno n)
-        eventoFallimentoImpegno k = (,) "evento di fallimento raccolta impegni" $ do
-                s <- ask
+        eventoFallimentoImpegno k = (,) "evento di fallimento raccolta impegni" $ \s -> do
 		let e = elencoSottoStati (undefined :: Impegni) s
 		when (null e) $ k "nessuna raccolta di impegni attiva"
                 n <- parametro . Scelta "selezione raccolta da far fallire" $ (map (snd &&& fst) e)
                 return $ show (FallimentoImpegno n)
-        eventoImpegno k = (,) "evento di impegno" $ do
-                s <- ask
+        eventoImpegno k = (,) "evento di impegno" $ \s -> do
 		let e = elencoSottoStati (undefined :: Impegni) s
 		when (null e) $ k "nessuna raccolta di impegni attiva"
                 n <- parametro . Scelta "selezione raccolta impegni"  $ (map (snd &&& fst) e)

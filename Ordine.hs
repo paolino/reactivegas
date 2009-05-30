@@ -6,7 +6,7 @@ import Lib0
 import Impegno (programmazioneImpegno)
 import Accredito (salda)
 import Anagrafe (Utente,eventoValidato)
-import Aspetti ((.<))
+import Aspetti ((.<) , see)
 import Core (nessunEffetto, soloEsterna)
 import Costruzione
 import Prioriti
@@ -40,7 +40,7 @@ reazioneOrdine = soloEsterna reattoreOrdine where
 		return (True,([z t],[]))
 
 makeAperturaOrdine = [eventoApertura] where
-	eventoApertura k = (,) "evento di apertura ordini per un nuovo bene" $ do
+	eventoApertura k =  (,) "evento di apertura ordini per un nuovo bene" $ \_ -> do
 		n <- parametro (Libero "nome del nuovo bene in acquisto")
 		return $ show (AperturaOrdine n)
 

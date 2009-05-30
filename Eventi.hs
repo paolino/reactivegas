@@ -34,7 +34,7 @@ main =  do
 	when (responsabiliQ s' /= vs) $ error "Il sicronizzatore sta truffando sui responsabili validi"
 	writeFile "stato" s'
 	hSetBuffering stdout NoBuffering 
-	runStateT (svolgi (interfaccia (x,read z) g s') undefined >>= runCostruzioneIO) (Nothing,[])
+	runStateT (svolgi (interfaccia (x,read z) g s') >>= runCostruzioneIO) (Nothing,[])
 
 -- interfaccia :: (String,Int) -> PublicKey -> String -> MakePatch r m ()
 interfaccia hp puk s = let c = correggiStato (liftIO . stampaLogs) reattori priorities s in 
@@ -72,7 +72,7 @@ cercaChiave s = do
 		Nothing -> print ("file chiave privata di " ++ decodeString s ++ " non trovato") >> return Nothing
 		Just x -> Just . read <$> readFile x
 
-runCostruzioneIO :: (Monad m, MonadIO m) =>  Costruzione m r a -> m (Maybe a)
+runCostruzioneIO :: (Monad m, MonadIO m) =>  Costruzione m  a -> m (Maybe a)
 runCostruzioneIO  c = flip runContT return . callCC $ \k -> 
 	let zeta c@(Costruzione l f) = do 
 		let riprova s  = nl >> msg s >> zeta c

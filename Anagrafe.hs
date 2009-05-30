@@ -88,22 +88,21 @@ reazioneAnagrafe = soloEsterna reattoreAnagrafe' where
 			modifica $ \(Responsabili us ls ) -> Responsabili (elimina u us) (elimina l ls)
 			logga $ "responsabile eliminato " ++ show u
 			return ([],[EventoInterno $ EventoEliminazioneResponsabile u r])
+
+
 makeEventiAnagrafe = [eventoNuovoUtente, eventoElezioneResponsabile,eventoEliminazioneResponsabile] where
-        eventoNuovoUtente k = (,) "evento di nuovo utente"  $ do
-                s <- ask
+        eventoNuovoUtente k = (,) "evento di nuovo utente"  $ \s -> do
                 n <- parametro (Libero "il nuovo nome")
                 return $ show (NuovoUtente n)
 
-        eventoElezioneResponsabile k = (,) "evento di elezione responsabile" $ do
-                s <- ask 
+        eventoElezioneResponsabile k = (,) "evento di elezione responsabile" $ \s -> do
 		let disponibili = utenti s \\ map fst (responsabili s)
 		when (null disponibili) $ k "nessun utente disponibile"
                 n <- parametro . Scelta "selezione eleggibile" $ (map (show &&& id) $ disponibili)
                 m <- parametro (Libero "il modulo della chiave pubblica")
                 return $ show (ElezioneResponsabile (n,m))
 
-        eventoEliminazioneResponsabile k = (,) "evento di eliminazione responsabile" $ do
-                s <- ask
+        eventoEliminazioneResponsabile k = (,) "evento di eliminazione responsabile" $ \s -> do
 		when (null $ responsabili s) $ k "nessun utente disponibile"
                 n <- parametro . Scelta "selezione responsabile" . map (show &&& id) $ responsabili s
                 return $ show (EliminazioneResponsabile (fst n))
@@ -154,13 +153,11 @@ programmazioneAssenso se ur c k = do
 	return (l,Reazione (Nothing, reattoreAssenso)) -- restituisce il riferimento a questa richiesta perché venga nominato negli eventi di assenso
 
 makeEventiAssenso = [eventoFallimentoAssenso , eventoAssenso] where
-        eventoFallimentoAssenso k = (,) "evento di fallimento raccolta assenso" $ do
-                s <- ask
+        eventoFallimentoAssenso k = (,) "evento di fallimento raccolta assenso" $ \s -> do
 		when (null $ elencoSottoStati (undefined :: Assensi) s) $ k "nessuna raccolta di assensi attiva"
                 n <- parametro . Scelta "selezione richiesta per fallire" $ (map (snd &&& fst) $ elencoSottoStati (undefined :: Assensi) s)
                 return $ show (EventoFallimentoAssenso n)
-        eventoAssenso k = (,) "evento di assenso" $ do
-                s <- ask
+        eventoAssenso k = (,) "evento di assenso" $ \s -> do
 		when (null $ elencoSottoStati (undefined :: Assensi) s) $ k "nessuna raccolta di assensi attiva"
                 n <- parametro . Scelta "selezione richiesta per assenso"  $ (map (snd &&& fst) $ elencoSottoStati (undefined :: Assensi) s)
                 return $ show (Assenso n)
