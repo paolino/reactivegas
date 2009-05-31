@@ -11,7 +11,7 @@ import Debug.Trace
 import Data.Function
 
 import Core (Nodo, runInserzione , inserimentoCompleto, Reazione, mkNodi, reattore)
-import Serializzazione (serializza, deserializza)
+import Serializzazione (serializza, deserializza, SNodo)
 import Prioriti
 import Text.PrettyPrint
 import Codec.Binary.UTF8.String
@@ -36,19 +36,19 @@ caricaEvento x = do
 caricaEventi :: (Show d, Monad m) => [R] -> [(d,String)] -> Programma m s c d ()
 caricaEventi rs = mapM_ caricaEvento . sortP rs snd
 
-caricaStato :: (Read s, Show s, Read d, Monad m) => String -> Programma m s c d ()
+caricaStato :: (Read s, Show s,Monad m) => (s,[SNodo s d]) -> Programma m s c d ()
 caricaStato s = do
 	(_,map (fromJust . reattore) -> rs) <- get -- si ritiene che i reattori siano li :)
-	put . second (map (uncurry deserializza) . (flip zip rs)) . read $ s
+	put . second (map (uncurry deserializza) . (flip zip rs)) $ s
 
-scaricaStato :: (Read s, Show s, Show d,  Monad m) =>  Programma m s c d String
-scaricaStato = show <$> second (map serializza) <$> get
+scaricaStato :: (Read s, Show s,  Monad m) => Programma m s c d (s,[SNodo s d])
+scaricaStato = second (map serializza) <$> get
 
 -- esegue una computazione Programma all'interno di una modifica dello stato serializzato
-conStato :: (Read s, Show s, Read d, Show d, Monad m) => String -> Programma m s c d b ->  Programma m s c d (b,String)
+conStato :: (Read s, Show s,Monad m) => (s,[SNodo s d]) -> Programma m s c d b ->  Programma m s c d (b,(s,[SNodo s d]))
 conStato s f = caricaStato s >> liftM2 (,) f scaricaStato 
 
-runProgramma :: (Read s, Show s, Read d, Show d, Monad m) => [Reazione s c d] -> String -> Programma m s c d b -> m (b,String,Log d)
+runProgramma :: (Read s, Show s, Monad m) => [Reazione s c d] -> (s,[SNodo s d]) -> Programma m s c d b -> m (b,(s,[SNodo s d]),Log d)
 runProgramma rs s p = do 
 	((y,s'),_,ws) <- runRWST (conStato s p) () (undefined, mkNodi rs) 
 	return (y,s',ws)

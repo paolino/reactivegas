@@ -78,4 +78,5 @@ commit s k = (,) "invia eventi" $ do
 			True -> k "mi rifiuto di spedire una lista di eventi vuota"
 			False -> lift (s (u,prk,es)) >>= k
 	lift $ modify (second (const []))
-	
+
+

@@ -24,6 +24,7 @@ import Control.Applicative ((<$>))
 import System.IO
 import Codec.Binary.UTF8.String
 import Control.Monad.Error
+import Control.Monad.Writer
 import System.Directory
 import Codec.Crypto.RSA
 import Data.Digest.Pure.SHA
@@ -49,20 +50,19 @@ s0 responsabilidiboot = (
 	replicate (length reattori) $ nodoVuoto
 	) :: (T,[SNodo T Utente])
 
-responsabiliQ s = map snd . responsabili . fst $ (read s :: Q)
-aggiornaStato g = let
+responsabiliQ s = map snd . responsabili . fst $ s
+aggiornaStato g x = let
 	r stato (firma,ps) = do
-		let h = showDigest . sha512 $ B.pack $ stato
-		when (not $ verify g (B.pack $ h ++ show ps) firma) $ error "errore di integrita della patch di gruppo" 
-		let 	(t,_):: (T,[SNodo T Utente]) = read stato
-			rs = map (snd &&& fst) $ responsabili t 
+		let h = showDigest . sha512 $ B.pack $ show stato
+		when (not $ verify g (B.pack $ h ++ show ps) firma) $ throwError "throwErrore di integrita della patch di gruppo" 
+		let 	rs = map (snd &&& fst) $ responsabili (fst stato)
 			zs = map (\(puk,_,es) -> zip (repeat (fromJust $ lookup puk rs)) es) ps
-		when (not $ all (\(puk,_,_) -> puk `elem` map fst rs) ps ) $ error "la patch di gruppo contiene eventi da un utente sconosciuto"
+		when (not $ all (\(puk,_,_) -> puk `elem` map fst rs) ps ) $ throwError "la patch di gruppo contiene eventi da un utente sconosciuto"
 		when (not $ all (\(puk,firma,es) -> verify puk (B.pack $ h ++ concat es) firma) ps) $ 
-			error "la patch di gruppo contiene una patch di responsabile non integra"
+			throwError "la patch di gruppo contiene una patch di responsabile non integra"
 		(_,stato',logs) <- runProgramma reattori stato (caricaEventi priorities (concat zs))
-		stampaLogs logs
+		tell logs
 		return stato'
-	in foldM r		
+	in runWriterT . foldM r x
 
 
