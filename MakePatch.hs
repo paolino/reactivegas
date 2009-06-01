@@ -39,13 +39,14 @@ nodo d cs = callCC $ forever . (callCC . dentro)  where
 	dentro k ki = join . parametro . Scelta "scegli una strada" $ ("indietro", k ()): map ($ ki2) cs where
 		ki2 x = lift (d x) >> ki ()
 
+sincronizzazione :: Monad m => m (Either String String) -> Errante m () 
+sincronizzazione f k = (,) "sincronizza il gruppo" $ lift f >>= either k (\s -> k ("sincronizzazione:" ++ s))
 
-autenticazione :: (ParteDi Responsabili r, MonadState Patch m) => (m r, Utente -> m (Maybe PrivateKey)) -> Errante m ()
+autenticazione :: (ParteDi Responsabili r, MonadState Patch m) => (m r, Utente -> m (Either String PrivateKey)) -> Errante m ()
 autenticazione (qr,q) k = (,) "autenticazione" $  do
 		rs <- map fst . responsabili <$> lift qr -- lo stato si trova nella reader
 		p <- parametro $ Scelta "autore degli eventi" (map (id &&& id) rs)
-		lift (q p) >>= maybe (k "errore nel caricamento della chiave privata") 
-				(\n -> lift . modify . first $ const (Just (p,n)))
+		lift (q p) >>= either k (\n -> lift . modify . first $ const (Just (p,n)))
 
 cancellaEvento :: MonadState Patch m => Errante m ()
 cancellaEvento k = (,) "elimina evento" $ do
@@ -67,16 +68,22 @@ trattamentoEvento (d,q) cs = (,) "manipola eventi" $ do
 	nodo d  $ cancellaEvento: map wrap cs
 	where 	z x = lift . modify . second $ (x:)
 
+update :: Monad m => m (Either String ()) -> Errante m ()
+update f k = (,) "aggiorna lo stato" $ do
+	(lift f) >>= either k (\_ -> k "stato aggiornato")
 
-
-commit ::  (MonadState Patch m) => ((Utente,PrivateKey,[String]) -> m String) -> Errante m ()
+nuovechiavi :: Monad m => (Utente -> m (Either String ())) -> Errante m ()
+nuovechiavi f k = (,) "crea nuove chiavi responsabile" $ do
+	s <- parametro $ Libero "nome del responsabile delle nuove chiavi (attenzione!)"
+	lift (f s) >>= either k (\_ -> k "nuove chiavi create")
+commit ::  (MonadState Patch m) => ((Utente,PrivateKey,[String]) -> m (Either String String)) -> Errante m ()
 commit s k = (,) "invia eventi" $ do
 	(uprk,es) <- lift get
 	case uprk of
 		Nothing -> k "bisogna ancora autenticarsi"
 		Just (u,prk) -> case null es of
 			True -> k "mi rifiuto di spedire una lista di eventi vuota"
-			False -> lift (s (u,prk,es)) >>= k
+			False -> lift (s (u,prk,es)) >>= either k (\s -> k ("spedizione patch" ++ s))
 	lift $ modify (second (const []))
 
 

@@ -14,8 +14,10 @@ import Data.Maybe
 import Control.Monad.Error
 import Codec.Binary.UTF8.String
 import System.Directory
+import System.Random
 import Network
 
+import Core (Reazione)
 import Anagrafe
 import MakePatch 
 import Costruzione
@@ -34,6 +36,9 @@ throwLefts f = do
 			Right y -> return y	
 catchFromIO f = ErrorT ((Right <$> f) `catch` (return . Left . show))
 
+liftErrorT :: (MonadIO m) => ErrorT e IO a -> ErrorT e m a
+liftErrorT f = ErrorT (liftIO (runErrorT f))
+
 contentReads x = case reads x of 	
 		[] -> throwError $ "errore nell'interpretare " ++ show x
 		[(y,_)] -> return y
@@ -41,7 +46,18 @@ contentReads x = case reads x of
 data Board = Board Configurazione PublicKey (TVar Q) (TVar Patch)
 data Configurazione = Configurazione HostName Integer deriving (Read,Show)
 
-query' (Board (Configurazione h p) _ _ _) = liftIO . query h (fromIntegral p) . show
+query host p y = do
+	l <- liftErrorT . catchFromIO $ do
+		h <- connectTo host (PortNumber (fromIntegral p))
+		hSetBuffering h NoBuffering
+		hPutStrLn h y
+		hGetLine h
+	case reads l of
+		[] -> error "errore di protocollo"
+		[(Right l,_)] -> return l
+		[(Left l,_)] -> throwError l
+
+query' (Board (Configurazione h p) _ _ _) = query h (fromIntegral p) . show
 
 newtype Program a = Program (ReaderT Board IO a) deriving (Monad, Functor, MonadIO, MonadReader Board )
 fromIO = Program . liftIO
@@ -57,7 +73,7 @@ main =	do
 	print "lettura cartella ............"
 	b <- throwLefts $ do 
 		c <- tagga "lettura configurazione" $ catchFromIO (readFile "configurazione") >>= contentReads 
-		s <- tagga "lettura file di stato" $ catchFromIO (readFile "stato") >>= contentReads >>= lift . atomically . newTVar
+		s <- tagga "lettura file di stato" $ catchFromIO (readFile "stato" >>= \x -> length x `seq` return x ) >>= contentReads >>= lift . atomically . newTVar
 		puk <- tagga "lettura chiave pubblica sincronizzatore" $ catchFromIO (readFile "sincronizzatore.publ") >>= contentReads
 		pa <- lift . atomically . newTVar =<< do 	t <- lift . runErrorT $ tagga "lettura patch" $ catchFromIO (readFile "patch") >>= contentReads 
 								either (\e -> liftIO (print e) >> return (Nothing, [])) return t
@@ -65,7 +81,12 @@ main =	do
 		
 	hSetBuffering stdout NoBuffering 
 	runProgram b (svolgi interfaccia >>= runCostruzioneIO) 
-interfaccia = undefined 
+
+creaChiaviIO l = runErrorT . tagga "creazione chiavi in IO" . liftErrorT . catchFromIO $ do
+	let (p1,p2) = (l ++ ".priv", l ++ ".publ")
+	(pu,pr,_) <- flip generateKeyPair 512 <$> newStdGen
+	writeFile p1 (show pr)
+	writeFile p2 (show pu)
 
 aggiornamentoIO pl =  runErrorT . tagga "aggiornamentoIO:" $ do
 	b@(Board _ g ts tp) <- ask
@@ -73,27 +94,51 @@ aggiornamentoIO pl =  runErrorT . tagga "aggiornamentoIO:" $ do
 	let h = showDigest $ sha512 $ B.pack (show s)
 	ps <- query' b (g,Aggiornamento h)
 	(s',ls) <- aggiornaStato g s ps 
+	pl ls
 	vs <- query' b (g,Validi)
 	when (responsabiliQ s' /= vs) $ throwError "Il sicronizzatore sta truffando sui responsabili validi"
 	liftIO $ atomically (writeTVar ts s')
 	liftIO $ writeFile "stato" (show s')
 
-{-
+sincronizzaIO = runErrorT . tagga "sincronizzazioneIO:" $ do
+	b@(Board _ puk ts tp) <- ask
+	(_,s) <- liftIO $ atomically (liftM2 (,) (readTVar tp) (readTVar ts))
+	let h = showDigest $ sha512 $ B.pack (show s)
+	prk <- liftErrorT $ tagga "lettura chiave privata sincronizzatore" $ catchFromIO (readFile "sincronizzatore.priv") >>= contentReads
+	ps <-  query' b (puk,UPS)
+	let 	ps' = filter (\((pu,firma,es)::UP) -> pu `elem` responsabiliQ s && 
+			verify pu (B.pack (h ++ concat es)) firma) ps
+		f0 = sign prk (B.pack $ h ++ show ps') 
+	(s',ls) <- aggiornaStato puk s [(f0 ,ps')] 
+	let 	ws = responsabiliQ $ s'
+		f1 = sign prk (B.pack $ h ++ show ws)
+		h' = showDigest . sha512 . B.pack $ show s'
+	query' b (puk,GroupPatch (h',f0 ,ws, f1))
+		
 
 -- interfaccia :: (String,Int) -> PublicKey -> String -> MakePatch r m ()
-interfaccia b = let c = correggiStato (liftIO . stampaLogs) reattori priorities b in 
+interfaccia = let c = correggiStato (liftIO . stampaLogs) reattori priorities in 
 	nodo (liftIO . logerrore) [
+		nuovechiavi creaChiaviIO , 
+		sincronizzazione sincronizzaIO , 
+		update $ aggiornamentoIO (liftIO . stampaLogs),
+		commit send, 
+
 		autenticazione (c, liftIO . cercaChiave), 
-		commit (liftIO . send b), 
 		const $ trattamentoEvento (liftIO . logerrore, c) makers
 		]
--}
 
 logerrore  =  putStrLn .( ++ "****" ) . ("****" ++)
 
---correggiStato :: MonadState Patch m => (Log Utente -> m ()) -> [Reazione r ParserConRead Utente] -> [R] ->  String -> m r
-correggiStato pl rs bs (Board _ _ ts tp) = do
-	((uprk,xs),s) <- atomically (liftM2 (,) (readTVar tp) (readTVar ts))
+correggiStato :: (MonadIO m, MonadReader Board m)
+	=> (Log Utente -> m a)
+	-> [Reazione T c Utente]
+	-> [R]
+	-> m T
+
+correggiStato pl rs bs = do
+	(Board _ _ ts tp) <- ask
+	((uprk,xs),s) <- liftIO $ atomically (liftM2 (,) (readTVar tp) (readTVar ts))
 	let ys = case uprk of 
 		Just (u,prk) -> zip (repeat u) xs
 		Nothing -> []
@@ -102,22 +147,21 @@ correggiStato pl rs bs (Board _ _ ts tp) = do
 			pl log >> return r
 		True -> let (r,_,log) = runIdentity $ runProgramma rs s (fst <$> get) in return r
 
--- supporto IO 
-send :: Board -> IO (Either String ())
-send b@(Board _ g ts tp) = runErrorT $ do
-	pu <- tagga "lettura chiave pubblica responsabile"$ catchFromIO (readFile $ u ++ ".publ") >>= contentReads
-	((uprk,xs),s) <- atomically (liftM2 (,) (readTVar tp) (readTVar ts))
 
-	let 	h = showDigest $ sha512 $ B.pack s
+send :: (MonadIO m, MonadReader Board m) => (Utente,PrivateKey,[String]) ->  m (Either String String)
+send  (u,prk,es) = runErrorT . tagga "spedizione patch di eventi" $ do
+	b@(Board _ puk ts tp) <- ask
+	pu <- liftErrorT $ tagga "lettura chiave pubblica responsabile" $ catchFromIO (readFile $ u ++ ".publ") >>= contentReads
+	s <- liftIO $ atomically (readTVar ts)
+	let 	h = showDigest . sha512 . B.pack . show $ s
 	 	r = (pu,sign prk (B.pack $ h ++ concat es),es)
-	query' b (g,Patch r) 
-
-cercaChiave s = do
-	ls <- getDirectoryContents "."
+	query' b (puk,Patch r) 
+cercaChiave s = runErrorT . tagga ("lettura chiave privata di" ++ decodeString s) $ do
+	ls <- liftIO $ getDirectoryContents "."
 	case find ((==) $ s ++ ".priv") ls of
-		Nothing -> print ("file chiave privata di " ++ decodeString s ++ " non trovato") >> return Nothing
-		Just x -> Just . read <$> readFile x
--}
+		Nothing -> throwError "file assente" 
+		Just x -> catchFromIO (readFile x) >>= contentReads
+			
 runCostruzioneIO :: (Monad m, MonadIO m) =>  Costruzione m  a -> m (Maybe a)
 runCostruzioneIO  c = flip runContT return . callCC $ \k -> 
 	let zeta c@(Costruzione l f) = do 

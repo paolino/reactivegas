@@ -1,10 +1,8 @@
 applicativi:Chiavi.hs Sincronizza.hs Eventi.hs Inizio.hs Server.hs
-	ghc --make Chiavi
-	ghc --make Sincronizza
-	ghc --make Eventi
+	ghc --make Cliente
 	ghc --make Server
-	ghc --make Inizio
-	cp Chiavi Eventi Sincronizza Server Inizio Applicazioni
+	ghc --make Boot
+	cp Cliente Server Boot Applicazioni
 clean:
 	rm -f *.o 
 	rm -f *.hi
@@ -16,9 +14,10 @@ git:
 	git add makefile
 	git commit
 	git push
+
 release:applicativi
 	mkdir release
-	cp Chiavi Eventi Sincronizza Server Inizio release
+	cp Cliente Server Boot release
 	tar cjvf release.tbz release
 	rm -rf release
 edit:

@@ -28,13 +28,4 @@ type SelectorProtocol  = (PublicKey,Protocol)
 data PBox = forall a . Show a => PBox a 
 instance Show PBox where 
 	show (PBox a) = show a
-query host p y = do
-	h <- connectTo host (PortNumber (fromIntegral p))
-	hSetBuffering h NoBuffering
-	hPutStrLn h y
-	l <- hGetLine h
-	case reads l of
-		[] -> error "errore di protocollo"
-		[(Right l,_)] -> return l
-		[(Left l,_)] -> error l
 

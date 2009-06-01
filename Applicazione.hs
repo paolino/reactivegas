@@ -29,7 +29,7 @@ import System.Directory
 import Codec.Crypto.RSA
 import Data.Digest.Pure.SHA
 import qualified Data.ByteString.Lazy.Char8 as B
-
+import Anagrafe
 import MakePatch 
 -----------------------------------------
 
@@ -50,7 +50,15 @@ s0 responsabilidiboot = (
 	replicate (length reattori) $ nodoVuoto
 	) :: (T,[SNodo T Utente])
 
+responsabiliQ :: Q -> [Chiave]
 responsabiliQ s = map snd . responsabili . fst $ s
+
+aggiornaStato :: (MonadError [Char] m) =>
+                 PublicKey
+                 -> (T, [SNodo T Utente])
+                 -> [(B.ByteString, [(Chiave, B.ByteString, [[Char]])])]
+                 -> m ((T, [SNodo T Utente]), Log Utente)
+
 aggiornaStato g x = let
 	r stato (firma,ps) = do
 		let h = showDigest . sha512 $ B.pack $ show stato
