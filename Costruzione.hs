@@ -27,7 +27,7 @@ instance Read (Svolgimento b m a)
 parametro :: (Monad m, Show a,Read a) => SceltaOLibero a -> Svolgimento b m a 
 parametro scelte = Svolgimento (ContT $ \k -> return (Costruzione scelte k))
 
-svolgi :: Monad m => Svolgimento b m b  -> m (Costruzione m b)
+-- svolgi :: Monad m => Svolgimento b m b  -> m (Costruzione m b)
 svolgi (Svolgimento c) = runContT c undefined 
 
 ----------------------  un driver per utilizzare una Costruzione ----------------------------------------						

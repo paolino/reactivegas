@@ -9,7 +9,7 @@ import Control.Monad.State
 import Control.Monad.Cont
 import Control.Monad.Identity
 import Data.List
-
+import Control.Arrow
 import Data.Maybe
 import Control.Monad.Error
 import Codec.Binary.UTF8.String
@@ -40,7 +40,7 @@ liftErrorT :: (MonadIO m) => ErrorT e IO a -> ErrorT e m a
 liftErrorT f = ErrorT (liftIO (runErrorT f))
 
 contentReads x = case reads x of 	
-		[] -> throwError $ "errore nell'interpretare " ++ show x
+		[] -> throwError $ "errore nell'interpretare " ++ take 50 (show x)
 		[(y,_)] -> return y
 
 data Board = Board Configurazione PublicKey (TVar Q) (TVar Patch)
@@ -80,8 +80,10 @@ main =	do
 		return $ Board c puk s pa 
 		
 	hSetBuffering stdout NoBuffering 
-	runProgram b (svolgi interfaccia >>= runCostruzioneIO) 
-
+	x <- runProgram b $ runErrorT $ svolgi interfaccia >>= runCostruzioneIO 
+	case x of 
+		Left s -> liftIO $ putStrLn "impossibile"
+		Right r -> print "fine"
 creaChiaviIO l = runErrorT . tagga "creazione chiavi in IO" . liftErrorT . catchFromIO $ do
 	let (p1,p2) = (l ++ ".priv", l ++ ".publ")
 	(pu,pr,_) <- flip generateKeyPair 512 <$> newStdGen
@@ -115,8 +117,8 @@ sincronizzaIO = runErrorT . tagga "sincronizzazioneIO:" $ do
 		h' = showDigest . sha512 . B.pack $ show s'
 	query' b (puk,GroupPatch (h',f0 ,ws, f1))
 		
+interfaccia :: (MonadIO m, MonadReader Board m, MonadState Patch m) => MakePatch m ()
 
--- interfaccia :: (String,Int) -> PublicKey -> String -> MakePatch r m ()
 interfaccia = let c = correggiStato (liftIO . stampaLogs) reattori priorities in 
 	nodo (liftIO . logerrore) [
 		nuovechiavi creaChiaviIO , 
@@ -161,25 +163,37 @@ cercaChiave s = runErrorT . tagga ("lettura chiave privata di" ++ decodeString s
 	case find ((==) $ s ++ ".priv") ls of
 		Nothing -> throwError "file assente" 
 		Just x -> catchFromIO (readFile x) >>= contentReads
-			
-runCostruzioneIO :: (Monad m, MonadIO m) =>  Costruzione m  a -> m (Maybe a)
+
+listingIO = runErrorT . tagga "listing della cartella" . liftErrorT . catchFromIO $ do
+	liftIO $ getDirectoryContents "."
+
+runCostruzioneIO :: (MonadIO m) => Costruzione (ErrorT String m) t -> ErrorT String m (Maybe a)
+	
 runCostruzioneIO  c = flip runContT return . callCC $ \k -> 
 	let zeta c@(Costruzione l f) = do 
 		let riprova s  = nl >> msg s >> zeta c
 		r <- runErrorT $ nl >> case l of
 			Libero z -> do	(encodeString -> x) <- pgl z
-					backifnull (errorOrAhead (lift . lift . f) . stringOrNot) x
+					ls <- liftErrorT . catchFromIO $ getDirectoryContents "."
+
+					case x of 	"/" -> lift . zeta . Costruzione (Scelta "scegli un file" $ map (id &&& id) ls) $ \x -> do
+									r <-  tagga "lettura dato da file" .
+										liftErrorT  $  catchFromIO (readFile x) >>= contentReads --guaio , bisogna gestire gli errori in f
+									f r
+							x -> 	backifnull (errorOrAhead joke . stringOrNot) x
 			Scelta t as -> do 	let bs = ("fine",undefined) : as
 						liftIO $ mapM_ putStrLn  [show n ++ ". " ++ decodeString a | (n,a) <- zip [0..] (map fst bs)]
 						nl
 						let 	q y = do 	when (y < 0 || y > length as) $ throwError "scelta impossibile"
 									when (y == 0) $ lift (k Nothing)
-									lift . lift .  f . snd $ (as !! (y - 1))	
+									joke . snd $ (as !! (y - 1))	
 						pgl t >>= backifnull (errorOrAhead q . toMaybe . reads)
 		either riprova return r 
 		where
+			joke =  ErrorT . lift . lift . runErrorT . f  
 			backifnull f x = if null x then return Nothing else f x
-			errorOrAhead q =  maybe (throwError "errore di lettura") 
+			errorOrAhead q =  
+				maybe (throwError "errore di lettura") 
 				(\x -> q x >>= lift . zeta >>= maybe (lift $ zeta c) (return . Just)) 
 			stringOrNot s = toMaybe $ case reads s of
 				[] -> reads ("\"" ++ s ++ "\"")

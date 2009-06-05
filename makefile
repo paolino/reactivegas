@@ -1,8 +1,8 @@
-applicativi:Chiavi.hs Sincronizza.hs Eventi.hs Inizio.hs Server.hs
+applicativi:Cliente.hs Boot.hs Servente.hs
 	ghc --make Cliente
-	ghc --make Server
+	ghc --make Servente
 	ghc --make Boot
-	cp Cliente Server Boot Applicazioni
+	cp Cliente Servente Boot Applicazioni
 clean:
 	rm -f *.o 
 	rm -f *.hi
@@ -17,7 +17,7 @@ git:
 
 release:applicativi
 	mkdir release
-	cp Cliente Server Boot release
+	cp Cliente Servente Boot release
 	tar cjvf release.tbz release
 	rm -rf release
 edit:

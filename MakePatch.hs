@@ -36,7 +36,7 @@ type Errante m a = Recupera m -> Prompt m a
 
 nodo :: Monad m => (String -> m ()) -> [Errante m ()] -> MakePatch m ()
 nodo d cs = callCC $ forever . (callCC . dentro)  where
-	dentro k ki = join . parametro . Scelta "scegli una strada" $ ("indietro", k ()): map ($ ki2) cs where
+	dentro k ki = join . parametro . Scelta "scegli una strada" $ ("nodo superiore", k ()): map ($ ki2) cs where
 		ki2 x = lift (d x) >> ki ()
 
 sincronizzazione :: Monad m => m (Either String String) -> Errante m () 
@@ -85,5 +85,6 @@ commit s k = (,) "invia eventi" $ do
 			True -> k "mi rifiuto di spedire una lista di eventi vuota"
 			False -> lift (s (u,prk,es)) >>= either k (\s -> k ("spedizione patch" ++ s))
 	lift $ modify (second (const []))
+
 
 
