@@ -39,6 +39,10 @@ nodo d cs = callCC $ forever . (callCC . dentro)  where
 	dentro k ki = join . parametro . Scelta "scegli una strada" $ ("nodo superiore", k ()): map ($ ki2) cs where
 		ki2 x = lift (d x) >> ki ()
 
+incrocio d s cs = callCC $ forever . dentro where
+	dentro ki =  join . parametro . Scelta s $ map ($ ki2) cs where
+		ki2 x = lift (d x) >> ki ()
+
 sincronizzazione :: Monad m => m (Either String String) -> Errante m () 
 sincronizzazione f k = (,) "sincronizza il gruppo" $ lift f >>= either k (\s -> k ("sincronizzazione:" ++ s))
 
@@ -66,6 +70,21 @@ trattamentoEvento (d,q) cs = (,) "manipola eventi" $ do
 				in (s,y) 
 			
 	nodo d  $ cancellaEvento: map wrap cs
+	where 	z x = lift . modify . second $ (x:)
+
+soloCreazioneEvento :: forall m r . (MonadState Patch m, Show r) 
+	=> (String -> m (), m r) -- come comunicare i problemi e come caricare lo stato
+	-> [Recupera m -> (String , r -> MakePatch m String)]  -- i fattori
+	-> MakePatch m ()
+soloCreazioneEvento (d,q) cs = do
+	let 	wrap :: (Recupera m -> (String , r -> MakePatch m String)) -> (Errante m ())
+		wrap f k = let 	(s,c) = f k 
+				y = do	r <- lift q
+					c r >>= z
+					lift q >> return ()
+				in (s,y) 
+			
+	incrocio d "creazione evento" $ map wrap cs
 	where 	z x = lift . modify . second $ (x:)
 
 update :: Monad m => m (Either String ()) -> Errante m ()

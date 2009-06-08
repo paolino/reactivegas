@@ -16,10 +16,7 @@ git:
 	git push
 
 release:applicativi
-	mkdir release
-	cp Cliente Servente Boot release
-	tar cjvf release.tbz release
-	rm -rf release
+	tar cjvf release.tbz Cliente Servente Boot
 edit:
 	gvim *.hs README LICENSE makefile
 

@@ -2,6 +2,7 @@
 -- | modulo per la gestione dei conti utente e responsabile
 module Accredito (Accredito (..), Conti, Saldi, preleva, accredita, salda, reazioneAccredito , statoInizialeAccredito ,makeAccredito,priorityAccredito) where
 
+import Codec.Binary.UTF8.String
 import Core
 import Lib0
 import Lib1
@@ -27,7 +28,7 @@ preleva u dv = do
 	fallimento (dv <= 0) "tentato un prelievo negativo o nullo"
 	esistenzaUtente u 
 	Conti us <- osserva
-	fallimento (us ? (u,0) < dv) "il credito non é sufficiente per la richiesta" 
+	fallimento (us ? (u,0) < dv) $ encodeString "il credito non é sufficiente per la richiesta" 
 	aggiornaCredito u (subtract dv) 
 
 accredita u dv = do

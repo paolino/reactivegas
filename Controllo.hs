@@ -82,5 +82,6 @@ passa xs = let 	h = map ((head . head) &&& map tail) . groupBy ((==) `on` head)
 				else Node . second passa <$>  h y -- ogni sottosequenza di una lista  di liste piene che ha 
 					-- la stessa testa é un nodo. ricorsivamente analizziamo il resto
 stampaLogs = 	putStrLn . decodeString . showTrees . map (\(as,b) -> (map (\(d,e) -> show d ++ ":" ++ e) as) ++ ["------> " ++ b])
+eccoILogs = decodeString . showTrees . map (\(as,b) -> (map (\(d,e) -> show d ++ ":" ++ e) as) ++ ["------> " ++ b])
 ----------------------------------------
 
