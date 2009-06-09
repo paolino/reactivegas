@@ -30,7 +30,6 @@ import Codec.Crypto.RSA
 import Data.Digest.Pure.SHA
 import qualified Data.ByteString.Lazy.Char8 as B
 import Anagrafe
-import MakePatch 
 -----------------------------------------
 
 priorities = [priorityAnagrafe,priorityAnagrafeI,priorityImpegnoI,priorityImpegno,priorityOrdine,priorityAccredito]
