@@ -94,39 +94,37 @@ main =	do
 populateCombo xs c = do
 	ls <- G.comboBoxSetModelText c
 	mapM_ (G.listStoreAppend ls) xs
-
 costruzioneGTK l = do 
-	
-	(d,rs,vistacar,vistalog,reset) <- liftIO $ do
-		d <- Gl.xmlGetWidget l G.castToLabel "label domanda"
-		rs <- Gl.xmlGetWidget l G.castToHBox "scatola risposta"
-		vistacar <-  Gl.xmlGetWidget l G.castToTextView "vista caricamento"
-		vistalog <-  Gl.xmlGetWidget l G.castToTextView "vista log"
-		reset <- Gl.xmlGetWidget l G.castToButton "pulsante reset evento"
-		return (d,rs,vistacar,vistalog,reset)	
-	let c = do 
-		(r,ls) <- statoCorrettoIO reattori priorities 
-		liftIO . outputcaricamento vistacar . eccoILogs $ ls
-		return r
-	return ()
-	base <- svolgi (creazioneEvento (liftIO . outputlog vistalog, c) makers) 
-	runCostruzioneGTK d rs vistalog base
-	r <- ask
-	liftIO $ G.onClicked reset (runProgram r (runCostruzioneGTK d rs vistalog base))
+	let gW f = liftIO . Gl.xmlGetWidget l f
+	de <- gW G.castToLabel "domanda evento"
+	re <- gW G.castToHBox "risposta evento"
+	ke <- gW G.castToButton "reset evento"
+	di <- gW G.castToLabel "domanda interrogazione"
+	ri <- gW G.castToHBox "risposta interrogazione"
+	ki <- gW G.castToButton "reset interrogazione"
+	vistacar <-  gW G.castToTextView "vista caricamento"
+	vistalog <-  gW G.castToTextView "vista log"
+	let c = statoCorrettoIO reattori priorities 
 
-creazioneEvento (d,q) cs = do
-	let 	
-		wrap f k = let 	(s,c) = f k 
-				y = do	r <- lift q				
-					c r >>= z
-				in (s,y) 
-			
-	incrocio d "creazione evento" $ map wrap cs
-	where 	z x = lift . modify . second $ (x:)
-		incrocio d s cs = callCC $ forever . dentro where
+	evento <- svolgi (interfacciaY "costruzione evento"
+		(liftIO . outputlog vistalog, fst <$> c, \x -> (modify . second $ (x:)) >> snd <$> c >>= liftIO . outputcaricamento vistacar . eccoILogs) 
+		makers) 
+	interrogazione <- svolgi (interfacciaY "interrogazione" 
+		(liftIO . outputlog vistalog, fst <$> c,liftIO . outputlog vistalog ) queriers) 
+	runCostruzioneGTK de re vistalog evento
+	runCostruzioneGTK di ri vistalog interrogazione
+	r <- ask
+	liftIO $ G.onClicked ke (runProgram r (runCostruzioneGTK de re vistalog evento))
+	liftIO $ G.onClicked ki (runProgram r (runCostruzioneGTK di ri vistalog interrogazione))
+
+
+interfacciaY s (d,q,z) cs = do
+	let wrap f k = second (\c -> lift q >>= c >>= lift . z) $  f k 
+	incrocio d s $ map wrap cs
+	where 	incrocio d s cs = forever $ callCC dentro where
 			dentro ki =  join . parametro . Scelta s $ map ($ ki2) cs where
 				ki2 x = lift (d x) >> ki ()
-
+	
 containerEmpty c = G.containerGetChildren c >>= mapM_ (G.containerRemove c)
 
 runCostruzioneGTK d rs  vistalog c@(Costruzione (Libero s) f) = do
@@ -170,7 +168,6 @@ outputlog vistalog x = do
 	G.textIterForwardToEnd i
 	G.textBufferInsert b i (x ++ "\n") 
 outputcaricamento vistacar x = do
-	print "here"
 	b <- G.textViewGetBuffer vistacar
 	G.textBufferSetText b x 
 

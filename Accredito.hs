@@ -1,6 +1,6 @@
 {-# LANGUAGE ScopedTypeVariables, ViewPatterns, NoMonomorphismRestriction, FlexibleContexts #-}
 -- | modulo per la gestione dei conti utente e responsabile
-module Accredito (Accredito (..), Conti, Saldi, preleva, accredita, salda, reazioneAccredito , statoInizialeAccredito ,makeAccredito,priorityAccredito) where
+module Accredito (Accredito (..), Conti, Saldi, preleva, accredita, salda, reazioneAccredito , statoInizialeAccredito ,makeAccredito,priorityAccredito, queryAccredito) where
 
 import Codec.Binary.UTF8.String
 import Core
@@ -68,8 +68,9 @@ makeAccredito = [eventoAccredito , eventoSaldo] where
 	    u <- parametro (Scelta "selezione responsabile" . map (fst &&& id) . responsabili $ s)
 	    n <- parametro (Libero "la somma ricevuta")
 	    return $ show (Saldo (fst u) n)
-queryAccredito :: (Aspetti.ParteDi Responsabili a, Monad m, Aspetti.ParteDi Anagrafe a) =>
-                 [([Char] -> Svolgimento b m ()) -> ([Char], a -> Svolgimento b m String)]
+	    
+--queryAccredito :: (Aspetti.ParteDi Responsabili a, Monad m, Aspetti.ParteDi Anagrafe a) =>
+ --                [([Char] -> Svolgimento b m ()) -> ([Char], a -> Svolgimento b m String)]
     
 queryAccredito = [queryUtente, queryResponsabile] where
 	queryUtente k = (,) "interroga gli accrediti degli utenti" $ \s -> do
@@ -77,12 +78,12 @@ queryAccredito = [queryUtente, queryResponsabile] where
 		u <- parametro (Scelta "selezione utente". map (id &&& id) . utenti  $ s)
 		let Conti us = see s
 		case lookup u us of
-			Nothing -> k "l'utente non ha un conto"
+			Nothing -> k "l'utente non ha un conto" >> return ""
 			Just v -> return $ show v
 	queryResponsabile k = (,) "interroga i saldi dei responsabili" $ \s -> do
 		when (null $ responsabili s) $ k "nessun responsabile disponibile"
 		u <- parametro (Scelta "selezione responsabile" . map (fst &&& id) . responsabili $ s)
 		let Saldi rs = see s
 		case lookup (fst u) rs of
-			Nothing -> k "il responsabile non ha saldo"
+			Nothing -> k "il responsabile non ha saldo" >> return ""
 			Just v -> return $ show v

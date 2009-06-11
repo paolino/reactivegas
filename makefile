@@ -12,6 +12,7 @@ git:
 	git add README
 	git add LICENSE
 	git add makefile
+	git add cliente.glade
 	git commit
 	git push
 
