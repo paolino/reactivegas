@@ -1,4 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables, ViewPatterns, NoMonomorphismRestriction #-}
+{-# LANGUAGE ScopedTypeVariables, ViewPatterns, NoMonomorphismRestriction, FlexibleContexts #-}
 -- | modulo per la gestione dei conti utente e responsabile
 module Accredito (Accredito (..), Conti, Saldi, preleva, accredita, salda, reazioneAccredito , statoInizialeAccredito ,makeAccredito,priorityAccredito) where
 
@@ -11,7 +11,7 @@ import Anagrafe
 import Data.Maybe
 import Control.Monad.Reader
 import Control.Arrow
-import Aspetti ((.<))
+import Aspetti ((.<), see, ParteDi)
 import Prioriti
 
 data Accredito = Accredito Utente Float | Saldo Utente Float deriving (Show, Read)
@@ -64,8 +64,25 @@ makeAccredito = [eventoAccredito , eventoSaldo] where
 	    return $ show (Accredito u n)
 
 	eventoSaldo k =  (,) "evento di saldo" $ \s -> do
-	    when (null $ utenti s) $ k "nessun responsabile disponibile"
+	    when (null $ responsabili s) $ k "nessun responsabile disponibile"
 	    u <- parametro (Scelta "selezione responsabile" . map (fst &&& id) . responsabili $ s)
 	    n <- parametro (Libero "la somma ricevuta")
 	    return $ show (Saldo (fst u) n)
-
+queryAccredito :: (Aspetti.ParteDi Responsabili a, Monad m, Aspetti.ParteDi Anagrafe a) =>
+                 [([Char] -> Svolgimento b m ()) -> ([Char], a -> Svolgimento b m String)]
+    
+queryAccredito = [queryUtente, queryResponsabile] where
+	queryUtente k = (,) "interroga gli accrediti degli utenti" $ \s -> do
+		when (null $ utenti s) $ k "nessun utente disponibile"
+		u <- parametro (Scelta "selezione utente". map (id &&& id) . utenti  $ s)
+		let Conti us = see s
+		case lookup u us of
+			Nothing -> k "l'utente non ha un conto"
+			Just v -> return $ show v
+	queryResponsabile k = (,) "interroga i saldi dei responsabili" $ \s -> do
+		when (null $ responsabili s) $ k "nessun responsabile disponibile"
+		u <- parametro (Scelta "selezione responsabile" . map (fst &&& id) . responsabili $ s)
+		let Saldi rs = see s
+		case lookup (fst u) rs of
+			Nothing -> k "il responsabile non ha saldo"
+			Just v -> return $ show v
