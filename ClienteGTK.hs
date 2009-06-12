@@ -93,7 +93,7 @@ main =	do
 
 populateCombo xs c = do
 	ls <- G.comboBoxSetModelText c
-	mapM_ (G.listStoreAppend ls) xs
+	mapM_ (G.listStoreAppend ls) (map (take 40) xs)
 costruzioneGTK l = do 
 	let gW f = liftIO . Gl.xmlGetWidget l f
 	de <- gW G.castToLabel "domanda evento"
@@ -104,11 +104,18 @@ costruzioneGTK l = do
 	ki <- gW G.castToButton "reset interrogazione"
 	vistacar <-  gW G.castToTextView "vista caricamento"
 	vistalog <-  gW G.castToTextView "vista log"
-	let c = statoCorrettoIO reattori priorities 
+	let 	c = statoCorrettoIO reattori priorities 
+		d x = do
+			l <- testAutenticazione 
+			case l of
+				Left s -> liftIO . outputlog vistalog $ s
+				Right _ -> return ()
+			modify . second $ (x:)
+			y <- snd <$> c
+			liftIO . outputcaricamento vistacar . eccoILogs $ y
 
 	evento <- svolgi (interfacciaY "costruzione evento"
-		(liftIO . outputlog vistalog, fst <$> c, \x -> (modify . second $ (x:)) >> snd <$> c >>= liftIO . outputcaricamento vistacar . eccoILogs) 
-		makers) 
+		(liftIO . outputlog vistalog, fst <$> c, d)	makers) 
 	interrogazione <- svolgi (interfacciaY "interrogazione" 
 		(liftIO . outputlog vistalog, fst <$> c,liftIO . outputlog vistalog ) queriers) 
 	runCostruzioneGTK de re vistalog evento

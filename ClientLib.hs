@@ -129,6 +129,13 @@ statoCorrettoIO rs bs = do
 			Just (u,prk) -> caricaEventi bs (zip (repeat u) xs) >> (fst <$> get)
 	return (r,log)
 
+testAutenticazione = runErrorT . tagga "test autenticazione" $ do
+	b@(Board _ puk ts tp) <- ask
+	((uprk,es),s) <- liftIO $ atomically (liftM2 (,) (readTVar tp) (readTVar ts))
+	case uprk of 
+		Nothing -> throwError "manca l'autenticazione"
+		Just l -> return l
+
 spedizionePatchIO :: (Read a, MonadIO m, MonadReader Board m) => m (Either String a)
 spedizionePatchIO  = runErrorT . tagga "spedizione patch di eventi" $ do
 	b@(Board _ puk ts tp) <- ask

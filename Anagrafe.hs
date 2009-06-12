@@ -1,7 +1,7 @@
 {-# LANGUAGE NoMonomorphismRestriction, ViewPatterns, ScopedTypeVariables, ExistentialQuantification #-}
 module Anagrafe (eliminazioneResponsabile, esistenzaUtente , Anagrafe, Responsabili, statoInizialeAnagrafe, esistenzaResponsabile ,
 	reazioneAnagrafe, programmazioneAssenso , Chiave, Assensi, eventoValidato, Utente, makeEventiAssenso, makeEventiAnagrafe,
-	responsabili , utenti, priorityAnagrafeI, priorityAnagrafe, Evento (..)) where
+	responsabili , utenti, priorityAnagrafeI, priorityAnagrafe, Evento (..), queryAnagrafe,queryAssenso) where
 
 import Control.Monad.RWS
 import Control.Applicative
@@ -106,8 +106,16 @@ makeEventiAnagrafe = [eventoNuovoUtente, eventoElezioneResponsabile,eventoElimin
 		when (null $ responsabili s) $ k "nessun utente disponibile"
                 n <- parametro . Scelta "selezione responsabile" . map (fst &&& id) $ responsabili s
                 return $ show (EliminazioneResponsabile (fst n))
-
-
+queryAnagrafe = [queryChiave,queryElencoUtenti,queryElencoResponsabili] where
+	queryChiave k = (,) "la chiave pubblica di un responsabile"  $ \s -> do
+		when (null $ responsabili s) $ k "nessun responsabile disponibile"
+		u <- parametro (Scelta "selezione responsabile" . map (fst &&& id) . responsabili $ s)		
+		case lookup (fst u) $ responsabili s of
+			Nothing -> k "il responsabile non ha una chiave (siamo alle cozze ...)" >> return ""
+			Just v -> return $ show v		
+	queryElencoUtenti k = (,) "elenco nomi utenti" $ return .show . utenti
+	queryElencoResponsabili k = (,) "elenco nomi responsabili" $ return .show . map fst . responsabili
+		
 
 ----------------------------------------------------------------------------------------------------------------------
 --  sezione assensi, putroppo non ha un modulo a parte a causa del ciclo di dipendenze con l'anagrafe
@@ -161,6 +169,8 @@ makeEventiAssenso = [eventoFallimentoAssenso , eventoAssenso] where
 		when (null $ elencoSottoStati (undefined :: Assensi) s) $ k "nessuna raccolta di assensi attiva"
                 n <- parametro . Scelta "selezione richiesta per assenso"  $ (map (snd &&& fst) $ elencoSottoStati (undefined :: Assensi) s)
                 return $ show (Assenso n)
+queryAssenso = [querySottoStati] where
+	querySottoStati k = (,) "elenco richieste di assenso assensi aperte" $ return .show . elencoSottoStati (undefined :: Assensi)
 
 ---------------------------------------------------
 

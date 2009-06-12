@@ -17,7 +17,6 @@ data (Read a,Show a) => Servizio a = Servizio {contatore :: Int, sottostato :: [
 	(Show, Read)
 
 statoInizialeServizio x = Servizio 0 [] .< x
-
 nuovoStatoServizio s q = do
 	Servizio p ls <- osserva
 	modifica $ \_ -> Servizio (p + 1) ((p,(q,s)):ls)

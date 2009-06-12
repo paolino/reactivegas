@@ -74,16 +74,8 @@ makeAccredito = [eventoAccredito , eventoSaldo] where
     
 queryAccredito = [queryUtente, queryResponsabile] where
 	queryUtente k = (,) "interroga gli accrediti degli utenti" $ \s -> do
-		when (null $ utenti s) $ k "nessun utente disponibile"
-		u <- parametro (Scelta "selezione utente". map (id &&& id) . utenti  $ s)
 		let Conti us = see s
-		case lookup u us of
-			Nothing -> k "l'utente non ha un conto" >> return ""
-			Just v -> return $ show v
+		return $ show us
 	queryResponsabile k = (,) "interroga i saldi dei responsabili" $ \s -> do
-		when (null $ responsabili s) $ k "nessun responsabile disponibile"
-		u <- parametro (Scelta "selezione responsabile" . map (fst &&& id) . responsabili $ s)
 		let Saldi rs = see s
-		case lookup (fst u) rs of
-			Nothing -> k "il responsabile non ha saldo" >> return ""
-			Just v -> return $ show v
+		return $ show rs
