@@ -93,7 +93,7 @@ main =	do
 
 populateCombo xs c = do
 	ls <- G.comboBoxSetModelText c
-	mapM_ (G.listStoreAppend ls) (map (take 40) xs)
+	mapM_ (G.listStoreAppend ls) (map (take 50) xs)
 costruzioneGTK l = do 
 	let gW f = liftIO . Gl.xmlGetWidget l f
 	de <- gW G.castToLabel "domanda evento"

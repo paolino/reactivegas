@@ -57,13 +57,13 @@ reattoreAccredito (eventoValidato -> (wrap ,Saldo u dv)) = wrap $ \r -> do
 
 makeAccredito = [eventoAccredito , eventoSaldo] where
 
-	eventoAccredito k = (,) "evento di accredito" $ \s -> do
+	eventoAccredito k = (,) "accredito" $ \s -> do
 	    when (null $ utenti s) $ k "nessun utente disponibile"
 	    u <- parametro (Scelta "selezione utente". map (id &&& id) . utenti  $ s)
 	    n <- parametro (Libero "la somma da accreditare")
 	    return $ show (Accredito u n)
 
-	eventoSaldo k =  (,) "evento di saldo" $ \s -> do
+	eventoSaldo k =  (,) "saldo" $ \s -> do
 	    when (null $ responsabili s) $ k "nessun responsabile disponibile"
 	    u <- parametro (Scelta "selezione responsabile" . map (fst &&& id) . responsabili $ s)
 	    n <- parametro (Libero "la somma ricevuta")
@@ -73,9 +73,9 @@ makeAccredito = [eventoAccredito , eventoSaldo] where
  --                [([Char] -> Svolgimento b m ()) -> ([Char], a -> Svolgimento b m String)]
     
 queryAccredito = [queryUtente, queryResponsabile] where
-	queryUtente k = (,) "interroga gli accrediti degli utenti" $ \s -> do
+	queryUtente k = (,) "accrediti degli utenti" $ \s -> do
 		let Conti us = see s
 		return $ show us
-	queryResponsabile k = (,) "interroga i saldi dei responsabili" $ \s -> do
+	queryResponsabile k = (,) "saldi dei responsabili" $ \s -> do
 		let Saldi rs = see s
 		return $ show rs

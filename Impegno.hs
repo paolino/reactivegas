@@ -9,7 +9,8 @@ module Impegno (
 	fallimentoImpegno,
 	makeEventiImpegno,
 	priorityImpegnoI,
-	priorityImpegno
+	priorityImpegno,
+	unImpegno
 	)  where
 
 import Control.Monad.Maybe (MaybeT)
@@ -26,7 +27,7 @@ import Costruzione
 import Prioriti
 
 ---- moduli necessari
-import Servizio (Servizio, statoInizialeServizio, nuovoStatoServizio, modificaStatoServizio, osservaStatoServizio, eliminaStatoServizio,elencoSottoStati)
+import Servizio (Servizio, statoInizialeServizio, nuovoStatoServizio, modificaStatoServizio, osservaStatoServizio, eliminaStatoServizio,elencoSottoStati, seeStatoServizio)
 import Anagrafe (Utente, Responsabili, Anagrafe, eliminazioneResponsabile, eventoValidato,utenti, esistenzaResponsabile)
 import Accredito (preleva, accredita, Conti)
 
@@ -54,6 +55,8 @@ data Impegni = Impegni [(Utente,Float)] deriving (Show,Read)
 -- | aggiunta dell'aspetto Servizio Impegni 
 statoInizialeImpegni  :: a -> (Servizio Impegni, a)
 statoInizialeImpegni = statoInizialeServizio 
+
+unImpegno s n = (\(Impegni us) -> us) <$> snd <$> seeStatoServizio  (undefined :: Impegni) s n
 
 -- | il tipo della funzione da passare alla hof restituita da programmazioneImpegno 
 type ConclusioneReattoreImpegno s c = Maybe ([(Utente, Float)]) -> MTInserzione s c Utente (Effetti s c Utente)

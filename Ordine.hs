@@ -1,9 +1,11 @@
 {-# LANGUAGE ScopedTypeVariables, ViewPatterns, NoMonomorphismRestriction #-}
-module Ordine (statoInizialeOrdini, reazioneOrdine, StatoOrdini, makeAperturaOrdine,priorityOrdine) where
+module Ordine (statoInizialeOrdini, reazioneOrdine, StatoOrdini, makeAperturaOrdine,priorityOrdine,queryOrdine) where
+
+import Control.Arrow 
 
 import Lib1
 import Lib0
-import Impegno (programmazioneImpegno)
+import Impegno (programmazioneImpegno, unImpegno)
 import Accredito (salda)
 import Anagrafe (Utente,eventoValidato)
 import Aspetti ((.<) , see)
@@ -44,4 +46,12 @@ makeAperturaOrdine = [eventoApertura] where
 		n <- parametro (Libero "nome del nuovo bene in acquisto")
 		return $ show (AperturaOrdine n)
 
+queryOrdine = [q] where
+	q  k = (,) "stato ordini aperti" $ \s -> do
+		let ls = aperti $ see s
+		x <- parametro $ Scelta "scegli un ordine aperto" $ map (snd &&& fst) ls
+		let es = unImpegno s x
+		case es of
+			Nothing -> k "non esiste un ordine con quel numero" >> return ""
+			Just us -> return $ show us
 

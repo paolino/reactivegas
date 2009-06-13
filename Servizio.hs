@@ -51,3 +51,12 @@ elencoSottoStati :: forall a s c d. (ParteDi (Servizio a) s,
 elencoSottoStati proxy s = let
 	Servizio p ls = see s :: Servizio a
 	in map (id *** fst) ls
+
+seeStatoServizio :: forall a s c d. (ParteDi (Servizio a) s,
+                        Show a,Read a
+                        ) =>
+                       a -> s -> Int -> Maybe (String,a)
+seeStatoServizio proxy s i =
+	let Servizio p ls = see s :: Servizio a
+	in lookup i $ ls
+

@@ -34,7 +34,7 @@ import Anagrafe
 
 priorities = [priorityAnagrafe,priorityAnagrafeI,priorityImpegnoI,priorityImpegno,priorityOrdine,priorityAccredito]
 makers = concat [makeAperturaOrdine,makeAccredito,makeEventiImpegno,makeEventiAssenso,makeEventiAnagrafe]
-queriers = concat [queryAccredito, queryAnagrafe,queryAssenso]
+queriers = concat [queryAccredito, queryAnagrafe,queryAssenso,queryOrdine]
 
 type T = Servizio Impegni :*: StatoOrdini :*: Conti :*: Saldi :*: Servizio Assensi :*: Anagrafe :*: Responsabili :*: ()
 reattori = [reazioneAnagrafe :: Reazione T ParserConRead Utente,reazioneAccredito,reazioneOrdine,reazioneLogger] 
