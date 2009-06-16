@@ -28,39 +28,49 @@ import Prioriti
 import ClientLib
 import Control.Monad.Reader
 import Control.Concurrent.STM
+import Control.Concurrent
 import qualified Graphics.UI.Gtk as G
 import qualified Graphics.UI.Gtk.Glade as Gl
 import qualified Graphics.UI.Gtk.TreeList.ListStore as Gls
 
 main =	do
-	print "lettura cartella ............"
-	b <- throwLefts $ do 
-		c <- tagga "lettura configurazione" $ catchFromIO (readFile "configurazione") >>= contentReads 
-		s <- tagga "lettura file di stato" $ catchFromIO (readFile "stato" >>= \x -> length x `seq` return x ) >>= contentReads >>= lift . atomically . newTVar
-		puk <- tagga "lettura chiave pubblica sincronizzatore" $ catchFromIO (readFile "sincronizzatore.publ") >>= contentReads
-		pa <- lift . atomically . newTVar =<< do 	t <- lift . runErrorT $ tagga "lettura patch" $ catchFromIO (readFile "patch") >>= contentReads 
-								either (\e -> liftIO (print e) >> return (Nothing, [])) return t
-		return $ Board c puk s pa 
-	
 	G.initGUI
-	glade <- maybe (error "no glade!") id <$> Gl.xmlNew "cliente.glade"
+	glade <- maybe (error "manca il file di descrizione interfaccia") id <$> Gl.xmlNew "cliente.glade"
 	let getWidget = Gl.xmlGetWidget glade
 	window  <- Gl.xmlGetWidget glade G.castToWindow "window1"
 	G.onDestroy window G.mainQuit
 	
+	
 	getWidget G.castToButton "pulsante fine" >>= flip G.onClicked (G.widgetDestroy window)
 	
 	vistalog <-  getWidget G.castToTextView "vista log"
+	vistacar <-  getWidget G.castToTextView "vista caricamento"
+	a <- getWidget G.castToButton "pulsante aggiornamento"
 
+	s <- getWidget G.castToButton "pulsante spedizione" 
+	resps <- getWidget G.castToComboBox "selezione responsabile"
+	
+	G.widgetShowAll window
+	c <- atomically $ newTVar Nothing
+	let rc = do
+		r <- runErrorT (tagga "lettura configurazione" $ catchFromIO (readFile "configurazione") >>= contentReads)
+		either (\ e -> outputlog vistalog e >> (liftIO . atomically . writeTVar c $ Nothing)) (liftIO . atomically . writeTVar c . Just) r
+		threadDelay 1000000
+		rc
+	forkIO rc
+	st <- runErrorT (tagga "lettura file di stato" $ catchFromIO (readFile "stato" >>= \x -> length x `seq` return x ) >>= contentReads)
+		>>= either (\ e -> outputlog vistalog e >> return Nothing) (return . Just) >>= atomically . newTVar 
+	t <- runErrorT (tagga "lettura patch" $ catchFromIO (readFile "patch") >>= contentReads) >>= 
+			either (\ e -> outputlog vistalog e >> return (Nothing, [])) return >>= atomically . newTVar 
+	let b = Board c st t
+	
 	sinc <- getWidget G.castToButton "pulsante sincronizzazione" 
 	
 	G.onClicked sinc $ runReaderT sincronizzaIO b >>= either (outputlog vistalog) (outputlog vistalog)
 
-	s <- getWidget G.castToButton "pulsante spedizione" 
 	G.onClicked s $ runReaderT spedizionePatchIO b >>= either (outputlog vistalog) (outputlog vistalog)
 
-	resps <- getWidget G.castToComboBox "selezione responsabile"
-	runReaderT (responsabiliGTK resps) b
+	runReaderT (responsabiliGTK resps vistalog) b
 
 	G.on resps G.changed $ do
 		x <- G.comboBoxGetActive resps
@@ -70,13 +80,11 @@ main =	do
 			case z of 
 				Left s -> outputlog vistalog s
 				Right k -> do
-					let (Board _ _ _ tp) = b 
+					let (Board  _ _ tp) = b 
 					(_,es) <- atomically (readTVar tp)
 					atomically $ writeTVar tp (Just (y,k),es)
 			
-	vistacar <-  getWidget G.castToTextView "vista caricamento"
 	
-	a <- getWidget G.castToButton "pulsante aggiornamento"
 
 	G.onClicked a $ do
 		l <- runReaderT aggiornamentoIO b 
@@ -85,10 +93,9 @@ main =	do
 			Right t -> do 
 				outputcaricamento vistacar (eccoILogs t)
 				outputlog vistalog "cliente aggiornato"
-				runReaderT (responsabiliGTK resps) b
+				runReaderT (responsabiliGTK resps vistalog) b
 	
 	runProgram b (costruzioneGTK glade)			
-	G.widgetShowAll window
 	G.mainGUI
 
 populateCombo xs c = do
@@ -104,20 +111,22 @@ costruzioneGTK l = do
 	ki <- gW G.castToButton "reset interrogazione"
 	vistacar <-  gW G.castToTextView "vista caricamento"
 	vistalog <-  gW G.castToTextView "vista log"
-	let 	c = statoCorrettoIO reattori priorities 
-		d x = do
+	let 	c = statoCorrettoIO reattori priorities
+	let 	d x = do
 			l <- testAutenticazione 
 			case l of
 				Left s -> liftIO . outputlog vistalog $ s
 				Right _ -> return ()
 			modify . second $ (x:)
-			y <- snd <$> c
-			liftIO . outputcaricamento vistacar . eccoILogs $ y
+			y <- c
+			case y of
+				Left s -> liftIO . outputlog vistalog $ s
+				Right (_,y) -> liftIO . outputcaricamento vistacar . eccoILogs $ y
 
 	evento <- svolgi (interfacciaY "costruzione evento"
-		(liftIO . outputlog vistalog, fst <$> c, d)	makers) 
+		(liftIO . outputlog vistalog, c, d)	makers) 
 	interrogazione <- svolgi (interfacciaY "interrogazione" 
-		(liftIO . outputlog vistalog, fst <$> c,liftIO . outputlog vistalog ) queriers) 
+		(liftIO . outputlog vistalog, c,liftIO . outputlog vistalog ) queriers) 
 	runCostruzioneGTK de re vistalog evento
 	runCostruzioneGTK di ri vistalog interrogazione
 	r <- ask
@@ -126,7 +135,12 @@ costruzioneGTK l = do
 
 
 interfacciaY s (d,q,z) cs = do
-	let wrap f k = second (\c -> lift q >>= c >>= lift . z) $  f k 
+	let wrap f k = second r (f k) where
+		r c = do
+			y <- lift q
+			case y of
+				Left s -> k s >> return undefined
+				Right (s,_) ->  c s >>= lift . z 
 	incrocio d s $ map wrap cs
 	where 	incrocio d s cs = forever $ callCC dentro where
 			dentro ki =  join . parametro . Scelta s $ map ($ ki2) cs where
@@ -164,10 +178,15 @@ runCostruzioneGTK d rs vistalog c@(Costruzione (Scelta s xs) f) = do
 		return ()
 
 
-responsabiliGTK c = do
-	b@(Board _ g ts tp) <- ask
-	((uprk,xs),s) <- liftIO $ atomically (liftM2 (,) (readTVar tp) (readTVar ts))
-	liftIO $ populateCombo (map fst . responsabili . fst $ s) c
+responsabiliGTK c vistalog = do
+	b@(Board tc ts tp) <- ask
+	tc <- liftIO $ atomically (readTVar tc)
+	case tc of 
+		Nothing -> liftIO . outputlog vistalog  $ "la configurazione non é stata caricata"
+		Just (Configurazione _ s0 puk) -> do
+			((uprk,xs),s') <- liftIO $ atomically (liftM2 (,) (readTVar tp) (readTVar ts))
+			let 	s = maybe s0 id s'
+			liftIO $ populateCombo (map fst . responsabili . fst $ s) c
 
 outputlog vistalog x = do 
 	b <- G.textViewGetBuffer vistalog 

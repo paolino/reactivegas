@@ -19,7 +19,6 @@ import Network
 
 import Core (Reazione)
 import Anagrafe
-import MakePatch 
 import Costruzione
 import Rete
 import Controllo 
@@ -27,55 +26,69 @@ import Applicazione
 import Prioriti
 import Control.Monad.Reader
 import Control.Concurrent.STM
+import ClientLib
+import Aspetti
 
-tagga x f = f `catchError` (\s -> throwError $ x ++ ":" ++ s)
+----------------------------------- sezione input nuovo evento -----------------------------------------
 
-throwLefts f = do 
-	x <- runErrorT f 
-	case x of 	Left y -> error y
-			Right y -> return y	
-catchFromIO f = ErrorT ((Right <$> f) `catch` (return . Left . show))
+type MakePatch m a = Svolgimento () m a 
 
-liftErrorT :: (MonadIO m) => ErrorT e IO a -> ErrorT e m a
-liftErrorT f = ErrorT (liftIO (runErrorT f))
+type Prompt m a = (String , MakePatch m a)
+type Recupera m = String -> MakePatch m ()
+type Errante m a = Recupera m -> Prompt m a
 
-contentReads x = case reads x of 	
-		[] -> throwError $ "errore nell'interpretare " ++ take 50 (show x)
-		[(y,_)] -> return y
+nodo :: Monad m => (String -> m ()) -> [Errante m ()] -> MakePatch m ()
+nodo d cs = callCC $ forever . (callCC . dentro)  where
+	dentro k ki = join . parametro . Scelta "scegli una strada" $ ("nodo superiore", k ()): map ($ ki2) cs where
+		ki2 x = lift (d x) >> ki ()
 
-data Board = Board Configurazione PublicKey (TVar Q) (TVar Patch)
-data Configurazione = Configurazione HostName Integer deriving (Read,Show)
 
-query host p y = do
-	l <- liftErrorT . catchFromIO $ do
-		h <- connectTo host (PortNumber (fromIntegral p))
-		hSetBuffering h NoBuffering
-		hPutStrLn h y
-		hGetLine h
-	case reads l of
-		[] -> error "errore di protocollo"
-		[(Right l,_)] -> return l
-		[(Left l,_)] -> throwError l
+sincronizzazione :: Monad m => m (Either String String) -> Errante m () 
+sincronizzazione f k = (,) "sincronizza il gruppo" $ lift f >>= either k (\s -> k ("sincronizzazione:" ++ s))
 
-query' (Board (Configurazione h p) _ _ _) = query h (fromIntegral p) . show
+autenticazione :: (ParteDi Responsabili r, MonadState Patch m) => (m r, Utente -> m (Either String PrivateKey)) -> Errante m ()
+autenticazione (qr,q) k = (,) "autenticazione" $  do
+		rs <- map fst . responsabili <$> lift qr -- lo stato si trova nella reader
+		p <- parametro $ Scelta "autore degli eventi" (map (id &&& id) rs)
+		lift (q p) >>= either k (\n -> lift . modify . first $ const (Just (p,n)))
 
-newtype Program a = Program (ReaderT Board IO a) deriving (Monad, Functor, MonadIO, MonadReader Board )
-fromIO = Program . liftIO
+cancellaEvento :: MonadState Patch m => Errante m ()
+cancellaEvento k = (,) "elimina evento" $ do
+		es <- snd <$> lift get	
+		when (null es) $ k "non ci sono eventi da cancellare"
+		s <- parametro $ Scelta "evento da cancellare" (map (id &&& id) es)
+		lift . modify . second $ delete s 
+		k "evento cancellato"
 
-runProgram :: Board  -> Program a -> IO a
-runProgram b (Program p) = runReaderT p b
+trattamentoEvento :: forall m r . (MonadState Patch m, Show r) => (String -> m (), m r) -> [Recupera m -> (String , r -> MakePatch m String)] -> Prompt m ()
+trattamentoEvento (d,q) cs = (,) "manipola eventi" $ do
+	let 	wrap :: (Recupera m -> (String , r -> MakePatch m String)) -> (Errante m ())
+		wrap f k = let 	(s,c) = f k 
+				y = do	r <- lift q
+					c r >>= z
+					lift q >> return ()
+				in (s,y) 
+			
+	nodo d  $ cancellaEvento: map wrap cs
+	where 	z x = lift . modify . second $ (x:)
 
-instance MonadState Patch Program where
-	get = Program $ ask >>= \(Board _ _ _ tp) -> liftIO (atomically $ readTVar tp)
-	put x = Program $ ask >>= \(Board _ _ _ tp) -> liftIO (atomically $ writeTVar tp x)
+
+
+nuovechiavi :: Monad m => (Utente -> m (Either String ())) -> Errante m ()
+nuovechiavi f k = (,) "crea nuove chiavi responsabile" $ do
+	s <- parametro $ Libero "nome del responsabile delle nuove chiavi (attenzione!)"
+	lift (f s) >>= either k (\_ -> k "nuove chiavi create")
+
 
 main =	do
 	print "lettura cartella ............"
 	b <- throwLefts $ do 
 		c <- tagga "lettura configurazione" $ catchFromIO (readFile "configurazione") >>= contentReads 
-		s <- tagga "lettura file di stato" $ catchFromIO (readFile "stato" >>= \x -> length x `seq` return x ) >>= contentReads >>= lift . atomically . newTVar
+		s <- tagga "lettura file di stato" $ catchFromIO (readFile "stato" >>= \x -> length x `seq` return x ) >>= 
+			contentReads >>= lift . atomically . newTVar
 		puk <- tagga "lettura chiave pubblica sincronizzatore" $ catchFromIO (readFile "sincronizzatore.publ") >>= contentReads
-		pa <- lift . atomically . newTVar =<< do 	t <- lift . runErrorT $ tagga "lettura patch" $ catchFromIO (readFile "patch") >>= contentReads 
+		pa <- lift . atomically . newTVar =<< do 	t <- lift . runErrorT $ tagga "lettura patch" $ catchFromIO (readFile "patch") 
+									>>= contentReads 
 								either (\e -> liftIO (print e) >> return (Nothing, [])) return t
 		return $ Board c puk s pa 
 		
@@ -84,87 +97,22 @@ main =	do
 	case x of 
 		Left s -> liftIO $ putStrLn "impossibile"
 		Right r -> print "fine"
-creaChiaviIO l = runErrorT . tagga "creazione chiavi in IO" . liftErrorT . catchFromIO $ do
-	let (p1,p2) = (l ++ ".priv", l ++ ".publ")
-	(pu,pr,_) <- flip generateKeyPair 512 <$> newStdGen
-	writeFile p1 (show pr)
-	writeFile p2 (show pu)
-
-aggiornamentoIO pl =  runErrorT . tagga "aggiornamentoIO:" $ do
-	b@(Board _ g ts tp) <- ask
-	((uprk,xs),s) <- liftIO $ atomically (liftM2 (,) (readTVar tp) (readTVar ts))
-	let h = showDigest $ sha512 $ B.pack (show s)
-	ps <- query' b (g,Aggiornamento h)
-	(s',ls) <- aggiornaStato g s ps 
-	pl ls
-	vs <- query' b (g,Validi)
-	when (responsabiliQ s' /= vs) $ throwError "Il sicronizzatore sta truffando sui responsabili validi"
-	liftIO $ atomically (writeTVar ts s')
-	liftIO $ writeFile "stato" (show s')
-
-sincronizzaIO = runErrorT . tagga "sincronizzazioneIO:" $ do
-	b@(Board _ puk ts tp) <- ask
-	(_,s) <- liftIO $ atomically (liftM2 (,) (readTVar tp) (readTVar ts))
-	let h = showDigest $ sha512 $ B.pack (show s)
-	prk <- liftErrorT $ tagga "lettura chiave privata sincronizzatore" $ catchFromIO (readFile "sincronizzatore.priv") >>= contentReads
-	ps <-  query' b (puk,UPS)
-	let 	ps' = filter (\((pu,firma,es)::UP) -> pu `elem` responsabiliQ s && 
-			verify pu (B.pack (h ++ concat es)) firma) ps
-		f0 = sign prk (B.pack $ h ++ show ps') 
-	(s',ls) <- aggiornaStato puk s [(f0 ,ps')] 
-	let 	ws = responsabiliQ $ s'
-		f1 = sign prk (B.pack $ h ++ show ws)
-		h' = showDigest . sha512 . B.pack $ show s'
-	query' b (puk,GroupPatch (h',f0 ,ws, f1))
 		
-interfaccia :: (MonadIO m, MonadReader Board m, MonadState Patch m) => MakePatch m ()
+interfaccia :: (Functor m , MonadIO m, MonadReader Board m, MonadState Patch m) => MakePatch m ()
 
-interfaccia = let c = correggiStato (liftIO . stampaLogs) reattori priorities in 
+interfaccia = let c = statoCorrettoIO reattori priorities in 
 	nodo (liftIO . logerrore) [
 		nuovechiavi creaChiaviIO , 
 		sincronizzazione sincronizzaIO , 
-		update $ aggiornamentoIO (liftIO . stampaLogs),
-		commit send, 
-
-		autenticazione (c, liftIO . cercaChiave), 
-		const $ trattamentoEvento (liftIO . logerrore, c) makers
+		\k -> ("aggiornamento dello stato" , lift $ aggiornamentoIO >>= either (liftIO . putStrLn) (liftIO . stampaLogs)), 
+		\k -> ("spedizione patch", lift $ spedizionePatchIO >>= either (liftIO . putStrLn) return),
+		autenticazione (fst <$> c, cercaChiaveIO),
+		const $ trattamentoEvento (liftIO . logerrore, fst <$> c) makers
 		]
 
 logerrore  =  putStrLn .( ++ "****" ) . ("****" ++)
 
-correggiStato :: (MonadIO m, MonadReader Board m)
-	=> (Log Utente -> m a)
-	-> [Reazione T c Utente]
-	-> [R]
-	-> m T
-
-correggiStato pl rs bs = do
-	(Board _ _ ts tp) <- ask
-	((uprk,xs),s) <- liftIO $ atomically (liftM2 (,) (readTVar tp) (readTVar ts))
-	let ys = case uprk of 
-		Just (u,prk) -> zip (repeat u) xs
-		Nothing -> []
-	case null ys of
-		False -> let (r,_,log) = runIdentity $ runProgramma rs s (caricaEventi bs ys >> (fst <$> get)) in
-			pl log >> return r
-		True -> let (r,_,log) = runIdentity $ runProgramma rs s (fst <$> get) in return r
-
-
-send :: (MonadIO m, MonadReader Board m) => (Utente,PrivateKey,[String]) ->  m (Either String String)
-send  (u,prk,es) = runErrorT . tagga "spedizione patch di eventi" $ do
-	b@(Board _ puk ts tp) <- ask
-	pu <- liftErrorT $ tagga "lettura chiave pubblica responsabile" $ catchFromIO (readFile $ u ++ ".publ") >>= contentReads
-	s <- liftIO $ atomically (readTVar ts)
-	let 	h = showDigest . sha512 . B.pack . show $ s
-	 	r = (pu,sign prk (B.pack $ h ++ concat es),es)
-	query' b (puk,Patch r) 
-cercaChiave s = runErrorT . tagga ("lettura chiave privata di" ++ decodeString s) $ do
-	ls <- liftIO $ getDirectoryContents "."
-	case find ((==) $ s ++ ".priv") ls of
-		Nothing -> throwError "file assente" 
-		Just x -> catchFromIO (readFile x) >>= contentReads
-
-listingIO = runErrorT . tagga "listing della cartella" . liftErrorT . catchFromIO $ do
+listingIO = runErrorT . tagga "listing della cartella" . catchFromIO $ do
 	liftIO $ getDirectoryContents "."
 
 runCostruzioneIO :: (MonadIO m) => Costruzione (ErrorT String m) t -> ErrorT String m (Maybe a)
@@ -174,11 +122,11 @@ runCostruzioneIO  c = flip runContT return . callCC $ \k ->
 		let riprova s  = nl >> msg s >> zeta c
 		r <- runErrorT $ nl >> case l of
 			Libero z -> do	(encodeString -> x) <- pgl z
-					ls <- liftErrorT . catchFromIO $ getDirectoryContents "."
+					ls <- catchFromIO $ getDirectoryContents "."
 
 					case x of 	"/" -> lift . zeta . Costruzione (Scelta "scegli un file" $ map (id &&& id) ls) $ \x -> do
-									r <-  tagga "lettura dato da file" .
-										liftErrorT  $  catchFromIO (readFile x) >>= contentReads --guaio , bisogna gestire gli errori in f
+									r <-  tagga "lettura dato da file" $
+										catchFromIO (readFile x) >>= contentReads --guaio , bisogna gestire gli errori in f
 									f r
 							x -> 	backifnull (errorOrAhead joke . stringOrNot) x
 			Scelta t as -> do 	let bs = ("fine",undefined) : as

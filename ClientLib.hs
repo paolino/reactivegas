@@ -46,8 +46,8 @@ contentReads x = case reads x of
 		[(y,_)] -> return y
 
 type Patch = (Maybe (Utente,PrivateKey),[String]) 
-data Board = Board Configurazione PublicKey (TVar Q) (TVar Patch)
-data Configurazione = Configurazione HostName Integer deriving (Read,Show)
+data Board = Board (TVar (Maybe Configurazione)) (TVar (Maybe Q)) (TVar Patch)
+data Configurazione = Configurazione (HostName,Integer) Q PublicKey deriving (Read,Show)
 
 query' host p y = do
 	l <- catchFromIO $ do
@@ -60,18 +60,23 @@ query' host p y = do
 		[(Right l,_)] -> return l
 		[(Left l,_)] -> throwError l
 
-query :: (Read b, MonadIO m, Show a) => Board -> a -> ErrorT String m b
-query (Board (Configurazione h p) _ _ _) = query' h (fromIntegral p) . show where
-	query' host p y = do
-		l <- catchFromIO $ do
-			h <- connectTo host (PortNumber (fromIntegral p))
-			hSetBuffering h NoBuffering
-			hPutStrLn h y
-			hGetLine h
-		case reads l of
-			[] -> error "errore di protocollo"
-			[(Right l,_)] -> return l
-			[(Left l,_)] -> throwError l
+-- query :: (Read b, MonadIO m, Show a) => Board -> a -> ErrorT String m b
+query y = tagga "interrogazione servente internet" $ do
+	b@(Board tc _ _ ) <- ask
+	tc <- liftIO $ atomically (readTVar tc)
+	case tc of 
+		Nothing -> throwError $ "la configurazione non é stata caricata"
+		Just (Configurazione (h,p) _ _) -> query' h (fromIntegral p) (show y) where
+			query' host p y = do
+				l <- catchFromIO $ do
+					h <- connectTo host (PortNumber (fromIntegral p))
+					hSetBuffering h NoBuffering
+					hPutStrLn h y
+					hGetLine h
+				case reads l of
+					[] -> throwError "errore di protocollo"
+					[(Right l,_)] -> return l
+					[(Left l,_)] -> throwError l
 
 newtype Program a = Program (ReaderT Board IO a) deriving (Monad, Functor, MonadIO, MonadReader Board )
 fromIO = Program . liftIO
@@ -80,8 +85,8 @@ runProgram :: Board  -> Program a -> IO a
 runProgram b (Program p) = runReaderT p b
 
 instance MonadState Patch Program where
-	get = Program $ ask >>= \(Board _ _ _ tp) -> liftIO (atomically $ readTVar tp)
-	put x = Program $ ask >>= \(Board _ _ _ tp) -> liftIO (atomically $ writeTVar tp x) 
+	get = Program $ ask >>= \(Board  _ _ tp) -> liftIO (atomically $ readTVar tp)
+	put x = Program $ ask >>= \(Board  _ _ tp) -> liftIO (atomically $ writeTVar tp x) 
 
 creaChiaviIO :: MonadIO m => String -> m (Either String ())
 creaChiaviIO l = runErrorT . tagga "creazione chiavi in IO" . catchFromIO $ do
@@ -91,62 +96,89 @@ creaChiaviIO l = runErrorT . tagga "creazione chiavi in IO" . catchFromIO $ do
 	writeFile p2 (show pu)
 
 aggiornamentoIO :: (MonadIO m, MonadReader Board m) => m (Either String (Log Utente))
-aggiornamentoIO =  runErrorT . tagga "aggiornamento:" $ do
-	b@(Board _ g ts tp) <- ask
-	((uprk,xs),s) <- liftIO $ atomically (liftM2 (,) (readTVar tp) (readTVar ts))
-	let h = showDigest $ sha512 $ B.pack (show s)
-	ps <- query b (g,Aggiornamento h)
-	(s',ls) <- aggiornaStato g s ps 
-	vs <- query b (g,Validi)
-	when (responsabiliQ s' /= vs) $ throwError "Il sicronizzatore sta truffando sui responsabili validi"
-	liftIO $ atomically (writeTVar ts s')
-	liftIO $ writeFile "stato" (show s')
-	return ls
+aggiornamentoIO =  runErrorT . tagga "ggiornamento:" $ do
+	b@(Board tc ts tp) <- ask
+	tc <- liftIO $ atomically (readTVar tc)
+	case tc of 
+		Nothing -> throwError $ "la configurazione non é stata caricata"
+		Just (Configurazione _ s0 g) -> do 
+			((uprk,xs),s') <- liftIO $ atomically (liftM2 (,) (readTVar tp) (readTVar ts))
+			let 	s = maybe s0 id s'
+				h = showDigest $ sha512 $ B.pack (show s)
+			ps <- query (g,Aggiornamento h)
+			(s',ls) <- aggiornaStato g s ps 
+			vs <- query (g,Validi)
+			when (responsabiliQ s' /= vs) $ throwError "Il sicronizzatore sta truffando sui responsabili validi"
+			liftIO $ atomically (writeTVar ts (Just s'))
+			liftIO $ writeFile "stato" (show s')
+			return ls
 
 sincronizzaIO :: (Read a, MonadIO m, MonadReader Board m) => m (Either String a)
-sincronizzaIO = runErrorT . tagga "sincronizzazione:" $ do
-	b@(Board _ puk ts tp) <- ask
-	(_,s) <- liftIO $ atomically (liftM2 (,) (readTVar tp) (readTVar ts))
-	let h = showDigest $ sha512 $ B.pack (show s)
+sincronizzaIO = runErrorT . tagga "sincronizzazione" $ do
+	b@(Board tc ts tp) <- ask
 	prk <- tagga "lettura chiave privata sincronizzatore" $  catchFromIO (readFile "sincronizzatore.priv") >>= contentReads
-	ps <-  query b (puk,UPS)
-	let 	ps' = filter (\((pu,firma,es)::UP) -> pu `elem` responsabiliQ s && 
-			verify pu (B.pack (h ++ concat es)) firma) ps
-		f0 = sign prk (B.pack $ h ++ show ps') 
-	(s',ls) <- aggiornaStato puk s [(f0 ,ps')] 
-	let 	ws = responsabiliQ $ s'
-		f1 = sign prk (B.pack $ h ++ show ws)
-		h' = showDigest . sha512 . B.pack $ show s'
-	query b (puk,GroupPatch (h',f0 ,ws, f1))
+	tc <- liftIO $ atomically (readTVar tc)
+	case tc of 
+		Nothing -> throwError $ "la configurazione non é stata caricata"
+		Just (Configurazione _ s0 puk) -> do 
+			(_,s') <- liftIO $ atomically (liftM2 (,) (readTVar tp) (readTVar ts))
+
+			let 	s = maybe s0 id s'
+				h = showDigest $ sha512 $ B.pack (show s)
+			ps <-  query (puk,UPS)
+			let 	ps' = filter (\((pu,firma,es)::UP) -> pu `elem` responsabiliQ s && 
+					verify pu (B.pack (h ++ concat es)) firma) ps
+				f0 = sign prk (B.pack $ h ++ show ps') 
+			(s',ls) <- aggiornaStato puk s [(f0 ,ps')] 
+			let 	ws = responsabiliQ $ s'
+				f1 = sign prk (B.pack $ h ++ show ws)
+				h' = showDigest . sha512 . B.pack $ show s'
+			query (puk,GroupPatch (h',f0 ,ws, f1))
 		
-statoCorrettoIO :: (MonadReader Board m, MonadIO m) => [Reazione T c Utente] -> [R] -> m (T, Log Utente)
-statoCorrettoIO rs bs = do
-	(Board _ _ ts tp) <- ask
-	((uprk,xs),s) <- liftIO $ atomically (liftM2 (,) (readTVar tp) (readTVar ts))
-	let (r,_,log) = runIdentity . runProgramma rs s  $ 
-		case uprk of 
-			Nothing -> fst <$> get
-			Just (u,prk) -> caricaEventi bs (zip (repeat u) xs) >> (fst <$> get)
-	return (r,log)
+statoCorrettoIO :: (MonadReader Board m, MonadIO m) => [Reazione T c Utente] -> [R] -> m (Either String (T, Log Utente))
+statoCorrettoIO rs bs = runErrorT . tagga "computazione stato corretto" $ do
+	(Board tc ts tp) <- ask
+	tc <- liftIO $ atomically (readTVar tc)
+	case tc of 
+		Nothing -> throwError $ "la configurazione non é stata caricata"
+		Just (Configurazione _ s0 puk) -> do
+			((uprk,xs),s') <- liftIO $ atomically (liftM2 (,) (readTVar tp) (readTVar ts))
+			let 	s = maybe s0 id s'
+			let (r,_,log) = runIdentity . runProgramma rs s  $ 
+				case uprk of 
+					Nothing -> fst <$> get
+					Just (u,prk) -> caricaEventi bs (zip (repeat u) xs) >> (fst <$> get)
+			return (r,log)
 
 testAutenticazione = runErrorT . tagga "test autenticazione" $ do
-	b@(Board _ puk ts tp) <- ask
-	((uprk,es),s) <- liftIO $ atomically (liftM2 (,) (readTVar tp) (readTVar ts))
-	case uprk of 
-		Nothing -> throwError "manca l'autenticazione"
-		Just l -> return l
+	b@(Board tc ts tp) <- ask
+	tc <- liftIO $ atomically (readTVar tc)
+	case tc of 
+		Nothing -> throwError $ "la configurazione non é stata caricata"
+		Just (Configurazione _ s0 puk) -> do
+
+			((uprk,es),s') <- liftIO $ atomically (liftM2 (,) (readTVar tp) (readTVar ts))
+			let 	s = maybe s0 id s'
+			case uprk of 
+				Nothing -> throwError "manca l'autenticazione"
+				Just l -> return l
 
 spedizionePatchIO :: (Read a, MonadIO m, MonadReader Board m) => m (Either String a)
 spedizionePatchIO  = runErrorT . tagga "spedizione patch di eventi" $ do
-	b@(Board _ puk ts tp) <- ask
-	((uprk,es),s) <- liftIO $ atomically (liftM2 (,) (readTVar tp) (readTVar ts))
-	(u,prk) <- case uprk of 
-		Nothing -> throwError "manca l'autenticazione"
-		Just l -> return l
-	pu <- tagga "lettura chiave pubblica responsabile" $ catchFromIO (readFile $ u ++ ".publ") >>= contentReads
-	let 	h = showDigest . sha512 . B.pack . show $ s
-	 	r = (pu,sign prk (B.pack $ h ++ concat es),es)
-	query b (puk,Patch r) 
+	b@(Board tc ts tp) <- ask
+	tc <- liftIO $ atomically (readTVar tc)
+	case tc of 
+		Nothing -> throwError $ "la configurazione non é stata caricata"
+		Just (Configurazione _ s0 puk) -> do	
+			((uprk,es),s') <- liftIO $ atomically (liftM2 (,) (readTVar tp) (readTVar ts))
+			let 	s = maybe s0 id s'
+			(u,prk) <- case uprk of 
+				Nothing -> throwError "manca l'autenticazione"
+				Just l -> return l
+			pu <- tagga "lettura chiave pubblica responsabile" $ catchFromIO (readFile $ u ++ ".publ") >>= contentReads
+			let 	h = showDigest . sha512 . B.pack . show $ s
+				r = (pu,sign prk (B.pack $ h ++ concat es),es)
+			query (puk,Patch r) 
 
 cercaChiaveIO :: (MonadIO m, Read a) => String -> m (Either String a)
 cercaChiaveIO s = runErrorT . tagga ("lettura chiave privata di" ++ decodeString s) $ do
