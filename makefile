@@ -1,9 +1,7 @@
-applicativi:Cliente.hs Boot.hs Servente.hs
-	ghc --make Cliente
+applicativi:Cliente.hs Servente.hs
 	ghc --make ClienteGTK
 	ghc --make Servente
-	ghc --make Boot
-	cp Cliente ClienteGTK Servente Boot Applicazioni
+	cp cliente.glade ClienteGTK Servente Applicazioni
 clean:
 	rm -f *.o 
 	rm -f *.hi
@@ -18,7 +16,7 @@ git:
 	git push
 
 release:applicativi
-	tar cjvf release.tbz Cliente Servente Boot ClienteGTK
+	tar cjvf release.tbz Servente ClienteGTK
 edit:
 	gvim *.hs README LICENSE makefile
 

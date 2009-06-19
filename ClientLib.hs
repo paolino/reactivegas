@@ -19,6 +19,7 @@ import Codec.Binary.UTF8.String
 import Data.IORef
 import System.Directory
 import System.Random
+import System.FilePath
 import Network
 
 import Core (Reazione)
@@ -188,5 +189,14 @@ cercaChiaveIO s = runErrorT . tagga ("lettura chiave privata di" ++ decodeString
 		Just x -> catchFromIO (readFile x) >>= contentReads
 
 			
+listaChiaviIO :: (Functor m, MonadIO m) => m [(String,String)]
+listaChiaviIO = map (takeBaseName &&& id) . filter ((/=) "sincronizzatore.publ") . filter ((==) ".publ". takeExtension) <$> liftIO (getDirectoryContents ".")
+
+
+creaGruppo :: [PublicKey] -> Q -> String -> IO (Either String ()) 
+creaGruppo puks s n = runErrorT . tagga "creazione file di gruppo" $ do
+	p <- tagga "lettura chiave pubblica sincronizzatore" $ 
+		catchFromIO (readFile "sincronizzatore.publ") >>= contentReads
+	liftIO $ writeFile (n ++ ".gruppo") $ show (p :: PublicKey , mkBoardValue (showDigest . sha512 $ B.pack (show s)) puks)
 
 	

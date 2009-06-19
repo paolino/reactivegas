@@ -112,8 +112,6 @@ interfaccia = let c = statoCorrettoIO reattori priorities in
 
 logerrore  =  putStrLn .( ++ "****" ) . ("****" ++)
 
-listingIO = runErrorT . tagga "listing della cartella" . catchFromIO $ do
-	liftIO $ getDirectoryContents "."
 
 runCostruzioneIO :: (MonadIO m) => Costruzione (ErrorT String m) t -> ErrorT String m (Maybe a)
 	
