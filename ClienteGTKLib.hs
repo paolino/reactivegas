@@ -33,6 +33,7 @@ import Control.Concurrent.STM
 import Control.Concurrent
 import qualified Graphics.UI.Gtk as G
 import qualified Graphics.UI.Gtk.Glade as Gl
+import qualified Graphics.UI.Gtk.ModelView as M
 import System.Glib.Types
 
 containerEmpty c = G.containerGetChildren c >>= mapM_ (G.containerRemove c)
@@ -51,23 +52,47 @@ uiChiavi _ g = do
 		rs <- creaChiaviIO r
 		case rs of 
 			Left s -> outputlog g s
-			Right _ -> outputlog g $ "chiavi create per " ++ r
-	return ()		
+			Right _ -> do 
+				outputlog g $ "chiavi create per " ++ r
+				g G.castToButton "aggiorna lista chiavi" >>= G.buttonClicked
 	p <- g G.castToButton "pulsante crea chiavi di sincronizzazione"
 	G.onClicked p $ do
 		rs <- creaChiaviIO "sincronizzatore"
 		case rs of 
 			Left s -> outputlog g s
 			Right _ -> outputlog g $ "chiavi create per " ++ "sincronizzatore"
-
+								
 	return ()	
 
-uiConfigurazione :: OP ()
-uiConfigurazione b@(Board tc _ _) g = do
-	v <-  g G.castToTextView "lista chiavi pubbliche"
-	bv <- G.textViewGetBuffer v
-	cs <- listaChiaviIO
-	G.textBufferSetText bv (unlines $ map fst cs) 
+uiListaChiavi :: GlRet -> IO (G.ListStore String)
+uiListaChiavi g = do
+	ls <- M.listStoreNew []
+	v <-  g G.castToTreeView "lista chiavi in cartella"
+	M.treeViewSetModel v ls
+
+	renderer1 <- M.cellRendererTextNew
+	col1 <- M.treeViewColumnNew
+	M.treeViewColumnPackStart col1 renderer1 True
+	M.cellLayoutSetAttributes col1 renderer1 ls $ \row -> [ M.cellText G.:= row ]
+	M.treeViewColumnSetTitle col1 "Chiavi pubbliche in cartella"
+	M.treeViewAppendColumn v col1
+
+
+
+	uiAggiornaListaChiavi ls g
+	return ls
+
+uiAggiornaListaChiavi  :: G.ListStore String -> GlRet -> IO [(String,String)]
+uiAggiornaListaChiavi ls g = do
+	M.listStoreClear ls
+	cs <- listaChiaviIO 
+	mapM_ (M.listStoreAppend ls . fst) cs
+	return cs
+	
+	
+
+uiConfigurazione :: G.ListStore String -> OP ()
+uiConfigurazione ls b@(Board tc _ _) g = do
 	p <- g G.castToButton "pulsante creazione configurazione"
 	t <- g G.castToEntry "indirizzo servente"
 	n <- g G.castToEntry "nome del gruppo"
@@ -77,8 +102,9 @@ uiConfigurazione b@(Board tc _ _) g = do
 		case r of
 			Left s -> outputlog g s
 			Right c -> do
+				cs <- uiAggiornaListaChiavi ls g
 				rs <- runErrorT . forM (map snd cs) $ \c -> do 
-					tagga ("lettura chiave di responsabile di " ++ c) $ 
+					tagga ("lettura chiave di responsabile da " ++ c) $ 
 						catchFromIO (readFile c) >>= contentReads
 				case rs of 
 					Left s -> outputlog g s

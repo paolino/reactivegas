@@ -55,14 +55,15 @@ main =	do
 	t <- runErrorT (tagga "lettura patch" $ catchFromIO (readFile "patch") >>= contentReads) >>= 
 			either (\ e -> outputlog g e >> return (Nothing, [])) return >>= atomically . newTVar 
 	let b = Board tc st t
-	
+	ls <- uiListaChiavi g
+
 	uiChiavi b g 
-	uiConfigurazione b g 
+	uiConfigurazione ls b g 
 	uiResponsabile b g
 	uiAggiornamento b g
 	uiSetResponsabili b g
 	uiCostruzioni b g
-
+	g G.castToButton "aggiorna lista chiavi" >>= flip G.onClicked (uiAggiornaListaChiavi ls g >> return ())
 	g G.castToButton "pulsante sincronizzazione" >>= flip G.onClicked 
 		(runReaderT sincronizzaIO b >>= either (outputlog g) (outputlog g))
 

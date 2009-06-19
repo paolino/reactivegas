@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.5 on Fri Jun 19 10:14:38 2009 -->
+<!--Generated with glade3 3.4.5 on Sat Jun 20 00:05:31 2009 -->
 <glade-interface>
   <widget class="GtkWindow" id="window1">
     <child>
@@ -28,6 +28,8 @@
                     <child>
                       <widget class="GtkVBox" id="vbox2">
                         <property name="visible">True</property>
+                        <property name="border_width">5</property>
+                        <property name="spacing">5</property>
                         <child>
                           <widget class="GtkFrame" id="frame2">
                             <property name="visible">True</property>
@@ -43,6 +45,7 @@
                                     <child>
                                       <widget class="GtkHBox" id="hbox4">
                                         <property name="visible">True</property>
+                                        <property name="spacing">5</property>
                                         <child>
                                           <widget class="GtkLabel" id="label4">
                                             <property name="visible">True</property>
@@ -75,9 +78,12 @@
                                       </packing>
                                     </child>
                                     <child>
+                                      <placeholder/>
+                                    </child>
+                                    <child>
                                       <widget class="GtkHBox" id="hbox2">
                                         <property name="visible">True</property>
-                                        <property name="spacing">4</property>
+                                        <property name="spacing">5</property>
                                         <child>
                                           <widget class="GtkLabel" id="domanda evento">
                                             <property name="visible">True</property>
@@ -119,7 +125,7 @@
                                         </child>
                                       </widget>
                                       <packing>
-                                        <property name="position">1</property>
+                                        <property name="position">2</property>
                                       </packing>
                                     </child>
                                   </widget>
@@ -155,6 +161,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="tooltip" translatable="yes">lista degli eventi attualmente nella patch</property>
+                                    <property name="border_width">5</property>
                                     <property name="wrap_mode">GTK_WRAP_WORD</property>
                                   </widget>
                                 </child>
@@ -190,6 +197,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="tooltip" translatable="yes">effetto del caricamento della patch sullo stato attuale</property>
+                                    <property name="border_width">5</property>
                                     <property name="wrap_mode">GTK_WRAP_WORD</property>
                                   </widget>
                                 </child>
@@ -207,13 +215,13 @@
                             </child>
                           </widget>
                           <packing>
-                            <property name="expand">False</property>
                             <property name="position">2</property>
                           </packing>
                         </child>
                         <child>
                           <widget class="GtkHButtonBox" id="hbuttonbox3">
                             <property name="visible">True</property>
+                            <property name="layout_style">GTK_BUTTONBOX_END</property>
                             <child>
                               <widget class="GtkButton" id="pulsante spedizione">
                                 <property name="visible">True</property>
@@ -245,6 +253,8 @@
                     <child>
                       <widget class="GtkVBox" id="vbox4">
                         <property name="visible">True</property>
+                        <property name="border_width">5</property>
+                        <property name="spacing">5</property>
                         <child>
                           <widget class="GtkFrame" id="frame3">
                             <property name="visible">True</property>
@@ -257,7 +267,8 @@
                                 <child>
                                   <widget class="GtkHBox" id="hbox1">
                                     <property name="visible">True</property>
-                                    <property name="spacing">4</property>
+                                    <property name="border_width">5</property>
+                                    <property name="spacing">5</property>
                                     <child>
                                       <widget class="GtkLabel" id="domanda interrogazione">
                                         <property name="visible">True</property>
@@ -330,6 +341,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="tooltip" translatable="yes">responso sull'andamento del programma</property>
+                                    <property name="border_width">5</property>
                                     <property name="wrap_mode">GTK_WRAP_WORD</property>
                                   </widget>
                                 </child>
@@ -369,6 +381,8 @@
                     <child>
                       <widget class="GtkVBox" id="vbox5">
                         <property name="visible">True</property>
+                        <property name="border_width">6</property>
+                        <property name="spacing">5</property>
                         <child>
                           <widget class="GtkFrame" id="frame4">
                             <property name="visible">True</property>
@@ -381,6 +395,8 @@
                                 <child>
                                   <widget class="GtkHBox" id="hbox3">
                                     <property name="visible">True</property>
+                                    <property name="border_width">5</property>
+                                    <property name="spacing">5</property>
                                     <child>
                                       <widget class="GtkLabel" id="label16">
                                         <property name="visible">True</property>
@@ -429,7 +445,8 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
-                                    <property name="label" translatable="yes">Crea</property>
+                                    <property name="border_width">5</property>
+                                    <property name="label" translatable="yes">crea</property>
                                     <property name="response_id">0</property>
                                   </widget>
                                 </child>
@@ -463,9 +480,12 @@
                                 <child>
                                   <widget class="GtkVBox" id="vbox6">
                                     <property name="visible">True</property>
+                                    <property name="border_width">5</property>
+                                    <property name="spacing">5</property>
                                     <child>
                                       <widget class="GtkHBox" id="hbox6">
                                         <property name="visible">True</property>
+                                        <property name="spacing">5</property>
                                         <child>
                                           <widget class="GtkLabel" id="label17">
                                             <property name="visible">True</property>
@@ -500,53 +520,18 @@
                                       </widget>
                                     </child>
                                     <child>
-                                      <widget class="GtkFrame" id="frame11">
+                                      <widget class="GtkHSeparator" id="hseparator1">
                                         <property name="visible">True</property>
-                                        <property name="label_xalign">0</property>
-                                        <property name="shadow_type">GTK_SHADOW_NONE</property>
-                                        <child>
-                                          <widget class="GtkAlignment" id="alignment11">
-                                            <property name="visible">True</property>
-                                            <property name="left_padding">12</property>
-                                            <child>
-                                              <widget class="GtkTextView" id="lista chiavi pubbliche">
-                                                <property name="visible">True</property>
-                                                <property name="can_focus">True</property>
-                                              </widget>
-                                            </child>
-                                          </widget>
-                                        </child>
-                                        <child>
-                                          <widget class="GtkLabel" id="label18">
-                                            <property name="visible">True</property>
-                                            <property name="label" translatable="yes">&lt;b&gt;Lista chiavi responsabili del gruppo iniziale&lt;/b&gt;</property>
-                                            <property name="use_markup">True</property>
-                                          </widget>
-                                          <packing>
-                                            <property name="type">label_item</property>
-                                          </packing>
-                                        </child>
-                                      </widget>
-                                      <packing>
-                                        <property name="position">1</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <widget class="GtkButton" id="pulsante creazione configurazione">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">True</property>
-                                        <property name="label" translatable="yes">Crea</property>
-                                        <property name="response_id">0</property>
                                       </widget>
                                       <packing>
                                         <property name="expand">False</property>
-                                        <property name="position">2</property>
+                                        <property name="position">1</property>
                                       </packing>
                                     </child>
                                     <child>
                                       <widget class="GtkHBox" id="hbox5">
                                         <property name="visible">True</property>
+                                        <property name="spacing">5</property>
                                         <child>
                                           <widget class="GtkLabel" id="label3">
                                             <property name="visible">True</property>
@@ -568,7 +553,68 @@
                                         </child>
                                       </widget>
                                       <packing>
+                                        <property name="position">2</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkHSeparator" id="hseparator2">
+                                        <property name="visible">True</property>
+                                      </widget>
+                                      <packing>
+                                        <property name="expand">False</property>
                                         <property name="position">3</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkVBox" id="vbox7">
+                                        <property name="visible">True</property>
+                                        <property name="spacing">6</property>
+                                        <child>
+                                          <widget class="GtkTreeView" id="lista chiavi in cartella">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="headers_clickable">True</property>
+                                            <property name="rubber_banding">True</property>
+                                          </widget>
+                                        </child>
+                                        <child>
+                                          <widget class="GtkButton" id="aggiorna lista chiavi">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="receives_default">True</property>
+                                            <property name="label" translatable="yes">aggiorna</property>
+                                            <property name="response_id">0</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="position">1</property>
+                                          </packing>
+                                        </child>
+                                      </widget>
+                                      <packing>
+                                        <property name="position">4</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkHSeparator" id="hseparator4">
+                                        <property name="visible">True</property>
+                                      </widget>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="position">5</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkButton" id="pulsante creazione configurazione">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">True</property>
+                                        <property name="label" translatable="yes">crea</property>
+                                        <property name="response_id">0</property>
+                                      </widget>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="position">6</property>
                                       </packing>
                                     </child>
                                   </widget>
@@ -594,6 +640,9 @@
                         <child>
                           <widget class="GtkHButtonBox" id="hbuttonbox2">
                             <property name="visible">True</property>
+                            <property name="border_width">5</property>
+                            <property name="spacing">5</property>
+                            <property name="layout_style">GTK_BUTTONBOX_END</property>
                             <child>
                               <widget class="GtkButton" id="pulsante sincronizzazione">
                                 <property name="visible">True</property>
@@ -668,19 +717,11 @@
                 <property name="visible">True</property>
                 <property name="left_padding">12</property>
                 <child>
-                  <widget class="GtkScrolledWindow" id="scrolledwindow1">
+                  <widget class="GtkTextView" id="vista log">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                    <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                    <child>
-                      <widget class="GtkTextView" id="vista log">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="tooltip" translatable="yes">responso sull'andamento del programma</property>
-                        <property name="wrap_mode">GTK_WRAP_WORD</property>
-                      </widget>
-                    </child>
+                    <property name="tooltip" translatable="yes">responso sull'andamento del programma</property>
+                    <property name="wrap_mode">GTK_WRAP_WORD</property>
                   </widget>
                 </child>
               </widget>
