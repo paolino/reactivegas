@@ -2,6 +2,7 @@ applicativi:Cliente.hs Servente.hs
 	ghc --make ClienteGTK
 	ghc --make Servente
 	cp cliente.glade ClienteGTK Servente Applicazioni
+
 clean:
 	rm -f *.o 
 	rm -f *.hi
