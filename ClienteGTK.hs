@@ -65,27 +65,16 @@ main =	do
 	ls <- uiListaEventi g
 	uiAggiornaEventi ls b g
 	uiCostruzioni ls b g
-	let f = do
-		tv <- g G.castToTreeView "vista eventi"
-		(ns,_) <- G.treeViewGetCursor tv
-		case ns of
-			[] -> outputlog g "nessun evento selezionato"
-			(n:_) -> do
-				x <- G.listStoreGetValue ls n
-				(uprk,es) <- atomically (readTVar tp)
-				case x `elem` es of
-					False -> outputlog g "programma rotto ...."
-					True -> do 	atomically (writeTVar tp (uprk, delete x es))
-							G.listStoreRemove ls n
-							uiRicaricaPatch b g
-	g G.castToButton "pulsante eliminazione evento" >>= flip G.onClicked f
+	uiCallbackEliminazione ls b g
 	g G.castToButton "aggiorna lista chiavi" >>= flip G.onClicked (uiAggiornaListaChiavi ls g >> return ())
 	g G.castToButton "pulsante sincronizzazione" >>= flip G.onClicked 
 		(runReaderT sincronizzaIO b >>= either (outputlog g) (outputlog g))
 
-	let f = runReaderT spedizionePatchIO b >>= either (outputlog g) (\e -> outputlog g e >> uiRicaricaPatch b g)
+	let f = runReaderT spedizionePatchIO b >>= either (outputlog g) 
+		(\e -> outputlog g e >> uiAggiornaEventi ls b g )
 	g G.castToButton "pulsante spedizione" >>= flip G.onClicked f 
 			
+	uiRicaricaPatch b g
 
 	G.widgetShowAll window
 	G.mainGUI

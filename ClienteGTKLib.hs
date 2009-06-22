@@ -187,6 +187,10 @@ uiAggiornaEventi ls b@(Board tc ts tp) g = do
 	(uprk,es) <- atomically $ readTVar tp
 	M.listStoreClear ls
 	mapM_ (M.listStoreAppend ls) es
+
+	uiRicaricaPatch b g 
+	writeFile "patch" $ show (uprk,es)
+
 	
 
 uiCostruzioni :: G.ListStore String -> OP ()
@@ -232,7 +236,6 @@ uiCostruzioni ls b@(Board  _ _ tp) g = do
 				Left s ->  outputlog g $ s
 				Right _ -> return ()
 			atomically $ readTVar tp >>= writeTVar tp . second (x:)
-			uiRicaricaPatch b g 
 			uiAggiornaEventi ls b g
 		c = runReaderT (statoCorrettoIO reattori priorities) b 
 	evento <- svolgi (interfacciaY "costruzione evento"
@@ -255,7 +258,6 @@ uiCostruzioni ls b@(Board  _ _ tp) g = do
 			where 	incrocio d s cs = forever $ callCC dentro where
 					dentro ki =  join . parametro . Scelta s $ map ($ ki2) cs where
 						ki2 x = lift (d x) >> ki ()
-
 uiSetResponsabili :: OP ()
 uiSetResponsabili b@(Board tc ts tp) g = do
 	tc <- atomically (readTVar tc)
@@ -283,7 +285,24 @@ outputcaricamento vistacar x = do
 	b <- G.textViewGetBuffer vistacar
 	G.textBufferSetText b x 
 
-
+uiCallbackEliminazione :: G.ListStore String -> OP ()
+uiCallbackEliminazione ls b@(Board  _ _ tp) g = do
+	let f = do
+		tv <- g G.castToTreeView "vista eventi"
+		(ns,_) <- G.treeViewGetCursor tv
+		case ns of
+			[] -> outputlog g "nessun evento selezionato"
+			(n:_) -> do
+				x <- G.listStoreGetValue ls n
+				(uprk,es) <- atomically (readTVar tp)
+				case x `elem` es of
+					False -> outputlog g "programma rotto ...."
+					True -> do 	
+							atomically $ writeTVar tp (uprk, delete x es)
+							G.listStoreRemove ls n
+							uiRicaricaPatch b g
+	g G.castToButton "pulsante eliminazione evento" >>= flip G.onClicked f
+	return ()
 			
 
 	
