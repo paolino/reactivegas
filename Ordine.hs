@@ -42,7 +42,7 @@ reazioneOrdine = soloEsterna reattoreOrdine where
 		return (True,([z t],[]))
 
 makeAperturaOrdine = [eventoApertura] where
-	eventoApertura k =  (,) "evento di apertura ordini per un nuovo bene" $ \_ -> do
+	eventoApertura k =  (,) "apertura ordini per un nuovo bene" $ \_ -> do
 		n <- parametro (Libero "nome del nuovo bene in acquisto")
 		return $ show (AperturaOrdine n)
 

@@ -46,6 +46,7 @@ reazioneAccredito = soloEsterna reattoreAccredito
 
 reattoreAccredito (eventoValidato -> (wrap,Accredito u dv)) = wrap $ \r -> do
 	accredita u dv
+	salda r (+dv)
 	logga $ "accreditate " ++ show dv ++ " euro a " ++ show u
 	return (True,nessunEffetto)	
 reattoreAccredito (eventoValidato -> (wrap ,Saldo u dv)) = wrap $ \r -> do

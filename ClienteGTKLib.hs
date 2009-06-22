@@ -165,10 +165,32 @@ uiAggiornamento b g = do
 uiRicaricaPatch :: OP ()
 uiRicaricaPatch  b g = do
 	car <- g G.castToTextView "vista caricamento"
-	runReaderT (statoCorrettoIO reattori priorities) b >>= either (outputlog g) (outputcaricamento car . eccoILogs . snd)
+	runReaderT (statoCorrettoIO reattori priorities) b 
+		>>= either (outputlog g) (outputcaricamento car . eccoILogs . snd)
 
-uiCostruzioni :: OP ()
-uiCostruzioni b@(Board  _ _ tp) g = do 
+uiListaEventi :: GlRet -> IO (G.ListStore String)
+uiListaEventi g = do
+	ls <- M.listStoreNew []
+	v <-  g G.castToTreeView "vista eventi"
+	M.treeViewSetModel v ls
+
+	renderer1 <- M.cellRendererTextNew
+	col1 <- M.treeViewColumnNew
+	M.treeViewColumnPackStart col1 renderer1 True
+	M.cellLayoutSetAttributes col1 renderer1 ls $ \row -> [ M.cellText G.:= row ]
+	M.treeViewColumnSetTitle col1 "Eventi presenti nella patch"
+	M.treeViewAppendColumn v col1
+	return ls
+
+uiAggiornaEventi :: G.ListStore String -> OP ()
+uiAggiornaEventi ls b@(Board tc ts tp) g = do
+	(uprk,es) <- atomically $ readTVar tp
+	M.listStoreClear ls
+	mapM_ (M.listStoreAppend ls) es
+	
+
+uiCostruzioni :: G.ListStore String -> OP ()
+uiCostruzioni ls b@(Board  _ _ tp) g = do 
 	de <- g G.castToLabel "domanda evento"
 	re <- g G.castToHBox "risposta evento"
 	ke <- g G.castToButton "reset evento"
@@ -211,11 +233,12 @@ uiCostruzioni b@(Board  _ _ tp) g = do
 				Right _ -> return ()
 			atomically $ readTVar tp >>= writeTVar tp . second (x:)
 			uiRicaricaPatch b g 
+			uiAggiornaEventi ls b g
 		c = runReaderT (statoCorrettoIO reattori priorities) b 
 	evento <- svolgi (interfacciaY "costruzione evento"
 		( outputlog g, c, d)	makers) 
 	interrogazione <- svolgi (interfacciaY "interrogazione" 
-		( outputlog g, c , outputlog g ) queriers) 
+		( outputlog g, c , outputAppend g "vista interrogazione"  ) queriers) 
 	runCostruzioneGTK b de re evento
 	runCostruzioneGTK b di ri interrogazione
 	G.onClicked ke (runCostruzioneGTK b de re evento)
@@ -244,14 +267,17 @@ uiSetResponsabili b@(Board tc ts tp) g = do
 			let 	s = maybe s0 id s'
 			populateCombo (map fst . responsabili . fst $ s) c 
 
-outputlog :: GlRet -> String -> IO ()
-outputlog g x = do 
-	l <- g G.castToTextView "vista log"
+outputAppend :: GlRet -> String -> String -> IO ()
+outputAppend g t x = do 
+	l <- g G.castToTextView t
 	b <- G.textViewGetBuffer l 
 	i <- G.textBufferGetStartIter b 
 	G.textIterForwardToEnd i
 	G.textBufferInsert b i (x ++ "\n") 
 	return ()
+
+outputlog :: GlRet -> String -> IO ()
+outputlog g = outputAppend g "vista log" 
 
 outputcaricamento vistacar x = do
 	b <- G.textViewGetBuffer vistacar

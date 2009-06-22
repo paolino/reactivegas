@@ -52,9 +52,9 @@ main =	do
 	st <- runErrorT (tagga "lettura file di stato" $ catchFromIO (readFile "stato" >>= \x -> length x `seq` return x ) >>= contentReads)
 		>>= either (\ e -> outputlog g e >> return Nothing) (return . Just) >>= atomically . newTVar 
 	
-	t <- runErrorT (tagga "lettura patch" $ catchFromIO (readFile "patch") >>= contentReads) >>= 
+	tp <- runErrorT (tagga "lettura patch" $ catchFromIO (readFile "patch") >>= contentReads) >>= 
 			either (\ e -> outputlog g e >> return (Nothing, [])) return >>= atomically . newTVar 
-	let b = Board tc st t
+	let b = Board tc st tp
 	ls <- uiListaChiavi g
 
 	uiChiavi b g 
@@ -62,13 +62,30 @@ main =	do
 	uiResponsabile b g
 	uiAggiornamento b g
 	uiSetResponsabili b g
-	uiCostruzioni b g
+	ls <- uiListaEventi g
+	uiAggiornaEventi ls b g
+	uiCostruzioni ls b g
+	let f = do
+		tv <- g G.castToTreeView "vista eventi"
+		(ns,_) <- G.treeViewGetCursor tv
+		case ns of
+			[] -> outputlog g "nessun evento selezionato"
+			(n:_) -> do
+				x <- G.listStoreGetValue ls n
+				(uprk,es) <- atomically (readTVar tp)
+				case x `elem` es of
+					False -> outputlog g "programma rotto ...."
+					True -> do 	atomically (writeTVar tp (uprk, delete x es))
+							G.listStoreRemove ls n
+							uiRicaricaPatch b g
+	g G.castToButton "pulsante eliminazione evento" >>= flip G.onClicked f
 	g G.castToButton "aggiorna lista chiavi" >>= flip G.onClicked (uiAggiornaListaChiavi ls g >> return ())
 	g G.castToButton "pulsante sincronizzazione" >>= flip G.onClicked 
 		(runReaderT sincronizzaIO b >>= either (outputlog g) (outputlog g))
 
-	g G.castToButton "pulsante spedizione" >>= flip G.onClicked 
-		(runReaderT spedizionePatchIO b >>= either (outputlog g) (outputlog g))
+	let f = runReaderT spedizionePatchIO b >>= either (outputlog g) (\e -> outputlog g e >> uiRicaricaPatch b g)
+	g G.castToButton "pulsante spedizione" >>= flip G.onClicked f 
+			
 
 	G.widgetShowAll window
 	G.mainGUI

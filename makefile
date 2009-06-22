@@ -17,7 +17,7 @@ git:
 	git push
 
 release:applicativi
-	tar cjvf release.tbz Servente ClienteGTK
+	tar cjvf release.tbz Servente ClienteGTK cliente.glade
 edit:
 	gvim *.hs README LICENSE makefile
 

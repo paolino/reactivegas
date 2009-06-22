@@ -138,6 +138,7 @@ sincronizzaIO = runErrorT . tagga "sincronizzazione" $ do
 				f1 = sign prk (B.pack $ h ++ show ws)
 				h' = showDigest . sha512 . B.pack $ show s'
 			query (puk,GroupPatch (h',f0 ,ws, f1))
+			
 		
 statoCorrettoIO :: (MonadReader Board m, MonadIO m) => [Reazione T c Utente] -> [R] -> m (Either String (T, Log Utente))
 statoCorrettoIO rs bs = runErrorT . tagga "computazione stato corretto" $ do
@@ -170,8 +171,8 @@ testAutenticazione = runErrorT . tagga "test autenticazione" $ do
 spedizionePatchIO :: (Read a, MonadIO m, MonadReader Board m) => m (Either String a)
 spedizionePatchIO  = runErrorT . tagga "spedizione patch di eventi" $ do
 	b@(Board tc ts tp) <- ask
-	tc <- liftIO $ atomically (readTVar tc)
-	case tc of 
+	tcr <- liftIO $ atomically (readTVar tc)
+	case tcr of 
 		Nothing -> throwError $ "la configurazione non é stata caricata"
 		Just (Configurazione _ s0 puk) -> do	
 			((uprk,es),s') <- liftIO $ atomically (liftM2 (,) (readTVar tp) (readTVar ts))
@@ -182,7 +183,11 @@ spedizionePatchIO  = runErrorT . tagga "spedizione patch di eventi" $ do
 			pu <- tagga "lettura chiave pubblica responsabile" $ catchFromIO (readFile $ u ++ ".publ") >>= contentReads
 			let 	h = showDigest . sha512 . B.pack . show $ s
 				r = (pu,sign prk (B.pack $ h ++ concat es),es)
-			query (puk,Patch r) 
+			r <- runErrorT $ query (puk,Patch r) 
+			case r of
+				Right s -> liftIO $ atomically (writeTVar tp $ (uprk,[]))
+				Left _ -> return ()
+			ErrorT $ return r
 
 cercaChiaveIO :: (MonadIO m, Read a) => String -> m (Either String a)
 cercaChiaveIO s = runErrorT . tagga ("lettura chiave privata di" ++ decodeString s) $ do
@@ -201,5 +206,6 @@ creaGruppo puks s n = runErrorT . tagga "creazione file di gruppo" $ do
 	p <- tagga "lettura chiave pubblica sincronizzatore" $ 
 		catchFromIO (readFile "sincronizzatore.publ") >>= contentReads
 	liftIO $ writeFile (n ++ ".gruppo") $ show (p :: PublicKey , mkBoardValue (showDigest . sha512 $ B.pack (show s)) puks)
+
 
 	
