@@ -2,6 +2,7 @@
 module Ordine (statoInizialeOrdini, reazioneOrdine, StatoOrdini, makeAperturaOrdine,priorityOrdine,queryOrdine) where
 
 import Control.Arrow 
+import Data.Maybe
 
 import Lib1
 import Lib0
@@ -46,12 +47,7 @@ makeAperturaOrdine = [eventoApertura] where
 		n <- parametro (Libero "nome del nuovo bene in acquisto")
 		return $ show (AperturaOrdine n)
 
-queryOrdine = [q] where
-	q  k = (,) "stato ordini aperti" $ \s -> do
-		let ls = aperti $ see s
-		x <- parametro $ Scelta "scegli un ordine aperto" $ map (snd &&& fst) ls
-		let es = unImpegno s x
-		case es of
-			Nothing -> k "non esiste un ordine con quel numero" >> return ""
-			Just us -> return $ show us
+queryOrdine = [q,c] where
+	q  k = (,) "ordini aperti" $ \s -> return (show (aperti $ see s))
+	c  k = (,) "ultimi ordini chiusi con successo" $ \s -> return (show (map (id *** fromJust) . take 10 . filter (isJust . snd) . chiusi $ see s))
 

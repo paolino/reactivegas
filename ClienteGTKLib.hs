@@ -149,17 +149,21 @@ uiResponsabile b@(Board  _ _ tp) g = do
 					uiRicaricaPatch b g
 	return ()
 
+cbAggiornamento :: OP ()
+cbAggiornamento b g = do
+	lv <- runReaderT aggiornamentoIO b 
+	case lv of 
+		Left s -> outputlog g s
+		Right t -> do 
+			outputlog g (eccoILogs t)
+			outputlog g "cliente aggiornato"
+			uiSetResponsabili  b g
+	return ()
+
 uiAggiornamento :: OP ()
 uiAggiornamento b g = do
 	a <- g G.castToButton "pulsante aggiornamento"
-	G.onClicked a $ do
-		lv <- runReaderT aggiornamentoIO b 
-		case lv of 
-			Left s -> outputlog g s
-			Right t -> do 
-				outputlog g (eccoILogs t)
-				outputlog g "cliente aggiornato"
-				uiSetResponsabili  b g
+	G.onClicked a $	cbAggiornamento b g
 	return ()
 
 uiRicaricaPatch :: OP ()
@@ -212,7 +216,9 @@ uiCostruzioni ls b@(Board  _ _ tp) g = do
 			G.onEntryActivate es $  do
 				x <-  G.entryGetText es
 				case reads x of 
-					[] -> outputlog g ("errore nel leggere il valore " ++ x) 
+					[] -> case reads ("\"" ++ x ++ "\"") of	
+						[] -> outputlog g ("errore nel leggere il valore " ++ x) 
+						[(x,_)] -> f x >>= runCostruzioneGTK b d rs 
 					[(x,_)] -> f x >>= runCostruzioneGTK b d rs 
 			return ()
 
@@ -238,7 +244,7 @@ uiCostruzioni ls b@(Board  _ _ tp) g = do
 			atomically $ readTVar tp >>= writeTVar tp . second (x:)
 			uiAggiornaEventi ls b g
 		c = runReaderT (statoCorrettoIO reattori priorities) b 
-	evento <- svolgi (interfacciaY "costruzione evento"
+	evento <- svolgi (interfacciaY "nuovo evento"
 		( outputlog g, c, d)	makers) 
 	interrogazione <- svolgi (interfacciaY "interrogazione" 
 		( outputlog g, c , outputAppend g "vista interrogazione"  ) queriers) 

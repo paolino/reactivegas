@@ -1,7 +1,10 @@
 applicativi:Cliente.hs Servente.hs
 	ghc --make ClienteGTK
+	mv ClienteGTK Reactivegas
 	ghc --make Servente
-	cp cliente.glade ClienteGTK Servente Applicazioni
+	mv Servente Reactivegas.server
+	cp Reactivegas Reactivegas.server Applicazioni
+	cp reactivegas.glade Applicazioni
 
 clean:
 	rm -f *.o 
@@ -12,12 +15,12 @@ git:
 	git add README
 	git add LICENSE
 	git add makefile
-	git add cliente.glade
+	git add reactivegas.glade
 	git commit
 	git push
 
 release:applicativi
-	tar cjvf release.tbz Servente ClienteGTK cliente.glade
+	tar cjvf release.tbz Reactivegas.server Reactivegas reactivegas.glade
 edit:
 	gvim *.hs README LICENSE makefile
 

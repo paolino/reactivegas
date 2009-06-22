@@ -38,7 +38,7 @@ import ClienteGTKLib
 main =	do
 	G.initGUI
 	
-	glade <- maybe (error "manca il file di descrizione interfaccia") id <$> Gl.xmlNew "cliente.glade"
+	glade <- maybe (error "manca il file di descrizione interfaccia") id <$> Gl.xmlNew "reactivegas.glade"
 	
 	let g = Gl.xmlGetWidget glade
 	
@@ -55,10 +55,10 @@ main =	do
 	tp <- runErrorT (tagga "lettura patch" $ catchFromIO (readFile "patch") >>= contentReads) >>= 
 			either (\ e -> outputlog g e >> return (Nothing, [])) return >>= atomically . newTVar 
 	let b = Board tc st tp
-	ls <- uiListaChiavi g
+	lsc <- uiListaChiavi g
 
 	uiChiavi b g 
-	uiConfigurazione ls b g 
+	uiConfigurazione lsc b g 
 	uiResponsabile b g
 	uiAggiornamento b g
 	uiSetResponsabili b g
@@ -66,7 +66,7 @@ main =	do
 	uiAggiornaEventi ls b g
 	uiCostruzioni ls b g
 	uiCallbackEliminazione ls b g
-	g G.castToButton "aggiorna lista chiavi" >>= flip G.onClicked (uiAggiornaListaChiavi ls g >> return ())
+	g G.castToButton "aggiorna lista chiavi" >>= flip G.onClicked (uiAggiornaListaChiavi lsc g >> return ())
 	g G.castToButton "pulsante sincronizzazione" >>= flip G.onClicked 
 		(runReaderT sincronizzaIO b >>= either (outputlog g) (outputlog g))
 
@@ -74,6 +74,7 @@ main =	do
 		(\e -> outputlog g e >> uiAggiornaEventi ls b g )
 	g G.castToButton "pulsante spedizione" >>= flip G.onClicked f 
 			
+	cbAggiornamento b g			
 	uiRicaricaPatch b g
 
 	G.widgetShowAll window

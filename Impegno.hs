@@ -18,6 +18,7 @@ import Control.Monad (mzero, when)
 import Control.Applicative ((<$>))
 import Control.Monad.Reader (ask)
 import Control.Arrow ((&&&))
+import Codec.Binary.UTF8.String
 
 import Aspetti ((.<), ParteDi)
 import Lib1
@@ -89,14 +90,14 @@ programmazioneImpegno q ur  = do
 			esistenzaResponsabile r
 			when (l /= j) mzero
 			Impegni us <- osservaStatoServizio j
-			fallimento (ur /= r) "solo chi ha aperto una impegnativa puó chiuderla"
+			fallimento (ur /= r) (encodeString $ "solo chi ha aperto una impegnativa puó chiuderla")
 			eliminaStatoServizio j (undefined :: Impegni)
 			(,) False <$> k (Just us) 
 		reattoreImpegno k (Right (r,FallimentoImpegno j)) = conFallimento $ do
 			esistenzaResponsabile r
 			when (l /= j) mzero
 			Impegni us <- osservaStatoServizio j
-			fallimento (ur /= r) "solo chi ha aperto una impegnativa puó chiuderla"
+			fallimento (ur /= r) $ encodeString "solo chi ha aperto una impegnativa puó chiuderla"
 			mapM_ (\(u,v) -> accredita u v) us
 			eliminaStatoServizio j (undefined :: Impegni)
 			(ks,is) <- k Nothing 

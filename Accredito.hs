@@ -58,13 +58,13 @@ reattoreAccredito (eventoValidato -> (wrap ,Saldo u dv)) = wrap $ \r -> do
 
 makeAccredito = [eventoAccredito , eventoSaldo] where
 
-	eventoAccredito k = (,) "accredito" $ \s -> do
+	eventoAccredito k = (,) "attribuzione accredito per un utente" $ \s -> do
 	    when (null $ utenti s) $ k "nessun utente disponibile"
 	    u <- parametro (Scelta "selezione utente". map (id &&& id) . utenti  $ s)
 	    n <- parametro (Libero "la somma da accreditare")
 	    return $ show (Accredito u n)
 
-	eventoSaldo k =  (,) "saldo" $ \s -> do
+	eventoSaldo k =  (,) "ricezione saldo da un responsabile" $ \s -> do
 	    when (null $ responsabili s) $ k "nessun responsabile disponibile"
 	    u <- parametro (Scelta "selezione responsabile" . map (fst &&& id) . responsabili $ s)
 	    n <- parametro (Libero "la somma ricevuta")
