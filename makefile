@@ -1,10 +1,10 @@
 applicativi:Cliente.hs Servente.hs
+	cp reactivegas.glade Applicazioni
 	ghc --make ClienteGTK
 	mv ClienteGTK Reactivegas
 	ghc --make Servente
 	mv Servente Reactivegas.server
 	cp Reactivegas Reactivegas.server Applicazioni
-	cp reactivegas.glade Applicazioni
 
 clean:
 	rm -f *.o 

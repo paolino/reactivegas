@@ -33,7 +33,7 @@ import Control.Concurrent.STM
 import Control.Concurrent
 import qualified Graphics.UI.Gtk as G
 import qualified Graphics.UI.Gtk.Glade as Gl
-import qualified Graphics.UI.Gtk.ModelView as M
+import qualified Graphics.UI.Gtk as M
 import System.Glib.Types
 
 containerEmpty c = G.containerGetChildren c >>= mapM_ (G.containerRemove c)
@@ -211,8 +211,6 @@ uiCostruzioni ls b@(Board  _ _ tp) g = do
 			G.labelSetText d s
 			containerEmpty rs
 			es <- G.entryNew
-			G.containerAdd rs es
-			G.widgetShow es
 			G.onEntryActivate es $  do
 				x <-  G.entryGetText es
 				case reads x of 
@@ -220,6 +218,27 @@ uiCostruzioni ls b@(Board  _ _ tp) g = do
 						[] -> outputlog g ("errore nel leggere il valore " ++ x) 
 						[(x,_)] -> f x >>= runCostruzioneGTK b d rs 
 					[(x,_)] -> f x >>= runCostruzioneGTK b d rs 
+			G.widgetShow es
+			G.boxPackStart rs es G.PackGrow 0
+			fc <- G.fileChooserDialogNew (Just "carica dato da file") Nothing G.FileChooserActionOpen 
+				[("Seleziona risorsa",G.ResponseAccept),("Annulla",G.ResponseCancel)]
+			fs <- G.fileChooserButtonNewWithDialog fc
+			let 	z G.ResponseAccept = do
+					r <- G.fileChooserGetFilename fs
+					case r of
+						Nothing -> return ()
+						Just r -> do
+							r <- runErrorT (tagga "lettura dato da file" $ 
+								catchFromIO (readFile r) >>= contentReads)
+							case r of
+								Left s -> outputlog g s
+								Right x -> f x >>= runCostruzioneGTK b d rs
+				z _ = return ()									
+				
+			G.onResponse fc z
+			G.boxPackStart rs fs G.PackGrow 0
+			G.widgetShow fs
+
 			return ()
 
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.5 on Mon Jun 22 20:29:31 2009 -->
+<!--Generated with glade3 3.4.5 on Thu Jun 25 16:21:37 2009 -->
 <glade-interface>
   <widget class="GtkWindow" id="window1">
     <child>
@@ -108,10 +108,9 @@
                                           <widget class="GtkHBox" id="risposta evento">
                                             <property name="visible">True</property>
                                             <property name="tooltip" translatable="yes">spazio per la risposta</property>
+                                            <property name="spacing">5</property>
                                           </widget>
                                           <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">False</property>
                                             <property name="position">1</property>
                                           </packing>
                                         </child>
@@ -160,10 +159,19 @@
                             <property name="visible">True</property>
                             <property name="spacing">5</property>
                             <child>
-                              <widget class="GtkTreeView" id="vista eventi">
+                              <widget class="GtkScrolledWindow" id="scrolledwindow3">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="headers_clickable">True</property>
+                                <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                                <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                                <property name="shadow_type">GTK_SHADOW_IN</property>
+                                <child>
+                                  <widget class="GtkTreeView" id="vista eventi">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="headers_clickable">True</property>
+                                  </widget>
+                                </child>
                               </widget>
                             </child>
                             <child>
@@ -201,12 +209,21 @@
                                 <property name="visible">True</property>
                                 <property name="left_padding">12</property>
                                 <child>
-                                  <widget class="GtkTextView" id="vista caricamento">
+                                  <widget class="GtkScrolledWindow" id="scrolledwindow2">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="tooltip" translatable="yes">effetto del caricamento della patch sullo stato attuale</property>
-                                    <property name="border_width">5</property>
-                                    <property name="wrap_mode">GTK_WRAP_WORD</property>
+                                    <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                                    <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                                    <property name="shadow_type">GTK_SHADOW_IN</property>
+                                    <child>
+                                      <widget class="GtkTextView" id="vista caricamento">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="tooltip" translatable="yes">effetto del caricamento della patch sullo stato attuale</property>
+                                        <property name="border_width">5</property>
+                                        <property name="wrap_mode">GTK_WRAP_WORD</property>
+                                      </widget>
+                                    </child>
                                   </widget>
                                 </child>
                               </widget>
@@ -735,11 +752,20 @@
                 <property name="visible">True</property>
                 <property name="left_padding">12</property>
                 <child>
-                  <widget class="GtkTextView" id="vista log">
+                  <widget class="GtkScrolledWindow" id="scrolledwindow1">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="tooltip" translatable="yes">responso sull'andamento del programma</property>
-                    <property name="wrap_mode">GTK_WRAP_WORD</property>
+                    <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                    <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                    <property name="shadow_type">GTK_SHADOW_IN</property>
+                    <child>
+                      <widget class="GtkTextView" id="vista log">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="tooltip" translatable="yes">responso sull'andamento del programma</property>
+                        <property name="wrap_mode">GTK_WRAP_WORD</property>
+                      </widget>
+                    </child>
                   </widget>
                 </child>
               </widget>
