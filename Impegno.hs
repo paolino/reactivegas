@@ -10,6 +10,7 @@ module Impegno (
 	makeEventiImpegno,
 	priorityImpegnoI,
 	priorityImpegno,
+	queryImpegni,
 	unImpegno
 	)  where
 
@@ -19,6 +20,7 @@ import Control.Applicative ((<$>))
 import Control.Monad.Reader (ask)
 import Control.Arrow ((&&&))
 import Codec.Binary.UTF8.String
+import Data.Maybe
 
 import Aspetti ((.<), ParteDi)
 import Lib1
@@ -84,7 +86,7 @@ programmazioneImpegno q ur  = do
 			when (l /= j) mzero
 			preleva u v 
 			modificaStatoServizio j $ \(Impegni  is) -> return (Impegni $ update u (+ v) 0 is)
-			logga  $ "impegnati " ++ show v ++ " euro da " ++ show u ++ " per la causa " ++ show j
+			logga  $ "impegnati " ++ show v ++ " euro da " ++ show u ++ " per la causa " ++ q
 			return (True,nessunEffetto)
 		reattoreImpegno k (Right (r,FineImpegno j)) = conFallimento $  do
 			esistenzaResponsabile r
@@ -132,4 +134,20 @@ makeEventiImpegno = [ eventoFineImpegno, eventoFallimentoImpegno ,  eventoImpegn
 		u <- parametro . Scelta "selezione utente impegnante" $ (map (id &&& id) us)
 		z <- parametro $ Libero "somma impegnata"
                 return $ show (Impegno u z n)
+
+queryImpegni = [r,q] where
+	r k = (,) "elenco impegni" $ \s -> do
+		let e = elencoSottoStati (undefined :: Impegni) s
+		let 	f = seeStatoServizio (undefined :: Impegni) s
+			is = map fst . catMaybes . map (f . fst) $ e
+		return $ Response [("elenco impegni",if null e then 
+			ResponseOne "nessuna raccolta di impegni attiva" else ResponseMany is)]
+	q k = (,) "raccolte impegni"$ \s -> do
+		let e = elencoSottoStati (undefined :: Impegni) s
+		when (null e) .k $ Response [("raccolte impegni",ResponseOne "nessuna raccolta di impegni attiva")]
+		n <- parametro . Scelta "selezione raccolta impegni" $ (map (snd &&& fst) e)
+		let is = seeStatoServizio (undefined :: Impegni) s n
+		case is of 
+			Nothing -> return $ Response [("raccolte impegni",ResponseOne "errore interno")]
+			Just (t,Impegni is) -> return $ Response [("obiettivo raccolta",ResponseOne t),("somme impegnate", ResponseAL is)]
 

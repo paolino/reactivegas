@@ -76,7 +76,9 @@ makeAccredito = [eventoAccredito , eventoSaldo] where
 queryAccredito = [queryUtente, queryResponsabile] where
 	queryUtente k = (,) "accrediti degli utenti" $ \s -> do
 		let Conti us = see s
-		return $ show us
+		return $ Response [("accrediti degli utenti", if null us then 
+			ResponseOne "nessun utente possiede un accredito" else ResponseAL us)]
 	queryResponsabile k = (,) "saldi dei responsabili" $ \s -> do
 		let Saldi rs = see s
-		return $ show rs
+		return $ Response [("saldi dei responsabili" , if null rs then 
+			ResponseOne "nessun responsabile ha un saldo" else ResponseAL rs)]

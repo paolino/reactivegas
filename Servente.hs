@@ -156,5 +156,5 @@ server p b@(Boards _ tvnt) = do
 main = do
 	b <- readBoards `catch` (\(_::IOException) -> mkBoards )
 	forkIO (updateService 5 b)
-	server 9090 b
+	server 1433 b
 

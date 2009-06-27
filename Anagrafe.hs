@@ -108,13 +108,18 @@ makeEventiAnagrafe = [eventoNuovoUtente, eventoElezioneResponsabile,eventoElimin
                 return $ show (EliminazioneResponsabile (fst n))
 queryAnagrafe = [queryChiave,queryElencoUtenti,queryElencoResponsabili] where
 	queryChiave k = (,) "la chiave pubblica di un responsabile"  $ \s -> do
-		when (null $ responsabili s) $ k "nessun responsabile disponibile"
-		u <- parametro (Scelta "selezione responsabile" . map (fst &&& id) . responsabili $ s)		
-		case lookup (fst u) $ responsabili s of
-			Nothing -> k "il responsabile non ha una chiave (siamo alle cozze ...)" >> return ""
-			Just v -> return $ show v		
-	queryElencoUtenti k = (,) "elenco nomi utenti" $ return .show . utenti
-	queryElencoResponsabili k = (,) "elenco nomi responsabili" $ return .show . map fst . responsabili
+		when (null $ responsabili s) $ k (Response [("chiave pubblica",ResponseOne "nessun responsabile disponibile")])
+		(u,v) <- parametro (Scelta "selezione responsabile" . map (fst &&& id) . responsabili $ s)		
+		return $ Response [("responsabile",ResponseOne u),("chiave pubblica",ResponseOne v)]
+
+	queryElencoUtenti k = (,) "elenco nomi utenti" $ \s -> do
+		let us = utenti s
+		return . Response $ [("elenco nomi utenti", if null us then 
+			ResponseOne "nessun utente nel gruppo" else ResponseMany $ utenti s)]
+	queryElencoResponsabili k = (,) "elenco nomi responsabili" $ \s -> do
+		let us = map fst $ responsabili s
+		return . Response $ [("elenco nomi responsabili", if null us then 
+			ResponseOne "nessun responsabile nel gruppo" else ResponseMany $ utenti s)]
 		
 
 ----------------------------------------------------------------------------------------------------------------------
@@ -170,7 +175,10 @@ makeEventiAssenso = [eventoFallimentoAssenso , eventoAssenso] where
                 n <- parametro . Scelta "selezione richiesta per assenso"  $ (map (snd &&& fst) $ elencoSottoStati (undefined :: Assensi) s)
                 return $ show (Assenso n)
 queryAssenso = [querySottoStati] where
-	querySottoStati k = (,) "elenco richieste di assenso assensi aperte" $ return .show . elencoSottoStati (undefined :: Assensi)
+	querySottoStati k = (,) "elenco richieste di assenso aperte" $ \s -> do
+		let e = elencoSottoStati (undefined :: Assensi) s
+		return $ Response [("elenco richieste di assenso aperte", if null e then
+			ResponseOne "nessuna richiesta aperta" else ResponseMany e)]
 
 ---------------------------------------------------
 

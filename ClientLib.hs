@@ -127,13 +127,10 @@ sincronizzaIO = runErrorT . tagga "sincronizzazione" $ do
 			let 	s = maybe s0 id s'
 				h = showDigest $ sha512 $ B.pack (show s)
 			ps <-  query (puk,UPS)
-			liftIO $  print (ps,responsabiliQ s)
-
 			let 	ps' = filter (\((pu,firma,es)::UP) -> pu `elem` responsabiliQ s && 
 					verify pu (B.pack (h ++ concat es)) firma) ps
 				f0 = sign prk (B.pack $ h ++ show ps') 
 			(s',ls) <- aggiornaStato puk s [(f0 ,ps')] 
-			liftIO $ print s'
 			let 	ws = responsabiliQ $ s'
 				f1 = sign prk (B.pack $ h ++ show ws)
 				h' = showDigest . sha512 . B.pack $ show s'

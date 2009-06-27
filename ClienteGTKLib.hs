@@ -19,6 +19,7 @@ import Data.IORef
 import System.Directory
 import System.Random
 import Network
+import Text.PrettyPrint
 
 import Core (Reazione)
 import Anagrafe
@@ -111,7 +112,7 @@ uiConfigurazione ls b@(Board tc _ _) g = do
 					Right rs -> do
 						r <- G.entryGetText t 
 						let s = s0  (zip (map fst cs) rs)
-						writeFile "configurazione" $ show (Configurazione (r,9090) s c)
+						writeFile "configurazione" $ show (Configurazione (r,1433) s c)
 						outputlog g "configurazione creata"
 						r <- G.entryGetText n >>= creaGruppo rs s
 						case r of 
@@ -264,9 +265,12 @@ uiCostruzioni ls b@(Board  _ _ tp) g = do
 			uiAggiornaEventi ls b g
 		c = runReaderT (statoCorrettoIO reattori priorities) b 
 	evento <- svolgi (interfacciaY "nuovo evento"
-		( outputlog g, c, d)	makers) 
+			( outputlog g, c, d)	makers) 
 	interrogazione <- svolgi (interfacciaY "interrogazione" 
-		( outputlog g, c , outputAppend g "vista interrogazione"  ) queriers) 
+				(outputSet g "vista interrogazione" . render. renderResponse 
+					, c >>= return . either (Left . ResponseOne) Right 
+					, outputSet g "vista interrogazione" . render. renderResponse ) 
+				queriers) 
 	runCostruzioneGTK b de re evento
 	runCostruzioneGTK b di ri interrogazione
 	G.onClicked ke (runCostruzioneGTK b de re evento)
@@ -292,8 +296,15 @@ uiSetResponsabili b@(Board tc ts tp) g = do
 		Just (Configurazione _ s0 puk) -> do
 			((uprk,xs),s') <- atomically (liftM2 (,) (readTVar tp) (readTVar ts))
 			let 	s = maybe s0 id s'
-			populateCombo (map fst . responsabili . fst $ s) c 
-
+			 	us = map fst . responsabili . fst $ s 
+			populateCombo us c
+			case uprk of
+				Just (u,_) -> case elemIndex u us of
+					Just n -> G.comboBoxSetActive c n
+					Nothing -> do
+						outputlog g "il responsabile selezionato come autore non é valido"
+						atomically (writeTVar tp (Nothing,xs))
+				Nothing -> return ()
 outputAppend :: GlRet -> String -> String -> IO ()
 outputAppend g t x = do 
 	l <- g G.castToTextView t
@@ -302,6 +313,12 @@ outputAppend g t x = do
 	G.textIterForwardToEnd i
 	G.textBufferInsert b i (x ++ "\n") 
 	return ()
+
+outputSet :: GlRet -> String -> String -> IO ()
+outputSet g t x = do
+	l <- g G.castToTextView t
+	b <- G.textViewGetBuffer l
+	G.textBufferSetText b x
 
 outputlog :: GlRet -> String -> IO ()
 outputlog g = outputAppend g "vista log" 
