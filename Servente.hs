@@ -169,7 +169,6 @@ argd = [Arg 0 (Just 'p') (Just "port") (argDataDefaulted "porta server" ArgtypeI
 
 main = do
 	r <- parseArgsIO ArgsComplete argd
-
 	b <- readBoards `catch` (\(_::IOException) -> mkBoards )
 	forkIO (updateService 5 b)
 	let Just p = getArg r 0
