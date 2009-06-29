@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.5 on Sat Jun 27 12:38:26 2009 -->
+<!--Generated with glade3 3.4.5 on Sun Jun 28 16:15:59 2009 -->
 <glade-interface>
   <widget class="GtkWindow" id="window1">
     <child>
@@ -616,7 +616,7 @@
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">True</property>
-                                            <property name="label" translatable="yes">aggiorna</property>
+                                            <property name="label" translatable="yes">aggiorna lista chiavi</property>
                                             <property name="response_id">0</property>
                                           </widget>
                                           <packing>
@@ -643,7 +643,7 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
-                                        <property name="label" translatable="yes">crea</property>
+                                        <property name="label" translatable="yes">crea configurazioni</property>
                                         <property name="response_id">0</property>
                                       </widget>
                                       <packing>
@@ -698,19 +698,6 @@
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="position">1</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkButton" id="pulsante aggiornamento">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
-                                <property name="tooltip" translatable="yes">richiede al servente le gli ultimi aggiornamenti</property>
-                                <property name="label" translatable="yes">aggiorna</property>
-                                <property name="response_id">0</property>
-                              </widget>
-                              <packing>
-                                <property name="position">2</property>
                               </packing>
                             </child>
                           </widget>
@@ -798,7 +785,15 @@
           <widget class="GtkHButtonBox" id="hbuttonbox1">
             <property name="visible">True</property>
             <property name="spacing">5</property>
-            <property name="layout_style">GTK_BUTTONBOX_END</property>
+            <property name="layout_style">GTK_BUTTONBOX_EDGE</property>
+            <child>
+              <widget class="GtkStatusbar" id="statusbar">
+                <property name="visible">True</property>
+                <property name="spacing">2</property>
+                <property name="homogeneous">True</property>
+                <property name="has_resize_grip">False</property>
+              </widget>
+            </child>
             <child>
               <widget class="GtkButton" id="pulsante fine">
                 <property name="visible">True</property>
@@ -808,6 +803,9 @@
                 <property name="label" translatable="yes">fine</property>
                 <property name="response_id">0</property>
               </widget>
+              <packing>
+                <property name="position">1</property>
+              </packing>
             </child>
           </widget>
           <packing>

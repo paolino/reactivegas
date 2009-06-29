@@ -21,6 +21,7 @@ import System.Directory
 import System.Random
 import System.FilePath
 import Network
+import Control.Monad.Maybe
 
 import Core (Reazione)
 import Anagrafe
@@ -96,23 +97,27 @@ creaChiaviIO l = runErrorT . tagga "creazione chiavi in IO" . catchFromIO $ do
 	writeFile p1 (show pr)
 	writeFile p2 (show pu)
 
-aggiornamentoIO :: (MonadIO m, MonadReader Board m) => m (Either String (Log Utente))
-aggiornamentoIO =  runErrorT . tagga "ggiornamento:" $ do
+aggiornamentoIO :: (MonadIO m, MonadReader Board m) => m (Either String (Maybe (Log Utente)))
+aggiornamentoIO =  runErrorT . tagga "aggiornamento:" . runMaybeT $ do
 	b@(Board tc ts tp) <- ask
-	tc <- liftIO $ atomically (readTVar tc)
-	case tc of 
-		Nothing -> throwError $ "la configurazione non é stata caricata"
-		Just (Configurazione _ s0 g) -> do 
-			((uprk,xs),s') <- liftIO $ atomically (liftM2 (,) (readTVar tp) (readTVar ts))
-			let 	s = maybe s0 id s'
-				h = showDigest $ sha512 $ B.pack (show s)
-			ps <- query (g,Aggiornamento h)
-			(s',ls) <- aggiornaStato g s ps 
-			vs <- query (g,Validi)
-			when (responsabiliQ s' /= vs) $ throwError "Il sicronizzatore sta truffando sui responsabili validi"
-			liftIO $ atomically (writeTVar ts (Just s'))
-			liftIO $ writeFile "stato" (show s')
-			return ls
+	(mc,(uprk,xs),s') <- liftIO . atomically $ do
+		p <- readTVar tp
+		s <- readTVar ts
+		c <- readTVar tc
+		return (c,p,s)
+	when (isNothing mc) . lift . throwError $ "la configurazione non é stata caricata"
+	let 	Just (Configurazione _ s0 g) = mc
+		s = maybe s0 id s'
+		h = showDigest $ sha512 $ B.pack (show s)
+	ps <- lift $ query (g,Aggiornamento h)
+	when (null ps) $ MaybeT (return Nothing)
+	lift $ do
+		(s',ls) <- aggiornaStato g s ps 
+		vs <- query (g,Validi)
+		when (responsabiliQ s' /= vs) $ throwError "Il sicronizzatore sta truffando sui responsabili validi"
+		liftIO $ atomically (writeTVar ts (Just s'))
+		liftIO $ writeFile "stato" (show s')
+		return ls
 
 sincronizzaIO :: (Read a, MonadIO m, MonadReader Board m) => m (Either String a)
 sincronizzaIO = runErrorT . tagga "sincronizzazione" $ do

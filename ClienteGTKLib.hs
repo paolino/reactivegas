@@ -151,21 +151,22 @@ uiResponsabile b@(Board  _ _ tp) g = do
 	return ()
 
 cbAggiornamento :: OP ()
-cbAggiornamento b g = do
-	lv <- runReaderT aggiornamentoIO b 
+cbAggiornamento bo g = do
+	b <- g G.castToStatusbar "statusbar"
+	c <- G.statusbarGetContextId b "aggiornamento"
+	m <- G.statusbarPush b c "in esecuzione"
+	threadDelay 2000000
+	lv <- runReaderT aggiornamentoIO bo 
 	case lv of 
 		Left s -> outputlog g s
-		Right t -> do 
+		Right Nothing -> return ()
+		Right (Just t) -> do 
 			outputlog g (eccoILogs t)
 			outputlog g "cliente aggiornato"
-			uiSetResponsabili  b g
+			uiSetResponsabili  bo g
+	G.statusbarPop b c 			
 	return ()
 
-uiAggiornamento :: OP ()
-uiAggiornamento b g = do
-	a <- g G.castToButton "pulsante aggiornamento"
-	G.onClicked a $	cbAggiornamento b g
-	return ()
 
 uiRicaricaPatch :: OP ()
 uiRicaricaPatch  b g = do

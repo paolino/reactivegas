@@ -9,6 +9,8 @@ import Network
 import System.IO
 import System.Directory
 import System.FilePath
+import System.Environment
+import System.Console.ParseArgs
 import System.Random
 import Data.Maybe
 
@@ -25,8 +27,16 @@ import Control.Monad.Error
 maxdb = 1000
 maxthreads = 1000
 
+data ServerErrors 
+	= StatoInesistente 
+	| ServizioNonInizializzato 
+	| ResponsabileNonAutorizzato 
+	| FirmaIncorretta 
+	| GruppoSconosciuto 
+	| SincronizzazioneNonNecessaria 
+	| ErroreDiProtocollo deriving Show
 
-data Board = Board {gpatches:: TVar DB, nuovo :: TVar (String,[UP]) , validi :: TVar [PublicKey]}
+data Board = Board {gpatches :: TVar DB, nuovo :: TVar (String,[UP]) , validi :: TVar [PublicKey]}
 
 data  Boards = Boards {boards :: TVar [(PublicKey,Board)], nt :: TVar Int}
 
@@ -134,7 +144,7 @@ protocol x (Boards tvbs _) = runErrorT $
 				GroupPatch y -> PBox <$> nuovaGP puk y b
 				Validi -> PBox <$> lift (readTVar (validi b))
 				
-
+server :: Int -> Boards -> IO ()
 server p b@(Boards _ tvnt) = do
 	s <- listenOn (PortNumber (fromIntegral  p))
 	let t = do
@@ -153,8 +163,14 @@ server p b@(Boards _ tvnt) = do
 			return ()
 		 else threadDelay 1000000
 	forever t  `finally` sClose s
+
+
+argd = [Arg 0 (Just 'p') (Just "port") (argDataDefaulted "porta server" ArgtypeInt 9090) "la porta sulla quale aprire il servizio"]
+
 main = do
+	r <- parseArgsIO ArgsComplete argd
 	b <- readBoards `catch` (\(_::IOException) -> mkBoards )
 	forkIO (updateService 5 b)
-	server 1433 b
+	let Just p = getArg r 0
+	server p b
 

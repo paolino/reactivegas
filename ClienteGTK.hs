@@ -60,7 +60,7 @@ main =	do
 	uiChiavi b g 
 	uiConfigurazione lsc b g 
 	uiResponsabile b g
-	uiAggiornamento b g
+	--uiAggiornamento b g
 	uiSetResponsabili b g
 	ls <- uiListaEventi g
 	uiAggiornaEventi ls b g
@@ -74,7 +74,7 @@ main =	do
 		(\e -> outputlog g e >> uiAggiornaEventi ls b g )
 	g G.castToButton "pulsante spedizione" >>= flip G.onClicked f 
 			
-	cbAggiornamento b g			
+	G.timeoutAdd (cbAggiornamento b g >> return True) 10000
 	uiRicaricaPatch b g
 
 	G.widgetShowAll window
