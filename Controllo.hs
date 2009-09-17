@@ -10,13 +10,13 @@ import Data.Either
 import Debug.Trace
 import Data.Function
 
-import Core (Nodo, runInserzione , inserimentoCompleto, Reazione, mkNodi, reattore)
+import Core (Nodo, runInserzione , inserimentoCompleto, Reazione, mkNodi, reattore, Motivato')
 import Serializzazione (serializza, deserializza, SNodo)
 import Prioriti
 import Text.PrettyPrint
 import Codec.Binary.UTF8.String
 
-type Log d = [([(d,String)],String)]
+type Log d = [Motivato' d String]
 -- ---------------------------------------------
 -- | monade di caricamento eventi
 type Programma m s c d = RWST 
