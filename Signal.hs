@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleInstances, MultiParamTypeClasses, UndecidableInstances#-}
+-- | A monad isomorphic to  Writer [()], useful to signal if something has happened inside an action
 module Signal  where
 
 import Control.Monad
@@ -6,9 +7,13 @@ import Control.Monad.Trans
 import Control.Monad.State
 import Control.Monad.Writer
 import Control.Monad.Reader
+
+-- | the class for the monad and monadtransformer
 class MonadSignal m where
-	happened :: m () 
-	intercept :: m a -> m (a,Bool)
+	happened :: m () 		-- ^ signal that the thing happened
+	intercept :: m a -> m (a,Bool)	-- ^ execute an action and report if the thing happened
+
+newtype SignalT t a = SignalT {runSignalT :: t (a,Bool)}
 	
 instance Monad m => MonadSignal (SignalT m) where
 	happened = SignalT $  return  ((),True)
@@ -17,7 +22,6 @@ instance Monad m => MonadSignal (SignalT m) where
 		return ((x,b),b)
 
 
-newtype SignalT t a = SignalT {runSignalT :: t (a,Bool)}
 
 instance (Monad m) => Monad (SignalT m) where
 	g >>= k = SignalT $ do

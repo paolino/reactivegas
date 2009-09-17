@@ -17,8 +17,12 @@ instance Read Logger where
 
 d1 (eliminazioneResponsabile -> Just (u,w)) = Just (Logger "ahi, comportato male eh")
 d1 _ = Nothing
+
 d2 (fallimentoImpegno -> Just (u,v)) = Just (Logger $ u ++ " ha fatto un danno :)")
 d2 _ = Nothing
+
+d3 :: CoreEvents -> Maybe Logger
 d3 (eventoRifiutato -> Just x) = Just (Logger $  encodeString "l'evento non ha modificato la realtá")
+d3 _ = Nothing
 reazioneLogger = Reazione (Just [Deviatore d1, Deviatore d2, Deviatore d3], \x ->  either (\(Logger x) -> logInserimento x) (\(_,()) ->  return ()) x 
 									>> return (Just (True,nessunEffetto))) 

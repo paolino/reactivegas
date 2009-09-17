@@ -64,7 +64,7 @@ unImpegno s n = (\(Impegni us) -> us) <$> snd <$> seeStatoServizio  (undefined :
 -- | il tipo della funzione da passare alla hof restituita da programmazioneImpegno 
 type ConclusioneReattoreImpegno s c = Maybe ([(Utente, Float)]) -> MTInserzione s c Utente (Effetti s c Utente)
 
--- | la programmazione di una ca(,) False <$> usa impegni richiede il nome del responsabile che la apre e restituisce la chiave del nuovo stato impegni
+-- | la programmazione di un impegni richiede il nome del responsabile che la apre e restituisce la chiave del nuovo stato impegni
 -- con una una azione monadica in grado di creare una nuova Reazione se fornita della giusta procedura. La giusta procedura definisce cosa 
 -- eseguire alla fine della raccolta impegni. In caso di successo l'azione riceve la lista di impegni raccolta , in caso di fallimento Nothing.
 -- Comunque essa deve fornire una lista di nuovi reattori e una lista di eventi interni.
