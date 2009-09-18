@@ -23,7 +23,7 @@ import System.FilePath
 import Network
 import Control.Monad.Maybe
 
-import Core (Reazione)
+import Core 
 import Anagrafe
 import Costruzione
 import Rete
@@ -97,7 +97,7 @@ creaChiaviIO l = runErrorT . tagga "creazione chiavi in IO" . catchFromIO $ do
 	writeFile p1 (show pr)
 	writeFile p2 (show pu)
 
-aggiornamentoIO :: (MonadIO m, MonadReader Board m) => m (Either String (Maybe (Log Utente)))
+aggiornamentoIO :: (MonadIO m, MonadReader Board m) => m (Either String (Maybe [Contestualizzato  Utente String ] ))
 aggiornamentoIO =  runErrorT . tagga "aggiornamento:" . runMaybeT $ do
 	b@(Board tc ts tp) <- ask
 	(mc,(uprk,xs),s') <- liftIO . atomically $ do
@@ -142,7 +142,7 @@ sincronizzaIO = runErrorT . tagga "sincronizzazione" $ do
 			query (puk,GroupPatch (h',f0 ,ws, f1))
 			
 		
-statoCorrettoIO :: (MonadReader Board m, MonadIO m) => [Reazione T c Utente] -> [R] -> m (Either String (T, Log Utente))
+statoCorrettoIO :: (MonadReader Board m, MonadIO m) => [Reazione T c Utente] -> [R] -> m (Either String (T, [Contestualizzato Utente String]))
 statoCorrettoIO rs bs = runErrorT . tagga "computazione stato corretto" $ do
 	(Board tc ts tp) <- ask
 	tc <- liftIO $ atomically (readTVar tc)
@@ -151,10 +151,10 @@ statoCorrettoIO rs bs = runErrorT . tagga "computazione stato corretto" $ do
 		Just (Configurazione _ s0 puk) -> do
 			((uprk,xs),s') <- liftIO $ atomically (liftM2 (,) (readTVar tp) (readTVar ts))
 			let 	s = maybe s0 id s'
-			let (r,_,log) = runIdentity . runProgramma rs s  $ 
+			let ((r,_),log) = runIdentity $ 
 				case uprk of 
-					Nothing -> fst <$> get
-					Just (u,prk) -> caricaEventi bs (zip (repeat u) xs) >> (fst <$> get)
+					Nothing -> return (s,[])
+					Just (u,prk) -> caricaEventi bs rs (zip (repeat u) xs) s 
 			return (r,log)
 
 testAutenticazione = runErrorT . tagga "test autenticazione" $ do

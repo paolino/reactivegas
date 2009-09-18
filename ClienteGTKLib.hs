@@ -20,8 +20,8 @@ import System.Directory
 import System.Random
 import Network
 import Text.PrettyPrint
-
-import Core (Reazione)
+import Lib0
+import Core (Reazione, flatten)
 import Anagrafe
 import Costruzione
 import Rete
@@ -155,13 +155,12 @@ cbAggiornamento bo g = do
 	b <- g G.castToStatusbar "statusbar"
 	c <- G.statusbarGetContextId b "aggiornamento"
 	m <- G.statusbarPush b c "in esecuzione"
-	threadDelay 2000000
 	lv <- runReaderT aggiornamentoIO bo 
 	case lv of 
 		Left s -> outputlog g s
 		Right Nothing -> return ()
 		Right (Just t) -> do 
-			outputlog g (eccoILogs t)
+			outputlog g (eccoILogs . map (first flatten) $ t)
 			outputlog g "cliente aggiornato"
 			uiSetResponsabili  bo g
 	G.statusbarPop b c 			
@@ -172,7 +171,7 @@ uiRicaricaPatch :: OP ()
 uiRicaricaPatch  b g = do
 	car <- g G.castToTextView "vista caricamento"
 	runReaderT (statoCorrettoIO reattori priorities) b 
-		>>= either (outputlog g) (outputcaricamento car . eccoILogs . snd)
+		>>= either (outputlog g) (outputcaricamento car . eccoILogs . map (first flatten).  snd)
 
 uiListaEventi :: GlRet -> IO (G.ListStore String)
 uiListaEventi g = do

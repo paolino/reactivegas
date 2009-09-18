@@ -1,5 +1,5 @@
 {-# LANGUAGE ScopedTypeVariables, ExistentialQuantification, MultiParamTypeClasses #-}
-
+-- | un modulo per il riordinamento di valori basato su una serie di priorita' ricavabili dal parsing delle loro rappresentazioni
 module Prioriti (sortP, R (..)) where
 
 import Control.Arrow
@@ -11,8 +11,10 @@ import Data.Ord (comparing)
 import Data.List (sortBy)
 import Data.Char (ord)
 
+-- | una scatola per le priorita'
 data R = forall a. Read a => R (a -> Int) 
 
+-- | la funzione riordinante 
 sortP :: [R] -> (a -> String) -> [a] -> [a]
 sortP rs f = map fst . sortBy (comparing snd) . map (id &&& maybe 0 id . lss rs)
 	where

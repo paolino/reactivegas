@@ -3,7 +3,6 @@
 module Applicazione where
 
 import Core 
-import Serializzazione
 import Controllo
 
 import Anagrafe 
@@ -32,6 +31,7 @@ import qualified Data.ByteString.Lazy.Char8 as B
 import Anagrafe
 -----------------------------------------
 
+
 priorities = [priorityAnagrafe,priorityAnagrafeI,priorityImpegnoI,priorityImpegno,priorityOrdine,priorityAccredito]
 makers = concat [makeAperturaOrdine,makeAccredito,makeEventiImpegno,makeEventiAssenso,makeEventiAnagrafe]
 queriers = concat [queryAccredito, queryAnagrafe,queryAssenso,queryOrdine,queryImpegni]
@@ -56,7 +56,7 @@ aggiornaStato :: (MonadError [Char] m) =>
                  PublicKey
                  -> (T, [SNodo T Utente])
                  -> [(B.ByteString, [(Chiave, B.ByteString, [[Char]])])]
-                 -> m ((T, [SNodo T Utente]), Log Utente)
+                 -> m ((T, [SNodo T Utente]), [Contestualizzato Utente String] )
 
 aggiornaStato g x = let
 	r stato (firma,ps) = do
@@ -67,7 +67,7 @@ aggiornaStato g x = let
 		when (not $ all (\(puk,_,_) -> puk `elem` map fst rs) ps ) $ throwError "la patch di gruppo contiene eventi da un utente sconosciuto"
 		when (not $ all (\(puk,firma,es) -> verify puk (B.pack $ h ++ concat es) firma) ps) $ 
 			throwError "la patch di gruppo contiene una patch di responsabile non integra"
-		(_,stato',logs) <- runProgramma reattori stato (caricaEventi priorities (concat zs))
+		(stato',logs) <- caricaEventi priorities reattori (concat zs) stato
 		tell logs
 		return stato'
 	in runWriterT . foldM r x

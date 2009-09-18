@@ -46,11 +46,15 @@ type Esterno d = (d,Evento)
 data Contesto d = Boot | Primo (Esterno d) | Oltre (Esterno d) [Interno] deriving Show
 
 -- | il passaggio da un contesto all'altro deve seguire il protocollo : esterno, interno, interno, interno. ......
-motiva :: Either Interno (Esterno d) -> Contesto d -> Contesto d
+motiva :: (Show d) => Either Interno (Esterno d) -> Contesto d -> Contesto d
 motiva (Right x) Boot = Primo x
 motiva (Left x) (Primo y) = Oltre y [x]
 motiva (Left x) (Oltre y xs) = Oltre y (xs ++ [x])
-motiva _ _ = error "ricontestualizzazione fallita"
+motiva r q = error ("ricontestualizzazione fallita " ++ show (r,q))
+
+flatten Boot = []
+flatten (Primo y) = [y]
+flatten (Oltre y xs) = y: map ((,) "Interno") xs
 
 -- | I log dei reattori sono diretti all'utente 
 type Message = String
@@ -184,7 +188,7 @@ eventoRifiutato _ = Nothing
 inserimentoCompleto :: Show d => Esterno d -> [Nodo s c d] -> Inserzione s c d [Nodo s c d]
 inserimentoCompleto x ns = fmap (fst . fst) . runInserimento  $ do	
 		(ns',t) <- intercept $ consumaR ns (Right x) 
-		if not t then  consumaR ns' $ Left [show CoreEventoRifiuto]
+		if not t then  local (motiva $ Right x) . consumaR ns' $ Left [show CoreEventoRifiuto]
 			else return ns'
 	where 
 	consuma :: Show d => [Nodo s c d] -> Either [Interno] (Esterno d) -> Inserimento s c d [Nodo s c d]

@@ -1,7 +1,7 @@
 {-# LANGUAGE NoMonomorphismRestriction, ViewPatterns, ScopedTypeVariables, ExistentialQuantification #-}
 module Anagrafe (eliminazioneResponsabile, esistenzaUtente , Anagrafe, Responsabili, statoInizialeAnagrafe, esistenzaResponsabile ,
 	reazioneAnagrafe, programmazioneAssenso , Chiave, Assensi, eventoValidato, Utente, makeEventiAssenso, makeEventiAnagrafe,
-	responsabili , utenti, priorityAnagrafeI, priorityAnagrafe, Evento (..), queryAnagrafe,queryAssenso) where
+	responsabili , utenti, priorityAnagrafeI, priorityAnagrafe , queryAnagrafe,queryAssenso) where
 
 import Control.Monad.RWS
 import Control.Applicative

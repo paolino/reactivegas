@@ -1,4 +1,8 @@
-{-# LANGUAGE ViewPatterns, NoMonomorphismRestriction #-}
+{-# LANGUAGE ViewPatterns, ScopedTypeVariables, NoMonomorphismRestriction #-}
+-- | un wrapper intorno al Core per facilitare il caricamento di un blocco di eventi e per accedere allo stato, partendo dalla serializzazione delle reazioni
+--  Modulo per la serializzazione dell'albero delle reazioni. La serializzazione e' complicata dal fatto che i nodi contengono le procedure di reazione.
+-- La soluzione e' ricreare le procedure . Per fare questo e' necessaro ricaricare  un set di eventi che essendo potenzialmente discontinui nel tempo vengono memorizzati ognuno con lo stato in cui deve essere caricato per riprodurre le reazioni desiderate. 
+-- Da notare che lo stato dell'applicazion in se e' serializzabile. Il problema nasce dal fatto che le reazioni sono dinamiche , nascono a volte dal caricamento degli eventi
 module Controllo where
 
 import Control.Monad.RWS
@@ -8,80 +12,56 @@ import Data.List
 import Data.Maybe
 import Data.Either
 import Debug.Trace
-import Data.Function
 
-import Core (Nodo, runInserzione , inserimentoCompleto, Reazione, mkNodi, reattore, Motivato')
-import Serializzazione (serializza, deserializza, SNodo)
-import Prioriti
-import Text.PrettyPrint
-import Codec.Binary.UTF8.String
+import Core 	
+	-- (Nodo, runInserzione , inserimentoCompleto, Reazione, mkNodi, reattore, Motivato')
+import Prioriti (R,sortP)
+-- | nodo serializzato , una copia di una struttura Nodo non contenente la funzione di reazione del nodo stesso
+data (Read s, Show s) => SNodo s d = SNodo 
+	Bool 					-- ^ stato di attivita della reazione
+	[(Appuntato s d,[(Int,SNodo s d)])] 	-- ^ struttura di deserializzazione  dipendente
+	deriving (Read,Show)
 
-type Log d = [Motivato' d String]
--- ---------------------------------------------
--- | monade di caricamento eventi
-type Programma m s c d = RWST 
-	() -- spazio libero per le configurazioni
-	(Log d) -- il log del caricamento zippato con gli eventi causanti
-	(s,[Nodo s c d]) -- lo stato applicativo e le basi dei nodi reattori
-	m -- una monade interna
-	
+-- | un SNodo vuoto
+nodoVuoto = SNodo True []
 
-caricaEvento :: (Show d, Monad m) => (d,String) -> Programma m s c d ()
-caricaEvento x = do
-	(s,rs) <- get
-	let (rs',s',ws) = runInserzione (inserimentoCompleto x rs) [] s
-	tell ws
-	put (s',rs')
+-- | passa da una struttura SNodo a una Nodo con il contributo della reazione, le reazioni dei nodi seguenti sono costruite con l'inserimento degli eventi appositamente ricordati 
+deserializza :: (Read s, Show s) 
+	=> SNodo s d 		-- ^ il nodo serializzato da ricreare
+	-> Reazione s c d 	-- ^ la sua reazione
+	-> Nodo s c d 		-- ^ il nodo vivo ottenuto
+deserializza (SNodo k rs) r@(Reazione (acc,f :: TyReazione a b d s c)) =	
+	let  -- te :: (Contestuale s d,[(Int,SNodo s d)]) -> (Contestuale s d,[(Int,Nodo s c d)])
+	     te ((ec@(Right (u,x)) , s),js) = ((ec,s),ns) where
+		ns = case  (valore :: ParserConRead a -> a) <$> parser x of
+			Nothing -> error "deserializzaione fallita nel parser"
+			Just y -> let (Just (_,(qs,_)), _,_) = runInserzione (f (Right (u,y))) Boot s in 
+				map (\(i,d) -> (i,deserializza d (qs !! i))) js
+	     te ((ec@(Left x) , s),js) = ((ec , s),ns) where
+		ns = case maybe ((valore :: ParserConRead b -> b) <$> parser x) (provaAccentratore x) acc of
+			Nothing -> error "deserializzaione fallita nel parser"
+			Just y -> let (Just (_,(qs,_)), _, _) = runInserzione (f (Left y)) Boot s in 
+				map (\(i,d) -> (i,deserializza d (qs !! i))) js
+	in Nodo (if k then Just r else Nothing) (map te rs)
 
-caricaEventi :: (Show d, Monad m) => [R] -> [(d,String)] -> Programma m s c d ()
-caricaEventi rs = mapM_ caricaEvento . sortP rs snd
+-- | passa da una struttura Nodo a una SNodo, naturalmente la funzione reazione del nodo base deve essere la stessa quando verra' deserializzato
+serializza :: (Read s, Show s) 
+	=> Nodo s c d 	-- ^ il nodo vivo 
+	-> SNodo s d	-- ^ il nodo serializzato
+serializza (Nodo k rs) = SNodo (isJust k) (map (second $ map (second serializza))  rs)	
 
-caricaStato :: (Read s, Show s,Monad m) => (s,[SNodo s d]) -> Programma m s c d ()
-caricaStato s = do
-	(_,map (fromJust . reattore) -> rs) <- get -- si ritiene che i reattori siano li :)
-	put . second (map (uncurry deserializza) . (flip zip rs)) $ s
+-- | programma di caricamento eventi, prevede il riordinamento per priorita
+caricaEventi :: (Show d, Read s, Show s,Monad m) 
+	=> [R] 			-- ^ i prioritizzatori
+	-> [Reazione s c d] 	-- ^ le reazioni base
+	-> [Esterno d] 		-- ^ gli eventi da caricare
+	-> (s,[SNodo s d]) 	-- ^ lo stato e la serializzazione dell'albero reattivo
+	-> m ((s,[SNodo s d]),[Contestualizzato d String])-- ^ nuovo stato e nuova  serializzazione dell'albero reattivo insieme ai log contestualizzati
+caricaEventi ps rs xs (s,nss) = do
+	let 	ns = map (uncurry deserializza) $ zip nss rs
+		xs' = sortP ps snd xs
+		(ns',s',ws) = runInserzione (foldM (\ns x -> inserimentoCompleto x ns) ns xs') Boot s
+		nss' =  map serializza ns'
+	return ((s',nss'),ws)
 
-scaricaStato :: (Read s, Show s,  Monad m) => Programma m s c d (s,[SNodo s d])
-scaricaStato = second (map serializza) <$> get
-
--- esegue una computazione Programma all'interno di una modifica dello stato serializzato
-conStato :: (Read s, Show s,Monad m) => (s,[SNodo s d]) -> Programma m s c d b ->  Programma m s c d (b,(s,[SNodo s d]))
-conStato s f = caricaStato s >> liftM2 (,) f scaricaStato 
-
-runProgramma :: (Read s, Show s, Monad m) => [Reazione s c d] -> (s,[SNodo s d]) -> Programma m s c d b -> m (b,(s,[SNodo s d]),Log d)
-runProgramma rs s p = do 
-	((y,s'),_,ws) <- runRWST (conStato s p) () (undefined, mkNodi rs) 
-	return (y,s',ws)
-{-	
--- | il metodo normale per caricare un set di eventi su uno stato serializzato e ottenere lo stato serializzato risultante
--- insieme al log del caricamento inchiavato con gli eventi
--- attenzione che uno stato serializzato puó essere deserializzato senza errori e fidato 
--- solamente se la lista di reattori passata é funzionalente equivalente a quella con cui é stato costruito
--- ovvero revisioni delle reazioni rendono errata e/o catastrofica la deserializzazione, in tal caso ricaricare tutti gli eventi
--- partendo da uno stato fresco
-cicloStandard :: (Read s, Show s, Read d, Show d, Monad m) => 
-	[Reazione s c d] -- albero reazioni
-	-> String 
-	-> [(d,String)] 
-	-> m (String,Log d)
-cicloStandard reazioni stato eventi = do
-	(_,stato',logs) <- runProgramma reazioni stato (mapM_ caricaEvento eventi)
-	return (stato',logs)
--}
---------------------- programma di stampa ------------------------------------------
-data Show a => Tree a = Node (a,[Tree a]) | Leaf 
-
-showTrees =  render . vcat . map renderTree . passa  where
-	renderTree Leaf = Text.PrettyPrint.empty
-	renderTree (Node (x,ts)) = text x $$ nest 3 (vcat (map renderTree ts))
-
-passa :: (Show a ,Eq a) => [[a]] -> [Tree a]
-passa xs = let 	h = map ((head . head) &&& map tail) . groupBy ((==) `on` head) 
-		in do 	y <- groupBy ((==) `on` null) xs  -- distinguiamo tra liste vuote e piene
-			if null . head $ y then const Leaf <$> y -- una lista di liste vuote é una lista di Leaf
-				else Node . second passa <$>  h y -- ogni sottosequenza di una lista  di liste piene che ha 
-					-- la stessa testa é un nodo. ricorsivamente analizziamo il resto
-stampaLogs = 	putStrLn . decodeString . showTrees . map (\(as,b) -> (map (\(d,e) -> show d ++ ":" ++ e) as) ++ ["------> " ++ b])
-eccoILogs = decodeString . showTrees . map (\(as,b) -> (map (\(d,e) -> show d ++ ":" ++ e) as) ++ ["------> " ++ b])
 ----------------------------------------
-

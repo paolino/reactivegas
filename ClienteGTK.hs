@@ -74,7 +74,7 @@ main =	do
 		(\e -> outputlog g e >> uiAggiornaEventi ls b g )
 	g G.castToButton "pulsante spedizione" >>= flip G.onClicked f 
 			
-	G.timeoutAdd (cbAggiornamento b g >> return True) 10000
+	-- G.timeoutAdd (cbAggiornamento b g >> return True) 10000
 	uiRicaricaPatch b g
 
 	G.widgetShowAll window
