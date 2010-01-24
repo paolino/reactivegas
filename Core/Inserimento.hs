@@ -1,0 +1,107 @@
+{-# LANGUAGE  ScopedTypeVariables, ViewPatterns #-}
+
+
+-- | modulo di trasformazione dello stato del programma. gli eventi sono espressi come stringhe mentre lo stato 
+module Core.Inserimento where -- (nessunEffetto, TyReazione, Reazione (..), EventoInterno (..), Inserzione, ParserConRead, Parser) where
+
+import Control.Monad (foldM, mzero, when)
+import Control.Monad.RWS (local,get, gets,lift,put, modify)
+import Control.Monad.Writer (WriterT, runWriterT, tell, listen)
+import Control.Applicative ((<$>))
+
+import Control.Monad.Maybe (runMaybeT, MaybeT)
+
+import Lib.Aspetti (see,seeset, ParteDi)
+import Lib.Signal (SignalT, runSignalT, happened, intercept)
+
+import Core.Parsing (valore, parser, ParserConRead)
+import Core.Types (Interno,Esterno)
+import Core.Contesto (motiva)
+import Core.Programmazione (EventoInterno (..), Inserzione, Reazione (..), TyReazione, provaAccentratore, logInserimento)
+import Core.Nodo (Nodo (..), pruner, mkNodi)
+
+
+--------------------------------------------------------------------------------------------------------
+
+-- | una monade temporanea che aiuta l'inserimento di un evento
+-- la Writer accumula gli eventi interni creati contestualizzati alle loro cause
+-- la SignalT dichiara che almeno un a reazione e' avvenuta
+type Inserimento s c d = SignalT (WriterT [EventoInterno] (Inserzione s c d))
+runInserimento = runWriterT . runSignalT
+-- | inserisce un evento nello stato , causando una lista di eventi interni nella monade di WriterT 
+inserimento :: Show d => Either Interno (Esterno d) -> Nodo s c d -> Inserimento s c d (Nodo s c d)
+-- l'inserimento quando attraversa un nodo privo di reazione, si propaga nei nodi inferiori
+inserimento x (Nodo Nothing rs) = Nodo Nothing <$> mapM (secondM (mapM (secondM $ inserimento x)))  rs where
+	secondM f (x,y) = f y >>= return . (,) x
+inserimento x n@(Nodo k@(Just (Reazione (acc, f :: TyReazione a b d s c))) _) = do
+	Nodo Nothing rs <- inserimento x n{reattore = Nothing} -- intanto eseguiamo l'inserzione nei figli simulando nodo morto, gancio al caso sopra
+	s' <- get -- registriamo lo stato per un eventuale ripristino o per la contestualizzazione
+	let 	complete v = do 
+			result <- lift . lift $ f v -- esecuzione con creazione dei nodi dei reattori dipendenti
+			case result of 
+				Just (t, (zip [0..] . mkNodi -> ns, nevs)) -> do
+					happened -- segnaliamo che almeno una reazione è avvenuta
+					tell nevs -- logghiamo gli eventi interni eventualmente creati 
+					return . Nodo (if t then k else Nothing) $ ((x, s') , ns) : rs 
+						--controlla se la reazione e' finita e aggiunge i nuovi reattori contestualizzati
+				Nothing -> put s' >> rifiuto -- la reazione é fallita, lo stato viene ripristinato
+		rifiuto = return (n{seguenti = rs}) 		
+	case x of 
+		Right (u,y) -> -- evento esterno
+			case  (valore :: c a -> a) <$> parser y of 
+				Nothing -> rifiuto -- non intercettato dai parser 
+				Just v ->  complete (Right (u,v))
+		Left y -> -- evento interno
+			case maybe ((valore :: ParserConRead b -> b) <$> parser y) (provaAccentratore y) acc of 
+				Just v -> complete (Left v)
+				Nothing -> rifiuto
+
+-- | l'evento interno del core segnala che nessun reattore ha accettato l'evento (parsing fallito)
+data CoreEvents = CoreEventoRifiuto  deriving (Read,Show)
+
+-- | un aiutante per costruire un reattore all'evento interno del core, evitando di esportare il costruttore non permettiamo ad altri  moduli di produrre l'evento, invece esportiamo una funzione per eseguire il pattern matching
+eventoRifiutato :: CoreEvents -> Maybe ()
+eventoRifiutato CoreEventoRifiuto = Just ()
+-- eventoRifiutato _ = Nothing
+
+-- | inserisce completamente un evento, reinserendo gli eventuali eventi interni creati durante l'inserimento stesso
+inserimentoCompleto :: Show d => Esterno d -> [Nodo s c d] -> Inserzione s c d [Nodo s c d]
+inserimentoCompleto x ns = fmap (fst . fst) . runInserimento  $ do	
+		(ns',t) <- intercept $ consumaR ns (Right x) 
+		if not t then  local (motiva $ Right x) . consumaR ns' $ Left [show CoreEventoRifiuto]
+			else return ns'
+	where 
+	consuma :: Show d => [Nodo s c d] -> Either [Interno] (Esterno d) -> Inserimento s c d [Nodo s c d]
+	consuma ns (Left xs) = foldM (\ns' x -> local (motiva $ Left x) $ inserimentoAlbero (Left x) ns')  ns xs
+	consuma ns (Right e) = local (motiva $ Right e) $ inserimentoAlbero (Right e) ns
+	
+	inserimentoAlbero :: Show d => Either Interno (Esterno d) -> [Nodo s c d] -> Inserimento s c d [Nodo s c d]
+	inserimentoAlbero x = mapM $ fmap pruner . inserimento x
+
+	consumaR :: Show d => [Nodo s c d] -> Either [Interno] (Esterno d) -> Inserimento s c d [Nodo s c d]
+	consumaR ns x = do
+		(ns, map (\(EventoInterno e) -> show e) -> xs) <- listen $ consuma ns x
+		if null xs then return ns else consumaR ns (Left xs)
+
+------------------------ marasma ----------------------------
+-- | la monade di inserimento completata con la gestione fallimento
+type MTInserzione s c d = MaybeT (Inserzione s c d)
+
+-- | gestisce un fallimento segnalando al writer il motivo
+fallimento :: Bool -> String -> MTInserzione s c d ()
+fallimento t s = when t $ logga s >> mzero
+
+logga s = lift (logInserimento s)
+-- | legge il valore di tipo a dallo stato
+osserva :: ParteDi a s => MTInserzione s c d a
+osserva = lift $ gets see 
+
+-- | modifica il valore di tipo a dallo stato
+modifica :: ParteDi a s => (a -> a) -> MTInserzione s c d ()
+modifica = lift . modify . seeset
+
+-- | runner dello strato di gestione fallimento
+conFallimento :: MTInserzione s c d a -> Inserzione s c d (Maybe a)
+conFallimento = runMaybeT
+
+
