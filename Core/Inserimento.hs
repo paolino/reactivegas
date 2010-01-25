@@ -11,6 +11,8 @@ import Control.Applicative ((<$>))
 
 import Control.Monad.Maybe (runMaybeT, MaybeT)
 
+import Codec.Binary.UTF8.String (encodeString)
+
 import Lib.Aspetti (see,seeset, ParteDi)
 import Lib.Signal (SignalT, runSignalT, happened, intercept)
 
@@ -91,7 +93,7 @@ type MTInserzione s c d = MaybeT (Inserzione s c d)
 fallimento :: Bool -> String -> MTInserzione s c d ()
 fallimento t s = when t $ logga s >> mzero
 
-logga s = lift (logInserimento s)
+logga s = lift (logInserimento $ encodeString s)
 -- | legge il valore di tipo a dallo stato
 osserva :: ParteDi a s => MTInserzione s c d a
 osserva = lift $ gets see 

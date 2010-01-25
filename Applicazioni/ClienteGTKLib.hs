@@ -276,17 +276,19 @@ uiCostruzioni ls b@(Board  _ _ tp) g = do
 	G.onClicked ke (runCostruzioneGTK b de re evento)
 	G.onClicked ki (runCostruzioneGTK b di ri interrogazione)
 	return ()
-	where	interfacciaY s (d,q,z) cs = do
-			let wrap f k = second r (f k) where
-				r c = do
-					y <- lift q
-					case y of
-						Left s -> k s >> return undefined
-						Right (s,_) ->  c s >>= lift . z 
-			incrocio d s $ map wrap cs
-			where 	incrocio d s cs = forever $ callCC dentro where
-					dentro ki =  join . parametro . Scelta s $ map ($ ki2) cs where
-						ki2 x = lift (d x) >> ki ()
+
+interfacciaY desc (errore,lettura,accetta) cs = let
+	wrap f k = second r (f k) where
+		r attore = do
+			y <- lift lettura
+			case y of
+				Left ops -> k ops >> return ()
+				Right (stato,_) -> runReaderT attore stato >>= lift . accetta 
+	incrocio cs = forever $ callCC dentro where
+		dentro k =  join . parametro . Scelta desc $ map ($ k2) cs where
+			k2 x = lift (errore x) >> k ()
+	in incrocio $ map wrap cs
+
 uiSetResponsabili :: OP ()
 uiSetResponsabili b@(Board tc ts tp) g = do
 	tc <- atomically (readTVar tc)

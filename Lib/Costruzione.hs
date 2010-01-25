@@ -20,7 +20,7 @@ data Monad m => Costruzione m b
 type Svolgimento b m a = ContT (Costruzione m b) m a
 
 parametro :: (Monad m, Show a,Read a) => SceltaOLibero a -> Svolgimento b m a 
-parametro scelte = ContT $ \k -> return (Costruzione scelte k)
+parametro scelte = ContT $ return . Costruzione scelte 
 
 svolgi :: Monad m => Svolgimento b m b  -> m (Costruzione m b)
 svolgi c = runContT c undefined 

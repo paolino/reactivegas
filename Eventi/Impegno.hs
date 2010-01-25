@@ -1,8 +1,7 @@
-{-# LANGUAGE FlexibleContexts, ViewPatterns, NoMonomorphismRestriction #-}
+{-# LANGUAGE FlexibleContexts, ScopedTypeVariables, ViewPatterns, NoMonomorphismRestriction #-}
 
--- modulo di implementazione della funzionalitá dell'impegno economico. La funzionalitá é generalizzata sull'obbiettivo dell'impegno, infatti
--- esponiamo l'interfaccia programmazioneImpegno. La gestione dello stato é fornita dal modulo di Servizio come in tutti i moduli higher order.
-module Impegno (
+-- | modulo di implementazione della funzionalitá dell'impegno economico. La funzionalitá é generalizzata sull'obiettivo dell'impegno, infatti esponiamo l'interfaccia programmazioneImpegno. La gestione dello stato é fornita dal modulo di Servizio come in tutti i moduli higher order.
+module Eventi.Impegno (
 	Impegni,  -- necessario per l'istanziazione dell'aspetto del tipo dello stato
 	statoInizialeImpegni, -- evitiamo di esportare il costruttore dell'aspetto
 	programmazioneImpegno, -- l'interfaccia per programmare il modulo
@@ -10,30 +9,31 @@ module Impegno (
 	makeEventiImpegno,
 	priorityImpegnoI,
 	priorityImpegno,
-	queryImpegni,
-	unImpegno
+	queryImpegni
+--	unImpegno
 	)  where
 
 import Control.Monad.Maybe (MaybeT)
 import Control.Monad (mzero, when)
 import Control.Applicative ((<$>))
-import Control.Monad.Reader (ask)
+import Control.Monad.Reader (asks, MonadReader)
 import Control.Arrow ((&&&))
-import Codec.Binary.UTF8.String
-import Data.Maybe
 
-import Aspetti ((.<), ParteDi)
-import Lib1
-import Lib0 
-import Core (Reazione (Reazione), Inserzione, EventoInterno (..), Parser, nessunEffetto, Effetti)
-import Costruzione 
-import Prioriti
+import Lib.Aspetti ((.<), ParteDi)
+import Lib.Costruzione (parametro, Svolgimento, Response (..), SceltaOLibero (..))
+import Lib.Prioriti (R(..))
+import Lib.Assocs (update)
+
+import Core.Parsing (Parser)
+import Core.Programmazione (Effetti, Reazione (..) , EventoInterno (..), soloEsterna, nessunEffetto)
+import Core.Inserimento (MTInserzione, conFallimento, fallimento, osserva, modifica, logga)
 
 ---- moduli necessari
-import Servizio (Servizio, statoInizialeServizio, nuovoStatoServizio, modificaStatoServizio, osservaStatoServizio, eliminaStatoServizio,elencoSottoStati, seeStatoServizio)
-import Anagrafe (Utente, Responsabili, Anagrafe, eliminazioneResponsabile, eventoValidato,utenti, esistenzaResponsabile)
-import Accredito (preleva, accredita, Conti)
+import Eventi.Servizio (Servizio, servizio0, nuovoStatoServizio, modificaStatoServizio, osservaStatoServizio, eliminaStatoServizio,elencoSottoStati)
+import Eventi.Anagrafe (Utente, Responsabili, Anagrafe, eliminazioneResponsabile, eventoValidato,utenti, esistenzaResponsabile)
+import Eventi.Accredito (preleva, accredita, Conti)
 
+type Indice = Int
 -- gli eventi , solo esterni, che il reattoreImpegno intercetta
 data Eventi 
 	= Impegno Utente Float Indice  -- indica un impegno di denaro da parte dell'utente per la causa chiave
@@ -56,10 +56,10 @@ fallimentoImpegno _ = Nothing
 data Impegni = Impegni [(Utente,Float)] deriving (Show,Read)
 
 -- | aggiunta dell'aspetto Servizio Impegni 
-statoInizialeImpegni  :: a -> (Servizio Impegni, a)
-statoInizialeImpegni = statoInizialeServizio 
+statoInizialeImpegni  :: Servizio Impegni
+statoInizialeImpegni = servizio0
 
-unImpegno s n = (\(Impegni us) -> us) <$> snd <$> seeStatoServizio  (undefined :: Impegni) s n
+-- unImpegno s n = (\(Impegni us) -> us) <$> snd <$> seeStatoServizio  (undefined :: Impegni) s n
 
 -- | il tipo della funzione da passare alla hof restituita da programmazioneImpegno 
 type ConclusioneReattoreImpegno s c = Maybe ([(Utente, Float)]) -> MTInserzione s c Utente (Effetti s c Utente)
@@ -92,14 +92,14 @@ programmazioneImpegno q ur  = do
 			esistenzaResponsabile r
 			when (l /= j) mzero
 			Impegni us <- osservaStatoServizio j
-			fallimento (ur /= r) (encodeString $ "solo chi ha aperto una impegnativa puó chiuderla")
+			fallimento (ur /= r) "solo chi ha aperto una impegnativa puó chiuderla"
 			eliminaStatoServizio j (undefined :: Impegni)
 			(,) False <$> k (Just us) 
 		reattoreImpegno k (Right (r,FallimentoImpegno j)) = conFallimento $ do
 			esistenzaResponsabile r
 			when (l /= j) mzero
 			Impegni us <- osservaStatoServizio j
-			fallimento (ur /= r) $ encodeString "solo chi ha aperto una impegnativa puó chiuderla"
+			fallimento (ur /= r) "solo chi ha aperto una impegnativa puó chiuderla"
 			mapM_ (\(u,v) -> accredita u v) us
 			eliminaStatoServizio j (undefined :: Impegni)
 			(ks,is) <- k Nothing 
@@ -114,40 +114,49 @@ programmazioneImpegno q ur  = do
 			
 	return (l, \t -> Reazione (Nothing,reattoreImpegno t) )
 
+askImpegni :: (ParteDi (Servizio Impegni) r, MonadReader r m) =>
+     (String -> m ()) -> m [(String, Int)]
+askImpegni k	= do 	(xs :: [(Int,(String,Impegni))]) <- asks elencoSottoStati
+			when (null xs) $ k "nessuna raccolta di impegni attiva"
+			return $ map (fst . snd &&& fst) xs
+makeEventiImpegno :: (
+	ParteDi (Servizio Impegni) s, 
+	ParteDi Anagrafe s,
+	MonadReader s m) =>
+	[(String -> Svolgimento b m ()) -> (String, Svolgimento b m String)]
+
 makeEventiImpegno = [ eventoFineImpegno, eventoFallimentoImpegno ,  eventoImpegno] where
-        eventoFineImpegno k = (,) "fine di una raccolta impegni" $ \s -> do
-		let e = elencoSottoStati (undefined :: Impegni) s
-		when (null e) $ k "nessuna raccolta di impegni attiva"
-                n <- parametro . Scelta "selezione raccolta impegni da chiudere" $ (map (snd &&& fst) e)
+        eventoFineImpegno k = (,) "fine di una raccolta impegni" $ do
+		e <- askImpegni k
+                n <- parametro . Scelta "selezione raccolta impegni da chiudere" $ e
                 return $ show (FineImpegno n)
-        eventoFallimentoImpegno k = (,) "fallimento di una raccolta impegni" $ \s -> do
-		let e = elencoSottoStati (undefined :: Impegni) s
-		when (null e) $ k "nessuna raccolta di impegni attiva"
-                n <- parametro . Scelta "selezione raccolta da far fallire" $ (map (snd &&& fst) e)
+        eventoFallimentoImpegno k = (,) "fallimento di una raccolta impegni" $ do
+		e <- askImpegni k
+                n <- parametro . Scelta "selezione raccolta da far fallire" $ e
                 return $ show (FallimentoImpegno n)
-        eventoImpegno k = (,) "impegno di una somma" $ \s -> do
-		let e = elencoSottoStati (undefined :: Impegni) s
-		when (null e) $ k "nessuna raccolta di impegni attiva"
-                n <- parametro . Scelta "selezione raccolta impegni"  $ (map (snd &&& fst) e)
-		let us = utenti s
-		when (null us) $ k "nessun utente disponibile"
+        eventoImpegno k = (,) "impegno di una somma" $ do
+		e <- askImpegni k
+                n <- parametro . Scelta "selezione raccolta impegni"  $ e
+		us <- utenti k
 		u <- parametro . Scelta "selezione utente impegnante" $ (map (id &&& id) us)
 		z <- parametro $ Libero "somma impegnata"
                 return $ show (Impegno u z n)
 
+queryImpegni :: (
+	ParteDi (Servizio Impegni) s, 
+	MonadReader s m) =>
+	[(String -> Svolgimento b m ()) -> (String, Svolgimento b m Response)]
+
 queryImpegni = [r,q] where
-	r k = (,) "elenco impegni" $ \s -> do
-		let e = elencoSottoStati (undefined :: Impegni) s
-		let 	f = seeStatoServizio (undefined :: Impegni) s
-			is = map fst . catMaybes . map (f . fst) $ e
-		return $ Response [("elenco impegni",if null e then 
-			ResponseOne "nessuna raccolta di impegni attiva" else ResponseMany is)]
-	q k = (,) "raccolte impegni"$ \s -> do
-		let e = elencoSottoStati (undefined :: Impegni) s
-		when (null e) .k $ Response [("raccolte impegni",ResponseOne "nessuna raccolta di impegni attiva")]
-		n <- parametro . Scelta "selezione raccolta impegni" $ (map (snd &&& fst) e)
-		let is = seeStatoServizio (undefined :: Impegni) s n
-		case is of 
-			Nothing -> return $ Response [("raccolte impegni",ResponseOne "errore interno")]
-			Just (t,Impegni is) -> return $ Response [("obiettivo raccolta",ResponseOne t),("somme impegnate", ResponseAL is)]
+	r k = (,) "elenco impegni" $  do
+		e <- askImpegni k 
+		return $ Response [("elenco impegni",ResponseMany (map fst e))]
+	q k = (,) "raccolte impegni"$do
+		askImpegni k
+		e <- asks elencoSottoStati 
+		n <- parametro . Scelta "selezione raccolta impegni" $ map (fst . snd &&& fst) e
+		case lookup n e of 
+			Nothing -> error "parametro: incoerenza interna" 
+			Just (t,Impegni is) -> return $ 
+				Response [("obiettivo raccolta",ResponseOne t),("somme impegnate", ResponseAL is)]
 

@@ -11,11 +11,14 @@ git:
 	git add Applicazioni/reactivegas.glade
 	git add README
 	git add LICENSE
+	git add modules.svg
 	git add makefile
 	git commit
 	git push
 
 edit:
 	gvim Lib/*.hs Core/*.hs Eventi/*.hs Applicazioni/*.hs Applicazioni/reactivegas.glade README LICENSE makefile
+modules:
+	/home/paolino/.cabal/bin/graphmod Core/*.hs Lib/*.hs Eventi/*.hs | dot -Tsvg  > modules.svg
 
 

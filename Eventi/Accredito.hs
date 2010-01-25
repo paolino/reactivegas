@@ -1,18 +1,31 @@
 {-# LANGUAGE ScopedTypeVariables, ViewPatterns, NoMonomorphismRestriction, FlexibleContexts #-}
 -- | modulo per la gestione dei conti utente e responsabile
-module Accredito (Accredito (..), Conti, Saldi, preleva, accredita, salda, reazioneAccredito , statoInizialeAccredito ,makeAccredito,priorityAccredito, queryAccredito) where
+module Eventi.Accredito (
+--	Accredito,
+	Conti,
+	Saldi,
+	preleva,
+	accredita,
+	salda,
+	reazioneAccredito ,
+	statoInizialeAccredito ,
+	makeAccredito,
+	priorityAccredito,
+	queryAccredito
+	) where
 
-import Codec.Binary.UTF8.String
-import Core
-import Lib0
-import Lib1
-import Costruzione
-import Anagrafe
-import Data.Maybe
-import Control.Monad.Reader
-import Control.Arrow
-import Aspetti ((.<), see, ParteDi)
-import Prioriti
+import Control.Monad.Reader (MonadReader, asks)
+import Control.Monad (when)
+import Control.Arrow (second, (&&&))
+
+import Core.Programmazione (soloEsterna, nessunEffetto)
+import Core.Inserimento (fallimento, osserva, modifica, logga)
+import Lib.Costruzione (parametro, Svolgimento, Response (..), SceltaOLibero (..))
+import Eventi.Anagrafe (Anagrafe, Utente, esistenzaUtente, utenti, Responsabili, 
+	esistenzaResponsabile, responsabili, eventoValidato)
+import Lib.Aspetti ((.<), see, ParteDi)
+import Lib.Prioriti (R (..))
+import Lib.Assocs (update , (?))
 
 data Accredito = Accredito Utente Float | Saldo Utente Float deriving (Show, Read)
 priorityAccredito = R k where
@@ -28,7 +41,7 @@ preleva u dv = do
 	fallimento (dv <= 0) "tentato un prelievo negativo o nullo"
 	esistenzaUtente u 
 	Conti us <- osserva
-	fallimento (us ? (u,0) < dv) $ encodeString "il credito non é sufficiente per la richiesta" 
+	fallimento (us ? (u,0) < dv) "il credito non é sufficiente per la richiesta" 
 	aggiornaCredito u (subtract dv) 
 
 accredita u dv = do
@@ -56,29 +69,38 @@ reattoreAccredito (eventoValidato -> (wrap ,Saldo u dv)) = wrap $ \r -> do
 	logga $ "spostati " ++ show dv ++ " euro dal saldo di " ++ show u ++ " al saldo di " ++ show r
 	return (True,nessunEffetto)
 
+makeAccredito :: (
+	ParteDi Responsabili s, 
+	ParteDi Anagrafe s,
+	MonadReader s m) =>
+	[(String -> Svolgimento b m ()) -> (String, Svolgimento b m String)]
+
 makeAccredito = [eventoAccredito , eventoSaldo] where
 
-	eventoAccredito k = (,) "attribuzione accredito per un utente" $ \s -> do
-	    when (null $ utenti s) $ k "nessun utente disponibile"
-	    u <- parametro (Scelta "selezione utente". map (id &&& id) . utenti  $ s)
-	    n <- parametro (Libero "la somma da accreditare")
-	    return $ show (Accredito u n)
+	eventoAccredito k = (,) "attribuzione accredito per un utente" $ do
+		us <- utenti k 
+		u <- parametro (Scelta "selezione utente". map (id &&& id) $ us)
+		n <- parametro (Libero "la somma da accreditare")
+		return $ show (Accredito u n)
 
-	eventoSaldo k =  (,) "ricezione saldo da un responsabile" $ \s -> do
-	    when (null $ responsabili s) $ k "nessun responsabile disponibile"
-	    u <- parametro (Scelta "selezione responsabile" . map (fst &&& id) . responsabili $ s)
-	    n <- parametro (Libero "la somma ricevuta")
-	    return $ show (Saldo (fst u) n)
+	eventoSaldo k =  (,) "ricezione saldo da un responsabile" $ do
+		rs <- responsabili k
+		u <- parametro (Scelta "selezione responsabile" . map (fst &&& id) $ rs)
+		n <- parametro (Libero "la somma ricevuta")
+		return $ show (Saldo (fst u) n)
 	    
---queryAccredito :: (Aspetti.ParteDi Responsabili a, Monad m, Aspetti.ParteDi Anagrafe a) =>
- --                [([Char] -> Svolgimento b m ()) -> ([Char], a -> Svolgimento b m String)]
+queryAccredito :: (
+	Conti `ParteDi` s, 
+	Saldi `ParteDi` s, 
+	MonadReader s m) =>
+	[(String -> Svolgimento b m a) -> (String, Svolgimento b m Response)]
     
 queryAccredito = [queryUtente, queryResponsabile] where
-	queryUtente k = (,) "accrediti degli utenti" $ \s -> do
-		let Conti us = see s
+	queryUtente k = (,) "accrediti degli utenti" $ do
+		Conti us <- asks see 
 		return $ Response [("accrediti degli utenti", if null us then 
 			ResponseOne "nessun utente possiede un accredito" else ResponseAL us)]
-	queryResponsabile k = (,) "saldi dei responsabili" $ \s -> do
-		let Saldi rs = see s
+	queryResponsabile k = (,) "saldi dei responsabili" $ do
+		Saldi rs <- asks see 
 		return $ Response [("saldi dei responsabili" , if null rs then 
 			ResponseOne "nessun responsabile ha un saldo" else ResponseAL rs)]

@@ -1,4 +1,4 @@
-{-# LANGUAGE NoMonomorphismRestriction, ViewPatterns, FlexibleContexts, ScopedTypeVariables, ExistentialQuantification #-}
+{-# LANGUAGE NoMonomorphismRestriction, StandaloneDeriving, ViewPatterns, FlexibleContexts, ScopedTypeVariables, ExistentialQuantification #-}
 module Eventi.Anagrafe (
 	eliminazioneResponsabile
 	, esistenzaUtente 
@@ -26,8 +26,8 @@ import Data.List ((\\))
 import Control.Applicative ((<$>))
 import Control.Arrow ((***), (&&&))
 import Control.Monad (when, mzero)
-import Control.Monad.State (MonadState, gets)
-
+import Control.Monad.Reader (asks, MonadReader)
+import Codec.Crypto.RSA
 import Core.Inserimento (logga, conFallimento, MTInserzione, osserva, modifica, fallimento)
 import Core.Programmazione (Inserzione, EventoInterno (..), soloEsterna, nessunEffetto, Reazione (..))
 import Lib.Aspetti ((.<),ParteDi,see)
@@ -36,24 +36,31 @@ import Lib.Costruzione (parametro,Svolgimento,SceltaOLibero (..), Response (..))
 import Lib.Prioriti (R (..))
 
 
-
 import Eventi.Servizio
 
-type Chiave= Int
+deriving instance Read PublicKey
+deriving instance Eq PublicKey
+
+type Chiave= PublicKey
 type Indice = Int
 type Utente = String
 
 eventoValidato  (r,a) = (\f -> conFallimento (esistenzaResponsabile r >> f r), a)
 
 data Anagrafe = Anagrafe [Utente] deriving (Show,Read)
-utenti = (\(Anagrafe us) -> us) . see
-
+utenti k = do 
+	us <- asks $ (\(Anagrafe us) -> us) . see
+	when (null us) $ k "nessun utente presente"
+	return us
 statoInizialeAnagrafe unos x = Anagrafe (map fst unos) .< Responsabili unos [] .< x
 
 type Responsabile = (Utente,Chiave)
 
 data Responsabili = Responsabili {eletti::[Responsabile], inodore ::[(Indice,Responsabile)]} deriving (Show,Read)
-responsabili = eletti . see
+responsabili k = do
+	rs <- asks $ eletti . see
+	when (null rs) $ k "nessun responsabile presente"
+	return rs
 
 priorityAnagrafe = R k where
 	k (NuovoUtente _) = -20
@@ -114,37 +121,46 @@ reazioneAnagrafe = soloEsterna reattoreAnagrafe' where
 			logga $ "responsabile eliminato " ++ show u
 			return ([],[EventoInterno $ EventoEliminazioneResponsabile u r])
 
+makeEventiAnagrafe :: (
+	Anagrafe `ParteDi` s,
+	Responsabili `ParteDi` s, 
+	MonadReader s m) =>
+	[(String -> Svolgimento b m ()) -> (String , Svolgimento b m String)]
 
 makeEventiAnagrafe = [eventoNuovoUtente, eventoElezioneResponsabile,eventoEliminazioneResponsabile] where
-        eventoNuovoUtente k = (,) "nuovo utente"  $ \s -> do
+        eventoNuovoUtente k = (,) "nuovo utente"  $ do
                 n <- parametro (Libero "il nome del nuovo utente")
                 return $ show (NuovoUtente n)
 
-        eventoElezioneResponsabile k = (,) "elezione di un nuovo responsabile" $ \s -> do
-		let disponibili = utenti s \\ map fst (responsabili s)
-		when (null disponibili) $ k "nessun utente disponibile"
+        eventoElezioneResponsabile k = (,) "elezione di un nuovo responsabile" $ do
+		us <- utenti k
+		rs <- responsabili k
+		let disponibili = us \\ map fst rs
+		when (null disponibili) $ k "nessun utente non responsabile disponibile"
                 n <- parametro . Scelta "selezione eleggibile" $ (map (id &&& id) $ disponibili)
                 m <- parametro (Libero "il modulo della chiave pubblica")
                 return $ show (ElezioneResponsabile (n,m))
 
-        eventoEliminazioneResponsabile k = (,) "richiesta di eliminazione di un responsabile" $ \s -> do
-		when (null $ responsabili s) $ k "nessun utente disponibile"
-                n <- parametro . Scelta "selezione responsabile" . map (fst &&& id) $ responsabili s
+        eventoEliminazioneResponsabile k = (,) "richiesta di eliminazione di un responsabile" $ do
+		rs <- responsabili k
+                n <- parametro . Scelta "selezione responsabile da eliminare" . map (fst &&& id) $ rs
                 return $ show (EliminazioneResponsabile (fst n))
+queryAnagrafe
+  :: (ParteDi Responsabili r, MonadReader r m, ParteDi Anagrafe r) =>
+	[(String -> Svolgimento b m ()) -> (String , Svolgimento b m Response)]
+
 queryAnagrafe = [queryChiave,queryElencoUtenti,queryElencoResponsabili] where
-	queryChiave k = (,) "la chiave pubblica di un responsabile"  $ \s -> do
-		when (null $ responsabili s) $ k (Response [("chiave pubblica",ResponseOne "nessun responsabile disponibile")])
-		(u,v) <- parametro (Scelta "selezione responsabile" . map (fst &&& id) . responsabili $ s)		
+	queryChiave k = (,) "la chiave pubblica di un responsabile"  $ do
+		rs <- responsabili k
+		(u,v) <- parametro (Scelta "selezione responsabile" . map (fst &&& id) $ rs)		
 		return $ Response [("responsabile",ResponseOne u),("chiave pubblica",ResponseOne v)]
 
-	queryElencoUtenti k = (,) "elenco nomi utenti" $ \s -> do
-		let us = utenti s
-		return . Response $ [("elenco nomi utenti", if null us then 
-			ResponseOne "nessun utente nel gruppo" else ResponseMany $ utenti s)]
-	queryElencoResponsabili k = (,) "elenco nomi responsabili" $ \s -> do
-		let us = map fst $ responsabili s
-		return . Response $ [("elenco nomi responsabili", if null us then 
-			ResponseOne "nessun responsabile nel gruppo" else ResponseMany $ utenti s)]
+	queryElencoUtenti k = (,) "elenco nomi utenti" $ do
+		us <- utenti k 
+		return . Response $ [("elenco nomi utenti", ResponseMany us)]
+	queryElencoResponsabili k = (,) "elenco nomi responsabili" $ do
+		rs <- responsabili k 
+		return . Response $ [("elenco nomi responsabili", ResponseMany rs )]
 		
 
 ----------------------------------------------------------------------------------------------------------------------
@@ -190,27 +206,31 @@ programmazioneAssenso se ur c k = do
 	logga $ "aperta la raccolta di assensi numero " ++ show l
 	return (l,Reazione (Nothing, reattoreAssenso)) -- restituisce il riferimento a questa richiesta perché venga nominato negli eventi di assenso
 
-getAssensi :: (ParteDi (Servizio Assensi) s, MonadState s m) => m [(String, Int)]
-getAssensi 	= do 	(xs :: [(Int,(String,Assensi))]) <- elencoSottoStati 
+askAssensi :: (ParteDi (Servizio Assensi) s, MonadReader s m) => m [(String, Int)]
+askAssensi 	= do 	(xs :: [(Int,(String,Assensi))]) <- asks elencoSottoStati 
 			return $ map (fst . snd &&& fst) xs
 makeEventiAssenso
-	:: (ParteDi (Servizio Assensi) s, MonadState s m) =>
+	:: (ParteDi (Servizio Assensi) s, MonadReader s m) =>
 	[(String -> Svolgimento b m ()) -> (String , Svolgimento b m String)]
 
 makeEventiAssenso = [eventoFallimentoAssenso , eventoAssenso] where
         eventoFallimentoAssenso k = (,) "fallimento di una raccolta di assensi" $ do
-		ys <- getAssensi 
+		ys <- askAssensi 
 		when (null ys) $ k "nessuna raccolta di assensi attiva"
                 n <- parametro . Scelta "selezione richiesta per fallire" $ ys
               	return $ show (EventoFallimentoAssenso n)
         eventoAssenso k = (,) "attribuzione di un assenso" $ do
-		ys <- getAssensi 
+		ys <- askAssensi 
 		when (null ys) $ k "nessuna raccolta di assensi attiva"
                 n <- parametro . Scelta "selezione richiesta per assenso" $ ys
                 return $ show (Assenso n)
+queryAssenso
+  :: (ParteDi (Servizio Assensi) s, MonadReader s m) =>
+	[(String -> Svolgimento b m ()) -> (String , Svolgimento b m Response)]
+
 queryAssenso = [querySottoStati] where
 	querySottoStati _ = (,) "elenco richieste di assenso aperte" $ do
-		ys <- getAssensi 
+		ys <- askAssensi 
 		return $ Response [("elenco richieste di assenso aperte", if null ys then
 			ResponseOne "nessuna richiesta aperta" else ResponseMany ys)]
 

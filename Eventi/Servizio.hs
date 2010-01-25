@@ -1,11 +1,20 @@
 {-# LANGUAGE NoMonomorphismRestriction,FlexibleContexts,ScopedTypeVariables  #-}
 
 -- | un gestore eventi per servizi istanziabili
-module Eventi.Servizio where
+module Eventi.Servizio (
+	servizio0,	
+	nuovoStatoServizio,
+	osservaStatoServizio,
+	modificaStatoServizio,
+	eliminaStatoServizio,
+	elencoSottoStati,
+	Servizio
+	)
+	
+	where
 
 import Control.Applicative ((<$>))
 import Control.Arrow ((***))
-import Control.Monad.State (MonadState, gets)
 
 import Core.Inserimento (MTInserzione, osserva, modifica, fallimento)
 import Core.Programmazione (Inserzione)
@@ -65,10 +74,8 @@ eliminaStatoServizio j proxy = do
 	modifica $ \_ -> Servizio p (elimina j ls)
 
 -- | restituisce la lista di associazione (chiave, descrizione) degli stati presenti
-elencoSottoStati :: (ParteDi (Servizio a) s, Show a,Read a, MonadState s m) 
-	=> m [(Int,(String,a))]
-elencoSottoStati = do
-	Servizio p ls <- gets see
-	return $ ls
+elencoSottoStati :: (ParteDi (Servizio a) s, Show a,Read a) 
+	=> s -> [(Int,(String,a))]
+elencoSottoStati = sottostato . see
 
 
