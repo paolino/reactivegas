@@ -4,6 +4,7 @@ module Eventi.Anagrafe (
 	, esistenzaUtente 
 	, Anagrafe
 	, Responsabili
+	, Responsabile
 	, statoInizialeAnagrafe
 	, esistenzaResponsabile
 	, reazioneAnagrafe

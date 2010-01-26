@@ -34,17 +34,17 @@ import Lib.Aspetti
 import Lib.Costruzione 
 -----------------------------------------
 
-
 priorities = [priorityAnagrafe,priorityAnagrafeI,priorityImpegnoI,priorityImpegno,priorityOrdine,priorityAccredito]
 makers = concat [makeAperturaOrdine,makeAccredito,makeEventiImpegno,makeEventiAssenso,makeEventiAnagrafe]
 queriers = concat [queryAccredito, queryAnagrafe,queryAssenso,queryOrdine,queryImpegni]
 
 type T = Servizio Impegni :*: StatoOrdini :*: Conti :*: Saldi :*: Servizio Assensi :*: Anagrafe :*: Responsabili :*: ()
+
 reattori = [reazioneAnagrafe :: Reazione T ParserConRead Utente,reazioneAccredito,reazioneOrdine] 
 addServizio = (,) servizio0
 type Q = (T,[SNodo T Utente])
 
-s0 :: [(Utente, Chiave)] -> (T, [SNodo T Utente])
+s0 :: [(Utente, Chiave)] -> Q
 s0 responsabilidiboot = (
 	addServizio . 
 	statoInizialeOrdini . 
@@ -57,11 +57,11 @@ s0 responsabilidiboot = (
 responsabiliQ :: Q -> [(Utente,PublicKey)]
 responsabiliQ s = runReader (responsabili error) . fst $ s
 
-aggiornaStato :: MonadError [Char] m =>
-                 PublicKey
-                 -> (T, [SNodo T Utente])
-                 -> [(B.ByteString, [(Chiave, B.ByteString, [[Char]])])]
-                 -> m ((T, [SNodo T Utente]), [Contestualizzato Utente String] )
+aggiornaStato :: MonadError [Char] m 
+	=> Chiave
+	-> (T, [SNodo T Utente])
+	-> [(Firma, [(Chiave, Firma, [String])])]
+	-> m ((T, [SNodo T Utente]), [Contestualizzato Utente String] )
 aggiornaStato g x = let
 	r stato (firma,ps) = do
 		let h = showDigest . sha512 $ B.pack $ show stato
@@ -76,4 +76,4 @@ aggiornaStato g x = let
 		return stato'
 	in runWriterT . foldM r x
 
-
+provaStato :: Utente -> IO (Q,PublicKey,(Utente,
