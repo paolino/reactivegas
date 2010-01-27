@@ -10,20 +10,29 @@ import Text.PrettyPrint
 import Control.Applicative
 import Data.List
 
-data SceltaOLibero a = Scelta String [(String,a)] | Libero String
+type Continuazione m b a = a -> m (Passo m b) -- una continuazione monadica
 
-type Continuazione m b a = a -> m (Costruzione m b) -- una continuazione monadica
-data Monad m => Costruzione m b 
-	= forall a . (Show a,Read a) => 
-		Costruzione (SceltaOLibero a) (Continuazione m b a)
+data Monad m => Passo m b 
+	= forall a. Scelta String [(String,a)] (Passo m b)  (Continuazione m b a)
+	| forall a. Read a => Libero String (Passo m b)  (Continuazione m b a)
+	| Costruito b
 
-type Svolgimento b m a = ContT (Costruzione m b) m a
+type Svolgimento b m a = ContT (Passo m b) (ReaderT (Passo m b) m) a
 
-parametro :: (Monad m, Show a,Read a) => SceltaOLibero a -> Svolgimento b m a 
-parametro scelte = ContT $ return . Costruzione scelte 
+reset :: Monad m => (Passo m b -> Continuazione m b a -> Passo m b) -> Svolgimento b m a
+reset f = ContT $ \k -> local (l k) ask where
+	l k u = f u $ \x -> runReaderT (k x) (l k u)
 
-svolgi :: Monad m => Svolgimento b m b  -> m (Costruzione m b)
-svolgi c = runContT c undefined 
+libero :: (Monad m, Read a) => String -> Svolgimento b m a 
+libero prompt = reset $ Libero prompt
+
+scelte :: Monad m =>  [(String,a)] -> String -> Svolgimento b m a 
+scelte xs prompt = reset $ Scelta prompt xs
+
+type Costruzione m b = Svolgimento b m b
+
+svolgi :: Monad m => Passo m b -> Costruzione m b -> m (Passo m b)
+svolgi p c = flip runReaderT p $ runContT c (return . Costruito)
 
 ----------------------  un driver per utilizzare una Costruzione ----------------------------------------						
 data Response 

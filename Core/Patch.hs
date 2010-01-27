@@ -1,101 +1,88 @@
-{-# LANGUAGE TypeOperators, ViewPatterns, ScopedTypeVariables, FlexibleContexts, FlexibleInstances, NoMonomorphismRestriction #-}
-module Core.Patch where
+{-# LANGUAGE  TypeSynonymInstances, FlexibleInstances #-}
+module Core.Patch (Patch, fromPatch, mkPatch, Group, fromGroup, mkGroup, Checker, runChecker, Ambiente (..)) where
 
-import Data.Maybe
-import Control.Arrow
-import System.Environment
-import Data.List
+import Data.List (find, lookup)
 import Control.Applicative ((<$>))
-import System.IO
-import Codec.Binary.UTF8.String
-import Control.Monad.Error
-import Control.Monad.Writer
-import Control.Monad.Reader
-import System.Directory
-import Codec.Crypto.RSA
-import Data.Digest.Pure.SHA
-import qualified Data.ByteString.Lazy.Char8 as B
-
-import Control.Monad (msum)
+import Control.Monad.Error (when, ErrorT, throwError, runErrorT)
+import Control.Monad.Reader (ReaderT, ask, runReaderT)
+import Data.Monoid (mappend)
 
 import Core.Types (Esterno,Evento,Message)
-import Core.Inserimento ()
-import Core.Controllo (SNodo)
-import Core.Programmazione
-import Core.Parsing
-import Core.Contesto
 
 import Lib.Aspetti (ParteDi)
-import qualified Eventi.Anagrafe as Anagrafe
+import Lib.Error (liftMaybe, liftBool)
+import Lib.Firmabile (Firmabile (..), sign , verify, Firma, Chiave, Segreto)
 
+import Eventi.Anagrafe (Responsabile,Utente)
+import Data.ByteString.Lazy.Char8 (pack)
 
--- | Lo stato e' sempre accompagnato dalla struttura di eventi necessari a trasformarlo in attuale, quegli eventi che non potevano trovare riscontro nella serializzazione, detti eventi aperti
-type Stato s = (s,[SNodo s Anagrafe.Utente])
+-- | l'ambiente immutabile dove eseguire le operazioni di patch
+data Ambiente = Ambiente {
+	sincronizzatore :: Chiave,	-- ^ chiave pubblica di sincronizzazione
+	responsabili :: [Responsabile],	-- ^ responsabili validi
+	blob :: String 			-- ^ hash di riferimento per la patch
+	}
 
--- | estrae i responsabili da uno Stato
-responsabili :: (Anagrafe.Responsabili `ParteDi` s) => Stato s  -> [Anagrafe.Responsabile]
-responsabili s = runReader (Anagrafe.responsabili (\x -> error $ "Patch: " ++ x)) . fst $ s
+-- | la monade di esecuzione delle operazioni di patch
+type Checker m = ReaderT Ambiente (ErrorT Message m)
 
-type Chiave = PublicKey
-type Firma = B.ByteString
-type Blob = String
-
+-- | esegue una azione di tipo checker nel suo ambiente
+runChecker :: Ambiente -> Checker m a -> m (Either Message a)
+runChecker rs c = runErrorT $ runReaderT c rs  
 
 -- | una patch è un insieme di eventi firmati da un responsabile
 type Patch = (Chiave,Firma,[Evento])
 
-firma :: Patch -> Firma
-firma (_,f,_) = f
-
-digest = showDigest . sha512 . B.pack . show
-
-type Checker m = ReaderT ([Anagrafe.Responsabile],Blob) (ErrorT Message m)
-
-runChecker :: ([Anagrafe.Responsabile],Blob) -> Checker m a -> m (Either Message a)
-runChecker rs c = runErrorT $ runReaderT c rs  
-
-liftMaybe :: MonadError Message m => Maybe a -> Message -> m a
-liftMaybe Nothing s = throwError s
-liftMaybe (Just x) _ = return x 
+instance Firmabile ([Evento],String) where
+	hash (xs,b) = pack $ b ++ concat xs
 
 -- | controlla che una patch sia accettabile, ovvero che il responsabile sia presente e che la firma sia corretta
 checkPatch :: Monad m => Patch -> Checker m ()
 checkPatch (c,f,xs) = do
-	(rs,b) <- ask
-	when (not $ c `elem` map snd rs) $ throwError "l'autore della patch è sconosciuto"
-	when (verify c (B.pack $ b ++ concat xs) f) $ throwError "la firma della patch è corrotta"
+	Ambiente _ rs b <- ask
+	liftBool (c `elem` map snd rs) "l'autore della patch è sconosciuto"
+	liftBool (verify c (xs,b) f) "la firma della patch è corrotta"
 
 -- | costruisce una patch da un insieme di eventi
-mkPatch :: [Evento] -> Utente -> Checker m Patch
-mkPatch = undefined
+mkPatch :: Monad m => [Evento] -> (Utente, Segreto) -> Checker m Patch
+mkPatch xs (u,s) = do
+	Ambiente _ rs b <- ask
+	c <- liftMaybe (lookup  u rs) "l'utente non è registrato tra i responsabili"
+	return (c, sign s (xs,b), xs)
 
-
-eventiPatch :: Monad m => Patch -> Checker m [Esterno Anagrafe.Utente]
-eventiPatch (c,_,xs) = do
-	(rs,_) <- ask
-	(n,_) <- liftMaybe (find ((==) c . snd) $ rs) $ "errore interno: lo stato ha una chiave senza nome"
+-- | estrae gli eventi da una patch giudicandone l'integrita'
+fromPatch :: Monad m => Patch -> Checker m [Esterno Utente]
+fromPatch p@(c,_,xs) = do
+	checkPatch p
+	Ambiente _ rs _ <- ask
+	(n,_) <- liftMaybe (find ((==) c . snd) $ rs) $ "la patch proviene da un responsabile sconosciuto"
 	return $ map ((,) n) xs 
+
 -- | una patch di gruppo è un insieme di patch firmate dal sincronizzatore
 type Group = (Firma,[Patch])
 
--- | controlla l'integrità di una patch di gruppo
-checkGroup :: Monad m => Chiave -> Group -> Checker m ()
-checkGroup c (f,ps) = do 
-	mapM checkPatch ps
-	(_,b) <- ask
-	when (not $ verify c (B.pack b `mappend` B.concat (map firma ps)) f) $ throwError
-		 "la firma del sincronizzatore è corrotta" 
+instance Firmabile ([Patch],String) where
+	hash (ps,b) = foldl mappend (pack b) $ map firma ps where
+		firma (_,f,_) = f
 
-mkGroup :: Monad m => 
+-- | controlla l'integrità di una patch di gruppo
+checkGroup :: Monad m => Group -> Checker m ()
+checkGroup (f,ps) = do 
+	Ambiente c _ b  <- ask
+	liftBool (verify c (ps,b) f) "la firma del sincronizzatore è corrotta" 
+
+-- | costruisce una patch di gruppo da un insieme di patch responsabile
+mkGroup :: Monad m => [Patch] -> Segreto -> Checker m Group
+mkGroup ps s = do
+	Ambiente _ _ b  <- ask
+	return (sign s (ps,b),ps)
+	
 -- | estrae gli eventi, come eventi esterni assegnati al loro autore, da una patch di gruppo
-eventi :: Monad m 
-	=> [Anagrafe.Responsabile] 	-- ^ responsabili validi
-	-> Blob 			-- ^ hash dello stato di riferimento
-	-> Chiave 			-- ^ chiave pubblica del sincronizzatiore
-	-> Group 			-- ^ patch di gruppo
-	-> m (Either Message [Esterno Anagrafe.Utente])	-- ^ o errore o lista di eventi
-eventi rs b c g = runChecker (rs,b) $ do
-	checkGroup c g
-	concat <$> mapM eventiPatch ps
+fromGroup :: Monad m 
+	=> Group 			-- ^ patch di gruppo
+	-> Checker m [Esterno Utente]	-- ^ o errore o lista di eventi
+fromGroup g@(_,ps) = do
+	checkGroup g
+	concat <$> mapM fromPatch ps
 	
 
