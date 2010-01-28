@@ -1,5 +1,5 @@
 {-# LANGUAGE NoMonomorphismRestriction, StandaloneDeriving, ViewPatterns, FlexibleContexts, ScopedTypeVariables, ExistentialQuantification #-}
-module Eventi.Anagrafe (
+module Eventi.Anagrafe {-(
 	eliminazioneResponsabile
 	, esistenzaUtente 
 	, Anagrafe
@@ -20,7 +20,7 @@ module Eventi.Anagrafe (
 	, priorityAnagrafeI
 	, priorityAnagrafe 
 	, queryAnagrafe
-	, queryAssenso) 
+	, queryAssenso) -}
 	where
 
 import Data.List ((\\))
@@ -33,8 +33,9 @@ import Core.Inserimento (logga, conFallimento, MTInserzione, osserva, modifica, 
 import Core.Programmazione (Inserzione, EventoInterno (..), soloEsterna, nessunEffetto, Reazione (..))
 import Lib.Aspetti ((.<),ParteDi,see)
 import Lib.Assocs (assente,(?),updateM,elimina)
-import Lib.Costruzione (parametro,Svolgimento,SceltaOLibero (..), Response (..))
+import Lib.Costruzione -- (libero,scelta,Costruzione,Svolgimento)
 import Lib.Prioriti (R (..))
+import Core.Types (Message)
 
 
 import Eventi.Servizio
@@ -49,20 +50,11 @@ type Utente = String
 eventoValidato  (r,a) = (\f -> conFallimento (esistenzaResponsabile r >> f r), a)
 
 data Anagrafe = Anagrafe [Utente] deriving (Show,Read)
-utenti k = do 
-	us <- asks $ (\(Anagrafe us) -> us) . see
-	when (null us) $ k "nessun utente presente"
-	return us
 statoInizialeAnagrafe unos x = Anagrafe (map fst unos) .< Responsabili unos [] .< x
 
 type Responsabile = (Utente,Chiave)
 
 data Responsabili = Responsabili {eletti::[Responsabile], inodore ::[(Indice,Responsabile)]} deriving (Show,Read)
-responsabili k = do
-	rs <- asks $ eletti . see
-	when (null rs) $ k "nessun responsabile presente"
-	return rs
-
 priorityAnagrafe = R k where
 	k (NuovoUtente _) = -20
 	k (EliminazioneResponsabile _) = -19
@@ -121,35 +113,32 @@ reazioneAnagrafe = soloEsterna reattoreAnagrafe' where
 			modifica $ \(Responsabili us ls ) -> Responsabili (elimina u us) (elimina l ls)
 			logga $ "responsabile eliminato " ++ show u
 			return ([],[EventoInterno $ EventoEliminazioneResponsabile u r])
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+responsabili k (see -> Responsabili rs _) = when (null rs) (k "nessun responsabile presente") >> return rs
+utenti k (see -> Anagrafe us)  = when (null us) (k "nessun utente presente") >> return us
 
-makeEventiAnagrafe :: (
-	Anagrafe `ParteDi` s,
-	Responsabili `ParteDi` s, 
-	MonadReader s m) =>
-	[(String -> Svolgimento b m ()) -> (String , Svolgimento b m String)]
-
-makeEventiAnagrafe = [eventoNuovoUtente, eventoElezioneResponsabile,eventoEliminazioneResponsabile] where
-        eventoNuovoUtente k = (,) "nuovo utente"  $ do
-                n <- parametro (Libero "il nome del nuovo utente")
-                return $ show (NuovoUtente n)
-
-        eventoElezioneResponsabile k = (,) "elezione di un nuovo responsabile" $ do
-		us <- utenti k
-		rs <- responsabili k
+makeEventiAnagrafe s kp kn = [eventoNuovoUtente, eventoElezioneResponsabile,eventoEliminazioneResponsabile] 
+	where
+        eventoNuovoUtente = (,) "inserimento nuovo utente"  $ do
+		us <- utenti kn s
+                n <- libero "il nome del nuovo utente"
+		when (n `elem` us) . kn $  "utente già presente"	
+                kp  $ NuovoUtente n
+        eventoElezioneResponsabile = (,) "elezione di un nuovo responsabile" $ do
+		us <- utenti kn s
+		rs <- responsabili kn s
 		let disponibili = us \\ map fst rs
-		when (null disponibili) $ k "nessun utente non responsabile disponibile"
-                n <- parametro . Scelta "selezione eleggibile" $ (map (id &&& id) $ disponibili)
-                m <- parametro (Libero "il modulo della chiave pubblica")
-                return $ show (ElezioneResponsabile (n,m))
+		when (null disponibili) . kn $  "nessun utente non responsabile disponibile"
+                n <- scelte (map (id &&& id) $ disponibili) "selezione eleggibile" 
+                m <- libero "il modulo della chiave pubblica"
+                kp  $ ElezioneResponsabile (n,m)
+        eventoEliminazioneResponsabile = (,) "richiesta di eliminazione di un responsabile" $ do
+		rs <- responsabili kn s
+                n <- scelte (map (fst &&& id) $ rs) "selezione responsabile da eliminare"
+                kp $ EliminazioneResponsabile (fst n)
 
-        eventoEliminazioneResponsabile k = (,) "richiesta di eliminazione di un responsabile" $ do
-		rs <- responsabili k
-                n <- parametro . Scelta "selezione responsabile da eliminare" . map (fst &&& id) $ rs
-                return $ show (EliminazioneResponsabile (fst n))
-queryAnagrafe
-  :: (ParteDi Responsabili r, MonadReader r m, ParteDi Anagrafe r) =>
-	[(String -> Svolgimento b m ()) -> (String , Svolgimento b m Response)]
-
+{-
 queryAnagrafe = [queryChiave,queryElencoUtenti,queryElencoResponsabili] where
 	queryChiave k = (,) "la chiave pubblica di un responsabile"  $ do
 		rs <- responsabili k
@@ -163,7 +152,7 @@ queryAnagrafe = [queryChiave,queryElencoUtenti,queryElencoResponsabili] where
 		rs <- responsabili k 
 		return . Response $ [("elenco nomi responsabili", ResponseMany rs )]
 		
-
+-}
 ----------------------------------------------------------------------------------------------------------------------
 --  sezione assensi, putroppo non ha un modulo a parte a causa del ciclo di dipendenze con l'anagrafe
 
@@ -206,7 +195,7 @@ programmazioneAssenso se ur c k = do
 		reattoreAssenso (Left _) = return Nothing
 	logga $ "aperta la raccolta di assensi numero " ++ show l
 	return (l,Reazione (Nothing, reattoreAssenso)) -- restituisce il riferimento a questa richiesta perché venga nominato negli eventi di assenso
-
+{-
 askAssensi :: (ParteDi (Servizio Assensi) s, MonadReader s m) => m [(String, Int)]
 askAssensi 	= do 	(xs :: [(Int,(String,Assensi))]) <- asks elencoSottoStati 
 			return $ map (fst . snd &&& fst) xs
@@ -234,7 +223,7 @@ queryAssenso = [querySottoStati] where
 		ys <- askAssensi 
 		return $ Response [("elenco richieste di assenso aperte", if null ys then
 			ResponseOne "nessuna richiesta aperta" else ResponseMany ys)]
-
+-}
 ---------------------------------------------------
 
 

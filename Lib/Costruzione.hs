@@ -1,49 +1,37 @@
-{-# LANGUAGE ExistentialQuantification, GeneralizedNewtypeDeriving, FlexibleContexts, ScopedTypeVariables, NoMonomorphismRestriction,ViewPatterns #-}
+{-# LANGUAGE ExistentialQuantification #-}
+-- | modulo per la creazione di valori dove i passi sono esplicitati attraverso le continuazioni
+-- esempio
+-- f :: Passo Int
+-- f = svolgi $ do
+-- 	x <- libero "primo:" 
+-- 	y <- libero "secondo:" 
+-- 	z <- scelte [("somma",(+)),("differenza",(-))] "operazione:" 
+-- 	return $ z x y
+-- le funzioni che trasformano il passo in un'azione reale sono fornite altrove
 
 module Lib.Costruzione where
 
-import Lib.Aspetti
-import Control.Monad.Cont
-import Control.Monad.Reader
-import Text.PrettyPrint
+import Control.Monad.Cont (Cont (..) , runCont)
 
-import Control.Applicative
-import Data.List
+-- | i possibili sviluppi di una costruzione
+data Passo b 
+	= forall a. Scelta String [(String,a)] (a -> Passo b) 	-- ^ scelta vincolata ad una lista di possibilità
+	| forall a. Read a => Libero String (a -> Passo b)	-- ^ scelta da leggere da una stringa
+	| Costruito b						-- ^ valore calcolato
 
-type Continuazione m b a = a -> m (Passo m b) -- una continuazione monadica
+-- | produce un passo di valore Libero nella monade Cont
+libero :: (Read a) => String -> Cont (Passo b) a
+libero prompt = Cont $ Libero prompt
 
-data Monad m => Passo m b 
-	= forall a. Scelta String [(String,a)] (Passo m b)  (Continuazione m b a)
-	| forall a. Read a => Libero String (Passo m b)  (Continuazione m b a)
-	| Costruito b
+-- | produce un passo di valore Scelta
+scelte :: [(String,a)] -> String -> Cont (Passo b) a
+scelte xs prompt = Cont $ Scelta prompt xs
 
-type Svolgimento b m a = ContT (Passo m b) (ReaderT (Passo m b) m) a
+-- | costruzione di un valore b 
+type Costruzione b = Cont (Passo b) b  
 
-reset :: Monad m => (Passo m b -> Continuazione m b a -> Passo m b) -> Svolgimento b m a
-reset f = ContT $ \k -> local (l k) ask where
-	l k u = f u $ \x -> runReaderT (k x) (l k u)
-
-libero :: (Monad m, Read a) => String -> Svolgimento b m a 
-libero prompt = reset $ Libero prompt
-
-scelte :: Monad m =>  [(String,a)] -> String -> Svolgimento b m a 
-scelte xs prompt = reset $ Scelta prompt xs
-
-type Costruzione m b = Svolgimento b m b
-
-svolgi :: Monad m => Passo m b -> Costruzione m b -> m (Passo m b)
-svolgi p c = flip runReaderT p $ runContT c (return . Costruito)
-
-----------------------  un driver per utilizzare una Costruzione ----------------------------------------						
-data Response 
-	= forall a. Show a => ResponseOne a
-	| forall a . Show a => ResponseMany [a]
-	| forall a . Show a =>  ResponseAL [(String,a)]
-	| Response [(String,Response)]
-
-renderResponse (ResponseOne x) = text (show x)
-renderResponse (ResponseMany xs) = vcat $ map (text . show) xs
-renderResponse (ResponseAL xs) = vcat $ map (\(x,y) -> hang (text (x ++ ":")) 3 (text . show $ y)) xs
-renderResponse (Response rs) = vcat $ map (\(s,r) -> hang (text (s ++ ":")) 3 (renderResponse r)) rs
-
+-- | da una costruzione ad un passo che la esegue
+svolgi :: Costruzione b -> Passo b
+svolgi = flip runCont Costruito
+					
 

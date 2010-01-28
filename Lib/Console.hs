@@ -1,41 +1,39 @@
 {-# LANGUAGE ScopedTypeVariables #-}
+-- | una funzione di elaborazione di Lib.Costruzione.Passo a con interazione in console.
+module Lib.Console (runPasso) where
 
-import Lib.Costruzione
-import Control.Monad.Cont
+import Control.Monad (forM)
+import Lib.Costruzione (Passo (..))
 
-runPasso :: Passo IO b -> IO b
+-- | la funzione smonta i passi in caso di undo
+runPasso :: [Passo b] -> IO b
 
-runPasso (Costruito x) = return x 
+runPasso [] = error "lista vuota"
 
-runPasso  c@(Libero p u f) = do
-	putStr p
+runPasso (Costruito x:_) = return x 
+runPasso  w@(c@(Libero p f) : u) = do
+	putStr $ p ++ ": "
 	x <- getLine 
 	n <- case x of 
-		[] -> return u 
+		[] -> return u
 		_ -> case reads x of 
-			[] -> return c
-			(x,_):_ -> f x 
+			[] -> return w
+			(x,_):_ -> return $ f x : w 
 	runPasso n
 
-runPasso c@(Scelta p xs u f) = do
+runPasso w@(c@(Scelta p xs f): u) = do
 	putStrLn p 
 	forM (zip [1..] xs) $ \(n,(p,_)) -> putStrLn $ "\t" ++ show n ++ ") " ++ p
 	putStr "scelta: "
 	x <- getLine 
 	n <- case x of
-		[] -> return u 
+		[] -> return u
 		_ -> case reads x of 
-			[] -> return c
+			[] -> return w
 			(x,_):_ -> case x  `elem` [1 .. length xs] of
-					True -> f . snd $ xs !! (x - 1)
-					False -> return c
+					True -> return $ (f . snd $ xs !! (x - 1)) : w
+					False -> return w
 	runPasso n	  
 	
-f :: Monad m => Costruzione m Int
-f = do
-	x <- libero "primo:" 
-	y <- libero "secondo:" 
-	z <- scelte [("somma",(+)),("differenza",(-))] "operazione:" 
-	return $ z x y
 
 
