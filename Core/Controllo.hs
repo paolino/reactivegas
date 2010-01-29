@@ -20,6 +20,7 @@ import Core.Contesto (nuovoContesto,  Contestualizzato)
 import Core.Parsing (valore,parser, ParserConRead)
 import Core.Inserimento (inserimentoCompleto)
 
+import Debug.Trace
 -- | nodo serializzato , una copia di una struttura Nodo non contenente la funzione di reazione del nodo stesso
 data SNodo s d = SNodo 
 	Bool 					-- ^ stato di attivita della reazione

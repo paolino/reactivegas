@@ -1,4 +1,4 @@
-module Core.Contesto (Contesto , nuovoContesto, Contestualizzato, motiva) where
+module Core.Contesto (Contesto (..), nuovoContesto, Contestualizzato, motiva) where
 
 import Core.Types
 

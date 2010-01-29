@@ -15,7 +15,7 @@ data Show a => Tree a = Node (a,[Tree a]) | Leaf
 showTrees :: [[String]] -> String
 showTrees =  render . vcat . map renderTree . passa  where
 	renderTree Leaf = Text.PrettyPrint.empty
-	renderTree (Node (x,ts)) = text x $$ nest 3 (vcat (map renderTree ts))
+	renderTree (Node (x,ts)) = text (take 80 x) $$ nest 3 (vcat (map renderTree ts))
 
 passa :: (Show a ,Eq a) => [[a]] -> [Tree a]
 passa xs = let 	h = map ((head . head) &&& map tail) . groupBy ((==) `on` head) 

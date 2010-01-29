@@ -11,9 +11,12 @@ data Response
 	| forall a . Show a =>  ResponseAL [(String,a)]
 	| Response [(String,Response)]
 
-renderResponse (ResponseOne x) = text (show x)
-renderResponse (ResponseMany xs) = vcat $ map (text . show) xs
-renderResponse (ResponseAL xs) = vcat $ map (\(x,y) -> hang (text (x ++ ":")) 3 (text . show $ y)) xs
-renderResponse (Response rs) = vcat $ map (\(s,r) -> hang (text (s ++ ":")) 3 (renderResponse r)) rs
+instance Show Response where
+	show x = render $ render' x
+
+render' (ResponseOne x) = text (show x)
+render' (ResponseMany xs) = vcat $ map (text . show) xs
+render' (ResponseAL xs) = vcat $ map (\(x,y) -> hang (text (x ++ ":")) 3 (text . show$ y)) xs
+render' (Response rs) = vcat $ map (\(s,r) -> hang (text (s ++ ":")) 3 (render' r)) rs
 
 

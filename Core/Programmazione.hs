@@ -41,13 +41,10 @@ type EfReazione s c d = Inserzione s c d (Maybe (Bool, Effetti s c d))
 -- una TyReazione è una funzione che o da un evento interno o da un evento esterno produce una possibile Inserzione che ha come risultato un booleano che determina la persistenza della reazione e una serie di effetti da riferirsi come figli della razione stessa
 type TyReazione a b d s c = (Either b (d,a)) -> EfReazione s c d
 
--- | comodo , mah ....
-ignoraEventoInterno :: TyReazione a () d s c 
-ignoraEventoInterno (Left ()) = undefined
 
 -- | wrappa una semplice azione in pura esterna
 soloEsterna :: (Show d, Read d, Parser c a) => ((d,a) -> EfReazione s c d) -> Reazione s c d
-soloEsterna f = Reazione (Nothing,either (\() -> return Nothing) f )
+soloEsterna f = Reazione (Nothing,either (\_ -> return Nothing) f )
 
 -- | una scatola esistenziale intorno ad un evento  che racchiude la sua potenziale trasformazione in evento 
 data Deviatore c b = forall a . Parser c a => Deviatore (a -> Maybe b)

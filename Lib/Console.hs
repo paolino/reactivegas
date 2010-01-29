@@ -4,6 +4,7 @@ module Lib.Console (runPasso) where
 
 import Control.Monad (forM)
 import Lib.Costruzione (Passo (..))
+import Control.Exception
 
 -- | la funzione smonta i passi in caso di undo
 runPasso :: [Passo b] -> IO b
@@ -17,7 +18,7 @@ runPasso  w@(c@(Libero p f) : u) = do
 	n <- case x of 
 		[] -> return u
 		_ -> case reads x of 
-			[] -> return w
+			[] -> putStrLn "valore non valido" >> return w
 			(x,_):_ -> return $ f x : w 
 	runPasso n
 
@@ -35,5 +36,19 @@ runPasso w@(c@(Scelta p xs f): u) = do
 					False -> return w
 	runPasso n	  
 	
+runPasso  w@(c@(DaFile p f) : u) = do
+	putStr $ p ++ "[nome del file da caricare]: "
+	x <- getLine 
+	n <- case x of 
+		[] -> return u
+		fn -> do 	
+			k <- tryJust (\(SomeException e) -> Just (show e)) (readFile fn) 
+			case k of 
+				Left e -> putStrLn e >> return w
+				Right x -> do 
+					case reads x of 
+						[] -> putStrLn "valore non valido" >> return w
+						(x,_):_ -> return $ f x : w 
+	runPasso n
 
 

@@ -22,7 +22,7 @@ import Core.Contesto (motiva)
 import Core.Programmazione (EventoInterno (..), Inserzione, Reazione (..), TyReazione, provaAccentratore, logInserimento)
 import Core.Nodo (Nodo (..), pruner, mkNodi)
 
-
+import Debug.Trace
 --------------------------------------------------------------------------------------------------------
 
 -- | una monade temporanea che aiuta l'inserimento di un evento
@@ -36,6 +36,7 @@ inserimento :: Show d => Either Interno (Esterno d) -> Nodo s c d -> Inserimento
 inserimento x (Nodo Nothing rs) = Nodo Nothing <$> mapM (secondM (mapM (secondM $ inserimento x)))  rs where
 	secondM f (x,y) = f y >>= return . (,) x
 inserimento x n@(Nodo k@(Just (Reazione (acc, f :: TyReazione a b d s c))) _) = do
+	
 	Nodo Nothing rs <- inserimento x n{reattore = Nothing} -- intanto eseguiamo l'inserzione nei figli simulando nodo morto, gancio al caso sopra
 	s' <- get -- registriamo lo stato per un eventuale ripristino o per la contestualizzazione
 	let 	complete v = do 
@@ -55,7 +56,7 @@ inserimento x n@(Nodo k@(Just (Reazione (acc, f :: TyReazione a b d s c))) _) = 
 				Just v ->  complete (Right (u,v))
 		Left y -> -- evento interno
 			case maybe ((valore :: ParserConRead b -> b) <$> parser y) (provaAccentratore y) acc of 
-				Just v -> complete (Left v)
+				Just v ->  complete (Left v)
 				Nothing -> rifiuto
 
 -- | l'evento interno del core segnala che nessun reattore ha accettato l'evento (parsing fallito)

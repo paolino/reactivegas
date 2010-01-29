@@ -17,12 +17,14 @@ import Control.Monad.Cont (Cont (..) , runCont)
 data Passo b 
 	= forall a. Scelta String [(String,a)] (a -> Passo b) 	-- ^ scelta vincolata ad una lista di possibilità
 	| forall a. Read a => Libero String (a -> Passo b)	-- ^ scelta da leggere da una stringa
+	| forall a. Read a => DaFile String (a -> Passo b)
 	| Costruito b						-- ^ valore calcolato
 
 -- | produce un passo di valore Libero nella monade Cont
 libero :: (Read a) => String -> Cont (Passo b) a
 libero prompt = Cont $ Libero prompt
 
+dafile prompt = Cont $ DaFile prompt
 -- | produce un passo di valore Scelta
 scelte :: [(String,a)] -> String -> Cont (Passo b) a
 scelte xs prompt = Cont $ Scelta prompt xs
