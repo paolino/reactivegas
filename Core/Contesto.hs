@@ -1,4 +1,4 @@
-module Core.Contesto (Contesto (..), nuovoContesto, Contestualizzato, motiva) where
+module Core.Contesto (Contesto (..), nuovoContesto, Contestualizzato, motiva, flatten) where
 
 import Core.Types
 
@@ -15,4 +15,9 @@ motiva r q = error ("ricontestualizzazione fallita " ++ show (r,q))
 -- | alcuni valori hanno senso solo insieme al loro contesto
 type Contestualizzato d r = (Contesto d ,r)
 
+-- | schiaccia  un classico contesto
+flatten :: Contesto String -> [(String,String)]
+flatten Boot = []
+flatten (Primo y) = [y]
+flatten (Oltre y xs) = y: map ((,) "Interno") xs
 

@@ -30,10 +30,10 @@ scelte :: [(String,a)] -> String -> Cont (Passo b) a
 scelte xs prompt = Cont $ Scelta prompt xs
 
 -- | costruzione di un valore b 
-type Costruzione b = Cont (Passo b) b  
+type Costruzione b = Cont (Passo b) 
 
 -- | da una costruzione ad un passo che la esegue
-svolgi :: Costruzione b -> Passo b
+svolgi :: Costruzione b b -> Passo b
 svolgi = flip runCont Costruito
 					
 

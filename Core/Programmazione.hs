@@ -44,7 +44,7 @@ type TyReazione a b d s c = (Either b (d,a)) -> EfReazione s c d
 
 -- | wrappa una semplice azione in pura esterna
 soloEsterna :: (Show d, Read d, Parser c a) => ((d,a) -> EfReazione s c d) -> Reazione s c d
-soloEsterna f = Reazione (Nothing,either (\_ -> return Nothing) f )
+soloEsterna f = Reazione (Nothing,either (\() -> return Nothing) f )
 
 -- | una scatola esistenziale intorno ad un evento  che racchiude la sua potenziale trasformazione in evento 
 data Deviatore c b = forall a . Parser c a => Deviatore (a -> Maybe b)
