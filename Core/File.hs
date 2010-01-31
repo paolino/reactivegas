@@ -5,8 +5,8 @@ import Control.Exception (handle, SomeException (..))
 
 readEvents :: IO [String]
 readEvents = do
-	l <- handle (\(SomeException _) -> return "") $ readFile "eventi" 
+	l <- handle (\(SomeException _) -> return "") $ readFile "patch" 
 	return $ lines l
 
 writeEvents :: [String] -> IO ()
-writeEvents xs = writeFile "eventi" $ intercalate "\n" xs
+writeEvents xs = writeFile "patch" $ intercalate "\n" xs
