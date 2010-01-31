@@ -8,6 +8,7 @@ git:
 	git add Core/*.hs
 	git add Eventi/*.hs
 	git add Applicazioni/*.hs
+	git add Tests.hs
 	git add Applicazioni/reactivegas.glade
 	git add README
 	git add LICENSE

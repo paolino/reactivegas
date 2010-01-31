@@ -318,6 +318,9 @@ costrQueryAssenso s kp kn = [("elenco richieste di assenso aperte", querySottoSt
 		ys <- assensi
 		return $ Response [("elenco richieste di assenso aperte", if null ys then
 			ResponseOne "nessuna richiesta aperta" else ResponseMany ys)]
+priorityAssenso = R k where
+	k (Assenso _) = -15
+	k (EventoFallimentoAssenso _) = 15
 ---------------------------------------------------
 
 

@@ -74,6 +74,8 @@ bootImpegni x = (servizio0,x)
 -- type ConclusioneReattoreImpegno s c = Maybe ([(Utente, Float)]) -> MTInserzione s c Utente (Effetti s c Utente)
 
 -- | la programmazione di un impegni richiede il nome del responsabile che la apre e restituisce la chiave del nuovo stato impegni con una una azione monadica in grado di creare una nuova Reazione se fornita della giusta procedura. La giusta procedura definisce cosa eseguire alla fine della raccolta impegni. In caso di successo l'azione riceve la lista di impegni raccolta , in caso di fallimento Nothing. Comunque essa deve fornire una lista di nuovi reattori e una lista di eventi interni.
+
+type ChiudiProgrammazioneImpegno s c = (Maybe ([(Utente, Float)]) -> MTInserzione s c Utente (Effetti s c Utente))
 programmazioneImpegno :: (
 	Parser c EsternoImpegno,  -- okkio se serve un parser va implementato
 	Anagrafe 		`ParteDi` s,  -- eventoValidato lo richiede
@@ -82,25 +84,24 @@ programmazioneImpegno :: (
 	Servizio Impegni 	`ParteDi` s)  -- il nostro aspetto
 	=> String
 	-> Utente  -- ^ l'utente responsabile dell'impegno
-	-> (Maybe ([(Utente, Float)]) -> MTInserzione s c Utente (Effetti s c Utente))
-	-> MTInserzione s c Utente (Int ,Reazione s c Utente) -- ^ la chiave e una Reazione
+	-> MTInserzione s c Utente (Int ,ChiudiProgrammazioneImpegno s c -> Reazione s c Utente) -- ^ la chiave e una Reazione
 
-programmazioneImpegno q ur k = do
+programmazioneImpegno q ur = do
 	l <- nuovoStatoServizio (Impegni []) q
 	let 	
-		reattoreImpegno (Right (first validante ->  (w,Impegno u v j))) = w $ \r -> do
+		reattoreImpegno k (Right (first validante ->  (w,Impegno u v j))) = w $ \r -> do
 			when (l /= j) mzero
 			preleva u v 
 			modificaStatoServizio j $ \(Impegni  is) -> return (Impegni $ update u (+ v) 0 is)
 			logga  $ "impegnati " ++ show v ++ " euro da " ++ show u ++ " per la causa " ++ q
 			return (True,nessunEffetto)
-		reattoreImpegno (Right (first validante -> (w,FineImpegno j))) = w $ \r -> do
+		reattoreImpegno k (Right (first validante -> (w,FineImpegno j))) = w $ \r -> do
 			when (l /= j) mzero
 			Impegni us <- osservaStatoServizio j
 			fallimento (ur /= r) "solo chi ha aperto una impegnativa puó chiuderla"
 			eliminaStatoServizio j (undefined :: Impegni)
 			(,) False <$> k (Just us) 
-		reattoreImpegno (Right (first validante -> (w,FallimentoImpegno j))) = w $ \r -> do
+		reattoreImpegno k (Right (first validante -> (w,FallimentoImpegno j))) = w $ \r -> do
 			when (l /= j) mzero
 			Impegni us <- osservaStatoServizio j
 			fallimento (ur /= r) "solo chi ha aperto una impegnativa puó chiuderla"
@@ -108,15 +109,15 @@ programmazioneImpegno q ur k = do
 			eliminaStatoServizio j (undefined :: Impegni)
 			(ks,is) <- k Nothing 
 			return (False,(ks,EventoInterno (EventoFallimentoImpegno (ur,sum (map snd us))): is))
-		reattoreImpegno (Left (eliminazioneResponsabile -> Just (u,_))) = conFallimento $ do
+		reattoreImpegno k (Left (eliminazioneResponsabile -> Just (u,_))) = conFallimento $ do
 			when (ur /= u) mzero
 			Impegni  us <- osservaStatoServizio l
 			mapM_ (\(u,v) -> accredita u v) us
 			eliminaStatoServizio l (undefined :: Impegni)
 			(,) False <$> k Nothing 
-		reattoreImpegno (Left _) = return Nothing
+		reattoreImpegno _ (Left _) = return Nothing
 			
-	return (l, Reazione (Nothing,reattoreImpegno) )
+	return (l,\k -> Reazione (Nothing,reattoreImpegno k) )
 -----------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------
 -- askImpegni :: (ParteDi (Servizio Impegni) r, MonadReader r m) =>
