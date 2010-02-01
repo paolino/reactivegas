@@ -11,7 +11,7 @@ import Core.Types (Esterno,Evento,Message)
 
 import Lib.Aspetti (ParteDi)
 import Lib.Error (liftMaybe, liftBool)
-import Lib.Firmabile (Firmabile (..), sign , verify, Firma, Chiave, Segreto)
+import Lib.Firmabile (Firmabile (..), sign , verify, Firma, Chiave, Segreto, Password)
 
 import Eventi.Anagrafe (Responsabile,Utente)
 import Data.ByteString.Lazy.Char8 (pack)
@@ -40,22 +40,22 @@ instance Firmabile ([Evento],String) where
 checkPatch :: Monad m => Patch -> Checker m ()
 checkPatch (c,f,xs) = do
 	Ambiente _ rs b <- ask
-	liftBool (c `elem` map snd rs) "l'autore della patch è sconosciuto"
+	liftBool (c `elem` map (fst . snd) rs) "l'autore della patch è sconosciuto"
 	liftBool (verify c (xs,b) f) "la firma della patch è corrotta"
 
 -- | costruisce una patch da un insieme di eventi
-mkPatch :: Monad m => [Evento] -> (Utente, Segreto) -> Checker m Patch
-mkPatch xs (u,s) = do
+mkPatch :: Monad m => [Evento] -> (Utente,Password) -> Checker m Patch
+mkPatch xs (u,p) = do
 	Ambiente _ rs b <- ask
-	c <- liftMaybe (lookup  u rs) "l'utente non è registrato tra i responsabili"
-	return (c, sign s (xs,b), xs)
+	(c,s) <- liftMaybe (lookup  u rs) "l'utente non è registrato tra i responsabili"
+	return (c, sign p s (xs,b), xs)
 
 -- | estrae gli eventi da una patch giudicandone l'integrita'
 fromPatch :: Monad m => Patch -> Checker m [Esterno Utente]
 fromPatch p@(c,_,xs) = do
 	checkPatch p
 	Ambiente _ rs _ <- ask
-	(n,_) <- liftMaybe (find ((==) c . snd) $ rs) $ "la patch proviene da un responsabile sconosciuto"
+	(n,_) <- liftMaybe (find ((==) c . fst . snd) $ rs) $ "la patch proviene da un responsabile sconosciuto"
 	return $ map ((,) n) xs 
 
 -- | una patch di gruppo è un insieme di patch firmate dal sincronizzatore

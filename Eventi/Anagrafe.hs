@@ -43,6 +43,7 @@ import Core.Programmazione (Inserzione, EventoInterno (..), soloEsterna, nessunE
 import Core.Types (Message)
 import Core.Costruzione (Supporto,libero,dafile,scelte,runSupporto,CostrAction)
 import Core.Parsing (ParserConRead, Parser)
+import Core.Amministrazione (Segreto)
 
 import Eventi.Servizio 
 
@@ -51,6 +52,7 @@ deriving instance Eq PublicKey
 
 -- | chiave pubblica di un responsabile
 type Chiave = PublicKey
+-- type Segreto = 
 type Indice = Int
 -- | nome di un utente
 type Utente = String
@@ -73,7 +75,7 @@ bootAnagrafe :: [Responsabile] ->  a -> TyAnagrafe a
 bootAnagrafe unos x = Anagrafe (map fst unos) .< Responsabili unos [] .< servizio0 .< x
 
 -- | un utente con chiave pubblica
-type Responsabile = (Utente,Chiave)
+type Responsabile = (Utente,(Chiave,Segreto))
 
 -- | la lista dei responsabili eletti e in elezione
 data Responsabili = Responsabili {eletti::[Responsabile], inodore ::[(Indice,Responsabile)]} deriving (Show,Read)
