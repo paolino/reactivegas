@@ -1,0 +1,104 @@
+{-# LANGUAGE TypeOperators, ViewPatterns, ScopedTypeVariables, FlexibleContexts, FlexibleInstances, NoMonomorphismRestriction #-}
+module Core.Patch where
+
+import Data.Maybe
+import Control.Arrow
+import System.Environment
+import Data.List
+import Control.Applicative ((<$>))
+import System.IO
+import Codec.Binary.UTF8.String
+import Control.Monad.Error
+import Control.Monad.Writer
+import Control.Monad.Reader
+import System.Directory
+import Codec.Crypto.RSA
+import Data.Digest.Pure.SHA
+import qualified Data.ByteString.Lazy.Char8 as B
+
+import Control.Monad (msum)
+
+import Core.Types (Esterno,Evento,Message)
+import Core.Inserimento ()
+import Core.Controllo (SNodo)
+import Core.Programmazione
+import Core.Parsing
+import Core.Contesto
+
+import Lib.Aspetti (ParteDi)
+import qualified Eventi.Anagrafe as Anagrafe
+
+
+-- | Lo stato e' sempre accompagnato dalla struttura di eventi necessari a trasformarlo in attuale, quegli eventi che non potevano trovare riscontro nella serializzazione, detti eventi aperti
+type Stato s = (s,[SNodo s Anagrafe.Utente])
+
+-- | estrae i responsabili da uno Stato
+responsabili :: (Anagrafe.Responsabili `ParteDi` s) => Stato s  -> [Anagrafe.Responsabile]
+responsabili s = runReader (Anagrafe.responsabili (\x -> error $ "Patch: " ++ x)) . fst $ s
+
+type Chiave = PublicKey
+type Firma = B.ByteString
+
+-- | una patch è un insieme di eventi firmati da un responsabile
+type Patch = (Chiave,Firma,[Evento])
+
+firma :: Patch -> Firma
+firma (_,f,_) = f
+
+digest = showDigest . sha512 . B.pack . show
+
+type Checker m = ReaderT [Anagrafe.Responsabile] (ErrorT Message m)
+{-
+-- | controlla che una patch sia accettabile, ovvero che il responsabile sia presente e che la firma sia corretta
+checkPatch ::  (Anagrafe.Responsabili `ParteDi` s, Show s, MonadError Message m) =>  Stato s -> Patch -> Maybe String 
+checkPatch s (c,f,xs) 
+	| not (c `elem` map snd (responsabili s)) = Just  "l'autore della patch è sconosciuto"
+	| not (verify c (B.pack $ digest s ++ concat xs) f) = Just "la firma della patch è corrotta"
+	| otherwise = Nothing
+
+eventiPatch :: (MonadError m, Anagrafe.Responsabili `ParteDi` s, Show s) 
+	=> Stato s -> Patch -> m [Esterno Anagrafe.Utente]
+eventiPatch s p@(c,_,xs) = case checkPatch s p of
+	Just e -> Left e
+	Nothing -> case find ( (==) c . snd) $ responsabili s of
+		Nothing -> Left "errore interno: lo stato ha una chiave senza nome"
+		Just n -> Right $ map ((,) $ fst n) xs
+
+-- | una patch di gruppo è un insieme di patch firmate dal sincronizzatore
+type Group = (Firma,[Patch])
+
+-- | controlla l'integrità di una patch di gruppo
+checkGroup :: (Anagrafe.Responsabili `ParteDi` s, Show s) =>  Stato s -> Chiave -> Group -> Maybe String
+checkGroup s c (f,ps) = do 
+	msum (map (checkPatch s) ps) 
+	case verify c (B.pack (digest s) `mappend` B.concat (map firma ps)) f of
+		True -> Nothing
+		False -> Just "la firma del sincronizzatore è corrotta" 
+-- | estrae gli eventi, come eventi esterni assegnati al loro autore, da una patch di gruppo
+eventi :: Group -> Either String [Esterno Anagrafe.Utente]
+eventi g = case checkGroup g of
+	Just e -> Left e
+	Nothing ->  
+-}
+{-
+aggiornaStato :: MonadError [Char] m 
+	=> Chiave
+	-> (T, [SNodo T Utente])
+	-> [(Firma, [(Chiave, Firma, [String])])]
+	-> m ((T, [SNodo T Utente]), [Contestualizzato Utente String] )
+aggiornaStato g x = let
+	r stato (firma,ps) = do
+		let h = showDigest . sha512 $ B.pack $ show stato
+		when (not $ verify g (B.pack $ h ++ show ps) firma) $ throwError "throwErrore di integrita della patch di gruppo" 
+		let 	rs = map (snd &&& fst) $ responsabiliQ stato
+			zs = map (\(puk,_,es) -> zip (repeat (fromJust $ lookup puk rs)) es) ps
+		when (not $ all (\(puk,_,_) -> puk `elem` map fst rs) ps ) $ throwError "la patch di gruppo contiene eventi da un utente sconosciuto"
+		when (not $ all (\(puk,firma,es) -> verify puk (B.pack $ h ++ concat es) firma) ps) $ 
+			throwError "la patch di gruppo contiene una patch di responsabile non integra"
+		(stato',logs) <- caricaEventi priorities reattori (concat zs) stato
+		tell logs
+		return stato'
+	in runWriterT . foldM r x
+
+provaStato :: Utente -> IO (Q,PublicKey,(Utente,
+-}
