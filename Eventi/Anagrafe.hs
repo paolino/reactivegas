@@ -43,15 +43,14 @@ import Core.Programmazione (Inserzione, EventoInterno (..), soloEsterna, nessunE
 import Core.Types (Message)
 import Core.Costruzione (Supporto,libero,dafile,scelte,runSupporto,CostrAction)
 import Core.Parsing (ParserConRead, Parser)
-import Core.Amministrazione (Segreto)
+import Lib.Firmabile (Segreto, Chiave)
 
 import Eventi.Servizio 
 
-deriving instance Read PublicKey
 deriving instance Eq PublicKey
+deriving instance Read PublicKey
 
 -- | chiave pubblica di un responsabile
-type Chiave = PublicKey
 -- type Segreto = 
 type Indice = Int
 -- | nome di un utente
