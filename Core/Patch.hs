@@ -1,88 +1,73 @@
-{-# LANGUAGE  TypeSynonymInstances, FlexibleInstances #-}
-module Core.Patch (Patch, fromPatch, mkPatch, Group, fromGroup, mkGroup, Checker, runChecker, Ambiente (..)) where
+{-# LANGUAGE  TypeSynonymInstances, FlexibleContexts #-}
+module Core.Patch -- (Patch, fromPatch, mkPatch, Group, fromGroup, mkGroup, Checker, runChecker, Ambiente (..)) where
+	where
 
 import Data.List (find, lookup)
+import Data.Maybe (fromJust)
 import Control.Applicative ((<$>))
 import Control.Monad.Error (when, ErrorT, throwError, runErrorT)
-import Control.Monad.Reader (ReaderT, ask, runReaderT)
+import Control.Monad.Reader (ReaderT, ask, runReaderT,asks)
 import Data.Monoid (mappend)
 
 import Core.Types (Esterno,Evento,Message)
-
+import Core.Costruzione (CostrAction,Supporto,libero,scelte)
 import Lib.Aspetti (ParteDi)
-import Lib.Error (liftMaybe, liftBool)
-import Lib.Firmabile (Firmabile (..), sign , verify, Firma, Chiave, Segreto, Password)
+import Lib.Firmabile (sign , verify, Firma, Chiave, Segreto, Password)
 
-import Eventi.Anagrafe (Responsabile,Utente)
-import Data.ByteString.Lazy.Char8 (pack)
+import Eventi.Anagrafe (Responsabili,Utente,costrResponsabili,responsabili)
+import Eventi.Sincronizzatore (sincronizzatore,Sincronizzatore)
 
--- | l'ambiente immutabile dove eseguire le operazioni di patch
-data Ambiente = Ambiente {
-	sincronizzatore :: Chiave,	-- ^ chiave pubblica di sincronizzazione
-	responsabili :: [Responsabile],	-- ^ responsabili validi
-	blob :: String 			-- ^ hash di riferimento per la patch
-	}
-
--- | la monade di esecuzione delle operazioni di patch
-type Checker m = ReaderT Ambiente (ErrorT Message m)
-
--- | esegue una azione di tipo checker nel suo ambiente
-runChecker :: Ambiente -> Checker m a -> m (Either Message a)
-runChecker rs c = runErrorT $ runReaderT c rs  
 
 -- | una patch è un insieme di eventi firmati da un responsabile
 type Patch = (Chiave,Firma,[Evento])
 
-instance Firmabile ([Evento],String) where
-	hash (xs,b) = pack $ b ++ concat xs
-
 -- | controlla che una patch sia accettabile, ovvero che il responsabile sia presente e che la firma sia corretta
-checkPatch :: Monad m => Patch -> Checker m ()
-checkPatch (c,f,xs) = do
-	Ambiente _ rs b <- ask
-	liftBool (c `elem` map (fst . snd) rs) "l'autore della patch è sconosciuto"
-	liftBool (verify c (xs,b) f) "la firma della patch è corrotta"
+fromPatch :: (Responsabili `ParteDi` s, Show s) => Patch -> Supporto s c [Esterno Utente]
+fromPatch (c,f,xs) =  do
+	rs <- costrResponsabili 
+	s <- ask
+	when (not $ c `elem` map (fst . snd) rs) $ throwError "l'autore della patch è sconosciuto"
+	when (not $ verify c (xs,s) f) $ throwError "la firma della patch è corrotta"
+	let u = fst. head . filter ((==c) . fst . snd) $ rs
+	return $ zip (repeat u) xs
 
 -- | costruisce una patch da un insieme di eventi
-mkPatch :: Monad m => [Evento] -> (Utente,Password) -> Checker m Patch
-mkPatch xs (u,p) = do
-	Ambiente _ rs b <- ask
-	(c,s) <- liftMaybe (lookup  u rs) "l'utente non è registrato tra i responsabili"
-	return (c, sign p s (xs,b), xs)
+mkPatch :: (Responsabili `ParteDi` s, Show s) => Utente -> [Evento] -> Supporto s c Patch
+mkPatch u xs  = do
+	(rs,_) <- asks responsabili 
+	when (not $ u `elem` map fst rs) $ throwError "il tuo nome non risulta tra i responsabili"
+	let (c,s) = fromJust . lookup u $ rs 
+	p <- libero "la tua password di responsabile" 
+	b <- ask
+	case sign (s,p) (xs,b) of 
+		Nothing -> throwError $ "password errata"
+		Just f -> return (c, f , xs)
 
--- | estrae gli eventi da una patch giudicandone l'integrita'
-fromPatch :: Monad m => Patch -> Checker m [Esterno Utente]
-fromPatch p@(c,_,xs) = do
-	checkPatch p
-	Ambiente _ rs _ <- ask
-	(n,_) <- liftMaybe (find ((==) c . fst . snd) $ rs) $ "la patch proviene da un responsabile sconosciuto"
-	return $ map ((,) n) xs 
-
+selezionaAutore :: (Responsabili `ParteDi` s) => Supporto s c Utente
+selezionaAutore = do 
+	(rs,_) <- asks responsabili 
+	(u,_) <- scelte (zip (map fst rs) rs) "seleziona l'autore della patch"
+	return u
 -- | una patch di gruppo è un insieme di patch firmate dal sincronizzatore
 type Group = (Firma,[Patch])
 
-instance Firmabile ([Patch],String) where
-	hash (ps,b) = foldl mappend (pack b) $ map firma ps where
-		firma (_,f,_) = f
 
 -- | controlla l'integrità di una patch di gruppo
-checkGroup :: Monad m => Group -> Checker m ()
-checkGroup (f,ps) = do 
-	Ambiente c _ b  <- ask
-	liftBool (verify c (ps,b) f) "la firma del sincronizzatore è corrotta" 
+fromGroup :: (Sincronizzatore `ParteDi` s, Responsabili `ParteDi` s, Show s) => Group -> Supporto s c s
+fromGroup (f,ps) = do 
+	s <- ask
+	(_,(c,_)) <- asks sincronizzatore
+	when  (not $ verify c (ps,s) f) $ throwError "la firma del sincronizzatore è corrotta" 
+	es <- concat <$> mapM fromPatch ps
+
 
 -- | costruisce una patch di gruppo da un insieme di patch responsabile
-mkGroup :: Monad m => [Patch] -> Segreto -> Checker m Group
+mkGroup :: [Patch] -> Supporto s c Group
 mkGroup ps s = do
-	Ambiente _ _ b  <- ask
-	return (sign s (ps,b),ps)
+	b <- ask
+	(_,(c,s)) <- asks sincronizzatore
+	p <- libero "password di sincronizzatore"
+	case  sign (s,p) (ps,b) of 
+		Nothing -> throwError $ "password errata"
+		Just f -> return (f,ps)
 	
--- | estrae gli eventi, come eventi esterni assegnati al loro autore, da una patch di gruppo
-fromGroup :: Monad m 
-	=> Group 			-- ^ patch di gruppo
-	-> Checker m [Esterno Utente]	-- ^ o errore o lista di eventi
-fromGroup g@(_,ps) = do
-	checkGroup g
-	concat <$> mapM fromPatch ps
-	
-

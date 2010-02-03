@@ -69,6 +69,7 @@ validante r f = conFallimento $ esistenzaResponsabile r >> f r
 -- | la lista di utenti 
 data Anagrafe = Anagrafe [Utente] deriving (Show,Read)
 
+utenti = (\(Anagrafe us) -> us) . see
 -- | aggiunge la parte anagrafica dello stato allo stato iniziale
 bootAnagrafe :: [Responsabile] ->  a -> TyAnagrafe a
 bootAnagrafe unos x = Anagrafe (map fst unos) .< Responsabili unos [] .< servizio0 .< x
@@ -79,6 +80,7 @@ type Responsabile = (Utente,(Chiave,Segreto))
 -- | la lista dei responsabili eletti e in elezione
 data Responsabili = Responsabili {eletti::[Responsabile], inodore ::[(Indice,Responsabile)]} deriving (Show,Read)
 
+responsabili = (\(Responsabili es is) -> (es, map snd is)) . see
 -- | mappa di priorita' per gli eventi di questo modulo
 priorityAnagrafe = R k where
 	k (NuovoUtente _) = -20
@@ -171,21 +173,21 @@ reazioneAnagrafe = soloEsterna reattoreAnagrafe' where
 -- reparto costruzione ed interrogazione
 ------------------------------------------------------------------------------------------------
  
--- | estrae la lista di responsabili
-responsabili :: (ParteDi Responsabili s) => Supporto s b [Responsabile]	
-responsabili = do
-	Responsabili rs _ <- asks see 
+-- | estrae la lista di costrResponsabili
+costrResponsabili :: (ParteDi Responsabili s) => Supporto s b [Responsabile]	
+costrResponsabili = do
+	(rs,_) <- asks responsabili
 	when (null rs) $ throwError "nessun responsabile presente" 
 	return rs
 
--- | estrae la lista di utenti
-utenti :: (ParteDi Anagrafe s) => Supporto s b [Utente]	
-utenti = do
-	Anagrafe rs <- asks see
+-- | estrae la lista di costrUtenti
+costrUtenti :: (ParteDi Anagrafe s) => Supporto s b [Utente]	
+costrUtenti = do
+	rs <- asks utenti
 	when (null rs) $ throwError "nessun utente presente" 
 	return rs
 
--- | costruzione degli eventi esterni per la gestione utenti e responsabili
+-- | costruzione degli eventi esterni per la gestione costrUtenti e costrResponsabili
 costrEventiAnagrafe :: (ParteDi Anagrafe s, ParteDi Responsabili s) => CostrAction c EsternoAnagrafico s
 costrEventiAnagrafe s kp kn =	[("inserimento nuovo utente", eventoNuovoUtente)
 				,("elezione di un nuovo responsabile", eventoElezioneResponsabile)
@@ -194,41 +196,41 @@ costrEventiAnagrafe s kp kn =	[("inserimento nuovo utente", eventoNuovoUtente)
 	where
 	run = runSupporto s kn kp
         eventoNuovoUtente =  run $ do
-		us <- utenti 
+		us <- costrUtenti 
                 n <- libero "il nome del nuovo utente"
 		when (n `elem` us) $ throwError "utente già presente"	
                 return $ NuovoUtente n
         eventoElezioneResponsabile = run $ do
-		us <- utenti 
-		rs <- responsabili 
+		us <- costrUtenti 
+		rs <- costrResponsabili 
 		let ds = us \\ map fst rs
 		when (null ds) $ throwError "nessun utente non responsabile disponibile"
                 n <- scelte (map (id &&& id) ds) "selezione eleggibile" 
                 m <- dafile "il modulo della chiave pubblica"
                 return $ ElezioneResponsabile (n,m)
         eventoEliminazioneResponsabile = run $ do
-		rs <- responsabili 
+		rs <- costrResponsabili 
                 n <- scelte (map (fst &&& id) rs) "selezione responsabile da eliminare"
                 return $ EliminazioneResponsabile (fst n)
 
--- | costruzione delle interrogazione sull'anagrafe e sui responsabili
+-- | costruzione delle interrogazione sull'anagrafe e sui costrResponsabili
 costrQueryAnagrafe :: (ParteDi Anagrafe s, ParteDi Responsabili s) => CostrAction c Response s
 costrQueryAnagrafe s kp kn = 	[("la chiave pubblica di un responsabile",queryChiave)
-				,("elenco nomi utenti",queryElencoUtenti)
-				,("elenco nomi responsabili",queryElencoResponsabili)
+				,("elenco nomi costrUtenti",queryElencoUtenti)
+				,("elenco nomi costrResponsabili",queryElencoResponsabili)
 				] 
 	where
 	run = runSupporto s kn kp
 	queryChiave = run $ do
-		rs <- responsabili 
+		rs <- costrResponsabili 
 		(u,v) <- scelte (map (fst &&& id) rs) "selezione responsabile" 
 		return $ Response [("responsabile",ResponseOne u),("chiave pubblica",ResponseOne v)]
 	queryElencoUtenti = run $ do
-		us <- utenti 
-		return $ Response [("elenco nomi utenti", ResponseMany us)]
+		us <- costrUtenti 
+		return $ Response [("elenco nomi costrUtenti", ResponseMany us)]
 	queryElencoResponsabili = run $ do
-		rs <- responsabili 
-		return $ Response [("elenco nomi responsabili", ResponseMany rs )]
+		rs <- costrResponsabili 
+		return $ Response [("elenco nomi costrResponsabili", ResponseMany rs )]
 		
 ----------------------------------------------------------------------------------------------------------------------
 --  sezione assensi, putroppo non ha un modulo a parte a causa del ciclo di dipendenze con l'anagrafe

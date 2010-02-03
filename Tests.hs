@@ -44,6 +44,7 @@ rs = [reazioneAnagrafe, reazioneAccredito, reazioneOrdine, reazioneSincronizzato
 -- | crea i costruttori
 cs :: (Box -> Costruzione a ()) -> TS -> [(String, Costruzione a ())]
 cs k s = concat $ [
+	costruttori
 	costrEventiAnagrafe s (k . Evento) (k . Bocciato),
 	costrEventiAssenso s (k . Evento) (k . Bocciato),
 	costrEventiAccredito s (k . Evento) (k . Bocciato),
@@ -61,7 +62,8 @@ data Box
 	= forall a. Show a => Evento a 
 	| Bocciato String 
 	| Report Response 
-	| Elimina Int	
+	| Elimina Int
+	| Chiavi (Utente,(Chiave,Segreto))	
 	| Fine
 
 main =	do

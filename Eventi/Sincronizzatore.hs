@@ -34,25 +34,26 @@ data EsternoSincronizzatore
 prioritySincronizzatore = R k where
 	k (NuovoSincronizzatore _) = 20
 
+sincronizzatore = (\(Sincronizzatore r) -> r) . see
 
-data StatoSincronizzatore = StatoSincronizzatore Responsabile deriving (Read, Show)
+data Sincronizzatore = Sincronizzatore Responsabile deriving (Read, Show)
 
 -- | tipo dello stato aggiunto del sincronizzatore
-type TySincronizzatore a = (StatoSincronizzatore , a)
+type TySincronizzatore a = (Sincronizzatore , a)
 
--- | aggiunta dell'aspetto StatoSincronizzatore, serve un responsabile al momento del boot
+-- | aggiunta dell'aspetto Sincronizzatore, serve un responsabile al momento del boot
 bootSincronizzatore :: Responsabile -> a -> TySincronizzatore a
-bootSincronizzatore y x = (StatoSincronizzatore y, x)
+bootSincronizzatore y x = (Sincronizzatore y, x)
 
 
 reazioneSincronizzatore :: 
-	(StatoSincronizzatore `ParteDi` s
+	(Sincronizzatore `ParteDi` s
 	, Parser c EsternoSincronizzatore
 	) => Reazione s c Utente
 reazioneSincronizzatore = soloEsterna reattore where
 	reattore (u,NuovoSincronizzatore r) = conFallimento $ do
 		fallimento (u /= "sincronizzatore") "solo il sincronizzatore può cambiare se stesso"
-		modifica (\(StatoSincronizzatore _) -> StatoSincronizzatore r)
+		modifica (\(Sincronizzatore _) -> Sincronizzatore r)
 		logga "il sincronizzatore è stato cambiato"
 		return (True,nessunEffetto)	
 

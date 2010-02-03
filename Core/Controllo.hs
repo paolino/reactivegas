@@ -57,17 +57,17 @@ serializza
 serializza (Nodo k rs) = SNodo (isJust k) (map (second $ map (second serializza))  rs)	
 
 -- | programma di caricamento eventi, prevede il riordinamento per priorita
-caricaEventi :: (Show d,Monad m) 
+caricaEventi :: Show d 
 	=> [R] 			-- ^ i prioritizzatori
 	-> [Reazione s c d] 	-- ^ le reazioni base
 	-> [Esterno d] 		-- ^ gli eventi da caricare
 	-> (s,[SNodo s d]) 	-- ^ lo stato e la serializzazione dell'albero reattivo
-	-> m ((s,[SNodo s d]),[Contestualizzato d String])-- ^ nuovo stato e nuova  serializzazione dell'albero reattivo insieme ai log contestualizzati
-caricaEventi ps rs xs (s,nss) = do
+	-> ((s,[SNodo s d]),[Contestualizzato d String])-- ^ nuovo stato e nuova  serializzazione dell'albero reattivo insieme ai log contestualizzati
+caricaEventi ps rs xs (s,nss) = 
 	let 	ns = map (uncurry deserializza) $ zip nss rs
 		xs' = sortP ps snd xs
 		(ns',s',ws) = runInserzione (foldM (\ns x -> inserimentoCompleto x ns) ns xs') nuovoContesto s
 		nss' =  map serializza ns'
-	return ((s',nss'),ws)
+	in ((s',nss'),ws)
 
 ----------------------------------------
