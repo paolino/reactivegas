@@ -6,6 +6,7 @@ import Control.Arrow
 import Lib.Console
 import Lib.Costruzione
 import Control.Monad.Cont
+import Control.Monad.State
 import System.Exit
 import Data.IORef
 
@@ -22,6 +23,7 @@ import Core.File
 import Lib.TreeLogs
 import Lib.Firmabile
 
+import Eventi.Amministrazione
 import Eventi.Anagrafe
 import Eventi.Accredito
 import Eventi.Impegno
@@ -41,31 +43,42 @@ ps = [priorityAnagrafe, priorityAnagrafeI, priorityAccredito, priorityImpegnoI, 
 -- | lista di reattori
 rs = [reazioneAnagrafe, reazioneAccredito, reazioneOrdine, reazioneSincronizzatore] :: [Reazione TS ParserConRead Utente ]
 
--- | crea i costruttori
-cs :: (Box -> Costruzione a ()) -> TS -> [(String, Costruzione a ())]
-cs k s = concat $ [
-	costruttori
+-- | costruzione aggiornamento
+cs :: TS -> [String] -> (BoxPatch -> Costruzione a ()) -> [(String, Costruzione a ())]
+cs s evs k = concat $ [
 	costrEventiAnagrafe s (k . Evento) (k . Bocciato),
 	costrEventiAssenso s (k . Evento) (k . Bocciato),
 	costrEventiAccredito s (k . Evento) (k . Bocciato),
 	costrEventiImpegno s (k . Evento) (k . Bocciato),
 	costrEventiOrdine s (k . Evento) (k . Bocciato),
 	costrEventiSincronizzatore s (k . Evento) (k . Bocciato),
-	costrQueryAnagrafe s (k . Report) (k . Bocciato),
-	costrQueryAssenso s (k . Report) (k. Bocciato),
-	costrQueryAccredito s (k . Report) (k . Bocciato),
-	costrQueryImpegni s (k . Report) (k . Bocciato),
-	costrQueryOrdine s (k . Report) (k . Bocciato)
+	costrGestionePatch evs () (k . Elimina) (k . Bocciato)
 	]
 
-data Box 
+treat r (Evento x) = modify (++ [show x])  >> r
+treat r (Bocciato x) = liftIO (putStrLn ("*** Incoerenza: " ++ x) >> getLine) >> r
+treat r (Elimina xs) = put xs >> r
+treat _ FinePatch = return ()
+
+costruzionePatch ts = do
+	(u,_) <- ask
+	let ((ts1,_),logs) <- caricaEventi ps rs (map ((,) "paolino") evs) (s0 [paolino] sinc ,ns)
+	evs <- get
+	e <- lift $ runMenu "produzione eventi" FinePatch (cs ts evs)
+	treat (costruzionePatch ts) e
+
+runMenu x def q = runInputT defaultSettings . runPasso . (:[Costruito def]) . flip runCont Costruito . callCC $ \k -> do
+		join . scelte (q k) $ x
+		error "fine inaspettata"
+
+data BoxPatch
 	= forall a. Show a => Evento a 
 	| Bocciato String 
-	| Report Response 
-	| Elimina Int
-	| Chiavi (Utente,(Chiave,Segreto))	
-	| Fine
+	| Elimina [String]
+	| FinePatch
 
+ts0 = s0 [("paolino",cryptobox "gaien")] ("sincronizzatore",cryptobox "desinc")
+{-
 main =	do
 	let 	paolino = ("paolino",cryptobox "gaien")
 		sinc = ("sincronizzatore",cryptobox "desinc")
@@ -87,3 +100,4 @@ main =	do
 				Bocciato x -> putStrLn ("*** Incoerenza: " ++ x) >> getLine >> machine ns
 				Evento x -> writeEvents (evs ++ [show x]) >> machine  ns
 	machine $ repeat (SNodo True []) 
+-}

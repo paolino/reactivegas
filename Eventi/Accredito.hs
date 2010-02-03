@@ -107,12 +107,12 @@ costrEventiAccredito s kp kn = 	[("attribuzione accredito per un utente",eventoA
 	where
 	run = runSupporto s kn kp
 	eventoAccredito = run $ do
-		us <- utenti 
+		us <- asks utenti 
 		u <- scelte (map (id &&& id) us) "selezione utente"
 		n <- libero "la somma da accreditare"
 		return $ Accredito u n
 	eventoSaldo = run $ do
-		rs <- responsabili 
+		(rs,_) <- asks responsabili 
 		u <- scelte (map (fst &&& id) rs) "selezione responsabile"
 		n <- libero "la somma ricevuta"
 		return $ Saldo (fst u) n

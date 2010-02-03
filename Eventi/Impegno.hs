@@ -148,7 +148,7 @@ costrEventiImpegno s kp kn = 	[("fine di una raccolta impegni", eventoFineImpegn
         eventoImpegno  = run $ do
 		is <- impegni 
                 n <- scelte is  "selezione raccolta impegni"  
-		us <- utenti 
+		us <- asks utenti 
 		u <- scelte (map (id &&& id) us) "selezione utente impegnante"
 		z <- libero "somma impegnata"
                 return $ Impegno u z n

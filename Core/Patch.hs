@@ -13,6 +13,7 @@ import Core.Types (Esterno,Evento,Message)
 import Core.Costruzione (CostrAction,Supporto,libero,scelte)
 import Lib.Aspetti (ParteDi)
 import Lib.Firmabile (sign , verify, Firma, Chiave, Segreto, Password)
+import Lib.Aggiornamento 
 
 import Eventi.Anagrafe (Responsabili,Utente,costrResponsabili,responsabili)
 import Eventi.Sincronizzatore (sincronizzatore,Sincronizzatore)
@@ -71,3 +72,6 @@ mkGroup ps s = do
 		Nothing -> throwError $ "password errata"
 		Just f -> return (f,ps)
 	
+--------------------------------------------------------------
+
+
