@@ -10,7 +10,7 @@ import Control.Monad.Reader (ReaderT, ask, runReaderT,asks)
 import Data.Monoid (mappend)
 
 import Core.Types (Esterno,Evento,Message)
-import Core.Costruzione (CostrAction,Supporto,libero,scelte)
+import Core.Costruzione (Supporto,libero,scelte)
 import Lib.Aspetti (ParteDi)
 import Lib.Firmabile (sign , verify, Firma, Chiave, Segreto, Password)
 import Lib.Aggiornamento 
@@ -23,7 +23,7 @@ import Eventi.Sincronizzatore (sincronizzatore,Sincronizzatore)
 type Patch = (Chiave,Firma,[Evento])
 
 -- | controlla che una patch sia accettabile, ovvero che il responsabile sia presente e che la firma sia corretta
-fromPatch :: (Responsabili `ParteDi` s, Show s) => Patch -> Supporto s c [Esterno Utente]
+fromPatch :: (Responsabili `ParteDi` s, Show s, Monad m) => Patch -> Supporto m s c [Esterno Utente]
 fromPatch (c,f,xs) =  do
 	rs <- costrResponsabili 
 	s <- ask
@@ -33,7 +33,7 @@ fromPatch (c,f,xs) =  do
 	return $ zip (repeat u) xs
 
 -- | costruisce una patch da un insieme di eventi
-mkPatch :: (Responsabili `ParteDi` s, Show s) => Utente -> [Evento] -> Supporto s c Patch
+mkPatch :: (Responsabili `ParteDi` s, Show s, Monad m ) => Utente -> [Evento] -> Supporto m s c Patch
 mkPatch u xs  = do
 	(rs,_) <- asks responsabili 
 	when (not $ u `elem` map fst rs) $ throwError "il tuo nome non risulta tra i responsabili"
@@ -44,27 +44,28 @@ mkPatch u xs  = do
 		Nothing -> throwError $ "password errata"
 		Just f -> return (c, f , xs)
 
-selezionaAutore :: (Responsabili `ParteDi` s) => Supporto s c Utente
+selezionaAutore :: (Responsabili `ParteDi` s, Monad m) => Supporto m s c Utente
 selezionaAutore = do 
 	(rs,_) <- asks responsabili 
 	(u,_) <- scelte (zip (map fst rs) rs) "seleziona l'autore della patch"
 	return u
+
 -- | una patch di gruppo è un insieme di patch firmate dal sincronizzatore
 type Group = (Firma,[Patch])
 
 
 -- | controlla l'integrità di una patch di gruppo
-fromGroup :: (Sincronizzatore `ParteDi` s, Responsabili `ParteDi` s, Show s) => Group -> Supporto s c s
+fromGroup :: (Sincronizzatore `ParteDi` s, Responsabili `ParteDi` s, Show s, Monad m ) => Group -> Supporto m s c [Esterno Utente]
 fromGroup (f,ps) = do 
 	s <- ask
 	(_,(c,_)) <- asks sincronizzatore
 	when  (not $ verify c (ps,s) f) $ throwError "la firma del sincronizzatore è corrotta" 
-	es <- concat <$> mapM fromPatch ps
-
+	concat <$> mapM fromPatch ps
+	
 
 -- | costruisce una patch di gruppo da un insieme di patch responsabile
-mkGroup :: [Patch] -> Supporto s c Group
-mkGroup ps s = do
+mkGroup :: (Show s, Monad m, Sincronizzatore `ParteDi` s) => [Patch] -> Supporto m s c Group
+mkGroup ps = do
 	b <- ask
 	(_,(c,s)) <- asks sincronizzatore
 	p <- libero "password di sincronizzatore"
