@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts, NoMonomorphismRestriction #-}
 module Eventi.Amministrazione where
 
 import Data.List (delete, (\\))
@@ -14,13 +14,13 @@ import Eventi.Anagrafe (Anagrafe, Responsabili, Utente, costrUtenti, responsabil
 
 
 -- costrNuovoResponsabile :: (Monad m, Anagrafe `ParteDi` s, Responsabili `ParteDi` s) => CostrAction m c (Utente,(Chiave,Segreto)) s
-costrNuovoResponsabile s kp kn = (,) "nuove chiavi da responsabile" . runSupporto s kn kp $ do 
+nuoveChiavi = do 
 	us <- asks utenti
 	(rs,rs') <- asks responsabili
 	let us' = us \\ (map fst $ rs ++ rs')
 	when (null us') $ throwError "nessun utente che non sia già tra i responsabili, o in elezione"
 	u <- scelte (zip us' us') "scegli il tuo nome di utente"
-	p <- libero "immetti la tua password, una frasetta lunga possibilmente"
+	p <- libero "immetti una password, una frase , lunga almeno 12 caratteri"
 	return $ (u,cryptobox p)
 
 costrGestionePatch :: (Monad m) => [String] -> CostrAction m c [String] ()

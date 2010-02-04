@@ -13,7 +13,7 @@ import System.Console.Haskeline
 -- | la funzione smonta i passi in caso di undo
 runPasso :: MonadException m => [Passo m b] -> InputT m b
 
-runPasso [] = error "lista vuota"
+runPasso [x] = runPasso [x,x]
 
 runPasso (Costruito x:_) = return x 
 runPasso  w@(c@(Libero p f) : u) = do
@@ -57,5 +57,5 @@ runPasso  w@(c@(DaFile p f) : u) = do
 	runPasso n
 
 interazione :: (MonadException m) => b -> Costruzione m b b -> m b
-interazione base f = svolgi f >>= runInputT defaultSettings . runPasso . (:[Costruito base]) 
+interazione base f = svolgi f >>= runInputT defaultSettings . runPasso . return 
 

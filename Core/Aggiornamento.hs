@@ -63,9 +63,10 @@ consumaM agg y@(Verfile n p s) (x@(Verfile m q d) :xs)
 			putStrLn $ "Warn: Rilevato l'aggiornamento " ++ show m ++ ", manca l'aggiornamento " ++ show (n + 1)
 			return y
 	
-aggiornamento :: (Eq b, Read b, Show a, Read a, MonadIO m) => Maybe FilePath -> ((Int,a) -> b -> m a) -> m (Int,a)
+aggiornamento :: (Eq b, Read b, Show a, Read a, MonadIO m) => Maybe FilePath -> ((Int,a) -> b -> m a) -> m ((Int,FilePath),a)
+
 aggiornamento mf aggiorna = do
-	(stato,aggiornamenti) <- liftIO $ do 	
+	(wd,stato,aggiornamenti) <- liftIO $ do 	
 			putStrLn "\n\nOk: *************** Inizio aggiornamento ***********"
 			wd <- maybe getCurrentDirectory return mf 
 			putStrLn $ "Ok: Cartella di lavoro " ++ wd
@@ -73,13 +74,15 @@ aggiornamento mf aggiorna = do
 			when (null stati) $ error $ 
 				"Abort: Il file di stato è non presente o non integro nella cartella " ++ wd
 			let (stato:elimina) = stati
+			putStrLn $ "Ok: Rilevato il file di stato " ++ show (index stato)
 			mapM (removeFile . path) elimina 
-			(elimina,aggiornamenti) <- break ((> index stato) . index) <$> sort <$> getVerfiles "aggiornamento" wd	
+			(elimina,aggiornamenti) <- break ((> index stato) . index) <$> sort <$> getVerfiles "aggiornamento" wd
+			putStrLn $ "Ok: Rilevati gli aggiornamenti di gruppo " ++ show (map index aggiornamenti)	
 			mapM (removeFile . path) elimina
-			return (stato,aggiornamenti) 
+			return (wd,stato,aggiornamenti) 
 	Verfile n p s <- consumaM aggiorna stato aggiornamenti
-	liftIO $ putStrLn $ "Ok: ********* Fine aggiornamento (stato " ++ show n ++ ")********\n\n"
-	return (n,s)	
+	liftIO $ putStrLn $ "Ok: ********* Fine aggiornamento (stato " ++ show n ++ ") ********\n\n"
+	return ((n,wd),s)	
 
 
 -- -}
