@@ -34,7 +34,7 @@ import Codec.Crypto.RSA (PublicKey (..))
 
 import Lib.Aspetti ((.<),ParteDi,see)
 import Lib.Assocs (assente,(?),updateM,elimina)
-import Lib.Costruzione  (Costruzione)
+import Lib.Passo (Costruzione)
 import Lib.Response (Response (..))
 import Lib.Prioriti (R (..))
 
@@ -174,21 +174,21 @@ reazioneAnagrafe = soloEsterna reattoreAnagrafe' where
 ------------------------------------------------------------------------------------------------
  
 -- | estrae la lista di costrResponsabili
-costrResponsabili :: (ParteDi Responsabili s) => Supporto s b [Responsabile]	
+costrResponsabili :: (Monad m , ParteDi Responsabili s) => Supporto m s b [Responsabile]	
 costrResponsabili = do
 	(rs,_) <- asks responsabili
 	when (null rs) $ throwError "nessun responsabile presente" 
 	return rs
 
 -- | estrae la lista di costrUtenti
-costrUtenti :: (ParteDi Anagrafe s) => Supporto s b [Utente]	
+costrUtenti :: (Monad m, ParteDi Anagrafe s) => Supporto m s b [Utente]	
 costrUtenti = do
 	rs <- asks utenti
 	when (null rs) $ throwError "nessun utente presente" 
 	return rs
 
 -- | costruzione degli eventi esterni per la gestione costrUtenti e costrResponsabili
-costrEventiAnagrafe :: (ParteDi Anagrafe s, ParteDi Responsabili s) => CostrAction c EsternoAnagrafico s
+costrEventiAnagrafe :: (Monad m, ParteDi Anagrafe s, ParteDi Responsabili s) => CostrAction m c EsternoAnagrafico s
 costrEventiAnagrafe s kp kn =	[("inserimento nuovo utente", eventoNuovoUtente)
 				,("elezione di un nuovo responsabile", eventoElezioneResponsabile)
 				,("richiesta di eliminazione di un responsabile",eventoEliminazioneResponsabile)
@@ -214,10 +214,10 @@ costrEventiAnagrafe s kp kn =	[("inserimento nuovo utente", eventoNuovoUtente)
                 return $ EliminazioneResponsabile (fst n)
 
 -- | costruzione delle interrogazione sull'anagrafe e sui costrResponsabili
-costrQueryAnagrafe :: (ParteDi Anagrafe s, ParteDi Responsabili s) => CostrAction c Response s
+costrQueryAnagrafe :: (Monad m, ParteDi Anagrafe s, ParteDi Responsabili s) => CostrAction m c Response s
 costrQueryAnagrafe s kp kn = 	[("la chiave pubblica di un responsabile",queryChiave)
-				,("elenco nomi costrUtenti",queryElencoUtenti)
-				,("elenco nomi costrResponsabili",queryElencoResponsabili)
+				,("elenco nomi utenti",queryElencoUtenti)
+				,("elenco nomi responsabili",queryElencoResponsabili)
 				] 
 	where
 	run = runSupporto s kn kp
@@ -227,10 +227,10 @@ costrQueryAnagrafe s kp kn = 	[("la chiave pubblica di un responsabile",queryChi
 		return $ Response [("responsabile",ResponseOne u),("chiave pubblica",ResponseOne v)]
 	queryElencoUtenti = run $ do
 		us <- costrUtenti 
-		return $ Response [("elenco nomi costrUtenti", ResponseMany us)]
+		return $ Response [("elenco nomi utenti", ResponseMany us)]
 	queryElencoResponsabili = run $ do
 		rs <- costrResponsabili 
-		return $ Response [("elenco nomi costrResponsabili", ResponseMany rs )]
+		return $ Response [("elenco nomi responsabili", ResponseMany $ map fst rs )]
 		
 ----------------------------------------------------------------------------------------------------------------------
 --  sezione assensi, putroppo non ha un modulo a parte a causa del ciclo di dipendenze con l'anagrafe
@@ -291,14 +291,14 @@ programmazioneAssenso se ur c k = do
 --------------------------- costruzioni per il modulo assensi -----------------------------
 
 -- | estrae gli assensi dallo stato in lettura
-assensi :: ParteDi (Servizio Assensi) s => Supporto s b [(String, Int)]
+assensi :: (Monad m, ParteDi (Servizio Assensi) s) => Supporto m s b [(String, Int)]
 assensi = do
 	xs :: [(Int,(String,Assensi))] <- asks elencoSottoStati 
 	when (null xs) $ throwError "nessuna raccolta di assensi attiva"
 	return  $ map (fst . snd &&& fst) xs
 
 -- | costrutore degli eventi di assenso
-costrEventiAssenso :: (Servizio Assensi `ParteDi` s) => CostrAction c EsternoAssenso s
+costrEventiAssenso :: (Monad m, Servizio Assensi `ParteDi` s) => CostrAction m c EsternoAssenso s
 costrEventiAssenso s kp kn = 	[("fallimento di una raccolta di assensi",eventoFallimentoAssenso)
 				,("attribuzione di un assenso",eventoAssenso)
 				] 
@@ -314,7 +314,7 @@ costrEventiAssenso s kp kn = 	[("fallimento di una raccolta di assensi",eventoFa
                 return $ Assenso n
 
 -- | costruzione delle interrogazioni sul modulo di assensi
-costrQueryAssenso :: (Servizio Assensi `ParteDi` s) => CostrAction c Response s
+costrQueryAssenso :: (Monad m , Servizio Assensi `ParteDi` s) => CostrAction m c Response s
 costrQueryAssenso s kp kn = [("elenco richieste di assenso aperte", querySottoStati)] 
 	where
 	querySottoStati = runSupporto s kn kp $ do

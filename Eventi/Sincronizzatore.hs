@@ -57,7 +57,7 @@ reazioneSincronizzatore = soloEsterna reattore where
 		logga "il sincronizzatore è stato cambiato"
 		return (True,nessunEffetto)	
 
-costrEventiSincronizzatore :: CostrAction c EsternoSincronizzatore s
+costrEventiSincronizzatore :: Monad m => CostrAction m c EsternoSincronizzatore s
 costrEventiSincronizzatore s kp kn = 	[("sostituzione sincronizzatore", sost)]
 	where
 	sost = runSupporto s kn kp $ do

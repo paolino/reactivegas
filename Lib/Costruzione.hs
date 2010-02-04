@@ -11,7 +11,7 @@
 
 module Lib.Costruzione where
 
-import Control.Monad.Cont (Cont (..) , runCont)
+import Control.Monad.Cont (Cont (..) , runCont, callCC, join)
 
 -- | i possibili sviluppi di una costruzione
 data Passo b 
@@ -34,6 +34,17 @@ type Costruzione b = Cont (Passo b)
 
 -- | da una costruzione ad un passo che la esegue
 svolgi :: Costruzione b b -> Passo b
-svolgi = flip runCont Costruito
-					
+svolgi = flip runCont Costruito 
+	
+		
+-- | presenta un menu di scelte operative
+incrocio 	:: String -- ^ descrizione
+		-> Incrocio b a -- ^ menu a partire da un gestore di a
+		-> Passo b	-- ^ il passo risultante
+incrocio x q = svolgi . callCC $ \k -> do
+		join . scelte (q k) $ x
+		error "Lib.Costruzione.menu: the impossible happened"
+
+type Incrocio b a  = (b -> Costruzione b a) -> [(String,Costruzione b a)]
+
 

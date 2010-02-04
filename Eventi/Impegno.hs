@@ -126,10 +126,11 @@ impegni 	= do 	(xs :: [(Int,(String,Impegni))]) <- asks elencoSottoStati
 			when (null xs) $ throwError "nessuna raccolta di impegni attiva"
 			return $ map (fst . snd &&& fst) xs
 costrEventiImpegno :: (
+	Monad m,
 	ParteDi (Servizio Impegni) s, 
 	ParteDi Anagrafe s
 	) =>
-	CostrAction c EsternoImpegno s
+	CostrAction m c EsternoImpegno s
 
 costrEventiImpegno s kp kn = 	[("fine di una raccolta impegni", eventoFineImpegno)
 				,("fallimento di una raccolta impegni", eventoFallimentoImpegno) 
@@ -153,7 +154,7 @@ costrEventiImpegno s kp kn = 	[("fine di una raccolta impegni", eventoFineImpegn
 		z <- libero "somma impegnata"
                 return $ Impegno u z n
 
-costrQueryImpegni :: (ParteDi (Servizio Impegni) s) => CostrAction c Response s
+costrQueryImpegni :: (Monad m, ParteDi (Servizio Impegni) s) => CostrAction m c Response s
 costrQueryImpegni s kp kn = 	[("elenco impegni",r)
 				,("raccolte impegni",q)
 				] 

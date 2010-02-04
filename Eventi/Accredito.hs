@@ -100,7 +100,7 @@ reazioneAccredito = soloEsterna reattoreAccredito where
 		return (True,nessunEffetto)
 
 -- | costruttore di eventi per il modulo di accredito
-costrEventiAccredito :: (ParteDi Responsabili s, ParteDi Anagrafe s) => CostrAction c EsternoAccredito s
+costrEventiAccredito :: (Monad m, ParteDi Responsabili s, ParteDi Anagrafe s) => CostrAction m c EsternoAccredito s
 costrEventiAccredito s kp kn = 	[("attribuzione accredito per un utente",eventoAccredito) 
 				,("ricezione saldo da un responsabile", eventoSaldo)
 				] 
@@ -118,7 +118,7 @@ costrEventiAccredito s kp kn = 	[("attribuzione accredito per un utente",eventoA
 		return $ Saldo (fst u) n
 	    
 -- | costruttore interrogazioni sul modulo accrediti
-costrQueryAccredito :: (Conti `ParteDi` s, Saldi `ParteDi` s) => CostrAction c Response s
+costrQueryAccredito :: (Monad m, Conti `ParteDi` s, Saldi `ParteDi` s) => CostrAction m c Response s
 costrQueryAccredito s kp kn = 	[("accrediti degli utenti", queryUtente)
 				,("saldi dei responsabili", queryResponsabile)
 				] 

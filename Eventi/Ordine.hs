@@ -56,7 +56,7 @@ reazioneOrdine = soloEsterna reattoreOrdine where
 		logga $  "per il bene " ++ show b ++ " aperto l'ordine numero " ++ show l
 		return (True,([z t],[]))
 
-costrEventiOrdine :: (StatoOrdini `ParteDi` s) => CostrAction c EsternoOrdine s
+costrEventiOrdine :: (Monad m, StatoOrdini `ParteDi` s) => CostrAction m c EsternoOrdine s
 costrEventiOrdine s kp kn  = [("apertura ordine per un nuovo bene", eventoApertura)] 
 	where
 	eventoApertura  = runSupporto s kn kp $ do
@@ -70,7 +70,7 @@ sottostringa x = any (x `isPrefixOf`) . tails
 
 modCatMaybes :: (c -> Maybe a) -> [c] -> [c]
 modCatMaybes f = filter (isJust . f)
-costrQueryOrdine :: (ParteDi StatoOrdini s) => CostrAction c Response s
+costrQueryOrdine :: (Monad m, ParteDi StatoOrdini s) => CostrAction m c Response s
 costrQueryOrdine s kp kn = 	[("cerca ordini chiusi",cerca)]
 	where
 	run = runSupporto s kn kp
