@@ -30,7 +30,7 @@ runPasso  w@(c@(Libero p f) : u) = do
 
 runPasso w@(c@(Scelta p xs f): u) = do
 	outputStrLn p 
-	forM (zip [1..] xs) $ \(n,(p,_)) -> outputStrLn $ "\t" ++ show n ++ ") " ++ p
+	forM (zip [1..] xs) $ \(n,(p,_)) -> outputStrLn $ "\t" ++ show n ++ ") " ++ take 60 p
 	x <- getInputLine  "scelta: "
 
 	n <- case fromJust x of

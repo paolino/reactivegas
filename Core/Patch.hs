@@ -23,9 +23,9 @@ import Eventi.Sincronizzatore (sincronizzatore,Sincronizzatore)
 type Patch = (Chiave,Firma,[Evento])
 
 -- | controlla che una patch sia accettabile, ovvero che il responsabile sia presente e che la firma sia corretta
-fromPatch :: (Responsabili `ParteDi` s, Show s, Monad m) => Patch -> Supporto m s c [Esterno Utente]
+-- fromPatch :: (Responsabili `ParteDi` s, Show s, Monad m) => Patch -> Supporto m s c [Esterno Utente]
 fromPatch (c,f,xs) =  do
-	rs <- costrResponsabili 
+	(rs,_) <- asks $ responsabili 
 	s <- ask
 	when (not $ c `elem` map (fst . snd) rs) $ throwError "l'autore della patch è sconosciuto"
 	when (not $ verify c (xs,s) f) $ throwError "la firma della patch è corrotta"
@@ -55,7 +55,7 @@ type Group = (Firma,[Patch])
 
 
 -- | controlla l'integrità di una patch di gruppo
-fromGroup :: (Sincronizzatore `ParteDi` s, Responsabili `ParteDi` s, Show s, Monad m ) => Group -> Supporto m s c [Esterno Utente]
+-- fromGroup :: (Sincronizzatore `ParteDi` s, Responsabili `ParteDi` s, Show s, Monad m ) => Group -> Supporto m s c [Esterno Utente]
 fromGroup (f,ps) = do 
 	s <- ask
 	(_,(c,_)) <- asks sincronizzatore
