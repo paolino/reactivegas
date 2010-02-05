@@ -30,6 +30,7 @@ import Core.Aggiornamento
 
 import Lib.Console
 import Lib.Passo (Costruzione,menu,svolgi) 
+import qualified Lib.Passo as P
 import Lib.TreeLogs
 import Lib.Firmabile
 
@@ -41,7 +42,8 @@ import Eventi.Ordine
 import Eventi.Sincronizzatore
 
 ----------------- hacking for a boot state ---------------
-s0 rs s = bootAnagrafe rs  . bootAccredito . bootImpegni . bootOrdini . bootSincronizzatore s $ ()
+nuovoStato :: [Responsabile] -> Responsabile -> (TS,[SNodo TS Utente])
+nuovoStato rs s = (bootAnagrafe rs  . bootAccredito . bootImpegni . bootOrdini . bootSincronizzatore s $ (),replicate (length rs) $ SNodo True [])
 ------------------------------------------
 
 -- | il tipo dello stato generale
@@ -102,7 +104,7 @@ forzaUtente = do
 
 patching  :: MonadIO m => Interface m () 
 patching = do
-	let	nuovoevento x = modify (second $ (++) [show x])  >> patching	
+	let	nuovoevento x = modify (second $ (++ [show x]) )  >> patching	
 		sfronda xs = modify (second $ const xs) >> patching
 	(s,_) <- caricamentoT
 	(_,evs) <- get
@@ -166,6 +168,24 @@ amministrazione = menu "amministrazione" $ [
 			("creazione aggiornamento di gruppo",sincronizza)
 			]
 
+bootChiavi = do
+	u <- P.libero "scegli il tuo nome di utente"
+	p <- P.libero "immetti una password, una frase , lunga almeno 12 caratteri"
+	return $ (u,cryptobox p)
+
+bootStato = do
+	(_,path) <- asks fst
+	cs <- liftIO (getBasfiles "chiavi" path)
+	s <- P.scelte (map (bext &&& id) cs) "scegli il sincronizzatore"
+	let 	si:rs = map (\(Basfile nome _ chiave) -> (nome,chiave)) $ s:cs
+	liftIO $ writeFile "stato.0" . show $ nuovoStato rs si
+	
+	
+boot = menu "amministrazione" $ [
+			("creazione chiavi per un nuovo responsabile" ,bootChiavi >>= salvaChiavi),
+			("creazione nuovo stato di gruppo", bootStato)
+			]
+
 mainmenu :: MonadIO m => Interface m ()
 mainmenu = do
 	menu "reactivegas (2010)" $ [
@@ -185,7 +205,8 @@ main = do
 	mq <- runErrorT $ aggiornamento Nothing loader
 	case mq of
 		Left s -> error s
-		Right ts -> evalStateT (runReaderT (interazione () mainmenu) ts) (Nothing,[])
+		Right (wd,Nothing) -> evalStateT (runReaderT (interazione () boot) ((undefined , wd), error "impossible happened")) $ error "impossible happened"
+		Right (wd,Just (i,ts)) -> evalStateT (runReaderT (interazione () mainmenu) ((i,wd),ts)) (Nothing,[])
 
 {-
 ts0 = s0 [("paolino",cryptobox "gaien")] ("sincronizzatore",cryptobox "desinc")

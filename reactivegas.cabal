@@ -1,0 +1,31 @@
+
+name: reactivegas 
+version: 2010.2.5
+license: BSD3
+license-file: LICENSE
+maintainer: Paolo Veronelli <paolo.veronelli@gmail.com> 
+stability: unstable
+category: social, p2p, cooperative
+synopsis: social tool for group of consumers
+description:  ..
+homepage: http://wiki.github.com/paolino/reactivegas
+copyright: Copyright (c) 2010 Paolo Veronelli 
+build-type: Simple
+cabal-version: >=1.6
+
+Executable reactivegas
+ ghc-options: -Wall
+ main-is: reactivegas.hs
+ build-depends: base        >= 4 && < 5,
+                random      >= 1.0.0.2,
+                bytestring  >= 0.9.1.5,
+                SimpleAES   >= 0.3,
+                RSA         >= 1.0.2,
+                mtl         >= 1.1.0.2,
+                utf8-string >= 0.3.6,
+                MaybeT      >= 0.1.2,
+                pretty      >= 1.0.1.1,
+                haskeline   >= 0.6.2.2,
+                filepath    >= 1.1.0.3,
+                FileManip   >= 0.3.2,
+                directory   >= 1.0.1.0  

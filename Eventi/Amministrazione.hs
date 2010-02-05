@@ -23,6 +23,7 @@ nuoveChiavi = do
 	p <- libero "immetti una password, una frase , lunga almeno 12 caratteri"
 	return $ (u,cryptobox p)
 
+
 costrGestionePatch :: (Monad m) => [String] -> CostrAction m c [String] ()
 costrGestionePatch xs s kp kn = return . (,) "correzione patch" . runSupporto () kn kp $ do
 	when (null xs) $ throwError "non ci sono eventi da eliminare"
