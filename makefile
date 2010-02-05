@@ -20,6 +20,6 @@ git:
 edit:
 	gvim Lib/*.hs Core/*.hs Eventi/*.hs Applicazioni/*.hs Applicazioni/reactivegas.glade README LICENSE makefile
 modules:
-	/home/paolino/.cabal/bin/graphmod *.hs Core/*.hs Lib/*.hs Eventi/*.hs | dot -Tsvg  > modules.svg
+	/home/paolino/.cabal/bin/graphmod *.hs Core/*.hs Lib/*.hs Eventi/*.hs | dot -Tpng  > modules.png
 
 
