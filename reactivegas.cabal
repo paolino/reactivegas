@@ -16,7 +16,7 @@ cabal-version: >= 1.6
 Executable reactivegas
  ghc-options: -Wall
  main-is: reactivegas.hs
- build-depends: base     >= 4.2  , 
+ build-depends: base     < 4.2  , 
                 random      ,
                 bytestring  ,
                 SimpleAES   ,
