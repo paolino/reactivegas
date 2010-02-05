@@ -1,71 +1,26 @@
-module Core.Aggiornamento where
 
-import Data.Maybe
-import Control.Arrow 
-import Control.Monad.Writer
-import Control.Monad.Trans
+module Core.Aggiornamento (Aggiornamento (..), aggiornamento) where
+
+
+import Data.List (sort)
+import Control.Monad.Trans (MonadIO, liftIO)
 import Control.Applicative ((<$>))
-import Control.Monad.Maybe
-import System.Directory
-import System.FilePath.FindCompat
-import Data.List (sortBy, sort)
-import Data.Ord (comparing)
-import System.FilePath (replaceExtension, takeExtension , splitExtension)
-import System.FilePath.GlobPattern
-import Debug.Trace
+import Control.Arrow ((&&&))
 
-getNumber :: Monad m => String -> MaybeT m Int
-getNumber s = case reads (tail s) of
-	[] -> mzero 
-	[(n,_)] -> return n
-
-guardM :: (Monad m, MonadPlus m) => m Bool -> m ()
-guardM x = x >>= guard  
-
-data Basfile a = Basfile {bext :: String , bpath :: FilePath, bvalue :: a}
-
-mkBasfile :: Read a => (String , FilePath) -> IO (Maybe (Basfile a))
-mkBasfile (e,x) = do	r <- readFile x 
-			return $ case reads r of
-				[] -> Nothing
-				[(r,_)] -> Just $ Basfile e x r
-
-getBasfiles :: (Read a) => [Char] -> FilePath -> IO [Basfile a]
-getBasfiles n x = let
-	 	accum ss f = maybe ss (:ss) . flip evalClause f . runMaybeT $ do
-			guardM . lift $ fileType ==? RegularFile
-			guardM . lift $ fileName ~~? (n ++ ".*")
-			liftM2 (,) (tail <$> lift extension)  $ lift filePath
-		in do 	fs <- fold (depth ==? 0) accum [] x >>= mapM mkBasfile
-			return $ catMaybes fs
+import System.Directory (removeFile, getCurrentDirectory)
+import System.FilePath (takeExtension,replaceExtension, (</>))
 
 
-data Verfile a = Verfile {index :: Int , path :: FilePath, value :: a } deriving Show
+import Lib.Valuedfiles  (Valuedfile (..), ext, path , maybeParse, getValuedfiles)
 
-instance Ord (Verfile a) where
-	(Verfile n _ _) `compare` (Verfile m _ _) = n `compare` m
-instance Eq (Verfile a) where
-	(Verfile n _ _) == (Verfile m _ _) = n == m
+import Core.Patch (Patch,Group)
 
-mkVerfile :: Read a => (Int,FilePath) -> IO (Maybe (Verfile a))
-mkVerfile (i,x) = do	r <- readFile x 
-			return $ case reads r of
-				[] -> Nothing
-				[(r,_)] -> Just $ Verfile i x r
+import Eventi.Anagrafe (Responsabile)
+-----------------------------------------------------------------------------------------
 
-getVerfiles :: (Read a) => [Char] -> FilePath -> IO [Verfile a]
-getVerfiles n x = let
-	 	accum ss f = maybe ss (:ss) . flip evalClause f . runMaybeT $ do
-			guardM . lift $ fileType ==? RegularFile
-			guardM . lift $ fileName ~~? (n ++ ".*")
-			liftM2 (,) (lift extension >>= getNumber) $ lift filePath
-		in do 	fs <- fold (depth ==? 0) accum [] x >>= mapM mkVerfile
-			return $ catMaybes fs
-
-
-consumaM :: (MonadIO m , Show a) => ((Int,a) -> b -> m a) -> Verfile a -> [Verfile b] -> m (Verfile a)
+consumaM :: (MonadIO m , Show a) => ((Int,a) -> b -> m a) -> Valuedfile a Int -> [Valuedfile b Int] -> m (Valuedfile a Int)
 consumaM agg y [] = return y
-consumaM agg y@(Verfile n p s) (x@(Verfile m q d) :xs) 
+consumaM agg y@(Valuedfile n p s) (x@(Valuedfile m q d) :xs) 
 	| m <= n = do
 		liftIO $ do 	removeFile q
 				putStrLn $ "Warn: eliminato un file di stato vecchio" ++ q
@@ -77,34 +32,48 @@ consumaM agg y@(Verfile n p s) (x@(Verfile m q d) :xs)
 				 	putStrLn $ " Caricato l'aggiornamento " ++ show m
 					removeFile q
 					removeFile p
-		consumaM agg (Verfile m np s') xs
+		consumaM agg (Valuedfile m np s') xs
 	| m > n + 1 = liftIO $ do
 			putStrLn $ "Warn: Rilevato l'aggiornamento " ++ show m ++ ", manca l'aggiornamento " ++ show (n + 1)
 			return y
-	
-aggiornamento :: (Eq b, Read b, Show a, Read a, MonadIO m) => Maybe FilePath -> ((Int,a) -> b -> m a) -> m (FilePath, Maybe (Int,a))
 
+
+data Aggiornamento a 	
+	= Boot { setStato :: a -> IO (), nuovires :: [Responsabile]}
+	| Flow { stato :: (Int,a) , setAggiornamento :: ([Patch] -> Group) -> IO ()}
+		
+aggiornamento :: (Show a, Read a, MonadIO m, Functor m) => Maybe FilePath -> ((Int,a) -> Group -> m a) -> m (Aggiornamento a)
 aggiornamento mf aggiorna = do
 	(wd,msa) <- liftIO $ do 	
 			putStrLn "\n\n *************** Inizio aggiornamento ***********"
 			wd <- maybe getCurrentDirectory return mf 
-			putStrLn $ " Cartella di lavoro " ++ wd
-			stati <- reverse . sort <$> getVerfiles "stato" wd
+			putStrLn $ " Aggiornamento di lavoro: " ++ wd
+			stati <- reverse . sort <$> getValuedfiles maybeParse "stato" wd
 			if  not $ null stati then do 
 				let (stato:elimina) = stati
-				putStrLn $ " Rilevato il file di stato " ++ show (index stato)
+				putStrLn $ " Rilevato il file di stato " ++ show (ext stato)
 				mapM (removeFile . path) elimina 
-				(elimina,aggiornamenti) <- break ((> index stato) . index) <$> sort <$> getVerfiles "aggiornamento" wd
-				putStrLn $ " Rilevati gli aggiornamenti di gruppo " ++ show (map index aggiornamenti)	
+				(elimina,aggiornamenti) <- break ((> ext stato) . ext) <$> sort <$> getValuedfiles maybeParse "aggiornamento" wd
+				putStrLn $ " Rilevati gli aggiornamenti di gruppo " ++ show (map ext aggiornamenti)	
 				mapM (removeFile . path) elimina
 				return (wd,Just (stato,aggiornamenti)) 
 				else return (wd,Nothing)
-	case msa of 
-		Nothing -> return (wd,Nothing)
-		Just (stato,aggiornamenti) -> do 
-			Verfile n p s <- consumaM aggiorna stato aggiornamenti
-			liftIO $ putStrLn $ " ********* Fine aggiornamento (stato " ++ show n ++ ") ********\n\n"
-			return (wd, Just (n,s))	
 
-(~~?) = liftOp (~~)
+	cs <- map (ext &&& value) <$> liftIO (getValuedfiles return "chiavi" wd)
+	liftIO . putStrLn $ " Rilevate chiavi responsabile " ++ show (map fst cs)
+
+	
+	case msa of 
+		Nothing -> do
+			liftIO $ putStrLn $ " ********* Fine aggiornamento (stato inesistente) ********\n\n"
+			return $ Boot (writeFile  (wd </> "stato.0") . show) cs
+		Just (stato,aggiornamenti) -> do 
+			Valuedfile n p s <- consumaM aggiorna stato aggiornamenti
+
+			as <- map value . filter ((==) (n + 1) . ext) <$> liftIO (getValuedfiles maybeParse "aggiornamento" wd)
+			liftIO $ putStrLn $ " Rilevati " ++ show (length as) ++ " aggiornamenti individuali "
+
+			liftIO $ putStrLn $ " ********* Fine aggiornamento (stato " ++ show n ++ "********\n\n"
+			return $ Flow (n,s) (writeFile (wd </> "aggiornamento." ++ show (n + 1)) . show . ($as))
+
 -- -}
