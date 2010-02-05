@@ -24,7 +24,6 @@ import Core.Inserimento
 import Core.Programmazione
 import Core.Parsing
 import Core.Patch
-import Core.File
 import Core.Costruzione
 import Core.Aggiornamento
 

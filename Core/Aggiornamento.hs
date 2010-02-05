@@ -11,6 +11,7 @@ import System.FilePath.FindCompat
 import Data.List (sortBy, sort)
 import Data.Ord (comparing)
 import System.FilePath (replaceExtension, takeExtension , splitExtension)
+import System.FilePath.GlobPattern
 import Debug.Trace
 
 getNumber :: Monad m => String -> MaybeT m Int
@@ -105,5 +106,5 @@ aggiornamento mf aggiorna = do
 			liftIO $ putStrLn $ " ********* Fine aggiornamento (stato " ++ show n ++ ") ********\n\n"
 			return (wd, Just (n,s))	
 
-
+(~~?) = liftOp (~~)
 -- -}

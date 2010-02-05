@@ -13,7 +13,6 @@ import Core.Types (Esterno,Evento,Message)
 import Core.Costruzione (Supporto,libero,scelte)
 import Lib.Aspetti (ParteDi)
 import Lib.Firmabile (sign , verify, Firma, Chiave, Segreto, Password)
-import Lib.Aggiornamento 
 
 import Eventi.Anagrafe (Responsabili,Utente,costrResponsabili,responsabili)
 import Eventi.Sincronizzatore (sincronizzatore,Sincronizzatore)
