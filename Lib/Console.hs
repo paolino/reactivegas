@@ -7,7 +7,7 @@ import Control.Monad (forM)
 import Control.Applicative ((<$>))
 import Control.Monad.Trans (liftIO, MonadIO, lift)
 import Lib.Passo (Passo (..), svolgi, Costruzione)
-import Control.Exception
+import Control.OldException
 import System.Console.Haskeline
 
 -- | la funzione smonta i passi in caso di undo
@@ -47,7 +47,7 @@ runPasso  w@(c@(DaFile p f) : u) = do
 	n <- case fromJust x of 
 		[] -> return u
 		fn -> do 	
-			k <- liftIO $ tryJust (\(SomeException e) -> Just (show e)) (readFile fn) 
+			k <- liftIO $ tryJust (\(IOException e) -> Just (show e)) (readFile fn) 
 			case k of 
 				Left e -> outputStrLn e >> return w
 				Right x -> do 
