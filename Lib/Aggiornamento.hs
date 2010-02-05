@@ -7,7 +7,7 @@ import Control.Monad.Trans
 import Control.Applicative ((<$>))
 import Control.Monad.Maybe
 import System.Directory
-import System.FilePath.Find
+import System.FilePath.FindCompat
 import Data.List (sortBy, sort)
 import Data.Ord (comparing)
 import System.FilePath (replaceExtension, takeExtension , splitExtension)
