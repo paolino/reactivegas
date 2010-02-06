@@ -15,36 +15,36 @@ import Lib.Valuedfiles  (Valuedfile (..), ext, path , maybeParse, getValuedfiles
 
 import Core.Patch (Patch,Group)
 
-import Eventi.Anagrafe (Responsabile)
+import Eventi.Anagrafe (Responsabile, Utente)
 -----------------------------------------------------------------------------------------
 
-consumaM :: (MonadIO m , Show a) => ((Int,a) -> b -> m a) -> Valuedfile a Int -> [Valuedfile b Int] -> m (Valuedfile a Int)
+consumaM :: (Show a) => (a -> b -> IO a) -> Valuedfile a Int -> [Valuedfile b Int] -> IO (Valuedfile a Int)
 consumaM agg y [] = return y
 consumaM agg y@(Valuedfile n p s) (x@(Valuedfile m q d) :xs) 
 	| m <= n = do
-		liftIO $ do 	removeFile q
-				putStrLn $ "Warn: eliminato un file di stato vecchio" ++ q
+		do 	removeFile q
+			putStrLn $ "Warn: eliminato un file di stato vecchio" ++ q
 		consumaM agg y xs
 	| m == n + 1 = do
-		s' <- agg (m,s) d
+		s' <- agg s d
 		let 	np = replaceExtension p (takeExtension q)
-		s' `seq` liftIO $ do 	writeFile np (show s') 
-				 	putStrLn $ " Caricato l'aggiornamento " ++ show m
-					removeFile q
-					removeFile p
+		s' `seq` do 	writeFile np (show s') 
+				putStrLn $ " Caricato l'aggiornamento " ++ show m
+				removeFile q
+				removeFile p
 		consumaM agg (Valuedfile m np s') xs
-	| m > n + 1 = liftIO $ do
+	| m > n + 1 = do
 			putStrLn $ "Warn: Rilevato l'aggiornamento " ++ show m ++ ", manca l'aggiornamento " ++ show (n + 1)
 			return y
 
 
 data Aggiornamento a 	
-	= Boot { setStato :: a -> IO (), nuovires :: [Responsabile]}
-	| Flow { stato :: (Int,a) , setAggiornamento :: ([Patch] -> Group) -> IO ()}
+	= Boot { responsabiliBoot :: [Responsabile], publishStato :: a -> IO (), publishChiavi :: Responsabile -> IO ()}
+	| Flow { stato :: a , publishUPatch :: Utente -> Patch -> IO (), publishGPatch :: Maybe (([Patch] -> Group) -> IO ())}
 		
-aggiornamento :: (Show a, Read a, MonadIO m, Functor m) => Maybe FilePath -> ((Int,a) -> Group -> m a) -> m (Aggiornamento a)
+aggiornamento :: (Show a, Read a) => Maybe FilePath -> (a -> Group -> IO a) -> IO (Aggiornamento a)
 aggiornamento mf aggiorna = do
-	(wd,msa) <- liftIO $ do 	
+	(wd,msa) <-  do 	
 			putStrLn "\n\n *************** Inizio aggiornamento ***********"
 			wd <- maybe getCurrentDirectory return mf 
 			putStrLn $ " Aggiornamento di lavoro: " ++ wd
@@ -59,21 +59,29 @@ aggiornamento mf aggiorna = do
 				return (wd,Just (stato,aggiornamenti)) 
 				else return (wd,Nothing)
 
-	cs <- map (ext &&& value) <$> liftIO (getValuedfiles return "chiavi" wd)
-	liftIO . putStrLn $ " Rilevate chiavi responsabile " ++ show (map fst cs)
+	cs <- map (ext &&& value) <$> (getValuedfiles return "chiavi" wd)
+	putStrLn $ " Rilevate chiavi responsabile " ++ show (map fst cs)
 
 	
 	case msa of 
 		Nothing -> do
-			liftIO $ putStrLn $ " ********* Fine aggiornamento (stato inesistente) ********\n\n"
-			return $ Boot (writeFile  (wd </> "stato.0") . show) cs
+			putStrLn $ " ********* Fine aggiornamento (stato inesistente) ********\n\n"
+			return $ Boot 
+				cs 
+				(writeFile  (wd </> "stato.0") . show) 
+				(\(r,c) -> writeFile (wd </> "chiavi." ++ r) . show $ c) 
 		Just (stato,aggiornamenti) -> do 
 			Valuedfile n p s <- consumaM aggiorna stato aggiornamenti
 
 			as <- map value . filter ((==) (n + 1) . ext) <$> liftIO (getValuedfiles maybeParse "aggiornamento" wd)
-			liftIO $ putStrLn $ " Rilevati " ++ show (length as) ++ " aggiornamenti individuali "
+			putStrLn $ " Rilevati " ++ show (length as) ++ " aggiornamenti individuali "
 
-			liftIO $ putStrLn $ " ********* Fine aggiornamento (stato " ++ show n ++ "********\n\n"
-			return $ Flow (n,s) (writeFile (wd </> "aggiornamento." ++ show (n + 1)) . show . ($as))
+			putStrLn $ " ********* Fine aggiornamento (stato " ++ show n ++ "********\n\n"
+			return $ Flow 
+				s
+				(\u -> writeFile (wd </> "aggiornamento." ++ u ++ "." ++ show (n + 1)) . show)
+				$ case as of
+					[] -> Nothing
+					as -> Just $ writeFile (wd </> "aggiornamento." ++ show (n + 1)) . show . ($as)
 
 -- -}

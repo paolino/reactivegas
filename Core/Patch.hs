@@ -63,14 +63,14 @@ fromGroup (f,ps) = do
 	
 
 -- | costruisce una patch di gruppo da un insieme di patch responsabile
-mkGroup :: (Show s, Monad m, Sincronizzatore `ParteDi` s) => [Patch] -> Supporto m s c Group
-mkGroup ps = do
+mkGroup :: (Show s, Monad m, Sincronizzatore `ParteDi` s) => Supporto m s c ([Patch] -> Group)
+mkGroup = do
 	b <- ask
 	(_,(c,s)) <- asks sincronizzatore
 	p <- libero "password di sincronizzatore"
-	case  sign (s,p) (ps,b) of 
+	case  sign (s,p) ([]::[Patch],b) of 
 		Nothing -> throwError $ "password errata"
-		Just f -> return (f,ps)
+		Just _ -> return (\ps -> (fromJust $ sign (s,p) (ps,b),ps))
 	
 --------------------------------------------------------------
 

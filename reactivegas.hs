@@ -1,4 +1,4 @@
-{-# LANGUAGE ExistentialQuantification, ScopedTypeVariables, NoMonomorphismRestriction #-}
+{-# LANGUAGE ExistentialQuantification, ScopedTypeVariables, GeneralizedNewtypeDeriving, NoMonomorphismRestriction #-}
 
 import System.Random
 import Codec.Crypto.RSA
@@ -19,7 +19,7 @@ import Data.Maybe
 import Lib.Response
 import Core.Types
 import Core.Controllo
-import Core.Contesto
+import Core.Contesto (flatten)
 import Core.Inserimento
 import Core.Programmazione
 import Core.Parsing
@@ -48,7 +48,6 @@ nuovoStato rs s = (bootAnagrafe rs  . bootAccredito . bootImpegni . bootOrdini .
 -- | il tipo dello stato generale
 type TS = TyAnagrafe (TyAccredito (TyImpegni (TyOrdini (TySincronizzatore ()))))
 
-type TSN = ((Int,FilePath),(TS,[SNodo TS Utente]))
 -- | lista di prioritizzatori
 ps = [priorityAnagrafe, priorityAnagrafeI, priorityAccredito, priorityImpegnoI, priorityImpegno, priorityOrdine, priorityAssenso] 
 
@@ -73,8 +72,8 @@ data Patching
 	| Sfronda Eventi
 	| FinePatch
 
-type Env m = ReaderT TSN (StateT (Maybe Utente,[String]) m)
-type Interface m a = Costruzione (Env m) () a
+type Env m = ReaderT (Aggiornamento (TS,[SNodo TS Utente])) (StateT (Maybe Utente,[String]) m)
+type Interface m = Costruzione (Env m) () 
 
 caricamentoT :: MonadIO m => Costruzione (Env m) () (TS,[SNodo TS Utente])
 caricamentoT = do 
@@ -83,17 +82,18 @@ caricamentoT = do
 		t <- forzaUtente
 		if t then do 
 			(Just u,evs) <- get 	
-			s <- asks snd 
+			s <- asks stato 
 			caricamento (map ((,) u) evs)  s
-			else asks snd
-		else asks snd
+			else asks stato
+		else asks stato
+
 bocciato :: MonadIO m => Interface m a -> String -> Interface m a
 bocciato f x =  liftIO (putStrLn ("*** Incoerenza: " ++ x) >> getLine) >> f
 
 forzaUtente :: MonadIO m => Interface m Bool
 forzaUtente = do 
 	(u,_) <- get
-	(s',_) <- asks snd
+	(s',_) <- asks stato
 	case u of 
 		Nothing -> runSupporto s' (bocciato (return False)) (\u -> (modify . first . const . Just $ u) >> return True) $ do
 				(us :: [Utente]) <- map fst <$> costrResponsabili
@@ -119,9 +119,9 @@ patching = do
 
 interrogazioni :: MonadIO m => Interface m ()
 interrogazioni = do
+	(s,_) <- caricamentoT
 	(_,evs) <- get
-	(s,_) <- if null evs then asks snd else caricamentoT
-	let 	response x = liftIO (print x >> getLine) >> interrogazioni
+	let 	response x = liftIO (print x >> getLine) >> interrogazioni -- buggy, i Response devoo essere gestiti in Passo !
 	menu "interrogazione stato del gruppo" . (("fine interrogazione",return ()):) . concatMap ($ bocciato interrogazioni) $ [
 		costrQueryAccredito s response,
 		costrQueryAnagrafe s response,
@@ -129,13 +129,16 @@ interrogazioni = do
 		costrQueryAssenso s response,
 		costrQueryImpegni s response
 		]
+
 salvataggio = do
 	(Just u,evs) <- get
-	((i,_),(s,_)) <- ask
+	(s,_) <- asks stato
 	mpa <- runSupporto s (bocciato $ salvaPatch >> return Nothing) (return . Just) $ mkPatch u evs
 	case mpa of 
 		Nothing -> return ()
-		Just pa -> liftIO $ writeFile ("aggiornamento." ++ u ++ "." ++ show (i + 1)) (show pa) 
+		Just pa -> do 
+			p <- asks  publishUPatch  
+			liftIO $ p u pa
 
 salvaPatch = do
 	(_,evs) <- get
@@ -144,23 +147,20 @@ salvaPatch = do
 		when t $ do 
 			when (not $ null evs) $ menu "vuoi firmare l'aggiornamento che hai prodotto?" $ [("si",salvataggio),("no",return ())]
  	
-salvaChiavi c@(u,v) = do
-	(_,path) <- asks fst
-	liftIO $ writeFile (path </> "chiavi." ++ u) $ show v
-	
-salvaGruppo g = do
-	(i,path) <- asks fst
-	liftIO . writeFile (path </> "aggiornamento." ++ show (i + 1)) . show $ g
-
 sincronizza = do
-	((i,path),(s,_)) <- ask
-	ps <- map value . filter ((==) (i + 1) . index) <$> liftIO (getVerfiles "aggiornamento" path)
-	if null ps then bocciato (return ()) $ "nessun aggiornamento per lo stato " ++ show i
-		else runSupporto s  (bocciato $ return ()) salvaGruppo   $ mkGroup ps
-
+	p <- asks publishGPatch 
+	(s,_) <- asks stato
+	case p of 
+		Nothing -> bocciato (return ()) $ "nessun aggiornamento per lo stato "
+		Just publ -> do
+			f <- runSupporto s  (bocciato $ return Nothing) (return . Just)  $ mkGroup 
+			case f of 
+				Nothing -> return ()
+				Just f -> liftIO $ publ f
 chiavi = do
 	(s,_) <- caricamentoT
-	runSupporto s (bocciato $ return ()) salvaChiavi nuoveChiavi
+	sc <- asks publishChiavi 
+	runSupporto s (bocciato $ return ()) (liftIO . sc) nuoveChiavi
 
 amministrazione = menu "amministrazione" $ [
 			("creazione chiavi per un nuovo responsabile" ,chiavi),
@@ -168,20 +168,20 @@ amministrazione = menu "amministrazione" $ [
 			]
 
 bootChiavi = do
+	q <- asks publishChiavi
 	u <- P.libero "scegli il tuo nome di utente"
 	p <- P.libero "immetti una password, una frase , lunga almeno 12 caratteri"
-	return $ (u,cryptobox p)
+	liftIO $ q (u,cryptobox p)
 
 bootStato = do
-	(_,path) <- asks fst
-	cs <- liftIO (getBasfiles "chiavi" path)
-	s <- P.scelte (map (bext &&& id) cs) "scegli il sincronizzatore"
-	let 	si:rs = map (\(Basfile nome _ chiave) -> (nome,chiave)) $ s:cs
-	liftIO $ writeFile "stato.0" . show $ nuovoStato rs si
+	cs <- asks responsabiliBoot
+	c <- P.scelte (map (fst &&& id) cs) "scegli il sincronizzatore"
+	p <- asks  publishStato
+	liftIO $ p (nuovoStato cs c)
 	
 	
 boot = menu "amministrazione" $ [
-			("creazione chiavi per un nuovo responsabile" ,bootChiavi >>= salvaChiavi),
+			("creazione chiavi per un nuovo responsabile" ,bootChiavi ),
 			("creazione nuovo stato di gruppo", bootStato)
 			]
 
@@ -194,18 +194,17 @@ mainmenu = do
 		("amministrazione",amministrazione >> mainmenu)
 		]
 
-loader :: MonadIO m => (Int,(TS,[SNodo TS Utente])) -> Group -> ErrorT String m (TS,[SNodo TS Utente])
-loader (_,ts@(s,_)) g = do 
-	es <- runReaderT (fromGroup g) s
-	caricamento es ts
+-- loader :: MonadIO m => (TS,[SNodo TS Utente]) -> Group -> ErrorT String m (TS,[SNodo TS Utente])
+loader (ts@(s,_)) g = do 
+	es <- runErrorT $ runReaderT (fromGroup g) s
+	either error (flip caricamento ts) es
 
 main :: IO ()
 main = do
-	mq <- runErrorT $ aggiornamento Nothing loader
+	mq <- aggiornamento Nothing loader
 	case mq of
-		Left s -> error s
-		Right (wd,Nothing) -> evalStateT (runReaderT (interazione () boot) ((undefined , wd), error "impossible happened")) $ error "impossible happened"
-		Right (wd,Just (i,ts)) -> evalStateT (runReaderT (interazione () mainmenu) ((i,wd),ts)) (Nothing,[])
+		b@(Boot _ _ _) -> evalStateT (runReaderT (interazione () boot) b) (Nothing,[])
+		fl -> evalStateT (runReaderT (interazione () mainmenu) fl) (Nothing,[])
 
 {-
 ts0 = s0 [("paolino",cryptobox "gaien")] ("sincronizzatore",cryptobox "desinc")
