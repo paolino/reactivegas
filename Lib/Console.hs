@@ -8,7 +8,7 @@ import Control.Applicative ((<$>))
 import Control.Monad.Trans (liftIO, MonadIO, lift)
 import Lib.Passo (Passo (..), svolgi, Costruzione)
 import Lib.Response 
-import Control.OldException
+import Control.Exception
 import System.Console.Haskeline
 
 -- | la funzione smonta i passi in caso di undo

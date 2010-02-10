@@ -9,6 +9,7 @@ import Data.Maybe
 import Control.Monad.Reader (asks,ask, when, MonadReader)
 import Control.Monad.Error (throwError)
 import Text.PrettyPrint
+import Debug.Trace
 
 import Lib.Aspetti ((.<), ParteDi,see)
 import Lib.Prioriti (R(..))
@@ -38,10 +39,12 @@ bootOrdini :: a -> TyOrdini a
 bootOrdini x = (StatoOrdini [] [] [], x)
 
 reazioneOrdine = soloEsterna reattoreOrdine where
+	
 	reattoreOrdine (first validante -> (w, AperturaOrdine b)) = w $ \r -> do
-		s@(StatoOrdini cs as ias ) <- osserva
+		
+		s@(StatoOrdini cs as ias ) <- trace "quiquiqui.--" osserva
 		fallimento (not (b `assente` cs) || (b `elem` map snd as) || (b `elem` map snd ias)) "il nome per questo bene e' gia' stato utilizzato oppure in uso"
-		let 	positivo i = do 	(l,z) <- programmazioneImpegno ("acquisto del bene " ++ b) r
+		let 	positivo i = do 	(l,z) <- programmazioneImpegno ("per l' acquisto del bene " ++ b) r
 						let t k = case k of
 							Just us -> do 
 								salda r (subtract . sum . map snd $ us)
@@ -60,7 +63,6 @@ reazioneOrdine = soloEsterna reattoreOrdine where
 						return nessunEffetto
 		(i,z) <- programmazioneAssenso ("ordine sul bene " ++ show b) r maggioranza positivo negativo	
 		modifica $ \(StatoOrdini cs as ias) -> StatoOrdini cs as ((i,b):ias) 
-		logga $  "per l'ordine sul bene " ++ show b ++ " aperto la richiesta di assenso " ++ show i
 		return (True,([z],[]))
 
 costrEventiOrdine :: (Monad m, StatoOrdini `ParteDi` s) => CostrAction m c EsternoOrdine s

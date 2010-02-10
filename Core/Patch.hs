@@ -1,4 +1,4 @@
-{-# LANGUAGE  TypeSynonymInstances, FlexibleContexts #-}
+{-# LANGUAGE  TypeSynonymInstances, ExistentialQuantification, FlexibleContexts, Rank2Types, ImpredicativeTypes, NoMonomorphismRestriction #-}
 module Core.Patch -- (Patch, fromPatch, mkPatch, Group, fromGroup, mkGroup, Checker, runChecker, Ambiente (..)) where
 	where
 
@@ -15,7 +15,7 @@ import Core.Costruzione (Supporto,libero,scelte)
 import Lib.Aspetti (ParteDi)
 import Lib.Firmabile (sign , verify, Firma, Chiave, Segreto, Password)
 
-import Eventi.Anagrafe (Responsabili,Utente,costrResponsabili,responsabili)
+import Eventi.Anagrafe (Responsabile, Responsabili,Utente,costrResponsabili,responsabili)
 
 
 -- | una patch è un insieme di eventi firmati da un responsabile
@@ -32,16 +32,6 @@ fromPatch (c,f,xs) =  do
 	return $ zip (repeat u) xs
 
 -- | costruisce una patch da un insieme di eventi
-mkPatch :: (Responsabili `ParteDi` s, Show s, Monad m ) => Utente -> [Evento] -> Supporto m s c Patch
-mkPatch u xs  = do
-	(rs,_) <- asks responsabili 
-	when (not $ u `elem` map fst rs) $ throwError "il tuo nome non risulta tra i responsabili"
-	let (c,s) = fromJust . lookup u $ rs 
-	p <- libero "la tua password di responsabile" 
-	b <- ask
-	case sign (s,p) (xs,b) of 
-		Nothing -> throwError $ "password errata"
-		Just f -> return (c, f , xs)
 
 -- | una patch di gruppo è un insieme di patch firmate da uno dei responsabili
 type Group = (Chiave,Firma,[Patch])
@@ -57,19 +47,24 @@ fromGroup (c,f,ps) = do
 	let u = fst. head . filter ((==c) . fst . snd) $ rs
 	(,) u <$> concat <$> mapM fromPatch ps
 	
-
+-- newtype SignerBox = SignerBox 
 -- | costruisce una patch di gruppo da un insieme di patch responsabile
-mkGroup :: (Show s, Monad m, Responsabili `ParteDi` s) => Utente -> Supporto m s c ([Patch] -> Group)
-mkGroup u = do
+
+login :: (Show s, Monad m, Responsabili `ParteDi` s) 
+	=> Supporto m s c (Maybe (Responsabile,Firmante)) -- forall a. Show a => [a] -> (Chiave, Firma)))
+login = do
 	b <- ask
 	(rs,_) <- asks responsabili 	
-	when (not $ u `elem` map fst rs) $ throwError "il tuo nome non risulta tra i responsabili"
-	let (c,s) = fromJust . lookup u $ rs 
-	p <- libero "la tua password di responsabile"
-	case  sign (s,p) ([]::[Patch],b) of 
-		Nothing -> throwError $ "password errata"
-		Just _ -> return (\ps -> (c,fromJust $ sign (s,p) (ps,b),ps))
+	r <- scelte (("anonimo",Nothing) : map (fst &&& Just . id) rs) "credenziali di accesso"
+	
+	case r of 
+		Nothing -> return Nothing
+		Just r@(_,(c,s)) -> do  
+			p <- libero "la tua password di responsabile"
+			case  sign (s,p) (undefined :: (),b) of 
+				Nothing -> throwError $ "password errata"
+				Just _ -> return . Just $ (r, Firmante $ \ps -> (c,fromJust $ sign (s,p) (ps,b),ps))
 	
 --------------------------------------------------------------
 
-
+newtype Firmante = Firmante (forall a. Show a => [a] -> (Chiave, Firma,[a]))

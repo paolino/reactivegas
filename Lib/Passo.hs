@@ -11,7 +11,7 @@
 
 module Lib.Passo where
 
-import Control.Monad.Cont (ContT (..) , runContT, callCC, join)
+import Control.Monad.Cont (forever, ContT (..) , runContT, callCC, join)
 import Lib.Response (Response)
 -- | i possibili sviluppi di una costruzione
 data Passo m b 
@@ -44,4 +44,8 @@ menu 	:: Monad m => String -- ^ descrizione
 		-> [(String,Costruzione m b a)] -- ^ menu a partire da un gestore di a
 		-> Costruzione m b a	-- ^ il passo risultante
 menu x = join . flip scelte x
-password = libero
+
+rotonda f = callCC $ \k -> forever (f k)
+
+rmenu k s xs = menu s $ ("fine",k ()):xs
+
