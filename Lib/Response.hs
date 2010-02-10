@@ -1,4 +1,4 @@
-{-# LANGUAGE StandaloneDeriving, ExistentialQuantification #-}
+{-# LANGUAGE StandaloneDeriving, DeriveDataTypeable, ExistentialQuantification #-}
 
 module Lib.Response where
 
