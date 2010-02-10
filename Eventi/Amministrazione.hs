@@ -25,7 +25,7 @@ nuoveChiavi = do
 
 
 costrGestionePatch :: (Monad m) => [String] -> CostrAction m c [String] ()
-costrGestionePatch xs s kp kn = return . (,) "correzione patch" . runSupporto () kn kp $ do
+costrGestionePatch xs s kp kn = return . (,) "correzione" . runSupporto () kn kp $ do
 	when (null xs) $ throwError "non ci sono eventi da eliminare"
 	x <- scelte (zip xs xs) "seleziona evento da eliminare"
 	return $ delete x xs

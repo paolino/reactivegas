@@ -36,7 +36,7 @@ prioritySincronizzatore = R k where
 
 sincronizzatore = (\(Sincronizzatore r) -> r) . see
 
-data Sincronizzatore = Sincronizzatore Responsabile deriving (Read, Show)
+data Sincronizzatore = Sincronizzatore Responsabile (Bool,Utente) deriving (Read, Show)
 
 -- | tipo dello stato aggiunto del sincronizzatore
 type TySincronizzatore a = (Sincronizzatore , a)
@@ -52,6 +52,10 @@ reazioneSincronizzatore ::
 	) => Reazione s c Utente
 reazioneSincronizzatore = soloEsterna reattore where
 	reattore (u,NuovoSincronizzatore r) = conFallimento $ do
+		Sincronizzatore _ t <- osserva
+		when t $ fallimento "richiesta di modifica già attivata" 
+		(l,k) <- programmazioneAssenso "modifica della chiave di sincronizzazione" maggioranza chiudibene chiudimale
+		
 		fallimento (u /= "sincronizzatore") "solo il sincronizzatore può cambiare se stesso"
 		modifica (\(Sincronizzatore _) -> Sincronizzatore r)
 		logga "il sincronizzatore è stato cambiato"

@@ -31,7 +31,7 @@ instance Eq b => Eq (Valuedfile a b) where
 
 mkValuedfile :: Read a => (b,FilePath) -> IO (Maybe (Valuedfile a b))
 mkValuedfile (i,x) = do	r <- readFile x 
-			return $ case reads r of
+			seq (length r) . return $ case reads r of
 				[] -> Nothing
 				[(r,_)] -> Just $ Valuedfile i x r
 

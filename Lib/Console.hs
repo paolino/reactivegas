@@ -7,7 +7,8 @@ import Control.Monad (forM)
 import Control.Applicative ((<$>))
 import Control.Monad.Trans (liftIO, MonadIO, lift)
 import Lib.Passo (Passo (..), svolgi, Costruzione)
-import Control.Exception
+import Lib.Response 
+import Control.OldException
 import System.Console.Haskeline
 
 -- | la funzione smonta i passi in caso di undo
@@ -15,9 +16,13 @@ runPasso :: MonadException m => [Passo m b] -> InputT m b
 
 runPasso [x] = runPasso [x,x]
 
+runPasso (Output x l:u) = do
+	outputStrLn $ "\n" ++ take 120 (show x)
+	getInputLine "continua .."
+	lift l >>= runPasso . (:u)
 runPasso (Costruito x:_) = return x 
 runPasso  w@(c@(Libero p f) : u) = do
-	x <- getInputLine $ p ++ ": "
+	x <- getInputLine $ "\n** " ++ p ++ ": "
 	n <- case fromJust x of 
 		[] -> return u
 		_ -> case reads $ fromJust x of 
@@ -29,8 +34,8 @@ runPasso  w@(c@(Libero p f) : u) = do
 	runPasso n
 
 runPasso w@(c@(Scelta p xs f): u) = do
-	outputStrLn p 
-	forM (zip [1..] xs) $ \(n,(p,_)) -> outputStrLn $ "\t" ++ show n ++ ") " ++ take 60 p
+	outputStrLn ("\n** " ++ p) 
+	forM (zip [1..] xs) $ \(n,(p,_)) -> outputStrLn $ "\t" ++ show n ++ ") " ++ take 80 p
 	x <- getInputLine  "scelta: "
 
 	n <- case fromJust x of
@@ -43,7 +48,7 @@ runPasso w@(c@(Scelta p xs f): u) = do
 	runPasso n	  
 	
 runPasso  w@(c@(DaFile p f) : u) = do
-	x <- getInputLine $  p ++ "[nome del file da caricare]: "
+	x <- getInputLine $  "\n** " ++ p ++ "[nome del file da caricare]: "
 	n <- case fromJust x of 
 		[] -> return u
 		fn -> do 	

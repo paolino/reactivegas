@@ -12,18 +12,21 @@
 module Lib.Passo where
 
 import Control.Monad.Cont (ContT (..) , runContT, callCC, join)
-
+import Lib.Response (Response)
 -- | i possibili sviluppi di una costruzione
 data Passo m b 
 	= forall a. Scelta String [(String,a)] (a -> m (Passo m b)) 	-- ^ scelta vincolata ad una lista di possibilità
 	| forall a. Read a => Libero String (a -> m (Passo m b))	-- ^ scelta da leggere da una stringa
 	| forall a. Read a => DaFile String (a -> m (Passo m b))
+	| Output Response (m (Passo m b)) 
 	| Costruito b							-- ^ valore calcolato
 
 -- | produce un passo di valore Libero nella monade Cont
 libero :: (Read a, Monad m) => String -> Costruzione m b a
 libero prompt = ContT $ return . Libero prompt
 
+output :: Monad m => Response -> Costruzione m b ()
+output s = ContT $ return . Output s . ($())
 dafile prompt = ContT $ return . DaFile prompt
 -- | produce un passo di valore Scelta
 scelte :: Monad m => [(String,a)] -> String -> Costruzione m b a 

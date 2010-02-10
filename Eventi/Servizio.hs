@@ -48,7 +48,7 @@ servizioPresente j = do
 	return s
 
 -- | restituisce il valore del servizio di tipo a indicizzato dalla chiave passata 
-osservaStatoServizio :: (ParteDi (Servizio a) s, Read a, Show a) => Int ->  MTInserzione s c d a
+-- osservaStatoServizio :: (ParteDi (Servizio a) s, Read a, Show a) => Int ->  MTInserzione s c d a
 osservaStatoServizio j = do 
 	Servizio p ls <- servizioPresente j 	
 	snd <$> return (ls ? (j,error "osservaStatoServizio: the impossible happened"))
@@ -77,5 +77,6 @@ eliminaStatoServizio j proxy = do
 elencoSottoStati :: (ParteDi (Servizio a) s, Show a,Read a) 
 	=> s -> [(Int,(String,a))]
 elencoSottoStati = sottostato . see
+
 
 
