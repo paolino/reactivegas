@@ -77,8 +77,8 @@ conStato :: (String -> Interfaccia a) -> (b -> Interfaccia a) -> Supporto Env TS
 conStato x y z = do	(s,_) <- asks getStato 
 			runSupporto s x y z
 -- | prova a fare accedere un responsabile. ritorna Nothing segnalando accesso anonimo
--- accesso :: Interfaccia  (Maybe (Responsabile, Firmante))
-accesso = conStato (\x -> bocciato x >> return Nothing) return login 
+accesso :: Interfaccia  (Maybe (Responsabile, Firmante))
+accesso = rotonda $ \k -> conStato bocciato k login 
 
 bootChiavi :: Interfaccia ()
 bootChiavi = do
@@ -119,13 +119,13 @@ interrogazioni = rotonda $ \k -> do
 		]
 
 salvaPatch  :: (Responsabile,Firmante) -> Interfaccia ()
-salvaPatch ((u,_), Firmante f) = do
+salvaPatch q@((u,_), Firmante f) = caricando q $ do
 	evs <- get 
 	let salvataggio = do
 		p <- asks  publishUPatch 
 		liftIO $ p u (f evs)
-	when (not $ null evs) . menu "vuoi firmare l'aggiornamento prodotto?"  $
-		[("si",salvataggio),("no",return ())]
+	when (not $ null evs) . menu "trattamento eventi in sospeso"  $
+		[("firma",salvataggio),("mantieni",return ()),("elimina", asks publishEventi >>= \e -> liftIO (e []))]
 
 caricando :: (Responsabile,Firmante) -> Interfaccia a -> Interfaccia a
 caricando q@((u,_),Firmante f) k = do 

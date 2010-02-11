@@ -42,7 +42,7 @@ reazioneOrdine = soloEsterna reattoreOrdine where
 	
 	reattoreOrdine (first validante -> (w, AperturaOrdine b)) = w $ \r -> do
 		
-		s@(StatoOrdini cs as ias ) <- trace "quiquiqui.--" osserva
+		s@(StatoOrdini cs as ias ) <-  osserva
 		fallimento (not (b `assente` cs) || (b `elem` map snd as) || (b `elem` map snd ias)) "il nome per questo bene e' gia' stato utilizzato oppure in uso"
 		let 	positivo i = do 	(l,z) <- programmazioneImpegno ("per l' acquisto del bene " ++ b) r
 						let t k = case k of
