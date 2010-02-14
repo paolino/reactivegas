@@ -82,4 +82,37 @@ aggiornamento mf aggiorna = do
 			return $ Boot 
 				(writeFile  (wd </> "stato.0") . show . ($cs)) 
 				writeChiavi
+aggiornamentoWeb :: (Show a, Read a) => Maybe FilePath -> (a -> Group -> IO (Utente,a)) -> IO (Aggiornamento a)
+aggiornamentoWeb mf aggiorna = do
+	putStrLn "\n\n *************** Inizio aggiornamento ***********"
+	wd <- maybe getCurrentDirectory return mf 
+	let writeChiavi (r,c) = writeFile (wd </> "chiavi." ++ r) . show $ c
+	putStrLn $ " Cartella di lavoro: " ++ wd
+	stati <- reverse . sort <$> getValuedfiles maybeParse "stato" wd
+	cs <- map (ext &&& value) <$> (getValuedfiles return "chiavi" wd)
+	putStrLn $ " Rilevate chiavi responsabile " ++ show (map fst cs)
+	if  not $ null stati then do 
+		let stato = head stati
+		putStrLn $ " Rilevato il file di stato " ++ show (ext stato)
+		(_,aggiornamenti) <- break ((> ext stato) . ext) <$> sort 
+			<$> getValuedfiles maybeParse "aggiornamento" wd
+		putStrLn $ " Rilevati gli aggiornamenti di gruppo " ++ show (map ext aggiornamenti)	
+		Valuedfile n _ s <- consumaM aggiorna stato aggiornamenti
+		as <- map value . filter ((==) (n + 1) . ext) <$> liftIO (getValuedfiles maybeParse "aggiornamento" wd)
+		putStrLn $ " Rilevati " ++ show (length as) ++ " aggiornamenti individuali "
+		rs <- map value . filter ((==) (n + 1) . ext) <$> liftIO (getValuedfiles maybeParse "eventi" wd)
+		putStrLn $ " ********* Fine aggiornamento (stato " ++ show n ++ ") ********\n\n"
+		return $ Flow 
+			s
+			(if null rs then [] else head rs)
+			(writeFile (wd </> "eventi." ++ show (n + 1)) . show)
+			(\u -> writeFile (wd </> "aggiornamento." ++ u ++ "." ++ show (n + 1)) . show)
+			writeChiavi $
+			if null as then Nothing else
+				Just $ writeFile (wd </> "aggiornamento." ++ show (n + 1)) . show . ($as)
+		else do
+			putStrLn $ " ********* Fine aggiornamento (inizializzazione) ********\n\n"
+			return $ Boot 
+				(writeFile  (wd </> "stato.0") . show . ($cs)) 
+				writeChiavi
 

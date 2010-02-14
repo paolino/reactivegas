@@ -19,10 +19,13 @@ type Appuntato s d = (Either Interno (Esterno d) , s)
 
 -- | un nodo contiene una possible reazione, infatti le reazioni possono avere una vita limitata, e una lista di figli 
 -- ognuno di essi contiene l'evento contestualizzato che lo ha creato e una lista di nodi indicizzati per intero (necessario ?)
+
 data Nodo s c d = Nodo {
 	reattore :: Maybe (Reazione s c d),
 	seguenti :: [(Appuntato s d,[(Int,Nodo s c d)])] 
 	}
+
+
 -- | decora una serie di reazioni in nodi con seguenti nulli
 mkNodi :: [Reazione s c d] -> [Nodo s c d]
 mkNodi = map (flip Nodo [] . Just) 

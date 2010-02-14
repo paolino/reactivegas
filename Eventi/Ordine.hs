@@ -44,7 +44,7 @@ reazioneOrdine = soloEsterna reattoreOrdine where
 		
 		s@(StatoOrdini cs as ias ) <-  osserva
 		fallimento (not (b `assente` cs) || (b `elem` map snd as) || (b `elem` map snd ias)) "il nome per questo bene e' gia' stato utilizzato oppure in uso"
-		let 	positivo i = do 	(l,z) <- programmazioneImpegno ("per l' acquisto del bene " ++ b) r
+		let 	positivo i = do 	(l,z) <- programmazioneImpegno ("per l'acquisto del bene " ++ b) r
 						let t k = case k of
 							Just us -> do 
 								salda r (subtract . sum . map snd $ us)
@@ -77,8 +77,6 @@ costrEventiOrdine s kp kn  = [("apertura ordine per un nuovo bene", eventoApertu
 sottostringa :: Eq a => [a] -> [a] -> Bool
 sottostringa x = any (x `isPrefixOf`) . tails
 
-modCatMaybes :: (c -> Maybe a) -> [c] -> [c]
-modCatMaybes f = filter (isJust . f)
 costrQueryOrdine :: (Monad m, ParteDi StatoOrdini s) => CostrAction m c Response s
 costrQueryOrdine s kp kn = 	[("cerca ordini chiusi",cerca)]
 	where

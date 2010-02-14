@@ -63,9 +63,11 @@ preleva u dv = do
 -- | esegue un accredito su un conto utente
 accredita :: (Anagrafe `ParteDi` s, Conti `ParteDi` s) => Utente -> Float -> MTInserzione s c Utente ()
 accredita u dv = do
-	fallimento (dv <= 0) "tentato un accredito negativo o nullo"
+	--fallimento (dv <= 0) "tentato un accredito negativo o nullo"
 	esistenzaUtente u 
 	Conti us <- osserva
+	let r = (us ? (u,0)) + dv
+	fallimento (r < 0) "richiesto uno storno superiore al credito" 
 	aggiornaCredito u (+ dv) 
 -- | modifica il saldo di un responsabile
 salda :: (Anagrafe `ParteDi` s, Responsabili `ParteDi` s, Saldi `ParteDi` s) => Utente -> (Float -> Float) -> MTInserzione s c Utente ()

@@ -29,3 +29,20 @@ Executable reactivegas
                 filepath    ,
                 FileManipCompat   ,
                 directory   
+
+Library 
+ exposed-modules: Lib.Passo,Lib.Response
+ ghc-options: -Wall
+ build-depends: base     < 4.2  , 
+                random      ,
+                bytestring  ,
+                SimpleAES   ,
+                RSA         ,
+                mtl         ,
+                utf8-string ,
+                MaybeT      ,
+                pretty      ,
+                haskeline   ,
+                filepath    ,
+                FileManipCompat   ,
+                directory   
