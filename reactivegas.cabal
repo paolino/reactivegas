@@ -27,9 +27,8 @@ Executable reactivegas
                 pretty      ,
                 haskeline   ,
                 filepath    ,
-                FileManipCompat   ,
-                directory  , stm
-
+                FileManipCompat   ,network,
+                directory  , stm, xhtml, scgi
 Library 
  exposed-modules: Lib.Passo,Lib.Response
  ghc-options: -Wall
