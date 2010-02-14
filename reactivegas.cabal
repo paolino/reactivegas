@@ -28,7 +28,7 @@ Executable reactivegas
                 haskeline   ,
                 filepath    ,
                 FileManipCompat   ,
-                directory   
+                directory  , stm
 
 Library 
  exposed-modules: Lib.Passo,Lib.Response
@@ -45,4 +45,4 @@ Library
                 haskeline   ,
                 filepath    ,
                 FileManipCompat   ,
-                directory   
+                directory   , stm
