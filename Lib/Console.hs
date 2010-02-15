@@ -20,6 +20,12 @@ runPasso (Output x l:u) = do
 	outputStrLn $ "\n" ++ take 120 (show x)
 	getInputLine "continua .."
 	lift l >>= runPasso . (:u)
+
+runPasso (Errore x l:u) = do
+	outputStrLn $ "\n" ++ take 120 (show x)
+	getInputLine "continua .."
+	lift l >>= runPasso . (:u)
+
 runPasso (Costruito x:_) = return x 
 runPasso  w@(c@(Libero p f) : u) = do
 	x <- getInputLine $ "\n** " ++ p ++ ": "
@@ -47,12 +53,12 @@ runPasso w@(c@(Scelta p xs f): u) = do
 					False -> return w
 	runPasso n	  
 	
-runPasso  w@(c@(DaFile p f) : u) = do
+runPasso  w@(c@(Upload p f) : u) = do
 	x <- getInputLine $  "\n** " ++ p ++ "[nome del file da caricare]: "
 	n <- case fromJust x of 
 		[] -> return u
 		fn -> do 	
-			k <- liftIO $ tryJust (\(IOException e) -> Just (show e)) (readFile fn) 
+			k <- liftIO $ tryJust (\(SomeException e) -> Just (show e)) (readFile fn) 
 			case k of 
 				Left e -> outputStrLn e >> return w
 				Right x -> do 
@@ -60,6 +66,17 @@ runPasso  w@(c@(DaFile p f) : u) = do
 						[] -> outputStrLn "valore non valido" >> return w
 						(x,_):_ -> (:w) <$> lift (f x) 
 	runPasso n
+
+runPasso w@(c@(Download x f):u) = do
+		x <- getInputLine $  "\n** Salvataggio di " ++ take 30 (show x) ++ ".... [nome del file da salvare]: "
+		n <- case fromJust x of 
+			[] -> return u
+			fn -> do 	
+				k <- liftIO $ tryJust (\(SomeException e) -> Just (show e)) (writeFile fn (show x)) 
+				case k of 
+					Left e -> outputStrLn e >> return w
+					Right () -> outputStrLn "salvato." >> (:u) <$> lift f
+		runPasso n
 
 interazione :: (MonadException m) => b -> Costruzione m b b -> m b
 interazione base f = svolgi f >>= runInputT defaultSettings . runPasso . return 

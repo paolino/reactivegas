@@ -1,4 +1,4 @@
-{-# LANGUAGE  TypeSynonymInstances, ExistentialQuantification, FlexibleContexts, Rank2Types, ImpredicativeTypes, NoMonomorphismRestriction #-}
+{-# LANGUAGE  TypeSynonymInstances, ExistentialQuantification, FlexibleContexts, Rank2Types,  NoMonomorphismRestriction #-}
 module Core.Patch -- (Patch, fromPatch, mkPatch, Group, fromGroup, mkGroup, Checker, runChecker, Ambiente (..)) where
 	where
 

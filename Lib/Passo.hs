@@ -17,8 +17,10 @@ import Lib.Response (Response)
 data Passo m b 
 	= forall a. Scelta String [(String,a)] (a -> m (Passo m b)) 	-- ^ scelta vincolata ad una lista di possibilità
 	| forall a. Read a => Libero String (a -> m (Passo m b))	-- ^ scelta da leggere da una stringa
-	| forall a. Read a => DaFile String (a -> m (Passo m b))
+	| forall a. Read a => Upload String (a -> m (Passo m b))
 	| Output Response (m (Passo m b)) 
+	| Errore Response (m (Passo m b)) 
+	| forall a. Show a => Download String a (m (Passo m b)) 
 	| Costruito b							-- ^ valore calcolato
 
 -- | produce un passo di valore Libero nella monade Cont
@@ -27,7 +29,12 @@ libero prompt = ContT $ return . Libero prompt
 
 output :: Monad m => Response -> Costruzione m b ()
 output s = ContT $ return . Output s . ($())
-dafile prompt = ContT $ return . DaFile prompt
+errore :: Monad m => Response -> Costruzione m b ()
+errore s = ContT $ return . Errore s . ($())
+
+upload prompt = ContT $ return . Upload prompt
+
+download s x = ContT $ return . Download s x . ($())
 -- | produce un passo di valore Scelta
 scelte :: Monad m => [(String,a)] -> String -> Costruzione m b a 
 scelte xs prompt = ContT $ return . Scelta prompt xs

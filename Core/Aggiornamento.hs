@@ -116,3 +116,28 @@ aggiornamentoWeb mf aggiorna = do
 				(writeFile  (wd </> "stato.0") . show . ($cs)) 
 				writeChiavi
 
+data Aggiornamento a =
+	Boot 	{ 	writeStato :: ([Responsabile] -> a) -> IO ()	
+		, 	writeChiavi :: Responsabile -> IO ()
+		}
+	| Flow 	{ 	readStato :: IO a,
+			readEventi :: Utente -> IO [Eventi],
+			writeEventi :: Utente -> Eventi -> IO (),
+			writeUPatch :: Utente -> Patch -> IO (),
+			readUPatches :: IO [Patch],
+		 	writeChiavi :: Responsabile -> IO (),
+			writeGPatch :: Group -> IO ()
+			readLog :: IO [String]
+		}
+			 
+data Board a = Board 
+	{	tstato :: TVar a
+	,	teventi :: TVar [(Utente,TVar [Evento])]
+	,	tupatch :: TChan (Utente,Patch)
+	,	tchiavi :: TChan Resposabile
+	,	tgpatch :: TChan Group
+	,	tlog 	:: TChan String
+	}
+
+		
+	
