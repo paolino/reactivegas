@@ -29,6 +29,7 @@ libero prompt = ContT $ return . Libero prompt
 
 output :: Monad m => Response -> Costruzione m b ()
 output s = ContT $ return . Output s . ($())
+
 errore :: Monad m => Response -> Costruzione m b ()
 errore s = ContT $ return . Errore s . ($())
 
@@ -54,5 +55,5 @@ menu x = join . flip scelte x
 
 rotonda f = callCC $ \k -> forever (f k)
 
-rmenu k s xs = menu s $ ("fine",k ()):xs
+rmenu k s xs = menu s $ ("esci",k ()):xs
 

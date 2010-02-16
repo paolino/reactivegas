@@ -1,4 +1,5 @@
-{-# LANGUAGE  TypeSynonymInstances, ExistentialQuantification, FlexibleContexts, Rank2Types,  NoMonomorphismRestriction #-}
+{-# LANGUAGE  TypeSynonymInstances, ExistentialQuantification, FlexibleContexts, 
+	ScopedTypeVariables, Rank2Types,  NoMonomorphismRestriction #-}
 module Core.Patch -- (Patch, fromPatch, mkPatch, Group, fromGroup, mkGroup, Checker, runChecker, Ambiente (..)) where
 	where
 
@@ -50,21 +51,17 @@ fromGroup (c,f,ps) = do
 -- newtype SignerBox = SignerBox 
 -- | costruisce una patch di gruppo da un insieme di patch responsabile
 
-login :: (Show s, Monad m, Responsabili `ParteDi` s) 
-	=> Supporto m s c (Maybe (Responsabile,Firmante)) -- forall a. Show a => [a] -> (Chiave, Firma)))
+login :: forall s m c . (Show s, Monad m, Responsabili `ParteDi` s)
+ 	=> Supporto m s c (Maybe (Responsabile, Supporto m s c (Firmante s))) 
 login = do
-	b <- ask
 	(rs,_) <- asks responsabili 	
 	r <- scelte (("anonimo",Nothing) : map (fst &&& Just . id) rs) "credenziali di accesso"
-	
-	case r of 
-		Nothing -> return Nothing
-		Just r@(_,(c,s)) -> do  
-			p <- libero "la tua password di responsabile"
-			case  sign (s,p) (undefined :: (),b) of 
-				Nothing -> throwError $ "password errata"
-				Just _ -> return . Just $ (r, Firmante $ \ps -> (c,fromJust $ sign (s,p) (ps,b),ps))
-	
+	let firmante r@(_,(c,s)) = do  
+		p <- libero "la tua password di responsabile"
+		case  sign (s,p) (undefined :: (),undefined :: s) of 
+			Nothing -> throwError $ "password errata"
+			Just _ -> return $ Firmante $ \b ps -> (c,fromJust $ sign (s,p) (ps,b),ps)
+	return $ (id &&& firmante) <$> r
 --------------------------------------------------------------
 
-newtype Firmante = Firmante (forall a. Show a => [a] -> (Chiave, Firma,[a]))
+newtype Firmante b = Firmante (forall a. Show a => b -> [a] -> (Chiave, Firma,[a]))

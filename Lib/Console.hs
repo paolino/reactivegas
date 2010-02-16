@@ -67,7 +67,7 @@ runPasso  w@(c@(Upload p f) : u) = do
 						(x,_):_ -> (:w) <$> lift (f x) 
 	runPasso n
 
-runPasso w@(c@(Download x f):u) = do
+runPasso w@(c@(Download _ x f):u) = do
 		x <- getInputLine $  "\n** Salvataggio di " ++ take 30 (show x) ++ ".... [nome del file da salvare]: "
 		n <- case fromJust x of 
 			[] -> return u

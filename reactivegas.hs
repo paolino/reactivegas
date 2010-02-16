@@ -1,6 +1,9 @@
 {-# LANGUAGE FlexibleContexts, ExistentialQuantification, ScopedTypeVariables, GeneralizedNewtypeDeriving, NoMonomorphismRestriction #-}
 
 
+import Control.Monad.Error (runErrorT)
+import Control.Monad.Writer (Writer, tell)
+import Control.Monad.Cont
 import Control.Arrow
 import Control.Applicative
 import Control.Monad.State
@@ -10,33 +13,24 @@ import Control.Concurrent
 import Debug.Trace
 
 import Lib.Passo
-import Lib.Console
+-- import Lib.Console
 import Lib.HTTP
 
+
+import Core.Patch (fromGroup, Group)
 import Core.Persistenza
 import Core.UI
-loader ::  QS -> Group -> Writer [String] (Either String (Utente,QS))
-loader (qs@(s,_)) g = do 
-		e <-  runErrorT $ do
-			(u,es) <- runReaderT (fromGroup g) s
-			qs' <- liftIO $ caricamento es qs
-			return (u,qs')
-		either error return e
 
+import Eventi.Anagrafe (Utente)
 
+loader ::  QS -> Group -> Writer [String] (Either String QS)
+loader (qs@(s,_)) g = runErrorT $ do
+			(_,es) <- runReaderT (fromGroup g) s
+			let (qs',ef) = caricamento es qs
+			tell [ef]
+			return qs'
 
-aggiornamentoConcurrent = aggiornamento
-
-checkDir = do
-	mq <- aggiornamentoConcurrent Nothing loader
-	return $ case mq of
-		b@(Boot _ _) -> (svolgi boot,error "nessuno stato", flip runReaderT b)
-		fl -> (svolgi flow, [], flip runReaderT fl)
-
-
-main :: IO ()
 main = do
-	mq <- wake 
-	t <- checkDir >>= atomically . newTVar 
-	forkIO . forever $ threadDelay 1000000 >> checkDir >>= atomically . writeTVar t
-	server t
+	p <- wake loader Nothing 
+	t <- atomically . newTVar $ (svolgi (applicazione p),flip runReaderT p)
+	server t	

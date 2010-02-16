@@ -41,7 +41,7 @@ import Lib.Prioriti (R (..))
 import Core.Inserimento (logga, conFallimento, MTInserzione, osserva, modifica, fallimento)
 import Core.Programmazione (Inserzione, EventoInterno (..), soloEsterna, nessunEffetto, Reazione (..),Effetti)
 import Core.Types (Message)
-import Core.Costruzione (Supporto,libero,dafile,scelte,runSupporto,CostrAction)
+import Core.Costruzione (Supporto,libero,upload,scelte,runSupporto,CostrAction)
 import Core.Parsing (ParserConRead, Parser)
 import Lib.Firmabile (Segreto, Chiave)
 
@@ -214,8 +214,8 @@ costrEventiResponsabili s kp kn =
 		let ds = us \\ map fst rs
 		when (null ds) $ throwError "nessun utente non responsabile disponibile"
                 n <- scelte (map (id &&& id) ds) "selezione eleggibile" 
-                m <- dafile "il modulo della chiave pubblica"
-                return $ ElezioneResponsabile (n,m)
+                m <- upload $ "chiavi per l'utente" ++ n
+                return $ ElezioneResponsabile m
 
         eventoEliminazioneResponsabile = run $ do
 		rs <- costrResponsabili 

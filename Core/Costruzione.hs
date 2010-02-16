@@ -1,13 +1,13 @@
 {-# LANGUAGE NoMonomorphismRestriction #-}
 -- | un wrapper intorno a Lib.Costruzione m per semplificare la costruzione di interfacce
-module Core.Costruzione (libero, scelte, dafile, Supporto, runSupporto, CostrAction) where
+module Core.Costruzione (libero, scelte, upload, Supporto, runSupporto, CostrAction, download) where
 
 
 import Control.Applicative ((<$>))
 import Control.Monad.Error (lift, runErrorT, ErrorT)
 import Control.Monad.Reader (runReaderT, ReaderT)
 
-import qualified Lib.Passo as P (Costruzione , libero, dafile, scelte)
+import qualified Lib.Passo as P (Costruzione , libero, upload, scelte, download)
 
 -- | monade di supporto per la costruzione di valori con il valore interrogativo in reader e con la possibilita di fallire 
 type Supporto m s b = ReaderT s (ErrorT String (P.Costruzione m b))
@@ -24,13 +24,17 @@ runSupporto s kn kp f = runErrorT (runReaderT f s) >>= either kn kp
 libero :: (Monad m ,Read a) => String -> Supporto m s b a
 libero = toSupporto . P.libero
 
--- | passo dafile elevato al supporto
-dafile :: (Read a , Monad m) => String -> Supporto m s b a
-dafile = toSupporto . P.dafile
+-- | passo upload elevato al supporto
+upload :: (Read a , Monad m) => String -> Supporto m s b a
+upload = toSupporto . P.upload
+
+download :: (Show a , Monad m) => String -> a -> Supporto m s b ()
+download q = toSupporto . P.download q
 
 -- | passo scelte elevato al supporto
 scelte :: Monad m => [(String, a)] -> String -> Supporto m s b a
 scelte xs = toSupporto . P.scelte xs
+
 
 -- | il tipo degli insiemi di azioni costruttive
 type CostrAction m c q s = 
