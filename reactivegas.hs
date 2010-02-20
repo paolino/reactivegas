@@ -14,23 +14,37 @@ import Debug.Trace
 
 import Lib.Passo
 -- import Lib.Console
-import Lib.HTTP
-
+import Lib.ServerHTTP (server)
+import Lib.TreeLogs
+import Lib.Prioriti
 
 import Core.Patch (fromGroup, Group)
 import Core.Persistenza
+import Core.Sessione
 import Core.UI
 
 import Eventi.Anagrafe (Utente)
 
-loader ::  QS -> Group -> Writer [String] (Either String QS)
-loader (qs@(s,_)) g = runErrorT $ do
-			(_,es) <- runReaderT (fromGroup g) s
-			let (qs',ef) = caricamento es qs
-			tell [ef]
-			return qs'
+import Core.Types (Esterno, Evento)
+import Core.Controllo (caricaEventi, SNodo (..))
+import Core.Contesto (flatten)
+import Core.Programmazione (Reazione)
+import Core.Parsing (ParserConRead)
+import Core.Applicazione (loader) 
+
+import Eventi.Anagrafe
+import Eventi.Accredito
+import Eventi.Impegno
+import Eventi.Ordine
+
+
 
 main = do
-	p <- wake loader Nothing 
-	t <- atomically . newTVar $ (svolgi (applicazione p),flip runReaderT p)
-	server t	
+	se <- mkSessione
+	c <- atomically newTChan
+	forkIO . forever $ (atomically (readTChan c) >>= putStrLn)
+	pe <- mkGroupSystem loader c "tarogas" >>= startGroupSystem 10000000
+
+	interazione <- svolgi 0 $ applicazione (pe,se)
+	server interazione 	
+	

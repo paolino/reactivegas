@@ -13,11 +13,11 @@ import qualified Lib.Passo as P (Costruzione , libero, upload, scelte, download)
 type Supporto m s b = ReaderT s (ErrorT String (P.Costruzione m b))
 
 -- | eleva la costruzione nel supporto
-toSupporto :: Monad m => P.Costruzione m b a -> Supporto m s b a
+toSupporto :: (Monad m) => P.Costruzione m b a -> Supporto m s b a
 toSupporto = lift . lift
 
 -- | dato lo stato interrogativo e le continuazioni in caso di errore o meno esegue una azione di Supporto m
-runSupporto:: Monad m => s -> (String -> P.Costruzione m b c) -> (a -> P.Costruzione m b c) -> Supporto m s b a -> P.Costruzione m b c
+runSupporto:: (Monad m) => s -> (String -> P.Costruzione m b c) -> (a -> P.Costruzione m b c) -> Supporto m s b a -> P.Costruzione m b c
 runSupporto s kn kp f = runErrorT (runReaderT f s) >>= either kn kp
 
 -- | passo libero elevato al supporto
@@ -32,7 +32,7 @@ download :: (Show a , Monad m) => String -> a -> Supporto m s b ()
 download q = toSupporto . P.download q
 
 -- | passo scelte elevato al supporto
-scelte :: Monad m => [(String, a)] -> String -> Supporto m s b a
+scelte :: (Monad m) => [(String, a)] -> String -> Supporto m s b a
 scelte xs = toSupporto . P.scelte xs
 
 

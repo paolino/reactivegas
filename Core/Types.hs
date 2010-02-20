@@ -10,4 +10,5 @@ type Interno = Evento
 type Esterno d = (d,Evento)
 -- | I log dei reattori sono diretti all'utente 
 type Message = String
+type Utente = String
 
