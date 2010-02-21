@@ -9,6 +9,7 @@ import Control.Applicative ((<$>))
 import Control.Monad (liftM, forM, foldM)
 import Control.Monad.Error (MonadError, ErrorT, throwError, runErrorT)
 import Control.Monad.Maybe
+import Control.Monad.Reader
 import System.Random
 import Network.SCGI
 import Network
@@ -27,72 +28,70 @@ onNothing :: MonadError e m => e -> Maybe a -> m a
 onNothing e x = if isNothing x then throwError e else return . fromJust $ x
 ------------------------------------------------------------------------------
 
-
+type HistoryKey = String
 type FormKey = String  -- chiave di selezione delle form di interazione
 type Value = String
 
-data FormPoint = FormPoint 	
-	{continuazione :: Value -> Maybe (IO (Int,FormPoint))
+data FormPoint m = FormPoint 	
+	{continuazione :: Value -> Maybe (IO (HistoryKey,FormPoint m ))
+	,context :: [m (Passo m ())]
 	,prompt :: FormKey -> Html
 	,link :: Maybe Link
 	}
-instance Show FormPoint where
+instance Show (FormPoint m)where
 	show _ = "FormPoint"
 
-mkFormPoint :: HPasso IO () -> (Int,FormPoint)
-mkFormPoint (p,i) = let
+mkFormPoint :: Monad m => (m (HPasso m ()) -> IO (HPasso m ())) -> HPasso m () -> IO (HistoryKey,FormPoint m)
+mkFormPoint f  (p,ctx) = let
 	(h,ml,cont) = runPasso p -- trasformata html
-	pass = cont >=> \a -> return $ mkFormPoint <$> a
-	in (i,FormPoint pass (h (show i)) ml)
+	pass = cont >=> \a -> return $ f a >>= mkFormPoint f 
+	in do 
+		key <- show <$> (randomIO  :: IO Int)
+		return (key,FormPoint pass ctx (h key) ml)
 				
-
-data Form = Form 
-	{tree :: MGraph FormPoint
-	,remap :: [(Int,Int)]
+data Form m = Form 
+	{history :: [(HistoryKey, FormPoint m)]
+	,limit :: Int
 	} deriving Show
+type Risposta = (HistoryKey, Value) -- risposta di una interazione
 
-type Risposta = (Int, Value) -- risposta di una interazione
-
-applica' :: Risposta -> TVar Form -> ErrorT String IO (FormKey -> Html)
+applica' :: Risposta -> TVar (Form m) -> ErrorT String IO (FormKey -> Html)
 applica' (i,v) tps =  do
-		fo@(Form mg rm) <- lift . atomically $ readTVar tps
-		lift $ print ((i,v),fo)
-		j <- onNothing "indice della form fuori dai limiti" $ lookup i rm
-		let FormPoint c _ _ = load mg A.! j
-		lift $ print j	
+		Form hs l <- lift . atomically $ readTVar tps
+		liftIO . print $ map (length . context . snd) hs
+		
+		FormPoint c _ _ _ <- onNothing "indice della form fuori dai limiti" $ lookup i hs
 		(k,fp) <- onNothing  "il valore risposto non è accettabile" (c v) >>= lift
-		(mg',l) <- onNothing "la memoria dell'interazione è esaurita" $ update mg (j,fp)
-		lift . atomically . writeTVar tps $ Form mg' $ (k,l):(filter ((/=) k . fst) $ rm)
-		return $ prompt fp		
-serve' :: Int -> TVar Form -> ErrorT String IO Link
+		lift . atomically . writeTVar tps $ Form (take l $ (k,fp) : hs) l
+		return (prompt fp) 		
+
+serve' :: HistoryKey -> TVar (Form m) -> ErrorT String IO Link
 serve' i tps = do
-	Form mg rm <- lift . atomically $ readTVar tps
-	j <- onNothing "indice della form fuori dai limiti" $ lookup i rm
-	let FormPoint _ _ ml = load mg A.! j
-	onNothing "questo indice non ha un valore da scaricare associato" ml
+	Form hs l <- lift . atomically $ readTVar tps
+	FormPoint _ _ _ l <- onNothing "indice della form fuori dai limiti" $ lookup i hs
+	onNothing "questo indice non ha un valore da scaricare associato" l
 
-
-data Sessione = Sessione
-	{	azione :: HPasso IO ()
-	,	forms :: TVar [(FormKey, TVar Form)]
+data Sessione m = Sessione
+	{	azione :: HPasso m ()
+	,	forms :: TVar [(FormKey, TVar (Form m))]
 	}
-
-mkSessione :: HPasso IO () -> IO Sessione
+mkSessione :: HPasso m () -> IO (Sessione m)
 mkSessione hp = do
 	forms <- atomically $ newTVar []
 	return $ Sessione hp forms 
 
-newForm :: Sessione -> Maybe FormKey -> IO FormKey
-newForm (Sessione hp tfs) Nothing = do
-	let (0,fp) = mkFormPoint hp
+newForm ::Monad m => (m (HPasso m ()) -> IO (HPasso m ())) ->  Sessione m -> Maybe FormKey -> IO FormKey
+newForm f (Sessione hp tfs) Nothing = do
 	key <- show <$> (randomIO  :: IO Int)
+	fp <- mkFormPoint f hp
+
 	atomically $ do
 		fs <- readTVar tfs
-		tfp <- newTVar $ Form (mkMGraph 30 fp) [(0,0)]
+		tfp <- newTVar $ Form [fp] 30
 		writeTVar tfs $ (key,tfp) : fs
 	return key
 
-newForm s@(Sessione hp tfs) (Just clone) = do
+newForm f s@(Sessione hp tfs) (Just clone) = do
 	key <- show <$> (randomIO  :: IO Int)
 	c <- atomically $ do
 		fs <- readTVar tfs
@@ -103,23 +102,23 @@ newForm s@(Sessione hp tfs) (Just clone) = do
 				writeTVar tfs $ (key,tfp') : fs
 				return False
 			Nothing -> return True
-	if c then newForm s Nothing else return key
+	if c then newForm f s Nothing else return key
 
-pickForm :: Sessione -> FormKey -> ErrorT String IO (TVar Form)
+pickForm :: Sessione m -> FormKey -> ErrorT String IO (TVar (Form m))
 pickForm (Sessione hp tfs) fk = 
 	(lift . atomically) (readTVar tfs) >>= onNothing "chiave dell'interazione non trovata" . lookup fk  
 
-applica :: Sessione -> FormKey -> Maybe Risposta -> ErrorT String IO Html
+applica :: Sessione m -> FormKey -> Maybe Risposta -> ErrorT String IO Html
 applica s  fk res =  do 
 	form <- pickForm s fk 	
 	($fk) <$> case res of 
-		Nothing -> prompt <$> (flip (A.!) 0) <$> load <$> tree  <$> lift (atomically $ readTVar form) 
-		Just iv -> applica' iv form 
+		Nothing -> prompt <$> snd <$> head <$> history <$> lift (atomically $ readTVar form) 
+		Just iv -> applica' iv form
 
 runApplica :: ErrorT String IO Html -> CGI CGIResult
 runApplica k = lift (runErrorT k) >>= either outputNotFound (output . prettyHtml)
 
-serve :: Sessione -> FormKey -> Int -> ErrorT String IO Link
+serve :: Sessione m -> FormKey -> HistoryKey -> ErrorT String IO Link
 serve s fk i = pickForm s fk >>= serve' i 
 
 runServe :: ErrorT String IO Link -> CGI CGIResult
@@ -130,23 +129,22 @@ runServe k = lift (runErrorT k) >>= either outputNotFound r where
 		setHeader "Content-Disposition" $ "filename=" ++ show n
 		output x 
 
-readInputs :: ErrorT String (CGIT IO) (Int,String)
+readInputs :: ErrorT String (CGIT IO) (HistoryKey,Value)
 readInputs = do 
 	hf <- lift (getInput "hkey") >>= onNothing "form corrotta, manca la chiave di punto"
-	(i,_) <- onNothing "form corrotta, la chiave di punto non è un numero" . listToMaybe $ reads hf
 	v <- lift (getInput "valore") >>= onNothing "form corrotta, manca la risposta"
-	return (i,v)
+	return (hf,v)
 
 
 				
-singleFormServer :: HPasso IO () -> IO (CGI CGIResult)
-singleFormServer hp = do
+
+singleFormServer :: Monad m => (m (HPasso m ()) -> IO (HPasso m ())) -> HPasso m () -> IO (CGI CGIResult)
+singleFormServer f hp = do
 	s@(Sessione _ tfp) <- mkSessione hp
-	fk <- newForm s Nothing
+	fk <- newForm f s Nothing
 	return $ do 
 		r <- runErrorT $ do
 			vs <- lift $ getVars 
-			lift $ getInputs >>= liftIO . print
 			case lookup "REQUEST_URI"  vs of 
 				Just "/interazione" -> do 
 					(i,v) <- readInputs
@@ -163,12 +161,17 @@ singleFormServer hp = do
 
 
 
+server
+  :: (Monad m) =>
+     (m (HPasso m ()) -> IO (HPasso m ())) -> HPasso m () -> IO ()
 
-server interazione = do
-	service <- singleFormServer interazione
+server f interazione = do
+	service <- singleFormServer f interazione
 	runSCGI  (PortNumber $ fromIntegral 5000)  $ handleErrors service
 
-interazione :: Costruzione IO () () 
+
+unIterazione = flip runReaderT ()
+interazione :: Costruzione (ReaderT () IO) () () 
 interazione = rotonda $ \k -> do
 		P.output (ResponseOne "benvenuto")
 		(x :: Int) <- upload "un file contenente lo show di un numero" 
@@ -177,3 +180,5 @@ interazione = rotonda $ \k -> do
 		t <- scelte [("si",True),("no",False)] "fine?"
 		if t then k () else return ()
 
+{-
+-}

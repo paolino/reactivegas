@@ -1,5 +1,5 @@
 
-{-# LANGUAGE FlexibleContexts, ExistentialQuantification, ScopedTypeVariables, GeneralizedNewtypeDeriving, NoMonomorphismRestriction, ImplicitParams #-}
+{-# LANGUAGE FlexibleContexts, Rank2Types, ExistentialQuantification, ScopedTypeVariables, GeneralizedNewtypeDeriving, NoMonomorphismRestriction, ImplicitParams #-}
 module Core.UI where
 
 import Data.Maybe (fromJust)
@@ -41,15 +41,16 @@ import Eventi.Accredito
 import Eventi.Impegno
 import Eventi.Ordine
 
-
+sel :: ((Persistenza QS, Sessione) -> IO a) -> Interfaccia a
+sel f = asks f >>= liftIO 
 
 -- | la monade dove gira il programma. Mantiene in lettura lo stato del gruppo insieme alle operazioni di IO. Nello stato la lista degli eventi aspiranti un posto nella patch
 type MEnv = ReaderT (Persistenza QS, Sessione) IO
-type Interfaccia = Costruzione IO () 
+type Interfaccia = Costruzione MEnv () 
 
-applicazione :: (Persistenza QS, Sessione) -> Interfaccia ()
-applicazione ctx = let ?context = ctx in rotonda $ \k -> do
-	ms <- liftIO $ ($ (?context)) (readStato . fst) 
+applicazione :: Costruzione MEnv () ()
+applicazione = rotonda $ \_ -> do 
+	ms <- sel $ readStato . fst 
 	case ms of 
 		Nothing ->    
 			mano "il gruppo non esiste ancora" 
@@ -59,10 +60,10 @@ applicazione ctx = let ?context = ctx in rotonda $ \k -> do
 		Just s -> do 
 			mk <- accesso 
 			case mk of 
-				Nothing -> mano "accesso anonimo" [("interrogazioni", interrogazioni)
+				Nothing -> mano "accesso anonimo" [("interrogazioni", interrogazioni (fst s))
 						,("creazione nuove chiavi di responsable", bootChiavi)
 						]
-				Just q@((u,_),_) -> 
+				Just q@((u,_),_) -> do
 					mano ("accesso secondo " ++ u) [
 						("eventi" , mano "produzione eventi" $ 
 							[("votazioni",votazioni q)
@@ -70,33 +71,33 @@ applicazione ctx = let ?context = ctx in rotonda $ \k -> do
 							,("anagrafe",anagrafica q)
 							,("correzione",eliminazioneEvento q)
 							]),
-						("interrogazione", caricando q interrogazioni),
+						("interrogazione", caricando q >>= interrogazioni),
 						("amministrazione",amministrazione q)
 						]
-
+					salvaPatch q
 
 -- | comunica che c'è un errore logico nella richiesta
 bocciato :: String -> Interfaccia ()
 bocciato x =  P.errore . Response $ [("Incoerenza", ResponseOne x)] 
 
 -- | semplifica il running dei Supporto
-conStato :: (?context::(Persistenza QS, Sessione)) => (String -> Interfaccia a) -> (b -> Interfaccia a) -> Supporto IO TS () b -> Interfaccia a
-conStato x y z = do	(s,_) <- letturaStato
-			runSupporto s x y z
+conStato :: (String -> Interfaccia a) -> (b -> Interfaccia a) -> Supporto MEnv TS () b -> TS -> Interfaccia a
+conStato x y z s = runSupporto s x y z
 
-type Accesso = (Responsabile, Supporto IO TS () (Firmante TS))
+type Accesso = (Responsabile, Supporto MEnv TS () (Firmante TS))
 -- | prova a fare accedere un responsabile. ritorna Nothing segnalando accesso anonimo
-accesso ::(?context::(Persistenza QS, Sessione)) => Interfaccia  (Maybe Accesso)
-accesso = rotonda $ \k -> conStato bocciato k login 
+accesso :: Interfaccia  (Maybe Accesso)
+accesso = rotonda $ \k -> do
+	(s,_) <- letturaStato 
+	conStato bocciato k login s
 
-bootGruppo :: (?context::(Persistenza QS, Sessione)) => [Responsabile] -> Interfaccia ()
+bootGruppo ::  [Responsabile] -> Interfaccia ()
 bootGruppo xs = do
 	P.output . ResponseMany $ map fst xs
 	mano "inserimento responsabili iniziali" $ 
 		[("caricamento altra chiave responsabile", P.upload "chiave" >>= \x -> bootGruppo (x:xs))
-		,("fine caricamento chiavi", liftIO $ (writeStato . fst $ (?context)) $ nuovoStato xs)
+		,("fine caricamento chiavi", sel $ ($nuovoStato xs) . writeStato . fst)
 		]
-	liftIO $ print "ola"
 
 bootChiavi :: Interfaccia ()
 bootChiavi = do
@@ -104,12 +105,12 @@ bootChiavi = do
 	p <- P.libero "immetti una password, una frase , lunga almeno 12 caratteri"
 	P.download (u ++ ".chiavi") (u,cryptobox p)
 
-letturaStato :: (?context::(Persistenza QS, b)) => Interfaccia QS
-letturaStato = fmap fromJust . liftIO $ ($ (?context)) (readStato . fst) 
+letturaStato ::  Interfaccia QS
+letturaStato = fmap fromJust . sel $ readStato . fst
 
-interrogazioni :: (?context::(Persistenza QS, Sessione)) => Interfaccia ()
-interrogazioni =  do
-	(s,_) <- letturaStato
+interrogazioni :: TS -> Interfaccia ()
+interrogazioni s =  do
+	liftIO $ print s
 	mano "interrogazione stato del gruppo" . concatMap ($ bocciato) $ [
 		costrQueryAccredito s P.output,
 		costrQueryAnagrafe s P.output,
@@ -118,31 +119,32 @@ interrogazioni =  do
 		costrQueryImpegni s P.output
 		]
 
-letturaEventi :: (?context::(Persistenza QS, Sessione)) => Interfaccia [Evento]
-letturaEventi = liftIO $ ($ (?context)) (readEventi . snd) 
+letturaEventi ::  Interfaccia [Evento]
+letturaEventi = sel $ readEventi . snd
 
-svuotaEventi :: (?context::(Persistenza QS, Sessione)) => Interfaccia ()
-svuotaEventi = liftIO $  (writeEventi . snd $ (?context)) []
+svuotaEventi :: Interfaccia ()
+svuotaEventi = sel $ ($[]). writeEventi . snd
 
-salvaPatch  ::(?context::(Persistenza QS, Sessione)) => Accesso -> Interfaccia ()
+salvaPatch  :: Accesso -> Interfaccia ()
 salvaPatch q@((u,_),sf) = do
 	(s,_) <- letturaStato
 	evs <- letturaEventi
 	let salvataggio = do
-		let p = ($ (?context))  (writeUPatch . fst)
-		runSupporto s bocciato (\(Firmante f) -> liftIO (p u $ f s evs)) sf
+		let p up = sel $ ($up) . ($u) . writeUPatch . fst
+		runSupporto s bocciato (\(Firmante f) -> p (f s evs) >> svuotaEventi) sf
 	when (not $ null evs) . mano "trattamento eventi in sospeso"  $
 		[("firma",salvataggio),("mantieni",return ()),("elimina", svuotaEventi), ("scarica eventi", P.download "eventi.txt" evs)]
 
-caricando ::(?context::(Persistenza QS, Sessione)) => Accesso -> Interfaccia a -> Interfaccia a
-caricando q@((u,_),_) k = do 
-	evs <- letturaEventi  
+caricando :: Accesso -> Interfaccia TS
+caricando q@((u,_),_) = do 
+	evs <- letturaEventi 
 	s <- letturaStato
-	if null evs then k  else  do 
-		let c = Just . fst . caricamento (map ((,) u) evs) . fromJust  --buggy, dove sono i logs ?
-		let ?context = (first $ \f -> f {readStato = c <$> readStato f}) (?context) in k 
-
-eliminazioneEvento ::(?context::(Persistenza QS, Sessione)) => Accesso -> Interfaccia ()
+	liftIO $ print evs	
+	let (s',logs) =  caricamento (map ((,) u) evs) $ s
+	liftIO $ print logs
+	return $ fst s'
+	
+eliminazioneEvento :: Accesso -> Interfaccia ()
 eliminazioneEvento ((u,_),_) = do
 	es <- letturaEventi
 	if null es then bocciato "non ci sono eventi da eliminare"
@@ -152,32 +154,29 @@ eliminazioneEvento ((u,_),_) = do
 
 
 -- correzioneEventi  :: Show a => a -> Interfaccia ()
-correzioneEventi evs  = liftIO $ (writeEventi . snd $ (?context)) evs
+correzioneEventi evs  = sel $ ($evs) . writeEventi . snd 
 
 addEvento x = letturaEventi >>= \evs -> correzioneEventi (show x:evs)
 
-anagrafica ::(?context::(Persistenza QS, Sessione)) => Accesso -> Interfaccia ()
-anagrafica q@((u,_),_) = caricando q $ do
-	(s,_) <- letturaStato
+anagrafica :: Accesso -> Interfaccia ()
+anagrafica q@((u,_),_) = caricando q >>= \s -> do
 	mano "anagrafe" . concatMap ($ bocciato) $ [
 		costrEventiResponsabili s (addEvento),
 		costrEventiAnagrafe s (addEvento)
 		]
 
 
-economia  ::(?context::(Persistenza QS, Sessione)) => Accesso -> Interfaccia () 
-economia q@((u,_),_) = caricando q $ do
-	(s,_) <- letturaStato
+economia  :: Accesso -> Interfaccia () 
+economia q@((u,_),_) = caricando q >>= \s -> do
 	mano "economia" . concatMap ($ bocciato) $ [
 		costrEventiAccredito s (addEvento),
 		costrEventiImpegno s (addEvento) ,
 		costrEventiOrdine s (addEvento)
 		]
 
-votazioni ::(?context::(Persistenza QS, Sessione)) => Accesso -> Interfaccia ()
-votazioni q@((u,_),_) = caricando q $ do
-	n <- conStato (const $ return 0) (return . length) $ assensiFiltrati u
-	(s,_) <- letturaStato
+votazioni :: Accesso -> Interfaccia ()
+votazioni q@((u,_),_) = caricando q >>= \s -> do
+	n <- conStato (const $ return 0) (return . length) (assensiFiltrati u) s
 	mano ("votazioni (" ++ show n ++ " votazioni in attesa)") . concatMap ($ bocciato) $ [
 		costrEventiAssenso u s (addEvento)
 		]
@@ -185,12 +184,12 @@ votazioni q@((u,_),_) = caricando q $ do
 -- amministrazione :: (Responsabile,Firmante) -> Interfaccia ()
 amministrazione q@(_,sf) = do
 	let	sincronizza = do
-			let p = ($ (?context)) (writeGPatch .fst)
-			rs <- liftIO $ ($ (?context)) (readUPatches .fst )
+			let p g = sel $ ($g). writeGPatch .fst
+			rs <- sel $ readUPatches .fst
 			(s,_) <- letturaStato
 			case rs of 
 				[] -> bocciato $ "nessun aggiornamento individale per lo stato attuale"
-				xs -> runSupporto s bocciato (\(Firmante f) -> liftIO (p $ f s xs)) sf
+				xs -> runSupporto s bocciato (\(Firmante f) -> p $ f s xs) sf
 	mano "amministrazione" $ [
 			("firma un aggiornamento di gruppo (pericoloso)", sincronizza)
 			]

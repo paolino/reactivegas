@@ -27,19 +27,19 @@ data Passo m b
 	| forall a. Show a => Download String a (m (HPasso m b)) 
 	| Costruito b							-- ^ valore calcolato
 
-type HPasso m b = (Passo m b, Int)
+type HPasso m b = (Passo m b, [m (Passo m b)])
 
-type Costruzione m b = StateT Int (ContT (HPasso m b) m)
+type Costruzione m b = StateT [m (Passo m b)] (ContT (HPasso m b) m)
 
 wrap :: Monad m => ((a -> m (HPasso m b)) -> Passo m b ) ->  Costruzione m b a
-wrap f  = StateT $ \n -> ContT $ \k -> return $ let 
-		c a = k (a, n + 1)
-		in  (f c, n)
+wrap f  = StateT $ \ns -> ContT $ \k -> return $ let 
+		c a = k (a, (fst `liftM` c a) : ns)
+		in  (f c, ns)
 
 back = modify (subtract 1)
 -- | da una costruzione ad un passo che la esegue
-svolgi :: Monad m => Int -> Costruzione m b b -> m (HPasso m b)
-svolgi x = flip runContT (return . first Costruito) . flip runStateT x
+svolgi :: Monad m => Costruzione m b b -> m (HPasso m b)
+svolgi = flip runContT (return . first Costruito) . flip runStateT []
 
 
 

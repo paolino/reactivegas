@@ -52,7 +52,7 @@ runPasso (P.Costruito x) =
 				<< (show x +++ anchor ! [href "/interazione"] << "riparti")
 			)
 		, 	Nothing
-		,	\_ -> Just $ return (P.Costruito x,0)
+		,	\_ -> Just $ return (P.Costruito x,[])
 		) -- brutta roba
 
 runPasso (P.Libero q c ) = let 

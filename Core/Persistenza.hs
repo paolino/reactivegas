@@ -172,7 +172,7 @@ type GroupSystem a =
 	)
 
 -- | prepara uno stato vergine di un gruppo
-mkGroupSystem :: (Read a, Show a) 
+mkGroupSystem :: ( Read a, Show a) 
 	=> (a -> Group -> Writer [String] (Either String a)) 	-- ^ loader specifico per a
 	-> TChan String 					-- ^ log di persistenza
 	-> GK 							-- ^ nome del gruppo

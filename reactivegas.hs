@@ -45,6 +45,6 @@ main = do
 	forkIO . forever $ (atomically (readTChan c) >>= putStrLn)
 	pe <- mkGroupSystem loader c "tarogas" >>= startGroupSystem 10000000
 
-	interazione <- svolgi 0 $ applicazione (pe,se)
-	server interazione 	
+	interazione <- runReaderT (svolgi applicazione) (pe,se)
+	server (flip runReaderT (pe,se)) interazione 	
 	
