@@ -20,7 +20,6 @@ import Control.Monad
 import Lib.HTTP
 import Lib.Passo hiding (output)
 import Lib.Response
-import Lib.LimitedTree
 import qualified Lib.Passo as P
 
 -------------------------------- library ------------------------------------
