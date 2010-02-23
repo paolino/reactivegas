@@ -17,8 +17,8 @@ toSupporto :: (Monad m) => P.Costruzione m b a -> Supporto m s b a
 toSupporto = lift . lift
 
 -- | dato lo stato interrogativo e le continuazioni in caso di errore o meno esegue una azione di Supporto m
-runSupporto:: (Monad m) => s -> (String -> P.Costruzione m b c) -> (a -> P.Costruzione m b c) -> Supporto m s b a -> P.Costruzione m b c
-runSupporto s kn kp f = runErrorT (runReaderT f s) >>= either kn kp
+runSupporto:: (Monad m) => m s -> (String -> P.Costruzione m b c) -> (a -> P.Costruzione m b c) -> Supporto m s b a -> P.Costruzione m b c
+runSupporto s kn kp f = lift (lift s) >>= \s' -> runErrorT (runReaderT f s') >>= either kn kp
 
 -- | passo libero elevato al supporto
 libero :: (Monad m ,Read a) => String -> Supporto m s b a
@@ -38,7 +38,7 @@ scelte xs = toSupporto . P.scelte xs
 
 -- | il tipo degli insiemi di azioni costruttive
 type CostrAction m c q s = 
-	s  					-- ^ stato in lettura
+	m s  					-- ^ stato in lettura
 	-> (q -> P.Costruzione m c ())		-- ^ azione di successo
  	-> (String -> P.Costruzione m c ())	-- ^ azione di fallimento
  	-> [(String, P.Costruzione m c ())]	-- ^ lista di azioni costruttive taggate con il loro nome di selezione
