@@ -75,7 +75,7 @@ persistenza write tversion tstato tupatch torfani tlog = do
 		write "stato" version (fromJust stato)
 		write "patches" version patches
 		write "orfani" version patches
-		atomically . writeTChan tlog $ "persistenza: " ++ show (version,map fst patches)
+		-- atomically . writeTChan tlog $ "persistenza: " ++ show (version,map fst patches)
 
 -- | Operazione di ripristino. Legge lo stato del gruppo 
 ripristino
@@ -100,10 +100,14 @@ ripristino unwrite tversion tstato tupatch torfani tlog = do
 			ps <- unwrite "patches" (Just v)
 			os <- unwrite "orfani" (Just v)
 			atomically $ do
-				writeTChan tlog "nessuno stato per questo gruppo"
+				writeTChan tlog $ "rilevato stato " ++ show v ++ " per questo gruppo"
 				writeTVar tstato  $ Just x
-				when (isJust ps) . writeTVar tupatch . snd . fromJust $ ps
-				when (isJust os) . writeTVar torfani . snd . fromJust $ os
+				when (isJust ps) $ do
+					writeTVar tupatch . snd . fromJust $ ps
+					writeTChan tlog $ "rilevati aggiornamenti utente " ++ show (length . snd . fromJust $ ps)
+				when (isJust os) $ do
+					writeTVar torfani . snd . fromJust $ os
+					writeTChan tlog $ "rilevati eventi orfani  " ++ show (length . snd . fromJust $ os)
 				writeTVar tversion v
 
 -- | stato concorrente di un gruppo
@@ -205,13 +209,13 @@ mkPersistenza (tv,ts,tp,to,cg,tl) = let
 	readLogs' = atomically (dupTChan tl) >>= return . atomically . readTChan
 	in Persistenza readStato' writeStato' readOrfani' 
 		writeOrfani' writeUPatch' readUPatches' writeGPatch' readLogs'
-
+{-
 oneService :: (Read a, Show a) => (a -> Group -> Writer [String] (Either String a)) -> FilePath ->  IO (Persistenza a)
 oneService load name = do
 	c <- atomically newTChan
 	forkIO . forever $ (atomically (readTChan c) >>= putStrLn)
 	mkGroupSystem load c name >>= startGroupSystem 10000000
-	
+-}	
 -- | prepara lo strato persistente per l'applicativo
 
 		

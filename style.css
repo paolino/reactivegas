@@ -1,0 +1,19 @@
+dl {font-size: 8;}
+option.menu {display:inline}
+div {
+	border: 1px solid Black;
+	
+}
+dt {color: green;}
+
+
+.response {
+   color: Red;
+   font-weight: bold;
+}
+
+
+.menu {
+   background-color: Gray;
+}
+

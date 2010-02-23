@@ -13,12 +13,13 @@ copyright: Copyright (c) 2010 Paolo Veronelli
 build-type: Simple
 cabal-version: >= 1.6
 
-Executable reactivegas
+Executable reactivegas_cgi
  ghc-options: -Wall
- main-is: reactivegas.hs
- build-depends: base     < 4.2  , 
+ main-is: reactivegas_cgi.hs
+ build-depends: base  >= 4.2      , 
                 random      ,
                 bytestring  ,
+                array,
                 SimpleAES   ,
                 RSA         ,
                 mtl         ,
@@ -27,12 +28,16 @@ Executable reactivegas
                 pretty      ,
                 haskeline   ,
                 filepath    ,
-                FileManipCompat   ,network,
-                directory  , stm, xhtml, scgi
+                FileManipCompat   ,
+                network,
+                directory  , 
+                stm, 
+                xhtml, 
+                scgi
 Library 
  exposed-modules: Lib.Passo,Lib.Response
  ghc-options: -Wall
- build-depends: base     < 4.2  , 
+ build-depends: base       , 
                 random      ,
                 bytestring  ,
                 SimpleAES   ,
