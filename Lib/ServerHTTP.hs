@@ -176,10 +176,10 @@ serveSessione s@(Sessione _ tfs) = do
 		fs <- readTVar tfs >>= mapM (secondM readTVar) :: STM [(FormKey,Form a)]
 		return $ map (second (prompt . snd . head . history)) fs
 	output . prettyHtml $ 
-		(header << thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] 
-			<< script ! [strAttr "language" "Javascript"] 
-				<< "function submity(y){document.getElementById(y).submit();}")
-			+++ (body << map (\(k,h) -> h k) fps)
+		header << (thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml 
+			+++ script ! [strAttr "language" "Javascript", src "/function.js"] << noHtml)
+				+++ (body ! [strAttr "onload" "rewrite()"] << 
+					map (\(k,h) -> thediv ! [theclass "interazione"] << h k) fps)
 
 		
 runApplica :: Sessione a -> ErrorT String IO Html -> CGI CGIResult
@@ -206,16 +206,19 @@ cookieing senv env hp ms = do
 
 mkServer ::  IO b -> a -> HPasso (Env (a,b)) () -> IO (CGI CGIResult)
 mkServer senv env hp = do
-	ms <- atomically $ newTVar [] -- le sessioni
-	
+	ms <- atomically $ newTVar [] -- le sessioni	
 	return $ do 
+		s <- cookieing senv env hp ms 
+		vs <- getVars 
 		r <- runErrorT $ do
-			s <- lift $ cookieing senv env hp ms 
-			vs <- lift $ getVars 
 			case lookup "REQUEST_URI"  vs of 
 				Just "/style.css" -> do
 					css <- liftIO $ readFile "style.css"   
 					lift $ setHeader "Content-type" "text/css"
+					lift $ output css
+				Just "/function.js" -> do
+					css <- liftIO $ readFile "function.js"   
+					lift $ setHeader "Content-type" "text/js"
 					lift $ output css
 				Just "/interazione" -> do 
 					hk <- readHKey
@@ -237,7 +240,7 @@ mkServer senv env hp = do
 						"ricarica" -> ricarica s fk hk
 					lift $ serveSessione s
 				_ -> lift $ serveSessione s 
-		either outputNotFound return r
+		either (\_ -> serveSessione s) return r
 
 
 

@@ -11,7 +11,7 @@ import Debug.Trace
 
 
 internalmenu y z  =  	thediv ! [theclass "menu"] << (form ! [identifier $ "b"++ tail y, method "post", action "/menu"] << 
-				([hidden "hkey" y,hidden "fkey" z] +++ select ! [size "1",name "valore", strAttr "onChange" $ "submity(\"b" ++ tail y ++ "\")"] << 
+				([hidden "hkey" y,hidden "fkey" z] +++ select ! [name "valore"] << 
 					( map (\x -> option ! [theclass "menu"] << x) ["ricarica","clona","chiudi","indietro"])
 					+++ submit "" "Aspetto"))
 					 
@@ -41,7 +41,7 @@ runPasso (P.Output x c) = let
 			(	renderResponse "responso" x 
 				+++ form ! [method "post", action "/interazione"] 
 					<< [	hidden "hkey" y, hidden "valore" "undefined", 
-						hidden "fkey" z, submit "" "Continua .." ! [identifier "continua"]]
+						hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]]
 			) +++ internalmenu y z
 	in (k, Nothing,\_ -> Just c )
 
@@ -50,7 +50,7 @@ runPasso (P.Errore x c) = let
 			(	renderResponse "errore" x 
 				+++ form ! [method "post", action ("/interazione")] 
 					<< [	hidden "hkey" y, hidden "valore" "undefined", 
-						hidden "fkey" z, submit "" "Continua .." ! [identifier "continua"]]
+						hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]]
 			) +++ internalmenu y z
 	in (k, Nothing,\_ -> Just c )
 
@@ -68,7 +68,7 @@ runPasso (P.Libero q c ) = let
 			(	thediv ! [theclass "response"] << q +++ 
 				form ! [method "post", action ("/interazione")] 
 					<< [	hidden "hkey" y, textfield "valore", 
-						hidden "fkey" z, submit "" "Continua .." ! [identifier "continua"]]
+						hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]]
 			) +++ internalmenu  y z
 	parse x = case reads x of
 		[] -> case reads $ "\"" ++ x ++ "\"" of 
@@ -82,10 +82,10 @@ runPasso (P.Scelta q xs c) = let
 			form ! [identifier $ "a" ++ tail y
 				, method "post"
 				, action "/interazione"
-				] << select ! [size "8" , name  "valore", strAttr "onChange" $ "submity(\"a" ++ tail y ++ "\")"]
+				] << select ! [name  "valore"]
 					<< (( map (\(x,_) -> option << x +++ br) xs) +++  
 					[	hidden "hkey" y,  
-						hidden "fkey" z, submit "" "Continua .." ! [identifier "continua"]
+						hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]
 					]) 
 		) +++ internalmenu y z
 	resp x = trace x $ lookup x xs >>= return . c
@@ -96,7 +96,7 @@ runPasso (P.Upload q c ) = let
 		(thediv ! [theclass "response"] << q +++ 
 			form ! [method "post", action "/interazione", enctype "multipart/form-data"] << 
 				( 	[afile "valore", hidden "hkey" y,  
-					hidden "fkey" z, submit "" "Continua .." ! [identifier "continua"]]
+					hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]]
 				) 
 		) +++ internalmenu y z
 
@@ -111,11 +111,11 @@ runPasso (P.Download q x c) = let
 		(thediv ! [theclass "download"] <<  
 				form ! [method "post", action "/download"] 
 					<< [	hidden "hkey" y,  hidden "fkey" z
-						, hidden "valore" "undefined" , submit "" "Download .." ! [identifier "continua"]]
+						, hidden "valore" "undefined" , submit "" "Download .." ! [theclass "continua"]]
 				+++
 				form ! [method "post", action "/interazione"] 
 					<< [	hidden "hkey" y,  hidden "fkey" z
-						, hidden "valore" "undefined" , submit "" "Continua .." ! [identifier "continua"]]
+						, hidden "valore" "undefined" , submit "" "Continua .." ! [theclass "continua"]]
 		) +++ internalmenu y z
 
 	in (k,Just $ Link q (show x) "application/chiavi",\_ -> Just c)
