@@ -35,7 +35,6 @@ import Core.Persistenza (Persistenza (..))
 import Core.Sessione (Sessione (..))
 import Core.Applicazione (QS,nuovoStato, caricamento, TS)
 
-import Eventi.Amministrazione
 import Eventi.Anagrafe
 import Eventi.Accredito
 import Eventi.Impegno

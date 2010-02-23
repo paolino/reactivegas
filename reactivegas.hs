@@ -17,6 +17,5 @@ main = do
 	c <- atomically newTChan
 	forkIO . forever $ (atomically (readTChan c) >>= putStrLn)
 	pe <- mkGroupSystem loader c "tarogas" >>= startGroupSystem 10000000
-
 	server mkSessione pe applicazione	
 	
