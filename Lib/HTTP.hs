@@ -29,7 +29,7 @@ renderResponse' (Response xs) =  dlist <<
 		concatHtml (map  (\(x,y) -> dterm << x +++ ddef << renderResponse' y) xs)
 
   
-runPasso :: (Monad m , Show b) 
+runPasso :: (Monad m ) 
 	=> P.Passo m b 
 	-> 	( String -> String ->  Html
 		, Maybe Link
@@ -57,7 +57,7 @@ runPasso (P.Errore x c) = let
 runPasso (P.Costruito x) =
 	(\_ _ -> thediv ! [theclass "passobox"] << 
 			(	thediv ! [theclass "response"] 
-				<< (show x +++ anchor ! [href "/interazione"] << "riparti")
+				<< (anchor ! [href "/interazione"] << "riparti")
 			)
 		, 	Nothing
 		,	\_ -> Just $ return (P.Costruito x,[])

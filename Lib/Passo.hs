@@ -58,7 +58,7 @@ upload prompt = wrap $ Upload prompt
 download s x = wrap $ (\c -> Download s x $ c ())
 
 -- | produce un passo di valore Scelta
-scelte :: (Monad m) => [(String,a)] -> String -> Costruzione m b a 
+scelte :: Monad m => [(String,a)] -> String -> Costruzione m b a 
 scelte xs prompt = wrap $ (\c -> Scelta prompt xs c)
 
 
