@@ -82,11 +82,9 @@ mkServer limit base = do
 	dbe <- atomically . newTVar $ set (limitedDB limit) ("0",(M.singleton 0 base))
 	(,) (form base "0" 0) >$> return $ \(enk,fok,q) -> do
 		-- restituisce le celle riferite alla chiave di environment
-		lift $ print ("chiave temporale",enk)
 		fos <- lift (atomically (($enk) . query <$> readTVar dbe)) >>= onNothing "chiave temporale non trovata" 
 		fo  <- onNothing "indice di cella non trovato" $ fok `M.lookup` fos
 		enk' <- lift $ show <$> (randomIO :: IO Int)
-		lift $ print ("nuova chiave temporale",enk)
 		let 	ricarica' :: M.IntMap (Form e b c) ->ErrorT String IO (Either c (M.IntMap (Form e b c)))
 			ricarica' xs = Right 
 					>$> M.fromList 

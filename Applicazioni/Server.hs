@@ -4,7 +4,7 @@ module Applicazioni.Server where
 
 import Data.List  (tails)
 import Control.Applicative ((<$>))
-import Control.Monad.State
+import Control.Monad.Reader
 import Control.Monad.Cont
 import Text.XHtml (Html)
 import Network.SCGI(CGI, CGIResult, runSCGI, handleErrors)
@@ -19,16 +19,16 @@ import qualified Lib.Passo as P
 import Lib.HTTP
 
 -- | istanza di Form computata da un HPasso con environment
-fromHPasso :: HPasso (StateT e IO) () -> e -> Form e Html Link
+fromHPasso :: HPasso (ReaderT e IO) () -> e -> Form e Html Link
 fromHPasso (p,[]) e0 = fromHPasso' ((p,e0),[]) where
 	fromHPasso' ((p,e),ps) = let 
 			(h,ml,cont) = runPasso p -- trasformata html
 			pass = cont >=> \mhp -> return $ do 
-				((p',ps),e') <- runStateT mhp e 
+				((p',ps),e') <- runReaderT (liftM2 (,) mhp ask) e 
 				return . fromHPasso' $ ((p',e'),ps)
 			reload = let
 				check k (e,_) (mp:rps) = do
-					(p,e') <- lift $ runStateT mp e
+					(p,e') <- lift $ runReaderT (liftM2 (,) mp ask)  e
 					let result = ((p,e'),ps)
 					case p of	Errore _ _  -> k result
 							_ -> return (e',result)
@@ -39,12 +39,12 @@ fromHPasso _ _ = error "inizializzazione con contesto non implementata"
 
 sessionFromHPasso 	:: Int 
 			-> e 
-			-> HPasso (StateT e IO) () 
+			-> HPasso (ReaderT e IO) () 
 			-> IO (Server e Html Link)
 sessionFromHPasso l e hp = mkServer l $ fromHPasso hp e
 
 
-interazione :: Costruzione (StateT () IO) () () 
+interazione :: Costruzione (ReaderT () IO) () () 
 interazione = rotonda $ \k -> do
 		P.output (ResponseOne "benvenuto")
 		(x :: Int) <- upload "un file contenente lo show di un numero" 
@@ -53,11 +53,11 @@ interazione = rotonda $ \k -> do
 		t <- scelte [("si",True),("no",False)] "fine?"
 		if t then k () else return ()
 
-sessionCgi :: Int -> Costruzione (StateT e IO) () () -> IO e -> IO (Server e Html Link) 
+-- sessionCgi :: Int -> Costruzione (ReaderT e IO) () () -> IO e -> IO (Server e Html Link) 
 sessionCgi l x me = do 	e <- me
- 			evalStateT (svolgi x) e >>= sessionFromHPasso l e
+ 			runReaderT (svolgi x) e >>= sessionFromHPasso l e
 	 
-singleSessionServer :: Int -> Int -> Costruzione (StateT e IO) () () -> IO e -> IO ()
+-- singleSessionServer :: Int -> Int -> Costruzione (ReaderT e IO) () () -> IO e -> IO ()
 singleSessionServer p l x me = do
 	s <- sessionCgi l x me	
 	runSCGI  (PortNumber $ fromIntegral p)  $ handleErrors (cgiFromServer s)

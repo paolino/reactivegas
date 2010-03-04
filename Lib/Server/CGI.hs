@@ -45,7 +45,6 @@ cgiFromServer :: Server e Html Link -> CGI CGIResult
 cgiFromServer (f,(liftServer .) -> s) = do 
 	vs <- getVars 
 	is <- getInputs
-	liftIO $ print is
 	r <- runErrorT $ do
 		case lookup "REQUEST_URI"  vs of 
 			Just "/style.css" -> do
@@ -58,7 +57,6 @@ cgiFromServer (f,(liftServer .) -> s) = do
 				 		output js
 			Just "/interazione" -> do 
 				hk <- readHKey
-				liftIO $ print ("CGI.Chiavetemporale",hk)
 				fk <- readFKey
 				v <- readValore
 				ehl <- s (hk,fk,Continua v)

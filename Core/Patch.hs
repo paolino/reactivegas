@@ -51,17 +51,18 @@ fromGroup (c,f,ps) = do
 -- newtype SignerBox = SignerBox 
 -- | costruisce una patch di gruppo da un insieme di patch responsabile
 
-login :: forall s m c . (Show s, Monad m, Responsabili `ParteDi` s)
- 	=> Supporto m s c (Maybe (Responsabile, Supporto m s c (Firmante s))) 
+login :: forall s m c . (Monad m, Responsabili `ParteDi` s) => Supporto m s c (Maybe Responsabile) 
 login = do
 	(rs,_) <- asks responsabili 	
-	r <- scelte (("anonimo",Nothing) : map (fst &&& Just . id) rs) "credenziali di accesso"
-	let firmante r@(_,(c,s)) = do  
-		p <- libero "la tua password di responsabile"
-		case  sign (s,p) (undefined :: (),undefined :: s) of 
-			Nothing -> throwError $ "password errata"
-			Just _ -> return $ Firmante $ \b ps -> (c,fromJust $ sign (s,p) (ps,b),ps)
-	return $ (id &&& firmante) <$> r
+	scelte (("anonimo",Nothing) : map (fst &&& Just . id) rs) "credenziali di accesso"
+
+firmante :: forall m s c . (Show s, Monad m) => Responsabile -> Supporto m s c (Firmante s)
+firmante r@(u,(c,s)) = do  
+	p <- libero $ u ++ ",la tua password di responsabile:"
+	case  sign (s,p) (undefined :: (),undefined :: s) of 
+		Nothing -> throwError $ "password errata"
+		Just _ -> return $ Firmante $ \b ps -> (c,fromJust $ sign (s,p) (ps,b),ps)
+
 --------------------------------------------------------------
 
 newtype Firmante b = Firmante (forall a. Show a => b -> [a] -> (Chiave, Firma,[a]))

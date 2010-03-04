@@ -82,7 +82,7 @@ runPasso (P.Scelta q xs c) = let
 			form ! [identifier $ "a" ++ tail y
 				, method "post"
 				, action "/interazione"
-				]<< (( map (\(x,_) -> tag "input" ! [thetype "radio", value x, name "valore"] << x +++ br) xs) +++  
+				]<< (( map (\(x,_) -> tag "input" ! [theclass "passobox",thetype "radio", value x, name "valore"] << x +++ br) xs) +++  
 					[	hidden "hkey" y,  
 						hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]
 					]) 
