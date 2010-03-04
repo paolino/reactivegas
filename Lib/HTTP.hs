@@ -8,6 +8,10 @@ import Lib.Response
 import Data.List
 import Debug.Trace
 
+data Link = Link 	{nomelink :: String
+			,valore :: String
+			,mime :: String
+			}
 
 
 internalmenu y z  =  	thediv ! [theclass "menu"] << (form ! [identifier $ "b"++ tail y, method "post", action "/menu"] << 
@@ -16,10 +20,6 @@ internalmenu y z  =  	thediv ! [theclass "menu"] << (form ! [identifier $ "b"++ 
 					+++ submit "" "Aspetto"))
 					 
 
-data Link = Link 	{nomelink :: String
-			,valore :: String
-			,mime :: String
-			}
 renderResponse k x = thediv ! [theclass k] << renderResponse' x
 renderResponse' x@(ResponseOne _) =  thediv << show x
 renderResponse' (ResponseMany xs) =  ulist << concatHtml (map  ((li <<) .  show ) xs) 
