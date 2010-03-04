@@ -12,6 +12,7 @@ import Control.Arrow ((***),(&&&),  second)
 import System.Random (randomIO)
 import qualified Data.IntMap as M (IntMap,assocs,insert,delete,adjust,fromList,lookup,singleton)
 
+import Debug.Trace
 import Lib.Assocs (secondM)
 
 ------------------------------------ library -----------------------------------------
@@ -19,7 +20,7 @@ import Lib.Assocs (secondM)
 data DB a b = DB {query :: a -> Maybe b, set :: (a,b) -> DB a b, dbmap :: (b -> b) -> DB a b}
 
 -- | un DB inefficiente a memoria limitata 
-limitedDB :: Eq a 
+limitedDB :: (Show a, Eq a) 
 	=> Int 	-- ^ massimo numero di elementi
 	-> DB a b
 limitedDB limit = let
@@ -81,9 +82,11 @@ mkServer limit base = do
 	dbe <- atomically . newTVar $ set (limitedDB limit) ("0",(M.singleton 0 base))
 	(,) (form base "0" 0) >$> return $ \(enk,fok,q) -> do
 		-- restituisce le celle riferite alla chiave di environment
+		lift $ print ("chiave temporale",enk)
 		fos <- lift (atomically (($enk) . query <$> readTVar dbe)) >>= onNothing "chiave temporale non trovata" 
 		fo  <- onNothing "indice di cella non trovato" $ fok `M.lookup` fos
 		enk' <- lift $ show <$> (randomIO :: IO Int)
+		lift $ print ("nuova chiave temporale",enk)
 		let 	ricarica' :: M.IntMap (Form e b c) ->ErrorT String IO (Either c (M.IntMap (Form e b c)))
 			ricarica' xs = Right 
 					>$> M.fromList 
@@ -99,10 +102,11 @@ mkServer limit base = do
 				ricarica' $ M.insert fok' fo fos
 			esegui' Chiudi = ricarica' $ M.delete fok fos 
 			update fos' = do
+				
 				lift . atomically $ do 
 					enks <- readTVar dbe
 					writeTVar dbe $ set enks (enk', fos')
-				return $ map (\(fok,fo) -> form fo enk' fok) $ M.assocs fos'
+				return . map (\(fok,fo) -> form fo enk' fok) $ M.assocs fos'
 		esegui' q >>= either (return . Left) (Right >$> update) 
 	
 

@@ -14,9 +14,9 @@ data Link = Link 	{nomelink :: String
 			}
 
 
-internalmenu y z  =  	thediv ! [theclass "menu"] << (form ! [identifier $ "b"++ tail y, method "post", action "/menu"] << 
-				([hidden "hkey" y,hidden "fkey" z] +++ select ! [name "valore"] << 
-					( map (\x -> option ! [theclass "menu"] << x) ["ricarica","clona","chiudi","indietro"])
+internalmenu y z  =  	thediv ! [theclass "menu"] << (form ! [identifier $ "b" ++ tail y, method "post", action "/menu"] << 
+				([hidden "hkey" y,hidden "fkey" z] +++ 
+					( map (\x -> tag "input" ! [thetype "radio", theclass "menu" , name "valore" , value x] << x) ["clona","chiudi"])
 					+++ submit "" "Aspetto"))
 					 
 
@@ -82,8 +82,7 @@ runPasso (P.Scelta q xs c) = let
 			form ! [identifier $ "a" ++ tail y
 				, method "post"
 				, action "/interazione"
-				] << select ! [name  "valore"]
-					<< (( map (\(x,_) -> option << x +++ br) xs) +++  
+				]<< (( map (\(x,_) -> tag "input" ! [thetype "radio", value x, name "valore"] << x +++ br) xs) +++  
 					[	hidden "hkey" y,  
 						hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]
 					]) 

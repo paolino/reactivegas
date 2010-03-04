@@ -10,6 +10,9 @@ import Lib.Server.Core
 import Text.XHtml
 import Lib.HTTP
 
+
+import Debug.Trace
+
 readHKey :: ErrorT String (CGIT IO) Enk
 readHKey = lift (getInput "hkey") >>= onNothing "form corrotta, manca la chiave di punto"
 
@@ -25,8 +28,9 @@ readValore = lift (getInput "valore") >>= onNothing "form corrotta, manca la ris
 pagina :: [Html] -> CGI CGIResult
 pagina xs = output . prettyHtml $  
 		header << (thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml 
-			+++ script ! [strAttr "language" "Javascript", src "/function.js"] << noHtml)
-				+++ (body ! [strAttr "onload" "rewrite()"] << 
+			-- +++ script ! [strAttr "language" "Javascript", src "/function.js"] << noHtml
+				)
+				+++ (body {-! [strAttr "onload" "rewrite()"]-} << 
 					map (\h -> thediv ! [theclass "interazione"] << h) xs)
 
 -- | eleva gli errori nella monade del server in quella di CGI 
@@ -40,6 +44,8 @@ liftServer ma = do
 cgiFromServer :: Server e Html Link -> CGI CGIResult
 cgiFromServer (f,(liftServer .) -> s) = do 
 	vs <- getVars 
+	is <- getInputs
+	liftIO $ print is
 	r <- runErrorT $ do
 		case lookup "REQUEST_URI"  vs of 
 			Just "/style.css" -> do
@@ -52,6 +58,7 @@ cgiFromServer (f,(liftServer .) -> s) = do
 				 		output js
 			Just "/interazione" -> do 
 				hk <- readHKey
+				liftIO $ print ("CGI.Chiavetemporale",hk)
 				fk <- readFKey
 				v <- readValore
 				ehl <- s (hk,fk,Continua v)
@@ -77,9 +84,9 @@ cgiFromServer (f,(liftServer .) -> s) = do
 					"chiudi" -> Chiudi
 					"clona" -> Clona)
 				case ehl of
-					Right hs -> lift $ pagina hs
+					Right hs -> lift $ pagina $ hs
 					Left _ -> throwError "l'interazione continua con un download"
-
+			Just "/" -> lift $ pagina [f]
 			_ -> throwError "richiesta non intercettata"
 	either (\s -> outputNotFound s) return r
 

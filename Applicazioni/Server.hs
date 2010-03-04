@@ -3,9 +3,13 @@
 module Applicazioni.Server where
 
 import Data.List  (tails)
+import Control.Applicative ((<$>))
 import Control.Monad.State
 import Control.Monad.Cont
 import Text.XHtml (Html)
+import Network.SCGI(CGI, CGIResult, runSCGI, handleErrors)
+import Network (PortID (PortNumber))
+
 
 import Lib.Response
 import Lib.Server.Core
@@ -29,15 +33,15 @@ fromHPasso (p,[]) e0 = fromHPasso' ((p,e0),[]) where
 					case p of	Errore _ _  -> k result
 							_ -> return (e',result)
 				in fromHPasso' >$> flip runContT return .callCC $ \k -> 
-					fmap snd . foldM (check k) (e0,undefined) . tail . reverse . tails $ ps
+					fmap snd . foldM (check k) (e0,((p,e0),[])) . tail . reverse . tails $ ps
 			in Form pass reload (\enk -> h enk . show) ml
 fromHPasso _ _ = error "inizializzazione con contesto non implementata"	
 
 sessionFromHPasso 	:: Int 
-			-> IO e 
+			-> e 
 			-> HPasso (StateT e IO) () 
 			-> IO (Server e Html Link)
-sessionFromHPasso l me hp = me >>= mkServer l . fromHPasso hp 
+sessionFromHPasso l e hp = mkServer l $ fromHPasso hp e
 
 
 interazione :: Costruzione (StateT () IO) () () 
@@ -48,6 +52,15 @@ interazione = rotonda $ \k -> do
 		download "il numero uno.txt" x
 		t <- scelte [("si",True),("no",False)] "fine?"
 		if t then k () else return ()
+
+sessionCgi :: Int -> Costruzione (StateT e IO) () () -> IO e -> IO (Server e Html Link) 
+sessionCgi l x me = do 	e <- me
+ 			evalStateT (svolgi x) e >>= sessionFromHPasso l e
+	 
+singleSessionServer :: Int -> Int -> Costruzione (StateT e IO) () () -> IO e -> IO ()
+singleSessionServer p l x me = do
+	s <- sessionCgi l x me	
+	runSCGI  (PortNumber $ fromIntegral p)  $ handleErrors (cgiFromServer s)
 --
 --	in do	key <- show <$> (randomIO  :: IO Int)
 --		return (key,FormPoint pass ctx env (h key) ml)
