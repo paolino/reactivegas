@@ -80,7 +80,8 @@ cgiFromServer (f,(liftServer .) -> s) = do
 				v <- readValore
 				ehl <- s (hk,fk,case v of 
 					"chiudi" -> Chiudi
-					"clona" -> Clona)
+					"clona" -> Clona
+					"inchioda" -> Inchioda)
 				case ehl of
 					Right hs -> lift $ pagina $ hs
 					Left _ -> throwError "l'interazione continua con un download"

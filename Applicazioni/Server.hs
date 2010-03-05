@@ -18,23 +18,27 @@ import Lib.Passo
 import qualified Lib.Passo as P
 import Lib.HTTP
 
+rzip :: [a] -> [b] -> [(a,b)]
+rzip xs ys = reverse $ zip (reverse xs) (reverse ys)
 -- | istanza di Form computata da un HPasso con environment
-fromHPasso :: HPasso (ReaderT e IO) () -> e -> Form e Html Link
+fromHPasso :: forall e . HPasso (ReaderT e IO) () -> e -> Form e Html Link
 fromHPasso (p,[]) e0 = fromHPasso' ((p,e0),[]) where
-	fromHPasso' ((p,e),ps) = let 
+	fromHPasso' :: ((Passo (ReaderT e IO) (),e),[(Value,ReaderT e IO (Passo (ReaderT e IO) ()))]) -> Form e Html Link
+	fromHPasso' ((p,e),qs) = let 
 			(h,ml,cont) = runPasso p -- trasformata html
-			pass = cont >=> \mhp -> return $ do 
+			vs = map fst qs
+			pass v = cont v >>= \mhp -> return $ do 
 				((p',ps),e') <- runReaderT (liftM2 (,) mhp ask) e 
-				return . fromHPasso' $ ((p',e'),ps)
+				return . fromHPasso' $ ((p',e'), rzip (v : vs) $ ps) -- postulato sul comportamento di Passo.cont
 			reload = let
-				check k (e,_) (mp:rps) = do
+				check k (e,_) (vmps@((_,mp):_)) = do
 					(p,e') <- lift $ runReaderT (liftM2 (,) mp ask)  e
-					let result = ((p,e'),ps)
+					let result = ((p,e'),vmps)
 					case p of	Errore _ _  -> k result
 							_ -> return (e',result)
 				in fromHPasso' >$> flip runContT return .callCC $ \k -> 
-					fmap snd . foldM (check k) (e0,((p,e0),[])) . tail . reverse . tails $ ps
-			in Form pass reload (\enk -> h enk . show) ml
+					fmap snd . foldM (check k) (e0,((p,e0),[])) . tail . reverse . tails $ qs
+			in Form pass reload (map fst qs) (\enk -> h enk . show) ml
 fromHPasso _ _ = error "inizializzazione con contesto non implementata"	
 
 sessionFromHPasso 	:: Int 
