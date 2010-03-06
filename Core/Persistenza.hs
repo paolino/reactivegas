@@ -23,6 +23,8 @@ import Lib.Assocs (secondM)
 import Core.Patch (Patch,Group)
 import Core.Types (Evento,Utente)
 
+import Eventi.Anagrafe (Responsabile)
+
 
 import Debug.Trace
 -----------------------------------------------------------------------------------------
@@ -31,7 +33,9 @@ type GK = String
 -- | strato funzionale di persistenza, lo stato in memoria è pericoloso .....
 data Persistenza a = Persistenza
 		{ 	readStato 	:: IO (Maybe a),		-- ^ lettura dello stato
-			writeStato 	:: a -> IO (),			-- ^ scrittura dello stato
+			writeStato 	:: IO (),			-- ^ scrittura dello stato
+			readBoot	:: IO [Responsabile],
+			writeBoot	:: [Responsabile] -> IO (),
 			readOrfani 	:: Utente -> IO [Evento], 	-- ^ eventi di patch utente invalidate
 			writeOrfani 	:: Utente -> [Evento] -> IO (),	-- ^ settaggio orfani
 			writeUPatch 	:: Utente -> Patch -> IO (),	-- ^ scrittura di una patch utente
@@ -112,7 +116,8 @@ ripristino unwrite tversion tstato tupatch torfani tlog = do
 
 -- | stato concorrente di un gruppo
 type GroupState a = 
-	(TVar Int 		-- ^ versione dello stato
+	(TVar [Responsabile]
+	,TVar Int 		-- ^ versione dello stato
 	,TVar (Maybe a)		-- ^ stato
 	,TVar [(Utente,Patch)]	-- ^ associazione utente -> patch individuale
 	,TVar [(Utente,[Evento])] -- ^ eventi orfani dell'ultimo aggiornamento di gruppo
@@ -123,13 +128,14 @@ type GroupState a =
 -- | prepara un stato vergine
 mkGroup :: IO (GroupState a)
 mkGroup = do
+	tb <- atomically $ newTVar []
 	tv <- atomically $ newTVar 0
 	ts <- atomically $ newTVar Nothing
 	tp <- atomically $ newTVar []
 	to <- atomically $ newTVar []
 	cg <- atomically $ newTChan 
 	cl <- atomically $ newTChan
-	return (tv,ts,tp,to,cg,cl)
+	return (tb,tv,ts,tp,to,cg,cl)
 
 		
 
@@ -154,13 +160,14 @@ aggiornamento load  tv ts tp to cg tl = atomically $ do
 	s' <- readTVar ts
 	when (isNothing s') retry
 	let Just s = s'
-	g@(_,_,ps) <- readTChan cg
+	g@(_,_,ps) <- trace ("patches!") $ readTChan cg
 	let (es,ls) = runWriter $ load s g
-	mapM (writeTChan tl) ls
+	trace (show ("output!",ls)) $ mapM (writeTChan tl) ls
 	case es of
-		Left e -> writeTChan tl e
+		Left e -> trace (show ("errore",e)) $ writeTChan tl e
 		Right s' -> do
-			writeTVar ts $ Just s'
+			
+			trace "nuovo stato" $ writeTVar ts $ Just s'
 			pos <- filter (not . (`elem` ps) . snd) <$> readTVar tp
 			os <- readTVar to
 			writeTVar to $ map (second $ \(_,_,evs) -> evs) pos `mix` os
@@ -178,13 +185,14 @@ type GroupSystem a =
 -- | prepara uno stato vergine di un gruppo
 mkGroupSystem :: ( Read a, Show a) 
 	=> (a -> Group -> Writer [String] (Either String a)) 	-- ^ loader specifico per a
+	-> ([Responsabile] -> a)				-- ^ inizializzatore di gruppo
 	-> TChan String 					-- ^ log di persistenza
 	-> GK 							-- ^ nome del gruppo
 	-> IO (GroupSystem a)					
 
-mkGroupSystem loader ptl x = do 
-		g@(tv,ts,tp,to,cg,tl) <- mkGroup 
-		return 	(mkPersistenza g
+mkGroupSystem loader boot ptl x = do 
+		g@(tb,tv,ts,tp,to,cg,tl) <- mkGroup 
+		return 	(mkPersistenza boot g
 			,aggiornamento loader tv ts tp to cg tl 
 			,ripristino (groupUnwrite x) tv ts tp to ptl 
 			,persistenza (groupWrite x) tv ts tp to ptl
@@ -197,17 +205,19 @@ startGroupSystem t (g,agg,rip,pers) = do
 	rip
 	return g
 
-mkPersistenza :: GroupState a -> Persistenza a
-mkPersistenza (tv,ts,tp,to,cg,tl) = let
+mkPersistenza :: ([Responsabile] -> a) -> GroupState a -> Persistenza a
+mkPersistenza boot (tb,tv,ts,tp,to,cg,tl) = let
 	readStato' = atomically $ readTVar ts
-	writeStato' s = atomically $ writeTVar ts (Just s)
+	writeStato' = atomically $ readTVar tb >>= writeTVar ts . Just . boot
+	readBoot' = atomically $ readTVar tb
+	writeBoot' = atomically . writeTVar tb
 	readOrfani' u = atomically $ maybe [] id . lookup u <$> readTVar to
 	writeOrfani' u es = atomically $ readTVar to >>= writeTVar to . ((u,es) :) .  filter ((/=) u . fst)  
 	writeUPatch' u p = atomically $ readTVar tp >>= writeTVar tp . ((u,p) :)
 	readUPatches' = atomically $ map snd <$> readTVar tp
 	writeGPatch' g = atomically $ writeTChan cg g
 	readLogs' = atomically (dupTChan tl) >>= return . atomically . readTChan
-	in Persistenza readStato' writeStato' readOrfani' 
+	in Persistenza readStato' writeStato' readBoot' writeBoot' readOrfani' 
 		writeOrfani' writeUPatch' readUPatches' writeGPatch' readLogs'
 {-
 oneService :: (Read a, Show a) => (a -> Group -> Writer [String] (Either String a)) -> FilePath ->  IO (Persistenza a)

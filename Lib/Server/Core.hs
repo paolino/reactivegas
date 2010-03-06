@@ -79,10 +79,10 @@ type Server e b c = (b,Request -> ErrorT String IO (Either c [b]))
 -- | costruisce un server a partire dalla form base
 mkServer 	:: forall e b c . Int 			-- ^ limite per il numero di environments
 		-> Form e b c 		-- ^ form di base
---		-> [[Value]] -> IO () 	-- ^ persistenza
+		-> ([[Value]] -> IO ()) 	-- ^ persistenza
 		-> IO (Server e b c)	-- ^ il reattore 
 
-mkServer limit base = do
+mkServer limit base pers = do
 	dbe <- atomically . newTVar $ set (limitedDB limit) ("0",(M.singleton 0 (Nothing,base)))
 	(,) (form base "0" 0) >$> return $ \(enk,fok,q) -> do
 		-- restituisce le celle riferite alla chiave di environment
@@ -109,8 +109,7 @@ mkServer limit base = do
 				ricarica' $ M.adjust (first (const . Just . length . serializzazione $ fo)) fok fos
 			esegui' Chiudi = ricarica' $ M.delete fok fos 
 			update fos' = do
-				
-				lift $ print $ map (serializzazione . snd) $ M.elems fos'
+				lift . pers $ map (serializzazione . snd) $ M.elems fos'
 				lift . atomically $ do 
 					enks <- readTVar dbe
 					writeTVar dbe $ set enks (enk', fos')

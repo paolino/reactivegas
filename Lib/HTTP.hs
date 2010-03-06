@@ -16,7 +16,7 @@ data Link = Link 	{nomelink :: String
 
 internalmenu y z  =  	thediv ! [theclass "menu"] << (form ! [identifier $ "b" ++ tail y, method "post", action "/menu"] << 
 				([hidden "hkey" y,hidden "fkey" z] +++ 
-					( map (\x -> tag "input" ! [thetype "radio", theclass "menu" , name "valore" , value x] << x) ["clona","chiudi","inchioda"])
+					( map (\x -> tag "input" ! [thetype "radio", theclass "menu" , name "valore" , value x] << x) ["clona","chiudi"])
 					+++ submit "" "Aspetto"))
 					 
 

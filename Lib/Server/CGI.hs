@@ -2,6 +2,7 @@
 
 module Lib.Server.CGI (cgiFromServer) where
 
+import Data.List.Split (splitOn)
 import Data.Maybe (listToMaybe)
 
 import Control.Monad.Error (Error , ErrorT,runErrorT,throwError,lift)
@@ -39,6 +40,10 @@ liftServer ma = do
 	r <- lift . lift $ runErrorT ma 
 	case r of 	Left x -> throwError x	
 			Right y -> return y
+
+	
+
+type HServer e = Server e Html Link
 
 -- | map a Server reactor to a CGI action 
 cgiFromServer :: Server e Html Link -> CGI CGIResult
@@ -81,11 +86,12 @@ cgiFromServer (f,(liftServer .) -> s) = do
 				ehl <- s (hk,fk,case v of 
 					"chiudi" -> Chiudi
 					"clona" -> Clona
-					"inchioda" -> Inchioda)
+					_ -> Chiudi)
 				case ehl of
 					Right hs -> lift $ pagina $ hs
 					Left _ -> throwError "l'interazione continua con un download"
 			Just "/" -> lift $ pagina [f]
 			_ -> throwError "richiesta non intercettata"
 	either (\s -> outputNotFound s) return r
+
 

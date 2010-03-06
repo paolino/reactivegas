@@ -14,6 +14,7 @@ import Network (PortID (PortNumber))
 import Lib.Response
 import Lib.Server.Core
 import Lib.Server.CGI
+import Lib.Server.Session
 import Lib.Passo
 import qualified Lib.Passo as P
 import Lib.HTTP
@@ -45,7 +46,7 @@ sessionFromHPasso 	:: Int
 			-> e 
 			-> HPasso (ReaderT e IO) () 
 			-> IO (Server e Html Link)
-sessionFromHPasso l e hp = mkServer l $ fromHPasso hp e
+sessionFromHPasso l e hp = mkServer l (fromHPasso hp e) print
 
 
 interazione :: Costruzione (ReaderT () IO) () () 
@@ -63,8 +64,9 @@ sessionCgi l x me = do 	e <- me
 	 
 -- singleSessionServer :: Int -> Int -> Costruzione (ReaderT e IO) () () -> IO e -> IO ()
 singleSessionServer p l x me = do
-	s <- sessionCgi l x me	
-	runSCGI  (PortNumber $ fromIntegral p)  $ handleErrors (cgiFromServer s)
+	s <- sessioning 100 (sessionCgi l x me)	
+	runSCGI  (PortNumber $ fromIntegral p)  $ 
+		handleErrors (s >>= cgiFromServer)
 --
 --	in do	key <- show <$> (randomIO  :: IO Int)
 --		return (key,FormPoint pass ctx env (h key) ml)

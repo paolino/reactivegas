@@ -28,7 +28,7 @@ fromPatch (c,f,xs) =  do
 	(rs,_) <- asks $ responsabili 
 	s <- ask
 	when (not $ c `elem` map (fst . snd) rs) $ throwError "l'autore della patch è sconosciuto"
-	when (not $ verify c (xs,s) f) $ throwError "la firma della patch è corrotta"
+	when (not $ verify c (xs,s) f) $ throwError "la firma della patch utente è corrotta"
 	let u = fst. head . filter ((==c) . fst . snd) $ rs
 	return $ zip (repeat u) xs
 

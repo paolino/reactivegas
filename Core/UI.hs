@@ -33,7 +33,7 @@ import Core.Patch (login, Firmante (..),firmante)
 import Core.Costruzione (runSupporto, Supporto)
 import Core.Persistenza (Persistenza (..))
 import Core.Sessione (Sessione (..))
-import Core.Applicazione (QS,nuovoStato, caricamento, TS)
+import Core.Applicazione (QS,caricamento, TS)
 
 import Eventi.Anagrafe
 import Eventi.Accredito
@@ -42,8 +42,24 @@ import Eventi.Ordine
 -- sel :: (MonadReader (Persistenza QS, Sessione)  m, MonadIO m) => ((Persistenza QS, Sessione) -> IO b) -> m b
 sel f = asks f >>= liftIO 
 
-letturaStato :: (Functor m, MonadReader (Persistenza QS, Sessione) m,MonadIO m) => m QS
-letturaStato = fmap fromJust . sel $ readStato . fst
+letturaStato' :: (Functor m, MonadReader (Persistenza QS, Sessione) m,MonadIO m) => m QS
+letturaStato' = fmap fromJust . sel $ readStato . fst
+
+caricando :: (Persistenza QS, Sessione) -> (Persistenza QS, Sessione)
+caricando (pe,se) = 
+	let 	modifica _ Nothing = return Nothing
+		modifica se (Just s) = do  
+			evs <- readEventi se
+			mr <- readAccesso se
+			case mr of 
+				Nothing -> return $ Just s
+				Just (u,_) -> do
+					let (s',logs) =  caricamento (map ((,) u) evs) $ s
+					print logs
+					return . Just $ s'
+	in (pe{readStato = readStato pe >>= modifica se},se) 
+
+letturaStato = local caricando $ letturaStato' 
 -- | semplifica il running dei Supporto
 
 conStato :: (String -> Interfaccia a) -> (b -> Interfaccia a) -> Supporto MEnv TS () b ->  Interfaccia a
@@ -68,17 +84,20 @@ type MEnv  = ReaderT (Persistenza QS, Sessione) IO
 type Interfaccia a = Costruzione MEnv () a
 
 bootGruppo :: Interfaccia ()
-bootGruppo = rotonda $ \k -> do
-	let cy xs = do 
+bootGruppo = rotonda $ \k ->  
 		mano "preparazione stato iniziale" $ 
-			[("elenco chiavi responsabile già inserite",P.output $ Response 
-				[("elenco chiavi responsabile già inserite",
-					ResponseMany $ map (ResponseOne . fst) xs)])
-			,("inserimento di una chiave responsabile", P.upload "chiave" >>= \x -> cy $ x:xs)
+			[("elenco chiavi responsabile già inserite", do
+				xs <- sel $ readBoot .fst 
+				P.output $ Response 
+					[("elenco chiavi responsabile già inserite",
+						ResponseMany $ map (ResponseOne . fst) xs)])
+			,("inserimento di una chiave responsabile", P.upload "chiave" >>= \x -> do
+				xs <- sel $ readBoot . fst
+				sel $ ($ x: delete x xs) . writeBoot . fst)
 			,("creazione dello stato iniziale dalle chiavi inserite", 
-				sel (($nuovoStato xs) . writeStato . fst) >> k ())
+				sel (writeStato . fst) >> k ())
 			]
-	cy []
+	
 bootChiavi :: Interfaccia ()
 bootChiavi = do
 	u <- P.libero "scegli il tuo nome di utente"
@@ -106,21 +125,13 @@ letturaEventi = sel $ readEventi . snd
 svuotaEventi :: Interfaccia ()
 svuotaEventi = sel $ ($[]). writeEventi . snd
 
-salvaPatch  :: Interfaccia ()
-salvaPatch =  do 
-	(s,_) <- letturaStato
-	evs <- letturaEventi
-	let salvataggio = onAccesso $ \(r@(u,_)) -> do
-		let 	p up = sel $ ($up) . ($u) . writeUPatch . fst
-		 	k (Firmante f) = p (f s evs) >> svuotaEventi
-		runSupporto (fst <$> letturaStato) bocciato k $ firmante r
-	when (not $ null evs) . mano "trattamento eventi in sospeso"  $
-		[	("firma",salvataggio)
-		,	("mantieni",return ())
-		,	("elimina", svuotaEventi)
-		, 	("scarica eventi", letturaEventi >>= P.download "eventi.txt" )
-		]
 
+salvataggio = onAccesso $ \(r@(u,_)) -> do
+		let 	p up = sel $ ($up) . ($u) . writeUPatch . fst
+		 	k (Firmante f) = do 
+				evs <- letturaEventi
+				(fst <$> letturaStato') >>= \s -> p (f s evs) >> svuotaEventi
+		runSupporto (fst <$> letturaStato') bocciato k $ firmante r
 
 correzioneEventi  :: [Evento] -> Interfaccia ()
 correzioneEventi evs  = sel $ ($evs) . writeEventi . snd 
@@ -195,7 +206,7 @@ applicazione = rotonda $ \_ -> do
 				[("creazione nuove chiavi di responsable", bootChiavi)
 				,("preparazione stato iniziale di gruppo", bootGruppo)
 				]
-		Just s -> do 
+		Just s ->  
 			mano ("menu principale") [
 				("accesso", accesso >> return ()) ,
 				("eventi" , mano "produzione eventi" $ 
@@ -203,11 +214,12 @@ applicazione = rotonda $ \_ -> do
 					,("economia",economia)
 					,("anagrafe",anagrafica)
 					,("correzione",eliminazioneEvento)
+					,("firma aggiornamento",salvataggio)
+					,("scarica eventi", letturaEventi >>= P.download "eventi.txt" )
 					]),
 				("interrogazione", interrogazioni),
 				("amministrazione",amministrazione)
 				]
-			salvaPatch 
 
 {-
 -}
