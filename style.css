@@ -48,7 +48,12 @@ blockquote, q {
 
 
 
-
+div.testata {
+	border : 5px solid yellow;
+	float: clear;
+	height : 100px;
+	font: 30pt sans-serif;
+	}
 
 div.interazione {
 	border: 1px solid green;
@@ -71,6 +76,7 @@ dl dd {
 div.passobox {
 	margin:5px;
 	height:25em;
+	overflow:auto;
 	}
 div.passobox select {
 	border: 0px;

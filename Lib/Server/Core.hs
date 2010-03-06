@@ -1,6 +1,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module Lib.Server.Core where
 
+import Data.Maybe (listToMaybe)
 import Data.List (lookup)
 
 import Control.Applicative ((<$>))
@@ -10,14 +11,14 @@ import Control.Monad.Error (ErrorT, throwError, lift)
 import Control.Arrow ((***),(&&&),  second, first)
 
 import System.Random (randomIO)
-import qualified Data.IntMap as M (IntMap,assocs,insert,delete,adjust,fromList,lookup,singleton,elems)
+import qualified Data.IntMap as M 
 
 import Debug.Trace
 import Lib.Assocs (secondM)
 
 ------------------------------------ library -----------------------------------------
 -- | interfaccia di un DB
-data DB a b = DB {query :: a -> Maybe b, set :: (a,b) -> DB a b, dbmap :: (b -> b) -> DB a b}
+data DB a b = DB {query :: a -> Maybe b, lkey :: Maybe a, set :: (a,b) -> DB a b, dbmap :: (b -> b) -> DB a b}
 
 -- | un DB inefficiente a memoria limitata 
 limitedDB :: (Show a, Eq a) 
@@ -25,9 +26,10 @@ limitedDB :: (Show a, Eq a)
 	-> DB a b
 limitedDB limit = let
 	q xs x = lookup x xs
-	s xs (x,y) = mkdb . take limit $ (x,y) : xs 
+	l xs = fst <$> listToMaybe xs
+	s xs (x,y) = mkdb . take limit $ (x,y) : xs 	
 	m xs f = mkdb . map (second f) $ xs 
-	mkdb xs = DB (q xs) (s xs) (m xs)
+	mkdb xs = DB (q xs) (l xs) (s xs) (m xs)
 	in mkdb []
 
 -- | erroring on Nothing
@@ -69,22 +71,29 @@ data Req
 -- | tutte le richieste portano con se la chiave di environment, e la chiave di cella
 type Request = (Enk,Fok,Req)
 
-type IM e b c = M.IntMap ((Maybe Int,Form e b c))
+type NailedForm e b c = (Maybe Int,Form e b c)
+type IM e b c = M.IntMap (NailedForm e b c)
 -- | una mappatura tra chiavi di environment e insiemi di celle
 type Servizio e b c = DB Enk (IM e b c)
 
 -- | il server come reattore a richieste
-type Server e b c = (b,Request -> ErrorT String IO (Either c [b]))
+type Server e b c = (IO [b],Request -> ErrorT String IO (Either c [b]))
 
 -- | costruisce un server a partire dalla form base
 mkServer 	:: forall e b c . Int 			-- ^ limite per il numero di environments
-		-> Form e b c 		-- ^ form di base
-		-> ([[Value]] -> IO ()) 	-- ^ persistenza
+		-> [NailedForm e b c] 		-- ^ forms di base
+		-> ([[Value]] -> IO ()) -- ^ persistenza
 		-> IO (Server e b c)	-- ^ il reattore 
 
-mkServer limit base pers = do
-	dbe <- atomically . newTVar $ set (limitedDB limit) ("0",(M.singleton 0 (Nothing,base)))
-	(,) (form base "0" 0) >$> return $ \(enk,fok,q) -> do
+mkServer limit bs pers = do
+	let ibs = zip [0..] bs
+	dbe <- atomically . newTVar $ set (limitedDB limit) ("0",M.fromList ibs)
+	let
+	  def = atomically $ do 
+			Just enk <- lkey <$> readTVar dbe 
+			Just fos <- ($enk) . query <$> readTVar dbe
+			return . map (\(i,(_,fo)) -> form fo enk i) $ M.assocs fos 
+	  req (enk,fok,q) = do
 		-- restituisce le celle riferite alla chiave di environment
 		fos <- lift (atomically (($enk) . query <$> readTVar dbe)) >>= onNothing "chiave temporale non trovata" 
 		foi@(mi,fo)  <- onNothing "indice di cella non trovato" $ fok `M.lookup` fos
@@ -103,11 +112,11 @@ mkServer limit base pers = do
 			esegui' Scarica = 
 				fmap Left . onNothing "la form non contiene un valore da scaricare" $ scarica fo
 			esegui' Clona  = do
-				fok' <- lift $ (randomIO :: IO Int)
+				let fok' = last (M.keys fos) + 1
 				ricarica' $ M.insert fok' foi fos
 			esegui' Inchioda = do
 				ricarica' $ M.adjust (first (const . Just . length . serializzazione $ fo)) fok fos
-			esegui' Chiudi = ricarica' $ M.delete fok fos 
+			esegui' Chiudi = ricarica' $ if M.size fos > 1 then M.delete fok fos else fos
 			update fos' = do
 				lift . pers $ map (serializzazione . snd) $ M.elems fos'
 				lift . atomically $ do 
@@ -115,5 +124,15 @@ mkServer limit base pers = do
 					writeTVar dbe $ set enks (enk', fos')
 				return . map (\(fok,(_,fo)) -> form fo enk' fok) $ M.assocs fos'
 		esegui' q >>= either (return . Left) (Right >$> update) 
-	
+	return (def,req)
 
+restore :: forall e b c. Form e b c -> [Value] -> IO (Form e b c)
+restore base hs = foldM k (Right base) (reverse hs) >>= either return return
+	where 	k :: Either (Form e b c) (Form e b c) -> Value -> IO (Either (Form e b c) (Form e b c))
+		k (Right f) v = do
+			let mr = continuazione f v
+			case mr of 
+				Nothing -> return (Left f)
+				Just r -> Right <$> r 
+		k lf _ = return lf
+	

@@ -2,7 +2,7 @@
 {-# LANGUAGE FlexibleContexts, Rank2Types, ExistentialQuantification, ScopedTypeVariables, GeneralizedNewtypeDeriving, NoMonomorphismRestriction, ImplicitParams #-}
 module Core.UI where
 
-import Data.Maybe (fromJust)
+import Data.Maybe (isJust , fromJust)
 import Data.List (delete)
 
 import Control.Arrow
@@ -208,13 +208,17 @@ applicazione = rotonda $ \_ -> do
 				]
 		Just s ->  
 			mano ("menu principale") [
-				("accesso", accesso >> return ()) ,
+				("accesso", mano "accesso" $ [("scelta responsabile", do  
+					r <- accesso 
+					when (isJust r) $ 
+						P.output $ Response [("responsabile scelto" , 
+							ResponseOne . fst . fromJust $ r)]
+					),("firma aggiornamento",salvataggio)]),
 				("eventi" , mano "produzione eventi" $ 
 					[("votazioni",votazioni)
 					,("economia",economia)
 					,("anagrafe",anagrafica)
 					,("correzione",eliminazioneEvento)
-					,("firma aggiornamento",salvataggio)
 					,("scarica eventi", letturaEventi >>= P.download "eventi.txt" )
 					]),
 				("interrogazione", interrogazioni),

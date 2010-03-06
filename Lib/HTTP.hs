@@ -21,7 +21,7 @@ internalmenu y z  =  	thediv ! [theclass "menu"] << (form ! [identifier $ "b" ++
 					 
 
 renderResponse k x = thediv ! [theclass k] << renderResponse' x
-renderResponse' x@(ResponseOne _) =  thediv << show x
+renderResponse' x@(ResponseOne _) =  thediv << take 50 (show x)
 renderResponse' (ResponseMany xs) =  ulist << concatHtml (map  ((li <<) .  show ) xs) 
 renderResponse' (ResponseAL xs) =  dlist 
 		<< concatHtml (map  (\(x,y) -> dterm << x +++ ddef << show y) xs) 
@@ -82,7 +82,7 @@ runPasso (P.Scelta q xs c) = let
 			form ! [identifier $ "a" ++ tail y
 				, method "post"
 				, action "/interazione"
-				]<< (( map (\(x,_) -> tag "input" ! [theclass "passobox",thetype "radio", value x, name "valore"] << x +++ br) xs) +++  
+				]<< (( map (\(x,_) -> tag "input" ! [theclass "passobox",thetype "radio", value x, name "valore"] << take 40 x +++ br) xs) +++  
 					[	hidden "hkey" y,  
 						hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]
 					]) 

@@ -26,13 +26,8 @@ readFKey =  do
 readValore :: ErrorT String (CGIT IO) Value
 readValore = lift (getInput "valore") >>= onNothing "form corrotta, manca la risposta"
 
-pagina :: [Html] -> CGI CGIResult
-pagina xs = output . prettyHtml $  
-		header << (thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml 
-			-- +++ script ! [strAttr "language" "Javascript", src "/function.js"] << noHtml
-				)
-				+++ (body {-! [strAttr "onload" "rewrite()"]-} << 
-					map (\h -> thediv ! [theclass "interazione"] << h) xs)
+pagina :: [Html] -> Html
+pagina xs =  thediv << map (\h -> thediv ! [theclass "interazione"] << h) xs
 
 -- | eleva gli errori nella monade del server in quella di CGI 
 liftServer :: Error e => ErrorT e IO a -> ErrorT e (CGIT IO) a
@@ -46,8 +41,8 @@ liftServer ma = do
 type HServer e = Server e Html Link
 
 -- | map a Server reactor to a CGI action 
-cgiFromServer :: Server e Html Link -> CGI CGIResult
-cgiFromServer (f,(liftServer .) -> s) = do 
+cgiFromServer :: (Html -> CGI CGIResult) -> Server e Html Link -> CGI CGIResult
+cgiFromServer resp (fsM,(liftServer .) -> s) = do 
 	vs <- getVars 
 	is <- getInputs
 	r <- runErrorT $ do
@@ -66,7 +61,7 @@ cgiFromServer (f,(liftServer .) -> s) = do
 				v <- readValore
 				ehl <- s (hk,fk,Continua v)
 				case ehl of
-					Right hs -> lift $ pagina hs
+					Right hs -> lift . resp $ pagina hs
 					Left _ -> throwError "l'interazione continua con un download"
 			Just "/download" -> do
 				hk <- readHKey
@@ -88,9 +83,9 @@ cgiFromServer (f,(liftServer .) -> s) = do
 					"clona" -> Clona
 					_ -> Chiudi)
 				case ehl of
-					Right hs -> lift $ pagina $ hs
+					Right hs -> lift . resp . pagina $ hs
 					Left _ -> throwError "l'interazione continua con un download"
-			Just "/" -> lift $ pagina [f]
+			Just "/" -> lift $ lift fsM >>= resp . pagina 
 			_ -> throwError "richiesta non intercettata"
 	either (\s -> outputNotFound s) return r
 

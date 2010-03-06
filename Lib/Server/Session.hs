@@ -9,7 +9,7 @@ import Network.SCGI (CGI,getCookie,newCookie,setCookie)
 
 
 import Lib.Server.Core (limitedDB,set,query)
-
+import Debug.Trace
 sessioning :: Int -> IO a -> IO (CGI a)
 sessioning l rs = do
 	sex <-  show <$> (randomIO :: IO Int)
@@ -28,5 +28,5 @@ sessioning l rs = do
 			atomically $  do
 				cs <- readTVar tcs
 				case query cs c of
-					Just s -> return s
+					Just s -> trace "trovato" $ return s
 					Nothing -> writeTVar tcs (set cs (c,s0)) >> return s0

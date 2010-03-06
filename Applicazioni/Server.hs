@@ -44,9 +44,15 @@ fromHPasso _ _ = error "inizializzazione con contesto non implementata"
 
 sessionFromHPasso 	:: Int 
 			-> e 
+			-> [[Value]]
 			-> HPasso (ReaderT e IO) () 
 			-> IO (Server e Html Link)
-sessionFromHPasso l e hp = mkServer l (fromHPasso hp e) print
+sessionFromHPasso l e vss hp = do
+	fs <- forM vss $ \vs -> (,) (Just $ length vs) <$> restore (fromHPasso hp e) vs
+	mkServer l fs  print
+	
+		
+	
 
 
 interazione :: Costruzione (ReaderT () IO) () () 
@@ -59,14 +65,14 @@ interazione = rotonda $ \k -> do
 		if t then k () else return ()
 
 -- sessionCgi :: Int -> Costruzione (ReaderT e IO) () () -> IO e -> IO (Server e Html Link) 
-sessionCgi l x me = do 	e <- me
- 			runReaderT (svolgi x) e >>= sessionFromHPasso l e
+sessionCgi l x vss me = do 	e <- me
+ 				runReaderT (svolgi x) e >>= sessionFromHPasso l e vss
 	 
 -- singleSessionServer :: Int -> Int -> Costruzione (ReaderT e IO) () () -> IO e -> IO ()
-singleSessionServer p l x me = do
-	s <- sessioning 100 (sessionCgi l x me)	
+sessionServer p l x resp vss me = do
+	s <- sessioning 100 (sessionCgi l x vss me)	
 	runSCGI  (PortNumber $ fromIntegral p)  $ 
-		handleErrors (s >>= cgiFromServer)
+		handleErrors (s >>= cgiFromServer resp)
 --
 --	in do	key <- show <$> (randomIO  :: IO Int)
 --		return (key,FormPoint pass ctx env (h key) ml)
