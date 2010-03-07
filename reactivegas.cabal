@@ -17,7 +17,7 @@ Executable reactivegas_cgi
  ghc-options: -Wall
  main-is: reactivegas_cgi.hs
  build-depends: base  >= 4.2      , 
-		containers,
+                containers,
                 random      ,
                 bytestring  ,
                 array,
@@ -40,6 +40,7 @@ Library
  exposed-modules: Lib.Passo,Lib.Response,Lib.Server.CGI,Lib.Server.Core, Lib.Server.Session, Lib.Assocs
  ghc-options: -Wall
  build-depends: base       , 
+                containers,
                 random      ,
                 bytestring  ,
                 SimpleAES   ,
@@ -51,4 +52,6 @@ Library
                 haskeline   ,
                 filepath    ,
                 FileManipCompat   ,
-                directory   , stm
+                directory   , 
+                stm, 
+                split
