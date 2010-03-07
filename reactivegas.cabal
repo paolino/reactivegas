@@ -17,6 +17,7 @@ Executable reactivegas_cgi
  ghc-options: -Wall
  main-is: reactivegas_cgi.hs
  build-depends: base  >= 4.2      , 
+		containers,
                 random      ,
                 bytestring  ,
                 array,
