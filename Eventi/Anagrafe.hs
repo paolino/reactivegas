@@ -83,9 +83,9 @@ data Responsabili = Responsabili {eletti::[Responsabile], inodore ::[(Indice,Res
 responsabili = (\(Responsabili es is) -> (es, map snd is)) . see
 -- | mappa di priorita' per gli eventi di questo modulo
 priorityAnagrafe = R k where
-	k (NuovoUtente _) = -20
-	k (EliminazioneResponsabile _) = -19
-	k (ElezioneResponsabile _) = -18
+	k (NuovoUtente _) = -30
+	k (EliminazioneResponsabile _) = -28
+	k (ElezioneResponsabile _) = -29
 	
 priorityAnagrafeI = R k where
 	k (EventoEliminazioneResponsabile _ _) = 20
@@ -369,8 +369,8 @@ costrQueryAssenso s kp kn = [("elenco richieste di assenso aperte", querySottoSt
 		return $ Response [("elenco richieste di assenso aperte", if null ys then
 			ResponseOne "nessuna richiesta aperta" else Response (map (show . snd &&& ResponseOne . fst) ys))]
 priorityAssenso = R k where
-	k (Assenso _) = -15
-	k (Dissenso _) = -14
+	k (Assenso _) = -25
+	k (Dissenso _) = -24
 	k (EventoFallimentoAssenso _) = -16
 ---------------------------------------------------
 

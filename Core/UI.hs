@@ -2,8 +2,8 @@
 {-# LANGUAGE FlexibleContexts, Rank2Types, ExistentialQuantification, ScopedTypeVariables, GeneralizedNewtypeDeriving, NoMonomorphismRestriction, ImplicitParams #-}
 module Core.UI where
 
-import Data.Maybe (isJust , fromJust)
-import Data.List (delete)
+import Data.Maybe (isJust , fromJust,catMaybes)
+import Data.List (delete,find)
 
 import Control.Arrow
 import Control.Applicative
@@ -29,7 +29,7 @@ import Core.Controllo (caricaEventi, SNodo (..))
 import Core.Contesto (flatten)
 import Core.Programmazione (Reazione)
 import Core.Parsing (ParserConRead)
-import Core.Patch (login, Firmante (..),firmante)
+import Core.Patch (login, Firmante (..),firmante, Patch)
 import Core.Costruzione (runSupporto, Supporto)
 import Core.Persistenza (Persistenza (..))
 import Core.Sessione (Sessione (..))
@@ -45,16 +45,25 @@ sel f = asks f >>= liftIO
 letturaStato' :: (Functor m, MonadReader (Persistenza QS, Sessione) m,MonadIO m) => m QS
 letturaStato' = fmap fromJust . sel $ readStato . fst
 
+fromUPatches :: ([Patch],TS) -> [(Utente,[Evento])]
+fromUPatches  (ups,s) =  
+	let (rs,_) = responsabili s
+	in catMaybes $ map (\(c,_,es) -> second (const es) <$> find (\(_,(c',_)) -> c == c') rs) ups
+
 caricando :: (Persistenza QS, Sessione) -> (Persistenza QS, Sessione)
 caricando (pe,se) = 
-	let 	modifica _ Nothing = return Nothing
+	let 	third (_,_,x) = x
+	 	modifica _ Nothing = return Nothing
 		modifica se (Just s) = do  
 			evs <- readEventi se
+			ups <- readUPatches pe
 			mr <- readAccesso se
 			case mr of 
 				Nothing -> return $ Just s
 				Just (u,_) -> do
-					let (s',logs) =  caricamento (map ((,) u) evs) $ s
+					let (s',logs) =  caricamento 
+						(concatMap (\(u,evs) -> map ((,) u) evs) $ (u,evs):fromUPatches (ups,fst s))  
+						s
 					print logs
 					return . Just $ s'
 	in (pe{readStato = readStato pe >>= modifica se},se) 
@@ -184,13 +193,20 @@ amministrazione = do
 				[] -> bocciato $ "nessun aggiornamento individale per lo stato attuale"
 				xs -> do
 					let k (Firmante f)  = do
-						(s,_) <- letturaStato
+						(s,_) <- letturaStato'
 						aggiornamento $ f s xs
 					runSupporto (fst <$> letturaStato) bocciato k $ firmante r
 
 	mano "amministrazione" $ [
+			("aggiornamenti individuali in attesa", do
+				us <- sel $ readUPatches . fst
+				(s,_) <- letturaStato
+				let ps = fromUPatches (us,s)
+				(u,es) <- P.scelte (map (fst &&& id) ps) "scegli aggiornamento da visionare" 
+				P.output $ Response [("aggiornamento da parte di " ++ u, ResponseMany $ map ResponseOne es)]
+				),
 			("creazione nuove chiavi di responsable", bootChiavi),
-			("firma un aggiornamento di gruppo (pericoloso)", sincronizza),
+			("firma un aggiornamento di gruppo", sincronizza),
 			("scarica gli aggiornamenti individuali", aggiornamenti >>= P.download "aggiornamenti.txt"),
 			("carica aggiornamento di gruppo",P.upload "aggiornamento di gruppo" >>= aggiornamento), 
 			("manutenzione", menu "manutenzione" $ [
@@ -208,19 +224,25 @@ applicazione = rotonda $ \_ -> do
 				]
 		Just s ->  
 			mano ("menu principale") [
-				("accesso", mano "accesso" $ [("scelta responsabile", do  
-					r <- accesso 
-					when (isJust r) $ 
-						P.output $ Response [("responsabile scelto" , 
-							ResponseOne . fst . fromJust $ r)]
-					),("firma aggiornamento",salvataggio)]),
-				("eventi" , mano "produzione eventi" $ 
-					[("votazioni",votazioni)
-					,("economia",economia)
-					,("anagrafe",anagrafica)
-					,("correzione",eliminazioneEvento)
-					,("scarica eventi", letturaEventi >>= P.download "eventi.txt" )
+				("esecuzione accesso", accesso >> return ()),
+				("produzione eventi" , mano "produzione eventi" $ 
+					[("eventi democratici",votazioni)
+					,("eventi economici",economia)
+					,("eventi anagrafici",anagrafica)
+					,("firma degli eventi prodotti",salvataggio)
+					,("correzione dell'insieme eventi",eliminazioneEvento)
+					,("scarica gli eventi", letturaEventi >>= P.download "eventi.txt" )
 					]),
+				("descrizione sessione", do
+					r <- sel $ readAccesso . snd
+					evs <- sel $ readEventi . snd
+					P.output . Response $ 
+						[("responsabile scelto" , ResponseOne $ case r of 
+							Nothing -> "anonimo"
+							Just (u,_) -> u)
+						,("eventi prodotti" , ResponseMany $ map ResponseOne evs)
+						]
+					),
 				("interrogazione", interrogazioni),
 				("amministrazione",amministrazione)
 				]

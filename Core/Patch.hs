@@ -54,7 +54,7 @@ fromGroup (c,f,ps) = do
 login :: forall s m c . (Monad m, Responsabili `ParteDi` s) => Supporto m s c (Maybe Responsabile) 
 login = do
 	(rs,_) <- asks responsabili 	
-	scelte (("anonimo",Nothing) : map (fst &&& Just . id) rs) "credenziali di accesso"
+	scelte (("anonimo",Nothing) : map (fst &&& Just . id) rs) "responsabile che accede"
 
 firmante :: forall m s c . (Show s, Monad m) => Responsabile -> Supporto m s c (Firmante s)
 firmante r@(u,(c,s)) = do  

@@ -15,7 +15,7 @@ import Core.Applicazione (loader, caricamento, nuovoStato)
 import Text.XHtml
 import Network.SCGI
 
-layout = [["accesso"],["eventi"],["correzione","eventi"], ["interrogazione"],["amministrazione"]]
+layout = [["esecuzione accesso"],["produzione eventi"], ["interrogazione"],["amministrazione"],["descrizione sessione"]]
 pagina b = output . prettyHtml $  
 		header << (thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml)
 		+++ body << ((thediv ! [theclass "testata"] << "reactivegas (alpha)") +++ (thediv ! [theclass "utente"] << b))

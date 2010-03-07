@@ -2,7 +2,7 @@
 
 module Lib.Server.CGI (cgiFromServer) where
 
-import Data.List.Split (splitOn)
+import Data.List.Split (splitOneOf)
 import Data.Maybe (listToMaybe)
 
 import Control.Monad.Error (Error , ErrorT,runErrorT,throwError,lift)
@@ -45,48 +45,46 @@ cgiFromServer :: (Html -> CGI CGIResult) -> Server e Html Link -> CGI CGIResult
 cgiFromServer resp (fsM,(liftServer .) -> s) = do 
 	vs <- getVars 
 	is <- getInputs
-	r <- runErrorT $ do
-		case lookup "REQUEST_URI"  vs of 
-			Just "/style.css" -> do
-				css <- liftIO $ readFile "style.css"   
-				lift $ do 	setHeader "Content-type" "text/css"
-				 		output css
-			Just "/function.js" -> do
-				js <- liftIO $ readFile "function.js"   
-				lift $ do 	setHeader "Content-type" "text/js"
-				 		output js
-			Just "/interazione" -> do 
-				hk <- readHKey
-				fk <- readFKey
-				v <- readValore
-				ehl <- s (hk,fk,Continua v)
-				case ehl of
-					Right hs -> lift . resp $ pagina hs
-					Left _ -> throwError "l'interazione continua con un download"
-			Just "/download" -> do
-				hk <- readHKey
-				fk <- readFKey
-				ec <- s (hk,fk,Scarica)
-				case ec of
-					Left (Link n x m) -> lift $ do
-						setHeader "Content-type" m
-						setHeader "Content-Disposition" "attachment"
-						setHeader "Content-Disposition" $ "filename=" ++ show n
-						output x 
-					Right _ -> throwError "l'interazione continua con una interazione"
-			Just "/menu" -> do
-				hk <- readHKey
-				fk <- readFKey
-				v <- readValore
-				ehl <- s (hk,fk,case v of 
-					"chiudi" -> Chiudi
-					"clona" -> Clona
-					_ -> Chiudi)
-				case ehl of
-					Right hs -> lift . resp . pagina $ hs
-					Left _ -> throwError "l'interazione continua con un download"
-			Just "/" -> lift $ lift fsM >>= resp . pagina 
-			_ -> throwError "richiesta non intercettata"
+	r <- runErrorT $ case lookup "REQUEST_URI"  vs of 
+		Just x -> let xs =  tail $ splitOneOf "/?" x in
+			case xs of
+				[""] -> lift $ lift fsM >>= resp . pagina 
+				["style.css"] -> do
+					css <- liftIO $ readFile "style.css"   
+					lift $ do 	setHeader "Content-type" "text/css"
+							output css
+				("interazione":_) -> do 
+					hk <- readHKey
+					fk <- readFKey
+					v <- readValore
+					ehl <- s (hk,fk,Continua v)
+					case ehl of
+						Right hs -> lift . resp $ pagina hs
+						Left _ -> throwError "l'interazione continua con un download"
+				("download":_) -> do
+					hk <- readHKey
+					fk <- readFKey
+					ec <- s (hk,fk,Scarica)
+					case ec of
+						Left (Link n x m) -> lift $ do
+							setHeader "Content-type" m
+							setHeader "Content-Disposition" "attachment"
+							setHeader "Content-Disposition" $ "filename=" ++ show n
+							output x 
+						Right _ -> throwError "l'interazione continua con una interazione"
+				("menu":_) -> do
+					hk <- readHKey
+					fk <- readFKey
+					v <- readValore
+					ehl <- s (hk,fk,case v of 
+						"chiudi" -> Chiudi
+						"clona" -> Clona
+						_ -> Chiudi)
+					case ehl of
+						Right hs -> lift . resp . pagina $ hs
+						Left _ -> throwError "l'interazione continua con un download"
+				_ -> lift (lift $ print xs) >> throwError "boh"
+			
 	either (\s -> outputNotFound s) return r
 
 

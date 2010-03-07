@@ -14,7 +14,7 @@ data Link = Link 	{nomelink :: String
 			}
 
 
-internalmenu y z  =  	thediv ! [theclass "menu"] << (form ! [identifier $ "b" ++ tail y, method "post", action "/menu"] << 
+internalmenu y z  =  	thediv ! [theclass "menu"] << (form ! [identifier $ "b" ++ tail y, method "get", action "/menu"] << 
 				([hidden "hkey" y,hidden "fkey" z] +++ 
 					( map (\x -> tag "input" ! [thetype "radio", theclass "menu" , name "valore" , value x] << x) ["clona","chiudi"])
 					+++ submit "" "Aspetto"))
@@ -39,7 +39,7 @@ runPasso :: (Monad m )
 runPasso (P.Output x c) = let
 	k y z = thediv ! [theclass "passobox"] << 
 			(	renderResponse "responso" x 
-				+++ form ! [method "post", action "/interazione"] 
+				+++ form ! [method "get", action "/interazione"] 
 					<< [	hidden "hkey" y, hidden "valore" "undefined", 
 						hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]]
 			) +++ internalmenu y z
@@ -48,7 +48,7 @@ runPasso (P.Output x c) = let
 runPasso (P.Errore x c) = let
 	k y z = thediv ! [theclass "passobox"] << 
 			(	renderResponse "errore" x 
-				+++ form ! [method "post", action ("/interazione")] 
+				+++ form ! [method "get", action ("/interazione")] 
 					<< [	hidden "hkey" y, hidden "valore" "undefined", 
 						hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]]
 			) +++ internalmenu y z
@@ -66,7 +66,7 @@ runPasso (P.Costruito x) =
 runPasso (P.Libero q c ) = let 
 	k y z = thediv ! [theclass "passobox"] << 
 			(	thediv ! [theclass "response"] << q +++ 
-				form ! [method "post", action ("/interazione")] 
+				form ! [method "get", action ("/interazione")] 
 					<< [	hidden "hkey" y, textfield "valore", 
 						hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]]
 			) +++ internalmenu  y z
@@ -80,7 +80,7 @@ runPasso (P.Scelta q xs c) = let
 	k y z =  thediv ! [theclass "passobox"] << 
 		(thediv ! [theclass "response"] << q +++ 
 			form ! [identifier $ "a" ++ tail y
-				, method "post"
+				, method "get"
 				, action "/interazione"
 				]<< (( map (\(x,_) -> tag "input" ! [theclass "passobox",thetype "radio", value x, name "valore"] << take 40 x +++ br) xs) +++  
 					[	hidden "hkey" y,  
@@ -108,11 +108,11 @@ runPasso (P.Upload q c ) = let
 runPasso (P.Download q x c) = let
 	k y z = thediv ! [theclass "passobox"] << 
 		(thediv ! [theclass "download"] <<  
-				form ! [method "post", action "/download"] 
+				form ! [method "get", action "/download"] 
 					<< [	hidden "hkey" y,  hidden "fkey" z
 						, hidden "valore" "undefined" , submit "" "Download .." ! [theclass "continua"]]
 				+++
-				form ! [method "post", action "/interazione"] 
+				form ! [method "get", action "/interazione"] 
 					<< [	hidden "hkey" y,  hidden "fkey" z
 						, hidden "valore" "undefined" , submit "" "Continua .." ! [theclass "continua"]]
 		) +++ internalmenu y z
