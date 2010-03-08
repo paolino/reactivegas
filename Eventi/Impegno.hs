@@ -155,9 +155,7 @@ costrEventiImpegno s kp kn = 	[("fine di una raccolta impegni", eventoFineImpegn
                 return $ Impegno u z n
 
 costrQueryImpegni :: (Monad m, ParteDi (Servizio Impegni) s) => CostrAction m c Response s
-costrQueryImpegni s kp kn = 	[("elenco impegni",r)
-				,("raccolte impegni",q)
-				] 
+costrQueryImpegni s kp kn = 	[("elenco impegni aperti",q)] 
 	where
 	run = runSupporto s kn kp
 	r =  run $ do

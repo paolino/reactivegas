@@ -103,14 +103,20 @@ wrapCostrActions
 wrapCostrActions g = concatMap (\f -> f (fst <$> letturaStato) g bocciato)
 
 interrogazioni :: Interfaccia ()
-interrogazioni = mano "interrogazione stato del gruppo" . wrapCostrActions P.output $ [
+interrogazioni = mano "interrogazione stato del gruppo" $ (wrapCostrActions P.output $ [
 		costrQueryAccredito,
 		costrQueryAnagrafe,
 		costrQueryOrdine,
 		costrQueryAssenso,
 		costrQueryImpegni
-		]
-
+		]) ++ [aggiornamentiIndividuali]
+aggiornamentiIndividuali = ("aggiornamenti individuali in attesa", do
+	us <- sel $ readUPatches . fst
+	(s,_) <- letturaStato
+	let ps = fromUPatches (us,s)
+	(u,es) <- P.scelte (map (fst &&& id) ps) "scegli aggiornamento da visionare" 
+	P.output $ Response [("aggiornamento da parte di " ++ u, ResponseMany $ map ResponseOne (sortEventi es))]
+	)
 letturaEventi ::  Interfaccia [Evento]
 letturaEventi = sel $ readEventi . snd
 
@@ -118,12 +124,6 @@ svuotaEventi :: Interfaccia ()
 svuotaEventi = sel $ ($[]). writeEventi . snd
 
 
-salvataggio = onAccesso $ \(r@(u,_)) -> do
-		let 	p up = sel $ ($up) . ($u) . writeUPatch . fst
-		 	k (Firmante f) = do 
-				evs <- letturaEventi
-				(fst <$> letturaStato') >>= \s -> p (f s evs) >> svuotaEventi
-		runSupporto (fst <$> letturaStato') bocciato k $ firmante r
 
 correzioneEventi  :: [Evento] -> Interfaccia ()
 correzioneEventi evs  = sel $ ($evs) . writeEventi . snd 
@@ -164,36 +164,41 @@ votazioni = onAccesso $ \(u,_) -> do
 		costrEventiAssenso u
 		]
 
+sincronizza  aggiornamento aggiornamenti = onAccesso $ \(r@(u,_)) -> do  
+	rs <- aggiornamenti
+	case rs of 
+		[] -> bocciato $ "nessun aggiornamento individale per lo stato attuale"
+		xs -> do
+			let k (Firmante f)  = do
+				(s,_) <- letturaStato'
+				aggiornamento $ f s xs
+			runSupporto (fst <$> letturaStato) bocciato k $ firmante r
+
+salvataggio = onAccesso $ \(r@(u,_)) -> do
+		let 	p up = sel $ ($up) . ($u) . writeUPatch . fst
+		 	k (Firmante f) = do 
+				evs <- letturaEventi
+				(fst <$> letturaStato') >>= \s -> p (f s evs) >> svuotaEventi
+		runSupporto (fst <$> letturaStato') bocciato k $ firmante r
 
 amministrazione :: Interfaccia ()
 amministrazione = do
 	
 	let	aggiornamenti = sel $ readUPatches .fst
 		aggiornamento g = sel $ ($g). writeGPatch .fst
-		sincronizza  = onAccesso $ \(r@(u,_)) -> do  
-			rs <- aggiornamenti
-			case rs of 
-				[] -> bocciato $ "nessun aggiornamento individale per lo stato attuale"
-				xs -> do
-					let k (Firmante f)  = do
-						(s,_) <- letturaStato'
-						aggiornamento $ f s xs
-					runSupporto (fst <$> letturaStato) bocciato k $ firmante r
+
 
 	mano "amministrazione" $ [
-			("aggiornamenti individuali in attesa", do
-				us <- sel $ readUPatches . fst
-				(s,_) <- letturaStato
-				let ps = fromUPatches (us,s)
-				(u,es) <- P.scelte (map (fst &&& id) ps) "scegli aggiornamento da visionare" 
-				P.output $ Response [("aggiornamento da parte di " ++ u, ResponseMany $ map ResponseOne (sortEventi es))]
-				),
+			("firma degli eventi prodotti",salvataggio),
+			("firma un aggiornamento di gruppo", sincronizza aggiornamento aggiornamenti),
 			("creazione nuove chiavi di responsable", bootChiavi),
-			("firma un aggiornamento di gruppo", sincronizza),
-			("scarica gli aggiornamenti individuali", aggiornamenti >>= P.download "aggiornamenti.txt"),
-			("carica aggiornamento di gruppo",P.upload "aggiornamento di gruppo" >>= aggiornamento), 
-			("manutenzione", menu "manutenzione" $ [
-				("scarica stato", sel (readStato . fst) >>= P.download "stato")
+			("accesso remoto", mano "accesso remoto" 
+				[("scarica gli eventi prodotti", letturaEventi >>= P.download "eventi.txt" )
+				,("carica aggiornamento individuale", P.errore $ ResponseOne "non implementato")
+				,("scarica gli aggiornamenti individuali", 
+					aggiornamenti >>= P.download "aggiornamenti.txt")
+				,("carica aggiornamento di gruppo",P.upload "aggiornamento di gruppo" >>= aggiornamento)
+				,("scarica stato", sel (readStato . fst) >>= P.download "stato")
 				])
 			]
 applicazione :: Costruzione MEnv () ()
@@ -211,10 +216,8 @@ applicazione = rotonda $ \_ -> do
 				("produzione eventi" , mano "produzione eventi" $ 
 					[("eventi democratici",votazioni)
 					,("eventi economici",economia)
-					,("eventi anagrafici",anagrafica)
-					,("firma degli eventi prodotti",salvataggio)
+					,("eventi anagrafici",anagrafica)				
 					,("correzione dell'insieme eventi",eliminazioneEvento)
-					,("scarica gli eventi", letturaEventi >>= P.download "eventi.txt" )
 					]),
 				("descrizione sessione", do
 					r <- sel $ readAccesso . snd

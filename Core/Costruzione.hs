@@ -1,24 +1,40 @@
-{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE NoMonomorphismRestriction, GeneralizedNewtypeDeriving, MultiParamTypeClasses, FlexibleInstances #-}
 -- | un wrapper intorno a Lib.Costruzione m per semplificare la costruzione di interfacce
 module Core.Costruzione (libero, scelte, upload, Supporto, runSupporto, CostrAction, download) where
 
-
 import Control.Applicative ((<$>))
-import Control.Monad.Error (lift, runErrorT, ErrorT)
-import Control.Monad.Reader (runReaderT, ReaderT)
+import Control.Monad (liftM)
+import Control.Monad.Error (lift, runErrorT, ErrorT,MonadError)
+import Control.Monad.Cont (MonadCont)
+import Control.Monad.Reader (runReaderT, ReaderT, MonadReader(..))
 
 import qualified Lib.Passo as P (Costruzione , libero, upload, scelte, download)
 
+import Debug.Trace
+
 -- | monade di supporto per la costruzione di valori con il valore interrogativo in reader e con la possibilita di fallire 
-type Supporto m s b = ReaderT s (ErrorT String (P.Costruzione m b))
+newtype Supporto m s b a = Supporto {unSupporto :: ReaderT (m s) (ErrorT String (P.Costruzione m b)) a} deriving
+	(Monad
+	,Functor
+	,MonadError String
+	)
+
+instance Monad m => MonadReader s (Supporto m s b) where
+	ask = Supporto $ ask >>= lift . lift . lift . lift
+	local f (Supporto k) = Supporto $ local (liftM f) k
 
 -- | eleva la costruzione nel supporto
-toSupporto :: (Monad m) => P.Costruzione m b a -> Supporto m s b a
-toSupporto = lift . lift
+toSupporto :: Monad m => P.Costruzione m b a -> Supporto m s b a
+toSupporto = Supporto . lift . lift
 
 -- | dato lo stato interrogativo e le continuazioni in caso di errore o meno esegue una azione di Supporto m
-runSupporto:: (Monad m) => m s -> (String -> P.Costruzione m b c) -> (a -> P.Costruzione m b c) -> Supporto m s b a -> P.Costruzione m b c
-runSupporto s kn kp f = lift (lift s) >>= \s' -> runErrorT (runReaderT f s') >>= either kn kp
+runSupporto	:: Monad m 
+		=> m s 
+		-> (String -> P.Costruzione m b c) 
+		-> (a -> P.Costruzione m b c) 
+		-> Supporto m s b a 
+		-> P.Costruzione m b c
+runSupporto s kn kp (Supporto f) = runErrorT (runReaderT f s) >>= either kn kp
 
 -- | passo libero elevato al supporto
 libero :: (Monad m ,Read a) => String -> Supporto m s b a

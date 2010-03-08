@@ -224,16 +224,11 @@ costrEventiResponsabili s kp kn =
 
 -- | costruzione delle interrogazione sull'anagrafe e sui costrResponsabili
 costrQueryAnagrafe :: (Monad m, ParteDi Anagrafe s, ParteDi Responsabili s) => CostrAction m c Response s
-costrQueryAnagrafe s kp kn = 	[("la chiave pubblica di un responsabile",queryChiave)
-				,("elenco nomi utenti",queryElencoUtenti)
+costrQueryAnagrafe s kp kn = 	[("elenco nomi utenti",queryElencoUtenti)
 				,("elenco nomi responsabili",queryElencoResponsabili)
 				] 
 	where
 	run = runSupporto s kn kp
-	queryChiave = run $ do
-		rs <- costrResponsabili 
-		(u,v) <- scelte (map (fst &&& id) rs) "selezione responsabile" 
-		return $ Response [("responsabile",ResponseOne u),("chiave pubblica",ResponseOne v)]
 	queryElencoUtenti = run $ do
 		us <- costrUtenti 
 		return $ Response [("elenco nomi utenti", ResponseMany $ map ResponseOne us)]
