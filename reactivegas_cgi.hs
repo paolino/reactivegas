@@ -17,13 +17,16 @@ import Network.SCGI
 
 layout = [["esecuzione accesso"],["produzione eventi"], ["interrogazione"],["amministrazione"],["descrizione sessione"]]
 pagina b = output . prettyHtml $  
-		header << (thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml)
-		+++ body << ((thediv ! [theclass "testata"] << "reactivegas (alpha)") +++ (thediv ! [theclass "utente"] << b))
+		header << (thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml +++ thetitle << "Reactivegas") 
+		+++ body << ((thediv ! [theclass "testata"] << anchor ! [href "/reset"] << "reactivegas (alpha)") +++ (thediv ! [theclass "utente"] << b))
 
-
+caricamento' s Nothing _ = s
+caricamento' s _ [] = s
+caricamento' s (Just (u,_)) evs = fst $ caricamento (map ((,) u) evs) s
 main = do
 	c <- atomically newTChan
 	forkIO . forever $ (atomically (readTChan c) >>= putStrLn)
-	pe <- mkGroupSystem loader nuovoStato c "tarogas" >>= startGroupSystem 10000000
-	sessionServer 5000 100  applicazione pagina layout ((,) pe <$> mkSessione) 
+	(gs,modif,agg) <- mkGroupSystem loader caricamento' nuovoStato c "tarogas" 
+	pe <- startGroupSystem 10000000 gs
+	sessionServer 5000 100  applicazione pagina layout ((,) pe <$> mkSessione modif agg) 
 	

@@ -56,11 +56,13 @@ reattori = [reazioneAnagrafe, reazioneAccredito, reazioneOrdine]
 -- | effettua un inserimento di eventi esterni nello stato, restituendo il nuovo. Stampa i logs
 caricamento :: [Esterno Utente] -> QS -> (QS,String)
 caricamento es = trace "caricamento" $ second (eccoILogs . map (first flatten)) . caricaEventi priorita reattori es 
+
 -- | creazione di un novo stato di tipo QS
 nuovoStato :: [Responsabile] -> QS
 nuovoStato rs = (bootAnagrafe rs  . bootAccredito . bootImpegni . bootOrdini $ (), replicate (length reattori) $ SNodo True [])
 
-
+sortEventi :: [Evento] -> [Evento]
+sortEventi = sortP priorita id
 
 loader ::  QS -> Group -> Writer [String] (Either String QS)
 loader (qs@(s,_)) g = runErrorT $ do

@@ -8,25 +8,42 @@ import System.Random (randomIO)
 import Network.SCGI (CGI,getCookie,newCookie,setCookie)
 
 
-import Lib.Server.Core (limitedDB,set,query)
+import Lib.Server.Core (limitedDB,set,query,forget)
 import Debug.Trace
-sessioning :: Int -> IO a -> IO (CGI a)
+
+type Droppable a = CGI (a, IO ())
+
+-- | we should treat the unwilling cookie browser (reject for now, at least), those now just trash our cookie db !
+sessioning 	:: Int  		-- ^ limit for remebering sessions
+		-> IO a 		-- ^ creation of default value
+		-> IO (Droppable a,Droppable a)	-- ^ (recall last value for cookie if present, reset anyway)
 sessioning l rs = do
 	sex <-  show <$> (randomIO :: IO Int)
 	tcs <- atomically . newTVar $ limitedDB l
-	return $ do
-		mc <- getCookie sex
-		c <- case mc of 
-			Just c -> do	lift $ print c 
-					return c
-			Nothing -> do 
-				cn <- lift $ show <$> (randomIO :: IO Int)
-				setCookie $ newCookie sex cn
-				return cn
-		lift $ do
-			s0 <- rs 
-			atomically $  do
+	let 	new c = do
+			s <- rs 
+			atomically $ do
 				cs <- readTVar tcs
-				case query cs c of
-					Just s -> trace "trovato" $ return s
-					Nothing -> writeTVar tcs (set cs (c,s0)) >> return s0
+		 		writeTVar tcs (set cs (c,s))
+			return s
+		gc = do 
+			mc <- getCookie sex
+			case mc of 
+				Just c -> return c
+				Nothing -> do 
+					cn <- lift $ show <$> (randomIO :: IO Int)
+					setCookie $ newCookie sex cn
+					return cn
+		yes = do
+			c <- gc 
+			r <- lift $ do  
+				ms <- atomically $ flip query c <$> readTVar tcs
+				maybe (new c) return ms 
+			return (r,droppa c)
+		no = do 
+			c <- gc 
+			r <- lift . new $ c
+			return (r, droppa c)
+		droppa c = atomically $ readTVar tcs >>= writeTVar tcs . flip forget c 
+			 	
+	return (yes,no)

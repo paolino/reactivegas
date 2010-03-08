@@ -41,8 +41,8 @@ liftServer ma = do
 type HServer e = Server e Html Link
 
 -- | map a Server reactor to a CGI action 
-cgiFromServer :: (Html -> CGI CGIResult) -> Server e Html Link -> CGI CGIResult
-cgiFromServer resp (fsM,(liftServer .) -> s) = do 
+cgiFromServer :: (Html -> CGI CGIResult) -> (Server e Html Link,IO ()) -> CGI CGIResult
+cgiFromServer resp ((fsM,(liftServer .) -> s),droppa) = do 
 	vs <- getVars 
 	is <- getInputs
 	r <- runErrorT $ case lookup "REQUEST_URI"  vs of 
@@ -83,7 +83,9 @@ cgiFromServer resp (fsM,(liftServer .) -> s) = do
 					case ehl of
 						Right hs -> lift . resp . pagina $ hs
 						Left _ -> throwError "l'interazione continua con un download"
-				_ -> lift (lift $ print xs) >> throwError "boh"
+				("reset":_) -> lift $ lift fsM >>= resp . pagina
+					
+				_ -> lift (lift droppa) >> throwError "boh"
 			
 	either (\s -> outputNotFound s) return r
 

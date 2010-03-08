@@ -1,13 +1,15 @@
-{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE ScopedTypeVariables, ViewPatterns #-}
 
 module Applicazioni.Server where
 
+
 import Data.List  (tails)
+import Data.List.Split (splitOneOf)
 import Control.Applicative ((<$>))
 import Control.Monad.Reader
 import Control.Monad.Cont
 import Text.XHtml (Html)
-import Network.SCGI(CGI, CGIResult, runSCGI, handleErrors)
+import Network.SCGI(CGI, CGIResult, runSCGI, handleErrors,getVars)
 import Network (PortID (PortNumber))
 
 
@@ -18,6 +20,7 @@ import Lib.Server.Session
 import Lib.Passo
 import qualified Lib.Passo as P
 import Lib.HTTP
+
 
 rzip :: [a] -> [b] -> [(a,b)]
 rzip xs ys = reverse $ zip (reverse xs) (reverse ys)
@@ -49,7 +52,7 @@ sessionFromHPasso 	:: Int
 			-> IO (Server e Html Link)
 sessionFromHPasso l e vss hp = do
 	fs <- forM vss $ \vs -> (,) (Just $ length vs) <$> restore (fromHPasso hp e) vs
-	mkServer l fs  print
+	mkServer l fs  (const $ return ())
 	
 		
 	
@@ -67,12 +70,24 @@ interazione = rotonda $ \k -> do
 -- sessionCgi :: Int -> Costruzione (ReaderT e IO) () () -> IO e -> IO (Server e Html Link) 
 sessionCgi l x vss me = do 	e <- me
  				runReaderT (svolgi x) e >>= sessionFromHPasso l e vss
-	 
--- singleSessionServer :: Int -> Int -> Costruzione (ReaderT e IO) () () -> IO e -> IO ()
-sessionServer p l x resp vss me = do
-	s <- sessioning 100 (sessionCgi l x vss me)	
-	runSCGI  (PortNumber $ fromIntegral p)  $ 
-		handleErrors (s >>= cgiFromServer resp)
---
---	in do	key <- show <$> (randomIO  :: IO Int)
---		return (key,FormPoint pass ctx env (h key) ml)
+	
+checkReset :: CGI a -> CGI a -> CGI a 
+checkReset reset k = do	
+	vs <- getVars 
+	case lookup "REQUEST_URI"  vs of 
+		Just x -> let xs =  tail $ splitOneOf "/?" x in
+			case xs of
+				("reset":_) -> reset
+				_ -> k
+		_ -> k
+
+sessionServer 	:: forall e . Int 	 -- ^ porta del server scgi
+			-> Int 	 -- ^ numero massimo di ricordi per sessione
+			-> Costruzione (ReaderT e IO) () () -- ^ interfaccia utente
+			-> (Html -> CGI CGIResult) -- ^ gestore del response
+			-> [[Value]] -- ^ serializzazione delle foem di default
+			-> IO e  -- ^ produzione di evironment per sessione 
+			-> IO () -- ^ aloa
+sessionServer (PortNumber . fromIntegral -> port) limit interface responseHandler defaultForms newEnvironment = do
+	(server :: CGI (Server e Html Link,IO ()),reset) <- sessioning 100 (sessionCgi limit interface defaultForms newEnvironment) 
+	runSCGI port $ handleErrors (checkReset reset server >>= cgiFromServer responseHandler)

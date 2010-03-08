@@ -28,7 +28,7 @@ import Eventi.Impegno (programmazioneImpegno)
 type Indice = Int
 data EsternoOrdine = AperturaOrdine String deriving (Read,Show) 
 priorityOrdine = R k  where
-	k (AperturaOrdine _) = -20 
+	k (AperturaOrdine _) = -28 
 
 data StatoOrdini = StatoOrdini {chiusi :: [(String, Maybe (Utente, [(Utente,Float)]))] , aperti :: [(Indice,String)], inapertura :: [(Indice,String)]}
 	deriving (Read,Show)

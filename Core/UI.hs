@@ -33,7 +33,7 @@ import Core.Patch (login, Firmante (..),firmante, Patch)
 import Core.Costruzione (runSupporto, Supporto)
 import Core.Persistenza (Persistenza (..))
 import Core.Sessione (Sessione (..))
-import Core.Applicazione (QS,caricamento, TS)
+import Core.Applicazione (QS,caricamento, TS, sortEventi)
 
 import Eventi.Anagrafe
 import Eventi.Accredito
@@ -42,7 +42,7 @@ import Eventi.Ordine
 -- sel :: (MonadReader (Persistenza QS, Sessione)  m, MonadIO m) => ((Persistenza QS, Sessione) -> IO b) -> m b
 sel f = asks f >>= liftIO 
 
-letturaStato' :: (Functor m, MonadReader (Persistenza QS, Sessione) m,MonadIO m) => m QS
+letturaStato' :: (Functor m, MonadReader (Persistenza QS, Sessione (Maybe QS)) m,MonadIO m) => m QS
 letturaStato' = fmap fromJust . sel $ readStato . fst
 
 fromUPatches :: ([Patch],TS) -> [(Utente,[Evento])]
@@ -50,25 +50,8 @@ fromUPatches  (ups,s) =
 	let (rs,_) = responsabili s
 	in catMaybes $ map (\(c,_,es) -> second (const es) <$> find (\(_,(c',_)) -> c == c') rs) ups
 
-caricando :: (Persistenza QS, Sessione) -> (Persistenza QS, Sessione)
-caricando (pe,se) = 
-	let 	third (_,_,x) = x
-	 	modifica _ Nothing = return Nothing
-		modifica se (Just s) = do  
-			evs <- readEventi se
-			ups <- readUPatches pe
-			mr <- readAccesso se
-			case mr of 
-				Nothing -> return $ Just s
-				Just (u,_) -> do
-					let (s',logs) =  caricamento 
-						(concatMap (\(u,evs) -> map ((,) u) evs) $ (u,evs):fromUPatches (ups,fst s))  
-						s
-					print logs
-					return . Just $ s'
-	in (pe{readStato = readStato pe >>= modifica se},se) 
 
-letturaStato = local caricando $ letturaStato' 
+letturaStato = fmap fromJust . sel $ readStatoSessione . snd  
 -- | semplifica il running dei Supporto
 
 conStato :: (String -> Interfaccia a) -> (b -> Interfaccia a) -> Supporto MEnv TS () b ->  Interfaccia a
@@ -88,7 +71,7 @@ onAccesso k = do
 	maybe (accesso >>= maybe (return ()) k) k mr
 
 -- | la monade dove gira il programma. Mantiene in lettura lo stato del gruppo insieme alle operazioni di IO. Nello stato la lista degli eventi aspiranti un posto nella patch
-type MEnv  = ReaderT (Persistenza QS, Sessione) IO 
+type MEnv  = ReaderT (Persistenza QS, Sessione (Maybe QS)) IO 
 
 type Interfaccia a = Costruzione MEnv () a
 
@@ -203,7 +186,7 @@ amministrazione = do
 				(s,_) <- letturaStato
 				let ps = fromUPatches (us,s)
 				(u,es) <- P.scelte (map (fst &&& id) ps) "scegli aggiornamento da visionare" 
-				P.output $ Response [("aggiornamento da parte di " ++ u, ResponseMany $ map ResponseOne es)]
+				P.output $ Response [("aggiornamento da parte di " ++ u, ResponseMany $ map ResponseOne (sortEventi es))]
 				),
 			("creazione nuove chiavi di responsable", bootChiavi),
 			("firma un aggiornamento di gruppo", sincronizza),
@@ -240,7 +223,7 @@ applicazione = rotonda $ \_ -> do
 						[("responsabile scelto" , ResponseOne $ case r of 
 							Nothing -> "anonimo"
 							Just (u,_) -> u)
-						,("eventi prodotti" , ResponseMany $ map ResponseOne evs)
+						,("eventi prodotti" , ResponseMany $ map ResponseOne (sortEventi evs))
 						]
 					),
 				("interrogazione", interrogazioni),

@@ -123,6 +123,7 @@ type GroupState a =
 	,TVar [(Utente,[Evento])] -- ^ eventi orfani dell'ultimo aggiornamento di gruppo
 	,TChan Group		-- ^ canale di aggiornamento di gruppo
 	,TChan String 		-- ^ log del gruppo
+	,TChan ()		-- ^ stato aggiornato
 	)
 
 -- | prepara un stato vergine
@@ -135,7 +136,8 @@ mkGroup = do
 	to <- atomically $ newTVar []
 	cg <- atomically $ newTChan 
 	cl <- atomically $ newTChan
-	return (tb,tv,ts,tp,to,cg,cl)
+	cs <- atomically $ newTChan
+	return (tb,tv,ts,tp,to,cg,cl,cs)
 
 		
 
@@ -155,59 +157,79 @@ aggiornamento
 	-> TVar [(Utente,[Evento])] -- ^ eventi orfani
 	-> TChan Group
 	-> TChan String
-	-> IO ()	-- ^ transazione 
-aggiornamento load  tv ts tp to cg tl = atomically $ do
+	-> TChan ()
+	-> STM ()	-- ^ transazione 
+aggiornamento load  tv ts tp to cg tl cs = do
 	s' <- readTVar ts
 	when (isNothing s') retry
 	let Just s = s'
-	g@(_,_,ps) <- trace ("patches!") $ readTChan cg
+	g@(_,_,ps) <- readTChan cg
 	let (es,ls) = runWriter $ load s g
-	trace (show ("output!",ls)) $ mapM (writeTChan tl) ls
+	trace (show ls) $ mapM (writeTChan tl) ls
 	case es of
-		Left e -> trace (show ("errore",e)) $ writeTChan tl e
+		Left e -> writeTChan tl e
 		Right s' -> do
-			
-			trace "nuovo stato" $ writeTVar ts $ Just s'
+			writeTVar ts $ Just s'
 			pos <- filter (not . (`elem` ps) . snd) <$> readTVar tp
 			os <- readTVar to
 			writeTVar to $ map (second $ \(_,_,evs) -> evs) pos `mix` os
 			writeTVar tp []
 			readTVar tv >>= writeTVar tv . (+1)
+			writeTChan cs ()
 	
 -- | il sistema gruppo , con il suo stato e le operazioni di persistenza
 type GroupSystem a = 
 	(Persistenza a	 		-- ^ stato complessivo del gruppo
-	,IO ()				-- ^ azione di aggiornamento
 	,IO ()				-- ^ azione di ripristino
 	,IO ()				-- ^ azione di persistenza
 	)
 
+type Modificato a = Maybe Responsabile -> [Evento] -> STM (Maybe a)
+
 -- | prepara uno stato vergine di un gruppo
 mkGroupSystem :: ( Read a, Show a) 
 	=> (a -> Group -> Writer [String] (Either String a)) 	-- ^ loader specifico per a
+	-> (a -> Maybe Responsabile -> [Evento] -> a)		-- ^ insertore diretto di eventi per a
 	-> ([Responsabile] -> a)				-- ^ inizializzatore di gruppo
 	-> TChan String 					-- ^ log di persistenza
 	-> GK 							-- ^ nome del gruppo
-	-> IO (GroupSystem a)					
+	-> IO (GroupSystem a, Modificato a, TChan ())					
 
-mkGroupSystem loader boot ptl x = do 
-		g@(tb,tv,ts,tp,to,cg,tl) <- mkGroup 
-		return 	(mkPersistenza boot g
-			,aggiornamento loader tv ts tp to cg tl 
-			,ripristino (groupUnwrite x) tv ts tp to ptl 
-			,persistenza (groupWrite x) tv ts tp to ptl
+mkGroupSystem loader modif boot ptl x = do 
+		g@(tb,tv,ts,tp,to,cg,tl,cs) <- mkGroup 
+		msg <- atomically $ dupTChan cg
+		return 	(	
+			(	mkPersistenza boot loader g
+				,ripristino (groupUnwrite x) tv ts tp to ptl 
+				,persistenza (groupWrite x) tv ts tp to ptl
+				)
+			, modificato modif ts
+			, cs
 			)
 
 startGroupSystem :: (Read a, Show a) => Int -> GroupSystem a -> IO (Persistenza a)
-startGroupSystem t (g,agg,rip,pers) = do
-	forkIO $ forever agg
+startGroupSystem t (g,rip,pers) = do
 	forkIO $ forever (threadDelay t >> pers)
 	rip
 	return g
 
-mkPersistenza :: ([Responsabile] -> a) -> GroupState a -> Persistenza a
-mkPersistenza boot (tb,tv,ts,tp,to,cg,tl) = let
-	readStato' = atomically $ readTVar ts
+modificato 	:: (a -> Maybe Responsabile -> [Evento] -> a) 
+		-> TVar (Maybe a) 
+		-> Modificato a
+modificato f ts mr es = do
+	ms <- trace (show ("read" ,maybe "" fst mr , es)) $ readTVar ts
+	
+	case ms of
+		Nothing -> return Nothing
+		Just s -> return . Just $ f s mr es 
+
+before a b = (a >> b) `orElse` b
+mkPersistenza 	:: ([Responsabile] -> a) 
+		-> (a -> Group -> Writer [String] (Either String a)) 	-- ^ loader specifico per a
+		-> GroupState a 	
+		-> Persistenza a
+mkPersistenza boot load  (tb,tv,ts,tp,to,cg,tl,cs) = let
+	readStato' = atomically . before (aggiornamento load  tv ts tp to cg tl cs) $ readTVar ts
 	writeStato' = atomically $ readTVar tb >>= writeTVar ts . Just . boot
 	readBoot' = atomically $ readTVar tb
 	writeBoot' = atomically . writeTVar tb

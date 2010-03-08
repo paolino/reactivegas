@@ -87,7 +87,7 @@ runPasso (P.Scelta q xs c) = let
 						hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]
 					]) 
 		) +++ internalmenu y z
-	resp x = trace x $ lookup x xs >>= return . c
+	resp x = lookup x xs >>= return . c
 	in (k, Nothing,resp)
 	
 runPasso (P.Upload q c ) = let
