@@ -69,6 +69,7 @@ div.response {
 	color: Red;
 	background-color: #f3d3f3 ;
 	margin: 5px;
+	overflow:auto;
 }
 dl dd {
 	text-indent:1em;

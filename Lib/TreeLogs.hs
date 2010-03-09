@@ -10,7 +10,7 @@ import Data.List
 import Control.Arrow
 
 --------------------- programma di stampa ------------------------------------------
-data Show a => Tree a = Node (a,[Tree a]) | Leaf 
+data Show a => Tree a = Node (a,[Tree a]) | Leaf deriving Show
 
 showTrees :: [[String]] -> String
 showTrees =  render . vcat . map renderTree . passa  where

@@ -217,6 +217,9 @@ applicazione = rotonda $ \_ -> do
 					[("eventi democratici",votazioni)
 					,("eventi economici",economia)
 					,("eventi anagrafici",anagrafica)				
+					,("effetto del caricamento degli eventi", do
+						c <- sel (readCaricamento . snd) 
+						trace c . P.output . Response $ [("effetto del caricamento eventi",  ResponseOne c)])
 					,("correzione dell'insieme eventi",eliminazioneEvento)
 					]),
 				("descrizione sessione", do

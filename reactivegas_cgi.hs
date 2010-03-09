@@ -20,9 +20,9 @@ pagina b = output . prettyHtml $
 		header << (thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml +++ thetitle << "Reactivegas") 
 		+++ body << ((thediv ! [theclass "testata"] << anchor ! [href "/reset"] << "reactivegas (alpha)") +++ (thediv ! [theclass "utente"] << b))
 
-caricamento' s Nothing _ = s
-caricamento' s _ [] = s
-caricamento' s (Just (u,_)) evs = fst $ caricamento (map ((,) u) evs) s
+caricamento' s Nothing _ = (s,"")
+caricamento' s _ [] = (s,"")
+caricamento' s (Just (u,_)) evs = caricamento (map ((,) u) evs) s
 main = do
 	c <- atomically newTChan
 	forkIO . forever $ (atomically (readTChan c) >>= putStrLn)

@@ -8,7 +8,7 @@ import Data.List (sort,partition,find)
 import Control.Monad.Writer
 import Control.Monad.Trans (MonadIO, liftIO)
 import Control.Applicative ((<$>))
-import Control.Arrow ((&&&), (***),second)
+import Control.Arrow ((&&&), (***),second, first)
 import Control.Exception (tryJust, SomeException (..))
 import Control.Concurrent (threadDelay, forkIO)
 import Control.Concurrent.STM
@@ -121,7 +121,7 @@ type GroupState a =
 	,TVar (Maybe a)		-- ^ stato
 	,TVar [(Utente,Patch)]	-- ^ associazione utente -> patch individuale
 	,TVar [(Utente,[Evento])] -- ^ eventi orfani dell'ultimo aggiornamento di gruppo
-	,TChan Group		-- ^ canale di aggiornamento di gruppo
+--	,TChan Group		-- ^ canale di aggiornamento di gruppo
 	,TChan String 		-- ^ log del gruppo
 	,TChan ()		-- ^ stato aggiornato
 	)
@@ -134,10 +134,10 @@ mkGroup = do
 	ts <- atomically $ newTVar Nothing
 	tp <- atomically $ newTVar []
 	to <- atomically $ newTVar []
-	cg <- atomically $ newTChan 
+--	cg <- atomically $ newTChan 
 	cl <- atomically $ newTChan
 	cs <- atomically $ newTChan
-	return (tb,tv,ts,tp,to,cg,cl,cs)
+	return (tb,tv,ts,tp,to,cl,cs)
 
 		
 
@@ -155,15 +155,15 @@ aggiornamento
 	-> TVar (Maybe a)
 	-> TVar [(Utente,Patch)]
 	-> TVar [(Utente,[Evento])] -- ^ eventi orfani
-	-> TChan Group
+--	-> TChan Group
 	-> TChan String
 	-> TChan ()
+	-> Group
 	-> STM ()	-- ^ transazione 
-aggiornamento load  tv ts tp to cg tl cs = do
+aggiornamento load  tv ts tp to tl cs g@(_,_,ps) = do
 	s' <- readTVar ts
 	when (isNothing s') retry
 	let Just s = s'
-	g@(_,_,ps) <- readTChan cg
 	let (es,ls) = runWriter $ load s g
 	trace (show ls) $ mapM (writeTChan tl) ls
 	case es of
@@ -184,20 +184,19 @@ type GroupSystem a =
 	,IO ()				-- ^ azione di persistenza
 	)
 
-type Modificato a = Maybe Responsabile -> [Evento] -> STM (Maybe a)
+type Modificato a = Maybe Responsabile -> [Evento] -> STM (Maybe a, String)
 
 -- | prepara uno stato vergine di un gruppo
 mkGroupSystem :: ( Read a, Show a) 
 	=> (a -> Group -> Writer [String] (Either String a)) 	-- ^ loader specifico per a
-	-> (a -> Maybe Responsabile -> [Evento] -> a)		-- ^ insertore diretto di eventi per a
+	-> (a -> Maybe Responsabile -> [Evento] -> (a,String))		-- ^ insertore diretto di eventi per a
 	-> ([Responsabile] -> a)				-- ^ inizializzatore di gruppo
 	-> TChan String 					-- ^ log di persistenza
 	-> GK 							-- ^ nome del gruppo
 	-> IO (GroupSystem a, Modificato a, TChan ())					
 
 mkGroupSystem loader modif boot ptl x = do 
-		g@(tb,tv,ts,tp,to,cg,tl,cs) <- mkGroup 
-		msg <- atomically $ dupTChan cg
+		g@(tb,tv,ts,tp,to,tl,cs) <- mkGroup 
 		return 	(	
 			(	mkPersistenza boot loader g
 				,ripristino (groupUnwrite x) tv ts tp to ptl 
@@ -213,23 +212,23 @@ startGroupSystem t (g,rip,pers) = do
 	rip
 	return g
 
-modificato 	:: (a -> Maybe Responsabile -> [Evento] -> a) 
+modificato 	:: (a -> Maybe Responsabile -> [Evento] -> (a,String)) 
 		-> TVar (Maybe a) 
 		-> Modificato a
 modificato f ts mr es = do
-	ms <- trace (show ("read" ,maybe "" fst mr , es)) $ readTVar ts
+	ms <-  readTVar ts
 	
 	case ms of
-		Nothing -> return Nothing
-		Just s -> return . Just $ f s mr es 
+		Nothing -> return (Nothing, "nessuno stato")
+		Just s -> return . first Just $ f s mr es 
 
 before a b = (a >> b) `orElse` b
 mkPersistenza 	:: ([Responsabile] -> a) 
 		-> (a -> Group -> Writer [String] (Either String a)) 	-- ^ loader specifico per a
 		-> GroupState a 	
 		-> Persistenza a
-mkPersistenza boot load  (tb,tv,ts,tp,to,cg,tl,cs) = let
-	readStato' = atomically . before (aggiornamento load  tv ts tp to cg tl cs) $ readTVar ts
+mkPersistenza boot load  (tb,tv,ts,tp,to,tl,cs) = let
+	readStato' = atomically $ readTVar ts
 	writeStato' = atomically $ readTVar tb >>= writeTVar ts . Just . boot
 	readBoot' = atomically $ readTVar tb
 	writeBoot' = atomically . writeTVar tb
@@ -237,7 +236,7 @@ mkPersistenza boot load  (tb,tv,ts,tp,to,cg,tl,cs) = let
 	writeOrfani' u es = atomically $ readTVar to >>= writeTVar to . ((u,es) :) .  filter ((/=) u . fst)  
 	writeUPatch' u p = atomically $ readTVar tp >>= writeTVar tp . ((u,p) :)
 	readUPatches' = atomically $ map snd <$> readTVar tp
-	writeGPatch' g = atomically $ writeTChan cg g
+	writeGPatch' g = atomically $ aggiornamento load  tv ts tp to tl cs g
 	readLogs' = atomically (dupTChan tl) >>= return . atomically . readTChan
 	in Persistenza readStato' writeStato' readBoot' writeBoot' readOrfani' 
 		writeOrfani' writeUPatch' readUPatches' writeGPatch' readLogs'
