@@ -15,7 +15,14 @@ import Core.Applicazione (loader, caricamento, nuovoStato)
 import Text.XHtml
 import Network.SCGI
 
-layout = [["esecuzione accesso"],["produzione eventi"], ["interrogazione"],["amministrazione"],["descrizione sessione"]]
+layout = [["esecuzione accesso"]
+	,["produzione eventi"]
+	,["interrogazione"]
+	,["amministrazione"]
+	,["descrizione sessione"]
+	,["effetto del caricamento degli eventi","produzione eventi"]
+	,["attribuzione di un voto","eventi democratici","produzione eventi"]
+	]
 pagina b = output . prettyHtml $  
 		header << (thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml +++ thetitle << "Reactivegas") 
 		+++ body << ((thediv ! [theclass "testata"] << anchor ! [href "/reset"] << "reactivegas (alpha)") +++ (thediv ! [theclass "utente"] << b))

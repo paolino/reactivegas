@@ -26,4 +26,9 @@ passa xs = let 	h = map ((head . head) &&& map tail) . groupBy ((==) `on` head)
 
 eccoILogs :: [([(String, String)], String)] -> String
 eccoILogs = decodeString . showTrees . map (\(as,b) -> (map (\(d,e) -> show d ++ ":" ++ e) as) ++ ["------> " ++ b])
-
+{-
+eil = map renderTree . passa . map (\(as,b) -> (map (\(d,e) -> show d ++ ":" ++ e) as) ++ ["------> " ++ b])
+	where
+		renderTree Leaf = ""
+		renderTree (Node (x,ts)) = 
+-}

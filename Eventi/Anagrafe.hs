@@ -193,7 +193,7 @@ costrUtenti = do
 
 -- | costruzione degli eventi esterni per la gestione costrUtenti e costrResponsabili
 costrEventiAnagrafe :: (Monad m, ParteDi Anagrafe s, ParteDi Responsabili s) => CostrAction m c EsternoAnagrafico s
-costrEventiAnagrafe s kp kn =	[("inserimento nuovo utente", eventoNuovoUtente)]
+costrEventiAnagrafe s kp kn =	[("inserimento di un nuovo utente", eventoNuovoUtente)]
 	where
 	run = runSupporto s kn kp
         eventoNuovoUtente =  run $ do
@@ -213,8 +213,8 @@ costrEventiResponsabili s kp kn =
 		rs <- costrResponsabili 
 		let ds = us \\ map fst rs
 		when (null ds) $ throwError "nessun utente non responsabile disponibile"
-                n <- scelte (map (id &&& id) ds) "selezione eleggibile" 
-                m <- upload $ "chiavi per l'utente" ++ n
+                n <- scelte (map (id &&& id) ds) "selezione dell'utente da eleggere a responsabile" 
+                m <- upload $ "caricamento delle chiavi per il responsabile" ++ n
                 return $ ElezioneResponsabile m
 
         eventoEliminazioneResponsabile = run $ do
@@ -275,15 +275,15 @@ programmazioneAssenso :: (
 programmazioneAssenso se ur c k kn = do
 	l <- nuovoStatoServizio (Assensi [] []) se -- ricevi la chiave per la nuova raccolta
 	let 	eliminaRichiesta u j = do
-			fallimento (ur /= u) "eliminazione di una richiesta di assenso effettuata da altro"
+			fallimento (ur /= u) "tentativo di eliminazione di una votazione aperta da un altro"
 			eliminaStatoServizio j (undefined :: Assensi)  
-			logga $ "chiusa la raccolta di assensi numero " ++ show l
+			logga $ "chiusa votazione numero " ++ show l
 			return (False,nessunEffetto) -- non rischedula il reattore
 
 		reattoreAssenso (Right (first validante -> (w,Assenso j))) = w $ \r -> do
 			when (j /= l) mzero
 			Assensi ps ns <- osservaStatoServizio j 
-			fallimento (r `elem` (ps ++ ns)) "il responsabile ha gia' posto un giudizio sulla richiesta" 
+			fallimento (r `elem` (ps ++ ns)) "il responsabile ha gia' votato sulla questione" 
 			let ps' = r:ps -- la nuova lista di assensi per j 
 			t <- c (ps',ns) -- controlla che si debba continuare a ricevere gli assensi
 			case t of
@@ -292,7 +292,7 @@ programmazioneAssenso se ur c k kn = do
 					(,) False <$> k j -- esegui la procedura finale come coronamento del 
 						-- consenso e non rischedula il reattore 
 				Indecidibile -> do		
-					logga $ "ricevuto assenso da " ++ show r ++ " sulla raccolta numero " ++ show j
+					logga $ "ricevuto assenso da " ++ show r ++ " sulla votazione numero " ++ show j
 					modificaStatoServizio j $ \_ -> return (Assensi ps' ns) -- registra gli assensi
 					return (True,nessunEffetto) -- continua a ricevere
 
@@ -307,7 +307,7 @@ programmazioneAssenso se ur c k kn = do
 					eliminaRichiesta r j
 					(,) False <$> kn j
 				Indecidibile -> do		
-					logga $ "ricevuto dissenso da " ++ show r ++ " sulla raccolta numero " ++ show j
+					logga $ "ricevuto dissenso da " ++ show r ++ " sulla votazione numero " ++ show j
 					modificaStatoServizio j $ \_ -> return (Assensi ps ns') -- registra gli assensi
 					return (True,nessunEffetto) -- continua a ricevere
 
@@ -320,7 +320,7 @@ programmazioneAssenso se ur c k kn = do
 			eliminaRichiesta u l
 			(,) False <$> kn l
 		reattoreAssenso (Left _) = return Nothing
-	logga $ "aperta la raccolta di assensi numero " ++ show l
+	logga $ "aperta la votazione numero " ++ show l
  	return (l,Reazione (Nothing, reattoreAssenso)) -- restituisce il riferimento a questa richiesta perché venga nominato negli eventi di assenso
 
 --------------------------- costruzioni per il modulo assensi -----------------------------
@@ -329,40 +329,40 @@ programmazioneAssenso se ur c k kn = do
 assensi :: (Monad m, ParteDi (Servizio Assensi) s) => Supporto m s b [(String, Int)]
 assensi = do
 	xs :: [(Int,(String,Assensi))] <- asks elencoSottoStati 
-	when (null xs) $ throwError "nessuna raccolta di assensi attiva"
+	when (null xs) $ throwError "nessuna votazione aperta"
 	return  $ map (fst . snd &&& fst) xs
 
 assensiFiltrati u = do
 	xs :: [(Int,(String,Assensi))] <- filter (not . elem u . (\(Assensi ps ns) -> ps ++ ns) . snd . snd)
 		<$> asks elencoSottoStati 
-	when (null xs) . throwError $ "nessuna raccolta di assensi aperta per l'utente " ++ u
+	when (null xs) . throwError $ "nessuna votazione aperta per il responsabile " ++ u
 	return  $ map (fst . snd &&& fst)  $ xs
 
 -- | costrutore degli eventi di assenso
 costrEventiAssenso :: (Monad m, Servizio Assensi `ParteDi` s) => Utente -> CostrAction m c EsternoAssenso s
-costrEventiAssenso u s kp kn = 	[("fallimento di una raccolta di assensi",eventoFallimentoAssenso)
-				,("attribuzione di un assenso",eventoAssenso u s kp kn )
+costrEventiAssenso u s kp kn = 	[("attribuzione di un voto",eventoAssenso u s kp kn )
+				,("fallimento di una raccolta di voti",eventoFallimentoAssenso)
 				] 
 	where
 	eventoAssenso u s kp kn = runSupporto s kn kp $ do
 		ys <- assensiFiltrati u
-		n <- scelte ys "seleziona la questione"
+		n <- scelte ys "esprimi un voto su"
 		ad <- scelte [("assenso",Assenso),("dissenso",Dissenso)] "esprimi un parere" 
 		return $ ad n
 
         eventoFallimentoAssenso = runSupporto s kn kp $ do
 		ys <- assensi
-                n <- scelte ys "selezione richiesta per fallire" 
+                n <- scelte ys "selezione la votazione da fare fallire" 
               	return $ EventoFallimentoAssenso n
 
 -- | costruzione delle interrogazioni sul modulo di assensi
 costrQueryAssenso :: (Monad m , Servizio Assensi `ParteDi` s) => CostrAction m c Response s
-costrQueryAssenso s kp kn = [("elenco richieste di assenso aperte", querySottoStati)] 
+costrQueryAssenso s kp kn = [("elenco votazioni aperte", querySottoStati)] 
 	where
 	querySottoStati = runSupporto s kn kp $ do
 		ys <- assensi
-		return $ Response [("elenco richieste di assenso aperte", if null ys then
-			ResponseOne "nessuna richiesta aperta" else Response (map (show . snd &&& ResponseOne . fst) ys))]
+		return $ Response [("elenco votazioni aperte", if null ys then
+			ResponseOne "nessuna votazione aperta" else Response (map (show . snd &&& ResponseOne . fst) ys))]
 priorityAssenso = R k where
 	k (Assenso _) = -25
 	k (Dissenso _) = -24
