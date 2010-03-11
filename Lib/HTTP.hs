@@ -3,12 +3,16 @@ module Lib.HTTP where
 
 import Control.Applicative
 import Text.XHtml
+import Data.Maybe
 import qualified Lib.Passo as P 
 import Lib.Response
 import Data.List
+
+import Network.URL
 import Debug.Trace
 
-
+mkLink :: String -> [(String,String)] -> String
+mkLink x = exportURL . foldl add_param (fromJust $ importURL x)
 
 data Link = Link 	{nomelink :: String
 			,valore :: String
@@ -16,11 +20,15 @@ data Link = Link 	{nomelink :: String
 			}
 
 
-internalmenu y z  =  	thediv ! [theclass "menu"] << (form ! [identifier $ "b" ++ tail y, method "post", action "/menu"] << 
-				([hidden "hkey" y,hidden "fkey" z] +++ 
-					( map (\x -> tag "input" ! [thetype "radio", theclass "menu" , name "valore" , value x] << x) ["clona","chiudi"])
-					+++ submit "" "Aspetto"))
-					 
+internalmenu y z  = let 
+	in	thediv ! [theclass "menu"] << ulist << (	
+				li ! [theclass "menu"] 
+					<< anchor ! [ href $ mkLink "/menu" [("hkey",y),("fkey",z),("valore","clona")]] 
+					<< "clona" 
+				+++ li ! [theclass "menu"] 
+					<< anchor ! [href $ mkLink "/menu" [("hkey",y),("fkey",z),("valore","chiudi")]] 
+					<< "chiudi" 
+				)	 
 
 renderResponse k x = thediv ! [theclass k] << renderResponse' x
 renderResponse' x@(ResponseOne _) =  thediv << show x
@@ -81,14 +89,10 @@ runPasso (P.Libero q c ) = let
 runPasso (P.Scelta q xs c) = let 
 	k y z =  thediv ! [theclass "passobox"] << 
 		(thediv ! [theclass "response"] << q +++ 
-			form ! [identifier $ "a" ++ tail y
-				, method "post"
-				, action "/interazione"
-				]<< (( map (\(x,_) -> tag "input" ! [theclass "passobox",thetype "radio", value x, name "valore"] << take 40 x +++ br) xs) +++  
-					[	hidden "hkey" y,  
-						hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]
-					]) 
-		) +++ internalmenu y z
+				 ulist << (map (\(x,_) -> li
+					<< anchor ! [theclass "passobox", href $ mkLink "/interazione" [("hkey",y),("fkey",z),("valore",x)]] 
+						<< x) xs ))  
+			+++ internalmenu y z
 	resp x = lookup x xs >>= return . c
 	in (k, Nothing,resp)
 	

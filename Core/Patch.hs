@@ -21,7 +21,8 @@ import Eventi.Anagrafe (Responsabile, Responsabili,Utente,costrResponsabili,resp
 
 -- | una patch è un insieme di eventi firmati da un responsabile
 type Patch = (Chiave,Firma,[Evento])
-
+firma :: Patch -> Firma
+firma (_,x, _) =  x
 -- | controlla che una patch sia accettabile, ovvero che il responsabile sia presente e che la firma sia corretta
 fromPatch :: (Responsabili `ParteDi` s, Show s, MonadReader s m, MonadError String m) => Patch -> m [Esterno Utente]
 fromPatch (c,f,xs) =  do

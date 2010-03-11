@@ -47,7 +47,10 @@ blockquote, q {
 }
 
 
-
+a:link.passobox {color:#0000ff;text-decoration:none;}
+a:visited.passobox {color:#0000ff;text-decoration:none;}
+a:hover.passobox {background-color: #f3d3f3;
+	text-decoration:underline;}
 div.testata {
 	border : 5px solid yellow;
 	float: clear;
@@ -71,17 +74,16 @@ div.response {
 	margin: 5px;
 	overflow:auto;
 }
-dl dd {
+dl dd dt {
 	text-indent:1em;
 	}
+
 div.passobox {
 	margin:5px;
 	height:25em;
 	overflow:auto;
 	}
-div.passobox select {
-	border: 0px;
-	}
+li.menu {display:inline;}
 div.menu {
 	background-color: #939393 ;
 }

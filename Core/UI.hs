@@ -51,7 +51,7 @@ fromUPatches  (ups,s) =
 	in catMaybes $ map (\(c,_,es) -> second (const es) <$> find (\(_,(c',_)) -> c == c') rs) ups
 
 
-letturaStato = fmap fromJust . sel $ readStatoSessione . snd  
+letturaStato = letturaStato' -- fmap fromJust . sel $ readStatoSessione . snd  
 -- | semplifica il running dei Supporto
 
 conStato :: (String -> Interfaccia a) -> (b -> Interfaccia a) -> Supporto MEnv TS () b ->  Interfaccia a
@@ -114,8 +114,9 @@ aggiornamentiIndividuali = ("aggiornamenti individuali in attesa", do
 	us <- sel $ readUPatches . fst
 	(s,_) <- letturaStato
 	let ps = fromUPatches (us,s)
-	(u,es) <- P.scelte (map (fst &&& id) ps) "scegli aggiornamento da visionare" 
-	P.output $ Response [("aggiornamento da parte di " ++ u, ResponseMany $ map ResponseOne (sortEventi es))]
+	if null ps then bocciato "non ci sono aggiornamenti individuali in attesa" else do 
+		(u,es) <- P.scelte (map (fst &&& id) ps) "scegli aggiornamento da visionare" 
+		P.output $ Response [("aggiornamento da parte di " ++ u, ResponseMany $ map ResponseOne (sortEventi es))]
 	)
 letturaEventi ::  Interfaccia [Evento]
 letturaEventi = sel $ readEventi . snd
@@ -125,8 +126,10 @@ svuotaEventi = sel $ ($[]). writeEventi . snd
 
 
 
-correzioneEventi  :: [Evento] -> Interfaccia ()
-correzioneEventi evs  = sel $ ($evs) . writeEventi . snd 
+correzioneEventi  :: ([Evento] -> [Evento]) -> Interfaccia ()
+correzioneEventi devs  = do
+	evs <- letturaEventi
+	sel $ ($ devs evs) . writeEventi . snd 
 
 
 eliminazioneEvento :: Interfaccia ()
@@ -135,12 +138,12 @@ eliminazioneEvento = do
 	if null es then bocciato "non ci sono eventi da eliminare"
 		else do 
 			x <- P.scelte (zip es es) "seleziona evento da eliminare"
-			correzioneEventi $ delete x es
+			correzioneEventi . const $ delete x es
 
 
 
 
-addEvento x = letturaEventi >>= \evs -> correzioneEventi (show x:evs)
+addEvento x = correzioneEventi (show x:)
 
 anagrafica :: Interfaccia ()
 anagrafica = mano "anagrafe" . wrapCostrActions addEvento $ [
@@ -169,17 +172,32 @@ sincronizza  aggiornamento aggiornamenti = onAccesso $ \(r@(u,_)) -> do
 	case rs of 
 		[] -> bocciato $ "nessun aggiornamento individale per lo stato attuale"
 		xs -> do
-			let k (Firmante f)  = do
-				(s,_) <- letturaStato'
-				aggiornamento $ f s xs
-			runSupporto (fst <$> letturaStato) bocciato k $ firmante r
+			let k (Firmante f)  = (fst <$> letturaStato') >>= \s -> aggiornamento (f s xs)
+			runSupporto (fst <$> letturaStato') bocciato k $ firmante r
 
-salvataggio = onAccesso $ \(r@(u,_)) -> do
+salvataggio = do
+	evs <- letturaEventi
+	if null evs then bocciato "non ci sono eventi da firmare" else onAccesso $ \(r@(u,_)) -> do
 		let 	p up = sel $ ($up) . ($u) . writeUPatch . fst
 		 	k (Firmante f) = do 
 				evs <- letturaEventi
 				(fst <$> letturaStato') >>= \s -> p (f s evs) >> svuotaEventi
 		runSupporto (fst <$> letturaStato') bocciato k $ firmante r
+
+-- | importa gli eventuali eventi già presenti
+
+importa :: Interfaccia ()
+importa = onAccesso $ \r@(u,(c,_)) -> do 
+	ps <- filter (\(c',_,_) -> c == c') <$>  sel (readUPatches . fst)
+	if null ps then	bocciato $ "non ci sono aggiornamenti individuali in attesa per il responsabile " ++ u
+
+		else do 
+		(p,f,es) <- P.scelte (zip (map show [1..]) ps) "scegli l'aggiornamento da importare e distruggere"
+		let k _ = do
+			correzioneEventi (es ++) 
+			sel (($f) . deleteUPatch . fst)	
+		runSupporto (fst <$> letturaStato') bocciato k $ firmante r
+	
 
 amministrazione :: Interfaccia ()
 amministrazione = do
@@ -190,9 +208,11 @@ amministrazione = do
 
 	mano "amministrazione" $ [
 			("firma degli eventi prodotti",salvataggio),
+			("importa e distruggi un aggiornamento individuale", importa),
 			("firma un aggiornamento di gruppo", sincronizza aggiornamento aggiornamenti),
 			("creazione nuove chiavi di responsable", bootChiavi),
 			("accesso remoto", mano "accesso remoto" 
+
 				[("scarica gli eventi prodotti", letturaEventi >>= P.download "eventi.txt" )
 				,("carica aggiornamento individuale", P.errore $ ResponseOne "non implementato")
 				,("scarica gli aggiornamenti individuali", 
@@ -219,7 +239,7 @@ applicazione = rotonda $ \_ -> do
 					,("eventi anagrafici",anagrafica)				
 					,("effetto del caricamento degli eventi", do
 						c <- sel (readCaricamento . snd) 
-						trace c . P.output . Response $ [("effetto del caricamento eventi",  ResponseOne c)])
+						P.output . Response $ [("effetto del caricamento eventi",  ResponseOne c)])
 					,("correzione dell'insieme eventi",eliminazioneEvento)
 					]),
 				("descrizione sessione", do
