@@ -51,7 +51,7 @@ sessionFromHPasso 	:: Int
 			-> HPasso (ReaderT e IO) () 
 			-> IO (Server e Html Link)
 sessionFromHPasso l e vss hp = do
-	fs <- forM vss $ \vs -> (,) (Just $ length vs) <$> restore (fromHPasso hp e) vs
+	fs <- forM vss $ \vs -> (,) Nothing <$> restore (fromHPasso hp e) vs
 	mkServer l fs  (const $ return ())
 	
 		

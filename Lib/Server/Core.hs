@@ -104,7 +104,7 @@ mkServer limit bs pers = do
 		-- restituisce le celle riferite alla chiave di environment
 		fos <- lift (atomically (($enk) . query <$> readTVar dbe)) >>= onNothing "chiave temporale non trovata" 
 		foi@(mi,fo)  <- onNothing "indice di cella non trovato" $ fok `M.lookup` fos
-		enk' <- lift $ show <$> (randomIO :: IO Int)
+		enk' <- lift $ show <$> (`mod` 10000000) <$> abs <$> (randomIO :: IO Int)
 		let 	ricarica' :: IM e b c ->ErrorT String IO (Either c (IM e b c))
 			ricarica' xs = Right 
 					>$> M.fromList 

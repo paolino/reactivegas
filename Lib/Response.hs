@@ -6,9 +6,9 @@ import Data.Typeable
 import Data.Maybe
 import Codec.Crypto.RSA
 import Text.PrettyPrint
-
+import Text.XHtml hiding (text)
 deriving instance Typeable PublicKey
-
+deriving instance Typeable Html
 data Response 
 	= forall a. (Typeable a, Show a) => ResponseOne a
 	| forall a . Show a => ResponseMany [a]

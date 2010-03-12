@@ -4,6 +4,7 @@ import Control.Monad (forever)
 import Control.Concurrent (forkIO)
 import Control.Concurrent.STM
 
+import Text.XHtml
 import Core.Types (Evento)
 import Eventi.Anagrafe (Responsabile)
 import Debug.Trace
@@ -13,7 +14,7 @@ data Sessione a = Sessione
 	,writeEventi :: [Evento] -> IO ()		-- ^ scrive gli eventi in memoria
 	,readAccesso :: IO (Maybe Responsabile)		-- ^ legge il responsabile in azione
 	,writeAccesso :: Maybe Responsabile -> IO ()	-- ^ scrive il responsabile in azione
-	, readCaricamento :: IO String
+	, readCaricamento :: IO Html
 	-- | legge lo stato modificato dagli eventi in memoria prodotti dal responsabile in memoria
 	,readStatoSessione :: IO a			
 	}
@@ -27,9 +28,9 @@ data Board a = Board
 	, triggers :: TChan (Either (Maybe Responsabile) [Evento]) -- il canale al quale inviare le modifiche
 	}
 
-type Update a = Maybe Responsabile -> [Evento] -> STM (a,String)
+type Update a = Maybe Responsabile -> [Evento] -> STM (a,Html)
 
-update :: Update a -> (TVar [Evento], TVar (Maybe Responsabile),  TVar a, TVar String) -> STM ()
+update :: Update a -> (TVar [Evento], TVar (Maybe Responsabile),  TVar a, TVar Html) -> STM ()
 update f (eventi,accesso,stato, caricatura) = do
 	mr <- readTVar accesso
 	evs <- readTVar eventi
@@ -42,7 +43,7 @@ triggering 	:: Update a  -- produce uno stato modificato
 		-> 	(TVar [Evento]
 			,TVar (Maybe Responsabile)
 			,TVar a
-			,TVar String
+			,TVar Html
 			,TChan (Either (Maybe Responsabile) [Evento])
 			,TChan ()
 			) 

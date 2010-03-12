@@ -8,10 +8,11 @@ import Control.Monad (forever)
 
 import Applicazioni.Server (sessionServer)
 
+import Core.Types (Esterno,Utente)
 import Core.Persistenza (mkGroupSystem, startGroupSystem, readStato)
 import Core.Sessione (mkSessione, readEventi , readAccesso)
 import Core.UI (applicazione)
-import Core.Applicazione (loader, caricamento, nuovoStato) 
+import Core.Applicazione (QS,loader, caricamento, nuovoStato) 
 import Text.XHtml
 import Network.SCGI
 
@@ -26,9 +27,12 @@ pagina b = output . prettyHtml $
 		+++ body << ((thediv ! [theclass "testata"] << anchor ! [href "/reset"] << "reactivegas (alpha)") 
 			+++ (thediv ! [theclass "utente"] << b))
 
-caricamento' s Nothing _ = (s,"")
-caricamento' s _ [] = (s,"")
-caricamento' s (Just (u,_)) evs = caricamento (map ((,) u) evs) s
+caricamento' :: QS -> [Esterno Utente] -> (QS,Html)
+caricamento' s es = let
+	(s',qs) = caricamento es s
+	qs' = ulist << map (li <<) (lines qs)
+	in (s',qs')
+	
 main = do
 	c <- atomically newTChan
 	forkIO . forever $ (atomically (readTChan c) >>= putStrLn)

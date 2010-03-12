@@ -16,13 +16,15 @@ import Control.Concurrent.STM
 import System.Directory (getCurrentDirectory)
 import System.FilePath ((</>), addExtension)
 
+import Text.XHtml hiding ((</>),value)
+
 
 import Lib.Valuedfiles  (Valuedfile (..), maybeParse, getValuedfiles)
 import Lib.Assocs (secondM)
 import Lib.Firmabile (Firma)
 
 import Core.Patch (Patch,firma,Group)
-import Core.Types (Evento,Utente)
+import Core.Types (Evento,Utente,Esterno)
 
 import Eventi.Anagrafe (Responsabile)
 
@@ -186,12 +188,12 @@ type GroupSystem a =
 	,IO ()				-- ^ azione di persistenza
 	)
 
-type Modificato a = Maybe Responsabile -> [Evento] -> STM (Maybe a, String)
+type Modificato a = Maybe Responsabile -> [Evento] -> STM (Maybe a, Html)
 
 -- | prepara uno stato vergine di un gruppo
 mkGroupSystem :: ( Read a, Show a) 
 	=> (a -> Group -> Writer [String] (Either String a)) 	-- ^ loader specifico per a
-	-> (a -> Maybe Responsabile -> [Evento] -> (a,String))		-- ^ insertore diretto di eventi per a
+	-> (a -> [Esterno Utente] -> (a,Html))		-- ^ insertore diretto di eventi per a (dovrebbe tornare xml !)
 	-> ([Responsabile] -> a)				-- ^ inizializzatore di gruppo
 	-> TChan String 					-- ^ log di persistenza
 	-> GK 							-- ^ nome del gruppo
@@ -214,16 +216,19 @@ startGroupSystem t (g,rip,pers) = do
 	rip
 	return g
 
-modificato 	:: (a -> Maybe Responsabile -> [Evento] -> (a,String)) 
+modificato 	:: (a -> [Esterno Utente] -> (a,Html)) 
 		-> TVar (Maybe a) 
 		-> TVar [(Utente,Patch)]
 		-> Modificato a
 modificato f ts tp mr es = do
 	ms <-  readTVar ts
-	ups <- concatMap (\(_,(_,_,es)) -> es) <$> readTVar tp	
-	case ms of
-		Nothing -> return (Nothing, "nessuno stato")
-		Just s -> return . first Just $ f s mr (ups ++ es) 
+	ups <- concatMap (\(u,(_,_,es)) -> map ((,) u) es) <$> readTVar tp	
+	return $ case ms of
+		Nothing -> (Nothing, h4 << "nessuno stato")
+		Just s -> first Just $ f s (ups ++ case mr of 
+			Nothing -> []
+			Just (u,_) -> map ((,) u) es
+			) 
 
 before a b = (a >> b) `orElse` b
 mkPersistenza 	:: ([Responsabile] -> a) 

@@ -1,4 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE ScopedTypeVariables, StandaloneDeriving #-}
 module Lib.HTTP where
 
 import Control.Applicative
@@ -7,9 +7,13 @@ import Data.Maybe
 import qualified Lib.Passo as P 
 import Lib.Response
 import Data.List
+import Data.Typeable
 
 import Network.URL
 import Debug.Trace
+
+
+
 
 mkLink :: String -> [(String,String)] -> String
 mkLink x = exportURL . foldl add_param (fromJust $ importURL x)
@@ -31,7 +35,9 @@ internalmenu y z  = let
 				)	 
 
 renderResponse k x = thediv ! [theclass k] << renderResponse' x
-renderResponse' x@(ResponseOne _) =  thediv << show x
+renderResponse' x@(ResponseOne y) =  case typeOf y == typeOf noHtml of
+		False -> thediv << show x
+		True -> thediv << (fromJust (cast y) :: Html)
 renderResponse' (ResponseMany xs) =  ulist << concatHtml (map  ((li <<) .  show ) xs) 
 renderResponse' (ResponseAL xs) =  dlist 
 		<< concatHtml (map  (\(x,y) -> dterm << x +++ ddef << show y) xs) 
