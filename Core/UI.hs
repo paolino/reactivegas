@@ -29,7 +29,7 @@ import Core.Controllo (caricaEventi, SNodo (..))
 import Core.Contesto (flatten)
 import Core.Programmazione (Reazione)
 import Core.Parsing (ParserConRead)
-import Core.Patch (login, Firmante (..),firmante, Patch)
+import Core.Patch ( Firmante (..),firmante, Patch)
 import Core.Costruzione (runSupporto, Supporto)
 import Core.Persistenza (Persistenza (..))
 import Core.Sessione (Sessione (..))
@@ -61,14 +61,12 @@ conStato x y z = runSupporto (fst <$> letturaStato) x y z
 bocciato :: String -> Interfaccia ()
 bocciato x =  P.errore . Response $ [("Incoerenza", ResponseOne x)] 
 
-accesso :: Interfaccia (Maybe Responsabile)
-accesso = do 
-	ac <- rotonda $ \k -> conStato bocciato k login 
-	sel $ ($ac) . writeAccesso . snd
-	return ac
-onAccesso k = do
-	mr <- sel $ readAccesso . snd
-	maybe (accesso >>= maybe (return ()) k) k mr
+accesso :: Interfaccia ()
+accesso = let k r = sel $ ($r) . writeAccesso . snd in do
+	(rs,_) <- responsabili . fst <$> letturaStato 
+	mano "scelta del responsabile" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
+
+onAccesso k = sel (readAccesso . snd) >>= maybe (accesso >> onAccesso k) k 
 
 -- | la monade dove gira il programma. Mantiene in lettura lo stato del gruppo insieme alle operazioni di IO. Nello stato la lista degli eventi aspiranti un posto nella patch
 type MEnv  = ReaderT (Persistenza QS, Sessione (Maybe QS)) IO 
@@ -109,7 +107,7 @@ interrogazioni = mano "interrogazione stato del gruppo" $ (wrapCostrActions P.ou
 		costrQueryOrdine,
 		costrQueryAssenso,
 		costrQueryImpegni
-		]) ++ [aggiornamentiIndividuali]
+		]) 
 aggiornamentiIndividuali = ("aggiornamenti individuali in attesa", do
 	us <- sel $ readUPatches . fst
 	(s,_) <- letturaStato
@@ -135,10 +133,10 @@ correzioneEventi devs  = do
 eliminazioneEvento :: Interfaccia ()
 eliminazioneEvento = do
 	es <- letturaEventi
-	if null es then bocciato "non ci sono eventi da eliminare"
-		else do 
-			x <- P.scelte (zip es es) "seleziona evento da eliminare"
-			correzioneEventi . const $ delete x es
+	if null es then bocciato "non ci sono eventi da eliminare" 
+		else let 
+		k x = letturaEventi >>= correzioneEventi . const . delete x 
+		in mano  "seleziona evento da eliminare" (zip es $ map k es)
 
 
 
@@ -211,6 +209,7 @@ amministrazione = do
 			("importa e distruggi un aggiornamento individuale", importa),
 			("firma un aggiornamento di gruppo", sincronizza aggiornamento aggiornamenti),
 			("creazione nuove chiavi di responsable", bootChiavi),
+			aggiornamentiIndividuali,
 			("accesso remoto", mano "accesso remoto" 
 
 				[("scarica gli eventi prodotti", letturaEventi >>= P.download "eventi.txt" )
@@ -232,7 +231,7 @@ applicazione = rotonda $ \_ -> do
 				]
 		Just s ->  
 			mano ("menu principale") [
-				("esecuzione accesso", accesso >> return ()),
+				("scelta del responsabile", accesso >> return ()),
 				("produzione eventi" , mano "produzione eventi" $ 
 					[("eventi democratici",votazioni)
 					,("eventi economici",economia)

@@ -98,13 +98,13 @@ programmazioneImpegno q ur = do
 		reattoreImpegno k (Right (first validante -> (w,FineImpegno j))) = w $ \r -> do
 			when (l /= j) mzero
 			Impegni us <- osservaStatoServizio j
-			fallimento (ur /= r) "solo chi ha aperto una impegnativa puó chiuderla"
+			fallimento (ur /= r) "solo chi ha aperto una raccolta di impegni puó chiuderla"
 			eliminaStatoServizio j (undefined :: Impegni)
 			(,) False <$> k (Just us) 
 		reattoreImpegno k (Right (first validante -> (w,FallimentoImpegno j))) = w $ \r -> do
 			when (l /= j) mzero
 			Impegni us <- osservaStatoServizio j
-			fallimento (ur /= r) "solo chi ha aperto una impegnativa puó chiuderla"
+			fallimento (ur /= r) "solo chi ha aperto una raccolta do impegni puó chiuderla"
 			mapM_ (\(u,v) -> accredita u v) us
 			eliminaStatoServizio j (undefined :: Impegni)
 			(ks,is) <- k Nothing 
@@ -155,7 +155,7 @@ costrEventiImpegno s kp kn = 	[("fine di una raccolta impegni", eventoFineImpegn
                 return $ Impegno u z n
 
 costrQueryImpegni :: (Monad m, ParteDi (Servizio Impegni) s) => CostrAction m c Response s
-costrQueryImpegni s kp kn = 	[("elenco impegni aperti",q)] 
+costrQueryImpegni s kp kn = 	[("elenco degli impegni aperti",q)] 
 	where
 	run = runSupporto s kn kp
 	r =  run $ do
