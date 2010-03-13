@@ -28,7 +28,7 @@ body {
 ol, ul {
 	list-style: none;
 }
-body { font: 12pt sans-serif; }
+body { font: 8pt sans-serif; }
 /* tables still need 'cellspacing="0"' in the markup */
 table {
 	border-collapse: separate;
@@ -47,8 +47,8 @@ blockquote, q {
 }
 
 
-a:link.passobox {color:#0000ff;text-decoration:none;}
-a:visited.passobox {color:#0000ff;text-decoration:none;}
+a:link.passobox {color:#0066ff;text-decoration:none;}
+a:visited.passobox {color:#0066ff;text-decoration:none;}
 a:hover.passobox {background-color: #f3d3f3;
 	text-decoration:underline;}
 a:link.menu {color:#6666ff;text-decoration:none;}
@@ -56,28 +56,28 @@ a:visited.menu {color:#6666ff;text-decoration:none;}
 a:hover.menu {background-color: #f3d3f3;
 	text-decoration:underline;}
 
-
 div.testata {
-	margin: 10px;
+	margin: 5px;
 	float: clear;
-	height : 100px;
+	height : 3em;
 	background-color: #f3f3f3;
 	}
 div.titolo {
-	font: 30pt sans-serif;
+	font: 16pt sans-serif;
 	float:left;
 	}
 div.reset {float:right;}
 div.interazione {
 	/*border: 1px solid green;*/
 	margin: 3px;
-	background-color: #f3d3f3 ;
+	background-color: #f5d5f5 ;
 	float:left;
-	width:400px;
+	width:23em;
 }
 dt {color: green;}
-.continua {
+input.continua {
 	float:right;
+	font: 8pt sans-serif;
 	}
 
 div.response {	
@@ -93,11 +93,13 @@ div.passobox {
 	height:20em;
 	margin:3px;
 	overflow:auto;
-	list-style-type: circle;
 	}
 
 div.menu {height:1.5em;background-color: #d3d3d3;margin:1px;}
 div.menu ul {float:right;}
 li.menu {display:inline;}
 
+div.utente {margin:5px;overflow:auto;height:46em;float:clear;}
+div.pedata {margin:5px;font: 8pt sans-serif;height:3em;background-color:#f3f3f3}
+div.pedata ul {float:right;}
 

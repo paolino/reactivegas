@@ -26,10 +26,15 @@ pagina b = output . prettyHtml $
 		header << (thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml +++ thetitle << "Tarogas (economia)") 
 		+++ body 
 			<< thediv ! [theclass "testata"] 
-				<< ((thediv ! [theclass "titolo"] << "Economia collaborativa Tarogas") +++
+				<< (thediv ! [theclass "titolo"] << "Amministrazione distribuita per il gruppo di acquisto Tarogas" +++
 				 (thediv ! [theclass "reset"] << anchor ! [href "/reset"] << "reset"))
 			+++ (thediv ! [theclass "utente"] << b)
-
+			+++ (thediv ! [theclass "pedata"] << ulist << [
+				li << ("Servizio sviluppato da " +++ anchor ! 
+					[href "mailto:paolo.veronelli@gmail.com"] << "paolino"),
+				li << ("Codice disponibile sotto licenza BSD presso " +++ anchor ! 
+					[href "http://github.com/paolino/reactivegas"] << "github.com")
+				])  
 caricamento' :: QS -> [Esterno Utente] -> (QS,Html)
 caricamento' s es = let
 	(s',qs) = caricamento es s
