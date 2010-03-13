@@ -16,22 +16,22 @@ import Core.Applicazione (QS,loader, caricamento, nuovoStato)
 import Text.XHtml
 import Network.SCGI
 
-layout = 	[["esecuzione accesso"]
-		,["produzione eventi"]
+layout = 	[["amministrazione"]
 		,["interrogazione"]
-		,["amministrazione"]
+		,["responsabile autore"]
+		,["produzione eventi"]
 		,["descrizione sessione"]
 		]
 pagina b = output . prettyHtml $  
 		header << (thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml +++ thetitle << "Tarogas (economia)") 
 		+++ body 
 			<< thediv ! [theclass "testata"] 
-				<< (thediv ! [theclass "titolo"] << "Amministrazione distribuita per il gruppo di acquisto Tarogas" +++
-				 (thediv ! [theclass "reset"] << anchor ! [href "/reset"] << "reset"))
+				<< (thediv ! [theclass "titolo"] << "Amministrazione distribuita per un gruppo di acquisto" +++
+				 (thediv ! [theclass "reset"] << anchor ! [href "/reset"] << "annulla la sessione"))
 			+++ (thediv ! [theclass "utente"] << b)
 			+++ (thediv ! [theclass "pedata"] << ulist << [
 				li << ("Servizio sviluppato da " +++ anchor ! 
-					[href "mailto:paolo.veronelli@gmail.com"] << "paolino"),
+					[href "mailto:paolo.veronelli@gmail.com"] << "paolino" +++ "e amici"),
 				li << ("Codice disponibile sotto licenza BSD presso " +++ anchor ! 
 					[href "http://github.com/paolino/reactivegas"] << "github.com")
 				])  

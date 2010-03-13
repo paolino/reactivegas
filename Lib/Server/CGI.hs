@@ -84,6 +84,7 @@ cgiFromServer resp ((fsM,(liftServer .) -> s),droppa) = do
 					ehl <- s (hk,fk,case v of 
 						"chiudi" -> Chiudi
 						"clona" -> Clona
+						"affonda" -> Affonda
 						_ -> Chiudi)
 					case ehl of
 						Right hs -> lift . resp . pagina $ hs

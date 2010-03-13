@@ -231,7 +231,7 @@ applicazione = rotonda $ \_ -> do
 				]
 		Just s ->  
 			mano ("menu principale") [
-				("scelta del responsabile", accesso >> return ()),
+				("responsabile autore", accesso >> return ()),
 				("produzione eventi" , mano "produzione eventi" $ 
 					[("eventi democratici",votazioni)
 					,("eventi economici",economia)

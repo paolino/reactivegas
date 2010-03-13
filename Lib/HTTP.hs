@@ -27,8 +27,11 @@ data Link = Link 	{nomelink :: String
 internalmenu y z  = let 
 	in	thediv ! [theclass "menu"] << ulist << (	
 				li ! [theclass "menu"] 
-					<< anchor ! [ theclass "menu", href $ mkLink "/menu" [("hkey",y),("fkey",z),("valore","clona")]] 
+					<< anchor ! [ theclass "menu", href $ mkLink "/menu" [("hkey",y),("fkey",z),("valore","clona")]]
 					<< "clona" 
+ 				+++ li ! [theclass "menu"] 
+					<< anchor ! [theclass "menu", href $ mkLink "/menu" [("hkey",y),("fkey",z),("valore","affonda")]] 
+					<< "accoda"
 				+++ li ! [theclass "menu"] 
 					<< anchor ! [theclass "menu", href $ mkLink "/menu" [("hkey",y),("fkey",z),("valore","chiudi")]] 
 					<< "chiudi" 
@@ -70,14 +73,8 @@ runPasso (P.Errore x c) = let
 			) +++ internalmenu y z
 	in (k, Nothing,\_ -> Just c )
 
-runPasso (P.Costruito x) =
-	(\_ _ -> thediv ! [theclass "passobox"] << 
-			(	thediv ! [theclass "response"] 
-				<< (anchor ! [href "/interazione"] << "riparti")
-			)
-		, 	Nothing
-		,	\_ -> Just $ return (P.Costruito x,[])
-		) -- brutta roba, infatti non va!
+runPasso (P.Costruito _) = runPasso . P.Errore 
+	(ResponseOne "vicolo cieco dell'interfaccia utente") $ return (P.Costruito undefined,[])
 
 runPasso (P.Libero q c ) = let 
 	k y z = thediv ! [theclass "passobox"] << 

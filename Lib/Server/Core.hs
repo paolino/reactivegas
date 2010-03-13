@@ -73,6 +73,7 @@ data Req
 	| Scarica 	
 	| Clona 
 	| Chiudi 
+	| Affonda
 	| Inchioda	
 
 -- | tutte le richieste portano con se la chiave di environment, e la chiave di cella
@@ -124,6 +125,9 @@ mkServer limit bs pers = do
 			esegui' Inchioda = do
 				ricarica' $ M.adjust (first (const . Just . length . serializzazione $ fo)) fok fos
 			esegui' Chiudi = ricarica' $ if M.size fos > 1 then M.delete fok fos else fos
+			esegui' Affonda = do
+				let 	(afos,bfos) = partition ((< fok) . fst) $ M.assocs fos
+				ricarica' . M.fromList $ afos ++ tail bfos ++ [(last (M.keys fos) + 1,foi)]
 			update fos' = do
 				lift . pers $ map (serializzazione . snd) $ M.elems fos'
 				lift . atomically $ do 
