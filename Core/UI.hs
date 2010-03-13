@@ -108,7 +108,7 @@ interrogazioni = mano "interrogazione stato del gruppo" $ (wrapCostrActions P.ou
 		costrQueryAssenso,
 		costrQueryImpegni
 		]) 
-aggiornamentiIndividuali = ("aggiornamenti individuali in attesa", do
+aggiornamentiIndividuali = ("interroga aggiornamenti in attesa", do
 	us <- sel $ readUPatches . fst
 	(s,_) <- letturaStato
 	let ps = fromUPatches (us,s)
@@ -190,7 +190,9 @@ importa = onAccesso $ \r@(u,(c,_)) -> do
 	if null ps then	bocciato $ "non ci sono aggiornamenti individuali in attesa per il responsabile " ++ u
 
 		else do 
-		(p,f,es) <- P.scelte (zip (map show [1..]) ps) "scegli l'aggiornamento da importare e distruggere"
+		(_,f,es) <- case ps of
+			[r] -> return r
+			_ -> P.scelte (zip (map show [1..]) ps) $ "aggiornamenti di " ++  u ++ " in attesa"
 		let k _ = do
 			correzioneEventi (es ++) 
 			sel (($f) . deleteUPatch . fst)	
@@ -205,10 +207,10 @@ amministrazione = do
 
 
 	mano "amministrazione" $ [
-			("firma degli eventi prodotti",salvataggio),
-			("importa e distruggi un aggiornamento individuale", importa),
+			("firma un aggiornamento individuale",salvataggio),
+			("modifica un aggiornamento individuale", importa),
 			("firma un aggiornamento di gruppo", sincronizza aggiornamento aggiornamenti),
-			("creazione nuove chiavi di responsable", bootChiavi),
+			("creazione nuove chiavi di responsabile", bootChiavi),
 			aggiornamentiIndividuali,
 			("accesso remoto", mano "accesso remoto" 
 
@@ -217,7 +219,7 @@ amministrazione = do
 				,("scarica gli aggiornamenti individuali", 
 					aggiornamenti >>= P.download "aggiornamenti.txt")
 				,("carica aggiornamento di gruppo",P.upload "aggiornamento di gruppo" >>= aggiornamento)
-				,("scarica stato", sel (readStato . fst) >>= P.download "stato")
+				,("scarica stato", sel (readStato . fst) >>= maybe (bocciato "stato non presente") (P.download "stato"))
 				])
 			]
 applicazione :: Costruzione MEnv () ()
