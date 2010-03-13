@@ -51,15 +51,27 @@ a:link.passobox {color:#0000ff;text-decoration:none;}
 a:visited.passobox {color:#0000ff;text-decoration:none;}
 a:hover.passobox {background-color: #f3d3f3;
 	text-decoration:underline;}
+a:link.menu {color:#6666ff;text-decoration:none;}
+a:visited.menu {color:#6666ff;text-decoration:none;}
+a:hover.menu {background-color: #f3d3f3;
+	text-decoration:underline;}
+
+
 div.testata {
-	border : 5px solid yellow;
+	margin: 10px;
 	float: clear;
 	height : 100px;
-	font: 30pt sans-serif;
+	background-color: #f3f3f3;
 	}
-
+div.titolo {
+	font: 30pt sans-serif;
+	float:left;
+	}
+div.reset {float:right;}
 div.interazione {
-	border: 1px solid green;
+	/*border: 1px solid green;*/
+	margin: 3px;
+	background-color: #f3d3f3 ;
 	float:left;
 	width:400px;
 }
@@ -70,8 +82,7 @@ dt {color: green;}
 
 div.response {	
 	color: Red;
-	background-color: #f3d3f3 ;
-	margin: 5px;
+	margin:3px;	
 	overflow:auto;
 }
 dl dd dt {
@@ -79,12 +90,14 @@ dl dd dt {
 	}
 
 div.passobox {
-	margin:5px;
-	height:25em;
+	height:20em;
+	margin:3px;
 	overflow:auto;
+	list-style-type: circle;
 	}
+
+div.menu {height:1.5em;background-color: #d3d3d3;margin:1px;}
+div.menu ul {float:right;}
 li.menu {display:inline;}
-div.menu {
-	background-color: #939393 ;
-}
+
 

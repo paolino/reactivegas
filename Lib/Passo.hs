@@ -73,6 +73,6 @@ rotonda f = callCC $ \k -> forever $ get >>= \c -> f k >> put c
 
 mano s xs = rotonda (rmenu s xs)
 
-rmenu s xs k = menu s $ ("uscita",k ()):xs
+rmenu s xs k = menu s $ ("<---",k ()):xs
 
 

@@ -4,7 +4,7 @@ module Lib.Server.CGI (cgiFromServer) where
 
 import Data.List.Split (splitOneOf)
 import Data.Maybe (listToMaybe)
-
+import qualified Data.ByteString.Lazy.Char8 as B (readFile)
 import Control.Monad.Error (Error , ErrorT,runErrorT,throwError,lift)
 import Network.SCGI
 import Lib.Server.Core
@@ -53,6 +53,11 @@ cgiFromServer resp ((fsM,(liftServer .) -> s),droppa) = do
 					css <- liftIO $ readFile "style.css"   
 					lift $ do 	setHeader "Content-type" "text/css"
 							output css
+				["favicon.ico"] -> do
+					css <- liftIO $ B.readFile "favicon.ico"   
+					lift $ do 	setHeader "Content-type" "image/ico"
+							outputFPS css
+
 				("interazione":_) -> do 
 					hk <- readHKey
 					fk <- readFKey

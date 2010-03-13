@@ -87,7 +87,7 @@ persistenza write tversion tstato tupatch torfani tlog = do
 
 -- | Operazione di ripristino. Legge lo stato del gruppo 
 ripristino
-	:: Read a =>  (forall b . Read b => String -> Maybe Int -> IO (Maybe (Int, b)))
+	:: (Read a, Show  a) =>  (forall b . Read b => String -> Maybe Int -> IO (Maybe (Int, b)))
 	-> TVar Int
 	-> TVar (Maybe a)
 	-> TVar [(Utente,Patch)]
@@ -109,7 +109,7 @@ ripristino unwrite tversion tstato tupatch torfani tlog = do
 			os <- unwrite "orfani" (Just v)
 			atomically $ do
 				writeTChan tlog $ "rilevato stato " ++ show v ++ " per questo gruppo"
-				writeTVar tstato  $ Just x
+				writeTVar tstato  $ seq (last . show $ x) $ Just x
 				when (isJust ps) $ do
 					writeTVar tupatch . snd . fromJust $ ps
 					writeTChan tlog $ "rilevati aggiornamenti utente " ++ show (length . snd . fromJust $ ps)

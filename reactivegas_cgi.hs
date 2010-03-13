@@ -23,9 +23,12 @@ layout = 	[["esecuzione accesso"]
 		,["descrizione sessione"]
 		]
 pagina b = output . prettyHtml $  
-		header << (thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml +++ thetitle << "Reactivegas") 
-		+++ body << ((thediv ! [theclass "testata"] << anchor ! [href "/reset"] << "reactivegas (alpha)") 
-			+++ (thediv ! [theclass "utente"] << b))
+		header << (thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml +++ thetitle << "Tarogas (economia)") 
+		+++ body 
+			<< thediv ! [theclass "testata"] 
+				<< ((thediv ! [theclass "titolo"] << "Economia collaborativa Tarogas") +++
+				 (thediv ! [theclass "reset"] << anchor ! [href "/reset"] << "reset"))
+			+++ (thediv ! [theclass "utente"] << b)
 
 caricamento' :: QS -> [Esterno Utente] -> (QS,Html)
 caricamento' s es = let

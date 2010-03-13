@@ -2,7 +2,7 @@
 module Lib.Server.Core where
 
 import Data.Maybe (listToMaybe)
-import Data.List (lookup)
+import Data.List (lookup,partition)
 
 import Control.Applicative ((<$>))
 import Control.Concurrent.STM (newTVar,  readTVar, writeTVar,atomically)
@@ -119,8 +119,8 @@ mkServer limit bs pers = do
 			esegui' Scarica = 
 				fmap Left . onNothing "la form non contiene un valore da scaricare" $ scarica fo
 			esegui' Clona  = do
-				let fok' = last (M.keys fos) + 1
-				ricarica' $ M.insert fok' foi fos
+				let 	(afos,bfos) = partition ((< fok) . fst) $ M.assocs fos
+				ricarica' . M.fromList $ afos ++ (fok,foi): map (first (+1)) bfos
 			esegui' Inchioda = do
 				ricarica' $ M.adjust (first (const . Just . length . serializzazione $ fo)) fok fos
 			esegui' Chiudi = ricarica' $ if M.size fos > 1 then M.delete fok fos else fos

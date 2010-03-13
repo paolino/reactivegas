@@ -27,10 +27,10 @@ data Link = Link 	{nomelink :: String
 internalmenu y z  = let 
 	in	thediv ! [theclass "menu"] << ulist << (	
 				li ! [theclass "menu"] 
-					<< anchor ! [ href $ mkLink "/menu" [("hkey",y),("fkey",z),("valore","clona")]] 
+					<< anchor ! [ theclass "menu", href $ mkLink "/menu" [("hkey",y),("fkey",z),("valore","clona")]] 
 					<< "clona" 
 				+++ li ! [theclass "menu"] 
-					<< anchor ! [href $ mkLink "/menu" [("hkey",y),("fkey",z),("valore","chiudi")]] 
+					<< anchor ! [theclass "menu", href $ mkLink "/menu" [("hkey",y),("fkey",z),("valore","chiudi")]] 
 					<< "chiudi" 
 				)	 
 
