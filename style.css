@@ -80,6 +80,14 @@ input.continua {
 	font: 8pt sans-serif;
 	}
 
+input.download {
+	float:right;
+	font: 8pt sans-serif;
+	}
+
+input#valore {font: 8pt sans-serif;
+	}
+
 div.response {	
 	color: Red;
 	margin:3px;	
