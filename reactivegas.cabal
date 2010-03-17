@@ -35,7 +35,7 @@ Executable reactivegas_cgi
                 stm, 
                 xhtml, 
                 split,
-                scgi
+                scgi,url
 Library 
  exposed-modules: Lib.Passo,Lib.Response,Lib.Server.CGI,Lib.Server.Core, Lib.Server.Session, Lib.Assocs
  ghc-options: -Wall

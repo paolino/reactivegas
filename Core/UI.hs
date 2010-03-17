@@ -101,7 +101,7 @@ wrapCostrActions
 wrapCostrActions g = concatMap (\f -> f (fst <$> letturaStato) g bocciato)
 
 interrogazioni :: Interfaccia ()
-interrogazioni = mano "interrogazione stato del gruppo" $ (wrapCostrActions P.output $ [
+interrogazioni = mano "interrogazione dello stato del gruppo" $ (wrapCostrActions P.output $ [
 		costrQueryAccredito,
 		costrQueryAnagrafe,
 		costrQueryOrdine,
@@ -136,7 +136,7 @@ eliminazioneEvento = do
 	if null es then bocciato "non ci sono eventi da eliminare" 
 		else let 
 		k x = letturaEventi >>= correzioneEventi . const . delete x 
-		in mano  "seleziona evento da eliminare" (zip es $ map k es)
+		in mano  "seleziona un evento da eliminare" (zip es $ map k es)
 
 
 
@@ -144,14 +144,14 @@ eliminazioneEvento = do
 addEvento x = correzioneEventi (show x:)
 
 anagrafica :: Interfaccia ()
-anagrafica = mano "anagrafe" . wrapCostrActions addEvento $ [
+anagrafica = mano "eventi anagrafici" . wrapCostrActions addEvento $ [
 		costrEventiResponsabili,
 		costrEventiAnagrafe 
 		]
 
 
 economia  :: Interfaccia () 
-economia = mano "economia" . concat $ 
+economia = mano "eventi economici" . concat $ 
 		[wrapCostrActions addEvento [costrEventiAccredito]
 		,wrapCostrActions addEvento [costrEventiImpegno]
 		,wrapCostrActions addEvento [costrEventiOrdine]
@@ -161,7 +161,7 @@ votazioni :: Interfaccia ()
 votazioni = onAccesso $ \(u,_) -> do
 	
 	n <- conStato (const $ return 0) (return . length) (assensiFiltrati u) 
-	mano ("votazioni (" ++ show n ++ " votazioni in attesa)") . wrapCostrActions addEvento $ [
+	mano ("eventi democratici (" ++ show n ++ " questioni aperte)") . wrapCostrActions addEvento $ [
 		costrEventiAssenso u
 		]
 

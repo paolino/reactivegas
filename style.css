@@ -60,17 +60,17 @@ div.testata {
 	height : 3em;
 	background-color: #eeffee;
 	}
-div.titolo {
+div.titolo {margin:5px;
 	font: 16pt sans-serif;
 	float:left;
 	}
-div.reset {float:right;}
+div.reset {margin:5px;float:right;}
 div.interazione {
 	border: 1px dotted #dddddd;
 	margin: 2px;
 	background-color: #f5f5f5 ;
 	float:left;
-	width:23em;
+	width:22em;
 }
 dt {color: green;}
 input.continua {
@@ -91,21 +91,28 @@ div.response {
 	margin:3px;	
 	overflow:auto;
 }
-dl dd dt {
+dl dd {
 	text-indent:1em;
 	}
-
+dd dt {
+	text-indent:2em;
+	}
 div.passobox {
 	height:20em;
 	margin:3px;
 	overflow:auto;
 	}
-
+/*div.passobox ul li  a {width:20em}*/
 div.menu {height:1.5em;margin:1px;}
-div.menu ul {float:right;}
+div.menu ul {background-color:#efefef ;
+	float:right;
+}
+dt {color: green;}
+input.continua {
+ float:right;}
 li.menu {display:inline;}
 
 div.utente {margin:5px;overflow:auto;height:46em;float:clear;}
 div.pedata {margin:5px;font: 8pt sans-serif;height:3em;background-color:#eeffee}
-div.pedata ul {float:right;}
+div.pedata ul {margin:5px;float:right;}
 
