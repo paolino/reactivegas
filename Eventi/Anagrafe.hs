@@ -214,7 +214,7 @@ costrEventiResponsabili s kp kn =
 		let ds = us \\ map fst rs
 		when (null ds) $ throwError "nessun utente non responsabile disponibile"
                 n <- scelte (map (id &&& id) ds) "selezione dell'utente da eleggere a responsabile" 
-                m <- upload $ "caricamento delle chiavi per il responsabile" ++ n
+                m <- upload $ "caricamento delle chiavi per il responsabile " ++ n
                 return $ ElezioneResponsabile m
 
         eventoEliminazioneResponsabile = run $ do
