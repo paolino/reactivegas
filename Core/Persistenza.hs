@@ -50,8 +50,10 @@ data Persistenza a = Persistenza
 
 -- | scrive un dato riguardante un gruppo
 groupWrite :: Show a => GK -> String -> Int -> a -> IO ()
-groupWrite x y v = writeFile (x </> addExtension y (show v)) . show
-	
+groupWrite x y v t = do 
+	r <- tryJust (\(SomeException x) -> Just $ show x) (writeFile (x </> addExtension y (show v)) . show $ t) 
+	either putStrLn return r
+
 -- | legge un dato riguardante un gruppo
 groupUnwrite :: Read a => GK -> String -> Maybe Int -> IO (Maybe (Int,a))
 groupUnwrite x y mv = do
