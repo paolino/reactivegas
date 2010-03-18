@@ -16,11 +16,13 @@ import Core.Applicazione (QS,loader, caricamento, nuovoStato)
 import Text.XHtml
 import Network.SCGI
 
-layout = 	[["amministrazione"]
-		,["interrogazione"]
-		,["responsabile autore"]
-		,["produzione eventi"]
-		,["descrizione sessione"]
+layout = 	[(["amministrazione"],1)
+		,(["interrogazione"],1)
+		,(["responsabile autore"],1)
+		,(["produzione eventi"],1)
+		,(["correzione dell'insieme eventi","produzione eventi"],1) 
+		,(["descrizione sessione"],1)
+		,(["effetto del caricamento degli eventi", "produzione eventi"],2)
 		]
 pagina b = output . prettyHtml $  
 		header << (thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml +++ thetitle << "Tarogas (economia)") 

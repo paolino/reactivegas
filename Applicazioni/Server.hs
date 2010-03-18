@@ -47,11 +47,11 @@ fromHPasso _ _ = error "inizializzazione con contesto non implementata"
 
 sessionFromHPasso 	:: Int 
 			-> e 
-			-> [[Value]]
+			-> [([Value],Int)]
 			-> HPasso (ReaderT e IO) () 
 			-> IO (Server e Html Link)
 sessionFromHPasso l e vss hp = do
-	fs <- forM vss $ \vs -> (,) Nothing <$> restore (fromHPasso hp e) vs
+	fs <- forM vss $ \(vs,i) -> flip (,) i . (,) Nothing <$> restore (fromHPasso hp e) vs
 	mkServer l fs  (const $ return ())
 	
 		
@@ -85,7 +85,7 @@ sessionServer 	:: forall e . Int 	 -- ^ porta del server scgi
 			-> Int 	 -- ^ numero massimo di ricordi per sessione
 			-> Costruzione (ReaderT e IO) () () -- ^ interfaccia utente
 			-> (Html -> CGI CGIResult) -- ^ gestore del response
-			-> [[Value]] -- ^ serializzazione delle foem di default
+			-> [([Value],Int)] -- ^ serializzazione delle form di default
 			-> IO e  -- ^ produzione di evironment per sessione 
 			-> IO () -- ^ aloa
 sessionServer (PortNumber . fromIntegral -> port) limit interface responseHandler defaultForms newEnvironment = do

@@ -14,7 +14,7 @@ import System.Random (randomIO)
 import qualified Data.IntMap as M 
 
 import Debug.Trace
-import Lib.Assocs (secondM)
+import Lib.Assocs (secondM, firstM)
 
 ------------------------------------ library -----------------------------------------
 -- | interfaccia di un DB
@@ -74,66 +74,73 @@ data Req
 	| Clona 
 	| Chiudi 
 	| Affonda
-	| Inchioda	
+	| Inchioda
+	| Allarga
+	| Restringi	
 
 -- | tutte le richieste portano con se la chiave di environment, e la chiave di cella
 type Request = (Enk,Fok,Req)
 
 type NailedForm e b c = (Maybe Int,Form e b c)
-type IM e b c = M.IntMap (NailedForm e b c)
+type IM e b c = M.IntMap (NailedForm e b c,Int)
 -- | una mappatura tra chiavi di environment e insiemi di celle
 type Servizio e b c = DB Enk (IM e b c)
 
 -- | il server come reattore a richieste
-type Server e b c = (IO [b],Request -> ErrorT String IO (Either c [b]))
+type Server e b c = (IO [(b,Int)],Request -> ErrorT String IO (Either c [(b,Int)]))
 
 -- | costruisce un server a partire dalla form base
 mkServer 	:: forall e b c . Int 			-- ^ limite per il numero di environments
-		-> [NailedForm e b c] 		-- ^ forms di base
+		-> [(NailedForm e b c,Int)] 		-- ^ forms di base
 		-> ([[Value]] -> IO ()) -- ^ persistenza
 		-> IO (Server e b c)	-- ^ il reattore 
 
 mkServer limit bs pers = do
-	let ibs = zip [0..] bs
-	dbe <- atomically . newTVar $ set (limitedDB limit) ("0",M.fromList ibs)
+	let ibs =  zip [0..] bs
+	dbe <- atomically . newTVar $ set (limitedDB limit) ("0",M.fromList ibs )
 	let
 	  def = atomically $ do 
 			Just enk <- lkey <$> readTVar dbe 
 			Just fos <- ($enk) . query <$> readTVar dbe
-			return . map (\(i,(_,fo)) -> form fo enk i) $ M.assocs fos 
+			return . map (\(i,((_,fo),j)) -> (form fo enk i,j)) $ M.assocs fos 
 	  req (enk,fok,q) = do
 		-- restituisce le celle riferite alla chiave di environment
 		fos <- lift (atomically (($enk) . query <$> readTVar dbe)) >>= onNothing "chiave temporale non trovata" 
-		foi@(mi,fo)  <- onNothing "indice di cella non trovato" $ fok `M.lookup` fos
+		
+		foi@((mi,fo),j :: Int)  <- onNothing "indice di cella non trovato" $ fok `M.lookup` fos
 		enk' <- lift $ show <$> (`mod` 10000000) <$> abs <$> (randomIO :: IO Int)
 		let 	ricarica' :: IM e b c ->ErrorT String IO (Either c (IM e b c))
 			ricarica' xs = Right 
 					>$> M.fromList 
-					>$> mapM (lift . secondM (secondM ricarica)) $ M.assocs xs
+					>$> mapM (lift . secondM (firstM $ secondM ricarica)) $ M.assocs xs
 			esegui' (Continua v) = do 
 				fo' <- join . onNothing "il valore non è stato compreso" 
 					. fmap lift $ continuazione fo v	
 				let fo'' = case mi of
 					Just l -> if length (serializzazione fo') >= l then fo' else fo
 					Nothing -> fo'
-				ricarica' $ M.adjust (const (mi,fo'')) fok fos 
+				ricarica' $ M.adjust (const ((mi,fo''),j)) fok fos 
 			esegui' Scarica = 
 				fmap Left . onNothing "la form non contiene un valore da scaricare" $ scarica fo
 			esegui' Clona  = do
 				let 	(afos,bfos) = partition ((< fok) . fst) $ M.assocs fos
 				ricarica' . M.fromList $ afos ++ (fok,foi): map (first (+1)) bfos
-			esegui' Inchioda = do
-				ricarica' $ M.adjust (first (const . Just . length . serializzazione $ fo)) fok fos
+			esegui' Inchioda = undefined
+				-- ricarica' $ M.adjust (first (const . Just . length . serializzazione $ fo)) fok fos
 			esegui' Chiudi = ricarica' $ if M.size fos > 1 then M.delete fok fos else fos
 			esegui' Affonda = do
 				let 	(afos,bfos) = partition ((< fok) . fst) $ M.assocs fos
 				ricarica' . M.fromList $ afos ++ tail bfos ++ [(last (M.keys fos) + 1,foi)]
+			esegui' Allarga = do
+				ricarica' $ M.adjust (const ((mi,fo),if j < 4 then j + 1 else j)) fok fos 
+			esegui' Restringi = do
+				ricarica' $ M.adjust (const ((mi,fo),if j > 1  then j - 1 else j)) fok fos 
 			update fos' = do
-				lift . pers $ map (serializzazione . snd) $ M.elems fos'
+				lift . pers $ map (serializzazione . snd . fst) $ M.elems fos'
 				lift . atomically $ do 
 					enks <- readTVar dbe
 					writeTVar dbe $ set enks (enk', fos')
-				return . map (\(fok,(_,fo)) -> form fo enk' fok) $ M.assocs fos'
+				return . map (\(fok,((_,fo),j)) -> (form fo enk' fok, j)) $ M.assocs fos'
 		esegui' q >>= either (return . Left) (Right >$> update) 
 	return (def,req)
 

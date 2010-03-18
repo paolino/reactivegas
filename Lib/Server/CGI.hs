@@ -26,8 +26,8 @@ readFKey =  do
 readValore :: ErrorT String (CGIT IO) Value
 readValore = lift (getInput "valore") >>= onNothing "form corrotta, manca la risposta"
 
-pagina :: [Html] -> Html
-pagina xs =  thediv << map (\h -> thediv ! [theclass "interazione"] << h) xs
+pagina :: [(Html,Int)] -> Html
+pagina xs =  thediv << map (\(h,i) -> thediv ! [theclass ("dimensione" ++ show i)] << h) xs
 
 -- | eleva gli errori nella monade del server in quella di CGI 
 liftServer :: Error e => ErrorT e IO a -> ErrorT e (CGIT IO) a
@@ -85,6 +85,8 @@ cgiFromServer resp ((fsM,(liftServer .) -> s),droppa) = do
 						"chiudi" -> Chiudi
 						"clona" -> Clona
 						"affonda" -> Affonda
+						"allarga" -> Allarga
+						"restringi" -> Restringi
 						_ -> Chiudi)
 					case ehl of
 						Right hs -> lift . resp . pagina $ hs

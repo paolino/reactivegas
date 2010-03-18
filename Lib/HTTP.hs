@@ -33,6 +33,13 @@ internalmenu y z  = let
 					<< anchor ! [theclass "menu", href $ mkLink "/menu" [("hkey",y),("fkey",z),("valore","affonda")]] 
 					<< "accoda"
 				+++ li ! [theclass "menu"] 
+					<< anchor ! [theclass "menu", href $ mkLink "/menu" [("hkey",y),("fkey",z),("valore","allarga")]]
+					<< "allarga" 
+				+++ li ! [theclass "menu"] 
+					<< anchor ! [theclass "menu", href $ mkLink "/menu" [("hkey",y),("fkey",z),("valore","restringi")]]
+					<< "restringi" 
+
+				+++ li ! [theclass "menu"] 
 					<< anchor ! [theclass "menu", href $ mkLink "/menu" [("hkey",y),("fkey",z),("valore","chiudi")]] 
 					<< "chiudi" 
 				)	 

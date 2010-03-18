@@ -64,7 +64,7 @@ bocciato x =  P.errore . Response $ [("Incoerenza", ResponseOne x)]
 accesso :: Interfaccia ()
 accesso = let k r = sel $ ($r) . writeAccesso . snd in do
 	(rs,_) <- responsabili . fst <$> letturaStato 
-	mano "scelta del responsabile" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
+	mano "responsabile autore" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
 
 onAccesso k = sel (readAccesso . snd) >>= maybe (accesso >> onAccesso k) k 
 
@@ -240,14 +240,14 @@ applicazione = rotonda $ \_ -> do
 					,("eventi anagrafici",anagrafica)				
 					,("effetto del caricamento degli eventi", do
 						c <- sel (readCaricamento . snd) 
-						P.output . Response $ [("effetto del caricamento eventi",  ResponseOne c)])
+						P.output . Response $ [("effetto del caricamento degli eventi",  ResponseOne c)])
 					,("correzione dell'insieme eventi",eliminazioneEvento)
 					]),
 				("descrizione sessione", do
 					r <- sel $ readAccesso . snd
 					evs <- sel $ readEventi . snd
 					P.output . Response $ 
-						[("responsabile scelto" , ResponseOne $ case r of 
+						[("responsabile autore" , ResponseOne $ case r of 
 							Nothing -> "anonimo"
 							Just (u,_) -> u)
 						,("eventi prodotti" , ResponseMany $ map ResponseOne (sortEventi evs))

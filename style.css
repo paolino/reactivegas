@@ -65,13 +65,35 @@ div.titolo {margin:5px;
 	float:left;
 	}
 div.reset {margin:5px;float:right;}
-div.interazione {
+div.dimensione1 {
 	border: 1px dotted #dddddd;
 	margin: 2px;
 	background-color: #f5f5f5 ;
 	float:left;
 	width:22em;
 }
+div.dimensione2 {
+	border: 1px dotted #dddddd;
+	margin: 2px;
+	background-color: #f5f5f5 ;
+	float:left;
+	width:44em;
+}
+div.dimensione3 {
+	border: 1px dotted #dddddd;
+	margin: 2px;
+	background-color: #f5f5f5 ;
+	float:left;
+	width:66em;
+}
+div.dimensione4 {
+	border: 1px dotted #dddddd;
+	margin: 2px;
+	background-color: #f5f5f5 ;
+	float:left;
+	width:88em;
+}
+
 dt {color: green;}
 input.continua {
 	float:right;

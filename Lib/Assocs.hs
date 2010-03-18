@@ -18,6 +18,9 @@ elimina k kvs = filter ((/=) k . fst) kvs
 secondM :: (Monad m) => (a -> m b) -> (c, a) -> m (c, b)
 secondM f (x,y) = f y >>= return . (,) x
 
+firstM :: (Monad m) => (a -> m b) -> (a, c) -> m (b, c)
+firstM f (x,y) = f x >>= return . flip (,) y
+
 updateM :: (Monad m ,Eq a) => a -> (b -> m b) -> b -> [(a,b)] -> m [(a,b)]
 updateM k dv v kvs = case lookup k kvs of
 	Nothing -> dv v >>= \v' -> return $ (k,v'):kvs
