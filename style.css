@@ -47,10 +47,14 @@ blockquote, q {
 a:link.passobox {color:#0066aa;text-decoration:none;}
 a:visited.passobox {color:#0066aa;text-decoration:none;}
 a:hover.passobox {background-color: #f3d3f3;}
+
 a:link.menu {color:#3399dd;text-decoration:none;}
 a:visited.menu {color:#3399dd;text-decoration:none;}
 a:hover.menu {background-color: #f3d3f3;}
+
 body {background-color:#fefffe}
+
+
 div.testata {
 	margin: 5px;
 	float: clear;
@@ -62,17 +66,18 @@ div.titolo {margin:5px;
 	float:left;
 	}
 div.reset {margin:5px;float:right;}
+
 div.dimensione1 {
 	border: 1px dotted #dddddd;
 	margin: 2px;
 	background-color: #f5f5f5 ;
 	float:left;
-	width:22em;
+	width:24em;
 }
 div.dimensione2 {
 	border: 1px dotted #dddddd;
 	margin: 2px;
-	background-color: #f5f5f5 ;
+	background-color: #f1f1f1 ;
 	float:left;
 	width:44em;
 }
@@ -81,23 +86,19 @@ div.dimensione3 {
 	margin: 2px;
 	background-color: #f5f5f5 ;
 	float:left;
-	width:66em;
+	width:60em;
 }
 div.dimensione4 {
 	border: 1px dotted #dddddd;
 	margin: 2px;
 	background-color: #f5f5f5 ;
 	float:left;
-	width:88em;
+	width:72em;
 }
 
 dt {color: green;}
-input.continua {
-	float:right;
-	font: 8pt sans-serif;
-	}
 
-input.download {
+input.continua {
 	float:right;
 	font: 8pt sans-serif;
 	}
@@ -108,19 +109,20 @@ input#valore {font: 8pt sans-serif;
 div.response {	
 	color: Red;
 	margin:3px;	
-	overflow:auto;
-}
+	overflow:auto;}
 dl dd {
-	text-indent:1em;
+	text-indent:1em; 
 	}
 dd dt {
-	text-indent:2em;
-	}
+	text-indent:2em;		}
 div.passobox {
 	height:20em;
 	margin:3px;
 	overflow:auto;
 	}
+
+li.scelta {height:1.3em;overflow:hidden;}
+li.responso {height:1.3em;overflow:hidden;}
 /*div.passobox ul li  a {width:20em}*/
 div.menu {height:1.5em;margin:1px;}
 div.menu ul {background-color:#efefef ;

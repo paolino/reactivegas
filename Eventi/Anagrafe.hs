@@ -362,7 +362,7 @@ costrQueryAssenso s kp kn = [("elenco questioni aperte", querySottoStati)]
 	querySottoStati = runSupporto s kn kp $ do
 		ys <- assensi
 		return $ Response [("elenco questioni aperte", if null ys then
-			ResponseOne "nessuna questione aperta" else Response (map (show . snd &&& ResponseOne . fst) ys))]
+			ResponseOne "nessuna questione aperta" else ResponseMany (map (snd &&& ResponseOne . fst) ys))]
 priorityAssenso = R k where
 	k (Assenso _) = -25
 	k (Dissenso _) = -24

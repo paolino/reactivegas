@@ -42,7 +42,7 @@ import Eventi.Ordine
 -- sel :: (MonadReader (Persistenza QS, Sessione)  m, MonadIO m) => ((Persistenza QS, Sessione) -> IO b) -> m b
 sel f = asks f >>= liftIO 
 
-letturaStato' :: (Functor m, MonadReader (Persistenza QS, Sessione (Maybe QS)) m,MonadIO m) => m QS
+letturaStato' :: (Functor m, MonadReader (Persistenza QS, Sessione (Maybe QS) Response) m,MonadIO m) => m QS
 letturaStato' = fmap fromJust . sel $ readStato . fst
 
 fromUPatches :: ([Patch],TS) -> [(Utente,[Evento])]
@@ -69,7 +69,7 @@ accesso = let k r = sel $ ($r) . writeAccesso . snd in do
 onAccesso k = sel (readAccesso . snd) >>= maybe (accesso >> onAccesso k) k 
 
 -- | la monade dove gira il programma. Mantiene in lettura lo stato del gruppo insieme alle operazioni di IO. Nello stato la lista degli eventi aspiranti un posto nella patch
-type MEnv  = ReaderT (Persistenza QS, Sessione (Maybe QS)) IO 
+type MEnv  = ReaderT (Persistenza QS, Sessione (Maybe QS) Response) IO 
 
 type Interfaccia a = Costruzione MEnv () a
 
@@ -240,7 +240,7 @@ applicazione = rotonda $ \_ -> do
 					,("eventi anagrafici",anagrafica)				
 					,("effetto del caricamento degli eventi", do
 						c <- sel (readCaricamento . snd) 
-						P.output . Response $ [("effetto del caricamento degli eventi",  ResponseOne c)])
+						P.output . Response $ [("effetto del caricamento degli eventi",  c)])
 					,("correzione dell'insieme eventi",eliminazioneEvento)
 					]),
 				("descrizione sessione", do

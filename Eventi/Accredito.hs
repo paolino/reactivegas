@@ -16,7 +16,7 @@ module Eventi.Accredito {-(
 
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad (when)
-import Control.Arrow (second, (&&&), first)
+import Control.Arrow (second, (&&&), first, (***))
 
 import Core.Programmazione (Reazione, soloEsterna, nessunEffetto)
 import Core.Inserimento (MTInserzione, fallimento, osserva, modifica, logga)
@@ -129,8 +129,8 @@ costrQueryAccredito s kp kn = 	[("accrediti degli utenti", queryUtente)
 	queryUtente = run $ do
 		Conti us <- asks see 
 		return $ Response [("accrediti degli utenti", if null us then 
-			ResponseOne "nessun utente possiede un accredito" else ResponseAL us)]
+			ResponseOne "nessun utente possiede un accredito" else ResponseMany (map (ResponseOne *** id) us))]
 	queryResponsabile = run $ do
 		Saldi rs <- asks see 
 		return $ Response [("saldi dei responsabili" , if null rs then 
-			ResponseOne "nessun responsabile ha un saldo" else ResponseAL rs)]
+			ResponseOne "nessun responsabile ha un saldo" else ResponseMany (map (ResponseOne *** id) rs))]

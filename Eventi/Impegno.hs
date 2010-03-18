@@ -18,7 +18,7 @@ import Control.Monad (mzero, when)
 import Control.Monad.Error (throwError)
 import Control.Applicative ((<$>))
 import Control.Monad.Reader (asks, MonadReader)
-import Control.Arrow ((&&&), first)
+import Control.Arrow ((&&&), (***), first)
 
 import Lib.Aspetti ((.<), ParteDi)
 import Lib.Costruzione (Costruzione)
@@ -168,5 +168,6 @@ costrQueryImpegni s kp kn = 	[("elenco degli impegni aperti",q)]
 		case lookup n isx of 
 			Nothing -> throwError "incoerenza interna" 
 			Just (t,Impegni is) -> return $ 
-				Response [("obiettivo raccolta",ResponseOne t),("somme impegnate", ResponseAL is)]
+				Response [("obiettivo raccolta",ResponseOne t),
+					("somme impegnate", ResponseMany . map (ResponseOne *** id) $ is)]
 

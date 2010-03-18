@@ -44,15 +44,15 @@ internalmenu y z  = let
 					<< "chiudi" 
 				)	 
 
-renderResponse k x = thediv ! [theclass k] << renderResponse' x
-renderResponse' x@(ResponseOne y) =  case typeOf y == typeOf noHtml of
-		False -> thediv << take 50 (show x)
-		True -> thediv << (fromJust (cast y) :: Html)
-renderResponse' (ResponseMany xs) =  ulist << concatHtml (map  ((li <<) .  take 50 . show ) xs) 
-renderResponse' (ResponseAL xs) =  dlist 
-		<< concatHtml (map  (\(x,y) -> dterm << x +++ ddef << (take 50 . show $ y)) xs) 
-renderResponse' (Response xs) =  dlist << 
-		concatHtml (map  (\(x,y) -> dterm << x +++ ddef << renderResponse' y) xs)
+renderResponse k x = thediv ! [theclass k] << renderResponse' x where
+	renderResponse' x@(ResponseOne y) =  case typeOf y == typeOf noHtml of
+			False -> thediv << (show x)
+			True -> thediv << (fromJust (cast y) :: Html)
+	renderResponse' (ResponseMany xs) =  ulist ! [theclass k] << concatHtml (map  ((li ! [theclass k] <<) .   show ) xs) 
+	renderResponse' (ResponseAL xs) =  dlist ! [theclass k]
+			<< concatHtml (map  (\(x,y) -> dterm ! [theclass k] << x +++ ddef ! [theclass k] << ( show $ y)) xs) 
+	renderResponse' (Response xs) =  dlist  ! [theclass k] << 
+			concatHtml (map  (\(x,y) -> dterm ! [theclass k] << x +++ ddef ! [theclass k] << renderResponse' y) xs)
 
   
 runPasso :: (Monad m ) 
@@ -99,9 +99,10 @@ runPasso (P.Libero q c ) = let
 runPasso (P.Scelta q xs c) = let 
 	k y z =  thediv ! [theclass "passobox"] << 
 		(thediv ! [theclass "response"] << q +++ 
-				 ulist << (map (\(x,_) -> li
-					<< anchor ! [theclass "passobox", href $ mkLink "/interazione" [("hkey",y),("fkey",z),("valore",x)]] 
-						<< take 50 x) xs ))  
+				 ulist << (map (\(x,_) -> li ! [theclass "scelta"]
+					<< anchor ! [theclass "passobox", 
+						href $ mkLink "/interazione" [("hkey",y),("fkey",z),("valore",x)]] 
+						<< x) xs ))  
 			+++ internalmenu y z
 	resp x = lookup x xs >>= return . c
 	in (k, Nothing,resp)

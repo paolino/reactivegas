@@ -5,6 +5,7 @@ import Control.Concurrent.STM (readTChan,newTChan,atomically)
 import Control.Concurrent (forkIO)
 import Control.Monad (forever)
 
+import Lib.Response
 
 import Applicazioni.Server (sessionServer)
 
@@ -15,6 +16,8 @@ import Core.UI (applicazione)
 import Core.Applicazione (QS,loader, caricamento, nuovoStato) 
 import Text.XHtml
 import Network.SCGI
+
+import Debug.Trace
 
 layout = 	[(["amministrazione"],1)
 		,(["interrogazione"],1)
@@ -37,10 +40,10 @@ pagina b = output . prettyHtml $
 				li << ("Codice disponibile sotto licenza BSD presso " +++ anchor ! 
 					[href "http://github.com/paolino/reactivegas"] << "github.com")
 				])  
-caricamento' :: QS -> [Esterno Utente] -> (QS,Html)
+caricamento' :: QS -> [Esterno Utente] -> (QS,Response)
 caricamento' s es = let
 	(s',qs) = caricamento es s
-	qs' = ulist << map (li <<) (lines qs)
+	qs' = ResponseMany (map ResponseOne $ lines qs)
 	in (s',qs')
 	
 main = do
