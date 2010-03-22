@@ -60,18 +60,18 @@ inserimento x n@(Nodo k@(Just (Reazione (acc, f :: TyReazione a b d s c))) _) = 
 				Nothing -> rifiuto
 
 -- | l'evento interno del core segnala che nessun reattore ha accettato l'evento (parsing fallito)
-data CoreEvents = CoreEventoRifiuto  deriving (Read,Show)
+data CoreEvents = Rifiuto  deriving (Read,Show)
 
 -- | un aiutante per costruire un reattore all'evento interno del core, evitando di esportare il costruttore non permettiamo ad altri  moduli di produrre l'evento, invece esportiamo una funzione per eseguire il pattern matching
 eventoRifiutato :: CoreEvents -> Maybe ()
-eventoRifiutato CoreEventoRifiuto = Just ()
+eventoRifiutato Rifiuto = Just ()
 -- eventoRifiutato _ = Nothing
 
 -- | inserisce completamente un evento, reinserendo gli eventuali eventi interni creati durante l'inserimento stesso
 inserimentoCompleto :: Show d => Esterno d -> [Nodo s c d] -> Inserzione s c d [Nodo s c d]
 inserimentoCompleto x ns = fmap (fst . fst) . runInserimento  $ do	
 		(ns',t) <- intercept $ consumaR ns (Right x) 
-		if not t then  local (motiva $ Right x) . consumaR ns' $ Left [show CoreEventoRifiuto]
+		if not t then  local (motiva $ Right x) . consumaR ns' $ Left [show Rifiuto]
 			else return ns'
 	where 
 	consuma :: Show d => [Nodo s c d] -> Either [Interno] (Esterno d) -> Inserimento s c d [Nodo s c d]

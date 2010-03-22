@@ -288,7 +288,8 @@ programmazioneAssenso se ur c k kn = do
 			t <- c (ps',ns) -- controlla che si debba continuare a ricevere gli assensi
 			case t of
 				Positivo  -> do
-					eliminaStatoServizio j (undefined :: Assensi) 
+					eliminaStatoServizio j (undefined :: Assensi)
+					logga $ "chiusura postiva della questione " ++ show j 
 					(,) False <$> k j -- esegui la procedura finale come coronamento del 
 						-- consenso e non rischedula il reattore 
 				Indecidibile -> do		
@@ -305,6 +306,7 @@ programmazioneAssenso se ur c k kn = do
 			case t of 	
 				Negativo -> do
 					eliminaRichiesta r j
+					logga $ "chiusura negativa della questione " ++ show j
 					(,) False <$> kn j
 				Indecidibile -> do		
 					logga $ "ricevuto dissenso da " ++ show r ++ " sulla questione numero " ++ show j

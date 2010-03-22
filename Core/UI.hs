@@ -133,10 +133,10 @@ correzioneEventi devs  = do
 eliminazioneEvento :: Interfaccia ()
 eliminazioneEvento = do
 	es <- letturaEventi
-	if null es then bocciato "non ci sono eventi da eliminare" 
+	if null es then bocciato "non ci sono dichiarazioni da eliminare" 
 		else let 
 		k x = letturaEventi >>= correzioneEventi . const . delete x 
-		in mano  "seleziona un evento da eliminare" (zip es $ map k es)
+		in mano  "seleziona una dichiarazione da eliminare" (zip es $ map k es)
 
 
 
@@ -144,14 +144,14 @@ eliminazioneEvento = do
 addEvento x = correzioneEventi (show x:)
 
 anagrafica :: Interfaccia ()
-anagrafica = mano "eventi anagrafici" . wrapCostrActions addEvento $ [
+anagrafica = mano "dichiarazioni anagrafiche" . wrapCostrActions addEvento $ [
 		costrEventiResponsabili,
 		costrEventiAnagrafe 
 		]
 
 
 economia  :: Interfaccia () 
-economia = mano "eventi economici" . concat $ 
+economia = mano "dichiarazioni economiche" . concat $ 
 		[wrapCostrActions addEvento [costrEventiAccredito]
 		,wrapCostrActions addEvento [costrEventiImpegno]
 		,wrapCostrActions addEvento [costrEventiOrdine]
@@ -161,7 +161,7 @@ votazioni :: Interfaccia ()
 votazioni = onAccesso $ \(u,_) -> do
 	
 	n <- conStato (const $ return 0) (return . length) (assensiFiltrati u) 
-	mano ("eventi democratici (" ++ show n ++ " questioni aperte)") . wrapCostrActions addEvento $ [
+	mano ("dichiarazioni democratiche (" ++ show n ++ " questioni aperte)") . wrapCostrActions addEvento $ [
 		costrEventiAssenso u
 		]
 
@@ -175,7 +175,7 @@ sincronizza  aggiornamento aggiornamenti = onAccesso $ \(r@(u,_)) -> do
 
 salvataggio = do
 	evs <- letturaEventi
-	if null evs then bocciato "non ci sono eventi da firmare" else onAccesso $ \(r@(u,_)) -> do
+	if null evs then bocciato "non ci sono dichiarazioni da firmare" else onAccesso $ \(r@(u,_)) -> do
 		let 	p up = sel $ ($up) . ($u) . writeUPatch . fst
 		 	k (Firmante f) = do 
 				evs <- letturaEventi
@@ -214,7 +214,7 @@ amministrazione = do
 			aggiornamentiIndividuali,
 			("accesso remoto", mano "accesso remoto" 
 
-				[("scarica gli eventi prodotti", letturaEventi >>= P.download "eventi.txt" )
+				[("scarica le dichiarazioni prodotte", letturaEventi >>= P.download "dichiarazioni.txt" )
 				,("carica aggiornamento individuale", P.errore $ ResponseOne "non implementato")
 				,("scarica gli aggiornamenti individuali", 
 					aggiornamenti >>= P.download "aggiornamenti.txt")
@@ -234,14 +234,14 @@ applicazione = rotonda $ \_ -> do
 		Just s ->  
 			mano ("menu principale") [
 				("responsabile autore", accesso >> return ()),
-				("produzione eventi" , mano "produzione eventi" $ 
-					[("eventi democratici",votazioni)
-					,("eventi economici",economia)
-					,("eventi anagrafici",anagrafica)				
-					,("effetto del caricamento degli eventi", do
+				("produzione dichiarazioni" , mano "produzione dichiarazioni" $ 
+					[("dichiarazioni democratiche",votazioni)
+					,("dichiarazioni economiche",economia)
+					,("dichiarazioni anagrafiche",anagrafica)				
+					,("effetto dell'inserimento delle dichiarazioni", do
 						c <- sel (readCaricamento . snd) 
-						P.output . Response $ [("effetto del caricamento degli eventi",  c)])
-					,("correzione dell'insieme eventi",eliminazioneEvento)
+						P.output . Response $ [("effetto dell'inserimento delle dichiarazioni",  c)])
+					,("correzione dell'insieme dichiarazioni",eliminazioneEvento)
 					]),
 				("descrizione sessione", do
 					r <- sel $ readAccesso . snd
@@ -250,7 +250,7 @@ applicazione = rotonda $ \_ -> do
 						[("responsabile autore" , ResponseOne $ case r of 
 							Nothing -> "anonimo"
 							Just (u,_) -> u)
-						,("eventi prodotti" , ResponseMany $ map ResponseOne (sortEventi evs))
+						,("dichiarazioni prodotte" , ResponseMany $ map ResponseOne (sortEventi evs))
 						]
 					),
 				("interrogazione", interrogazioni),

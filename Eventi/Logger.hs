@@ -1,28 +1,25 @@
 {-# LANGUAGE NoMonomorphismRestriction, ViewPatterns, ScopedTypeVariables, MultiParamTypeClasses #-}
 -- | modulo inutile per mostrare l'utilizzo dei Deviatori
 
-module Logger where
+module Eventi.Logger where
 import Control.Monad.Writer
 import Control.Applicative
 import Codec.Binary.UTF8.String
 
-import Core
-import Anagrafe (eliminazioneResponsabile)
-import Impegno (fallimentoImpegno)
+import Core.Programmazione
+import Core.Inserimento (CoreEvents, eventoRifiutato)
+
+import Lib.Prioriti
 
 data Logger  = Logger String  deriving (Show)
 
 instance Read Logger where
 	readsPrec _ x = [(Logger x, "")]
 
-d1 (eliminazioneResponsabile -> Just (u,w)) = Just (Logger "ahi, comportato male eh")
-d1 _ = Nothing
-
-d2 (fallimentoImpegno -> Just (u,v)) = Just (Logger $ u ++ " ha fatto un danno :)")
-d2 _ = Nothing
-
 d3 :: CoreEvents -> Maybe Logger
-d3 (eventoRifiutato -> Just x) = Just (Logger $  encodeString "l'evento non ha modificato la realtá")
+d3 (eventoRifiutato -> Just x) = Just (Logger $  encodeString "la dichiarazione non ha modificato la conoscenza")
 d3 _ = Nothing
-reazioneLogger = Reazione (Just [Deviatore d1, Deviatore d2, Deviatore d3], \x ->  either (\(Logger x) -> logInserimento x) (\(_,()) ->  return ()) x 
-									>> return (Just (True,nessunEffetto))) 
+
+reazioneLogger = Reazione (Just [Deviatore d3], \x ->  
+	either (\(Logger x) -> logInserimento x) (\(_,()) ->  return ()) x >> return (Just (True,nessunEffetto))
+	) 

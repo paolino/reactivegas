@@ -34,6 +34,7 @@ import Eventi.Anagrafe
 import Eventi.Accredito
 import Eventi.Impegno
 import Eventi.Ordine
+import Eventi.Logger
 
 
 
@@ -45,12 +46,12 @@ type QS = (TS,[SNodo TS Utente])
 
 -- | lista di prioritizzatori, definiscono un riordinamento tra gli eventidi una patch
 priorita :: [Lib.Prioriti.R]
-priorita = [priorityAnagrafe, priorityAnagrafeI, priorityAccredito
+priorita = [ priorityAnagrafe, priorityAnagrafeI, priorityAccredito
 		, priorityImpegnoI, priorityImpegno, priorityOrdine, priorityAssenso] 
 
 -- | lista di reattori. I reattori di base per gli eventi
 reattori :: [Reazione TS ParserConRead Utente]
-reattori = [reazioneAnagrafe, reazioneAccredito, reazioneOrdine] 
+reattori = [reazioneLogger, reazioneAnagrafe, reazioneAccredito, reazioneOrdine] 
 
 
 -- | effettua un inserimento di eventi esterni nello stato, restituendo il nuovo. Stampa i logs
@@ -59,7 +60,7 @@ caricamento es = second (eccoILogs . map (first flatten)) . caricaEventi priorit
 
 -- | creazione di un novo stato di tipo QS
 nuovoStato :: [Responsabile] -> QS
-nuovoStato rs = (bootAnagrafe rs  . bootAccredito . bootImpegni . bootOrdini $ (), replicate (length reattori) $ SNodo True [])
+nuovoStato rs = (bootAnagrafe rs  . bootAccredito . bootImpegni . bootOrdini  $ (), replicate (length reattori) $ SNodo True [])
 
 sortEventi :: [Evento] -> [Evento]
 sortEventi = sortP priorita id

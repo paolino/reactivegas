@@ -22,10 +22,10 @@ import Debug.Trace
 layout = 	[(["amministrazione"],1)
 		,(["interrogazione"],1)
 		,(["responsabile autore"],1)
-		,(["produzione eventi"],1)
-		,(["correzione dell'insieme eventi","produzione eventi"],1) 
+		,(["produzione dichiarazioni"],1)
+		,(["correzione dell'insieme eventi","produzione dichiarazioni"],1) 
 		,(["descrizione sessione"],1)
-		,(["effetto del caricamento degli eventi", "produzione eventi"],2)
+		,(["effetto dell'inserimento delle dichiarazioni", "produzione dichiarazioni"],2)
 		]
 pagina b = output . prettyHtml $  
 		header << (thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml +++ thetitle << "Tarogas (economia)") 

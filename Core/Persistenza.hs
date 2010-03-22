@@ -171,7 +171,6 @@ aggiornamento load  tv ts tp to tl cs g@(_,_,ps) = do
 	when (isNothing s') retry
 	let Just s = s'
 	let (es,ls) = runWriter $ load s g
-	trace (show ls) $ mapM (writeTChan tl) ls
 	case es of
 		Left e -> writeTChan tl e
 		Right s' -> do
