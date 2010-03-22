@@ -23,16 +23,20 @@ layout = 	[(["amministrazione"],1)
 		,(["interrogazione"],1)
 		,(["responsabile autore"],1)
 		,(["produzione dichiarazioni"],1)
-		,(["correzione dell'insieme eventi","produzione dichiarazioni"],1) 
+		,(["correzione delle dichiarazioni","produzione dichiarazioni"],1) 
 		,(["descrizione sessione"],1)
 		,(["effetto dell'inserimento delle dichiarazioni", "produzione dichiarazioni"],2)
 		]
 pagina b = output . prettyHtml $  
-		header << (thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml +++ thetitle << "Tarogas (economia)") 
-		+++ body 
-			<< thediv ! [theclass "testata"] 
-				<< (thediv ! [theclass "titolo"] << "Amministrazione distribuita per un gruppo di acquisto" +++
-				 (thediv ! [theclass "reset"] << anchor ! [href "/reset"] << "annulla la sessione"))
+		header << (thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml 
+				+++ thetitle << "Amministrazione G.A.S.") 
+		+++ body << thediv ! [theclass "testata"] 
+				<< 	(thediv ! [theclass "titolo"] 
+						<< "Amministrazione distribuita per un gruppo di acquisto" +++
+				 		(thediv ! [theclass "reset"] 
+							<< anchor ! [href "/reset"] << "annulla la sessione"
+						)
+					)
 			+++ (thediv ! [theclass "utente"] << b)
 			+++ (thediv ! [theclass "pedata"] << ulist << [
 				li << ("Servizio sviluppato da " +++ anchor ! 
@@ -40,6 +44,7 @@ pagina b = output . prettyHtml $
 				li << ("Codice disponibile sotto licenza BSD presso " +++ anchor ! 
 					[href "http://github.com/paolino/reactivegas"] << "github.com")
 				])  
+
 caricamento' :: QS -> [Esterno Utente] -> (QS,Response)
 caricamento' s es = let
 	(s',qs) = caricamento es s

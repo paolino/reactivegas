@@ -241,7 +241,7 @@ applicazione = rotonda $ \_ -> do
 					,("effetto dell'inserimento delle dichiarazioni", do
 						c <- sel (readCaricamento . snd) 
 						P.output . Response $ [("effetto dell'inserimento delle dichiarazioni",  c)])
-					,("correzione dell'insieme dichiarazioni",eliminazioneEvento)
+					,("correzione delle dichiarazioni",eliminazioneEvento)
 					]),
 				("descrizione sessione", do
 					r <- sel $ readAccesso . snd
