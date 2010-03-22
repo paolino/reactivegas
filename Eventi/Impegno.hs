@@ -93,18 +93,18 @@ programmazioneImpegno q ur = do
 			when (l /= j) mzero
 			preleva u v 
 			modificaStatoServizio j $ \(Impegni  is) -> return (Impegni $ update u (+ v) 0 is)
-			logga  $ "impegnati " ++ show v ++ " euro da " ++ show u ++ " per la causa " ++ q
+			logga  $ "impegnati " ++ show v ++ " euro da " ++ u ++ " per " ++ q
 			return (True,nessunEffetto)
 		reattoreImpegno k (Right (first validante -> (w,FineImpegno j))) = w $ \r -> do
 			when (l /= j) mzero
 			Impegni us <- osservaStatoServizio j
-			fallimento (ur /= r) "solo chi ha aperto una raccolta di impegni puó chiuderla"
+			fallimento (ur /= r) "solo chi ha aperto una raccolta di impegni può chiuderla"
 			eliminaStatoServizio j (undefined :: Impegni)
 			(,) False <$> k (Just us) 
 		reattoreImpegno k (Right (first validante -> (w,FallimentoImpegno j))) = w $ \r -> do
 			when (l /= j) mzero
 			Impegni us <- osservaStatoServizio j
-			fallimento (ur /= r) "solo chi ha aperto una raccolta do impegni puó chiuderla"
+			fallimento (ur /= r) "solo chi ha aperto una raccolta di impegni può chiuderla"
 			mapM_ (\(u,v) -> accredita u v) us
 			eliminaStatoServizio j (undefined :: Impegni)
 			(ks,is) <- k Nothing 

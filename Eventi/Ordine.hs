@@ -44,24 +44,25 @@ reazioneOrdine = soloEsterna reattoreOrdine where
 		
 		s@(StatoOrdini cs as ias ) <-  osserva
 		fallimento (not (b `assente` cs) || (b `elem` map snd as) || (b `elem` map snd ias)) "il nome per questo bene e' gia' stato utilizzato oppure in uso"
-		let 	positivo i = do 	(l,z) <- programmazioneImpegno ("per l'acquisto del bene " ++ b) r
-						let t k = case k of
-							Just us -> do 
-								salda r (subtract . sum . map snd $ us)
-								modifica $ \(StatoOrdini  cs as ias) -> StatoOrdini ((b,Just (r,us)):cs) (elimina l as) ias
-								logga $ "acquisto del bene " ++ show b ++ " chiuso con successo"
-								return nessunEffetto
-							Nothing -> do
-								modifica $ \(StatoOrdini  cs as ias ) -> StatoOrdini ((b,Nothing):cs) (elimina l as) ias
-								logga $ "acquisto del bene " ++ show b ++ " fallito"
-								return nessunEffetto
-						modifica $ \(StatoOrdini cs as ias) -> StatoOrdini cs ((l,b):as) (elimina i ias)
-						logga $  "per il bene " ++ show b ++ " aperto l'ordine numero " ++ show l
-						return ([z t],[])
-			negativo i = do		modifica $ \(StatoOrdini cs as ias) -> StatoOrdini cs as (elimina i ias)
-						logga $ "richiesta di apertura d'ordine per il bene " ++ show b ++ " fallita"
+		let 	positivo i = do 	
+				(l,z) <- programmazioneImpegno ("l'acquisto del bene " ++ b) r
+				let t k = case k of
+					Just us -> do 
+						salda r (subtract . sum . map snd $ us)
+						modifica $ \(StatoOrdini  cs as ias) -> StatoOrdini ((b,Just (r,us)):cs) (elimina l as) ias
+						logga $ "acquisto del bene " ++ b ++ " chiuso con successo"
 						return nessunEffetto
-		(i,z) <- programmazioneAssenso ("ordine sul bene " ++ show b) r maggioranza positivo negativo	
+					Nothing -> do
+						modifica $ \(StatoOrdini  cs as ias ) -> StatoOrdini ((b,Nothing):cs) (elimina l as) ias
+						logga $ "acquisto del bene " ++ b ++ " fallito"
+						return nessunEffetto
+				modifica $ \(StatoOrdini cs as ias) -> StatoOrdini cs ((l,b):as) (elimina i ias)
+				logga $  "per il bene " ++ b ++ " aperto l'ordine numero " ++ show l
+				return ([z t],[])
+			negativo i = do		modifica $ \(StatoOrdini cs as ias) -> StatoOrdini cs as (elimina i ias)
+						logga $ "richiesta di apertura d'ordine per il bene " ++ b ++ " fallita"
+						return nessunEffetto
+		(i,z) <- programmazioneAssenso ("apertura d'ordine sul bene " ++ b) r maggioranza positivo negativo	
 		modifica $ \(StatoOrdini cs as ias) -> StatoOrdini cs as ((i,b):ias) 
 		return (True,([z],[]))
 

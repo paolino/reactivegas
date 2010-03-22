@@ -203,7 +203,7 @@ costrEventiAnagrafe s kp kn =	[("inserimento di un nuovo utente", eventoNuovoUte
                 return $ NuovoUtente n
 costrEventiResponsabili :: (Monad m, ParteDi Responsabili s, ParteDi Anagrafe s) => CostrAction m c EsternoAnagrafico s
 costrEventiResponsabili s kp kn =
-	[("elezione di un nuovo responsabile", eventoElezioneResponsabile)
+	[("richiesta di elezione di un nuovo responsabile", eventoElezioneResponsabile)
 	,("richiesta di eliminazione di un responsabile",eventoEliminazioneResponsabile)
 	] 
 	where
@@ -214,12 +214,12 @@ costrEventiResponsabili s kp kn =
 		let ds = us \\ map fst rs
 		when (null ds) $ throwError "nessun utente non responsabile disponibile"
                 n <- scelte (map (id &&& id) ds) "selezione dell'utente da eleggere a responsabile" 
-                m <- upload $ "caricamento delle chiavi per il responsabile " ++ n
+                m <- upload $ "caricamento delle chiavi del responsabile " ++ n
                 return $ ElezioneResponsabile m
 
         eventoEliminazioneResponsabile = run $ do
 		rs <- costrResponsabili 
-                n <- scelte (map (fst &&& id) rs) "selezione responsabile da eliminare"
+                n <- scelte (map (fst &&& id) rs) "selezione del responsabile da eliminare"
                 return $ EliminazioneResponsabile (fst n)
 
 -- | costruzione delle interrogazione sull'anagrafe e sui costrResponsabili
@@ -275,9 +275,10 @@ programmazioneAssenso :: (
 programmazioneAssenso se ur c k kn = do
 	l <- nuovoStatoServizio (Assensi [] []) se -- ricevi la chiave per la nuova raccolta
 	let 	eliminaRichiesta u j = do
-			fallimento (ur /= u) "tentativo di chiusura prematura di una questione aperta da un altro responsabile"
+			fallimento (ur /= u) 
+				"tentativo di chiusura prematura di una questione aperta da un altro responsabile"
 			eliminaStatoServizio j (undefined :: Assensi)  
-			logga $ "chiusa la questione numero " ++ show l
+			logga $ "chiusura fallimentare della questione " ++ se
 			return (False,nessunEffetto) -- non rischedula il reattore
 
 		reattoreAssenso (Right (first validante -> (w,Assenso j))) = w $ \r -> do
@@ -289,27 +290,29 @@ programmazioneAssenso se ur c k kn = do
 			case t of
 				Positivo  -> do
 					eliminaStatoServizio j (undefined :: Assensi)
-					logga $ "chiusura postiva della questione " ++ show j 
+					logga $ "chiusura postiva della questione " ++ se 
 					(,) False <$> k j -- esegui la procedura finale come coronamento del 
 						-- consenso e non rischedula il reattore 
 				Indecidibile -> do		
-					logga $ "ricevuto assenso da " ++ show r ++ " sulla questione numero " ++ show j
+					logga $ "ricevuto l'assenso da " ++ r 
+						++ " sulla questione " ++ se
 					modificaStatoServizio j $ \_ -> return (Assensi ps' ns) -- registra gli assensi
 					return (True,nessunEffetto) -- continua a ricevere
 
 		reattoreAssenso (Right (first validante -> (w,Dissenso j))) = w $ \r -> do
 			when (j /= l) mzero
 			Assensi ps ns <- osservaStatoServizio j 
-			fallimento (r `elem` (ps ++ ns)) "il responsabile ha gia' posto un giudizio sulla questione" 
+			fallimento (r `elem` (ps ++ ns)) "il responsabile si è già espresso sulla questione" 
 			let ns' = r:ns -- la nuova lista di assensi per j 
 			t <- c (ps,ns') -- controlla che si debba continuare a ricevere gli assensi
 			case t of 	
 				Negativo -> do
 					eliminaRichiesta r j
-					logga $ "chiusura negativa della questione " ++ show j
+					logga $ "chiusura negativa della questione " ++ se
 					(,) False <$> kn j
 				Indecidibile -> do		
-					logga $ "ricevuto dissenso da " ++ show r ++ " sulla questione numero " ++ show j
+					logga $ "ricevuto il dissenso da " ++ r 
+						++ " sulla questione " ++ se
 					modificaStatoServizio j $ \_ -> return (Assensi ps ns') -- registra gli assensi
 					return (True,nessunEffetto) -- continua a ricevere
 
@@ -319,10 +322,11 @@ programmazioneAssenso se ur c k kn = do
 			(,) False <$> kn j
 		reattoreAssenso (Left (eliminazioneResponsabile -> Just (u,r))) = conFallimento $ do
 			when (ur /= u) mzero
+			logga $ "eliminazione della richiesta " ++ se
 			eliminaRichiesta u l
 			(,) False <$> kn l
 		reattoreAssenso (Left _) = return Nothing
-	logga $ "aperta la questione numero " ++ show l
+	logga $ "posta la questione numero " ++ show l ++ " per l'obiettivo " ++ se 
  	return (l,Reazione (Nothing, reattoreAssenso)) -- restituisce il riferimento a questa richiesta perché venga nominato negli eventi di assenso
 
 --------------------------- costruzioni per il modulo assensi -----------------------------
