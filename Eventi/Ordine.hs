@@ -62,7 +62,7 @@ reazioneOrdine = soloEsterna reattoreOrdine where
 			negativo i = do		modifica $ \(StatoOrdini cs as ias) -> StatoOrdini cs as (elimina i ias)
 						logga $ "richiesta di apertura d'ordine per il bene " ++ b ++ " fallita"
 						return nessunEffetto
-		(i,z) <- programmazioneAssenso ("apertura d'ordine sul bene " ++ b) r maggioranza positivo negativo	
+		(i,z) <- programmazioneAssenso ("apertura d'ordine per il bene " ++ b) r maggioranza positivo negativo	
 		modifica $ \(StatoOrdini cs as ias) -> StatoOrdini cs as ((i,b):ias) 
 		return (True,([z],[]))
 

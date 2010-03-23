@@ -108,12 +108,12 @@ interrogazioni = mano "interrogazione dello stato del gruppo" $ (wrapCostrAction
 		costrQueryAssenso,
 		costrQueryImpegni
 		]) 
-aggiornamentiIndividuali = ("interroga aggiornamenti in attesa", do
+aggiornamentiIndividuali = ("esamina gli aggiornamenti individuali prodotti", do
 	us <- sel $ readUPatches . fst
 	(s,_) <- letturaStato
 	let ps = fromUPatches (us,s)
 	if null ps then bocciato "non ci sono aggiornamenti individuali in attesa" else do 
-		(u,es) <- P.scelte (map (fst &&& id) ps) "scegli aggiornamento da visionare" 
+		(u,es) <- P.scelte (map (fst &&& id) ps) "scegli aggiornamento da esaminare" 
 		P.output $ Response [("aggiornamento da parte di " ++ u, ResponseMany $ map ResponseOne (sortEventi es))]
 	)
 letturaEventi ::  Interfaccia [Evento]
@@ -207,26 +207,26 @@ amministrazione = do
 
 
 	mano "amministrazione" $ [
-			("firma un aggiornamento individuale",salvataggio),
-			("modifica un aggiornamento individuale", importa),
-			("firma un aggiornamento di gruppo", sincronizza aggiornamento aggiornamenti),
-			("creazione nuove chiavi di responsabile", bootChiavi),
+			("firma le dichiarazioni prodotte",salvataggio),
+			("modifica delle dichiarazioni gia' firmate", importa),
+			("esegui un aggiornamento della conoscenza", sincronizza aggiornamento aggiornamenti),
+			("crea nuove chiavi da responsabile", bootChiavi),
 			aggiornamentiIndividuali,
-			("accesso remoto", mano "accesso remoto" 
+			("accesso sicuro", mano "accesso sicuro" 
 
 				[("scarica le dichiarazioni prodotte", letturaEventi >>= P.download "dichiarazioni.txt" )
-				,("carica aggiornamento individuale", P.errore $ ResponseOne "non implementato")
+				,("carica un aggiornamento individuale", P.errore $ ResponseOne "non implementato")
 				,("scarica gli aggiornamenti individuali", 
 					aggiornamenti >>= P.download "aggiornamenti.txt")
-				,("carica aggiornamento di gruppo",P.upload "aggiornamento di gruppo" >>= aggiornamento)
-				,("scarica stato", sel (readStato . fst) >>= maybe (bocciato "stato non presente") (P.download "stato"))
+				,("carica un aggiornamento di gruppo",P.upload "aggiornamento di gruppo" >>= aggiornamento)
+				,("scarica lo stato", sel (readStato . fst) >>= maybe (bocciato "stato non presente") (P.download "stato"))
 				])
 			]
 applicazione :: Costruzione MEnv () ()
 applicazione = rotonda $ \_ -> do 
 	ms <- sel $ readStato . fst 
 	case ms of 
-		Nothing ->    
+		Nothing ->    -- un bel po rotto
 			mano "il gruppo non esiste ancora" 
 				[("creazione nuove chiavi di responsable", bootChiavi)
 				,("preparazione stato iniziale di gruppo", bootGruppo)
