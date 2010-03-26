@@ -238,10 +238,10 @@ applicazione = rotonda $ \_ -> do
 					[("dichiarazioni democratiche",votazioni)
 					,("dichiarazioni economiche",economia)
 					,("dichiarazioni anagrafiche",anagrafica)				
-					,("effetto dell'inserimento delle dichiarazioni", do
+					,("effetto possibile delle prossime dichiarazioni", do
 						c <- sel (readCaricamento . snd) 
-						P.output . Response $ [("effetto dell'inserimento delle dichiarazioni",  c)])
-					,("correzione delle dichiarazioni",eliminazioneEvento)
+						P.output . Response $ [("effetto possibile delle prossime dichiarazioni",  c)])
+					,("eliminazione dichiarazioni",eliminazioneEvento)
 					]),
 				("descrizione sessione", do
 					r <- sel $ readAccesso . snd

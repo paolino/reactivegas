@@ -243,7 +243,7 @@ costrQueryAnagrafe s kp kn = 	[("elenco nomi utenti",queryElencoUtenti)
 data EsternoAssenso = Assenso Indice | Dissenso Indice | EventoFallimentoAssenso Indice deriving (Read, Show)
 
 -- | lo stato necessario per la gestione di un tipo di assensi
-data Assensi = Assensi [Utente] [Utente] deriving (Show,Read)
+data Assensi = Assensi [Utente] [Utente] | Permesso Utente deriving (Show,Read)
 
 
 data Check = Positivo | Negativo | Indecidibile deriving (Show,Read)
@@ -257,7 +257,41 @@ maggioranza (ps,ns) = do
 			if length ps >= soglia then Positivo else
 				Indecidibile
 
+programmazionePermesso se ur ut k kn = do
+	l <- nuovoStatoServizio (Permesso ut) se
+	let 	eliminaRichiesta u j = do
+			fallimento (ur /= u) 
+				"tentativo di chiusura prematura di una questione aperta da un altro responsabile"
+			eliminaStatoServizio j (undefined :: Assensi)  
+			logga $ "chiusura fallimentare della questione " ++ se
+			return (False,nessunEffetto) -- non rischedula il reattore
+		reattoreAssenso (Right (first validante -> (w,Assenso j))) = w $ \r -> do
+			when (j /= l) mzero
+			Permesso ut' <- osservaStatoServizio j 
+			fallimento (ut /= ut') "il responsabile non è tenuto a dare il permesso sulla questione" 
+			eliminaStatoServizio j (undefined :: Assensi)
+			logga $ "chiusura postiva della questione " ++ se 
+			(,) False <$> k j -- esegui la procedura finale come coronamento del 
+						-- consenso e non rischedula il reattore 
+		reattoreAssenso (Right (first validante -> (w,Dissenso j))) = w $ \r -> do
+			when (j /= l) mzero
+			Permesso ut' <- osservaStatoServizio j 
+			fallimento (ut /= ut') "il responsabile non è tenuto a dare il permesso sulla questione" 
+			eliminaRichiesta r j
+			logga $ "chiusura negativa della questione " ++ se
+			(,) False <$> kn j
+		reattoreAssenso (Right (first validante -> (w,EventoFallimentoAssenso j))) = w $ \r -> do
+			when (j /= l) mzero
+			eliminaRichiesta r j
+			(,) False <$> kn j
+		reattoreAssenso (Left (eliminazioneResponsabile -> Just (u,r))) = conFallimento $ do
+			when (ur /= u) mzero
+			logga $ "eliminazione della richiesta " ++ se
+			eliminaRichiesta u l
+			(,) False <$> kn l
 
+	logga $ "posta la questione numero " ++ show l ++ " per l'obiettivo " ++ se 
+ 	return (l,Reazione (Nothing, reattoreAssenso)) -- restituisce il riferimento a questa richiesta perché venga nominato negli eventi di assenso
 -- | funzione di programmazione per una nuova raccolta di assensi
 programmazioneAssenso :: (
 	Servizio Assensi `ParteDi` s
@@ -338,8 +372,10 @@ assensi = do
 	when (null xs) $ throwError "nessuna questione aperta"
 	return  $ map (fst . snd &&& fst) xs
 
+filtra u (Assensi ps ns) = not . elem u $ ps ++ ns
+filtra u (Permesso u') = u' == u 
 assensiFiltrati u = do
-	xs :: [(Int,(String,Assensi))] <- filter (not . elem u . (\(Assensi ps ns) -> ps ++ ns) . snd . snd)
+	xs :: [(Int,(String,Assensi))] <- filter (filtra u . snd . snd)
 		<$> asks elencoSottoStati 
 	when (null xs) . throwError $ "nessuna questione aperta per il responsabile " ++ u
 	return  $ map (fst . snd &&& fst)  $ xs

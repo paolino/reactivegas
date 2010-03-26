@@ -23,9 +23,9 @@ layout = 	[(["amministrazione"],1)
 		,(["interrogazione"],1)
 		,(["responsabile autore"],1)
 		,(["produzione dichiarazioni"],1)
-		,(["correzione delle dichiarazioni","produzione dichiarazioni"],1) 
+		,(["eliminazione delle dichiarazioni","produzione dichiarazioni"],2) 
 		,(["descrizione sessione"],1)
-		,(["effetto dell'inserimento delle dichiarazioni", "produzione dichiarazioni"],2)
+		,(["effetto possibile delle prossime dichiarazioni", "produzione dichiarazioni"],5)
 		]
 pagina b = output . prettyHtml $  
 		header << (thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml 
