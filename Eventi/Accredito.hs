@@ -121,7 +121,7 @@ costrEventiAccredito s kp kn = 	[("attribuzione accredito per un utente",eventoA
 	    
 -- | costruttore interrogazioni sul modulo accrediti
 costrQueryAccredito :: (Monad m, Conti `ParteDi` s, Saldi `ParteDi` s) => CostrAction m c Response s
-costrQueryAccredito s kp kn = 	[("accrediti degli utenti", queryUtente)
+costrQueryAccredito s kp kn = 	[("crediti degli utenti", queryUtente)
 				,("saldi dei responsabili", queryResponsabile)
 				] 
 	where
@@ -129,7 +129,7 @@ costrQueryAccredito s kp kn = 	[("accrediti degli utenti", queryUtente)
 	queryUtente = run $ do
 		Conti us <- asks see 
 		return $ Response [("accrediti degli utenti", if null us then 
-			ResponseOne "nessun utente possiede un accredito" else ResponseMany (map (ResponseOne *** id) us))]
+			ResponseOne "nessun utente possiede un credito" else ResponseMany (map (ResponseOne *** id) us))]
 	queryResponsabile = run $ do
 		Saldi rs <- asks see 
 		return $ Response [("saldi dei responsabili" , if null rs then 

@@ -117,20 +117,21 @@ programmazioneImpegno q ur = do
 			when (l /= j) mzero
 			fallimento (ur /= r) "solo chi ha aperto una raccolta di impegni può chiuderla"
 			Impegni as is <- osservaStatoServizio j
+			mapM_ (\(u,v) -> accredita u v) is -- restituzione del denaro degli impegni non accettati
 			eliminaStatoServizio j (undefined :: Impegni)
 			(,) False <$> k (Just as) 
 		reattoreImpegno k (Right (first validante -> (w,FallimentoImpegno j))) = w $ \r -> do
 			when (l /= j) mzero
 			fallimento (ur /= r) "solo chi ha aperto una raccolta di impegni può chiuderla"
 			Impegni as is <- osservaStatoServizio j
-			mapM_ (\(u,v) -> accredita u v) (as ++ is)
+			mapM_ (\(u,v) -> accredita u v) (as ++ is) -- restituzione del denaro di tutti gli impegni
 			eliminaStatoServizio j (undefined :: Impegni)
 			(ks,es) <- k Nothing 
 			return (False,(ks,EventoInterno (EventoFallimentoImpegno (ur,sum (map snd (as ++ is)))): es))
 		reattoreImpegno k (Left (eliminazioneResponsabile -> Just (u,_))) = conFallimento $ do
 			when (ur /= u) mzero
 			Impegni as is <- osservaStatoServizio l
-			mapM_ (\(u,v) -> accredita u v) (as ++ is)
+			mapM_ (\(u,v) -> accredita u v) (as ++ is) -- restituzione del denaro di tutti gli impegni
 			eliminaStatoServizio l (undefined :: Impegni)
 			(,) False <$> k Nothing 
 		reattoreImpegno _ (Left _) = return Nothing
@@ -150,9 +151,9 @@ costrEventiImpegno :: (
 	) =>
 	CostrAction m c EsternoImpegno s
 
-costrEventiImpegno s kp kn = 	[("fine di una raccolta impegni", eventoFineImpegno)
+costrEventiImpegno s kp kn = 	[("richiesta di impegno di denaro per un utente", eventoImpegno)
+				,("fine di una raccolta impegni", eventoFineImpegno)
 				,("fallimento di una raccolta impegni", eventoFallimentoImpegno) 
-				,("impegno di una somma", eventoImpegno)
 				] 
 	where
 	run = runSupporto s kn kp
@@ -162,7 +163,7 @@ costrEventiImpegno s kp kn = 	[("fine di una raccolta impegni", eventoFineImpegn
                 return $ FineImpegno n
         eventoFallimentoImpegno = run $ do
 		is <- impegni 
-                n <- scelte is  "selezione raccolta da far fallire" 
+                n <- scelte is  "selezione raccolta impegni da far fallire" 
                 return $ FallimentoImpegno n
         eventoImpegno  = run $ do
 		is <- impegni 
@@ -186,7 +187,7 @@ costrQueryImpegni s kp kn = 	[("elenco degli impegni aperti",q)]
 		case lookup n isx of 
 			Nothing -> throwError "incoerenza interna" 
 			Just (t,Impegni as is) -> return $ 
-				Response [("obiettivo raccolta",ResponseOne t),
+				Response [("obiettivo della raccolta impegni",ResponseOne t),
 					("somme impegnate accettate ", ResponseMany . map (ResponseOne *** id) $ as),
 					("somme impegnate in attesa di conferma ", ResponseMany . map (ResponseOne *** id) $ is)]
 

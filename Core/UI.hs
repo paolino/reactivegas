@@ -102,13 +102,13 @@ wrapCostrActions g = concatMap (\f -> f (fst <$> letturaStato) g bocciato)
 
 interrogazioni :: Interfaccia ()
 interrogazioni = mano "interrogazione dello stato del gruppo" $ (wrapCostrActions P.output $ [
-		costrQueryAccredito,
 		costrQueryAnagrafe,
+		costrQueryAccredito,
 		costrQueryOrdine,
-		costrQueryAssenso,
-		costrQueryImpegni
+		costrQueryImpegni,
+		costrQueryAssenso
 		]) 
-aggiornamentiIndividuali = ("esamina gli aggiornamenti individuali prodotti", do
+aggiornamentiIndividuali = ("esamina gli aggiornamenti individuali presenti", do
 	us <- sel $ readUPatches . fst
 	(s,_) <- letturaStato
 	let ps = fromUPatches (us,s)
@@ -145,25 +145,28 @@ addEvento x = correzioneEventi (show x:)
 
 anagrafica :: Interfaccia ()
 anagrafica = mano "dichiarazioni anagrafiche" . wrapCostrActions addEvento $ [
-		costrEventiResponsabili,
-		costrEventiAnagrafe 
+		costrEventiAnagrafe ,
+		costrEventiResponsabili
 		]
 
 
 economia  :: Interfaccia () 
 economia = mano "dichiarazioni economiche" . concat $ 
 		[wrapCostrActions addEvento [costrEventiAccredito]
-		,wrapCostrActions addEvento [costrEventiImpegno]
 		,wrapCostrActions addEvento [costrEventiOrdine]
+		,wrapCostrActions addEvento [costrEventiImpegno]
 		]
 
 votazioni :: Interfaccia ()
 votazioni = onAccesso $ \(u,_) -> do
-	
-	n <- conStato (const $ return 0) (return . length) (assensiFiltrati u) 
-	mano ("dichiarazioni democratiche (" ++ show n ++ " questioni aperte)") . wrapCostrActions addEvento $ [
-		costrEventiAssenso u
-		]
+	mano ("dichiarazioni di assenso") $ costrEventiAssenso 
+		(do 	s <- fst <$> letturaStato
+			mu <- fmap fst <$> sel (readAccesso . snd)
+			return (SUtente mu,s)
+		)
+
+		addEvento 
+		bocciato
 
 sincronizza  aggiornamento aggiornamenti = onAccesso $ \(r@(u,_)) -> do  
 	rs <- aggiornamenti
@@ -235,13 +238,13 @@ applicazione = rotonda $ \_ -> do
 			mano ("menu principale") [
 				("responsabile autore", accesso >> return ()),
 				("produzione dichiarazioni" , mano "produzione dichiarazioni" $ 
-					[("dichiarazioni democratiche",votazioni)
+					[("dichiarazioni di assenso",votazioni)
 					,("dichiarazioni economiche",economia)
 					,("dichiarazioni anagrafiche",anagrafica)				
 					,("effetto possibile delle prossime dichiarazioni", do
 						c <- sel (readCaricamento . snd) 
 						P.output . Response $ [("effetto possibile delle prossime dichiarazioni",  c)])
-					,("eliminazione dichiarazioni",eliminazioneEvento)
+					,("eliminazione delle dichiarazioni",eliminazioneEvento)
 					]),
 				("descrizione sessione", do
 					r <- sel $ readAccesso . snd

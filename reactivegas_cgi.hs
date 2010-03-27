@@ -22,9 +22,9 @@ import Debug.Trace
 layout = 	[(["amministrazione"],1)
 		,(["interrogazione"],1)
 		,(["responsabile autore"],1)
-		,(["produzione dichiarazioni"],1)
-		,(["eliminazione delle dichiarazioni","produzione dichiarazioni"],2) 
 		,(["descrizione sessione"],1)
+		,(["produzione dichiarazioni"],2)
+		,(["eliminazione delle dichiarazioni","produzione dichiarazioni"],2) 
 		,(["effetto possibile delle prossime dichiarazioni", "produzione dichiarazioni"],5)
 		]
 pagina b = output . prettyHtml $  

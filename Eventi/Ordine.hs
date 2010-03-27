@@ -57,17 +57,17 @@ reazioneOrdine = soloEsterna reattoreOrdine where
 						logga $ "acquisto del bene " ++ b ++ " fallito"
 						return nessunEffetto
 				modifica $ \(StatoOrdini cs as ias) -> StatoOrdini cs ((l,b):as) (elimina i ias)
-				logga $  "per il bene " ++ b ++ " aperto l'ordine numero " ++ show l
+				logga $  "per il bene " ++ b ++ " aperto l'acquisto numero " ++ show l
 				return ([z t],[])
 			negativo i = do		modifica $ \(StatoOrdini cs as ias) -> StatoOrdini cs as (elimina i ias)
-						logga $ "richiesta di apertura d'ordine per il bene " ++ b ++ " fallita"
+						logga $ "proposta di acquisto per il bene " ++ b ++ " fallita"
 						return nessunEffetto
-		(i,z) <- programmazioneAssenso ("apertura d'ordine per il bene " ++ b) r maggioranza positivo negativo	
+		(i,z) <- programmazioneAssenso ("proposta di acquisto per il bene " ++ b) r maggioranza positivo negativo	
 		modifica $ \(StatoOrdini cs as ias) -> StatoOrdini cs as ((i,b):ias) 
 		return (True,([z],[]))
 
 costrEventiOrdine :: (Monad m, StatoOrdini `ParteDi` s) => CostrAction m c EsternoOrdine s
-costrEventiOrdine s kp kn  = [("apertura ordine per un nuovo bene", eventoApertura)] 
+costrEventiOrdine s kp kn  = [("proposta di acquisto per un nuovo bene", eventoApertura)] 
 	where
 	eventoApertura  = runSupporto s kn kp $ do
 		n <- libero "nome del nuovo bene da acquistare"
@@ -79,17 +79,17 @@ sottostringa :: Eq a => [a] -> [a] -> Bool
 sottostringa x = any (x `isPrefixOf`) . tails
 
 costrQueryOrdine :: (Monad m, ParteDi StatoOrdini s) => CostrAction m c Response s
-costrQueryOrdine s kp kn = 	[("cerca ordini chiusi",cerca)]
+costrQueryOrdine s kp kn = 	[("acquisti chiusi",cerca)]
 	where
 	run = runSupporto s kn kp
 	cerca = run $ do
 		(StatoOrdini xs _ _) <- asks see
-		t <- libero "introduci parte del nome dell'ordine [* per vederli tutti]"
+		t <- libero "introduci parte del nome dell'acquisto [* per vederli tutti]"
 		let cs =  filter (sottostringa (if t == "*" then "" else t) . fst) $ xs 
-		when (null cs) . throwError $ "nessun ordine incontra la richiesta"
-		r <- scelte cs "ordine da esaminare" 
+		when (null cs) . throwError $ "nessun nome di acquisto incontra la richiesta"
+		r <- scelte cs "acquisto da esaminare" 
 		return $ case r of 
-			Nothing -> ResponseOne "ordine fallito" 
+			Nothing -> ResponseOne "acquisto fallito" 
 			Just (autore, xs) -> Response [("responsabile dell'acquisto",ResponseOne autore), 
 						("acquirenti",ResponseAL  xs)]
 		

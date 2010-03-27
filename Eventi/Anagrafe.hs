@@ -204,7 +204,7 @@ costrEventiAnagrafe s kp kn =	[("inserimento di un nuovo utente", eventoNuovoUte
 costrEventiResponsabili :: (Monad m, ParteDi Responsabili s, ParteDi Anagrafe s) => CostrAction m c EsternoAnagrafico s
 costrEventiResponsabili s kp kn =
 	[("richiesta di elezione di un nuovo responsabile", eventoElezioneResponsabile)
-	,("richiesta di eliminazione di un responsabile",eventoEliminazioneResponsabile)
+	,("richiesta di revoca di un responsabile",eventoEliminazioneResponsabile)
 	] 
 	where
 	run = runSupporto s kn kp
@@ -374,20 +374,25 @@ assensi = do
 
 filtra u (Assensi ps ns) = not . elem u $ ps ++ ns
 filtra u (Permesso u') = u' == u 
-assensiFiltrati u = do
-	xs :: [(Int,(String,Assensi))] <- filter (filtra u . snd . snd)
-		<$> asks elencoSottoStati 
-	when (null xs) . throwError $ "nessuna questione aperta per il responsabile " ++ u
-	return  $ map (fst . snd &&& fst)  $ xs
+assensiFiltrati = do
+	SUtente mu <- asks see
+	case mu of
+		Just u -> do
+			xs :: [(Int,(String,Assensi))] <- filter (filtra u . snd . snd)
+				<$> asks elencoSottoStati 
+			when (null xs) . throwError $ "nessuna questione aperta per il responsabile " ++ u
+			return  $ map (fst . snd &&& fst)  $ xs
+		Nothing -> throwError $ "strano eh"
 
+data SUtente = SUtente (Maybe Utente)
 -- | costrutore degli eventi di assenso
-costrEventiAssenso :: (Monad m, Servizio Assensi `ParteDi` s) => Utente -> CostrAction m c EsternoAssenso s
-costrEventiAssenso u s kp kn = 	[("attribuzione di un parere su una questione aperta",eventoAssenso u s kp kn )
+costrEventiAssenso :: (Monad m, Servizio Assensi `ParteDi` s, SUtente `ParteDi` s) => CostrAction m c EsternoAssenso s
+costrEventiAssenso s kp kn = 	[("attribuzione di un parere su una questione aperta",eventoAssenso s kp kn )
 				,("chiusura prematura di una questione",eventoFallimentoAssenso)
 				] 
 	where
-	eventoAssenso u s kp kn = runSupporto s kn kp $ do
-		ys <- assensiFiltrati u
+	eventoAssenso s kp kn = runSupporto s kn kp $ do
+		ys <- assensiFiltrati 
 		n <- scelte ys "esprimi un parere sulla questione"
 		ad <- scelte [("assenso",Assenso),("dissenso",Dissenso)] ("esprimi un parere sulla questione " ++ show n) 
 		return $ ad n
