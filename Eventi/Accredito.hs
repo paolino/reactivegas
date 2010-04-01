@@ -13,9 +13,10 @@ module Eventi.Accredito {-(
 	priorityAccredito,
 	queryAccredito
 	)-} where
-
+import Data.Maybe (fromJust, isNothing)
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad (when)
+import Control.Monad.Error (throwError)
 import Control.Arrow (second, (&&&), first, (***))
 
 import Core.Programmazione (Reazione, soloEsterna, nessunEffetto)
@@ -24,7 +25,7 @@ import Core.Costruzione (libero, scelte, CostrAction, runSupporto)
 import Core.Parsing (Parser)
 import Lib.Costruzione (Costruzione)
 import Eventi.Anagrafe (Anagrafe, Utente, esistenzaUtente, utenti, Responsabili, 
-	esistenzaResponsabile, responsabili, validante)
+	esistenzaResponsabile, responsabili, validante, SUtente (..))
 import Lib.Aspetti ((.<), see, ParteDi)
 import Lib.Prioriti (R (..))
 import Lib.Assocs (update , (?))
@@ -57,7 +58,7 @@ preleva u dv = do
 	fallimento (dv <= 0) "prelievo negativo o nullo"
 	esistenzaUtente u 
 	Conti us <- osserva
-	fallimento (us ? (u,0) < dv) "il credito non é sufficiente per la richiesta" 
+	fallimento (us ? (u,0) < dv) "il credito non è sufficiente per la richiesta" 
 	aggiornaCredito u (subtract dv) 
 
 -- | esegue un accredito su un conto utente
@@ -97,13 +98,14 @@ reazioneAccredito = soloEsterna reattoreAccredito where
 		return (True,nessunEffetto)	
 	reattoreAccredito (first validante -> (wrap ,Saldo u dv)) = wrap $ \r -> do
 		esistenzaResponsabile u
+		fallimento (u == r) "movimento di denaro riferito ad una cassa sola"
 		fallimento (dv <= 0) "saldo negativo o nullo"
 		modifica $ \(Saldi us) -> Saldi (update r (+ dv) 0 (update u (subtract dv) 0 us))
 		logga $ "spostati " ++ show dv ++ " euro dalla cassa di " ++ u ++ " alla cassa di " ++ r
 		return (True,nessunEffetto)
 
 -- | costruttore di eventi per il modulo di accredito
-costrEventiAccredito :: (Monad m, ParteDi Responsabili s, ParteDi Anagrafe s) => CostrAction m c EsternoAccredito s
+costrEventiAccredito :: (Monad m, ParteDi Responsabili s, SUtente `ParteDi` s, ParteDi Anagrafe s) => CostrAction m c EsternoAccredito s
 costrEventiAccredito s kp kn = 	[("aggiornamento credito di un utente",eventoAccredito) 
 				,("ricezione saldo da un responsabile", eventoSaldo)
 				] 
@@ -111,12 +113,16 @@ costrEventiAccredito s kp kn = 	[("aggiornamento credito di un utente",eventoAcc
 	run = runSupporto s kn kp
 	eventoAccredito = run $ do
 		us <- asks utenti 
-		u <- scelte (map (id &&& id) us) "utente interessato dall'aggiornamento"
+		SUtente un <- asks see
+		when (isNothing un) $ throwError "manca la scelta del responsabile autore"
+		u <- scelte (map (id &&& id) (filter ((/=) $ fromJust un)  us)) "utente interessato dall'aggiornamento"
 		n <- libero $ "somma da accreditare sul conto di " ++ u
 		return $ Accredito u n
 	eventoSaldo = run $ do
 		(rs,_) <- asks responsabili 
-		u <- scelte (map (fst &&& id) rs) "responsabile che ha dato il denaro"
+		SUtente un <- asks see
+		when  (isNothing un) $ throwError "manca la scelta del responsabile autore"
+		u <- scelte (map (fst &&& id) (filter ((/=) (fromJust un) . fst) rs)) "responsabile che ha dato il denaro"
 		n <- libero $ "somma ricevuta dal responsabile " ++ fst u
 		return $ Saldo (fst u) n
 	    
