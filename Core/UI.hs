@@ -96,12 +96,16 @@ bootChiavi = do
 
 wrapCostrActions 	
 	:: (a -> Interfaccia ()) 
-	-> [MEnv TS -> (a -> Interfaccia ()) -> (String -> Interfaccia ()) -> [(String,Interfaccia ())]]
+	-> [MEnv (SUtente,TS) -> (a -> Interfaccia ()) -> (String -> Interfaccia ()) -> [(String,Interfaccia ())]]
 	-> [(String,Interfaccia ())]
-wrapCostrActions g = concatMap (\f -> f (fst <$> letturaStato) g bocciato)
+wrapCostrActions g = concatMap (\f -> f q g bocciato) where
+	q = do 	s <- fst <$> letturaStato
+		mu <- fmap fst <$> sel (readAccesso . snd)
+		return (SUtente mu,s)
+
 
 interrogazioni :: Interfaccia ()
-interrogazioni = mano "interrogazione dello stato del gruppo" $ (wrapCostrActions P.output $ [
+interrogazioni = mano "interrogazione della conoscenza" $ (wrapCostrActions P.output $ [
 		costrQueryAnagrafe,
 		costrQueryAccredito,
 		costrQueryOrdine,
@@ -158,15 +162,7 @@ economia = mano "dichiarazioni economiche" . concat $
 		]
 
 votazioni :: Interfaccia ()
-votazioni = onAccesso $ \(u,_) -> do
-	mano ("dichiarazioni di assenso") $ costrEventiAssenso 
-		(do 	s <- fst <$> letturaStato
-			mu <- fmap fst <$> sel (readAccesso . snd)
-			return (SUtente mu,s)
-		)
-
-		addEvento 
-		bocciato
+votazioni = onAccesso $ \(u,_) -> mano ("dichiarazioni di assenso") $ wrapCostrActions addEvento [costrEventiAssenso]
 
 sincronizza  aggiornamento aggiornamenti = onAccesso $ \(r@(u,_)) -> do  
 	rs <- aggiornamenti
@@ -214,7 +210,6 @@ amministrazione = do
 			("modifica delle dichiarazioni gia' firmate", importa),
 			("esegui un aggiornamento della conoscenza", sincronizza aggiornamento aggiornamenti),
 			("crea nuove chiavi da responsabile", bootChiavi),
-			aggiornamentiIndividuali,
 			("accesso sicuro", mano "accesso sicuro" 
 
 				[("scarica le dichiarazioni prodotte", letturaEventi >>= P.download "dichiarazioni.txt" )
@@ -256,7 +251,7 @@ applicazione = rotonda $ \_ -> do
 						,("dichiarazioni prodotte" , ResponseMany $ map ResponseOne (sortEventi evs))
 						]
 					),
-				("interrogazione", interrogazioni),
+				("interrogazione della conoscenza", interrogazioni),
 				("amministrazione",amministrazione)
 				]
 

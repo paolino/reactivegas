@@ -20,11 +20,10 @@ import Network.SCGI
 import Debug.Trace
 
 layout = 	[(["amministrazione"],1)
-		,(["interrogazione"],1)
+		,(["interrogazione della conoscenza"],2)
 		,(["responsabile autore"],1)
 		,(["descrizione sessione"],1)
 		,(["produzione dichiarazioni"],2)
-		,(["eliminazione delle dichiarazioni","produzione dichiarazioni"],2) 
 		,(["effetto possibile delle prossime dichiarazioni", "produzione dichiarazioni"],5)
 		]
 pagina b = output . prettyHtml $  

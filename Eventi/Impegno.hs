@@ -12,7 +12,7 @@ module Eventi.Impegno {-(
 	queryImpegni
 --	unImpegno
 	)-}  where
-
+import Data.List (delete)
 import Control.Monad.Maybe (MaybeT)
 import Control.Monad (mzero, when)
 import Control.Monad.Error (throwError)
@@ -20,7 +20,7 @@ import Control.Applicative ((<$>))
 import Control.Monad.Reader (asks, MonadReader)
 import Control.Arrow ((&&&), (***), first)
 
-import Lib.Aspetti ((.<), ParteDi)
+import Lib.Aspetti ((.<), ParteDi, see)
 import Lib.Costruzione (Costruzione)
 import Lib.Prioriti (R(..))
 import Lib.Assocs (update)
@@ -32,7 +32,7 @@ import Core.Programmazione (Effetti, Reazione (..) , EventoInterno (..),  nessun
 import Core.Inserimento (MTInserzione, conFallimento, fallimento, osserva, modifica, logga)
 
 import Eventi.Servizio (Servizio, servizio0, nuovoStatoServizio, modificaStatoServizio, osservaStatoServizio, eliminaStatoServizio,elencoSottoStati)
-import Eventi.Anagrafe (EsternoAssenso, Assensi, programmazionePermesso, Utente, Responsabili, Anagrafe, eliminazioneResponsabile, validante ,utenti, esistenzaResponsabile)
+import Eventi.Anagrafe (EsternoAssenso, Assensi, programmazionePermesso, Utente, Responsabili, Anagrafe, eliminazioneResponsabile, validante ,utenti, esistenzaResponsabile, SUtente (..))
 import Eventi.Accredito (preleva, accredita, Conti)
 
 import Debug.Trace
@@ -60,7 +60,7 @@ fallimentoImpegno (EventoFallimentoImpegno t) = Just t
 fallimentoImpegno _ = Nothing
 
 -- | lo stato per ogni causa
-data Impegni = Impegni {accettati :: [(Utente,Float)], inattesa :: [(Utente,Float)]} deriving (Show,Read)
+data Impegni = Impegni {referente::Utente, accettati :: [(Utente,Float)], inattesa :: [(Utente,Float)]} deriving (Show,Read)
 
 -- | tipo dello stato aggiunto degli impegni
 type TyImpegni a = (Servizio Impegni , a)
@@ -90,24 +90,24 @@ programmazioneImpegno :: (
 	-> MTInserzione s c Utente (Int ,ChiudiProgrammazioneImpegno s c -> Reazione s c Utente) -- ^ la chiave e una Reazione
 
 programmazioneImpegno q ur = do
-	l <- nuovoStatoServizio (Impegni [] []) q
+	l <- nuovoStatoServizio (Impegni ur [] []) q
 	let 	
 		reattoreImpegno k (Right (first validante ->  (w,Impegno u v j))) = w $ \r -> let
 			positivo _ = do
 				logga $ "accettato l'impegno di " ++ show v ++ " euro per " ++ q ++ " da parte di " ++ u
-				modificaStatoServizio j $ \(Impegni as is) -> return 
-					(Impegni (update u (+ v) 0 as) (update u (subtract v) 0 is))
+				modificaStatoServizio j $ \(Impegni ur as is) -> return 
+					(Impegni ur ((u,v):as) (delete (u,v) is))
 				return nessunEffetto
 			negativo _ = do 
 				accredita u v
-				modificaStatoServizio j $ \(Impegni as is) -> return 
-					(Impegni as (update u (subtract v) 0 is))
+				modificaStatoServizio j $ \(Impegni ur as is) -> return 
+					(Impegni ur as (update u (subtract v) 0 is))
 				logga $ "rifiutato l'impegno di soldi per " ++ q ++ " da parte di " ++ u
 				return nessunEffetto
 			in do 
 				when (l /= j) mzero
 				preleva u v 
-				modificaStatoServizio j $ \(Impegni  as is) -> return (Impegni as $ update u (+ v) 0 is)
+				modificaStatoServizio j $ \(Impegni ur as is) -> return (Impegni ur as $ update u (+ v) 0 is)
 				logga  $ "richiesta di impegno di  " ++ show v ++ " euro da " ++ u ++ " per " ++ q
 				(_,reaz) <- programmazionePermesso 
 					("impegno di " ++ show v ++ " euro per " ++ q ++ " da parte di " ++ u) 
@@ -116,21 +116,21 @@ programmazioneImpegno q ur = do
 		reattoreImpegno k (Right (first validante -> (w,FineImpegno j))) = w $ \r -> do
 			when (l /= j) mzero
 			fallimento (ur /= r) "solo chi ha aperto una raccolta di impegni può chiuderla"
-			Impegni as is <- osservaStatoServizio j
+			Impegni ur as is <- osservaStatoServizio j
 			mapM_ (\(u,v) -> accredita u v) is -- restituzione del denaro degli impegni non accettati
 			eliminaStatoServizio j (undefined :: Impegni)
 			(,) False <$> k (Just as) 
 		reattoreImpegno k (Right (first validante -> (w,FallimentoImpegno j))) = w $ \r -> do
 			when (l /= j) mzero
 			fallimento (ur /= r) "solo chi ha aperto una raccolta di impegni può chiuderla"
-			Impegni as is <- osservaStatoServizio j
+			Impegni ur as is <- osservaStatoServizio j
 			mapM_ (\(u,v) -> accredita u v) (as ++ is) -- restituzione del denaro di tutti gli impegni
 			eliminaStatoServizio j (undefined :: Impegni)
 			(ks,es) <- k Nothing 
 			return (False,(ks,EventoInterno (EventoFallimentoImpegno (ur,sum (map snd (as ++ is)))): es))
 		reattoreImpegno k (Left (eliminazioneResponsabile -> Just (u,_))) = conFallimento $ do
 			when (ur /= u) mzero
-			Impegni as is <- osservaStatoServizio l
+			Impegni ur as is <- osservaStatoServizio l
 			mapM_ (\(u,v) -> accredita u v) (as ++ is) -- restituzione del denaro di tutti gli impegni
 			eliminaStatoServizio l (undefined :: Impegni)
 			(,) False <$> k Nothing 
@@ -144,10 +144,21 @@ programmazioneImpegno q ur = do
 impegni 	= do 	(xs :: [(Int,(String,Impegni))]) <- asks elencoSottoStati
 			when (null xs) $ throwError "nessuna raccolta di impegni attiva"
 			return $ map (fst . snd &&& fst) xs
+impegniFiltrati k e = do
+	SUtente mu <- asks see
+	case mu of
+		Just u -> do
+			xs :: [(Int,(String,Impegni))] <- filter (k u . snd . snd)
+				<$> asks elencoSottoStati 
+			when (null xs) . throwError $ e u
+			return  $ map (fst . snd &&& fst)  $ xs
+		Nothing -> throwError $ "manca la selezione del responsabile autore"
+
 costrEventiImpegno :: (
 	Monad m,
 	ParteDi (Servizio Impegni) s, 
-	ParteDi Anagrafe s
+	ParteDi Anagrafe s,
+	ParteDi SUtente s
 	) =>
 	CostrAction m c EsternoImpegno s
 
@@ -158,36 +169,37 @@ costrEventiImpegno s kp kn = 	[("richiesta di impegno di denaro per un utente", 
 	where
 	run = runSupporto s kn kp
         eventoFineImpegno = run $ do
-		is <- impegni 
-                n <- scelte is "selezione raccolta impegni da chiudere" 
+		is <- impegniFiltrati (\u -> (==) u . referente) ("nessuna raccolta impegni aperta dal responsabile " ++)
+                n <- scelte is "raccolta impegni da chiudere positivamente" 
                 return $ FineImpegno n
         eventoFallimentoImpegno = run $ do
-		is <- impegni 
-                n <- scelte is  "selezione raccolta impegni da far fallire" 
+		is <- impegniFiltrati (\u -> (==) u . referente) ("nessuna raccolta impegni aperta dal responsabile " ++)
+                n <- scelte is  "raccolta impegni da chiudere negativamente" 
                 return $ FallimentoImpegno n
         eventoImpegno  = run $ do
 		is <- impegni 
-                n <- scelte is  "selezione raccolta impegni"  
+                n <- scelte is  "raccolta impegni alla quale partecipare"  
 		us <- asks utenti 
-		u <- scelte (map (id &&& id) us) "selezione utente impegnante"
+		u <- scelte (map (id &&& id) us) "utente impegnante"
 		z <- libero "somma impegnata"
                 return $ Impegno u z n
 
 costrQueryImpegni :: (Monad m, ParteDi (Servizio Impegni) s) => CostrAction m c Response s
-costrQueryImpegni s kp kn = 	[("elenco degli impegni aperti",q)] 
+costrQueryImpegni s kp kn = 	[("raccolte di impegni aperte",q)] 
 	where
 	run = runSupporto s kn kp
 	r =  run $ do
 		is <- impegni  
-		return $ Response [("elenco impegni",ResponseMany (map fst is))]
+		return $ Response [("raccolte di impegni aperte",ResponseMany (map fst is))]
 	q = run $ do
 		is <- impegni
-		n <- scelte is "selezione raccolta impegni" 
+		n <- scelte is "esamina la raccolta di impegni" 
 		isx <- asks elencoSottoStati
 		case lookup n isx of 
 			Nothing -> throwError "incoerenza interna" 
-			Just (t,Impegni as is) -> return $ 
-				Response [("obiettivo della raccolta impegni",ResponseOne t),
+			Just (t,Impegni ur as is) -> return $ 
+				Response [("obiettivo della raccolta di impegni",ResponseOne t),
+					("responsabile della raccolta di impegni", ResponseOne ur),
 					("somme impegnate accettate ", ResponseMany . map (ResponseOne *** id) $ as),
 					("somme impegnate in attesa di conferma ", ResponseMany . map (ResponseOne *** id) $ is)]
 

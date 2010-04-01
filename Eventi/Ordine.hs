@@ -43,36 +43,36 @@ reazioneOrdine = soloEsterna reattoreOrdine where
 	reattoreOrdine (first validante -> (w, AperturaOrdine b)) = w $ \r -> do
 		
 		s@(StatoOrdini cs as ias ) <-  osserva
-		fallimento (not (b `assente` cs) || (b `elem` map snd as) || (b `elem` map snd ias)) "il nome per questo bene e' gia' stato utilizzato oppure in uso"
+		fallimento (not (b `assente` cs) || (b `elem` map snd as) || (b `elem` map snd ias)) "nome non più disponibile"
 		let 	positivo i = do 	
-				(l,z) <- programmazioneImpegno ("l'acquisto del bene " ++ b) r
+				(l,z) <- programmazioneImpegno ("l'acquisto " ++ b) r
 				let t k = case k of
 					Just us -> do 
 						salda r (subtract . sum . map snd $ us)
 						modifica $ \(StatoOrdini  cs as ias) -> StatoOrdini ((b,Just (r,us)):cs) (elimina l as) ias
-						logga $ "acquisto del bene " ++ b ++ " chiuso con successo"
+						logga $ "acquisto " ++ b ++ " chiuso con successo"
 						return nessunEffetto
 					Nothing -> do
 						modifica $ \(StatoOrdini  cs as ias ) -> StatoOrdini ((b,Nothing):cs) (elimina l as) ias
-						logga $ "acquisto del bene " ++ b ++ " fallito"
+						logga $ "acquisto  " ++ b ++ " chiuso negativamente"
 						return nessunEffetto
 				modifica $ \(StatoOrdini cs as ias) -> StatoOrdini cs ((l,b):as) (elimina i ias)
-				logga $  "per il bene " ++ b ++ " aperto l'acquisto numero " ++ show l
+				logga $  "aperto l'acquisto " ++ b 
 				return ([z t],[])
 			negativo i = do		modifica $ \(StatoOrdini cs as ias) -> StatoOrdini cs as (elimina i ias)
-						logga $ "proposta di acquisto per il bene " ++ b ++ " fallita"
+						logga $ "nuova proposta di acquisto " ++ b ++ " fallita"
 						return nessunEffetto
-		(i,z) <- programmazioneAssenso ("proposta di acquisto per il bene " ++ b) r maggioranza positivo negativo	
+		(i,z) <- programmazioneAssenso ("nuova proposta di acquisto " ++ b) r maggioranza positivo negativo	
 		modifica $ \(StatoOrdini cs as ias) -> StatoOrdini cs as ((i,b):ias) 
 		return (True,([z],[]))
 
 costrEventiOrdine :: (Monad m, StatoOrdini `ParteDi` s) => CostrAction m c EsternoOrdine s
-costrEventiOrdine s kp kn  = [("proposta di acquisto per un nuovo bene", eventoApertura)] 
+costrEventiOrdine s kp kn  = [("nuova proposta di acquisto", eventoApertura)] 
 	where
 	eventoApertura  = runSupporto s kn kp $ do
-		n <- libero "nome del nuovo bene da acquistare"
+		n <- libero "nome della nuova proposta d'acquisto"
 		StatoOrdini xs ys zs <- asks see
-		when (n `elem` (map fst xs ++ map snd ys ++ map snd zs)) $ throwError "nome del bene già usato in passato o in uso"
+		when (n `elem` (map fst xs ++ map snd ys ++ map snd zs)) $ throwError "nome non più disponibile"
 		return $ AperturaOrdine n
 
 sottostringa :: Eq a => [a] -> [a] -> Bool

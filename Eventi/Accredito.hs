@@ -35,7 +35,7 @@ data EsternoAccredito = Accredito Utente Float | Saldo Utente Float deriving (Sh
 
 -- | priorita' per gli eventi del modulo
 priorityAccredito = R k where
-	k (Accredito _ _) = - 15
+	k (Accredito _ _) = -15
 	k (Saldo _ _) = -15
 
 -- | stato degli accrediti utente
@@ -54,7 +54,7 @@ bootAccredito x = Conti [] .< Saldi [] .< x
 -- | esegue un prelievo da un conto utente
 preleva :: (Anagrafe `ParteDi` s, Conti `ParteDi` s) => Utente -> Float -> MTInserzione s c Utente ()
 preleva u dv = do
-	fallimento (dv <= 0) "tentato un prelievo negativo o nullo"
+	fallimento (dv <= 0) "prelievo negativo o nullo"
 	esistenzaUtente u 
 	Conti us <- osserva
 	fallimento (us ? (u,0) < dv) "il credito non é sufficiente per la richiesta" 
@@ -90,47 +90,48 @@ reazioneAccredito :: (
 	) => Reazione s c Utente
 reazioneAccredito = soloEsterna reattoreAccredito where
 	reattoreAccredito (first validante -> (wrap,Accredito u dv)) = wrap $ \r -> do
+		fallimento (r == u) "aggiornamento del proprio credito di utente"
 		accredita u dv
 		salda r (+dv)
-		logga $ "accreditate " ++ show dv ++ " euro a " ++ show u
+		logga $ "accreditate " ++ show dv ++ " euro a " ++ u
 		return (True,nessunEffetto)	
 	reattoreAccredito (first validante -> (wrap ,Saldo u dv)) = wrap $ \r -> do
 		esistenzaResponsabile u
-		fallimento (dv <= 0) "tentato un saldo negativo o nullo"
+		fallimento (dv <= 0) "saldo negativo o nullo"
 		modifica $ \(Saldi us) -> Saldi (update r (+ dv) 0 (update u (subtract dv) 0 us))
-		logga $ "spostati " ++ show dv ++ " euro dal saldo di " ++ show u ++ " al saldo di " ++ show r
+		logga $ "spostati " ++ show dv ++ " euro dalla cassa di " ++ u ++ " alla cassa di " ++ r
 		return (True,nessunEffetto)
 
 -- | costruttore di eventi per il modulo di accredito
 costrEventiAccredito :: (Monad m, ParteDi Responsabili s, ParteDi Anagrafe s) => CostrAction m c EsternoAccredito s
-costrEventiAccredito s kp kn = 	[("attribuzione accredito per un utente",eventoAccredito) 
+costrEventiAccredito s kp kn = 	[("aggiornamento credito di un utente",eventoAccredito) 
 				,("ricezione saldo da un responsabile", eventoSaldo)
 				] 
 	where
 	run = runSupporto s kn kp
 	eventoAccredito = run $ do
 		us <- asks utenti 
-		u <- scelte (map (id &&& id) us) "selezione utente"
-		n <- libero "la somma da accreditare"
+		u <- scelte (map (id &&& id) us) "utente interessato dall'aggiornamento"
+		n <- libero $ "somma da accreditare sul conto di " ++ u
 		return $ Accredito u n
 	eventoSaldo = run $ do
 		(rs,_) <- asks responsabili 
-		u <- scelte (map (fst &&& id) rs) "selezione responsabile"
-		n <- libero "la somma ricevuta"
+		u <- scelte (map (fst &&& id) rs) "responsabile che ha dato il denaro"
+		n <- libero $ "somma ricevuta dal responsabile " ++ fst u
 		return $ Saldo (fst u) n
 	    
 -- | costruttore interrogazioni sul modulo accrediti
 costrQueryAccredito :: (Monad m, Conti `ParteDi` s, Saldi `ParteDi` s) => CostrAction m c Response s
 costrQueryAccredito s kp kn = 	[("crediti degli utenti", queryUtente)
-				,("saldi dei responsabili", queryResponsabile)
+				,("casse dei responsabili", queryResponsabile)
 				] 
 	where
 	run = runSupporto s kn kp
 	queryUtente = run $ do
 		Conti us <- asks see 
-		return $ Response [("accrediti degli utenti", if null us then 
+		return $ Response [("crediti degli utenti", if null us then 
 			ResponseOne "nessun utente possiede un credito" else ResponseMany (map (ResponseOne *** id) us))]
 	queryResponsabile = run $ do
 		Saldi rs <- asks see 
-		return $ Response [("saldi dei responsabili" , if null rs then 
-			ResponseOne "nessun responsabile ha un saldo" else ResponseMany (map (ResponseOne *** id) rs))]
+		return $ Response [("casse dei responsabili" , if null rs then 
+			ResponseOne "nessun responsabile possiede una cassa attiva" else ResponseMany (map (ResponseOne *** id) rs))]
