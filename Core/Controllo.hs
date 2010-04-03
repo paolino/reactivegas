@@ -62,12 +62,13 @@ serializza (Nodo k rs) = SNodo (isJust k) (map (second $ map (second serializza)
 caricaEventi :: Show d 
 	=> [R] 			-- ^ i prioritizzatori
 	-> [Reazione s c d] 	-- ^ le reazioni base
+	-> Int 			-- ^ livello di caricamento
 	-> [Esterno d] 		-- ^ gli eventi da caricare
 	-> (s,[SNodo s d]) 	-- ^ lo stato e la serializzazione dell'albero reattivo
 	-> ((s,[SNodo s d]),[Contestualizzato d String])-- ^ nuovo stato e nuova  serializzazione dell'albero reattivo insieme ai log contestualizzati
-caricaEventi ps rs xs (s,nss) = 
+caricaEventi ps rs l xs (s,nss) = 
 	let 	ns = map (uncurry deserializza) $ zip nss rs
-		xs' = sortP ps snd xs
+		xs' = sortP l ps snd xs
 		(ns',s',ws) = runInserzione (foldM (\ns x -> inserimentoCompleto x ns) ns xs') nuovoContesto s
 		nss' =  map serializza ns'
 	in ((s',nss'),ws)

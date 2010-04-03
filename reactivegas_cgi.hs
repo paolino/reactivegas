@@ -44,9 +44,9 @@ pagina b = output . prettyHtml $
 					[href "http://github.com/paolino/reactivegas"] << "github.com")
 				])  
 
-caricamento' :: QS -> [Esterno Utente] -> (QS,Response)
-caricamento' s es = let
-	(s',qs) = caricamento es s
+caricamento' :: Int -> QS -> [Esterno Utente] -> (QS,Response)
+caricamento' l s es = let
+	(s',qs) = caricamento l es s
 	qs' = ResponseMany (map ResponseOne $ lines qs)
 	in (s',qs')
 	
@@ -55,5 +55,5 @@ main = do
 	forkIO . forever $ (atomically (readTChan c) >>= putStrLn)
 	(gs,modif,agg) <- mkGroupSystem loader caricamento' nuovoStato c "tarogas" 
 	pe <- startGroupSystem 10000000 gs
-	sessionServer 5000 100  applicazione pagina layout ((,) pe <$> mkSessione modif agg) 
+	sessionServer 5000 100  applicazione pagina layout ((,) pe <$> mkSessione modif 100 agg) 
 	

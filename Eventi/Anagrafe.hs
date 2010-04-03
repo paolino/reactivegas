@@ -83,9 +83,9 @@ data Responsabili = Responsabili {eletti::[Responsabile], inodore ::[(Indice,Res
 responsabili = (\(Responsabili es is) -> (es, map snd is)) . see
 -- | mappa di priorita' per gli eventi di questo modulo
 priorityAnagrafe = R k where
-	k (NuovoUtente _) = -30
-	k (EliminazioneResponsabile _) = -28
-	k (ElezioneResponsabile _) = -29
+	k (NuovoUtente _) = -40
+	k (EliminazioneResponsabile _) = -38
+	k (ElezioneResponsabile _) = -39
 	
 priorityAnagrafeI = R k where
 	k (EventoEliminazioneResponsabile _ _) = 20
@@ -261,7 +261,6 @@ maggioranza (ps,ns) = do
 programmazionePermesso se ur ut k kn = do
 	l <- nuovoStatoServizio (Permesso ur ut) se
 	let 	eliminaRichiesta u j = do
-			fallimento (ur /= u)  "questione aperta da un altro responsabile"
 			eliminaStatoServizio j (undefined :: Assensi)  
 			logga $ "rinuncia alla questione " ++ se
 			return (False,nessunEffetto) -- non rischedula il reattore
@@ -282,6 +281,7 @@ programmazionePermesso se ur ut k kn = do
 			(,) False <$> kn j
 		reattoreAssenso (Right (first validante -> (w,EventoFallimentoAssenso j))) = w $ \r -> do
 			when (j /= l) mzero
+			fallimento (ur /= r)  "questione aperta da un altro responsabile"
 			eliminaRichiesta r j
 			(,) False <$> kn j
 		reattoreAssenso (Left (eliminazioneResponsabile -> Just (u,r))) = conFallimento $ do
@@ -309,7 +309,6 @@ programmazioneAssenso :: (
 programmazioneAssenso se ur c k kn = do
 	l <- nuovoStatoServizio (Assensi ur [] []) se -- ricevi la chiave per la nuova raccolta
 	let 	eliminaRichiesta u j = do
-			fallimento (ur /= u) "questione aperta da un altro responsabile"
 			eliminaStatoServizio j (undefined :: Assensi)  
 			logga $ "rinuncia alla questione " ++ se
 			return (False,nessunEffetto) -- non rischedula il reattore
@@ -351,6 +350,7 @@ programmazioneAssenso se ur c k kn = do
 
 		reattoreAssenso (Right (first validante -> (w,EventoFallimentoAssenso j))) = w $ \r -> do
 			when (j /= l) mzero
+			fallimento (ur /= r) "questione aperta da un altro responsabile"
 			eliminaRichiesta r j
 			(,) False <$> kn j
 		reattoreAssenso (Left (eliminazioneResponsabile -> Just (u,r))) = conFallimento $ do

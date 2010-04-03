@@ -189,12 +189,12 @@ type GroupSystem a =
 	,IO ()				-- ^ azione di persistenza
 	)
 
-type Modificato a b = Maybe Responsabile -> [Evento] -> STM (Maybe a, b)
+type Modificato a b = Int -> Maybe Responsabile -> [Evento] -> STM (Maybe a, b)
 
 -- | prepara uno stato vergine di un gruppo
 mkGroupSystem :: ( Read a, Show a) 
 	=> (a -> Group -> Writer [String] (Either String a)) 	-- ^ loader specifico per a
-	-> (a -> [Esterno Utente] -> (a,b))		-- ^ insertore diretto di eventi per a (dovrebbe tornare xml !)
+	-> (Int -> a -> [Esterno Utente] -> (a,b))		-- ^ insertore diretto di eventi per a (dovrebbe tornare xml !)
 	-> ([Responsabile] -> a)				-- ^ inizializzatore di gruppo
 	-> TChan String 					-- ^ log di persistenza
 	-> GK 							-- ^ nome del gruppo
@@ -217,16 +217,16 @@ startGroupSystem t (g,rip,pers) = do
 	rip
 	return g
 
-modificato 	:: (a -> [Esterno Utente] -> (a,b)) 
+modificato 	:: (Int -> a -> [Esterno Utente] -> (a,b)) 
 		-> TVar (Maybe a) 
 		-> TVar [(Utente,Patch)]
 		-> Modificato a b
-modificato f ts tp mr es = do
+modificato f ts tp l mr es = do
 	ms <-  readTVar ts
 	ups <- concatMap (\(u,(_,_,es)) -> map ((,) u) es) <$> readTVar tp	
 	return $ case ms of
 		Nothing -> (Nothing, error "nessuno stato")
-		Just s -> first Just $ f s (ups ++ case mr of 
+		Just s -> first Just $ f l s (ups ++ case mr of 
 			Nothing -> []
 			Just (u,_) -> map ((,) u) es
 			) 

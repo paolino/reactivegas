@@ -36,8 +36,8 @@ data EsternoAccredito = Accredito Utente Float | Saldo Utente Float deriving (Sh
 
 -- | priorita' per gli eventi del modulo
 priorityAccredito = R k where
-	k (Accredito _ _) = -15
-	k (Saldo _ _) = -15
+	k (Accredito _ _) = -35
+	k (Saldo _ _) = -35
 
 -- | stato degli accrediti utente
 data Conti = Conti [(Utente,Float)] deriving (Read, Show)

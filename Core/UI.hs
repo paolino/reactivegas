@@ -33,7 +33,7 @@ import Core.Patch ( Firmante (..),firmante, Patch)
 import Core.Costruzione (runSupporto, Supporto)
 import Core.Persistenza (Persistenza (..))
 import Core.Sessione (Sessione (..))
-import Core.Applicazione (QS,caricamento, TS, sortEventi)
+import Core.Applicazione (QS,caricamento, TS, sortEventi, levelsEventi)
 
 import Eventi.Anagrafe
 import Eventi.Accredito
@@ -42,8 +42,8 @@ import Eventi.Ordine
 -- sel :: (MonadReader (Persistenza QS, Sessione)  m, MonadIO m) => ((Persistenza QS, Sessione) -> IO b) -> m b
 sel f = asks f >>= liftIO 
 
-letturaStato' :: (Functor m, MonadReader (Persistenza QS, Sessione (Maybe QS) Response) m,MonadIO m) => m QS
-letturaStato' = fmap fromJust . sel $ readStato . fst
+statoPersistenza :: (Functor m, MonadReader (Persistenza QS, Sessione (Maybe QS) Response) m,MonadIO m) => m QS
+statoPersistenza = fmap fromJust . sel $ readStato . fst
 
 fromUPatches :: ([Patch],TS) -> [(Utente,[Evento])]
 fromUPatches  (ups,s) =  
@@ -51,11 +51,11 @@ fromUPatches  (ups,s) =
 	in catMaybes $ map (\(c,_,es) -> second (const es) <$> find (\(_,(c',_)) -> c == c') rs) ups
 
 
-letturaStato = letturaStato' -- fmap fromJust . sel $ readStatoSessione . snd  
+statoSessione =  fmap fromJust . sel $ readStatoSessione . snd   
 -- | semplifica il running dei Supporto
 
 conStato :: (String -> Interfaccia a) -> (b -> Interfaccia a) -> Supporto MEnv TS () b ->  Interfaccia a
-conStato x y z = runSupporto (fst <$> letturaStato) x y z
+conStato x y z = runSupporto (fst <$> statoPersistenza) x y z
 
 -- | comunica che c'è un errore logico nella richiesta
 bocciato :: String -> Interfaccia ()
@@ -63,7 +63,7 @@ bocciato x =  P.errore . Response $ [("Incoerenza", ResponseOne x)]
 
 accesso :: Interfaccia ()
 accesso = let k r = sel $ ($r) . writeAccesso . snd in do
-	(rs,_) <- responsabili . fst <$> letturaStato 
+	(rs,_) <- responsabili . fst <$> statoPersistenza 
 	mano "responsabile autore" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
 
 onAccesso k = sel (readAccesso . snd) >>= maybe (accesso >> onAccesso k) k 
@@ -99,7 +99,7 @@ wrapCostrActions
 	-> [MEnv (SUtente,TS) -> (a -> Interfaccia ()) -> (String -> Interfaccia ()) -> [(String,Interfaccia ())]]
 	-> [(String,Interfaccia ())]
 wrapCostrActions g = concatMap (\f -> f q g bocciato) where
-	q = do 	s <- fst <$> letturaStato
+	q = do 	s <- fst <$> statoSessione
 		mu <- fmap fst <$> sel (readAccesso . snd)
 		return (SUtente mu,s)
 
@@ -114,12 +114,21 @@ interrogazioni = mano "interrogazione della conoscenza" $ (wrapCostrActions P.ou
 		]) 
 aggiornamentiIndividuali = ("esamina gli aggiornamenti individuali presenti", do
 	us <- sel $ readUPatches . fst
-	(s,_) <- letturaStato
+	(s,_) <- statoPersistenza
 	let ps = fromUPatches (us,s)
 	if null ps then bocciato "non ci sono aggiornamenti individuali in attesa" else do 
 		(u,es) <- P.scelte (map (fst &&& id) ps) "scegli aggiornamento da esaminare" 
 		P.output $ Response [("aggiornamento da parte di " ++ u, ResponseMany $ map ResponseOne (sortEventi es))]
 	)
+eventLevelSelector = do 
+	us <- sel $ readUPatches . fst
+	(s,_) <- statoPersistenza
+	let es = levelsEventi . concatMap snd $ fromUPatches (us,s)
+	return $ case es of
+		[] -> Nothing  
+		es -> Just $ (const "<nessuno>" *** (subtract 1)) (head es) : es ++ [("<tutti>",100)]
+	
+
 letturaEventi ::  Interfaccia [Evento]
 letturaEventi = sel $ readEventi . snd
 
@@ -148,9 +157,9 @@ eliminazioneEvento = do
 addEvento x = correzioneEventi (show x:)
 
 anagrafica :: Interfaccia ()
-anagrafica = mano "dichiarazioni anagrafiche" . wrapCostrActions addEvento $ [
-		costrEventiAnagrafe ,
-		costrEventiResponsabili
+anagrafica = mano "dichiarazioni anagrafiche" . wrapCostrActions addEvento $ 
+		[costrEventiAnagrafe 
+		-- ,costrEventiResponsabili
 		]
 
 
@@ -169,8 +178,8 @@ sincronizza  aggiornamento aggiornamenti = onAccesso $ \(r@(u,_)) -> do
 	case rs of 
 		[] -> bocciato $ "nessun aggiornamento individale per lo stato attuale"
 		xs -> do
-			let k (Firmante f)  = (fst <$> letturaStato') >>= \s -> aggiornamento (f s xs)
-			runSupporto (fst <$> letturaStato') bocciato k $ firmante r
+			let k (Firmante f)  = (fst <$> statoPersistenza) >>= \s -> aggiornamento (f s xs)
+			runSupporto (fst <$> statoPersistenza) bocciato k $ firmante r
 
 salvataggio = do
 	evs <- letturaEventi
@@ -178,8 +187,8 @@ salvataggio = do
 		let 	p up = sel $ ($up) . ($u) . writeUPatch . fst
 		 	k (Firmante f) = do 
 				evs <- letturaEventi
-				(fst <$> letturaStato') >>= \s -> p (f s evs) >> svuotaEventi
-		runSupporto (fst <$> letturaStato') bocciato k $ firmante r
+				(fst <$> statoPersistenza) >>= \s -> p (f s evs) >> svuotaEventi
+		runSupporto (fst <$> statoPersistenza) bocciato k $ firmante r
 
 -- | importa gli eventuali eventi già presenti
 
@@ -195,7 +204,7 @@ importa = onAccesso $ \r@(u,(c,_)) -> do
 		let k _ = do
 			correzioneEventi (es ++) 
 			sel (($f) . deleteUPatch . fst)	
-		runSupporto (fst <$> letturaStato') bocciato k $ firmante r
+		runSupporto (fst <$> statoPersistenza) bocciato k $ firmante r
 	
 
 amministrazione :: Interfaccia ()
@@ -205,12 +214,19 @@ amministrazione = do
 		aggiornamento g = sel $ ($g). writeGPatch .fst
 
 
-	mano "amministrazione" $ [
-			("firma le dichiarazioni prodotte",salvataggio),
-			("modifica delle dichiarazioni gia' firmate", importa),
-			("esegui un aggiornamento della conoscenza", sincronizza aggiornamento aggiornamenti),
-			("crea nuove chiavi da responsabile", bootChiavi),
-			("accesso sicuro", mano "accesso sicuro" 
+	mano "amministrazione" $ 
+			[("firma le dichiarazioni della sessione",salvataggio)
+			,("ammetti gli aggiornamenti nella conoscenza", sincronizza aggiornamento aggiornamenti)
+			,("imposta il livello di caricamento", do 
+				rs <- eventLevelSelector 
+				case rs of 
+					Nothing -> P.errore $ ResponseOne "nessun evento per selezionare il livello"
+					Just rs -> do 
+						r <- P.scelte rs "livello di caricamento"	
+						sel (($r). setConservative . snd))
+			-- ,("modifica delle dichiarazioni gia' firmate", importa),
+			--,("nuove chiavi da responsabile", bootChiavi)
+			{-,("accesso sicuro", mano "accesso sicuro" 
 
 				[("scarica le dichiarazioni prodotte", letturaEventi >>= P.download "dichiarazioni.txt" )
 				,("carica un aggiornamento individuale", P.errore $ ResponseOne "non implementato")
@@ -218,7 +234,7 @@ amministrazione = do
 					aggiornamenti >>= P.download "aggiornamenti.txt")
 				,("carica un aggiornamento di gruppo",P.upload "aggiornamento di gruppo" >>= aggiornamento)
 				,("scarica lo stato", sel (readStato . fst) >>= maybe (bocciato "stato non presente") (P.download "stato"))
-				])
+				])-}
 			]
 applicazione :: Costruzione MEnv () ()
 applicazione = rotonda $ \_ -> do 

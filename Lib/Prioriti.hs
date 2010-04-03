@@ -1,6 +1,6 @@
 {-# LANGUAGE ScopedTypeVariables, ExistentialQuantification #-}
 -- | un modulo per il riordinamento di valori basato su una serie di priorita' ricavabili dal parsing delle loro rappresentazioni
-module Lib.Prioriti (sortP, R (..)) where
+module Lib.Prioriti (sortP, levelsP, R (..)) where
 
 import Control.Arrow ((&&&))
 import Control.Applicative  ((<$>))
@@ -15,12 +15,18 @@ import Data.Char (ord)
 data R = forall a. Read a => R (a -> Int) 
 
 -- | la funzione riordinante 
-sortP :: [R] -> (a -> String) -> [a] -> [a]
-sortP rs f = map fst . sortBy (comparing snd) . map (id &&& maybe 0 id . lss rs)
+sortP :: Int -> [R] -> (a -> String) -> [a] -> [a]
+sortP l rs f = map fst . takeWhile ((<=l) . snd) . sortBy (comparing snd) . map (id &&& maybe 0 id . lss rs)
 	where
 		lss ps x = msum $ map (ls x) ps
 		ls x (R (p :: a -> Int)) = p <$> (read' :: String -> Maybe a) (f x) 
 		read' x = fst <$> listToMaybe (reads x)
 
-test = sortP [R id, R ord , R (length :: String -> Int)] id ["'a'","3","\"piox\""]
+levelsP rs f = sortBy (comparing snd) . map (id &&& maybe 0 id . lss rs)
+	where
+		lss ps x = msum $ map (ls x) ps
+		ls x (R (p :: a -> Int)) = p <$> (read' :: String -> Maybe a) (f x) 
+		read' x = fst <$> listToMaybe (reads x)
+
+test = sortP 800 [R id, R ord , R (length :: String -> Int)] id ["'a'","3","\"piox\""]
 	== ["3","\"piox\"","'a'"]

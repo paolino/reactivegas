@@ -45,7 +45,7 @@ data EsternoImpegno
 	deriving (Show,Read)
 
 priorityImpegno = R k where
-	k (Impegno _ _ _) = -10
+	k (Impegno _ _ _) = -28
 	k (FineImpegno _) = 15
 	k (FallimentoImpegno _) = 15
 
@@ -101,7 +101,7 @@ programmazioneImpegno q ur = do
 			negativo _ = do 
 				accredita u v
 				modificaStatoServizio j $ \(Impegni ur as is) -> return 
-					(Impegni ur as (update u (subtract v) 0 is))
+					(Impegni ur as (delete (u,v) is))
 				logga $ "rifiutato l'impegno di soldi per " ++ q ++ " da parte di " ++ u
 				return nessunEffetto
 			in do 

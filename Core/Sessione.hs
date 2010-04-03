@@ -16,8 +16,11 @@ data Sessione a b = Sessione
 	,writeAccesso :: Maybe Responsabile -> IO ()	-- ^ scrive il responsabile in azione
 	, readCaricamento :: IO b
 	-- | legge lo stato modificato dagli eventi in memoria prodotti dal responsabile in memoria
-	,readStatoSessione :: IO a			
+	,readStatoSessione :: IO a
+	,setConservative :: Int -> IO ()
 	}
+
+data Triggers = TResponsabile (Maybe Responsabile) | TEventi [Evento] | TConservative Int
 
 -- memoria condivisa
 data Board a = Board
@@ -25,16 +28,18 @@ data Board a = Board
 	, accesso :: TVar (Maybe Responsabile)
 	, stato :: TVar a
 	, caricatura :: TVar String
-	, triggers :: TChan (Either (Maybe Responsabile) [Evento]) -- il canale al quale inviare le modifiche
+	, triggers :: TChan Triggers -- il canale al quale inviare le modifiche
+	, conservative :: TVar Int
 	}
 
-type Update a b = Maybe Responsabile -> [Evento] -> STM (a,b)
+type Update a b = Int -> Maybe Responsabile -> [Evento] -> STM (a,b)
 
-update :: Update a b -> (TVar [Evento], TVar (Maybe Responsabile),  TVar a, TVar b) -> STM ()
-update f (eventi,accesso,stato, caricatura) = do
+update :: Update a b -> (TVar [Evento], TVar (Maybe Responsabile),  TVar Int , TVar a, TVar b) -> STM ()
+update f (eventi,accesso,conservative, stato, caricatura) = do
 	mr <- readTVar accesso
 	evs <- readTVar eventi
-	(s,c) <- f mr evs 
+	l <- readTVar conservative
+	(s,c) <- f l mr evs 
 	writeTVar stato s
 	writeTVar caricatura c
 
@@ -42,37 +47,44 @@ update f (eventi,accesso,stato, caricatura) = do
 triggering 	:: Update a b -- produce uno stato modificato
 		-> 	(TVar [Evento]
 			,TVar (Maybe Responsabile)
+			,TVar Int
 			,TVar a
 			,TVar b
-			,TChan (Either (Maybe Responsabile) [Evento])
+			,TChan Triggers
 			,TChan ()
 			) 
 		-> STM ()
-triggering f (eventi,accesso,stato,caricatura,triggers,cs) = do
-	(readTChan triggers >>= either (writeTVar accesso) (writeTVar eventi))
-		`orElse` (readTChan cs >> return ())
-	update f (eventi,accesso,stato,caricatura)
+triggering f (eventi,accesso,conservative, stato,caricatura,triggers,cs) = do
+	(do 	t <- readTChan triggers 
+		case t of 	TResponsabile mr -> writeTVar accesso mr
+				TEventi es -> writeTVar eventi es
+				TConservative l -> writeTVar conservative l
+	
+	 `orElse` (readTChan cs >> return ()))
+	update f (eventi,accesso,conservative, stato,caricatura)
 
 -- | costruisce l'interfaccia di sessione a partire da un modificatore di stato in STM
 mkSessione 	:: Update a  b		-- ^ modificatore di stato
+		-> Int 			-- ^ livello di caricamento di base
 		-> TChan ()		-- ^ segnale di aggiornamento stato
 		-> IO (Sessione a b)	
-mkSessione f cs = do
-	(s,c) <- atomically $ f Nothing [] -- uno stato iniziale, dovrebbe corrispondere allo stato non modificato
+mkSessione f l cs = do
+	(s,c) <- atomically $ f l Nothing [] -- uno stato iniziale, dovrebbe corrispondere allo stato non modificato
 	stato <- atomically $ newTVar s
 	eventi <- atomically $ newTVar []
 	accesso <- atomically $ newTVar Nothing
 	caricatura <- atomically $ newTVar c
 	triggers <- atomically $ newTChan
-
-	let t = atomically . before (triggering f (eventi,accesso,stato,caricatura , triggers, cs))
+	conservative <- atomically $ newTVar l
+	let t = atomically . before (triggering f (eventi,accesso,conservative, stato,caricatura , triggers, cs))
 	return $ Sessione 
 		(t $ readTVar eventi) 
-		(atomically . writeTChan triggers . Right)
+		(atomically . writeTChan triggers . TEventi)
 		(t $ readTVar accesso) 
-		(atomically . writeTChan triggers . Left)
+		(atomically . writeTChan triggers . TResponsabile)
 		(t $ readTVar caricatura)
 		(t $ readTVar stato)
+		(atomically . writeTChan triggers . TConservative)
 
 before :: STM a -> STM b -> STM b 
 before a b = (a >> b) `orElse` b
