@@ -16,7 +16,9 @@ instance ParteDi l (l,ls) where
 instance ParteDi l ls => ParteDi l (l',ls) where 
 	see (_,ls) = see ls
 	set l (l',ls) = (l',set l ls)
-
+instance ParteDi l l where
+	see l = l
+	set l l' = l
 seeset :: ParteDi a ls => (a -> a) -> ls -> ls	
 seeset f x =  set  (f $ see x) x
 

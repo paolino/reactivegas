@@ -1,11 +1,11 @@
 {-# LANGUAGE StandaloneDeriving #-}
 module Lib.Firmabile 
 	where
-
-import qualified Codec.Crypto.RSA as RSA (hashFunction, ha_MD5, sign,verify,PrivateKey(..),PublicKey, generateKeyPair)
+import Data.Monoid (mappend)
+import qualified Codec.Crypto.RSA as RSA (hashFunction, ha_MD5,ha_SHA256, sign,verify,PrivateKey(..),PublicKey, generateKeyPair)
 import qualified Codec.Crypto.SimpleAES as A  (decryptMsg,encryptMsg',Mode(..))
 import qualified Data.ByteString.Char8 as B (ByteString, pack, concat, take)
-import qualified Data.ByteString.Lazy.Char8 as BL (ByteString, pack, toChunks, unpack, foldr)
+import qualified Data.ByteString.Lazy.Char8 as BL (ByteString, pack, toChunks, unpack, foldr, concat)
 import System.Random (mkStdGen)
 import Data.Char (ord)
 
@@ -16,6 +16,9 @@ type Chiave = RSA.PublicKey
 type Segreto = BL.ByteString
 type Password = String
 
+
+hash = RSA.hashFunction RSA.ha_MD5 . BL.pack
+hashOver x k = RSA.hashFunction RSA.ha_MD5 $ BL.pack x `mappend` k
 bytestringInteger :: BL.ByteString -> Int 
 bytestringInteger = BL.foldr (\c x -> ord c + 256 * x) 0 
 key :: Int -> String -> B.ByteString

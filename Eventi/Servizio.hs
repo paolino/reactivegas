@@ -13,6 +13,10 @@ module Eventi.Servizio (
 	
 	where
 
+import qualified Data.ByteString.Lazy.Char8 as BL (foldr)
+import Data.Char (ord)
+
+import Control.Monad.State (get,lift)
 import Control.Applicative ((<$>))
 import Control.Arrow ((***))
 
@@ -20,62 +24,64 @@ import Core.Inserimento (MTInserzione, osserva, modifica, fallimento)
 import Core.Programmazione (Inserzione)
 import Lib.Aspetti ((.<),ParteDi,see)
 import Lib.Assocs (assente,(?),updateM,elimina)
-
-data (Read a,Show a) => Servizio a = Servizio {contatore :: Int, sottostato :: [(Int,(String,a))]} deriving 
+import Lib.Firmabile (hash,hashOver)
+data (Read a,Show a) => Servizio a = Servizio {sottostato :: [(Integer,(String,a))]} deriving 
 	(Show, Read)
 
 servizio0 :: (Show a, Read a) => Servizio a
-servizio0 = Servizio 0 []
+servizio0 = Servizio []
 
 
 -- | aggiunge una nuova istanza per il servizio di tipo a, integrando con una descrizione,  restituisce la chiave 
-nuovoStatoServizio :: (ParteDi (Servizio a) s, Read a, Show a) 
+nuovoStatoServizio :: (ParteDi (Servizio a) s, Read a, Show a, Integer `ParteDi` s) 
 	=> a 
 	-> String 
-	-> MTInserzione s c d Int
+	-> MTInserzione s c d Integer
 nuovoStatoServizio s q = do
-	Servizio p ls <- osserva
-	modifica $ \_ -> Servizio (p + 1) ((p,(q,s)):ls)
+	Servizio ls <- osserva
+	n <- osserva
+	let p = n + (BL.foldr (\x y -> 256 * y + fromIntegral (ord x)) 0 . hash $ q)
+	modifica $ \_ -> Servizio ((p,(q,s)):ls)
 	return p
 
 -- | controlla la presenza di una chiave presso il servizio di tipo a, in caso di successo restituisce il servizio
 servizioPresente :: (ParteDi (Servizio a) s, Read a, Show a) 
-	=> Int 
+	=> Integer 
 	-> MTInserzione s c d (Servizio a)
 servizioPresente j = do
-	s@(Servizio p ls) <- osserva  
+	s@(Servizio ls) <- osserva  
 	fallimento (assente j ls) $ "richiesta di servizio fallita , indice " ++ show j ++ " non trovato"
 	return s
 
 -- | restituisce il valore del servizio di tipo a indicizzato dalla chiave passata 
 -- osservaStatoServizio :: (ParteDi (Servizio a) s, Read a, Show a) => Int ->  MTInserzione s c d a
 osservaStatoServizio j = do 
-	Servizio p ls <- servizioPresente j 	
+	Servizio ls <- servizioPresente j 	
 	snd <$> return (ls ? (j,error "osservaStatoServizio: the impossible happened"))
 
 -- | modifica il valore del servizio di tipo a indicizzato dalla chiave passata
 modificaStatoServizio :: (ParteDi (Servizio a) s, Read a, Show a) 
-	=> Int 
+	=> Integer 
 	-> (a ->  MTInserzione s c d a) 
 	-> MTInserzione s c d ()
 
 modificaStatoServizio j f = do
-	Servizio p ls <- servizioPresente j 
+	Servizio ls <- servizioPresente j 
 	ls' <- updateM j (\(q,a) -> (,) q <$> f a)  undefined ls
-	modifica $ \_ -> Servizio p ls'
+	modifica $ \_ -> Servizio ls'
 
 -- | elimina lo stato di servizio di tipo a alla chiave passata, necessita di un valore di tipo a inutile
 eliminaStatoServizio :: forall a s c d. (ParteDi (Servizio a) s,
                         Show a,Read a
                         ) =>
-                       Int -> a -> MTInserzione s c d ()
+                       Integer -> a -> MTInserzione s c d ()
 eliminaStatoServizio j proxy = do
-	Servizio p ls <- servizioPresente j :: MTInserzione s c d (Servizio a)
-	modifica $ \_ -> Servizio p (elimina j ls)
+	Servizio ls <- servizioPresente j :: MTInserzione s c d (Servizio a)
+	modifica $ \_ -> Servizio (elimina j ls)
 
 -- | restituisce la lista di associazione (chiave, descrizione) degli stati presenti
 elencoSottoStati :: (ParteDi (Servizio a) s, Show a,Read a) 
-	=> s -> [(Int,(String,a))]
+	=> s -> [(Integer,(String,a))]
 elencoSottoStati = sottostato . see
 
 

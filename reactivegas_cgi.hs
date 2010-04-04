@@ -19,12 +19,13 @@ import Network.SCGI
 
 import Debug.Trace
 
-layout = 	[(["amministrazione"],1)
-		,(["interrogazione della conoscenza"],2)
-		,(["responsabile autore"],1)
-		,(["descrizione sessione"],1)
+layout = 	[
+		 (["responsabile autore"],1)
+		,(["effetto dell'applicazione delle dichiarazioni", "produzione dichiarazioni"],4)
+		,(["amministrazione"],2)
 		,(["produzione dichiarazioni"],2)
-		,(["effetto possibile delle prossime dichiarazioni", "produzione dichiarazioni"],5)
+		,(["descrizione sessione"],2)
+		,(["interrogazione della conoscenza"],2)
 		]
 pagina b = output . prettyHtml $  
 		header << (thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml 

@@ -36,7 +36,7 @@ import Eventi.Anagrafe (EsternoAssenso, Assensi, programmazionePermesso, Utente,
 import Eventi.Accredito (preleva, accredita, Conti)
 
 import Debug.Trace
-type Indice = Int
+type Indice = Integer
 -- | gli eventi  esterni per questo modulo
 data EsternoImpegno 
 	= Impegno Utente Float Indice	-- ^ indica un impegno di denaro da parte dell'utente per la causa chiave
@@ -84,17 +84,18 @@ programmazioneImpegno :: (
 	Conti 			`ParteDi` s,  -- preleva e accredita lo richiedono
 	Responsabili 		`ParteDi` s,  -- eliminazioneResponsabile lo richiede
 	Servizio Assensi 		`ParteDi` s,
+	Integer `ParteDi` s,
 	Servizio Impegni 	`ParteDi` s)  -- il nostro aspetto
-	=> String
-	-> Utente  -- ^ l'utente responsabile dell'impegno
-	-> MTInserzione s c Utente (Int ,ChiudiProgrammazioneImpegno s c -> Reazione s c Utente) -- ^ la chiave e una Reazione
+	=> String	-- ^ motivazione della raccolta
+	-> Utente 	-- ^ l'utente responsabile dell'impegno
+	-> MTInserzione s c Utente (Indice ,ChiudiProgrammazioneImpegno s c -> Reazione s c Utente) -- ^ la chiave e una Reazione
 
 programmazioneImpegno q ur = do
-	l <- nuovoStatoServizio (Impegni ur [] []) q
+	l <- nuovoStatoServizio (Impegni ur [] []) (ur ++ ", " ++ q)
 	let 	
 		reattoreImpegno k (Right (first validante ->  (w,Impegno u v j))) = w $ \r -> let
 			positivo _ = do
-				logga $ "accettato l'impegno di " ++ show v ++ " euro per " ++ q ++ " da parte di " ++ u
+				logga $ "accettato l'impegno di " ++ show v ++ " euro da " ++ u ++ " per " ++ q 
 				modificaStatoServizio j $ \(Impegni ur as is) -> return 
 					(Impegni ur ((u,v):as) (delete (u,v) is))
 				return nessunEffetto
@@ -102,15 +103,15 @@ programmazioneImpegno q ur = do
 				accredita u v
 				modificaStatoServizio j $ \(Impegni ur as is) -> return 
 					(Impegni ur as (delete (u,v) is))
-				logga $ "rifiutato l'impegno di soldi per " ++ q ++ " da parte di " ++ u
+				logga $ "rifiutato l'impegno di " ++ show v ++ " euro da " ++ u ++ " per " ++ q
 				return nessunEffetto
 			in do 
 				when (l /= j) mzero
 				preleva u v 
-				modificaStatoServizio j $ \(Impegni ur as is) -> return (Impegni ur as $ update u (+ v) 0 is)
+				modificaStatoServizio j $ \(Impegni ur as is) -> return (Impegni ur as $ (u,v):is)
 				logga  $ "richiesta di impegno di  " ++ show v ++ " euro da " ++ u ++ " per " ++ q
 				(_,reaz) <- programmazionePermesso 
-					("impegno di " ++ show v ++ " euro per " ++ q ++ " da parte di " ++ u) 
+					("impegno di " ++ show v ++ " euro da " ++ u ++ " per " ++ q)
 					r ur positivo negativo
 				return (True, ([reaz],[]))   
 		reattoreImpegno k (Right (first validante -> (w,FineImpegno j))) = w $ \r -> do
@@ -141,14 +142,14 @@ programmazioneImpegno q ur = do
 ----------------------------------------------------------------------------------
 -- askImpegni :: (ParteDi (Servizio Impegni) r, MonadReader r m) =>
 --      (String -> m ()) -> m [(String, Int)]
-impegni 	= do 	(xs :: [(Int,(String,Impegni))]) <- asks elencoSottoStati
-			when (null xs) $ throwError "nessuna raccolta di impegni attiva"
+impegni 	= do 	(xs :: [(Indice,(String,Impegni))]) <- asks elencoSottoStati
+			when (null xs) $ throwError "nessuna raccolta di impegni aperta"
 			return $ map (fst . snd &&& fst) xs
 impegniFiltrati k e = do
 	SUtente mu <- asks see
 	case mu of
 		Just u -> do
-			xs :: [(Int,(String,Impegni))] <- filter (k u . snd . snd)
+			xs :: [(Indice,(String,Impegni))] <- filter (k u . snd . snd)
 				<$> asks elencoSottoStati 
 			when (null xs) . throwError $ e u
 			return  $ map (fst . snd &&& fst)  $ xs

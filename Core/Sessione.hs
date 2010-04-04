@@ -34,17 +34,19 @@ data Board a = Board
 
 type Update a b = Int -> Maybe Responsabile -> [Evento] -> STM (a,b)
 
-update :: Update a b -> (TVar [Evento], TVar (Maybe Responsabile),  TVar Int , TVar a, TVar b) -> STM ()
-update f (eventi,accesso,conservative, stato, caricatura) = do
+update :: Update a b -> Int -> (TVar [Evento], TVar (Maybe Responsabile),  TVar Int , TVar a, TVar b) -> STM ()
+update f l (eventi,accesso,conservative, stato, caricatura) = do
 	mr <- readTVar accesso
 	evs <- readTVar eventi
-	l <- readTVar conservative
-	(s,c) <- f l mr evs 
+	l' <- readTVar conservative
+	(s,c) <- f l' mr evs 
 	writeTVar stato s
-	writeTVar caricatura c
+	c' <- if l == l' then return c else fmap snd $ f l mr evs
+	writeTVar caricatura c'
 
 -- azione di modifica di uno di eventi o responsabile
 triggering 	:: Update a b -- produce uno stato modificato
+		-> Int -- ^ livello di caricamento completo
 		-> 	(TVar [Evento]
 			,TVar (Maybe Responsabile)
 			,TVar Int
@@ -54,14 +56,14 @@ triggering 	:: Update a b -- produce uno stato modificato
 			,TChan ()
 			) 
 		-> STM ()
-triggering f (eventi,accesso,conservative, stato,caricatura,triggers,cs) = do
+triggering f l (eventi,accesso,conservative, stato,caricatura,triggers,cs) = do
 	(do 	t <- readTChan triggers 
 		case t of 	TResponsabile mr -> writeTVar accesso mr
 				TEventi es -> writeTVar eventi es
 				TConservative l -> writeTVar conservative l
 	
 	 `orElse` (readTChan cs >> return ()))
-	update f (eventi,accesso,conservative, stato,caricatura)
+	update f l (eventi,accesso,conservative, stato,caricatura)
 
 -- | costruisce l'interfaccia di sessione a partire da un modificatore di stato in STM
 mkSessione 	:: Update a  b		-- ^ modificatore di stato
@@ -76,7 +78,7 @@ mkSessione f l cs = do
 	caricatura <- atomically $ newTVar c
 	triggers <- atomically $ newTChan
 	conservative <- atomically $ newTVar l
-	let t = atomically . before (triggering f (eventi,accesso,conservative, stato,caricatura , triggers, cs))
+	let t = atomically . before (triggering f l (eventi,accesso,conservative, stato,caricatura , triggers, cs))
 	return $ Sessione 
 		(t $ readTVar eventi) 
 		(atomically . writeTChan triggers . TEventi)

@@ -16,6 +16,7 @@ import Lib.Passo
 -- import Lib.HTTP
 import Lib.TreeLogs
 import Lib.Prioriti
+import Lib.Aspetti (seeset)
 
 import Core.Patch (fromGroup, Group)
 import Core.Persistenza
@@ -39,7 +40,7 @@ import Eventi.Logger
 
 
 -- | il tipo dello stato accessibile
-type TS = TyAnagrafe (TyAccredito (TyImpegni (TyOrdini ())))
+type TS = TyAnagrafe (TyAccredito (TyImpegni (TyOrdini Integer)))
 
 -- |tipo dello stato con la serializzazione dei reattori
 type QS = (TS,[SNodo TS Utente])
@@ -60,7 +61,7 @@ caricamento l es = second (eccoILogs . map (first flatten)) . caricaEventi prior
 
 -- | creazione di un novo stato di tipo QS
 nuovoStato :: [Responsabile] -> QS
-nuovoStato rs = (bootAnagrafe rs  . bootAccredito . bootImpegni . bootOrdini  $ (), replicate (length reattori) $ SNodo True [])
+nuovoStato rs = (bootAnagrafe rs  . bootAccredito . bootImpegni . bootOrdini  $ 0, replicate (length reattori) $ SNodo True [])
 
 sortEventi :: [Evento] -> [Evento]
 sortEventi = sortP 100 priorita id
@@ -73,5 +74,5 @@ loader (qs@(s,_)) g = runErrorT $ do
 			(_,es) <- runReaderT (fromGroup g) s
 			let (qs',ef) = caricamento 100 es qs 
 			tell [ef]
-			return qs'
+			return $ first (seeset ((+) 1 :: Integer -> Integer)) qs'
 

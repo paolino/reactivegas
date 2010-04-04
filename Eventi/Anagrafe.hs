@@ -52,7 +52,7 @@ deriving instance Read PublicKey
 
 -- | chiave pubblica di un responsabile
 -- type Segreto = 
-type Indice = Int
+type Indice = Integer
 -- | nome di un utente
 type Utente = String
 
@@ -126,6 +126,7 @@ reazioneAnagrafe :: (
 	ParteDi Anagrafe s,
 	ParteDi Responsabili s,
 	Parser c EsternoAssenso,
+	ParteDi Integer s, 
 	Parser c EsternoAnagrafico) =>
 	Reazione s c Utente
 
@@ -259,7 +260,7 @@ maggioranza (ps,ns) = do
 				Indecidibile
 
 programmazionePermesso se ur ut k kn = do
-	l <- nuovoStatoServizio (Permesso ur ut) se
+	l <- nuovoStatoServizio (Permesso ur ut) (ur ++ ", " ++ se)
 	let 	eliminaRichiesta u j = do
 			eliminaStatoServizio j (undefined :: Assensi)  
 			logga $ "rinuncia alla questione " ++ se
@@ -283,14 +284,12 @@ programmazionePermesso se ur ut k kn = do
 			when (j /= l) mzero
 			fallimento (ur /= r)  "questione aperta da un altro responsabile"
 			eliminaRichiesta r j
-			(,) False <$> kn j
 		reattoreAssenso (Left (eliminazioneResponsabile -> Just (u,r))) = conFallimento $ do
 			when (ur /= u) mzero
 			logga $ "eliminazione della richiesta " ++ se
 			eliminaRichiesta u l
-			(,) False <$> kn l
 
-	logga $ "posta la questione numero " ++ show l ++ " per l'obiettivo " ++ se 
+	logga $ "posta la questione per l'obiettivo " ++ se 
  	return (l,Reazione (Nothing, reattoreAssenso)) -- restituisce il riferimento a questa richiesta perché venga nominato negli eventi di assenso
 -- | funzione di programmazione per una nuova raccolta di assensi
 programmazioneAssenso :: (
@@ -298,16 +297,17 @@ programmazioneAssenso :: (
 	, Responsabili `ParteDi` s
 	, Anagrafe `ParteDi` s
 	, Parser c EsternoAssenso
+	, ParteDi Integer s
 	)
 	=> String	-- ^ nome della raccolta 
 	-> Utente 	-- ^ l'utente che la richiede
 	-> (([Utente],[Utente]) -> MTInserzione s c Utente Check) -- ^ condizione di rolling 
 	-> (Indice -> MTInserzione s c Utente (Effetti s c Utente)) -- ^ la chiusura per il successo della raccolta
 	-> (Indice -> MTInserzione s c Utente (Effetti s c Utente)) -- ^ la chiusura per il fallimento della raccolta
-	-> MTInserzione s c Utente (Int, Reazione s c Utente)	-- ^ la chiave per emettere assensi relativi e la reazione da schedulare
+	-> MTInserzione s c Utente (Indice, Reazione s c Utente)	-- ^ la chiave per emettere assensi relativi e la reazione da schedulare
 
 programmazioneAssenso se ur c k kn = do
-	l <- nuovoStatoServizio (Assensi ur [] []) se -- ricevi la chiave per la nuova raccolta
+	l <- nuovoStatoServizio (Assensi ur [] []) (ur ++ ", " ++ se) -- ricevi la chiave per la nuova raccolta
 	let 	eliminaRichiesta u j = do
 			eliminaStatoServizio j (undefined :: Assensi)  
 			logga $ "rinuncia alla questione " ++ se
@@ -359,7 +359,7 @@ programmazioneAssenso se ur c k kn = do
 			eliminaRichiesta u l
 			(,) False <$> kn l
 		reattoreAssenso (Left _) = return Nothing
-	logga $ "posta la questione (" ++ show l ++ ") per l'obiettivo " ++ se 
+	logga $ "posta la questione per l'obiettivo " ++ se 
  	return (l,Reazione (Nothing, reattoreAssenso)) -- restituisce il riferimento a questa richiesta perché venga nominato negli eventi di assenso
 
 --------------------------- costruzioni per il modulo assensi -----------------------------
@@ -367,7 +367,7 @@ programmazioneAssenso se ur c k kn = do
 -- | estrae gli assensi dallo stato in lettura
 assensi :: (Monad m, ParteDi (Servizio Assensi) s) => Supporto m s b [(String, Utente)]
 assensi = do
-	xs :: [(Int,(String,Assensi))] <- asks elencoSottoStati 
+	xs :: [(Indice,(String,Assensi))] <- asks elencoSottoStati 
 	when (null xs) $ throwError "nessuna questione aperta"
 	return  $ map (second richiedente . snd) xs
 
@@ -377,7 +377,7 @@ assensiFiltrati k e = do
 	SUtente mu <- asks see
 	case mu of
 		Just u -> do
-			xs :: [(Int,(String,Assensi))] <- filter (k u . snd . snd)
+			xs :: [(Indice,(String,Assensi))] <- filter (k u . snd . snd)
 				<$> asks elencoSottoStati 
 			when (null xs) . throwError $ e u
 			return  $ map (fst . snd &&& (id *** fst))  $ xs

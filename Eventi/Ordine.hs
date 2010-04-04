@@ -25,7 +25,7 @@ import Eventi.Anagrafe (Utente,validante,programmazioneAssenso,maggioranza)
 import Eventi.Accredito (salda)
 import Eventi.Impegno (programmazioneImpegno)
 
-type Indice = Int
+type Indice = Integer
 data EsternoOrdine = AperturaOrdine String deriving (Read,Show) 
 priorityOrdine = R k  where
 	k (AperturaOrdine _) = -28 
@@ -83,14 +83,17 @@ costrQueryOrdine s kp kn = 	[("acquisti chiusi",cerca)]
 	where
 	run = runSupporto s kn kp
 	cerca = run $ do
-		(StatoOrdini xs _ _) <- asks see
 		t <- libero "introduci parte del nome dell'acquisto [* per vederli tutti]"
+		(StatoOrdini xs _ _) <- asks see
 		let cs =  filter (sottostringa (if t == "*" then "" else t) . fst) $ xs 
-		when (null cs) . throwError $ "nessun nome di acquisto incontra la richiesta"
-		r <- scelte cs "acquisto da esaminare" 
-		return $ case r of 
-			Nothing -> ResponseOne "acquisto fallito" 
-			Just (autore, xs) -> Response [("responsabile dell'acquisto",ResponseOne autore), 
-						("acquirenti",ResponseAL  xs)]
+		when ( null cs) . throwError $ "nessun nome di acquisto incontra la richiesta"
+		r <- scelte (map (fst &&& fst) cs) "acquisto da esaminare" 
+		(StatoOrdini xs _ _) <- asks see	
+		case lookup r xs of
+			Nothing -> throwError $ "non esiste l'acquisto " ++ r 
+			Just r' -> return $ case r' of 
+				Nothing -> ResponseOne "acquisto fallito" 
+				Just (autore, xs) -> Response [("responsabile dell'acquisto",ResponseOne autore), 
+							("acquirenti",trace ("lala" ++ show cs) $ ResponseAL  xs)]
 		
 

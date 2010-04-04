@@ -123,7 +123,8 @@ aggiornamentiIndividuali = ("esamina gli aggiornamenti individuali presenti", do
 eventLevelSelector = do 
 	us <- sel $ readUPatches . fst
 	(s,_) <- statoPersistenza
-	let es = levelsEventi . concatMap snd $ fromUPatches (us,s)
+	es' <- letturaEventi
+	let es = levelsEventi . (es' ++) . concatMap snd $ fromUPatches (us,s)
 	return $ case es of
 		[] -> Nothing  
 		es -> Just $ (const "<nessuno>" *** (subtract 1)) (head es) : es ++ [("<tutti>",100)]
@@ -159,7 +160,7 @@ addEvento x = correzioneEventi (show x:)
 anagrafica :: Interfaccia ()
 anagrafica = mano "dichiarazioni anagrafiche" . wrapCostrActions addEvento $ 
 		[costrEventiAnagrafe 
-		-- ,costrEventiResponsabili
+		,costrEventiResponsabili
 		]
 
 
@@ -215,8 +216,8 @@ amministrazione = do
 
 
 	mano "amministrazione" $ 
-			[("firma le dichiarazioni della sessione",salvataggio)
-			,("ammetti gli aggiornamenti nella conoscenza", sincronizza aggiornamento aggiornamenti)
+			[("firma le tue dichiarazioni",salvataggio)
+			,("applica le dichiarazioni alla conoscenza", sincronizza aggiornamento aggiornamenti)
 			,("imposta il livello di caricamento", do 
 				rs <- eventLevelSelector 
 				case rs of 
@@ -224,8 +225,8 @@ amministrazione = do
 					Just rs -> do 
 						r <- P.scelte rs "livello di caricamento"	
 						sel (($r). setConservative . snd))
-			-- ,("modifica delle dichiarazioni gia' firmate", importa),
-			--,("nuove chiavi da responsabile", bootChiavi)
+			,("modifica delle dichiarazioni gia' firmate", importa)
+			,("nuove chiavi da responsabile", bootChiavi)
 			{-,("accesso sicuro", mano "accesso sicuro" 
 
 				[("scarica le dichiarazioni prodotte", letturaEventi >>= P.download "dichiarazioni.txt" )
@@ -252,9 +253,9 @@ applicazione = rotonda $ \_ -> do
 					[("dichiarazioni di assenso",votazioni)
 					,("dichiarazioni economiche",economia)
 					,("dichiarazioni anagrafiche",anagrafica)				
-					,("effetto possibile delle prossime dichiarazioni", do
+					,("effetto dell'applicazione delle dichiarazioni", do
 						c <- sel (readCaricamento . snd) 
-						P.output . Response $ [("effetto possibile delle prossime dichiarazioni",  c)])
+						P.output . Response $ [("effetto dell'applicazione delle dichiarazioni",  c)])
 					,("eliminazione delle dichiarazioni",eliminazioneEvento)
 					]),
 				("descrizione sessione", do
