@@ -11,6 +11,7 @@ import Control.Monad (foldM)
 import Control.Applicative ((<$>))
 import Control.Arrow (second)
 
+import Lib.Missing (foldDeleteMb)
 import Lib.Prioriti (R,sortP)
 
 import Core.Types (Esterno)
@@ -69,8 +70,9 @@ caricaEventi :: Show d
 caricaEventi ps rs l xs (s,nss) = 
 	let 	ns = map (uncurry deserializza) $ zip nss rs
 		xs' = sortP l ps snd xs
-		(ns',s',ws) = runInserzione (foldM (\ns x -> inserimentoCompleto x ns) ns xs') nuovoContesto s
+		((ns',ahi),s',ws) = runInserzione (foldDeleteMb inserimentoCompleto ns xs') nuovoContesto s
 		nss' =  map serializza ns'
 	in ((s',nss'),ws)
+
 
 ----------------------------------------

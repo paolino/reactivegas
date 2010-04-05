@@ -73,12 +73,12 @@ eventoRifiutato Rifiuto = Just ()
 -- eventoRifiutato _ = Nothing
 
 -- | inserisce completamente un evento, reinserendo gli eventuali eventi interni creati durante l'inserimento stesso
-inserimentoCompleto :: Show d => Esterno d -> [Nodo s c d] -> Inserzione s c d [Nodo s c d]
-inserimentoCompleto x ns = fmap (fst . fst) . runInserimento  $ do	
+inserimentoCompleto :: Show d =>  [Nodo s c d] -> Esterno d -> Inserzione s c d (Maybe [Nodo s c d])
+inserimentoCompleto ns x = fmap (fst . fst) . runInserimento  $ do	
 		(ns',t) <- intercept $ consumaR ns (Right x) 
-		if not t then  
-			local (motiva $ Right x) . consumaR ns' $ Left [show Rifiuto]
-			else return ns'
+		if not t then  return Nothing 
+--			local (motiva $ Right x) . consumaR ns' $ Left [show Rifiuto]
+			else return $ Just ns'
 	where 	
 	
 	-- | esegue l'inserimento sui rami effettuando la pulizia dei sottorami secchi	
