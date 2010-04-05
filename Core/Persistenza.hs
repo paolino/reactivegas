@@ -243,7 +243,7 @@ mkPersistenza boot load  (tb,tv,ts,tp,to,tl,cs) = let
 	writeBoot' = atomically . writeTVar tb
 	readOrfani' u = atomically $ maybe [] id . lookup u <$> readTVar to
 	writeOrfani' u es = atomically $ readTVar to >>= writeTVar to . ((u,es) :) .  filter ((/=) u . fst)  
-	writeUPatch' u p = atomically $ readTVar tp >>= writeTVar tp . ((u,p) :)
+	writeUPatch' u p = atomically $ readTVar tp >>= writeTVar tp . (++ [(u,p)])
 	deleteUPatch' f = atomically $ readTVar tp >>= writeTVar tp . filter ((/=) f . firma . snd) 
 	readUPatches' = atomically $ map snd <$> readTVar tp
 	writeGPatch' g = atomically $ aggiornamento load  tv ts tp to tl cs g

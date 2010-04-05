@@ -289,7 +289,7 @@ programmazionePermesso se ur ut k kn = do
 			logga $ "eliminazione della richiesta " ++ se
 			eliminaRichiesta u l
 
-	logga $ "posta la questione per l'obiettivo " ++ se 
+	logga $ "richiesta di permesso a " ++ ut ++ " per " ++ se 
  	return (l,Reazione (Nothing, reattoreAssenso)) -- restituisce il riferimento a questa richiesta perché venga nominato negli eventi di assenso
 -- | funzione di programmazione per una nuova raccolta di assensi
 programmazioneAssenso :: (
@@ -359,7 +359,7 @@ programmazioneAssenso se ur c k kn = do
 			eliminaRichiesta u l
 			(,) False <$> kn l
 		reattoreAssenso (Left _) = return Nothing
-	logga $ "posta la questione per l'obiettivo " ++ se 
+	logga $ "raccolta di assensi per " ++ se 
  	return (l,Reazione (Nothing, reattoreAssenso)) -- restituisce il riferimento a questa richiesta perché venga nominato negli eventi di assenso
 
 --------------------------- costruzioni per il modulo assensi -----------------------------

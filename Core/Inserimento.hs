@@ -30,8 +30,13 @@ import Debug.Trace
 -- la SignalT dichiara che almeno un a reazione e' avvenuta
 type Inserimento s c d = SignalT (WriterT [EventoInterno] (Inserzione s c d))
 runInserimento = runWriterT . runSignalT
--- | inserisce un evento nello stato , causando una lista di eventi interni nella monade di WriterT 
-inserimento :: Show d => Either Interno (Esterno d) -> Nodo s c d -> Inserimento s c d (Nodo s c d)
+
+
+-- | inserisce un evento nello stato , tentando la reazione contenuda in un Nodo e quello in tutti i Nodi contenuti , causando una lista di eventi interni nella monade di WriterT 
+inserimento 	:: Show d 			-- ^ il tag esterno deve essere serializzabile internamente (?)
+		=> Either Interno (Esterno d) 	-- ^ un evento interno o esterno da processare
+		-> Nodo s c d 			-- ^ il ramo reattivo
+		-> Inserimento s c d (Nodo s c d)	-- ^ il ramo reattivo aggiornato
 -- l'inserimento quando attraversa un nodo privo di reazione, si propaga nei nodi inferiori
 inserimento x (Nodo Nothing rs) = Nodo Nothing <$> mapM (secondM (mapM (secondM $ inserimento x)))  rs where
 	secondM f (x,y) = f y >>= return . (,) x
@@ -42,22 +47,22 @@ inserimento x n@(Nodo k@(Just (Reazione (acc, f :: TyReazione a b d s c))) _) = 
 	let 	complete v = do 
 			result <- lift . lift $ f v -- esecuzione con creazione dei nodi dei reattori dipendenti
 			case result of 
-				Just (t, (zip [0..] . mkNodi -> ns, nevs)) -> do
+				Just (t {- condizione di mantenimento -}, (zip [0..] . mkNodi -> ns, nevs)) -> do
 					happened -- segnaliamo che almeno una reazione è avvenuta
 					tell nevs -- logghiamo gli eventi interni eventualmente creati 
 					return . Nodo (if t then k else Nothing) $ ((x, s') , ns) : rs 
 						--controlla se la reazione e' finita e aggiunge i nuovi reattori contestualizzati
 				Nothing -> put s' >> rifiuto -- la reazione é fallita, lo stato viene ripristinato
-		rifiuto = return (n{seguenti = rs}) 		
+		rifiuto = return (n{seguenti = rs}) -- il rifiuto non compromette l'eventuale accettazione dei sottonodi	
 	case x of 
 		Right (u,y) -> -- evento esterno
 			case  (valore :: c a -> a) <$> parser y of 
-				Nothing -> rifiuto -- non intercettato dai parser 
+				Nothing -> rifiuto -- non intercettato dal parser 
 				Just v ->  complete (Right (u,v))
 		Left y -> -- evento interno
 			case maybe ((valore :: ParserConRead b -> b) <$> parser y) (provaAccentratore y) acc of 
-				Just v ->  complete (Left v)
 				Nothing -> rifiuto
+				Just v ->  complete (Left v)
 
 -- | l'evento interno del core segnala che nessun reattore ha accettato l'evento (parsing fallito)
 data CoreEvents = Rifiuto  deriving (Read,Show)
@@ -71,16 +76,24 @@ eventoRifiutato Rifiuto = Just ()
 inserimentoCompleto :: Show d => Esterno d -> [Nodo s c d] -> Inserzione s c d [Nodo s c d]
 inserimentoCompleto x ns = fmap (fst . fst) . runInserimento  $ do	
 		(ns',t) <- intercept $ consumaR ns (Right x) 
-		if not t then  local (motiva $ Right x) . consumaR ns' $ Left [show Rifiuto]
+		if not t then  
+			local (motiva $ Right x) . consumaR ns' $ Left [show Rifiuto]
 			else return ns'
-	where 
+	where 	
+	
+	-- | esegue l'inserimento sui rami effettuando la pulizia dei sottorami secchi	
+	inserimentoAlbero :: Show d => Either Interno (Esterno d) -> [Nodo s c d] -> Inserimento s c d [Nodo s c d]
+	inserimentoAlbero x = mapM $ 
+		fmap pruner .  -- pulizia dopo l'inserimento
+		inserimento x  -- inserimento dell'evento interno o esterno
+ 
+	-- | consuma un evento esterno oppure una lista di eventi interni
 	consuma :: Show d => [Nodo s c d] -> Either [Interno] (Esterno d) -> Inserimento s c d [Nodo s c d]
 	consuma ns (Left xs) = foldM (\ns' x -> local (motiva $ Left x) $ inserimentoAlbero (Left x) ns')  ns xs
 	consuma ns (Right e) = local (motiva $ Right e) $ inserimentoAlbero (Right e) ns
 	
-	inserimentoAlbero :: Show d => Either Interno (Esterno d) -> [Nodo s c d] -> Inserimento s c d [Nodo s c d]
-	inserimentoAlbero x = mapM $ fmap pruner . inserimento x
-
+	-- | continua a consumare fino a che non vengono più prodotti eventi interni, 
+	-- pericolo loop se i reattori sono rotti
 	consumaR :: Show d => [Nodo s c d] -> Either [Interno] (Esterno d) -> Inserimento s c d [Nodo s c d]
 	consumaR ns x = do
 		(ns, map (\(EventoInterno e) -> show e) -> xs) <- listen $ consuma ns x
