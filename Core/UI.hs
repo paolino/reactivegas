@@ -64,7 +64,7 @@ bocciato x =  P.errore . Response $ [("Incoerenza", ResponseOne x)]
 accesso :: Interfaccia ()
 accesso = let k r = sel $ ($r) . writeAccesso . snd in do
 	(rs,_) <- responsabili . fst <$> statoPersistenza 
-	mano "responsabile autore" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
+	mano "responsabile autore delle dichiarazioni" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
 
 onAccesso k = sel (readAccesso . snd) >>= maybe (accesso >> onAccesso k) k 
 
@@ -75,23 +75,30 @@ type Interfaccia a = Costruzione MEnv () a
 
 bootGruppo :: Interfaccia ()
 bootGruppo = rotonda $ \k ->  
-		mano "preparazione stato iniziale" $ 
-			[("elenco chiavi responsabile già inserite", do
+		mano "preparazione stato iniziale del gruppo" $ 
+			[("elenco delle chiavi responsabile già inserite", do
 				xs <- sel $ readBoot .fst 
 				P.output $ Response 
 					[("elenco chiavi responsabile già inserite",
 						ResponseMany $ map (ResponseOne . fst) xs)])
-			,("inserimento di una chiave responsabile", P.upload "chiave" >>= \x -> do
+			,("inserimento di un responsabile del gruppo iniziale", P.upload "chiave" >>= \x -> do
 				xs <- sel $ readBoot . fst
 				sel $ ($ x: delete x xs) . writeBoot . fst)
-			,("creazione dello stato iniziale dalle chiavi inserite", 
+			,("creazione dello stato iniziale del gruppo", 
 				sel (writeStato . fst) >> k ())
 			]
 	
 bootChiavi :: Interfaccia ()
 bootChiavi = do
-	u <- P.libero "scegli il tuo nome di utente"
+	u <- P.libero "scegli il tuo nomignolo di utente e responsabile"
 	p <- P.libero "immetti una password, una frase , lunga almeno 12 caratteri"
+	P.download (u ++ ".chiavi") (u,cryptobox p)
+
+creaChiavi :: Interfaccia ()
+creaChiavi = do
+	us <- utenti <$> fst <$> statoSessione
+	u <- P.scelte  (zip us us) "nomignolo dell'utente pr il quale creare le chiavi"
+	p <- P.libero $ "la password per le chiavi di " ++ u ++ ", una frase , lunga almeno 12 caratteri"
 	P.download (u ++ ".chiavi") (u,cryptobox p)
 
 wrapCostrActions 	
@@ -105,7 +112,7 @@ wrapCostrActions g = concatMap (\f -> f q g bocciato) where
 
 
 interrogazioni :: Interfaccia ()
-interrogazioni = mano "interrogazione della conoscenza" $ (wrapCostrActions P.output $ [
+interrogazioni = mano "interrogazioni sulla conoscenza del gruppo" $ (wrapCostrActions P.output $ [
 		costrQueryAnagrafe,
 		costrQueryAccredito,
 		costrQueryOrdine,
@@ -184,7 +191,7 @@ sincronizza  aggiornamento aggiornamenti = onAccesso $ \(r@(u,_)) -> do
 
 salvataggio = do
 	evs <- letturaEventi
-	if null evs then bocciato "non ci sono dichiarazioni da firmare" else onAccesso $ \(r@(u,_)) -> do
+	if null evs then bocciato "non ci sono dichiarazioni da pubblicare" else onAccesso $ \(r@(u,_)) -> do
 		let 	p up = sel $ ($up) . ($u) . writeUPatch . fst
 		 	k (Firmante f) = do 
 				evs <- letturaEventi
@@ -216,18 +223,18 @@ amministrazione = do
 
 
 	mano "amministrazione" $ 
-			[("firma le tue dichiarazioni",salvataggio)
-			,("applica le dichiarazioni alla conoscenza", sincronizza aggiornamento aggiornamenti)
-			,("imposta il livello di caricamento", do 
+			[("pubblica le dichiarazioni in sessione",salvataggio)
+			,("applica tutte le dichiarazioni pubblicate alla conoscenza", sincronizza aggiornamento aggiornamenti)
+			,("regola il livello di caricamento dichiarazioni pubblicate", do 
 				rs <- eventLevelSelector 
 				case rs of 
-					Nothing -> P.errore $ ResponseOne "nessun evento per selezionare il livello"
+					Nothing -> P.errore $ ResponseOne "nessuna dichiarazione pubblicata"
 					Just rs -> do 
 						r <- P.scelte rs "livello di caricamento"	
 						sel (($r). setConservative . snd))
 			,("modifica delle dichiarazioni gia' firmate", importa)
-			,("nuove chiavi da responsabile", bootChiavi)
-			{-,("accesso sicuro", mano "accesso sicuro" 
+			,("scarica nuove chiavi da responsabile", creaChiavi)
+			,("porta sul retro", mano "porta sul retro" 
 
 				[("scarica le dichiarazioni prodotte", letturaEventi >>= P.download "dichiarazioni.txt" )
 				,("carica un aggiornamento individuale", P.errore $ ResponseOne "non implementato")
@@ -235,7 +242,7 @@ amministrazione = do
 					aggiornamenti >>= P.download "aggiornamenti.txt")
 				,("carica un aggiornamento di gruppo",P.upload "aggiornamento di gruppo" >>= aggiornamento)
 				,("scarica lo stato", sel (readStato . fst) >>= maybe (bocciato "stato non presente") (P.download "stato"))
-				])-}
+				])
 			]
 applicazione :: Costruzione MEnv () ()
 applicazione = rotonda $ \_ -> do 
@@ -243,7 +250,7 @@ applicazione = rotonda $ \_ -> do
 	case ms of 
 		Nothing ->    -- un bel po rotto
 			mano "il gruppo non esiste ancora" 
-				[("creazione nuove chiavi di responsable", bootChiavi)
+				[("creazione nuova identità di responsable", bootChiavi)
 				,("preparazione stato iniziale di gruppo", bootGruppo)
 				]
 		Just s ->  
