@@ -64,7 +64,7 @@ bocciato x =  P.errore . Response $ [("Incoerenza", ResponseOne x)]
 accesso :: Interfaccia ()
 accesso = let k r = sel $ ($r) . writeAccesso . snd in do
 	(rs,_) <- responsabili . fst <$> statoPersistenza 
-	mano "responsabile autore delle dichiarazioni in sessione" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
+	mano "responsabile autore delle nuove dichiarazioni" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
 
 onAccesso k = sel (readAccesso . snd) >>= maybe (accesso >> onAccesso k) k 
 
@@ -232,7 +232,7 @@ amministrazione = do
 					Just rs -> do 
 						r <- P.scelte rs "livello di caricamento"	
 						sel (($r). setConservative . snd))
-			,("modifica delle dichiarazioni gia' firmate", importa)
+			,("modifica delle dichiarazioni gia' pubblicate", importa)
 			,("scarica nuove chiavi da responsabile", creaChiavi)
 			,("porta sul retro", mano "porta sul retro" 
 
@@ -255,15 +255,17 @@ applicazione = rotonda $ \_ -> do
 				]
 		Just s ->  
 			mano ("menu principale") [
-				("responsabile autore delle dichiarazioni in sessione", accesso >> return ()),
-				("produzione dichiarazioni in sessione" , mano "produzione dichiarazioni in sessione" $ 
+				("effetto delle nuove dichiarazioni", do
+					c <- sel (readCaricamento . snd) 
+					P.output . Response $ 
+						[("effetto delle nuove dichiarazioni",  c)]),
+
+				("responsabile autore delle nuove dichiarazioni", accesso >> return ()),
+				("nuove dichiarazioni" , mano "nuove dichiarazioni" $ 
 					[("dichiarazioni di assenso",votazioni)
 					,("dichiarazioni economiche",economia)
 					,("dichiarazioni anagrafiche",anagrafica)				
-					,("effetto dell'applicazione delle dichiarazioni alla conoscenza", do
-						c <- sel (readCaricamento . snd) 
-						P.output . Response $ [("effetto dell'applicazione delle dichiarazioni alla conoscenza",  c)])
-					,("eliminazione delle dichiarazioni",eliminazioneEvento)
+										,("eliminazione delle dichiarazioni",eliminazioneEvento)
 					]),
 				("descrizione sessione", do
 					r <- sel $ readAccesso . snd

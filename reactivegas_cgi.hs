@@ -20,10 +20,10 @@ import Network.SCGI
 import Debug.Trace
 
 layout = 	[
-		 (["responsabile autore"],1)
-		,(["effetto dell'applicazione delle dichiarazioni", "produzione dichiarazioni"],4)
+		 (["responsabile autore delle nuove dichiarazioni"],1)
+		,(["effetto delle nuove dichiarazioni"],4)
 		,(["amministrazione"],2)
-		,(["produzione dichiarazioni"],2)
+		,(["nuove dichiarazioni"],2)
 		,(["descrizione sessione"],2)
 		,(["interrogazione della conoscenza"],2)
 		]
