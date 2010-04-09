@@ -64,7 +64,7 @@ bocciato x =  P.errore . Response $ [("Incoerenza", ResponseOne x)]
 accesso :: Interfaccia ()
 accesso = let k r = sel $ ($r) . writeAccesso . snd in do
 	(rs,_) <- responsabili . fst <$> statoPersistenza 
-	mano "responsabile autore delle dichiarazioni" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
+	mano "responsabile autore delle dichiarazioni in sessione" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
 
 onAccesso k = sel (readAccesso . snd) >>= maybe (accesso >> onAccesso k) k 
 
@@ -255,24 +255,24 @@ applicazione = rotonda $ \_ -> do
 				]
 		Just s ->  
 			mano ("menu principale") [
-				("responsabile autore", accesso >> return ()),
-				("produzione dichiarazioni" , mano "produzione dichiarazioni" $ 
+				("responsabile autore delle dichiarazioni in sessione", accesso >> return ()),
+				("produzione dichiarazioni in sessione" , mano "produzione dichiarazioni in sessione" $ 
 					[("dichiarazioni di assenso",votazioni)
 					,("dichiarazioni economiche",economia)
 					,("dichiarazioni anagrafiche",anagrafica)				
-					,("effetto dell'applicazione delle dichiarazioni", do
+					,("effetto dell'applicazione delle dichiarazioni alla conoscenza", do
 						c <- sel (readCaricamento . snd) 
-						P.output . Response $ [("effetto dell'applicazione delle dichiarazioni",  c)])
+						P.output . Response $ [("effetto dell'applicazione delle dichiarazioni alla conoscenza",  c)])
 					,("eliminazione delle dichiarazioni",eliminazioneEvento)
 					]),
 				("descrizione sessione", do
 					r <- sel $ readAccesso . snd
 					evs <- sel $ readEventi . snd
 					P.output . Response $ 
-						[("responsabile autore" , ResponseOne $ case r of 
+						[("responsabile autore delle dichiarazioni in sessione" , ResponseOne $ case r of 
 							Nothing -> "anonimo"
 							Just (u,_) -> u)
-						,("dichiarazioni prodotte" , ResponseMany $ map ResponseOne (sortEventi evs))
+						,("dichiarazioni in sessione (da pubblicare)" , ResponseMany $ map ResponseOne (sortEventi evs))
 						]
 					),
 				("interrogazione della conoscenza", interrogazioni),

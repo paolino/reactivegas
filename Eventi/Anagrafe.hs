@@ -267,16 +267,14 @@ programmazionePermesso se ur ut k kn = do
 			return (False,nessunEffetto) -- non rischedula il reattore
 		reattoreAssenso (Right (first validante -> (w,Assenso j))) = w $ \r -> do
 			when (j /= l) mzero
-			Permesso _ ut' <- osservaStatoServizio j 
-			fallimento (ut /= ut') "il responsabile non è tenuto a dare il permesso sulla questione" 
+			fallimento (ut /= r) "il responsabile non è tenuto a dare il permesso sulla questione" 
 			eliminaStatoServizio j (undefined :: Assensi)
 			logga $ "chiusura postiva della questione " ++ se 
 			(,) False <$> k j -- esegui la procedura finale come coronamento del 
 						-- consenso e non rischedula il reattore 
 		reattoreAssenso (Right (first validante -> (w,Dissenso j))) = w $ \r -> do
 			when (j /= l) mzero
-			Permesso _ ut' <- osservaStatoServizio j 
-			fallimento (ut /= ut') "il responsabile non è tenuto a dare il permesso sulla questione" 
+			fallimento (ut /= r) "il responsabile non è tenuto a dare il permesso sulla questione" 
 			eliminaRichiesta r j
 			logga $ "chiusura negativa della questione " ++ se
 			(,) False <$> kn j
