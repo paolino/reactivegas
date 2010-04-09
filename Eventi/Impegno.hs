@@ -75,6 +75,70 @@ bootImpegni x = (servizio0,x)
 -- type ConclusioneReattoreImpegno s c = Maybe ([(Utente, Float)]) -> MTInserzione s c Utente (Effetti s c Utente)
 
 -- | la programmazione di un impegni richiede il nome del responsabile che la apre e restituisce la chiave del nuovo stato impegni con una una azione monadica in grado di creare una nuova Reazione se fornita della giusta procedura. La giusta procedura definisce cosa eseguire alla fine della raccolta impegni. In caso di successo l'azione riceve la lista di impegni raccolta , in caso di fallimento Nothing. Comunque essa deve fornire una lista di nuovi reattori e una lista di eventi interni.
+programmazioneImpegno' :: (
+	Parser c EsternoImpegno,  -- okkio se serve un parser va implementato
+	Parser c EsternoAssenso,
+	Anagrafe 		`ParteDi` s,  -- eventoValidato lo richiede
+	Conti 			`ParteDi` s,  -- preleva e accredita lo richiedono
+	Responsabili 		`ParteDi` s,  -- eliminazioneResponsabile lo richiede
+	Servizio Assensi 		`ParteDi` s,
+	Integer `ParteDi` s,
+	Servizio Impegni 	`ParteDi` s)  -- il nostro aspetto
+	=> String	-- ^ motivazione della raccolta
+	-> Utente 	-- ^ l'utente responsabile dell'impegno
+	-> (Maybe ([(Utente, Float)]) -> MTInserzione s c Utente (Effetti s c Utente))
+	-> MTInserzione s c Utente Bool
+	-> MTInserzione s c Utente (Indice, MTInserzione s c Utente (Effetti s c Utente), Reazione s c Utente)
+
+programmazioneImpegno' q ur k ch = do
+	l <- nuovoStatoServizio (Impegni ur [] []) (ur ++ ", " ++ q)
+	let 	effettoF j = do 
+			Impegni ur as is <- osservaStatoServizio j
+			mapM_ (\(u,v) -> accredita u v) (as ++ is) -- restituzione del denaro di tutti gli impegni
+			eliminaStatoServizio j (undefined :: Impegni)
+			(ks,es) <- k Nothing 
+			return (ks,EventoInterno (EventoFallimentoImpegno (ur,sum (map snd (as ++ is)))): es)
+
+		reattoreImpegno (Right (first validante ->  (w,Impegno u v j))) = w $ \r -> let
+			positivo _ = do
+				logga $ "accettato l'impegno di " ++ show v ++ " euro da " ++ u ++ " per " ++ q 
+				modificaStatoServizio j $ \(Impegni ur as is) -> return 
+					(Impegni ur ((u,v):as) (delete (u,v) is))
+				return nessunEffetto
+			negativo _ = do 
+				accredita u v
+				modificaStatoServizio j $ \(Impegni ur as is) -> return 
+					(Impegni ur as (delete (u,v) is))
+				logga $ "rifiutato l'impegno di " ++ show v ++ " euro da " ++ u ++ " per " ++ q
+				return nessunEffetto
+			in do 
+				when (l /= j) mzero
+				preleva u v 
+				modificaStatoServizio j $ \(Impegni ur as is) -> return (Impegni ur as $ (u,v):is)
+				logga  $ "richiesta di impegno di  " ++ show v ++ " euro da " ++ u ++ " per " ++ q
+				(_,reaz) <- programmazionePermesso 
+					("impegno di " ++ show v ++ " euro da " ++ u ++ " per " ++ q)
+					r ur positivo negativo
+				return (True, ([reaz],[]))   
+		reattoreImpegno  (Right (first validante -> (w,FineImpegno j))) = w $ \r -> do
+			when (l /= j) mzero
+			y <- ch
+			fallimento (not y) $ "la chiusura non è stata concessa per " ++ q
+			fallimento (ur /= r) $ "solo " ++ ur ++ " può chiudere la raccolta di impegni per " ++ q
+			Impegni ur as is <- osservaStatoServizio j
+			mapM_ (\(u,v) -> accredita u v) is -- restituzione del denaro degli impegni non accettati
+			eliminaStatoServizio j (undefined :: Impegni)
+			(,) False <$> k (Just as) 
+		reattoreImpegno (Right (first validante -> (w,FallimentoImpegno j))) = w $ \r -> do
+			when (l /= j) mzero
+			fallimento (ur /= r) $ "solo " ++ ur ++ " può chiudere la raccolta di impegni per " ++ q
+			(,) False <$> effettoF j
+		reattoreImpegno (Left (eliminazioneResponsabile -> Just (u,_))) = conFallimento $ do
+			when (ur /= u) mzero
+			(,) False <$> effettoF l
+		reattoreImpegno  (Left _) = return Nothing
+	logga $ "raccolta di impegni per " ++ q ++ " aperta"	
+	return (l,effettoF l,Reazione (Nothing,reattoreImpegno))
 
 type ChiudiProgrammazioneImpegno s c = (Maybe ([(Utente, Float)]) -> MTInserzione s c Utente (Effetti s c Utente))
 programmazioneImpegno :: (

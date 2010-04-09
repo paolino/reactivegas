@@ -34,13 +34,13 @@ import Core.Parsing (ParserConRead)
 import Eventi.Anagrafe
 import Eventi.Accredito
 import Eventi.Impegno
-import Eventi.Ordine
 import Eventi.Logger
+import Eventi.Acquisto
 
 
 
 -- | il tipo dello stato accessibile
-type TS = TyAnagrafe (TyAccredito (TyImpegni (TyOrdini Integer)))
+type TS = TyAnagrafe (TyAccredito (TyImpegni (TyAcquisti Integer)))
 
 -- |tipo dello stato con la serializzazione dei reattori
 type QS = (TS,[SNodo TS Utente])
@@ -48,11 +48,11 @@ type QS = (TS,[SNodo TS Utente])
 -- | lista di prioritizzatori, definiscono un riordinamento tra gli eventidi una patch
 priorita :: [Lib.Prioriti.R]
 priorita = [ priorityAnagrafe, priorityAnagrafeI, priorityAccredito
-		, priorityImpegnoI, priorityImpegno, priorityOrdine, priorityAssenso] 
+		, priorityImpegnoI, priorityImpegno, priorityAcquisto, priorityAssenso] 
 
 -- | lista di reattori. I reattori di base per gli eventi
 reattori :: [Reazione TS ParserConRead Utente]
-reattori = [reazioneLogger, reazioneAnagrafe, reazioneAccredito, reazioneOrdine] 
+reattori = [reazioneLogger, reazioneAnagrafe, reazioneAccredito, reazioneAcquisto] 
 
 
 -- | effettua un inserimento di eventi esterni nello stato, restituendo il nuovo. Stampa i logs
@@ -61,7 +61,7 @@ caricamento l es = second (eccoILogs . map (first flatten)) . caricaEventi prior
 
 -- | creazione di un novo stato di tipo QS
 nuovoStato :: [Responsabile] -> QS
-nuovoStato rs = (bootAnagrafe rs  . bootAccredito . bootImpegni . bootOrdini  $ 0, replicate (length reattori) $ SNodo True [])
+nuovoStato rs = (bootAnagrafe rs  . bootAccredito . bootImpegni . bootAcquisti  $ 0, replicate (length reattori) $ SNodo True [])
 
 sortEventi :: [Evento] -> [Evento]
 sortEventi = sortP 100 priorita id

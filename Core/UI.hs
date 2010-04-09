@@ -38,7 +38,7 @@ import Core.Applicazione (QS,caricamento, TS, sortEventi, levelsEventi)
 import Eventi.Anagrafe
 import Eventi.Accredito
 import Eventi.Impegno
-import Eventi.Ordine
+import Eventi.Acquisto
 -- sel :: (MonadReader (Persistenza QS, Sessione)  m, MonadIO m) => ((Persistenza QS, Sessione) -> IO b) -> m b
 sel f = asks f >>= liftIO 
 
@@ -115,7 +115,7 @@ interrogazioni :: Interfaccia ()
 interrogazioni = mano "interrogazioni sulla conoscenza del gruppo" $ (wrapCostrActions P.output $ [
 		costrQueryAnagrafe,
 		costrQueryAccredito,
-		costrQueryOrdine,
+		costrQueryAcquisto,
 		costrQueryImpegni,
 		costrQueryAssenso
 		]) 
@@ -174,7 +174,7 @@ anagrafica = mano "dichiarazioni anagrafiche" . wrapCostrActions addEvento $
 economia  :: Interfaccia () 
 economia = mano "dichiarazioni economiche" . concat $ 
 		[wrapCostrActions addEvento [costrEventiAccredito]
-		,wrapCostrActions addEvento [costrEventiOrdine]
+		,wrapCostrActions addEvento [costrEventiAcquisto]
 		,wrapCostrActions addEvento [costrEventiImpegno]
 		]
 
