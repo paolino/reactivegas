@@ -52,10 +52,6 @@ fromUPatches  (ups,s) =
 
 
 statoSessione =  fmap fromJust . sel $ readStatoSessione . snd   
--- | semplifica il running dei Supporto
-
-conStato :: (String -> Interfaccia a) -> (b -> Interfaccia a) -> Supporto MEnv TS () b ->  Interfaccia a
-conStato x y z = runSupporto (fst <$> statoPersistenza) x y z
 
 -- | comunica che c'è un errore logico nella richiesta
 bocciato :: String -> Interfaccia ()
@@ -63,7 +59,7 @@ bocciato x =  P.errore . Response $ [("Incoerenza", ResponseOne x)]
 
 accesso :: Interfaccia ()
 accesso = let k r = sel $ ($r) . writeAccesso . snd in do
-	(rs,_) <- responsabili . fst <$> statoPersistenza 
+	(rs,_) <- responsabili . fst <$> statoSessione 
 	mano "responsabile autore delle nuove dichiarazioni" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
 
 onAccesso k = sel (readAccesso . snd) >>= maybe (accesso >> onAccesso k) k 
@@ -179,7 +175,7 @@ economia = mano "dichiarazioni economiche" . concat $
 		]
 
 votazioni :: Interfaccia ()
-votazioni = onAccesso $ \(u,_) -> mano ("dichiarazioni di assenso") $ wrapCostrActions addEvento [costrEventiAssenso]
+votazioni = mano ("dichiarazioni di assenso") $ wrapCostrActions addEvento [costrEventiAssenso]
 
 sincronizza  aggiornamento aggiornamenti = onAccesso $ \(r@(u,_)) -> do  
 	rs <- aggiornamenti
@@ -223,16 +219,7 @@ amministrazione = do
 
 
 	mano "amministrazione" $ 
-			[("pubblica le dichiarazioni in sessione",salvataggio)
-			,("applica tutte le dichiarazioni pubblicate alla conoscenza", sincronizza aggiornamento aggiornamenti)
-			,("regola il livello di caricamento dichiarazioni pubblicate", do 
-				rs <- eventLevelSelector 
-				case rs of 
-					Nothing -> P.errore $ ResponseOne "nessuna dichiarazione pubblicata"
-					Just rs -> do 
-						r <- P.scelte rs "livello di caricamento"	
-						sel (($r). setConservative . snd))
-			,("modifica delle dichiarazioni gia' pubblicate", importa)
+			[("applica tutte le dichiarazioni pubblicate alla conoscenza", sincronizza aggiornamento aggiornamenti)
 			,("scarica nuove chiavi da responsabile", creaChiavi)
 			,("porta sul retro", mano "porta sul retro" 
 
@@ -261,11 +248,20 @@ applicazione = rotonda $ \_ -> do
 						[("effetto delle nuove dichiarazioni",  c)]),
 
 				("responsabile autore delle nuove dichiarazioni", accesso >> return ()),
-				("nuove dichiarazioni" , mano "nuove dichiarazioni" $ 
-					[("dichiarazioni di assenso",votazioni)
+				("nuove dichiarazioni" , onAccesso . const $ mano "nuove dichiarazioni" $ 
+					[("pubblica le dichiarazioni in sessione",salvataggio)
+					,("dichiarazioni di assenso",votazioni)
 					,("dichiarazioni economiche",economia)
 					,("dichiarazioni anagrafiche",anagrafica)				
-										,("eliminazione delle dichiarazioni",eliminazioneEvento)
+					,("elimina le dichiarazioni",eliminazioneEvento)
+					,("modifica delle dichiarazioni gia' pubblicate", importa)
+					,("regola il livello di caricamento dichiarazioni pubblicate", do 
+						rs <- eventLevelSelector 
+						case rs of 
+							Nothing -> P.errore $ ResponseOne "nessuna dichiarazione pubblicata"
+							Just rs -> do 
+								r <- P.scelte rs "livello di caricamento"	
+								sel (($r). setConservative . snd))
 					]),
 				("descrizione sessione", do
 					r <- sel $ readAccesso . snd

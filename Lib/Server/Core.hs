@@ -132,7 +132,7 @@ mkServer limit bs pers = do
 				let 	(afos,bfos) = partition ((< fok) . fst) $ M.assocs fos
 				ricarica' . M.fromList $ afos ++ tail bfos ++ [(last (M.keys fos) + 1,foi)]
 			esegui' Allarga = do
-				ricarica' $ M.adjust (const ((mi,fo),if j < 4 then j + 1 else j)) fok fos 
+				ricarica' $ M.adjust (const ((mi,fo),if j < 5 then j + 1 else j)) fok fos 
 			esegui' Restringi = do
 				ricarica' $ M.adjust (const ((mi,fo),if j > 1  then j - 1 else j)) fok fos 
 			update fos' = do
