@@ -42,7 +42,7 @@ data Persistenza a = Persistenza
 			readOrfani 	:: Utente -> IO [Evento], 	-- ^ eventi di patch utente invalidate
 			writeOrfani 	:: Utente -> [Evento] -> IO (),	-- ^ settaggio orfani
 			writeUPatch 	:: Utente -> Patch -> IO (),	-- ^ scrittura di una patch utente
-			deleteUPatch 	:: Firma -> IO (),		-- ^ elimina una patch utente
+			readUPatch 	:: Utente -> IO (Maybe Patch),	-- ^ lettura una patch utente
 			readUPatches 	:: IO [Patch],			-- ^ lettura delle patch utente
 			writeGPatch 	:: Group -> IO (),		-- ^ scrittura di una patch di gruppo
 			readLogs	:: IO (IO String)
@@ -223,13 +223,12 @@ modificato 	:: (Int -> a -> [Esterno Utente] -> (a,b))
 		-> Modificato a b
 modificato f ts tp l mr es = do
 	ms <-  readTVar ts
-	ups <- concatMap (\(u,(_,_,es)) -> map ((,) u) es) <$> readTVar tp	
-	return $ case ms of
-		Nothing -> (Nothing, error "nessuno stato")
-		Just s -> first Just $ f l s (ups ++ case mr of 
-			Nothing -> []
-			Just (u,_) -> map ((,) u) es
-			) 
+	case ms of
+		Nothing -> return (Nothing, error "nessuno stato")
+		Just s -> do	ups <- case mr of
+					Just (u,_) -> (++ map ((,) u) es) .  concatMap (\(u,(_,_,es)) -> map ((,) u) es) . filter ((/=) u . fst) <$> readTVar tp
+					Nothing  ->  concatMap (\(u,(_,_,es)) -> map ((,) u) es) <$> readTVar tp
+				return . first Just $ f l s ups
 
 before a b = (a >> b) `orElse` b
 mkPersistenza 	:: ([Responsabile] -> a) 
@@ -243,13 +242,13 @@ mkPersistenza boot load  (tb,tv,ts,tp,to,tl,cs) = let
 	writeBoot' = atomically . writeTVar tb
 	readOrfani' u = atomically $ maybe [] id . lookup u <$> readTVar to
 	writeOrfani' u es = atomically $ readTVar to >>= writeTVar to . ((u,es) :) .  filter ((/=) u . fst)  
-	writeUPatch' u p = atomically $ readTVar tp >>= writeTVar tp . (++ [(u,p)])
-	deleteUPatch' f = atomically $ readTVar tp >>= writeTVar tp . filter ((/=) f . firma . snd) 
+	writeUPatch' u p = atomically $ readTVar tp >>= writeTVar tp . (++ [(u,p)]) . filter ((/=) u . fst)
+	readUPatch' u = atomically $ lookup u <$> readTVar tp 
 	readUPatches' = atomically $ map snd <$> readTVar tp
 	writeGPatch' g = atomically $ aggiornamento load  tv ts tp to tl cs g
 	readLogs' = atomically (dupTChan tl) >>= return . atomically . readTChan
 	in Persistenza readStato' writeStato' readBoot' writeBoot' readOrfani' 
-		writeOrfani' writeUPatch' deleteUPatch' readUPatches' writeGPatch' readLogs'
+		writeOrfani' writeUPatch' readUPatch' readUPatches' writeGPatch' readLogs'
 {-
 oneService :: (Read a, Show a) => (a -> Group -> Writer [String] (Either String a)) -> FilePath ->  IO (Persistenza a)
 oneService load name = do

@@ -58,7 +58,17 @@ bocciato :: String -> Interfaccia ()
 bocciato x =  P.errore . Response $ [("Incoerenza", ResponseOne x)] 
 
 accesso :: Interfaccia ()
-accesso = let k r = sel $ ($r) . writeAccesso . snd in do
+accesso = do 
+	let k r = do
+		sel $ ($r) . writeAccesso . snd
+		case r of 
+			Just r -> do
+				mes <- sel $ ($ fst r) . readUPatch . fst
+				let es = case mes of
+					Nothing -> []
+					Just (_,_,es) -> es
+				sel $ ($es) . writeEventi . snd
+			Nothing -> sel $ ($ []) . writeEventi . snd
 	(rs,_) <- responsabili . fst <$> statoSessione 
 	mano "responsabile autore delle nuove dichiarazioni" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
 
@@ -136,11 +146,6 @@ eventLevelSelector = do
 letturaEventi ::  Interfaccia [Evento]
 letturaEventi = sel $ readEventi . snd
 
-svuotaEventi :: Interfaccia ()
-svuotaEventi = sel $ ($[]). writeEventi . snd
-
-
-
 correzioneEventi  :: ([Evento] -> [Evento]) -> Interfaccia ()
 correzioneEventi devs  = do
 	evs <- letturaEventi
@@ -175,7 +180,7 @@ economia = mano "dichiarazioni economiche" . concat $
 		]
 
 votazioni :: Interfaccia ()
-votazioni = mano ("dichiarazioni di assenso") $ wrapCostrActions addEvento [costrEventiAssenso]
+votazioni = mano "dichiarazioni di assenso" $ wrapCostrActions addEvento [costrEventiAssenso]
 
 sincronizza  aggiornamento aggiornamenti = onAccesso $ \(r@(u,_)) -> do  
 	rs <- aggiornamenti
@@ -184,6 +189,7 @@ sincronizza  aggiornamento aggiornamenti = onAccesso $ \(r@(u,_)) -> do
 		xs -> do
 			let k (Firmante f)  = (fst <$> statoPersistenza) >>= \s -> aggiornamento (f s xs)
 			runSupporto (fst <$> statoPersistenza) bocciato k $ firmante r
+			sel $ ($ Nothing) . writeAccesso . snd
 
 salvataggio = do
 	evs <- letturaEventi
@@ -191,24 +197,11 @@ salvataggio = do
 		let 	p up = sel $ ($up) . ($u) . writeUPatch . fst
 		 	k (Firmante f) = do 
 				evs <- letturaEventi
-				(fst <$> statoPersistenza) >>= \s -> p (f s evs) >> svuotaEventi
+				(fst <$> statoPersistenza) >>= \s -> p (f s evs) 
 		runSupporto (fst <$> statoPersistenza) bocciato k $ firmante r
 
 -- | importa gli eventuali eventi già presenti
 
-importa :: Interfaccia ()
-importa = onAccesso $ \r@(u,(c,_)) -> do 
-	ps <- filter (\(c',_,_) -> c == c') <$>  sel (readUPatches . fst)
-	if null ps then	bocciato $ "non ci sono aggiornamenti individuali in attesa per il responsabile " ++ u
-
-		else do 
-		(_,f,es) <- case ps of
-			[r] -> return r
-			_ -> P.scelte (zip (map show [1..]) ps) $ "aggiornamenti di " ++  u ++ " in attesa"
-		let k _ = do
-			correzioneEventi (es ++) 
-			sel (($f) . deleteUPatch . fst)	
-		runSupporto (fst <$> statoPersistenza) bocciato k $ firmante r
 	
 
 amministrazione :: Interfaccia ()
@@ -254,7 +247,6 @@ applicazione = rotonda $ \_ -> do
 					,("dichiarazioni economiche",economia)
 					,("dichiarazioni anagrafiche",anagrafica)				
 					,("elimina le dichiarazioni",eliminazioneEvento)
-					,("modifica delle dichiarazioni gia' pubblicate", importa)
 					,("regola il livello di caricamento dichiarazioni pubblicate", do 
 						rs <- eventLevelSelector 
 						case rs of 
