@@ -115,14 +115,18 @@ costrEventiAccredito s kp kn = 	[("aggiornamento credito di un utente",eventoAcc
 		us <- asks utenti 
 		SUtente un <- asks see
 		when (isNothing un) $ throwError "manca la scelta del responsabile autore"
-		u <- scelte (map (id &&& id) (filter ((/=) $ fromJust un)  us)) "utente interessato dall'aggiornamento"
+		let us' = map (id &&& id) $ filter ((/=) $ fromJust un)  us
+		when (null us') $ throwError "non ci sono altri utenti"
+		u <- scelte us' "utente interessato dall'aggiornamento"
 		n <- libero $ "somma da accreditare sul conto di " ++ u
 		return $ Accredito u n
 	eventoSaldo = run $ do
 		(rs,_) <- asks responsabili 
 		SUtente un <- asks see
 		when  (isNothing un) $ throwError "manca la scelta del responsabile autore"
-		u <- scelte (map (fst &&& id) (filter ((/=) (fromJust un) . fst) rs)) "responsabile che ha dato il denaro"
+		let rs' = map (fst &&& id) (filter ((/=) (fromJust un) . fst) rs)
+		when (null rs') $ throwError "non ci sono altri responsabili"
+		u <- scelte rs' "responsabile che ha dato il denaro"
 		n <- libero $ "somma ricevuta dal responsabile " ++ fst u
 		return $ Saldo (fst u) n
 	    
