@@ -69,7 +69,7 @@ accesso = do
 					Just (_,_,es) -> es
 				sel $ ($es) . writeEventi . snd
 			Nothing -> sel $ ($ []) . writeEventi . snd
-	(rs,_) <- responsabili . fst <$> statoSessione 
+	(rs,_) <- responsabili . fst <$> statoPersistenza 
 	mano "responsabile autore" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
 
 onAccesso k = sel (readAccesso . snd) >>= maybe (accesso >> onAccesso k) k 
