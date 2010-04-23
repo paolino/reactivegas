@@ -69,8 +69,8 @@ accesso = do
 					Just (_,_,es) -> es
 				sel $ ($es) . writeEventi . snd
 			Nothing -> sel $ ($ []) . writeEventi . snd
-	(rs,_) <- responsabili . fst <$> statoSessione 
-	menu "responsabile autore delle nuove dichiarazioni" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
+	(rs,_) <- responsabili . fst <$> statoPersistenza 
+	mano "responsabile autore" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
 
 onAccesso k = sel (readAccesso . snd) >>= maybe (accesso >> onAccesso k) k 
 
@@ -167,18 +167,18 @@ eliminazioneEvento = do
 
 addEvento x = correzioneEventi (show x:)
 
-anagrafica :: Interfaccia ()
-anagrafica = mano "dichiarazioni anagrafiche" . wrapCostrActions addEvento $ 
-		[costrEventiAnagrafe 
-		,costrEventiResponsabili
-		]
 
 
-economia  :: Interfaccia () 
-economia = mano "dichiarazioni economiche" . concat $ 
+dichiarazioni = concat $ 
 		[wrapCostrActions addEvento [costrEventiAccredito]
 		,wrapCostrActions addEvento [costrEventiAcquisto]
 		,wrapCostrActions addEvento [costrEventiImpegno]
+		,wrapCostrActions addEvento $ 
+			[costrEventiAnagrafe 
+			,costrEventiResponsabili
+			]
+		,wrapCostrActions addEvento [costrEventiAssenso]
+
 		]
 
 votazioni :: Interfaccia ()
@@ -232,27 +232,26 @@ applicazione = rotonda $ \_ -> do
 	case ms of 
 		Nothing ->    -- un bel po rotto
 			mano "il gruppo non esiste ancora" 
-				[("creazione nuova identità di responsable", bootChiavi)
+				[("creazione nuova identita' di responsable", bootChiavi)
 				,("preparazione stato iniziale di gruppo", bootGruppo)
 				]
 		Just s ->  
 			mano ("menu principale") [
-				("effetto delle nuove dichiarazioni", do
+				("effetto delle dichiarazioni", do
 					c <- sel (readCaricamento . snd) 
 					P.output . Response $ 
 						[("effetto delle nuove dichiarazioni",  c)]),
 
-				("responsabile autore delle nuove dichiarazioni", accesso >> return ()),
-				("nuove dichiarazioni" , onAccesso . const $ mano "nuove dichiarazioni" $ 
-					[("pubblica le dichiarazioni in sessione",salvataggio)
-					,("dichiarazioni di assenso",votazioni)
-					,("dichiarazioni economiche",economia)
-					,("dichiarazioni anagrafiche",anagrafica)				
-					,("elimina le dichiarazioni",eliminazioneEvento)
-					,("regola il livello di caricamento dichiarazioni pubblicate", do 
+				("crea una nuova dichiarazione",onAccesso . const $ mano "crea una nuova dichiarazione" dichiarazioni),
+				("gestione dichiarazioni" , onAccesso . const $ mano "gestione dichiarazioni" $ 
+					[
+					("pubblica le dichiarazioni in sessione",salvataggio)
+					,("elimina delle dichiarazioni",eliminazioneEvento)
+					,("responsabile autore", accesso >> return ())
+					,("regola il livello di caricamento dichiarazioni", do 
 						rs <- eventLevelSelector 
 						case rs of 
-							Nothing -> P.errore $ ResponseOne "nessuna dichiarazione pubblicata"
+							Nothing -> P.errore $ ResponseOne "nessuna dichiarazione da caricare"
 							Just rs -> do 
 								r <- P.scelte rs "livello di caricamento"	
 								sel (($r). setConservative . snd))
@@ -260,11 +259,20 @@ applicazione = rotonda $ \_ -> do
 				("descrizione sessione", do
 					r <- sel $ readAccesso . snd
 					evs <- sel $ readEventi . snd
+					evsp <- case r of
+						Nothing -> return []
+						Just (u,_) -> do
+							mevsp <- sel $ ($ u) . readUPatch . fst
+							return $ case mevsp of
+								Nothing -> []
+								Just (_,_,es) -> es
+							
 					P.output . Response $ 
 						[("responsabile autore delle dichiarazioni in sessione" , ResponseOne $ case r of 
 							Nothing -> "anonimo"
 							Just (u,_) -> u)
-						,("dichiarazioni in sessione (da pubblicare)" , ResponseMany $ map ResponseOne (sortEventi evs))
+						,("dichiarazioni in sessione" , ResponseMany $ map ResponseOne (sortEventi evs))
+						,("dichiarazioni pubblicate", ResponseMany $ map ResponseOne (sortEventi evsp))
 						]
 					),
 				("interrogazione della conoscenza", interrogazioni),

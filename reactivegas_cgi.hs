@@ -19,9 +19,10 @@ import Network.SCGI
 
 import Debug.Trace
 
-layout = 	[(["nuove dichiarazioni"],2)
+layout = 	[(["gestione dichiarazioni"],1)
+		,(["crea una nuova dichiarazione"],2)
 		,(["descrizione sessione"],2)
-		,(["effetto delle nuove dichiarazioni"],5)
+		,(["effetto delle dichiarazioni"],5)
 		,(["interrogazione della conoscenza"],2)
 		,([],2)
 		]
