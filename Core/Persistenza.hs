@@ -41,7 +41,7 @@ data Persistenza a = Persistenza
 			writeBoot	:: [Responsabile] -> IO (),
 			readOrfani 	:: Utente -> IO [Evento], 	-- ^ eventi di patch utente invalidate
 			writeOrfani 	:: Utente -> [Evento] -> IO (),	-- ^ settaggio orfani
-			writeUPatch 	:: Utente -> Patch -> IO (),	-- ^ scrittura di una patch utente, se l'insieme degli eventi e' vuoto la patch viene eliminata
+			writeUPatch 	:: Utente -> Patch -> IO (),	-- ^ scrittura di una patch utente
 			readUPatch 	:: Utente -> IO (Maybe Patch),	-- ^ lettura una patch utente
 			readUPatches 	:: IO [Patch],			-- ^ lettura delle patch utente
 			writeGPatch 	:: Group -> IO (),		-- ^ scrittura di una patch di gruppo
@@ -242,7 +242,7 @@ mkPersistenza boot load  (tb,tv,ts,tp,to,tl,cs) = let
 	writeBoot' = atomically . writeTVar tb
 	readOrfani' u = atomically $ maybe [] id . lookup u <$> readTVar to
 	writeOrfani' u es = atomically $ readTVar to >>= writeTVar to . ((u,es) :) .  filter ((/=) u . fst)  
-	writeUPatch' u p@(_,_,es) = atomically $ readTVar tp >>= writeTVar tp . (++ if null es then [] else [(u,p)]) . filter ((/=) u . fst)
+	writeUPatch' u p = atomically $ readTVar tp >>= writeTVar tp . (++ [(u,p)]) . filter ((/=) u . fst)
 	readUPatch' u = atomically $ lookup u <$> readTVar tp 
 	readUPatches' = atomically $ map snd <$> readTVar tp
 	writeGPatch' g = atomically $ aggiornamento load  tv ts tp to tl cs g

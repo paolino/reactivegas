@@ -66,7 +66,11 @@ div.titolo {margin:5px;
 	font: 16pt sans-serif;
 	float:left;
 	}
+<<<<<<< HEAD:style.css
 div.reset {margin:15px;float :right;}
+=======
+div.reset {margin:15px;}
+>>>>>>> f5c208a04a679aadd967a0c2fff8bde0b9c7d416:style.css
 
 div.dimensione1 {
 	position: absolute;
@@ -85,7 +89,11 @@ div.dimensione2 {
 	border: 1px solid #999999;
 	margin: 2px;
 	background-color: #f1f1f1 ;
+<<<<<<< HEAD:style.css
 	width:655px;
+=======
+	width:650px;
+>>>>>>> f5c208a04a679aadd967a0c2fff8bde0b9c7d416:style.css
 	height:245px;
 }
 div.dimensione3 {

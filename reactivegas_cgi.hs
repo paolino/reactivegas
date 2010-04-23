@@ -30,7 +30,8 @@ pagina b = output . prettyHtml $
 				+++ thetitle << "Amministrazione G.A.S.") 
 		+++ body << thediv ! [theclass "testata"] 
 				<< 	(thediv ! [theclass "titolo"] 
-						<< "Amministrazione distribuita per un gruppo di acquisto" +++
+						<< ("Amministrazione distribuita per il gruppo " +++ anchor !
+						[href "http://googlegroups.com/group/tarogas"] << " tarogas ") +++
 				 		(thediv ! [theclass "reset"] 
 							<< anchor ! [href "/reset"] << "annulla la sessione"
 						)

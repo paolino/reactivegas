@@ -3,7 +3,7 @@
 module Core.UI where
 
 import Data.Maybe (isJust , fromJust,catMaybes)
-import Data.List (delete,find, (\\))
+import Data.List (delete,find,(\\))
 
 import Control.Arrow
 import Control.Applicative
@@ -70,7 +70,7 @@ accesso = do
 				sel $ ($es) . writeEventi . snd
 			Nothing -> sel $ ($ []) . writeEventi . snd
 	(rs,_) <- responsabili . fst <$> statoPersistenza 
-	menu "responsabile autore" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
+	mano "responsabile autore" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
 
 onAccesso k = sel (readAccesso . snd) >>= maybe (accesso >> onAccesso k) k 
 
@@ -104,8 +104,8 @@ creaChiavi :: Interfaccia ()
 creaChiavi = do
 	us <- utenti <$> fst <$> statoSessione
 	(rs,rs') <- responsabili <$> fst <$> statoSessione
-	let eleggibili = us \\ (map fst (rs ++ rs'))
-	u <- P.scelte  (zip eleggibili eleggibili) "nomignolo dell'utente pr il quale creare le chiavi"
+	let es = us \\ (map fst $ rs ++ rs')
+	u <- P.scelte  (zip es es) "nomignolo dell'utente pr il quale creare le chiavi"
 	p <- P.libero $ "la password per le chiavi di " ++ u ++ ", una frase , lunga almeno 12 caratteri"
 	P.download (u ++ ".chiavi") (u,cryptobox p)
 
