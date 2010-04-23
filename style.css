@@ -44,9 +44,9 @@ blockquote, q {
 }
 
 
-a:link.passobox {color:#0066aa;text-decoration:none;}
-a:visited.passobox {color:#0066aa;text-decoration:none;}
-a:hover.passobox {background-color: #f3d3f3;}
+a:link {color:#0066aa;text-decoration:none;}
+a:visited {color:#0066aa;text-decoration:none;}
+a:hover {background-color: #f3d3f3;}
 
 a:link.menu {color:#3399dd;text-decoration:none;}
 a:visited.menu {color:#3399dd;text-decoration:none;}
@@ -59,62 +59,64 @@ div.testata {
 	margin: 5px;
 	float: clear;
 	height : 3em;
+	width:900px;
 	background-color: #eeffee;
 	}
 div.titolo {margin:5px;
 	font: 16pt sans-serif;
 	float:left;
 	}
-div.reset {margin:5px;float:right;}
+div.reset {margin:15px;float :right;}
 
 div.dimensione1 {
 	position: absolute;
 	top :50px;
 	left :0px;
-	border: 1px dotted #dddddd;
+	border: 1px solid #999999;
 	margin: 2px;
 	background-color: #f5f5f5 ;
 	width:240px;
-	height:245px;
+	height:180px;
 }
 div.dimensione2 {
 	position: absolute;
 	top :50px;
-	left : 245px;
-	border: 1px dotted #dddddd;
+	left : 241px;
+	border: 1px solid #999999;
 	margin: 2px;
 	background-color: #f1f1f1 ;
-	width:640px;
+	width:655px;
 	height:245px;
 }
 div.dimensione3 {
 	position: absolute;
-	top : 300px;
-	left : 0px;
-	border: 1px dotted #dddddd;
+	top : 296px;
+	left : 241px;
+	border: 1px solid #999999;
 	margin: 2px;
 	background-color: #f5f5f5 ;
-	width:640px;
+	width:655px;
 	height:300px;
 }
 div.dimensione4 {
 	position: absolute;
-	top : 300px;
-	left : 645px;
-	border: 1px dotted #dddddd;
+	top : 231px;
+	left : 0px;
+	border: 1px solid #999999;
 	margin: 2px;
 	background-color: #f5f5f5 ;
-	width:250px;
-	height:300px;
+	width:240px;
+	height:180px;
 }
 div.dimensione5 {
 	position: absolute;
-	top : 550px;
-	left : 200px;
-	border: 1px dotted #dddddd;
+	top : 412px;
+	left : 0px;
+	border: 1px solid #999999;
 	margin: 2px;
 	background-color: #f5f5f5 ;
-	width:250px;
+	width:240px;
+	height:180px;
 }
 
 dt {color: green;}
@@ -129,7 +131,8 @@ input#valore {font: 8pt sans-serif;
 
 div.response {	
 	color: Red;
-	margin:3px;	
+	border: 1px dotted #aaaaaa;
+	background:#dddddd;
 	overflow:auto;}
 dl dd {
 	text-indent:1em; 
@@ -148,12 +151,17 @@ div.menu {height:1.5em;margin:1px;}
 div.menu ul {background-color:#efefef ;
 	float:right;
 }
-dt {color: green;}
+dt {	color: green;
+
+	border: 1px dotted #999999;
+
+	background:#dddddd;
+	}
 input.continua {
  float:right;}
 li.menu {display:inline;}
 
 div.utente {margin:5px;overflow:auto;height:auto;float:clear;}
-div.pedata {margin:5px;font: 8pt sans-serif;height:3em;background-color:#eeffee}
+div.pedata {margin:5px;position:absolute;top:600px;float:clear;font: 8pt sans-serif;height:3em;background-color:#eeffee}
 div.pedata ul {margin:5px;float:right;}
 

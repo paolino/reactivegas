@@ -23,6 +23,7 @@ layout = 	[(["gestione dichiarazioni"],1)
 		,(["crea una nuova dichiarazione"],2)
 		,(["descrizione sessione"],4)
 		,(["effetto delle dichiarazioni"],3)
+		,(["interrogazione della conoscenza"],5)
 		]
 pagina b = output . prettyHtml $  
 		header << (thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml 
