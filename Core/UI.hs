@@ -3,7 +3,7 @@
 module Core.UI where
 
 import Data.Maybe (isJust , fromJust,catMaybes)
-import Data.List (delete,find)
+import Data.List (delete,find, (\\))
 
 import Control.Arrow
 import Control.Applicative
@@ -70,7 +70,7 @@ accesso = do
 				sel $ ($es) . writeEventi . snd
 			Nothing -> sel $ ($ []) . writeEventi . snd
 	(rs,_) <- responsabili . fst <$> statoSessione 
-	mano "responsabile autore delle nuove dichiarazioni" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
+	menu "responsabile autore delle nuove dichiarazioni" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
 
 onAccesso k = sel (readAccesso . snd) >>= maybe (accesso >> onAccesso k) k 
 
@@ -103,7 +103,9 @@ bootChiavi = do
 creaChiavi :: Interfaccia ()
 creaChiavi = do
 	us <- utenti <$> fst <$> statoSessione
-	u <- P.scelte  (zip us us) "nomignolo dell'utente pr il quale creare le chiavi"
+	(rs,rs') <- responsabili <$> fst <$> statoSessione
+	let eleggibili = us \\ (map fst (rs ++ rs'))
+	u <- P.scelte  (zip eleggibili eleggibili) "nomignolo dell'utente pr il quale creare le chiavi"
 	p <- P.libero $ "la password per le chiavi di " ++ u ++ ", una frase , lunga almeno 12 caratteri"
 	P.download (u ++ ".chiavi") (u,cryptobox p)
 
@@ -193,7 +195,7 @@ sincronizza  aggiornamento aggiornamenti = onAccesso $ \(r@(u,_)) -> do
 
 salvataggio = do
 	evs <- letturaEventi
-	if null evs then bocciato "non ci sono dichiarazioni da pubblicare" else onAccesso $ \(r@(u,_)) -> do
+	onAccesso $ \(r@(u,_)) -> do
 		let 	p up = sel $ ($up) . ($u) . writeUPatch . fst
 		 	k (Firmante f) = do 
 				evs <- letturaEventi
