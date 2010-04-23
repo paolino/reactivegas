@@ -65,7 +65,7 @@ div.titolo {margin:5px;
 	font: 16pt sans-serif;
 	float:left;
 	}
-div.reset {margin:5px;float:right;}
+div.reset {margin:15px;}
 
 div.dimensione1 {
 	position: absolute;
@@ -84,7 +84,7 @@ div.dimensione2 {
 	border: 1px dotted #dddddd;
 	margin: 2px;
 	background-color: #f1f1f1 ;
-	width:640px;
+	width:650px;
 	height:245px;
 }
 div.dimensione3 {
@@ -154,6 +154,6 @@ input.continua {
 li.menu {display:inline;}
 
 div.utente {margin:5px;overflow:auto;height:auto;float:clear;}
-div.pedata {margin:5px;font: 8pt sans-serif;height:3em;background-color:#eeffee}
+div.pedata {margin:5px;position:absolute;top:600px;float:clear;font: 8pt sans-serif;height:3em;background-color:#eeffee}
 div.pedata ul {margin:5px;float:right;}
 
