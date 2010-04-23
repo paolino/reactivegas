@@ -19,19 +19,19 @@ import Network.SCGI
 
 import Debug.Trace
 
-layout = 	[(["gestione dichiarazioni"],1)
-		,(["crea una nuova dichiarazione"],2)
-		,(["descrizione sessione"],4)
+layout = 	[(["gestione dichiarazioni"],2)
+		,(["descrizione sessione"],1)
+		,(["amministrazione"],5)
 		,(["effetto delle dichiarazioni"],3)
-		,(["interrogazione della conoscenza"],5)
+		,(["interrogazione sullo stato del gruppo"],4)
 		]
 pagina b = output . prettyHtml $  
 		header << (thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml 
 				+++ thetitle << "Amministrazione G.A.S.") 
 		+++ body << thediv ! [theclass "testata"] 
 				<< 	(thediv ! [theclass "titolo"] 
-						<< ("Amministrazione distribuita per il gruppo " +++ anchor !
-						[href "http://googlegroups.com/group/tarogas"] << " tarogas ") +++
+						<< ("Amministrazione economica del gruppo d'acquisto" +++ anchor !
+						[href "http://googlegroups.com/group/tarogas"] << bold << " tarogas ") +++
 				 		(thediv ! [theclass "reset"] 
 							<< anchor ! [href "/reset"] << "annulla la sessione"
 						)

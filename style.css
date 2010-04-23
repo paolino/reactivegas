@@ -52,7 +52,7 @@ a:link.menu {color:#3399dd;text-decoration:none;}
 a:visited.menu {color:#3399dd;text-decoration:none;}
 a:hover.menu {background-color: #f3d3f3;}
 
-body {background-color:#fefffe}
+body {background-color:#eeffee}
 
 
 div.testata {
@@ -60,71 +60,68 @@ div.testata {
 	float: clear;
 	height : 3em;
 	width:900px;
-	background-color: #eeffee;
+	background-color: #66ffee;
 	}
 div.titolo {margin:5px;
 	font: 16pt sans-serif;
 	float:left;
 	}
-<<<<<<< HEAD:style.css
 div.reset {margin:15px;float :right;}
-=======
-div.reset {margin:15px;}
->>>>>>> f5c208a04a679aadd967a0c2fff8bde0b9c7d416:style.css
 
 div.dimensione1 {
 	position: absolute;
 	top :50px;
-	left :0px;
-	border: 1px solid #999999;
+	left :4px;
+	border: 1px solid #bbbbbb;
 	margin: 2px;
-	background-color: #f5f5f5 ;
-	width:240px;
+	background-color: #f1f1f1 ;
+	width:235px;
 	height:180px;
+	overflow: auto;
 }
 div.dimensione2 {
 	position: absolute;
 	top :50px;
 	left : 241px;
-	border: 1px solid #999999;
+	border: 1px solid #bbbbbb;
 	margin: 2px;
 	background-color: #f1f1f1 ;
-<<<<<<< HEAD:style.css
-	width:655px;
-=======
-	width:650px;
->>>>>>> f5c208a04a679aadd967a0c2fff8bde0b9c7d416:style.css
-	height:245px;
+	width:660px;
+	height:255px;
+	overflow: auto;
 }
 div.dimensione3 {
 	position: absolute;
-	top : 296px;
+	top : 306px;
 	left : 241px;
-	border: 1px solid #999999;
+	border: 1px solid #bbbbbb;
 	margin: 2px;
-	background-color: #f5f5f5 ;
-	width:655px;
-	height:300px;
+	background-color: #f1f1f1 ;
+	width:660px;
+	height:290px;
+	overflow:auto;
 }
 div.dimensione4 {
 	position: absolute;
 	top : 231px;
-	left : 0px;
-	border: 1px solid #999999;
+	left : 4px;
+	border: 1px solid #bbbbbb;
 	margin: 2px;
-	background-color: #f5f5f5 ;
-	width:240px;
-	height:180px;
+	background-color: #f1f1f1 ;
+	width:235px;
+	height:230px;
+	overflow: auto;
 }
 div.dimensione5 {
 	position: absolute;
-	top : 412px;
-	left : 0px;
-	border: 1px solid #999999;
+	top : 462px;
+	left : 4px;
+	border: 1px solid #bbbbbb;
 	margin: 2px;
-	background-color: #f5f5f5 ;
-	width:240px;
-	height:180px;
+	background-color: #f1f1f1 ;
+	width:235px;
+	height:134px;
+	overflow: auto;
 }
 
 dt {color: green;}
@@ -161,7 +158,7 @@ div.menu ul {background-color:#efefef ;
 }
 dt {	color: green;
 
-	border: 1px dotted #999999;
+	border: 1px dotted #bbbbbb;
 
 	background:#dddddd;
 	}
@@ -169,7 +166,7 @@ input.continua {
  float:right;}
 li.menu {display:inline;}
 
-div.utente {margin:5px;overflow:auto;height:auto;float:clear;}
-div.pedata {margin:5px;position:absolute;top:600px;float:clear;font: 8pt sans-serif;height:3em;background-color:#eeffee}
-div.pedata ul {margin:5px;float:right;}
+div.utente {margin:5px;overflow:auto;float:clear;}
+div.pedata  {margin:5px;position:absolute;top:600px;width:900px;background-color: #66ffee;}
+div.pedata ul {float:right;font: 8pt sans-serif;height:3em;}
 

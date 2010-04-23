@@ -70,7 +70,7 @@ accesso = do
 				sel $ ($es) . writeEventi . snd
 			Nothing -> sel $ ($ []) . writeEventi . snd
 	(rs,_) <- responsabili . fst <$> statoPersistenza 
-	mano "responsabile autore" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
+	mano "responsabile autore delle dichiarazioni" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
 
 onAccesso k = sel (readAccesso . snd) >>= maybe (accesso >> onAccesso k) k 
 
@@ -105,9 +105,10 @@ creaChiavi = do
 	us <- utenti <$> fst <$> statoSessione
 	(rs,rs') <- responsabili <$> fst <$> statoSessione
 	let es = us \\ (map fst $ rs ++ rs')
-	u <- P.scelte  (zip es es) "nomignolo dell'utente pr il quale creare le chiavi"
-	p <- P.libero $ "la password per le chiavi di " ++ u ++ ", una frase , lunga almeno 12 caratteri"
-	P.download (u ++ ".chiavi") (u,cryptobox p)
+	if null es then P.errore $ ResponseOne "nessun utente senza chiavi" else do
+		u <- P.scelte  (zip es es) "nomignolo dell'utente pr il quale creare le chiavi"
+		p <- P.libero $ "la password per le chiavi di " ++ u ++ ", una frase , lunga almeno 12 caratteri"
+		P.download (u ++ ".chiavi") (u,cryptobox p)
 
 wrapCostrActions 	
 	:: (a -> Interfaccia ()) 
@@ -120,7 +121,7 @@ wrapCostrActions g = concatMap (\f -> f q g bocciato) where
 
 
 interrogazioni :: Interfaccia ()
-interrogazioni = mano "interrogazioni sulla conoscenza del gruppo" $ (wrapCostrActions P.output $ [
+interrogazioni = mano "interrogazioni sullo stato del gruppo" $ (wrapCostrActions P.output $ [
 		costrQueryAnagrafe,
 		costrQueryAccredito,
 		costrQueryAcquisto,
@@ -178,6 +179,19 @@ dichiarazioni = concat $
 			,costrEventiResponsabili
 			]
 		,wrapCostrActions addEvento [costrEventiAssenso]
+
+		,	[("----------",return ())
+			,("pubblica le dichiarazioni in sessione",salvataggio)
+			,("responsabile autore delle dichiarazioni", accesso >> return ())
+			,("elimina delle dichiarazioni",eliminazioneEvento)
+			,("regola il livello di caricamento dichiarazioni", do 
+						rs <- eventLevelSelector 
+						case rs of 
+							Nothing -> P.errore $ ResponseOne "nessuna dichiarazione da caricare"
+							Just rs -> do 
+								r <- P.scelte rs "livello di caricamento"	
+								sel (($r). setConservative . snd))
+			]
 
 		]
 
@@ -242,20 +256,7 @@ applicazione = rotonda $ \_ -> do
 					P.output . Response $ 
 						[("effetto delle nuove dichiarazioni",  c)]),
 
-				("crea una nuova dichiarazione",onAccesso . const $ mano "crea una nuova dichiarazione" dichiarazioni),
-				("gestione dichiarazioni" , onAccesso . const $ mano "gestione dichiarazioni" $ 
-					[
-					("pubblica le dichiarazioni in sessione",salvataggio)
-					,("elimina delle dichiarazioni",eliminazioneEvento)
-					,("responsabile autore", accesso >> return ())
-					,("regola il livello di caricamento dichiarazioni", do 
-						rs <- eventLevelSelector 
-						case rs of 
-							Nothing -> P.errore $ ResponseOne "nessuna dichiarazione da caricare"
-							Just rs -> do 
-								r <- P.scelte rs "livello di caricamento"	
-								sel (($r). setConservative . snd))
-					]),
+				("gestione dichiarazioni" , onAccesso . const $ mano "gestione dichiarazioni" $ dichiarazioni), 
 				("descrizione sessione", do
 					r <- sel $ readAccesso . snd
 					evs <- sel $ readEventi . snd
@@ -268,14 +269,14 @@ applicazione = rotonda $ \_ -> do
 								Just (_,_,es) -> es
 							
 					P.output . Response $ 
-						[("responsabile autore delle dichiarazioni in sessione" , ResponseOne $ case r of 
+						[("responsabile della sessione" , ResponseOne $ case r of 
 							Nothing -> "anonimo"
 							Just (u,_) -> u)
 						,("dichiarazioni in sessione" , ResponseMany $ map ResponseOne (sortEventi evs))
 						,("dichiarazioni pubblicate", ResponseMany $ map ResponseOne (sortEventi evsp))
 						]
 					),
-				("interrogazione della conoscenza", interrogazioni),
+				("interrogazione sullo stato del gruppo", interrogazioni),
 				("amministrazione",amministrazione)
 				]
 
