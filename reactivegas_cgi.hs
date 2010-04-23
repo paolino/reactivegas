@@ -21,10 +21,8 @@ import Debug.Trace
 
 layout = 	[(["gestione dichiarazioni"],1)
 		,(["crea una nuova dichiarazione"],2)
-		,(["descrizione sessione"],2)
-		,(["effetto delle dichiarazioni"],5)
-		,(["interrogazione della conoscenza"],2)
-		,([],2)
+		,(["descrizione sessione"],4)
+		,(["effetto delle dichiarazioni"],3)
 		]
 pagina b = output . prettyHtml $  
 		header << (thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml 

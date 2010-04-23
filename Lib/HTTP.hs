@@ -23,7 +23,7 @@ data Link = Link 	{nomelink :: String
 			,mime :: String
 			}
 
-
+{-
 internalmenu y z  = let 
 	in	thediv ! [theclass "menu"] << ulist << (	
 				li ! [theclass "menu"] 
@@ -43,7 +43,8 @@ internalmenu y z  = let
 					<< anchor ! [theclass "menu", href $ mkLink "/menu" [("hkey",y),("fkey",z),("valore","chiudi")]] 
 					<< "chiudi" 
 				)	 
-
+-}
+internalmenu _ _ = noHtml 
 renderResponse k x = thediv ! [theclass k] << renderResponse' x where
 	renderResponse' x@(ResponseOne y) =  case typeOf y == typeOf noHtml of
 			False -> thediv << (show x)

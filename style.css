@@ -68,39 +68,53 @@ div.titolo {margin:5px;
 div.reset {margin:5px;float:right;}
 
 div.dimensione1 {
+	position: absolute;
+	top :50px;
+	left :0px;
 	border: 1px dotted #dddddd;
 	margin: 2px;
 	background-color: #f5f5f5 ;
-	float:left;
-	width:24em;
+	width:240px;
+	height:245px;
 }
 div.dimensione2 {
+	position: absolute;
+	top :50px;
+	left : 245px;
 	border: 1px dotted #dddddd;
 	margin: 2px;
 	background-color: #f1f1f1 ;
-	float:left;
-	width:44em;
+	width:640px;
+	height:245px;
 }
 div.dimensione3 {
+	position: absolute;
+	top : 300px;
+	left : 0px;
 	border: 1px dotted #dddddd;
 	margin: 2px;
 	background-color: #f5f5f5 ;
-	float:left;
-	width:60em;
+	width:640px;
+	height:300px;
 }
 div.dimensione4 {
+	position: absolute;
+	top : 300px;
+	left : 645px;
 	border: 1px dotted #dddddd;
 	margin: 2px;
 	background-color: #f5f5f5 ;
-	float:left;
-	width:72em;
+	width:250px;
+	height:300px;
 }
 div.dimensione5 {
+	position: absolute;
+	top : 550px;
+	left : 200px;
 	border: 1px dotted #dddddd;
 	margin: 2px;
 	background-color: #f5f5f5 ;
-	float:left;
-	width:82em;
+	width:250px;
 }
 
 dt {color: green;}
@@ -123,7 +137,6 @@ dl dd {
 dd dt {
 	text-indent:2em;		}
 div.passobox {
-	height:20em;
 	margin:3px;
 	overflow:auto;
 	}
