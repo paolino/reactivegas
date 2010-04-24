@@ -44,15 +44,11 @@ blockquote, q {
 }
 
 
-a:link {color:#0066aa;text-decoration:none;}
-a:visited {color:#0066aa;text-decoration:none;}
-a:hover {background-color: #f3d3f3;}
+a:link {color:#558;text-decoration:none;}
+a:visited {color:#558;text-decoration:none;}
+a:hover {background-color: #ccd;}
 
-a:link.menu {color:#3399dd;text-decoration:none;}
-a:visited.menu {color:#3399dd;text-decoration:none;}
-a:hover.menu {background-color: #f3d3f3;}
 
-body {background-color:#eeffee}
 
 
 div.testata {
@@ -62,13 +58,13 @@ div.testata {
 	float: clear;
 	height : 43px;
 	width:897px;
-	border: 1px solid #bbb;
+	border: 1px solid #ccc;
 	background-color: #dde;
 	}
 div.titolo {margin:10px;
 	font: 16pt sans-serif;
 	float:left;
-	color:#456;
+	color:#555;
 	}
 div.reset {margin:15px;border : 1px solid #22ddee ; background : #66ddee;float :right;}
 
@@ -76,7 +72,7 @@ div.dimensione1 {
 	position: absolute;
 	top :50px;
 	left :4px;
-	border: 1px solid #bbbbbb;
+	border: 1px solid #cccccc;
 	margin: 2px;
 	background-color: #f1f1f1 ;
 	width:235px;
@@ -87,7 +83,7 @@ div.dimensione2 {
 	position: absolute;
 	top :50px;
 	left : 240px;
-	border: 1px solid #bbbbbb;
+	border: 1px solid #cccccc;
 	margin: 2px;
 	background-color: #f1f1f1 ;
 	width:661px;
@@ -98,7 +94,7 @@ div.dimensione3 {
 	position: absolute;
 	top : 309px;
 	left : 240px;
-	border: 1px solid #bbbbbb;
+	border: 1px solid #cccccc;
 	margin: 2px;
 	background-color: #f1f1f1 ;
 	width:661px;
@@ -109,7 +105,7 @@ div.dimensione4 {
 	position: absolute;
 	top : 231px;
 	left : 4px;
-	border: 1px solid #bbb;
+	border: 1px solid #ccc;
 	margin: 2px;
 	background-color: #f1f1f1 ;
 	width:235px;
@@ -120,7 +116,7 @@ div.dimensione5 {
 	position: absolute;
 	top : 462px;
 	left : 4px;
-	border: 1px solid #bbbbbb;
+	border: 1px solid #cccccc;
 	margin: 2px;
 	background-color: #f1f1f1 ;
 	width:235px;
@@ -129,18 +125,19 @@ div.dimensione5 {
 }
 
 dt {color: green;}
-dl {color:#456;}
+dl {color:#555;}
 
 input.continua {
 	float:right;
 	font: 8pt sans-serif;
+	color:#888
 	}
 
 input#valore {font: 8pt sans-serif;
 	}
 
 div.response {	
-	color: Red;
+	color: #855;
 	background:#f1f1f1;
 	border-bottom: 1px solid #e5e5e5;
 	overflow:auto;
@@ -156,16 +153,16 @@ div.passobox {
 	overflow:auto;
 	}
 
-li.scelta {height:13px;overflow:hidden;}
-li.responso {height:13px;overflow:hidden;}
+li.scelta {height:14px;overflow:hidden;}
+li.responso {height:14px;overflow:hidden;}
 
-dt {	color: green;
+dt {	color: #585;
 	border-bottom: 1px solid #e5e5e5;
 	background:#f1f1f1;
 	}
 
 div.utente {margin:5px;overflow:auto;float:clear;}
-div.pedata  {border : 1px solid #bbb ;margin:2px;position:absolute;top:598px;left : 4px; width:897px
-	;background-color: #dde;}
+div.pedata  {border : 1px solid #ccc ;margin:2px;position:absolute;top:598px;left : 4px; width:897px
+	;background-color: #dde;color:#666;}
 div.pedata ul {margin: 5px;float:right;font: 8pt sans-serif;height:27px;}
 
