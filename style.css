@@ -65,9 +65,10 @@ div.testata {
 	border: 1px solid #bbb;
 	background-color: #dde;
 	}
-div.titolo {margin:5px;
+div.titolo {margin:10px;
 	font: 16pt sans-serif;
 	float:left;
+	color:#456;
 	}
 div.reset {margin:15px;border : 1px solid #22ddee ; background : #66ddee;float :right;}
 
@@ -90,12 +91,12 @@ div.dimensione2 {
 	margin: 2px;
 	background-color: #f1f1f1 ;
 	width:661px;
-	height:255px;
+	height:258px;
 	overflow: auto;
 }
 div.dimensione3 {
 	position: absolute;
-	top : 306px;
+	top : 309px;
 	left : 240px;
 	border: 1px solid #bbbbbb;
 	margin: 2px;
@@ -108,7 +109,7 @@ div.dimensione4 {
 	position: absolute;
 	top : 231px;
 	left : 4px;
-	border: 1px solid #bbbbbb;
+	border: 1px solid #bbb;
 	margin: 2px;
 	background-color: #f1f1f1 ;
 	width:235px;
@@ -128,6 +129,7 @@ div.dimensione5 {
 }
 
 dt {color: green;}
+dl {color:#456;}
 
 input.continua {
 	float:right;
@@ -139,35 +141,28 @@ input#valore {font: 8pt sans-serif;
 
 div.response {	
 	color: Red;
-	border: 1px solid #cdd;
-	background:#dee;
-	overflow:auto;}
+	background:#f1f1f1;
+	border-bottom: 1px solid #e5e5e5;
+	overflow:auto;
+	}
 dl dd {
-	text-indent:1em; 
+	text-indent:5px; 
 	}
 dd dt {
-	text-indent:2em;		}
+	text-indent:5px;		
+	}
 div.passobox {
 	margin:3px;
 	overflow:auto;
 	}
 
-li.scelta {height:1.3em;overflow:hidden;}
-li.responso {height:1.3em;overflow:hidden;}
-/*div.passobox ul li  a {width:20em}*/
-div.menu {height:1.5em;margin:1px;}
-div.menu ul {background-color:#efefef ;
-	float:right;
-}
+li.scelta {height:13px;overflow:hidden;}
+li.responso {height:13px;overflow:hidden;}
+
 dt {	color: green;
-
-	border: 1px solid #cdd;
-
-	background:#dee;
+	border-bottom: 1px solid #e5e5e5;
+	background:#f1f1f1;
 	}
-input.continua {
- float:right;}
-li.menu {display:inline;}
 
 div.utente {margin:5px;overflow:auto;float:clear;}
 div.pedata  {border : 1px solid #bbb ;margin:2px;position:absolute;top:598px;left : 4px; width:897px
