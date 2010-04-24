@@ -135,11 +135,11 @@ aggiornamentiIndividuali = ("esamina gli aggiornamenti individuali presenti", do
 		(u,es) <- P.scelte (map (fst &&& id) ps) "scegli aggiornamento da esaminare" 
 		P.output $ Response [("aggiornamento da parte di " ++ u, ResponseMany $ map ResponseOne (sortEventi es))]
 	)
-eventLevelSelector = do 
+eventLevelSelector = onAccesso $ \(u,_) -> do 
 	us <- sel $ readUPatches . fst
 	(s,_) <- statoPersistenza
 	es' <- letturaEventi
-	let es = levelsEventi . (es' ++) . concatMap snd $ fromUPatches (us,s)
+	let es = levelsEventi . (es' ++) . concatMap snd . filter ((/=) u . fst) $ fromUPatches (us,s)
 	return $ case es of
 		[] -> Nothing  
 		es -> Just $ (const "<nessuno>" *** (subtract 1)) (head es) : es ++ [("<tutti>",100)]
