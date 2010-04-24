@@ -139,8 +139,8 @@ input#valore {font: 8pt sans-serif;
 
 div.response {	
 	color: Red;
-	border: 1px dotted #aaaaaa;
-	background:#dddddd;
+	border: 1px solid #cdd;
+	background:#dee;
 	overflow:auto;}
 dl dd {
 	text-indent:1em; 
@@ -161,9 +161,9 @@ div.menu ul {background-color:#efefef ;
 }
 dt {	color: green;
 
-	border: 1px dotted #bbbbbb;
+	border: 1px solid #cdd;
 
-	background:#dddddd;
+	background:#dee;
 	}
 input.continua {
  float:right;}
