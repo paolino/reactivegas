@@ -46,10 +46,10 @@ blockquote, q {
 
 a:link {color:#558;text-decoration:none;}
 a:visited {color:#558;text-decoration:none;}
-a:hover {background-color: #ccd;}
+a:hover {color:#558;text-decoration:underline;}
 
 
-body {background:#777;}
+body {background:#999;}
 
 div.testata {
 	margin: 2px;
@@ -74,7 +74,7 @@ div.dimensione1 {
 	left :4px;
 	border: 1px solid #cccccc;
 	margin: 2px;
-	background-color: #f1f1f1 ;
+	background-color: #f0f0f0 ;
 	width:235px;
 	height:180px;
 	overflow: auto;
@@ -85,7 +85,7 @@ div.dimensione2 {
 	left : 240px;
 	border: 1px solid #cccccc;
 	margin: 2px;
-	background-color: #f1f1f1 ;
+	background-color: #f0f0f0 ;
 	width:661px;
 	height:258px;
 	overflow: auto;
@@ -96,7 +96,7 @@ div.dimensione3 {
 	left : 240px;
 	border: 1px solid #cccccc;
 	margin: 2px;
-	background-color: #f1f1f1 ;
+	background-color: #f0f0f0 ;
 	width:661px;
 	height:290px;
 	overflow:auto;
@@ -107,7 +107,7 @@ div.dimensione4 {
 	left : 4px;
 	border: 1px solid #ccc;
 	margin: 2px;
-	background-color: #f1f1f1 ;
+	background-color: #f0f0f0 ;
 	width:235px;
 	height:230px;
 	overflow: auto;
@@ -118,13 +118,13 @@ div.dimensione5 {
 	left : 4px;
 	border: 1px solid #cccccc;
 	margin: 2px;
-	background-color: #f1f1f1 ;
+	background-color: #f0f0f0 ;
 	width:235px;
 	height:134px;
 	overflow: auto;
 }
 
-dt {color: green;}
+dt {color: green;font-style:bold;}
 dl {color:#555;}
 
 input.continua {
@@ -137,8 +137,9 @@ input#valore {font: 8pt sans-serif;
 	}
 
 div.response {	
-	color: #855;
-	background:#f1f1f1;
+	color: #755;
+	font-weight:bold;
+	background:#f0f0f0;
 	border-bottom: 1px solid #e5e5e5;
 	overflow:auto;
 	}
@@ -146,7 +147,7 @@ dl dd {
 	text-indent:5px; 
 	}
 dd dt {
-	text-indent:5px;		
+	text-indent:5px;			
 	}
 div.passobox {
 	margin:3px;
@@ -156,9 +157,9 @@ div.passobox {
 li.scelta {height:14px;overflow:hidden;}
 li.responso {height:14px;overflow:hidden;}
 
-dt {	color: #585;
+dt {	color: #575;font-weight:bold;
 	border-bottom: 1px solid #e5e5e5;
-	background:#f1f1f1;
+	background:#f0f0f0;
 	}
 
 div.utente {margin:5px;overflow:auto;float:clear;}

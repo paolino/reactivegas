@@ -228,7 +228,7 @@ amministrazione = do
 
 
 	mano "amministrazione" $ 
-			[("applica tutte le dichiarazioni pubblicate alla conoscenza", sincronizza aggiornamento aggiornamenti)
+			[("digerisci tutte le dichiarazioni pubblicate", sincronizza aggiornamento aggiornamenti)
 			,("scarica nuove chiavi da responsabile", creaChiavi)
 			,("porta sul retro", mano "porta sul retro" 
 
