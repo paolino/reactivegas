@@ -56,17 +56,20 @@ body {background-color:#eeffee}
 
 
 div.testata {
-	margin: 5px;
+	margin: 2px;
+	position : absolute;
+	left : 4px;
 	float: clear;
-	height : 3em;
-	width:900px;
-	background-color: #66ffee;
+	height : 43px;
+	width:897px;
+	border: 1px solid #bbb;
+	background-color: #dde;
 	}
 div.titolo {margin:5px;
 	font: 16pt sans-serif;
 	float:left;
 	}
-div.reset {margin:15px;float :right;}
+div.reset {margin:15px;border : 1px solid #22ddee ; background : #66ddee;float :right;}
 
 div.dimensione1 {
 	position: absolute;
@@ -82,22 +85,22 @@ div.dimensione1 {
 div.dimensione2 {
 	position: absolute;
 	top :50px;
-	left : 241px;
+	left : 240px;
 	border: 1px solid #bbbbbb;
 	margin: 2px;
 	background-color: #f1f1f1 ;
-	width:660px;
+	width:661px;
 	height:255px;
 	overflow: auto;
 }
 div.dimensione3 {
 	position: absolute;
 	top : 306px;
-	left : 241px;
+	left : 240px;
 	border: 1px solid #bbbbbb;
 	margin: 2px;
 	background-color: #f1f1f1 ;
-	width:660px;
+	width:661px;
 	height:290px;
 	overflow:auto;
 }
@@ -167,6 +170,7 @@ input.continua {
 li.menu {display:inline;}
 
 div.utente {margin:5px;overflow:auto;float:clear;}
-div.pedata  {margin:5px;position:absolute;top:600px;width:900px;background-color: #66ffee;}
-div.pedata ul {float:right;font: 8pt sans-serif;height:3em;}
+div.pedata  {border : 1px solid #bbb ;margin:2px;position:absolute;top:598px;left : 4px; width:897px
+	;background-color: #dde;}
+div.pedata ul {margin: 5px;float:right;font: 8pt sans-serif;height:27px;}
 
