@@ -55,5 +55,5 @@ main = do
 	forkIO . forever $ atomically (readTChan c)
 	(gs,modif,agg) <- mkGroupSystem loader caricamento' nuovoStato c "tarogas" 
 	pe <- startGroupSystem 10000000 gs
-	sessionServer 5000 100  applicazione pagina layout ((,) pe <$> mkSessione modif 100 agg) 
+	sessionServer 5000 10 applicazione pagina layout ((,) pe <$> mkSessione modif 30 agg) 
 	
