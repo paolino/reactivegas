@@ -16,6 +16,7 @@ import Lib.Aspetti ((.<), ParteDi,see)
 import Lib.Prioriti (R(..))
 import Lib.Assocs (update,elimina,assente)
 import Lib.Response (Response (..))
+import Lib.QInteger (QInteger)
 
 import Core.Costruzione (libero, scelte , CostrAction, runSupporto)
 import Core.Parsing (Parser)
@@ -26,7 +27,7 @@ import Eventi.Anagrafe (Utente,validante,programmazioneAssenso,maggioranza)
 import Eventi.Accredito (salda)
 import Eventi.Impegno (programmazioneImpegno')
 
-type Indice = Integer
+type Indice = QInteger
 data EsternoAcquisto = AperturaAcquisto String deriving (Read,Show) 
 priorityAcquisto = R k  where
 	k (AperturaAcquisto _) = -28 

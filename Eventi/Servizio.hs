@@ -25,7 +25,9 @@ import Core.Programmazione (Inserzione)
 import Lib.Aspetti ((.<),ParteDi,see)
 import Lib.Assocs (assente,(?),updateM,elimina)
 import Lib.Firmabile (hash,hashOver)
-data (Read a,Show a) => Servizio a = Servizio {sottostato :: [(Integer,(String,a))]} deriving 
+import Lib.QInteger 
+
+data (Read a,Show a) => Servizio a = Servizio {sottostato :: [(QInteger,(String,a))]} deriving 
 	(Show, Read)
 
 servizio0 :: (Show a, Read a) => Servizio a
@@ -36,18 +38,18 @@ servizio0 = Servizio []
 nuovoStatoServizio :: (ParteDi (Servizio a) s, Read a, Show a, Integer `ParteDi` s) 
 	=> a 
 	-> String 
-	-> MTInserzione s c d Integer
+	-> MTInserzione s c d QInteger
 nuovoStatoServizio s q = do
 	Servizio ls <- osserva
 	n <- osserva
-	let p = n + (BL.foldr (\x y -> 256 * y + fromIntegral (ord x)) 0 . hash $ q)
+	let p = makeQInteger $ n + (BL.foldr (\x y -> 256 * y + fromIntegral (ord x)) 0 . hash $ q)
 	modifica $ \_ -> Servizio ((p,(q,s)):ls)
 	logga $ "riferimento " ++ show p
 	return p
 
 -- | controlla la presenza di una chiave presso il servizio di tipo a, in caso di successo restituisce il servizio
 servizioPresente :: (ParteDi (Servizio a) s, Read a, Show a) 
-	=> Integer 
+	=> QInteger 
 	-> MTInserzione s c d (Servizio a)
 servizioPresente j = do
 	s@(Servizio ls) <- osserva  
@@ -62,7 +64,7 @@ osservaStatoServizio j = do
 
 -- | modifica il valore del servizio di tipo a indicizzato dalla chiave passata
 modificaStatoServizio :: (ParteDi (Servizio a) s, Read a, Show a) 
-	=> Integer 
+	=> QInteger 
 	-> (a ->  MTInserzione s c d a) 
 	-> MTInserzione s c d ()
 
@@ -75,14 +77,14 @@ modificaStatoServizio j f = do
 eliminaStatoServizio :: forall a s c d. (ParteDi (Servizio a) s,
                         Show a,Read a
                         ) =>
-                       Integer -> a -> MTInserzione s c d ()
+                       QInteger -> a -> MTInserzione s c d ()
 eliminaStatoServizio j proxy = do
 	Servizio ls <- servizioPresente j :: MTInserzione s c d (Servizio a)
 	modifica $ \_ -> Servizio (elimina j ls)
 
 -- | restituisce la lista di associazione (chiave, descrizione) degli stati presenti
 elencoSottoStati :: (ParteDi (Servizio a) s, Show a,Read a) 
-	=> s -> [(Integer,(String,a))]
+	=> s -> [(QInteger,(String,a))]
 elencoSottoStati = sottostato . see
 
 
