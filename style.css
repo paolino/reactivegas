@@ -44,37 +44,37 @@ blockquote, q {
 }
 
 
-a:link {color:#0066aa;text-decoration:none;}
-a:visited {color:#0066aa;text-decoration:none;}
-a:hover {background-color: #f3d3f3;}
+a:link {color:#558;text-decoration:none;}
+a:visited {color:#558;text-decoration:none;}
+a:hover {color:#558;text-decoration:underline;}
 
-a:link.menu {color:#3399dd;text-decoration:none;}
-a:visited.menu {color:#3399dd;text-decoration:none;}
-a:hover.menu {background-color: #f3d3f3;}
 
-body {background-color:#eeffee}
-
+body {background:#999;}
 
 div.testata {
-	margin: 5px;
+	margin: 2px;
+	position : absolute;
+	left : 4px;
 	float: clear;
-	height : 3em;
-	width:900px;
-	background-color: #66ffee;
+	height : 43px;
+	width:897px;
+	border: 1px solid #ccc;
+	background-color: #dde;
 	}
-div.titolo {margin:5px;
+div.titolo {margin:10px;
 	font: 16pt sans-serif;
 	float:left;
+	color:#555;
 	}
-div.reset {margin:15px;float :right;}
+div.reset {margin:15px;border : 1px solid #22ddee ; background : #66ddee;float :right;}
 
 div.dimensione1 {
 	position: absolute;
 	top :50px;
 	left :4px;
-	border: 1px solid #bbbbbb;
+	border: 1px solid #cccccc;
 	margin: 2px;
-	background-color: #f1f1f1 ;
+	background-color: #f0f0f0 ;
 	width:235px;
 	height:180px;
 	overflow: auto;
@@ -82,22 +82,22 @@ div.dimensione1 {
 div.dimensione2 {
 	position: absolute;
 	top :50px;
-	left : 241px;
-	border: 1px solid #bbbbbb;
+	left : 240px;
+	border: 1px solid #cccccc;
 	margin: 2px;
-	background-color: #f1f1f1 ;
-	width:660px;
-	height:255px;
+	background-color: #f0f0f0 ;
+	width:661px;
+	height:258px;
 	overflow: auto;
 }
 div.dimensione3 {
 	position: absolute;
-	top : 306px;
-	left : 241px;
-	border: 1px solid #bbbbbb;
+	top : 309px;
+	left : 240px;
+	border: 1px solid #cccccc;
 	margin: 2px;
-	background-color: #f1f1f1 ;
-	width:660px;
+	background-color: #f0f0f0 ;
+	width:661px;
 	height:290px;
 	overflow:auto;
 }
@@ -105,9 +105,9 @@ div.dimensione4 {
 	position: absolute;
 	top : 231px;
 	left : 4px;
-	border: 1px solid #bbbbbb;
+	border: 1px solid #ccc;
 	margin: 2px;
-	background-color: #f1f1f1 ;
+	background-color: #f0f0f0 ;
 	width:235px;
 	height:230px;
 	overflow: auto;
@@ -116,57 +116,54 @@ div.dimensione5 {
 	position: absolute;
 	top : 462px;
 	left : 4px;
-	border: 1px solid #bbbbbb;
+	border: 1px solid #cccccc;
 	margin: 2px;
-	background-color: #f1f1f1 ;
+	background-color: #f0f0f0 ;
 	width:235px;
 	height:134px;
 	overflow: auto;
 }
 
-dt {color: green;}
+dt {color: green;font-style:bold;}
+dl {color:#555;}
 
 input.continua {
 	float:right;
 	font: 8pt sans-serif;
+	color:#888
 	}
 
 input#valore {font: 8pt sans-serif;
 	}
 
 div.response {	
-	color: Red;
-	border: 1px dotted #aaaaaa;
-	background:#dddddd;
-	overflow:auto;}
+	color: #755;
+	font-weight:bold;
+	background:#f0f0f0;
+	border-bottom: 1px solid #e5e5e5;
+	overflow:auto;
+	}
 dl dd {
-	text-indent:1em; 
+	text-indent:5px; 
 	}
 dd dt {
-	text-indent:2em;		}
+	text-indent:5px;			
+	}
 div.passobox {
 	margin:3px;
 	overflow:auto;
 	}
 
-li.scelta {height:1.3em;overflow:hidden;}
-li.responso {height:1.3em;overflow:hidden;}
-/*div.passobox ul li  a {width:20em}*/
-div.menu {height:1.5em;margin:1px;}
-div.menu ul {background-color:#efefef ;
-	float:right;
-}
-dt {	color: green;
+li.scelta {height:14px;overflow:hidden;}
+li.responso {height:14px;overflow:hidden;}
 
-	border: 1px dotted #bbbbbb;
-
-	background:#dddddd;
+dt {	color: #575;font-weight:bold;
+	border-bottom: 1px solid #e5e5e5;
+	background:#f0f0f0;
 	}
-input.continua {
- float:right;}
-li.menu {display:inline;}
 
 div.utente {margin:5px;overflow:auto;float:clear;}
-div.pedata  {margin:5px;position:absolute;top:600px;width:900px;background-color: #66ffee;}
-div.pedata ul {float:right;font: 8pt sans-serif;height:3em;}
+div.pedata  {border : 1px solid #ccc ;margin:2px;position:absolute;top:598px;left : 4px; width:897px
+	;background-color: #dde;color:#666;}
+div.pedata ul {margin: 5px;float:right;font: 8pt sans-serif;height:27px;}
 
