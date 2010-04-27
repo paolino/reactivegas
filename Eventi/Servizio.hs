@@ -40,7 +40,7 @@ nuovoStatoServizio :: (ParteDi (Servizio a) s, Read a, Show a, Integer `ParteDi`
 nuovoStatoServizio s q = do
 	Servizio ls <- osserva
 	n <- osserva
-	let p = n + (BL.foldr (\x y -> 256 * y + fromIntegral (ord x)) 0 . hash $ q)
+	let p = (n + (BL.foldr (\x y -> 256 * y + fromIntegral (ord x)) 0 . hash $ q)) `mod` 1000000
 	modifica $ \_ -> Servizio ((p,(q,s)):ls)
 	logga $ "riferimento " ++ show p
 	return p
