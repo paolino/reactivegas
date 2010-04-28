@@ -80,12 +80,13 @@ reazioneAcquisto = soloEsterna reattoreAcquisto where
 					compl Nothing
 					logga $ "acquisto  " ++ b ++ " chiuso negativamente"
 					return nessunEffetto
+-- 
 		(li,fi,zi) <- programmazioneImpegno' ("l'acquisto " ++ b) r t (concesso <$> acquisto b)
 		-- definizione completamenti raccolta di assenso
 		let 	positivo _ = do
 				a <- concedi b
 				modifica $ \(StatoAcquisti cs as)  -> StatoAcquisti cs (a: filter (not . nominato b) as)
-				logga $ "concessa la chiusura dell'acquisto " ++ b
+				logga $ "concessa la chiusura dell'acquisto " ++ b -- esegui la marcatura ottenuta da programmazione impegno
 				return nessunEffetto
 			negativo _ = do
 				logga $ "negata la chiusura dell'acquisto, acquisto fallito " ++ b
