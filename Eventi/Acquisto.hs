@@ -82,20 +82,21 @@ reazioneAcquisto = soloEsterna reattoreAcquisto where
 					compl Nothing
 					logga $ "acquisto  " ++ b ++ " chiuso negativamente"
 					return nessunEffetto
+-- 
 		(li,fi,zi) <- programmazioneImpegno' ("l'acquisto " ++ b) r t (concesso <$> acquisto b)
 		-- definizione completamenti raccolta di assenso
 		let 	positivo _ = do
 				a <- concedi b
 				modifica $ \(StatoAcquisti cs as)  -> StatoAcquisti cs (a: filter (not . nominato b) as)
-				logga $ "concessa la chiusura dell'acquisto " ++ b
+				logga $ "concessa la chiusura dell'acquisto " ++ b -- esegui la marcatura ottenuta da programmazione impegno
 				return nessunEffetto
 			negativo _ = do
 				logga $ "negata la chiusura dell'acquisto, acquisto fallito " ++ b
 				fi
-		(la,za) <- programmazioneAssenso ("nuova proposta di acquisto " ++ b) r maggioranza  positivo negativo
+		(la,za,esf) <- programmazioneAssenso ("nuova proposta di acquisto " ++ b) r maggioranza  positivo negativo
 
 		modifica $ \(StatoAcquisti cs as) -> StatoAcquisti cs (Acquisto b False li la : as)
-		return (True, ([za, zi],[]))
+		return (True, ([za, zi esf],[]))
 
 costrEventiAcquisto :: (Monad m, StatoAcquisti `ParteDi` s) => CostrAction m c EsternoAcquisto s
 costrEventiAcquisto s kp kn  = [("nuova proposta di acquisto", eventoApertura)] 

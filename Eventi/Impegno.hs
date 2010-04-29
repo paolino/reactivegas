@@ -89,7 +89,7 @@ programmazioneImpegno' :: (
 	-> Utente 	-- ^ l'utente responsabile dell'impegno
 	-> (Maybe ([(Utente, Float)]) -> MTInserzione s c Utente (Effetti s c Utente))
 	-> MTInserzione s c Utente Bool
-	-> MTInserzione s c Utente (Indice, MTInserzione s c Utente (Effetti s c Utente), Reazione s c Utente)
+	-> MTInserzione s c Utente (Indice, MTInserzione s c Utente (Effetti s c Utente), MTInserzione s c Utente () -> Reazione s c Utente)
 
 programmazioneImpegno' q ur k ch = do
 	l <- nuovoStatoServizio (Impegni ur [] []) (ur ++ ", " ++ q)
@@ -100,7 +100,7 @@ programmazioneImpegno' q ur k ch = do
 			(ks,es) <- k Nothing 
 			return (ks,EventoInterno (EventoFallimentoImpegno (ur,sum (map snd (as ++ is)))): es)
 
-		reattoreImpegno (Right (first validante ->  (w,Impegno u v j))) = w $ \r -> let
+		reattoreImpegno _ (Right (first validante ->  (w,Impegno u v j))) = w $ \r -> let
 			positivo _ = do
 				logga $ "accettato l'impegno di " ++ show v ++ " euro da " ++ u ++ " per " ++ q 
 				modificaStatoServizio j $ \(Impegni ur as is) -> return 
@@ -121,7 +121,7 @@ programmazioneImpegno' q ur k ch = do
 					("impegno di " ++ show v ++ " euro da " ++ u ++ " per " ++ q)
 					r ur positivo negativo
 				return (True, ([reaz],[]))   
-		reattoreImpegno  (Right (first validante -> (w,FineImpegno j))) = w $ \r -> do
+		reattoreImpegno _ (Right (first validante -> (w,FineImpegno j))) = w $ \r -> do
 			when (l /= j) mzero
 			y <- ch
 			fallimento (not y) $ "la chiusura non è stata concessa per " ++ q
@@ -130,16 +130,18 @@ programmazioneImpegno' q ur k ch = do
 			mapM_ (\(u,v) -> accredita u v) is -- restituzione del denaro degli impegni non accettati
 			eliminaStatoServizio j (undefined :: Impegni)
 			(,) False <$> k (Just as) 
-		reattoreImpegno (Right (first validante -> (w,FallimentoImpegno j))) = w $ \r -> do
+		reattoreImpegno esf (Right (first validante -> (w,FallimentoImpegno j))) = w $ \r -> do
 			when (l /= j) mzero
 			fallimento (ur /= r) $ "solo " ++ ur ++ " può chiudere la raccolta di impegni per " ++ q
+			esf
 			(,) False <$> effettoF j
-		reattoreImpegno (Left (eliminazioneResponsabile -> Just (u,_))) = conFallimento $ do
+		reattoreImpegno esf (Left (eliminazioneResponsabile -> Just (u,_))) = conFallimento $ do
 			when (ur /= u) mzero
+			esf
 			(,) False <$> effettoF l
-		reattoreImpegno  (Left _) = return Nothing
+		reattoreImpegno  _ (Left _) = return Nothing
 	logga $ "raccolta di impegni per " ++ q ++ " aperta"	
-	return (l,effettoF l,Reazione (Nothing,reattoreImpegno))
+	return $ (l,effettoF l,\esf -> Reazione (Nothing,reattoreImpegno esf))
 
 type ChiudiProgrammazioneImpegno s c = (Maybe ([(Utente, Float)]) -> MTInserzione s c Utente (Effetti s c Utente))
 programmazioneImpegno :: (
