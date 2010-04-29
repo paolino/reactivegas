@@ -44,6 +44,7 @@ import Core.Types (Message)
 import Core.Costruzione (Supporto,libero,upload,scelte,runSupporto,CostrAction)
 import Core.Parsing (ParserConRead, Parser)
 import Lib.Firmabile (Segreto, Chiave)
+import Lib.QInteger 
 
 import Eventi.Servizio 
 
@@ -52,7 +53,7 @@ deriving instance Read PublicKey
 
 -- | chiave pubblica di un responsabile
 -- type Segreto = 
-type Indice = Integer
+type Indice = QInteger
 -- | nome di un utente
 type Utente = String
 
@@ -85,7 +86,7 @@ responsabili = (\(Responsabili es is) -> (es, map snd is)) . see
 priorityAnagrafe = R k where
 	k (NuovoUtente _) = -40
 	k (EliminazioneResponsabile _) = -38
-	k (ElezioneResponsabile _) = -39
+	k (ElezioneResponsabile _ _ _) = -39
 	
 priorityAnagrafeI = R k where
 	k (EventoEliminazioneResponsabile _ _) = 20
@@ -93,7 +94,7 @@ priorityAnagrafeI = R k where
 -- | eventi provenienti dall'esterno
 data EsternoAnagrafico 
 	= NuovoUtente String -- ^ inserimento di un nuovo utente 
-	| ElezioneResponsabile Responsabile -- ^ richiesta di promozione a responsabile per un utente
+	| ElezioneResponsabile Utente Chiave Segreto  -- ^ richiesta di promozione a responsabile per un utente
 	| EliminazioneResponsabile String -- ^ richiesta di dimissioni da responsabile per un responsabile
 	deriving (Read,Show)
 
@@ -137,23 +138,24 @@ reazioneAnagrafe = soloEsterna reattoreAnagrafe' where
 		modifica . const $ Anagrafe (u:us)
 		logga $ "accettato il nuovo utente " ++ u
 		return (True, nessunEffetto)
-	reattoreAnagrafe' (first validante -> (w,ElezioneResponsabile u)) = w $ \r -> do
+	reattoreAnagrafe' (first validante -> (w,ElezioneResponsabile u c s)) = w $ \r -> do
+		let ucs = (u,(c,s))
 		Anagrafe us <- osserva
-		esistenzaUtente (fst u)
+		esistenzaUtente u
 		Responsabili us ls <- osserva 
-		fallimento (u `elem` us) "utente già eletto" 
-		fallimento (u `elem` map snd ls) "utente già in elezione" 
-		(l,reaz,_) <- programmazioneAssenso ("elezione dell'utente " ++ fst u) r maggioranza (chiudibene u) (chiudimale u)
-		modifica $ \(Responsabili us ls) -> Responsabili us ((l,u):ls)
+		fallimento (ucs `elem` us) "utente già eletto" 
+		fallimento (ucs `elem` map snd ls) "utente già in elezione" 
+		(l,reaz,_) <- programmazioneAssenso ("elezione dell'utente " ++ u) r maggioranza (chiudibene ucs) (chiudimale ucs)
+		modifica $ \(Responsabili us ls) -> Responsabili us ((l,ucs):ls)
 		return (True,([reaz],[])) 
 		where
-		chiudibene u l = do
-			modifica $ \(Responsabili us ls) -> Responsabili (u:us) (filter ((/=) l . fst) ls)
-			logga $ "eletto il nuovo responsabile " ++ fst u
+		chiudibene ucs l = do
+			modifica $ \(Responsabili us ls) -> Responsabili (ucs:us) (filter ((/=) l . fst) ls)
+			logga $ "eletto il nuovo responsabile " ++ fst ucs
 			return nessunEffetto
-		chiudimale u l = do
+		chiudimale ucs l = do
 			modifica $ \(Responsabili us ls) -> Responsabili us (filter ((/=) l . fst) ls)
-			logga $ "elezione dell'utente " ++ fst u ++ " fallita"
+			logga $ "elezione dell'utente " ++ fst ucs ++ " fallita"
 			return nessunEffetto
 
 	reattoreAnagrafe' (first validante -> (w,EliminazioneResponsabile u)) = w $ \r -> do
@@ -215,8 +217,8 @@ costrEventiResponsabili s kp kn =
 		let ds = us \\ (map fst rs ++ map fst ts) 
 		when (null ds) $ throwError "nessun utente non responsabile disponibile"
                 n <- scelte (map (id &&& id) ds) "selezione dell'utente da eleggere a responsabile" 
-                m <- upload $ "inserimento delle chiavi del responsabile " ++ n ++ " per la sua elezione"
-                return $ ElezioneResponsabile m
+                (u,(c,s)) <- upload $ "inserimento delle chiavi del responsabile " ++ n ++ " per la sua elezione"
+                return $ ElezioneResponsabile u c s
 
         eventoEliminazioneResponsabile = run $ do
 		rs <- costrResponsabili 

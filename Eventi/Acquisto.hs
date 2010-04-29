@@ -16,6 +16,7 @@ import Lib.Aspetti ((.<), ParteDi,see)
 import Lib.Prioriti (R(..))
 import Lib.Assocs (update,elimina,assente)
 import Lib.Response (Response (..))
+import Lib.QInteger (QInteger)
 
 import Core.Costruzione (libero, scelte , CostrAction, runSupporto)
 import Core.Parsing (Parser)
@@ -26,7 +27,7 @@ import Eventi.Anagrafe (Utente,validante,programmazioneAssenso,maggioranza)
 import Eventi.Accredito (salda)
 import Eventi.Impegno (programmazioneImpegno')
 
-type Indice = Integer
+type Indice = QInteger
 data EsternoAcquisto = AperturaAcquisto String deriving (Read,Show) 
 priorityAcquisto = R k  where
 	k (AperturaAcquisto _) = -28 
@@ -79,12 +80,13 @@ reazioneAcquisto = soloEsterna reattoreAcquisto where
 					compl Nothing
 					logga $ "acquisto  " ++ b ++ " chiuso negativamente"
 					return nessunEffetto
+-- 
 		(li,fi,zi) <- programmazioneImpegno' ("l'acquisto " ++ b) r t (concesso <$> acquisto b)
 		-- definizione completamenti raccolta di assenso
 		let 	positivo _ = do
 				a <- concedi b
 				modifica $ \(StatoAcquisti cs as)  -> StatoAcquisti cs (a: filter (not . nominato b) as)
-				logga $ "concessa la chiusura dell'acquisto " ++ b
+				logga $ "concessa la chiusura dell'acquisto " ++ b -- esegui la marcatura ottenuta da programmazione impegno
 				return nessunEffetto
 			negativo _ = do
 				logga $ "negata la chiusura dell'acquisto, acquisto fallito " ++ b

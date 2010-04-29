@@ -25,6 +25,7 @@ import Lib.Costruzione (Costruzione)
 import Lib.Prioriti (R(..))
 import Lib.Assocs (update)
 import Lib.Response (Response (..))
+import Lib.QInteger (QInteger)
 
 import Core.Costruzione (libero, scelte, runSupporto, CostrAction)
 import Core.Parsing (Parser)
@@ -36,7 +37,7 @@ import Eventi.Anagrafe (EsternoAssenso, Assensi, programmazionePermesso, Utente,
 import Eventi.Accredito (preleva, accredita, Conti)
 
 import Debug.Trace
-type Indice = Integer
+type Indice = QInteger
 -- | gli eventi  esterni per questo modulo
 data EsternoImpegno 
 	= Impegno Utente Float Indice	-- ^ indica un impegno di denaro da parte dell'utente per la causa chiave
