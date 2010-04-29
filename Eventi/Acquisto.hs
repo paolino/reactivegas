@@ -23,12 +23,14 @@ import Core.Parsing (Parser)
 import Core.Programmazione (Effetti, Reazione (..) , EventoInterno (..), soloEsterna, nessunEffetto)
 import Core.Inserimento (MTInserzione, conFallimento, fallimento, osserva, modifica, logga)
 
-import Eventi.Anagrafe (Utente,validante,programmazioneAssenso,maggioranza)
+import Eventi.Anagrafe (Utente,validante,programmazioneAssenso,maggioranza,Redeable(..))
 import Eventi.Accredito (salda)
 import Eventi.Impegno (programmazioneImpegno')
 
 type Indice = QInteger
 data EsternoAcquisto = AperturaAcquisto String deriving (Read,Show) 
+instance Redeable EsternoAcquisto where
+	redeable (AperturaAcquisto s) = "Richiesta di apertura acquisto di nome " ++ s
 priorityAcquisto = R k  where
 	k (AperturaAcquisto _) = -28 
 

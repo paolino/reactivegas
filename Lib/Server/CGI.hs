@@ -2,11 +2,14 @@
 
 module Lib.Server.CGI (cgiFromServer) where
 
+import Control.Applicative ((<$>))
+
 import Data.List.Split (splitOneOf)
 import Data.Maybe (listToMaybe)
 import qualified Data.ByteString.Lazy.Char8 as B (readFile)
-import Control.Monad.Error (Error , ErrorT,runErrorT,throwError,lift)
+import Control.Monad.Error (mplus,Error , ErrorT,runErrorT,throwError,lift)
 import Network.SCGI
+import Codec.Binary.UTF8.String (decodeString)
 import Lib.Server.Core
 import Text.XHtml
 import Lib.HTTP
@@ -24,7 +27,7 @@ readFKey =  do
 	return i
 
 readValore :: ErrorT String (CGIT IO) Value
-readValore = lift (getInput "valore") >>= onNothing "form corrotta, manca la risposta"
+readValore = fmap id <$> lift (getInput "valore") >>= onNothing "form corrotta, manca la risposta"
 
 pagina :: [(Html,Int)] -> Html
 pagina xs =  thediv << map (\(h,i) -> thediv ! [theclass ("dimensione" ++ show i)] << h) xs
@@ -45,6 +48,7 @@ cgiFromServer :: (Html -> CGI CGIResult) -> (Server e Html Link,IO ()) -> CGI CG
 cgiFromServer resp ((fsM,(liftServer .) -> s),droppa) = do 
 	vs <- getVars 
 	is <- getInputs
+	liftIO $ print is
 	r <- runErrorT $ case lookup "REQUEST_URI"  vs of 
 		Just x -> let xs =  tail $ splitOneOf "/?" x in
 			case xs of
@@ -62,7 +66,7 @@ cgiFromServer resp ((fsM,(liftServer .) -> s),droppa) = do
 					hk <- readHKey
 					fk <- readFKey
 					v <- readValore
-					ehl <- s (hk,fk,Continua v)
+					ehl <- s (hk,fk,Continua v) `mplus` s (hk,fk,Continua $ decodeString v)
 					case ehl of
 						Right hs -> lift . resp $ pagina hs
 						Left _ -> throwError "l'interazione continua con un download"

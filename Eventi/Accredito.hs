@@ -24,7 +24,7 @@ import Core.Inserimento (MTInserzione, fallimento, osserva, modifica, logga)
 import Core.Costruzione (libero, scelte, CostrAction, runSupporto)
 import Core.Parsing (Parser)
 import Lib.Costruzione (Costruzione)
-import Eventi.Anagrafe (Anagrafe, Utente, esistenzaUtente, utenti, Responsabili, 
+import Eventi.Anagrafe (Anagrafe, Utente, esistenzaUtente, utenti, Responsabili,Redeable (..), 
 	esistenzaResponsabile, responsabili, validante, SUtente (..))
 import Lib.Aspetti ((.<), see, ParteDi)
 import Lib.Prioriti (R (..))
@@ -33,7 +33,9 @@ import Lib.Response (Response (..))
 
 -- | evento esterno che interessa il controllo del credito o del saldo
 data EsternoAccredito = Accredito Utente Float | Saldo Utente Float deriving (Show, Read)
-
+instance Redeable EsternoAccredito where
+	redeable (Accredito u f) = "Ricezione di " ++ show f ++ " euro da " ++ u
+	redeable (Saldo u f) = "Ricezione di " ++ show f ++ " euro dalla cassa di " ++ u
 -- | priorita' per gli eventi del modulo
 priorityAccredito = R k where
 	k (Accredito _ _) = -35

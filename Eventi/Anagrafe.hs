@@ -91,6 +91,9 @@ priorityAnagrafe = R k where
 priorityAnagrafeI = R k where
 	k (EventoEliminazioneResponsabile _ _) = 20
 
+class Redeable a where
+	redeable :: a -> String
+
 -- | eventi provenienti dall'esterno
 data EsternoAnagrafico 
 	= NuovoUtente String -- ^ inserimento di un nuovo utente 
@@ -98,6 +101,10 @@ data EsternoAnagrafico
 	| EliminazioneResponsabile String -- ^ richiesta di dimissioni da responsabile per un responsabile
 	deriving (Read,Show)
 
+instance Redeable EsternoAnagrafico where
+	redeable (NuovoUtente x) = "Inserimento di un nuovo utente con nomignolo " ++ x
+	redeable (ElezioneResponsabile u c s) = "Richiesta di elezione dell'utente " ++ u 
+	redeable (EliminazioneResponsabile u) = "Richiesta di revoca del responsabile " ++ u
 -- | eventi prodotti all'interno
 data InternoAnagrafico 
 	= EventoEliminazioneResponsabile Utente Utente -- ^ messaggio di avvenuta eliminazione di un responsabile

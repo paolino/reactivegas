@@ -1,6 +1,7 @@
 {-# LANGUAGE ScopedTypeVariables, StandaloneDeriving #-}
 module Lib.HTTP where
 
+import Control.Arrow ((***))
 import Control.Applicative
 import Text.XHtml
 import Data.Maybe
@@ -11,12 +12,12 @@ import Data.Typeable
 
 import Network.URL
 import Debug.Trace
-
+import Codec.Binary.UTF8.String
 
 
 
 mkLink :: String -> [(String,String)] -> String
-mkLink x = exportURL . foldl add_param (fromJust $ importURL x)
+mkLink x = exportURL . foldl (\s  -> add_param s ) (fromJust $ importURL x)
 
 data Link = Link 	{nomelink :: String
 			,valore :: String
