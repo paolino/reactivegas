@@ -89,10 +89,10 @@ reazioneAcquisto = soloEsterna reattoreAcquisto where
 			negativo _ = do
 				logga $ "negata la chiusura dell'acquisto, acquisto fallito " ++ b
 				fi
-		(la,za) <- programmazioneAssenso ("nuova proposta di acquisto " ++ b) r maggioranza  positivo negativo
+		(la,za,esf) <- programmazioneAssenso ("nuova proposta di acquisto " ++ b) r maggioranza  positivo negativo
 
 		modifica $ \(StatoAcquisti cs as) -> StatoAcquisti cs (Acquisto b False li la : as)
-		return (True, ([za, zi],[]))
+		return (True, ([za, zi esf],[]))
 
 costrEventiAcquisto :: (Monad m, StatoAcquisti `ParteDi` s) => CostrAction m c EsternoAcquisto s
 costrEventiAcquisto s kp kn  = [("nuova proposta di acquisto", eventoApertura)] 
