@@ -23,20 +23,17 @@ import Core.Parsing (Parser)
 import Core.Programmazione (Effetti, Reazione (..) , EventoInterno (..), soloEsterna, nessunEffetto)
 import Core.Inserimento (MTInserzione, conFallimento, fallimento, osserva, modifica, logga)
 
-import Eventi.Anagrafe (Utente,validante,programmazioneAssenso,maggioranza,Redeable(..))
+import Eventi.Anagrafe (Utente,validante,programmazioneAssenso,maggioranza)
 import Eventi.Accredito (salda)
 import Eventi.Impegno (programmazioneImpegno')
 
 type Indice = QInteger
 data EsternoAcquisto = AperturaAcquisto String deriving (Read,Show) 
-instance Redeable EsternoAcquisto where
-	redeable (AperturaAcquisto s) = "Richiesta di apertura acquisto di nome " ++ s
 priorityAcquisto = R k  where
 	k (AperturaAcquisto _) = -28 
 
 data Acquisto = Acquisto
 	{nome		:: String 	-- ^ identificativo unico dell'acquisto 
-	,concesso 	:: Bool		-- ^ stato della raccolta assensi
 	,impegni	:: Indice	-- ^ indice della raccolta impegni
 	,assensi	:: Indice	-- ^ indice della raccolta assensi
 	} deriving (Show, Read)
@@ -44,8 +41,6 @@ data Acquisto = Acquisto
 nominato :: String -> Acquisto -> Bool
 nominato s = (==) s . nome
 
-concedi s = concessione <$> acquisto s	 
-	where concessione (Acquisto n c i a) = Acquisto n True i a
 
 acquisto b = do 
 	(as :: [Acquisto]) <- aperti <$> osserva
@@ -83,11 +78,12 @@ reazioneAcquisto = soloEsterna reattoreAcquisto where
 					logga $ "acquisto  " ++ b ++ " chiuso negativamente"
 					return nessunEffetto
 -- 
-		(li,fi,zi) <- programmazioneImpegno' ("l'acquisto " ++ b) r t (concesso <$> acquisto b)
+		(li,fi,zi,ci) <- programmazioneImpegno' ("l'acquisto " ++ b) r t
 		-- definizione completamenti raccolta di assenso
 		let 	positivo _ = do
-				a <- concedi b
+				a <- acquisto b
 				modifica $ \(StatoAcquisti cs as)  -> StatoAcquisti cs (a: filter (not . nominato b) as)
+				ci
 				logga $ "concessa la chiusura dell'acquisto " ++ b -- esegui la marcatura ottenuta da programmazione impegno
 				return nessunEffetto
 			negativo _ = do
@@ -95,7 +91,7 @@ reazioneAcquisto = soloEsterna reattoreAcquisto where
 				fi
 		(la,za,esf) <- programmazioneAssenso ("nuova proposta di acquisto " ++ b) r maggioranza  positivo negativo
 
-		modifica $ \(StatoAcquisti cs as) -> StatoAcquisti cs (Acquisto b False li la : as)
+		modifica $ \(StatoAcquisti cs as) -> StatoAcquisti cs (Acquisto b li la : as)
 		return (True, ([za, zi esf],[]))
 
 costrEventiAcquisto :: (Monad m, StatoAcquisti `ParteDi` s) => CostrAction m c EsternoAcquisto s

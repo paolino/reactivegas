@@ -91,8 +91,6 @@ priorityAnagrafe = R k where
 priorityAnagrafeI = R k where
 	k (EventoEliminazioneResponsabile _ _) = 20
 
-class Redeable a where
-	redeable :: a -> String
 
 -- | eventi provenienti dall'esterno
 data EsternoAnagrafico 
@@ -101,10 +99,6 @@ data EsternoAnagrafico
 	| EliminazioneResponsabile String -- ^ richiesta di dimissioni da responsabile per un responsabile
 	deriving (Read,Show)
 
-instance Redeable EsternoAnagrafico where
-	redeable (NuovoUtente x) = "Inserimento di un nuovo utente con nomignolo " ++ x
-	redeable (ElezioneResponsabile u c s) = "Richiesta di elezione dell'utente " ++ u 
-	redeable (EliminazioneResponsabile u) = "Richiesta di revoca del responsabile " ++ u
 -- | eventi prodotti all'interno
 data InternoAnagrafico 
 	= EventoEliminazioneResponsabile Utente Utente -- ^ messaggio di avvenuta eliminazione di un responsabile
@@ -314,10 +308,10 @@ programmazioneAssenso :: (
 	-> MTInserzione s c Utente (Indice, Reazione s c Utente, MTInserzione s c Utente ())	-- ^ la chiave per emettere assensi relativi e la reazione da schedulare
 
 programmazioneAssenso se ur c k kn = do
-	l <- nuovoStatoServizio (Assensi ur [] []) (ur ++ ", " ++ se) -- ricevi la chiave per la nuova raccolta
+	l <- nuovoStatoServizio (Assensi ur [] []) ("da " ++ ur ++ ", " ++ se) -- ricevi la chiave per la nuova raccolta
 	let 	eliminaRichiesta = do
 			eliminaStatoServizio l (undefined :: Assensi)  
-			logga $ "rinuncia alla questione " ++ se
+			logga $ "rinuncia alla raccolta di assensi per " ++ se
 
 		reattoreAssenso (Right (first validante -> (w,Assenso j))) = w $ \r -> do
 			when (j /= l) mzero
@@ -361,11 +355,10 @@ programmazioneAssenso se ur c k kn = do
 			(,) False <$> kn j
 		reattoreAssenso (Left (eliminazioneResponsabile -> Just (u,r))) = conFallimento $ do
 			when (ur /= u) mzero
-			logga $ "eliminazione della richiesta " ++ se
 			eliminaRichiesta
 			(,) False <$> kn l
 		reattoreAssenso (Left _) = return Nothing
-	logga $ "raccolta di assensi per " ++ se 
+	logga $ "aperta la raccolta di assensi per " ++ se 
  	return (l,Reazione (Nothing, reattoreAssenso),eliminaRichiesta) -- restituisce il riferimento a questa richiesta perché venga nominato negli eventi di assenso
 
 --------------------------- costruzioni per il modulo assensi -----------------------------
