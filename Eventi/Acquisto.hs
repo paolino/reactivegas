@@ -2,14 +2,16 @@
 module Eventi.Acquisto {-
 	(statoInizialeAcquisti, reazioneAcquisto, StatoAcquisti, makeAperturaAcquisto,priorityAcquisto,queryAcquisto) -}
 	where
+import Text.ParserCombinators.ReadP
+import Text.Read hiding (get,(<++))
+
 
 import Data.List (isPrefixOf, tails, find, deleteBy)
-import Control.Arrow 
+import Control.Arrow (first, (&&&))
 import Data.Maybe
 import Control.Applicative ((<$>))
 import Control.Monad.Reader (asks,ask, when, MonadReader)
 import Control.Monad.Error (throwError)
-import Text.PrettyPrint
 import Debug.Trace
 
 import Lib.Aspetti ((.<), ParteDi,see)
@@ -28,9 +30,21 @@ import Eventi.Accredito (salda)
 import Eventi.Impegno (programmazioneImpegno')
 
 type Indice = QInteger
-data EsternoAcquisto = AperturaAcquisto String deriving (Read,Show) 
+data EsternoAcquisto = AperturaAcquisto String  
+
 priorityAcquisto = R k  where
 	k (AperturaAcquisto _) = -28 
+
+
+instance Show EsternoAcquisto where
+	show (AperturaAcquisto x) = "apertura nuovo acquisto nominato \"" ++ x ++ "\""
+
+charOrEscape = (char '\\' >> get) <++ get
+phrase = char '"' >> manyTill charOrEscape (char '"')
+instance Read EsternoAcquisto where
+	readPrec = lift $ do
+		string "apertura nuovo acquisto nominato "
+		AperturaAcquisto `fmap` phrase
 
 data Acquisto = Acquisto
 	{nome		:: String 	-- ^ identificativo unico dell'acquisto 

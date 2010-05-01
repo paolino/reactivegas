@@ -8,10 +8,11 @@ import Control.Monad (foldM, mzero, when)
 import Control.Monad.RWS (local,get, gets,lift,put, modify)
 import Control.Monad.Writer (WriterT, runWriterT, tell, listen)
 import Control.Applicative ((<$>))
+import Control.Arrow (second)
 
 import Control.Monad.Maybe (runMaybeT, MaybeT)
 
-import Codec.Binary.UTF8.String (encodeString)
+import Codec.Binary.UTF8.String -- (decodeString)
 
 import Lib.Aspetti (see,seeset, ParteDi)
 import Lib.Signal (SignalT, runSignalT, happened, intercept)
@@ -90,7 +91,7 @@ inserimentoCompleto ns x = fmap (fst . fst) . runInserimento  $ do
 	-- | consuma un evento esterno oppure una lista di eventi interni
 	consuma :: Show d => [Nodo s c d] -> Either [Interno] (Esterno d) -> Inserimento s c d [Nodo s c d]
 	consuma ns (Left xs) = foldM (\ns' x -> local (motiva $ Left x) $ inserimentoAlbero (Left x) ns')  ns xs
-	consuma ns (Right e) = local (motiva $ Right e) $ inserimentoAlbero (Right e) ns
+	consuma ns (Right e) = local (motiva $ Right $ second encodeString e) $ inserimentoAlbero (Right e) ns
 	
 	-- | continua a consumare fino a che non vengono più prodotti eventi interni, 
 	-- pericolo loop se i reattori sono rotti
