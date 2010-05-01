@@ -37,6 +37,7 @@ import Lib.Assocs (assente,(?),updateM,elimina)
 import Lib.Passo (Costruzione)
 import Lib.Response (Response (..))
 import Lib.Prioriti (R (..))
+import Lib.ShowRead
 
 import Core.Inserimento (logga, conFallimento, MTInserzione, osserva, modifica, fallimento)
 import Core.Programmazione (Inserzione, EventoInterno (..), soloEsterna, nessunEffetto, Reazione (..),Effetti)
@@ -97,8 +98,32 @@ data EsternoAnagrafico
 	= NuovoUtente String -- ^ inserimento di un nuovo utente 
 	| ElezioneResponsabile Utente Chiave Segreto  -- ^ richiesta di promozione a responsabile per un utente
 	| EliminazioneResponsabile String -- ^ richiesta di dimissioni da responsabile per un responsabile
-	deriving (Read,Show)
 
+instance Show EsternoAnagrafico where
+	show (NuovoUtente u) = "riconoscimento di un nuovo utente di nome " ++ quote u
+	show (ElezioneResponsabile u c s) = "richiesta di elezione a responsable di " ++ quote u ++ ", " ++ show c ++ ", " ++ show s 
+	show (EliminazioneResponsabile u) = "richiesta di dimissione del responsabile " ++ quote u
+
+instance Read EsternoAnagrafico where
+	readPrec = let
+		nu = do
+			string "riconoscimento di un nuovo utente di nome "
+			u <- phrase
+			return $ NuovoUtente u
+			
+		el = do 
+			string "richiesta di elezione a responsable di "
+			u <- phrase
+			string ", "
+			c <- readS_to_P reads
+			string ", "
+			s <- readS_to_P reads
+			return $ ElezioneResponsabile u c s
+		di = do 
+			string "richiesta di dimissione del responsabile "
+			u <- phrase
+			return $ EliminazioneResponsabile u
+		in lift $ nu <++ el <++ di	
 -- | eventi prodotti all'interno
 data InternoAnagrafico 
 	= EventoEliminazioneResponsabile Utente Utente -- ^ messaggio di avvenuta eliminazione di un responsabile
@@ -244,7 +269,20 @@ costrQueryAnagrafe s kp kn = 	[("nomi utenti",queryElencoUtenti)
 --  sezione assensi, putroppo non ha un modulo a parte a causa del ciclo di dipendenze con l'anagrafe
 
 -- | gli eventi che interessano una raccolta di assensi
-data EsternoAssenso = Assenso Indice | Dissenso Indice | EventoFallimentoAssenso Indice deriving (Read, Show)
+data EsternoAssenso = Assenso Indice | Dissenso Indice | EventoFallimentoAssenso Indice 
+instance Show EsternoAssenso where
+	show (Assenso i) = "assenso riferito a " ++ show i
+	show (Dissenso i) = "dissenso riferito a " ++ show i
+	show (EventoFallimentoAssenso i) = "rinuncia alla raccolta di assensi riferita a " ++ show i
+
+instance Read EsternoAssenso where
+	readPrec = let 
+		as = do 
+			string "assenso riferito a "
+			Assenso <$>  readS_to_P reads
+		di = string "dissenso riferito a " >> Dissenso <$> readS_to_P reads
+		fa = string "rinuncia alla raccolta di assensi riferita a " >> EventoFallimentoAssenso <$> readS_to_P reads
+		in lift $ as <++ di <++ fa 
 
 -- | lo stato necessario per la gestione di un tipo di assensi
 data Assensi = Assensi Utente [Utente] [Utente] | Permesso Utente Utente deriving (Show,Read)

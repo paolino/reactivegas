@@ -37,15 +37,41 @@ import Eventi.Anagrafe (EsternoAssenso, Assensi, programmazionePermesso, Utente,
 import Eventi.Accredito (preleva, accredita, Conti)
 
 import Debug.Trace
+
+import Lib.ShowRead
+
 type Indice = QInteger
 -- | gli eventi  esterni per questo modulo
 data EsternoImpegno 
 	= Impegno Utente Float Indice	-- ^ indica un impegno di denaro da parte dell'utente per la causa chiave
 	| FineImpegno Indice  		-- ^ indica la chiusura positiva della causa
 	| FallimentoImpegno Indice	-- ^ indica la chiusura negativa della causa
-	deriving (Show,Read)
 
-
+instance Show EsternoImpegno where
+	show (Impegno u f i) = "impegno da " ++ quote u ++ " di euro " ++ show f ++ " in riferimento a " ++ show i
+	show (FineImpegno i) = "chiusura della raccolta impegni riferita a " ++ show i
+	show (FallimentoImpegno i) = "fallimento della raccolta impegni riferita a " ++ show i
+instance Read EsternoImpegno where
+	readPrec = let
+		imp = do
+			string "impegno da "
+			u <- phrase 
+			string " di euro " 
+			f <- readS_to_P reads
+			string " in riferimento a "
+			i <- readS_to_P reads
+			return $ Impegno u f i
+		fin = do 
+			string "chiusura della raccolta impegni riferita a "
+			i <- readS_to_P reads
+			return $ FineImpegno i
+		fal = do 
+			string "fallimento della raccolta impegni riferita a "
+			i <- readS_to_P reads
+			return $ FallimentoImpegno i
+			
+			
+		in lift $ imp <++ fin <++ fal
 priorityImpegno = R k where
 	k (Impegno _ _ _) = -28
 	k (FineImpegno _) = 15

@@ -30,9 +30,31 @@ import Lib.Aspetti ((.<), see, ParteDi)
 import Lib.Prioriti (R (..))
 import Lib.Assocs (update , (?))
 import Lib.Response (Response (..))
+import Lib.ShowRead
 
 -- | evento esterno che interessa il controllo del credito o del saldo
-data EsternoAccredito = Accredito Utente Float | Saldo Utente Float deriving (Show, Read)
+data EsternoAccredito = Accredito Utente Float | Saldo Utente Float 
+
+
+instance Show EsternoAccredito where
+	show (Accredito u f) = "accredito a " ++ quote u ++ " di euro " ++ show f
+	show (Saldo u f) = "movimento dalla cassa di " ++ quote u ++ " di euro " ++ show f
+
+instance Read EsternoAccredito where
+	readPrec = let 
+		acc = do
+			string "accredito a "
+			u <- phrase
+			string " di euro "
+			f <- readS_to_P reads
+			return $ Accredito u f
+		sal = do
+			string "movimento dalla cassa di "
+			u <- phrase
+			string " di euro "
+			f <- readS_to_P reads
+			return $ Saldo u f
+		in lift $ acc <++ sal
 -- | priorita' per gli eventi del modulo
 priorityAccredito = R k where
 	k (Accredito _ _) = -35
