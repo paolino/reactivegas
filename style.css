@@ -142,12 +142,19 @@ div.response {
 	border-bottom: 1px solid #e5e5e5;
 	overflow:auto;
 	}
-dl dd {
-	text-indent:5px; 
+dl dd dl dt {
+	text-indent:10px;			
 	}
-dd dt {
-	text-indent:5px;			
+dl dd dl dd {
+	text-indent:20px;			
 	}
+dl dd dl dd dl dt {
+	text-indent:30px;			
+	}
+dl dd dl dd dl dd {
+	text-indent:40px;			
+	}
+
 div.passobox {
 	margin:3px;
 	overflow:auto;

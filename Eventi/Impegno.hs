@@ -123,7 +123,7 @@ programmazioneImpegno' :: (
 		)
 
 programmazioneImpegno' q ur k  = do
-	l <- nuovoStatoServizio (Impegni False ur [] []) (ur ++ ", " ++ q)
+	l <- nuovoStatoServizio (Impegni False ur [] []) (ur,q)
 	let 	effettoF j = do 
 			Impegni _ ur as is <- osservaStatoServizio j
 			mapM_ (\(u,v) -> accredita u v) (as ++ is) -- restituzione del denaro di tutti gli impegni

@@ -37,12 +37,12 @@ servizio0 = Servizio []
 -- | aggiunge una nuova istanza per il servizio di tipo a, integrando con una descrizione,  restituisce la chiave 
 nuovoStatoServizio :: (ParteDi (Servizio a) s, Read a, Show a, Integer `ParteDi` s) 
 	=> a 
-	-> String 
+	-> (String,String) 
 	-> MTInserzione s c d QInteger
-nuovoStatoServizio s q = do
+nuovoStatoServizio s (u,q) = do
 	Servizio ls <- osserva
 	n <- osserva
-	let p = makeQInteger $ (n + (BL.foldr (\x y -> 256 * y + fromIntegral (ord x)) 0 . hash $ q) `mod` 10 ^ 12)
+	let p = makeQInteger $ (n + (BL.foldr (\x y -> 256 * y + fromIntegral (ord x)) 0 . hash $ u ++ q) `mod` 10 ^ 12)
 	modifica $ \_ -> Servizio ((p,(q,s)):ls)
 	logga $ "riferimento " ++ show p
 	return p

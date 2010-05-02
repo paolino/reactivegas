@@ -48,7 +48,7 @@ import Lib.Firmabile (Segreto, Chiave)
 import Lib.QInteger 
 
 import Eventi.Servizio 
-
+import Debug.Trace
 deriving instance Eq PublicKey
 deriving instance Read PublicKey
 
@@ -297,7 +297,7 @@ maggioranza (ps,ns) = do
 				Indecidibile
 
 programmazionePermesso se ur ut k kn = do
-	l <- nuovoStatoServizio (Permesso ur ut) (ur ++ ", " ++ se)
+	l <- nuovoStatoServizio (Permesso ur ut) (ur,se)
 	let 	eliminaRichiesta u j = do
 			eliminaStatoServizio j (undefined :: Assensi)  
 			logga $ "rinuncia alla questione " ++ se
@@ -342,7 +342,7 @@ programmazioneAssenso :: (
 	-> MTInserzione s c Utente (Indice, Reazione s c Utente, MTInserzione s c Utente ())	-- ^ la chiave per emettere assensi relativi e la reazione da schedulare
 
 programmazioneAssenso se ur c k kn = do
-	l <- nuovoStatoServizio (Assensi ur [] []) ("da " ++ ur ++ ", " ++ se) -- ricevi la chiave per la nuova raccolta
+	l <- nuovoStatoServizio (Assensi ur [] []) (ur,se) -- ricevi la chiave per la nuova raccolta
 	let 	eliminaRichiesta = do
 			eliminaStatoServizio l (undefined :: Assensi)  
 			logga $ "rinuncia alla raccolta di assensi per " ++ se
@@ -398,11 +398,11 @@ programmazioneAssenso se ur c k kn = do
 --------------------------- costruzioni per il modulo assensi -----------------------------
 
 -- | estrae gli assensi dallo stato in lettura
-assensi :: (Monad m, ParteDi (Servizio Assensi) s) => Supporto m s b [(Indice,String)]
+-- assensi :: (Monad m, ParteDi (Servizio Assensi) s) => Supporto m s b [(Indice,String)]
 assensi = do
 	xs :: [(Indice,(String,Assensi))] <- asks elencoSottoStati 
 	when (null xs) $ throwError "nessuna questione aperta"
-	return  $ map (second fst) xs
+	return xs
 
 filtra u (Assensi ur ps ns) = not . elem u $ ps ++ ns
 filtra u (Permesso ur u') = u' == u 
@@ -441,9 +441,19 @@ costrQueryAssenso s kp kn = [("questioni aperte", querySottoStati)]
 	where
 	querySottoStati = runSupporto s kn kp $ do
 		ys <- assensi
-		return $ Response [("questioni aperte", if null ys then
-			ResponseOne "nessuna questione aperta" else ResponseAL $ 
-				map (\(i,s) -> (show i,ResponseOne s)) ys)]
+		return $ if null ys then ResponseOne "nessuna questione aperta" 
+			else Response $ 
+				map (\(i,s) -> (show i
+						,Response [	("obiettivo",ResponseOne (fst s)),
+								("espressione",responseAssensi (snd s))]
+						)) ys
+
+
+responseAssensi as@(Assensi u ps ns) = Response $ 
+		[("promotore",ResponseOne u)] ++ 
+		(if null ns then [] else [("dissensi",ResponseMany $ map ResponseOne ns)]) ++
+		if null ps then [] else [("assensi",ResponseMany $ map ResponseOne ps)] 
+responseAssensi (Permesso u ut) = Response $ [("promotore",ResponseOne u),("interrogato", ResponseOne ut)] 
 priorityAssenso = R k where
 	k (Assenso _) = -25
 	k (Dissenso _) = -24

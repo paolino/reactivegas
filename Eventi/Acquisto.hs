@@ -89,7 +89,7 @@ reazioneAcquisto = soloEsterna reattoreAcquisto where
 					logga $ "acquisto  " ++ b ++ " chiuso negativamente"
 					return nessunEffetto
 -- 
-		(li,fi,zi,ci) <- programmazioneImpegno' ("l'acquisto " ++ b) r t
+		(li,fi,zi,ci) <- programmazioneImpegno' ("l'acquisto di " ++ b) r t
 		-- definizione completamenti raccolta di assenso
 		let 	positivo _ = do
 				a <- acquisto b
