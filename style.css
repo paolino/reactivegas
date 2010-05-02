@@ -137,18 +137,21 @@ input#valore {font: 8pt sans-serif;
 	}
 
 div.response {	
-	color: #755;
+	color: #755;font-weight: bold;
 	background:#f0f0f0;
 	border-bottom: 1px solid #e5e5e5;
 	overflow:auto;
 	}
+dl dt {font-weight: bold;}
 dl dd dl dt {
+	font-weight: normal;
 	text-indent:10px;			
 	}
 dl dd dl dd {
 	text-indent:20px;			
 	}
 dl dd dl dd dl dt {
+	font-weight: normal;
 	text-indent:30px;			
 	}
 dl dd dl dd dl dd {

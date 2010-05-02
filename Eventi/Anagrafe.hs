@@ -444,16 +444,15 @@ costrQueryAssenso s kp kn = [("questioni aperte", querySottoStati)]
 		return $ if null ys then ResponseOne "nessuna questione aperta" 
 			else Response $ 
 				map (\(i,s) -> (show i
-						,Response [	("obiettivo",ResponseOne (fst s)),
-								("espressione",responseAssensi (snd s))]
+						, Response $ [("obiettivo",ResponseOne (fst s))] ++  responseAssensi (snd s)
 						)) ys
 
 
-responseAssensi as@(Assensi u ps ns) = Response $ 
+responseAssensi as@(Assensi u ps ns) = 
 		[("promotore",ResponseOne u)] ++ 
 		(if null ns then [] else [("dissensi",ResponseMany $ map ResponseOne ns)]) ++
 		if null ps then [] else [("assensi",ResponseMany $ map ResponseOne ps)] 
-responseAssensi (Permesso u ut) = Response $ [("promotore",ResponseOne u),("interrogato", ResponseOne ut)] 
+responseAssensi (Permesso u ut) = [("promotore",ResponseOne u),("interrogato", ResponseOne ut)] 
 priorityAssenso = R k where
 	k (Assenso _) = -25
 	k (Dissenso _) = -24
