@@ -25,7 +25,7 @@ passa xs = let 	h = map ((head . head) &&& map tail) . groupBy ((==) `on` head)
 					-- la stessa testa é un nodo. ricorsivamente analizziamo il resto
 
 eccoILogs :: [([(String, String)], String)] -> String
-eccoILogs = decodeString . showTrees . map (\(as,b) -> (map (\(d,e) -> show d ++ ":" ++ e) as) ++ ["------> " ++ b])
+eccoILogs = decodeString . showTrees . map (\(as,b) -> (map (\(d,e) -> d ++ ": " ++ e) as) ++ ["...... " ++ b])
 {-
 eil = map renderTree . passa . map (\(as,b) -> (map (\(d,e) -> show d ++ ":" ++ e) as) ++ ["------> " ++ b])
 	where

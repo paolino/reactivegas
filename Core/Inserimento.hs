@@ -90,7 +90,7 @@ inserimentoCompleto ns x = fmap (fst . fst) . runInserimento  $ do
  
 	-- | consuma un evento esterno oppure una lista di eventi interni
 	consuma :: Show d => [Nodo s c d] -> Either [Interno] (Esterno d) -> Inserimento s c d [Nodo s c d]
-	consuma ns (Left xs) = foldM (\ns' x -> local (motiva $ Left x) $ inserimentoAlbero (Left x) ns')  ns xs
+	consuma ns (Left xs) = foldM (\ns' x -> local (motiva $ Left $ encodeString x) $ inserimentoAlbero (Left x) ns')  ns xs
 	consuma ns (Right e) = local (motiva $ Right $ second encodeString e) $ inserimentoAlbero (Right e) ns
 	
 	-- | continua a consumare fino a che non vengono più prodotti eventi interni, 
