@@ -108,21 +108,19 @@ instance Read EsternoAnagrafico where
 	readPrec = let
 		nu = do
 			string "riconoscimento di un nuovo utente di nome "
-			u <- phrase
-			return $ NuovoUtente u
+			NuovoUtente <$> phrase
 			
 		el = do 
 			string "richiesta di elezione a responsable di "
 			u <- phrase
 			string ", "
-			c <- readS_to_P reads
+			c <- reads'
 			string ", "
-			s <- readS_to_P reads
+			s <- reads'
 			return $ ElezioneResponsabile u c s
 		di = do 
 			string "richiesta di dimissione del responsabile "
-			u <- phrase
-			return $ EliminazioneResponsabile u
+			EliminazioneResponsabile <$> phrase
 		in lift $ nu <++ el <++ di	
 -- | eventi prodotti all'interno
 data InternoAnagrafico 
@@ -277,11 +275,9 @@ instance Show EsternoAssenso where
 
 instance Read EsternoAssenso where
 	readPrec = let 
-		as = do 
-			string "assenso riferito a "
-			Assenso <$>  readS_to_P reads
-		di = string "dissenso riferito a " >> Dissenso <$> readS_to_P reads
-		fa = string "rinuncia alla raccolta di assensi riferita a " >> EventoFallimentoAssenso <$> readS_to_P reads
+		as = string "assenso riferito a " >> Assenso <$> reads'
+		di = string "dissenso riferito a " >> Dissenso <$> reads'
+		fa = string "rinuncia alla raccolta di assensi riferita a " >> EventoFallimentoAssenso <$> reads'
 		in lift $ as <++ di <++ fa 
 
 -- | lo stato necessario per la gestione di un tipo di assensi
@@ -402,11 +398,11 @@ programmazioneAssenso se ur c k kn = do
 --------------------------- costruzioni per il modulo assensi -----------------------------
 
 -- | estrae gli assensi dallo stato in lettura
-assensi :: (Monad m, ParteDi (Servizio Assensi) s) => Supporto m s b [(String, Utente)]
+assensi :: (Monad m, ParteDi (Servizio Assensi) s) => Supporto m s b [(Indice,String)]
 assensi = do
 	xs :: [(Indice,(String,Assensi))] <- asks elencoSottoStati 
 	when (null xs) $ throwError "nessuna questione aperta"
-	return  $ map (second richiedente . snd) xs
+	return  $ map (second fst) xs
 
 filtra u (Assensi ur ps ns) = not . elem u $ ps ++ ns
 filtra u (Permesso ur u') = u' == u 
@@ -447,7 +443,7 @@ costrQueryAssenso s kp kn = [("questioni aperte", querySottoStati)]
 		ys <- assensi
 		return $ Response [("questioni aperte", if null ys then
 			ResponseOne "nessuna questione aperta" else ResponseAL $ 
-				map (\(s,u) -> (u,ResponseOne s)) ys)]
+				map (\(i,s) -> (show i,ResponseOne s)) ys)]
 priorityAssenso = R k where
 	k (Assenso _) = -25
 	k (Dissenso _) = -24

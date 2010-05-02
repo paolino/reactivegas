@@ -57,17 +57,17 @@ instance Read EsternoImpegno where
 			string "impegno da "
 			u <- phrase 
 			string " di euro " 
-			f <- readS_to_P reads
+			f <- reads'
 			string " in riferimento a "
-			i <- readS_to_P reads
+			i <- reads'
 			return $ Impegno u f i
 		fin = do 
 			string "chiusura della raccolta impegni riferita a "
-			i <- readS_to_P reads
+			i <- reads'
 			return $ FineImpegno i
 		fal = do 
 			string "fallimento della raccolta impegni riferita a "
-			i <- readS_to_P reads
+			i <- reads'
 			return $ FallimentoImpegno i
 			
 			
@@ -249,5 +249,6 @@ costrQueryImpegni s kp kn = 	[("raccolte di impegni aperte",q)]
 					("responsabile della raccolta di impegni", ResponseOne ur),
 					("permesso a chiudere", ResponseOne $ if ch then "concesso" else "non ancora concesso"),
 					("somme impegnate accettate ", ResponseMany . map (ResponseOne *** id) $ as),
-					("somme impegnate in attesa di conferma ", ResponseMany . map (ResponseOne *** id) $ is)]
+					("somme impegnate in attesa di conferma ", ResponseMany . map (ResponseOne *** id) $ is),
+					("riferimento", ResponseOne $ show n)]
 

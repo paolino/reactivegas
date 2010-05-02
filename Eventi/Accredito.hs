@@ -46,13 +46,13 @@ instance Read EsternoAccredito where
 			string "accredito a "
 			u <- phrase
 			string " di euro "
-			f <- readS_to_P reads
+			f <- reads'
 			return $ Accredito u f
 		sal = do
 			string "movimento dalla cassa di "
 			u <- phrase
 			string " di euro "
-			f <- readS_to_P reads
+			f <- reads'
 			return $ Saldo u f
 		in lift $ acc <++ sal
 -- | priorita' per gli eventi del modulo

@@ -124,7 +124,7 @@ div.dimensione5 {
 	overflow: auto;
 }
 
-dt {color: green;font-style:bold;}
+dt {color: green;}
 dl {color:#555;}
 
 input.continua {
@@ -138,7 +138,6 @@ input#valore {font: 8pt sans-serif;
 
 div.response {	
 	color: #755;
-	font-weight:bold;
 	background:#f0f0f0;
 	border-bottom: 1px solid #e5e5e5;
 	overflow:auto;
@@ -157,7 +156,7 @@ div.passobox {
 li.scelta {height:14px;overflow:hidden;}
 li.responso {height:14px;overflow:hidden;}
 
-dt {	color: #575;font-weight:bold;
+dt {	color: #575;
 	border-bottom: 1px solid #e5e5e5;
 	background:#f0f0f0;
 	}

@@ -42,7 +42,7 @@ nuovoStatoServizio :: (ParteDi (Servizio a) s, Read a, Show a, Integer `ParteDi`
 nuovoStatoServizio s q = do
 	Servizio ls <- osserva
 	n <- osserva
-	let p = makeQInteger $ n + (BL.foldr (\x y -> 256 * y + fromIntegral (ord x)) 0 . hash $ q)
+	let p = makeQInteger $ (n + (BL.foldr (\x y -> 256 * y + fromIntegral (ord x)) 0 . hash $ q) `mod` 10 ^ 12)
 	modifica $ \_ -> Servizio ((p,(q,s)):ls)
 	logga $ "riferimento " ++ show p
 	return p
