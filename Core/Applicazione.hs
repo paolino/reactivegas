@@ -63,8 +63,9 @@ caricamento l es = second (eccoILogs . map (first flatten)) . caricaEventi prior
 nuovoStato :: [Responsabile] -> QS
 nuovoStato rs = (bootAnagrafe rs  . bootAccredito . bootImpegni . bootAcquisti  $ 0, replicate (length reattori) $ SNodo True [])
 
+maxLevel = 100
 sortEventi :: [Evento] -> [Evento]
-sortEventi = sortP 100 priorita id
+sortEventi = sortP maxLevel priorita id
 
 levelsEventi :: [Evento] -> [(Evento,Int)]
 levelsEventi = levelsP  priorita id
@@ -72,7 +73,7 @@ levelsEventi = levelsP  priorita id
 loader ::  QS -> Group -> Writer [String] (Either String QS)
 loader (qs@(s,_)) g = runErrorT $ do
 			(_,es) <- runReaderT (fromGroup g) s
-			let (qs',ef) = caricamento 100 es qs 
+			let (qs',ef) = caricamento maxLevel es qs 
 			tell [ef]
 			return $ first (seeset ((+) 1 :: Integer -> Integer)) qs'
 

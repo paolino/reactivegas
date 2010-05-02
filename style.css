@@ -72,7 +72,7 @@ div.dimensione1 {
 	position: absolute;
 	top :50px;
 	left :4px;
-	border: 1px solid #cccccc;
+	border: 1px solid #999;
 	margin: 2px;
 	background-color: #f0f0f0 ;
 	width:295px;
@@ -82,8 +82,8 @@ div.dimensione1 {
 div.dimensione2 {
 	position: absolute;
 	top :50px;
-	left : 300px;
-	border: 1px solid #cccccc;
+	left : 302px;
+	border: 1px solid #999;
 	margin: 2px;
 	background-color: #f0f0f0 ;
 	width:601px;
@@ -93,8 +93,8 @@ div.dimensione2 {
 div.dimensione3 {
 	position: absolute;
 	top : 309px;
-	left : 300px;
-	border: 1px solid #cccccc;
+	left : 302px;
+	border: 1px solid #999;
 	margin: 2px;
 	background-color: #f0f0f0 ;
 	width:601px;
@@ -103,9 +103,9 @@ div.dimensione3 {
 }
 div.dimensione4 {
 	position: absolute;
-	top : 231px;
+	top : 232px;
 	left : 4px;
-	border: 1px solid #ccc;
+	border: 1px solid #999;
 	margin: 2px;
 	background-color: #f0f0f0 ;
 	width:295px;
@@ -114,9 +114,9 @@ div.dimensione4 {
 }
 div.dimensione5 {
 	position: absolute;
-	top : 462px;
+	top : 464px;
 	left : 4px;
-	border: 1px solid #cccccc;
+	border: 1px solid #999;
 	margin: 2px;
 	background-color: #f0f0f0 ;
 	width:295px;

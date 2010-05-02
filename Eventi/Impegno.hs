@@ -73,9 +73,9 @@ instance Read EsternoImpegno where
 			
 		in lift $ imp <++ fin <++ fal
 priorityImpegno = R k where
-	k (Impegno _ _ _) = -28
+	k (Impegno _ _ _) = -27
 	k (FineImpegno _) = 15
-	k (FallimentoImpegno _) = 15
+	k (FallimentoImpegno _) = 16
 
 priorityImpegnoI = R k where
 	k (EventoFallimentoImpegno _) = 20

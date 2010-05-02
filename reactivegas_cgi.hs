@@ -13,7 +13,7 @@ import Core.Types (Esterno,Utente)
 import Core.Persistenza (mkGroupSystem, startGroupSystem, readStato)
 import Core.Sessione (mkSessione, readEventi , readAccesso)
 import Core.UI (applicazione)
-import Core.Applicazione (QS,loader, caricamento, nuovoStato) 
+import Core.Applicazione (QS,loader, caricamento, nuovoStato, maxLevel) 
 import Text.XHtml
 import Network.SCGI
 
@@ -22,7 +22,7 @@ import Debug.Trace
 layout = 	[(["gestione dichiarazioni"],2)
 		,(["descrizione sessione"],1)
 		,(["amministrazione"],5)
-		,(["effetto delle dichiarazioni"],3)
+		,(["effetto delle ultime dichiarazioni"],3)
 		,(["interrogazione sullo stato del gruppo"],4)
 		]
 pagina b = output . prettyHtml $  
@@ -55,5 +55,5 @@ main = do
 	forkIO . forever $ atomically (readTChan c)
 	(gs,modif,agg) <- mkGroupSystem loader caricamento' nuovoStato c "tarogas" 
 	pe <- startGroupSystem 10000000 gs
-	sessionServer 5000 10 applicazione pagina layout ((,) pe <$> mkSessione modif 30 agg) 
+	sessionServer 5000 10 20 applicazione pagina layout ((,) pe <$> mkSessione modif maxLevel agg) 
 	

@@ -82,12 +82,13 @@ checkReset reset k = do
 		_ -> k
 
 sessionServer 	:: forall e . Int 	 -- ^ porta del server scgi
-			-> Int 	 -- ^ numero massimo di ricordi per sessione
+			-> Int		-- ^ numero massimo di ricordi per sessione
+			-> Int		-- ^ numero massimo di sessioni simnultanee 	
 			-> Costruzione (ReaderT e IO) () () -- ^ interfaccia utente
 			-> (Html -> CGI CGIResult) -- ^ gestore del response
 			-> [([Value],Int)] -- ^ serializzazione delle form di default
 			-> IO e  -- ^ produzione di evironment per sessione 
 			-> IO () -- ^ aloa
-sessionServer (PortNumber . fromIntegral -> port) limit interface responseHandler defaultForms newEnvironment = do
-	(server :: CGI (Server e Html Link,IO ()),reset) <- sessioning 100 (sessionCgi limit interface defaultForms newEnvironment) 
+sessionServer (PortNumber . fromIntegral -> port) limitR limitS interface responseHandler defaultForms newEnvironment = do
+	(server :: CGI (Server e Html Link,IO ()),reset) <- sessioning limitS (sessionCgi limitR interface defaultForms newEnvironment) 
 	runSCGI port $ handleErrors (checkReset reset server >>= cgiFromServer responseHandler)

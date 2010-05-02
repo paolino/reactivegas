@@ -18,6 +18,7 @@ data Sessione a b = Sessione
 	-- | legge lo stato modificato dagli eventi in memoria prodotti dal responsabile in memoria
 	,readStatoSessione :: IO a
 	,setConservative :: Int -> IO ()
+	,getConservative :: IO (Int)
 	}
 
 data Triggers = TResponsabile (Maybe Responsabile) | TEventi [Evento] | TConservative Int
@@ -42,7 +43,7 @@ update f l (eventi,accesso,conservative, stato, caricatura) = do
 	(s,c) <- f l' mr evs 
 	writeTVar stato s
 	c' <- if l == l' then return c else fmap snd $ f l mr evs
-	writeTVar caricatura c'
+	writeTVar caricatura c
 
 -- azione di modifica di uno di eventi o responsabile
 triggering 	:: Update a b -- produce uno stato modificato
@@ -87,6 +88,7 @@ mkSessione f l cs = do
 		(t $ readTVar caricatura)
 		(t $ readTVar stato)
 		(atomically . writeTChan triggers . TConservative)
+		(atomically $ readTVar conservative)
 
 before :: STM a -> STM b -> STM b 
 before a b = (a >> b) `orElse` b

@@ -33,7 +33,7 @@ import Core.Patch ( Firmante (..),firmante, Patch)
 import Core.Costruzione (runSupporto, Supporto)
 import Core.Persistenza (Persistenza (..))
 import Core.Sessione (Sessione (..))
-import Core.Applicazione (QS,caricamento, TS, sortEventi, levelsEventi)
+import Core.Applicazione (QS,caricamento, TS, sortEventi, levelsEventi, maxLevel)
 
 import Eventi.Anagrafe
 import Eventi.Accredito
@@ -105,8 +105,8 @@ creaChiavi = do
 	us <- utenti <$> fst <$> statoSessione
 	(rs,rs') <- responsabili <$> fst <$> statoSessione
 	let es = us \\ (map fst $ rs ++ rs')
-	if null es then P.errore $ ResponseOne "nessun utente senza chiavi" else do
-		u <- P.scelte  (zip es es) "nomignolo dell'utente pr il quale creare le chiavi"
+	if null es then P.errore $ ResponseOne "nessun utente che non sia già responsabile" else do
+		u <- P.scelte  (zip es es) "nomignolo dell'utente per il quale creare le chiavi"
 		p <- P.libero $ "la password per le chiavi di " ++ u ++ ", una frase , lunga almeno 12 caratteri"
 		P.download (u ++ ".chiavi") (u,cryptobox p)
 
@@ -136,15 +136,20 @@ aggiornamentiIndividuali = ("esamina gli aggiornamenti individuali presenti", do
 		(u,es) <- P.scelte (map (fst &&& id) ps) "scegli aggiornamento da esaminare" 
 		P.output $ Response [("aggiornamento da parte di " ++ u, ResponseMany $ map ResponseOne (sortEventi es))]
 	)
-eventLevelSelector = onAccesso $ \(u,_) -> do 
+eventLevelSelector = do 
 	us <- sel $ readUPatches . fst
 	(s,_) <- statoPersistenza
 	es' <- letturaEventi
-	let es = levelsEventi . (es' ++) . concatMap snd . filter ((/=) u . fst) $ fromUPatches (us,s)
-	return $ case es of
+	mu <- sel $ readAccesso . snd
+	let es = levelsEventi . (es' ++) . concatMap snd . maybe id (\(u,_) -> filter ((/=) u . fst)) mu $ fromUPatches (us,s)
+	let rs = case es of
 		[] -> Nothing  
-		es -> Just $ (const "<nessuno>" *** (subtract 1)) (head es) : es ++ [("<tutti>",100)]
-	
+		es -> Just $ (const "<nessuno>" *** (subtract 1)) (head es) : es ++ [("<tutti>",maxLevel)]
+	case rs of 
+		Nothing -> P.errore $ ResponseOne "nessuna dichiarazione presente"
+		Just rs -> mano "livello di considerazione delle ultime dichiarazioni" $ map (\(x,l) ->
+				(x, sel (($l). setConservative . snd))) rs
+
 
 letturaEventi ::  Interfaccia [Evento]
 letturaEventi = sel $ readEventi . snd
@@ -183,13 +188,6 @@ dichiarazioni = concat $
 		,	[("----------",return ())
 			,("pubblica le dichiarazioni in sessione",salvataggio)
 			,("elimina delle dichiarazioni",eliminazioneEvento)
-			,("regola il livello di caricamento dichiarazioni", do 
-						rs <- eventLevelSelector 
-						case rs of 
-							Nothing -> P.errore $ ResponseOne "nessuna dichiarazione da caricare"
-							Just rs -> do 
-								r <- P.scelte rs "livello di caricamento"	
-								sel (($r). setConservative . snd))
 			]
 
 		]
@@ -229,11 +227,12 @@ amministrazione = do
 	mano "amministrazione" $ 
 			[
 			("responsabile autore delle dichiarazioni", accesso >> return ())
-			,("digerisci tutte le dichiarazioni pubblicate", sincronizza aggiornamento aggiornamenti)
+			,("livello di considerazione delle ultime dichiarazioni", eventLevelSelector)
 			,("scarica nuove chiavi da responsabile", creaChiavi)
-			,("porta sul retro", mano "porta sul retro" 
+			,("priveè", mano "priveè" 
 
 				[("scarica le dichiarazioni prodotte", letturaEventi >>= P.download "dichiarazioni.txt" )
+				,("digerisci tutte le dichiarazioni pubblicate", sincronizza aggiornamento aggiornamenti)
 				,("carica un aggiornamento individuale", P.errore $ ResponseOne "non implementato")
 				,("scarica gli aggiornamenti individuali", 
 					aggiornamenti >>= P.download "aggiornamenti.txt")
@@ -252,10 +251,10 @@ applicazione = rotonda $ \_ -> do
 				]
 		Just s ->  
 			mano ("menu principale") [
-				("effetto delle dichiarazioni", do
+				("effetto delle ultime dichiarazioni", do
 					c <- sel (readCaricamento . snd) 
 					P.output . Response $ 
-						[("effetto delle nuove dichiarazioni",  c)]),
+						[("effetto delle ultime dichiarazioni",  c)]),
 
 				("gestione dichiarazioni" , onAccesso . const $ mano "gestione dichiarazioni" $ dichiarazioni), 
 				("descrizione sessione", do
@@ -268,11 +267,14 @@ applicazione = rotonda $ \_ -> do
 							return $ case mevsp of
 								Nothing -> []
 								Just (_,_,es) -> es
+					l <- sel $ getConservative . snd
 							
 					P.output . Response $ 
 						[("responsabile della sessione" , ResponseOne $ case r of 
 							Nothing -> "anonimo"
 							Just (u,_) -> u)
+						,("livello di considerazione dichiarazioni",if l == maxLevel then
+							ResponseOne "massimo" else ResponseOne ("modificato: " ++ show l)) 
 						,("dichiarazioni in sessione" , ResponseMany $ map ResponseOne (sortEventi evs))
 						,("dichiarazioni pubblicate", ResponseMany $ map ResponseOne (sortEventi evsp))
 						]
