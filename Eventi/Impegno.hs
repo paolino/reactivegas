@@ -132,7 +132,7 @@ programmazioneImpegno' q ur k  = do
 			(ks,es) <- k Nothing 
 			return (ks,EventoInterno (EventoFallimentoImpegno (ur,sum (map snd (as ++ is)))): es)
 
-		reattoreImpegno _ (Right (first validante ->  (w,Impegno u v j))) = w $ \r -> let
+		reattoreImpegno _ (Right (first validante ->  (w,i@(Impegno u v j)))) = w $ \r -> let
 			positivo _ = do
 				logga $ "accettato l'impegno di " ++ show v ++ " da " ++ u ++ " per " ++ q 
 				modificaStatoServizio j $ \(Impegni ch ur as is) -> return 

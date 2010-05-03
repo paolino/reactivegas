@@ -12,7 +12,7 @@ import Data.List
 newtype Euro = Euro Rational deriving (Eq,Num,Ord)
 
 instance Show Euro where
-	show (Euro x) = printf "%d euro " y ++ if yc > 0 then printf "e %d centesimi" yc else "" where
+	show (Euro x) = printf "%d euro" y ++ if yc > 0 then printf " e %d centesimi" yc else "" where
 		z = truncate $ fromRational (x * 100) :: Int
 		(y,yc) = z `divMod` 100 
 
