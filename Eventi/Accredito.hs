@@ -31,27 +31,28 @@ import Lib.Prioriti (R (..))
 import Lib.Assocs (update , (?))
 import Lib.Response (Response (..))
 import Lib.ShowRead
+import Lib.Euro
 
 -- | evento esterno che interessa il controllo del credito o del saldo
-data EsternoAccredito = Accredito Utente Float | Saldo Utente Float 
+data EsternoAccredito = Accredito Utente Euro | Saldo Utente Euro 
 
 
 instance Show EsternoAccredito where
-	show (Accredito u f) = "accredito a " ++ quote u ++ " di euro " ++ show f
-	show (Saldo u f) = "movimento dalla cassa di " ++ quote u ++ " di euro " ++ show f
+	show (Accredito u f) = "accredito a " ++ quote u ++ " di " ++ show f
+	show (Saldo u f) = "movimento dalla cassa di " ++ quote u ++ " di " ++ show f
 
 instance Read EsternoAccredito where
 	readPrec = let 
 		acc = do
 			string "accredito a "
 			u <- phrase
-			string " di euro "
+			string " di "
 			f <- reads'
 			return $ Accredito u f
 		sal = do
 			string "movimento dalla cassa di "
 			u <- phrase
-			string " di euro "
+			string " di "
 			f <- reads'
 			return $ Saldo u f
 		in lift $ acc <++ sal
@@ -61,10 +62,10 @@ priorityAccredito = R k where
 	k (Saldo _ _) = -35
 
 -- | stato degli accrediti utente
-data Conti = Conti [(Utente,Float)] deriving (Read, Show)
+data Conti = Conti [(Utente,Euro)] deriving (Read, Show)
 
 -- | stato dei saldi responsabile
-data Saldi = Saldi [(Utente,Float)] deriving (Read, Show)
+data Saldi = Saldi [(Utente,Euro)] deriving (Read, Show)
 
 -- | tipo aggiunto dello stato necessario al modulo
 type TyAccredito a = (Conti , (Saldi , a))
@@ -74,7 +75,7 @@ bootAccredito :: a -> TyAccredito a
 bootAccredito x = Conti [] .< Saldi [] .< x
 
 -- | esegue un prelievo da un conto utente
-preleva :: (Anagrafe `ParteDi` s, Conti `ParteDi` s) => Utente -> Float -> MTInserzione s c Utente ()
+preleva :: (Anagrafe `ParteDi` s, Conti `ParteDi` s) => Utente -> Euro -> MTInserzione s c Utente ()
 preleva u dv = do
 	fallimento (dv <= 0) "prelievo negativo o nullo"
 	esistenzaUtente u 
@@ -83,7 +84,7 @@ preleva u dv = do
 	aggiornaCredito u (subtract dv) 
 
 -- | esegue un accredito su un conto utente
-accredita :: (Anagrafe `ParteDi` s, Conti `ParteDi` s) => Utente -> Float -> MTInserzione s c Utente ()
+accredita :: (Anagrafe `ParteDi` s, Conti `ParteDi` s) => Utente -> Euro -> MTInserzione s c Utente ()
 accredita u dv = do
 	--fallimento (dv <= 0) "tentato un accredito negativo o nullo"
 	esistenzaUtente u 
@@ -92,14 +93,14 @@ accredita u dv = do
 	fallimento (r < 0) "richiesto uno storno superiore al credito" 
 	aggiornaCredito u (+ dv) 
 -- | modifica il saldo di un responsabile
-salda :: (Anagrafe `ParteDi` s, Responsabili `ParteDi` s, Saldi `ParteDi` s) => Utente -> (Float -> Float) -> MTInserzione s c Utente ()
+salda :: (Anagrafe `ParteDi` s, Responsabili `ParteDi` s, Saldi `ParteDi` s) => Utente -> (Euro -> Euro) -> MTInserzione s c Utente ()
 salda u dv = esistenzaResponsabile u >> aggiornaSaldo u dv
 
 -- | LL : modifica un credito
-aggiornaCredito :: (Anagrafe `ParteDi` s, Conti `ParteDi` s) => Utente -> (Float -> Float) -> MTInserzione s c Utente ()
+aggiornaCredito :: (Anagrafe `ParteDi` s, Conti `ParteDi` s) => Utente -> (Euro -> Euro) -> MTInserzione s c Utente ()
 aggiornaCredito u dv = modifica $ \(Conti us) -> Conti (update u dv 0 us)
 -- | LL : modifica un saldo
-aggiornaSaldo :: (Anagrafe `ParteDi` s, Responsabili `ParteDi` s, Saldi `ParteDi` s) => Utente -> (Float -> Float) -> MTInserzione s c Utente ()
+aggiornaSaldo :: (Anagrafe `ParteDi` s, Responsabili `ParteDi` s, Saldi `ParteDi` s) => Utente -> (Euro -> Euro) -> MTInserzione s c Utente ()
 aggiornaSaldo u dv = modifica $ \(Saldi us) -> Saldi (update u dv 0 us)
 
 -- | il caricatore di eventi per questo modulo
@@ -115,14 +116,14 @@ reazioneAccredito = soloEsterna reattoreAccredito where
 		fallimento (r == u) "aggiornamento del proprio credito di utente"
 		accredita u dv
 		salda r (+dv)
-		logga $ "accreditate " ++ show dv ++ " euro a " ++ u
+		logga $ "accreditate " ++ show dv ++ " a " ++ u
 		return (True,nessunEffetto)	
 	reattoreAccredito (first validante -> (wrap ,Saldo u dv)) = wrap $ \r -> do
 		esistenzaResponsabile u
 		fallimento (u == r) "movimento di denaro riferito ad una cassa sola"
 		fallimento (dv <= 0) "saldo negativo o nullo"
 		modifica $ \(Saldi us) -> Saldi (update r (+ dv) 0 (update u (subtract dv) 0 us))
-		logga $ "spostati " ++ show dv ++ " euro dalla cassa di " ++ u ++ " alla cassa di " ++ r
+		logga $ "spostati " ++ show dv ++ " dalla cassa di " ++ u ++ " alla cassa di " ++ r
 		return (True,nessunEffetto)
 
 -- | costruttore di eventi per il modulo di accredito

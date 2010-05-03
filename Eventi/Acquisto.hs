@@ -18,6 +18,7 @@ import Lib.Prioriti (R(..))
 import Lib.Assocs (update,elimina,assente)
 import Lib.Response (Response (..))
 import Lib.QInteger (QInteger)
+import Lib.Euro (Euro)
 
 import Core.Costruzione (libero, scelte , CostrAction, runSupporto)
 import Core.Parsing (Parser)
@@ -58,7 +59,7 @@ acquisto b = do
 	maybe (fallimento True "nome dell'acquisto inesistente" >> return undefined) return $ find (nominato b) as
 
 data StatoAcquisti = StatoAcquisti 
-	{ chiusi :: [(String, Maybe (Utente, [(Utente,Float)]))] 
+	{ chiusi :: [(String, Maybe (Utente, [(Utente,Euro)]))] 
 	, aperti :: [Acquisto]
 	} deriving (Read,Show)
 

@@ -2,7 +2,6 @@
 module Core.Parsing where
 
 import Control.Applicative ((<$>))
-import Data.Maybe (listToMaybe)
 
 -- | Un parser selezionabile 
 class (Show a, Read a) => Parser c a where -- richiediamo Show qui per comoditá ....
@@ -13,10 +12,11 @@ class (Show a, Read a) => Parser c a where -- richiediamo Show qui per comoditá
 -- |  parser interno utilizzato per la deserializzazione dello stato di controllo
 --  attenzione alla relazione biiettiva show read in tutti gli eventi introdotti in tutti i plugin !!!!
 data ParserConRead a = ParserConRead a 
-
+listToMaybe' [] = Nothing
+listToMaybe' xs = Just $ last xs
 -- | il parser standard che utilizza read e show, valido per qualsiasi evento di tipo String
 instance (Read a, Show a) =>  Parser ParserConRead a where
-	parser s = ParserConRead <$> fst <$> listToMaybe (reads s)
+	parser s = ParserConRead <$> fst <$> listToMaybe' (reads s)
 	valore (ParserConRead a) = a
 	priorita (ParserConRead a) = 0
 

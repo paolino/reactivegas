@@ -26,8 +26,8 @@ layout = 	[(["gestione dichiarazioni"],2)
 		,(["interrogazione sullo stato del gruppo"],4)
 		]
 pagina b = output . prettyHtml $  
-		header << (thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml 
-				+++ thetitle << "Amministrazione G.A.S.") 
+		header << ((thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml)
+				+++ (thetitle << "Amministrazione G.A.S.") +++ (meta ! [httpequiv "Content-Type", content "text/html;charset=utf8;"]))  
 		+++ body << thediv ! [theclass "testata"] 
 				<< 	(thediv ! [theclass "titolo"] 
 						<< ("Amministrazione economica del gruppo d'acquisto" +++ anchor !

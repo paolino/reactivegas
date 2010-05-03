@@ -1,4 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables, StandaloneDeriving #-}
+{-# LANGUAGE ScopedTypeVariables, ViewPatterns, StandaloneDeriving #-}
 module Lib.HTTP where
 
 import Control.Arrow ((***))
@@ -88,15 +88,15 @@ runPasso (P.Costruito _) = runPasso . P.Errore
 runPasso (P.Libero q c ) = let 
 	k y z = thediv ! [theclass "passobox"] << 
 			(	thediv ! [theclass "response"] << q +++ 
-				form ! [method "post", action ("/interazione")] 
+				form ! [method "post", action ("/interazione"), strAttr "accept-charset" "utf8"] 
 					<< [	hidden "hkey" y, textfield "valore", 
 						hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]]
 			) +++ internalmenu  y z
 	parse x = case reads x of
 		[] -> case reads $ "\"" ++ x ++ "\"" of 
 			[] -> Nothing 
-			[(x',_)] -> Just $ c x'
-		[(x',_)] -> Just $ c x'
+			(last -> (x',_)) -> Just $ c x'
+		(last -> (x',_)) -> Just $ c x'
 	in (k, Nothing,parse)
 runPasso (P.Scelta q xs c) = let 
 	k y z =  thediv ! [theclass "passobox"] << 

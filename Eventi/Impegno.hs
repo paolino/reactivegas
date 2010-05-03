@@ -39,16 +39,17 @@ import Eventi.Accredito (preleva, accredita, Conti)
 import Debug.Trace
 
 import Lib.ShowRead
+import Lib.Euro
 
 type Indice = QInteger
 -- | gli eventi  esterni per questo modulo
 data EsternoImpegno 
-	= Impegno Utente Float Indice	-- ^ indica un impegno di denaro da parte dell'utente per la causa chiave
+	= Impegno Utente Euro Indice	-- ^ indica un impegno di denaro da parte dell'utente per la causa chiave
 	| FineImpegno Indice  		-- ^ indica la chiusura positiva della causa
 	| FallimentoImpegno Indice	-- ^ indica la chiusura negativa della causa
 
 instance Show EsternoImpegno where
-	show (Impegno u f i) = "impegno da " ++ quote u ++ " di euro " ++ show f ++ " in riferimento a " ++ show i
+	show (Impegno u f i) = "impegno da " ++ quote u ++ " di " ++ show f ++ " in riferimento a " ++ show i
 	show (FineImpegno i) = "chiusura della raccolta impegni riferita a " ++ show i
 	show (FallimentoImpegno i) = "fallimento della raccolta impegni riferita a " ++ show i
 instance Read EsternoImpegno where
@@ -56,7 +57,7 @@ instance Read EsternoImpegno where
 		imp = do
 			string "impegno da "
 			u <- phrase 
-			string " di euro " 
+			string " di " 
 			f <- reads'
 			string " in riferimento a "
 			i <- reads'
@@ -81,14 +82,14 @@ priorityImpegnoI = R k where
 	k (EventoFallimentoImpegno _) = 20
 
 -- | evento interno che segnala il fallimento di una causa
-data Interni = EventoFallimentoImpegno (Utente, Float) deriving (Show,Read)
+data Interni = EventoFallimentoImpegno (Utente, Euro) deriving (Show,Read)
 
 -- | intercettore per gli eventi interni
 fallimentoImpegno (EventoFallimentoImpegno t) = Just t
 fallimentoImpegno _ = Nothing
 
 -- | lo stato per ogni causa
-data Impegni = Impegni {permesso :: Bool, referente::Utente, accettati :: [(Utente,Float)], inattesa :: [(Utente,Float)]} deriving (Show,Read)
+data Impegni = Impegni {permesso :: Bool, referente::Utente, accettati :: [(Utente,Euro)], inattesa :: [(Utente,Euro)]} deriving (Show,Read)
 
 -- | tipo dello stato aggiunto degli impegni
 type TyImpegni a = (Servizio Impegni , a)
@@ -100,7 +101,7 @@ bootImpegni x = (servizio0,x)
 -- unImpegno s n = (\(Impegni us) -> us) <$> snd <$> seeStatoServizio  (undefined :: Impegni) s n
 
 -- | il tipo della funzione da passare alla hof restituita da programmazioneImpegno 
--- type ConclusioneReattoreImpegno s c = Maybe ([(Utente, Float)]) -> MTInserzione s c Utente (Effetti s c Utente)
+-- type ConclusioneReattoreImpegno s c = Maybe ([(Utente, Euro)]) -> MTInserzione s c Utente (Effetti s c Utente)
 
 -- | la programmazione di un impegni richiede il nome del responsabile che la apre e restituisce la chiave del nuovo stato impegni con una una azione monadica in grado di creare una nuova Reazione se fornita della giusta procedura. La giusta procedura definisce cosa eseguire alla fine della raccolta impegni. In caso di successo l'azione riceve la lista di impegni raccolta , in caso di fallimento Nothing. Comunque essa deve fornire una lista di nuovi reattori e una lista di eventi interni.
 programmazioneImpegno' :: (
@@ -114,7 +115,7 @@ programmazioneImpegno' :: (
 	Servizio Impegni 	`ParteDi` s)  -- il nostro aspetto
 	=> String	-- ^ motivazione della raccolta
 	-> Utente 	-- ^ l'utente responsabile dell'impegno
-	-> (Maybe ([(Utente, Float)]) -> MTInserzione s c Utente (Effetti s c Utente))
+	-> (Maybe ([(Utente, Euro)]) -> MTInserzione s c Utente (Effetti s c Utente))
 	-> MTInserzione s c Utente 
 		( Indice
 		, MTInserzione s c Utente (Effetti s c Utente)
@@ -133,7 +134,7 @@ programmazioneImpegno' q ur k  = do
 
 		reattoreImpegno _ (Right (first validante ->  (w,Impegno u v j))) = w $ \r -> let
 			positivo _ = do
-				logga $ "accettato l'impegno di " ++ show v ++ " euro da " ++ u ++ " per " ++ q 
+				logga $ "accettato l'impegno di " ++ show v ++ " da " ++ u ++ " per " ++ q 
 				modificaStatoServizio j $ \(Impegni ch ur as is) -> return 
 					(Impegni ch ur ((u,v):as) (delete (u,v) is))
 				return nessunEffetto
@@ -141,15 +142,15 @@ programmazioneImpegno' q ur k  = do
 				accredita u v
 				modificaStatoServizio j $ \(Impegni ch ur as is) -> return 
 					(Impegni ch ur as (delete (u,v) is))
-				logga $ "rifiutato l'impegno di " ++ show v ++ " euro da " ++ u ++ " per " ++ q
+				logga $ "rifiutato l'impegno di " ++ show v ++ " da " ++ u ++ " per " ++ q
 				return nessunEffetto
 			in do 
 				when (l /= j) mzero
 				preleva u v 
 				modificaStatoServizio j $ \(Impegni ch ur as is) -> return (Impegni ch ur as $ (u,v):is)
-				logga  $ "richiesta di impegno di  " ++ show v ++ " euro da " ++ u ++ " per " ++ q
+				logga  $ "richiesta di impegno di  " ++ show v ++ " da " ++ u ++ " per " ++ q
 				(_,reaz) <- programmazionePermesso 
-					("impegno di " ++ show v ++ " euro da " ++ u ++ " per " ++ q)
+					("impegno di " ++ show v ++ " da " ++ u ++ " per " ++ q)
 					r ur positivo negativo
 				return (True, ([reaz],[]))   
 		reattoreImpegno _ (Right (first validante -> (w,FineImpegno j))) = w $ \r -> do

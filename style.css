@@ -143,6 +143,10 @@ div.response {
 	overflow:auto;
 	}
 dl dt {font-weight: bold;}
+dl dd {
+	font-weight: normal;
+	text-indent:10px;			
+	}
 dl dd dl dt {
 	font-weight: normal;
 	text-indent:10px;			

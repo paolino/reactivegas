@@ -66,7 +66,8 @@ cgiFromServer resp ((fsM,(liftServer .) -> s),droppa) = do
 					hk <- readHKey
 					fk <- readFKey
 					v <- readValore
-					ehl <- s (hk,fk,Continua v) `mplus` s (hk,fk,Continua $ decodeString v)
+					ehl <- 	s (hk,fk,Continua (trace v  v)) `mplus` 
+						s (hk,fk,Continua $ decodeString v)	
 					case ehl of
 						Right hs -> lift . resp $ pagina hs
 						Left _ -> throwError "l'interazione continua con un download"
