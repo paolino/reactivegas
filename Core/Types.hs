@@ -1,5 +1,5 @@
 module Core.Types where
-
+import Lib.Firmabile (Chiave,Segreto)
 -- | come ci si riferisce ad un evento
 type Evento = String
 
@@ -12,4 +12,6 @@ type Esterno d = (d,Evento)
 -- | I log dei reattori sono diretti all'utente 
 type Message = String
 type Utente = String
+-- | un utente con chiave pubblica
+type Responsabile = (Utente,(Chiave,Segreto))
 

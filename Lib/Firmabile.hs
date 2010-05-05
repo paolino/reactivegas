@@ -1,15 +1,19 @@
-{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE StandaloneDeriving, TypeSynonymInstances #-}
 module Lib.Firmabile 
 	where
 import Data.Monoid (mappend)
-import qualified Codec.Crypto.RSA as RSA (hashFunction, ha_MD5,ha_SHA256, sign,verify,PrivateKey(..),PublicKey, generateKeyPair)
+import qualified Codec.Crypto.RSA as RSA -- (hashFunction, ha_MD5,ha_SHA256, sign,verify,PrivateKey(..),PublicKey (..), generateKeyPair)
 import qualified Codec.Crypto.SimpleAES as A  (decryptMsg,encryptMsg',Mode(..))
 import qualified Data.ByteString.Char8 as B (ByteString, pack, concat, take)
 import qualified Data.ByteString.Lazy.Char8 as BL (ByteString, pack, toChunks, unpack, foldr, concat)
 import System.Random (mkStdGen)
 import Data.Char (ord)
 
+deriving instance Read RSA.PublicKey
 deriving instance Read RSA.PrivateKey
+
+deriving instance Eq RSA.PublicKey
+deriving instance Eq RSA.PrivateKey
 
 type Firma = BL.ByteString
 type Chiave = RSA.PublicKey

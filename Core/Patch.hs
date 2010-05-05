@@ -1,5 +1,5 @@
 {-# LANGUAGE  TypeSynonymInstances, ExistentialQuantification, FlexibleContexts, 
-	ScopedTypeVariables, Rank2Types,  NoMonomorphismRestriction #-}
+	ScopedTypeVariables, Rank2Types,  NoMonomorphismRestriction, StandaloneDeriving #-}
 module Core.Patch -- (Patch, fromPatch, mkPatch, Group, fromGroup, mkGroup, Checker, runChecker, Ambiente (..)) where
 	where
 
@@ -11,12 +11,9 @@ import Control.Monad.Error (MonadError , when, throwError)
 import Control.Monad.Reader (MonadReader,ask, asks)
 import Data.Monoid (mappend)
 
-import Core.Types (Esterno,Evento,Message)
+import Core.Types (Esterno,Evento,Message,Utente,Responsabile)
 import Core.Costruzione (Supporto,libero,scelte)
-import Lib.Aspetti (ParteDi)
 import Lib.Firmabile (sign , verify, Firma, Chiave, Segreto, Password)
-
-import Eventi.Anagrafe (Responsabile, Responsabili,Utente,costrResponsabili,responsabili)
 
 
 -- | una patch è un insieme di eventi firmati da un responsabile
@@ -24,10 +21,10 @@ type Patch = (Chiave,Firma,[Evento])
 firma :: Patch -> Firma
 firma (_,x, _) =  x
 -- | controlla che una patch sia accettabile, ovvero che il responsabile sia presente e che la firma sia corretta
-fromPatch :: (Responsabili `ParteDi` s, Show s, MonadReader s m, MonadError String m) => Patch -> m [Esterno Utente]
-fromPatch (c,f,xs) =  do
-	(rs,_) <- asks $ responsabili 
+fromPatch :: (Show s, MonadReader s m, MonadError String m) => (s -> [Responsabile]) -> Patch -> m [Esterno Utente]
+fromPatch grs (c,f,xs) =  do
 	s <- ask
+	let rs = grs s
 	when (not $ c `elem` map (fst . snd) rs) $ throwError "l'autore della patch è sconosciuto"
 	when (not $ verify c (xs,s) f) $ throwError "la firma della patch utente è corrotta"
 	let u = fst. head . filter ((==c) . fst . snd) $ rs
@@ -40,14 +37,14 @@ type Group = (Chiave,Firma,[Patch])
 
 
 -- | restituisce gli eventi estratti dalla patch di gruppo, insieme al nome del responsabile che la ha firmata
-fromGroup :: (Responsabili `ParteDi` s, Show s, MonadReader s m , MonadError String m, Functor m) => Group -> m  (Utente,[Esterno Utente])
-fromGroup (c,f,ps) = do 
+fromGroup :: (Show s, MonadReader s m , MonadError String m, Functor m) => (s -> [Responsabile]) -> Group -> m  (Utente,[Esterno Utente])
+fromGroup grs (c,f,ps) = do 
 	s <- ask
-	(rs,_) <- asks responsabili 
+	let rs = grs s
 	when (not $ c `elem` map (fst . snd) rs) $ throwError "l'autore dell'aggiornamento di gruppo è sconosciuto"
 	when  (not $ verify c (ps,s) f) $ throwError "la firma del responsabile dell'aggiornamento di gruppo è corrotta" 
 	let u = fst. head . filter ((==c) . fst . snd) $ rs
-	(,) u <$> concat <$> mapM fromPatch ps
+	(,) u <$> concat <$> mapM (fromPatch grs) ps
 	
 -- newtype SignerBox = SignerBox 
 -- | costruisce una patch di gruppo da un insieme di patch responsabile

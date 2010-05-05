@@ -37,7 +37,6 @@ import Lib.Assocs (assente,(?),updateM,elimina)
 import Lib.Passo (Costruzione)
 import Lib.Response (Response (..))
 import Lib.Prioriti (R (..))
-import Lib.ShowRead
 
 import Core.Inserimento (logga, conFallimento, MTInserzione, osserva, modifica, fallimento)
 import Core.Programmazione (Inserzione, EventoInterno (..), soloEsterna, nessunEffetto, Reazione (..),Effetti)
@@ -45,18 +44,16 @@ import Core.Types (Message)
 import Core.Costruzione (Supporto,libero,upload,scelte,runSupporto,CostrAction)
 import Core.Parsing (ParserConRead, Parser)
 import Lib.Firmabile (Segreto, Chiave)
-import Lib.QInteger 
+import Lib.QInteger
 
 import Eventi.Servizio 
-import Debug.Trace
+
 deriving instance Eq PublicKey
 deriving instance Read PublicKey
 
 -- | chiave pubblica di un responsabile
 -- type Segreto = 
 type Indice = QInteger
--- | nome di un utente
-type Utente = String
 
 -- | il pezzo di stato necessario all'anagrafe per funzionare
 type TyAnagrafe a = (Anagrafe , (Responsabili , (Servizio Assensi, a)))
@@ -75,10 +72,6 @@ utenti = (\(Anagrafe us) -> us) . see
 -- | aggiunge la parte anagrafica dello stato allo stato iniziale
 bootAnagrafe :: [Responsabile] ->  a -> TyAnagrafe a
 bootAnagrafe unos x = Anagrafe (map fst unos) .< Responsabili unos [] .< servizio0 .< x
-
--- | un utente con chiave pubblica
-type Responsabile = (Utente,(Chiave,Segreto))
-
 -- | la lista dei responsabili eletti e in elezione
 data Responsabili = Responsabili {eletti::[Responsabile], inodore ::[(Indice,Responsabile)]} deriving (Show,Read)
 
@@ -87,41 +80,18 @@ responsabili = (\(Responsabili es is) -> (es, map snd is)) . see
 priorityAnagrafe = R k where
 	k (NuovoUtente _) = -40
 	k (EliminazioneResponsabile _) = -38
-	k (ElezioneResponsabile _ _ _) = -39
+	k (ElezioneResponsabile _) = -39
 	
 priorityAnagrafeI = R k where
 	k (EventoEliminazioneResponsabile _ _) = 20
 
-
 -- | eventi provenienti dall'esterno
 data EsternoAnagrafico 
 	= NuovoUtente String -- ^ inserimento di un nuovo utente 
-	| ElezioneResponsabile Utente Chiave Segreto  -- ^ richiesta di promozione a responsabile per un utente
+	| ElezioneResponsabile Responsabile -- ^ richiesta di promozione a responsabile per un utente
 	| EliminazioneResponsabile String -- ^ richiesta di dimissioni da responsabile per un responsabile
+	deriving (Read,Show)
 
-instance Show EsternoAnagrafico where
-	show (NuovoUtente u) = "riconoscimento di un nuovo utente di nome " ++ quote u
-	show (ElezioneResponsabile u c s) = "richiesta di elezione a responsable di " ++ quote u ++ ", " ++ show c ++ ", " ++ show s 
-	show (EliminazioneResponsabile u) = "richiesta di dimissione del responsabile " ++ quote u
-
-instance Read EsternoAnagrafico where
-	readPrec = let
-		nu = do
-			string "riconoscimento di un nuovo utente di nome "
-			NuovoUtente <$> phrase
-			
-		el = do 
-			string "richiesta di elezione a responsable di "
-			u <- phrase
-			string ", "
-			c <- reads'
-			string ", "
-			s <- reads'
-			return $ ElezioneResponsabile u c s
-		di = do 
-			string "richiesta di dimissione del responsabile "
-			EliminazioneResponsabile <$> phrase
-		in lift $ nu <++ el <++ di	
 -- | eventi prodotti all'interno
 data InternoAnagrafico 
 	= EventoEliminazioneResponsabile Utente Utente -- ^ messaggio di avvenuta eliminazione di un responsabile
@@ -162,24 +132,23 @@ reazioneAnagrafe = soloEsterna reattoreAnagrafe' where
 		modifica . const $ Anagrafe (u:us)
 		logga $ "accettato il nuovo utente " ++ u
 		return (True, nessunEffetto)
-	reattoreAnagrafe' (first validante -> (w,ElezioneResponsabile u c s)) = w $ \r -> do
-		let ucs = (u,(c,s))
+	reattoreAnagrafe' (first validante -> (w,ElezioneResponsabile u)) = w $ \r -> do
 		Anagrafe us <- osserva
-		esistenzaUtente u
+		esistenzaUtente (fst u)
 		Responsabili us ls <- osserva 
-		fallimento (ucs `elem` us) "utente già eletto" 
-		fallimento (ucs `elem` map snd ls) "utente già in elezione" 
-		(l,reaz,_) <- programmazioneAssenso ("elezione dell'utente " ++ u) r maggioranza (chiudibene ucs) (chiudimale ucs)
-		modifica $ \(Responsabili us ls) -> Responsabili us ((l,ucs):ls)
+		fallimento (u `elem` us) "utente già eletto" 
+		fallimento (u `elem` map snd ls) "utente già in elezione" 
+		(l,reaz) <- programmazioneAssenso ("elezione dell'utente " ++ fst u) r maggioranza (chiudibene u) (chiudimale u)
+		modifica $ \(Responsabili us ls) -> Responsabili us ((l,u):ls)
 		return (True,([reaz],[])) 
 		where
-		chiudibene ucs l = do
-			modifica $ \(Responsabili us ls) -> Responsabili (ucs:us) (filter ((/=) l . fst) ls)
-			logga $ "eletto il nuovo responsabile " ++ fst ucs
+		chiudibene u l = do
+			modifica $ \(Responsabili us ls) -> Responsabili (u:us) (filter ((/=) l . fst) ls)
+			logga $ "eletto il nuovo responsabile " ++ fst u
 			return nessunEffetto
-		chiudimale ucs l = do
+		chiudimale u l = do
 			modifica $ \(Responsabili us ls) -> Responsabili us (filter ((/=) l . fst) ls)
-			logga $ "elezione dell'utente " ++ fst ucs ++ " fallita"
+			logga $ "elezione dell'utente " ++ fst u ++ " fallita"
 			return nessunEffetto
 
 	reattoreAnagrafe' (first validante -> (w,EliminazioneResponsabile u)) = w $ \r -> do
@@ -188,7 +157,7 @@ reazioneAnagrafe = soloEsterna reattoreAnagrafe' where
 		esistenzaResponsabile u
 		Responsabili us ls <- osserva 
 		fallimento (u `elem` map (fst . snd) ls) "revoca del responsabile già richiesta" 
-		(l,reaz,_) <- programmazioneAssenso ("revoca del responsabile " ++ u) r maggioranza (chiudibene u r) (chiudimale u r)
+		(l,reaz) <- programmazioneAssenso ("revoca del responsabile " ++ u) r maggioranza (chiudibene u r) (chiudimale u r)
 		modifica $ \(Responsabili us ls) -> (Responsabili us ((l,(u,us ? (u,undefined))):ls))
 		return (True,([reaz],[]))
 		where
@@ -207,14 +176,14 @@ reazioneAnagrafe = soloEsterna reattoreAnagrafe' where
 -- | estrae la lista di costrResponsabili
 costrResponsabili :: (Monad m , ParteDi Responsabili s) => Supporto m s b [Responsabile]	
 costrResponsabili = do
-	(rs,_) <- asks responsabili
+	(rs,_) <- asks $ responsabili 
 	when (null rs) $ throwError "nessun responsabile presente nel gruppo" 
 	return rs
 
 -- | estrae la lista di costrUtenti
 costrUtenti :: (Monad m, ParteDi Anagrafe s) => Supporto m s b [Utente]	
 costrUtenti = do
-	rs <- asks utenti
+	rs <- asks $ utenti 
 	when (null rs) $ throwError "nessun utente presente nel gruppo" 
 	return rs
 
@@ -241,8 +210,8 @@ costrEventiResponsabili s kp kn =
 		let ds = us \\ (map fst rs ++ map fst ts) 
 		when (null ds) $ throwError "nessun utente non responsabile disponibile"
                 n <- scelte (map (id &&& id) ds) "selezione dell'utente da eleggere a responsabile" 
-                (u,(c,s)) <- upload $ "inserimento delle chiavi del responsabile " ++ n ++ " per la sua elezione"
-                return $ ElezioneResponsabile u c s
+                m <- upload $ "inserimento delle chiavi del responsabile " ++ n ++ " per la sua elezione"
+                return $ ElezioneResponsabile m
 
         eventoEliminazioneResponsabile = run $ do
 		rs <- costrResponsabili 
@@ -267,18 +236,7 @@ costrQueryAnagrafe s kp kn = 	[("nomi utenti",queryElencoUtenti)
 --  sezione assensi, putroppo non ha un modulo a parte a causa del ciclo di dipendenze con l'anagrafe
 
 -- | gli eventi che interessano una raccolta di assensi
-data EsternoAssenso = Assenso Indice | Dissenso Indice | EventoFallimentoAssenso Indice 
-instance Show EsternoAssenso where
-	show (Assenso i) = "assenso riferito a " ++ show i
-	show (Dissenso i) = "dissenso riferito a " ++ show i
-	show (EventoFallimentoAssenso i) = "rinuncia alla raccolta di assensi riferita a " ++ show i
-
-instance Read EsternoAssenso where
-	readPrec = let 
-		as = string "assenso riferito a " >> Assenso <$> reads'
-		di = string "dissenso riferito a " >> Dissenso <$> reads'
-		fa = string "rinuncia alla raccolta di assensi riferita a " >> EventoFallimentoAssenso <$> reads'
-		in lift $ as <++ di <++ fa 
+data EsternoAssenso = Assenso Indice | Dissenso Indice | EventoFallimentoAssenso Indice deriving (Read, Show)
 
 -- | lo stato necessario per la gestione di un tipo di assensi
 data Assensi = Assensi Utente [Utente] [Utente] | Permesso Utente Utente deriving (Show,Read)
@@ -339,13 +297,14 @@ programmazioneAssenso :: (
 	-> (([Utente],[Utente]) -> MTInserzione s c Utente Check) -- ^ condizione di rolling 
 	-> (Indice -> MTInserzione s c Utente (Effetti s c Utente)) -- ^ la chiusura per il successo della raccolta
 	-> (Indice -> MTInserzione s c Utente (Effetti s c Utente)) -- ^ la chiusura per il fallimento della raccolta
-	-> MTInserzione s c Utente (Indice, Reazione s c Utente, MTInserzione s c Utente ())	-- ^ la chiave per emettere assensi relativi e la reazione da schedulare
+	-> MTInserzione s c Utente (Indice, Reazione s c Utente)	-- ^ la chiave per emettere assensi relativi e la reazione da schedulare
 
 programmazioneAssenso se ur c k kn = do
 	l <- nuovoStatoServizio (Assensi ur [] []) (ur,se) -- ricevi la chiave per la nuova raccolta
-	let 	eliminaRichiesta = do
-			eliminaStatoServizio l (undefined :: Assensi)  
-			logga $ "rinuncia alla raccolta di assensi per " ++ se
+	let 	eliminaRichiesta u j = do
+			eliminaStatoServizio j (undefined :: Assensi)  
+			logga $ "rinuncia alla questione " ++ se
+			return (False,nessunEffetto) -- non rischedula il reattore
 
 		reattoreAssenso (Right (first validante -> (w,Assenso j))) = w $ \r -> do
 			when (j /= l) mzero
@@ -373,7 +332,7 @@ programmazioneAssenso se ur c k kn = do
 			t <- c (ps,ns') -- controlla che si debba continuare a ricevere gli assensi
 			case t of 	
 				Negativo -> do
-					eliminaRichiesta
+					eliminaRichiesta r j
 					logga $ "chiusura negativa della questione " ++ se
 					(,) False <$> kn j
 				Indecidibile -> do		
@@ -385,24 +344,25 @@ programmazioneAssenso se ur c k kn = do
 		reattoreAssenso (Right (first validante -> (w,EventoFallimentoAssenso j))) = w $ \r -> do
 			when (j /= l) mzero
 			fallimento (ur /= r) "questione aperta da un altro responsabile"
-			eliminaRichiesta
+			eliminaRichiesta r j
 			(,) False <$> kn j
 		reattoreAssenso (Left (eliminazioneResponsabile -> Just (u,r))) = conFallimento $ do
 			when (ur /= u) mzero
-			eliminaRichiesta
+			logga $ "eliminazione della richiesta " ++ se
+			eliminaRichiesta u l
 			(,) False <$> kn l
 		reattoreAssenso (Left _) = return Nothing
-	logga $ "aperta la raccolta di assensi per " ++ se 
- 	return (l,Reazione (Nothing, reattoreAssenso),eliminaRichiesta) -- restituisce il riferimento a questa richiesta perché venga nominato negli eventi di assenso
+	logga $ "raccolta di assensi per " ++ se 
+ 	return (l,Reazione (Nothing, reattoreAssenso)) -- restituisce il riferimento a questa richiesta perché venga nominato negli eventi di assenso
 
 --------------------------- costruzioni per il modulo assensi -----------------------------
 
 -- | estrae gli assensi dallo stato in lettura
--- assensi :: (Monad m, ParteDi (Servizio Assensi) s) => Supporto m s b [(Indice,String)]
+assensi :: (Monad m, ParteDi (Servizio Assensi) s) => Supporto m s b [(String, Utente)]
 assensi = do
 	xs :: [(Indice,(String,Assensi))] <- asks elencoSottoStati 
 	when (null xs) $ throwError "nessuna questione aperta"
-	return xs
+	return  $ map (second richiedente . snd) xs
 
 filtra u (Assensi ur ps ns) = not . elem u $ ps ++ ns
 filtra u (Permesso ur u') = u' == u 
@@ -441,18 +401,9 @@ costrQueryAssenso s kp kn = [("questioni aperte", querySottoStati)]
 	where
 	querySottoStati = runSupporto s kn kp $ do
 		ys <- assensi
-		return $ if null ys then ResponseOne "nessuna questione aperta" 
-			else Response $ 
-				map (\(i,s) -> (show i
-						, Response $ [("obiettivo",ResponseOne (fst s))] ++  responseAssensi (snd s)
-						)) ys
-
-
-responseAssensi as@(Assensi u ps ns) = 
-		[("promotore",ResponseOne u)] ++ 
-		(if null ns then [] else [("dissensi",ResponseMany $ map ResponseOne ns)]) ++
-		if null ps then [] else [("assensi",ResponseMany $ map ResponseOne ps)] 
-responseAssensi (Permesso u ut) = [("promotore",ResponseOne u),("interrogato", ResponseOne ut)] 
+		return $ Response [("questioni aperte", if null ys then
+			ResponseOne "nessuna questione aperta" else ResponseAL $ 
+				map (\(s,u) -> (u,ResponseOne s)) ys)]
 priorityAssenso = R k where
 	k (Assenso _) = -25
 	k (Dissenso _) = -24
