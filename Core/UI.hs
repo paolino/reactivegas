@@ -19,7 +19,7 @@ import Lib.Passo (Costruzione,mano, menu, rotonda ,rmenu, Passo)
 import qualified Lib.Passo as P
 
 import Lib.TreeLogs (eccoILogs)
-import Lib.Firmabile (cryptobox)
+import Lib.Firmabile (cryptobox, Chiave)
 import Lib.Prioriti (R)
 import Lib.Response (Response (..))
 
@@ -29,7 +29,7 @@ import Core.Controllo (caricaEventi, SNodo (..))
 import Core.Contesto (flatten)
 import Core.Programmazione (Reazione)
 import Core.Parsing (ParserConRead)
-import Core.Patch ( Firmante (..),firmante, Patch)
+import Core.Patch ( Firmante (..),firmante, Patch, fromPatch)
 import Core.Costruzione (runSupporto, Supporto)
 import Core.Persistenza (Persistenza (..))
 import Core.Sessione (Sessione (..))
@@ -45,10 +45,13 @@ sel f = asks f >>= liftIO
 statoPersistenza :: (Functor m, MonadReader (Persistenza QS, Sessione (Maybe QS) Response) m,MonadIO m) => m QS
 statoPersistenza = fmap fromJust . sel $ readStato . fst
 
+daChiave :: Chiave -> [Responsabile] -> Maybe Responsabile
+daChiave c = find (\(_,(c',_)) -> c == c') 
+
 fromUPatches :: ([Patch],TS) -> [(Utente,[Evento])]
 fromUPatches  (ups,s) =  
 	let (rs,_) = responsabili s
-	in catMaybes $ map (\(c,_,es) -> second (const es) <$> find (\(_,(c',_)) -> c == c') rs) ups
+	in catMaybes $ map (\(c,_,es) -> second (const es) <$> daChiave c rs) ups
 
 
 statoSessione =  fmap fromJust . sel $ readStatoSessione . snd   
@@ -216,7 +219,17 @@ salvataggio = do
 -- | importa gli eventuali eventi già presenti
 
 	
+getPatch :: Patch -> Interfaccia ()
+getPatch p@(c,_,_) = do 
+	s <- fst <$> statoPersistenza
+	rs <- runErrorT . flip runReaderT s $ fromPatch p
+	case rs of 
+		Left prob -> P.errore $ ResponseOne prob
+		Right _ -> do 
+			let Just (u,_) = daChiave c (fst $ responsabili s)
+			sel $ ($p) . ($u) . writeUPatch . fst
 
+getGPatch :: 			 
 amministrazione :: Interfaccia ()
 amministrazione = do
 	
@@ -233,7 +246,7 @@ amministrazione = do
 
 				[("scarica le dichiarazioni prodotte", letturaEventi >>= P.download "dichiarazioni.txt" )
 				,("digerisci tutte le dichiarazioni pubblicate", sincronizza aggiornamento aggiornamenti)
-				,("carica un aggiornamento individuale", P.errore $ ResponseOne "non implementato")
+				,("carica un aggiornamento individuale", P.upload "aggiornamento individuale" >>= getPatch )
 				,("scarica gli aggiornamenti individuali", 
 					aggiornamenti >>= P.download "aggiornamenti.txt")
 				,("carica un aggiornamento di gruppo",P.upload "aggiornamento di gruppo" >>= aggiornamento)
