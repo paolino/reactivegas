@@ -12,6 +12,25 @@ homepage: http://wiki.github.com/paolino/reactivegas
 copyright: Copyright (c) 2010 Paolo Veronelli 
 build-type: Simple
 cabal-version: >= 1.6
+Executable reactivegas
+ ghc-options: -Wall
+ main-is: reactivegas.hs
+ build-depends: base  >= 4.2      , 
+                containers,
+                random      ,
+                bytestring  ,
+                array,
+                SimpleAES   ,
+                RSA         ,
+                mtl         ,
+                utf8-string ,
+                MaybeT      ,
+                pretty      ,
+                haskeline   ,
+                filepath    ,
+                FileManipCompat   ,
+                directory  , 
+                stm 
 
 Executable reactivegas_cgi
  ghc-options: -Wall
@@ -27,7 +46,6 @@ Executable reactivegas_cgi
                 utf8-string ,
                 MaybeT      ,
                 pretty      ,
-                haskeline   ,
                 filepath    ,
                 FileManipCompat   ,
                 network,

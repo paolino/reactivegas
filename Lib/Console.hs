@@ -12,19 +12,19 @@ import Control.Exception
 import System.Console.Haskeline
 
 -- | la funzione smonta i passi in caso di undo
-runPasso :: MonadException m => [Passo m b] -> InputT m b
+runPasso :: (MonadException m, Functor m) => [Passo m b] -> InputT m b
 
 runPasso [x] = runPasso [x,x]
 
 runPasso (Output x l:u) = do
-	outputStrLn $ "\n" ++ take 120 (show x)
+	outputStrLn $ "\n" ++ (show x)
 	getInputLine "continua .."
-	lift l >>= runPasso . (:u)
+	lift l >>= runPasso . (:u) . fst
 
 runPasso (Errore x l:u) = do
-	outputStrLn $ "\n" ++ take 120 (show x)
+	outputStrLn $ "\n" ++ (show x)
 	getInputLine "continua .."
-	lift l >>= runPasso . (:u)
+	lift l >>= runPasso . (:u) . fst
 
 runPasso (Costruito x:_) = return x 
 runPasso  w@(c@(Libero p f) : u) = do
@@ -34,14 +34,14 @@ runPasso  w@(c@(Libero p f) : u) = do
 		_ -> case reads $ fromJust x of 
 			[] -> case reads $ "\"" ++ fromJust x ++ "\"" of
 				[] -> outputStrLn "valore non valido" >> return w
-				(x,_):_ -> (:w) <$> lift (f x) 
-			(x,_):_ -> (:w) <$> lift (f x)
+				(x,_):_ -> (:w) <$> lift (fst <$> f x) 
+			(x,_):_ -> (:w) <$> lift (fst <$> f x)
 
 	runPasso n
 
 runPasso w@(c@(Scelta p xs f): u) = do
 	outputStrLn ("\n** " ++ p) 
-	forM (zip [1..] xs) $ \(n,(p,_)) -> outputStrLn $ "\t" ++ show n ++ ") " ++ take 80 p
+	forM (zip [1..] xs) $ \(n,(p,_)) -> outputStrLn $ "\t" ++ show n ++ ") " ++ take 100 p
 	x <- getInputLine  "scelta: "
 
 	n <- case fromJust x of
@@ -49,7 +49,7 @@ runPasso w@(c@(Scelta p xs f): u) = do
 		_ -> case reads $ fromJust x of 
 			[] -> return w
 			(x,_):_ -> case x  `elem` [1 .. length xs] of
-					True -> (: w) <$> (lift . f . snd $ xs !! (x - 1)) 
+					True -> (: w) <$> (fmap fst . lift . f . snd $ xs !! (x - 1)) 
 					False -> return w
 	runPasso n	  
 	
@@ -64,20 +64,20 @@ runPasso  w@(c@(Upload p f) : u) = do
 				Right x -> do 
 					case reads x of 
 						[] -> outputStrLn "valore non valido" >> return w
-						(x,_):_ -> (:w) <$> lift (f x) 
+						(x,_):_ -> (:w) <$> lift (fst <$> f x) 
 	runPasso n
 
-runPasso w@(c@(Download _ x f):u) = do
-		x <- getInputLine $  "\n** Salvataggio di " ++ take 30 (show x) ++ ".... [nome del file da salvare]: "
+runPasso w@(c@(Download _ y f):u) = do
+		x <- getInputLine $  "\n** Salvataggio di " ++ take 60 (show y) ++ ".... [nome del file da salvare]: "
 		n <- case fromJust x of 
 			[] -> return u
 			fn -> do 	
-				k <- liftIO $ tryJust (\(SomeException e) -> Just (show e)) (writeFile fn (show x)) 
+				k <- liftIO $ tryJust (\(SomeException e) -> Just (show e)) (writeFile fn (show y)) 
 				case k of 
 					Left e -> outputStrLn e >> return w
-					Right () -> outputStrLn "salvato." >> (:u) <$> lift f
+					Right () -> outputStrLn "salvato." >> (:u) <$> fst <$> lift f
 		runPasso n
 
-interazione :: (MonadException m) => b -> Costruzione m b b -> m b
-interazione base f = svolgi f >>= runInputT defaultSettings . runPasso . return 
+interazione :: (MonadException m, Functor m) => Costruzione m b b -> m b
+interazione f = svolgi f >>= runInputT defaultSettings . runPasso . return . fst 
 

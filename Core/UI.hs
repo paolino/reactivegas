@@ -42,7 +42,7 @@ import Eventi.Acquisto
 sel f = asks f >>= liftIO 
 
 statoPersistenza :: (Functor m, MonadReader (Persistenza QS, Sessione (Maybe QS) Response) m,MonadIO m) => m QS
-statoPersistenza = fmap fromJust . sel $ readStato . fst
+statoPersistenza = fmap (snd . fromJust) . sel $ readStato . fst
 
 daChiave :: Chiave -> [Responsabile] -> Maybe Responsabile
 daChiave c = find (\(_,(c',_)) -> c == c') 
@@ -131,7 +131,7 @@ interrogazioni = mano "interrogazioni sullo stato del gruppo" $ (wrapCostrAction
 		costrQueryAssenso
 		]) 
 aggiornamentiIndividuali = ("esamina gli aggiornamenti individuali presenti", do
-	us <- sel $ readUPatches . fst
+	(_,us) <- sel $ readUPatches . fst
 	(s,_) <- statoPersistenza
 	let ps = fromUPatches (us,s)
 	if null ps then bocciato "non ci sono aggiornamenti individuali in attesa" else do 
@@ -139,7 +139,7 @@ aggiornamentiIndividuali = ("esamina gli aggiornamenti individuali presenti", do
 		P.output $ Response [("aggiornamento da parte di " ++ u, ResponseMany $ map ResponseOne (sortEventi es))]
 	)
 eventLevelSelector = do 
-	us <- sel $ readUPatches . fst
+	(_,us) <- sel $ readUPatches . fst
 	(s,_) <- statoPersistenza
 	es' <- letturaEventi
 	mu <- sel $ readAccesso . snd
@@ -198,7 +198,7 @@ votazioni :: Interfaccia ()
 votazioni = mano "dichiarazioni di assenso" $ wrapCostrActions addEvento [costrEventiAssenso]
 
 sincronizza  aggiornamento aggiornamenti = onAccesso $ \(r@(u,_)) -> do  
-	rs <- aggiornamenti
+	(_,rs) <- aggiornamenti
 	case rs of 
 		[] -> bocciato $ "nessun aggiornamento individale per lo stato attuale"
 		xs -> do
@@ -242,13 +242,20 @@ amministrazione = do
 			,("scarica nuove chiavi da responsabile", creaChiavi)
 			,("priveè", mano "priveè" 
 
-				[("scarica le dichiarazioni prodotte", letturaEventi >>= P.download "dichiarazioni.txt" )
+				[("scarica le dichiarazioni prodotte", letturaEventi >>= P.download "dichiarazioni" )
 				,("digerisci tutte le dichiarazioni pubblicate", sincronizza aggiornamento aggiornamenti)
 				,("carica un aggiornamento individuale", P.upload "aggiornamento individuale" >>= getPatch )
 				,("scarica gli aggiornamenti individuali", 
-					aggiornamenti >>= P.download "aggiornamenti.txt")
+					aggiornamenti >>= \ (n,ups) -> P.download ("patches." ++ show n) ups)
 				,("carica un aggiornamento di gruppo",P.upload "aggiornamento di gruppo" >>= aggiornamento)
-				,("scarica lo stato", sel (readStato . fst) >>= maybe (bocciato "stato non presente") (P.download "stato"))
+				,("scarica un aggiornamento di gruppo",do
+					n <- P.libero "indice dell'aggiornamento richiesto"
+					mg <- sel $ ($n) . readGPatch . fst
+					case mg of
+						Nothing -> P.errore $ ResponseOne "aggiornamento di gruppo non trovato"
+						Just g -> P.download ("groups." ++ show n) g)
+				,("scarica lo stato", sel (readStato . fst) >>= maybe (bocciato "stato non presente") 
+					(\ (n,s) -> P.download ("stato." ++ show n) s))
 				])
 			]
 applicazione :: Costruzione MEnv () ()
@@ -279,9 +286,10 @@ applicazione = rotonda $ \_ -> do
 								Nothing -> []
 								Just (_,_,es) -> es
 					l <- sel $ getConservative . snd
-							
+					v <- sel $ readVersion . fst
 					P.output . Response $ 
-						[("responsabile della sessione" , ResponseOne $ case r of 
+						[("versione attuale dello stato", ResponseOne $ v)
+						,("responsabile della sessione" , ResponseOne $ case r of 
 							Nothing -> "anonimo"
 							Just (u,_) -> u)
 						,("livello di considerazione dichiarazioni",if l == maxLevel then

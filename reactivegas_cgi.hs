@@ -53,7 +53,7 @@ caricamento' l s es = let
 main = do
 	c <- atomically newTChan
 	forkIO . forever $ atomically (readTChan c)
-	(gs,modif,agg) <- mkGroupSystem loader caricamento' nuovoStato c "tarogas" 
+	(gs,modif,agg) <- mkGroupSystem loader caricamento' nuovoStato c "tarogas" 20
 	pe <- startGroupSystem 10000000 gs
 	sessionServer 5000 10 20 applicazione pagina layout ((,) pe <$> mkSessione modif maxLevel agg) 
 	
