@@ -40,16 +40,14 @@ import Lib.Prioriti (R (..))
 
 import Core.Inserimento (logga, conFallimento, MTInserzione, osserva, modifica, fallimento)
 import Core.Programmazione (Inserzione, EventoInterno (..), soloEsterna, nessunEffetto, Reazione (..),Effetti)
-import Core.Types (Message)
+import Core.Types 
 import Core.Costruzione (Supporto,libero,upload,scelte,runSupporto,CostrAction)
 import Core.Parsing (ParserConRead, Parser)
 import Lib.Firmabile (Segreto, Chiave)
-import Lib.QInteger
+import Lib.QInteger (QInteger)
 
 import Eventi.Servizio 
 
-deriving instance Eq PublicKey
-deriving instance Read PublicKey
 
 -- | chiave pubblica di un responsabile
 -- type Segreto = 

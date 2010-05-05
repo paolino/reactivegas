@@ -20,12 +20,13 @@ import Lib.Response (Response (..))
 import Lib.QInteger (QInteger)
 import Lib.Euro (Euro)
 
+import Core.Types (Utente)
 import Core.Costruzione (libero, scelte , CostrAction, runSupporto)
 import Core.Parsing (Parser)
 import Core.Programmazione (Effetti, Reazione (..) , EventoInterno (..), soloEsterna, nessunEffetto)
 import Core.Inserimento (MTInserzione, conFallimento, fallimento, osserva, modifica, logga)
 
-import Eventi.Anagrafe (Utente,validante,programmazioneAssenso,maggioranza)
+import Eventi.Anagrafe (validante,programmazioneAssenso,maggioranza)
 import Eventi.Accredito (salda)
 import Eventi.Impegno (programmazioneImpegno')
 

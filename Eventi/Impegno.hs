@@ -27,13 +27,14 @@ import Lib.Assocs (update)
 import Lib.Response (Response (..))
 import Lib.QInteger (QInteger)
 
+import Core.Types (Utente)
 import Core.Costruzione (libero, scelte, runSupporto, CostrAction)
 import Core.Parsing (Parser)
 import Core.Programmazione (Effetti, Reazione (..) , EventoInterno (..),  nessunEffetto)
 import Core.Inserimento (MTInserzione, conFallimento, fallimento, osserva, modifica, logga)
 
 import Eventi.Servizio (Servizio, servizio0, nuovoStatoServizio, modificaStatoServizio, osservaStatoServizio, eliminaStatoServizio,elencoSottoStati)
-import Eventi.Anagrafe (EsternoAssenso, Assensi, programmazionePermesso, Utente, Responsabili, Anagrafe, eliminazioneResponsabile, validante ,utenti, esistenzaResponsabile, SUtente (..))
+import Eventi.Anagrafe (EsternoAssenso, Assensi, programmazionePermesso, Responsabili, Anagrafe, eliminazioneResponsabile, validante ,utenti, esistenzaResponsabile, SUtente (..))
 import Eventi.Accredito (preleva, accredita, Conti)
 
 import Debug.Trace

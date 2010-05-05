@@ -5,8 +5,7 @@ import Control.Concurrent (forkIO)
 import Control.Concurrent.STM
 
 import Text.XHtml
-import Core.Types (Evento)
-import Eventi.Anagrafe (Responsabile)
+import Core.Types (Evento,Responsabile)
 import Debug.Trace
 -- | interfaccia concorrente per una sessione di interazione
 data Sessione a b = Sessione 

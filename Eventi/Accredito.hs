@@ -19,12 +19,13 @@ import Control.Monad (when)
 import Control.Monad.Error (throwError)
 import Control.Arrow (second, (&&&), first, (***))
 
+import Core.Types (Utente)
 import Core.Programmazione (Reazione, soloEsterna, nessunEffetto)
 import Core.Inserimento (MTInserzione, fallimento, osserva, modifica, logga)
 import Core.Costruzione (libero, scelte, CostrAction, runSupporto)
 import Core.Parsing (Parser)
 import Lib.Costruzione (Costruzione)
-import Eventi.Anagrafe (Anagrafe, Utente, esistenzaUtente, utenti, Responsabili, 
+import Eventi.Anagrafe (Anagrafe, esistenzaUtente, utenti, Responsabili, 
 	esistenzaResponsabile, responsabili, validante, SUtente (..))
 import Lib.Aspetti ((.<), see, ParteDi)
 import Lib.Prioriti (R (..))

@@ -24,9 +24,8 @@ import Lib.Assocs (secondM)
 import Lib.Firmabile (Firma)
 
 import Core.Patch (Patch,firma,Group)
-import Core.Types (Evento,Utente,Esterno)
+import Core.Types (Evento,Utente,Esterno,Responsabile)
 
-import Eventi.Anagrafe (Responsabile)
 
 
 import Debug.Trace
