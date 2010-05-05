@@ -16,22 +16,20 @@ import Lib.Passo
 -- import Lib.HTTP
 import Lib.TreeLogs
 import Lib.Prioriti
-import Lib.Aspetti (seeset)
+import Lib.Aspetti (seeset, see)
 
 import Core.Patch (fromGroup, Group)
 import Core.Persistenza
 -- import Core.UI
 
-import Eventi.Anagrafe (Utente)
-
-import Core.Types (Esterno, Evento)
+import Core.Types (Esterno, Evento, Utente, Responsabile)
 import Core.Controllo (caricaEventi, SNodo (..))
 import Core.Contesto (flatten)
 import Core.Programmazione (Reazione)
 import Core.Parsing (ParserConRead)
 
 
-import Eventi.Anagrafe
+import Eventi.Anagrafe 
 import Eventi.Accredito
 import Eventi.Impegno
 import Eventi.Logger
@@ -72,7 +70,7 @@ levelsEventi = levelsP  priorita id
 
 loader ::  QS -> Group -> Writer [String] (Either String QS)
 loader (qs@(s,_)) g = runErrorT $ do
-			(_,es) <- runReaderT (fromGroup g) s
+			(_,es) <- runReaderT (fromGroup (fst . responsabili) g) s
 			let (qs',ef) = caricamento maxLevel es qs 
 			tell [ef]
 			return $ first (seeset ((+) 1 :: Integer -> Integer)) qs'

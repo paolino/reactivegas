@@ -11,7 +11,6 @@ import Control.Monad.Cont
 import Control.Monad.State
 import Control.Monad.Reader
 import Control.Monad.Error
-import System.Console.Haskeline (MonadException)
 import Debug.Trace
 
 
@@ -24,7 +23,7 @@ import Lib.Prioriti (R)
 import Lib.Response (Response (..))
 
 
-import Core.Types (Esterno, Evento)
+import Core.Types (Esterno, Evento, Utente, Responsabile)
 import Core.Controllo (caricaEventi, SNodo (..))
 import Core.Contesto (flatten)
 import Core.Programmazione (Reazione)
@@ -222,14 +221,13 @@ salvataggio = do
 getPatch :: Patch -> Interfaccia ()
 getPatch p@(c,_,_) = do 
 	s <- fst <$> statoPersistenza
-	rs <- runErrorT . flip runReaderT s $ fromPatch p
+	rs <- runErrorT . flip runReaderT s $ fromPatch (fst . responsabili) p
 	case rs of 
 		Left prob -> P.errore $ ResponseOne prob
 		Right _ -> do 
 			let Just (u,_) = daChiave c (fst $ responsabili s)
 			sel $ ($p) . ($u) . writeUPatch . fst
 
-getGPatch :: 			 
 amministrazione :: Interfaccia ()
 amministrazione = do
 	

@@ -136,7 +136,7 @@ reazioneAnagrafe = soloEsterna reattoreAnagrafe' where
 		Responsabili us ls <- osserva 
 		fallimento (u `elem` us) "utente già eletto" 
 		fallimento (u `elem` map snd ls) "utente già in elezione" 
-		(l,reaz) <- programmazioneAssenso ("elezione dell'utente " ++ fst u) r maggioranza (chiudibene u) (chiudimale u)
+		(l,reaz,_) <- programmazioneAssenso ("elezione dell'utente " ++ fst u) r maggioranza (chiudibene u) (chiudimale u)
 		modifica $ \(Responsabili us ls) -> Responsabili us ((l,u):ls)
 		return (True,([reaz],[])) 
 		where
@@ -155,7 +155,7 @@ reazioneAnagrafe = soloEsterna reattoreAnagrafe' where
 		esistenzaResponsabile u
 		Responsabili us ls <- osserva 
 		fallimento (u `elem` map (fst . snd) ls) "revoca del responsabile già richiesta" 
-		(l,reaz) <- programmazioneAssenso ("revoca del responsabile " ++ u) r maggioranza (chiudibene u r) (chiudimale u r)
+		(l,reaz,_) <- programmazioneAssenso ("revoca del responsabile " ++ u) r maggioranza (chiudibene u r) (chiudimale u r)
 		modifica $ \(Responsabili us ls) -> (Responsabili us ((l,(u,us ? (u,undefined))):ls))
 		return (True,([reaz],[]))
 		where
@@ -295,14 +295,13 @@ programmazioneAssenso :: (
 	-> (([Utente],[Utente]) -> MTInserzione s c Utente Check) -- ^ condizione di rolling 
 	-> (Indice -> MTInserzione s c Utente (Effetti s c Utente)) -- ^ la chiusura per il successo della raccolta
 	-> (Indice -> MTInserzione s c Utente (Effetti s c Utente)) -- ^ la chiusura per il fallimento della raccolta
-	-> MTInserzione s c Utente (Indice, Reazione s c Utente)	-- ^ la chiave per emettere assensi relativi e la reazione da schedulare
+	-> MTInserzione s c Utente (Indice, Reazione s c Utente, MTInserzione s c Utente ())	-- ^ la chiave per emettere assensi relativi e la reazione da schedulare
 
 programmazioneAssenso se ur c k kn = do
 	l <- nuovoStatoServizio (Assensi ur [] []) (ur,se) -- ricevi la chiave per la nuova raccolta
-	let 	eliminaRichiesta u j = do
-			eliminaStatoServizio j (undefined :: Assensi)  
+	let 	eliminaRichiesta  = do
+			eliminaStatoServizio l (undefined :: Assensi)  
 			logga $ "rinuncia alla questione " ++ se
-			return (False,nessunEffetto) -- non rischedula il reattore
 
 		reattoreAssenso (Right (first validante -> (w,Assenso j))) = w $ \r -> do
 			when (j /= l) mzero
@@ -330,7 +329,7 @@ programmazioneAssenso se ur c k kn = do
 			t <- c (ps,ns') -- controlla che si debba continuare a ricevere gli assensi
 			case t of 	
 				Negativo -> do
-					eliminaRichiesta r j
+					eliminaRichiesta 
 					logga $ "chiusura negativa della questione " ++ se
 					(,) False <$> kn j
 				Indecidibile -> do		
@@ -342,16 +341,16 @@ programmazioneAssenso se ur c k kn = do
 		reattoreAssenso (Right (first validante -> (w,EventoFallimentoAssenso j))) = w $ \r -> do
 			when (j /= l) mzero
 			fallimento (ur /= r) "questione aperta da un altro responsabile"
-			eliminaRichiesta r j
+			eliminaRichiesta 
 			(,) False <$> kn j
 		reattoreAssenso (Left (eliminazioneResponsabile -> Just (u,r))) = conFallimento $ do
 			when (ur /= u) mzero
 			logga $ "eliminazione della richiesta " ++ se
-			eliminaRichiesta u l
+			eliminaRichiesta 
 			(,) False <$> kn l
 		reattoreAssenso (Left _) = return Nothing
 	logga $ "raccolta di assensi per " ++ se 
- 	return (l,Reazione (Nothing, reattoreAssenso)) -- restituisce il riferimento a questa richiesta perché venga nominato negli eventi di assenso
+ 	return (l,Reazione (Nothing, reattoreAssenso),eliminaRichiesta ) -- restituisce il riferimento a questa richiesta perché venga nominato negli eventi di assenso
 
 --------------------------- costruzioni per il modulo assensi -----------------------------
 
