@@ -28,7 +28,7 @@ data SNodo s d = SNodo {
 	attivo :: Bool, 					-- ^ stato di attivita della reazione
 	sottonodi :: [(Appuntato s d,[(Int,SNodo s d)])] 	-- ^ struttura di deserializzazione dipendente
 	}
-	deriving (Read,Show)
+	deriving (Read,Show,Eq)
 
 -- | un SNodo vuoto
 nodoVuoto ::  SNodo s d

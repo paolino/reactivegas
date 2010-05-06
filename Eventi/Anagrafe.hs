@@ -66,14 +66,14 @@ validante ::(ParteDi Anagrafe s, ParteDi Responsabili s)
 validante r f = conFallimento $ esistenzaResponsabile r >> f r
 
 -- | la lista di utenti 
-data Anagrafe = Anagrafe [Utente] deriving (Show,Read)
+data Anagrafe = Anagrafe [Utente] deriving (Show,Read,Eq)
 
 utenti = (\(Anagrafe us) -> us) . see
 -- | aggiunge la parte anagrafica dello stato allo stato iniziale
 bootAnagrafe :: [Responsabile] ->  a -> TyAnagrafe a
 bootAnagrafe unos x = Anagrafe (map fst unos) .< Responsabili unos [] .< servizio0 .< x
 -- | la lista dei responsabili eletti e in elezione
-data Responsabili = Responsabili {eletti::[Responsabile], inodore ::[(Indice,Responsabile)]} deriving (Show,Read)
+data Responsabili = Responsabili {eletti::[Responsabile], inodore ::[(Indice,Responsabile)]} deriving (Show,Read,Eq)
 
 responsabili = (\(Responsabili es is) -> (es, map snd is)) . see
 -- | mappa di priorita' per gli eventi di questo modulo
@@ -271,11 +271,11 @@ instance Read EsternoAssenso where
 		fa = string "rinuncia alla raccolta di assensi riferita a " >> EventoFallimentoAssenso <$> reads'
 		in lift $ as <++ di <++ fa 
 -- | lo stato necessario per la gestione di un tipo di assensi
-data Assensi = Assensi Utente [Utente] [Utente] | Permesso Utente Utente deriving (Show,Read)
+data Assensi = Assensi Utente [Utente] [Utente] | Permesso Utente Utente deriving (Show,Read,Eq)
 
 richiedente (Assensi r _ _) = r
 richiedente (Permesso r _) = r 
-data Check = Positivo | Negativo | Indecidibile deriving (Show,Read)
+data Check = Positivo | Negativo | Indecidibile deriving (Show,Read,Eq)
 
 -- controlla che la maggioranza sia raggiunta
 maggioranza :: (Responsabili `ParteDi` s) => ([Utente],[Utente]) -> MTInserzione s c Utente Check

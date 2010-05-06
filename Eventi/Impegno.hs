@@ -90,7 +90,7 @@ fallimentoImpegno (EventoFallimentoImpegno t) = Just t
 fallimentoImpegno _ = Nothing
 
 -- | lo stato per ogni causa
-data Impegni = Impegni {permesso :: Bool, referente::Utente, accettati :: [(Utente,Euro)], inattesa :: [(Utente,Euro)]} deriving (Show,Read)
+data Impegni = Impegni {permesso :: Bool, referente::Utente, accettati :: [(Utente,Euro)], inattesa :: [(Utente,Euro)]} deriving (Show,Read,Eq)
 
 -- | tipo dello stato aggiunto degli impegni
 type TyImpegni a = (Servizio Impegni , a)

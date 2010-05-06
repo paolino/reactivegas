@@ -4,20 +4,20 @@ import Control.Applicative ((<$>))
 import Control.Concurrent.STM (readTChan,newTChan,atomically)
 import Control.Concurrent (forkIO)
 import Control.Monad (forever)
-
-import Lib.Response
-
-import Applicazioni.Server (sessionServer)
-
-import Core.Types (Esterno,Utente)
-import Core.Persistenza (mkGroupSystem, startGroupSystem, readStato)
-import Core.Sessione (mkSessione, readEventi , readAccesso)
-import Core.UI (applicazione)
-import Core.Applicazione (QS,loader, caricamento, nuovoStato, maxLevel) 
 import Text.XHtml
 import Network.SCGI
 
 import Debug.Trace
+-------------------------------------------------------
+import Lib.Response
+
+import Core.Types (Esterno,Utente)
+import Core.UI (applicazione)
+
+import Applicazioni.Reactivegas (QS,loader, caricamento, nuovoStato, maxLevel) 
+import Applicazioni.Server (sessionServer)
+import Applicazioni.Persistenza (mkPersistenza , Persistenza (readLogs,caricamentoBianco,updateSignal))
+import Applicazioni.Sessione (mkSessione)
 
 layout = 	[(["gestione dichiarazioni"],2)
 		,(["descrizione sessione"],1)
@@ -25,6 +25,7 @@ layout = 	[(["gestione dichiarazioni"],2)
 		,(["effetto delle ultime dichiarazioni"],3)
 		,(["interrogazione sullo stato del gruppo"],4)
 		]
+
 pagina b = output . prettyHtml $  
 		header << ((thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml)
 				+++ (thetitle << "Amministrazione G.A.S.") +++ (meta ! [httpequiv "Content-Type", content "text/html;charset=utf8;"]))  
@@ -44,16 +45,9 @@ pagina b = output . prettyHtml $
 					[href "http://github.com/paolino/reactivegas"] << "github.com")
 				])  
 
-caricamento' :: Int -> QS -> [Esterno Utente] -> (QS,Response)
-caricamento' l s es = let
-	(s',qs) = caricamento l es s
-	qs' = ResponseMany (map ResponseOne $ lines qs)
-	in (s',qs')
 	
 main = do
-	c <- atomically newTChan
-	forkIO . forever $ atomically (readTChan c)
-	(gs,modif,agg) <- mkGroupSystem loader caricamento' nuovoStato c "tarogas" 20
-	pe <- startGroupSystem 10000000 gs
-	sessionServer 5000 10 20 applicazione pagina layout ((,) pe <$> mkSessione modif maxLevel agg) 
+	pe <- mkPersistenza loader caricamento nuovoStato "tarogas" 20
+	forkIO . forever $ readLogs pe >>= putStrLn
+	sessionServer 5000 10 20 applicazione pagina layout ((,) pe <$> mkSessione (caricamentoBianco pe) maxLevel (updateSignal pe)) 
 	

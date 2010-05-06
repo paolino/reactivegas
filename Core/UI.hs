@@ -30,18 +30,19 @@ import Core.Programmazione (Reazione)
 import Core.Parsing (ParserConRead)
 import Core.Patch ( Firmante (..),firmante, Patch, fromPatch)
 import Core.Costruzione (runSupporto, Supporto)
-import Core.Persistenza (Persistenza (..))
-import Core.Sessione (Sessione (..))
-import Core.Applicazione (QS,caricamento, TS, sortEventi, levelsEventi, maxLevel)
 
 import Eventi.Anagrafe
 import Eventi.Accredito
 import Eventi.Impegno
 import Eventi.Acquisto
+
+import Applicazioni.Reactivegas (QS,caricamento, TS, sortEventi, levelsEventi, maxLevel)
+import Applicazioni.Persistenza (Persistenza (..))
+import Applicazioni.Sessione (Sessione (..))
 -- sel :: (MonadReader (Persistenza QS, Sessione)  m, MonadIO m) => ((Persistenza QS, Sessione) -> IO b) -> m b
 sel f = asks f >>= liftIO 
 
-statoPersistenza :: (Functor m, MonadReader (Persistenza QS, Sessione (Maybe QS) Response) m,MonadIO m) => m QS
+statoPersistenza :: (Functor m, MonadReader (Persistenza QS Response, Sessione (Maybe QS) Response) m,MonadIO m) => m QS
 statoPersistenza = fmap (snd . fromJust) . sel $ readStato . fst
 
 daChiave :: Chiave -> [Responsabile] -> Maybe Responsabile
@@ -77,7 +78,7 @@ accesso = do
 onAccesso k = sel (readAccesso . snd) >>= maybe (accesso >> onAccesso k) k 
 
 -- | la monade dove gira il programma. Mantiene in lettura lo stato del gruppo insieme alle operazioni di IO. Nello stato la lista degli eventi aspiranti un posto nella patch
-type MEnv  = ReaderT (Persistenza QS, Sessione (Maybe QS) Response) IO 
+type MEnv  = ReaderT (Persistenza QS Response, Sessione (Maybe QS) Response) IO 
 
 type Interfaccia a = Costruzione MEnv () a
 

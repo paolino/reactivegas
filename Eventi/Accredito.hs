@@ -63,10 +63,10 @@ priorityAccredito = R k where
 	k (Saldo _ _) = -35
 
 -- | stato degli accrediti utente
-data Conti = Conti [(Utente,Euro)] deriving (Read, Show)
+data Conti = Conti [(Utente,Euro)] deriving (Read, Show,Eq)
 
 -- | stato dei saldi responsabile
-data Saldi = Saldi [(Utente,Euro)] deriving (Read, Show)
+data Saldi = Saldi [(Utente,Euro)] deriving (Read, Show,Eq)
 
 -- | tipo aggiunto dello stato necessario al modulo
 type TyAccredito a = (Conti , (Saldi , a))

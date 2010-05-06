@@ -27,15 +27,15 @@ import Lib.Assocs (assente,(?),updateM,elimina)
 import Lib.Firmabile (hash,hashOver)
 import Lib.QInteger 
 
-data (Read a,Show a) => Servizio a = Servizio {sottostato :: [(QInteger,(String,a))]} deriving 
-	(Show, Read)
+data (Read a,Show a,Eq a) => Servizio a = Servizio {sottostato :: [(QInteger,(String,a))]} deriving 
+	(Show, Read,Eq)
 
-servizio0 :: (Show a, Read a) => Servizio a
+servizio0 :: (Show a, Read a,Eq a) => Servizio a
 servizio0 = Servizio []
 
 
 -- | aggiunge una nuova istanza per il servizio di tipo a, integrando con una descrizione,  restituisce la chiave 
-nuovoStatoServizio :: (ParteDi (Servizio a) s, Read a, Show a, Integer `ParteDi` s) 
+nuovoStatoServizio :: (ParteDi (Servizio a) s, Read a,Eq a, Show a, Integer `ParteDi` s) 
 	=> a 
 	-> (String,String) 
 	-> MTInserzione s c d QInteger
@@ -48,7 +48,7 @@ nuovoStatoServizio s (u,q) = do
 	return p
 
 -- | controlla la presenza di una chiave presso il servizio di tipo a, in caso di successo restituisce il servizio
-servizioPresente :: (ParteDi (Servizio a) s, Read a, Show a) 
+servizioPresente :: (ParteDi (Servizio a) s, Read a,Eq a, Show a) 
 	=> QInteger 
 	-> MTInserzione s c d (Servizio a)
 servizioPresente j = do
@@ -57,13 +57,13 @@ servizioPresente j = do
 	return s
 
 -- | restituisce il valore del servizio di tipo a indicizzato dalla chiave passata 
--- osservaStatoServizio :: (ParteDi (Servizio a) s, Read a, Show a) => Int ->  MTInserzione s c d a
+-- osservaStatoServizio :: (ParteDi (Servizio a) s, Read a,Eq a, Show a) => Int ->  MTInserzione s c d a
 osservaStatoServizio j = do 
 	Servizio ls <- servizioPresente j 	
 	snd <$> return (ls ? (j,error "osservaStatoServizio: the impossible happened"))
 
 -- | modifica il valore del servizio di tipo a indicizzato dalla chiave passata
-modificaStatoServizio :: (ParteDi (Servizio a) s, Read a, Show a) 
+modificaStatoServizio :: (ParteDi (Servizio a) s, Read a,Eq a, Show a) 
 	=> QInteger 
 	-> (a ->  MTInserzione s c d a) 
 	-> MTInserzione s c d ()
@@ -75,7 +75,7 @@ modificaStatoServizio j f = do
 
 -- | elimina lo stato di servizio di tipo a alla chiave passata, necessita di un valore di tipo a inutile
 eliminaStatoServizio :: forall a s c d. (ParteDi (Servizio a) s,
-                        Show a,Read a
+                        Show a,Read a,Eq a
                         ) =>
                        QInteger -> a -> MTInserzione s c d ()
 eliminaStatoServizio j proxy = do
@@ -83,7 +83,7 @@ eliminaStatoServizio j proxy = do
 	modifica $ \_ -> Servizio (elimina j ls)
 
 -- | restituisce la lista di associazione (chiave, descrizione) degli stati presenti
-elencoSottoStati :: (ParteDi (Servizio a) s, Show a,Read a) 
+elencoSottoStati :: (ParteDi (Servizio a) s, Show a,Read a,Eq a) 
 	=> s -> [(QInteger,(String,a))]
 elencoSottoStati = sottostato . see
 

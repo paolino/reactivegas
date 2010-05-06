@@ -1,26 +1,16 @@
-module Core.Applicazione where
+module  Applicazioni.Reactivegas where
 
 import Control.Monad.Error (runErrorT)
 import Control.Monad.Writer (Writer, tell)
-import Control.Monad.Cont
-import Control.Arrow
-import Control.Applicative
-import Control.Monad.State
-import Control.Monad.Reader
-import Control.Concurrent.STM
-import Control.Concurrent
-import Debug.Trace
+import Control.Monad.Reader (runReaderT)
+import Control.Arrow (second, first)
 
-import Lib.Passo
--- import Lib.Console
--- import Lib.HTTP
-import Lib.TreeLogs
-import Lib.Prioriti
+import Lib.TreeLogs (eccoILogs)
+import Lib.Prioriti (R, sortP, levelsP)
 import Lib.Aspetti (seeset, see)
+import Lib.Response (Response(ResponseMany,ResponseOne))
 
 import Core.Patch (fromGroup, Group)
-import Core.Persistenza
--- import Core.UI
 
 import Core.Types (Esterno, Evento, Utente, Responsabile)
 import Core.Controllo (caricaEventi, SNodo (..))
@@ -53,10 +43,6 @@ reattori :: [Reazione TS ParserConRead Utente]
 reattori = [reazioneLogger, reazioneAnagrafe, reazioneAccredito, reazioneAcquisto] 
 
 
--- | effettua un inserimento di eventi esterni nello stato, restituendo il nuovo. Stampa i logs
-caricamento :: Int -> [Esterno Utente] -> QS -> (QS,String)
-caricamento l es = second (eccoILogs . map (first flatten)) . caricaEventi priorita reattori l es 
-
 -- | creazione di un novo stato di tipo QS
 nuovoStato :: [Responsabile] -> QS
 nuovoStato rs = (bootAnagrafe rs  . bootAccredito . bootImpegni . bootAcquisti  $ 0, replicate (length reattori) $ SNodo True [])
@@ -68,10 +54,19 @@ sortEventi = sortP maxLevel priorita id
 levelsEventi :: [Evento] -> [(Evento,Int)]
 levelsEventi = levelsP  priorita id
 
+caricamento' l es = second (eccoILogs . map (first flatten)) . caricaEventi priorita reattori l es
+
 loader ::  QS -> Group -> Writer [String] (Either String QS)
 loader (qs@(s,_)) g = runErrorT $ do
 			(_,es) <- runReaderT (fromGroup (fst . responsabili) g) s
-			let (qs',ef) = caricamento maxLevel es qs 
+			let (qs',ef) = caricamento' maxLevel es qs 
 			tell [ef]
 			return $ first (seeset ((+) 1 :: Integer -> Integer)) qs'
+
+-- | effettua un inserimento di eventi esterni nello stato, restituendo il nuovo. Stampa i logs
+caricamento :: Int -> QS -> [Esterno Utente] -> (QS,Response)
+caricamento l s es = let
+	(s',qs) = caricamento' l es $ s
+	qs' = ResponseMany (map ResponseOne $ lines qs)
+	in (s',qs')
 

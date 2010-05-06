@@ -48,7 +48,6 @@ cgiFromServer :: (Html -> CGI CGIResult) -> (Server e Html Link,IO ()) -> CGI CG
 cgiFromServer resp ((fsM,(liftServer .) -> s),droppa) = do 
 	vs <- getVars 
 	is <- getInputs
-	liftIO $ print is
 	r <- runErrorT $ case lookup "REQUEST_URI"  vs of 
 		Just x -> let xs =  tail $ splitOneOf "/?" x in
 			case xs of
@@ -66,7 +65,7 @@ cgiFromServer resp ((fsM,(liftServer .) -> s),droppa) = do
 					hk <- readHKey
 					fk <- readFKey
 					v <- readValore
-					ehl <- 	s (hk,fk,Continua (trace v  v)) `mplus` 
+					ehl <- 	s (hk,fk,Continua v) `mplus` 
 						s (hk,fk,Continua $ decodeString v)	
 					case ehl of
 						Right hs -> lift . resp $ pagina hs

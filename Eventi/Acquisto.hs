@@ -49,7 +49,7 @@ data Acquisto = Acquisto
 	{nome		:: String 	-- ^ identificativo unico dell'acquisto 
 	,impegni	:: Indice	-- ^ indice della raccolta impegni
 	,assensi	:: Indice	-- ^ indice della raccolta assensi
-	} deriving (Show, Read)
+	} deriving (Show, Read, Eq)
 
 nominato :: String -> Acquisto -> Bool
 nominato s = (==) s . nome
@@ -62,7 +62,7 @@ acquisto b = do
 data StatoAcquisti = StatoAcquisti 
 	{ chiusi :: [(String, Maybe (Utente, [(Utente,Euro)]))] 
 	, aperti :: [Acquisto]
-	} deriving (Read,Show)
+	} deriving (Read,Show,Eq)
 
 type TyAcquisti a = (StatoAcquisti , a)
 
