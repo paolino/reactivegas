@@ -15,7 +15,7 @@ cabal-version: >= 1.6
 Executable reactivegas
  ghc-options: -Wall
  main-is: reactivegas.hs
- build-depends: base   , 
+ build-depends: base >= 4.2  , 
                 containers,
                 random      ,
                 bytestring  ,
@@ -35,7 +35,7 @@ Executable reactivegas
 Executable reactivegas_cgi
  ghc-options: -Wall
  main-is: reactivegas_cgi.hs
- build-depends: base     , 
+ build-depends: base  >=4.2   , 
                 containers,
                 random      ,
                 bytestring  ,
@@ -57,7 +57,7 @@ Executable reactivegas_cgi
 Library 
  exposed-modules: Lib.Passo,Lib.Response,Lib.Server.CGI,Lib.Server.Core, Lib.Server.Session, Lib.Assocs
  ghc-options: -Wall
- build-depends: base       , 
+ build-depends: base >= 4.2       , 
                 containers,
                 random      ,
                 bytestring  ,
