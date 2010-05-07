@@ -196,7 +196,7 @@ data Persistenza a b = Persistenza
 			readOrfani 	:: Utente -> IO [Evento], 	-- ^ eventi di patch utente invalidate
 			writeUPatch 	:: Utente -> Patch -> IO (),	-- ^ scrittura di una patch utente
 			readUPatch 	:: Utente -> IO (Maybe Patch),	-- ^ lettura una patch utente
-			readUPatches 	:: IO (Int,[Patch]),			-- ^ lettura delle patch utente
+			readUPatches 	:: IO (Int,[(Utente,Patch)]),			-- ^ lettura delle patch utente
 			writeGPatch 	:: Group -> IO (),		-- ^ scrittura di una patch di gruppo
 			readGPatch	:: Int -> IO (Maybe Group),	-- ^ lettura di una patch di gruppo
 			readVersion 	:: IO Int,			-- ^ versione dello stato attuale
@@ -246,7 +246,7 @@ mkPersistenza load modif boot x n = do
 			writeUPatch' u p@(_,_,es) = 	atomicallyP (UPatch u es)
 				$ readTVar tp >>= writeTVar tp . (++ if null es then [] else [(u,p)]) . filter ((/=) u . fst)
 			readUPatch' u 	= atomically $ lookup u <$> readTVar tp 
-			readUPatches' 	= atomically $ liftM2 (,) (readTVar tv) $ map snd <$> readTVar tp
+			readUPatches' 	= atomically $ liftM2 (,) (readTVar tv) $ readTVar tp
 			writeGPatch' g 	= atomicallyP GPatch $ aggiornamento n load  tv ts tp to tg cl g
 			readGPatch' i 	= atomically $ lookup i <$> readTVar tg
 			readVersion' 	= atomically $ readTVar tv

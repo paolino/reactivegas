@@ -45,13 +45,9 @@ import Applicazioni.Sessione (Sessione (..))
 daChiave :: Chiave -> [Responsabile] -> Maybe Responsabile
 daChiave c = find (\(_,(c',_)) -> c == c') 
 
-eventi :: ([Patch],TS) -> [(Utente,[Evento])]
-eventi = map (second $ \(_,_,es) -> es) . patches  
+eventi :: [(Utente,Patch)] -> [(Utente,[Evento])]
+eventi = map (second $ \(_,_,es) -> es) 
 
-patches :: ([Patch],TS) -> [(Utente,Patch)]
-patches (ups,s) = 
-	let (rs,_) = responsabili s
-	in catMaybes $ map (\p@(c,_,es) -> second (const p) <$> daChiave c rs) ups
 
 -- sel :: (MonadReader (Persistenza QS, Sessione)  m, MonadIO m) => ((Persistenza QS, Sessione) -> IO b) -> m b
 sel f = asks f >>= liftIO 
@@ -123,10 +119,9 @@ addEvento x = correzioneEventi (show x:)
 
 eventLevelSelector = do 
 	(_,us) <- sel $ readUPatches . fst
-	(s,_) <- statoPersistenza
 	es' <- letturaEventi
 	mu <- sel $ readAccesso . snd
-	let es = levelsEventi . (es' ++) . concatMap snd . maybe id (\(u,_) -> filter ((/=) u . fst)) mu $ eventi (us,s)
+	let es = levelsEventi . (es' ++) . concatMap snd . maybe id (\(u,_) -> filter ((/=) u . fst)) mu $ eventi us
 	let rs = case es of
 		[] -> Nothing  
 		es -> Just $ (const "<nessuno>" *** (subtract 1)) (head es) : es ++ [("<tutti>",maxLevel)]
@@ -145,7 +140,7 @@ eliminazioneEvento = do
 
 
 sincronizza = onAccesso $ \(r@(u,_)) -> do  
-	(_,rs) <-  sel $ readUPatches .fst
+	(_,rs) <-  second (map snd) <$> sel (readUPatches .fst)
 	case rs of 
 		[] -> bocciato $ "nessun aggiornamento individale per lo stato attuale"
 		xs -> do
@@ -179,8 +174,7 @@ caricaAggiornamentoIndividuale = do
 scaricaAggiornamentoIndividuale :: Interfaccia ()
 scaricaAggiornamentoIndividuale = do 
 	(_,us) <- sel $ readUPatches . fst
-	(s,_) <-  statoPersistenza 
-	(u,p) <- P.scelte (map (fst &&& id) $ patches (us,s)) $ "aggiornamenti utente presenti"
+	(u,p) <- P.scelte (map (fst &&& id) us) $ "aggiornamenti utente presenti"
 	v <- sel $ readVersion . fst
 	P.download (u ++ "." ++ show v) p
 
