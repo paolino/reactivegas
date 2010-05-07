@@ -1,7 +1,7 @@
 {-# LANGUAGE Rank2Types #-}
 
 -- | modulo di gestione del filesystem
-module Applicazioni.Persistenza (Persistenza (..), mkPersistenza, Modificato) where
+module Applicazioni.Persistenza (Persistenza (..), mkPersistenza, Change (..), Modificato) where
 
 import Data.Maybe (fromJust,isJust,isNothing)
 import Data.List (sort,find)
@@ -82,7 +82,6 @@ persistenza write tversion tstato tupatch torfani tgroup tlog trigger = do
 		write "patches" version patches
 		write "orfani" version patches
 		write "groups" version groups
-		atomically . writeTChan tlog $ "persistenza: " ++ show (version,map fst patches)
 	
 
 -- | Operazione di ripristino. Legge lo stato del gruppo 
@@ -125,6 +124,7 @@ ripristino unwrite tversion tstato tupatch torfani tgroup tlog = do
 
 				writeTVar tversion v
 
+data Change = Boot | GPatch | UPatch Utente [Evento]
 
 mix :: [(Utente,[Evento])] -> [(Utente,[Evento])] -> [(Utente,[Evento])] 
 mix [] [] = []
@@ -143,11 +143,10 @@ aggiornamento
 	-> TVar [(Utente,[Evento])] 	-- ^ eventi orfani
 	-> TVar [(Int,Group)]		-- ^ storico
 	-> TChan String	-- ^ log 
-	-> TChan ()	-- ^ segnala l'avvenuto aggiornamento
 	-> Group	-- ^ aggiornamento di gruppo offerto
 	-> STM ()	-- ^ transazione 
 
-aggiornamento n load  tv ts tp to tg tl cs  g@(_,_,ps) = do
+aggiornamento n load  tv ts tp to tg tl g@(_,_,ps) = do
 	s' <- readTVar ts
 	when (isNothing s') retry -- fallisce finche non esiste uno stato
 	let 	Just s = s'
@@ -164,7 +163,6 @@ aggiornamento n load  tv ts tp to tg tl cs  g@(_,_,ps) = do
 			writeTVar to $ map (second $ \(_,_,evs) -> evs) pos `mix` os -- aggiorna gli orfani
 			writeTVar tp []	-- annulla gli aggiornamenti individuali (o erano in 'g' o sono in 'os')
 			writeTVar tv v	-- scrive la versione
-			writeTChan cs ()	-- annuncia l'aggiornamento avvenuto
 
 -- | come esportiamo l'interfaccia di modifica in bianco. Un caricamento in bianco sullo stato attuale 
 type Modificato a b 	= Int 			-- ^ livello di caricamento
@@ -203,7 +201,8 @@ data Persistenza a b = Persistenza
 			readGPatch	:: Int -> IO (Maybe Group),	-- ^ lettura di una patch di gruppo
 			readVersion 	:: IO Int,			-- ^ versione dello stato attuale
 			readLogs	:: IO String,
-			updateSignal	:: TChan (),			-- ^ segnala un avvenuto cambiamento di stato
+			updateSignal	:: IO (STM Change),			-- ^ segnala un avvenuto cambiamento di stato
+			queryUtente	:: Maybe Utente -> STM [Evento],
 			caricamentoBianco :: Modificato a b
 		}
 
@@ -234,28 +233,32 @@ mkPersistenza load modif boot x n = do
 	-- azioni del record di persistenza
 	
 	let		-- scatena la persistenza in chiusura della transazione
-			atomicallyP f = atomically $ f >> writeTChan trigger ()
+			atomicallyP t f = atomically $ f >> writeTChan trigger () >> writeTChan cs t
 			readStato' 	= atomically $ do 
 						s <- readTVar ts
 						case s of 
 							Nothing -> return Nothing
 							Just s -> readTVar tv >>= \v -> return (Just (v,s))
-			writeStato' 	= atomicallyP $ readTVar tb >>= writeTVar ts . Just . boot
+			writeStato' 	= atomicallyP Boot $ readTVar tb >>= writeTVar ts . Just . boot
 			readBoot' 	= atomically $ readTVar tb
 			writeBoot' 	= atomically . writeTVar tb
 			readOrfani' u 	= atomically $ maybe [] id . lookup u <$> readTVar to
-			writeUPatch' u p 	= atomicallyP $ readTVar tp >>= writeTVar tp . (++ [(u,p)]) . filter ((/=) u . fst)
+			writeUPatch' u p@(_,_,es) = 	atomicallyP (UPatch u es)
+				$ readTVar tp >>= writeTVar tp . (++ if null es then [] else [(u,p)]) . filter ((/=) u . fst)
 			readUPatch' u 	= atomically $ lookup u <$> readTVar tp 
 			readUPatches' 	= atomically $ liftM2 (,) (readTVar tv) $ map snd <$> readTVar tp
-			writeGPatch' g 	= atomicallyP $ aggiornamento n load  tv ts tp to tg cl cs g
+			writeGPatch' g 	= atomicallyP GPatch $ aggiornamento n load  tv ts tp to tg cl g
 			readGPatch' i 	= atomically $ lookup i <$> readTVar tg
 			readVersion' 	= atomically $ readTVar tv
 			readLogs' 	= atomically . readTChan $ cl
+			updateSignal'	= atomically $ dupTChan cs >>= return . readTChan  
+			queryUtente (Just u)	= maybe [] (\(_,_,es) -> es) <$> lookup u <$> readTVar tp 
+			queryUtente Nothing = return []
 			caricamentoBianco' 	= mkModificato modif ts tp
 			
 	return $ Persistenza 	readStato' writeStato' readBoot' writeBoot' readOrfani' 
 				writeUPatch' readUPatch' readUPatches' writeGPatch' 
-				readGPatch' readVersion' readLogs' cs caricamentoBianco'
+				readGPatch' readVersion' readLogs' updateSignal' queryUtente caricamentoBianco'
 
 
 

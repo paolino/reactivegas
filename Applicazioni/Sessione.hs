@@ -1,12 +1,16 @@
 -- | gestione della sessione, del modello falso in cui l'utente si trova ad operare in bianco prima di fare persistere il proprio lavoro
 module Applicazioni.Sessione (Sessione (..), mkSessione, Update) where
 
-import Control.Monad (forever)
+import Control.Applicative ((<$>))
+import Control.Monad (forever, when)
 import Control.Concurrent (forkIO)
 import Control.Concurrent.STM (STM,TVar,TChan,newTVar,newTChan,readTVar,readTChan,writeTVar,writeTChan,orElse,atomically)
 
-import Core.Types (Evento,Responsabile)
+import Core.Types (Evento,Responsabile, Utente)
 
+import Applicazioni.Persistenza (Change (..))
+
+import Debug.Trace
 -- | interfaccia concorrente per una sessione di interazione
 data Sessione a b = Sessione 
 	{readEventi :: IO [Evento]			-- ^ legge gli eventi in memoria		
@@ -34,21 +38,29 @@ update 	:: Update a b -- produce uno stato modificato
 		,TVar a
 		,TVar b
 		,TChan Triggers
-		,TChan () -- una condizione esterna che deve fare scattare il rinnovamento
+		,STM Change -- una condizione esterna che deve fare scattare il rinnovamento
+		,(Maybe Utente -> STM [Evento]) -- gli eventi pubblicati per un utente
 		) -- ^ memoria condivisa
 	-> STM ()
-update f l (eventi, accesso, conservative, stato, caricamento, triggers,signal) = 
+update f l (eventi, accesso, conservative, stato, caricamento, triggers,signal, publ) = 
 	let 	-- | update causato da modifica utente
 		interna = do 	t 	<- readTChan triggers 
-				case t of 	TResponsabile mr 	-> writeTVar accesso mr
-						TEventi es 		-> writeTVar eventi es
-						TConservative l 	-> writeTVar conservative l
+				case t of 	TResponsabile mr 	->  do
+							writeTVar accesso mr
+							publ (fst <$> mr) >>= writeTVar eventi
+						TEventi es 		->  writeTVar eventi es
+						TConservative l 	->  writeTVar conservative l
 		-- | update causato da condizione esterna, butta via tutto tranne il responsabile
-		esterna = do 	readTChan signal
-				writeTVar eventi []
-				writeTVar conservative l
-					
-	in do 	interna  `orElse` esterna
+		esterna = do 	s <- signal
+				case s of
+					Boot -> return ()
+					GPatch ->  do	writeTVar eventi []
+							writeTVar conservative l
+					UPatch u es ->  do
+						mr <- readTVar accesso
+						when (Just u == (fst <$> mr)) $ writeTVar eventi es
+	in do 	
+		interna `orElse` esterna
 		mr 	<- readTVar accesso
 		evs 	<- readTVar eventi
 		l' 	<- readTVar conservative
@@ -60,9 +72,10 @@ update f l (eventi, accesso, conservative, stato, caricamento, triggers,signal) 
 -- | costruisce l'interfaccia di sessione a partire da un modificatore di stato in STM
 mkSessione 	:: Update a  b		-- ^ modificatore di stato
 		-> Int 			-- ^ livello di caricamento di base
-		-> TChan ()		-- ^ segnale di aggiornamento stato
+		-> IO (STM Change)		-- ^ segnale di aggiornamento stato
+		-> (Maybe Utente -> STM [Evento])  -- ^ query sugli eventi pubblicati per un utente
 		-> IO (Sessione a b)	
-mkSessione f l signal = do
+mkSessione f l mkSignal publ = do
 	(s,c) 		<- atomically $ f l Nothing [] -- uno stato iniziale
 	caricamento 	<- atomically $ newTVar c
 	stato 		<- atomically $ newTVar s
@@ -70,7 +83,8 @@ mkSessione f l signal = do
 	accesso 	<- atomically $ newTVar Nothing
 	triggers 	<- atomically $ newTChan
 	conservative 	<- atomically $ newTVar l
-	let	memoria = (eventi, accesso, conservative, stato, caricamento ,triggers, signal)
+	signal 		<- mkSignal
+	let	memoria = (eventi, accesso, conservative, stato, caricamento ,triggers, signal, publ)
 		checkUpdate q  = (update f l memoria >> q) `orElse` q
 		write f = atomically . writeTChan triggers . f
 		read t = atomically . checkUpdate $ readTVar t

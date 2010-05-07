@@ -12,12 +12,13 @@ import Debug.Trace
 import Lib.Response
 
 import Core.Types (Esterno,Utente)
-import Core.UI (applicazione)
 
 import Applicazioni.Reactivegas (QS,loader, caricamento, nuovoStato, maxLevel) 
 import Applicazioni.Server (sessionServer)
-import Applicazioni.Persistenza (mkPersistenza , Persistenza (readLogs,caricamentoBianco,updateSignal))
+import Applicazioni.Persistenza (mkPersistenza , Persistenza (readLogs,caricamentoBianco,updateSignal,queryUtente))
 import Applicazioni.Sessione (mkSessione)
+
+import UI.Server (applicazione)
 
 layout = 	[(["gestione dichiarazioni"],2)
 		,(["descrizione sessione"],1)
@@ -49,5 +50,5 @@ pagina b = output . prettyHtml $
 main = do
 	pe <- mkPersistenza loader caricamento nuovoStato "tarogas" 20
 	forkIO . forever $ readLogs pe >>= putStrLn
-	sessionServer 5000 10 20 applicazione pagina layout ((,) pe <$> mkSessione (caricamentoBianco pe) maxLevel (updateSignal pe)) 
+	sessionServer 5000 10 20 applicazione pagina layout ((,) pe <$> mkSessione (caricamentoBianco pe) maxLevel (updateSignal pe) (queryUtente pe)) 
 	

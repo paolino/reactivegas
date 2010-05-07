@@ -67,15 +67,11 @@ runPasso  w@(c@(Upload p f) : u) = do
 						(x,_):_ -> (:w) <$> lift (fst <$> f x) 
 	runPasso n
 
-runPasso w@(c@(Download _ y f):u) = do
-		x <- getInputLine $  "\n** Salvataggio di " ++ take 60 (show y) ++ ".... [nome del file da salvare]: "
-		n <- case fromJust x of 
-			[] -> return u
-			fn -> do 	
-				k <- liftIO $ tryJust (\(SomeException e) -> Just (show e)) (writeFile fn (show y)) 
-				case k of 
-					Left e -> outputStrLn e >> return w
-					Right () -> outputStrLn "salvato." >> (:u) <$> fst <$> lift f
+runPasso w@(c@(Download x y f):u) = do
+		k <- liftIO $ tryJust (\(SomeException e) -> Just (show e)) (writeFile x (show y)) 
+		n <- case k of 
+			Left e -> outputStrLn e >> return w
+			Right () -> outputStrLn "salvato." >> (:u) <$> fst <$> lift f
 		runPasso n
 
 interazione :: (MonadException m, Functor m) => Costruzione m b b -> m b
