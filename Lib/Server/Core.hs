@@ -7,7 +7,7 @@ import Data.List (lookup,partition)
 import Control.Applicative ((<$>))
 import Control.Concurrent.STM (newTVar,  readTVar, writeTVar,atomically)
 import Control.Monad (join, (>=>), foldM)
-import Control.Monad.Error (ErrorT, throwError, lift)
+import Control.Monad.Error (ErrorT, throwError, lift, MonadIO)
 import Control.Arrow ((***),(&&&),  second, first)
 
 import System.Random (randomIO)
@@ -15,38 +15,8 @@ import qualified Data.IntMap as M
 
 import Debug.Trace
 import Lib.Assocs (secondM, firstM)
-
------------------------------------- library -----------------------------------------
--- | interfaccia di un DB
-data DB a b = DB 
-	{ query :: a -> Maybe b
-	, lkey :: Maybe a
-	, set :: (a,b) -> DB a b
-	, forget :: a -> DB a b 
-	, dbmap :: (b -> b) -> DB a b
-	}
-
--- | un DB inefficiente a memoria limitata 
-limitedDB :: (Show a, Eq a) 
-	=> Int 	-- ^ massimo numero di elementi
-	-> DB a b
-limitedDB limit = let
-	q xs x = lookup x xs
-	l xs = fst <$> listToMaybe xs
-	s xs (x,y) = mkdb . take limit $ (x,y) : xs 
-	f xs x = mkdb . filter ((/=) x . fst) $ xs	
-	m xs f = mkdb . map (second f) $ xs 
-	mkdb xs = DB (q xs) (l xs) (s xs) (f xs) (m xs)
-	in mkdb []
-
--- | erroring on Nothing
-onNothing :: Monad m => String -> Maybe a -> ErrorT String m a
-onNothing x = maybe (throwError x) return  
-
-infixr 8 >$>
-(>$>) :: Functor f => (a -> b) -> (c -> f a) -> c -> f b
-(>$>) = (.) . (<$>)
--------------------------------------------------------------------------------------
+import Lib.Missing (onNothing, (>$>))
+import Lib.Database (limitedDB, query, lkey, set)
 
 
 -- | la chiave di environment, indica una situazione dell'interfaccia untente. Le richieste la portano con se, per ricontestualizzare la risposta alla situazione "attuale" che l'utente fronteggia
@@ -62,88 +32,12 @@ type Value = String
 data Form e b c = Form
 	{ continuazione :: Value -> Maybe (IO (Form e b c)) -- ^ passaggio a nuova form
 	, ricarica :: IO (Form e b c) -- ^ ricomputazione della form, per inglobare eventuali cambiamenti logici
-	, serializzazione :: [Value]  -- ^ insieme minimo di valori per raggiungere lo stato attuale della form
+	, serializzazione :: [Value]
 	, form :: Enk -> Fok -> b	-- ^ modulistica di interazione
 	, scarica :: Maybe c	-- ^ eventuale valore servibile
 	}
 
--- | i valori delle richieste possibili, scevri dai valori comuni
-data Req 
-	= Continua 	Value
-	| Scarica 	
-	| Clona 
-	| Chiudi 
-	| Affonda
-	| Inchioda
-	| Allarga
-	| Restringi	
-
--- | tutte le richieste portano con se la chiave di environment, e la chiave di cella
-type Request = (Enk,Fok,Req)
-
-type NailedForm e b c = (Maybe Int,Form e b c)
-type IM e b c = M.IntMap (NailedForm e b c,Int)
--- | una mappatura tra chiavi di environment e insiemi di celle
-type Servizio e b c = DB Enk (IM e b c)
-
--- | il server come reattore a richieste
-type Server e b c = (IO [(b,Int)],Request -> ErrorT String IO (Either c [(b,Int)]))
-
--- | costruisce un server a partire dalla form base
-mkServer 	:: forall e b c . Int 			-- ^ limite per il numero di environments
-		-> [(NailedForm e b c,Int)] 		-- ^ forms di base
-		-> ([[Value]] -> IO ()) -- ^ persistenza
-		-> IO (Server e b c)	-- ^ il reattore 
-
-mkServer limit bs pers = do
-	let ibs =  zip [0..] bs
-	dbe <- atomically . newTVar $ set (limitedDB limit) ("0",M.fromList ibs )
-	let
-	  def = atomically $ do 
-			Just enk <- lkey <$> readTVar dbe 
-			Just fos <- ($enk) . query <$> readTVar dbe
-			return . map (\(i,((_,fo),j)) -> (form fo enk i,j)) $ M.assocs fos 
-	  req (enk,fok,q) = do
-		-- restituisce le celle riferite alla chiave di environment
-		fos <- lift (atomically (($enk) . query <$> readTVar dbe)) >>= onNothing "chiave temporale non trovata" 
-		
-		foi@((mi,fo),j :: Int)  <- onNothing "indice di cella non trovato" $ fok `M.lookup` fos
-		enk' <- lift $ show <$> (`mod` 10000000) <$> abs <$> (randomIO :: IO Int)
-		let 	ricarica' :: IM e b c ->ErrorT String IO (Either c (IM e b c))
-			ricarica' xs = Right 
-					>$> M.fromList 
-					>$> mapM (lift . secondM (firstM $ secondM ricarica)) $ M.assocs xs
-			esegui' (Continua v) = do 
-				fo' <- join . onNothing "il valore non è stato compreso" 
-					. fmap lift $ continuazione fo v	
-				let fo'' = case mi of
-					Just l -> if length (serializzazione fo') >= l then fo' else fo
-					Nothing -> fo'
-				ricarica' $ M.adjust (const ((mi,fo''),j)) fok fos 
-			esegui' Scarica = 
-				fmap Left . onNothing "la form non contiene un valore da scaricare" $ scarica fo
-			esegui' Clona  = do
-				let 	(afos,bfos) = partition ((< fok) . fst) $ M.assocs fos
-				ricarica' . M.fromList $ afos ++ (fok,foi): map (first (+1)) bfos
-			esegui' Inchioda = undefined
-				-- ricarica' $ M.adjust (first (const . Just . length . serializzazione $ fo)) fok fos
-			esegui' Chiudi = ricarica' $ if M.size fos > 1 then M.delete fok fos else fos
-			esegui' Affonda = do
-				let 	(afos,bfos) = partition ((< fok) . fst) $ M.assocs fos
-				ricarica' . M.fromList $ afos ++ tail bfos ++ [(last (M.keys fos) + 1,foi)]
-			esegui' Allarga = do
-				ricarica' $ M.adjust (const ((mi,fo),if j < 5 then j + 1 else j)) fok fos 
-			esegui' Restringi = do
-				ricarica' $ M.adjust (const ((mi,fo),if j > 1  then j - 1 else j)) fok fos 
-			update fos' = do
-				lift . pers $ map (serializzazione . snd . fst) $ M.elems fos'
-				lift . atomically $ do 
-					enks <- readTVar dbe
-					writeTVar dbe $ set enks (enk', fos')
-				return . map (\(fok,((_,fo),j)) -> (form fo enk' fok, j)) $ M.assocs fos'
-		esegui' q >>= either (return . Left) (Right >$> update) 
-	return (def,req)
-
+-- | ricostruisce una form a partire dalla form di base , applicando i valori alle continuazioni , sinche' vengono accettati
 restore :: forall e b c. Form e b c -> [Value] -> IO (Form e b c)
 restore base hs = foldM k (Right base) (reverse hs) >>= either return return
 	where 	k :: Either (Form e b c) (Form e b c) -> Value -> IO (Either (Form e b c) (Form e b c))
@@ -153,4 +47,90 @@ restore base hs = foldM k (Right base) (reverse hs) >>= either return return
 				Nothing -> return (Left f)
 				Just r -> Right <$> r 
 		k lf _ = return lf
+
+-- | i valori delle richieste possibili, scevri dai valori comuni
+data Req 
+	= Continua 	Value
+	| Scarica 	
+	| Clona Id
+	| Chiudi 
+
+-- | tutte le richieste portano con se la chiave di environment, e la chiave di cella
+type Request = (Enk,Fok,Req)
+
+-- | Un identificativo dato dall'esterno
+type Id = Int
+
+-- | una form assieme al suo nome
+type IdedForm e b c = (Form e b c, Id)
+
+-- | un insieme di form, usiamo una mappa per semplificare la definizione dellM.fromListe updates
+type IM e b c = M.IntMap (IdedForm e b c)
+
+-- estrae i valori di modulistica da un insieme di form e la sua chiave
+render :: Enk -> IM e b c -> [(b,Id)]
+render enk = map (\(i,(fo,j)) -> (form fo enk i,j)) . M.assocs  
+
+-- | esegue il protocollo Req
+esegui 	:: Req 			-- ^ richiesta da soddisfare
+	-> IM e b c 		-- ^ insieme di form
+	-> Fok 			-- ^ chiave della form richiedente
+	-> IdedForm e b c 	-- ^ form richiedente
+	-> ErrorT String IO (Either c (IM e b c))	-- ^ o lo scaricabile oppure il nuovo insieme di form
+esegui (Continua v) fos fok (fo,j) = do 
+	fo' <- join . onNothing "il valore non è stato compreso" . fmap lift $ continuazione fo v	
+	return . Right $ M.adjust (const (fo',j)) fok fos 
+esegui Scarica _ _ (fo,j) = fmap Left . onNothing "la form non contiene un valore da scaricare" $ scarica fo
+esegui (Clona j) fos fok (fo,_) = let 	(afos,bfos) = partition ((< fok) . fst) $ M.assocs fos
+	in return . Right  $ M.fromList $ afos ++ (fok,(fo,j)): map (first (+1)) bfos
+esegui Chiudi fos fok _  = return . Right  $ if M.size fos > 1 then M.delete fok fos else fos
+
+
+
+-- | il server come reattore a richieste. Il nome delle form filtra nelle uscite
+-- il tipo 'e' filtra per inchiodare il tipo delle form
+data Server e b c = Server {
+	apertura :: IO [(b,Id)], -- ^ il risultato di una non richiesta
+	servizio :: Request -> ErrorT String IO (Either c [(b,Id)]) -- ^ reazione ad una richiesta
+	}
+
+mkEnk :: IO Enk
+mkEnk = show <$> (`mod` (100000 :: Int)) <$> abs <$> randomIO
+
+-- | costruisce un server a partire dalla form base
+mkServer 	:: forall e b c 
+		. Int 			-- ^ limite per il numero di insiemi gestiti
+		-> [IdedForm e b c] 	-- ^ forms di partenza
+		-> IO (Server e b c)	-- ^ il reattore 
+
+mkServer limit bs = do
+	-- una chiave per l'insieme di form iniziale
+	enk <- mkEnk
+	-- apriamo un database in memoria (String -> IM e b c) e assegnamo alla chiave "0" l'insieme iniziale
+	-- il database è condiviso alle chiamate, quindi va in retry in caso di update contemporaneo
+	dbe <- atomically . newTVar $ set (limitedDB limit) (enk,M.fromList $ zip [0..] bs)
+	let	apertura = atomically $ do -- carica l'ultima chiave inserita
+			Just enk <- lkey <$> readTVar dbe 
+			-- carica l'insieme di form relativo
+			Just fos <- ($enk) . query <$> readTVar dbe
+			-- estrae l'uscita dalla forma e gli associa il nome (j::Id)
+			return $ render enk fos 
+		servizio (enk,fok,q) = do
+			-- estrae l'insieme di form dal db
+			fos <- (lift . atomically) (($enk) . query <$> readTVar dbe) >>= onNothing "chiave temporale non trovata" 
+			-- estrae la form con il suo nome
+			foj  <- onNothing "chiave di form non trovata" $ fok `M.lookup` fos
+			r <- esegui q fos fok foj
+			case r of
+				Left x -> return $ Left x
+				Right fos' -> do
+					-- riforma l'insieme di form ricaricandole
+					fos'' <- M.fromList >$> lift . mapM (secondM . firstM $ ricarica) $ M.assocs fos'
+					-- crea una nuova chiave storica (non serve il random ?)
+					enk' <- lift mkEnk				
+					-- aggiunge il nuovo insieme di form al db
+					lift . atomically $ readTVar dbe >>= writeTVar dbe . flip set (enk', fos'')
+					return . Right $ render enk' fos'' 
+	return $ Server apertura servizio
+
 	

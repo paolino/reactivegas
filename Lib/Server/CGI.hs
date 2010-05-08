@@ -13,6 +13,7 @@ import Codec.Binary.UTF8.String (decodeString)
 import Lib.Server.Core
 import Text.XHtml
 import Lib.HTTP
+import Lib.Missing (onNothing)
 
 
 import Debug.Trace
@@ -45,13 +46,14 @@ type HServer e = Server e Html Link
 
 -- | map a Server reactor to a CGI action 
 cgiFromServer :: (Html -> CGI CGIResult) -> (Server e Html Link,IO ()) -> CGI CGIResult
-cgiFromServer resp ((fsM,(liftServer .) -> s),droppa) = do 
+cgiFromServer resp (Server apertura servizio,droppa) = do 
+	let s = liftServer . servizio 
 	vs <- getVars 
 	is <- getInputs
 	r <- runErrorT $ case lookup "REQUEST_URI"  vs of 
 		Just x -> let xs =  tail $ splitOneOf "/?" x in
 			case xs of
-				[""] -> lift $ lift fsM >>= resp . pagina 
+				[""] -> lift $ lift apertura >>= resp . pagina 
 				["style.css"] -> do
 					css <- liftIO $ readFile "style.css"   
 					lift $ do 	setHeader "Content-type" "text/css"
@@ -81,22 +83,6 @@ cgiFromServer resp ((fsM,(liftServer .) -> s),droppa) = do
 							setHeader "Content-Disposition" $ "filename=" ++ show n
 							output x 
 						Right _ -> throwError "l'interazione continua con una interazione"
-				("menu":_) -> do
-					hk <- readHKey
-					fk <- readFKey
-					v <- readValore
-					ehl <- s (hk,fk,case v of 
-						"chiudi" -> Chiudi
-						"clona" -> Clona
-						"affonda" -> Affonda
-						"allarga" -> Allarga
-						"restringi" -> Restringi
-						_ -> Chiudi)
-					case ehl of
-						Right hs -> lift . resp . pagina $ hs
-						Left _ -> throwError "l'interazione continua con un download"
-				("reset":_) -> lift $ lift fsM >>= resp . pagina
-					
 				_ -> lift (lift droppa) >> throwError "boh"
 			
 	either (\s -> outputNotFound s) return r

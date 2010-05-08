@@ -2,6 +2,7 @@ module Lib.Missing where
 
 import Control.Applicative ((<$>))
 import Control.Arrow (second)
+import Control.Monad.Error (throwError, ErrorT)
 
 deleteM 	:: (Functor m, Monad m) 
 		=> (a -> m Bool) 	-- ^ judging function	
@@ -28,3 +29,12 @@ foldDeleteMb 	:: (Functor m, Monad m)
 		-> m (b,[a])			-- ^ the final state and the unacceptable elements
 
 foldDeleteMb	f y xs = deleteMb f y xs >>= maybe (return (y,xs)) (uncurry $ foldDeleteMb f) 
+
+-- | erroring on Nothing
+onNothing :: Monad m => String -> Maybe a -> ErrorT String m a
+onNothing x = maybe (throwError x) return  
+
+infixr 8 >$>
+(>$>) :: Functor f => (a -> b) -> (c -> f a) -> c -> f b
+(>$>) = (.) . (<$>)
+

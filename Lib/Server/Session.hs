@@ -8,7 +8,7 @@ import System.Random (randomIO)
 import Network.SCGI (CGI,getCookie,newCookie,setCookie)
 
 
-import Lib.Server.Core (limitedDB,set,query,forget)
+import Lib.Database (limitedDB,set,query,forget)
 import Debug.Trace
 
 type Droppable a = CGI (a, IO ())

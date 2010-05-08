@@ -14,7 +14,6 @@ import Lib.Console (interazione)
 import Core.Types (Esterno,Utente)
 
 import Applicazioni.Reactivegas (QS,loader, caricamento, nuovoStato, maxLevel) 
-import Applicazioni.Server (sessionServer)
 import Applicazioni.Persistenza (mkPersistenza , Persistenza (readLogs,caricamentoBianco,updateSignal,queryUtente))
 import Applicazioni.Sessione (mkSessione)
 
