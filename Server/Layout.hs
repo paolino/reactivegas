@@ -1,0 +1,41 @@
+-- | impostazioni della pagina di interazione http
+module Server.Layout (pagina, layout) where
+
+import Text.XHtml
+
+-- | le cinque finestre , path e nome
+layout :: [([String],Int)]
+layout = 	[(["gestione dichiarazioni"],2)
+		,(["descrizione sessione"],1)
+		,(["amministrazione"],5)
+		,(["effetto delle ultime dichiarazioni"],3)
+		,(["interrogazione sullo stato del gruppo"],4)
+		]
+
+
+metadata = header << 	(
+				(thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml)
+			+++ 	(thetitle << "Amministrazione G.A.S.") 
+			+++ 	(meta ! [httpequiv "Content-Type", content "text/html;charset=utf8;"])
+			)  
+piede = ulist << 	[
+			li << ("Servizio sviluppato da " +++ anchor ! [href "mailto:paolo.veronelli@gmail.com"] 
+					<< "paolino" +++ "e amici"),
+			li << ("Codice disponibile sotto licenza BSD presso " +++ anchor ! 
+				[href "http://github.com/paolino/reactivegas"] << "github.com")
+			]  
+
+testata = 	thediv ! [theclass "titolo"] << ("Amministrazione economica di un gruppo d'acquisto") 
+	+++	(thediv ! [theclass "reset"] << anchor ! [href "/"] << "annulla la sessione")
+
+pagina 	:: Html 	-- ^ corpo della pagina
+	-> String	-- ^ pagina servita
+pagina b = prettyHtml $ 
+		header << metadata  
+	+++ 	body << (		(thediv ! [theclass "testata"] << testata)
+				+++ 	(thediv ! [theclass "utente"] << b)
+				+++ 	(thediv ! [theclass "pedata"] << piede)  
+			)
+
+	
+

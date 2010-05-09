@@ -12,9 +12,10 @@ homepage: http://wiki.github.com/paolino/reactivegas
 copyright: Copyright (c) 2010 Paolo Veronelli 
 build-type: Simple
 cabal-version: >= 1.6
-Executable reactivegas
+
+Executable console
  ghc-options: -Wall
- main-is: reactivegas.hs
+ main-is: Console/console.hs
  build-depends: base >= 4.2  , 
                 containers,
                 random      ,
@@ -32,9 +33,9 @@ Executable reactivegas
                 directory  , 
                 stm 
 
-Executable reactivegas_cgi
+Executable server
  ghc-options: -Wall
- main-is: reactivegas_cgi.hs
+ main-is: Server/server.hs
  build-depends: base  >=4.2   , 
                 containers,
                 random      ,
@@ -54,22 +55,4 @@ Executable reactivegas_cgi
                 xhtml, 
                 split,
                 scgi,url
-Library 
- exposed-modules: Lib.Passo,Lib.Response,Lib.Server.CGI,Lib.Server.Core, Lib.Server.Session, Lib.Assocs
- ghc-options: -Wall
- build-depends: base >= 4.2       , 
-                containers,
-                random      ,
-                bytestring  ,
-                SimpleAES   ,
-                RSA         ,
-                mtl         ,
-                utf8-string ,
-                MaybeT      ,
-                pretty      ,
-                haskeline   ,
-                filepath    ,
-                FileManipCompat   ,
-                directory   , 
-                stm, 
-                split
+

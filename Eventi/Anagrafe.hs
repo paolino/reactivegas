@@ -23,7 +23,7 @@ module Eventi.Anagrafe {-(
 	, queryAnagrafe
 	, queryAssenso) -}
 	where
-
+import Debug.Trace
 import Data.List ((\\))
 import Control.Applicative ((<$>))
 import Control.Arrow ((***),first,  second,  (&&&))
@@ -331,7 +331,8 @@ programmazioneAssenso :: (
 	-> (Indice -> MTInserzione s c Utente (Effetti s c Utente)) -- ^ la chiusura per il fallimento della raccolta
 	-> MTInserzione s c Utente (Indice, Reazione s c Utente, MTInserzione s c Utente ())	-- ^ la chiave per emettere assensi relativi e la reazione da schedulare
 
-programmazioneAssenso se ur c k kn = do
+programmazioneAssenso se ur c k kn' = do
+	let kn = trace "beccato" kn'
 	l <- nuovoStatoServizio (Assensi ur [] []) (ur,se) -- ricevi la chiave per la nuova raccolta
 	let 	eliminaRichiesta  = do
 			eliminaStatoServizio l (undefined :: Assensi)  
@@ -365,7 +366,7 @@ programmazioneAssenso se ur c k kn = do
 				Negativo -> do
 					eliminaRichiesta 
 					logga $ "chiusura negativa della questione " ++ se
-					(,) False <$> kn j
+					(,) False <$> trace "dissenso" (kn j)
 				Indecidibile -> do		
 					logga $ "ricevuto il dissenso da " ++ r 
 						++ " sulla questione " ++ se
@@ -376,12 +377,12 @@ programmazioneAssenso se ur c k kn = do
 			when (j /= l) mzero
 			fallimento (ur /= r) "questione aperta da un altro responsabile"
 			eliminaRichiesta 
-			(,) False <$> kn j
+			(,) False <$> trace "fallimento assenso" (kn j)
 		reattoreAssenso (Left (eliminazioneResponsabile -> Just (u,r))) = conFallimento $ do
 			when (ur /= u) mzero
 			logga $ "eliminazione della richiesta " ++ se
 			eliminaRichiesta 
-			(,) False <$> kn l
+			(,) False <$> trace "eliminazione responsabile" (kn l)
 		reattoreAssenso (Left _) = return Nothing
 	logga $ "raccolta di assensi per " ++ se 
  	return (l,Reazione (Nothing, reattoreAssenso),eliminaRichiesta ) -- restituisce il riferimento a questa richiesta perché venga nominato negli eventi di assenso
