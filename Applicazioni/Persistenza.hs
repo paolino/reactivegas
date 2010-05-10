@@ -43,15 +43,20 @@ groupWrite x y v t = do
 	r <- tryJust (\(SomeException x) -> Just $ show x) (writeFile (x </> addExtension y (show v)) . show $ t) 
 	either putStrLn return r
 
+extValue vf = case vf of 
+	Nothing -> return Nothing
+	Just vf -> do
+		v <- value vf
+		return . Just $ (ext vf ,v)
 -- | legge un dato riguardante un gruppo
 groupUnwrite :: Read a => GK -> String -> Maybe Int -> IO (Maybe (Int,a))
 groupUnwrite x y mv = do
 		stati <-  getValuedfiles maybeParse y x
-		return $ case mv of
-			Just v -> find ((==) v . ext) stati >>= Just . (ext &&& value)
+		case mv of
+			Just v -> extValue $ find ((==) v . ext) stati 
 			Nothing -> case sort stati of 
-				[] -> Nothing
-				xs -> Just . (ext &&& value) $ last xs
+				[] -> return Nothing
+				xs -> extValue . Just $ last xs
 -------------------------------------------------------------------------------------------------------------------
 
 
