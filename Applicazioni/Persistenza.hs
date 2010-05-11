@@ -20,7 +20,7 @@ import System.FilePath ((</>), addExtension)
 
 import Text.XHtml hiding ((</>),value)
 
-import Lib.Valuedfiles  (Valuedfile (..), maybeParse, getValuedfiles)
+import Lib.Valuedfiles  (Valuedfile (..), maybeParse, getValuedfiles, keepSpecific, keepNewest)
 import Lib.Assocs (secondM)
 import Lib.Firmabile (Firma)
 
@@ -52,11 +52,7 @@ extValue vf = case vf of
 groupUnwrite :: Read a => GK -> String -> Maybe Int -> IO (Maybe (Int,a))
 groupUnwrite x y mv = do
 		stati <-  getValuedfiles maybeParse y x
-		case mv of
-			Just v -> extValue $ find ((==) v . ext) stati 
-			Nothing -> case sort stati of 
-				[] -> return Nothing
-				xs -> extValue . Just $ last xs
+		maybe (keepNewest stati) (keepSpecific stati) mv >>= extValue 
 -------------------------------------------------------------------------------------------------------------------
 
 
@@ -75,17 +71,17 @@ persistenza 	:: Show a
 
 persistenza write tversion tstato tupatch torfani tgroup tlog trigger = do
 	atomically $ readTChan trigger 
-	(version,stato,patches,groups) <- atomically $ do
+	(version,stato,patches,groups,orfani) <- atomically $ do
 		version 	<- readTVar tversion
 		stato 		<- readTVar tstato
 		patches 	<- readTVar tupatch
 		orfani 		<- readTVar torfani
 		groups 		<- readTVar tgroup
-		return (version,stato,patches, groups)
+		return (version,stato,patches, groups,orfani)
 	when (isJust stato) $ do 
 		write "stato" version (fromJust stato)
 		write "patches" version patches
-		write "orfani" version patches
+		write "orfani" version orfani
 		write "groups" version groups
 	
 

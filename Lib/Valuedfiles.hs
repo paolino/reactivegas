@@ -1,16 +1,18 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module Lib.Valuedfiles where
 
-import Data.Maybe (catMaybes)
+import Data.List (partition, sort)
+import Data.Maybe (catMaybes, listToMaybe)
 import Control.Monad.Trans (lift)
 import Control.Applicative ((<$>))
+import Control.Arrow ((&&&))
 import Control.Monad (mzero,guard,liftM2, MonadPlus)
 import Control.Monad.Maybe (MaybeT,runMaybeT)
 import System.FilePath.FindCompat (filePath, fileName , fileType, (==?), extension, 
 	evalClause , depth, fold, liftOp, FileType (RegularFile),FindClause)
 import System.FilePath.GlobPattern ((~~))
 import System.IO (openFile, hGetContents, hSeek, SeekMode (AbsoluteSeek), hClose, IOMode (ReadMode))
-
+import System.Directory (removeFile)
 import Debug.Trace
 --- buggy filemanipcompat ------
 (~~?) = liftOp (~~)
@@ -39,13 +41,15 @@ mkValuedfile (i,x) = do	h1 <- openFile x ReadMode
 			case reads r of
 				[] -> do
 					hClose h1
+					putStrLn $ x ++ " non riconosciuto"
 					return Nothing
 				[((r::a),_)] -> do
-					h2 <- openFile x ReadMode
-					hClose h1
+					h2 <- openFile x ReadMode -- new lock
+					hClose h1 -- release the lock
+					putStrLn $ x ++ " riconosciuto"
 					return . Just . Valuedfile i x $ do 
 						[(r',_)] <- reads <$> hGetContents h2
-						hClose h2 
+						hClose h2  -- release the lock
 						return r'
 
 
@@ -58,3 +62,13 @@ getValuedfiles g n x = let
 		in do 	fs <- fold (depth ==? 0) accum [] x >>= mapM mkValuedfile
 			return $ catMaybes fs
 
+keepNewest :: Ord b => [Valuedfile a b] -> IO (Maybe (Valuedfile a b))
+keepNewest [] = return Nothing
+keepNewest vs = let
+	(vs',v) = (init &&& last) $ sort vs
+	in mapM (removeFile . path) vs'>> return (Just v)
+
+keepSpecific :: Eq b => [Valuedfile a b] -> b -> IO (Maybe (Valuedfile a b))
+keepSpecific vs e = let
+	(xs,ys) = partition ((==) e . ext) vs
+	in mapM (removeFile . path) ys >> return (listToMaybe xs)
