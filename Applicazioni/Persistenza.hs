@@ -4,9 +4,9 @@
 module Applicazioni.Persistenza (Persistenza (..), mkPersistenza, Change (..), Modificato) where
 
 import Data.Maybe (fromJust,isJust,isNothing)
-import Data.List (sort,find)
+import Data.List (sort,find, partition)
 
-import Control.Monad (when, liftM2, forever)
+import Control.Monad (when, liftM2, forever,mplus)
 import Control.Monad.Writer (runWriter, Writer)
 import Control.Applicative ((<$>))
 import Control.Arrow ((&&&), (***),second, first)
@@ -125,8 +125,14 @@ ripristino unwrite tversion tstato tupatch torfani tgroup tlog = do
 
 				writeTVar tversion v
 
-data Change = Boot | GPatch | UPatch Utente [Evento]
+data Change 	= Boot 						-- ^ messaggio di nuovo stato
+		-- | arrivato un aggiornamento di gruppo, comunica gli eventi digeriti e quelli orfani
+		| GPatch [(Utente,[Evento])] [(Utente,[Evento])]  
+		-- | arrivato un aggiornamento utente, comunica l'autore e gli eventi
+		| UPatch Utente [Evento]
 
+
+-- | forse non serve ad una mazza
 mix :: [(Utente,[Evento])] -> [(Utente,[Evento])] -> [(Utente,[Evento])] 
 mix [] [] = []
 mix [] xs = xs
@@ -145,26 +151,29 @@ aggiornamento
 	-> TVar [(Int,Group)]		-- ^ storico
 	-> TChan String	-- ^ log 
 	-> Group	-- ^ aggiornamento di gruppo offerto
+	-> (Change -> STM ())
 	-> STM ()	-- ^ transazione 
 
-aggiornamento n load  tv ts tp to tg tl g@(_,_,ps) = do
+aggiornamento n load  tv ts tp to tg tl g@(_,_,ps) k = do
 	s' <- readTVar ts
 	when (isNothing s') retry -- fallisce finche non esiste uno stato
 	let 	Just s = s'
 	 	(es,ls) = runWriter $ load s g
 	case es of
-		Left e -> writeTChan tl e -- problema di caricamento
+		Left e -> 	writeTChan tl e -- problema di caricamento
 		Right s' -> do
 			v <- (+1) <$> readTVar tv
 			gs <- readTVar tg
 			writeTVar tg (take n $ (v - 1,g) : gs) -- inserisce l'aggiornamento nello storico
 			writeTVar ts $ Just s' -- scrive il nuovo stato
-			pos <- filter (not . (`elem` ps) . snd) <$> readTVar tp -- cerca gli aggiornamenti individuali mancanti
+			(pos,dps) <- partition (not . (`elem` ps) . snd) <$> readTVar tp -- cerca gli aggiornamenti individuali mancanti
 			os <- readTVar to
-			writeTVar to $ map (second $ \(_,_,evs) -> evs) pos `mix` os -- aggiorna gli orfani
+			let 	orphans =  map (second $ \(_,_,evs) -> evs) pos `mix` os
+			 	digested = map (second $ \(_,_,evs) -> evs) dps
+			writeTVar to orphans -- aggiorna gli orfani
 			writeTVar tp []	-- annulla gli aggiornamenti individuali (o erano in 'g' o sono in 'os')
 			writeTVar tv v	-- scrive la versione
-
+			k $ GPatch digested orphans
 -- | come esportiamo l'interfaccia di modifica in bianco. Un caricamento in bianco sullo stato attuale 
 type Modificato a b 	= Int 			-- ^ livello di caricamento
 			-> Maybe Responsabile 	-- ^ responsabile autore o anonimo
@@ -194,16 +203,15 @@ data Persistenza a b = Persistenza
 			writeStato 	:: IO (),			-- ^ scrittura dello stato
 			readBoot	:: IO [Responsabile],
 			writeBoot	:: [Responsabile] -> IO (),
-			readOrfani 	:: Utente -> IO [Evento], 	-- ^ eventi di patch utente invalidate
 			writeUPatch 	:: Utente -> Patch -> IO (),	-- ^ scrittura di una patch utente
-			readUPatch 	:: Utente -> IO (Maybe Patch),	-- ^ lettura una patch utente
 			readUPatches 	:: IO (Int,[(Utente,Patch)]),			-- ^ lettura delle patch utente
 			writeGPatch 	:: Group -> IO (),		-- ^ scrittura di una patch di gruppo
 			readGPatch	:: Int -> IO (Maybe Group),	-- ^ lettura di una patch di gruppo
 			readVersion 	:: IO Int,			-- ^ versione dello stato attuale
 			readLogs	:: IO String,
 			updateSignal	:: IO (STM Change),			-- ^ segnala un avvenuto cambiamento di stato
-			queryUtente	:: Maybe Utente -> STM [Evento],
+			-- | raccoglie gli eventi relativi ad un utente che sono da attribuire alla persistenza
+			queryUtente	:: Maybe Utente -> STM [Evento], 
 			caricamentoBianco :: Modificato a b
 		}
 
@@ -234,34 +242,42 @@ mkPersistenza load modif boot x n = do
 	-- azioni del record di persistenza
 	
 	let		-- scatena la persistenza in chiusura della transazione
-			atomicallyP t f = atomically $ f >> writeTChan trigger () >> writeTChan cs t
+			atomicallyP f = atomically $ f (writeTChan cs) >> writeTChan trigger () 
 			readStato' 	= atomically $ do 
 						s <- readTVar ts
 						case s of 
 							Nothing -> return Nothing
 							Just s -> readTVar tv >>= \v -> return (Just (v,s))
-			writeStato' 	= atomicallyP Boot $ readTVar tb >>= writeTVar ts . Just . boot
+			writeStato' 	= atomicallyP $ \k -> readTVar tb >>= writeTVar ts . Just . boot >> k Boot
 			readBoot' 	= atomically $ readTVar tb
 			writeBoot' 	= atomically . writeTVar tb
-			readOrfani' u 	= atomically $ maybe [] id . lookup u <$> readTVar to
-			writeUPatch' u p@(_,_,es) = 	atomicallyP (UPatch u es)
-				$ readTVar tp >>= writeTVar tp . (++ if null es then [] else [(u,p)]) . filter ((/=) u . fst)
-			readUPatch' u 	= atomically $ lookup u <$> readTVar tp 
+			writeUPatch' u p@(_,_,es) = atomicallyP $ \k -> do
+				up <- readTVar tp 
+				writeTVar tp . (++ if null es then [] else [(u,p)]) . filter ((/=) u . fst) $ up
+				or <- readTVar to
+				writeTVar to . (++ [(u,[])]) . filter ((/=) u .fst) $ or
+				k $ UPatch u es
 			readUPatches' 	= atomically $ liftM2 (,) (readTVar tv) $ readTVar tp
-			writeGPatch' g 	= atomicallyP GPatch $ aggiornamento n load  tv ts tp to tg cl g
+			writeGPatch' g 	= atomicallyP $ aggiornamento n load  tv ts tp to tg cl g
 			readGPatch' i 	= atomically $ lookup i <$> readTVar tg
 			readVersion' 	= atomically $ readTVar tv
 			readLogs' 	= atomically . readTChan $ cl
 			updateSignal'	= atomically $ dupTChan cs >>= return . readTChan  
-			queryUtente (Just u)	= maybe [] (\(_,_,es) -> es) <$> lookup u <$> readTVar tp 
+			queryUtente (Just u)	= do
+				es0 <- fmap (\(_,_,es) -> es) <$> lookup u <$> readTVar tp
+				es1 <- lookup u <$> readTVar to
+				return . maybe [] id $ es0 `mplus` es1
 			queryUtente Nothing = return []
 			caricamentoBianco' 	= mkModificato modif ts tp
 			
-	return $ Persistenza 	readStato' writeStato' readBoot' writeBoot' readOrfani' 
-				writeUPatch' readUPatch' readUPatches' writeGPatch' 
+	return $ Persistenza 	readStato' writeStato' readBoot' writeBoot'  
+				writeUPatch' readUPatches' writeGPatch' 
 				readGPatch' readVersion' readLogs' updateSignal' queryUtente caricamentoBianco'
 
-
+--- TODO 
+{-
+integrare gli orfani con la sessione !
+-}
 
 
 

@@ -1,6 +1,7 @@
 -- | gestione della sessione, del modello falso in cui l'utente si trova ad operare in bianco prima di fare persistere il proprio lavoro
 module Applicazioni.Sessione (Sessione (..), mkSessione, Update) where
 
+import Data.List (union, (\\))
 import Control.Applicative ((<$>))
 import Control.Monad (forever, when)
 import Control.Concurrent (forkIO)
@@ -52,13 +53,18 @@ update f l (eventi, accesso, conservative, stato, caricamento, triggers,signal, 
 						TConservative l 	->  writeTVar conservative l
 		-- | update causato da condizione esterna, butta via tutto tranne il responsabile
 		esterna = do 	s <- signal
+				ess <- readTVar eventi
+				mr <- fmap fst <$>readTVar accesso
 				case s of
 					Boot -> return ()
-					GPatch ->  do	writeTVar eventi []
-							writeTVar conservative l
-					UPatch u es ->  do
-						mr <- readTVar accesso
-						when (Just u == (fst <$> mr)) $ writeTVar eventi es
+					GPatch digested orphans ->  do	
+						let 	ofs = maybe [] id $ mr >>= \u -> lookup u orphans 
+						 	dgs = maybe [] id $ mr >>= \u -> lookup u digested
+						writeTVar eventi $ (ess `union` ofs) \\ dgs
+						writeTVar conservative l
+
+					UPatch u esp ->  do
+						when (Just u == mr) $ writeTVar eventi (esp `union` ess)
 	in do 	
 		interna `orElse` esterna
 		mr 	<- readTVar accesso

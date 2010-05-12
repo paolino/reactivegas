@@ -4,7 +4,7 @@
 module UI.Lib where
 
 import Data.Maybe (isJust , fromJust,catMaybes)
-import Data.List (delete,find,(\\))
+import Data.List (delete,find,(\\), lookup)
 
 import Control.Arrow
 import Control.Applicative
@@ -146,7 +146,6 @@ sincronizza = onAccesso $ \(r@(u,_)) -> do
 		xs -> do
 			let k (Firmante f)  = (fst <$> statoPersistenza) >>= \s -> sel $ ($ f s xs). writeGPatch .fst
 			runSupporto (fst <$> statoPersistenza) bocciato k $ firmante r
-			sel $ ($ Nothing) . writeAccesso . snd
 
 salvataggio = do
 	evs <- letturaEventi
@@ -199,11 +198,9 @@ descrizione = do
 	evs <- sel $ readEventi . snd
 	evsp <- case r of
 		Nothing -> return []
-		Just (u,_) -> do
-			mevsp <- sel $ ($ u) . readUPatch . fst
-			return $ case mevsp of
-				Nothing -> []
-				Just (_,_,es) -> es
+		Just (u,_) -> do 
+			(_,us) <- sel $ readUPatches . fst
+			return $ maybe [] (\(_,_,es) -> es) $ lookup u us
 	l <- sel $ getConservative . snd
 	v <- sel $ readVersion . fst
 	P.output . Response $ 

@@ -14,6 +14,7 @@ import System.FilePath.GlobPattern ((~~))
 import System.IO (openFile, hGetContents, hSeek, SeekMode (AbsoluteSeek), hClose, IOMode (ReadMode))
 import System.Directory (removeFile)
 import Debug.Trace
+
 --- buggy filemanipcompat ------
 (~~?) = liftOp (~~)
 -------------------------------
