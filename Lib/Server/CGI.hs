@@ -85,6 +85,6 @@ cgiFromServer resp (Server apertura servizio,droppa) = do
 						Right _ -> throwError "l'interazione continua con una interazione"
 				_ -> lift (lift droppa) >> throwError "boh"
 			
-	either (\s -> outputNotFound s) return r
+	either (\_ -> lift apertura >>= resp . pagina) return r
 
 

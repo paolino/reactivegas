@@ -1,6 +1,7 @@
 -- | gestione della sessione, del modello falso in cui l'utente si trova ad operare in bianco prima di fare persistere il proprio lavoro
 module Applicazioni.Sessione (Sessione (..), mkSessione, Update) where
 
+import Data.Maybe (listToMaybe)
 import Data.List (union, (\\))
 import Control.Applicative ((<$>))
 import Control.Monad (forever, when)
@@ -22,6 +23,7 @@ data Sessione a b = Sessione
 	,readStatoSessione :: IO a	-- ^ legge lo stato modificato dagli eventi in memoria prodotti dal responsabile in memoria
 	,setConservative :: Int -> IO () 	-- ^ imposta il livello di caricamento
 	,getConservative :: IO Int		-- ^ legge il livello di caricamento
+	,backup		:: IO ([Evento],Maybe Responsabile,Int)
 	}
 
 -- | eventi che scatenano la ricomputazione dello stato modificato
@@ -80,19 +82,21 @@ mkSessione 	:: Update a  b		-- ^ modificatore di stato
 		-> Int 			-- ^ livello di caricamento di base
 		-> IO (STM Change)		-- ^ segnale di aggiornamento stato
 		-> (Maybe Utente -> STM [Evento])  -- ^ query sugli eventi pubblicati per un utente
+		-> STM ()			-- ^ segnale di modifica sessione
+		-> Maybe ([Evento],Maybe Responsabile,Int)
 		-> IO (Sessione a b)	
-mkSessione f l mkSignal publ = do
-	(s,c) 		<- atomically $ f l Nothing [] -- uno stato iniziale
-	caricamento 	<- atomically $ newTVar c
+mkSessione f l mkSignal publ exsignal ms = do
+	(s,c) 		<- atomically $ maybe (f l Nothing []) (\(es,mr,cl) -> f cl mr es) ms -- uno stato iniziale
+	caricamento 	<- atomically $ newTVar $ c
 	stato 		<- atomically $ newTVar s
-	eventi 		<- atomically $ newTVar []
-	accesso 	<- atomically $ newTVar Nothing
+	eventi 		<- atomically $ newTVar $ maybe [] (\(es,_,_) -> es) ms
+	accesso 	<- atomically $ newTVar $ ms >>= \(_,mr,_) -> mr
 	triggers 	<- atomically $ newTChan
-	conservative 	<- atomically $ newTVar l
+	conservative 	<- atomically $ newTVar $ maybe l (\(_,_,cl) -> cl) ms
 	signal 		<- mkSignal
 	let	memoria = (eventi, accesso, conservative, stato, caricamento ,triggers, signal, publ)
-		checkUpdate q  = (update f l memoria >> q) `orElse` q
-		write f = atomically . writeTChan triggers . f
+		checkUpdate q  = (update f l memoria >> exsignal >> q) `orElse` q
+		write f = atomically . writeTChan triggers . f 
 		read t = atomically . checkUpdate $ readTVar t
 	return $ Sessione 
 		(read eventi) 
@@ -102,5 +106,13 @@ mkSessione f l mkSignal publ = do
 		(read caricamento)
 		(read stato)
 		(write TConservative)
-		(read conservative)
+		(read conservative) 
+		(atomically $ do
+			es <- readTVar eventi
+			cl <- readTVar conservative
+			mr <- readTVar accesso
+			return (es,mr,cl))
 
+	
+		
+	

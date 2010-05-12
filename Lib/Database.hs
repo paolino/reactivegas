@@ -13,7 +13,10 @@ data DB a b = DB
 	, set :: (a,b) -> DB a b
 	, forget :: a -> DB a b 
 	, dbmap :: (b -> b) -> DB a b
+	, dump :: [(a,b)]
 	}
+
+restoreDB l = foldr (flip set) (limitedDB l)
 
 -- | un DB inefficiente a memoria limitata 
 limitedDB :: (Show a, Eq a) 
@@ -25,6 +28,7 @@ limitedDB limit = let
 	s xs (x,y) = mkdb . take limit $ (x,y) : xs 
 	f xs x = mkdb . filter ((/=) x . fst) $ xs	
 	m xs f = mkdb . map (second f) $ xs 
-	mkdb xs = DB (q xs) (l xs) (s xs) (f xs) (m xs)
+	mkdb xs = DB (q xs) (l xs) (s xs) (f xs) (m xs) xs
+	
 	in mkdb []
 

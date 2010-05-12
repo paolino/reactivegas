@@ -86,14 +86,12 @@ amministrazione = do
 			[("responsabile autore delle dichiarazioni", accesso >> return ())
 			,("livello di considerazione delle ultime dichiarazioni", eventLevelSelector)
 			,("digerisci tutte le dichiarazioni pubblicate", sincronizza )
+			,("scarica nuove chiavi da responsabile", creaChiavi)
 			,("accesso indiretto" , mano "accesso indiretto" 
-				[("scarica nuove chiavi da responsabile", creaChiavi)
-				,("scarica le dichiarazioni prodotte", letturaEventi >>= P.download "dichiarazioni" )
-				,("scarica un aggiornamento individuale",scaricaAggiornamentoIndividuale)
-				,("carica un aggiornamento individuale", caricaAggiornamentoIndividuale )
+				[("carica un aggiornamento individuale", caricaAggiornamentoIndividuale )
+				,("carica un aggiornamento di gruppo", caricaAggiornamentoDiGruppo)
 				,("scarica gli aggiornamenti individuali", 
 					sel (readUPatches . fst) >>= \ (n,ups) -> P.download ("patches." ++ show n) ups)
-				,("carica un aggiornamento di gruppo", caricaAggiornamentoDiGruppo)
 				,("scarica un aggiornamento di gruppo",scaricaAggiornamentoDiGruppo)
 				,("scarica lo stato", sel (readStato . fst) >>= maybe (bocciato "stato non presente") 
 					(\ (n,s) -> P.download ("stato." ++ show n) s))

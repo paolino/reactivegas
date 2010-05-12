@@ -25,7 +25,7 @@ main = do
 		(x:_) -> return x
 	pe <- mkPersistenza loader caricamento nuovoStato dir 1
 	forkIO . forever $ readLogs pe >>= putStrLn
-	se <- mkSessione (caricamentoBianco pe) maxLevel (updateSignal pe) (queryUtente pe)
+	se <- mkSessione (caricamentoBianco pe) maxLevel (updateSignal pe) (queryUtente pe) (return ()) Nothing 
 	runReaderT (interazione applicazione) (pe,se)
 	
 	

@@ -10,7 +10,7 @@ import Lib.Server.Server (server)
 
 import Applicazioni.Reactivegas (loader, caricamento, nuovoStato, maxLevel) 
 import Applicazioni.Persistenza (mkPersistenza , Persistenza (readLogs,caricamentoBianco,updateSignal,queryUtente))
-import Applicazioni.Sessione (mkSessione)
+import Applicazioni.Sessione (mkSessione, Sessione (backup))
 
 import UI.Server (applicazione)
 
@@ -21,8 +21,9 @@ main = do
 	Argomenti dir port lagg lsess lrem <- parseArgs $ Argomenti "." 5000 20 10 20
 	pe <- mkPersistenza loader caricamento nuovoStato dir lagg
 	forkIO . forever $ readLogs pe >>= putStrLn
-	server port lsess lrem applicazione (output . pagina) layout $
-		(,) pe <$> mkSessione (caricamentoBianco pe) maxLevel (updateSignal pe) (queryUtente pe)
+	server dir port lsess lrem applicazione (output . pagina) layout $ \signal ms -> do
+		se <- mkSessione (caricamentoBianco pe) maxLevel (updateSignal pe) (queryUtente pe) signal ms
+		return ((pe,se),backup se)
 
 	
 

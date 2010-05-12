@@ -8,6 +8,7 @@ import Data.List.Split (splitOneOf)
 import Control.Applicative ((<$>))
 import Control.Monad.Reader
 import Control.Monad.Cont
+import Control.Concurrent.STM (STM)
 import Text.XHtml (Html)
 import Network.SCGI(CGI, CGIResult, runSCGI, handleErrors,getVars)
 import Network (PortID (PortNumber))
@@ -63,23 +64,29 @@ checkReset reset k = do
 				_ -> k
 		_ -> k
 
-server 	:: forall e . Int 			-- ^ porta del server scgi
+server 	:: forall e b . (Read b,Show b) 
+	=>  FilePath		-- ^ cartella di lavoro
+	-> Int 			-- ^ porta del server scgi
 	-> Int					-- ^ numero massimo di ricordi per sessione
 	-> Int					-- ^ numero massimo di sessioni simultanee 	
 	-> Costruzione (Running e) () () 	-- ^ applicazione
 	-> (Html -> CGI CGIResult) 		-- ^ gestore del response
 	-> [([Value],Int)] 			-- ^ serializzazione delle form di default
-	-> IO e  				-- ^ produzione di evironment per sessione 
+	-> (STM () -> Maybe b -> IO (e, IO b))  		-- ^ produzione e restore di evironment per sessione
 	-> IO () 				-- ^ aloa
-server (PortNumber . fromIntegral -> port) limitR limitS applicazione responseHandler defaultForms newEnvironment = do
+server path (PortNumber . fromIntegral -> port) limitR limitS applicazione responseHandler defaultForms newEnvironment = do
 	-- definizione di nuova sessione
-	let newSession = do 
-		-- ogni sessione ha la possibilità di avere il suo environment
-		en <-  newEnvironment
-		-- esplicitazione della definizione di applicazione (runContT)
-		(hp :: HRPasso e) <- runReaderT (svolgi applicazione) en
-		-- computazione delle forms
-		(fs :: [IdedForm e Html Link]) <- forM defaultForms $ \(vs,i) -> flip (,) i <$> restore (fromHPasso hp en) vs
-		mkServer limitR fs  
-	(run,reset) <- sessioning limitS newSession 
+	let 	newSession signal s = do 
+			-- ogni sessione ha la possibilità di avere il suo environment
+			(en, ben) <-  newEnvironment signal s
+			-- esplicitazione della definizione di applicazione (runContT)
+			(hp :: HRPasso e) <- runReaderT (svolgi applicazione) en
+			-- computazione delle forms
+			(fs :: [IdedForm e Html Link]) <- forM defaultForms $ \(vs,i) -> flip (,) i <$> restore (fromHPasso hp en) vs
+			-- boot di un nuovo servizio 
+			s <- mkServer limitR fs
+			return (s,ben)
+			
+			
+	(run,reset) <- sessioning path limitS newSession
 	runSCGI port $ handleErrors (checkReset reset run >>= cgiFromServer responseHandler)

@@ -31,7 +31,7 @@ Executable console
                 filepath    ,
                 FileManipCompat   ,
                 directory  , 
-                stm 
+                stm, old-time 
 
 Executable server
  ghc-options: -Wall
@@ -51,7 +51,7 @@ Executable server
                 FileManipCompat   ,
                 network,
                 directory  , 
-                stm, 
+                stm, old-time,
                 xhtml, 
                 split,
                 scgi,url
