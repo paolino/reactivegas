@@ -12,7 +12,7 @@ import Control.Monad.Reader (MonadReader,ask, asks)
 import Data.Monoid (mappend)
 
 import Core.Types (Esterno,Evento,Message,Utente,Responsabile)
-import Core.Costruzione (Supporto,libero,scelte)
+import Core.Costruzione (Supporto,libero,scelte,password)
 import Lib.Firmabile (sign , verify, Firma, Chiave, Segreto, Password)
 
 
@@ -53,7 +53,7 @@ fromGroup grs (c,f,ps) = do
 
 firmante :: forall m s c . (Show s, Monad m) => Responsabile -> Supporto m s c (Firmante s)
 firmante r@(u,(c,s)) = do  
-	p <- libero $ u ++ ",la tua password di responsabile:"
+	p <- password $ u ++ ",la tua password di responsabile:"
 	case  sign (s,p) (undefined :: (),undefined :: s) of 
 		Nothing -> throwError $ "password errata"
 		Just _ -> return $ Firmante $ \b ps -> (c,fromJust $ sign (s,p) (ps,b),ps)

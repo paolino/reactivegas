@@ -25,6 +25,7 @@ data Passo m b
 	| Output Response (m (HPasso m b)) 
 	| Errore Response (m (HPasso m b)) 
 	| forall a. Show a => Download String a (m (HPasso m b)) 
+	| forall a. Read a => Password String (a -> m (HPasso m b))
 	| Costruito b							-- ^ valore calcolato
 
 type HPasso m b = (Passo m b, [m (Passo m b)])
@@ -46,6 +47,9 @@ svolgi = flip runContT (return . first Costruito) . flip runStateT []
 -- | produce un passo di valore Libero nella monade Cont
 libero :: (Read a, Monad m) => String -> Costruzione m b a
 libero prompt = wrap $ Libero prompt
+
+password :: (Read a, Monad m) => String -> Costruzione m b a
+password prompt = wrap $ Password prompt
 
 output :: (Monad m) => Response -> Costruzione m b ()
 output s = wrap $ (\c -> Output s  $ c ()) 

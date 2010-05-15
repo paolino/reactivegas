@@ -38,7 +38,7 @@ runPasso  w@(c@(Libero p f) : u) = do
 			(x,_):_ -> (:w) <$> lift (fst <$> f x)
 
 	runPasso n
-
+runPasso (Password p f :r) = runPasso (Libero p f : r)
 runPasso w@(c@(Scelta p xs f): u) = do
 	outputStrLn ("\n** " ++ p) 
 	forM (zip [1..] xs) $ \(n,(p,_)) -> outputStrLn $ "\t" ++ show n ++ ") " ++ take 100 p

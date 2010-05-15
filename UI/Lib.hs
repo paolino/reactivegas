@@ -94,7 +94,7 @@ bootGruppo = rotonda $ \k ->
 bootChiavi :: Interfaccia ()
 bootChiavi = do
 	u <- P.libero "scegli il tuo nomignolo di utente e responsabile"
-	p <- P.libero "immetti una password, una frase , lunga almeno 12 caratteri"
+	p <- P.password "immetti una password, una frase , lunga almeno 12 caratteri"
 	P.download (u ++ ".chiavi") (u,cryptobox p)
 
 creaChiavi :: Interfaccia ()
@@ -104,7 +104,7 @@ creaChiavi = do
 	let es = us \\ (map fst $ rs ++ rs')
 	if null es then P.errore $ ResponseOne "nessun utente che non sia già responsabile" else do
 		u <- P.scelte  (zip es es) "nomignolo dell'utente per il quale creare le chiavi"
-		p <- P.libero $ "la password per le chiavi di " ++ u ++ ", una frase , lunga almeno 12 caratteri"
+		p <- P.password $ "la password per le chiavi di " ++ u ++ ", una frase , lunga almeno 12 caratteri"
 		P.download (u ++ ".chiavi") (u,cryptobox p)
 
 letturaEventi ::  Interfaccia [Evento]

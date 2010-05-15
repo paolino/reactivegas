@@ -1,6 +1,6 @@
 {-# LANGUAGE NoMonomorphismRestriction, GeneralizedNewtypeDeriving, MultiParamTypeClasses, FlexibleInstances #-}
 -- | un wrapper intorno a Lib.Costruzione m per semplificare la costruzione di interfacce
-module Core.Costruzione (libero, scelte, upload, Supporto, runSupporto, CostrAction, download) where
+module Core.Costruzione (libero, password, scelte, upload, Supporto, runSupporto, CostrAction, download) where
 
 import Control.Applicative ((<$>))
 import Control.Monad (liftM)
@@ -8,7 +8,7 @@ import Control.Monad.Error (lift, runErrorT, ErrorT,MonadError)
 import Control.Monad.Cont (MonadCont)
 import Control.Monad.Reader (runReaderT, ReaderT, MonadReader(..))
 
-import qualified Lib.Passo as P (Costruzione , libero, upload, scelte, download)
+import qualified Lib.Passo as P (Costruzione , libero, upload, scelte, download,password)
 
 import Debug.Trace
 
@@ -39,6 +39,11 @@ runSupporto s kn kp (Supporto f) = runErrorT (runReaderT f s) >>= either kn kp
 -- | passo libero elevato al supporto
 libero :: (Monad m ,Read a) => String -> Supporto m s b a
 libero = toSupporto . P.libero
+
+-- | passo libero elevato al supporto
+password :: (Monad m ,Read a) => String -> Supporto m s b a
+password = toSupporto . P.password
+
 
 -- | passo upload elevato al supporto
 upload :: (Read a , Monad m) => String -> Supporto m s b a
