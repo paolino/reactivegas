@@ -76,31 +76,14 @@ accesso = do
 
 onAccesso k = sel (readAccesso . snd) >>= maybe (accesso >> onAccesso k) k
 
-bootGruppo :: Interfaccia ()
-bootGruppo = rotonda $ \k ->  
-		mano "preparazione stato iniziale del gruppo" $ 
-			[("elenco delle chiavi responsabile già inserite", do
-				xs <- sel $ readBoot .fst 
-				P.output $ Response 
-					[("elenco chiavi responsabile già inserite",
-						ResponseMany $ map (ResponseOne . fst) xs)])
-			,("inserimento di un responsabile del gruppo iniziale", P.upload "chiave" >>= \x -> do
-				xs <- sel $ readBoot . fst
-				sel $ ($ x: delete x xs) . writeBoot . fst)
-			,("creazione dello stato iniziale del gruppo", 
-				sel (writeStato . fst) >> k ())
-			]
 	
-bootChiavi :: Interfaccia ()
-bootChiavi = P.libero "scegli il tuo nomignolo di utente e responsabile" >>= nuovaPassword
 
-
-nuovaPassword :: Utente -> Interfaccia ()
-nuovaPassword u = do 
+nuovoResponsabile :: Utente -> Interfaccia (Maybe Responsabile)
+nuovoResponsabile u = do 
 	p1 <- P.password "immetti una password, una frase , lunga almeno 12 caratteri"
 	p2 <- P.password "reimmetti la password per controllare la digitazione"
-	if (p1 == p2) then P.download (u ++ ".chiavi") (u,cryptobox p1)
-		else P.errore $ ResponseOne "errore di digitazione"
+	return $ if p1 == p2 then Just (u,cryptobox p1) else Nothing
+
 
 creaChiavi :: Interfaccia ()
 creaChiavi = do
@@ -109,7 +92,11 @@ creaChiavi = do
 	let es = us \\ (map fst $ rs ++ rs')
 	if null es then P.errore $ ResponseOne "nessun utente che non sia già responsabile" else do
 		u <- P.scelte  (zip es es) "nomignolo dell'utente per il quale creare le chiavi"
-		nuovaPassword u
+		mr <- nuovoResponsabile u
+		case mr of 
+			Just r -> P.download (u ++ ".chiavi") r
+			Nothing -> P.errore $ ResponseOne "errore di digitazione"
+		
 
 letturaEventi ::  Interfaccia [Evento]
 letturaEventi = sel $ readEventi . snd
@@ -193,7 +180,7 @@ scaricaAggiornamentoDiGruppo = do
 		Just g -> P.download ("group." ++ show n) g
 
 effetto = do
-	c <- sel (readCaricamento . snd) 
+	c <- sel $ readCaricamento . snd
 	P.output . Response $ [("effetto delle ultime dichiarazioni",  c)]
 
 

@@ -10,13 +10,17 @@ data Argomenti = Argomenti
 	,lagg :: Int           -- ^ grandezza coda di aggiornamenti di gru
 	,lsess :: Int          -- ^ numero massimo di ricordi per sessione
 	,lrem :: Int           -- ^ numero massimo di sessioni simultanee 
+	,tokpass :: String 	-- ^ password di lettura tokens	
+	,ntokens :: Int         	-- ^ numero di reponsabili iniziali
 	} deriving Show        
 
 
-data Flag = Versione | Nome String | Path String | Porta String | LAgg String | LSess String | LRem String deriving Show
+data Flag = Versione | Nome String | Path String | Porta String | LAgg String | LSess String | LRem String | Tokpass String | NTok String deriving Show
 
 options :: [OptDescr Flag]
 options = [
+    Option "n" ["ntokens"] (ReqArg NTok "NUMERO") "numero di tokens iniziali",
+    Option "t" ["bootpassword"] (ReqArg Tokpass "PASSWORD" ) "password di lettura tokens",
     Option "V" ["versione"] (NoArg Versione)          "versione dell'applicativo",
     Option "p" ["porta"] (ReqArg Porta "PORTA") "la porta sulla quale il server CGI deve ascoltare",
     Option "g" ["laggiornamenti"] (ReqArg LAgg "NUMERO") "numero massimo di aggiornamenti di gruppo in memoria",
@@ -29,13 +33,17 @@ fallimento  =  usageInfo "Uso: reactivegas_cgi [OPZIONE ...] cartella" options
 
 parse x r f = case reads x of 
 	[(x,_)] ->  f x
-	_ -> r
+	_ -> case reads ("\"" ++ x ++ "\"") of
+		[(x,_)] -> f x
+		_ -> r
 
 set (Path x) r = r{directory = x}
 set (Porta x) r = parse x r $ \x -> r{porta = x}
 set (LAgg x) r = parse x r $ \x -> r{lagg = x}
 set (LSess x) r =parse x r $ \x -> r{lsess = x}
 set (LRem x) r =parse x r $ \x -> r{lrem = x}
+set (Tokpass x) r = parse x r $ \x -> r{tokpass = x}
+set (NTok x) r = parse x r $ \x -> r{ntokens = x}
 
 -- | computa gli argomenti dell'applicazione dall'environment
 parseArgs :: Argomenti -> IO Argomenti

@@ -98,16 +98,55 @@ amministrazione = do
 				])
 			]
 
+bootGruppo :: Interfaccia ()
+bootGruppo = mano "preparazione stato iniziale del gruppo" $ 
+			[("elenco delle chiavi responsabile già inserite", do
+				xs <- sel $ readBoot .fst 
+				P.output $ Response 
+					[("elenco chiavi responsabile già inserite",
+						ResponseMany $ map (ResponseOne . fst) xs)])
+			,("inserimento di un responsabile nel gruppo iniziale (interattivo)", do
+				t <- P.libero "inserisci il tuo token"
+				u <- P.libero "scegli il tuo nomignolo di utente e responsabile"
+				xs <- sel $ readBoot . fst
+				if u `elem` map fst xs then P.errore $ ResponseOne "nome utente già utilizzato"
+					else do
+						mr <- nuovoResponsabile u
+						case mr of 
+							Nothing -> P.errore $ ResponseOne "errore di digitazione"
+							Just r -> do 
+								b <- sel $ ($ r) . ($t) . assignToken . fst
+								when (not b) $ P.errore $ ResponseOne 
+									"token invalido o già utilizzato"
+				)
+			,("inserimento di un responsabile nel gruppo iniziale (da remoto)", do
+				t <- P.libero "inserisci il tuo token"
+				r@(u,_) <- P.upload "carica le tue chiavi"
+				xs <- sel $ readBoot . fst
+				if u `elem` map fst xs then P.errore $ ResponseOne "nome utente già utilizzato"
+					else do
+						b <- sel $ ($ r) . ($t) . assignToken . fst
+						when (not b) $ P.errore $ ResponseOne "token invalido o già utilizzato"
+				)
+			,("lettura tokens", do
+				t <- P.password "password lettura tokens"
+				mxs <- sel $ ($t) . readTokens . fst
+				case mxs of 
+					Just xs -> P.output $ ResponseMany $ map ResponseOne xs
+					Nothing -> P.errore $ ResponseOne $ "password errata"
+				)
+				
+						
+				
+				
+			]
 
 applicazione :: Costruzione MEnv () ()
 applicazione = rotonda $ \_ -> do 
 	ms <- sel $ readStato . fst 
 	case ms of 
-		Nothing ->    -- un bel po rotto
-			mano "il gruppo non esiste ancora" 
-				[("creazione nuova identita' di responsable", bootChiavi)
-				,("preparazione stato iniziale di gruppo", bootGruppo)
-				]
+		Nothing ->   bootGruppo 
+				
 		Just s ->  
 			mano ("menu principale") [
 				("effetto delle ultime dichiarazioni", do

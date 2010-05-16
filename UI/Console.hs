@@ -73,11 +73,7 @@ applicazione :: Interfaccia ()
 applicazione = rotonda $ \_ -> do 
 	ms <- sel $ readStato . fst 
 	case ms of 
-		Nothing ->    
-			mano "il gruppo non esiste ancora" 
-				[("creazione nuova identita' di responsable", bootChiavi)
-				,("preparazione stato iniziale di gruppo", bootGruppo)
-				]
+		Nothing ->  P.errore $ ResponseOne "il gruppo non esiste ancora" 
 		Just s ->  
 			mano ("menu principale") 
 				[("produci dichiarazioni" ,  dichiarazioni)
