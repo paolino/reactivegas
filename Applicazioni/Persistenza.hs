@@ -14,7 +14,7 @@ import Control.Exception (tryJust, SomeException (..))
 import Control.Concurrent (threadDelay, forkIO)
 import Control.Concurrent.STM (STM,TVar,TChan,newTVar,newTChan,readTVar,readTChan,writeTVar,writeTChan,dupTChan,retry,atomically)
 
-
+import System.Random (getStdGen,randomRs)
 import System.Directory (getCurrentDirectory)
 import System.FilePath ((</>), addExtension)
 
@@ -211,7 +211,9 @@ data Persistenza a b = Persistenza
 		{ 	readStato 	:: IO (Maybe (Int,a)),		-- ^ lettura dello stato
 			assignToken	:: Token -> Responsabile -> IO Bool, -- ^ tenta l'assegnamento di un token
 			readBoot	:: IO [Responsabile],	-- ^ elenco dei responsabili di boot
+			moreTokens	:: Token -> Int -> IO (Maybe ()),	-- ^ richiede altri tokens
 			readTokens	:: Token -> IO (Maybe [Token]), -- ^ elenco tokens mancanti
+			forceBoot	:: Token -> IO (Maybe ()),	-- ^ forza la chiusura della fase di boot
 			writeUPatch 	:: Utente -> Patch -> IO (),	-- ^ scrittura di una patch utente
 			readUPatches 	:: IO (Int,[(Utente,Patch)]),			-- ^ lettura delle patch utente
 			writeGPatch 	:: Group -> IO (),		-- ^ scrittura di una patch di gruppo
@@ -226,7 +228,7 @@ data Persistenza a b = Persistenza
 
 -- | prepara uno stato vergine di un gruppo
 mkPersistenza :: (Eq a, Read a, Show a) 
-	=> (String,[Token])						-- ^ tokens per il gruppo iniziale
+	=> Token						-- ^ token di amministrazione fase di boot
 	-> (a -> Group -> Writer [String] (Either String a)) 	-- ^ loader specifico per a
 	-> (Int -> a -> [Esterno Utente] -> (a,b))		-- ^ insertore diretto di eventi per a 
 	-> ([Responsabile] -> a)				-- ^ inizializzatore di gruppo
@@ -234,10 +236,10 @@ mkPersistenza :: (Eq a, Read a, Show a)
 	-> Int 							-- ^ coda di aggiornamenti di gruppo
 	-> IO (Persistenza a b)					
 
-mkPersistenza (pass,tokens) load modif boot x n = do 
+mkPersistenza pass load modif boot x n = do 
 	-- istanzia la memoria condivisa
 	trigger <- atomically $ newTChan 	
-	tb <- atomically $ newTVar (pass,tokens,[])
+	tb <- atomically $ newTVar (pass,[],[])
 	tv <- atomically $ newTVar 0
 	ts <- atomically $ newTVar Nothing
 	tp <- atomically $ newTVar []
@@ -270,6 +272,23 @@ mkPersistenza (pass,tokens) load modif boot x n = do
 					return True
 					else return False
 
+			forceBoot' t = atomicallyP $ \k -> do
+				(p,_,as) <- readTVar tb 
+				if t == p then do 
+					writeTVar ts $ Just (boot as)  
+					k Boot
+					return (Just ())
+					else return Nothing
+			moreTokens' t n = do 
+				g <- getStdGen 
+				atomically $ do
+					(p,us,as) <- readTVar tb 
+					if t == p then do 
+						let ts = map show . take n $ randomRs (0,1000000000::Int) g
+						writeTVar tb (p, us ++ ts,as)  
+						return $ Just ()
+						else return Nothing
+
 			readBoot' 	= atomically $ do 
 						(_,_,rs) <- readTVar tb
 						return rs
@@ -295,7 +314,7 @@ mkPersistenza (pass,tokens) load modif boot x n = do
 			queryUtente Nothing = return []
 			caricamentoBianco' 	= mkModificato modif ts tp
 			
-	return $ Persistenza 	readStato' assignToken' readBoot' readTokens'  
+	return $ Persistenza 	readStato' assignToken' readBoot' moreTokens' readTokens'  forceBoot'
 				writeUPatch' readUPatches' writeGPatch' 
 				readGPatch' readVersion' readLogs' updateSignal' queryUtente caricamentoBianco'
 

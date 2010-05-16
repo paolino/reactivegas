@@ -128,17 +128,31 @@ bootGruppo = mano "preparazione stato iniziale del gruppo" $
 						b <- sel $ ($ r) . ($t) . assignToken . fst
 						when (not b) $ P.errore $ ResponseOne "token invalido o già utilizzato"
 				)
-			,("lettura tokens", do
+			,("gestione tokens",mano "gestione tokens" [
+				("tokens non ancora assegnati", do
 				t <- P.password "password lettura tokens"
 				mxs <- sel $ ($t) . readTokens . fst
 				case mxs of 
 					Just xs -> P.output $ ResponseMany $ map ResponseOne xs
 					Nothing -> P.errore $ ResponseOne $ "password errata"
-				)
-				
-						
-				
-				
+				),
+				("fine forzata della fase di boot", do 
+				t <- P.password "password lettura tokens"
+				m <- sel $ ($t) . forceBoot . fst
+				case m of 
+					Just xs -> return ()
+					Nothing -> P.errore $ ResponseOne $ "password errata"
+
+				),
+				("richiesta di nuovi tokens", do
+				n <- P.libero "numero di tokens da aggiungere"
+				t <- P.password "password lettura tokens"
+				mts <- sel $ ($n). ($t) . moreTokens . fst
+				case mts of 
+					Just () -> return ()
+					Nothing -> P.errore $ ResponseOne $ "password errata"
+
+				)])
 			]
 
 applicazione :: Costruzione MEnv () ()
@@ -160,5 +174,4 @@ applicazione = rotonda $ \_ -> do
 				("amministrazione",amministrazione)
 				]
 
-{-
--}
+
