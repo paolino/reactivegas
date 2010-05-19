@@ -54,15 +54,6 @@ cgiFromServer resp (Server apertura servizio,droppa) = do
 		Just x -> let xs =  tail $ splitOneOf "/?" x in
 			case xs of
 				[""] -> lift $ lift apertura >>= resp . pagina 
-				["style.css"] -> do
-					css <- liftIO $ readFile "style.css"   
-					lift $ do 	setHeader "Content-type" "text/css"
-							output css
-				["favicon.ico"] -> do
-					css <- liftIO $ B.readFile "favicon.ico"   
-					lift $ do 	setHeader "Content-type" "image/ico"
-							outputFPS css
-
 				("interazione":_) -> do 
 					hk <- readHKey
 					fk <- readFKey

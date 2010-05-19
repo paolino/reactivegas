@@ -14,7 +14,8 @@ layout = 	[(["gestione dichiarazioni"],2)
 
 
 metadata = header << 	(
-				(thelink ! [rel "stylesheet", href "/style.css", thetype "text/css"] << noHtml)
+				(thelink ! [rel "stylesheet", href "/static/style.css", thetype "text/css"] << noHtml)
+			+++ 	(thelink ! [rel "icon", href "/static/favicon.ico"] << noHtml)
 			+++ 	(thetitle << "Amministrazione G.A.S.") 
 			+++ 	(meta ! [httpequiv "Content-Type", content "text/html;charset=utf8;"])
 			)  

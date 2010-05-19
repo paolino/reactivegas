@@ -11,7 +11,7 @@ import Eventi.Impegno
 import Applicazioni.Reactivegas
 
 metadata = header << 	(
-				(thelink ! [rel "stylesheet", href "/report.css", thetype "text/css"] << noHtml)
+				(thelink ! [rel "stylesheet", href "/static/report.css", thetype "text/css"] << noHtml)
 			+++ 	(thetitle << "Report G.A.S.") 
 			+++ 	(meta ! [httpequiv "Content-Type", content "text/html;charset=utf8;"])
 			)  
@@ -19,31 +19,29 @@ metadata = header << 	(
 
  
 
+altrs f  = map (\(i,x) -> tr ! [theclass $ if odd i then "odd" else "even"] << f x) . zip [0..]
 reporter :: TS -> Html
-reporter s = (thediv ! [theclass "crediti"] << table ! [border 1] << 
-	(caption << "crediti dei membri"
-	+++
-	 map (\(u,e) -> tr << (td << u +++ td << show e)) (reportCrediti s)
+reporter s = (table ! [identifier "crediti"] << 
+	(caption << "crediti dei membri" +++ tr << (th << "nickname"  +++ th << "credito")
+	+++ altrs (\(u,e) -> td << u +++ td << show e) (reportCrediti s)
 	))
-	+++ (thediv ! [theclass "casse"] << table ! [border 1] << 
-	(caption << "casse dei responsabili"
-	+++
-	 map (\(u,e) -> tr << (td << u +++ td << show e)) (reportCasse s)
+	+++ (table ! [identifier "casse"] << 
+	(caption << "casse dei responsabili"  +++ tr << (th << "nickname"  +++ th << "cassa")
+
+	+++ altrs (\(u,e) -> td << u +++ td << show e) (reportCasse s)
 	))
-	+++ (thediv ! [theclass "impegni"] << table ! [border 1] << 
-	(caption << "acquisti (raccolte di impegni) aperti"
-	+++
-	 map (\(s,b,u,is,as) -> tr << (td << s +++ td << u +++ td << richieste is +++ td << accettate as)) 
-		(reportImpegni s) 
+	+++ (table  ! [identifier "impegni"]  << 
+	(caption << "acquisti (raccolte di impegni) aperti"  +++ tr << (th << "acquisto"  +++ th << "responsabile" +++
+		th << "richieste in attesa" +++ th << "richieste accolte")
+
+	+++ altrs (\(s,b,u,is,as) -> td << s +++ td << u +++ td ! [identifier "richieste"] << richieste as +++ td ! [identifier "accettate"] << accettate is) (reportImpegni s) 
 		
 	))
 	
-richieste is = thediv ! [theclass "richieste"] << table ! [border 1] <<
-	(caption << "richieste in attesa"
-	+++ map (\(u,e) -> tr << (td << u +++ td << show e)) is)
-accettate is = thediv ! [theclass "richieste"] << table ! [border 1] <<
-	(caption << "richieste accettate"
-	+++ map (\(u,e) -> tr << (td << u +++ td << show e)) is)
+richieste is =  table <<
+	altrs (\(u,e) -> td << u +++ td << show e) is
+accettate is =  table <<
+	altrs (\(u,e) -> td << u +++ td << show e) is
 
 
 
