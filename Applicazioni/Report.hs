@@ -11,7 +11,8 @@ import Eventi.Impegno
 import Applicazioni.Reactivegas
 
 metadata = header << 	(
-				(thelink ! [rel "stylesheet", href "/static/report.css", thetype "text/css"] << noHtml)
+				(thelink ! [rel "stylesheet", href "/static/report.css", thetype "text/css"] << noHtml)	
+			+++ 	(thelink ! [rel "icon", href "/static/favicon.ico"] << noHtml)
 			+++ 	(thetitle << "Report G.A.S.") 
 			+++ 	(meta ! [httpequiv "Content-Type", content "text/html;charset=utf8;"])
 			)  
