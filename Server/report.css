@@ -44,10 +44,17 @@ blockquote, q {
 
 
 
-body {background:#EEE;}
+body {background:#EEE;padding:3px;}
+
+h3
+{
+font-size:2em;
+background : #EEF;
+}
 
 table#crediti, table#casse, table#impegni
 {
+padding : 3px;
 margin : 5px;
 border :1px solid black;
 border-collapse:collapse;
@@ -86,7 +93,10 @@ td, th
 border: 1px solid black;
 padding:3px;
 }
-
+tr
+{
+padding:1px;
+}
 td#accettate , td#richieste 
 {
 padding : 0px;

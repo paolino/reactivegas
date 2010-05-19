@@ -3,7 +3,7 @@
 module Applicazioni.Report where
 
 import Control.Monad (forever)
-import Control.Concurrent
+import System.Time
 import Text.XHtml
 
 import Eventi.Accredito
@@ -45,6 +45,8 @@ accettate is =  table <<
 
 
 
-report d Nothing  = writeFile d $ prettyHtml $ metadata +++ (body << "gruppo in costruzione") 
-report d (Just s) = writeFile d $ prettyHtml $ metadata +++ (body << reporter s)
+report d x = do 
+	t <- getClockTime >>= toCalendarTime
+	let h = h3 << ("Ultimo aggiornamento: " ++ calendarTimeToString t)
+	writeFile d $ prettyHtml $ metadata +++ (body << (h +++ maybe (h3 << "Gruppo in costruzione") reporter x))
 
