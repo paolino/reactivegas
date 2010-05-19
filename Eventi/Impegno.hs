@@ -189,6 +189,10 @@ programmazioneImpegno' q ur k  = do
 ----------------------------------------------------------------------------------
 -- askImpegni :: (ParteDi (Servizio Impegni) r, MonadReader r m) =>
 --      (String -> m ()) -> m [(String, Int)]
+reportImpegni :: (ParteDi (Servizio Impegni) s) => s -> [(String,Bool,Utente,[(Utente,Euro)],[(Utente,Euro)])]
+reportImpegni x = let (xs :: [(Indice,(String,Impegni))])=  elencoSottoStati  $ x
+	in map (\(_,(s,Impegni b u is as)) -> (s,b,u,is,as)) xs 
+
 impegni 	= do 	(xs :: [(Indice,(String,Impegni))]) <- asks elencoSottoStati
 			when (null xs) $ throwError "nessuna raccolta di impegni aperta"
 			return $ map (fst . snd &&& fst) xs

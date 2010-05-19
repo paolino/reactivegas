@@ -68,6 +68,11 @@ data Conti = Conti [(Utente,Euro)] deriving (Read, Show,Eq)
 -- | stato dei saldi responsabile
 data Saldi = Saldi [(Utente,Euro)] deriving (Read, Show,Eq)
 
+reportCrediti :: (Conti `ParteDi` s) => s -> [(Utente,Euro)]
+reportCrediti = (\(Conti xs) -> xs) . see 
+
+reportCasse :: (Saldi `ParteDi` s) => s -> [(Utente,Euro)]
+reportCasse = (\(Saldi xs) -> xs) . see 
 -- | tipo aggiunto dello stato necessario al modulo
 type TyAccredito a = (Conti , (Saldi , a))
 
