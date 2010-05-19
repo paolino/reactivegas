@@ -179,7 +179,7 @@ aggiornamento n load  tv ts tp to tg tl g@(_,_,ps) k = do
 			os <- readTVar to
 			let 	orphans =  map (second $ \(_,_,evs) -> evs) pos `mix` os
 			 	digested = map (second $ \(_,_,evs) -> evs) dps
-			writeTVar to $ filter (not null . snd) orphans -- aggiorna gli orfani
+			writeTVar to $ filter (not . null . snd) orphans -- aggiorna gli orfani
 			writeTVar tp []	-- annulla gli aggiornamenti individuali (o erano in 'g' o sono in 'os')
 			writeTVar tv v	-- scrive la versione
 			k $ GPatch digested orphans
