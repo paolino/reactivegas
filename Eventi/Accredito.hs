@@ -1,4 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables, ViewPatterns, NoMonomorphismRestriction, FlexibleContexts #-}
+{-# LANGUAGE ScopedTypeVariables, ViewPatterns, NoMonomorphismRestriction, FlexibleContexts, DeriveDataTypeable #-}
 -- | modulo per la gestione dei conti utente e responsabile, detti accredito e saldo
 module Eventi.Accredito {-(
 --	Accredito,
@@ -14,14 +14,15 @@ module Eventi.Accredito {-(
 	queryAccredito
 	)-} where
 import Data.Maybe (fromJust, isNothing)
+import Data.Typeable (Typeable, cast)
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad (when)
 import Control.Monad.Error (throwError)
 import Control.Arrow (second, (&&&), first, (***))
 
 import Core.Types (Utente)
-import Core.Programmazione (Reazione, soloEsterna, nessunEffetto)
-import Core.Inserimento (MTInserzione, fallimento, osserva, modifica, logga)
+import Core.Programmazione (Reazione, soloEsterna, nessunEffetto, Message (..))
+import Core.Inserimento (MTInserzione, fallimento, osserva, modifica, logga, loggamus)
 import Core.Costruzione (libero, scelte, CostrAction, runSupporto)
 import Core.Parsing (Parser)
 import Lib.Costruzione (Costruzione)
@@ -29,13 +30,21 @@ import Eventi.Anagrafe (Anagrafe, esistenzaUtente, utenti, Responsabili,
 	esistenzaResponsabile, responsabili, validante, SUtente (..))
 import Lib.Aspetti ((.<), see, ParteDi)
 import Lib.Prioriti (R (..))
-import Lib.Assocs (update , (?))
+import Lib.Assocs (update , (?), upset)
 import Lib.Response (Response (..))
 import Lib.ShowRead
 import Lib.Euro
 
+
+data Movimento = MovimentoU Utente DEuro String | MovimentoR Utente DEuro String  deriving Typeable
+
+instance Show Movimento where
+	show (MovimentoU u e s) = "movimento di " ++ show e ++ " sul conto di " ++ u ++ " per " ++ s 
+	show (MovimentoR u e s) = "movimento di " ++ show e ++ " sulla cassa di " ++ u ++ " per " ++ s
+
+
 -- | evento esterno che interessa il controllo del credito o del saldo
-data EsternoAccredito = Accredito Utente Euro | Saldo Utente Euro 
+data EsternoAccredito = Accredito Utente DEuro | Saldo Utente DEuro 
 
 
 instance Show EsternoAccredito where
@@ -80,34 +89,23 @@ type TyAccredito a = (Conti , (Saldi , a))
 bootAccredito :: a -> TyAccredito a
 bootAccredito x = Conti [] .< Saldi [] .< x
 
--- | esegue un prelievo da un conto utente
-preleva :: (Anagrafe `ParteDi` s, Conti `ParteDi` s) => Utente -> Euro -> MTInserzione s c Utente ()
-preleva u dv = do
-	fallimento (dv <= 0) "prelievo negativo o nullo"
-	esistenzaUtente u 
-	Conti us <- osserva
-	fallimento (us ? (u,0) < dv) "il credito non è sufficiente per la richiesta" 
-	aggiornaCredito u (subtract dv) 
-
 -- | esegue un accredito su un conto utente
-accredita :: (Anagrafe `ParteDi` s, Conti `ParteDi` s) => Utente -> Euro -> MTInserzione s c Utente ()
-accredita u dv = do
-	--fallimento (dv <= 0) "tentato un accredito negativo o nullo"
+accredita :: (Anagrafe `ParteDi` s, Conti `ParteDi` s) => Utente -> DEuro -> String -> MTInserzione s c Utente ()
+accredita u dv s = do
 	esistenzaUtente u 
 	Conti us <- osserva
-	let r = (us ? (u,0)) + dv
-	fallimento (r < 0) "richiesto uno storno superiore al credito" 
-	aggiornaCredito u (+ dv) 
+	let r = dv $^ (us ? (u,0)) 
+	fallimento (r < 0) "conti in rosso non ammessi" 
+	modifica $ \(Conti us) -> Conti (upset u r us)
+	logga . Message $ MovimentoU u dv s
+	
 -- | modifica il saldo di un responsabile
-salda :: (Anagrafe `ParteDi` s, Responsabili `ParteDi` s, Saldi `ParteDi` s) => Utente -> (Euro -> Euro) -> MTInserzione s c Utente ()
-salda u dv = esistenzaResponsabile u >> aggiornaSaldo u dv
-
--- | LL : modifica un credito
-aggiornaCredito :: (Anagrafe `ParteDi` s, Conti `ParteDi` s) => Utente -> (Euro -> Euro) -> MTInserzione s c Utente ()
-aggiornaCredito u dv = modifica $ \(Conti us) -> Conti (update u dv 0 us)
--- | LL : modifica un saldo
-aggiornaSaldo :: (Anagrafe `ParteDi` s, Responsabili `ParteDi` s, Saldi `ParteDi` s) => Utente -> (Euro -> Euro) -> MTInserzione s c Utente ()
-aggiornaSaldo u dv = modifica $ \(Saldi us) -> Saldi (update u dv 0 us)
+salda :: (Anagrafe `ParteDi` s, Responsabili `ParteDi` s, Saldi `ParteDi` s) => Utente -> DEuro 
+	-> String -> MTInserzione s c Utente ()
+salda u dv s = do 
+	esistenzaResponsabile u 
+	modifica $ \(Saldi us) -> Saldi (update u (dv $^) 0 us)
+	logga . Message $ MovimentoR u dv s
 
 -- | il caricatore di eventi per questo modulo
 reazioneAccredito :: (
@@ -120,16 +118,17 @@ reazioneAccredito :: (
 reazioneAccredito = soloEsterna reattoreAccredito where
 	reattoreAccredito (first validante -> (wrap,Accredito u dv)) = wrap $ \r -> do
 		fallimento (r == u) "aggiornamento del proprio credito di utente"
-		accredita u dv
-		salda r (+dv)
-		logga $ "accreditate " ++ show dv ++ " a " ++ u
+		accredita u dv $ "versamento attraverso il cassiere " ++ r
+		salda r dv $ "funzione di cassiere per " ++ u
+		loggamus $ "accreditate " ++ show dv ++ " a " ++ u
 		return (True,nessunEffetto)	
 	reattoreAccredito (first validante -> (wrap ,Saldo u dv)) = wrap $ \r -> do
 		esistenzaResponsabile u
 		fallimento (u == r) "movimento di denaro riferito ad una cassa sola"
-		fallimento (dv <= 0) "saldo negativo o nullo"
-		modifica $ \(Saldi us) -> Saldi (update r (+ dv) 0 (update u (subtract dv) 0 us))
-		logga $ "spostati " ++ show dv ++ " dalla cassa di " ++ u ++ " alla cassa di " ++ r
+		fallimento (dv $^ 0 <= 0) "saldo negativo o nullo"
+		salda r dv $ "trasferiti dalla cassa di " ++ u
+		salda u (opposite dv) $ "trasferiti alla cassa di " ++ r
+		loggamus $ "spostati " ++ show dv ++ " dalla cassa di " ++ u ++ " alla cassa di " ++ r
 		return (True,nessunEffetto)
 
 -- | costruttore di eventi per il modulo di accredito

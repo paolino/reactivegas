@@ -40,7 +40,7 @@ import Lib.Prioriti (R (..))
 import Lib.ShowRead
 
 
-import Core.Inserimento (logga, conFallimento, MTInserzione, osserva, modifica, fallimento)
+import Core.Inserimento (loggamus, conFallimento, MTInserzione, osserva, modifica, fallimento)
 import Core.Programmazione (Inserzione, EventoInterno (..), soloEsterna, nessunEffetto, Reazione (..),Effetti)
 import Core.Types 
 import Core.Costruzione (Supporto,libero,upload,scelte,runSupporto,CostrAction)
@@ -151,7 +151,7 @@ reazioneAnagrafe = soloEsterna reattoreAnagrafe' where
 		Anagrafe us <- osserva
 		fallimento (u `elem` us) "utente già presente nel gruppo" 
 		modifica . const $ Anagrafe (u:us)
-		logga $ "accettato il nuovo utente " ++ u
+		loggamus $ "accettato il nuovo utente " ++ u
 		return (True, nessunEffetto)
 	reattoreAnagrafe' (first validante -> (w,ElezioneResponsabile u' c s)) = w $ \r -> do
 		let u = (u',(c,s))
@@ -166,11 +166,11 @@ reazioneAnagrafe = soloEsterna reattoreAnagrafe' where
 		where
 		chiudibene u l = do
 			modifica $ \(Responsabili us ls) -> Responsabili (u:us) (filter ((/=) l . fst) ls)
-			logga $ "eletto il nuovo responsabile " ++ fst u
+			loggamus $ "eletto il nuovo responsabile " ++ fst u
 			return nessunEffetto
 		chiudimale u l = do
 			modifica $ \(Responsabili us ls) -> Responsabili us (filter ((/=) l . fst) ls)
-			logga $ "elezione dell'utente " ++ fst u ++ " fallita"
+			loggamus $ "elezione dell'utente " ++ fst u ++ " fallita"
 			return nessunEffetto
 
 	reattoreAnagrafe' (first validante -> (w,EliminazioneResponsabile u)) = w $ \r -> do
@@ -185,11 +185,11 @@ reazioneAnagrafe = soloEsterna reattoreAnagrafe' where
 		where
 		chiudibene u r l = do
 			modifica $ \(Responsabili us ls ) -> Responsabili (elimina u us) (elimina l ls)
-			logga $ "revocato il responsabile  " ++ u
+			loggamus $ "revocato il responsabile  " ++ u
 			return ([],[EventoInterno $ EventoEliminazioneResponsabile u r])
 		chiudimale u r l = do
 			modifica $ \(Responsabili us ls ) -> Responsabili us  (elimina l ls)
-			logga $ "rinuncia alla revoca del responsabile " ++ u
+			loggamus $ "rinuncia alla revoca del responsabile " ++ u
 			return nessunEffetto
 ------------------------------------------------------------------------------------------------
 -- reparto costruzione ed interrogazione
@@ -290,20 +290,20 @@ programmazionePermesso se ur ut k kn = do
 	l <- nuovoStatoServizio (Permesso ur ut) (ur,se)
 	let 	eliminaRichiesta u j = do
 			eliminaStatoServizio j (undefined :: Assensi)  
-			logga $ "rinuncia alla questione " ++ se
+			loggamus $ "rinuncia alla questione " ++ se
 			return (False,nessunEffetto) -- non rischedula il reattore
 		reattoreAssenso (Right (first validante -> (w,Assenso j))) = w $ \r -> do
 			when (j /= l) mzero
 			fallimento (ut /= r) "il responsabile non è tenuto a dare il permesso sulla questione" 
 			eliminaStatoServizio j (undefined :: Assensi)
-			logga $ "chiusura postiva della questione " ++ se 
+			loggamus $ "chiusura postiva della questione " ++ se 
 			(,) False <$> k j -- esegui la procedura finale come coronamento del 
 						-- consenso e non rischedula il reattore 
 		reattoreAssenso (Right (first validante -> (w,Dissenso j))) = w $ \r -> do
 			when (j /= l) mzero
 			fallimento (ut /= r) "il responsabile non è tenuto a dare il permesso sulla questione" 
 			eliminaRichiesta r j
-			logga $ "chiusura negativa della questione " ++ se
+			loggamus $ "chiusura negativa della questione " ++ se
 			(,) False <$> kn j
 		reattoreAssenso (Right (first validante -> (w,EventoFallimentoAssenso j))) = w $ \r -> do
 			when (j /= l) mzero
@@ -311,10 +311,10 @@ programmazionePermesso se ur ut k kn = do
 			eliminaRichiesta r j
 		reattoreAssenso (Left (eliminazioneResponsabile -> Just (u,r))) = conFallimento $ do
 			when (ur /= u) mzero
-			logga $ "eliminazione della richiesta " ++ se
+			loggamus $ "eliminazione della richiesta " ++ se
 			eliminaRichiesta u l
 
-	logga $ "richiesta di permesso a " ++ ut ++ " per " ++ se 
+	loggamus $ "richiesta di permesso a " ++ ut ++ " per " ++ se 
  	return (l,Reazione (Nothing, reattoreAssenso)) -- restituisce il riferimento a questa richiesta perché venga nominato negli eventi di assenso
 -- | funzione di programmazione per una nuova raccolta di assensi
 programmazioneAssenso :: (
@@ -336,7 +336,7 @@ programmazioneAssenso se ur c k kn' = do
 	l <- nuovoStatoServizio (Assensi ur [] []) (ur,se) -- ricevi la chiave per la nuova raccolta
 	let 	eliminaRichiesta  = do
 			eliminaStatoServizio l (undefined :: Assensi)  
-			logga $ "rinuncia alla questione " ++ se
+			loggamus $ "rinuncia alla questione " ++ se
 
 		reattoreAssenso (Right (first validante -> (w,Assenso j))) = w $ \r -> do
 			when (j /= l) mzero
@@ -347,11 +347,11 @@ programmazioneAssenso se ur c k kn' = do
 			case t of
 				Positivo  -> do
 					eliminaStatoServizio j (undefined :: Assensi)
-					logga $ "chiusura postiva della questione " ++ se 
+					loggamus $ "chiusura postiva della questione " ++ se 
 					(,) False <$> k j -- esegui la procedura finale come coronamento del 
 						-- consenso e non rischedula il reattore 
 				Indecidibile -> do		
-					logga $ "ricevuto l'assenso da " ++ r 
+					loggamus $ "ricevuto l'assenso da " ++ r 
 						++ " sulla questione " ++ se
 					modificaStatoServizio j $ \_ -> return (Assensi ur ps' ns) -- registra gli assensi
 					return (True,nessunEffetto) -- continua a ricevere
@@ -365,10 +365,10 @@ programmazioneAssenso se ur c k kn' = do
 			case t of 	
 				Negativo -> do
 					eliminaRichiesta 
-					logga $ "chiusura negativa della questione " ++ se
+					loggamus $ "chiusura negativa della questione " ++ se
 					(,) False <$> trace "dissenso" (kn j)
 				Indecidibile -> do		
-					logga $ "ricevuto il dissenso da " ++ r 
+					loggamus $ "ricevuto il dissenso da " ++ r 
 						++ " sulla questione " ++ se
 					modificaStatoServizio j $ \_ -> return (Assensi ur ps ns') -- registra gli assensi
 					return (True,nessunEffetto) -- continua a ricevere
@@ -380,11 +380,11 @@ programmazioneAssenso se ur c k kn' = do
 			(,) False <$> trace "fallimento assenso" (kn j)
 		reattoreAssenso (Left (eliminazioneResponsabile -> Just (u,r))) = conFallimento $ do
 			when (ur /= u) mzero
-			logga $ "eliminazione della richiesta " ++ se
+			loggamus $ "eliminazione della richiesta " ++ se
 			eliminaRichiesta 
 			(,) False <$> trace "eliminazione responsabile" (kn l)
 		reattoreAssenso (Left _) = return Nothing
-	logga $ "raccolta di assensi per " ++ se 
+	loggamus $ "raccolta di assensi per " ++ se 
  	return (l,Reazione (Nothing, reattoreAssenso),eliminaRichiesta ) -- restituisce il riferimento a questa richiesta perché venga nominato negli eventi di assenso
 
 --------------------------- costruzioni per il modulo assensi -----------------------------

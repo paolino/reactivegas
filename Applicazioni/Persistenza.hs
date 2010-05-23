@@ -26,8 +26,8 @@ import Lib.Firmabile (Firma)
 
 import Core.Patch (Patch,firma,Group)
 import Core.Types (Evento,Utente,Esterno,Responsabile)
-
-
+import Core.Contesto (Contestualizzato)
+import Core.Programmazione (Message)
 
 import Debug.Trace
 -----------------------------------------------------------------------------------------
@@ -134,9 +134,11 @@ ripristino unwrite tversion tstato tupatch torfani tgroup tlog ttokens = do
 
 				writeTVar tversion v
 
-data Change 	= Boot 						-- ^ messaggio di nuovo stato
+type Effetti = [Contestualizzato Utente Message]
+
+data Change a	= Boot 	a					-- ^ messaggio di nuovo stato
 		-- | arrivato un aggiornamento di gruppo, comunica gli eventi digeriti e quelli orfani
-		| GPatch [(Utente,[Evento])] [(Utente,[Evento])]  
+		| GPatch [(Utente,[Evento])] [(Utente,[Evento])] (Effetti, a)
 		-- | arrivato un aggiornamento utente, comunica l'autore e gli eventi
 		| UPatch Utente [Evento]
 
@@ -152,7 +154,7 @@ mix ((u,y):ys) xs = case lookup u xs of
 -- | transazione di aggiornamento provocata dall'arrivo di una patch di gruppo
 aggiornamento 
 	:: Int 	-- ^ dimensione della coda di aggiornamenti
-	-> (a -> Group -> Writer [String] (Either String a))  -- ^ tentativo di aggiornamento
+	-> (a -> Group ->  Either String (a, Effetti))  -- ^ tentativo di aggiornamento
 	-> TVar Int			-- ^ versione
 	-> TVar (Maybe a)		-- ^ stato
 	-> TVar [(Utente,Patch)]	-- ^ aggiornamenti individuali
@@ -160,17 +162,17 @@ aggiornamento
 	-> TVar [(Int,Group)]		-- ^ storico
 	-> TChan String	-- ^ log 
 	-> Group	-- ^ aggiornamento di gruppo offerto
-	-> (Change -> STM ())
+	-> (Change a  -> STM ())
 	-> STM ()	-- ^ transazione 
 
 aggiornamento n load  tv ts tp to tg tl g@(_,_,ps) k = do
 	s' <- readTVar ts
 	when (isNothing s') retry -- fallisce finche non esiste uno stato
 	let 	Just s = s'
-	 	(es,ls) = runWriter $ load s g
+	 	es = load s g
 	case es of
 		Left e -> 	writeTChan tl e -- problema di caricamento
-		Right s' -> do
+		Right (s',ls) -> do
 			v <- (+1) <$> readTVar tv
 			gs <- readTVar tg
 			writeTVar tg (take n $ (v - 1,g) : gs) -- inserisce l'aggiornamento nello storico
@@ -182,7 +184,7 @@ aggiornamento n load  tv ts tp to tg tl g@(_,_,ps) k = do
 			writeTVar to $ filter (not . null . snd) orphans -- aggiorna gli orfani
 			writeTVar tp []	-- annulla gli aggiornamenti individuali (o erano in 'g' o sono in 'os')
 			writeTVar tv v	-- scrive la versione
-			k $ GPatch digested orphans
+			k $ GPatch digested orphans $ (ls ,s') 
 -- | come esportiamo l'interfaccia di modifica in bianco. Un caricamento in bianco sullo stato attuale 
 type Modificato a b 	= Int 			-- ^ livello di caricamento
 			-> Maybe Responsabile 	-- ^ responsabile autore o anonimo
@@ -220,7 +222,7 @@ data Persistenza a b = Persistenza
 			readGPatch	:: Int -> IO (Maybe Group),	-- ^ lettura di una patch di gruppo
 			readVersion 	:: IO Int,			-- ^ versione dello stato attuale
 			readLogs	:: IO String,
-			updateSignal	:: IO (STM Change),			-- ^ segnala un avvenuto cambiamento di stato
+			updateSignal	:: IO (STM (Change a)),			-- ^ segnala un avvenuto cambiamento di stato
 			-- | raccoglie gli eventi relativi ad un utente che sono da attribuire alla persistenza
 			queryUtente	:: Maybe Utente -> STM [Evento], 
 			caricamentoBianco :: Modificato a b
@@ -229,7 +231,7 @@ data Persistenza a b = Persistenza
 -- | prepara uno stato vergine di un gruppo
 mkPersistenza :: (Eq a, Read a, Show a) 
 	=> Token						-- ^ token di amministrazione fase di boot
-	-> (a -> Group -> Writer [String] (Either String a)) 	-- ^ loader specifico per a
+	-> (a -> Group -> Either String (a, Effetti)) 	-- ^ loader specifico per a
 	-> (Int -> a -> [Esterno Utente] -> (a,b))		-- ^ insertore diretto di eventi per a 
 	-> ([Responsabile] -> a)				-- ^ inizializzatore di gruppo
 	-> GK 							-- ^ nome del gruppo
@@ -267,16 +269,18 @@ mkPersistenza pass load modif boot x n = do
 						as' = r:as
 					writeTVar tb (p,us',as')
 					when (null us') $ do
-						writeTVar ts $ Just (boot as')  
-						k Boot
+						let s = boot as'
+						writeTVar ts $ Just s
+						k (Boot s)
 					return True
 					else return False
 
 			forceBoot' t = atomicallyP $ \k -> do
 				(p,_,as) <- readTVar tb 
 				if t == p then do 
-					writeTVar ts $ Just (boot as)  
-					k Boot
+					let s = boot as
+					writeTVar ts $ Just s
+					k (Boot s)
 					return (Just ())
 					else return Nothing
 			moreTokens' t n = do 

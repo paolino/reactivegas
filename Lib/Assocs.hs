@@ -7,6 +7,7 @@ update k dv v kvs = case lookup k kvs of
 	Nothing -> (k,dv v):kvs
 	Just v -> (k,dv v):filter ((/=) k . fst) kvs
 
+upset x y = update x (const y) undefined
 assente :: (Eq a) => a -> [(a, b)] -> Bool
 assente k kvs = case lookup k kvs of
 	Nothing -> True

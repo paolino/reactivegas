@@ -1,8 +1,8 @@
 module  Applicazioni.Reactivegas where
 
-import Control.Monad.Error (runErrorT)
-import Control.Monad.Writer (Writer, tell)
-import Control.Monad.Reader (runReaderT)
+import Control.Applicative ((<$>))
+import Control.Monad.Error (runErrorT, lift)
+import Control.Monad.Reader (runReader)
 import Control.Arrow (second, first)
 
 import Lib.TreeLogs (eccoILogs)
@@ -13,10 +13,12 @@ import Lib.Response (Response(ResponseMany,ResponseOne))
 import Core.Patch (fromGroup, Group)
 
 import Core.Types (Esterno, Evento, Utente, Responsabile)
-import Core.Controllo (caricaEventi, SNodo (..))
+import Core.Controllo (caricaEventi, SNodo (..), )
+import Core.Inserimento (UString (..))
 import Core.Contesto (flatten)
-import Core.Programmazione (Reazione)
+import Core.Programmazione (Reazione, estrai, Message, lascia)
 import Core.Parsing (ParserConRead)
+import Core.Contesto (Contestualizzato)
 
 
 import Eventi.Anagrafe 
@@ -48,25 +50,33 @@ nuovoStato :: [Responsabile] -> QS
 nuovoStato rs = (bootAnagrafe rs  . bootAccredito . bootImpegni . bootAcquisti  $ 0, replicate (length reattori) $ SNodo True [])
 
 maxLevel = 100
+
 sortEventi :: [Evento] -> [Evento]
 sortEventi = sortP maxLevel priorita id
 
 levelsEventi :: [Evento] -> [(Evento,Int)]
 levelsEventi = levelsP  priorita id
 
-caricamento' l es = second (eccoILogs . map (first flatten)) . caricaEventi priorita reattori l es
+filtroMovimenti :: Effetti -> ([Movimento],Effetti)
+filtroMovimenti = estrai 
 
-loader ::  QS -> Group -> Writer [String] (Either String QS)
-loader (qs@(s,_)) g = runErrorT $ do
-			(_,es) <- runReaderT (fromGroup (fst . responsabili) g) s
-			let (qs',ef) = caricamento' maxLevel es qs 
-			tell [ef]
-			return $ first (seeset ((+) 1 :: Integer -> Integer)) qs'
+type Effetti = [Contestualizzato Utente Message]
+
+caricamento' :: Int -> [Esterno Utente] -> QS -> (QS,Effetti)
+caricamento' = caricaEventi priorita reattori 
+
+
+-- | aggiornamento di gruppo
+loader :: QS -> Group -> Either String (QS,Effetti)
+loader (qs@(s,_)) g = flip runReader s . runErrorT $ do
+			(_,es) <- fromGroup (fst . responsabili) g -- gli eventi dell'aggiornamento
+			-- caricamento e aggiorna l'indice di stato
+			return . first (first $ seeset ((+) 1 :: Integer -> Integer)) $ caricamento' maxLevel es qs
 
 -- | effettua un inserimento di eventi esterni nello stato, restituendo il nuovo. Stampa i logs
-caricamento :: Int -> QS -> [Esterno Utente] -> (QS,Response)
-caricamento l s es = let
-	(s',qs) = caricamento' l es $ s
+bianco :: Int -> QS -> [Esterno Utente] -> (QS,Response)
+bianco l s es = let
+	(s',qs) = second (eccoILogs . map (first flatten) . lascia (UString "")) . caricamento' l es $ s
 	qs' = ResponseMany (map ResponseOne $ lines qs)
 	in (s',qs')
 

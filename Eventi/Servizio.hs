@@ -20,7 +20,7 @@ import Control.Monad.State (get,lift)
 import Control.Applicative ((<$>))
 import Control.Arrow ((***))
 
-import Core.Inserimento (MTInserzione, osserva, modifica, fallimento,logga)
+import Core.Inserimento (MTInserzione, osserva, modifica, fallimento,loggamus)
 import Core.Programmazione (Inserzione)
 import Lib.Aspetti ((.<),ParteDi,see)
 import Lib.Assocs (assente,(?),updateM,elimina)
@@ -44,7 +44,7 @@ nuovoStatoServizio s (u,q) = do
 	n <- osserva
 	let p = makeQInteger $ (n + (BL.foldr (\x y -> 256 * y + fromIntegral (ord x)) 0 . hash $ u ++ q) `mod` 10 ^ 12)
 	modifica $ \_ -> Servizio ((p,(q,s)):ls)
-	logga $ "riferimento " ++ show p
+	loggamus $ "riferimento " ++ show p
 	return p
 
 -- | controlla la presenza di una chiave presso il servizio di tipo a, in caso di successo restituisce il servizio

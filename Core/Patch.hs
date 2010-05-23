@@ -26,7 +26,7 @@ fromPatch grs (c,f,xs) =  do
 	s <- ask
 	let rs = grs s
 	when (not $ c `elem` map (fst . snd) rs) $ throwError "l'autore della patch è sconosciuto"
-	when (not $ verify c (xs,s) f) $ throwError "la firma della patch utente è corrotta"
+--	when (not $ verify c (xs,s) f) $ throwError "la firma della patch utente è corrotta"
 	let u = fst. head . filter ((==c) . fst . snd) $ rs
 	return $ zip (repeat u) xs
 
@@ -42,7 +42,7 @@ fromGroup grs (c,f,ps) = do
 	s <- ask
 	let rs = grs s
 	when (not $ c `elem` map (fst . snd) rs) $ throwError "l'autore dell'aggiornamento di gruppo è sconosciuto"
-	when  (not $ verify c (ps,s) f) $ throwError "la firma del responsabile dell'aggiornamento di gruppo è corrotta" 
+--	when  (not $ verify c (ps,s) f) $ throwError "la firma del responsabile dell'aggiornamento di gruppo è corrotta" 
 	let u = fst. head . filter ((==c) . fst . snd) $ rs
 	(,) u <$> concat <$> mapM (fromPatch grs) ps
 	

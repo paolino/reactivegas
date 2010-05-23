@@ -2,6 +2,8 @@
 module Lib.Euro where
 
 -- import Text.ParserCombinators.ReadPrec
+import Control.Arrow
+import Control.Applicative ((<$>))
 import Text.ParserCombinators.ReadP
 import Text.Read (readPrec, lift)
 import Text.Printf
@@ -31,3 +33,20 @@ instance Read Euro where
 			r <- readS_to_P reads
 			return . Euro $ approxRational r 0.01
 		in lift $ com <++ bug
+
+newtype DEuro = DEuro (Euro -> Euro)
+
+mkDEuro :: Euro -> DEuro
+mkDEuro x = DEuro (+ x)
+
+($^) :: DEuro -> Euro -> Euro
+DEuro x $^ y =  x y
+
+opposite :: DEuro -> DEuro 
+opposite f = mkDEuro . negate $ f $^ 0
+instance Show DEuro where
+	show (DEuro f) = show (f $ fromInteger 0)
+
+instance Read DEuro where
+	readPrec = mkDEuro <$> readPrec
+		

@@ -54,5 +54,5 @@ Executable server
                 stm, old-time,
                 xhtml, 
                 split,
-                scgi,url
+                scgi,url,HDBC-sqlite3,HDBC
 

@@ -1,8 +1,10 @@
-{-# LANGUAGE  ScopedTypeVariables, ViewPatterns #-}
+{-# LANGUAGE  ScopedTypeVariables, ViewPatterns, DeriveDataTypeable, NoMonomorphismRestriction #-}
 
 
 -- | modulo di trasformazione dello stato del programma. gli eventi sono espressi come stringhe mentre lo stato 
 module Core.Inserimento where -- (nessunEffetto, TyReazione, Reazione (..), EventoInterno (..), Inserzione, ParserConRead, Parser) where
+
+import Data.Typeable
 
 import Control.Monad (foldM, mzero, when)
 import Control.Monad.RWS (local,get, gets,lift,put, modify)
@@ -20,7 +22,7 @@ import Lib.Signal (SignalT, runSignalT, happened, intercept)
 import Core.Parsing (valore, parser, ParserConRead)
 import Core.Types (Interno,Esterno)
 import Core.Contesto (motiva)
-import Core.Programmazione (EventoInterno (..), Inserzione, Reazione (..), TyReazione, provaAccentratore, logInserimento)
+import Core.Programmazione (Message (..), EventoInterno (..), Inserzione, Reazione (..), TyReazione, provaAccentratore, logInserimento)
 import Core.Nodo (Nodo (..), pruner, mkNodi)
 
 import Debug.Trace
@@ -104,11 +106,18 @@ inserimentoCompleto ns x = fmap (fst . fst) . runInserimento  $ do
 -- | la monade di inserimento completata con la gestione fallimento
 type MTInserzione s c d = MaybeT (Inserzione s c d)
 
+data UString  = UString String deriving Typeable
+
+instance Show UString where
+	show (UString s) = encodeString s
+
+mus = Message . UString
 -- | gestisce un fallimento segnalando al writer il motivo
 fallimento :: Bool -> String -> MTInserzione s c d ()
-fallimento t s = when t $ logga s >> mzero
+fallimento t s = when t $ logga (mus s) >> mzero
 
-logga s = lift (logInserimento $ encodeString s)
+loggamus = logga . mus
+logga s = lift (logInserimento s)
 -- | legge il valore di tipo a dallo stato
 osserva :: ParteDi a s => MTInserzione s c d a
 osserva = lift $ gets see 

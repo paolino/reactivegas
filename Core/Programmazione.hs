@@ -1,12 +1,37 @@
 {-# LANGUAGE ExistentialQuantification, ScopedTypeVariables, FlexibleContexts, GeneralizedNewtypeDeriving #-}
 -- | monade di programmazione per le reazioni 
 module Core.Programmazione where
+
+import Data.Typeable
 import Control.Monad.RWS (RWS, MonadState, MonadReader, MonadWriter, ask, tell, runRWS, msum)
 import Control.Applicative ((<$>))
 
-import Core.Types  (Interno, Message)
+import Core.Types  (Interno)
 import Core.Contesto (Contesto, Contestualizzato)
 import Core.Parsing (ParserConRead, Parser, valore, parser)
+
+
+data Message = forall a. (Show a, Typeable a) => Message a
+
+instance Show Message where
+	show (Message x) = show x
+
+
+estrai :: Typeable a => [Contestualizzato d Message] -> ([a], [Contestualizzato d Message]) 
+estrai [] = ([],[])
+estrai (cm@(_,Message x):xs) = let 
+	(ms,rs) = estrai xs
+	in case cast x of
+		Just z -> (z: ms, rs)
+		Nothing -> (ms, cm:rs)
+
+lascia :: Typeable a => a -> [Contestualizzato d Message] -> [Contestualizzato d Message]
+lascia u [] = []
+lascia u (cm@(_,Message x):xs) = let 
+	rs = lascia u xs 
+	in case typeOf x == typeOf u of
+		True -> cm:rs
+		False -> rs
 
 -- | la monade
 -- lo stato "s" dipende dall'applicazione , generalmente contine l'effetto degli eventi

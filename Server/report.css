@@ -58,9 +58,10 @@ padding : 3px;
 margin : 5px;
 border :1px solid black;
 border-collapse:collapse;
+width:80%;
 }
 
-td#accettate table, td#richieste table
+td.accettate table, td.richieste table, td.movimentiU table, td.movimentiR table
 {
 margin : 0px;
 border-collapse:collapse;
@@ -93,17 +94,23 @@ td, th
 border: 1px solid black;
 padding:3px;
 }
+
+th.colMovimenti {
+	width:60%;
+	}
 tr
 {
 padding:1px;
 }
-td#accettate , td#richieste 
+td.accettate , td.richieste ,td.movimentiU, td.movimentiR
 {
+max-height:5em;
+overflow:auto;
 padding : 0px;
 }
-td#accettate td , td#richieste td
+td.accettate td , td.richieste td, td.movimentiU td, td.movimentiR td
 {
-border :0px;
+border :1px solid white;
 }
 
 th
@@ -118,12 +125,14 @@ table#casse tr.even
 {
 background-color:#beb;
 }
-table#crediti tr.even  
+table#crediti tr.even
 {
 background-color:#ebb;
 }
 
-td#accettate table tr.odd, td#richieste table tr.odd
+
+td.accettate table tr.odd, td.richieste table tr.odd, td.movimentiR table tr.odd, td.movimentiU table tr.odd
+
 {
 background-color:#ccf;
 }

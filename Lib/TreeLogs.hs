@@ -24,8 +24,8 @@ passa xs = let 	h = map ((head . head) &&& map tail) . groupBy ((==) `on` head)
 				else Node . second passa <$>  h y -- ogni sottosequenza di una lista  di liste piene che ha 
 					-- la stessa testa é un nodo. ricorsivamente analizziamo il resto
 
-eccoILogs :: [([(String, String)], String)] -> String
-eccoILogs = decodeString . showTrees . map (\(as,b) -> (map (\(d,e) -> d ++ ": " ++ e) as) ++ ["...... " ++ b])
+eccoILogs :: Show a => [([(String, String)], a)] -> String
+eccoILogs = decodeString . showTrees . map (\(as,b) -> (map (\(d,e) -> d ++ ": " ++ e) as) ++ ["...... " ++ show b])
 {-
 eil = map renderTree . passa . map (\(as,b) -> (map (\(d,e) -> show d ++ ":" ++ e) as) ++ ["------> " ++ b])
 	where

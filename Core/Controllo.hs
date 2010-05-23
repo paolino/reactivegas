@@ -15,7 +15,7 @@ import Lib.Missing (foldDeleteMb)
 import Lib.Prioriti (R,sortP)
 
 import Core.Types (Esterno)
-import Core.Programmazione (runInserzione, provaAccentratore, Reazione (..), TyReazione)
+import Core.Programmazione (Message,runInserzione, provaAccentratore, Reazione (..), TyReazione)
 import Core.Nodo (Appuntato (..), Nodo (..))
 import Core.Contesto (nuovoContesto,  Contestualizzato)
 import Core.Parsing (valore,parser, ParserConRead)
@@ -66,7 +66,7 @@ caricaEventi :: Show d
 	-> Int 			-- ^ livello di caricamento
 	-> [Esterno d] 		-- ^ gli eventi da caricare
 	-> (s,[SNodo s d]) 	-- ^ lo stato e la serializzazione dell'albero reattivo
-	-> ((s,[SNodo s d]),[Contestualizzato d String])-- ^ nuovo stato e nuova  serializzazione dell'albero reattivo insieme ai log contestualizzati
+	-> ((s,[SNodo s d]),[Contestualizzato d Message])-- ^ nuovo stato e nuova  serializzazione dell'albero reattivo insieme ai log contestualizzati
 caricaEventi ps rs l xs (s,nss) = 
 	let 	ns = map (uncurry deserializza) $ zip nss rs
 		xs' = sortP l ps snd xs

@@ -7,7 +7,7 @@ import Control.Applicative
 import Codec.Binary.UTF8.String
 
 import Core.Programmazione
-import Core.Inserimento (CoreEvents, eventoRifiutato)
+import Core.Inserimento (CoreEvents, eventoRifiutato, mus)
 
 import Lib.Prioriti
 
@@ -21,5 +21,5 @@ d3 (eventoRifiutato -> Just x) = Just (Logger $  encodeString "la dichiarazione 
 d3 _ = Nothing
 
 reazioneLogger = Reazione (Just [Deviatore d3], \x ->  
-	either (\(Logger x) -> logInserimento x) (\(_,()) ->  return ()) x >> return (Just (True,nessunEffetto))
+	either (\(Logger x) -> logInserimento . mus $ x) (\(_,()) ->  return ()) x >> return (Just (True,nessunEffetto))
 	) 

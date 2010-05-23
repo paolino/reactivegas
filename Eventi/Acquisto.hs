@@ -24,10 +24,9 @@ import Core.Types (Utente)
 import Core.Costruzione (libero, scelte , CostrAction, runSupporto)
 import Core.Parsing (Parser)
 import Core.Programmazione (Effetti, Reazione (..) , EventoInterno (..), soloEsterna, nessunEffetto)
-import Core.Inserimento (MTInserzione, conFallimento, fallimento, osserva, modifica, logga)
+import Core.Inserimento (MTInserzione, conFallimento, fallimento, osserva, modifica, loggamus)
 
 import Eventi.Anagrafe (validante,programmazioneAssenso,maggioranza)
-import Eventi.Accredito (salda)
 import Eventi.Impegno (programmazioneImpegno')
 
 type Indice = QInteger
@@ -82,13 +81,13 @@ reazioneAcquisto = soloEsterna reattoreAcquisto where
 			case k of
 				Just us -> do 
 					-- aggiorna la cassa del responsabile
-					salda r (subtract . sum . map snd $ us)
+				 --	salda r (subtract . sum . map snd $ us)
 					compl (Just (r,us))
-					logga $ "acquisto " ++ b ++ " chiuso con successo"
+					loggamus $ "acquisto " ++ b ++ " chiuso con successo"
 					return nessunEffetto
 				Nothing -> do
 					compl Nothing
-					logga $ "acquisto  " ++ b ++ " chiuso negativamente"
+					loggamus $ "acquisto  " ++ b ++ " chiuso negativamente"
 					return nessunEffetto
 -- 
 		(li,fi,zi,ci) <- programmazioneImpegno' ("l'acquisto di " ++ b) r t
@@ -97,10 +96,10 @@ reazioneAcquisto = soloEsterna reattoreAcquisto where
 				a <- acquisto b
 				modifica $ \(StatoAcquisti cs as)  -> StatoAcquisti cs (a: filter (not . nominato b) as)
 				ci
-				logga $ "concessa la chiusura dell'acquisto " ++ b -- esegui la marcatura ottenuta da programmazione impegno
+				loggamus $ "concessa la chiusura dell'acquisto " ++ b -- esegui la marcatura ottenuta da programmazione impegno
 				return nessunEffetto
 			negativo _ = do
-				logga $ "negata la chiusura dell'acquisto, acquisto fallito " ++ b
+				loggamus $ "negata la chiusura dell'acquisto, acquisto fallito " ++ b
 				fi
 		(la,za,esf) <- programmazioneAssenso ("nuova proposta di acquisto " ++ b) r maggioranza  positivo negativo
 
