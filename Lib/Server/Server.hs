@@ -89,4 +89,5 @@ server path (PortNumber . fromIntegral -> port) limitR limitS applicazione respo
 			
 			
 	(run,reset) <- sessioning path limitS newSession
+	putStrLn "** Server attivo"
 	runSCGI port $ handleErrors (checkReset reset run >>= cgiFromServer responseHandler)

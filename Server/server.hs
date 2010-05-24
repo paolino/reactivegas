@@ -22,12 +22,11 @@ import Server.Layout (layout, pagina)
 
 
 main = do
-	Argomenti dir port lagg lsess lrem tokpass <- parseArgs $ Argomenti "." 5000 20 10 20 "" 
-	pe <- mkPersistenza tokpass loader bianco nuovoStato dir lagg
-	-- report stuff -----------------------------
-	v <- maybe (-1) fst <$> readStato pe
-	report <- mkReporter dir (dir </> "static" </> "report.html") 10 v
-	readStato pe >>= report . (,) [] . fmap snd
+	Argomenti dir port lmov lsess lrem tokpass <- parseArgs $ Argomenti "." 5000 15 10 20 "" 
+	putStrLn "** Inizio report"
+	report <- mkReporter dir (dir </> "static" </> "report.html") lmov 
+	putStrLn "** Inizio persistenza"
+	(pe,boot) <- mkPersistenza tokpass loader bianco nuovoStato dir 
 	forkIO $ do
 		w <- updateSignal pe
 		forever $ do
@@ -38,9 +37,10 @@ main = do
 	------- logs ----------------------
 	forkIO . forever $ readLogs pe >>= putStrLn
 	-------- server ----------------------
+	boot
 	server dir port lsess lrem applicazione (output . pagina) layout $ \signal ms -> do
 		se <- mkSessione (caricamentoBianco pe) maxLevel (updateSignal pe) (queryUtente pe) signal ms
 		return ((pe,se),backup se)
-
+	
 	
 

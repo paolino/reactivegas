@@ -1,7 +1,9 @@
 module Applicazioni.Movimenti (mkMovimenti, Movimenti (..)) where
 
 import Control.Applicative ((<$>))
-import System.FilePath
+import System.FilePath ((</>))
+import System.Directory (removeFile)
+import Control.Exception (handle, SomeException (..))
 
 import Database.HDBC 
 import Database.HDBC.Sqlite3 
@@ -22,15 +24,14 @@ rowMovimento [Just "conto",Just u,Just e, Just s] = MovimentoU u (read e) s
 rowMovimento [Just "cassa",Just u,Just e, Just s] = MovimentoR u (read e) s
 
 mkMovimenti 	:: FilePath 	-- ^ workin directory
-		-> Int 		-- ^ ultimo aggiornamento valido
 		-> IO Movimenti
-mkMovimenti wd v = do
-	db <- connectSqlite3 $ wd </> "movimenti.db"
+mkMovimenti wd  = do
+	handle (\(SomeException _) -> return ()) (removeFile $ wd </> "movimenti.sql")
+	db <- connectSqlite3 $ wd </> "movimenti.sql"
 	handleSql (\_ -> return ()) $ do
 		run db ("CREATE TABLE movimenti (id INTEGER Primary Key, aggiornamento , integer, tipo char(5)" ++
 			", utente varchar(50), movimento varchar(50), descrizione varchar(50))") []
 		commit db
-	run db ("delete from movimenti where aggiornamento > " ++ show v) []
 	let 	iM i = prepare db $ "INSERT INTO movimenti (aggiornamento,tipo,utente,movimento,descrizione) VALUES (" ++
 			show i ++ ",?,?,?,?)" 
 	 	uM u n = prepare db $ "select tipo,utente,movimento,descrizione from movimenti where utente = '" ++ u 

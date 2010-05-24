@@ -23,8 +23,9 @@ main = do
 	dir <- case args of
 		[] -> return "."
 		(x:_) -> return x
-	pe <- mkPersistenza "" loader bianco nuovoStato dir 1
+	(pe,boot) <- mkPersistenza "" loader bianco nuovoStato dir 
 	forkIO . forever $ readLogs pe >>= putStrLn
+	boot
 	se <- mkSessione (caricamentoBianco pe) maxLevel (updateSignal pe) (queryUtente pe) (return ()) Nothing 
 	runReaderT (interazione applicazione) (pe,se)
 	

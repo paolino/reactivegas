@@ -7,21 +7,21 @@ import System.Console.GetOpt (getOpt, usageInfo, ArgOrder (Permute), OptDescr (O
 data Argomenti = Argomenti
 	{directory :: String  -- ^ directory di lavoro / nome del gruppo
 	,porta :: Int          -- ^ porta cgi
-	,lagg :: Int           -- ^ grandezza coda di aggiornamenti di gru
+	,lmov :: Int           -- ^ grandezza coda di movimenti di gru
 	,lsess :: Int          -- ^ numero massimo di ricordi per sessione
 	,lrem :: Int           -- ^ numero massimo di sessioni simultanee 
 	,tokpass :: String 	-- ^ password di lettura tokens	
 	} deriving Show        
 
 
-data Flag = Versione | Nome String | Path String | Porta String | LAgg String | LSess String | LRem String | Tokpass String deriving Show
+data Flag = Versione | Nome String | Path String | Porta String | LMov String | LSess String | LRem String | Tokpass String deriving Show
 
 options :: [OptDescr Flag]
 options = [
     Option "t" ["bootpassword"] (ReqArg Tokpass "PASSWORD" ) "password di lettura tokens",
     Option "V" ["versione"] (NoArg Versione)          "versione dell'applicativo",
     Option "p" ["porta"] (ReqArg Porta "PORTA") "la porta sulla quale il server CGI deve ascoltare",
-    Option "g" ["laggiornamenti"] (ReqArg LAgg "NUMERO") "numero massimo di aggiornamenti di gruppo in memoria",
+    Option "g" ["lmovimenti"] (ReqArg LMov "NUMERO") "numero massimo di movimenti di gruppo in memoria",
     Option "s" ["lsessioni"] (ReqArg LSess "NUMERO") "numero massimo di sessioni in memoria",
     Option "r" ["lricordi"] (ReqArg LRem "NUMERO") "numero massimo di ricordi per sessione in memoria"
    
@@ -37,7 +37,7 @@ parse x r f = case reads x of
 
 set (Path x) r = r{directory = x}
 set (Porta x) r = parse x r $ \x -> r{porta = x}
-set (LAgg x) r = parse x r $ \x -> r{lagg = x}
+set (LMov x) r = parse x r $ \x -> r{lmov = x}
 set (LSess x) r =parse x r $ \x -> r{lsess = x}
 set (LRem x) r =parse x r $ \x -> r{lrem = x}
 set (Tokpass x) r = parse x r $ \x -> r{tokpass = x}
