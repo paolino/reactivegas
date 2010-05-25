@@ -10,7 +10,7 @@ import Lib.Prioriti (R, sortP, levelsP)
 import Lib.Aspetti (seeset, see)
 import Lib.Response (Response(ResponseMany,ResponseOne))
 
-import Core.Patch (fromGroup, Group)
+import Core.Patch (fromGroup, Group,Patch)
 
 import Core.Types (Esterno, Evento, Utente, Responsabile)
 import Core.Controllo (caricaEventi, SNodo (..), )

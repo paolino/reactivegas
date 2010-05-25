@@ -56,7 +56,6 @@ interrogazioni :: Interfaccia ()
 interrogazioni = mano "interrogazioni sullo stato del gruppo" $ (wrapCostrActions P.output $ [
 		costrQueryAnagrafe,
 		costrQueryAccredito,
-		costrQueryAcquisto,
 		costrQueryImpegni,
 		costrQueryAssenso
 		]) 

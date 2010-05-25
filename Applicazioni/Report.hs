@@ -13,8 +13,10 @@ import Core.Types (Utente)
 import Core.Programmazione (estrai)
 import Eventi.Accredito
 import Eventi.Impegno
+import Eventi.Acquisto
 import Applicazioni.Reactivegas
 import Applicazioni.Movimenti
+import Applicazioni.Database.Acquisti
 import Eventi.Accredito (Movimento (..))
 
 metadata = header << 	(	(script ! [thetype "text/javascript", src "/static/jquery.js"] << noHtml)
@@ -31,8 +33,8 @@ movimenti (MovimentoR u de s) = tr << (td << show de +++ td << s)
 
 altrsM xs f  = mapM (\(i,x) -> f x >>= \y -> return $ tr ! [theclass $ if odd i then "odd" else "even"] << y) . zip [0..] $ xs
 altrs xs f  = map (\(i,x) -> tr ! [theclass $ if odd i then "odd" else "even"] << f x) . zip [0..] $ xs
-reporter :: Int -> Movimenti -> TS  -> IO Html
-reporter n (Movimenti _ conti casse) s  = do
+reporter :: Int -> Movimenti -> Acquisti -> TS  -> IO Html
+reporter n (Movimenti _ conti casse) (Acquisti _ acquisti) s  = do
 
 	conti' <- altrsM (reportCrediti s) $ \(u,e) -> do
 		ms <- conti u n
@@ -40,7 +42,7 @@ reporter n (Movimenti _ conti casse) s  = do
 	casse'  <- altrsM (reportCasse s) $ \(u,e) -> do
 		ms <- casse u n
 		return (td << u +++ td << show e +++ td ! [theclass "movimentiR"] << table << map movimenti ms)
-	
+	acquisti' <- acquisti n
 	return $ (table ! [identifier "crediti"] << 
 			(caption << "crediti dei membri" +++ tr << (
 				th << "nickname"  +++ 
@@ -54,12 +56,19 @@ reporter n (Movimenti _ conti casse) s  = do
 				th ! [theclass "colMovimenti"] << "ultimi movimenti")
 			+++ casse' ))
 		+++ (table  ! [identifier "impegni"]  << 
-			(caption << "acquisti (raccolte di impegni) aperti"  
+			(caption << "acquisti aperti"  
 			+++ tr << (th << "acquisto"  +++ th << "responsabile" +++
 			th << "richieste in attesa" +++ th << "richieste accolte")
 			+++ altrs (reportImpegni s)  (\(s,b,u,is,as) -> td << s +++ td << u +++ td ! [theclass "richieste"] << richieste as +++ td ! [theclass "accettate"] << richieste is) 
 			))
 	
+		+++ (table  ! [identifier "acquisti"]  << 
+			(caption << "acquisti chiusi"  
+			+++ tr << (th << "acquisto"  +++ th << "quote")
+			+++ altrs acquisti'  (\(FineAcquisto b uvs) -> 
+				td << b +++ td ! [theclass "quote"] << table << altrs uvs (\(u,v) -> 
+					td << u +++ td << (show v)))
+			))
 
 richieste is =  table <<
 	altrs is (\(u,e) -> td << u +++ td << show e) 
@@ -68,15 +77,16 @@ richieste is =  table <<
 mkReporter :: FilePath -> FilePath -> Int -> IO ((Effetti,Maybe QS) -> IO ())
 mkReporter wd d l  = do 
 	m@(Movimenti i _ _) <- mkMovimenti wd 
+	a@(Acquisti ia _) <- mkAcquisti wd
 	return $ \(ls,x) -> do 
 		t <- getClockTime >>= toCalendarTime
 		let 	h = h3 << ("Ultimo aggiornamento: " ++ calendarTimeToString t)
 		b <- case x of
 			Nothing -> return $ h3 << "Gruppo in costruzione"
 			Just (x,_) -> do 
-				let j = see x 
-				i j . fst . estrai $ ls
-				reporter l m x
+				i (see x) . fst . estrai $ ls
+				mapM_ ia  . fst . estrai $ ls
+				reporter l m a x
 		writeFile d $ prettyHtml $ metadata +++ (body << (h +++ b))
 
 

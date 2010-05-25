@@ -99,6 +99,9 @@ type TyImpegni a = (Servizio Impegni , a)
 bootImpegni :: a -> TyImpegni a
 bootImpegni x = (servizio0,x)
 
+raccolte :: (Servizio Impegni `ParteDi` s) => s -> [String]
+raccolte s = let xs :: [(Indice,(String,Impegni))] = elencoSottoStati s  in map (fst . snd) xs
+
 -- unImpegno s n = (\(Impegni us) -> us) <$> snd <$> seeStatoServizio  (undefined :: Impegni) s n
 
 -- | il tipo della funzione da passare alla hof restituita da programmazioneImpegno 

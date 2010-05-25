@@ -6,7 +6,7 @@ module Applicazioni.Persistenza (Persistenza (..), mkPersistenza, Change (..), M
 import Data.Maybe (fromJust,isJust,isNothing)
 import Data.List (sort,find, partition,delete)
 
-import Control.Monad (when, liftM2, forever,mplus)
+import Control.Monad (when, liftM2, forever,mplus, join)
 import Control.Monad.Writer (runWriter, Writer)
 import Control.Applicative ((<$>))
 import Control.Arrow ((&&&), (***),second, first)
@@ -310,12 +310,13 @@ mkPersistenza pass load modif boot x = do
 				Nothing -> do 
 					putStrLn "stato iniziale assente"
 					forkIO $ do 
-						r <- atomically $ dupTChan cs >>= readTChan
+						r <- updateSignal' >>= atomically
 						case r of
 							Boot s -> do
 								groupWrite x "stato.boot" 0  s
 								putStrLn "stato iniziale scritto"
-							_ -> return ()
+							_ -> print "absurd"
+							 
 					return ()
 			-- thread di persistenza appeso a trigger
 			forkIO $ do
