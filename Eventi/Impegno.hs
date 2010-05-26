@@ -128,8 +128,9 @@ programmazioneImpegno' :: (
 		, MTInserzione s c Utente ()
 		)
 
-programmazioneImpegno' q ur k  = do
-	l <- nuovoStatoServizio (Impegni False ur [] []) (ur,q)
+programmazioneImpegno' q' ur k  = do
+	l <- nuovoStatoServizio (Impegni False ur [] []) (ur,q')
+	let q = "per l'acquisto di " ++ q'
 	let 	effettoF j = do 
 			Impegni _ ur as is <- osservaStatoServizio j
 			mapM_ (\(u,v) -> accredita u (mkDEuro v) $ "restituzione per fallimento " ++ q) (as ++ is) -- restituzione del denaro di tutti gli impegni
@@ -139,37 +140,37 @@ programmazioneImpegno' q ur k  = do
 
 		reattoreImpegno _ (Right (first validante ->  (w,i@(Impegno u v j)))) = w $ \r -> let
 			positivo _ = do
-				loggamus $ "accettato l'impegno di " ++ show v ++ " da " ++ u ++ " per " ++ q 
+				loggamus $ "accettato l'impegno di " ++ show v ++ " da " ++ u ++ q 
 				modificaStatoServizio j $ \(Impegni ch ur as is) -> return 
 					(Impegni ch ur ((u,v):as) (delete (u,v) is))
 				return nessunEffetto
 			negativo _ = do 
-				accredita u (mkDEuro v) $ "restituzione per rifiuto richiesta per " ++ q
+				accredita u (mkDEuro v) $ "restituzione per rifiuto richiesta " ++ q
 				modificaStatoServizio j $ \(Impegni ch ur as is) -> return 
 					(Impegni ch ur as (delete (u,v) is))
-				loggamus $ "rifiutato l'impegno di " ++ show v ++ " da " ++ u ++ " per " ++ q
+				loggamus $ "rifiutato l'impegno di " ++ show v ++ " da " ++ u  ++ q
 				return nessunEffetto
 			in do 
 				when (l /= j) mzero
-				accredita u (mkDEuro $ negate v) $ "richiesta di impegno per " ++ q 
+				accredita u (mkDEuro $ negate v) $ "richiesta di impegno " ++ q 
 				modificaStatoServizio j $ \(Impegni ch ur as is) -> return (Impegni ch ur as $ (u,v):is)
-				loggamus  $ "richiesta di impegno di  " ++ show v ++ " da " ++ u ++ " per " ++ q
+				loggamus  $ "richiesta di impegno di  " ++ show v ++ " da " ++ u  ++ q
 				(_,reaz) <- programmazionePermesso 
-					("impegno di " ++ show v ++ " da " ++ u ++ " per " ++ q)
+					("impegno di " ++ show v ++ " da " ++ u ++ q)
 					r ur positivo negativo
 				return (True, ([reaz],[]))   
 		reattoreImpegno _ (Right (first validante -> (w,FineImpegno j))) = w $ \r -> do
 			when (l /= j) mzero
 			Impegni y ur as is <- osservaStatoServizio j
-			fallimento (ur /= r) $ "solo " ++ ur ++ " può chiudere la raccolta di impegni per " ++ q
-			fallimento (not y) $ "la chiusura non è stata concessa per " ++ q
+			fallimento (ur /= r) $ "solo " ++ ur ++ " può chiudere la raccolta di impegni " ++ q
+			fallimento (not y) $ "la chiusura non è stata concessa  " ++ q
 			mapM_ (\(u,v) -> accredita u (mkDEuro v) $ "restituzione a causa della mancata accettazione in " ++ q) is -- restituzione del denaro degli impegni non accettati
-			salda r (mkDEuro . negate $ (sum $ map snd as)) $ "spesa per " ++ q
+			salda r (mkDEuro . negate $ (sum $ map snd as)) $ "spesa  " ++ q
 			eliminaStatoServizio j (undefined :: Impegni)
 			(,) False <$> k (Just as) 
 		reattoreImpegno esf (Right (first validante -> (w,FallimentoImpegno j))) = w $ \r -> do
 			when (l /= j) mzero
-			fallimento (ur /= r) $ "solo " ++ ur ++ " può chiudere la raccolta di impegni per " ++ q
+			fallimento (ur /= r) $ "solo " ++ ur ++ " può chiudere la raccolta di impegni " ++ q
 			Impegni y ur as is <- osservaStatoServizio j
 			when (not y) esf 
 			(,) False <$> effettoF j
@@ -179,7 +180,7 @@ programmazioneImpegno' q ur k  = do
 			when (not y) esf 
 			(,) False <$> effettoF l
 		reattoreImpegno  _ (Left _) = return Nothing
-	loggamus $ "raccolta di impegni per " ++ q ++ " aperta"	
+	loggamus $ "raccolta di impegni " ++ q ++ " aperta"	
 	return $ 
 		( l
 		, effettoF l

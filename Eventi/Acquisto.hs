@@ -68,7 +68,7 @@ reazioneAcquisto = soloEsterna reattoreAcquisto where
 				return nessunEffetto
 			_ -> return nessunEffetto
 		
-		(li,fi,zi,ci) <- programmazioneImpegno' ("acquisto di " ++ b) r t
+		(li,fi,zi,ci) <- programmazioneImpegno' b r t
 		-- definizione completamenti raccolta di assenso
 		let 	positivo _ = do
 				ci

@@ -52,7 +52,7 @@ font-size:2em;
 background : #EEF;
 }
 
-table#crediti, table#casse, table#impegni
+table#crediti, table#casse, table#impegni, table#acquisti
 {
 padding : 3px;
 margin : 5px;
@@ -61,7 +61,7 @@ border-collapse:collapse;
 width:80%;
 }
 
-td.accettate table, td.richieste table, td.movimentiU table, td.movimentiR table
+td.accettate table, td.richieste table, td.movimentiU table, td.movimentiR table , td.quote table
 {
 margin : 0px;
 border-collapse:collapse;
@@ -80,6 +80,10 @@ background :#cfc;
 table#impegni, table#impegni caption
 {
 background :#ccf;
+}
+table#acquisti, table#acquisti caption
+{
+background :#ddf;
 }
 
 
@@ -102,13 +106,13 @@ tr
 {
 padding:1px;
 }
-td.accettate , td.richieste ,td.movimentiU, td.movimentiR
+td.accettate , td.richieste ,td.movimentiU, td.movimentiR, td.quote
 {
 max-height:5em;
 overflow:auto;
 padding : 0px;
 }
-td.accettate td , td.richieste td, td.movimentiU td, td.movimentiR td
+td.accettate td , td.richieste td, td.movimentiU td, td.movimentiR td, td.quote td
 {
 border :1px solid white;
 }
@@ -121,6 +125,11 @@ table#impegni tr.even
 {
 background-color:#bbe;
 }
+table#impegni tr.even  
+{
+background-color:#aae;
+}
+
 table#casse tr.even  
 {
 background-color:#beb;
@@ -131,7 +140,7 @@ background-color:#ebb;
 }
 
 
-td.accettate table tr.odd, td.richieste table tr.odd, td.movimentiR table tr.odd, td.movimentiU table tr.odd
+td.accettate table tr.odd, td.richieste table tr.odd, td.movimentiR table tr.odd, td.movimentiU table tr.odd td.quote table tr.odd
 
 {
 background-color:#ccf;
