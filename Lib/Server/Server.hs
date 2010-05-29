@@ -57,6 +57,7 @@ fromHPasso _ _ = error "inizializzazione con contesto non implementata"
 checkReset :: CGI a -> CGI a -> CGI a
 checkReset reset k = do
 	vs <- getVars
+	
 	case lookup "REQUEST_URI" vs of
 		Just x -> let xs = tail $ splitOneOf "/?" x in
 			case xs of
@@ -70,11 +71,13 @@ server 	:: forall e b . (Read b,Show b)
 	-> Int					-- ^ numero massimo di ricordi per sessione
 	-> Int					-- ^ numero massimo di sessioni simultanee 	
 	-> Costruzione (Running e) () () 	-- ^ applicazione
+	-> CGI (Maybe CGIResult)				-- ^ preserver
 	-> (Html -> CGI CGIResult) 		-- ^ gestore del response
 	-> [([Value],Int)] 			-- ^ serializzazione delle form di default
 	-> (STM () -> Maybe b -> IO (e, IO b))  		-- ^ produzione e restore di evironment per sessione
 	-> IO () 				-- ^ aloa
-server path (PortNumber . fromIntegral -> port) limitR limitS applicazione responseHandler defaultForms newEnvironment = do
+server path (PortNumber . fromIntegral -> port) limitR limitS applicazione preServer 
+		responseHandler defaultForms newEnvironment = do
 	-- definizione di nuova sessione
 	let 	newSession signal s = do 
 			-- ogni sessione ha la possibilità di avere il suo environment
@@ -90,4 +93,8 @@ server path (PortNumber . fromIntegral -> port) limitR limitS applicazione respo
 			
 	(run,reset) <- sessioning path limitS newSession
 	putStrLn "** Server attivo"
-	runSCGI port $ handleErrors (checkReset reset run >>= cgiFromServer responseHandler)
+	runSCGI port . handleErrors $ do 
+		b <- preServer
+		case b of
+			Nothing -> checkReset reset run >>= cgiFromServer responseHandler 
+			Just result -> return result

@@ -50,7 +50,6 @@ fromGroup grs (c,f,ps) = do
 -- | costruisce una patch di gruppo da un insieme di patch responsabile
 
 
-
 firmante :: forall m s c . (Show s, Monad m) => Responsabile -> Supporto m s c (Firmante s)
 firmante r@(u,(c,s)) = do  
 	p <- password $ u ++ ",la tua password di responsabile:"

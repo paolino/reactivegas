@@ -4,10 +4,14 @@
 module Applicazioni.Persistenza (Persistenza (..), mkPersistenza, Change (..), Modificato) where
 
 import Data.Maybe (fromJust,isJust,isNothing)
-import Data.List (sort,find, partition,delete)
+import Data.List (sort,find, partition,delete, sortBy, groupBy, union, (\\))
+import Data.Ord (comparing)
+import Data.Function (on)
 
 import Control.Monad (when, liftM2, forever,mplus, join)
 import Control.Monad.Writer (runWriter, Writer)
+import Control.Monad.Reader
+import Control.Monad.Error
 import Control.Applicative ((<$>))
 import Control.Arrow ((&&&), (***),second, first)
 import Control.Exception (tryJust, SomeException (..))
@@ -24,7 +28,7 @@ import Text.XHtml hiding ((</>),value)
 import Lib.Assocs (secondM)
 import Lib.Firmabile (Firma)
 
-import Core.Patch (Patch,firma,Group)
+import Core.Patch (Patch,firma,fromPatch, Group, fromGroup)
 import Core.Types (Evento,Utente,Esterno,Responsabile)
 import Core.Contesto (Contestualizzato)
 import Core.Programmazione (Message)
@@ -54,7 +58,6 @@ groupUnwrite x y  = do
 			[(q,_)] -> Just q
 			_ -> Nothing
 -------------------------------------------------------------------------------------------------------------------
-
 
 type Token = String
 
@@ -135,36 +138,40 @@ mix ((u,y):ys) xs = case lookup u xs of
 	Nothing -> mix ys $ (u,y):xs
 	Just _ -> mix ys $ (u,y): filter ((/=) u . fst) xs
 
+groupUp = map (fst . head &&& map snd) . groupBy ((==) `on` fst) . sortBy (comparing fst)
+groupDown = map (\(u,es) -> map ((,) u) es)
+
 -- | transazione di aggiornamento provocata dall'arrivo di una patch di gruppo
 aggiornamento 
-	:: (a -> Group ->  Either String (a, Effetti))  -- ^ tentativo di aggiornamento
+	:: (a -> [Esterno Utente] ->  Either String (a, Effetti))  -- ^ tentativo di aggiornamento
 	-> TVar Int			-- ^ versione
 	-> TVar (Maybe a)		-- ^ stato
 	-> TVar [(Utente,Patch)]	-- ^ aggiornamenti individuali
 	-> TVar [(Utente,[Evento])] 	-- ^ eventi orfani
 	-> TChan String	-- ^ log 
-	-> Group	-- ^ aggiornamento di gruppo offerto
+	-> [Esterno Utente]	-- ^ aggiornamento di gruppo offerto
 	-> (Change a  -> STM ())
 	-> STM ()	-- ^ transazione 
 
-aggiornamento  load  tv ts tp to tl g@(_,_,ps) k = do
+aggiornamento  load  tv ts tp to tl evs k = do
 	s' <- readTVar ts
 	when (isNothing s') retry -- fallisce finche non esiste uno stato
 	let 	Just s = s'
-	 	es = load s g
+	 	es = load s evs
+		digested = groupUp evs
 	case es of
-		Left e -> 	writeTChan tl e -- problema di caricamento
+		Left e -> writeTChan tl e -- problema di caricamento
 		Right (s',ls) -> do
 			v <- (+1) <$> readTVar tv
 			writeTVar ts $ Just s' -- scrive il nuovo stato
-			(pos,dps) <- partition (not . (`elem` ps) . snd) <$> readTVar tp -- cerca gli aggiornamenti individuali mancanti
-			os <- readTVar to
-			let 	orphans =  map (second $ \(_,_,evs) -> evs) pos `mix` os
-			 	digested = map (second $ \(_,_,evs) -> evs) dps
-			writeTVar to $ filter (not . null . snd) orphans -- aggiorna gli orfani
+			wes <- concatMap (\(u,(_,_,es)) -> map ((,) u) es) <$> readTVar tp 
+			os <- concat <$> groupDown <$> readTVar to
+			let orphans = groupUp $ (os `union` wes) \\ evs
+			writeTVar to orphans -- aggiorna gli orfani
 			writeTVar tp []	-- annulla gli aggiornamenti individuali (o erano in 'g' o sono in 'os')
 			writeTVar tv v	-- scrive la versione
 			k $ GPatch digested orphans $ (ls ,s') 
+
 -- | come esportiamo l'interfaccia di modifica in bianco. Un caricamento in bianco sullo stato attuale 
 type Modificato a b 	= Int 			-- ^ livello di caricamento
 			-> Maybe Responsabile 	-- ^ responsabile autore o anonimo
@@ -210,15 +217,17 @@ data Persistenza a b = Persistenza
 
 
 -- | prepara uno stato vergine di un gruppo
-mkPersistenza :: (Eq a, Read a, Show a) 
+mkPersistenza :: (Eq a, Read a, Show a, Show c) 
 	=> Token						-- ^ token di amministrazione fase di boot
-	-> (a -> Group -> Either String (a, Effetti)) 	-- ^ loader specifico per a
+	-> (a -> [Esterno Utente] -> Either String (a, Effetti)) 	-- ^ loader specifico per a
 	-> (Int -> a -> [Esterno Utente] -> (a,b))		-- ^ insertore diretto di eventi per a 
 	-> ([Responsabile] -> a)				-- ^ inizializzatore di gruppo
+	-> (c -> [Responsabile])
+	-> (a -> c)
 	-> GK 							-- ^ nome del gruppo
 	-> IO (Persistenza a b,IO ())					
 
-mkPersistenza pass load modif boot x = do 
+mkPersistenza pass load modif boot resps ctx x = do 
 	-- istanzia la memoria condivisa
 	trigger <- atomically $ newTChan 	
 	tb <- atomically $ newTVar (pass,[],[])
@@ -273,16 +282,28 @@ mkPersistenza pass load modif boot x = do
 			readTokens' t	 = atomically $ do
 						(p,ts,_) <- readTVar tb
 						return $ if t == p then Just ts else Nothing
-			writeUPatch' u p@(_,_,es) = atomicallyP $ \k -> do
-				up <- readTVar tp 
-				writeTVar tp . (++ if null es then [] else [(u,p)]) . filter ((/=) u . fst) $ up
-				or <- readTVar to
-				writeTVar to . (++ [(u,[])]) . filter ((/=) u .fst) $ or
-				k $ UPatch u es
+			writeUPatch' pe u p@(_,_,es) = do
+				s <- snd <$> fromJust <$> readStato pe
+				rl <- runErrorT $ runReaderT (fromPatch resps p) (ctx s)
+				case rl of
+					Right _ -> do 
+						atomicallyP $ \k -> do
+							up <- readTVar tp 
+							writeTVar tp . (++ if null es then [] else [(u,p)]) . filter ((/=) u . fst) $ up
+							or <- readTVar to
+							writeTVar to . (++ [(u,[])]) . filter ((/=) u .fst) $ or
+							k $ UPatch u es
+					Left x -> atomically $ writeTChan cl  x
 			readUPatches' 	= atomically $ liftM2 (,) (readTVar tv) $ readTVar tp
-			writeGPatch' g 	= do 
-				v <- atomicallyP $ \f -> aggiornamento load  tv ts tp to cl g f >> readTVar tv
-				nuovaGPatch gp (fromIntegral v) g
+			writeGPatch' pe g 	= do 
+				s <- snd <$> fromJust <$> readStato pe
+				rl <- runErrorT $ runReaderT (fromGroup resps g) (ctx s)
+				case rl of
+					Right (_,es) -> do 
+						v <- atomicallyP $ \f -> 
+							aggiornamento load  tv ts tp to cl es f >> readTVar tv
+						nuovaGPatch gp (fromIntegral v) g
+					Left x -> atomically $ writeTChan cl x
 			readGPatch' 	= vecchiaGPatch gp . fromIntegral
 			readVersion' 	= atomically $ readTVar tv
 			readLogs' 	= atomically . readTChan $ cl
@@ -295,7 +316,7 @@ mkPersistenza pass load modif boot x = do
 			caricamentoBianco' 	= mkModificato modif ts tp
 			
 	let 	p = Persistenza 	readStato' assignToken' readBoot' moreTokens' readTokens'  forceBoot'
-				writeUPatch' readUPatches' writeGPatch' 
+				(writeUPatch' p) readUPatches' (writeGPatch' p)
 				readGPatch' readVersion' readLogs' updateSignal' queryUtente caricamentoBianco'
 		boot' = do 	
 			ms <- groupUnwrite x "stato.boot" 	

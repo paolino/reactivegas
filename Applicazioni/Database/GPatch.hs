@@ -18,12 +18,15 @@ import Lib.Euro
 data GPatches = GPatches
 	{	nuovaGPatch :: Integer -> Group -> IO ()
 	,	vecchiaGPatch :: Integer -> IO (Maybe Group)
+	, 	abbandonaGPatch :: IO ()
 	}
 
 nuoveTabelle = 
-	[	"create table dichiarazioni (upatch integer, dichiarazione varchar(1000))"
-	,	"create table patches (id integer primary key, gpatch integer, firma varchar(1000))"
-	,	"create table gpatches (id integer primary key, firma varchar(1000))"
+	[	"create table gpatches (id integer primary key, firma varchar(1000))" 
+	,	"create table patches (id integer primary key, gpatch integer , firma varchar(1000), " ++		
+		" FOREIGN KEY(gpatch) REFERENCES gpatch(id) on delete cascade)"
+	,	"create table dichiarazioni (upatch integer, dichiarazione varchar(1000), " ++
+		" foreign key (upatch) references patches(id) on delete cascade)"
 	]
 
 lastRow :: Connection -> String -> String -> IO (Integer)
@@ -58,8 +61,7 @@ insertGPatch db i (c,f,us) = do
 getGPatch :: Connection -> Integer -> IO (Maybe Group)
 getGPatch db i = do
 	stmt <- prepare db $ "select gpatches.firma, patches.firma, dichiarazione from gpatches, patches, " ++
-		"dichiarazioni  where gpatches.id = patches.gpatch and patches.id = dichiarazioni.upatch and gpatches.id = " 
-		++ show i
+		"dichiarazioni  where gpatches.id = patches.gpatch and patches.id = dichiarazioni.upatch and gpatches.id = " ++ show i
 	execute stmt []
 	xs <- sFetchAllRows' stmt
 	if null xs then return Nothing else do  
@@ -71,7 +73,14 @@ getGPatch db i = do
 						in (cu,fu,ds)) xs''
 		return $ Just (cg,fg,ys)
 
- 
+dropGPatch :: Connection -> IO ()
+dropGPatch db = do
+	pis <- lastRow db "id" "gpatches"
+	stmt <- prepare db $ "delete from gpatches, patches, dichiarazioni where upatch = patches.id and " ++
+		"gpatch = gpatches.id and gpatches.id = " ++ show pis
+	execute stmt []
+	commit db
+
 mkGPatches :: FilePath -> IO GPatches
 mkGPatches wd = do
 	db <- connectSqlite3 $ wd </> "aggiornamenti.sql"
@@ -80,7 +89,8 @@ mkGPatches wd = do
 		commit db
 	return $ GPatches {
 		nuovaGPatch = insertGPatch db,
-		vecchiaGPatch = getGPatch db . (+1)
+		vecchiaGPatch = getGPatch db . (+1),
+		abbandonaGPatch = dropGPatch db
 		}
 	
 

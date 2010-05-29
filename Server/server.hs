@@ -11,6 +11,7 @@ import System.FilePath ((</>))
 
 import Lib.Server.Server (server)
 
+import Eventi.Anagrafe (responsabili)
 import Applicazioni.Reactivegas (Effetti, QS,loader, bianco, nuovoStato, maxLevel) 
 import Applicazioni.Persistenza (Change (GPatch), mkPersistenza , Persistenza (readStato, readLogs, caricamentoBianco,updateSignal,queryUtente))
 import Applicazioni.Sessione (mkSessione, Sessione (backup))
@@ -19,6 +20,7 @@ import UI.Server (applicazione)
 
 import Server.Opzioni (parseArgs, Argomenti (Argomenti))
 import Server.Layout (layout, pagina)
+import Applicazioni.Aggiornamento
 
 
 main = do
@@ -26,7 +28,7 @@ main = do
 	putStrLn "** Inizio report"
 	report <- mkReporter dir (dir </> "static" </> "report.html") lmov 
 	putStrLn "** Inizio persistenza"
-	(pe,boot) <- mkPersistenza tokpass loader bianco nuovoStato dir 
+	(pe,boot) <- mkPersistenza tokpass loader bianco nuovoStato (fst . responsabili) fst dir 
 	forkIO $ do
 		w <- updateSignal pe
 		forever $ do
@@ -38,9 +40,10 @@ main = do
 	forkIO . forever $ readLogs pe >>= putStrLn
 	-------- server ----------------------
 	boot
-	server dir port lsess lrem applicazione (output . pagina) layout $ \signal ms -> do
-		se <- mkSessione (caricamentoBianco pe) maxLevel (updateSignal pe) (queryUtente pe) signal ms
-		return ((pe,se),backup se)
+	server dir port lsess lrem applicazione (checkAggiornamento $ mkAggiornamento pe) 
+		(output . pagina) layout $ \signal ms -> do
+			se <- mkSessione (caricamentoBianco pe) maxLevel (updateSignal pe) (queryUtente pe) signal ms
+			return ((pe,se),backup se)
 	
 	
 

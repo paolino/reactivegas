@@ -35,6 +35,7 @@ type TS = TyAnagrafe (TyAccredito (TyImpegni (TyAcquisti Integer)))
 -- |tipo dello stato con la serializzazione dei reattori
 type QS = (TS,[SNodo TS Utente])
 
+
 -- | lista di prioritizzatori, definiscono un riordinamento tra gli eventidi una patch
 priorita :: [Lib.Prioriti.R]
 priorita = [ priorityAnagrafe, priorityAnagrafeI, priorityAccredito
@@ -67,9 +68,8 @@ caricamento' = caricaEventi priorita reattori
 
 
 -- | aggiornamento di gruppo
-loader :: QS -> Group -> Either String (QS,Effetti)
-loader (qs@(s,_)) g = flip runReader s . runErrorT $ do
-			(_,es) <- fromGroup (fst . responsabili) g -- gli eventi dell'aggiornamento
+loader :: QS -> [Esterno Utente] -> Either String (QS,Effetti)
+loader (qs@(s,_)) es = flip runReader s . runErrorT $ do
 			-- caricamento e aggiorna l'indice di stato
 			return . first (first $ seeset ((+) 1 :: Integer -> Integer)) $ caricamento' maxLevel es qs
 

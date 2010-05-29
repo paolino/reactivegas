@@ -60,36 +60,28 @@ interrogazioni = mano "interrogazioni sullo stato del gruppo" $ (wrapCostrAction
 		costrQueryAssenso
 		]) 
 
-dichiarazioni = onAccesso . const . mano "produci dichiarazioni" . concat $ 
+dichiarazioni k = onAccesso . const . mano "gestione dichiarazioni" $ concat  
 		[wrapCostrActions addEvento [costrEventiAccredito]
 		,wrapCostrActions addEvento [costrEventiAcquisto]
 		,wrapCostrActions addEvento [costrEventiImpegno]
 		,wrapCostrActions addEvento [costrEventiAnagrafe ,costrEventiResponsabili]
 		,wrapCostrActions addEvento [costrEventiAssenso]
-		]
+		] ++ [	 ("elimina delle dichiarazioni",eliminazioneEvento)
+			,("modifica il livello di considerazione delle ultime dichiarazioni", eventLevelSelector)
+			,("uscita",salvataggio >> k ())
+			]
 
 applicazione :: Interfaccia ()
-applicazione = rotonda $ \_ -> do 
+applicazione = rotonda $ \k -> do 
 	ms <- sel $ readStato . fst 
 	case ms of 
 		Nothing ->  P.errore $ ResponseOne "il gruppo non esiste ancora" 
 		Just s ->  
-			mano ("menu principale") 
-				[("produci dichiarazioni" ,  dichiarazioni)
-				,("pubblica le dichiarazioni in sessione",salvataggio)
-				,("scarica un aggiornamento individuale",scaricaAggiornamentoIndividuale)
-				,("elimina delle dichiarazioni",eliminazioneEvento)
-
-				 
-				,("responsabile autore delle dichiarazioni", accesso >> return ())
-				,("modifica il livello di considerazione delle ultime dichiarazioni", eventLevelSelector)
+			menu ("menu principale") 
+				[("uscita",salvataggio >> k ())
+				,("gestione dichiarazioni" ,  dichiarazioni k)
+				,("effetto delle ultime dichiarazioni del gruppo", effetto)
 				,("scarica nuove chiavi da responsabile", creaChiavi)
-				,("digerisci tutte le dichiarazioni pubblicate", sincronizza)
-				,("carica un aggiornamento individuale", caricaAggiornamentoIndividuale )
-				,("carica un aggiornamento di gruppo",caricaAggiornamentoDiGruppo)
-				,("scarica un aggiornamento di gruppo", scaricaAggiornamentoDiGruppo)
-				,("effetto delle ultime dichiarazioni", effetto)
-				,("descrizione sessione", descrizione)
-				,("interrogazione sullo stato del gruppo", interrogazioni)
+				,("digerisci tutte le dichiarazioni pubblicate (sincronizzatore)", sincronizza)
 				]
 

@@ -72,7 +72,7 @@ accesso :: Interfaccia ()
 accesso = do 
 	let k r = sel $ ($r) . writeAccesso . snd
 	(rs,_) <- responsabili . fst <$> statoPersistenza 
-	mano "responsabile autore delle dichiarazioni" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
+	menu "responsabile autore delle dichiarazioni" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
 
 onAccesso k = sel (readAccesso . snd) >>= maybe (accesso >> onAccesso k) k
 
