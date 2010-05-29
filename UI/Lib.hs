@@ -72,7 +72,7 @@ accesso :: Interfaccia ()
 accesso = do 
 	let k r = sel $ ($r) . writeAccesso . snd
 	(rs,_) <- responsabili . fst <$> statoPersistenza 
-	menu "responsabile autore delle dichiarazioni" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
+	mano "responsabile autore delle dichiarazioni" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
 
 onAccesso k = sel (readAccesso . snd) >>= maybe (accesso >> onAccesso k) k
 
@@ -126,8 +126,12 @@ eliminazioneEvento = do
 	es <- letturaEventi
 	if null es then bocciato "non ci sono dichiarazioni da eliminare" 
 		else let 
-		k x = letturaEventi >>= correzioneEventi . const . delete x 
-		in mano  "seleziona una dichiarazione da eliminare" (zip es $ map k es)
+		k x = do
+			es <- letturaEventi 
+			correzioneEventi . const . delete x $ es
+		in do 
+			es <- letturaEventi
+			mano  "seleziona una dichiarazione da eliminare" (zip es $ map k es)
 
 
 sincronizza = onAccesso $ \(r@(u,_)) -> do  
