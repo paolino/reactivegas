@@ -130,7 +130,7 @@ programmazioneImpegno' :: (
 
 programmazioneImpegno' q' ur k  = do
 	l <- nuovoStatoServizio (Impegni False ur [] []) (ur,q')
-	let q = "per l'acquisto di " ++ q'
+	let q = " per l'acquisto di " ++ q'
 	let 	effettoF j = do 
 			Impegni _ ur as is <- osservaStatoServizio j
 			mapM_ (\(u,v) -> accredita u (mkDEuro v) $ "restituzione per fallimento " ++ q) (as ++ is) -- restituzione del denaro di tutti gli impegni

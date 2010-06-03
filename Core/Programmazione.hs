@@ -1,4 +1,4 @@
-{-# LANGUAGE ExistentialQuantification, ScopedTypeVariables, FlexibleContexts, GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE ExistentialQuantification, DeriveDataTypeable, ScopedTypeVariables, FlexibleContexts, GeneralizedNewtypeDeriving #-}
 -- | monade di programmazione per le reazioni 
 module Core.Programmazione where
 
@@ -18,12 +18,23 @@ instance Show Message where
 instance Eq Message where
 	x == y = show x == show y
 
+data Fallimento a = Fallimento a deriving (Typeable, Show)
+
 estrai :: Typeable a => [Contestualizzato d Message] -> ([a], [Contestualizzato d Message]) 
 estrai [] = ([],[])
 estrai (cm@(_,Message x):xs) = let 
 	(ms,rs) = estrai xs
 	in case cast x of
 		Just z -> (z: ms, rs)
+		Nothing -> (ms, cm:rs)
+
+estraiFallimenti :: Typeable a => [Contestualizzato d Message] -> ([Contestualizzato d a], [Contestualizzato d Message]) 
+
+estraiFallimenti [] = ([],[])
+estraiFallimenti (cm@(ctx,Message x):xs) = let 
+	(ms,rs) = estraiFallimenti xs
+	in case cast x of
+		Just z -> ((ctx,z): ms, rs)
 		Nothing -> (ms, cm:rs)
 
 lascia :: Typeable a => a -> [Contestualizzato d Message] -> [Contestualizzato d Message]

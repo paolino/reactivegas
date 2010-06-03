@@ -6,7 +6,8 @@
 module Core.Controllo where
 
 import Data.Maybe (isJust)
-import Data.List (nub)
+import Data.List (nubBy)
+import Data.Function (on)
 import Control.Monad (foldM)
 import Control.Applicative ((<$>))
 import Control.Arrow (second)
@@ -17,7 +18,7 @@ import Lib.Prioriti (R,sortP)
 import Core.Types (Esterno)
 import Core.Programmazione (Message,runInserzione, provaAccentratore, Reazione (..), TyReazione)
 import Core.Nodo (Appuntato (..), Nodo (..))
-import Core.Contesto (nuovoContesto,  Contestualizzato)
+import Core.Contesto (nuovoContesto,  Contestualizzato, esterno)
 import Core.Parsing (valore,parser, ParserConRead)
 import Core.Inserimento (inserimentoCompleto)
 
@@ -66,13 +67,13 @@ caricaEventi :: (Show d,Eq d)
 	-> Int 			-- ^ livello di caricamento
 	-> [Esterno d] 		-- ^ gli eventi da caricare
 	-> (s,[SNodo s d]) 	-- ^ lo stato e la serializzazione dell'albero reattivo
-	-> ((s,[SNodo s d]),[Contestualizzato d Message])-- ^ nuovo stato e nuova  serializzazione dell'albero reattivo insieme ai log contestualizzati
+	-> ((s,[SNodo s d]),([Contestualizzato d Message]))-- ^ nuovo stato e nuova  serializzazione dell'albero reattivo insieme ai log contestualizzati
 caricaEventi ps rs l xs (s,nss) = 
 	let 	ns = map (uncurry deserializza) $ zip nss rs
 		xs' = sortP l ps snd xs
 		((ns',ahi),s',ws) = runInserzione (foldDeleteMb inserimentoCompleto ns xs') nuovoContesto s
 		nss' =  map serializza ns'
-	in ((s',nss'),reverse . nub . reverse $ ws)
+	in ((s',nss'),reverse . nubBy ((==) `on` (esterno . fst) ) . reverse $ ws)
 
 
 ----------------------------------------

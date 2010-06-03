@@ -22,7 +22,7 @@ import Lib.Signal (SignalT, runSignalT, happened, intercept)
 import Core.Parsing (valore, parser, ParserConRead)
 import Core.Types (Interno,Esterno)
 import Core.Contesto (motiva)
-import Core.Programmazione (runInserzione, Message (..), EventoInterno (..), Inserzione, Reazione (..), TyReazione, provaAccentratore, logInserimento)
+import Core.Programmazione (Fallimento (..), runInserzione, Message (..), EventoInterno (..), Inserzione, Reazione (..), TyReazione, provaAccentratore, logInserimento)
 import Core.Nodo (Nodo (..), pruner, mkNodi)
 
 import Debug.Trace
@@ -114,7 +114,7 @@ instance Show UString where
 mus = Message . UString
 -- | gestisce un fallimento segnalando al writer il motivo
 fallimento :: Bool -> String -> MTInserzione s c d ()
-fallimento t s = when t $ logga (mus s) >> mzero
+fallimento t s = when t $ logga (Message . UString $ s) >> mzero
 
 loggamus = logga . mus
 logga s = lift (logInserimento s)

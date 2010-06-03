@@ -103,7 +103,7 @@ accredita u dv s = do
 	esistenzaUtente u 
 	Conti us <- osserva
 	let r = dv $^ (us ? (u,0)) 
-	fallimento (r < 0) "conti in rosso non ammessi" 
+	fallimento (r < 0) "il credito non copre l'operazione" 
 	modifica $ \(Conti us) -> Conti (upset u r us)
 	logga . Message $ MovimentoU u dv s
 	
