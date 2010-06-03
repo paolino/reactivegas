@@ -3,7 +3,7 @@ module Core.Contesto (Contesto (..), nuovoContesto, Contestualizzato, motiva, fl
 import Core.Types
 
 -- | Il contesto tiene conto degli eventi ai quali abbiamo reagito prima di trovarci a reagire all'ultimo. La catena ha sempre in testa un evento esterno, seguita da un numero qualsiasi di eventi interni
-data Contesto d = Boot | Primo (Esterno d) | Oltre (Esterno d) [Interno] deriving Show
+data Contesto d = Boot | Primo (Esterno d) | Oltre (Esterno d) [Interno] deriving (Show,Eq)
 
 
 nuovoContesto = Boot

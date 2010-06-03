@@ -15,7 +15,8 @@ data Message = forall a. (Show a, Typeable a) => Message a
 
 instance Show Message where
 	show (Message x) = show x
-
+instance Eq Message where
+	x == y = show x == show y
 
 estrai :: Typeable a => [Contestualizzato d Message] -> ([a], [Contestualizzato d Message]) 
 estrai [] = ([],[])

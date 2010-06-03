@@ -22,7 +22,7 @@ import Lib.Signal (SignalT, runSignalT, happened, intercept)
 import Core.Parsing (valore, parser, ParserConRead)
 import Core.Types (Interno,Esterno)
 import Core.Contesto (motiva)
-import Core.Programmazione (Message (..), EventoInterno (..), Inserzione, Reazione (..), TyReazione, provaAccentratore, logInserimento)
+import Core.Programmazione (runInserzione, Message (..), EventoInterno (..), Inserzione, Reazione (..), TyReazione, provaAccentratore, logInserimento)
 import Core.Nodo (Nodo (..), pruner, mkNodi)
 
 import Debug.Trace

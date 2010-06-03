@@ -162,7 +162,7 @@ costrEventiAccredito s kp kn = 	[("versamento sul conto di un utente",eventoAccr
 		let us' = map (id &&& id) $ filter ((/=) $ fromJust un)  us
 		when (null us') $ throwError "non ci sono altri utenti"
 		u <- scelte us' "utente interessato dall'aggiornamento"
-		n <- libero $ "somma da accreditare sul conto di " ++ u
+		n <- libero $ "somma da accreditare sul conto di " ++ quote u
 		return $ Accredito u n	
 	eventoAddebito = run $ do
 		us <- asks utenti 
@@ -171,7 +171,7 @@ costrEventiAccredito s kp kn = 	[("versamento sul conto di un utente",eventoAccr
 		let us' = map (id &&& id) $ filter ((/=) $ fromJust un)  us
 		when (null us') $ throwError "non ci sono altri utenti"
 		u <- scelte us' "utente interessato dall'aggiornamento"
-		n <- libero $ "somma da prelevare dal conto di " ++ u
+		n <- libero $ "somma da prelevare dal conto di " ++ quote u
 		s <- libero $ "motivazione del prelievo"
 		return $ Addebito u s n 
 	eventoSaldo = run $ do
@@ -181,7 +181,7 @@ costrEventiAccredito s kp kn = 	[("versamento sul conto di un utente",eventoAccr
 		let rs' = map (fst &&& id) (filter ((/=) (fromJust un) . fst) rs)
 		when (null rs') $ throwError "non ci sono altri responsabili"
 		u <- scelte rs' "responsabile che ha dato il denaro"
-		n <- libero $ "somma ricevuta dal responsabile " ++ fst u
+		n <- libero $ "somma ricevuta dal responsabile " ++ quote (fst u)
 		return $ Saldo (fst u) n
 	    
 -- | costruttore interrogazioni sul modulo accrediti

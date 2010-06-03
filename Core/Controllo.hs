@@ -6,7 +6,7 @@
 module Core.Controllo where
 
 import Data.Maybe (isJust)
-
+import Data.List (nub)
 import Control.Monad (foldM)
 import Control.Applicative ((<$>))
 import Control.Arrow (second)
@@ -60,7 +60,7 @@ serializza
 serializza (Nodo k rs) = SNodo (isJust k) (map (second $ map (second serializza))  rs)	
 
 -- | programma di caricamento eventi, prevede il riordinamento per priorita
-caricaEventi :: Show d 
+caricaEventi :: (Show d,Eq d) 
 	=> [R] 			-- ^ i prioritizzatori
 	-> [Reazione s c d] 	-- ^ le reazioni base
 	-> Int 			-- ^ livello di caricamento
@@ -72,7 +72,7 @@ caricaEventi ps rs l xs (s,nss) =
 		xs' = sortP l ps snd xs
 		((ns',ahi),s',ws) = runInserzione (foldDeleteMb inserimentoCompleto ns xs') nuovoContesto s
 		nss' =  map serializza ns'
-	in ((s',nss'),ws)
+	in ((s',nss'),reverse . nub . reverse $ ws)
 
 
 ----------------------------------------
