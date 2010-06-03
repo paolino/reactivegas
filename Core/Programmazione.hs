@@ -18,7 +18,9 @@ instance Show Message where
 instance Eq Message where
 	x == y = show x == show y
 
-data Fallimento a = Fallimento a deriving (Typeable, Show)
+data Fallimento a = Fallimento a deriving (Typeable)
+instance Show a => Show (Fallimento a) where
+	show (Fallimento x) = "Fallimento:" ++ show x
 
 estrai :: Typeable a => [Contestualizzato d Message] -> ([a], [Contestualizzato d Message]) 
 estrai [] = ([],[])

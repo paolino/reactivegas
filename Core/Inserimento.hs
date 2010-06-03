@@ -114,7 +114,7 @@ instance Show UString where
 mus = Message . UString
 -- | gestisce un fallimento segnalando al writer il motivo
 fallimento :: Bool -> String -> MTInserzione s c d ()
-fallimento t s = when t $ logga (Message . UString $ s) >> mzero
+fallimento t s = when t $ logga (Message . Fallimento . UString $ s) >> mzero
 
 loggamus = logga . mus
 logga s = lift (logInserimento s)

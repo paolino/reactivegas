@@ -73,7 +73,7 @@ caricaEventi ps rs l xs (s,nss) =
 		xs' = sortP l ps snd xs
 		((ns',ahi),s',ws) = runInserzione (foldDeleteMb inserimentoCompleto ns xs') nuovoContesto s
 		nss' =  map serializza ns'
-	in ((s',nss'),reverse . nubBy ((==) `on` (esterno . fst) ) . reverse $ ws)
+	in ((s',nss'),ws)
 
 
 ----------------------------------------

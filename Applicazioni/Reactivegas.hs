@@ -1,5 +1,8 @@
 module  Applicazioni.Reactivegas where
 
+import Data.Function (on)
+import Data.List (nubBy)
+
 import Control.Applicative ((<$>))
 import Control.Monad.Error (runErrorT, lift)
 import Control.Monad.Reader (runReader)
@@ -15,8 +18,8 @@ import Core.Patch (fromGroup, Group,Patch)
 import Core.Types (Esterno, Evento, Utente, Responsabile)
 import Core.Controllo (caricaEventi, SNodo (..), )
 import Core.Inserimento (UString (..))
-import Core.Contesto (flatten)
-import Core.Programmazione (Reazione, estrai, Message, lascia)
+import Core.Contesto (flatten, esterno)
+import Core.Programmazione (Fallimento (..), Reazione, estrai, Message, lascia)
 import Core.Parsing (ParserConRead)
 import Core.Contesto (Contestualizzato)
 
@@ -76,7 +79,8 @@ loader (qs@(s,_)) es = flip runReader s . runErrorT $ do
 -- | effettua un inserimento di eventi esterni nello stato, restituendo il nuovo. Stampa i logs
 bianco :: Int -> QS -> [Esterno Utente] -> (QS,Response)
 bianco l s es = let
-	(s',qs) = second (eccoILogs . map (first flatten) . lascia (UString "")) . caricamento' l es $ s
+	(s',qs) = second (eccoILogs . map (first flatten) . (\r -> lascia (UString "") r 
+		++ nubBy ((==) `on` (esterno . fst)) (lascia (Fallimento (UString "")) r))) . caricamento' l es $ s
 	qs' = ResponseMany (map ResponseOne $ lines qs)
 	in (s',qs')
 
