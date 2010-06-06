@@ -58,7 +58,7 @@ reporter n (Movimenti _ conti casse) (Acquisti _ acquisti) s  = do
 		+++ (table  ! [identifier "impegni"]  << 
 			(caption << "acquisti aperti"  
 			+++ tr << (th << "acquisto"  +++ th << "responsabile" +++
-			th << "richieste in attesa" +++ th << "richieste accolte")
+			th ! [theclass "colRichieste"] << "richieste in attesa" +++ th ! [theclass "colAccolte"] << "richieste accolte")
 			+++ altrs (reportImpegni s)  (\(s,b,u,is,as) -> td << s +++ td << u +++ td ! [theclass "richieste"] << richieste as +++ td ! [theclass "accettate"] << richieste is) 
 			))
 	

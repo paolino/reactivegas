@@ -93,22 +93,26 @@ padding:3px;
 border :1px solid black;
 font-size :1.5em;
 }
-td, th 
+table#casse td, table#impegni td, table#acquisti td, table#crediti td 
 {
 border: 1px solid black;
 padding:3px;
 }
 
-th.colMovimenti {
+th.colMovimenti, td.quote {
 	width:60%;
 	}
+
+td.richieste, td.accettate {
+	width:35%;
+	} 
 tr
 {
 padding:1px;
 }
+
 td.accettate , td.richieste ,td.movimentiU, td.movimentiR, td.quote
 {
-max-height:5em;
 overflow:auto;
 padding : 0px;
 }
