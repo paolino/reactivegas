@@ -27,29 +27,33 @@ mkMovimenti 	:: FilePath 	-- ^ workin directory
 		-> IO Movimenti
 mkMovimenti wd  = do
 	handle (\(SomeException _) -> return ()) (removeFile $ wd </> "movimenti.sql")
-	db <- connectSqlite3 $ wd </> "movimenti.sql"
+	let mdb = connectSqlite3 $ wd </> "movimenti.sql"
+	db <- mdb
 	handleSql (\_ -> return ()) $ do
 		run db ("CREATE TABLE movimenti (id INTEGER Primary Key, aggiornamento , integer, tipo char(5)" ++
 			", utente varchar(50), movimento varchar(50), descrizione varchar(50))") []
 		commit db
-	let 	iM i = prepare db $ "INSERT INTO movimenti (aggiornamento,tipo,utente,movimento,descrizione) VALUES (" ++
+	let 	iM db i = prepare db $ "INSERT INTO movimenti (aggiornamento,tipo,utente,movimento,descrizione) VALUES (" ++
 			show i ++ ",?,?,?,?)" 
-	 	uM u n = prepare db $ "select tipo,utente,movimento,descrizione from movimenti where utente = '" ++ u 
+	 	uM db u n = prepare db $ "select tipo,utente,movimento,descrizione from movimenti where utente = '" ++ u 
 			++ "' and tipo = 'conto'  order by id desc limit " ++ show n
-		rM u n = prepare db $ "select tipo,utente,movimento,descrizione from movimenti where utente = '" ++ u 
+		rM db u n = prepare db $ "select tipo,utente,movimento,descrizione from movimenti where utente = '" ++ u 
 			++ "' and tipo = 'cassa'  order by id desc limit " ++ show n
 
 	return $ Movimenti
 		{	nuoviMovimenti = \ i ms -> do
-				iS <- iM i
+				db <- mdb 
+				iS <- iM db i
 				executeMany iS . map movimentoRow $ ms
 				commit db
 		,	ultimiMovimentiConto =  \u n -> do
-				uS <- uM u n
+				db <- mdb
+				uS <- uM db u n
 				execute uS [] 
 				map rowMovimento <$> sFetchAllRows' uS
 		,	ultimiMovimentiCassa =  \u n -> do
-				uS <- rM u n
+				db <- mdb
+				uS <- rM db u n
 				execute uS [] 
 				map rowMovimento <$> sFetchAllRows' uS
 		} 

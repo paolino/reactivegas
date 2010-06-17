@@ -83,14 +83,21 @@ dropGPatch db = do
 
 mkGPatches :: FilePath -> IO GPatches
 mkGPatches wd = do
-	db <- connectSqlite3 $ wd </> "aggiornamenti.sql"
+	let mdb = connectSqlite3 $ wd </> "aggiornamenti.sql"
+	db <- mdb
 	handleSql (\_ -> return ()) $ do
 		mapM (flip (run db) []) $ nuoveTabelle 
 		commit db
 	return $ GPatches {
-		nuovaGPatch = insertGPatch db,
-		vecchiaGPatch = getGPatch db . (+1),
-		abbandonaGPatch = dropGPatch db
+		nuovaGPatch = \n x -> do 
+			db <- mdb 
+			insertGPatch db n x
+			,
+		vecchiaGPatch = \n -> do 
+			db <- mdb 
+			getGPatch db (n + 1)
+			,
+		abbandonaGPatch = mdb >>= dropGPatch 
 		}
 	
 
