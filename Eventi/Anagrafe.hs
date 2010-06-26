@@ -331,8 +331,7 @@ programmazioneAssenso :: (
 	-> (Indice -> MTInserzione s c Utente (Effetti s c Utente)) -- ^ la chiusura per il fallimento della raccolta
 	-> MTInserzione s c Utente (Indice, Reazione s c Utente, MTInserzione s c Utente ())	-- ^ la chiave per emettere assensi relativi e la reazione da schedulare
 
-programmazioneAssenso se ur c k kn' = do
-	let kn = trace "beccato" kn'
+programmazioneAssenso se ur c k kn = do
 	l <- nuovoStatoServizio (Assensi ur [] []) (ur,se) -- ricevi la chiave per la nuova raccolta
 	let 	eliminaRichiesta  = do
 			eliminaStatoServizio l (undefined :: Assensi)  
@@ -366,7 +365,7 @@ programmazioneAssenso se ur c k kn' = do
 				Negativo -> do
 					eliminaRichiesta 
 					loggamus $ "chiusura negativa della questione " ++ se
-					(,) False <$> trace "dissenso" (kn j)
+					(,) False <$> kn j
 				Indecidibile -> do		
 					loggamus $ "ricevuto il dissenso da " ++ r 
 						++ " sulla questione " ++ se
@@ -377,12 +376,12 @@ programmazioneAssenso se ur c k kn' = do
 			when (j /= l) mzero
 			fallimento (ur /= r) "questione aperta da un altro responsabile"
 			eliminaRichiesta 
-			(,) False <$> trace "fallimento assenso" (kn j)
+			(,) False <$> kn j
 		reattoreAssenso (Left (eliminazioneResponsabile -> Just (u,r))) = conFallimento $ do
 			when (ur /= u) mzero
 			loggamus $ "eliminazione della richiesta " ++ se
 			eliminaRichiesta 
-			(,) False <$> trace "eliminazione responsabile" (kn l)
+			(,) False <$> kn l
 		reattoreAssenso (Left _) = return Nothing
 	loggamus $ "raccolta assensi per " ++ se 
  	return (l,Reazione (Nothing, reattoreAssenso),eliminaRichiesta ) -- restituisce il riferimento a questa richiesta perché venga nominato negli eventi di assenso

@@ -153,8 +153,8 @@ f.top,left:d.left-f.left}},offsetParent:function(){return this.map(function(){fo
 "pageXOffset"]:c.support.boxModel&&j.document.documentElement[d]||j.document.body[d]:e[d]}});c.each(["Height","Width"],function(a,b){var d=b.toLowerCase();c.fn["inner"+b]=function(){return this[0]?c.css(this[0],d,false,"padding"):null};c.fn["outer"+b]=function(f){return this[0]?c.css(this[0],d,false,f?"margin":"border"):null};c.fn[d]=function(f){var e=this[0];if(!e)return f==null?null:this;if(c.isFunction(f))return this.each(function(j){var i=c(this);i[d](f.call(this,j,i[d]()))});return"scrollTo"in
 e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["client"+b]||e.document.body["client"+b]:e.nodeType===9?Math.max(e.documentElement["client"+b],e.body["scroll"+b],e.documentElement["scroll"+b],e.body["offset"+b],e.documentElement["offset"+b]):f===w?c.css(e,d):this.css(d,typeof f==="string"?f:f+"px")}});A.jQuery=A.$=c})(window);
 function shhi (el,sel) {
-		$(sel).find ("table") . slideUp(1200);
-  		$(el).find ("table"). slideDown(1200);
+		$(sel).find ("table") . slideUp(1200).removeClass ("selezionato");
+  		$(el).find ("table"). slideDown(1200).addClass ("selezionato");
 	};
 $(document).ready(function(){
 	$("td.movimentiU > table") . hide() . first () . show();

@@ -67,7 +67,8 @@ filtroMovimenti = estrai
 type Effetti = [Contestualizzato Utente Message]
 
 caricamento' :: Int -> [Esterno Utente] -> QS -> (QS,Effetti)
-caricamento' = caricaEventi priorita reattori 
+caricamento' l es q = let (q',ef) = caricaEventi priorita reattori l es q
+	in (q' == q') `seq` (q',ef)
 
 
 -- | aggiornamento di gruppo
