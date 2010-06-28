@@ -33,6 +33,7 @@ mkMovimenti wd  = do
 		run db ("CREATE TABLE movimenti (id INTEGER Primary Key, aggiornamento , integer, tipo char(5)" ++
 			", utente varchar(50), movimento varchar(50), descrizione varchar(50))") []
 		commit db
+	disconnect db
 	let 	iM db i = prepare db $ "INSERT INTO movimenti (aggiornamento,tipo,utente,movimento,descrizione) VALUES (" ++
 			show i ++ ",?,?,?,?)" 
 	 	uM db u n = prepare db $ "select tipo,utente,movimento,descrizione from movimenti where utente = '" ++ u 
@@ -46,15 +47,20 @@ mkMovimenti wd  = do
 				iS <- iM db i
 				executeMany iS . map movimentoRow $ ms
 				commit db
+				disconnect db
 		,	ultimiMovimentiConto =  \u n -> do
 				db <- mdb
 				uS <- uM db u n
 				execute uS [] 
-				map rowMovimento <$> sFetchAllRows' uS
+				r <- map rowMovimento <$> sFetchAllRows' uS
+				disconnect db
+				return r
 		,	ultimiMovimentiCassa =  \u n -> do
 				db <- mdb
 				uS <- rM db u n
 				execute uS [] 
-				map rowMovimento <$> sFetchAllRows' uS
+				r <- map rowMovimento <$> sFetchAllRows' uS
+				disconnect db
+				return r
 		} 
 	

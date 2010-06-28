@@ -14,9 +14,11 @@ import Data.List
 newtype Euro = Euro Rational deriving (Eq,Num,Ord)
 
 instance Show Euro where
-	show (Euro x) = printf "%d euro" y ++ if yc > 0 then printf " e %d centesimi" yc else "" where
+	show (Euro x) = printf "%d euro" y' ++ if yc' > 0 then printf " e %d centesimi" yc' else "" where
 		z = truncate $ fromRational (x * 100) :: Int
 		(y,yc) = z `divMod` 100 
+		(y',yc') = if y >= 0 then (y,yc) else 
+			if yc > 0 then (y + 1, 100 - yc) else (y,yc)
 
 afterSpaces x =  skipSpaces >> string x
 instance Read Euro where
@@ -27,7 +29,7 @@ instance Read Euro where
 			do	choice [string ",",afterSpaces "e"]
 				c <-  readS_to_P reads
 				optional $ afterSpaces "centesimi"
-				return . Euro $ (n * 100  + c) % 100
+				return . Euro $ (n * 100  + if n < 0 then negate c else c) % 100
 			  <++ (return . Euro $ n % 1)
 		bug = do 
 			r <- readS_to_P reads

@@ -57,7 +57,6 @@ insertGPatch db i (c,f,us) = do
 		pis <- lastRow db "id" "gpatches"
 		forM_ us $ insertUPatch db pis
 
-
 getGPatch :: Connection -> Integer -> IO (Maybe Group)
 getGPatch db i = do
 	stmt <- prepare db $ "select gpatches.firma, patches.firma, dichiarazione from gpatches, patches, " ++
@@ -88,16 +87,23 @@ mkGPatches wd = do
 	handleSql (\_ -> return ()) $ do
 		mapM (flip (run db) []) $ nuoveTabelle 
 		commit db
+		disconnect db
 	return $ GPatches {
 		nuovaGPatch = \n x -> do 
 			db <- mdb 
 			insertGPatch db n x
+			disconnect db
 			,
 		vecchiaGPatch = \n -> do 
 			db <- mdb 
-			getGPatch db (n + 1)
+			r <-  getGPatch db (n + 1)
+			disconnect db
+			return r
 			,
-		abbandonaGPatch = mdb >>= dropGPatch 
+		abbandonaGPatch = do 
+			db <- mdb 
+			dropGPatch db
+			disconnect db
 		}
 	
 
