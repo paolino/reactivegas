@@ -166,6 +166,7 @@ programmazioneImpegno' q' ur k  = do
 			fallimento (not y) $ "la chiusura non è stata concessa  " ++ q
 			mapM_ (\(u,v) -> accredita u (mkDEuro v) $ "restituzione a causa della mancata accettazione in " ++ q) is -- restituzione del denaro degli impegni non accettati
 			salda r (mkDEuro . negate $ (sum $ map snd as)) $ "spesa  " ++ q
+			loggamus $ "raccolta di impegni " ++ q ++ " chiusa positivamente"
 			eliminaStatoServizio j (undefined :: Impegni)
 			(,) False <$> k (Just as) 
 		reattoreImpegno esf (Right (first validante -> (w,FallimentoImpegno j))) = w $ \r -> do
