@@ -34,7 +34,7 @@ Executable console
                 stm, old-time , HTTP
 
 Executable server
- ghc-options: -Wall
+ ghc-options: -Wall -threaded
  main-is: Server/server.hs
  build-depends: base  >=4.2   , 
                 containers,
