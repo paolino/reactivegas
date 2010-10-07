@@ -1,21 +1,21 @@
+
 {-# LANGUAGE ScopedTypeVariables #-}
 -- | una funzione di elaborazione di Lib.Costruzione.Passo a con interazione in console.
-module Lib.Console (interazione) where
+module Lib.Interazione.HaskelineM (interazione) where
 
 import Data.Maybe
 import Control.Monad (forM)
 import Control.Applicative ((<$>))
 import Control.Monad.Trans (liftIO, MonadIO, lift)
-import Lib.Passo (Passo (..), svolgi, Costruzione, HPasso)
+import Lib.Interazione.PassoM
+import Lib.Interazione
 import Lib.Response 
 import Control.Exception
 import System.Console.Haskeline
 
--- | la funzione smonta i passi in caso di undo
-runPasso :: (MonadException m, Functor m) => [Passo m b] -> InputT m b
-
-runPasso [x] = runPasso [x,x]
-
+-- runPasso :: (MonadException m, Functor m) => PassoM m b -> InputT m b
+runPasso (Costruito x) = return x
+{-
 runPasso (Output x l:u) = do
 	outputStrLn $ "\n" ++ (show x)
 	getInputLine "continua .."
@@ -25,34 +25,35 @@ runPasso (Errore x l:u) = do
 	outputStrLn $ "\n" ++ (show x)
 	getInputLine "continua .."
 	lift l >>= runPasso . (:u) . fst
+-}
 
-runPasso (Costruito x:_) = return x 
-runPasso  w@(c@(Libero p f) : u) = do
+runPasso  w@(Libero p h f) = do
 	x <- getInputLine $ "\n** " ++ p ++ ": "
-	n <- case fromJust x of 
-		[] -> return u
-		_ -> case reads $ fromJust x of 
-			[] -> case reads $ "\"" ++ fromJust x ++ "\"" of
+	n <-  case fromJust x of 
+		[] -> h
+		x -> case reads x of 
+			[] -> case reads $ "\"" ++ x ++ "\"" of
 				[] -> outputStrLn "valore non valido" >> return w
-				(x,_):_ -> (:w) <$> lift (fst <$> f x) 
-			(x,_):_ -> (:w) <$> lift (fst <$> f x)
-
+				xs -> let (x,"") = last xs in  f x
+			xs -> let (x,"") = last xs in  f x
 	runPasso n
+{-
 runPasso (Password p f :r) = runPasso (Libero p f : r)
-runPasso w@(c@(Scelta p xs f): u) = do
+-}
+
+runPasso w@(Scelta p xs h f) = do
 	outputStrLn ("\n** " ++ p) 
 	forM (zip [1..] xs) $ \(n,(p,_)) -> outputStrLn $ "\t" ++ show n ++ ") " ++ take 100 p
 	x <- getInputLine  "scelta: "
-
 	n <- case fromJust x of
-		[] -> return u
-		_ -> case reads $ fromJust x of 
+		[] -> h
+		x -> case reads x of 
 			[] -> return w
-			(x,_):_ -> case x  `elem` [1 .. length xs] of
-					True -> (: w) <$> (fmap fst . lift . f . snd $ xs !! (x - 1)) 
+			ys -> let (x,"") = last ys in case x  `elem` [1 .. length xs] of
+					True -> f . snd $ xs !! (x - 1)
 					False -> return w
 	runPasso n	  
-	
+{-	
 runPasso  w@(c@(Upload p f) : u) = do
 	x <- getInputLine $  "\n** " ++ p ++ "[nome del file da caricare]: "
 	n <- case fromJust x of 
@@ -73,8 +74,8 @@ runPasso w@(c@(Download x y f):u) = do
 			Left e -> outputStrLn e >> return w
 			Right () -> outputStrLn "salvato." >> (:u) <$> fst <$> lift f
 		runPasso n
+-}
 
 -- | la funzione svolge la Costruzione nella monade della libreria haskeline
-interazione :: (MonadException m, Functor m) => HPasso m b -> m b
-interazione  = runInputT defaultSettings . runPasso . return . fst 
-
+interazione :: (MonadException m, Functor m) => b -> PDescription b b -> m b
+interazione d = runInputT defaultSettings $ evalDescriptionM (Costruito d) Costruito p >>= runPassoM

@@ -20,7 +20,8 @@ import UI.Server (applicazione)
 
 import Server.Opzioni (parseArgs, Argomenti (Argomenti))
 import Server.Layout (layout, pagina)
-import Applicazioni.Aggiornamento
+import Applicazioni.Aggiornamento (serverAggiornamento)
+
 
 
 main = do
@@ -29,18 +30,19 @@ main = do
 	report <- mkReporter dir (dir </> "static" </> "report.html") lmov 
 	putStrLn "** Inizio persistenza"
 	(pe,boot) <- mkPersistenza tokpass loader bianco nuovoStato (fst . responsabili) fst dir 
+	--- report thread --------------------------------
 	forkIO $ do
-		w <- updateSignal pe
+		w <- updateSignal pe -- una copia del canale di segnalazione update della persistenza
 		forever $ do
-			c <- atomically w 
+			c <- atomically w -- aspetta un segnale
 			case c of
-				GPatch _ _ (ls,x) -> report (ls,Just x)
+				GPatch _ _ (ls,x) -> report (ls,Just x) -- arrivata una GPatch 
 				_ -> return ()
 	------- logs ----------------------
 	forkIO . forever $ readLogs pe >>= putStrLn
 	-------- server ----------------------
 	boot
-	server dir port lsess lrem applicazione (checkAggiornamento $ mkAggiornamento pe) 
+	server dir port lsess lrem applicazione (serverAggiornamento pe) 
 		(output . pagina) layout $ \signal ms -> do
 			se <- mkSessione (caricamentoBianco pe) maxLevel (updateSignal pe) (queryUtente pe) signal ms
 			return ((pe,se),backup se)

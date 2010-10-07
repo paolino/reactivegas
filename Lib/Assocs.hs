@@ -1,31 +1,52 @@
+-- | alcune funzioni comode per la gestione delle liste associative
 module Lib.Assocs where
 
 import Data.List (lookup)
+import Data.Maybe (isNothing)
 -----------------------------------------
-update :: (Eq a) => a -> (b -> b) -> b -> [(a, b)] -> [(a, b)]
+
+-- | aggiorna l'elemento selezionato fornendo un valore di default se l'elemento manca
+update :: (Eq a) 	=> a		-- ^ indice 
+			-> (b -> b) 	-- ^ modificatore
+			-> b 		-- ^ valore di default
+			-> [(a, b)] 	-- ^ lista iniziale
+			-> [(a, b)]	-- ^ lista modificata
 update k dv v kvs = case lookup k kvs of
 	Nothing -> (k,dv v):kvs
 	Just v -> (k,dv v):filter ((/=) k . fst) kvs
 
+-- | imposta il valore dell'elemento selezionato
+upset :: (Eq a) 	=> a		-- ^ indice 
+			-> b		-- ^ valore di default
+			-> [(a, b)]	-- ^ lista iniziale
+			-> [(a, b)]	-- ^ lista modificata
 upset x y = update x (const y) undefined
-assente :: (Eq a) => a -> [(a, b)] -> Bool
-assente k kvs = case lookup k kvs of
-	Nothing -> True
-	Just _ -> False
 
-elimina :: (Eq a) => a -> [(a, b)] -> [(a, b)]
-elimina k kvs = filter ((/=) k . fst) kvs
+-- | controlla la assenza di un elemento
+assente :: (Eq a) 	=> a 		-- ^ indice
+			-> [(a, b)] 	-- ^ lista associativa
+			-> Bool		-- ^ risultato della ricerca
+assente x = isNothing . lookup x 
 
-secondM :: (Monad m) => (a -> m b) -> (c, a) -> m (c, b)
-secondM f (x,y) = f y >>= return . (,) x
+-- | elimina l'elemento selezionato
+elimina :: (Eq a) 	=> a 		-- ^ indice
+			-> [(a, b)] 	-- ^ lista iniziale
+			-> [(a, b)]	-- ^ lista modificata
+elimina k kvs = let (xs,ys) = break ((==k) . fst) kvs in xs ++ if null ys then ys else tail ys
 
-firstM :: (Monad m) => (a -> m b) -> (a, c) -> m (b, c)
-firstM f (x,y) = f x >>= return . flip (,) y
-
-updateM :: (Monad m ,Eq a) => a -> (b -> m b) -> b -> [(a,b)] -> m [(a,b)]
+-- | update monadico
+updateM :: (Monad m ,Eq a) 	=> a		-- ^ indice 
+				-> (b -> m b)	-- ^ modificatore
+				-> b		-- ^ valore di default
+				-> [(a,b)]	-- ^ lista iniziale
+				-> m [(a,b)]	-- ^ lista modificata
 updateM k dv v kvs = case lookup k kvs of
 	Nothing -> dv v >>= \v' -> return $ (k,v'):kvs
 	Just v -> dv v >>= \v' -> return $ (k,v'):filter ((/=) k . fst) kvs
-(?) :: Eq a => [(a,b)] -> (a,b) -> b
+
+-- | ricerca con default
+(?) :: Eq a 	=> [(a,b)] 	-- ^ lista ricercata
+		-> (a,b)	-- ^ indice accoppiato al valore di default
+		-> b		-- ^ valore estratto
 xs ? (k,t) = maybe t id $ lookup k xs 
 

@@ -1,13 +1,36 @@
 {-# LANGUAGE ExistentialQuantification, NoMonomorphismRestriction #-}
--- | modulo per la creazione di valori dove i passi sono esplicitati attraverso le continuazioni
--- esempio
--- f :: Passo Int
--- f = svolgi $ do
--- 	x <- libero "primo:" 
--- 	y <- libero "secondo:" 
--- 	z <- scelte [("somma",(+)),("differenza",(-))] "operazione:" 
--- 	return $ z x y
--- le funzioni che trasformano il passo in un'azione reale sono fornite altrove
+
+
+{- | 
+Un modulo per la costruzione controllata di valori.
+
+I passi possibili per la creazione di valori sono limitati al datatype Passo.
+
+Il valore Cont b c , che ha come parametro una funzione (a -> c) si presta a racchiudere i dati di tipo (Passo c). Infatti i "passi" rilevanti prendono come ultimo parametro delle funzioni (a -> Passo b) che rappresentano il passo successivo costruito dal valore di uscita del passo attuale.
+
+Essendo (Cont (Passo b)) una monade, la scrittura monadica ci permette un linguaggio sequenziale di costruzione dei valori.
+
+Nell'esempio la funzione interazione descrive la costruzione di un intero attraverso l'inserimento sequenziale di 2 interi e la selezione dell'operazione binaria da eseguire sui 2 numeri.
+
+interazioneb :: Cont (Passo Int) Int
+interazioneb = do
+	x <- libero "primo:" 
+	y <- libero "secondo:" 
+	z <- scelte [("somma",(+)),("differenza",(-))] "operazione:" 
+	return $ z x y
+
+interazioneu :: Cont (Passo Int) Int
+interazioneu k = do
+
+La funzione svolgi passa dal linguaggio monadico alla struttura Passo Int, svolgendo la monade.
+
+costruzione :: Passo Int
+costruzione = svolgi interazione
+
+I dati di tipo (Passo b) vanno sucessivamente percorsi dai driver adatti all'interazione.
+
+-}
+
 
 module Lib.Passo where
 
@@ -28,6 +51,7 @@ data Passo m b
 	| forall a. Read a => Password String (a -> m (HPasso m b))
 	| Costruito b							-- ^ valore calcolato
 
+-- | Historied Passo. An HPasso gives a positive continuation along a set of runned continuations.
 type HPasso m b = (Passo m b, [m (Passo m b)])
 
 type Costruzione m b = StateT [m (Passo m b)] (ContT (HPasso m b) m)

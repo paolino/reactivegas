@@ -14,8 +14,7 @@ import System.Random (randomIO)
 import qualified Data.IntMap as M 
 
 import Debug.Trace
-import Lib.Assocs (secondM, firstM)
-import Lib.Missing (onNothing, (>$>))
+import Lib.Missing (onNothing, (>$>), firstM, secondM)
 import Lib.Database (limitedDB, query, lkey, set)
 
 

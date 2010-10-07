@@ -37,7 +37,7 @@ import Eventi.Accredito
 import Eventi.Impegno
 import Eventi.Acquisto
 
-import Applicazioni.Reactivegas (QS,bianco, TS, sortEventi, levelsEventi, maxLevel)
+import Applicazioni.Reactivegas (QS,bianco, TS, sortEventi, levelsEventi, maxLevel, Effetti)
 import Applicazioni.Persistenza (Persistenza (..))
 import Applicazioni.Sessione (Sessione (..))
 
@@ -52,7 +52,7 @@ eventi = map (second $ \(_,_,es) -> es)
 -- sel :: (MonadReader (Persistenza QS, Sessione)  m, MonadIO m) => ((Persistenza QS, Sessione) -> IO b) -> m b
 sel f = asks f >>= liftIO 
 
-statoPersistenza :: (Functor m, MonadReader (Persistenza QS Response, Sessione (Maybe QS) Response) m,MonadIO m) => m QS
+statoPersistenza :: (Functor m, MonadReader (Persistenza QS Effetti Response, Sessione (Maybe QS) Response) m,MonadIO m) => m QS
 statoPersistenza = fmap (snd . fromJust) . sel $ readStato . fst
 
 statoSessione =  fmap fromJust . sel $ readStatoSessione . snd   
@@ -60,7 +60,7 @@ statoSessione =  fmap fromJust . sel $ readStatoSessione . snd
  
 
 -- | la monade dove gira il programma. Mantiene in lettura lo stato del gruppo insieme alle operazioni di IO. Nello stato la lista degli eventi aspiranti un posto nella patch
-type MEnv  = ReaderT (Persistenza QS Response, Sessione (Maybe QS) Response) IO 
+type MEnv  = ReaderT (Persistenza QS Effetti Response, Sessione (Maybe QS) Response) IO 
 
 type Interfaccia a = Costruzione MEnv () a
 

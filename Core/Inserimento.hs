@@ -36,7 +36,7 @@ runInserimento = runWriterT . runSignalT
 
 
 -- | inserisce un evento nello stato , tentando la reazione contenuda in un Nodo e quello in tutti i Nodi contenuti , causando una lista di eventi interni nella monade di WriterT 
-inserimento 	:: Show d 			-- ^ il tag esterno deve essere serializzabile internamente (?)
+inserimento 	:: Show d			--  il tag esterno deve essere serializzabile internamente
 		=> Either Interno (Esterno d) 	-- ^ un evento interno o esterno da processare
 		-> Nodo s c d 			-- ^ il ramo reattivo
 		-> Inserimento s c d (Nodo s c d)	-- ^ il ramo reattivo aggiornato

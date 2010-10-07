@@ -15,7 +15,7 @@ import Eventi.Accredito
 import Eventi.Impegno
 import Eventi.Acquisto
 import Applicazioni.Reactivegas
-import Applicazioni.Movimenti
+import Applicazioni.Database.Movimenti
 import Applicazioni.Database.Acquisti
 import Eventi.Accredito (Movimento (..))
 

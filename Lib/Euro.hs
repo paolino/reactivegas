@@ -1,4 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables, GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE ScopedTypeVariables,DeriveDataTypeable, GeneralizedNewtypeDeriving #-}
 module Lib.Euro where
 
 -- import Text.ParserCombinators.ReadPrec
@@ -8,10 +8,11 @@ import Text.ParserCombinators.ReadP
 import Text.Read (readPrec, lift)
 import Text.Printf
 import Data.Ratio
+import Data.Typeable
 import Data.List
 
 
-newtype Euro = Euro Rational deriving (Eq,Num,Ord)
+newtype Euro = Euro Rational deriving (Eq,Num,Ord,Typeable)
 
 instance Show Euro where
 	show (Euro x) = printf "%d euro" y' ++ if yc' > 0 then printf " e %d centesimi" yc' else "" where
@@ -36,7 +37,7 @@ instance Read Euro where
 			return . Euro $ approxRational r 0.01
 		in lift $ com <++ bug
 
-newtype DEuro = DEuro (Euro -> Euro)
+newtype DEuro = DEuro (Euro -> Euro) deriving (Typeable)
 
 mkDEuro :: Euro -> DEuro
 mkDEuro x = DEuro (+ x)

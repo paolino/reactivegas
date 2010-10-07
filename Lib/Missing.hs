@@ -1,24 +1,16 @@
+
+{-# LANGUAGE ScopedTypeVariables#-}
+
 module Lib.Missing where
 
 import Control.Applicative ((<$>))
 import Control.Arrow (second)
 import Control.Monad.Error (throwError, ErrorT)
+import Data.Typeable
 
 
 import Data.List (lookup)
 -----------------------------------------
-update :: (Eq a) => a -> (b -> b) -> b -> [(a, b)] -> [(a, b)]
-update k dv v kvs = case lookup k kvs of
-	Nothing -> (k,dv v):kvs
-	Just v -> (k,dv v):filter ((/=) k . fst) kvs
-
-assente :: (Eq a) => a -> [(a, b)] -> Bool
-assente k kvs = case lookup k kvs of
-	Nothing -> True
-	Just _ -> False
-
-elimina :: (Eq a) => a -> [(a, b)] -> [(a, b)]
-elimina k kvs = filter ((/=) k . fst) kvs
 
 secondM :: (Monad m) => (a -> m b) -> (c, a) -> m (c, b)
 secondM f (x,y) = f y >>= return . (,) x
@@ -26,12 +18,6 @@ secondM f (x,y) = f y >>= return . (,) x
 firstM :: (Monad m) => (a -> m b) -> (a, c) -> m (b, c)
 firstM f (x,y) = f x >>= return . flip (,) y
 
-updateM :: (Monad m ,Eq a) => a -> (b -> m b) -> b -> [(a,b)] -> m [(a,b)]
-updateM k dv v kvs = case lookup k kvs of
-	Nothing -> dv v >>= \v' -> return $ (k,v'):kvs
-	Just v -> dv v >>= \v' -> return $ (k,v'):filter ((/=) k . fst) kvs
-(?) :: Eq a => [(a,b)] -> (a,b) -> b
-xs ? (k,t) = maybe t id $ lookup k xs 
 
 deleteM 	:: (Functor m, Monad m) 
 		=> (a -> m Bool) 	-- ^ judging function	
@@ -66,4 +52,19 @@ onNothing x = maybe (throwError x) return
 infixr 8 >$>
 (>$>) :: Functor f => (a -> b) -> (c -> f a) -> c -> f b
 (>$>) = (.) . (<$>)
+
+catchRead :: forall a. (Read a,Typeable a) => String -> String -> a
+catchRead err tok = case reads tok of
+	[] -> e
+	xs -> case last xs of 
+		(x,"") -> x
+		_ -> e
+	where e = error $ err ++ " reading " ++ show (take 20 tok) ++ " as type " ++ show (typeOf (undefined::a))
+
+untilNothing :: (Monad m, Functor m) =>  b -> (b -> m (Maybe a, b)) -> m [a]
+untilNothing r f = do
+	(x,r') <- f r
+	case x of
+		Just y -> (y:) `fmap` untilNothing r' f
+		Nothing -> return []
 

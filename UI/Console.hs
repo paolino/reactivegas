@@ -1,6 +1,6 @@
 
 {-# LANGUAGE FlexibleContexts, Rank2Types, ExistentialQuantification, ScopedTypeVariables, GeneralizedNewtypeDeriving, NoMonomorphismRestriction, ImplicitParams #-}
-module UI.Console (applicazione) where
+module UI.Console (interfaccia) where
 
 import Data.Maybe (isJust , fromJust,catMaybes)
 import Data.List (delete,find,(\\))
@@ -13,8 +13,7 @@ import Control.Monad.Reader
 import Control.Monad.Error
 import Debug.Trace
 
-
-import Lib.Passo (Costruzione,mano, menu, rotonda ,rmenu, Passo) 
+import Lib.Passo (Costruzione,mano, menu, rotonda ,rmenu, Passo,svolgi, HPasso ) 
 import qualified Lib.Passo as P
 
 import Lib.TreeLogs (eccoILogs)
@@ -40,6 +39,7 @@ import Applicazioni.Reactivegas (QS,bianco, TS, sortEventi, levelsEventi, maxLev
 import Applicazioni.Persistenza (Persistenza (..))
 import Applicazioni.Sessione (Sessione (..))
 
+import Lib.Console
 import UI.Lib
 
 wrapCostrActions 	
@@ -71,8 +71,8 @@ dichiarazioni k = onAccesso . const . mano "gestione dichiarazioni" $ concat
 			,("uscita",salvataggio >> k ())
 			]
 
-applicazione :: Interfaccia ()
-applicazione = rotonda $ \k -> do 
+baseloop :: Interfaccia ()
+baseloop = rotonda $ \k -> do 
 	ms <- sel $ readStato . fst 
 	case ms of 
 		Nothing ->  P.errore $ ResponseOne "il gruppo non esiste ancora" 
@@ -85,3 +85,5 @@ applicazione = rotonda $ \k -> do
 				,("digerisci tutte le dichiarazioni pubblicate (sincronizzatore)", sincronizza)
 				]
 
+interfaccia :: MEnv ()
+interfaccia = svolgi baseloop >>= interazione 

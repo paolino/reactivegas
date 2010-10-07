@@ -13,6 +13,9 @@ import Database.HDBC.Sqlite3
 import Core.Types (Utente)
 import Core.Patch 
 import Lib.Euro
+import Lib.Missing (catchRead)
+
+read' x = catchRead "on module GPatch" x
 
 
 data GPatches = GPatches
@@ -36,7 +39,7 @@ lastRow db col table = do
 	o <- sFetchAllRows' stmt
 	return $ case o of
 		[] -> 0
-		[[Just pis]] -> read pis
+		[[Just pis]] -> read' pis
 
 insertUPatch :: Connection -> Integer -> Patch -> IO ()
 insertUPatch db gi (c,f,es) = do
@@ -64,10 +67,10 @@ getGPatch db i = do
 	execute stmt []
 	xs <- sFetchAllRows' stmt
 	if null xs then return Nothing else do  
-		let 	(cg,fg) = read . fromJust . head $ head $ xs
+		let 	(cg,fg) = read' . fromJust . head $ head $ xs
 			xs' = map tail xs
 			xs'' = groupBy ((==) `on` head) xs'
-			ys = map (\x'' -> let 	(cu,fu) =   read . fromJust . head $ head $ x''
+			ys = map (\x'' -> let 	(cu,fu) =   read' . fromJust . head $ head $ x''
 						ds = map (fromJust . head . tail) x''
 						in (cu,fu,ds)) xs''
 		return $ Just (cg,fg,ys)
@@ -87,23 +90,23 @@ mkGPatches wd = do
 	handleSql (\_ -> return ()) $ do
 		mapM (flip (run db) []) $ nuoveTabelle 
 		commit db
-		disconnect db
+		--disconnect db
 	return $ GPatches {
 		nuovaGPatch = \n x -> do 
-			db <- mdb 
+			--db <- mdb 
 			insertGPatch db n x
-			disconnect db
+			--disconnect db
 			,
 		vecchiaGPatch = \n -> do 
-			db <- mdb 
+			--db <- mdb 
 			r <-  getGPatch db (n + 1)
-			disconnect db
+			--disconnect db
 			return r
 			,
 		abbandonaGPatch = do 
-			db <- mdb 
+			--db <- mdb 
 			dropGPatch db
-			disconnect db
+			--disconnect db
 		}
 	
 

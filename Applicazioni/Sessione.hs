@@ -41,7 +41,7 @@ update 	:: Update a b -- produce uno stato modificato
 		,TVar a
 		,TVar b
 		,TChan Triggers
-		,STM (Change c) -- una condizione esterna che deve fare scattare il rinnovamento
+		,STM (Change c d) -- una condizione esterna che deve fare scattare il rinnovamento
 		,(Maybe Utente -> STM [Evento]) -- gli eventi pubblicati per un utente
 		) -- ^ memoria condivisa
 	-> STM ()
@@ -80,7 +80,7 @@ update f l (eventi, accesso, conservative, stato, caricamento, triggers,signal, 
 -- | costruisce l'interfaccia di sessione a partire da un modificatore di stato in STM
 mkSessione 	:: Update a  b		-- ^ modificatore di stato
 		-> Int 			-- ^ livello di caricamento di base
-		-> IO (STM (Change c))		-- ^ segnale di aggiornamento stato
+		-> IO (STM (Change c d))		-- ^ segnale di aggiornamento stato
 		-> (Maybe Utente -> STM [Evento])  -- ^ query sugli eventi pubblicati per un utente
 		-> STM ()			-- ^ segnale di modifica sessione
 		-> Maybe ([Evento],Maybe Responsabile,Int)
