@@ -1,7 +1,7 @@
 
 {-# LANGUAGE ScopedTypeVariables #-}
 -- | una funzione di elaborazione di Lib.Costruzione.Passo a con interazione in console.
-module Lib.Interazione.HaskelineM where -- (interazione) where
+module Lib.Interazione.HaskelineM (interazione) where
 
 import Data.Maybe
 import Control.Monad (forM)
@@ -13,7 +13,7 @@ import Lib.Response
 import Control.Exception
 import System.Console.Haskeline
 
-runPasso :: (MonadException m, Functor m) => PassoM m b -> InputT m b
+-- runPasso :: (MonadException m, Functor m) => PassoM m b -> InputT m b
 runPasso (Costruito x) = return x
 {-
 runPasso (Output x l:u) = do
@@ -30,30 +30,30 @@ runPasso (Errore x l:u) = do
 runPasso  w@(Libero p h f) = do
 	x <- getInputLine $ "\n** " ++ p ++ ": "
 	n <-  case fromJust x of 
-		[] -> lift h
+		[] -> h
 		x -> case reads x of 
 			[] -> case reads $ "\"" ++ x ++ "\"" of
 				[] -> outputStrLn "valore non valido" >> return w
-				xs -> let (x,"") = last xs in  lift $ f x
-			xs -> let (x,"") = last xs in  lift $ f x
+				xs -> let (x,"") = last xs in  f x
+			xs -> let (x,"") = last xs in  f x
 	runPasso n
 {-
 runPasso (Password p f :r) = runPasso (Libero p f : r)
 -}
+
 runPasso w@(Scelta p xs h f) = do
 	outputStrLn ("\n** " ++ p) 
 	forM (zip [1..] xs) $ \(n,(p,_)) -> outputStrLn $ "\t" ++ show n ++ ") " ++ take 100 p
 	x <- getInputLine  "scelta: "
 	n <- case fromJust x of
-		[] -> lift h
+		[] -> h
 		x -> case reads x of 
 			[] -> return w
 			ys -> let (x,"") = last ys in case x  `elem` [1 .. length xs] of
-					True -> lift . f . snd $ xs !! (x - 1)
+					True -> f . snd $ xs !! (x - 1)
 					False -> return w
 	runPasso n	  
-
-{-
+{-	
 runPasso  w@(c@(Upload p f) : u) = do
 	x <- getInputLine $  "\n** " ++ p ++ "[nome del file da caricare]: "
 	n <- case fromJust x of 
@@ -77,6 +77,5 @@ runPasso w@(c@(Download x y f):u) = do
 -}
 
 -- | la funzione svolge la Costruzione nella monade della libreria haskeline
-interazione :: (MonadException m, Functor m) => b -> PDescriptionM m b b -> m b
-interazione d p = runInputT defaultSettings $ 
-	lift (evalDescriptionM (return $ Costruito d) (return . Costruito) p) >>= runPasso
+-- interazione :: (MonadException m, Functor m) => b -> PDescriptionM m b b -> m b
+-- interazione d p = runInputT defaultSettings $ evalDescriptionM (return $ Costruito d) (return . Costruito) p >>= runPasso

@@ -23,7 +23,7 @@ import qualified Lib.Passo as P
 import Lib.HTTP
 import Lib.Missing ((>$>))
 
-
+-- | la monade interna all'interazione che ammettiamo.
 type Running e = ReaderT e IO
 
 type RPasso e =  Passo (Running e) ()
@@ -33,7 +33,7 @@ type HRPasso e = HPasso (Running e) ()
 rzip :: [a] -> [b] -> [(a,b)]
 rzip xs ys = reverse $ zip (reverse xs) (reverse ys)
 
--- | istanza di Form computata da un HPasso con environment
+-- | istanza di Form computata da un HPasso con environment. L'elaborazione prevede il passaggio del passo di radice, quindi, un passo senza storia.
 fromHPasso :: forall e . HRPasso e -> e -> Form e Html Link
 fromHPasso (p,[]) e0 = fromHPasso' ((p,e0),[]) where
 	fromHPasso' :: ((RPasso e,e),[(Value,Running e (RPasso e))]) -> Form e Html Link

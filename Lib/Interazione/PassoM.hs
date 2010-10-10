@@ -5,7 +5,9 @@ module Lib.Interazione.PassoM where
 
 import Control.Monad (join, forever, when)
 import Control.Monad.Cont (callCC)
+import Control.Monad.Random (MonadRandom, )
 import Control.Monad.State (MonadState,modify,lift)
+import Control.Arrow (second)
 import Lib.Interazione
 import Lib.Response
 
@@ -56,13 +58,37 @@ rotonda f = callCC $ forever . f
 mano :: Monad m => String -> a -> [(String,PDescriptionM m b a)] -> PDescriptionM m b a
 mano s z xs = rotonda $ \k -> menu s $ ("<uscita>",k z):xs
 
-esempio :: MonadState [Int] m => PDescriptionM m a ()
-esempio = mano "esempio" () . map (second (>>= append)) $ [
-		("*2", (*2) `fmap` libero "numero"),
-		("+", do
-			x <- libero "primo addendo"
-			y <- libero "secondo addendo"
-			return (x + y))
-		]
+--------------------- esempio -----------------
 
-	where append x = lift . modify (x:)
+type Operazione m a = (String, PDescriptionM m a (Int -> Int))
+{-
+simpleOps = 
+	[("moliplicazione", (*) `fmap` libero "fattore")
+	,("addizione",(+) `fmap` libero "addendo")
+	,("divisione", (flip div) `fmap` libero "divisore")
+	,("sottrazione" , (flip subtract) `fmap` libero "sottraendo")
+	]
+
+partita = zip [3,5,1,4] simpleOps
+wrap x (l,f) = do
+	r <- (f x -) `fmap` password "indovina"
+	case abs r < 0.000000001 of
+			True -> lift $ modify (\xs -> fmap (.(-1)) $ find ((==l) . fst .snd) xs )
+			False -> lift $ modify (((x:) *** (+1)) *** id)
+esempio :: (MonadRandom m, MonadState [Operazione m a] m) => Int -> PDescriptionM m a ()
+esempio l = do 
+		x <- lift $ getRandomR (1,20)
+		output "operando:" (ResponseOne x)
+		ops <- lift . fmap (filter ((>0) . fst)) $ gets 
+
+		(l,f) <- menu "operazione" $ map snd ops
+		r <- (f x -) `fmap` password "indovina"
+		
+		case abs r < 0.000000001 of
+			True -> lift $ modify ((id *** (-1)) *** id)
+			False -> lift $ modify (((x:) *** (+1)) *** id)
+		t <- lift $ gets (snd . fst) 
+		case t <= 0 of
+			True -> return ()
+			Fasle -> esempio
+-}

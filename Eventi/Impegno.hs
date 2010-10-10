@@ -21,7 +21,6 @@ import Control.Monad.Reader (asks, MonadReader)
 import Control.Arrow ((&&&), (***), first)
 
 import Lib.Aspetti ((.<), ParteDi, see)
-import Lib.Costruzione (Costruzione)
 import Lib.Prioriti (R(..))
 import Lib.Assocs (update)
 import Lib.Response (Response (..))

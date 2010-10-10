@@ -1,10 +1,10 @@
 
 {-# LANGUAGE ExistentialQuantification #-}
+-- | Un semplice linguaggio descrittivo di una interazione. Non prevedendo la monade interna il modulo risulta meramente didattico.
 
 module Lib.Interazione.Passo where
 
-import Control.Monad (join, forever, when)
-import Control.Monad.Cont (callCC)
+import Control.Monad.Cont
 import Lib.Interazione
 import Lib.Response
 
@@ -19,6 +19,7 @@ data Passo b
 	| Costruito b							-- ^ valore calcolato
 
 type PDescription b = Description (Passo b)
+
 -- | produce un passo di valore Libero nella monade Cont
 libero :: Read a => String -> PDescription b a
 libero prompt = mkDescription $ Libero prompt
@@ -42,24 +43,31 @@ download s x = mkDescription $ voidCall (Download s x)
 scelte :: [(String,a)] -> String -> PDescription b a 
 scelte xs prompt = mkDescription $ Scelta prompt xs 
 
+
+	
 -- | presenta un menu di scelte operative
-menu 	::  String 			-- ^ descrizione
-	-> [(String,PDescription b a)] 	-- ^ menu a partire da un gestore di a
-	-> PDescription b a		-- ^ il passo risultante
+menu 		:: String -- ^ descrizione
+		-> [(String,PDescription b a)] -- ^ menu a partire da un gestore di a
+		-> PDescription b a	-- ^ il passo risultante
 menu x = join . flip scelte x
 
-rotonda :: ((a -> PDescription b c) -> PDescription b c) -> PDescription b a
-rotonda f = callCC $ \k -> forever $ f k
+evalPDescription x = evalDescription (Costruito x) Costruito
+--------------------- esempio -----------------
+esempio :: PDescription a Double
+esempio = let 
+	r1 = (*) `fmap` libero "fattore"
+	r2 = (+) `fmap` libero "addendo"
+	r3 = (flip (/)) `fmap` libero "divisore"
+	r4 = (flip subtract) `fmap` libero "sottraendo"
+	in do 
+		x <- libero "operando"
+		f <- menu "operazione" [
+			("moliplicazione",r1),
+			("addizione",r2),
+			("divisione",r3),
+			("sottrazione",r4)
+			]
+		r <- password "indovina"
+		return $ f x - r
 
-mano :: String -> a -> [(String,PDescription b a)] -> PDescription b a
-mano s z xs = rotonda $ \k -> menu s $ ("<uscita>",k z):xs
 
-esempio :: PDescription Int Int
-esempio = mano "esempio" 0 [
-		("*2", (*2) `fmap` libero "numero"),
-		("*", do
-			x <- libero "addendo 1"
-			y <- libero "addendo 2"
-			return $ x * y)
-		]
-	

@@ -1,6 +1,6 @@
 module Lib.Interazione where 
 
-import Control.Monad.Cont (Cont (..) , runCont, callCC, join, ContT (..))
+import Control.Monad.Cont (MonadCont, Cont (..) , runCont, callCC, join, ContT (..), forever)
 import Control.Monad.State (StateT (..), evalStateT)
 
 
@@ -30,3 +30,5 @@ mkDescriptionM f = StateT $ \(h,h') -> ContT $ \k -> let
 evalDescriptionM :: Monad m => m a -> (b -> m a) -> DescriptionM m a b -> m a
 evalDescriptionM z c d = flip runContT c . flip evalStateT (z,evalDescriptionM z c d) $ d
 
+roundAbout ::  MonadCont m => ((a -> m b) -> m a) -> m a
+roundAbout f = callCC $ forever . f

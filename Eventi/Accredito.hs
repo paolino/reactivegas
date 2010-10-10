@@ -19,13 +19,13 @@ import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad (when)
 import Control.Monad.Error (throwError)
 import Control.Arrow (second, (&&&), first, (***))
+import Control.Applicative ((<$>))
 
 import Core.Types (Utente)
 import Core.Programmazione (Reazione, soloEsterna, nessunEffetto, Message (..))
 import Core.Inserimento (MTInserzione, fallimento, osserva, modifica, logga, loggamus)
 import Core.Costruzione (libero, scelte, CostrAction, runSupporto)
 import Core.Parsing (Parser)
-import Lib.Costruzione (Costruzione)
 import Eventi.Anagrafe (Anagrafe, esistenzaUtente, utenti, Responsabili, 
 	esistenzaResponsabile, responsabili, validante, SUtente (..))
 import Lib.Aspetti ((.<), see, ParteDi)
@@ -34,7 +34,7 @@ import Lib.Assocs (update , (?), upset)
 import Lib.Response (Response (..))
 import Lib.ShowRead
 import Lib.Euro
-
+import Lib.Missing (sortLower, sortByLower)
 
 data Movimento = MovimentoU Utente DEuro String | MovimentoR Utente DEuro String  deriving Typeable
 
@@ -81,15 +81,16 @@ priorityAccredito = R k where
 	k (Addebito _ _ _) = -34
 -- | stato degli accrediti utente
 data Conti = Conti [(Utente,Euro)] deriving (Read, Show,Eq)
-
+conti (Conti us) = sortByLower fst us
 -- | stato dei saldi responsabile
 data Saldi = Saldi [(Utente,Euro)] deriving (Read, Show,Eq)
+saldi (Saldi us) = sortByLower fst us
 
 reportCrediti :: (Conti `ParteDi` s) => s -> [(Utente,Euro)]
-reportCrediti = (\(Conti xs) -> xs) . see 
+reportCrediti = (\(Conti xs) -> sortByLower fst xs) . see 
 
 reportCasse :: (Saldi `ParteDi` s) => s -> [(Utente,Euro)]
-reportCasse = (\(Saldi xs) -> xs) . see 
+reportCasse = (\(Saldi xs) -> sortByLower fst xs) . see 
 -- | tipo aggiunto dello stato necessario al modulo
 type TyAccredito a = (Conti , (Saldi , a))
 
@@ -192,10 +193,10 @@ costrQueryAccredito s kp kn = 	[("crediti degli utenti", queryUtente)
 	where
 	run = runSupporto s kn kp
 	queryUtente = run $ do
-		Conti us <- asks see 
+		us <- asks (conti . see) 
 		return $ Response [("crediti degli utenti", if null us then 
 			ResponseOne "nessun utente possiede un credito" else ResponseMany (map (ResponseOne *** id) us))]
 	queryResponsabile = run $ do
-		Saldi rs <- asks see 
+		rs <- asks (saldi . see)
 		return $ Response [("casse dei responsabili" , if null rs then 
 			ResponseOne "nessun responsabile possiede una cassa attiva" else ResponseMany (map (ResponseOne *** id) rs))]

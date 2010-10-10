@@ -1,5 +1,5 @@
 
-{-# LANGUAGE ScopedTypeVariables#-}
+{-# LANGUAGE ScopedTypeVariables, NoMonomorphismRestriction #-}
 
 module Lib.Missing where
 
@@ -7,10 +7,13 @@ import Control.Applicative ((<$>))
 import Control.Arrow (second)
 import Control.Monad.Error (throwError, ErrorT)
 import Data.Typeable
-
-
-import Data.List (lookup)
+import Data.Char (toLower)
+import Data.Function (on)
+import Data.List (lookup, sortBy)
 -----------------------------------------
+sortLower = sortByLower id
+sortByLower f = sortBy (compare `on` (map toLower . f))
+----------------------------------
 
 secondM :: (Monad m) => (a -> m b) -> (c, a) -> m (c, b)
 secondM f (x,y) = f y >>= return . (,) x
