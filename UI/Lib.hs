@@ -52,15 +52,27 @@ eventi = map (second $ \(_,_,es) -> es)
 -- sel :: (MonadReader (Persistenza QS, Sessione)  m, MonadIO m) => ((Persistenza QS, Sessione) -> IO b) -> m b
 sel f = asks f >>= liftIO 
 
-statoPersistenza :: (Functor m, MonadReader (Persistenza QS Effetti Response, Sessione (Maybe QS) Response) m,MonadIO m) => m QS
-statoPersistenza = fmap (snd . fromJust) . sel $ readStato . fst
+type Name = String 
 
-statoSessione =  fmap fromJust . sel $ readStatoSessione . snd   
+type Environment = (Name -> Maybe (Persistenza QS Effetti Response), Sessione (Maybe QS) Response)
 
- 
+statoPersistenza :: (Functor m, MonadReader Environment m,MonadIO m) => m QS
 
+statoPersistenza = fmap (snd . fromJust) . sel $ \(pe,se) ->  do
+			g <- readGruppo se
+			readStato (fromJust $ pe (fromJust g))
+
+statoSessione =  fmap (fromJust.fromJust) . sel $ readStatoSessione . snd   
+
+ses f = sel $ f . snd
+sepU f = sel $ \(pe,se) -> do
+		g <- readGruppo se
+		f . fromJust $ (g >>= pe)
+sep f =  sel $ \(pe,se) -> do
+		g <- readGruppo se
+		f  (g >>= pe)
 -- | la monade dove gira il programma. Mantiene in lettura lo stato del gruppo insieme alle operazioni di IO. Nello stato la lista degli eventi aspiranti un posto nella patch
-type MEnv  = ReaderT (Persistenza QS Effetti Response, Sessione (Maybe QS) Response) IO 
+type MEnv  = ReaderT Environment IO 
 
 type Interfaccia a = Costruzione MEnv () a
 
@@ -70,11 +82,12 @@ bocciato x =  P.errore . Response $ [("Incoerenza", ResponseOne x)]
 
 accesso :: Interfaccia ()
 accesso = do 
-	let k r = sel $ ($r) . writeAccesso . snd
 	(rs,_) <- responsabili . fst <$> statoPersistenza 
-	mano "responsabile autore delle dichiarazioni" $ ("anonimo",k Nothing):map (fst &&& k . Just) rs
+	r <- P.scelte (("<anonimo>",Nothing):map (fst &&& Just) rs) "responsabile autore delle dichiarazioni" 
+	ses $ ($r) . writeAccesso
 
-onAccesso k = sel (readAccesso . snd) >>= maybe (accesso >> onAccesso k) k
+onAccesso k = ses readAccesso  >>= maybe (accesso >> onAccesso k) k
+
 
 	
 
@@ -99,19 +112,19 @@ creaChiavi = do
 		
 
 letturaEventi ::  Interfaccia [Evento]
-letturaEventi = sel $ readEventi . snd
+letturaEventi = ses readEventi 
 
 correzioneEventi  :: ([Evento] -> [Evento]) -> Interfaccia ()
 correzioneEventi devs  = do
 	evs <- letturaEventi
-	sel $ ($ devs evs) . writeEventi . snd 
+	ses $ ($ devs evs) . writeEventi 
 
 addEvento x = correzioneEventi (show x:)
 
 eventLevelSelector = do 
-	(_,us) <- sel $ readUPatches . fst
+	(_,us) <- sepU readUPatches 
 	es' <- letturaEventi
-	mu <- sel $ readAccesso . snd
+	mu <- ses readAccesso 
 	let es = levelsEventi . (es' ++) . concatMap snd . maybe id (\(u,_) -> filter ((/=) u . fst)) mu $ eventi us
 	let rs = case es of
 		[] -> Nothing  
@@ -119,7 +132,7 @@ eventLevelSelector = do
 	case rs of 
 		Nothing -> P.errore $ ResponseOne "nessuna dichiarazione presente"
 		Just rs -> mano "livello di considerazione delle ultime dichiarazioni" $ map (\(x,l) ->
-				(x, sel (($l). setConservative . snd))) rs
+				(x, ses (($l). setConservative ))) rs
 
 eliminazioneEvento :: Interfaccia ()
 eliminazioneEvento = do
@@ -135,17 +148,17 @@ eliminazioneEvento = do
 
 
 sincronizza = onAccesso $ \(r@(u,_)) -> do  
-	(_,rs) <-  second (map snd) <$> sel (readUPatches .fst)
+	(_,rs) <-  second (map snd) <$> sepU readUPatches
 	case rs of 
 		[] -> bocciato $ "nessun aggiornamento individale per lo stato attuale"
 		xs -> do
-			let k (Firmante f)  = (fst <$> statoPersistenza) >>= \s -> sel $ ($ f s xs). writeGPatch .fst
+			let k (Firmante f)  = (fst <$> statoPersistenza) >>= \s -> sepU $ ($ f s xs). writeGPatch
 			runSupporto (fst <$> statoPersistenza) bocciato k $ firmante r
 
 salvataggio = do
 	evs <- letturaEventi
 	onAccesso $ \(r@(u,_)) -> do
-		let 	p up = sel $ ($up) . ($u) . writeUPatch . fst
+		let 	p up = sepU $ ($up) . ($u) . writeUPatch 
 		 	k (Firmante f) = do 
 				evs <- letturaEventi
 				(fst <$> statoPersistenza) >>= \s -> p (f s evs) 
@@ -163,46 +176,48 @@ caricaAggiornamentoIndividuale = do
 		Left prob -> P.errore $ ResponseOne prob
 		Right _ -> do 
 			let Just (u,_) = daChiave c (fst $ responsabili s)
-			sel $ ($p) . ($u) . writeUPatch . fst
+			sepU $ ($p) . ($u) . writeUPatch
 
 scaricaAggiornamentoIndividuale :: Interfaccia ()
 scaricaAggiornamentoIndividuale = do 
-	(_,us) <- sel $ readUPatches . fst
+	(_,us) <- sepU readUPatches
 	(u,p) <- P.scelte (map (fst &&& id) us) $ "aggiornamenti utente presenti"
-	v <- sel $ readVersion . fst
+	v <- sepU readVersion
 	P.download (u ++ "." ++ show v) p
 
 caricaAggiornamentoDiGruppo :: Interfaccia ()
-caricaAggiornamentoDiGruppo = P.upload "aggiornamento di gruppo" >>= \g -> sel $ ($g). writeGPatch .fst
+caricaAggiornamentoDiGruppo = P.upload "aggiornamento di gruppo" >>= \g -> sepU $ ($g). writeGPatch
 
 scaricaAggiornamentoDiGruppo :: Interfaccia ()
 scaricaAggiornamentoDiGruppo = do
 	n <- P.libero "indice dell'aggiornamento richiesto"
-	mg <- sel $ ($n) . readGPatch . fst
+	mg <- sepU $ ($n) . readGPatch
 	case mg of
 		Nothing -> P.errore $ ResponseOne "aggiornamento di gruppo non trovato"
 		Just g -> P.download ("group." ++ show n) g
 
 effetto = do
-	c <- sel $ readCaricamento . snd
+	c <- fromJust <$> ses readCaricamento
 	P.output . Response $ [("effetto delle ultime dichiarazioni",  c)]
 
 
 descrizione = do
-	r <- sel $ readAccesso . snd
-	evs <- sel $ readEventi . snd
+	r <- ses readAccesso
+	evs <- ses readEventi 
 	evsp <- case r of
 		Nothing -> return []
 		Just (u,_) -> do 
-			(_,us) <- sel $ readUPatches . fst
+			(_,us) <- sepU readUPatches
 			return $ maybe [] (\(_,_,es) -> es) $ lookup u us
-	l <- sel $ getConservative . snd
-	v <- sel $ readVersion . fst
+	l <- ses getConservative
+	g <- ses readGruppo
+	v <- sep $ maybe (return (-1)) readVersion
 	P.output . Response $ 
-		[("versione attuale dello stato", ResponseOne $ v)
+		[("gruppo selezionato", ResponseOne $ maybe "<nessuno>" id g)
 		,("responsabile della sessione" , ResponseOne $ case r of 
-			Nothing -> "anonimo"
+			Nothing -> "<anonimo>"
 			Just (u,_) -> u)
+		,("versione attuale dello stato", ResponseOne $ v)
 		,("livello di considerazione dichiarazioni",if l == maxLevel then
 			ResponseOne "massimo" else ResponseOne ("modificato: " ++ show l)) 
 		,("dichiarazioni in sessione" , ResponseMany $ map ResponseOne (sortEventi evs))

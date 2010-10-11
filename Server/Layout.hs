@@ -6,9 +6,8 @@ import Text.XHtml
 -- | le cinque finestre , path e nome
 layout :: [([String],Int)]
 layout = 	[(["gestione dichiarazioni"],2)
-		,(["descrizione sessione"],1)
-		,(["amministrazione"],5)
-		,(["effetto delle ultime dichiarazioni"],3)
+		,(["interrogazioni sulle attivita'"],3)
+		,(["amministrazione"],1)
 		,(["interrogazione sullo stato del gruppo"],4)
 		]
 
