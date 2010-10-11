@@ -6,6 +6,7 @@ import System.Directory (removeFile)
 import Control.Exception (handle, SomeException (..))
 import Database.HDBC 
 import Database.HDBC.Sqlite3  (connectSqlite3)
+import Data.Time
 
 import Core.Types (Utente)
 import Eventi.Accredito (Movimento (..))
@@ -17,8 +18,8 @@ data Movimenti = Movimenti
 	,	ultimiMovimentiCassa :: Utente -> Int -> IO [Movimento]
 	}
 
-movimentoRow (MovimentoU u e s) = [toSql "conto", toSql u , toSql (show e), toSql s]
-movimentoRow (MovimentoR u e s) = [toSql "cassa", toSql u , toSql (show e), toSql s]
+movimentoRow d (MovimentoU u e s) = [toSql "conto", toSql u , toSql (show e), toSql (s ++ " (" ++ d ++ ")")]
+movimentoRow d (MovimentoR u e s) = [toSql "cassa", toSql u , toSql (show e), toSql (s ++ " (" ++ d ++ ")")]
 
 read' x = catchRead "on module Movimenti" x
 
@@ -45,7 +46,8 @@ mkMovimenti wd  = do
 	return $ Movimenti
 		{	nuoviMovimenti = \ i ms -> do
 				iS <- iM db i
-				executeMany iS . map movimentoRow $ ms
+				d <- (show . utctDay) `fmap` getCurrentTime
+				executeMany iS . map (movimentoRow d) $ ms
 				commit db
 		,	ultimiMovimentiConto =  \u n -> do
 				uS <- uM db u n

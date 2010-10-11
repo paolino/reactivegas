@@ -19,6 +19,7 @@ import Control.Monad.Error (throwError)
 import Control.Applicative ((<$>))
 import Control.Monad.Reader (asks, MonadReader)
 import Control.Arrow ((&&&), (***), first)
+import Data.Time (LocalTime)
 
 import Lib.Aspetti ((.<), ParteDi, see)
 import Lib.Prioriti (R(..))

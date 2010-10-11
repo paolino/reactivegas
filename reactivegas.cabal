@@ -31,7 +31,8 @@ Executable console
                 filepath    ,
                 FileManipCompat   ,
                 directory  , 
-                stm, old-time , HTTP
+                stm, old-time , HTTP,
+                time
 
 Executable server
  ghc-options: -Wall -threaded
