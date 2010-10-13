@@ -40,6 +40,7 @@ import Applicazioni.Reactivegas (QS,bianco, TS, sortEventi, levelsEventi, maxLev
 import Applicazioni.Persistenza (Persistenza (..))
 import Applicazioni.Sessione (Sessione (..))
 
+import Lib.Tokenizer
 import UI.Lib
 
 wrapCostrActions 	
@@ -108,7 +109,7 @@ elencoChiavi =  do
 bootGruppo k = menu "preparazione stato iniziale del gruppo" $ 
 			[("elenco delle chiavi responsabile già inserite",elencoChiavi)
 			,("inserimento di un nuovo responsabile", do
-				t <- P.libero "inserimento del oken"
+				t <- P.libero "inserimento del token"
 				u <- P.libero "scelta del nomignolo di utente e responsabile"
 				xs <- sepU readBoot
 				if u `elem` map fst xs then bocciato "nome utente già utilizzato"
