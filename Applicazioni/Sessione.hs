@@ -138,7 +138,7 @@ mkSessione 	:: Update a  b		-- ^ modificatore di stato
 		-> Maybe (Maybe Name,[Evento],Maybe Responsabile,Int)
 		-> [Name]
 		-> IO (Sessione a b)	
-mkSessione f l signal publ exsignal ms gns = do
+mkSessione f l signal publ exsignal ms gns =  do
 	z <- randomRIO (0,100000) :: IO Int
 	(stato,caricamento) 	<- atomically $ do 
 					msc <- case ms of

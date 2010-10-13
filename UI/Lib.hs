@@ -41,6 +41,7 @@ import Applicazioni.Reactivegas (QS,bianco, TS, sortEventi, levelsEventi, maxLev
 import Applicazioni.Persistenza (Persistenza (..))
 import Applicazioni.Sessione (Sessione (..))
 
+fJ y x = case x of {Nothing -> error (show y) ; Just x -> x}
 
 daChiave :: Chiave -> [Responsabile] -> Maybe Responsabile
 daChiave c = find (\(_,(c',_)) -> c == c') 
@@ -58,16 +59,16 @@ type Environment = (Name -> Maybe (Persistenza QS Effetti Response), Sessione (M
 
 statoPersistenza :: (Functor m, MonadReader Environment m,MonadIO m) => m QS
 
-statoPersistenza = fmap (snd . fromJust) . sel $ \(pe,se) ->  do
+statoPersistenza = fmap (snd . fJ "0.UI.Server") . sel $ \(pe,se) ->  do
 			g <- readGruppo se
-			readStato (fromJust $ pe (fromJust g))
+			readStato (fJ "1.UI.Server" $ pe (fJ "2.UI.Server" g))
 
-statoSessione =  fmap (fromJust.fromJust) . sel $ readStatoSessione . snd   
+statoSessione =  fmap (fJ "3.UI.Server".fJ "4.UI.Server") . sel $ readStatoSessione . snd   
 
 ses f = sel $ f . snd
 sepU f = sel $ \(pe,se) -> do
 		g <- readGruppo se
-		f . fromJust $ (g >>= pe)
+		f . fJ "5.UI.Server" $ (g >>= pe)
 sep f =  sel $ \(pe,se) -> do
 		g <- readGruppo se
 		f  (g >>= pe)
@@ -122,6 +123,7 @@ correzioneEventi devs  = do
 addEvento x = correzioneEventi (show x:)
 
 eventLevelSelector = do 
+	
 	(_,us) <- sepU readUPatches 
 	es' <- letturaEventi
 	mu <- ses readAccesso 
@@ -197,7 +199,7 @@ scaricaAggiornamentoDiGruppo = do
 		Just g -> P.download ("group." ++ show n) g
 
 effetto = do
-	c <- fromJust <$> ses readCaricamento
+	c <- fJ "6.UI.Server" <$> ses readCaricamento
 	P.output . Response $ [("effetto delle ultime dichiarazioni",  c)]
 
 
@@ -206,9 +208,11 @@ descrizione = do
 	evs <- ses readEventi 
 	evsp <- case r of
 		Nothing -> return []
-		Just (u,_) -> do 
-			(_,us) <- sepU readUPatches
-			return $ maybe [] (\(_,_,es) -> es) $ lookup u us
+		Just (u,_) -> let ps (_,us) = case lookup u us of
+						Nothing -> []
+						Just (_,_,es) -> es 
+				in sep $ maybe (return []) (fmap ps . readUPatches)
+
 	l <- ses getConservative
 	g <- ses readGruppo
 	v <- sep $ maybe (return (-1)) readVersion

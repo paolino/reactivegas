@@ -77,34 +77,39 @@ dichiarazioni = concat $
 
 		]
 amministrazione :: Interfaccia ()
-amministrazione = rotonda $ \_ ->
-	menu "amministrazione" $ 
-			[("selezione del gruppo di acquisto", cambiaGruppo)
-			,("scelta del responsabile autore delle dichiarazioni", ensureStato accesso )
+amministrazione = rotonda $ \k -> do 
+	let 	
+		sempre = [("selezione del gruppo di acquisto", cambiaGruppo)] 
+		inizio = [("costruzione del gruppo",ensureGruppo $ bootGruppo k)] 
+		normale = 
+			[("scelta del responsabile autore delle dichiarazioni", ensureStato accesso )
 			,("modifica della considerazione delle dichiarazioni", ensureGruppo eventLevelSelector)
 			,("digestione di tutte le dichiarazioni pubblicate", ensureStato sincronizza )
-			,("richiesta nuove chiavi da responsabile", creaChiavi)
+			,("richiesta nuove chiavi da responsabile", ensureStato creaChiavi)
 			,("accesso indiretto" , mano "accesso indiretto" 
 				[("carica un aggiornamento individuale", ensureStato caricaAggiornamentoIndividuale )
 				,("carica un aggiornamento di gruppo", ensureStato caricaAggiornamentoDiGruppo)
 				,("scarica gli aggiornamenti individuali", ensureStato $ 
-					sepU readUPatches >>= \ (n,ups) -> P.download ("patches." ++ show n) ups)
-				,("scarica un aggiornamento di gruppo",ensureStato $ scaricaAggiornamentoDiGruppo)
+				  sepU readUPatches >>= \ (n,ups) -> P.download ("patches." ++ show n) ups)
+					,("scarica un aggiornamento di gruppo",ensureStato $ scaricaAggiornamentoDiGruppo)
 				,("scarica lo stato", ensureStato $ sepU readStato >>= maybe (bocciato "stato non presente") 
-					(\ (n,s) -> P.download ("stato." ++ show n) s))
+						 (\ (n,s) -> P.download ("stato." ++ show n) s))
 				])
 			]
-
-bootGruppo :: Interfaccia ()
-bootGruppo = mano "preparazione stato iniziale del gruppo" $ 
-			[("elenco delle chiavi responsabile già inserite", do
+	costr <- sep $ maybe (return []) (fmap (maybe inizio (const normale)) . readStato) 
+	menu "amministrazione" $ sempre ++ costr
+			
+-- bootGruppo :: Interfaccia ()
+elencoChiavi =  do
 				xs <- sepU readBoot 
 				P.output $ Response 
 					[("elenco chiavi responsabile già inserite",
-						ResponseMany $ map (ResponseOne . fst) xs)])
-			,("inserimento di un responsabile nel gruppo iniziale (interattivo)", do
-				t <- P.libero "inserisci il tuo token"
-				u <- P.libero "scegli il tuo nomignolo di utente e responsabile"
+						ResponseMany $ map (ResponseOne . fst) xs)]
+bootGruppo k = menu "preparazione stato iniziale del gruppo" $ 
+			[("elenco delle chiavi responsabile già inserite",elencoChiavi)
+			,("inserimento di un nuovo responsabile", do
+				t <- P.libero "inserimento del oken"
+				u <- P.libero "scelta del nomignolo di utente e responsabile"
 				xs <- sepU readBoot
 				if u `elem` map fst xs then bocciato "nome utente già utilizzato"
 					else do
@@ -115,17 +120,9 @@ bootGruppo = mano "preparazione stato iniziale del gruppo" $
 								b <- sepU $ ($ r) . ($t) . assignToken 
 								when (not b) $ bocciato 
 									"token invalido o già utilizzato"
+				elencoChiavi
 				)
-			,("inserimento di un responsabile nel gruppo iniziale (da remoto)", do
-				t <- P.libero "inserisci il tuo token"
-				r@(u,_) <- P.upload "carica le tue chiavi"
-				xs <- sepU readBoot 
-				if u `elem` map fst xs then bocciato "nome utente già utilizzato"
-					else do
-						b <- sepU $ ($ r) . ($t) . assignToken 
-						when (not b) $ bocciato "token invalido o già utilizzato"
-				)
-			,("gestione tokens",mano "gestione tokens" [
+			,("gestione tokens (privato)", menu "gestione tokens" [
 				("tokens non ancora assegnati", do
 				t <- P.password "password lettura tokens"
 				mxs <- sepU $ ($t) . readTokens 
@@ -133,20 +130,20 @@ bootGruppo = mano "preparazione stato iniziale del gruppo" $
 					Just xs -> P.output $ ResponseMany $ map ResponseOne xs
 					Nothing -> bocciato $ "password errata"
 				),
-				("fine forzata della fase di boot", do 
-				t <- P.password "password lettura tokens"
-				m <- sepU $ ($t) . forceBoot 
-				case m of 
-					Just xs -> return ()
-					Nothing -> bocciato $ "password errata"
-
-				),
 				("richiesta di nuovi tokens", do
 				n <- P.libero "numero di tokens da aggiungere"
 				t <- P.password "password lettura tokens"
 				mts <- sepU $ ($n). ($t) . moreTokens 
 				case mts of 
 					Just () -> return ()
+					Nothing -> bocciato $ "password errata"
+
+				)
+				,("fine forzata della fase di boot", do 
+				t <- P.password "password lettura tokens"
+				m <- sepU $ ($t) . forceBoot 
+				case m of 
+					Just xs -> k ()
 					Nothing -> bocciato $ "password errata"
 
 				)])
@@ -165,10 +162,11 @@ ensureGruppo f = do
 		Just _ -> f 
 
 ensureStato f = ensureGruppo $ do 
-	s <- sepU readStato
+	s <- sep $ maybe (return Nothing) (fmap Just . readStato)
 	case s of 
-		Nothing -> bocciato "manca la costruzione del gruppo"
-		Just _ -> f
+		Nothing -> bocciato "manca la selezione del gruppo"
+		Just Nothing -> bocciato "manca la costruzione del gruppo"
+		Just (Just _) -> f
 
 ensureResponsabile f = ensureStato  $ do
 	r <- ses readAccesso
@@ -181,7 +179,7 @@ applicazione = rotonda $ \_ -> do
 	menu "menu principale" $ 
 				[
 				("gestione dichiarazioni" , ensureResponsabile $ rotonda $ \_ -> menu "gestione dichiarazioni" $ dichiarazioni), 
-				("interrogazioni sulle attivita'", ensureGruppo $ rotonda $ \_ -> mano "interrogazioni sulle attivita'" 
+				("interrogazioni sulle attivita'", ensureGruppo $ rotonda $ \_ -> menu "interrogazioni sulle attivita'" 
 					[("descrizione della sessione",descrizione),
 					("effetto delle ultime dichiarazioni", ensureStato $ do
 					c <- fromJust <$> ses readCaricamento 

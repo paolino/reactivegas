@@ -31,6 +31,8 @@ import Core.Programmazione (Message)
 import Applicazioni.Database.GPatch (mkGPatches, GPatches (..))
 
 import Debug.Trace
+
+fJ y x = case x of {Nothing -> error (show y) ; Just x -> x}
 -----------------------------------------------------------------------------------------
 
 -- | nome del gruppo
@@ -50,8 +52,8 @@ groupUnwrite x y  = do
 	r <- tryJust (\(SomeException x) -> Just $ show x) (readFile (x </> y))
 	return $ case r of 
 		Left _ -> Nothing
-		Right z -> last z `seq` case reads z of 
-			[(q,_)] -> Just q
+		Right z -> case reads z of 
+			[(q,_)] -> last z `seq` Just q
 			_ -> Nothing
 -------------------------------------------------------------------------------------------------------------------
 
@@ -273,7 +275,7 @@ mkPersistenza pass load modif boot resps ctx x = do
 					(p,ts,_) <- readTVar tb
 					return $ if t == p then Just ts else Nothing
 		writeUPatch' u p@(_,_,es) = do
-			s <- atomically $ fromJust <$> readTVar ts
+			s <- atomically $ fJ "Persistenza" <$> readTVar ts
 			rl <- runErrorT $ runReaderT (fromPatch resps p) (ctx s)
 			case rl of
 				Right _ -> do 
@@ -286,7 +288,7 @@ mkPersistenza pass load modif boot resps ctx x = do
 				Left x -> atomically $ writeTChan cl  x
 		readUPatches' 	= atomically $ liftM2 (,) (readTVar tv) $ readTVar tp
 		writeGPatch' g 	= do 
-			s <- atomically $ fromJust <$> readTVar ts
+			s <- atomically $ fJ "Persistenza" <$> readTVar ts
 			rl <- runErrorT $ runReaderT (fromGroup resps g) (ctx s)
 			case rl of
 				Right (_,es) -> do 
@@ -329,7 +331,7 @@ mkPersistenza pass load modif boot resps ctx x = do
 					return ()
 			-- thread di persistenza appeso a trigger
 			forkIO . forever $ persistenza (groupWrite x) tv ts tp to cl tb trigger
-			forkIO . forever $ atomically (readTChan cs) >>= print
+			forkIO . forever $ atomically (readTChan cs) 
 			putStrLn "persistenza attivata"
 	return (p,boot')
 

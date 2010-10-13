@@ -26,13 +26,13 @@ import Applicazioni.Aggiornamento (serverAggiornamento)
 
 
 
+
 main = do
-	Argomenti dir port lmov lsess lrem tokpass <- parseArgs $ Argomenti "." 5000 15 10 20 "" 
-	putStrLn "** Inizio report"
-	let dirs = [dir]
-	pes <- forM dirs $ \dir -> do
+	Argomenti dirs port lmov lsess lrem tokpass <- parseArgs $ Argomenti [] 5000 15 10 20 "" 
+	pes <- forM dirs $ \(dir,name) -> do
+		putStrLn $ "** Inizio report di \"" ++ name ++ "\""
 		report <- mkReporter dir (dir </> "static" </> "report.html") lmov 
-		putStrLn "** Inizio persistenza"
+		putStrLn $ "** Inizio persistenza di \"" ++ name ++ "\""
 		(pe,boot) <- mkPersistenza tokpass loader bianco nuovoStato (fst . responsabili) fst dir 
 		--- report thread --------------------------------
 		forkIO $ do
@@ -43,11 +43,12 @@ main = do
 					GPatch _ _ (ls,x) -> report (ls,Just x) -- arrivata una GPatch 
 					_ -> return ()
 		------- logs ----------------------
-		forkIO . forever $ readLogs pe >>= putStrLn . take 100
+		-- forkIO . forever $ readLogs pe >>= putStrLn . take 100
 		-------- server ----------------------
 		boot
 		return pe
-	let pe = flip lookup $ zip dirs pes :: String -> Maybe (Persistenza QS Effetti Response)
+
+	let pe = flip lookup $ zip (map snd dirs) pes :: String -> Maybe (Persistenza QS Effetti Response)
 	server "." port lsess lrem applicazione (serverAggiornamento pe) 
 		(output . pagina) layout $ \signal ms -> do
 			se <- mkSessione (fmap caricamentoBianco . pe ) 
@@ -56,8 +57,7 @@ main = do
 				(fmap queryUtente . pe) 
 				signal 
 				ms
-				dirs
+				(map snd dirs)
 			return ((pe,se),backup se)
-	
 	
 
