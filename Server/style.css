@@ -76,7 +76,7 @@ div.dimensione1 {
 	margin: 2px;
 	background-color: #f0f0f0 ;
 	width:295px;
-	height:180px;
+	height:258px;
 	overflow: auto;
 }
 div.dimensione2 {
@@ -103,13 +103,13 @@ div.dimensione3 {
 }
 div.dimensione4 {
 	position: absolute;
-	top : 232px;
+	top : 309px;
 	left : 4px;
 	border: 1px solid #999;
 	margin: 2px;
 	background-color: #f0f0f0 ;
 	width:295px;
-	height:230px;
+	height:290px;
 	overflow: auto;
 }
 div.dimensione5 {

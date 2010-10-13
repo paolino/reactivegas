@@ -31,6 +31,8 @@ import Core.Programmazione (Message)
 import Applicazioni.Database.GPatch (mkGPatches, GPatches (..))
 
 import Debug.Trace
+
+fJ y x = case x of {Nothing -> error (show y) ; Just x -> x}
 -----------------------------------------------------------------------------------------
 
 -- | nome del gruppo
@@ -50,8 +52,8 @@ groupUnwrite x y  = do
 	r <- tryJust (\(SomeException x) -> Just $ show x) (readFile (x </> y))
 	return $ case r of 
 		Left _ -> Nothing
-		Right z -> last z `seq` case reads z of 
-			[(q,_)] -> Just q
+		Right z -> case reads z of 
+			[(q,_)] -> last z `seq` Just q
 			_ -> Nothing
 -------------------------------------------------------------------------------------------------------------------
 
@@ -122,7 +124,7 @@ data Change a b	= Boot 	a					-- ^ messaggio di nuovo stato
 		-- | arrivato un aggiornamento di gruppo, comunica gli eventi digeriti e quelli orfani
 		| GPatch [(Utente,[Evento])] [(Utente,[Evento])] (b, a)
 		-- | arrivato un aggiornamento utente, comunica l'autore e gli eventi
-		| UPatch Utente [Evento]
+		| UPatch Utente [Evento] deriving Show
 
 -- | raggruppa le dichiarazioni per responsabile
 groupUp :: [(Utente, Evento)] -> [(Utente, [Evento])]
@@ -152,7 +154,7 @@ aggiornamento  load  tv ts tp to tl evs k = do
 		digested = groupUp evs
 	case es of
 		Left e -> writeTChan tl e -- problema di caricamento
-		Right (s',ls) -> do
+		Right (s',ls) -> seq s' $ do
 			v <- (+1) <$> readTVar tv
 			writeTVar ts $ Just s' -- scrive il nuovo stato
 			wes <- concatMap (\(u,(_,_,es)) -> map ((,) u) es) <$> readTVar tp 
@@ -200,7 +202,7 @@ data Persistenza a b d = Persistenza
 			readGPatch	:: Int -> IO (Maybe Group),	-- ^ lettura di una patch di gruppo
 			readVersion 	:: IO Int,			-- ^ versione dello stato attuale
 			readLogs	:: IO String,
-			updateSignal	:: IO (STM (Change a b)),			-- ^ segnala un avvenuto cambiamento di stato
+			updateSignal	:: STM (STM (Change a b)),			-- ^ segnala un avvenuto cambiamento di stato
 			-- | raccoglie gli eventi relativi ad un utente che sono da attribuire alla persistenza
 			queryUtente	:: Maybe Utente -> STM [Evento], 
 			caricamentoBianco :: Modificato a d
@@ -208,7 +210,7 @@ data Persistenza a b d = Persistenza
 
 
 -- | prepara uno stato vergine di un gruppo
-mkPersistenza :: (Eq a, Read a, Show a, Show c) 
+mkPersistenza :: (Eq a, Read a, Show a, Show c, Show b) 
 	=> Token						-- ^ token di amministrazione fase di boot
 	-> (a -> [(Utente,Evento)] -> Either String (a,b)) 	-- ^ loader specifico per a
 	-> (Int -> a -> [(Utente,Evento)] -> (a,d))		-- ^ insertore diretto di eventi per a 
@@ -273,7 +275,7 @@ mkPersistenza pass load modif boot resps ctx x = do
 					(p,ts,_) <- readTVar tb
 					return $ if t == p then Just ts else Nothing
 		writeUPatch' u p@(_,_,es) = do
-			s <- atomically $ fromJust <$> readTVar ts
+			s <- atomically $ fJ "Persistenza" <$> readTVar ts
 			rl <- runErrorT $ runReaderT (fromPatch resps p) (ctx s)
 			case rl of
 				Right _ -> do 
@@ -286,18 +288,18 @@ mkPersistenza pass load modif boot resps ctx x = do
 				Left x -> atomically $ writeTChan cl  x
 		readUPatches' 	= atomically $ liftM2 (,) (readTVar tv) $ readTVar tp
 		writeGPatch' g 	= do 
-			s <- atomically $ fromJust <$> readTVar ts
+			s <- atomically $ fJ "Persistenza" <$> readTVar ts
 			rl <- runErrorT $ runReaderT (fromGroup resps g) (ctx s)
 			case rl of
 				Right (_,es) -> do 
-					v <- atomicallyP $ \f -> 
+					v <- atomicallyP $ \f ->  
 						aggiornamento load  tv ts tp to cl es f >> readTVar tv
 					nuovaGPatch gp (fromIntegral v) g
 				Left x -> atomically $ writeTChan cl x
 		readGPatch' 	= vecchiaGPatch gp . fromIntegral
 		readVersion' 	= atomically $ readTVar tv
 		readLogs' 	= atomically . readTChan $ cl
-		updateSignal'	= atomically $ dupTChan cs >>= return . readTChan  
+		updateSignal'	= dupTChan cs >>= return . readTChan  
 		queryUtente (Just u)	= do
 			es0 <- fmap (\(_,_,es) -> es) <$> lookup u <$> readTVar tp
 			es1 <- lookup u <$> readTVar to
@@ -320,7 +322,7 @@ mkPersistenza pass load modif boot resps ctx x = do
 				Nothing -> do 
 					putStrLn "stato iniziale assente"
 					forkIO $ do 
-						r <- updateSignal' >>= atomically
+						r <- atomically updateSignal' >>= atomically
 						case r of
 							Boot s -> do
 								groupWrite x "stato.boot" 0  s
@@ -329,6 +331,7 @@ mkPersistenza pass load modif boot resps ctx x = do
 					return ()
 			-- thread di persistenza appeso a trigger
 			forkIO . forever $ persistenza (groupWrite x) tv ts tp to cl tb trigger
+			forkIO . forever $ atomically (readTChan cs) 
 			putStrLn "persistenza attivata"
 	return (p,boot')
 
@@ -342,7 +345,8 @@ autofeed p = do
 		Just g -> do
 			putStr $ show i ++ ","
 			hFlush stdout
-			writeGPatch p g >> autofeed p
+			writeGPatch p g
+			autofeed p
 
 
 

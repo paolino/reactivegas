@@ -27,7 +27,7 @@ sessioning path l rs = do
 	signal <- atomically  newTChan
 	let emit = writeTChan signal () 
 	os <- catch (readFile (path </> "sessioni") >>= \os -> putStrLn "rilevata persistenza delle sessioni" >> return os) (const $ return "[]")  
-	qs <- mapM (secondM $ rs emit . Just) $ case reads (last os `seq` os) of
+	qs <- mapM (secondM $ rs emit . Just) $ case reads os of
 		[] -> []
 		[(x,_)] -> x
 	tcs <- atomically . newTVar $ restoreDB l qs

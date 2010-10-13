@@ -2,19 +2,23 @@
 module Server.Opzioni (parseArgs, Argomenti (..)) where
 
 import System.Environment( getArgs )
+import System.Directory (getDirectoryContents)
 import System.Console.GetOpt (getOpt, usageInfo, ArgOrder (Permute), OptDescr (Option) , ArgDescr(NoArg,ReqArg))
+import Data.List (elem)
+import System.FilePath ((</>))
+import Control.Arrow ((&&&))
 
 data Argomenti = Argomenti
-	{directory :: String  -- ^ directory di lavoro / nome del gruppo
+	{directory :: [(String,String)]  -- ^ directory di lavoro / nomi dei gruppi
 	,porta :: Int          -- ^ porta cgi
-	,lmov :: Int           -- ^ grandezza coda di movimenti di gru
+	,lmov :: Int           -- ^ grandezza coda di movimenti di gruppo
 	,lsess :: Int          -- ^ numero massimo di ricordi per sessione
 	,lrem :: Int           -- ^ numero massimo di sessioni simultanee 
 	,tokpass :: String 	-- ^ password di lettura tokens	
 	} deriving Show        
 
 
-data Flag = Versione | Nome String | Path String | Porta String | LMov String | LSess String | LRem String | Tokpass String deriving Show
+data Flag = Versione | Nome String | Path [(String,String)] | Porta String | LMov String | LSess String | LRem String | Tokpass String deriving Show
 
 options :: [OptDescr Flag]
 options = [
@@ -48,7 +52,9 @@ parseArgs ars = do
 	args <- getArgs
 	case getOpt Permute options args of
 		(_, [],      [])     -> error $ "manca la cartella di lavoro\n" ++ fallimento
-		(flags ,c : _ , [])   -> return . foldr set ars $ flags ++ [Path c]
+		(flags ,c : _ , [])   -> do
+			paths <- filter (not . (`elem` [".",".."])) `fmap` getDirectoryContents c
+			return . foldr set ars $ flags ++ [Path $ map ((c </>) &&& id ) paths]
 		(_,     _,       msgs)   -> error $ concat msgs ++ fallimento
 
 
