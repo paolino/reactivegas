@@ -1,15 +1,15 @@
-{-# LANGUAGE Rank2Types #-}
+{-# LANGUAGE Rank2Types, TupleSections #-}
 
 -- | Modulo di persistenza del programma.
 -- La persistenza ha 2 facce. Ci sono i dati attuali che persistono su file cosi' come sono e i dati storici che persistono su file attraverso sqlite.
-module Applicazioni.Persistenza (Persistenza (..), mkPersistenza, Change (..), Modificato) where
+module Applicazioni.Persistenza where -- (Persistenza (..), mkPersistenza, Change (..), Modificato) where
 
 import Data.Maybe (fromJust,isJust,isNothing)
 import Data.List (sort,find, partition,delete, sortBy, groupBy, union, (\\))
 import Data.Ord (comparing)
 import Data.Function (on)
 
-import Control.Monad (when, liftM2, forever,mplus, join)
+import Control.Monad (when, liftM2, forever,mplus, join,(<<))
 import Control.Monad.Writer (runWriter, Writer)
 import Control.Monad.Reader
 import Control.Monad.Error
@@ -29,7 +29,7 @@ import Core.Types (Evento,Utente,Esterno,Responsabile)
 import Core.Contesto (Contestualizzato)
 import Core.Programmazione (Message)
 import Applicazioni.Database.GPatch (mkGPatches, GPatches (..))
-
+import Lib.Tokens
 import Debug.Trace
 
 fJ y x = case x of {Nothing -> error (show y) ; Just x -> x}
@@ -57,7 +57,6 @@ groupUnwrite x y  = do
 			_ -> Nothing
 -------------------------------------------------------------------------------------------------------------------
 
-type Token = String
 
 -- | Operazione di persistenza. Scrive un istantanea di (stato,patches) oppure i tokens, quando richiesto dal trigger
 persistenza 	:: Show a
@@ -67,7 +66,7 @@ persistenza 	:: Show a
 	-> TVar [(Utente,Patch)]-- ^ associazione utente -> patch individuale
 	-> TVar [(Utente,[Evento])] -- ^ eventi orfani
 	-> TChan String		-- ^ logger
-	-> TVar (Token,[Token],[Responsabile])	-- ^ tokens di boot
+	-> TVar (Maybe (ConcurrentTokenizer Modulars String),[Responsabile])	-- ^ tokens di boot
 	-> TChan () 		-- ^ trigger di persistenza
 	-> IO ()
 
@@ -77,14 +76,17 @@ persistenza write tversion tstato tupatch torfani tlog ttokens trigger = do
 		version 	<- readTVar tversion
 		patches 	<- readTVar tupatch
 		orfani 		<- readTVar torfani
-		tokens		<- readTVar ttokens
+		tokens	<- readTVar ttokens
 		stato 		<- readTVar tstato
 		return (stato,version,patches,orfani,tokens)
 	when (isJust stato) $ do 
 		write "patches" version patches
 		write "orfani" version orfani
 	when (isNothing stato) $ do
-		write "tokens" 0 tokens
+		r <- case tokens of
+			(Nothing,rs) -> return (Nothing,rs)
+			(Just t,rs) -> ((,rs) . Just) `fmap` serializeC t  
+		write "tokens" 0 $ r
 	
 
 -- | Operazione di ripristino. Legge lo stato del gruppo 
@@ -95,20 +97,23 @@ ripristino
 	-> TVar [(Utente,Patch)]
 	-> TVar [(Utente,[Evento])] -- ^ eventi orfani
 	-> TChan String
-	-> TVar (Token, [Token],[Responsabile])	-- ^ tokens di boot
+	-> TVar (Maybe (ConcurrentTokenizer Modulars String) ,[Responsabile])	-- ^ tokens di boot
 	-> IO ()
 
 ripristino unwrite tversion tstato tupatch torfani tlog ttokens = do
 	mt <- unwrite "tokens" 
 	ps <- unwrite "patches" 
 	os <- unwrite "orfani" 
-	atomically $ do 
-		ms <- readTVar tstato
-		case ms of
-			Nothing -> case mt of
-					Nothing -> return () 
-					Just (_,(p,x,y)) -> writeTVar ttokens (p,x,y)
-			Just x -> do
+	ms <- atomically $ readTVar tstato
+	case ms of
+		Nothing -> case mt of
+			Nothing -> return () 
+			Just (_,(mtz,resps)) -> do 
+				mtz' <- case mtz of 
+					Nothing -> return Nothing
+					Just (p,ts) -> Just <$> mkConcurrentTokenizer p ts
+				atomically $ writeTVar ttokens (mtz',resps)
+			Just x -> atomically $ do
 				v <- readTVar tversion
 				case ps of
 					Nothing -> return ()
@@ -117,7 +122,6 @@ ripristino unwrite tversion tstato tupatch torfani tlog ttokens = do
 					Nothing -> return ()
 					Just (v',os) -> when (v' == v) $ writeTVar torfani os
 				writeTVar tversion v
-
 
 -- | messaggi di avvenuta persistenza
 data Change a b	= Boot 	a					-- ^ messaggio di nuovo stato
@@ -191,11 +195,10 @@ mkModificato f ts tp l mr es = do
 -- | strato funzionale di persistenza, lo stato in memoria è pericoloso .....
 data Persistenza a b d = Persistenza
 		{ 	readStato 	:: IO (Maybe (Int,a)),		-- ^ lettura dello stato
-			assignToken	:: Token -> Responsabile -> IO Bool, -- ^ tenta l'assegnamento di un token
-			readBoot	:: IO [Responsabile],	-- ^ elenco dei responsabili di boot
-			moreTokens	:: Token -> Int -> IO (Maybe ()),	-- ^ richiede altri tokens
-			readTokens	:: Token -> IO (Maybe [Token]), -- ^ elenco tokens mancanti
-			forceBoot	:: Token -> IO (Maybe ()),	-- ^ forza la chiusura della fase di boot
+			readTokens	:: IO (Maybe (ConcurrentTokenizer Modulars String)),
+			readResps	:: IO [Responsabile],		-- ^ lista responsabili di boot
+			addResp		:: Responsabile -> IO Bool,	-- ^ aggiunge un responsabile di boot
+			forceBoot	:: Modulars -> IO Bool,		-- ^ forza la chiusura della fase di boot
 			writeUPatch 	:: Utente -> Patch -> IO (),	-- ^ scrittura di una patch utente
 			readUPatches 	:: IO (Int,[(Utente,Patch)]),			-- ^ lettura delle patch utente
 			writeGPatch 	:: Group -> IO (),		-- ^ scrittura di una patch di gruppo
@@ -237,18 +240,6 @@ mkPersistenza pass load modif boot resps ctx x = do
 					case s of 
 						Nothing -> return Nothing
 						Just s -> readTVar tv >>= \v -> return (Just (v,s))
-		assignToken' t  r	= atomicallyP $ \k -> do
-			(p,us,as) <- readTVar tb 
-			if t `elem` us then do
-				let 	us' = delete t us
-					as' = r:as
-				writeTVar tb (p,us',as')
-				when (null us') $ do
-					let s = boot as'
-					writeTVar ts $ Just s
-					k (Boot s)
-				return True
-				else return False
 
 		forceBoot' t = atomicallyP $ \k -> do
 			(p,_,as) <- readTVar tb 
@@ -258,22 +249,9 @@ mkPersistenza pass load modif boot resps ctx x = do
 				k (Boot s)
 				return (Just ())
 				else return Nothing
-		moreTokens' t n = do 
-			g <- getStdGen 
-			atomically $ do
-				(p,us,as) <- readTVar tb 
-				if t == p then do 
-					let ts = map show . take n $ randomRs (0,1000000000::Int) g
-					writeTVar tb (p, us ++ ts,as)  
-					return $ Just ()
-					else return Nothing
 
-		readBoot' 	= atomically $ do 
-					(_,_,rs) <- readTVar tb
-					return rs
-		readTokens' t	 = atomically $ do
-					(p,ts,_) <- readTVar tb
-					return $ if t == p then Just ts else Nothing
+		readBoot' 	= atomically $ snd <$> readTVar tb
+		readTokens' t	 = atomically $ fst <$> readTVar tb
 		writeUPatch' u p@(_,_,es) = do
 			s <- atomically $ fJ "Persistenza" <$> readTVar ts
 			rl <- runErrorT $ runReaderT (fromPatch resps p) (ctx s)
@@ -351,4 +329,3 @@ autofeed p = do
 
 
 		
-

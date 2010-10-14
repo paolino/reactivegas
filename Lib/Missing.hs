@@ -71,3 +71,4 @@ untilNothing r f = do
 		Just y -> (y:) `fmap` untilNothing r' f
 		Nothing -> return []
 
+type Modify m a =  (a -> m (Maybe a)) -> m ()
