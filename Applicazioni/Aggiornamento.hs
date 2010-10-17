@@ -39,7 +39,7 @@ sincronizza pe (xs,ys) = do
 read'S x = catchRead "on module Aggiornamento (Server, CGI)" x
 
 -- | Uno strato Server CGI intorno alle operazioni di aggiornamento
-serverAggiornamento :: (Name -> Maybe (Persistenza a b d)) -> CGI (Maybe CGIResult)
+serverAggiornamento :: (Name -> IO (Maybe (Persistenza a b d))) -> CGI (Maybe CGIResult)
 serverAggiornamento persistenze = do
 	vs <- getVars
 	case lookup "REQUEST_URI" vs of
@@ -49,13 +49,13 @@ serverAggiornamento persistenze = do
 					n <- maybe 0 read'S <$> getInput "limite"
 					runMaybeT $ do
 						g <- MaybeT $ getInput "gruppo" 
-						pe <- MaybeT . return $ persistenze g
+						pe <- MaybeT $ persistenze g
 						lift (lift (aggiorna pe n) >>= output . show)
 				("remote":"sincronizza":_) -> do
 					s <- maybe ([],[]) read'S <$> getInput "valore"
 					runMaybeT $ do
 						g <- MaybeT (getInput "gruppo") 
-						pe <- MaybeT .return $ persistenze g
+						pe <- MaybeT $ persistenze g
 						lift (lift (sincronizza pe s) >>= output . show)
 				_ -> return Nothing
 		_ -> return Nothing

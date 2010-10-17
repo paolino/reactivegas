@@ -10,10 +10,11 @@ import Text.ParserCombinators.ReadPrec
 import Text.Read
 import System.Random (Random (..))
 import Control.Arrow ((***),first)
+import Data.Typeable (Typeable)
 
 import Lib.Passo
 import Lib.Response 
-import Lib.Missing (Modify)
+import Lib.Modify (PeekPoke (peek), modifyT)
 
 -- testing
 
@@ -33,29 +34,34 @@ instance Random Token where
 
 
 -- | a token server
-data Tokenizer m a = Tokenizer 
-	{	leftTokens :: Token -> Maybe [(Token,a)]
+data Tokenizer a b = Tokenizer 
+	{
+	-- | tokens waiting
+		leftTokens :: Token -> Maybe [(Token,b)]
+	-- | elements of received tokens
+	, 	promotedElements :: [(b,a)]	
 	-- | given a token, use it if it is valid. Nothing signal an invalid token. otherwise compute a new tokenizer without the use one.
-	, 	useToken :: Token -> Maybe (a,Tokenizer m a)
+	, 	useToken :: Token -> Maybe ((Token,b), a -> Tokenizer a b)
 	-- | add new tokens to the token pool. The random monad is used to extract random tokens from it. Nothing signals a wrong password
-	,	generateTokens :: MonadIO m => Token -> Int -> Maybe ((Token -> m a) -> m (Tokenizer m a))
+	,	generateTokens :: Token -> b -> Maybe (IO (Tokenizer a b))
 	-- | expose internals. Should not be used to show , but it's simmetric to read :)
-	,	serialize :: (Token,[(Token,a)])
+	,	serialize :: (Token,[(Token,b)],[(b,a)])
 	}
-
 -- | build a tokenizer from an amministrator token and a list of give tokens
-mkTokenizer :: (MonadIO m, Show a) => Token -> [(Token,a)] -> Tokenizer m a
-mkTokenizer p0 zs = let
-	to x = Tokenizer (leftTokens_ x) (useToken_ x) (generateTokens_ x) (p0,x)
+mkTokenizer :: (Show a) => (Token,[(Token,b)],[(b,a)]) -> Tokenizer a b
+mkTokenizer (p0,zs,as) = let
+	to xs as = Tokenizer (leftTokens_ xs) (promotedElements_ as) (useToken_ xs as) (generateTokens_ xs as) (p0,xs,as)
 	leftTokens_ xs p = if p /= p0 then Nothing
 		else Just xs
-	useToken_ xs x = fmap (snd *** to) $ dropfst xs ((==x) . fst)
-	generateTokens_ xs p n = if p /= p0 then Nothing
-			else Just $ \c -> do
-				ts <- liftIO $ replicateM n getRandom
-				as <- mapM c $ ts
-				return . to $ xs ++ zip ts as
-	in to zs
+	promotedElements_ as = as
+	useToken_ xs as x = do 
+		((t,b),xs') <- dropfst xs ((==x) . fst)
+		return $ ((t,b),\a -> to xs' ((b,a):as))
+	generateTokens_ xs as p b = if p /= p0 then Nothing
+			else Just $ do
+				t <- getRandom
+				return $ to ((t,b):xs) as
+	in to zs as
 
 -- | a single operation filter, removing only the first match 
 dropfst 	:: [a] 		-- ^ list to be filtered
@@ -66,45 +72,56 @@ dropfst xs c = let (y,z) = break c xs in if null z then Nothing else Just $ (hea
 
 
 uiTokenizer 
-  :: forall m c b . (Show c , MonadIO m, Functor m) 
-	=> Modify (Costruzione m b) (Tokenizer (Costruzione m b) c)
-	-> (Token -> Costruzione m b c)
- 	-> (((c -> Costruzione m b ()) -> Costruzione m b ()) -> Costruzione m b ())
+  :: forall m c b d . (Typeable d , Read d, Show d,Read c, Show c , MonadIO m, Functor m) 
+	-- | tokenizer che raccolglie elementi c
+	=> PeekPoke (Tokenizer c d)
+	-- | presentazione elenco elementi raccolti
+	-> String 				
+	-- | interazione di creazione valore associato vincolato
+	-> (Costruzione m b d) 	
+	-- | utilizzatore dell'elemento raccolto		
+ 	-> ((((Token,d) -> Costruzione m b c) -> Costruzione m b ()) -> Costruzione m b ())
+	-- | procedura di finalizzazione tokenizer
+	-> ([c] -> Costruzione m b ())
+	-- | menu
      	-> [(String,Costruzione m b ())] 
 
-uiTokenizer tokens notante accessed = [
+uiTokenizer tokens notedrv notante accessed close = [
 	("utilizza un token", accessed $ \f -> do
 			t' <- libero "il token da utilizzare" 
-			tokens $ \tk -> case useToken tk t' of
+			modifyT tokens $ \tk -> case useToken tk t' of
 					Nothing -> do 
 						errore $ ResponseOne "il token non è valido"
 						return Nothing
-					Just (n,tk') -> f n >> return (Just tk')
+					Just (b,g) -> f b >>= \h -> return (Just $ g h)
 			),
+	(notedrv,liftIO (peek tokens) >>= \tk -> do
+		let (ds,cs) = unzip $ promotedElements tk
+		output $ ResponseAL [(notedrv , ResponseMany $ map ResponseOne ds)]),
 	("token inutilizzati", do
-			t <- password "inserimento token di amministrazione"
-			tokens $ \tk -> do
+			t <- libero "inserimento token di amministrazione"
+			modifyT tokens $ \tk -> do
 				case leftTokens tk t of
 					Nothing -> errore $ ResponseOne "il token di amministrazione è un altro"
-					Just ts -> output $ ResponseAL [("elenco tokens inutilizzati",
-						ResponseAL $ map (first show) ts)]
+					Just ts -> output $ ResponseAL $ map (show *** ResponseOne) ts
 				return Nothing
 	 
 			),
-	("generazione nuovi token", do
-			n <- libero "numero di token da aggiungere"
-			t <- password "il token di amministrazione"
-			tokens $ \tk -> case generateTokens tk t n of
+	("generazione nuovo token", do
+			a <- notante
+			t <- libero "il token di amministrazione"
+			modifyT tokens $ \tk -> case generateTokens tk t a of
 				Nothing -> do 
 					errore $ ResponseOne "il token di amministrazione è un altro"
 					return Nothing
-				Just f -> Just `fmap` f notante
-			)
+				Just g -> Just `fmap` liftIO g
+					
+
+			),
+	("chiusura raccolta tokens", do
+			t <- libero "il token di amministrazione"
+			liftIO (peek tokens) >>= \tk -> 
+				case leftTokens tk t of
+					Nothing -> errore $ ResponseOne "il token di amministrazione è un altro"
+					Just _ -> close $ map snd $ promotedElements tk)
 	]
-uiTokenizerCheck  :: Monad m => Modify (Costruzione m b) (Tokenizer (Costruzione m b) c) -> Costruzione m b () -> Costruzione m b () 
-uiTokenizerCheck tokens cont = do
-	 	t <- password "inserimento token di amministrazione"
-		tokens $ \tk -> do 
-			if fst (serialize tk) == t then cont else 
-				errore $ ResponseOne "il token di amministrazione è un altro"
-			return Nothing

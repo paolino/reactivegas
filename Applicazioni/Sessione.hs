@@ -19,7 +19,7 @@ import Debug.Trace
 type Name = String 
 -- | interfaccia concorrente per una sessione di interazione
 data Sessione a b = Sessione 
-	{queryGruppi :: [Name]			-- ^ lista dei gruppi disponibili
+	{queryGruppi :: IO [Name]			-- ^ lista dei gruppi disponibili
 	,readGruppo :: IO (Maybe Name)			-- ^ gruppo selezionato
 	,writeGruppo :: Maybe Name -> IO ()		-- ^ cambia gruppo
 	,readEventi :: IO [Evento]			-- ^ legge gli eventi in memoria		
@@ -38,7 +38,7 @@ data Triggers = TResponsabile (Maybe Responsabile) | TEventi [Evento] | TConserv
 	deriving Show
 
 -- | modello di ricomputazione che deve essere fornito
-type Update a b = Name -> Maybe (Int -> Maybe Responsabile -> [Evento] -> STM (a,b))
+type Update a b = Name -> STM (Maybe (Int -> Maybe Responsabile -> [Evento] -> STM (a,b)))
 
 -- | azione di modifica di uno di eventi o responsabile
 update 	
@@ -53,24 +53,28 @@ update
 		,TVar (Maybe Name)
 		,TChan Triggers
 		,TVar (Maybe (STM (Change c d)))
-		,(Name -> Maybe (STM (STM (Change c d)))) -- una condizione esterna che deve fare scattare il rinnovamento
-		,(Name -> Maybe (Maybe Utente -> STM [Evento])) -- gli eventi pubblicati per un utente
+		,(Name -> STM (Maybe (STM (STM (Change c d))))) -- una condizione esterna che deve fare scattare il rinnovamento
+		,(Name -> STM (Maybe (Maybe Utente -> STM [Evento]))) -- gli eventi pubblicati per un utente
 		) -- ^ memoria condivisa
 	-> STM ()
 update z f l (eventi, accesso, conservative, stato, caricamento, gruppo, triggers, signalbox, newsignal, publ) =  do
 	let 	-- | update causato da modifica utente
-		onG f = readTVar gruppo >>= maybe (return ()) f 
 		interna = do 	
 				t 	<- readTChan triggers 
 				case t of 	
-						TResponsabile mr 	->  onG $ \g -> do
-							writeTVar accesso mr
-							maybe (return ()) (\k -> k (fst <$> mr) >>= writeTVar eventi)
-								$ publ g
+						TResponsabile mr 	->  do
+							mg <- readTVar gruppo
+							case mg of 
+								Nothing -> return ()
+								Just g -> do 
+									writeTVar accesso mr
+									publ g >>= \mp -> case mp of
+										Nothing -> return ()
+										Just k -> k (fst <$> mr) >>= writeTVar eventi
 						TEventi es 		->  writeTVar eventi es
 						TConservative l 	->  writeTVar conservative l
 						TGruppo n 		-> case n of
-							Just g -> case newsignal g of 
+							Just g -> newsignal g >>= \mns -> case mns of 
 								Just ns -> do
 									signal <- ns
 									writeTVar signalbox (Just signal)
@@ -117,7 +121,8 @@ update z f l (eventi, accesso, conservative, stato, caricamento, gruppo, trigger
 			evs 	<- readTVar eventi
 			l' 	<- readTVar conservative
 			-- effettua il caricamento rispettoso dell condizioni di sessione 
-			case f g of 
+			mu <- f g
+			case mu of 
 				Nothing -> do
 					writeTVar stato Nothing
 					writeTVar caricamento Nothing
@@ -132,11 +137,11 @@ update z f l (eventi, accesso, conservative, stato, caricamento, gruppo, trigger
 -- | costruisce l'interfaccia di sessione a partire da un modificatore di stato in STM
 mkSessione 	:: Update a  b		-- ^ modificatore di stato
 		-> Int 			-- ^ livello di caricamento di base
-		-> (Name -> Maybe (STM (STM (Change c d))))		-- ^ segnale di aggiornamento stato
-		-> (Name -> Maybe (Maybe Utente -> STM [Evento]))  -- ^ query sugli eventi pubblicati per un utente
+		-> (Name -> STM (Maybe (STM (STM (Change c d)))))		-- ^ segnale di aggiornamento stato
+		-> (Name -> STM (Maybe (Maybe Utente -> STM [Evento])))  -- ^ query sugli eventi pubblicati per un utente
 		-> STM ()			-- ^ segnale di modifica sessione
 		-> Maybe (Maybe Name,[Evento],Maybe Responsabile,Int)
-		-> [Name]
+		-> IO [Name]
 		-> IO (Sessione a b)	
 mkSessione f l signal publ exsignal ms gns =  do
 	z <- randomRIO (0,100000) :: IO Int
@@ -144,7 +149,7 @@ mkSessione f l signal publ exsignal ms gns =  do
 					msc <- case ms of
 						Nothing -> return Nothing
 						Just (Nothing,_, _ ,_) -> return Nothing
-						Just (Just g,es,mr,cl) -> case f g of 
+						Just (Just g,es,mr,cl) -> f g >>= \x -> case x of 
 							Just k -> Just <$> k cl mr es 
 							Nothing -> return Nothing
 					liftM2 (,) (newTVar $ fst <$> msc ) (newTVar $ snd <$> msc)
@@ -157,7 +162,7 @@ mkSessione f l signal publ exsignal ms gns =  do
 		Nothing -> newTVar Nothing
 		Just (mg,_,_,_) -> case mg of
 			Nothing -> newTVar Nothing 
-			Just g -> case  signal g of
+			Just g -> signal g >>= \ms -> case ms of
 				Nothing -> newTVar Nothing
 				Just mks -> mks >>= newTVar . Just			
 	let	memoria = (eventi, accesso, conservative, stato, caricamento ,gruppo,triggers, signalbox , signal, publ)

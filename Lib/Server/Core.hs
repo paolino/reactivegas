@@ -41,10 +41,11 @@ restore :: forall e b c. Form e b c -> [Value] -> IO (Form e b c)
 restore base hs = foldM k (Right base) (reverse hs) >>= either return return
 	where 	k :: Either (Form e b c) (Form e b c) -> Value -> IO (Either (Form e b c) (Form e b c))
 		k (Right f) v = do
+			print v
 			let mr = continuazione f v
 			case mr of 
 				Nothing -> return (Left f)
-				Just r -> Right <$> r 
+				Just r ->   Right <$> r 
 		k lf _ = return lf
 
 -- | i valori delle richieste possibili, scevri dai valori comuni

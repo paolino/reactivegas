@@ -21,6 +21,8 @@ import Lib.TreeLogs (eccoILogs)
 import Lib.Firmabile (cryptobox, Chiave)
 import Lib.Prioriti (R)
 import Lib.Response (Response (..))
+import Lib.Tokens
+import Lib.Modify
 
 
 import Core.Types (Esterno, Evento, Utente, Responsabile)
@@ -76,11 +78,12 @@ dichiarazioni = concat $
 			]
 
 		]
-amministrazione :: Interfaccia ()
-amministrazione = rotonda $ \k -> do 
+-- amministrazione :: Interfaccia () -> Interfaccia ()
+amministrazione ammenu = rotonda $ \k -> do 
 	let 	
-		sempre = [("selezione del gruppo di acquisto", cambiaGruppo)] 
-		inizio = [("costruzione del gruppo",ensureGruppo $ bootGruppo k)] 
+		sempre = [("selezione del gruppo di acquisto", cambiaGruppo),
+				("amministrazione del servizio",mano "amministrazione del servizio" ammenu)] 
+		inizio = [("costruzione del gruppo",ensureGruppo $  bootGruppo)] 
 		normale = 
 			[("scelta del responsabile autore delle dichiarazioni", ensureStato accesso )
 			,("modifica della considerazione delle dichiarazioni", ensureGruppo eventLevelSelector)
@@ -100,58 +103,17 @@ amministrazione = rotonda $ \k -> do
 	menu "amministrazione" $ sempre ++ costr
 			
 -- bootGruppo :: Interfaccia ()
-elencoChiavi =  do
-				xs <- sepU readBoot 
-				P.output $ Response 
-					[("elenco chiavi responsabile già inserite",
-						ResponseMany $ map (ResponseOne . fst) xs)]
-bootGruppo k = menu "preparazione stato iniziale del gruppo" $ 
-			[("elenco delle chiavi responsabile già inserite",elencoChiavi)
-			,("inserimento di un nuovo responsabile", do
-				t <- P.libero "inserimento del oken"
-				u <- P.libero "scelta del nomignolo di utente e responsabile"
-				xs <- sepU readBoot
-				if u `elem` map fst xs then bocciato "nome utente già utilizzato"
-					else do
-						mr <- nuovoResponsabile u
-						case mr of 
-							Nothing -> bocciato "errore di digitazione"
-							Just r -> do 
-								b <- sepU $ ($ r) . ($t) . assignToken 
-								when (not b) $ bocciato 
-									"token invalido o già utilizzato"
-				elencoChiavi
-				)
-			,("gestione tokens (privato)", menu "gestione tokens" [
-				("tokens non ancora assegnati", do
-				t <- P.password "password lettura tokens"
-				mxs <- sepU $ ($t) . readTokens 
-				case mxs of 
-					Just xs -> P.output $ ResponseMany $ map ResponseOne xs
-					Nothing -> bocciato $ "password errata"
-				),
-				("richiesta di nuovi tokens", do
-				n <- P.libero "numero di tokens da aggiungere"
-				t <- P.password "password lettura tokens"
-				mts <- sepU $ ($n). ($t) . moreTokens 
-				case mts of 
-					Just () -> return ()
-					Nothing -> bocciato $ "password errata"
-
-				)
-				,("fine forzata della fase di boot", do 
-				t <- P.password "password lettura tokens"
-				m <- sepU $ ($t) . forceBoot 
-				case m of 
-					Just xs -> k ()
-					Nothing -> bocciato $ "password errata"
-
-				)])
-			]
-
+bootGruppo = do
+	tok <- sepU (return . modTokens) :: Interfaccia (PeekPoke (Tokenizer Responsabile Utente))
+	mano "costruzione del gruppo" $ uiTokenizer tok "elenco responsabili raccolti" 
+		(P.libero $ "nome del responsabile associato al nuovo token")
+		(\next -> next $ \(_,u) -> do
+			p <- P.password "password per il nuovo responsabile"
+			return (u, cryptobox p))
+		(\c -> sepU $ ($c) . forceBoot)
 
 cambiaGruppo = do
-	gs <- ses (return . queryGruppi) 
+	gs <- ses (queryGruppi) 
 	g <- P.scelte (("<nessuno>",Nothing): zip gs (map Just gs)) "seleziona il gruppo di acquisto" 
 	ses $ ($g) . writeGruppo
 
@@ -174,21 +136,19 @@ ensureResponsabile f = ensureStato  $ do
 		Nothing -> bocciato "manca la selezione del responsabile"
 		Just _ -> f
 
-applicazione :: Costruzione MEnv () ()
-applicazione = rotonda $ \_ -> do
+-- applicazione :: Costruzione MEnv () ()
+applicazione ammenu = rotonda $ \_ -> do
 	menu "menu principale" $ 
 				[
-				("gestione dichiarazioni" , ensureResponsabile $ rotonda $ \_ -> menu "gestione dichiarazioni" $ dichiarazioni), 
-				("interrogazioni sulle attivita'", ensureGruppo $ rotonda $ \_ -> menu "interrogazioni sulle attivita'" 
-					[("descrizione della sessione",descrizione),
-					("effetto delle ultime dichiarazioni", ensureStato $ do
+				("gestione dichiarazioni" , ensureResponsabile $ rotonda $ \_ -> menu "gestione dichiarazioni" $ dichiarazioni),	
+				("descrizione della sessione",descrizione),
+				("effetto delle ultime dichiarazioni", ensureStato $ do
 					c <- fromJust <$> ses readCaricamento 
 					P.output . Response $ 
-						[("effetto delle ultime dichiarazioni",  c)])]),
-
+						[("effetto delle ultime dichiarazioni",  c)]),
 
 				("interrogazione sullo stato del gruppo", ensureStato  interrogazioni),
-				("amministrazione", amministrazione)
+				("amministrazione", amministrazione ammenu)
 				]
 
 

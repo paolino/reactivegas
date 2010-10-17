@@ -11,6 +11,7 @@ import Control.Applicative
 import Control.Monad.Cont
 import Control.Monad.State
 import Control.Monad.Reader
+import Control.Concurrent.STM
 import Control.Monad.Error
 import Debug.Trace
 
@@ -55,23 +56,24 @@ sel f = asks f >>= liftIO
 
 type Name = String 
 
-type Environment = (Name -> Maybe (Persistenza QS Effetti Response), Sessione (Maybe QS) Response)
+type Environment = (Name -> STM (Maybe (Persistenza QS Effetti Response)), Sessione (Maybe QS) Response)
 
 statoPersistenza :: (Functor m, MonadReader Environment m,MonadIO m) => m QS
 
-statoPersistenza = fmap (snd . fJ "0.UI.Server") . sel $ \(pe,se) ->  do
-			g <- readGruppo se
-			readStato (fJ "1.UI.Server" $ pe (fJ "2.UI.Server" g))
+statoPersistenza = (snd . fromJust) `fmap` sepU readStato 
 
 statoSessione =  fmap (fJ "3.UI.Server".fJ "4.UI.Server") . sel $ readStatoSessione . snd   
 
 ses f = sel $ f . snd
 sepU f = sel $ \(pe,se) -> do
 		g <- readGruppo se
-		f . fJ "5.UI.Server" $ (g >>= pe)
+		pe' <- maybe (return Nothing) (\g -> atomically (pe g)) g
+		f . fJ "5.UI.Server" $ pe'
 sep f =  sel $ \(pe,se) -> do
 		g <- readGruppo se
-		f  (g >>= pe)
+		pe' <- maybe (return Nothing) (\g -> atomically (pe g)) g
+		f  (pe')
+
 -- | la monade dove gira il programma. Mantiene in lettura lo stato del gruppo insieme alle operazioni di IO. Nello stato la lista degli eventi aspiranti un posto nella patch
 type MEnv  = ReaderT Environment IO 
 

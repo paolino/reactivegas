@@ -7,6 +7,7 @@ import System.Console.GetOpt (getOpt, usageInfo, ArgOrder (Permute), OptDescr (O
 import Data.List (elem)
 import System.FilePath ((</>))
 import Control.Arrow ((&&&))
+import Lib.Tokens
 
 data Argomenti = Argomenti
 	{directory :: [(String,String)]  -- ^ directory di lavoro / nomi dei gruppi
@@ -14,7 +15,7 @@ data Argomenti = Argomenti
 	,lmov :: Int           -- ^ grandezza coda di movimenti di gruppo
 	,lsess :: Int          -- ^ numero massimo di ricordi per sessione
 	,lrem :: Int           -- ^ numero massimo di sessioni simultanee 
-	,tokpass :: String 	-- ^ password di lettura tokens	
+	,tokpass :: Token 	-- ^ password di lettura tokens	
 	} deriving Show        
 
 
