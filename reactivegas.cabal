@@ -29,11 +29,11 @@ Executable server
                 MaybeT      ,
                 pretty      ,
                 filepath    ,
-                FileManipCompat   ,
+                filemanip  ,
                 network,
                 directory  , 
                 stm, old-time,
                 xhtml, 
                 split,
-                scgi,url,HDBC-sqlite3,HDBC, HTTP
+                scgi,url,HDBC-sqlite3,HDBC, HTTP,haskeline, MonadRandom
 

@@ -279,12 +279,13 @@ richiedente (Permesso r _) = r
 data Check = Positivo | Negativo | Indecidibile deriving (Show,Read,Eq)
 
 -- controlla che la maggioranza sia raggiunta
-maggioranza :: (Responsabili `ParteDi` s) => ([Utente],[Utente]) -> MTInserzione s c Utente Check
+maggioranza :: (Responsabili `ParteDi` s, Integer `ParteDi` s) => ([Utente],[Utente]) -> MTInserzione s c Utente Check
 maggioranza (ps,ns) = do 	
 	Responsabili us _ <- osserva
-	let soglia =  (length us + 1) `div` 2
-	return $ if length ns >= soglia then Negativo else 
-			if length ps >= soglia then Positivo else
+	(i :: Integer) <- osserva
+	let soglia =  if i == 0 then 0 else (length us + 1) `div` 2
+	return $ if length ps >= soglia then Positivo else 
+			if length ns >= soglia then Negativo else
 				Indecidibile
 
 programmazionePermesso se ur ut k kn = do

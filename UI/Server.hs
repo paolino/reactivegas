@@ -21,6 +21,7 @@ import Lib.TreeLogs (eccoILogs)
 import Lib.Firmabile (cryptobox, Chiave)
 import Lib.Prioriti (R)
 import Lib.Response (Response (..))
+import Lib.Modify
 
 
 import Core.Types (Esterno, Evento, Utente, Responsabile)
@@ -39,6 +40,7 @@ import Eventi.Acquisto
 import Applicazioni.Reactivegas (QS,bianco, TS, sortEventi, levelsEventi, maxLevel)
 import Applicazioni.Persistenza (Persistenza (..))
 import Applicazioni.Sessione (Sessione (..))
+import Applicazioni.Amministratore (Amministratore (..))
 
 import Lib.Tokenizer
 import UI.Lib
@@ -47,14 +49,14 @@ wrapCostrActions
 	:: (a -> Interfaccia ()) 
 	-> [MEnv (SUtente,TS) -> (a -> Interfaccia ()) -> (String -> Interfaccia ()) -> [(String,Interfaccia ())]]
 	-> [(String,Interfaccia ())]
-wrapCostrActions g = concatMap (\f -> f q g bocciato) where
+wrapCostrActions g = concatMap (\f -> f q g (bocciato "costruzione di una dichiarazione")) where
 	q = do 	s <- fst <$> statoSessione
 		mu <- fmap fst <$> ses readAccesso
 		return (SUtente mu,s)
 
 
 interrogazioni :: Interfaccia ()
-interrogazioni = rotonda $ \_ -> menu "interrogazioni sullo stato del gruppo" $ (wrapCostrActions P.output $ [
+interrogazioni = rotonda $ \_ -> menu "interrogazioni sullo stato del gruppo" $ (wrapCostrActions (P.output True) $ [
 		costrQueryAnagrafe,
 		costrQueryAccredito,
 		costrQueryImpegni,
@@ -72,124 +74,98 @@ dichiarazioni = concat $
 		,wrapCostrActions addEvento [costrEventiAssenso]
 
 		,	[("----------",return ())
-			,("pubblica le dichiarazioni in sessione",salvataggio)
-			,("elimina delle dichiarazioni",eliminazioneEvento)
+			,("pubblica le dichiarazioni in sessione",salvataggio "pubblica le dichiarazioni in sessione")
+			,("elimina delle dichiarazioni",eliminazioneEvento "elimina delle dichiarazioni")
 			]
 
 		]
-amministrazione :: Interfaccia ()
-amministrazione = rotonda $ \k -> do 
-	let 	
-		sempre = [("selezione del gruppo di acquisto", cambiaGruppo)] 
-		inizio = [("costruzione del gruppo",ensureGruppo $ bootGruppo k)] 
-		normale = 
-			[("scelta del responsabile autore delle dichiarazioni", ensureStato accesso )
-			,("modifica della considerazione delle dichiarazioni", ensureGruppo eventLevelSelector)
-			,("digestione di tutte le dichiarazioni pubblicate", ensureStato sincronizza )
-			,("richiesta nuove chiavi da responsabile", ensureStato creaChiavi)
-			,("accesso indiretto" , mano "accesso indiretto" 
-				[("carica un aggiornamento individuale", ensureStato caricaAggiornamentoIndividuale )
-				,("carica un aggiornamento di gruppo", ensureStato caricaAggiornamentoDiGruppo)
-				,("scarica gli aggiornamenti individuali", ensureStato $ 
-				  sepU readUPatches >>= \ (n,ups) -> P.download ("patches." ++ show n) ups)
-					,("scarica un aggiornamento di gruppo",ensureStato $ scaricaAggiornamentoDiGruppo)
-				,("scarica lo stato", ensureStato $ sepU readStato >>= maybe (bocciato "stato non presente") 
-						 (\ (n,s) -> P.download ("stato." ++ show n) s))
-				])
-			]
-	costr <- sep $ maybe (return []) (fmap (maybe inizio (const normale)) . readStato) 
-	menu "amministrazione" $ sempre ++ costr
-			
--- bootGruppo :: Interfaccia ()
-elencoChiavi =  do
-				xs <- sepU readBoot 
-				P.output $ Response 
-					[("elenco chiavi responsabile già inserite",
-						ResponseMany $ map (ResponseOne . fst) xs)]
-bootGruppo k = menu "preparazione stato iniziale del gruppo" $ 
-			[("elenco delle chiavi responsabile già inserite",elencoChiavi)
-			,("inserimento di un nuovo responsabile", do
-				t <- P.libero "inserimento del token"
-				u <- P.libero "scelta del nomignolo di utente e responsabile"
-				xs <- sepU readBoot
-				if u `elem` map fst xs then bocciato "nome utente già utilizzato"
-					else do
-						mr <- nuovoResponsabile u
-						case mr of 
-							Nothing -> bocciato "errore di digitazione"
-							Just r -> do 
-								b <- sepU $ ($ r) . ($t) . assignToken 
-								when (not b) $ bocciato 
-									"token invalido o già utilizzato"
-				elencoChiavi
-				)
-			,("gestione tokens (privato)", menu "gestione tokens" [
-				("tokens non ancora assegnati", do
-				t <- P.password "password lettura tokens"
-				mxs <- sepU $ ($t) . readTokens 
-				case mxs of 
-					Just xs -> P.output $ ResponseMany $ map ResponseOne xs
-					Nothing -> bocciato $ "password errata"
-				),
-				("richiesta di nuovi tokens", do
-				n <- P.libero "numero di tokens da aggiungere"
-				t <- P.password "password lettura tokens"
-				mts <- sepU $ ($n). ($t) . moreTokens 
-				case mts of 
-					Just () -> return ()
-					Nothing -> bocciato $ "password errata"
+richiesta_nuovo_gruppo :: Interfaccia ()
+richiesta_nuovo_gruppo = do 
+	n <- P.libero "nome del nuovo gruppo"
+	t <- sea $ ($n) . controlla_nome 
+	if t then do
+		(m :: String) <- P.libero "nome del primo responsabile"
+		p <- P.password "password del primo responsabile"
+		P.download (n ++ ".richiesta") "scarica file di richiesta inserimento nuovo gruppo" (n,(m, cryptobox p))
+		else bocciato "nome del nuovo gruppo" "nome non disponibile"
+accettazione_nuovo_gruppo :: Interfaccia ()
+accettazione_nuovo_gruppo = do
+	p <- P.password "password di amministrazione"
+	t <- sea $ return . ($p) . controlla_password
+	if t then do
+		r <- P.upload "carica la richiesta"
+		l <- sea $ ($r) . boot_nuovo_gruppo 
+		case l of 
+			True -> return ()
+			False -> bocciato "nome del nuovo gruppo" "nome non disponibile"
 
-				)
-				,("fine forzata della fase di boot", do 
-				t <- P.password "password lettura tokens"
-				m <- sepU $ ($t) . forceBoot 
-				case m of 
-					Just xs -> k ()
-					Nothing -> bocciato $ "password errata"
-
-				)])
-			]
-
-
+		else bocciato "password di amministrazione" "password do amministrazione non riconosciuta"
 cambiaGruppo = do
-	gs <- ses (return . queryGruppi) 
+	gs <- sea elenco_gruppi 
 	g <- P.scelte (("<nessuno>",Nothing): zip gs (map Just gs)) "seleziona il gruppo di acquisto" 
 	ses $ ($g) . writeGruppo
 
-ensureGruppo f = do
+ensureGruppo s f = do
 	g <- ses readGruppo
 	case g of 
-		Nothing -> bocciato "manca la selezione del gruppo"
+		Nothing -> bocciatoS s "manca la selezione del gruppo"
 		Just _ -> f 
 
-ensureStato f = ensureGruppo $ do 
-	s <- sep $ maybe (return Nothing) (fmap Just . readStato)
-	case s of 
-		Nothing -> bocciato "manca la selezione del gruppo"
-		Just Nothing -> bocciato "manca la costruzione del gruppo"
-		Just (Just _) -> f
-
-ensureResponsabile f = ensureStato  $ do
+ensureResponsabile s f = ensureGruppo s $ do
 	r <- ses readAccesso
 	case r of 
-		Nothing -> bocciato "manca la selezione del responsabile"
+		Nothing -> bocciatoS s "manca la selezione del responsabile"
 		Just _ -> f
 
-applicazione :: Costruzione MEnv () ()
+wname s f x = (s,f s x)
+
+amministrazione :: Interfaccia ()
+amministrazione = rotonda $ \k -> do
+	g <- ses readGruppo
+	let grs = case g of 
+		Nothing -> []
+		Just _ -> [
+			(,) "scelta del responsabile autore delle dichiarazioni"  accesso,
+			(,) "modifica della considerazione delle dichiarazioni"   eventLevelSelector,
+			(,) "ricezione nuove chiavi da responsabile"  creaChiavi
+			]
+	r <- ses readAccesso
+	let res = case r of 
+		Nothing -> []
+		Just _ -> [(,) "digestione di tutte le dichiarazioni pubblicate"  sincronizza]
+	menu "operazioni amministrative" $ 
+		[("selezione del gruppo di acquisto", cambiaGruppo)]
+		++ grs ++ res ++ [
+			("richiesta inserimento nuovo gruppo",richiesta_nuovo_gruppo) ,
+			("accettazione richiesta nuovo gruppo", accettazione_nuovo_gruppo)
+			]
+
+
+indiretto =  wname  "accesso indiretto"  mano
+				[
+				wname "carica un aggiornamento individuale"  ensureGruppo caricaAggiornamentoIndividuale ,
+				wname "carica un aggiornamento di gruppo"  ensureGruppo caricaAggiornamentoDiGruppo,
+				wname "scarica gli aggiornamenti individuali"  ensureGruppo $ 
+				  sepU readUPatches >>= \ (n,ups) -> P.download ("patches." ++ show n) "scarica gli aggiornamenti individuali" ups,
+				wname "scarica un aggiornamento di gruppo"  ensureGruppo scaricaAggiornamentoDiGruppo,
+				wname "scarica lo stato"  ensureGruppo $ sepU readStato >>= \(n,s) -> 
+					P.download ("stato." ++ show n) "scaricamento dello stato" s
+				]
+
+
+
+-- applicazione :: Costruzione MEnv () ()
 applicazione = rotonda $ \_ -> do
 	menu "menu principale" $ 
 				[
-				("gestione dichiarazioni" , ensureResponsabile $ rotonda $ \_ -> menu "gestione dichiarazioni" $ dichiarazioni), 
-				("interrogazioni sulle attivita'", ensureGruppo $ rotonda $ \_ -> menu "interrogazioni sulle attivita'" 
-					[("descrizione della sessione",descrizione),
-					("effetto delle ultime dichiarazioni", ensureStato $ do
+				wname "gestione dichiarazioni" ensureResponsabile $ rotonda $ \_ -> menu "gestione dichiarazioni" $ dichiarazioni,	
+				("descrizione della sessione",descrizione),
+				wname "effetto delle ultime dichiarazioni" ensureGruppo $ do
 					c <- fromJust <$> ses readCaricamento 
-					P.output . Response $ 
-						[("effetto delle ultime dichiarazioni",  c)])]),
+					P.output False . Response $ 
+						[("effetto delle ultime dichiarazioni",  c)],
 
-
-				("interrogazione sullo stato del gruppo", ensureStato  interrogazioni),
+				wname "interrogazione sullo stato del gruppo" ensureGruppo  interrogazioni,
 				("amministrazione", amministrazione)
 				]
-
 

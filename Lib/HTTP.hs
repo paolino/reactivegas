@@ -41,26 +41,32 @@ runPasso :: (Monad m )
 		, String -> Maybe (m (P.HPasso m b))
 		)
 
-runPasso (P.Output x c) = let
+runPasso (P.Output x mc) = let
 	k y z = thediv ! [theclass "passobox"] << 
 			(	renderResponse "responso" x 
 				+++ form ! [method "post", action "/interazione"] 
-					<< [	hidden "hkey" y, hidden "valore" "undefined", 
-						hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]]
+					<< case mc of 
+						Nothing -> []
+						Just c -> [	hidden "hkey" y, hidden "valore" "undefined", 
+							hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]]
 			) 
-	in (k, Nothing,\_ -> Just c )
+	in (k, Nothing,\_ -> mc )
 
-runPasso (P.Errore x c) = let
+runPasso (P.Errore x mc) = let
 	k y z = thediv ! [theclass "passobox"] << 
 			(	renderResponse "errore" x 
 				+++ form ! [method "post", action ("/interazione")] 
-					<< [	hidden "hkey" y, hidden "valore" "undefined", 
-						hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]]
+					<< case mc of 
+						Nothing -> []
+						Just c -> [	
+							hidden "hkey" y, hidden "valore" "undefined", 
+							hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]
+							]
 			) 
-	in (k, Nothing,\_ -> Just c )
+	in (k, Nothing,\_ -> mc)
 
 runPasso (P.Costruito _) = runPasso . P.Errore 
-	(ResponseOne "vicolo cieco dell'interfaccia utente") $ return (P.Costruito undefined,[])
+	(ResponseOne "vicolo cieco dell'interfaccia utente") $ Nothing
 
 runPasso (P.Libero q c ) = let 
 	k y z = thediv ! [theclass "passobox"] << 
@@ -117,8 +123,9 @@ runPasso (P.Upload q c ) = let
 	in (k, Nothing ,parse)
 
 
-runPasso (P.Download q x c) = let
+runPasso (P.Download f q x c) = let
 	k y z = thediv ! [theclass "passobox"] << 
+		(thediv ! [theclass "response"] << q +++
 		(thediv ! [theclass "download"] <<  
 				form ! [method "post", action "/download"] 
 					<< [	hidden "hkey" y,  hidden "fkey" z
@@ -127,9 +134,9 @@ runPasso (P.Download q x c) = let
 				form ! [method "post", action "/interazione"] 
 					<< [	hidden "hkey" y,  hidden "fkey" z
 						, hidden "valore" "undefined" , submit "" "Continua .." ! [theclass "continua"]]
-		) 
+		) )
 
-	in (k,Just $ Link q (show x) "application/chiavi",\_ -> Just c)
+	in (k,Just $ Link f (show x) "application/any",\_ -> Just c)
 -------------------------------------------------------------------------------------------------------
 radio'  = tag "option" 
 --------------------------------------------------------------------------------------------------

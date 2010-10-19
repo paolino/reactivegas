@@ -13,6 +13,7 @@ import Control.Applicative
 import Control.Monad.Cont
 import Control.Monad.State
 import Control.Monad.Reader
+import Control.Concurrent.STM
 import Control.Monad.Error
 import Debug.Trace
 
@@ -42,6 +43,7 @@ import Eventi.Acquisto
 import Applicazioni.Reactivegas (QS,bianco, TS, sortEventi, levelsEventi, maxLevel, Effetti)
 import Applicazioni.Persistenza (Persistenza (..))
 import Applicazioni.Sessione (Sessione (..))
+import Applicazioni.Amministratore (Amministratore, valore_di_gruppo)
 
 fJ y x = case x of {Nothing -> error (show y) ; Just x -> x}
 
@@ -57,31 +59,37 @@ sel f = asks f >>= liftIO
 
 type Name = String 
 
-type Environment = (Name -> Maybe (Persistenza QS Effetti Response), Sessione (Maybe QS) Response)
+type Environment = (
+	Amministratore (Persistenza QS Effetti Response),
+	Sessione QS Response)
+	
 
 statoPersistenza :: (Functor m, MonadReader Environment m,MonadIO m) => m QS
 
-statoPersistenza = fmap (snd . fJ "0.UI.Server") . sel $ \(pe,se) ->  do
-			g <- readGruppo se
-			readStato (fJ "1.UI.Server" $ pe (fJ "2.UI.Server" g))
+statoPersistenza = snd  `fmap` sepU readStato 
 
-statoSessione =  fmap (fJ "3.UI.Server".fJ "4.UI.Server") . sel $ readStatoSessione . snd   
+statoSessione =  fmap (fJ "stato sessione") . sel $ readStatoSessione . snd   
 
 ses f = sel $ f . snd
 sepU f = sel $ \(pe,se) -> do
 		g <- readGruppo se
-		f . fJ "5.UI.Server" $ (g >>= pe)
+		pe' <- maybe (return Nothing) (\g -> atomically (valore_di_gruppo pe g)) g
+		f . fromJust $ pe'
 sep f =  sel $ \(pe,se) -> do
 		g <- readGruppo se
-		f  (g >>= pe)
+		pe' <- maybe (return Nothing) (\g -> atomically (valore_di_gruppo pe g)) g
+		f  (pe')
+sea f = sel $ f . fst 
 -- | la monade dove gira il programma. Mantiene in lettura lo stato del gruppo insieme alle operazioni di IO. Nello stato la lista degli eventi aspiranti un posto nella patch
 type MEnv  = ReaderT Environment IO 
 
 type Interfaccia a = Costruzione MEnv () a
 
 -- | comunica che c'è un errore logico nella richiesta
-bocciato :: String -> Interfaccia ()
-bocciato x =  P.errore . Response $ [("Incoerenza", ResponseOne x)] 
+bocciato :: String -> String -> Interfaccia ()
+bocciato s x =  P.errore True . Response $ [(s ++ " (inaccettabile)", ResponseOne x)] 
+
+bocciatoS s x =  P.errore False . Response $ [(s ++ " (invalutabile)", ResponseOne x)] 
 
 accesso :: Interfaccia ()
 accesso = do 
@@ -101,19 +109,17 @@ nuovoResponsabile u = do
 	return $ if p1 == p2 then Just (u,cryptobox p1) else Nothing
 
 
-creaChiavi :: Interfaccia ()
 creaChiavi = do
 	us <- utenti <$> fst <$> statoSessione
 	(rs,rs') <- responsabili <$> fst <$> statoSessione
 	let es = us \\ (map fst $ rs ++ rs')
-	if null es then P.errore $ ResponseOne "nessun utente che non sia già responsabile" else do
+	if null es then bocciato "creazione chiavi" "nessun utente che non sia già responsabile" else do
 		u <- P.scelte  (zip es es) "nomignolo dell'utente per il quale creare le chiavi"
 		mr <- nuovoResponsabile u
 		case mr of 
-			Just r -> P.download (u ++ ".chiavi") r
-			Nothing -> P.errore $ ResponseOne "errore di digitazione"
+			Just r -> P.download  (u ++ ".chiavi") "scarica delle nuove chiavi" r
+			Nothing -> bocciato "creazione chiavi" "errore di digitazione password"
 		
-
 letturaEventi ::  Interfaccia [Evento]
 letturaEventi = ses readEventi 
 
@@ -134,14 +140,14 @@ eventLevelSelector = do
 		[] -> Nothing  
 		es -> Just $ (const "<nessuno>" *** (subtract 1)) (head es) : es ++ [("<tutti>",maxLevel)]
 	case rs of 
-		Nothing -> P.errore $ ResponseOne "nessuna dichiarazione presente"
+		Nothing -> bocciato "selezione livello di considerazione" "nessuna dichiarazione presente"
 		Just rs -> mano "livello di considerazione delle ultime dichiarazioni" $ map (\(x,l) ->
 				(x, ses (($l). setConservative ))) rs
 
-eliminazioneEvento :: Interfaccia ()
-eliminazioneEvento = do
+eliminazioneEvento :: String -> Interfaccia ()
+eliminazioneEvento s = do
 	es <- letturaEventi
-	if null es then bocciato "non ci sono dichiarazioni da eliminare" 
+	if null es then bocciato s "non ci sono dichiarazioni da eliminare" 
 		else let 
 		k x = do
 			es <- letturaEventi 
@@ -154,19 +160,18 @@ eliminazioneEvento = do
 sincronizza = onAccesso $ \(r@(u,_)) -> do  
 	(_,rs) <-  second (map snd) <$> sepU readUPatches
 	case rs of 
-		[] -> bocciato $ "nessun aggiornamento individale per lo stato attuale"
+		[] -> bocciato "sincronizzazione gruppo" "nessun aggiornamento individale per lo stato attuale"
 		xs -> do
 			let k (Firmante f)  = (fst <$> statoPersistenza) >>= \s -> sepU $ ($ f s xs). writeGPatch
-			runSupporto (fst <$> statoPersistenza) bocciato k $ firmante r
-
-salvataggio = do
+			runSupporto (fst <$> statoPersistenza) (bocciato "sincronizzazione gruppo") k $ firmante r
+salvataggio s = do
 	evs <- letturaEventi
 	onAccesso $ \(r@(u,_)) -> do
 		let 	p up = sepU $ ($up) . ($u) . writeUPatch 
 		 	k (Firmante f) = do 
 				evs <- letturaEventi
 				(fst <$> statoPersistenza) >>= \s -> p (f s evs) 
-		runSupporto (fst <$> statoPersistenza) bocciato k $ firmante r
+		runSupporto (fst <$> statoPersistenza) (bocciato s) k $ firmante r
 
 -- | importa gli eventuali eventi già presenti
 
@@ -177,7 +182,7 @@ caricaAggiornamentoIndividuale = do
 	s <- fst <$> statoPersistenza
 	rs <- runErrorT . flip runReaderT s $ fromPatch (fst . responsabili) p
 	case rs of 
-		Left prob -> P.errore $ ResponseOne prob
+		Left prob -> bocciato "caricamento aggiornamento individuale" prob
 		Right _ -> do 
 			let Just (u,_) = daChiave c (fst $ responsabili s)
 			sepU $ ($p) . ($u) . writeUPatch
@@ -187,7 +192,7 @@ scaricaAggiornamentoIndividuale = do
 	(_,us) <- sepU readUPatches
 	(u,p) <- P.scelte (map (fst &&& id) us) $ "aggiornamenti utente presenti"
 	v <- sepU readVersion
-	P.download (u ++ "." ++ show v) p
+	P.download  (u ++ "." ++ show v) "scarica un aggiornamento individuale" p
 
 caricaAggiornamentoDiGruppo :: Interfaccia ()
 caricaAggiornamentoDiGruppo = P.upload "aggiornamento di gruppo" >>= \g -> sepU $ ($g). writeGPatch
@@ -197,12 +202,12 @@ scaricaAggiornamentoDiGruppo = do
 	n <- P.libero "indice dell'aggiornamento richiesto"
 	mg <- sepU $ ($n) . readGPatch
 	case mg of
-		Nothing -> P.errore $ ResponseOne "aggiornamento di gruppo non trovato"
-		Just g -> P.download ("group." ++ show n) g
+		Nothing -> bocciato "scaricamento aggiornamento di gruppo"  "aggiornamento di gruppo non trovato"
+		Just g -> P.download  ("group." ++ show n) "scarica un aggiornamento individuale" g
 
 effetto = do
 	c <- fJ "6.UI.Server" <$> ses readCaricamento
-	P.output . Response $ [("effetto delle ultime dichiarazioni",  c)]
+	P.output False . Response $ [("effetto delle ultime dichiarazioni",  c)]
 
 
 descrizione = do
@@ -218,7 +223,7 @@ descrizione = do
 	l <- ses getConservative
 	g <- ses readGruppo
 	v <- sep $ maybe (return (-1)) readVersion
-	P.output . Response $ 
+	P.output False . Response $ 
 		[("gruppo selezionato", ResponseOne $ maybe "<nessuno>" id g)
 		,("responsabile della sessione" , ResponseOne $ case r of 
 			Nothing -> "<anonimo>"
@@ -229,4 +234,4 @@ descrizione = do
 		,("dichiarazioni in sessione" , ResponseMany $ map ResponseOne (sortEventi evs))
 		,("dichiarazioni pubblicate", ResponseMany $ map ResponseOne (sortEventi evsp))
 		]
-					
+				

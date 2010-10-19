@@ -6,9 +6,10 @@ import Text.XHtml
 -- | le cinque finestre , path e nome
 layout :: [([String],Int)]
 layout = 	[(["gestione dichiarazioni"],2)
-		,(["interrogazioni sulle attivita'"],3)
-		,(["amministrazione"],1)
-		,(["interrogazione sullo stato del gruppo"],4)
+		,(["descrizione della sessione"],1)
+		,(["amministrazione"],4)
+		,(["interrogazione sullo stato del gruppo"],5)
+		,(["effetto delle ultime dichiarazioni"],3)
 		]
 
 
@@ -25,8 +26,11 @@ piede = ulist << 	[
 				[href "http://github.com/paolino/reactivegas"] << "github.com")
 			]  
 
-testata = 	thediv ! [theclass "titolo"] << ("Amministrazione economica di un gruppo d'acquisto") 
-	+++	(thediv ! [theclass "reset"] << anchor ! [href "/"] << "annulla la sessione")
+testata = 	thediv ! [theclass "titolo"] << ( 
+	thediv ! [theclass "project"] << "ReactiveGAS" +++
+	thediv ! [theclass "synopsis"] << "Supporto all'amministrazione economica dei gruppi d'acquisto")
+ 
+	+++	thediv ! [theclass "abort"] << thediv ! [theclass "reset"] << anchor ! [href "/"] << "annullamento dell'interazione"
 
 pagina 	:: Html 	-- ^ corpo della pagina
 	-> String	-- ^ pagina servita

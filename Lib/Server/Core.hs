@@ -44,7 +44,7 @@ restore base hs = foldM k (Right base) (reverse hs) >>= either return return
 			let mr = continuazione f v
 			case mr of 
 				Nothing -> return (Left f)
-				Just r -> Right <$> r 
+				Just r ->   Right <$> r 
 		k lf _ = return lf
 
 -- | i valori delle richieste possibili, scevri dai valori comuni
