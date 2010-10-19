@@ -1,5 +1,5 @@
 
-{-# LANGUAGE Rank2Types, ScopedTypeVariables, RecursiveDo #-}
+{-# LANGUAGE Rank2Types, ScopedTypeVariables, TupleSections #-}
 
 module Applicazioni.Amministratore where
 import Control.Monad (when)
@@ -9,6 +9,7 @@ import Control.Arrow (first,(&&&))
 import Lib.Passo
 
 import Data.List (lookup)
+import Data.Maybe (catMaybes, isNothing)
 import Lib.Tokens 
 import Control.Monad.Trans (liftIO, MonadIO)
 import Core.Types
@@ -25,56 +26,62 @@ import Applicazioni.Persistenza
 type Gruppo = String
 
 
-uiNuovoGruppo :: (MonadIO m, Functor m) 
-	-- | procedura di inserimento gruppo
-	=> ((FilePath, Gruppo) -> Token -> IO ())
-	-> (Token,Gruppo)
-	-- | interfaccia
-	-> Costruzione m b ()
-uiNuovoGruppo new (tok,g) = do
-	let dir = "gruppi" </> g
-	t <- liftIO $ doesDirectoryExist dir
-	let go = liftIO $ do
-		when t $ renameDirectory dir ("gruppi" </> addExtension g "copia")
-		createDirectoryIfMissing True (dir </> "static")
-		print $ "created " ++ dir </> "static"
-		new (dir,g) tok
+data Amministratore a = Amministratore {
+	controlla_nome :: Gruppo -> IO Bool,
+	controlla_password :: Token -> Bool,
+	boot_nuovo_gruppo :: (Gruppo,Responsabile) -> IO Bool,
+	elenco_gruppi :: IO [Gruppo],
+	valore_di_gruppo :: Gruppo -> STM (Maybe a)
+	}
 
-	if t then menu "gestione conflitto nuovo gruppo" [
-			("eliminare il vecchio gruppo con lo stesso nome e proseguire", go),
-			("abbandonare la procedura di creazione nuovo gruppo",return ())
-			]
-		else go
-
-uiAmministratore :: (MonadIO m, Monad m , Functor m) => PeekPoke (Tokenizer () Gruppo) -> ((Token,Gruppo) -> Costruzione m b ()) -> [(String,Costruzione m b ())]
-uiAmministratore pp c = uiTokenizer  pp "elenco dei gruppi operativi"
-		(libero "nome del nuovo gruppo da associare al token")
-		($ c )
-		(\_ -> errore $ ResponseOne "la chiusura del servizio non passa di qua")
-
-mkAmministratore ::(MonadIO m, Functor m) 
-	=> ((FilePath, String) -> Token -> IO (Persistenza a b d)) 
-	-- | il menu di amministrazione e la query da nome del gruppo a persistenza
-	-> Token 			-- ^ password di amministrazione
-	-> IO ([(String, Costruzione m q ())], Gruppo -> STM (Maybe (Persistenza a b d)),IO [Gruppo])
-mkAmministratore runGruppo pass = mdo
-	tok0 <- onFS  (readFile "amministratore") (\_ -> return $ mkTokenizer (pass,[],[])) (return . mkTokenizer . read) 
-	
-	mtok <- mkPeekPoke tok0 (atomically $ writeTChan commit ())
-	commit <- atomically newTChan  
-	forkIO $ do 	atomically $ readTChan commit
-			tok <- peek mtok
-			onFS  (writeFile "amministratore" $ show $ serialize tok) error return
+mkAmministratore	
+	-- | password di amministratore 
+	:: Token 
+	-- | creazione o lettura di gruppo		
+	-> ((FilePath,Gruppo,Maybe Responsabile) -> IO a) 
+	-- | directory di lavoro
+	-> FilePath 
+	-- | l'amministratore risultante
+	-> IO (Amministratore a)
+mkAmministratore pass readA dir = do
+	-- analisi directories
 	ms <- tail `fmap` find 
 		((== 0) `fmap` depth) 
 		((== Directory) `fmap` fileType) 
-		"gruppi"
-	pes <- atomically $ newTVar []
-	let new (dir,g) t = do 	
-		pe <- runGruppo (dir,g) t
-		liftIO . atomically $ readTVar pes >>= writeTVar pes . ((g,pe):)
-	mapM_ (flip new $ error "token di super responsabile perso") (map (id &&& takeFileName) ms)
-	return $ (uiAmministratore mtok (uiNuovoGruppo new), \g -> lookup g `fmap` readTVar pes, 
-		map fst `fmap` atomically (readTVar pes))
+		dir
+	-- gruppi e valori
+	let ns = map takeFileName ms
+	gs <-  zip ns `fmap` mapM readA (zip3 ms ns $ repeat Nothing)
 
+	putStrLn "** Recuperati i seguenti gruppi:"
+	mapM_ (\(x,_) -> putStrLn $ "\t" ++ x) gs 
+
+	-- mappatura variabile
+	pes <- atomically $ newTVar gs
+
+	let 	new g r0 = do 	
+			pe <- readA (dir </> g, g,Just r0)
+			liftIO . atomically $ readTVar pes >>= writeTVar pes . ((g,pe):)
+		create g = do
+			let dg = dir </> g
+			t <- doesDirectoryExist $ dg
+			when t $ renameDirectory dg ( dg </> addExtension g "copia")
+			createDirectoryIfMissing True (dg </> "static")
+			putStrLn $ "created " ++ dg
+		controlla_nome' x = (isNothing . lookup x) `fmap` atomically (readTVar pes)
+		controlla_password' = (== pass)
+		boot_nuovo_gruppo' (g,r) = do 
+			t <- atomically $ do
+				gs <- readTVar pes
+				case lookup g gs of 
+					Nothing -> return True
+					Just _ -> return False
+			when t $ do
+				create g 
+				new g r
+			return t
+		elenco_gruppi' = map fst `fmap` atomically (readTVar pes)
+		valore_di_gruppo' g = lookup g `fmap` readTVar pes
+	putStrLn "** Amministrazione attiva"
+	return $ Amministratore controlla_nome' controlla_password' boot_nuovo_gruppo' elenco_gruppi' valore_di_gruppo'
 

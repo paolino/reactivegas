@@ -26,11 +26,11 @@ import Server.Layout (layout, pagina)
 -- import Applicazioni.Aggiornamento (serverAggiornamento)
 import Applicazioni.Amministratore
 
-runGruppo lmov (dir,name) tokpass = do
+runGruppo lmov (dir,name,mr0)  = do
 		putStrLn $ "** Inizio report di \"" ++ name ++ "\""
 		report <- mkReporter dir (dir </> "static" </> "report.html") lmov 
 		putStrLn $ "** Inizio persistenza di \"" ++ name ++ "\""
-		(pe,boot) <- mkPersistenza tokpass loader bianco nuovoStato (fst . responsabili) fst dir 
+		(pe,boot) <- mkPersistenza loader bianco (nuovoStato $ maybe [] return mr0) (fst . responsabili) fst dir 
 		--- report thread --------------------------------
 		forkIO $ do
 			w <- atomically (updateSignal pe) -- una copia del canale di segnalazione update della persistenza
@@ -45,11 +45,11 @@ runGruppo lmov (dir,name) tokpass = do
 		boot
 		return pe
 
-
 main = do
 	Argomenti dirs port lmov lsess lrem tokpass <- parseArgs $ Argomenti [] 5000 15 10 20 (Token 123) 
-	(ammenu,query,list) <- mkAmministratore (runGruppo lmov) tokpass
-	server "." port lsess lrem (applicazione ammenu) (return Nothing) 
+	amm@(Amministratore _ _ _ _ query)  <- mkAmministratore tokpass (runGruppo lmov) "gruppi"
+	
+	server "." port lsess lrem applicazione (return Nothing) 
 		(output . pagina) layout $ \signal ms -> do
 			se <- mkSessione (fmap (fmap caricamentoBianco) . query ) 
 				maxLevel 
@@ -57,7 +57,6 @@ main = do
 				(fmap (fmap queryUtente) . query) 
 				signal 
 				ms
-				list
-			return ((query,se),backup se)
+			return ((amm,se),backup se)
 	
 

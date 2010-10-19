@@ -19,8 +19,8 @@ import Debug.Trace
 type Name = String 
 -- | interfaccia concorrente per una sessione di interazione
 data Sessione a b = Sessione 
-	{queryGruppi :: IO [Name]			-- ^ lista dei gruppi disponibili
-	,readGruppo :: IO (Maybe Name)			-- ^ gruppo selezionato
+	{
+	readGruppo :: IO (Maybe Name)			-- ^ gruppo selezionato
 	,writeGruppo :: Maybe Name -> IO ()		-- ^ cambia gruppo
 	,readEventi :: IO [Evento]			-- ^ legge gli eventi in memoria		
 	,writeEventi :: [Evento] -> IO ()		-- ^ scrive gli eventi in memoria
@@ -141,9 +141,8 @@ mkSessione 	:: Update a  b		-- ^ modificatore di stato
 		-> (Name -> STM (Maybe (Maybe Utente -> STM [Evento])))  -- ^ query sugli eventi pubblicati per un utente
 		-> STM ()			-- ^ segnale di modifica sessione
 		-> Maybe (Maybe Name,[Evento],Maybe Responsabile,Int)
-		-> IO [Name]
 		-> IO (Sessione a b)	
-mkSessione f l signal publ exsignal ms gns =  do
+mkSessione f l signal publ exsignal ms =  do
 	z <- randomRIO (0,100000) :: IO Int
 	(stato,caricamento) 	<- atomically $ do 
 					msc <- case ms of
@@ -170,7 +169,6 @@ mkSessione f l signal publ exsignal ms gns =  do
 		write f = atomically . writeTChan triggers . f 
 		read t = atomically . checkUpdate $ readTVar t
 	return $ Sessione 
-		gns
 		(read gruppo) 
 		(write TGruppo)
 		(read eventi)

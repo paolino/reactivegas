@@ -57,16 +57,46 @@ div.testata {
 	left : 4px;
 	float: clear;
 	height : 43px;
-	width:897px;
-	border: 1px solid #ccc;
+	width:720px;
+	border: 1px solid #999;
 	background-color: #dde;
 	}
-div.titolo {margin:10px;
-	font: 16pt sans-serif;
+div.abort {
+	margin: 2px;
+	position : absolute;
+	left : 750px;
+	top : 10px;
+	float: clear;
+	height : 30px;
+	width:146px;
+	border: 1px solid #999;
+	background-color: #aee;
+
+	}
+
+div.titolo {margin:3px;
 	float:left;
 	color:#555;
 	}
-div.reset {margin:15px;border : 1px solid #22ddee ; background : #66ddee;float :right;}
+div.project {
+	margin:4px;
+	font: 18pt sans-serif;
+	float:left;
+	}
+div.synopsis {
+	margin:4px;
+	margin-top:12px;
+	margin-left:40px;
+	font: 12pt sans-serif;
+	font-style:italic;
+	float:left;
+	}
+div.reset {
+	margin-top:2px;
+	margin-right :7px;
+	text-align:right;
+	color: #f00;
+	}
 
 div.dimensione1 {
 	position: absolute;
@@ -76,51 +106,51 @@ div.dimensione1 {
 	margin: 2px;
 	background-color: #f0f0f0 ;
 	width:295px;
-	height:258px;
+	height:180px;
 	overflow: auto;
 }
 div.dimensione2 {
 	position: absolute;
 	top :50px;
-	left : 302px;
+	left : 301px;
 	border: 1px solid #999;
 	margin: 2px;
 	background-color: #f0f0f0 ;
-	width:601px;
+	width:602px;
 	height:258px;
 	overflow: auto;
 }
 div.dimensione3 {
 	position: absolute;
-	top : 309px;
-	left : 302px;
+	top : 310px;
+	left : 301px;
 	border: 1px solid #999;
 	margin: 2px;
 	background-color: #f0f0f0 ;
-	width:601px;
-	height:290px;
+	width:602px;
+	height:288px;
 	overflow:auto;
 }
 div.dimensione4 {
 	position: absolute;
-	top : 309px;
+	top : 232px;
 	left : 4px;
 	border: 1px solid #999;
 	margin: 2px;
 	background-color: #f0f0f0 ;
 	width:295px;
-	height:290px;
+	height:160px;
 	overflow: auto;
 }
 div.dimensione5 {
 	position: absolute;
-	top : 464px;
+	top : 394px;
 	left : 4px;
 	border: 1px solid #999;
 	margin: 2px;
 	background-color: #f0f0f0 ;
 	width:295px;
-	height:134px;
+	height:204px;
 	overflow: auto;
 }
 
@@ -176,7 +206,7 @@ dt {	color: #575;
 	}
 
 div.utente {margin:5px;overflow:auto;float:clear;}
-div.pedata  {border : 1px solid #ccc ;margin:2px;position:absolute;top:598px;left : 4px; width:897px
+div.pedata  {border : 1px solid #999 ;margin:2px;position:absolute;top:600px;left : 4px; width:899px
 	;background-color: #dde;color:#666;}
 div.pedata ul {margin: 5px;float:right;font: 8pt sans-serif;height:27px;}
 

@@ -45,9 +45,9 @@ data Passo m b
 	= forall a. Scelta String [(String,a)] (a -> m (HPasso m b)) 	-- ^ scelta vincolata ad una lista di possibilità
 	| forall a. Read a => Libero String (a -> m (HPasso m b)) 		-- ^ scelta da leggere da una stringa
 	| forall a. Read a => Upload String (a -> m (HPasso m b))
-	| Output Response (m (HPasso m b)) 
-	| Errore Response (m (HPasso m b)) 
-	| forall a. Show a => Download String a (m (HPasso m b)) 
+	| Output Response (Maybe (m (HPasso m b)))
+	| Errore Response (Maybe (m (HPasso m b)))
+	| forall a. Show a => Download String String a (m (HPasso m b)) 
 	| forall a. Read a => Password String (a -> m (HPasso m b))
 	| Costruito b							-- ^ valore calcolato
 
@@ -75,15 +75,15 @@ libero prompt = wrap $ Libero prompt
 password :: (Read a, Monad m) => String -> Costruzione m b a
 password prompt = wrap $ Password prompt
 
-output :: (Monad m) => Response -> Costruzione m b ()
-output s = wrap $ (\c -> Output s  $ c ()) 
+output :: (Monad m) => Bool -> Response -> Costruzione m b ()
+output t s = wrap $ (\c -> Output s  $ if t then Just (c ()) else Nothing) 
 
-errore :: (Monad m) => Response -> Costruzione m b ()
-errore s = wrap $ (\c -> Errore s $ c ())
+errore :: (Monad m) => Bool -> Response -> Costruzione m b ()
+errore t s = wrap $ (\c -> Errore s $ if t then Just (c ()) else Nothing)
 
 upload prompt = wrap $ Upload prompt
 
-download s x = wrap $ (\c -> Download s x $ c ())
+download s f x = wrap $ (\c -> Download s f x $ c ())
 
 -- | produce un passo di valore Scelta
 scelte :: Monad m => [(String,a)] -> String -> Costruzione m b a 

@@ -18,7 +18,6 @@ import Lib.Modify (PeekPoke (peek), modifyT)
 
 -- testing
 
-import Lib.Console
 
 newtype Token = Token Int deriving Eq
 
@@ -33,7 +32,7 @@ instance Random Token where
 	randomR = undefined
 
 
--- | a token server
+-- | a token to element collector
 data Tokenizer a b = Tokenizer 
 	{
 	-- | tokens waiting
@@ -47,6 +46,7 @@ data Tokenizer a b = Tokenizer
 	-- | expose internals. Should not be used to show , but it's simmetric to read :)
 	,	serialize :: (Token,[(Token,b)],[(b,a)])
 	}
+
 -- | build a tokenizer from an amministrator token and a list of give tokens
 mkTokenizer :: (Show a) => (Token,[(Token,b)],[(b,a)]) -> Tokenizer a b
 mkTokenizer (p0,zs,as) = let
@@ -76,7 +76,7 @@ uiTokenizer
 	-- | tokenizer che raccolglie elementi c
 	=> PeekPoke (Tokenizer c d)
 	-- | presentazione elenco elementi raccolti
-	-> String 				
+	-> [String] 				
 	-- | interazione di creazione valore associato vincolato
 	-> (Costruzione m b d) 	
 	-- | utilizzatore dell'elemento raccolto		
@@ -86,42 +86,34 @@ uiTokenizer
 	-- | menu
      	-> [(String,Costruzione m b ())] 
 
-uiTokenizer tokens notedrv notante accessed close = [
-	("utilizza un token", accessed $ \f -> do
+uiTokenizer tokens notedrvs notante accessed close = zip notedrvs 
+	[	accessed $ \f -> do
 			t' <- libero "il token da utilizzare" 
 			modifyT tokens $ \tk -> case useToken tk t' of
 					Nothing -> do 
-						errore $ ResponseOne "il token non è valido"
+						errore True $ ResponseOne "il token non è valido"
 						return Nothing
 					Just (b,g) -> f b >>= \h -> return (Just $ g h)
-			),
-	(notedrv,liftIO (peek tokens) >>= \tk -> do
-		let (ds,cs) = unzip $ promotedElements tk
-		output $ ResponseAL [(notedrv , ResponseMany $ map ResponseOne ds)]),
-	("token inutilizzati", do
-			t <- libero "inserimento token di amministrazione"
+			
+	,	liftIO (peek tokens) >>= \tk -> do
+			let (ds,_) = unzip $ promotedElements tk
+			output True $ ResponseMany $ map ResponseOne ds
+	,	do	t <- libero "inserimento token di amministrazione"
 			modifyT tokens $ \tk -> do
 				case leftTokens tk t of
-					Nothing -> errore $ ResponseOne "il token di amministrazione è un altro"
-					Just ts -> output $ ResponseAL $ map (show *** ResponseOne) ts
+					Nothing -> errore True $ ResponseOne "il token di amministrazione è un altro"
+					Just ts -> output True $ ResponseAL $ map (show *** ResponseOne) ts
 				return Nothing
-	 
-			),
-	("generazione nuovo token", do
-			a <- notante
+	,	do	a <- notante
 			t <- libero "il token di amministrazione"
 			modifyT tokens $ \tk -> case generateTokens tk t a of
 				Nothing -> do 
-					errore $ ResponseOne "il token di amministrazione è un altro"
+					errore True $ ResponseOne "il token di amministrazione è un altro"
 					return Nothing
 				Just g -> Just `fmap` liftIO g
-					
-
-			),
-	("chiusura raccolta tokens", do
-			t <- libero "il token di amministrazione"
+	,	do	t <- libero "il token di amministrazione"
 			liftIO (peek tokens) >>= \tk -> 
 				case leftTokens tk t of
-					Nothing -> errore $ ResponseOne "il token di amministrazione è un altro"
-					Just _ -> close $ map snd $ promotedElements tk)
+					Nothing -> errore True $ ResponseOne "il token di amministrazione è un altro"
+					Just _ -> close $ map snd $ promotedElements tk
 	]

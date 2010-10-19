@@ -49,8 +49,8 @@ password = toSupporto . P.password
 upload :: (Read a , Monad m) => String -> Supporto m s b a
 upload = toSupporto . P.upload
 
-download :: (Show a , Monad m) => String -> a -> Supporto m s b ()
-download q = toSupporto . P.download q
+download :: (Show a , Monad m) => String -> String -> a -> Supporto m s b ()
+download q f = toSupporto . P.download q f
 
 -- | passo scelte elevato al supporto
 scelte :: (Monad m) => [(String, a)] -> String -> Supporto m s b a
