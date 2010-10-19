@@ -34,6 +34,6 @@ Executable server
                 directory  , 
                 stm, old-time,
                 xhtml, 
-                split,
+                split,time,
                 scgi,url,HDBC-sqlite3,HDBC, HTTP,haskeline, MonadRandom
 
