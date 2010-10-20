@@ -102,23 +102,14 @@ onAccesso k = ses readAccesso  >>= maybe (accesso >> onAccesso k) k
 
 	
 
-nuovoResponsabile :: Utente -> Interfaccia (Maybe Responsabile)
-nuovoResponsabile u = do 
+
+
+creaChiavi = do 
 	p1 <- P.password "immetti una password, una frase , lunga almeno 12 caratteri"
 	p2 <- P.password "reimmetti la password per controllare la digitazione"
-	return $ if p1 == p2 then Just (u,cryptobox p1) else Nothing
-
-
-creaChiavi = do
-	us <- utenti <$> fst <$> statoSessione
-	(rs,rs') <- responsabili <$> fst <$> statoSessione
-	let es = us \\ (map fst $ rs ++ rs')
-	if null es then bocciato "creazione chiavi" "nessun utente che non sia già responsabile" else do
-		u <- P.scelte  (zip es es) "nomignolo dell'utente per il quale creare le chiavi"
-		mr <- nuovoResponsabile u
-		case mr of 
-			Just r -> P.download  (u ++ ".chiavi") "scarica delle nuove chiavi" r
-			Nothing -> bocciato "creazione chiavi" "errore di digitazione password"
+	if p1 == p2 then 
+		P.download  "nuove.chiavi" "scarica delle nuove chiavi" $ cryptobox p1
+		else bocciato "creazione chiavi" "errore di digitazione password"
 		
 letturaEventi ::  Interfaccia [Evento]
 letturaEventi = ses readEventi 

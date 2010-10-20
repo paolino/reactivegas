@@ -65,15 +65,43 @@ persistenza write tversion tupatch torfani tlog tstato trigger = do
 	write "stato.corrente" version stato
 
 -- | Operazione di ripristino. Legge lo stato del gruppo 
-ripristino
-	:: (forall b . Read b => String -> IO (Maybe (Int, b)))
+ripristino :: (Read a, Show a) 
+	=> (forall b . Read b => String -> IO (Maybe (Int, b)))
+	-> String 
+	-> Persistenza a b d
 	-> TVar Int
 	-> TVar [(Utente,Patch)]
 	-> TVar [(Utente,[Evento])] -- ^ eventi orfani
 	-> TChan String
+	-> Int 
+	-> TVar a
 	-> IO ()
 
-ripristino unwrite tversion tupatch torfani tlog = do
+ripristino unwrite gname p tversion tupatch torfani tlog uv ts = do					
+	let reload = do 
+		ms <- groupUnwrite gname "stato.boot"
+		case ms of 
+			Just (0,s) -> do 
+				atomically $ writeTVar ts s
+				putStr "aggiornamenti:"
+				autofeed p	
+				putStrLn "\n"
+			Nothing -> do
+				s <- atomically $ readTVar ts
+				groupWrite gname "stato.boot" 0 s
+				putStrLn "stato iniziale scritto"
+
+	ms <- groupUnwrite gname "stato.corrente" 	
+	case ms of 
+		Just (vc,s) -> do 
+			putStrLn $ "rilevato file di stato corrente " ++ show vc
+			if vc == uv then 
+				atomically $ writeTVar tversion vc >> writeTVar ts s
+				else do
+					putStrLn $ "incoerenza con aggiornamenti " ++ show (uv,vc)
+					reload
+		Nothing -> reload
+
 	ps <- unwrite "patches" 
 	os <- unwrite "orfani" 
 	atomically $ do
@@ -185,6 +213,7 @@ mkPersistenza load modif boot resps ctx gname = do
 	cl <- atomically $ newTChan
 	cs <- atomically $ newTChan
 	gp <- mkGPatches gname
+	uv <- fromInteger`fmap` ultimaGPatch gp
 	let	atomicallyP f = atomically $ writeTChan trigger () >> f (writeTChan cs)  
 		readStato' 	= atomically $ do 
 					s <- readTVar ts
@@ -226,18 +255,7 @@ mkPersistenza load modif boot resps ctx gname = do
 			readUPatches' writeGPatch' readGPatch' readVersion' readLogs' updateSignal' 
 			queryUtente caricamentoBianco'
 		boot' = do 	
-			ms <- groupUnwrite gname "stato.boot" 	
-			case ms of 
-				Just (_,s) -> 	do 
-					putStrLn "rilevato file di stato iniziale"
-					atomically $ writeTVar ts s
-					putStr "aggiornamenti:"
-					autofeed p	
-					putStrLn "\n"
-				Nothing -> do
-					groupWrite gname "stato.boot" 0  boot
-					putStrLn "stato iniziale scritto"
-			ripristino (groupUnwrite gname) tv tp to cl 
+			ripristino (groupUnwrite gname)  gname p tv tp to cl uv ts
 			-- thread di persistenza appeso a trigger
 			forkIO . forever $ persistenza (groupWrite gname) tv tp to cl ts trigger
 			forkIO . forever $ atomically (readTChan cs) -- tiene vuoto cs 

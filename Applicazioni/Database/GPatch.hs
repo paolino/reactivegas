@@ -22,6 +22,7 @@ data GPatches = GPatches
 	{	nuovaGPatch :: Integer -> Group -> IO ()
 	,	vecchiaGPatch :: Integer -> IO (Maybe Group)
 	, 	abbandonaGPatch :: IO ()
+	, 	ultimaGPatch :: IO Integer
 	}
 
 nuoveTabelle = 
@@ -92,21 +93,14 @@ mkGPatches wd = do
 		commit db
 		--disconnect db
 	return $ GPatches {
-		nuovaGPatch = \n x -> do 
-			--db <- mdb 
-			insertGPatch db n x
-			--disconnect db
+		nuovaGPatch = insertGPatch db 
 			,
 		vecchiaGPatch = \n -> do 
-			--db <- mdb 
 			r <-  getGPatch db (n + 1)
-			--disconnect db
 			return r
 			,
-		abbandonaGPatch = do 
-			--db <- mdb 
-			dropGPatch db
-			--disconnect db
+		abbandonaGPatch = dropGPatch db,
+		ultimaGPatch = lastRow db "id" "gpatches"
 		}
 	
 
