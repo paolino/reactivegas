@@ -29,7 +29,6 @@ import Core.Types (Evento,Utente,Esterno,Responsabile)
 import Core.Contesto (Contestualizzato)
 import Core.Programmazione (Message)
 import Applicazioni.Database.GPatch (mkGPatches, GPatches (..))
-import Lib.Tokens
 import Lib.Modify ( PeekPoke (peek,poke), mkPeekPoke)
 import Debug.Trace
 import Lib.Filesystem
@@ -43,24 +42,27 @@ type GName = String
 
 
 -- | Operazione di persistenza. Scrive un istantanea di (stato,patches) oppure i tokens, quando richiesto dal trigger
-persistenza 	
-	:: (forall b . Show b => String -> Int -> b -> IO ())		-- ^ operazione di persistenza
+persistenza :: Show a	
+	=> (forall b . Show b => String -> Int -> b -> IO ())		-- ^ operazione di persistenza
 	-> TVar Int 		-- ^ versione dello stato
 	-> TVar [(Utente,Patch)]-- ^ associazione utente -> patch individuale
 	-> TVar [(Utente,[Evento])] -- ^ eventi orfani
 	-> TChan String		-- ^ logger
+	-> TVar a		-- ^ stato
 	-> TChan () 		-- ^ trigger di persistenza
 	-> IO ()
 
-persistenza write tversion tupatch torfani tlog trigger = do
-	(version,patches,orfani) <- atomically $ do 
+persistenza write tversion tupatch torfani tlog tstato trigger = do
+	(version,patches,orfani,stato) <- atomically $ do 
 		readTChan trigger 
 		version 	<- readTVar tversion
 		patches 	<- readTVar tupatch
 		orfani 		<- readTVar torfani
-		return (version,patches,orfani)
+		stato		<- readTVar tstato
+		return (version,patches,orfani,stato)
 	write "patches" version patches
 	write "orfani" version orfani
+	write "stato.corrente" version stato
 
 -- | Operazione di ripristino. Legge lo stato del gruppo 
 ripristino
@@ -237,8 +239,8 @@ mkPersistenza load modif boot resps ctx gname = do
 					putStrLn "stato iniziale scritto"
 			ripristino (groupUnwrite gname) tv tp to cl 
 			-- thread di persistenza appeso a trigger
-			forkIO . forever $ persistenza (groupWrite gname) tv tp to cl  trigger
-			forkIO . forever $ atomically (readTChan cs) 
+			forkIO . forever $ persistenza (groupWrite gname) tv tp to cl ts trigger
+			forkIO . forever $ atomically (readTChan cs) -- tiene vuoto cs 
 			putStrLn "persistenza attivata"
 	return (p,boot')
 

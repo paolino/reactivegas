@@ -42,7 +42,6 @@ import Applicazioni.Persistenza (Persistenza (..))
 import Applicazioni.Sessione (Sessione (..))
 import Applicazioni.Amministratore (Amministratore (..))
 
-import Lib.Tokenizer
 import UI.Lib
 
 wrapCostrActions 	
