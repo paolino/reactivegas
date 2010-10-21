@@ -74,7 +74,8 @@ dichiarazioni = concat $
 
 		,	[("----------",return ())
 			,("pubblica le dichiarazioni in sessione",salvataggio "pubblica le dichiarazioni in sessione")
-			,("elimina delle dichiarazioni",eliminazioneEvento "elimina delle dichiarazioni")
+			,("elimina delle dichiarazioni",eliminazioneEvento "elimina delle dichiarazioni"),
+			(,) "modifica della considerazione delle dichiarazioni"   eventLevelSelector
 			]
 
 		]
@@ -99,10 +100,11 @@ accettazione_nuovo_gruppo = do
 			False -> bocciato "nome del nuovo gruppo" "nome non disponibile"
 
 		else bocciato "password di amministrazione" "password do amministrazione non riconosciuta"
-cambiaGruppo = do
+cambiaGruppo = rotonda $ \_ -> do
 	gs <- sea elenco_gruppi 
-	g <- P.scelte (("<nessuno>",Nothing): zip gs (map Just gs)) "seleziona il gruppo di acquisto" 
-	ses $ ($g) . writeGruppo
+	let 	cg g = ses $ ($g) . writeGruppo
+		ngs = map (second cg) $ ("<nessuno>",Nothing): zip gs (map Just gs)
+	menu "gruppo di acquisto" ngs
 
 ensureGruppo s f = do
 	g <- ses readGruppo
@@ -124,20 +126,17 @@ amministrazione = rotonda $ \k -> do
 	let grs = case g of 
 		Nothing -> []
 		Just _ -> [
-			(,) "scelta del responsabile autore delle dichiarazioni"  accesso,
-			(,) "modifica della considerazione delle dichiarazioni"   eventLevelSelector,
 			(,) "ricezione nuove chiavi da responsabile"  creaChiavi
 			]
 	r <- ses readAccesso
 	let res = case r of 
 		Nothing -> []
 		Just _ -> [(,) "digestione di tutte le dichiarazioni pubblicate"  sincronizza]
-	menu "operazioni amministrative" $ 
-		[("selezione del gruppo di acquisto", cambiaGruppo)]
-		++ grs ++ res ++ [
-			("richiesta inserimento nuovo gruppo",richiesta_nuovo_gruppo) ,
-			("accettazione richiesta nuovo gruppo", accettazione_nuovo_gruppo)
-			]
+	menu "amministrazione" $ grs ++ res ++ [	
+		("richiesta inserimento nuovo gruppo",richiesta_nuovo_gruppo) ,
+		("accettazione richiesta nuovo gruppo", accettazione_nuovo_gruppo)
+		]
+
 
 
 indiretto =  wname  "accesso indiretto"  mano
@@ -157,6 +156,9 @@ indiretto =  wname  "accesso indiretto"  mano
 applicazione = rotonda $ \_ -> do
 	menu "menu principale" $ 
 				[
+				wname "responsabile autore"  ensureGruppo (rotonda $ const accesso),
+
+				("gruppo di acquisto", cambiaGruppo),
 				wname "gestione dichiarazioni" ensureResponsabile $ rotonda $ \_ -> menu "gestione dichiarazioni" $ dichiarazioni,	
 				("descrizione della sessione",descrizione),
 				wname "effetto delle ultime dichiarazioni" ensureGruppo $ do

@@ -10,6 +10,8 @@ layout = 	[(["gestione dichiarazioni"],2)
 		,(["amministrazione"],4)
 		,(["interrogazione sullo stato del gruppo"],5)
 		,(["effetto delle ultime dichiarazioni"],3)
+		,(["gruppo di acquisto"],6)
+		,(["responsabile autore"],7)
 		]
 
 
@@ -20,6 +22,7 @@ metadata = header << 	(
 			+++ 	(meta ! [httpequiv "Content-Type", content "text/html;charset=utf8;"])
 			)  
 piede = ulist << 	[
+			li << ("Manualistica" +++ anchor ! [href "http://github.com/paolino/reactivegas/wiki"] << "wiki"),
 			li << ("Servizio sviluppato da " +++ anchor ! [href "mailto:paolo.veronelli@gmail.com"] 
 					<< "paolino" +++ "e amici"),
 			li << ("Codice disponibile sotto licenza BSD presso " +++ anchor ! 
@@ -28,7 +31,7 @@ piede = ulist << 	[
 
 testata = 	thediv ! [theclass "titolo"] << ( 
 	thediv ! [theclass "project"] << "ReactiveGAS" +++
-	thediv ! [theclass "synopsis"] << "Supporto all'amministrazione economica dei gruppi d'acquisto")
+	thediv ! [theclass "synopsis"] << "Cooperazione economica nei gruppi d'acquisto")
  
 	+++	thediv ! [theclass "abort"] << thediv ! [theclass "reset"] << anchor ! [href "/"] << "annullamento dell'interazione"
 
