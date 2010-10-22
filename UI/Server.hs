@@ -85,8 +85,11 @@ richiesta_nuovo_gruppo = do
 	t <- sea $ ($n) . controlla_nome 
 	if t then do
 		(m :: String) <- P.libero "nome del primo responsabile"
-		p <- P.password "password del primo responsabile"
-		P.download (n ++ ".richiesta") "scarica file di richiesta inserimento nuovo gruppo" (n,(m, cryptobox p))
+		p1 <- P.password "una password responsabile (12 caratteri)"
+		p2 <- P.password "reimmetti la password"
+		if p1 == p2 then 
+			P.download (n ++ ".richiesta") "scarica file di richiesta inserimento nuovo gruppo" (n,(m, cryptobox p1))
+			else bocciato "immissione password" "digitazione errata"
 		else bocciato "nome del nuovo gruppo" "nome non disponibile"
 accettazione_nuovo_gruppo :: Interfaccia ()
 accettazione_nuovo_gruppo = do
