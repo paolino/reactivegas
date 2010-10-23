@@ -11,6 +11,7 @@ import Lib.Passo
 import Data.List (lookup)
 import Data.Maybe (catMaybes, isNothing)
 import Lib.Tokens 
+import Control.Monad (liftM2)
 import Control.Monad.Trans (liftIO, MonadIO)
 import Core.Types
 import Lib.Modify (PeekPoke)
@@ -47,7 +48,7 @@ mkAmministratore pass readA dir = do
 	-- analisi directories
 	ms <- tail `fmap` find 
 		((== 0) `fmap` depth) 
-		((== Directory) `fmap` fileType) 
+		(liftM2 (&&) ((== Directory) `fmap` fileType) ((/= "static") `fmap` fileName)) 
 		dir
 	-- gruppi e valori
 	let ns = map takeFileName ms
@@ -74,7 +75,7 @@ mkAmministratore pass readA dir = do
 			t <- atomically $ do
 				gs <- readTVar pes
 				case lookup g gs of 
-					Nothing -> return True
+					Nothing -> return (g /= "static")
 					Just _ -> return False
 			when t $ do
 				create g 
