@@ -49,24 +49,20 @@ a:visited {color:#558;text-decoration:none;}
 a:hover {color:#558;text-decoration:underline;}
 
 
-body {background:#999;}
-
-div.testata {
-	margin: 2px;
+body {background:#99b;}
+input.paypal {	
 	position : absolute;
-	left : 4px;
-	float: clear;
-	top:10px;
-	height : 43px;
-	width:720px;
-	border: 1px solid #999;
-	background-color: #dde;
+	left : 670px;
+	top : 0px;
+	font: 8pt sans-serif;
+	color:#558	
 	}
+
 div.abort {
 	margin: 2px;
 	position : absolute;
-	left : 779px;
-	top : 15px;
+	left : 786px;
+	top : 28px;
 	float: clear;
 	height : 30px;
 	width:146px;
@@ -75,28 +71,29 @@ div.abort {
 
 	}
 
-div.titolo {margin:3px;
+div.titolo {	
+	border: 1px solid #999;
+	margin: 2px;
+	position : absolute;
+	left : 4px;
+	top:16px;
+	background-color: #dde;
 	float:left;
 	color:#555;
 	}
 div.project {
 	margin:4px;
+	margin-left:20px;
 	font: 18pt sans-serif;
 	float:left;
 	}
 div.synopsis {
 	margin:4px;
 	margin-top:12px;
-	margin-left:40px;
+	margin-left:100px;
 	font: 12pt sans-serif;
 	font-style:italic;
 	float:left;
-	}
-div.reset {
-	margin-top:2px;
-	margin-right :7px;
-	text-align:right;
-	color: #f00;
 	}
 div.dimensione6 {
 	position: absolute;

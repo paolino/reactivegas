@@ -32,7 +32,7 @@ piede = ulist << 	[
 				method "post"
 				] << 	[	hidden "cmd" "_s-xclick",
 						hidden "encrypted" paypalV,
-						input ! [name "submit" , 
+						input ! [name "submit" , src "/static/donazioni.gif" ,
 							thetype "image",theclass "paypal", alt "paypal"]
 						])
 			]  
