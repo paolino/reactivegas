@@ -56,6 +56,7 @@ div.testata {
 	position : absolute;
 	left : 4px;
 	float: clear;
+	top:10px;
 	height : 43px;
 	width:720px;
 	border: 1px solid #999;
@@ -65,7 +66,7 @@ div.abort {
 	margin: 2px;
 	position : absolute;
 	left : 779px;
-	top : 10px;
+	top : 15px;
 	float: clear;
 	height : 30px;
 	width:146px;
@@ -99,7 +100,7 @@ div.reset {
 	}
 div.dimensione6 {
 	position: absolute;
-	top :50px;
+	top :60px;
 	left :4px;
 	border: 1px solid #999;
 	margin: 2px;
@@ -110,7 +111,7 @@ div.dimensione6 {
 }
 div.dimensione7 {
 	position: absolute;
-	top :310px;
+	top :320px;
 	left :4px;
 	border: 1px solid #999;
 	margin: 2px;
@@ -122,7 +123,7 @@ div.dimensione7 {
 
 div.dimensione2 {
 	position: absolute;
-	top :50px;
+	top :60px;
 	left : 135px;
 	border: 1px solid #999;
 	margin: 2px;
@@ -133,7 +134,7 @@ div.dimensione2 {
 }
 div.dimensione3 {
 	position: absolute;
-	top : 310px;
+	top : 320px;
 	left : 135px;
 	border: 1px solid #999;
 	margin: 2px;
@@ -144,11 +145,11 @@ div.dimensione3 {
 }
 div.dimensione1 {
 	position: absolute;
-	top :50px;
+	top :60px;
 	left :638px;
 	border: 1px solid #999;
 	margin: 2px;
-	background-color: #f0f0f0 ;
+	background-color: #f0e0e0 ;
 	width:294px;
 	height:200px;
 	overflow: auto;
@@ -156,7 +157,7 @@ div.dimensione1 {
 
 div.dimensione4 {
 	position: absolute;
-	top : 252px;
+	top : 262px;
 	left : 638px;
 	border: 1px solid #999;
 	margin: 2px;
@@ -167,7 +168,7 @@ div.dimensione4 {
 }
 div.dimensione5 {
 	position: absolute;
-	top : 334px;
+	top : 344px;
 	left : 638px;
 	border: 1px solid #999;
 	margin: 2px;
@@ -191,7 +192,6 @@ input#valore {font: 8pt sans-serif;
 
 div.response {	
 	color: #755;font-weight: bold;
-	background:#f0f0f0;
 	border-bottom: 1px solid #e5e5e5;
 	overflow:auto;
 	}
@@ -225,11 +225,10 @@ li.responso {height:14px;overflow:hidden;}
 
 dt {	color: #575;
 	border-bottom: 1px solid #e5e5e5;
-	background:#f0f0f0;
 	}
 
 div.utente {margin:5px;overflow:auto;float:clear;}
-div.pedata  {border : 1px solid #999 ;margin:2px;position:absolute;top:600px;left : 4px; width:928px
+div.pedata  {border : 1px solid #999 ;margin:2px;position:absolute;top:0px;left : 4px; width:928px
 	;background-color: #dde;color:#666;}
-div.pedata li {display:inline;margin-left: 60px;font: 8pt sans-serif;}
+div.pedata li {display:inline;margin-left: 80px;font: 8pt sans-serif;}
 

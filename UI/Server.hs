@@ -141,6 +141,38 @@ amministrazione = rotonda $ \k -> do
 		]
 
 
+descrizione = do
+	r <- ses readAccesso
+	evs <- ses readEventi 
+	evsp <- case r of
+		Nothing -> return []
+		Just (u,_) -> let ps (_,us) = case lookup u us of
+						Nothing -> []
+						Just (_,_,es) -> es 
+				in sep $ maybe (return []) (fmap ps . readUPatches)
+
+	l <- ses getConservative
+	g <- ses readGruppo
+	mv <- case g of 
+		Nothing -> return Nothing 
+		Just _ -> fmap Just $ sepU readVersion
+	P.output False . Response $ 
+		[("gruppo selezionato", ResponseOne $ maybe "<nessuno>" id g) 
+		,("responsabile della sessione" , ResponseOne $ case r of 
+			Nothing -> "<anonimo>"
+			Just (u,_) -> u)
+		] 
+		++ case mv of 
+			Nothing -> []
+			Just v -> [("versione corrente dello stato", ResponseOne v)]
+		++ [("livello di considerazione dichiarazioni",if l == maxLevel then
+			ResponseOne "completo" else ResponseOne ("modificato: " ++ show l))]
+		++ case r of 
+			Nothing -> []
+			Just _ -> [
+				("dichiarazioni in sessione" , ResponseMany $ map ResponseOne (sortEventi evs)),
+				("dichiarazioni pubblicate", ResponseMany $ map ResponseOne (sortEventi evsp))
+				]
 
 indiretto =  wname  "accesso indiretto"  mano
 				[

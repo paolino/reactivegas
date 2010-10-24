@@ -74,10 +74,10 @@ richieste is =  table <<
 	altrs is (\(u,e) -> td << u +++ td << show e) 
 
 
-mkReporter :: FilePath -> FilePath -> Int -> IO ((Effetti,Maybe QS) -> IO ())
-mkReporter wd d l  = do 
-	m@(Movimenti i _ _) <- mkMovimenti wd 
-	a@(Acquisti ia _) <- mkAcquisti wd
+mkReporter :: FilePath -> FilePath -> Int -> Bool -> IO ((Effetti,Maybe QS) -> IO ())
+mkReporter wd d l t = do 
+	m@(Movimenti i _ _) <- mkMovimenti wd t 
+	a@(Acquisti ia _) <- mkAcquisti wd t 
 	return $ \(ls,x) -> do 
 		t <- getClockTime >>= toCalendarTime
 		let 	h = h3 << ("Ultimo aggiornamento: " ++ calendarTimeToString t)

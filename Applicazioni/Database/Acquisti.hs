@@ -68,9 +68,10 @@ getAcquisti db n = do
 	return ys'
 
 mkAcquisti 	:: FilePath 	-- ^ workin directory
+		-> Bool
 		-> IO Acquisti
-mkAcquisti wd  = do
-	handle (\(SomeException _) -> return ()) (removeFile $ wd </> "acquisti.sql")
+mkAcquisti wd t  = do
+	when t $ handle (\(SomeException _) -> return ()) (removeFile $ wd </> "acquisti.sql")
 	db <- connectSqlite3 $ wd </> "acquisti.sql"
 
 	handleSql (\_ -> return ()) $ do

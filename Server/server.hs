@@ -27,11 +27,12 @@ import Server.Layout (layout, pagina)
 import Applicazioni.Amministratore
 
 runGruppo lmov (dir,name,mr0)  = do
-		putStrLn $ "** Inizio report di \"" ++ name ++ "\""
-		report <- mkReporter dir (dir </> "static" </> "report.html") lmov 
 		putStrLn $ "** Inizio persistenza di \"" ++ name ++ "\""
-		(pe,boot) <- mkPersistenza loader bianco (nuovoStato $ maybe [] return mr0) (fst . responsabili) fst dir 
-		--- report thread --------------------------------
+		(pe,boot,cond) 
+			<- mkPersistenza loader bianco (nuovoStato $ maybe [] return mr0) (fst . responsabili) fst dir
+
+		putStrLn $ "** Inizio report di \"" ++ name ++ "\"" 
+		report <- mkReporter dir (dir </> "static" </> "report.html") lmov cond
 		forkIO $ do
 			w <- atomically (updateSignal pe) -- una copia del canale di segnalazione update della persistenza
 			forever $ do
@@ -39,15 +40,22 @@ runGruppo lmov (dir,name,mr0)  = do
 				case c of
 					GPatch _ _ (ls,x) -> report (ls,Just x) -- arrivata una GPatch 
 					_ -> return ()
+
+
 		------- logs ----------------------
-	 	forkIO . forever $ readLogs pe >>= putStrLn . take 100
+	 	forkIO . forever $ readLogs pe >>= putStrLn . take 100		
+
+
+
 		-------- server ----------------------
-		boot
+		boot 		--------------------------------	
+		
+
 		return pe
 
 main = do
 	Argomenti dirs port lmov lsess lrem tokpass <- parseArgs $ Argomenti [] 5000 15 10 20 (Token 123) 
-	amm@(Amministratore _ _ _ _ query)  <- mkAmministratore tokpass (runGruppo lmov) "gruppi"
+	amm@(Amministratore _ _ _ _ query) <- mkAmministratore tokpass (runGruppo lmov) "gruppi"
 	
 	server "." port lsess lrem applicazione (return Nothing) 
 		(output . pagina) layout $ \signal ms -> do

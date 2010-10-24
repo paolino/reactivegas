@@ -64,7 +64,9 @@ persistenza write tversion tupatch torfani tlog tstato trigger = do
 	write "orfani" version orfani
 	write "stato.corrente" version stato
 
--- | Operazione di ripristino. Legge lo stato del gruppo 
+-- | Operazione di ripristino. Ricrea tutti i dati del gruppo da filesystem.
+-- Ritorna True se e' necessario ricalcolare tutto a partire dagli aggiornamenti, utile per cancellare le informazioni 
+-- derivate dalle GPatch.L'azione ritornata è da eseguire per eseguire la reale computazione dello stato.
 ripristino :: (Read a, Show a) 
 	=> (forall b . Read b => String -> IO (Maybe (Int, b)))
 	-> String 
@@ -75,10 +77,23 @@ ripristino :: (Read a, Show a)
 	-> TChan String
 	-> Int 
 	-> TVar a
-	-> IO ()
+	-> IO (Bool,IO ())
 
-ripristino unwrite gname p tversion tupatch torfani tlog uv ts = do					
-	let reload = do 
+ripristino unwrite gname p tversion tupatch torfani tlog uv ts = do
+	let complete = do 	
+		ps <- unwrite "patches" 
+		os <- unwrite "orfani" 
+		atomically $ do
+			v <- readTVar tversion
+			case ps of
+				Nothing -> return ()
+				Just (v',ps) -> when (v' == v) $ writeTVar tupatch ps
+			case os of 
+				Nothing -> return ()
+				Just (v',os) -> when (v' == v) $ writeTVar torfani os
+			writeTVar tversion v
+					
+	let reload = (True, do 
 		ms <- groupUnwrite gname "stato.boot"
 		case ms of 
 			Just (0,s) -> do 
@@ -90,30 +105,17 @@ ripristino unwrite gname p tversion tupatch torfani tlog uv ts = do
 				s <- atomically $ readTVar ts
 				groupWrite gname "stato.boot" 0 s
 				putStrLn "stato iniziale scritto"
-
+			)
 	ms <- groupUnwrite gname "stato.corrente" 	
-	case ms of 
+	t <- case ms of 
 		Just (vc,s) -> do 
 			putStrLn $ "rilevato file di stato corrente " ++ show vc
 			if vc == uv then 
-				atomically $ writeTVar tversion vc >> writeTVar ts s
-				else do
-					putStrLn $ "incoerenza con aggiornamenti " ++ show (uv,vc)
-					reload
-		Nothing -> reload
+				return $ (False, atomically $ writeTVar tversion vc >> writeTVar ts s )
+				else do return reload
+		Nothing -> return reload 
 
-	ps <- unwrite "patches" 
-	os <- unwrite "orfani" 
-	atomically $ do
-		v <- readTVar tversion
-		case ps of
-			Nothing -> return ()
-			Just (v',ps) -> when (v' == v) $ writeTVar tupatch ps
-		case os of 
-			Nothing -> return ()
-			Just (v',os) -> when (v' == v) $ writeTVar torfani os
-		writeTVar tversion v
-
+	return $ second (>> complete) t
 -- | messaggi di avvenuta persistenza
 data Change a b	= Boot 	a					-- ^ messaggio di nuovo stato
 		-- | arrivato un aggiornamento di gruppo, comunica gli eventi digeriti e quelli orfani
@@ -200,10 +202,10 @@ mkPersistenza :: (Show c, Eq a, Read a, Show a, Show b)
 	-> a							-- ^ inizializzatore di gruppo
 	-> (c -> [Responsabile])
 	-> (a -> c)
-	-> GName 							-- ^ nome del gruppo
-	-> IO (Persistenza a b d,IO ())					
+	-> GName 		
+	-> IO (Persistenza a b d,IO (),Bool)					
 
-mkPersistenza load modif boot resps ctx gname = do 
+mkPersistenza load modif boot resps ctx gname  = do 
 	-- istanzia la memoria condivisa
 	trigger <- atomically $ newTChan 	
 	tv <- atomically $ newTVar 0
@@ -254,13 +256,13 @@ mkPersistenza load modif boot resps ctx gname = do
 		p = Persistenza readStato'  writeUPatch'  
 			readUPatches' writeGPatch' readGPatch' readVersion' readLogs' updateSignal' 
 			queryUtente caricamentoBianco'
-		boot' = do 	
-			ripristino (groupUnwrite gname)  gname p tv tp to cl uv ts
 			-- thread di persistenza appeso a trigger
+		close = do 
 			forkIO . forever $ persistenza (groupWrite gname) tv tp to cl ts trigger
 			forkIO . forever $ atomically (readTChan cs) -- tiene vuoto cs 
 			putStrLn "persistenza attivata"
-	return (p,boot')
+	(t,boot') <- ripristino (groupUnwrite gname)  gname p tv tp to cl uv ts 
+	return (p,boot' >> close,t)
 
 
 autofeed :: Persistenza a b d -> IO ()

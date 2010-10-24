@@ -201,28 +201,4 @@ effetto = do
 	P.output False . Response $ [("effetto delle ultime dichiarazioni",  c)]
 
 
-descrizione = do
-	r <- ses readAccesso
-	evs <- ses readEventi 
-	evsp <- case r of
-		Nothing -> return []
-		Just (u,_) -> let ps (_,us) = case lookup u us of
-						Nothing -> []
-						Just (_,_,es) -> es 
-				in sep $ maybe (return []) (fmap ps . readUPatches)
-
-	l <- ses getConservative
-	g <- ses readGruppo
-	v <- sep $ maybe (return (-1)) readVersion
-	P.output False . Response $ 
-		[("gruppo selezionato", ResponseOne $ maybe "<nessuno>" id g)
-		,("responsabile della sessione" , ResponseOne $ case r of 
-			Nothing -> "<anonimo>"
-			Just (u,_) -> u)
-		,("versione attuale dello stato", ResponseOne $ v)
-		,("livello di considerazione dichiarazioni",if l == maxLevel then
-			ResponseOne "massimo" else ResponseOne ("modificato: " ++ show l)) 
-		,("dichiarazioni in sessione" , ResponseMany $ map ResponseOne (sortEventi evs))
-		,("dichiarazioni pubblicate", ResponseMany $ map ResponseOne (sortEventi evsp))
-		]
 				
