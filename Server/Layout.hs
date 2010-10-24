@@ -37,19 +37,21 @@ piede = ulist << 	[
 						])
 			]  
 
-testata = 	thediv ! [theclass "titolo"] << ( 
+testata = 
 	thediv ! [theclass "project"] << "ReactiveGAS" +++
-	thediv ! [theclass "synopsis"] << "Cooperazione economica nei gruppi d'acquisto")
+	thediv ! [theclass "synopsis"] << "Cooperazione economica nei gruppi d'acquisto"
  
-	+++	thediv ! [theclass "abort"] << thediv ! [theclass "reset"] << anchor ! [href "/"] << "annullamento dell'interazione"
 
 pagina 	:: Html 	-- ^ corpo della pagina
 	-> String	-- ^ pagina servita
 pagina b = prettyHtml $ 
 		header << metadata  
-	+++ 	body << (		(thediv ! [theclass "testata"] << testata)
+	+++ 	body << (	
+				 	(thediv ! [theclass "pedata boxes"] << piede)  	
+				+++ 	(thediv ! [theclass "titolo boxes"] << testata)
+				+++	thediv ! [theclass "abort boxes"]  
+					<< anchor ! [href "/"] << "annullamento dell'interazione"
 				+++ 	(thediv ! [theclass "utente"] << b)
-				+++ 	(thediv ! [theclass "pedata"] << piede)  
 			)
 
 	

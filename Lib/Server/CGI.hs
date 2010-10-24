@@ -31,7 +31,7 @@ readValore :: ErrorT String (CGIT IO) Value
 readValore = fmap id <$> lift (getInput "valore") >>= onNothing "form corrotta, manca la risposta"
 
 pagina :: [(Html,Int)] -> Html
-pagina xs =  thediv << map (\(h,i) -> thediv ! [theclass ("dimensione" ++ show i)] << h) xs
+pagina xs =  thediv << map (\(h,i) -> thediv ! [theclass ("boxes dimensione" ++ show i)] << h) xs
 
 -- | eleva gli errori nella monade del server in quella di CGI 
 liftServer :: Error e => ErrorT e IO a -> ErrorT e (CGIT IO) a
