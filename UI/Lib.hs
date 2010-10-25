@@ -87,9 +87,9 @@ type Interfaccia a = Costruzione MEnv () a
 
 -- | comunica che c'è un errore logico nella richiesta
 bocciato :: String -> String -> Interfaccia ()
-bocciato s x =  P.errore True . Response $ [(s ++ " (inaccettabile)", ResponseOne x)] 
+bocciato s x =  P.errore True . Response $ [(s , ResponseOne x)] 
 
-bocciatoS s x =  P.errore False . Response $ [(s ++ " (invalutabile)", ResponseOne x)] 
+bocciatoS s x =  P.errore False . Response $ [(s , ResponseOne x)] 
 
 accesso :: Interfaccia ()
 accesso = do 

@@ -1,0 +1,8 @@
+<p> Questo menu permette di aggiungere nuove dichiarazioni alla sessione </p>
+<p> Inoltre nell'ultima parte si trovano alcune operazioni gestionali che riguardano le dichiarazioni stesse </p>
+<ul>
+	<li> La pubblicazione delle dichiarazioni sostituisce le dichiarazioni precedentemente pubblicate dal responsabile selezionato con quelle attualmente in sessione </li>
+	<li> L'eliminazione delle dichiarazioni elimina le dichiarazioni in sessione. La sucessiva pubblicazione corregge quelle pubblicate </li>
+	<li> La correzione del livello di considerazione delle dichiarazioni permette di osservare un caricamento in bianco incompleto. Questo risulta necessario quando vogliamo produrre una dichiarazione che ha diritto di essere pubblicata , ma il caricamento di tutte le dichiarazioni impedisce al sistema di proporcela </li>
+	
+</ul> 

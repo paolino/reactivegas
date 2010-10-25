@@ -30,7 +30,7 @@ testata =
 	thediv ! [theclass "synopsis"] << "Cooperazione economica per i gruppi di acquisto"
  
 
-pagina 	:: Html 	-- ^ corpo della pagina
+pagina 	:: [Html] 	-- ^ corpo della pagina
 	-> String	-- ^ pagina servita
 pagina b = prettyHtml $ 
 		header << metadata  
@@ -38,13 +38,17 @@ pagina b = prettyHtml $
 		thediv ! [theclass "titolo boxes"] << (testata +++ piede),
 		thediv ! [theclass "abort boxes"] << thediv ! [theclass "reset"] 
 			<< anchor ! [href "/"] << "annullamento dell'interazione",
+		thediv ! [identifier "help", theclass "boxes"] << noHtml,
 		thediv ! [theclass "utente"] << b,
 		thediv ! [theclass "contatti boxes"] << ulist << [
 					li << "Contatto sviluppatore:" 
 						+++ anchor ! [href "mailto:paolo.veronelli@gmail.com"]<< "e-mail",
 					li << "Donazioni: postepay n° 4023600431903923 intestata a Paolo Veronelli"
-					]
+					],
+		thelink ! [thetype "text/css", href "static/css/start/jquery-ui-1.8.5.custom.css", rel "Stylesheet"]
+			<<noHtml,
+		script ! [thetype "text/javascript", src "/static/js/jquery-1.4.2.min.js"]
+			<<noHtml,
+		script ! [thetype "text/javascript", src "/static/js/jquery-ui-1.8.5.custom.min.js"] << noHtml,
+		script ! [thetype "text/javascript", src "/static/help.js"] << noHtml
 		]
-
-	
-

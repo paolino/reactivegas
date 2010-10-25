@@ -30,8 +30,8 @@ readFKey =  do
 readValore :: ErrorT String (CGIT IO) Value
 readValore = fmap id <$> lift (getInput "valore") >>= onNothing "form corrotta, manca la risposta"
 
-pagina :: [(Html,Int)] -> Html
-pagina xs =  thediv << map (\(h,i) -> thediv ! [theclass ("boxes dimensione" ++ show i)] << h) xs
+pagina :: [(Html,Int)] -> [Html]
+pagina xs =  map (\(h,i) -> thediv ! [theclass ("boxes interazione dimensione" ++ show i)] << h) xs
 
 -- | eleva gli errori nella monade del server in quella di CGI 
 liftServer :: Error e => ErrorT e IO a -> ErrorT e (CGIT IO) a
@@ -45,7 +45,7 @@ liftServer ma = do
 type HServer e = Server e Html Link
 
 -- | map a Server reactor to a CGI action 
-cgiFromServer :: (Html -> CGI CGIResult) -> (Server e Html Link,IO ()) -> CGI CGIResult
+cgiFromServer :: ([Html] -> CGI CGIResult) -> (Server e Html Link,IO ()) -> CGI CGIResult
 cgiFromServer resp (Server apertura servizio,droppa) = do 
 	let s = liftServer . servizio 
 	vs <- getVars 

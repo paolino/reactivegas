@@ -48,7 +48,6 @@ a:link {color:#558;text-decoration:none;}
 a:visited {color:#558;text-decoration:none;}
 a:hover {color:#558;text-decoration:underline;}
 
-
 body {background:#99b;color:#555;}
 input.paypal {	
 	position : absolute;
@@ -57,10 +56,12 @@ input.paypal {
 	font: 8pt sans-serif;
 	color:#558	
 	}
-
+div#help {
+	border: 2px solid #f0f0f0;
+	}
 .boxes {	
 	background-color: #f0f0f0 ;	
-	border : 1px solid #8a8;
+	border : 1px solid #ccc;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	position : absolute;
@@ -68,35 +69,41 @@ input.paypal {
 	}
 
 div.pedata  {
-	top:0px;
-	left : 4px; 
-	width: 928px;
-	background-color: #d0d0d0;
+	margin-top:5px;
+	margin-left : 644px; 
 	}
-div.pedata li {display:inline;margin-left: 80px;font: 8pt sans-serif;}
-
+div.pedata ul {
+	list-style-type: none;
+	}
 div.abort {
-	left : 770px;
+	border : 2px solid #f88;	
+	left : 786px;
 	top : 29px;
 	height :29;
 	width:145px;
 	}
 div.reset {
-	border : 2px solid #f88;	
-	border-radius: 5px;
-	-moz-border-radius: 5px;
 	text-align:center;
 	}
 
 div.titolo {	
+	border : 2px solid #aaa;	
 	left : 4px;
-	top:14px;
-	width:632px;
+	top:0px;
 	height :34px;
+	width:750px;
 	float:left;
 	color:#555;
-	background-color: #e0e0e0;
+	background-color: #d0d0d0;
 	}
+div.contatti {
+	top:607px;
+	left : 4px; 
+	width: 928px;
+	background-color: #d0d0d0;
+	}
+div.contatti li {display:inline;margin-left: 120px;font: 8pt sans-serif;}
+
 div.project {
 	margin:4px;
 	margin-left:20px;
@@ -106,9 +113,8 @@ div.project {
 div.synopsis {
 	margin:4px;
 	margin-top:12px;
-	margin-left:80px;
+	margin-left:40px;
 	font: 12pt sans-serif;
-	font-style:italic;
 	float:left;
 	}
 div.dimensione6 {
@@ -171,10 +177,9 @@ input.continua {
 
 input#valore {font: 8pt sans-serif;}
 
-div.response {	
-	color: #755;font-weight: bold;
-	border-bottom: 1px solid #e5e5e5;
-	overflow:auto;
+div.responso {	
+	color: #755;
+	font-weight: bold;
 	}
 dl dt {font-weight: bold;}
 dl dd {
@@ -202,7 +207,17 @@ div.passobox {
 	}
 
 li.scelta {height:14px;overflow:hidden;}
-li.responso {height:14px;overflow:hidden;}
+li.output {height:14px;overflow:hidden;}
 
-
-
+ul.ulhelp {list-style-type:none;}
+li div.responso {float:clear;}
+.lihelp {
+	float:right;
+	font-weight:normal;
+	color : #77a;
+	}
+.tooltip {
+	background-color: #aaa;
+	font-weight:normal;
+	color : #77a;
+	}

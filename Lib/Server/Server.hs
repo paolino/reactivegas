@@ -72,7 +72,7 @@ server 	:: forall e b . (Read b,Show b)
 	-> Int					-- ^ numero massimo di sessioni simultanee 	
 	-> Costruzione (Running e) () () 	-- ^ applicazione
 	-> CGI (Maybe CGIResult)				-- ^ preserver
-	-> (Html -> CGI CGIResult) 		-- ^ gestore del response
+	-> ([Html] -> CGI CGIResult) 		-- ^ gestore del response
 	-> [([Value],Int)] 			-- ^ serializzazione delle form di default
 	-> (STM () -> Maybe b -> IO (e, IO b))  		-- ^ produzione e restore di evironment per sessione
 	-> IO () 				-- ^ aloa
