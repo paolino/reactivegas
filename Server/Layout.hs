@@ -50,7 +50,7 @@ pagina b = prettyHtml $
 				 	(thediv ! [theclass "pedata boxes"] << piede)  	
 				+++ 	(thediv ! [theclass "titolo boxes"] << testata)
 				+++	thediv ! [theclass "abort boxes"]  
-					<< anchor ! [href "/"] << "annullamento dell'interazione"
+					<< thediv ! [theclass "reset"] << anchor ! [href "/"] << "annullamento dell'interazione"
 				+++ 	(thediv ! [theclass "utente"] << b)
 			)
 

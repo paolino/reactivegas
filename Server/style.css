@@ -49,7 +49,7 @@ a:visited {color:#558;text-decoration:none;}
 a:hover {color:#558;text-decoration:underline;}
 
 
-body {background:#99b;}
+body {background:#99b;color:#555;}
 input.paypal {	
 	position : absolute;
 	left : 670px;
@@ -58,33 +58,44 @@ input.paypal {
 	color:#558	
 	}
 
-div.abort {
-	border-radius: 6px;
-	-moz-border-radius: 6px;
-	margin: 2px;
+.boxes {	
+	background-color: #f0f0f0 ;	
+	border : 1px solid #8a8;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
 	position : absolute;
-	left : 786px;
-	top : 29px;
-	float: clear;
-	height : 30px;
-	width:146px;
-	background-color: #aee;
-	text-align:center;
+	overflow: auto;
+	}
 
+div.pedata  {
+	top:0px;
+	left : 4px; 
+	width: 928px;
+	background-color: #d0d0d0;
+	}
+div.pedata li {display:inline;margin-left: 80px;font: 8pt sans-serif;}
+
+div.abort {
+	left : 770px;
+	top : 29px;
+	height :29;
+	width:145px;
+	}
+div.reset {
+	border : 2px solid #f88;	
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	text-align:center;
 	}
 
 div.titolo {	
-	border-radius: 6px;
-	-moz-border-radius: 6px;
-	margin: 2px;
-	position : absolute;
 	left : 4px;
 	top:14px;
-	width:633px;
-	height :35px;
-	background-color: #dde;
+	width:632px;
+	height :34px;
 	float:left;
 	color:#555;
+	background-color: #e0e0e0;
 	}
 div.project {
 	margin:4px;
@@ -95,99 +106,61 @@ div.project {
 div.synopsis {
 	margin:4px;
 	margin-top:12px;
-	margin-left:90px;
+	margin-left:80px;
 	font: 12pt sans-serif;
 	font-style:italic;
 	float:left;
 	}
 div.dimensione6 {
-	border-radius: 6px;
-	-moz-border-radius: 6px;
-	position: absolute;
 	top :60px;
 	left :4px;
-	margin: 2px;
-	background-color: #f0f0f0 ;
-	width:130px;
-	height:258px;
-	overflow: auto;
+	width:129px;
+	height:257px;
 }
 div.dimensione7 {
-	border-radius: 6px;
-	-moz-border-radius: 6px;
-	position: absolute;
 	top :319px;
 	left :4px;
-	margin: 2px;
-	background-color: #f0f0f0 ;
-	width:130px;
-	height:287px;
-	overflow: auto;
+	width:129px;
+	height:286px;
 }
 
 div.dimensione2 {
-	border-radius: 6px;
-	-moz-border-radius: 6px;
-	position: absolute;
 	top :60px;
 	left : 135px;
-	margin: 2px;
-	background-color: #f0f0f0 ;
-	width:502px;
-	height:258px;
+	width:501px;
+	height:257px;
 	overflow: auto;
 }
 div.dimensione3 {
-	border-radius: 6px;
-	-moz-border-radius: 6px;
-	position: absolute;
 	top : 319px;
 	left : 135px;
-	margin: 2px;
-	background-color: #f0f0f0 ;
-	width:502px;
-	height:287px;
-	overflow:auto;
+	width:501px;
+	height:286px;
 }
 div.dimensione1 {
-	border-radius: 6px;
-	-moz-border-radius: 6px;
-	position: absolute;
 	top :60px;
 	left :638px;
-	margin: 2px;
-	background-color: #f0e0e0 ;
-	width:294px;
-	height:200px;
-	overflow: auto;
+	width:293px;
+	height:199px;
 }
 
 div.dimensione4 {
-	border-radius: 6px;
-	-moz-border-radius: 6px;
-	position: absolute;
 	top : 261px;
 	left : 638px;
-	margin: 2px;
-	background-color: #f0f0f0 ;
-	width:294px;
-	height:80px;
-	overflow: auto;
+	width:293px;
+	height:79px;
 }
 div.dimensione5 {
-	border-radius: 6px;
-	-moz-border-radius: 6px;
-	position: absolute;
 	top : 342px;
 	left : 638px;
-	margin: 2px;
-	background-color: #f0f0f0 ;
-	width:294px;
-	height:264px;
-	overflow: auto;
+	width:293px;
+	height:263px;
 }
 
-dt {color: green;}
+dt {	color: #575;
+	border-bottom: 1px solid #e5e5e5;
+	}
+
 dl {color:#555;}
 
 input.continua {
@@ -196,8 +169,7 @@ input.continua {
 	color:#888
 	}
 
-input#valore {font: 8pt sans-serif;
-	}
+input#valore {font: 8pt sans-serif;}
 
 div.response {	
 	color: #755;font-weight: bold;
@@ -232,21 +204,5 @@ div.passobox {
 li.scelta {height:14px;overflow:hidden;}
 li.responso {height:14px;overflow:hidden;}
 
-dt {	color: #575;
-	border-bottom: 1px solid #e5e5e5;
-	}
 
-div.utente {margin:5px;overflow:auto;float:clear;}
-div.pedata  {
-	border-radius: 6px;
-	-moz-border-radius: 6px;
-	margin:2px;
-	position:absolute;
-	top:0px;
-	left : 4px; 
-	width: 928px;
-	background-color: #dde;
-	color:#666;
-	}
-div.pedata li {display:inline;margin-left: 80px;font: 8pt sans-serif;}
 
