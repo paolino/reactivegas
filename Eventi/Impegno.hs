@@ -83,7 +83,7 @@ priorityImpegnoI = R k where
 	k (EventoFallimentoImpegno _) = 20
 
 -- | evento interno che segnala il fallimento di una causa
-data Interni = EventoFallimentoImpegno (Utente, Euro) deriving (Show,Read)
+data Interni = ForzaFallimento | EventoFallimentoImpegno (Utente, Euro) deriving (Show,Read)
 
 -- | intercettore per gli eventi interni
 fallimentoImpegno (EventoFallimentoImpegno t) = Just t

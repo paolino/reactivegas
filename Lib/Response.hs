@@ -20,7 +20,6 @@ instance Show Response where
 
 render' (ResponseOne x) = text (case typeOf x == typeOf "" of True -> fromJust $ cast x ; False -> show x)
 render' (ResponseMany xs) = vcat $ map (text . show) xs
-render' (ResponseAL xs) = vcat $ map (\(x,y) -> hang (text (x ++ ":")) 3 (text . show$ y)) xs
-render' (Response rs) = vcat $ map (\(s,r) -> hang (text (s ++ ":")) 3 (render' r)) rs
-
+render' (ResponseAL xs) = vcat $ map (\(x,y) -> text (x ++ ":") $+$ nest 3 (text . show $ y)) xs
+render' (Response rs) = vcat $ map (\(s,r) -> text (s ++ ":") $+$ nest 3 (render' r)) rs
 
