@@ -1,4 +1,4 @@
-{-# LANGUAGE NoMonomorphismRestriction, DeriveDataTypeable #-}
+{-# LANGUAGE NoMonomorphismRestriction, DeriveDataTypeable, ScopedTypeVariables #-}
 import Lib.Metrics
 import Lib.Passo
 import Data.List
@@ -9,6 +9,8 @@ import Lib.Response
 import Data.Typeable
 import Control.Arrow
 import Control.Monad.State
+import Control.Monad.Cont
+import Control.Exception
 
 data Bene p = Bene {
 	categoria :: [String],
@@ -80,13 +82,13 @@ uiConfezionato (Bene cs fs _) = do
 		("peso", Dimension (1,Chilogrammo)),
 		("unità", Dimension (1,Singolo Pezzo)) 
 		] "bene nel contenitore misurato in"
-	s <- libero $ "contenuto (" ++ bisex (plurale [q,chdim negate c]) ++ ")"
+	s <- libero $ bisex (plurale q) ++ " contenuti in " ++ bisex (respect (("un " ++), ("una " ++)) $ singolare c)
 	let tr d = [Dimension (1,Euro), chdim negate d]
-	r <- scelte [
-		(bisex . plurale $ tr c, tr c),
-		(bisex . plurale $ tr q, tr q)
+	(d,r) <- scelte [
+		(bisex . plurale $ tr c, (c,tr c)),
+		(bisex . plurale $ tr q, (q,tr q))
 		] "prezzo misurato in"
-	p <- libero $ "prezzo (" ++ bisex (singolare r) ++ ")"
+	p <- libero $ "prezzo in " ++ bisex (plurale $ Dimension (1,Euro)) ++ " di " ++ bisex (respect (("un " ++), ("una " ++)) $ singolare d)
 	return $ Bene cs fs $ Just $ 
 		Confezionato (Dimensioned (toRational p) r) (Dimensioned (toRational s) [q,chdim negate c])
 
@@ -99,16 +101,15 @@ uiFiliera (Bene cs fs comm) = do
 	l <- libero "nuovo attore nella filiera"
 	return (Bene cs (nub $ l:fs) comm)
 	
-uiBene b = do
+uiBene k b = do
+	let m b = output True (mostraBene b) >> return b
 	f <- scelte [
-		("aggiungi categoria", uiCategoria b >>= uiBene),
-		("aggiungi filiera",uiFiliera b >>= uiBene),
-		("imposta i valori di commercio",uiConfezionato b >>= uiBene),
-		("fine descrizione", return b)
+		("aggiungi categoria", uiCategoria b >>= m >>=  uiBene k),
+		("aggiungi filiera",uiFiliera b >>= m >>= uiBene k),
+		("imposta i valori di commercio",uiConfezionato b >>= uiBene k),
+		("fine descrizione", k b)
 		] "operazione" 
-	b' <- f
-	output True $ mostraBene b'
-	return b'
+	f >>= m
 	
 
 query = map (\(s,m,q) -> (s,m)) . impegno . commercio
@@ -132,16 +133,15 @@ data Stato = Stato {
 	ordini :: [(Bene Confezionato, [Dimensioned])]
 	}
 
-mostraBene (Bene cs ps Nothing) = ResponseOne $ intercalate ", " (cs ++ ps)
-mostraBene (Bene cs ps (Just comm)) = Response [
+mostraBene (Bene cs ps comm) = Response $ [
 	("categorie",ResponseOne $ intercalate ", " cs),
-	("filiera",ResponseOne $ intercalate ", " ps),
-	("commercio", prettyDescrizione comm)
-	]
+	("filiera",ResponseOne $ intercalate ", " ps)]
+	++ maybe [] (\comm -> [("commercio", prettyDescrizione comm)]) comm
+	
 
 uiMain = join $  scelte [
 		("aggiungi bene", do 
-			b <- uiBene (Bene [] [] Nothing) 
+			b <- callCC $ \k -> uiBene k (Bene [] [] Nothing) 
 			lift $ modify (\(Stato bs os) -> Stato (b:bs) os)
 			uiMain
 			),
@@ -173,7 +173,18 @@ uiMain = join $  scelte [
 	
 
 
-s0 = Stato [caffe,farina] []
-main = (\x -> runStateT (svolgi x >>= interazione) s0 ) $ do
-	uiMain
+b0 = [caffe,farina]
+main = do 
+	kbs <- try $ readFile "beni.data.hs"
+	let bs = case kbs of
+		Left (_::IOException) -> b0
+		Right q -> last q `seq` read q
+	kos <- try $ readFile "ordini.data.hs"
+	let os = case kos of
+		Left (_::IOException) -> []
+		Right q -> last q `seq` read q
+	(_,Stato bs os) <- runStateT (svolgi uiMain >>= interazione) $ Stato bs os
+	
+	writeFile "beni.data.hs" (show bs)
+	writeFile "ordini.data.hs" (show os)
 	  

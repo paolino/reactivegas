@@ -19,12 +19,10 @@ import System.Console.Haskeline
 runPasso :: MonadException m => HPasso m b -> InputT m b
 runPasso (Output x (Just l),_) = do
 	outputStrLn $  (show x)
-	getInputLine "continua .."
 	lift l >>= runPasso
 
 runPasso (Errore x (Just l),_) = do
 	outputStrLn $ "\n" ++ (show x)
-	getInputLine "continua .."
 	lift l >>= runPasso
 
 runPasso (Costruito x,_) = return x 

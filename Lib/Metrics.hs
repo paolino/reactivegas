@@ -29,6 +29,9 @@ instance Show a => Show (Sex a) where
 bisex (Maschile x) = x
 bisex (Femminile x) = x
 
+respect (m,f) (Maschile x) = Maschile (m x)
+respect (m,f) (Femminile x) = Femminile (f x)
+
 class Pretty a where
 	singolare :: a -> Sex String
 	plurale :: a -> Sex String
@@ -162,10 +165,8 @@ instance Pretty Dimensions where
 	plurale [] = Maschile ""
 	plurale xs =  let 
 		(rs,qs) = partition ((>= 0) . esp) $ xs 
-		q (Maschile x) = " al " ++ x
-		q (Femminile x) = " alla " ++ x
 		in Maschile $ (intercalate " per " . zipWith  (\f -> bisex . f) (plurale : repeat singolare) $ rs) 
-			++ (concatMap (q . singolare) $ qs)
+			++ (concatMap (bisex . respect ((" al " ++),(" alla " ++)) . singolare) $ qs)
 
 denominatore = map (chdim negate) .  filter ((==) (-1) . esp) . dimensions
 numeratore = filter ((==) 1 . esp) . dimensions
