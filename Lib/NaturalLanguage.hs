@@ -45,24 +45,10 @@ maschile x = (Maschile x, Maschile x)
 femminile x = (Femminile x, Femminile x)
 
 data Molteplicita a = Singolare {unmulti :: a} | Plurale {unmulti ::  a} deriving (Show,Read)
+
 plurale2 = Plurale . plurale
 singolare2 = Singolare . singolare
 
-maschileFemminile (Singolare x) = [
-		("un " ++ x ,Maschile x),
-		("un" ++ (if vocale (head x) then "'" else "a ") ++ x, Femminile x)
-		] 
-maschileFemminile (Plurale x) = [
-		(onstz x "degli " "dei " ,Maschile x),
-		("delle " ++ x, Femminile x)
-		] 
-maschileFemminileSP :: Polimorfo a => a -> String -> [(String,Molteplicita Word)]
-maschileFemminileSP y x = [
-		(unsex $ singolare (y :++ maschile x),Singolare $ Maschile x),
-		(unsex $ singolare (y :++ femminile x), Singolare $ Femminile x),
-		(unsex $ plurale (y :++ maschile x), Plurale $ Maschile x),
-		(unsex $ plurale (y :++ femminile x), Plurale $ Femminile x)
-		] 
 
 stz (x:y:xs) = x == 's' && not (vocale y)  || x == 'z'
 onstz x y z = if stz x then (y ++ x) else (z ++ x)
@@ -99,12 +85,18 @@ instance Polimorfo ADeterminativo where
 	pluraleA ADeterminativo (Maschile x) = Maschile (onstz x "agli " "ai " )
 	pluraleA ADeterminativo (Femminile x) = Femminile ("alle " ++ x)
 
-data DiDeterrminativo = DiDeterrminativo deriving (Show,Read)
-instance Polimorfo DiDeterrminativo where
-	singolareA DiDeterrminativo (Maschile x) = Maschile (onstz x "dello " "del ")
-	singolareA DiDeterrminativo (Femminile x) = Femminile $ "dell" ++ (if vocale (head x) then "'" else "a ") ++ x
-	pluraleA DiDeterrminativo (Maschile x) = Maschile (onstz x "degli " "dei " )
-	pluraleA DiDeterrminativo (Femminile x) = Femminile ("delle " ++ x)
+data DiDeterminativo = DiDeterminativo deriving (Show,Read)
+instance Polimorfo DiDeterminativo where
+	singolareA DiDeterminativo (Maschile x) = Maschile (onstz x "dello " "del ")
+	singolareA DiDeterminativo (Femminile x) = Femminile $ "dell" ++ (if vocale (head x) then "'" else "a ") ++ x
+	pluraleA DiDeterminativo (Maschile x) = Maschile (onstz x "degli " "dei " )
+	pluraleA DiDeterminativo (Femminile x) = Femminile ("delle " ++ x)
+
+data A = A 
+instance Polimorfo A where
+	singolareA A x = let (y:ys) = unsex x in if vocale y then respect (("ad " ++),("ad " ++)) x else 
+		respect (("a " ++),("a " ++)) x
+	pluraleA A x = singolareA A x
 
 class Render a where
 	render :: a -> String

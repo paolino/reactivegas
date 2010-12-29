@@ -27,11 +27,9 @@ instance UnitClass b => Ord (Quantità b) where
 
 
 data Bene a b where
-	Pesato :: Molteplicita a -> Bene a Pesi
-	Volumato :: Molteplicita a -> Bene a Volumi
-	Contato :: (a,a) -> Bene a Unità
-
-
+	Pesato :: a -> Bene a Pesi
+	Volumato :: a -> Bene a Volumi
+	Contato :: a -> Bene a Unità
 
 data Contenitore b where 
 	Brick :: Contenitore Volumi
@@ -194,16 +192,8 @@ instance Eq b => Eq (Confezione b) where
 		s1 == s2 && n1 == n2 && c1 == c2
 	_ == _ = False
 
-data Voce a = forall b c . (Name (Prezzato a b c) , UnitClass b, UnitClass c) =>  Voce (Prezzato a b c)
+data Voce = forall a b c . (Name (Prezzato a b c) , UnitClass b, UnitClass c) =>  Voce (Prezzato a b c)
 
-mkVoce :: (Name (Prezzato a b c) , UnitClass b , UnitClass c) => Prezzato a b c -> Maybe (Voce a)
-mkVoce x = if check x then Just $ Voce x else Nothing
-	where
-	check :: Eq c => Prezzato a b c -> Bool
-	check (AlPeso _ _) = True
-	check (AlVolume _ _) = True
-	check (AlPesoStimato (Scaffale c1 _) c2 _ _) = c2 `elem` explode c1 
-	check (AllaConfezione (Scaffale c1 _) c2 _) = c2 `elem` explode c1
 
 --------------- Esempi ------------------------------------------------------------------------
 
