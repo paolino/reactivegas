@@ -60,39 +60,39 @@ deriving instance Read a => Read (Scaffale a Volumi)
 ----------------------------------------------------------------------
 data Prezzato a b c where
 	AllaConfezione 
-		:: Scaffale a b -> Confezione b -> Quantità Denaro -> Prezzato a b b 
+		:: Scaffale a b -> Quantità Denaro -> Prezzato a b b 
 	AlPeso 
 		:: Scaffale a Pesi -> Quantità (Denaro,Pesi) -> Prezzato a Pesi Pesi
 	AlVolume 
 		:: Scaffale a Volumi -> Quantità (Denaro,Volumi) -> Prezzato a Volumi Volumi
 	AlPesoStimato
-		:: Scaffale a Unità -> Confezione Unità -> (Quantità Pesi, Quantità Pesi) 
+		:: Scaffale a Unità  -> (Quantità Pesi, Quantità Pesi) 
 			-> Quantità (Denaro,Pesi) -> Prezzato a Unità Pesi 
 	
 ----------------------------------------------------------------------------------
 instance (Show (Scaffale a c), Show a) => Show (Prezzato a b c) where
-	show (AllaConfezione s c q) = show ("AC",s,c,q)
+	show (AllaConfezione s q) = show ("AC",s,q)
 	show (AlPeso s q) = show ("AP",s,q)
 	show (AlVolume s q) = show ("AV",s,q)
-	show (AlPesoStimato s c qs q) = show ("ASS",s,c,qs,q)
+	show (AlPesoStimato s qs q) = show ("ASS",s,qs,q)
 
 instance Read a => Read (Prezzato a Pesi Pesi) where
 	readsPrec _ x = case reads x of
 		[(("AP",s,q),r)] -> [(AlPeso s q,r)]
 		_ -> case reads x of
-			[(("AC",s,c,q),r)] -> [(AllaConfezione s c q,r)]
+			[(("AC",s,q),r)] -> [(AllaConfezione s q,r)]
 			_ -> []
 
 instance Read a => Read (Prezzato a Volumi Volumi) where
 	readsPrec _ x = case reads x of
 		[(("AV",s,q),r)] -> [(AlVolume s q,r)]
 		_ -> case reads x of
-			[(("AC",s,c,q),r)] -> [(AllaConfezione s c q,r)]
+			[(("AC",s,q),r)] -> [(AllaConfezione s q,r)]
 			_ -> []
 
 instance Read a => Read (Prezzato a Unità Pesi) where
 	readsPrec _ x = case reads x of
-		[(("ASS",s,c,qs,q),r)] -> [(AlPesoStimato s c qs q,r)]
+		[(("ASS",s,qs,q),r)] -> [(AlPesoStimato s qs q,r)]
 		_ -> []
 
 instance Show a => Show (Bene a b) where
@@ -199,18 +199,15 @@ data Voce = forall a b c . (Name (Prezzato a b c) , UnitClass b, UnitClass c) =>
 
 pollo =  AlPesoStimato
 		(Scaffale Base $ Contato ("pollo","polli"))
-		Base
 		(700 :? Grammo, 1300 :? Grammo)
 		(9.5 :? (Euro,Chilogrammo))
 
 caffe =  AllaConfezione 
 		(Scaffale (Solido (250 :? Grammo) Pacchetto)  $ Pesato (Singolare "caffè"))
-		(Solido (250 :? Grammo) Pacchetto)
 		(2.3 :? Euro)
 		
 uova =  AllaConfezione 
 		(Scaffale (Inscatolato Scatola 6 Base) $ Contato ("uovo", "uova"))
-		(Inscatolato Scatola 6 Base)
 		(2 :? Euro)
 olio =  AlVolume 
 		(Scaffale Base $ Volumato (Singolare "olio"))
@@ -218,7 +215,6 @@ olio =  AlVolume
 
 caki =  AlPesoStimato
 		(Scaffale (Inscatolato Plateau 15 Base) $ Contato ("caco","cachi"))
-		(Inscatolato Plateau 15 Base)
 		(3.5 :? Chilogrammo, 4.5 :? Chilogrammo)
 		(3.25 :? (Euro,Chilogrammo))
 

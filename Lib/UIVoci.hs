@@ -109,7 +109,7 @@ nameInscatolato (Scaffale (Inscatolato s n c) b) = Costante x :++ Costante " di"
 		checkUnità 1 f _ = f
 		checkUnità _ _ g = g
 
-nameContenitore s q b = Costante c :++ Costante " di" :++  s where
+nameContenitore s q b = Costante c :++ Costante " da" :++  s where
 	c = render $ " " :+: singolare q :+: " di " :+: plurale b
 
 instance Name (BScaffale Unità) where
@@ -136,34 +136,54 @@ instance Name (BScaffale Volumi) where
 	plurale (Scaffale (Liquido q s) b) = plurale $ nameContenitore s q b
 	plurale i = plurale . nameInscatolato $ i
 
-nameConfezione z@(Scaffale _ b) c q = 
-	Costante (render $ " al prezzo di " :+: singolare q :+: " per ogni " :+: singolare (Scaffale c b)) :++  z
+
+class GContenitore a where
+	contenitore :: (forall g . Name g => g -> b) -> a -> b	
+
+contenitore' :: (forall g . Name g => g -> c) -> BScaffale b -> c
+contenitore' _ (Scaffale Base _) = error "bene sfuso"
+contenitore' f (Scaffale (Inscatolato c _ _) _) = f c
+contenitore' f (Scaffale _ _) = error "uso improprio di contenitore'"
+
+instance GContenitore (BScaffale Pesi) where
+	contenitore f (Scaffale (Solido _ c) _) = f c
+	contenitore f s = contenitore' f s
+
+instance GContenitore (BScaffale Volumi) where
+	contenitore f (Scaffale (Liquido _ c) _) = f c
+	contenitore f s = contenitore' f s
+
+instance GContenitore (BScaffale Unità) where
+	contenitore f s = contenitore' f s
+
+nameConfezione z@(Scaffale c b) q = 
+	Costante (render $ " al prezzo di " :+: singolare q :+: " " :+: ADeterminativo &.& Singolare (contenitore singolare z)) :++  z
 
 nameAllaMisura q z = Costante (render $ " al prezzo di " :+: singolare q) :++  z
 
 instance Name (Prezzato (BWord Pesi) Pesi Pesi) where	
-	singolare (AllaConfezione z@(Scaffale _ b) c q) = singolare $ nameConfezione z c q
+	singolare (AllaConfezione z@(Scaffale _ b) q) = singolare $ nameConfezione z q
 	singolare (AlPeso z q) = singolare $ nameAllaMisura q z 
-	plurale (AllaConfezione z@(Scaffale _ b) c q) = plurale $ nameConfezione z c q
+	plurale (AllaConfezione z@(Scaffale _ b) q) = plurale $ nameConfezione z q
 	plurale (AlPeso z q) = plurale $ nameAllaMisura q z 
 
 instance Name (Prezzato (BWord Volumi) Volumi Volumi) where
-	singolare (AllaConfezione z@(Scaffale _ b) c q) = singolare $ nameConfezione z c q
+	singolare (AllaConfezione z@(Scaffale _ b) q) = singolare $ nameConfezione z q
 	singolare (AlVolume z q) = singolare $ nameAllaMisura q z 
-	plurale (AllaConfezione z@(Scaffale _ b) c q) = plurale $ nameConfezione z c q
+	plurale (AllaConfezione z@(Scaffale _ b) q) = plurale $ nameConfezione z q
 	plurale (AlVolume z q) = plurale $ nameAllaMisura q z
 
 instance Name (Prezzato (BWord Unità) Unità Unità) where
-	singolare (AllaConfezione z@(Scaffale _ b) c q) = singolare $ nameConfezione z c q
-	plurale (AllaConfezione z@(Scaffale _ b) c q) = plurale $ nameConfezione z c q
+	singolare (AllaConfezione z@(Scaffale _ b) q) = singolare $ nameConfezione z q
+	plurale (AllaConfezione z@(Scaffale _ b) q) = plurale $ nameConfezione z q
 
-nameStimato z c (q1,q2) p = Costante c :++ z where
+nameStimato z (q1,q2) p = Costante c :++ z where
 	c = render $ " al prezzo di " :+: singolare p :+: " con peso stimato di " 
 		:+: Indeterminativo &.& singolare2 z :+: " da " :+: singolare q1 :+: " a " :+: singolare q2
 
 instance Name (Prezzato (BWord Unità) Unità Pesi) where
-	singolare (AlPesoStimato z c (q1,q2) p) = singolare $ nameStimato z c (q1,q2) p
-	plurale (AlPesoStimato z c (q1,q2) p) = plurale$ nameStimato z c (q1,q2) p
+	singolare (AlPesoStimato z (q1,q2) p) = singolare $ nameStimato z (q1,q2) p
+	plurale (AlPesoStimato z (q1,q2) p) = plurale$ nameStimato z (q1,q2) p
 		
 ------------------------------------------- interfaccia utente ------------------------------------
 
@@ -195,7 +215,7 @@ uiBene 	:: Monad m
 	-> (BBene Unità -> Costruzione m b a) 
 	-> Costruzione m b a
 uiBene kp kv kc = do 
-	x <- scelte  [("peso",0),("volume",1),("unità",2)] "il bene si descrive in"
+	x <- scelte  [("peso",0),("volume",1),("unità",2)] "descrizione del bene in"
 	case x of 
 		0 -> do 
 			(l :: String) <- libero "nome comune del bene sfuso"
@@ -206,8 +226,8 @@ uiBene kp kv kc = do
 			l' <- disambiguaSP Determinativo l
 			kv $ Volumato (VWord l')
 		2 -> do 
-			(s :: String) <- libero "nome della unità bene (forma singolare)"
-			p <- libero "nome delle unità di bene (forma plurale)"
+			(s :: String) <- libero "nome singolare del bene"
+			p <- libero "nome plurale del bene"
 			(s',p') <- disambigua (s,p)
 			kc $ Contato (UWord (s',p'))
 
@@ -222,7 +242,7 @@ uiContenitore :: (Monad m ,Name (BBene c), Name c, Enum c, Bounded c)
 	-> Costruzione m b a
 uiContenitore cs f ks kq  xp = do
 	let b = render $ Determinativo &.& Sfuso &.& singolare2 xp
-	y <- scelte (("nessuno",Nothing):map (render . singolare &&& Just ) cs) $ "tipo di contenitore per " ++ b
+	y <- scelte (("nessuno",Nothing):map (render . singolare &&& Just ) cs) $ "contenitore per " ++ b
 	case y of 
 		Nothing -> kq (Scaffale Base xp)
 		Just y' -> do 
@@ -251,8 +271,8 @@ uiScatola :: (Name (BScaffale c), Monad m)
 	=> BScaffale c
 	-> Costruzione m b (BScaffale c)
 uiScatola  g@(Scaffale c b) = do
-	x <- scelte (("nessuno",Nothing): map (render . singolare &&& Just) [minBound .. maxBound]) $ 
-		"ulteriore confezione contenente " ++ render (plurale g)
+	x <- scelte (("nessuna",Nothing): map (render . singolare &&& Just) [minBound .. maxBound]) $ 
+		"eventuale confezione contenente " ++ render (plurale g)
 	case x of 
 		Nothing -> return $ Scaffale c b
 		Just s -> do 
@@ -265,13 +285,8 @@ uiAllaConfezione :: (Monad m, Name (BScaffale c), UnitClass c, Name (Prezzato (B
 	=> BScaffale c
 	-> Costruzione m b Voce
 uiAllaConfezione z@(Scaffale c b) = do
-	let cs = explode c
-	c' <- case cs of
-		[c] -> return c	
-		cs -> scelte  (map (render . singolare . flip Scaffale b  &&& id) cs) 
-			"confezione o unità da prezzare"
-	(y :: Float) <- libero . render $ "prezzo in euro di " :+: Indeterminativo &.& singolare2 (Scaffale c' b)
-	return $ Voce $  AllaConfezione z c' (toRational y :? Euro) 
+	(y :: Float) <- libero . render $ "prezzo in euro di " :+: Indeterminativo &.& singolare2 (Scaffale c b)
+	return $ Voce $  AllaConfezione z (toRational y :? Euro) 
 
 -- prezzatura in unità di misura
 uiAllaMisura :: (Monad m, Name (BScaffale c), UnitClass c, 
@@ -293,33 +308,29 @@ uiPrezzaPesato :: Monad m
 	=> BScaffale Pesi
 	-> Costruzione m b Voce
 uiPrezzaPesato z@(Scaffale Base _) = uiAllaMisura z AlPeso
-uiPrezzaPesato z = join $ scelte [
-	("alla confezione", uiAllaConfezione z),
-	("al peso", uiAllaMisura z AlPeso)] 
-	"prezzo del bene relativo"
+uiPrezzaPesato z@(Scaffale _ x) = join $ scelte [
+	("di " ++ render (Indeterminativo &.& singolare2 z), uiAllaConfezione z),
+	(render (DiDeterminativo &.& singolare2 (Scaffale Base x)), uiAllaMisura z AlPeso)] 
+	"prezzo"
 
 -- prezzatura volumati
 uiPrezzaVolumato :: Monad m
 	=> BScaffale Volumi
 	-> Costruzione m b Voce
 uiPrezzaVolumato z@(Scaffale Base _) = uiAllaMisura z AlVolume
-uiPrezzaVolumato z = join $ scelte [
-		("alla confezione", uiAllaConfezione z),
-		("al volume", uiAllaMisura z AlVolume)] 
+uiPrezzaVolumato z @(Scaffale _ x) = join $ scelte [
+		(render $ (ADeterminativo &.& singolare2 z), uiAllaConfezione z),
+		("al volume " ++ render (DiDeterminativo &.& singolare2 (Scaffale Base x)), uiAllaMisura z AlVolume)] 
 	"prezzo del bene relativo" 
 
 -- prezzatura contati
 uiPrezzaContato :: Monad m
 	=> BScaffale Unità
 	-> Costruzione m b Voce
-uiPrezzaContato z@(Scaffale Base _) =  join $ scelte [
+uiPrezzaContato z =  join $ scelte [
 		(render $ (ADeterminativo &.& singolare2 z), uiAllaConfezione z),
 		("al peso stimato di " ++ render (Indeterminativo &.& singolare2 z), uiAlPesoStimato z)] 
 	"prezzo del bene relativo"
-uiPrezzaContato z = join $ scelte [
-		("alla confezione", uiAllaConfezione z),
-		("al peso stimato di una confezione", uiAlPesoStimato z)] 
-	"prezzo del bene relativo" 
 
 
 -- prezzatura al peso stimato di una confezione o dell'unità di bene
@@ -331,17 +342,12 @@ uiAlPesoStimato z@(Scaffale c b)  = do
 	(y :: Float) <- libero . render $ "prezzo in euro di " 
 		:+: Indeterminativo &.& singolare2 x
 		:+: " di " :+: plurale b
-	let cs = explode c
-	c' <- case cs of
-		[c] -> return c	
-		cs -> scelte  (map ((\c -> render $ Indeterminativo &.& singolare2 (Scaffale c b)) &&& id) cs) 
-			"confezione da stimare in peso"
-	(pm :: Float) <- libero . render $ "peso minimo di " :+: Indeterminativo &.& singolare2 (Scaffale c' b) :+:
+	(pm :: Float) <- libero . render $ "peso minimo di " :+: Indeterminativo &.& singolare2 (Scaffale c b) :+:
 		" in " :+: plurale x
 
-	(pd :: Float) <- libero . render $ "peso massimo di " :+: Indeterminativo &.& singolare2 (Scaffale c' b) :+:
+	(pd :: Float) <- libero . render $ "peso massimo di " :+: Indeterminativo &.& singolare2 (Scaffale c b) :+:
 		" in " :+: plurale x
-	return $ Voce $  AlPesoStimato z c' (toRational pm :? x, toRational pd :? x) 
+	return $ Voce $  AlPesoStimato z (toRational pm :? x, toRational pd :? x) 
 		(toRational y :? (Euro,x))
 
 -- creazione di una voce di bene
@@ -349,5 +355,5 @@ ui = uiBene 	(uiPesato uiScatola uiPrezzaPesato)
 		(uiVolumato uiScatola uiPrezzaVolumato) 
 		(uiContato uiScatola uiPrezzaContato)
 
-main = svolgi ui >>= interazione >>= \(Voce x) -> putStrLn (render $ singolare x)
+main = svolgi ui >>= interazione >>= \(Voce x) -> putStrLn (render $ plurale x)
 
