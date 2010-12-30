@@ -9,6 +9,7 @@ import Control.Monad.Cont (MonadCont)
 import Control.Monad.Reader (runReaderT, ReaderT, MonadReader(..))
 
 import qualified Lib.Passo as P (Costruzione , libero, upload, scelte, download,password)
+import Lib.Response
 
 import Debug.Trace
 
@@ -37,7 +38,7 @@ runSupporto	:: Monad m
 runSupporto s kn kp (Supporto f) = runErrorT (runReaderT f s) >>= either kn kp
 
 -- | passo libero elevato al supporto
-libero :: (Monad m ,Read a) => String -> Supporto m s b a
+libero :: (Monad m ,Read a) => Response -> Supporto m s b a
 libero = toSupporto . P.libero
 
 -- | passo libero elevato al supporto
@@ -53,7 +54,7 @@ download :: (Show a , Monad m) => String -> String -> a -> Supporto m s b ()
 download q f = toSupporto . P.download q f
 
 -- | passo scelte elevato al supporto
-scelte :: (Monad m) => [(String, a)] -> String -> Supporto m s b a
+scelte :: (Monad m) => [(String, a)] -> Response -> Supporto m s b a
 scelte xs = toSupporto . P.scelte xs
 
 

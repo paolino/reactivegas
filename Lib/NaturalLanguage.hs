@@ -15,7 +15,6 @@ respect (f,_) (Maschile x) = Maschile (f x)
 respect (_,f) (Femminile x) = Femminile (f x)
 
 prefix (x,y) = respect ((x ++),(y ++))
-vocale = (`elem` "aeiou")
 
 type Word = Sexed String
 
@@ -49,28 +48,34 @@ data Molteplicita a = Singolare {unmulti :: a} | Plurale {unmulti ::  a} derivin
 plurale2 = Plurale . plurale
 singolare2 = Singolare . singolare
 
-
-stz (x:y:xs) = x == 's' && not (vocale y)  || x == 'z'
+vocale [] = False
+vocale (x:xs) = (x `elem` "aeiou")
+stz [] = False
+stz [x] = x == 'z'
+stz (x:y:xs) = x == 's' && not (y `elem` "aeiou")  || x == 'z'
 onstz x y z = if stz x then (y ++ x) else (z ++ x)
+onvocale x y z = if vocale x then (y ++ x) else (z ++ x)
+onstzvocale x q y z = if vocale x then (q ++ x) else if stz x  then (y ++ x) else (z ++ x)
+
 data Indeterminativo = Indeterminativo deriving (Show,Read)
 instance Polimorfo Indeterminativo where
 	singolareA Indeterminativo (Maschile x) = Maschile ("un " ++ x)
-	singolareA Indeterminativo (Femminile x) = Femminile $ "un" ++ (if vocale (head x) then "'" else "a ") ++ x
+	singolareA Indeterminativo (Femminile x) = Femminile $ onvocale x "un'" "una "
 	pluraleA Indeterminativo (Maschile x) = Maschile ("alcuni " ++ x)
 	pluraleA Indeterminativo (Femminile x) = Femminile ("alcune " ++ x)
 
 data Determinativo = Determinativo deriving (Show,Read)
 instance Polimorfo Determinativo where
-	singolareA Determinativo (Maschile x) = Maschile (onstz x "lo " "il ")
-	singolareA Determinativo (Femminile x) = Femminile $ "l" ++ (if vocale (head x) then "'" else "a ") ++ x
+	singolareA Determinativo (Maschile x) = Maschile (onstzvocale x "l'" "lo " "il ")
+	singolareA Determinativo (Femminile x) = Femminile $ onvocale x "l'" "la " 
 	pluraleA Determinativo (Maschile x) = Maschile (onstz x "gli " "i " )
 	pluraleA Determinativo (Femminile x) = Femminile ("le " ++ x)
 
 data InDeterminativo = InDeterminativo deriving (Show,Read)
 instance Polimorfo InDeterminativo where
-	singolareA InDeterminativo (Maschile x) = Maschile (onstz x "nello " "nel ")
-	singolareA InDeterminativo (Femminile x) = Femminile $ "nell" ++ (if vocale (head x) then "'" else "a ") ++ x
-	pluraleA InDeterminativo (Maschile x) = Maschile (onstz x "negli " "nei ")
+	singolareA InDeterminativo (Maschile x) = Maschile $ onstzvocale x "nell'" "nello " "nel "
+	singolareA InDeterminativo (Femminile x) = Femminile $ onvocale x "nell'" "nella "
+	pluraleA InDeterminativo (Maschile x) = Maschile $ onstz x "negli " "nei "
 	pluraleA InDeterminativo (Femminile x) = Femminile ("nelle " ++ x)
 
 data Costante = Costante String deriving (Show,Read)
@@ -80,21 +85,21 @@ instance Polimorfo Costante where
 
 data ADeterminativo = ADeterminativo deriving (Show,Read)
 instance Polimorfo ADeterminativo where
-	singolareA ADeterminativo (Maschile x) = Maschile (onstz x "allo " "al ")
-	singolareA ADeterminativo (Femminile x) = Femminile $ "all" ++ (if vocale (head x) then "'" else "a ") ++ x
-	pluraleA ADeterminativo (Maschile x) = Maschile (onstz x "agli " "ai " )
+	singolareA ADeterminativo (Maschile x) = Maschile $ onstzvocale  x "all'" "allo " "al "
+	singolareA ADeterminativo (Femminile x) = Femminile $ onvocale x "all'" "alla "
+	pluraleA ADeterminativo (Maschile x) = Maschile $ onstz x "agli " "ai " 
 	pluraleA ADeterminativo (Femminile x) = Femminile ("alle " ++ x)
 
 data DiDeterminativo = DiDeterminativo deriving (Show,Read)
 instance Polimorfo DiDeterminativo where
-	singolareA DiDeterminativo (Maschile x) = Maschile (onstz x "dello " "del ")
-	singolareA DiDeterminativo (Femminile x) = Femminile $ "dell" ++ (if vocale (head x) then "'" else "a ") ++ x
+	singolareA DiDeterminativo (Maschile x) = Maschile (onstzvocale x "dell'" "dello " "del ")
+	singolareA DiDeterminativo (Femminile x) = Femminile $ onvocale x "dell'" "della " 
 	pluraleA DiDeterminativo (Maschile x) = Maschile (onstz x "degli " "dei " )
 	pluraleA DiDeterminativo (Femminile x) = Femminile ("delle " ++ x)
 
 data A = A 
 instance Polimorfo A where
-	singolareA A x = let (y:ys) = unsex x in if vocale y then respect (("ad " ++),("ad " ++)) x else 
+	singolareA A x = if vocale (unsex x) then respect (("ad " ++),("ad " ++)) x else 
 		respect (("a " ++),("a " ++)) x
 	pluraleA A x = singolareA A x
 

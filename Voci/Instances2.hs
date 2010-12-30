@@ -1,7 +1,8 @@
 
+
 {-# LANGUAGE TypeSynonymInstances, Rank2Types, ScopedTypeVariables, StandaloneDeriving, 
 	FlexibleInstances, FlexibleContexts, GADTs, OverlappingInstances #-}
-module Voci.Instances where
+module Voci.Instances2 where
 
 import Lib.NaturalLanguage -- (Name (..))
 import Numeric (showFFloat)
@@ -315,8 +316,6 @@ instance Name (Prezzato (BWord Unità) Unità Pesi) where
 	singolare (AlPesoStimato z (q1,q2) p) = singolare $ nameStimato z (q1,q2) p
 	plurale (AlPesoStimato z (q1,q2) p) = plurale$ nameStimato z (q1,q2) p
 		
-instance Name Commercio where
-	singolare (Commercio x) = singolare x
-	plurale (Commercio x) = plurale x
+
 
 

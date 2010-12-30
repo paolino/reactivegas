@@ -1,4 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables, ViewPatterns, StandaloneDeriving #-}
+{-# LANGUAGE ScopedTypeVariables, ViewPatterns, StandaloneDeriving, DeriveDataTypeable #-}
 module Lib.HTTP where
 
 import Control.Arrow ((***))
@@ -15,6 +15,7 @@ import Debug.Trace
 import Codec.Binary.UTF8.String
 
 
+deriving instance Typeable Html
 
 mkLink :: String -> [(String,String)] -> String
 mkLink x = exportURL . foldl (\s  -> add_param s ) (fromJust $ importURL x)
@@ -70,13 +71,13 @@ runPasso (P.Costruito _) = runPasso . P.Errore
 
 runPasso (P.Libero q c ) = let 
 	k y z = thediv ! [theclass "passobox"] << 
-			(	thediv ! [theclass "responso"] << q +++ 
+			(	thediv ! [theclass "responso"] << renderResponse "output" q +++ 
 				form ! [method "post", action ("/interazione"), strAttr "accept-charset" "utf8"] 
 					<< [	hidden "hkey" y, textfield "valore", 
 						hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]]
 			) 
-	parse x = case reads x of
-		[] -> case reads $ "\"" ++ x ++ "\"" of 
+	parse x = case reads (decodeString x) of
+		[] -> case reads $ "\"" ++ decodeString x ++ "\"" of 
 			[] -> Nothing 
 			(last -> (x',_)) -> Just $ c x'
 		(last -> (x',_)) -> Just $ c x'
@@ -99,7 +100,7 @@ runPasso (P.Password q c ) = let
 
 runPasso (P.Scelta q xs c) = let 
 	k y z =  thediv ! [theclass "passobox"] << 
-		(thediv ! [theclass "responso"] << q +++ 
+		(thediv ! [theclass "responso"] << renderResponse "output" q +++ 
 				 ulist << (map (\(x,_) -> li ! [theclass "scelta"]
 					<< anchor ! [ 
 						href $ mkLink "/interazione" [("hkey",y),("fkey",z),("valore",x)]] 

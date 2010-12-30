@@ -32,5 +32,10 @@ instance Polimorfo Contenente where
 	pluraleA Contenente (Maschile x) = Maschile $ x ++ " contenenti"
 	pluraleA Contenente (Femminile x) = Femminile $ x ++ " contenenti"
 
-
+data Rosso = Rosso 
+instance Polimorfo Rosso where
+	singolareA Rosso (Maschile x) = Maschile $ x ++ " rosso"
+	singolareA Rosso (Femminile x) = Femminile $ x ++ " rossa"
+	pluraleA Rosso (Maschile x) = Maschile $ x ++ " rossi"
+	pluraleA Rosso (Femminile x) = Femminile $ x ++ " rosse"
 

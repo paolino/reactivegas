@@ -85,7 +85,7 @@ costrEventiAcquisto :: (Monad m, Servizio Impegni `ParteDi` s) => CostrAction m 
 costrEventiAcquisto s kp kn  = [("nuova proposta di acquisto", eventoApertura)] 
 	where
 	eventoApertura  = runSupporto s kn kp $ do
-		n <- libero "nome della nuova proposta d'acquisto"
+		n <- libero $ ResponseOne  "nome della nuova proposta d'acquisto"
 		rs <- asks raccolte
 		when (n `elem` rs) $ throwError "acquisto già aperto"
 		return $ AperturaAcquisto n

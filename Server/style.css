@@ -61,7 +61,7 @@ div#help {
 	}
 .boxes {	
 	background-color: #f0f0f0 ;	
-	border : 1px solid #ccc;
+	border : 1px solid #aab;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	position : absolute;
@@ -208,6 +208,7 @@ div.passobox {
 
 li.scelta {height:14px;overflow:hidden;}
 li.output {height:14px;overflow:hidden;}
+div.output {border-bottom: 2px solid #d5d5d5;}
 
 ul.ulhelp {list-style-type:none;}
 li div.responso {float:clear;}

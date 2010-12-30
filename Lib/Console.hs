@@ -28,7 +28,7 @@ runPasso (Errore x (Just l),_) = do
 runPasso (Costruito x,_) = return x 
 
 runPasso  w@(c@(Libero p f),us) = do
-	x <- getInputLine $ "\n** " ++ p ++ ": "
+	x <- getInputLine $ "\n** " ++ show p ++ ": "
 	n <- case fromJust x of 
 		[] -> case us of 
 			[] -> outputStrLn "bottom" >> return w
@@ -40,10 +40,10 @@ runPasso  w@(c@(Libero p f),us) = do
 			(x,_):_ -> lift (f x)
 
 	runPasso n
-runPasso (Password p f,us) = runPasso (Libero p f,us)
+runPasso (Password p f,us) = runPasso (Libero (ResponseOne p) f,us)
 
 runPasso w@(c@(Scelta p xs f),u) = do
-	outputStrLn ("\n** " ++ p) 
+	outputStrLn ("\n** " ++ show p) 
 	forM (zip [1..] xs) $ \(n,(p,_)) -> outputStrLn $ "\t" ++ show n ++ ") " ++ take 100 p
 	x <- getInputLine  "scelta: "
 

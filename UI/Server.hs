@@ -36,6 +36,7 @@ import Eventi.Anagrafe
 import Eventi.Accredito
 import Eventi.Impegno
 import Eventi.Acquisto
+import Eventi.Voci
 
 import Applicazioni.Reactivegas (QS,bianco, TS, sortEventi, levelsEventi, maxLevel)
 import Applicazioni.Persistenza (Persistenza (..))
@@ -55,7 +56,7 @@ wrapCostrActions g = concatMap (\f -> f q g (bocciato "costruzione di una dichia
 
 
 interrogazioni :: Interfaccia ()
-interrogazioni = rotonda $ \_ -> menu "interrogazioni sullo stato del gruppo" $ (wrapCostrActions (P.output True) $ [
+interrogazioni = rotonda $ \_ -> menu (ResponseOne "interrogazioni sullo stato del gruppo") $ (wrapCostrActions (P.output True) $ [
 		costrQueryAnagrafe,
 		costrQueryAccredito,
 		costrQueryImpegni,
@@ -72,6 +73,7 @@ dichiarazioni = concat $
 			]
 		,wrapCostrActions addEvento [costrEventiAssenso]
 
+		,wrapCostrActions addEvento [costrEventiVoci]
 		,	[("----------",return ())
 			,("pubblica le dichiarazioni in sessione",salvataggio "pubblica le dichiarazioni in sessione")
 			,("elimina delle dichiarazioni",eliminazioneEvento "elimina delle dichiarazioni"),
@@ -81,10 +83,10 @@ dichiarazioni = concat $
 		]
 richiesta_nuovo_gruppo :: Interfaccia ()
 richiesta_nuovo_gruppo = do 
-	n <- P.libero "nome del nuovo gruppo"
+	n <- P.libero $ ResponseOne "nome del nuovo gruppo"
 	t <- sea $ ($n) . controlla_nome 
 	if t then do
-		(m :: String) <- P.libero "nome del primo responsabile"
+		(m :: String) <- P.libero $ ResponseOne "nome del primo responsabile"
 		p1 <- P.password "una password responsabile (12 caratteri)"
 		p2 <- P.password "reimmetti la password"
 		if p1 == p2 then 
@@ -107,7 +109,7 @@ cambiaGruppo = rotonda $ \_ -> do
 	gs <- sea elenco_gruppi 
 	let 	cg g = ses $ ($g) . writeGruppo
 		ngs = map (second cg) $ ("<nessuno>",Nothing): zip gs (map Just gs)
-	menu "gruppo di acquisto" ngs
+	menu (ResponseOne "gruppo di acquisto") ngs
 
 ensureGruppo s f = do
 	g <- ses readGruppo
@@ -135,7 +137,7 @@ amministrazione = rotonda $ \k -> do
 	let res = case r of 
 		Nothing -> []
 		Just _ -> [(,) "digestione di tutte le dichiarazioni pubblicate"  sincronizza]
-	menu "amministrazione" $ grs ++ res ++ [	
+	menu (ResponseOne "amministrazione") $ grs ++ res ++ [	
 		("richiesta inserimento nuovo gruppo",richiesta_nuovo_gruppo) ,
 		("accettazione richiesta nuovo gruppo", accettazione_nuovo_gruppo)
 		]
@@ -174,7 +176,7 @@ descrizione = do
 				("dichiarazioni pubblicate", ResponseMany $ map ResponseOne (sortEventi evsp))
 				]
 
-indiretto =  wname  "accesso indiretto"  mano
+indiretto =  ("accesso indiretto", mano (ResponseOne "accesso indiretto")
 				[
 				wname "carica un aggiornamento individuale"  ensureGruppo caricaAggiornamentoIndividuale ,
 				wname "carica un aggiornamento di gruppo"  ensureGruppo caricaAggiornamentoDiGruppo,
@@ -183,18 +185,19 @@ indiretto =  wname  "accesso indiretto"  mano
 				wname "scarica un aggiornamento di gruppo"  ensureGruppo scaricaAggiornamentoDiGruppo,
 				wname "scarica lo stato"  ensureGruppo $ sepU readStato >>= \(n,s) -> 
 					P.download ("stato." ++ show n) "scaricamento dello stato" s
-				]
+				])
 
 
 
 -- applicazione :: Costruzione MEnv () ()
 applicazione = rotonda $ \_ -> do
-	menu "menu principale" $ 
+	menu (ResponseOne "menu principale") $ 
 				[
 				wname "responsabile autore"  ensureGruppo (rotonda $ const accesso),
 
 				("gruppo di acquisto", cambiaGruppo),
-				wname "gestione dichiarazioni" ensureResponsabile $ rotonda $ \_ -> menu "gestione dichiarazioni" $ dichiarazioni,	
+				wname "gestione dichiarazioni" ensureResponsabile $ rotonda $ \_ -> menu 
+					(ResponseOne "gestione dichiarazioni") $ dichiarazioni,	
 				("descrizione della sessione",descrizione),
 				wname "effetto delle ultime dichiarazioni" ensureGruppo $ do
 					c <- fromJust <$> ses readCaricamento 

@@ -94,7 +94,7 @@ bocciatoS s x =  P.errore False . Response $ [(s , ResponseOne x)]
 accesso :: Interfaccia ()
 accesso = do 
 	(rs,_) <- responsabili . fst <$> statoPersistenza 
-	r <- P.scelte (("<anonimo>",Nothing):map (fst &&& Just) rs) "responsabile autore delle dichiarazioni" 
+	r <- P.scelte (("<anonimo>",Nothing):map (fst &&& Just) rs) $ ResponseOne  "responsabile autore delle dichiarazioni" 
 	ses $ ($r) . writeAccesso
 
 onAccesso k = ses readAccesso  >>= maybe (accesso >> onAccesso k) k
@@ -132,7 +132,7 @@ eventLevelSelector = do
 		es -> Just $ (const "<nessuno>" *** (subtract 1)) (head es) : es ++ [("<tutti>",maxLevel)]
 	case rs of 
 		Nothing -> bocciato "selezione livello di considerazione" "nessuna dichiarazione presente"
-		Just rs -> mano "livello di considerazione delle ultime dichiarazioni" $ map (\(x,l) ->
+		Just rs -> mano (ResponseOne "livello di considerazione delle ultime dichiarazioni") $ map (\(x,l) ->
 				(x, ses (($l). setConservative ))) rs
 
 eliminazioneEvento :: String -> Interfaccia ()
@@ -145,7 +145,7 @@ eliminazioneEvento s = do
 			correzioneEventi . const . delete x $ es
 		in do 
 			es <- letturaEventi
-			mano  "seleziona una dichiarazione da eliminare" (zip es $ map k es)
+			mano (ResponseOne "seleziona una dichiarazione da eliminare") (zip es $ map k es)
 
 
 sincronizza = onAccesso $ \(r@(u,_)) -> do  
@@ -181,7 +181,7 @@ caricaAggiornamentoIndividuale = do
 scaricaAggiornamentoIndividuale :: Interfaccia ()
 scaricaAggiornamentoIndividuale = do 
 	(_,us) <- sepU readUPatches
-	(u,p) <- P.scelte (map (fst &&& id) us) $ "aggiornamenti utente presenti"
+	(u,p) <- P.scelte (map (fst &&& id) us)  $ ResponseOne "aggiornamenti utente presenti"
 	v <- sepU readVersion
 	P.download  (u ++ "." ++ show v) "scarica un aggiornamento individuale" p
 
@@ -190,7 +190,7 @@ caricaAggiornamentoDiGruppo = P.upload "aggiornamento di gruppo" >>= \g -> sepU 
 
 scaricaAggiornamentoDiGruppo :: Interfaccia ()
 scaricaAggiornamentoDiGruppo = do
-	n <- P.libero "indice dell'aggiornamento richiesto"
+	n <- P.libero$ ResponseOne  "indice dell'aggiornamento richiesto"
 	mg <- sepU $ ($n) . readGPatch
 	case mg of
 		Nothing -> bocciato "scaricamento aggiornamento di gruppo"  "aggiornamento di gruppo non trovato"
