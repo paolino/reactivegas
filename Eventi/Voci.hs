@@ -32,17 +32,17 @@ costrEventiVoci s kp kn = 	[("nuova voce (sperimentale)", callCC (nuovaVoce [] [
 	where
 	nuovaVoce cs fs co k = do
 		let c= Response [("categorie", ResponseMany $ map ResponseOne $ cs),
-			("filera", ResponseMany $  map ResponseOne $ fs),
-			("modello commerciale", ResponseOne $ maybe "nessuno" (render . singolare) co)]
+			("filiera", ResponseMany $  map ResponseOne $ fs),
+			("unità minima di acquisto", ResponseOne $ maybe "nessuno" (render . singolare) co)]
 		menu c $ [
-			("aggiungi categoria", addCat),
-			("elimina categoria", rmCat),
-			("aggiungi attore filiera", addFil),
-			("elimina attore filiera", rmFil),
-			("imposta il modello di commercio",setCom),
+			("aggiungi una categoria", addCat),
+			("elimina una categoria", rmCat),
+			("aggiungi un attore nella filiera", addFil),
+			("elimina un attore dalla filiera", rmFil),
+			("imposta l'unità minima di acquisto",setCom),
 			("<fine>", case co of 
 				Nothing -> do 
-					errore True $ ResponseOne "manca la definizione di modello commerciale"
+					errore True $ ResponseOne "manca la definizione diunità minima di acquisto"
 					nuovaVoce cs fs co k
 				Just o -> return $ NuovaVoce $ Voce cs fs o)
 			]

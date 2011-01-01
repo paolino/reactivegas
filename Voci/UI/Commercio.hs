@@ -1,4 +1,4 @@
-{-# LANGUAGE NoMonomorphismRestriction, ScopedTypeVariables, FlexibleContexts #-}
+{-# LANGUAGE NoMonomorphismRestriction, ScopedTypeVariables, FlexibleContexts, GADTs #-}
 module Voci.UI.Commercio where
 
 import Data.Maybe
@@ -60,18 +60,19 @@ uiBene kp kv kc = do
 -- decide il contenitore per il bene sfuso
 uiContenitore :: (Monad m ,Name (BBene c), Name c, Enum c, Bounded c)
 	=> [Contenitore c]
+	-> (BBene c -> Molteplicita Word)
 	-> (Quantità c -> Contenitore c -> Confezione c)	
 	-> (BScaffale c -> Costruzione m b (BScaffale c))
 	-> (BScaffale c -> Costruzione m b a)
 	-> BBene c
 	-> Costruzione m b a
-uiContenitore cs f ks kq  xp = do
-	let b = render $ Determinativo &.& Sfuso &.& singolare2 xp
+uiContenitore cs mo f ks kq  xp = do
+	let b = render $ Determinativo &.& Sfuso &.& mo xp
 	y <- scelte (("nessuno",Nothing):map (render . singolare &&& Just ) cs) $ ResponseOne  $ "contenitore per " ++ b
 	case y of 
 		Nothing -> kq (Scaffale Base xp)
 		Just y' -> do 
-			let 	b' = render $ b :+: " " :+: InDeterminativo &.& plurale2 y'
+			let 	b' = render $ b :+: " " :+: InDeterminativo &.& singolare2 y'
 			z <- scelte (map (render . singolare &&& id) [minBound .. maxBound]) $ ResponseOne  $ 
 				"unità di misura per " ++ b' 
 			(q :: Float) <- libero . ResponseOne $ render $ "quantità di " :+: singolare xp :+: " " 
@@ -79,8 +80,8 @@ uiContenitore cs f ks kq  xp = do
 				:+: " espressa in " :+: plurale z 
 			ks  (Scaffale (f (toRational q :? z)  y') xp) >>= kq
 
-uiPesato  = uiContenitore [Pacchetto, Sacco, Sacchetto, Cassetta] Solido 
-uiVolumato  = uiContenitore [Brick,Flacone,Damigiana] Liquido 
+uiPesato  = uiContenitore [Pacchetto, Sacco, Sacchetto, Cassetta] fromPesato Solido 
+uiVolumato  = uiContenitore [Brick,Flacone,Damigiana] fromVolumato Liquido 
 
 -- i beni unitari passano all'inscatolamento
 uiContato :: Monad m
@@ -118,34 +119,37 @@ uiAllaMisura :: (Monad m, Name (BScaffale c),Show (BScaffale c), UnitClass c,
 	Name (BBene c), Name c, Enum c, Bounded c, Name (Prezzato (BWord c) c c)) 
 	=> BScaffale c
 	-> (BScaffale c -> Quantità (Denaro,c) -> Prezzato (BWord c) c c)
+	-> (BBene c -> Molteplicita Word)
 	-> Costruzione m b Commercio
 
-uiAllaMisura z@(Scaffale c b) f = do 
+uiAllaMisura z@(Scaffale c b) f mo = do 
 	x <- scelte (map (render . singolare &&& id) [minBound .. maxBound]) $ ResponseOne  $ 
 		"unità di misura relativa al prezzo" 
 	(y :: Float) <- libero . ResponseOne $ render $ "prezzo in euro di " 
 		:+: Indeterminativo &.& singolare2 x
-		:+: " di " :+: singolare b
-	return $ Commercio $  f z (toRational y :? (Euro,x))
+		:+: " di " :+: mo b
+	return $ Commercio $ f z (toRational y :? (Euro,x))
 
 -- prezzatura pesati
 uiPrezzaPesato :: Monad m
 	=> BScaffale Pesi
 	-> Costruzione m b Commercio
-uiPrezzaPesato z@(Scaffale Base _) = uiAllaMisura z AlPeso
+uiPrezzaPesato z@(Scaffale Base _) = uiAllaMisura z AlPeso (\(Pesato (PWord x)) -> x)
 uiPrezzaPesato z@(Scaffale _ x) = join $ scelte [
 	("di " ++ render (Indeterminativo &.& singolare2 z), uiAllaConfezione z),
-	(render (DiDeterminativo &.& singolare2 (Scaffale Base x)), uiAllaMisura z AlPeso)] 
+	(render (DiDeterminativo &.& Sfuso &.& fromPesato x), uiAllaMisura z AlPeso fromPesato
+	)] 
 	 $ ResponseOne "prezzo"
 
 -- prezzatura volumati
 uiPrezzaVolumato :: Monad m
 	=> BScaffale Volumi
 	-> Costruzione m b Commercio
-uiPrezzaVolumato z@(Scaffale Base _) = uiAllaMisura z AlVolume
+uiPrezzaVolumato z@(Scaffale Base _) = uiAllaMisura z AlVolume fromVolumato 
 uiPrezzaVolumato z @(Scaffale _ x) = join $ scelte [
 		(render $ (ADeterminativo &.& singolare2 z), uiAllaConfezione z),
-		("al volume " ++ render (DiDeterminativo &.& singolare2 (Scaffale Base x)), uiAllaMisura z AlVolume)] 
+		("al volume " ++ render (DiDeterminativo &.& Sfuso &.& fromVolumato x), 
+		uiAllaMisura z AlVolume fromVolumato)] 
 	 $ ResponseOne "prezzo del bene relativo" 
 
 -- prezzatura contati
