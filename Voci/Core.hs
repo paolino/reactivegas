@@ -71,8 +71,9 @@ data BWord a where
 	PWord :: Molteplicita Word -> BWord Pesi
 	VWord :: Molteplicita Word -> BWord Volumi
 	UWord :: (Word,Word) -> BWord Unità
-
+fromPesato :: BBene Pesi -> Molteplicita Word
 fromPesato (Pesato (PWord x)) = x	 
+fromPesato :: BBene Volumi -> Molteplicita Word
 fromVolumato (Volumato (VWord x)) = x	 
 
 type BBene b = Bene (BWord b) b
