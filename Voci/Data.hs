@@ -1,5 +1,5 @@
 
-{-# LANGUAGE GADTs #-}
+{-# LANGUAGE GADTs,EmptyDataDecls #-}
 module Voci.Data where
 
 import Lib.Units (Pesi,Volumi,Unità, Denaro)
