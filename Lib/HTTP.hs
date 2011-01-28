@@ -43,11 +43,10 @@ runPasso :: (Monad m )
 		)
 
 timeB s _ Nothing = noHtml
-timeB s y (Just z) = form ! [theclass "back" , method "post", action ""]  <<
-	[ hidden "hkey" z,  hidden "fkey" y, submit "" s ! [theclass "back"]]
+timeB s y (Just z) = anchor ! [theclass "back", href $ mkLink "/interazione" [("hkey",z),("fkey",y)]] << s
 			
-indietro = timeB "<"
-avanti = timeB ">"
+indietro = timeB "⇦"
+avanti = timeB "⇨"
 
 runPasso (P.Output x mc) = let
 	k y z mb ma = thediv ! [theclass "passobox",strAttr "hkey" y, strAttr "fkey" z] << 
@@ -86,7 +85,6 @@ runPasso (P.Libero po q c) = let
 				indietro z mb +++ avanti z ma +++
 				form ! [theclass "quiet",method "post", action "/interazione", strAttr "accept-charset" "utf8"] 							<< [	hidden "hkey" y, textfield "valore", 
 						hidden "fkey" z, submit "" "Inserisci" ! [theclass "continua"]]
-				+++ indietro z mb +++ avanti z ma
 			) 
 	parse x = case reads (decodeString x) of
 		[] -> case reads $ "\"" ++ decodeString x ++ "\"" of 
@@ -112,11 +110,11 @@ runPasso (P.Password po q c ) = let
 	in (k, Nothing,parse)
 
 runPasso (P.Scelta po q xs c) = let 
-	k y z mb ma =  thediv ! [theclass $ "passobox quietL" , strAttr "hkey" y, strAttr "fkey" z] << 
+	k y z mb ma =  thediv ! [theclass $ "passobox" , strAttr "hkey" y, strAttr "fkey" z] << 
 			(	thediv ! [theclass "responso"] << renderResponse "output" q  +++
 					indietro z mb +++ avanti z ma +++  
 					ulist << (map (\(x,_) -> li ! [theclass "scelta"]
-					<< anchor ! [ href $ mkLink "/interazione" [("hkey",y),("fkey",z),("valore",x)]] 
+					<< anchor ! [theclass "quietL", href $ mkLink "/interazione" [("hkey",y),("fkey",z),("valore",x)]] 
 						<< x) xs )
 			)  
 	resp x = lookup x xs >>= return . c
