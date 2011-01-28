@@ -25,7 +25,7 @@ data Contenitore b where
 	Plateau 	:: Quantità Unità 	-> Contenitore Unità 
 	Scatolone 	:: Quantità Unità 	-> Contenitore Unità 
 	
-count :: Contenitore Unità -> Unità
+count :: Contenitore Unità -> Quantità Unità
 count (Scatola x) = x
 count (Scatolone x) = x
 count (Plateau x) = x
