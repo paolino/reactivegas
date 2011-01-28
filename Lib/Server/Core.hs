@@ -174,7 +174,9 @@ mkServer limit reload bs = do
 							"chiave temporale riferita ad una form"
 						Right fos -> return fos
 					fos' <- eseguiContinuaT v fok fos
-					lift . atomically $ readTVar dbe >>= 
-							writeTVar dbe . flip set (Right $ enk + 1, Right fos')
-					return . Right $ renderT db (enk + 1) fos'
+					fos'' <- M.fromList <$> mapM (\(k,f) -> ((,) k) <$> lift (ricarica f)) 
+								(M.assocs fos')
+					let db' = set db (Right $ enk + 1, Right fos'')
+					lift . atomically $ writeTVar dbe db'
+					return . Right $ renderT db' (enk + 1) fos''
 	return $ Server apertura servizio

@@ -55,8 +55,6 @@ cgiFromServer resp (Server apertura servizio,droppa) = do
 	let s = liftServer . servizio 
 	vs <- getVars 
 	is <- getInputs
-	lift (print is)
-	lift (print $ lookup "REQUEST_URI" vs)
 	r <- runErrorT $ case lookup "REQUEST_URI"  vs of 
 		Just x -> let xs =  tail $ splitOneOf "/?" x in
 			case xs of
