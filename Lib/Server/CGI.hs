@@ -53,8 +53,11 @@ type HServer e = Server e Html Link
 cgiFromServer :: ([Html] -> CGI CGIResult) -> (Server e Html Link,IO ()) -> CGI CGIResult
 cgiFromServer resp (Server apertura servizio,droppa) = do 
 	let s = liftServer . servizio 
-	vs <- getVars 
+	vs <- getVars
+	-- lift $ print $ lookup "REQUEST_URI"  vs
 	is <- getInputs
+
+	--lift $ print is
 	r <- runErrorT $ case lookup "REQUEST_URI"  vs of 
 		Just x -> let xs =  tail $ splitOneOf "/?" x in
 			case xs of

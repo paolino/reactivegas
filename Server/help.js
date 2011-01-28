@@ -5,14 +5,21 @@ help = function () {
       $("#help").dialog();	
        
     };
+clean = function (p) {
+	var t = p.find(".passobox");
+	p.empty();
+	t.appendTo(p);
+	trigs(p);
+	} 
 
 refresh = function (p,uri) {
+	p.children().remove();
 	p.load(uri,function () {
-		if (p.children().hasClass("passobox")) { trigs (p);} 
-		else {	t = p.find(".passobox");
+		if (p.children().hasClass("passobox")) {trigs (p);} 
+		else {	var t = p.find(".passobox");
 			t.detach();
 			p.empty();
-			$(".passobox").fadeOut('fast').each(reload).fadeIn('slow');
+			$(".passobox").each(reload);
 			t.appendTo(p);
 			trigs(p);
 			} 
@@ -38,7 +45,7 @@ relink = function(event) {
 reback = function(event) {
 	var uri = $(this).attr("href").replace("interazione","ricarica");
 	event.preventDefault();
-	var p = $(this).parent();
+	var p = $(this).parent().parent();
 	refresh (p,uri);
 	};
 
@@ -48,18 +55,22 @@ reload = function (n,y) {
 	var fkey = x.attr("fkey");
 	var uri = encodeURI ('/ricarica?' + 'hkey=' + hkey + '&fkey=' + fkey)	
 	var p = x.parent();
-	p.load (uri,function () {trigs(p)});
+	x.fadeOut("fast");
+	p.children().remove();
+	p.load (uri,function () {clean (p);p.fadeIn("fast");});
 };
 
 trigs = function (x) {	
 	x.find("a.back").click(reback);
    	x.find(".quiet").submit(reform);
 	x.find("a.quietL").click(relink);
-	x.find(".responso").click(help);   
-	x.find(".output > dt").click(help);
-	x.find(".errore > dt").click(help);
+	//x.find(".responso").click(help);   
+	//x.find(".output > dt").click(help);
+	//x.find(".errore > dt").click(help);
    	};
 $(document).ready(function () {
-	trigs ($(".utente"));
+	if ($.browser.mozilla) {trigs ($(".utente"))}; 
+	if ($.browser.webkit) {trigs ($(".utente"))}; 
+	//if ($.browser.msie) {trigs ($(".utente"))}; 
 	})
 

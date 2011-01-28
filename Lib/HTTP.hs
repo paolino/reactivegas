@@ -80,11 +80,13 @@ runPasso (P.Costruito _) = runPasso . P.Errore
 
 runPasso (P.Libero po q c) = let 
 	k y z mb ma = thediv ! [theclass $ "passobox", strAttr "hkey" y, strAttr "fkey" z] << 
-			(thediv ! [theclass "responso"] << indietro z mb +++ avanti z ma +++
+			( indietro z mb +++ avanti z ma +++
+			(thediv ! [theclass "responso"] << 
 				renderResponse "output" q +++ 
 				
 				form ! [theclass "quiet",method "post", action "/interazione", strAttr "accept-charset" "utf8"] 							<< [	hidden "hkey" y, textfield "valore", 
 						hidden "fkey" z, submit "" "Inserisci" ! [theclass "continua"]]
+			)
 			) 
 	parse x = case reads (decodeString x) of
 		[] -> case reads $ "\"" ++ decodeString x ++ "\"" of 
@@ -95,12 +97,14 @@ runPasso (P.Libero po q c) = let
 
 runPasso (P.Password po q c ) = let 
 	k y z mb ma = thediv ! [theclass $ "passobox" , strAttr "hkey" y, strAttr "fkey" z] << 
-			(	thediv ! [theclass "responso"] <<indietro z mb +++ avanti z ma +++ q +++ 
+			(indietro z mb +++ avanti z ma +++ q +++ 
+			(	thediv ! [theclass "responso"] <<
 				form ! [theclass "quiet", method "post", action "/interazione",
 					strAttr "accept-charset" "utf8"] 
 					<< [	hidden "hkey" y, password "valore", 
 						hidden "fkey" z, submit "" "Inserisci" ! [theclass "continua"]]
 			) 
+			)
 	parse x = case reads x of
 		[] -> case reads $ "\"" ++ x ++ "\"" of 
 			[] -> Nothing 
@@ -110,24 +114,27 @@ runPasso (P.Password po q c ) = let
 
 runPasso (P.Scelta po q xs c) = let 
 	k y z mb ma =  thediv ! [theclass $ "passobox" , strAttr "hkey" y, strAttr "fkey" z] << 
-			(	thediv ! [theclass "responso"] << indietro z mb +++ avanti z ma +++ 
+			(indietro z mb +++ avanti z ma +++
+			(	thediv ! [theclass "responso"] <<  
 					renderResponse "output" q  +++
 					  
 					ulist << (map (\(x,_) -> li ! [theclass "scelta"]
 					<< anchor ! [theclass "quietL", href $ mkLink "/interazione" [("hkey",y),("fkey",z),("valore",x)]] 
 						<< x) xs )
-			)  
+			)
+			)
 	resp x = lookup x xs >>= return . c
 	in (k, Nothing,resp)
 	
 runPasso (P.Upload po q c ) = let
 	k y z mb ma = thediv ! [theclass $ "passobox" , strAttr "hkey" y, strAttr "fkey" z] << 
-		(	thediv ! [theclass "responso"] <<indietro z mb +++ avanti z ma +++ q +++
+		(indietro z mb +++ avanti z ma +++ q +++
+		(	thediv ! [theclass "responso"] <<
 			form ! [theclass "quiet", method "post", action "/interazione", enctype "multipart/form-data"] << 
 				 	[afile "valore", hidden "hkey" y,  
 					hidden "fkey" z, submit "" "Carica" ! [theclass "continua"]]
 		) 
-
+		)
 	parse x = case reads x of
 		[] -> Nothing  
 		[(x',_)] -> Just $ c x'
@@ -136,11 +143,13 @@ runPasso (P.Upload po q c ) = let
 
 runPasso (P.Download f q x c) = let
 	k y z mb ma = thediv ! [theclass "passobox", strAttr "hkey" y, strAttr "fkey" z] << 
-		(thediv ! [theclass "responso"] <<indietro z mb +++ avanti z ma +++ q +++
+		(indietro z mb +++ avanti z ma +++ q +++
+		(thediv ! [theclass "responso"] <<
 		(thediv ! [theclass "download"] <<  
 				form ! [theclass "quiet", method "post", action "/download"] 
 					<< [	hidden "hkey" y,  hidden "fkey" z
 						, hidden "valore" "undefined" , submit "" "Scarica" ! [theclass "continua"]]
+		)
 		)
 		)
 
