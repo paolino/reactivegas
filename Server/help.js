@@ -19,14 +19,6 @@ refresh = function (p,uri) {
 		}
 		);
 	};
-reback = function(event) {
-	var p = $(this).parent().parent();
-	var hkey = $(this).find("input#hkey").val();
-	var fkey = $(this).find("input#fkey").val();
-	event.preventDefault();
-	var uri = encodeURI ('/ricarica?hkey=' + hkey + '&fkey=' + fkey);
-	refresh(p,uri);
-	};
 reform = function(event) {
 	var valore = $(this).find("input#valore").val();
 	var hkey = $(this).find("input#hkey").val();
@@ -43,6 +35,13 @@ relink = function(event) {
 	refresh (p,uri);
 	};
 
+reback = function(event) {
+	var uri = $(this).attr("href").replace("interazione","ricarica");
+	event.preventDefault();
+	var p = $(this).parent();
+	refresh (p,uri);
+	};
+
 reload = function (n,y) {
 	var x = $(y)
 	var hkey = x.attr("hkey");
@@ -50,12 +49,12 @@ reload = function (n,y) {
 	var uri = encodeURI ('/ricarica?' + 'hkey=' + hkey + '&fkey=' + fkey)	
 	var p = x.parent();
 	p.load (uri,function () {trigs(p)});
-}
+};
 
 trigs = function (x) {	
-	x.find(".back").submit(reback);
+	x.find("a.back").click(reback);
    	x.find(".quiet").submit(reform);
-	x.find(".quietL").find("a").click(relink);
+	x.find("a.quietL").click(relink);
 	x.find(".responso").click(help);   
 	x.find(".output > dt").click(help);
 	x.find(".errore > dt").click(help);

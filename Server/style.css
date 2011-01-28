@@ -172,12 +172,13 @@ dl {color:#555;}
 input.continua {
 	float:left;
 	font: 8pt sans-serif;
-	color:#888
+	color:#888;
 	}
-input.back {
+a.back {
 	float:right;
-	font: 6pt sans-serif;
-	color:#aaa
+	font: 12pt sans-serif;
+	background-color:#ddf;
+	color:#a88;
 	}
 input#valore {font: 8pt sans-serif;}
 
