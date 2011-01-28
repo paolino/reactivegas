@@ -20,6 +20,14 @@ groupUnwrite x y  = onFS (readFile (x </> y)) (\_ -> return Nothing) (return . s
 	where seqit z = case reads z of 
 		[(q,_)] -> last z `seq` Just q
 		_ -> Nothing
+
+-- | legge un dato riguardante un gruppo
+groupUnwriteF ::  ReadS (Int,a) -> FilePath -> String -> IO (Maybe (Int,a))
+groupUnwriteF f x y  = onFS (readFile (x </> y)) (\_ -> return Nothing) (return . seqit)
+	where seqit z = case f z of 
+		[(q,_)] -> last z `seq` Just q
+		_ -> Nothing
+
 -------------------------------------------------------------------------------------------------------------------
 
 

@@ -14,12 +14,18 @@ layout = 	[(["gestione dichiarazioni"],2)
 		]
 
 
-metadata = header << 	(
-				(thelink ! [rel "stylesheet", href "/static/style.css", thetype "text/css"] << noHtml)
-			+++ 	(thelink ! [rel "icon", href "/static/favicon.ico"] << noHtml)
-			+++ 	(thetitle << "Amministrazione G.A.S.") 
-			+++ 	(meta ! [httpequiv "Content-Type", content "text/html;charset=utf8;"])
-			)  
+metadata = header << 	[
+		thelink ! [rel "stylesheet", href "/static/style.css", thetype "text/css"] << noHtml,
+		thelink ! [rel "icon", href "/static/favicon.ico"] << noHtml,
+		thetitle << "Amministrazione G.A.S.",
+		meta ! [httpequiv "Content-Type", content "text/html;charset=utf8;"],
+		thelink ! [thetype "text/css", href "static/css/start/jquery-ui-1.8.5.custom.css", rel "Stylesheet"]
+			<<noHtml,
+		script ! [thetype "text/javascript", src "/static/js/jquery-1.4.2.min.js"]
+			<<noHtml,
+		script ! [thetype "text/javascript", src "/static/js/jquery-ui-1.8.5.custom.min.js"] << noHtml,
+		script ! [thetype "text/javascript", src "/static/help.js"] << noHtml
+	] 
 piede = thediv ! [theclass "pedata"] << ulist << 	[
 			li << anchor ! [href "http://github.com/paolino/reactivegas/wiki"] << "documentazione",
 			li << anchor ! [href "http://github.com/paolino/reactivegas"] << "sorgenti"
@@ -44,11 +50,7 @@ pagina b = prettyHtml $
 					li << "Contatto sviluppatore:" 
 						+++ anchor ! [href "mailto:paolo.veronelli@gmail.com"]<< "e-mail",
 					li << "Donazioni: postepay n° 4023600431903923 intestata a Paolo Veronelli"
-					],
-		thelink ! [thetype "text/css", href "static/css/start/jquery-ui-1.8.5.custom.css", rel "Stylesheet"]
-			<<noHtml,
-		script ! [thetype "text/javascript", src "/static/js/jquery-1.4.2.min.js"]
-			<<noHtml,
-		script ! [thetype "text/javascript", src "/static/js/jquery-ui-1.8.5.custom.min.js"] << noHtml,
-		script ! [thetype "text/javascript", src "/static/help.js"] << noHtml
+					]
 		]
+
+

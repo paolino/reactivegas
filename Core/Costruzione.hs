@@ -1,6 +1,6 @@
 {-# LANGUAGE NoMonomorphismRestriction, GeneralizedNewtypeDeriving, MultiParamTypeClasses, FlexibleInstances #-}
 -- | un wrapper intorno a Lib.Costruzione m per semplificare la costruzione di interfacce
-module Core.Costruzione (libero, password, scelte, upload, Supporto, runSupporto, CostrAction, download) where
+module Core.Costruzione (toSupporto, libero, password, scelte, upload, Supporto, runSupporto, CostrAction, download, output) where
 
 import Control.Applicative ((<$>))
 import Control.Monad (liftM)
@@ -8,7 +8,7 @@ import Control.Monad.Error (lift, runErrorT, ErrorT,MonadError)
 import Control.Monad.Cont (MonadCont)
 import Control.Monad.Reader (runReaderT, ReaderT, MonadReader(..))
 
-import qualified Lib.Passo as P (Costruzione , libero, upload, scelte, download,password)
+import qualified Lib.Passo as P -- (Costruzione , libero, upload, scelte, download,password,menu)
 import Lib.Response
 
 import Debug.Trace
@@ -18,6 +18,7 @@ newtype Supporto m s b a = Supporto {unSupporto :: ReaderT (m s) (ErrorT String 
 	(Monad
 	,Functor
 	,MonadError String
+	, MonadCont 
 	)
 
 instance Monad m => MonadReader s (Supporto m s b) where
@@ -38,24 +39,27 @@ runSupporto	:: Monad m
 runSupporto s kn kp (Supporto f) = runErrorT (runReaderT f s) >>= either kn kp
 
 -- | passo libero elevato al supporto
-libero :: (Monad m ,Read a) => Response -> Supporto m s b a
-libero = toSupporto . P.libero
+libero :: (Monad m ,Read a) => Bool -> Response -> Supporto m s b a
+libero t = toSupporto . P.libero t
 
 -- | passo libero elevato al supporto
-password :: (Monad m ,Read a) => String -> Supporto m s b a
-password = toSupporto . P.password
+password :: (Monad m ,Read a) => Bool -> String -> Supporto m s b a
+password t = toSupporto . P.password t
 
 
 -- | passo upload elevato al supporto
-upload :: (Read a , Monad m) => String -> Supporto m s b a
-upload = toSupporto . P.upload
+upload :: (Read a , Monad m) => Bool -> String -> Supporto m s b a
+upload t = toSupporto . P.upload t
 
 download :: (Show a , Monad m) => String -> String -> a -> Supporto m s b ()
 download q f = toSupporto . P.download q f
 
 -- | passo scelte elevato al supporto
-scelte :: (Monad m) => [(String, a)] -> Response -> Supporto m s b a
-scelte xs = toSupporto . P.scelte xs
+scelte :: (Monad m) => Bool -> [(String, a)] -> Response -> Supporto m s b a
+scelte t xs = toSupporto . P.scelte t xs
+
+output t  = toSupporto . P.output t
+
 
 
 -- | il tipo degli insiemi di azioni costruttive

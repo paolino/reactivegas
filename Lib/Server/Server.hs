@@ -9,13 +9,13 @@ import Control.Applicative ((<$>))
 import Control.Monad.Reader
 import Control.Monad.Cont
 import Control.Concurrent.STM (STM)
-import Text.XHtml (Html)
+import Text.XHtml 
 import Network.SCGI(CGI, CGIResult, runSCGI, handleErrors,getVars)
 import Network (PortID (PortNumber))
 
 
 import Lib.Response
-import Lib.Server.Core
+import Lib.Server.Core (Form (Form), Value, mkServer, restore)
 import Lib.Server.CGI
 import Lib.Server.Session
 import Lib.Passo
@@ -51,7 +51,8 @@ fromHPasso (p,[]) e0 = fromHPasso' ((p,e0),[]) where
 							_ -> return (e',result)
 				in fromHPasso' >$> flip runContT return .callCC $ \k -> 
 					fmap snd . foldM (check k) (e0,((p,e0),[])) . tail . reverse . tails $ qs
-			in Form pass reload (map fst qs) (\enk -> h enk . show) ml
+			in Form pass reload (map fst qs) 
+				(\enk fok mb ma -> h (show enk) (show fok) (fmap show mb) (fmap show ma)) ml
 fromHPasso _ _ = error "inizializzazione con contesto non implementata"	
 	
 checkReset :: CGI a -> CGI a -> CGI a
@@ -65,6 +66,8 @@ checkReset reset k = do
 				_ -> k
 		_ -> k
 
+backButton y z x = x  
+
 server 	:: forall e b . (Read b,Show b) 
 	=>  FilePath		-- ^ cartella di lavoro
 	-> Int 			-- ^ porta del server scgi
@@ -75,9 +78,10 @@ server 	:: forall e b . (Read b,Show b)
 	-> ([Html] -> CGI CGIResult) 		-- ^ gestore del response
 	-> [([Value],Int)] 			-- ^ serializzazione delle form di default
 	-> (STM () -> Maybe b -> IO (e, IO b))  		-- ^ produzione e restore di evironment per sessione
+	-> (e -> IO Bool)			-- ^ condizione di reload per la sessione
 	-> IO () 				-- ^ aloa
 server path (PortNumber . fromIntegral -> port) limitR limitS applicazione preServer 
-		responseHandler defaultForms newEnvironment = do
+		responseHandler defaultForms newEnvironment reloadCond = do
 	-- definizione di nuova sessione
 	let 	newSession signal s = do 
 			-- ogni sessione ha la possibilità di avere il suo environment
@@ -85,9 +89,12 @@ server path (PortNumber . fromIntegral -> port) limitR limitS applicazione preSe
 			-- esplicitazione della definizione di applicazione (runContT)
 			(hp :: HRPasso e) <- runReaderT (svolgi applicazione) en
 			-- computazione delle forms
-			(fs :: [IdedForm e Html Link]) <- forM defaultForms $ \(vs,i) -> flip (,) i <$> restore (fromHPasso hp en) vs
+			(fs :: [(Form e Html Link,Int)]) <- forM defaultForms $ \(vs,i) -> flip (,) i <$> restore (fromHPasso hp en) vs
 			-- boot di un nuovo servizio 
-			s <- mkServer limitR fs
+			s <- mkServer  limitR (reloadCond en >>= \x -> if x 
+				then return $ \y -> thediv ! [strAttr "reload" ""] << y 
+				else return id
+				) fs
 			return (s,ben)
 			
 			

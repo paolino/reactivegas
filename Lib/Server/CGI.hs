@@ -18,17 +18,22 @@ import Lib.Missing (onNothing)
 
 import Debug.Trace
 
-readHKey :: ErrorT String (CGIT IO) Enk
-readHKey = lift (getInput "hkey") >>= onNothing "form corrotta, manca la chiave di punto"
+readHKey :: ErrorT String (CGIT IO) TimeKey
+readHKey = do 
+	r <- lift (getInput "hkey") >>= onNothing "manca la chiave di punto"
+	case reads r of
+		[(k,_)] -> return k
+		_ -> throwError "campo hkey illeggibile"
 
-readFKey :: ErrorT String (CGIT IO) Fok
+readFKey :: ErrorT String (CGIT IO) FormKey
 readFKey =  do 
-	fks <- lift (getInput "fkey") >>= onNothing "form corrotta, manca la chiave di interazione"
-	(i,_) <- onNothing "form corrotta, la chiave di form non è un numero" . listToMaybe $ reads fks 
-	return i
+	r <- lift (getInput "fkey") >>= onNothing "manca la chiave di form"
+	case reads r of
+		[(k,_)] -> return k
+		_ -> throwError "campo fkey illeggibile"
 
 readValore :: ErrorT String (CGIT IO) Value
-readValore = fmap id <$> lift (getInput "valore") >>= onNothing "form corrotta, manca la risposta"
+readValore = fmap id <$> lift (getInput "valore") >>= onNothing "manca la risposta"
 
 pagina :: [(Html,Int)] -> [Html]
 pagina xs =  map (\(h,i) -> thediv ! [theclass ("boxes interazione dimensione" ++ show i)] << h) xs
@@ -50,23 +55,43 @@ cgiFromServer resp (Server apertura servizio,droppa) = do
 	let s = liftServer . servizio 
 	vs <- getVars 
 	is <- getInputs
+	lift (print is)
+	lift (print $ lookup "REQUEST_URI" vs)
 	r <- runErrorT $ case lookup "REQUEST_URI"  vs of 
 		Just x -> let xs =  tail $ splitOneOf "/?" x in
 			case xs of
-				[""] -> lift $ lift apertura >>= resp . pagina 
+				[""] -> lift .  resp . pagina $ apertura
+
+				("unaform":_) -> do 
+					hk <- readHKey
+					fk <- readFKey
+					v <- readValore
+					ehl <- 	s (hk,fk,ContinuaS v) `mplus` 
+						s (hk,fk,ContinuaS $ decodeString v)	
+					case ehl of
+						Right hs -> lift . output . prettyHtml . fst . head $ hs
+						Left _ -> throwError "unaform fallita"
+
+				("ricarica":_) -> do 
+					hk <- readHKey
+					fk <- readFKey
+					ehl <- 	s (hk,fk,RicaricaS)
+					case ehl of
+						Right hs -> lift . output . prettyHtml . fst . head $ hs
+						Left _ -> throwError "ricarica fallita"
 				("interazione":_) -> do 
 					hk <- readHKey
 					fk <- readFKey
 					v <- readValore
-					ehl <- 	s (hk,fk,Continua v) `mplus` 
-						s (hk,fk,Continua $ decodeString v)	
+					ehl <- 	s (hk,fk,ContinuaT v) `mplus` 
+						s (hk,fk,ContinuaT $ decodeString v)	
 					case ehl of
 						Right hs -> lift . resp $ pagina hs
 						Left _ -> throwError "l'interazione continua con un download"
 				("download":_) -> do
 					hk <- readHKey
 					fk <- readFKey
-					ec <- s (hk,fk,Scarica)
+					ec <- s (hk,fk,ScaricaD)
 					case ec of
 						Left (Link n x m) -> lift $ do
 							setHeader "Content-type" m
@@ -76,6 +101,6 @@ cgiFromServer resp (Server apertura servizio,droppa) = do
 						Right _ -> throwError "l'interazione continua con una interazione"
 				_ -> lift (lift droppa) >> throwError "boh"
 			
-	either (\_ -> lift apertura >>= resp . pagina) return r
+	either output return r
 
 

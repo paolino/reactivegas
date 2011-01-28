@@ -85,7 +85,7 @@ costrEventiAcquisto :: (Monad m, Servizio Impegni `ParteDi` s) => CostrAction m 
 costrEventiAcquisto s kp kn  = [("nuova proposta di acquisto", eventoApertura)] 
 	where
 	eventoApertura  = runSupporto s kn kp $ do
-		n <- libero $ ResponseOne  "nome della nuova proposta d'acquisto"
+		n <- libero True $ ResponseOne  "nome della nuova proposta d'acquisto"
 		rs <- asks raccolte
 		when (n `elem` rs) $ throwError "acquisto già aperto"
 		return $ AperturaAcquisto n
@@ -99,11 +99,11 @@ costrQueryAcquisto s kp kn = 	[("acquisti chiusi",cerca)]
 	where
 	run = runSupporto s kn kp
 	cerca = run $ do
-		t <- libero "introduci parte del nome dell'acquisto [* per vederli tutti]"
+		t <- libero False "introduci parte del nome dell'acquisto [* per vederli tutti]"
 		(StatoAcquisti xs _ ) <- asks see
 		let cs =  filter (sottostringa (if t == "*" then "" else t) . fst) $ xs 
 		when ( null cs) . throwError $ "nessun nome di acquisto incontra la richiesta"
-		r <- scelte (map (fst &&& fst) cs) "acquisto da esaminare" 
+		r <- scelte False (map (fst &&& fst) cs) "acquisto da esaminare" 
 		(StatoAcquisti xs _ ) <- asks see	
 		case lookup r xs of
 			Nothing -> throwError $ "non esiste l'acquisto " ++ r 

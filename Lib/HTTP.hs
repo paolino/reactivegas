@@ -24,7 +24,7 @@ data Link = Link 	{nomelink :: String
 			,valore :: String
 			,mime :: String
 			}
-renderResponse k x = thediv ! [theclass k] << renderResponse' x where
+renderResponse k x = (thediv ! [theclass k] << renderResponse' x) where
 	renderResponse' x@(ResponseOne y) =  case typeOf y == typeOf noHtml of
 			False -> thediv << (show x)
 			True -> thediv << (fromJust (cast y) :: Html)
@@ -37,31 +37,41 @@ renderResponse k x = thediv ! [theclass k] << renderResponse' x where
   
 runPasso :: (Monad m ) 
 	=> P.Passo m b 
-	-> 	( String -> String ->  Html
+	-> 	( String -> String -> Maybe String -> Maybe String -> Html
 		, Maybe Link
 		, String -> Maybe (m (P.HPasso m b))
 		)
 
+timeB s _ Nothing = noHtml
+timeB s y (Just z) = form ! [theclass "back" , method "post", action ""]  <<
+	[ hidden "hkey" z,  hidden "fkey" y, submit "" s ! [theclass "back"]]
+			
+indietro = timeB "<"
+avanti = timeB ">"
+
 runPasso (P.Output x mc) = let
-	k y z = thediv ! [theclass "passobox"] << 
+	k y z mb ma = thediv ! [theclass "passobox",strAttr "hkey" y, strAttr "fkey" z] << 
 			(	renderResponse "output" x 
-				+++ form ! [method "post", action "/interazione"] 
+				+++ indietro z mb +++ avanti z ma	
+				+++ form ! [theclass "quiet", method "post", action "/interazione"] 
 					<< case mc of 
 						Nothing -> []
 						Just c -> [	hidden "hkey" y, hidden "valore" "undefined", 
-							hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]]
+							hidden "fkey" z, submit "" "Continua" ! [theclass "continua"]]
 			) 
 	in (k, Nothing,\_ -> mc )
 
 runPasso (P.Errore x mc) = let
-	k y z = thediv ! [theclass "passobox"] << 
+	k y z mb ma = thediv ! [theclass "passobox", strAttr "hkey" y, strAttr "fkey" z] << 
 			(	renderResponse "errore" x 
-				+++ form ! [method "post", action ("/interazione")] 
+				
+				+++ indietro z mb +++ avanti z ma
+				+++ form ! [theclass "quiet",method "post", action ("/interazione")] 
 					<< case mc of 
 						Nothing -> []
 						Just c -> [	
 							hidden "hkey" y, hidden "valore" "undefined", 
-							hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]
+							hidden "fkey" z, submit "" "Continua" ! [theclass "continua"]
 							]
 			) 
 	in (k, Nothing,\_ -> mc)
@@ -69,12 +79,14 @@ runPasso (P.Errore x mc) = let
 runPasso (P.Costruito _) = runPasso . P.Errore 
 	(ResponseOne "vicolo cieco dell'interfaccia utente") $ Nothing
 
-runPasso (P.Libero q c ) = let 
-	k y z = thediv ! [theclass "passobox"] << 
-			(	thediv ! [theclass "responso"] << renderResponse "output" q +++ 
-				form ! [method "post", action ("/interazione"), strAttr "accept-charset" "utf8"] 
-					<< [	hidden "hkey" y, textfield "valore", 
-						hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]]
+runPasso (P.Libero po q c) = let 
+	k y z mb ma = thediv ! [theclass $ "passobox", strAttr "hkey" y, strAttr "fkey" z] << 
+			(thediv ! [theclass "responso"] << 
+				renderResponse "output" q +++ 
+				indietro z mb +++ avanti z ma +++
+				form ! [theclass "quiet",method "post", action "/interazione", strAttr "accept-charset" "utf8"] 							<< [	hidden "hkey" y, textfield "valore", 
+						hidden "fkey" z, submit "" "Inserisci" ! [theclass "continua"]]
+				+++ indietro z mb +++ avanti z ma
 			) 
 	parse x = case reads (decodeString x) of
 		[] -> case reads $ "\"" ++ decodeString x ++ "\"" of 
@@ -83,12 +95,14 @@ runPasso (P.Libero q c ) = let
 		(last -> (x',_)) -> Just $ c x'
 	in (k, Nothing,parse)
 
-runPasso (P.Password q c ) = let 
-	k y z = thediv ! [theclass "passobox"] << 
+runPasso (P.Password po q c ) = let 
+	k y z mb ma = thediv ! [theclass $ "passobox" , strAttr "hkey" y, strAttr "fkey" z] << 
 			(	thediv ! [theclass "responso"] << q +++ 
-				form ! [method "post", action ("/interazione"), strAttr "accept-charset" "utf8"] 
+				indietro z mb +++ avanti z ma +++
+				form ! [theclass "quiet", method "post", action "/interazione",
+					strAttr "accept-charset" "utf8"] 
 					<< [	hidden "hkey" y, password "valore", 
-						hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]]
+						hidden "fkey" z, submit "" "Inserisci" ! [theclass "continua"]]
 			) 
 	parse x = case reads x of
 		[] -> case reads $ "\"" ++ x ++ "\"" of 
@@ -97,25 +111,24 @@ runPasso (P.Password q c ) = let
 		(last -> (x',_)) -> Just $ c x'
 	in (k, Nothing,parse)
 
-
-runPasso (P.Scelta q xs c) = let 
-	k y z =  thediv ! [theclass "passobox"] << 
-		(thediv ! [theclass "responso"] << renderResponse "output" q +++ 
-				 ulist << (map (\(x,_) -> li ! [theclass "scelta"]
-					<< anchor ! [ 
-						href $ mkLink "/interazione" [("hkey",y),("fkey",z),("valore",x)]] 
-						<< x) xs ))  
-		
+runPasso (P.Scelta po q xs c) = let 
+	k y z mb ma =  thediv ! [theclass $ "passobox quietL" , strAttr "hkey" y, strAttr "fkey" z] << 
+			(	thediv ! [theclass "responso"] << renderResponse "output" q  +++
+					indietro z mb +++ avanti z ma +++  
+					ulist << (map (\(x,_) -> li ! [theclass "scelta"]
+					<< anchor ! [ href $ mkLink "/interazione" [("hkey",y),("fkey",z),("valore",x)]] 
+						<< x) xs )
+			)  
 	resp x = lookup x xs >>= return . c
 	in (k, Nothing,resp)
 	
-runPasso (P.Upload q c ) = let
-	k y z = thediv ! [theclass "passobox"] << 
-		(thediv ! [theclass "responso"] << q +++ 
-			form ! [method "post", action "/interazione", enctype "multipart/form-data"] << 
-				( 	[afile "valore", hidden "hkey" y,  
-					hidden "fkey" z, submit "" "Continua .." ! [theclass "continua"]]
-				) 
+runPasso (P.Upload po q c ) = let
+	k y z mb ma = thediv ! [theclass $ "passobox" , strAttr "hkey" y, strAttr "fkey" z] << 
+		(	thediv ! [theclass "responso"] << q 
+			+++ indietro z mb +++ avanti z ma +++
+			form ! [theclass "quiet", method "post", action "/interazione", enctype "multipart/form-data"] << 
+				 	[afile "valore", hidden "hkey" y,  
+					hidden "fkey" z, submit "" "Carica" ! [theclass "continua"]]
 		) 
 
 	parse x = case reads x of
@@ -125,17 +138,15 @@ runPasso (P.Upload q c ) = let
 
 
 runPasso (P.Download f q x c) = let
-	k y z = thediv ! [theclass "passobox"] << 
+	k y z mb ma = thediv ! [theclass "passobox", strAttr "hkey" y, strAttr "fkey" z] << 
 		(thediv ! [theclass "responso"] << q +++
+		indietro z mb +++ avanti z ma +++
 		(thediv ! [theclass "download"] <<  
-				form ! [method "post", action "/download"] 
+				form ! [theclass "quiet", method "post", action "/download"] 
 					<< [	hidden "hkey" y,  hidden "fkey" z
-						, hidden "valore" "undefined" , submit "" "Download .." ! [theclass "continua"]]
-				+++
-				form ! [method "post", action "/interazione"] 
-					<< [	hidden "hkey" y,  hidden "fkey" z
-						, hidden "valore" "undefined" , submit "" "Continua .." ! [theclass "continua"]]
-		) )
+						, hidden "valore" "undefined" , submit "" "Scarica" ! [theclass "continua"]]
+		)
+		)
 
 	in (k,Just $ Link f (show x) "application/any",\_ -> Just c)
 -------------------------------------------------------------------------------------------------------

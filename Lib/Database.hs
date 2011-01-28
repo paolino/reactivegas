@@ -1,7 +1,7 @@
 module Lib.Database where
 
 import Data.List (lookup)
-import Data.Maybe (listToMaybe)
+import Data.Maybe (listToMaybe, isJust)
 import Control.Arrow (second)
 import Control.Applicative ((<$>))
 
@@ -14,6 +14,7 @@ data DB a b = DB
 	, forget :: a -> DB a b 
 	, dbmap :: (b -> b) -> DB a b
 	, dump :: [(a,b)]
+	, exists :: a -> Bool
 	}
 
 restoreDB l = foldr (flip set) (limitedDB l)
@@ -25,10 +26,11 @@ limitedDB :: (Show a, Eq a)
 limitedDB limit = let
 	q xs x = lookup x xs
 	l xs = fst <$> listToMaybe xs
-	s xs (x,y) = mkdb . take limit $ (x,y) : xs 
+	s xs (x,y) = mkdb . take limit $ (x,y) : filter ((/=) x . fst) xs 
 	f xs x = mkdb . filter ((/=) x . fst) $ xs	
 	m xs f = mkdb . map (second f) $ xs 
-	mkdb xs = DB (q xs) (l xs) (s xs) (f xs) (m xs) xs
+	e xs = isJust . q xs 
+	mkdb xs = DB (q xs) (l xs) (s xs) (f xs) (m xs) xs (e xs)
 	
 	in mkdb []
 

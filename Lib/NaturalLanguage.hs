@@ -5,7 +5,7 @@ import Data.Typeable
 import Data.Monoid
 
 
-data Sexed  a = Femminile {unsex :: a} | Maschile {unsex :: a} deriving (Read,Show,Functor)
+data Sexed  a = Femminile {unsex :: a} | Maschile {unsex :: a} deriving (Eq, Read,Show,Functor)
 
 
 prettySexed (Maschile x) = maybe (show x) id $ cast x 
@@ -43,7 +43,7 @@ infixr 5 &.&
 maschile x = (Maschile x, Maschile x)
 femminile x = (Femminile x, Femminile x)
 
-data Molteplicita a = Singolare {unmulti :: a} | Plurale {unmulti ::  a} deriving (Show,Read)
+data Molteplicita a = Singolare {unmulti :: a} | Plurale {unmulti ::  a} deriving (Show,Read,Eq)
 
 plurale2 = Plurale . plurale
 singolare2 = Singolare . singolare
@@ -52,14 +52,14 @@ vocale [] = False
 vocale (x:xs) = (x `elem` "aeiou")
 stz [] = False
 stz [x] = x == 'z'
-stz (x:y:xs) = x == 's' && not (y `elem` "aeiou")  || x == 'z'
+stz (x:y:xs) = (x == 's' && not (y `elem` "aeiou"))  || x == 'z'
 onstz x y z = if stz x then (y ++ x) else (z ++ x)
 onvocale x y z = if vocale x then (y ++ x) else (z ++ x)
 onstzvocale x q y z = if vocale x then (q ++ x) else if stz x  then (y ++ x) else (z ++ x)
 
 data Indeterminativo = Indeterminativo deriving (Show,Read)
 instance Polimorfo Indeterminativo where
-	singolareA Indeterminativo (Maschile x) = Maschile ("un " ++ x)
+	singolareA Indeterminativo (Maschile x) = Maschile (onstz x "uno " "un ")
 	singolareA Indeterminativo (Femminile x) = Femminile $ onvocale x "un'" "una "
 	pluraleA Indeterminativo (Maschile x) = Maschile ("alcuni " ++ x)
 	pluraleA Indeterminativo (Femminile x) = Femminile ("alcune " ++ x)

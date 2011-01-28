@@ -1,3 +1,4 @@
+{-# LANGUAGE TypeSynonymInstances, MultiParamTypeClasses, TupleSections #-}
 module  Applicazioni.Reactivegas where
 
 import Data.Function (on)
@@ -6,7 +7,7 @@ import Data.List (nubBy)
 import Control.Applicative ((<$>))
 import Control.Monad.Error (runErrorT, lift)
 import Control.Monad.Reader (runReader)
-import Control.Arrow (second, first)
+import Control.Arrow (second, first, (***))
 
 import Lib.TreeLogs (eccoILogs)
 import Lib.Prioriti (R, sortP, levelsP)
@@ -16,13 +17,13 @@ import Lib.Response (Response(ResponseMany,ResponseOne))
 import Core.Patch (fromGroup, Group,Patch)
 
 import Core.Types (Esterno, Evento, Utente, Responsabile)
-import Core.Controllo (caricaEventi, SNodo (..), )
+import Core.Controllo (caricaEventi, SNodo (..),amendSNodo, nodoVuoto )
 import Core.Inserimento (UString (..))
 import Core.Contesto (flatten, esterno)
 import Core.Programmazione (Fallimento (..), Reazione, estrai, Message, lascia)
 import Core.Parsing (ParserConRead)
 import Core.Contesto (Contestualizzato)
-
+import Lib.States
 
 import Eventi.Anagrafe 
 import Eventi.Accredito
@@ -30,14 +31,31 @@ import Eventi.Impegno
 import Eventi.Logger
 import Data.Time 
 import Eventi.Acquisto
+import Eventi.Voci
 
+instance Transition TS' where
+	back _ = Nothing 
+	forth = Nothing
+instance Transition QS' where
+	back _ = Nothing 
+	forth = Nothing
 
+instance Transition QS where
+	back = Just . ToPast . (snd *** tail . map (amendSNodo snd))
+	forth = Just . FromPast $ ([] ,) *** (nodoVuoto:) . map (amendSNodo  ([] ,))
 
+instance Transition TS where
+	back = Just . ToPast . snd
+	forth = Just . FromPast $ ([] ,)
 -- | il tipo dello stato accessibile
-type TS = TyAnagrafe (TyAccredito (TyImpegni (TyAcquisti Integer)))
-
+type TS' = TyAnagrafe (TyAccredito (TyImpegni (TyAcquisti Integer)))
+type TS = ([Voce],TS')
 -- |tipo dello stato con la serializzazione dei reattori
+type QS' = (TS',[SNodo TS' Utente])
 type QS = (TS,[SNodo TS Utente])
+
+
+
 
 
 -- | lista di prioritizzatori, definiscono un riordinamento tra gli eventidi una patch
@@ -47,12 +65,12 @@ priorita = [ priorityAnagrafe, priorityAnagrafeI, priorityAccredito
 
 -- | lista di reattori. I reattori di base per gli eventi
 reattori :: [Reazione TS ParserConRead Utente]
-reattori = [reazioneLogger, reazioneAnagrafe, reazioneAccredito, reazioneAcquisto] 
+reattori = [reazioneVoci, reazioneLogger, reazioneAnagrafe, reazioneAccredito, reazioneAcquisto] 
 
 
 -- | creazione di un novo stato di tipo QS
 nuovoStato :: [Responsabile] -> QS
-nuovoStato rs = (bootAnagrafe rs  . bootAccredito . bootImpegni . bootAcquisti  $ 0, replicate (length reattori) $ SNodo True [])
+nuovoStato rs = (([],) . bootAnagrafe rs  . bootAccredito . bootImpegni . bootAcquisti  $ 0, replicate (length reattori) $ SNodo True [])
 
 maxLevel = 100
 

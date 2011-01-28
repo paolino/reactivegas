@@ -16,7 +16,7 @@ import Lib.Tokens (Token (..))
 import Eventi.Anagrafe (responsabili)
 import Applicazioni.Reactivegas (Effetti, QS,loader, bianco, nuovoStato, maxLevel) 
 import Applicazioni.Persistenza (Change (GPatch), mkPersistenza , Persistenza (readStato, readLogs, caricamentoBianco,updateSignal,queryUtente))
-import Applicazioni.Sessione (mkSessione, Sessione (backup))
+import Applicazioni.Sessione (mkSessione, Sessione (backup,reloadCondition))
 import Applicazioni.Report (mkReporter)
 import UI.Server (applicazione)
 import UI.Lib
@@ -54,17 +54,17 @@ runGruppo lmov (dir,name,mr0)  = do
 		return pe
 
 main = do
-	Argomenti dirs port lmov lsess lrem tokpass <- parseArgs $ Argomenti [] 5000 15 10 20 (Token 123) 
+	Argomenti dirs port lmov lsess lrem tokpass <- parseArgs $ Argomenti [] 5000 15 200 20 (Token 123) 
 	amm@(Amministratore _ _ _ _ query) <- mkAmministratore tokpass (runGruppo lmov) "gruppi"
-	
-	server "." port lsess lrem applicazione (return Nothing) 
-		(output . pagina) layout $ \signal ms -> do
-			se <- mkSessione (fmap (fmap caricamentoBianco) . query ) 
-				maxLevel 
-				(fmap (fmap updateSignal) . query) 
-				(fmap (fmap queryUtente) . query) 
-				signal 
-				ms
-			return ((amm,se),backup se)
+	let bingo signal ms = do
+		se <- mkSessione (fmap (fmap caricamentoBianco) . query ) 
+			maxLevel 
+			(fmap (fmap updateSignal) . query) 
+			(fmap (fmap queryUtente) . query) 
+			signal 
+			ms
+		return ((amm,se),backup se)
+	server "." port lsess lrem applicazione (return Nothing)  
+		(output . pagina) layout bingo (reloadCondition . snd)
 	
 

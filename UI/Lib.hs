@@ -94,7 +94,7 @@ bocciatoS s x =  P.errore False . Response $ [(s , ResponseOne x)]
 accesso :: Interfaccia ()
 accesso = do 
 	(rs,_) <- responsabili . fst <$> statoPersistenza 
-	r <- P.scelte (("<anonimo>",Nothing):map (fst &&& Just) rs) $ ResponseOne  "responsabile autore delle dichiarazioni" 
+	r <- P.scelte True (("<anonimo>",Nothing):map (fst &&& Just) rs) $ ResponseOne  "responsabile autore delle dichiarazioni" 
 	ses $ ($r) . writeAccesso
 
 onAccesso k = ses readAccesso  >>= maybe (accesso >> onAccesso k) k
@@ -105,8 +105,8 @@ onAccesso k = ses readAccesso  >>= maybe (accesso >> onAccesso k) k
 
 
 creaChiavi = do 
-	p1 <- P.password "immetti una password, una frase , lunga almeno 12 caratteri"
-	p2 <- P.password "reimmetti la password per controllare la digitazione"
+	p1 <- P.password False "immetti una password, una frase , lunga almeno 12 caratteri"
+	p2 <- P.password False "reimmetti la password per controllare la digitazione"
 	if p1 == p2 then 
 		P.download  "nuove.chiavi" "scarica delle nuove chiavi" $ cryptobox p1
 		else bocciato "creazione chiavi" "errore di digitazione password"
@@ -132,7 +132,7 @@ eventLevelSelector = do
 		es -> Just $ (const "<nessuno>" *** (subtract 1)) (head es) : es ++ [("<tutti>",maxLevel)]
 	case rs of 
 		Nothing -> bocciato "selezione livello di considerazione" "nessuna dichiarazione presente"
-		Just rs -> mano (ResponseOne "livello di considerazione delle ultime dichiarazioni") $ map (\(x,l) ->
+		Just rs -> mano (ResponseOne "livello di considerazione delle ultime dichiarazioni") True $ map (\(x,l) ->
 				(x, ses (($l). setConservative ))) rs
 
 eliminazioneEvento :: String -> Interfaccia ()
@@ -145,7 +145,7 @@ eliminazioneEvento s = do
 			correzioneEventi . const . delete x $ es
 		in do 
 			es <- letturaEventi
-			mano (ResponseOne "seleziona una dichiarazione da eliminare") (zip es $ map k es)
+			mano (ResponseOne "seleziona una dichiarazione da eliminare") True (zip es $ map k es)
 
 
 sincronizza = onAccesso $ \(r@(u,_)) -> do  
@@ -169,7 +169,7 @@ salvataggio s = do
 	
 caricaAggiornamentoIndividuale :: Interfaccia ()
 caricaAggiornamentoIndividuale = do 
-	p@(c,_,_) <- P.upload "aggiornamento individuale"
+	p@(c,_,_) <- P.upload True "aggiornamento individuale"
 	s <- fst <$> statoPersistenza
 	rs <- runErrorT . flip runReaderT s $ fromPatch (fst . responsabili) p
 	case rs of 
@@ -181,16 +181,16 @@ caricaAggiornamentoIndividuale = do
 scaricaAggiornamentoIndividuale :: Interfaccia ()
 scaricaAggiornamentoIndividuale = do 
 	(_,us) <- sepU readUPatches
-	(u,p) <- P.scelte (map (fst &&& id) us)  $ ResponseOne "aggiornamenti utente presenti"
+	(u,p) <- P.scelte False (map (fst &&& id) us)  $ ResponseOne "aggiornamenti utente presenti"
 	v <- sepU readVersion
 	P.download  (u ++ "." ++ show v) "scarica un aggiornamento individuale" p
 
 caricaAggiornamentoDiGruppo :: Interfaccia ()
-caricaAggiornamentoDiGruppo = P.upload "aggiornamento di gruppo" >>= \g -> sepU $ ($g). writeGPatch
+caricaAggiornamentoDiGruppo = P.upload True "aggiornamento di gruppo" >>= \g -> sepU $ ($g). writeGPatch
 
 scaricaAggiornamentoDiGruppo :: Interfaccia ()
 scaricaAggiornamentoDiGruppo = do
-	n <- P.libero$ ResponseOne  "indice dell'aggiornamento richiesto"
+	n <- P.libero False $ ResponseOne  "indice dell'aggiornamento richiesto"
 	mg <- sepU $ ($n) . readGPatch
 	case mg of
 		Nothing -> bocciato "scaricamento aggiornamento di gruppo"  "aggiornamento di gruppo non trovato"

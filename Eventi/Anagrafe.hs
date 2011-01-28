@@ -217,7 +217,7 @@ costrEventiAnagrafe s kp kn =	[("inserimento di un nuovo utente", eventoNuovoUte
 	run = runSupporto s kn kp
         eventoNuovoUtente =  run $ do
 		us <- costrUtenti 
-                n <- libero $ ResponseOne "il nomignolo del nuovo utente"
+                n <- libero True $ ResponseOne "il nomignolo del nuovo utente"
 		when (n `elem` us) $ throwError "nome già utilizzato"	
                 return $ NuovoUtente n
 costrEventiResponsabili :: (Monad m, ParteDi Responsabili s, ParteDi Anagrafe s) => CostrAction m c EsternoAnagrafico s
@@ -232,13 +232,13 @@ costrEventiResponsabili s kp kn =
 		(rs,ts) <- asks responsabili
 		let ds = us \\ (map fst rs ++ map fst ts) 
 		when (null ds) $ throwError "nessun utente non responsabile disponibile"
-                n <- scelte (map (id &&& id) ds) $ ResponseOne "selezione dell'utente da eleggere a responsabile" 
-                (c,s) <- upload $ "inserimento delle chiavi del responsabile " ++ n ++ " per la sua elezione"
+                n <- scelte False (map (id &&& id) ds) $ ResponseOne "selezione dell'utente da eleggere a responsabile" 
+                (c,s) <- upload True $ "inserimento delle chiavi del responsabile " ++ n ++ " per la sua elezione"
                 return $ ElezioneResponsabile n c s
 
         eventoEliminazioneResponsabile = run $ do
 		rs <- costrResponsabili 
-                n <- scelte (map (fst &&& id) rs) $ ResponseOne "selezione del responsabile da revocare"
+                n <- scelte True (map (fst &&& id) rs) $ ResponseOne "selezione del responsabile da revocare"
                 return $ EliminazioneResponsabile (fst n)
 
 -- | costruzione delle interrogazione sull'anagrafe e sui costrResponsabili
@@ -419,13 +419,13 @@ costrEventiAssenso s kp kn = 	[("parere su una questione",eventoAssenso s kp kn 
 	where
 	eventoAssenso s kp kn = runSupporto s kn kp $ do
 		ys <- assensiFiltrati filtra ("nessuna questione ancora aperta per il responsabile " ++) 
-		(n,s) <- scelte ys $ ResponseOne "questione sulla quale esprimersi" 
-		ad <- scelte [("assenso",Assenso),("dissenso",Dissenso)] $ ResponseOne ("parere sulla questione " ++ s) 
+		(n,s) <- scelte False ys $ ResponseOne "questione sulla quale esprimersi" 
+		ad <- scelte True [("assenso",Assenso),("dissenso",Dissenso)] $ ResponseOne ("parere sulla questione " ++ s) 
 		return $ ad n
 
         eventoFallimentoAssenso = runSupporto s kn kp $ do
 		ys <- assensiFiltrati (\u -> (==) u . richiedente) ("nessuna questione aperta dal responsabile " ++)
-                (n,_) <- scelte ys $ ResponseOne "seleziona la questione da chiudere"   
+                (n,_) <- scelte True ys $ ResponseOne "seleziona la questione da chiudere"   
               	return $ EventoFallimentoAssenso n
 -- | costruzione delle interrogazioni sul modulo di assensi
 costrQueryAssenso :: (Monad m , Servizio Assensi `ParteDi` s) => CostrAction m c Response s

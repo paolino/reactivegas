@@ -36,7 +36,7 @@ instance Name Volumi where
 	plurale Millilitro = Maschile "millilitro"
 	plurale Centilitro = Maschile "centilitri"
 
-data Denaro = Euro | Centesimo  deriving (Read,Show,Typeable,Enum,Eq)
+data Denaro = Euro | Centesimo  deriving (Read,Show,Typeable,Enum,Eq, Bounded)
 
 instance UnitClass Denaro where
 	base Euro = (1,Euro)
@@ -49,7 +49,7 @@ instance Name Denaro where
 	plurale Centesimo = Maschile "centesimi"
 
 
-data Unità = Unità  deriving (Read,Show,Typeable,Eq, Enum)
+data Unità = Unità  deriving (Read,Show,Typeable,Eq, Enum, Bounded)
 instance Name Unità where
 	singolare Unità = Femminile "unità"
 	plurale Unità = Femminile "unità"

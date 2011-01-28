@@ -4,12 +4,12 @@ import Lib.NaturalLanguage
 
 ---------------------------------- parte specifica del linguaggio per le descrizioni ------------
 
-data Sfuso = Sfuso
-instance Polimorfo Sfuso where
-	singolareA Sfuso (Maschile x) = Maschile $ x ++ " sfuso"
-	singolareA Sfuso (Femminile x) = Femminile $ x ++ " sfusa"
-	pluraleA Sfuso (Maschile x) = Maschile $ x ++ " sfusi"
-	pluraleA Sfuso (Femminile x) = Femminile $ x ++ " sfuse"
+data WSfuso = WSfuso
+instance Polimorfo WSfuso where
+	singolareA WSfuso (Maschile x) = Maschile $ x ++ " sfuso"
+	singolareA WSfuso (Femminile x) = Femminile $ x ++ " sfusa"
+	pluraleA WSfuso (Maschile x) = Maschile $ x ++ " sfusi"
+	pluraleA WSfuso (Femminile x) = Femminile $ x ++ " sfuse"
 
 data Misurato = Misurato 
 instance Polimorfo Misurato where

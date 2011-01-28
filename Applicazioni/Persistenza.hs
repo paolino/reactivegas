@@ -1,4 +1,4 @@
-{-# LANGUAGE Rank2Types, TupleSections #-}
+{-# LANGUAGE Rank2Types, TupleSections, ScopedTypeVariables, FlexibleInstances #-}
 
 -- | Modulo di persistenza del programma.
 -- La persistenza ha 2 facce. Ci sono i dati attuali che persistono su file cosi' come sono e i dati storici che persistono su file attraverso sqlite.
@@ -32,6 +32,7 @@ import Applicazioni.Database.GPatch (mkGPatches, GPatches (..))
 import Lib.Modify ( PeekPoke (peek,poke), mkPeekPoke)
 import Debug.Trace
 import Lib.Filesystem
+import Lib.States 
 
 fJ y x = case x of {Nothing -> error (show y) ; Just x -> x}
 -----------------------------------------------------------------------------------------
@@ -40,7 +41,14 @@ fJ y x = case x of {Nothing -> error (show y) ; Just x -> x}
 type GName = String
 
 
-
+instance Transition a => Transition (Int,a) where
+	back (n,x) = case  back x of
+		Nothing -> Nothing
+		Just (ToPast y) -> Just $ ToPast (n,y)
+	forth = case forth of 
+		Nothing -> Nothing 
+		Just (FromPast f) -> Just $ FromPast $ \(n,y) -> (n,f y)
+ 
 -- | Operazione di persistenza. Scrive un istantanea di (stato,patches) oppure i tokens, quando richiesto dal trigger
 persistenza :: Show a	
 	=> (forall b . Show b => String -> Int -> b -> IO ())		-- ^ operazione di persistenza
@@ -67,7 +75,7 @@ persistenza write tversion tupatch torfani tlog tstato trigger = do
 -- | Operazione di ripristino. Ricrea tutti i dati del gruppo da filesystem.
 -- Ritorna True se e' necessario ricalcolare tutto a partire dagli aggiornamenti, utile per cancellare le informazioni 
 -- derivate dalle GPatch.L'azione ritornata è da eseguire per eseguire la reale computazione dello stato.
-ripristino :: (Read a, Show a) 
+ripristino :: (Transition a, Read a, Show a) 
 	=> (forall b . Read b => String -> IO (Maybe (Int, b)))
 	-> String 
 	-> Persistenza a b d
@@ -94,7 +102,7 @@ ripristino unwrite gname p tversion tupatch torfani tlog uv ts = do
 			writeTVar tversion v
 					
 	let reload = (True, do 
-		ms <- groupUnwrite gname "stato.boot"
+		ms <- groupUnwriteF tryRead gname "stato.boot"
 		case ms of 
 			Just (0,s) -> do 
 				atomically $ writeTVar ts s
@@ -106,7 +114,7 @@ ripristino unwrite gname p tversion tupatch torfani tlog uv ts = do
 				groupWrite gname "stato.boot" 0 s
 				putStrLn "stato iniziale scritto"
 			)
-	ms <- groupUnwrite gname "stato.corrente" 	
+	ms <- groupUnwriteF tryRead gname "stato.corrente" 	
 	t <- case ms of 
 		Just (vc,s) -> do 
 			putStrLn $ "rilevato file di stato corrente " ++ show vc
@@ -196,7 +204,7 @@ data Persistenza a b d = Persistenza
 		}
 
 -- | prepara uno stato vergine di un gruppo, a e' il tipo dello stato, b il tipo degli effetti
-mkPersistenza :: (Show c, Eq a, Read a, Show a, Show b) 
+mkPersistenza :: (Transition c, Transition a, Show c, Eq a, Read a, Show a, Show b) 
 	=> (a -> [(Utente,Evento)] -> Either String (a,b)) 	-- ^ loader specifico per a
 	-> (Int -> a -> [(Utente,Evento)] -> (a,d))		-- ^ insertore diretto di eventi per a 
 	-> a							-- ^ inizializzatore di gruppo

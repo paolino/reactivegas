@@ -10,10 +10,12 @@ import Control.Arrow ((&&&))
 import Control.Monad.Error (MonadError , when, throwError)
 import Control.Monad.Reader (MonadReader,ask, asks)
 import Data.Monoid (mappend)
+import Debug.Trace
 
 import Core.Types (Esterno,Evento,Message,Utente,Responsabile)
 import Core.Costruzione (Supporto,libero,scelte,password)
 import Lib.Firmabile (sign , verify, Firma, Chiave, Segreto, Password)
+import Lib.States
 
 
 -- | una patch è un insieme di eventi firmati da un responsabile
@@ -21,12 +23,12 @@ type Patch = (Chiave,Firma,[Evento])
 firma :: Patch -> Firma
 firma (_,x, _) =  x
 -- | controlla che una patch sia accettabile, ovvero che il responsabile sia presente e che la firma sia corretta
-fromPatch :: (Show s, MonadReader s m, MonadError String m) => (s -> [Responsabile]) -> Patch -> m [Esterno Utente]
+fromPatch :: (Show s, Transition s, MonadReader s m, MonadError String m) => (s -> [Responsabile]) -> Patch -> m [Esterno Utente]
 fromPatch grs (c,f,xs) =  do
 	s <- ask
 	let rs = grs s
 	when (not $ c `elem` map (fst . snd) rs) $ throwError "l'autore della patch è sconosciuto"
-	when (not $ verify c (xs,s) f) $ throwError "la firma della patch utente è corrotta"
+	when (not $ tryShowF (\s -> verify c (xs,s) f) (ToPast s)) $ throwError "la firma della patch utente è corrotta"
 	let u = fst. head . filter ((==c) . fst . snd) $ rs
 	return $ zip (repeat u) xs
 
@@ -37,12 +39,12 @@ type Group = (Chiave,Firma,[Patch])
 
 
 -- | restituisce gli eventi estratti dalla patch di gruppo, insieme al nome del responsabile che la ha firmata
-fromGroup :: (Show s, MonadReader s m , MonadError String m, Functor m) => (s -> [Responsabile]) -> Group -> m  (Utente,[Esterno Utente])
+fromGroup :: (Show s, Transition s, MonadReader s m , MonadError String m, Functor m) => (s -> [Responsabile]) -> Group -> m  (Utente,[Esterno Utente])
 fromGroup grs (c,f,ps) = do 
 	s <- ask
 	let rs = grs s
 	when (not $ c `elem` map (fst . snd) rs) $ throwError "l'autore dell'aggiornamento di gruppo è sconosciuto"
-	when  (not $ verify c (ps,s) f) $ throwError "la firma del responsabile dell'aggiornamento di gruppo è corrotta" 
+	when  (not $ tryShowF (\s -> verify c (ps,s) f) (ToPast s)) $ throwError "la firma del responsabile dell'aggiornamento di gruppo è corrotta" 
 	let u = fst. head . filter ((==c) . fst . snd) $ rs
 	(,) u <$> concat <$> mapM (fromPatch grs) ps
 	
@@ -50,9 +52,9 @@ fromGroup grs (c,f,ps) = do
 -- | costruisce una patch di gruppo da un insieme di patch responsabile
 
 
-firmante :: forall m s c . (Show s, Monad m) => Responsabile -> Supporto m s c (Firmante s)
+firmante :: forall m s c . (Transition s, Show s, Monad m) => Responsabile -> Supporto m s c (Firmante s)
 firmante r@(u,(c,s)) = do  
-	p <- password $ u ++ ",la tua password di responsabile:"
+	p <- password False $ u ++ ",la tua password di responsabile:"
 	when (null p) $ throwError "password errata"
 	case  sign (s,p) (undefined :: (),undefined :: s) of 
 		Nothing -> throwError $ "password errata"

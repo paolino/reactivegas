@@ -90,7 +90,7 @@ div.titolo {
 	border : 2px solid #aaa;	
 	left : 4px;
 	top:0px;
-	height :34px;
+	height :37px;
 	width:750px;
 	float:left;
 	color:#555;
@@ -170,11 +170,15 @@ dt {	color: #575;
 dl {color:#555;}
 
 input.continua {
-	float:right;
+	float:left;
 	font: 8pt sans-serif;
 	color:#888
 	}
-
+input.back {
+	float:right;
+	font: 6pt sans-serif;
+	color:#aaa
+	}
 input#valore {font: 8pt sans-serif;}
 
 div.responso {	

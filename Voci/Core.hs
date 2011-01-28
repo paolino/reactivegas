@@ -1,92 +1,92 @@
 
-{-# LANGUAGE GADTs, ExistentialQuantification, FlexibleContexts #-}
-module Voci.Core where
+{-# LANGUAGE GADTs #-}
+module Voci.Data where
 
-import Lib.Units -- (Pesi,Volumi,Unità, Denaro,UnitClass (..))
-import Lib.NaturalLanguage
-import Lib.QInteger
-import Eventi.Servizio
+import Lib.Units (Pesi,Volumi,Unità, Denaro)
+import Voci.Quantita (Quantità)
 
---------------------------------- simple quantities library -------------------------------
-data Quantità b = Rational :? b deriving (Show,Read)
-
-instance (UnitClass a, UnitClass b) => UnitClass (a,b) where
-	base (x,y) = let 
-		(kx,x') = base x
-		(ky,y') = base y
-		in (kx/ky,(x',y'))
-instance UnitClass b => Eq (Quantità b) where
-	(x :? y) == (x1 :? y1) =  (x * fst (base y)) == (x1 * fst (base y1))
-
-instance UnitClass b => Ord (Quantità b) where
-	(x :? y) `compare` (x1 :? y1) =  (x * fst (base y)) `compare` (x1 * fst (base y1))
---------------------------------------------------------------------------------------------
-
+-- | costruttori di beni, distinti per unita' di descrizione
 data Bene a b where
-	Pesato :: a -> Bene a Pesi
-	Volumato :: a -> Bene a Volumi
-	Contato :: a -> Bene a Unità
+	Pesato 		:: a -> Bene a Pesi
+	Volumato 	:: a -> Bene a Volumi
+	Contato 	:: a -> Bene a Unità
 
+-- | costruttori di contenitore, ognuno con il suo contenuto nominale, distinti per tipo di unita' 
 data Contenitore b where 
-	Brick :: Contenitore Volumi
-	Flacone :: Contenitore Volumi 
-	Damigiana :: Contenitore Volumi
-	Pacchetto :: Contenitore Pesi
-	Sacco :: Contenitore Pesi
-	Sacchetto :: Contenitore Pesi
-	Cassetta :: Contenitore Pesi
-		
-data Scatolame = Scatola | Plateau | Scatolone | Pallet deriving (Eq,Enum,Bounded, Read,Show)
-
-data Confezione b where
-	Base :: Confezione b 
-	Solido :: Quantità Pesi -> Contenitore Pesi -> Confezione Pesi
-	Liquido :: Quantità Volumi -> Contenitore Volumi -> Confezione Volumi
-	Inscatolato :: Scatolame -> Int -> Confezione b -> Confezione b
-
-explode :: Confezione b -> [Confezione b]
-explode Base = [Base]
-explode s@(Solido _ _) = [s]
-explode l@(Liquido _ _) = [l]
-explode i@(Inscatolato _ _ c) = i: explode c
-
-
-data Scaffale a b = Scaffale (Confezione b)  (Bene a b) 
-
-
-----------------------------------------------------------------------
-data Prezzato a b c where
-	AllaConfezione 
-		:: Scaffale a b -> Quantità Denaro -> Prezzato a b b 
-	AlPeso 
-		:: Scaffale a Pesi -> Quantità (Denaro,Pesi) -> Prezzato a Pesi Pesi
-	AlVolume 
-		:: Scaffale a Volumi -> Quantità (Denaro,Volumi) -> Prezzato a Volumi Volumi
-	AlPesoStimato
-		:: Scaffale a Unità  -> (Quantità Pesi, Quantità Pesi) 
-			-> Quantità (Denaro,Pesi) -> Prezzato a Unità Pesi 
+	Brick 		:: Quantità Volumi 	-> Contenitore Volumi
+	Bottiglia 	:: Quantità Volumi 	-> Contenitore Volumi
+	Flacone 	:: Quantità Volumi 	-> Contenitore Volumi 
+	Damigiana 	:: Quantità Volumi 	-> Contenitore Volumi
+	Pacchetto 	:: Quantità Pesi 	-> Contenitore Pesi
+	Sacco 		:: Quantità Pesi 	-> Contenitore Pesi
+	Sacchetto 	:: Quantità Pesi 	-> Contenitore Pesi
+	Cassetta 	:: Quantità Pesi 	-> Contenitore Pesi
+	Scatola 	:: Quantità Unità 	-> Contenitore Unità
+	Plateau 	:: Quantità Unità 	-> Contenitore Unità
+	Scatolone 	:: Quantità Unità 	-> Contenitore Unità
 	
------------------------------------- datatype reale dei nomi dei beni -------------------------
+-- | tag distintivo per i beni confezionati
+data Confezionato
+
+-- | tag distintivo per i beni sfusi
+data Sfuso
+
+-- | costruttori di confezionamenti , distinti per unita' e per tag di sfuso-confezionato. Inscatolato puo' inscatolare ricorsivamente
+data Confezionamento b d where
+	-- | sfuso unitario
+	UnitariaSfuso 	:: Confezionamento Unità Sfuso
+	-- | sfuso in peso
+	SolidoSfuso 	:: Confezionamento Pesi Sfuso
+	-- | primo confezionamento bene unitario
+	UnitariaConfezionato 	:: Contenitore Unità -> Confezionamento Unità Confezionato
+	-- | primo confezionamento bene in peso
+	SolidoConfezionato 	:: Contenitore Pesi ->  Confezionamento Pesi Confezionato
+	-- | primo confezionamento bene in volume
+	Liquido 	:: Contenitore Volumi -> Confezionamento Volumi Confezionato
+	-- | ulteriore confezionamento in unita' di qualsiasi primo confezionamento
+	Inscatolato 	:: Contenitore Unità -> Confezionamento b Confezionato -> Confezionamento b Confezionato
+
+-- | sfoglia la cipolla di confezionamento, valida solo per i confezionati
+explode :: Confezionamento b Confezionato -> [Confezionamento b Confezionato]
+explode u@(UnitariaConfezionato _ ) = [u]
+explode s@(SolidoConfezionato _ ) = [s]
+explode l@(Liquido _ ) = [l]
+explode i@(Inscatolato _  c) = i: explode c
+
+
+-- | costruttori di voci. A causa della prezzatura a peso stimato per i beni unitari si aggiunge un tag di unità (c)
+data Voce a b c d where
+	-- | tutto  il confezionato
+	AllaConfezione	:: Confezionamento b Confezionato -> Bene a b -> Quantità Denaro -> Voce a b b Confezionato
+	-- | gli sfusi unitari
+	AlPezzo 	:: Confezionamento Unità Sfuso -> Bene a Unità -> Quantità Denaro -> Voce a Unità Unità Sfuso
+	-- | tutti i pesi
+	AlPeso 		:: Confezionamento Pesi d -> Bene a Pesi -> Quantità (Denaro,Pesi) -> Voce a Pesi Pesi d
+	-- | i volumi confezionati
+	AlVolume 	:: Confezionamento Volumi Confezionato -> Bene a Volumi -> Quantità (Denaro,Volumi) 
+				-> Voce a Volumi Volumi Confezionato
+	-- | unitari sia confezionati che sfusi dove il prezzo si esprime in peso e si stima il peso del bene
+	AlPesoStimato	:: Confezionamento Unità d -> Bene a Unità -> (Quantità Pesi, Quantità Pesi) 
+				-> Quantità (Denaro,Pesi) -> Voce a Unità Pesi d
+
+-- | costruttori di ordine, associano una quantità ad una voce
+data Ordine a b c d where
+	-- | in denaro si può ordinare tutto
+	InDenaro 	:: Quantità Denaro 	-> Voce a b c d -> Ordine a b c d
+	-- | esclusi gli sfusi
+	InConfezioni 	:: Quantità Unità 	-> Voce a b c Confezionato -> Ordine a b c Confezionato
+	-- | unità sfuse, compresi gli stimati in peso
+	InPezzi		:: Quantità Unità 	-> Voce a Unità c Sfuso -> Ordine a Unità c Sfuso
+	-- | tutti pesi, sfusi e non , esclusi gli stimati
+	InPeso	 	:: Quantità Pesi 	-> Voce a Pesi Pesi d -> Ordine a Pesi Pesi d
+	-- | i volumi , che si commerciano solo confezionati 
+	InVolume	:: Quantità Volumi -> Voce a Volumi Volumi Confezionato -> Ordine a Volumi Volumi Confezionato
+
+
 data BWord a where
 	PWord :: Molteplicita Word -> BWord Pesi
 	VWord :: Molteplicita Word -> BWord Volumi
 	UWord :: (Word,Word) -> BWord Unità
-fromPesato :: BBene Pesi -> Molteplicita Word
-fromPesato (Pesato (PWord x)) = x	 
-fromVolumato :: BBene Volumi -> Molteplicita Word
-fromVolumato (Volumato (VWord x)) = x	 
-
+	 
 type BBene b = Bene (BWord b) b
 type BScaffale b = Scaffale (BWord b) b
-
-data Commercio = forall a b c . (Show a , Show (Scaffale a c) , Name (Prezzato a b c) , UnitClass b, UnitClass c) => 
-	Commercio (Prezzato a b c)
-
-data Voce =  Voce {
-	categorie :: [String],
-	filiera :: [String],
-	commercio :: Commercio	
-	} 
-
-
-

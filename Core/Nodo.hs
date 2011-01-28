@@ -17,6 +17,8 @@ import Core.Programmazione (Reazione)
 -- esplicitiamo se l'evento é interno o esterno, per gli eventi interni non e' possibile associare il valore d
 type Appuntato s d = (Either Interno (Esterno d) , s) 
 
+
+
 -- | un nodo contiene una possible reazione, infatti le reazioni possono avere una vita limitata, e una lista di figli 
 -- ognuno di essi contiene l'evento contestualizzato che lo ha creato e una lista di nodi indicizzati per intero (necessario ?)
 

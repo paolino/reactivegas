@@ -48,6 +48,7 @@ inserimento x n@(Nodo k@(Just (Reazione (acc, f :: TyReazione a b d s c))) _) = 
 	Nodo Nothing rs <- inserimento x n{reattore = Nothing} -- intanto eseguiamo l'inserzione nei figli simulando nodo morto, gancio al caso sopra
 	s' <- get -- registriamo lo stato per un eventuale ripristino o per la contestualizzazione
 	let 	complete v = do 
+			
 			result <- lift . lift $ f v -- esecuzione con creazione dei nodi dei reattori dipendenti
 			case result of 
 				Just (t {- condizione di mantenimento -}, (zip [0..] . mkNodi -> ns, nevs)) -> do

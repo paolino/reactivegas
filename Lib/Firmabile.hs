@@ -44,7 +44,8 @@ sign (s,p) y = case reads (BL.unpack . A.decryptMsg A.CBC (key 32 p) $ s) of
 	[(x,_)] -> Just . RSA.sign x . BL.pack . show $ y
 
 verify :: Show a => Chiave -> a -> Firma -> Bool
-verify c x = RSA.verify c (BL.pack . show $ x)
+verify c x = RSA.verify c (BL.pack . show $ x)  
+
 
 
 	
