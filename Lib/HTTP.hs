@@ -78,7 +78,7 @@ runPasso (P.Errore x mc) = let
 runPasso (P.Costruito _) = runPasso . P.Errore 
 	(ResponseOne "vicolo cieco dell'interfaccia utente") $ Nothing
 
-runPasso (P.Libero po q c) = let 
+runPasso (P.Libero q c) = let 
 	k y z mb ma = thediv ! [theclass $ "passobox", strAttr "hkey" y, strAttr "fkey" z] << 
 			( indietro z mb +++ avanti z ma +++
 			(thediv ! [theclass "responso"] << 
@@ -95,7 +95,7 @@ runPasso (P.Libero po q c) = let
 		(last -> (x',_)) -> Just $ c x'
 	in (k, Nothing,parse)
 
-runPasso (P.Password po q c ) = let 
+runPasso (P.Password q c ) = let 
 	k y z mb ma = thediv ! [theclass $ "passobox" , strAttr "hkey" y, strAttr "fkey" z] << 
 			(indietro z mb +++ avanti z ma +++ q +++ 
 			(	thediv ! [theclass "responso"] <<
@@ -112,7 +112,7 @@ runPasso (P.Password po q c ) = let
 		(last -> (x',_)) -> Just $ c x'
 	in (k, Nothing,parse)
 
-runPasso (P.Scelta po q xs c) = let 
+runPasso (P.Scelta q xs c) = let 
 	k y z mb ma =  thediv ! [theclass $ "passobox" , strAttr "hkey" y, strAttr "fkey" z] << 
 			(indietro z mb +++ avanti z ma +++
 			(	thediv ! [theclass "responso"] <<  
@@ -126,7 +126,7 @@ runPasso (P.Scelta po q xs c) = let
 	resp x = lookup x xs >>= return . c
 	in (k, Nothing,resp)
 	
-runPasso (P.Upload po q c ) = let
+runPasso (P.Upload q c ) = let
 	k y z mb ma = thediv ! [theclass $ "passobox" , strAttr "hkey" y, strAttr "fkey" z] << 
 		(indietro z mb +++ avanti z ma +++ q +++
 		(	thediv ! [theclass "responso"] <<

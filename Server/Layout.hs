@@ -33,7 +33,7 @@ piede = thediv ! [theclass "pedata"] << ulist << 	[
 
 testata = 
 	thediv ! [theclass "project"] << "ReactiveGAS" +++
-	thediv ! [theclass "synopsis"] << "Cooperazione economica per i gruppi di acquisto"
+	thediv ! [theclass "synopsis"] << "Servizio di gestione per i gruppi di acquisto solidale"
  
 
 pagina 	:: [Html] 	-- ^ corpo della pagina

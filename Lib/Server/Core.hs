@@ -89,8 +89,10 @@ eseguiContinuaT v fok fos = do
 	fo' <- join . onNothing "il valore non è stato compreso" . fmap lift $ continuazione fo v	
 	return $ M.adjust (const fo') fok fos 
 
-eseguiContinuaS v fo = join . onNothing "il valore non è stato compreso" . fmap lift $ 
-	continuazione fo v	
+eseguiContinuaS v fo = do 
+	fo' <- join . onNothing "il valore non è stato compreso" . fmap lift $ continuazione fo v 
+	-- lift $ ricarica fo'
+	return fo'
 
 eseguiRicaricaS	fo = lift $ ricarica fo
 

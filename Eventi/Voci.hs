@@ -62,13 +62,13 @@ costrEventiVoci s kp kn = 	[("definizione nuovo bene", runSupporto s kn kp $ cal
 	where
 	elimaBene = runSupporto s kn kp $ do
 		vs <- asks see
-		v <- scelte True (map (loggaVoce &&& id) vs) $ ResponseOne "bene da eliminare"
+		v <- scelte  (map (loggaVoce &&& id) vs) $ ResponseOne "bene da eliminare"
 		return $ EliminaVoce v
 	nuovaVoce cs fs co k =  do
 		let c = Response [("categorie", ResponseMany $ map ResponseOne $ cs),
 			("filiera", ResponseMany $  map ResponseOne $ fs),
 			("unità minima di acquisto", ResponseOne $ maybe "nessuno" (render . singolare) co)]
-		join $ scelte  True [
+		join $ scelte   [
 			("aggiungi una categoria", addCat),
 			("elimina una categoria", rmCat),
 			("aggiungi un attore nella filiera", addFil),
@@ -81,11 +81,11 @@ costrEventiVoci s kp kn = 	[("definizione nuovo bene", runSupporto s kn kp $ cal
 				Just o -> k $ NuovaVoce $ Voce cs fs o)
 			] c
 		where
-			addCat = libero False (ResponseOne "nuova categoria") >>= \c -> nuovaVoce (nub (c:cs)) fs co k
-			addFil = libero False (ResponseOne "nuovo attore della filiera") >>= \c -> nuovaVoce cs (nub (c:fs)) co k
-			rmCat = scelte False (map (id &&& id) cs)  (ResponseOne "selezione categoria da eliminare") >>= \c -> 
+			addCat = libero  (ResponseOne "nuova categoria") >>= \c -> nuovaVoce (nub (c:cs)) fs co k
+			addFil = libero  (ResponseOne "nuovo attore della filiera") >>= \c -> nuovaVoce cs (nub (c:fs)) co k
+			rmCat = scelte  (map (id &&& id) cs)  (ResponseOne "selezione categoria da eliminare") >>= \c -> 
 				nuovaVoce (filter (/=c) cs) fs co k
-			rmFil = scelte False (map (id &&& id) fs) (ResponseOne "selezione attore da eliminare") >>= \c -> 
+			rmFil = scelte  (map (id &&& id) fs) (ResponseOne "selezione attore da eliminare") >>= \c -> 
 				nuovaVoce cs (filter (/=c) fs) co k
 			setCom = toSupporto ui >>= \o -> nuovaVoce cs fs (Just o) k
 
@@ -94,7 +94,7 @@ costrQueryVoci s kp kn = [("beni inseribili negli acquisti", mostraBeni)]
 	where
 	mostraBeni = runSupporto s kn kp $ do
 		vs <- asks see
-		Voce cs fs o <- scelte False (map (loggaVoce &&& id) vs) $ ResponseOne "scelta bene da mostrare"
+		Voce cs fs o <- scelte  (map (loggaVoce &&& id) vs) $ ResponseOne "scelta bene da mostrare"
 		return $ Response [("categorie", ResponseMany $ map ResponseOne $ cs),
 			("filiera", ResponseMany $  map ResponseOne $ fs),
 			("unità minima di acquisto", ResponseOne . render . singolare $ o)

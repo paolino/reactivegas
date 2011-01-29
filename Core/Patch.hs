@@ -54,7 +54,7 @@ fromGroup grs (c,f,ps) = do
 
 firmante :: forall m s c . (Transition s, Show s, Monad m) => Responsabile -> Supporto m s c (Firmante s)
 firmante r@(u,(c,s)) = do  
-	p <- password False $ u ++ ",la tua password di responsabile:"
+	p <- password  $ u ++ ",la tua password di responsabile:"
 	when (null p) $ throwError "password errata"
 	case  sign (s,p) (undefined :: (),undefined :: s) of 
 		Nothing -> throwError $ "password errata"

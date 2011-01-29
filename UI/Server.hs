@@ -56,7 +56,7 @@ wrapCostrActions g = concatMap (\f -> f q g (bocciato "costruzione di una dichia
 
 
 interrogazioni :: Interfaccia ()
-interrogazioni = rotonda $ \_ -> menu (ResponseOne "interrogazioni sullo stato del gruppo") False $ (wrapCostrActions (P.output True) $ [
+interrogazioni = rotonda $ \_ -> menu (ResponseOne "interrogazioni sullo stato del gruppo")  $ (wrapCostrActions (P.output True) $ [
 		costrQueryAnagrafe,
 		costrQueryAccredito,
 		costrQueryImpegni,
@@ -84,22 +84,22 @@ dichiarazioni = concat $
 		]
 richiesta_nuovo_gruppo :: Interfaccia ()
 richiesta_nuovo_gruppo = do 
-	n <- P.libero False $ ResponseOne "nome del nuovo gruppo"
+	n <- P.libero  $ ResponseOne "nome del nuovo gruppo"
 	t <- sea $ ($n) . controlla_nome 
 	if t then do
-		(m :: String) <- P.libero False $ ResponseOne "nome del primo responsabile"
-		p1 <- P.password False "una password responsabile (12 caratteri)"
-		p2 <- P.password False "reimmetti la password"
+		(m :: String) <- P.libero  $ ResponseOne "nome del primo responsabile"
+		p1 <- P.password  "una password responsabile (12 caratteri)"
+		p2 <- P.password  "reimmetti la password"
 		if p1 == p2 then 
 			P.download (n ++ ".richiesta") "scarica file di richiesta inserimento nuovo gruppo" (n,(m, cryptobox p1))
 			else bocciato "immissione password" "digitazione errata"
 		else bocciato "nome del nuovo gruppo" "nome non disponibile"
 accettazione_nuovo_gruppo :: Interfaccia ()
 accettazione_nuovo_gruppo = do
-	p <- P.password False "password di amministrazione"
+	p <- P.password  "password di amministrazione"
 	t <- sea $ return . ($p) . controlla_password
 	if t then do
-		r <- P.upload True "carica la richiesta"
+		r <- P.upload  "carica la richiesta"
 		l <- sea $ ($r) . boot_nuovo_gruppo 
 		case l of 
 			True -> return ()
@@ -110,7 +110,7 @@ cambiaGruppo = rotonda $ \_ -> do
 	gs <- sea elenco_gruppi 
 	let 	cg g = ses $ ($g) . writeGruppo
 		ngs = map (second cg) $ ("<nessuno>",Nothing): zip gs (map Just gs)
-	menu (ResponseOne "gruppo di acquisto") True ngs
+	menu (ResponseOne "gruppo di acquisto")  ngs
 
 ensureGruppo s f = do
 	g <- ses readGruppo
@@ -138,7 +138,7 @@ amministrazione = rotonda $ \k -> do
 	let res = case r of 
 		Nothing -> []
 		Just _ -> [(,) "digestione di tutte le dichiarazioni pubblicate"  sincronizza]
-	menu (ResponseOne "amministrazione") False $ grs ++ res ++ [	
+	menu (ResponseOne "amministrazione")  $ grs ++ res ++ [	
 		("richiesta inserimento nuovo gruppo",richiesta_nuovo_gruppo) ,
 		("accettazione richiesta nuovo gruppo", accettazione_nuovo_gruppo)
 		]
@@ -177,7 +177,7 @@ descrizione = do
 				("dichiarazioni pubblicate", ResponseMany $ map ResponseOne (sortEventi evsp))
 				]
 
-indiretto =  ("accesso indiretto", mano (ResponseOne "accesso indiretto") False
+indiretto =  ("accesso indiretto", mano (ResponseOne "accesso indiretto") 
 				[
 				wname "carica un aggiornamento individuale"  ensureGruppo caricaAggiornamentoIndividuale ,
 				wname "carica un aggiornamento di gruppo"  ensureGruppo caricaAggiornamentoDiGruppo,
@@ -192,13 +192,13 @@ indiretto =  ("accesso indiretto", mano (ResponseOne "accesso indiretto") False
 
 -- applicazione :: Costruzione MEnv () ()
 applicazione = rotonda $ \_ -> do
-	menu (ResponseOne "menu principale") False $ 
+	menu (ResponseOne "menu principale")  $ 
 				[
 				wname "responsabile autore"  ensureGruppo (rotonda $ const accesso),
 
 				("gruppo di acquisto", cambiaGruppo),
 				wname "gestione dichiarazioni" ensureResponsabile $ rotonda $ \_ -> menu 
-					(ResponseOne "gestione dichiarazioni") False $ dichiarazioni,	
+					(ResponseOne "gestione dichiarazioni")  $ dichiarazioni,	
 				("descrizione della sessione",descrizione),
 				wname "effetto delle ultime dichiarazioni" ensureGruppo $ do
 					c <- fromJust <$> ses readCaricamento 

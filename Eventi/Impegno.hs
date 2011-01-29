@@ -230,18 +230,18 @@ costrEventiImpegno s kp kn = 	[("richiesta di impegno di denaro per un utente", 
 	run = runSupporto s kn kp
         eventoFineImpegno = run $ do
 		is <- impegniFiltrati (\u -> (==) u . referente) ("nessuna raccolta impegni chiudibile dal responsabile " ++) permesso
-                n <- scelte True is  $ ResponseOne "raccolta impegni da chiudere positivamente" 
+                n <- scelte  is  $ ResponseOne "raccolta impegni da chiudere positivamente" 
                 return $ FineImpegno n
         eventoFallimentoImpegno = run $ do
 		is <- impegniFiltrati (\u -> (==) u . referente) ("nessuna raccolta impegni aperta dal responsabile " ++) (const True)
-                n <- scelte True is  $ ResponseOne  "raccolta impegni da chiudere negativamente" 
+                n <- scelte  is  $ ResponseOne  "raccolta impegni da chiudere negativamente" 
                 return $ FallimentoImpegno n
         eventoImpegno  = run $ do
 		is <- impegni 
-                n <- scelte False is  $ ResponseOne  "raccolta impegni alla quale partecipare"  
+                n <- scelte  is  $ ResponseOne  "raccolta impegni alla quale partecipare"  
 		us <- asks utenti 
-		u <- scelte False (map (id &&& id) us)  $ ResponseOne  "utente impegnante"
-		z <- libero True $ ResponseOne "somma impegnata"
+		u <- scelte  (map (id &&& id) us)  $ ResponseOne  "utente impegnante"
+		z <- libero  $ ResponseOne "somma impegnata"
                 return $ Impegno u z n
 
 costrQueryImpegni :: (Monad m, ParteDi (Servizio Impegni) s) => CostrAction m c Response s
@@ -253,7 +253,7 @@ costrQueryImpegni s kp kn = 	[("raccolte di impegni aperte",q)]
 		return $ Response [("raccolte di impegni aperte",ResponseMany (map fst is))]
 	q = run $ do
 		is <- impegni
-		n <- scelte False is  $ ResponseOne  "esamina la raccolta di impegni" 
+		n <- scelte  is  $ ResponseOne  "esamina la raccolta di impegni" 
 		isx <- asks elencoSottoStati
 		case lookup n isx of 
 			Nothing -> throwError "incoerenza interna" 

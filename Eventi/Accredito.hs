@@ -162,8 +162,8 @@ costrEventiAccredito s kp kn = 	[("versamento sul conto di un utente",eventoAccr
 		when (isNothing un) $ throwError "manca la scelta del responsabile autore"
 		let us' = map (id &&& id) $ filter ((/=) $ fromJust un)  us
 		when (null us') $ throwError "non ci sono altri utenti"
-		u <- scelte False us' $ ResponseOne "utente interessato dall'aggiornamento"
-		n <- libero True $ ResponseOne $ "somma da accreditare sul conto di " ++ quote u
+		u <- scelte  us' $ ResponseOne "utente interessato dall'aggiornamento"
+		n <- libero  $ ResponseOne $ "somma da accreditare sul conto di " ++ quote u
 		return $ Accredito u n	
 	eventoAddebito = run $ do
 		us <- asks utenti 
@@ -171,9 +171,9 @@ costrEventiAccredito s kp kn = 	[("versamento sul conto di un utente",eventoAccr
 		when (isNothing un) $ throwError "manca la scelta del responsabile autore"
 		let us' = map (id &&& id) $ filter ((/=) $ fromJust un)  us
 		when (null us') $ throwError "non ci sono altri utenti"
-		u <- scelte False us' $ ResponseOne "utente interessato dall'aggiornamento"
-		n <- libero False $ ResponseOne $ "somma da prelevare dal conto di " ++ quote u
-		s <- libero True $ ResponseOne $ "motivazione del prelievo"
+		u <- scelte  us' $ ResponseOne "utente interessato dall'aggiornamento"
+		n <- libero  $ ResponseOne $ "somma da prelevare dal conto di " ++ quote u
+		s <- libero  $ ResponseOne $ "motivazione del prelievo"
 		return $ Addebito u s n 
 	eventoSaldo = run $ do
 		(rs,_) <- asks responsabili 
@@ -181,8 +181,8 @@ costrEventiAccredito s kp kn = 	[("versamento sul conto di un utente",eventoAccr
 		when  (isNothing un) $ throwError "manca la scelta del responsabile autore"
 		let rs' = map (fst &&& id) (filter ((/=) (fromJust un) . fst) rs)
 		when (null rs') $ throwError "non ci sono altri responsabili"
-		u <- scelte False rs' $ ResponseOne "responsabile che ha dato il denaro"
-		n <- libero True $ ResponseOne $ "somma ricevuta dal responsabile " ++ quote (fst u)
+		u <- scelte  rs' $ ResponseOne "responsabile che ha dato il denaro"
+		n <- libero  $ ResponseOne $ "somma ricevuta dal responsabile " ++ quote (fst u)
 		return $ Saldo (fst u) n
 	    
 -- | costruttore interrogazioni sul modulo accrediti
