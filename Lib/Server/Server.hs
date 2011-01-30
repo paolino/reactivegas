@@ -8,12 +8,13 @@ import Data.List.Split (splitOneOf)
 import Control.Applicative ((<$>))
 import Control.Monad.Reader
 import Control.Monad.Cont
-import Control.Concurrent.STM (STM)
+import Control.Concurrent.STM 
 import Text.XHtml 
 import Network.SCGI(CGI, CGIResult, runSCGI, handleErrors,getVars)
 import Network (PortID (PortNumber))
 
 
+import Lib.STM
 import Lib.Response
 import Lib.Server.Core (Form (Form), Value, mkServer, restore)
 import Lib.Server.CGI
@@ -66,9 +67,9 @@ checkReset reset k = do
 				_ -> k
 		_ -> k
 
-backButton y z x = x  
+data Happens a = Always | Depends a deriving Eq
 
-server 	:: forall e b . (Read b,Show b) 
+server 	:: forall e b k . (Read b,Show b) 
 	=>  FilePath		-- ^ cartella di lavoro
 	-> Int 			-- ^ porta del server scgi
 	-> Int					-- ^ numero massimo di ricordi per sessione
@@ -77,28 +78,35 @@ server 	:: forall e b . (Read b,Show b)
 	-> CGI (Maybe CGIResult)				-- ^ preserver
 	-> ([Html] -> CGI CGIResult) 		-- ^ gestore del response
 	-> [([Value],Int)] 			-- ^ serializzazione delle form di default
-	-> (STM () -> Maybe b -> IO (e, IO b))  		-- ^ produzione e restore di evironment per sessione
-	-> (e -> IO Bool)			-- ^ condizione di reload per la sessione
+	-> (STM () -> Maybe b -> IO (e, k -> IO Bool , IO b))  -- ^ produzione e restore di evironment per sessione
+	-> (b -> Maybe k)
 	-> IO () 				-- ^ aloa
 server path (PortNumber . fromIntegral -> port) limitR limitS applicazione preServer 
-		responseHandler defaultForms newEnvironment reloadCond = do
+		responseHandler defaultForms newEnvironment sessionKey = do
 	-- definizione di nuova sessione
-	let 	newSession signal s = do 
+	persistSessionChan <- atomically newTChan
+	let 	newSession s = do 
+			reloadChan <- atomically  newTChan 
+			reloadCond <- condSignal reloadChan
 			-- ogni sessione ha la possibilità di avere il suo environment
-			(en, ben) <-  newEnvironment signal s
+			(en, cks, ben) <-  newEnvironment 
+					(writeTChan reloadChan () >> writeTChan persistSessionChan ()) 
+					s
 			-- esplicitazione della definizione di applicazione (runContT)
 			(hp :: HRPasso e) <- runReaderT (svolgi applicazione) en
 			-- computazione delle forms
 			(fs :: [(Form e Html Link,Int)]) <- forM defaultForms $ \(vs,i) -> flip (,) i <$> restore (fromHPasso hp en) vs
-			-- boot di un nuovo servizio 
-			s <- mkServer  limitR (reloadCond en >>= \x -> if x 
-				then return $ \y -> thediv ! [strAttr "reload" ""] << y 
-				else return id
-				) fs
+			let reloadAllCond f g = do
+				mk <- sessionKey `fmap` ben
+				t1 <- maybe (return False) cks mk
+				t2 <- atomically reloadCond
+				return $ if t1 || t2 then f else g
+				-- boot di un nuovo servizio 
+			s <- mkServer  limitR (reloadAllCond (\y -> thediv ! [strAttr "reload" ""] << y) id) fs
 			return (s,ben)
 			
 			
-	(run,reset) <- sessioning path limitS newSession
+	(run,reset) <- sessioning path limitS (readTChan persistSessionChan) newSession
 	putStrLn "** Server attivo"
 	runSCGI port . handleErrors $ do 
 		b <- preServer

@@ -24,6 +24,8 @@ import System.Directory (getCurrentDirectory)
 import System.FilePath ((</>), addExtension)
 import System.IO (hFlush,stdout)
 
+import Lib.STM (condSignal)
+
 import Core.Patch (Patch,firma,fromPatch, Group, fromGroup)
 import Core.Types (Evento,Utente,Esterno,Responsabile)
 import Core.Contesto (Contestualizzato)
@@ -190,7 +192,8 @@ mkModificato f ts tp l mr es = do
 
 -- | strato funzionale di persistenza, lo stato in memoria è pericoloso .....
 data Persistenza a b d = Persistenza
-		{ 	readStato 	:: IO (Int,a),		-- ^ lettura dello stato
+		{ 	persReloadCond  :: IO (STM Bool),
+			readStato 	:: IO (Int,a),		-- ^ lettura dello stato
 			writeUPatch 	:: Utente -> Patch -> IO (),	-- ^ scrittura di una patch utente
 			readUPatches 	:: IO (Int,[(Utente,Patch)]),			-- ^ lettura delle patch utente
 			writeGPatch 	:: Group -> IO (),		-- ^ scrittura di una patch di gruppo
@@ -205,7 +208,8 @@ data Persistenza a b d = Persistenza
 
 -- | prepara uno stato vergine di un gruppo, a e' il tipo dello stato, b il tipo degli effetti
 mkPersistenza :: (Transition c, Transition a, Show c, Eq a, Read a, Show a, Show b) 
-	=> (a -> [(Utente,Evento)] -> Either String (a,b)) 	-- ^ loader specifico per a
+	=> STM ()						-- ^ segnala un cambiamento qualsiasi
+	-> (a -> [(Utente,Evento)] -> Either String (a,b)) 	-- ^ loader specifico per a
 	-> (Int -> a -> [(Utente,Evento)] -> (a,d))		-- ^ insertore diretto di eventi per a 
 	-> a							-- ^ inizializzatore di gruppo
 	-> (c -> [Responsabile])
@@ -213,7 +217,7 @@ mkPersistenza :: (Transition c, Transition a, Show c, Eq a, Read a, Show a, Show
 	-> GName 		
 	-> IO (Persistenza a b d,IO (),Bool)					
 
-mkPersistenza load modif boot resps ctx gname  = do 
+mkPersistenza signal load modif boot resps ctx gname  = do 
 	-- istanzia la memoria condivisa
 	trigger <- atomically $ newTChan 	
 	tv <- atomically $ newTVar 0
@@ -224,7 +228,7 @@ mkPersistenza load modif boot resps ctx gname  = do
 	cs <- atomically $ newTChan
 	gp <- mkGPatches gname
 	uv <- fromInteger`fmap` ultimaGPatch gp
-	let	atomicallyP f = atomically $ writeTChan trigger () >> f (writeTChan cs)  
+	let	atomicallyP f = atomically $ writeTChan trigger () >> signal >> f (writeTChan cs)  
 		readStato' 	= atomically $ do 
 					s <- readTVar ts
 					v <- readTVar tv 
@@ -261,7 +265,7 @@ mkPersistenza load modif boot resps ctx gname  = do
 			return . maybe [] id $ es0 `mplus` es1
 		queryUtente Nothing = return []
 		caricamentoBianco' 	= mkModificato modif ts tp		
-		p = Persistenza readStato'  writeUPatch'  
+		p = Persistenza (condSignal trigger) readStato'  writeUPatch'  
 			readUPatches' writeGPatch' readGPatch' readVersion' readLogs' updateSignal' 
 			queryUtente caricamentoBianco'
 			-- thread di persistenza appeso a trigger

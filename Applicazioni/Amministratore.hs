@@ -8,8 +8,12 @@ import Control.Concurrent (forkIO)
 import Control.Arrow (first,(&&&))
 import Lib.Passo
 
+
 import Data.List (lookup)
 import Data.Maybe (catMaybes, isNothing)
+
+import Lib.STM (condSignalEq)
+
 import Lib.Tokens 
 import Control.Monad (liftM2)
 import Control.Monad.Trans (liftIO, MonadIO)
@@ -28,6 +32,7 @@ type Gruppo = String
 
 
 data Amministratore a = Amministratore {
+	ammReloadCond :: IO (Gruppo -> IO Bool),
 	controlla_nome :: Gruppo -> IO Bool,
 	controlla_password :: Token -> Bool,
 	boot_nuovo_gruppo :: (Gruppo,Responsabile) -> IO Bool,
@@ -39,7 +44,7 @@ mkAmministratore
 	-- | password di amministratore 
 	:: Token 
 	-- | creazione o lettura di gruppo		
-	-> ((FilePath,Gruppo,Maybe Responsabile) -> IO a) 
+	-> ((FilePath,Gruppo,Maybe Responsabile,STM ()) -> IO a) 
 	-- | directory di lavoro
 	-> FilePath 
 	-- | l'amministratore risultante
@@ -52,16 +57,22 @@ mkAmministratore pass readA dir = do
 		dir
 	-- gruppi e valori
 	let ns = map takeFileName ms
-	gs <-  zip ns `fmap` mapM readA (zip3 ms ns $ repeat Nothing)
+	tr <- atomically newTChan :: IO (TChan (Either () Gruppo)) 
+	let pokeGruppo = writeTChan tr . Right
+	gs <-  zip ns `fmap` mapM readA (zipWith (\m n -> (m,n,Nothing,pokeGruppo n)) ms ns)
 
 	putStrLn "** Recuperati i seguenti gruppi:"
 	mapM_ (\(x,_) -> putStrLn $ "\t" ++ x) gs 
-
+ --------- condSignalEq :: TChan a -> IO ((a -> Bool) -> STM Bool)
+	let 	trw y (Left ()) = True
+		trw y (Right x) = x == y
+		amR = do
+			t <- condSignalEq tr
+			return $ \n ->  atomically $ t (trw n)
 	-- mappatura variabile
 	pes <- atomically $ newTVar gs
-
 	let 	new g r0 = do 	
-			pe <- readA (dir </> g, g,Just r0)
+			pe <- readA (dir </> g, g,Just r0, pokeGruppo g)
 			liftIO . atomically $ readTVar pes >>= writeTVar pes . ((g,pe):)
 		create g = do
 			let dg = dir </> g
@@ -73,6 +84,7 @@ mkAmministratore pass readA dir = do
 		controlla_password' = (== pass)
 		boot_nuovo_gruppo' (g,r) = do 
 			t <- atomically $ do
+				writeTChan tr $ Left ()
 				gs <- readTVar pes
 				case lookup g gs of 
 					Nothing -> return (g /= "static")
@@ -84,5 +96,5 @@ mkAmministratore pass readA dir = do
 		elenco_gruppi' = map fst `fmap` atomically (readTVar pes)
 		valore_di_gruppo' g = lookup g `fmap` readTVar pes
 	putStrLn "** Amministrazione attiva"
-	return $ Amministratore controlla_nome' controlla_password' boot_nuovo_gruppo' elenco_gruppi' valore_di_gruppo'
+	return $ Amministratore amR controlla_nome' controlla_password' boot_nuovo_gruppo' elenco_gruppi' valore_di_gruppo'
 

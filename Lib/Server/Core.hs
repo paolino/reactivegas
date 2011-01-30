@@ -158,7 +158,8 @@ mkServer limit reload bs = do
 				RicaricaS -> do
 					fo <- correctS dbe eseguiRicaricaS fok enk enk
 					db <- lift . atomically $ readTVar dbe 
-					return . Right . return  $ renderS db enk fok fo
+					c <- lift reload
+					return . Right . return . first c  $ renderS db enk fok fo
 				ContinuaS v -> do
 					fo <- correctS dbe (eseguiContinuaS v) fok enk (enk + 1)
 					c <- lift reload

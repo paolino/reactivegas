@@ -8,6 +8,8 @@ import Control.Monad (forever, when, liftM2)
 import System.Random
 import Control.Concurrent (forkIO)
 import Control.Concurrent.STM 
+
+import Lib.STM (condSignal)
 import Core.Types (Evento,Responsabile, Utente)
 
 import Applicazioni.Persistenza (Change (..))
@@ -19,8 +21,7 @@ type Name = String
 -- | interfaccia concorrente per una sessione di interazione
 data Sessione a b = Sessione 
 	{
-	reloadCondition :: IO Bool 			-- ^ qualcosa è cambiato
-	,readGruppo :: IO (Maybe Name)			-- ^ gruppo selezionato
+	readGruppo :: IO (Maybe Name)			-- ^ gruppo selezionato
 	,writeGruppo :: Maybe Name -> IO ()		-- ^ cambia gruppo
 	,readEventi :: IO [Evento]			-- ^ legge gli eventi in memoria		
 	,writeEventi :: [Evento] -> IO ()		-- ^ scrive gli eventi in memoria
@@ -155,7 +156,6 @@ mkSessione f l signal publ exsignal ms =  do
 	eventi 		<- atomically $ newTVar $ maybe [] (\(_,es,_,_) -> es) ms
 	accesso 	<- atomically $ newTVar $ ms >>= \(_,_,mr,_) -> mr
 	triggers 	<- atomically $ newTChan
-	reload		<- atomically $ dupTChan triggers
 	conservative 	<- atomically $ newTVar $ maybe l (\(_,_,_,cl) -> cl) ms
 	gruppo 		<- atomically $ newTVar $ ms >>= \(mg,_,_,_) -> mg
 	signalbox 	<- atomically $ case ms of 
@@ -166,17 +166,11 @@ mkSessione f l signal publ exsignal ms =  do
 				Nothing -> newTVar Nothing
 				Just mks -> mks >>= newTVar . Just			
 	let	memoria = (eventi, accesso, conservative, stato, caricamento ,gruppo,triggers, signalbox , signal, publ)
-		checkUpdate q  = (update z f l memoria >> exsignal >> q) `orElse` q
-		write f = atomically . writeTChan triggers . f 
+		checkUpdate q  = (update z f l memoria >> q) `orElse` q
+		write f x = atomically $ writeTChan triggers (f x) >> exsignal
 		read t = atomically . checkUpdate $ readTVar t
-		reloadCond = atomically $ do 
-			let r = do
-				_ <- readTChan reload
-				t <-  isEmptyTChan reload
-				if t then return True else r
-			r `orElse` return False
+
 	return $ Sessione 
-		reloadCond
 		(read gruppo) 
 		(write TGruppo)
 		(read eventi)

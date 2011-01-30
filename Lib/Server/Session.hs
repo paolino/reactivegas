@@ -21,22 +21,21 @@ type Droppable a = CGI (a, IO ())
 sessioning 	:: forall a b . (Read b, Show b) 
 		=> FilePath		-- ^ cartella di lavoro  
 		-> Int  		-- ^ limit for remebering sessions
-		-> (STM () -> Maybe b -> IO (a,IO b))		-- ^ creation of default value or restoring
+		-> STM ()		-- ^ segnale per persistere
+		-> (Maybe b -> IO (a,IO b))		-- ^ creation of default value or restoring
 		-> IO (Droppable a,Droppable a)	-- ^ (recall last value for cookie if present, reset anyway)
-sessioning path l rs = do
-	signal <- atomically  newTChan
-	let emit = writeTChan signal () 
+sessioning path l signal rs = do
 	os <- catch (readFile (path </> "sessioni") >>= \os -> putStrLn "rilevata persistenza delle sessioni" >> return os) (const $ return "[]")  
-	qs <- seq (last os) .  mapM (secondM $ rs emit . Just) $ case reads os of
+	qs <- seq (last os) .  mapM (secondM $ rs . Just) $ case reads os of
 		[] -> []
 		[(x,_)] -> x
 	tcs <- atomically . newTVar $ restoreDB l qs
 	forkIO . forever $ do
-		ss <- atomically (readTChan signal >> (dump <$> readTVar tcs)) >>= mapM (\(c,(_,ios)) -> fmap ((,) c) ios)
+		ss <- atomically (signal >> (dump <$> readTVar tcs)) >>= mapM (\(c,(_,ios)) -> fmap ((,) c) ios)
 		writeFile (path </> "sessioni") $ show ss
 	let sex = "reactivegas_sessione"
 	let 	new c = do
-			sbk@(s,_) <- rs emit Nothing 
+			sbk@(s,_) <- rs Nothing 
 			atomically $ do
 				cs <- readTVar tcs
 		 		writeTVar tcs (set cs (c,sbk))
