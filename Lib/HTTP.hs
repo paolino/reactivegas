@@ -143,12 +143,16 @@ runPasso (P.Download f q x c) = let
 	k y z mb ma = thediv ! [theclass "passobox", strAttr "hkey" y, strAttr "fkey" z] << 
 		(indietro z mb +++ avanti z ma +++ 
 		(thediv ! [theclass "responso"] << q +++
-		(thediv ! [theclass "download"] <<  
-				form ! [theclass "quiet", method "post", action "/download"] 
+		form ! [theclass "quiet", method "post", action "/download"] 
 					<< [	hidden "hkey" y,  hidden "fkey" z
 						, hidden "valore" "undefined" , 
 						submit "" "Scarica" ! [theclass "continua scarica"]]
-		)
+		+++ 
+		form ! [theclass "quiet", method "post", action "/interazione"] 
+					<< [	hidden "hkey" y, hidden "valore" "undefined",
+						hidden "fkey" z, submit "" "Continua" ! [theclass "continua"]]
+
+		
 		)
 		)
 
