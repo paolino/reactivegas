@@ -50,9 +50,8 @@ avanti = timeB "⇨"
 
 runPasso (P.Output x mc) = let
 	k y z mb ma = thediv ! [theclass "passobox",strAttr "hkey" y, strAttr "fkey" z] << 
-			(	avanti z mb +++ indietro z ma +++
+			(	indietro z mb +++ avanti z ma +++
 				renderResponse "output" x 
-					
 				+++ form ! [theclass "quiet", method "post", action "/interazione"] 
 					<< case mc of 
 						Nothing -> []
@@ -64,7 +63,6 @@ runPasso (P.Output x mc) = let
 runPasso (P.Errore x mc) = let
 	k y z mb ma = thediv ! [theclass "passobox", strAttr "hkey" y, strAttr "fkey" z] << 
 			(	indietro z mb +++ avanti z ma +++ renderResponse "errore" x 
-				
 				+++ form ! [theclass "quiet",method "post", action ("/interazione")] 
 					<< case mc of 
 						Nothing -> []
@@ -97,12 +95,13 @@ runPasso (P.Libero q c) = let
 
 runPasso (P.Password q c ) = let 
 	k y z mb ma = thediv ! [theclass $ "passobox" , strAttr "hkey" y, strAttr "fkey" z] << 
-			(indietro z mb +++ avanti z ma +++ q +++ 
-			(	thediv ! [theclass "responso"] <<
-				form ! [theclass "quiet", method "post", action "/interazione",
-					strAttr "accept-charset" "utf8"] 
-					<< [	hidden "hkey" y, password "valore", 
-						hidden "fkey" z, submit "" "Inserisci" ! [theclass "continua"]]
+			(indietro z mb +++ avanti z ma +++  
+			(thediv ! [theclass "responso"] << q 
+			+++ 
+			form ! [theclass "quiet", method "post", action "/interazione",
+				strAttr "accept-charset" "utf8"] 
+				<< [	hidden "hkey" y, password "valore", 
+					hidden "fkey" z, submit "" "Inserisci" ! [theclass "continua"]]
 			) 
 			)
 	parse x = case reads x of
@@ -117,7 +116,6 @@ runPasso (P.Scelta q xs c) = let
 			(indietro z mb +++ avanti z ma +++
 			(	thediv ! [theclass "responso"] <<  
 					renderResponse "output" q  +++
-					  
 					ulist << (map (\(x,_) -> li ! [theclass "scelta"]
 					<< anchor ! [theclass "quietL", href $ mkLink "/interazione" [("hkey",y),("fkey",z),("valore",x)]] 
 						<< x) xs )
@@ -128,8 +126,8 @@ runPasso (P.Scelta q xs c) = let
 	
 runPasso (P.Upload q c ) = let
 	k y z mb ma = thediv ! [theclass $ "passobox" , strAttr "hkey" y, strAttr "fkey" z] << 
-		(indietro z mb +++ avanti z ma +++ q +++
-		(	thediv ! [theclass "responso"] <<
+		(indietro z mb +++ avanti z ma +++ 
+		(	thediv ! [theclass "responso"] << q +++
 			form ! [theclass "quiet", method "post", action "/interazione", enctype "multipart/form-data"] << 
 				 	[afile "valore", hidden "hkey" y,  
 					hidden "fkey" z, submit "" "Carica" ! [theclass "continua"]]
@@ -143,12 +141,13 @@ runPasso (P.Upload q c ) = let
 
 runPasso (P.Download f q x c) = let
 	k y z mb ma = thediv ! [theclass "passobox", strAttr "hkey" y, strAttr "fkey" z] << 
-		(indietro z mb +++ avanti z ma +++ q +++
-		(thediv ! [theclass "responso"] <<
+		(indietro z mb +++ avanti z ma +++ 
+		(thediv ! [theclass "responso"] << q +++
 		(thediv ! [theclass "download"] <<  
 				form ! [theclass "quiet", method "post", action "/download"] 
 					<< [	hidden "hkey" y,  hidden "fkey" z
-						, hidden "valore" "undefined" , submit "" "Scarica" ! [theclass "continua"]]
+						, hidden "valore" "undefined" , 
+						submit "" "Scarica" ! [theclass "continua scarica"]]
 		)
 		)
 		)
