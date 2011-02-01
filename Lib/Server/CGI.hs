@@ -88,7 +88,7 @@ cgiFromServer resp (Server apertura servizio,droppa) = do
 						s (hk,fk,ContinuaT $ decodeString v)	
 					case ehl of
 						Right hs -> lift . resp $ pagina hs
-						Left _ -> throwError "l'interazione continua con un download"
+						Left _ ->  lift .  resp . pagina $ apertura
 				("download":_) -> do
 					hk <- readHKey
 					fk <- readFKey
@@ -99,7 +99,7 @@ cgiFromServer resp (Server apertura servizio,droppa) = do
 							setHeader "Content-Disposition" "attachment"
 							setHeader "Content-Disposition" $ "filename=" ++ show n
 							output x 
-						Right _ -> throwError "l'interazione continua con una interazione"
+						Right _ -> lift .  resp . pagina $ apertura
 				_ -> lift (lift droppa) >> throwError "boh"
 			
 	either (\e -> output e) return r
