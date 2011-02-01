@@ -53,7 +53,8 @@ fromHPasso (p,[]) e0 = fromHPasso' ((p,e0),[]) where
 				in fromHPasso' >$> flip runContT return .callCC $ \k -> 
 					fmap snd . foldM (check k) (e0,((p,e0),[])) . tail . reverse . tails $ qs
 			in Form pass reload (map fst qs) 
-				(\enk fok mb ma -> h (show enk) (show fok) (fmap show mb) (fmap show ma)) ml
+				(\enk fok mb ma -> 
+					h (show enk) (show fok) (fmap show mb) (fmap show ma)) ml
 fromHPasso _ _ = error "inizializzazione con contesto non implementata"	
 	
 checkReset :: CGI a -> CGI a -> CGI a
@@ -66,8 +67,6 @@ checkReset reset k = do
 				[""] -> reset
 				_ -> k
 		_ -> k
-
-data Happens a = Always | Depends a deriving Eq
 
 server 	:: forall e b k . (Read b,Show b) 
 	=>  FilePath		-- ^ cartella di lavoro
