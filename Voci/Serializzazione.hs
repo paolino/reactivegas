@@ -118,6 +118,9 @@ instance Read a => Read (Ordine a Pesi Pesi Confezionato) where
 instance Read a => Read (Ordine a Unità Unità Confezionato) where
 	readsPrec _ =	 restore ("InConfezioni", uncurry InConfezioni) `alt`
 				restore ("InDenaro", uncurry InDenaro)
+instance Read a => Read (Ordine a Unità Unità Sfuso) where
+	readsPrec _ =	 restore ("InPezzi", uncurry InPezzi) `alt`
+				restore ("InDenaro", uncurry InDenaro)
 
 instance Read a => Read (Ordine a Unità Pesi Sfuso) where
 	readsPrec _ =	 restore ("InPezzi", uncurry InPezzi) `alt`

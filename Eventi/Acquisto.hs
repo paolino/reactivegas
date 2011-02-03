@@ -33,6 +33,7 @@ import Eventi.Servizio (Servizio)
 
 type Indice = QInteger
 data EsternoAcquisto = AperturaAcquisto String  
+data InternoAcquisto = IAperturaAcquisto Indice String | IChiusuraAquisto Indice Bool deriving (Show,Read)
 
 priorityAcquisto = R k  where
 	k (AperturaAcquisto _) = -28 
@@ -61,7 +62,7 @@ reazioneAcquisto = soloEsterna reattoreAcquisto where
 	
 	reattoreAcquisto (first validante -> (w, AperturaAcquisto b)) = w $ \r -> do
 		rs <- raccolte <$> get
-		fallimento (b `elem` rs) "nome non più disponibile"
+		fallimento (b `elem` rs) "nome non disponibile"
 		let t k = case k of
 			Just us -> do 
 				logga . Message $ FineAcquisto b us
@@ -73,13 +74,14 @@ reazioneAcquisto = soloEsterna reattoreAcquisto where
 		let 	positivo _ = do
 				ci
 				loggamus $ "concessa la chiusura dell'acquisto " ++ b -- esegui la marcatura ottenuta da programmazione impegno
-				return nessunEffetto
+				return ([],[EventoInterno (IChiusuraAquisto li True)])
 			negativo _ = do
 				loggamus $ "negata la chiusura dell'acquisto, acquisto fallito " ++ b
-				fi
+				(epr,epf) <- fi
+				return (epr,(EventoInterno (IChiusuraAquisto li False )):epf)
 		(la,za,esf) <- programmazioneAssenso ("nuova proposta di acquisto " ++ b) r maggioranza  positivo negativo
 
-		return (True, ([za, zi esf],[]))
+		return (True, ([za, zi esf],[EventoInterno (IAperturaAcquisto li b)]))
 
 costrEventiAcquisto :: (Monad m, Servizio Impegni `ParteDi` s) => CostrAction m c EsternoAcquisto s
 costrEventiAcquisto s kp kn  = [("nuova proposta di acquisto", eventoApertura)] 

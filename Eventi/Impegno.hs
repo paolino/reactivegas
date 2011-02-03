@@ -13,6 +13,7 @@ module Eventi.Impegno {-(
 --	unImpegno
 	)-}  where
 import Data.List (delete)
+import Data.Maybe (fromJust)
 import Control.Monad.Maybe (MaybeT)
 import Control.Monad (mzero, when)
 import Control.Monad.Error (throwError)
@@ -48,11 +49,15 @@ data EsternoImpegno
 	= Impegno Utente Euro Indice	-- ^ indica un impegno di denaro da parte dell'utente per la causa chiave
 	| FineImpegno Indice  		-- ^ indica la chiusura positiva della causa
 	| FallimentoImpegno Indice	-- ^ indica la chiusura negativa della causa
+	| CorrezioneImpegno Utente Euro Indice
 
 instance Show EsternoImpegno where
 	show (Impegno u f i) = "impegno da " ++ quote u ++ " di " ++ show f ++ " in riferimento a " ++ show i
 	show (FineImpegno i) = "chiusura della raccolta impegni riferita a " ++ show i
 	show (FallimentoImpegno i) = "fallimento della raccolta impegni riferita a " ++ show i
+	show (CorrezioneImpegno u f i) = "correzione impegno da " ++ quote u ++ " di " ++ show f ++ 
+		" in riferimento a " ++ show i
+
 instance Read EsternoImpegno where
 	readPrec = let
 		imp = do
@@ -71,13 +76,21 @@ instance Read EsternoImpegno where
 			string "fallimento della raccolta impegni riferita a "
 			i <- reads'
 			return $ FallimentoImpegno i
-			
-			
-		in lift $ imp <++ fin <++ fal
+		cor = do 
+			string "correzione impegno da "
+			u <- phrase 
+			string " di " 
+			f <- reads'
+			string " in riferimento a "
+			i <- reads'
+			return $ CorrezioneImpegno u f i
+
+		in lift $ imp <++ fin <++ fal <++ cor
 priorityImpegno = R k where
 	k (Impegno _ _ _) = -27
 	k (FineImpegno _) = 15
 	k (FallimentoImpegno _) = 16
+	k (CorrezioneImpegno _ _ _) = -20
 
 priorityImpegnoI = R k where
 	k (EventoFallimentoImpegno _) = 20
@@ -137,7 +150,17 @@ programmazioneImpegno' q' ur k  = do
 			eliminaStatoServizio j (undefined :: Impegni)
 			(ks,es) <- k Nothing 
 			return (ks,EventoInterno (EventoFallimentoImpegno (ur,sum (map snd (as ++ is)))): es)
-
+		reattoreImpegno _ (Right (first validante -> (w,i@(CorrezioneImpegno u v j)))) = w $ \r -> do
+				when (l /= j) mzero
+				fallimento (ur /= r)  $ "solo " ++ ur ++ " può correggere gli impegni per " ++ q
+				Impegni _ _ as is <- osservaStatoServizio j 
+				fallimento (not $ u `elem` map fst as) "nessun impegno tra gli accettati per l'utente"
+				let vp = fromJust (lookup u as) -- denaro impegnato
+				accredita u (mkDEuro $ vp - v) $ "correzione impegno " ++ q 
+				modificaStatoServizio j $ \(Impegni ch ur as is) -> return $
+					Impegni ch ur ((u,v):(filter ((/=) u . fst) as)) is
+				loggamus  $ "correzione d'impegno per  " ++ show (mkDEuro $ v - vp) ++ " da " ++ u  ++ q
+				return (True, nessunEffetto)  
 		reattoreImpegno _ (Right (first validante ->  (w,i@(Impegno u v j)))) = w $ \r -> let
 			positivo _ = do
 				loggamus $ "accettato l'impegno di " ++ show v ++ " da " ++ u ++ q 
@@ -152,8 +175,11 @@ programmazioneImpegno' q' ur k  = do
 				return nessunEffetto
 			in do 
 				when (l /= j) mzero
+				Impegni _ _ as is <- osservaStatoServizio j 
+				fallimento (u `elem` map fst (as ++ is)) "impegno già richiesto o accettato per l'utente"
 				accredita u (mkDEuro $ negate v) $ "richiesta di impegno " ++ q 
-				modificaStatoServizio j $ \(Impegni ch ur as is) -> return (Impegni ch ur as $ (u,v):is)
+				modificaStatoServizio j $ \(Impegni ch ur as is) -> return (Impegni ch ur as $ (u,v):
+					filter ((/=) u . fst) is)
 				loggamus  $ "richiesta di impegno di  " ++ show v ++ " da " ++ u  ++ q
 				(_,reaz) <- programmazionePermesso 
 					("impegno di " ++ show v ++ " da " ++ u ++ q)
@@ -164,7 +190,7 @@ programmazioneImpegno' q' ur k  = do
 			Impegni y ur as is <- osservaStatoServizio j
 			fallimento (ur /= r) $ "solo " ++ ur ++ " può chiudere la raccolta di impegni " ++ q
 			fallimento (not y) $ "la chiusura non è stata concessa  " ++ q
-			mapM_ (\(u,v) -> accredita u (mkDEuro v) $ "restituzione a causa della mancata accettazione in " ++ q) is -- restituzione del denaro degli impegni non accettati
+			fallimento (not . null $ is) "richieste di impegno ancora in attesa di conferma"
 			salda r (mkDEuro . negate $ (sum $ map snd as)) $ "spesa  " ++ q
 			loggamus $ "raccolta di impegni " ++ q ++ " chiusa positivamente"
 			eliminaStatoServizio j (undefined :: Impegni)
@@ -223,6 +249,7 @@ costrEventiImpegno :: (
 	CostrAction m c EsternoImpegno s
 
 costrEventiImpegno s kp kn = 	[("richiesta di impegno di denaro per un utente", eventoImpegno)
+				,("correzione di impegno di denaro per un utente",eventoCorrezioneImpegno)
 				,("fine di una raccolta impegni", eventoFineImpegno)
 				,("fallimento di una raccolta impegni", eventoFallimentoImpegno) 
 				] 
@@ -236,6 +263,15 @@ costrEventiImpegno s kp kn = 	[("richiesta di impegno di denaro per un utente", 
 		is <- impegniFiltrati (\u -> (==) u . referente) ("nessuna raccolta impegni aperta dal responsabile " ++) (const True)
                 n <- scelte  is  $ ResponseOne  "raccolta impegni da chiudere negativamente" 
                 return $ FallimentoImpegno n
+	eventoCorrezioneImpegno = run $ do
+		is <- impegni 
+                n <- scelte  is  $ ResponseOne  "raccolta impegni per la quale correggere un impegno"  
+		(xs :: [(Indice,(String,Impegni))]) <- asks elencoSottoStati 
+		let zs = fromJust (lookup n xs)
+		u <- scelte  (map (fst &&& fst) $ accettati $ snd $ zs)  $ ResponseOne  "utente coinvolto nella correzione"
+		z <- libero  $ ResponseOne "nuova somma impegnata"
+		return $ CorrezioneImpegno u z n
+		
         eventoImpegno  = run $ do
 		is <- impegni 
                 n <- scelte  is  $ ResponseOne  "raccolta impegni alla quale partecipare"  

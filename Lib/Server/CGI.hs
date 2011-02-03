@@ -7,7 +7,7 @@ import Control.Applicative ((<$>))
 import Data.List.Split (splitOneOf)
 import Data.Maybe (listToMaybe)
 import qualified Data.ByteString.Lazy.Char8 as B (readFile)
-import Control.Monad.Error (mplus,Error , ErrorT,runErrorT,throwError,lift)
+import Control.Monad.Error -- (mplus,Error , ErrorT,runErrorT,throwError,lift)
 import Network.SCGI
 import Codec.Binary.UTF8.String (decodeString)
 import Lib.Server.Core
@@ -59,8 +59,9 @@ cgiFromServer resp (Server apertura servizio,droppa) = do
 
 	-- lift $ print is
 	r <- runErrorT $ case lookup "REQUEST_URI"  vs of 
-		Just x -> let xs =  tail $ splitOneOf "/?" x in
-			case xs of
+		Just x -> 
+			let 	xs =  tail $ splitOneOf "/?" x 
+			in case xs of
 				[""] -> lift .  resp . pagina $ apertura
 
 				("unaform":_) -> do 
@@ -71,7 +72,7 @@ cgiFromServer resp (Server apertura servizio,droppa) = do
 						s (hk,fk,ContinuaS $ decodeString v)	
 					case ehl of
 						Right hs -> lift . output . prettyHtml . fst . head $ hs
-						Left _ -> throwError "unaform fallita"
+						Left _ -> throwError "continuazione del questionario fallita"
 
 				("ricarica":_) -> do 
 					hk <- readHKey
@@ -79,7 +80,7 @@ cgiFromServer resp (Server apertura servizio,droppa) = do
 					ehl <- 	s (hk,fk,RicaricaS)
 					case ehl of
 						Right hs -> lift . output . prettyHtml . fst . head $ hs
-						Left _ -> throwError "ricarica fallita"
+						Left _ -> throwError "ricarica del questionario fallita"
 				("interazione":_) -> do 
 					hk <- readHKey
 					fk <- readFKey
@@ -88,7 +89,7 @@ cgiFromServer resp (Server apertura servizio,droppa) = do
 						s (hk,fk,ContinuaT $ decodeString v)	
 					case ehl of
 						Right hs -> lift . resp $ pagina hs
-						Left _ ->  lift .  resp . pagina $ apertura
+						Left _ -> throwError "l'interazione è fallita"
 				("download":_) -> do
 					hk <- readHKey
 					fk <- readFKey
@@ -99,8 +100,8 @@ cgiFromServer resp (Server apertura servizio,droppa) = do
 							setHeader "Content-Disposition" "attachment"
 							setHeader "Content-Disposition" $ "filename=" ++ show n
 							output x 
-						Right _ -> lift .  resp . pagina $ apertura
-				_ -> lift (lift droppa) >> throwError "boh"
+						Right _ -> throwError "il download è fallito"
+				_ -> lift (lift droppa) >> throwError "protocollo scorretto"
 			
 	either (\e -> output e) return r
 

@@ -2,8 +2,9 @@
 {-# LANGUAGE GADTs,EmptyDataDecls #-}
 module Voci.Data where
 
-import Lib.Units (Pesi,Volumi,Unità, Denaro)
-import Voci.Quantita (Quantità)
+import Control.Arrow (first)
+import Lib.Units 
+import Voci.Quantita -- (Quantità)
 
 -- | costruttori di beni, distinti per unita' di descrizione
 data Bene a b where
@@ -29,8 +30,22 @@ count :: Contenitore Unità -> Quantità Unità
 count (Scatola x) = x
 count (Scatolone x) = x
 count (Plateau x) = x
+
 -- | costruttori di confezionamenti 
 data Confezionamento b = Primo (Contenitore b) | Inscatolato (Contenitore Unità) (Confezionamento b) 
+
+confezioniEPeso :: Confezionamento Pesi -> (Quantità Unità,Quantità (Pesi,Unità))
+confezioniEPeso (Primo (Sacchetto (p:?l))) = (1 :? Unità,p:? (l,Unità))
+confezioniEPeso (Primo (Sacco (p:?l))) = (1 :? Unità,p:? (l,Unità))
+confezioniEPeso (Primo (Cassetta (p:?l))) = (1 :? Unità,p:? (l,Unità))
+confezioniEPeso (Inscatolato c x) = first (qon (count c)) $ confezioniEPeso x
+
+confezioniEVolume :: Confezionamento Volumi -> (Quantità Unità,Quantità (Volumi,Unità))
+confezioniEVolume (Primo (Brick (p:?l))) = (1 :? Unità,p:? (l,Unità))
+confezioniEVolume (Primo (Bottiglia (p:?l))) = (1 :? Unità,p:? (l,Unità))
+confezioniEVolume (Primo (Flacone (p:?l))) = (1 :? Unità,p:? (l,Unità))
+confezioniEVolume (Primo (Damigiana (p:?l))) = (1 :? Unità,p:? (l,Unità))
+confezioniEVolume (Inscatolato c x) = first (qon (count c)) $ confezioniEVolume x
 
 -- | tag distintivo per i beni confezionati
 data Confezionato
@@ -52,10 +67,10 @@ data Voce a b c d where
 	-- | unitari sia confezionati che sfusi dove il prezzo si esprime in peso e si stima il peso del bene
 	AlVolumeConfezionato :: Confezionamento Volumi -> Bene a Volumi -> Quantità (Denaro,Volumi) -> Voce a Volumi Volumi Confezionato
 	-- | unitari sia confezionati che sfusi dove il prezzo si esprime in peso e si stima il peso del bene
-	AlPezzoStimato	:: Bene a Unità -> (Quantità Pesi, Quantità Pesi) 
+	AlPezzoStimato	:: Bene a Unità -> (Quantità (Pesi,Unità), Quantità (Pesi,Unità)) 
 		-> Quantità (Denaro,Pesi) -> Voce a Unità Pesi Sfuso
 	AllaConfezioneStimata ::  Confezionamento Unità -> Bene a Unità   
-		-> (Quantità Pesi, Quantità Pesi) 
+		-> (Quantità (Pesi,Unità), Quantità (Pesi,Unità)) 
 		-> Quantità (Denaro,Pesi) -> Voce a Unità Pesi Confezionato
 
 -- | costruttori di ordine, associano una quantità ad una voce
