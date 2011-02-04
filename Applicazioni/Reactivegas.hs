@@ -33,25 +33,10 @@ import Data.Time
 import Eventi.Acquisto
 import Eventi.Voci
 
-instance Transition TS' where
-	back _ = Nothing 
-	forth = Nothing
-instance Transition QS' where
-	back _ = Nothing 
-	forth = Nothing
-
-instance Transition QS where
-	back = Just . ToPast . (snd *** tail . map (amendSNodo snd))
-	forth = Just . FromPast $ ([] ,) *** (nodoVuoto:) . map (amendSNodo  ([] ,))
-
-instance Transition TS where
-	back = Just . ToPast . snd
-	forth = Just . FromPast $ ([] ,)
 -- | il tipo dello stato accessibile
 type TS' = TyAnagrafe (TyAccredito (TyImpegni (TyAcquisti Integer)))
 type TS = ([Voce],TS')
 -- |tipo dello stato con la serializzazione dei reattori
-type QS' = (TS',[SNodo TS' Utente])
 type QS = (TS,[SNodo TS Utente])
 
 

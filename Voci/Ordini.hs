@@ -1,11 +1,10 @@
-{-# LANGUAGE MultiParamTypeClasses, ScopedTypeVariables, TypeFamilies, FunctionalDependencies, GADTs, FlexibleContexts, UndecidableInstances, FlexibleInstances, TypeSynonymInstances, ViewPatterns #-}
+{-# LANGUAGE MultiParamTypeClasses, ScopedTypeVariables, TypeFamilies, FunctionalDependencies, GADTs, FlexibleContexts, UndecidableInstances, FlexibleInstances, TypeSynonymInstances, ViewPatterns, OverlappingInstances #-}
 module Voci.Ordini where
 
 import Data.Typeable
 import Voci.Data
 import Voci.Compare
 import Lib.Units
-import Voci.Boxes
 import Voci.Beni
 import Voci.Quantita
 import Debug.Trace
@@ -19,171 +18,209 @@ InVolume _ y  `matchOV` z = y == z
 InDenaro _ y  `matchOV` z = y == z
 InConfezioni _ y  `matchOV` z = y == z
 
-bicast :: forall a b c d. (Typeable a, Typeable b, Typeable d, Typeable c) =>  a -> b -> (c -> d -> Bool) -> Bool
-bicast x y f = case cast y of
-	Nothing -> False
-	Just y' -> case cast x of 
-		Just x' -> x' `f` y'
-		Nothing -> False
 
-match :: BoxOrdine -> BoxVoce -> Bool
-(BoxOrdine o) `match` (BoxVoce c) = any id [
-	bicast o c (matchOV :: BOrdine Pesi Pesi Sfuso -> BVoce Pesi Pesi Sfuso -> Bool),
-	bicast o c (matchOV :: BOrdine Volumi Volumi Confezionato -> BVoce Volumi Volumi Confezionato -> Bool),
-	bicast o c (matchOV :: BOrdine Unità Unità Sfuso -> BVoce Unità Unità Sfuso -> Bool),
-	bicast o c (matchOV :: BOrdine Pesi Pesi Confezionato -> BVoce Pesi Pesi Confezionato -> Bool),
-	bicast o c (matchOV :: BOrdine Unità Unità Confezionato -> BVoce Unità Unità Confezionato -> Bool),
-	bicast o c (matchOV :: BOrdine Unità Pesi Sfuso -> BVoce Unità Pesi Sfuso -> Bool),
-	bicast o c (matchOV :: BOrdine Unità Pesi Confezionato -> BVoce Unità Pesi Confezionato -> Bool)
-	]
+class Valuta b c d e where
+	valuta :: BOrdine b c d  -> Maybe (Quantità e)
+instance Valuta b c d e where
+	valuta _ = Nothing
 
-class Valuta a b where
-	valuta :: a -> Maybe (Quantità b)
 
-instance Valuta (BOrdine Pesi Pesi Sfuso) Denaro where
-	valuta (InPeso v (AlPeso _ q)) = Just $ v `qon` q where
+--------- Richiesta Denaro ----------------------------------------------------
+
+----------------------------- Sfuso --------------------------------------
+instance Valuta Pesi Pesi Sfuso Denaro where
+	valuta (InPeso v (AlPeso _ q)) = Just $ v *|* q where
 	valuta (InDenaro v _) = Just v
-instance Valuta (BOrdine Unità Unità Sfuso) Denaro where
-	valuta (InPezzi v (AlPezzo _ q ))  = Just $ v `qon` q where
-	valuta (InDenaro v (AlPezzo _ q))  = Just $ n `qon` q where
-		n = floorQ $ v `qon` q :: Quantità Unità -- numero pezzi
-instance Valuta (BOrdine Unità Pesi Sfuso) Denaro where
-	valuta (InPeso v (AlPezzoStimato _ (_,p2) q))  = Just $ ((n `qon` p2 :: Quantità Pesi) `qon` q) where
-		n = floorQ $ v `qon` p2  :: Quantità Unità-- numero di pezzi
-	valuta (InDenaro v (AlPezzoStimato _ (_,p2 )  q)) = Just $  ((n `qon` p2 :: Quantità Pesi) `qon` q) where
-		n = floorQ $ (v `qon` q :: Quantità Pesi) `qon` p2 :: Quantità Unità 
-instance Valuta (BOrdine Pesi Pesi Confezionato) Denaro where
-	valuta (InConfezioni v (AllaConfezione _ _ q)) = Just $ v `qon` q
-	valuta (InConfezioni v (AlPesoConfezionato c _ q)) = Just $ (v `qon` n :: Quantità Unità) `qon` 
-			(p0 `qon` q :: Quantità (Denaro,Unità)) where
-		(n,p0) = confezioniEPeso c 
-	valuta (InPeso v (AllaConfezione c _ q)) = Just $ m `qon` q where
-		(n,p0) = confezioniEPeso c 
-		z = n `qon` p0 :: Quantità Pesi
-		m = floorQ $ v `qon` z :: Quantità Unità 
-	valuta (InPeso v (AlPesoConfezionato c _ q)) =  Just $ (m `qon` z :: Quantità Pesi) `qon` q where 
-		(n,p0) = confezioniEPeso c 
-		z = n `qon` p0 :: Quantità Pesi -- peso confezione minima
-		m = floorQ $ v `qon` z :: Quantità Unità -- numero confezioni
-	valuta (InDenaro v (AllaConfezione c _ q)) = Just $ m `qon` q where
-		m = floorQ $ v `qon` q :: Quantità Unità 
-	valuta (InDenaro v (AlPesoConfezionato c _ q)) = Just $ m `qon` cc  where 
-		(n,p0) = confezioniEPeso c 
-		z = n `qon` p0 :: Quantità Pesi -- peso confezione minima
-		cc = z `qon` q :: Quantità Denaro -- costo alla condezione
-		m = floorQ $ v `qon` cc :: Quantità Unità -- numero confezioni 
-instance Valuta (BOrdine Volumi Volumi Sfuso) Denaro where
-	valuta (InVolume v (AlVolume _ q)) = Just $ v `qon` q where
+instance Valuta Unità Unità Sfuso Denaro where
+	valuta (InPezzi v (AlPezzo _ q ))  = Just $ v *|* q where
+	valuta (InDenaro v (AlPezzo _ q))  = Just $ n *|* q where
+		n = floorQ $ v *|* q :: Quantità Unità -- numero pezzi
+instance Valuta Unità Pesi Sfuso Denaro where
+	valuta (InPeso v (AlPezzoStimato _ (_,p2) q))  = Just $ ((n *|* p2 :: Quantità Pesi) *|* q) where
+		n = floorQ $ v *|* p2  :: Quantità Unità-- numero di pezzi
+	valuta (InDenaro v (AlPezzoStimato _ (_,p2 )  q)) = Just $  ((n *|* p2 :: Quantità Pesi) *|* q) where
+		n = floorQ $ (v *|* q :: Quantità Pesi) *|* p2 :: Quantità Unità 
+instance Valuta Volumi Volumi Sfuso Denaro where
+	valuta (InVolume v (AlVolume _ q)) = Just $ v *|* q where
 	valuta (InDenaro v _) = Just v
 
-instance Valuta (BOrdine Volumi Volumi Confezionato) Denaro where
-	valuta (InConfezioni v (AllaConfezione _ _ q)) = Just $ v `qon` q
-	valuta (InConfezioni v (AlVolumeConfezionato c _ q)) = Just $ (v `qon` n :: Quantità Unità) `qon` 
-			(p0 `qon` q :: Quantità (Denaro,Unità)) where
-		(n,p0) = confezioniEVolume c 
-	valuta (InVolume v (AllaConfezione c _ q)) = Just $ m `qon` q where
-		(n,p0) = confezioniEVolume c 
-		z = n `qon` p0 :: Quantità Volumi
-		m = floorQ $ v `qon` z :: Quantità Unità 
-	valuta (InVolume v (AlVolumeConfezionato c _ q)) =  Just $ (m `qon` z :: Quantità Volumi) `qon` q where 
-		(n,p0) = confezioniEVolume c 
-		z = n `qon` p0 :: Quantità Volumi -- peso confezione minima
-		m = floorQ $ v `qon` z :: Quantità Unità -- numero confezioni
-	valuta (InDenaro v (AllaConfezione c _ q)) = Just $ m `qon` q where
-		m = floorQ $ v `qon` q :: Quantità Unità 
-	valuta (InDenaro v (AlVolumeConfezionato c _ q)) = Just $ m `qon` cc  where 
-		(n,p0) = confezioniEVolume c 
-		z = n `qon` p0 :: Quantità Volumi -- peso confezione minima
-		cc = z `qon` q :: Quantità Denaro -- costo alla condezione
-		m = floorQ $ v `qon` cc :: Quantità Unità -- numero confezioni 
-instance Valuta (BOrdine Unità Unità Confezionato) Denaro where
-	valuta (InConfezioni v (AllaConfezione _ _ q)) = Just $ v `qon` q
-	valuta (InDenaro v (AllaConfezione c _ q)) = Just $ m `qon` q where
-		m = floorQ $ v `qon` q :: Quantità Unità 
-instance Valuta (BOrdine Unità Pesi Confezionato) Denaro where
-	valuta (InConfezioni v (AllaConfezioneStimata c _ (_,p2) q)) = Just $ p `qon` q where
-		p = v `qon` p2 :: Quantità Pesi
-	valuta (InPeso v (AllaConfezioneStimata c _ (_,p2) q)) = Just $ p `qon` q where
-		m = floorQ $ v `qon` p2 :: Quantità Unità -- numero confezioni
-		p = m `qon` p2 :: Quantità Pesi
-	valuta (InDenaro v (AllaConfezioneStimata c _ (_,p2) q)) = Just $ p `qon` q where
-		cc = p2 `qon` q :: Quantità (Denaro,Unità)
-		m = floorQ $ v `qon` cc :: Quantità Unità
-		p = m `qon` p2 :: Quantità Pesi
+----------------------------- Confezionato ---------------------------------
+instance Valuta Pesi Pesi Confezionato Denaro where
+	valuta (InConfezioni v (AllaConfezione _ _ q)) = Just $ v *|* q
+	valuta (InConfezioni v (AlPesoConfezionato c _ q)) = Just $ (v *|* n :: Quantità Unità) *|* 
+			(p0 *|* q :: Quantità (Denaro,Unità)) where
+		(n,p0) = confezioniEPeso c 
+	valuta (InPeso v (AllaConfezione c _ q)) = Just $ m *|* q where
+		(n,p0) = confezioniEPeso c 
+		z = n *|* p0 :: Quantità Pesi
+		m = floorQ $ v *|* z :: Quantità Unità 
+	valuta (InPeso v (AlPesoConfezionato c _ q)) =  Just $ (m *|* z :: Quantità Pesi) *|* q where 
+		(n,p0) = confezioniEPeso c 
+		z = n *|* p0 :: Quantità Pesi -- peso confezione minima
+		m = floorQ $ v *|* z :: Quantità Unità -- numero confezioni
+	valuta (InDenaro v (AllaConfezione c _ q)) = Just $ m *|* q where
+		m = floorQ $ v *|* q :: Quantità Unità 
+	valuta (InDenaro v (AlPesoConfezionato c _ q)) = Just $ m *|* cc  where 
+		(n,p0) = confezioniEPeso c 
+		z = n *|* p0 :: Quantità Pesi -- peso confezione minima
+		cc = z *|* q :: Quantità Denaro -- costo alla condezione
+		m = floorQ $ v *|* cc :: Quantità Unità -- numero confezioni 
 
---------------------------------------------  Pesi ------------------------------------------------------
-instance Valuta (BOrdine Pesi Pesi Sfuso) Pesi where
+instance Valuta Volumi Volumi Confezionato Denaro where
+	valuta (InConfezioni v (AllaConfezione _ _ q)) = Just $ v *|* q
+	valuta (InConfezioni v (AlVolumeConfezionato c _ q)) = Just $ (v *|* n :: Quantità Unità) *|* 
+			(p0 *|* q :: Quantità (Denaro,Unità)) where
+		(n,p0) = confezioniEVolume c 
+	valuta (InVolume v (AllaConfezione c _ q)) = Just $ m *|* q where
+		(n,p0) = confezioniEVolume c 
+		z = n *|* p0 :: Quantità Volumi
+		m = floorQ $ v *|* z :: Quantità Unità 
+	valuta (InVolume v (AlVolumeConfezionato c _ q)) =  Just $ (m *|* z :: Quantità Volumi) *|* q where 
+		(n,p0) = confezioniEVolume c 
+		z = n *|* p0 :: Quantità Volumi -- peso confezione minima
+		m = floorQ $ v *|* z :: Quantità Unità -- numero confezioni
+	valuta (InDenaro v (AllaConfezione c _ q)) = Just $ m *|* q where
+		m = floorQ $ v *|* q :: Quantità Unità 
+	valuta (InDenaro v (AlVolumeConfezionato c _ q)) = Just $ m *|* cc  where 
+		(n,p0) = confezioniEVolume c 
+		z = n *|* p0 :: Quantità Volumi -- peso confezione minima
+		cc = z *|* q :: Quantità Denaro -- costo alla condezione
+		m = floorQ $ v *|* cc :: Quantità Unità -- numero confezioni
+ 
+instance Valuta Unità Unità Confezionato Denaro where
+	valuta (InConfezioni v (AllaConfezione _ _ q)) = Just $ v *|* q
+	valuta (InDenaro v (AllaConfezione c _ q)) = Just $ m *|* q where
+		m = floorQ $ v *|* q :: Quantità Unità 
+
+instance Valuta Unità Pesi Confezionato Denaro where
+	valuta (InConfezioni v (AllaConfezioneStimata c _ (_,p2) q)) = Just $ p *|* q where
+		p = v *|* p2 :: Quantità Pesi
+	valuta (InPeso v (AllaConfezioneStimata c _ (_,p2) q)) = Just $ p *|* q where
+		m = floorQ $ v *|* p2 :: Quantità Unità -- numero confezioni
+		p = m *|* p2 :: Quantità Pesi
+	valuta (InDenaro v (AllaConfezioneStimata c _ (_,p2) q)) = Just $ p *|* q where
+		cc = p2 *|* q :: Quantità (Denaro,Unità)
+		m = floorQ $ v *|* cc :: Quantità Unità
+		p = m *|* p2 :: Quantità Pesi
+
+------------Richiesta  Pesi ------------------------------------------------------
+
+------------------------------ Sfuso ------------------------------------
+instance Valuta Unità Pesi Sfuso Pesi where
+	valuta (InPeso v (AlPezzoStimato _ (_,p2) q))  = Just $ n *|* p2  where
+		n = floorQ $ v *|* p2  :: Quantità Unità-- numero di pezzi
+	valuta (InDenaro v (AlPezzoStimato _ (_,p2 )  q)) = Just $  n *|* p2 where
+		n = floorQ $ (v *|* q :: Quantità Pesi) *|* p2 :: Quantità Unità 
+
+instance Valuta Pesi Pesi Sfuso Pesi where
 	valuta (InPeso v (AlPeso _ q)) = Just $ v  where
-	valuta (InDenaro v (AlPeso _ q)) = Just $ v `qon` q
-instance Valuta (BOrdine Unità Pesi Sfuso) Pesi where
-	valuta (InPeso v (AlPezzoStimato _ (_,p2) q))  = Just $ n `qon` p2  where
-		n = floorQ $ v `qon` p2  :: Quantità Unità-- numero di pezzi
-	valuta (InDenaro v (AlPezzoStimato _ (_,p2 )  q)) = Just $  n `qon` p2 where
-		n = floorQ $ (v `qon` q :: Quantità Pesi) `qon` p2 :: Quantità Unità 
-instance Valuta (BOrdine Unità Pesi Confezionato) Pesi where
+	valuta (InDenaro v (AlPeso _ q)) = Just $ v *|* q
+
+
+------------------------------- Confezionato ---------------------------------
+instance Valuta Unità Pesi Confezionato Pesi where
 	valuta (InConfezioni v (AllaConfezioneStimata c _ (_,p2) q)) = Just $ p where
-		p = v `qon` p2 :: Quantità Pesi
+		p = v *|* p2 :: Quantità Pesi
 	valuta (InPeso v (AllaConfezioneStimata c _ (_,p2) q)) = Just $ p where
-		m = floorQ $ v `qon` p2 :: Quantità Unità -- numero confezioni
-		p = m `qon` p2 :: Quantità Pesi
+		m = floorQ $ v *|* p2 :: Quantità Unità -- numero confezioni
+		p = m *|* p2 :: Quantità Pesi
 	valuta (InDenaro v (AllaConfezioneStimata c _ (_,p2) q)) = Just $ p  where
-		cc = p2 `qon` q :: Quantità (Denaro,Unità)
-		m = floorQ $ v `qon` cc :: Quantità Unità
-		p = m `qon` p2 :: Quantità Pesi
-		n = floorQ $ (v `qon` q :: Quantità Pesi) `qon` p2 :: Quantità Unità 
-instance Valuta (BOrdine Pesi Pesi Confezionato) Pesi where
-	valuta (InConfezioni v (AllaConfezione c _ q)) = Just $ v `qon` z  where
-		z = n `qon` p0 :: Quantità Pesi -- peso confezione minima
-		(n,p0) = confezioniEPeso c 
-	valuta (InConfezioni v (AlPesoConfezionato c _ q)) = Just $ v `qon` z where 
-		(n,p0) = confezioniEPeso c 
-		z = n `qon` p0 :: Quantità Pesi -- peso confezione minima
-	valuta (InPeso v (AllaConfezione c _ q)) = Just $ m `qon` z where
-		(n,p0) = confezioniEPeso c 
-		z = n `qon` p0 :: Quantità Pesi
-		m = floorQ $ v `qon` z :: Quantità Unità 
-	valuta (InPeso v (AlPesoConfezionato c _ q)) =  Just $ m `qon` z  where 
-		(n,p0) = confezioniEPeso c 
-		z = n `qon` p0 :: Quantità Pesi -- peso confezione minima
-		m = floorQ $ v `qon` z :: Quantità Unità -- numero confezioni
-	valuta (InDenaro v (AllaConfezione c _ q)) = Just $ m `qon` z where
-		(n,p0) = confezioniEPeso c 
-		z = n `qon` p0 :: Quantità Pesi -- peso confezione minima
-		m = floorQ $ v `qon` q :: Quantità Unità 
-	valuta (InDenaro v (AlPesoConfezionato c _ q)) = Just $ m `qon` z  where 
-		(n,p0) = confezioniEPeso c 
-		z = n `qon` p0 :: Quantità Pesi -- peso confezione minima
-		cc = z `qon` q :: Quantità Denaro -- costo alla confezione
-		m = floorQ $ v `qon` cc :: Quantità Unità -- numero confezioni 
------------------------------- Volumi ---------------------------------------------------
+		cc = p2 *|* q :: Quantità (Denaro,Unità)
+		m = floorQ $ v *|* cc :: Quantità Unità
+		p = m *|* p2 :: Quantità Pesi
+		n = floorQ $ (v *|* q :: Quantità Pesi) *|* p2 :: Quantità Unità 
 
-instance Valuta (BOrdine Volumi Volumi Sfuso) Volumi where
+
+instance Valuta Pesi Pesi Confezionato Pesi where
+	valuta (InConfezioni v (AllaConfezione c _ q)) = Just $ v *|* z  where
+		z = n *|* p0 :: Quantità Pesi -- peso confezione minima
+		(n,p0) = confezioniEPeso c 
+	valuta (InConfezioni v (AlPesoConfezionato c _ q)) = Just $ v *|* z where 
+		(n,p0) = confezioniEPeso c 
+		z = n *|* p0 :: Quantità Pesi -- peso confezione minima
+	valuta (InPeso v (AllaConfezione c _ q)) = Just $ m *|* z where
+		(n,p0) = confezioniEPeso c 
+		z = n *|* p0 :: Quantità Pesi
+		m = floorQ $ v *|* z :: Quantità Unità 
+	valuta (InPeso v (AlPesoConfezionato c _ q)) =  Just $ m *|* z  where 
+		(n,p0) = confezioniEPeso c 
+		z = n *|* p0 :: Quantità Pesi -- peso confezione minima
+		m = floorQ $ v *|* z :: Quantità Unità -- numero confezioni
+	valuta (InDenaro v (AllaConfezione c _ q)) = Just $ m *|* z where
+		(n,p0) = confezioniEPeso c 
+		z = n *|* p0 :: Quantità Pesi -- peso confezione minima
+		m = floorQ $ v *|* q :: Quantità Unità 
+	valuta (InDenaro v (AlPesoConfezionato c _ q)) = Just $ m *|* z  where 
+		(n,p0) = confezioniEPeso c 
+		z = n *|* p0 :: Quantità Pesi -- peso confezione minima
+		cc = z *|* q :: Quantità Denaro -- costo alla confezione
+		m = floorQ $ v *|* cc :: Quantità Unità -- numero confezioni 
+
+------------------------------ Richieste Volumi ---------------------------------------------------
+
+----------------------------------------Sfuso ---------------------------
+instance Valuta Volumi Volumi Sfuso Volumi where
 	valuta (InVolume v (AlVolume _ q)) = Just $ v where
-	valuta (InDenaro v (AlVolume _ q)) = Just $ v `qon` q
+	valuta (InDenaro v (AlVolume _ q)) = Just $ v *|* q
 
-instance Valuta (BOrdine Volumi Volumi Confezionato) Volumi where
-	valuta (InConfezioni v (AllaConfezione c _ q)) = Just $ v `qon` z  where
-		z = n `qon` p0 :: Quantità Volumi -- peso confezione minima
+---------------------------------------- Confezionato
+instance Valuta Volumi Volumi Confezionato Volumi where
+	valuta (InConfezioni v (AllaConfezione c _ q)) = Just $ v *|* z  where
+		z = n *|* p0 :: Quantità Volumi -- peso confezione minima
 		(n,p0) = confezioniEVolume c 
-	valuta (InConfezioni v (AlVolumeConfezionato c _ q)) = Just $ v `qon` z where 
+	valuta (InConfezioni v (AlVolumeConfezionato c _ q)) = Just $ v *|* z where 
 		(n,p0) = confezioniEVolume c 
-		z = n `qon` p0 :: Quantità Volumi -- peso confezione minima
-	valuta (InVolume v (AllaConfezione c _ q)) = Just $ m `qon` z where
+		z = n *|* p0 :: Quantità Volumi -- peso confezione minima
+	valuta (InVolume v (AllaConfezione c _ q)) = Just $ m *|* z where
 		(n,p0) = confezioniEVolume c 
-		z = n `qon` p0 :: Quantità Volumi
-		m = floorQ $ v `qon` z :: Quantità Unità 
-	valuta (InVolume v (AlVolumeConfezionato c _ q)) =  Just $ m `qon` z  where 
+		z = n *|* p0 :: Quantità Volumi
+		m = floorQ $ v *|* z :: Quantità Unità 
+	valuta (InVolume v (AlVolumeConfezionato c _ q)) =  Just $ m *|* z  where 
 		(n,p0) = confezioniEVolume c 
-		z = n `qon` p0 :: Quantità Volumi -- peso confezione minima
-		m = floorQ $ v `qon` z :: Quantità Unità -- numero confezioni
-	valuta (InDenaro v (AllaConfezione c _ q)) = Just $ m `qon` z where
+		z = n *|* p0 :: Quantità Volumi -- peso confezione minima
+		m = floorQ $ v *|* z :: Quantità Unità -- numero confezioni
+	valuta (InDenaro v (AllaConfezione c _ q)) = Just $ m *|* z where
 		(n,p0) = confezioniEVolume c 
-		z = n `qon` p0 :: Quantità Volumi -- peso confezione minima
-		m = floorQ $ v `qon` q :: Quantità Unità 
-	valuta (InDenaro v (AlVolumeConfezionato c _ q)) = Just $ m `qon` z  where 
+		z = n *|* p0 :: Quantità Volumi -- peso confezione minima
+		m = floorQ $ v *|* q :: Quantità Unità 
+	valuta (InDenaro v (AlVolumeConfezionato c _ q)) = Just $ m *|* z  where 
 		(n,p0) = confezioniEVolume c 
-		z = n `qon` p0 :: Quantità Volumi -- peso confezione minima
-		cc = z `qon` q :: Quantità Denaro -- costo alla confezione
-		m = floorQ $ v `qon` cc :: Quantità Unità -- numero confezioni 
+		z = n *|* p0 :: Quantità Volumi -- peso confezione minima
+		cc = z *|* q :: Quantità Denaro -- costo alla confezione
+		m = floorQ $ v *|* cc :: Quantità Unità -- numero confezioni 
 
+---------------------------- Richieste Unità -----------------------
 
+----------------------------------- Sfuso --------------------------
+instance Valuta Unità Unità Sfuso Unità where
+	valuta (InPezzi v (AlPezzo _ q)) = Just v
+	valuta (InDenaro v (AlPezzo _ q)) = Just . floorQ $ v *|* q
+instance Valuta Unità Pesi Sfuso Unità where
+	valuta (InPezzi v (AlPezzoStimato _ (_,p) q)) = Just v
+	valuta (InPeso v (AlPezzoStimato _ (_,p) q)) = Just . floorQ $ v *|* p
+	valuta (InDenaro v (AlPezzoStimato _ (_,p) q)) = Just . floorQ $ r *|* p where
+		r = v *|* q :: Quantità Pesi -- peso acquistabile
+		
+instance Valuta Unità Unità Confezionato Unità where
+	valuta (InConfezioni v (AllaConfezione c _ q)) = Just v
+	valuta (InDenaro v (AllaConfezione c _ q)) = Just . floorQ $ v *|* q
+instance Valuta Unità Pesi Confezionato Unità where
+	valuta (InConfezioni v (AllaConfezioneStimata c _ (_,p) q)) = Just v
+	valuta (InPeso v (AllaConfezioneStimata c _ (_,p) q)) = Just $ floorQ $ v *|* p
+	valuta (InDenaro v (AllaConfezioneStimata c _ (_,p) q)) = Just . floorQ $ 
+		(v *|* q :: Quantità Pesi) *|* p
+
+instance Valuta Pesi Pesi Confezionato Unità where
+	valuta (InConfezioni v (AllaConfezione c _ q)) = Just v
+	valuta (InDenaro v (AllaConfezione c _ q)) = Just . floorQ $ v *|* q
+	valuta (InPeso v (AllaConfezione c _ q)) = Just $ floorQ $ v *|* r where
+		(n,p0) = confezioniEPeso c
+		r = n *|* p0 :: Quantità Pesi
+		
+	
+instance Valuta Volumi Volumi Confezionato Unità where
+	valuta (InConfezioni v (AllaConfezione c _ q)) = Just v
+	valuta (InDenaro v (AllaConfezione c _ q)) = Just . floorQ $ v *|* q
+	valuta (InVolume v (AllaConfezione c _ q)) = Just $ floorQ $ v *|* r where
+		(n,p0) = confezioniEVolume c
+		r = n *|* p0 :: Quantità Volumi

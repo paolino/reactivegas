@@ -171,9 +171,9 @@ uiAllaConfezioneStimata c xp =  do
 	return $ AllaConfezioneStimata c xp (ftr p0 :? (u,Unità),ftr p1 :? (u,Unità)) (ftr p :? (Euro,u))
 
 uiAllaConfezioneOConfezioneStimataD c xp = join . scelte 
-		[(render $ ADeterminativo &.& singolare2 c :+: " di " :+: plurale xp ,
+		[(render $ ADeterminativo &.& singolare2 c :+: plurale xp ,
 			BoxVoce `fmap` uiAllaConfezione plurale c xp),
-		(render $ "al peso stimato di " :+: Indeterminativo &.& singolare2 c :+: " di " :+: plurale xp,
+		(render $ "al peso stimato di " :+: Indeterminativo &.& singolare2 c :+:  plurale xp,
 			BoxVoce `fmap` uiAllaConfezioneStimata c xp)
 		] $ ResponseOne "prezzo espresso"
 

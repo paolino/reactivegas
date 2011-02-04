@@ -78,6 +78,7 @@ instance (Show c, Show a) => Show (Voce a b c d) where
 	show (AlVolumeConfezionato c b q) = show ("AlVolumeConfezionato",(c,b,q))
 	show (AlPezzo b q) = show ("AlPezzo",(b,q))
 	show (AlPeso b q) = show ("AlPeso",(b,q))
+	show (AlVolume b q) = show ("AlVolume",(b,q))
 	show (AlPezzoStimato b dq q) = show ("AlPezzoStimato",(b,dq,q))
 	show (AllaConfezioneStimata c b dq q) = show ("AllaConfezioneStimata",(c,b,dq,q))
 
@@ -98,6 +99,8 @@ instance (Read a) => Read (Voce a Unità Unità Sfuso)	where
 	readsPrec _ = restore ("AlPezzo", (\(b,q) -> AlPezzo b q))
 instance (Read a) => Read (Voce a Pesi Pesi Sfuso)	where
 	readsPrec _ = restore ("AlPeso", (\(b,q) -> AlPeso b q))
+instance (Read a) => Read (Voce a Volumi Volumi Sfuso)	where
+	readsPrec _ = restore ("AlVolume", (\(b,q) -> AlVolume b q))
 
 instance (Show c, Show a) => Show (Ordine a b c d) where
 	-- | in denaro si può ordinare tutto
@@ -133,6 +136,10 @@ instance Read a => Read (Ordine a Unità Pesi Confezionato) where
 					restore ("InDenaro", uncurry InDenaro)
 instance Read a => Read (Ordine a Pesi Pesi Sfuso) where
 	readsPrec _ = restore ("InPeso", uncurry InPeso) `alt`
+			restore ("InDenaro", uncurry InDenaro)
+
+instance Read a => Read (Ordine a Volumi Volumi Sfuso) where
+	readsPrec _ = restore ("InVolume", uncurry InVolume) `alt`
 			restore ("InDenaro", uncurry InDenaro)
 
 instance Show (BWord a) where

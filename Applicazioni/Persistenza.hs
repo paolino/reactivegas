@@ -77,7 +77,7 @@ persistenza write tversion tupatch torfani tlog tstato trigger = do
 -- | Operazione di ripristino. Ricrea tutti i dati del gruppo da filesystem.
 -- Ritorna True se e' necessario ricalcolare tutto a partire dagli aggiornamenti, utile per cancellare le informazioni 
 -- derivate dalle GPatch.L'azione ritornata è da eseguire per eseguire la reale computazione dello stato.
-ripristino :: (Transition a, Read a, Show a) 
+ripristino :: ( Read a, Show a) 
 	=> (forall b . Read b => String -> IO (Maybe (Int, b)))
 	-> String 
 	-> Persistenza a b d
@@ -104,10 +104,11 @@ ripristino unwrite gname p tversion tupatch torfani tlog uv ts = do
 			writeTVar tversion v
 					
 	let reload = (True, do 
-		ms <- groupUnwriteF tryRead gname "stato.boot"
+		ms <- groupUnwrite gname "stato.boot"
 		case ms of 
 			Just (0,s) -> do 
 				atomically $ writeTVar ts s
+				atomically $ writeTVar tversion 0
 				putStr "aggiornamenti:"
 				autofeed p	
 				putStrLn "\n"
@@ -116,7 +117,7 @@ ripristino unwrite gname p tversion tupatch torfani tlog uv ts = do
 				groupWrite gname "stato.boot" 0 s
 				putStrLn "stato iniziale scritto"
 			)
-	ms <- groupUnwriteF tryRead gname "stato.corrente" 	
+	ms <- groupUnwrite gname "stato.corrente" 	
 	t <- case ms of 
 		Just (vc,s) -> do 
 			putStrLn $ "rilevato file di stato corrente " ++ show vc
@@ -207,7 +208,7 @@ data Persistenza a b d = Persistenza
 		}
 
 -- | prepara uno stato vergine di un gruppo, a e' il tipo dello stato, b il tipo degli effetti
-mkPersistenza :: (Transition c, Transition a, Show c, Eq a, Read a, Show a, Show b) 
+mkPersistenza :: ( Show c, Eq a, Read a, Show a, Show b) 
 	=> STM ()						-- ^ segnala un cambiamento qualsiasi
 	-> (a -> [(Utente,Evento)] -> Either String (a,b)) 	-- ^ loader specifico per a
 	-> (Int -> a -> [(Utente,Evento)] -> (a,d))		-- ^ insertore diretto di eventi per a 

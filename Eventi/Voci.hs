@@ -25,13 +25,13 @@ import Lib.Aspetti ((.<), see, ParteDi)
 import Lib.Prioriti (R (..))
 import Lib.Assocs (update , (?), upset)
 
-import Voci.UI.Commercio (ui)
-import Voci.Boxes (Commercio (..))
-
+import Voci.UI.Voci (ui)
+import Voci.UI.Ordini (nuovoOrdine)
+import Voci.Boxes (BoxVoce (..),BoxOrdine)
 
 type Indice = QInteger
 
-data Voce = Voce [String] [String] Commercio deriving (Eq, Show, Read)
+data Voce = Voce [String] [String] BoxVoce deriving (Eq, Show, Read)
 
 data EsternoVoci = NuovaVoce Voce | EliminaVoce Voce deriving (Show,Read)
 

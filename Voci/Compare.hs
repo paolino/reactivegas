@@ -44,6 +44,9 @@ instance Eq a => Eq (Voce a Pesi Pesi Confezionato) where
 instance Eq a => Eq (Voce a Pesi Pesi Sfuso) where
 	AlPeso b1 q1 == AlPeso b2 q2 = b1 == b2 && q1 == q2 
 
+instance Eq a => Eq (Voce a Volumi Volumi Sfuso) where
+	AlVolume b1 q1 == AlVolume b2 q2 = b1 == b2 && q1 == q2 
+
 instance Eq a => Eq (Voce a Volumi Volumi Confezionato) where
 	AllaConfezione c1 b1 q1 == AllaConfezione c2 b2 q2 = c1 == c2 && b1 == b2 && q1 == q2 
 	AlVolumeConfezionato c1 b1 q1 == AlVolumeConfezionato c2 b2 q2 = c1 == c2 && b1 == b2 && q1 == q2 
@@ -83,6 +86,9 @@ instance Eq a => Eq (Ordine a Unità Unità Sfuso) where
 instance Eq a => Eq (Ordine a Pesi Pesi Sfuso) where
 	InDenaro q1 v1 == InDenaro q2 v2 = q1 == q2 && v1 == v2
 	InPeso q1 v1 == InPeso q2 v2 = q1 == q2 && v1 == v2
+instance Eq a => Eq (Ordine a Volumi Volumi Sfuso) where
+	InDenaro q1 v1 == InDenaro q2 v2 = q1 == q2 && v1 == v2
+	InVolume q1 v1 == InVolume q2 v2 = q1 == q2 && v1 == v2
 
 instance Eq a => Eq (Ordine a Unità Pesi Confezionato) where
 	InDenaro q1 v1 == InDenaro q2 v2 = q1 == q2 && v1 == v2

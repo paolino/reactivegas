@@ -1,5 +1,5 @@
 
-{-# LANGUAGE GADTs,EmptyDataDecls #-}
+{-# LANGUAGE GADTs,EmptyDataDecls, MultiParamTypeClasses, FlexibleInstances, FlexibleContexts #-}
 module Voci.Data where
 
 import Control.Arrow (first)
@@ -36,16 +36,17 @@ data Confezionamento b = Primo (Contenitore b) | Inscatolato (Contenitore Unità
 
 confezioniEPeso :: Confezionamento Pesi -> (Quantità Unità,Quantità (Pesi,Unità))
 confezioniEPeso (Primo (Sacchetto (p:?l))) = (1 :? Unità,p:? (l,Unità))
+confezioniEPeso (Primo (Pacchetto (p:?l))) = (1 :? Unità,p:? (l,Unità))
 confezioniEPeso (Primo (Sacco (p:?l))) = (1 :? Unità,p:? (l,Unità))
 confezioniEPeso (Primo (Cassetta (p:?l))) = (1 :? Unità,p:? (l,Unità))
-confezioniEPeso (Inscatolato c x) = first (qon (count c)) $ confezioniEPeso x
+confezioniEPeso (Inscatolato c x) = first ((*|*) (count c)) $ confezioniEPeso x
 
 confezioniEVolume :: Confezionamento Volumi -> (Quantità Unità,Quantità (Volumi,Unità))
 confezioniEVolume (Primo (Brick (p:?l))) = (1 :? Unità,p:? (l,Unità))
 confezioniEVolume (Primo (Bottiglia (p:?l))) = (1 :? Unità,p:? (l,Unità))
 confezioniEVolume (Primo (Flacone (p:?l))) = (1 :? Unità,p:? (l,Unità))
 confezioniEVolume (Primo (Damigiana (p:?l))) = (1 :? Unità,p:? (l,Unità))
-confezioniEVolume (Inscatolato c x) = first (qon (count c)) $ confezioniEVolume x
+confezioniEVolume (Inscatolato c x) = first ((*|*) (count c)) $ confezioniEVolume x
 
 -- | tag distintivo per i beni confezionati
 data Confezionato
@@ -60,6 +61,7 @@ data Voce a b c d where
 	AllaConfezione	:: Confezionamento b -> Bene a b -> Quantità (Denaro,Unità) -> Voce a b b Confezionato
 	-- | gli sfusi unitari
 	AlPezzo 	:: Bene a Unità -> Quantità (Denaro,Unità) -> Voce a Unità Unità Sfuso
+	AlVolume	:: Bene a Volumi -> Quantità (Denaro,Volumi) -> Voce a Volumi Volumi Sfuso
 	-- | tutti i pesi
 	AlPeso	:: Bene a Pesi -> Quantità (Denaro,Pesi) -> Voce a Pesi Pesi Sfuso
 	-- | unitari sia confezionati che sfusi dove il prezzo si esprime in peso e si stima il peso del bene
@@ -84,7 +86,45 @@ data Ordine a b c d where
 	-- | tutti pesi, sfusi e non , esclusi gli stimati
 	InPeso	 	:: Quantità Pesi 	-> Voce a b Pesi d -> Ordine a b Pesi d
 	-- | i volumi , che si commerciano solo confezionati 
-	InVolume	:: Quantità Volumi -> Voce a Volumi Volumi Confezionato -> Ordine a Volumi Volumi Confezionato
+	InVolume	:: Quantità Volumi -> Voce a Volumi Volumi d -> Ordine a Volumi Volumi d
 
 
 
+class VoceOf a b c d where
+	voceOf :: Ordine a b c d -> Voce a b c d
+
+instance VoceOf a Pesi Pesi Confezionato where
+	voceOf (InConfezioni _ v ) = v
+	voceOf (InDenaro _ v ) = v
+	voceOf (InPeso _ v) = v
+
+instance VoceOf a Volumi Volumi Confezionato where
+	voceOf (InDenaro _ v ) = v
+	voceOf (InConfezioni _ v ) = v
+	voceOf (InVolume _ v) = v
+	
+instance VoceOf a Unità Unità Confezionato where
+	voceOf (InDenaro _ v ) = v
+	voceOf (InConfezioni _ v ) = v
+
+instance VoceOf a Unità Unità Sfuso where
+	voceOf (InDenaro _ v ) = v
+	voceOf (InPezzi _ v ) = v
+
+instance VoceOf a Pesi Pesi Sfuso where
+	voceOf (InPeso _ v) = v
+	voceOf (InDenaro _ v ) = v
+
+instance VoceOf a Volumi Volumi Sfuso where
+	voceOf (InDenaro _ v ) = v
+	voceOf (InVolume _ v) = v
+
+instance VoceOf a Unità Pesi Sfuso where
+	voceOf (InDenaro _ v ) = v
+	voceOf (InPeso _ v) = v
+	voceOf (InPezzi _ v ) = v
+
+instance VoceOf a Unità Pesi Confezionato where
+	voceOf (InConfezioni _ v ) = v
+	voceOf (InPeso _ v) = v
+	voceOf (InDenaro _ v ) = v

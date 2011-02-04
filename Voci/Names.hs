@@ -81,28 +81,28 @@ checkUnità _ _ g = g
 
 instance Name (BVoce Pesi Pesi Confezionato) where
 	singolare (AllaConfezione c b q) = Maschile . render $ singolare c :+: " di " :+: singolare b
- 		:+: " a " :+: singolare q 
+ 		:+: " a " :+: singolare q :+: " alla confezione"
 	singolare (AlPesoConfezionato c b q) = Maschile . render $ singolare c :+: " di " :+: singolare b 
-		:+: " a " :+:  singolare q
+		:+: " a " :+:  singolare q 
 	plurale (AllaConfezione c b q) = Maschile . render $ plurale c :+: " di " :+: singolare b
- 		:+: " a " :+: singolare q 
+ 		:+: " a " :+: singolare q :+: " alla confezione"
 	plurale (AlPesoConfezionato c b q) = Maschile . render $ plurale c :+: " di " :+: singolare b 
 		:+: " a " :+:  singolare q
 
 instance Name (BVoce Volumi Volumi Confezionato) where	
 	singolare (AllaConfezione c b q) = Maschile . render $ singolare c :+: " di " :+: singolare b
- 		:+: " a " :+: singolare q 
+ 		:+: " a " :+: singolare q :+: " alla confezione"
 	singolare (AlVolumeConfezionato c b q) = Maschile . render $ singolare c :+: " di " :+: singolare b 
 		:+: " a " :+:  singolare q
 	plurale (AllaConfezione c b q) = Maschile . render $ plurale c :+: " di " :+: singolare b
- 		:+: " a " :+: singolare q 
+ 		:+: " a " :+: singolare q :+: " alla confezione"
 	plurale (AlVolumeConfezionato c b q) = Maschile . render $ plurale c :+: " di " :+: singolare b 
 		:+: " a " :+:  singolare q
 
 instance Name (BVoce Unità Unità Confezionato) where	
-	singolare (AllaConfezione c b q) = Maschile . render $ singolare c :+: " di " :+: singolare b
- 		:+: " a " :+: singolare q 
-	plurale (AllaConfezione c b q) = Maschile . render $ plurale c :+: " di " :+: singolare b
+	singolare (AllaConfezione c b q) = Maschile . render $ singolare c :+: plurale b
+ 		:+: " a " :+: singolare q :+: " alla confezione"
+	plurale (AllaConfezione c b q) = Maschile . render $ plurale c :+: plurale b
  		:+: " a " :+: singolare q 
 
 instance Name (BVoce Unità Unità Sfuso) where
@@ -113,6 +113,10 @@ instance Name (BVoce Unità Unità Sfuso) where
 
 instance Name (BVoce Pesi Pesi Sfuso) where
 	singolare (AlPeso b q) = Maschile . render $ WSfuso &.& fromPesato b :+: " a " :+:  singolare q 
+	plurale = singolare
+
+instance Name (BVoce Volumi Volumi Sfuso) where
+	singolare (AlVolume b q) = Maschile . render $ WSfuso &.& fromVolumato b :+: " a " :+:  singolare q 
 	plurale = singolare
 
 instance Name (BVoce Unità Pesi Sfuso) where
@@ -133,39 +137,44 @@ instance Name (BVoce Unità Pesi Confezionato) where
 
 	
 instance  Name (BOrdine Volumi Volumi Confezionato) where
-	singolare (InDenaro q v) = Maschile . render $ (singolare q :+: "di" :+: plurale v)
+	singolare (InDenaro q v) = Maschile . render $ (singolare q :+: " di " :+: plurale v)
 	singolare (InConfezioni q v) = Maschile . render $ (singolare q :+: checkUnità q singolare plurale v)
-	singolare (InVolume q v) = Maschile . render $ (singolare q :+: "in" :+: plurale v)
+	singolare (InVolume q v) = Maschile . render $ (singolare q :+: " di " :+: plurale v)
 	plurale = singolare
 instance  Name (BOrdine Pesi Pesi Confezionato) where
-	singolare (InDenaro q v) = Maschile . render $ (singolare q :+: "di" :+: plurale v)
+	singolare (InDenaro q v) = Maschile . render $ (singolare q :+: " di " :+: plurale v)
 	singolare (InConfezioni q v) = Maschile . render $ (singolare q :+: checkUnità q singolare plurale v)
-	singolare (InPeso q v) = Maschile . render $ (singolare q :+: "in" :+: plurale v)
+	singolare (InPeso q v) = Maschile . render $ (singolare q :+: " di " :+: plurale v)
 	plurale = singolare
 
 instance  Name (BOrdine Unità Unità Confezionato) where
-	singolare (InDenaro q v) = Maschile . render $ (singolare q :+: "di" :+: plurale v)
+	singolare (InDenaro q v) = Maschile . render $ (singolare q :+: " di " :+: plurale v)
 	singolare (InConfezioni q v) = Maschile . render $ (singolare q :+: checkUnità q singolare plurale v)
 	plurale = singolare
 
 instance  Name (BOrdine Unità Unità Sfuso) where
-	singolare (InDenaro q v) = Maschile . render $ (singolare q :+: "di" :+: plurale v)
+	singolare (InDenaro q v) = Maschile . render $ (singolare q :+: " di " :+: plurale v)
 	singolare (InPezzi q v) = Maschile . render $ (singolare q :+: checkUnità q singolare plurale v)
 	plurale = singolare
 
 instance  Name (BOrdine Pesi Pesi Sfuso) where
-	singolare (InDenaro q v) = Maschile . render $ (singolare q :+: "di" :+: plurale v)
-	singolare (InPeso q v) = Maschile . render $ (singolare q :+: "in" :+: plurale v)
+	singolare (InDenaro q v) = Maschile . render $ (singolare q :+: " di " :+: plurale v)
+	singolare (InPeso q v) = Maschile . render $ (singolare q :+: " di " :+: plurale v)
+	plurale = singolare
+instance  Name (BOrdine Volumi Volumi Sfuso) where
+	singolare (InDenaro q v) = Maschile . render $ (singolare q :+: " di " :+: plurale v)
+	singolare (InVolume q v) = Maschile . render $ (singolare q :+: " di " :+: plurale v)
 	plurale = singolare
 
 instance  Name (BOrdine Unità Pesi Confezionato) where
+	singolare (InDenaro q v) = Maschile . render $ (singolare q :+: " di " :+: plurale v)
 	singolare (InConfezioni q v) = Maschile . render $ (singolare q :+: checkUnità q singolare plurale v)
-	singolare (InPeso q v) = Maschile . render $ (singolare q :+: "in" :+: plurale v)
+	singolare (InPeso q v) = Maschile . render $ (singolare q :+: " di " :+: plurale v)
 	plurale = singolare
 
 instance  Name (BOrdine Unità Pesi Sfuso) where
-	singolare (InDenaro q v) = Maschile . render $ (singolare q :+: "di" :+: plurale v)
-	singolare (InPeso q v) = Maschile . render $ (singolare q :+: "in" :+: plurale v)
+	singolare (InDenaro q v) = Maschile . render $ (singolare q :+: " di " :+: plurale v)
+	singolare (InPeso q v) = Maschile . render $ (singolare q :+: " di " :+: plurale v)
 	singolare (InPezzi q v) = Maschile . render $ (singolare q :+: checkUnità q singolare plurale v)
 	plurale = singolare
 
