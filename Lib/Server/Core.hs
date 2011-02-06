@@ -15,7 +15,7 @@ import qualified Data.Map as M
 
 import Debug.Trace
 import Lib.Missing (onNothing, (>$>), firstM, secondM)
-import Lib.Database (DB, limitedDB, query, lkey, set, exists)
+import Lib.Database (DB, limitedDB, query, lkey, set, exists, restoreDB)
 
 
 -- | la chiave di environment, indica una situazione dell'interfaccia untente. Le richieste la portano con se, per ricontestualizzare la risposta alla situazione "attuale" che l'utente fronteggia
@@ -74,8 +74,8 @@ renderS 	:: FormDB e b c -- database del tempo
 		-> Form e b c -- form
 		-> (b,FormId) -- rendering
 renderS db enk fok fo = (form fo enk fok enkB enkF, formKey fok) where
-	enkB = if exists db (Left (enk - 1,fok)) || exists db (Right (enk - 1)) then Just (enk - 1) else Nothing
-	enkF = if exists db (Left (enk + 1,fok)) || exists db (Right (enk + 1)) then Just (enk + 1) else Nothing
+	enkB = if exists db (Left (enk - 1,fok)) then Just (enk - 1) else Nothing
+	enkF = if exists db (Left (enk + 1,fok)) then Just (enk + 1) else Nothing
 
 renderT 	:: FormDB e b c -- database del tempo
 		-> TimeKey -- chiave di tempo attuale
@@ -148,7 +148,7 @@ mkServer limit reload bs = do
 	-- apriamo un database in memoria (String -> Either (Form e b c) (FormGroup e b c)) e assegnamo
 	--  alla chiave "0" l'insieme iniziale
 	-- il database è condiviso alle chiamate, quindi va in retry in caso di update contemporaneo
-	let 	db0 = set (limitedDB limit) (Right enk,Right fos0)
+	let 	db0 = restoreDB limit $ (Right enk,Right fos0) : map (\(fok,fo) -> (Left (enk,fok),Left fo)) (M.toList fos0)
 		fos0 = M.fromList $ map (FormKey . snd &&& fst) bs
 		apertura = renderT db0 enk fos0
 	dbe <- atomically . newTVar $ db0
