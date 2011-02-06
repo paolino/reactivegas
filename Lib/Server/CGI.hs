@@ -63,6 +63,13 @@ cgiFromServer resp (Server apertura servizio,droppa) = do
 			let 	xs =  tail $ splitOneOf "/?" x 
 			in case xs of
 				[""] -> lift .  resp . pagina $ apertura
+				("clona":_) -> do 
+					hk <- readHKey
+					fk <- readFKey
+					ehl <- 	s (hk,fk,ClonaS)
+					case ehl of
+						Right hs -> lift . output . prettyHtml . fst . head $ hs
+						Left _ -> throwError "ricarica del questionario fallita"
 
 				("unaform":_) -> do 
 					hk <- readHKey

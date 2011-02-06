@@ -54,6 +54,7 @@ data Req
 	| ContinuaS 	Value
 	| RicaricaS
 	| ScaricaD
+	| ClonaS
 
 -- | tutte le richieste portano con se la chiave di environment, e la chiave di cella
 type Request = (TimeKey,FormKey,Req)
@@ -109,6 +110,8 @@ data Server e b c = Server {
 mkTimeKey :: IO TimeKey
 mkTimeKey = TimeKey <$> (`mod` (10000000 :: Int)) <$> abs <$> randomIO
 
+mkFokKey = FormKey <$> (`mod` (10000000 :: Int)) <$> abs <$> randomIO
+
 correctS 	:: TVar (FormDB e b c) 
 		-> (Form e b c -> ErrorT String IO (Form e b c))
 		-> FormKey
@@ -155,6 +158,16 @@ mkServer limit reload bs = do
 			efosfo <- onNothing "chiave temporale non trovata" $ 
 				query db (Left (enk,fok)) `mplus` query db (Right enk)
 			case q of
+				ClonaS -> do
+					fo <- case efosfo of
+						Right fos -> onNothing "chiave di form non trovata" $ 
+								fok `M.lookup` fos
+						Left fo -> return fo
+					fok' <- lift $ mkFokKey
+					lift $ atomically $ do 
+						db <- readTVar dbe
+						writeTVar dbe $ set db (Left (enk,fok'), Left fo)
+					return . Right . return . first id  $ renderS db enk fok' fo
 				RicaricaS -> do
 					fo <- correctS dbe eseguiRicaricaS fok enk enk
 					db <- lift . atomically $ readTVar dbe 
