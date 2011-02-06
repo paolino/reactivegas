@@ -2,7 +2,8 @@
 module Lib.Server.Core where
 
 import Data.Maybe (listToMaybe)
-import Data.List (lookup,partition)
+import Data.List (lookup,partition,minimumBy)
+import Data.Ord (comparing)
 
 import Control.Applicative ((<$>))
 import Control.Concurrent.STM (newTVar,  readTVar, writeTVar,atomically, TVar)
@@ -15,7 +16,7 @@ import qualified Data.Map as M
 
 import Debug.Trace
 import Lib.Missing (onNothing, (>$>), firstM, secondM)
-import Lib.Database (DB, limitedDB, query, lkey, set, exists, restoreDB)
+import Lib.Database (DB, limitedDB, query, lkey, set, exists, restoreDB, select)
 
 
 -- | la chiave di environment, indica una situazione dell'interfaccia untente. Le richieste la portano con se, per ricontestualizzare la risposta alla situazione "attuale" che l'utente fronteggia
@@ -55,6 +56,7 @@ data Req
 	| RicaricaS
 	| ScaricaD
 	| ClonaS
+	| ResetS
 
 -- | tutte le richieste portano con se la chiave di environment, e la chiave di cella
 type Request = (TimeKey,FormKey,Req)
@@ -168,6 +170,15 @@ mkServer limit reload bs = do
 						db <- readTVar dbe
 						writeTVar dbe $ set db (Left (enk,fok'), Left fo)
 					return . Right . return . first id  $ renderS db enk fok' fo
+				ResetS -> do 
+					fo <- case efosfo of
+						Right fos -> onNothing "chiave di form non trovata" $ 
+								fok `M.lookup` fos
+						Left fo -> return fo
+					db <- lift $ atomically $ readTVar dbe
+					let 	es =  select db (either ((==) fok . snd) (const False)) 
+ 						(Left (enk',_),Left fo') = minimumBy (comparing $ \(Left (e,_),_) -> e) es
+					return . Right . return . first id  $ renderS db enk' fok fo'
 				RicaricaS -> do
 					fo <- correctS dbe eseguiRicaricaS fok enk enk
 					db <- lift . atomically $ readTVar dbe 

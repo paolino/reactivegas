@@ -80,7 +80,13 @@ cgiFromServer resp (Server apertura servizio,droppa) = do
 					case ehl of
 						Right hs -> lift . output . prettyHtml . fst . head $ hs
 						Left _ -> throwError "continuazione del questionario fallita"
-
+				("reset":_) -> do 
+					hk <- readHKey
+					fk <- readFKey
+					ehl <- 	s (hk,fk,ResetS)
+					case ehl of
+						Right hs -> lift . output . prettyHtml . fst . head $ hs
+						Left _ -> throwError "ricarica del questionario fallita"
 				("ricarica":_) -> do 
 					hk <- readHKey
 					fk <- readFKey
