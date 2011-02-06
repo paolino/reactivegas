@@ -42,11 +42,11 @@ runPasso :: (Monad m )
 		, String -> Maybe (m (P.HPasso m b))
 		)
 
-timeB s _ Nothing = noHtml
-timeB s y (Just z) = anchor ! [theclass "back", href $ mkLink "/interazione" [("hkey",z),("fkey",y)]] << s
+timeB h s _ Nothing = noHtml
+timeB h s y (Just z) = anchor ! [title h, theclass "back", href $ mkLink "/interazione" [("hkey",z),("fkey",y)]] << s
 			
-indietro = timeB "⇦"
-avanti = timeB "⇨"
+indietro = timeB "indietro" "⇦"
+avanti = timeB "avanti" "⇨"
 
 runPasso (P.Output x mc) = let
 	k y z mb ma = thediv ! [theclass "passobox",strAttr "hkey" y, strAttr "fkey" z] << 
@@ -83,7 +83,7 @@ runPasso (P.Libero q c) = let
 				renderResponse "output" q +++ 
 				
 				form ! [theclass "quiet",method "post", action "/interazione", strAttr "accept-charset" "utf8"] 							<< [	hidden "hkey" y, textfield "valore", 
-						hidden "fkey" z, submit "" "Inserisci" ! [theclass "continua"]]
+						hidden "fkey" z, submit "" "Invio" ! [theclass "invio"]]
 			)
 			) 
 	parse x = case reads (decodeString x) of
@@ -101,7 +101,7 @@ runPasso (P.Password q c ) = let
 			form ! [theclass "quiet", method "post", action "/interazione",
 				strAttr "accept-charset" "utf8"] 
 				<< [	hidden "hkey" y, password "valore", 
-					hidden "fkey" z, submit "" "Inserisci" ! [theclass "continua"]]
+					hidden "fkey" z, submit "" "Invio" ! [theclass "invio"]]
 			) 
 			)
 	parse x = case reads x of

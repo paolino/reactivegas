@@ -40,8 +40,8 @@ pagina b = prettyHtml $
 		header << metadata  
 	+++ 	body << [
 		thediv ! [theclass "titolo boxes"] << testata,
-		thediv ! [theclass "abort boxes"] << thediv ! [theclass "reset"] 
-			<< anchor ! [href "/"] << "abbandono della sessione",
+		thediv ! [theclass "abort"] << thediv ! [theclass "reset"] 
+			<< anchor ! [href "/"] << "fine della sessione",
 		thediv ! [identifier "help", theclass "boxes"] << noHtml,
 		thediv ! [theclass "utente"] << b,
 		thediv ! [theclass "contatti boxes"] << ulist << [
