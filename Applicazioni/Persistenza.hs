@@ -208,7 +208,7 @@ data Persistenza a b d = Persistenza
 		}
 
 -- | prepara uno stato vergine di un gruppo, a e' il tipo dello stato, b il tipo degli effetti
-mkPersistenza :: ( Show c, Eq a, Read a, Show a, Show b) 
+mkPersistenza :: ( Show c,  Read a, Show a, Show b) 
 	=> STM ()						-- ^ segnala un cambiamento qualsiasi
 	-> (a -> [(Utente,Evento)] -> Either String (a,b)) 	-- ^ loader specifico per a
 	-> (Int -> a -> [(Utente,Evento)] -> (a,d))		-- ^ insertore diretto di eventi per a 

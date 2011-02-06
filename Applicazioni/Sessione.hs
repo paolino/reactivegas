@@ -31,6 +31,14 @@ data Sessione a b = Sessione
 	,readStatoSessione :: IO (Maybe a)	-- ^ legge lo stato modificato dagli eventi in memoria prodotti dal responsabile in memoria
 	,setConservative :: Int -> IO () 	-- ^ imposta il livello di caricamento
 	,getConservative :: IO Int		-- ^ legge il livello di caricamento
+--	,writeVoci	:: [Voce] -> IO ()
+--	,readVoci 	:: IO [Voce]
+--	,writeAcquisto	:: Maybe Indice -> IO ()
+--	,readAcquisto	:: IO (Maybe Indice)
+--	,writeOrdinante :: Maybe Utente -> IO ()
+--	,readOrdinante	:: IO (Maybe Utente)
+--	,writeOrdine 	:: [Ordine] -> IO ()
+--	,readOrdine 	:: IO [Ordine]
 	,backup		:: IO (Maybe Name, [Evento],Maybe Responsabile,Int)
 	}
 

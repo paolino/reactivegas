@@ -69,19 +69,19 @@ reazioneAcquisto = soloEsterna reattoreAcquisto where
 				return nessunEffetto
 			_ -> return nessunEffetto
 		
-		(li,fi,zi,ci) <- programmazioneImpegno' b r t
+		(li,fi,zi,ci,ievs) <- programmazioneImpegno' b r t
 		-- definizione completamenti raccolta di assenso
 		let 	positivo _ = do
 				ci
 				loggamus $ "concessa la chiusura dell'acquisto " ++ b -- esegui la marcatura ottenuta da programmazione impegno
-				return ([],[EventoInterno (IChiusuraAquisto li True)])
+				return ([],[])
 			negativo _ = do
 				loggamus $ "negata la chiusura dell'acquisto, acquisto fallito " ++ b
 				(epr,epf) <- fi
-				return (epr,(EventoInterno (IChiusuraAquisto li False )):epf)
+				return (epr,epf)
 		(la,za,esf) <- programmazioneAssenso ("nuova proposta di acquisto " ++ b) r maggioranza  positivo negativo
 
-		return (True, ([za, zi esf],[EventoInterno (IAperturaAcquisto li b)]))
+		return (True, ([za, zi esf],ievs))
 
 costrEventiAcquisto :: (Monad m, Servizio Impegni `ParteDi` s) => CostrAction m c EsternoAcquisto s
 costrEventiAcquisto s kp kn  = [("nuova proposta di acquisto", eventoApertura)] 

@@ -20,7 +20,7 @@ import Core.Programmazione (Message,runInserzione, provaAccentratore, Reazione (
 import Core.Nodo (Appuntato (..), Nodo (..))
 import Core.Contesto (nuovoContesto,  Contestualizzato, esterno)
 import Core.Parsing (valore,parser, ParserConRead)
-import Core.Inserimento (inserimentoCompleto)
+import Core.Inserimento (inserimentoCompleto, conFallimento)
 
 import Debug.Trace
 
@@ -76,10 +76,21 @@ caricaEventi ps rs l xs (s,nss) =
 	let 	ns = case sequence . map (uncurry deserializza) . zip nss $ rs of
 			Nothing -> error $ "deserializzazione fallita" ++ show (length nss) ++ show s
 			Just ns -> ns
-		xs' = sortP l ps snd xs
+		xs' = sortP l ps snd  xs
 		((ns',ahi),s',ws) = runInserzione (foldDeleteMb inserimentoCompleto ns xs') nuovoContesto s
 		nss' =  map serializza ns'
 	in ((s',nss'),ws)
+-- | programma di caricamento eventi, prevede il riordinamento per priorita
+caricaEventi' :: (Show d,Eq d, Show s) 
+	=> [R] 			-- ^ i prioritizzatori
+	-> Int 			-- ^ livello di caricamento
+	-> [Esterno d] 		-- ^ gli eventi da caricare
+	-> (s,[Nodo s c d]) 	-- ^ lo stato e la serializzazione dell'albero reattivo
+	-> ((s,[Nodo s c d]),([Contestualizzato d Message]))-- ^ nuovo stato e nuova  serializzazione dell'albero reattivo insieme ai log contestualizzati
+caricaEventi' ps l xs (s,ns) = 
+	let 	xs' = sortP l ps snd  xs
+		((ns',ahi),s',ws) = runInserzione (foldDeleteMb inserimentoCompleto ns xs') nuovoContesto s
+	in ((s',ns'),ws)
 
 
 ----------------------------------------

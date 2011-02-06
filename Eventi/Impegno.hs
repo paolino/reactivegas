@@ -28,10 +28,10 @@ import Lib.Assocs (update)
 import Lib.Response (Response (..))
 import Lib.QInteger (QInteger)
 
-import Core.Types (Utente)
+import Core.Types (Utente, Responsabile)
 import Core.Costruzione (libero, scelte, runSupporto, CostrAction)
 import Core.Parsing (Parser)
-import Core.Programmazione (Effetti, Reazione (..) , EventoInterno (..),  nessunEffetto)
+import Core.Programmazione (Effetti, Reazione (..) , EventoInterno (..),  nessunEffetto, Accentratore , Deviatore (..))
 import Core.Inserimento (MTInserzione, conFallimento, fallimento, osserva, modifica, loggamus)
 
 import Eventi.Servizio (Servizio, servizio0, nuovoStatoServizio, modificaStatoServizio, osservaStatoServizio, eliminaStatoServizio,elencoSottoStati)
@@ -96,7 +96,16 @@ priorityImpegnoI = R k where
 	k (EventoFallimentoImpegno _) = 20
 
 -- | evento interno che segnala il fallimento di una causa
-data Interni = ForzaFallimento | EventoFallimentoImpegno (Utente, Euro) deriving (Show,Read)
+data Interni = ForzaFallimento | EventoFallimentoImpegno (Utente, Euro) | EventoChiusuraImpegni Indice |
+	EventoAperturaImpegni Utente Indice | EventoImpegno Utente Utente Euro Indice
+	| EventoCorrezioneImpegno Utente Utente Euro Indice | EliminazioneResponsabileA Utente deriving (Show,Read)
+
+
+-- accentratore dell'evento interno di eliminazione responsabile negli eventi interni del modulo
+acc = [Deviatore (\(i::Interni) -> Just i),Deviatore f] where
+	f x = case eliminazioneResponsabile x of
+		Nothing -> Nothing
+		Just (w,r) -> Just $ EliminazioneResponsabileA w 
 
 -- | intercettore per gli eventi interni
 fallimentoImpegno (EventoFallimentoImpegno t) = Just t
@@ -114,7 +123,8 @@ bootImpegni x = (servizio0,x)
 
 raccolte :: (Servizio Impegni `ParteDi` s) => s -> [String]
 raccolte s = let xs :: [(Indice,(String,Impegni))] = elencoSottoStati s  in map (fst . snd) xs
-
+nomeRaccolta :: ParteDi (Servizio Impegni) s => s -> Indice -> Maybe String
+nomeRaccolta s i = let xs :: [(Indice,(String,Impegni))] = elencoSottoStati s in fst <$> lookup i xs 
 -- unImpegno s n = (\(Impegni us) -> us) <$> snd <$> seeStatoServizio  (undefined :: Impegni) s n
 
 -- | il tipo della funzione da passare alla hof restituita da programmazioneImpegno 
@@ -139,6 +149,7 @@ programmazioneImpegno' :: (
 		, MTInserzione s c Utente (Effetti s c Utente)
 		, MTInserzione s c Utente () -> Reazione s c Utente
 		, MTInserzione s c Utente ()
+		, [EventoInterno]
 		)
 
 programmazioneImpegno' q' ur k  = do
@@ -149,7 +160,9 @@ programmazioneImpegno' q' ur k  = do
 			mapM_ (\(u,v) -> accredita u (mkDEuro v) $ "restituzione per fallimento " ++ q) (as ++ is) -- restituzione del denaro di tutti gli impegni
 			eliminaStatoServizio j (undefined :: Impegni)
 			(ks,es) <- k Nothing 
-			return (ks,EventoInterno (EventoFallimentoImpegno (ur,sum (map snd (as ++ is)))): es)
+			return (ks,[EventoInterno (EventoChiusuraImpegni j)])
+		reattoreImpegno _ (Left (EventoCorrezioneImpegno r u v j)) = reattoreImpegno undefined 
+			(Right (r,CorrezioneImpegno u v j))
 		reattoreImpegno _ (Right (first validante -> (w,i@(CorrezioneImpegno u v j)))) = w $ \r -> do
 				when (l /= j) mzero
 				fallimento (ur /= r)  $ "solo " ++ ur ++ " può correggere gli impegni per " ++ q
@@ -161,6 +174,8 @@ programmazioneImpegno' q' ur k  = do
 					Impegni ch ur ((u,v):(filter ((/=) u . fst) as)) is
 				loggamus  $ "correzione d'impegno per  " ++ show (mkDEuro $ v - vp) ++ " da " ++ u  ++ q
 				return (True, nessunEffetto)  
+		reattoreImpegno _ (Left (EventoImpegno r u v j)) = reattoreImpegno undefined 
+			(Right (r,Impegno u v j))
 		reattoreImpegno _ (Right (first validante ->  (w,i@(Impegno u v j)))) = w $ \r -> let
 			positivo _ = do
 				loggamus $ "accettato l'impegno di " ++ show v ++ " da " ++ u ++ q 
@@ -194,14 +209,15 @@ programmazioneImpegno' q' ur k  = do
 			salda r (mkDEuro . negate $ (sum $ map snd as)) $ "spesa  " ++ q
 			loggamus $ "raccolta di impegni " ++ q ++ " chiusa positivamente"
 			eliminaStatoServizio j (undefined :: Impegni)
-			(,) False <$> k (Just as) 
+			(rzs,ievs) <- k (Just as)
+			return (False,(rzs,EventoInterno (EventoChiusuraImpegni l):ievs)) 
 		reattoreImpegno esf (Right (first validante -> (w,FallimentoImpegno j))) = w $ \r -> do
 			when (l /= j) mzero
 			fallimento (ur /= r) $ "solo " ++ ur ++ " può chiudere la raccolta di impegni " ++ q
 			Impegni y ur as is <- osservaStatoServizio j
 			when (not y) esf 
 			(,) False <$> effettoF j
-		reattoreImpegno esf (Left (eliminazioneResponsabile -> Just (u,_))) = conFallimento $ do
+		reattoreImpegno esf (Left (EliminazioneResponsabileA u)) = conFallimento $ do
 			when (ur /= u) mzero
 			Impegni y ur as is <- osservaStatoServizio l
 			when (not y) esf 
@@ -211,8 +227,9 @@ programmazioneImpegno' q' ur k  = do
 	return $ 
 		( l
 		, effettoF l
-		, \esf -> Reazione (Nothing,reattoreImpegno esf)
+		, \esf -> Reazione (Just acc,reattoreImpegno esf)
 		, modificaStatoServizio l $ \(Impegni _ ur as is) -> return (Impegni True ur as is)
+		,[EventoInterno $ EventoAperturaImpegni ur l]
 		)
 
 

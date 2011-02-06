@@ -40,7 +40,7 @@ import Eventi.Accredito
 import Eventi.Impegno
 import Eventi.Acquisto
 
-import Applicazioni.Reactivegas (QS,bianco, TS, sortEventi, levelsEventi, maxLevel, Effetti)
+import Applicazioni.Reactivegas (QS (..) ,bianco, TS, sortEventi, levelsEventi, maxLevel, Effetti)
 import Applicazioni.Persistenza (Persistenza (..))
 import Applicazioni.Sessione (Sessione (..))
 import Applicazioni.Amministratore (Amministratore, valore_di_gruppo)
@@ -93,7 +93,7 @@ bocciatoS s x =  P.errore True . Response $ [(s , ResponseOne x)]
 
 accesso :: Interfaccia ()
 accesso = do 
-	(rs,_) <- responsabili . fst <$> statoPersistenza 
+	(rs,_) <- responsabili . fst . unQS <$> statoPersistenza 
 	r <- P.scelte  (("<anonimo>",Nothing):map (fst &&& Just) rs) $ ResponseOne  "responsabile autore delle dichiarazioni" 
 	ses $ ($r) . writeAccesso
 
@@ -119,7 +119,7 @@ correzioneEventi devs  = do
 	evs <- letturaEventi
 	ses $ ($ devs evs) . writeEventi 
 
-addEvento x = correzioneEventi (show x:)
+addEvento x = correzioneEventi (++ [show x])
 
 eventLevelSelector = do 
 	
@@ -145,22 +145,21 @@ eliminazioneEvento s = do
 			es <- letturaEventi
 			menu (ResponseOne "seleziona una dichiarazione da eliminare")  (zip es $ map (k es) es)
 
-
 sincronizza = onAccesso $ \(r@(u,_)) -> do  
 	(_,rs) <-  second (map snd) <$> sepU readUPatches
 	case rs of 
 		[] -> bocciato "sincronizzazione gruppo" "nessun aggiornamento individale per lo stato attuale"
 		xs -> do
-			let k (Firmante f)  = (fst <$> statoPersistenza) >>= \s -> sepU $ ($ f s xs). writeGPatch
-			runSupporto (fst <$> statoPersistenza) (bocciato "sincronizzazione gruppo") k $ firmante r
+			let k (Firmante f)  = (fst <$>  unQS <$> statoPersistenza) >>= \s -> sepU $ ($ f s xs). writeGPatch
+			runSupporto (fst <$> unQS <$> statoPersistenza) (bocciato "sincronizzazione gruppo") k $ firmante r
 salvataggio s = do
 	evs <- letturaEventi
 	onAccesso $ \(r@(u,_)) -> do
 		let 	p up = sepU $ ($up) . ($u) . writeUPatch 
 		 	k (Firmante f) = do 
 				evs <- letturaEventi
-				(fst <$> statoPersistenza) >>= \s -> p (f s evs) 
-		runSupporto (fst <$> statoPersistenza) (bocciato s) k $ firmante r
+				(fst <$> unQS <$> statoPersistenza) >>= \s -> p (f s evs) 
+		runSupporto (fst <$> unQS <$> statoPersistenza) (bocciato s) k $ firmante r
 
 -- | importa gli eventuali eventi già presenti
 
@@ -168,7 +167,7 @@ salvataggio s = do
 caricaAggiornamentoIndividuale :: Interfaccia ()
 caricaAggiornamentoIndividuale = do 
 	p@(c,_,_) <- P.upload  "aggiornamento individuale"
-	s <- fst <$> statoPersistenza
+	s <- fst <$> unQS <$> statoPersistenza
 	rs <- runErrorT . flip runReaderT s $ fromPatch (fst . responsabili) p
 	case rs of 
 		Left prob -> bocciato "caricamento aggiornamento individuale" prob

@@ -1,5 +1,5 @@
 
-{-# LANGUAGE FlexibleContexts, Rank2Types, ExistentialQuantification, ScopedTypeVariables, GeneralizedNewtypeDeriving, NoMonomorphismRestriction, ImplicitParams #-}
+{-# LANGUAGE FlexibleContexts, Rank2Types, ExistentialQuantification, ScopedTypeVariables, GeneralizedNewtypeDeriving, NoMonomorphismRestriction, ImplicitParams , OverlappingInstances#-}
 module UI.Server where
 
 import Data.Maybe (isJust , fromJust,catMaybes)
@@ -38,7 +38,7 @@ import Eventi.Impegno
 import Eventi.Acquisto
 import Eventi.Voci
 
-import Applicazioni.Reactivegas (QS,bianco, TS, sortEventi, levelsEventi, maxLevel)
+import Applicazioni.Reactivegas (QS (..) ,bianco, TS, sortEventi, levelsEventi, maxLevel)
 import Applicazioni.Persistenza (Persistenza (..))
 import Applicazioni.Sessione (Sessione (..))
 import Applicazioni.Amministratore (Amministratore (..))
@@ -50,8 +50,8 @@ wrapCostrActions
 	-> [MEnv (SUtente,TS) -> (a -> Interfaccia ()) -> (String -> Interfaccia ()) -> [(String,Interfaccia ())]]
 	-> [(String,Interfaccia ())]
 wrapCostrActions g = concatMap (\f -> f q g (bocciato "costruzione di una dichiarazione")) where
-	q = do 	s <- fst <$> statoSessione
-		mu <- fmap fst <$> ses readAccesso
+	q = do 	s <- fst <$> unQS <$>statoSessione
+		mu <- fmap fst  <$> ses readAccesso
 		return (SUtente mu,s)
 
 
@@ -176,7 +176,7 @@ descrizione = do
 				("dichiarazioni in sessione" , ResponseMany $ map ResponseOne (sortEventi evs)),
 				("dichiarazioni pubblicate", ResponseMany $ map ResponseOne (sortEventi evsp))
 				]
-
+{-
 indiretto =  ("accesso indiretto", mano (ResponseOne "accesso indiretto") 
 				[
 				wname "carica un aggiornamento individuale"  ensureGruppo caricaAggiornamentoIndividuale ,
@@ -188,7 +188,7 @@ indiretto =  ("accesso indiretto", mano (ResponseOne "accesso indiretto")
 					P.download ("stato." ++ show n) "scaricamento dello stato" s
 				])
 
-
+-}
 
 -- applicazione :: Costruzione MEnv () ()
 applicazione = rotonda $ \_ -> do

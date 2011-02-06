@@ -83,7 +83,7 @@ mkReporter wd d l t = do
 		let 	h = h3 << ("Ultimo aggiornamento: " ++ calendarTimeToString t)
 		b <- case x of
 			Nothing -> return $ h3 << "Gruppo in costruzione"
-			Just (x,_) -> do 
+			Just (QS (x,_)) -> do 
 				i (see x) . fst . estrai $ ls
 				mapM_ ia  . fst . estrai $ ls
 				reporter l m a x

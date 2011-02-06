@@ -14,7 +14,7 @@ import Lib.Response
 import Lib.Missing ((>$>))
 import Lib.Tokens (Token (..))
 import Eventi.Anagrafe (responsabili)
-import Applicazioni.Reactivegas (Effetti, QS,loader, bianco, nuovoStato, maxLevel) 
+import Applicazioni.Reactivegas (Effetti, QS (..) ,loader, bianco, nuovoStato, maxLevel) 
 import Applicazioni.Persistenza (Change (GPatch), mkPersistenza , Persistenza (readStato, readLogs, caricamentoBianco,updateSignal,queryUtente))
 import Applicazioni.Sessione (mkSessione, Sessione (backup,readGruppo))
 import Applicazioni.Report (mkReporter)
@@ -29,7 +29,7 @@ import Applicazioni.Amministratore
 runGruppo lmov (dir,name,mr0,signal)  = do
 		putStrLn $ "** Inizio persistenza di \"" ++ name ++ "\""
 		(pe,boot,cond) 
-			<- mkPersistenza signal loader bianco (nuovoStato $ maybe [] return mr0) (fst . responsabili) fst dir
+			<- mkPersistenza signal loader bianco (nuovoStato $ maybe [] return mr0) (fst . responsabili) (fst . unQS)  dir
 
 		putStrLn $ "** Inizio report di \"" ++ name ++ "\"" 
 		report <- mkReporter dir (dir </> "static" </> "report.html") lmov cond

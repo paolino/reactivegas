@@ -79,8 +79,8 @@ eventoRifiutato Rifiuto = Just ()
 -- | inserisce completamente un evento, reinserendo gli eventuali eventi interni creati durante l'inserimento stesso
 inserimentoCompleto :: Show d =>  [Nodo s c d] -> Esterno d -> Inserzione s c d (Maybe [Nodo s c d])
 inserimentoCompleto ns x = fmap (fst . fst) . runInserimento  $ do	
-		(ns',t) <- intercept $ consumaR ns (Right x) 
-		if not t then  return Nothing 
+		(ns',t) <- intercept $ consuma ns (Right x) 
+		if not t then  trace ("mah") $ return Nothing 
 --			local (motiva $ Right x) . consumaR ns' $ Left [show Rifiuto]
 			else return $ Just ns'
 	where 	
@@ -93,9 +93,15 @@ inserimentoCompleto ns x = fmap (fst . fst) . runInserimento  $ do
  
 	-- | consuma un evento esterno oppure una lista di eventi interni
 	consuma :: Show d => [Nodo s c d] -> Either [Interno] (Esterno d) -> Inserimento s c d [Nodo s c d]
-	consuma ns (Left xs) = foldM (\ns' x -> local (motiva $ Left $ encodeString x) $ inserimentoAlbero (Left x) ns')  ns xs
-	consuma ns (Right e) = local (motiva $ Right $ second encodeString e) $ inserimentoAlbero (Right e) ns
-	
+	consuma ns (Left xs) = foldM f ns xs where
+		f ns' x = local (motiva $ Left $ encodeString x) $ do
+			(ns, map (\(EventoInterno e) -> show e) -> xs) <- listen $ inserimentoAlbero (Left x) ns'
+			if null xs then return ns else consuma ns (Left xs)
+
+	consuma ns (Right e) = local (motiva $ Right $ second encodeString e) $ do 
+		(ns, map (\(EventoInterno e) -> show e) -> xs) <- listen $ inserimentoAlbero (Right e) ns
+		if null xs then return ns else consuma ns (Left xs)
+
 	-- | continua a consumare fino a che non vengono più prodotti eventi interni, 
 	-- pericolo loop se i reattori sono rotti
 	consumaR :: Show d => [Nodo s c d] -> Either [Interno] (Esterno d) -> Inserimento s c d [Nodo s c d]
