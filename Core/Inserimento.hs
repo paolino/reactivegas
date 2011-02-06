@@ -80,7 +80,7 @@ eventoRifiutato Rifiuto = Just ()
 inserimentoCompleto :: Show d =>  [Nodo s c d] -> Esterno d -> Inserzione s c d (Maybe [Nodo s c d])
 inserimentoCompleto ns x = fmap (fst . fst) . runInserimento  $ do	
 		(ns',t) <- intercept $ consuma ns (Right x) 
-		if not t then  trace ("mah") $ return Nothing 
+		if not t then  return Nothing 
 --			local (motiva $ Right x) . consumaR ns' $ Left [show Rifiuto]
 			else return $ Just ns'
 	where 	

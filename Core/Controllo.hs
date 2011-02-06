@@ -88,7 +88,7 @@ caricaEventi' :: (Show d,Eq d, Show s)
 	-> (s,[Nodo s c d]) 	-- ^ lo stato e la serializzazione dell'albero reattivo
 	-> ((s,[Nodo s c d]),([Contestualizzato d Message]))-- ^ nuovo stato e nuova  serializzazione dell'albero reattivo insieme ai log contestualizzati
 caricaEventi' ps l xs (s,ns) = 
-	let 	xs' = sortP l ps snd  xs
+	let 	xs' = sortP l ps snd xs
 		((ns',ahi),s',ws) = runInserzione (foldDeleteMb inserimentoCompleto ns xs') nuovoContesto s
 	in ((s',ns'),ws)
 
