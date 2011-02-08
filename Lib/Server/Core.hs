@@ -16,7 +16,7 @@ import qualified Data.Map as M
 
 import Debug.Trace
 import Lib.Missing (onNothing, (>$>), firstM, secondM)
-import Lib.Database (DB, limitedDB, query, lkey, set, exists, restoreDB, select)
+import Lib.Database (DB, limitedDB, query, lkey, set, exists, restoreDB, select, purge)
 
 
 -- | la chiave di environment, indica una situazione dell'interfaccia untente. Le richieste la portano con se, per ricontestualizzare la risposta alla situazione "attuale" che l'utente fronteggia
@@ -171,13 +171,16 @@ mkServer limit reload bs = do
 						writeTVar dbe $ set db (Left (enk,fok'), Left fo)
 					return . Right . return . first id  $ renderS db enk fok' fo
 				ResetS -> do 
-					fo <- case efosfo of
-						Right fos -> onNothing "chiave di form non trovata" $ 
-								fok `M.lookup` fos
-						Left fo -> return fo
-					db <- lift $ atomically $ readTVar dbe
-					let 	es =  select db (either ((==) fok . snd) (const False)) 
- 						(Left (enk',_),Left fo') = minimumBy (comparing $ \(Left (e,_),_) -> e) es
+					enk' <- lift mkTimeKey
+					fo <- onNothing "chiave di form non trovata" $ fok `M.lookup` fos0
+					fo' <- lift . ricarica $ fo
+					db <- lift . atomically  $ do 
+						db <- readTVar dbe 
+						let 	db' = purge db (either (\(e,f) -> f == fok) (const False))
+						
+							db'' = set db' (Left (enk',fok), Left fo')
+						writeTVar dbe db''
+						return db''
 					return . Right . return . first id  $ renderS db enk' fok fo'
 				RicaricaS -> do
 					fo <- correctS dbe eseguiRicaricaS fok enk enk
@@ -185,10 +188,15 @@ mkServer limit reload bs = do
 					c <- lift reload
 					return . Right . return . first c  $ renderS db enk fok fo
 				ContinuaS v -> do
-					fo <- correctS dbe (eseguiContinuaS v) fok enk (enk + 1)
+					let enk' = enk + 1
+					fo <- correctS dbe (eseguiContinuaS v) fok enk enk'
 					c <- lift reload
-					db <- lift . atomically $ readTVar dbe 
-					return . Right . return . first c $ renderS db (enk + 1) fok fo
+					db <- lift . atomically $ do 
+						db <- readTVar dbe 
+						let db' = purge db (either (\(e,f) -> f == fok && e > enk') (const False))
+						writeTVar dbe db'
+						return db'
+					return . Right . return . first c $ renderS db enk' fok fo
 				ScaricaD -> do
 					fo <- case efosfo of
 						Right fos -> onNothing "chiave di form non trovata" $ 
