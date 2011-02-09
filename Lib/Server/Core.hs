@@ -152,8 +152,10 @@ mkServer limit reload bs = do
 	-- il database è condiviso alle chiamate, quindi va in retry in caso di update contemporaneo
 	let 	db0 = restoreDB limit $ (Right enk,Right fos0) : map (\(fok,fo) -> (Left (enk,fok),Left fo)) (M.toList fos0)
 		fos0 = M.fromList $ map (FormKey . snd &&& fst) bs
+		db1 = restoreDB limit $ M.toList fos0
 		apertura = renderT db0 enk fos0
 	dbe <- atomically . newTVar $ db0
+	dbr <-  atomically . newTVar $ db1
 	let	servizio (enk,fok,q) = do
 			
 			db <- lift . atomically $ readTVar dbe 
@@ -169,19 +171,23 @@ mkServer limit reload bs = do
 					lift $ atomically $ do 
 						db <- readTVar dbe
 						writeTVar dbe $ set db (Left (enk,fok'), Left fo)
+					lift . atomically $ do
+						db <- readTVar dbr
+						writeTVar dbr $ set db (fok',fo)
 					return . Right . return . first id  $ renderS db enk fok' fo
 				ResetS -> do 
 					enk' <- lift mkTimeKey
-					fo <- onNothing "chiave di form non trovata" $ fok `M.lookup` fos0
-					fo' <- lift . ricarica $ fo
+					dbf0 <- lift . atomically $ readTVar dbr
+					lfo0 <- onNothing "chiave di form reset non trovata" $ 
+						query dbf0 fok
+					fo <- lift . ricarica $ lfo0
 					db <- lift . atomically  $ do 
 						db <- readTVar dbe 
 						let 	db' = purge db (either (\(e,f) -> f == fok) (const False))
-						
-							db'' = set db' (Left (enk',fok), Left fo')
+							db'' = set db' (Left (enk',fok), Left fo)
 						writeTVar dbe db''
 						return db''
-					return . Right . return . first id  $ renderS db enk' fok fo'
+					return . Right . return . first id  $ renderS db enk' fok fo
 				RicaricaS -> do
 					fo <- correctS dbe eseguiRicaricaS fok enk enk
 					db <- lift . atomically $ readTVar dbe 
