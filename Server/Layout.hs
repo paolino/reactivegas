@@ -30,24 +30,21 @@ metadata = header << 	[
  
 
 testata = 
-	thediv ! [theclass "project"] << "ReactiveGAS" +++
+	(thediv ! [title "annulla sessione", theclass "project"] << anchor ! [ href "/"] << "ReactiveGAS") +++
 	thediv ! [theclass "synopsis"] << "Servizio gestione prepagato per i gruppi di acquisto"
- 
-
 pagina 	:: [Html] 	-- ^ corpo della pagina
 	-> String	-- ^ pagina servita
 pagina b = prettyHtml $ 
 		header << metadata  
 	+++ 	body << [
-		thediv ! [theclass "titolo boxes"] << testata,
-		thediv ! [title "fine sessione", theclass "abort"] << anchor ! [href "/"] << "○",
+		thediv ! [theclass "titolo"] << testata,
 		thediv ! [identifier "help", theclass "boxes"] << noHtml,
 		thediv ! [theclass "utente"] << b,
-		thediv ! [theclass "contatti boxes"] << ulist << [
+		thediv ! [theclass "contatti"] << ulist << [
 					li << anchor ! [href "http://github.com/paolino/reactivegas/wiki"] << "documentazione",
 					li << anchor ! [href "http://github.com/paolino/reactivegas"] << "codice sorgente",
 					li << anchor ! [href "mailto:paolo.veronelli@gmail.com"] << "contatti",
-					li << "Donazioni: postepay, n° 4023600431903923"
+					li << "donazioni: postepay 4023600431903923"
 					]
 		]
 
