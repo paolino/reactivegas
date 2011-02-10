@@ -34,5 +34,5 @@ Executable server
                 stm, old-time,
                 xhtml, 
                 split,time,
-                scgi,url,HDBC-sqlite3,HDBC, HTTP,haskeline, MonadRandom
+                scgi <= 0.3.2,url,HDBC-sqlite3,HDBC, HTTP,haskeline, MonadRandom
 
