@@ -19,8 +19,8 @@ import Applicazioni.Database.Movimenti
 import Applicazioni.Database.Acquisti
 import Eventi.Accredito (Movimento (..))
 
-metadata = header << 	(	(script ! [thetype "text/javascript", src "/static/jquery.js"] << noHtml)
-			
+metadata = header << 	(	
+			script ! [thetype "text/javascript", src "/static/report.js"] << noHtml
 			+++	(thelink ! [rel "stylesheet", href "/static/report.css", thetype "text/css"] << noHtml)	
 			+++ 	(thelink ! [rel "icon", href "/static/favicon.ico"] << noHtml)
 			+++ 	(thetitle << "Report G.A.S.") 
