@@ -29,7 +29,7 @@ Executable server
                 pretty      ,
                 filepath    ,
                 filemanip  ,
-                network,
+                network <= 2.2.7,
                 directory  , 
                 stm, old-time,
                 xhtml, 
