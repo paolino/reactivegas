@@ -44,129 +44,116 @@ blockquote, q {
 }
 
 
-a:link {color:#558;text-decoration:none;}
-a:visited {color:#558;text-decoration:none;}
-a:hover {color:#558;text-decoration:underline;}
+a:link {color:#335;text-decoration:none;}
+a:visited {color:#335;text-decoration:none;}
+a:hover {color:#597;text-decoration:none;}
 
-body {background:#99b;color:#555;}
-input.paypal {	
-	position : absolute;
-	left : 670px;
-	top : 0px;
-	font: 8pt sans-serif;
-	color:#558	
+a.abort:link {color:#555;text-decoration:none;}
+
+body {background:#70b095;color:#555;
+	background: -moz-linear-gradient(0,#70b095,#408085);
 	}
-div#help {
-	border: 2px solid #f0f0f0;
-	}
+
 .boxes {	
-	background-color: #f0f0f0 ;	
-	border : 1px solid #aab;
+	background-color: #e8e8e8 ;	
+	background: -moz-linear-gradient(0,#e8e8e8,#d0d0d0);
 	border-radius: 5px;
+	border-style:inset;
+	border-width:2px;
+	border-color:#a0e0e5;
 	-moz-border-radius: 5px;
 	position : absolute;
-	overflow: auto;
+	overflow:auto;
 	}
-
-div.pedata  {
-	margin-top:5px;
-	margin-left : 644px; 
-	}
-div.pedata ul {
-	list-style-type: none;
-	}
-div.abort {
-	border : 2px solid #f88;	
-	left : 786px;
-	top : 29px;
-	height :29;
-	width:145px;
-	}
-div.reset {
-	text-align:center;
-	}
-
-div.titolo {	
-	border : 2px solid #aaa;	
-	left : 4px;
-	top:0px;
-	height :37px;
-	width:750px;
+div.titolo, div.contatti {	
 	float:left;
 	color:#555;
-	background-color: #d0d0d0;
+	background-color: #80c0a5;
+	background: -moz-linear-gradient(0,#70b095,#408085);
+	padding:1px;
+	padding-right:25px;
+	padding-left:25px;
+	overflow:hidden;
+	margin:2px;
+	margin-left:10px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
 	}
-div.contatti {
-	top:607px;
-	left : 4px; 
-	width: 928px;
-	background-color: #d0d0d0;
-	}
-div.contatti li {display:inline;margin-left: 120px;font: 8pt sans-serif;}
-
 div.project {
 	margin:4px;
-	margin-left:20px;
 	font: 18pt sans-serif;
 	float:left;
 	}
 div.synopsis {
-	margin:4px;
-	margin-top:12px;
-	margin-left:40px;
-	font: 12pt sans-serif;
+	margin-top:10px;
+	margin-left:30px;
+	font: 10pt sans-serif;
 	float:left;
+	font-style:italic;
 	}
+
+div.utente {
+	position:relative;
+	}
+
+
+
+div.contatti li {list-style-type:none;float:left;margin-left: 14px; font: 8pt sans-serif;color:#676}
+
+
 div.dimensione6 {
-	top :60px;
-	left :4px;
-	width:129px;
-	height:257px;
+	top :50px;
+	left :10px;
+	width:97px;
+	height:237px;
 }
 div.dimensione7 {
-	top :319px;
-	left :4px;
-	width:129px;
-	height:286px;
+	top :290px;
+	left :10px;
+	width:97px;
+	height:237px;
 }
 
 div.dimensione2 {
-	top :60px;
-	left : 135px;
-	width:501px;
-	height:257px;
-	overflow: auto;
+	top :50px;
+	left : 110px;
+	width:397px;
+	height:237px;
+
 }
 div.dimensione3 {
-	top : 319px;
-	left : 135px;
-	width:501px;
-	height:286px;
+	top : 290px;
+	left : 110px;
+	width:397px;
+	height:237px;
 }
 div.dimensione1 {
-	top :60px;
-	left :638px;
-	width:293px;
-	height:199px;
+	top :50px;
+	left :510px;
+	width:297px;
+	height:157px;
 }
 
 div.dimensione4 {
-	top : 261px;
-	left : 638px;
-	width:293px;
-	height:79px;
+	top : 210px;
+	left : 510px;
+	width:297px;
+	height:77px;
 }
 div.dimensione5 {
-	top : 342px;
-	left : 638px;
-	width:293px;
-	height:263px;
+	top : 290px;
+	left : 510px;
+	width:297px;
+	height:237px;
 }
 
 dt {	color: #575;
 	border-bottom: 1px solid #e5e5e5;
 	}
-
+div.expand{
+	width:15px;
+	text-align:center;
+	}
 dl {color:#555;}
 
 input.continua {
@@ -174,11 +161,34 @@ input.continua {
 	font: 8pt sans-serif;
 	color:#888;
 	}
-a.back {
+input.invio {
+	float:left;
+	font: 8pt sans-serif;
+	color:#888;
+	}
+
+div.expand,div.abort,div.resetF,a.back {
+	width:12px;
+	height:17px;
 	float:right;
-	font: 12pt sans-serif;
-	background-color:#ddf;
+	padding:1px;
+	border:1px solid #bbd;
+	font: 10pt sans-serif;
+	background-color:#eee0e0;
 	color:#a88;
+	cursor:pointer;	
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+
+	}
+div.heights {
+	clear:right;
+	}
+div.abort {
+	width:24px;
+	height:34px;
+	font:20pt sans-serif;
+	margin-top:1px;
 	}
 input#valore {font: 8pt sans-serif;}
 
@@ -222,8 +232,16 @@ li div.responso {float:clear;}
 	font-weight:normal;
 	color : #77a;
 	}
-.tooltip {
-	background-color: #aaa;
-	font-weight:normal;
-	color : #77a;
-	}
+
+#tooltip {
+    background-color: #ddf;
+    border: 1px solid #bbd;
+    color:#866;
+    opacity: 0.85;
+    padding: 2px;
+    position: absolute;
+    z-index: 3000;	
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+
+}
