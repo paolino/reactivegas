@@ -23,9 +23,11 @@ import Lib.Euro (Euro)
 
 import Core.Types (Utente)
 import Core.Costruzione (libero, scelte , CostrAction, runSupporto)
-import Core.Parsing (Parser)
 import Core.Programmazione (Effetti, Reazione (..) , EventoInterno (..), soloEsterna, nessunEffetto, Message (..))
 import Core.Inserimento (MTInserzione, conFallimento, fallimento, osserva, modifica, loggamus, logga)
+import Core.Parsing (Parser, ParserConRead (ParserConRead))
+import Core.Dichiarazioni (Dichiarazione(Singola), Singola)
+
 
 import Eventi.Anagrafe (validante,programmazioneAssenso,maggioranza)
 import Eventi.Impegno (programmazioneImpegno', raccolte, Impegni)
@@ -83,14 +85,14 @@ reazioneAcquisto = soloEsterna reattoreAcquisto where
 
 		return (True, ([za, zi esf],ievs))
 
-costrEventiAcquisto :: (Monad m, Servizio Impegni `ParteDi` s) => CostrAction m c EsternoAcquisto s
+costrEventiAcquisto :: (Monad m, Parser p EsternoAcquisto,  Servizio Impegni `ParteDi` s) => CostrAction m c (Dichiarazione p s Singola) s
 costrEventiAcquisto s kp kn  = [("nuova proposta di acquisto", eventoApertura)] 
 	where
 	eventoApertura  = runSupporto s kn kp $ do
 		n <- libero  $ ResponseOne  "nome della nuova proposta d'acquisto"
 		rs <- asks raccolte
 		when (n `elem` rs) $ throwError "acquisto già aperto"
-		return $ AperturaAcquisto n
+		return . Singola  $ AperturaAcquisto n
 
 {-
 sottostringa :: Eq a => [a] -> [a] -> Bool

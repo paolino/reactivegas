@@ -57,6 +57,7 @@ data Req
 	| ScaricaD
 	| ClonaS
 	| ResetS
+	| PinPointS
 
 -- | tutte le richieste portano con se la chiave di environment, e la chiave di cella
 type Request = (TimeKey,FormKey,Req)
@@ -67,7 +68,8 @@ type FormId = Int
 -- | un insieme di form, usiamo una mappa per semplificare la definizione delle updates nel caso di gruppo
 type FormGroup e b c = M.Map FormKey (Form e b c)
 
-type FormDB e b c = DB (Either (TimeKey,FormKey) TimeKey) (Either (Form e b c) (FormGroup e b c))
+type FormDB e b c = DB (TimeKey,FormKey) (Form e b c)
+type FormGroupDB e b c = DB  TimeKey (FormGroup e b c)
 
 -- estrae i valori di modulistica da un insieme di form e la sua chiave
 renderS 	:: FormDB e b c -- database del tempo
@@ -76,16 +78,16 @@ renderS 	:: FormDB e b c -- database del tempo
 		-> Form e b c -- form
 		-> (b,FormId) -- rendering
 renderS db enk fok fo = (form fo enk fok enkB enkF, formKey fok) where
-	enkB = if exists db (Left (enk - 1,fok)) then Just (enk - 1) else Nothing
-	enkF = if exists db (Left (enk + 1,fok)) then Just (enk + 1) else Nothing
+	enkB = if exists db (enk - 1,fok) then Just (enk - 1) else Nothing
+	enkF = if exists db (enk + 1,fok) then Just (enk + 1) else Nothing
 
-renderT 	:: FormDB e b c -- database del tempo
+renderT 	:: FormGroupDB e b c -- database del tempo
 		-> TimeKey -- chiave di tempo attuale
 		-> FormGroup e b c -- form
 		-> [(b,FormId)] -- rendering
 renderT db enk = map (\(fok,fo) -> (form fo enk fok enkB enkF ,formKey fok)) . M.assocs  where
-	enkB = if exists db (Right (enk - 1)) then Just (enk - 1) else Nothing
-	enkF = if exists db (Right (enk + 1)) then Just (enk + 1) else Nothing
+	enkB = if exists db (enk - 1) then Just (enk - 1) else Nothing
+	enkF = if exists db (enk + 1) then Just (enk + 1) else Nothing
 
 eseguiContinuaT v fok fos = do 
 	fo <- onNothing "chiave di form non trovata" $ fok `M.lookup` fos
@@ -122,21 +124,11 @@ correctS 	:: TVar (FormDB e b c)
 		->  ErrorT String IO (Form e b c)
 correctS dbe f fok enk nenk = do
 	db <- lift . atomically $ readTVar dbe
-	efosfo <- onNothing "chiave temporale non trovata" $ 
-		query db (Left (enk,fok)) `mplus` query db (Right enk)
-	case efosfo of
-		Right fos -> do
-			fo <- onNothing "chiave di form non trovata" $ 
-				fok `M.lookup` fos
-			fo' <- f fo
-			lift . atomically $ readTVar dbe >>= writeTVar dbe . 
-					flip set (Left (nenk,fok), Left fo')
-			return fo'
-		Left fo -> do
-			fo' <- f fo
-			lift . atomically $ readTVar dbe >>= 
-				writeTVar dbe . flip set (Left (nenk,fok), Left fo')
-			return fo'
+	fo <- onNothing "chiave temporale non trovata" $ query db (enk,fok)
+	fo' <- f fo
+	lift . atomically $ readTVar dbe >>= 
+		writeTVar dbe . flip set ((nenk,fok),fo')
+	return fo'
 
 -- | costruisce un server a partire dalla form base
 mkServer 	:: Int 			-- ^ limite per il numero di insiemi gestiti
@@ -150,27 +142,25 @@ mkServer limit reload bs = do
 	-- apriamo un database in memoria (String -> Either (Form e b c) (FormGroup e b c)) e assegnamo
 	--  alla chiave "0" l'insieme iniziale
 	-- il database è condiviso alle chiamate, quindi va in retry in caso di update contemporaneo
-	let 	db0 = restoreDB limit $ (Right enk,Right fos0) : map (\(fok,fo) -> (Left (enk,fok),Left fo)) (M.toList fos0)
+	let 	dbg0 = restoreDB limit $ [(enk,fos0)]
+	 	db0 = restoreDB limit $ map (\(fok,fo) -> ((enk,fok),fo)) (M.toList fos0)
 		fos0 = M.fromList $ map (FormKey . snd &&& fst) bs
 		db1 = restoreDB limit $ M.toList fos0
-		apertura = renderT db0 enk fos0
+		apertura = renderT dbg0 enk fos0
 	dbe <- atomically . newTVar $ db0
+	dbge <- atomically . newTVar $ dbg0
 	dbr <-  atomically . newTVar $ db1
 	let	servizio (enk,fok,q) = do
 			
-			db <- lift . atomically $ readTVar dbe 
-			efosfo <- onNothing "chiave temporale non trovata" $ 
-				query db (Left (enk,fok)) `mplus` query db (Right enk)
 			case q of
+				PinPointS -> 
 				ClonaS -> do
-					fo <- case efosfo of
-						Right fos -> onNothing "chiave di form non trovata" $ 
-								fok `M.lookup` fos
-						Left fo -> return fo
+					db <- lift . atomically $ readTVar dbe
+					fo <- onNothing "chiave temporale non trovata" $ query db (enk,fok)
 					fok' <- lift $ mkFokKey
 					lift $ atomically $ do 
 						db <- readTVar dbe
-						writeTVar dbe $ set db (Left (enk,fok'), Left fo)
+						writeTVar dbe $ set db ((enk,fok'),fo)
 					lift . atomically $ do
 						db <- readTVar dbr
 						writeTVar dbr $ set db (fok',fo)
@@ -178,13 +168,12 @@ mkServer limit reload bs = do
 				ResetS -> do 
 					enk' <- lift mkTimeKey
 					dbf0 <- lift . atomically $ readTVar dbr
-					lfo0 <- onNothing "chiave di form reset non trovata" $ 
-						query dbf0 fok
+					lfo0 <- onNothing "chiave di form reset non trovata" $ query dbf0 fok
 					fo <- lift . ricarica $ lfo0
 					db <- lift . atomically  $ do 
 						db <- readTVar dbe 
-						let 	db' = purge db (either (\(e,f) -> f == fok) (const False))
-							db'' = set db' (Left (enk',fok), Left fo)
+						let 	db' = purge db (\(e,f) -> f == fok)
+							db'' = set db' ((enk',fok),fo)
 						writeTVar dbe db''
 						return db''
 					return . Right . return . first id  $ renderS db enk' fok fo
@@ -199,25 +188,22 @@ mkServer limit reload bs = do
 					c <- lift reload
 					db <- lift . atomically $ do 
 						db <- readTVar dbe 
-						let db' = purge db (either (\(e,f) -> f == fok && e > enk') (const False))
+						let db' = purge db (\(e,f) -> f == fok && e > enk') 
 						writeTVar dbe db'
 						return db'
 					return . Right . return . first c $ renderS db enk' fok fo
 				ScaricaD -> do
-					fo <- case efosfo of
-						Right fos -> onNothing "chiave di form non trovata" $ 
-								fok `M.lookup` fos
-						Left fo -> return fo
+					db <- lift . atomically $ readTVar dbe
+					dbg <-  lift . atomically $ readTVar dbge
+					fo <- onNothing "chiave temporale non trovata" (query db (enk,fok) `mplus` (query dbg enk >>= M.lookup fok))
 					Left <$> eseguiScarica fo
 				ContinuaT v -> do			
-					fos <- case  efosfo of
-						Left _ -> throwError 
-							"chiave temporale riferita ad una form"
-						Right fos -> return fos
+					dbg <-  lift . atomically $ readTVar dbge
+					fos <-  onNothing "chiave temporale non trovata" $ query dbg enk 
 					fos' <- eseguiContinuaT v fok fos
 					fos'' <- M.fromList <$> mapM (\(k,f) -> ((,) k) <$> lift (ricarica f)) 
 								(M.assocs fos')
-					let db' = set db (Right $ enk + 1, Right fos'')
-					lift . atomically $ writeTVar dbe db'
-					return . Right $ renderT db' (enk + 1) fos''
+					let dbg' = set dbg (enk + 1, fos'')
+					lift . atomically $ writeTVar dbge dbg'
+					return . Right $ renderT dbg' (enk + 1) fos''
 	return $ Server apertura servizio

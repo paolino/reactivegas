@@ -25,7 +25,8 @@ import Core.Types (Utente)
 import Core.Programmazione (Reazione, soloEsterna, nessunEffetto, Message (..))
 import Core.Inserimento (MTInserzione, fallimento, osserva, modifica, logga, loggamus)
 import Core.Costruzione (libero, scelte, CostrAction, runSupporto)
-import Core.Parsing (Parser)
+import Core.Parsing (Parser, ParserConRead (ParserConRead))
+import Core.Dichiarazioni (Dichiarazione(Singola), Singola)
 import Eventi.Anagrafe (Anagrafe, esistenzaUtente, utenti, Responsabili, 
 	esistenzaResponsabile, responsabili, validante, SUtente (..))
 import Lib.Aspetti ((.<), see, ParteDi)
@@ -149,7 +150,8 @@ reazioneAccredito = soloEsterna reattoreAccredito where
 		return (True,nessunEffetto)
 
 -- | costruttore di eventi per il modulo di accredito
-costrEventiAccredito :: (Monad m, ParteDi Responsabili s, SUtente `ParteDi` s, ParteDi Anagrafe s) => CostrAction m c EsternoAccredito s
+costrEventiAccredito :: (Parser p EsternoAccredito, Monad m, ParteDi Responsabili s, SUtente `ParteDi` s, ParteDi Anagrafe s) 
+	=> CostrAction m c (Dichiarazione p s Singola) s
 costrEventiAccredito s kp kn = 	[("versamento sul conto di un utente",eventoAccredito) 
 				,("prelievo motivato dal conto di un utente",eventoAddebito) 
 				,("ricezione saldo da un responsabile", eventoSaldo)
@@ -164,7 +166,7 @@ costrEventiAccredito s kp kn = 	[("versamento sul conto di un utente",eventoAccr
 		when (null us') $ throwError "non ci sono altri utenti"
 		u <- scelte  us' $ ResponseOne "utente interessato dall'aggiornamento"
 		n <- libero  $ ResponseOne $ "somma da accreditare sul conto di " ++ quote u
-		return $ Accredito u n	
+		return . Singola  $ Accredito u n	
 	eventoAddebito = run $ do
 		us <- asks utenti 
 		SUtente un <- asks see
@@ -174,7 +176,7 @@ costrEventiAccredito s kp kn = 	[("versamento sul conto di un utente",eventoAccr
 		u <- scelte  us' $ ResponseOne "utente interessato dall'aggiornamento"
 		n <- libero  $ ResponseOne $ "somma da prelevare dal conto di " ++ quote u
 		s <- libero  $ ResponseOne $ "motivazione del prelievo"
-		return $ Addebito u s n 
+		return . Singola   $ Addebito u s n 
 	eventoSaldo = run $ do
 		(rs,_) <- asks responsabili 
 		SUtente un <- asks see
@@ -183,7 +185,7 @@ costrEventiAccredito s kp kn = 	[("versamento sul conto di un utente",eventoAccr
 		when (null rs') $ throwError "non ci sono altri responsabili"
 		u <- scelte  rs' $ ResponseOne "responsabile che ha dato il denaro"
 		n <- libero  $ ResponseOne $ "somma ricevuta dal responsabile " ++ quote (fst u)
-		return $ Saldo (fst u) n
+		return . Singola   $ Saldo (fst u) n
 	    
 -- | costruttore interrogazioni sul modulo accrediti
 costrQueryAccredito :: (Monad m, Conti `ParteDi` s, Saldi `ParteDi` s) => CostrAction m c Response s

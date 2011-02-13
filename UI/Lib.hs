@@ -61,7 +61,7 @@ type Name = String
 
 type Environment = (
 	Amministratore (Persistenza QS Effetti Response),
-	Sessione QS Response)
+	Sessione QS Response ParserConRead)
 	
 
 statoPersistenza :: (Functor m, MonadReader Environment m,MonadIO m) => m QS
@@ -114,13 +114,10 @@ creaChiavi = do
 letturaEventi ::  Interfaccia [Evento]
 letturaEventi = ses readEventi 
 
-correzioneEventi  :: ([Evento] -> [Evento]) -> Interfaccia ()
-correzioneEventi devs  = do
-	evs <- letturaEventi
-	ses $ ($ devs evs) . writeEventi 
 
-addEvento x = correzioneEventi (++ [show x])
 
+addEvento x = ses $  ($x) . aggiungiEvento
+addEventoC x  = ses $ ($x) . correggiEvento
 eventLevelSelector = do 
 	
 	(_,us) <- sepU readUPatches 
@@ -137,21 +134,10 @@ eventLevelSelector = do
 
 eliminazioneEvento :: String -> Interfaccia ()
 eliminazioneEvento s = do
-	es <- letturaEventi
+	es <- ses eliminaEvento 
 	if null es then bocciato s "non ci sono dichiarazioni da eliminare" 
-		else let 
-		k es x = correzioneEventi . const . delete x $ es
-		in do 
-			es <- letturaEventi
-			menu (ResponseOne "seleziona una dichiarazione da eliminare")  (zip es $ map (k es) es)
+		else menu (ResponseOne "seleziona una dichiarazione da eliminare")  $ map (second liftIO) es
 
-sincronizza = onAccesso $ \(r@(u,_)) -> do  
-	(_,rs) <-  second (map snd) <$> sepU readUPatches
-	case rs of 
-		[] -> bocciato "sincronizzazione gruppo" "nessun aggiornamento individale per lo stato attuale"
-		xs -> do
-			let k (Firmante f)  = (fst <$>  unQS <$> statoPersistenza) >>= \s -> sepU $ ($ f s xs). writeGPatch
-			runSupporto (fst <$> unQS <$> statoPersistenza) (bocciato "sincronizzazione gruppo") k $ firmante r
 salvataggio s = do
 	evs <- letturaEventi
 	onAccesso $ \(r@(u,_)) -> do
@@ -161,9 +147,15 @@ salvataggio s = do
 				(fst <$> unQS <$> statoPersistenza) >>= \s -> p (f s evs) 
 		runSupporto (fst <$> unQS <$> statoPersistenza) (bocciato s) k $ firmante r
 
--- | importa gli eventuali eventi già presenti
+{-
+sincronizza = onAccesso $ \(r@(u,_)) -> do  
+	(_,rs) <-  second (map snd) <$> sepU readUPatches
+	case rs of 
+		[] -> bocciato "sincronizzazione gruppo" "nessun aggiornamento individale per lo stato attuale"
+		xs -> do
+			let k (Firmante f)  = (fst <$>  unQS <$> statoPersistenza) >>= \s -> sepU $ ($ f s xs). writeGPatch
+			runSupporto (fst <$> unQS <$> statoPersistenza) (bocciato "sincronizzazione gruppo") k $ firmante r
 
-	
 caricaAggiornamentoIndividuale :: Interfaccia ()
 caricaAggiornamentoIndividuale = do 
 	p@(c,_,_) <- P.upload  "aggiornamento individuale"
@@ -196,6 +188,6 @@ scaricaAggiornamentoDiGruppo = do
 effetto = do
 	c <- fJ "6.UI.Server" <$> ses readCaricamento
 	P.output False . Response $ [("effetto delle ultime dichiarazioni",  c)]
-
+-}
 
 				

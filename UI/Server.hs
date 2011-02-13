@@ -54,6 +54,15 @@ wrapCostrActions g = concatMap (\f -> f q g (bocciato "costruzione di una dichia
 		mu <- fmap fst  <$> ses readAccesso
 		return (SUtente mu,s)
 
+wrapCostrActions 	
+	:: (a -> Interfaccia ()) 
+	-> [MEnv (SUtente,TS) -> (a -> Interfaccia ()) -> (String -> Interfaccia ()) -> [(String,Interfaccia ())]]
+	-> [(String,Interfaccia ())]
+
+wrapCostrActionsC g = concatMap (\f -> f q g (bocciato "costruzione di una dichiarazione")) where
+	q = do 	s <- fst <$> unQS <$> statoSessione
+		return (ses id,s)
+
 
 interrogazioni :: Interfaccia ()
 interrogazioni = rotonda $ \_ -> menu (ResponseOne "interrogazioni sullo stato del gruppo")  $ (wrapCostrActions (P.output True) $ [
@@ -64,6 +73,7 @@ interrogazioni = rotonda $ \_ -> menu (ResponseOne "interrogazioni sullo stato d
 		costrQueryVoci
 		]) 
 
+{-
 dichiarazioni = concat $ 
 		[wrapCostrActions addEvento [costrEventiAccredito]
 		,wrapCostrActions addEvento [costrEventiAcquisto]
@@ -74,7 +84,7 @@ dichiarazioni = concat $
 			]
 		,wrapCostrActions addEvento [costrEventiAssenso]
 
-		,wrapCostrActions addEvento [costrEventiVoci]
+		-- ,wrapCostrActions addEventoC [costrEventiVoci]
 		,	[("----------",return ())
 			,("pubblica le dichiarazioni in sessione",salvataggio "pubblica le dichiarazioni in sessione")
 			,("elimina delle dichiarazioni",eliminazioneEvento "elimina delle dichiarazioni"),
@@ -208,4 +218,4 @@ applicazione = rotonda $ \_ -> do
 				wname "interrogazione sullo stato del gruppo" ensureGruppo  interrogazioni,
 				("amministrazione", amministrazione)
 				]
-
+-}

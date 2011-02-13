@@ -8,6 +8,7 @@ import Control.Monad.Error (lift, runErrorT, ErrorT,MonadError)
 import Control.Monad.Cont (MonadCont)
 import Control.Monad.Reader (runReaderT, ReaderT, MonadReader(..))
 
+import Core.Types (Evento)
 import qualified Lib.Passo as P -- (Costruzione , libero, upload, scelte, download,password)
 import Lib.Response
 

@@ -5,7 +5,8 @@ import Data.Maybe (listToMaybe)
 import Data.List (union, (\\))
 import Control.Applicative ((<$>))
 import Control.Monad (forever, when, liftM2)
-import System.Random
+import Control.Arrow (second)
+-- import System.Random
 import Control.Concurrent (forkIO)
 import Control.Concurrent.STM 
 
@@ -14,59 +15,53 @@ import Core.Types (Evento,Responsabile, Utente)
 
 import Applicazioni.Persistenza (Change (..))
 
-
+import Core.Dichiarazioni
 import Debug.Trace
 
 type Name = String 
 -- | interfaccia concorrente per una sessione di interazione
-data Sessione a b = Sessione 
+data Sessione a b p = Sessione 
 	{
 	readGruppo :: IO (Maybe Name)			-- ^ gruppo selezionato
 	,writeGruppo :: Maybe Name -> IO ()		-- ^ cambia gruppo
 	,readEventi :: IO [Evento]			-- ^ legge gli eventi in memoria		
-	,writeEventi :: [Evento] -> IO ()		-- ^ scrive gli eventi in memoria
+	,aggiungiEvento ::  Dichiarazione p a Singola -> IO ()
+	,eliminaEvento :: IO [(Evento,IO ())]
+	,correggiEvento :: Dichiarazione p a Composta -> IO ()
 	,readAccesso :: IO (Maybe Responsabile)		-- ^ legge il responsabile in azione
 	,writeAccesso :: Maybe Responsabile -> IO ()	-- ^ scrive il responsabile in azione
 	,readCaricamento :: IO (Maybe b)	-- ^ legge l'effetto dell'ultimo caricamento dichiarazioni
 	,readStatoSessione :: IO (Maybe a)	-- ^ legge lo stato modificato dagli eventi in memoria prodotti dal responsabile in memoria
 	,setConservative :: Int -> IO () 	-- ^ imposta il livello di caricamento
 	,getConservative :: IO Int		-- ^ legge il livello di caricamento
---	,writeVoci	:: [Voce] -> IO ()
---	,readVoci 	:: IO [Voce]
---	,writeAcquisto	:: Maybe Indice -> IO ()
---	,readAcquisto	:: IO (Maybe Indice)
---	,writeOrdinante :: Maybe Utente -> IO ()
---	,readOrdinante	:: IO (Maybe Utente)
---	,writeOrdine 	:: [Ordine] -> IO ()
---	,readOrdine 	:: IO [Ordine]
 	,backup		:: IO (Maybe Name, [Evento],Maybe Responsabile,Int)
 	}
 
 -- | eventi che scatenano la ricomputazione dello stato modificato
-data Triggers = TResponsabile (Maybe Responsabile) | TEventi [Evento] | TConservative Int | TGruppo (Maybe Name)
-	deriving Show
+data Triggers p a = TResponsabile (Maybe Responsabile) | TEventi (Dichiarazioni p a) | TConservative Int | TGruppo (Maybe Name)
 
 -- | modello di ricomputazione che deve essere fornito
 type Update a b = Name -> STM (Maybe (Int -> Maybe Responsabile -> [Evento] -> STM (a,b)))
+type Parse p a = [Evento] -> Dichiarazioni p a
 
 -- | azione di modifica di uno di eventi o responsabile
 update 	
-	:: Int 
+	:: Parse p a -- riproduzione dichiarazioni
 	-> Update a b -- produce uno stato modificato
 	-> Int -- ^ livello standard di caricamento eventi
-	-> 	(TVar [Evento]
+	-> 	(TVar (Dichiarazioni p a)
 		,TVar (Maybe Responsabile)
 		,TVar Int
-		,TVar (Maybe a)
-		,TVar (Maybe b)
-		,TVar (Maybe Name)
-		,TChan Triggers
+		,TVar (Maybe a) -- ultimo stato calcolato
+		,TVar (Maybe b) -- ultimi effetti calcolati
+		,TVar (Maybe Name)  -- nome del gruppo , se selezionato
+		,TChan (Triggers p a)
 		,TVar (Maybe (STM (Change c d)))
 		,(Name -> STM (Maybe (STM (STM (Change c d))))) -- una condizione esterna che deve fare scattare il rinnovamento
 		,(Name -> STM (Maybe (Maybe Utente -> STM [Evento]))) -- gli eventi pubblicati per un utente
 		) -- ^ memoria condivisa
 	-> STM ()
-update z f l (eventi, accesso, conservative, stato, caricamento, gruppo, triggers, signalbox, newsignal, publ) =  do
+update pa f l (eventi, accesso, conservative, stato, caricamento, gruppo, triggers, signalbox, newsignal, publ) =  do
 	let 	-- | update causato da modifica utente
 		interna = do 	
 				t 	<- readTChan triggers 
@@ -79,8 +74,8 @@ update z f l (eventi, accesso, conservative, stato, caricamento, gruppo, trigger
 									writeTVar accesso mr
 									publ g >>= \mp -> case mp of
 										Nothing -> return ()
-										Just k -> k (fst <$> mr) >>= writeTVar eventi
-						TEventi es 		->  writeTVar eventi es
+										Just k -> k (fst <$> mr) >>= writeTVar eventi . pa
+						TEventi ds 		->  writeTVar eventi ds
 						TConservative l 	->  writeTVar conservative l
 						TGruppo n 		-> case n of
 							Just g -> newsignal g >>= \mns -> case mns of 
@@ -88,7 +83,7 @@ update z f l (eventi, accesso, conservative, stato, caricamento, gruppo, trigger
 									signal <- ns
 									writeTVar signalbox (Just signal)
 									writeTVar accesso Nothing
-									writeTVar eventi []
+									writeTVar eventi (Dichiarazioni [] [])
 									writeTVar conservative l
 									writeTVar gruppo n
 								Nothing -> return ()
@@ -96,7 +91,7 @@ update z f l (eventi, accesso, conservative, stato, caricamento, gruppo, trigger
 								writeTVar signalbox Nothing
 								writeTVar gruppo Nothing
 								writeTVar accesso Nothing
-								writeTVar eventi []
+								writeTVar eventi (Dichiarazioni [] [])
 								writeTVar conservative l
 								writeTVar gruppo n
 		esterna = do 	
@@ -116,10 +111,10 @@ update z f l (eventi, accesso, conservative, stato, caricamento, gruppo, trigger
 											\u -> lookup u orphans 
 										dgs = maybe [] id $ mr >>= 
 											\u -> lookup u digested
-									writeTVar eventi $ (ess `union` ofs) \\ dgs
+									-- TODO !!!
+									writeTVar eventi $ Dichiarazioni [] [] -- (ess `union` ofs) \\ dgs
 									writeTVar conservative l
-								UPatch u esp ->  do when (Just u == mr) $ 
-											writeTVar eventi (esp `union` ess)
+								UPatch u esp -> when (Just u == mr) $ writeTVar eventi $ pa esp 
 						Nothing -> retry
 				Nothing -> retry
 	interna `orElse` esterna
@@ -136,7 +131,7 @@ update z f l (eventi, accesso, conservative, stato, caricamento, gruppo, trigger
 					writeTVar stato Nothing
 					writeTVar caricamento Nothing
 				Just k -> do 
-					(s,c) <- k l' mr evs 	
+					(s,c) <- k l' mr (toEventi evs)
 					writeTVar stato (Just s)
 					writeTVar caricamento (Just c)
 		Nothing -> do 
@@ -144,15 +139,15 @@ update z f l (eventi, accesso, conservative, stato, caricamento, gruppo, trigger
 			writeTVar caricamento Nothing
 
 -- | costruisce l'interfaccia di sessione a partire da un modificatore di stato in STM
-mkSessione 	:: Update a  b		-- ^ modificatore di stato
+mkSessione 	:: Parse p a		-- ^ lettore di eventi
+		-> Update a  b		-- ^ modificatore di stato
 		-> Int 			-- ^ livello di caricamento di base
 		-> (Name -> STM (Maybe (STM (STM (Change c d)))))		-- ^ segnale di aggiornamento stato
 		-> (Name -> STM (Maybe (Maybe Utente -> STM [Evento])))  -- ^ query sugli eventi pubblicati per un utente
 		-> STM ()			-- ^ segnale di modifica sessione
 		-> Maybe (Maybe Name,[Evento],Maybe Responsabile,Int)
-		-> IO (Sessione a b)	
-mkSessione f l signal publ exsignal ms =  do
-	z <- randomRIO (0,100000) :: IO Int
+		-> IO (Sessione a b p)	
+mkSessione pa f l signal publ exsignal ms =  do
 	(stato,caricamento) 	<- atomically $ do 
 					msc <- case ms of
 						Nothing -> return Nothing
@@ -161,7 +156,7 @@ mkSessione f l signal publ exsignal ms =  do
 							Just k -> Just <$> k cl mr es 
 							Nothing -> return Nothing
 					liftM2 (,) (newTVar $ fst <$> msc ) (newTVar $ snd <$> msc)
-	eventi 		<- atomically $ newTVar $ maybe [] (\(_,es,_,_) -> es) ms
+	eventi 		<- atomically $ newTVar $ maybe (Dichiarazioni [] []) (\(_,es,_,_) -> pa es) ms
 	accesso 	<- atomically $ newTVar $ ms >>= \(_,_,mr,_) -> mr
 	triggers 	<- atomically $ newTChan
 	conservative 	<- atomically $ newTVar $ maybe l (\(_,_,_,cl) -> cl) ms
@@ -174,15 +169,17 @@ mkSessione f l signal publ exsignal ms =  do
 				Nothing -> newTVar Nothing
 				Just mks -> mks >>= newTVar . Just			
 	let	memoria = (eventi, accesso, conservative, stato, caricamento ,gruppo,triggers, signalbox , signal, publ)
-		checkUpdate q  = (update z f l memoria >> q) `orElse` q
+		checkUpdate q  = (update pa f l memoria >> q) `orElse` q
 		write f x = atomically $ writeTChan triggers (f x) >> exsignal
 		read t = atomically . checkUpdate $ readTVar t
 
 	return $ Sessione 
 		(read gruppo) 
 		(write TGruppo)
-		(read eventi)
-		(write TEventi)
+		(toEventi `fmap` read eventi)
+		(\d -> read eventi >>= write TEventi . aggiungi d)
+		(map (second $ write TEventi) . elimina <$> read eventi)
+		undefined
 		(read accesso) 
 		(write TResponsabile)
 		(read caricamento)
@@ -191,7 +188,7 @@ mkSessione f l signal publ exsignal ms =  do
 		(read conservative) 
 		(atomically $ do
 			mg <- readTVar gruppo
-			es <- readTVar eventi
+			es <- toEventi <$> readTVar eventi
 			cl <- readTVar conservative
 			mr <- readTVar accesso
 			return (mg,es,mr,cl))
@@ -199,3 +196,4 @@ mkSessione f l signal publ exsignal ms =  do
 	
 		
 	
+

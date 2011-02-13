@@ -44,7 +44,8 @@ import Core.Inserimento (loggamus, conFallimento, MTInserzione, osserva, modific
 import Core.Programmazione (Inserzione, EventoInterno (..), soloEsterna, nessunEffetto, Reazione (..),Effetti)
 import Core.Types 
 import Core.Costruzione (Supporto,libero,upload,scelte,runSupporto,CostrAction)
-import Core.Parsing (ParserConRead, Parser)
+import Core.Parsing ( Parser)
+import Core.Dichiarazioni (Dichiarazione (Singola), Singola)
 import Lib.Firmabile (Segreto, Chiave)
 import Lib.QInteger (QInteger)
 import Lib.Missing (sortLower, sortByLower)
@@ -211,7 +212,7 @@ costrUtenti = do
 	return rs
 
 -- | costruzione degli eventi esterni per la gestione costrUtenti e costrResponsabili
-costrEventiAnagrafe :: (Monad m, ParteDi Anagrafe s, ParteDi Responsabili s) => CostrAction m c EsternoAnagrafico s
+costrEventiAnagrafe :: (Parser p EsternoAnagrafico, Monad m, ParteDi Anagrafe s, ParteDi Responsabili s) => CostrAction m c (Dichiarazione p s Singola) s
 costrEventiAnagrafe s kp kn =	[("inserimento di un nuovo utente", eventoNuovoUtente)]
 	where
 	run = runSupporto s kn kp
@@ -219,8 +220,8 @@ costrEventiAnagrafe s kp kn =	[("inserimento di un nuovo utente", eventoNuovoUte
 		us <- costrUtenti 
                 n <- libero  $ ResponseOne "il nomignolo del nuovo utente"
 		when (n `elem` us) $ throwError "nome già utilizzato"	
-                return $ NuovoUtente n
-costrEventiResponsabili :: (Monad m, ParteDi Responsabili s, ParteDi Anagrafe s) => CostrAction m c EsternoAnagrafico s
+                return . Singola  $ NuovoUtente n
+costrEventiResponsabili :: (Parser p EsternoAnagrafico, Monad m, ParteDi Responsabili s, ParteDi Anagrafe s) => CostrAction m c (Dichiarazione p s Singola) s
 costrEventiResponsabili s kp kn =
 	[("richiesta di elezione di un nuovo responsabile", eventoElezioneResponsabile)
 	,("richiesta di revoca di un responsabile",eventoEliminazioneResponsabile)
@@ -234,12 +235,12 @@ costrEventiResponsabili s kp kn =
 		when (null ds) $ throwError "nessun utente non responsabile disponibile"
                 n <- scelte  (map (id &&& id) ds) $ ResponseOne "selezione dell'utente da eleggere a responsabile" 
                 (c,s) <- upload  $ "inserimento delle chiavi del responsabile " ++ n ++ " per la sua elezione"
-                return $ ElezioneResponsabile n c s
+                return . Singola  $ ElezioneResponsabile n c s
 
         eventoEliminazioneResponsabile = run $ do
 		rs <- costrResponsabili 
                 n <- scelte  (map (fst &&& id) rs) $ ResponseOne "selezione del responsabile da revocare"
-                return $ EliminazioneResponsabile (fst n)
+                return . Singola  $ EliminazioneResponsabile (fst n)
 
 -- | costruzione delle interrogazione sull'anagrafe e sui costrResponsabili
 costrQueryAnagrafe :: (Monad m, ParteDi Anagrafe s, ParteDi Responsabili s) => CostrAction m c Response s
@@ -412,7 +413,7 @@ assensiFiltrati k e = do
 
 data SUtente = SUtente (Maybe Utente)
 -- | costrutore degli eventi di assenso
-costrEventiAssenso :: (Monad m, Servizio Assensi `ParteDi` s, SUtente `ParteDi` s) => CostrAction m c EsternoAssenso s
+costrEventiAssenso :: (Parser p EsternoAssenso, Monad m, Servizio Assensi `ParteDi` s, SUtente `ParteDi` s) => CostrAction m c (Dichiarazione p s Singola) s
 costrEventiAssenso s kp kn = 	[("parere su una questione",eventoAssenso s kp kn )
 				,("chiusura prematura di una questione",eventoFallimentoAssenso)
 				] 
@@ -421,12 +422,12 @@ costrEventiAssenso s kp kn = 	[("parere su una questione",eventoAssenso s kp kn 
 		ys <- assensiFiltrati filtra ("nessuna questione ancora aperta per il responsabile " ++) 
 		(n,s) <- scelte  ys $ ResponseOne "questione sulla quale esprimersi" 
 		ad <- scelte  [("assenso",Assenso),("dissenso",Dissenso)] $ ResponseOne ("parere sulla questione " ++ s) 
-		return $ ad n
+		return . Singola  $ ad n
 
         eventoFallimentoAssenso = runSupporto s kn kp $ do
 		ys <- assensiFiltrati (\u -> (==) u . richiedente) ("nessuna questione aperta dal responsabile " ++)
                 (n,_) <- scelte  ys $ ResponseOne "seleziona la questione da chiudere"   
-              	return $ EventoFallimentoAssenso n
+              	return . Singola  $ EventoFallimentoAssenso n
 -- | costruzione delle interrogazioni sul modulo di assensi
 costrQueryAssenso :: (Monad m , Servizio Assensi `ParteDi` s) => CostrAction m c Response s
 costrQueryAssenso s kp kn = [("questioni aperte", querySottoStati)] where
