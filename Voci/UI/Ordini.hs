@@ -14,9 +14,8 @@ import Lib.Units
 import Lib.NaturalLanguage
 
 
-nuovoOrdine :: Monad m => [BoxVoce] -> Costruzione m b BoxOrdine
-nuovoOrdine xs = do
-	x <- scelte (map (render . singolare &&& id) xs) $ ResponseOne "scelta voce da ordinare"
+nuovoOrdine :: Monad m => BoxVoce -> Costruzione m b BoxOrdine
+nuovoOrdine x = do
 	let 	complete f = do
 			u <- scelte  (map (render . singolare &&& id) [minBound .. maxBound]) $ ResponseOne  $ 
 				"unità di misura per il valore dell'ordine"

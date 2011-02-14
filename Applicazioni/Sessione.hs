@@ -25,9 +25,9 @@ data Sessione a b p = Sessione
 	readGruppo :: IO (Maybe Name)			-- ^ gruppo selezionato
 	,writeGruppo :: Maybe Name -> IO ()		-- ^ cambia gruppo
 	,readEventi :: IO [Evento]			-- ^ legge gli eventi in memoria		
-	,aggiungiEvento ::  Dichiarazione p a Singola -> IO ()
+	,aggiungiEvento ::  Dichiarazione p Singola -> IO ()
 	,eliminaEvento :: IO [(Evento,IO ())]
-	,correggiEvento :: Dichiarazione p a Composta -> IO ()
+	,correggiEvento :: Dichiarazione p Composta -> IO ()
 	,readAccesso :: IO (Maybe Responsabile)		-- ^ legge il responsabile in azione
 	,writeAccesso :: Maybe Responsabile -> IO ()	-- ^ scrive il responsabile in azione
 	,readCaricamento :: IO (Maybe b)	-- ^ legge l'effetto dell'ultimo caricamento dichiarazioni
@@ -38,24 +38,24 @@ data Sessione a b p = Sessione
 	}
 
 -- | eventi che scatenano la ricomputazione dello stato modificato
-data Triggers p a = TResponsabile (Maybe Responsabile) | TEventi (Dichiarazioni p a) | TConservative Int | TGruppo (Maybe Name)
+data Triggers p  = TResponsabile (Maybe Responsabile) | TEventi (Dichiarazioni p ) | TConservative Int | TGruppo (Maybe Name)
 
 -- | modello di ricomputazione che deve essere fornito
 type Update a b = Name -> STM (Maybe (Int -> Maybe Responsabile -> [Evento] -> STM (a,b)))
-type Parse p a = [Evento] -> Dichiarazioni p a
+type Parse p  = [Evento] -> Dichiarazioni p 
 
 -- | azione di modifica di uno di eventi o responsabile
 update 	
-	:: Parse p a -- riproduzione dichiarazioni
+	:: Parse p  -- riproduzione dichiarazioni
 	-> Update a b -- produce uno stato modificato
 	-> Int -- ^ livello standard di caricamento eventi
-	-> 	(TVar (Dichiarazioni p a)
+	-> 	(TVar (Dichiarazioni p )
 		,TVar (Maybe Responsabile)
 		,TVar Int
 		,TVar (Maybe a) -- ultimo stato calcolato
 		,TVar (Maybe b) -- ultimi effetti calcolati
 		,TVar (Maybe Name)  -- nome del gruppo , se selezionato
-		,TChan (Triggers p a)
+		,TChan (Triggers p )
 		,TVar (Maybe (STM (Change c d)))
 		,(Name -> STM (Maybe (STM (STM (Change c d))))) -- una condizione esterna che deve fare scattare il rinnovamento
 		,(Name -> STM (Maybe (Maybe Utente -> STM [Evento]))) -- gli eventi pubblicati per un utente
@@ -83,7 +83,7 @@ update pa f l (eventi, accesso, conservative, stato, caricamento, gruppo, trigge
 									signal <- ns
 									writeTVar signalbox (Just signal)
 									writeTVar accesso Nothing
-									writeTVar eventi (Dichiarazioni [] [])
+									writeTVar eventi (pa [])
 									writeTVar conservative l
 									writeTVar gruppo n
 								Nothing -> return ()
@@ -91,7 +91,7 @@ update pa f l (eventi, accesso, conservative, stato, caricamento, gruppo, trigge
 								writeTVar signalbox Nothing
 								writeTVar gruppo Nothing
 								writeTVar accesso Nothing
-								writeTVar eventi (Dichiarazioni [] [])
+								writeTVar eventi (pa [])
 								writeTVar conservative l
 								writeTVar gruppo n
 		esterna = do 	
@@ -112,7 +112,7 @@ update pa f l (eventi, accesso, conservative, stato, caricamento, gruppo, trigge
 										dgs = maybe [] id $ mr >>= 
 											\u -> lookup u digested
 									-- TODO !!!
-									writeTVar eventi $ Dichiarazioni [] [] -- (ess `union` ofs) \\ dgs
+									writeTVar eventi $ pa [] -- (ess `union` ofs) \\ dgs
 									writeTVar conservative l
 								UPatch u esp -> when (Just u == mr) $ writeTVar eventi $ pa esp 
 						Nothing -> retry
@@ -139,7 +139,7 @@ update pa f l (eventi, accesso, conservative, stato, caricamento, gruppo, trigge
 			writeTVar caricamento Nothing
 
 -- | costruisce l'interfaccia di sessione a partire da un modificatore di stato in STM
-mkSessione 	:: Parse p a		-- ^ lettore di eventi
+mkSessione 	:: Parse p 		-- ^ lettore di eventi
 		-> Update a  b		-- ^ modificatore di stato
 		-> Int 			-- ^ livello di caricamento di base
 		-> (Name -> STM (Maybe (STM (STM (Change c d)))))		-- ^ segnale di aggiornamento stato
@@ -179,7 +179,7 @@ mkSessione pa f l signal publ exsignal ms =  do
 		(toEventi `fmap` read eventi)
 		(\d -> read eventi >>= write TEventi . aggiungi d)
 		(map (second $ write TEventi) . elimina <$> read eventi)
-		undefined
+		(\d -> read eventi >>= write TEventi . correggi d)
 		(read accesso) 
 		(write TResponsabile)
 		(read caricamento)

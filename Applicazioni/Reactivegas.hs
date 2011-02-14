@@ -1,4 +1,4 @@
-{-# LANGUAGE TypeSynonymInstances, MultiParamTypeClasses, TupleSections, OverlappingInstances #-}
+{-# LANGUAGE TypeSynonymInstances, MultiParamTypeClasses, TupleSections, OverlappingInstances, NoMonomorphismRestriction #-}
 module  Applicazioni.Reactivegas where
 
 import Data.Function (on)
@@ -33,7 +33,19 @@ import Eventi.Logger
 import Data.Time 
 import Eventi.Acquisto
 import Eventi.Voci
+import Core.Dichiarazioni
 
+esing = [
+	Singola (error "using a witness" :: EsternoAcquisto), 
+	Singola (error "using a witness" :: EsternoAccredito),
+	Singola (error "using a witness" :: EsternoImpegno),
+	Singola (error "using a witness" :: EsternoAnagrafico),
+	Singola (error "using a witness" :: EsternoAssenso)
+	]
+
+ecompo = [Composta ([]::[EventoVoci]), Composta ([]::[EsternoImpegnoVincolato])]
+
+mkDichiarazioni = parseDichiarazioni esing ecompo
 -- | il tipo dello stato accessibile
 type TS' = TyAnagrafe (TyAccredito (TyImpegni (TyAcquisti Integer)))
 type TS = (StatoVoci,TS')
@@ -54,7 +66,7 @@ instance Read QS where
 -- | lista di prioritizzatori, definiscono un riordinamento tra gli eventidi una patch
 priorita :: [Lib.Prioriti.R]
 priorita = [ priorityAnagrafe, priorityAnagrafeI, priorityAccredito
-		,  priorityImpegno, priorityAcquisto, priorityAssenso] 
+		,  priorityImpegno, priorityAcquisto, priorityAssenso, priorityImpegnoVincolato] 
 
 -- | lista di reattori. I reattori di base per gli eventi
 reattori :: [Reazione TS ParserConRead Utente]

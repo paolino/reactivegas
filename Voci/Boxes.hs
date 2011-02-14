@@ -26,7 +26,8 @@ data BoxVoce where
 		Name (BVoce b c d) , Typeable b, Typeable c, Typeable d,
 		Typeable (BVoce b c d), 
 		UnitClass b, 
-		UnitClass c) => BVoce b c d -> BoxVoce
+		UnitClass c
+		) => BVoce b c d -> BoxVoce
 
 instance Show BoxVoce where
 	show (BoxVoce x) = show x
@@ -63,6 +64,7 @@ data BoxOrdine where
 		Valuta b c d Pesi, 
 		Valuta b c d Volumi, 
 		Valuta b c d Unità, 
+		Valuta b c d Denaro, 
 		VoceOf (BWord b) b c d,
 		UnitClass b, 
 		UnitClass c) => BOrdine b c d -> BoxOrdine
@@ -156,6 +158,5 @@ mkInDenaro (BoxVoce v) =
 	`mplus`
 	(fmap BoxOrdine `fmap` (mkIn InDenaro v :: Maybe (Quantità Denaro -> BOrdine Unità Pesi Sfuso)))
 	
-
 
 

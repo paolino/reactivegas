@@ -1,4 +1,4 @@
-{-# LANGUAGE NoMonomorphismRestriction, ScopedTypeVariables, FlexibleContexts, GADTs #-}
+{-# LANGUAGE NoMonomorphismRestriction, ScopedTypeVariables, FlexibleContexts, GADTs, MultiParamTypeClasses, FlexibleInstances, TypeSynonymInstances #-}
 module Voci.UI.Voci where
 import Data.Typeable
 import Data.Dynamic
@@ -94,13 +94,14 @@ uiContenitorePesato  = uiContenitore fromPesato
 	[("pacchetto",Pacchetto), ("sacco",Sacco), ("sacchetto", Sacchetto) , ("cassetta",Cassetta)] . Just 
 uiContenitoreVolumato
   :: Monad m 
-	=> (Confezionamento Volumi -> BBene Volumi -> Costruzione m b a)
+	=>  (BBene Volumi -> Costruzione m b a)
+	-> (Confezionamento Volumi -> BBene Volumi -> Costruzione m b a)
 	-> BBene Volumi
 	-> Costruzione m b a
 
 uiContenitoreVolumato  = uiContenitore 
 	fromVolumato 
-	[("brick",Brick),("bottiglia",Bottiglia),("flacone", Flacone),("damigiana", Damigiana)] Nothing
+	[("brick",Brick),("bottiglia",Bottiglia),("flacone", Flacone),("damigiana", Damigiana)] . Just
 
 uiContenitoreUnitario
   :: Monad m =>
@@ -187,6 +188,19 @@ uiAlPeso xp = do
 			:+: " di " :+: WSfuso &.& fromPesato xp
 	return $ AlPeso xp (ftr c :? (Euro,u))
 uiAlPesoD = fmap BoxVoce . uiAlPeso
+
+
+uiAlVolume :: Monad m
+	=> BBene Volumi
+	-> Costruzione m b (BVoce Volumi Volumi Sfuso)
+uiAlVolume xp = do
+	u <- scelte  (map (render . singolare &&& id) [minBound .. maxBound]) . ResponseOne . render $ 
+		"unità di misura relativa al prezzo " :+: DiDeterminativo &.& WSfuso &.& fromVolumato xp
+	c <- libero  . ResponseOne . render $ "prezzo in euro per " :+: Indeterminativo &.& singolare2 u 
+			:+: " di " :+: WSfuso &.& fromVolumato xp
+	return $ AlVolume xp (ftr c :? (Euro,u))
+uiAlVolumeD = fmap BoxVoce . uiAlVolume
+
 uiAlPesoConfezionato c xp = do
 	u <- scelte  (map (render . singolare &&& id) [minBound .. maxBound]) . ResponseOne . render $ 
 		"unità di misura relativa al prezzo " :+: DiDeterminativo &.& WSfuso &.& fromPesato xp
@@ -221,6 +235,15 @@ uiAllaConfezioneD mo c = fmap BoxVoce . uiAllaConfezione mo c
 
 ui = uiBene 
 	(uiContenitorePesato  uiAlPesoD 	(uiScatola uiAlPesoConfezionatoOAllaConfezioneD)) 
-	(uiContenitoreVolumato  		(uiScatola uiAlVolumeConfezionatoOAllaConfezioneD)) 
+	(uiContenitoreVolumato uiAlVolumeD 		(uiScatola uiAlVolumeConfezionatoOAllaConfezioneD)) 
 	(uiContenitoreUnitario uiAlPezzoOPezzoStimatoD 	(uiScatola (uiAllaConfezioneOConfezioneStimataD)))
 
+class  ModificaPrezzo m b a where
+	modificaPrezzo :: a -> Costruzione m b a
+
+instance Monad m =>ModificaPrezzo m b (BVoce Pesi Pesi Sfuso) where
+	modificaPrezzo (AlPeso x q) = uiAlPeso x
+instance Monad m => ModificaPrezzo m b (BVoce Unità Unità Sfuso) where
+	modificaPrezzo (AlPezzo x q) = uiAlPezzo x
+instance Monad m => ModificaPrezzo m b (BVoce  Volumi Volumi Sfuso) where
+	modificaPrezzo (AlVolume x q) = uiAlVolume x

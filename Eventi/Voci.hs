@@ -31,9 +31,9 @@ import Lib.Prioriti (R (..))
 import Lib.Assocs (update , (?), upset)
 import qualified Lib.Euro  as E
 
-import Voci.UI.Voci (ui)
+import Voci.UI.Voci (ui, modificaPrezzo)
 import Voci.UI.Ordini (nuovoOrdine)
-import Voci.Ordini (Valuta (valuta))
+import Voci.Ordini (Valuta (..))
 import Voci.Boxes (BoxVoce (..),BoxOrdine (..))
 import Voci.Quantita (Quantità((:?)))
 
@@ -47,11 +47,12 @@ data Voce = Voce [String] [String] BoxVoce deriving (Eq, Show, Read)
 data Ordine = Ordine [String] [String] BoxOrdine deriving (Eq, Show, Read)
 
 denaro :: Ordine -> E.Euro
-denaro (Ordine _ _ (BoxOrdine o)) = let x :? U.Euro = fromJust $ valuta o in
+denaro q@(Ordine _ _ (BoxOrdine o)) = let x :? U.Euro = maybe (error $ "niente denaro: " ++ show q) id $ valuta o :: Quantità Denaro in
 	E.Euro x
 
 data EventoVoci = CorreggiVoci [Voce] [Voce] | CorreggiAcquisto Indice [Voce] [Voce] 
-	| CorreggiOrdine Indice Utente [Ordine] [Ordine] deriving (Show,Read, Typeable)
+	| CorreggiOrdine Indice Utente [Ordine] [Ordine] deriving (Typeable, Read, Show)
+
 
 data StatoVoci = StatoVoci {
 	voci :: [Voce],
@@ -59,14 +60,23 @@ data StatoVoci = StatoVoci {
 	ordini :: [((Indice,Utente),[Ordine])]
 	} deriving (Show,Read,Eq)
 
-patcher (CorreggiVoci ns vs) (CorreggiVoci ns' vs') = Just $ CorreggiVoci (ns `union` ns') (vs `union` vs')
+mix xs xs' ys ys' = let
+	xs'' = xs `union` xs'
+	ys'' = ys `union` ys'
+	in (xs'' \\ ys'', ys'' \\ xs'')
+
+patcher (CorreggiVoci ns vs) (CorreggiVoci ns' vs') = Just $ uncurry CorreggiVoci $ mix ns ns' vs vs'
 patcher (CorreggiAcquisto i ns vs) (CorreggiAcquisto i' ns' vs') 
-	| i == i' = Just $ CorreggiAcquisto i (ns `union` ns') (vs `union` vs')
+	| i == i' = Just $ uncurry (CorreggiAcquisto i) $ mix ns ns' vs vs'
 	| otherwise = Nothing
 patcher (CorreggiOrdine i u ns vs) (CorreggiOrdine i' u' ns' vs') 
-	| i == i' && u == u' = Just $ CorreggiOrdine i u (ns `union` ns') (vs `union` vs')
+	| i == i' && u == u' = Just $ uncurry (CorreggiOrdine i u) $ mix ns ns' vs vs'
 	| otherwise = Nothing
 patcher _ _ = Nothing
+nullaer (CorreggiVoci [] []) = True
+nullaer (CorreggiAcquisto _ [] []) = True
+nullaer (CorreggiOrdine _ _  [] []) = True
+nullaer _ = False
 
 data EventoInternoVoci = EventoAperturaImpegni Utente Indice String | EventoChiusuraImpegni Indice | InternoVoci EventoVoci deriving (Show,Read)
 
@@ -74,7 +84,7 @@ instance Patch EventoVoci where
 	patch xs x = case msum . map (\(y,ys) -> (,) ys `fmap` patcher x y) $ holing xs of
 		Nothing -> x : xs 
 		Just (ys,y)  -> y : ys
-
+	nulla = nullaer
 data OrdiniChiusi = OrdiniChiusi Indice [((Indice,Utente),[Ordine])] deriving (Typeable,Show,Read)
 loggaVoce (Voce cs fs o) = render (singolare o) ++ "," ++ intercalate "," cs ++ "," ++ intercalate "," fs 
 
@@ -89,7 +99,7 @@ reazioneVoci = Reazione (Nothing,reattoreVoci) where
 		modifica $ \(StatoVoci vs as os) -> StatoVoci (nvs ++ (vs \\ evs)) as os
 		loggamus $ "corretto l'insieme generale delle voci acquistabili "
 		StatoVoci vs as os <- osserva
-		trace (show vs) $ return (True,nessunEffetto)
+		return (True,nessunEffetto)
 	reattoreVoci (Left (EventoAperturaImpegni u i s)) = conFallimento $ do
 		modifica $ \(StatoVoci vs as os) -> StatoVoci vs ((i,(u,s,[])):as) os
 		loggamus $ "aggiunto un nuovo acquisto al modulo ordini"
@@ -101,7 +111,7 @@ reazioneVoci = Reazione (Nothing,reattoreVoci) where
 			Just (u,_, _) -> do
 				let (gs,os') = partition (\((j,_),_) -> i == j) os 
 				logga $ Message (OrdiniChiusi i gs)
-				modifica $ \(StatoVoci vs as os) -> StatoVoci vs (filter ((==) i . fst) as) os'
+				modifica $ \(StatoVoci vs as os) -> StatoVoci vs (filter ((/=) i . fst) as) os'
 				loggamus $ "modulo ordini relativo a " ++ show i
 		return (True,nessunEffetto)
 	reattoreVoci (Right (first validante -> (wrap,CorreggiAcquisto i nvs evs))) = wrap $ \r -> do
@@ -111,7 +121,7 @@ reazioneVoci = Reazione (Nothing,reattoreVoci) where
 			Just (u,s,vs) -> do
 				fallimento (r /= u) "solo il responsabile d'acquisto può modificare le voci acquistabili"
 				modifica $ \(StatoVoci dvs as os) -> 
-						StatoVoci dvs ((i,(u,s,nvs ++ (vs \\ evs))) : filter ((==) i . fst) as) os
+						StatoVoci dvs ((i,(u,s,nvs ++ (vs \\ evs))) : filter ((/=) i . fst) as) os
 				loggamus $ "elenco beni acquistabili in riferimento a " ++ show i ++ " modificato"
 		return (True,nessunEffetto)
 	reattoreVoci (Left (InternoVoci (CorreggiOrdine i u ns ves))) = conFallimento $ do
@@ -126,24 +136,74 @@ reazioneVoci = Reazione (Nothing,reattoreVoci) where
 		return (True,nessunEffetto)
 
 -- | costruttore di eventi per il modulo di accredito
-costrEventiVoci :: (Functor m,Parser p EventoVoci,  Monad m, ParteDi StatoVoci s) => CostrAction m c (Dichiarazione p s Composta) s
-costrEventiVoci s kp kn = 	[("definizione nuovo bene d'acquisto", runSupporto s kn kp $ callCC (nuovaVoce [] [] Nothing)),
-				("eliminazione bene d'acquisto",elimaBene),
-				("assegnazione bene ad un acquisto",assegnaVoce)
+costrEventiVoci :: (Functor m,  Parser p EventoVoci,  Monad m, ParteDi StatoVoci s) => CostrAction m c (Dichiarazione p Composta) s
+costrEventiVoci s kp kn = 	[("definizione nuova voce d'acquisto", runSupporto s kn kp $ callCC (nuovaVoce [] [] Nothing)),
+				("clonazione voce d'acquisto", clonaVoce),
+				("correzione voce d'acquisto", correggiVoce),
+				("eliminazione voce d'acquisto",elimaBene),
+				("assegnazione voce ad un acquisto",assegnaVoce),
+				("eliminazione voce da un acquisto",staccaVoce)
 				] 
-	where
+	where	
+
 	assegnaVoce = runSupporto s kn kp $ do
 		StatoVoci vs as os <- asks see
-		s' <- ask
+		i <- scelte (map (\(i,(u,s,vs)) -> (s,i)) as) $ ResponseOne "selezione acquisto da modificare"
+		StatoVoci vs as os <- asks see
+		let r = lookup i as
+		case r of
+			Nothing -> throwError "acquisto inesistente"
+			Just (u,s,vs') -> do 
+				v <- scelte (map (loggaVoce &&& id) (vs \\ vs')) $ ResponseOne $ "voce da inserire nell'acquisto " ++ s	
+				return . Composta $ [CorreggiAcquisto i [v] []]
+	staccaVoce = runSupporto s kn kp $ do
+		StatoVoci vs as os <- asks see
 		(i,vs') <- scelte (map (\(i,(u,s,vs)) -> (s,(i,vs))) as) $ 
-			ResponseOne "selezione acquisto da ampliare"
-		v <- scelte (map (loggaVoce &&& id) (vs \\ vs')) $ ResponseOne "selezione nuova voce da inserire nell'acquisto"	
-		return . Composta $ [CorreggiAcquisto i [v] []]
+			ResponseOne "selezione acquisto da modificare"
+		StatoVoci vs as os <- asks see
+		let r = lookup i as
+		case r of
+			Nothing -> throwError "acquisto inesistente"
+			Just (u,s,vs') -> do 
+				v <- scelte (map (loggaVoce &&& id) (vs')) $ ResponseOne $ "voce da togliere dall'acquisto " ++ s
+				return . Composta $ [CorreggiAcquisto i [] [v]]
 
 	elimaBene = runSupporto s kn kp $ do
 		StatoVoci vs _ _ <- asks see
-		v <- scelte  (map (loggaVoce &&& id) vs) $ ResponseOne "bene da eliminare"
+		v <- scelte  (map (loggaVoce &&& id) vs) $ ResponseOne "voce d'acquisto da eliminare"
 		return . Composta $ [CorreggiVoci [] [v]]
+	clonaVoce = runSupporto s kn kp $ do
+			StatoVoci vs _ _ <- asks see
+			Voce cs fs o <- scelte  (map (loggaVoce &&& id) vs) $ ResponseOne "voce d'acquisto da clonare" 
+			v' <- callCC $ correggiVoce' cs fs o
+			return . Composta $ [CorreggiVoci [v'] []]
+	correggiVoce = runSupporto s kn kp $ do
+			StatoVoci vs _ _ <- asks see
+			v@(Voce cs fs o) <- scelte  (map (loggaVoce &&& id) vs) $ ResponseOne "voce d'acquisto da clonare" 
+			v' <- callCC $ correggiVoce' cs fs o
+			return . Composta $ [CorreggiVoci [v'] [v]]
+
+	correggiVoce' cs fs o k =  do 
+				let c = Response [("categorie", ResponseMany $ map ResponseOne $ cs),
+					("filiera", ResponseMany $  map ResponseOne $ fs),
+					("unità minima di acquisto", ResponseOne . render . singolare $ o)]
+				join $ scelte   [
+					("aggiungi una categoria", addCat),
+					("elimina una categoria", rmCat),
+					("aggiungi un attore nella filiera", addFil),
+					("elimina un attore dalla filiera", rmFil),
+					("correggi il prezzo",setCom),
+					("<fine>", k $ Voce cs fs o)
+					] c
+			where
+			addCat = libero  (ResponseOne "correggi categoria") >>= \c -> correggiVoce' (nub (c:cs)) fs o k
+			addFil = libero  (ResponseOne "nuovo attore della filiera") >>= \c -> correggiVoce' cs (nub (c:fs)) o k
+			rmCat = scelte  (map (id &&& id) cs)  (ResponseOne "selezione categoria da eliminare") >>= \c -> 
+				correggiVoce' (filter (/=c) cs) fs o k
+			rmFil = scelte  (map (id &&& id) fs) (ResponseOne "selezione attore da eliminare") >>= \c -> 
+				correggiVoce' cs (filter (/=c) fs) o k
+			setCom = toSupporto (modificaPrezzo o) >>= \o -> correggiVoce' cs fs o k
+
 	nuovaVoce cs fs co k =  do
 		let c = Response [("categorie", ResponseMany $ map ResponseOne $ cs),
 			("filiera", ResponseMany $  map ResponseOne $ fs),

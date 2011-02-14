@@ -14,7 +14,7 @@ import Lib.Response
 import Lib.Missing ((>$>))
 import Lib.Tokens (Token (..))
 import Eventi.Anagrafe (responsabili)
-import Applicazioni.Reactivegas (Effetti, QS (..) ,loader, bianco, nuovoStato, maxLevel) 
+import Applicazioni.Reactivegas (Effetti, QS (..) ,loader, bianco, nuovoStato, maxLevel, mkDichiarazioni) 
 import Applicazioni.Persistenza (Change (GPatch), mkPersistenza , Persistenza (readStato, readLogs, caricamentoBianco,updateSignal,queryUtente))
 import Applicazioni.Sessione (mkSessione, Sessione (backup,readGruppo))
 import Applicazioni.Report (mkReporter)
@@ -25,6 +25,8 @@ import Server.Opzioni (parseArgs, Argomenti (Argomenti))
 import Server.Layout (layout, pagina)
 -- import Applicazioni.Aggiornamento (serverAggiornamento)
 import Applicazioni.Amministratore
+
+
 
 runGruppo lmov (dir,name,mr0,signal)  = do
 		putStrLn $ "** Inizio persistenza di \"" ++ name ++ "\""
@@ -59,7 +61,9 @@ main = do
 		
 	let 
 	    newEnvironment signal ms = do
-		se <- mkSessione (fmap (fmap caricamentoBianco) . query ) 
+		se <- mkSessione 
+			(mkDichiarazioni)
+			(fmap (fmap caricamentoBianco) . query ) 
 			maxLevel 
 			(fmap (fmap updateSignal) . query) 
 			(fmap (fmap queryUtente) . query) 

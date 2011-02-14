@@ -83,9 +83,9 @@ reazioneAcquisto = soloEsterna reattoreAcquisto where
 				return (epr,epf)
 		(la,za,esf) <- programmazioneAssenso ("nuova proposta di acquisto " ++ b) r maggioranza  positivo negativo
 
-		return (True, ([za, zi esf],ievs))
+		return (True, ([za]++ zi esf,ievs))
 
-costrEventiAcquisto :: (Monad m, Parser p EsternoAcquisto,  Servizio Impegni `ParteDi` s) => CostrAction m c (Dichiarazione p s Singola) s
+costrEventiAcquisto :: (Monad m, Parser p EsternoAcquisto,  Servizio Impegni `ParteDi` s) => CostrAction m c (Dichiarazione p Singola) s
 costrEventiAcquisto s kp kn  = [("nuova proposta di acquisto", eventoApertura)] 
 	where
 	eventoApertura  = runSupporto s kn kp $ do

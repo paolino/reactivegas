@@ -147,7 +147,6 @@ salvataggio s = do
 				(fst <$> unQS <$> statoPersistenza) >>= \s -> p (f s evs) 
 		runSupporto (fst <$> unQS <$> statoPersistenza) (bocciato s) k $ firmante r
 
-{-
 sincronizza = onAccesso $ \(r@(u,_)) -> do  
 	(_,rs) <-  second (map snd) <$> sepU readUPatches
 	case rs of 
@@ -156,6 +155,7 @@ sincronizza = onAccesso $ \(r@(u,_)) -> do
 			let k (Firmante f)  = (fst <$>  unQS <$> statoPersistenza) >>= \s -> sepU $ ($ f s xs). writeGPatch
 			runSupporto (fst <$> unQS <$> statoPersistenza) (bocciato "sincronizzazione gruppo") k $ firmante r
 
+{-
 caricaAggiornamentoIndividuale :: Interfaccia ()
 caricaAggiornamentoIndividuale = do 
 	p@(c,_,_) <- P.upload  "aggiornamento individuale"

@@ -116,7 +116,7 @@ runPasso (P.Scelta q xs c) = let
 			(indietro z mb +++ avanti z ma +++
 			(	thediv ! [theclass "responso"] <<  
 					renderResponse "output" q  +++
-					ulist << (map (\(x,_) -> li ! [theclass "scelta"]
+					ulist ! [theclass "scelta"] << (map (\(x,_) -> li ! [title x , theclass "scelta"]
 					<< anchor ! [theclass "quietL", href $ mkLink "/interazione" [("hkey",y),("fkey",z),("valore",x)]] 
 						<< x) xs )
 			)

@@ -57,7 +57,6 @@ data Req
 	| ScaricaD
 	| ClonaS
 	| ResetS
-	| PinPointS
 
 -- | tutte le richieste portano con se la chiave di environment, e la chiave di cella
 type Request = (TimeKey,FormKey,Req)
@@ -153,7 +152,6 @@ mkServer limit reload bs = do
 	let	servizio (enk,fok,q) = do
 			
 			case q of
-				PinPointS -> 
 				ClonaS -> do
 					db <- lift . atomically $ readTVar dbe
 					fo <- onNothing "chiave temporale non trovata" $ query db (enk,fok)

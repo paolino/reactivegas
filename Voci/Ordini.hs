@@ -1,4 +1,4 @@
-{-# LANGUAGE MultiParamTypeClasses, ScopedTypeVariables, TypeFamilies, FunctionalDependencies, GADTs, FlexibleContexts, UndecidableInstances, FlexibleInstances, TypeSynonymInstances, ViewPatterns, OverlappingInstances #-}
+{-# LANGUAGE MultiParamTypeClasses, ScopedTypeVariables, TypeFamilies, FunctionalDependencies, GADTs, FlexibleContexts, FlexibleInstances, TypeSynonymInstances, ViewPatterns, OverlappingInstances #-}
 module Voci.Ordini where
 
 import Data.Typeable
@@ -21,8 +21,7 @@ InConfezioni _ y  `matchOV` z = y == z
 
 class Valuta b c d e where
 	valuta :: BOrdine b c d  -> Maybe (Quantità e)
-instance Valuta b c d e where
-	valuta _ = Nothing
+
 
 
 --------- Richiesta Denaro ----------------------------------------------------
@@ -115,7 +114,8 @@ instance Valuta Unità Pesi Sfuso Pesi where
 instance Valuta Pesi Pesi Sfuso Pesi where
 	valuta (InPeso v (AlPeso _ q)) = Just $ v  where
 	valuta (InDenaro v (AlPeso _ q)) = Just $ v *|* q
-
+instance Valuta b c Sfuso Pesi where
+	valuta _ = Nothing
 
 ------------------------------- Confezionato ---------------------------------
 instance Valuta Unità Pesi Confezionato Pesi where
@@ -155,6 +155,9 @@ instance Valuta Pesi Pesi Confezionato Pesi where
 		z = n *|* p0 :: Quantità Pesi -- peso confezione minima
 		cc = z *|* q :: Quantità Denaro -- costo alla confezione
 		m = floorQ $ v *|* cc :: Quantità Unità -- numero confezioni 
+instance Valuta b c Confezionato Pesi where
+	valuta _ = Nothing
+
 
 ------------------------------ Richieste Volumi ---------------------------------------------------
 
@@ -162,6 +165,8 @@ instance Valuta Pesi Pesi Confezionato Pesi where
 instance Valuta Volumi Volumi Sfuso Volumi where
 	valuta (InVolume v (AlVolume _ q)) = Just $ v where
 	valuta (InDenaro v (AlVolume _ q)) = Just $ v *|* q
+instance Valuta b c Sfuso Volumi where
+	valuta _ = Nothing
 
 ---------------------------------------- Confezionato
 instance Valuta Volumi Volumi Confezionato Volumi where
@@ -188,6 +193,8 @@ instance Valuta Volumi Volumi Confezionato Volumi where
 		z = n *|* p0 :: Quantità Volumi -- peso confezione minima
 		cc = z *|* q :: Quantità Denaro -- costo alla confezione
 		m = floorQ $ v *|* cc :: Quantità Unità -- numero confezioni 
+instance Valuta b c Confezionato Volumi where
+	valuta _ = Nothing
 
 ---------------------------- Richieste Unità -----------------------
 
@@ -200,7 +207,10 @@ instance Valuta Unità Pesi Sfuso Unità where
 	valuta (InPeso v (AlPezzoStimato _ (_,p) q)) = Just . floorQ $ v *|* p
 	valuta (InDenaro v (AlPezzoStimato _ (_,p) q)) = Just . floorQ $ r *|* p where
 		r = v *|* q :: Quantità Pesi -- peso acquistabile
-		
+
+instance Valuta b c Sfuso Unità where
+	valuta _ = Nothing
+
 instance Valuta Unità Unità Confezionato Unità where
 	valuta (InConfezioni v (AllaConfezione c _ q)) = Just v
 	valuta (InDenaro v (AllaConfezione c _ q)) = Just . floorQ $ v *|* q
@@ -224,3 +234,6 @@ instance Valuta Volumi Volumi Confezionato Unità where
 	valuta (InVolume v (AllaConfezione c _ q)) = Just $ floorQ $ v *|* r where
 		(n,p0) = confezioniEVolume c
 		r = n *|* p0 :: Quantità Volumi
+instance Valuta b c Confezionato Unità where
+	valuta _ = Nothing
+
