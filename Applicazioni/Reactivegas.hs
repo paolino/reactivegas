@@ -52,17 +52,17 @@ type TS = (StatoVoci,TS')
 -- |tipo dello stato con la serializzazione dei reattori
 -- type QS = (TS,[SNodo TS  Utente])
 
-newtype QS = QS {unQS :: (TS,[Nodo TS ParserConRead Utente])} deriving Eq
+newtype QS = QS {unQS :: (TS,[Nodo TS ParserConRead Utente])} 
 
 
 instance Show QS where
 	show (QS (ts,ns)) = show (ts,map serializza ns)
 
 instance Read QS where
-	readsPrec t x = map (first (QS . second y)) $ readsPrec t x where
+	readsPrec t x = map (first ( QS . second y)) $ readsPrec t x where
 		y nss = case sequence . map (uncurry deserializza) . zip nss $ reattori of
 			Nothing -> error $ "deserializzazione fallita" 
-			Just ns -> (map serializza ns == map serializza ns) `seq` ns
+			Just ns ->  ns
 -- | lista di prioritizzatori, definiscono un riordinamento tra gli eventidi una patch
 priorita :: [Lib.Prioriti.R]
 priorita = [ priorityAnagrafe, priorityAnagrafeI, priorityAccredito
@@ -91,7 +91,7 @@ filtroMovimenti = estrai
 type Effetti = [Contestualizzato Utente Message]
 
 caricamento'' :: Int -> [Esterno Utente] -> QS -> (QS,Effetti)
-caricamento'' l es (QS q) = let (q',ef) = (q == q) `seq` caricaEventi' priorita  l es q
+caricamento'' l es (QS q) = let (q',ef) = (fst q == fst q) `seq` caricaEventi' priorita  l es q
 	in  (QS q',ef)
 
 -- | aggiornamento di gruppo

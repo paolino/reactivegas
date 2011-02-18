@@ -18,7 +18,7 @@ groupWrite x y v t = onFS (writeFile (x </> y) (show (v,t))) error return
 groupUnwrite :: Read a => FilePath -> String -> IO (Maybe (Int,a))
 groupUnwrite x y  = onFS (readFile (x </> y)) (\_ -> return Nothing) (return . seqit)
 	where seqit z = case reads z of 
-		[(q,_)] -> last z `seq` Just q
+		[(q,_)] -> Just q
 		_ -> Nothing
 
 -- | legge un dato riguardante un gruppo

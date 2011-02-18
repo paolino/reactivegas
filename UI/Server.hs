@@ -168,10 +168,6 @@ descrizione = do
 	l <- ses getConservative
 	g <- ses readGruppo
 	s <- ses readStatoSessione
-	s <- case s of
-		Nothing -> bocciato "selezione acquisto" "incongruenza interna: manca lo stato" 
-		Just s -> return s
-	let a = acq >>= flip lookup (map (snd &&& fst) . raccoltei . fst. unQS $ s)
 	mv <- case g of 
 		Nothing -> return Nothing 
 		Just _ -> fmap Just $ sepU readVersion
@@ -180,7 +176,12 @@ descrizione = do
 		,("responsabile della sessione" , ResponseOne $ case r of 
 			Nothing -> "<anonimo>"
 			Just (u,_) -> u)
-		,("acquisto selezionato", ResponseOne $ maybe "<nessuno>" id a)
+		,("acquisto selezionato", ResponseOne . maybe "<nessuno>" id $ do 
+			i <- acq 
+			s' <- map (snd &&& fst) . raccoltei . fst . unQS <$> s
+			lookup i s'
+			)
+			
 		] 
 		++ case mv of 
 			Nothing -> []
@@ -251,9 +252,9 @@ vociW = do
 applicazione = rotonda $ \_ -> do
 	menu (ResponseOne "menu principale")  $ 
 				[
-				wname "responsabile autore"  ensureGruppo (rotonda $ const accesso),
+				wname "selezione responsabile"  ensureGruppo (rotonda $ const accesso),
 
-				("gruppo di acquisto", cambiaGruppo),
+				("selezione gruppo", cambiaGruppo),
 				("selezione acquisto", selaAcquisto),
 				("selezione ordinante", selaOrdinante),
 				("acquisti e ordini",vociW),

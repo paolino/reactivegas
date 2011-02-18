@@ -120,7 +120,7 @@ ripristino unwrite gname p tversion tupatch torfani tlog uv ts = do
 	ms <- groupUnwrite gname "stato.corrente" 	
 	t <- case ms of 
 		Just (vc,s) -> do 
-			putStrLn $ "rilevato file di stato corrente " ++ show vc
+			putStrLn $ last (show s) `seq`  "rilevato file di stato corrente " ++ show vc
 			if vc == uv then 
 				return $ (False, atomically $ writeTVar tversion vc >> writeTVar ts s )
 				else do return reload

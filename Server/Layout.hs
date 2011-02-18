@@ -5,10 +5,10 @@ import Text.XHtml
 
 layout :: [([String],Int)]
 layout = 	
-		[(["gruppo di acquisto"],6)
+		[(["selezione gruppo"],6)
 		,(["gestione dichiarazioni"],2)
 		,(["descrizione della sessione"],1)
-		,(["responsabile autore"],7)
+		,(["selezione responsabile"],7)
 		,(["effetto delle ultime dichiarazioni"],3)
 		,(["amministrazione"],4)
 		,(["interrogazione sullo stato del gruppo"],5)

@@ -32,8 +32,8 @@ runGruppo lmov (dir,name,mr0,signal)  = do
 		putStrLn $ "** Inizio persistenza di \"" ++ name ++ "\""
 		(pe,boot,cond) 
 			<- mkPersistenza signal loader bianco (nuovoStato $ maybe [] return mr0) (fst . responsabili) (fst . unQS)  dir
-
-		putStrLn $ "** Inizio report di \"" ++ name ++ "\"" 
+		s <- readStato pe
+		putStrLn $  "** Inizio report di \"" ++ name ++ "\"" 
 		report <- mkReporter dir (dir </> "static" </> "report.html") lmov cond
 		forkIO $ do
 			w <- atomically (updateSignal pe) -- una copia del canale di segnalazione update della persistenza
