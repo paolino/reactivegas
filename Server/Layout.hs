@@ -12,6 +12,9 @@ layout =
 		,(["effetto delle ultime dichiarazioni"],3)
 		,(["amministrazione"],4)
 		,(["interrogazione sullo stato del gruppo"],5)
+		,(["selezione acquisto"],8)
+		,(["selezione ordinante"],9)
+		,(["acquisti e ordini"],10)
 		]
 
 

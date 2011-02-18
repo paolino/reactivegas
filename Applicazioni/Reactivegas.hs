@@ -66,7 +66,7 @@ instance Read QS where
 -- | lista di prioritizzatori, definiscono un riordinamento tra gli eventidi una patch
 priorita :: [Lib.Prioriti.R]
 priorita = [ priorityAnagrafe, priorityAnagrafeI, priorityAccredito
-		,  priorityImpegno, priorityAcquisto, priorityAssenso, priorityImpegnoVincolato] 
+		,  priorityImpegno, priorityAcquisto, priorityAssenso, priorityImpegnoVincolato, priorityEventoVoci] 
 
 -- | lista di reattori. I reattori di base per gli eventi
 reattori :: [Reazione TS ParserConRead Utente]

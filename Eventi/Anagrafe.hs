@@ -55,7 +55,6 @@ import Eventi.Servizio
 
 -- | chiave pubblica di un responsabile
 -- type Segreto = 
-type Indice = QInteger
 
 -- | il pezzo di stato necessario all'anagrafe per funzionare
 type TyAnagrafe a = (Anagrafe , (Responsabili , (Servizio Assensi, a)))

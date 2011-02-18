@@ -27,7 +27,7 @@ import Lib.Prioriti (R)
 import Lib.Response (Response (..))
 
 
-import Core.Types (Esterno, Evento, Utente, Responsabile)
+import Core.Types (Esterno, Evento, Utente, Responsabile, SessioneOrdinante (..), SessioneAcquisto (..)) 
 import Core.Controllo (caricaEventi, SNodo (..))
 import Core.Contesto (flatten)
 import Core.Programmazione (Reazione)
@@ -70,6 +70,11 @@ statoPersistenza = snd  `fmap` sepU readStato
 
 statoSessione =  fmap (fJ "stato sessione") . sel $ readStatoSessione . snd   
 
+
+
+
+
+
 ses f = sel $ f . snd
 sepU f = sel $ \(pe,se) -> do
 		g <- readGruppo se
@@ -86,8 +91,10 @@ type MEnv  = ReaderT Environment IO
 type Interfaccia a = Costruzione MEnv () a
 
 -- | comunica che c'è un errore logico nella richiesta
-bocciato :: String -> String -> Interfaccia ()
-bocciato s x =  P.errore True  . Response $ [(s , ResponseOne x)] 
+bocciato :: String -> String -> Interfaccia a
+bocciato s x =  do
+	P.errore True  . Response $ [(s , ResponseOne x)] 
+	return undefined
 
 bocciatoS s x =  P.errore True . Response $ [(s , ResponseOne x)] 
 

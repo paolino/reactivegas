@@ -1,13 +1,14 @@
-{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE NoMonomorphismRestriction, DeriveDataTypeable #-}
 module Lib.QInteger (makeQInteger, fromQInteger,QInteger) where
 import Debug.Trace
 
 import Data.List (unfoldr)
+import Data.Typeable
 import Text.Printf
 
 nq= 4
 
-data QInteger = QInteger [Int] deriving (Eq,Ord)
+data QInteger = QInteger [Int] deriving (Eq,Ord, Typeable)
 
 instance Show QInteger where
 	show (QInteger xs) = concatMap (printf ("%0" ++ show nq ++ "d ")) $ xs

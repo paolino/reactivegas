@@ -3,7 +3,7 @@
 {-# LANGUAGE NoMonomorphismRestriction, FlexibleInstances, FlexibleContexts, Rank2Types, ScopedTypeVariables, GADTs, ExistentialQuantification, StandaloneDeriving,UndecidableInstances, ViewPatterns, DeriveDataTypeable, MultiParamTypeClasses #-}
 module Eventi.Voci where
 
-import Data.List (nub, intercalate, partition, (\\), union)
+import Data.List (nub, intercalate, partition, (\\), union, group, sort)
 import Data.Maybe (catMaybes, fromJust)
 import Data.Typeable 
 import Control.Arrow ((&&&), first)
@@ -18,7 +18,7 @@ import qualified Lib.Passo as P
 import Eventi.Servizio
 import Core.Costruzione -- (CostrAction)
 import Lib.Response
-import Core.Types (Utente)
+import Core.Types -- (Utente)
 import Core.Programmazione (Reazione (..), TyReazione, soloEsterna, nessunEffetto, Message (..))
 import Core.Inserimento (MTInserzione, fallimento, osserva, modifica, logga, loggamus, conFallimento)
 import Core.Parsing (Parser)
@@ -37,21 +37,27 @@ import Voci.Ordini (Valuta (..))
 import Voci.Boxes (BoxVoce (..),BoxOrdine (..))
 import Voci.Quantita (Quantità((:?)))
 
-import qualified Lib.Units as U (Denaro(Euro))
+import qualified Lib.Units as U
 
 import Debug.Trace
 
-type Indice = QInteger
 
 data Voce = Voce [String] [String] BoxVoce deriving (Eq, Show, Read)
 data Ordine = Ordine [String] [String] BoxOrdine deriving (Eq, Show, Read)
 
 denaro :: Ordine -> E.Euro
-denaro q@(Ordine _ _ (BoxOrdine o)) = let x :? U.Euro = maybe (error $ "niente denaro: " ++ show q) id $ valuta o :: Quantità Denaro in
-	E.Euro x
+denaro q@(Ordine _ _ (BoxOrdine o)) = let x = valuta o :: Maybe (Quantità Denaro) in
+	case x of 
+		Just (y :? U.Euro) -> E.Euro y
+		Just (y :? U.Centesimo) -> E.Euro (y/100)
 
 data EventoVoci = CorreggiVoci [Voce] [Voce] | CorreggiAcquisto Indice [Voce] [Voce] 
 	| CorreggiOrdine Indice Utente [Ordine] [Ordine] deriving (Typeable, Read, Show)
+
+priorityEventoVoci = R k where	
+	k (CorreggiVoci _ _) = -40
+	k (CorreggiAcquisto _ _ _) = -39
+	k (CorreggiOrdine _ _ _ _) = -39
 
 
 data StatoVoci = StatoVoci {
@@ -87,6 +93,7 @@ instance Patch EventoVoci where
 	nulla = nullaer
 data OrdiniChiusi = OrdiniChiusi Indice [((Indice,Utente),[Ordine])] deriving (Typeable,Show,Read)
 loggaVoce (Voce cs fs o) = render (singolare o) ++ "," ++ intercalate "," cs ++ "," ++ intercalate "," fs 
+loggaOrdine (Ordine cs fs o) = render (singolare o) ++ "," ++ intercalate "," cs ++ "," ++ intercalate "," fs 
 
 reazioneVoci :: (
 	StatoVoci `ParteDi` s,
@@ -228,9 +235,45 @@ costrEventiVoci s kp kn = 	[("definizione nuova voce d'acquisto", runSupporto s 
 			rmFil = scelte  (map (id &&& id) fs) (ResponseOne "selezione attore da eliminare") >>= \c -> 
 				nuovaVoce cs (filter (/=c) fs) co k
 			setCom = toSupporto ui >>= \o -> nuovaVoce cs fs (Just o) k
+mostraBeni s kp kn =  runSupporto s kn kp $ do
+	StatoVoci vs as os <- asks see
+	Voce cs fs o <- scelte  (map (loggaVoce &&& id) vs) $ ResponseOne "scelta bene da mostrare"
+	return $ Response [("categorie", ResponseMany $ map ResponseOne $ cs),
+		("filiera", ResponseMany $  map ResponseOne $ fs),
+		("unità minima di acquisto", ResponseOne . render . singolare $ o)
+		]
+mostraAcquisti i s kp kn =  runSupporto s kn kp $ do
+	StatoVoci _ as _ <- asks see
+	(i,s,u,vs) <- case lookup i as of
+		Nothing -> throwError "acquisto non disponibile"
+		Just (u,s,vs) -> return (i,s,u,vs)
+	Voce cs fs o <- scelte  (map (loggaVoce &&& id) vs) $ Response $ [
+		("nome acquisto",ResponseOne s),
+		("riferimento acquisto",ResponseOne i),
+		("responsabile acquisto",ResponseOne u),
+		("voci acquistabili",ResponseOne "")
+		]
+	return $ Response [("categorie", ResponseMany $ map ResponseOne $ cs),
+		("filiera", ResponseMany $  map ResponseOne $ fs),
+		("unità minima di acquisto", ResponseOne . render . singolare $ o)
+		]
+mostraOrdini i u s kp kn = runSupporto s kn kp $ do
+	StatoVoci _ as os <- asks see
+	s <- case lookup i as of
+		Nothing -> throwError "acquisto non disponibile"
+		Just (u,s,vs) -> return s
+	case lookup (i,u) os of
+		Nothing -> throwError $ "l'utente " ++ u ++ " non ha ancora effettuato un ordine per " ++ show s
+		Just xs -> do 
+			Ordine cs fs o <- scelte (map (loggaOrdine &&& id) xs) $ ResponseOne $ "selezione ordine di " ++ u ++ " sull'acquisto " ++ s
+			return $ Response [
+					("categorie", ResponseMany $ map ResponseOne $ cs),
+					("filiera", ResponseMany $  map ResponseOne $ fs),
+					("quantità acquistata in denaro", ResponseOne . render . singolare $ o)
+					]
 
 costrQueryVoci :: (Monad m, StatoVoci `ParteDi` s) => CostrAction m c Response s
-costrQueryVoci s kp kn = [("beni inseribili negli acquisti", mostraBeni)] 
+costrQueryVoci s kp kn = [("beni inseribili negli acquisti", mostraBeni),("acquisti aperti con beni", mostraAcquisti),("ordini", mostraOrdini)] 
 	where
 	mostraBeni = runSupporto s kn kp $ do
 		StatoVoci vs as os <- asks see
@@ -239,3 +282,35 @@ costrQueryVoci s kp kn = [("beni inseribili negli acquisti", mostraBeni)]
 			("filiera", ResponseMany $  map ResponseOne $ fs),
 			("unità minima di acquisto", ResponseOne . render . singolare $ o)
 			]
+	mostraAcquisti = runSupporto s kn kp $ do
+		StatoVoci _ as _ <- asks see
+		(i,s,u,vs) <- scelte (map (\(i,(u,s,vs)) -> (s,(i,s,u,vs))) as) $ 
+			ResponseOne "selezione acquisto da mostrare"
+		Voce cs fs o <- scelte  (map (loggaVoce &&& id) vs) $ Response $ [
+			("nome acquisto",ResponseOne s),
+			("riferimento acquisto",ResponseOne i),
+			("responsabile acquisto",ResponseOne u),
+			("voci acquistabili",ResponseOne "")
+			]
+		return $ Response [("categorie", ResponseMany $ map ResponseOne $ cs),
+			("filiera", ResponseMany $  map ResponseOne $ fs),
+			("unità minima di acquisto", ResponseOne . render . singolare $ o)
+			]
+	mostraOrdini = runSupporto s kn kp $ do
+		StatoVoci _ as os <- asks see
+		(i,s) <- scelte (map (\(i,(_,s,_)) -> (s,(i,s))) as) $ 
+			ResponseOne "selezione acquisto"
+		let us = map head . group . sort . map (\((_,u),_) -> u) . filter (\((j,_),_) -> j == i) $ os
+		u <- scelte (map (id &&& id) us) $ ResponseOne "selezione utente"
+		case lookup (i,u) os of
+			Nothing -> throwError $ "l'utente " ++ u ++ " non ha ancora effettuato un ordine per " ++ s
+			Just xs -> do 
+				Ordine cs fs o <- scelte (map (loggaOrdine &&& id) xs) $ ResponseOne "selezione ordine da mostrare"
+				return $ Response [
+						("categorie", ResponseMany $ map ResponseOne $ cs),
+						("filiera", ResponseMany $  map ResponseOne $ fs),
+						("quantità acquistata", ResponseOne . render . singolare $ o)
+						]
+
+
+

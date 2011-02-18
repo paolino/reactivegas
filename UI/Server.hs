@@ -50,10 +50,13 @@ wrapCostrActions
 	-> [MEnv (SUtente,TS) -> (a -> Interfaccia ()) -> (String -> Interfaccia ()) -> [(String,Interfaccia ())]]
 	-> [(String,Interfaccia ())]
 wrapCostrActions g = concatMap (\f -> f q g (bocciato "costruzione di una dichiarazione")) where
-	q = do 	s <- fst <$> unQS <$>statoSessione
+	q = do 	s <- fst <$> unQS <$> statoSessione
 		mu <- fmap fst  <$> ses readAccesso
 		return (SUtente mu,s)
-
+runCostrAction g = (\f -> f q g (bocciato "costruzione di una dichiarazione")) where
+	q = do 	s <- fst <$> unQS <$> statoSessione
+		mu <- fmap fst  <$> ses readAccesso
+		return (SUtente mu,s)
 
 
 interrogazioni :: Interfaccia ()
@@ -119,6 +122,11 @@ ensureGruppo s f = do
 	case g of 
 		Nothing -> bocciatoS s "manca la selezione del gruppo"
 		Just _ -> f 
+ensureGruppoG s f = do
+	g <- ses readGruppo
+	case g of 
+		Nothing -> bocciatoS s "manca la selezione del gruppo"
+		Just _ -> f g
 
 ensureResponsabile s f = ensureGruppo s $ do
 	r <- ses readAccesso
@@ -149,6 +157,7 @@ amministrazione = rotonda $ \k -> do
 descrizione = do
 	r <- ses readAccesso
 	evs <- ses readEventi 
+	acq <- ses readAcquisto
 	evsp <- case r of
 		Nothing -> return []
 		Just (u,_) -> let ps (_,us) = case lookup u us of
@@ -158,6 +167,11 @@ descrizione = do
 
 	l <- ses getConservative
 	g <- ses readGruppo
+	s <- ses readStatoSessione
+	s <- case s of
+		Nothing -> bocciato "selezione acquisto" "incongruenza interna: manca lo stato" 
+		Just s -> return s
+	let a = acq >>= flip lookup (map (snd &&& fst) . raccoltei . fst. unQS $ s)
 	mv <- case g of 
 		Nothing -> return Nothing 
 		Just _ -> fmap Just $ sepU readVersion
@@ -166,6 +180,7 @@ descrizione = do
 		,("responsabile della sessione" , ResponseOne $ case r of 
 			Nothing -> "<anonimo>"
 			Just (u,_) -> u)
+		,("acquisto selezionato", ResponseOne $ maybe "<nessuno>" id a)
 		] 
 		++ case mv of 
 			Nothing -> []
@@ -191,6 +206,46 @@ indiretto =  ("accesso indiretto", mano (ResponseOne "accesso indiretto")
 				])
 
 -}
+selaAcquisto = ensureGruppoG "selezione acquisto" $ \g ->  rotonda $ \_ -> do
+	s <- ses readStatoSessione
+	s <- case s of
+		Nothing -> bocciato "selezione acquisto" "incongruenza interna: manca lo stato" 
+		Just s -> return s
+	let gs = raccoltei . fst. unQS $ s
+	let 	cg g = ses $ ($g) . writeAquisto
+		ngs = map (second cg) $ ("<nessuno>",Nothing): map (second Just) gs
+	menu (ResponseOne "selezione acquisto")  ngs
+
+	
+selaOrdinante = ensureGruppoG "selezione ordinante" $ \g ->  rotonda $ \_ -> do
+	s <- ses readStatoSessione
+	s <- case s of
+		Nothing -> bocciato "selezione ordinante" "incongruenza interna: manca lo stato" 
+		Just s -> return s
+	let gs = map (id &&& id) . utenti . fst. unQS $ s
+	let 	cg g = ses $ ($g) . writeOrdinante
+		ngs = map (second cg) $ ("<nessuno>",Nothing): map (second Just) gs
+	menu (ResponseOne "selezione ordinante")  ngs
+	
+	
+vociW = do
+	g <- ses readGruppo
+	r <- ses readAccesso
+	o <- ses readOrdinante
+	a <- ses readAcquisto
+	case g of 
+		Just g -> case r of 
+			Nothing -> case a of 
+				Nothing ->  runCostrAction (P.output True) mostraBeni
+				Just a -> case o of
+					Nothing -> runCostrAction (P.output True) $ mostraAcquisti a
+					Just o ->  runCostrAction (P.output True) $ mostraOrdini a o
+
+			Just _ ->  bocciato "acquisti e ordini" "non implementato"
+		Nothing -> bocciato "acquisti e ordini" "manca la selezione del gruppo"
+			
+
+	
 
 -- applicazione :: Costruzione MEnv () ()
 applicazione = rotonda $ \_ -> do
@@ -199,6 +254,9 @@ applicazione = rotonda $ \_ -> do
 				wname "responsabile autore"  ensureGruppo (rotonda $ const accesso),
 
 				("gruppo di acquisto", cambiaGruppo),
+				("selezione acquisto", selaAcquisto),
+				("selezione ordinante", selaOrdinante),
+				("acquisti e ordini",vociW),
 				wname "gestione dichiarazioni" ensureResponsabile $ rotonda $ \_ -> menu 
 					(ResponseOne "gestione dichiarazioni")  $ dichiarazioni,	
 				("descrizione della sessione",descrizione),

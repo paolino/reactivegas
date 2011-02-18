@@ -12,12 +12,17 @@ import Control.Concurrent.STM
 
 import Lib.STM (condSignal)
 import Core.Types (Evento,Responsabile, Utente)
+import Lib.QInteger
 
 import Applicazioni.Persistenza (Change (..))
 
 import Core.Dichiarazioni
 import Debug.Trace
 
+
+
+
+type Indice = QInteger
 type Name = String 
 -- | interfaccia concorrente per una sessione di interazione
 data Sessione a b p = Sessione 
@@ -30,6 +35,10 @@ data Sessione a b p = Sessione
 	,correggiEvento :: Dichiarazione p Composta -> IO ()
 	,readAccesso :: IO (Maybe Responsabile)		-- ^ legge il responsabile in azione
 	,writeAccesso :: Maybe Responsabile -> IO ()	-- ^ scrive il responsabile in azione
+	,readAcquisto	:: IO (Maybe Indice)
+	,writeAquisto 	:: Maybe Indice -> IO ()
+	,readOrdinante :: IO (Maybe Utente)		-- ^ legge il responsabile in azione
+	,writeOrdinante :: Maybe Utente -> IO ()	-- ^ scrive il responsabile in azione
 	,readCaricamento :: IO (Maybe b)	-- ^ legge l'effetto dell'ultimo caricamento dichiarazioni
 	,readStatoSessione :: IO (Maybe a)	-- ^ legge lo stato modificato dagli eventi in memoria prodotti dal responsabile in memoria
 	,setConservative :: Int -> IO () 	-- ^ imposta il livello di caricamento
@@ -38,7 +47,10 @@ data Sessione a b p = Sessione
 	}
 
 -- | eventi che scatenano la ricomputazione dello stato modificato
-data Triggers p  = TResponsabile (Maybe Responsabile) | TEventi (Dichiarazioni p ) | TConservative Int | TGruppo (Maybe Name)
+data Triggers p  = TResponsabile (Maybe Responsabile) | 
+	TAcquisto (Maybe Indice)
+	| TOrdinante (Maybe Utente)
+	| TEventi (Dichiarazioni p ) | TConservative Int | TGruppo (Maybe Name)
 
 -- | modello di ricomputazione che deve essere fornito
 type Update a b = Name -> STM (Maybe (Int -> Maybe Responsabile -> [Evento] -> STM (a,b)))
@@ -51,6 +63,8 @@ update
 	-> Int -- ^ livello standard di caricamento eventi
 	-> 	(TVar (Dichiarazioni p )
 		,TVar (Maybe Responsabile)
+		,TVar (Maybe Indice)
+		,TVar (Maybe Utente)
 		,TVar Int
 		,TVar (Maybe a) -- ultimo stato calcolato
 		,TVar (Maybe b) -- ultimi effetti calcolati
@@ -61,11 +75,13 @@ update
 		,(Name -> STM (Maybe (Maybe Utente -> STM [Evento]))) -- gli eventi pubblicati per un utente
 		) -- ^ memoria condivisa
 	-> STM ()
-update pa f l (eventi, accesso, conservative, stato, caricamento, gruppo, triggers, signalbox, newsignal, publ) =  do
+update pa f l (eventi, accesso,  acquisto, ordinante,conservative, stato, caricamento, gruppo, triggers, signalbox, newsignal, publ) =  do
 	let 	-- | update causato da modifica utente
 		interna = do 	
 				t 	<- readTChan triggers 
 				case t of 	
+						TAcquisto mr 		-> writeTVar acquisto mr
+						TOrdinante mr 		-> writeTVar ordinante mr
 						TResponsabile mr 	->  do
 							mg <- readTVar gruppo
 							case mg of 
@@ -158,6 +174,9 @@ mkSessione pa f l signal publ exsignal ms =  do
 					liftM2 (,) (newTVar $ fst <$> msc ) (newTVar $ snd <$> msc)
 	eventi 		<- atomically $ newTVar $ maybe (Dichiarazioni [] []) (\(_,es,_,_) -> pa es) ms
 	accesso 	<- atomically $ newTVar $ ms >>= \(_,_,mr,_) -> mr
+	acquisto	<- atomically $ newTVar Nothing
+	ordinante 	<- atomically $ newTVar Nothing
+	accesso 	<- atomically $ newTVar $ ms >>= \(_,_,mr,_) -> mr
 	triggers 	<- atomically $ newTChan
 	conservative 	<- atomically $ newTVar $ maybe l (\(_,_,_,cl) -> cl) ms
 	gruppo 		<- atomically $ newTVar $ ms >>= \(mg,_,_,_) -> mg
@@ -168,7 +187,7 @@ mkSessione pa f l signal publ exsignal ms =  do
 			Just g -> signal g >>= \ms -> case ms of
 				Nothing -> newTVar Nothing
 				Just mks -> mks >>= newTVar . Just			
-	let	memoria = (eventi, accesso, conservative, stato, caricamento ,gruppo,triggers, signalbox , signal, publ)
+	let	memoria = (eventi, accesso, acquisto, ordinante, conservative, stato, caricamento ,gruppo,triggers, signalbox , signal, publ)
 		checkUpdate q  = (update pa f l memoria >> q) `orElse` q
 		write f x = atomically $ writeTChan triggers (f x) >> exsignal
 		read t = atomically . checkUpdate $ readTVar t
@@ -182,6 +201,10 @@ mkSessione pa f l signal publ exsignal ms =  do
 		(\d -> read eventi >>= write TEventi . correggi d)
 		(read accesso) 
 		(write TResponsabile)
+		(read acquisto) 
+		(write TAcquisto)
+		(read ordinante) 
+		(write TOrdinante)
 		(read caricamento)
 		(read stato)
 		(write TConservative)
@@ -191,7 +214,7 @@ mkSessione pa f l signal publ exsignal ms =  do
 			es <- toEventi <$> readTVar eventi
 			cl <- readTVar conservative
 			mr <- readTVar accesso
-			return (mg,es,mr,cl))
+			return (mg,es,mr,cl)) -- TODO , serializzare acquisto e ordinante (ma il ripristino sessione non funziona)
 
 	
 		

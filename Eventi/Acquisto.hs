@@ -38,7 +38,7 @@ data EsternoAcquisto = AperturaAcquisto String
 data InternoAcquisto = IAperturaAcquisto Indice String | IChiusuraAquisto Indice Bool deriving (Show,Read)
 
 priorityAcquisto = R k  where
-	k (AperturaAcquisto _) = -28 
+	k (AperturaAcquisto _) = -50 
 
 -----------------  vestigia del passato ---------------------------------------------------
 data StatoAcquisti = StatoAcquisti { chiusi :: [()], aperti :: [()]}  deriving (Read,Show,Eq) -- vestigia del passato

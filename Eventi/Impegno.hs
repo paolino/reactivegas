@@ -30,7 +30,7 @@ import Lib.Response (Response (..))
 import Lib.QInteger (QInteger)
 import Lib.NaturalLanguage
 
-import Core.Types (Utente, Responsabile)
+import Core.Types (Utente, Responsabile,Indice)
 import Core.Costruzione (toSupporto, libero, scelte, runSupporto, CostrAction)
 import Core.Programmazione (Effetti, Reazione (..) , EventoInterno (..),  nessunEffetto, Accentratore , Deviatore (..))
 import Core.Inserimento (MTInserzione, conFallimento, fallimento, osserva, modifica, loggamus)
@@ -144,6 +144,8 @@ bootImpegni x = (servizio0,x)
 
 raccolte :: (Servizio Impegni `ParteDi` s) => s -> [String]
 raccolte s = let xs :: [(Indice,(String,Impegni))] = elencoSottoStati s  in map (fst . snd) xs
+raccoltei :: (Servizio Impegni `ParteDi` s) => s -> [(String,Indice)]
+raccoltei s = let xs :: [(Indice,(String,Impegni))] = elencoSottoStati s  in map (fst . snd &&& fst) xs
 nomeRaccolta :: ParteDi (Servizio Impegni) s => s -> Indice -> Maybe String
 nomeRaccolta s i = let xs :: [(Indice,(String,Impegni))] = elencoSottoStati s in fst <$> lookup i xs 
 -- unImpegno s n = (\(Impegni us) -> us) <$> snd <$> seeStatoServizio  (undefined :: Impegni) s n
@@ -313,6 +315,7 @@ reportImpegni x = let (xs :: [(Indice,(String,Impegni))])=  elencoSottoStati  $ 
 impegni 	= do 	(xs :: [(Indice,(String,Impegni))]) <- asks elencoSottoStati
 			when (null xs) $ throwError "nessuna raccolta di impegni aperta"
 			return $ map (fst . snd &&& fst) xs
+
 impegniFiltrati k e t = do
 	SUtente mu <- asks see
 	case mu of
