@@ -52,7 +52,7 @@ type TS = (StatoVoci,TS')
 -- |tipo dello stato con la serializzazione dei reattori
 -- type QS = (TS,[SNodo TS  Utente])
 
-newtype QS = QS {unQS :: (TS,[Nodo TS ParserConRead Utente])}
+newtype QS = QS {unQS :: (TS,[Nodo TS ParserConRead Utente])} deriving Eq
 
 
 instance Show QS where
@@ -91,7 +91,7 @@ filtroMovimenti = estrai
 type Effetti = [Contestualizzato Utente Message]
 
 caricamento'' :: Int -> [Esterno Utente] -> QS -> (QS,Effetti)
-caricamento'' l es (QS q) = let (q',ef) = caricaEventi' priorita  l es q
+caricamento'' l es (QS q) = let (q',ef) = (q == q) `seq` caricaEventi' priorita  l es q
 	in  (QS q',ef)
 
 -- | aggiornamento di gruppo
