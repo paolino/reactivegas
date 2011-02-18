@@ -33,7 +33,9 @@ parseComposta y (Composta (ws :: [a])) = Composta `fmap` patch ws `fmap` (valore
 
 toEventi :: forall  c . Dichiarazioni c  -> [Evento]
 toEventi (Dichiarazioni xs ys) = map f xs ++ concatMap g ys where
+	f :: Dichiarazione c Singola -> Evento
 	f (Singola (x :: a)) = (serializza :: c a -> String) . boxer $ x
+	g :: Dichiarazione c Composta -> [Evento]
 	g (Composta (xs :: [a])) = mapMaybe (\x -> if nulla x then Nothing else Just . (serializza :: c a -> String) . boxer $ x)  xs
 
 holing :: [a] -> [(a,[a])]
@@ -56,16 +58,19 @@ aggiungi x (Dichiarazioni ms us) = Dichiarazioni (x:ms) us
 
 elimina :: forall c  . Dichiarazioni c  -> [(String,Dichiarazioni c )]
 elimina (Dichiarazioni ms us) = map f (holing ms) ++ concatMap g (holing us) where
+	f :: (Dichiarazione c Singola,[Dichiarazione c Singola]) -> (Evento,Dichiarazioni c)
 	f (Singola (x :: a),xs) = ((serializza :: c a -> String) . boxer $ x, Dichiarazioni xs us)
+	g :: (Dichiarazione c Composta,[Dichiarazione c Composta]) -> [(Evento,Dichiarazioni c)]
 	g (Composta (x :: [a]),xs) = map q $ holing x where
 		q (y,ys) = ((serializza :: c a -> String) . boxer $ y, if null ys then Dichiarazioni ms xs else 
 			Dichiarazioni ms (Composta ys:xs))
 
-correggi :: Dichiarazione c  Composta -> Dichiarazioni c  -> Dichiarazioni c 
+correggi :: forall c. Dichiarazione c  Composta -> Dichiarazioni c  -> Dichiarazioni c 
 correggi (Composta y) (Dichiarazioni ms us) = Dichiarazioni ms $ case msum . map f $ holing us of
 		Nothing -> (Composta y: us)
 		Just (us,u) -> (u:us)
 	where
+	f :: (Dichiarazione c Composta, [Dichiarazione c Composta]) -> Maybe ([Dichiarazione c Composta], Dichiarazione c Composta)
 	f (Composta x,us) = ((,) us) `fmap` Composta `fmap` foldr (flip patch) x `fmap` sequence (map cast y)
 {-
 -}
