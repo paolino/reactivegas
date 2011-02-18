@@ -239,7 +239,7 @@ ui = uiBene
 	(uiContenitoreUnitario uiAlPezzoOPezzoStimatoD 	(uiScatola (uiAllaConfezioneOConfezioneStimataD)))
 
 
-
+modificaPrezzo :: Monad m => BoxVoce -> Costruzione m b BoxVoce 
 modificaPrezzo (BoxVoce x) = case cast x of 
 		Just (AlPeso z _ :: BVoce Pesi Pesi Sfuso) -> BoxVoce `fmap` uiAlPeso z
 		_ -> case cast x of 
