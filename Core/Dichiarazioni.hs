@@ -1,4 +1,4 @@
-{-# LANGUAGE GADTs, MultiParamTypeClasses, ScopedTypeVariables, FlexibleInstances,FlexibleContexts #-}
+{-# LANGUAGE EmptyDataDecls , GADTs, MultiParamTypeClasses, ScopedTypeVariables, FlexibleInstances,FlexibleContexts #-}
 
 module Core.Dichiarazioni where
 
