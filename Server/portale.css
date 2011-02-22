@@ -1,0 +1,260 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend, select,
+table, caption, tbody, tfoot, thead, option, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-weight: inherit;
+	font-style: inherit;
+	font-size: 100%;
+	font-family: inherit;
+	vertical-align: baseline;
+}
+/* remember to define focus styles! */
+:focus {
+	outline: 0;
+}
+body {
+	line-height: 1;
+	color: black;
+	background: white;
+}
+body { font: 8pt sans-serif; }
+/* tables still need 'cellspacing="0"' in the markup */
+table {
+	border-collapse: separate;
+	border-spacing: 0;
+}
+caption, th, td {
+	text-align: left;
+	font-weight: normal;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: "";
+}
+blockquote, q {
+	quotes: "" "";
+}
+
+
+a:link {color:#335;text-decoration:none;}
+a:visited {color:#335;text-decoration:none;}
+a:hover {color:#597;text-decoration:none;background:#eee }
+
+a.abort:link {color:#555;text-decoration:none;}
+
+body {background:#70b095;color:#555;
+	background: -moz-linear-gradient(0,#70b095,#408085);
+	}
+
+.boxes {	
+	background-color: #e8e8e8 ;	
+	background: -moz-linear-gradient(0,#e8e8e8,#d0d0d0);
+	border-radius: 5px;
+	border-style:inset;
+	border-width:2px;
+	border-color:#a0e0e5;
+	-moz-border-radius: 5px;
+	position : absolute;
+	overflow:auto;
+	}
+div.titolo, div.contatti {	
+	float:left;
+	color:#555;
+	background-color: #80c0a5;
+	background: -moz-linear-gradient(0,#70b095,#408085);
+	padding:1px;
+	padding-right:25px;
+	padding-left:25px;
+	overflow:hidden;
+	margin:2px;
+	margin-left:10px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	}
+div.project {
+	margin:4px;
+	font: 18pt sans-serif;
+	float:left;
+	}
+div.synopsis {
+	margin-top:10px;
+	margin-left:30px;
+	font: 10pt sans-serif;
+	float:left;
+	font-style:italic;
+	}
+
+div.utente {
+	position:relative;
+	}
+
+
+
+div.contatti li {list-style-type:square;float:left;margin-left: 14px; font: 8pt sans-serif;color:#676}
+
+div.dimensione8 {
+	top :530px;
+	left :10px;
+	width:95px;
+	height:235px;
+}
+div.dimensione9 {
+	top :530px;
+	left :110px;
+	width:95px;
+	height:235px;
+}
+div.dimensione10 {
+	top :530px;
+	left :210px;
+	width:350px;
+	height:235px;
+}
+
+
+div.dimensione6 {
+	top :50px;
+	left :10px;
+	width:95px;
+	height:235px;
+}
+div.dimensione7 {
+	top :290px;
+	left :10px;
+	width:95px;
+	height:235px;
+}
+
+div.dimensione2 {
+	top :50px;
+	left : 110px;
+	width:395px;
+	height:235px;
+
+}
+div.dimensione3 {
+	top : 290px;
+	left : 110px;
+	width:395px;
+	height:235px;
+}
+div.dimensione1 {
+	top :50px;
+	left :510px;
+	width:295px;
+	height:155px;
+}
+
+div.dimensione4 {
+	top : 210px;
+	left : 510px;
+	width:295px;
+	height:75px;
+}
+div.dimensione5 {
+	top : 290px;
+	left : 510px;
+	width:295px;
+	height:235px;
+}
+
+dt {	color: #575;
+	border-bottom: 1px solid #e5e5e5;
+	}
+div.expand{
+	width:15px;
+	text-align:center;
+	}
+dl {color:#555;}
+
+input.continua {
+	float:left;
+	font: 8pt sans-serif;
+	color:#888;
+	}
+input.invio {
+	float:left;
+	font: 8pt sans-serif;
+	color:#888;
+	}
+
+div.expand,div.abort,div.resetF,a.back {
+	width:12px;
+	height:17px;
+	float:right;
+	padding:1px;
+	border:1px solid #bbd;
+	font: 10pt sans-serif;
+	background-color:#eee0e0;
+	color:#a88;
+	cursor:pointer;	
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+
+	}
+div.heights {
+	clear:right;
+	}
+div.abort {
+	width:24px;
+	height:34px;
+	font:20pt sans-serif;
+	margin-top:1px;
+	}
+input#valore {font: 8pt sans-serif;}
+
+div.responso {	
+	color: #755;
+	font-weight: bold;
+	}
+dl dt {font-weight: bold;}
+dl dd {
+	font-weight: normal;
+	text-indent:10px;			
+	}
+dl dd dl dt {
+	font-weight: normal;
+	text-indent:10px;			
+	}
+dl dd dl dd {
+	text-indent:20px;			
+	}
+dl dd dl dd dl dt {
+	font-weight: normal;
+	text-indent:30px;			
+	}
+dl dd dl dd dl dd {
+	text-indent:40px;			
+	}
+
+div.passobox {
+	margin:3px;
+	overflow:auto;
+	}
+ul.scelta {list-style-type:none;}
+li.scelta {height:13px;overflow:hidden;} 
+li.output {height:13px;overflow:hidden;} 
+div.output {border-bottom: 2px solid #d5d5d5;}
+
+li div.responso {float:clear;}
+
+#tooltip {
+    background-color: #ddf;
+    border: 1px solid #bbd;
+    color:#866;
+    opacity: 0.85;
+    padding: 2px;
+    position: absolute;
+    z-index: 3000;	
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+
+}
