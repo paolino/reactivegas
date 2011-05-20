@@ -78,7 +78,8 @@ persistenza write tversion tupatch torfani tlog tstato trigger = do
 -- Ritorna True se e' necessario ricalcolare tutto a partire dagli aggiornamenti, utile per cancellare le informazioni 
 -- derivate dalle GPatch.L'azione ritornata è da eseguire per eseguire la reale computazione dello stato.
 ripristino :: ( Read a, Show a) 
-	=> (forall b . Read b => String -> IO (Maybe (Int, b)))
+	=> (forall b . Show b => String -> Int -> b -> IO ())		-- ^ operazione di persistenza
+	-> (forall b . Read b => String -> IO (Maybe (Int, b)))
 	-> String 
 	-> Persistenza a b d
 	-> TVar Int
@@ -89,7 +90,7 @@ ripristino :: ( Read a, Show a)
 	-> TVar a
 	-> IO (Bool,IO ())
 
-ripristino unwrite gname p tversion tupatch torfani tlog uv ts = do
+ripristino write unwrite gname p tversion tupatch torfani tlog uv ts = do
 	let complete = do 	
 		ps <- unwrite "patches" 
 		os <- unwrite "orfani" 
@@ -111,6 +112,9 @@ ripristino unwrite gname p tversion tupatch torfani tlog uv ts = do
 				atomically $ writeTVar tversion 0
 				putStr "aggiornamenti:"
 				autofeed p	
+				s' <- atomically $ readTVar ts
+				v' <- atomically $ readTVar tversion
+				write "stato.corrente" v' s'
 				putStrLn "\n"
 			Nothing -> do
 				s <- atomically $ readTVar ts
@@ -274,7 +278,7 @@ mkPersistenza signal load modif boot resps ctx gname  = do
 			forkIO . forever $ persistenza (groupWrite gname) tv tp to cl ts trigger
 			forkIO . forever $ atomically (readTChan cs) -- tiene vuoto cs 
 			putStrLn "persistenza attivata"
-	(t,boot') <- ripristino (groupUnwrite gname)  gname p tv tp to cl uv ts 
+	(t,boot') <- ripristino (groupWrite gname) (groupUnwrite gname)  gname p tv tp to cl uv ts 
 	return (p,boot' >> close,t)
 
 

@@ -16,7 +16,7 @@ cabal-version: >= 1.6
 Executable server
  ghc-options: -Wall
  main-is: Server/server.hs
- build-depends: base  >=4.2   , 
+ build-depends: base >= 4.2   , 
                 containers,
                 random      ,
                 bytestring  ,
@@ -29,10 +29,10 @@ Executable server
                 pretty      ,
                 filepath    ,
                 filemanip  ,
-                network <= 2.2.1.7,
+                network,
                 directory  , 
                 stm, old-time,
                 xhtml, 
                 split,time,
-                scgi <= 0.3.2,url,HDBC-sqlite3,HDBC, HTTP,haskeline, MonadRandom
+                scgi , url,HDBC-sqlite3,HDBC, HTTP,haskeline, MonadRandom
 

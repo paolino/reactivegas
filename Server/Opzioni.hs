@@ -10,7 +10,7 @@ import Control.Arrow ((&&&))
 import Lib.Tokens
 
 data Argomenti = Argomenti
-	{directory :: [(String,String)]  -- ^ directory di lavoro / nomi dei gruppi
+	{directory :: String  -- ^ directory di lavoro 
 	,porta :: Int          -- ^ porta cgi
 	,lmov :: Int           -- ^ grandezza coda di movimenti di gruppo
 	,lsess :: Int          -- ^ numero massimo di ricordi per sessione
@@ -19,7 +19,7 @@ data Argomenti = Argomenti
 	} deriving Show        
 
 
-data Flag = Versione | Nome String | Path [(String,String)] | Porta String | LMov String | LSess String | LRem String | Tokpass String deriving Show
+data Flag = Versione | Nome String | Path String | Porta String | LMov String | LSess String | LRem String | Tokpass String deriving Show
 
 options :: [OptDescr Flag]
 options = [
@@ -54,8 +54,7 @@ parseArgs ars = do
 		(_, [],      [])     -> error $ "manca la cartella di lavoro\n" ++ fallimento
 		(_, [c],      [])     -> error $ "manca la password di amministrazione\n" ++ fallimento
 		(flags ,c : t : _ , [])   -> do
-			paths <- filter (not . (`elem` [".",".."])) `fmap` getDirectoryContents c
-			return . foldr set ars $ flags ++ [Path $ map ((c </>) &&& id ) paths] ++ [Tokpass t]
+			return . foldr set ars $ flags ++ [Path c] ++ [Tokpass t]
 		(_,     _,       msgs)   -> error $ concat msgs ++ fallimento
 
 
