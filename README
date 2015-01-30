@@ -2,3 +2,4 @@ Un sistema per mantenere lo stato economico di un gruppo di acquisto.
 Il sistema è fondato sulla modificazione distribuita dello stato. Questa corrisponde alla scelta di dividere l'amministrazione del gruppo di acquisto tra pari. Il numero dei pari detti responsabili è inteso inferiore al numero totale dei membri. I membri accedono alle attività economiche del gruppo attraverso uno qualsiasi dei responsabili in grado di riconoscerli come possessori di un credito nei confronti del gas.
 Il sistema fornisce lo strumento informatico ai responsabili per facilitare il rendiconto del loro lavoro.
 Il sistema prevede la certificazione degli eventi, la programmazione di eventi aperti, la costruzione parallela dello stato presso i responsabili e una discreta usabilità oltre ad un ottimo strumento didattico nel servizio http.
+Attualmente l'unica isatanza accessibile si trova su http://lambdasistemi.net/reactivegas
