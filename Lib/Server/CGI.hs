@@ -61,8 +61,9 @@ cgiFromServer resp (Server apertura servizio,droppa) = do
 	r <- runErrorT $ case lookup "REQUEST_URI"  vs of 
 		Just x -> 
 			let 	xs =  tail $ splitOneOf "/?" x 
-			in case xs of
-				[""] -> lift .  resp . pagina $ apertura
+			in case tail xs of
+				[""] -> lift . resp . pagina $ apertura
+				[] -> lift .  resp . pagina $ apertura
 				("clona":_) -> do 
 					hk <- readHKey
 					fk <- readFKey
@@ -110,12 +111,11 @@ cgiFromServer resp (Server apertura servizio,droppa) = do
 					case ec of
 						Left (Link n x m) -> lift $ do
 							setHeader "Content-type" m
-							setHeader "Content-Disposition" "attachment"
-							setHeader "Content-Disposition" $ "filename=" ++ show n
+							setHeader "Content-Disposition" $ "inline;filename=" ++ show n
 							output x 
 						Right _ -> throwError "il download è fallito"
-				_ -> lift (lift droppa) >> throwError "protocollo scorretto"
+				x -> lift (lift droppa) >> throwError ("protocollo scorretto" ++ show x)
 			
-	either (\e -> output e) return r
+	either (\e -> liftIO (print e) >> output e) return r
 
 

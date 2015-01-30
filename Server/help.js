@@ -32,7 +32,7 @@ a&&a.call(f,l)},0)})}).submit();return this}})(jQuery);
 help = function () {
       $("#help").empty();
       $("#help").append("nessun aiuto presente");
-      $("#help").load (encodeURI ('/help/' + $(this).text().trim()));
+      $("#help").load (encodeURI ('/reactivegas/help/' + $(this).text().trim()));
       $("#help").dialog();
        
     };
@@ -87,8 +87,8 @@ reform = function(event) {
 	var action = $(this).attr("action");
 
 	
-	var uri = encodeURI ('/unaform?' + 'valore=' + valore + '&hkey=' + hkey + '&fkey=' + fkey + '&rand=' + Math.random()*999999);
-	if (action === '/interazione') {	
+	var uri = encodeURI ('/reactivegas/unaform?' + 'valore=' + valore + '&hkey=' + hkey + '&fkey=' + fkey + '&rand=' + Math.random()*999999);
+	if (action === '/reactivegas/interazione') {	
 		event.preventDefault();	refresh (p,uri);
 		}
 	else {p.find(".continua").show();}
@@ -111,21 +111,21 @@ reload = function (n,y) {
 	var x = $(y);
 	var hkey = x.attr("hkey");
 	var fkey = x.attr("fkey");
-	var uri = encodeURI ('/ricarica?' + 'hkey=' + hkey + '&fkey=' + fkey + '&rand=' + Math.random()*999999);	
+	var uri = encodeURI ('/reactivegas/ricarica?' + 'hkey=' + hkey + '&fkey=' + fkey + '&rand=' + Math.random()*999999);	
 	var p = x.parent();
 	refresh(p,uri);
 };
 clona = function (x,d) {
 	var hkey = x.attr("hkey");
 	var fkey = x.attr("fkey");
-	var uri = encodeURI ('/clona?' + 'hkey=' + hkey + '&fkey=' + fkey + '&rand=' + Math.random()*999999);	
+	var uri = encodeURI ('/reactivegas/clona?' + 'hkey=' + hkey + '&fkey=' + fkey + '&rand=' + Math.random()*999999);	
 	var p = x.parent();
 	refreshC(p,uri,d);
 };
 reset = function (x) {
 	var hkey = x.attr("hkey");
 	var fkey = x.attr("fkey");
-	var uri = encodeURI ('/reset?' + 'hkey=' + hkey + '&fkey=' + fkey + '&rand=' + Math.random()*999999);	
+	var uri = encodeURI ('/reactivegas/reset?' + 'hkey=' + hkey + '&fkey=' + fkey + '&rand=' + Math.random()*999999);	
 	var p = x.parent();
 	refresh(p,uri);
 };
@@ -179,7 +179,7 @@ trigs0 = function (x) {
 				var p = $(this).parent().parent().parent();
 				var hkey = $(this).parent().find("input#hkey").val();
 				var fkey = $(this).parent().find("input#fkey").val();
-				$(this).upload('/unaform?fkey=' + fkey + '&hkey=' + hkey, update(p));
+				$(this).upload('/reactivegas/unaform?fkey=' + fkey + '&hkey=' + hkey, update(p));
 				});
 	x.find("a.quietL").click(relink);
 	x.find(".continua").hide();
@@ -243,8 +243,9 @@ taller = function (y) {
 refresher = function (x) {
 	var hkey = x.attr("hkey");
 	var fkey = x.attr("fkey");
-	var uri = encodeURI ('/ricarica?' + 'hkey=' + hkey + '&fkey=' + fkey + '&rand=' + Math.random()*999999);	
+	var uri = encodeURI ('/reactivegas/ricarica?' + 'hkey=' + hkey + '&fkey=' + fkey + '&rand=' + Math.random()*999999);	
 	var p = x.parent();
+	sleep(1);
 	refresh(p,uri);
 	};
 

@@ -128,7 +128,7 @@ reazioneAccredito :: (
 reazioneAccredito = soloEsterna reattoreAccredito where
 	reattoreAccredito (first validante -> (wrap,Accredito u dv)) = wrap $ \r -> do
 		fallimento (r == u) "aggiornamento del proprio credito di utente"
-		fallimento (dv $^ 0 <= 0) "accredito negativo"
+		fallimento ({-dv $^ 0 <= 0-} False) "accredito negativo"
 		accredita u dv $ "versamento presso il cassiere " ++ quote r
 		salda r dv $ "funzione di cassiere per " ++ quote u
 		loggamus $ "accreditate " ++ show dv ++ " a " ++ quote u

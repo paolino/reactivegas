@@ -43,7 +43,7 @@ runPasso :: (Monad m )
 		)
 
 timeB h s _ Nothing = noHtml
-timeB h s y (Just z) = anchor ! [title h, theclass "back", href $ mkLink "/interazione" [("hkey",z),("fkey",y)]] << s
+timeB h s y (Just z) = anchor ! [title h, theclass "back", href $ mkLink "/reactivegas/interazione" [("hkey",z),("fkey",y)]] << s
 			
 indietro = timeB "indietro" "⇦"
 avanti = timeB "avanti" "⇨"
@@ -52,7 +52,7 @@ runPasso (P.Output x mc) = let
 	k y z mb ma = thediv ! [theclass "passobox",strAttr "hkey" y, strAttr "fkey" z] << 
 			(	indietro z mb +++ avanti z ma +++
 				renderResponse "output" x 
-				+++ form ! [theclass "quiet", method "post", action "/interazione"] 
+				+++ form ! [theclass "quiet", method "post", action "/reactivegas/interazione"] 
 					<< case mc of 
 						Nothing -> []
 						Just c -> [	hidden "hkey" y, hidden "valore" "undefined", 
@@ -63,7 +63,7 @@ runPasso (P.Output x mc) = let
 runPasso (P.Errore x mc) = let
 	k y z mb ma = thediv ! [theclass "passobox", strAttr "hkey" y, strAttr "fkey" z] << 
 			(	indietro z mb +++ avanti z ma +++ renderResponse "errore" x 
-				+++ form ! [theclass "quiet",method "post", action ("/interazione")] 
+				+++ form ! [theclass "quiet",method "post", action ("/reactivegas/interazione")] 
 					<< case mc of 
 						Nothing -> []
 						Just c -> [	
@@ -82,7 +82,7 @@ runPasso (P.Libero q c) = let
 			(thediv ! [theclass "responso"] << 
 				renderResponse "output" q +++ 
 				
-				form ! [theclass "quiet",method "post", action "/interazione", strAttr "accept-charset" "utf8"] 							<< [	hidden "hkey" y, textfield "valore", 
+				form ! [theclass "quiet",method "post", action "/reactivegas/interazione", strAttr "accept-charset" "utf8"] 							<< [	hidden "hkey" y, textfield "valore", 
 						hidden "fkey" z, submit "" "Invio" ! [theclass "invio"]]
 			)
 			) 
@@ -98,7 +98,7 @@ runPasso (P.Password q c ) = let
 			(indietro z mb +++ avanti z ma +++  
 			(thediv ! [theclass "responso"] << q 
 			+++ 
-			form ! [theclass "quiet", method "post", action "/interazione",
+			form ! [theclass "quiet", method "post", action "/reactivegas/interazione",
 				strAttr "accept-charset" "utf8"] 
 				<< [	hidden "hkey" y, password "valore", 
 					hidden "fkey" z, submit "" "Invio" ! [theclass "invio"]]
@@ -117,7 +117,7 @@ runPasso (P.Scelta q xs c) = let
 			(	thediv ! [theclass "responso"] <<  
 					renderResponse "output" q  +++
 					ulist ! [theclass "scelta"] << (map (\(x,_) -> li ! [title x , theclass "scelta"]
-					<< anchor ! [theclass "quietL", href $ mkLink "/interazione" [("hkey",y),("fkey",z),("valore",x)]] 
+					<< anchor ! [theclass "quietL", href $ mkLink "/reactivegas/interazione" [("hkey",y),("fkey",z),("valore",x)]] 
 						<< x) xs )
 			)
 			)
@@ -128,7 +128,7 @@ runPasso (P.Upload q c ) = let
 	k y z mb ma = thediv ! [theclass $ "passobox" , strAttr "hkey" y, strAttr "fkey" z] << 
 		(indietro z mb +++ avanti z ma +++ 
 		(	thediv ! [theclass "responso"] << q +++
-			form ! [theclass "quiet", method "post", action "/interazione", enctype "multipart/form-data"] << 
+			form ! [theclass "quiet", method "post", action "/reactivegas/interazione", enctype "multipart/form-data"] << 
 				 	[afile "valore", hidden "hkey" y,  
 					hidden "fkey" z, submit "" "Carica" ! [theclass "continua"]]
 		) 
@@ -143,12 +143,12 @@ runPasso (P.Download f q x c) = let
 	k y z mb ma = thediv ! [theclass "passobox", strAttr "hkey" y, strAttr "fkey" z] << 
 		(indietro z mb +++ avanti z ma +++ 
 		(thediv ! [theclass "responso"] << q +++
-		form ! [theclass "quiet", method "post", action "/download"] 
+		form ! [theclass "quiet", method "post", action "/reactivegas/download"] 
 					<< [	hidden "hkey" y,  hidden "fkey" z
 						, hidden "valore" "undefined" , 
 						submit "" "Scarica" ! [theclass "continua scarica"]]
 		+++ 
-		form ! [theclass "quiet", method "post", action "/interazione"] 
+		form ! [theclass "quiet", method "post", action "/reactivegas/interazione"] 
 					<< [	hidden "hkey" y, hidden "valore" "undefined",
 						hidden "fkey" z, submit "" "Continua" ! [theclass "continua"]]
 

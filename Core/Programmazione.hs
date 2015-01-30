@@ -1,4 +1,4 @@
-{-# LANGUAGE ExistentialQuantification, DeriveDataTypeable, ScopedTypeVariables, FlexibleContexts, GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE ExistentialQuantification, DeriveDataTypeable, ScopedTypeVariables, FlexibleContexts, GeneralizedNewtypeDeriving, KindSignatures #-}
 -- | monade di programmazione per le reazioni 
 module Core.Programmazione where
 
@@ -53,7 +53,7 @@ lascia u (cm@(_,Message x):xs) = let
 -- "d" e' un parametro libero che accompagna gli eventi, ie. l'utente
 -- nella reader manteniamo le cause che conducono allo stato attuale, ovvero gli eventi che sono avvenuti, ma non possono essere dimenticati, in quanto il loro effetto non è ancora serializzabile
 -- nella writer, i log, indicizzati per insieme di eventi causanti
-newtype Inserzione s c d b = Inserzione (RWS (Contesto d) [Contestualizzato d Message] s b) deriving 
+newtype Inserzione s (c :: * -> *) d b = Inserzione (RWS (Contesto d) [Contestualizzato d Message] s b) deriving 
 	(Functor, Monad, MonadState s, MonadReader (Contesto d), MonadWriter [Contestualizzato d Message])
 
 -- | una azione che associa un log all'insieme attuale di eventi causanti
@@ -101,6 +101,6 @@ provaAccentratore x = msum . map (provaDeviatore x)
 
 -- | una reazione incapsula un evento interno ed uno esterno che sono in alternativa grazie a TyReazione. Nel caso la reazione riguardi un evento interno
 -- "b" e' possibile fornire anche un accentratore per l'evento stesso
-data Reazione s c d = forall a b . (Parser c a , Parser ParserConRead b) => Reazione (Maybe (Accentratore b) , TyReazione a b d s c)
+data Reazione s (c :: * -> *) d =  forall a b . (Parser c a , Parser ParserConRead b) => Reazione (Maybe (Accentratore b) , TyReazione a b d s c) 
 
 

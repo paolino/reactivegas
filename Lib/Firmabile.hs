@@ -18,6 +18,7 @@ deriving instance Eq RSA.PrivateKey
 
 deriving instance Typeable RSA.PublicKey
 deriving instance Typeable RSA.PrivateKey
+
 type Firma = BL.ByteString
 type Chiave = RSA.PublicKey
 type Segreto = BL.ByteString

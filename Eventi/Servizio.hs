@@ -1,4 +1,4 @@
-{-# LANGUAGE NoMonomorphismRestriction,FlexibleContexts,ScopedTypeVariables  #-}
+{-# LANGUAGE NoMonomorphismRestriction,FlexibleContexts,ScopedTypeVariables,TypeOperators  #-}
 
 -- | un gestore eventi per servizi istanziabili
 module Eventi.Servizio (

@@ -1,6 +1,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module Lib.Server.Session where
 
+import Control.Exception (catch,IOException)
 
 import Control.Applicative ((<$>))
 import Control.Monad (forever)
@@ -25,7 +26,7 @@ sessioning 	:: forall a b . (Read b, Show b)
 		-> (Maybe b -> IO (a,IO b))		-- ^ creation of default value or restoring
 		-> IO (Droppable a,Droppable a)	-- ^ (recall last value for cookie if present, reset anyway)
 sessioning path l signal rs = do
-	os <- catch (readFile (path </> "sessioni") >>= \os -> putStrLn "rilevata persistenza delle sessioni" >> return os) (const $ return "[]")  
+	os <- catch (readFile (path </> "sessioni") >>= \os -> putStrLn "rilevata persistenza delle sessioni" >> return os) (\(_::IOException) -> return "[]")  
 	qs <- seq (last os) .  mapM (secondM $ rs . Just) $ case reads os of
 		[] -> []
 		[(x,_)] -> x

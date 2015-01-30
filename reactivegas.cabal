@@ -14,7 +14,7 @@ cabal-version: >= 1.6
 
 
 Executable server
- ghc-options: -Wall
+ ghc-options: -Wall -XTypeOperators -threaded
  main-is: Server/server.hs
  build-depends: base >= 4.2   , 
                 containers,
@@ -22,13 +22,14 @@ Executable server
                 bytestring  ,
                 array,
                 SimpleAES   ,
-                RSA         ,
+                RSA == 1.0.6.3        ,
                 mtl        ,
                 utf8-string ,
                 MaybeT      ,
                 pretty      ,
                 filepath    ,
                 filemanip  ,
+                network-uri,
                 network,
                 directory  , 
                 stm, old-time,
