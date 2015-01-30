@@ -19,7 +19,7 @@ import Lib.Modify (PeekPoke (peek), modifyT)
 -- testing
 
 
-newtype Token = Token Int deriving Eq
+newtype Token = Token String deriving Eq
 
 instance Show Token where
 	show (Token n) = show n
@@ -28,7 +28,7 @@ instance Read Token where
 	readPrec = Token `fmap` readS_to_Prec (const reads)
 
 instance Random Token where
-	random = (Token . (`mod` 1000000000) . abs *** id) . random
+	random = (Token . show . (`mod` (1000000000 :: Int)) . abs *** id) . random  
 	randomR = undefined
 
 

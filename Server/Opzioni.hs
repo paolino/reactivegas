@@ -44,7 +44,7 @@ set (Porta x) r = parse x r $ \x -> r{porta = x}
 set (LMov x) r = parse x r $ \x -> r{lmov = x}
 set (LSess x) r = parse x r $ \x -> r{lsess = x}
 set (LRem x) r = parse x r $ \x -> r{lrem = x}
-set (Tokpass x) r = parse x r $ \x -> r{tokpass = x}
+set (Tokpass x) r = r{tokpass = Token x}
 
 -- | computa gli argomenti dell'applicazione dall'environment
 parseArgs :: Argomenti -> IO Argomenti
