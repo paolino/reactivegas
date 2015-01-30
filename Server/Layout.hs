@@ -22,7 +22,7 @@ metadata = header << 	[
 		thelink ! [rel "stylesheet", href "/static/portale.css", thetype "text/css"] << noHtml,
 		thelink ! [rel "icon", href "/static/favicon.ico"] << noHtml,
 		thetitle << "ReactiveGAS (Amministrazione)",
-		meta ! [httpequiv "Content-Type", content "text/html;charset=utf8;"],
+		meta ! [httpequiv "Content-Type", content "text/html;charset=UTF-8;"],
 		thelink ! [thetype "text/css", href "/static/jquery-ui.css", rel "Stylesheet"]
 			<<noHtml,
 		script ! [thetype "text/javascript", src "/static/jquery.js"]
