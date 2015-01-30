@@ -16,7 +16,7 @@ import qualified Data.Map as M
 
 import Debug.Trace
 import Lib.Missing (onNothing, (>$>), firstM, secondM)
-import Lib.Database (DB, limitedDB, query, lkey, set, exists, restoreDB, select, purge)
+import Lib.Database (DB, limitedDB, query, lkey, set, exists, restoreDB, select, purge,dump)
 
 
 -- | la chiave di environment, indica una situazione dell'interfaccia untente. Le richieste la portano con se, per ricontestualizzare la risposta alla situazione "attuale" che l'utente fronteggia
@@ -123,7 +123,7 @@ correctS 	:: TVar (FormDB e b c)
 		->  ErrorT String IO (Form e b c)
 correctS dbe f fok enk nenk = do
 	db <- lift . atomically $ readTVar dbe
-	fo <- onNothing "chiave temporale non trovata" $ query db (enk,fok)
+	fo <- onNothing ("chiave temporale non trovata 1") $ query db (enk,fok)
 	fo' <- f fo
 	lift . atomically $ readTVar dbe >>= 
 		writeTVar dbe . flip set ((nenk,fok),fo')

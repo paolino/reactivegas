@@ -32,7 +32,7 @@ a&&a.call(f,l)},0)})}).submit();return this}})(jQuery);
 help = function () {
       $("#help").empty();
       $("#help").append("nessun aiuto presente");
-      $("#help").load (encodeURI ('/help/' + $(this).text().trim()));
+      $("#help").load (encodeURI ('/reactivegas/help/' + $(this).text().trim()));
       $("#help").dialog();
        
     };
@@ -87,8 +87,8 @@ reform = function(event) {
 	var action = $(this).attr("action");
 
 	
-	var uri = encodeURI ('/unaform?' + 'valore=' + valore + '&hkey=' + hkey + '&fkey=' + fkey + '&rand=' + Math.random()*999999);
-	if (action === '/interazione') {	
+	var uri = encodeURI ('/reactivegas/unaform?' + 'valore=' + valore + '&hkey=' + hkey + '&fkey=' + fkey + '&rand=' + Math.random()*999999);
+	if (action === '/reactivegas/interazione') {	
 		event.preventDefault();	refresh (p,uri);
 		}
 	else {p.find(".continua").show();}
@@ -111,21 +111,21 @@ reload = function (n,y) {
 	var x = $(y);
 	var hkey = x.attr("hkey");
 	var fkey = x.attr("fkey");
-	var uri = encodeURI ('/ricarica?' + 'hkey=' + hkey + '&fkey=' + fkey + '&rand=' + Math.random()*999999);	
+	var uri = encodeURI ('/reactivegas/ricarica?' + 'hkey=' + hkey + '&fkey=' + fkey + '&rand=' + Math.random()*999999);	
 	var p = x.parent();
 	refresh(p,uri);
 };
 clona = function (x,d) {
 	var hkey = x.attr("hkey");
 	var fkey = x.attr("fkey");
-	var uri = encodeURI ('/clona?' + 'hkey=' + hkey + '&fkey=' + fkey + '&rand=' + Math.random()*999999);	
+	var uri = encodeURI ('/reactivegas/clona?' + 'hkey=' + hkey + '&fkey=' + fkey + '&rand=' + Math.random()*999999);	
 	var p = x.parent();
 	refreshC(p,uri,d);
 };
 reset = function (x) {
 	var hkey = x.attr("hkey");
 	var fkey = x.attr("fkey");
-	var uri = encodeURI ('/reset?' + 'hkey=' + hkey + '&fkey=' + fkey + '&rand=' + Math.random()*999999);	
+	var uri = encodeURI ('/reactivegas/reset?' + 'hkey=' + hkey + '&fkey=' + fkey + '&rand=' + Math.random()*999999);	
 	var p = x.parent();
 	refresh(p,uri);
 };
@@ -133,8 +133,9 @@ dila = function (z) {
 	z.find(".expand").click(function () {
 			var q = $(this).parent(); // passobox
 			var y = q.parent(); // boxes, dimension
-			var x = y.clone(true,true); // clone della dimension 
+			var x = y.clone(); // clone della dimension 
 			x.css("left","0").css("top","0");
+			x.removeClass ("boxes");
 			var d = function () {
 				x.removeData();
 				x.dialog({ 
@@ -161,6 +162,8 @@ trigs = function (x) {
 	x.find(".expand").tooltip();
 	x.find(".back").tooltip({showURL: false});
 	x.find(".resetF").tooltip();
+	x.find (".scelta").tooltip({delay:1000});
+	x.find ("li.output").tooltip({delay:1000});
 	trigs0 (x); 
 	dila(x);
 	dilax(x);
@@ -176,7 +179,7 @@ trigs0 = function (x) {
 				var p = $(this).parent().parent().parent();
 				var hkey = $(this).parent().find("input#hkey").val();
 				var fkey = $(this).parent().find("input#fkey").val();
-				$(this).upload('/unaform?fkey=' + fkey + '&hkey=' + hkey, update(p));
+				$(this).upload('/reactivegas/unaform?fkey=' + fkey + '&hkey=' + hkey, update(p));
 				});
 	x.find("a.quietL").click(relink);
 	x.find(".continua").hide();
@@ -188,37 +191,47 @@ trigs0 = function (x) {
 fill = function () {
 	var w = $(window).width();
 	var h = $(window).height();
-	var fw = w / $gw;
-	var fh = h / $gh;
-	$gw = w;
-	$gh = h;
+	var fw = w/$gw;
+	var fh = h/$gh;
 	$(".boxes").each (larger (fw));
 	$(".boxes").each (taller (fh));
 	}
+record = function () {
+		var l = parseInt($(this).css("left"));
+		if (isNaN (l)) {} else {$(this).attr("ileft",l)}
+		var l = parseInt($(this).css("width")); 
+		if (isNaN (l)) {} else {$(this).attr("iwidth",l)}
+		var l = parseInt($(this).css("top"));
+		if (isNaN (l)) {} else {$(this).attr("itop",l)}
+		var l = parseInt($(this).css("height"));
+		if (isNaN (l)) {} else {$(this).attr("iheight",l)}
+		};
 larger = function (y) {
 	var l = function (q,z) { 
-		var l = parseInt($(this).css("left"));
-		var w = parseInt($(this).css("width")); 
-		if (isNaN(l) || isNaN (w)) {} else {
-			$(z).css(
+		var l0 = $(z).attr("ileft");
+		var w0 = $(z).attr("iwidth"); 
+		if (isNaN(l0) || isNaN (w0)) {} else {
+			$(z).animate(
 				{ 
-				left: (l * y) + "px", 
-				width: (w * y) + "px"
-				});
+				left: (l0 * y) + "px", 
+				width: (w0 * y) + "px"
+				},100);
 			};
 		};
 			
 	return l;
 	};
+		
+
 taller = function (y) {
 	var l = function (q,z) { 
-		var l = parseInt($(this).css("top"));
-		var w = parseInt($(this).css("height")); 
-		if (isNaN(l) || isNaN (w)) {} else {
+		var l0 = $(z).attr("itop");
+		var w0 = $(z).attr("iheight"); 
+		if (isNaN(l0) || isNaN (w0)) {} else {
 			$(z).animate(
 				{ 
-				top: (l * y) + "px", 
-				height: (w * y) + "px"
+				top: (l0 * y) + "px", 
+				height: (w0 * y) + "px"
 				},100);
 			};
 		};
@@ -230,19 +243,20 @@ taller = function (y) {
 refresher = function (x) {
 	var hkey = x.attr("hkey");
 	var fkey = x.attr("fkey");
-	var uri = encodeURI ('/ricarica?' + 'hkey=' + hkey + '&fkey=' + fkey + '&rand=' + Math.random()*999999);	
+	var uri = encodeURI ('/reactivegas/ricarica?' + 'hkey=' + hkey + '&fkey=' + fkey + '&rand=' + Math.random()*999999);	
 	var p = x.parent();
+	sleep(1);
 	refresh(p,uri);
 	};
 
 var $gw = 820;
-var $gh = 550;
+var $gh = 770;
 
 $(document).ready(function () {
-	$(window).resize(fill);
+	$(".boxes").each(record);
 	fill();
+	$(window).resize(fill);
 	$(".project").tooltip({showURL:false});
-
 	trigs ($(".utente"));
 	setInterval(function() {refresher($(".dimensione1 > .passobox").first());},20000);
 

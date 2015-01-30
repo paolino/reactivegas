@@ -63,8 +63,9 @@ checkReset reset k = do
 	
 	case lookup "REQUEST_URI" vs of
 		Just x -> let xs = tail $ splitOneOf "/?" x in
-			case xs of
+			case tail xs of
 				[""] -> reset
+				[] -> reset
 				_ -> k
 		_ -> k
 

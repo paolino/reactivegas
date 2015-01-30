@@ -35,14 +35,17 @@ sessioning path l signal rs = do
 		ss <- atomically (signal >> (dump <$> readTVar tcs)) >>= mapM (\(c,(_,ios)) -> fmap ((,) c) ios)
 		writeFile (path </> "sessioni") $ show ss
 	let sex = "reactivegas_sessione"
-	let 	new c = do
+	let 	-- new cookie
+		new c = do
 			sbk@(s,_) <- rs Nothing 
 			atomically $ do
 				cs <- readTVar tcs
 		 		writeTVar tcs (set cs (c,sbk))
 			return s
+		-- get cookie
 		gc = do 
 			mc <- getCookie sex
+			-- lift $ print mc -- debug
 			case mc of 
 				Just c -> return c
 				Nothing -> do 
