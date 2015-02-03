@@ -48,7 +48,7 @@ ecompo = [Composta ([]::[EventoVoci]), Composta ([]::[EsternoImpegnoVincolato])]
 mkDichiarazioni = parseDichiarazioni esing ecompo
 -- | il tipo dello stato accessibile
 type TS' = TyAnagrafe (TyAccredito (TyImpegni (TyAcquisti Integer)))
-type TS = (StatoVoci,TS')
+type TS = TS'
 -- |tipo dello stato con la serializzazione dei reattori
 -- type QS = (TS,[SNodo TS  Utente])
 
@@ -70,12 +70,12 @@ priorita = [ priorityAnagrafe, priorityAnagrafeI, priorityAccredito
 
 -- | lista di reattori. I reattori di base per gli eventi
 reattori :: [Reazione TS ParserConRead Utente]
-reattori = [reazioneVoci, reazioneLogger, reazioneAnagrafe, reazioneAccredito, reazioneAcquisto] 
+reattori = [reazioneLogger, reazioneAnagrafe, reazioneAccredito, reazioneAcquisto] 
 
 
 -- | creazione di un novo stato di tipo QS
 nuovoStato :: [Responsabile] -> QS
-nuovoStato rs = QS $ ((StatoVoci [] [] [],) . bootAnagrafe rs  . bootAccredito . bootImpegni . bootAcquisti  $ 0, map (\r -> Nodo (Just r) []) reattori)
+nuovoStato rs = QS $ (bootAnagrafe rs  . bootAccredito . bootImpegni . bootAcquisti  $ 0, map (\r -> Nodo (Just r) []) reattori)
 
 maxLevel = 100
 

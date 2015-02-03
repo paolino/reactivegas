@@ -64,8 +64,7 @@ interrogazioni = rotonda $ \_ -> menu (ResponseOne "interrogazioni sullo stato d
 		costrQueryAnagrafe,
 		costrQueryAccredito,
 		costrQueryImpegni,
-		costrQueryAssenso,
-		costrQueryVoci
+		costrQueryAssenso
 		]) 
 
 dichiarazioni = concat $ 
@@ -78,8 +77,7 @@ dichiarazioni = concat $
 			]
 		,wrapCostrActions addEvento [costrEventiAssenso]
 
-		,wrapCostrActions addEventoC [costrEventiVoci]
-		,wrapCostrActions addEventoC [costrEventiImpegnoVincolato]
+		-- ,wrapCostrActions addEventoC [costrEventiImpegnoVincolato]
 		,	[("----------",return ())
 			,("pubblica le dichiarazioni in sessione",salvataggio "pubblica le dichiarazioni in sessione")
 			,("elimina delle dichiarazioni",eliminazioneEvento "elimina delle dichiarazioni"),
@@ -228,7 +226,8 @@ selaOrdinante = ensureGruppoG "selezione ordinante" $ \g ->  rotonda $ \_ -> do
 		ngs = map (second cg) $ ("<nessuno>",Nothing): map (second Just) gs
 	menu (ResponseOne "selezione ordinante")  ngs
 	
-	
+
+{-	
 vociW = do
 	g <- ses readGruppo
 	r <- ses readAccesso
@@ -244,7 +243,7 @@ vociW = do
 
 			Just _ ->  bocciato "acquisti e ordini" "non implementato"
 		Nothing -> bocciato "acquisti e ordini" "manca la selezione del gruppo"
-			
+-}			
 
 	
 
@@ -257,7 +256,7 @@ applicazione = rotonda $ \_ -> do
 				("selezione gruppo", cambiaGruppo),
 				("selezione acquisto", selaAcquisto),
 				("selezione ordinante", selaOrdinante),
-				("acquisti e ordini",vociW),
+				-- ("acquisti e ordini",vociW),
 				wname "gestione dichiarazioni" ensureResponsabile $ rotonda $ \_ -> menu 
 					(ResponseOne "gestione dichiarazioni")  $ dichiarazioni,	
 				("descrizione della sessione",descrizione),
