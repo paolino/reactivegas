@@ -105,7 +105,7 @@ accredita u dv s = do
 	esistenzaUtente u 
 	Conti us <- osserva
 	let r = dv $^ (us ? (u,0)) 
-	fallimento ({-r < 0-}False) "il credito non copre l'operazione" 
+	fallimento (r < 0) "il credito non copre l'operazione" 
 	modifica $ \(Conti us) -> Conti (upset u r us)
 	logga . Message $ MovimentoU u dv s
 	
@@ -127,8 +127,8 @@ reazioneAccredito :: (
 	) => Reazione s c Utente
 reazioneAccredito = soloEsterna reattoreAccredito where
 	reattoreAccredito (first validante -> (wrap,Accredito u dv)) = wrap $ \r -> do
-		fallimento ({-r == u-} False) "aggiornamento del proprio credito di utente"
-		fallimento ({-dv $^ 0 <= 0-} False) "accredito negativo"
+		fallimento (r == u) "aggiornamento del proprio credito di utente"
+		fallimento (dv $^ 0 <= 0) "accredito negativo"
 		accredita u dv $ "versamento presso il cassiere " ++ quote r
 		salda r dv $ "funzione di cassiere per " ++ quote u
 		loggamus $ "accreditate " ++ show dv ++ " a " ++ quote u
