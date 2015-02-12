@@ -3,6 +3,8 @@ module Server.Layout (pagina, layout) where
 
 import Text.XHtml
 
+
+
 layout :: [([String],Int)]
 layout = 	
 		[(["selezione gruppo"],6)
