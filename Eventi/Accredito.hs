@@ -100,15 +100,14 @@ bootAccredito :: a -> TyAccredito a
 bootAccredito x = Conti [] .< Saldi [] .< x
 
 -- | esegue un accredito su un conto utente
-accredita :: (Anagrafe `ParteDi` s, Conti `ParteDi` s) => Utente -> DEuro -> String -> MTInserzione s c Utente ()
+accredita :: (Anagrafe `ParteDi` s, Conti `ParteDi` s) => Utente -> DEuro -> String -> MTInserzione s c Utente Euro
 accredita u dv s = do
 	esistenzaUtente u 
 	Conti us <- osserva
 	let r = dv $^ (us ? (u,0)) 
-	fallimento ({-r < 0-}False) "il credito non copre l'operazione" 
 	modifica $ \(Conti us) -> Conti (upset u r us)
 	logga . Message $ MovimentoU u dv s
-	
+	return r	
 -- | modifica il saldo di un responsabile
 salda :: (Anagrafe `ParteDi` s, Responsabili `ParteDi` s, Saldi `ParteDi` s) => Utente -> DEuro 
 	-> String -> MTInserzione s c Utente ()
@@ -127,8 +126,8 @@ reazioneAccredito :: (
 	) => Reazione s c Utente
 reazioneAccredito = soloEsterna reattoreAccredito where
 	reattoreAccredito (first validante -> (wrap,Accredito u dv)) = wrap $ \r -> do
-		fallimento ({-r == u-} False) "aggiornamento del proprio credito di utente"
-		fallimento ({-dv $^ 0 <= 0-} False) "accredito negativo"
+		fallimento (r == u) "aggiornamento del proprio credito di utente"
+		fallimento (dv $^ 0 <= 0) "accredito negativo"
 		accredita u dv $ "versamento presso il cassiere " ++ quote r
 		salda r dv $ "funzione di cassiere per " ++ quote u
 		loggamus $ "accreditate " ++ show dv ++ " a " ++ quote u
@@ -136,7 +135,8 @@ reazioneAccredito = soloEsterna reattoreAccredito where
 	reattoreAccredito (first validante -> (wrap,Addebito u s dv)) = wrap $ \r -> do
 		fallimento (r == u) "aggiornamento del proprio credito di utente"
 		fallimento (dv $^ 0 <= 0) "prelievo negativo o nullo"
-		accredita u (opposite dv) $ "prelievo attraverso il cassiere " ++ quote r ++ " per " ++ quote s
+		z <- accredita u (opposite dv) $ "prelievo attraverso il cassiere " ++ quote r ++ " per " ++ quote s
+		fallimento (z < 0) "il credito non copre l'operazione" 
 		salda r (opposite dv) $ "funzione di cassiere per " ++ quote u
 		loggamus $ "prelevate " ++ show dv ++ " a " ++ quote u ++ " per " ++ s
 		return (True,nessunEffetto)

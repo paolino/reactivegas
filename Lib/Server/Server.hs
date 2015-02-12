@@ -9,8 +9,9 @@ import Control.Applicative ((<$>))
 import Control.Monad.Reader
 import Control.Monad.Cont
 import Control.Concurrent.STM 
+import Control.Concurrent (forkIO) 
 import Text.XHtml 
-import Network.SCGI(CGI, CGIResult, runSCGI, handleErrors,getVars)
+import Network.SCGI(CGI, CGIResult, runSCGIConcurrent', handleErrors,getVars)
 import Network (PortID (PortNumber))
 
 
@@ -108,7 +109,7 @@ server path (PortNumber . fromIntegral -> port) limitR limitS applicazione preSe
 			
 	(run,reset) <- sessioning path limitS (readTChan persistSessionChan) newSession
 	putStrLn "** Server attivo"
-	runSCGI port . handleErrors $ do 
+	runSCGIConcurrent' forkIO 1000 port . handleErrors $ do 
 		b <- preServer
 		case b of
 			Nothing -> checkReset reset run >>= cgiFromServer responseHandler 
