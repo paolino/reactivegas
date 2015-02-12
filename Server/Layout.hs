@@ -44,7 +44,7 @@ pagina b = prettyHtml $
 		thediv ! [identifier "help", theclass "boxes"] << noHtml,
 		thediv ! [theclass "utente"] << b,
 		thediv ! [theclass "contatti"] << ulist << [
-					li << anchor ! [href "http://github.com/paolino/reactivegas/wiki"] << "documentazione",
+					li << anchor ! [href "http://wiki.github.com/paolino/reactivegas"] << "documentazione",
 					li << anchor ! [href "http://github.com/paolino/reactivegas"] << "codice sorgente",
 					li << anchor ! [href "mailto:paolo.veronelli@gmail.com"] << "contatti",
 					li << "donazioni: postepay 4023600431903923"
