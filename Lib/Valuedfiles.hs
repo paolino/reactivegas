@@ -7,7 +7,7 @@ import Control.Monad.Trans (lift)
 import Control.Applicative ((<$>))
 import Control.Arrow ((&&&))
 import Control.Monad (mzero,guard,liftM2, MonadPlus)
-import Control.Monad.Maybe (MaybeT,runMaybeT)
+import Control.Monad.Trans.Maybe (MaybeT,runMaybeT)
 import System.FilePath.FindCompat (filePath, fileName , fileType, (==?), extension, 
 	evalClause , depth, fold, liftOp, FileType (RegularFile),FindClause)
 import System.FilePath.GlobPattern ((~~))

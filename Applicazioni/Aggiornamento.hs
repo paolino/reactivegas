@@ -10,7 +10,7 @@ import Control.Arrow
 import Data.List.Split
 import Data.Maybe
 import Control.Monad.Trans
-import Control.Monad.Maybe
+import Control.Monad.Trans.Maybe
 import Network.SCGI
 import System.IO
 import Control.Concurrent.STM

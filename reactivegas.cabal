@@ -17,6 +17,7 @@ Executable server
  ghc-options: -Wall -XTypeOperators -threaded -O2
  main-is: Server/server.hs
  build-depends: base >= 4.2   , 
+                transformers,
                 containers,
                 random      ,
                 bytestring  ,
@@ -25,7 +26,7 @@ Executable server
                 RSA == 1.0.6.3        ,
                 mtl        ,
                 utf8-string ,
-                MaybeT      ,
+                -- MaybeT      ,
                 pretty      ,
                 filepath    ,
                 filemanip  ,

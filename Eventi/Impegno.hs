@@ -14,7 +14,7 @@ module Eventi.Impegno {-(
 	)-}  where
 import Data.List (delete, union)
 import Data.Maybe (fromJust)
-import Control.Monad.Maybe (MaybeT)
+import Control.Monad.Trans.Maybe (MaybeT)
 import Control.Monad (mzero, when, msum)
 import Control.Monad.Error (throwError)
 import Control.Applicative ((<$>))
