@@ -1,7 +1,7 @@
 {-# LANGUAGE GADTs #-}
 
 module Voci.Beni where
-
+import Prelude hiding (Word)
 import Voci.Data
 import Lib.NaturalLanguage
 import Lib.Units -- (Pesi,Volumi,Unità, Denaro,UnitClass (..))

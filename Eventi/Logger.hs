@@ -1,4 +1,4 @@
-{-# LANGUAGE NoMonomorphismRestriction, ViewPatterns, ScopedTypeVariables, MultiParamTypeClasses #-}
+{-# LANGUAGE NoMonomorphismRestriction, ViewPatterns, ScopedTypeVariables, MultiParamTypeClasses, FlexibleContexts #-}
 -- | modulo inutile per mostrare l'utilizzo dei Deviatori
 
 module Eventi.Logger where
