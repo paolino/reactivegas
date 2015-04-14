@@ -14,7 +14,7 @@ module Eventi.Ordine {-(
 	)-}  where
 import Data.List (delete)
 import Data.Maybe (fromJust)
-import Control.Monad.Maybe (MaybeT)
+import Control.Monad.Trans.Maybe (MaybeT)
 import Control.Monad (mzero, when)
 import Control.Monad.Error (throwError)
 import Control.Applicative ((<$>))

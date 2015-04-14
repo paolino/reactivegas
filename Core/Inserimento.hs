@@ -12,7 +12,7 @@ import Control.Monad.Writer (WriterT, runWriterT, tell, listen)
 import Control.Applicative ((<$>))
 import Control.Arrow (second)
 
-import Control.Monad.Maybe (runMaybeT, MaybeT)
+import Control.Monad.Trans.Maybe (runMaybeT, MaybeT)
 
 import Codec.Binary.UTF8.String -- (decodeString)
 

@@ -5,7 +5,7 @@ module Eventi.Sincronizzatore where
 
 
 
-import Control.Monad.Maybe (MaybeT)
+import Control.Monad.Trans.Maybe (MaybeT)
 import Control.Monad (mzero, when)
 import Control.Monad.Error (throwError)
 import Control.Applicative ((<$>))
