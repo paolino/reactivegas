@@ -12,11 +12,21 @@ import Voci.Ordini
 import Data.Typeable
 import Debug.Trace
 
-caffèBene = Pesato (PWord $ Singolare (Maschile "caffè"))
+-- definizione di un bene con un nome singolare maschile le quali quantità si esprimono in peso
+caffèBene = Pesato (PWord $ Singolare (Maschile "caffè")) 
+
+-- definizione di una voce di listino riguardante il bene caffè appena definito in vendita in confezioni confezionata in pacchetti da 250 grammi, venduta a 2.9 euro al pacchetto
 caffèVoce = AllaConfezione (Primo $ Pacchetto $ 250 :? Grammo) caffèBene (toRational 2.9 :? (Euro,Unità)) 
+
+-- definizione di un ordine di 2.5 kg per la voce sopra definita
 caffèOrdinePeso = InPeso (toRational 2.5 :? Chilogrammo) caffèVoce
+
+-- definizione di un ordine di 35 euro per la voce sopra definita
 caffèOrdineDenaro = InDenaro (35 :? Euro) caffèVoce
+
+-- definizione di un ordine di 12 confezioni per la voce sopra definita
 caffèOrdineConfezioni = InConfezioni (12 :? Unità) caffèVoce
+
 
 inPeso :: (Valuta b Pesi d Pesi, VoceOf (BWord b) b Pesi d) => BOrdine b Pesi d -> Maybe (BOrdine b Pesi d)
 inPeso x = flip InPeso (voceOf x) `fmap` valuta x 

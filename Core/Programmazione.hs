@@ -48,7 +48,7 @@ lascia u (cm@(_,Message x):xs) = let
 		False -> rs
 
 -- | la monade
--- lo stato "s" dipende dall'applicazione , generalmente contine l'effetto degli eventi
+-- lo stato "s" dipende dall'applicazione , generalmente contiene l'effetto degli eventi
 -- "c" e' il parser scelto dall'applicazione che rimane libero ?
 -- "d" e' un parametro libero che accompagna gli eventi, ie. l'utente
 -- nella reader manteniamo le cause che conducono allo stato attuale, ovvero gli eventi che sono avvenuti, ma non possono essere dimenticati, in quanto il loro effetto non è ancora serializzabile

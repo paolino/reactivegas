@@ -127,23 +127,23 @@ reazioneAccredito :: (
 reazioneAccredito = soloEsterna reattoreAccredito where
 	reattoreAccredito (first validante -> (wrap,Accredito u dv)) = wrap $ \r -> do
 		fallimento (r == u) "aggiornamento del proprio credito di utente"
-		fallimento (dv $^ 0 <= 0) "accredito negativo"
+		-- fallimento (dv $^ 0 <= 0) "accredito negativo"
 		accredita u dv $ "versamento presso il cassiere " ++ quote r
 		salda r dv $ "funzione di cassiere per " ++ quote u
 		loggamus $ "accreditate " ++ show dv ++ " a " ++ quote u
 		return (True,nessunEffetto)	
 	reattoreAccredito (first validante -> (wrap,Addebito u s dv)) = wrap $ \r -> do
 		fallimento (r == u) "aggiornamento del proprio credito di utente"
-		fallimento (dv $^ 0 <= 0) "prelievo negativo o nullo"
+		-- fallimento (dv $^ 0 <= 0) "prelievo negativo o nullo"
 		z <- accredita u (opposite dv) $ "prelievo attraverso il cassiere " ++ quote r ++ " per " ++ quote s
-		fallimento (z < 0) "il credito non copre l'operazione" 
+		-- fallimento (z < 0) "il credito non copre l'operazione" 
 		salda r (opposite dv) $ "funzione di cassiere per " ++ quote u
 		loggamus $ "prelevate " ++ show dv ++ " a " ++ quote u ++ " per " ++ s
 		return (True,nessunEffetto)
 	reattoreAccredito (first validante -> (wrap ,Saldo u dv)) = wrap $ \r -> do
 		esistenzaResponsabile u
 		fallimento (u == r) "movimento di denaro riferito ad una cassa sola"
-		fallimento (dv $^ 0 <= 0) "saldo negativo o nullo"
+		-- fallimento (dv $^ 0 <= 0) "saldo negativo o nullo"
 		salda r dv $ "trasferiti dalla cassa di " ++ quote u
 		salda u (opposite dv) $ "trasferiti alla cassa di " ++ quote r
 		loggamus $ "spostati " ++ show dv ++ " dalla cassa di " ++ quote u ++ " alla cassa di " ++ quote r

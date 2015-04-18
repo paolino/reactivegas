@@ -1,5 +1,5 @@
 name: reactivegas 
-version: 2010.2.5
+version: 2015.4.14
 license: BSD3
 license-file: LICENSE
 maintainer: Paolo Veronelli <paolo.veronelli@gmail.com> 
@@ -8,7 +8,7 @@ category: social, p2p, cooperative
 synopsis: social tool for group of consumers
 description:  ..
 homepage: http://wiki.github.com/paolino/reactivegas
-copyright: Copyright (c) 2010 Paolo Veronelli 
+copyright: Copyright (c) 2010-2015 Paolo Veronelli 
 build-type: Simple
 cabal-version: >= 1.6
 

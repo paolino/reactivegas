@@ -1,4 +1,6 @@
 {-# LANGUAGE MultiParamTypeClasses, ScopedTypeVariables, TypeFamilies, FunctionalDependencies, GADTs, FlexibleContexts, FlexibleInstances, TypeSynonymInstances, ViewPatterns, OverlappingInstances #-}
+
+-- | Valutazione di un ordine, ovvero estrazione di tutte le possibili quantità implicate nella definizione 
 module Voci.Ordini where
 
 import Data.Typeable

@@ -43,9 +43,9 @@ esing = [
 	Singola (error "using a witness" :: EsternoAssenso)
 	]
 
-ecompo = [Composta ([]::[EventoVoci]), Composta ([]::[EsternoImpegnoVincolato])]
+-- ecompo = [Composta ([]::[EventoVoci]), Composta ([]::[EsternoImpegnoVincolato])]
 
-mkDichiarazioni = parseDichiarazioni esing ecompo
+mkDichiarazioni = parseDichiarazioni esing []
 -- | il tipo dello stato accessibile
 type TS' = TyAnagrafe (TyAccredito (TyImpegni (TyAcquisti Integer)))
 type TS = TS'
@@ -66,7 +66,7 @@ instance Read QS where
 -- | lista di prioritizzatori, definiscono un riordinamento tra gli eventidi una patch
 priorita :: [Lib.Prioriti.R]
 priorita = [ priorityAnagrafe, priorityAnagrafeI, priorityAccredito
-		,  priorityImpegno, priorityAcquisto, priorityAssenso, priorityImpegnoVincolato, priorityEventoVoci] 
+		,  priorityImpegno, priorityAcquisto, priorityAssenso, {-priorityImpegnoVincolato,-} priorityEventoVoci] 
 
 -- | lista di reattori. I reattori di base per gli eventi
 reattori :: [Reazione TS ParserConRead Utente]

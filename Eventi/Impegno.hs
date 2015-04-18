@@ -54,7 +54,7 @@ data EsternoImpegno
 	| FineImpegno Indice  		-- ^ indica la chiusura positiva della causa
 	| FallimentoImpegno Indice	-- ^ indica la chiusura negativa della causa
 	| CorrezioneImpegno Utente Euro Indice
-	
+{-	
 data EsternoImpegnoVincolato =
 	ImpegnoVincolato Utente [Ordine] Indice
 	| CorrezioneImpegnoVincolato Utente [Ordine] [Ordine] Indice deriving (Show,Read, Typeable)
@@ -74,6 +74,7 @@ instance Patch EsternoImpegnoVincolato where
 		Nothing -> x : xs 
 		Just (ys,y)  -> y : ys
 	nulla = nullaer
+-}
 
 instance Show EsternoImpegno where
 	show (Impegno u f i) = "impegno da " ++ quote u ++ " di " ++ show f ++ " in riferimento a " ++ show i
@@ -116,10 +117,11 @@ priorityImpegno = R k where
 	k (FallimentoImpegno _) = 16
 	k (CorrezioneImpegno _ _ _) = -20
 
+{-
 priorityImpegnoVincolato = R k where	
 	k (ImpegnoVincolato _ _ _) = -27
 	k (CorrezioneImpegnoVincolato _ _ _ _) = -20
-
+-}
 
 -- | evento interno che segnala il fallimento di una causa
 data Interni = EliminazioneResponsabileA Utente deriving (Show,Read)
@@ -154,7 +156,8 @@ nomeRaccolta s i = let xs :: [(Indice,(String,Impegni))] = elencoSottoStati s in
 -- type ConclusioneReattoreImpegno s c = Maybe ([(Utente, Euro)]) -> MTInserzione s c Utente (Effetti s c Utente)
 
 -- | la programmazione di un impegni richiede il nome del responsabile che la apre e restituisce la chiave del nuovo stato impegni con una una azione monadica in grado di creare una nuova Reazione se fornita della giusta procedura. La giusta procedura definisce cosa eseguire alla fine della raccolta impegni. In caso di successo l'azione riceve la lista di impegni raccolta , in caso di fallimento Nothing. Comunque essa deve fornire una lista di nuovi reattori e una lista di eventi interni.
-programmazioneImpegno' :: (Parser c EsternoImpegnoVincolato,
+programmazioneImpegno' :: --(Parser c EsternoImpegnoVincolato,
+	(
 	Parser c EsternoImpegno,  -- okkio se serve un parser va implementato
 	Parser c EsternoAssenso,
 	Anagrafe 		`ParteDi` s,  -- eventoValidato lo richiede
@@ -191,7 +194,7 @@ programmazioneImpegno' q' ur k  = do
 				fallimento (not $ u `elem` map fst as) "nessun impegno tra gli accettati per l'utente"
 				let vp = fromJust (lookup u as) -- denaro impegnato
 				z <- accredita u (mkDEuro $ vp - v) $ "correzione impegno " ++ q 
-				fallimento (z < 0) "il credito non copre l'operazione" 
+				-- fallimento (z < 0) "il credito non copre l'operazione" 
 				modificaStatoServizio j $ \(Impegni ch ur as is) -> return $
 					Impegni ch ur ((u,v):(filter ((/=) u . fst) as)) is
 				loggamus  $ "correzione d'impegno per  " ++ show (mkDEuro $ v - vp) ++ " da " ++ u  ++ q
@@ -214,15 +217,17 @@ programmazioneImpegno' q' ur k  = do
 				Impegni _ _ as is <- osservaStatoServizio j 
 				-- fallimento (u `elem` map fst (as ++ is)) "impegno già richiesto o accettato per l'utente"
 				z <- accredita u (mkDEuro $ negate v) $ "richiesta di impegno " ++ q 
-				fallimento (z < 0) "il credito non copre l'operazione" 
+				-- fallimento (z < 0) "il credito non copre l'operazione" 
 				
 				modificaStatoServizio j $ \(Impegni ch ur as is) -> return (Impegni ch ur as $ (u,v):
 					filter ((/=) u . fst) is)
 				loggamus  $ "richiesta di impegno di  " ++ show v ++ " da " ++ u  ++ q
-				(_,reaz) <- programmazionePermesso 
-					("impegno di " ++ show v ++ " da " ++ u ++ q)
-					r ur positivo negativo
-				return (True, ([reaz],[]))  
+				if (r /= ur) then do
+					(_,reaz) <- programmazionePermesso 
+						("impegno di " ++ show v ++ " da " ++ u ++ q)
+						r ur positivo negativo
+					return (True, ([reaz],[]))  
+					else positivo undefined >> return (True,([],[])) 
 		reattoreImpegno _ (Right (first validante -> (w,FineImpegno j))) = w $ \r -> do
 			when (l /= j) mzero
 			Impegni y ur as is <- osservaStatoServizio j
@@ -248,7 +253,7 @@ programmazioneImpegno' q' ur k  = do
 			(,) False <$> effettoF l
 		reattoreImpegno  _ (Left _) = return Nothing
 
-
+{-
  		reattoreImpegnoVincolato _ (Right (first validante ->  (w,i@(ImpegnoVincolato u os j)))) = w $ \r -> let
 			v = sum . map denaro $ os
 			positivo _ = do
@@ -294,12 +299,12 @@ programmazioneImpegno' q' ur k  = do
 			when (not y) esf 
 			(,) False <$> effettoF l
 		reattoreImpegnoVincolato  _ (Left _) = return Nothing
-
+-}
 	loggamus $ "raccolta di impegni " ++ q ++ " aperta"	
 	return $ 
 		( l
 		, effettoF l
-		, \esf -> [Reazione (Just acc,reattoreImpegno esf),Reazione (Just acc,reattoreImpegnoVincolato esf)]
+		, \esf -> [Reazione (Just acc,reattoreImpegno esf)]-- Reazione (Just acc,reattoreImpegnoVincolato esf)]
 		, modificaStatoServizio l $ \(Impegni _ ur as is) -> return (Impegni True ur as is)
 		,[EventoInterno $ EventoAperturaImpegni ur l q']
 		)
@@ -370,6 +375,7 @@ costrEventiImpegno s kp kn = 	[("richiesta di impegno di denaro per un utente", 
 		u <- scelte  (map (id &&& id) us)  $ ResponseOne  "utente impegnante"
 		z <- libero  $ ResponseOne "somma impegnata"
                 return . Singola  $ Impegno u z n
+{-
 costrEventiImpegnoVincolato s kp kn = 	[("richiesta di nuovo ordine per un utente", eventoImpegnoVincolato)
 				,("correzione di ordine per un utente",eventoCorrezioneImpegnoVincolato)
 				] 
@@ -390,7 +396,7 @@ costrEventiImpegnoVincolato s kp kn = 	[("richiesta di nuovo ordine per un utent
 		                return . Composta $ [ImpegnoVincolato u [Ordine cs fs o] n]
 	eventoCorrezioneImpegnoVincolato = undefined
 
-
+-}
 
 costrQueryImpegni :: (Monad m, ParteDi (Servizio Impegni) s) => CostrAction m c Response s
 costrQueryImpegni s kp kn = 	[("raccolte di impegni aperte",q)] 
