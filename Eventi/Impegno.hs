@@ -194,7 +194,7 @@ programmazioneImpegno' q' ur k  = do
 				fallimento (not $ u `elem` map fst as) "nessun impegno tra gli accettati per l'utente"
 				let vp = fromJust (lookup u as) -- denaro impegnato
 				z <- accredita u (mkDEuro $ vp - v) $ "correzione impegno " ++ q 
-				-- fallimento (z < 0) "il credito non copre l'operazione" 
+				fallimento (z < 0) "il credito non copre l'operazione" 
 				modificaStatoServizio j $ \(Impegni ch ur as is) -> return $
 					Impegni ch ur ((u,v):(filter ((/=) u . fst) as)) is
 				loggamus  $ "correzione d'impegno per  " ++ show (mkDEuro $ v - vp) ++ " da " ++ u  ++ q
@@ -215,9 +215,9 @@ programmazioneImpegno' q' ur k  = do
 			in do 
 				when (l /= j) mzero
 				Impegni _ _ as is <- osservaStatoServizio j 
-				-- fallimento (u `elem` map fst (as ++ is)) "impegno già richiesto o accettato per l'utente"
+				fallimento (u `elem` map fst (as ++ is)) "impegno già richiesto o accettato per l'utente"
 				z <- accredita u (mkDEuro $ negate v) $ "richiesta di impegno " ++ q 
-				-- fallimento (z < 0) "il credito non copre l'operazione" 
+				fallimento (z < 0) "il credito non copre l'operazione" 
 				
 				modificaStatoServizio j $ \(Impegni ch ur as is) -> return (Impegni ch ur as $ (u,v):
 					filter ((/=) u . fst) is)
