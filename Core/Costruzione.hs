@@ -17,6 +17,7 @@ import Debug.Trace
 -- | monade di supporto per la costruzione di valori con il valore interrogativo in reader e con la possibilita di fallire 
 newtype Supporto m s b a = Supporto {unSupporto :: ReaderT (m s) (ErrorT String (P.Costruzione m b)) a} deriving
 	(Monad
+	,Applicative
 	,Functor
 	,MonadError String
 	,MonadCont

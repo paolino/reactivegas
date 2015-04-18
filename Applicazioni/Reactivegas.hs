@@ -1,4 +1,4 @@
-{-# LANGUAGE TypeSynonymInstances, MultiParamTypeClasses, TupleSections, OverlappingInstances, NoMonomorphismRestriction #-}
+{-# LANGUAGE TypeSynonymInstances, MultiParamTypeClasses, TupleSections, OverlappingInstances, NoMonomorphismRestriction, FlexibleContexts #-}
 module  Applicazioni.Reactivegas where
 
 import Data.Function (on)

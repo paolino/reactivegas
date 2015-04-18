@@ -20,7 +20,9 @@ instance Monad m => MonadSignal (SignalT m) where
 	intercept f = SignalT $ do
 		(x,b) <- runSignalT f
 		return ((x,b),b)
-
+instance Monad m => Applicative (SignalT m) where
+	pure = return 
+	(<*>)  = ap
 
 
 instance (Monad m) => Monad (SignalT m) where

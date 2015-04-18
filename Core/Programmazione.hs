@@ -54,7 +54,7 @@ lascia u (cm@(_,Message x):xs) = let
 -- nella reader manteniamo le cause che conducono allo stato attuale, ovvero gli eventi che sono avvenuti, ma non possono essere dimenticati, in quanto il loro effetto non è ancora serializzabile
 -- nella writer, i log, indicizzati per insieme di eventi causanti
 newtype Inserzione s (c :: * -> *) d b = Inserzione (RWS (Contesto d) [Contestualizzato d Message] s b) deriving 
-	(Functor, Monad, MonadState s, MonadReader (Contesto d), MonadWriter [Contestualizzato d Message])
+	(Applicative,Functor, Monad, MonadState s, MonadReader (Contesto d), MonadWriter [Contestualizzato d Message])
 
 -- | una azione che associa un log all'insieme attuale di eventi causanti
 logInserimento :: (MonadReader (Contesto d) m, MonadWriter [Contestualizzato d t] m) => t -> m ()

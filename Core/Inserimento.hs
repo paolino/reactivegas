@@ -1,4 +1,4 @@
-{-# LANGUAGE  ScopedTypeVariables, ViewPatterns, DeriveDataTypeable, NoMonomorphismRestriction #-}
+{-# LANGUAGE  ScopedTypeVariables, ViewPatterns, DeriveDataTypeable, NoMonomorphismRestriction , FlexibleContexts#-}
 
 
 -- | modulo di trasformazione dello stato del programma. gli eventi sono espressi come stringhe mentre lo stato 

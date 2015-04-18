@@ -1,5 +1,6 @@
 {-# LANGUAGE NoMonomorphismRestriction, ScopedTypeVariables, FlexibleContexts, GADTs, MultiParamTypeClasses, FlexibleInstances, TypeSynonymInstances #-}
 module Voci.UI.Voci where
+import Prelude hiding (Word)
 import Data.Typeable
 import Data.Dynamic
 import Data.Maybe

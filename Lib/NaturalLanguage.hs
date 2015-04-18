@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveFunctor, FlexibleInstances, TypeSynonymInstances, NoMonomorphismRestriction#-}
 module Lib.NaturalLanguage where
-
+import Prelude hiding (Word)
 import Data.Typeable
 import Data.Monoid
 

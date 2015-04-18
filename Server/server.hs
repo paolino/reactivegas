@@ -1,4 +1,4 @@
--- {-# LANGUAGE  #-}
+{-# LANGUAGE  FlexibleContexts #-}
 import Data.List (lookup)
 import Control.Applicative ((<$>))
 import Control.Concurrent.STM (atomically)
