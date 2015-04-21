@@ -16,7 +16,7 @@ cabal-version: >= 1.6
 Executable server
  ghc-options: -Wall -XTypeOperators -threaded -O2
  main-is: Server/server.hs
- build-depends: base >= 4.2   , 
+ build-depends: base    , 
                 transformers,
                 containers,
                 random      ,

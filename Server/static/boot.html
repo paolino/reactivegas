@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="reactivegas">
+<head>
+  <title>Bootstrap Case</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.0/angular.min.js"></script>
+<script src='//ajax.googleapis.com/ajax/libs/angularjs/1.4.0-rc.0/angular-sanitize.min.js'></script>
+  <script src="/static/reactivegas.js"></script>
+</head>
+<body ng-controller="Reactivegas as gas">
+
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Reactivegas</a>
+        <menunav></menunav>
+    </div>
+  </div>
+</nav>
+  
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+        <p ng-bind-html="gas.doc"></p>
+    </div>
+  </div>
+</div>
+
+
+
+</body>
+</html>

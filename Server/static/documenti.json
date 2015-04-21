@@ -1,0 +1,27 @@
+
+[
+ {
+        "nome":"Filosofia",
+        "url":"filosofia.html"
+}
+,
+ {
+        "nome":"Limiti",
+        "url":"limiti.html"
+}
+,
+ {
+        "nome":"Backup",
+        "url":"backup.html"
+}
+,
+ {
+        "nome":"Iscrizioni",
+        "url":"iscrizioni.html"
+}
+,
+ {
+        "nome":"Sostegno",
+        "url":"sostegno.html"
+}
+]

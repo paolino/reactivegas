@@ -1,0 +1,12 @@
+
+      <ul class="nav navbar-nav">
+        <li ng-repeat="link in gas.navs" ng-class="{active:link.url === gas.select}"><a ng-click="gas.select=link.url;gas.fetch()" href="#">{{link.nome}}</a></li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#">Manuale
+          <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+      <li  ng-class="{active:link.url === gas.select}" ng-repeat="dichiarazione in gas.nomi"> <a ng-click="gas.select=dichiarazione.url;gas.fetch()">{{dichiarazione.nome}}</a></li>
+          </ul>
+        </li>
+        <li > <a ng-click="" href="#" style="color:green;background-color:#333"><b>Portale</b></a></li>
+      </ul>

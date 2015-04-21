@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="reactivegas">
+<head>
+  <title>Bootstrap Case</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Reactivegas</a>
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Manuale</a></li>
+        <li><a href="#">Navigazione</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+  
+<div class="container">
+  <div class="row">
+    <div class="col-md-2">
+      <ul class="nav nav-pills nav-stacked">
+        <li class="active"><a href="#">Home</a></li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#">Dichiarazioni
+          <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+
+          </ul>
+        </li>
+        <li><a href="#">Filosofia</a></li>
+        <li><a href="#">Backup</a></li>
+        <li><a href="#">Limiti</a></li>
+        <li><a href="#">Iscrizioni</a></li>
+        <li><a href="#">Sostegno</a></li>
+      </ul>
+    </div>
+    <div class="col-md-10"> 
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
+
+
+<div ng-controller="FetchController">
+  <select ng-model="method" aria-label="Request method">
+    <option>GET</option>
+    <option>JSONP</option>
+  </select>
+  <input type="text" ng-model="url" size="80" aria-label="URL" />
+  <button id="fetchbtn" ng-click="fetch()">fetch</button><br>
+  <button id="samplegetbtn" ng-click="updateModel('GET', 'http-hello.html')">Sample GET</button>
+  <button id="samplejsonpbtn"
+    ng-click="updateModel('JSONP',
+                  'https://angularjs.org/greet.php?callback=JSON_CALLBACK&name=Super%20Hero')">
+    Sample JSONP
+  </button>
+  <button id="invalidjsonpbtn"
+    ng-click="updateModel('JSONP', 'https://angularjs.org/doesntexist&callback=JSON_CALLBACK')">
+      Invalid JSONP
+    </button>
+  <pre>http status code: {{status}}</pre>
+  <pre>http response data: {{data}}</pre>
+</div>
+
+
+    </div>
+</div>
+
+<script>
+angular.module('httpExample', [])
+.controller('FetchController', ['$scope', '$http', '$templateCache',
+  function($scope, $http, $templateCache) {
+    $scope.method = 'GET';
+    $scope.url = 'http-hello.html';
+
+    $scope.fetch = function() {
+      $scope.code = null;
+      $scope.response = null;
+
+      $http({method: $scope.method, url: $scope.url, cache: $templateCache}).
+        success(function(data, status) {
+          $scope.status = status;
+          $scope.data = data;
+        }).
+        error(function(data, status) {
+          $scope.data = data || "Request failed";
+          $scope.status = status;
+      });
+    };
+
+    $scope.updateModel = function(method, url) {
+      $scope.method = method;
+      $scope.url = url;
+    };
+  }]);
+</script>
+</body>
+</html>
