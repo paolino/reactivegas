@@ -334,7 +334,7 @@ programmazioneAssenso :: (
 	-> MTInserzione s c Utente (Indice, Reazione s c Utente, MTInserzione s c Utente ())	-- ^ la chiave per emettere assensi relativi e la reazione da schedulare
 
 programmazioneAssenso se ur c k kn = do
-	l <- nuovoStatoServizio (Assensi ur [ur] []) (ur,se) -- ricevi la chiave per la nuova raccolta
+	l <- nuovoStatoServizio (Assensi ur [] []) (ur,se) -- ricevi la chiave per la nuova raccolta
 	let 	eliminaRichiesta  = do
 			eliminaStatoServizio l (undefined :: Assensi)  
 			loggamus $ "rinuncia alla questione " ++ se
