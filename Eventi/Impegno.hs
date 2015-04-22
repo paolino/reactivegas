@@ -217,7 +217,7 @@ programmazioneImpegno' q' ur k  = do
 				Impegni _ _ as is <- osservaStatoServizio j 
 				fallimento (u `elem` map fst (as ++ is)) "impegno già richiesto o accettato per l'utente"
 				z <- accredita u (mkDEuro $ negate v) $ "richiesta di impegno " ++ q 
-				fallimento (z < 0) "il credito non copre l'operazione" 
+				when (z < 0) $ loggamus "il credito non copre l'operazione" 
 				
 				modificaStatoServizio j $ \(Impegni ch ur as is) -> return (Impegni ch ur as $ (u,v):
 					filter ((/=) u . fst) is)
