@@ -152,9 +152,9 @@ reazioneAccredito = soloEsterna reattoreAccredito where
 -- | costruttore di eventi per il modulo di accredito
 costrEventiAccredito :: (Parser p EsternoAccredito, Monad m, ParteDi Responsabili s, SUtente `ParteDi` s, ParteDi Anagrafe s) 
 	=> CostrAction m c (Dichiarazione p Singola) s
-costrEventiAccredito s kp kn = 	[("versamento sul conto di un utente",eventoAccredito) 
-				,("prelievo motivato dal conto di un utente",eventoAddebito) 
-				,("ricezione saldo da un responsabile", eventoSaldo)
+costrEventiAccredito s kp kn = 	[("versamento",eventoAccredito) 
+				,("prelievo motivato",eventoAddebito) 
+				,("movimento cassa", eventoSaldo)
 				] 
 	where
 	run = runSupporto s kn kp

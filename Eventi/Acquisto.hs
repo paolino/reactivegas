@@ -86,7 +86,7 @@ reazioneAcquisto = soloEsterna reattoreAcquisto where
 		return (True, ([za]++ zi esf,ievs))
 
 costrEventiAcquisto :: (Monad m, Parser p EsternoAcquisto,  Servizio Impegni `ParteDi` s) => CostrAction m c (Dichiarazione p Singola) s
-costrEventiAcquisto s kp kn  = [("nuova proposta di acquisto", eventoApertura)] 
+costrEventiAcquisto s kp kn  = [("nuovo acquisto", eventoApertura)] 
 	where
 	eventoApertura  = runSupporto s kn kp $ do
 		n <- libero  $ ResponseOne  "nome della nuova proposta d'acquisto"

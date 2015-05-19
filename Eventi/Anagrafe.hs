@@ -212,7 +212,7 @@ costrUtenti = do
 
 -- | costruzione degli eventi esterni per la gestione costrUtenti e costrResponsabili
 costrEventiAnagrafe :: (Parser p EsternoAnagrafico, Monad m, ParteDi Anagrafe s, ParteDi Responsabili s) => CostrAction m c (Dichiarazione p Singola) s
-costrEventiAnagrafe s kp kn =	[("inserimento di un nuovo utente", eventoNuovoUtente)]
+costrEventiAnagrafe s kp kn =	[("nuovo utente", eventoNuovoUtente)]
 	where
 	run = runSupporto s kn kp
         eventoNuovoUtente =  run $ do
@@ -222,8 +222,8 @@ costrEventiAnagrafe s kp kn =	[("inserimento di un nuovo utente", eventoNuovoUte
                 return . Singola  $ NuovoUtente n
 costrEventiResponsabili :: (Parser p EsternoAnagrafico, Monad m, ParteDi Responsabili s, ParteDi Anagrafe s) => CostrAction m c (Dichiarazione p Singola) s
 costrEventiResponsabili s kp kn =
-	[("richiesta di elezione di un nuovo responsabile", eventoElezioneResponsabile)
-	,("richiesta di revoca di un responsabile",eventoEliminazioneResponsabile)
+	[("elezione responsabile", eventoElezioneResponsabile)
+	,("revoca responsabile",eventoEliminazioneResponsabile)
 	] 
 	where
 	run = runSupporto s kn kp
@@ -413,8 +413,8 @@ assensiFiltrati k e = do
 data SUtente = SUtente (Maybe Utente)
 -- | costrutore degli eventi di assenso
 costrEventiAssenso :: (Parser p EsternoAssenso, Monad m, Servizio Assensi `ParteDi` s, SUtente `ParteDi` s) => CostrAction m c (Dichiarazione p Singola) s
-costrEventiAssenso s kp kn = 	[("parere su una questione",eventoAssenso s kp kn )
-				,("chiusura prematura di una questione",eventoFallimentoAssenso)
+costrEventiAssenso s kp kn = 	[("parere",eventoAssenso s kp kn )
+				,("fallimento questione",eventoFallimentoAssenso)
 				] 
 	where
 	eventoAssenso s kp kn = runSupporto s kn kp $ do

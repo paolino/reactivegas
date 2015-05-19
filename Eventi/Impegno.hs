@@ -344,10 +344,10 @@ costrEventiImpegno :: (
 	) =>
 	CostrAction m c (Dichiarazione p Singola) s
 
-costrEventiImpegno s kp kn = 	[("richiesta di impegno di denaro per un utente", eventoImpegno)
-				,("correzione di impegno di denaro per un utente",eventoCorrezioneImpegno)
-				,("fine di una raccolta impegni", eventoFineImpegno)
-				,("fallimento di una raccolta impegni", eventoFallimentoImpegno) 
+costrEventiImpegno s kp kn = 	[("impegno", eventoImpegno)
+				,("correzione impegno",eventoCorrezioneImpegno)
+				,("fine acquisto", eventoFineImpegno)
+				,("fallimento acquisto", eventoFallimentoImpegno) 
 				] 
 	where
 	run = runSupporto s kn kp

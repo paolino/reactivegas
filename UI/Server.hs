@@ -79,9 +79,9 @@ dichiarazioni = concat $
 
 		-- ,wrapCostrActions addEventoC [costrEventiImpegnoVincolato]
 		,	[("----------",return ())
-			,("pubblica le dichiarazioni in sessione",salvataggio "pubblica le dichiarazioni in sessione")
-			,("elimina delle dichiarazioni",eliminazioneEvento "elimina delle dichiarazioni"),
-			(,) "modifica della considerazione delle dichiarazioni"   eventLevelSelector
+			,("pubblicazione dichiarazioni",salvataggio "pubblica le dichiarazioni in sessione")
+			,("eliminazione dichiarazioni",eliminazioneEvento "elimina delle dichiarazioni"),
+			(,) "considerazione delle dichiarazioni"   eventLevelSelector
 			]
 
 		]
