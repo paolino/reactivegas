@@ -342,8 +342,8 @@ programmazioneAssenso se ur c k kn = do
 		reattoreAssenso (Right (first validante -> (w,Assenso j))) = w $ \r -> do
 			when (j /= l) mzero
 			Assensi ur ps ns <- osservaStatoServizio j 
-			fallimento (r `elem` (ps ++ ns)) "il responsabile si è già espresso sulla questione" 
-			let ps' = r:ps -- la nuova lista di assensi per j 
+			-- fallimento (r `elem` (ps ++ ns)) "il responsabile si è già espresso sulla questione" 
+			let ps' = r:filter (/= r) ps -- la nuova lista di assensi per j 
 			t <- c (ps',ns) -- controlla che si debba continuare a ricevere gli assensi
 			case t of
 				Positivo  -> do
@@ -360,8 +360,8 @@ programmazioneAssenso se ur c k kn = do
 		reattoreAssenso (Right (first validante -> (w,Dissenso j))) = w $ \r -> do
 			when (j /= l) mzero
 			Assensi ur ps ns <- osservaStatoServizio j 
-			fallimento (r `elem` (ps ++ ns)) "il responsabile si è già espresso sulla questione" 
-			let ns' = r:ns -- la nuova lista di assensi per j 
+			-- fallimento (r `elem` (ps ++ ns)) "il responsabile si è già espresso sulla questione" 
+			let ns' = r:filter (/=r) ns -- la nuova lista di assensi per j 
 			t <- c (ps,ns') -- controlla che si debba continuare a ricevere gli assensi
 			case t of 	
 				Negativo -> do
