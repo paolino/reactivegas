@@ -1,5 +1,5 @@
 name: reactivegas 
-version: 2015.4.14
+version: 2018.05.03
 license: BSD3
 license-file: LICENSE
 maintainer: Paolo Veronelli <paolo.veronelli@gmail.com> 
@@ -14,7 +14,7 @@ cabal-version: >= 1.6
 
 
 Executable server
- ghc-options: -Wall -XTypeOperators -threaded -O2
+ ghc-options: -Wall -XTypeOperators  -O2 -threaded
  main-is: Server/server.hs
  build-depends: base    , 
                 transformers,

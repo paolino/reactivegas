@@ -69,7 +69,7 @@ data BoxOrdine where
 		UnitClass b, 
 		UnitClass c) => BOrdine b c d -> BoxOrdine
 
-deriving instance Typeable4 Ordine
+deriving instance Typeable Ordine
 
 instance Show BoxOrdine where
 	show (BoxOrdine x) = show x

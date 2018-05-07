@@ -10,8 +10,8 @@ import Voci.Beni
 
 deriving instance Typeable Confezionato
 deriving instance Typeable Sfuso
-deriving instance Typeable4 Voce
-deriving instance Typeable1 BWord
+deriving instance Typeable Voce
+deriving instance Typeable BWord
 -- deriving instance Typeable
 --deriving instance Typeable
 
