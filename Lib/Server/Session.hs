@@ -12,6 +12,7 @@ import Network.SCGI (CGI,getCookie,newCookie,setCookie, Cookie(cookieExpires))
 import Control.Concurrent (forkIO, threadDelay)
 import System.FilePath ((</>))
 import System.Time (getClockTime, addToClockTime, noTimeDiff, tdMonth, toCalendarTime)
+import Data.Time
 import Lib.Missing (secondM)
 import Lib.Database (limitedDB,set,query,forget,dump,restoreDB, DB)
 import Debug.Trace
@@ -50,7 +51,7 @@ sessioning path l signal rs = do
 				Just c -> return c
 				Nothing -> do 
 					cn <- lift $ show <$> (randomIO :: IO Int)
-					t <- lift $ getClockTime >>= return . (addToClockTime (noTimeDiff {tdMonth = 1})) >>= toCalendarTime
+					t <- lift $ getCurrentTime >>= return . (addUTCTime $ 31 * 12 * 60 * 60) -- >>= toCalendarTime
 					let c = newCookie sex cn
 					setCookie $ c{cookieExpires = Just t}
 					return cn

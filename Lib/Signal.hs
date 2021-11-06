@@ -13,13 +13,14 @@ class MonadSignal m where
 	happened :: m () 		-- ^ signal that the thing happened
 	intercept :: m a -> m (a,Bool)	-- ^ execute an action and report if the thing happened
 
-newtype SignalT t a = SignalT {runSignalT :: t (a,Bool)}
+newtype SignalT m a = SignalT {runSignalT :: m (a,Bool)} 
 	
 instance Monad m => MonadSignal (SignalT m) where
 	happened = SignalT $  return  ((),True)
 	intercept f = SignalT $ do
 		(x,b) <- runSignalT f
 		return ((x,b),b)
+
 instance Monad m => Applicative (SignalT m) where
 	pure = return 
 	(<*>)  = ap
@@ -32,6 +33,9 @@ instance (Monad m) => Monad (SignalT m) where
 		return $ (x',b || b')
 	return x = lift (return x)
 
+instance MonadFail m => MonadFail (SignalT m) where 
+	fail x = SignalT $ fail x
+	
 instance MonadTrans SignalT where
 	lift m = SignalT (m >>= return . flip (,) False)
 

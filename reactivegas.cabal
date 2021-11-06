@@ -1,40 +1,53 @@
-name: reactivegas 
-version: 2018.05.03
-license: BSD3
-license-file: LICENSE
-maintainer: Paolo Veronelli <paolo.veronelli@gmail.com> 
-stability: unstable
-category: social, p2p, cooperative
-synopsis: social tool for group of consumers
-description:  ..
-homepage: http://wiki.github.com/paolino/reactivegas
-copyright: Copyright (c) 2010-2015 Paolo Veronelli 
-build-type: Simple
-cabal-version: >= 1.6
+name:          reactivegas 
+version:       2021.11.5
+license:       BSD3
+license-file:  LICENSE
+maintainer:    Paolo Veronelli <paolo.veronelli@gmail.com> 
+stability:     unstable
+category:      social, p2p, cooperative
+synopsis:      social tool for group of consumers
+description:   ..
+homepage:      http://wiki.github.com/paolino/reactivegas
+copyright:     Copyright (c) 2010-2021 Paolo Veronelli 
+build-type:    Simple
+cabal-version: >=1.6
 
+executable server
+  main-is:       app/Main.hs
+  ghc-options:   -Wall -XTypeOperators -O2 -threaded
 
-Executable server
- ghc-options: -Wall -XTypeOperators  -O2 -threaded
- main-is: Server/server.hs
- build-depends: base    , 
-                transformers,
-                containers,
-                random      ,
-                bytestring  ,
-                array,
-                SimpleAES   ,
-                RSA == 1.0.6.3        ,
-                mtl        ,
-                utf8-string ,
-                -- MaybeT      ,
-                pretty      ,
-                filepath    ,
-                filemanip  ,
-                network-uri,
-                network,
-                directory  , 
-                stm, old-time,
-                xhtml, 
-                split,time,
-                scgi , url,HDBC-sqlite3,HDBC, HTTP,haskeline, MonadRandom
+library
+  ghc-options:   -Wall -XTypeOperators -O2 -threaded
+  exposed-modules:
+    Server.Service
+  build-depends:
+      array
+    , base
+    , bytestring
+    , containers
+    , directory
+    , filemanip
+    , filepath
+    , haskeline
+    , HDBC
+    , HDBC-sqlite3 ==2.3.3.1
+    , HTTP
+    , MonadRandom
+    , mtl
+    , network ==2.6.0.0
+    , network-uri
+    , old-time
+    , pretty
+    , random
+    , RSA ==1.0.6.3      
+    , SimpleAES ==0.4.2
+    , scgi
+    , split
+    , stm
+    , time
+    , transformers
+    , url
+    , utf8-string
+    , xhtml
 
+-- MaybeT      ,

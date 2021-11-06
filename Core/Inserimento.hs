@@ -45,28 +45,31 @@ inserimento x (Nodo Nothing rs) = Nodo Nothing <$> mapM (secondM (mapM (secondM 
 	secondM f (x,y) = f y >>= return . (,) x
 inserimento x n@(Nodo k@(Just (Reazione (acc, f :: TyReazione a b d s c))) _) = do
 	
-	Nodo Nothing rs <- inserimento x n{reattore = Nothing} -- intanto eseguiamo l'inserzione nei figli simulando nodo morto, gancio al caso sopra
-	s' <- get -- registriamo lo stato per un eventuale ripristino o per la contestualizzazione
-	let 	complete v = do 
-			
-			result <- lift . lift $ f v -- esecuzione con creazione dei nodi dei reattori dipendenti
-			case result of 
-				Just (t {- condizione di mantenimento -}, (zip [0..] . mkNodi -> ns, nevs)) -> do
-					happened -- segnaliamo che almeno una reazione è avvenuta
-					tell nevs -- logghiamo gli eventi interni eventualmente creati 
-					return . Nodo (if t then k else Nothing) $ ((x, s') , ns) : rs 
-						--controlla se la reazione e' finita e aggiunge i nuovi reattori contestualizzati
-				Nothing -> put s' >> rifiuto -- la reazione é fallita, lo stato viene ripristinato
-		rifiuto = return (n{seguenti = rs}) -- il rifiuto non compromette l'eventuale accettazione dei sottonodi	
-	case x of 
-		Right (u,y) -> -- evento esterno
-			case  (valore :: c a -> a) <$> parser y of 
-				Nothing -> rifiuto -- non intercettato dal parser 
-				Just v ->  complete (Right (u,v))
-		Left y -> -- evento interno
-			case maybe ((valore :: ParserConRead b -> b) <$> parser y) (provaAccentratore y) acc of 
-				Nothing -> rifiuto
-				Just v ->  complete (Left v)
+	Nodo mreat rs <- inserimento x n{reattore = Nothing} -- intanto eseguiamo l'inserzione nei figli simulando nodo morto, gancio al caso sopra
+	case mreat of 
+		Just _ -> error "inserimento impossibile"
+		Nothing -> do 
+			s' <- get -- registriamo lo stato per un eventuale ripristino o per la contestualizzazione
+			let 	complete v = do 
+					
+					result <- lift . lift $ f v -- esecuzione con creazione dei nodi dei reattori dipendenti
+					case result of 
+						Just (t {- condizione di mantenimento -}, (zip [0..] . mkNodi -> ns, nevs)) -> do
+							happened -- segnaliamo che almeno una reazione è avvenuta
+							tell nevs -- logghiamo gli eventi interni eventualmente creati 
+							return . Nodo (if t then k else Nothing) $ ((x, s') , ns) : rs 
+								--controlla se la reazione e' finita e aggiunge i nuovi reattori contestualizzati
+						Nothing -> put s' >> rifiuto -- la reazione é fallita, lo stato viene ripristinato
+				rifiuto = return (n{seguenti = rs}) -- il rifiuto non compromette l'eventuale accettazione dei sottonodi	
+			case x of 
+				Right (u,y) -> -- evento esterno
+					case  (valore :: c a -> a) <$> parser y of 
+						Nothing -> rifiuto -- non intercettato dal parser 
+						Just v ->  complete (Right (u,v))
+				Left y -> -- evento interno
+					case maybe ((valore :: ParserConRead b -> b) <$> parser y) (provaAccentratore y) acc of 
+						Nothing -> rifiuto
+						Just v ->  complete (Left v)
 
 -- | l'evento interno del core segnala che nessun reattore ha accettato l'evento (parsing fallito)
 data CoreEvents = Rifiuto  deriving (Read,Show)
