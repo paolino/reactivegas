@@ -22,7 +22,7 @@ module Eventi.Accredito {-(
 import Control.Applicative ((<$>))
 import Control.Arrow (first, second, (&&&), (***))
 import Control.Monad (when)
-import Control.Monad.Error (throwError)
+import Control.Monad.Except (throwError)
 import Control.Monad.Reader (MonadReader, asks)
 import Core.Costruzione (CostrAction, libero, runSupporto, scelte)
 import Core.Dichiarazioni (Dichiarazione (Singola), Singola)

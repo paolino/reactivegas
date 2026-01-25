@@ -7,10 +7,11 @@ import Data.List (nub, intercalate, partition, (\\), union, group, sort)
 import Data.Maybe (catMaybes, fromJust)
 import Data.Typeable 
 import Control.Arrow ((&&&), first)
-import Control.Monad (msum)
-import Control.Monad.Cont (callCC, join, lift)
+import Control.Monad (msum, join)
+import Control.Monad.Cont (callCC)
+import Control.Monad.Trans (lift)
 import Control.Monad.Reader (asks, ask)
-import Control.Monad.Error (throwError)
+import Control.Monad.Except (throwError)
 import Lib.Units -- (Pesi,Volumi,Unità, Denaro,UnitClass (..))
 import Lib.NaturalLanguage
 import Lib.QInteger

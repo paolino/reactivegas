@@ -8,8 +8,9 @@ import Data.List (isPrefixOf, tails, find, deleteBy)
 import Control.Arrow (first, (&&&))
 import Data.Maybe
 import Control.Applicative ((<$>))
-import Control.Monad.Reader (asks,ask, when, MonadReader)
-import Control.Monad.Error (throwError)
+import Control.Monad (when)
+import Control.Monad.Reader (asks, ask, MonadReader)
+import Control.Monad.Except (throwError)
 import Control.Monad.State (get)
 import Debug.Trace
 

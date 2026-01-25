@@ -7,7 +7,7 @@ module Eventi.Sincronizzatore where
 
 import Control.Monad.Trans.Maybe (MaybeT)
 import Control.Monad (mzero, when)
-import Control.Monad.Error (throwError)
+import Control.Monad.Except (throwError)
 import Control.Applicative ((<$>))
 import Control.Monad.Reader (asks, MonadReader)
 import Control.Arrow ((&&&), first)

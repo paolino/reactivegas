@@ -6,13 +6,13 @@ module Lib.Server.Server (server) where
 import Data.List  (tails)
 import Data.List.Split (splitOneOf)
 import Control.Applicative ((<$>))
+import Control.Monad (liftM2, foldM, forM, void)
 import Control.Monad.Reader
 import Control.Monad.Cont
-import Control.Concurrent.STM 
-import Control.Concurrent (forkIO) 
-import Text.XHtml 
-import Network.SCGI(CGI, CGIResult, runSCGIConcurrent', handleErrors,getVars)
-import Network (PortID (PortNumber))
+import Control.Concurrent.STM
+import Control.Concurrent (forkIO)
+import Text.XHtml
+import Lib.SCGI (CGI, CGIResult, runSCGIConcurrent', handleErrors, getVars)
 
 
 import Lib.STM
@@ -82,7 +82,7 @@ server 	:: forall e b k . (Read b,Show b)
 	-> (STM () -> Maybe b -> IO (e, k -> IO Bool , IO b))  -- ^ produzione e restore di evironment per sessione
 	-> (b -> Maybe k)
 	-> IO () 				-- ^ aloa
-server path (PortNumber . fromIntegral -> port) limitR limitS applicazione preServer 
+server path (fromIntegral -> port) limitR limitS applicazione preServer 
 		responseHandler defaultForms newEnvironment sessionKey = do
 	-- definizione di nuova sessione
 	persistSessionChan <- atomically newTChan
@@ -109,7 +109,7 @@ server path (PortNumber . fromIntegral -> port) limitR limitS applicazione preSe
 			
 	(run,reset) <- sessioning path limitS (readTChan persistSessionChan) newSession
 	putStrLn "** Server attivo"
-	runSCGIConcurrent' forkIO 1000 port . handleErrors $ do 
+	runSCGIConcurrent' (void . forkIO) 1000 port . handleErrors $ do 
 		b <- preServer
 		case b of
 			Nothing -> checkReset reset run >>= cgiFromServer responseHandler 

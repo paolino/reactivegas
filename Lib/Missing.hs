@@ -5,7 +5,7 @@ module Lib.Missing where
 
 import Control.Applicative ((<$>))
 import Control.Arrow (second)
-import Control.Monad.Error (throwError, ErrorT)
+import Control.Monad.Except (throwError, ExceptT)
 import Data.Typeable
 import Data.Char (toLower)
 import Data.Function (on)
@@ -49,7 +49,7 @@ foldDeleteMb 	:: (Functor m, Monad m)
 foldDeleteMb	f y xs = deleteMb f y xs >>= maybe (return (y,xs)) (uncurry $ foldDeleteMb f) 
 
 -- | erroring on Nothing
-onNothing :: Monad m => String -> Maybe a -> ErrorT String m a
+onNothing :: Monad m => String -> Maybe a -> ExceptT String m a
 onNothing x = maybe (throwError x) return  
 
 infixr 8 >$>

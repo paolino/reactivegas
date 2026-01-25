@@ -5,7 +5,8 @@ import Data.Function (on)
 import Data.List (nubBy)
 
 import Control.Applicative ((<$>))
-import Control.Monad.Error (runErrorT, lift)
+import Control.Monad.Except (runExceptT)
+import Control.Monad.Trans (lift)
 import Control.Monad.Reader (runReader)
 import Control.Arrow (second, first, (***))
 
@@ -96,7 +97,7 @@ caricamento'' l es (QS q) = let (q',ef) = (fst q == fst q) `seq` caricaEventi' p
 
 -- | aggiornamento di gruppo
 loader :: QS -> [Esterno Utente] -> Either String (QS,Effetti)
-loader (qs@(QS (s,_))) es = flip runReader s . runErrorT  $
+loader (qs@(QS (s,_))) es = flip runReader s . runExceptT  $
 			return . first (\(QS q) -> QS . first (seeset ((+) 1 :: Integer -> Integer)) $ q) $ caricamento'' maxLevel es qs
 
 -- | effettua un inserimento di eventi esterni nello stato, restituendo il nuovo. Stampa i logs

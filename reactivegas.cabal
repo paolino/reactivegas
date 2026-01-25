@@ -10,11 +10,41 @@ description:   ..
 homepage:      http://wiki.github.com/paolino/reactivegas
 copyright:     Copyright (c) 2010-2021 Paolo Veronelli 
 build-type:    Simple
-cabal-version: >=1.6
+cabal-version: >=1.8
 
 executable server
   main-is:       app/Main.hs
   ghc-options:   -Wall -XTypeOperators -O2 -threaded
+  build-depends:
+      array
+    , base
+    , bytestring
+    , containers
+    , directory
+    , filemanip
+    , filepath
+    , haskeline
+    , HDBC
+    , HDBC-sqlite3
+    , HTTP
+    , MonadRandom
+    , mtl
+    , network
+    , network-uri
+    , old-time
+    , pretty
+    , random
+    , reactivegas
+    , RSA
+    , crypto-api
+    , SimpleAES
+    , split
+    , stm
+    , time
+    , transformers
+    , url
+    , utf8-string
+    , xhtml
 
 library
   ghc-options:   -Wall -XTypeOperators -O2 -threaded
@@ -30,18 +60,18 @@ library
     , filepath
     , haskeline
     , HDBC
-    , HDBC-sqlite3 ==2.3.3.1
+    , HDBC-sqlite3
     , HTTP
     , MonadRandom
     , mtl
-    , network ==2.6.0.0
+    , network
     , network-uri
     , old-time
     , pretty
     , random
-    , RSA ==1.0.6.3      
-    , SimpleAES ==0.4.2
-    , scgi
+    , RSA
+    , crypto-api
+    , SimpleAES
     , split
     , stm
     , time

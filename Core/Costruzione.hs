@@ -4,7 +4,8 @@ module Core.Costruzione (libero, output,toSupporto, password, scelte, upload, Su
 
 import Control.Applicative ((<$>))
 import Control.Monad (liftM)
-import Control.Monad.Error (lift, runErrorT, ErrorT,MonadError)
+import Control.Monad.Except (runExceptT, ExceptT, MonadError)
+import Control.Monad.Trans (lift)
 import Control.Monad.Cont (MonadCont)
 import Control.Monad.Reader (runReaderT, ReaderT, MonadReader(..))
 
@@ -15,7 +16,7 @@ import Lib.Response
 import Debug.Trace
 
 -- | monade di supporto per la costruzione di valori con il valore interrogativo in reader e con la possibilita di fallire 
-newtype Supporto m s b a = Supporto {unSupporto :: ReaderT (m s) (ErrorT String (P.Costruzione m b)) a} deriving
+newtype Supporto m s b a = Supporto {unSupporto :: ReaderT (m s) (ExceptT String (P.Costruzione m b)) a} deriving
 	(Monad
 	,Applicative
 	,Functor
@@ -38,7 +39,7 @@ runSupporto	:: Monad m
 		-> (a -> P.Costruzione m b c) 
 		-> Supporto m s b a 
 		-> P.Costruzione m b c
-runSupporto s kn kp (Supporto f) = runErrorT (runReaderT f s) >>= either kn kp
+runSupporto s kn kp (Supporto f) = runExceptT (runReaderT f s) >>= either kn kp
 
 -- | passo libero elevato al supporto
 libero :: (Monad m ,Read a) => Response -> Supporto m s b a
