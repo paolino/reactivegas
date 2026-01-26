@@ -217,7 +217,7 @@ mkSessione pa f l signal publ exsignal ms = do
         Just (mg, _, _, _) -> case mg of
             Nothing -> newTVar Nothing
             Just g ->
-                signal g >>= \ms -> case ms of
+                signal g >>= \case
                     Nothing -> newTVar Nothing
                     Just mks -> mks >>= newTVar . Just
     let memoria = (eventi, accesso, acquisto, ordinante, conservative, stato, caricamento, gruppo, triggers, signalbox, signal, publ)

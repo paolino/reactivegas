@@ -48,10 +48,10 @@ lastRow db col table = do
 
 insertAcquisto :: Connection -> FineAcquisto -> IO ()
 insertAcquisto db (FineAcquisto b us) = do
-    run db ("insert into acquisti (nome) values (?)") [toSql b]
+    run db "insert into acquisti (nome) values (?)" [toSql b]
     pis <- lastRow db "id" "acquisti"
     forM_ us $ \(u, v) -> do
-        run db ("insert into impegni (acquisto,utente,impegno) values (?,?,?)") [toSql pis, toSql u, toSql $ show v]
+        run db "insert into impegni (acquisto,utente,impegno) values (?,?,?)" [toSql pis, toSql u, toSql $ show v]
     commit db
 
 getAcquisti :: Connection -> Int -> IO [FineAcquisto]
@@ -69,7 +69,7 @@ getAcquisti db n = do
         ys' =
             map
                 ( \y ->
-                    let nome = fromJust . head $ head $ y
+                    let nome = fromJust . head $ head y
                         uvs = map (map fromJust . tail) y
                      in FineAcquisto nome (map (\[u, v] -> (u, read' v)) uvs)
                 )
@@ -86,7 +86,7 @@ mkAcquisti wd t = do
     db <- connectSqlite3 $ wd </> "acquisti.sql"
 
     handleSql (\_ -> return ()) $ do
-        mapM (flip (run db) []) $ nuoveTabelle
+        mapM_ (flip (run db) []) nuoveTabelle
         commit db
     return $
         Acquisti
