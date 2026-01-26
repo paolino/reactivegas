@@ -7,30 +7,30 @@
 Module      : Lib.SCGI
 Description : SCGI server implementation for network >= 3.0
 -}
-module Lib.SCGI
-    ( -- * CGI monad
-      CGI
-    , CGIT (..)
-    , CGIResult
-    , MonadCGI (..)
+module Lib.SCGI (
+    -- * CGI monad
+    CGI,
+    CGIT (..),
+    CGIResult,
+    MonadCGI (..),
 
-      -- * Request handling
-    , getInput
-    , getInputs
-    , getVars
-    , output
-    , setHeader
-    , handleErrors
+    -- * Request handling
+    getInput,
+    getInputs,
+    getVars,
+    output,
+    setHeader,
+    handleErrors,
 
-      -- * Cookies
-    , Cookie (..)
-    , getCookie
-    , setCookie
-    , newCookie
+    -- * Cookies
+    Cookie (..),
+    getCookie,
+    setCookie,
+    newCookie,
 
-      -- * SCGI server
-    , runSCGIConcurrent'
-    ) where
+    -- * SCGI server
+    runSCGIConcurrent',
+) where
 
 import Control.Concurrent (forkIO)
 import Control.Exception (SomeException, bracket, catch)
@@ -44,7 +44,7 @@ import qualified Data.ByteString.Lazy.Char8 as L
 import Data.Char (isDigit, toLower)
 import Data.List (intercalate, lookup)
 import Data.Maybe (fromMaybe, mapMaybe)
-import Data.Time (UTCTime, formatTime, defaultTimeLocale)
+import Data.Time (UTCTime, defaultTimeLocale, formatTime)
 import Network.Socket
 import Network.Socket.ByteString (recv, sendAll)
 import Network.URI (unEscapeString)
@@ -84,34 +84,34 @@ data Cookie = Cookie
     }
 
 -- | MonadCGI class for CGI operations
-class Monad m => MonadCGI m where
+class (Monad m) => MonadCGI m where
     cgiGet :: (CGIEnv -> a) -> m a
     cgiAddHeader :: String -> String -> m ()
 
-instance MonadIO m => MonadCGI (CGIT m) where
+instance (MonadIO m) => MonadCGI (CGIT m) where
     cgiGet f = CGIT $ f <$> ask
     cgiAddHeader name value = CGIT $ tell [Header name value]
 
 -- | Get a form input by name
-getInput :: MonadCGI m => String -> m (Maybe String)
+getInput :: (MonadCGI m) => String -> m (Maybe String)
 getInput name = lookup name <$> getInputs
 
 -- | Get all form inputs
-getInputs :: MonadCGI m => m [(String, String)]
+getInputs :: (MonadCGI m) => m [(String, String)]
 getInputs = cgiGet cgiInputs
 
 -- | Get all CGI environment variables
-getVars :: MonadCGI m => m [(String, String)]
+getVars :: (MonadCGI m) => m [(String, String)]
 getVars = cgiGet cgiVars
 
 -- | Output a string as the response
-output :: MonadCGI m => String -> m CGIResult
+output :: (MonadCGI m) => String -> m CGIResult
 output s = do
     setHeader "Content-Type" "text/html; charset=utf-8"
     return $ L.pack s
 
 -- | Set a response header
-setHeader :: MonadCGI m => String -> String -> m ()
+setHeader :: (MonadCGI m) => String -> String -> m ()
 setHeader = cgiAddHeader
 
 -- | Handle errors in CGI computation
@@ -131,7 +131,7 @@ runCGIT' :: CGIEnv -> ReaderT CGIEnv (WriterT [Header] IO) a -> IO (a, [Header])
 runCGIT' env m = runWriterT (runReaderT m env)
 
 -- | Get a cookie by name
-getCookie :: MonadCGI m => String -> m (Maybe String)
+getCookie :: (MonadCGI m) => String -> m (Maybe String)
 getCookie name = do
     vars <- getVars
     let cookies = fromMaybe "" $ lookup "HTTP_COOKIE" vars
@@ -174,7 +174,7 @@ newCookie name value =
         }
 
 -- | Set a cookie in the response
-setCookie :: MonadCGI m => Cookie -> m ()
+setCookie :: (MonadCGI m) => Cookie -> m ()
 setCookie cookie = setHeader "Set-Cookie" (formatCookie cookie)
 
 formatCookie :: Cookie -> String
@@ -190,16 +190,16 @@ formatCookie c =
     formatExpires = formatTime defaultTimeLocale "%a, %d %b %Y %H:%M:%S GMT"
 
 -- | Run an SCGI server concurrently
-runSCGIConcurrent'
-    :: (IO () -> IO ())
-    -- ^ Fork function (typically forkIO)
-    -> Int
-    -- ^ Max concurrent connections (for compatibility, not enforced)
-    -> PortNumber
-    -- ^ Port to listen on
-    -> CGI CGIResult
-    -- ^ Request handler
-    -> IO ()
+runSCGIConcurrent' ::
+    -- | Fork function (typically forkIO)
+    (IO () -> IO ()) ->
+    -- | Max concurrent connections (for compatibility, not enforced)
+    Int ->
+    -- | Port to listen on
+    PortNumber ->
+    -- | Request handler
+    CGI CGIResult ->
+    IO ()
 runSCGIConcurrent' fork _maxConns port handler = do
     addr <-
         head

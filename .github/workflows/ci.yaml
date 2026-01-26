@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build and check
+    runs-on: ubuntu-latest
+    steps:
+      - run: sudo rm -rf /opt&
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            trusted-public-keys = hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+            substituters = https://cache.iog.io https://cache.nixos.org/
+            accept-flake-config = true
+
+      - uses: cachix/cachix-action@v15
+        with:
+          name: paolino
+          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+
+      - name: Build all
+        run: nix --quiet develop --command cabal build all
+
+      - name: Check formatting
+        run: |
+          nix --quiet develop --command bash -c '
+            hs_files=$(find . -name "*.hs" \
+              -not -path "./dist-newstyle/*" \
+              -not -path "./.direnv/*" \
+              -not -name "FileSystem.hs" \
+              -not -name "Valuta.hs" \
+              -not -path "./Core/Aggiornamento.hs")
+            fourmolu -m check $hs_files
+          '
+
+      - name: Run hlint
+        run: |
+          nix --quiet develop --command bash -c '
+            find . -name "*.hs" \
+              -not -path "./dist-newstyle/*" \
+              -not -path "./.direnv/*" \
+              -not -name "FileSystem.hs" \
+              -not -name "Valuta.hs" \
+              -not -path "./Core/Aggiornamento.hs" \
+              | xargs hlint
+          '

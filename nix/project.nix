@@ -17,5 +17,6 @@ in pkgs.haskell-nix.cabalProject' {
     shellcheck
     sqlite
     haskellPackages.fourmolu
+    haskellPackages.cabal-fmt
   ];
 }
