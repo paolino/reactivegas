@@ -10,7 +10,7 @@ import Control.Applicative
 import Control.Monad.Cont
 import Control.Monad.State
 import Control.Monad.Reader
-import Control.Monad.Error
+import Control.Monad.Except
 import Debug.Trace
 
 import Lib.Passo (Costruzione,mano, menu, rotonda ,rmenu, Passo,svolgi, HPasso ) 

@@ -3,7 +3,8 @@
 module Core.Programmazione where
 
 import Data.Typeable
-import Control.Monad.RWS (RWS, MonadState, MonadReader, MonadWriter, ask, tell, runRWS, msum)
+import Control.Monad (msum)
+import Control.Monad.RWS (RWS, MonadState, MonadReader, MonadWriter, ask, tell, runRWS)
 import Control.Applicative ((<$>))
 
 import Core.Types  (Interno)

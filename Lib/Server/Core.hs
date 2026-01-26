@@ -8,7 +8,9 @@ import Data.Ord (comparing)
 import Control.Applicative ((<$>))
 import Control.Concurrent.STM (newTVar,  readTVar, writeTVar,atomically, TVar)
 import Control.Monad (join, (>=>), foldM, mplus)
-import Control.Monad.Error (ErrorT, throwError, lift, MonadIO)
+import Control.Monad.Except (ExceptT, throwError)
+import Control.Monad.Trans (lift)
+import Control.Monad.IO.Class (MonadIO)
 import Control.Arrow ((***),(&&&),  second, first)
 
 import System.Random (randomIO)
@@ -107,7 +109,7 @@ eseguiScarica fo = do
 -- il tipo 'e' filtra per inchiodare il tipo delle form
 data Server e b c = Server {
 	apertura :: [(b,FormId)], -- ^ il risultato di una non richiesta
-	servizio :: Request -> ErrorT String IO (Either c [(b,FormId)]) -- ^ reazione ad una richiesta
+	servizio :: Request -> ExceptT String IO (Either c [(b,FormId)]) -- ^ reazione ad una richiesta
 	}
 
 mkTimeKey :: IO TimeKey
@@ -116,11 +118,11 @@ mkTimeKey = TimeKey <$> (`mod` (10000000 :: Int)) <$> abs <$> randomIO
 mkFokKey = FormKey <$> (`mod` (10000000 :: Int)) <$> abs <$> randomIO
 
 correctS 	:: TVar (FormDB e b c) 
-		-> (Form e b c -> ErrorT String IO (Form e b c))
+		-> (Form e b c -> ExceptT String IO (Form e b c))
 		-> FormKey
 		-> TimeKey
 		-> TimeKey
-		->  ErrorT String IO (Form e b c)
+		->  ExceptT String IO (Form e b c)
 correctS dbe f fok enk nenk = do
 	db <- lift . atomically $ readTVar dbe
 	fo <- onNothing ("chiave temporale non trovata 1") $ query db (enk,fok)

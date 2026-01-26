@@ -18,7 +18,7 @@ import Lib.Missing ((>$>))
 import Lib.Response
 import Lib.Server.Server (server)
 import Lib.Tokens (Token (..))
-import Network.SCGI (output)
+import Lib.SCGI (output)
 import Server.Layout (layout, pagina)
 import Server.Opzioni (Argomenti (Argomenti), parseArgs)
 import System.FilePath ((</>))

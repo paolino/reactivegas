@@ -34,7 +34,8 @@ I dati di tipo (Passo b) vanno sucessivamente percorsi dai driver adatti all'int
 
 module Lib.Passo where
 
-import Control.Monad.Cont -- (forever, ContT (..) , runContT, callCC, join)
+import Control.Monad (join, forever, liftM)
+import Control.Monad.Cont
 import Control.Monad.State
 import Control.Arrow ((***), first)
 import Control.Applicative ((<$>))

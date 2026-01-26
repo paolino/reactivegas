@@ -1,1 +1,6 @@
-dist-newstyle
+dist-newstyle/
+result
+result-*
+.direnv/
+*.sqlite
+*.db

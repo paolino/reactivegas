@@ -29,7 +29,7 @@ import Control.Applicative ((<$>))
 import Control.Arrow ((***),first,  second,  (&&&))
 import Control.Monad (when, mzero)
 import Control.Monad.Reader (asks, MonadReader)
-import Control.Monad.Error (throwError)
+import Control.Monad.Except (throwError)
 import Codec.Crypto.RSA (PublicKey (..))
 
 import Lib.Aspetti ((.<),ParteDi,see)

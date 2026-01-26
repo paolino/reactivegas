@@ -14,7 +14,7 @@ import Control.Monad.Cont
 import Control.Monad.State
 import Control.Monad.Reader
 import Control.Concurrent.STM
-import Control.Monad.Error
+import Control.Monad.Except
 import Debug.Trace
 
 
@@ -167,7 +167,7 @@ caricaAggiornamentoIndividuale :: Interfaccia ()
 caricaAggiornamentoIndividuale = do 
 	p@(c,_,_) <- P.upload  "aggiornamento individuale"
 	s <- fst <$> unQS <$> statoPersistenza
-	rs <- runErrorT . flip runReaderT s $ fromPatch (fst . responsabili) p
+	rs <- runExceptT . flip runReaderT s $ fromPatch (fst . responsabili) p
 	case rs of 
 		Left prob -> bocciato "caricamento aggiornamento individuale" prob
 		Right _ -> do 

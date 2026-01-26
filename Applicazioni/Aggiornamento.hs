@@ -11,7 +11,7 @@ import Data.List.Split
 import Data.Maybe
 import Control.Monad.Trans
 import Control.Monad.Trans.Maybe
-import Network.SCGI
+import Lib.SCGI
 import System.IO
 import Control.Concurrent.STM
 

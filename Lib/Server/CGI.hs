@@ -7,8 +7,11 @@ import Control.Applicative ((<$>))
 import Data.List.Split (splitOneOf)
 import Data.Maybe (listToMaybe)
 import qualified Data.ByteString.Lazy.Char8 as B (readFile)
-import Control.Monad.Error -- (mplus,Error , ErrorT,runErrorT,throwError,lift)
-import Network.SCGI
+import Control.Monad (MonadPlus(..))
+import Control.Monad.Except (ExceptT, runExceptT, throwError)
+import Control.Monad.Trans (lift)
+import Control.Monad.IO.Class (liftIO)
+import Lib.SCGI
 import Codec.Binary.UTF8.String (decodeString)
 import Lib.Server.Core
 import Text.XHtml
@@ -18,30 +21,30 @@ import Lib.Missing (onNothing)
 
 import Debug.Trace
 
-readHKey :: ErrorT String (CGIT IO) TimeKey
+readHKey :: ExceptT String (CGIT IO) TimeKey
 readHKey = do 
 	r <- lift (getInput "hkey") >>= onNothing "manca la chiave di punto"
 	case reads r of
 		[(k,_)] -> return k
 		_ -> throwError "campo hkey illeggibile"
 
-readFKey :: ErrorT String (CGIT IO) FormKey
+readFKey :: ExceptT String (CGIT IO) FormKey
 readFKey =  do 
 	r <- lift (getInput "fkey") >>= onNothing "manca la chiave di form"
 	case reads r of
 		[(k,_)] -> return k
 		_ -> throwError "campo fkey illeggibile"
 
-readValore :: ErrorT String (CGIT IO) Value
+readValore :: ExceptT String (CGIT IO) Value
 readValore = fmap id <$> lift (getInput "valore") >>= onNothing "manca la risposta"
 
 pagina :: [(Html,Int)] -> [Html]
 pagina xs =  map (\(h,i) -> thediv ! [theclass ("boxes interazione dimensione" ++ show i)] << h) xs
 
 -- | eleva gli errori nella monade del server in quella di CGI 
-liftServer :: Error e => ErrorT e IO a -> ErrorT e (CGIT IO) a
+liftServer :: ExceptT String IO a -> ExceptT String (CGIT IO) a
 liftServer ma = do
-	r <- lift . lift $ runErrorT ma 
+	r <- lift . lift $ runExceptT ma 
 	case r of 	Left x -> throwError x	
 			Right y -> return y
 
@@ -58,7 +61,7 @@ cgiFromServer resp (Server apertura servizio,droppa) = do
 	is <- getInputs
 
 	-- lift $ print is
-	r <- runErrorT $ case lookup "REQUEST_URI"  vs of 
+	r <- runExceptT $ case lookup "REQUEST_URI"  vs of 
 		Just x -> 
 			let 	xs =  tail $ splitOneOf "/?" x 
 			in case tail xs of

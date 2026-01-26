@@ -12,13 +12,8 @@ import Applicazioni.Database.GPatch (GPatches (..), mkGPatches)
 import Control.Arrow (second, (&&&))
 import Control.Concurrent (forkIO)
 import Control.Concurrent.STM (STM, TChan, TVar, atomically, dupTChan, newTChan, readTChan, readTVar, writeTChan, writeTVar, newTVarIO, readTVarIO)
-import Control.Monad.Reader
-  ( MonadPlus (mplus)
-  , ReaderT (runReaderT)
-  , forever
-  , liftM2
-  , when
-  )
+import Control.Monad (MonadPlus (mplus), forever, liftM2, when)
+import Control.Monad.Reader (ReaderT (runReaderT))
 import Core.Patch (Group, Patch, fromGroup, fromPatch)
 import Core.Types (Evento, Responsabile, Utente)
 import Data.Function (on)
