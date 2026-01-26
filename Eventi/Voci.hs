@@ -52,7 +52,7 @@ import Eventi.Anagrafe (
     validante,
  )
 import Lib.Aspetti (ParteDi, see, (.<))
-import Lib.Assocs (update, upset, (?))
+import Lib.Assocs (update, set, (?))
 import qualified Lib.Euro as E
 import Lib.Prioriti (R (..))
 

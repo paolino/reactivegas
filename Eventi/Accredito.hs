@@ -44,7 +44,7 @@ import Eventi.Anagrafe (
     validante,
  )
 import Lib.Aspetti (ParteDi, see, (.<))
-import Lib.Assocs (update, upset, (?))
+import Lib.Assocs (update, set, (?))
 import Lib.Euro
 import Lib.Missing (sortByLower, sortLower)
 import Lib.Prioriti (R (..))
@@ -126,7 +126,7 @@ accredita u dv s = do
     esistenzaUtente u
     Conti us <- osserva
     let r = dv $^ (us ? (u, 0))
-    modifica $ \(Conti us) -> Conti (upset u r us)
+    modifica $ \(Conti us) -> Conti (set u r us)
     logga . Message $ MovimentoU u dv s
     return r
 

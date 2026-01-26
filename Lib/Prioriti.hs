@@ -1,35 +1,70 @@
 {-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
--- | un modulo per il riordinamento di valori basato su una serie di priorita' ricavabili dal parsing delle loro rappresentazioni
-module Lib.Prioriti (sortP, levelsP, R (..)) where
+{- |
+Module      : Lib.Prioriti
+Description : Priority-based sorting using parseable representations
+Copyright   : (c) Paolo Veronelli, 2025
+License     : BSD-3-Clause
 
-import Control.Applicative ((<$>))
+A module for reordering values based on priorities derived from
+parsing their string representations.
+-}
+module Lib.Prioriti
+    ( sortP
+    , levelsP
+    , R (..)
+    ) where
+
 import Control.Arrow ((&&&))
 import Control.Monad (msum)
-
 import Data.Char (ord)
 import Data.List (sortBy)
-import Data.Maybe (listToMaybe)
+import Data.Maybe (fromMaybe, listToMaybe)
 import Data.Ord (comparing)
 
--- | una scatola per le priorita'
+-- | Existential wrapper for priority functions
 data R = forall a. (Read a) => R (a -> Int)
 
--- | la funzione riordinante
-sortP :: Int -> [R] -> (a -> String) -> [a] -> [a]
-sortP l rs f = map fst . takeWhile ((<= l) . snd) . sortBy (comparing snd) . map (id &&& maybe 0 id . lss rs)
+-- | Sort values by computed priority, filtering by maximum level
+sortP
+    :: Int
+    -- ^ maximum priority level to include
+    -> [R]
+    -- ^ list of priority extractors
+    -> (a -> String)
+    -- ^ function to get string representation
+    -> [a]
+    -- ^ values to sort
+    -> [a]
+    -- ^ sorted values up to max level
+sortP maxLevel extractors toStr =
+    map fst
+        . takeWhile ((<= maxLevel) . snd)
+        . sortBy (comparing snd)
+        . map (id &&& computeLevel extractors)
   where
-    lss ps x = msum $ map (ls x) ps
-    ls x (R (p :: a -> Int)) = p <$> (read' :: String -> Maybe a) (f x)
-    read' x = fst <$> listToMaybe (reads x)
+    computeLevel ps x = fromMaybe 0 $ msum $ map (extractLevel x) ps
+    extractLevel x (R (priority :: b -> Int)) =
+        priority <$> safeRead (toStr x)
+    safeRead :: forall b. (Read b) => String -> Maybe b
+    safeRead s = fst <$> listToMaybe (reads s)
 
-levelsP rs f = sortBy (comparing snd) . map (id &&& maybe 0 id . lss rs)
+-- | Compute priority levels for all values
+levelsP
+    :: [R]
+    -- ^ list of priority extractors
+    -> (a -> String)
+    -- ^ function to get string representation
+    -> [a]
+    -- ^ values to analyze
+    -> [(a, Int)]
+    -- ^ values paired with their levels
+levelsP extractors toStr =
+    sortBy (comparing snd) . map (id &&& computeLevel extractors)
   where
-    lss ps x = msum $ map (ls x) ps
-    ls x (R (p :: a -> Int)) = p <$> (read' :: String -> Maybe a) (f x)
-    read' x = fst <$> listToMaybe (reads x)
-
-test =
-    sortP 800 [R id, R ord, R (length :: String -> Int)] id ["'a'", "3", "\"piox\""]
-        == ["3", "\"piox\"", "'a'"]
+    computeLevel ps x = fromMaybe 0 $ msum $ map (extractLevel x) ps
+    extractLevel x (R (priority :: b -> Int)) =
+        priority <$> safeRead (toStr x)
+    safeRead :: forall b. (Read b) => String -> Maybe b
+    safeRead s = fst <$> listToMaybe (reads s)

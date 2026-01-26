@@ -40,7 +40,7 @@ import Data.List ((\\))
 import Debug.Trace
 
 import Lib.Aspetti (ParteDi, see, (.<))
-import Lib.Assocs (assente, elimina, updateM, (?))
+import Lib.Assocs (absent, delete, updateM, (?))
 import Lib.Passo (Costruzione)
 import Lib.Prioriti (R (..))
 import Lib.Response (Response (..))
@@ -153,7 +153,7 @@ esistenzaResponsabile :: (Responsabili `ParteDi` s, Anagrafe `ParteDi` s) => Ute
 esistenzaResponsabile u = do
     esistenzaUtente u
     Responsabili us _ <- osserva
-    fallimento (u `assente` us) $ "responsabile " ++ show u ++ " non eletto"
+    fallimento (u `absent` us) $ "responsabile " ++ show u ++ " non eletto"
 
 -- | la reazione agli eventi anagrafici
 reazioneAnagrafe ::
@@ -203,11 +203,11 @@ reazioneAnagrafe = soloEsterna reattoreAnagrafe'
         return (True, ([reaz], []))
       where
         chiudibene u r l = do
-            modifica $ \(Responsabili us ls) -> Responsabili (elimina u us) (elimina l ls)
+            modifica $ \(Responsabili us ls) -> Responsabili (delete u us) (delete l ls)
             loggamus $ "revocato il responsabile  " ++ u
             return ([], [EventoInterno $ EventoEliminazioneResponsabile u r])
         chiudimale u r l = do
-            modifica $ \(Responsabili us ls) -> Responsabili us (elimina l ls)
+            modifica $ \(Responsabili us ls) -> Responsabili us (delete l ls)
             loggamus $ "rinuncia alla revoca del responsabile " ++ u
             return nessunEffetto
 

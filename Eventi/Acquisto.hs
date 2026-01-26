@@ -20,7 +20,7 @@ import Data.Typeable (Typeable)
 import Debug.Trace
 
 import Lib.Aspetti (ParteDi, see, (.<))
-import Lib.Assocs (assente, elimina, update)
+import Lib.Assocs (absent, delete, update)
 import Lib.Euro (Euro)
 import Lib.Prioriti (R (..))
 import Lib.QInteger (QInteger)

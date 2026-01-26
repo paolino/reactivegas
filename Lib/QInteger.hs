@@ -1,45 +1,69 @@
 {-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE NoMonomorphismRestriction #-}
 
-module Lib.QInteger (makeQInteger, fromQInteger, QInteger) where
+{- |
+Module      : Lib.QInteger
+Description : Chunked integer representation for display
+Copyright   : (c) Paolo Veronelli, 2025
+License     : BSD-3-Clause
 
-import Debug.Trace
+Provides a chunked integer type that displays large integers
+in groups of digits for improved readability.
+-}
+module Lib.QInteger
+    ( makeQInteger
+    , fromQInteger
+    , QInteger
+    ) where
 
 import Data.List (unfoldr)
-import Data.Typeable
-import Text.Printf
+import Data.Typeable (Typeable)
+import Text.Printf (printf)
 
-nq = 4
+-- | Number of digits per chunk
+chunkSize :: Int
+chunkSize = 4
 
-data QInteger = QInteger [Int] deriving (Eq, Ord, Typeable)
+-- | Integer represented as chunks of digits for display
+data QInteger = QInteger [Int]
+    deriving (Eq, Ord, Typeable)
 
 instance Show QInteger where
-    show (QInteger xs) = concatMap (printf ("%0" ++ show nq ++ "d ")) $ xs
+    show (QInteger xs) =
+        concatMap (printf ("%0" ++ show chunkSize ++ "d ")) xs
 
-readQ [] = ([], "")
-readQ xs =
-    let (ps, qs) = splitAt (nq + 1) $ dropWhile (== ' ') xs
-     in if length ps < (nq + 1)
-            then
-                ([], xs)
-            else case reads ps of
+-- | Parse chunked integer format
+readChunks :: String -> ([Int], String)
+readChunks [] = ([], "")
+readChunks xs =
+    let (prefix, rest) = splitAt (chunkSize + 1) $ dropWhile (== ' ') xs
+    in  if length prefix < (chunkSize + 1)
+            then ([], xs)
+            else case reads prefix of
                 [] -> ([], xs)
-                [(i, " ")] -> let (js, rs) = readQ qs in (i : js, rs)
+                [(i, " ")] ->
+                    let (js, remaining) = readChunks rest
+                    in  (i : js, remaining)
                 _ -> ([], xs)
 
 instance Read QInteger where
-    readsPrec _ x = case readQ x of
-        ([], xs) -> []
-        (js, rs) -> [(QInteger $ js, rs)]
+    readsPrec _ x = case readChunks x of
+        ([], _) -> []
+        (js, remaining) -> [(QInteger js, remaining)]
 
-takeQ :: Integer -> (Int, Integer)
-takeQ x = let (a, b) = x `divMod` (10 ^ nq) in (fromIntegral b, a)
+-- | Extract one chunk from an integer
+takeChunk :: Integer -> (Int, Integer)
+takeChunk x =
+    let (quotient, remainder) = x `divMod` (10 ^ chunkSize)
+    in  (fromIntegral remainder, quotient)
 
+-- | Convert an 'Integer' to chunked representation
 makeQInteger :: Integer -> QInteger
-makeQInteger = QInteger . unfoldr f
+makeQInteger = QInteger . unfoldr step
   where
-    f 0 = Nothing
-    f x = Just $ takeQ x
+    step 0 = Nothing
+    step x = Just $ takeChunk x
 
+-- | Convert chunked representation back to 'Integer'
 fromQInteger :: QInteger -> Integer
-fromQInteger (QInteger xs) = foldr (\x y -> y * 10 ^ nq + fromIntegral x) 0 $ xs
+fromQInteger (QInteger xs) =
+    foldr (\x acc -> acc * 10 ^ chunkSize + fromIntegral x) 0 xs

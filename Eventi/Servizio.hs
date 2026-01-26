@@ -26,7 +26,7 @@ import Control.Monad.State (get, lift)
 import Core.Inserimento (MTInserzione, fallimento, loggamus, modifica, osserva)
 import Core.Programmazione (Inserzione)
 import Lib.Aspetti (ParteDi, see, (.<))
-import Lib.Assocs (assente, elimina, updateM, (?))
+import Lib.Assocs (absent, delete, updateM, (?))
 import Lib.Firmabile (hash, hashOver)
 import Lib.QInteger
 
@@ -58,7 +58,7 @@ servizioPresente ::
     MTInserzione s c d (Servizio a)
 servizioPresente j = do
     s@(Servizio ls) <- osserva
-    fallimento (assente j ls) $ "richiesta di servizio fallita , indice " ++ show j ++ " non trovato"
+    fallimento (absent j ls) $ "richiesta di servizio fallita , indice " ++ show j ++ " non trovato"
     return s
 
 {- | restituisce il valore del servizio di tipo a indicizzato dalla chiave passata
@@ -90,7 +90,7 @@ eliminaStatoServizio ::
     QInteger -> a -> MTInserzione s c d ()
 eliminaStatoServizio j proxy = do
     Servizio ls <- servizioPresente j :: MTInserzione s c d (Servizio a)
-    modifica $ \_ -> Servizio (elimina j ls)
+    modifica $ \_ -> Servizio (delete j ls)
 
 -- | restituisce la lista di associazione (chiave, descrizione) degli stati presenti
 elencoSottoStati ::

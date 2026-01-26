@@ -1,23 +1,52 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE ExistentialQuantification #-}
-{-# LANGUAGE StandaloneDeriving #-}
 
-module Lib.Response where
+{- |
+Module      : Lib.Response
+Description : Polymorphic response types for display
+Copyright   : (c) Paolo Veronelli, 2025
+License     : BSD-3-Clause
 
-import Data.Maybe
-import Data.Typeable
-import Text.PrettyPrint
+Provides existential response types that can hold various
+data structures for formatted display.
+-}
+module Lib.Response
+    ( Response (..)
+    ) where
 
+import Data.Maybe (fromJust)
+import Data.Typeable (Typeable, cast, typeOf)
+import Text.PrettyPrint (Doc, nest, render, text, vcat, ($+$))
+
+-- | Polymorphic response type for formatted output
 data Response
-    = forall a. (Typeable a, Show a) => ResponseOne a
-    | forall a. (Show a) => ResponseMany [a]
-    | forall a. (Show a) => ResponseAL [(String, a)]
-    | Response [(String, Response)]
+    = -- | Single typed value
+      forall a. (Typeable a, Show a) => ResponseOne a
+    | -- | List of values
+      forall a. (Show a) => ResponseMany [a]
+    | -- | Association list with string keys
+      forall a. (Show a) => ResponseAL [(String, a)]
+    | -- | Nested response structure
+      Response [(String, Response)]
 
 instance Show Response where
-    show x = render $ render' x
+    show x = render $ renderResponse x
 
-render' (ResponseOne x) = text (case typeOf x == typeOf "" of True -> fromJust $ cast x; False -> show x)
-render' (ResponseMany xs) = vcat $ map (text . show) xs
-render' (ResponseAL xs) = vcat $ map (\(x, y) -> text (x ++ ":") $+$ nest 3 (text . show $ y)) xs
-render' (Response rs) = vcat $ map (\(s, r) -> text (s ++ ":") $+$ nest 3 (render' r)) rs
+-- | Render a response as a pretty-printed document
+renderResponse :: Response -> Doc
+renderResponse (ResponseOne x) =
+    text $ case typeOf x == typeOf ("" :: String) of
+        True -> fromJust $ cast x
+        False -> show x
+renderResponse (ResponseMany xs) =
+    vcat $ map (text . show) xs
+renderResponse (ResponseAL xs) =
+    vcat $ map renderPair xs
+  where
+    renderPair (key, value) =
+        text (key ++ ":") $+$ nest 3 (text $ show value)
+renderResponse (Response rs) =
+    vcat $ map renderNested rs
+  where
+    renderNested (label, response) =
+        text (label ++ ":") $+$ nest 3 (renderResponse response)
