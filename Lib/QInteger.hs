@@ -24,7 +24,7 @@ chunkSize :: Int
 chunkSize = 4
 
 -- | Integer represented as chunks of digits for display
-data QInteger = QInteger [Int]
+newtype QInteger = QInteger [Int]
     deriving (Eq, Ord, Typeable)
 
 instance Show QInteger where

@@ -114,7 +114,7 @@ instance UnitClass Dimensions where
         collapse [] = (1, [])
         collapse (x : xs) =
             let
-                w (q, x) y = ((* q) *** id) `fmap` operate (\i j -> return (i + j)) x y
+                w (q, x) y = first (* q) `fmap` operate (\i j -> return (i + j)) x y
                 k y (x, zs) = case w x y of
                     Nothing -> (x, y : zs)
                     Just x' -> (x', zs)
@@ -157,8 +157,9 @@ ds === ds' =
                 ( msum $
                     map
                         ( \z ->
-                            foldr mplus Nothing $
-                                map (\z' -> trydim z z' >> if esp z /= esp z' then Nothing else Just undefined) dz
+                            foldr
+                                (mplus . (\z' -> trydim z z' >> if esp z /= esp z' then Nothing else Just undefined))
+                                Nothing dz
                         )
                         dz'
                 )

@@ -16,7 +16,7 @@ import Core.Programmazione
 
 import Lib.Prioriti
 
-data Logger = Logger String deriving (Show)
+newtype Logger = Logger String deriving (Show)
 
 instance Read Logger where
     readsPrec _ x = [(Logger x, "")]

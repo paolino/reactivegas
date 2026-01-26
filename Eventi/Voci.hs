@@ -151,7 +151,7 @@ reazioneVoci = Reazione (Nothing, reattoreVoci)
                 let (gs, os') = partition (\((j, _), _) -> i == j) os
                 logga $ Message (OrdiniChiusi i gs)
                 modifica $ \(StatoVoci vs as os) -> StatoVoci vs (filter ((/=) i . fst) as) os'
-                loggamus "modulo ordini relativo a " ++ show i
+                loggamus $ "modulo ordini relativo a " ++ show i
         return (True, nessunEffetto)
     reattoreVoci (Right (first validante -> (wrap, CorreggiAcquisto i nvs evs))) = wrap $ \r -> do
         StatoVoci vs as os <- osserva
@@ -161,17 +161,17 @@ reazioneVoci = Reazione (Nothing, reattoreVoci)
                 fallimento (r /= u) "solo il responsabile d'acquisto può modificare le voci acquistabili"
                 modifica $ \(StatoVoci dvs as os) ->
                     StatoVoci dvs ((i, (u, s, nvs ++ (vs \\ evs))) : filter ((/=) i . fst) as) os
-                loggamus "elenco beni acquistabili in riferimento a " ++ show i ++ " modificato"
+                loggamus $ "elenco beni acquistabili in riferimento a " ++ show i ++ " modificato"
         return (True, nessunEffetto)
     reattoreVoci (Left (InternoVoci (CorreggiOrdine i u ns ves))) = conFallimento $ do
         StatoVoci vs as os <- osserva
         case lookup (i, u) os of
             Nothing -> do
                 modifica $ \_ -> StatoVoci vs as $ ((i, u), ns) : os
-                loggamus "inserito nuovo ordine per " ++ show u ++ " in riferimento a " ++ show i
+                loggamus $ "inserito nuovo ordine per " ++ show u ++ " in riferimento a " ++ show i
             Just ys -> do
                 modifica $ \_ -> StatoVoci vs as $ ((i, u), ns ++ (ys \\ ves)) : os
-                loggamus "modificato l'ordine di " ++ show u ++ " in riferimento a " ++ show i
+                loggamus $ "modificato l'ordine di " ++ show u ++ " in riferimento a " ++ show i
         return (True, nessunEffetto)
 
 -- | costruttore di eventi per il modulo di accredito

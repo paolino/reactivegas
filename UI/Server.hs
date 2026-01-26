@@ -1,7 +1,5 @@
 {-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE ImplicitParams #-}
 {-# LANGUAGE OverlappingInstances #-}
 {-# LANGUAGE Rank2Types #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -10,7 +8,7 @@
 module UI.Server where
 
 import Data.List (delete, find, (\\))
-import Data.Maybe (catMaybes, fromJust, isJust)
+import Data.Maybe (catMaybes, fromJust, fromMaybe, isJust)
 
 import Control.Applicative
 import Control.Arrow
@@ -57,20 +55,20 @@ wrapCostrActions ::
 wrapCostrActions g = concatMap (\f -> f q g (bocciato "costruzione di una dichiarazione"))
   where
     q = do
-        s <- fst <$> unQS <$> statoSessione
+        s <- fst . unQS <$> statoSessione
         mu <- fmap fst <$> ses readAccesso
         return (SUtente mu, s)
-runCostrAction g = (\f -> f q g (bocciato "costruzione di una dichiarazione"))
+runCostrAction g = \f -> f q g (bocciato "costruzione di una dichiarazione")
   where
     q = do
-        s <- fst <$> unQS <$> statoSessione
+        s <- fst . unQS <$> statoSessione
         mu <- fmap fst <$> ses readAccesso
         return (SUtente mu, s)
 
 interrogazioni :: Interfaccia ()
 interrogazioni = rotonda $ \_ ->
-    menu (ResponseOne "interrogazioni sullo stato del gruppo") $
-        ( wrapCostrActions (P.output True) $
+    menu (ResponseOne "interrogazioni sullo stato del gruppo")
+        ( wrapCostrActions (P.output True)
             [ costrQueryAnagrafe
             , costrQueryAccredito
             , costrQueryImpegni
@@ -79,11 +77,11 @@ interrogazioni = rotonda $ \_ ->
         )
 
 dichiarazioni =
-    concat $
+    concat
         [ wrapCostrActions addEvento [costrEventiAccredito]
         , wrapCostrActions addEvento [costrEventiAcquisto]
         , wrapCostrActions addEvento [costrEventiImpegno]
-        , wrapCostrActions addEvento $
+        , wrapCostrActions addEvento
             [ costrEventiAnagrafe
             , costrEventiResponsabili
             ]
@@ -96,10 +94,10 @@ dichiarazioni =
             , (,) "considerazione delle dichiarazioni" eventLevelSelector
             ]
         ]
-richiesta_nuovo_gruppo :: Interfaccia ()
-richiesta_nuovo_gruppo = do
+richiestaNuovoGruppo :: Interfaccia ()
+richiestaNuovoGruppo = do
     n <- P.libero $ ResponseOne "nome del nuovo gruppo"
-    t <- sea $ ($ n) . checkGroupName
+    t <- sea $ flip checkGroupName n
     if t
         then do
             (m :: String) <- P.libero $ ResponseOne "nome del primo responsabile"
@@ -110,21 +108,21 @@ richiesta_nuovo_gruppo = do
                     P.download (n ++ ".richiesta") "scarica file di richiesta inserimento nuovo gruppo" (n, (m, cryptobox p1))
                 else bocciato "immissione password" "digitazione errata"
         else bocciato "nome del nuovo gruppo" "nome non disponibile"
-accettazione_nuovo_gruppo :: Interfaccia ()
-accettazione_nuovo_gruppo = do
+accettazioneNuovoGruppo :: Interfaccia ()
+accettazioneNuovoGruppo = do
     p <- P.password "password di amministrazione"
-    t <- sea $ return . ($ p) . checkPassword
+    t <- sea $ return . flip checkPassword p
     if t
         then do
             r <- P.upload "carica la richiesta"
-            l <- sea $ ($ r) . bootNewGroup
+            l <- sea $ flip bootNewGroup r
             case l of
                 True -> return ()
                 False -> bocciato "nome del nuovo gruppo" "nome non disponibile"
         else bocciato "password di amministrazione" "password do amministrazione non riconosciuta"
 cambiaGruppo = rotonda $ \_ -> do
     gs <- sea listGroups
-    let cg g = ses $ ($ g) . writeGruppo
+    let cg g = ses $ flip writeGruppo g
         ngs = map (second cg) $ ("<nessuno>", Nothing) : zip gs (map Just gs)
     menu (ResponseOne "gruppo di acquisto") ngs
 
@@ -162,8 +160,8 @@ amministrazione = rotonda $ \k -> do
     menu (ResponseOne "amministrazione") $
         grs
             ++ res
-            ++ [ ("richiesta inserimento nuovo gruppo", richiesta_nuovo_gruppo)
-               , ("accettazione richiesta nuovo gruppo", accettazione_nuovo_gruppo)
+            ++ [ ("richiesta inserimento nuovo gruppo", richiestaNuovoGruppo)
+               , ("accettazione richiesta nuovo gruppo", accettazioneNuovoGruppo)
                ]
 
 descrizione = do
@@ -183,9 +181,9 @@ descrizione = do
     s <- ses readStatoSessione
     mv <- case g of
         Nothing -> return Nothing
-        Just _ -> fmap Just $ sepU readVersion
+        Just _ -> Just <$> sepU readVersion
     P.output False . Response $
-        [ ("gruppo selezionato", ResponseOne $ maybe "<nessuno>" id g)
+        [ ("gruppo selezionato", ResponseOne $ fromMaybe "<nessuno>" g)
         ,
             ( "responsabile della sessione"
             , ResponseOne $ case r of
@@ -194,7 +192,7 @@ descrizione = do
             )
         ,
             ( "acquisto selezionato"
-            , ResponseOne . maybe "<nessuno>" id $ do
+            , ResponseOne . fromMaybe "<nessuno>" $ do
                 i <- acq
                 s' <- map (snd &&& fst) . raccoltei . fst . unQS <$> s
                 lookup i s'
@@ -237,7 +235,7 @@ selaAcquisto = ensureGruppoG "selezione acquisto" $ \g -> rotonda $ \_ -> do
         Nothing -> bocciato "selezione acquisto" "incongruenza interna: manca lo stato"
         Just s -> return s
     let gs = raccoltei . fst . unQS $ s
-    let cg g = ses $ ($ g) . writeAquisto
+    let cg g = ses $ flip writeAquisto g
         ngs = map (second cg) $ ("<nessuno>", Nothing) : map (second Just) gs
     menu (ResponseOne "selezione acquisto") ngs
 
@@ -247,7 +245,7 @@ selaOrdinante = ensureGruppoG "selezione ordinante" $ \g -> rotonda $ \_ -> do
         Nothing -> bocciato "selezione ordinante" "incongruenza interna: manca lo stato"
         Just s -> return s
     let gs = map (id &&& id) . utenti . fst . unQS $ s
-    let cg g = ses $ ($ g) . writeOrdinante
+    let cg g = ses $ flip writeOrdinante g
         ngs = map (second cg) $ ("<nessuno>", Nothing) : map (second Just) gs
     menu (ResponseOne "selezione ordinante") ngs
 
@@ -271,7 +269,7 @@ vociW = do
 
 -- applicazione :: Costruzione MEnv () ()
 applicazione = rotonda $ \_ -> do
-    menu (ResponseOne "menu principale") $
+    menu (ResponseOne "menu principale")
         [ wname "selezione responsabile" ensureGruppo (rotonda $ const accesso)
         , ("selezione gruppo", cambiaGruppo)
         , ("selezione acquisto", selaAcquisto)
@@ -280,7 +278,7 @@ applicazione = rotonda $ \_ -> do
           wname "gestione dichiarazioni" ensureResponsabile $ rotonda $ \_ ->
             menu
                 (ResponseOne "gestione dichiarazioni")
-                $ dichiarazioni
+                dichiarazioni
         , ("descrizione della sessione", descrizione)
         , wname "effetto delle ultime dichiarazioni" ensureGruppo $ do
             c <- fromJust <$> ses readCaricamento

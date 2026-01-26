@@ -1,13 +1,10 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverlappingInstances #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TypeSynonymInstances #-}
-{-# LANGUAGE ViewPatterns #-}
 
 -- | Valutazione di un ordine, ovvero estrazione di tutte le possibili quantità implicate nella definizione
 module Voci.Ordini where
@@ -34,22 +31,22 @@ class Valuta b c d e where
 
 ----------------------------- Sfuso --------------------------------------
 instance Valuta Pesi Pesi Sfuso Denaro where
-    valuta (InPeso v (AlPeso _ q)) = Just $ v *|* q where
+    valuta (InPeso v (AlPeso _ q)) = Just $ v *|* q
     valuta (InDenaro v _) = Just v
 instance Valuta Unità Unità Sfuso Denaro where
-    valuta (InPezzi v (AlPezzo _ q)) = Just $ v *|* q where
+    valuta (InPezzi v (AlPezzo _ q)) = Just $ v *|* q
     valuta (InDenaro v (AlPezzo _ q)) = Just $ n *|* q
       where
         n = floorQ $ v *|* q :: Quantità Unità -- numero pezzi
 instance Valuta Unità Pesi Sfuso Denaro where
-    valuta (InPeso v (AlPezzoStimato _ (_, p2) q)) = Just $ ((n *|* p2 :: Quantità Pesi) *|* q)
+    valuta (InPeso v (AlPezzoStimato _ (_, p2) q)) = Just ((n *|* p2 :: Quantità Pesi) *|* q)
       where
         n = floorQ $ v *|* p2 :: Quantità Unità -- numero di pezzi
-    valuta (InDenaro v (AlPezzoStimato _ (_, p2) q)) = Just $ ((n *|* p2 :: Quantità Pesi) *|* q)
+    valuta (InDenaro v (AlPezzoStimato _ (_, p2) q)) = Just ((n *|* p2 :: Quantità Pesi) *|* q)
       where
         n = floorQ $ (v *|* q :: Quantità Pesi) *|* p2 :: Quantità Unità
 instance Valuta Volumi Volumi Sfuso Denaro where
-    valuta (InVolume v (AlVolume _ q)) = Just $ v *|* q where
+    valuta (InVolume v (AlVolume _ q)) = Just $ v *|* q
     valuta (InDenaro v _) = Just v
 
 ----------------------------- Confezionato ---------------------------------
@@ -141,21 +138,21 @@ instance Valuta Unità Pesi Sfuso Pesi where
         n = floorQ $ (v *|* q :: Quantità Pesi) *|* p2 :: Quantità Unità
 
 instance Valuta Pesi Pesi Sfuso Pesi where
-    valuta (InPeso v (AlPeso _ q)) = Just $ v where
+    valuta (InPeso v (AlPeso _ q)) = Just v
     valuta (InDenaro v (AlPeso _ q)) = Just $ v *|* q
 instance Valuta b c Sfuso Pesi where
     valuta _ = Nothing
 
 ------------------------------- Confezionato ---------------------------------
 instance Valuta Unità Pesi Confezionato Pesi where
-    valuta (InConfezioni v (AllaConfezioneStimata c _ (_, p2) q)) = Just $ p
+    valuta (InConfezioni v (AllaConfezioneStimata c _ (_, p2) q)) = Just p
       where
         p = v *|* p2 :: Quantità Pesi
-    valuta (InPeso v (AllaConfezioneStimata c _ (_, p2) q)) = Just $ p
+    valuta (InPeso v (AllaConfezioneStimata c _ (_, p2) q)) = Just p
       where
         m = floorQ $ v *|* p2 :: Quantità Unità -- numero confezioni
         p = m *|* p2 :: Quantità Pesi
-    valuta (InDenaro v (AllaConfezioneStimata c _ (_, p2) q)) = Just $ p
+    valuta (InDenaro v (AllaConfezioneStimata c _ (_, p2) q)) = Just p
       where
         cc = p2 *|* q :: Quantità (Denaro, Unità)
         m = floorQ $ v *|* cc :: Quantità Unità
@@ -199,7 +196,7 @@ instance Valuta b c Confezionato Pesi where
 
 ----------------------------------------Sfuso ---------------------------
 instance Valuta Volumi Volumi Sfuso Volumi where
-    valuta (InVolume v (AlVolume _ q)) = Just $ v where
+    valuta (InVolume v (AlVolume _ q)) = Just v
     valuta (InDenaro v (AlVolume _ q)) = Just $ v *|* q
 instance Valuta b c Sfuso Volumi where
     valuta _ = Nothing

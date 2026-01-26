@@ -30,7 +30,7 @@ import Lib.Assocs (absent, delete, updateM, (?))
 import Lib.Firmabile (hash, hashOver)
 import Lib.QInteger
 
-data (Read a, Show a, Eq a) => Servizio a = Servizio {sottostato :: [(QInteger, (String, a))]}
+newtype (Read a, Show a, Eq a) => Servizio a = Servizio {sottostato :: [(QInteger, (String, a))]}
     deriving
         (Show, Read, Eq)
 
@@ -46,7 +46,7 @@ nuovoStatoServizio ::
 nuovoStatoServizio s (u, q) = do
     Servizio ls <- osserva
     n <- osserva
-    let p = makeQInteger $ (n + (BL.foldr (\x y -> 256 * y + fromIntegral (ord x)) 0 . hash $ u ++ q) `mod` 10 ^ 12)
+    let p = makeQInteger (n + (BL.foldr (\x y -> 256 * y + fromIntegral (ord x)) 0 . hash $ u ++ q) `mod` 10 ^ 12)
     modifica $ \_ -> Servizio ((p, (q, s)) : ls)
     loggamus $ "riferimento " ++ show p
     return p
@@ -66,7 +66,7 @@ osservaStatoServizio :: (ParteDi (Servizio a) s, Read a,Eq a, Show a) => Int -> 
 -}
 osservaStatoServizio j = do
     Servizio ls <- servizioPresente j
-    snd <$> return (ls ? (j, error "osservaStatoServizio: the impossible happened"))
+    return . snd $ ls ? (j, error "osservaStatoServizio: the impossible happened")
 
 -- | modifica il valore del servizio di tipo a indicizzato dalla chiave passata
 modificaStatoServizio ::

@@ -53,7 +53,7 @@ restore z x = case reads x of
         False -> [(snd z $ snd x, r)]
     _ -> []
 
-f `alt` g = \x -> let fx = f x in if null fx then g x else fx where
+f `alt` g = \x -> let fx = f x in if null fx then g x else fx
 restore1 :: forall a b. (Read a) => [(String, a -> b)] -> ReadS b
 restore1 xs x = case reads x of
     [(x, r)] -> case lookup (fst x) xs of
@@ -85,25 +85,25 @@ instance (Show c, Show a) => Show (Voce a b c d) where
 
 instance (Read a) => Read (Voce a Volumi Volumi Confezionato) where
     readsPrec _ =
-        restore ("AllaConfezione", (\(c, b, q) -> AllaConfezione c b q))
-            `alt` restore ("AlVolumeConfezionato", (\(c, b, q) -> AlVolumeConfezionato c b q))
+        restore ("AllaConfezione", \(c, b, q) -> AllaConfezione c b q)
+            `alt` restore ("AlVolumeConfezionato", \(c, b, q) -> AlVolumeConfezionato c b q)
 instance (Read a) => Read (Voce a Pesi Pesi Confezionato) where
     readsPrec _ =
-        restore ("AllaConfezione", (\(c, b, q) -> AllaConfezione c b q))
-            `alt` restore ("AlPesoConfezionato", (\(c, b, q) -> AlPesoConfezionato c b q))
+        restore ("AllaConfezione", \(c, b, q) -> AllaConfezione c b q)
+            `alt` restore ("AlPesoConfezionato", \(c, b, q) -> AlPesoConfezionato c b q)
 
 instance (Read a) => Read (Voce a Unità Unità Confezionato) where
-    readsPrec _ = restore ("AllaConfezione", (\(c, b, q) -> AllaConfezione c b q))
+    readsPrec _ = restore ("AllaConfezione", \(c, b, q) -> AllaConfezione c b q)
 instance (Read a) => Read (Voce a Unità Pesi Confezionato) where
-    readsPrec _ = restore ("AllaConfezioneStimata", (\(c, b, dq, q) -> AllaConfezioneStimata c b dq q))
+    readsPrec _ = restore ("AllaConfezioneStimata", \(c, b, dq, q) -> AllaConfezioneStimata c b dq q)
 instance (Read a) => Read (Voce a Unità Pesi Sfuso) where
-    readsPrec _ = restore ("AlPezzoStimato", (\(b, dq, q) -> AlPezzoStimato b dq q))
+    readsPrec _ = restore ("AlPezzoStimato", \(b, dq, q) -> AlPezzoStimato b dq q)
 instance (Read a) => Read (Voce a Unità Unità Sfuso) where
-    readsPrec _ = restore ("AlPezzo", (\(b, q) -> AlPezzo b q))
+    readsPrec _ = restore ("AlPezzo", uncurry AlPezzo)
 instance (Read a) => Read (Voce a Pesi Pesi Sfuso) where
-    readsPrec _ = restore ("AlPeso", (\(b, q) -> AlPeso b q))
+    readsPrec _ = restore ("AlPeso", uncurry AlPeso)
 instance (Read a) => Read (Voce a Volumi Volumi Sfuso) where
-    readsPrec _ = restore ("AlVolume", (\(b, q) -> AlVolume b q))
+    readsPrec _ = restore ("AlVolume", uncurry AlVolume)
 
 instance (Show c, Show a) => Show (Ordine a b c d) where
     -- \| in denaro si può ordinare tutto

@@ -54,7 +54,7 @@ main = do
     let newEnvironment signal ms = do
             se <-
                 mkSessione
-                    (mkDichiarazioni)
+                    mkDichiarazioni
                     (fmap (fmap whiteLoad) . query)
                     maxLevel
                     (fmap (fmap updateSignal) . query)

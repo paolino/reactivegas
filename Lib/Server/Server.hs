@@ -1,4 +1,5 @@
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE ViewPatterns #-}
 
 module Lib.Server.Server (server) where
@@ -46,10 +47,10 @@ fromHPasso (p, []) e0 = fromHPasso' ((p, e0), [])
             pass v =
                 cont v >>= \mhp -> return $ do
                     ((p', ps), e') <- runReaderT (liftM2 (,) mhp ask) e
-                    return . fromHPasso' $ ((p', e'), rzip (v : vs) $ ps) -- postulato sul comportamento di Passo.cont
+                    return . fromHPasso' $ ((p', e'), rzip (v : vs) ps) -- postulato sul comportamento di Passo.cont
             reload =
                 let
-                    check k (e, _) (vmps@((_, mp) : _)) = do
+                    check k (e, _) vmps@((_, mp) : _) = do
                         (p, e') <- lift $ runReaderT (liftM2 (,) mp ask) e
                         let result = ((p, e'), vmps)
                         case p of
@@ -130,7 +131,7 @@ server
                 -- esplicitazione della definizione di applicazione (runContT)
                 (hp :: HRPasso e) <- runReaderT (svolgi applicazione) en
                 -- computazione delle forms
-                (fs :: [(Form e Html Link, Int)]) <- forM defaultForms $ \(vs, i) -> flip (,) i <$> restore (fromHPasso hp en) vs
+                (fs :: [(Form e Html Link, Int)]) <- forM defaultForms $ \(vs, i) -> (, i) <$> restore (fromHPasso hp en) vs
                 let reloadAllCond f g = do
                         mk <- sessionKey `fmap` ben
                         t1 <- maybe (return False) cks mk

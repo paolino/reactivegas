@@ -1,7 +1,5 @@
 {-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE ImplicitParams #-}
 {-# LANGUAGE Rank2Types #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
@@ -60,8 +58,8 @@ wrapCostrActions g = concatMap (\f -> map (second (>> effetto)) $ f q g bocciato
 
 interrogazioni :: Interfaccia ()
 interrogazioni =
-    mano "interrogazioni sullo stato del gruppo" $
-        ( wrapCostrActions P.output $
+    mano "interrogazioni sullo stato del gruppo"
+        ( wrapCostrActions P.output
             [ costrQueryAnagrafe
             , costrQueryAccredito
             , costrQueryImpegni
@@ -90,7 +88,7 @@ baseloop = rotonda $ \k -> do
         Nothing -> P.errore $ ResponseOne "il gruppo non esiste ancora"
         Just s ->
             menu
-                ("menu principale")
+                "menu principale"
                 [ ("uscita", salvataggio >> k ())
                 , ("gestione dichiarazioni", dichiarazioni k)
                 , ("effetto delle ultime dichiarazioni del gruppo", effetto)

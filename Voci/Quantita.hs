@@ -26,7 +26,7 @@ instance (UnitClass b) => Ord (Quantità b) where
 class Qon a b c where
     (*|*) :: Quantità a -> Quantità b -> Quantità c
 
-floorQ (x :? y) = ((toRational . floor $ x) :? y)
+floorQ (x :? y) = (toRational . floor $ x) :? y
 instance (UnitClass a) => Qon a a Unità where
     (*|*) (x :? dx) (y :? dy) =
         let (bx, _) = base dx

@@ -109,7 +109,7 @@ align xs ys =
         (bx, xs') = base xs
         (by, ys') = base ys
      in
-        (first (foldr (*) (bx / by)) . unzip) <$> zipWithM convert xs' ys'
+        first (foldr (*) (bx / by)) . unzip <$> zipWithM convert xs' ys'
 
 ---------------------------------------------------------------------------------------------------
 class Dimensioned a where

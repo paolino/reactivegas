@@ -41,7 +41,7 @@ data BoxVoce where
 instance Show BoxVoce where
     show (BoxVoce x) = show x
 instance Eq BoxVoce where
-    BoxVoce x == BoxVoce y = maybe False (== y) $ cast x
+    BoxVoce x == BoxVoce y = (Just y ==) $ cast x
 
 instance Name BoxVoce where
     singolare (BoxVoce x) = singolare x
@@ -103,7 +103,7 @@ instance Read BoxOrdine where
                                 _ -> []
 
 instance Eq BoxOrdine where
-    BoxOrdine x == BoxOrdine y = maybe False (== y) $ cast x
+    BoxOrdine x == BoxOrdine y = (Just y ==) $ cast x
 
 instance Name BoxOrdine where
     singolare (BoxOrdine x) = singolare x
@@ -118,8 +118,7 @@ bicast x y f = case cast y of
 
 match :: BoxOrdine -> BoxVoce -> Bool
 (BoxOrdine o) `match` (BoxVoce c) =
-    any
-        id
+    or
         [ bicast o c (matchOV :: BOrdine Pesi Pesi Sfuso -> BVoce Pesi Pesi Sfuso -> Bool)
         , bicast o c (matchOV :: BOrdine Volumi Volumi Confezionato -> BVoce Volumi Volumi Confezionato -> Bool)
         , bicast o c (matchOV :: BOrdine Unità Unità Sfuso -> BVoce Unità Unità Sfuso -> Bool)
@@ -136,7 +135,7 @@ mkInConfezioni (BoxVoce v) =
         `mplus` (fmap BoxOrdine `fmap` (mkIn InConfezioni v :: Maybe (Quantità Unità -> BOrdine Unità Unità Confezionato)))
 
 mkInPezzi (BoxVoce v) =
-    (fmap BoxOrdine `fmap` (mkIn InPezzi v :: Maybe (Quantità Unità -> BOrdine Unità Unità Sfuso)))
+    fmap BoxOrdine `fmap` (mkIn InPezzi v :: Maybe (Quantità Unità -> BOrdine Unità Unità Sfuso))
 
 mkInPeso (BoxVoce v) =
     (fmap BoxOrdine `fmap` (mkIn InPeso v :: Maybe (Quantità Pesi -> BOrdine Pesi Pesi Confezionato)))

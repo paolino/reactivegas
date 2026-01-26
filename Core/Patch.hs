@@ -24,7 +24,7 @@ module Core.Patch
     , Firmante (..)
     ) where
 
-import Control.Monad (unless)
+import Control.Monad (unless, when)
 import Control.Monad.Except (MonadError, throwError)
 import Control.Monad.Reader (MonadReader, ask)
 import Data.Maybe (fromJust)

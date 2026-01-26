@@ -27,7 +27,8 @@ import Control.Monad.Except (ExceptT, throwError)
 import Data.Char (toLower)
 import Data.Function (on)
 import Data.List (sortBy)
-import Data.Typeable (Typeable, typeOf)
+import Data.Proxy (Proxy (..))
+import Data.Typeable (Typeable, typeRep)
 
 -- | Sort strings case-insensitively
 sortLower :: [String] -> [String]
@@ -123,7 +124,7 @@ catchRead context token = case reads token of
                 ++ " reading "
                 ++ show (take 20 token)
                 ++ " as type "
-                ++ show (typeOf (undefined :: a))
+                ++ show (typeRep (Proxy :: Proxy a))
 
 -- | Repeatedly apply function until it returns 'Nothing'
 untilNothing

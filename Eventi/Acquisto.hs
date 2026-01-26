@@ -13,7 +13,7 @@ import Control.Arrow (first, (&&&))
 import Control.Monad (when)
 import Control.Monad.Except (throwError)
 import Control.Monad.Reader (MonadReader, ask, asks)
-import Control.Monad.State (get)
+import Control.Monad.State (gets)
 import Data.List (deleteBy, find, isPrefixOf, tails)
 import Data.Maybe
 import Data.Typeable (Typeable)
@@ -39,7 +39,7 @@ import Eventi.Impegno (Impegni, programmazioneImpegno', raccolte)
 import Eventi.Servizio (Servizio)
 
 type Indice = QInteger
-data EsternoAcquisto = AperturaAcquisto String
+newtype EsternoAcquisto = AperturaAcquisto String
 data InternoAcquisto = IAperturaAcquisto Indice String | IChiusuraAquisto Indice Bool deriving (Show, Read)
 
 priorityAcquisto = R k
@@ -69,7 +69,7 @@ data FineAcquisto = FineAcquisto String [(Utente, Euro)] deriving (Typeable, Sho
 reazioneAcquisto = soloEsterna reattoreAcquisto
   where
     reattoreAcquisto (first validante -> (w, AperturaAcquisto b)) = w $ \r -> do
-        rs <- raccolte <$> get
+        rs <- gets raccolte
         fallimento (b `elem` rs) "nome non disponibile"
         let t k = case k of
                 Just us -> do
@@ -89,7 +89,7 @@ reazioneAcquisto = soloEsterna reattoreAcquisto
                 return (epr, epf)
         (la, za, esf) <- programmazioneAssenso ("nuova proposta di acquisto " ++ b) r maggioranza positivo negativo
 
-        return (True, ([za] ++ zi esf, ievs))
+        return (True, (za : zi esf, ievs))
 
 costrEventiAcquisto :: (Monad m, Parser p EsternoAcquisto, Servizio Impegni `ParteDi` s) => CostrAction m c (Dichiarazione p Singola) s
 costrEventiAcquisto s kp kn = [("nuovo acquisto", eventoApertura)]

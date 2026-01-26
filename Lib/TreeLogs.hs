@@ -23,12 +23,12 @@ passa xs =
      in do
             y <- groupBy ((==) `on` null) xs -- distinguiamo tra liste vuote e piene
             if null . head $ y
-                then const Leaf <$> y -- una lista di liste vuote é una lista di Leaf
+                then Leaf <$ y -- una lista di liste vuote é una lista di Leaf
                 else Node . second passa <$> h y -- ogni sottosequenza di una lista  di liste piene che ha
                 -- la stessa testa é un nodo. ricorsivamente analizziamo il resto
 
 eccoILogs :: (Show a) => [([(String, String)], a)] -> String
-eccoILogs = decodeString . showTrees . map (\(as, b) -> (map (\(d, e) -> d ++ ": " ++ e) as) ++ ["...... " ++ show b])
+eccoILogs = decodeString . showTrees . map (\(as, b) -> map (\(d, e) -> d ++ ": " ++ e) as ++ ["...... " ++ show b])
 
 {-
 eil = map renderTree . passa . map (\(as,b) -> (map (\(d,e) -> show d ++ ":" ++ e) as) ++ ["------> " ++ b])

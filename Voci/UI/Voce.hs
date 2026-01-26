@@ -3,7 +3,6 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
 
 module Voci.UI.Voci where
@@ -78,13 +77,12 @@ uiBene kp kv kc = do
             (s', p') <- disambigua Indeterminativo (s, p)
             kc $ Contato (UWord (s', p'))
     join $
-        flip
-            (scelte)
-            (ResponseOne "descrizione del bene in")
+        scelte
             [ ("peso", peso)
             , ("volume", volume)
             , ("unità", unità)
             ]
+            (ResponseOne "descrizione del bene in")
 
 -- decide il contenitore per il bene sfuso
 uiContenitore ::
@@ -97,7 +95,7 @@ uiContenitore ::
     Costruzione m b a
 uiContenitore mo cs ksfuso kcontenuto xp = do
     y <-
-        scelte ((if isJust ksfuso then [("<nessuno>", Nothing)] else []) ++ map (second Just) cs) $
+        scelte ([("<nessuno>", Nothing) | isJust ksfuso] ++ map (second Just) cs) $
             ResponseOne $
                 render $
                     "contenitore per " :+: Determinativo &.& mo xp
@@ -107,7 +105,7 @@ uiContenitore mo cs ksfuso kcontenuto xp = do
             z <-
                 scelte (map (render . singolare &&& id) [minBound .. maxBound]) $
                     ResponseOne $
-                        render $
+                        render
                             "unità di misura per il bene nel contenitore"
             (q :: Float) <-
                 libero . ResponseOne $
@@ -368,7 +366,7 @@ ui =
     uiBene
         (uiContenitorePesato uiAlPesoD (uiScatola uiAlPesoConfezionatoOAllaConfezioneD))
         (uiContenitoreVolumato uiAlVolumeD (uiScatola uiAlVolumeConfezionatoOAllaConfezioneD))
-        (uiContenitoreUnitario uiAlPezzoOPezzoStimatoD (uiScatola (uiAllaConfezioneOConfezioneStimataD)))
+        (uiContenitoreUnitario uiAlPezzoOPezzoStimatoD (uiScatola uiAllaConfezioneOConfezioneStimataD))
 
 class ModificaPrezzo m b a where
     modificaPrezzo :: a -> Costruzione m b a

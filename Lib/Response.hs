@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE ExistentialQuantification #-}
 
 {- |
@@ -15,7 +14,8 @@ module Lib.Response
     ) where
 
 import Data.Maybe (fromJust)
-import Data.Typeable (Typeable, cast, typeOf)
+import Data.Proxy (Proxy (..))
+import Data.Typeable (Typeable, cast, typeOf, typeRep)
 import Text.PrettyPrint (Doc, nest, render, text, vcat, ($+$))
 
 -- | Polymorphic response type for formatted output
@@ -35,7 +35,7 @@ instance Show Response where
 -- | Render a response as a pretty-printed document
 renderResponse :: Response -> Doc
 renderResponse (ResponseOne x) =
-    text $ case typeOf x == typeOf ("" :: String) of
+    text $ case typeOf x == typeRep (Proxy :: Proxy String) of
         True -> fromJust $ cast x
         False -> show x
 renderResponse (ResponseMany xs) =

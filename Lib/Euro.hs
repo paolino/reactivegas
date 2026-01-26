@@ -45,13 +45,10 @@ instance Show Euro where
       where
         totalCents = truncate $ fromRational (x * 100) :: Int
         (euros, cents) = totalCents `divMod` 100
-        (euros', cents') =
-            if euros >= 0
-                then (euros, cents)
-                else
-                    if cents > 0
-                        then (euros + 1, 100 - cents)
-                        else (euros, cents)
+        (euros', cents')
+            | euros >= 0 = (euros, cents)
+            | cents > 0 = (euros + 1, 100 - cents)
+            | otherwise = (euros, cents)
 
 -- | Parse "euro" after optional spaces
 afterSpaces :: String -> ReadP ()
