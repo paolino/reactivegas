@@ -1,4 +1,4 @@
-{ pkgs, rev ? null }:
+{ pkgs, rev ? null, mkdocs }:
 let
   compiler-nix-name = "ghc984";
   indexState = "2025-01-01T00:00:00Z";
@@ -18,5 +18,8 @@ in pkgs.haskell-nix.cabalProject' {
     sqlite
     haskellPackages.fourmolu
     haskellPackages.cabal-fmt
+    pkgs.mkdocs
+    mkdocs.from-nixpkgs
+    mkdocs.static-i18n
   ];
 }
