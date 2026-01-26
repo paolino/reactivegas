@@ -1,110 +1,175 @@
 {-# LANGUAGE ExistentialQuantification #-}
-{-# LANGUAGE NoMonomorphismRestriction #-}
 
 {- |
-Un modulo per la costruzione controllata di valori.
+Module      : Lib.Passo
+Description : Controlled value construction monad
+Copyright   : (c) Paolo Veronelli, 2025
+License     : BSD-3-Clause
 
-I passi possibili per la creazione di valori sono limitati al datatype Passo.
+A module for controlled construction of values through interactive steps.
 
-Il valore Cont b c , che ha come parametro una funzione (a -> c) si presta a racchiudere i dati di tipo (Passo c). Infatti i "passi" rilevanti prendono come ultimo parametro delle funzioni (a -> Passo b) che rappresentano il passo successivo costruito dal valore di uscita del passo attuale.
+The possible steps for value creation are limited to the 'Passo' datatype.
+Using 'Cont' monad with 'Passo' enables a sequential language for value
+construction.
 
-Essendo (Cont (Passo b)) una monade, la scrittura monadica ci permette un linguaggio sequenziale di costruzione dei valori.
+Example usage:
 
-Nell'esempio la funzione interazione descrive la costruzione di un intero attraverso l'inserimento sequenziale di 2 interi e la selezione dell'operazione binaria da eseguire sui 2 numeri.
+@
+interaction :: Costruzione IO Int Int
+interaction = do
+    x <- libero "first number:"
+    y <- libero "second number:"
+    op <- scelte [("sum", (+)), ("difference", (-))] "operation:"
+    return $ op x y
+@
 
-interazioneb :: Cont (Passo Int) Int
-interazioneb = do
-	x <- libero "primo:"
-	y <- libero "secondo:"
-	z <- scelte [("somma",(+)),("differenza",(-))] "operazione:"
-	return $ z x y
-
-interazioneu :: Cont (Passo Int) Int
-interazioneu k = do
-
-La funzione svolgi passa dal linguaggio monadico alla struttura Passo Int, svolgendo la monade.
-
-costruzione :: Passo Int
-costruzione = svolgi interazione
-
-I dati di tipo (Passo b) vanno sucessivamente percorsi dai driver adatti all'interazione.
+The 'svolgi' function converts from the monadic language to the 'Passo'
+structure by running the monad. The resulting 'Passo' values are then
+processed by drivers appropriate for the interaction medium.
 -}
-module Lib.Passo where
+module Lib.Passo
+    ( -- * Core types
+      Passo (..)
+    , HPasso
+    , Costruzione
+      -- * Running constructions
+    , svolgi
+      -- * Step constructors
+    , libero
+    , password
+    , output
+    , errore
+    , upload
+    , download
+    , scelte
+      -- * Menu utilities
+    , menu
+    , rotonda
+    , mano
+    , rmenu
+    ) where
 
-import Control.Applicative ((<$>))
-import Control.Arrow (first, (***))
-import Control.Monad (forever, join, liftM)
-import Control.Monad.Cont
-import Control.Monad.State
+import Control.Arrow (first)
+import Control.Monad (forever, join)
+import Control.Monad.Cont (ContT, callCC, runContT)
+import Control.Monad.State (StateT, get, put, runStateT)
 import Lib.Response (Response)
 
--- | i possibili sviluppi di una costruzione
+-- | Possible developments of a construction
 data Passo m b
-    = -- | scelta vincolata ad una lista di possibilità
+    = -- | Choice constrained to a list of possibilities
       forall a. Scelta Response [(String, a)] (a -> m (HPasso m b))
-    | -- | scelta da leggere da una stringa
+    | -- | Free input parsed from a string
       forall a. (Read a) => Libero Response (a -> m (HPasso m b))
-    | forall a. (Read a) => Upload String (a -> m (HPasso m b))
-    | Output Response (Maybe (m (HPasso m b)))
-    | Errore Response (Maybe (m (HPasso m b)))
-    | forall a. (Show a) => Download String String a (m (HPasso m b))
-    | forall a. (Read a) => Password String (a -> m (HPasso m b))
-    | -- | valore calcolato
+    | -- | File upload
+      forall a. (Read a) => Upload String (a -> m (HPasso m b))
+    | -- | Output display (with optional continuation)
+      Output Response (Maybe (m (HPasso m b)))
+    | -- | Error display (with optional continuation)
+      Errore Response (Maybe (m (HPasso m b)))
+    | -- | File download
+      forall a. (Show a) => Download String String a (m (HPasso m b))
+    | -- | Password input
+      forall a. (Read a) => Password String (a -> m (HPasso m b))
+    | -- | Completed construction with final value
       Costruito b
 
--- | Historied Passo. An HPasso gives a positive continuation along a set of runned continuations.
+-- | Historied Passo: a step paired with history of previous steps
 type HPasso m b = (Passo m b, [m (Passo m b)])
 
+-- | Construction monad for building values interactively
 type Costruzione m b = StateT [m (Passo m b)] (ContT (HPasso m b) m)
 
-wrap :: (Monad m) => ((a -> m (HPasso m b)) -> Passo m b) -> Costruzione m b a
+-- | Wrap a step constructor into the construction monad
+wrap
+    :: (Monad m)
+    => ((a -> m (HPasso m b)) -> Passo m b)
+    -> Costruzione m b a
 wrap f = StateT $ \ns -> ContT $ \k ->
     return $
-        let
-            c a = k (a, (fst `liftM` c a) : ns)
-         in
-            (f c, ns)
+        let c a = k (a, (fst <$> c a) : ns)
+        in  (f c, ns)
 
-back = modify (subtract 1)
-
--- | da una costruzione ad un passo che la esegue
+-- | Run a construction to produce a step
 svolgi :: (Monad m) => Costruzione m b b -> m (HPasso m b)
 svolgi = flip runContT (return . first Costruito) . flip runStateT []
 
--- | produce un passo di valore Libero nella monade Cont
+-- | Create a free input step (parsed from string)
 libero :: (Read a, Monad m) => Response -> Costruzione m b a
 libero prompt = wrap $ Libero prompt
 
+-- | Create a password input step
 password :: (Read a, Monad m) => String -> Costruzione m b a
 password prompt = wrap $ Password prompt
 
-output :: (Monad m) => Bool -> Response -> Costruzione m b ()
-output t s = wrap $ (\c -> Output s $ if t then Just (c ()) else Nothing)
+-- | Create an output display step
+output
+    :: (Monad m)
+    => Bool
+    -- ^ whether to continue after display
+    -> Response
+    -- ^ content to display
+    -> Costruzione m b ()
+output continue s = wrap $ \c -> Output s $ if continue then Just (c ()) else Nothing
 
-errore :: (Monad m) => Bool -> Response -> Costruzione m b ()
-errore t s = wrap $ (\c -> Errore s $ if t then Just (c ()) else Nothing)
+-- | Create an error display step
+errore
+    :: (Monad m)
+    => Bool
+    -- ^ whether to continue after display
+    -> Response
+    -- ^ error content to display
+    -> Costruzione m b ()
+errore continue s = wrap $ \c -> Errore s $ if continue then Just (c ()) else Nothing
 
+-- | Create a file upload step
+upload :: (Read a, Monad m) => String -> Costruzione m b a
 upload prompt = wrap $ Upload prompt
 
-download s f x = wrap $ (\c -> Download s f x $ c ())
+-- | Create a file download step
+download :: (Show a, Monad m) => String -> String -> a -> Costruzione m b ()
+download s f x = wrap $ \c -> Download s f x $ c ()
 
--- | produce un passo di valore Scelta
-scelte :: (Monad m) => [(String, a)] -> Response -> Costruzione m b a
-scelte xs prompt = wrap $ (\c -> Scelta prompt xs c)
+-- | Create a choice selection step
+scelte
+    :: (Monad m)
+    => [(String, a)]
+    -- ^ list of (label, value) choices
+    -> Response
+    -- ^ prompt
+    -> Costruzione m b a
+scelte xs prompt = wrap $ \c -> Scelta prompt xs c
 
--- | presenta un menu di scelte operative
-menu ::
-    (Functor m, Monad m) =>
-    -- | descrizione
-    Response ->
-    -- | menu a partire da un gestore di a
-    [(String, Costruzione m b a)] ->
-    -- | il passo risultante
-    Costruzione m b a
-menu x = join . flip scelte x
+-- | Present a menu of operational choices
+menu
+    :: (Functor m, Monad m)
+    => Response
+    -- ^ description
+    -> [(String, Costruzione m b a)]
+    -- ^ menu items (label, action)
+    -> Costruzione m b a
+menu prompt = join . flip scelte prompt
 
+-- | Create a looping menu that restores state on each iteration
+rotonda
+    :: (Monad m)
+    => ((a -> Costruzione m b a) -> Costruzione m b a)
+    -> Costruzione m b a
 rotonda f = callCC $ \k -> forever $ get >>= \c -> f k >> put c
 
+-- | Create a hand menu with exit option
+mano
+    :: (Functor m, Monad m)
+    => Response
+    -> [(String, Costruzione m b ())]
+    -> Costruzione m b ()
 mano s xs = rotonda (rmenu s xs)
 
-rmenu s xs k = menu s $ ("<uscita>", k ()) : xs
+-- | Menu with exit option
+rmenu
+    :: (Functor m, Monad m)
+    => Response
+    -> [(String, Costruzione m b ())]
+    -> (() -> Costruzione m b ())
+    -> Costruzione m b ()
+rmenu s xs k = menu s $ ("<exit>", k ()) : xs
