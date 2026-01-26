@@ -1,40 +1,54 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeSynonymInstances #-}
 
-module Core.Parsing where
+{- |
+Module      : Core.Parsing
+Description : Selectable parser type class
+Copyright   : (c) Paolo Veronelli, 2025
+License     : BSD-3-Clause
 
-import Control.Applicative ((<$>))
+Provides a type class for parsers that can parse events from
+strings, with support for prioritization and serialization.
+-}
+module Core.Parsing
+    ( Parser (..)
+    , ParserConRead (..)
+    ) where
 
--- | Un parser selezionabile
-class (Show a, Read a) => Parser c a where -- richiediamo Show qui per comoditá ....
-    parser ::
-        String ->
-        -- | dato un evento di tipo e si produce un potenziale valore taggato dal parser
-        Maybe (c a)
-    valore ::
-        c a ->
-        -- | estrazione del valore dal tag
-        a
+-- | A selectable parser type class
+class (Show a, Read a) => Parser c a where
+    -- | Parse a string to produce a potential tagged value
+    parser
+        :: String
+        -> Maybe (c a)
+
+    -- | Extract the value from the tag
+    valore :: c a -> a
+
+    -- | Wrap a value in the parser tag
     boxer :: a -> c a
-    priorita ::
-        c a ->
-        -- | priorita' di un evento nel fase di parsing
-        Int
+
+    -- | Get the priority of an event during parsing phase
+    priorita :: c a -> Int
+
+    -- | Serialize a tagged value back to string
     serializza :: c a -> String
 
-{- |  parser interno utilizzato per la deserializzazione dello stato di controllo
- attenzione alla relazione biiettiva show read in tutti gli eventi introdotti in tutti i plugin !!!!
--}
+-- | Standard parser using Read/Show instances
+-- Used for deserialization of control state
+-- Note: Requires bijective show/read relationship for all events
 data ParserConRead a = ParserConRead a
 
+-- | Like 'listToMaybe' but returns the last element
+listToMaybe' :: [a] -> Maybe a
 listToMaybe' [] = Nothing
 listToMaybe' xs = Just $ last xs
 
--- | il parser standard che utilizza read e show, valido per qualsiasi evento di tipo String
+-- | Standard parser instance using read and show
+-- Valid for any event type with Read/Show instances
 instance (Read a, Show a) => Parser ParserConRead a where
     parser s = ParserConRead <$> fst <$> listToMaybe' (reads s)
     valore (ParserConRead a) = a
-    priorita (ParserConRead a) = 0
+    priorita (ParserConRead _) = 0
     boxer = ParserConRead
     serializza (ParserConRead a) = show a
