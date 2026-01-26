@@ -48,7 +48,7 @@ runGruppo lmov (dir, name, mr0, signal) = do
     return pe
 
 main = do
-    Argomenti dirs port lmov lsess lrem tokpass <- parseArgs $ Argomenti [] 5000 15 200 20 (Token "abc")
+    Argomenti dirs port lmov lsess lrem tokpass <- parseArgs
     amm@(Amministratore acs _ _ _ _ query) <- mkAmministratore tokpass (runGruppo lmov) dirs
 
     let newEnvironment signal ms = do
