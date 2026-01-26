@@ -1,3 +1,5 @@
+{-# LANGUAGE LambdaCase #-}
+
 -- | gestione della sessione, del modello falso in cui l'utente si trova ad operare in bianco prima di fare persistere il proprio lavoro
 module Applicazioni.Sessione (Sessione (..), mkSessione, Update) where
 
@@ -5,7 +7,7 @@ import Control.Applicative ((<$>))
 import Control.Arrow (second)
 import Control.Monad (forever, liftM2, when)
 import Data.List (union, (\\))
-import Data.Maybe (listToMaybe)
+import Data.Maybe (fromMaybe, listToMaybe)
 
 -- import System.Random
 import Control.Concurrent (forkIO)
@@ -87,8 +89,8 @@ update ::
     , TVar (Maybe Name) -- nome del gruppo , se selezionato
     , TChan (Triggers p)
     , TVar (Maybe (STM (Change c d)))
-    , (Name -> STM (Maybe (STM (STM (Change c d))))) -- una condizione esterna che deve fare scattare il rinnovamento
-    , (Name -> STM (Maybe (Maybe Utente -> STM [Evento]))) -- gli eventi pubblicati per un utente
+    , Name -> STM (Maybe (STM (STM (Change c d)))) -- una condizione esterna che deve fare scattare il rinnovamento
+    , Name -> STM (Maybe (Maybe Utente -> STM [Evento])) -- gli eventi pubblicati per un utente
     ) ->
     STM ()
 update pa f l (eventi, accesso, acquisto, ordinante, conservative, stato, caricamento, gruppo, triggers, signalbox, newsignal, publ) = do
@@ -105,14 +107,14 @@ update pa f l (eventi, accesso, acquisto, ordinante, conservative, stato, carica
                         Nothing -> return ()
                         Just g -> do
                             writeTVar accesso mr
-                            publ g >>= \mp -> case mp of
+                            publ g >>= \case
                                 Nothing -> return ()
                                 Just k -> k (fst <$> mr) >>= writeTVar eventi . pa
                 TEventi ds -> writeTVar eventi ds
                 TConservative l -> writeTVar conservative l
                 TGruppo n -> case n of
                     Just g ->
-                        newsignal g >>= \mns -> case mns of
+                        newsignal g >>= \case
                             Just ns -> do
                                 signal <- ns
                                 writeTVar signalbox (Just signal)
@@ -142,11 +144,11 @@ update pa f l (eventi, accesso, acquisto, ordinante, conservative, stato, carica
                                 Boot _ -> return ()
                                 GPatch digested orphans _ -> do
                                     let ofs =
-                                            maybe [] id $
+                                            fromMaybe [] $
                                                 mr
                                                     >>= \u -> lookup u orphans
                                         dgs =
-                                            maybe [] id $
+                                            fromMaybe [] $
                                                 mr
                                                     >>= \u -> lookup u digested
                                     -- TODO !!!
@@ -198,18 +200,18 @@ mkSessione pa f l signal publ exsignal ms = do
             Nothing -> return Nothing
             Just (Nothing, _, _, _) -> return Nothing
             Just (Just g, es, mr, cl) ->
-                f g >>= \x -> case x of
+                f g >>= \case
                     Just k -> Just <$> k cl mr es
                     Nothing -> return Nothing
         liftM2 (,) (newTVar $ fst <$> msc) (newTVar $ snd <$> msc)
-    eventi <- atomically $ newTVar $ maybe (Dichiarazioni [] []) (\(_, es, _, _) -> pa es) ms
-    accesso <- atomically $ newTVar $ ms >>= \(_, _, mr, _) -> mr
-    acquisto <- atomically $ newTVar Nothing
-    ordinante <- atomically $ newTVar Nothing
-    accesso <- atomically $ newTVar $ ms >>= \(_, _, mr, _) -> mr
-    triggers <- atomically $ newTChan
-    conservative <- atomically $ newTVar $ maybe l (\(_, _, _, cl) -> cl) ms
-    gruppo <- atomically $ newTVar $ ms >>= \(mg, _, _, _) -> mg
+    eventi <- newTVarIO $ maybe (Dichiarazioni [] []) (\(_, es, _, _) -> pa es) ms
+    accesso <- newTVarIO $ ms >>= \(_, _, mr, _) -> mr
+    acquisto <- newTVarIO Nothing
+    ordinante <- newTVarIO Nothing
+    accesso <- newTVarIO $ ms >>= \(_, _, mr, _) -> mr
+    triggers <- newTChanIO
+    conservative <- newTVarIO $ maybe l (\(_, _, _, cl) -> cl) ms
+    gruppo <- newTVarIO $ ms >>= \(mg, _, _, _) -> mg
     signalbox <- atomically $ case ms of
         Nothing -> newTVar Nothing
         Just (mg, _, _, _) -> case mg of

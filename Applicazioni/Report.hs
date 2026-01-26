@@ -34,7 +34,7 @@ movimenti (MovimentoU u de s) = tr << (td << show de +++ td << s)
 movimenti (MovimentoR u de s) = tr << (td << show de +++ td << s)
 
 altrsM xs f = mapM (\(i, x) -> f x >>= \y -> return $ tr ! [theclass $ if odd i then "odd" else "even"] << y) . zip [0 ..] $ xs
-altrs xs f = map (\(i, x) -> tr ! [theclass $ if odd i then "odd" else "even"] << f x) . zip [0 ..] $ xs
+altrs xs f = zipWith (\i x -> tr ! [theclass $ if odd i then "odd" else "even"] << f x) [0 ..] xs
 reporter :: Int -> Movimenti -> Acquisti -> TS -> IO Html
 reporter n (Movimenti _ conti casse) (Acquisti _ acquisti) s = do
     conti' <- altrsM (reportCrediti s) $ \(u, e) -> do
@@ -113,7 +113,7 @@ reporter n (Movimenti _ conti casse) (Acquisti _ acquisti) s = do
                                         << altrs
                                             uvs
                                             ( \(u, v) ->
-                                                td << u +++ td << (show v)
+                                                td << u +++ td << show v
                                             )
                                 )
                        )
