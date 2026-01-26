@@ -11,6 +11,7 @@ import Data.List (nubBy)
 
 import Control.Applicative ((<$>))
 import Control.Arrow (first, second, (***))
+import Control.Monad (zipWithM)
 import Control.Monad.Except (runExceptT)
 import Control.Monad.Reader (runReader)
 import Control.Monad.Trans (lift)
@@ -70,7 +71,7 @@ instance Show QS where
 instance Read QS where
     readsPrec t x = map (first (QS . second y)) $ readsPrec t x
       where
-        y nss = case mapM (uncurry deserializza) (zip nss reattori) of
+        y nss = case zipWithM deserializza nss reattori of
             Nothing -> error "deserializzazione fallita"
             Just ns -> ns
 

@@ -12,7 +12,6 @@ import Applicazioni.Database.Movimenti
 import Applicazioni.Reactivegas
 import Core.Programmazione (estrai)
 import Core.Types (Utente)
-import Eventi.Accredito
 import Eventi.Accredito (Movimento (..))
 import Eventi.Acquisto
 import Eventi.Impegno
