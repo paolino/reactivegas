@@ -96,7 +96,7 @@ mkModify x notify = do
 
 -- | Create a Modify function for an association list with dynamic creation
 mkModifyAssocList
-    :: (MonadIO m)
+    :: (MonadIO m, Eq k)
     => (k -> IO v)
     -- ^ create value for new key
     -> [(k, v)]
@@ -113,7 +113,7 @@ mkModifyAssocList mkValue xs notify = do
             Nothing -> return ()
             Just newKeys -> do
                 let addedKeys = filter (`notElem` map fst currentList) newKeys
-                newValues <- mapM mkValue addedKeys
+                newValues <- liftIO $ mapM mkValue addedKeys
                 liftIO . atomically $
                     writeTVar gs (currentList ++ zip addedKeys newValues)
                 notify

@@ -1,3 +1,5 @@
+{-# LANGUAGE TupleSections #-}
+
 {- |
 Module      : Core.Contesto
 Description : Event context tracking

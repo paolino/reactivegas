@@ -4,6 +4,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TupleSections #-}
 
 {- |
 Module      : Core.Programmazione
@@ -167,11 +168,18 @@ type EfReazione s c d = Inserzione s c d (Maybe (Bool, Effetti s c d))
 type TyReazione a b d s c = Either b (d, a) -> EfReazione s c d
 
 -- | Wrap a simple external-only action as a reaction
+--
+-- Uses @()@ as the internal event type since external-only reactions
+-- don't process internal events.
 soloEsterna
     :: (Show d, Read d, Parser c a)
     => ((d, a) -> EfReazione s c d)
     -> Reazione s c d
-soloEsterna f = Reazione (Nothing, either (const $ return Nothing) f)
+soloEsterna f =
+    Reazione
+        ( Nothing :: Maybe (Accentratore ())
+        , either (const $ return Nothing) f
+        )
 
 -- | Existential box for event transformation
 data Deviatore c b = forall a. (Parser c a) => Deviatore (a -> Maybe b)

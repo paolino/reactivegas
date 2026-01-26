@@ -40,7 +40,7 @@ import Eventi.Acquisto
 import Eventi.Anagrafe
 import Eventi.Impegno
 
-import Applicazioni.Persistenza (Persistenza (..))
+import Applicazioni.Persistenza (Persistence (..))
 import Applicazioni.Reactivegas (QS, TS, bianco, levelsEventi, maxLevel, sortEventi)
 import Applicazioni.Sessione (Sessione (..))
 
@@ -85,7 +85,7 @@ dichiarazioni k =
 
 baseloop :: Interfaccia ()
 baseloop = rotonda $ \k -> do
-    ms <- sel $ readStato . fst
+    ms <- sel $ readState . fst
     case ms of
         Nothing -> P.errore $ ResponseOne "il gruppo non esiste ancora"
         Just s ->

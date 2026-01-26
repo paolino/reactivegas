@@ -51,8 +51,8 @@ module Lib.Passo
 
 import Control.Arrow (first)
 import Control.Monad (forever, join)
-import Control.Monad.Cont (ContT, callCC, runContT)
-import Control.Monad.State (StateT, get, put, runStateT)
+import Control.Monad.Cont (ContT (..), callCC, runContT)
+import Control.Monad.State (StateT (..), get, put, runStateT)
 import Lib.Response (Response)
 
 -- | Possible developments of a construction

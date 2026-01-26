@@ -1,91 +1,169 @@
 {-# LANGUAGE Rank2Types #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TupleSections #-}
 
-module Applicazioni.Amministratore where
+{- |
+Module      : Applicazioni.Amministratore
+Description : Group administrator management
+Copyright   : (c) Paolo Veronelli, 2025
+License     : BSD-3-Clause
+
+Provides functionality for managing multiple purchasing groups,
+including group creation, validation, and state access.
+-}
+module Applicazioni.Amministratore
+    ( -- * Types
+      Group
+    , Administrator (..)
+
+      -- * Administrator creation
+    , mkAdministrator
+    ) where
 
 import Control.Concurrent.STM
+    ( STM
+    , TChan
+    , TVar
+    , atomically
+    , newTChan
+    , newTVarIO
+    , readTVar
+    , readTVarIO
+    , writeTChan
+    , writeTVar
+    )
 import Control.Monad (liftM2, when)
 import Control.Monad.Trans (liftIO)
-import Core.Types
 import Data.Maybe (isNothing)
+import System.Directory
+    ( createDirectoryIfMissing
+    , doesDirectoryExist
+    , renameDirectory
+    )
+import System.FilePath (addExtension, takeFileName, (</>))
+import System.FilePath.Find (FileType (..), depth, fileName, fileType, find)
+
+import Core.Types (Responsabile)
 import Lib.STM (condSignalEq)
-import Lib.Tokens
-import System.Directory (
-    createDirectoryIfMissing,
-    doesDirectoryExist,
-    renameDirectory,
- )
-import System.FilePath
-import System.FilePath.Find
+import Lib.Tokens (Token)
 
-type Gruppo = String
+-- | Group name identifier
+type Group = String
 
-data Amministratore a = Amministratore
-    { ammReloadCond :: IO (Gruppo -> IO Bool)
-    , controlla_nome :: Gruppo -> IO Bool
-    , controlla_password :: Token -> Bool
-    , boot_nuovo_gruppo :: (Gruppo, Responsabile) -> IO Bool
-    , elenco_gruppi :: IO [Gruppo]
-    , valore_di_gruppo :: Gruppo -> STM (Maybe a)
+-- | Administrator interface for managing multiple groups
+data Administrator a = Administrator
+    { adminReloadCondition :: IO (Group -> IO Bool)
+    -- ^ Returns a function that waits for a group reload signal
+    , checkGroupName :: Group -> IO Bool
+    -- ^ Check if a group name is available (not already used)
+    , checkPassword :: Token -> Bool
+    -- ^ Validate administrator password
+    , bootNewGroup :: (Group, Responsabile) -> IO Bool
+    -- ^ Create and initialize a new group
+    , listGroups :: IO [Group]
+    -- ^ List all available groups
+    , getGroupValue :: Group -> STM (Maybe a)
+    -- ^ Get the current value for a group
     }
 
-mkAmministratore ::
-    -- | password di amministratore
-    Token ->
-    -- | creazione o lettura di gruppo
-    ((FilePath, Gruppo, Maybe Responsabile, STM ()) -> IO a) ->
-    -- | directory di lavoro
-    FilePath ->
-    -- | l'amministratore risultante
-    IO (Amministratore a)
-mkAmministratore pass readA dir = do
-    -- analisi directories
-    ms <-
+-- | Create an administrator for managing groups
+mkAdministrator
+    :: Token
+    -- ^ administrator password
+    -> ((FilePath, Group, Maybe Responsabile, STM ()) -> IO a)
+    -- ^ group creation or reading function
+    -> FilePath
+    -- ^ working directory
+    -> IO (Administrator a)
+    -- ^ the resulting administrator
+mkAdministrator password readGroup dir = do
+    -- Analyze directories
+    directories <-
         tail
             `fmap` find
                 ((== 0) `fmap` depth)
-                (liftM2 (&&) ((== Directory) `fmap` fileType) ((/= "static") `fmap` fileName))
+                ( liftM2
+                    (&&)
+                    ((== Directory) `fmap` fileType)
+                    ((/= "static") `fmap` fileName)
+                )
                 dir
-    -- gruppi e valori
-    let ns = map takeFileName ms
-    tr <- atomically newTChan :: IO (TChan (Either () Gruppo))
-    let pokeGruppo = writeTChan tr . Right
-    gs <- zip ns `fmap` mapM readA (zipWith (\m n -> (m, n, Nothing, pokeGruppo n)) ms ns)
+    -- Groups and values
+    let names = map takeFileName directories
+    reloadChan <- atomically newTChan :: IO (TChan (Either () Group))
+    let notifyGroup = writeTChan reloadChan . Right
+    groups <-
+        zip names
+            `fmap` mapM
+                readGroup
+                ( zipWith
+                    (\path name -> (path, name, Nothing, notifyGroup name))
+                    directories
+                    names
+                )
 
-    putStrLn "** Recuperati i seguenti gruppi:"
-    mapM_ (\(x, _) -> putStrLn $ "\t" ++ x) gs
-    --------- condSignalEq :: TChan a -> IO ((a -> Bool) -> STM Bool)
-    let trw _y (Left ()) = True
-        trw y (Right x) = x == y
-        amR = do
-            t <- condSignalEq tr
-            return $ \n -> atomically $ t (trw n)
-    -- mappatura variabile
-    pes <- newTVarIO gs
-    let new g r0 = do
-            pe <- readA (dir </> g, g, Just r0, pokeGruppo g)
-            liftIO . atomically $ readTVar pes >>= writeTVar pes . ((g, pe) :)
-        create g = do
-            let dg = dir </> g
-            t <- doesDirectoryExist dg
-            when t $ renameDirectory dg (dg </> addExtension g "copia")
-            createDirectoryIfMissing True (dg </> "static")
-            putStrLn $ "created " ++ dg
-        controlla_nome' x = (isNothing . lookup x) `fmap` readTVarIO pes
-        controlla_password' = (== pass)
-        boot_nuovo_gruppo' (g, r) = do
-            t <- atomically $ do
-                writeTChan tr $ Left ()
-                gs' <- readTVar pes
-                case lookup g gs' of
-                    Nothing -> return (g /= "static")
+    putStrLn "** Recovered the following groups:"
+    mapM_ (\(x, _) -> putStrLn $ "\t" ++ x) groups
+
+    -- condSignalEq :: TChan a -> IO ((a -> Bool) -> STM Bool)
+    let matchReload _y (Left ()) = True
+        matchReload y (Right x) = x == y
+        reloadCondition = do
+            t <- condSignalEq reloadChan
+            return $ \n -> atomically $ t (matchReload n)
+
+    -- Variable mapping
+    groupsVar <- newTVarIO groups
+    let createNewGroup groupName responsible = do
+            groupValue <-
+                readGroup
+                    ( dir </> groupName
+                    , groupName
+                    , Just responsible
+                    , notifyGroup groupName
+                    )
+            liftIO
+                . atomically
+                $ readTVar groupsVar
+                    >>= writeTVar groupsVar . ((groupName, groupValue) :)
+
+        createDirectory groupName = do
+            let groupDir = dir </> groupName
+            exists <- doesDirectoryExist groupDir
+            when exists $
+                renameDirectory
+                    groupDir
+                    (groupDir </> addExtension groupName "copia")
+            createDirectoryIfMissing True (groupDir </> "static")
+            putStrLn $ "created " ++ groupDir
+
+        checkGroupName' x =
+            (isNothing . lookup x) `fmap` readTVarIO groupsVar
+
+        checkPassword' = (== password)
+
+        bootNewGroup' (groupName, responsible) = do
+            canCreate <- atomically $ do
+                writeTChan reloadChan $ Left ()
+                currentGroups <- readTVar groupsVar
+                case lookup groupName currentGroups of
+                    Nothing -> return (groupName /= "static")
                     Just _ -> return False
-            when t $ do
-                create g
-                new g r
-            return t
-        elenco_gruppi' = map fst `fmap` readTVarIO pes
-        valore_di_gruppo' g = lookup g `fmap` readTVar pes
-    putStrLn "** Amministrazione attiva"
-    return $ Amministratore amR controlla_nome' controlla_password' boot_nuovo_gruppo' elenco_gruppi' valore_di_gruppo'
+            when canCreate $ do
+                createDirectory groupName
+                createNewGroup groupName responsible
+            return canCreate
+
+        listGroups' = map fst `fmap` readTVarIO groupsVar
+
+        getGroupValue' groupName =
+            lookup groupName `fmap` readTVar groupsVar
+
+    putStrLn "** Administration active"
+    return $
+        Administrator
+            reloadCondition
+            checkGroupName'
+            checkPassword'
+            bootNewGroup'
+            listGroups'
+            getGroupValue'

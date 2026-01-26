@@ -43,8 +43,8 @@ import Eventi.Anagrafe
 import Eventi.Impegno
 import Eventi.Voci
 
-import Applicazioni.Amministratore (Amministratore (..))
-import Applicazioni.Persistenza (Persistenza (..))
+import Applicazioni.Amministratore (Administrator (..))
+import Applicazioni.Persistenza (Persistence (..))
 import Applicazioni.Reactivegas (QS (..), TS, bianco, levelsEventi, maxLevel, sortEventi)
 import Applicazioni.Sessione (Sessione (..))
 
@@ -99,7 +99,7 @@ dichiarazioni =
 richiesta_nuovo_gruppo :: Interfaccia ()
 richiesta_nuovo_gruppo = do
     n <- P.libero $ ResponseOne "nome del nuovo gruppo"
-    t <- sea $ ($ n) . controlla_nome
+    t <- sea $ ($ n) . checkGroupName
     if t
         then do
             (m :: String) <- P.libero $ ResponseOne "nome del primo responsabile"
@@ -113,17 +113,17 @@ richiesta_nuovo_gruppo = do
 accettazione_nuovo_gruppo :: Interfaccia ()
 accettazione_nuovo_gruppo = do
     p <- P.password "password di amministrazione"
-    t <- sea $ return . ($ p) . controlla_password
+    t <- sea $ return . ($ p) . checkPassword
     if t
         then do
             r <- P.upload "carica la richiesta"
-            l <- sea $ ($ r) . boot_nuovo_gruppo
+            l <- sea $ ($ r) . bootNewGroup
             case l of
                 True -> return ()
                 False -> bocciato "nome del nuovo gruppo" "nome non disponibile"
         else bocciato "password di amministrazione" "password do amministrazione non riconosciuta"
 cambiaGruppo = rotonda $ \_ -> do
-    gs <- sea elenco_gruppi
+    gs <- sea listGroups
     let cg g = ses $ ($ g) . writeGruppo
         ngs = map (second cg) $ ("<nessuno>", Nothing) : zip gs (map Just gs)
     menu (ResponseOne "gruppo di acquisto") ngs
@@ -176,7 +176,7 @@ descrizione = do
             let ps (_, us) = case lookup u us of
                     Nothing -> []
                     Just (_, _, es) -> es
-             in sep $ maybe (return []) (fmap ps . readUPatches)
+             in sep $ maybe (return []) (fmap ps . readUserPatches)
 
     l <- ses getConservative
     g <- ses readGruppo
@@ -224,9 +224,9 @@ indiretto =  ("accesso indiretto", mano (ResponseOne "accesso indiretto")
 				wname "carica un aggiornamento individuale"  ensureGruppo caricaAggiornamentoIndividuale ,
 				wname "carica un aggiornamento di gruppo"  ensureGruppo caricaAggiornamentoDiGruppo,
 				wname "scarica gli aggiornamenti individuali"  ensureGruppo $
-				  sepU readUPatches >>= \ (n,ups) -> P.download ("patches." ++ show n) "scarica gli aggiornamenti individuali" ups,
+				  sepU readUserPatches >>= \ (n,ups) -> P.download ("patches." ++ show n) "scarica gli aggiornamenti individuali" ups,
 				wname "scarica un aggiornamento di gruppo"  ensureGruppo scaricaAggiornamentoDiGruppo,
-				wname "scarica lo stato"  ensureGruppo $ sepU readStato >>= \(n,s) ->
+				wname "scarica lo stato"  ensureGruppo $ sepU readState >>= \(n,s) ->
 					P.download ("stato." ++ show n) "scaricamento dello stato" s
 				])
 

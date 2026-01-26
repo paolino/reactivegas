@@ -31,7 +31,7 @@ import Network.HTTP.Base (getRequest)
 import Network.URI (parseURI)
 import System.IO (hFlush, stdout)
 
-import Applicazioni.Persistenza (Persistenza (..))
+import Applicazioni.Persistenza (Persistence (..))
 import Core.Patch (Group, Patch)
 import Core.Types (Utente)
 import Lib.Missing (catchRead, untilNothing)
@@ -45,32 +45,32 @@ type Name = String
 
 -- | Legge gli aggiornamenti dal server a partire da una versione
 aggiorna
-    :: Persistenza a b d
+    :: Persistence a b d
     -> Int
     -> IO Sync
 aggiorna pe n = do
     let f m = do
-            x <- readGPatch pe m
+            x <- readGroupPatch pe m
             return (x, m + 1)
     xs <- untilNothing n f
-    (_, ys) <- readUPatches pe
+    (_, ys) <- readUserPatches pe
     return (xs, ys)
 
 -- | Applica una sincronizzazione alla persistenza
 sincronizza
-    :: Persistenza a b d
+    :: Persistence a b d
     -> Sync
     -> IO ()
 sincronizza pe (xs, ys) = do
     mapM_
         ( \x ->
-            writeGPatch pe x
+            writeGroupPatch pe x
                 >> readVersion pe
                 >>= putStr . ("," ++) . show
                 >> hFlush stdout
         )
         xs
-    mapM_ (uncurry (writeUPatch pe)) ys
+    mapM_ (uncurry (writeUserPatch pe)) ys
     putStrLn "\n"
 
 -- | Parser per richieste server
@@ -78,7 +78,7 @@ read'S :: (Read a) => String -> a
 read'S = catchRead "on module Aggiornamento (Server, CGI)"
 
 -- | Uno strato Server CGI intorno alle operazioni di aggiornamento
-serverAggiornamento :: (Name -> IO (Maybe (Persistenza a b d))) -> CGI (Maybe CGIResult)
+serverAggiornamento :: (Name -> IO (Maybe (Persistence a b d))) -> CGI (Maybe CGIResult)
 serverAggiornamento persistenze = do
     vs <- getVars
     case lookup "REQUEST_URI" vs of
@@ -107,7 +107,7 @@ read'C = catchRead "on module Aggiornamento (Client, HTTP)"
 -- | Uno strato Client HTTP intorno alle operazioni di aggiornamento.
 -- Vale solo per un ciclo di aggiornamento, sicronizzazione
 clientAggiornamento
-    :: Persistenza a b d
+    :: Persistence a b d
     -- ^ operazioni di persistenza
     -> String
     -- ^ URL server

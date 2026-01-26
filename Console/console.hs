@@ -3,7 +3,7 @@
 -------------------------------------------------------
 
 import Applicazioni.Aggiornamento
-import Applicazioni.Persistenza (Persistenza (caricamentoBianco, queryUtente, readLogs, updateSignal), mkPersistenza)
+import Applicazioni.Persistenza (Persistence (whiteLoad, queryUser, readLogs, updateSignal), mkPersistence)
 import Applicazioni.Reactivegas (bianco, loader, maxLevel, nuovoStato)
 import Applicazioni.Sessione (mkSessione)
 import Control.Applicative ((<$>))
@@ -20,10 +20,10 @@ main = do
     (server, dir) <- case args of
         (x : []) -> return (x, ".")
         (x : y : _) -> return (x, y)
-    (pe, boot) <- mkPersistenza "" loader bianco nuovoStato (fst . responsabili) fst dir
+    (pe, boot, _) <- mkPersistence "" loader bianco nuovoStato (fst . responsabili) fst dir
     forkIO . forever $ readLogs pe >>= putStrLn
     boot
-    se <- mkSessione (caricamentoBianco pe) maxLevel (updateSignal pe) (queryUtente pe) (return ()) Nothing
+    se <- mkSessione (whiteLoad pe) maxLevel (updateSignal pe) (queryUser pe) (return ()) Nothing
     (aggiorna, sincronizza) <- clientAggiornamento pe server
     aggiorna
     runReaderT interfaccia (pe, se)
