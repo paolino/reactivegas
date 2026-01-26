@@ -29,11 +29,11 @@ jobs:
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
 
       - name: Build all
-        run: nix develop --command cabal build all
+        run: nix --quiet develop --command cabal build all
 
       - name: Check formatting
         run: |
-          nix develop --command bash -c '
+          nix --quiet develop --command bash -c '
             hs_files=$(find . -name "*.hs" \
               -not -path "./dist-newstyle/*" \
               -not -path "./.direnv/*" \
@@ -45,7 +45,7 @@ jobs:
 
       - name: Run hlint
         run: |
-          nix develop --command bash -c '
+          nix --quiet develop --command bash -c '
             find . -name "*.hs" \
               -not -path "./dist-newstyle/*" \
               -not -path "./.direnv/*" \
