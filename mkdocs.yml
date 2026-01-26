@@ -1,0 +1,53 @@
+site_name: Reactivegas Documentation
+site_url: https://paolino.github.io/reactivegas/
+repo_url: https://github.com/paolino/reactivegas
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+  features:
+    - navigation.indexes
+    - toc.integrate
+    - content.code.copy
+    - navigation.path
+
+plugins:
+  - search
+  - i18n:
+      docs_structure: folder
+      fallback_to_default: true
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+        - locale: it
+          name: Italiano
+          build: true
+
+markdown_extensions:
+  - admonition
+  - tables
+  - footnotes
+  - def_list
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: installation.md
+    - Usage: usage.md
+  - Reference:
+    - Help: help.md

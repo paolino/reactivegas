@@ -91,3 +91,13 @@ modules:
     graphmod -q -p Applicazioni Core Eventi Lib Server UI Voci \
         | dot -T png > modules.png
     echo "Generated modules.png"
+
+# Serve mkdocs documentation locally
+serve-docs:
+    #!/usr/bin/env bash
+    mkdocs serve
+
+# Build mkdocs documentation
+build-docs:
+    #!/usr/bin/env bash
+    mkdocs build
