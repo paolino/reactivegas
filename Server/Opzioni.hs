@@ -1,63 +1,108 @@
--- {-# LANGUAGE  #-}
-module Server.Opzioni (parseArgs, Argomenti (..)) where
+{-# LANGUAGE ApplicativeDo #-}
+{-# LANGUAGE RecordWildCards #-}
 
-import Control.Arrow ((&&&))
-import Data.List (elem)
-import Lib.Tokens
-import System.Console.GetOpt (ArgDescr (NoArg, ReqArg), ArgOrder (Permute), OptDescr (Option), getOpt, usageInfo)
-import System.Directory (getDirectoryContents)
-import System.Environment (getArgs)
-import System.FilePath ((</>))
+module Server.Opzioni (
+    parseArgs,
+    Argomenti (..),
+) where
+
+import Lib.Tokens (Token (..))
+import Options.Applicative (
+    Parser,
+    auto,
+    execParser,
+    fullDesc,
+    header,
+    help,
+    helper,
+    info,
+    long,
+    metavar,
+    option,
+    progDesc,
+    short,
+    showDefault,
+    strArgument,
+    value,
+ )
 
 data Argomenti = Argomenti
     { directory :: String
-    -- ^ directory di lavoro
+    -- ^ working directory
     , porta :: Int
-    -- ^ porta cgi
+    -- ^ CGI port
     , lmov :: Int
-    -- ^ grandezza coda di movimenti di gruppo
+    -- ^ max group movements queue size
     , lsess :: Int
-    -- ^ numero massimo di ricordi per sessione
+    -- ^ max memories per session
     , lrem :: Int
-    -- ^ numero massimo di sessioni simultanee
+    -- ^ max simultaneous sessions
     , tokpass :: Token
-    -- ^ password di lettura tokens
+    -- ^ token read password
     }
     deriving (Show)
 
-data Flag = Versione | Nome String | Path String | Porta String | LMov String | LSess String | LRem String | Tokpass String deriving (Show)
+argomentiParser :: Parser Argomenti
+argomentiParser = do
+    porta <-
+        option
+            auto
+            ( long "port"
+                <> short 'p'
+                <> metavar "PORT"
+                <> value 5000
+                <> showDefault
+                <> help "CGI server port"
+            )
+    lmov <-
+        option
+            auto
+            ( long "movements"
+                <> short 'm'
+                <> metavar "COUNT"
+                <> value 15
+                <> showDefault
+                <> help "Max group movements in memory"
+            )
+    lsess <-
+        option
+            auto
+            ( long "sessions"
+                <> short 's'
+                <> metavar "COUNT"
+                <> value 200
+                <> showDefault
+                <> help "Max sessions in memory"
+            )
+    lrem <-
+        option
+            auto
+            ( long "memories"
+                <> short 'r'
+                <> metavar "COUNT"
+                <> value 20
+                <> showDefault
+                <> help "Max memories per session"
+            )
+    directory <-
+        strArgument
+            ( metavar "DIRECTORY"
+                <> help "Working directory"
+            )
+    tokpass <-
+        Token
+            <$> strArgument
+                ( metavar "PASSWORD"
+                    <> help "Administration password"
+                )
+    pure Argomenti{..}
 
-options :: [OptDescr Flag]
-options =
-    [ Option "V" ["versione"] (NoArg Versione) "versione dell'applicativo"
-    , Option "p" ["porta"] (ReqArg Porta "PORTA") "la porta sulla quale il server CGI deve ascoltare"
-    , Option "g" ["lmovimenti"] (ReqArg LMov "NUMERO") "numero massimo di movimenti di gruppo in memoria"
-    , Option "s" ["lsessioni"] (ReqArg LSess "NUMERO") "numero massimo di sessioni in memoria"
-    , Option "r" ["lricordi"] (ReqArg LRem "NUMERO") "numero massimo di ricordi per sessione in memoria"
-    ]
-
-fallimento = usageInfo "Uso: reactivegas_cgi [OPZIONE ...] cartella password" options
-
-parse x r f = case reads x of
-    [(x, _)] -> f x
-    _ -> case reads ("\"" ++ x ++ "\"") of
-        [(x, _)] -> f x
-        _ -> r
-
-set (Path x) r = r{directory = x}
-set (Porta x) r = parse x r $ \x -> r{porta = x}
-set (LMov x) r = parse x r $ \x -> r{lmov = x}
-set (LSess x) r = parse x r $ \x -> r{lsess = x}
-set (LRem x) r = parse x r $ \x -> r{lrem = x}
-set (Tokpass x) r = r{tokpass = Token x}
-
--- | computa gli argomenti dell'applicazione dall'environment
-parseArgs :: Argomenti -> IO Argomenti
-parseArgs ars = do
-    args <- getArgs
-    case getOpt Permute options args of
-        (_, [], []) -> error $ "manca la cartella di lavoro\n" ++ fallimento
-        (_, [c], []) -> error $ "manca la password di amministrazione\n" ++ fallimento
-        (flags, c : t : _, []) -> do
-            return . foldr set ars $ flags ++ [Path c] ++ [Tokpass t]
-        (_, _, msgs) -> error $ concat msgs ++ fallimento
+parseArgs :: IO Argomenti
+parseArgs =
+    execParser $
+        info
+            (helper <*> argomentiParser)
+            ( fullDesc
+                <> progDesc "Run the reactivegas server"
+                <> header "reactivegas - social tool for groups"
+            )

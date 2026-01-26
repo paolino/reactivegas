@@ -33,6 +33,7 @@ executable server
     , network
     , network-uri
     , old-time
+    , optparse-applicative
     , pretty
     , random
     , reactivegas
@@ -67,6 +68,7 @@ library
     , network
     , network-uri
     , old-time
+    , optparse-applicative
     , pretty
     , random
     , RSA
