@@ -1,6 +1,5 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TupleSections #-}
-{-# LANGUAGE ViewPatterns #-}
 
 {- | la colla che forma il Core per facilitare il caricamento di un blocco di eventi e per accedere allo stato, partendo dalla serializzazione delle reazioni
  Modulo per la serializzazione dell'albero delle reazioni. La serializzazione e' complicata dal fatto che i nodi contengono le procedure di reazione.
@@ -11,7 +10,7 @@ module Core.Controllo where
 
 import Control.Applicative ((<$>))
 import Control.Arrow (second)
-import Control.Monad (foldM, msum)
+import Control.Monad (foldM, msum, zipWithM)
 import Data.Function (on)
 import Data.List (nubBy, tails)
 import Data.Maybe (isJust)
@@ -61,16 +60,16 @@ deserializza (SNodo k rs) r@(Reazione (acc, f :: TyReazione a b d s c)) =
                 Nothing -> Nothing
                 Just y ->
                     let (Just (_, (qs, _)), _, _) = runInserzione (f (Right (u, y))) nuovoContesto s
-                     in sequence $ map (\(i, d) -> (i,) `fmap` deserializza d (qs !! i)) js
+                     in mapM (\(i, d) -> (i,) `fmap` deserializza d (qs !! i)) js
         te ((ec@(Left x), s), js) = ((ec, s),) `fmap` ns
           where
             ns = case maybe ((valore :: ParserConRead b -> b) <$> parser x) (provaAccentratore x) acc of
                 Nothing -> Nothing
                 Just y ->
                     let (Just (_, (qs, _)), _, _) = runInserzione (f (Left y)) nuovoContesto s
-                     in sequence $ map (\(i, d) -> (i,) `fmap` deserializza d (qs !! i)) js
+                     in mapM (\(i, d) -> (i,) `fmap` deserializza d (qs !! i)) js
      in
-        Nodo (if k then Just r else Nothing) `fmap` (sequence $ map te rs)
+        Nodo (if k then Just r else Nothing) `fmap` mapM te rs
 
 -- | passa da una struttura Nodo a una SNodo, naturalmente la funzione reazione del nodo base deve essere la stessa quando verra' deserializzato
 serializza ::
@@ -94,9 +93,9 @@ caricaEventi ::
     -- | lo stato e la serializzazione dell'albero reattivo
     (s, [SNodo s d]) ->
     -- | nuovo stato e nuova  serializzazione dell'albero reattivo insieme ai log contestualizzati
-    ((s, [SNodo s d]), ([Contestualizzato d Message]))
+    ((s, [SNodo s d]), [Contestualizzato d Message])
 caricaEventi ps rs l xs (s, nss) =
-    let ns = case sequence . map (uncurry deserializza) . zip nss $ rs of
+    let ns = case zipWithM deserializza nss rs of
             Nothing -> error $ "deserializzazione fallita" ++ show (length nss) ++ show s
             Just ns -> ns
         xs' = sortP l ps snd xs

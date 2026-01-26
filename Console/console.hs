@@ -18,7 +18,7 @@ import UI.Console (interfaccia)
 main = do
     args <- getArgs
     (server, dir) <- case args of
-        (x : []) -> return (x, ".")
+        [x] -> return (x, ".")
         (x : y : _) -> return (x, y)
     (pe, boot, _) <- mkPersistence "" loader bianco nuovoStato (fst . responsabili) fst dir
     forkIO . forever $ readLogs pe >>= putStrLn
