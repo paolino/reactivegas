@@ -37,7 +37,7 @@ class (Show a, Read a) => Parser c a where
 -- | Standard parser using Read/Show instances
 -- Used for deserialization of control state
 -- Note: Requires bijective show/read relationship for all events
-data ParserConRead a = ParserConRead a
+newtype ParserConRead a = ParserConRead a
 
 -- | Like 'listToMaybe' but returns the last element
 listToMaybe' :: [a] -> Maybe a
@@ -47,7 +47,7 @@ listToMaybe' xs = Just $ last xs
 -- | Standard parser instance using read and show
 -- Valid for any event type with Read/Show instances
 instance (Read a, Show a) => Parser ParserConRead a where
-    parser s = ParserConRead <$> fst <$> listToMaybe' (reads s)
+    parser s = ParserConRead . fst <$> listToMaybe' (reads s)
     valore (ParserConRead a) = a
     priorita (ParserConRead _) = 0
     boxer = ParserConRead

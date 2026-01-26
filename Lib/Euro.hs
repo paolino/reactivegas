@@ -96,7 +96,7 @@ opposite :: DEuro -> DEuro
 opposite f = mkDEuro . negate $ f $^ 0
 
 instance Show DEuro where
-    show (DEuro f) = show (f $ fromInteger 0)
+    show (DEuro f) = show (f 0)
 
 instance Read DEuro where
     readPrec = mkDEuro <$> readPrec

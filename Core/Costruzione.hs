@@ -31,7 +31,7 @@ newtype Supporto m s b a = Supporto {unSupporto :: ReaderT (m s) (ExceptT String
 
 instance (Monad m) => MonadReader s (Supporto m s b) where
     ask = Supporto $ ask >>= lift . lift . lift . lift
-    local f (Supporto k) = Supporto $ local (liftM f) k
+    local f (Supporto k) = Supporto $ local (fmap f) k
 
 -- | eleva la costruzione nel supporto
 toSupporto :: (Monad m) => P.Costruzione m b a -> Supporto m s b a

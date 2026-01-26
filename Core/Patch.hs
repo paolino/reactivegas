@@ -2,6 +2,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TupleSections #-}
 
 {- |
 Module      : Core.Patch
@@ -23,7 +24,7 @@ module Core.Patch
     , Firmante (..)
     ) where
 
-import Control.Monad (when)
+import Control.Monad (unless)
 import Control.Monad.Except (MonadError, throwError)
 import Control.Monad.Reader (MonadReader, ask)
 import Data.Maybe (fromJust)
@@ -51,10 +52,10 @@ fromPatch
 fromPatch getResponsibles (c, _f, xs) = do
     s <- ask
     let rs = getResponsibles s
-    when (c `notElem` map (fst . snd) rs) $
+    unless (c `elem` map (fst . snd) rs) $
         throwError "patch author is unknown"
     let u = fst . head . filter ((== c) . fst . snd) $ rs
-    return $ zip (repeat u) xs
+    return $ map (u,) xs
 
 -- | A group patch is a set of patches signed by a responsible user
 type Group = (Chiave, Firma, [Patch])
@@ -71,7 +72,7 @@ fromGroup
 fromGroup getResponsibles (c, _f, ps) = do
     s <- ask
     let rs = getResponsibles s
-    when (c `notElem` map (fst . snd) rs) $
+    unless (c `elem` map (fst . snd) rs) $
         throwError "group update author is unknown"
     let u = fst . head . filter ((== c) . fst . snd) $ rs
     events <- concat <$> mapM (fromPatch getResponsibles) ps

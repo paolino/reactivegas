@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE ViewPatterns #-}
@@ -20,7 +19,7 @@ where
 
 import Control.Applicative ((<$>))
 import Control.Arrow (first, (&&&), (***))
-import Control.Monad (msum, mzero, when)
+import Control.Monad (msum, mzero, unless, when)
 import Control.Monad.Except (throwError)
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.Trans.Maybe (MaybeT)
@@ -107,32 +106,28 @@ instance Read EsternoImpegno where
                 string " di "
                 f <- reads'
                 string " in riferimento a "
-                i <- reads'
-                return $ Impegno u f i
+                Impegno u f <$> reads'
             fin = do
                 string "chiusura della raccolta impegni riferita a "
-                i <- reads'
-                return $ FineImpegno i
+                FineImpegno <$> reads'
             fal = do
                 string "fallimento della raccolta impegni riferita a "
-                i <- reads'
-                return $ FallimentoImpegno i
+                FallimentoImpegno <$> reads'
             cor = do
                 string "correzione impegno da "
                 u <- phrase
                 string " di "
                 f <- reads'
                 string " in riferimento a "
-                i <- reads'
-                return $ CorrezioneImpegno u f i
+                CorrezioneImpegno u f <$> reads'
          in
             lift $ imp <++ fin <++ fal <++ cor
 priorityImpegno = R k
   where
-    k (Impegno _ _ _) = -27
+    k Impegno{} = -27
     k (FineImpegno _) = 15
     k (FallimentoImpegno _) = 16
-    k (CorrezioneImpegno _ _ _) = -20
+    k CorrezioneImpegno{} = -20
 
 {-
 priorityImpegnoVincolato = R k where
@@ -141,7 +136,7 @@ priorityImpegnoVincolato = R k where
 -}
 
 -- | evento interno che segnala il fallimento di una causa
-data Interni = EliminazioneResponsabileA Utente deriving (Show, Read)
+newtype Interni = EliminazioneResponsabileA Utente deriving (Show, Read)
 
 -- accentratore dell'evento interno di eliminazione responsabile negli eventi interni del modulo
 acc = [Deviatore (\(i :: Interni) -> Just i), Deviatore f]
@@ -189,7 +184,7 @@ programmazioneImpegno' :: -- (Parser c EsternoImpegnoVincolato,
     String ->
     -- | l'utente responsabile dell'impegno
     Utente ->
-    (Maybe ([(Utente, Euro)]) -> MTInserzione s c Utente (Effetti s c Utente)) ->
+    (Maybe [(Utente, Euro)] -> MTInserzione s c Utente (Effetti s c Utente)) ->
     MTInserzione
         s
         c
@@ -213,13 +208,13 @@ programmazioneImpegno' q' ur k = do
             when (l /= j) mzero
             fallimento (ur /= r) $ "solo " ++ ur ++ " può correggere gli impegni per " ++ q
             Impegni _ _ as is <- osservaStatoServizio j
-            fallimento (not $ u `elem` map fst as) "nessun impegno tra gli accettati per l'utente"
+            fallimento (u `notElem` map fst as) "nessun impegno tra gli accettati per l'utente"
             let vp = fromJust (lookup u as) -- denaro impegnato
             z <- accredita u (mkDEuro $ vp - v) $ "correzione impegno " ++ q
             when (z < 0) $ loggamus "il credito non copre l'operazione"
             modificaStatoServizio j $ \(Impegni ch ur as is) ->
                 return $
-                    Impegni ch ur ((u, v) : (filter ((/=) u . fst) as)) is
+                    Impegni ch ur ((u, v) : filter ((/=) u . fst) as) is
             loggamus $ "correzione d'impegno per  " ++ show (mkDEuro $ v - vp) ++ " da " ++ u ++ q
             return (True, nessunEffetto)
         reattoreImpegno _ (Right (first validante -> (w, i@(Impegno u v j)))) = w $ \r ->
@@ -252,7 +247,7 @@ programmazioneImpegno' q' ur k = do
                                     : filter ((/=) u . fst) is
                             )
                     loggamus $ "richiesta di impegno di  " ++ show v ++ " da " ++ u ++ q
-                    if (r /= ur)
+                    if r /= ur
                         then do
                             (_, reaz) <-
                                 programmazionePermesso
@@ -269,7 +264,7 @@ programmazioneImpegno' q' ur k = do
             fallimento (ur /= r) $ "solo " ++ ur ++ " può chiudere la raccolta di impegni " ++ q
             fallimento (not y) $ "la chiusura non è stata concessa  " ++ q
             fallimento (not . null $ is) "richieste di impegno ancora in attesa di conferma"
-            salda r (mkDEuro . negate $ (sum $ map snd as)) $ "spesa  " ++ q
+            salda r (mkDEuro . negate $ sum (map snd as)) $ "spesa  " ++ q
             loggamus $ "raccolta di impegni " ++ q ++ " chiusa positivamente"
             eliminaStatoServizio j (undefined :: Impegni)
             (rzs, ievs) <- k (Just as)
@@ -278,13 +273,13 @@ programmazioneImpegno' q' ur k = do
             when (l /= j) mzero
             fallimento (ur /= r) $ "solo " ++ ur ++ " può chiudere la raccolta di impegni " ++ q
             Impegni y ur as is <- osservaStatoServizio j
-            fallimento (not $ null is) $ "manca l'assenso su alcune richieste"
-            when (not y) esf
+            fallimento (not $ null is) "manca l'assenso su alcune richieste"
+            unless y esf
             (,) False <$> effettoF j
         reattoreImpegno esf (Left (EliminazioneResponsabileA u)) = conFallimento $ do
             when (ur /= u) mzero
             Impegni y ur as is <- osservaStatoServizio l
-            when (not y) esf
+            unless y esf
             (,) False <$> effettoF l
         reattoreImpegno _ (Left _) = return Nothing
 
@@ -336,7 +331,7 @@ programmazioneImpegno' q' ur k = do
     		reattoreImpegnoVincolato  _ (Left _) = return Nothing
     -}
     loggamus $ "raccolta di impegni " ++ q ++ " aperta"
-    return $
+    return
         ( l
         , effettoF l
         , \esf -> [Reazione (Just acc, reattoreImpegno esf)] -- Reazione (Just acc,reattoreImpegnoVincolato esf)]
@@ -350,7 +345,7 @@ programmazioneImpegno' q' ur k = do
 --      (String -> m ()) -> m [(String, Int)]
 reportImpegni :: (ParteDi (Servizio Impegni) s) => s -> [(String, Bool, Utente, [(Utente, Euro)], [(Utente, Euro)])]
 reportImpegni x =
-    let (xs :: [(Indice, (String, Impegni))]) = elencoSottoStati $ x
+    let (xs :: [(Indice, (String, Impegni))]) = elencoSottoStati x
      in map (\(_, (s, Impegni b u is as)) -> (s, b, u, is, as)) xs
 
 impegni = do
@@ -363,12 +358,11 @@ impegniFiltrati k e t = do
     case mu of
         Just u -> do
             xs :: [(Indice, (String, Impegni))] <-
-                filter (k u . snd . snd)
-                    <$> asks elencoSottoStati
+                asks (filter (k u . snd . snd) . elencoSottoStati)
             let ys = filter (t . snd . snd) xs
             when (null ys) . throwError $ e u
-            return $ map (fst . snd &&& fst) $ ys
-        Nothing -> throwError $ "manca la selezione del responsabile autore"
+            return $ map (fst . snd &&& fst) ys
+        Nothing -> throwError "manca la selezione del responsabile autore"
 
 costrEventiImpegno ::
     ( Monad m
@@ -399,7 +393,7 @@ costrEventiImpegno s kp kn =
         n <- scelte is $ ResponseOne "raccolta impegni per la quale correggere un impegno"
         (xs :: [(Indice, (String, Impegni))]) <- asks elencoSottoStati
         let zs = fromJust (lookup n xs)
-        u <- scelte (map (fst &&& fst) $ accettati $ snd $ zs) $ ResponseOne "utente coinvolto nella correzione"
+        u <- scelte (map (fst &&& fst) $ accettati $ snd zs) $ ResponseOne "utente coinvolto nella correzione"
         z <- libero $ ResponseOne "nuova somma impegnata"
         return . Singola $ CorrezioneImpegno u z n
 
@@ -453,7 +447,7 @@ costrQueryImpegni s kp kn = [("raccolte di impegni aperte", q)]
                         [ ("obiettivo della raccolta di impegni", ResponseOne t)
                         , ("responsabile della raccolta di impegni", ResponseOne ur)
                         , ("permesso a chiudere", ResponseOne $ if ch then "concesso" else "non ancora concesso")
-                        , ("somme impegnate accettate ", ResponseMany . map (ResponseOne *** id) $ as)
-                        , ("somme impegnate in attesa di conferma ", ResponseMany . map (ResponseOne *** id) $ is)
+                        , ("somme impegnate accettate ", ResponseMany . map (first ResponseOne) $ as)
+                        , ("somme impegnate in attesa di conferma ", ResponseMany . map (first ResponseOne) $ is)
                         , ("riferimento", ResponseOne $ show n)
                         ]

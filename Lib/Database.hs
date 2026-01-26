@@ -52,7 +52,7 @@ limitedDB limit = mkdb []
   where
     mkdb xs =
         DB
-            { query = \x -> lookup x xs
+            { query = (`lookup` xs)
             , lkey = fst <$> listToMaybe xs
             , select = \f -> filter (f . fst) xs
             , set = \(x, y) ->

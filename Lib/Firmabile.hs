@@ -71,7 +71,7 @@ bytestringInteger = BL.foldr (\c x -> ord c + 256 * x) 0
 
 -- | Create a password-derived key of specified length
 key :: Int -> String -> B.ByteString
-key n = B.pack . take n . concat . repeat
+key n = B.pack . take n . cycle
 
 -- | Generate a cryptographic key pair protected by password
 -- Returns (public key, encrypted private key)

@@ -21,23 +21,23 @@ import Network.URL
 deriving instance Typeable Html
 
 mkLink :: String -> [(String, String)] -> String
-mkLink x = exportURL . foldl (\s -> add_param s) (fromJust $ importURL x)
+mkLink x = exportURL . foldl add_param (fromJust $ importURL x)
 
 data Link = Link
     { nomelink :: String
     , valore :: String
     , mime :: String
     }
-renderResponse k x = (thediv ! [theclass k] << renderResponse' x)
+renderResponse k x = thediv ! [theclass k] << renderResponse' x
   where
     renderResponse' x@(ResponseOne y) = case typeOf y == typeOf noHtml of
-        False -> thediv << (show x)
+        False -> thediv << show x
         True -> thediv << (fromJust (cast y) :: Html)
     renderResponse' (ResponseMany xs) = ulist ! [theclass k] << concatHtml (map ((li ! [theclass k] <<) . show) xs)
     renderResponse' (ResponseAL xs) =
         dlist
             ! [theclass k]
-            << concatHtml (map (\(x, y) -> dterm ! [theclass k] << x +++ ddef ! [theclass k] << (show $ y)) xs)
+            << concatHtml (map (\(x, y) -> dterm ! [theclass k] << x +++ ddef ! [theclass k] << show y) xs)
     renderResponse' (Response xs) =
         dlist
             ! [theclass k]
@@ -77,7 +77,7 @@ runPasso (P.Output x mc) =
                                 ]
                    )
      in
-        (k, Nothing, \_ -> mc)
+        (k, Nothing, const mc)
 runPasso (P.Errore x mc) =
     let
         k y z mb ma =
@@ -87,7 +87,7 @@ runPasso (P.Errore x mc) =
                         +++ avanti z ma
                         +++ renderResponse "errore" x
                         +++ form
-                        ! [theclass "quiet", method "post", action ("/reactivegas/interazione")]
+                        ! [theclass "quiet", method "post", action "/reactivegas/interazione"]
                         << case mc of
                             Nothing -> []
                             Just c ->
@@ -98,7 +98,7 @@ runPasso (P.Errore x mc) =
                                 ]
                    )
      in
-        (k, Nothing, \_ -> mc)
+        (k, Nothing, const mc)
 runPasso (P.Costruito _) =
     runPasso
         . P.Errore
@@ -108,7 +108,7 @@ runPasso (P.Libero q c) =
     let
         k y z mb ma =
             thediv
-                ! [theclass $ "passobox", strAttr "hkey" y, strAttr "fkey" z]
+                ! [theclass "passobox", strAttr "hkey" y, strAttr "fkey" z]
                 << ( indietro z mb
                         +++ avanti z ma
                         +++ ( thediv
@@ -134,7 +134,7 @@ runPasso (P.Password q c) =
     let
         k y z mb ma =
             thediv
-                ! [theclass $ "passobox", strAttr "hkey" y, strAttr "fkey" z]
+                ! [theclass "passobox", strAttr "hkey" y, strAttr "fkey" z]
                 << ( indietro z mb
                         +++ avanti z ma
                         +++ ( thediv
@@ -164,7 +164,7 @@ runPasso (P.Scelta q xs c) =
     let
         k y z mb ma =
             thediv
-                ! [theclass $ "passobox", strAttr "hkey" y, strAttr "fkey" z]
+                ! [theclass "passobox", strAttr "hkey" y, strAttr "fkey" z]
                 << ( indietro z mb
                         +++ avanti z ma
                         +++ ( thediv
@@ -172,7 +172,7 @@ runPasso (P.Scelta q xs c) =
                                 << renderResponse "output" q
                                 +++ ulist
                                 ! [theclass "scelta"]
-                                << ( map
+                                << map
                                         ( \(x, _) ->
                                             li
                                                 ! [title x, theclass "scelta"]
@@ -181,17 +181,16 @@ runPasso (P.Scelta q xs c) =
                                                 << x
                                         )
                                         xs
-                                   )
                             )
                    )
-        resp x = lookup x xs >>= return . c
+        resp x = c <$> lookup x xs
      in
         (k, Nothing, resp)
 runPasso (P.Upload q c) =
     let
         k y z mb ma =
             thediv
-                ! [theclass $ "passobox", strAttr "hkey" y, strAttr "fkey" z]
+                ! [theclass "passobox", strAttr "hkey" y, strAttr "fkey" z]
                 << ( indietro z mb
                         +++ avanti z ma
                         +++ ( thediv

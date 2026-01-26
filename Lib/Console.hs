@@ -6,7 +6,7 @@ module Lib.Console (interazione) where
 
 import Control.Applicative ((<$>))
 import Control.Exception
-import Control.Monad (forM)
+import Control.Monad (forM_)
 import Control.Monad.Trans (MonadIO, lift, liftIO)
 import Data.Maybe
 import Lib.Passo (Costruzione, HPasso, Passo (..), svolgi)
@@ -21,10 +21,10 @@ runPasso :: (MonadException m, Functor m) => [Passo m b] -> InputT m b
 
 runPasso :: (MonadException m) => HPasso m b -> InputT m b
 runPasso (Output x (Just l), _) = do
-    outputStrLn $ (show x)
+    outputStrLn (show x)
     lift l >>= runPasso
 runPasso (Errore x (Just l), _) = do
-    outputStrLn $ "\n" ++ (show x)
+    outputStrLn $ "\n" ++ show x
     lift l >>= runPasso
 runPasso (Costruito x, _) = return x
 runPasso w@(c@(Libero p f), us) = do
@@ -43,7 +43,7 @@ runPasso w@(c@(Libero p f), us) = do
 runPasso (Password p f, us) = runPasso (Libero (ResponseOne p) f, us)
 runPasso w@(c@(Scelta p xs f), u) = do
     outputStrLn ("\n** " ++ show p)
-    forM (zip [1 ..] xs) $ \(n, (p, _)) -> outputStrLn $ "\t" ++ show n ++ ") " ++ take 100 p
+    forM_ (zip [1 ..] xs) $ \(n, (p, _)) -> outputStrLn $ "\t" ++ show n ++ ") " ++ take 100 p
     x <- getInputLine "scelta: "
 
     n <- case fromJust x of

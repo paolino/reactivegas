@@ -190,7 +190,7 @@ type Accentratore b = [Deviatore ParserConRead b]
 -- | Check if a deviator accepts an event and transforms it
 provaDeviatore :: forall b c. Interno -> Deviatore c b -> Maybe b
 provaDeviatore x (Deviatore (f :: a -> Maybe b)) =
-    (valore :: c a -> a) <$> parser x >>= f
+    parser x >>= f . (valore :: c a -> a)
 
 -- | Try if any concentrator succeeds
 provaAccentratore :: Interno -> [Deviatore c a] -> Maybe a
