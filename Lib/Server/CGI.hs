@@ -4,121 +4,118 @@ module Lib.Server.CGI (cgiFromServer) where
 
 import Control.Applicative ((<$>))
 
+import Codec.Binary.UTF8.String (decodeString)
+import Control.Monad (MonadPlus (..))
+import Control.Monad.Except (ExceptT, runExceptT, throwError)
+import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Trans (lift)
+import qualified Data.ByteString.Lazy.Char8 as B (readFile)
 import Data.List.Split (splitOneOf)
 import Data.Maybe (listToMaybe)
-import qualified Data.ByteString.Lazy.Char8 as B (readFile)
-import Control.Monad (MonadPlus(..))
-import Control.Monad.Except (ExceptT, runExceptT, throwError)
-import Control.Monad.Trans (lift)
-import Control.Monad.IO.Class (liftIO)
-import Lib.SCGI
-import Codec.Binary.UTF8.String (decodeString)
-import Lib.Server.Core
-import Text.XHtml
 import Lib.HTTP
 import Lib.Missing (onNothing)
-
+import Lib.SCGI
+import Lib.Server.Core
+import Text.XHtml
 
 import Debug.Trace
 
 readHKey :: ExceptT String (CGIT IO) TimeKey
-readHKey = do 
-	r <- lift (getInput "hkey") >>= onNothing "manca la chiave di punto"
-	case reads r of
-		[(k,_)] -> return k
-		_ -> throwError "campo hkey illeggibile"
+readHKey = do
+    r <- lift (getInput "hkey") >>= onNothing "manca la chiave di punto"
+    case reads r of
+        [(k, _)] -> return k
+        _ -> throwError "campo hkey illeggibile"
 
 readFKey :: ExceptT String (CGIT IO) FormKey
-readFKey =  do 
-	r <- lift (getInput "fkey") >>= onNothing "manca la chiave di form"
-	case reads r of
-		[(k,_)] -> return k
-		_ -> throwError "campo fkey illeggibile"
+readFKey = do
+    r <- lift (getInput "fkey") >>= onNothing "manca la chiave di form"
+    case reads r of
+        [(k, _)] -> return k
+        _ -> throwError "campo fkey illeggibile"
 
 readValore :: ExceptT String (CGIT IO) Value
 readValore = fmap id <$> lift (getInput "valore") >>= onNothing "manca la risposta"
 
-pagina :: [(Html,Int)] -> [Html]
-pagina xs =  map (\(h,i) -> thediv ! [theclass ("boxes interazione dimensione" ++ show i)] << h) xs
+pagina :: [(Html, Int)] -> [Html]
+pagina xs = map (\(h, i) -> thediv ! [theclass ("boxes interazione dimensione" ++ show i)] << h) xs
 
--- | eleva gli errori nella monade del server in quella di CGI 
+-- | eleva gli errori nella monade del server in quella di CGI
 liftServer :: ExceptT String IO a -> ExceptT String (CGIT IO) a
 liftServer ma = do
-	r <- lift . lift $ runExceptT ma 
-	case r of 	Left x -> throwError x	
-			Right y -> return y
-
-	
+    r <- lift . lift $ runExceptT ma
+    case r of
+        Left x -> throwError x
+        Right y -> return y
 
 type HServer e = Server e Html Link
 
--- | map a Server reactor to a CGI action 
-cgiFromServer :: ([Html] -> CGI CGIResult) -> (Server e Html Link,IO ()) -> CGI CGIResult
-cgiFromServer resp (Server apertura servizio,droppa) = do 
-	let s = liftServer . servizio 
-	vs <- getVars
-	-- lift $ print $ lookup "REQUEST_URI"  vs
-	is <- getInputs
+-- | map a Server reactor to a CGI action
+cgiFromServer :: ([Html] -> CGI CGIResult) -> (Server e Html Link, IO ()) -> CGI CGIResult
+cgiFromServer resp (Server apertura servizio, droppa) = do
+    let s = liftServer . servizio
+    vs <- getVars
+    -- lift $ print $ lookup "REQUEST_URI"  vs
+    is <- getInputs
 
-	-- lift $ print is
-	r <- runExceptT $ case lookup "REQUEST_URI"  vs of 
-		Just x -> 
-			let 	xs =  tail $ splitOneOf "/?" x 
-			in case tail xs of
-				[""] -> lift . resp . pagina $ apertura
-				[] -> lift .  resp . pagina $ apertura
-				("clona":_) -> do 
-					hk <- readHKey
-					fk <- readFKey
-					ehl <- 	s (hk,fk,ClonaS)
-					case ehl of
-						Right hs -> lift . output . prettyHtml . fst . head $ hs
-						Left _ -> throwError "ricarica del questionario fallita"
+    -- lift $ print is
+    r <- runExceptT $ case lookup "REQUEST_URI" vs of
+        Just x ->
+            let xs = tail $ splitOneOf "/?" x
+             in case tail xs of
+                    [""] -> lift . resp . pagina $ apertura
+                    [] -> lift . resp . pagina $ apertura
+                    ("clona" : _) -> do
+                        hk <- readHKey
+                        fk <- readFKey
+                        ehl <- s (hk, fk, ClonaS)
+                        case ehl of
+                            Right hs -> lift . output . prettyHtml . fst . head $ hs
+                            Left _ -> throwError "ricarica del questionario fallita"
+                    ("unaform" : _) -> do
+                        hk <- readHKey
+                        fk <- readFKey
+                        v <- readValore
+                        ehl <-
+                            s (hk, fk, ContinuaS v)
+                                `mplus` s (hk, fk, ContinuaS $ decodeString v)
+                        case ehl of
+                            Right hs -> lift . output . prettyHtml . fst . head $ hs
+                            Left _ -> throwError "continuazione del questionario fallita"
+                    ("reset" : _) -> do
+                        hk <- readHKey
+                        fk <- readFKey
+                        ehl <- s (hk, fk, ResetS)
+                        case ehl of
+                            Right hs -> lift . output . prettyHtml . fst . head $ hs
+                            Left _ -> throwError "ricarica del questionario fallita"
+                    ("ricarica" : _) -> do
+                        hk <- readHKey
+                        fk <- readFKey
+                        ehl <- s (hk, fk, RicaricaS)
+                        case ehl of
+                            Right hs -> lift . output . prettyHtml . fst . head $ hs
+                            Left _ -> throwError "ricarica del questionario fallita"
+                    ("interazione" : _) -> do
+                        hk <- readHKey
+                        fk <- readFKey
+                        v <- readValore
+                        ehl <-
+                            s (hk, fk, ContinuaT v)
+                                `mplus` s (hk, fk, ContinuaT $ decodeString v)
+                        case ehl of
+                            Right hs -> lift . resp $ pagina hs
+                            Left _ -> throwError "l'interazione è fallita"
+                    ("download" : _) -> do
+                        hk <- readHKey
+                        fk <- readFKey
+                        ec <- s (hk, fk, ScaricaD)
+                        case ec of
+                            Left (Link n x m) -> lift $ do
+                                setHeader "Content-type" m
+                                setHeader "Content-Disposition" $ "inline;filename=" ++ show n
+                                output x
+                            Right _ -> throwError "il download è fallito"
+                    x -> lift (lift droppa) >> throwError ("protocollo scorretto" ++ show x)
 
-				("unaform":_) -> do 
-					hk <- readHKey
-					fk <- readFKey
-					v <- readValore
-					ehl <- 	s (hk,fk,ContinuaS v) `mplus` 
-						s (hk,fk,ContinuaS $ decodeString v)	
-					case ehl of
-						Right hs -> lift . output . prettyHtml . fst . head $ hs
-						Left _ -> throwError "continuazione del questionario fallita"
-				("reset":_) -> do 
-					hk <- readHKey
-					fk <- readFKey
-					ehl <- 	s (hk,fk,ResetS)
-					case ehl of
-						Right hs -> lift . output . prettyHtml . fst . head $ hs
-						Left _ -> throwError "ricarica del questionario fallita"
-				("ricarica":_) -> do 
-					hk <- readHKey
-					fk <- readFKey
-					ehl <- 	s (hk,fk,RicaricaS)
-					case ehl of
-						Right hs -> lift . output . prettyHtml . fst . head $ hs
-						Left _ -> throwError "ricarica del questionario fallita"
-				("interazione":_) -> do 
-					hk <- readHKey
-					fk <- readFKey
-					v <- readValore
-					ehl <- 	s (hk,fk,ContinuaT v) `mplus` 
-						s (hk,fk,ContinuaT $ decodeString v)	
-					case ehl of
-						Right hs -> lift . resp $ pagina hs
-						Left _ -> throwError "l'interazione è fallita"
-				("download":_) -> do
-					hk <- readHKey
-					fk <- readFKey
-					ec <- s (hk,fk,ScaricaD)
-					case ec of
-						Left (Link n x m) -> lift $ do
-							setHeader "Content-type" m
-							setHeader "Content-Disposition" $ "inline;filename=" ++ show n
-							output x 
-						Right _ -> throwError "il download è fallito"
-				x -> lift (lift droppa) >> throwError ("protocollo scorretto" ++ show x)
-			
-	either (\e -> liftIO (print e) >> output e) return r
-
-
+    either (\e -> liftIO (print e) >> output e) return r

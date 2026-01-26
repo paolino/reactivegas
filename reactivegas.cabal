@@ -2,13 +2,13 @@ name:          reactivegas
 version:       2021.11.5
 license:       BSD3
 license-file:  LICENSE
-maintainer:    Paolo Veronelli <paolo.veronelli@gmail.com> 
+maintainer:    Paolo Veronelli <paolo.veronelli@gmail.com>
 stability:     unstable
 category:      social, p2p, cooperative
 synopsis:      social tool for group of consumers
 description:   ..
 homepage:      http://wiki.github.com/paolino/reactivegas
-copyright:     Copyright (c) 2010-2021 Paolo Veronelli 
+copyright:     Copyright (c) 2010-2021 Paolo Veronelli
 build-type:    Simple
 cabal-version: >=1.8
 
@@ -20,6 +20,7 @@ executable server
     , base
     , bytestring
     , containers
+    , crypto-api
     , directory
     , filemanip
     , filepath
@@ -36,7 +37,6 @@ executable server
     , random
     , reactivegas
     , RSA
-    , crypto-api
     , SimpleAES
     , split
     , stm
@@ -47,14 +47,14 @@ executable server
     , xhtml
 
 library
-  ghc-options:   -Wall -XTypeOperators -O2 -threaded
-  exposed-modules:
-    Server.Service
+  ghc-options:     -Wall -XTypeOperators -O2 -threaded
+  exposed-modules: Server.Service
   build-depends:
       array
     , base
     , bytestring
     , containers
+    , crypto-api
     , directory
     , filemanip
     , filepath
@@ -70,7 +70,6 @@ library
     , pretty
     , random
     , RSA
-    , crypto-api
     , SimpleAES
     , split
     , stm

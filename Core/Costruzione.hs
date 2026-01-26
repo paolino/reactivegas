@@ -1,13 +1,17 @@
-{-# LANGUAGE NoMonomorphismRestriction, GeneralizedNewtypeDeriving, MultiParamTypeClasses, FlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
+
 -- | un wrapper intorno a Lib.Costruzione m per semplificare la costruzione di interfacce
-module Core.Costruzione (libero, output,toSupporto, password, scelte, upload, Supporto, runSupporto, CostrAction, download) where
+module Core.Costruzione (libero, output, toSupporto, password, scelte, upload, Supporto, runSupporto, CostrAction, download) where
 
 import Control.Applicative ((<$>))
 import Control.Monad (liftM)
-import Control.Monad.Except (runExceptT, ExceptT, MonadError)
-import Control.Monad.Trans (lift)
 import Control.Monad.Cont (MonadCont)
-import Control.Monad.Reader (runReaderT, ReaderT, MonadReader(..))
+import Control.Monad.Except (ExceptT, MonadError, runExceptT)
+import Control.Monad.Reader (MonadReader (..), ReaderT, runReaderT)
+import Control.Monad.Trans (lift)
 
 import Core.Types (Evento)
 import qualified Lib.Passo as P -- (Costruzione , libero, upload, scelte, download,password)
@@ -15,58 +19,62 @@ import Lib.Response
 
 import Debug.Trace
 
--- | monade di supporto per la costruzione di valori con il valore interrogativo in reader e con la possibilita di fallire 
-newtype Supporto m s b a = Supporto {unSupporto :: ReaderT (m s) (ExceptT String (P.Costruzione m b)) a} deriving
-	(Monad
-	,Applicative
-	,Functor
-	,MonadError String
-	,MonadCont
-	)
+-- | monade di supporto per la costruzione di valori con il valore interrogativo in reader e con la possibilita di fallire
+newtype Supporto m s b a = Supporto {unSupporto :: ReaderT (m s) (ExceptT String (P.Costruzione m b)) a}
+    deriving
+        ( Monad
+        , Applicative
+        , Functor
+        , MonadError String
+        , MonadCont
+        )
 
-instance Monad m => MonadReader s (Supporto m s b) where
-	ask = Supporto $ ask >>= lift . lift . lift . lift
-	local f (Supporto k) = Supporto $ local (liftM f) k
+instance (Monad m) => MonadReader s (Supporto m s b) where
+    ask = Supporto $ ask >>= lift . lift . lift . lift
+    local f (Supporto k) = Supporto $ local (liftM f) k
 
 -- | eleva la costruzione nel supporto
-toSupporto :: Monad m => P.Costruzione m b a -> Supporto m s b a
+toSupporto :: (Monad m) => P.Costruzione m b a -> Supporto m s b a
 toSupporto = Supporto . lift . lift
 
 -- | dato lo stato interrogativo e le continuazioni in caso di errore o meno esegue una azione di Supporto m
-runSupporto	:: Monad m 
-		=> m s 
-		-> (String -> P.Costruzione m b c) 
-		-> (a -> P.Costruzione m b c) 
-		-> Supporto m s b a 
-		-> P.Costruzione m b c
+runSupporto ::
+    (Monad m) =>
+    m s ->
+    (String -> P.Costruzione m b c) ->
+    (a -> P.Costruzione m b c) ->
+    Supporto m s b a ->
+    P.Costruzione m b c
 runSupporto s kn kp (Supporto f) = runExceptT (runReaderT f s) >>= either kn kp
 
 -- | passo libero elevato al supporto
-libero :: (Monad m ,Read a) => Response -> Supporto m s b a
+libero :: (Monad m, Read a) => Response -> Supporto m s b a
 libero = toSupporto . P.libero
 
 -- | passo libero elevato al supporto
-password :: (Monad m ,Read a) => String -> Supporto m s b a
+password :: (Monad m, Read a) => String -> Supporto m s b a
 password = toSupporto . P.password
 
-
 -- | passo upload elevato al supporto
-upload :: (Read a , Monad m) => String -> Supporto m s b a
+upload :: (Read a, Monad m) => String -> Supporto m s b a
 upload = toSupporto . P.upload
 
 output t = toSupporto . P.output t
 
-download :: (Show a , Monad m) => String -> String -> a -> Supporto m s b ()
+download :: (Show a, Monad m) => String -> String -> a -> Supporto m s b ()
 download q f = toSupporto . P.download q f
 
 -- | passo scelte elevato al supporto
 scelte :: (Monad m) => [(String, a)] -> Response -> Supporto m s b a
 scelte xs = toSupporto . P.scelte xs
 
-
 -- | il tipo degli insiemi di azioni costruttive
-type CostrAction m c q s = 
-	m s  					-- ^ stato in lettura
-	-> (q -> P.Costruzione m c ())		-- ^ azione di successo
- 	-> (String -> P.Costruzione m c ())	-- ^ azione di fallimento
- 	-> [(String, P.Costruzione m c ())]	-- ^ lista di azioni costruttive taggate con il loro nome di selezione
+type CostrAction m c q s =
+    -- | stato in lettura
+    m s ->
+    -- | azione di successo
+    (q -> P.Costruzione m c ()) ->
+    -- | azione di fallimento
+    (String -> P.Costruzione m c ()) ->
+    -- | lista di azioni costruttive taggate con il loro nome di selezione
+    [(String, P.Costruzione m c ())]
