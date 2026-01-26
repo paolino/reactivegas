@@ -22,9 +22,11 @@ import Control.Concurrent.STM
     ( atomically
     , newTVarIO
     , readTVar
+    , readTVarIO
     , writeTVar
     )
 import Control.Monad.Trans (MonadIO, liftIO)
+import Data.Foldable (forM_)
 
 -- | Interface for peeking, poking, and modifying a mutable value
 data PeekPoke a = PeekPoke
@@ -42,9 +44,7 @@ modifyT :: (MonadIO t) => PeekPoke a -> (a -> t (Maybe a)) -> t ()
 modifyT pp f = do
     y <- liftIO (peek pp)
     x <- f y
-    case x of
-        Just x' -> liftIO . poke pp $ x'
-        Nothing -> return ()
+    forM_ x (liftIO . poke pp)
 
 -- | Create a PeekPoke backed by a TVar with a notification action
 mkPeekPoke
@@ -57,10 +57,10 @@ mkPeekPoke x notify = do
     tt <- newTVarIO x
     return $
         PeekPoke
-            (atomically $ readTVar tt)
+            (readTVarIO tt)
             (\v -> atomically (writeTVar tt v) >> notify)
             (\f -> do
-                v <- atomically $ readTVar tt
+                v <- readTVarIO tt
                 v' <- f v
                 atomically (writeTVar tt v') >> notify
             )
@@ -87,7 +87,7 @@ mkModify
 mkModify x notify = do
     tt <- newTVarIO x
     return $ \f -> do
-        mt <- (liftIO . atomically $ readTVar tt) >>= f
+        mt <- liftIO (readTVarIO tt) >>= f
         case mt of
             Nothing -> return ()
             Just t -> do
@@ -107,7 +107,7 @@ mkModifyAssocList
 mkModifyAssocList mkValue xs notify = do
     gs <- newTVarIO xs
     return $ \f -> do
-        currentList <- liftIO . atomically $ readTVar gs
+        currentList <- liftIO (readTVarIO gs)
         mNewKeys <- f $ map fst currentList
         case mNewKeys of
             Nothing -> return ()
