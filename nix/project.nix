@@ -1,7 +1,7 @@
 { pkgs, rev ? null, mkdocs }:
 let
   compiler-nix-name = "ghc984";
-  indexState = "2025-01-01T00:00:00Z";
+  indexState = "2026-01-01T00:00:00Z";
 in pkgs.haskell-nix.cabalProject' {
   src = ../.;
   inherit compiler-nix-name;
@@ -10,6 +10,7 @@ in pkgs.haskell-nix.cabalProject' {
   shell.tools = {
     cabal = { index-state = indexState; };
     hlint = { index-state = indexState; };
+    haskell-language-server = { index-state = indexState; };
   };
   shell.buildInputs = with pkgs; [
     just
