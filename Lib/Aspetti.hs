@@ -1,54 +1,69 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE OverlappingInstances #-}
 {-# LANGUAGE TypeOperators #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
-{- | Implementazione del record dello stato , liberamente tratto dalle HList di Oleg. Contributo di Saizan.
-Lo stato e' una 2-tupla nidificata nel secondo elemento. I tipi dei primi elementi sono tutti diversi e la selezione dell'elemento avviene attraverso la specificazione del tipo.
+{- |
+Module      : Lib.Aspetti
+Description : Heterogeneous record implementation
+Copyright   : (c) Paolo Veronelli, 2025
+License     : BSD-3-Clause
+
+Implementation of extensible records, freely inspired by Oleg's HList.
+Contribution by Saizan.
+
+The state is a 2-tuple nested in the second element. All first element
+types are distinct, and element selection occurs through type specification.
 -}
-module Lib.Aspetti (ParteDi (..), seeset, (.<)) where
+module Lib.Aspetti
+    ( ParteDi (..)
+    , seeset
+    , (.<)
+    , type (:*:)
+    ) where
 
-import Control.Applicative ((<$>))
-import Control.Concurrent.STM (atomically, newTVar, readTVar, writeTVar)
-
--- | classe operativa dello stato, il primo parametro e' il tipo selezionato il secondo la struttura che lo contiene.
+-- | Type class for extensible records
+-- First parameter is the selected type, second is the containing structure
 class ParteDi l ls where
-    -- | estrae l'elemento di tipo l
+    -- | Extract the element of type @l@
     see :: ls -> l
 
-    -- | sostituisce l'elemento di tipo l
+    -- | Replace the element of type @l@
     set :: l -> ls -> ls
 
-instance ParteDi l (l, ls) where
+-- Base case: element is the first in the tuple
+instance {-# OVERLAPPING #-} ParteDi l (l, ls) where
     see (l, _) = l
     set l (_, ls) = (l, ls)
 
+-- Recursive case: search in the rest of the tuple
 instance (ParteDi l ls) => ParteDi l (l', ls) where
     see (_, ls) = see ls
     set l (l', ls) = (l', set l ls)
 
-instance ParteDi l l where
+-- Identity case: single element
+instance {-# OVERLAPPABLE #-} ParteDi l l where
     see l = l
-    set l l' = l
+    set l _ = l
 
--- | modifica l'elemento di tipo l
-seeset ::
-    (ParteDi l ls) =>
-    -- | modificatore
-    (l -> l) ->
-    -- | struttura iniziale
-    ls ->
-    -- | struttura finale
-    ls
+-- | Modify the element of type @l@ using a function
+seeset
+    :: (ParteDi l ls)
+    => (l -> l)
+    -- ^ modifier function
+    -> ls
+    -- ^ initial structure
+    -> ls
+    -- ^ modified structure
 seeset f x = set (f $ see x) x
 
 infixr 8 .<
 
--- | compositore di struttura, x <. y == (x,y)
+-- | Structure composer: @x .< y == (x, y)@
 (.<) :: l -> ls -> (l, ls)
 (.<) = (,)
 
 infixr 8 :*:
 
--- | compositore di tipi
+-- | Type-level structure composer
 type a :*: b = (a, b)

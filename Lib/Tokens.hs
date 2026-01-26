@@ -1,35 +1,37 @@
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE Rank2Types #-}
+{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE StandaloneDeriving #-}
-{-# LANGUAGE TupleSections #-}
-{-# LANGUAGE NoMonomorphismRestriction #-}
 
-module Lib.Tokens where
+{- |
+Module      : Lib.Tokens
+Description : Random token generation
+Copyright   : (c) Paolo Veronelli, 2025
+License     : BSD-3-Clause
 
-import Control.Arrow (first, (***))
-import Control.Monad (replicateM)
-import Control.Monad.Random (getRandom)
-import Control.Monad.Trans (MonadIO, liftIO)
-import Data.Typeable (Typeable)
+Provides random token generation for session management
+and authentication purposes.
+-}
+module Lib.Tokens
+    ( Token (..)
+    ) where
+
+import Control.Arrow (first)
 import System.Random (Random (..))
-import Text.ParserCombinators.ReadPrec
-import Text.Read
+import Text.ParserCombinators.ReadPrec (readS_to_Prec)
+import Text.Read (Read (..), readPrec)
 
-import Lib.Modify (PeekPoke (peek), modifyT)
-import Lib.Passo
-import Lib.Response
-
--- testing
-
-newtype Token = Token String deriving (Eq)
+-- | A random token represented as a string
+newtype Token = Token String
+    deriving (Eq)
 
 instance Show Token where
     show (Token n) = show n
 
 instance Read Token where
-    readPrec = Token `fmap` readS_to_Prec (const reads)
+    readPrec = Token <$> readS_to_Prec (const reads)
 
 instance Random Token where
-    random = (Token . show . (`mod` (1000000000 :: Int)) . abs *** id) . random
+    random g =
+        first (Token . show . (`mod` (1000000000 :: Int)) . abs) $
+            random g
     randomR = undefined
