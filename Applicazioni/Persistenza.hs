@@ -1,74 +1,44 @@
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE Rank2Types #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TupleSections #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-{- |
-Module      : Applicazioni.Persistenza
-Description : Program persistence module
-Copyright   : (c) Paolo Veronelli, 2025
-License     : BSD-3-Clause
-
-Handles persistence with two aspects:
-- Current data that persists to files as-is
-- Historical data that persists to files through SQLite
+{- | Modulo di persistenza del programma.
+La persistenza ha 2 facce. Ci sono i dati attuali che persistono su file cosi' come sono e i dati storici che persistono su file attraverso sqlite.
 -}
-module Applicazioni.Persistenza
-    ( -- * Types
-      GroupName
-    , Change (..)
-    , WhiteLoadResult
-    , Persistence (..)
-
-      -- * Persistence operations
-    , mkPersistence
-    ) where
-
-import Control.Arrow (second, (&&&))
-import Control.Concurrent (forkIO)
-import Control.Concurrent.STM
-    ( STM
-    , TChan
-    , TVar
-    , atomically
-    , dupTChan
-    , newTChan
-    , newTVarIO
-    , readTChan
-    , readTVar
-    , readTVarIO
-    , writeTChan
-    , writeTVar
-    )
-import Control.Monad (MonadPlus (mplus), forever, liftM2, when)
-import Control.Monad.Except (runExceptT)
-import Control.Monad.Reader (runReaderT)
-import Data.Function (on)
-import Data.Functor ((<&>))
-import Data.List (groupBy, sortBy, union, (\\))
-import Data.Maybe (fromMaybe)
-import Data.Ord (comparing)
-import System.IO (hFlush, stdout)
+module Applicazioni.Persistenza where -- (Persistenza (..), mkPersistenza, Change (..), Modificato) where
 
 import Applicazioni.Database.GPatch (GPatches (..), mkGPatches)
+import Control.Arrow (second, (&&&))
+import Control.Concurrent (forkIO)
+import Control.Concurrent.STM (STM, TChan, TVar, atomically, dupTChan, newTChan, newTVarIO, readTChan, readTVar, readTVarIO, writeTChan, writeTVar)
+import Control.Monad (MonadPlus (mplus), forever, liftM2, when)
+import Control.Monad.Except (runExceptT)
+import Control.Monad.Reader (ReaderT (runReaderT))
 import Core.Patch (Group, Patch, fromGroup, fromPatch)
 import Core.Types (Evento, Responsabile, Utente)
+import Data.Function (on)
+import Data.List (groupBy, sortBy, union, (\\))
+import Data.Ord (comparing)
 import Lib.Filesystem (groupUnwrite, groupWrite)
 import Lib.STM (condSignal)
-import Lib.States (FromPast (FromPast), ToPast (ToPast), Transition (..))
+import Lib.States (
+    FromPast (FromPast),
+    ToPast (ToPast),
+    Transition (..),
+ )
+import System.IO (hFlush, stdout)
 
--- | Helper for extracting values from Maybe with error on Nothing
-extractOrError :: (Show a) => a -> Maybe p -> p
-extractOrError context = \case
-    Nothing -> error (show context)
-    Just value -> value
+fJ :: (Show a) => a -> Maybe p -> p
+fJ y x = case x of
+    Nothing -> error (show y)
+    Just x' -> x'
 
 -----------------------------------------------------------------------------------------
 
--- | Group name identifier
-type GroupName = String
+-- | nome del gruppo
+type GName = String
 
 instance (Transition a) => Transition (Int, a) where
     back (n, x) = case back x of
@@ -78,397 +48,296 @@ instance (Transition a) => Transition (Int, a) where
         Nothing -> Nothing
         Just (FromPast f) -> Just $ FromPast $ second f
 
--- | Persistence operation
---
--- Writes a snapshot of (state, patches) or tokens when triggered
-persistence
-    :: (Show a)
-    => (forall b. (Show b) => String -> Int -> b -> IO ())
-    -- ^ write operation
-    -> TVar Int
-    -- ^ state version
-    -> TVar [(Utente, Patch)]
-    -- ^ user -> individual patch association
-    -> TVar [(Utente, [Evento])]
-    -- ^ orphan events
-    -> TChan String
-    -- ^ logger
-    -> TVar a
-    -- ^ state
-    -> TChan ()
-    -- ^ persistence trigger
-    -> IO ()
-persistence write versionVar patchVar orphanVar _logChan stateVar trigger = do
-    (version, patches, orphans, state) <- atomically $ do
+-- | Operazione di persistenza. Scrive un istantanea di (stato,patches) oppure i tokens, quando richiesto dal trigger
+persistenza ::
+    (Show a) =>
+    -- | operazione di persistenza
+    (forall b. (Show b) => String -> Int -> b -> IO ()) ->
+    -- | versione dello stato
+    TVar Int ->
+    -- | associazione utente -> patch individuale
+    TVar [(Utente, Patch)] ->
+    -- | eventi orfani
+    TVar [(Utente, [Evento])] ->
+    -- | logger
+    TChan String ->
+    -- | stato
+    TVar a ->
+    -- | trigger di persistenza
+    TChan () ->
+    IO ()
+persistenza write tversion tupatch torfani _tlog tstato trigger = do
+    (version, patches, orfani, stato) <- atomically $ do
         readTChan trigger
-        version <- readTVar versionVar
-        patches <- readTVar patchVar
-        orphans <- readTVar orphanVar
-        state <- readTVar stateVar
-        return (version, patches, orphans, state)
+        version <- readTVar tversion
+        patches <- readTVar tupatch
+        orfani <- readTVar torfani
+        stato <- readTVar tstato
+        return (version, patches, orfani, stato)
     write "patches" version patches
-    write "orfani" version orphans
-    write "stato.corrente" version state
+    write "orfani" version orfani
+    write "stato.corrente" version stato
 
-{- | Recovery operation
-
-Recreates all group data from filesystem.
-Returns True if recalculation from updates is necessary,
-useful for clearing derived information from GPatch.
-The returned action performs the actual state computation.
+{- | Operazione di ripristino. Ricrea tutti i dati del gruppo da filesystem.
+Ritorna True se e' necessario ricalcolare tutto a partire dagli aggiornamenti, utile per cancellare le informazioni
+derivate dalle GPatch.L'azione ritornata è da eseguire per eseguire la reale computazione dello stato.
 -}
-recovery
-    :: (Read a, Show a)
-    => (forall b. (Show b) => String -> Int -> b -> IO ())
-    -- ^ write operation
-    -> (forall b. (Read b) => String -> IO (Maybe (Int, b)))
-    -- ^ read operation
-    -> String
-    -- ^ group name
-    -> Persistence a b d
-    -- ^ persistence interface
-    -> TVar Int
-    -- ^ version var
-    -> TVar [(Utente, Patch)]
-    -- ^ patches var
-    -> TVar [(Utente, [Evento])]
-    -- ^ orphan events
-    -> TChan String
-    -- ^ logger
-    -> Int
-    -- ^ expected version
-    -> TVar a
-    -- ^ state var
-    -> IO (Bool, IO ())
-recovery write unwrite groupName pers versionVar patchVar orphanVar _logChan expectedVersion stateVar = do
+ripristino ::
+    (Read a, Show a) =>
+    -- | operazione di persistenza
+    (forall b. (Show b) => String -> Int -> b -> IO ()) ->
+    (forall b. (Read b) => String -> IO (Maybe (Int, b))) ->
+    String ->
+    Persistenza a b d ->
+    TVar Int ->
+    TVar [(Utente, Patch)] ->
+    -- | eventi orfani
+    TVar [(Utente, [Evento])] ->
+    TChan String ->
+    Int ->
+    TVar a ->
+    IO (Bool, IO ())
+ripristino write unwrite gname p tversion tupatch torfani _tlog uv ts = do
     let complete = do
-            patchesResult <- unwrite "patches"
-            orphansResult <- unwrite "orfani"
+            ps <- unwrite "patches"
+            os <- unwrite "orfani"
             atomically $ do
-                v <- readTVar versionVar
-                case patchesResult of
+                v <- readTVar tversion
+                case ps of
                     Nothing -> return ()
-                    Just (v', ps') ->
-                        when (v' == v) $ writeTVar patchVar ps'
-                case orphansResult of
+                    Just (v', ps') -> when (v' == v) $ writeTVar tupatch ps'
+                case os of
                     Nothing -> return ()
-                    Just (v', os') ->
-                        when (v' == v) $ writeTVar orphanVar os'
-                writeTVar versionVar v
+                    Just (v', os') -> when (v' == v) $ writeTVar torfani os'
+                writeTVar tversion v
 
     let reload =
             ( True
             , do
-                bootState <- groupUnwrite groupName "stato.boot"
-                case bootState of
+                ms <- groupUnwrite gname "stato.boot"
+                case ms of
                     Just (0, s) -> do
-                        atomically $ writeTVar stateVar s
-                        atomically $ writeTVar versionVar 0
+                        atomically $ writeTVar ts s
+                        atomically $ writeTVar tversion 0
                         putStr "aggiornamenti:"
-                        autoFeed pers
-                        s' <- readTVarIO stateVar
-                        v' <- readTVarIO versionVar
+                        autofeed p
+                        s' <- atomically $ readTVar ts
+                        v' <- atomically $ readTVar tversion
                         write "stato.corrente" v' s'
                         putStrLn "\n"
                     Nothing -> do
-                        s <- readTVarIO stateVar
-                        groupWrite groupName "stato.boot" 0 s
+                        s <- atomically $ readTVar ts
+                        groupWrite gname "stato.boot" 0 s
                         putStrLn "stato iniziale scritto"
             )
-
-    currentState <- groupUnwrite groupName "stato.corrente"
-    result <- case currentState of
+    ms <- groupUnwrite gname "stato.corrente"
+    t <- case ms of
         Just (vc, s) -> do
-            putStrLn $
-                last (show s)
-                    `seq` "rilevato file di stato corrente "
-                    ++ show vc
-            if vc == expectedVersion
-                then
-                    return
-                        ( False
-                        , atomically $
-                            writeTVar versionVar vc >> writeTVar stateVar s
-                        )
-                else return reload
+            putStrLn $ last (show s) `seq` "rilevato file di stato corrente " ++ show vc
+            if vc == uv
+                then return $ (False, atomically $ writeTVar tversion vc >> writeTVar ts s)
+                else do return reload
         Nothing -> return reload
 
-    return $ second (>> complete) result
+    return $ second (>> complete) t
 
--- | Change notification messages
+-- | messaggi di avvenuta persistenza
 data Change a b
-    = -- | Boot message with initial state
+    = {- | messaggio di nuovo stato
+      | arrivato un aggiornamento di gruppo, comunica gli eventi digeriti e quelli orfani
+      -}
       Boot a
-    | -- | Group patch arrived: digested events, orphan events, (effects, state)
-      GPatch [(Utente, [Evento])] [(Utente, [Evento])] (b, a)
-    | -- | User patch arrived: author and events
+    | GPatch [(Utente, [Evento])] [(Utente, [Evento])] (b, a)
+    | -- | arrivato un aggiornamento utente, comunica l'autore e gli eventi
       UPatch Utente [Evento]
     deriving (Show)
 
--- | Group declarations by responsible user
+-- | raggruppa le dichiarazioni per responsabile
 groupUp :: [(Utente, Evento)] -> [(Utente, [Evento])]
-groupUp =
-    map (fst . head &&& map snd)
-        . groupBy ((==) `on` fst)
-        . sortBy (comparing fst)
+groupUp = map (fst . head &&& map snd) . groupBy ((==) `on` fst) . sortBy (comparing fst)
 
--- | Flatten grouped declarations
+-- | appiattisce le dichiarazioni raggruppate per responsabile
 groupDown :: [(Utente, [Evento])] -> [[(Utente, Evento)]]
 groupDown = map (\(u, es) -> map (u,) es)
 
--- | Update transaction triggered by a group patch arrival
-updateTransaction
-    :: (a -> [(Utente, Evento)] -> Either String (a, b))
-    -- ^ update attempt
-    -> TVar Int
-    -- ^ version
-    -> TVar a
-    -- ^ state
-    -> TVar [(Utente, Patch)]
-    -- ^ individual updates
-    -> TVar [(Utente, [Evento])]
-    -- ^ orphan events
-    -> TChan String
-    -- ^ log
-    -> [(Utente, Evento)]
-    -- ^ offered group update
-    -> (Change a b -> STM ())
-    -- ^ callback
-    -> STM ()
-updateTransaction load versionVar stateVar patchVar orphanVar logChan evs callback = do
-    s <- readTVar stateVar
-    let result = load s evs
+-- | transazione di aggiornamento provocata dall'arrivo di una patch di gruppo
+aggiornamento ::
+    -- | tentativo di aggiornamento
+    (a -> [(Utente, Evento)] -> Either String (a, b)) ->
+    -- | versione
+    TVar Int ->
+    -- | stato
+    TVar a ->
+    -- | aggiornamenti individuali
+    TVar [(Utente, Patch)] ->
+    -- | eventi orfani
+    TVar [(Utente, [Evento])] ->
+    -- | log
+    TChan String ->
+    -- | aggiornamento di gruppo offerto
+    [(Utente, Evento)] ->
+    (Change a b -> STM ()) ->
+    -- | transazione
+    STM ()
+aggiornamento load tv ts tp to tl evs k = do
+    s <- readTVar ts
+    let es = load s evs
         digested = groupUp evs
-    case result of
-        Left e -> writeTChan logChan e -- loading problem
-        Right (s', effects) -> seq s' $ do
-            v <- (+ 1) <$> readTVar versionVar
-            writeTVar stateVar s' -- write new state
-            waitingEvents <-
-                concatMap (\(u, (_, _, es)) -> map (u,) es)
-                    <$> readTVar patchVar
-            existingOrphans <- concat . groupDown <$> readTVar orphanVar
-            let orphans = groupUp $ (existingOrphans `union` waitingEvents) \\ evs
-            writeTVar orphanVar orphans -- update orphans
-            writeTVar patchVar [] -- clear individual updates
-            writeTVar versionVar v -- write version
-            callback $ GPatch digested orphans (effects, s')
+    case es of
+        Left e -> writeTChan tl e -- problema di caricamento
+        Right (s', ls) -> seq s' $ do
+            v <- (+ 1) <$> readTVar tv
+            writeTVar ts s' -- scrive il nuovo stato
+            wes <- concatMap (\(u, (_, _, es)) -> map (u,) es) <$> readTVar tp
+            os <- concat . groupDown <$> readTVar to
+            let orphans = groupUp $ (os `union` wes) \\ evs
+            writeTVar to orphans -- aggiorna gli orfani
+            writeTVar tp [] -- annulla gli aggiornamenti individuali (o erano in 'g' o sono in 'os')
+            writeTVar tv v -- scrive la versione
+            k $ GPatch digested orphans (ls, s')
 
--- | White modification interface type
---
--- A white load on the current state
-type WhiteLoadResult a d =
-    Int
-    -- ^ loading level
-    -> Maybe Responsabile
-    -- ^ responsible author or anonymous
-    -> [Evento]
-    -- ^ author's declarations
-    -> STM (a, d)
-    -- ^ modified state with loading effects
+-- | come esportiamo l'interfaccia di modifica in bianco. Un caricamento in bianco sullo stato attuale
+type Modificato a d =
+    -- | livello di caricamento
+    Int ->
+    -- | responsabile autore o anonimo
+    Maybe Responsabile ->
+    -- | dichiarazioni dell'autore
+    [Evento] ->
+    -- | in STM , lo stato modificato se esiste insieme agli effetti di caricamento
+    STM (a, d)
 
--- | Produce the white modification interface
-mkWhiteLoad
-    :: (Int -> a -> [(Utente, Evento)] -> (a, d))
-    -> TVar a
-    -> TVar [(Utente, Patch)]
-    -> WhiteLoadResult a d
-mkWhiteLoad f stateVar patchVar level maybeResp events = do
-    s <- readTVar stateVar
+-- | produce l'interfaccia di modifica in bianco
+mkModificato ::
+    (Int -> a -> [(Utente, Evento)] -> (a, d)) ->
+    TVar a ->
+    TVar [(Utente, Patch)] ->
+    Modificato a d
+mkModificato f ts tp l mr es = do
+    s <- readTVar ts
     let
-        -- Map individual updates to a pool of events with author
-        extractEvents =
-            concatMap (\(u, (_, _, es)) -> map (u,) es)
-                <$> readTVar patchVar
-        authorEvents u = (++ map (u,) events) . filter ((/=) u . fst)
-    -- Compute modification with or without new events depending on author presence
-    f level s . maybe id (authorEvents . fst) maybeResp <$> extractEvents
+        -- mappa gli aggiornamenti individuali in una pozza di eventi con autore ((Utente,Evento))
+        estraiEventi = concatMap (\(u, (_, _, es)) -> map (u,) es) <$> readTVar tp
+        eventiAutore u = (++ map (u,) es) . filter ((/=) u . fst)
+    -- computa la modifica con o senza gli eventi nuovi a seconda della presenza dell'autore
+    f l s . maybe id (eventiAutore . fst) mr <$> estraiEventi
 
--- | Functional persistence layer
---
--- Note: in-memory state is dangerous...
-data Persistence a b d = Persistence
+-- | strato funzionale di persistenza, lo stato in memoria è pericoloso .....
+data Persistenza a b d = Persistenza
     { persReloadCond :: IO (STM Bool)
-    -- ^ Condition for reload signal
-    , readState :: IO (Int, a)
-    -- ^ Read current state with version
-    , writeUserPatch :: Utente -> Patch -> IO ()
-    -- ^ Write a user patch
-    , readUserPatches :: IO (Int, [(Utente, Patch)])
-    -- ^ Read all user patches with version
-    , writeGroupPatch :: Group -> IO ()
-    -- ^ Write a group patch
-    , readGroupPatch :: Int -> IO (Maybe Group)
-    -- ^ Read a group patch by version
+    , readStato :: IO (Int, a)
+    -- ^ lettura dello stato
+    , writeUPatch :: Utente -> Patch -> IO ()
+    -- ^ scrittura di una patch utente
+    , readUPatches :: IO (Int, [(Utente, Patch)])
+    -- ^ lettura delle patch utente
+    , writeGPatch :: Group -> IO ()
+    -- ^ scrittura di una patch di gruppo
+    , readGPatch :: Int -> IO (Maybe Group)
+    -- ^ lettura di una patch di gruppo
     , readVersion :: IO Int
-    -- ^ Current state version
+    -- ^ versione dello stato attuale
     , readLogs :: IO String
-    -- ^ Read log messages
     , updateSignal :: STM (STM (Change a b))
-    -- ^ Signal for state changes
-    , queryUser :: Maybe Utente -> STM [Evento]
-    -- ^ Collect events for a user from persistence
-    , whiteLoad :: WhiteLoadResult a d
-    -- ^ White modification interface
+    {- ^ segnala un avvenuto cambiamento di stato
+    | raccoglie gli eventi relativi ad un utente che sono da attribuire alla persistenza
+    -}
+    , queryUtente :: Maybe Utente -> STM [Evento]
+    , caricamentoBianco :: Modificato a d
     }
 
--- | Prepare a virgin group state
---
--- @a@ is the state type, @b@ the effects type
-mkPersistence
-    :: (Show c, Read a, Show a, Show b)
-    => STM ()
-    -- ^ signal any change
-    -> (a -> [(Utente, Evento)] -> Either String (a, b))
-    -- ^ specific loader for @a@
-    -> (Int -> a -> [(Utente, Evento)] -> (a, d))
-    -- ^ direct event inserter for @a@
-    -> a
-    -- ^ group initializer
-    -> (c -> [Responsabile])
-    -- ^ get responsibles from context
-    -> (a -> c)
-    -- ^ get context from state
-    -> GroupName
-    -- ^ group name
-    -> IO (Persistence a b d, IO (), Bool)
-mkPersistence signal load modify boot getResponsibles getContext groupName = do
-    -- Instantiate shared memory
+-- | prepara uno stato vergine di un gruppo, a e' il tipo dello stato, b il tipo degli effetti
+mkPersistenza ::
+    (Show c, Read a, Show a, Show b) =>
+    -- | segnala un cambiamento qualsiasi
+    STM () ->
+    -- | loader specifico per a
+    (a -> [(Utente, Evento)] -> Either String (a, b)) ->
+    -- | insertore diretto di eventi per a
+    (Int -> a -> [(Utente, Evento)] -> (a, d)) ->
+    -- | inizializzatore di gruppo
+    a ->
+    (c -> [Responsabile]) ->
+    (a -> c) ->
+    GName ->
+    IO (Persistenza a b d, IO (), Bool)
+mkPersistenza signal load modif boot resps ctx gname = do
+    -- istanzia la memoria condivisa
     trigger <- atomically newTChan
-    versionVar <- newTVarIO 0
-    stateVar <- newTVarIO boot
-    patchVar <- newTVarIO []
-    orphanVar <- newTVarIO []
-    logChan <- atomically newTChan
-    changeChan <- atomically newTChan
-    groupPatches <- mkGPatches groupName
-    lastVersion <- fromInteger `fmap` ultimaGPatch groupPatches
-
-    let atomicallyWithPersist f =
-            atomically $
-                writeTChan trigger ()
-                    >> signal
-                    >> f (writeTChan changeChan)
-
-        readState' = atomically $ do
-            s <- readTVar stateVar
-            v <- readTVar versionVar
+    tv <- newTVarIO 0
+    ts <- newTVarIO boot
+    tp <- newTVarIO []
+    to <- newTVarIO []
+    cl <- atomically newTChan
+    cs <- atomically newTChan
+    gp <- mkGPatches gname
+    uv <- fromInteger `fmap` ultimaGPatch gp
+    let atomicallyP f = atomically $ writeTChan trigger () >> signal >> f (writeTChan cs)
+        readStato' = atomically $ do
+            s <- readTVar ts
+            v <- readTVar tv
             return (v, s)
-
-        writeUserPatch' user patch@(_, _, events) = do
-            s <- readTVarIO stateVar
-            result <-
-                runExceptT $
-                    runReaderT (fromPatch getResponsibles patch) (getContext s)
-            case result of
+        writeUPatch' u p@(_, _, es) = do
+            s <- readTVarIO ts
+            rl <- runExceptT $ runReaderT (fromPatch resps p) (ctx s)
+            case rl of
                 Right _ -> do
-                    atomicallyWithPersist $ \notify -> do
-                        existingPatches <- readTVar patchVar
-                        writeTVar patchVar
-                            . (++ [(user, patch) | not (null events)])
-                            . filter ((/=) user . fst)
-                            $ existingPatches
-                        existingOrphans <- readTVar orphanVar
-                        writeTVar orphanVar
-                            . (++ [(user, [])])
-                            . filter ((/=) user . fst)
-                            $ existingOrphans
-                        notify $ UPatch user events
-                Left errMsg -> atomically $ writeTChan logChan errMsg
-
-        readUserPatches' =
-            atomically $ liftM2 (,) (readTVar versionVar) $ readTVar patchVar
-
-        writeGroupPatch' group = do
-            s <- readTVarIO stateVar
-            result <-
-                runExceptT $
-                    runReaderT (fromGroup getResponsibles group) (getContext s)
-            case result of
-                Right (_, events) -> do
-                    v <- atomicallyWithPersist $ \notify ->
-                        updateTransaction
-                            load
-                            versionVar
-                            stateVar
-                            patchVar
-                            orphanVar
-                            logChan
-                            events
-                            notify
-                            >> readTVar versionVar
-                    nuovaGPatch groupPatches (fromIntegral v) group
-                Left errMsg -> atomically $ writeTChan logChan errMsg
-
-        readGroupPatch' = vecchiaGPatch groupPatches . fromIntegral
-
-        readVersion' = readTVarIO versionVar
-
-        readLogs' = atomically . readTChan $ logChan
-
-        updateSignal' = dupTChan changeChan <&> readTChan
-
-        queryUser' (Just user) = do
-            patchEvents <-
-                fmap (\(_, _, es) -> es) . lookup user <$> readTVar patchVar
-            orphanEvents <- lookup user <$> readTVar orphanVar
-            return . fromMaybe [] $ patchEvents `mplus` orphanEvents
-        queryUser' Nothing = return []
-
-        whiteLoad' = mkWhiteLoad modify stateVar patchVar
-
-        pers =
-            Persistence
+                    atomicallyP $ \k -> do
+                        up <- readTVar tp
+                        writeTVar tp . (++ [(u, p) | not (null es)]) . filter ((/=) u . fst) $ up
+                        or' <- readTVar to
+                        writeTVar to . (++ [(u, [])]) . filter ((/=) u . fst) $ or'
+                        k $ UPatch u es
+                Left gname' -> atomically $ writeTChan cl gname'
+        readUPatches' = atomically $ liftM2 (,) (readTVar tv) $ readTVar tp
+        writeGPatch' g = do
+            s <- readTVarIO ts
+            rl <- runExceptT $ runReaderT (fromGroup resps g) (ctx s)
+            case rl of
+                Right (_, es) -> do
+                    v <- atomicallyP $ \f ->
+                        aggiornamento load tv ts tp to cl es f >> readTVar tv
+                    nuovaGPatch gp (fromIntegral v) g
+                Left gname -> atomically $ writeTChan cl gname
+        readGPatch' = vecchiaGPatch gp . fromIntegral
+        readVersion' = atomically $ readTVar tv
+        readLogs' = atomically . readTChan $ cl
+        updateSignal' = dupTChan cs >>= return . readTChan
+        queryUtente (Just u) = do
+            es0 <- fmap (\(_, _, es) -> es) <$> lookup u <$> readTVar tp
+            es1 <- lookup u <$> readTVar to
+            return . maybe [] id $ es0 `mplus` es1
+        queryUtente Nothing = return []
+        caricamentoBianco' = mkModificato modif ts tp
+        p =
+            Persistenza
                 (condSignal trigger)
-                readState'
-                writeUserPatch'
-                readUserPatches'
-                writeGroupPatch'
-                readGroupPatch'
+                readStato'
+                writeUPatch'
+                readUPatches'
+                writeGPatch'
+                readGPatch'
                 readVersion'
                 readLogs'
                 updateSignal'
-                queryUser'
-                whiteLoad'
-
-        -- Persistence thread attached to trigger
+                queryUtente
+                caricamentoBianco'
+        -- thread di persistenza appeso a trigger
         close = do
-            forkIO
-                . forever
-                $ persistence
-                    (groupWrite groupName)
-                    versionVar
-                    patchVar
-                    orphanVar
-                    logChan
-                    stateVar
-                    trigger
-            forkIO . forever $ atomically (readTChan changeChan)
+            forkIO . forever $ persistenza (groupWrite gname) tv tp to cl ts trigger
+            forkIO . forever $ atomically (readTChan cs) -- tiene vuoto cs
             putStrLn "persistenza attivata"
+    (t, boot') <- ripristino (groupWrite gname) (groupUnwrite gname) gname p tv tp to cl uv ts
+    return (p, boot' >> close, t)
 
-    (needsRecalc, bootAction) <-
-        recovery
-            (groupWrite groupName)
-            (groupUnwrite groupName)
-            groupName
-            pers
-            versionVar
-            patchVar
-            orphanVar
-            logChan
-            lastVersion
-            stateVar
-    return (pers, bootAction >> close, needsRecalc)
-
--- | Automatically feed patches from history
-autoFeed :: Persistence a b d -> IO ()
-autoFeed pers = do
-    currentVersion <- readVersion pers
-    maybeGroup <- readGroupPatch pers currentVersion
-    case maybeGroup of
+autofeed :: Persistenza a b d -> IO ()
+autofeed p = do
+    i <- readVersion p
+    mn <- readGPatch p i
+    case mn of
         Nothing -> return ()
-        Just group -> do
-            putStr $ show currentVersion ++ ","
+        Just g -> do
+            putStr $ show i ++ ","
             hFlush stdout
-            writeGroupPatch pers group
-            autoFeed pers
+            writeGPatch p g
+            autofeed p
