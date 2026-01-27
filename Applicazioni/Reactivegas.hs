@@ -55,12 +55,12 @@ esing =
 
 mkDichiarazioni = parseDichiarazioni esing []
 
--- | il tipo dello stato accessibile
+-- | The accessible state type
 type TS' = TyAnagrafe (TyAccredito (TyImpegni (TyAcquisti Integer)))
 
 type TS = TS'
 
-{- | tipo dello stato con la serializzazione dei reattori
+{- | State type with reactor serialization
  type QS = (TS,[SNodo TS  Utente])
 -}
 newtype QS = QS {unQS :: (TS, [Nodo TS ParserConRead Utente])}
@@ -75,7 +75,7 @@ instance Read QS where
             Nothing -> error "deserializzazione fallita"
             Just ns -> ns
 
--- | lista di prioritizzatori, definiscono un riordinamento tra gli eventidi una patch
+-- | List of prioritizers, defining a reordering of events within a patch
 priorita :: [Lib.Prioriti.R]
 priorita =
     [ priorityAnagrafe
@@ -87,7 +87,7 @@ priorita =
     , priorityEventoVoci
     ]
 
--- | lista di reattori. I reattori di base per gli eventi
+-- | List of reactors. The base reactors for events
 reattori :: [Reazione TS ParserConRead Utente]
 reattori = [reazioneLogger, reazioneAnagrafe, reazioneAccredito, reazioneAcquisto]
 
@@ -124,7 +124,7 @@ loader qs@(QS (s, _)) es =
         return . first (\(QS q) -> QS . first (seeset ((+) 1 :: Integer -> Integer)) $ q) $
             caricamento'' maxLevel es qs
 
--- | effettua un inserimento di eventi esterni nello stato, restituendo il nuovo. Stampa i logs
+-- | Performs an insertion of external events into the state, returning the new state. Prints logs
 bianco :: Int -> QS -> [Esterno Utente] -> (QS, Response)
 bianco l s es =
     let

@@ -3,7 +3,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
 
--- | un wrapper intorno a Lib.Costruzione m per semplificare la costruzione di interfacce
+-- | A wrapper around Lib.Costruzione m to simplify interface construction
 module Core.Costruzione (libero, output, toSupporto, password, scelte, upload, Supporto, runSupporto, CostrAction, download) where
 
 import Control.Applicative ((<$>))
@@ -19,7 +19,7 @@ import Lib.Response
 
 import Debug.Trace
 
--- | monade di supporto per la costruzione di valori con il valore interrogativo in reader e con la possibilita di fallire
+-- | Support monad for value construction with query value in reader and ability to fail
 newtype Supporto m s b a = Supporto {unSupporto :: ReaderT (m s) (ExceptT String (P.Costruzione m b)) a}
     deriving
         ( Monad
@@ -33,11 +33,11 @@ instance (Monad m) => MonadReader s (Supporto m s b) where
     ask = Supporto $ ask >>= lift . lift . lift . lift
     local f (Supporto k) = Supporto $ local (fmap f) k
 
--- | eleva la costruzione nel supporto
+-- | Lifts construction into the support monad
 toSupporto :: (Monad m) => P.Costruzione m b a -> Supporto m s b a
 toSupporto = Supporto . lift . lift
 
--- | dato lo stato interrogativo e le continuazioni in caso di errore o meno esegue una azione di Supporto m
+-- | Given the query state and continuations for error/success, executes a Supporto action
 runSupporto ::
     (Monad m) =>
     m s ->
@@ -47,15 +47,15 @@ runSupporto ::
     P.Costruzione m b c
 runSupporto s kn kp (Supporto f) = runExceptT (runReaderT f s) >>= either kn kp
 
--- | passo libero elevato al supporto
+-- | Free step lifted to support monad
 libero :: (Monad m, Read a) => Response -> Supporto m s b a
 libero = toSupporto . P.libero
 
--- | passo libero elevato al supporto
+-- | Password step lifted to support monad
 password :: (Monad m, Read a) => String -> Supporto m s b a
 password = toSupporto . P.password
 
--- | passo upload elevato al supporto
+-- | Upload step lifted to support monad
 upload :: (Read a, Monad m) => String -> Supporto m s b a
 upload = toSupporto . P.upload
 
@@ -64,17 +64,17 @@ output t = toSupporto . P.output t
 download :: (Show a, Monad m) => String -> String -> a -> Supporto m s b ()
 download q f = toSupporto . P.download q f
 
--- | passo scelte elevato al supporto
+-- | Choices step lifted to support monad
 scelte :: (Monad m) => [(String, a)] -> Response -> Supporto m s b a
 scelte xs = toSupporto . P.scelte xs
 
--- | il tipo degli insiemi di azioni costruttive
+-- | Type for sets of constructive actions
 type CostrAction m c q s =
-    -- | stato in lettura
+    -- | read state
     m s ->
-    -- | azione di successo
+    -- | success action
     (q -> P.Costruzione m c ()) ->
-    -- | azione di fallimento
+    -- | failure action
     (String -> P.Costruzione m c ()) ->
-    -- | lista di azioni costruttive taggate con il loro nome di selezione
+    -- | list of constructive actions tagged with their selection name
     [(String, P.Costruzione m c ())]

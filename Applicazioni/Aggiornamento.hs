@@ -36,14 +36,14 @@ import Core.Patch (Group, Patch)
 import Core.Types (Utente)
 import Lib.Missing (catchRead, untilNothing)
 
--- | Contenuto della comunicazione, una lista di aggiornamenti
--- di gruppo e le patch utente pendenti per il prossimo aggiornamento
+-- | Communication content: a list of group updates
+-- and pending user patches for the next update
 type Sync = ([Group], [(Utente, Patch)])
 
--- | Nome del gruppo
+-- | Group name identifier
 type Name = String
 
--- | Legge gli aggiornamenti dal server a partire da una versione
+-- | Reads updates from the server starting from a given version
 aggiorna
     :: Persistence a b d
     -> Int
@@ -56,7 +56,7 @@ aggiorna pe n = do
     (_, ys) <- readUserPatches pe
     return (xs, ys)
 
--- | Applica una sincronizzazione alla persistenza
+-- | Applies a synchronization to the persistence layer
 sincronizza
     :: Persistence a b d
     -> Sync
@@ -73,11 +73,11 @@ sincronizza pe (xs, ys) = do
     mapM_ (uncurry (writeUserPatch pe)) ys
     putStrLn "\n"
 
--- | Parser per richieste server
+-- | Parser for server requests
 read'S :: (Read a) => String -> a
 read'S = catchRead "on module Aggiornamento (Server, CGI)"
 
--- | Uno strato Server CGI intorno alle operazioni di aggiornamento
+-- | Server CGI layer wrapping the update operations
 serverAggiornamento :: (Name -> IO (Maybe (Persistence a b d))) -> CGI (Maybe CGIResult)
 serverAggiornamento persistenze = do
     vs <- getVars
@@ -100,19 +100,19 @@ serverAggiornamento persistenze = do
                     _ -> return Nothing
         _ -> return Nothing
 
--- | Parser per richieste client
+-- | Parser for client requests
 read'C :: (Read a) => String -> a
 read'C = catchRead "on module Aggiornamento (Client, HTTP)"
 
--- | Uno strato Client HTTP intorno alle operazioni di aggiornamento.
--- Vale solo per un ciclo di aggiornamento, sicronizzazione
+-- | Client HTTP layer wrapping the update operations.
+-- Valid only for a single update/synchronization cycle
 clientAggiornamento
     :: Persistence a b d
-    -- ^ operazioni di persistenza
+    -- ^ persistence operations
     -> String
-    -- ^ URL server
+    -- ^ server URL
     -> IO (IO (), IO ())
-    -- ^ le due operazioni di Aggiornamento mappate sul server
+    -- ^ the two update operations mapped to the server
 clientAggiornamento pe s = do
     v <- readVersion pe
     t <- newTVarIO v

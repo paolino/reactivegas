@@ -1,7 +1,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
 
--- | Modulo di persistenza degli acquisti. Tutti gli acquisti chiusi vengono inseriti in un db sql3. La tabella principale indica il nome , la secondaria riporta tutti gli impegni con valore e utente impegnante.
+-- | Purchase persistence module. All closed purchases are stored in a SQL3
+-- database. The main table contains the purchase name, the secondary table
+-- contains all commitments with their value and committing user.
 module Applicazioni.Database.Acquisti (mkAcquisti, Acquisti (..)) where
 
 import Control.Applicative ((<$>))
@@ -22,12 +24,12 @@ import Eventi.Acquisto (FineAcquisto (..))
 import Lib.Euro
 import Lib.Missing (catchRead)
 
--- | struttura operativa esportata
+-- | Exported operational structure for purchase persistence
 data Acquisti = Acquisti
     { nuovoAcquisto :: FineAcquisto -> IO ()
-    -- ^ inserisce un nuovo acquisto chiuso in coda
+    -- ^ inserts a new closed purchase at the end
     , ultimiAcquisti :: Int -> IO [FineAcquisto]
-    -- ^ restituisce gli ultimi n acquisti
+    -- ^ returns the last n purchases
     }
 
 nuoveTabelle =
@@ -43,7 +45,7 @@ lastRow db col table = do
     execute stmt []
     o <- sFetchAllRows' stmt
     return $ case o of
-        [] -> 0 -- non ci sono acquisti
+        [] -> 0 -- no purchases exist
         [[Just pis]] -> read' pis
 
 insertAcquisto :: Connection -> FineAcquisto -> IO ()
@@ -77,7 +79,7 @@ getAcquisti db n = do
     return ys'
 
 mkAcquisti ::
-    -- | workin directory
+    -- | working directory
     FilePath ->
     Bool ->
     IO Acquisti
