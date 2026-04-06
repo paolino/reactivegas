@@ -26,11 +26,11 @@ import Control.Monad.State (get, lift)
 import Core.Inserimento (MTInserzione, fallimento, loggamus, modifica, osserva)
 import Core.Programmazione (Inserzione)
 import Lib.Aspetti (ParteDi, see, (.<))
-import Lib.Assocs (assente, elimina, updateM, (?))
+import Lib.Assocs (absent, delete, updateM, (?))
 import Lib.Firmabile (hash, hashOver)
 import Lib.QInteger
 
-data (Read a, Show a, Eq a) => Servizio a = Servizio {sottostato :: [(QInteger, (String, a))]}
+newtype (Read a, Show a, Eq a) => Servizio a = Servizio {sottostato :: [(QInteger, (String, a))]}
     deriving
         (Show, Read, Eq)
 
@@ -46,7 +46,7 @@ nuovoStatoServizio ::
 nuovoStatoServizio s (u, q) = do
     Servizio ls <- osserva
     n <- osserva
-    let p = makeQInteger $ (n + (BL.foldr (\x y -> 256 * y + fromIntegral (ord x)) 0 . hash $ u ++ q) `mod` 10 ^ 12)
+    let p = makeQInteger (n + (BL.foldr (\x y -> 256 * y + fromIntegral (ord x)) 0 . hash $ u ++ q) `mod` 10 ^ 12)
     modifica $ \_ -> Servizio ((p, (q, s)) : ls)
     loggamus $ "riferimento " ++ show p
     return p
@@ -58,7 +58,7 @@ servizioPresente ::
     MTInserzione s c d (Servizio a)
 servizioPresente j = do
     s@(Servizio ls) <- osserva
-    fallimento (assente j ls) $ "richiesta di servizio fallita , indice " ++ show j ++ " non trovato"
+    fallimento (absent j ls) $ "richiesta di servizio fallita , indice " ++ show j ++ " non trovato"
     return s
 
 {- | restituisce il valore del servizio di tipo a indicizzato dalla chiave passata
@@ -66,7 +66,7 @@ osservaStatoServizio :: (ParteDi (Servizio a) s, Read a,Eq a, Show a) => Int -> 
 -}
 osservaStatoServizio j = do
     Servizio ls <- servizioPresente j
-    snd <$> return (ls ? (j, error "osservaStatoServizio: the impossible happened"))
+    return . snd $ ls ? (j, error "osservaStatoServizio: the impossible happened")
 
 -- | modifica il valore del servizio di tipo a indicizzato dalla chiave passata
 modificaStatoServizio ::
@@ -90,7 +90,7 @@ eliminaStatoServizio ::
     QInteger -> a -> MTInserzione s c d ()
 eliminaStatoServizio j proxy = do
     Servizio ls <- servizioPresente j :: MTInserzione s c d (Servizio a)
-    modifica $ \_ -> Servizio (elimina j ls)
+    modifica $ \_ -> Servizio (delete j ls)
 
 -- | restituisce la lista di associazione (chiave, descrizione) degli stati presenti
 elencoSottoStati ::

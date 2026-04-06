@@ -43,14 +43,14 @@ confezioniEPeso (Primo (Sacchetto (p :? l))) = (1 :? Unità, p :? (l, Unità))
 confezioniEPeso (Primo (Pacchetto (p :? l))) = (1 :? Unità, p :? (l, Unità))
 confezioniEPeso (Primo (Sacco (p :? l))) = (1 :? Unità, p :? (l, Unità))
 confezioniEPeso (Primo (Cassetta (p :? l))) = (1 :? Unità, p :? (l, Unità))
-confezioniEPeso (Inscatolato c x) = first ((*|*) (count c)) $ confezioniEPeso x
+confezioniEPeso (Inscatolato c x) = first (count c *|*) $ confezioniEPeso x
 
 confezioniEVolume :: Confezionamento Volumi -> (Quantità Unità, Quantità (Volumi, Unità))
 confezioniEVolume (Primo (Brick (p :? l))) = (1 :? Unità, p :? (l, Unità))
 confezioniEVolume (Primo (Bottiglia (p :? l))) = (1 :? Unità, p :? (l, Unità))
 confezioniEVolume (Primo (Flacone (p :? l))) = (1 :? Unità, p :? (l, Unità))
 confezioniEVolume (Primo (Damigiana (p :? l))) = (1 :? Unità, p :? (l, Unità))
-confezioniEVolume (Inscatolato c x) = first ((*|*) (count c)) $ confezioniEVolume x
+confezioniEVolume (Inscatolato c x) = first (count c *|*) $ confezioniEVolume x
 
 -- | tag distintivo per i beni confezionati
 data Confezionato

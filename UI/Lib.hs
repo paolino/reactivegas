@@ -1,7 +1,5 @@
 {-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE ImplicitParams #-}
 {-# LANGUAGE Rank2Types #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
@@ -41,8 +39,8 @@ import Eventi.Acquisto
 import Eventi.Anagrafe
 import Eventi.Impegno
 
-import Applicazioni.Amministratore (Amministratore, valore_di_gruppo)
-import Applicazioni.Persistenza (Persistenza (..))
+import Applicazioni.Amministratore (Administrator, getGroupValue)
+import Applicazioni.Persistenza (Persistence (..))
 import Applicazioni.Reactivegas (Effetti, QS (..), TS, bianco, levelsEventi, maxLevel, sortEventi)
 import Applicazioni.Sessione (Sessione (..))
 
@@ -60,24 +58,24 @@ sel f = asks f >>= liftIO
 type Name = String
 
 type Environment =
-    ( Amministratore (Persistenza QS Effetti Response)
+    ( Administrator (Persistence QS Effetti Response)
     , Sessione QS Response ParserConRead
     )
 
 statoPersistenza :: (Functor m, MonadReader Environment m, MonadIO m) => m QS
-statoPersistenza = snd `fmap` sepU readStato
+statoPersistenza = snd `fmap` sepU readState
 
 statoSessione = fmap (fJ "stato sessione") . sel $ readStatoSessione . snd
 
 ses f = sel $ f . snd
 sepU f = sel $ \(pe, se) -> do
     g <- readGruppo se
-    pe' <- maybe (return Nothing) (\g -> atomically (valore_di_gruppo pe g)) g
+    pe' <- maybe (return Nothing) (atomically . getGroupValue pe) g
     f . fromJust $ pe'
 sep f = sel $ \(pe, se) -> do
     g <- readGruppo se
-    pe' <- maybe (return Nothing) (\g -> atomically (valore_di_gruppo pe g)) g
-    f (pe')
+    pe' <- maybe (return Nothing) (atomically . getGroupValue pe) g
+    f pe'
 sea f = sel $ f . fst
 
 -- | la monade dove gira il programma. Mantiene in lettura lo stato del gruppo insieme alle operazioni di IO. Nello stato la lista degli eventi aspiranti un posto nella patch
@@ -97,7 +95,7 @@ accesso :: Interfaccia ()
 accesso = do
     (rs, _) <- responsabili . fst . unQS <$> statoPersistenza
     r <- P.scelte (("<anonimo>", Nothing) : map (fst &&& Just) rs) $ ResponseOne "responsabile autore delle dichiarazioni"
-    ses $ ($ r) . writeAccesso
+    ses $ flip writeAccesso r
 
 onAccesso k = ses readAccesso >>= maybe (accesso >> onAccesso k) k
 
@@ -112,23 +110,23 @@ creaChiavi = do
 letturaEventi :: Interfaccia [Evento]
 letturaEventi = ses readEventi
 
-addEvento x = ses $ ($ x) . aggiungiEvento
-addEventoC x = ses $ ($ x) . correggiEvento
+addEvento x = ses $ flip aggiungiEvento x
+addEventoC x = ses $ flip correggiEvento x
 eventLevelSelector = do
-    (_, us) <- sepU readUPatches
+    (_, us) <- sepU readUserPatches
     es' <- letturaEventi
     mu <- ses readAccesso
     let es = levelsEventi . (es' ++) . concatMap snd . maybe id (\(u, _) -> filter ((/=) u . fst)) mu $ eventi us
     let rs = case es of
             [] -> Nothing
-            es -> Just $ (const "<nessuno>" *** (subtract 1)) (head es) : es ++ [("<tutti>", maxLevel)]
+            es -> Just $ (const "<nessuno>" *** subtract 1) (head es) : es ++ [("<tutti>", maxLevel)]
     case rs of
         Nothing -> bocciato "selezione livello di considerazione" "nessuna dichiarazione presente"
         Just rs ->
             mano (ResponseOne "livello di considerazione delle ultime dichiarazioni") $
                 map
                     ( \(x, l) ->
-                        (x, ses (($ l) . setConservative))
+                        (x, ses (`setConservative` l))
                     )
                     rs
 
@@ -141,20 +139,20 @@ eliminazioneEvento s = do
 
 salvataggio s = do
     evs <- letturaEventi
-    onAccesso $ \(r@(u, _)) -> do
-        let p up = sepU $ ($ up) . ($ u) . writeUPatch
+    onAccesso $ \r@(u, _) -> do
+        let p up = sepU (\pe -> writeUserPatch pe u up)
             k (Firmante f) = do
                 evs <- letturaEventi
-                (fst <$> unQS <$> statoPersistenza) >>= \s -> p (f s evs)
-        runSupporto (fst <$> unQS <$> statoPersistenza) (bocciato s) k $ firmante r
+                statoPersistenza >>= (\s -> p (f s evs)) . fst . unQS
+        runSupporto (fst . unQS <$> statoPersistenza) (bocciato s) k $ firmante r
 
-sincronizza = onAccesso $ \(r@(u, _)) -> do
-    (_, rs) <- second (map snd) <$> sepU readUPatches
+sincronizza = onAccesso $ \r@(u, _) -> do
+    (_, rs) <- second (map snd) <$> sepU readUserPatches
     case rs of
         [] -> bocciato "sincronizzazione gruppo" "nessun aggiornamento individale per lo stato attuale"
         xs -> do
-            let k (Firmante f) = (fst <$> unQS <$> statoPersistenza) >>= \s -> sepU $ ($ f s xs) . writeGPatch
-            runSupporto (fst <$> unQS <$> statoPersistenza) (bocciato "sincronizzazione gruppo") k $ firmante r
+            let k (Firmante f) = statoPersistenza >>= (\s -> sepU $ flip writeGroupPatch (f s xs)) . fst . unQS
+            runSupporto (fst . unQS <$> statoPersistenza) (bocciato "sincronizzazione gruppo") k $ firmante r
 
 {-
 caricaAggiornamentoIndividuale :: Interfaccia ()
@@ -166,17 +164,17 @@ caricaAggiornamentoIndividuale = do
 		Left prob -> bocciato "caricamento aggiornamento individuale" prob
 		Right _ -> do
 			let Just (u,_) = daChiave c (fst $ responsabili s)
-			sepU $ ($p) . ($u) . writeUPatch
+			sepU $ ($p) . ($u) . writeUserPatch
 
 scaricaAggiornamentoIndividuale :: Interfaccia ()
 scaricaAggiornamentoIndividuale = do
-	(_,us) <- sepU readUPatches
+	(_,us) <- sepU readUserPatches
 	(u,p) <- P.scelte  (map (fst &&& id) us)  $ ResponseOne "aggiornamenti utente presenti"
 	v <- sepU readVersion
 	P.download  (u ++ "." ++ show v) "scarica un aggiornamento individuale" p
 
 caricaAggiornamentoDiGruppo :: Interfaccia ()
-caricaAggiornamentoDiGruppo = P.upload  "aggiornamento di gruppo" >>= \g -> sepU $ ($g). writeGPatch
+caricaAggiornamentoDiGruppo = P.upload  "aggiornamento di gruppo" >>= \g -> sepU $ ($g). writeGroupPatch
 
 scaricaAggiornamentoDiGruppo :: Interfaccia ()
 scaricaAggiornamentoDiGruppo = do

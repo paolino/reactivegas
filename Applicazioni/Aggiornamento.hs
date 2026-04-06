@@ -1,45 +1,84 @@
-{-# LANGUAGE ViewPatterns #-}
+module Applicazioni.Aggiornamento
+    ( serverAggiornamento
+    , clientAggiornamento
+    ) where
 
-module Applicazioni.Aggiornamento (serverAggiornamento, clientAggiornamento) where
-
-import Control.Applicative
-import Control.Arrow
 import Control.Concurrent.STM
-import Control.Monad.Trans
-import Control.Monad.Trans.Maybe
-import Data.List.Split
-import Data.Maybe
+    ( atomically
+    , newTVarIO
+    , readTVarIO
+    , writeTVar
+    )
+import Control.Monad (void)
+import Control.Monad.Trans (lift)
+import Control.Monad.Trans.Maybe (MaybeT (..), runMaybeT)
+import Data.List.Split (splitOneOf)
+import Data.Maybe (fromJust)
 import Lib.SCGI
-import Network.Browser
+    ( CGI
+    , CGIResult
+    , getInput
+    , getVars
+    , output
+    )
+import Network.Browser (Form (..), formToRequest)
 import Network.HTTP
-import Network.URI
-import System.IO
+    ( RequestMethod (..)
+    , getResponseBody
+    , simpleHTTP
+    )
+import Network.HTTP.Base (getRequest)
+import Network.URI (parseURI)
+import System.IO (hFlush, stdout)
 
-import Applicazioni.Persistenza (Persistenza (..))
+import Applicazioni.Persistenza (Persistence (..))
 import Core.Patch (Group, Patch)
 import Core.Types (Utente)
 import Lib.Missing (catchRead, untilNothing)
 
--- | contenuto della comunicazione, una lista di aggiornamenti di gruppo e le patch utente pendenti per il prossimo aggiornamento di gruppo
+-- | Communication content: a list of group updates
+-- and pending user patches for the next update
 type Sync = ([Group], [(Utente, Patch)])
 
+-- | Group name identifier
 type Name = String
+
+-- | Reads updates from the server starting from a given version
+aggiorna
+    :: Persistence a b d
+    -> Int
+    -> IO Sync
 aggiorna pe n = do
-    let f n = do
-            x <- readGPatch pe n
-            return (x, n + 1)
+    let f m = do
+            x <- readGroupPatch pe m
+            return (x, m + 1)
     xs <- untilNothing n f
-    (_, ys) <- readUPatches pe
+    (_, ys) <- readUserPatches pe
     return (xs, ys)
+
+-- | Applies a synchronization to the persistence layer
+sincronizza
+    :: Persistence a b d
+    -> Sync
+    -> IO ()
 sincronizza pe (xs, ys) = do
-    mapM_ (\x -> writeGPatch pe x >> readVersion pe >>= putStr . ("," ++) . show >> hFlush stdout) xs
-    mapM_ (uncurry (writeUPatch pe)) ys
+    mapM_
+        ( \x ->
+            writeGroupPatch pe x
+                >> readVersion pe
+                >>= putStr . ("," ++) . show
+                >> hFlush stdout
+        )
+        xs
+    mapM_ (uncurry (writeUserPatch pe)) ys
     putStrLn "\n"
 
-read'S x = catchRead "on module Aggiornamento (Server, CGI)" x
+-- | Parser for server requests
+read'S :: (Read a) => String -> a
+read'S = catchRead "on module Aggiornamento (Server, CGI)"
 
--- | Uno strato Server CGI intorno alle operazioni di aggiornamento
-serverAggiornamento :: (Name -> IO (Maybe (Persistenza a b d))) -> CGI (Maybe CGIResult)
+-- | Server CGI layer wrapping the update operations
+serverAggiornamento :: (Name -> IO (Maybe (Persistence a b d))) -> CGI (Maybe CGIResult)
 serverAggiornamento persistenze = do
     vs <- getVars
     case lookup "REQUEST_URI" vs of
@@ -61,29 +100,38 @@ serverAggiornamento persistenze = do
                     _ -> return Nothing
         _ -> return Nothing
 
-read'C x = catchRead "on module Aggiornamento (Client, HTTP)" x
+-- | Parser for client requests
+read'C :: (Read a) => String -> a
+read'C = catchRead "on module Aggiornamento (Client, HTTP)"
 
--- | Uno strato Client HTTP intorno alle operazioni di aggiornamento. Vale solo per un ciclo di aggiornamento, sicronizzazione
-clientAggiornamento ::
-    -- | operazioni di persistenza
-    Persistenza a b d ->
-    -- | URL server
-    String ->
-    -- | le due operazioni di Aggiornamento mappate sul server
-    IO (IO (), IO ())
+-- | Client HTTP layer wrapping the update operations.
+-- Valid only for a single update/synchronization cycle
+clientAggiornamento
+    :: Persistence a b d
+    -- ^ persistence operations
+    -> String
+    -- ^ server URL
+    -> IO (IO (), IO ())
+    -- ^ the two update operations mapped to the server
 clientAggiornamento pe s = do
     v <- readVersion pe
-    t <- atomically $ newTVar v
+    t <- newTVarIO v
     let agg = do
-            putStrLn $ "aggiornamento web da " ++ s ++ " dalla versione " ++ show v
+            putStrLn $
+                "aggiornamento web da "
+                    ++ s
+                    ++ " dalla versione "
+                    ++ show v
             rsp <- simpleHTTP (getRequest $ s ++ "/remote/aggiorna?limite=" ++ show v)
-            read'C <$> getResponseBody rsp >>= sincronizza pe
-            readVersion pe >>= atomically . writeTVar t -- ricorda la versione iniziale
+            getResponseBody rsp >>= sincronizza pe . read'C
+            readVersion pe >>= atomically . writeTVar t
         sinc = do
-            v <- atomically $ readTVar t
-            si <- aggiorna pe v
-            let fo = Form POST (fromJust . parseURI $ s ++ "/remote/sincronizza") [("valore", show si)]
-            simpleHTTP $ formToRequest fo
-            return ()
-
+            v' <- readTVarIO t
+            si <- aggiorna pe v'
+            let fo =
+                    Form
+                        POST
+                        (fromJust . parseURI $ s ++ "/remote/sincronizza")
+                        [("valore", show si)]
+            void $ simpleHTTP (formToRequest fo)
     return (agg, sinc)

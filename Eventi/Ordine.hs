@@ -19,7 +19,7 @@ where
 
 import Control.Applicative ((<$>))
 import Control.Arrow (first, (&&&), (***))
-import Control.Monad (mzero, when)
+import Control.Monad (mzero, unless, when)
 import Control.Monad.Except (throwError)
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.Trans.Maybe (MaybeT)
@@ -83,33 +83,29 @@ instance Read EsternoOrdine where
                 string " di "
                 f <- reads'
                 string " in riferimento a "
-                i <- reads'
-                return $ Ordine u f i
+                Ordine u f <$> reads'
             fin = do
                 string "chiusura della raccolta ordini riferita a "
-                i <- reads'
-                return $ FineOrdine i
+                FineOrdine <$> reads'
             fal = do
                 string "fallimento della raccolta ordini riferita a "
-                i <- reads'
-                return $ FallimentoOrdine i
+                FallimentoOrdine <$> reads'
             cor = do
                 string "correzione ordine da "
                 u <- phrase
                 string " di "
                 f <- reads'
                 string " in riferimento a "
-                i <- reads'
-                return $ CorrezioneOrdine u f i
+                CorrezioneOrdine u f <$> reads'
          in
             lift $ imp <++ fin <++ fal <++ cor
 
 priorityOrdine = R k
   where
-    k (Ordine _ _ _) = -27
+    k Ordine{} = -27
     k (FineOrdine _) = 15
     k (FallimentoOrdine _) = 16
-    k (CorrezioneOrdine _ _ _) = -20
+    k CorrezioneOrdine{} = -20
 
 priorityOrdineI = R k
   where
@@ -163,7 +159,7 @@ programmazioneOrdine' ::
     String ->
     -- | l'utente responsabile dell'ordine
     Utente ->
-    (Maybe ([(Utente, Euro)]) -> MTInserzione s c Utente (Effetti s c Utente)) ->
+    (Maybe [(Utente, Euro)] -> MTInserzione s c Utente (Effetti s c Utente)) ->
     MTInserzione
         s
         c
@@ -186,12 +182,12 @@ programmazioneOrdine' q' ur k = do
             when (l /= j) mzero
             fallimento (ur /= r) $ "solo " ++ ur ++ " può correggere gli ordini per " ++ q
             Ordini _ _ as is <- osservaStatoServizio j
-            fallimento (not $ u `elem` map fst as) "nessun ordine tra gli accettati per l'utente"
+            fallimento (u `notElem` map fst as) "nessun ordine tra gli accettati per l'utente"
             let vp = fromJust (lookup u as) -- denaro impegnato
             accredita u (mkDEuro $ vp - v) $ "correzione ordine " ++ q
             modificaStatoServizio j $ \(Ordini ch ur as is) ->
                 return $
-                    Ordini ch ur ((u, v) : (filter ((/=) u . fst) as)) is
+                    Ordini ch ur ((u, v) : filter ((/=) u . fst) as) is
             loggamus $ "correzione d'ordine per  " ++ show (mkDEuro $ v - vp) ++ " da " ++ u ++ q
             return (True, nessunEffetto)
         reattoreOrdine _ (Right (first validante -> (w, i@(Ordine u v j)))) = w $ \r ->
@@ -236,7 +232,7 @@ programmazioneOrdine' q' ur k = do
             fallimento (ur /= r) $ "solo " ++ ur ++ " può chiudere la raccolta di ordini " ++ q
             fallimento (not y) $ "la chiusura non è stata concessa  " ++ q
             fallimento (not . null $ is) "richieste di ordine ancora in attesa di conferma"
-            salda r (mkDEuro . negate $ (sum $ map snd as)) $ "spesa  " ++ q
+            salda r (mkDEuro . negate $ sum (map snd as)) $ "spesa  " ++ q
             loggamus $ "raccolta di ordini " ++ q ++ " chiusa positivamente"
             eliminaStatoServizio j (undefined :: Ordini)
             (,) False <$> k (Just as)
@@ -244,16 +240,16 @@ programmazioneOrdine' q' ur k = do
             when (l /= j) mzero
             fallimento (ur /= r) $ "solo " ++ ur ++ " può chiudere la raccolta di ordini " ++ q
             Ordini y ur as is <- osservaStatoServizio j
-            when (not y) esf
+            unless y esf
             (,) False <$> effettoF j
         reattoreOrdine esf (Left (eliminazioneResponsabile -> Just (u, _))) = conFallimento $ do
             when (ur /= u) mzero
             Ordini y ur as is <- osservaStatoServizio l
-            when (not y) esf
+            unless y esf
             (,) False <$> effettoF l
         reattoreOrdine _ (Left _) = return Nothing
     loggamus $ "raccolta di ordini " ++ q ++ " aperta"
-    return $
+    return
         ( l
         , effettoF l
         , \esf -> Reazione (Nothing, reattoreOrdine esf)
@@ -266,7 +262,7 @@ programmazioneOrdine' q' ur k = do
 --      (String -> m ()) -> m [(String, Int)]
 reportOrdini :: (ParteDi (Servizio Ordini) s) => s -> [(String, Bool, Utente, [(Utente, Euro)], [(Utente, Euro)])]
 reportOrdini x =
-    let (xs :: [(Indice, (String, Ordini))]) = elencoSottoStati $ x
+    let (xs :: [(Indice, (String, Ordini))]) = elencoSottoStati x
      in map (\(_, (s, Ordini b u is as)) -> (s, b, u, is, as)) xs
 
 ordini = do
@@ -284,12 +280,11 @@ ordiniFiltrati k e t = do
     case mu of
         Just u -> do
             xs :: [(Indice, (String, Ordini))] <-
-                filter (k u . snd . snd)
-                    <$> asks elencoSottoStati
+                asks (filter (k u . snd . snd) . elencoSottoStati)
             let ys = filter (t . snd . snd) xs
             when (null ys) . throwError $ e u
-            return $ map (fst . snd &&& fst) $ ys
-        Nothing -> throwError $ "manca la selezione del responsabile autore"
+            return $ map (fst . snd &&& fst) ys
+        Nothing -> throwError "manca la selezione del responsabile autore"
 
 costrEventiOrdine ::
     ( Monad m
@@ -319,7 +314,7 @@ costrEventiOrdine s kp kn =
         n <- scelte is $ ResponseOne "raccolta ordini per la quale correggere un ordine"
         (xs :: [(Indice, (String, Ordini))]) <- asks elencoSottoStati
         let zs = fromJust (lookup n xs)
-        u <- scelte (map (fst &&& fst) $ accettati $ snd $ zs) $ ResponseOne "utente coinvolto nella correzione"
+        u <- scelte (map (fst &&& fst) $ accettati $ snd zs) $ ResponseOne "utente coinvolto nella correzione"
         z <- libero $ ResponseOne "nuova somma impegnata"
         return $ CorrezioneOrdine u z n
 
@@ -350,7 +345,7 @@ costrQueryOrdini s kp kn = [("raccolte di ordini aperte", q)]
                         [ ("obiettivo della raccolta di ordini", ResponseOne t)
                         , ("responsabile della raccolta di ordini", ResponseOne ur)
                         , ("permesso a chiudere", ResponseOne $ if ch then "concesso" else "non ancora concesso")
-                        , ("somme impegnate accettate ", ResponseMany . map (ResponseOne *** id) $ as)
-                        , ("somme impegnate in attesa di conferma ", ResponseMany . map (ResponseOne *** id) $ is)
+                        , ("somme impegnate accettate ", ResponseMany . map (first ResponseOne) $ as)
+                        , ("somme impegnate in attesa di conferma ", ResponseMany . map (first ResponseOne) $ is)
                         , ("riferimento", ResponseOne $ show n)
                         ]

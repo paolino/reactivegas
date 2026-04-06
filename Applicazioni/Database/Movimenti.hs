@@ -22,7 +22,7 @@ data Movimenti = Movimenti
 movimentoRow d (MovimentoU u e s) = [toSql "conto", toSql u, toSql (show e), toSql (s ++ " (" ++ d ++ ")")]
 movimentoRow d (MovimentoR u e s) = [toSql "cassa", toSql u, toSql (show e), toSql (s ++ " (" ++ d ++ ")")]
 
-read' x = catchRead "on module Movimenti" x
+read' = catchRead "on module Movimenti"
 
 rowMovimento [Just "conto", Just u, Just e, Just s] = MovimentoU u (read' e) s
 rowMovimento [Just "cassa", Just u, Just e, Just s] = MovimentoR u (read' e) s
@@ -72,11 +72,9 @@ mkMovimenti wd t = do
             , ultimiMovimentiConto = \u n -> do
                 uS <- uM db u n
                 execute uS []
-                r <- map rowMovimento <$> sFetchAllRows' uS
-                return r
+                map rowMovimento <$> sFetchAllRows' uS
             , ultimiMovimentiCassa = \u n -> do
                 uS <- rM db u n
                 execute uS []
-                r <- map rowMovimento <$> sFetchAllRows' uS
-                return r
+                map rowMovimento <$> sFetchAllRows' uS
             }

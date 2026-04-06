@@ -1,18 +1,18 @@
 {-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
 
 module Lib.NaturalLanguage where
 
+import Data.Maybe (fromMaybe)
 import Data.Monoid
 import Data.Typeable
 import Prelude hiding (Word)
 
 data Sexed a = Femminile {unsex :: a} | Maschile {unsex :: a} deriving (Eq, Read, Show, Functor)
 
-prettySexed (Maschile x) = maybe (show x) id $ cast x
-prettySexed (Femminile x) = maybe (show x) id $ cast x
+prettySexed (Maschile x) = fromMaybe (show x) $ cast x
+prettySexed (Femminile x) = fromMaybe (show x) $ cast x
 
 respect (f, _) (Maschile x) = Maschile (f x)
 respect (_, f) (Femminile x) = Femminile (f x)
@@ -51,13 +51,16 @@ plurale2 = Plurale . plurale
 singolare2 = Singolare . singolare
 
 vocale [] = False
-vocale (x : xs) = (x `elem` "aeiou")
+vocale (x : xs) = x `elem` "aeiou"
 stz [] = False
 stz [x] = x == 'z'
-stz (x : y : xs) = (x == 's' && not (y `elem` "aeiou")) || x == 'z'
-onstz x y z = if stz x then (y ++ x) else (z ++ x)
-onvocale x y z = if vocale x then (y ++ x) else (z ++ x)
-onstzvocale x q y z = if vocale x then (q ++ x) else if stz x then (y ++ x) else (z ++ x)
+stz (x : y : xs) = (x == 's' && y `notElem` "aeiou") || x == 'z'
+onstz x y z = if stz x then y ++ x else z ++ x
+onvocale x y z = if vocale x then y ++ x else z ++ x
+onstzvocale x q y z
+    | vocale x = q ++ x
+    | stz x = y ++ x
+    | otherwise = z ++ x
 
 data Indeterminativo = Indeterminativo deriving (Show, Read)
 instance Polimorfo Indeterminativo where
@@ -80,7 +83,7 @@ instance Polimorfo InDeterminativo where
     pluraleA InDeterminativo (Maschile x) = Maschile $ onstz x "negli " "nei "
     pluraleA InDeterminativo (Femminile x) = Femminile ("nelle " ++ x)
 
-data Costante = Costante String deriving (Show, Read)
+newtype Costante = Costante String deriving (Show, Read)
 instance Polimorfo Costante where
     singolareA (Costante s) = respect ((++ s), (++ s))
     pluraleA (Costante s) = respect ((++ s), (++ s))
@@ -106,7 +109,7 @@ instance Polimorfo A where
             then respect (("ad " ++), ("ad " ++)) x
             else
                 respect (("a " ++), ("a " ++)) x
-    pluraleA A x = singolareA A x
+    pluraleA A = singolareA A
 
 class Render a where
     render :: a -> String

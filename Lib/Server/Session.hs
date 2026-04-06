@@ -1,4 +1,5 @@
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TupleSections #-}
 
 module Lib.Server.Session where
 
@@ -6,7 +7,7 @@ import Control.Exception (IOException, catch)
 
 import Control.Applicative ((<$>))
 import Control.Concurrent (forkIO, threadDelay)
-import Control.Concurrent.STM (STM, TVar, atomically, newTChan, newTVar, readTChan, readTVar, writeTChan, writeTVar)
+import Control.Concurrent.STM (STM, TVar, atomically, newTChan, newTVar, newTVarIO, readTChan, readTVar, writeTChan, writeTVar)
 import Control.Monad (forever)
 import Control.Monad.Trans (lift)
 import Data.Time
@@ -39,9 +40,9 @@ sessioning path l signal rs = do
     qs <- seq (last os) . mapM (secondM $ rs . Just) $ case reads os of
         [] -> []
         [(x, _)] -> x
-    tcs <- atomically . newTVar $ restoreDB l qs
+    tcs <- newTVarIO $ restoreDB l qs
     forkIO . forever $ do
-        ss <- atomically (signal >> (dump <$> readTVar tcs)) >>= mapM (\(c, (_, ios)) -> fmap ((,) c) ios)
+        ss <- atomically (signal >> (dump <$> readTVar tcs)) >>= mapM (\(c, (_, ios)) -> fmap (c,) ios)
         writeFile (path </> "sessioni") $ show ss
     let sex = "reactivegas_sessione"
     let
@@ -60,7 +61,7 @@ sessioning path l signal rs = do
                 Just c -> return c
                 Nothing -> do
                     cn <- lift $ show <$> (randomIO :: IO Int)
-                    t <- lift $ getCurrentTime >>= return . (addUTCTime $ 31 * 12 * 60 * 60) -- >>= toCalendarTime
+                    t <- lift $ addUTCTime (31 * 12 * 60 * 60) <$> getCurrentTime -- >>= toCalendarTime
                     let c = newCookie sex cn
                     setCookie $ c{cookieExpires = Just t}
                     return cn

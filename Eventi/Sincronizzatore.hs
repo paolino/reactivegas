@@ -1,6 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
 
 module Eventi.Sincronizzatore where
@@ -27,7 +26,7 @@ import Eventi.Anagrafe (Responsabile, Utente)
 import Lib.Firmabile
 
 -- | gli eventi  esterni per questo modulo
-data EsternoSincronizzatore
+newtype EsternoSincronizzatore
     = -- | imposta un nuovo responsabile di sincronizzazione
       NuovoSincronizzatore Responsabile
     deriving (Show, Read)
@@ -69,4 +68,4 @@ costrEventiSincronizzatore s kp kn = [("sostituzione sincronizzatore", sost)]
   where
     sost = runSupporto s kn kp $ do
         p <- libero "password per il nuovo sincronizzatore"
-        return (NuovoSincronizzatore $ ("sincronizzatore", cryptobox p))
+        return (NuovoSincronizzatore ("sincronizzatore", cryptobox p))

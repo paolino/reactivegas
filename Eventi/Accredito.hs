@@ -44,7 +44,7 @@ import Eventi.Anagrafe (
     validante,
  )
 import Lib.Aspetti (ParteDi, see, (.<))
-import Lib.Assocs (update, upset, (?))
+import Lib.Assocs (update, set, (?))
 import Lib.Euro
 import Lib.Missing (sortByLower, sortLower)
 import Lib.Prioriti (R (..))
@@ -71,8 +71,7 @@ instance Read EsternoAccredito where
                 string "accredito a "
                 u <- phrase
                 string " di "
-                f <- reads'
-                return $ Accredito u f
+                Accredito u <$> reads'
             add = do
                 string "addebito a "
                 u <- phrase
@@ -85,8 +84,7 @@ instance Read EsternoAccredito where
                 string "movimento dalla cassa di "
                 u <- phrase
                 string " di "
-                f <- reads'
-                return $ Saldo u f
+                Saldo u <$> reads'
          in lift $ acc <++ sal <++ add
 
 -- | priorita' per gli eventi del modulo
@@ -95,15 +93,15 @@ priorityAccredito = R k
   where
     k (Accredito _ _) = -35
     k (Saldo _ _) = -35
-    k (Addebito _ _ _) = -34
+    k Addebito{} = -34
 
 -- | stato degli accrediti utente
-data Conti = Conti [(Utente, Euro)] deriving (Read, Show, Eq)
+newtype Conti = Conti [(Utente, Euro)] deriving (Read, Show, Eq)
 
 conti (Conti us) = sortByLower fst us
 
 -- | stato dei saldi responsabile
-data Saldi = Saldi [(Utente, Euro)] deriving (Read, Show, Eq)
+newtype Saldi = Saldi [(Utente, Euro)] deriving (Read, Show, Eq)
 
 saldi (Saldi us) = sortByLower fst us
 
@@ -126,7 +124,7 @@ accredita u dv s = do
     esistenzaUtente u
     Conti us <- osserva
     let r = dv $^ (us ? (u, 0))
-    modifica $ \(Conti us) -> Conti (upset u r us)
+    modifica $ \(Conti us) -> Conti (set u r us)
     logga . Message $ MovimentoU u dv s
     return r
 
@@ -205,7 +203,7 @@ costrEventiAccredito s kp kn =
         when (null us') $ throwError "non ci sono altri utenti"
         u <- scelte us' $ ResponseOne "utente interessato dall'aggiornamento"
         n <- libero $ ResponseOne $ "somma da prelevare dal conto di " ++ quote u
-        s <- libero $ ResponseOne $ "motivazione del prelievo"
+        s <- libero $ ResponseOne "motivazione del prelievo"
         return . Singola $ Addebito u s n
     eventoSaldo = run $ do
         (rs, _) <- asks responsabili
@@ -233,7 +231,7 @@ costrQueryAccredito s kp kn =
                     ( "crediti degli utenti"
                     , if null us
                         then ResponseOne "nessun utente possiede un credito"
-                        else ResponseMany (map (ResponseOne *** id) us)
+                        else ResponseMany (map (first ResponseOne) us)
                     )
                 ]
     queryResponsabile = run $ do
@@ -244,6 +242,6 @@ costrQueryAccredito s kp kn =
                     ( "casse dei responsabili"
                     , if null rs
                         then ResponseOne "nessun responsabile possiede una cassa attiva"
-                        else ResponseMany (map (ResponseOne *** id) rs)
+                        else ResponseMany (map (first ResponseOne) rs)
                     )
                 ]

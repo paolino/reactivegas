@@ -1,71 +1,99 @@
 {-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE Rank2Types #-}
+{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE StandaloneDeriving #-}
-{-# LANGUAGE TypeSynonymInstances #-}
-{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE TupleSections #-}
 
-module Core.Patch -- (Patch, fromPatch, mkPatch, Group, fromGroup, mkGroup, Checker, runChecker, Ambiente (..)) where
-where
+{- |
+Module      : Core.Patch
+Description : Signed event patches and groups
+Copyright   : (c) Paolo Veronelli, 2025
+License     : BSD-3-Clause
 
-import Control.Applicative ((<$>))
-import Control.Arrow ((&&&))
-import Control.Monad (when)
+Provides types and functions for creating and verifying signed
+patches (collections of events signed by a responsible user)
+and groups (collections of patches signed by a group administrator).
+-}
+module Core.Patch
+    ( Patch
+    , firma
+    , fromPatch
+    , Group
+    , fromGroup
+    , firmante
+    , Firmante (..)
+    ) where
+
+import Control.Monad (unless, when)
 import Control.Monad.Except (MonadError, throwError)
-import Control.Monad.Reader (MonadReader, ask, asks)
-import Data.List (find, lookup)
+import Control.Monad.Reader (MonadReader, ask)
 import Data.Maybe (fromJust)
-import Data.Monoid (mappend)
-import Debug.Trace
 
-import Core.Costruzione (Supporto, libero, password, scelte)
-import Core.Types (Esterno, Evento, Message, Responsabile, Utente)
-import Lib.Firmabile (Chiave, Firma, Password, Segreto, sign, verify)
-import Lib.States
+import Core.Costruzione (Supporto, password)
+import Core.Types (Esterno, Evento, Responsabile, Utente)
+import Lib.Firmabile (Chiave, Firma, sign)
 
--- | una patch è un insieme di eventi firmati da un responsabile
+-- | A patch is a set of events signed by a responsible user
 type Patch = (Chiave, Firma, [Evento])
 
+-- | Extract the signature from a patch
 firma :: Patch -> Firma
 firma (_, x, _) = x
 
--- | controlla che una patch sia accettabile, ovvero che il responsabile sia presente e che la firma sia corretta
-fromPatch :: (Show s, MonadReader s m, MonadError String m) => (s -> [Responsabile]) -> Patch -> m [Esterno Utente]
-fromPatch grs (c, f, xs) = do
+-- | Verify a patch is acceptable (known author, valid signature)
+fromPatch
+    :: (Show s, MonadReader s m, MonadError String m)
+    => (s -> [Responsabile])
+    -- ^ function to get responsible users from state
+    -> Patch
+    -- ^ patch to verify
+    -> m [Esterno Utente]
+    -- ^ events tagged with author
+fromPatch getResponsibles (c, _f, xs) = do
     s <- ask
-    let rs = grs s
-    when (not $ c `elem` map (fst . snd) rs) $ throwError "l'autore della patch è sconosciuto"
-    -- when (not $ verify c (xs,s) f) $ throwError "la firma della patch utente è corrotta"
+    let rs = getResponsibles s
+    unless (c `elem` map (fst . snd) rs) $
+        throwError "patch author is unknown"
     let u = fst . head . filter ((== c) . fst . snd) $ rs
-    return $ zip (repeat u) xs
+    return $ map (u,) xs
 
--- | costruisce una patch da un insieme di eventi
-
--- | una patch di gruppo è un insieme di patch firmate da uno dei responsabili
+-- | A group patch is a set of patches signed by a responsible user
 type Group = (Chiave, Firma, [Patch])
 
--- | restituisce gli eventi estratti dalla patch di gruppo, insieme al nome del responsabile che la ha firmata
-fromGroup :: (Show s, MonadReader s m, MonadError String m, Functor m) => (s -> [Responsabile]) -> Group -> m (Utente, [Esterno Utente])
-fromGroup grs (c, f, ps) = do
+-- | Extract events from a group patch with the signing user's name
+fromGroup
+    :: (Show s, MonadReader s m, MonadError String m, Functor m)
+    => (s -> [Responsabile])
+    -- ^ function to get responsible users from state
+    -> Group
+    -- ^ group to verify
+    -> m (Utente, [Esterno Utente])
+    -- ^ (signing user, all events)
+fromGroup getResponsibles (c, _f, ps) = do
     s <- ask
-    let rs = grs s
-    when (not $ c `elem` map (fst . snd) rs) $ throwError "l'autore dell'aggiornamento di gruppo è sconosciuto"
-    -- when  (not $ verify c (ps,s) f) $ throwError "la firma del responsabile dell'aggiornamento di gruppo è corrotta"
+    let rs = getResponsibles s
+    unless (c `elem` map (fst . snd) rs) $
+        throwError "group update author is unknown"
     let u = fst . head . filter ((== c) . fst . snd) $ rs
-    (,) u <$> concat <$> mapM (fromPatch grs) ps
+    events <- concat <$> mapM (fromPatch getResponsibles) ps
+    return (u, events)
 
--- newtype SignerBox = SignerBox
-
--- | costruisce una patch di gruppo da un insieme di patch responsabile
-firmante :: forall m s c. (Show s, Monad m) => Responsabile -> Supporto m s c (Firmante s)
-firmante r@(u, (c, s)) = do
-    p <- password $ u ++ ",la tua password di responsabile:"
-    when (null p) $ throwError "password errata"
+-- | Create a signer from a responsible user's credentials
+firmante
+    :: forall m s c.
+       (Show s, Monad m)
+    => Responsabile
+    -> Supporto m s c (Firmante s)
+firmante (u, (c, s)) = do
+    p <- password $ u ++ ", your responsible password:"
+    when (null p) $ throwError "incorrect password"
     case sign (s, p) (undefined :: (), undefined :: s) of
-        Nothing -> throwError $ "password errata"
-        Just _ -> return $ Firmante $ \b ps -> (c, fromJust $ sign (s, p) (ps, b), ps)
+        Nothing -> throwError "incorrect password"
+        Just _ ->
+            return $
+                Firmante $ \b ps ->
+                    (c, fromJust $ sign (s, p) (ps, b), ps)
 
---------------------------------------------------------------
-
-newtype Firmante b = Firmante (forall a. (Show a) => b -> [a] -> (Chiave, Firma, [a]))
+-- | Existential wrapper for a signing function
+newtype Firmante b = Firmante
+    (forall a. (Show a) => b -> [a] -> (Chiave, Firma, [a]))

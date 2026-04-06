@@ -19,10 +19,10 @@ nuovoOrdine x = do
     let complete f = do
             u <-
                 scelte (map (render . singolare &&& id) [minBound .. maxBound]) $
-                    ResponseOne $
+                    ResponseOne
                         "unità di misura per il valore dell'ordine"
             x <- libero $ ResponseOne "valore dell'ordine"
-            return $ f $ (toRational x :? u)
+            return $ f (toRational x :? u)
 
     let md = (" in denaro ",) `fmap` complete `fmap` mkInDenaro x
         mc = (" in confezioni ",) `fmap` complete `fmap` mkInConfezioni x

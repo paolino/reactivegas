@@ -63,7 +63,7 @@ data (Ix a) => SRange a = SRange [a] [(a, a)]
     deriving (Show)
 
 inSRange :: (Ix a) => a -> SRange a -> Bool
-inSRange c (SRange d s) = c `elem` d || any (flip inRange c) s
+inSRange c (SRange d s) = c `elem` d || any (`inRange` c) s
 
 type CharClass = SRange Char
 

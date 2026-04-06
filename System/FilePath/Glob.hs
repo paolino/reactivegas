@@ -29,7 +29,7 @@ namesMatching :: String -> IO [FilePath]
 namesMatching pat
     | not (isPattern pat) = do
         exists <- doesNameExist pat
-        return (if exists then [pat] else [])
+        return [pat | exists]
     | otherwise = do
         case splitFileName pat of
             ("", baseName) -> do
@@ -77,7 +77,7 @@ listPlain dirName baseName = do
         if null baseName
             then doesDirectoryExist dirName
             else doesNameExist (dirName </> baseName)
-    return (if exists then [baseName] else [])
+    return [baseName | exists]
 
 doesNameExist :: FilePath -> IO Bool
 doesNameExist name = do

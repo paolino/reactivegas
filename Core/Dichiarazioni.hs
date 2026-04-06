@@ -4,6 +4,7 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TupleSections #-}
 
 module Core.Dichiarazioni where
 
@@ -53,7 +54,7 @@ holing = holing' []
 parseDichiarazione :: [Dichiarazione c Singola] -> Evento -> Dichiarazioni c -> Dichiarazioni c
 parseDichiarazione ss x (Dichiarazioni ys zs) = case msum $ map (parseSingola x) ss of
     Just y -> Dichiarazioni (y : ys) zs
-    Nothing -> case msum . map (\(z, zs') -> ((,) zs') `fmap` parseComposta x z) $ holing zs of
+    Nothing -> case msum . map (\(z, zs') -> (zs',) <$> parseComposta x z) $ holing zs of
         Just (zs', z) -> Dichiarazioni ys (z : zs')
         Nothing -> error $ "dichiarazione inaccettabile: " ++ x
 
@@ -81,11 +82,11 @@ elimina (Dichiarazioni ms us) = map f (holing ms) ++ concatMap g (holing us)
 
 correggi :: forall c. Dichiarazione c Composta -> Dichiarazioni c -> Dichiarazioni c
 correggi (Composta y) (Dichiarazioni ms us) = Dichiarazioni ms $ case msum . map f $ holing us of
-    Nothing -> (Composta y : us)
-    Just (us, u) -> (u : us)
+    Nothing -> Composta y : us
+    Just (us, u) -> u : us
   where
     f :: (Dichiarazione c Composta, [Dichiarazione c Composta]) -> Maybe ([Dichiarazione c Composta], Dichiarazione c Composta)
-    f (Composta x, us) = ((,) us) `fmap` Composta `fmap` foldr (flip patch) x `fmap` sequence (map cast y)
+    f (Composta x, us) = (us,) . Composta . foldr (flip patch) x <$> mapM cast y
 
 {-
 -}

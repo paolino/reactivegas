@@ -57,7 +57,7 @@ mkValuedfile (i, x) = do
             hClose h1
             putStrLn $ x ++ " non riconosciuto"
             return Nothing
-        [((r :: a), _)] -> do
+        [(r :: a, _)] -> do
             h2 <- openFile x ReadMode -- new lock
             hClose h1 -- release the lock
             putStrLn $ x ++ " riconosciuto"
@@ -84,11 +84,11 @@ keepNewest vs =
     let
         (vs', v) = (init &&& last) $ sort vs
      in
-        mapM (removeFile . path) vs' >> return (Just v)
+        mapM_ (removeFile . path) vs' >> return (Just v)
 
 keepSpecific :: (Eq b) => [Valuedfile a b] -> b -> IO (Maybe (Valuedfile a b))
 keepSpecific vs e =
     let
         (xs, ys) = partition ((==) e . ext) vs
      in
-        mapM (removeFile . path) ys >> return (listToMaybe xs)
+        mapM_ (removeFile . path) ys >> return (listToMaybe xs)

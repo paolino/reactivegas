@@ -4,8 +4,6 @@
 {-# LANGUAGE OverlappingInstances #-}
 {-# LANGUAGE Rank2Types #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE StandaloneDeriving #-}
-{-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Voci.Names where
@@ -22,17 +20,17 @@ instance (Name b) => Name (Quantità (b, Unità)) where
     singolare (x :? (y, _)) =
         fmap ((showFFloat (Just 2) (fromRational x) "" ++ " ") ++) $
             if x == 1 then singolare y else plurale y
-    plurale z = singolare z
+    plurale = singolare
 
 instance Name (Quantità Unità) where
-    singolare (x :? y) = Maschile ((showFFloat (Just 0) (fromRational x) "" ++ " "))
-    plurale z = singolare z
+    singolare (x :? y) = Maschile (showFFloat (Just 0) (fromRational x) "" ++ " ")
+    plurale = singolare
 
 instance (Name b) => Name (Quantità b) where
     singolare (x :? y) =
         fmap ((showFFloat (Just 2) (fromRational x) "" ++ " ") ++) $
             if x == 1 then singolare y else plurale y
-    plurale z = singolare z
+    plurale = singolare
 
 instance (UnitClass a, UnitClass b, Name a, Name b) => Name (a, b) where
     singolare (x, y) = (++ (render $ " " :+: ADeterminativo &.& singolare2 y)) `fmap` singolare x
@@ -80,9 +78,9 @@ instance Name (Contenitore Unità) where
 
 instance (Name (Contenitore b)) => Name (Confezionamento b) where
     singolare (Primo c) = singolare c
-    singolare (Inscatolato c n) = (++ render (checkUnità (count c) singolare plurale $ n)) `fmap` singolare c
+    singolare (Inscatolato c n) = (++ render (checkUnità (count c) singolare plurale n)) `fmap` singolare c
     plurale (Primo c) = plurale c
-    plurale (Inscatolato c n) = (++ render (checkUnità (count c) singolare plurale $ n)) `fmap` plurale c
+    plurale (Inscatolato c n) = (++ render (checkUnità (count c) singolare plurale n)) `fmap` plurale c
 
 checkUnità (1 :? Unità) f _ = f
 checkUnità _ _ g = g

@@ -1,17 +1,20 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TupleSections #-}
-{-# LANGUAGE ViewPatterns #-}
 
-{- | la colla che forma il Core per facilitare il caricamento di un blocco di eventi e per accedere allo stato, partendo dalla serializzazione delle reazioni
- Modulo per la serializzazione dell'albero delle reazioni. La serializzazione e' complicata dal fatto che i nodi contengono le procedure di reazione.
-La soluzione e' ricreare le procedure . Per fare questo e' necessaro ricaricare  un set di eventi che essendo potenzialmente discontinui nel tempo vengono memorizzati ognuno con lo stato in cui deve essere caricato per riprodurre le reazioni desiderate.
-Da notare che lo stato dell'applicazion in se e' serializzabile. Il problema nasce dal fatto che le reazioni sono dinamiche , nascono a volte dal caricamento degli eventi
+{- | Core glue to facilitate loading a block of events and accessing state,
+starting from reaction serialization. Module for serializing the reaction tree.
+Serialization is complicated by the fact that nodes contain reaction procedures.
+The solution is to recreate the procedures. To do this, we need to reload a set
+of events that, being potentially discontinuous in time, are each stored with
+the state in which they must be loaded to reproduce the desired reactions.
+Note that the application state itself is serializable. The problem arises from
+the fact that reactions are dynamic - they sometimes arise from event loading.
 -}
 module Core.Controllo where
 
 import Control.Applicative ((<$>))
 import Control.Arrow (second)
-import Control.Monad (foldM, msum)
+import Control.Monad (foldM, msum, zipWithM)
 import Data.Function (on)
 import Data.List (nubBy, tails)
 import Data.Maybe (isJust)
@@ -28,29 +31,30 @@ import Core.Types (Esterno)
 
 import Debug.Trace
 
--- | nodo serializzato , una copia di una struttura Nodo non contenente la funzione di reazione del nodo stesso
+-- | Serialized node, a copy of a Nodo structure not containing the node's reaction function
 data SNodo s d = SNodo
     { attivo :: Bool
-    -- ^ stato di attivita della reazione
+    -- ^ reaction activity state
     , sottonodi :: [(Appuntato s d, [(Int, SNodo s d)])]
-    -- ^ struttura di deserializzazione dipendente
+    -- ^ dependent deserialization structure
     }
     deriving (Read, Show, Eq)
 
 -- amendSNodo :: (s -> s') -> Nodo s c d -> Nodo s' c d
 amendSNodo f (SNodo x ys) = SNodo x $ map (\((e, s), zs) -> ((e, f s), map (second $ amendSNodo f) zs)) ys
 
--- | un SNodo vuoto
+-- | An empty SNodo
 nodoVuoto :: SNodo s d
 nodoVuoto = SNodo True []
 
--- | passa da una struttura SNodo a una Nodo con il contributo della reazione, le reazioni dei nodi seguenti sono costruite con l'inserimento degli eventi appositamente ricordati
+-- | Converts an SNodo structure to a Nodo with the reaction contribution.
+-- Reactions of subsequent nodes are built by inserting specially remembered events.
 deserializza ::
-    -- | il nodo serializzato da ricreare
+    -- | the serialized node to recreate
     SNodo s d ->
-    -- | la sua reazione
+    -- | its reaction
     Reazione s c d ->
-    -- | il nodo vivo ottenuto
+    -- | the resulting live node
     Maybe (Nodo s c d)
 deserializza (SNodo k rs) r@(Reazione (acc, f :: TyReazione a b d s c)) =
     let
@@ -61,42 +65,43 @@ deserializza (SNodo k rs) r@(Reazione (acc, f :: TyReazione a b d s c)) =
                 Nothing -> Nothing
                 Just y ->
                     let (Just (_, (qs, _)), _, _) = runInserzione (f (Right (u, y))) nuovoContesto s
-                     in sequence $ map (\(i, d) -> (i,) `fmap` deserializza d (qs !! i)) js
+                     in mapM (\(i, d) -> (i,) `fmap` deserializza d (qs !! i)) js
         te ((ec@(Left x), s), js) = ((ec, s),) `fmap` ns
           where
             ns = case maybe ((valore :: ParserConRead b -> b) <$> parser x) (provaAccentratore x) acc of
                 Nothing -> Nothing
                 Just y ->
                     let (Just (_, (qs, _)), _, _) = runInserzione (f (Left y)) nuovoContesto s
-                     in sequence $ map (\(i, d) -> (i,) `fmap` deserializza d (qs !! i)) js
+                     in mapM (\(i, d) -> (i,) `fmap` deserializza d (qs !! i)) js
      in
-        Nodo (if k then Just r else Nothing) `fmap` (sequence $ map te rs)
+        Nodo (if k then Just r else Nothing) `fmap` mapM te rs
 
--- | passa da una struttura Nodo a una SNodo, naturalmente la funzione reazione del nodo base deve essere la stessa quando verra' deserializzato
+-- | Converts a Nodo structure to an SNodo. The base node's reaction function
+-- must be the same when deserialized.
 serializza ::
-    -- | il nodo vivo
+    -- | the live node
     Nodo s c d ->
-    -- | il nodo serializzato
+    -- | the serialized node
     SNodo s d
 serializza (Nodo k rs) = SNodo (isJust k) (map (second $ map (second serializza)) rs)
 
--- | programma di caricamento eventi, prevede il riordinamento per priorita
+-- | Event loading program with priority reordering
 caricaEventi ::
     (Show d, Eq d, Show s) =>
-    -- | i prioritizzatori
+    -- | prioritizers
     [R] ->
-    -- | le reazioni base
+    -- | base reactions
     [Reazione s c d] ->
-    -- | livello di caricamento
+    -- | loading level
     Int ->
-    -- | gli eventi da caricare
+    -- | events to load
     [Esterno d] ->
-    -- | lo stato e la serializzazione dell'albero reattivo
+    -- | state and reactive tree serialization
     (s, [SNodo s d]) ->
-    -- | nuovo stato e nuova  serializzazione dell'albero reattivo insieme ai log contestualizzati
-    ((s, [SNodo s d]), ([Contestualizzato d Message]))
+    -- | new state, new reactive tree serialization with contextualized logs
+    ((s, [SNodo s d]), [Contestualizzato d Message])
 caricaEventi ps rs l xs (s, nss) =
-    let ns = case sequence . map (uncurry deserializza) . zip nss $ rs of
+    let ns = case zipWithM deserializza nss rs of
             Nothing -> error $ "deserializzazione fallita" ++ show (length nss) ++ show s
             Just ns -> ns
         xs' = sortP l ps snd xs
@@ -104,19 +109,19 @@ caricaEventi ps rs l xs (s, nss) =
         nss' = map serializza ns'
      in ((s', nss'), ws)
 
--- | programma di caricamento eventi, prevede il riordinamento per priorita
+-- | Event loading program with priority reordering (live nodes version)
 caricaEventi' ::
     (Show d, Eq d, Show s) =>
-    -- | i prioritizzatori
+    -- | prioritizers
     [R] ->
-    -- | livello di caricamento
+    -- | loading level
     Int ->
-    -- | gli eventi da caricare
+    -- | events to load
     [Esterno d] ->
-    -- | lo stato e la serializzazione dell'albero reattivo
+    -- | state and reactive tree
     (s, [Nodo s c d]) ->
-    -- | nuovo stato e nuova  serializzazione dell'albero reattivo insieme ai log contestualizzati
-    ((s, [Nodo s c d]), ([Contestualizzato d Message]))
+    -- | new state, new reactive tree with contextualized logs
+    ((s, [Nodo s c d]), [Contestualizzato d Message])
 caricaEventi' ps l xs (s, ns) =
     let xs' = sortP l ps snd xs
         ((ns', ahi), s', ws) = runInserzione (foldDeleteMb inserimentoCompleto ns xs') nuovoContesto s

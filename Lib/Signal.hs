@@ -1,27 +1,42 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE UndecidableInstances #-}
 
--- | A monad isomorphic to  Writer [()], useful to signal if something has happened inside an action
-module Lib.Signal where
+{- |
+Module      : Lib.Signal
+Description : Signal monad for tracking if something happened
+Copyright   : (c) Paolo Veronelli, 2025
+License     : BSD-3-Clause
 
-import Control.Monad
-import Control.Monad.Reader
-import Control.Monad.State
-import Control.Monad.Trans
-import Control.Monad.Writer
+A monad isomorphic to @Writer [()]@, useful to signal if something
+has happened inside an action. This is used to track whether any
+reaction occurred during event processing.
+-}
+module Lib.Signal
+    ( MonadSignal (..)
+    , SignalT (..)
+    ) where
 
--- | the class for the monad and monadtransformer
+import Control.Monad (ap)
+import Control.Monad.Reader (MonadReader (..))
+import Control.Monad.State (MonadState (..))
+import Control.Monad.Trans (MonadTrans (..))
+import Control.Monad.Writer (MonadWriter (..))
+
+-- | Type class for signal monads
 class MonadSignal m where
-    happened ::
-        -- | signal that the thing happened
-        m ()
-    intercept ::
-        m a ->
-        -- | execute an action and report if the thing happened
-        m (a, Bool)
+    -- | Signal that the thing happened
+    happened :: m ()
 
-newtype SignalT m a = SignalT {runSignalT :: m (a, Bool)}
+    -- | Execute an action and report if the thing happened
+    intercept :: m a -> m (a, Bool)
+
+-- | Signal monad transformer
+newtype SignalT m a = SignalT
+    { runSignalT :: m (a, Bool)
+    -- ^ Run the signal computation, returning value and whether signal fired
+    }
 
 instance (Monad m) => MonadSignal (SignalT m) where
     happened = SignalT $ return ((), True)
@@ -37,17 +52,17 @@ instance (Monad m) => Monad (SignalT m) where
     g >>= k = SignalT $ do
         (x, b) <- runSignalT g
         (x', b') <- runSignalT (k x)
-        return $ (x', b || b')
+        return (x', b || b')
     return x = lift (return x)
 
 instance (MonadFail m) => MonadFail (SignalT m) where
     fail x = SignalT $ fail x
 
 instance MonadTrans SignalT where
-    lift m = SignalT (m >>= return . flip (,) False)
+    lift m = SignalT $ (,False) <$> m
 
 instance (Functor t, Monad t) => Functor (SignalT t) where
-    f `fmap` SignalT m = SignalT $ do
+    fmap f (SignalT m) = SignalT $ do
         (x, b) <- m
         return (f x, b)
 

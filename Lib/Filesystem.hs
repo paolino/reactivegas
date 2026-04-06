@@ -1,33 +1,85 @@
 {-# LANGUAGE MonoLocalBinds #-}
 
-module Lib.Filesystem where
+{- |
+Module      : Lib.Filesystem
+Description : Filesystem utilities for group data persistence
+Copyright   : (c) Paolo Veronelli, 2025
+License     : BSD-3-Clause
 
-import Control.Exception
-import Data.Maybe
-import System.Directory
-import System.FilePath
+Provides utilities for reading and writing group-related data
+to the filesystem with error handling.
+-}
+module Lib.Filesystem
+    ( onFS
+    , groupWrite
+    , groupUnwrite
+    , groupUnwriteF
+    ) where
 
-onFS :: IO a -> (String -> IO b) -> (a -> IO b) -> IO b
-onFS f z w = tryJust (\(SomeException x) -> Just $ show x) f >>= either z w
+import Control.Exception (SomeException (..), tryJust)
+import System.FilePath ((</>))
 
--- | scrive un dato riguardante un gruppo
-groupWrite :: (Show a) => FilePath -> String -> Int -> a -> IO ()
-groupWrite x y v t = onFS (writeFile (x </> y) (show (v, t))) error return
+-- | Execute an IO action with exception handling
+-- Takes an IO action, an error handler, and a success handler
+onFS
+    :: IO a
+    -- ^ IO action to execute
+    -> (String -> IO b)
+    -- ^ error handler (receives error message)
+    -> (a -> IO b)
+    -- ^ success handler
+    -> IO b
+onFS action onError onSuccess =
+    tryJust (\(SomeException x) -> Just $ show x) action
+        >>= either onError onSuccess
 
--- | legge un dato riguardante un gruppo
-groupUnwrite :: (Read a) => FilePath -> String -> IO (Maybe (Int, a))
-groupUnwrite x y = onFS (readFile (x </> y)) (\_ -> return Nothing) (return . seqit)
+-- | Write group-related data to a file
+groupWrite
+    :: (Show a)
+    => FilePath
+    -- ^ group directory
+    -> String
+    -- ^ filename
+    -> Int
+    -- ^ version number
+    -> a
+    -- ^ data to write
+    -> IO ()
+groupWrite dir filename version value =
+    onFS
+        (writeFile (dir </> filename) (show (version, value)))
+        error
+        return
+
+-- | Read group-related data from a file using standard Read
+groupUnwrite
+    :: (Read a)
+    => FilePath
+    -- ^ group directory
+    -> String
+    -- ^ filename
+    -> IO (Maybe (Int, a))
+    -- ^ 'Just' (version, value) if successful, 'Nothing' on error
+groupUnwrite dir filename =
+    onFS (readFile (dir </> filename)) (const $ return Nothing) (return . parse)
   where
-    seqit z = case reads z of
-        [(q, _)] -> Just q
+    parse content = case reads content of
+        [(result, _)] -> Just result
         _ -> Nothing
 
--- | legge un dato riguardante un gruppo
-groupUnwriteF :: ReadS (Int, a) -> FilePath -> String -> IO (Maybe (Int, a))
-groupUnwriteF f x y = onFS (readFile (x </> y)) (\_ -> return Nothing) (return . seqit)
+-- | Read group-related data from a file using a custom parser
+groupUnwriteF
+    :: ReadS (Int, a)
+    -- ^ custom parser
+    -> FilePath
+    -- ^ group directory
+    -> String
+    -- ^ filename
+    -> IO (Maybe (Int, a))
+    -- ^ 'Just' (version, value) if successful, 'Nothing' on error
+groupUnwriteF customParser dir filename =
+    onFS (readFile (dir </> filename)) (const $ return Nothing) (return . parse)
   where
-    seqit z = case f z of
-        [(q, _)] -> last z `seq` Just q
+    parse content = case customParser content of
+        [(result, _)] -> last content `seq` Just result
         _ -> Nothing
-
--------------------------------------------------------------------------------------------------------------------

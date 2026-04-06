@@ -1,11 +1,14 @@
--- | gestione della sessione, del modello falso in cui l'utente si trova ad operare in bianco prima di fare persistere il proprio lavoro
+{-# LANGUAGE LambdaCase #-}
+
+-- | Session management, handling the draft model where the user operates
+-- before persisting their work
 module Applicazioni.Sessione (Sessione (..), mkSessione, Update) where
 
 import Control.Applicative ((<$>))
 import Control.Arrow (second)
 import Control.Monad (forever, liftM2, when)
 import Data.List (union, (\\))
-import Data.Maybe (listToMaybe)
+import Data.Maybe (fromMaybe, listToMaybe)
 
 -- import System.Random
 import Control.Concurrent (forkIO)
@@ -23,39 +26,39 @@ import Debug.Trace
 type Indice = QInteger
 type Name = String
 
--- | interfaccia concorrente per una sessione di interazione
+-- | Concurrent interface for an interaction session
 data Sessione a b p = Sessione
     { readGruppo :: IO (Maybe Name)
-    -- ^ gruppo selezionato
+    -- ^ selected group
     , writeGruppo :: Maybe Name -> IO ()
-    -- ^ cambia gruppo
+    -- ^ change group
     , readEventi :: IO [Evento]
-    -- ^ legge gli eventi in memoria
+    -- ^ reads events in memory
     , aggiungiEvento :: Dichiarazione p Singola -> IO ()
     , eliminaEvento :: IO [(Evento, IO ())]
     , correggiEvento :: Dichiarazione p Composta -> IO ()
     , readAccesso :: IO (Maybe Responsabile)
-    -- ^ legge il responsabile in azione
+    -- ^ reads the responsible in action
     , writeAccesso :: Maybe Responsabile -> IO ()
-    -- ^ scrive il responsabile in azione
+    -- ^ writes the responsible in action
     , readAcquisto :: IO (Maybe Indice)
     , writeAquisto :: Maybe Indice -> IO ()
     , readOrdinante :: IO (Maybe Utente)
-    -- ^ legge il responsabile in azione
+    -- ^ reads the ordering user
     , writeOrdinante :: Maybe Utente -> IO ()
-    -- ^ scrive il responsabile in azione
+    -- ^ writes the ordering user
     , readCaricamento :: IO (Maybe b)
-    -- ^ legge l'effetto dell'ultimo caricamento dichiarazioni
+    -- ^ reads the effect of the last declaration loading
     , readStatoSessione :: IO (Maybe a)
-    -- ^ legge lo stato modificato dagli eventi in memoria prodotti dal responsabile in memoria
+    -- ^ reads the state modified by in-memory events produced by the in-memory responsible
     , setConservative :: Int -> IO ()
-    -- ^ imposta il livello di caricamento
+    -- ^ sets the loading level
     , getConservative :: IO Int
-    -- ^ legge il livello di caricamento
+    -- ^ reads the loading level
     , backup :: IO (Maybe Name, [Evento], Maybe Responsabile, Int)
     }
 
--- | eventi che scatenano la ricomputazione dello stato modificato
+-- | Events that trigger recomputation of the modified state
 data Triggers p
     = TResponsabile (Maybe Responsabile)
     | TAcquisto (Maybe Indice)
@@ -64,36 +67,36 @@ data Triggers p
     | TConservative Int
     | TGruppo (Maybe Name)
 
--- | modello di ricomputazione che deve essere fornito
+-- | Recomputation model that must be provided
 type Update a b = Name -> STM (Maybe (Int -> Maybe Responsabile -> [Evento] -> STM (a, b)))
 
 type Parse p = [Evento] -> Dichiarazioni p
 
--- | azione di modifica di uno di eventi o responsabile
+-- | Action to modify events or responsible
 update ::
-    Parse p -> -- riproduzione dichiarazioni
-    Update a b -> -- produce uno stato modificato
+    Parse p -> -- declaration reproduction
+    Update a b -> -- produces a modified state
 
-    -- | livello standard di caricamento eventi
+    -- | standard event loading level
     Int ->
-    -- | memoria condivisa
+    -- | shared memory
     ( TVar (Dichiarazioni p)
     , TVar (Maybe Responsabile)
     , TVar (Maybe Indice)
     , TVar (Maybe Utente)
     , TVar Int
-    , TVar (Maybe a) -- ultimo stato calcolato
-    , TVar (Maybe b) -- ultimi effetti calcolati
-    , TVar (Maybe Name) -- nome del gruppo , se selezionato
+    , TVar (Maybe a) -- last calculated state
+    , TVar (Maybe b) -- last calculated effects
+    , TVar (Maybe Name) -- group name, if selected
     , TChan (Triggers p)
     , TVar (Maybe (STM (Change c d)))
-    , (Name -> STM (Maybe (STM (STM (Change c d))))) -- una condizione esterna che deve fare scattare il rinnovamento
-    , (Name -> STM (Maybe (Maybe Utente -> STM [Evento]))) -- gli eventi pubblicati per un utente
+    , Name -> STM (Maybe (STM (STM (Change c d)))) -- external condition that triggers renewal
+    , Name -> STM (Maybe (Maybe Utente -> STM [Evento])) -- events published for a user
     ) ->
     STM ()
 update pa f l (eventi, accesso, acquisto, ordinante, conservative, stato, caricamento, gruppo, triggers, signalbox, newsignal, publ) = do
     let
-        -- \| update causato da modifica utente
+        -- update caused by user modification
         interna = do
             t <- readTChan triggers
             case t of
@@ -105,14 +108,14 @@ update pa f l (eventi, accesso, acquisto, ordinante, conservative, stato, carica
                         Nothing -> return ()
                         Just g -> do
                             writeTVar accesso mr
-                            publ g >>= \mp -> case mp of
+                            publ g >>= \case
                                 Nothing -> return ()
                                 Just k -> k (fst <$> mr) >>= writeTVar eventi . pa
                 TEventi ds -> writeTVar eventi ds
                 TConservative l -> writeTVar conservative l
                 TGruppo n -> case n of
                     Just g ->
-                        newsignal g >>= \mns -> case mns of
+                        newsignal g >>= \case
                             Just ns -> do
                                 signal <- ns
                                 writeTVar signalbox (Just signal)
@@ -142,11 +145,11 @@ update pa f l (eventi, accesso, acquisto, ordinante, conservative, stato, carica
                                 Boot _ -> return ()
                                 GPatch digested orphans _ -> do
                                     let ofs =
-                                            maybe [] id $
+                                            fromMaybe [] $
                                                 mr
                                                     >>= \u -> lookup u orphans
                                         dgs =
-                                            maybe [] id $
+                                            fromMaybe [] $
                                                 mr
                                                     >>= \u -> lookup u digested
                                     -- TODO !!!
@@ -162,7 +165,7 @@ update pa f l (eventi, accesso, acquisto, ordinante, conservative, stato, carica
             mr <- readTVar accesso
             evs <- readTVar eventi
             l' <- readTVar conservative
-            -- effettua il caricamento rispettoso dell condizioni di sessione
+            -- perform loading respecting session conditions
             mu <- f g
             case mu of
                 Nothing -> do
@@ -176,19 +179,19 @@ update pa f l (eventi, accesso, acquisto, ordinante, conservative, stato, carica
             writeTVar stato Nothing
             writeTVar caricamento Nothing
 
--- | costruisce l'interfaccia di sessione a partire da un modificatore di stato in STM
+-- | Constructs the session interface from an STM state modifier
 mkSessione ::
-    -- | lettore di eventi
+    -- | event reader
     Parse p ->
-    -- | modificatore di stato
+    -- | state modifier
     Update a b ->
-    -- | livello di caricamento di base
+    -- | base loading level
     Int ->
-    -- | segnale di aggiornamento stato
+    -- | state update signal
     (Name -> STM (Maybe (STM (STM (Change c d))))) ->
-    -- | query sugli eventi pubblicati per un utente
+    -- | query for events published for a user
     (Name -> STM (Maybe (Maybe Utente -> STM [Evento]))) ->
-    -- | segnale di modifica sessione
+    -- | session modification signal
     STM () ->
     Maybe (Maybe Name, [Evento], Maybe Responsabile, Int) ->
     IO (Sessione a b p)
@@ -198,24 +201,24 @@ mkSessione pa f l signal publ exsignal ms = do
             Nothing -> return Nothing
             Just (Nothing, _, _, _) -> return Nothing
             Just (Just g, es, mr, cl) ->
-                f g >>= \x -> case x of
+                f g >>= \case
                     Just k -> Just <$> k cl mr es
                     Nothing -> return Nothing
         liftM2 (,) (newTVar $ fst <$> msc) (newTVar $ snd <$> msc)
-    eventi <- atomically $ newTVar $ maybe (Dichiarazioni [] []) (\(_, es, _, _) -> pa es) ms
-    accesso <- atomically $ newTVar $ ms >>= \(_, _, mr, _) -> mr
-    acquisto <- atomically $ newTVar Nothing
-    ordinante <- atomically $ newTVar Nothing
-    accesso <- atomically $ newTVar $ ms >>= \(_, _, mr, _) -> mr
-    triggers <- atomically $ newTChan
-    conservative <- atomically $ newTVar $ maybe l (\(_, _, _, cl) -> cl) ms
-    gruppo <- atomically $ newTVar $ ms >>= \(mg, _, _, _) -> mg
+    eventi <- newTVarIO $ maybe (Dichiarazioni [] []) (\(_, es, _, _) -> pa es) ms
+    accesso <- newTVarIO $ ms >>= \(_, _, mr, _) -> mr
+    acquisto <- newTVarIO Nothing
+    ordinante <- newTVarIO Nothing
+    accesso <- newTVarIO $ ms >>= \(_, _, mr, _) -> mr
+    triggers <- newTChanIO
+    conservative <- newTVarIO $ maybe l (\(_, _, _, cl) -> cl) ms
+    gruppo <- newTVarIO $ ms >>= \(mg, _, _, _) -> mg
     signalbox <- atomically $ case ms of
         Nothing -> newTVar Nothing
         Just (mg, _, _, _) -> case mg of
             Nothing -> newTVar Nothing
             Just g ->
-                signal g >>= \ms -> case ms of
+                signal g >>= \case
                     Nothing -> newTVar Nothing
                     Just mks -> mks >>= newTVar . Just
     let memoria = (eventi, accesso, acquisto, ordinante, conservative, stato, caricamento, gruppo, triggers, signalbox, signal, publ)
@@ -246,5 +249,5 @@ mkSessione pa f l signal publ exsignal ms = do
                 es <- toEventi <$> readTVar eventi
                 cl <- readTVar conservative
                 mr <- readTVar accesso
-                return (mg, es, mr, cl) -- TODO , serializzare acquisto e ordinante (ma il ripristino sessione non funziona)
+                return (mg, es, mr, cl) -- TODO: serialize acquisto and ordinante (but session restore doesn't work)
             )

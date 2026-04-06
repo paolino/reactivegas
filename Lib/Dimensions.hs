@@ -1,5 +1,3 @@
-{-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeSynonymInstances #-}
@@ -26,12 +24,12 @@ prettyDimension i
     | abs i == 2 = (++ "quadrato")
     | abs i == 3 = (++ "cubo")
     | abs i == 4 = (++ "alla quarta")
-    | otherwise = (\x -> x ++ "alla " ++ show i ++ "ma potenza")
+    | otherwise = \x -> x ++ "alla " ++ show i ++ "ma potenza"
 
 esp (Dimension (i, _)) = i
 mkDimension i x = Dimension (i, x)
 
-dbase (Dimension (i, x)) = (^^ i) *** (mkDimension i) $ base x
+dbase (Dimension (i, x)) = (^^ i) *** mkDimension i $ base x
 
 chdim f (Dimension (i, x)) = Dimension (f i, x)
 trydim (Dimension (_, x)) (Dimension (i, y)) = (mkDimension i . (`asTypeOf` x)) `fmap` cast y
@@ -40,7 +38,7 @@ operate f g dx@(Dimension (i, x)) dy@(Dimension (j, y)) = do
     let (n, _) = dbase dx
         (m, _) = dbase dy
     l <- j `f` i
-    return $ (m `g` n, Dimension (l, x))
+    return (m `g` n, Dimension (l, x))
 
 convert = operate (\j i -> if i == j then Just i else Nothing) (/)
 
@@ -50,12 +48,12 @@ readDimension :: [Unit] -> ReadS Dimension
 readDimension [] _ = []
 readDimension (Unit x : xs) s = case reads s of
     [] -> readDimension xs s
-    ys -> map (first $ Dimension . second (`asTypeOf` x)) $ ys
+    ys -> map (first $ Dimension . second (`asTypeOf` x)) ys
 
 data Unit = forall a. (Name a, Read a, Show a, Typeable a, UnitClass a) => Unit a
 
 instance Read Dimension where
-    readsPrec _ = readDimension $ [Unit Euro, Unit Grammo, Unit Unita]
+    readsPrec _ = readDimension [Unit Euro, Unit Grammo, Unit Unita]
 
 --------------------------------------------------------------------------------------
 type Dimensions = [Dimension]
@@ -78,19 +76,19 @@ instance Name Dimensions where
     singolare [] = Maschile ""
     singolare xs =
         let
-            (rs, qs) = partition ((>= 0) . esp) $ xs
+            (rs, qs) = partition ((>= 0) . esp) xs
             q = concatMap (unsex . prefix (" al ", " alla ") . singolare)
          in
             Maschile $
-                (intercalate " per " . map (unsex . singolare) $ rs) ++ (q qs)
+                (intercalate " per " . map (unsex . singolare) $ rs) ++ q qs
     plurale [] = Maschile ""
     plurale xs =
         let
-            (rs, qs) = partition ((>= 0) . esp) $ xs
+            (rs, qs) = partition ((>= 0) . esp) xs
             q = concatMap (unsex . prefix (" al ", " alla ") . singolare)
          in
             Maschile $
-                (intercalate " per " . zipWith (\f -> unsex . f) (plurale : repeat singolare) $ rs)
+                (intercalate " per " . zipWith (unsex .) (plurale : repeat singolare) $ rs)
                     ++ q qs
 
 denominatore = map (chdim negate) . filter ((==) (-1) . esp) . dimensions
@@ -111,7 +109,7 @@ align xs ys =
         (bx, xs') = base xs
         (by, ys') = base ys
      in
-        (first (foldr (*) (bx / by)) . unzip) `fmap` sequence (zipWith convert xs' ys')
+        first (foldr (*) (bx / by)) . unzip <$> zipWithM convert xs' ys'
 
 ---------------------------------------------------------------------------------------------------
 class Dimensioned a where

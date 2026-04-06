@@ -1,5 +1,6 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TupleSections #-}
 
 module Lib.Server.Core where
 
@@ -9,7 +10,7 @@ import Data.Ord (comparing)
 
 import Control.Applicative ((<$>))
 import Control.Arrow (first, second, (&&&), (***))
-import Control.Concurrent.STM (TVar, atomically, newTVar, readTVar, writeTVar)
+import Control.Concurrent.STM (TVar, atomically, newTVar, newTVarIO, readTVar, readTVarIO, writeTVar)
 import Control.Monad (foldM, join, mplus, (>=>))
 import Control.Monad.Except (ExceptT, throwError)
 import Control.Monad.IO.Class (MonadIO)
@@ -108,10 +109,8 @@ eseguiContinuaT v fok fos = do
     fo' <- join . onNothing "il valore non è stato compreso" . fmap lift $ continuazione fo v
     return $ M.adjust (const fo') fok fos
 
-eseguiContinuaS v fo = do
-    fo' <- join . onNothing "il valore non è stato compreso" . fmap lift $ continuazione fo v
-    -- lift $ ricarica fo'
-    return fo'
+eseguiContinuaS v fo =
+    join . onNothing "il valore non è stato compreso" . fmap lift $ continuazione fo v
 
 eseguiRicaricaS fo = lift $ ricarica fo
 
@@ -129,9 +128,10 @@ data Server e b c = Server
     }
 
 mkTimeKey :: IO TimeKey
-mkTimeKey = TimeKey <$> (`mod` (10000000 :: Int)) <$> abs <$> randomIO
+mkTimeKey = TimeKey . (`mod` (10000000 :: Int)) . abs <$> randomIO
 
-mkFokKey = FormKey <$> (`mod` (10000000 :: Int)) <$> abs <$> randomIO
+mkFokKey :: IO FormKey
+mkFokKey = FormKey . (`mod` (10000000 :: Int)) . abs <$> randomIO
 
 correctS ::
     TVar (FormDB e b c) ->
@@ -141,8 +141,8 @@ correctS ::
     TimeKey ->
     ExceptT String IO (Form e b c)
 correctS dbe f fok enk nenk = do
-    db <- lift . atomically $ readTVar dbe
-    fo <- onNothing ("chiave temporale non trovata 1") $ query db (enk, fok)
+    db <- lift $ readTVarIO dbe
+    fo <- onNothing "chiave temporale non trovata 1" $ query db (enk, fok)
     fo' <- f fo
     lift . atomically $
         readTVar dbe
@@ -165,30 +165,30 @@ mkServer limit reload bs = do
     -- apriamo un database in memoria (String -> Either (Form e b c) (FormGroup e b c)) e assegnamo
     --  alla chiave "0" l'insieme iniziale
     -- il database è condiviso alle chiamate, quindi va in retry in caso di update contemporaneo
-    let dbg0 = restoreDB limit $ [(enk, fos0)]
+    let dbg0 = restoreDB limit [(enk, fos0)]
         db0 = restoreDB limit $ map (\(fok, fo) -> ((enk, fok), fo)) (M.toList fos0)
         fos0 = M.fromList $ map (FormKey . snd &&& fst) bs
         db1 = restoreDB limit $ M.toList fos0
         apertura = renderT dbg0 enk fos0
-    dbe <- atomically . newTVar $ db0
-    dbge <- atomically . newTVar $ dbg0
-    dbr <- atomically . newTVar $ db1
+    dbe <- newTVarIO db0
+    dbge <- newTVarIO dbg0
+    dbr <- newTVarIO db1
     let servizio (enk, fok, q) = do
             case q of
                 ClonaS -> do
-                    db <- lift . atomically $ readTVar dbe
+                    db <- lift $ readTVarIO dbe
                     fo <- onNothing "chiave temporale non trovata" $ query db (enk, fok)
-                    fok' <- lift $ mkFokKey
+                    fok' <- lift mkFokKey
                     lift $ atomically $ do
                         db <- readTVar dbe
                         writeTVar dbe $ set db ((enk, fok'), fo)
                     lift . atomically $ do
                         db <- readTVar dbr
                         writeTVar dbr $ set db (fok', fo)
-                    return . Right . return . first id $ renderS db enk fok' fo
+                    return . Right . return $ renderS db enk fok' fo
                 ResetS -> do
                     enk' <- lift mkTimeKey
-                    dbf0 <- lift . atomically $ readTVar dbr
+                    dbf0 <- lift $ readTVarIO dbr
                     lfo0 <- onNothing "chiave di form reset non trovata" $ query dbf0 fok
                     fo <- lift . ricarica $ lfo0
                     db <- lift . atomically $ do
@@ -197,10 +197,10 @@ mkServer limit reload bs = do
                             db'' = set db' ((enk', fok), fo)
                         writeTVar dbe db''
                         return db''
-                    return . Right . return . first id $ renderS db enk' fok fo
+                    return . Right . return $ renderS db enk' fok fo
                 RicaricaS -> do
                     fo <- correctS dbe eseguiRicaricaS fok enk enk
-                    db <- lift . atomically $ readTVar dbe
+                    db <- lift $ readTVarIO dbe
                     c <- lift reload
                     return . Right . return . first c $ renderS db enk fok fo
                 ContinuaS v -> do
@@ -214,18 +214,18 @@ mkServer limit reload bs = do
                         return db'
                     return . Right . return . first c $ renderS db enk' fok fo
                 ScaricaD -> do
-                    db <- lift . atomically $ readTVar dbe
-                    dbg <- lift . atomically $ readTVar dbge
+                    db <- lift $ readTVarIO dbe
+                    dbg <- lift $ readTVarIO dbge
                     fo <- onNothing "chiave temporale non trovata" (query db (enk, fok) `mplus` (query dbg enk >>= M.lookup fok))
                     Left <$> eseguiScarica fo
                 ContinuaT v -> do
-                    dbg <- lift . atomically $ readTVar dbge
+                    dbg <- lift $ readTVarIO dbge
                     fos <- onNothing "chiave temporale non trovata" $ query dbg enk
                     fos' <- eseguiContinuaT v fok fos
                     fos'' <-
                         M.fromList
                             <$> mapM
-                                (\(k, f) -> ((,) k) <$> lift (ricarica f))
+                                (\(k, f) -> (k,) <$> lift (ricarica f))
                                 (M.assocs fos')
                     let dbg' = set dbg (enk + 1, fos'')
                     lift . atomically $ writeTVar dbge dbg'

@@ -36,7 +36,7 @@ import Control.Concurrent (forkIO)
 import Control.Exception (SomeException, bracket, catch)
 import Control.Monad (forever, void)
 import Control.Monad.IO.Class (MonadIO, liftIO)
-import Control.Monad.Reader (MonadReader, ReaderT, ask, runReaderT)
+import Control.Monad.Reader (MonadReader, ReaderT, ask, asks, runReaderT)
 import Control.Monad.Trans.Class (MonadTrans (..))
 import Control.Monad.Writer (MonadWriter, WriterT, runWriterT, tell)
 import qualified Data.ByteString.Char8 as S
@@ -89,7 +89,7 @@ class (Monad m) => MonadCGI m where
     cgiAddHeader :: String -> String -> m ()
 
 instance (MonadIO m) => MonadCGI (CGIT m) where
-    cgiGet f = CGIT $ f <$> ask
+    cgiGet f = CGIT $ asks f
     cgiAddHeader name value = CGIT $ tell [Header name value]
 
 -- | Get a form input by name
@@ -151,7 +151,7 @@ splitOn delim str =
     let (before, after) = breakOn delim str
      in before : if null after then [] else splitOn delim (drop (length delim) after)
   where
-    breakOn d s = go [] s
+    breakOn d = go []
       where
         go acc [] = (reverse acc, [])
         go acc xs@(x : xs')

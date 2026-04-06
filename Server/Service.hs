@@ -4,7 +4,7 @@ module Server.Service where
 
 -- import Applicazioni.Aggiornamento (serverAggiornamento)
 import Applicazioni.Amministratore
-import Applicazioni.Persistenza (Change (GPatch), Persistenza (caricamentoBianco, queryUtente, readLogs, readStato, updateSignal), mkPersistenza)
+import Applicazioni.Persistenza (Change (GPatch), Persistence (whiteLoad, queryUser, readLogs, readState, updateSignal), mkPersistence)
 import Applicazioni.Reactivegas (Effetti, QS (..), bianco, loader, maxLevel, mkDichiarazioni, nuovoStato)
 import Applicazioni.Report (mkReporter)
 import Applicazioni.Sessione (Sessione (backup, readGruppo), mkSessione)
@@ -28,8 +28,8 @@ import UI.Server (applicazione)
 runGruppo lmov (dir, name, mr0, signal) = do
     putStrLn $ "** Inizio persistenza di \"" ++ name ++ "\""
     (pe, boot, cond) <-
-        mkPersistenza signal loader bianco (nuovoStato $ maybe [] return mr0) (fst . responsabili) (fst . unQS) dir
-    s <- readStato pe
+        mkPersistence signal loader bianco (nuovoStato $ maybe [] return mr0) (fst . responsabili) (fst . unQS) dir
+    s <- readState pe
     putStrLn $ "** Inizio report di \"" ++ name ++ "\""
     report <- mkReporter dir (dir </> "static" </> "report.html") lmov cond
     forkIO $ do
@@ -49,16 +49,16 @@ runGruppo lmov (dir, name, mr0, signal) = do
 
 main = do
     Argomenti dirs port lmov lsess lrem tokpass <- parseArgs
-    amm@(Amministratore acs _ _ _ _ query) <- mkAmministratore tokpass (runGruppo lmov) dirs
+    amm@(Administrator acs _ _ _ _ query) <- mkAdministrator tokpass (runGruppo lmov) dirs
 
     let newEnvironment signal ms = do
             se <-
                 mkSessione
-                    (mkDichiarazioni)
-                    (fmap (fmap caricamentoBianco) . query)
+                    mkDichiarazioni
+                    (fmap (fmap whiteLoad) . query)
                     maxLevel
                     (fmap (fmap updateSignal) . query)
-                    (fmap (fmap queryUtente) . query)
+                    (fmap (fmap queryUser) . query)
                     signal
                     ms
             acss <- acs

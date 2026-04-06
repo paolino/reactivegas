@@ -1,5 +1,3 @@
-{-# LANGUAGE ViewPatterns #-}
-
 module Lib.Server.CGI (cgiFromServer) where
 
 import Control.Applicative ((<$>))
@@ -35,10 +33,10 @@ readFKey = do
         _ -> throwError "campo fkey illeggibile"
 
 readValore :: ExceptT String (CGIT IO) Value
-readValore = fmap id <$> lift (getInput "valore") >>= onNothing "manca la risposta"
+readValore = lift (getInput "valore") >>= onNothing "manca la risposta"
 
 pagina :: [(Html, Int)] -> [Html]
-pagina xs = map (\(h, i) -> thediv ! [theclass ("boxes interazione dimensione" ++ show i)] << h) xs
+pagina = map (\(h, i) -> thediv ! [theclass ("boxes interazione dimensione" ++ show i)] << h)
 
 -- | eleva gli errori nella monade del server in quella di CGI
 liftServer :: ExceptT String IO a -> ExceptT String (CGIT IO) a

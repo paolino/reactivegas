@@ -1,7 +1,6 @@
 {-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
 
@@ -40,7 +39,7 @@ import Data.List ((\\))
 import Debug.Trace
 
 import Lib.Aspetti (ParteDi, see, (.<))
-import Lib.Assocs (assente, elimina, updateM, (?))
+import Lib.Assocs (absent, delete, updateM, (?))
 import Lib.Passo (Costruzione)
 import Lib.Prioriti (R (..))
 import Lib.Response (Response (..))
@@ -74,7 +73,7 @@ validante ::
 validante r f = conFallimento $ esistenzaResponsabile r >> f r
 
 -- | la lista di utenti
-data Anagrafe = Anagrafe [Utente] deriving (Show, Read, Eq)
+newtype Anagrafe = Anagrafe [Utente] deriving (Show, Read, Eq)
 
 utenti = (\(Anagrafe us) -> sortLower us) . see
 
@@ -92,7 +91,7 @@ priorityAnagrafe = R k
   where
     k (NuovoUtente _) = -40
     k (EliminazioneResponsabile _) = -38
-    k (ElezioneResponsabile _ _ _) = -39
+    k ElezioneResponsabile{} = -39
 
 priorityAnagrafeI = R k
   where
@@ -124,8 +123,7 @@ instance Read EsternoAnagrafico where
                 string ", "
                 c <- reads'
                 string ", "
-                s <- reads'
-                return $ ElezioneResponsabile u c s
+                ElezioneResponsabile u c <$> reads'
             di = do
                 string "richiesta di dimissione del responsabile "
                 EliminazioneResponsabile <$> phrase
@@ -153,7 +151,7 @@ esistenzaResponsabile :: (Responsabili `ParteDi` s, Anagrafe `ParteDi` s) => Ute
 esistenzaResponsabile u = do
     esistenzaUtente u
     Responsabili us _ <- osserva
-    fallimento (u `assente` us) $ "responsabile " ++ show u ++ " non eletto"
+    fallimento (u `absent` us) $ "responsabile " ++ show u ++ " non eletto"
 
 -- | la reazione agli eventi anagrafici
 reazioneAnagrafe ::
@@ -199,15 +197,15 @@ reazioneAnagrafe = soloEsterna reattoreAnagrafe'
         Responsabili us ls <- osserva
         fallimento (u `elem` map (fst . snd) ls) "revoca del responsabile già richiesta"
         (l, reaz, _) <- programmazioneAssenso ("revoca del responsabile " ++ u) r maggioranza (chiudibene u r) (chiudimale u r)
-        modifica $ \(Responsabili us ls) -> (Responsabili us ((l, (u, us ? (u, undefined))) : ls))
+        modifica $ \(Responsabili us ls) -> Responsabili us ((l, (u, us ? (u, undefined))) : ls)
         return (True, ([reaz], []))
       where
         chiudibene u r l = do
-            modifica $ \(Responsabili us ls) -> Responsabili (elimina u us) (elimina l ls)
+            modifica $ \(Responsabili us ls) -> Responsabili (delete u us) (delete l ls)
             loggamus $ "revocato il responsabile  " ++ u
             return ([], [EventoInterno $ EventoEliminazioneResponsabile u r])
         chiudimale u r l = do
-            modifica $ \(Responsabili us ls) -> Responsabili us (elimina l ls)
+            modifica $ \(Responsabili us ls) -> Responsabili us (delete l ls)
             loggamus $ "rinuncia alla revoca del responsabile " ++ u
             return nessunEffetto
 
@@ -218,14 +216,14 @@ reazioneAnagrafe = soloEsterna reattoreAnagrafe'
 -- | estrae la lista di costrResponsabili
 costrResponsabili :: (Monad m, ParteDi Responsabili s) => Supporto m s b [Responsabile]
 costrResponsabili = do
-    (rs, _) <- asks $ responsabili
+    (rs, _) <- asks responsabili
     when (null rs) $ throwError "nessun responsabile presente nel gruppo"
     return rs
 
 -- | estrae la lista di costrUtenti
 costrUtenti :: (Monad m, ParteDi Anagrafe s) => Supporto m s b [Utente]
 costrUtenti = do
-    rs <- asks $ utenti
+    rs <- asks utenti
     when (null rs) $ throwError "nessun utente presente nel gruppo"
     return rs
 
@@ -438,20 +436,19 @@ assensi = do
     when (null xs) $ throwError "nessuna questione aperta"
     return xs
 
-filtra u (Assensi ur ps ns) = not . elem u $ ps ++ ns
+filtra u (Assensi ur ps ns) = u `notElem` (ps ++ ns)
 filtra u (Permesso ur u') = u' == u
 assensiFiltrati k e = do
     SUtente mu <- asks see
     case mu of
         Just u -> do
             xs :: [(Indice, (String, Assensi))] <-
-                filter (k u . snd . snd)
-                    <$> asks elencoSottoStati
+                asks (filter (k u . snd . snd) . elencoSottoStati)
             when (null xs) . throwError $ e u
-            return $ map (fst . snd &&& (id *** fst)) $ xs
-        Nothing -> throwError $ "manca la selezione del responsabile autore"
+            return $ map (fst . snd &&& second fst) xs
+        Nothing -> throwError "manca la selezione del responsabile autore"
 
-data SUtente = SUtente (Maybe Utente)
+newtype SUtente = SUtente (Maybe Utente)
 
 -- | costrutore degli eventi di assenso
 costrEventiAssenso :: (Parser p EsternoAssenso, Monad m, Servizio Assensi `ParteDi` s, SUtente `ParteDi` s) => CostrAction m c (Dichiarazione p Singola) s
@@ -486,16 +483,16 @@ costrQueryAssenso s kp kn = [("questioni aperte", querySottoStati)]
                             ( \(i, s) ->
                                 ( show i
                                 , Response $
-                                    [("obiettivo", ResponseOne (fst s))]
-                                        ++ responseAssensi (snd s)
+                                    ("obiettivo", ResponseOne (fst s))
+                                        : responseAssensi (snd s)
                                 )
                             )
                             ys
 
 responseAssensi as@(Assensi u ps ns) =
     [("promotore", ResponseOne u)]
-        ++ (if null ns then [] else [("dissensi", ResponseMany $ map ResponseOne ns)])
-        ++ if null ps then [] else [("assensi", ResponseMany $ map ResponseOne ps)]
+        ++ [("dissensi", ResponseMany $ map ResponseOne ns) | not (null ns)]
+        ++ [("assensi", ResponseMany $ map ResponseOne ps) | not (null ps)]
 responseAssensi (Permesso u ut) = [("promotore", ResponseOne u), ("interrogato", ResponseOne ut)]
 
 priorityAssenso = R k

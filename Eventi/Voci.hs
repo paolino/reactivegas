@@ -6,7 +6,6 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE Rank2Types #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
@@ -52,7 +51,7 @@ import Eventi.Anagrafe (
     validante,
  )
 import Lib.Aspetti (ParteDi, see, (.<))
-import Lib.Assocs (update, upset, (?))
+import Lib.Assocs (update, set, (?))
 import qualified Lib.Euro as E
 import Lib.Prioriti (R (..))
 
@@ -85,8 +84,8 @@ data EventoVoci
 priorityEventoVoci = R k
   where
     k (CorreggiVoci _ _) = -40
-    k (CorreggiAcquisto _ _ _) = -39
-    k (CorreggiOrdine _ _ _ _) = -39
+    k CorreggiAcquisto{} = -39
+    k CorreggiOrdine{} = -39
 
 data StatoVoci = StatoVoci
     { voci :: [Voce]
@@ -137,12 +136,12 @@ reazioneVoci = Reazione (Nothing, reattoreVoci)
   where
     reattoreVoci (Right (first validante -> (wrap, CorreggiVoci nvs evs))) = wrap $ \r -> do
         modifica $ \(StatoVoci vs as os) -> StatoVoci (nvs ++ (vs \\ evs)) as os
-        loggamus $ "corretto l'insieme generale delle voci acquistabili "
+        loggamus "corretto l'insieme generale delle voci acquistabili "
         StatoVoci vs as os <- osserva
         return (True, nessunEffetto)
     reattoreVoci (Left (EventoAperturaImpegni u i s)) = conFallimento $ do
         modifica $ \(StatoVoci vs as os) -> StatoVoci vs ((i, (u, s, [])) : as) os
-        loggamus $ "aggiunto un nuovo acquisto al modulo ordini"
+        loggamus "aggiunto un nuovo acquisto al modulo ordini"
         return (True, nessunEffetto)
     reattoreVoci (Left (EventoChiusuraImpegni i)) = conFallimento $ do
         StatoVoci vs as os <- osserva
@@ -206,7 +205,7 @@ costrEventiVoci s kp kn =
         case r of
             Nothing -> throwError "acquisto inesistente"
             Just (u, s, vs') -> do
-                v <- scelte (map (loggaVoce &&& id) (vs')) $ ResponseOne $ "voce da togliere dall'acquisto " ++ s
+                v <- scelte (map (loggaVoce &&& id) vs') $ ResponseOne $ "voce da togliere dall'acquisto " ++ s
                 return . Composta $ [CorreggiAcquisto i [] [v]]
 
     elimaBene = runSupporto s kn kp $ do
@@ -227,8 +226,8 @@ costrEventiVoci s kp kn =
     correggiVoce' cs fs o k = do
         let c =
                 Response
-                    [ ("categorie", ResponseMany $ map ResponseOne $ cs)
-                    , ("filiera", ResponseMany $ map ResponseOne $ fs)
+                    [ ("categorie", ResponseMany $ map ResponseOne cs)
+                    , ("filiera", ResponseMany $ map ResponseOne fs)
                     , ("unità minima di acquisto", ResponseOne . render . singolare $ o)
                     ]
         join $
@@ -255,8 +254,8 @@ costrEventiVoci s kp kn =
     nuovaVoce cs fs co k = do
         let c =
                 Response
-                    [ ("categorie", ResponseMany $ map ResponseOne $ cs)
-                    , ("filiera", ResponseMany $ map ResponseOne $ fs)
+                    [ ("categorie", ResponseMany $ map ResponseOne cs)
+                    , ("filiera", ResponseMany $ map ResponseOne fs)
                     , ("unità minima di acquisto", ResponseOne $ maybe "nessuno" (render . singolare) co)
                     ]
         join $
@@ -292,8 +291,8 @@ mostraBeni s kp kn = runSupporto s kn kp $ do
     Voce cs fs o <- scelte (map (loggaVoce &&& id) vs) $ ResponseOne "scelta bene da mostrare"
     return $
         Response
-            [ ("categorie", ResponseMany $ map ResponseOne $ cs)
-            , ("filiera", ResponseMany $ map ResponseOne $ fs)
+            [ ("categorie", ResponseMany $ map ResponseOne cs)
+            , ("filiera", ResponseMany $ map ResponseOne fs)
             , ("unità minima di acquisto", ResponseOne . render . singolare $ o)
             ]
 mostraAcquisti i s kp kn = runSupporto s kn kp $ do
@@ -303,7 +302,7 @@ mostraAcquisti i s kp kn = runSupporto s kn kp $ do
         Just (u, s, vs) -> return (i, s, u, vs)
     Voce cs fs o <-
         scelte (map (loggaVoce &&& id) vs) $
-            Response $
+            Response
                 [ ("nome acquisto", ResponseOne s)
                 , ("riferimento acquisto", ResponseOne i)
                 , ("responsabile acquisto", ResponseOne u)
@@ -311,8 +310,8 @@ mostraAcquisti i s kp kn = runSupporto s kn kp $ do
                 ]
     return $
         Response
-            [ ("categorie", ResponseMany $ map ResponseOne $ cs)
-            , ("filiera", ResponseMany $ map ResponseOne $ fs)
+            [ ("categorie", ResponseMany $ map ResponseOne cs)
+            , ("filiera", ResponseMany $ map ResponseOne fs)
             , ("unità minima di acquisto", ResponseOne . render . singolare $ o)
             ]
 mostraOrdini i u s kp kn = runSupporto s kn kp $ do
@@ -326,8 +325,8 @@ mostraOrdini i u s kp kn = runSupporto s kn kp $ do
             Ordine cs fs o <- scelte (map (loggaOrdine &&& id) xs) $ ResponseOne $ "selezione ordine di " ++ u ++ " sull'acquisto " ++ s
             return $
                 Response
-                    [ ("categorie", ResponseMany $ map ResponseOne $ cs)
-                    , ("filiera", ResponseMany $ map ResponseOne $ fs)
+                    [ ("categorie", ResponseMany $ map ResponseOne cs)
+                    , ("filiera", ResponseMany $ map ResponseOne fs)
                     , ("quantità acquistata in denaro", ResponseOne . render . singolare $ o)
                     ]
 
@@ -339,8 +338,8 @@ costrQueryVoci s kp kn = [("beni inseribili negli acquisti", mostraBeni), ("acqu
         Voce cs fs o <- scelte (map (loggaVoce &&& id) vs) $ ResponseOne "scelta bene da mostrare"
         return $
             Response
-                [ ("categorie", ResponseMany $ map ResponseOne $ cs)
-                , ("filiera", ResponseMany $ map ResponseOne $ fs)
+                [ ("categorie", ResponseMany $ map ResponseOne cs)
+                , ("filiera", ResponseMany $ map ResponseOne fs)
                 , ("unità minima di acquisto", ResponseOne . render . singolare $ o)
                 ]
     mostraAcquisti = runSupporto s kn kp $ do
@@ -350,7 +349,7 @@ costrQueryVoci s kp kn = [("beni inseribili negli acquisti", mostraBeni), ("acqu
                 ResponseOne "selezione acquisto da mostrare"
         Voce cs fs o <-
             scelte (map (loggaVoce &&& id) vs) $
-                Response $
+                Response
                     [ ("nome acquisto", ResponseOne s)
                     , ("riferimento acquisto", ResponseOne i)
                     , ("responsabile acquisto", ResponseOne u)
@@ -358,8 +357,8 @@ costrQueryVoci s kp kn = [("beni inseribili negli acquisti", mostraBeni), ("acqu
                     ]
         return $
             Response
-                [ ("categorie", ResponseMany $ map ResponseOne $ cs)
-                , ("filiera", ResponseMany $ map ResponseOne $ fs)
+                [ ("categorie", ResponseMany $ map ResponseOne cs)
+                , ("filiera", ResponseMany $ map ResponseOne fs)
                 , ("unità minima di acquisto", ResponseOne . render . singolare $ o)
                 ]
     mostraOrdini = runSupporto s kn kp $ do
@@ -375,7 +374,7 @@ costrQueryVoci s kp kn = [("beni inseribili negli acquisti", mostraBeni), ("acqu
                 Ordine cs fs o <- scelte (map (loggaOrdine &&& id) xs) $ ResponseOne "selezione ordine da mostrare"
                 return $
                     Response
-                        [ ("categorie", ResponseMany $ map ResponseOne $ cs)
-                        , ("filiera", ResponseMany $ map ResponseOne $ fs)
+                        [ ("categorie", ResponseMany $ map ResponseOne cs)
+                        , ("filiera", ResponseMany $ map ResponseOne fs)
                         , ("quantità acquistata", ResponseOne . render . singolare $ o)
                         ]

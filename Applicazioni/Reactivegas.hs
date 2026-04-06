@@ -1,7 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverlappingInstances #-}
-{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
 
@@ -12,6 +11,7 @@ import Data.List (nubBy)
 
 import Control.Applicative ((<$>))
 import Control.Arrow (first, second, (***))
+import Control.Monad (zipWithM)
 import Control.Monad.Except (runExceptT)
 import Control.Monad.Reader (runReader)
 import Control.Monad.Trans (lift)
@@ -55,12 +55,12 @@ esing =
 
 mkDichiarazioni = parseDichiarazioni esing []
 
--- | il tipo dello stato accessibile
+-- | The accessible state type
 type TS' = TyAnagrafe (TyAccredito (TyImpegni (TyAcquisti Integer)))
 
 type TS = TS'
 
-{- | tipo dello stato con la serializzazione dei reattori
+{- | State type with reactor serialization
  type QS = (TS,[SNodo TS  Utente])
 -}
 newtype QS = QS {unQS :: (TS, [Nodo TS ParserConRead Utente])}
@@ -71,11 +71,11 @@ instance Show QS where
 instance Read QS where
     readsPrec t x = map (first (QS . second y)) $ readsPrec t x
       where
-        y nss = case sequence . map (uncurry deserializza) . zip nss $ reattori of
-            Nothing -> error $ "deserializzazione fallita"
+        y nss = case zipWithM deserializza nss reattori of
+            Nothing -> error "deserializzazione fallita"
             Just ns -> ns
 
--- | lista di prioritizzatori, definiscono un riordinamento tra gli eventidi una patch
+-- | List of prioritizers, defining a reordering of events within a patch
 priorita :: [Lib.Prioriti.R]
 priorita =
     [ priorityAnagrafe
@@ -87,13 +87,17 @@ priorita =
     , priorityEventoVoci
     ]
 
--- | lista di reattori. I reattori di base per gli eventi
+-- | List of reactors. The base reactors for events
 reattori :: [Reazione TS ParserConRead Utente]
 reattori = [reazioneLogger, reazioneAnagrafe, reazioneAccredito, reazioneAcquisto]
 
--- | creazione di un novo stato di tipo QS
+-- | Create a new state of type QS
 nuovoStato :: [Responsabile] -> QS
-nuovoStato rs = QS $ (bootAnagrafe rs . bootAccredito . bootImpegni . bootAcquisti $ 0, map (\r -> Nodo (Just r) []) reattori)
+nuovoStato rs =
+    QS
+        ( bootAnagrafe rs . bootAccredito . bootImpegni . bootAcquisti $ 0
+        , map (\r -> Nodo (Just r) []) reattori
+        )
 
 maxLevel = 100
 
@@ -113,14 +117,14 @@ caricamento'' l es (QS q) =
     let (q', ef) = (fst q == fst q) `seq` caricaEventi' priorita l es q
      in (QS q', ef)
 
--- | aggiornamento di gruppo
+-- | Group update loader
 loader :: QS -> [Esterno Utente] -> Either String (QS, Effetti)
-loader (qs@(QS (s, _))) es =
+loader qs@(QS (s, _)) es =
     flip runReader s . runExceptT $
         return . first (\(QS q) -> QS . first (seeset ((+) 1 :: Integer -> Integer)) $ q) $
             caricamento'' maxLevel es qs
 
--- | effettua un inserimento di eventi esterni nello stato, restituendo il nuovo. Stampa i logs
+-- | Performs an insertion of external events into the state, returning the new state. Prints logs
 bianco :: Int -> QS -> [Esterno Utente] -> (QS, Response)
 bianco l s es =
     let

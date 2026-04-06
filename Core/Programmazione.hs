@@ -4,117 +4,201 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TupleSections #-}
 
--- | monade di programmazione per le reazioni
-module Core.Programmazione where
+{- |
+Module      : Core.Programmazione
+Description : Reaction programming monad
+Copyright   : (c) Paolo Veronelli, 2025
+License     : BSD-3-Clause
 
-import Control.Applicative ((<$>))
+Provides the core monad for programming reactions to events.
+The monad tracks state changes, event context, and log messages.
+-}
+module Core.Programmazione
+    ( -- * Message types
+      Message (..)
+    , Fallimento (..)
+    , estrai
+    , estraiFallimenti
+    , lascia
+      -- * Insertion monad
+    , Inserzione (..)
+    , logInserimento
+    , runInserzione
+      -- * Event and reaction types
+    , EventoInterno (..)
+    , Effetti
+    , nessunEffetto
+    , EfReazione
+    , TyReazione
+    , Reazione (..)
+    , soloEsterna
+      -- * Event routing
+    , Deviatore (..)
+    , Accentratore
+    , provaDeviatore
+    , provaAccentratore
+    ) where
+
 import Control.Monad (msum)
-import Control.Monad.RWS (MonadReader, MonadState, MonadWriter, RWS, ask, runRWS, tell)
-import Data.Typeable
+import Control.Monad.RWS
+    ( MonadReader
+    , MonadState
+    , MonadWriter
+    , RWS
+    , ask
+    , runRWS
+    , tell
+    )
+import Data.Typeable (Typeable, cast, typeOf)
 
 import Core.Contesto (Contesto, Contestualizzato)
 import Core.Parsing (Parser, ParserConRead, parser, valore)
 import Core.Types (Interno)
 
+-- | Existential wrapper for log messages
 data Message = forall a. (Show a, Typeable a) => Message a
 
 instance Show Message where
     show (Message x) = show x
+
 instance Eq Message where
     x == y = show x == show y
 
-data Fallimento a = Fallimento a deriving (Typeable)
-instance (Show a) => Show (Fallimento a) where
-    show (Fallimento x) = "Fallimento:" ++ show x
+-- | Wrapper for failure messages
+newtype Fallimento a = Fallimento a
+    deriving (Typeable)
 
-estrai :: (Typeable a) => [Contestualizzato d Message] -> ([a], [Contestualizzato d Message])
+instance (Show a) => Show (Fallimento a) where
+    show (Fallimento x) = "Failure:" ++ show x
+
+-- | Extract messages of a specific type from contextualized messages
+estrai
+    :: (Typeable a)
+    => [Contestualizzato d Message]
+    -> ([a], [Contestualizzato d Message])
+    -- ^ (extracted messages, remaining messages)
 estrai [] = ([], [])
 estrai (cm@(_, Message x) : xs) =
-    let
-        (ms, rs) = estrai xs
-     in
-        case cast x of
+    let (ms, rs) = estrai xs
+    in  case cast x of
             Just z -> (z : ms, rs)
             Nothing -> (ms, cm : rs)
 
-estraiFallimenti :: (Typeable a) => [Contestualizzato d Message] -> ([Contestualizzato d a], [Contestualizzato d Message])
+-- | Extract failure messages with their context
+estraiFallimenti
+    :: (Typeable a)
+    => [Contestualizzato d Message]
+    -> ([Contestualizzato d a], [Contestualizzato d Message])
 estraiFallimenti [] = ([], [])
 estraiFallimenti (cm@(ctx, Message x) : xs) =
-    let
-        (ms, rs) = estraiFallimenti xs
-     in
-        case cast x of
+    let (ms, rs) = estraiFallimenti xs
+    in  case cast x of
             Just z -> ((ctx, z) : ms, rs)
             Nothing -> (ms, cm : rs)
 
-lascia :: (Typeable a) => a -> [Contestualizzato d Message] -> [Contestualizzato d Message]
-lascia u [] = []
+-- | Keep only messages of a specific type
+lascia
+    :: (Typeable a)
+    => a
+    -- ^ type witness
+    -> [Contestualizzato d Message]
+    -> [Contestualizzato d Message]
+lascia _ [] = []
 lascia u (cm@(_, Message x) : xs) =
-    let
-        rs = lascia u xs
-     in
-        case typeOf x == typeOf u of
-            True -> cm : rs
-            False -> rs
+    let rs = lascia u xs
+    in  if typeOf x == typeOf u then cm : rs else rs
 
-{- | la monade
-lo stato "s" dipende dall'applicazione , generalmente contiene l'effetto degli eventi
-"c" e' il parser scelto dall'applicazione che rimane libero ?
-"d" e' un parametro libero che accompagna gli eventi, ie. l'utente
-nella reader manteniamo le cause che conducono allo stato attuale, ovvero gli eventi che sono avvenuti, ma non possono essere dimenticati, in quanto il loro effetto non è ancora serializzabile
-nella writer, i log, indicizzati per insieme di eventi causanti
+{- | The insertion monad
+
+- State @s@: application-specific state containing event effects
+- @c@: parser chosen by the application
+- @d@: free parameter accompanying events (e.g., user identifier)
+- Reader: maintains the causes leading to current state (events that
+  occurred but whose effects aren't yet serializable)
+- Writer: logs indexed by their causing event set
 -}
-newtype Inserzione s (c :: * -> *) d b = Inserzione (RWS (Contesto d) [Contestualizzato d Message] s b)
+newtype Inserzione s (c :: * -> *) d b = Inserzione
+    (RWS (Contesto d) [Contestualizzato d Message] s b)
     deriving
-        (Applicative, Functor, Monad, MonadState s, MonadReader (Contesto d), MonadWriter [Contestualizzato d Message])
+        ( Applicative
+        , Functor
+        , Monad
+        , MonadState s
+        , MonadReader (Contesto d)
+        , MonadWriter [Contestualizzato d Message]
+        )
 
--- | una azione che associa un log all'insieme attuale di eventi causanti
-logInserimento :: (MonadReader (Contesto d) m, MonadWriter [Contestualizzato d t] m) => t -> m ()
-logInserimento x = ask >>= tell . return . flip (,) x
+-- | Log a message associated with the current event context
+logInserimento
+    :: (MonadReader (Contesto d) m, MonadWriter [Contestualizzato d t] m)
+    => t
+    -> m ()
+logInserimento x = ask >>= tell . return . (,x)
 
--- | il runner per un Inserzione
-runInserzione :: Inserzione s c d b -> Contesto d -> s -> (b, s, [Contestualizzato d Message])
+-- | Run an insertion computation
+runInserzione
+    :: Inserzione s c d b
+    -> Contesto d
+    -> s
+    -> (b, s, [Contestualizzato d Message])
 runInserzione (Inserzione f) = runRWS f
 
--- | Una scatola per gli eventi iterni, permette ai reattori di essere polimorfi negli eventi prodotti
+-- | Box for internal events, allows reactors to be polymorphic
+-- in the events they produce
 data EventoInterno = forall b. (Parser ParserConRead b) => EventoInterno b
 
-{- | gli effetti di un inserzione sono una lista di nuove reazioni e una lista di eventi interni, con la prima si aggiungono nuovi nodi all'albero delle reazioni
-la seconda sono eventi che vengono subitaneamente prodotti
--}
+-- | Effects of an insertion: new reactions and internal events
+-- The first list adds new nodes to the reaction tree
+-- The second list contains immediately produced events
 type Effetti s c d = ([Reazione s c d], [EventoInterno])
 
--- | inserzioni semplici che riducono il loro effetto nella modifica dello stato e/o nel log
-nessunEffetto = ([], []) :: Effetti s c d
+-- | Empty effects (no new reactions, no internal events)
+nessunEffetto :: Effetti s c d
+nessunEffetto = ([], [])
 
--- | Il risultato di una reazione è una azione nella monade di Inserzione, azione che restituisce Nothing in caso di dichiarato disinteresse , altrimenti un booleano che determina la persistenza della reazione e una serie di effetti da riferirsi come figli della razione stessa
+-- | Result of a reaction: action returning Nothing on disinterest,
+-- otherwise a boolean for reaction persistence and effects
 type EfReazione s c d = Inserzione s c d (Maybe (Bool, Effetti s c d))
 
-{- | Il tipo di una reazione parametrizzata su evento esterno e interno oltre che stato e parser
-una TyReazione è una funzione che o da un evento interno o da un evento esterno produce una possibile Inserzione che ha come risultato un booleano che determina la persistenza della reazione e una serie di effetti da riferirsi come figli della razione stessa
--}
-type TyReazione a b d s c = (Either b (d, a)) -> EfReazione s c d
+-- | Type of a reaction parameterized on external/internal events
+-- A TyReazione is a function from either an internal or external event
+-- to a possible insertion with persistence flag and child effects
+type TyReazione a b d s c = Either b (d, a) -> EfReazione s c d
 
--- | wrappa una semplice azione in pura esterna
-soloEsterna :: (Show d, Read d, Parser c a) => ((d, a) -> EfReazione s c d) -> Reazione s c d
-soloEsterna f = Reazione (Nothing, either (\() -> return Nothing) f)
+-- | Wrap a simple external-only action as a reaction
+--
+-- Uses @()@ as the internal event type since external-only reactions
+-- don't process internal events.
+soloEsterna
+    :: (Show d, Read d, Parser c a)
+    => ((d, a) -> EfReazione s c d)
+    -> Reazione s c d
+soloEsterna f =
+    Reazione
+        ( Nothing :: Maybe (Accentratore ())
+        , either (const $ return Nothing) f
+        )
 
--- | una scatola esistenziale intorno ad un evento  che racchiude la sua potenziale trasformazione in evento
+-- | Existential box for event transformation
 data Deviatore c b = forall a. (Parser c a) => Deviatore (a -> Maybe b)
 
--- | il tipo che descrive l'operazione di accentrare molti deviatori sullo stesso evento interno (perche forzo il parser ?)
+-- | Type for concentrating multiple deviators on the same internal event
 type Accentratore b = [Deviatore ParserConRead b]
 
--- | controlla se un deviatore accetta l'evento  e lo trasforma in un'altro
+-- | Check if a deviator accepts an event and transforms it
 provaDeviatore :: forall b c. Interno -> Deviatore c b -> Maybe b
-provaDeviatore x (Deviatore (f :: a -> Maybe b)) = (valore :: c a -> a) <$> parser x >>= f
+provaDeviatore x (Deviatore (f :: a -> Maybe b)) =
+    parser x >>= f . (valore :: c a -> a)
 
--- | prova se un accentatore ha successo (da capire)
+-- | Try if any concentrator succeeds
 provaAccentratore :: Interno -> [Deviatore c a] -> Maybe a
 provaAccentratore x = msum . map (provaDeviatore x)
 
-{- | una reazione incapsula un evento interno ed uno esterno che sono in alternativa grazie a TyReazione. Nel caso la reazione riguardi un evento interno
-"b" e' possibile fornire anche un accentratore per l'evento stesso
--}
-data Reazione s (c :: * -> *) d = forall a b. (Parser c a, Parser ParserConRead b) => Reazione (Maybe (Accentratore b), TyReazione a b d s c)
+-- | A reaction encapsulates internal and external events in alternation
+-- For internal events, an optional concentrator can be provided
+data Reazione s (c :: * -> *) d
+    = forall a b.
+        (Parser c a, Parser ParserConRead b) =>
+        Reazione (Maybe (Accentratore b), TyReazione a b d s c)
