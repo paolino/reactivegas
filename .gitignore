@@ -5,3 +5,6 @@ result-*
 *.sqlite
 *.db
 tarogas.tgz
+/gate.sh
+/.search-board/
+/.orch/
