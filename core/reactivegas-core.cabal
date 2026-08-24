@@ -17,8 +17,11 @@ homepage:      http://wiki.github.com/paolino/reactivegas
 bug-reports:   http://wiki.github.com/paolino/reactivegas/issues
 
 library
-  exposed-modules:  Reactivegas.Core
-                    Reactivegas.Core.Blake3
+  exposed-modules:
+    Reactivegas.Core
+    Reactivegas.Core.Blake3
+    Reactivegas.Core.Ed25519
+
   hs-source-dirs:   src
   default-language: Haskell2010
   ghc-options:
@@ -27,16 +30,22 @@ library
     -Wdeferred-out-of-scope-variables -Wpartial-type-signatures
     -Wredundant-constraints -O0
 
-  build-depends:    base
-                  , array
-                  , bytestring
+  build-depends:
+    , array
+    , base
+    , bytestring
+    , crypton
+    , memory
 
 test-suite core-tests
   type:             exitcode-stdio-1.0
   main-is:          Main.hs
   hs-source-dirs:   test
-  other-modules:    Blake3Spec
-                    Hex
+  other-modules:
+    Blake3Spec
+    Ed25519Spec
+    Hex
+
   default-language: Haskell2010
   ghc-options:
     -Wall -Werror -Wunused-imports -Wunused-packages -Wname-shadowing
