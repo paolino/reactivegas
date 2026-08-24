@@ -53,6 +53,12 @@ build:
     set -euo pipefail
     cabal build all
 
+# Run reactivegas-core test suite
+unit:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cabal test core-tests
+
 # Full CI pipeline
 ci:
     #!/usr/bin/env bash

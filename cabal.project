@@ -1,4 +1,4 @@
-packages: ./*.cabal
+packages: ./*.cabal core/*.cabal
 
 index-state: 2025-01-01T00:00:00Z
 
