@@ -10,9 +10,9 @@ Pure, IO-free kernel of the modernized reactivegas architecture:
 canonical event envelopes, Ed25519 / BLAKE3 primitives and state
 reduction. This package must never depend on server IO.
 -}
-module Reactivegas.Core
-    ( coreVersion
-    ) where
+module Reactivegas.Core (
+    coreVersion,
+) where
 
 -- | Version of the core event-format contract.
 coreVersion :: String

@@ -1,60 +1,43 @@
-cabal-version:  3.0
-name:           reactivegas-core
-version:        0.1.0.0
-license:        BSD3
-license-file:   LICENSE
-maintainer:     Paolo Veronelli <paolo.veronelli@gmail.com>
-author:         Paolo Veronelli
-stability:      experimental
-category:       social, p2p, cooperative
-synopsis:       Pure domain core for reactivegas events
+cabal-version: 3.0
+name:          reactivegas-core
+version:       0.1.0.0
+license:       BSD-3-Clause
+license-file:  LICENSE
+maintainer:    Paolo Veronelli <paolo.veronelli@gmail.com>
+author:        Paolo Veronelli
+stability:     experimental
+category:      social, p2p, cooperative
+synopsis:      Pure domain core for reactivegas events
 description:
-    Pure, IO-free kernel of the modernized reactivegas architecture:
-    canonical event envelopes, Ed25519 and BLAKE3 primitives and state
-    reduction. No server IO is allowed in this package.
-homepage:       http://wiki.github.com/paolino/reactivegas
-bug-reports:    http://wiki.github.com/paolino/reactivegas/issues
+  Pure, IO-free kernel of the modernized reactivegas architecture:
+  canonical event envelopes, Ed25519 and BLAKE3 primitives and state
+  reduction. No server IO is allowed in this package.
+
+homepage:      http://wiki.github.com/paolino/reactivegas
+bug-reports:   http://wiki.github.com/paolino/reactivegas/issues
 
 library
-    exposed-modules:
-        Reactivegas.Core
-    hs-source-dirs:
-        src
-    default-language:
-        Haskell2010
-    ghc-options:
-        -Wall
-        -Werror
-        -Wunused-imports
-        -Wunused-packages
-        -Wmissing-export-lists
-        -Wname-shadowing
-        -Wdeferred-out-of-scope-variables
-        -Wpartial-type-signatures
-        -Wredundant-constraints
-        -O0
-    build-depends:
-        base
+  exposed-modules:  Reactivegas.Core
+  hs-source-dirs:   src
+  default-language: Haskell2010
+  ghc-options:
+    -Wall -Werror -Wunused-imports -Wunused-packages
+    -Wmissing-export-lists -Wname-shadowing
+    -Wdeferred-out-of-scope-variables -Wpartial-type-signatures
+    -Wredundant-constraints -O0
+
+  build-depends:    base
 
 test-suite core-tests
-    type:
-        exitcode-stdio-1.0
-    main-is:
-        Main.hs
-    hs-source-dirs:
-        test
-    default-language:
-        Haskell2010
-    ghc-options:
-        -Wall
-        -Werror
-        -Wunused-imports
-        -Wunused-packages
-        -Wname-shadowing
-        -Wdeferred-out-of-scope-variables
-        -O0
-        -threaded
-    build-depends:
-        base
-      , hspec
-      , reactivegas-core
+  type:             exitcode-stdio-1.0
+  main-is:          Main.hs
+  hs-source-dirs:   test
+  default-language: Haskell2010
+  ghc-options:
+    -Wall -Werror -Wunused-imports -Wunused-packages -Wname-shadowing
+    -Wdeferred-out-of-scope-variables -O0 -threaded
+
+  build-depends:
+    , base
+    , hspec
+    , reactivegas-core
