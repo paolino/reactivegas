@@ -7,6 +7,7 @@ module Main (
 import Blake3Spec qualified
 import Ed25519Spec qualified
 import EnvelopeSpec qualified
+import EnvelopeVectorSpec qualified
 import Reactivegas.Core qualified as Core
 import Test.Hspec (describe, hspec, it)
 import VerifySpec qualified
@@ -21,3 +22,4 @@ main = hspec $ do
     describe "Ed25519" Ed25519Spec.spec
     describe "Envelope" EnvelopeSpec.spec
     describe "Verify" VerifySpec.spec
+    describe "Vectors" EnvelopeVectorSpec.spec
