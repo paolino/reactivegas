@@ -1,5 +1,11 @@
 # Reactivegas
 
+> **⚠️ Status: dead code.** This implementation is retired: no further fixes
+> or features will land here. Reactivegas is being rebuilt on the
+> [kelgroups](https://github.com/paolino/kelgroups) KERI substrate — follow
+> milestone [Reactivegas on kelgroups](https://github.com/paolino/reactivegas/milestone/2)
+> and epic [#43](https://github.com/paolino/reactivegas/issues/43).
+
 An open-source system for managing the economic activities of solidarity purchasing groups (GAS - Gruppo di Acquisto Solidale).
 
 ## Overview

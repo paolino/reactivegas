@@ -1,5 +1,11 @@
 # Reactivegas
 
+> **⚠️ Stato: implementazione ritirata.** Nessuna correzione o funzionalità
+> verrà più applicata a questo codice. Reactivegas viene ricostruito sul
+> substrato KERI [kelgroups](https://github.com/paolino/kelgroups) — vedi la
+> milestone [Reactivegas on kelgroups](https://github.com/paolino/reactivegas/milestone/2)
+> e l'epica [#43](https://github.com/paolino/reactivegas/issues/43).
+
 Un sistema open-source per la gestione delle attività economiche dei gruppi di acquisto solidale (GAS).
 
 ## Panoramica
