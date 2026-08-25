@@ -62,7 +62,7 @@ newtype GroupId = GroupId {unGroupId :: ByteString}
 
 -- | Self-sovereign member identity: BLAKE3-256 of its public key.
 newtype MemberId = MemberId {unMemberId :: ByteString}
-    deriving (Eq, Show)
+    deriving (Eq, Ord, Show)
 
 newtype EventId = EventId {unEventId :: ByteString}
     deriving (Eq, Ord, Show)

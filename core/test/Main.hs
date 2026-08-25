@@ -9,6 +9,8 @@ import Ed25519Spec qualified
 import EnvelopeSpec qualified
 import EnvelopeVectorSpec qualified
 import Reactivegas.Core qualified as Core
+import ReduceSpec qualified
+import ReduceVectorSpec qualified
 import Test.Hspec (describe, hspec, it)
 import VerifySpec qualified
 
@@ -23,3 +25,5 @@ main = hspec $ do
     describe "Envelope" EnvelopeSpec.spec
     describe "Verify" VerifySpec.spec
     describe "Vectors" EnvelopeVectorSpec.spec
+    describe "Reduce" ReduceSpec.spec
+    describe "Reducer vectors" ReduceVectorSpec.spec

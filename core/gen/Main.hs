@@ -1,10 +1,10 @@
 {-# LANGUAGE ImportQualifiedPost #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-{- | Deterministic generator for @vectors/envelope.json@, the
-cross-language golden corpus shared with the PureScript frontend.
-Every input is a compile-time constant; reruns must produce
-byte-identical JSON.
+{- | Deterministic generator for @vectors/envelope.json@ (the
+cross-language envelope corpus) and @vectors/reducer.json@ (golden
+reducer fixtures). Every input is a compile-time constant; reruns
+must produce byte-identical JSON.
 -}
 module Main (main) where
 
@@ -20,6 +20,9 @@ import System.FilePath (takeDirectory, (</>))
 import Reactivegas.Core.Blake3 (hash256)
 import Reactivegas.Core.Ed25519
 import Reactivegas.Core.Envelope
+import Reactivegas.Core.Payload
+import Reactivegas.Core.Projection
+import Reactivegas.Core.Reduce
 
 newtype Hex = Hex ByteString
 
@@ -151,7 +154,133 @@ main = do
                 , "cases" Aeson..= map Aeson.toJSON [g1, g2, g3, g4]
                 ]
     BSL.writeFile (root </> "vectors" </> "envelope.json") (Aeson.encode doc)
-    putStrLn "wrote vectors/envelope.json"
+    BSL.writeFile (root </> "vectors" </> "reducer.json") (Aeson.encode reducerDoc)
+    putStrLn "wrote vectors/envelope.json and vectors/reducer.json"
+
+-- Reducer fixtures -----------------------------------------------------
+
+seedC :: ByteString
+seedC = BS.replicate 32 0x33
+
+skOf :: ByteString -> SecretKey
+skOf seed = either error id (newSecretKey seed)
+
+authorOf :: ByteString -> MemberId
+authorOf seed = MemberId (hash256 (publicKeyBytes (skOf seed)))
+
+cidN :: Int -> CampaignId
+cidN n = CampaignId (BS.pack [0xC0, fromIntegral n])
+
+kidN :: Int -> CommitmentId
+kidN n = CommitmentId (BS.pack [0xB0, fromIntegral n])
+
+midN :: Int -> MovementId
+midN n = MovementId (BS.pack [0xE0, fromIntegral n])
+
+pay :: ByteString -> Payload -> Envelope
+pay seed pl =
+    either error id (sealEnvelope sk header (encodePayload pl))
+  where
+    sk = skOf seed
+    header =
+        Header
+            { headerGroup = GroupId group
+            , headerAuthor = authorOf seed
+            , headerLamport = 0
+            , headerParents = []
+            , headerTs = 1724500001000
+            , headerKind = payloadKind pl
+            }
+
+data StepJson = StepJson
+    { sjEnvelope :: Envelope
+    , sjReject :: Maybe Reject
+    , sjProjection :: Projection
+    }
+
+instance Aeson.ToJSON StepJson where
+    toJSON (StepJson env rej proj) =
+        Aeson.object
+            [ "envelope" Aeson..= Hex (encodeEnvelope env)
+            , "reject" Aeson..= fmap show rej
+            , "projection" Aeson..= proj
+            ]
+
+data CaseJson = CaseJson
+    { ccName :: String
+    , ccSteps :: [StepJson]
+    }
+
+instance Aeson.ToJSON CaseJson where
+    toJSON (CaseJson name steps) =
+        Aeson.object ["name" Aeson..= name, "steps" Aeson..= map Aeson.toJSON steps]
+
+{- | Reduce the fixed scenario, recording every step's envelope,
+outcome and post-state. The generator is authoritative: it runs the
+real reducer, so regenerating after an intentional semantic change
+refreshes the goldens in lockstep.
+-}
+reduceCase :: String -> [Envelope] -> CaseJson
+reduceCase name envs =
+    CaseJson name (reverse (go emptyProjection envs []))
+  where
+    go _ [] acc = acc
+    go p (e : es) acc = case step p e of
+        Left r -> go p es (StepJson e (Just r) p : acc)
+        Right p' -> go p' es (StepJson e Nothing p' : acc)
+
+lifecycleEnvs :: [Envelope]
+lifecycleEnvs =
+    [ pay seedA (MemberAdmitted (authorOf seedA))
+    , pay seedA (MemberAdmitted (authorOf seedB))
+    , pay seedA (RoleAssigned (authorOf seedB) RoleTreasurer)
+    , pay seedA (CampaignOpened (cidN 1))
+    , pay seedA (CampaignCatalogSet (cidN 1) "catalog-root-v1")
+    , pay seedB (CommitmentProposed (cidN 1) (kidN 1) (EuroCent 50000))
+    , pay seedA (CommitmentAccepted (cidN 1) (kidN 1))
+    , pay seedA (CampaignClosedForOrders (cidN 1))
+    , pay seedA (OrderAllocated (cidN 1) (authorOf seedB) (EuroCent 50000))
+    , pay seedA (CampaignFinalized (cidN 1))
+    , pay seedB (CreditIssued (midN 1) (authorOf seedB) (EuroCent 50000))
+    , pay seedB (DebitIssued (midN 2) (authorOf seedB) (EuroCent 50000))
+    ]
+
+{- | Negative steps interleaved with the valid prefix that keeps the
+projection reachable; every negative step must be rejected and leaves
+the projection untouched.
+-}
+rejectionEnvs :: [Envelope]
+rejectionEnvs =
+    [ pay seedA (MemberAdmitted (authorOf seedA))
+    , pay seedA (MemberAdmitted (authorOf seedB))
+    , -- admission by a non-referente
+      pay seedB (MemberAdmitted (authorOf seedC))
+    , pay seedA (CampaignOpened (cidN 1))
+    , -- commitment while still collecting the catalog
+      pay seedB (CommitmentProposed (cidN 1) (kidN 8) (EuroCent 100))
+    , pay seedA (CampaignCatalogSet (cidN 1) "catalog-root-v1")
+    , -- unknown signer proposes
+      pay seedC (CommitmentProposed (cidN 1) (kidN 7) (EuroCent 100))
+    , -- allocation before the order phase closes
+      pay seedA (OrderAllocated (cidN 1) (authorOf seedB) (EuroCent 100))
+    , -- treasurer role missing for balance movements
+      pay seedB (CreditIssued (midN 1) (authorOf seedB) (EuroCent 100))
+    , -- closure by a non-referente
+      pay seedB (CampaignClosedForOrders (cidN 1))
+    ]
+
+reducerCases :: [CaseJson]
+reducerCases =
+    [ reduceCase "order-lifecycle" lifecycleEnvs
+    , reduceCase "rejections" rejectionEnvs
+    ]
+
+reducerDoc :: Aeson.Value
+reducerDoc =
+    Aeson.object
+        [ "version" Aeson..= (1 :: Int)
+        , "cases" Aeson..= map Aeson.toJSON reducerCases
+        ]
 
 locateRoot :: IO FilePath
 locateRoot = getCurrentDirectory >>= go

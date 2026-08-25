@@ -22,6 +22,9 @@ library
     Reactivegas.Core.Blake3
     Reactivegas.Core.Ed25519
     Reactivegas.Core.Envelope
+    Reactivegas.Core.Payload
+    Reactivegas.Core.Projection
+    Reactivegas.Core.Reduce
     Reactivegas.Core.Verify
 
   hs-source-dirs:   src
@@ -33,6 +36,7 @@ library
     -Wredundant-constraints -O0
 
   build-depends:
+    , aeson
     , array
     , base
     , bytestring
@@ -40,6 +44,7 @@ library
     , containers
     , crypton
     , memory
+    , text
 
 test-suite core-tests
   type:             exitcode-stdio-1.0
@@ -51,6 +56,8 @@ test-suite core-tests
     EnvelopeSpec
     EnvelopeVectorSpec
     Hex
+    ReduceSpec
+    ReduceVectorSpec
     VerifySpec
 
   default-language: Haskell2010
@@ -62,6 +69,7 @@ test-suite core-tests
     , aeson
     , base
     , bytestring
+    , containers
     , directory
     , filepath
     , hspec
