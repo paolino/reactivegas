@@ -30,6 +30,7 @@ module Reactivegas.Core.Reduce (
 ) where
 
 import Data.ByteString (ByteString)
+import Data.Either (fromRight)
 import Data.Foldable (foldl')
 import Data.Map.Strict qualified as Map
 import Data.Maybe (fromMaybe)
@@ -113,16 +114,17 @@ applyEvent proj author p = case p of
     RoleRevoked t r -> assignRole proj author t r Set.delete
     -- Governance ----------------------------------------------------
     ProposalOpened i ->
-        if Map.member i votes
-            then Left (DuplicateProposal i)
-            else
-                Right proj{projGovernance = gov{governanceVotes = Map.insert i mempty votes}}
-      where
-        votes = governanceVotes (projGovernance proj)
+        let gov = projGovernance proj
+            votes = governanceVotes gov
+         in if Map.member i votes
+                then Left (DuplicateProposal i)
+                else
+                    Right proj{projGovernance = gov{governanceVotes = Map.insert i mempty votes}}
     BallotCast i c -> castBallot proj author i c
     QuorumCertified i -> certifyProposal proj author i
     -- Campaigns -----------------------------------------------------
-    CampaignOpened cid ->
+    CampaignOpened cid -> do
+        requireReferente proj author
         if Map.member cid (projCampaigns proj)
             then Left (DuplicateCampaign cid)
             else
@@ -132,6 +134,7 @@ applyEvent proj author p = case p of
                             Map.insert cid emptyCampaignState (projCampaigns proj)
                         }
     CampaignCatalogSet cid root -> do
+        requireReferente proj author
         c <- requirePhase proj cid CollectingCatalog
         Right $
             bumpCampaign proj cid $
@@ -140,9 +143,11 @@ applyEvent proj author p = case p of
                     , campaignCatalogRoot = Just root
                     }
     CampaignClosedForOrders cid -> do
+        requireReferente proj author
         c <- requirePhase proj cid OpenForOrders
         Right (bumpCampaign proj cid c{campaignPhase = ClosedForOrders})
     CampaignFinalized cid -> do
+        requireReferente proj author
         c <- requirePhase proj cid ClosedForOrders
         let allocated =
                 EuroCent (sum (map unEuroCent (Map.elems (campaignAllocations c))))
@@ -151,6 +156,7 @@ applyEvent proj author p = case p of
             then Left (AllocationMismatch allocated accepted)
             else Right (bumpCampaign proj cid c{campaignPhase = Finalized})
     CampaignAborted cid -> do
+        requireReferente proj author
         c <- requireCampaign proj cid
         if campaignPhase c `elem` [Finalized, Aborted]
             then Left (WrongPhase cid (campaignPhase c))
@@ -177,8 +183,8 @@ applyEvent proj author p = case p of
                         }
     CommitmentAccepted cid kid -> do
         requireReferente proj author
-        _ <- requirePhase proj cid OpenForOrders
         k <- requireCommitment proj cid kid
+        _ <- requirePhase proj cid OpenForOrders
         if commitmentStatus k == AcceptedCommitment
             then Right proj
             else
@@ -214,25 +220,23 @@ applyEvent proj author p = case p of
                     }
     -- Balances ------------------------------------------------------
     CreditIssued mid target cents ->
-        movement proj author mid target (Just cents) $ \p ->
-            moveBalance p target cents
+        movement proj author mid target (Just cents) $ \p1 ->
+            Right (moveBalance p1 target cents)
     DebitIssued mid target cents ->
-        movement proj author mid target (Just cents) $ \pr ->
-            moveBalance pr target (negateEuro cents)
+        movement proj author mid target (Just cents) $ \p2 ->
+            Right (moveBalance p2 target (negateEuro cents))
     SettlementAgreed mid target cents ->
-        movement proj author mid target Nothing $ \pr ->
+        movement proj author mid target Nothing $ \p3 ->
             if unEuroCent cents == 0
                 then Left ZeroSettlement
-                else Right (moveBalance pr target cents)
+                else Right (moveBalance p3 target cents)
     TreasuryTransferred mid cents ->
-        movement proj author mid target' (Just cents) $ \pr ->
+        movement proj author mid author (Just cents) $ \p4 ->
             Right
-                pr
-                    { projTreasury = subEuro (projTreasury pr) cents
-                    , projReserve = addEuro (projReserve pr) cents
+                p4
+                    { projTreasury = subEuro (projTreasury p4) cents
+                    , projReserve = addEuro (projReserve p4) cents
                     }
-      where
-        target' = author
     -- Catalog -------------------------------------------------------
     CatalogUpserted pid name price -> do
         requireCatalogEditor proj author
@@ -249,17 +253,18 @@ applyEvent proj author p = case p of
                     proj{projCatalog = CatalogState (Map.delete pid (catalogItems (projCatalog proj)))}
 
 -- Shared pipeline for balance-affecting payloads.
-movement
-    :: Projection
-    -> MemberId
-    -> MovementId
-    -> MemberId
-    -- ^ Target member whose existence and activity are required;
-    -- pass the acting treasurer for treasury-only transfers.
-    -> Maybe EuroCent
-    -- ^ Positive-only amounts carry 'Just'.
-    -> (Projection -> Either Reject Projection)
-    -> Either Reject Projection
+movement ::
+    Projection ->
+    MemberId ->
+    MovementId ->
+    {- | Target member whose existence and activity are required;
+    pass the acting treasurer for treasury-only transfers.
+    -}
+    MemberId ->
+    -- | Positive-only amounts carry 'Just'.
+    Maybe EuroCent ->
+    (Projection -> Either Reject Projection) ->
+    Either Reject Projection
 movement proj author mid target amountLimit apply = do
     requireTreasurer proj author
     _ <- requireActiveMember proj target
@@ -269,14 +274,26 @@ movement proj author mid target amountLimit apply = do
         else apply proj{projMovements = Set.insert mid (projMovements proj)}
 
 admitMember :: Projection -> MemberId -> MemberId -> Either Reject Projection
-admitMember proj author t = do
-    requireReferente proj author
-    case Map.lookup t (projMembers proj) of
-        Just m
-            | memberStatus m == ActiveMember -> Left (DuplicateMember t)
-            -- Re-admission reinstates a suspended member, roles intact.
-            | otherwise -> Right (adjustMember proj t (\st -> st{memberStatus = ActiveMember}))
-        Nothing -> Right (insertMember proj t emptyMemberState)
+admitMember proj author t
+    -- Bootstrap: the first member admits itself and holds the referente role.
+    | Map.null (projMembers proj) =
+        if t == author
+            then
+                Right $
+                    insertMember
+                        proj
+                        t
+                        emptyMemberState{memberRoles = Set.singleton RoleReferente}
+            else Left SelfAdmissionRequired
+    | otherwise = do
+        requireReferente proj author
+        case Map.lookup t (projMembers proj) of
+            Just m
+                | memberStatus m == ActiveMember -> Left (DuplicateMember t)
+                -- Re-admission reinstates a suspended member, roles intact.
+                | otherwise ->
+                    Right (adjustMember proj t (\st -> st{memberStatus = ActiveMember}))
+            Nothing -> Right (insertMember proj t emptyMemberState)
 
 suspendMember :: Projection -> MemberId -> MemberId -> Either Reject Projection
 suspendMember proj author t = do
@@ -286,13 +303,13 @@ suspendMember proj author t = do
         then Left (ProtectedMember t)
         else Right (adjustMember proj t (\st -> st{memberStatus = SuspendedMember}))
 
-assignRole
-    :: Projection
-    -> MemberId
-    -> MemberId
-    -> Role
-    -> (Role -> Set.Set Role -> Set.Set Role)
-    -> Either Reject Projection
+assignRole ::
+    Projection ->
+    MemberId ->
+    MemberId ->
+    Role ->
+    (Role -> Set.Set Role -> Set.Set Role) ->
+    Either Reject Projection
 assignRole proj author target role update = do
     requireReferente proj author
     guardAssignableRole role
@@ -301,8 +318,8 @@ assignRole proj author target role update = do
   where
     bump st = st{memberRoles = update role (memberRoles st)}
 
-castBallot
-    :: Projection -> MemberId -> ProposalId -> Choice -> Either Reject Projection
+castBallot ::
+    Projection -> MemberId -> ProposalId -> Choice -> Either Reject Projection
 castBallot proj voter pid choice = do
     _ <- openVotes proj pid
     let perProposal = governanceVotes (projGovernance proj)
@@ -406,8 +423,8 @@ requirePhase proj cid want = do
 bumpCampaign :: Projection -> CampaignId -> CampaignState -> Projection
 bumpCampaign proj cid c = proj{projCampaigns = Map.insert cid c (projCampaigns proj)}
 
-requireCommitment
-    :: Projection -> CampaignId -> CommitmentId -> Either Reject CommitmentState
+requireCommitment ::
+    Projection -> CampaignId -> CommitmentId -> Either Reject CommitmentState
 requireCommitment proj cid kid = do
     k <-
         maybe (Left (UnknownCommitment kid)) Right (Map.lookup kid (projCommitments proj))
@@ -444,4 +461,4 @@ moveBalance proj target d =
 foldLog :: Projection -> [Envelope] -> Projection
 foldLog start = foldl' advance start
   where
-    advance p e = either (const p) id (step p e)
+    advance p e = fromRight p (step p e)

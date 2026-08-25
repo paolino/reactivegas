@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE ImportQualifiedPost #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 {- |
 Module      : Reactivegas.Core.Projection
@@ -15,24 +16,29 @@ balance movement nets to zero against treasury or reserve, so
 'ledgerTotal' is a permanent conservation probe: it must be zero for
 any projection reachable through 'Reactivegas.Core.Reduce.step'.
 The 'ToJSON' rendering is part of the cross-language fixture contract
-consumed by @vectors/reducer.json@.
+consumed by @vectors/reducer.json@; this module intentionally owns
+every JSON instance of that contract in one place, so some are
+orphaned by design.
 -}
 module Reactivegas.Core.Projection (
     -- * Members
     MemberStatus (..),
     MemberState (..),
     emptyMemberState,
+
     -- * Campaigns and commitments
     Phase (..),
     CommitmentStatus (..),
     CommitmentState (..),
     CampaignState (..),
     emptyCampaignState,
+
     -- * Accounts, catalog, governance
     AccountState (..),
     CatalogItem (..),
     CatalogState (..),
     GovernanceState (..),
+
     -- * Whole projection
     Projection (..),
     emptyProjection,
@@ -43,10 +49,13 @@ module Reactivegas.Core.Projection (
 
 import Data.Aeson (ToJSON (..), ToJSONKey (..), ToJSONKeyFunction (..), Value (..))
 import Data.Aeson qualified as Aeson
+import Data.Aeson.Encoding qualified as Aeson.Enc
+import Data.Aeson.Key qualified as Key
 import Data.ByteArray.Encoding (Base (..), convertToBase)
 import Data.ByteString (ByteString)
 import Data.Int (Int64)
 import Data.Map.Strict (Map)
+import Data.Map.Strict qualified as Map
 import Data.Set (Set)
 import Data.Text (Text)
 import Data.Text.Encoding qualified as TE
@@ -196,17 +205,23 @@ ledgerTotal p =
 instance ToJSONKey MemberId where
     toJSONKey = hexKey unMemberId
 
+instance ToJSONKey CampaignId where
+    toJSONKey = hexKey unCampaignId
+
+instance ToJSONKey CommitmentId where
+    toJSONKey = hexKey unCommitmentId
+
 instance ToJSONKey ProductId where
     toJSONKey = hexKey unProductId
 
 instance ToJSONKey ProposalId where
     toJSONKey = hexKey unProposalId
 
-hexKey :: (a -> ByteString) -> ToJSONKeyFunction
+hexKey :: (a -> ByteString) -> ToJSONKeyFunction a
 hexKey extract =
     ToJSONKeyText
-        (TE.decodeUtf8 . hexEncodeBytes . extract)
-        (Aeson.toEncoding . Aeson.String . TE.decodeUtf8 . hexEncodeBytes . extract)
+        (Key.fromText . TE.decodeUtf8 . hexEncodeBytes . extract)
+        (Aeson.Enc.text . TE.decodeUtf8 . hexEncodeBytes . extract)
 
 -- | Deterministic lowercase hex via the memory package's Base16 codec.
 hexEncodeBytes :: ByteString -> ByteString
@@ -232,6 +247,10 @@ instance ToJSON MemberId where
 
 idJson :: (a -> ByteString) -> a -> Value
 idJson extract = Aeson.String . TE.decodeUtf8 . hexEncodeBytes . extract
+
+-- Local rendering of raw bytes (catalog roots) as hex.
+instance ToJSON ByteString where
+    toJSON = Aeson.String . TE.decodeUtf8 . hexEncodeBytes
 
 instance ToJSON EuroCent where
     toJSON (EuroCent c) = Aeson.toJSON c
