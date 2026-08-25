@@ -13,7 +13,7 @@ module ReduceSpec (
 
 import Data.ByteString (ByteString)
 import Data.ByteString qualified as BS
-import Data.Either (isLeft)
+import Data.Either (isLeft, lefts)
 import Data.Map.Strict qualified as Map
 import Data.Maybe (fromMaybe)
 import Data.Word (Word64)
@@ -54,7 +54,7 @@ skOf :: ByteString -> SecretKey
 skOf seed = either (error . ("bad seed: " ++)) id (newSecretKey seed)
 
 authorOf :: ByteString -> MemberId
-authorOf seed = MemberId (hash256 (publicKeyBytes (skOf seed)))
+authorOf seed = MemberId (hash256 (publicKeyBytes (derivePublicKey (skOf seed))))
 
 cid :: Int -> CampaignId
 cid n = CampaignId (BS.pack [0xC0, fromIntegral n])
@@ -118,7 +118,7 @@ acceptedPrefixes p0 = go p0
 reduceOk :: [Envelope] -> Projection
 reduceOk envs = case stepAll emptyProjection envs of
     (results, final) ->
-        case [r | Left r <- results] of
+        case lefts results of
             [] -> final
             rejects -> error ("valid script rejected: " ++ show rejects)
 
@@ -360,7 +360,9 @@ spec = do
         it "rejects finalization while allocations miss the accepted total" $ do
             let short =
                     take 14 legacyLifecycle
-                        ++ [pay seedA (OrderAllocated (cid 1) (authorOf seedB) (centI 400))]
+                        ++ [ pay seedA (OrderAllocated (cid 1) (authorOf seedB) (centI 400))
+                           , pay seedA (CampaignFinalized (cid 1))
+                           ]
             case stepAll emptyProjection short of
                 (results, _) ->
                     last results `shouldBe` Left (AllocationMismatch (centI 400) (centI 1000))

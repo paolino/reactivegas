@@ -166,7 +166,7 @@ skOf :: ByteString -> SecretKey
 skOf seed = either error id (newSecretKey seed)
 
 authorOf :: ByteString -> MemberId
-authorOf seed = MemberId (hash256 (publicKeyBytes (skOf seed)))
+authorOf seed = memberIdOf (derivePublicKey (skOf seed))
 
 cidN :: Int -> CampaignId
 cidN n = CampaignId (BS.pack [0xC0, fromIntegral n])
@@ -192,27 +192,20 @@ pay seed pl =
             , headerKind = payloadKind pl
             }
 
-data StepJson = StepJson
-    { sjEnvelope :: Envelope
-    , sjReject :: Maybe Reject
-    , sjProjection :: Projection
-    }
+data ReducerStep = ReducerStep Envelope (Maybe Reject) Projection
 
-instance Aeson.ToJSON StepJson where
-    toJSON (StepJson env rej proj) =
+instance Aeson.ToJSON ReducerStep where
+    toJSON (ReducerStep env rej proj) =
         Aeson.object
             [ "envelope" Aeson..= Hex (encodeEnvelope env)
             , "reject" Aeson..= fmap show rej
             , "projection" Aeson..= proj
             ]
 
-data CaseJson = CaseJson
-    { ccName :: String
-    , ccSteps :: [StepJson]
-    }
+data ReducerCase = ReducerCase String [ReducerStep]
 
-instance Aeson.ToJSON CaseJson where
-    toJSON (CaseJson name steps) =
+instance Aeson.ToJSON ReducerCase where
+    toJSON (ReducerCase name steps) =
         Aeson.object ["name" Aeson..= name, "steps" Aeson..= map Aeson.toJSON steps]
 
 {- | Reduce the fixed scenario, recording every step's envelope,
@@ -220,14 +213,14 @@ outcome and post-state. The generator is authoritative: it runs the
 real reducer, so regenerating after an intentional semantic change
 refreshes the goldens in lockstep.
 -}
-reduceCase :: String -> [Envelope] -> CaseJson
+reduceCase :: String -> [Envelope] -> ReducerCase
 reduceCase name envs =
-    CaseJson name (reverse (go emptyProjection envs []))
+    ReducerCase name (reverse (go emptyProjection envs []))
   where
     go _ [] acc = acc
     go p (e : es) acc = case step p e of
-        Left r -> go p es (StepJson e (Just r) p : acc)
-        Right p' -> go p' es (StepJson e Nothing p' : acc)
+        Left r -> go p es (ReducerStep e (Just r) p : acc)
+        Right p' -> go p' es (ReducerStep e Nothing p' : acc)
 
 lifecycleEnvs :: [Envelope]
 lifecycleEnvs =
@@ -269,7 +262,7 @@ rejectionEnvs =
       pay seedB (CampaignClosedForOrders (cidN 1))
     ]
 
-reducerCases :: [CaseJson]
+reducerCases :: [ReducerCase]
 reducerCases =
     [ reduceCase "order-lifecycle" lifecycleEnvs
     , reduceCase "rejections" rejectionEnvs

@@ -24,7 +24,6 @@ import System.FilePath (takeDirectory, (</>))
 import Test.Hspec (
     Spec,
     describe,
-    expectationFailure,
     it,
     shouldBe,
  )
@@ -92,19 +91,16 @@ replayCase c = void (go emptyProjection (cvSteps c))
   where
     go :: Projection -> [StepVec] -> IO Projection
     go _ [] = pure emptyProjection
-    go p (s : ss) =
-        either
-            (expectationFailure . ("undecodable envelope: " ++))
-            pure
-            (decodeEnvelope (svEnvelope s))
-            >>= \env -> case step p env of
-                Left r -> do
-                    svReject s `shouldBe` Just (show r)
-                    go p ss
-                Right p' -> do
-                    svReject s `shouldBe` Nothing
-                    toJSON p' `shouldBe` svProjection s
-                    go p' ss
+    go p (s : ss) = do
+        env <- either (fail . (("undecodable envelope in " ++ cvName c ++ ": ") ++)) pure (decodeEnvelope (svEnvelope s))
+        case step p env of
+            Left r -> do
+                svReject s `shouldBe` Just (show r)
+                go p ss
+            Right p' -> do
+                svReject s `shouldBe` Nothing
+                Aeson.toJSON p' `shouldBe` svProjection s
+                go p' ss
 
 spec :: Spec
 spec =
