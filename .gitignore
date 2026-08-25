@@ -5,3 +5,4 @@ result-*
 *.sqlite
 *.db
 tarogas.tgz
+lean/.lake/

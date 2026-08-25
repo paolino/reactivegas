@@ -13,6 +13,7 @@ in pkgs.haskell-nix.cabalProject' {
   };
   shell.buildInputs = with pkgs; [
     just
+    lean4
     nixfmt-classic
     shellcheck
     sqlite
