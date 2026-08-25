@@ -49,5 +49,7 @@ nav:
   - Getting Started:
     - Installation: installation.md
     - Usage: usage.md
+  - Design:
+    - State machine: design/state-machine.md
   - Reference:
     - Help: help.md
