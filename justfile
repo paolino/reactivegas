@@ -53,6 +53,12 @@ build:
     set -euo pipefail
     cabal build all
 
+# Build the lean state-machine specification
+lean:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd lean && lake build
+
 # Full CI pipeline
 ci:
     #!/usr/bin/env bash
@@ -60,6 +66,7 @@ ci:
     just build
     just format-check
     just hlint
+    just lean
 
 # Clean build artifacts
 clean:

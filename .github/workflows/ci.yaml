@@ -54,3 +54,6 @@ jobs:
               -not -path "./Core/Aggiornamento.hs" \
               | xargs hlint
           '
+
+      - name: Build lean specification
+        run: nix --quiet develop --command just lean
