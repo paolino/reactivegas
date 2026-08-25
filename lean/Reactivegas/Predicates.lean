@@ -11,8 +11,16 @@ One predicate per documented law (issue #45); the prose record in
 def conservation (s : State) : Prop :=
   sumBal s.casse - sumBal s.conti - escrowSum s.collections = 0
 
-/-- **L7 Soft solvency**: negative credit balances exist and are
-reported, never rejected — deliberately *not* an invariant. -/
+/-- **L7 Solvency**: no account ever goes below zero, and every pledged
+amount stays non-negative so refunds can never push anyone under.
+Guards in `step` reject any debit that would overdraw; `insolvent` is
+therefore unreachable from the boot state (`not_insolvent_of_reach`). -/
+def solvent (s : State) : Prop :=
+  (∀ u : UserId, bal s.conti u ≥ 0) ∧
+  (∀ col ∈ s.collections, ∀ p ∈ col.accepted ++ col.pending, 0 ≤ p.amount)
+
+/-- A negative credit balance. Unreachable from boot since solvency is
+enforced; kept as the reported-shape definition for tooling. -/
 def insolvent (s : State) : Prop :=
   ∃ u, List.Mem u s.users ∧ bal s.conti u < 0
 

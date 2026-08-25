@@ -37,7 +37,11 @@ The machine is a rejecting step function:
 encode authorisation inline: opening/closing requires responsabile
 status, deposits and withdrawals require the actor's own account, and
 pledge/accept/refuse/correct route through `pullCollection`, which fails
-when the collection does not exist.
+when the collection does not exist. On top of the legacy checks, three
+*solvency guards* reject any movement that would overdraw an account:
+a withdrawal or pledge larger than the pledger's balance, and a pledge
+correction that would leave a negative account, all return `none`
+(`pledge_guard_inv` decomposes the resulting six-way pledge guard).
 
 ## Laws
 
@@ -96,14 +100,17 @@ the entire class of "closed while still provisional" bugs.
 **User story.** Anna pledges €30 towards the olive oil. She expects her
 account to show €30 less immediately — the money is committed, even
 though nobody has spent it yet — and she expects to see her offer listed
-in the collection. She does not expect the group's total wealth to change.
+in the collection. She does not expect the group's total wealth to
+change. If she only had €20, the machine would have refused the pledge
+outright.
 
 **What is proved.** After a successful pledge, three things hold at once
 and are proved together (`pledge_escrow_debit`): Anna's balance dropped
 by exactly `v` (`bal_bump`), the collection now holds exactly `v` more
 escrow than before, witnessed by `escrowHeld` via `splitUser`, and the
 global books still balance because the debit moved into escrow rather
-than vanishing.
+than vanishing. The funds check itself is part of the guard that
+`pledge_guard_inv` decomposes.
 
 * Predicate: `escrowHeld`
 * Theorem: `pledge_escrow_debit`
@@ -131,7 +138,9 @@ does Marco gain without the cash box losing, or vice versa.
 **What is proved.** Both movements produce the witness required by the
 `doubleEntry` predicate: the pair of balancing changes. The theorems
 construct that witness directly from the `bal_bump` lemma applied to each
-side of the ledger.
+side of the ledger. A deposit of a negative amount is rejected (the
+machine would otherwise smuggle an unguarded withdrawal past the
+solvency guards).
 
 * Predicate: `doubleEntry`
 * Theorems: `deposit_double_entry`, `withdraw_double_entry`
@@ -155,23 +164,35 @@ change that leaks or duplicates money breaks the build.
 * Predicate: `conservation`
 * Theorem: `conservation_preserved`
 
-### L7 — Insolvency is reachable but explicit
+### L7 — Solvency is enforced, insolvency unreachable
 
-**User story.** A catastrophic scenario: members withdraw their credit,
-leaving the group owing more escrow than the accounts hold. The legacy
-system never claimed this cannot happen — and honesty is cheaper here
-than a false guarantee. The spec admits insolvency, exhibits it, and lets
-downstream code decide how to react.
+**User story.** Bruno has €12 in his account and tries to pledge €30
+towards the olive oil. The machine refuses: `step` returns `none`, no
+money moves, and the collection never sees his offer. There is no
+"recorded with warning" middle ground — an overdrawing debit simply
+never happens.
 
-**What is proved.** `badState` is a concrete, hand-written state whose
-accounts cannot cover its escrow. `insolvency_reachable` derives
-`Reach badState` from the boot state by an explicit chain of legal steps
-— so the bad state is not a fantasy but genuinely constructible — and
-`insolvency_example` decides the shortfall by computation alone
-(`by decide`). The negative result is itself machine checked.
+**What is proved.** This is a deliberate strengthening over the legacy
+reactors, which let members run negative tabs and merely reported them.
+The guards reject every debit that would push a balance below zero
+(withdrawal beyond the balance, pledge beyond the balance, correction
+beyond the corrected balance) and require all pledge amounts to be
+positive, so the refund paths (deny, fail, responsabile removal) can
+never push anyone under either. The predicate `solvent` captures both
+halves — non-negative balances and non-negative pledged amounts — and:
 
-* Predicate: `insolvent`
-* Theorems: `badState`, `insolvency_reachable`, `insolvency_example`
+* `solvent_preserved` shows every one of the 15 events preserves it;
+* `solvent_init` shows the boot state satisfies it;
+* `reach_solvent` chains these along any execution (`Reach`), so every
+  reachable state is solvent;
+* `not_insolvent_of_reach` finishes the job: no reachable state makes
+  `insolvent` true. Insolvency went from "reachable and reported"
+  (the old `badState` example) to impossible.
+
+* Predicate: `solvent` (and `insolvent`, now provably unreachable)
+* Theorems: `solvent_init`, `solvent_preserved`, `reach_solvent`,
+  `not_insolvent_of_reach`; guard decomposition in `pledge_guard_inv`
+  and `step_correct_inv`
 
 ### L8 — One pledge per user per collection
 

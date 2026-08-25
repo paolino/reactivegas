@@ -5,9 +5,9 @@ import Reactivegas.Predicates
 
 The flagship is `conservation_preserved` (L6): every successful event
 preserves `Σ casse − Σ conti − Σ open escrow = 0`. Each documented law
-(L1–L8) gets at least one machine-checked theorem; L7 shows that soft
-insolvency is *reachable* and therefore must stay reportable rather
-than rejected.
+(L1–L8) gets at least one machine-checked theorem; L7 proves solvency:
+the guards reject every overdrawing debit, so `insolvent` is
+unreachable from boot (`reach_solvent`, `not_insolvent_of_reach`).
 -/
 
 /-! ### Proof helpers -/
@@ -127,17 +127,22 @@ theorem user_absent_of_any_false {u : UserId} {l : List Pledge}
 /-! ### Guard inversions -/
 
 /-- Decompose the pledge guard into its conjuncts. -/
-theorem pledge_guard_inv {s : State} {a u : UserId} {col : Collection}
+theorem pledge_guard_inv {s : State} {a u : UserId} {col : Collection} {v : Int}
     (h : (isResponsabile s a && s.users.contains u &&
       !(col.accepted.any (fun p => p.user == u)) &&
-      !(col.pending.any (fun p => p.user == u))) = true) :
+      !(col.pending.any (fun p => p.user == u)) &&
+      decide (0 < v) && decide (bal s.conti u ≥ v)) = true) :
     isResponsabile s a = true ∧ s.users.contains u = true ∧
       col.accepted.any (fun p => p.user == u) = false ∧
-      col.pending.any (fun p => p.user == u) = false := by
-  have hn2 := bool_and_right h
-  have hn1 := bool_and_right (bool_and_left h)
-  have hAB := bool_and_left (bool_and_left h)
-  exact ⟨bool_and_left hAB, bool_and_right hAB, bool_not_true hn1, bool_not_true hn2⟩
+      col.pending.any (fun p => p.user == u) = false ∧
+      0 < v ∧ bal s.conti u ≥ v := by
+  have hv2 : decide (bal s.conti u ≥ v) = true := bool_and_right h
+  have hv1 : decide (0 < v) = true := bool_and_right (bool_and_left h)
+  have hn2 := bool_and_right (bool_and_left (bool_and_left h))
+  have hn1 := bool_and_right (bool_and_left (bool_and_left (bool_and_left h)))
+  have hAB := bool_and_left (bool_and_left (bool_and_left (bool_and_left h)))
+  exact ⟨bool_and_left hAB, bool_and_right hAB, bool_not_true hn1, bool_not_true hn2,
+    decide_eq_true_iff.mp hv1, decide_eq_true_iff.mp hv2⟩
 
 /-- Decompose the accept/refuse/correct guard. -/
 theorem auth_referente_guard_inv {s : State} {a : UserId} {col : Collection}
@@ -201,7 +206,8 @@ theorem step_pledge_inv {s s' : State} {a u : UserId} {c : CollId} {v : Int}
       pullCollection c s.collections = some (col, rest) ∧
       (isResponsabile s a && s.users.contains u &&
           !(col.accepted.any (fun p => p.user == u)) &&
-          !(col.pending.any (fun p => p.user == u))) =
+          !(col.pending.any (fun p => p.user == u)) &&
+          decide (0 < v) && decide (bal s.conti u ≥ v)) =
         true ∧
       s' = { s with
         conti := bump s.conti u (-v),
@@ -256,7 +262,9 @@ theorem step_correct_inv {s s' : State} {a u : UserId} {c : CollId} {v' : Int}
     ∃ col rest v acc',
       pullCollection c s.collections = some (col, rest) ∧
       splitUser u col.accepted = some (v, acc') ∧
-      (isResponsabile s a && col.referente == a) = true ∧
+      (isResponsabile s a && col.referente == a &&
+          decide (0 ≤ v') && decide (bal s.conti u + (v - v') ≥ 0)) =
+        true ∧
       s' = { s with
         conti := bump s.conti u (v - v'),
         collections := { col with accepted := ⟨u, v'⟩ :: acc' } :: rest } := by
@@ -478,13 +486,13 @@ theorem step_authorized {s s' : State} {e : Event} (h : step s e = some s') :
     simp only [step] at h
     show isResponsabile s a
     split at h
-    · next g => exact bool_and_left (bool_and_left g)
+    · next g => exact bool_and_left (bool_and_left (bool_and_left g))
     · exact Option.noConfusion h
   | withdraw a u v =>
     simp only [step] at h
     show isResponsabile s a
     split at h
-    · next g => exact bool_and_left (bool_and_left g)
+    · next g => exact bool_and_left (bool_and_left (bool_and_left g))
     · exact Option.noConfusion h
   | transferCassa a f v =>
     simp only [step] at h
@@ -504,7 +512,8 @@ theorem step_authorized {s s' : State} {e : Event} (h : step s e = some s') :
     exact (auth_referente_guard_inv hg).1
   | correctPledge a u c v =>
     obtain ⟨_, _, _, _, _, _, hg, _⟩ := step_correct_inv h
-    exact (auth_referente_guard_inv hg).1
+    exact bool_and_left
+      (bool_and_left (bool_and_left hg))
   | closePurchase a c =>
     obtain ⟨_, _, _, hg, _⟩ := step_close_inv h
     exact (close_guard_inv hg).1
@@ -600,30 +609,407 @@ theorem withdraw_double_entry {s s' : State} {a u : UserId} {v : Int}
     exact ⟨bal_bump .., bal_bump ..⟩
   · exact Option.noConfusion h
 
-/-! ### L7 insolvency is reachable, hence reportable not rejected -/
+/-! ### L7 solvency: overdrafts are rejected, insolvency unreachable -/
 
-/-- The state after booting with responsabile `0`, adding user `1`,
-depositing 10 for them and withdrawing 50: user 1 sits at −40 while the
-books still balance. -/
-def badState : State :=
-  { users := [0, 1], responsabili := [0], conti := [(1, -40)], casse := [(0, -40)], collections := [] }
+/-- `bump` leaves every other key's balance untouched. -/
+private theorem bal_bump_ne_lemma {u : UserId} {d : Int} :
+    ∀ (m : List (UserId × Int)) (k : UserId), k ≠ u →
+      bal (bump m u d) k = bal m k := by
+  intro m
+  induction m with
+  | nil =>
+    intro k hk
+    show bal [(u, d)] k = bal [] k
+    simp only [bal, if_neg (Ne.symm hk)]
+  | cons kv t ih =>
+    obtain ⟨k', v⟩ := kv
+    intro k hk
+    rw [bump]
+    split
+    · next h =>
+      have hkk' : k' ≠ k := fun hc => hk (hc.symm.trans h)
+      show bal ((k', v + d) :: t) k = bal ((k', v) :: t) k
+      rw [bal_cons, bal_cons, if_neg hkk', if_neg hkk']
+    · next h =>
+      show bal ((k', v) :: bump t u d) k = bal ((k', v) :: t) k
+      rw [bal_cons, bal_cons]
+      split
+      · rfl
+      · exact ih k hk
 
-theorem insolvency_reachable : Reach badState := by
-  have h1 : step (State.init 0) (.addUser 0 1)
-      = some { users := [0, 1], responsabili := [0], conti := [], casse := [], collections := [] } :=
-    rfl
-  have h2 : step { users := [0, 1], responsabili := [0], conti := [], casse := [], collections := [] }
-        (.deposit 0 1 10)
-      = some { users := [0, 1], responsabili := [0], conti := [(1, 10)], casse := [(0, 10)], collections := [] } :=
-    rfl
-  have h3 : step { users := [0, 1], responsabili := [0], conti := [(1, 10)], casse := [(0, 10)], collections := [] }
-        (.withdraw 0 1 50)
-      = some badState :=
-    rfl
-  exact Reach.trans (Reach.trans (Reach.trans (Reach.boot 0) h1) h2) h3
+/-- `bump` leaves every other key's balance untouched. -/
+theorem bal_bump_ne {m : List (UserId × Int)} {u : UserId} {d : Int} {k : UserId}
+    (hk : k ≠ u) : bal (bump m u d) k = bal m k :=
+  bal_bump_ne_lemma m k hk
 
-theorem insolvency_example : insolvent badState :=
-  ⟨1, List.Mem.tail _ (List.Mem.head _), by decide⟩
+/-- A successful split names the pledge it removed. -/
+private theorem splitUser_amount_lemma {u : UserId} :
+    ∀ (l : List Pledge) (v : Int) (r : List Pledge),
+      splitUser u l = some (v, r) → ∃ p ∈ l, p.user = u ∧ p.amount = v := by
+  intro l
+  induction l with
+  | nil => intro v r h; exact Option.noConfusion h
+  | cons p t ih =>
+    intro v r h
+    rw [splitUser] at h
+    split at h
+    · next hp =>
+      simp only [Option.some.injEq, Prod.mk.injEq] at h
+      obtain ⟨rfl, rfl⟩ := h
+      exact ⟨p, List.mem_cons_self .., hp, rfl⟩
+    · next hp =>
+      cases hx : splitUser u t with
+      | none => rw [hx] at h; exact Option.noConfusion h
+      | some w =>
+        obtain ⟨wv, wr⟩ := w
+        rw [hx] at h
+        simp only [Option.some.injEq, Prod.mk.injEq] at h
+        obtain ⟨hv, hr⟩ := h
+        obtain ⟨q, hq, hqu, hqa⟩ := ih wv wr hx
+        exact ⟨q, List.mem_cons_of_mem _ hq, hqu, hv ▸ hqa⟩
+
+theorem splitUser_amount {u : UserId} {l : List Pledge} {v : Int} {r : List Pledge}
+    (h : splitUser u l = some (v, r)) : ∃ p ∈ l, p.user = u ∧ p.amount = v :=
+  splitUser_amount_lemma l v r h
+
+/-- Refunding only non-negative amounts never lowers a balance. -/
+private theorem refundAll_bal_ge_lemma {l : List Pledge} :
+    ∀ (m : List (UserId × Int)) (w : UserId),
+      (∀ p ∈ l, 0 ≤ p.amount) → bal (refundAll m l) w ≥ bal m w := by
+  induction l with
+  | nil => intro m w _; show bal m w ≥ bal m w; omega
+  | cons p t ih =>
+    intro m w hamt
+    have hamt' : ∀ q ∈ t, 0 ≤ q.amount := fun q hq => hamt q (List.mem_cons_of_mem _ hq)
+    have ha := hamt p (List.mem_cons_self ..)
+    have h2 : bal (List.foldl (fun acc q => bump acc q.user q.amount)
+          (bump m p.user p.amount) t) w
+        ≥ bal (bump m p.user p.amount) w :=
+      ih (bump m p.user p.amount) w hamt'
+    show bal (List.foldl (fun acc q => bump acc q.user q.amount)
+          (bump m p.user p.amount) t) w ≥ bal m w
+    by_cases hc : w = p.user
+    · rw [hc] at h2 ⊢
+      have hb := bal_bump m p.user p.amount
+      omega
+    · have hb : bal (bump m p.user p.amount) w = bal m w := bal_bump_ne hc
+      omega
+
+theorem refundAll_bal_ge {m : List (UserId × Int)} {l : List Pledge} {w : UserId}
+    (hamt : ∀ p ∈ l, 0 ≤ p.amount) : bal (refundAll m l) w ≥ bal m w :=
+  refundAll_bal_ge_lemma m w hamt
+
+/-- Collections left behind by stripping `r` were in the original list. -/
+private theorem stripCollections_sublist_lemma (r : UserId) :
+    ∀ (cols : List Collection) (y : Collection), y ∈ (stripCollections r cols).1 →
+      y ∈ cols := by
+  intro cols
+  induction cols with
+  | nil => intro y hy; cases hy
+  | cons c t ih =>
+    intro y hy
+    simp only [stripCollections] at hy
+    split at hy
+    · next _ =>
+      dsimp only at hy
+      exact List.mem_cons_of_mem _ (ih y hy)
+    · next _ =>
+      dsimp only at hy
+      rcases List.mem_cons.mp hy with hc | hc
+      · exact List.mem_cons.mpr (Or.inl hc)
+      · exact List.mem_cons_of_mem _ (ih y hc)
+
+theorem stripCollections_sublist (r : UserId) (cols : List Collection)
+    {y : Collection} (hy : y ∈ (stripCollections r cols).1) : y ∈ cols :=
+  stripCollections_sublist_lemma r cols y hy
+
+/-- Every refunded pledge comes from some collection of the original list. -/
+private theorem stripCollections_amount_lemma (r : UserId) :
+    ∀ (cols : List Collection) (p : Pledge),
+      p ∈ (stripCollections r cols).2 →
+        ∃ c ∈ cols, p ∈ c.accepted ++ c.pending := by
+  intro cols
+  induction cols with
+  | nil => intro p hp; cases hp
+  | cons c t ih =>
+    intro p hp
+    simp only [stripCollections] at hp
+    split at hp
+    · next _ =>
+      dsimp only at hp
+      rcases List.mem_append.mp hp with hm | hm
+      · rcases List.mem_append.mp hm with hm1 | hm2
+        · exact ⟨c, List.mem_cons_self .., List.mem_append.mpr (Or.inl hm1)⟩
+        · exact ⟨c, List.mem_cons_self .., List.mem_append.mpr (Or.inr hm2)⟩
+      · obtain ⟨c', hc', hp'⟩ := ih p hm
+        exact ⟨c', List.mem_cons_of_mem _ hc', hp'⟩
+    · next _ =>
+      dsimp only at hp
+      obtain ⟨c', hc', hp'⟩ := ih p hp
+      exact ⟨c', List.mem_cons_of_mem _ hc', hp'⟩
+
+/-- Boot state is solvent: accounts start empty and there is no escrow. -/
+theorem solvent_init (r : UserId) : solvent (State.init r) :=
+  ⟨fun _ => by simp [State.init, bal], by
+    intro col hc
+    cases hc⟩
+
+/-- **L7 flagship**: every successful event preserves solvency — all
+balances stay non-negative and all pledged amounts stay non-negative,
+so refunds can never push an account below zero. -/
+theorem solvent_preserved {s s' : State} {e : Event}
+    (hsolv : solvent s) (hstep : step s e = some s') : solvent s' := by
+  obtain ⟨hsol, hamt⟩ := hsolv
+  cases e with
+  | addUser a u =>
+    simp only [step] at hstep
+    split at hstep
+    · simp only [Option.some.injEq] at hstep
+      subst hstep
+      exact ⟨hsol, hamt⟩
+    · exact Option.noConfusion hstep
+  | electResponsabile a u =>
+    simp only [step] at hstep
+    split at hstep
+    · simp only [Option.some.injEq] at hstep
+      subst hstep
+      exact ⟨hsol, hamt⟩
+    · exact Option.noConfusion hstep
+  | removeResponsabile a u =>
+    simp only [step] at hstep
+    split at hstep
+    · simp only [Option.some.injEq] at hstep
+      subst hstep
+      refine ⟨?_, ?_⟩
+      · intro w
+        show bal (refundAll s.conti (stripCollections u s.collections).2) w ≥ 0
+        have h1 : bal (refundAll s.conti (stripCollections u s.collections).2) w
+            ≥ bal s.conti w :=
+          refundAll_bal_ge (by
+            intro p hp
+            obtain ⟨c, hc, hp'⟩ := stripCollections_amount_lemma u s.collections p hp
+            exact hamt c hc p hp')
+        have h2 := hsol w
+        omega
+      · intro c hc p hp
+        exact hamt c
+          (stripCollections_sublist u s.collections hc) p hp
+    · exact Option.noConfusion hstep
+  | openPurchase a c =>
+    simp only [step] at hstep
+    split at hstep
+    · simp only [Option.some.injEq] at hstep
+      subst hstep
+      refine ⟨hsol, ?_⟩
+      intro c0 hc0 p hp
+      rcases List.mem_cons.mp hc0 with hc0 | hc0
+      · subst hc0
+        simp at hp
+      · exact hamt c0 hc0 p hp
+    · exact Option.noConfusion hstep
+  | grantPermission a c =>
+    obtain ⟨col, rest, hpull, _, hs'⟩ := step_grant_inv hstep
+    subst hs'
+    refine ⟨hsol, ?_⟩
+    intro c0 hc0 p hp
+    rcases List.mem_cons.mp hc0 with hc0 | hc0
+    · subst hc0
+      dsimp only at hp
+      exact hamt col (pullCollection_mem hpull) p hp
+    · exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
+  | denyPermission a c =>
+    obtain ⟨col, rest, hpull, _, hs'⟩ := step_deny_inv hstep
+    subst hs'
+    refine ⟨?_, ?_⟩
+    · intro w
+      show bal (refundAll s.conti (col.accepted ++ col.pending)) w ≥ 0
+      have h1 : bal (refundAll s.conti (col.accepted ++ col.pending)) w
+          ≥ bal s.conti w :=
+        refundAll_bal_ge (fun p hp => hamt col (pullCollection_mem hpull) p hp)
+      have h2 := hsol w
+      omega
+    · intro c0 hc0 p hp
+      exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
+  | deposit a u v =>
+    simp only [step] at hstep
+    split at hstep
+    · next g =>
+      simp only [Option.some.injEq] at hstep
+      subst hstep
+      have hv : 0 ≤ v := decide_eq_true_iff.mp (bool_and_right g)
+      refine ⟨fun w => ?_, hamt⟩
+      by_cases hc : w = u
+      · rw [hc]
+        show bal (bump s.conti u v) u ≥ 0
+        have hb := bal_bump s.conti u v
+        have h0 := hsol u
+        omega
+      · show bal (bump s.conti u v) w ≥ 0
+        rw [bal_bump_ne hc]
+        exact hsol w
+    · exact Option.noConfusion hstep
+  | withdraw a u v =>
+    simp only [step] at hstep
+    split at hstep
+    · next g =>
+      simp only [Option.some.injEq] at hstep
+      subst hstep
+      have hv : bal s.conti u ≥ v := decide_eq_true_iff.mp (bool_and_right g)
+      refine ⟨fun w => ?_, hamt⟩
+      by_cases hc : w = u
+      · rw [hc]
+        show bal (bump s.conti u (-v)) u ≥ 0
+        have hb := bal_bump s.conti u (-v)
+        omega
+      · show bal (bump s.conti u (-v)) w ≥ 0
+        rw [bal_bump_ne hc]
+        exact hsol w
+    · exact Option.noConfusion hstep
+  | transferCassa a f v =>
+    simp only [step] at hstep
+    split at hstep
+    · simp only [Option.some.injEq] at hstep
+      subst hstep
+      exact ⟨hsol, hamt⟩
+    · exact Option.noConfusion hstep
+  | pledge a u c v =>
+    obtain ⟨col, rest, hpull, hg, hs'⟩ := step_pledge_inv hstep
+    obtain ⟨_, _, _, _, hvpos, hfunds⟩ := pledge_guard_inv hg
+    subst hs'
+    refine ⟨fun w => ?_, ?_⟩
+    · by_cases hc : w = u
+      · rw [hc]
+        show bal (bump s.conti u (-v)) u ≥ 0
+        have hb := bal_bump s.conti u (-v)
+        omega
+      · show bal (bump s.conti u (-v)) w ≥ 0
+        rw [bal_bump_ne hc]
+        exact hsol w
+    · intro c0 hc0 p hp
+      rcases List.mem_cons.mp hc0 with hc0 | hc0
+      · subst hc0
+        dsimp only at hp
+        rcases List.mem_append.mp hp with hm | hm
+        · exact hamt col (pullCollection_mem hpull) p
+            (List.mem_append.mpr (Or.inl hm))
+        · rcases List.mem_cons.mp hm with heq | hinP
+          · subst heq
+            show 0 ≤ v
+            omega
+          · exact hamt col (pullCollection_mem hpull) p
+              (List.mem_append.mpr (Or.inr hinP))
+      · exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
+  | acceptPledge a u c =>
+    obtain ⟨col, rest, v, pend', hpull, hspl, _, hs'⟩ := step_accept_inv hstep
+    obtain ⟨q, hq, -, hqa⟩ := splitUser_amount hspl
+    have hv : 0 ≤ v := by
+      have h0 := hamt col (pullCollection_mem hpull) q
+        (List.mem_append.mpr (Or.inr hq))
+      omega
+    subst hs'
+    refine ⟨hsol, ?_⟩
+    intro c0 hc0 p hp
+    rcases List.mem_cons.mp hc0 with hc0 | hc0
+    · subst hc0
+      dsimp only at hp
+      rcases List.mem_append.mp hp with hm | hm
+      · rcases List.mem_cons.mp hm with heq | hinA
+        · subst heq
+          exact hv
+        · exact hamt col (pullCollection_mem hpull) p
+            (List.mem_append.mpr (Or.inl hinA))
+      · exact hamt col (pullCollection_mem hpull) p
+          (List.mem_append.mpr (Or.inr (splitUser_sublist hspl p hm)))
+    · exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
+  | refusePledge a u c =>
+    obtain ⟨col, rest, v, pend', hpull, hspl, _, hs'⟩ := step_refuse_inv hstep
+    obtain ⟨q, hq, -, hqa⟩ := splitUser_amount hspl
+    have hv : 0 ≤ v := by
+      have h0 := hamt col (pullCollection_mem hpull) q
+        (List.mem_append.mpr (Or.inr hq))
+      omega
+    subst hs'
+    refine ⟨fun w => ?_, ?_⟩
+    · by_cases hc : w = u
+      · rw [hc]
+        show bal (bump s.conti u v) u ≥ 0
+        have hb := bal_bump s.conti u v
+        have h0 := hsol u
+        omega
+      · show bal (bump s.conti u v) w ≥ 0
+        rw [bal_bump_ne hc]
+        exact hsol w
+    · intro c0 hc0 p hp
+      rcases List.mem_cons.mp hc0 with hc0 | hc0
+      · subst hc0
+        dsimp only at hp
+        rcases List.mem_append.mp hp with hm | hm
+        · exact hamt col (pullCollection_mem hpull) p
+            (List.mem_append.mpr (Or.inl hm))
+        · exact hamt col (pullCollection_mem hpull) p
+            (List.mem_append.mpr (Or.inr (splitUser_sublist hspl p hm)))
+      · exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
+  | correctPledge a u c v' =>
+    obtain ⟨col, rest, v, acc', hpull, hspl, hg, hs'⟩ := step_correct_inv hstep
+    have hv' : 0 ≤ v' :=
+      decide_eq_true_iff.mp (bool_and_right (bool_and_left hg))
+    have hfunds : bal s.conti u + (v - v') ≥ 0 :=
+      decide_eq_true_iff.mp (bool_and_right hg)
+    subst hs'
+    refine ⟨fun w => ?_, ?_⟩
+    · by_cases hc : w = u
+      · rw [hc]
+        show bal (bump s.conti u (v - v')) u ≥ 0
+        have hb := bal_bump s.conti u (v - v')
+        omega
+      · show bal (bump s.conti u (v - v')) w ≥ 0
+        rw [bal_bump_ne hc]
+        exact hsol w
+    · intro c0 hc0 p hp
+      rcases List.mem_cons.mp hc0 with hc0 | hc0
+      · subst hc0
+        dsimp only at hp
+        rcases List.mem_append.mp hp with hm | hm
+        · rcases List.mem_cons.mp hm with heq | hinA
+          · subst heq
+            show 0 ≤ v'
+            omega
+          · exact hamt col (pullCollection_mem hpull) p
+              (List.mem_append.mpr (Or.inl (splitUser_sublist hspl p hinA)))
+        · exact hamt col (pullCollection_mem hpull) p
+            (List.mem_append.mpr (Or.inr hm))
+      · exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
+  | closePurchase a c =>
+    obtain ⟨col, rest, hpull, _, hs'⟩ := step_close_inv hstep
+    subst hs'
+    refine ⟨hsol, ?_⟩
+    intro c0 hc0 p hp
+    exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
+  | failPurchase a c =>
+    obtain ⟨col, rest, hpull, _, hs'⟩ := step_fail_inv hstep
+    subst hs'
+    refine ⟨?_, ?_⟩
+    · intro w
+      show bal (refundAll s.conti (col.accepted ++ col.pending)) w ≥ 0
+      have h1 : bal (refundAll s.conti (col.accepted ++ col.pending)) w
+          ≥ bal s.conti w :=
+        refundAll_bal_ge (fun p hp => hamt col (pullCollection_mem hpull) p hp)
+      have h2 := hsol w
+      omega
+    · intro c0 hc0 p hp
+      exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
+
+/-- Solvency holds on every state reachable from boot. -/
+theorem reach_solvent {s : State} (hr : Reach s) : solvent s := by
+  induction hr with
+  | boot r => exact solvent_init r
+  | trans _ hstep ih => exact solvent_preserved ih hstep
+
+/-- Insolvency is impossible: no reachable state has a negative account. -/
+theorem not_insolvent_of_reach {s : State} (hr : Reach s) : ¬ insolvent s := by
+  intro ⟨u, _, hneg⟩
+  have hs := (reach_solvent hr).1 u
+  omega
 
 /-! ### L8 one pledge per user per collection -/
 
@@ -691,7 +1077,7 @@ theorem pledge_rejected_when_member {s : State} {a u : UserId} {c : CollId}
       obtain ⟨hdet, -⟩ : col₀ = col ∧ rest₀ = rest := by
         have hpair := pullCollection_det hpull₀ hpull
         simpa using hpair
-      obtain ⟨_, _, hn1, hn2⟩ := pledge_guard_inv hg
+      obtain ⟨_, _, hn1, hn2, _, _⟩ := pledge_guard_inv hg
       rw [hdet] at hn1 hn2
       obtain ⟨q, hq, hqu⟩ := hdup
       rcases List.mem_append.mp hq with hm | hm
@@ -709,7 +1095,7 @@ theorem pledge_preserves_allUnique {s s' : State} {a u : UserId} {c : CollId}
     {v : Int} (hun : allUniquePledges s)
     (h : step s (.pledge a u c v) = some s') : allUniquePledges s' := by
   obtain ⟨col, rest, hpull, hg, hs'⟩ := step_pledge_inv h
-  obtain ⟨_, _, hna1, hna2⟩ := pledge_guard_inv hg
+  obtain ⟨_, _, hna1, hna2, _, _⟩ := pledge_guard_inv hg
   subst hs'
   have ha1 := user_absent_of_any_false hna1
   have ha2 := user_absent_of_any_false hna2

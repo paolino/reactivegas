@@ -8,7 +8,9 @@ the legacy `fallimento` checks in `Eventi/`: every declaration must be
 authored by an elected responsabile (AUTH), referente-only operations
 check the referente (resolve/close/fail/correct), pledges are unique per
 collection (L8), and positive closure needs permission and zero pending
-pledges (L2/L4).
+pledges (L2/L4). Beyond the legacy checks, debits that would take an
+account below zero are rejected and pledge amounts must stay positive,
+so refunds can never push anyone under (L7 solvency).
 -/
 
 /-- Rejection guard: `demand b` succeeds exactly when `b` holds. -/
@@ -54,11 +56,12 @@ def step (s : State) (e : Event) : Option State :=
       conti := refundAll s.conti (col.accepted ++ col.pending),
       collections := rest }
   | .deposit a u v =>
-    if isResponsabile s a && s.users.contains u && a != u then
+    if isResponsabile s a && s.users.contains u && a != u && decide (0 ≤ v) then
       some { s with conti := bump s.conti u v, casse := bump s.casse a v }
     else none
   | .withdraw a u v =>
-    if isResponsabile s a && s.users.contains u && a != u then
+    if isResponsabile s a && s.users.contains u && a != u &&
+        decide (bal s.conti u ≥ v) then
       some { s with conti := bump s.conti u (-v), casse := bump s.casse a (-v) }
     else none
   | .transferCassa a f v =>
@@ -69,7 +72,8 @@ def step (s : State) (e : Event) : Option State :=
     let (col, rest) ← pullCollection c s.collections
     demand (isResponsabile s a && s.users.contains u
       && !(col.accepted.any (fun p => p.user == u))
-      && !(col.pending.any (fun p => p.user == u)))
+      && !(col.pending.any (fun p => p.user == u))
+      && decide (0 < v) && decide (bal s.conti u ≥ v))
     pure { s with
       conti := bump s.conti u (-v),
       collections := { col with pending := ⟨u, v⟩ :: col.pending } :: rest }
@@ -89,7 +93,8 @@ def step (s : State) (e : Event) : Option State :=
   | .correctPledge a u c v' => do
     let (col, rest) ← pullCollection c s.collections
     let (v, acc') ← splitUser u col.accepted
-    demand (isResponsabile s a && col.referente == a)
+    demand (isResponsabile s a && col.referente == a
+      && decide (0 ≤ v') && decide (bal s.conti u + (v - v') ≥ 0))
     pure { s with
       conti := bump s.conti u (v - v'),
       collections := { col with accepted := ⟨u, v'⟩ :: acc' } :: rest }
