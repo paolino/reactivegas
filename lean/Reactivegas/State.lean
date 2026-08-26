@@ -38,6 +38,23 @@ def bal (m : List (UserId × Int)) (u : UserId) : Int :=
   | [] => 0
   | (k, v) :: t => if k = u then v else bal t u
 
+/-- **Comune balance** (issue #48): the common fund is the `conti` balance
+at the reserved `comuneId` — a reserved non-member account inside
+`conti`, never a standalone `State` field. -/
+def comuneBal (s : State) : Int := bal s.conti comuneId
+
+/-- **Stall** (issue #48): the comune conto went negative. While stalled
+the machine refuses `closePurchase`, `withdraw`, `pledge`,
+`acceptPledge` and both departures; `donate` is the sole cure and stays
+reachable, as do `failPurchase` and `refusePledge`. `backdonate` is
+refused by its own affordability guard, with no separate stall
+condition. -/
+def stalled (s : State) : Prop := comuneBal s < 0
+
+/-- `stalled` is decidable so step guards can refuse stalled events. -/
+instance stalledDecidable (s : State) : Decidable (stalled s) :=
+  Int.decLt (comuneBal s) 0
+
 /-- Add `d` to the entry of `u`, appending a fresh entry when absent. -/
 def bump (m : List (UserId × Int)) (u : UserId) (d : Int) : List (UserId × Int) :=
   match m with

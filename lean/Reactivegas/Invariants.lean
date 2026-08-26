@@ -212,13 +212,10 @@ theorem step_pledge_inv {s s' : State} {a u : UserId} {c : CollId} {v : Int}
       s' = { s with
         conti := bump s.conti u (-v),
         collections := { col with pending := ⟨u, v⟩ :: col.pending } :: rest } := by
-  obtain ⟨w1, hw1, hw2⟩ := option_bind_inv hstep
-  obtain ⟨col, rest⟩ := w1
-  obtain ⟨_, hdem, hx⟩ := option_bind_inv hw2
-  refine ⟨col, rest, hw1, ?_, ?_⟩
-  · exact demand_eq_true_of_some hdem
-  · simp only [pure, Option.some.injEq] at hx
-    exact hx.symm
+  -- #48 definitions-only pass: the pledge guard gained the stall refusal,
+  -- so this inversion is deliberate proof debt. The statement is kept
+  -- exactly: it still follows from the strengthened guard.
+  sorry
 
 theorem step_accept_inv {s s' : State} {a u : UserId} {c : CollId}
     (hstep : step s (.acceptPledge a u c) = some s') :
@@ -228,15 +225,10 @@ theorem step_accept_inv {s s' : State} {a u : UserId} {c : CollId}
       (isResponsabile s a && col.referente == a) = true ∧
       s' = { s with collections :=
         { col with pending := pend', accepted := ⟨u, v⟩ :: col.accepted } :: rest } := by
-  obtain ⟨w1, hw1, hw2⟩ := option_bind_inv hstep
-  obtain ⟨col, rest⟩ := w1
-  obtain ⟨w2, hw3, hw4⟩ := option_bind_inv hw2
-  obtain ⟨v, pend'⟩ := w2
-  obtain ⟨_, hdem, hx⟩ := option_bind_inv hw4
-  refine ⟨col, rest, v, pend', hw1, hw3, ?_, ?_⟩
-  · exact demand_eq_true_of_some hdem
-  · simp only [pure, Option.some.injEq] at hx
-    exact hx.symm
+  -- #48 definitions-only pass: the accept guard gained the stall refusal,
+  -- so this inversion is deliberate proof debt. The statement is kept
+  -- exactly: it still follows from the strengthened guard.
+  sorry
 
 theorem step_refuse_inv {s s' : State} {a u : UserId} {c : CollId}
     (hstep : step s (.refusePledge a u c) = some s') :
@@ -287,13 +279,10 @@ theorem step_close_inv {s s' : State} {a : UserId} {c : CollId}
       s' = { s with
         casse := bump s.casse col.referente (-(sumPledges col.accepted)),
         collections := rest } := by
-  obtain ⟨w1, hw1, hw2⟩ := option_bind_inv hstep
-  obtain ⟨col, rest⟩ := w1
-  obtain ⟨_, hdem, hx⟩ := option_bind_inv hw2
-  refine ⟨col, rest, hw1, ?_, ?_⟩
-  · exact demand_eq_true_of_some hdem
-  · simp only [pure, Option.some.injEq] at hx
-    exact hx.symm
+  -- #48 definitions-only pass: the close guard gained the stall refusal,
+  -- so this inversion is deliberate proof debt. The statement is kept
+  -- exactly: it still follows from the strengthened guard.
+  sorry
 
 theorem step_fail_inv {s s' : State} {a : UserId} {c : CollId}
     (hstep : step s (.failPurchase a c) = some s') :
@@ -331,15 +320,9 @@ theorem conservation_preserved {s s' : State} {e : Event}
       simpa only [conservation] using hcon
     · exact Option.noConfusion hstep
   | removeResponsabile a u =>
-    simp only [step] at hstep
-    split at hstep
-    · simp only [Option.some.injEq] at hstep
-      subst hstep
-      simp only [conservation] at hcon ⊢
-      rw [refundAll_sum]
-      have hst := stripCollections_sum u s.collections
-      omega
-    · exact Option.noConfusion hstep
+    -- #48 definitions-only pass: the departure now also moves the leaver's
+    -- own claim into the comune conto; deliberate proof debt.
+    sorry
   | openPurchase a c =>
     simp only [step] at hstep
     split at hstep
@@ -445,6 +428,15 @@ theorem conservation_preserved {s s' : State} {e : Event}
     have hps := pullCollection_sum hpull
     simp only [escrowOf] at hps
     omega
+  | donate a v =>
+    -- #48 definitions-only pass: new event; deliberate proof debt.
+    sorry
+  | backdonate a w =>
+    -- #48 definitions-only pass: new event; deliberate proof debt.
+    sorry
+  | removeMember a u =>
+    -- #48 definitions-only pass: new event; deliberate proof debt.
+    sorry
 
 /-! ### AUTH -/
 
@@ -453,11 +445,9 @@ theorem step_authorized {s s' : State} {e : Event} (h : step s e = some s') :
     authorizedStep s e s' := by
   cases e with
   | addUser a u =>
-    simp only [step] at h
-    show isResponsabile s a
-    split at h
-    · next g => exact bool_and_left g
-    · exact Option.noConfusion h
+    -- #48 definitions-only pass: the guard gained the comuneId exclusion;
+    -- deliberate proof debt.
+    sorry
   | electResponsabile a u =>
     simp only [step] at h
     show isResponsabile s a
@@ -465,11 +455,9 @@ theorem step_authorized {s s' : State} {e : Event} (h : step s e = some s') :
     · next g => exact bool_and_left (bool_and_left g)
     · exact Option.noConfusion h
   | removeResponsabile a u =>
-    simp only [step] at h
-    show isResponsabile s a
-    split at h
-    · next g => exact bool_and_left g
-    · exact Option.noConfusion h
+    -- #48 definitions-only pass: the guard gained the stall refusal;
+    -- deliberate proof debt.
+    sorry
   | openPurchase a c =>
     simp only [step] at h
     show isResponsabile s a
@@ -489,11 +477,9 @@ theorem step_authorized {s s' : State} {e : Event} (h : step s e = some s') :
     · next g => exact bool_and_left (bool_and_left (bool_and_left g))
     · exact Option.noConfusion h
   | withdraw a u v =>
-    simp only [step] at h
-    show isResponsabile s a
-    split at h
-    · next g => exact bool_and_left (bool_and_left (bool_and_left g))
-    · exact Option.noConfusion h
+    -- #48 definitions-only pass: the guard gained the stall refusal;
+    -- deliberate proof debt.
+    sorry
   | transferCassa a f v =>
     simp only [step] at h
     show isResponsabile s a
@@ -520,6 +506,15 @@ theorem step_authorized {s s' : State} {e : Event} (h : step s e = some s') :
   | failPurchase a c =>
     obtain ⟨_, _, _, hg, _⟩ := step_fail_inv h
     exact (fail_guard_inv hg).1
+  | donate a v =>
+    -- #48 definitions-only pass: new event; deliberate proof debt.
+    sorry
+  | backdonate a w =>
+    -- #48 definitions-only pass: new event; deliberate proof debt.
+    sorry
+  | removeMember a u =>
+    -- #48 definitions-only pass: new event; deliberate proof debt.
+    sorry
 
 /-! ### L1 governance enacts -/
 
@@ -758,16 +753,22 @@ theorem solvent_init (r : UserId) : solvent (State.init r) :=
 balances stay non-negative and all pledged amounts stay non-negative,
 so refunds can never push an account below zero. -/
 theorem solvent_preserved {s s' : State} {e : Event}
+    (hmem : comune_not_a_member s)
     (hsolv : solvent s) (hstep : step s e = some s') : solvent s' := by
+  -- Audit finding 1 (submission 1, NOTE-003): the statement is false
+  -- without a reachability restriction. A state whose users contains
+  -- comuneId violates comune_not_a_member yet is solvent and not
+  -- stalled; a responsabile departure there moves the leaver's cassa
+  -- debt into the comune conto and drives it negative, breaking the
+  -- member-scoped conclusion. The hmem premise excludes exactly those
+  -- states; on reachable states it holds by
+  -- comune_not_a_member_of_reach. Deliberate proof debt this pass.
   obtain ⟨hsol, hamt⟩ := hsolv
   cases e with
   | addUser a u =>
-    simp only [step] at hstep
-    split at hstep
-    · simp only [Option.some.injEq] at hstep
-      subst hstep
-      exact ⟨hsol, hamt⟩
-    · exact Option.noConfusion hstep
+    -- #48 definitions-only pass: solvency is now member-scoped and the
+    -- users list grows; deliberate proof debt.
+    sorry
   | electResponsabile a u =>
     simp only [step] at hstep
     split at hstep
@@ -776,25 +777,9 @@ theorem solvent_preserved {s s' : State} {e : Event}
       exact ⟨hsol, hamt⟩
     · exact Option.noConfusion hstep
   | removeResponsabile a u =>
-    simp only [step] at hstep
-    split at hstep
-    · simp only [Option.some.injEq] at hstep
-      subst hstep
-      refine ⟨?_, ?_⟩
-      · intro w
-        show bal (refundAll s.conti (stripCollections u s.collections).2) w ≥ 0
-        have h1 : bal (refundAll s.conti (stripCollections u s.collections).2) w
-            ≥ bal s.conti w :=
-          refundAll_bal_ge (by
-            intro p hp
-            obtain ⟨c, hc, hp'⟩ := stripCollections_amount_lemma u s.collections p hp
-            exact hamt c hc p hp')
-        have h2 := hsol w
-        omega
-      · intro c hc p hp
-        exact hamt c
-          (stripCollections_sublist u s.collections hc) p hp
-    · exact Option.noConfusion hstep
+    -- #48 definitions-only pass: the departure now also moves the leaver's
+    -- own claim into the comune conto; deliberate proof debt.
+    sorry
   | openPurchase a c =>
     simp only [step] at hstep
     split at hstep
@@ -818,53 +803,17 @@ theorem solvent_preserved {s s' : State} {e : Event}
       exact hamt col (pullCollection_mem hpull) p hp
     · exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
   | denyPermission a c =>
-    obtain ⟨col, rest, hpull, _, hs'⟩ := step_deny_inv hstep
-    subst hs'
-    refine ⟨?_, ?_⟩
-    · intro w
-      show bal (refundAll s.conti (col.accepted ++ col.pending)) w ≥ 0
-      have h1 : bal (refundAll s.conti (col.accepted ++ col.pending)) w
-          ≥ bal s.conti w :=
-        refundAll_bal_ge (fun p hp => hamt col (pullCollection_mem hpull) p hp)
-      have h2 := hsol w
-      omega
-    · intro c0 hc0 p hp
-      exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
+    -- #48 definitions-only pass: solvency is now member-scoped;
+    -- deliberate proof debt.
+    sorry
   | deposit a u v =>
-    simp only [step] at hstep
-    split at hstep
-    · next g =>
-      simp only [Option.some.injEq] at hstep
-      subst hstep
-      have hv : 0 ≤ v := decide_eq_true_iff.mp (bool_and_right g)
-      refine ⟨fun w => ?_, hamt⟩
-      by_cases hc : w = u
-      · rw [hc]
-        show bal (bump s.conti u v) u ≥ 0
-        have hb := bal_bump s.conti u v
-        have h0 := hsol u
-        omega
-      · show bal (bump s.conti u v) w ≥ 0
-        rw [bal_bump_ne hc]
-        exact hsol w
-    · exact Option.noConfusion hstep
+    -- #48 definitions-only pass: solvency is now member-scoped;
+    -- deliberate proof debt.
+    sorry
   | withdraw a u v =>
-    simp only [step] at hstep
-    split at hstep
-    · next g =>
-      simp only [Option.some.injEq] at hstep
-      subst hstep
-      have hv : bal s.conti u ≥ v := decide_eq_true_iff.mp (bool_and_right g)
-      refine ⟨fun w => ?_, hamt⟩
-      by_cases hc : w = u
-      · rw [hc]
-        show bal (bump s.conti u (-v)) u ≥ 0
-        have hb := bal_bump s.conti u (-v)
-        omega
-      · show bal (bump s.conti u (-v)) w ≥ 0
-        rw [bal_bump_ne hc]
-        exact hsol w
-    · exact Option.noConfusion hstep
+    -- #48 definitions-only pass: the guard gained the stall refusal and
+    -- solvency is now member-scoped; deliberate proof debt.
+    sorry
   | transferCassa a f v =>
     simp only [step] at hstep
     split at hstep
@@ -873,32 +822,8 @@ theorem solvent_preserved {s s' : State} {e : Event}
       exact ⟨hsol, hamt⟩
     · exact Option.noConfusion hstep
   | pledge a u c v =>
-    obtain ⟨col, rest, hpull, hg, hs'⟩ := step_pledge_inv hstep
-    obtain ⟨_, _, _, _, hvpos, hfunds⟩ := pledge_guard_inv hg
-    subst hs'
-    refine ⟨fun w => ?_, ?_⟩
-    · by_cases hc : w = u
-      · rw [hc]
-        show bal (bump s.conti u (-v)) u ≥ 0
-        have hb := bal_bump s.conti u (-v)
-        omega
-      · show bal (bump s.conti u (-v)) w ≥ 0
-        rw [bal_bump_ne hc]
-        exact hsol w
-    · intro c0 hc0 p hp
-      rcases List.mem_cons.mp hc0 with hc0 | hc0
-      · subst hc0
-        dsimp only at hp
-        rcases List.mem_append.mp hp with hm | hm
-        · exact hamt col (pullCollection_mem hpull) p
-            (List.mem_append.mpr (Or.inl hm))
-        · rcases List.mem_cons.mp hm with heq | hinP
-          · subst heq
-            show 0 ≤ v
-            omega
-          · exact hamt col (pullCollection_mem hpull) p
-              (List.mem_append.mpr (Or.inr hinP))
-      · exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
+    -- #48 definitions-only pass: solvency is now member-scoped; deliberate proof debt.
+    sorry
   | acceptPledge a u c =>
     obtain ⟨col, rest, v, pend', hpull, hspl, _, hs'⟩ := step_accept_inv hstep
     obtain ⟨q, hq, -, hqa⟩ := splitUser_amount hspl
@@ -922,63 +847,11 @@ theorem solvent_preserved {s s' : State} {e : Event}
           (List.mem_append.mpr (Or.inr (splitUser_sublist hspl p hm)))
     · exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
   | refusePledge a u c =>
-    obtain ⟨col, rest, v, pend', hpull, hspl, _, hs'⟩ := step_refuse_inv hstep
-    obtain ⟨q, hq, -, hqa⟩ := splitUser_amount hspl
-    have hv : 0 ≤ v := by
-      have h0 := hamt col (pullCollection_mem hpull) q
-        (List.mem_append.mpr (Or.inr hq))
-      omega
-    subst hs'
-    refine ⟨fun w => ?_, ?_⟩
-    · by_cases hc : w = u
-      · rw [hc]
-        show bal (bump s.conti u v) u ≥ 0
-        have hb := bal_bump s.conti u v
-        have h0 := hsol u
-        omega
-      · show bal (bump s.conti u v) w ≥ 0
-        rw [bal_bump_ne hc]
-        exact hsol w
-    · intro c0 hc0 p hp
-      rcases List.mem_cons.mp hc0 with hc0 | hc0
-      · subst hc0
-        dsimp only at hp
-        rcases List.mem_append.mp hp with hm | hm
-        · exact hamt col (pullCollection_mem hpull) p
-            (List.mem_append.mpr (Or.inl hm))
-        · exact hamt col (pullCollection_mem hpull) p
-            (List.mem_append.mpr (Or.inr (splitUser_sublist hspl p hm)))
-      · exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
+    -- #48 definitions-only pass: solvency is now member-scoped; deliberate proof debt.
+    sorry
   | correctPledge a u c v' =>
-    obtain ⟨col, rest, v, acc', hpull, hspl, hg, hs'⟩ := step_correct_inv hstep
-    have hv' : 0 ≤ v' :=
-      decide_eq_true_iff.mp (bool_and_right (bool_and_left hg))
-    have hfunds : bal s.conti u + (v - v') ≥ 0 :=
-      decide_eq_true_iff.mp (bool_and_right hg)
-    subst hs'
-    refine ⟨fun w => ?_, ?_⟩
-    · by_cases hc : w = u
-      · rw [hc]
-        show bal (bump s.conti u (v - v')) u ≥ 0
-        have hb := bal_bump s.conti u (v - v')
-        omega
-      · show bal (bump s.conti u (v - v')) w ≥ 0
-        rw [bal_bump_ne hc]
-        exact hsol w
-    · intro c0 hc0 p hp
-      rcases List.mem_cons.mp hc0 with hc0 | hc0
-      · subst hc0
-        dsimp only at hp
-        rcases List.mem_append.mp hp with hm | hm
-        · rcases List.mem_cons.mp hm with heq | hinA
-          · subst heq
-            show 0 ≤ v'
-            omega
-          · exact hamt col (pullCollection_mem hpull) p
-              (List.mem_append.mpr (Or.inl (splitUser_sublist hspl p hinA)))
-        · exact hamt col (pullCollection_mem hpull) p
-            (List.mem_append.mpr (Or.inr hm))
-      · exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
+    -- #48 definitions-only pass: solvency is now member-scoped; deliberate proof debt.
+    sorry
   | closePurchase a c =>
     obtain ⟨col, rest, hpull, _, hs'⟩ := step_close_inv hstep
     subst hs'
@@ -986,30 +859,43 @@ theorem solvent_preserved {s s' : State} {e : Event}
     intro c0 hc0 p hp
     exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
   | failPurchase a c =>
-    obtain ⟨col, rest, hpull, _, hs'⟩ := step_fail_inv hstep
-    subst hs'
-    refine ⟨?_, ?_⟩
-    · intro w
-      show bal (refundAll s.conti (col.accepted ++ col.pending)) w ≥ 0
-      have h1 : bal (refundAll s.conti (col.accepted ++ col.pending)) w
-          ≥ bal s.conti w :=
-        refundAll_bal_ge (fun p hp => hamt col (pullCollection_mem hpull) p hp)
-      have h2 := hsol w
-      omega
-    · intro c0 hc0 p hp
-      exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
+    -- #48 definitions-only pass: solvency is now member-scoped; deliberate proof debt.
+    sorry
+  | donate a v =>
+    -- #48 definitions-only pass: new event; deliberate proof debt.
+    sorry
+  | backdonate a w =>
+    -- #48 definitions-only pass: new event; deliberate proof debt.
+    sorry
+  | removeMember a u =>
+    -- #48 definitions-only pass: new event; deliberate proof debt.
+    sorry
+
+/-- The comune account is never a member of any state reachable from
+boot: the guarded boot excludes `comuneId` and every event preserves
+the exclusion (`addUser` refuses it and no other event inserts it).
+Named reachability invariant required by the audit-repair bounce
+(NOTE-003): `solvent_preserved` carries it as a premise, so
+`reach_solvent` composes the two at the trans step. Deliberate proof
+debt in this definitions-only pass. -/
+theorem comune_not_a_member_of_reach {s : State} (hr : Reach s) :
+    comune_not_a_member s := by
+  sorry
 
 /-- Solvency holds on every state reachable from boot. -/
 theorem reach_solvent {s : State} (hr : Reach s) : solvent s := by
-  induction hr with
-  | boot r => exact solvent_init r
-  | trans _ hstep ih => exact solvent_preserved ih hstep
+  -- #48 definitions-only pass (audit-repair bounce): the restated
+  -- solvent_preserved gained the comune_not_a_member premise, so the
+  -- trans step now needs comune_not_a_member_of_reach; pre-authorized
+  -- deliberate proof debt (NOTE-003).
+  sorry
 
 /-- Insolvency is impossible: no reachable state has a negative account. -/
 theorem not_insolvent_of_reach {s : State} (hr : Reach s) : ¬ insolvent s := by
-  intro ⟨u, _, hneg⟩
-  have hs := (reach_solvent hr).1 u
-  omega
+  -- #48 definitions-only pass: solvency is now member-scoped, so this
+  -- needs the membership fact from the insolvent witness; deliberate
+  -- proof debt.
+  sorry
 
 /-! ### L8 one pledge per user per collection -/
 
