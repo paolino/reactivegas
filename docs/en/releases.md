@@ -86,9 +86,12 @@ $ scripts/release/package-release-artifact v2021.11.5 /tmp/release
 
 It smoke-tests `bin/server --help` on the staged tree, then extracts the archive
 it just wrote, checks the archived entrypoint is **byte-identical** to the
-binary it smoked, confirms `PROVISIONAL.md` declares the requested tag, and
-smokes the extracted entrypoint again. The bytes that reach GitHub are the bytes
-that were tested, and they say which release they belong to.
+binary it smoked, and smokes the extracted entrypoint again. Finally it submits
+its own output directory to `scripts/release/validate-release-artifact` — the
+same command a stranger runs on a download — so the producer cannot ship bytes
+the consumer would reject. If that identity check fails the packager deletes the
+archive it built: a run that cannot prove which release it made leaves nothing
+uploadable behind.
 
 ## Fetching the release as a stranger
 
@@ -100,19 +103,32 @@ $ TAG=v2021.11.5
 $ ASSET="reactivegas-server-$TAG-linux-x86_64.tar.gz"
 $ mkdir /tmp/reactivegas-stranger && cd /tmp/reactivegas-stranger
 $ gh release download "$TAG" --repo paolino/reactivegas --pattern "$ASSET"
-$ test -f "$ASSET"
-$ sha256sum "$ASSET"
+$ CHECKOUT=/path/to/reactivegas   # any checkout of the tag; the script is standalone bash
+$ "$CHECKOUT"/scripts/release/validate-release-artifact "$TAG" .
 $ mkdir extracted && tar -xzf "$ASSET" -C extracted
-$ grep -F "release tag: $TAG" extracted/PROVISIONAL.md
 $ ./extracted/bin/server --help
 ```
+
+Run the validator **before** extracting: it enumerates the whole directory and
+requires it to hold exactly the one expected asset, which stops being true once
+`extracted/` exists.
 
 **Never select the asset with a wildcard.** A pattern like
 `reactivegas-server-*-linux-x86_64.tar.gz` matches another release's asset just
 as well, and a genuine archive for the wrong tag downloads, extracts and smokes
 perfectly — so the check passes while proving nothing about the tag you asked
-for. Bind the requested tag to the exact filename with `--pattern`, and
-reconcile it against the tag the archive itself declares in `PROVISIONAL.md`.
+for.
+
+**And never reconcile the declared tag with a substring test.** Grepping
+`PROVISIONAL.md` for the requested tag looks like an identity check and is not
+one: requested `v2021.11.5` is a prefix of declared `v2021.11.5-wrong`, so a
+genuine archive built for a neighbouring tag passes it. That exact bug shipped
+here once. `validate-release-artifact` is the identity decision instead:
+requested tag, filename tag, and exactly one complete declaration record in
+`PROVISIONAL.md`, compared for **full equality**, with a missing, duplicated,
+extra, or prefix/suffix-colliding record all rejected. It also fails on any
+unrelated extra file in the directory, because "a matching asset is present" is
+a weaker claim than "this asset is all there is".
 
 The ticket gate automates exactly that sequence, including the identity
 reconciliation: `./gate.sh stranger-fetch v2021.11.5`, or

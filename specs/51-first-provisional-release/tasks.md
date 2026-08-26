@@ -15,9 +15,9 @@ Artifact ceiling: 3 KiB / 90 lines.
 
 ## S002 — Harden after O001
 
-- [ ] T009 Make requested tag, filename tag, and one complete internal declaration exactly equal; reject missing, extra, and prefix/suffix collision cases.
-- [ ] T010 Make producer identity failure leave no uploadable artifact and make the stranger verifier reject unrelated extra assets.
-- [ ] T011 Make PVP-domain failure distinguishable from drift and kill the frozen PVP-only broad-validator mutant.
+- [x] T009 Make requested tag, filename tag, and one complete internal declaration exactly equal; reject missing, extra, and prefix/suffix collision cases.
+- [x] T010 Make producer identity failure leave no uploadable artifact and make the stranger verifier reject unrelated extra assets.
+- [x] T011 Make PVP-domain failure distinguishable from drift and kill the frozen PVP-only broad-validator mutant.
 - [ ] T012 Re-audit the inherited mandate, retain live stranger fetch, and publish the hardened follow-up under milestone-owner merge authority.
 
 ## Post-merge ticket operation

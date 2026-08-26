@@ -213,9 +213,12 @@ if File.file?(docs_path)
   want(docs.include?('--pattern "$ASSET"'),
        "#{docs_path}: the stranger fetch must bind the requested tag to the exact " \
        'asset name with --pattern; a wildcard happily accepts another release\'s  archive, which downloads, extracts and smokes perfectly (D004, F004)')
-  want(docs.include?('grep -F "release tag: $TAG"'),
-       "#{docs_path}: the stranger fetch must reconcile the requested tag against " \
-       'the tag the archive itself declares in PROVISIONAL.md (D004, I006)')
+  want(docs.include?('scripts/release/validate-release-artifact "$TAG" .'),
+       "#{docs_path}: the stranger fetch must reconcile the requested tag through " \
+       'scripts/release/validate-release-artifact — a substring grep of  PROVISIONAL.md accepts a declared tag that merely extends the requested  one (D004, I006)')
+  want(!docs.include?('grep -F "release tag: $TAG"'),
+       "#{docs_path}: the documented stranger fetch must not reconcile the tag " \
+       'with a substring grep; requested v1.2.3 matches declared v1.2.3-wrong,  so the documented consumer would accept a neighbouring release (D004, I006)')
   want(docs.include?('reactivegas-server-'),
        "#{docs_path}: must document the release asset naming (I004)")
   want(docs.include?('gh release download'),

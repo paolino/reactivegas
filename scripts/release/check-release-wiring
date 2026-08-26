@@ -44,18 +44,36 @@ RELEASE_SURFACE=(
 # The version guards claim a strict domain, so the domain's edges are part of
 # what has to be shown failing: `01.2.3` is not a SemVer, and rejecting it must
 # not also reject a legitimate zero component.
+#
+# Each row asserts *which* outcome the seam reaches, not merely that it failed:
+#
+#   pass      exit 0, the one legal normalized pair
+#   drift     exit 1, both values parse and disagree
+#   malformed exit 65, a value is outside the domain
+#
+# Observing only pass/fail made the PVP half of this battery vacuous. Every
+# malformed Cabal version also differs textually from the expected `manifest.0`,
+# so broadening `release_cabal_version` to `[0-9]+` in all four positions let
+# each malformed row through the parser and out as ordinary drift — still
+# non-zero, still "fail", still green. The `pvp-*` rows below now separate a
+# rejected domain from a rejected comparison, which is exactly the distinction a
+# broadened parser destroys.
 version_domain_battery() {
-    local failures=0 row label manifest cabal expect fixtures actual
+    local failures=0 row label manifest cabal expect fixtures actual status
     local rows=(
         'strict-equality|2021.11.5|2021.11.5.0|pass'
         'zero-components|0.1.0|0.1.0.0|pass'
-        'drift|2021.11.5|2021.11.6.0|fail'
-        'leading-zero-major|01.2.3|01.2.3.0|fail'
-        'leading-zero-minor|1.02.3|1.02.3.0|fail'
-        'leading-zero-patch|1.2.03|1.2.03.0|fail'
-        'leading-zero-cabal-tail|1.2.3|1.2.3.00|fail'
-        'prerelease-suffix|1.2.3-ms2.0|1.2.3.0|fail'
-        'three-component-cabal|1.2.3|1.2.3|fail'
+        'drift|2021.11.5|2021.11.6.0|drift'
+        'semver-leading-zero-major|01.2.3|01.2.3.0|malformed'
+        'semver-leading-zero-minor|1.02.3|1.02.3.0|malformed'
+        'semver-leading-zero-patch|1.2.03|1.2.03.0|malformed'
+        'semver-prerelease-suffix|1.2.3-ms2.0|1.2.3.0|malformed'
+        'pvp-leading-zero-major|1.2.3|01.2.3.0|malformed'
+        'pvp-leading-zero-minor|1.2.3|1.02.3.0|malformed'
+        'pvp-leading-zero-patch|1.2.3|1.2.03.0|malformed'
+        'pvp-leading-zero-tail|1.2.3|1.2.3.00|malformed'
+        'pvp-too-few-components|1.2.3|1.2.3|malformed'
+        'pvp-too-many-components|1.2.3|1.2.3.0.0|malformed'
     )
     fixtures=$(mktemp -d)
     for row in "${rows[@]}"; do
@@ -63,17 +81,22 @@ version_domain_battery() {
         printf '{ ".": "%s" }\n' "$manifest" > "$fixtures/manifest.json"
         printf 'name: reactivegas\nversion:       %s\nlicense: BSD3\n' "$cabal" \
             > "$fixtures/fixture.cabal"
-        if "$script_dir/check-release-version" \
-                "$fixtures/manifest.json" "$fixtures/fixture.cabal" >/dev/null 2>&1; then
-            actual=pass
-        else
-            actual=fail
-        fi
+        status=0
+        "$script_dir/check-release-version" \
+            "$fixtures/manifest.json" "$fixtures/fixture.cabal" >/dev/null 2>&1 \
+            || status=$?
+        case "$status" in
+            0) actual=pass ;;
+            1) actual=drift ;;
+            65) actual=malformed ;;
+            *) actual="unexpected-exit-$status" ;;
+        esac
         if [ "$actual" = "$expect" ]; then
-            printf '  %-6s %-24s manifest=%s cabal=%s\n' "$actual" "$label" "$manifest" "$cabal"
+            printf '  %-9s %-26s manifest=%s cabal=%s exit=%s\n' \
+                "$actual" "$label" "$manifest" "$cabal" "$status"
         else
-            printf '  WRONG  %-24s manifest=%s cabal=%s expected=%s got=%s\n' \
-                "$label" "$manifest" "$cabal" "$expect" "$actual"
+            printf '  WRONG     %-26s manifest=%s cabal=%s expected=%s got=%s exit=%s\n' \
+                "$label" "$manifest" "$cabal" "$expect" "$actual" "$status"
             failures=$((failures + 1))
         fi
     done
@@ -118,7 +141,8 @@ self_test() {
         'docs-no-sync-dispatch|docs/en/releases.md|/gh workflow run "Sync Cabal version" --ref/d|must name the synchronization dispatch'
         'docs-recovery-out-of-order|docs/en/releases.md|/gh workflow run "Sync Cabal version" --ref/{h;d};$G|must be dispatched BEFORE CI'
         'docs-wildcard-fetch|docs/en/releases.md|s/--pattern "\$ASSET"/--pattern "reactivegas-server-*"/|exact asset name with --pattern'
-        'docs-no-tag-reconciliation|docs/en/releases.md|/grep -F "release tag: \$TAG"/d|reconcile the requested tag'
+        'docs-no-tag-reconciliation|docs/en/releases.md|/scripts\/release\/validate-release-artifact "\$TAG" \./d|reconcile the requested tag through'
+        'docs-substring-reconciliation|docs/en/releases.md|$a\grep -F "release tag: \$TAG" extracted/PROVISIONAL.md|must not reconcile the tag'
     )
 
     printf '%s: seeding %d deliberate defects\n' "$RELEASE_TOOL" "${#battery[@]}"

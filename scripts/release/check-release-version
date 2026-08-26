@@ -5,8 +5,8 @@ set -euo pipefail
 #
 # Exits zero only when the Cabal version is exactly the PVP normalization of the
 # authoritative manifest SemVer. Drift, malformed input, and unreadable input
-# are all non-zero; drift is reported distinctly from malformed input so a
-# negative control cannot pass for the wrong reason.
+# are all non-zero, and drift carries a different exit code from malformed input
+# so a negative control cannot pass for the wrong reason.
 
 RELEASE_TOOL=check-release-version
 export RELEASE_TOOL
@@ -25,8 +25,23 @@ script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 manifest_path=$1
 cabal_path=$2
 
-manifest_version=$(release_manifest_version "$manifest_path")
-cabal_version=$(release_cabal_version "$cabal_path")
+# The exit code is part of this command's contract:
+#
+#   0   the two versions are the one legal normalized pair
+#   1   drift — both values are in the domain and they disagree
+#   65  malformed or unreadable input — a value is not in the domain at all
+#
+# Keeping those two failures apart is not cosmetic, it is what makes the
+# permanent domain battery non-vacuous. Every malformed version also differs
+# textually from the expected one, so a test that observed only "non-zero"
+# stayed green when the PVP parser itself was broadened: the malformed value
+# sailed through the widened parser and was then reported as ordinary drift.
+# Observing *which* failure occurred is the signal that a broadened parser
+# cannot fake.
+EX_DATAERR=65
+
+manifest_version=$(release_manifest_version "$manifest_path") || exit "$EX_DATAERR"
+cabal_version=$(release_cabal_version "$cabal_path") || exit "$EX_DATAERR"
 expected_cabal_version=$(release_expected_cabal_version "$manifest_version")
 
 # R004: both observed versions are printed on success, not only on failure.
