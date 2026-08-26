@@ -6,3 +6,5 @@ result-*
 *.db
 tarogas.tgz
 lean/.lake/
+/gate.sh
+/gate-*.sh
