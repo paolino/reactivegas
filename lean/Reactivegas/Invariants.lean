@@ -755,14 +755,12 @@ so refunds can never push an account below zero. -/
 theorem solvent_preserved {s s' : State} {e : Event}
     (hr : Reach s)
     (hsolv : solvent s) (hstep : step s e = some s') : solvent s' := by
-  -- Audit finding 1 (submission 1, NOTE-003): the statement is false
-  -- without a reachability restriction. A state whose users contains
-  -- comuneId violates comune_not_a_member yet is solvent and not
-  -- stalled; a responsabile departure there moves the leaver's cassa
-  -- debt into the comune conto and drives it negative, breaking the
-  -- member-scoped conclusion. The hmem premise excludes exactly those
-  -- states; on reachable states it holds by
-  -- comune_not_a_member_of_reach. Deliberate proof debt this pass.
+  -- Audit findings (submissions 1 and 2): the statement is false
+  -- without a reachability restriction. An arbitrary State may contain
+  -- comuneId as a member or hold a dormant negative conto for a non-member;
+  -- departure or addUser can then make that debt violate the member-scoped
+  -- conclusion. The hr premise restricts the source to reachable states.
+  -- Deliberate proof debt this pass.
   obtain ⟨hsol, hamt⟩ := hsolv
   cases e with
   | addUser a u =>
@@ -874,20 +872,19 @@ theorem solvent_preserved {s s' : State} {e : Event}
 /-- The comune account is never a member of any state reachable from
 boot: the guarded boot excludes `comuneId` and every event preserves
 the exclusion (`addUser` refuses it and no other event inserts it).
-Named reachability invariant required by the audit-repair bounce
-(NOTE-003): `solvent_preserved` carries it as a premise, so
-`reach_solvent` composes the two at the trans step. Deliberate proof
-debt in this definitions-only pass. -/
+Named reachability invariant retained as deliberate proof debt from the
+audit-repair bounce (NOTE-003). `solvent_preserved` now carries its own
+`hr : Reach s` source premise and does not require this theorem as a
+premise. -/
 theorem comune_not_a_member_of_reach {s : State} (hr : Reach s) :
     comune_not_a_member s := by
   sorry
 
 /-- Solvency holds on every state reachable from boot. -/
 theorem reach_solvent {s : State} (hr : Reach s) : solvent s := by
-  -- #48 definitions-only pass (audit-repair bounce): the restated
-  -- solvent_preserved gained the comune_not_a_member premise, so the
-  -- trans step now needs comune_not_a_member_of_reach; pre-authorized
-  -- deliberate proof debt (NOTE-003).
+  -- #48 definitions-only pass: the trans case composes
+  -- solvent_preserved from hr, ih, and hstep alone; it needs no
+  -- comune_not_a_member premise. Deliberate proof debt this pass.
   sorry
 
 /-- Insolvency is impossible: no reachable state has a negative account. -/
