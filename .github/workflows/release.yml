@@ -1,0 +1,73 @@
+name: Release
+
+# Release Please maintains the release pull request on master. Merging that pull
+# request — a separate, separately authorized review — is what creates the tag
+# and the GitHub release. Nothing here publishes on a pull-request run.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  release-please:
+    name: Maintain the release pull request
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  publish-linux-server:
+    name: Publish the provisional linux server bundle
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TAG: ${{ needs.release-please.outputs.tag_name }}
+    steps:
+      - run: sudo rm -rf /opt&
+
+      # The tag Release Please just created is the provenance of the published
+      # asset. Building from a branch would publish bytes nobody can point at.
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.release-please.outputs.tag_name }}
+
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            trusted-public-keys = hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+            substituters = https://cache.iog.io https://cache.nixos.org/
+            accept-flake-config = true
+
+      - uses: cachix/cachix-action@v15
+        with:
+          name: paolino
+          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+
+      - name: Mark the release provisional
+        run: gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --prerelease
+
+      - name: Package the provisional server bundle
+        run: scripts/release/package-release-artifact "$TAG" "$RUNNER_TEMP/release"
+
+      - name: Upload the bundle to the release
+        run: |
+          gh release upload "$TAG" \
+            "$RUNNER_TEMP/release/reactivegas-server-$TAG-linux-x86_64.tar.gz" \
+            --repo "$GITHUB_REPOSITORY" --clobber

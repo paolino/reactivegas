@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+set -euo pipefail
+#
+# F002 — propagate the authoritative manifest SemVer into the Cabal package
+# version (R003). Shares its version semantics with `check-release-version`
+# through lib/version.sh rather than restating them, so the writer and the
+# assertion can never disagree about what "in sync" means.
+#
+# Changes only the package version field, and is idempotent: a second run on an
+# already-synchronized file is a no-op that still exits zero.
+
+RELEASE_TOOL=sync-cabal-version
+export RELEASE_TOOL
+
+usage() {
+    printf 'usage: %s MANIFEST_PATH CABAL_PATH\n' "$RELEASE_TOOL" >&2
+    exit 64
+}
+
+[ $# -eq 2 ] || usage
+
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=lib/version.sh
+. "$script_dir/lib/version.sh"
+
+manifest_path=$1
+cabal_path=$2
+
+manifest_version=$(release_manifest_version "$manifest_path")
+expected_cabal_version=$(release_expected_cabal_version "$manifest_version")
+current_cabal_version=$(release_cabal_version_raw "$cabal_path")
+
+if [ "$current_cabal_version" = "$expected_cabal_version" ]; then
+    printf 'cabal version already %s; nothing to synchronize\n' "$expected_cabal_version"
+    exit 0
+fi
+
+before=$(mktemp)
+trap 'rm -f "$before"' EXIT
+cp -- "$cabal_path" "$before"
+
+# The trailing capture preserves the existing column alignment of the field.
+sed -i -E "s/^version:([[:space:]]*)[^[:space:]]+[[:space:]]*$/version:\1$expected_cabal_version/" \
+    -- "$cabal_path"
+
+# "Changes only the package version" is asserted, not assumed: exactly one line
+# may differ, and the resulting field must be the expected PVP version.
+changed_lines=$(diff -- "$before" "$cabal_path" | grep -c '^[<>]' || true)
+if [ "$changed_lines" != 2 ]; then
+    cp -- "$before" "$cabal_path"
+    release_fail "refusing to write: expected exactly one changed line, saw $((changed_lines / 2))"
+    exit 1
+fi
+
+written_version=$(release_cabal_version "$cabal_path")
+if [ "$written_version" != "$expected_cabal_version" ]; then
+    cp -- "$before" "$cabal_path"
+    release_fail "wrote $written_version but expected $expected_cabal_version"
+    exit 1
+fi
+
+printf 'synchronized cabal version %s -> %s (manifest %s)\n' \
+    "$current_cabal_version" "$expected_cabal_version" "$manifest_version"

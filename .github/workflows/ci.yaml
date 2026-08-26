@@ -28,11 +28,29 @@ jobs:
           name: paolino
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
 
+      # Cheap release-line assertions first: version drift or a mis-wired
+      # release workflow should not cost a full build to discover.
+      - name: Check the manifest/Cabal version seam
+        run: |
+          scripts/release/check-release-version \
+            .release-please-manifest.json reactivegas.cabal
+
+      - name: Check the release wiring
+        run: |
+          scripts/release/check-release-wiring
+          scripts/release/check-release-wiring --self-test
+
+      # R010: the dev shell is a surface of its own, separate from every
+      # packaged Nix output, so it keeps a representative Cabal build.
       - name: Build all
         run: nix --quiet develop --command cabal build all
 
       - name: Check formatting
         run: |
+          # The inner script is single-quoted on purpose: `$hs_files` and the
+          # command substitution are expanded by the dev-shell bash, not by the
+          # runner shell that launches it.
+          # shellcheck disable=SC2016
           nix --quiet develop --command bash -c '
             hs_files=$(find . -name "*.hs" \
               -not -path "./dist-newstyle/*" \

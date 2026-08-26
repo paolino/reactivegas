@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+set -euo pipefail
+#
+# F001 — assert the manifest/Cabal version seam (I001).
+#
+# Exits zero only when the Cabal version is exactly the PVP normalization of the
+# authoritative manifest SemVer. Drift, malformed input, and unreadable input
+# are all non-zero; drift is reported distinctly from malformed input so a
+# negative control cannot pass for the wrong reason.
+
+RELEASE_TOOL=check-release-version
+export RELEASE_TOOL
+
+usage() {
+    printf 'usage: %s MANIFEST_PATH CABAL_PATH\n' "$RELEASE_TOOL" >&2
+    exit 64
+}
+
+[ $# -eq 2 ] || usage
+
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=lib/version.sh
+. "$script_dir/lib/version.sh"
+
+manifest_path=$1
+cabal_path=$2
+
+manifest_version=$(release_manifest_version "$manifest_path")
+cabal_version=$(release_cabal_version "$cabal_path")
+expected_cabal_version=$(release_expected_cabal_version "$manifest_version")
+
+# R004: both observed versions are printed on success, not only on failure.
+printf 'manifest version:       %s (%s)\n' "$manifest_version" "$manifest_path"
+printf 'cabal version:          %s (%s)\n' "$cabal_version" "$cabal_path"
+printf 'expected cabal version: %s\n' "$expected_cabal_version"
+
+if [ "$cabal_version" != "$expected_cabal_version" ]; then
+    printf '%s: version drift: cabal is %s but the manifest requires %s\n' \
+        "$RELEASE_TOOL" "$cabal_version" "$expected_cabal_version" >&2
+    exit 1
+fi
+
+printf 'release version seam: manifest and Cabal agree\n'

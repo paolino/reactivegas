@@ -1,0 +1,56 @@
+name: Sync Cabal version
+
+# The release manifest is the version authority; the Cabal file is a derived
+# representation of it. This keeps the derivation up to date on the release
+# pull request so the drift check in CI can stay unconditional.
+#
+# `workflow_dispatch` is not optional. A release pull request opened by the
+# `github-actions` bot fires no `pull_request` event, so on that branch this
+# workflow never runs by itself and the bumped manifest sits next to a stale
+# Cabal version. Dispatching this workflow is the FIRST step of the no-secret
+# recovery path; dispatching CI before it only produces a red drift check that
+# nothing can clear. See docs/en/releases.md.
+on:
+  workflow_dispatch:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    name: Synchronize the Cabal version with the release manifest
+    # `github.head_ref` is set only for pull_request events; a dispatch carries
+    # its target in `github.ref_name`. Guarding on just the former would make
+    # the dispatch surface silently skip, which is the defect this recovers.
+    if: >-
+      startsWith(github.head_ref, 'release-please--')
+      || (github.event_name == 'workflow_dispatch'
+          && startsWith(github.ref_name, 'release-please--'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Synchronize the Cabal version
+        run: |
+          scripts/release/sync-cabal-version \
+            .release-please-manifest.json reactivegas.cabal
+
+      - name: Commit the synchronized version
+        run: |
+          if git diff --quiet -- reactivegas.cabal; then
+            echo 'cabal version already synchronized; nothing to push'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- reactivegas.cabal
+          git commit -m 'chore: sync cabal version with the release manifest'
+          git push
