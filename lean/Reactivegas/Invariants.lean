@@ -753,7 +753,7 @@ theorem solvent_init (r : UserId) : solvent (State.init r) :=
 balances stay non-negative and all pledged amounts stay non-negative,
 so refunds can never push an account below zero. -/
 theorem solvent_preserved {s s' : State} {e : Event}
-    (hmem : comune_not_a_member s)
+    (hr : Reach s)
     (hsolv : solvent s) (hstep : step s e = some s') : solvent s' := by
   -- Audit finding 1 (submission 1, NOTE-003): the statement is false
   -- without a reachability restriction. A state whose users contains
