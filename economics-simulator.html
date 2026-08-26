@@ -139,6 +139,18 @@
     border-radius: 5px; font-size: .64rem; font-weight: 700; padding: 1px 5px; white-space: nowrap;
   }
   .gb.dim { border-color: var(--line); background: var(--bg); color: var(--muted); }
+  .gbx {
+    margin-left: auto; border: 1px solid #d9c8ef; background: #f3edfb; color: #5b3e96;
+    border-radius: 5px; font-size: .62rem; font-weight: 700; padding: 1px 5px; white-space: nowrap;
+  }
+  .msec {
+    margin: 6px 2px 2px; padding-top: 5px; border-top: 1px dashed #d9c8ef;
+    font-size: .66rem; font-weight: 700; color: #5b3e96; letter-spacing: .03em;
+  }
+  button.mi.ext:not(:disabled):hover { background: #f3edfb; }
+  .entry.ext { border-left-color: #8a63c9; background: #f7f3fc; }
+  .eprov { font-size: .72rem; color: #5b3e96; margin-top: 2px; }
+  .toast.ext { background: #f3edfb; border-color: #d9c8ef; }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 2px; }
   .lchip {
     border: 1px solid #c9d8ee; background: var(--chip); border-radius: 8px;
@@ -632,8 +644,10 @@ const EV = {
   electResponsabile:  { it: 'Eleggi responsabile', roles: ['author', 'targetMember'] },
   removeResponsabile: { it: 'Revoca responsabile', roles: ['author', 'targetResp'] },
   openPurchase:       { it: 'Apri acquisto',       roles: ['author', 'label'] },
-  grantPermission:    { it: 'Concedi permesso',    roles: ['coll', 'author'] },
-  denyPermission:     { it: 'Nega permesso',       roles: ['coll', 'author'] },
+  // interface outcomes: the vote happens outside this machine (kelgroups);
+  // the responsabile carrier required by Step.lean stays inside the adapter
+  grantPermission:    { it: 'Esito: permesso concesso', roles: ['coll'], external: true },
+  denyPermission:     { it: 'Esito: acquisto negato',   roles: ['coll'], external: true },
   deposit:            { it: 'Deposito',            roles: ['author', 'user'], amount: true },
   withdraw:           { it: 'Prelievo',            roles: ['author', 'user'], amount: true },
   transferCassa:      { it: 'Giro di cassa',       roles: ['author', 'from'], amount: true },
@@ -673,8 +687,8 @@ function descr(tag, a) {
     case 'electResponsabile': return `${nm(a.author)} elegge ${nm(a.target)}`;
     case 'removeResponsabile': return `${nm(a.author)} revoca ${nm(a.target)}`;
     case 'openPurchase': return `${nm(a.author)} apre «${lbl(a.c)}»`;
-    case 'grantPermission': return `${nm(a.author)} concede a «${lbl(a.c)}»`;
-    case 'denyPermission': return `${nm(a.author)} nega «${lbl(a.c)}»`;
+    case 'grantPermission': return `«${lbl(a.c)}»: permesso concesso — esito esterno`;
+    case 'denyPermission': return `«${lbl(a.c)}»: acquisto negato — esito esterno`;
     case 'deposit': return `${nm(a.author)} deposita ${a.v} per ${nm(a.user)}`;
     case 'withdraw': return `${nm(a.author)} preleva ${a.v} per ${nm(a.user)}`;
     case 'transferCassa': return `${nm(a.author)} riceve ${a.v} dalla cassa di ${nm(a.from_)}`;
@@ -710,11 +724,13 @@ function runAttempt(tag, args, toyLabel) {
     }
     state = res.state;
     if (tag === 'openPurchase') collSeq = Math.max(collSeq, args.c + 1);
-    history.unshift({ kind: 'acc', tag, args, descr: d, flow: res.flow, inv: invSnapshot() });
+    history.unshift({ kind: 'acc', tag, args, descr: d, flow: res.flow,
+      ext: !!EV[tag].external, inv: invSnapshot() });
     invNote = `dopo .${tag} ✓`;
   } else {
     if (tag === 'openPurchase') delete colLabels[args.c];
-    history.unshift({ kind: 'rej', tag, args, descr: d, failed: res.failed, inv: invSnapshot() });
+    history.unshift({ kind: 'rej', tag, args, descr: d, failed: res.failed,
+      ext: !!EV[tag].external, inv: invSnapshot() });
     invNote = `dopo .${tag} ✗ — stato invariato`;
   }
   return res;
@@ -761,11 +777,6 @@ function itemsForMember(M) {
       dis: A || (state.users.some(u => !resp(u)) ? null : B('—', 'tutti già ★')) },
     { tag: 'removeResponsabile', pre: { author: M }, dis: A },
     { tag: 'openPurchase', pre: { author: M }, dis: A },
-    { tag: 'grantPermission', pre: { author: M },
-      dis: A || (cols.some(c => !c.permitted) ? null
-        : B('—', cols.length ? 'già permesso' : 'nessuna colletta')) },
-    { tag: 'denyPermission', pre: { author: M },
-      dis: A || (cols.length ? null : B('—', 'nessuna colletta')) },
     { tag: 'deposit', pre: { author: M },
       dis: A || (othersOf(M).length ? null : B('—', 'serve un’altra persona')) },
     { tag: 'withdraw', pre: { author: M },
@@ -832,14 +843,17 @@ function itemsForPile(c) {
       dis: col.pending.length ? null : B('—', 'nessun pledge pendente') },
     { tag: 'correctPledge', pre: { c },
       dis: col.accepted.length ? null : B('—', 'nessun pledge accettato') },
-    { tag: 'grantPermission', pre: { c },
-      dis: col.permitted ? B('—', 'già permesso') : null },
-    { tag: 'denyPermission', pre: { c }, dis: null },
     { tag: 'closePurchase', pre: { c },
       dis: !col.permitted ? B('PERMITTED (L2)', 'serve il permesso del gruppo')
         : (col.pending.length ? B('NO-PENDING (L4)', 'pledge pendenti da risolvere') : null) },
     { tag: 'failPurchase', pre: { c },
       dis: col.pending.length ? B('NO-PENDING (L4)', 'pledge pendenti da risolvere') : null },
+    // incoming interface outcomes — vote not modelled by this machine
+    { tag: 'grantPermission', pre: { c }, ext: true,
+      dis: !state.responsabili.length ? B('AUTH', 'nessun responsabile')
+        : (col.permitted ? B('—', 'già permesso') : null) },
+    { tag: 'denyPermission', pre: { c }, ext: true,
+      dis: state.responsabili.length ? null : B('AUTH', 'nessun responsabile') },
   ];
 }
 
@@ -1117,7 +1131,8 @@ function renderStatus() {
       <button type="button" class="xbtn" id="st-x">✕</button>`;
   } else if (ui.mode === 'pick') {
     const role = ui.needs[0];
-    const ask = role ? (ASK_BY_EV[ui.ev + '.' + role] || ASK[role]) : 'importo…';
+    const ask = role ? (ASK_BY_EV[ui.ev + '.' + role] || ASK[role])
+      : (EV[ui.ev].external ? 'esito esterno…' : 'importo…');
     const filled = EV[ui.ev].roles.map(r => ROLEKEY[r]).filter(k => ui.params[k] !== undefined)
       .map(k => k === 'c' ? `«${lbl(ui.params.c)}»` : (k === '_label' ? '' : nm(ui.params[k])))
       .filter(Boolean).join(' · ');
@@ -1153,10 +1168,12 @@ function renderLog() {
   const box = $('log');
   if (!history.length) { box.innerHTML = '<p class="empty">nessun tentativo</p>'; return; }
   box.innerHTML = history.map(en => {
+    const prov = en.ext
+      ? '<div class="eprov">⇣ voto di maggioranza esterno — non modellato né verificato qui</div>' : '';
     if (en.kind === 'acc') {
-      return `<div class="entry acc">
-        <div class="eh">✓ ${esc(en.descr)} <span class="mono">.${en.tag}</span></div>
-        <div class="efl">${esc(en.flow)}</div>
+      return `<div class="entry acc${en.ext ? ' ext' : ''}">
+        <div class="eh">${en.ext ? '⇣' : '✓'} ${esc(en.descr)} <span class="mono">.${en.tag}</span></div>
+        <div class="efl">${esc(en.flow)}</div>${prov}
         <div class="einv">${en.inv.sc} − ${en.inv.sn} − ${en.inv.se} = ${en.inv.v}</div>
       </div>`;
     }
@@ -1252,7 +1269,7 @@ function playFx(tag, a, preState, pre) {
       break;
     }
     case 'openPurchase': flashKeys([`pile:${a.c}`]); break;
-    case 'grantPermission': floatTx(`pile:${a.c}`, 'L2 ✓', '#1c7c43'); break;
+    case 'grantPermission': floatTx(`pile:${a.c}`, '⇣ L2 ✓ esito esterno', '#5b3e96'); break;
     case 'denyPermission': {
       const col = preCol(a.c);
       [...col.accepted, ...col.pending].forEach((p, i) =>
@@ -1308,9 +1325,9 @@ function playFx(tag, a, preState, pre) {
   }
 }
 
-function toast(html, x, y) {
+function toast(html, x, y, cls) {
   const t = document.createElement('div');
-  t.className = 'toast';
+  t.className = 'toast' + (cls ? ' ' + cls : '');
   t.innerHTML = html;
   document.body.appendChild(t);
   const w = t.offsetWidth, h = t.offsetHeight;
@@ -1347,13 +1364,21 @@ function selectSubject(sub, x, y) {
   ui = { mode: 'menu', subject: sub, ev: null, params: {}, needs: [], xy: [x, y] };
   renderScene(); renderStatus();
   const items = menuItems(sub);
+  const row = (it, i) => it.dis
+    ? `<button class="mi${it.ext ? ' ext' : ''}" disabled title="${esc(it.dis.note)}"><span>${esc(EV[it.tag].it)}</span>
+         <span class="gb${it.dis.badge === '—' ? ' dim' : ''}">${esc(it.dis.badge === '—' ? it.dis.note || '—' : it.dis.badge)}</span></button>`
+    : it.ext
+    ? `<button class="mi ext" data-i="${i}" title=".${it.tag}"><span>${esc(EV[it.tag].it)}</span>
+         <span class="gbx">VOTO NON MODELLATO</span></button>`
+    : `<button class="mi" data-i="${i}" title=".${it.tag}"><span>${esc(EV[it.tag].it)}</span>
+         <span class="tag mono">.${it.tag}</span></button>`;
+  const mains = items.map((it, i) => it.ext ? '' : row(it, i)).join('');
+  const exts = items.map((it, i) => it.ext ? row(it, i) : '').join('');
   const html = `<div class="pt">${esc(subTitle(sub))}
       <button type="button" class="xbtn2" data-x="1">✕</button></div>
-    <div class="menu">` + items.map((it, i) => it.dis
-      ? `<button class="mi" disabled title="${esc(it.dis.note)}"><span>${esc(EV[it.tag].it)}</span>
-           <span class="gb${it.dis.badge === '—' ? ' dim' : ''}">${esc(it.dis.badge === '—' ? it.dis.note || '—' : it.dis.badge)}</span></button>`
-      : `<button class="mi" data-i="${i}" title=".${it.tag}"><span>${esc(EV[it.tag].it)}</span>
-           <span class="tag mono">.${it.tag}</span></button>`).join('') + '</div>';
+    <div class="menu">` + mains +
+    (exts ? `<div class="msec">esito dall’esterno — voto non modellato</div>` + exts : '') +
+    '</div>';
   popAt(x, y, html);
   $('pop').querySelectorAll('[data-i]').forEach(b =>
     b.addEventListener('click', () => startEvent(items[Number(b.dataset.i)])));
@@ -1374,8 +1399,28 @@ function advance() {
     openLabelPop(); return;
   }
   if (ui.needs.length) { renderScene(); renderStatus(); return; }
+  if (EV[ui.ev].external) { openExternalConfirm(); return; }
   if (EV[ui.ev].amount) { openAmountPop(); return; }
   commitAttempt();
+}
+
+// Interface outcome: the vote happened outside this machine. No member is
+// asked to authorize it; the Step.lean responsabile carrier stays internal.
+function openExternalConfirm() {
+  renderScene(); renderStatus();
+  const html = `<div class="pt">esito esterno <span class="gbx">VOTO NON MODELLATO</span>
+      <button type="button" class="xbtn2" data-x="1">✕</button></div>
+    <div class="tiny">${esc(EV[ui.ev].it)} per «${esc(lbl(ui.params.c))}»</div>
+    <div class="tiny">Nel sistema reale è l'esito di un voto di maggioranza del gruppo (kelgroups).<br>
+      Questa macchina economica non modella né verifica quel voto.</div>
+    <div class="ar2"><button type="button" class="primary" id="ext-apply">applica esito</button></div>`;
+  popAt(ui.xy[0], ui.xy[1], html);
+  $('ext-apply').addEventListener('click', () => {
+    ui.params.author = state.responsabili[0];   // machine adapter carrier only
+    commitAttempt();
+  });
+  const xb = $('pop').querySelector('[data-x]');
+  if (xb) xb.addEventListener('click', cancelAll);
 }
 
 function openLabelPop() {
@@ -1448,6 +1493,7 @@ function commitAttempt() {
   }
   if (tag === 'openPurchase') args.c = ui.params.c;
   if (EV[tag].amount) args.v = ui.params.v;
+  if (EV[tag].external) args.author = ui.params.author;
   const label = ui.params._label;
   const preState = state;
   const preLayout = { ...layout };
@@ -1457,6 +1503,9 @@ function commitAttempt() {
   renderAll();
   if (res.ok) {
     playFx(tag, args, preState, preLayout);
+    if (EV[tag].external)
+      toast(`<b>⇣ esito esterno applicato</b>
+        <span class="tiny">voto di maggioranza non modellato né verificato qui</span>`, px, py, 'ext');
   } else {
     toast(`<b>✗ ${esc(EV[tag].it)}</b> ` +
       res.failed.map(guardChip).join(' ') +
@@ -1647,6 +1696,67 @@ async function selftest() {
   expect(en.innerText.includes('stato invariato'), 'esito non mostrato');
   expect(JSON.stringify(state) === before, 'stato mutato da un rifiuto');
   invOk();
+
+  // governance: grant/deny mai come azione personale di un membro
+  await click('[data-key="member:0"]');
+  expect(!document.querySelector('#pop [title=".grantPermission"]') &&
+    !document.querySelector('#pop [title=".denyPermission"]'),
+    'grant/deny offerti come azione del membro');
+  await click('#scene');
+
+  // governance: sezione esterna e marcatura visibile PRIMA dell'applicazione
+  await click('[data-key="pile:1"]');
+  expect(document.querySelector('#pop .msec'), 'sezione esito esterno assente');
+  expect(document.querySelectorAll('#pop .gbx').length >= 2,
+    'badge VOTO NON MODELLATO assenti');
+
+  // applica il grant come esito esterno: nessuna scelta di autore, avviso locale
+  await click('#pop [title=".grantPermission"]');
+  const conf = document.querySelector('#pop .pbox');
+  expect(conf && conf.innerText.includes('non modella'), 'avviso di provenienza assente');
+  expect(conf.innerText.includes('VOTO NON MODELLATO'), 'marcatura assente alla conferma');
+  await click('#ext-apply');
+  const ge = lastEntry();
+  expect(ge.className.includes('ext'), 'risultato non marcato come esterno');
+  expect(ge.innerText.includes('non modellato'), 'provenienza assente nel risultato');
+  expect(!/Anna|Bruno|Elena|Carlo/.test(ge.querySelector('.eh').innerText),
+    'esito attribuito a un officer');
+  invOk();
+
+  // effetto economico intatto: accetta il pledge pendente e chiudi
+  await click('[data-key="pile:1"]');
+  await click('#pop [title=".acceptPledge"]');
+  await click('[data-key="member:1"]');
+  await click('[data-key="member:1"]');
+  await click('[data-key="pile:1"]');
+  await click('#pop [title=".closePurchase"]');
+  await click('[data-key="member:1"]');
+  expect(document.getElementById('done-body').innerText.includes('Olio'),
+    'closePurchase senza acquisto completato');
+  invOk();
+
+  // esito negativo: rimborso, colletta chiusa, nessun acquisto
+  await click('[data-key="member:1"]');
+  await click('#pop [title=".openPurchase"]');
+  await click('#pop [data-l="Vino"]');
+  await click('[data-key="pile:2"]');
+  await click('#pop [title=".denyPermission"]');
+  await click('#ext-apply');
+  expect(!document.querySelector('[data-key="pile:2"]'), 'colletta negata ancora aperta');
+  expect(!document.getElementById('done-body').innerText.includes('Vino'),
+    'denyPermission ha creato un acquisto');
+  invOk();
+
+  // nessuno stato o evento di voto inventato
+  const TAGS = ['addUser', 'electResponsabile', 'removeResponsabile', 'openPurchase',
+    'grantPermission', 'denyPermission', 'deposit', 'withdraw', 'transferCassa',
+    'pledge', 'acceptPledge', 'refusePledge', 'correctPledge', 'closePurchase',
+    'failPurchase'];
+  expect(Object.keys(EV).length === 15 && TAGS.every(t => EV[t]),
+    'vocabolario eventi alterato');
+  expect(JSON.stringify(Object.keys(state).sort()) ===
+    JSON.stringify(['casse', 'collections', 'conti', 'responsabili', 'users']),
+    'stato macchina esteso oltre Lean');
 }
 
 if (/[?&]selftest=1/.test(location.search)) {
