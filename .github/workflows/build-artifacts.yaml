@@ -1,15 +1,29 @@
 name: Build artifacts
 
+# Exercises the release packaging boundary on pull requests, using the same
+# `scripts/release/package-release-artifact` command the release workflow runs.
+# There is deliberately only one packaging implementation: a second one here
+# would be a second artifact shape that nothing keeps in step with the released
+# one.
+#
+# What this job uploads is a workflow artifact for inspection during review. It
+# is NOT a release, it is not fetchable by a stranger, and it never satisfies
+# the published-asset acceptance boundary — see docs/en/releases.md.
 on:
   workflow_dispatch:
   pull_request:
     branches:
       - master
 
+permissions:
+  contents: read
+
 jobs:
   linux-artifact:
-    name: Build and upload linux artifact
+    name: Package the provisional linux server bundle
     runs-on: ubuntu-latest
+    env:
+      TAG: provisional-ci-${{ github.run_id }}
     steps:
       - run: sudo rm -rf /opt&
       - uses: actions/checkout@v6
@@ -23,10 +37,14 @@ jobs:
         with:
           name: paolino
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
-      - name: Build server
-        run: nix --quiet build .#default -o server
-      - name: Upload Artifact
+
+      # Builds Nix .#default, stages it, smokes `bin/server --help`, and proves
+      # the archived entrypoint is byte-identical to the smoked one.
+      - name: Package and smoke the server bundle
+        run: scripts/release/package-release-artifact "$TAG" "$RUNNER_TEMP/release"
+
+      - name: Upload the packaged bundle
         uses: actions/upload-artifact@v6
         with:
-          name: server-linux
-          path: ./server
+          name: provisional-server-linux-x86_64
+          path: ${{ runner.temp }}/release/reactivegas-server-${{ env.TAG }}-linux-x86_64.tar.gz

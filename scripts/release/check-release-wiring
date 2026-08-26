@@ -1,0 +1,185 @@
+#!/usr/bin/env bash
+set -euo pipefail
+#
+# Run the structural release-wiring assertions (see lib/check-wiring.rb).
+#
+#   check-release-wiring [REPO_ROOT]   assert the release line is wired correctly
+#   check-release-wiring --self-test   assert those assertions can actually fail
+#
+# The self-test exists because an assertion that has never been observed failing
+# is not evidence. It seeds one deliberate defect at a time into a throwaway copy
+# of the release surface, checks that the defect really landed, and requires the
+# checker to reject it *for the matching reason* — a mutant caught by an
+# unrelated assertion would prove nothing about the one under test.
+
+RELEASE_TOOL=check-release-wiring
+
+usage() {
+    printf 'usage: %s [REPO_ROOT | --self-test]\n' "$RELEASE_TOOL" >&2
+    exit 64
+}
+
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+checker="$script_dir/lib/check-wiring.rb"
+
+# GitHub runners ship Ruby; a developer shell may not. Nix is a hard dependency
+# of this repository either way, so fall back to it rather than skipping — a
+# check that silently does not run is worse than no check.
+if command -v ruby >/dev/null 2>&1; then
+    ruby_cmd=(ruby)
+else
+    ruby_cmd=(nix --quiet shell nixpkgs#ruby -c ruby)
+fi
+
+RELEASE_SURFACE=(
+    release-please-config.json
+    .release-please-manifest.json
+    .github/workflows/release.yml
+    .github/workflows/ci.yaml
+    .github/workflows/sync-cabal-version.yml
+    docs/en/releases.md
+)
+
+
+# The version guards claim a strict domain, so the domain's edges are part of
+# what has to be shown failing: `01.2.3` is not a SemVer, and rejecting it must
+# not also reject a legitimate zero component.
+version_domain_battery() {
+    local failures=0 row label manifest cabal expect fixtures actual
+    local rows=(
+        'strict-equality|2021.11.5|2021.11.5.0|pass'
+        'zero-components|0.1.0|0.1.0.0|pass'
+        'drift|2021.11.5|2021.11.6.0|fail'
+        'leading-zero-major|01.2.3|01.2.3.0|fail'
+        'leading-zero-minor|1.02.3|1.02.3.0|fail'
+        'leading-zero-patch|1.2.03|1.2.03.0|fail'
+        'leading-zero-cabal-tail|1.2.3|1.2.3.00|fail'
+        'prerelease-suffix|1.2.3-ms2.0|1.2.3.0|fail'
+        'three-component-cabal|1.2.3|1.2.3|fail'
+    )
+    fixtures=$(mktemp -d)
+    for row in "${rows[@]}"; do
+        IFS='|' read -r label manifest cabal expect <<< "$row"
+        printf '{ ".": "%s" }\n' "$manifest" > "$fixtures/manifest.json"
+        printf 'name: reactivegas\nversion:       %s\nlicense: BSD3\n' "$cabal" \
+            > "$fixtures/fixture.cabal"
+        if "$script_dir/check-release-version" \
+                "$fixtures/manifest.json" "$fixtures/fixture.cabal" >/dev/null 2>&1; then
+            actual=pass
+        else
+            actual=fail
+        fi
+        if [ "$actual" = "$expect" ]; then
+            printf '  %-6s %-24s manifest=%s cabal=%s\n' "$actual" "$label" "$manifest" "$cabal"
+        else
+            printf '  WRONG  %-24s manifest=%s cabal=%s expected=%s got=%s\n' \
+                "$label" "$manifest" "$cabal" "$expect" "$actual"
+            failures=$((failures + 1))
+        fi
+    done
+    rm -rf -- "$fixtures"
+    [ "$failures" -eq 0 ] || return 1
+    printf '%s: version domain honoured on all %d rows\n' "$RELEASE_TOOL" "${#rows[@]}"
+}
+
+self_test() {
+    local root failures=0
+    root=$(git rev-parse --show-toplevel)
+
+    local missing=()
+    local relative
+    for relative in "${RELEASE_SURFACE[@]}"; do
+        [ -f "$root/$relative" ] || missing+=("$relative")
+    done
+    if [ ${#missing[@]} -ne 0 ]; then
+        printf '%s: cannot seed defects, the release surface is missing: %s\n' \
+            "$RELEASE_TOOL" "${missing[*]}" >&2
+        return 1
+    fi
+
+    # id | file | sed program seeding the defect | substring the report must contain
+    local battery=(
+        'prerelease-off|release-please-config.json|s/"prerelease": true/"prerelease": false/|prerelease must be true'
+        'prerelease-versioning|release-please-config.json|s/"prerelease": true/"versioning": "prerelease", "prerelease": true/|versioning strategy must stay default'
+        'manifest-not-semver|.release-please-manifest.json|s/"[0-9]+\.[0-9]+\.[0-9]+"/"9.9.9-ms2.0"/|not strict SemVer'
+        'release-from-pull-request|.github/workflows/release.yml|/^  workflow_dispatch:$/a\  pull_request:\n    branches:\n      - master|must not be triggered by pull requests'
+        'release-mutable-ref|.github/workflows/release.yml|s/ref: \$\{\{ needs.release-please.outputs.tag_name \}\}/ref: master/|must check out the emitted tag_name'
+        'release-ungated|.github/workflows/release.yml|/^    if: needs.release-please.outputs.release_created/d|must be gated on release_created'
+        'release-not-prerelease|.github/workflows/release.yml|/--prerelease/d|must assert the release is a prerelease'
+        'ci-no-dispatch|.github/workflows/ci.yaml|/^  workflow_dispatch:$/d|workflow_dispatch must stay'
+        'ci-no-drift-check|.github/workflows/ci.yaml|/check-release-version/d|drift must be rejected on every run'
+        'ci-no-wiring-check|.github/workflows/ci.yaml|/check-release-wiring/d|must themselves run in CI'
+        'ci-no-devshell-build|.github/workflows/ci.yaml|s/nix --quiet develop --command cabal build all/nix --quiet build .#default/|must stay; a'
+        'sync-unguarded|.github/workflows/sync-cabal-version.yml|s/release-please--/some-other-branch--/|guarded to release-please branches'
+        'docs-no-recovery|docs/en/releases.md|/gh workflow run CI --ref release-please--branches--master/d|exact bot-PR CI recovery command'
+        'sync-no-dispatch|.github/workflows/sync-cabal-version.yml|/^  workflow_dispatch:$/d|needs workflow_dispatch'
+        'sync-guard-pr-only|.github/workflows/sync-cabal-version.yml|s/github.event_name == .workflow_dispatch./false/|guard must admit workflow_dispatch'
+        'sync-checkout-head-only|.github/workflows/sync-cabal-version.yml|s/ref_name \}\}/}}/|checkout must resolve the branch on dispatch'
+        'docs-no-sync-dispatch|docs/en/releases.md|/gh workflow run "Sync Cabal version" --ref/d|must name the synchronization dispatch'
+        'docs-recovery-out-of-order|docs/en/releases.md|/gh workflow run "Sync Cabal version" --ref/{h;d};$G|must be dispatched BEFORE CI'
+        'docs-wildcard-fetch|docs/en/releases.md|s/--pattern "\$ASSET"/--pattern "reactivegas-server-*"/|exact asset name with --pattern'
+        'docs-no-tag-reconciliation|docs/en/releases.md|/grep -F "release tag: \$TAG"/d|reconcile the requested tag'
+    )
+
+    printf '%s: seeding %d deliberate defects\n' "$RELEASE_TOOL" "${#battery[@]}"
+
+    local entry id file program expected mutant report
+    for entry in "${battery[@]}"; do
+        IFS='|' read -r id file program expected <<< "$entry"
+
+        if [ -z "$id" ] || [ -z "$file" ] || [ -z "$program" ] || [ -z "$expected" ]; then
+            printf '  MALFORMED   %s\n' "$entry"
+            failures=$((failures + 1))
+            continue
+        fi
+
+        mutant=$(mktemp -d)
+        # (reuses the `relative` local declared above)
+        for relative in "${RELEASE_SURFACE[@]}"; do
+            mkdir -p -- "$mutant/$(dirname -- "$relative")"
+            cp -- "$root/$relative" "$mutant/$relative"
+        done
+
+        sed -i -E -e "$program" -- "$mutant/$file"
+
+        # A mutation that failed to apply would report "caught" while testing
+        # nothing, so every mutant proves its own edit landed.
+        if cmp -s -- "$root/$file" "$mutant/$file"; then
+            printf '  NOT-APPLIED %-24s the seed left %s unchanged\n' "$id" "$file"
+            failures=$((failures + 1))
+            rm -rf -- "$mutant"
+            continue
+        fi
+
+        if report=$("${ruby_cmd[@]}" "$checker" "$mutant" 2>&1); then
+            printf '  SURVIVED    %-24s %s accepted a seeded defect in %s\n' "$id" "$checker" "$file"
+            failures=$((failures + 1))
+        elif ! printf '%s' "$report" | grep -qF -- "$expected"; then
+            printf '  WRONG-REASON %-23s rejected, but no assertion mentioned %s\n' "$id" "$expected"
+            failures=$((failures + 1))
+        else
+            printf '  killed      %-24s %s\n' "$id" "$expected"
+        fi
+
+        rm -rf -- "$mutant"
+    done
+
+    if [ "$failures" -ne 0 ]; then
+        printf '%s: %d of %d assertions could not be shown to fail\n' \
+            "$RELEASE_TOOL" "$failures" "${#battery[@]}" >&2
+        return 1
+    fi
+
+    version_domain_battery
+
+    printf '%s: all %d assertions rejected their seeded defect for the stated reason\n' \
+        "$RELEASE_TOOL" "${#battery[@]}"
+}
+
+case "${1:-}" in
+    --self-test) [ $# -eq 1 ] || usage; self_test ;;
+    -h | --help) usage ;;
+    '') "${ruby_cmd[@]}" "$checker" "$(git rev-parse --show-toplevel)" ;;
+    -*) usage ;;
+    *) [ $# -eq 1 ] || usage; "${ruby_cmd[@]}" "$checker" "$1" ;;
+esac

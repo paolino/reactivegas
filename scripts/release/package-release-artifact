@@ -1,0 +1,107 @@
+#!/usr/bin/env bash
+set -euo pipefail
+#
+# F003 — turn the Nix `.#default` server output into the one provisional
+# release asset for a given tag (D002, R006, R007). The same command runs
+# locally, on pull requests, and in the release workflow, so the bytes CI
+# uploads come from code a developer can run by hand.
+#
+# Both smokes below are mandatory: the staged one proves the entrypoint works,
+# and the extracted one — compared byte-for-byte against the staged binary —
+# proves the archive that gets uploaded carries exactly the executable that was
+# smoked (I005).
+
+RELEASE_TOOL=package-release-artifact
+export RELEASE_TOOL
+
+usage() {
+    printf 'usage: %s TAG OUTPUT_DIRECTORY\n' "$RELEASE_TOOL" >&2
+    exit 64
+}
+
+[ $# -eq 2 ] || usage
+
+tag=$1
+output_directory=$2
+
+platform=linux-x86_64
+smoke_banner='Run the reactivegas server'
+
+die() {
+    printf '%s: %s\n' "$RELEASE_TOOL" "$*" >&2
+    exit 1
+}
+
+case "$tag" in
+    '' | */* | .*) die "refusing an empty, path-like, or dot-leading tag: '$tag'" ;;
+esac
+
+repo_root=$(git rev-parse --show-toplevel)
+mkdir -p -- "$output_directory"
+output_directory=$(cd -- "$output_directory" && pwd)
+archive="$output_directory/reactivegas-server-$tag-$platform.tar.gz"
+
+stage_dir=$(mktemp -d)
+verify_dir=$(mktemp -d)
+# A run that fails any post-archive check must not leave an uploadable
+# archive behind: the next glob would happily find it (D002).
+package_succeeded=0
+trap 'rm -rf -- "$stage_dir" "$verify_dir"; [ "$package_succeeded" = 1 ] || rm -f -- "$archive"' EXIT
+
+store_path=$(cd -- "$repo_root" && nix --quiet build .#default --no-link --print-out-paths)
+[ -x "$store_path/bin/server" ] \
+    || die "nix .#default did not provide an executable bin/server: $store_path"
+
+mkdir -p -- "$stage_dir/bin"
+install -m 0755 -- "$store_path/bin/server" "$stage_dir/bin/server"
+
+# I004 — provisional status travels with the bytes, not only with the release
+# page, so an asset detached from GitHub still declares what it is.
+cat > "$stage_dir/PROVISIONAL.md" <<NOTICE
+# Provisional reactivegas server bundle
+
+- release tag: $tag
+- platform: $platform
+- entrypoint: bin/server
+
+This is an **interim milestone artifact**, published as a GitHub *prerelease*.
+It is the current Nix \`.#default\` server build, packaged so the milestone can
+be exercised end to end. It carries no stability, compatibility, or support
+guarantee, and it is not a general availability release.
+
+Smoke command: \`bin/server --help\`
+NOTICE
+
+"$stage_dir/bin/server" --help | grep -qF "$smoke_banner" \
+    || die "staged smoke failed: 'bin/server --help' did not report '$smoke_banner'"
+staged_digest=$(sha256sum -- "$stage_dir/bin/server" | cut -d' ' -f1)
+
+rm -f -- "$archive"
+tar -czf "$archive" -C "$stage_dir" bin PROVISIONAL.md
+
+tar -xzf "$archive" -C "$verify_dir"
+extracted_digest=$(sha256sum -- "$verify_dir/bin/server" | cut -d' ' -f1)
+[ "$staged_digest" = "$extracted_digest" ] \
+    || die "archive entrypoint $extracted_digest is not the smoked binary $staged_digest"
+
+# Producer side of the tag/asset identity seam: the bytes must say which
+# release they belong to, so a consumer can reconcile the tag it asked for
+# against the tag the archive declares (D004, F004).
+grep -qF "release tag: $tag" "$verify_dir/PROVISIONAL.md" \
+    || die "the archive does not declare tag $tag in PROVISIONAL.md"
+"$verify_dir/bin/server" --help | grep -qF "$smoke_banner" \
+    || die "extracted smoke failed: 'bin/server --help' did not report '$smoke_banner'"
+
+# D002 — exactly one archive, so an upload glob cannot pick up a stale sibling.
+archive_count=$(find "$output_directory" -maxdepth 1 -type f \
+    -name "reactivegas-server-*-$platform.tar.gz" | wc -l)
+[ "$archive_count" = 1 ] \
+    || die "expected exactly one release archive in $output_directory, found $archive_count"
+
+package_succeeded=1
+archive_digest=$(sha256sum -- "$archive" | cut -d' ' -f1)
+printf 'tag:              %s\n' "$tag"
+printf 'nix .#default:    %s\n' "$store_path"
+printf 'entrypoint sha256: %s  bin/server\n' "$staged_digest"
+printf 'archive sha256:   %s\n' "$archive_digest"
+printf 'archive:          %s\n' "$archive"
