@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reactivegas — simulatore economico</title>
+<style>
+  :root {
+    --bg: #f4f6f8;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #5b6b7b;
+    --line: #dde4ea;
+    --accent: #1d5fbf;
+    --ok: #1c7c43;
+    --ok-bg: #e8f6ee;
+    --bad: #b3261e;
+    --bad-bg: #fdecea;
+    --warn: #8a5b00;
+    --warn-bg: #fff4dc;
+    --code-bg: #eef1f4;
+    --chip-bg: #e7eef8;
+    font-size: 15px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.45;
+  }
+  code, .mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.92em;
+  }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+  header {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--card);
+    border-bottom: 1px solid var(--line);
+    padding: 10px 18px;
+    box-shadow: 0 1px 4px rgba(20,40,60,.06);
+  }
+  header h1 { margin: 0 0 6px; font-size: 1.15rem; }
+  header h1 small { color: var(--muted); font-weight: 400; font-size: .8rem; }
+  #inv-strip {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px;
+  }
+  .inv-term { display: flex; flex-direction: column; }
+  .inv-term .lbl { font-size: .7rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .inv-term .val { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 1.05rem; }
+  .inv-op { font-size: 1.2rem; color: var(--muted); }
+  #inv-badge {
+    padding: 4px 12px; border-radius: 999px; font-weight: 600; font-size: .85rem;
+  }
+  #inv-badge.ok { background: var(--ok-bg); color: var(--ok); }
+  #inv-badge.bad { background: var(--bad-bg); color: var(--bad); }
+  #inv-note { font-size: .75rem; color: var(--muted); }
+  @keyframes flash { 0% { background: #dcebff; } 100% { background: transparent; } }
+  .flash { animation: flash .8s ease-out; }
+
+  main {
+    display: grid; grid-template-columns: 1.05fr 1fr; gap: 14px;
+    padding: 14px 18px 40px; max-width: 1400px; margin: 0 auto;
+  }
+  @media (max-width: 980px) {
+    main { grid-template-columns: 1fr; padding: 10px 10px 40px; }
+    header { padding: 8px 10px; }
+  }
+  .col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .card h2 { margin: 0 0 8px; font-size: .95rem; }
+  .card h2 small { color: var(--muted); font-weight: 400; }
+  .hint { color: var(--muted); font-size: .8rem; margin: 4px 0 0; }
+
+  .explainer {
+    background: var(--warn-bg); border-color: #e8d5a3;
+  }
+  .explainer p { margin: 4px 0; font-size: .88rem; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .uchip {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--chip-bg); border: 1px solid #c9d8ee; border-radius: 8px;
+    padding: 3px 6px 3px 9px; font-size: .88rem;
+  }
+  .uchip .star { color: #a8720a; }
+  .uchip .mini {
+    border: 1px solid #b7c9e2; background: #fff; border-radius: 5px;
+    font-size: .68rem; padding: 1px 5px; cursor: pointer; color: var(--accent);
+  }
+  .uchip .mini:hover { background: var(--accent); color: #fff; }
+
+  table.ledger { border-collapse: collapse; width: 100%; font-size: .88rem; }
+  table.ledger th, table.ledger td {
+    text-align: left; padding: 3px 8px; border-bottom: 1px solid var(--line);
+  }
+  table.ledger th { color: var(--muted); font-weight: 500; font-size: .75rem; }
+  table.ledger td.num { text-align: right; font-family: ui-monospace, Menlo, Consolas, monospace; }
+  td .rowbtn {
+    border: 1px solid #b7c9e2; background: #fff; border-radius: 5px;
+    font-size: .68rem; padding: 1px 5px; cursor: pointer; color: var(--accent);
+  }
+  td .rowbtn:hover { background: var(--accent); color: #fff; }
+  .neg { color: var(--bad); }
+  .pos { color: var(--ok); }
+  .empty { color: var(--muted); font-size: .85rem; font-style: italic; }
+
+  .coll {
+    border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin-top: 8px;
+  }
+  .coll .head { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: .9rem; }
+  .badge {
+    border-radius: 999px; padding: 1px 8px; font-size: .72rem; font-weight: 600;
+  }
+  .badge.perm-yes { background: var(--ok-bg); color: var(--ok); }
+  .badge.perm-no { background: var(--code-bg); color: var(--muted); }
+  .badge.iface { background: #ece7f6; color: #5b3e96; }
+  .badge.econ { background: #e2f0ea; color: #1c6b48; }
+  .plist { margin: 4px 0 0; padding-left: 0; list-style: none; font-size: .84rem; }
+  .plist li { padding: 1px 0; }
+  .plist .tagp { color: var(--muted); font-size: .74rem; }
+
+  form#evform { display: flex; flex-direction: column; gap: 8px; }
+  .frow { display: flex; flex-direction: column; gap: 2px; }
+  .frow label { font-size: .78rem; color: var(--muted); }
+  .frow select, .frow input {
+    font: inherit; padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px;
+    background: #fff; max-width: 100%;
+  }
+  .frow input.other { margin-top: 4px; }
+  #evdoc { font-size: .82rem; color: var(--muted); margin: 0; }
+  .btnrow { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  button.primary {
+    background: var(--accent); color: #fff; border: none; border-radius: 7px;
+    padding: 7px 16px; font: inherit; font-weight: 600; cursor: pointer;
+  }
+  button.primary:hover { filter: brightness(1.1); }
+  button.ghost {
+    background: #fff; color: var(--accent); border: 1px solid var(--accent);
+    border-radius: 7px; padding: 6px 12px; font: inherit; cursor: pointer;
+  }
+  button.ghost:hover { background: var(--chip-bg); }
+  button.danger { color: var(--bad); border-color: var(--bad); }
+  button.danger:hover { background: var(--bad-bg); }
+  #formerr {
+    display: none; background: var(--warn-bg); color: var(--warn);
+    border: 1px solid #e8d5a3; border-radius: 6px; padding: 6px 10px; font-size: .85rem;
+  }
+
+  #log { display: flex; flex-direction: column; gap: 8px; max-height: 520px; overflow-y: auto; }
+  .entry { border-left: 4px solid var(--line); border-radius: 4px; padding: 6px 10px; background: #fafbfc; }
+  .entry.acc { border-left-color: var(--ok); background: var(--ok-bg); }
+  .entry.rej { border-left-color: var(--bad); background: var(--bad-bg); }
+  .entry .ehead { font-size: .88rem; font-weight: 600; }
+  .entry .ehead .mono { font-weight: 500; }
+  .entry .flow { font-size: .82rem; margin-top: 2px; }
+  .entry .guards { margin: 4px 0 0; padding-left: 0; list-style: none; }
+  .entry .guards li { font-size: .8rem; margin: 2px 0; }
+  .entry .guards code { background: #fff; border: 1px solid #e6b8b4; }
+  .entry .invafter { font-size: .76rem; color: var(--muted); margin-top: 3px; }
+  .entry .lawtag { font-size: .7rem; font-weight: 700; color: var(--bad); margin-left: 4px; }
+
+  #cf-card { background: #fbf7ff; border-color: #d9c8ef; }
+  #cf-result { margin-top: 8px; display: none; border: 1px dashed #b599dd; border-radius: 8px; padding: 8px 10px; background: #fff; }
+  #cf-result .cfinv { font-size: 1.05rem; font-weight: 700; }
+  #cf-result .cfinv.nz { color: var(--bad); }
+  #cf-result .cfinv.z { color: var(--ok); }
+  #cf-result p { font-size: .82rem; margin: 4px 0; }
+  .cfrow { display:flex; flex-wrap: wrap; gap: 8px; align-items: end; margin-top: 6px; }
+  .cfrow .frow { min-width: 130px; }
+
+  footer { text-align: center; color: var(--muted); font-size: .75rem; padding: 10px 0 30px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Reactivegas — simulatore economico
+    <small>macchina a eventi da <code>Types.lean</code> + <code>Step.lean</code></small></h1>
+  <div id="inv-strip">
+    <span class="inv-term"><span class="lbl">Σ casse</span><span class="val" id="inv-casse">0</span></span>
+    <span class="inv-op">−</span>
+    <span class="inv-term"><span class="lbl">Σ conti</span><span class="val" id="inv-conti">0</span></span>
+    <span class="inv-op">−</span>
+    <span class="inv-term"><span class="lbl">Σ escrow</span><span class="val" id="inv-escrow">0</span></span>
+    <span class="inv-op">=</span>
+    <span id="inv-badge" class="ok">0</span>
+    <span id="inv-note">stato di avvio</span>
+  </div>
+</header>
+
+<main>
+  <section class="col" id="state-col">
+    <div class="card" id="users-card">
+      <h2>Utenti e responsabili <small>(<code>users</code>, <code>responsabili</code>)</small></h2>
+      <div class="chips" id="users-chips"></div>
+      <p class="hint">★ = responsabile · <b>A</b> imposta come autore, <b>U</b> come utente nel modulo evento.</p>
+    </div>
+
+    <div class="card explainer">
+      <h2>Cosa significa la cassa</h2>
+      <p><b><code>casse u</code> è quanto il cassiere <code>u</code> deve al gruppo.</b>
+         Positiva: detiene denaro del gruppo. Negativa: il gruppo deve denaro a lui.</p>
+      <p><b>Una cassa negativa è stato operativo normale</b> (es. il referente che ha appena
+         pagato una <code>closePurchase</code>), non un errore.</p>
+    </div>
+
+    <div class="card" id="casse-card">
+      <h2>Casse <small>(<code>casse : List (UserId × Int)</code>)</small></h2>
+      <div id="casse-body"></div>
+    </div>
+
+    <div class="card" id="conti-card">
+      <h2>Conti <small>(<code>conti : List (UserId × Int)</code> — credito utente)</small></h2>
+      <div id="conti-body"></div>
+    </div>
+
+    <div class="card" id="colls-card">
+      <h2>Collette aperte <small>(<code>collections : List Collection</code>)</small></h2>
+      <div id="colls-body"></div>
+    </div>
+
+    <div class="card" id="done-card">
+      <h2>Acquisti completati <small>(istantanea toy — non è stato della macchina)</small></h2>
+      <p class="hint">Lo stato qui sopra è la <b>posizione corrente</b>; la storia vive nel log
+        degli eventi e in queste istantanee, scattate nel momento in cui una
+        <code>closePurchase</code> viene accettata. <b>Solo <code>closePurchase</code> crea un
+        acquisto completato</b>; <code>failPurchase</code> e <code>denyPermission</code> sono
+        rimborsi e non compaiono mai qui. L'etichetta è decorazione del toy: un
+        <code>CollId</code> Lean è un semplice <code>Nat</code>.</p>
+      <div id="done-body"></div>
+    </div>
+  </section>
+
+  <section class="col" id="action-col">
+    <div class="card" id="event-card">
+      <h2>Prossimo evento <small>(un tentativo = un <code>step</code> atomico)</small></h2>
+      <form id="evform" autocomplete="off">
+        <div class="frow">
+          <label for="evsel">costruttore (<code>Event</code>, Types.lean)</label>
+          <select id="evsel"></select>
+        </div>
+        <p id="evdoc"></p>
+        <div id="evfields"></div>
+        <div id="formerr"></div>
+        <div class="btnrow">
+          <button type="submit" class="primary">Tenta l'evento</button>
+          <button type="button" class="ghost" id="btn-scenario"
+            title="Esegue una sequenza di eventi reali attraverso step, uno per uno">Scenario demo (eventi reali)</button>
+          <button type="button" class="ghost danger" id="btn-reset"
+            title="State.init 0: un fondatore utente+responsabile, tutto vuoto">Reset → <span class="mono">State.init 0</span></button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card" id="cf-card">
+      <h2>Contro-fattuale: manomissione <small>(non è un evento economico)</small></h2>
+      <p class="hint">Mostra cosa accadrebbe all'invariante se un saldo venisse alterato
+        <b>fuori dalla macchina</b>. Nessun costruttore di <code>Event</code> produce questo effetto:
+        non entra nella storia e <b>lo stato reale non viene toccato</b>.</p>
+      <div class="cfrow">
+        <div class="frow">
+          <label for="cf-target">registro manomesso</label>
+          <select id="cf-target">
+            <option value="conto">conto di un utente</option>
+            <option value="cassa">cassa di un utente</option>
+            <option value="escrow">escrow di una colletta</option>
+          </select>
+        </div>
+        <div class="frow">
+          <label for="cf-who" id="cf-who-lbl">utente</label>
+          <select id="cf-who"></select>
+        </div>
+        <div class="frow">
+          <label for="cf-delta">Δ (intero)</label>
+          <input id="cf-delta" type="text" inputmode="numeric" value="10" size="8">
+        </div>
+        <button type="button" class="ghost" id="cf-btn">Mostra effetto contro-fattuale</button>
+      </div>
+      <div id="cf-result"></div>
+    </div>
+
+    <div class="card" id="history-card">
+      <h2>Storia dei tentativi <small>(accettati ✓ / respinti ✗, più recenti in alto)</small></h2>
+      <div id="log"><p class="empty">Nessun tentativo ancora.</p></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Fonte autoritativa: <code>lean/Reactivegas/Types.lean</code> · <code>lean/Reactivegas/Step.lean</code>.
+  Vocabolario eventi completo: 15 costruttori, nessun evento inventato.
+</footer>
+
+<script>
+'use strict';
+/* =====================================================================
+   Faithful transcription of lean/Reactivegas/{Types,State,Step}.lean.
+   State: { users:[Nat], responsabili:[Nat],
+            conti:[[u,v]], casse:[[u,v]],
+            collections:[{id, referente, permitted, accepted:[{user,amount}],
+                          pending:[{user,amount}]}] }
+   ===================================================================== */
+
+const FOUNDER = 0;
+
+/* --- State.lean helpers ------------------------------------------------ */
+
+// State.init r := ⟨[r], [r], [], [], []⟩
+function initState(r) {
+  return { users: [r], responsabili: [r], conti: [], casse: [], collections: [] };
+}
+
+// bal: first matching entry, absent means zero
+function bal(m, u) {
+  for (const [k, v] of m) if (k === u) return v;
+  return 0;
+}
+
+// bump: add d to the first entry of u, appending a fresh entry when absent
+function bump(m, u, d) {
+  const out = [];
+  let done = false;
+  for (const [k, v] of m) {
+    if (!done && k === u) { out.push([k, v + d]); done = true; }
+    else out.push([k, v]);
+  }
+  if (!done) out.push([u, d]);
+  return out;
+}
+
+function sumBal(m) { return m.reduce((a, [, v]) => a + v, 0); }
+function sumPledges(l) { return l.reduce((a, p) => a + p.amount, 0); }
+function escrowOf(c) { return sumPledges(c.accepted) + sumPledges(c.pending); }
+function escrowSum(cols) { return cols.reduce((a, c) => a + escrowOf(c), 0); }
+
+// splitUser: first pledge of u, and the list without it; null when absent
+function splitUser(u, l) {
+  const i = l.findIndex(p => p.user === u);
+  if (i < 0) return null;
+  return [l[i].amount, l.slice(0, i).concat(l.slice(i + 1))];
+}
+
+// refundAll: foldl bump
+function refundAll(m, l) {
+  return l.reduce((acc, p) => bump(acc, p.user, p.amount), m);
+}
+
+// pullCollection: the collection with id c, and the list without it
+function pullCollection(c, cols) {
+  const i = cols.findIndex(x => x.id === c);
+  if (i < 0) return null;
+  return [cols[i], cols.slice(0, i).concat(cols.slice(i + 1))];
+}
+
+// stripCollections: remove collections whose referente is r; collect their
+// pledges (accepted ++ pending, in list order) for refunding
+function stripCollections(r, cols) {
+  const rest = [], ps = [];
+  for (const c of cols) {
+    if (c.referente === r) { ps.push(...c.accepted, ...c.pending); }
+    else rest.push(c);
+  }
+  return [rest, ps];
+}
+
+function isResponsabile(s, u) { return s.responsabili.includes(u); }
+
+/* --- Guard labels (canonical Lean text + teaching text) ---------------- */
+
+const g = (code, why, law) => ({ code, why, law: law || null });
+const AUTH = a => g('isResponsabile s a', `l'autore u${a} non è un responsabile eletto`, 'AUTH');
+const PULL = c => g('pullCollection c = none', `nessuna colletta aperta con id ${c}`);
+
+/* --- Step.lean: the rejecting transition, with named guards ------------
+   attempt(s,e) → {ok:true, state, flow} | {ok:false, failed:[guard]}
+   The accept/reject decision is exactly the Lean conjunction; `failed`
+   lists every failing guard that is evaluable (guards depending on a
+   failed pullCollection/splitUser cannot be evaluated and are skipped). */
+
+function attempt(s, e) {
+  const fails = [];
+  const need = (cond, guard) => { if (!cond) fails.push(guard); return cond; };
+  const rej = () => ({ ok: false, failed: fails });
+
+  switch (e.tag) {
+
+    case 'addUser': {
+      need(isResponsabile(s, e.author), AUTH(e.author));
+      need(!s.users.includes(e.target),
+        g('!s.users.contains u', `u${e.target} è già un utente`));
+      if (fails.length) return rej();
+      return { ok: true, flow: `users ++ [u${e.target}]`,
+        state: { ...s, users: [...s.users, e.target] } };
+    }
+
+    case 'electResponsabile': {
+      need(isResponsabile(s, e.author), AUTH(e.author));
+      need(s.users.includes(e.target),
+        g('s.users.contains u', `u${e.target} non è un utente`));
+      need(!isResponsabile(s, e.target),
+        g('!isResponsabile s u', `u${e.target} è già responsabile`));
+      if (fails.length) return rej();
+      return { ok: true, flow: `responsabili := u${e.target} :: responsabili`,
+        state: { ...s, responsabili: [e.target, ...s.responsabili] } };
+    }
+
+    case 'removeResponsabile': {
+      need(isResponsabile(s, e.author), AUTH(e.author));
+      need(isResponsabile(s, e.target),
+        g('isResponsabile s u', `u${e.target} non è responsabile`));
+      if (fails.length) return rej();
+      const [rest, ps] = stripCollections(e.target, s.collections);
+      const i = s.responsabili.indexOf(e.target);
+      const resps = s.responsabili.slice(0, i).concat(s.responsabili.slice(i + 1));
+      const flow = ps.length
+        ? `revoca u${e.target}; collette del referente chiuse, rimborsi: ` +
+          ps.map(p => `conto[u${p.user}] +${p.amount}`).join(', ')
+        : `revoca u${e.target}; nessuna colletta da chiudere`;
+      return { ok: true, flow,
+        state: { ...s, responsabili: resps, conti: refundAll(s.conti, ps), collections: rest } };
+    }
+
+    case 'openPurchase': {
+      need(isResponsabile(s, e.author), AUTH(e.author));
+      need(!s.collections.some(x => x.id === e.c),
+        g('!(s.collections.any (x.id == c))', `esiste già una colletta aperta con id ${e.c}`));
+      if (fails.length) return rej();
+      return { ok: true,
+        flow: `apre colletta #${e.c}, referente u${e.author}, permesso: no, escrow vuoto`,
+        state: { ...s, collections:
+          [{ id: e.c, referente: e.author, permitted: false, accepted: [], pending: [] },
+           ...s.collections] } };
+    }
+
+    case 'grantPermission': {
+      const pulled = pullCollection(e.c, s.collections);
+      need(pulled !== null, PULL(e.c));
+      need(isResponsabile(s, e.author), AUTH(e.author));
+      if (fails.length) return rej();
+      const [col, rest] = pulled;
+      return { ok: true, flow: `colletta #${e.c}: permesso concesso (permitted := true)`,
+        state: { ...s, collections: [{ ...col, permitted: true }, ...rest] } };
+    }
+
+    case 'denyPermission': {
+      const pulled = pullCollection(e.c, s.collections);
+      need(pulled !== null, PULL(e.c));
+      need(isResponsabile(s, e.author), AUTH(e.author));
+      if (fails.length) return rej();
+      const [col, rest] = pulled;
+      const ps = [...col.accepted, ...col.pending];
+      return { ok: true,
+        flow: `colletta #${e.c} negata e chiusa; rimborsi: ` +
+          (ps.length ? ps.map(p => `conto[u${p.user}] +${p.amount}`).join(', ') : 'nessuno'),
+        state: { ...s, conti: refundAll(s.conti, ps), collections: rest } };
+    }
+
+    case 'deposit': {
+      need(isResponsabile(s, e.author), AUTH(e.author));
+      need(s.users.includes(e.user),
+        g('s.users.contains u', `u${e.user} non è un utente`));
+      need(e.author !== e.user,
+        g('a != u', 'autore e utente devono essere diversi'));
+      need(0 <= e.v, g('0 ≤ v', `importo negativo (${e.v})`));
+      if (fails.length) return rej();
+      return { ok: true, flow: `conto[u${e.user}] +${e.v} · cassa[u${e.author}] +${e.v}`,
+        state: { ...s, conti: bump(s.conti, e.user, e.v), casse: bump(s.casse, e.author, e.v) } };
+    }
+
+    case 'withdraw': {
+      need(isResponsabile(s, e.author), AUTH(e.author));
+      need(s.users.includes(e.user),
+        g('s.users.contains u', `u${e.user} non è un utente`));
+      need(e.author !== e.user,
+        g('a != u', 'autore e utente devono essere diversi'));
+      need(bal(s.conti, e.user) >= e.v,
+        g('bal s.conti u ≥ v',
+          `credito insufficiente: conto[u${e.user}] = ${bal(s.conti, e.user)} < ${e.v}`, 'L7'));
+      if (fails.length) return rej();
+      return { ok: true, flow: `conto[u${e.user}] −${e.v} · cassa[u${e.author}] −${e.v}`,
+        state: { ...s, conti: bump(s.conti, e.user, -e.v), casse: bump(s.casse, e.author, -e.v) } };
+    }
+
+    case 'transferCassa': {
+      need(isResponsabile(s, e.author), AUTH(e.author));
+      need(isResponsabile(s, e.from_),
+        g('isResponsabile s f', `u${e.from_} non è un responsabile`));
+      need(e.author !== e.from_,
+        g('a != f', 'autore e mittente devono essere diversi'));
+      need(e.v > 0, g('v > 0', `l'importo deve essere positivo (${e.v})`));
+      if (fails.length) return rej();
+      return { ok: true, flow: `cassa[u${e.from_}] −${e.v} → cassa[u${e.author}] +${e.v}`,
+        state: { ...s, casse: bump(bump(s.casse, e.from_, -e.v), e.author, e.v) } };
+    }
+
+    case 'pledge': {
+      const pulled = pullCollection(e.c, s.collections);
+      need(pulled !== null, PULL(e.c));
+      need(isResponsabile(s, e.author), AUTH(e.author));
+      need(s.users.includes(e.user),
+        g('s.users.contains u', `u${e.user} non è un utente`));
+      if (pulled) {
+        const [col] = pulled;
+        need(!col.accepted.some(p => p.user === e.user),
+          g('!(col.accepted.any (p.user == u))',
+            `u${e.user} ha già un pledge accettato nella colletta #${e.c}`, 'L8'));
+        need(!col.pending.some(p => p.user === e.user),
+          g('!(col.pending.any (p.user == u))',
+            `u${e.user} ha già un pledge pendente nella colletta #${e.c}`, 'L8'));
+      }
+      need(0 < e.v, g('0 < v', `il pledge deve essere positivo (${e.v})`, 'L7'));
+      need(bal(s.conti, e.user) >= e.v,
+        g('bal s.conti u ≥ v',
+          `credito insufficiente: conto[u${e.user}] = ${bal(s.conti, e.user)} < ${e.v}`, 'L7'));
+      if (fails.length) return rej();
+      const [col, rest] = pulled;
+      return { ok: true,
+        flow: `conto[u${e.user}] −${e.v} → escrow colletta #${e.c} (pendente)`,
+        state: { ...s, conti: bump(s.conti, e.user, -e.v),
+          collections: [{ ...col, pending: [{ user: e.user, amount: e.v }, ...col.pending] },
+                        ...rest] } };
+    }
+
+    case 'acceptPledge': {
+      const pulled = pullCollection(e.c, s.collections);
+      need(pulled !== null, PULL(e.c));
+      let split = null;
+      if (pulled) {
+        split = splitUser(e.user, pulled[0].pending);
+        need(split !== null,
+          g('splitUser u col.pending = none',
+            `u${e.user} non ha un pledge pendente nella colletta #${e.c}`));
+        need(pulled[0].referente === e.author,
+          g('col.referente == a',
+            `solo il referente (u${pulled[0].referente}) può accettare`, 'REFERENTE'));
+      }
+      need(isResponsabile(s, e.author), AUTH(e.author));
+      if (fails.length) return rej();
+      const [col, rest] = pulled;
+      const [v, pend2] = split;
+      return { ok: true,
+        flow: `escrow colletta #${e.c}: pledge di u${e.user} (${v}) pendente → accettato`,
+        state: { ...s, collections:
+          [{ ...col, pending: pend2, accepted: [{ user: e.user, amount: v }, ...col.accepted] },
+           ...rest] } };
+    }
+
+    case 'refusePledge': {
+      const pulled = pullCollection(e.c, s.collections);
+      need(pulled !== null, PULL(e.c));
+      let split = null;
+      if (pulled) {
+        split = splitUser(e.user, pulled[0].pending);
+        need(split !== null,
+          g('splitUser u col.pending = none',
+            `u${e.user} non ha un pledge pendente nella colletta #${e.c}`));
+        need(pulled[0].referente === e.author,
+          g('col.referente == a',
+            `solo il referente (u${pulled[0].referente}) può rifiutare`, 'REFERENTE'));
+      }
+      need(isResponsabile(s, e.author), AUTH(e.author));
+      if (fails.length) return rej();
+      const [col, rest] = pulled;
+      const [v, pend2] = split;
+      return { ok: true,
+        flow: `rimborso: escrow colletta #${e.c} −${v} → conto[u${e.user}] +${v}`,
+        state: { ...s, conti: bump(s.conti, e.user, v),
+          collections: [{ ...col, pending: pend2 }, ...rest] } };
+    }
+
+    case 'correctPledge': {
+      const pulled = pullCollection(e.c, s.collections);
+      need(pulled !== null, PULL(e.c));
+      let split = null;
+      if (pulled) {
+        split = splitUser(e.user, pulled[0].accepted);
+        need(split !== null,
+          g('splitUser u col.accepted = none',
+            `u${e.user} non ha un pledge accettato nella colletta #${e.c}`));
+        need(pulled[0].referente === e.author,
+          g('col.referente == a',
+            `solo il referente (u${pulled[0].referente}) può correggere`, 'REFERENTE'));
+      }
+      need(isResponsabile(s, e.author), AUTH(e.author));
+      need(0 <= e.v, g("0 ≤ v'", `il nuovo importo non può essere negativo (${e.v})`, 'L7'));
+      if (split) {
+        const v = split[0];
+        need(bal(s.conti, e.user) + (v - e.v) >= 0,
+          g("bal s.conti u + (v − v') ≥ 0",
+            `il conguaglio manderebbe conto[u${e.user}] a ${bal(s.conti, e.user) + (v - e.v)} < 0`,
+            'L7'));
+      }
+      if (fails.length) return rej();
+      const [col, rest] = pulled;
+      const [v, acc2] = split;
+      const d = v - e.v;
+      return { ok: true,
+        flow: `pledge accettato di u${e.user}: ${v} → ${e.v} · conguaglio conto[u${e.user}] ` +
+          (d >= 0 ? `+${d}` : `${d}`),
+        state: { ...s, conti: bump(s.conti, e.user, d),
+          collections: [{ ...col, accepted: [{ user: e.user, amount: e.v }, ...acc2] },
+                        ...rest] } };
+    }
+
+    case 'closePurchase': {
+      const pulled = pullCollection(e.c, s.collections);
+      need(pulled !== null, PULL(e.c));
+      need(isResponsabile(s, e.author), AUTH(e.author));
+      if (pulled) {
+        const [col] = pulled;
+        need(col.referente === e.author,
+          g('col.referente == a',
+            `solo il referente (u${col.referente}) può chiudere`, 'REFERENTE'));
+        need(col.permitted,
+          g('col.permitted', 'il gruppo non ha concesso il permesso di chiusura', 'L2'));
+        need(col.pending.length === 0,
+          g('col.pending.isEmpty',
+            `restano ${col.pending.length} pledge pendenti da accettare o rifiutare`, 'L4'));
+      }
+      if (fails.length) return rej();
+      const [col, rest] = pulled;
+      const tot = sumPledges(col.accepted);
+      return { ok: true,
+        flow: `acquisto chiuso: cassa[u${col.referente}] −${tot} · escrow colletta #${e.c} −${tot} (spesi)`,
+        state: { ...s, casse: bump(s.casse, col.referente, -tot), collections: rest } };
+    }
+
+    case 'failPurchase': {
+      const pulled = pullCollection(e.c, s.collections);
+      need(pulled !== null, PULL(e.c));
+      need(isResponsabile(s, e.author), AUTH(e.author));
+      if (pulled) {
+        const [col] = pulled;
+        need(col.referente === e.author,
+          g('col.referente == a',
+            `solo il referente (u${col.referente}) può farla fallire`, 'REFERENTE'));
+        need(col.pending.length === 0,
+          g('col.pending.isEmpty',
+            `restano ${col.pending.length} pledge pendenti da accettare o rifiutare`, 'L4'));
+      }
+      if (fails.length) return rej();
+      const [col, rest] = pulled;
+      const ps = [...col.accepted, ...col.pending];
+      return { ok: true,
+        flow: `acquisto fallito: rimborsi ` +
+          (ps.length ? ps.map(p => `conto[u${p.user}] +${p.amount}`).join(', ') : 'nessuno'),
+        state: { ...s, conti: refundAll(s.conti, ps), collections: rest } };
+    }
+  }
+  throw new Error('unknown event tag: ' + e.tag);
+}
+
+/* --- Event metadata for the form --------------------------------------- */
+
+const F = {
+  author:   { key: 'author', label: 'autore a (deve essere responsabile)', kind: 'user' },
+  user:     { key: 'user',   label: 'utente u', kind: 'user' },
+  targetNew:{ key: 'target', label: 'nuovo utente u (id fresco)', kind: 'nat' },
+  target:   { key: 'target', label: 'utente u', kind: 'user' },
+  from:     { key: 'from_',  label: 'mittente f (responsabile)', kind: 'user' },
+  coll:     { key: 'c',      label: 'colletta c', kind: 'coll' },
+  collNew:  { key: 'c',      label: 'nuova colletta c (id fresco)', kind: 'nat' },
+  v:        { key: 'v',      label: 'importo v (intero)', kind: 'int' },
+  vNew:     { key: 'v',      label: "nuovo importo v' (intero)", kind: 'int' },
+};
+
+const EVDEF = [
+  { tag: 'addUser', it: 'Aggiungi utente', cat: 'interfaccia',
+    doc: 'Evento interfaccia: riconosce un nuovo utente.', fields: [F.author, F.targetNew] },
+  { tag: 'electResponsabile', it: 'Eleggi responsabile', cat: 'interfaccia',
+    doc: "Evento interfaccia: attua l'elezione di un nuovo responsabile.", fields: [F.author, F.target] },
+  { tag: 'removeResponsabile', it: 'Revoca responsabile', cat: 'interfaccia',
+    doc: 'Evento interfaccia: revoca un responsabile; chiude le sue collette con rimborso.',
+    fields: [F.author, F.target] },
+  { tag: 'openPurchase', it: 'Apri acquisto', cat: 'economico',
+    doc: "Apre un acquisto: colletta di pledge (l'autore ne è il referente) più domanda di maggioranza.",
+    fields: [F.author, F.collNew] },
+  { tag: 'grantPermission', it: 'Concedi permesso', cat: 'interfaccia',
+    doc: 'Evento interfaccia: il gruppo ha assentito; permesso di chiusura concesso.',
+    fields: [F.author, F.coll] },
+  { tag: 'denyPermission', it: 'Nega permesso', cat: 'interfaccia',
+    doc: "Evento interfaccia: il gruppo ha dissentito; l'acquisto fallisce con rimborso totale.",
+    fields: [F.author, F.coll] },
+  { tag: 'deposit', it: 'Deposito', cat: 'economico',
+    doc: "Deposito: muove insieme il credito dell'utente e la cassa del cassiere che agisce.",
+    fields: [F.author, F.user, F.v] },
+  { tag: 'withdraw', it: 'Prelievo', cat: 'economico',
+    doc: 'Prelievo: simmetrico al deposito.', fields: [F.author, F.user, F.v] },
+  { tag: 'transferCassa', it: 'Trasferimento cassa', cat: 'economico',
+    doc: "Trasferimento cassa-a-cassa fra due responsabili: v passa dalla cassa di f a quella dell'autore.",
+    fields: [F.author, F.from, F.v] },
+  { tag: 'pledge', it: 'Pledge', cat: 'economico',
+    doc: "Pledge: addebita subito il credito del pledger nell'escrow della colletta.",
+    fields: [F.author, F.user, F.coll, F.v] },
+  { tag: 'acceptPledge', it: 'Accetta pledge', cat: 'economico',
+    doc: 'Consenso del referente: sposta il pledge da pendente ad accettato.',
+    fields: [F.author, F.user, F.coll] },
+  { tag: 'refusePledge', it: 'Rifiuta pledge', cat: 'economico',
+    doc: 'Rifiuto del referente: rimborsa il pledge pendente.', fields: [F.author, F.user, F.coll] },
+  { tag: 'correctPledge', it: 'Correggi pledge', cat: 'economico',
+    doc: 'Correzione (solo referente) di un pledge accettato: conguaglia la differenza.',
+    fields: [F.author, F.user, F.coll, F.vNew] },
+  { tag: 'closePurchase', it: 'Chiudi acquisto', cat: 'economico',
+    doc: 'Chiusura positiva: spende la cassa del referente per il totale raccolto.',
+    fields: [F.author, F.coll] },
+  { tag: 'failPurchase', it: 'Fai fallire acquisto', cat: 'economico',
+    doc: 'Fallimento avviato dal referente: rimborsa ogni pledge.', fields: [F.author, F.coll] },
+];
+
+/* --- App state ---------------------------------------------------------- */
+
+let state = initState(FOUNDER);
+let history = [];       // newest first
+let attemptNo = 0;
+let collSuggest = 1;
+let invNote = 'stato di avvio';
+// Toy-side decoration and history: never part of the Lean machine state.
+let completed = [];     // snapshots taken when a closePurchase is accepted, newest first
+let toyLabels = {};     // open-collection id -> human label
+
+const $ = id => document.getElementById(id);
+const esc = x => String(x).replace(/[&<>"']/g,
+  ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+
+/* --- Rendering ---------------------------------------------------------- */
+
+function money(v) {
+  const cls = v < 0 ? 'neg' : (v > 0 ? 'pos' : '');
+  return `<span class="${cls}">${v}</span>`;
+}
+
+function renderInvariant() {
+  const sc = sumBal(state.casse), sn = sumBal(state.conti), se = escrowSum(state.collections);
+  const inv = sc - sn - se;
+  $('inv-casse').textContent = sc;
+  $('inv-conti').textContent = sn;
+  $('inv-escrow').textContent = se;
+  const b = $('inv-badge');
+  b.textContent = inv === 0 ? '0 ✓' : inv + ' ✗ VIOLATO';
+  b.className = inv === 0 ? 'ok' : 'bad';
+  $('inv-note').textContent = invNote;
+  const strip = $('inv-strip');
+  strip.classList.remove('flash'); void strip.offsetWidth; strip.classList.add('flash');
+  return inv;
+}
+
+function renderUsers() {
+  const box = $('users-chips');
+  box.innerHTML = '';
+  for (const u of state.users) {
+    const resp = isResponsabile(state, u);
+    const el = document.createElement('span');
+    el.className = 'uchip';
+    el.innerHTML =
+      `<span>${resp ? '<span class="star">★</span> ' : ''}u${u}` +
+      `${u === FOUNDER ? ' <small>(fondatore)</small>' : ''}</span>` +
+      `<button type="button" class="mini" data-set="author" data-id="${u}" title="usa come autore">A</button>` +
+      `<button type="button" class="mini" data-set="user" data-id="${u}" title="usa come utente">U</button>`;
+    box.appendChild(el);
+  }
+}
+
+function ledgerTable(entries, setKey, setLbl) {
+  if (!entries.length) return '<p class="empty">vuoto (nessuna voce; saldo assente = 0)</p>';
+  let h = '<table class="ledger"><tr><th>voce</th><th style="text-align:right">saldo</th><th></th></tr>';
+  for (const [u, v] of entries) {
+    h += `<tr><td>u${u}${isResponsabile(state, u) ? ' <span class="star" style="color:#a8720a">★</span>' : ''}</td>` +
+         `<td class="num">${money(v)}</td>` +
+         `<td><button type="button" class="rowbtn" data-set="${setKey}" data-id="${u}">${setLbl}</button></td></tr>`;
+  }
+  return h + '</table>';
+}
+
+function renderLedgers() {
+  $('casse-body').innerHTML = ledgerTable(state.casse, 'author', 'usa come autore');
+  $('conti-body').innerHTML = ledgerTable(state.conti, 'user', 'usa come utente');
+}
+
+function pledgeList(l, tag) {
+  if (!l.length) return `<li class="empty">nessun pledge ${tag}</li>`;
+  return l.map(p =>
+    `<li><span class="tagp">${tag}</span> u${p.user}: <b>${p.amount}</b></li>`).join('');
+}
+
+function renderColls() {
+  const box = $('colls-body');
+  if (!state.collections.length) {
+    box.innerHTML = '<p class="empty">nessuna colletta aperta</p>';
+    return;
+  }
+  box.innerHTML = state.collections.map(c => `
+    <div class="coll">
+      <div class="head">
+        <b>Colletta #${c.id}</b>${toyLabels[c.id] ? ` <span class="hint">«${esc(toyLabels[c.id])}»</span>` : ''}
+        <span>referente: u${c.referente}</span>
+        <span class="badge ${c.permitted ? 'perm-yes' : 'perm-no'}">
+          permesso: ${c.permitted ? 'sì' : 'no'}</span>
+        <span>escrow: <b class="mono">${escrowOf(c)}</b></span>
+        <button type="button" class="rowbtn" data-set="c" data-id="${c.id}">usa nel modulo</button>
+      </div>
+      <ul class="plist">
+        ${pledgeList(c.pending, 'pendente')}
+        ${pledgeList(c.accepted, 'accettato')}
+      </ul>
+    </div>`).join('');
+}
+
+function renderDone() {
+  const box = $('done-body');
+  if (!completed.length) {
+    box.innerHTML = '<p class="empty">nessun acquisto completato (serve una <span class="mono">closePurchase</span> accettata)</p>';
+    return;
+  }
+  box.innerHTML = completed.map(d => `
+    <div class="coll">
+      <div class="head">
+        <b>#${d.id}</b>${d.label ? ` <span class="hint">«${esc(d.label)}»</span>` : ''}
+        <span>referente: u${d.referente}</span>
+        <span>totale: <b class="mono">${d.total}</b></span>
+        <span class="tagp">(tentativo #${d.n})</span>
+      </div>
+      <ul class="plist">
+        ${d.contributors.length
+          ? d.contributors.map(p => `<li><span class="tagp">contributo</span> u${p.user}: <b>${p.amount}</b></li>`).join('')
+          : '<li class="empty">nessun contributo (chiusa vuota)</li>'}
+      </ul>
+    </div>`).join('');
+}
+
+function guardHtml(gd) {
+  return `<li><code>${gd.code}</code>${gd.law ? `<span class="lawtag">[${gd.law}]</span>` : ''}
+    — ${gd.why}</li>`;
+}
+
+function renderLog() {
+  const box = $('log');
+  if (!history.length) {
+    box.innerHTML = '<p class="empty">Nessun tentativo ancora.</p>';
+    return;
+  }
+  box.innerHTML = history.map(en => {
+    const args = Object.entries(en.args)
+      .map(([k, v]) => `${k}:=${v}`).join(', ');
+    if (en.kind === 'acc') {
+      return `<div class="entry acc">
+        <div class="ehead">#${en.n} ✓ <span class="mono">.${en.tag}</span>
+          <span class="mono">(${args})</span> — ACCETTATO</div>
+        <div class="flow">${en.flow}</div>
+        <div class="invafter">invariante ricalcolato: ${en.inv.sc} − ${en.inv.sn} − ${en.inv.se}
+          = <b>${en.inv.v}</b></div>
+      </div>`;
+    }
+    return `<div class="entry rej">
+      <div class="ehead">#${en.n} ✗ <span class="mono">.${en.tag}</span>
+        <span class="mono">(${args})</span> — RESPINTO (<span class="mono">step = none</span>)</div>
+      <div class="flow">guardie fallite:</div>
+      <ul class="guards">${en.failed.map(guardHtml).join('')}</ul>
+      <div class="invafter">stato invariato · invariante ricalcolato: ${en.inv.sc} − ${en.inv.sn}
+        − ${en.inv.se} = <b>${en.inv.v}</b></div>
+    </div>`;
+  }).join('');
+}
+
+function renderAll() {
+  renderInvariant();
+  renderUsers();
+  renderLedgers();
+  renderColls();
+  renderDone();
+  refreshFormOptions();
+  refreshCfOptions();
+  renderLog();
+  $('cf-result').style.display = 'none';   // counterfactual is a snapshot; clear on change
+}
+
+/* --- Event form --------------------------------------------------------- */
+
+const OTHER = '__other__';
+
+function buildEvSelect() {
+  const sel = $('evsel');
+  sel.innerHTML = EVDEF.map(d =>
+    `<option value="${d.tag}">${d.it} — .${d.tag}</option>`).join('');
+  sel.addEventListener('change', buildFields);
+}
+
+function currentDef() { return EVDEF.find(d => d.tag === $('evsel').value); }
+
+function fieldId(k) { return 'f-' + k; }
+
+function buildFields() {
+  const d = currentDef();
+  $('evdoc').innerHTML =
+    `<span class="badge ${d.cat === 'interfaccia' ? 'iface' : 'econ'}">${d.cat}</span> ${d.doc}`;
+  const box = $('evfields');
+  box.innerHTML = d.fields.map(f => {
+    const id = fieldId(f.key);
+    if (f.kind === 'user' || f.kind === 'coll') {
+      return `<div class="frow"><label for="${id}">${f.label}</label>
+        <select id="${id}" data-kind="${f.kind}"></select>
+        <input id="${id}-other" class="other" type="text" inputmode="numeric"
+          placeholder="id libero (Nat)" style="display:none"></div>`;
+    }
+    if (f.kind === 'nat') {
+      return `<div class="frow"><label for="${id}">${f.label}</label>
+        <input id="${id}" type="text" inputmode="numeric" data-kind="nat"></div>`;
+    }
+    return `<div class="frow"><label for="${id}">${f.label}</label>
+      <input id="${id}" type="text" inputmode="numeric" data-kind="int" placeholder="es. 10"></div>`;
+  }).join('');
+  if (d.tag === 'openPurchase') {
+    box.innerHTML += `<div class="frow"><label for="f-toylabel">etichetta acquisto
+      (decorazione toy, fuori dallo stato Lean — facoltativa)</label>
+      <input id="f-toylabel" type="text" maxlength="60" placeholder="es. Ordine olio"></div>`;
+  }
+  refreshFormOptions();
+  // fresh-id suggestions
+  for (const f of d.fields) {
+    if (f.kind === 'nat') {
+      const el = $(fieldId(f.key));
+      if (f.key === 'target') el.value = String(Math.max(...state.users) + 1);
+      if (f.key === 'c') el.value = String(collSuggest);
+    }
+  }
+  hideFormError();
+}
+
+function refreshFormOptions() {
+  const d = currentDef();
+  if (!d) return;
+  for (const f of d.fields) {
+    if (f.kind !== 'user' && f.kind !== 'coll') continue;
+    const sel = $(fieldId(f.key));
+    if (!sel) continue;
+    const prev = sel.value;
+    let opts;
+    if (f.kind === 'user') {
+      opts = state.users.map(u =>
+        `<option value="${u}">u${u}${isResponsabile(state, u) ? ' ★' : ''}</option>`);
+    } else {
+      opts = state.collections.map(c =>
+        `<option value="${c.id}">#${c.id} (ref. u${c.referente})</option>`);
+    }
+    opts.push(`<option value="${OTHER}">(altro id…)</option>`);
+    sel.innerHTML = opts.join('');
+    if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
+    sel.onchange = () => {
+      $(sel.id + '-other').style.display = sel.value === OTHER ? '' : 'none';
+    };
+    $(sel.id + '-other').style.display = sel.value === OTHER ? '' : 'none';
+  }
+}
+
+const NAT_RE = /^\d{1,12}$/;
+const INT_RE = /^-?\d{1,12}$/;
+
+function readForm() {
+  const d = currentDef();
+  const args = {};
+  for (const f of d.fields) {
+    const id = fieldId(f.key);
+    if (f.kind === 'user' || f.kind === 'coll') {
+      const sel = $(id);
+      if (sel.value === OTHER) {
+        const raw = $(id + '-other').value.trim();
+        if (!NAT_RE.test(raw))
+          return { err: `«${f.label}»: id libero non valido («${raw}») — serve un naturale (Nat).` };
+        args[f.key] = parseInt(raw, 10);
+      } else if (sel.value === '') {
+        return { err: `«${f.label}»: nessuna opzione disponibile — usa «(altro id…)».` };
+      } else {
+        args[f.key] = parseInt(sel.value, 10);
+      }
+    } else if (f.kind === 'nat') {
+      const raw = $(id).value.trim();
+      if (!NAT_RE.test(raw))
+        return { err: `«${f.label}»: valore non valido («${raw}») — serve un naturale (Nat).` };
+      args[f.key] = parseInt(raw, 10);
+    } else {
+      const raw = $(id).value.trim();
+      if (!INT_RE.test(raw))
+        return { err: `«${f.label}»: importo non valido («${raw}») — serve un intero (Int), es. -5, 0, 120.` };
+      args[f.key] = parseInt(raw, 10);
+    }
+  }
+  return { args };
+}
+
+function showFormError(msg) {
+  const el = $('formerr');
+  el.textContent = 'Input rifiutato (nessun tentativo registrato): ' + msg;
+  el.style.display = '';
+}
+function hideFormError() { $('formerr').style.display = 'none'; }
+
+/* --- Attempt driver ------------------------------------------------------ */
+
+function invSnapshot() {
+  const sc = sumBal(state.casse), sn = sumBal(state.conti), se = escrowSum(state.collections);
+  return { sc, sn, se, v: sc - sn - se };
+}
+
+function runAttempt(tag, args, toyLabel) {
+  attemptNo += 1;
+  const res = attempt(state, { tag, ...args });
+  if (res.ok) {
+    // toy-side snapshot of a successful close, taken from the pre-state
+    if (tag === 'closePurchase') {
+      const [col] = pullCollection(args.c, state.collections);
+      completed.unshift({ n: attemptNo, id: col.id, label: toyLabels[col.id] || null,
+        referente: col.referente,
+        contributors: col.accepted.map(p => ({ user: p.user, amount: p.amount })),
+        total: sumPledges(col.accepted) });
+    }
+    state = res.state;
+    if (tag === 'openPurchase') {
+      collSuggest = Math.max(collSuggest, args.c + 1);
+      if (toyLabel) toyLabels[args.c] = toyLabel;
+    }
+    // drop labels of collections no longer open (closed, denied, failed, stripped)
+    for (const k of Object.keys(toyLabels))
+      if (!state.collections.some(c => c.id === Number(k))) delete toyLabels[k];
+    history.unshift({ kind: 'acc', n: attemptNo, tag, args, flow: res.flow, inv: invSnapshot() });
+    invNote = `ricalcolato dopo tentativo #${attemptNo} (accettato)`;
+  } else {
+    history.unshift({ kind: 'rej', n: attemptNo, tag, args, failed: res.failed, inv: invSnapshot() });
+    invNote = `ricalcolato dopo tentativo #${attemptNo} (respinto — stato invariato)`;
+  }
+  return res;
+}
+
+$('evform').addEventListener('submit', ev => {
+  ev.preventDefault();
+  const r = readForm();
+  if (r.err) { showFormError(r.err); return; }
+  hideFormError();
+  const lbl = $('f-toylabel') ? $('f-toylabel').value.trim() : '';
+  runAttempt(currentDef().tag, r.args, lbl || undefined);
+  renderAll();
+});
+
+/* --- Prefill by clicking state ------------------------------------------ */
+
+document.addEventListener('click', ev => {
+  const b = ev.target.closest('[data-set]');
+  if (!b) return;
+  const key = b.dataset.set, id = b.dataset.id;
+  const el = $(fieldId(key));
+  if (!el) return;   // current form has no such field
+  if (el.tagName === 'SELECT') {
+    if ([...el.options].some(o => o.value === id)) el.value = id;
+    else { el.value = OTHER; $(el.id + '-other').value = id; }
+    el.dispatchEvent(new Event('change'));
+  } else el.value = id;
+});
+
+/* --- Reset & scenario ----------------------------------------------------- */
+
+$('btn-reset').addEventListener('click', () => {
+  state = initState(FOUNDER);
+  history = [];
+  attemptNo = 0;
+  collSuggest = 1;
+  completed = [];
+  toyLabels = {};
+  invNote = 'reset eseguito → State.init 0 (fondatore u0 utente+responsabile, saldi e collette vuoti)';
+  renderAll();
+  buildFields();
+});
+
+// A useful mid-flight scenario reached ONLY through real events (each one
+// goes through the same attempt/step path and lands in the history).
+const SCENARIO = [
+  ['addUser',            { author: 0, target: 1 }],
+  ['addUser',            { author: 0, target: 2 }],
+  ['electResponsabile',  { author: 0, target: 1 }],
+  ['deposit',            { author: 0, user: 1, v: 100 }],
+  ['deposit',            { author: 1, user: 2, v: 80 }],
+  ['openPurchase',       { author: 1, c: 1 }, 'Ordine olio (demo)'],
+  ['pledge',             { author: 0, user: 2, c: 1, v: 30 }],
+  ['acceptPledge',       { author: 1, user: 2, c: 1 }],
+  ['pledge',             { author: 1, user: 1, c: 1, v: 40 }],
+  ['grantPermission',    { author: 0, c: 1 }],
+];
+
+$('btn-scenario').addEventListener('click', () => {
+  for (const [tag, args, lbl] of SCENARIO) runAttempt(tag, args, lbl);
+  renderAll();
+});
+
+/* --- Counterfactual tamper panel ----------------------------------------- */
+
+function refreshCfOptions() {
+  const target = $('cf-target').value;
+  const who = $('cf-who');
+  const prev = who.value;
+  if (target === 'escrow') {
+    $('cf-who-lbl').textContent = 'colletta';
+    who.innerHTML = state.collections.length
+      ? state.collections.map(c => `<option value="${c.id}">#${c.id}</option>`).join('')
+      : '<option value="">nessuna colletta aperta</option>';
+  } else {
+    $('cf-who-lbl').textContent = 'utente';
+    who.innerHTML = state.users.map(u => `<option value="${u}">u${u}</option>`).join('');
+  }
+  if ([...who.options].some(o => o.value === prev)) who.value = prev;
+}
+$('cf-target').addEventListener('change', refreshCfOptions);
+
+$('cf-btn').addEventListener('click', () => {
+  const target = $('cf-target').value;
+  const rawD = $('cf-delta').value.trim();
+  const out = $('cf-result');
+  if (!INT_RE.test(rawD)) {
+    out.style.display = '';
+    out.innerHTML = '<p>Δ non valido: serve un intero (es. 10 o -10).</p>';
+    return;
+  }
+  const delta = parseInt(rawD, 10);
+  const whoRaw = $('cf-who').value;
+  if (whoRaw === '') {
+    out.style.display = '';
+    out.innerHTML = '<p>Nessuna colletta aperta da manomettere: aprine una con <code>openPurchase</code>.</p>';
+    return;
+  }
+  const who = parseInt(whoRaw, 10);
+  let sc = sumBal(state.casse), sn = sumBal(state.conti), se = escrowSum(state.collections);
+  let what;
+  if (target === 'conto') { sn += delta; what = `conto[u${who}] ${delta >= 0 ? '+' : ''}${delta}`; }
+  else if (target === 'cassa') { sc += delta; what = `cassa[u${who}] ${delta >= 0 ? '+' : ''}${delta}`; }
+  else { se += delta; what = `escrow colletta #${who} ${delta >= 0 ? '+' : ''}${delta}`; }
+  const inv = sc - sn - se;
+  out.style.display = '';
+  out.innerHTML = `
+    <p><b>Contro-fattuale</b> — se qualcuno alterasse ${what} <b>fuori dalla macchina</b>:</p>
+    <p class="mono">Σ casse ${sc} − Σ conti ${sn} − Σ escrow ${se} =
+      <span class="cfinv ${inv === 0 ? 'z' : 'nz'}">${inv}${inv === 0 ? '' : ' ≠ 0 — invariante rotto'}</span></p>
+    ${inv === 0 ? '<p>Con Δ = 0 non cambia nulla: scegli Δ ≠ 0 per vedere la rottura.</p>' : `
+    <p>Nessun costruttore di <code>Event</code> può produrre questo stato: ogni transizione di
+      <code>step</code> preserva l'invariante. La manomissione <b>non è un evento economico</b>,
+      non è stata aggiunta alla storia e <b>lo stato reale qui sopra resta intatto</b>
+      (invariante reale: sempre 0).</p>`}`;
+});
+
+/* --- Boot ---------------------------------------------------------------- */
+
+buildEvSelect();
+buildFields();
+renderAll();
+
+// Exposed for scripted verification (harmless in normal use).
+window.RG = { attempt, initState, sumBal, escrowSum, bal,
+  get state() { return state; }, runAttempt, renderAll: () => renderAll() };
+</script>
+</body>
+</html>
