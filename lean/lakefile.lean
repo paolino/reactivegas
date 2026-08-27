@@ -9,3 +9,7 @@ package reactivegas where
 @[default_target]
 lean_lib Reactivegas where
   srcDir := "."
+
+@[default_target]
+lean_lib KelGroups where
+  srcDir := "."
