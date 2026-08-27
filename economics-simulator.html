@@ -19,6 +19,9 @@
     --bad-bg: #fdecea;
     --gold: #b98a1c;
     --chip: #e7eef8;
+    --viola: #5b3e96;
+    --viola-bg: #f3edfb;
+    --viola-line: #d9c8ef;
     font-size: 15px;
   }
   * { box-sizing: border-box; }
@@ -32,32 +35,37 @@
   header {
     position: sticky; top: 0; z-index: 20; background: var(--card);
     border-bottom: 1px solid var(--line); padding: 7px 12px;
-    display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px;
   }
   header h1 { margin: 0; font-size: .98rem; }
   header h1 small { color: var(--muted); font-weight: 400; font-size: .68rem; }
-  #inv-strip { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
-  .inv-term { display: flex; flex-direction: column; line-height: 1.1; }
-  .inv-term .lbl { font-size: .62rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
-  .inv-term .val { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .98rem; }
-  .inv-op { font-size: 1.05rem; color: var(--muted); }
-  #inv-badge { padding: 3px 10px; border-radius: 999px; font-weight: 700; font-size: .82rem; }
-  #inv-badge.ok { background: var(--ok-bg); color: var(--ok); }
-  #inv-badge.bad { background: var(--bad-bg); color: var(--bad); }
-  #inv-note { font-size: .7rem; color: var(--muted); }
-  .hbtns { margin-left: auto; display: flex; gap: 6px; }
-  @keyframes flash { 0% { background: #dcebff; } 100% { background: transparent; } }
-  .flash-strip { animation: flash .8s ease-out; }
+  .hbtns { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+  #inv-chip {
+    border: 1px solid var(--line); background: var(--bg); border-radius: 999px;
+    font: inherit; font-size: .78rem; padding: 2px 10px; cursor: pointer; color: var(--muted);
+  }
+  #inv-chip.ok b { color: var(--ok); }
+  #inv-chip.bad { background: var(--bad-bg); border-color: #e6b8b4; }
+  #inv-chip.bad b { color: var(--bad); }
+  @keyframes chippulse { 0% { box-shadow: 0 0 0 4px #dcebff; } 100% { box-shadow: none; } }
+  #inv-chip.pulse { animation: chippulse .7s ease-out; }
 
-  #statusline {
-    max-width: 1400px; margin: 0 auto; padding: 6px 14px 0;
-    font-size: .86rem; min-height: 1.7em; display: flex; align-items: center; gap: 8px;
+  #crumbbar {
+    max-width: 1400px; margin: 0 auto; padding: 7px 14px 0;
+    display: flex; align-items: center; gap: 8px; font-size: .86rem; min-height: 1.9em;
   }
-  #statusline .xbtn {
-    border: 1px solid var(--line); background: #fff; border-radius: 6px;
-    font: inherit; font-size: .78rem; padding: 0 7px; cursor: pointer; color: var(--bad);
+  #nav-back {
+    border: 1px solid var(--line); background: #fff; border-radius: 7px;
+    font: inherit; font-size: .8rem; padding: 1px 9px; cursor: pointer; color: var(--accent);
   }
-  #statusline b { color: var(--accent); }
+  #nav-back:disabled { color: #b3bfca; cursor: default; }
+  #crumbs { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; min-width: 0; }
+  #crumbs .cr {
+    border: none; background: none; font: inherit; font-size: .86rem;
+    color: var(--accent); cursor: pointer; padding: 0 1px;
+  }
+  #crumbs .cr.here { color: var(--ink); font-weight: 700; cursor: default; }
+  #crumbs .sep { color: var(--muted); }
 
   main {
     display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
@@ -65,6 +73,7 @@
   }
   @media (max-width: 940px) {
     main { grid-template-columns: 1fr; padding: 6px 6px 30px; }
+    #crumbbar { padding: 6px 8px 0; }
   }
   .card {
     background: var(--card); border: 1px solid var(--line); border-radius: 10px;
@@ -74,7 +83,34 @@
   .card h2 small { color: var(--muted); font-weight: 400; font-size: .72rem; }
   .empty { color: var(--muted); font-size: .82rem; font-style: italic; margin: 2px 0; }
   #side { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  #view { min-width: 0; display: flex; flex-direction: column; gap: 10px; }
 
+  /* task buttons */
+  .tasks { display: flex; flex-wrap: wrap; gap: 7px; }
+  button.task {
+    display: inline-flex; align-items: center; gap: 7px;
+    border: 1px solid #c9d8ee; background: var(--chip); border-radius: 9px;
+    padding: 6px 12px; font: inherit; font-size: .86rem; cursor: pointer;
+  }
+  button.task:not(:disabled):hover { background: var(--accent); color: #fff; }
+  button.task:disabled { background: var(--bg); border-color: var(--line); color: #9aa7b4; cursor: default; }
+  button.task.ext { background: var(--viola-bg); border-color: var(--viola-line); }
+  button.task.ext:not(:disabled):hover { background: var(--viola); color: #fff; }
+  .gb {
+    border: 1px solid #e6b8b4; background: var(--bad-bg); color: var(--bad);
+    border-radius: 5px; font-size: .64rem; font-weight: 700; padding: 1px 5px; white-space: nowrap;
+  }
+  .gb.dim { border-color: var(--line); background: var(--bg); color: var(--muted); }
+  .gbx {
+    border: 1px solid var(--viola-line); background: var(--viola-bg); color: var(--viola);
+    border-radius: 5px; font-size: .62rem; font-weight: 700; padding: 1px 5px; white-space: nowrap;
+  }
+  .msec {
+    margin-top: 4px; padding-top: 6px; border-top: 1px dashed var(--viola-line);
+    font-size: .66rem; font-weight: 700; color: var(--viola); letter-spacing: .03em;
+  }
+
+  /* group scene */
   #scene-card { padding: 4px; }
   svg#scene { display: block; width: 100%; height: auto; user-select: none; }
   svg text { user-select: none; pointer-events: none; }
@@ -93,70 +129,94 @@
     font-size: 12.5px; text-anchor: middle; fill: var(--ink);
     font-family: ui-monospace, Menlo, Consolas, monospace;
   }
-  .chipk { font-size: 9px !important; fill: var(--muted) !important; font-family: inherit !important; }
-  .pileg .pc { fill: #f3edfb; stroke: #b599dd; stroke-width: 2.5; }
+  .pileg .pc { fill: var(--viola-bg); stroke: #b599dd; stroke-width: 2.5; }
   .plbl { font-size: 13px; text-anchor: middle; font-weight: 700; fill: #4a3175; }
   .pamt { font-size: 15px; text-anchor: middle; font-family: ui-monospace, Menlo, Consolas, monospace; fill: var(--ink); }
   .pmeta { font-size: 10px; text-anchor: middle; fill: var(--muted); }
   .reflink { stroke: #b599dd; stroke-width: 1.5; stroke-dasharray: 3 4; fill: none; opacity: .6; }
   .ringc { fill: none; stroke: #e3e9ef; stroke-width: 2; }
   .hintc { font-size: 13px; text-anchor: middle; fill: var(--muted); font-style: italic; }
-
-  .sel .avatar, .sel rect, .sel .pc { stroke: var(--accent) !important; stroke-width: 4 !important; }
-  .halo { fill: none; stroke: #35b36b; stroke-width: 3.5; animation: halop 1.1s ease-in-out infinite; }
-  @keyframes halop { 0%,100% { stroke-opacity: .25; } 50% { stroke-opacity: .9; } }
-  .pick-warn { opacity: .55; }
-  .pick-off { opacity: .3; pointer-events: none; }
-  .mut { opacity: .35; pointer-events: none; }
-  .svgb rect { fill: var(--bad-bg); stroke: #e6b8b4; }
-  .svgb text { font-size: 10.5px; fill: var(--bad); font-weight: 700; text-anchor: middle; }
   @keyframes nodeflash { 0% { opacity: .15; } 100% { opacity: 1; } }
   .nflash { animation: nodeflash .9s ease-out; }
   .coin { fill: #ffd766; stroke: var(--gold); stroke-width: 1.5; }
   .cointx { font-size: 12px; font-weight: 700; fill: #6b4d05; text-anchor: middle; }
   .floattx { font-size: 13px; font-weight: 700; text-anchor: middle; }
 
+  /* person / collection / pledge views */
+  .vhead { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .bigav {
+    width: 46px; height: 46px; border-radius: 50%; border: 2px solid #8aa3c0;
+    background: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 21px; font-weight: 700; color: #31465e; flex: none;
+  }
+  .bigav.resp { border-color: var(--gold); border-width: 3px; background: #fffaf0; }
+  .vhead .who { font-size: 1.05rem; font-weight: 700; }
+  .vhead .sub { color: var(--muted); font-size: .78rem; }
+  .tabs { display: flex; gap: 6px; }
+  button.tab {
+    border: 1px solid var(--line); background: #fff; border-radius: 8px 8px 0 0;
+    border-bottom: none; padding: 5px 14px; font: inherit; font-size: .86rem; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 7px;
+  }
+  button.tab.on { background: var(--chip); border-color: #c9d8ee; font-weight: 700; }
+  button.tab:disabled { color: #9aa7b4; cursor: default; }
+  .hatbox { border: 1px solid #c9d8ee; border-radius: 0 10px 10px 10px; background: var(--card); padding: 10px 12px; }
+  .money {
+    display: inline-flex; align-items: baseline; gap: 8px;
+    border: 1px solid #bcd8c3; background: #eaf3ec; border-radius: 9px; padding: 6px 14px;
+  }
+  .money.cassa { border-color: #e3cf9a; background: #fdf3dd; }
+  .money .k { font-size: .74rem; color: var(--muted); }
+  .money .v { font-size: 1.25rem; font-weight: 700; font-family: ui-monospace, Menlo, Consolas, monospace; }
+  .rows { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+  button.row {
+    display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+    border: 1px solid var(--line); background: #fafbfc; border-radius: 8px;
+    padding: 6px 10px; font: inherit; font-size: .86rem; cursor: pointer;
+  }
+  button.row:hover { background: var(--chip); border-color: #c9d8ee; }
+  .row .amt { margin-left: auto; font-family: ui-monospace, Menlo, Consolas, monospace; font-weight: 700; }
+  .stag {
+    border-radius: 999px; padding: 1px 8px; font-size: .68rem; font-weight: 700;
+  }
+  .stag.pend { background: #fff4dc; color: #8a5b00; }
+  .stag.acc { background: var(--ok-bg); color: var(--ok); }
+  .stag.perm { background: var(--viola-bg); color: var(--viola); }
+  .stag.noperm { background: var(--bg); color: var(--muted); }
+  .linkchip {
+    display: inline-flex; align-items: center; gap: 6px;
+    border: 1px solid #c9d8ee; background: var(--chip); border-radius: 8px;
+    padding: 3px 10px; font: inherit; font-size: .82rem; cursor: pointer;
+  }
+  .linkchip:hover { background: var(--accent); color: #fff; }
+  #refpanel { border: 1px solid var(--gold); border-radius: 10px; background: #fffdf6; padding: 9px 11px; }
+  #refpanel h3 { margin: 0 0 6px; font-size: .8rem; color: #7a5c10; display: flex; gap: 8px; align-items: center; }
+  .inline-acts { margin-left: auto; display: flex; gap: 5px; }
+  button.mini {
+    border: 1px solid #c9d8ee; background: #fff; border-radius: 6px;
+    font: inherit; font-size: .74rem; padding: 2px 8px; cursor: pointer; color: var(--accent);
+  }
+  button.mini:hover { background: var(--accent); color: #fff; }
+  button.mini.no { color: var(--bad); border-color: #e6b8b4; }
+  button.mini.no:hover { background: var(--bad); color: #fff; }
+  .sect { font-size: .74rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin: 8px 0 2px; }
+
   /* popover */
   #pop { position: fixed; z-index: 50; }
   .pbox {
     background: var(--card); border: 1px solid var(--line); border-radius: 10px;
-    box-shadow: 0 6px 24px rgba(20,40,60,.18); padding: 8px; max-width: min(320px, 92vw);
+    box-shadow: 0 6px 24px rgba(20,40,60,.18); padding: 8px; max-width: min(330px, 92vw);
   }
   .pt { font-size: .82rem; font-weight: 700; margin: 0 2px 6px; display: flex; gap: 8px; align-items: center; }
-  .pt .mono { color: var(--muted); font-weight: 400; }
   .pt .xbtn2 { margin-left: auto; border: none; background: none; cursor: pointer; color: var(--muted); font-size: .95rem; padding: 0 2px; }
-  .menu { display: flex; flex-direction: column; gap: 2px; max-height: 60vh; overflow-y: auto; }
-  button.mi {
-    display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;
-    border: none; background: none; border-radius: 6px; padding: 5px 8px;
-    font: inherit; font-size: .86rem; cursor: pointer;
-  }
-  button.mi:not(:disabled):hover { background: var(--chip); }
-  button.mi .tag { margin-left: auto; color: var(--muted); font-size: .68rem; }
-  button.mi:disabled { color: #9aa7b4; cursor: default; }
-  .gb {
-    margin-left: auto; border: 1px solid #e6b8b4; background: var(--bad-bg); color: var(--bad);
-    border-radius: 5px; font-size: .64rem; font-weight: 700; padding: 1px 5px; white-space: nowrap;
-  }
-  .gb.dim { border-color: var(--line); background: var(--bg); color: var(--muted); }
-  .gbx {
-    margin-left: auto; border: 1px solid #d9c8ef; background: #f3edfb; color: #5b3e96;
-    border-radius: 5px; font-size: .62rem; font-weight: 700; padding: 1px 5px; white-space: nowrap;
-  }
-  .msec {
-    margin: 6px 2px 2px; padding-top: 5px; border-top: 1px dashed #d9c8ef;
-    font-size: .66rem; font-weight: 700; color: #5b3e96; letter-spacing: .03em;
-  }
-  button.mi.ext:not(:disabled):hover { background: #f3edfb; }
-  .entry.ext { border-left-color: #8a63c9; background: #f7f3fc; }
-  .eprov { font-size: .72rem; color: #5b3e96; margin-top: 2px; }
-  .toast.ext { background: #f3edfb; border-color: #d9c8ef; }
-  .chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 2px; }
-  .lchip {
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 2px; max-height: 46vh; overflow-y: auto; }
+  button.chip {
+    display: inline-flex; align-items: center; gap: 7px;
     border: 1px solid #c9d8ee; background: var(--chip); border-radius: 8px;
     padding: 4px 10px; font: inherit; font-size: .86rem; cursor: pointer;
   }
-  .lchip:hover { background: var(--accent); color: #fff; }
+  button.chip:not(:disabled):hover { background: var(--accent); color: #fff; }
+  button.chip:disabled { background: var(--bg); border-color: var(--line); color: #9aa7b4; cursor: default; }
   .ar { display: flex; align-items: center; gap: 8px; padding: 4px 2px; }
   .ar input[type=range] { flex: 1; min-width: 120px; }
   .ar2 { display: flex; align-items: center; gap: 8px; padding: 4px 2px; }
@@ -181,65 +241,63 @@
   .cfline .nz { color: var(--bad); font-weight: 700; }
   .cfline .z { color: var(--ok); font-weight: 700; }
 
-  /* toast */
   .toast {
     position: fixed; z-index: 60; background: var(--bad-bg); border: 1px solid #e6b8b4;
     border-radius: 9px; padding: 6px 10px; font-size: .84rem; box-shadow: 0 4px 16px rgba(20,40,60,.18);
     display: flex; flex-wrap: wrap; align-items: center; gap: 6px; max-width: min(340px, 92vw);
     animation: toastin .18s ease-out;
   }
+  .toast.ext { background: var(--viola-bg); border-color: var(--viola-line); }
   @keyframes toastin { 0% { opacity: 0; transform: translateY(6px); } 100% { opacity: 1; } }
 
   /* history + done */
-  #log { display: flex; flex-direction: column; gap: 6px; max-height: 460px; overflow-y: auto; }
+  #log { display: flex; flex-direction: column; gap: 6px; max-height: 420px; overflow-y: auto; }
   .entry { border-left: 4px solid var(--line); border-radius: 4px; padding: 5px 9px; background: #fafbfc; font-size: .84rem; }
   .entry.acc { border-left-color: var(--ok); background: var(--ok-bg); }
   .entry.rej { border-left-color: var(--bad); background: var(--bad-bg); }
+  .entry.ext { border-left-color: #8a63c9; background: #f7f3fc; }
   .entry .eh { font-weight: 600; }
   .entry .eh .mono { font-weight: 400; color: var(--muted); font-size: .74rem; }
   .entry .efl { font-size: .8rem; margin-top: 1px; }
   .entry ul.egs { margin: 3px 0 0; padding: 0; list-style: none; }
   .entry ul.egs li { font-size: .78rem; margin: 2px 0; display: flex; gap: 6px; align-items: baseline; }
-  .entry ul.egs .gb { margin-left: 0; }
   .entry .einv { font-size: .72rem; color: var(--muted); margin-top: 2px; font-family: ui-monospace, Menlo, Consolas, monospace; }
+  .eprov { font-size: .72rem; color: var(--viola); margin-top: 2px; }
   .done { border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; margin-top: 6px; font-size: .84rem; }
   .done .dh { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; font-weight: 600; }
   .done .dh .tot { margin-left: auto; font-family: ui-monospace, Menlo, Consolas, monospace; }
   .done ul { margin: 2px 0 0; padding-left: 0; list-style: none; font-size: .8rem; }
+
+  .lawbanner {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--bad); color: #fff; font-weight: 700; font-size: .9rem;
+    padding: 8px 14px; box-shadow: 0 3px 14px rgba(0,0,0,.3);
+  }
 </style>
 </head>
 <body>
 <header>
   <h1>Reactivegas <small class="mono">Types.lean · Step.lean — 15 eventi</small></h1>
-  <div id="inv-strip">
-    <span class="inv-term"><span class="lbl">Σ casse</span><span class="val" id="inv-casse">0</span></span>
-    <span class="inv-op">−</span>
-    <span class="inv-term"><span class="lbl">Σ conti</span><span class="val" id="inv-conti">0</span></span>
-    <span class="inv-op">−</span>
-    <span class="inv-term"><span class="lbl">Σ escrow</span><span class="val" id="inv-escrow">0</span></span>
-    <span class="inv-op">=</span>
-    <span id="inv-badge" class="ok">0</span>
-    <span id="inv-note">avvio</span>
-  </div>
   <div class="hbtns">
-    <button type="button" class="ghost" id="btn-cf" title="mostra l'effetto di una manomissione fuori macchina — lo stato reale non cambia">contro&#8209;fattuale</button>
+    <button type="button" id="inv-chip" class="ok" title="Σ casse − Σ conti − Σ escrow — clicca per dettaglio e contro-fattuale">⚖ <b>0 ✓</b></button>
     <button type="button" class="ghost danger" id="btn-reset" title="State.init 0">Reset</button>
   </div>
 </header>
 
-<div id="statusline"></div>
+<div id="crumbbar">
+  <button type="button" id="nav-back" title="torna indietro">←</button>
+  <nav id="crumbs" aria-label="percorso"></nav>
+</div>
 
 <main>
-  <section class="card" id="scene-card">
-    <svg id="scene" viewBox="0 0 760 600" role="group" aria-label="scena del gruppo"></svg>
-  </section>
+  <section id="view"></section>
   <aside id="side">
     <div class="card" id="done-card">
       <h2>Acquisti completati <small>solo <span class="mono">closePurchase</span></small></h2>
       <div id="done-body"><p class="empty">nessuno</p></div>
     </div>
     <div class="card" id="history-card">
-      <h2>Storia <small>✓ accettati · ✗ respinti</small></h2>
+      <h2>Storia <small>✓ accettati · ✗ respinti · ⇣ esiti esterni</small></h2>
       <div id="log"><p class="empty">nessun tentativo</p></div>
     </div>
   </aside>
@@ -256,8 +314,9 @@
             conti:[[u,v]], casse:[[u,v]],
             collections:[{id, referente, permitted, accepted:[{user,amount}],
                           pending:[{user,amount}]}] }
-   Toy-side decoration (names, purchase labels, snapshots, UI modes) never
-   enters machine state or events; UserId/CollId stay numeric inside.
+   Toy-side decoration (names, purchase labels, snapshots, navigation,
+   hats, tasks) never enters machine state or events; UserId/CollId stay
+   numeric inside.
    ===================================================================== */
 
 const FOUNDER = 0;
@@ -337,7 +396,7 @@ function isResponsabile(s, u) { return s.responsabili.includes(u); }
 
 const g = (code, why, law) => ({ code, why, law: law || null });
 const AUTH = a => g('isResponsabile s a', `${nm(a)} non è responsabile`, 'AUTH');
-const PULL = c => g('pullCollection c = none', `nessuna colletta aperta «${lbl(c)}»`);
+const PULL = c => g('pullCollection c = none', `nessun acquisto aperto «${lbl(c)}»`);
 
 /* --- Step.lean: the rejecting transition, with named guards ------------
    attempt(s,e) → {ok:true, state, flow} | {ok:false, failed:[guard]}
@@ -381,7 +440,7 @@ function attempt(s, e) {
       const i = s.responsabili.indexOf(e.target);
       const resps = s.responsabili.slice(0, i).concat(s.responsabili.slice(i + 1));
       const flow = ps.length
-        ? `★✕ ${nm(e.target)} · collette chiuse, rimborsi: ` +
+        ? `★✕ ${nm(e.target)} · suoi acquisti chiusi, rimborsi: ` +
           ps.map(p => `conto ${nm(p.user)} +${p.amount}`).join(', ')
         : `★✕ ${nm(e.target)} · nessuna colletta da chiudere`;
       return { ok: true, flow,
@@ -391,10 +450,10 @@ function attempt(s, e) {
     case 'openPurchase': {
       need(isResponsabile(s, e.author), AUTH(e.author));
       need(!s.collections.some(x => x.id === e.c),
-        g('!(s.collections.any (x.id == c))', `colletta «${lbl(e.c)}» già aperta`));
+        g('!(s.collections.any (x.id == c))', `acquisto «${lbl(e.c)}» già aperto`));
       if (fails.length) return rej();
       return { ok: true,
-        flow: `apre «${lbl(e.c)}» — referente ${nm(e.author)}, permesso: no, escrow 0`,
+        flow: `apre l'acquisto «${lbl(e.c)}» — referente ${nm(e.author)}, permesso: no, impegni 0`,
         state: { ...s, collections:
           [{ id: e.c, referente: e.author, permitted: false, accepted: [], pending: [] },
            ...s.collections] } };
@@ -406,7 +465,7 @@ function attempt(s, e) {
       need(isResponsabile(s, e.author), AUTH(e.author));
       if (fails.length) return rej();
       const [col, rest] = pulled;
-      return { ok: true, flow: `«${lbl(e.c)}»: permesso di chiusura concesso (L2 ✓)`,
+      return { ok: true, flow: `«${lbl(e.c)}»: assenso del gruppo — permesso di chiusura concesso (L2 ✓)`,
         state: { ...s, collections: [{ ...col, permitted: true }, ...rest] } };
     }
 
@@ -418,7 +477,7 @@ function attempt(s, e) {
       const [col, rest] = pulled;
       const ps = [...col.accepted, ...col.pending];
       return { ok: true,
-        flow: `«${lbl(e.c)}» negata e chiusa · rimborsi: ` +
+        flow: `acquisto «${lbl(e.c)}» negato e chiuso · rimborsi: ` +
           (ps.length ? ps.map(p => `conto ${nm(p.user)} +${p.amount}`).join(', ') : 'nessuno'),
         state: { ...s, conti: refundAll(s.conti, ps), collections: rest } };
     }
@@ -431,7 +490,7 @@ function attempt(s, e) {
         g('a != u', 'autore e utente devono essere diversi'));
       need(0 <= e.v, g('0 ≤ v', `importo negativo (${e.v})`));
       if (fails.length) return rej();
-      return { ok: true, flow: `conto ${nm(e.user)} +${e.v} · cassa ${nm(e.author)} +${e.v}`,
+      return { ok: true, flow: `accredito: conto ${nm(e.user)} +${e.v} · cassa ${nm(e.author)} +${e.v}`,
         state: { ...s, conti: bump(s.conti, e.user, e.v), casse: bump(s.casse, e.author, e.v) } };
     }
 
@@ -446,7 +505,7 @@ function attempt(s, e) {
           `credito insufficiente: conto ${nm(e.user)} = ${bal(s.conti, e.user)} < ${e.v}`,
           'COVERED (L7)'));
       if (fails.length) return rej();
-      return { ok: true, flow: `conto ${nm(e.user)} −${e.v} · cassa ${nm(e.author)} −${e.v}`,
+      return { ok: true, flow: `prelievo: conto ${nm(e.user)} −${e.v} · cassa ${nm(e.author)} −${e.v}`,
         state: { ...s, conti: bump(s.conti, e.user, -e.v), casse: bump(s.casse, e.author, -e.v) } };
     }
 
@@ -472,12 +531,12 @@ function attempt(s, e) {
         const [col] = pulled;
         need(!col.accepted.some(p => p.user === e.user),
           g('!(col.accepted.any (p.user == u))',
-            `${nm(e.user)} ha già un pledge accettato in «${lbl(e.c)}»`, 'L8'));
+            `${nm(e.user)} ha già un impegno accettato in «${lbl(e.c)}»`, 'L8'));
         need(!col.pending.some(p => p.user === e.user),
           g('!(col.pending.any (p.user == u))',
-            `${nm(e.user)} ha già un pledge pendente in «${lbl(e.c)}»`, 'L8'));
+            `${nm(e.user)} ha già un impegno pendente in «${lbl(e.c)}»`, 'L8'));
       }
-      need(0 < e.v, g('0 < v', `il pledge deve essere positivo (${e.v})`, 'COVERED (L7)'));
+      need(0 < e.v, g('0 < v', `l'impegno deve essere positivo (${e.v})`, 'COVERED (L7)'));
       need(bal(s.conti, e.user) >= e.v,
         g('bal s.conti u ≥ v',
           `credito insufficiente: conto ${nm(e.user)} = ${bal(s.conti, e.user)} < ${e.v}`,
@@ -485,7 +544,7 @@ function attempt(s, e) {
       if (fails.length) return rej();
       const [col, rest] = pulled;
       return { ok: true,
-        flow: `conto ${nm(e.user)} −${e.v} → escrow «${lbl(e.c)}» (pendente)`,
+        flow: `impegno: conto ${nm(e.user)} −${e.v} → impegni di «${lbl(e.c)}» (pendente)`,
         state: { ...s, conti: bump(s.conti, e.user, -e.v),
           collections: [{ ...col, pending: [{ user: e.user, amount: e.v }, ...col.pending] },
                         ...rest] } };
@@ -499,7 +558,7 @@ function attempt(s, e) {
         split = splitUser(e.user, pulled[0].pending);
         need(split !== null,
           g('splitUser u col.pending = none',
-            `${nm(e.user)} non ha un pledge pendente in «${lbl(e.c)}»`));
+            `${nm(e.user)} non ha un impegno pendente in «${lbl(e.c)}»`));
         need(pulled[0].referente === e.author,
           g('col.referente == a',
             `solo il referente (${nm(pulled[0].referente)}) può accettare`, 'REFERENTE'));
@@ -509,7 +568,7 @@ function attempt(s, e) {
       const [col, rest] = pulled;
       const [v, pend2] = split;
       return { ok: true,
-        flow: `«${lbl(e.c)}»: pledge di ${nm(e.user)} (${v}) pendente → accettato`,
+        flow: `«${lbl(e.c)}»: impegno di ${nm(e.user)} (${v}) pendente → accettato`,
         state: { ...s, collections:
           [{ ...col, pending: pend2, accepted: [{ user: e.user, amount: v }, ...col.accepted] },
            ...rest] } };
@@ -523,7 +582,7 @@ function attempt(s, e) {
         split = splitUser(e.user, pulled[0].pending);
         need(split !== null,
           g('splitUser u col.pending = none',
-            `${nm(e.user)} non ha un pledge pendente in «${lbl(e.c)}»`));
+            `${nm(e.user)} non ha un impegno pendente in «${lbl(e.c)}»`));
         need(pulled[0].referente === e.author,
           g('col.referente == a',
             `solo il referente (${nm(pulled[0].referente)}) può rifiutare`, 'REFERENTE'));
@@ -533,7 +592,7 @@ function attempt(s, e) {
       const [col, rest] = pulled;
       const [v, pend2] = split;
       return { ok: true,
-        flow: `rimborso: escrow «${lbl(e.c)}» −${v} → conto ${nm(e.user)} +${v}`,
+        flow: `rimborso: impegni di «${lbl(e.c)}» −${v} → conto ${nm(e.user)} +${v}`,
         state: { ...s, conti: bump(s.conti, e.user, v),
           collections: [{ ...col, pending: pend2 }, ...rest] } };
     }
@@ -546,7 +605,7 @@ function attempt(s, e) {
         split = splitUser(e.user, pulled[0].accepted);
         need(split !== null,
           g('splitUser u col.accepted = none',
-            `${nm(e.user)} non ha un pledge accettato in «${lbl(e.c)}»`));
+            `${nm(e.user)} non ha un impegno accettato in «${lbl(e.c)}»`));
         need(pulled[0].referente === e.author,
           g('col.referente == a',
             `solo il referente (${nm(pulled[0].referente)}) può correggere`, 'REFERENTE'));
@@ -565,7 +624,7 @@ function attempt(s, e) {
       const [v, acc2] = split;
       const d = v - e.v;
       return { ok: true,
-        flow: `pledge di ${nm(e.user)}: ${v} → ${e.v} · conto ${nm(e.user)} ` +
+        flow: `impegno di ${nm(e.user)}: ${v} → ${e.v} · conto ${nm(e.user)} ` +
           (d >= 0 ? `+${d}` : `${d}`),
         state: { ...s, conti: bump(s.conti, e.user, d),
           collections: [{ ...col, accepted: [{ user: e.user, amount: e.v }, ...acc2] },
@@ -585,13 +644,13 @@ function attempt(s, e) {
           g('col.permitted', 'il gruppo non ha concesso il permesso di chiusura', 'PERMITTED (L2)'));
         need(col.pending.length === 0,
           g('col.pending.isEmpty',
-            `restano ${col.pending.length} pledge pendenti`, 'NO-PENDING (L4)'));
+            `restano ${col.pending.length} impegni pendenti`, 'NO-PENDING (L4)'));
       }
       if (fails.length) return rej();
       const [col, rest] = pulled;
       const tot = sumPledges(col.accepted);
       return { ok: true,
-        flow: `acquisto «${lbl(e.c)}» chiuso: cassa ${nm(col.referente)} −${tot} · escrow −${tot} (spesi)`,
+        flow: `acquisto «${lbl(e.c)}» chiuso: cassa ${nm(col.referente)} −${tot} · impegni −${tot} (spesi)`,
         state: { ...s, casse: bump(s.casse, col.referente, -tot), collections: rest } };
     }
 
@@ -606,13 +665,13 @@ function attempt(s, e) {
             `solo il referente (${nm(col.referente)}) può farla fallire`, 'REFERENTE'));
         need(col.pending.length === 0,
           g('col.pending.isEmpty',
-            `restano ${col.pending.length} pledge pendenti`, 'NO-PENDING (L4)'));
+            `restano ${col.pending.length} impegni pendenti`, 'NO-PENDING (L4)'));
       }
       if (fails.length) return rej();
       const [col, rest] = pulled;
       const ps = [...col.accepted, ...col.pending];
       return { ok: true,
-        flow: `«${lbl(e.c)}» fallita · rimborsi: ` +
+        flow: `acquisto «${lbl(e.c)}» fallito · rimborsi: ` +
           (ps.length ? ps.map(p => `conto ${nm(p.user)} +${p.amount}`).join(', ') : 'nessuno'),
         state: { ...s, conti: refundAll(s.conti, ps), collections: rest } };
     }
@@ -620,43 +679,45 @@ function attempt(s, e) {
   throw new Error('unknown event tag: ' + e.tag);
 }
 
-/* --- App state ---------------------------------------------------------- */
+/* --- App state (all toy-side) ------------------------------------------- */
 
 let state = initState(FOUNDER);
 let history = [];        // newest first
-let attemptNo = 0;
 let collSeq = 1;         // toy-side fresh CollId allocator
 let invNote = 'avvio';
 let completed = [];      // toy snapshots of accepted closePurchase, newest first
 
-// interaction state (toy-side only)
-let ui = { mode: 'idle', subject: null, ev: null, params: {}, needs: [], xy: [380, 285] };
-let cfMode = false;
+// navigation: group → person → collection → pledge (toy-side only)
+let navStack = [{ view: 'group' }];
+const nav = () => navStack[navStack.length - 1];
+
+// one in-flight task flow (toy-side only)
+let flow = null;         // { tag, params, steps, xy }
 
 const $ = id => document.getElementById(id);
 const esc = x => String(x).replace(/[&<>"']/g,
   ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 
-/* --- Event metadata ------------------------------------------------------ */
+/* --- Event metadata: machine provenance for task flows ------------------- */
 
 const EV = {
-  addUser:            { it: 'Aggiungi persona',    roles: ['author', 'targetGhost'] },
-  electResponsabile:  { it: 'Eleggi responsabile', roles: ['author', 'targetMember'] },
-  removeResponsabile: { it: 'Revoca responsabile', roles: ['author', 'targetResp'] },
-  openPurchase:       { it: 'Apri acquisto',       roles: ['author', 'label'] },
+  addUser:            { it: 'Fai entrare una persona', roles: ['targetGhost', 'author'] },
+  electResponsabile:  { it: 'Eleggi responsabile',     roles: ['targetMember', 'author'] },
+  removeResponsabile: { it: 'Revoca responsabile',     roles: ['targetResp', 'author'] },
+  openPurchase:       { it: 'Apri un acquisto',        roles: ['label', 'author'] },
   // interface outcomes: the vote happens outside this machine (kelgroups);
   // the responsabile carrier required by Step.lean stays inside the adapter
-  grantPermission:    { it: 'Esito: permesso concesso', roles: ['coll'], external: true },
-  denyPermission:     { it: 'Esito: acquisto negato',   roles: ['coll'], external: true },
-  deposit:            { it: 'Deposito',            roles: ['author', 'user'], amount: true },
-  withdraw:           { it: 'Prelievo',            roles: ['author', 'user'], amount: true },
-  transferCassa:      { it: 'Giro di cassa',       roles: ['author', 'from'], amount: true },
-  pledge:             { it: 'Pledge',              roles: ['author', 'user', 'coll'], amount: true },
-  acceptPledge:       { it: 'Accetta pledge',      roles: ['coll', 'pendUser', 'author'] },
-  refusePledge:       { it: 'Rifiuta pledge',      roles: ['coll', 'pendUser', 'author'] },
-  correctPledge:      { it: 'Correggi pledge',     roles: ['coll', 'accUser', 'author'], amount: true },
-  closePurchase:      { it: 'Chiudi acquisto',     roles: ['coll', 'author'] },
-  failPurchase:       { it: 'Fallisci acquisto',   roles: ['coll', 'author'] },
+  grantPermission:    { it: 'Assenso: permesso concesso', roles: ['coll'], external: true },
+  denyPermission:     { it: 'Dissenso: acquisto negato',  roles: ['coll'], external: true },
+  deposit:            { it: 'Accredito',               roles: ['user', 'author'], amount: true },
+  withdraw:           { it: 'Prelievo',                roles: ['user', 'author'], amount: true },
+  transferCassa:      { it: 'Giro di cassa',           roles: ['from', 'author'], amount: true },
+  pledge:             { it: 'Impegno su un acquisto',  roles: ['user', 'coll', 'author'], amount: true },
+  acceptPledge:       { it: 'Accetta impegno',         roles: ['coll', 'pendUser', 'author'] },
+  refusePledge:       { it: 'Rifiuta impegno',         roles: ['coll', 'pendUser', 'author'] },
+  correctPledge:      { it: 'Correggi impegno',        roles: ['coll', 'accUser', 'author'], amount: true },
+  closePurchase:      { it: 'Chiudi acquisto',         roles: ['coll', 'author'] },
+  failPurchase:       { it: 'Fallisci acquisto',       roles: ['coll', 'author'] },
 };
 
 const ROLEKEY = { author: 'author', targetGhost: 'target', targetMember: 'target',
@@ -664,21 +725,22 @@ const ROLEKEY = { author: 'author', targetGhost: 'target', targetMember: 'target
   user: 'user', label: '_label' };
 
 const ASK = {
-  author: 'clicca chi dichiara (★)',
-  targetGhost: 'clicca un candidato fuori dal cerchio',
-  targetMember: 'clicca chi eleggere',
-  targetResp: 'clicca la ★ da revocare',
-  from: 'clicca la cassa di provenienza',
-  coll: 'clicca una colletta',
-  pendUser: 'clicca chi ha il pledge pendente',
-  accUser: 'clicca chi ha il pledge accettato',
-  label: 'scegli l’etichetta',
-  user: 'clicca la persona',
+  author: 'chi lo registra? (★)',
+  targetGhost: 'chi entra nel gruppo?',
+  targetMember: 'chi viene eletto?',
+  targetResp: 'quale ★ viene revocata?',
+  from: 'da quale cassa?',
+  coll: 'su quale acquisto?',
+  user: 'per chi?',
+  label: 'come si chiama l’acquisto?',
 };
 const ASK_BY_EV = {
-  'deposit.user': 'clicca chi versa',
-  'withdraw.user': 'clicca chi ritira',
-  'pledge.user': 'clicca chi partecipa',
+  'openPurchase.author': 'chi ne sarà referente? (★)',
+  'deposit.user': 'chi versa? (accredito sul suo conto)',
+  'deposit.author': 'quale cassiere incassa? (★)',
+  'withdraw.user': 'chi ritira?',
+  'withdraw.author': 'quale cassiere consegna? (★)',
+  'pledge.user': 'chi si impegna?',
 };
 
 function descr(tag, a) {
@@ -686,20 +748,105 @@ function descr(tag, a) {
     case 'addUser': return `${nm(a.author)} aggiunge ${nm(a.target)}`;
     case 'electResponsabile': return `${nm(a.author)} elegge ${nm(a.target)}`;
     case 'removeResponsabile': return `${nm(a.author)} revoca ${nm(a.target)}`;
-    case 'openPurchase': return `${nm(a.author)} apre «${lbl(a.c)}»`;
-    case 'grantPermission': return `«${lbl(a.c)}»: permesso concesso — esito esterno`;
+    case 'openPurchase': return `${nm(a.author)} apre l'acquisto «${lbl(a.c)}»`;
+    case 'grantPermission': return `«${lbl(a.c)}»: assenso del gruppo — esito esterno`;
     case 'denyPermission': return `«${lbl(a.c)}»: acquisto negato — esito esterno`;
-    case 'deposit': return `${nm(a.author)} deposita ${a.v} per ${nm(a.user)}`;
-    case 'withdraw': return `${nm(a.author)} preleva ${a.v} per ${nm(a.user)}`;
+    case 'deposit': return `${nm(a.author)} accredita ${a.v} a ${nm(a.user)}`;
+    case 'withdraw': return `${nm(a.author)} consegna un prelievo di ${a.v} a ${nm(a.user)}`;
     case 'transferCassa': return `${nm(a.author)} riceve ${a.v} dalla cassa di ${nm(a.from_)}`;
-    case 'pledge': return `${nm(a.author)} impegna ${a.v} di ${nm(a.user)} su «${lbl(a.c)}»`;
-    case 'acceptPledge': return `${nm(a.author)} accetta il pledge di ${nm(a.user)} («${lbl(a.c)}»)`;
-    case 'refusePledge': return `${nm(a.author)} rifiuta il pledge di ${nm(a.user)} («${lbl(a.c)}»)`;
-    case 'correctPledge': return `${nm(a.author)} corregge il pledge di ${nm(a.user)} a ${a.v} («${lbl(a.c)}»)`;
+    case 'pledge': return `${nm(a.author)} registra l'impegno di ${nm(a.user)}: ${a.v} su «${lbl(a.c)}»`;
+    case 'acceptPledge': return `${nm(a.author)} accetta l'impegno di ${nm(a.user)} («${lbl(a.c)}»)`;
+    case 'refusePledge': return `${nm(a.author)} rifiuta l'impegno di ${nm(a.user)} («${lbl(a.c)}»)`;
+    case 'correctPledge': return `${nm(a.author)} corregge l'impegno di ${nm(a.user)} a ${a.v} («${lbl(a.c)}»)`;
     case 'closePurchase': return `${nm(a.author)} chiude «${lbl(a.c)}»`;
     case 'failPurchase': return `${nm(a.author)} fallisce «${lbl(a.c)}»`;
   }
   return tag;
+}
+
+/* --- Crude-drift net: lean/Reactivegas/Predicates.lean, transcribed ------
+   The state invariants of the law predicates, asserted after every applied
+   event: conservation (L6), solvent (L7, both conjuncts), allUniquePledges
+   (L8, exactly the Lean predicate: p.user = q.user → p = q). The relational
+   predicates (permissionToClose, escrowHeld, doubleEntry, authorizedStep,
+   governanceEnacts) are per-event properties, not state invariants, and the
+   trace-conformance net covers them. A violation here means the JS
+   transcription diverged from Step.lean: surfaced loudly, never cleared. */
+
+let lawBreaches = [];   // toy-side alarm record; selftest asserts it stays empty
+
+function lawViolations(s) {
+  const out = [];
+  // conservation: sumBal casse − sumBal conti − escrowSum collections = 0
+  if (sumBal(s.casse) - sumBal(s.conti) - escrowSum(s.collections) !== 0)
+    out.push('conservation (L6)');
+  // solvent, first conjunct: ∀ u, bal conti u ≥ 0 (absent entries are 0)
+  if (s.conti.some(([, v]) => v < 0)) out.push('solvent (L7): conto negativo');
+  for (const col of s.collections) {
+    const all = [...col.accepted, ...col.pending];
+    // solvent, second conjunct: every pledged amount non-negative
+    if (all.some(p => p.amount < 0)) out.push(`solvent (L7): impegno negativo in «${lbl(col.id)}»`);
+    // uniquePledges: p.user = q.user → p = q
+    outer:
+    for (let i = 0; i < all.length; i++)
+      for (let j = i + 1; j < all.length; j++)
+        if (all[i].user === all[j].user && all[i].amount !== all[j].amount) {
+          out.push(`uniquePledges (L8) in «${lbl(col.id)}»`);
+          break outer;
+        }
+  }
+  return out;
+}
+
+function lawAlarm(viol, tag) {
+  lawBreaches.push({ tag, viol });
+  const b = document.createElement('div');
+  b.className = 'lawbanner';
+  b.textContent = `⚠ INVARIANTE LEAN VIOLATO dopo .${tag}: ${viol.join(' · ')} — trascrizione divergente da Predicates.lean`;
+  document.body.appendChild(b);
+}
+
+/* --- Subtle-drift net: trace conformance against the Lean machine ---------
+   LEAN_TRACES below is the verbatim output of TraceDriver.lean, which folds
+   two fixed traces through the authoritative `step` of
+   lean/Reactivegas/Step.lean (`lake env lean`, Lean 4.25.0 via the repo dev
+   shell) and serializes each event with the complete post-state the Lean
+   machine produced. Raw output sha256:
+   ff44db79a3db82e2cf8586348bcfa548c8759fb901a9076511fa38f1fc13fdbf
+   (2026-08-27; driver and raw output preserved in the runtime handoffs).
+   Events and expected post-states are both Lean-emitted — nothing here is a
+   hand-written expectation. Trace A exercises removeResponsabile with two
+   live collections (strip + refund of accepted and pending); trace B
+   exercises correctPledge in both directions, closePurchase driving a cassa
+   negative, and denyPermission refunding accepted and pending together. */
+
+const LEAN_TRACES = {"A":[{"e":{"tag":"addUser","author":0,"target":1},"s":{"users":[0,1],"responsabili":[0],"conti":[],"casse":[],"collections":[]}},{"e":{"tag":"addUser","author":0,"target":2},"s":{"users":[0,1,2],"responsabili":[0],"conti":[],"casse":[],"collections":[]}},{"e":{"tag":"electResponsabile","author":0,"target":1},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[],"casse":[],"collections":[]}},{"e":{"tag":"deposit","author":0,"user":1,"v":100},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[1,100]],"casse":[[0,100]],"collections":[]}},{"e":{"tag":"deposit","author":1,"user":2,"v":80},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[1,100],[2,80]],"casse":[[0,100],[1,80]],"collections":[]}},{"e":{"tag":"openPurchase","author":1,"c":10},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[1,100],[2,80]],"casse":[[0,100],[1,80]],"collections":[{"id":10,"referente":1,"permitted":false,"accepted":[],"pending":[]}]}},{"e":{"tag":"pledge","author":0,"user":2,"c":10,"v":30},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[1,100],[2,50]],"casse":[[0,100],[1,80]],"collections":[{"id":10,"referente":1,"permitted":false,"accepted":[],"pending":[{"user":2,"amount":30}]}]}},{"e":{"tag":"acceptPledge","author":1,"user":2,"c":10},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[1,100],[2,50]],"casse":[[0,100],[1,80]],"collections":[{"id":10,"referente":1,"permitted":false,"accepted":[{"user":2,"amount":30}],"pending":[]}]}},{"e":{"tag":"pledge","author":1,"user":1,"c":10,"v":40},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[1,60],[2,50]],"casse":[[0,100],[1,80]],"collections":[{"id":10,"referente":1,"permitted":false,"accepted":[{"user":2,"amount":30}],"pending":[{"user":1,"amount":40}]}]}},{"e":{"tag":"openPurchase","author":1,"c":11},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[1,60],[2,50]],"casse":[[0,100],[1,80]],"collections":[{"id":11,"referente":1,"permitted":false,"accepted":[],"pending":[]},{"id":10,"referente":1,"permitted":false,"accepted":[{"user":2,"amount":30}],"pending":[{"user":1,"amount":40}]}]}},{"e":{"tag":"pledge","author":0,"user":2,"c":11,"v":20},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[1,60],[2,30]],"casse":[[0,100],[1,80]],"collections":[{"id":11,"referente":1,"permitted":false,"accepted":[],"pending":[{"user":2,"amount":20}]},{"id":10,"referente":1,"permitted":false,"accepted":[{"user":2,"amount":30}],"pending":[{"user":1,"amount":40}]}]}},{"e":{"tag":"removeResponsabile","author":0,"target":1},"s":{"users":[0,1,2],"responsabili":[0],"conti":[[1,100],[2,80]],"casse":[[0,100],[1,80]],"collections":[]}}],"B":[{"e":{"tag":"addUser","author":0,"target":1},"s":{"users":[0,1],"responsabili":[0],"conti":[],"casse":[],"collections":[]}},{"e":{"tag":"electResponsabile","author":0,"target":1},"s":{"users":[0,1],"responsabili":[1,0],"conti":[],"casse":[],"collections":[]}},{"e":{"tag":"addUser","author":0,"target":2},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[],"casse":[],"collections":[]}},{"e":{"tag":"deposit","author":0,"user":2,"v":50},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,50]],"casse":[[0,50]],"collections":[]}},{"e":{"tag":"openPurchase","author":1,"c":7},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,50]],"casse":[[0,50]],"collections":[{"id":7,"referente":1,"permitted":false,"accepted":[],"pending":[]}]}},{"e":{"tag":"pledge","author":0,"user":2,"c":7,"v":20},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,30]],"casse":[[0,50]],"collections":[{"id":7,"referente":1,"permitted":false,"accepted":[],"pending":[{"user":2,"amount":20}]}]}},{"e":{"tag":"acceptPledge","author":1,"user":2,"c":7},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,30]],"casse":[[0,50]],"collections":[{"id":7,"referente":1,"permitted":false,"accepted":[{"user":2,"amount":20}],"pending":[]}]}},{"e":{"tag":"correctPledge","author":1,"user":2,"c":7,"v":35},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,15]],"casse":[[0,50]],"collections":[{"id":7,"referente":1,"permitted":false,"accepted":[{"user":2,"amount":35}],"pending":[]}]}},{"e":{"tag":"correctPledge","author":1,"user":2,"c":7,"v":5},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,45]],"casse":[[0,50]],"collections":[{"id":7,"referente":1,"permitted":false,"accepted":[{"user":2,"amount":5}],"pending":[]}]}},{"e":{"tag":"grantPermission","author":0,"c":7},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,45]],"casse":[[0,50]],"collections":[{"id":7,"referente":1,"permitted":true,"accepted":[{"user":2,"amount":5}],"pending":[]}]}},{"e":{"tag":"closePurchase","author":1,"c":7},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,45]],"casse":[[0,50],[1,-5]],"collections":[]}},{"e":{"tag":"openPurchase","author":1,"c":8},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,45]],"casse":[[0,50],[1,-5]],"collections":[{"id":8,"referente":1,"permitted":false,"accepted":[],"pending":[]}]}},{"e":{"tag":"pledge","author":1,"user":2,"c":8,"v":10},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,35]],"casse":[[0,50],[1,-5]],"collections":[{"id":8,"referente":1,"permitted":false,"accepted":[],"pending":[{"user":2,"amount":10}]}]}},{"e":{"tag":"acceptPledge","author":1,"user":2,"c":8},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,35]],"casse":[[0,50],[1,-5]],"collections":[{"id":8,"referente":1,"permitted":false,"accepted":[{"user":2,"amount":10}],"pending":[]}]}},{"e":{"tag":"deposit","author":1,"user":0,"v":25},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,35],[0,25]],"casse":[[0,50],[1,20]],"collections":[{"id":8,"referente":1,"permitted":false,"accepted":[{"user":2,"amount":10}],"pending":[]}]}},{"e":{"tag":"pledge","author":0,"user":0,"c":8,"v":15},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,35],[0,10]],"casse":[[0,50],[1,20]],"collections":[{"id":8,"referente":1,"permitted":false,"accepted":[{"user":2,"amount":10}],"pending":[{"user":0,"amount":15}]}]}},{"e":{"tag":"denyPermission","author":0,"c":8},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,45],[0,25]],"casse":[[0,50],[1,20]],"collections":[]}}]};
+
+const canonState = s => JSON.stringify({
+  users: s.users, responsabili: s.responsabili, conti: s.conti, casse: s.casse,
+  collections: s.collections.map(c => ({ id: c.id, referente: c.referente,
+    permitted: c.permitted,
+    accepted: c.accepted.map(p => ({ user: p.user, amount: p.amount })),
+    pending: c.pending.map(p => ({ user: p.user, amount: p.amount })) })) });
+
+function traceConformance() {
+  let steps = 0;
+  for (const name of Object.keys(LEAN_TRACES)) {
+    let s = initState(FOUNDER);
+    LEAN_TRACES[name].forEach((st, i) => {
+      const res = attempt(s, st.e);
+      if (!res.ok)
+        throw new Error(`trace ${name} passo ${i} (.${st.e.tag}): respinto dal JS, accettato dal Lean`);
+      s = res.state;
+      if (canonState(s) !== canonState(st.s))
+        throw new Error(`trace ${name} passo ${i} (.${st.e.tag}): stato divergente dal Lean`);
+      const viol = lawViolations(s);
+      if (viol.length)
+        throw new Error(`trace ${name} passo ${i}: ${viol.join(' · ')}`);
+      steps++;
+    });
+  }
+  return { steps };
 }
 
 /* --- Attempt driver ------------------------------------------------------ */
@@ -710,7 +857,6 @@ function invSnapshot() {
 }
 
 function runAttempt(tag, args, toyLabel) {
-  attemptNo += 1;
   if (tag === 'openPurchase' && toyLabel) colLabels[args.c] = toyLabel;
   const res = attempt(state, { tag, ...args });
   const d = descr(tag, args);
@@ -724,6 +870,8 @@ function runAttempt(tag, args, toyLabel) {
     }
     state = res.state;
     if (tag === 'openPurchase') collSeq = Math.max(collSeq, args.c + 1);
+    const viol = lawViolations(state);
+    if (viol.length) lawAlarm(viol, tag);
     history.unshift({ kind: 'acc', tag, args, descr: d, flow: res.flow,
       ext: !!EV[tag].external, inv: invSnapshot() });
     invNote = `dopo .${tag} ✓`;
@@ -736,10 +884,9 @@ function runAttempt(tag, args, toyLabel) {
   return res;
 }
 
-/* --- Menu construction --------------------------------------------------- */
+/* --- Toy-side helpers ----------------------------------------------------- */
 
 const resp = u => isResponsabile(state, u);
-const othersOf = u => state.users.filter(x => x !== u);
 const refCols = u => state.collections.filter(c => c.referente === u);
 const inCol = (c, u) => c.accepted.some(p => p.user === u) || c.pending.some(p => p.user === u);
 const candidates = () => {
@@ -748,204 +895,135 @@ const candidates = () => {
     if (!state.users.includes(i)) out.push(i);
   return out;
 };
+const pledgesOf = u => {
+  const out = [];
+  for (const c of state.collections) {
+    for (const p of c.pending) if (p.user === u) out.push({ c: c.id, amount: p.amount, st: 'pendente' });
+    for (const p of c.accepted) if (p.user === u) out.push({ c: c.id, amount: p.amount, st: 'accettato' });
+  }
+  return out;
+};
 const B = (badge, note) => ({ badge, note: note || '' });
 
-function closeDisFor(M) {
-  const rc = refCols(M);
-  if (!rc.length) return B('REFERENTE', 'referente di nessuna colletta');
-  if (rc.some(c => c.permitted && !c.pending.length)) return null;
-  if (rc.some(c => c.permitted)) return B('NO-PENDING (L4)', 'pledge pendenti da risolvere');
-  return B('PERMITTED (L2)', 'serve il permesso del gruppo');
-}
-
-function pledgeDisForCol(col) {
-  const cand = state.users.filter(u => !inCol(col, u));
-  if (!cand.length) return B('L8', 'tutti hanno già un pledge');
-  if (!cand.some(u => bal(state.conti, u) >= 1)) return B('COVERED (L7)', 'nessun conto capiente');
+/* Task availability: guards as affordances, computed from live state. */
+function taskDis(tag, ctx) {
+  ctx = ctx || {};
+  const cols = state.collections;
+  switch (tag) {
+    case 'addUser':
+      if (!state.responsabili.length) return B('AUTH', 'nessun responsabile');
+      return candidates().length ? null : B('—', 'nessun candidato');
+    case 'electResponsabile':
+      if (!state.responsabili.length) return B('AUTH', 'nessun responsabile');
+      return state.users.some(u => !resp(u)) ? null : B('—', 'tutti già ★');
+    case 'removeResponsabile':
+      return state.responsabili.length ? null : B('AUTH', 'nessun responsabile');
+    case 'openPurchase':
+      if (ctx.author !== undefined && !resp(ctx.author)) return B('AUTH', 'non è responsabile');
+      return state.responsabili.length ? null : B('AUTH', 'nessun responsabile');
+    case 'deposit': case 'withdraw': {
+      if (ctx.user !== undefined)
+        return state.responsabili.some(r => r !== ctx.user) ? null : B('AUTH', 'serve un cassiere diverso');
+      if (ctx.author !== undefined)
+        return state.users.some(u => u !== ctx.author) ? null : B('—', 'serve un’altra persona');
+      return null;
+    }
+    case 'transferCassa':
+      return state.responsabili.some(r => r !== ctx.author) ? null : B('—', 'nessun’altra cassa');
+    case 'pledge': {
+      if (!cols.length) return B('—', 'nessun acquisto aperto');
+      if (!state.responsabili.length) return B('AUTH', 'nessun responsabile');
+      if (ctx.user !== undefined) {
+        if (bal(state.conti, ctx.user) < 1) return B('COVERED (L7)', 'conto insufficiente');
+        if (!cols.some(c => !inCol(c, ctx.user))) return B('L8', 'già in ogni acquisto');
+        return null;
+      }
+      if (ctx.c !== undefined) {
+        const col = cols.find(x => x.id === ctx.c);
+        const cand = state.users.filter(u => !inCol(col, u));
+        if (!cand.length) return B('L8', 'tutti hanno già un pledge');
+        if (!cand.some(u => bal(state.conti, u) >= 1)) return B('COVERED (L7)', 'nessun conto capiente');
+        return null;
+      }
+      return null;
+    }
+    case 'closePurchase': {
+      const col = cols.find(x => x.id === ctx.c);
+      if (!col.permitted) return B('PERMITTED (L2)', 'serve il permesso del gruppo');
+      if (col.pending.length) return B('NO-PENDING (L4)', 'pledge pendenti da risolvere');
+      return null;
+    }
+    case 'failPurchase': {
+      const col = cols.find(x => x.id === ctx.c);
+      return col.pending.length ? B('NO-PENDING (L4)', 'pledge pendenti da risolvere') : null;
+    }
+    case 'grantPermission': {
+      if (!state.responsabili.length) return B('AUTH', 'nessun responsabile');
+      const col = cols.find(x => x.id === ctx.c);
+      return col.permitted ? B('—', 'già permesso') : null;
+    }
+    case 'denyPermission':
+      return state.responsabili.length ? null : B('AUTH', 'nessun responsabile');
+  }
   return null;
 }
 
-function itemsForMember(M) {
-  const A = resp(M) ? null : B('AUTH', 'non è responsabile');
-  const cols = state.collections;
-  const rc = refCols(M);
-  const maxOther = Math.max(0, ...state.users.map(u => bal(state.conti, u)));
-  return [
-    { tag: 'addUser', pre: { author: M },
-      dis: A || (candidates().length ? null : B('—', 'nessun candidato')) },
-    { tag: 'electResponsabile', pre: { author: M },
-      dis: A || (state.users.some(u => !resp(u)) ? null : B('—', 'tutti già ★')) },
-    { tag: 'removeResponsabile', pre: { author: M }, dis: A },
-    { tag: 'openPurchase', pre: { author: M }, dis: A },
-    { tag: 'deposit', pre: { author: M },
-      dis: A || (othersOf(M).length ? null : B('—', 'serve un’altra persona')) },
-    { tag: 'withdraw', pre: { author: M },
-      dis: A || (othersOf(M).length ? null : B('—', 'serve un’altra persona')) },
-    { tag: 'transferCassa', pre: { author: M },
-      dis: A || (state.responsabili.some(r => r !== M) ? null : B('—', 'nessun’altra cassa')) },
-    { tag: 'pledge', pre: { author: M },
-      dis: A || (!cols.length ? B('—', 'nessuna colletta')
-        : (maxOther >= 1 ? null : B('COVERED (L7)', 'nessun conto capiente'))) },
-    { tag: 'acceptPledge', pre: { author: M },
-      dis: A || (!rc.length ? B('REFERENTE', 'referente di nessuna colletta')
-        : (rc.some(c => c.pending.length) ? null : B('—', 'nessun pledge pendente'))) },
-    { tag: 'refusePledge', pre: { author: M },
-      dis: A || (!rc.length ? B('REFERENTE', 'referente di nessuna colletta')
-        : (rc.some(c => c.pending.length) ? null : B('—', 'nessun pledge pendente'))) },
-    { tag: 'correctPledge', pre: { author: M },
-      dis: A || (!rc.length ? B('REFERENTE', 'referente di nessuna colletta')
-        : (rc.some(c => c.accepted.length) ? null : B('—', 'nessun pledge accettato'))) },
-    { tag: 'closePurchase', pre: { author: M }, dis: A || closeDisFor(M) },
-    { tag: 'failPurchase', pre: { author: M },
-      dis: A || (!rc.length ? B('REFERENTE', 'referente di nessuna colletta')
-        : (rc.some(c => !c.pending.length) ? null : B('NO-PENDING (L4)', 'pledge pendenti'))) },
-  ];
-}
-
-function itemsForGhost(G) {
-  return [{ tag: 'addUser', pre: { target: G },
-    dis: state.responsabili.length ? null : B('AUTH', 'nessun responsabile') }];
-}
-
-function itemsForConto(U) {
-  const eligAuthors = state.responsabili.filter(r => r !== U);
-  const noA = eligAuthors.length ? null : B('AUTH', 'serve un responsabile diverso');
-  const cols = state.collections;
-  return [
-    { tag: 'deposit', pre: { user: U }, dis: noA },
-    { tag: 'withdraw', pre: { user: U }, dis: noA },
-    { tag: 'pledge', pre: { user: U },
-      dis: !cols.length ? B('—', 'nessuna colletta')
-        : (bal(state.conti, U) < 1 ? B('COVERED (L7)', 'conto insufficiente')
-        : (cols.some(c => !inCol(c, U)) ? null : B('L8', 'già in ogni colletta'))) },
-  ];
-}
-
-function itemsForCassa(R) {
-  return [
-    { tag: 'deposit', pre: { author: R },
-      dis: othersOf(R).length ? null : B('—', 'serve un’altra persona') },
-    { tag: 'withdraw', pre: { author: R },
-      dis: othersOf(R).length ? null : B('—', 'serve un’altra persona') },
-    { tag: 'transferCassa', pre: { author: R },
-      dis: state.responsabili.some(r => r !== R) ? null : B('—', 'nessun’altra cassa') },
-    { tag: 'closePurchase', pre: { author: R }, dis: closeDisFor(R) },
-  ];
-}
-
-function itemsForPile(c) {
-  const col = state.collections.find(x => x.id === c);
-  return [
-    { tag: 'pledge', pre: { c }, dis: pledgeDisForCol(col) },
-    { tag: 'acceptPledge', pre: { c },
-      dis: col.pending.length ? null : B('—', 'nessun pledge pendente') },
-    { tag: 'refusePledge', pre: { c },
-      dis: col.pending.length ? null : B('—', 'nessun pledge pendente') },
-    { tag: 'correctPledge', pre: { c },
-      dis: col.accepted.length ? null : B('—', 'nessun pledge accettato') },
-    { tag: 'closePurchase', pre: { c },
-      dis: !col.permitted ? B('PERMITTED (L2)', 'serve il permesso del gruppo')
-        : (col.pending.length ? B('NO-PENDING (L4)', 'pledge pendenti da risolvere') : null) },
-    { tag: 'failPurchase', pre: { c },
-      dis: col.pending.length ? B('NO-PENDING (L4)', 'pledge pendenti da risolvere') : null },
-    // incoming interface outcomes — vote not modelled by this machine
-    { tag: 'grantPermission', pre: { c }, ext: true,
-      dis: !state.responsabili.length ? B('AUTH', 'nessun responsabile')
-        : (col.permitted ? B('—', 'già permesso') : null) },
-    { tag: 'denyPermission', pre: { c }, ext: true,
-      dis: state.responsabili.length ? null : B('AUTH', 'nessun responsabile') },
-  ];
-}
-
-function menuItems(sub) {
-  if (sub.type === 'member') return itemsForMember(sub.id);
-  if (sub.type === 'ghost') return itemsForGhost(sub.id);
-  if (sub.type === 'conto') return itemsForConto(sub.id);
-  if (sub.type === 'cassa') return itemsForCassa(sub.id);
-  if (sub.type === 'pile') return itemsForPile(sub.id);
+/* Chip candidates for one task step: only existing objects; ineligible
+   entries stay visible but disabled with the guard named (affordance). */
+function chipsFor(role) {
+  const tag = flow.tag, p = flow.params;
+  const col = p.c !== undefined ? state.collections.find(x => x.id === p.c) : null;
+  const person = u => ({ id: u, label: `${resp(u) ? '★ ' : ''}${nm(u)}` });
+  switch (role) {
+    case 'author': {
+      const refOps = ['acceptPledge', 'refusePledge', 'correctPledge', 'closePurchase', 'failPurchase'];
+      return state.users.map(u => {
+        const ch = person(u);
+        if ((tag === 'deposit' || tag === 'withdraw') && p.user === u) ch.dis = 'a ≠ u';
+        else if (tag === 'transferCassa' && p.from_ === u) ch.dis = 'a ≠ f';
+        else if (!resp(u)) ch.dis = 'AUTH';
+        else if (refOps.includes(tag) && col && col.referente !== u) ch.dis = 'REFERENTE';
+        return ch;
+      });
+    }
+    case 'user': return state.users.map(u => {
+      const ch = person(u);
+      if (p.author === u) ch.dis = 'a ≠ u';
+      else if (tag === 'pledge') {
+        if (col && inCol(col, u)) ch.dis = 'L8';
+        else if (bal(state.conti, u) < 1) ch.dis = 'COVERED (L7)';
+      }
+      return ch;
+    });
+    case 'targetGhost': return candidates().map(person);
+    case 'targetMember': return state.users.map(u => {
+      const ch = person(u); if (resp(u)) ch.dis = 'già ★'; return ch;
+    });
+    case 'targetResp': return state.responsabili.map(person);
+    case 'from': return state.responsabili.map(u => {
+      const ch = { id: u, label: `★ ${nm(u)} · cassa ${bal(state.casse, u)}` };
+      if (p.author === u) ch.dis = 'a ≠ f';
+      return ch;
+    });
+    case 'coll': return state.collections.map(c => {
+      const ch = { id: c.id, label: `«${lbl(c.id)}» · ${escrowOf(c)}` };
+      if (tag === 'pledge' && p.user !== undefined && inCol(c, p.user)) ch.dis = 'L8';
+      return ch;
+    });
+    case 'pendUser': return (col ? col.pending : []).map(q => person(q.user));
+    case 'accUser': return (col ? col.accepted : []).map(q => person(q.user));
+  }
   return [];
 }
 
-function subTitle(sub) {
-  if (sub.type === 'member') return `${nm(sub.id)}${resp(sub.id) ? ' ★' : ''}`;
-  if (sub.type === 'ghost') return `${nm(sub.id)} (fuori dal gruppo)`;
-  if (sub.type === 'conto') return `conto di ${nm(sub.id)}`;
-  if (sub.type === 'cassa') return `cassa di ${nm(sub.id)}`;
-  if (sub.type === 'pile') return `colletta «${lbl(sub.id)}»`;
-  return '';
-}
-
-/* --- Pick eligibility ----------------------------------------------------
-   Party choices come from clicking live objects only. A click that the
-   machine would reject on an identity guard stays possible (dimmed, with
-   its guard badge): the rejecting step function remains the arbiter.
-   Amounts are bounded before the attempt (NOTE-001). ------------------- */
-
-function pickSpec(role) {
-  const p = ui.params, tag = ui.ev;
-  const col = p.c !== undefined ? state.collections.find(x => x.id === p.c) : null;
-  const refOps = ['acceptPledge', 'refusePledge', 'correctPledge', 'closePurchase', 'failPurchase'];
-  switch (role) {
-    case 'author': return { type: 'member', test: m => {
-      if ((tag === 'deposit' || tag === 'withdraw') && p.user === m) return { lvl: 'off', badge: 'a ≠ u' };
-      if (tag === 'transferCassa' && p.from_ === m) return { lvl: 'off', badge: 'a ≠ f' };
-      if (!resp(m)) return { lvl: 'warn', badge: 'AUTH' };
-      if (refOps.includes(tag) && col && col.referente !== m)
-        return { lvl: 'warn', badge: 'REFERENTE' };
-      return { lvl: 'ok' };
-    } };
-    case 'user': return { type: 'member', test: m => {
-      if (p.author === m) return { lvl: 'off', badge: 'a ≠ u' };
-      if (tag === 'pledge') {
-        if (bal(state.conti, m) < 1) return { lvl: 'off', badge: 'COVERED (L7)' };
-        if (col && inCol(col, m)) return { lvl: 'off', badge: 'L8' };
-      }
-      return { lvl: 'ok' };
-    } };
-    case 'targetGhost': return { type: 'ghost', test: () => ({ lvl: 'ok' }) };
-    case 'targetMember': return { type: 'member', test: m =>
-      resp(m) ? { lvl: 'off', badge: 'già ★' } : { lvl: 'ok' } };
-    case 'targetResp': return { type: 'member', test: m =>
-      resp(m) ? { lvl: 'ok' } : { lvl: 'off', badge: 'non ★' } };
-    case 'from': return { type: 'cassa', test: m =>
-      p.author === m ? { lvl: 'off', badge: 'a ≠ f' } : { lvl: 'ok' } };
-    case 'coll': return { type: 'pile', test: cid => {
-      const x = state.collections.find(k => k.id === cid);
-      if (tag === 'pledge' && p.user !== undefined && inCol(x, p.user))
-        return { lvl: 'off', badge: 'L8' };
-      if (tag === 'acceptPledge' || tag === 'refusePledge')
-        return x.pending.length ? refWarn(x) : { lvl: 'off', badge: '—' };
-      if (tag === 'correctPledge')
-        return x.accepted.length ? refWarn(x) : { lvl: 'off', badge: '—' };
-      if (tag === 'closePurchase') {
-        if (!x.permitted) return { lvl: 'warn', badge: 'PERMITTED (L2)' };
-        if (x.pending.length) return { lvl: 'warn', badge: 'NO-PENDING (L4)' };
-        return refWarn(x);
-      }
-      if (tag === 'failPurchase')
-        return x.pending.length ? { lvl: 'warn', badge: 'NO-PENDING (L4)' } : refWarn(x);
-      return { lvl: 'ok' };
-    } };
-    case 'pendUser': return { type: 'member', test: m =>
-      col && col.pending.some(q => q.user === m) ? { lvl: 'ok' } : { lvl: 'off', badge: '—' } };
-    case 'accUser': return { type: 'member', test: m =>
-      col && col.accepted.some(q => q.user === m) ? { lvl: 'ok' } : { lvl: 'off', badge: '—' } };
-  }
-  function refWarn(x) {
-    return (p.author !== undefined && x.referente !== p.author)
-      ? { lvl: 'warn', badge: 'REFERENTE' } : { lvl: 'ok' };
-  }
-  return null;
-}
-
-/* --- Amount bounds (NOTE-001: values constrained before the attempt) ----- */
+/* --- Amount bounds (values constrained by live sources) ------------------ */
 
 const TOYMAX = 500;   // toy-side cap for unbounded-above amounts
 
 function amountSpec(tag, p) {
   switch (tag) {
     case 'deposit':
-      return { min: 0, max: TOYMAX, val: 50, what: `deposito per ${nm(p.user)}` };
+      return { min: 0, max: TOYMAX, val: 50, what: `accredito: ${nm(p.user)} versa a ${nm(p.author)}` };
     case 'withdraw': {
       const b = Math.max(0, bal(state.conti, p.user));
       return { min: 0, max: b, val: Math.min(b, 20), what: `prelievo di ${nm(p.user)} (conto ${b})` };
@@ -954,49 +1032,254 @@ function amountSpec(tag, p) {
       return { min: 1, max: TOYMAX, val: 50, what: `cassa ${nm(p.from_)} → cassa ${nm(p.author)}` };
     case 'pledge': {
       const b = bal(state.conti, p.user);
-      return { min: 1, max: b, val: Math.min(b, 20), what: `pledge di ${nm(p.user)} su «${lbl(p.c)}» (conto ${b})` };
+      return { min: 1, max: b, val: Math.min(b, 20), what: `impegno di ${nm(p.user)} su «${lbl(p.c)}» (conto ${b})` };
     }
     case 'correctPledge': {
       const col = state.collections.find(x => x.id === p.c);
       const cur = (col.accepted.find(q => q.user === p.user) || { amount: 0 }).amount;
       const mx = cur + Math.max(0, bal(state.conti, p.user));
-      return { min: 0, max: mx, val: cur, what: `pledge di ${nm(p.user)}: ora ${cur}` };
+      return { min: 0, max: mx, val: cur, what: `impegno di ${nm(p.user)}: ora ${cur}` };
     }
   }
   return null;
 }
 
-/* --- Scene rendering ----------------------------------------------------- */
+/* --- Navigation ----------------------------------------------------------- */
 
-let layout = {};   // element key -> {x, y} in viewBox coordinates
-
-function svgBadge(x, y, txt) {
-  const w = txt.length * 6.6 + 10;
-  return `<g class="svgb"><rect x="${x - w / 2}" y="${y - 9}" width="${w}" height="17" rx="4"/>` +
-    `<text x="${x}" y="${y + 4}">${esc(txt)}</text></g>`;
+function go(desc) { navStack.push(desc); closePop(); renderAll(); }
+function goPledge(c, pu) {
+  if (nav().view !== 'collection' || nav().c !== c) navStack.push({ view: 'collection', c });
+  navStack.push({ view: 'pledge', c, pu });
+  closePop(); renderAll();
 }
+function backNav() { if (navStack.length > 1) { navStack.pop(); closePop(); renderAll(); } }
+function goCrumb(i) { navStack = navStack.slice(0, i + 1); closePop(); renderAll(); }
 
-function pickClassAndBadge(type, id) {
-  // returns [cssClass, badgeText|null]
-  if (cfMode) {
-    return (type === 'conto' || type === 'cassa' || type === 'pile')
-      ? ['pick-target', null] : ['mut', null];
+// drop views whose object no longer exists (closed collections, gone pledges)
+function pruneNav() {
+  for (let i = 1; i < navStack.length; i++) {
+    const d = navStack[i];
+    let ok = true;
+    if (d.view === 'person') ok = state.users.includes(d.u);
+    if (d.view === 'collection') ok = state.collections.some(x => x.id === d.c);
+    if (d.view === 'pledge') {
+      const col = state.collections.find(x => x.id === d.c);
+      ok = !!col && (col.pending.some(p => p.user === d.pu) || col.accepted.some(p => p.user === d.pu));
+    }
+    if (!ok) { navStack = navStack.slice(0, i); break; }
   }
-  if (ui.mode !== 'pick') return ['', null];
-  const spec = pickSpec(ui.needs[0]);
-  if (!spec) return ['', null];
-  if (spec.type !== type) return ['mut', null];
-  const t = spec.test(id);
-  if (t.lvl === 'ok') return ['pick-target', null];
-  if (t.lvl === 'warn') return ['pick-warn', t.badge || null];
-  return ['pick-off', t.badge || null];
+  const top = nav();
+  if (top.view === 'person' && top.hat === 'cassiere' && !resp(top.u)) top.hat = 'member';
 }
 
-function isSubject(type, id) {
-  return ui.subject && ui.subject.type === type && ui.subject.id === id;
+function crumbLabel(d) {
+  if (d.view === 'group') return 'Gruppo';
+  if (d.view === 'person') return nm(d.u);
+  if (d.view === 'collection') return `«${lbl(d.c)}»`;
+  if (d.view === 'pledge') return `impegno di ${nm(d.pu)}`;
+  return '?';
 }
 
-function renderScene() {
+function renderCrumbs() {
+  $('nav-back').disabled = navStack.length <= 1;
+  $('crumbs').innerHTML = navStack.map((d, i) => {
+    const here = i === navStack.length - 1;
+    return (i ? '<span class="sep">›</span>' : '') +
+      `<button type="button" class="cr${here ? ' here' : ''}" data-crumb="${i}"${here ? ' disabled' : ''}>${esc(crumbLabel(d))}</button>`;
+  }).join('');
+}
+
+/* --- Task flow machinery -------------------------------------------------- */
+
+function startTask(tag, preset, x, y) {
+  flow = { tag, params: { ...preset }, xy: [x || innerWidth / 2, y || 160],
+    steps: EV[tag].roles.filter(r => flow === null || true).filter(r => ({ ...preset })[ROLEKEY[r]] === undefined) };
+  flow.steps = EV[tag].roles.filter(r => flow.params[ROLEKEY[r]] === undefined);
+  nextStep();
+}
+
+function nextStep() {
+  if (!flow) return;
+  const role = flow.steps[0];
+  if (role === 'label') { openLabelPop(); return; }
+  if (role) { openChipPop(role); return; }
+  if (EV[flow.tag].external) { openExternalConfirm(); return; }
+  if (EV[flow.tag].amount) { openAmountPop(); return; }
+  commitFlow();
+}
+
+function cancelFlow() { flow = null; closePop(); }
+
+function openChipPop(role) {
+  const ask = ASK_BY_EV[flow.tag + '.' + role] || ASK[role];
+  const chips = chipsFor(role);
+  const html = `<div class="pt">${esc(EV[flow.tag].it)}
+      <span class="mono" style="font-size:.68rem">.${flow.tag}</span>
+      <button type="button" class="xbtn2" data-x="1">✕</button></div>
+    <div class="tiny">${esc(ask)}</div>
+    <div class="chips">` +
+    (chips.length ? chips.map(ch => ch.dis
+      ? `<button type="button" class="chip" disabled title="${esc(ch.dis)}">${esc(ch.label)}
+           <span class="gb">${esc(ch.dis)}</span></button>`
+      : `<button type="button" class="chip" data-id="${ch.id}">${esc(ch.label)}</button>`).join('')
+      : '<span class="empty">niente da scegliere</span>') +
+    '</div>';
+  popAt(flow.xy[0], flow.xy[1], html);
+  $('pop').querySelectorAll('.chip[data-id]').forEach(b => b.addEventListener('click', ev => {
+    flow.params[ROLEKEY[role]] = Number(b.dataset.id);
+    flow.steps = flow.steps.slice(1);
+    flow.xy = [ev.clientX, ev.clientY];
+    nextStep();
+  }));
+  const xb = $('pop').querySelector('[data-x]');
+  if (xb) xb.addEventListener('click', cancelFlow);
+}
+
+function openLabelPop() {
+  const open = new Set(state.collections.map(c => lbl(c.id)));
+  let opts = PRESETS.filter(p => !open.has(p));
+  if (!opts.length) opts = PRESETS;
+  const html = `<div class="pt">${esc(EV[flow.tag].it)}
+      <span class="mono" style="font-size:.68rem">.${flow.tag}</span>
+      <button type="button" class="xbtn2" data-x="1">✕</button></div>
+    <div class="tiny">${esc(ASK.label)}</div>
+    <div class="chips">` +
+    opts.map(p => `<button type="button" class="chip" data-l="${esc(p)}">${esc(p)}</button>`).join('') +
+    `</div><div class="tiny">etichetta toy — il CollId Lean resta un Nat interno</div>`;
+  popAt(flow.xy[0], flow.xy[1], html);
+  $('pop').querySelectorAll('[data-l]').forEach(b => b.addEventListener('click', ev => {
+    flow.params._label = b.dataset.l;
+    flow.params.c = collSeq;
+    flow.steps = flow.steps.filter(r => r !== 'label');
+    flow.xy = [ev.clientX, ev.clientY];
+    nextStep();
+  }));
+  const xb = $('pop').querySelector('[data-x]');
+  if (xb) xb.addEventListener('click', cancelFlow);
+}
+
+function openAmountPop() {
+  const sp = amountSpec(flow.tag, flow.params);
+  const html = `<div class="pt">${esc(EV[flow.tag].it)} — importo
+      <button type="button" class="xbtn2" data-x="1">✕</button></div>
+    <div class="tiny">${esc(sp.what)}</div>
+    <div class="ar"><span class="mono">${sp.min}</span>
+      <input id="am-r" type="range" min="${sp.min}" max="${sp.max}" step="1" value="${sp.val}">
+      <span class="mono">${sp.max}</span></div>
+    <div class="ar2"><input id="am-n" type="number" min="${sp.min}" max="${sp.max}" step="1"
+        inputmode="numeric" value="${sp.val}">
+      <button type="button" class="primary" id="am-ok">OK</button></div>`;
+  popAt(flow.xy[0], flow.xy[1], html);
+  const r = $('am-r'), n = $('am-n'), ok = $('am-ok');
+  const valid = () => {
+    const v = Number(n.value);
+    return Number.isInteger(v) && v >= sp.min && v <= sp.max;
+  };
+  const sync = () => { ok.disabled = !valid(); n.classList.toggle('badv', !valid()); };
+  r.addEventListener('input', () => { n.value = r.value; sync(); });
+  n.addEventListener('input', () => { if (valid()) r.value = n.value; sync(); });
+  n.addEventListener('change', () => {
+    let v = Math.round(Number(n.value));
+    if (!Number.isFinite(v)) v = sp.min;
+    n.value = String(Math.max(sp.min, Math.min(sp.max, v)));
+    r.value = n.value; sync();
+  });
+  ok.addEventListener('click', () => {
+    if (!valid()) return;
+    flow.params.v = Number(n.value);
+    commitFlow();
+  });
+  const xb = $('pop').querySelector('[data-x]');
+  if (xb) xb.addEventListener('click', cancelFlow);
+  sync();
+  n.focus();
+}
+
+// Interface outcome: the vote happened outside this machine. No member is
+// asked to authorize it; the Step.lean responsabile carrier stays internal.
+function openExternalConfirm() {
+  const html = `<div class="pt">esito esterno <span class="gbx">VOTO NON MODELLATO</span>
+      <button type="button" class="xbtn2" data-x="1">✕</button></div>
+    <div class="tiny">${esc(EV[flow.tag].it)} per «${esc(lbl(flow.params.c))}»</div>
+    <div class="tiny">Nel sistema reale è l'esito di un voto di maggioranza del gruppo (kelgroups).<br>
+      Questa macchina economica non modella né verifica quel voto.</div>
+    <div class="ar2"><button type="button" class="primary" id="ext-apply">applica esito</button></div>`;
+  popAt(flow.xy[0], flow.xy[1], html);
+  $('ext-apply').addEventListener('click', () => {
+    flow.params.author = state.responsabili[0];   // machine adapter carrier only
+    commitFlow();
+  });
+  const xb = $('pop').querySelector('[data-x]');
+  if (xb) xb.addEventListener('click', cancelFlow);
+}
+
+function commitFlow() {
+  closePop();
+  const { tag, params, xy } = flow;
+  flow = null;
+  const args = {};
+  for (const role of EV[tag].roles) {
+    const k = ROLEKEY[role];
+    if (k !== '_label') args[k] = params[k];
+  }
+  if (tag === 'openPurchase') args.c = params.c;
+  if (EV[tag].amount) args.v = params.v;
+  if (EV[tag].external) args.author = params.author;
+  const preState = state;
+  const preLayout = { ...layout };
+  const res = runAttempt(tag, args, params._label);
+  renderAll();
+  if (res.ok) {
+    if (nav().view === 'group') playFx(tag, args, preState, preLayout);
+    if (EV[tag].external)
+      toast(`<b>⇣ esito esterno applicato</b>
+        <span class="tiny">voto di maggioranza non modellato né verificato qui</span>`, xy[0], xy[1], 'ext');
+  } else {
+    toast(`<b>✗ ${esc(EV[tag].it)}</b> ` +
+      res.failed.map(guardChip).join(' ') +
+      ` <span class="tiny">stato invariato</span>`, xy[0], xy[1]);
+  }
+}
+
+/* direct actions with every parameter already known (referente queue) */
+function directAct(tag, args, x, y) {
+  flow = { tag, params: { ...args }, steps: [], xy: [x, y] };
+  nextStep();
+}
+
+/* --- View renderers -------------------------------------------------------- */
+
+function taskBtn(tag, ctx, extra) {
+  const dis = taskDis(tag, ctx);
+  const it = (extra && extra.label) || EV[tag].it;
+  const ext = EV[tag].external;
+  if (dis) {
+    return `<button type="button" class="task${ext ? ' ext' : ''}" disabled
+      data-task="${tag}" title="${esc(dis.note)}">${esc(it)}
+      <span class="${ext ? 'gbx' : (dis.badge === '—' ? 'gb dim' : 'gb')}">${esc(dis.badge === '—' ? dis.note || '—' : dis.badge)}</span></button>`;
+  }
+  return `<button type="button" class="task${ext ? ' ext' : ''}" data-task="${tag}"
+    title=".${tag}">${esc(it)}${ext ? ' <span class="gbx">VOTO NON MODELLATO</span>' : ''}</button>`;
+}
+
+/* group scene (SVG) */
+let layout = {};
+
+function renderGroup() {
+  const tasks = `<div class="card"><div class="tasks" id="gtasks">
+      ${taskBtn('addUser')}
+      ${taskBtn('openPurchase')}
+      ${taskBtn('electResponsabile')}
+      ${taskBtn('removeResponsabile')}
+    </div></div>`;
+  const scene = `<div class="card" id="scene-card">
+    <svg id="scene" viewBox="0 0 760 600" role="group" aria-label="scena del gruppo"></svg>
+  </div>`;
+  $('view').innerHTML = tasks + scene;
+  drawScene();
+}
+
+function drawScene() {
   const svg = $('scene');
   layout = { world: { x: 705, y: 52 } };
   const CX = 380, CY = 302, R = 178;
@@ -1005,24 +1288,18 @@ function renderScene() {
   parts.push(`<text class="hintc" x="705" y="34">fuori</text>` +
     `<text x="705" y="56" style="font-size:17px;text-anchor:middle">🛒</text>`);
 
-  // ghost candidates, outside the circle (top-left row)
   const ghosts = candidates();
   ghosts.forEach((gid, i) => {
     const x = 62 + i * 92, y = 50;
     layout['ghost:' + gid] = { x, y };
-    const [pc, badge] = pickClassAndBadge('ghost', gid);
-    const sel = isSubject('ghost', gid) ? ' sel' : '';
-    parts.push(`<g class="ghostn ${pc}${sel}" data-obj="ghost" data-id="${gid}" data-key="ghost:${gid}"
+    parts.push(`<g class="ghostn" data-obj="ghost" data-id="${gid}" data-key="ghost:${gid}"
       role="button" tabindex="0" aria-label="candidato ${esc(nm(gid))}" transform="translate(${x},${y})">
-      ${pc === 'pick-target' ? '<circle class="halo" r="29"/>' : ''}
       <circle class="avatar" r="21"/>
       <text class="init" y="6">${esc(nm(gid)[0])}</text>
       <text class="nm" y="38">${esc(nm(gid))}</text>
-      ${badge ? svgBadge(0, -26, badge) : ''}
     </g>`);
   });
 
-  // members on the ring
   const n = state.users.length;
   const memberPos = {};
   state.users.forEach((u, i) => {
@@ -1034,7 +1311,6 @@ function renderScene() {
     if (resp(u)) layout['cassa:' + u] = { x, y: y + 84 };
   });
 
-  // escrow piles inside the ring (drawn before member nodes; links first)
   const k = state.collections.length;
   state.collections.forEach((c, i) => {
     let x = CX, y = CY - 8;
@@ -1049,100 +1325,217 @@ function renderScene() {
   state.collections.forEach(c => {
     const { x, y } = layout['pile:' + c.id];
     const rr = 30 + Math.min(22, escrowOf(c) / 8);
-    const [pc, badge] = pickClassAndBadge('pile', c.id);
-    const sel = isSubject('pile', c.id) ? ' sel' : '';
-    parts.push(`<g class="pileg ${pc}${sel}" data-obj="pile" data-id="${c.id}" data-key="pile:${c.id}"
-      role="button" tabindex="0" aria-label="colletta ${esc(lbl(c.id))}: escrow ${escrowOf(c)}"
+    parts.push(`<g class="pileg" data-obj="pile" data-id="${c.id}" data-key="pile:${c.id}"
+      role="button" tabindex="0" aria-label="acquisto ${esc(lbl(c.id))}: impegni ${escrowOf(c)}"
       transform="translate(${x},${y})">
-      ${pc === 'pick-target' ? `<circle class="halo" r="${rr + 7}"/>` : ''}
       <circle class="pc" r="${rr}"/>
       <text class="plbl" y="-8">«${esc(lbl(c.id))}»</text>
       <text class="pamt" y="10">${escrowOf(c)}</text>
-      <text class="pmeta" y="${rr + 13}">${c.permitted ? 'L2 ✓ · ' : ''}ref. ${esc(nm(c.referente))}${c.pending.length ? ` · ${c.pending.length} pend.` : ''}</text>
-      ${badge ? svgBadge(0, -rr - 12, badge) : ''}
+      <text class="pmeta" y="${rr + 13}">${c.permitted ? '⇣ L2 ✓ · ' : ''}ref. ${esc(nm(c.referente))}${c.pending.length ? ` · ${c.pending.length} pend.` : ''}</text>
     </g>`);
   });
-  if (!k) parts.push(`<text class="hintc" x="${CX}" y="${CY - 4}">nessuna colletta aperta</text>`);
+  if (!k) parts.push(`<text class="hintc" x="${CX}" y="${CY - 4}">nessun acquisto aperto</text>`);
 
-  // member nodes + money chips
   state.users.forEach(u => {
     const { x, y } = memberPos[u];
-    const [pc, badge] = pickClassAndBadge('member', u);
-    const sel = isSubject('member', u) ? ' sel' : '';
-    parts.push(`<g class="${resp(u) ? 'noderesp' : ''} ${pc}${sel}" data-obj="member" data-id="${u}"
+    parts.push(`<g class="${resp(u) ? 'noderesp' : ''}" data-obj="member" data-id="${u}"
       data-key="member:${u}" role="button" tabindex="0"
       aria-label="${esc(nm(u))}${resp(u) ? ' responsabile' : ''}" transform="translate(${x},${y})">
-      ${pc === 'pick-target' ? '<circle class="halo" r="33"/>' : ''}
       <circle class="avatar" r="25"/>
       <text class="init" y="6">${esc(nm(u)[0])}</text>
       ${resp(u) ? '<text class="star" x="20" y="-16">★</text>' : ''}
       <text class="nm" y="42">${esc(nm(u))}</text>
-      ${badge ? svgBadge(0, -34, badge) : ''}
     </g>`);
     const cv = bal(state.conti, u);
-    const [cc, cbadge] = pickClassAndBadge('conto', u);
-    const csel = isSubject('conto', u) ? ' sel' : '';
-    parts.push(`<g class="chipg ${cc}${csel}" data-obj="conto" data-id="${u}" data-key="conto:${u}"
+    parts.push(`<g class="chipg" data-obj="conto" data-id="${u}" data-key="conto:${u}"
       role="button" tabindex="0" aria-label="conto di ${esc(nm(u))}: ${cv}"
       transform="translate(${x},${y + 58})">
-      ${cc === 'pick-target' ? '<rect class="halo" x="-40" y="-15" width="80" height="30" rx="8"/>' : ''}
       <rect x="-36" y="-11" width="72" height="22" rx="6"/>
       <text y="4">conto ${cv}</text>
-      ${cbadge ? svgBadge(0, -20, cbadge) : ''}
     </g>`);
     if (resp(u)) {
       const kv = bal(state.casse, u);
-      const [kc, kbadge] = pickClassAndBadge('cassa', u);
-      const ksel = isSubject('cassa', u) ? ' sel' : '';
-      parts.push(`<g class="cassag ${kc}${ksel}" data-obj="cassa" data-id="${u}" data-key="cassa:${u}"
+      parts.push(`<g class="cassag" data-obj="cassa" data-id="${u}" data-key="cassa:${u}"
         role="button" tabindex="0" aria-label="cassa di ${esc(nm(u))}: ${kv}"
         transform="translate(${x},${y + 84})">
-        ${kc === 'pick-target' ? '<rect class="halo" x="-40" y="-15" width="80" height="30" rx="8"/>' : ''}
         <rect x="-36" y="-11" width="72" height="22" rx="6"/>
         <text y="4">cassa ${kv}</text>
-        ${kbadge ? svgBadge(0, -20, kbadge) : ''}
       </g>`);
     }
   });
 
   parts.push('<g id="fx"></g>');
   svg.innerHTML = parts.join('');
-  // green halo targets: give them the halo class list (already emitted) — mark class
-  svg.querySelectorAll('.pick-target').forEach(el => el.classList.add('pick-ok'));
 }
 
-function renderInvariant() {
-  const { sc, sn, se, v } = invSnapshot();
-  $('inv-casse').textContent = sc;
-  $('inv-conti').textContent = sn;
-  $('inv-escrow').textContent = se;
-  const b = $('inv-badge');
-  b.textContent = v === 0 ? '0 ✓' : v + ' ✗';
-  b.className = v === 0 ? 'ok' : 'bad';
-  $('inv-note').textContent = invNote;
-  const strip = $('inv-strip');
-  strip.classList.remove('flash-strip'); void strip.offsetWidth; strip.classList.add('flash-strip');
-}
+function renderPerson() {
+  const d = nav();
+  const u = d.u;
+  const hat = d.hat || 'member';
+  const isR = resp(u);
+  const rc = refCols(u);
+  const head = `<div class="card"><div class="vhead">
+      <div class="bigav${isR ? ' resp' : ''}">${esc(nm(u)[0])}</div>
+      <div><div class="who">${esc(nm(u))} ${isR ? '★' : ''}</div>
+        <div class="sub">${isR ? 'membro e responsabile' : 'membro del gruppo'}</div></div>
+    </div>
+    ${rc.length ? `<div class="sect">referente di</div>
+      <div class="tasks">${rc.map(c =>
+        `<button type="button" class="linkchip" data-goto-coll="${c.id}">«${esc(lbl(c.id))}» · ${escrowOf(c)}</button>`).join('')}
+      </div>
+      <div class="tiny">il cappello referente si indossa dentro l’acquisto</div>` : ''}
+  </div>`;
 
-function renderStatus() {
-  const el = $('statusline');
-  if (cfMode) {
-    el.innerHTML = `<b>contro-fattuale</b> clicca un conto, una cassa o una colletta
-      <button type="button" class="xbtn" id="st-x">✕</button>`;
-  } else if (ui.mode === 'pick') {
-    const role = ui.needs[0];
-    const ask = role ? (ASK_BY_EV[ui.ev + '.' + role] || ASK[role])
-      : (EV[ui.ev].external ? 'esito esterno…' : 'importo…');
-    const filled = EV[ui.ev].roles.map(r => ROLEKEY[r]).filter(k => ui.params[k] !== undefined)
-      .map(k => k === 'c' ? `«${lbl(ui.params.c)}»` : (k === '_label' ? '' : nm(ui.params[k])))
-      .filter(Boolean).join(' · ');
-    el.innerHTML = `<b>${esc(EV[ui.ev].it)}</b> ${filled ? esc(filled) + ' · ' : ''}${esc(ask)}
-      <button type="button" class="xbtn" id="st-x">✕ annulla</button>`;
+  const tabs = `<div class="tabs">
+    <button type="button" class="tab${hat === 'member' ? ' on' : ''}" data-hat="member">Membro</button>
+    ${isR
+      ? `<button type="button" class="tab${hat === 'cassiere' ? ' on' : ''}" data-hat="cassiere">Cassiere</button>`
+      : `<button type="button" class="tab" disabled title="non è responsabile">Cassiere <span class="gb">AUTH</span></button>`}
+  </div>`;
+
+  let body;
+  if (hat === 'cassiere' && isR) {
+    body = `<div class="hatbox" id="hat-cassiere">
+      <div class="money cassa" id="card-cassa"><span class="k">cassa</span>
+        <span class="v">${bal(state.casse, u)}</span></div>
+      <div class="sect">compiti del cassiere</div>
+      <div class="tasks">
+        ${taskBtn('deposit', { author: u }, { label: 'Incassa un accredito' })}
+        ${taskBtn('withdraw', { author: u }, { label: 'Consegna un prelievo' })}
+        ${taskBtn('transferCassa', { author: u }, { label: 'Giro di cassa' })}
+        ${taskBtn('openPurchase', { author: u }, { label: 'Apri un acquisto (ne sarai referente)' })}
+      </div>
+    </div>`;
   } else {
-    el.innerHTML = `<span style="color:var(--muted)">clicca una persona, un saldo o una colletta</span>`;
+    const pls = pledgesOf(u);
+    body = `<div class="hatbox" id="hat-member">
+      <div class="money" id="card-conto"><span class="k">conto</span>
+        <span class="v">${bal(state.conti, u)}</span></div>
+      <div class="sect">compiti</div>
+      <div class="tasks">
+        ${taskBtn('deposit', { user: u }, { label: 'Versa sul conto (accredito)' })}
+        ${taskBtn('withdraw', { user: u }, { label: 'Ritira dal conto (prelievo)' })}
+        ${taskBtn('pledge', { user: u }, { label: 'Impegnati su un acquisto' })}
+      </div>
+      <div class="sect">i suoi impegni</div>
+      ${pls.length ? `<div class="rows">${pls.map(p =>
+        `<button type="button" class="row" data-pledge-c="${p.c}" data-pledge-u="${u}">
+          «${esc(lbl(p.c))}» <span class="stag ${p.st === 'pendente' ? 'pend' : 'acc'}">${p.st}</span>
+          <span class="amt">${p.amount}</span></button>`).join('')}</div>`
+        : '<p class="empty">nessun impegno aperto</p>'}
+      <div class="sect">movimenti recenti</div>
+      ${recentFor(u)}
+    </div>`;
   }
-  const x = $('st-x');
-  if (x) x.addEventListener('click', cancelAll);
+  $('view').innerHTML = head + `<div>${tabs}${body}</div>`;
+}
+
+function recentFor(u) {
+  const name = nm(u);
+  const rel = history.filter(en =>
+    Object.values(en.args).includes(u) || en.flow && en.flow.includes(name)).slice(0, 4);
+  if (!rel.length) return '<p class="empty">nessun movimento</p>';
+  return `<div class="rows">${rel.map(en =>
+    `<div class="row" style="cursor:default">${en.kind === 'acc' ? (en.ext ? '⇣' : '✓') : '✗'}
+      <span>${esc(en.descr)}</span></div>`).join('')}</div>`;
+}
+
+function renderCollection() {
+  const c = nav().c;
+  const col = state.collections.find(x => x.id === c);
+  const ref = col.referente;
+  const rows = (list, st) => list.map(p =>
+    `<button type="button" class="row" data-pledge-c="${c}" data-pledge-u="${p.user}">
+      ${esc(nm(p.user))} <span class="stag ${st === 'pendente' ? 'pend' : 'acc'}">${st}</span>
+      <span class="amt">${p.amount}</span></button>`).join('');
+
+  const head = `<div class="card"><div class="vhead">
+      <div><div class="who">«${esc(lbl(c))}»</div>
+        <div class="sub mono">CollId interno · .openPurchase</div></div>
+      <span class="stag ${col.permitted ? 'perm' : 'noperm'}"
+        title="${col.permitted ? 'permesso concesso da esito esterno (voto non modellato)' : 'il gruppo non ha ancora deciso'}">
+        permesso: ${col.permitted ? 'sì ⇣' : 'no'}</span>
+      <span class="money" style="padding:3px 10px"><span class="k">impegni</span>
+        <span class="v" style="font-size:1rem">${escrowOf(col)}</span></span>
+      <button type="button" class="linkchip" data-goto-person="${ref}">referente: ${esc(nm(ref))} ★</button>
+    </div>
+    <div class="sect">partecipa</div>
+    <div class="tasks">${taskBtn('pledge', { c }, { label: 'Impegnati su questo acquisto' })}</div>
+    <div class="sect">impegni</div>
+    ${col.pending.length || col.accepted.length
+      ? `<div class="rows">${rows(col.pending, 'pendente')}${rows(col.accepted, 'accettato')}</div>`
+      : '<p class="empty">nessun impegno — impegnati per primo</p>'}
+  </div>`;
+
+  const queue = `<div id="refpanel">
+    <h3>cappello referente — ${esc(nm(ref))} ★
+      <span class="tiny" style="margin-left:auto">esiste solo dentro questo acquisto</span></h3>
+    ${col.pending.length ? `<div class="rows">${col.pending.map(p =>
+      `<div class="row" style="cursor:default">${esc(nm(p.user))}
+        <span class="stag pend">pendente</span><span class="amt">${p.amount}</span>
+        <span class="inline-acts">
+          <button type="button" class="mini" data-act="accept" data-u="${p.user}" title=".acceptPledge">accetta</button>
+          <button type="button" class="mini no" data-act="refuse" data-u="${p.user}" title=".refusePledge">rifiuta</button>
+        </span></div>`).join('')}</div>`
+      : '<p class="empty">nessun impegno pendente da decidere</p>'}
+    ${col.accepted.length ? `<div class="rows">${col.accepted.map(p =>
+      `<div class="row" style="cursor:default">${esc(nm(p.user))}
+        <span class="stag acc">accettato</span><span class="amt">${p.amount}</span>
+        <span class="inline-acts">
+          <button type="button" class="mini" data-act="correct" data-u="${p.user}" title=".correctPledge">correggi</button>
+        </span></div>`).join('')}</div>` : ''}
+    <div class="sect">chiusura</div>
+    <div class="tasks">
+      ${taskBtn('closePurchase', { c })}
+      ${taskBtn('failPurchase', { c })}
+    </div>
+  </div>`;
+
+  const external = `<div class="card">
+    <div class="msec">esito dall’esterno — voto non modellato</div>
+    <div class="tasks" style="margin-top:6px">
+      ${taskBtn('grantPermission', { c })}
+      ${taskBtn('denyPermission', { c })}
+    </div>
+  </div>`;
+
+  $('view').innerHTML = head + queue + external;
+}
+
+function renderPledge() {
+  const { c, pu } = nav();
+  const col = state.collections.find(x => x.id === c);
+  const pend = col.pending.find(p => p.user === pu);
+  const acc = col.accepted.find(p => p.user === pu);
+  const p = pend || acc;
+  const st = pend ? 'pendente' : 'accettato';
+  $('view').innerHTML = `<div class="card">
+    <div class="vhead">
+      <div class="bigav${resp(pu) ? ' resp' : ''}">${esc(nm(pu)[0])}</div>
+      <div><div class="who">impegno di ${esc(nm(pu))}</div>
+        <div class="sub">su «${esc(lbl(c))}» · <span class="mono">.pledge</span></div></div>
+      <span class="stag ${pend ? 'pend' : 'acc'}">${st}</span>
+      <span class="money" style="padding:3px 10px"><span class="k">importo</span>
+        <span class="v" style="font-size:1rem">${p.amount}</span></span>
+    </div>
+    <div class="tasks" style="margin-top:8px">
+      <button type="button" class="linkchip" data-goto-person="${pu}">vai a ${esc(nm(pu))}</button>
+    </div>
+    <div class="sect">decisioni del referente (${esc(nm(col.referente))} ★)</div>
+    <div class="tasks">
+      ${pend ? `<button type="button" class="task" data-act="accept" data-u="${pu}" title=".acceptPledge">Accetta</button>
+        <button type="button" class="task" data-act="refuse" data-u="${pu}" title=".refusePledge">Rifiuta e rimborsa</button>`
+      : `<button type="button" class="task" data-act="correct" data-u="${pu}" title=".correctPledge">Correggi importo</button>`}
+    </div>
+  </div>`;
+}
+
+/* side column */
+
+function guardChip(gd) {
+  return gd.law
+    ? `<span class="gb" title="${esc(gd.code)}">${esc(gd.law)}</span>`
+    : `<span class="gb dim" title="${esc(gd.code)}">guardia</span>`;
 }
 
 function renderDone() {
@@ -1156,12 +1549,6 @@ function renderDone() {
         ? d.contributors.map(p => `<li>${esc(nm(p.user))} · ${p.amount}</li>`).join('')
         : '<li class="empty">nessun contributo</li>'}</ul>
     </div>`).join('');
-}
-
-function guardChip(gd) {
-  return gd.law
-    ? `<span class="gb" title="${esc(gd.code)}">${esc(gd.law)}</span>`
-    : `<span class="gb dim" title="${esc(gd.code)}">guardia</span>`;
 }
 
 function renderLog() {
@@ -1185,19 +1572,88 @@ function renderLog() {
   }).join('');
 }
 
+/* invariant: demoted to a small chip; detail + counterfactual on demand */
+
+function renderInvChip() {
+  const { v } = invSnapshot();
+  const chip = $('inv-chip');
+  chip.className = v === 0 ? 'ok' : 'bad';
+  chip.innerHTML = `⚖ <b>${v === 0 ? '0 ✓' : v + ' ✗'}</b>`;
+  chip.classList.remove('pulse'); void chip.offsetWidth; chip.classList.add('pulse');
+}
+
+function openInvPop(x, y) {
+  const { sc, sn, se, v } = invSnapshot();
+  const moneyChips = [
+    ...state.users.map(u => `<button type="button" class="chip" data-cf="conto:${u}">conto ${esc(nm(u))} · ${bal(state.conti, u)}</button>`),
+    ...state.responsabili.map(u => `<button type="button" class="chip" data-cf="cassa:${u}">cassa ${esc(nm(u))} · ${bal(state.casse, u)}</button>`),
+    ...state.collections.map(c => `<button type="button" class="chip" data-cf="escrow:${c.id}">impegni «${esc(lbl(c.id))}» · ${escrowOf(c)}</button>`),
+  ].join('');
+  const html = `<div class="pt">bilancio della macchina
+      <button type="button" class="xbtn2" data-x="1">✕</button></div>
+    <div class="cfline mono">Σ casse ${sc} − Σ conti ${sn} − Σ impegni ${se} =
+      <span class="${v === 0 ? 'z' : 'nz'}">${v}${v === 0 ? ' ✓' : ' ✗'}</span></div>
+    <div class="tiny">${esc(invNote)} · ogni evento accettato la conserva (L6)</div>
+    <div class="msec" style="border-color:var(--line);color:var(--muted)">contro-fattuale — manomissione fuori macchina</div>
+    <div class="chips" style="margin-top:4px">${moneyChips || '<span class="empty">nessun saldo</span>'}</div>
+    <div class="tiny">scegli un saldo per vedere l'effetto di un Δ esterno; lo stato reale non cambia</div>`;
+  popAt(x, y, html);
+  $('pop').querySelectorAll('[data-cf]').forEach(b => b.addEventListener('click', ev => {
+    const [kind, idRaw] = b.dataset.cf.split(':');
+    openCfPop(kind, Number(idRaw), ev.clientX, ev.clientY);
+  }));
+  const xb = $('pop').querySelector('[data-x]');
+  if (xb) xb.addEventListener('click', closePop);
+}
+
+function openCfPop(kind, id, x, y) {
+  const what = kind === 'escrow' ? `impegni «${lbl(id)}»` : `${kind} di ${nm(id)}`;
+  const html = `<div class="pt">contro-fattuale — ${esc(what)}
+      <button type="button" class="xbtn2" data-x="1">✕</button></div>
+    <div class="ar"><span class="mono">−100</span>
+      <input id="cf-r" type="range" min="-100" max="100" step="1" value="10">
+      <span class="mono">100</span></div>
+    <div class="ar2"><input id="cf-n" type="number" min="-100" max="100" step="1"
+      inputmode="numeric" value="10"></div>
+    <div class="cfline" id="cf-line"></div>
+    <div class="tiny">fuori macchina · nessun costruttore di <span class="mono">Event</span> lo produce · stato reale intatto</div>`;
+  popAt(x, y, html);
+  const r = $('cf-r'), n = $('cf-n');
+  const upd = () => {
+    const d = Math.max(-100, Math.min(100, Math.round(Number(n.value) || 0)));
+    let { sc, sn, se } = invSnapshot();
+    if (kind === 'conto') sn += d;
+    else if (kind === 'cassa') sc += d;
+    else se += d;
+    const inv = sc - sn - se;
+    $('cf-line').innerHTML = `<span class="mono">${sc} − ${sn} − ${se} =</span>
+      <span class="${inv === 0 ? 'z' : 'nz'}">${inv}${inv === 0 ? ' ✓' : ' ✗'}</span>`;
+  };
+  r.addEventListener('input', () => { n.value = r.value; upd(); });
+  n.addEventListener('input', () => { r.value = n.value; upd(); });
+  const xb = $('pop').querySelector('[data-x]');
+  if (xb) xb.addEventListener('click', closePop);
+  upd();
+}
+
 function renderAll() {
-  renderInvariant();
-  renderScene();
-  renderStatus();
+  pruneNav();
+  renderCrumbs();
+  const v = nav().view;
+  if (v === 'group') renderGroup();
+  else if (v === 'person') renderPerson();
+  else if (v === 'collection') renderCollection();
+  else renderPledge();
+  renderInvChip();
   renderDone();
   renderLog();
 }
 
-/* --- FX: coins, floats, flashes ------------------------------------------ */
+/* --- FX (group scene only) ------------------------------------------------ */
 
 const SVGNS = 'http://www.w3.org/2000/svg';
 
-function fxLayer() { return $('scene').querySelector('#fx'); }
+function fxLayer() { const s = $('scene'); return s ? s.querySelector('#fx') : null; }
 
 function fly(fk, tk, txt, delay, pre) {
   delay = delay || 0;
@@ -1250,8 +1706,10 @@ function floatTx(k, txt, color, delay, pre) {
 }
 
 function flashKeys(keys) {
+  const s = $('scene');
+  if (!s) return;
   for (const k of keys) {
-    const el = $('scene').querySelector(`[data-key="${k}"]`);
+    const el = s.querySelector(`[data-key="${k}"]`);
     if (el) el.classList.add('nflash');
   }
 }
@@ -1336,7 +1794,7 @@ function toast(html, x, y, cls) {
   setTimeout(() => t.remove(), 3600);
 }
 
-/* --- Popover plumbing ----------------------------------------------------- */
+/* --- Popover plumbing ------------------------------------------------------ */
 
 function popAt(x, y, html) {
   const pop = $('pop');
@@ -1351,248 +1809,77 @@ function popAt(x, y, html) {
 
 function closePop() { const p = $('pop'); p.hidden = true; p.innerHTML = ''; }
 
-/* --- Interaction flow ------------------------------------------------------ */
-
-function cancelAll() {
-  ui = { mode: 'idle', subject: null, ev: null, params: {}, needs: [], xy: ui.xy };
-  cfMode = false;
-  closePop();
-  renderScene(); renderStatus();
-}
-
-function selectSubject(sub, x, y) {
-  ui = { mode: 'menu', subject: sub, ev: null, params: {}, needs: [], xy: [x, y] };
-  renderScene(); renderStatus();
-  const items = menuItems(sub);
-  const row = (it, i) => it.dis
-    ? `<button class="mi${it.ext ? ' ext' : ''}" disabled title="${esc(it.dis.note)}"><span>${esc(EV[it.tag].it)}</span>
-         <span class="gb${it.dis.badge === '—' ? ' dim' : ''}">${esc(it.dis.badge === '—' ? it.dis.note || '—' : it.dis.badge)}</span></button>`
-    : it.ext
-    ? `<button class="mi ext" data-i="${i}" title=".${it.tag}"><span>${esc(EV[it.tag].it)}</span>
-         <span class="gbx">VOTO NON MODELLATO</span></button>`
-    : `<button class="mi" data-i="${i}" title=".${it.tag}"><span>${esc(EV[it.tag].it)}</span>
-         <span class="tag mono">.${it.tag}</span></button>`;
-  const mains = items.map((it, i) => it.ext ? '' : row(it, i)).join('');
-  const exts = items.map((it, i) => it.ext ? row(it, i) : '').join('');
-  const html = `<div class="pt">${esc(subTitle(sub))}
-      <button type="button" class="xbtn2" data-x="1">✕</button></div>
-    <div class="menu">` + mains +
-    (exts ? `<div class="msec">esito dall’esterno — voto non modellato</div>` + exts : '') +
-    '</div>';
-  popAt(x, y, html);
-  $('pop').querySelectorAll('[data-i]').forEach(b =>
-    b.addEventListener('click', () => startEvent(items[Number(b.dataset.i)])));
-  const xb = $('pop').querySelector('[data-x]');
-  if (xb) xb.addEventListener('click', cancelAll);
-}
-
-function startEvent(item) {
-  closePop();
-  const params = { ...item.pre };
-  const needs = EV[item.tag].roles.filter(r => params[ROLEKEY[r]] === undefined);
-  ui = { mode: 'pick', subject: ui.subject, ev: item.tag, params, needs, xy: ui.xy };
-  advance();
-}
-
-function advance() {
-  while (ui.needs.length && ui.needs[0] === 'label') {
-    openLabelPop(); return;
-  }
-  if (ui.needs.length) { renderScene(); renderStatus(); return; }
-  if (EV[ui.ev].external) { openExternalConfirm(); return; }
-  if (EV[ui.ev].amount) { openAmountPop(); return; }
-  commitAttempt();
-}
-
-// Interface outcome: the vote happened outside this machine. No member is
-// asked to authorize it; the Step.lean responsabile carrier stays internal.
-function openExternalConfirm() {
-  renderScene(); renderStatus();
-  const html = `<div class="pt">esito esterno <span class="gbx">VOTO NON MODELLATO</span>
-      <button type="button" class="xbtn2" data-x="1">✕</button></div>
-    <div class="tiny">${esc(EV[ui.ev].it)} per «${esc(lbl(ui.params.c))}»</div>
-    <div class="tiny">Nel sistema reale è l'esito di un voto di maggioranza del gruppo (kelgroups).<br>
-      Questa macchina economica non modella né verifica quel voto.</div>
-    <div class="ar2"><button type="button" class="primary" id="ext-apply">applica esito</button></div>`;
-  popAt(ui.xy[0], ui.xy[1], html);
-  $('ext-apply').addEventListener('click', () => {
-    ui.params.author = state.responsabili[0];   // machine adapter carrier only
-    commitAttempt();
-  });
-  const xb = $('pop').querySelector('[data-x]');
-  if (xb) xb.addEventListener('click', cancelAll);
-}
-
-function openLabelPop() {
-  renderScene(); renderStatus();
-  const open = new Set(state.collections.map(c => lbl(c.id)));
-  let opts = PRESETS.filter(p => !open.has(p));
-  if (!opts.length) opts = PRESETS;
-  const html = `<div class="pt">${esc(EV[ui.ev].it)} — etichetta
-      <button type="button" class="xbtn2" data-x="1">✕</button></div>
-    <div class="chips">` +
-    opts.map(p => `<button type="button" class="lchip" data-l="${esc(p)}">${esc(p)}</button>`).join('') +
-    `</div><div class="tiny">decorazione toy — il CollId Lean resta un Nat interno</div>`;
-  popAt(ui.xy[0], ui.xy[1], html);
-  $('pop').querySelectorAll('[data-l]').forEach(b => b.addEventListener('click', () => {
-    ui.params._label = b.dataset.l;
-    ui.params.c = collSeq;
-    ui.needs = ui.needs.filter(r => r !== 'label');
-    closePop();
-    advance();
-  }));
-  const xb = $('pop').querySelector('[data-x]');
-  if (xb) xb.addEventListener('click', cancelAll);
-}
-
-function openAmountPop() {
-  renderScene(); renderStatus();
-  const sp = amountSpec(ui.ev, ui.params);
-  const html = `<div class="pt">${esc(EV[ui.ev].it)} — importo
-      <button type="button" class="xbtn2" data-x="1">✕</button></div>
-    <div class="tiny">${esc(sp.what)}</div>
-    <div class="ar"><span class="mono">${sp.min}</span>
-      <input id="am-r" type="range" min="${sp.min}" max="${sp.max}" step="1" value="${sp.val}">
-      <span class="mono">${sp.max}</span></div>
-    <div class="ar2"><input id="am-n" type="number" min="${sp.min}" max="${sp.max}" step="1"
-        inputmode="numeric" value="${sp.val}">
-      <button type="button" class="primary" id="am-ok">OK</button></div>`;
-  popAt(ui.xy[0], ui.xy[1], html);
-  const r = $('am-r'), n = $('am-n'), ok = $('am-ok');
-  const valid = () => {
-    const v = Number(n.value);
-    return Number.isInteger(v) && v >= sp.min && v <= sp.max;
-  };
-  const sync = () => { ok.disabled = !valid(); n.classList.toggle('badv', !valid()); };
-  r.addEventListener('input', () => { n.value = r.value; sync(); });
-  n.addEventListener('input', () => { if (valid()) r.value = n.value; sync(); });
-  n.addEventListener('change', () => {
-    let v = Math.round(Number(n.value));
-    if (!Number.isFinite(v)) v = sp.min;
-    n.value = String(Math.max(sp.min, Math.min(sp.max, v)));
-    r.value = n.value; sync();
-  });
-  ok.addEventListener('click', () => {
-    if (!valid()) return;
-    ui.params.v = Number(n.value);
-    commitAttempt();
-  });
-  const xb = $('pop').querySelector('[data-x]');
-  if (xb) xb.addEventListener('click', cancelAll);
-  sync();
-  n.focus();
-}
-
-function commitAttempt() {
-  closePop();
-  const tag = ui.ev;
-  const args = {};
-  for (const role of EV[tag].roles) {
-    const k = ROLEKEY[role];
-    if (k !== '_label') args[k] = ui.params[k];
-  }
-  if (tag === 'openPurchase') args.c = ui.params.c;
-  if (EV[tag].amount) args.v = ui.params.v;
-  if (EV[tag].external) args.author = ui.params.author;
-  const label = ui.params._label;
-  const preState = state;
-  const preLayout = { ...layout };
-  const [px, py] = ui.xy;
-  const res = runAttempt(tag, args, label);
-  ui = { mode: 'idle', subject: null, ev: null, params: {}, needs: [], xy: [px, py] };
-  renderAll();
-  if (res.ok) {
-    playFx(tag, args, preState, preLayout);
-    if (EV[tag].external)
-      toast(`<b>⇣ esito esterno applicato</b>
-        <span class="tiny">voto di maggioranza non modellato né verificato qui</span>`, px, py, 'ext');
-  } else {
-    toast(`<b>✗ ${esc(EV[tag].it)}</b> ` +
-      res.failed.map(guardChip).join(' ') +
-      ` <span class="tiny">stato invariato</span>`, px, py);
-  }
-}
-
-/* --- Counterfactual (outside the machine; real state never touched) ------- */
-
-function openCfPop(sub, x, y) {
-  const what = sub.type === 'pile' ? `escrow «${lbl(sub.id)}»`
-    : `${sub.type} di ${nm(sub.id)}`;
-  const html = `<div class="pt">contro-fattuale — ${esc(what)}
-      <button type="button" class="xbtn2" data-x="1">✕</button></div>
-    <div class="ar"><span class="mono">−100</span>
-      <input id="cf-r" type="range" min="-100" max="100" step="1" value="10">
-      <span class="mono">100</span></div>
-    <div class="ar2"><input id="cf-n" type="number" min="-100" max="100" step="1"
-      inputmode="numeric" value="10"></div>
-    <div class="cfline" id="cf-line"></div>
-    <div class="tiny">fuori macchina · nessun costruttore di <span class="mono">Event</span> lo produce · stato reale intatto</div>`;
-  popAt(x, y, html);
-  const r = $('cf-r'), n = $('cf-n');
-  const upd = () => {
-    const d = Math.max(-100, Math.min(100, Math.round(Number(n.value) || 0)));
-    let { sc, sn, se } = invSnapshot();
-    if (sub.type === 'conto') sn += d;
-    else if (sub.type === 'cassa') sc += d;
-    else se += d;
-    const inv = sc - sn - se;
-    $('cf-line').innerHTML = `<span class="mono">${sc} − ${sn} − ${se} =</span>
-      <span class="${inv === 0 ? 'z' : 'nz'}">${inv}${inv === 0 ? ' ✓' : ' ✗'}</span>`;
-  };
-  r.addEventListener('input', () => { n.value = r.value; upd(); });
-  n.addEventListener('input', () => { r.value = n.value; upd(); });
-  const xb = $('pop').querySelector('[data-x]');
-  if (xb) xb.addEventListener('click', cancelAll);
-  upd();
-}
-
 /* --- Wiring ---------------------------------------------------------------- */
 
-$('scene').addEventListener('click', ev => {
-  const gEl = ev.target.closest('[data-obj]');
-  const x = ev.clientX, y = ev.clientY;
-  if (cfMode) {
-    if (gEl && ['conto', 'cassa', 'pile'].includes(gEl.dataset.obj))
-      openCfPop({ type: gEl.dataset.obj, id: Number(gEl.dataset.id) }, x, y);
+$('view').addEventListener('click', ev => {
+  const t = ev.target;
+  const taskEl = t.closest('[data-task]');
+  if (taskEl && !taskEl.disabled) {
+    const tag = taskEl.dataset.task;
+    const preset = {};
+    const d = nav();
+    if (d.view === 'person') {
+      if (d.hat === 'cassiere') preset.author = d.u;
+      else if (tag === 'deposit' || tag === 'withdraw' || tag === 'pledge') preset.user = d.u;
+    }
+    if (d.view === 'collection') {
+      preset.c = d.c;
+      // the referente hat is the collection context: closing/failing is the
+      // referente's task, exactly as the Lean guard demands
+      if (tag === 'closePurchase' || tag === 'failPurchase') {
+        const col = state.collections.find(x => x.id === d.c);
+        preset.author = col.referente;
+      }
+    }
+    startTask(tag, preset, ev.clientX, ev.clientY);
     return;
   }
-  if (ui.mode === 'pick') {
-    if (!gEl) { cancelAll(); return; }
-    const role = ui.needs[0];
-    const spec = pickSpec(role);
-    if (!spec || gEl.dataset.obj !== spec.type) return;
-    const id = Number(gEl.dataset.id);
-    const t = spec.test(id);
-    if (t.lvl === 'off') return;
-    ui.params[ROLEKEY[role]] = id;
-    ui.needs = ui.needs.slice(1);
-    ui.xy = [x, y];
-    advance();
+  const act = t.closest('[data-act]');
+  if (act) {
+    const d = nav();
+    const c = d.c, u = Number(act.dataset.u);
+    const col = state.collections.find(x => x.id === c);
+    const author = col.referente;             // the hat is the context
+    if (act.dataset.act === 'accept') directAct('acceptPledge', { author, user: u, c }, ev.clientX, ev.clientY);
+    else if (act.dataset.act === 'refuse') directAct('refusePledge', { author, user: u, c }, ev.clientX, ev.clientY);
+    else directAct('correctPledge', { author, user: u, c }, ev.clientX, ev.clientY);
     return;
   }
-  closePop();
-  if (!gEl) { cancelAll(); return; }
-  const type = gEl.dataset.obj, id = Number(gEl.dataset.id);
-  selectSubject({ type, id }, x, y);
+  const hat = t.closest('[data-hat]');
+  if (hat && !hat.disabled) { nav().hat = hat.dataset.hat; renderAll(); return; }
+  const gc = t.closest('[data-goto-coll]');
+  if (gc) { go({ view: 'collection', c: Number(gc.dataset.gotoColl) }); return; }
+  const gp = t.closest('[data-goto-person]');
+  if (gp) { go({ view: 'person', u: Number(gp.dataset.gotoPerson), hat: 'member' }); return; }
+  const pr = t.closest('[data-pledge-c]');
+  if (pr) { goPledge(Number(pr.dataset.pledgeC), Number(pr.dataset.pledgeU)); return; }
+  const obj = t.closest('[data-obj]');
+  if (obj) {
+    const kind = obj.dataset.obj, id = Number(obj.dataset.id);
+    if (kind === 'member' || kind === 'conto') go({ view: 'person', u: id, hat: 'member' });
+    else if (kind === 'cassa') go({ view: 'person', u: id, hat: 'cassiere' });
+    else if (kind === 'pile') go({ view: 'collection', c: id });
+    else if (kind === 'ghost') startTask('addUser', { target: id }, ev.clientX, ev.clientY);
+  }
 });
 
-document.addEventListener('keydown', ev => { if (ev.key === 'Escape') cancelAll(); });
-
-$('btn-cf').addEventListener('click', () => {
-  cancelAll();
-  cfMode = true;
-  renderScene(); renderStatus();
+$('nav-back').addEventListener('click', backNav);
+$('crumbs').addEventListener('click', ev => {
+  const b = ev.target.closest('[data-crumb]');
+  if (b && !b.disabled) goCrumb(Number(b.dataset.crumb));
 });
+$('inv-chip').addEventListener('click', ev => openInvPop(ev.clientX, ev.clientY));
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape') { cancelFlow(); } });
 
 $('btn-reset').addEventListener('click', () => {
   state = initState(FOUNDER);
   history = [];
-  attemptNo = 0;
   collSeq = 1;
   completed = [];
   colLabels = {};
   invNote = 'reset → State.init 0';
-  cancelAll();
+  navStack = [{ view: 'group' }];
+  cancelFlow();
   renderAll();
 });
 
@@ -1602,6 +1889,7 @@ renderAll();
 
 // Exposed for scripted verification (harmless in normal use).
 window.RG = { attempt, initState, sumBal, escrowSum, bal,
+  lawViolations, traceConformance, get lawBreaches() { return lawBreaches; },
   get state() { return state; }, runAttempt, renderAll: () => renderAll() };
 
 /* --- ?selftest=1: drives the real visible controls, verdict in title ------ */
@@ -1627,127 +1915,126 @@ async function selftest() {
     n.dispatchEvent(new Event('input', { bubbles: true }));
     await click('#am-ok');
   };
-  const invOk = () =>
-    expect(document.getElementById('inv-badge').textContent === '0 ✓', 'invariante non 0');
+  const invOk = () => {
+    const { v } = { v: sumBal(state.casse) - sumBal(state.conti) - escrowSum(state.collections) };
+    expect(v === 0, 'invariante non 0');
+    expect(document.getElementById('inv-chip').textContent.includes('✓'), 'chip bilancio non ✓');
+  };
+  const here = () => nav().view;
+  const crumbText = () => document.getElementById('crumbs').innerText.replace(/\n/g, ' ');
   const lastEntry = () => document.querySelector('#log .entry');
 
-  expect(document.querySelector('[data-key="member:0"]'), 'fondatrice assente');
-  invOk();
+  // group view: task-shaped entry points, not the event list
+  expect(here() === 'group', 'vista iniziale non è il gruppo');
+  expect(document.querySelectorAll('#gtasks [data-task]').length === 4,
+    'compiti di gruppo assenti');
 
-  // addUser Bruno ed Elena: candidato → menu → autrice Anna
+  // task: far entrare Bruno ed Elena (candidato → registrante ★)
   for (const gid of [1, 2]) {
     await click(`[data-key="ghost:${gid}"]`);
-    await click('#pop [title=".addUser"]');
-    await click('[data-key="member:0"]');
+    await click(`#pop .chip[data-id="0"]`);
     expect(document.querySelector(`[data-key="member:${gid}"]`), 'membro non entrato');
   }
-  expect(lastEntry().className.includes('acc'), 'addUser non accettato');
-
-  // elezione di Bruno
-  await click('[data-key="member:0"]');
-  await click('#pop [title=".electResponsabile"]');
-  await click('[data-key="member:1"]');
+  // task: eleggi Bruno dalla barra dei compiti
+  await click('#gtasks [data-task="electResponsabile"]');
+  await click('#pop .chip[data-id="1"]');
+  await click('#pop .chip[data-id="0"]');
   expect(document.querySelector('[data-key="member:1"]').classList.contains('noderesp'),
     'Bruno non eletto');
+  invOk();
 
-  // evento disabilitato con badge guardia: Elena non è responsabile → AUTH
-  await click('[data-key="member:2"]');
-  const badges = [...document.querySelectorAll('#pop .mi:disabled .gb')].map(b => b.textContent);
-  expect(badges.includes('AUTH'), 'badge AUTH assente sul menu di Elena');
-  await click('#scene');
-
-  // deposito 100 per Bruno, autrice Anna; importo limitato e visibile
-  await click('[data-key="conto:1"]');
-  await click('#pop [title=".deposit"]');
+  // navigation: person view + hats
   await click('[data-key="member:0"]');
+  expect(here() === 'person', 'click sul membro non apre la persona');
+  expect(document.getElementById('hat-member'), 'cappello membro non attivo');
+  expect(document.getElementById('card-conto'), 'conto assente nel cappello membro');
+  expect(crumbText().includes('Gruppo') && crumbText().includes('Anna'), 'briciole errate');
+  // referente controls must NOT exist at person level
+  expect(!document.querySelector('#view [data-act]') && !document.getElementById('refpanel'),
+    'controlli referente fuori dal contesto colletta');
+  await click('[data-hat="cassiere"]');
+  expect(document.getElementById('hat-cassiere'), 'cappello cassiere non attivo');
+  expect(document.getElementById('card-cassa'), 'cassa assente nel cappello cassiere');
+
+  // cassiere task: incassa 100 da Bruno (bounded 0..500)
+  await click('#hat-cassiere [data-task="deposit"]');
+  await click('#pop .chip[data-id="1"]');
   await amount(100, 500);
-  expect(document.querySelector('[data-key="conto:1"] text').textContent.includes('100'),
-    'conto Bruno non aggiornato');
+  expect(document.getElementById('card-cassa').innerText.includes('100'),
+    'cassa non aggiornata');
   invOk();
 
-  // Bruno apre «Olio»
-  await click('[data-key="member:1"]');
-  await click('#pop [title=".openPurchase"]');
+  // back to group, then Bruno opens «Olio» from his cassiere hat
+  await click('#crumbs [data-crumb="0"]');
+  expect(here() === 'group', 'briciola Gruppo non torna al gruppo');
+  await click('[data-key="cassa:1"]');
+  expect(here() === 'person' && nav().hat === 'cassiere', 'click sulla cassa non apre il cassiere');
+  await click('#hat-cassiere [data-task="openPurchase"]');
   await click('#pop [data-l="Olio"]');
-  expect((document.querySelector('[data-key="pile:1"]') || {}).getAttribute &&
-    document.querySelector('[data-key="pile:1"]').getAttribute('aria-label').includes('Olio'),
-    'colletta «Olio» non visibile');
+  expect(document.querySelector('[data-goto-coll]'), 'sezione referente-di assente');
 
-  // pledge 30 di Bruno su «Olio», autrice Anna; max = conto di Bruno
-  await click('[data-key="conto:1"]');
-  await click('#pop [title=".pledge"]');
-  await click('[data-key="member:0"]');
-  await click('[data-key="pile:1"]');
+  // Bruno-as-member joins his own purchase? no — member hat: pledge 30 (bounded by conto 100)
+  await click('[data-hat="member"]');
+  expect(document.getElementById('hat-member'), 'ritorno al cappello membro fallito');
+  await click('#hat-member [data-task="pledge"]');
+  await click('#pop .chip[data-id]');            // the only collection «Olio»
+  await click('#pop .chip[data-id="0"]');        // registered by Anna ★
   await amount(30, 100);
-  expect(document.querySelector('[data-key="pile:1"] .pamt').textContent === '30',
-    'escrow non aggiornato');
+  expect(document.querySelector('#hat-member [data-pledge-c]'), 'pledge non elencato');
   invOk();
 
-  // tentativo respinto: Anna (non referente) prova ad accettare il pledge
-  const before = JSON.stringify(state);
+  // depth: person → pledge (through collection) and all the way back
+  await click('#hat-member [data-pledge-c]');
+  expect(here() === 'pledge', 'vista pledge non aperta');
+  expect(crumbText().includes('«Olio»') && crumbText().includes('impegno di Bruno'),
+    'briciole senza profondità gruppo→persona→acquisto→impegno');
+  await click('#nav-back');
+  expect(here() === 'collection', 'indietro non torna alla colletta');
+  expect(document.getElementById('refpanel'), 'cappello referente assente nella colletta');
+  await click('#nav-back');
+  expect(here() === 'person', 'indietro non torna alla persona');
+  await click('#nav-back');
+  expect(here() === 'group', 'indietro non torna al gruppo');
+
+  // guard affordance: Elena (conto 0) cannot pledge — COVERED (L7) on the task
+  await click('[data-key="member:2"]');
+  const pledgeBtn = document.querySelector('#hat-member [data-task="pledge"]');
+  expect(pledgeBtn && pledgeBtn.disabled, 'task pledge non disabilitato');
+  expect(pledgeBtn.innerText.includes('COVERED (L7)'), 'badge COVERED (L7) assente');
+  await click('#crumbs [data-crumb="0"]');
+
+  // collection flow: referente queue exists only here; accept Bruno's pledge
   await click('[data-key="pile:1"]');
-  await click('#pop [title=".acceptPledge"]');
-  await click('[data-key="member:1"]');
-  await click('[data-key="member:0"]');
-  const en = lastEntry();
-  expect(en.className.includes('rej'), 'tentativo non respinto');
-  expect([...en.querySelectorAll('.gb')].some(b => b.textContent === 'REFERENTE'),
-    'guardia REFERENTE non nominata');
-  expect(en.innerText.includes('stato invariato'), 'esito non mostrato');
-  expect(JSON.stringify(state) === before, 'stato mutato da un rifiuto');
+  expect(here() === 'collection', 'click sulla colletta non la apre');
+  expect(document.getElementById('refpanel'), 'coda referente assente');
+  await click('#refpanel [data-act="accept"]');
+  expect(lastEntry().innerText.includes("accetta l'impegno di Bruno"), 'accettazione non registrata');
   invOk();
 
-  // governance: grant/deny mai come azione personale di un membro
-  await click('[data-key="member:0"]');
-  expect(!document.querySelector('#pop [title=".grantPermission"]') &&
-    !document.querySelector('#pop [title=".denyPermission"]'),
-    'grant/deny offerti come azione del membro');
-  await click('#scene');
-
-  // governance: sezione esterna e marcatura visibile PRIMA dell'applicazione
-  await click('[data-key="pile:1"]');
-  expect(document.querySelector('#pop .msec'), 'sezione esito esterno assente');
-  expect(document.querySelectorAll('#pop .gbx').length >= 2,
-    'badge VOTO NON MODELLATO assenti');
-
-  // applica il grant come esito esterno: nessuna scelta di autore, avviso locale
-  await click('#pop [title=".grantPermission"]');
+  // external outcome kept: marked before, disclosed during, marked after
+  expect(document.querySelector('#view .msec'), 'sezione esito esterno assente');
+  const grantBtn = document.querySelector('#view [data-task="grantPermission"]');
+  expect(grantBtn && grantBtn.innerText.includes('VOTO NON MODELLATO'),
+    'marcatura VOTO NON MODELLATO assente prima dell’applicazione');
+  await click('#view [data-task="grantPermission"]');
   const conf = document.querySelector('#pop .pbox');
   expect(conf && conf.innerText.includes('non modella'), 'avviso di provenienza assente');
-  expect(conf.innerText.includes('VOTO NON MODELLATO'), 'marcatura assente alla conferma');
   await click('#ext-apply');
   const ge = lastEntry();
-  expect(ge.className.includes('ext'), 'risultato non marcato come esterno');
-  expect(ge.innerText.includes('non modellato'), 'provenienza assente nel risultato');
+  expect(ge.className.includes('ext') && ge.innerText.includes('non modellato'),
+    'esito esterno non marcato nel risultato');
   expect(!/Anna|Bruno|Elena|Carlo/.test(ge.querySelector('.eh').innerText),
     'esito attribuito a un officer');
   invOk();
 
-  // effetto economico intatto: accetta il pledge pendente e chiudi
-  await click('[data-key="pile:1"]');
-  await click('#pop [title=".acceptPledge"]');
-  await click('[data-key="member:1"]');
-  await click('[data-key="member:1"]');
-  await click('[data-key="pile:1"]');
-  await click('#pop [title=".closePurchase"]');
-  await click('[data-key="member:1"]');
+  // close from the referente panel; nav recovers to a still-existing view
+  await click('#refpanel [data-task="closePurchase"]');
   expect(document.getElementById('done-body').innerText.includes('Olio'),
-    'closePurchase senza acquisto completato');
+    'acquisto completato assente dopo la chiusura');
+  expect(here() !== 'collection' && here() !== 'pledge', 'vista su colletta chiusa non rientrata');
   invOk();
 
-  // esito negativo: rimborso, colletta chiusa, nessun acquisto
-  await click('[data-key="member:1"]');
-  await click('#pop [title=".openPurchase"]');
-  await click('#pop [data-l="Vino"]');
-  await click('[data-key="pile:2"]');
-  await click('#pop [title=".denyPermission"]');
-  await click('#ext-apply');
-  expect(!document.querySelector('[data-key="pile:2"]'), 'colletta negata ancora aperta');
-  expect(!document.getElementById('done-body').innerText.includes('Vino'),
-    'denyPermission ha creato un acquisto');
-  invOk();
-
-  // nessuno stato o evento di voto inventato
+  // no invented vote state or event; machine surface unchanged
   const TAGS = ['addUser', 'electResponsabile', 'removeResponsabile', 'openPurchase',
     'grantPermission', 'denyPermission', 'deposit', 'withdraw', 'transferCassa',
     'pledge', 'acceptPledge', 'refusePledge', 'correctPledge', 'closePurchase',
@@ -1757,6 +2044,26 @@ async function selftest() {
   expect(JSON.stringify(Object.keys(state).sort()) ===
     JSON.stringify(['casse', 'collections', 'conti', 'responsabili', 'users']),
     'stato macchina esteso oltre Lean');
+
+  // presentation vocabulary: legacy gruppo words in visible copy, never the
+  // invented ones; machine identifiers stay only as .mono provenance
+  const copy = (() => {
+    const c = document.body.cloneNode(true);
+    c.querySelectorAll('.mono, script, #pop, .toast').forEach(el => el.remove());
+    return c.innerText;
+  })();
+  expect(!/colletta/i.test(copy), 'vocabolario: «colletta» nel copy visibile');
+  expect(!/\bpledge\b/i.test(copy), 'vocabolario: «pledge» nel copy visibile');
+  expect(/impegn/i.test(copy) && /acquist/i.test(copy),
+    'vocabolario legacy (impegno/acquisto) assente dal copy');
+  expect(ge.querySelector('.mono') &&
+    ge.querySelector('.mono').textContent.trim().startsWith('.grantPermission'),
+    'provenienza macchina assente dalla storia');
+
+  // fidelity nets: crude net silent all session, Lean traces replay clean
+  expect(lawBreaches.length === 0, 'rete invarianti Lean scattata in sessione');
+  const tc = traceConformance();
+  expect(tc.steps === 29, 'copertura tracce Lean inattesa: ' + tc.steps);
 }
 
 if (/[?&]selftest=1/.test(location.search)) {
