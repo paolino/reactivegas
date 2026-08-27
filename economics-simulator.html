@@ -1894,7 +1894,34 @@ window.RG = { attempt, initState, sumBal, escrowSum, bal,
 
 /* --- ?selftest=1: drives the real visible controls, verdict in title ------ */
 
+/* Diagnostic-vocabulary lint: scans the ENTIRE selftest source (and its own)
+   line by line, so no invented term can return in any diagnostic message —
+   including branches a session never renders. Machine identifiers are allowed
+   only in their known code shapes; lines that must mention the banned
+   patterns themselves carry a DIAGLINT-ALLOW marker. */
+function diagVocabLint() {
+  const banned = /colletta|\bpledge\b/i;                                   // DIAGLINT-ALLOW
+  // token-precise: strip the allowed machine-identifier shapes from each
+  // line FIRST, then test what remains — prose sharing a line with a legal
+  // identifier is still caught
+  const stripAllowed = l => l
+    .replace(/data-pledge[-a-z]*/g, '')      // row selector attributes       DIAGLINT-ALLOW
+    .replace(/data-task="pledge"/g, '')      // task selector (machine tag)   DIAGLINT-ALLOW
+    .replace(/'pledge'|"pledge"/g, '')       // exact view/tag token compare  DIAGLINT-ALLOW
+    .replace(/\.pledge\b/g, '');             // dotted machine provenance     DIAGLINT-ALLOW
+  return (selftest.toString() + '\n' + diagVocabLint.toString())
+    .split('\n')
+    .filter(l => !/DIAGLINT-ALLOW/.test(l) && !/^\s*\/\//.test(l))
+    .filter(l => banned.test(stripAllowed(l)));
+}
+
 async function selftest() {
+  {
+    const dl = diagVocabLint();
+    if (dl.length)
+      throw new Error('lint diagnostica: termine vietato in ' + dl.length +
+        ' riga/e del selftest');
+  }
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   const expect = (cond, what) => { if (!cond) throw new Error(what); };
   const click = async sel => {
@@ -1980,12 +2007,12 @@ async function selftest() {
   await click('#pop .chip[data-id]');            // the only collection «Olio»
   await click('#pop .chip[data-id="0"]');        // registered by Anna ★
   await amount(30, 100);
-  expect(document.querySelector('#hat-member [data-pledge-c]'), 'pledge non elencato');
+  expect(document.querySelector('#hat-member [data-pledge-c]'), 'impegno non elencato');
   invOk();
 
   // depth: person → pledge (through collection) and all the way back
   await click('#hat-member [data-pledge-c]');
-  expect(here() === 'pledge', 'vista pledge non aperta');
+  expect(here() === 'pledge', 'vista impegno non aperta');
   expect(crumbText().includes('«Olio»') && crumbText().includes('impegno di Bruno'),
     'briciole senza profondità gruppo→persona→acquisto→impegno');
   await click('#nav-back');
@@ -1999,7 +2026,7 @@ async function selftest() {
   // guard affordance: Elena (conto 0) cannot pledge — COVERED (L7) on the task
   await click('[data-key="member:2"]');
   const pledgeBtn = document.querySelector('#hat-member [data-task="pledge"]');
-  expect(pledgeBtn && pledgeBtn.disabled, 'task pledge non disabilitato');
+  expect(pledgeBtn && pledgeBtn.disabled, 'task impegno non disabilitato');
   expect(pledgeBtn.innerText.includes('COVERED (L7)'), 'badge COVERED (L7) assente');
   await click('#crumbs [data-crumb="0"]');
 
@@ -2045,7 +2072,7 @@ async function selftest() {
   const re = lastEntry();
   expect(re.innerText.includes('nessun acquisto da chiudere'),
     'ramo revoca-senza-acquisti: copy legacy assente');
-  expect(!/colletta/i.test(re.innerText), 'ramo revoca-senza-acquisti: termine vietato');
+  expect(!/colletta/i.test(re.innerText), 'ramo revoca-senza-acquisti: termine vietato');   // DIAGLINT-ALLOW
 
   // branch coverage: every member già impegnato → L8 note; pending → L4 note
   await click('[data-key="conto:0"]');          // Anna: conto 0, serve un accredito
@@ -2085,7 +2112,7 @@ async function selftest() {
   // tooltip sweep: no invented term in any non-provenance title attribute
   const humanTitles = [...document.querySelectorAll('[title]')]
     .map(el => el.getAttribute('title')).filter(t => t && !t.startsWith('.'));
-  expect(!humanTitles.some(t => /colletta|\bpledge\b/i.test(t)),
+  expect(!humanTitles.some(t => /colletta|\bpledge\b/i.test(t)),   // DIAGLINT-ALLOW
     'vocabolario: termine vietato in un tooltip');
   invOk();
 
@@ -2107,8 +2134,8 @@ async function selftest() {
     c.querySelectorAll('.mono, script, #pop, .toast').forEach(el => el.remove());
     return c.innerText;
   })();
-  expect(!/colletta/i.test(copy), 'vocabolario: termine vietato (it) nel copy visibile');
-  expect(!/\bpledge\b/i.test(copy), 'vocabolario: termine vietato (en) nel copy visibile');
+  expect(!/colletta/i.test(copy), 'vocabolario: termine vietato (it) nel copy visibile');    // DIAGLINT-ALLOW
+  expect(!/\bpledge\b/i.test(copy), 'vocabolario: termine vietato (en) nel copy visibile');  // DIAGLINT-ALLOW
   expect(/impegn/i.test(copy) && /acquist/i.test(copy),
     'vocabolario legacy (impegno/acquisto) assente dal copy');
   expect(ge.querySelector('.mono') &&
