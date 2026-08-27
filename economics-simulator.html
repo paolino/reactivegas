@@ -442,7 +442,7 @@ function attempt(s, e) {
       const flow = ps.length
         ? `★✕ ${nm(e.target)} · suoi acquisti chiusi, rimborsi: ` +
           ps.map(p => `conto ${nm(p.user)} +${p.amount}`).join(', ')
-        : `★✕ ${nm(e.target)} · nessuna colletta da chiudere`;
+        : `★✕ ${nm(e.target)} · nessun acquisto da chiudere`;
       return { ok: true, flow,
         state: { ...s, responsabili: resps, conti: refundAll(s.conti, ps), collections: rest } };
     }
@@ -941,7 +941,7 @@ function taskDis(tag, ctx) {
       if (ctx.c !== undefined) {
         const col = cols.find(x => x.id === ctx.c);
         const cand = state.users.filter(u => !inCol(col, u));
-        if (!cand.length) return B('L8', 'tutti hanno già un pledge');
+        if (!cand.length) return B('L8', 'tutti hanno già un impegno');
         if (!cand.some(u => bal(state.conti, u) >= 1)) return B('COVERED (L7)', 'nessun conto capiente');
         return null;
       }
@@ -950,12 +950,12 @@ function taskDis(tag, ctx) {
     case 'closePurchase': {
       const col = cols.find(x => x.id === ctx.c);
       if (!col.permitted) return B('PERMITTED (L2)', 'serve il permesso del gruppo');
-      if (col.pending.length) return B('NO-PENDING (L4)', 'pledge pendenti da risolvere');
+      if (col.pending.length) return B('NO-PENDING (L4)', 'impegni pendenti da risolvere');
       return null;
     }
     case 'failPurchase': {
       const col = cols.find(x => x.id === ctx.c);
-      return col.pending.length ? B('NO-PENDING (L4)', 'pledge pendenti da risolvere') : null;
+      return col.pending.length ? B('NO-PENDING (L4)', 'impegni pendenti da risolvere') : null;
     }
     case 'grantPermission': {
       if (!state.responsabili.length) return B('AUTH', 'nessun responsabile');
@@ -1951,7 +1951,7 @@ async function selftest() {
   expect(crumbText().includes('Gruppo') && crumbText().includes('Anna'), 'briciole errate');
   // referente controls must NOT exist at person level
   expect(!document.querySelector('#view [data-act]') && !document.getElementById('refpanel'),
-    'controlli referente fuori dal contesto colletta');
+    'controlli referente fuori dal contesto acquisto');
   await click('[data-hat="cassiere"]');
   expect(document.getElementById('hat-cassiere'), 'cappello cassiere non attivo');
   expect(document.getElementById('card-cassa'), 'cassa assente nel cappello cassiere');
@@ -1989,8 +1989,8 @@ async function selftest() {
   expect(crumbText().includes('«Olio»') && crumbText().includes('impegno di Bruno'),
     'briciole senza profondità gruppo→persona→acquisto→impegno');
   await click('#nav-back');
-  expect(here() === 'collection', 'indietro non torna alla colletta');
-  expect(document.getElementById('refpanel'), 'cappello referente assente nella colletta');
+  expect(here() === 'collection', "indietro non torna all'acquisto");
+  expect(document.getElementById('refpanel'), "cappello referente assente nell'acquisto");
   await click('#nav-back');
   expect(here() === 'person', 'indietro non torna alla persona');
   await click('#nav-back');
@@ -2005,7 +2005,7 @@ async function selftest() {
 
   // collection flow: referente queue exists only here; accept Bruno's pledge
   await click('[data-key="pile:1"]');
-  expect(here() === 'collection', 'click sulla colletta non la apre');
+  expect(here() === 'collection', "click sull'acquisto non lo apre");
   expect(document.getElementById('refpanel'), 'coda referente assente');
   await click('#refpanel [data-act="accept"]');
   expect(lastEntry().innerText.includes("accetta l'impegno di Bruno"), 'accettazione non registrata');
@@ -2031,7 +2031,62 @@ async function selftest() {
   await click('#refpanel [data-task="closePurchase"]');
   expect(document.getElementById('done-body').innerText.includes('Olio'),
     'acquisto completato assente dopo la chiusura');
-  expect(here() !== 'collection' && here() !== 'pledge', 'vista su colletta chiusa non rientrata');
+  expect(here() !== 'collection' && here() !== 'pledge', 'vista su acquisto chiuso non rientrata');
+  invOk();
+
+  // branch coverage: remove-with-no-open-purchases flow copy
+  await click('#crumbs [data-crumb="0"]');
+  await click('#gtasks [data-task="electResponsabile"]');
+  await click('#pop .chip[data-id="2"]');       // Elena eletta
+  await click('#pop .chip[data-id="0"]');       // registrata da Anna
+  await click('#gtasks [data-task="removeResponsabile"]');
+  await click('#pop .chip[data-id="2"]');       // Elena revocata
+  await click('#pop .chip[data-id="1"]');       // registrata da Bruno
+  const re = lastEntry();
+  expect(re.innerText.includes('nessun acquisto da chiudere'),
+    'ramo revoca-senza-acquisti: copy legacy assente');
+  expect(!/colletta/i.test(re.innerText), 'ramo revoca-senza-acquisti: termine vietato');
+
+  // branch coverage: every member già impegnato → L8 note; pending → L4 note
+  await click('[data-key="conto:0"]');          // Anna: conto 0, serve un accredito
+  await click('#hat-member [data-task="deposit"]');
+  await click('#pop .chip[data-id="1"]');
+  await amount(20, 500);
+  await click('#crumbs [data-crumb="0"]');
+  await click('[data-key="conto:2"]');          // Elena: conto 0, serve un accredito
+  await click('#hat-member [data-task="deposit"]');
+  await click('#pop .chip[data-id="1"]');
+  await amount(20, 500);
+  await click('#crumbs [data-crumb="0"]');
+  await click('#gtasks [data-task="openPurchase"]');
+  await click('#pop [data-l="Vino"]');
+  await click('#pop .chip[data-id="1"]');       // referente Bruno
+  await click('[data-key="pile:2"]');
+  expect(here() === 'collection', 'acquisto «Vino» non aperto');
+  for (const [u, a] of [[0, 1], [1, 0], [2, 1]]) {
+    await click('#view [data-task="pledge"]');
+    await click(`#pop .chip[data-id="${u}"]`);
+    await click(`#pop .chip[data-id="${a}"]`);
+    await amount(5);
+  }
+  const pbtn = document.querySelector('#view [data-task="pledge"]');
+  expect(pbtn && pbtn.disabled, 'task impegno non disabilitato con tutti impegnati');
+  expect(pbtn.getAttribute('title') === 'tutti hanno già un impegno',
+    'ramo L8: nota legacy assente (' + pbtn.getAttribute('title') + ')');
+  const fbtn = document.querySelector('#refpanel [data-task="failPurchase"]');
+  expect(fbtn && fbtn.disabled && fbtn.getAttribute('title') === 'impegni pendenti da risolvere',
+    'ramo L4 (fallisci): nota legacy assente');
+  await click('#view [data-task="grantPermission"]');
+  await click('#ext-apply');
+  const cbtn = document.querySelector('#refpanel [data-task="closePurchase"]');
+  expect(cbtn && cbtn.disabled && cbtn.getAttribute('title') === 'impegni pendenti da risolvere',
+    'ramo L4 (chiudi): nota legacy assente');
+
+  // tooltip sweep: no invented term in any non-provenance title attribute
+  const humanTitles = [...document.querySelectorAll('[title]')]
+    .map(el => el.getAttribute('title')).filter(t => t && !t.startsWith('.'));
+  expect(!humanTitles.some(t => /colletta|\bpledge\b/i.test(t)),
+    'vocabolario: termine vietato in un tooltip');
   invOk();
 
   // no invented vote state or event; machine surface unchanged
@@ -2052,8 +2107,8 @@ async function selftest() {
     c.querySelectorAll('.mono, script, #pop, .toast').forEach(el => el.remove());
     return c.innerText;
   })();
-  expect(!/colletta/i.test(copy), 'vocabolario: «colletta» nel copy visibile');
-  expect(!/\bpledge\b/i.test(copy), 'vocabolario: «pledge» nel copy visibile');
+  expect(!/colletta/i.test(copy), 'vocabolario: termine vietato (it) nel copy visibile');
+  expect(!/\bpledge\b/i.test(copy), 'vocabolario: termine vietato (en) nel copy visibile');
   expect(/impegn/i.test(copy) && /acquist/i.test(copy),
     'vocabolario legacy (impegno/acquisto) assente dal copy');
   expect(ge.querySelector('.mono') &&
