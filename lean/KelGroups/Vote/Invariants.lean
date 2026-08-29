@@ -253,7 +253,7 @@ private theorem mem_erase_inv (a : Key) : ∀ (l : List Key), l.Nodup →
         intro hba
         have hbc : b = c := hba
         have hcm : c ∈ rest := hbc ▸ h
-        exact hn.1 (List.mem_map_of_mem (f := Prod.fst) hcm)
+        exact hn.1 hcm
       · have hnb : ¬(c == a) := fun heq => hca (beq_iff_eq.mp heq)
         rw [List.erase_cons_tail hnb] at h
         simp only [List.mem_cons] at h
@@ -460,7 +460,9 @@ private theorem sweepClosures_sweepReady (θ : Threshold) (gs : VoteState)
           (gs.openQuestions.filterMap (sweepStep θ gs)).map (·.questionId) := by
       simp [sweepClosures, List.map_append]
     rw [happend]
-    exact nodup_append_mem h.closedNodup hres hdisj
+    exact nodup_append_mem (gs.closed.map (·.questionId))
+      ((gs.openQuestions.filterMap (sweepStep θ gs)).map (·.questionId))
+      h.closedNodup hres hdisj
   · intro qid hopen hc
     rw [List.mem_map] at hopen hc
     obtain ⟨qe, hqe, hqid⟩ := hopen
@@ -468,9 +470,9 @@ private theorem sweepClosures_sweepReady (θ : Threshold) (gs : VoteState)
     obtain ⟨hentry, hv⟩ := hopenmem qe hqe
     rcases hclosedmem ce hce with hold | ⟨entry, hentry', hid, heq, hv', hne⟩
     · exact h.openClosedDisjoint qid
-        (List.mem_map.mpr ⟨qe, hentry, hqid.symm⟩)
+        (List.mem_map.mpr ⟨qe, hentry, hqid⟩)
         (List.mem_map.mpr ⟨ce, hold, hcid⟩)
-    · have hqee : entry.1 = qe.1 := by rw [hid.symm, hcid, hqid]
+    · have hqee : entry.1 = qe.1 := hid.symm.trans (hcid.trans hqid.symm)
       have hsame : entry.2 = qe.2 :=
         assoc_entries_key_unique gs.openQuestions h.openNodup qe entry hentry hentry' hqee
       rw [← hsame] at hv
@@ -489,14 +491,14 @@ private theorem sweepClosures_sweepReady (θ : Threshold) (gs : VoteState)
   · intro c hc
     rcases hclosedmem c hc with hold | ⟨entry, hentry, hid, heq, hv, hne⟩
     · exact h.closedNotOpen c hold
-    · rw [hv]
+    · rw [hv] at hne ⊢
       exact hne
 
 private theorem sweepClosures_wellFormed (θ : Threshold) (gs : VoteState)
     (h : SweepReady gs) : VoteWellFormed θ (sweepClosures θ gs) :=
   ⟨sweepClosures_sweepReady θ gs h, by
     intro qid q hlookup
-    obtain ⟨hentry, hv⟩ := sweepClosures_open_mem θ gs (qid, q)
+    obtain ⟨hentry, hv⟩ := (sweepClosures_open_mem θ gs (qid, q)).mp
       (assocLookup_some_mem' qid q (sweepClosures θ gs).openQuestions hlookup)
     rw [verdictOf_congr_members θ (sweepClosures_members θ gs) q]
     exact hv⟩
@@ -540,10 +542,10 @@ private theorem placeBallot_tally (voter : Key) (ballot : Ballot) (question : Qu
   | dissent =>
       simp only [tallyKeysOfQuestion, placeBallot, List.mem_append] at h
       rcases h with h | h
+      · exact Or.inr (List.mem_append.mpr (Or.inl (List.erase_subset h)))
       · rcases setInsert_mem_cases voter k question.dissents h with heq | hin
         · exact Or.inl heq
         · exact Or.inr (List.mem_append.mpr (Or.inr hin))
-      · exact Or.inr (List.mem_append.mpr (Or.inl (List.erase_subset h)))
 
 /-! ## Step preservation -/
 
@@ -556,8 +558,7 @@ private theorem effectedState_sweepReady (gs : VoteState) (signer : Key) (event 
       by_cases hguard : (lookupQuestion questionId gs).isNone
           && !(gs.closed.any (fun record : ClosureRecord => record.questionId == questionId))
       · have heff : effectedState gs signer (.openQuestion questionId kind) =
-            { gs with openQuestions :=
-                assocInsert questionId (Question.mk kind signer [] []) gs.openQuestions } := by
+            { gs with openQuestions := assocInsert questionId (Question.mk kind signer [] []) gs.openQuestions } := by
           simp [effectedState, hguard]
         rw [heff]
         obtain ⟨hnone, hnotany⟩ := by
@@ -568,13 +569,13 @@ private theorem effectedState_sweepReady (gs : VoteState) (signer : Key) (event 
         refine ⟨h.membersNodup, assocInsert_keys_nodup' questionId _ gs.openQuestions
           h.openNodup, h.closedNodup, ?_, ?_, h.closedClean, h.closedNotOpen⟩
         · intro qid hmem
-          rw [List.mem_map] at hmem
+          have hcons : { gs with openQuestions := assocInsert questionId (Question.mk kind signer [] []) gs.openQuestions }.openQuestions = (questionId, Question.mk kind signer [] []) :: assocErase questionId gs.openQuestions := rfl
+          rw [List.mem_map, hcons] at hmem
           obtain ⟨e, he, hid⟩ := hmem
-          rw [assocInsert, List.map_cons, List.mem_cons] at he
+          rw [List.mem_cons] at he
           rcases he with heq | he
-          · simp only [Prod.mk.injEq] at heq
-            cases heq.1
-            subst hid
+          · have hqid : qid = questionId := by simpa [heq] using hid
+            rw [hqid]
             exact closed_guard_absent questionId gs.closed (by simpa using hnotany)
           · exact h.openClosedDisjoint qid
               ((assocErase_sublist' questionId gs.openQuestions).map Prod.fst |>.mem he)
@@ -584,8 +585,8 @@ private theorem effectedState_sweepReady (gs : VoteState) (signer : Key) (event 
             (assocInsert questionId (Question.mk kind signer [] []) gs.openQuestions) hlookup
           rcases assocInsert_mem_cases qid questionId q (Question.mk kind signer [] [])
             gs.openQuestions hmem with heq | herased
-          · simp only [Prod.mk.injEq] at heq
-            cases heq.2
+          · obtain ⟨-, heq2⟩ := heq
+            cases heq2
             exact hfresh
           · exact h.openClean qid q
               (mem_assocLookup_some' qid q gs.openQuestions h.openNodup
@@ -604,9 +605,7 @@ private theorem effectedState_sweepReady (gs : VoteState) (signer : Key) (event 
             exact h
         | some question =>
             have heff : effectedState gs signer (.cast questionId ballot) =
-                { gs with openQuestions :=
-                    assocInsert questionId (placeBallot signer ballot question)
-                      gs.openQuestions } := by
+                { gs with openQuestions := assocInsert questionId (placeBallot signer ballot question) gs.openQuestions } := by
               simp [effectedState, hresp, hlook]
             rw [heff]
             have hqmem : (questionId, question) ∈ gs.openQuestions :=
@@ -614,12 +613,12 @@ private theorem effectedState_sweepReady (gs : VoteState) (signer : Key) (event 
             refine ⟨h.membersNodup, assocInsert_keys_nodup' questionId _ gs.openQuestions
               h.openNodup, h.closedNodup, ?_, ?_, h.closedClean, h.closedNotOpen⟩
             · intro qid hmem
-              rw [List.mem_map] at hmem
+              have hcons : { gs with openQuestions := assocInsert questionId (placeBallot signer ballot question) gs.openQuestions }.openQuestions = (questionId, placeBallot signer ballot question) :: assocErase questionId gs.openQuestions := rfl
+              rw [List.mem_map, hcons] at hmem
               obtain ⟨e, he, hid⟩ := hmem
-              rw [assocInsert, List.map_cons, List.mem_cons] at he
+              rw [List.mem_cons] at he
               rcases he with heq | he
-              · simp only [Prod.mk.injEq] at heq
-                have hqid : qid = questionId := hid.trans heq.1
+              · have hqid : qid = questionId := by simpa [heq] using hid
                 rw [hqid]
                 exact h.openClosedDisjoint questionId
                   (List.mem_map.mpr ⟨(questionId, question), hqmem, rfl⟩)
@@ -632,8 +631,9 @@ private theorem effectedState_sweepReady (gs : VoteState) (signer : Key) (event 
                   gs.openQuestions) hlookup
               rcases assocInsert_mem_cases qid questionId q
                 (placeBallot signer ballot question) gs.openQuestions hmem with heq | herased
-              · simp only [Prod.mk.injEq] at heq
-                cases heq.2
+              · obtain ⟨heq1, heq2⟩ := heq
+                cases heq2
+                subst heq1
                 exact placeBallot_clean signer ballot question
                   (h.openClean questionId question
                     (mem_assocLookup_some' questionId question gs.openQuestions hlook))
@@ -644,8 +644,8 @@ private theorem effectedState_sweepReady (gs : VoteState) (signer : Key) (event 
           simp [effectedState, hresp]
         rw [heff]
         exact h
-  | renounce _ =>
-      have heff : effectedState gs signer event = gs := rfl
+  | renounce questionId =>
+      have heff : effectedState gs signer (.renounce questionId) = gs := rfl
       rw [heff]
       exact h
   | admitMember key email roles =>
@@ -659,8 +659,7 @@ private theorem effectedState_sweepReady (gs : VoteState) (signer : Key) (event 
         h.closedNodup, h.openClosedDisjoint, h.openClean, h.closedClean, h.closedNotOpen⟩
   | setRoles key roles =>
       show SweepReady
-        { gs with members := assocAdjust key (fun member : Member => { member with roles })
-            gs.members }
+        { gs with members := assocAdjust key (fun member : Member => { member with roles }) gs.members }
       exact ⟨assocAdjust_keys_nodup' key (fun member : Member => { member with roles })
         gs.members h.membersNodup, h.openNodup, h.closedNodup, h.openClosedDisjoint,
         h.openClean, h.closedClean, h.closedNotOpen⟩
@@ -729,40 +728,37 @@ theorem no_expiry (θ : Threshold) (gs : VoteState) (signer : Key)
     | none =>
         have heff : effectedState gs signer (.cast otherId ballot) = gs := by
           simp [effectedState, hresp, hlook]
+        have hfinal := sweepClosures_wellFormed θ gs hform.toSweepReady
+        have hkept : (questionId, q) ∈ (sweepClosures θ gs).openQuestions :=
+          (sweepClosures_open_mem θ gs (questionId, q)).mpr
+            ⟨mem_assocLookup_some' questionId q gs.openQuestions hform.openNodup hopen,
+            hform.opensOpen questionId q hopen⟩
+        have hlookup' := mem_assocLookup_some' questionId q _ hfinal.openNodup hkept
         show assocLookup questionId
             (sweepClosures θ (effectedState gs signer (.cast otherId ballot))).openQuestions =
           some q ∧ _
         rw [heff]
-        exact ⟨hopen, hform.opensOpen questionId q hopen⟩
+        exact ⟨hlookup', hfinal.opensOpen questionId q hlookup'⟩
     | some other =>
         have heff : effectedState gs signer (.cast otherId ballot) =
-            { gs with openQuestions :=
-                assocInsert otherId (placeBallot signer ballot other) gs.openQuestions } := by
+            { gs with openQuestions := assocInsert otherId (placeBallot signer ballot other) gs.openQuestions } := by
           simp [effectedState, hresp, hlook]
         have hplaced := assocInsert_other_lookup questionId otherId
-          (placeBallot signer ballot other) gs.openQuestions
-            (fun heq => hdist heq.symm) hopen
-        have hnd' : ({ gs with openQuestions :=
-                assocInsert otherId (placeBallot signer ballot other) gs.openQuestions
-            }).openQuestions.map Prod.fst |>.Nodup :=
+          (placeBallot signer ballot other) gs.openQuestions hdist hopen
+        have hnd' : ({ gs with openQuestions := assocInsert otherId (placeBallot signer ballot other) gs.openQuestions }).openQuestions.map Prod.fst |>.Nodup :=
           assocInsert_keys_nodup' otherId _ gs.openQuestions hform.openNodup
         have hmem : (questionId, q) ∈
-            { gs with openQuestions :=
-                assocInsert otherId (placeBallot signer ballot other) gs.openQuestions
-            }.openQuestions :=
+            { gs with openQuestions := assocInsert otherId (placeBallot signer ballot other) gs.openQuestions }.openQuestions :=
           assocLookup_some_mem' questionId q _ hplaced
         have hv : verdictOf θ
-            { gs with openQuestions :=
-                assocInsert otherId (placeBallot signer ballot other) gs.openQuestions } q =
+            { gs with openQuestions := assocInsert otherId (placeBallot signer ballot other) gs.openQuestions } q =
             Verdict.open := by
           rw [verdictOf_congr_members θ (by rfl) q]
           exact hform.opensOpen questionId q hopen
         have hfinal := sweepClosures_wellFormed θ _
           (effectedState_sweepReady gs signer (.cast otherId ballot) hform.toSweepReady)
         have hkept : (questionId, q) ∈ (sweepClosures θ
-            { gs with openQuestions :=
-                assocInsert otherId (placeBallot signer ballot other) gs.openQuestions
-            }).openQuestions :=
+            { gs with openQuestions := assocInsert otherId (placeBallot signer ballot other) gs.openQuestions }).openQuestions :=
           (sweepClosures_open_mem θ _ (questionId, q)).mpr ⟨hmem, hv⟩
         have hlookup' := mem_assocLookup_some' questionId q _ hfinal.openNodup hkept
         show assocLookup questionId
@@ -772,11 +768,17 @@ theorem no_expiry (θ : Threshold) (gs : VoteState) (signer : Key)
         exact ⟨hlookup', hfinal.opensOpen questionId q hlookup'⟩
   · have heff : effectedState gs signer (.cast otherId ballot) = gs := by
       simp [effectedState, hresp]
+    have hfinal := sweepClosures_wellFormed θ gs hform.toSweepReady
+    have hkept : (questionId, q) ∈ (sweepClosures θ gs).openQuestions :=
+      (sweepClosures_open_mem θ gs (questionId, q)).mpr
+        ⟨mem_assocLookup_some' questionId q gs.openQuestions hform.openNodup hopen,
+        hform.opensOpen questionId q hopen⟩
+    have hlookup' := mem_assocLookup_some' questionId q _ hfinal.openNodup hkept
     show assocLookup questionId
         (sweepClosures θ (effectedState gs signer (.cast otherId ballot))).openQuestions =
       some q ∧ _
     rw [heff]
-    exact ⟨hopen, hform.opensOpen questionId q hopen⟩
+    exact ⟨hlookup', hfinal.opensOpen questionId q hlookup'⟩
 
 /-! ## INV-54-FRANCHISE (R-44, R-45, VC-5) -/
 
@@ -853,8 +855,7 @@ private theorem tallyKeysOfState_insert_cases (gs : VoteState) (qid : QuestionId
       { gs with openQuestions := assocInsert qid placed gs.openQuestions }) :
     k ∈ tallyKeysOfQuestion placed ∨
       k ∈ tallyKeysOfState { gs with openQuestions := assocErase qid gs.openQuestions } := by
-  have hfield : { gs with openQuestions := assocInsert qid placed gs.openQuestions
-    }.openQuestions = (qid, placed) :: assocErase qid gs.openQuestions := rfl
+  have hfield : { gs with openQuestions := assocInsert qid placed gs.openQuestions }.openQuestions = (qid, placed) :: assocErase qid gs.openQuestions := rfl
   unfold tallyKeysOfState at hk ⊢
   simp only [hfield, List.map_cons, List.mem_flatten, List.mem_append, List.mem_map] at hk ⊢
   rcases hk with ⟨l', hl', hkin⟩ | hc
@@ -875,8 +876,7 @@ private theorem effectedState_tally_growth (gs : VoteState) (signer : Key)
       by_cases hguard : (lookupQuestion questionId gs).isNone
           && !(gs.closed.any (fun record : ClosureRecord => record.questionId == questionId))
       · have heff : effectedState gs signer (.openQuestion questionId kind) =
-            { gs with openQuestions :=
-                assocInsert questionId (Question.mk kind signer [] []) gs.openQuestions } := by
+            { gs with openQuestions := assocInsert questionId (Question.mk kind signer [] []) gs.openQuestions } := by
           simp [effectedState, hguard]
         rw [heff] at hk
         rcases tallyKeysOfState_insert_cases gs questionId
@@ -897,9 +897,7 @@ private theorem effectedState_tally_growth (gs : VoteState) (signer : Key)
             exact Or.inl hk
         | some question =>
             have heff : effectedState gs signer (.cast questionId ballot) =
-                { gs with openQuestions :=
-                    assocInsert questionId (placeBallot signer ballot question)
-                      gs.openQuestions } := by
+                { gs with openQuestions := assocInsert questionId (placeBallot signer ballot question) gs.openQuestions } := by
               simp [effectedState, hresp, hlook]
             rw [heff] at hk
             rcases tallyKeysOfState_insert_cases gs questionId
