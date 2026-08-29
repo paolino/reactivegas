@@ -219,6 +219,14 @@ def votePointState : VoteState :=
   validateVoteEvent legacyThreshold votePointState "stranger"
     (.openQuestion "r" .collective) == Except.error VoteError.notResponsabile
 
+-- R-45 on the production fold: a non-responsabile opening is a complete
+-- no-op, including under `zeroThreshold` where a successful empty-tally open
+-- would close positive. Auditor instrument nonresponsabile-open.lean
+-- (sha256 1f7aa80a) against 757dac98 is the complementary mutant.
+#guard
+  let gs := foldVote zeroThreshold [("stranger", .openQuestion "q" .collective)]
+  lookupQuestion "q" gs == none && gs.closed == [] && gs.members == []
+
 -- A cast on an unknown question id is rejected with the lookup error.
 #guard
   validateVoteEvent legacyThreshold votePointState "a" (.cast "missing" .assent) ==
@@ -228,6 +236,21 @@ def votePointState : VoteState :=
 #guard
   validateVoteEvent legacyThreshold votePointState "a" (.cast "q" .assent) ==
     Except.ok ()
+
+-- INV-54-FRANCHISE: after losing standing, a recast cannot switch position.
+-- Four responsabili so that one assent stays open after the caster drops
+-- admin (legacyThreshold 3 = 2).
+def lostStandingEvents : List (Key × VoteEvent) :=
+  [vAdmit "a", vAdmit "b", vAdmit "c", vAdmit "d",
+    vOpen "a" "q",
+    vCast "a" "q" .assent,
+    ("a", .setRoles "a" []),
+    vCast "a" "q" .dissent]
+
+#guard
+  match lookupQuestion "q" (foldVote legacyThreshold lostStandingEvents) with
+  | some question => question.assents == ["a"] && question.dissents == []
+  | none => false
 
 -- Renunciation's proposer-only restriction is Slice B (R-58); in this slice
 -- an existing-question renounce validates and folds to no effect.

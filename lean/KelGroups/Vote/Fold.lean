@@ -1,5 +1,6 @@
 import KelGroups.Vote.State
 import KelGroups.Vote.Event
+import KelGroups.Vote.Validate
 
 /-!
 # Required vote machine — the production fold
@@ -103,10 +104,19 @@ def effectedState (gs : VoteState) (signer : Key) (event : VoteEvent) : VoteStat
 /-- One fold step: the event's own effect, then the unconditional
 recompute-and-close sweep. The sweep call is outside the match, so every
 branch recomputes (R-51); a branch that skips it is exactly the mutation the
-R-70 controls must redden. -/
+R-70 controls must redden.
+
+An inadmissible signer/event pair (R-44, R-45) is a no-op of the effect:
+`validateVoteEvent` gates `effectedState`, and the sweep still runs on the
+unchanged state. On a well-formed state the sweep is the identity, so the
+whole step is a complete no-op — including a non-responsabile `openQuestion`.
+-/
 def applyVoteEvent (threshold : Threshold) (gs : VoteState) (signer : Key)
     (event : VoteEvent) : VoteState :=
-  sweepClosures threshold (effectedState gs signer event)
+  sweepClosures threshold
+    (match validateVoteEvent threshold gs signer event with
+      | .ok () => effectedState gs signer event
+      | .error _ => gs)
 
 /-- The production fold: every signed event, in order, from the empty state.
 This is the fold every theorem and witness of the run is stated over. -/
