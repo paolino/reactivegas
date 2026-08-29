@@ -8,9 +8,9 @@ Issue body SHA-256 (as stored, LF, no trailing newline):
 
 ## Scope of this document
 
-Both slices are specified. **Only Slice 1 is authorized to run.** Slice 2 is
-blocked until the #48 ticket owner delivers the accepted definitions commit and
-both frozen economic consumer signatures.
+Both slices are specified. Slice 1 and the required vote-machine extension are
+accepted inputs. Slice 2 is authorized at the exact ancestry-preserving merge
+of accepted emitter `719eb56` and accepted vote machine `13b44bc`.
 
 ## Fidelity source of truth
 
@@ -197,36 +197,247 @@ semantics to any of these without a separate ruling is a rejection reason.
 - **R-29** Point tests execute during `lake build` and are non-vacuous: a false
   point test makes the build red.
 
-## Requirements — Slice 2 (BLOCKED, specified for contract stability)
+## Requirements — Slice 2 (AUTHORIZED; NOTE-031 composition amendment)
 
 - **R-30** The composition lives under `lean/Reactivegas/`, which may import
-  `KelGroups.*`. R-2 continues to hold: nothing flows back the other way.
-- **R-31** *(structural first)* Evaluate **structural** composition before any
-  relational theorem: type the economic permission events so they **carry an
-  enacted verdict** and cannot be constructed without evidence emitted by the
-  vote machine. This replaces the current unilateral `isResponsabile s a`
-  guard — the defect leaves the *representable* event space rather than being
-  rejected after construction. A relational theorem between independent traces
-  is a fallback only, permitted after a concrete impracticality is recorded on
-  the record **before** implementation. Convenience or proof elegance is not a
-  sufficient reason.
-- **R-32** A responsabile cannot inject `grantPermission`/`denyPermission`
-  directly through the composed model.
-- **R-33** The derivation exposes the enacted verdict's identity, its question,
-  and its provenance.
-- **R-34** Purchase approval **and** the voted comune backdonation (#48) are
-  both enumerated as consumers of the same verdict interface.
+  `KelGroups.*`; R-2 remains one-way and mechanically enforced. The complete
+  production fence is one new module plus its root import.
+- **R-31** `route` is a total wildcard-free classifier over all 18 economic
+  event constructors. Its exact inventory is 12 `direct`, 3 `baseEnacted`, and
+  3 `appDecided`; an added constructor must fail at this classifier after
+  upstream masking matches are mechanically repaired.
+- **R-32** `voteDerived` is independently total and wildcard-free over the same
+  18 constructors. It classifies `donate` as not vote-derived and
+  `removeMember`/`backdonate` as vote-derived, so those accepted #48 additions
+  cannot be omitted silently.
+- **R-33** Base-enacted evidence is available only for
+  `electResponsabile`, `removeResponsabile`, and `removeMember`; it binds the
+  concrete production result `(KelGroups.applyEventDetailed ...).enactment`
+  and uses `KelGroups.enact_implies_threshold_met`. It never targets
+  `introduceMember`; `addUser` remains direct.
+- **R-34** App-decided evidence is available only for `grantPermission`,
+  `denyPermission`, and `backdonate`; it binds a production
+  `KelGroups.Vote.ClosureRecord.verdict` and eliminates `positive`, `negative`,
+  and `open` exhaustively. `open` derives no economic event. The faithful
+  threshold theorem is never used for this route.
 - **R-35** Documentation and theorem metadata use exactly
   `enforced: PROVED-IN-MODEL` and retain the later-port caveat. Unqualified
   end-to-end enforcement is never claimed.
+- **R-36** No cross-channel join, shared identity, `QuestionId`/`ProposalId`
+  bridge, abstract existential evidence, or independent-trace correspondence
+  premise is introduced. Each event is classified by its actual producer.
+- **R-37** Production provenance is non-vacuous: executed witnesses reach a
+  real faithful enactment and a real required-machine closure. Severing either
+  production record makes the corresponding control red after earlier masking
+  invariant sites are isolated.
 
-Slice 2 cannot start until EP-DENY has a ruling: without a deny verdict source,
-R-31 is unstatable for `denyPermission`.
+Preconditions are satisfied by accepted commits `719eb56` and `13b44bc`.
+NOTE-031 supersedes the earlier verdict-carrying event redesign and relational
+fallback language: the settled design is option D, route per event producer.
 
 ## Out of scope / rejection reasons
 
 - Any write to `/code/kelgroups`.
-- Any edit to `lean/Reactivegas/**` or to the economic definitions owned by #48.
+- Any edit to existing #48-owned `lean/Reactivegas/{Types,State,Step,Predicates,Invariants,Trace,TraceTests}.lean`.
 - Redesigning the Haskell vote semantics.
 - Push, PR creation beyond the ticket-owner-owned draft, or merge.
 - Claiming implementation or end-to-end enforcement.
+
+---
+
+# Requirements — Vote-coverage run (AUTHORIZED, 2026-08-29)
+
+New work under the same issue #54 and the same ticket owner. It does **not**
+reopen, revise, or invalidate Slice 1, which merged as
+`ccdda83085c027c4142a14250cb7fd96a8f08dba`.
+
+## Why a second surface rather than an edit
+
+Slice 1's contract is *fidelity to `/code/kelgroups` at `368b596`*, and its
+shipped matrix claims `FAITHFUL` on that basis. The operator's V-1…V-7 rulings
+(`/tmp/reactivegas/ms2/questions/Q-001-operator-rulings.md`, SHA-256
+`98837654cdf99505d1df093432a8c80d24c67727618f2b0d2864a8a20ded193a`, §"Vote-machine
+rulings", lines 585–681) require behaviour that **today's kelgroups does not
+have** — V-6 is explicit that "the substrate must admit a member without a
+vote. Currently it cannot."
+
+Editing the faithful model in place would make every `FAITHFUL` row in
+`docs/en/design/kelgroups-vote-machine.md` false without any check going red.
+That is precisely a green signal that no longer entails what it is read to
+prove. Therefore:
+
+- `lean/KelGroups/{Types,Event,State,Fold,Validate,Invariants,Tests}.lean`
+  are **frozen** by this run. Not one byte changes.
+- the required machine ships beside them, under `lean/KelGroups/Vote/`, and
+  reuses only `KelGroups.Types` (assoc-list vocabulary, `Member`, `Role`,
+  `hasAdmin`) so the two models cannot drift in their shared substrate.
+
+Status vocabulary for the new surface is **`REQUIRED-OF-SUBSTRATE`**: it is
+what `kelgroups#28`/`#30` must become, proved as a specification, not a claim
+about code that exists. `FAITHFUL` is never claimed for it.
+
+## Ruling absorbed: EP-DENY is no longer open
+
+Slice 1 recorded **EP-DENY** ("kelgroups has no dissent, rejection, expiry or
+withdrawal event … no vote-machine source for a deny verdict") as a Slice-2
+blocker. V-7 supplies dissent (legacy `Dissenso`, same `soglia` both sides) and
+V-5 supplies withdrawal (legacy `EventoFallimentoAssenso`, running the negative
+continuation). **EP-DENY is ruled**; this run delivers the deny-verdict source.
+At the vote-coverage run boundary, Slice 2 still waited on #48 consumer
+signatures and was not started in that run. NOTE-031 records that both inputs
+are now accepted and supersedes that historical dispatch state.
+
+## Vocabulary
+
+`responsabile` = a member holding an admin role (`hasAdmin`), identical to
+Slice 1's `isAdmin`. "Franchise" is the set of responsabili at the moment a
+verdict is computed.
+
+## Structure and boundary
+
+- **R-40** The required machine lives under `lean/KelGroups/Vote/`, is rooted
+  from `lean/KelGroups.lean`, and elaborates under `lake build`.
+- **R-41** No module under `lean/KelGroups/Vote/` imports any `Reactivegas.*`
+  module, and none imports `KelGroups.Fold`, `KelGroups.Validate`, or
+  `KelGroups.Invariants`. The first clause is the portability rule (R-2)
+  restated for the new subtree; the second is what keeps the faithful model
+  unable to acquire required-but-absent semantics by accident.
+- **R-42** The tracked checker `nix/lean-dependency-direction.sh` covers the
+  new subtree. Its `grep -rnE` over `lean/KelGroups` is already recursive, so
+  **no edit is expected**; the run must *demonstrate* coverage rather than
+  assume it — a file placed under `lean/KelGroups/Vote/` importing
+  `Reactivegas` must make the checker exit non-zero.
+- **R-43** *(no vacuous green)* A deliberate elaboration error introduced under
+  `lean/KelGroups/Vote/` makes `just lean` red. Slice 1 had to prove this for
+  `lean/KelGroups/`; a new directory that no root module imports would compile
+  nothing while reporting success.
+
+## V-1 — the franchise is the responsabili
+
+- **R-44** A ballot is admissible only from a current responsabile. A cast by a
+  non-responsabile, by a non-member, or by a member without an admin role is
+  rejected with a distinct error and is a no-op in the fold.
+- **R-45** Pledging-style self-service has no analogue here: there is no path
+  by which a non-responsabile influences a verdict.
+
+## V-2 — threshold is a parameter, not a frozen policy
+
+- **R-46** Every verdict computation takes an explicit threshold policy
+  `Nat → Nat` mapping the current responsabile count to the required count.
+  No policy is hard-coded into the machine, the state, or any invariant.
+- **R-47** The legacy policy ships as one **named instance** reproducing
+  `maggioranza`: `legacyThreshold n = (n + 1) / 2`, together with the `i == 0`
+  case as a separate named instance `zeroThreshold _ = 0`.
+- **R-48** V-2's two undecided consequences are delivered as executed witnesses
+  **about `legacyThreshold` specifically**, never as machine-wide truths:
+  (a) four responsabili, two assents, no dissent ⇒ `positive` — *a tie passes*;
+  (b) `zeroThreshold` ⇒ a question opens and closes `positive` in one event
+  with no ballot cast at all.
+  Both are labelled as consequences of an **unruled** policy choice. Freezing
+  either as the product answer is a rejection reason.
+
+## V-3 / V-7 — three outcomes, recomputed always, never expiring
+
+- **R-49** The verdict type has exactly three inhabitants — positive, negative,
+  and a third open outcome (legacy `Indecidibile`) — and the open outcome is
+  distinct from negative at the type level, not by a boolean flag.
+- **R-50** The verdict is computed by comparing the recorded assent tally
+  against the threshold first, then the recorded dissent tally against the
+  **same** threshold, then falling through to open. This is legacy
+  `maggioranza`'s exact order and its exact symmetry.
+- **R-51** *(recompute on every state change)* Every open question's verdict is
+  re-evaluated after **every** event the machine folds, not only after a
+  ballot. Any question that has reached positive or negative closes in that
+  same step.
+- **R-52** *(the sharp form of R-51)* In every reachable state, every open
+  question is open **under the current franchise and the current threshold**. A
+  question sitting at or above threshold while still open is unreachable.
+  Note the deliberate divergence: this is the negation of Slice 1's refuted
+  **VI-6**, which exhibited exactly that stale state as reachable in the
+  faithful model. Both are correct about their own machine.
+- **R-53** *(the consequence the operator required be modelled honestly)* A
+  reachable trace exists in which a question closes **positive** because a
+  responsabile was removed — the tally never changed, the threshold fell.
+- **R-54** *(no expiry)* There is no clock, deadline, timeout, or age field
+  anywhere in the state. An open question stays open under any event that
+  changes neither its ballots, nor the franchise, nor its proposer's standing.
+  This is stated as a theorem, not as the absence of a field.
+- **R-55** The exits from an open question are exactly three — a verdict, a
+  franchise change carrying a stale tally past the threshold, and proposer
+  departure or renunciation. No fourth exit is representable.
+
+## V-4 — one position per responsabile
+
+- **R-56** Casting assent inserts the voter into the assent list **and removes
+  them from the dissent list**; casting dissent is symmetric. Re-casting the
+  same position does not change either tally.
+- **R-57** In every reachable state, each question's assent and dissent lists
+  are duplicate-free **and disjoint**. No responsabile is ever counted twice,
+  and the "just vote no" escape V-7 relies on is therefore always available.
+
+## V-5 — proposer departure or renunciation closes, negatively
+
+- **R-58** The proposer may renounce their own open question (legacy
+  `EventoFallimentoAssenso` / `rinuncia`). Only the proposer may; another
+  responsabile's renunciation is rejected.
+- **R-59** Loss of the proposer's responsabile standing, and loss of their
+  membership, each close every question they opened.
+- **R-60** *(forced, not preferred)* Every such closure records the **negative**
+  verdict, so the negative continuation runs. Silent deletion is a rejection
+  reason: a purchase-approval question holds members' money in escrow, and a
+  question erased without a verdict strands it.
+- **R-61** *(no silent deletion, as an invariant)* Every question ever opened is
+  in exactly one of two places in every reachable state: the open set, or the
+  closure log carrying a verdict. The two partition; neither loses a question.
+
+## V-6 — per-designee permission is not a vote
+
+- **R-62** A question is either **collective** (tallied against the threshold)
+  or **permission**, addressed to one named designee (legacy
+  `Permesso richiedente designato`). The distinction is in the type.
+- **R-63** On a permission question only the designee's ballot is admissible.
+  Any other responsabile's cast is rejected with the distinct error legacy
+  states as "il responsabile non è tenuto a dare il permesso sulla questione".
+- **R-64** A permission question's verdict **never consults the threshold or
+  any tally**: designee assent ⇒ positive, designee dissent ⇒ negative, no
+  ballot ⇒ open. A permission verdict that could be reached by counting is a
+  rejection reason.
+- **R-65** The proposer of a permission question may renounce it under R-58,
+  closing it negatively under R-60.
+
+## Direct member admission
+
+- **R-66** Admitting a member is a single event that adds the member
+  immediately, opening **no** question and consulting **no** threshold — legacy
+  `NuovoUtente` (`Eventi/Anagrafe.hs:170`). After exactly one admission event
+  the member is present.
+- **R-67** No question payload can admit a member. Routing admission through a
+  question is a rejection reason; this is the requirement V-6 places on
+  `kelgroups#28`, and the Lean models what reactivegas needs.
+
+## Proof and evidence contract
+
+- **R-68** Every theorem is about the **production fold** over event lists. A
+  property proved only of a hand-written record literal, or of a state built by
+  a test-only constructor that the fold cannot produce, does not discharge its
+  requirement.
+- **R-69** Every witness required above (R-48a, R-48b, R-53, R-66) is produced
+  by executing that production fold, and is checked at elaboration time.
+- **R-70** *(controls — each must be proved able to fail)* For each of the
+  following, the run demonstrates a mutation that makes the named check red:
+  no dissent path; a voter in both tallies; silent deletion of a question;
+  recomputation only on ballots; an expiry field; a permission decided by
+  majority; admission routed through a question. A check not shown to fail is
+  not accepted as evidence for its requirement.
+- **R-71** Zero `sorry` and zero custom axioms under `lean/KelGroups/Vote/`.
+  Every named theorem's axiom set is a subset of `propext`, `Classical.choice`,
+  `Quot.sound`, printed as gate evidence. `native_decide` remains forbidden.
+
+## Out of scope for this run
+
+- `lean/Reactivegas/**` — untouched. Slice 2 composition does **not** start.
+- Slice-1's seven `lean/KelGroups/*.lean` modules — frozen.
+- Any Haskell behaviour change; `Eventi/Anagrafe.hs` is read-only evidence.
+- Push, PR creation or update, issue edit, readiness change, merge.
+- Answering V-2's two open policy consequences. They are parameterized and
+  reported upward still open.

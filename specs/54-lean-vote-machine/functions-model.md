@@ -158,3 +158,124 @@ enactment boundaries; enactment deletes exactly the enacted proposal; the two
 enactment no-ops (remove-absent, change-roles-absent); introduce-overwrites; the
 application-event signer discard; and one case per distinct `ValidationError`
 constructor reachable in the model.
+
+---
+
+# Functions — Vote-coverage run (2026-08-29)
+
+New or changed signatures only: names, explicit argument names, types, and
+signature-level constraints. No bodies, no algorithms, no pseudocode.
+
+## `KelGroups.Vote.Types`
+
+- `Verdict` — closed inductive, three constructors (positive, negative, open).
+- `Threshold` — abbreviation for `Nat → Nat`.
+- `legacyThreshold (responsabili : Nat) : Nat`
+- `zeroThreshold (responsabili : Nat) : Nat`
+- `Ballot` — closed inductive, two constructors (assent, dissent).
+- `QuestionKind` — closed inductive: collective; permission carrying
+  `designee : Key`.
+- `ClosureCause` — closed inductive: tally; franchiseChange; proposerDeparted;
+  renounced.
+
+## `KelGroups.Vote.State`
+
+- `franchise (gs : VoteState) : List Key`
+- `franchiseSize (gs : VoteState) : Nat`
+- `isResponsabile (key : Key) (gs : VoteState) : Bool`
+- `verdictOf (threshold : Threshold) (gs : VoteState) (question : Question) : Verdict`
+  — the only place a verdict is decided; takes the threshold explicitly (R-46)
+  and dispatches on `QuestionKind` so a permission verdict cannot reach the
+  tally comparison (R-64).
+- `lookupQuestion (questionId : QuestionId) (gs : VoteState) : Option Question`
+
+## `KelGroups.Vote.Event`
+
+- `VoteEvent` — closed inductive with exactly these constructors:
+  `openQuestion (questionId) (kind) `,
+  `cast (questionId) (ballot)`,
+  `renounce (questionId)`,
+  `admitMember (key) (email) (roles)`,
+  `removeMember (key)`,
+  `setRoles (key) (roles)`.
+  The signer is supplied separately by the fold, matching Slice 1's
+  `(Key × GroupEvent α)` shape. `admitMember` carries no question id and no
+  threshold — that absence is R-66.
+
+## `KelGroups.Vote.Validate`
+
+- `VoteError` — closed inductive; distinct constructors at minimum for: caster
+  is not a responsabile; question not found; caster is not the designee of a
+  permission question; renouncer is not the proposer.
+- `validateVoteEvent (threshold : Threshold) (gs : VoteState) (signer : Key) (event : VoteEvent) : Except VoteError Unit`
+
+## `KelGroups.Vote.Fold`
+
+- `placeBallot (voter : Key) (ballot : Ballot) (question : Question) : Question`
+  — the one-position-per-responsabile placement; establishes VC-1 (R-56).
+- `sweepClosures (threshold : Threshold) (gs : VoteState) : VoteState`
+  — evaluates **every** open question and closes those with a verdict. Called
+  by `applyVoteEvent` on every branch without exception; that unconditional
+  call is R-51, and a branch that skips it is the mutation R-70 must redden.
+- `closeProposerQuestions (cause : ClosureCause) (proposer : Key) (gs : VoteState) : VoteState`
+  — R-59/R-60; every closure it writes carries the negative verdict.
+- `applyVoteEvent (threshold : Threshold) (gs : VoteState) (signer : Key) (event : VoteEvent) : VoteState`
+- `foldVote (threshold : Threshold) (events : List (Key × VoteEvent)) : VoteState`
+  — the production fold every theorem and witness in R-68/R-69 is stated over.
+
+## `KelGroups.Vote.Invariants`
+
+Theorem names are contractual; each discharges the named requirement.
+
+- `ballots_nodup_disjoint` — VC-1 / R-57.
+- `open_questions_are_open` — VC-4 / R-52.
+- `questions_partition` — VC-3 / R-61.
+- `closure_of_departure_is_negative` — R-60.
+- `permission_ignores_threshold` — R-64, stated so that `verdictOf` on a
+  permission question is independent of the threshold argument and of the
+  franchise size.
+- `no_expiry` — R-54, over an event whose hypotheses say it touches neither the
+  ballots of the question, nor the franchise, nor the proposer's standing.
+- `admission_opens_no_question` — R-66/R-67.
+- `foldVote_wellFormed` — the well-formedness carrier all of the above stand on.
+
+## `KelGroups.Vote.Tests`
+
+Executed witnesses, elaboration-time:
+
+- `tiePassesUnderLegacyThreshold` — R-48a.
+- `zeroThresholdPassesWithNoBallot` — R-48b.
+- `departureCarriesStaleAssents` — R-53.
+- `admissionIsImmediate` — R-66.
+- plus one point test per distinct `VoteError` constructor.
+
+---
+
+# Functions — Slice 2 composition (NOTE-031)
+
+Only new public declarations in `Reactivegas.Composition` are modeled here.
+
+```text
+Route                                           : Type
+route       (event : Reactivegas.Event)         : Route
+voteDerived (event : Reactivegas.Event)         : Bool
+```
+
+Both functions are total wildcard-free matches over all 18 constructors.
+`voteDerived` is true exactly when `route` is `baseEnacted` or `appDecided`.
+
+The module also exposes theorem-level evidence for the two governed routes:
+
+- base evidence takes an economic event classified `baseEnacted`, the faithful
+  production call arguments, the actual returned `Enactment`, and the equality
+  binding that result to `applyEventDetailed(...).enactment`; its result is the
+  threshold fact from `KelGroups.enact_implies_threshold_met` plus the
+  route/proposal restriction;
+- app evidence takes an economic event classified `appDecided` and an actual
+  `ClosureRecord`; its result eliminates the record's `verdict` exhaustively,
+  allowing an economic event only from `positive` or `negative`, never `open`.
+
+Executed public witnesses demonstrate that both evidence forms are reachable
+through the production functions. Exact theorem/witness names may be selected
+by the implementation owner, but must be recorded in its receipt and checked
+with theorem-qualified `#print axioms`.

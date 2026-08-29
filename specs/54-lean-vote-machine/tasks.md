@@ -31,18 +31,78 @@ independent audit has passed the exact candidate.
 - [x] T5411 `docs/en/design/kelgroups-vote-machine.md` — the reviewed fidelity
       matrix, plus its `mkdocs.yml` nav entry. (R-25, R-26)
 
-## Slice 2 — structural composition (BLOCKED)
+## Slice 2 — per-producer composition (AUTHORIZED)
 
-Blocked on P-1 (#48 definitions accepted, both consumer signatures frozen) and
-P-2 (EP-DENY ruled). Do not start.
+Inputs are accepted emitter `719eb56`, accepted vote machine `13b44bc`, and
+their frozen local merge `32c63850`. NOTE-031 settles option D.
 
-- [ ] T5412 Evaluate verdict-carrying permission events; record the design
-      decision, or the concrete impracticality justifying the relational
-      fallback, **before** implementation. (R-31)
-- [ ] T5413 Compose under `lean/Reactivegas/`, replacing the unilateral
-      `isResponsabile` permission guard. (R-30, R-32)
-- [ ] T5414 Expose enacted verdict identity, question, and provenance. (R-33)
-- [ ] T5415 Enumerate purchase approval and voted comune backdonation as
-      consumers of the one verdict interface. (R-34)
-- [ ] T5416 Status wording `enforced: PROVED-IN-MODEL` with the later-port
-      caveat, in documentation and theorem metadata. (R-35)
+- [x] T5412 Add the closed `Route` type, exact 12/3/3 total `route`, and
+      independently total `voteDerived` over all 18 events. (R-31, R-32)
+- [x] T5413 Bind base-enacted evidence to production
+      `applyEventDetailed(...).enactment`, restrict it to the faithful
+      `changeRoles`/`removeMember` vocabulary, and derive the threshold fact
+      only there. (R-33)
+- [x] T5414 Bind app-decided evidence to production `ClosureRecord.verdict` and
+      eliminate `positive`/`negative`/`open` exhaustively, with `open` deriving
+      no event. (R-34)
+- [x] T5415 Ship executed non-vacuous production witnesses, exact inventory and
+      layering controls, added-constructor controls, proof-trust checks, and
+      full CI receipts with Lean 4.25.0 named. (R-30, R-37)
+- [x] T5416 Record exactly `enforced: PROVED-IN-MODEL`, retain the later-port
+      caveat, preserve direct admission, and introduce no cross-channel join or
+      identifier bridge. (R-35, R-36)
+
+## Vote-coverage run — Slice A: the tally machine (AUTHORIZED)
+
+- [ ] T5420 `lean/KelGroups.lean` imports the new `KelGroups.Vote.*` root set,
+      and a deliberate elaboration error under `lean/KelGroups/Vote/` is shown
+      to make `just lean` red. (R-40, R-43)
+- [ ] T5421 `KelGroups.Vote.Types` — three-way verdict, ballot, question kind,
+      closure cause, the threshold-policy type and its two named instances.
+      (R-46, R-47, R-49, R-62)
+- [ ] T5422 `KelGroups.Vote.State` — state, franchise, tallies, and `verdictOf`
+      as the single verdict site taking the threshold explicitly. (R-46, R-50)
+- [ ] T5423 `KelGroups.Vote.Event` + `KelGroups.Vote.Validate` — the event
+      vocabulary and the distinct admissibility errors, franchise included.
+      (R-44, R-45)
+- [ ] T5424 `KelGroups.Vote.Fold` — ballot placement, the unconditional
+      recompute-and-close sweep, and closure as an append rather than a
+      delete. (R-51, R-55, R-56)
+- [ ] T5425 `KelGroups.Vote.Invariants` — `ballots_nodup_disjoint`,
+      `open_questions_are_open`, `questions_partition`, `no_expiry`,
+      `foldVote_wellFormed`, all over the production fold. (R-52, R-54, R-57,
+      R-61, R-68)
+- [ ] T5426 `KelGroups.Vote.Tests` — the V-2 witnesses (tie passes under the
+      legacy policy; zero threshold passes with no ballot) and the V-3 witness
+      (a question closes positive because a responsabile left), each executed
+      through `foldVote`. (R-48, R-53, R-69)
+- [ ] T5427 Controls proved able to fail for Slice A: no dissent path; a voter
+      in both tallies; silent deletion; recompute only on ballots; an expiry
+      field. (R-70)
+- [ ] T5428 Dependency-direction coverage of `lean/KelGroups/Vote/`
+      demonstrated, and zero `sorry`/custom axioms recorded as gate evidence.
+      (R-41, R-42, R-71)
+
+## Vote-coverage run — Slice B: the paths that are not a tally (AUTHORIZED)
+
+- [ ] T5430 Permission questions: named designee in the kind, designee-only
+      admissibility with its distinct error. (R-62, R-63)
+- [ ] T5431 `permission_ignores_threshold` — a permission verdict is
+      independent of the threshold argument and the franchise size. (R-64)
+- [ ] T5432 Proposer renunciation, proposer-only, for both question kinds.
+      (R-58, R-65)
+- [ ] T5433 Closure on proposer departure — loss of responsabile standing and
+      loss of membership — with `closure_of_departure_is_negative`. (R-59,
+      R-60)
+- [ ] T5434 Direct member admission and `admission_opens_no_question`, with the
+      executed immediacy witness. (R-66, R-67)
+- [ ] T5435 Controls proved able to fail for Slice B: a permission decided by
+      majority; admission routed through a question; a departure closure
+      carrying a non-negative verdict. (R-70)
+
+## Vote-coverage run — Slice C: record honesty (AUTHORIZED)
+
+- [ ] T5440 Correct the stale `EP-DENY` sentence in
+      `docs/en/design/kelgroups-vote-machine.md` and point it at the required
+      machine, leaving every fidelity claim about kelgroups `368b596`
+      unchanged. Fence extension reported upward. (spec §"Ruling absorbed")

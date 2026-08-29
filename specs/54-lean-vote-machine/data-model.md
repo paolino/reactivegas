@@ -139,3 +139,114 @@ row per requirement R-6..R-24, plus one row per extension point EP-*, each
 labelled `FAITHFUL`, `DIVERGENT`, or `EXTENSION`, and each naming the exact Lean
 declaration and Haskell anchor. Rows labelled `DIVERGENT` or `EXTENSION` state
 the consequence for the port.
+
+---
+
+# Data — Vote-coverage run (2026-08-29)
+
+Fields, relationships, validation, and state invariants only. No bodies.
+
+## Verdict
+
+Three inhabitants, closed: **positive**, **negative**, **open**. `open` is the
+legacy `Indecidibile` and is a distinct constructor, never `negative` plus a
+flag and never an `Option` of a two-valued type (R-49).
+
+## Threshold policy
+
+A function from the current responsabile count to the required count. Carried
+as an explicit parameter by every verdict evaluation (R-46). Two named
+instances ship: the legacy `(n + 1) / 2`, and the `i == 0` policy that is
+constantly zero (R-47). Neither is a default.
+
+## Question kind
+
+Either **collective** — decided by tally against the threshold — or
+**permission**, carrying exactly one designee key (R-62). The designee is part
+of the kind, so a permission question without a designee is not representable.
+
+## Question
+
+| Field | Type | Constraint |
+|---|---|---|
+| kind | question kind | fixed at opening; never changes |
+| proposer | key | a responsabile at opening time |
+| assents | list of key | duplicate-free |
+| dissents | list of key | duplicate-free |
+
+**No deadline, age, opened-at, or expiry field exists** (R-54). Absence is
+load-bearing: the theorem stating a question cannot expire is provable only
+because no such field is available to any transition.
+
+State invariants on a question:
+
+- **VC-1** assents and dissents are each duplicate-free and mutually disjoint
+  (R-57). Disjointness is the half legacy lost, and it is what restores V-7.
+- **VC-2** for a permission question, both lists hold at most the designee and
+  nothing else (R-63).
+
+## Closure record
+
+| Field | Type | Meaning |
+|---|---|---|
+| question id | question id | which question closed |
+| question | question | the question as it stood at closure |
+| verdict | verdict | `positive` or `negative`; never `open` |
+| cause | closure cause | tally, franchise change, proposer departure, or renunciation |
+
+The cause is recorded because R-55 claims exactly three exit routes and R-53
+requires the franchise-change route to be observable. A closure with verdict
+`open` is not representable.
+
+## Group state
+
+| Field | Type | Constraint |
+|---|---|---|
+| members | assoc list key→member | key-coherent, keys duplicate-free |
+| open | assoc list question-id→question | ids duplicate-free |
+| closed | list of closure record | append-only |
+
+State invariants over the whole state:
+
+- **VC-3** *(no silent deletion, R-61)* every question id ever opened appears
+  in exactly one of `open` and `closed`. The two partition.
+- **VC-4** *(no stale open, R-52)* every question in `open` evaluates to the
+  `open` verdict under the **current** franchise and the supplied threshold.
+- **VC-5** *(franchise, R-44)* every key in any tally was a responsabile when
+  it cast. Note it may no longer be one — V-3 counts recorded tallies against a
+  current threshold, which is exactly what makes R-53 reachable.
+- **VC-6** *(admission, R-66/R-67)* no closure record's question can add a
+  member, and membership grows only by the admission event.
+
+## Relationship to the faithful machine's data
+
+`Member`, `Role`, `Admin`, `hasAdmin`, and the association-list operations are
+reused unchanged from `KelGroups.Types`. `PendingProposal`, `Proposal`,
+`BaseEvent`, and `GroupState` of the faithful machine are **not** reused and
+**not** modified.
+
+---
+
+# Data — Slice 2 composition (NOTE-031)
+
+## Route
+
+Closed three-way classification with exactly `direct`, `baseEnacted`, and
+`appDecided`. The accepted 18-event inventory is:
+
+- `direct`: `addUser`, `openPurchase`, `deposit`, `withdraw`,
+  `transferCassa`, `donate`, `pledge`, `acceptPledge`, `refusePledge`,
+  `correctPledge`, `closePurchase`, `failPurchase`;
+- `baseEnacted`: `electResponsabile`, `removeResponsabile`, `removeMember`;
+- `appDecided`: `grantPermission`, `denyPermission`, `backdonate`.
+
+## Evidence boundaries
+
+Base evidence contains the actual faithful `Enactment` returned by production
+`applyEventDetailed`; its pending proposal is restricted to `changeRoles` or
+`removeMember`. App evidence contains the actual production `ClosureRecord`;
+its verdict is inspected as the closed three-way `Verdict` vocabulary. These
+records are deliberately not joined and share no identity.
+
+`introduceMember` has no economic base route. This is a deliberate data
+boundary: direct `addUser` preserves the no-voted-admission rule.
