@@ -13,7 +13,14 @@
  *      CLAIMS manifest — never from a copied citation list;
  *   3. validates row shape (including NON PROVATO rows carrying no refs);
  *   4. verifies every cited file:line and every pinned source sha256 against
- *      the repository Lean files;
+ *      the repository Lean files — and requires the receipt's KelGroups pin
+ *      set to exhaustively and exactly equal the authoritative source set
+ *      discovered FRESH on every run as the TRACKED files (git ls-files) for
+ *      lean/KelGroups.lean plus every *.lean recursively under
+ *      lean/KelGroups/ — never a hardcoded list, never a filesystem walk
+ *      (an untracked scratch file cannot enter the set): an omitted, added,
+ *      or removed tracked source is RED until the receipt is intentionally
+ *      updated;
  *   5. generates a temporary Lean driver with `#check` AND `#print axioms`
  *      for the extracted distinct declaration set;
  *   6. runs it in the repository's actual lean/ lake environment;
@@ -40,14 +47,16 @@
  * --selftest proves the gate can fail on every mandatory axis — bogus
  * economic citation, bogus vote citation, mutated receipt sha, touched
  * economic source, touched Vote source, a freshly-DERIVED sorry-backed
- * declaration flipped to provato in the receipt, and a disabled sorry
+ * declaration flipped to provato in the receipt, a disabled sorry
  * detector (env hook RG_GATE_SORRY_DETECTOR=off, caught by the always-on
- * tripwire) — each for its intended reason, then runs the unmodified
- * production gate GREEN. Temporary artifacts live in a fresh mkdtemp
+ * tripwire), and a freshly-DISCOVERED KelGroups pin removed from a scratch
+ * receipt (the victim is derived from the tree, never hardcoded) — each for
+ * its intended reason, then runs the unmodified production gate GREEN. Temporary artifacts live in a fresh mkdtemp
  * directory; the repository stays clean.
  */
 
-import { readFileSync, writeFileSync, mkdtempSync, mkdirSync, rmSync, cpSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdtempSync, mkdirSync, rmSync, cpSync,
+  existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
@@ -81,6 +90,32 @@ function extract(doc) {
     sources: Object.fromEntries(
       [...rm[4].matchAll(/'([^']+)':\s*'([0-9a-f]{64})'/g)].map(x => [x[1], x[2]])),
   };
+}
+
+/*
+ * Discover the authoritative KelGroups source set FRESH on every run: the
+ * TRACKED *.lean files (git ls-files) for lean/KelGroups.lean plus
+ * everything recursively under lean/KelGroups/, from the real repository —
+ * never a hardcoded list and never a filesystem walk, so an untracked
+ * scratch file cannot enter the set while a tracked source added to or
+ * removed from the tree changes it on the next run and the coverage
+ * comparison in runGate goes RED until the receipt is intentionally
+ * updated. Throws if git cannot enumerate (RED downstream, never an empty
+ * silent pass).
+ */
+function discoverKelGroups(repo) {
+  let out;
+  try {
+    out = execFileSync('git',
+      ['-C', repo, 'ls-files', '--', 'lean/KelGroups.lean', 'lean/KelGroups'],
+      { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+  } catch (e) {
+    throw new Error('scoperta KelGroups fallita: git ls-files non eseguibile in ' + repo);
+  }
+  const set = out.split('\n').filter(f => f.endsWith('.lean')).sort();
+  if (!set.length)
+    throw new Error('scoperta KelGroups vuota: nessuna sorgente tracciata sotto ' + repo);
+  return set;
 }
 
 /*
@@ -143,6 +178,20 @@ function runGate(opts) {
     reasons.push('CHECK_RECEIPT.decls ≠ citazioni estratte — solo-ricevuta: [' +
       ex.decls.filter(d => !ex.cited.includes(d)) + '] solo-manifesto: [' +
       ex.cited.filter(d => !ex.decls.includes(d)) + ']');
+
+  // exhaustive KelGroups coverage (NOTE-022/023): the receipt's KelGroups
+  // pin set must exactly equal the TRACKED set discovered fresh from the
+  // real repository (hash verification below still reads sourcesRoot, so
+  // the touched-source controls keep exercising the production hash path)
+  let discovered;
+  try { discovered = discoverKelGroups(lakeRepo); }
+  catch (e) { return { ok: false, reasons: [...reasons, e.message] }; }
+  const pinnedKel = Object.keys(ex.sources)
+    .filter(f => f === 'lean/KelGroups.lean' || f.startsWith('lean/KelGroups/')).sort();
+  for (const f of discovered.filter(f => !pinnedKel.includes(f)))
+    reasons.push('pin mancante per sorgente KelGroups scoperta: ' + f);
+  for (const f of pinnedKel.filter(f => !discovered.includes(f)))
+    reasons.push('pin per sorgente KelGroups non tracciata nell\'albero: ' + f);
 
   const srcCache = {};
   for (const [f, h] of Object.entries(ex.sources)) {
@@ -217,7 +266,7 @@ function runGate(opts) {
     return { ok: false, reasons: [`CHECK_RECEIPT.sha non legato all'output fresco del driver — embedded=${ex.sha.slice(0, 12)}… fresh=${outSha.slice(0, 12)}…`] };
   const enun = Object.values(derived).filter(s => s === 'enunciato').length;
   return { ok: true, rows: ex.rows.length, cited: ex.cited.length, sha: outSha,
-    axioms: derived, enun };
+    axioms: derived, enun, kelPins: pinnedKel.length };
 }
 
 /* --- selftest: the mandatory negative axes, then production GREEN ---------- */
@@ -241,6 +290,29 @@ function selftest(work) {
   const flipTarget = sorried[0];
   console.log(`derivazione fresca: ${sorried.length} dichiarazioni enunciate; ` +
     `controllo flip su ${flipTarget}`);
+
+  // positive control: an UNTRACKED scratch source under lean/KelGroups/ must
+  // not alter the authoritative set — discovery is git ls-files, not a
+  // filesystem walk. The scratch file is created in the real tree, checked,
+  // and removed in finally; validity is asserted (it must exist while the
+  // discovery runs, or the control proved nothing).
+  {
+    const before = discoverKelGroups(REPO);
+    const scratch = join(REPO, 'lean', 'KelGroups', 'ScratchUntrackedClaimGateSelftest.lean');
+    let during;
+    writeFileSync(scratch, '-- untracked scratch: must never enter the authoritative set\n');
+    try {
+      if (!existsSync(scratch)) throw new Error('controllo mal costruito: scratch assente');
+      during = discoverKelGroups(REPO);
+    } finally { rmSync(scratch, { force: true }); }
+    if (JSON.stringify(before) !== JSON.stringify(during) ||
+        during.some(f => f.includes('ScratchUntracked'))) {
+      console.error('SELFTEST RED: una sorgente non tracciata è entrata nell\'insieme autoritativo');
+      return 1;
+    }
+    console.log('controllo positivo «scratch non tracciata ignorata»: insieme autoritativo invariato ' +
+      `(${during.length} sorgenti tracciate)`);
+  }
 
   const controls = [
     {
@@ -309,6 +381,26 @@ function selftest(work) {
       expect: /hash sorgente divergente: lean\/KelGroups\/Vote\/Invariants\.lean/,
       run: () => touchedSourceControl(doc, work, 'lean/KelGroups/Vote/Invariants.lean', 'srcroot-vote'),
     },
+    {
+      name: 'pin KelGroups omesso dalla ricevuta',
+      // the victim is DISCOVERED fresh from the tree, never hardcoded: the
+      // first source the production coverage walk finds has its pin removed
+      // from a scratch receipt, and the SAME production check must name it
+      expect: /pin mancante per sorgente KelGroups scoperta/,
+      run: () => {
+        const victims = discoverKelGroups(REPO);
+        const ex = extract(doc);
+        const victim = victims.find(f => ex.sources[f]);
+        if (!victim) return { ok: false,
+          reasons: ['controllo mal costruito: nessuna sorgente KelGroups scoperta e pinnata'] };
+        const needle = `'${victim}': '${ex.sources[victim]}',`;
+        if (!doc.includes(needle)) return { ok: false,
+          reasons: [`controllo mal costruito: pin ${victim} non trovato nel documento`] };
+        const p = join(work, 'sab-missing-pin.html');
+        writeFileSync(p, doc.replace(needle, ''));
+        return runGate({ html: p, work });
+      },
+    },
   ];
   for (const c of controls) {
     const r = c.run();
@@ -364,7 +456,8 @@ try {
     if (r.ok) {
       console.log(`GREEN: ${r.rows} righe di manifesto, ${r.cited} citazioni verificate nel ` +
         `lake env; stati derivati (${r.enun} enunciate, ${r.cited - r.enun} provate); ` +
-        `file:line risolti; hash sorgenti confermati; ricevuta legata (sha ${r.sha.slice(0, 12)}…)`);
+        `file:line risolti; hash sorgenti confermati; copertura KelGroups esaustiva ` +
+        `(${r.kelPins} sorgenti scoperte = pinnate); ricevuta legata (sha ${r.sha.slice(0, 12)}…)`);
       code = 0;
     } else {
       console.error(`RED: ${r.reasons.length} problemi`);
