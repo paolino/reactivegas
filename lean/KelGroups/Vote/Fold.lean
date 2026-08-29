@@ -52,53 +52,61 @@ def placeBallot (voter : Key) (ballot : Ballot) (question : Question) : Question
       { question with dissents := setInsert voter question.dissents,
                       assents := question.assents.erase voter }
 
+/-- One open question's sweep outcome: `none` keeps the question open, and
+`some record` closes it under the recorded verdict and its observable cause. -/
+def sweepStep (threshold : Threshold) (gs : VoteState)
+    (entry : QuestionId × Question) : Option ClosureRecord :=
+  match verdictOf threshold gs entry.2 with
+  | .open => none
+  | verdict =>
+      some { questionId := entry.1, question := entry.2, verdict,
+             cause := closureCause gs entry.2 verdict }
+
 /-- Evaluate every open question and close, in this same step, each one whose
 verdict under the current franchise and threshold is positive or negative
 (R-51). Closed questions move to the closure log with their verdict and
 observable cause; nothing is ever dropped silently (R-61). -/
 def sweepClosures (threshold : Threshold) (gs : VoteState) : VoteState :=
-  let resolved := gs.openQuestions.filterMap (fun entry =>
-    match verdictOf threshold gs entry.2 with
-    | .open => none
-    | verdict =>
-        some { questionId := entry.1, question := entry.2, verdict,
-               cause := closureCause gs entry.2 verdict })
-  let remaining :=
-    gs.openQuestions.filter (fun entry => verdictOf threshold gs entry.2 = .open)
-  { gs with openQuestions := remaining, closed := gs.closed ++ resolved }
+  { gs with
+    openQuestions :=
+      gs.openQuestions.filter (fun entry => verdictOf threshold gs entry.2 = .open),
+    closed := gs.closed ++ gs.openQuestions.filterMap (sweepStep threshold gs) }
+
+/-- The event's own effect on the state, before the recompute-and-close
+sweep. A cast by a non-responsabile is a no-op effect besides its rejection in
+validation (R-44, R-45): only a current responsabile can move a tally. An
+`openQuestion` never overwrites or revives an existing id — decided questions
+stay decided. -/
+def effectedState (gs : VoteState) (signer : Key) (event : VoteEvent) : VoteState :=
+  match event with
+  | .openQuestion questionId kind =>
+      let fresh : Question := { kind, proposer := signer, assents := [], dissents := [] }
+      if (lookupQuestion questionId gs).isNone
+          && !(gs.closed.any (fun record => record.questionId == questionId)) then
+        { gs with openQuestions := assocInsert questionId fresh gs.openQuestions }
+      else gs
+  | .cast questionId ballot =>
+      if isResponsabile signer gs then
+        match lookupQuestion questionId gs with
+        | some question =>
+            let placed := placeBallot signer ballot question
+            { gs with openQuestions := assocInsert questionId placed gs.openQuestions }
+        | none => gs
+      else gs
+  | .renounce _ => gs
+  | .admitMember key email roles =>
+      { gs with members := assocInsert key (Member.mk key email roles) gs.members }
+  | .removeMember key => { gs with members := assocErase key gs.members }
+  | .setRoles key roles =>
+      { gs with members := assocAdjust key (fun member => { member with roles }) gs.members }
 
 /-- One fold step: the event's own effect, then the unconditional
 recompute-and-close sweep. The sweep call is outside the match, so every
 branch recomputes (R-51); a branch that skips it is exactly the mutation the
-R-70 controls must redden. A cast by a non-responsabile is a no-op effect
-besides its rejection in validation (R-44, R-45): only a current
-responsabile can move a tally. An `openQuestion` never overwrites or revives
-an existing id — decided questions stay decided. -/
+R-70 controls must redden. -/
 def applyVoteEvent (threshold : Threshold) (gs : VoteState) (signer : Key)
     (event : VoteEvent) : VoteState :=
-  let effected :=
-    match event with
-    | .openQuestion questionId kind =>
-        let fresh : Question := { kind, proposer := signer, assents := [], dissents := [] }
-        if (lookupQuestion questionId gs).isNone
-            && !(gs.closed.any (fun record => record.questionId == questionId)) then
-          { gs with openQuestions := assocInsert questionId fresh gs.openQuestions }
-        else gs
-    | .cast questionId ballot =>
-        if isResponsabile signer gs then
-          match lookupQuestion questionId gs with
-          | some question =>
-              let placed := placeBallot signer ballot question
-              { gs with openQuestions := assocInsert questionId placed gs.openQuestions }
-          | none => gs
-        else gs
-    | .renounce _ => gs
-    | .admitMember key email roles =>
-        { gs with members := assocInsert key (Member.mk key email roles) gs.members }
-    | .removeMember key => { gs with members := assocErase key gs.members }
-    | .setRoles key roles =>
-        { gs with members := assocAdjust key (fun member => { member with roles }) gs.members }
-  sweepClosures threshold effected
+  sweepClosures threshold (effectedState gs signer event)
 
 /-- The production fold: every signed event, in order, from the empty state.
 This is the fold every theorem and witness of the run is stated over. -/
