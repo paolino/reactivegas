@@ -880,11 +880,13 @@ const CLAIMS = {
   'js-transcription':  { c: 'Il browser esegue una trascrizione JavaScript: il legame con Lean è meccanico (manifesto + tracce generate da Lean), non esecuzione Lean', k: 'NON PROVATO', d: null, f: null, l: null },
 };
 
-/* Bound mechanically by handoffs/citation-gate.mjs: `decls` must equal the
-   citation set extracted from CLAIMS above (no second hand-copied list), and
-   `sha` must equal the sha256 of the output of the #check driver the gate
-   GENERATES from that extraction and runs in the repository lake environment.
-   The gate fails on any dangling citation, hash drift, or binding mismatch. */
+/* Bound mechanically by the committed gate at the repository root:
+   `node economics-simulator-claim-gate.mjs` (add `--selftest` for the three
+   negative controls). `decls` must equal the citation set the gate extracts
+   from CLAIMS above (no second hand-copied list), and `sha` must equal the
+   sha256 of the output of the #check driver the gate GENERATES from that
+   extraction and runs fresh in the repository lake environment. The gate
+   exits nonzero on any dangling citation, hash drift, or binding mismatch. */
 const CHECK_RECEIPT = {
   sha: '8086d591ec0a2e48c1fb7479d381ec3547580c8587239cf4654dd5c7d0ba4b95',
   decls: ['auth_referente_guard_inv', 'close_guard_inv', 'close_permission_to_close',
@@ -946,7 +948,7 @@ function openClaimPop(ids, x, y) {
   const html = `<div class="pt">prove Lean
       <button type="button" class="xbtn2" data-x="1">✕</button></div>` +
     ids.map(claimRowHtml).join('') +
-    `<div class="tiny">manifesto verificato meccanicamente · <span class="mono">CheckDriver</span> sha ${CHECK_RECEIPT.sha.slice(0, 12)}…</div>`;
+    `<div class="tiny">verificato da <span class="mono">economics-simulator-claim-gate.mjs</span> · sha ${CHECK_RECEIPT.sha.slice(0, 12)}…</div>`;
   popAt(x, y, html);
   const xb = $('pop').querySelector('[data-x]');
   if (xb) xb.addEventListener('click', closePop);
@@ -959,7 +961,7 @@ function openManifestPop(x, y) {
     <div style="max-height:55vh;overflow-y:auto">` +
     Object.keys(CLAIMS).map(claimRowHtml).join('') + `</div>
     <div class="tiny">fonti sha256: ${Object.keys(CHECK_RECEIPT.sources).length} file Lean ·
-      driver sha ${CHECK_RECEIPT.sha.slice(0, 12)}…</div>`;
+      gate <span class="mono">economics-simulator-claim-gate.mjs</span> · sha ${CHECK_RECEIPT.sha.slice(0, 12)}…</div>`;
   popAt(x, y, html);
   const xb = $('pop').querySelector('[data-x]');
   if (xb) xb.addEventListener('click', closePop);
