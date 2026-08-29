@@ -1,0 +1,1086 @@
+{
+ "name": "giro-governato-completo",
+ "description": "Elezione via canale base (bootstrap → ingresso → changeRoles deliberata), permesso via verdetto positivo del voto, chiusura: ogni evento vote-derived porta la sua evidenza.",
+ "wrap": {
+  "trace": {
+   "schema": "reactivegas.trace",
+   "version": 1,
+   "initial": {
+    "users": [
+     0
+    ],
+    "responsabili": [
+     0
+    ],
+    "conti": [],
+    "casse": [],
+    "collections": []
+   },
+   "steps": [
+    {
+     "input": {
+      "users": [
+       0
+      ],
+      "responsabili": [
+       0
+      ],
+      "conti": [],
+      "casse": [],
+      "collections": []
+     },
+     "event": {
+      "addUser": {
+       "author": 0,
+       "target": 1
+      }
+     },
+     "result": {
+      "tag": "applied",
+      "state": {
+       "users": [
+        0,
+        1
+       ],
+       "responsabili": [
+        0
+       ],
+       "conti": [],
+       "casse": [],
+       "collections": []
+      }
+     }
+    },
+    {
+     "input": {
+      "users": [
+       0,
+       1
+      ],
+      "responsabili": [
+       0
+      ],
+      "conti": [],
+      "casse": [],
+      "collections": []
+     },
+     "event": {
+      "electResponsabile": {
+       "author": 0,
+       "target": 1
+      }
+     },
+     "result": {
+      "tag": "applied",
+      "state": {
+       "users": [
+        0,
+        1
+       ],
+       "responsabili": [
+        1,
+        0
+       ],
+       "conti": [],
+       "casse": [],
+       "collections": []
+      }
+     }
+    },
+    {
+     "input": {
+      "users": [
+       0,
+       1
+      ],
+      "responsabili": [
+       1,
+       0
+      ],
+      "conti": [],
+      "casse": [],
+      "collections": []
+     },
+     "event": {
+      "deposit": {
+       "author": 0,
+       "user": 1,
+       "v": 100
+      }
+     },
+     "result": {
+      "tag": "applied",
+      "state": {
+       "users": [
+        0,
+        1
+       ],
+       "responsabili": [
+        1,
+        0
+       ],
+       "conti": [
+        [
+         1,
+         100
+        ]
+       ],
+       "casse": [
+        [
+         0,
+         100
+        ]
+       ],
+       "collections": []
+      }
+     }
+    },
+    {
+     "input": {
+      "users": [
+       0,
+       1
+      ],
+      "responsabili": [
+       1,
+       0
+      ],
+      "conti": [
+       [
+        1,
+        100
+       ]
+      ],
+      "casse": [
+       [
+        0,
+        100
+       ]
+      ],
+      "collections": []
+     },
+     "event": {
+      "openPurchase": {
+       "author": 1,
+       "c": 1
+      }
+     },
+     "result": {
+      "tag": "applied",
+      "state": {
+       "users": [
+        0,
+        1
+       ],
+       "responsabili": [
+        1,
+        0
+       ],
+       "conti": [
+        [
+         1,
+         100
+        ]
+       ],
+       "casse": [
+        [
+         0,
+         100
+        ]
+       ],
+       "collections": [
+        {
+         "id": 1,
+         "referente": 1,
+         "permitted": false,
+         "accepted": [],
+         "pending": []
+        }
+       ]
+      }
+     }
+    },
+    {
+     "input": {
+      "users": [
+       0,
+       1
+      ],
+      "responsabili": [
+       1,
+       0
+      ],
+      "conti": [
+       [
+        1,
+        100
+       ]
+      ],
+      "casse": [
+       [
+        0,
+        100
+       ]
+      ],
+      "collections": [
+       {
+        "id": 1,
+        "referente": 1,
+        "permitted": false,
+        "accepted": [],
+        "pending": []
+       }
+      ]
+     },
+     "event": {
+      "pledge": {
+       "author": 0,
+       "user": 1,
+       "c": 1,
+       "v": 40
+      }
+     },
+     "result": {
+      "tag": "applied",
+      "state": {
+       "users": [
+        0,
+        1
+       ],
+       "responsabili": [
+        1,
+        0
+       ],
+       "conti": [
+        [
+         1,
+         60
+        ]
+       ],
+       "casse": [
+        [
+         0,
+         100
+        ]
+       ],
+       "collections": [
+        {
+         "id": 1,
+         "referente": 1,
+         "permitted": false,
+         "accepted": [],
+         "pending": [
+          {
+           "user": 1,
+           "amount": 40
+          }
+         ]
+        }
+       ]
+      }
+     }
+    },
+    {
+     "input": {
+      "users": [
+       0,
+       1
+      ],
+      "responsabili": [
+       1,
+       0
+      ],
+      "conti": [
+       [
+        1,
+        60
+       ]
+      ],
+      "casse": [
+       [
+        0,
+        100
+       ]
+      ],
+      "collections": [
+       {
+        "id": 1,
+        "referente": 1,
+        "permitted": false,
+        "accepted": [],
+        "pending": [
+         {
+          "user": 1,
+          "amount": 40
+         }
+        ]
+       }
+      ]
+     },
+     "event": {
+      "acceptPledge": {
+       "author": 1,
+       "user": 1,
+       "c": 1
+      }
+     },
+     "result": {
+      "tag": "applied",
+      "state": {
+       "users": [
+        0,
+        1
+       ],
+       "responsabili": [
+        1,
+        0
+       ],
+       "conti": [
+        [
+         1,
+         60
+        ]
+       ],
+       "casse": [
+        [
+         0,
+         100
+        ]
+       ],
+       "collections": [
+        {
+         "id": 1,
+         "referente": 1,
+         "permitted": false,
+         "accepted": [
+          {
+           "user": 1,
+           "amount": 40
+          }
+         ],
+         "pending": []
+        }
+       ]
+      }
+     }
+    },
+    {
+     "input": {
+      "users": [
+       0,
+       1
+      ],
+      "responsabili": [
+       1,
+       0
+      ],
+      "conti": [
+       [
+        1,
+        60
+       ]
+      ],
+      "casse": [
+       [
+        0,
+        100
+       ]
+      ],
+      "collections": [
+       {
+        "id": 1,
+        "referente": 1,
+        "permitted": false,
+        "accepted": [
+         {
+          "user": 1,
+          "amount": 40
+         }
+        ],
+        "pending": []
+       }
+      ]
+     },
+     "event": {
+      "grantPermission": {
+       "author": 0,
+       "c": 1
+      }
+     },
+     "result": {
+      "tag": "applied",
+      "state": {
+       "users": [
+        0,
+        1
+       ],
+       "responsabili": [
+        1,
+        0
+       ],
+       "conti": [
+        [
+         1,
+         60
+        ]
+       ],
+       "casse": [
+        [
+         0,
+         100
+        ]
+       ],
+       "collections": [
+        {
+         "id": 1,
+         "referente": 1,
+         "permitted": true,
+         "accepted": [
+          {
+           "user": 1,
+           "amount": 40
+          }
+         ],
+         "pending": []
+        }
+       ]
+      }
+     }
+    },
+    {
+     "input": {
+      "users": [
+       0,
+       1
+      ],
+      "responsabili": [
+       1,
+       0
+      ],
+      "conti": [
+       [
+        1,
+        60
+       ]
+      ],
+      "casse": [
+       [
+        0,
+        100
+       ]
+      ],
+      "collections": [
+       {
+        "id": 1,
+        "referente": 1,
+        "permitted": true,
+        "accepted": [
+         {
+          "user": 1,
+          "amount": 40
+         }
+        ],
+        "pending": []
+       }
+      ]
+     },
+     "event": {
+      "closePurchase": {
+       "author": 1,
+       "c": 1
+      }
+     },
+     "result": {
+      "tag": "applied",
+      "state": {
+       "users": [
+        0,
+        1
+       ],
+       "responsabili": [
+        1,
+        0
+       ],
+       "conti": [
+        [
+         1,
+         60
+        ]
+       ],
+       "casse": [
+        [
+         0,
+         100
+        ],
+        [
+         1,
+         -40
+        ]
+       ],
+       "collections": []
+      }
+     }
+    }
+   ]
+  },
+  "kel": {
+   "schema": "kelgroups-vote.trace",
+   "version": 1,
+   "threshold": "legacyThreshold",
+   "initial": {
+    "members": [],
+    "openQuestions": [],
+    "closed": []
+   },
+   "steps": [
+    {
+     "input": {
+      "members": [],
+      "openQuestions": [],
+      "closed": []
+     },
+     "signer": "anna",
+     "event": {
+      "admitMember": {
+       "key": "anna",
+       "email": "anna@toy.example",
+       "roles": [
+        {
+         "adminRole": {
+          "admin": "publicAdmin"
+         }
+        }
+       ]
+      }
+     },
+     "result": {
+      "tag": "applied",
+      "state": {
+       "members": [
+        [
+         "anna",
+         {
+          "key": "anna",
+          "email": "anna@toy.example",
+          "roles": [
+           {
+            "adminRole": {
+             "admin": "publicAdmin"
+            }
+           }
+          ]
+         }
+        ]
+       ],
+       "openQuestions": [],
+       "closed": []
+      },
+      "closedCount": 0
+     }
+    },
+    {
+     "input": {
+      "members": [
+       [
+        "anna",
+        {
+         "key": "anna",
+         "email": "anna@toy.example",
+         "roles": [
+          {
+           "adminRole": {
+            "admin": "publicAdmin"
+           }
+          }
+         ]
+        }
+       ]
+      ],
+      "openQuestions": [],
+      "closed": []
+     },
+     "signer": "anna",
+     "event": {
+      "admitMember": {
+       "key": "bruno",
+       "email": "bruno@toy.example",
+       "roles": [
+        {
+         "adminRole": {
+          "admin": "publicAdmin"
+         }
+        }
+       ]
+      }
+     },
+     "result": {
+      "tag": "applied",
+      "state": {
+       "members": [
+        [
+         "bruno",
+         {
+          "key": "bruno",
+          "email": "bruno@toy.example",
+          "roles": [
+           {
+            "adminRole": {
+             "admin": "publicAdmin"
+            }
+           }
+          ]
+         }
+        ],
+        [
+         "anna",
+         {
+          "key": "anna",
+          "email": "anna@toy.example",
+          "roles": [
+           {
+            "adminRole": {
+             "admin": "publicAdmin"
+            }
+           }
+          ]
+         }
+        ]
+       ],
+       "openQuestions": [],
+       "closed": []
+      },
+      "closedCount": 0
+     }
+    },
+    {
+     "input": {
+      "members": [
+       [
+        "bruno",
+        {
+         "key": "bruno",
+         "email": "bruno@toy.example",
+         "roles": [
+          {
+           "adminRole": {
+            "admin": "publicAdmin"
+           }
+          }
+         ]
+        }
+       ],
+       [
+        "anna",
+        {
+         "key": "anna",
+         "email": "anna@toy.example",
+         "roles": [
+          {
+           "adminRole": {
+            "admin": "publicAdmin"
+           }
+          }
+         ]
+        }
+       ]
+      ],
+      "openQuestions": [],
+      "closed": []
+     },
+     "signer": "anna",
+     "event": {
+      "openQuestion": {
+       "questionId": "permesso:1",
+       "kind": "collective"
+      }
+     },
+     "result": {
+      "tag": "applied",
+      "state": {
+       "members": [
+        [
+         "bruno",
+         {
+          "key": "bruno",
+          "email": "bruno@toy.example",
+          "roles": [
+           {
+            "adminRole": {
+             "admin": "publicAdmin"
+            }
+           }
+          ]
+         }
+        ],
+        [
+         "anna",
+         {
+          "key": "anna",
+          "email": "anna@toy.example",
+          "roles": [
+           {
+            "adminRole": {
+             "admin": "publicAdmin"
+            }
+           }
+          ]
+         }
+        ]
+       ],
+       "openQuestions": [
+        [
+         "permesso:1",
+         {
+          "kind": "collective",
+          "proposer": "anna",
+          "assents": [],
+          "dissents": []
+         }
+        ]
+       ],
+       "closed": []
+      },
+      "closedCount": 0
+     }
+    },
+    {
+     "input": {
+      "members": [
+       [
+        "bruno",
+        {
+         "key": "bruno",
+         "email": "bruno@toy.example",
+         "roles": [
+          {
+           "adminRole": {
+            "admin": "publicAdmin"
+           }
+          }
+         ]
+        }
+       ],
+       [
+        "anna",
+        {
+         "key": "anna",
+         "email": "anna@toy.example",
+         "roles": [
+          {
+           "adminRole": {
+            "admin": "publicAdmin"
+           }
+          }
+         ]
+        }
+       ]
+      ],
+      "openQuestions": [
+       [
+        "permesso:1",
+        {
+         "kind": "collective",
+         "proposer": "anna",
+         "assents": [],
+         "dissents": []
+        }
+       ]
+      ],
+      "closed": []
+     },
+     "signer": "anna",
+     "event": {
+      "cast": {
+       "questionId": "permesso:1",
+       "ballot": "assent"
+      }
+     },
+     "result": {
+      "tag": "applied",
+      "state": {
+       "members": [
+        [
+         "bruno",
+         {
+          "key": "bruno",
+          "email": "bruno@toy.example",
+          "roles": [
+           {
+            "adminRole": {
+             "admin": "publicAdmin"
+            }
+           }
+          ]
+         }
+        ],
+        [
+         "anna",
+         {
+          "key": "anna",
+          "email": "anna@toy.example",
+          "roles": [
+           {
+            "adminRole": {
+             "admin": "publicAdmin"
+            }
+           }
+          ]
+         }
+        ]
+       ],
+       "openQuestions": [],
+       "closed": [
+        {
+         "questionId": "permesso:1",
+         "question": {
+          "kind": "collective",
+          "proposer": "anna",
+          "assents": [
+           "anna"
+          ],
+          "dissents": []
+         },
+         "verdict": "positive",
+         "cause": "tally"
+        }
+       ]
+      },
+      "closedCount": 1
+     }
+    }
+   ]
+  },
+  "base": {
+   "schema": "kelgroups-base.trace",
+   "version": 1,
+   "initial": {
+    "members": [],
+    "pendingProposals": []
+   },
+   "steps": [
+    {
+     "input": {
+      "members": [],
+      "pendingProposals": []
+     },
+     "signer": "anna",
+     "event": {
+      "propose": {
+       "proposal": {
+        "introduceMember": {
+         "key": "anna",
+         "email": "anna@toy.example",
+         "roles": [
+          {
+           "adminRole": {
+            "admin": "publicAdmin"
+           }
+          }
+         ]
+        }
+       }
+      }
+     },
+     "result": {
+      "tag": "applied",
+      "state": {
+       "members": [
+        [
+         "anna",
+         {
+          "key": "anna",
+          "email": "anna@toy.example",
+          "roles": [
+           {
+            "adminRole": {
+             "admin": "publicAdmin"
+            }
+           }
+          ]
+         }
+        ]
+       ],
+       "pendingProposals": []
+      },
+      "enacted": true
+     }
+    },
+    {
+     "input": {
+      "members": [
+       [
+        "anna",
+        {
+         "key": "anna",
+         "email": "anna@toy.example",
+         "roles": [
+          {
+           "adminRole": {
+            "admin": "publicAdmin"
+           }
+          }
+         ]
+        }
+       ]
+      ],
+      "pendingProposals": []
+     },
+     "signer": "anna",
+     "event": {
+      "propose": {
+       "proposal": {
+        "introduceMember": {
+         "key": "bruno",
+         "email": "bruno@toy.example",
+         "roles": [
+          {
+           "appRole": {
+            "name": "user"
+           }
+          }
+         ]
+        }
+       }
+      }
+     },
+     "result": {
+      "tag": "applied",
+      "state": {
+       "members": [
+        [
+         "bruno",
+         {
+          "key": "bruno",
+          "email": "bruno@toy.example",
+          "roles": [
+           {
+            "appRole": {
+             "name": "user"
+            }
+           }
+          ]
+         }
+        ],
+        [
+         "anna",
+         {
+          "key": "anna",
+          "email": "anna@toy.example",
+          "roles": [
+           {
+            "adminRole": {
+             "admin": "publicAdmin"
+            }
+           }
+          ]
+         }
+        ]
+       ],
+       "pendingProposals": []
+      },
+      "enacted": true
+     }
+    },
+    {
+     "input": {
+      "members": [
+       [
+        "bruno",
+        {
+         "key": "bruno",
+         "email": "bruno@toy.example",
+         "roles": [
+          {
+           "appRole": {
+            "name": "user"
+           }
+          }
+         ]
+        }
+       ],
+       [
+        "anna",
+        {
+         "key": "anna",
+         "email": "anna@toy.example",
+         "roles": [
+          {
+           "adminRole": {
+            "admin": "publicAdmin"
+           }
+          }
+         ]
+        }
+       ]
+      ],
+      "pendingProposals": []
+     },
+     "signer": "anna",
+     "event": {
+      "propose": {
+       "proposal": {
+        "changeRoles": {
+         "key": "bruno",
+         "roles": [
+          {
+           "adminRole": {
+            "admin": "publicAdmin"
+           }
+          }
+         ]
+        }
+       }
+      }
+     },
+     "result": {
+      "tag": "applied",
+      "state": {
+       "members": [
+        [
+         "bruno",
+         {
+          "key": "bruno",
+          "email": "bruno@toy.example",
+          "roles": [
+           {
+            "adminRole": {
+             "admin": "publicAdmin"
+            }
+           }
+          ]
+         }
+        ],
+        [
+         "anna",
+         {
+          "key": "anna",
+          "email": "anna@toy.example",
+          "roles": [
+           {
+            "adminRole": {
+             "admin": "publicAdmin"
+            }
+           }
+          ]
+         }
+        ]
+       ],
+       "pendingProposals": []
+      },
+      "enacted": true
+     }
+    }
+   ]
+  },
+  "seq": "ebbbeeeeekkkkee"
+ },
+ "expect": {
+  "governed": "accepted"
+ },
+ "assertions": [
+  "no-close-without-positive-permission",
+  "no-negative-conto",
+  "comune-tripwire",
+  "no-vote-derived-without-evidence"
+ ]
+}

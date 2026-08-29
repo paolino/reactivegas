@@ -388,10 +388,10 @@ if (IS_SELFTEST) window.__RG_NS = '-selftest';
    numeric inside.
    ===================================================================== */
 
-const FOUNDER = 0;
-
 /* --- Toy-side fixed name/label pools (decoration, outside the machine) -- */
 
+/* @@CORE:names@@ */
+const FOUNDER = 0;
 const NAMES = ['Anna', 'Bruno', 'Elena', 'Carlo', 'Dora', 'Enzo',
                'Febe', 'Gaia', 'Hugo', 'Irma', 'Luca', 'Mara'];
 const nm = u => NAMES[u] !== undefined ? NAMES[u] : '?';
@@ -399,6 +399,8 @@ const PRESETS = ['Olio', 'Vino', 'Farina', 'Caffè', 'Miele', 'Pasta', 'Riso', '
 let colLabels = {};                       // CollId -> toy label
 const lbl = c => colLabels[c] !== undefined ? colLabels[c] : '?';
 
+/* @@CORE:names:END@@ */
+/* @@CORE:machine@@ */
 /* --- State.lean helpers ------------------------------------------------ */
 
 // State.init r := ⟨[r], [r], [], [], []⟩
@@ -748,6 +750,7 @@ function attempt(s, e) {
   throw new Error('unknown event tag: ' + e.tag);
 }
 
+/* @@CORE:machine:END@@ */
 /* --- App state (all toy-side) ------------------------------------------- */
 
 let state = initState(FOUNDER);
@@ -770,6 +773,7 @@ const esc = x => String(x).replace(/[&<>"']/g,
 
 /* --- Event metadata: machine provenance for task flows ------------------- */
 
+/* @@CORE:events@@ */
 const EV = {
   addUser:            { it: 'Fai entrare una persona', roles: ['targetGhost', 'author'] },
   electResponsabile:  { it: 'Eleggi responsabile',     roles: ['targetMember', 'author'] },
@@ -791,6 +795,7 @@ const EV = {
   failPurchase:       { it: 'Fallisci acquisto',       roles: ['coll', 'author'] },
 };
 
+/* @@CORE:events:END@@ */
 const ROLEKEY = { author: 'author', targetGhost: 'target', targetMember: 'target',
   targetResp: 'target', from: 'from_', coll: 'c', pendUser: 'user', accUser: 'user',
   user: 'user', label: '_label' };
@@ -835,6 +840,7 @@ function descr(tag, a) {
   return tag;
 }
 
+/* @@CORE:claims@@ */
 /* --- Claim manifest: every interface assertion bound to a Lean proof -----
    One row per claim the UI makes. kind: 'teorema' (proved property),
    'definizione' (definitional effect of the cited declaration), or
@@ -900,10 +906,10 @@ const CLAIMS = {
   'vote-admit-plain':  { c: 'Ammettere un membro è un evento semplice, mai una domanda e mai un voto (R-66)', k: 'definizione', d: 'KelGroups.Vote.VoteEvent', f: 'lean/KelGroups/Vote/Event.lean', l: 14 },
   'vote-permission-kind': { c: 'Una domanda-permesso ha esattamente un designato e solo il SUO voto la decide', k: 'definizione', d: 'KelGroups.Vote.QuestionKind', f: 'lean/KelGroups/Vote/Types.lean', l: 63 },
   'vote-closure-cause':{ c: 'Ogni chiusura dichiara la sua causa: soglia raggiunta, o cambio di elettorato che fa passare un conteggio ormai stantio', k: 'definizione', d: 'KelGroups.Vote.closureCause', f: 'lean/KelGroups/Vote/State.lean', l: 105 },
-  'comp-routing':      { c: 'Instradamento TOTALE e senza wildcard dei 18 costruttori accettati: voteDerived e = true ↔ route e ≠ direct — provato al pin accettato della composizione (commit non ancora in questo albero)', k: 'teorema', d: 'Reactivegas.Composition.voteDerived_iff_not_direct', f: 'lean/Reactivegas/Composition.lean', l: 88, g: 'fcd4dc3037c3621f2a8d5c452fe21c7a53443037' },
-  'comp-base-threshold': { c: 'Canale base: per un Enactment REALE di applyEventDetailed la cui proposta è nel vocabolario FEDELE (changeRoles, removeMember; introduceMember escluso per costruzione), gli assensi registrati raggiunsero la maggioranza dello stato precedente — CONDIZIONATO alla proposta fedele; l’evento economico e l’enactment restano parametri separati: NESSUN join, nessuna equivalenza di macchine', k: 'teorema', d: 'Reactivegas.Composition.baseEnacted_threshold_met', f: 'lean/Reactivegas/Composition.lean', l: 111, g: 'fcd4dc3037c3621f2a8d5c452fe21c7a53443037' },
-  'comp-app-verdict':  { c: 'Canale app: l’eliminazione del verdetto è ESAUSTIVA — un ClosureRecord permette un evento esattamente quando chiuse positive o negative; open non permette nulla', k: 'teorema', d: 'Reactivegas.Composition.appDecided_verdict_exhaustive', f: 'lean/Reactivegas/Composition.lean', l: 142, g: 'fcd4dc3037c3621f2a8d5c452fe21c7a53443037' },
-  'comp-witness':      { c: 'Testimone di raggiungibilità (anti-vacuità) del canale app: usa zeroThreshold, quindi NON è MAI evidenza della forza reale della soglia', k: 'definizione', d: 'Reactivegas.Composition.productionVerdictWitness', f: 'lean/Reactivegas/Composition.lean', l: 163, g: 'fcd4dc3037c3621f2a8d5c452fe21c7a53443037' },
+  'comp-routing':      { c: 'Instradamento TOTALE e senza wildcard dei 18 costruttori accettati: voteDerived e = true ↔ route e ≠ direct — provato al pin accettato della composizione (commit non ancora in questo albero)', k: 'teorema', d: 'Reactivegas.Composition.voteDerived_iff_not_direct', f: 'lean/Reactivegas/Composition.lean', l: 88, g: 'c8c4dd8903cca817c814e9f84e9ff21ceba2de0c' },
+  'comp-base-threshold': { c: 'Canale base: per un Enactment REALE di applyEventDetailed la cui proposta è nel vocabolario FEDELE (changeRoles, removeMember; introduceMember escluso per costruzione), gli assensi registrati raggiunsero la maggioranza dello stato precedente — CONDIZIONATO alla proposta fedele; l’evento economico e l’enactment restano parametri separati: NESSUN join, nessuna equivalenza di macchine', k: 'teorema', d: 'Reactivegas.Composition.baseEnacted_threshold_met', f: 'lean/Reactivegas/Composition.lean', l: 111, g: 'c8c4dd8903cca817c814e9f84e9ff21ceba2de0c' },
+  'comp-app-verdict':  { c: 'Canale app: l’eliminazione del verdetto è ESAUSTIVA — un ClosureRecord permette un evento esattamente quando chiuse positive o negative; open non permette nulla', k: 'teorema', d: 'Reactivegas.Composition.appDecided_verdict_exhaustive', f: 'lean/Reactivegas/Composition.lean', l: 142, g: 'c8c4dd8903cca817c814e9f84e9ff21ceba2de0c' },
+  'comp-witness':      { c: 'Testimone di raggiungibilità (anti-vacuità) del canale app: usa zeroThreshold, quindi NON è MAI evidenza della forza reale della soglia', k: 'definizione', d: 'Reactivegas.Composition.productionVerdictWitness', f: 'lean/Reactivegas/Composition.lean', l: 163, g: 'c8c4dd8903cca817c814e9f84e9ff21ceba2de0c' },
   'kg-threshold':      { c: 'Canale base (trascritto qui): una delibera avviene solo al raggiungimento della maggioranza di assensi', k: 'teorema', d: 'enact_implies_threshold_met', f: 'lean/KelGroups/Invariants.lean', l: 572 },
   'kg-nodup':          { c: 'Canale base: gli assensi non contano mai doppio — la lista è senza duplicati', k: 'teorema', d: 'approvals_nodup', f: 'lean/KelGroups/Invariants.lean', l: 560 },
   'kg-proposer':       { c: 'Canale base: chi propone è già nel conteggio degli assensi', k: 'teorema', d: 'proposer_mem_approvals', f: 'lean/KelGroups/Invariants.lean', l: 566 },
@@ -965,8 +971,8 @@ const CHECK_RECEIPT = {
      one join, never machine equivalence, never proof that every economic
      event originated from a vote. */
   composition: {
-    commit: 'fcd4dc3037c3621f2a8d5c452fe21c7a53443037',
-    tree: 'dee9dfde87bff8e5c5e1b0e37655c19ee5d9b917',
+    commit: 'c8c4dd8903cca817c814e9f84e9ff21ceba2de0c',
+    tree: '641107474766534915f67651311b6bdcf1d1a574',
     decls: {
       'Reactivegas.Composition.voteDerived_iff_not_direct': 'provato',
       'Reactivegas.Composition.baseEnacted_threshold_met': 'provato',
@@ -1083,6 +1089,7 @@ function proofState(id) {
   return CHECK_RECEIPT.axioms[r.d] === 'provato' ? 'ok' : 'enun';
 }
 
+/* @@CORE:claims:END@@ */
 function pkGlyph(ids) {
   const arr = Array.isArray(ids) ? ids : [ids];
   const states = arr.map(proofState);
@@ -1131,6 +1138,7 @@ function openManifestPop(x, y) {
   if (xb) xb.addEventListener('click', closePop);
 }
 
+/* @@CORE:audit@@ */
 /* selftest gate: the manifest cannot be fictional or unmarked */
 function claimAudit() {
   const bad = [];
@@ -1198,6 +1206,7 @@ function claimAudit() {
   return bad;
 }
 
+/* @@CORE:audit:END@@ */
 /* --- Crude-drift net: lean/Reactivegas/Predicates.lean, transcribed ------
    The state invariants of the law predicates, asserted after every applied
    event: conservation (L6), solvent (L7, both conjuncts), allUniquePledges
@@ -1209,6 +1218,7 @@ function claimAudit() {
 
 let lawBreaches = [];   // toy-side alarm record; selftest asserts it stays empty
 
+/* @@CORE:laws@@ */
 function lawViolations(s) {
   const out = [];
   // conservation: sumBal casse − sumBal conti − escrowSum collections = 0
@@ -1232,6 +1242,7 @@ function lawViolations(s) {
   return out;
 }
 
+/* @@CORE:laws:END@@ */
 function lawAlarm(viol, tag) {
   lawBreaches.push({ tag, viol });
   const b = document.createElement('div');
@@ -1240,6 +1251,7 @@ function lawAlarm(viol, tag) {
   document.body.appendChild(b);
 }
 
+/* @@CORE:trace@@ */
 /* --- Trace interchange v1 (FROZEN: reactivegas.trace, TRACE-FORMAT-v1) ----
    LEAN_TRACES_V1 below is the verbatim output of the COMMITTED producer
    lean/TraceDriverV1.lean: the two seed envelopes emitted by Lean `ToJson`
@@ -1393,6 +1405,8 @@ function traceConformance() {
   return { steps, refusedUnverified, corpus: 'seme-locale-solo-applicati' };
 }
 
+/* @@CORE:trace:END@@ */
+/* @@CORE:vote-a@@ */
 /* --- Required Vote machine core: transcription of lean/KelGroups/Vote/ ----
    Second machine, MODEL-FAITHFUL to the required vote model (#54 slice A,
    REQUIRED-OF-SUBSTRATE): three-way verdicts with `open` as a real outcome,
@@ -1545,7 +1559,9 @@ const canonVoteState = gs => JSON.stringify({
    currently «enunciato, non dimostrato»; this runtime check detects
    transcription drift, it does not claim the proofs): QuestionClean,
    partition, no-stale-open */
+/* @@CORE:vote-a:END@@ */
 let kgLawBreaches = [];
+/* @@CORE:vote-b@@ */
 function kgLawViolations(gs) {
   const out = [];
   const clean = (q, where) => {
@@ -1571,6 +1587,7 @@ function kgLawViolations(gs) {
   }
   return out;
 }
+/* @@CORE:vote-b:END@@ */
 function kgLawAlarm(viol, what) {
   kgLawBreaches.push({ what, viol });
   const b = document.createElement('div');
@@ -1580,6 +1597,7 @@ function kgLawAlarm(viol, what) {
 }
 
 /* one consumer for vote conformance, session restore, import, presentation */
+/* @@CORE:vote-c@@ */
 function verifyKelTraceV1(env, opts) {
   opts = opts || {};
   const short = x => { const j = typeof x === 'string' ? x : JSON.stringify(x);
@@ -1662,10 +1680,11 @@ const kgApplyDetailed = (gs, signer, ev) => vtApply(gs, signer, ev);
    question in the final state. */
 const VOTE_TRACES_V1 = {"V":{"initial":{"closed":[],"members":[],"openQuestions":[]},"schema":"kelgroups-vote.trace","steps":[{"event":{"admitMember":{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}},"input":{"closed":[],"members":[],"openQuestions":[]},"result":{"closedCount":0,"state":{"closed":[],"members":[["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"tag":"applied"},"signer":"anna"},{"event":{"admitMember":{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}},"input":{"closed":[],"members":[["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"result":{"closedCount":0,"state":{"closed":[],"members":[["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"tag":"applied"},"signer":"anna"},{"event":{"admitMember":{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}},"input":{"closed":[],"members":[["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"result":{"closedCount":0,"state":{"closed":[],"members":[["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"tag":"applied"},"signer":"anna"},{"event":{"admitMember":{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}},"input":{"closed":[],"members":[["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"result":{"closedCount":0,"state":{"closed":[],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"tag":"applied"},"signer":"anna"},{"event":{"openQuestion":{"kind":"collective","questionId":"q:permesso-olio"}},"input":{"closed":[],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"result":{"closedCount":0,"state":{"closed":[],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:permesso-olio",{"assents":[],"dissents":[],"kind":"collective","proposer":"anna"}]]},"tag":"applied"},"signer":"anna"},{"event":{"cast":{"ballot":"assent","questionId":"q:permesso-olio"}},"input":{"closed":[],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:permesso-olio",{"assents":[],"dissents":[],"kind":"collective","proposer":"anna"}]]},"result":{"error":"notResponsabile","tag":"refused"},"signer":"dora"},{"event":{"cast":{"ballot":"assent","questionId":"q:nessuna"}},"input":{"closed":[],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:permesso-olio",{"assents":[],"dissents":[],"kind":"collective","proposer":"anna"}]]},"result":{"error":"questionNotFound","tag":"refused"},"signer":"anna"},{"event":{"cast":{"ballot":"assent","questionId":"q:permesso-olio"}},"input":{"closed":[],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:permesso-olio",{"assents":[],"dissents":[],"kind":"collective","proposer":"anna"}]]},"result":{"closedCount":0,"state":{"closed":[],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:permesso-olio",{"assents":["anna"],"dissents":[],"kind":"collective","proposer":"anna"}]]},"tag":"applied"},"signer":"anna"},{"event":{"cast":{"ballot":"dissent","questionId":"q:permesso-olio"}},"input":{"closed":[],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:permesso-olio",{"assents":["anna"],"dissents":[],"kind":"collective","proposer":"anna"}]]},"result":{"closedCount":0,"state":{"closed":[],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:permesso-olio",{"assents":["anna"],"dissents":["bruno"],"kind":"collective","proposer":"anna"}]]},"tag":"applied"},"signer":"bruno"},{"event":{"cast":{"ballot":"assent","questionId":"q:permesso-olio"}},"input":{"closed":[],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:permesso-olio",{"assents":["anna"],"dissents":["bruno"],"kind":"collective","proposer":"anna"}]]},"result":{"closedCount":1,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"tag":"applied"},"signer":"bruno"},{"event":{"openQuestion":{"kind":"collective","questionId":"q:sconto"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"result":{"closedCount":1,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:sconto",{"assents":[],"dissents":[],"kind":"collective","proposer":"anna"}]]},"tag":"applied"},"signer":"anna"},{"event":{"cast":{"ballot":"dissent","questionId":"q:sconto"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:sconto",{"assents":[],"dissents":[],"kind":"collective","proposer":"anna"}]]},"result":{"closedCount":1,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:sconto",{"assents":[],"dissents":["elena"],"kind":"collective","proposer":"anna"}]]},"tag":"applied"},"signer":"elena"},{"event":{"cast":{"ballot":"dissent","questionId":"q:sconto"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:sconto",{"assents":[],"dissents":["elena"],"kind":"collective","proposer":"anna"}]]},"result":{"closedCount":1,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:sconto",{"assents":[],"dissents":["elena"],"kind":"collective","proposer":"anna"}]]},"tag":"applied"},"signer":"elena"},{"event":{"cast":{"ballot":"dissent","questionId":"q:sconto"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:sconto",{"assents":[],"dissents":["elena"],"kind":"collective","proposer":"anna"}]]},"result":{"closedCount":2,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"tag":"applied"},"signer":"carlo"},{"event":{"openQuestion":{"kind":{"permission":{"designee":"bruno"}},"questionId":"q:incarico"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"result":{"closedCount":2,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:incarico",{"assents":[],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"}]]},"tag":"applied"},"signer":"anna"},{"event":{"cast":{"ballot":"assent","questionId":"q:incarico"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:incarico",{"assents":[],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"}]]},"result":{"closedCount":2,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:incarico",{"assents":["elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"}]]},"tag":"applied"},"signer":"elena"},{"event":{"cast":{"ballot":"assent","questionId":"q:incarico"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:incarico",{"assents":["elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"}]]},"result":{"closedCount":3,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"tag":"applied"},"signer":"bruno"},{"event":{"openQuestion":{"kind":"collective","questionId":"q:magazzino"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"result":{"closedCount":3,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:magazzino",{"assents":[],"dissents":[],"kind":"collective","proposer":"anna"}]]},"tag":"applied"},"signer":"anna"},{"event":{"cast":{"ballot":"assent","questionId":"q:magazzino"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:magazzino",{"assents":[],"dissents":[],"kind":"collective","proposer":"anna"}]]},"result":{"closedCount":3,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:magazzino",{"assents":["carlo"],"dissents":[],"kind":"collective","proposer":"anna"}]]},"tag":"applied"},"signer":"carlo"},{"event":{"removeMember":{"key":"carlo"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:magazzino",{"assents":["carlo"],"dissents":[],"kind":"collective","proposer":"anna"}]]},"result":{"closedCount":3,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"}],"members":[["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:magazzino",{"assents":["carlo"],"dissents":[],"kind":"collective","proposer":"anna"}]]},"tag":"applied"},"signer":"anna"},{"event":{"removeMember":{"key":"bruno"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"}],"members":[["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:magazzino",{"assents":["carlo"],"dissents":[],"kind":"collective","proposer":"anna"}]]},"result":{"closedCount":4,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"},{"cause":"franchiseChange","question":{"assents":["carlo"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:magazzino","verdict":"positive"}],"members":[["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"tag":"applied"},"signer":"anna"},{"event":{"openQuestion":{"kind":"collective","questionId":"q:aperta"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"},{"cause":"franchiseChange","question":{"assents":["carlo"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:magazzino","verdict":"positive"}],"members":[["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"result":{"closedCount":4,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"},{"cause":"franchiseChange","question":{"assents":["carlo"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:magazzino","verdict":"positive"}],"members":[["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:aperta",{"assents":[],"dissents":[],"kind":"collective","proposer":"anna"}]]},"tag":"applied"},"signer":"anna"},{"event":{"renounce":{"questionId":"q:aperta"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"},{"cause":"franchiseChange","question":{"assents":["carlo"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:magazzino","verdict":"positive"}],"members":[["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:aperta",{"assents":[],"dissents":[],"kind":"collective","proposer":"anna"}]]},"result":{"closedCount":4,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"},{"cause":"franchiseChange","question":{"assents":["carlo"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:magazzino","verdict":"positive"}],"members":[["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:aperta",{"assents":[],"dissents":[],"kind":"collective","proposer":"anna"}]]},"tag":"applied"},"signer":"anna"}],"threshold":"legacyThreshold","version":1}};
 
+/* @@CORE:vote-c:END@@ */
 kg = vtEmpty();
 
 /* --- Base governance channel: transcription of lean/KelGroups (merged) ----
-   The accepted composition (pin fcd4dc30…, lean/Reactivegas/Composition.lean)
+   The accepted composition (pin c8c4dd89…, lean/Reactivegas/Composition.lean)
    classifies every economic constructor by its actual producer:
    electResponsabile / removeResponsabile / removeMember are BASE-ENACTED —
    produced by the faithful KelGroups proposal machine (propose/approve →
@@ -1679,11 +1698,14 @@ kg = vtEmpty();
    local unproved join ('join-vote-econ'). α (the app fold) is fixed to a
    unit: the toy sends no app events on this channel. */
 
+/* @@CORE:base-a@@ */
 const bgEmpty = () => ({ members: [], pendingProposals: [] });
+/* @@CORE:base-a:END@@ */
 let bg = bgEmpty();
 let bgSteps = [];        // kelgroups-base.trace applied steps of the live session
 let bgCredits = [];      // faithful enactments not yet consumed by the bridge
 
+/* @@CORE:base-b@@ */
 /* State.lean (merged): counts, majority, membership */
 const bgAdminCount = gs => gs.members.reduce((n, [, m]) => n + (vtHasAdmin(m.roles) ? 1 : 0), 0);
 const bgMajority = gs => Math.floor((bgAdminCount(gs) + 1) / 2);   // KelGroups.majority
@@ -1801,7 +1823,9 @@ const canonBaseState = gs => JSON.stringify({
 /* Crude-drift net for the base channel: approvals_nodup and
    proposer_mem_approvals, transcribed and asserted after every applied
    event. A violation means this transcription diverged from Fold.lean. */
+/* @@CORE:base-b:END@@ */
 let bgLawBreaches = [];
+/* @@CORE:base-c@@ */
 function bgLawViolations(gs) {
   const out = [];
   for (const [pid, pp] of gs.pendingProposals) {
@@ -1889,6 +1913,57 @@ function bgCreditOf(enactment) {
     key: p.changeRoles.key, pid: enactment.proposalId };
 }
 
+/* toy-side name↔key mapping shared by the governance walk: user ids map to
+   the fixed decoration pool; keys are the lowercase names */
+const kgKey = u => nm(u).toLowerCase();
+const kgName = key => { const i = NAMES.findIndex(n => n.toLowerCase() === key);
+  return i >= 0 ? NAMES[i] : key; };
+const kgUid = key => { const i = NAMES.findIndex(n => n.toLowerCase() === key);
+  return i >= 0 ? i : null; };
+const permQid = c => 'permesso:' + c;
+
+/* Governance over the combined seq (model-level, also on import/restore):
+   walk the three verified streams in order, minting base credits from
+   faithful enactments and requiring route-appropriate evidence before any
+   vote-derived economic event. Throws on the first violation, so a log in
+   which four responsabili were elected without one vote is REFUSED. */
+function verifyGovernedSeq(n) {
+  let bgs = bgEmpty(), kgs = vtEmpty();
+  const credits = [];
+  let ei = 0, ki = 0, bi = 0;
+  for (const m of n.seq) {
+    if (m === 'b') {
+      const st = n.baseEnv.steps[bi++];
+      const det = bgApply(bgs, st.signer, st.event);
+      bgs = det.state;
+      if (det.enactment) {
+        const cr = bgCreditOf(det.enactment);
+        if (cr) credits.push(cr);
+      }
+    } else if (m === 'k') {
+      const st = n.kelEnv.steps[ki++];
+      kgs = vtApply(kgs, st.signer, st.event).state;
+    } else {
+      const st = n.env.steps[ei++];
+      const e = leanEventOf(st.event);
+      if (!voteDerivedTag(e.tag)) continue;
+      if (EVENT_ROUTES[e.tag] === 'baseEnacted') {
+        const key = kgKey(e.target);
+        const i = credits.findIndex(cr => cr.kind === e.tag && cr.key === key);
+        if (i < 0)
+          throw new Error(`governo: ${e.tag} senza enactment fedele del canale base`);
+        credits.splice(i, 1);
+      } else {
+        const want = e.tag === 'grantPermission' ? 'positive' : 'negative';
+        const rec = kgs.closed.find(r => r.questionId === permQid(e.c));
+        if (!rec || rec.verdict !== want)
+          throw new Error(`governo: ${e.tag} senza verdetto ${want === 'positive' ? 'positivo' : 'negativo'} chiuso`);
+      }
+    }
+  }
+}
+
+/* @@CORE:base-c:END@@ */
 function bgTakeCredit(tag, targetKey) {
   const i = bgCredits.findIndex(cr => cr.kind === tag && cr.key === targetKey);
   if (i < 0) return null;
@@ -1901,10 +1976,6 @@ function bgTakeCredit(tag, targetKey) {
    the collective question id 'permesso:<CollId>'. The economic↔vote JOIN is
    NOT proved: every bridge point carries claim 'join-vote-econ'. */
 
-const kgKey = u => nm(u).toLowerCase();
-const kgName = key => { const i = NAMES.findIndex(n => n.toLowerCase() === key);
-  return i >= 0 ? NAMES[i] : key; };
-const permQid = c => 'permesso:' + c;
 const vtVerdictFor = c => {
   const rec = kg.closed.find(r => r.questionId === permQid(c));
   return rec ? rec.verdict : (vtLookup(permQid(c), kg.openQuestions) ? 'pending' : null);
@@ -1999,8 +2070,6 @@ function runVoteEvent(signer, ev) {
 
 /* --- Base journey (toy-side wiring of the base proposal channel) --------- */
 
-const kgUid = key => { const i = NAMES.findIndex(n => n.toLowerCase() === key);
-  return i >= 0 ? i : null; };
 const BG_ADMIN_ROLES = [{ adminRole: { admin: 'publicAdmin' } }];
 const BG_APP_ROLES = [{ appRole: { name: 'user' } }];
 
@@ -2233,47 +2302,6 @@ function normalizeWrap(wrap) {
   return { env, kelEnv, baseEnv, seq, labels: (wrap && wrap.labels) || {} };
 }
 
-/* Governance over the combined seq (model-level, also on import/restore):
-   walk the three verified streams in order, minting base credits from
-   faithful enactments and requiring route-appropriate evidence before any
-   vote-derived economic event. Throws on the first violation, so a log in
-   which four responsabili were elected without one vote is REFUSED. */
-function verifyGovernedSeq(n) {
-  let bgs = bgEmpty(), kgs = vtEmpty();
-  const credits = [];
-  let ei = 0, ki = 0, bi = 0;
-  for (const m of n.seq) {
-    if (m === 'b') {
-      const st = n.baseEnv.steps[bi++];
-      const det = bgApply(bgs, st.signer, st.event);
-      bgs = det.state;
-      if (det.enactment) {
-        const cr = bgCreditOf(det.enactment);
-        if (cr) credits.push(cr);
-      }
-    } else if (m === 'k') {
-      const st = n.kelEnv.steps[ki++];
-      kgs = vtApply(kgs, st.signer, st.event).state;
-    } else {
-      const st = n.env.steps[ei++];
-      const e = leanEventOf(st.event);
-      if (!voteDerivedTag(e.tag)) continue;
-      if (EVENT_ROUTES[e.tag] === 'baseEnacted') {
-        const key = kgKey(e.target);
-        const i = credits.findIndex(cr => cr.kind === e.tag && cr.key === key);
-        if (i < 0)
-          throw new Error(`governo: ${e.tag} senza enactment fedele del canale base`);
-        credits.splice(i, 1);
-      } else {
-        const want = e.tag === 'grantPermission' ? 'positive' : 'negative';
-        const rec = kgs.closed.find(r => r.questionId === permQid(e.c));
-        if (!rec || rec.verdict !== want)
-          throw new Error(`governo: ${e.tag} senza verdetto ${want === 'positive' ? 'positivo' : 'negativo'} chiuso`);
-      }
-    }
-  }
-}
-
 function verifySessionShape(n) {
   const eCount = n.seq.filter(m => m === 'e').length;
   const kCount = n.seq.filter(m => m === 'k').length;
@@ -2470,7 +2498,7 @@ function recordApplied(tag, args, res) {
 }
 
 function runAttempt(tag, args, toyLabel) {
-  // Composition gate (accepted pin fcd4dc30…): a vote-derived economic
+  // Composition gate (accepted pin c8c4dd89…): a vote-derived economic
   // event is applied ONLY against its route-appropriate evidence — a
   // faithful base Enactment or a closed vote verdict. The refusal happens
   // BEFORE the economic machine is consulted: the machine itself has no
@@ -4390,7 +4418,7 @@ async function selftest() {
   // state; the route table covers exactly the accepted 18 constructors
   expect(Object.keys(EVENT_ROUTES).length === 18, 'instradamento non copre i 18 costruttori');
   const compRow = claimRowHtml('comp-routing');
-  expect(compRow.includes('@ pin fcd4dc3037') && compRow.includes('— provato'),
+  expect(compRow.includes('@ pin c8c4dd8903') && compRow.includes('— provato'),
     'riga della composizione senza pin o senza stato derivato');
   expect(claimRowHtml('comp-witness').includes('zeroThreshold'),
     'riga del testimone senza avvertenza zeroThreshold');

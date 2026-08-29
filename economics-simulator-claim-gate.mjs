@@ -76,13 +76,15 @@ const REPO = dirname(fileURLToPath(import.meta.url));
 const HTML = join(REPO, 'economics-simulator.html');
 const sha256 = b => createHash('sha256').update(b).digest('hex');
 
-/* The ACCEPTED composition pin (NOTE-025/028): an immutable commit, never a
-   branch. Acceptance data, mirrored by the parent-owned ./gate.sh; the
-   embedded receipt must agree, the commit must resolve to exactly this
-   tree, and the pinned module is re-elaborated fresh on every run. */
+/* The ACCEPTED composition pin (NOTE-025/028, re-pinned to the MERGED
+   commit by NOTE-029): an immutable commit, never a branch. Acceptance
+   data, mirrored by the parent-owned ./gate.sh (v3); the embedded receipt
+   must agree, the commit must resolve to exactly this tree, it must be
+   REACHABLE FROM origin/master (an orphaned pin is RED even if locally
+   resolvable), and the pinned module is re-elaborated fresh on every run. */
 const ACCEPTED_COMPOSITION = {
-  commit: 'fcd4dc3037c3621f2a8d5c452fe21c7a53443037',
-  tree: 'dee9dfde87bff8e5c5e1b0e37655c19ee5d9b917',
+  commit: 'c8c4dd8903cca817c814e9f84e9ff21ceba2de0c',
+  tree: '641107474766534915f67651311b6bdcf1d1a574',
   module: 'lean/Reactivegas/Composition.lean',
 };
 
@@ -284,6 +286,18 @@ function runGate(opts) {
     reasons.push('commit composizione non risolvibile: ' + ex.composition.commit);
   }
   if (resolvedTree !== null) {
+    // stable reachability (NOTE-029 / gate v3): the pin must be an ancestor
+    // of origin/master — an orphaned commit is rejected even when locally
+    // resolvable, BEFORE any equality masking can hide the reason
+    let reachable = false;
+    try {
+      execFileSync('git', ['-C', lakeRepo, 'merge-base', '--is-ancestor',
+        ex.composition.commit, 'origin/master'], { stdio: ['ignore', 'pipe', 'pipe'] });
+      reachable = true;
+    } catch (e) { /* exit 1: not an ancestor */ }
+    if (!reachable)
+      reasons.push('pin composizione non raggiungibile da origin/master (commit orfano): ' +
+        ex.composition.commit);
     if (resolvedTree !== ex.composition.tree)
       reasons.push(`albero del pin divergente dal dichiarato — dichiarato=${ex.composition.tree.slice(0, 12)}… risolto=${resolvedTree.slice(0, 12)}…`);
     if (ex.composition.commit !== ACCEPTED_COMPOSITION.commit ||
@@ -586,6 +600,21 @@ function selftest(work) {
         const p = join(work, 'sab-comp-moved.html');
         writeFileSync(p, doc.replace(`commit: '${ACCEPTED_COMPOSITION.commit}',`,
           `commit: '${head}',`));
+        return runGate({ html: p, work });
+      },
+    },
+    {
+      name: 'pin orfano risolvibile ma non raggiungibile da origin/master',
+      // the OLD pre-merge pin: locally resolvable with a CONSISTENT declared
+      // tree, rejected specifically for stable reachability (NOTE-029)
+      expect: /non raggiungibile da origin\/master \(commit orfano\): fcd4dc3037/,
+      run: () => {
+        const p = join(work, 'sab-comp-orphan.html');
+        writeFileSync(p, doc
+          .replace(`commit: '${ACCEPTED_COMPOSITION.commit}',`,
+            "commit: 'fcd4dc3037c3621f2a8d5c452fe21c7a53443037',")
+          .replace(`tree: '${ACCEPTED_COMPOSITION.tree}',`,
+            "tree: 'dee9dfde87bff8e5c5e1b0e37655c19ee5d9b917',"));
         return runGate({ html: p, work });
       },
     },

@@ -1,0 +1,381 @@
+{
+ "name": "elezioni-senza-delibera",
+ "description": "La sequenza esatta dell'operatore: quattro responsabili eletti senza un solo voto. La macchina economica grezza la APPLICA (nessuna guardia lì — quella assenza è il join non provato); il governo della composizione la RIFIUTA.",
+ "wrap": {
+  "trace": {
+   "schema": "reactivegas.trace",
+   "version": 1,
+   "initial": {
+    "users": [
+     0
+    ],
+    "responsabili": [
+     0
+    ],
+    "conti": [],
+    "casse": [],
+    "collections": []
+   },
+   "steps": [
+    {
+     "input": {
+      "users": [
+       0
+      ],
+      "responsabili": [
+       0
+      ],
+      "conti": [],
+      "casse": [],
+      "collections": []
+     },
+     "event": {
+      "addUser": {
+       "author": 0,
+       "target": 1
+      }
+     },
+     "result": {
+      "tag": "applied",
+      "state": {
+       "users": [
+        0,
+        1
+       ],
+       "responsabili": [
+        0
+       ],
+       "conti": [],
+       "casse": [],
+       "collections": []
+      }
+     }
+    },
+    {
+     "input": {
+      "users": [
+       0,
+       1
+      ],
+      "responsabili": [
+       0
+      ],
+      "conti": [],
+      "casse": [],
+      "collections": []
+     },
+     "event": {
+      "addUser": {
+       "author": 0,
+       "target": 2
+      }
+     },
+     "result": {
+      "tag": "applied",
+      "state": {
+       "users": [
+        0,
+        1,
+        2
+       ],
+       "responsabili": [
+        0
+       ],
+       "conti": [],
+       "casse": [],
+       "collections": []
+      }
+     }
+    },
+    {
+     "input": {
+      "users": [
+       0,
+       1,
+       2
+      ],
+      "responsabili": [
+       0
+      ],
+      "conti": [],
+      "casse": [],
+      "collections": []
+     },
+     "event": {
+      "addUser": {
+       "author": 0,
+       "target": 3
+      }
+     },
+     "result": {
+      "tag": "applied",
+      "state": {
+       "users": [
+        0,
+        1,
+        2,
+        3
+       ],
+       "responsabili": [
+        0
+       ],
+       "conti": [],
+       "casse": [],
+       "collections": []
+      }
+     }
+    },
+    {
+     "input": {
+      "users": [
+       0,
+       1,
+       2,
+       3
+      ],
+      "responsabili": [
+       0
+      ],
+      "conti": [],
+      "casse": [],
+      "collections": []
+     },
+     "event": {
+      "addUser": {
+       "author": 0,
+       "target": 4
+      }
+     },
+     "result": {
+      "tag": "applied",
+      "state": {
+       "users": [
+        0,
+        1,
+        2,
+        3,
+        4
+       ],
+       "responsabili": [
+        0
+       ],
+       "conti": [],
+       "casse": [],
+       "collections": []
+      }
+     }
+    },
+    {
+     "input": {
+      "users": [
+       0,
+       1,
+       2,
+       3,
+       4
+      ],
+      "responsabili": [
+       0
+      ],
+      "conti": [],
+      "casse": [],
+      "collections": []
+     },
+     "event": {
+      "electResponsabile": {
+       "author": 0,
+       "target": 1
+      }
+     },
+     "result": {
+      "tag": "applied",
+      "state": {
+       "users": [
+        0,
+        1,
+        2,
+        3,
+        4
+       ],
+       "responsabili": [
+        1,
+        0
+       ],
+       "conti": [],
+       "casse": [],
+       "collections": []
+      }
+     }
+    },
+    {
+     "input": {
+      "users": [
+       0,
+       1,
+       2,
+       3,
+       4
+      ],
+      "responsabili": [
+       1,
+       0
+      ],
+      "conti": [],
+      "casse": [],
+      "collections": []
+     },
+     "event": {
+      "electResponsabile": {
+       "author": 0,
+       "target": 2
+      }
+     },
+     "result": {
+      "tag": "applied",
+      "state": {
+       "users": [
+        0,
+        1,
+        2,
+        3,
+        4
+       ],
+       "responsabili": [
+        2,
+        1,
+        0
+       ],
+       "conti": [],
+       "casse": [],
+       "collections": []
+      }
+     }
+    },
+    {
+     "input": {
+      "users": [
+       0,
+       1,
+       2,
+       3,
+       4
+      ],
+      "responsabili": [
+       2,
+       1,
+       0
+      ],
+      "conti": [],
+      "casse": [],
+      "collections": []
+     },
+     "event": {
+      "electResponsabile": {
+       "author": 0,
+       "target": 3
+      }
+     },
+     "result": {
+      "tag": "applied",
+      "state": {
+       "users": [
+        0,
+        1,
+        2,
+        3,
+        4
+       ],
+       "responsabili": [
+        3,
+        2,
+        1,
+        0
+       ],
+       "conti": [],
+       "casse": [],
+       "collections": []
+      }
+     }
+    },
+    {
+     "input": {
+      "users": [
+       0,
+       1,
+       2,
+       3,
+       4
+      ],
+      "responsabili": [
+       3,
+       2,
+       1,
+       0
+      ],
+      "conti": [],
+      "casse": [],
+      "collections": []
+     },
+     "event": {
+      "electResponsabile": {
+       "author": 0,
+       "target": 4
+      }
+     },
+     "result": {
+      "tag": "applied",
+      "state": {
+       "users": [
+        0,
+        1,
+        2,
+        3,
+        4
+       ],
+       "responsabili": [
+        4,
+        3,
+        2,
+        1,
+        0
+       ],
+       "conti": [],
+       "casse": [],
+       "collections": []
+      }
+     }
+    }
+   ]
+  },
+  "kel": {
+   "schema": "kelgroups-vote.trace",
+   "version": 1,
+   "threshold": "legacyThreshold",
+   "initial": {
+    "members": [],
+    "openQuestions": [],
+    "closed": []
+   },
+   "steps": []
+  },
+  "base": {
+   "schema": "kelgroups-base.trace",
+   "version": 1,
+   "initial": {
+    "members": [],
+    "pendingProposals": []
+   },
+   "steps": []
+  },
+  "seq": "eeeeeeee"
+ },
+ "expect": {
+  "governed": "refused",
+  "refusalMatch": "senza enactment fedele del canale base"
+ },
+ "assertions": [
+  "no-vote-derived-without-evidence",
+  "no-negative-conto",
+  "comune-tripwire"
+ ]
+}
