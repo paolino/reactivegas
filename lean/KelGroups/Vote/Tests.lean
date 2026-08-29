@@ -1,5 +1,6 @@
 import KelGroups.Vote.Fold
 import KelGroups.Vote.Validate
+import KelGroups.Vote.Invariants
 
 /-!
 # Required vote machine — executed witnesses
@@ -34,10 +35,13 @@ private def witnessTraceValidFrom (θ : Threshold) (gs : VoteState) :
 private def witnessTraceValid (θ : Threshold) (events : List (Key × VoteEvent)) : Bool :=
   witnessTraceValidFrom θ emptyVoteState events
 
-/-- One admission event: the member arrives with an admin role, so the
-franchise grows by one responsabile. -/
-def vAdmit (key : Key) : Key × VoteEvent :=
-  (key, .admitMember key (key ++ "@vote.test") [.adminRole .publicAdmin])
+/-- One admission event, signed by an existing responsabile `who`: the
+member arrives with an admin role, so the franchise grows by one
+responsabile. Only the first seeder signs with the arriving key itself,
+from the empty state where the empty-franchise bootstrap capability applies
+(R57-04). -/
+def vAdmit (who key : Key) : Key × VoteEvent :=
+  (who, .admitMember key (key ++ "@vote.test") [.adminRole .publicAdmin])
 
 /-- `openQuestion` issued by `who`. -/
 def vOpen (who : Key) (questionId : QuestionId) : Key × VoteEvent :=
@@ -60,7 +64,7 @@ private def soleClosure (gs : VoteState) (questionId : QuestionId) : Option Clos
 the second assent reaches the threshold: the question closes positive with no
 dissent recorded. Executed through `foldVote`. -/
 def tieEvents : List (Key × VoteEvent) :=
-  [vAdmit "a", vAdmit "b", vAdmit "c", vAdmit "d",
+  [vAdmit "a" "a", vAdmit "a" "b", vAdmit "a" "c", vAdmit "a" "d",
     vOpen "a" "q",
     vCast "a" "q" .assent,
     vCast "b" "q" .assent]
@@ -87,7 +91,7 @@ consequence) -/
 opens with empty tallies already meets the threshold: it opens and closes
 positive in the same `openQuestion` event, with no ballot cast at all. -/
 def zeroEvents : List (Key × VoteEvent) :=
-  [vAdmit "a", vOpen "a" "q"]
+  [vAdmit "a" "a", vOpen "a" "q"]
 
 def zeroThresholdPassesWithNoBallot : VoteState := foldVote zeroThreshold zeroEvents
 
@@ -109,7 +113,7 @@ tally past the threshold: the question closes **positive**. The closure cause
 is the franchise route: the deciding side records a key the current franchise
 no longer counts. Required behaviour, not a bug. -/
 def departureEvents : List (Key × VoteEvent) :=
-  [vAdmit "a", vAdmit "b", vAdmit "c", vAdmit "d", vAdmit "e",
+  [vAdmit "a" "a", vAdmit "a" "b", vAdmit "a" "c", vAdmit "a" "d", vAdmit "a" "e",
     vOpen "a" "q",
     vCast "a" "q" .assent,
     vCast "b" "q" .assent,
@@ -137,7 +141,7 @@ after the switch they are counted once, on the assent side, and the dissent
 tally is back to zero. Legacy left the other list untouched and double-counted
 switchers; this machine cannot. -/
 def switchEvents : List (Key × VoteEvent) :=
-  [vAdmit "a", vAdmit "b", vAdmit "c",
+  [vAdmit "a" "a", vAdmit "a" "b", vAdmit "a" "c",
     vOpen "a" "q",
     vCast "b" "q" .dissent,
     vCast "b" "q" .assent]
@@ -154,7 +158,7 @@ def switchLeavesOneList : VoteState := foldVote legacyThreshold switchEvents
 closes negative. The dissent side is first-class; assent is not the only path
 to a verdict. -/
 def dissentEvents : List (Key × VoteEvent) :=
-  [vAdmit "a", vAdmit "b", vAdmit "c",
+  [vAdmit "a" "a", vAdmit "a" "b", vAdmit "a" "c",
     vOpen "a" "q",
     vCast "a" "q" .dissent,
     vCast "b" "q" .dissent]
@@ -198,7 +202,7 @@ def decidedQuestionStaysDecided : VoteState := foldVote legacyThreshold noRevive
 /-- A state with one responsabile and one open collective question, produced
 by the production fold. -/
 def votePointState : VoteState :=
-  foldVote legacyThreshold [vAdmit "a", vOpen "a" "q"]
+  foldVote legacyThreshold [vAdmit "a" "a", vOpen "a" "q"]
 
 -- A cast by a non-member is rejected with the franchise error (R-44).
 #guard
@@ -210,7 +214,7 @@ def votePointState : VoteState :=
 #guard
   validateVoteEvent legacyThreshold
     (foldVote legacyThreshold
-      [vAdmit "a", ("b", .admitMember "b" "b@vote.test" []), vOpen "a" "q"])
+      [vAdmit "a" "a", ("a", .admitMember "b" "b@vote.test" []), vOpen "a" "q"])
     "b" (.cast "q" .assent) == Except.error VoteError.notResponsabile
 
 -- A question opening by a non-responsabile is rejected (R-45: no path by
@@ -241,7 +245,7 @@ def votePointState : VoteState :=
 -- Four responsabili so that one assent stays open after the caster drops
 -- admin (legacyThreshold 3 = 2).
 def lostStandingEvents : List (Key × VoteEvent) :=
-  [vAdmit "a", vAdmit "b", vAdmit "c", vAdmit "d",
+  [vAdmit "a" "a", vAdmit "a" "b", vAdmit "a" "c", vAdmit "a" "d",
     vOpen "a" "q",
     vCast "a" "q" .assent,
     ("a", .setRoles "a" []),
@@ -253,8 +257,95 @@ def lostStandingEvents : List (Key × VoteEvent) :=
   | none => false
 
 -- Renunciation's proposer-only restriction is Slice B (R-58); in this slice
--- an existing-question renounce validates and folds to no effect.
+-- an existing-question renounce by a responsabile validates and folds to no
+-- effect. A non-responsabile renounce is inside the universal rejection
+-- class (see the R-45 section below).
 #guard
   validateVoteEvent legacyThreshold votePointState "a" (.renounce "q") == Except.ok ()
+
+/-! ## R57-04 universal class — every constructor rejected and inert after
+bootstrap (T5712) -/
+
+/-- All six current constructors, signed by a non-responsabile, from a
+production-reachable bootstrapped state (one responsabile, one open
+question). The three member/role events are inside the universal class, not
+exceptions to it. -/
+def strangerRejectedEvents : List VoteEvent :=
+  [.openQuestion "r" .collective,
+    .cast "q" .assent,
+    .renounce "q",
+    .admitMember "x" "x@vote.test" [.adminRole .publicAdmin],
+    .removeMember "a",
+    .setRoles "a" []]
+
+#guard
+  strangerRejectedEvents.all (fun event =>
+    validateVoteEvent legacyThreshold votePointState "stranger" event ==
+        Except.error VoteError.notResponsabile &&
+      applyVoteEvent legacyThreshold votePointState "stranger" event ==
+        votePointState)
+
+-- Explicit no-op oracles for the three franchise-changing events
+-- (risk-ledger control: authorization must not repair only `removeMember`).
+#guard
+  applyVoteEvent legacyThreshold votePointState "stranger"
+    (.admitMember "x" "x@vote.test" [.adminRole .publicAdmin]) == votePointState
+#guard
+  applyVoteEvent legacyThreshold votePointState "stranger"
+    (.removeMember "a") == votePointState
+#guard
+  applyVoteEvent legacyThreshold votePointState "stranger"
+    (.setRoles "a" []) == votePointState
+
+/-! ## R57-05 — the retained R-45 oracle on the production fold -/
+
+/-- Three responsabili, question `q` open on one assent. A stranger's
+`removeMember` is rejected with the franchise error and leaves the entire
+state unchanged: no membership change, no threshold drop, no closure, no
+verdict. -/
+def r45PreEvents : List (Key × VoteEvent) :=
+  [vAdmit "a" "a", vAdmit "a" "b", vAdmit "a" "c",
+    vOpen "a" "q", vCast "a" "q" .assent]
+
+def r45Before : VoteState := foldVote legacyThreshold r45PreEvents
+
+def r45After : VoteState :=
+  applyVoteEvent legacyThreshold r45Before "stranger" (.removeMember "b")
+
+#guard
+  franchiseSize r45Before == 3 &&
+    isResponsabile "stranger" r45Before == false &&
+    validateVoteEvent legacyThreshold r45Before "stranger" (.removeMember "b") ==
+      Except.error VoteError.notResponsabile &&
+    r45After == r45Before
+
+/-! ## R57-07 — the semantic no-expiry premise covers a preserving non-admin
+admission (T5713) -/
+
+/-- A non-admin admission by a responsabile: the state really changes
+(membership grows) while the target question's ballots, the franchise, and
+the proposer's standing are preserved — and the semantic premise holds. -/
+def nonAdminAdmission : VoteEvent :=
+  .admitMember "observer" "observer@vote.test" []
+
+#guard
+  let after := applyVoteEvent legacyThreshold r45Before "a" nonAdminAdmission
+  after != r45Before &&
+    franchise after == franchise r45Before &&
+    lookupQuestion "q" after == lookupQuestion "q" r45Before
+
+example : PreservesQuestionSemantics legacyThreshold r45Before "a"
+    nonAdminAdmission "q" := by decide
+
+-- The premise discriminates: a franchise-changing admission, a
+-- target-ballot cast, and a standing-changing role change do not satisfy it.
+example : ¬ PreservesQuestionSemantics legacyThreshold r45Before "a"
+    (.admitMember "x" "x@vote.test" [.adminRole .publicAdmin]) "q" := by decide
+
+example : ¬ PreservesQuestionSemantics legacyThreshold r45Before "b"
+    (.cast "q" .assent) "q" := by decide
+
+example : ¬ PreservesQuestionSemantics legacyThreshold r45Before "a"
+    (.setRoles "b" []) "q" := by decide
 
 end KelGroups.Vote

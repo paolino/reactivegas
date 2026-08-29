@@ -15,6 +15,11 @@ trace (a tally key may have lost standing after casting, V-3), so it is
 stated with the cast-time prefix as its witness rather than as a final-state
 predicate.
 
+The no-expiry premise `PreservesQuestionSemantics` observes the target
+question's ballots, the franchise, and the proposer's standing through the
+production step itself; it replaces the constructor whitelist and covers the
+preserving non-admin member admission (R57-07).
+
 Axiom sets of the contractual theorems are printed at the bottom; the frozen
 gate reads the printed lines.
 -/
@@ -624,17 +629,16 @@ private theorem effectedState_sweepReady (gs : VoteState) (signer : Key) (event 
         rw [heff]
         exact h
   | cast questionId ballot =>
-      by_cases hresp : isResponsabile signer gs = true
-      · cases hlook : lookupQuestion questionId gs with
+      cases hlook : lookupQuestion questionId gs with
         | none =>
             have heff : effectedState gs signer (.cast questionId ballot) = gs := by
-              simp [effectedState, hresp, hlook]
+              simp [effectedState, hlook]
             rw [heff]
             exact h
         | some question =>
             have heff : effectedState gs signer (.cast questionId ballot) =
                 { gs with openQuestions := assocInsert questionId (placeBallot signer ballot question) gs.openQuestions } := by
-              simp [effectedState, hresp, hlook]
+              simp [effectedState, hlook]
             rw [heff]
             have hqmem : (questionId, question) ∈ gs.openQuestions :=
               assocLookup_some_mem' questionId question gs.openQuestions hlook
@@ -666,10 +670,6 @@ private theorem effectedState_sweepReady (gs : VoteState) (signer : Key) (event 
               · exact h.openClean qid q
                   (mem_assocLookup_some' qid q gs.openQuestions h.openNodup
                     ((assocErase_sublist' questionId gs.openQuestions).mem herased))
-      · have heff : effectedState gs signer (.cast questionId ballot) = gs := by
-          simp [effectedState, hresp]
-        rw [heff]
-        exact h
   | renounce questionId =>
       have heff : effectedState gs signer (.renounce questionId) = gs := rfl
       rw [heff]
@@ -690,24 +690,16 @@ private theorem effectedState_sweepReady (gs : VoteState) (signer : Key) (event 
         gs.members h.membersNodup, h.openNodup, h.closedNodup, h.openClosedDisjoint,
         h.openClean, h.closedClean, h.closedNotOpen⟩
 
-private theorem gatedEffect_sweepReady (θ : Threshold) (gs : VoteState)
-    (signer : Key) (event : VoteEvent) (h : SweepReady gs) :
-    SweepReady
-      (match validateVoteEvent θ gs signer event with
-        | .ok () => effectedState gs signer event
-        | .error _ => gs) := by
-  cases validateVoteEvent θ gs signer event with
-  | error _ => exact h
-  | ok u =>
-      cases u
-      exact effectedState_sweepReady gs signer event h
-
 theorem applyVoteEvent_preserves_wellFormed (θ : Threshold) (gs : VoteState)
     (signer : Key) (event : VoteEvent) (h : VoteWellFormed θ gs) :
     VoteWellFormed θ (applyVoteEvent θ gs signer event) := by
   simp only [applyVoteEvent]
-  exact sweepClosures_wellFormed θ _
-    (gatedEffect_sweepReady θ gs signer event h.toSweepReady)
+  cases hval : validateVoteEvent θ gs signer event with
+  | error _ => exact h
+  | ok u =>
+      cases u
+      exact sweepClosures_wellFormed θ (effectedState gs signer event)
+        (effectedState_sweepReady gs signer event h.toSweepReady)
 
 private theorem foldFrom_preserves_wellFormed (θ : Threshold) :
     ∀ (events : List (Key × VoteEvent)) (initial : VoteState),
@@ -728,27 +720,6 @@ theorem foldVote_wellFormed (θ : Threshold) (events : List (Key × VoteEvent)) 
 private theorem foldVote_append (θ : Threshold) (pre suffix : List (Key × VoteEvent)) :
     foldVote θ (pre ++ suffix) = foldFrom θ (foldVote θ pre) suffix := by
   simp [foldVote, foldFrom, List.foldl_append]
-
-private theorem sweepClosures_id_of_wellFormed (θ : Threshold) (gs : VoteState)
-    (h : VoteWellFormed θ gs) : sweepClosures θ gs = gs := by
-  have hops :
-      gs.openQuestions.filter
-          (fun entry : QuestionId × Question => verdictOf θ gs entry.2 = .open) =
-        gs.openQuestions := by
-    refine List.filter_eq_self.mpr ?_
-    intro entry hentry
-    have hlook :=
-      mem_assocLookup_some' entry.1 entry.2 gs.openQuestions h.openNodup hentry
-    have hv := h.opensOpen entry.1 entry.2 hlook
-    simp [hv]
-  have hnil : gs.openQuestions.filterMap (sweepStep θ gs) = [] := by
-    refine List.filterMap_eq_nil_iff.mpr ?_
-    intro entry hentry
-    have hlook :=
-      mem_assocLookup_some' entry.1 entry.2 gs.openQuestions h.openNodup hentry
-    have hv := h.opensOpen entry.1 entry.2 hlook
-    simp [sweepStep, hv]
-  simp [sweepClosures, hops, hnil]
 
 private theorem sweepClosures_preserves_qid (θ : Threshold) (gs : VoteState)
     (qid : QuestionId)
@@ -802,17 +773,16 @@ private theorem effectedState_preserves_qid (gs : VoteState) (signer : Key)
         rw [heff]
         exact h
   | cast questionId ballot =>
-      by_cases hresp : isResponsabile signer gs = true
-      · cases hlook : lookupQuestion questionId gs with
+      cases hlook : lookupQuestion questionId gs with
         | none =>
             have heff : effectedState gs signer (.cast questionId ballot) = gs := by
-              simp [effectedState, hresp, hlook]
+              simp [effectedState, hlook]
             rw [heff]
             exact h
         | some question =>
             have heff : effectedState gs signer (.cast questionId ballot) =
                 { gs with openQuestions := assocInsert questionId (placeBallot signer ballot question) gs.openQuestions } := by
-              simp [effectedState, hresp, hlook]
+              simp [effectedState, hlook]
             rw [heff]
             rcases h with hopen | hclosed
             · refine Or.inl ?_
@@ -822,10 +792,6 @@ private theorem effectedState_preserves_qid (gs : VoteState) (signer : Key)
               · exact Or.inr
                   ((mem_map_fst_erase_of_ne questionId qid gs.openQuestions heq).mpr hopen)
             · exact Or.inr hclosed
-      · have heff : effectedState gs signer (.cast questionId ballot) = gs := by
-          simp [effectedState, hresp]
-        rw [heff]
-        exact h
   | renounce questionId =>
       have heff : effectedState gs signer (.renounce questionId) = gs := rfl
       rw [heff]
@@ -854,7 +820,7 @@ private theorem applyVoteEvent_preserves_qid (θ : Threshold) (gs : VoteState)
       qid ∈ (applyVoteEvent θ gs signer event).closed.map (·.questionId) := by
   simp only [applyVoteEvent]
   cases validateVoteEvent θ gs signer event with
-  | error _ => exact sweepClosures_preserves_qid θ gs qid h
+  | error _ => exact h
   | ok u =>
       cases u
       exact sweepClosures_preserves_qid θ (effectedState gs signer event) qid
@@ -911,190 +877,63 @@ theorem questions_partition (θ : Threshold) (events : List (Key × VoteEvent)) 
   rw [foldVote_append]
   exact foldFrom_preserves_qid θ suffix (foldVote θ pre) qid hin
 
-/-! ## INV-54-NOEXPIRY (R-54) -/
+/-! ## INV-54-NOEXPIRY (R-54) — semantic preservation premise (R57-07) -/
 
-/-- An event that does not touch this question's ballots, the franchise, or
-the proposer's standing. Member-role events are excluded: they can move the
-threshold. -/
-def EventPreservesQuestion (gs : VoteState) (signer : Key) (event : VoteEvent)
-    (qid : QuestionId) : Prop :=
-  match event with
-  | .cast otherId _ => qid ≠ otherId ∨ isResponsabile signer gs = false
-  | .openQuestion _ _ => True
-  | .renounce _ => True
-  | .admitMember _ _ _ => False
-  | .removeMember _ => False
-  | .setRoles _ _ => False
+/-- The observable content of "this signed event preserves the target
+question", read off the production step itself: the target question keeps
+its exact value, the franchise is unchanged, and the proposer's standing is
+unchanged. This is a semantic observation over arbitrary events, not a
+constructor whitelist: a non-admin member admission satisfies it, while a
+franchise-changing or target-ballot-changing event does not. -/
+def preservesQuestionDecide (threshold : Threshold) (gs : VoteState)
+    (signer : Key) (event : VoteEvent) (questionId : QuestionId) : Bool :=
+  match lookupQuestion questionId gs with
+  | none => true
+  | some q =>
+      decide (lookupQuestion questionId
+          (applyVoteEvent threshold gs signer event) = some q) &&
+        decide (franchise (applyVoteEvent threshold gs signer event) =
+          franchise gs) &&
+        decide (isResponsabile q.proposer
+            (applyVoteEvent threshold gs signer event) =
+          isResponsabile q.proposer gs)
 
-private theorem no_expiry_cast_other (θ : Threshold) (gs : VoteState) (signer : Key)
-    (questionId otherId : QuestionId) (ballot : Ballot) (q : Question)
-    (hform : VoteWellFormed θ gs)
-    (hopen : assocLookup questionId gs.openQuestions = some q)
-    (hdist : questionId ≠ otherId) :
-    assocLookup questionId
-        (applyVoteEvent θ gs signer (.cast otherId ballot)).openQuestions = some q ∧
-      verdictOf θ (applyVoteEvent θ gs signer (.cast otherId ballot)) q = Verdict.open := by
-  by_cases hresp : isResponsabile signer gs = true
-  · cases hlook : lookupQuestion otherId gs with
-    | none =>
-        have hval : validateVoteEvent θ gs signer (.cast otherId ballot) =
-            .error .questionNotFound := by
-          simp [validateVoteEvent, hresp, hlook]
-        simp only [applyVoteEvent, hval]
-        have heff : (match validateVoteEvent θ gs signer (.cast otherId ballot) with
-            | .ok () => effectedState gs signer (.cast otherId ballot)
-            | .error _ => gs) = gs := by
-          simp [hval]
-        have hfinal := sweepClosures_wellFormed θ gs hform.toSweepReady
-        have hkept : (questionId, q) ∈ (sweepClosures θ gs).openQuestions :=
-          (sweepClosures_open_mem θ gs (questionId, q)).mpr
-            ⟨assocLookup_some_mem' questionId q gs.openQuestions hopen,
-              hform.opensOpen questionId q hopen⟩
-        have hlookup' :=
-          mem_assocLookup_some' questionId q (sweepClosures θ gs).openQuestions
-            hfinal.openNodup hkept
-        exact ⟨hlookup', hfinal.opensOpen questionId q hlookup'⟩
-    | some other =>
-        have hval : validateVoteEvent θ gs signer (.cast otherId ballot) = .ok () := by
-          simp [validateVoteEvent, hresp, hlook]
-        simp only [applyVoteEvent, hval]
-        have heff : effectedState gs signer (.cast otherId ballot) =
-            { gs with openQuestions := assocInsert otherId (placeBallot signer ballot other) gs.openQuestions } := by
-          simp [effectedState, hresp, hlook]
-        rw [heff]
-        have hplaced : assocLookup questionId
-            (assocInsert otherId (placeBallot signer ballot other) gs.openQuestions) = some q :=
-          (assocInsert_other_lookup questionId otherId
-            (placeBallot signer ballot other) gs.openQuestions hdist).trans hopen
-        have hmem := assocLookup_some_mem' questionId q
-          (assocInsert otherId (placeBallot signer ballot other) gs.openQuestions) hplaced
-        have hv : verdictOf θ
-            { gs with openQuestions := assocInsert otherId (placeBallot signer ballot other) gs.openQuestions } q =
-            Verdict.open := by
-          rw [verdictOf_congr_members θ (by rfl) q]
-          exact hform.opensOpen questionId q hopen
-        have hsr0 :=
-          effectedState_sweepReady gs signer (.cast otherId ballot) hform.toSweepReady
-        rw [heff] at hsr0
-        have hfinal := sweepClosures_wellFormed θ _ hsr0
-        have hkept : (questionId, q) ∈ (sweepClosures θ
-            { gs with openQuestions := assocInsert otherId (placeBallot signer ballot other) gs.openQuestions }).openQuestions :=
-          (sweepClosures_open_mem θ _ (questionId, q)).mpr ⟨hmem, hv⟩
-        have hlookup' := mem_assocLookup_some' questionId q _ hfinal.openNodup hkept
-        exact ⟨hlookup', hfinal.opensOpen questionId q hlookup'⟩
-  · have hval : validateVoteEvent θ gs signer (.cast otherId ballot) =
-        .error .notResponsabile := by
-      simp [validateVoteEvent, hresp]
-    simp only [applyVoteEvent, hval]
-    have hfinal := sweepClosures_wellFormed θ gs hform.toSweepReady
-    have hkept : (questionId, q) ∈ (sweepClosures θ gs).openQuestions :=
-      (sweepClosures_open_mem θ gs (questionId, q)).mpr
-        ⟨assocLookup_some_mem' questionId q gs.openQuestions hopen,
-          hform.opensOpen questionId q hopen⟩
-    have hlookup' :=
-      mem_assocLookup_some' questionId q (sweepClosures θ gs).openQuestions
-        hfinal.openNodup hkept
-    exact ⟨hlookup', hfinal.opensOpen questionId q hlookup'⟩
+/-- R57-07: the no-expiry preservation premise. It holds exactly when the
+event preserves the target's ballots, the current franchise, and the
+proposer's standing; its truth depends on those semantic observations, never
+on the event constructor. -/
+def PreservesQuestionSemantics (threshold : Threshold) (gs : VoteState)
+    (signer : Key) (event : VoteEvent) (questionId : QuestionId) : Prop :=
+  preservesQuestionDecide threshold gs signer event questionId = true
 
-private theorem no_expiry_after_sweep (θ : Threshold) (gs : VoteState)
-    (questionId : QuestionId) (q : Question)
-    (hform : VoteWellFormed θ gs)
-    (hopen : assocLookup questionId gs.openQuestions = some q) :
-    assocLookup questionId (sweepClosures θ gs).openQuestions = some q ∧
-      verdictOf θ (sweepClosures θ gs) q = Verdict.open := by
-  have hfinal := sweepClosures_wellFormed θ gs hform.toSweepReady
-  have hkept : (questionId, q) ∈ (sweepClosures θ gs).openQuestions :=
-    (sweepClosures_open_mem θ gs (questionId, q)).mpr
-      ⟨assocLookup_some_mem' questionId q gs.openQuestions hopen,
-        hform.opensOpen questionId q hopen⟩
-  have hlookup' :=
-    mem_assocLookup_some' questionId q (sweepClosures θ gs).openQuestions
-      hfinal.openNodup hkept
-  exact ⟨hlookup', hfinal.opensOpen questionId q hlookup'⟩
-
-private theorem no_expiry_step (θ : Threshold) (gs : VoteState) (signer : Key)
-    (event : VoteEvent) (questionId : QuestionId) (q : Question)
-    (hform : VoteWellFormed θ gs)
-    (hopen : assocLookup questionId gs.openQuestions = some q)
-    (hpres : EventPreservesQuestion gs signer event questionId) :
-    assocLookup questionId (applyVoteEvent θ gs signer event).openQuestions = some q ∧
-      verdictOf θ (applyVoteEvent θ gs signer event) q = Verdict.open := by
-  cases event with
-  | cast otherId ballot =>
-      rcases hpres with hdist | hnr
-      · exact no_expiry_cast_other θ gs signer questionId otherId ballot q
-          hform hopen hdist
-      · have hval : validateVoteEvent θ gs signer (.cast otherId ballot) =
-            .error .notResponsabile := by
-          simp [validateVoteEvent, hnr]
-        simp only [applyVoteEvent, hval]
-        exact no_expiry_after_sweep θ gs questionId q hform hopen
-  | openQuestion otherId kind =>
-      by_cases hresp : isResponsabile signer gs = true
-      · have hval : validateVoteEvent θ gs signer (.openQuestion otherId kind) =
-            .ok () := by
-          simp [validateVoteEvent, hresp]
-        simp only [applyVoteEvent, hval]
-        by_cases hguard : (lookupQuestion otherId gs).isNone
-            && !(gs.closed.any (fun record : ClosureRecord => record.questionId == otherId))
-        · have hdist : questionId ≠ otherId := by
-            intro heq
-            subst otherId
-            simp [lookupQuestion, hopen] at hguard
-          have heff : effectedState gs signer (.openQuestion otherId kind) =
-              { gs with openQuestions := assocInsert otherId (Question.mk kind signer [] []) gs.openQuestions } := by
-            simp [effectedState, hguard]
-          rw [heff]
-          have hplaced : assocLookup questionId
-              (assocInsert otherId (Question.mk kind signer [] []) gs.openQuestions) = some q :=
-            (assocInsert_other_lookup questionId otherId
-              (Question.mk kind signer [] []) gs.openQuestions hdist).trans hopen
-          have hmem := assocLookup_some_mem' questionId q _ hplaced
-          have hv : verdictOf θ
-              { gs with openQuestions := assocInsert otherId (Question.mk kind signer [] []) gs.openQuestions } q =
-              Verdict.open := by
-            rw [verdictOf_congr_members θ (by rfl) q]
-            exact hform.opensOpen questionId q hopen
-          have hsr0 :=
-            effectedState_sweepReady gs signer (.openQuestion otherId kind) hform.toSweepReady
-          rw [heff] at hsr0
-          have hfinal := sweepClosures_wellFormed θ _ hsr0
-          have hkept : (questionId, q) ∈ (sweepClosures θ
-              { gs with openQuestions := assocInsert otherId (Question.mk kind signer [] []) gs.openQuestions }).openQuestions :=
-            (sweepClosures_open_mem θ _ (questionId, q)).mpr ⟨hmem, hv⟩
-          have hlookup' := mem_assocLookup_some' questionId q _ hfinal.openNodup hkept
-          exact ⟨hlookup', hfinal.opensOpen questionId q hlookup'⟩
-        · have heff : effectedState gs signer (.openQuestion otherId kind) = gs := by
-            simp [effectedState, hguard]
-          rw [heff]
-          exact no_expiry_after_sweep θ gs questionId q hform hopen
-      · have hval : validateVoteEvent θ gs signer (.openQuestion otherId kind) =
-            .error .notResponsabile := by
-          simp [validateVoteEvent, hresp]
-        simp only [applyVoteEvent, hval]
-        exact no_expiry_after_sweep θ gs questionId q hform hopen
-  | renounce otherId =>
-      have heq : applyVoteEvent θ gs signer (.renounce otherId) = sweepClosures θ gs := by
-        simp only [applyVoteEvent, effectedState]
-        cases validateVoteEvent θ gs signer (.renounce otherId) <;> rfl
-      rw [heq]
-      exact no_expiry_after_sweep θ gs questionId q hform hopen
-  | admitMember _ _ _ => cases hpres
-  | removeMember _ => cases hpres
-  | setRoles _ _ => cases hpres
+instance preservesQuestionSemanticsDecidable (threshold : Threshold)
+    (gs : VoteState) (signer : Key) (event : VoteEvent)
+    (questionId : QuestionId) :
+    Decidable (PreservesQuestionSemantics threshold gs signer event
+      questionId) :=
+  instDecidableEqBool (preservesQuestionDecide threshold gs signer event
+    questionId) true
 
 theorem no_expiry (θ : Threshold) (events : List (Key × VoteEvent))
     (pre : List (Key × VoteEvent)) (signer : Key) (event : VoteEvent)
     (suffix : List (Key × VoteEvent)) (questionId : QuestionId) (q : Question)
     (hevents : events = pre ++ (signer, event) :: suffix)
     (hopen : assocLookup questionId (foldVote θ pre).openQuestions = some q)
-    (hpres : EventPreservesQuestion (foldVote θ pre) signer event questionId) :
+    (hpres : PreservesQuestionSemantics θ (foldVote θ pre) signer event
+      questionId) :
     assocLookup questionId
         (applyVoteEvent θ (foldVote θ pre) signer event).openQuestions = some q ∧
       verdictOf θ (applyVoteEvent θ (foldVote θ pre) signer event) q = Verdict.open := by
   subst hevents
-  exact no_expiry_step θ (foldVote θ pre) signer event questionId q
-    (foldVote_wellFormed θ pre) hopen hpres
+  have hdec : preservesQuestionDecide θ (foldVote θ pre) signer event
+      questionId = true := hpres
+  simp only [preservesQuestionDecide] at hdec
+  rw [lookupQuestion, hopen] at hdec
+  simp only [Bool.and_eq_true, decide_eq_true_eq] at hdec
+  have hlook := hdec.1.1
+  have hform := applyVoteEvent_preserves_wellFormed θ (foldVote θ pre) signer
+    event (foldVote_wellFormed θ pre)
+  exact ⟨hlook, hform.opensOpen questionId q hlook⟩
 
 /-! ## INV-54-FRANCHISE (R-44, R-45, VC-5) -/
 
@@ -1151,27 +990,41 @@ private theorem sweepClosures_tallyKeys (θ : Threshold) (gs : VoteState) (k : K
       exact List.mem_append.mpr (Or.inr (List.mem_flatten.mpr
         ⟨keys, List.mem_map.mpr ⟨c, hc', heq⟩, hkin⟩))
 
+/-- R57-03: exact complete-state identity for an arbitrary rejected pair.
+No `VoteWellFormed`, reachability, event-kind, or constructor-specific
+premise: the production boundary returns the input before both effect and
+sweep. -/
 theorem inadmissible_is_noop (θ : Threshold) (gs : VoteState) (signer : Key)
-    (event : VoteEvent) (hform : VoteWellFormed θ gs)
-    (hbad : validateVoteEvent θ gs signer event ≠ .ok ()) :
+    (event : VoteEvent) (error : VoteError)
+    (rejected : validateVoteEvent θ gs signer event = .error error) :
     applyVoteEvent θ gs signer event = gs := by
-  simp only [applyVoteEvent]
-  cases hval : validateVoteEvent θ gs signer event with
-  | error _ =>
-      simp [hval]
-      exact sweepClosures_id_of_wellFormed θ gs hform
-  | ok u =>
-      cases u
-      exact (hbad hval).elim
+  simp only [applyVoteEvent, rejected]
+
+/-- R57-04: the universal non-responsabile corollary. Once a franchise
+exists, a signer who is not a current responsabile is inert for every
+`VoteEvent` — including `admitMember`, `removeMember`, and `setRoles`; there
+are no constructor exceptions. -/
+theorem nonresponsabile_event_noop (θ : Threshold) (gs : VoteState)
+    (signer : Key) (event : VoteEvent) (bootstrapped : franchiseSize gs > 0)
+    (unauthorized : isResponsabile signer gs = false) :
+    applyVoteEvent θ gs signer event = gs := by
+  have hs0 : (franchiseSize gs == 0) = false := by
+    cases hsz : franchiseSize gs with
+    | zero => rw [hsz] at bootstrapped; simp at bootstrapped
+    | succ n => simp [hsz]
+  have hval : validateVoteEvent θ gs signer event =
+      .error VoteError.notResponsabile := by
+    cases event <;> simp [validateVoteEvent, unauthorized, hs0]
+  exact inadmissible_is_noop θ gs signer event _ hval
 
 theorem unfranchised_cast_noop (θ : Threshold) (gs : VoteState) (signer : Key)
     (questionId : QuestionId) (ballot : Ballot)
-    (hform : VoteWellFormed θ gs)
     (h : isResponsabile signer gs = false) :
-    applyVoteEvent θ gs signer (.cast questionId ballot) = gs :=
-  inadmissible_is_noop θ gs signer (.cast questionId ballot) hform (by
-    intro hok
-    simp [validateVoteEvent, h] at hok)
+    applyVoteEvent θ gs signer (.cast questionId ballot) = gs := by
+  have hval : validateVoteEvent θ gs signer (.cast questionId ballot) =
+      .error VoteError.notResponsabile := by
+    simp [validateVoteEvent, h]
+  simp only [applyVoteEvent, hval]
 
 private theorem tallyKeysOfState_erased_le (gs : VoteState) (qid : QuestionId) (k : Key)
     (hk : k ∈ tallyKeysOfState { gs with openQuestions := assocErase qid gs.openQuestions }) :
@@ -1201,8 +1054,9 @@ private theorem tallyKeysOfState_insert_cases (gs : VoteState) (qid : QuestionId
   · exact Or.inl hp
   · exact Or.inr hrest
 
-private theorem effectedState_tally_growth (gs : VoteState) (signer : Key)
-    (event : VoteEvent) (k : Key)
+private theorem effectedState_tally_growth (θ : Threshold) (gs : VoteState)
+    (signer : Key) (event : VoteEvent) (k : Key)
+    (admitted : validateVoteEvent θ gs signer event = Except.ok ())
     (hk : k ∈ tallyKeysOfState (effectedState gs signer event)) :
     k ∈ tallyKeysOfState gs ∨
       (signer = k ∧ ∃ qid ballot, event = VoteEvent.cast qid ballot ∧
@@ -1224,32 +1078,31 @@ private theorem effectedState_tally_growth (gs : VoteState) (signer : Key)
         rw [heff] at hk
         exact Or.inl hk
   | cast questionId ballot =>
-      by_cases hresp : isResponsabile signer gs = true
-      · cases hlook : lookupQuestion questionId gs with
-        | none =>
-            have heff : effectedState gs signer (.cast questionId ballot) = gs := by
-              simp [effectedState, hresp, hlook]
-            rw [heff] at hk
-            exact Or.inl hk
-        | some question =>
-            have heff : effectedState gs signer (.cast questionId ballot) =
-                { gs with openQuestions := assocInsert questionId (placeBallot signer ballot question) gs.openQuestions } := by
-              simp [effectedState, hresp, hlook]
-            rw [heff] at hk
-            rcases tallyKeysOfState_insert_cases gs questionId
-              (placeBallot signer ballot question) k hk with hp | her
-            · rcases placeBallot_tally signer ballot question k hp with heq | hinq
-              · exact Or.inr ⟨heq.symm, questionId, ballot, rfl, heq.symm ▸ hresp⟩
-              · refine Or.inl (List.mem_append.mpr (Or.inl ?_))
-                have hqmem := assocLookup_some_mem' questionId question
-                  gs.openQuestions hlook
-                exact List.mem_flatten.mpr ⟨tallyKeysOfQuestion question,
-                  List.mem_map.mpr ⟨(questionId, question), hqmem, rfl⟩, hinq⟩
-            · exact Or.inl (tallyKeysOfState_erased_le gs questionId k her)
-      · have heff : effectedState gs signer (.cast questionId ballot) = gs := by
-          simp [effectedState, hresp]
-        rw [heff] at hk
-        exact Or.inl hk
+      cases hresp : isResponsabile signer gs with
+      | false => simp [validateVoteEvent, hresp] at admitted
+      | true =>
+          have hresp : isResponsabile signer gs = true := hresp
+          cases hlook : lookupQuestion questionId gs with
+          | none =>
+              have heff : effectedState gs signer (.cast questionId ballot) = gs := by
+                simp [effectedState, hlook]
+              rw [heff] at hk
+              exact Or.inl hk
+          | some question =>
+              have heff : effectedState gs signer (.cast questionId ballot) =
+                  { gs with openQuestions := assocInsert questionId (placeBallot signer ballot question) gs.openQuestions } := by
+                simp [effectedState, hlook]
+              rw [heff] at hk
+              rcases tallyKeysOfState_insert_cases gs questionId
+                (placeBallot signer ballot question) k hk with hp | her
+              · rcases placeBallot_tally signer ballot question k hp with heq | hinq
+                · exact Or.inr ⟨heq.symm, questionId, ballot, rfl, heq.symm ▸ hresp⟩
+                · refine Or.inl (List.mem_append.mpr (Or.inl ?_))
+                  have hqmem := assocLookup_some_mem' questionId question
+                    gs.openQuestions hlook
+                  exact List.mem_flatten.mpr ⟨tallyKeysOfQuestion question,
+                    List.mem_map.mpr ⟨(questionId, question), hqmem, rfl⟩, hinq⟩
+              · exact Or.inl (tallyKeysOfState_erased_le gs questionId k her)
   | renounce questionId =>
       have heff : effectedState gs signer (.renounce questionId) = gs := rfl
       rw [heff] at hk
@@ -1276,17 +1129,10 @@ private theorem tally_keys_franchised_from (θ : Threshold) :
       rw [hmid] at hk
       rcases ih (applyVoteEvent θ initial signed.1 signed.2) k hk with
         hmem | ⟨pre, qid, ballot, suffix, hev, hfr⟩
-      · have hmid' : applyVoteEvent θ initial signed.1 signed.2 =
-            sweepClosures θ
-              (match validateVoteEvent θ initial signed.1 signed.2 with
-                | .ok () => effectedState initial signed.1 signed.2
-                | .error _ => initial) := rfl
-        have hgate : k ∈ tallyKeysOfState
+      · have hgate : k ∈ tallyKeysOfState
             (match validateVoteEvent θ initial signed.1 signed.2 with
-              | .ok () => effectedState initial signed.1 signed.2
-              | .error _ => initial) := by
-          rw [hmid'] at hmem
-          exact (sweepClosures_tallyKeys θ _ k).mp hmem
+              | .ok () => sweepClosures θ (effectedState initial signed.1 signed.2)
+              | .error _ => initial) := hmem
         cases hval : validateVoteEvent θ initial signed.1 signed.2 with
         | error _ =>
             simp [hval] at hgate
@@ -1294,7 +1140,8 @@ private theorem tally_keys_franchised_from (θ : Threshold) :
         | ok u =>
             cases u
             simp [hval] at hgate
-            rcases effectedState_tally_growth initial signed.1 signed.2 k hgate with
+            rcases effectedState_tally_growth θ initial signed.1 signed.2 k hval
+              ((sweepClosures_tallyKeys θ _ k).mp hgate) with
               hold | ⟨hsk, qid, ballot, hevc, hfr2⟩
             · exact Or.inl hold
             · have hsigned : signed = (k, VoteEvent.cast qid ballot) :=
@@ -1330,3 +1177,5 @@ the printed lines, so a theorem that vanishes takes its evidence with it. -/
 #print axioms KelGroups.Vote.no_expiry
 #print axioms KelGroups.Vote.franchise_of_tallies
 #print axioms KelGroups.Vote.verdictOf_threshold_congr
+#print axioms KelGroups.Vote.inadmissible_is_noop
+#print axioms KelGroups.Vote.nonresponsabile_event_noop

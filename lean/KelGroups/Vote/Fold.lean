@@ -18,10 +18,10 @@ Three load-bearing shapes:
   escape; this placement cannot.
 * `sweepClosures` re-evaluates every open question against the current
   franchise and threshold and closes, in the same step, every question that
-  has reached a verdict. `applyVoteEvent` calls it unconditionally on every
-  branch (R-51): after a ballot, after a member event, after an opening —
-  because the verdict depends on the *current* franchise, not only on
-  ballots.
+  has reached a verdict. `applyVoteEvent` sweeps after every *admitted*
+  event's effect (R-51): after a ballot, after a member event, after an
+  opening — because the verdict depends on the *current* franchise, not only
+  on ballots. A rejected event reaches neither its effect nor the sweep.
 * Closure is removal from the open set *plus* an appended closure record, as
   one operation. No branch ever erases a question without writing its record
   (R-61): a purchase-approval question holds members' money in escrow, and a
@@ -74,10 +74,11 @@ def sweepClosures (threshold : Threshold) (gs : VoteState) : VoteState :=
     closed := gs.closed ++ gs.openQuestions.filterMap (sweepStep threshold gs) }
 
 /-- The event's own effect on the state, before the recompute-and-close
-sweep. A cast by a non-responsabile is a no-op effect besides its rejection in
-validation (R-44, R-45): only a current responsabile can move a tally. An
-`openQuestion` never overwrites or revives an existing id — decided questions
-stay decided. -/
+sweep. Effects are authorization-free by architecture (F-001 property class):
+they assume an already-admitted event — all signer authorization happens only
+in the total exhaustive `validateVoteEvent` boundary — and contain no
+independent standing decision. An `openQuestion` never overwrites or revives
+an existing id — decided questions stay decided. -/
 def effectedState (gs : VoteState) (signer : Key) (event : VoteEvent) : VoteState :=
   match event with
   | .openQuestion questionId kind =>
@@ -87,13 +88,11 @@ def effectedState (gs : VoteState) (signer : Key) (event : VoteEvent) : VoteStat
         { gs with openQuestions := assocInsert questionId fresh gs.openQuestions }
       else gs
   | .cast questionId ballot =>
-      if isResponsabile signer gs then
-        match lookupQuestion questionId gs with
-        | some question =>
-            let placed := placeBallot signer ballot question
-            { gs with openQuestions := assocInsert questionId placed gs.openQuestions }
-        | none => gs
-      else gs
+      match lookupQuestion questionId gs with
+      | some question =>
+          let placed := placeBallot signer ballot question
+          { gs with openQuestions := assocInsert questionId placed gs.openQuestions }
+      | none => gs
   | .renounce _ => gs
   | .admitMember key email roles =>
       { gs with members := assocInsert key (Member.mk key email roles) gs.members }
@@ -101,22 +100,18 @@ def effectedState (gs : VoteState) (signer : Key) (event : VoteEvent) : VoteStat
   | .setRoles key roles =>
       { gs with members := assocAdjust key (fun member => { member with roles }) gs.members }
 
-/-- One fold step: the event's own effect, then the unconditional
-recompute-and-close sweep. The sweep call is outside the match, so every
-branch recomputes (R-51); a branch that skips it is exactly the mutation the
-R-70 controls must redden.
-
-An inadmissible signer/event pair (R-44, R-45) is a no-op of the effect:
-`validateVoteEvent` gates `effectedState`, and the sweep still runs on the
-unchanged state. On a well-formed state the sweep is the identity, so the
-whole step is a complete no-op — including a non-responsabile `openQuestion`.
--/
+/-- One fold step. The validation result is the sole production boundary
+(R57-01): it dominates both the event effect and the recompute-and-close
+sweep. On `.ok`, the effect runs and the sweep recomputes on the effected
+state; on any error the input state is returned exactly — no membership,
+franchise, question, tally, closure, or verdict computation is reached
+(R57-03). A branch that reaches an effect or the sweep without this decision
+is exactly the mutation the R-70/BYPASS controls redden. -/
 def applyVoteEvent (threshold : Threshold) (gs : VoteState) (signer : Key)
     (event : VoteEvent) : VoteState :=
-  sweepClosures threshold
-    (match validateVoteEvent threshold gs signer event with
-      | .ok () => effectedState gs signer event
-      | .error _ => gs)
+  match validateVoteEvent threshold gs signer event with
+  | .ok () => sweepClosures threshold (effectedState gs signer event)
+  | .error _ => gs
 
 /-- The production fold: every signed event, in order, from the empty state.
 This is the fold every theorem and witness of the run is stated over. -/
