@@ -57,6 +57,7 @@ build:
 lean:
     #!/usr/bin/env bash
     set -euo pipefail
+    ./nix/lean-dependency-direction.sh
     cd lean && lake build
 
 # Full CI pipeline
