@@ -1043,12 +1043,17 @@ function lawAlarm(viol, tag) {
 }
 
 /* --- Trace interchange v1 (FROZEN: reactivegas.trace, TRACE-FORMAT-v1) ----
-   LEAN_TRACES_V1 below is the verbatim output of TraceDriverV1.lean: the two
-   seed envelopes emitted by Lean `ToJson` instances over the authoritative
-   `step` of lean/Reactivegas/Step.lean (`lake env lean`, repo dev shell).
+   LEAN_TRACES_V1 below is the verbatim output of the COMMITTED producer
+   lean/TraceDriverV1.lean: the two seed envelopes emitted by Lean `ToJson`
+   instances over the authoritative `step` of lean/Reactivegas/Step.lean.
+   Reproduce from a clean checkout with `cd lean && lake env lean
+   TraceDriverV1.lean`; the committed verifier at the repository root,
+   `node economics-simulator-trace-gate.mjs`, regenerates it fresh, compares
+   byte/structure against this fixture, and replays every envelope through
+   THIS page's own production `traceConformance` (add `--selftest` for the
+   negative controls).
    Raw output sha256:
    f4722f098216841a3212bacc7ec965960d1d1412d8a08f080565b91277498608
-   (2026-08-29; driver and raw output preserved in the runtime handoffs).
    Each step carries its explicit input state and an applied result computed
    by Lean; nothing here is hand-written or JS-generated. The seed corpus
    contains applied steps only: the typed diagnostic evaluator that would emit
