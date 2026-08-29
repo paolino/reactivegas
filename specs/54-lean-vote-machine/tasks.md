@@ -36,19 +36,19 @@ independent audit has passed the exact candidate.
 Inputs are accepted emitter `719eb56`, accepted vote machine `13b44bc`, and
 their frozen local merge `32c63850`. NOTE-031 settles option D.
 
-- [ ] T5412 Add the closed `Route` type, exact 12/3/3 total `route`, and
+- [x] T5412 Add the closed `Route` type, exact 12/3/3 total `route`, and
       independently total `voteDerived` over all 18 events. (R-31, R-32)
-- [ ] T5413 Bind base-enacted evidence to production
+- [x] T5413 Bind base-enacted evidence to production
       `applyEventDetailed(...).enactment`, restrict it to the faithful
       `changeRoles`/`removeMember` vocabulary, and derive the threshold fact
       only there. (R-33)
-- [ ] T5414 Bind app-decided evidence to production `ClosureRecord.verdict` and
+- [x] T5414 Bind app-decided evidence to production `ClosureRecord.verdict` and
       eliminate `positive`/`negative`/`open` exhaustively, with `open` deriving
       no event. (R-34)
-- [ ] T5415 Ship executed non-vacuous production witnesses, exact inventory and
+- [x] T5415 Ship executed non-vacuous production witnesses, exact inventory and
       layering controls, added-constructor controls, proof-trust checks, and
       full CI receipts with Lean 4.25.0 named. (R-30, R-37)
-- [ ] T5416 Record exactly `enforced: PROVED-IN-MODEL`, retain the later-port
+- [x] T5416 Record exactly `enforced: PROVED-IN-MODEL`, retain the later-port
       caveat, preserve direct admission, and introduce no cross-channel join or
       identifier bridge. (R-35, R-36)
 
