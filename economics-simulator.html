@@ -258,6 +258,11 @@
   .entry.acc { border-left-color: var(--ok); background: var(--ok-bg); }
   .entry.rej { border-left-color: var(--bad); background: var(--bad-bg); }
   .entry.ext { border-left-color: #8a63c9; background: #f7f3fc; }
+  .entry.kel { border-left-color: #23538f; background: #eef4fb; }
+  .entry.kel.enacted { border-left-color: #0d3a70; }
+  .vq { border: 1px solid #b9cbe2; border-radius: 8px; background: #f6faff; padding: 7px 10px; margin-top: 6px; }
+  .vq .qh { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; font-size: .86rem; font-weight: 600; }
+  .vq .qs { margin-left: auto; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .8rem; }
   .entry .eh { font-weight: 600; }
   .entry .eh .mono { font-weight: 400; color: var(--muted); font-size: .74rem; }
   .entry .efl { font-size: .8rem; margin-top: 1px; }
@@ -286,12 +291,15 @@
   .pk:hover { background: #23538f; color: #fff; }
   .pk.npv { border-color: #e0b4b0; background: #fdf1f0; color: var(--bad); }
   .pk.npv:hover { background: var(--bad); color: #fff; }
+  .pk.enun { border-color: #dcc48a; background: #fbf4e2; color: #8a6a12; }
+  .pk.enun:hover { background: #8a6a12; color: #fff; }
   .gb[data-claim], .gbx[data-claim] { cursor: pointer; }
   .prow { display: flex; gap: 7px; align-items: baseline; padding: 4px 2px; font-size: .82rem; }
   .prow .pkind { flex: none; font-size: .64rem; font-weight: 700; border-radius: 5px; padding: 1px 6px; }
   .prow .pkind.thm { background: #eef4fb; color: #23538f; border: 1px solid #b9cbe2; }
   .prow .pkind.def { background: var(--ok-bg); color: var(--ok); border: 1px solid #bcd8c3; }
   .prow .pkind.npv { background: #fdf1f0; color: var(--bad); border: 1px solid #e0b4b0; }
+  .prow .pkind.enun { background: #fbf4e2; color: #8a6a12; border: 1px solid #dcc48a; }
   .prow .pdecl { display: block; font-size: .72rem; color: var(--muted); }
   .npvbadge {
     border: 1px solid #e0b4b0; background: #fdf1f0; color: var(--bad);
@@ -743,7 +751,8 @@ function attempt(s, e) {
 /* --- App state (all toy-side) ------------------------------------------- */
 
 let state = initState(FOUNDER);
-let history = [];        // newest first
+let kg = null;           // KelGroups vote-machine state (initialized below)
+let history = [];        // newest first (economic and vote entries, mk-tagged)
 let collSeq = 1;         // toy-side fresh CollId allocator
 let invNote = 'avvio';
 let completed = [];      // toy snapshots of accepted closePurchase, newest first
@@ -766,7 +775,8 @@ const EV = {
   electResponsabile:  { it: 'Eleggi responsabile',     roles: ['targetMember', 'author'] },
   removeResponsabile: { it: 'Revoca responsabile',     roles: ['targetResp', 'author'] },
   openPurchase:       { it: 'Apri un acquisto',        roles: ['label', 'author'] },
-  // interface outcomes: the vote happens outside this machine (kelgroups);
+  // interface outcomes: the vote happens in the OTHER machine (KelGroups.Vote)
+  // and only its closed verdict crosses the unproved bridge into this one;
   // the responsabile carrier required by Step.lean stays inside the adapter
   grantPermission:    { it: 'Assenso: permesso concesso', roles: ['coll'], external: true },
   denyPermission:     { it: 'Dissenso: acquisto negato',  roles: ['coll'], external: true },
@@ -873,7 +883,28 @@ const CLAIMS = {
   'inv-grant':         { c: "Il rifiuto di un assenso è spiegato esattamente dalle sue guardie Lean (inversione)", k: 'teorema', d: 'step_grant_inv', f: 'lean/Reactivegas/Invariants.lean', l: 173 },
   'inv-deny':          { c: "Il rifiuto di un dissenso è spiegato esattamente dalle sue guardie Lean (inversione)", k: 'teorema', d: 'step_deny_inv', f: 'lean/Reactivegas/Invariants.lean', l: 187 },
   'refusal-unproved':  { c: "Questo rifiuto non ha ancora un lemma di inversione accettato nella sorgente Lean verificata (li completa #48): la spiegazione del rifiuto è NON PROVATA", k: 'NON PROVATO', d: null, f: null, l: null },
-  'vote':              { c: 'Assenso e dissenso applicano un voto di maggioranza esterno: questa macchina non modella né verifica quel voto', k: 'NON PROVATO', d: null, f: null, l: null },
+  'vote-wellformed':   { c: 'Ogni stato raggiunto dal fold di voto è ben formato', k: 'teorema', d: 'KelGroups.Vote.foldVote_wellFormed', f: 'lean/KelGroups/Vote/Invariants.lean', l: 92 },
+  'vote-clean':        { c: 'Una posizione per persona: sì e no mai insieme, mai duplicati — la fuga «vota no» è sempre disponibile', k: 'teorema', d: 'KelGroups.Vote.ballots_nodup_disjoint', f: 'lean/KelGroups/Vote/Invariants.lean', l: 101 },
+  'vote-nostale':      { c: 'Nessuna domanda aperta ha già un verdetto: lo sweep chiude tutto ciò che è deciso, nello stesso passo', k: 'teorema', d: 'KelGroups.Vote.open_questions_are_open', f: 'lean/KelGroups/Vote/Invariants.lean', l: 112 },
+  'vote-partition':    { c: 'Aperte e chiuse partizionano le domande: nessuna sparisce in silenzio e ogni record chiuso ha un verdetto deciso (invariante escrow)', k: 'teorema', d: 'KelGroups.Vote.questions_partition', f: 'lean/KelGroups/Vote/Invariants.lean', l: 125 },
+  'vote-noexpiry':     { c: 'Nessuna scadenza: non esiste un campo temporale che possa chiudere una domanda', k: 'teorema', d: 'KelGroups.Vote.no_expiry', f: 'lean/KelGroups/Vote/Invariants.lean', l: 141 },
+  'vote-franchise':    { c: 'Ogni voto registrato fu espresso da chi era responsabile al momento del voto', k: 'teorema', d: 'KelGroups.Vote.franchise_of_tallies', f: 'lean/KelGroups/Vote/Invariants.lean', l: 178 },
+  'vote-policyfree':   { c: 'Il verdetto dipende dalla soglia solo attraverso il suo valore alla dimensione attuale dell’elettorato', k: 'teorema', d: 'KelGroups.Vote.verdictOf_threshold_congr', f: 'lean/KelGroups/Vote/Invariants.lean', l: 70 },
+  'vote-verdict':      { c: 'Il verdetto è deciso in un solo punto: sì contro soglia, poi no contro la stessa soglia, altrimenti aperta', k: 'definizione', d: 'KelGroups.Vote.verdictOf', f: 'lean/KelGroups/Vote/State.lean', l: 81 },
+  'vote-threshold-exhibit': { c: 'La soglia scelta dal toy è l’esibizione legacy (n+1)/2 — parametro esplicito, mai un default: con quattro votanti bastano due sì (o due no: il primo lato a soglia chiude)', k: 'definizione', d: 'KelGroups.Vote.legacyThreshold', f: 'lean/KelGroups/Vote/Types.lean', l: 44 },
+  'vote-place':        { c: 'Cambiare voto sposta la posizione; ripetere lo stesso voto non conta mai doppio', k: 'definizione', d: 'KelGroups.Vote.placeBallot', f: 'lean/KelGroups/Vote/Fold.lean', l: 46 },
+  'vote-sweep':        { c: 'Dopo OGNI evento lo sweep rivaluta ogni domanda aperta contro l’elettorato attuale e chiude ciò che è deciso', k: 'definizione', d: 'KelGroups.Vote.sweepClosures', f: 'lean/KelGroups/Vote/Fold.lean', l: 59 },
+  'vote-apply':        { c: 'Un passo del fold è: effetto dell’evento, poi sweep incondizionato', k: 'definizione', d: 'KelGroups.Vote.applyVoteEvent', f: 'lean/KelGroups/Vote/Fold.lean', l: 77 },
+  'vote-validate':     { c: 'Ogni rifiuto del voto è un errore distinto della macchina (notResponsabile, questionNotFound, …)', k: 'definizione', d: 'KelGroups.Vote.validateVoteEvent', f: 'lean/KelGroups/Vote/Validate.lean', l: 37 },
+  'vote-open-empty':   { c: 'Una domanda si apre con conteggi VUOTI: chi propone non è contato come sì (divergenza deliberata dal legacy)', k: 'definizione', d: 'KelGroups.Vote.applyVoteEvent', f: 'lean/KelGroups/Vote/Fold.lean', l: 77 },
+  'vote-admit-plain':  { c: 'Ammettere un membro è un evento semplice, mai una domanda e mai un voto (R-66)', k: 'definizione', d: 'KelGroups.Vote.VoteEvent', f: 'lean/KelGroups/Vote/Event.lean', l: 14 },
+  'vote-permission-kind': { c: 'Una domanda-permesso ha esattamente un designato e solo il SUO voto la decide', k: 'definizione', d: 'KelGroups.Vote.QuestionKind', f: 'lean/KelGroups/Vote/Types.lean', l: 63 },
+  'vote-closure-cause':{ c: 'Ogni chiusura dichiara la sua causa: soglia raggiunta, o cambio di elettorato che fa passare un conteggio ormai stantio', k: 'definizione', d: 'KelGroups.Vote.closureCause', f: 'lean/KelGroups/Vote/State.lean', l: 105 },
+  'kg-setinsert':      { c: 'L’inserimento di posizione è idempotente per costruzione (substrato condiviso)', k: 'definizione', d: 'KelGroups.setInsert', f: 'lean/KelGroups/Types.lean', l: 46 },
+  'kg-majority':       { c: 'Aritmetica della formula (n+1)/2: 0,1,1,2,2,3 per 0–5 — provata nella macchina fusa sullo stesso calcolo scelto qui come esibizione', k: 'teorema', d: 'majority_table', f: 'lean/KelGroups/Invariants.lean', l: 597 },
+  'kg-tie':            { c: 'Con un numero pari la formula (n+1)/2 non è stretta: 2·soglia ≤ n — provato nella macchina fusa sullo stesso calcolo', k: 'teorema', d: 'majority_not_strict_on_even', f: 'lean/KelGroups/Invariants.lean', l: 606 },
+  'join-vote-econ':    { c: 'Il PONTE fra verdetto di voto e permesso economico NON è provato: nessun teorema garantisce che Reactivegas consumi solo grantPermission derivati da un verdetto KelGroups.Vote (in attesa di #54 slice 2 / #48 backdonation)', k: 'NON PROVATO', d: null, f: null, l: null },
+  'vote-model-status': { c: 'Questo è il modello di voto RICHIESTO (#54 slice A): verdetti sì/no/aperta, dissenso, permessi per-persona sono modellati; le sue prove sono ENUNCIATE, NON DIMOSTRATE (sorry in corso di scarico). Il sottoinsieme fuso propose/approve è superato per il simulatore', k: 'NON PROVATO', d: null, f: null, l: null },
   'done-list':         { c: "L'elenco «acquisti completati» è ricostruzione del toy: la macchina non conserva gli acquisti chiusi", k: 'NON PROVATO', d: null, f: null, l: null },
   'toy-cap':           { c: 'Il limite 500 su accrediti e giri è del toy: la macchina Lean non ha limite superiore', k: 'NON PROVATO', d: null, f: null, l: null },
   'names':             { c: 'Nomi ed etichette sono decorazione del toy, fuori dallo stato macchina', k: 'NON PROVATO', d: null, f: null, l: null },
@@ -888,7 +919,7 @@ const CLAIMS = {
    extraction and runs fresh in the repository lake environment. The gate
    exits nonzero on any dangling citation, hash drift, or binding mismatch. */
 const CHECK_RECEIPT = {
-  sha: '8086d591ec0a2e48c1fb7479d381ec3547580c8587239cf4654dd5c7d0ba4b95',
+  sha: 'b5b7a02369f03dd02a61404ab64f378edb801f7261c7bcd93adc25095a2e5c90',
   decls: ['auth_referente_guard_inv', 'close_guard_inv', 'close_permission_to_close',
     'close_spends_referente', 'conservation_preserved', 'deposit_double_entry',
     'fail_guard_inv', 'governance_enacts_remove', 'not_insolvent_of_reach',
@@ -897,13 +928,72 @@ const CHECK_RECEIPT = {
     'solvent_preserved', 'splitUser', 'step', 'step_accept_inv', 'step_authorized',
     'step_correct_inv', 'step_deny_inv', 'step_grant_inv', 'step_pledge_inv',
     'step_refuse_inv', 'stripCollections_sum', 'uniquePledges',
-    'uniquePledges_pend_cons', 'withdraw_double_entry'],
+    'uniquePledges_pend_cons', 'withdraw_double_entry',
+    'majority_table', 'majority_not_strict_on_even', 'KelGroups.setInsert',
+    'KelGroups.Vote.foldVote_wellFormed', 'KelGroups.Vote.ballots_nodup_disjoint',
+    'KelGroups.Vote.open_questions_are_open', 'KelGroups.Vote.questions_partition',
+    'KelGroups.Vote.no_expiry', 'KelGroups.Vote.franchise_of_tallies',
+    'KelGroups.Vote.verdictOf_threshold_congr', 'KelGroups.Vote.verdictOf',
+    'KelGroups.Vote.legacyThreshold', 'KelGroups.Vote.placeBallot',
+    'KelGroups.Vote.sweepClosures', 'KelGroups.Vote.applyVoteEvent',
+    'KelGroups.Vote.validateVoteEvent', 'KelGroups.Vote.VoteEvent',
+    'KelGroups.Vote.QuestionKind', 'KelGroups.Vote.closureCause'],
+  /* Derived, never hand-assigned: for every citation above the gate runs
+     `#print axioms <decl>` fresh and classifies it `provato` (no sorryAx)
+     or `enunciato` (depends on sorryAx: stated, not yet proved). This map
+     must equal that fresh derivation or the gate exits RED. The UI renders
+     the three states (provato / enunciato, non dimostrato / NON PROVATO)
+     from here — a sorry-backed citation can never render as proved. */
+  axioms: {
+    'KelGroups.Vote.QuestionKind': 'provato', 'KelGroups.Vote.VoteEvent': 'provato',
+    'KelGroups.Vote.applyVoteEvent': 'provato',
+    'KelGroups.Vote.ballots_nodup_disjoint': 'enunciato',
+    'KelGroups.Vote.closureCause': 'provato',
+    'KelGroups.Vote.foldVote_wellFormed': 'enunciato',
+    'KelGroups.Vote.franchise_of_tallies': 'enunciato',
+    'KelGroups.Vote.legacyThreshold': 'provato', 'KelGroups.Vote.no_expiry': 'enunciato',
+    'KelGroups.Vote.open_questions_are_open': 'enunciato',
+    'KelGroups.Vote.placeBallot': 'provato',
+    'KelGroups.Vote.questions_partition': 'enunciato',
+    'KelGroups.Vote.sweepClosures': 'provato',
+    'KelGroups.Vote.validateVoteEvent': 'provato', 'KelGroups.Vote.verdictOf': 'provato',
+    'KelGroups.Vote.verdictOf_threshold_congr': 'enunciato',
+    'KelGroups.setInsert': 'provato', 'auth_referente_guard_inv': 'provato',
+    'close_guard_inv': 'provato', 'close_permission_to_close': 'provato',
+    'close_spends_referente': 'provato', 'conservation_preserved': 'provato',
+    'deposit_double_entry': 'provato', 'fail_guard_inv': 'provato',
+    'governance_enacts_remove': 'provato', 'majority_not_strict_on_even': 'provato',
+    'majority_table': 'provato', 'not_insolvent_of_reach': 'provato',
+    'pledge_escrow_debit': 'provato', 'pledge_guard_inv': 'provato',
+    'pledge_preserves_allUnique': 'provato', 'pledge_rejected_when_member': 'provato',
+    'pullCollection': 'provato', 'reach_solvent': 'provato', 'solvent': 'provato',
+    'solvent_preserved': 'provato', 'splitUser': 'provato', 'step': 'provato',
+    'step_accept_inv': 'provato', 'step_authorized': 'provato',
+    'step_correct_inv': 'provato', 'step_deny_inv': 'provato',
+    'step_grant_inv': 'provato', 'step_pledge_inv': 'provato',
+    'step_refuse_inv': 'provato', 'stripCollections_sum': 'provato',
+    'uniquePledges': 'provato', 'uniquePledges_pend_cons': 'provato',
+    'withdraw_double_entry': 'provato',
+  },
   sources: {
     'lean/Reactivegas/Types.lean': 'd4c1f54ce6a86bb49f708ae3cf5b1a1911a29bc630b4884841910bab778c7615',
     'lean/Reactivegas/State.lean': '23461c9d3b3cf4f686a7e459fff0645ce71f4924d0e1bb6cc5c6f81ca4ee8f2d',
     'lean/Reactivegas/Step.lean': '682192f4c12bb4fa8b76f9b74445c8b465382b0db8e845722c3293fed5c5851b',
     'lean/Reactivegas/Predicates.lean': 'aedaa51e3944f94a860c87e1eb9f6caea2b69ed7dc8aff4e66a25a58c2a4ccbd',
     'lean/Reactivegas/Invariants.lean': 'f9964580396daebb2e8df292a084d045e883ed6ffdb00cdb7b5d824052d99462',
+    'lean/KelGroups/Types.lean': 'bfc2b40f18d73bde56455b0aa4dc4b6d78bf34eb396a3827f22e4020b7c5be79',
+    'lean/KelGroups/State.lean': 'f0fd3e2a70e40da909cb1f804b0d68f42b7f6c6c898dca19daeb6048e4e041ea',
+    'lean/KelGroups/Fold.lean': 'c6cbb818705db481b5f6fd8469e7a7b279fe2e6f9a9675f4cb262df570d679cf',
+    'lean/KelGroups/Validate.lean': '23084e484f5bdf9f28d07644b4778e844ed2e821bcb7e88aaab7e650f4f9e68d',
+    'lean/KelGroups/Invariants.lean': '77f01acca48ec29e5b7eb251cf1225c5d6a86e2e7d22cf919c12f8b731bf6080',
+    'lean/KelGroups.lean': '6c8e10e7c1dc1486f90f27571d633a48051a4cc8742d1a120ad981a5b78e05ce',
+    'lean/KelGroups/Vote/Types.lean': 'dc6227f8c785b566aa08c3baab35deae5bc58d6ae420d1cf4e8df923b97fedc8',
+    'lean/KelGroups/Vote/Event.lean': 'b7a5aeb4fed0da18d066282f25b860dd45431821851bd8ce4226f39ecfca7f45',
+    'lean/KelGroups/Vote/State.lean': 'c7126be8045854a0fab42bf72d4f11dd4405d7a1fabe3b0e2eee4dcc4c098187',
+    'lean/KelGroups/Vote/Fold.lean': '90a48f45b60547e691c49013b130824f47f41cc73f7b1141b687cd5c95dabafa',
+    'lean/KelGroups/Vote/Validate.lean': '85179a25245028459bfd3cc28a0a1a63201e768c17602b8d5b9253d8169e7d7f',
+    'lean/KelGroups/Vote/Invariants.lean': '199e849eb126cb18a681cae1528b3892fbc804e704a948d4fa281f05479272f3',
+    'lean/KelGroups/Vote/Tests.lean': '2f561dd3b1655a58b39b8772cec726a646fe479477f65610ff99ce3f21d43e37',
   },
 };
 
@@ -917,7 +1007,7 @@ const TAG_CLAIMS = {
   addUser: ['membership'], electResponsabile: ['auth'],
   removeResponsabile: ['remove-refunds', 'remove-refund-sum'],
   openPurchase: ['open-referente'],
-  grantPermission: ['vote'], denyPermission: ['vote', 'close-gone'],
+  grantPermission: ['join-vote-econ'], denyPermission: ['join-vote-econ', 'close-gone'],
   deposit: ['accredito'], withdraw: ['prelievo'], transferCassa: ['giro', 'conservation'],
   pledge: ['impegno-escrow'], acceptPledge: ['accept-effect'],
   refusePledge: ['refuse-refund'], correctPledge: ['correct-conguaglio'],
@@ -925,18 +1015,37 @@ const TAG_CLAIMS = {
   failPurchase: ['close-gone'],
 };
 
+/* Three derived proof states, never hand-assigned per row:
+   'npv'  — NON PROVATO: no Lean declaration at all;
+   'enun' — enunciato, non dimostrato: the citation exists and typechecks but
+            `#print axioms` shows it depends on sorryAx (CHECK_RECEIPT.axioms,
+            derived fresh by the committed gate on every run);
+   'ok'   — provato: the citation exists and is sorry-free.
+   A citation missing from the axioms map counts as 'enun', never 'ok':
+   inability to classify must not render as proved (claimAudit flags it). */
+function proofState(id) {
+  const r = CLAIMS[id];
+  if (!r || r.k === 'NON PROVATO' || !r.d) return 'npv';
+  return CHECK_RECEIPT.axioms[r.d] === 'provato' ? 'ok' : 'enun';
+}
+
 function pkGlyph(ids) {
   const arr = Array.isArray(ids) ? ids : [ids];
-  const anyNpv = arr.some(i => CLAIMS[i] && CLAIMS[i].k === 'NON PROVATO');
-  return `<button type="button" class="pk${anyNpv ? ' npv' : ''}" data-claims="${arr.join(',')}"
-    title="prove Lean di questa affermazione">${anyNpv ? '⚠' : '⊢'}</button>`;
+  const states = arr.map(proofState);
+  const cls = states.includes('npv') ? 'npv' : (states.includes('enun') ? 'enun' : 'ok');
+  const glyph = cls === 'npv' ? '⚠' : (cls === 'enun' ? '◇' : '⊢');
+  return `<button type="button" class="pk${cls === 'ok' ? '' : ' ' + cls}" data-claims="${arr.join(',')}"
+    title="prove Lean di questa affermazione">${glyph}</button>`;
 }
 
 function claimRowHtml(id) {
   const r = CLAIMS[id];
   if (!r) return '';
-  const kindCls = r.k === 'teorema' ? 'thm' : (r.k === 'definizione' ? 'def' : 'npv');
-  const kindTx = r.k === 'NON PROVATO' ? 'NON PROVATO' : r.k;
+  const ps = proofState(id);
+  const kindCls = ps === 'npv' ? 'npv' : (ps === 'enun' ? 'enun'
+    : (r.k === 'teorema' ? 'thm' : 'def'));
+  const kindTx = ps === 'npv' ? 'NON PROVATO'
+    : (ps === 'enun' ? r.k + ' — enunciato, non dimostrato' : r.k + ' — provato');
   const prov = r.d
     ? `<span class="pdecl mono">${esc(r.d)} · ${esc(r.f)}:${r.l}</span>`
     : `<span class="pdecl mono">NONE — nessuna dichiarazione Lean</span>`;
@@ -980,8 +1089,14 @@ function claimAudit() {
         bad.push(id + ': dichiarazione senza ricevuta di verifica');
       if (!r.f || !Number.isInteger(r.l) || r.l <= 0 || !CHECK_RECEIPT.sources[r.f])
         bad.push(id + ': sorgente/riga non validi');
+      if (!['provato', 'enunciato'].includes(CHECK_RECEIPT.axioms[r.d]))
+        bad.push(id + ': stato assiomi non derivato per ' + r.d);
     }
   }
+  // the axioms map may not invent entries the citation set does not contain
+  for (const d of Object.keys(CHECK_RECEIPT.axioms))
+    if (!CHECK_RECEIPT.decls.includes(d))
+      bad.push('assiomi per dichiarazione non citata: ' + d);
   for (const g of Object.values(GUARD_CLAIMS))
     if (!CLAIMS[g]) bad.push('guardia senza riga: ' + g);
   for (const ids of Object.values(TAG_CLAIMS))
@@ -1097,10 +1212,12 @@ const REFUSAL_PROOFS = {
   denyPermission: 'inv-deny',
 };
 
-/* is this event's refusal explanation bound to a verified inversion theorem? */
+/* is this event's refusal explanation bound to a verified inversion theorem?
+   A sorry-backed (enunciato) theorem never counts: proved means proved. */
 function refusalProven(tag) {
   const row = CLAIMS[REFUSAL_PROOFS[tag]];
-  return !!(row && row.k === 'teorema' && row.d && CHECK_RECEIPT.decls.includes(row.d));
+  return !!(row && row.k === 'teorema' && row.d && CHECK_RECEIPT.decls.includes(row.d)
+    && CHECK_RECEIPT.axioms[row.d] === 'provato');
 }
 /* claim ids to show for a refusal/guard encounter on this event */
 function refusalClaims(tag) {
@@ -1193,6 +1310,380 @@ function traceConformance() {
   return { steps, refusedUnverified, corpus: 'seme-locale-solo-applicati' };
 }
 
+/* --- Required Vote machine core: transcription of lean/KelGroups/Vote/ ----
+   Second machine, MODEL-FAITHFUL to the required vote model (#54 slice A,
+   REQUIRED-OF-SUBSTRATE): three-way verdicts with `open` as a real outcome,
+   dissent, per-person permission questions, explicit threshold parameter,
+   one-position-per-responsabile ballots, the unconditional recompute-and-
+   close sweep, and append-only closure records. Its contractual theorems are
+   currently STATED WITH UNPROVED BODIES (sorry): the manifest renders them
+   «enunciato, non dimostrato», never «provato» — the three-state
+   classification is derived from `#print axioms` by the committed claim
+   gate, not asserted here. Toy decoration (names, question phrasing) stays
+   outside. The economic↔vote JOIN remains first-class NON PROVATO
+   ('join-vote-econ'). */
+
+/* the threshold is a machine PARAMETER (R-46); the toy's explicit choice is
+   the named legacy exhibit (n+1)/2 — declared, never a hidden default */
+const VT_THRESHOLDS = {
+  legacyThreshold: n => Math.floor((n + 1) / 2),
+  zeroThreshold: () => 0,
+};
+const VT_THRESHOLD_NAME = 'legacyThreshold';
+const vtTheta = VT_THRESHOLDS[VT_THRESHOLD_NAME];
+
+const vtEmpty = () => ({ members: [], openQuestions: [], closed: [] });
+const vtLookup = (k, l) => { for (const [c, v] of l) if (c === k) return v; return null; };
+const vtErase = (k, l) => { const i = l.findIndex(e => e[0] === k);
+  return i < 0 ? l.slice() : l.slice(0, i).concat(l.slice(i + 1)); };
+const vtInsert = (k, v, l) => [[k, v], ...vtErase(k, l)];
+const vtAdjust = (k, f, l) => { const i = l.findIndex(e => e[0] === k);
+  if (i < 0) return l.slice(); const out = l.slice(); out[i] = [k, f(out[i][1])]; return out; };
+const vtSetInsert = (v, l) => l.includes(v) ? l.slice() : [v, ...l];
+const vtListErase = (v, l) => { const i = l.indexOf(v);
+  return i < 0 ? l.slice() : l.slice(0, i).concat(l.slice(i + 1)); };
+const vtHasAdmin = roles => roles.some(r => 'adminRole' in r);
+const vtFranchise = gs => gs.members.filter(([, m]) => vtHasAdmin(m.roles)).map(([k]) => k);
+const vtFranchiseSize = gs => vtFranchise(gs).length;
+const vtIsResp = (k, gs) => { const m = vtLookup(k, gs.members); return !!m && vtHasAdmin(m.roles); };
+
+/* a QuestionKind is either the string 'collective' (fieldless ctor) or
+   { permission: { designee } }; this is the one place that distinction lives */
+const vtPermKind = k =>
+  (k !== null && typeof k === 'object' && k.permission) ? k.permission : null;
+
+/* verdictOf — the single verdict site (State.lean): collective tallies are
+   compared to θ(franchise), assents first; a permission verdict is decided
+   ONLY by the designee's own recorded ballot */
+function vtVerdictOf(gs, q) {
+  const perm = vtPermKind(q.kind);
+  if (perm) {
+    const d = perm.designee;
+    if (q.assents.includes(d)) return 'positive';
+    if (q.dissents.includes(d)) return 'negative';
+    return 'open';
+  }
+  const required = vtTheta(vtFranchiseSize(gs));
+  if (q.assents.length >= required) return 'positive';
+  if (q.dissents.length >= required) return 'negative';
+  return 'open';
+}
+
+function vtClosureCause(gs, q, verdict) {
+  if (verdict === 'positive')
+    return q.assents.every(k => vtIsResp(k, gs)) ? 'tally' : 'franchiseChange';
+  if (verdict === 'negative')
+    return q.dissents.every(k => vtIsResp(k, gs)) ? 'tally' : 'franchiseChange';
+  return 'tally';
+}
+
+/* placeBallot — one position per responsabile: inserting into one list
+   erases from the other; re-casting the same position changes neither */
+function vtPlaceBallot(voter, ballot, q) {
+  if (ballot === 'assent')
+    return { ...q, assents: vtSetInsert(voter, q.assents),
+      dissents: vtListErase(voter, q.dissents) };
+  return { ...q, dissents: vtSetInsert(voter, q.dissents),
+    assents: vtListErase(voter, q.assents) };
+}
+
+/* sweepClosures — unconditional on every step: close every open question
+   whose verdict under the CURRENT franchise is decided; removal plus an
+   appended closure record, as one operation */
+function vtSweep(gs) {
+  const resolved = [], remaining = [];
+  for (const [qid, q] of gs.openQuestions) {
+    const v = vtVerdictOf(gs, q);
+    if (v === 'open') remaining.push([qid, q]);
+    else resolved.push({ questionId: qid, question: q, verdict: v,
+      cause: vtClosureCause(gs, q, v) });
+  }
+  return { ...gs, openQuestions: remaining, closed: gs.closed.concat(resolved) };
+}
+
+function vtApply(gs, signer, ev) {
+  let effected = gs;
+  if ('openQuestion' in ev) {
+    const { questionId, kind } = ev.openQuestion;
+    if (vtLookup(questionId, gs.openQuestions) === null &&
+        !gs.closed.some(r => r.questionId === questionId))
+      effected = { ...gs, openQuestions: vtInsert(questionId,
+        { kind, proposer: signer, assents: [], dissents: [] }, gs.openQuestions) };
+  } else if ('cast' in ev) {
+    const { questionId, ballot } = ev.cast;
+    if (vtIsResp(signer, gs)) {
+      const q = vtLookup(questionId, gs.openQuestions);
+      if (q) effected = { ...gs, openQuestions:
+        vtInsert(questionId, vtPlaceBallot(signer, ballot, q), gs.openQuestions) };
+    }
+  } else if ('renounce' in ev) {
+    /* slice-A no-op */
+  } else if ('admitMember' in ev) {
+    const { key, email, roles } = ev.admitMember;
+    effected = { ...gs, members: vtInsert(key, { key, email, roles }, gs.members) };
+  } else if ('removeMember' in ev) {
+    effected = { ...gs, members: vtErase(ev.removeMember.key, gs.members) };
+  } else if ('setRoles' in ev) {
+    const { key, roles } = ev.setRoles;
+    effected = { ...gs, members: vtAdjust(key, m => ({ ...m, roles }), gs.members) };
+  }
+  const swept = vtSweep(effected);
+  return { state: swept, closedDelta: swept.closed.length - gs.closed.length };
+}
+
+/* validateVoteEvent transcription — returns null or the VoteError ctor name,
+   the SAME identifiers Lean emits and the corpus compares exactly */
+function vtValidate(gs, signer, ev) {
+  if ('openQuestion' in ev)
+    return vtIsResp(signer, gs) ? null : 'notResponsabile';
+  if ('cast' in ev) {
+    if (!vtIsResp(signer, gs)) return 'notResponsabile';
+    return vtLookup(ev.cast.questionId, gs.openQuestions) ? null : 'questionNotFound';
+  }
+  if ('renounce' in ev)
+    return vtLookup(ev.renounce.questionId, gs.openQuestions) ? null : 'questionNotFound';
+  return null;   // admitMember / removeMember / setRoles: plain state events
+}
+
+const vtCanonRole = r => 'adminRole' in r
+  ? { adminRole: { admin: r.adminRole.admin } } : { appRole: { name: r.appRole.name } };
+const vtCanonKind = k => { const p = vtPermKind(k);
+  return p ? { permission: { designee: p.designee } } : 'collective'; };
+const vtCanonQ = q => ({ kind: vtCanonKind(q.kind), proposer: q.proposer,
+  assents: q.assents.slice(), dissents: q.dissents.slice() });
+const canonVoteState = gs => JSON.stringify({
+  members: gs.members.map(([k, m]) => [k,
+    { key: m.key, email: m.email, roles: m.roles.map(vtCanonRole) }]),
+  openQuestions: gs.openQuestions.map(([qid, q]) => [qid, vtCanonQ(q)]),
+  closed: gs.closed.map(r => ({ questionId: r.questionId, question: vtCanonQ(r.question),
+    verdict: r.verdict, cause: r.cause })) });
+
+/* crude net — transcription of the STATED invariants (their Lean proofs are
+   currently «enunciato, non dimostrato»; this runtime check detects
+   transcription drift, it does not claim the proofs): QuestionClean,
+   partition, no-stale-open */
+let kgLawBreaches = [];
+function kgLawViolations(gs) {
+  const out = [];
+  const clean = (q, where) => {
+    if (new Set(q.assents).size !== q.assents.length ||
+        new Set(q.dissents).size !== q.dissents.length)
+      out.push(`QuestionClean nodup violato (${where})`);
+    if (q.assents.some(k => q.dissents.includes(k)))
+      out.push(`QuestionClean disgiunzione violata (${where})`);
+  };
+  for (const [qid, q] of gs.openQuestions) {
+    clean(q, qid);
+    if (vtVerdictOf(gs, q) !== 'open')
+      out.push(`domanda aperta con verdetto deciso (${qid}) — sweep mancato`);
+  }
+  const openIds = gs.openQuestions.map(([qid]) => qid);
+  const closedIds = gs.closed.map(r => r.questionId);
+  if (new Set(openIds).size !== openIds.length) out.push('id aperti duplicati');
+  if (new Set(closedIds).size !== closedIds.length) out.push('id chiusi duplicati');
+  if (openIds.some(i => closedIds.includes(i))) out.push('partizione aperte/chiuse violata');
+  for (const r of gs.closed) {
+    clean(r.question, r.questionId + ' (chiusa)');
+    if (r.verdict === 'open') out.push(`record di chiusura con verdetto open (${r.questionId})`);
+  }
+  return out;
+}
+function kgLawAlarm(viol, what) {
+  kgLawBreaches.push({ what, viol });
+  const b = document.createElement('div');
+  b.className = 'lawbanner';
+  b.textContent = `⚠ INVARIANTE VOTE VIOLATO dopo ${what}: ${viol.join(' · ')} — trascrizione divergente`;
+  document.body.appendChild(b);
+}
+
+/* one consumer for vote conformance, session restore, import, presentation */
+function verifyKelTraceV1(env, opts) {
+  opts = opts || {};
+  const short = x => { const j = typeof x === 'string' ? x : JSON.stringify(x);
+    return j.length > 200 ? j.slice(0, 200) + '…' : j; };
+  const fail = m => { throw new Error('voto: ' + m); };
+  if (!env || typeof env !== 'object') fail('non è un oggetto');
+  if (env.schema !== 'kelgroups-vote.trace') fail('schema sconosciuto');
+  if (env.version !== 1) fail('versione non supportata: ' + env.version);
+  if (!VT_THRESHOLDS[env.threshold]) fail('soglia sconosciuta: ' + env.threshold);
+  if (env.threshold !== VT_THRESHOLD_NAME)
+    fail('soglia diversa dal parametro scelto dal toy: ' + env.threshold);
+  if (!env.initial || !Array.isArray(env.steps)) fail('forma non valida');
+  let s = env.initial;
+  if (canonVoteState(s) !== canonVoteState(vtEmpty()))
+    fail('stato iniziale non è emptyVoteState');
+  const states = [JSON.parse(canonVoteState(s))];
+  env.steps.forEach((st, i) => {
+    if (!st || !st.input || typeof st.signer !== 'string' || !st.event || !st.result)
+      fail(`passo ${i}: forma non valida`);
+    if (canonVoteState(st.input) !== canonVoteState(s))
+      fail(`passo ${i}: input discontinuo — derivato=${short(canonVoteState(s))} memorizzato=${short(canonVoteState(st.input))}`);
+    const verr = vtValidate(JSON.parse(canonVoteState(s)), st.signer, st.event);
+    if (st.result.tag === 'applied') {
+      if (verr) fail(`passo ${i}: registrato applicato, la validazione rifiuta (${verr})`);
+      const det = vtApply(JSON.parse(canonVoteState(s)), st.signer, st.event);
+      if (canonVoteState(det.state) !== canonVoteState(st.result.state))
+        fail(`passo ${i}: post-stato divergente — atteso=${short(canonVoteState(st.result.state))} osservato=${short(canonVoteState(det.state))}`);
+      if (typeof st.result.closedCount === 'number' &&
+          det.state.closed.length !== st.result.closedCount)
+        fail(`passo ${i}: conteggio chiusure divergente — atteso=${st.result.closedCount} osservato=${det.state.closed.length}`);
+      const viol = kgLawViolations(det.state);
+      if (viol.length) fail(`passo ${i}: ${viol.join(' · ')}`);
+      s = det.state;
+    } else if (st.result.tag === 'refused') {
+      if (opts.appliedOnly) fail(`passo ${i}: rifiuto in un log di sessione`);
+      if (!verr) fail(`passo ${i}: registrato rifiutato, la validazione applica`);
+      const errId = typeof st.result.error === 'string'
+        ? st.result.error : Object.keys(st.result.error || {})[0];
+      if (errId !== verr)
+        fail(`passo ${i}: errore di validazione divergente — atteso=${errId} osservato=${verr}`);
+    } else fail(`passo ${i}: result.tag sconosciuto`);
+    states.push(JSON.parse(canonVoteState(s)));
+  });
+  return { steps: env.steps.length, states };
+}
+
+function kelTraceConformance() {
+  const names = Object.keys(VOTE_TRACES_V1);
+  let steps = 0;
+  for (const name of names) {
+    try { steps += verifyKelTraceV1(VOTE_TRACES_V1[name]).steps; }
+    catch (e) { throw new Error(name + ' — ' + e.message); }
+  }
+  if (!names.length || steps === 0)
+    throw new Error('corpus di voto vuoto: nessuna traccia, nessuna prova');
+  return { steps, corpus: 'seme-locale-vote-richiesto' };
+}
+
+/* outer-module compatibility names (session log, presentation, restore) */
+const kgEmptyState = vtEmpty;
+const canonKelState = canonVoteState;
+const kgApplyDetailed = (gs, signer, ev) => vtApply(gs, signer, ev);
+
+/* VOTE_TRACES_V1: verbatim output of the COMMITTED producer
+   lean/KelTraceDriverV1.lean over the authoritative KelGroups.Vote fold
+   (foldVote step semantics, legacyThreshold as the declared parameter).
+   Reproduce with `cd lean && lake env lean KelTraceDriverV1.lean`; the
+   committed verifier `node economics-simulator-vote-trace-gate.mjs`
+   regenerates it fresh, compares with this fixture, and replays both
+   through THIS page's production Vote transcription.
+   Vote raw output sha256:
+   28682a9cddb724cadc258ebbb2309ff62553a145edf228fbb38898cbeb6abce8
+   Local schema kelgroups-vote.trace v1 (no shared proved schema with the
+   frozen economic contract is claimed). Seed: franchise via plain member
+   events (R-66), empty-tally opening (no proposer auto-assent), refused
+   casts (notResponsabile, questionNotFound), position switch closing at
+   threshold, idempotent re-cast, dissent-driven NEGATIVE verdict,
+   per-person permission decided only by the designee, franchise-change
+   closure over a stale tally, no-op renounce, and an OPEN (undecided)
+   question in the final state. */
+const VOTE_TRACES_V1 = {"V":{"initial":{"closed":[],"members":[],"openQuestions":[]},"schema":"kelgroups-vote.trace","steps":[{"event":{"admitMember":{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}},"input":{"closed":[],"members":[],"openQuestions":[]},"result":{"closedCount":0,"state":{"closed":[],"members":[["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"tag":"applied"},"signer":"anna"},{"event":{"admitMember":{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}},"input":{"closed":[],"members":[["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"result":{"closedCount":0,"state":{"closed":[],"members":[["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"tag":"applied"},"signer":"anna"},{"event":{"admitMember":{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}},"input":{"closed":[],"members":[["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"result":{"closedCount":0,"state":{"closed":[],"members":[["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"tag":"applied"},"signer":"anna"},{"event":{"admitMember":{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}},"input":{"closed":[],"members":[["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"result":{"closedCount":0,"state":{"closed":[],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"tag":"applied"},"signer":"anna"},{"event":{"openQuestion":{"kind":"collective","questionId":"q:permesso-olio"}},"input":{"closed":[],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"result":{"closedCount":0,"state":{"closed":[],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:permesso-olio",{"assents":[],"dissents":[],"kind":"collective","proposer":"anna"}]]},"tag":"applied"},"signer":"anna"},{"event":{"cast":{"ballot":"assent","questionId":"q:permesso-olio"}},"input":{"closed":[],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:permesso-olio",{"assents":[],"dissents":[],"kind":"collective","proposer":"anna"}]]},"result":{"error":"notResponsabile","tag":"refused"},"signer":"dora"},{"event":{"cast":{"ballot":"assent","questionId":"q:nessuna"}},"input":{"closed":[],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:permesso-olio",{"assents":[],"dissents":[],"kind":"collective","proposer":"anna"}]]},"result":{"error":"questionNotFound","tag":"refused"},"signer":"anna"},{"event":{"cast":{"ballot":"assent","questionId":"q:permesso-olio"}},"input":{"closed":[],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:permesso-olio",{"assents":[],"dissents":[],"kind":"collective","proposer":"anna"}]]},"result":{"closedCount":0,"state":{"closed":[],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:permesso-olio",{"assents":["anna"],"dissents":[],"kind":"collective","proposer":"anna"}]]},"tag":"applied"},"signer":"anna"},{"event":{"cast":{"ballot":"dissent","questionId":"q:permesso-olio"}},"input":{"closed":[],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:permesso-olio",{"assents":["anna"],"dissents":[],"kind":"collective","proposer":"anna"}]]},"result":{"closedCount":0,"state":{"closed":[],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:permesso-olio",{"assents":["anna"],"dissents":["bruno"],"kind":"collective","proposer":"anna"}]]},"tag":"applied"},"signer":"bruno"},{"event":{"cast":{"ballot":"assent","questionId":"q:permesso-olio"}},"input":{"closed":[],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:permesso-olio",{"assents":["anna"],"dissents":["bruno"],"kind":"collective","proposer":"anna"}]]},"result":{"closedCount":1,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"tag":"applied"},"signer":"bruno"},{"event":{"openQuestion":{"kind":"collective","questionId":"q:sconto"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"result":{"closedCount":1,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:sconto",{"assents":[],"dissents":[],"kind":"collective","proposer":"anna"}]]},"tag":"applied"},"signer":"anna"},{"event":{"cast":{"ballot":"dissent","questionId":"q:sconto"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:sconto",{"assents":[],"dissents":[],"kind":"collective","proposer":"anna"}]]},"result":{"closedCount":1,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:sconto",{"assents":[],"dissents":["elena"],"kind":"collective","proposer":"anna"}]]},"tag":"applied"},"signer":"elena"},{"event":{"cast":{"ballot":"dissent","questionId":"q:sconto"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:sconto",{"assents":[],"dissents":["elena"],"kind":"collective","proposer":"anna"}]]},"result":{"closedCount":1,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:sconto",{"assents":[],"dissents":["elena"],"kind":"collective","proposer":"anna"}]]},"tag":"applied"},"signer":"elena"},{"event":{"cast":{"ballot":"dissent","questionId":"q:sconto"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:sconto",{"assents":[],"dissents":["elena"],"kind":"collective","proposer":"anna"}]]},"result":{"closedCount":2,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"tag":"applied"},"signer":"carlo"},{"event":{"openQuestion":{"kind":{"permission":{"designee":"bruno"}},"questionId":"q:incarico"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"result":{"closedCount":2,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:incarico",{"assents":[],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"}]]},"tag":"applied"},"signer":"anna"},{"event":{"cast":{"ballot":"assent","questionId":"q:incarico"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:incarico",{"assents":[],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"}]]},"result":{"closedCount":2,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:incarico",{"assents":["elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"}]]},"tag":"applied"},"signer":"elena"},{"event":{"cast":{"ballot":"assent","questionId":"q:incarico"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:incarico",{"assents":["elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"}]]},"result":{"closedCount":3,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"tag":"applied"},"signer":"bruno"},{"event":{"openQuestion":{"kind":"collective","questionId":"q:magazzino"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"result":{"closedCount":3,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:magazzino",{"assents":[],"dissents":[],"kind":"collective","proposer":"anna"}]]},"tag":"applied"},"signer":"anna"},{"event":{"cast":{"ballot":"assent","questionId":"q:magazzino"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:magazzino",{"assents":[],"dissents":[],"kind":"collective","proposer":"anna"}]]},"result":{"closedCount":3,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:magazzino",{"assents":["carlo"],"dissents":[],"kind":"collective","proposer":"anna"}]]},"tag":"applied"},"signer":"carlo"},{"event":{"removeMember":{"key":"carlo"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"}],"members":[["carlo",{"email":"carlo@toy.example","key":"carlo","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:magazzino",{"assents":["carlo"],"dissents":[],"kind":"collective","proposer":"anna"}]]},"result":{"closedCount":3,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"}],"members":[["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:magazzino",{"assents":["carlo"],"dissents":[],"kind":"collective","proposer":"anna"}]]},"tag":"applied"},"signer":"anna"},{"event":{"removeMember":{"key":"bruno"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"}],"members":[["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bruno",{"email":"bruno@toy.example","key":"bruno","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:magazzino",{"assents":["carlo"],"dissents":[],"kind":"collective","proposer":"anna"}]]},"result":{"closedCount":4,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"},{"cause":"franchiseChange","question":{"assents":["carlo"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:magazzino","verdict":"positive"}],"members":[["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"tag":"applied"},"signer":"anna"},{"event":{"openQuestion":{"kind":"collective","questionId":"q:aperta"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"},{"cause":"franchiseChange","question":{"assents":["carlo"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:magazzino","verdict":"positive"}],"members":[["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[]},"result":{"closedCount":4,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"},{"cause":"franchiseChange","question":{"assents":["carlo"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:magazzino","verdict":"positive"}],"members":[["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:aperta",{"assents":[],"dissents":[],"kind":"collective","proposer":"anna"}]]},"tag":"applied"},"signer":"anna"},{"event":{"renounce":{"questionId":"q:aperta"}},"input":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"},{"cause":"franchiseChange","question":{"assents":["carlo"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:magazzino","verdict":"positive"}],"members":[["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:aperta",{"assents":[],"dissents":[],"kind":"collective","proposer":"anna"}]]},"result":{"closedCount":4,"state":{"closed":[{"cause":"tally","question":{"assents":["bruno","anna"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:permesso-olio","verdict":"positive"},{"cause":"tally","question":{"assents":[],"dissents":["carlo","elena"],"kind":"collective","proposer":"anna"},"questionId":"q:sconto","verdict":"negative"},{"cause":"tally","question":{"assents":["bruno","elena"],"dissents":[],"kind":{"permission":{"designee":"bruno"}},"proposer":"anna"},"questionId":"q:incarico","verdict":"positive"},{"cause":"franchiseChange","question":{"assents":["carlo"],"dissents":[],"kind":"collective","proposer":"anna"},"questionId":"q:magazzino","verdict":"positive"}],"members":[["elena",{"email":"elena@toy.example","key":"elena","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["anna",{"email":"anna@toy.example","key":"anna","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"openQuestions":[["q:aperta",{"assents":[],"dissents":[],"kind":"collective","proposer":"anna"}]]},"tag":"applied"},"signer":"anna"}],"threshold":"legacyThreshold","version":1}};
+
+kg = vtEmpty();
+
+/* --- Vote journey (toy-side wiring of the required Vote machine) ----------
+   Names/keys and question phrasing are decoration; the machine sees keys,
+   question ids, kinds and ballots. The permesso question for an acquisto is
+   the collective question id 'permesso:<CollId>'. The economic↔vote JOIN is
+   NOT proved: every bridge point carries claim 'join-vote-econ'. */
+
+const kgKey = u => nm(u).toLowerCase();
+const kgName = key => { const i = NAMES.findIndex(n => n.toLowerCase() === key);
+  return i >= 0 ? NAMES[i] : key; };
+const permQid = c => 'permesso:' + c;
+const vtVerdictFor = c => {
+  const rec = kg.closed.find(r => r.questionId === permQid(c));
+  return rec ? rec.verdict : (vtLookup(permQid(c), kg.openQuestions) ? 'pending' : null);
+};
+/* the LOCAL unproved bridges: positive verdict → grant, negative → deny */
+const bridgeReady = col => vtVerdictFor(col.id) === 'positive';
+const bridgeDenyReady = col => vtVerdictFor(col.id) === 'negative';
+
+function descrVote(signer, ev, closedNow) {
+  const who = kgName(signer);
+  let base;
+  if ('openQuestion' in ev) {
+    const { questionId, kind } = ev.openQuestion;
+    const perm = vtPermKind(kind);
+    base = `${who} apre la domanda «${questionId}»` +
+      (perm ? ` (per-persona: ${kgName(perm.designee)})` : '');
+  } else if ('cast' in ev) {
+    base = `${who} vota ${ev.cast.ballot === 'assent' ? 'sì' : 'no'} su «${ev.cast.questionId}»`;
+  } else if ('renounce' in ev) {
+    base = `${who} rinuncia a «${ev.renounce.questionId}» (no-op in slice A)`;
+  } else if ('admitMember' in ev) {
+    base = `${kgName(ev.admitMember.key)} entra nel voto (evento semplice, non una domanda)`;
+  } else if ('removeMember' in ev) {
+    base = `${kgName(ev.removeMember.key)} esce dal voto`;
+  } else {
+    base = `nuovi ruoli di voto a ${kgName(ev.setRoles.key)}`;
+  }
+  return base + (closedNow ? ' — CHIUSA una domanda' : '');
+}
+
+const VOTE_TAG_CLAIMS = {
+  openQuestion: ['vote-open-empty', 'vote-validate'],
+  cast: ['vote-place', 'vote-verdict', 'vote-sweep'],
+  renounce: ['vote-validate'],
+  member: ['vote-admit-plain', 'vote-sweep'],
+};
+
+function voteEvKind(ev) {
+  return 'openQuestion' in ev ? 'openQuestion' : 'cast' in ev ? 'cast'
+    : 'renounce' in ev ? 'renounce' : 'member';
+}
+
+function recordKelApplied(signer, ev, det) {
+  kg = det.state;
+  const viol = kgLawViolations(kg);
+  if (viol.length) kgLawAlarm(viol, descrVote(signer, ev, false));
+  const kind = voteEvKind(ev);
+  const closedNow = det.closedDelta > 0;
+  const claims = [...VOTE_TAG_CLAIMS[kind],
+    ...(closedNow ? ['vote-nostale', 'vote-partition', 'vote-threshold-exhibit'] : [])];
+  const lastClosed = closedNow ? kg.closed[kg.closed.length - 1] : null;
+  const flow = closedNow
+    ? `chiusa «${lastClosed.questionId}»: ${lastClosed.verdict === 'positive' ? 'POSITIVA' : 'NEGATIVA'}` +
+      ` (causa: ${lastClosed.cause === 'tally' ? 'soglia' : 'cambio di elettorato'})` +
+      ` · sì ${lastClosed.question.assents.length} / no ${lastClosed.question.dissents.length}` +
+      ` · soglia ${vtTheta(vtFranchiseSize(kg))}`
+    : (kind === 'cast'
+      ? `una posizione per persona: cambiare voto sposta, ripetere non conta doppio`
+      : (kind === 'openQuestion'
+        ? 'aperta con conteggi VUOTI: chi propone non è contato come sì'
+        : 'elettorato aggiornato — lo sweep ricontrolla ogni domanda aperta'));
+  history.unshift({ kind: 'acc', mk: 'kel', tag: kind,
+    descr: descrVote(signer, ev, closedNow), flow, claims,
+    enacted: closedNow, inv: invSnapshot() });
+  invNote = `dopo voto: ${kind} ✓`;
+}
+
+/* one attempted vote event through validate + apply, with durable logging */
+function runVoteEvent(signer, ev) {
+  const verr = vtValidate(kg, signer, ev);
+  if (verr) {
+    history.unshift({ kind: 'rej', mk: 'kel', tag: 'voto',
+      descr: descrVote(signer, ev, false),
+      failed: [{ code: 'KelGroups.Vote.validateVoteEvent = .error .' + verr,
+        why: 'validazione del voto: ' + verr, law: null }],
+      ext: false, inv: invSnapshot() });
+    invNote = 'dopo voto ✗ — stato invariato';
+    return { ok: false, error: verr };
+  }
+  const pre = JSON.parse(canonVoteState(kg));
+  const det = vtApply(kg, signer, ev);
+  recordKelApplied(signer, ev, det);
+  kelSteps.push({ input: pre, signer, event: ev,
+    result: { tag: 'applied', state: JSON.parse(canonVoteState(kg)),
+      closedCount: kg.closed.length } });
+  sessionSeq.push('k');
+  persistSession();
+  if (det.closedDelta > 0) teachLearn('voto');
+  teachLearn('benvenuto');
+  return { ok: true, closedDelta: det.closedDelta };
+}
+
+
 /* --- Session log (persist the LOG, not the state) -------------------------
    The durable artifact is the sequence of applied Lean-shaped events in the
    frozen v1 trace envelope; state is derived by replay and verified step by
@@ -1206,7 +1697,11 @@ const storeNS = () => window.__RG_NS || '';
 const logKey = () => LOG_KEY_BASE + storeNS();
 const teachKey = () => TEACH_KEY_BASE + storeNS();
 
-let sessionSteps = [];   // v1 applied steps of the live session
+let sessionSteps = [];   // frozen-v1 applied economic steps of the live session
+let kelSteps = [];       // kelgroups-vote.trace applied steps of the live session
+let sessionSeq = [];     // toy-side chronological interleaving: 'e' | 'k' markers
+                         // (ordering metadata only — the two envelopes stay
+                         // pure; no shared proved schema is claimed)
 
 function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
 function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
@@ -1217,27 +1712,70 @@ function sessionEnvelope() {
     initial: JSON.parse(canonState(initState(FOUNDER))),
     steps: sessionSteps };
 }
+function kelEnvelope() {
+  return { schema: 'kelgroups-vote.trace', version: 1,
+    threshold: VT_THRESHOLD_NAME,
+    initial: JSON.parse(canonKelState(kgEmptyState())),
+    steps: kelSteps };
+}
 function buildExport() {
-  return JSON.stringify({ format: 'reactivegas-sim-session', v: 1,
-    labels: { ...colLabels }, trace: sessionEnvelope() });
+  return JSON.stringify({ format: 'reactivegas-sim-session', v: 2,
+    labels: { ...colLabels }, trace: sessionEnvelope(), kel: kelEnvelope(),
+    seq: sessionSeq.join('') });
 }
 function persistSession() { lsSet(logKey(), buildExport()); }
 
-/* rebuild toy-side decoration + history from a verified applied-only trace */
-function adoptTrace(env, labels) {
+/* rebuild toy-side decoration + history from verified applied-only traces,
+   walking the chronological seq across both machines */
+function adoptSession(env, kelEnv, seq, labels) {
   state = initState(FOUNDER);
+  kg = kgEmptyState();
   history = []; completed = []; collSeq = 1; colLabels = { ...(labels || {}) };
-  for (const st of env.steps) {
-    const e = leanEventOf(st.event);
-    const { tag, ...args } = e;
-    if (tag === 'openPurchase' && colLabels[args.c] === undefined) {
-      const used = new Set(Object.values(colLabels));
-      colLabels[args.c] = PRESETS.find(p => !used.has(p)) || ('acquisto ' + collSeq);
+  let ei = 0, ki = 0;
+  for (const m of seq) {
+    if (m === 'e') {
+      const st = env.steps[ei++];
+      const e = leanEventOf(st.event);
+      const { tag, ...args } = e;
+      if (tag === 'openPurchase' && colLabels[args.c] === undefined) {
+        const used = new Set(Object.values(colLabels));
+        colLabels[args.c] = PRESETS.find(p => !used.has(p)) || ('acquisto ' + collSeq);
+      }
+      recordApplied(tag, args, attempt(state, e));
+    } else {
+      const st = kelEnv.steps[ki++];
+      const det = kgApplyDetailed(kg, st.signer, st.event);
+      recordKelApplied(st.signer, st.event, det);
     }
-    recordApplied(tag, args, attempt(state, e));
   }
   sessionSteps = env.steps.slice();
-  invNote = `sessione ripristinata: ${env.steps.length} eventi`;
+  kelSteps = kelEnv.steps.slice();
+  sessionSeq = seq.slice();
+  invNote = `sessione ripristinata: ${seq.length} eventi (${env.steps.length} economia, ${kelEnv.steps.length} voto)`;
+}
+
+/* normalize any accepted import/storage shape into {env, kelEnv, seq, labels} */
+function normalizeWrap(wrap) {
+  const env = wrap && wrap.format === 'reactivegas-sim-session' ? wrap.trace : wrap;
+  const kelEnv = (wrap && wrap.format === 'reactivegas-sim-session' && wrap.kel)
+    ? wrap.kel
+    : { schema: 'kelgroups-vote.trace', version: 1, threshold: VT_THRESHOLD_NAME,
+        initial: JSON.parse(canonKelState(kgEmptyState())), steps: [] };
+  let seq;
+  if (wrap && wrap.format === 'reactivegas-sim-session' && typeof wrap.seq === 'string')
+    seq = wrap.seq.split('');
+  else seq = env.steps.map(() => 'e');
+  return { env, kelEnv, seq, labels: (wrap && wrap.labels) || {} };
+}
+
+function verifySessionShape(n) {
+  const eCount = n.seq.filter(m => m === 'e').length;
+  const kCount = n.seq.filter(m => m === 'k').length;
+  if (eCount !== n.env.steps.length || kCount !== n.kelEnv.steps.length ||
+      eCount + kCount !== n.seq.length)
+    throw new Error('seq incoerente con i due flussi');
+  verifyTraceV1(n.env, { appliedOnly: true });
+  verifyKelTraceV1(n.kelEnv, { appliedOnly: true });
 }
 
 /* boot-time restore: never trust the stored final state — replay and verify */
@@ -1246,11 +1784,11 @@ function restoreSession() {
   if (!raw) return null;
   let wrap;
   try { wrap = JSON.parse(raw); } catch (e) { return quarantineLog('log locale illeggibile'); }
-  const env = wrap && wrap.format === 'reactivegas-sim-session' ? wrap.trace : wrap;
-  try { verifyTraceV1(env, { appliedOnly: true }); }
+  const n = normalizeWrap(wrap);
+  try { verifySessionShape(n); }
   catch (e) { return quarantineLog(e.message); }
-  adoptTrace(env, wrap && wrap.labels);
-  return env.steps.length;
+  adoptSession(n.env, n.kelEnv, n.seq, n.labels);
+  return n.seq.length;
 }
 
 function quarantineLog(reason) {
@@ -1265,7 +1803,9 @@ function quarantineLog(reason) {
 function newSession() {
   lsDel(logKey());
   state = initState(FOUNDER);
-  history = []; completed = []; collSeq = 1; colLabels = {}; sessionSteps = [];
+  kg = kgEmptyState();
+  history = []; completed = []; collSeq = 1; colLabels = {};
+  sessionSteps = []; kelSteps = []; sessionSeq = [];
   invNote = 'nuova sessione → State.init 0';
   navStack = [{ view: 'group' }];
   cancelFlow();
@@ -1274,16 +1814,21 @@ function newSession() {
 
 /* --- Presentation mode: replay a trace one applied event at a time -------- */
 
-let pres = null;   // { env, labels, states, idx, saved:{state,nav,labels,note} }
+let pres = null;   // combined two-machine presentation over the toy seq
 
-function enterPresentation(env, labels) {
-  const ver = verifyTraceV1(env);           // continuity + post-states, throws on bad
-  pres = { env, states: ver.states, idx: 0,
-    saved: { state, nav: navStack, labels: colLabels, note: invNote,
+function enterPresentation(n) {
+  // n = { env, kelEnv, seq, labels } — both envelopes verified independently
+  const ver = verifyTraceV1(n.env);
+  const kver = verifyKelTraceV1(n.kelEnv);
+  const eCount = n.seq.filter(m => m === 'e').length;
+  if (eCount !== n.env.steps.length ||
+      n.seq.length - eCount !== n.kelEnv.steps.length)
+    throw new Error('seq incoerente con i due flussi');
+  pres = { n, eco: ver.states, kel: kver.states, idx: 0,
+    saved: { state, kg, nav: navStack, labels: colLabels, note: invNote,
       hist: history, comp: completed, seq: collSeq } };
-  colLabels = { ...(labels || {}) };
-  // derive labels for unlabelled acquisti (toy decoration only)
-  env.steps.forEach(st => {
+  colLabels = { ...(n.labels || {}) };
+  n.env.steps.forEach(st => {
     const e = leanEventOf(st.event);
     if (e.tag === 'openPurchase' && colLabels[e.c] === undefined) {
       const used = new Set(Object.values(colLabels));
@@ -1296,26 +1841,43 @@ function enterPresentation(env, labels) {
 }
 
 function presSet(i) {
-  pres.idx = Math.max(0, Math.min(pres.env.steps.length, i));
-  state = JSON.parse(JSON.stringify(pres.states[pres.idx]));
+  pres.idx = Math.max(0, Math.min(pres.n.seq.length, i));
+  let ei = 0, ki = 0;
+  for (let j = 0; j < pres.idx; j++) (pres.n.seq[j] === 'e' ? ei++ : ki++);
+  state = JSON.parse(JSON.stringify(pres.eco[ei]));
+  kg = JSON.parse(JSON.stringify(pres.kel[ki]));
   renderAll();
 }
 
 function exitPresentation() {
   const s = pres.saved;
   pres = null;
-  state = s.state; navStack = s.nav; colLabels = s.labels; invNote = s.note;
+  state = s.state; kg = s.kg; navStack = s.nav; colLabels = s.labels; invNote = s.note;
   history = s.hist; completed = s.comp; collSeq = s.seq;
   renderAll();
+}
+
+function presWhat() {
+  const i = pres.idx;
+  if (i === 0) return 'stato iniziale';
+  let ei = 0, ki = 0;
+  for (let j = 0; j < i - 1; j++) (pres.n.seq[j] === 'e' ? ei++ : ki++);
+  if (pres.n.seq[i - 1] === 'e') {
+    const d = leanEventOf(pres.n.env.steps[ei].event);
+    return descr(d.tag, d);
+  }
+  const st = pres.n.kelEnv.steps[ki];
+  return descrVote(st.signer, st.event,
+    !!(st.result && st.result.tag === 'applied' &&
+       st.result.state.closed.length > st.input.closed.length));
 }
 
 function renderPresBar() {
   const bar = $('presbar');
   if (!pres) { bar.hidden = true; bar.innerHTML = ''; return; }
-  const n = pres.env.steps.length;
+  const n = pres.n.seq.length;
   const i = pres.idx;
-  const what = i === 0 ? 'stato iniziale'
-    : descr(...(d => [d.tag, d])(leanEventOf(pres.env.steps[i - 1].event)));
+  const what = presWhat();
   bar.hidden = false;
   bar.innerHTML = `<b>presentazione</b> <span>${i}/${n}</span>
     <span style="opacity:.85">${esc(what)}</span>
@@ -1338,6 +1900,7 @@ const TEACH_ITEMS = {
   guardie: { text: "Un'azione rifiutata nomina tutte le sue guardie; un compito spento mostra il motivo prima ancora di provare — cliccalo per la prova.", claims: ['auth', 'covered'] },
   cassa: { text: 'La cassa del referente può andare sotto zero: ha pagato il fornitore. Non è un errore.', claims: ['cassa-negativa', 'close-payout'] },
   chiusa: { text: "L'acquisto chiuso sparisce dallo stato: la storia resta solo nel log degli eventi.", claims: ['close-gone'] },
+  voto: { text: 'Una domanda si apre con conteggi VUOTI: chi propone non è contato come sì. Il primo lato a raggiungere la soglia chiude — qui la soglia scelta è (n+1)/2. Cambiare voto sposta la posizione, ripeterlo non conta mai doppio.', claims: ['vote-threshold-exhibit', 'vote-verdict', 'vote-open-empty', 'vote-place'] },
 };
 
 function loadTeach() {
@@ -1392,6 +1955,7 @@ function runAttempt(tag, args, toyLabel) {
     // the durable artifact is the applied-event log, in the frozen v1 shape
     sessionSteps.push({ input: preCanon, event: leanEventJson({ tag, ...args }),
       result: { tag: 'applied', state: JSON.parse(canonState(state)) } });
+    sessionSeq.push('e');
     persistSession();
     // teaching recedes as the machine is used
     teachLearn('benvenuto');
@@ -1427,7 +1991,7 @@ const pledgesOf = u => {
   }
   return out;
 };
-const B = (badge, note) => ({ badge, note: note || '' });
+const B = (badge, note, claims) => ({ badge, note: note || '', claims: claims || null });
 
 /* Task availability: guards as affordances, computed from live state. */
 function taskDis(tag, ctx) {
@@ -1482,12 +2046,28 @@ function taskDis(tag, ctx) {
       return col.pending.length ? B('NO-PENDING (L4)', 'impegni pendenti da risolvere') : null;
     }
     case 'grantPermission': {
+      // the direct one-officer grant path is gone: the economic permission is
+      // reachable only through an ENACTED vote question, and even then the
+      // machine-to-machine bridge is an unproved local join
       if (!state.responsabili.length) return B('AUTH', 'nessun responsabile');
       const col = cols.find(x => x.id === ctx.c);
-      return col.permitted ? B('—', 'già permesso') : null;
+      if (col.permitted) return B('—', 'già permesso');
+      if (!bridgeReady(col))
+        return B('SENZA DELIBERA', 'serve un verdetto positivo del gruppo di voto',
+          ['join-vote-econ', 'vote-verdict']);
+      return null;
     }
-    case 'denyPermission':
-      return state.responsabili.length ? null : B('AUTH', 'nessun responsabile');
+    case 'denyPermission': {
+      // symmetric to the grant: the economic denial is reachable only through
+      // a NEGATIVE verdict of the vote machine (dissent is modeled now), and
+      // the machine-to-machine bridge stays an unproved local join
+      if (!state.responsabili.length) return B('AUTH', 'nessun responsabile');
+      const col = cols.find(x => x.id === ctx.c);
+      if (!bridgeDenyReady(col))
+        return B('SENZA DELIBERA', 'serve un verdetto negativo del gruppo di voto',
+          ['join-vote-econ', 'vote-verdict']);
+      return null;
+    }
   }
   return null;
 }
@@ -1721,15 +2301,21 @@ function openAmountPop() {
   n.focus();
 }
 
-// Interface outcome: the vote happened outside this machine. No member is
-// asked to authorize it; the Step.lean responsabile carrier stays internal.
+// Interface outcome: the vote happened in the OTHER proved machine
+// (KelGroups.Vote). No economic member is asked to authorize it here; the
+// Step.lean responsabile carrier stays internal, and the machine-to-machine
+// bridge is the unproved local join the badge names.
 function openExternalConfirm() {
-  const html = `<div class="pt">esito esterno <span class="gbx">VOTO NON MODELLATO</span>
-      <span class="npvbadge" data-claims="vote">NON PROVATO</span>
+  const isGrant = flow.tag === 'grantPermission';
+  const html = `<div class="pt">ponte voto → economia
+      <span class="npvbadge" data-claims="join-vote-econ">NON PROVATO</span>
       <button type="button" class="xbtn2" data-x="1">✕</button></div>
     <div class="tiny">${esc(EV[flow.tag].it)} per «${esc(lbl(flow.params.c))}»</div>
-    <div class="tiny">Nel sistema reale è l'esito di un voto di maggioranza del gruppo (kelgroups).<br>
-      Questa macchina economica non modella né verifica quel voto.</div>
+    <div class="tiny">La domanda è stata DELIBERATA nel gruppo di voto: verdetto
+      ${isGrant ? 'POSITIVO' : 'NEGATIVO'} deciso da
+      <span class="mono">KelGroups.Vote.verdictOf</span> ${pkGlyph(['vote-verdict'])}.
+      L'applicazione al ${isGrant ? 'permesso' : 'diniego'} economico è un ponte
+      locale NON PROVATO fra le due macchine (#54 slice 2 / #48).</div>
     <div class="ar2"><button type="button" class="primary" id="ext-apply">applica esito</button></div>`;
   popAt(flow.xy[0], flow.xy[1], html);
   $('ext-apply').addEventListener('click', () => {
@@ -1760,7 +2346,7 @@ function commitFlow() {
     if (nav().view === 'group') playFx(tag, args, preState, preLayout);
     if (EV[tag].external)
       toast(`<b>⇣ esito esterno applicato</b>
-        <span class="tiny">voto di maggioranza non modellato né verificato qui</span>`, xy[0], xy[1], 'ext');
+        <span class="tiny">verdetto modellato nel voto; ponte verso l'economia NON PROVATO</span>`, xy[0], xy[1], 'ext');
   } else {
     toast(`<b>✗ ${esc(EV[tag].it)}</b> ` +
       res.failed.map(guardChip).join(' ') +
@@ -1785,15 +2371,18 @@ function taskBtn(tag, ctx, extra) {
   if (dis) {
     // a spent affordance stays clickable: the click opens the guard's proof
     // (or its honest NON PROVATO refusal status) instead of starting the task
-    const claims = [];
-    if (GUARD_CLAIMS[dis.badge]) claims.push(GUARD_CLAIMS[dis.badge]);
-    claims.push(...refusalClaims(tag));
+    const claims = dis.claims ? dis.claims.slice() : [];
+    if (!dis.claims) {
+      if (GUARD_CLAIMS[dis.badge]) claims.push(GUARD_CLAIMS[dis.badge]);
+      claims.push(...refusalClaims(tag));
+    }
     return `<button type="button" class="task off${ext ? ' ext' : ''}" aria-disabled="true"
       data-task="${tag}" data-off-claims="${claims.join(',')}" title="${esc(dis.note)}">${esc(it)}
       <span class="${ext ? 'gbx' : (dis.badge === '—' ? 'gb dim' : 'gb')}">${esc(dis.badge === '—' ? dis.note || '—' : dis.badge)}</span></button>`;
   }
+  const extBadge = ' <span class="npvbadge" data-claims="join-vote-econ">PONTE NON PROVATO</span>';
   return `<button type="button" class="task${ext ? ' ext' : ''}" data-task="${tag}"
-    title=".${tag}">${esc(it)}${ext ? ' <span class="gbx">VOTO NON MODELLATO</span>' : ''}</button>`;
+    title=".${tag}">${esc(it)}${ext ? extBadge : ''}</button>`;
 }
 
 /* group scene (SVG) */
@@ -1809,7 +2398,7 @@ function renderGroup() {
   const scene = `<div class="card" id="scene-card">
     <svg id="scene" viewBox="0 0 760 600" role="group" aria-label="scena del gruppo"></svg>
   </div>`;
-  $('view').innerHTML = teachStrip('benvenuto') + tasks + scene;
+  $('view').innerHTML = teachStrip('benvenuto') + tasks + scene + govCardHtml();
   drawScene();
 }
 
@@ -1969,7 +2558,8 @@ function renderPerson() {
 function recentFor(u) {
   const name = nm(u);
   const rel = history.filter(en =>
-    Object.values(en.args).includes(u) || en.flow && en.flow.includes(name)).slice(0, 4);
+    (en.args && Object.values(en.args).includes(u)) ||
+    (en.flow && en.flow.includes(name))).slice(0, 4);
   if (!rel.length) return '<p class="empty">nessun movimento</p>';
   return `<div class="rows">${rel.map(en =>
     `<div class="row" style="cursor:default">${en.kind === 'acc' ? (en.ext ? '⇣' : '✓') : '✗'}
@@ -2029,8 +2619,9 @@ function renderCollection() {
   </div>`;
 
   const external = `<div class="card">
-    <div class="msec">esito dall’esterno — voto non modellato
-      <span class="npvbadge" data-claims="vote">NON PROVATO</span></div>
+    <div class="msec">assenso del gruppo — via il gruppo di voto (KelGroups.Vote)
+      <span class="npvbadge" data-claims="join-vote-econ">PONTE NON PROVATO</span></div>
+    ${collGovHtml(col)}
     <div class="tasks" style="margin-top:6px">
       ${taskBtn('grantPermission', { c })}
       ${taskBtn('denyPermission', { c })}
@@ -2038,6 +2629,67 @@ function renderCollection() {
   </div>`;
 
   $('view').innerHTML = teachStrip('impegno') + head + queue + external;
+}
+
+/* per-franchise-member cast buttons for one open question; the voter's
+   CURRENT position is spent (affordance), the other stays live: switching is
+   always possible and repeating never double-counts (placeBallot) */
+function castButtonsHtml(qid, q) {
+  return vtFranchise(kg).map(k => {
+    const inA = q.assents.includes(k), inD = q.dissents.includes(k);
+    return `<span class="linkchip" style="cursor:default;background:#fff">${esc(kgName(k))}
+      <button type="button" class="mini" data-kgcast="${esc(qid)}" data-kgsigner="${esc(k)}"
+        data-kgballot="assent" title=".cast .assent"${inA ? ' disabled' : ''}>sì</button>
+      <button type="button" class="mini no" data-kgcast="${esc(qid)}" data-kgsigner="${esc(k)}"
+        data-kgballot="dissent" title=".cast .dissent"${inD ? ' disabled' : ''}>no</button></span>`;
+  }).join('');
+}
+
+function questionHtml(qid, q, titleTx) {
+  const th = vtTheta(vtFranchiseSize(kg));
+  const kindTx = vtPermKind(q.kind)
+    ? `per-persona: decide solo ${esc(kgName(vtPermKind(q.kind).designee))} ${pkGlyph(['vote-permission-kind'])}`
+    : `collettiva · soglia ${th} su ${vtFranchiseSize(kg)} ${pkGlyph(['vote-threshold-exhibit', 'kg-majority', 'kg-tie'])}`;
+  return `<div class="vq"><div class="qh">🗳 ${titleTx}
+      <span class="qs">sì ${q.assents.length} · no ${q.dissents.length}</span></div>
+    <div class="tiny">${kindTx} · aperta con conteggi vuoti ${pkGlyph(['vote-open-empty'])}
+      · il primo lato a soglia chiude ${pkGlyph(['vote-verdict', 'vote-sweep'])}</div>
+    <div class="tasks" style="margin-top:4px">${castButtonsHtml(qid, q)}</div>
+  </div>`;
+}
+
+/* the per-acquisto vote question: open → cast → verdict → unproved bridge */
+function collGovHtml(col) {
+  const label = lbl(col.id);
+  const qid = permQid(col.id);
+  if (col.permitted)
+    return `<div class="tiny">permesso già applicato ⇣</div>`;
+  const v = vtVerdictFor(col.id);
+  if (v === 'positive')
+    return `<div class="vq"><div class="qh">🗳 «${esc(qid)}» — CHIUSA POSITIVA
+      ${pkGlyph(['vote-nostale', 'vote-partition'])}</div>
+      <div class="tiny">la delibera è della macchina di voto; il ponte economico qui sotto resta
+        <span class="npvbadge" data-claims="join-vote-econ">NON PROVATO</span></div></div>`;
+  if (v === 'negative')
+    return `<div class="vq"><div class="qh">🗳 «${esc(qid)}» — CHIUSA NEGATIVA
+      ${pkGlyph(['vote-verdict', 'vote-partition'])}</div>
+      <div class="tiny">il dissenso ha raggiunto la soglia; l'esito economico negativo qui sotto è un ponte
+        <span class="npvbadge" data-claims="join-vote-econ">NON PROVATO</span></div></div>`;
+  if (v === 'pending') {
+    const q = vtLookup(qid, kg.openQuestions);
+    return questionHtml(qid, q, `domanda in votazione: «permesso per ${esc(label)}»`);
+  }
+  const ready = vtFranchiseSize(kg) > 0;
+  return `<div class="vq"><div class="qh">🗳 nessuna domanda di assenso per «${esc(label)}»</div>
+    ${ready
+      ? `<div class="tasks" style="margin-top:4px">
+          <button type="button" class="linkchip" data-kgpropose="${col.id}" title=".openQuestion">
+            apri la domanda: permesso per «${esc(label)}»</button></div>
+         <div class="tiny">domanda reale: <span class="mono">.openQuestion ${esc(qid)} .collective</span>
+           — il legame con questo acquisto è decorazione del toy
+           <span class="npvbadge" data-claims="join-vote-econ">NON PROVATO</span></div>`
+      : `<div class="tiny">ammetti prima dei responsabili al gruppo di voto (vista Gruppo)</div>`}
+  </div>`;
 }
 
 function renderPledge() {
@@ -2068,6 +2720,56 @@ function renderPledge() {
   </div>`;
 }
 
+/* group-view governance card: the second machine, observable and usable */
+function govCardHtml() {
+  const fr = vtFranchise(kg);
+  const th = vtTheta(fr.length);
+  const candidates2 = state.users.filter(u => !vtLookup(kgKey(u), kg.members));
+  const removable = kg.members.map(([k]) => k);
+  const qs = kg.openQuestions.map(([qid, q]) =>
+    questionHtml(qid, q, `«${esc(qid)}» (aperta da ${esc(kgName(q.proposer))})`)).join('');
+  const closedTail = kg.closed.slice(-3).map(r =>
+    `<div class="tiny">🗳 «${esc(r.questionId)}» — ${r.verdict === 'positive' ? 'POSITIVA' : 'NEGATIVA'}
+      (${r.cause === 'tally' ? 'soglia' : 'cambio di elettorato'})
+      · sì ${r.question.assents.length} / no ${r.question.dissents.length}</div>`).join('');
+  const body = `<div class="tiny">elettorato (responsabili del voto): ${fr.length
+      ? fr.map(k => esc(kgName(k))).join(', ') : '<i>nessuno</i>'}
+      · soglia (n+1)/2 = <b>${th}</b> ${pkGlyph(['vote-threshold-exhibit', 'kg-majority', 'kg-tie'])}
+      — parametro esplicito, esibizione legacy ${pkGlyph(['vote-policyfree'])}</div>
+    <div class="tasks" style="margin-top:5px">
+      ${candidates2.length ? `<button type="button" class="linkchip" data-kgadmit="1"
+        title=".admitMember">ammetti al voto… ${pkGlyph(['vote-admit-plain'])}</button>` : ''}
+      ${removable.length ? `<button type="button" class="linkchip" data-kgremove="1"
+        title=".removeMember">rimuovi dal voto…</button>` : ''}
+    </div>
+    ${qs || '<p class="empty">nessuna domanda in votazione</p>'}
+    ${closedTail}`;
+  return `<div class="card" id="govcard">
+    <h2>Gruppo di voto <small class="mono">KelGroups.Vote — modello richiesto (#54)</small></h2>
+    ${teachStrip('voto')}
+    ${body}
+    <div class="tiny" id="gov-status" style="margin-top:6px">verdetti sì/no/aperta, dissenso e
+      permessi per-persona sono MODELLATI; le prove del modello sono
+      <b>enunciate, non dimostrate</b>
+      <span class="npvbadge" data-claims="vote-model-status">stato</span> ·
+      il ponte con l'economia resta
+      <span class="npvbadge" data-claims="join-vote-econ">NON PROVATO</span></div>
+  </div>`;
+}
+
+function kgChipPop(title, chips, x, y, cb) {
+  const html = `<div class="pt">${esc(title)}
+      <button type="button" class="xbtn2" data-x="1">✕</button></div>
+    <div class="chips">` + (chips.length
+      ? chips.map(ch => `<button type="button" class="chip" data-id="${esc(ch.id)}">${esc(ch.label)}</button>`).join('')
+      : '<span class="empty">niente da scegliere</span>') + '</div>';
+  popAt(x, y, html);
+  $('pop').querySelectorAll('.chip[data-id]').forEach(b =>
+    b.addEventListener('click', ev => { closePop(); cb(b.dataset.id, ev.clientX, ev.clientY); }));
+  const xb = $('pop').querySelector('[data-x]');
+  if (xb) xb.addEventListener('click', closePop);
+}
+
 /* side column */
 
 function guardChip(gd) {
@@ -2094,8 +2796,22 @@ function renderLog() {
   const box = $('log');
   if (!history.length) { box.innerHTML = '<p class="empty">nessun tentativo</p>'; return; }
   box.innerHTML = history.map(en => {
+    if (en.mk === 'kel') {
+      if (en.kind === 'acc') {
+        return `<div class="entry acc kel${en.enacted ? ' enacted' : ''}">
+          <div class="eh">🗳 ${esc(en.descr)} <span class="mono">.${en.tag}</span>${pkGlyph(en.claims || [])}</div>
+          <div class="efl">${esc(en.flow)}</div>
+          <div class="einv">macchina di voto (KelGroups.Vote) — economia invariata</div>
+        </div>`;
+      }
+      return `<div class="entry rej kel">
+        <div class="eh">✗ ${esc(en.descr)} <span class="mono">validateVoteEvent = .error</span>${pkGlyph(['vote-validate'])}</div>
+        <ul class="egs">${en.failed.map(gd => `<li><span class="gb dim" title="${esc(gd.code)}">.${esc(gd.why.split(': ')[1] || 'errore')}</span> <span>${esc(gd.why)}</span></li>`).join('')}</ul>
+        <div class="einv">stato invariato (entrambe le macchine)</div>
+      </div>`;
+    }
     const prov = en.ext
-      ? '<div class="eprov">⇣ voto di maggioranza esterno — non modellato né verificato qui</div>' : '';
+      ? '<div class="eprov">⇣ esito applicato al permesso economico — ponte NON PROVATO fra voto ed economia</div>' : '';
     if (en.kind === 'acc') {
       return `<div class="entry acc${en.ext ? ' ext' : ''}">
         <div class="eh">${en.ext ? '⇣' : '✓'} ${esc(en.descr)} <span class="mono">.${en.tag}</span>${pkGlyph(TAG_CLAIMS[en.tag] || [])}</div>
@@ -2161,8 +2877,7 @@ function logMsg(m) { const el = $('log-msg'); if (el) el.innerHTML = `<span styl
 function importText(t) {
   let wrap;
   try { wrap = JSON.parse(t); } catch (e) { return logMsg('JSON non valido'); }
-  const env = wrap && wrap.format === 'reactivegas-sim-session' ? wrap.trace : wrap;
-  try { enterPresentation(env, wrap && wrap.labels); }
+  try { enterPresentation(normalizeWrap(wrap)); }
   catch (e) { return logMsg('traccia rifiutata — ' + e.message); }
 }
 
@@ -2202,8 +2917,9 @@ function openLogPop(x, y) {
     else { $('log-ta').value = data; logMsg('copia manualmente dal riquadro'); }
   });
   $('log-pres').addEventListener('click', () => {
-    if (!sessionSteps.length) return;
-    enterPresentation(sessionEnvelope(), colLabels);
+    if (!sessionSeq.length) return;
+    enterPresentation({ env: sessionEnvelope(), kelEnv: kelEnvelope(),
+      seq: sessionSeq.slice(), labels: colLabels });
   });
   $('log-new').addEventListener('click', () => { closePop(); newSession(); });
   $('log-import').addEventListener('click', () => importText($('log-ta').value));
@@ -2438,6 +3154,49 @@ $('view').addEventListener('click', ev => {
   const t = ev.target;
   const tx = t.closest('[data-teachx]');
   if (tx) { teachLearn(tx.dataset.teachx); renderAll(); return; }
+  const kgEl = t.closest('[data-kgadmit],[data-kgremove],[data-kgpropose],[data-kgcast]');
+  if (kgEl) {
+    if (pres) {
+      toast('<b>presentazione</b> <span class="tiny">sola lettura — esci per agire</span>',
+        ev.clientX, ev.clientY, 'ext');
+      return;
+    }
+    if (kgEl.dataset.kgadmit) {
+      // admission is a plain state event, never a question (R-66); the
+      // admitted person signs their own entry as provenance
+      const cands = state.users.filter(u => !vtLookup(kgKey(u), kg.members));
+      kgChipPop('chi entra nel gruppo di voto?', cands.map(u => ({ id: u, label: nm(u) })),
+        ev.clientX, ev.clientY, id => {
+          const key = kgKey(Number(id));
+          runVoteEvent(key, { admitMember: { key, email: key + '@toy.example',
+            roles: [{ adminRole: { admin: 'publicAdmin' } }] } });
+          renderAll();
+        });
+    } else if (kgEl.dataset.kgremove) {
+      kgChipPop('chi esce dal gruppo di voto?',
+        kg.members.map(([k]) => ({ id: k, label: kgName(k) })),
+        ev.clientX, ev.clientY, key => {
+          runVoteEvent(key, { removeMember: { key } });
+          renderAll();
+        });
+    } else if (kgEl.dataset.kgpropose) {
+      const col = state.collections.find(x => x.id === Number(kgEl.dataset.kgpropose));
+      if (col) {
+        kgChipPop('chi apre la domanda? (responsabile del voto)',
+          vtFranchise(kg).map(k => ({ id: k, label: kgName(k) })),
+          ev.clientX, ev.clientY, signer => {
+            runVoteEvent(signer, { openQuestion:
+              { questionId: permQid(col.id), kind: 'collective' } });
+            renderAll();
+          });
+      }
+    } else {
+      runVoteEvent(kgEl.dataset.kgsigner, { cast:
+        { questionId: kgEl.dataset.kgcast, ballot: kgEl.dataset.kgballot } });
+      renderAll();
+    }
+    return;
+  }
   if (pres && t.closest('[data-task],[data-act]')) {
     toast('<b>presentazione</b> <span class="tiny">sola lettura — esci per agire</span>',
       ev.clientX, ev.clientY, 'ext');
@@ -2518,7 +3277,10 @@ renderAll();
 // Exposed for scripted verification (harmless in normal use).
 window.RG = { attempt, initState, sumBal, escrowSum, bal,
   lawViolations, traceConformance, verifyTraceV1, claimAudit, refusalInventory,
+  kelTraceConformance, verifyKelTraceV1, kgLawViolations,
   get lawBreaches() { return lawBreaches; },
+  get kgLawBreaches() { return kgLawBreaches; },
+  get kg() { return kg; },
   get state() { return state; }, runAttempt, renderAll: () => renderAll() };
 
 /* --- ?selftest=1: drives the real visible controls, verdict in title ------ */
@@ -2694,20 +3456,98 @@ async function selftest() {
   expect(lastEntry().innerText.includes("accetta l'impegno di Bruno"), 'accettazione non registrata');
   invOk();
 
-  // external outcome kept: marked before, disclosed during, marked after
-  expect(document.querySelector('#view .msec'), 'sezione esito esterno assente');
-  expect(document.querySelector('#view .msec [data-claims="vote"]'),
-    'esito esterno senza marcatura NON PROVATO');
-  const grantBtn = document.querySelector('#view [data-task="grantPermission"]');
-  expect(grantBtn && grantBtn.innerText.includes('VOTO NON MODELLATO'),
-    'marcatura VOTO NON MODELLATO assente prima dell’applicazione');
+  // NO direct-permission bypass: the grant task is spent until a delibera,
+  // and clicking it opens the unproved-join disclosure
+  expect(document.querySelector('#view .msec'), 'sezione assenso assente');
+  expect(document.querySelector('#view .msec [data-claims="join-vote-econ"]'),
+    'sezione assenso senza marcatura PONTE NON PROVATO');
+  let grantBtn = document.querySelector('#view [data-task="grantPermission"]');
+  expect(grantBtn && grantBtn.classList.contains('off') &&
+    grantBtn.innerText.includes('SENZA DELIBERA'),
+    'permesso diretto non spento senza delibera del voto');
+  await click('#view [data-task="grantPermission"]');
+  expect(document.querySelector('#pop .pbox').innerText.includes('PONTE'),
+    'dettaglio del ponte non provato assente dal permesso spento');
+  await click('#pop .xbtn2');
+
+  // the vote journey: the REQUIRED machine — admission is a plain event
+  // (never a question), a question opens with EMPTY tallies, and the first
+  // side to reach the threshold closes it
+  await click('#crumbs [data-crumb="0"]');
+  await click('[data-key="ghost:3"]');                        // Carlo entra (4º utente)
+  await click('#pop .chip[data-id="0"]');
+  expect(document.getElementById('govcard'), 'scheda del gruppo di voto assente');
+  expect(document.querySelector('#gov-status [data-claims="vote-model-status"]') &&
+    document.querySelector('#gov-status [data-claims="join-vote-econ"]'),
+    'stato del modello di voto non dichiarato nella scheda');
+  expect(document.querySelector('[data-teach="voto"]'), 'spiegazione della soglia assente');
+  const kgadmit = async id => {
+    await click('#govcard [data-kgadmit]');
+    await click(`#pop .chip[data-id="${id}"]`);
+  };
+  await kgadmit(0);                                           // Anna
+  expect(RG.kg.members.length === 1, 'prima ammissione non applicata');
+  await kgadmit(1); await kgadmit(2); await kgadmit(3);       // Bruno, Elena, Carlo
+  expect(RG.kg.members.length === 4 && RG.kg.openQuestions.length === 0,
+    'ammettere è un evento semplice: attesi 4 membri e nessuna domanda');
+  expect(!document.querySelector('#govcard [data-kgadmit]'),
+    'ammissione ancora offerta con tutti dentro');
+  expect(lastEntry().innerText.includes('entra nel voto'),
+    'ammissione non registrata nella storia');
+
+  // the permesso question on «Olio»: EMPTY tallies at opening; with FOUR
+  // voters θ=(4+1)/2=2 — anna sì, bruno no, then bruno SWITCHES position:
+  // sì 2 ≥ 2 closes POSITIVE in the same step (sweep)
+  await click('[data-key="pile:1"]');
+  expect(document.querySelector('#view [data-kgpropose]'), 'proposta della domanda assente');
+  await click('#view [data-kgpropose]');
+  await click('#pop .chip[data-id="anna"]');
+  expect(RG.kg.openQuestions.length === 1, 'domanda permesso non aperta');
+  const q0 = RG.kg.openQuestions[0][1];
+  expect(q0.assents.length === 0 && q0.dissents.length === 0,
+    'la domanda non si apre con conteggi vuoti (auto-sì del proponente?)');
+  expect(document.querySelector('#view .vq .qs').innerText.includes('sì 0 · no 0'),
+    'conteggi vuoti non mostrati');
+  const castBtn = (s, b) =>
+    `#view [data-kgcast="permesso:1"][data-kgsigner="${s}"][data-kgballot="${b}"]`;
+  await click(castBtn('anna', 'assent'));
+  await click(castBtn('bruno', 'dissent'));
+  expect(document.querySelector('#view .vq .qs').innerText.includes('sì 1 · no 1'),
+    'conteggio sì/no non aggiornato');
+  // the voter's CURRENT position is spent: repeating never double-counts
+  const brunoNo = document.querySelector(castBtn('bruno', 'dissent'));
+  expect(brunoNo && brunoNo.disabled, 'posizione corrente non spenta (doppio conteggio?)');
+  await click(castBtn('bruno', 'assent'));                    // SWITCH → 2/2
+  expect(RG.kg.openQuestions.length === 0 && RG.kg.closed.length === 1
+    && RG.kg.closed[0].verdict === 'positive'
+    && RG.kg.closed[0].question.dissents.length === 0,
+    'il cambio di posizione a soglia non ha chiuso POSITIVA senza dissensi');
+  expect(document.querySelector('#view .vq .qh').innerText.includes('CHIUSA POSITIVA'),
+    'verdetto positivo non mostrato');
+  expect(lastEntry().innerText.includes('CHIUSA'), 'chiusura non registrata nella storia');
+  // the middle proof state is visible where the user meets it: the closed
+  // verdict cites sorry-backed Vote invariants, rendered ◇ not ⊢
+  expect(document.querySelector('#view .pk.enun'),
+    'stato enunciato invisibile nel punto d’uso');
+  // deny stays gated: a POSITIVE verdict never enables the negative bridge
+  const denyBtn = document.querySelector('#view [data-task="denyPermission"]');
+  expect(denyBtn && denyBtn.classList.contains('off') &&
+    denyBtn.innerText.includes('SENZA DELIBERA'),
+    'diniego diretto non spento senza verdetto negativo');
+
+  // only now the bridge exists — and it is marked unproved at the point of use
+  grantBtn = document.querySelector('#view [data-task="grantPermission"]');
+  expect(grantBtn && !grantBtn.classList.contains('off') &&
+    grantBtn.innerText.includes('PONTE NON PROVATO'),
+    'ponte senza marcatura NON PROVATO al punto d’uso');
   await click('#view [data-task="grantPermission"]');
   const conf = document.querySelector('#pop .pbox');
-  expect(conf && conf.innerText.includes('non modella'), 'avviso di provenienza assente');
+  expect(conf && conf.innerText.includes('DELIBERATA') && conf.innerText.includes('NON PROVATO'),
+    'conferma del ponte senza delibera o senza limite di prova');
   await click('#ext-apply');
   const ge = lastEntry();
-  expect(ge.className.includes('ext') && ge.innerText.includes('non modellato'),
-    'esito esterno non marcato nel risultato');
+  expect(ge.className.includes('ext') && ge.innerText.includes('NON PROVATO'),
+    'ponte applicato senza marcatura nel risultato');
   expect(!/Anna|Bruno|Elena|Carlo/.test(ge.querySelector('.eh').innerText),
     'esito attribuito a un officer');
   invOk();
@@ -2743,12 +3583,17 @@ async function selftest() {
   await click('#pop .chip[data-id="1"]');
   await amount(20, 500);
   await click('#crumbs [data-crumb="0"]');
+  await click('[data-key="conto:3"]');          // Carlo: conto 0, serve un accredito
+  await click('#hat-member [data-task="deposit"]');
+  await click('#pop .chip[data-id="1"]');
+  await amount(20, 500);
+  await click('#crumbs [data-crumb="0"]');
   await click('#gtasks [data-task="openPurchase"]');
   await click('#pop [data-l="Vino"]');
   await click('#pop .chip[data-id="1"]');       // referente Bruno
   await click('[data-key="pile:2"]');
   expect(here() === 'collection', 'acquisto «Vino» non aperto');
-  for (const [u, a] of [[0, 1], [1, 0], [2, 1]]) {
+  for (const [u, a] of [[0, 1], [1, 0], [2, 1], [3, 0]]) {
     await click('#view [data-task="pledge"]');
     await click(`#pop .chip[data-id="${u}"]`);
     await click(`#pop .chip[data-id="${a}"]`);
@@ -2761,6 +3606,14 @@ async function selftest() {
   const fbtn = document.querySelector('#refpanel [data-task="failPurchase"]');
   expect(fbtn && fbtn.classList.contains('off') && fbtn.getAttribute('title') === 'impegni pendenti da risolvere',
     'ramo L4 (fallisci): nota legacy assente');
+  // the «Vino» permesso also travels through the vote machine, never
+  // directly: open (empty tallies), two sì reach θ=2 → POSITIVE → bridge
+  await click('#view [data-kgpropose]');
+  await click('#pop .chip[data-id="anna"]');
+  await click('#view [data-kgcast="permesso:2"][data-kgsigner="anna"][data-kgballot="assent"]');
+  await click('#view [data-kgcast="permesso:2"][data-kgsigner="elena"][data-kgballot="assent"]');
+  expect(RG.kg.closed.length === 2 && RG.kg.closed[1].verdict === 'positive',
+    'seconda domanda non chiusa alla soglia');
   await click('#view [data-task="grantPermission"]');
   await click('#ext-apply');
   const cbtn = document.querySelector('#refpanel [data-task="closePurchase"]');
@@ -2819,33 +3672,83 @@ async function selftest() {
   expect(document.querySelector('#done-card [data-claims="done-list"]'),
     'elenco completati senza marcatura NON PROVATO');
 
-  // session log: persisted after every event, frozen v1 envelope, applied-only
+  // vote machine nets: Lean corpus replayed clean, laws silent, labels honest
+  const ktc = kelTraceConformance();
+  expect(ktc.steps === 23 && ktc.corpus === 'seme-locale-vote-richiesto',
+    'copertura tracce voto inattesa: ' + ktc.steps);
+  expect(kgLawBreaches.length === 0, 'rete invarianti del voto scattata in sessione');
+
+  // three DERIVED proof states: enunciato exists today (the Vote invariants
+  // carry sorry), the economic theorems stay provato, and no sorry-backed
+  // citation can ever render as proved
+  const enunNow = Object.values(CHECK_RECEIPT.axioms).filter(s => s === 'enunciato');
+  expect(enunNow.length > 0, 'nessuno stato enunciato derivato (attese: invarianti del voto)');
+  expect(CHECK_RECEIPT.axioms['KelGroups.Vote.ballots_nodup_disjoint'] === 'enunciato',
+    'invariante del voto con sorry non classificata enunciato');
+  expect(CHECK_RECEIPT.axioms['conservation_preserved'] === 'provato',
+    'teorema economico non classificato provato');
+  for (const cid of Object.keys(CLAIMS)) {
+    const row2 = claimRowHtml(cid);
+    if (proofState(cid) === 'enun')
+      expect(row2.includes('enunciato, non dimostrato') && !row2.includes('— provato'),
+        'citazione con sorry resa come provata: ' + cid);
+    if (proofState(cid) === 'ok')
+      expect(row2.includes('— provato') && !row2.includes('enunciato'),
+        'citazione provata resa in modo ambiguo: ' + cid);
+  }
+  expect(pkGlyph(['vote-clean']).includes('enun') && pkGlyph(['vote-clean']).includes('◇'),
+    'glifo dello stato enunciato assente');
+  expect(pkGlyph(['conservation']).includes('⊢') && !pkGlyph(['conservation']).includes('enun'),
+    'glifo provato contaminato dallo stato intermedio');
+  expect(pkGlyph(['vote-clean', 'join-vote-econ']).includes('npv'),
+    'NON PROVATO non prevale sugli altri stati nel glifo composto');
+
+  // session log: persisted after every event, both machines, applied-only
   const applied = sessionSteps.length;
+  const kelApplied = kelSteps.length;
+  const seqLen = sessionSeq.length;
   expect(applied >= 15, 'log sessione troppo corto: ' + applied);
+  expect(kelApplied >= 10, 'log voto troppo corto: ' + kelApplied);
+  expect(seqLen === applied + kelApplied, 'seq non copre entrambe le macchine');
   const rawLog = lsGet(logKey());
   expect(rawLog, 'log non persistito');
   const wrap = JSON.parse(rawLog);
-  expect(wrap.format === 'reactivegas-sim-session' && wrap.trace.schema === 'reactivegas.trace'
-    && wrap.trace.version === 1 && wrap.trace.steps.length === applied,
-    'involucro log non conforme');
-  expect(wrap.trace.steps.every(st => st.result.tag === 'applied'),
+  expect(wrap.format === 'reactivegas-sim-session' && wrap.v === 2
+    && wrap.trace.schema === 'reactivegas.trace' && wrap.trace.version === 1
+    && wrap.trace.steps.length === applied
+    && wrap.kel.schema === 'kelgroups-vote.trace' && wrap.kel.version === 1
+    && wrap.kel.threshold === 'legacyThreshold'
+    && wrap.kel.steps.length === kelApplied && wrap.seq.length === seqLen,
+    'involucro log v2 non conforme');
+  expect(wrap.trace.steps.every(st => st.result.tag === 'applied') &&
+    wrap.kel.steps.every(st => st.result.tag === 'applied'),
     'log di sessione con passi non applicati');
   expect(canonState(state) === canonState(wrap.trace.steps[applied - 1].result.state),
     'stato vivo diverso dal log');
+  expect(canonKelState(kg) === canonKelState(wrap.kel.steps[kelApplied - 1].result.state),
+    'stato del voto diverso dal log');
 
   // restore: replay from initial with per-step verification, never trust the tail
   const liveCanon = canonState(state);
-  expect(restoreSession() === applied, 'ripristino non riuscito');
+  const liveKelCanon = canonKelState(kg);
+  expect(restoreSession() === seqLen, 'ripristino non riuscito');
   expect(canonState(state) === liveCanon, 'replay diverge dallo stato vivo');
-  expect(history.length === applied, 'storia non ricostruita dal replay');
+  expect(canonKelState(kg) === liveKelCanon, 'replay diverge dallo stato del voto');
+  expect(history.length === seqLen, 'storia non ricostruita dal replay');
 
   // corruption: replay refused, log quarantined, then good log restores
   lsSet(logKey(), rawLog.replace('"amount":30', '"amount":31'));
   expect(restoreSession() === null, 'log corrotto accettato');
   expect(!lsGet(logKey()) && lsGet(logKey() + '-corrotto'), 'quarantena assente');
   lsSet(logKey(), rawLog);
-  expect(restoreSession() === applied && canonState(state) === liveCanon,
+  expect(restoreSession() === seqLen && canonState(state) === liveCanon,
     'ripristino del log valido fallito');
+  // corruption on the VOTE stream is caught the same way
+  expect(rawLog.includes('"assents":["anna"]'), 'sonda del log voto assente');
+  lsSet(logKey(), rawLog.replace('"assents":["anna"]', '"assents":["anna","anna"]'));
+  expect(restoreSession() === null, 'log voto corrotto accettato');
+  lsSet(logKey(), rawLog);
+  expect(restoreSession() === seqLen, 'ripristino post-corruzione voto fallito');
 
   // frozen-contract rejection matrix, on the real consumer
   const goodEnv = wrap.trace;
@@ -2893,18 +3796,26 @@ async function selftest() {
   const exported = document.getElementById('log-ta').value;
   expect(JSON.parse(exported).trace.steps.length === applied, 'export non conforme');
   await click('#log-import');
-  expect(pres && pres.env.steps.length === applied, 'import non entrato in presentazione');
+  expect(pres && pres.n.seq.length === seqLen, 'import non entrato in presentazione');
   expect(!document.getElementById('presbar').hidden, 'barra di presentazione assente');
   expect(pres.idx === 0, 'presentazione non a passo 0');
   await click('#pres-next'); await click('#pres-next');
   expect(pres.idx === 2, 'passo successivo non avanza');
   expect(document.querySelectorAll('[data-key^="member:"]').length === state.users.length,
     'vista di presentazione incoerente con lo stato del passo');
+  // step onto the first VOTE event of the seq and check the vote state follows
+  const firstK = pres.n.seq.indexOf('k');
+  expect(firstK >= 0, 'nessun passo di voto nella presentazione');
+  presSet(firstK + 1);
+  expect(RG.kg.members.length === 1, 'presentazione non mostra lo stato del voto al passo');
+  expect(document.getElementById('presbar').innerText.includes('entra nel voto'),
+    'descrizione del passo di voto assente');
   await click('#pres-prev');
-  expect(pres.idx === 1, 'passo precedente non torna');
+  expect(pres.idx === firstK, 'passo precedente non torna');
   await click('#pres-exit');
   expect(!pres, 'uscita dalla presentazione fallita');
   expect(canonState(state) === liveCanon, 'stato vivo mutato dalla presentazione');
+  expect(canonKelState(kg) === liveKelCanon, 'stato voto mutato dalla presentazione');
   expect(lsGet(logKey()) === rawLog, 'log mutato dalla presentazione');
 
   // corrupt import: clear local rejection through the real control
