@@ -900,6 +900,21 @@ const CLAIMS = {
   'vote-admit-plain':  { c: 'Ammettere un membro è un evento semplice, mai una domanda e mai un voto (R-66)', k: 'definizione', d: 'KelGroups.Vote.VoteEvent', f: 'lean/KelGroups/Vote/Event.lean', l: 14 },
   'vote-permission-kind': { c: 'Una domanda-permesso ha esattamente un designato e solo il SUO voto la decide', k: 'definizione', d: 'KelGroups.Vote.QuestionKind', f: 'lean/KelGroups/Vote/Types.lean', l: 63 },
   'vote-closure-cause':{ c: 'Ogni chiusura dichiara la sua causa: soglia raggiunta, o cambio di elettorato che fa passare un conteggio ormai stantio', k: 'definizione', d: 'KelGroups.Vote.closureCause', f: 'lean/KelGroups/Vote/State.lean', l: 105 },
+  'comp-routing':      { c: 'Instradamento TOTALE e senza wildcard dei 18 costruttori accettati: voteDerived e = true ↔ route e ≠ direct — provato al pin accettato della composizione (commit non ancora in questo albero)', k: 'teorema', d: 'Reactivegas.Composition.voteDerived_iff_not_direct', f: 'lean/Reactivegas/Composition.lean', l: 88, g: 'fcd4dc3037c3621f2a8d5c452fe21c7a53443037' },
+  'comp-base-threshold': { c: 'Canale base: per un Enactment REALE di applyEventDetailed la cui proposta è nel vocabolario FEDELE (changeRoles, removeMember; introduceMember escluso per costruzione), gli assensi registrati raggiunsero la maggioranza dello stato precedente — CONDIZIONATO alla proposta fedele; l’evento economico e l’enactment restano parametri separati: NESSUN join, nessuna equivalenza di macchine', k: 'teorema', d: 'Reactivegas.Composition.baseEnacted_threshold_met', f: 'lean/Reactivegas/Composition.lean', l: 111, g: 'fcd4dc3037c3621f2a8d5c452fe21c7a53443037' },
+  'comp-app-verdict':  { c: 'Canale app: l’eliminazione del verdetto è ESAUSTIVA — un ClosureRecord permette un evento esattamente quando chiuse positive o negative; open non permette nulla', k: 'teorema', d: 'Reactivegas.Composition.appDecided_verdict_exhaustive', f: 'lean/Reactivegas/Composition.lean', l: 142, g: 'fcd4dc3037c3621f2a8d5c452fe21c7a53443037' },
+  'comp-witness':      { c: 'Testimone di raggiungibilità (anti-vacuità) del canale app: usa zeroThreshold, quindi NON è MAI evidenza della forza reale della soglia', k: 'definizione', d: 'Reactivegas.Composition.productionVerdictWitness', f: 'lean/Reactivegas/Composition.lean', l: 163, g: 'fcd4dc3037c3621f2a8d5c452fe21c7a53443037' },
+  'kg-threshold':      { c: 'Canale base (trascritto qui): una delibera avviene solo al raggiungimento della maggioranza di assensi', k: 'teorema', d: 'enact_implies_threshold_met', f: 'lean/KelGroups/Invariants.lean', l: 572 },
+  'kg-nodup':          { c: 'Canale base: gli assensi non contano mai doppio — la lista è senza duplicati', k: 'teorema', d: 'approvals_nodup', f: 'lean/KelGroups/Invariants.lean', l: 560 },
+  'kg-proposer':       { c: 'Canale base: chi propone è già nel conteggio degli assensi', k: 'teorema', d: 'proposer_mem_approvals', f: 'lean/KelGroups/Invariants.lean', l: 566 },
+  'kg-majority-def':   { c: 'Canale base: la maggioranza è definita come (admin+1)/2', k: 'definizione', d: 'KelGroups.majority', f: 'lean/KelGroups/State.lean', l: 32 },
+  'kg-validate':       { c: 'Canale base: ogni rifiuto è un errore di validazione della macchina (notAnAdmin, alreadyApproved, …)', k: 'definizione', d: 'KelGroups.validateEvent', f: 'lean/KelGroups/Validate.lean', l: 132 },
+  'kg-approve-guard':  { c: 'Canale base: approvare richiede un admin, una proposta esistente e nessun assenso precedente dello stesso firmatario', k: 'definizione', d: 'KelGroups.validateApproval', f: 'lean/KelGroups/Validate.lean', l: 115 },
+  'kg-enact-effect':   { c: 'Canale base: la delibera applica la proposta ai membri e rimuove la pendente, in un passo', k: 'definizione', d: 'KelGroups.finishEnact', f: 'lean/KelGroups/Fold.lean', l: 18 },
+  'kg-apply':          { c: 'Canale base: proporre inserisce la pendente con il proponente già assenziente e tenta subito la delibera', k: 'definizione', d: 'KelGroups.applyEventDetailed', f: 'lean/KelGroups/Fold.lean', l: 75 },
+  'ev-remove-member':  { c: 'removeMember esiste nella macchina economica accettata al pin (#48) ed è instradato baseEnacted (vocabolario fedele); questo snapshot del simulatore non lo esegue ancora', k: 'NON PROVATO', d: null, f: null, l: null },
+  'ev-donate':         { c: 'donate esiste nella macchina economica accettata al pin (#48), è instradato direct (NON vote-derived) e muove il comune; questo snapshot del simulatore non lo esegue ancora', k: 'NON PROVATO', d: null, f: null, l: null },
+  'ev-backdonate':     { c: 'backdonate esiste nella macchina economica accettata al pin (#48) ed è instradato appDecided; questo snapshot del simulatore non lo esegue ancora', k: 'NON PROVATO', d: null, f: null, l: null },
   'kg-setinsert':      { c: 'L’inserimento di posizione è idempotente per costruzione (substrato condiviso)', k: 'definizione', d: 'KelGroups.setInsert', f: 'lean/KelGroups/Types.lean', l: 46 },
   'kg-majority':       { c: 'Aritmetica della formula (n+1)/2: 0,1,1,2,2,3 per 0–5 — provata nella macchina fusa sullo stesso calcolo scelto qui come esibizione', k: 'teorema', d: 'majority_table', f: 'lean/KelGroups/Invariants.lean', l: 597 },
   'kg-tie':            { c: 'Con un numero pari la formula (n+1)/2 non è stretta: 2·soglia ≤ n — provato nella macchina fusa sullo stesso calcolo', k: 'teorema', d: 'majority_not_strict_on_even', f: 'lean/KelGroups/Invariants.lean', l: 606 },
@@ -919,7 +934,7 @@ const CLAIMS = {
    extraction and runs fresh in the repository lake environment. The gate
    exits nonzero on any dangling citation, hash drift, or binding mismatch. */
 const CHECK_RECEIPT = {
-  sha: 'b5b7a02369f03dd02a61404ab64f378edb801f7261c7bcd93adc25095a2e5c90',
+  sha: '149a7cc9332635bf5e25649943b3d9658472df52ff00fc00a39736f5ccee2814',
   decls: ['auth_referente_guard_inv', 'close_guard_inv', 'close_permission_to_close',
     'close_spends_referente', 'conservation_preserved', 'deposit_double_entry',
     'fail_guard_inv', 'governance_enacts_remove', 'not_insolvent_of_reach',
@@ -937,7 +952,28 @@ const CHECK_RECEIPT = {
     'KelGroups.Vote.legacyThreshold', 'KelGroups.Vote.placeBallot',
     'KelGroups.Vote.sweepClosures', 'KelGroups.Vote.applyVoteEvent',
     'KelGroups.Vote.validateVoteEvent', 'KelGroups.Vote.VoteEvent',
-    'KelGroups.Vote.QuestionKind', 'KelGroups.Vote.closureCause'],
+    'KelGroups.Vote.QuestionKind', 'KelGroups.Vote.closureCause',
+    'enact_implies_threshold_met', 'approvals_nodup', 'proposer_mem_approvals',
+    'KelGroups.majority', 'KelGroups.validateEvent', 'KelGroups.validateApproval',
+    'KelGroups.finishEnact', 'KelGroups.applyEventDetailed'],
+  /* The accepted composition pin: an immutable COMMIT, never a branch. The
+     gate resolves it fresh, requires exactly this tree, verifies the cited
+     declarations' file:line inside the pinned source, and re-derives each
+     status by elaborating the pinned module in a scratch checkout on every
+     run (#print axioms; the #guard witnesses fail the build if false). The
+     three theorems are separate statements about separate premises — never
+     one join, never machine equivalence, never proof that every economic
+     event originated from a vote. */
+  composition: {
+    commit: 'fcd4dc3037c3621f2a8d5c452fe21c7a53443037',
+    tree: 'dee9dfde87bff8e5c5e1b0e37655c19ee5d9b917',
+    decls: {
+      'Reactivegas.Composition.voteDerived_iff_not_direct': 'provato',
+      'Reactivegas.Composition.baseEnacted_threshold_met': 'provato',
+      'Reactivegas.Composition.appDecided_verdict_exhaustive': 'provato',
+      'Reactivegas.Composition.productionVerdictWitness': 'provato',
+    },
+  },
   /* Derived, never hand-assigned: for every citation above the gate runs
      `#print axioms <decl>` fresh and classifies it `provato` (no sorryAx)
      or `enunciato` (depends on sorryAx: stated, not yet proved). This map
@@ -959,6 +995,10 @@ const CHECK_RECEIPT = {
     'KelGroups.Vote.validateVoteEvent': 'provato', 'KelGroups.Vote.verdictOf': 'provato',
     'KelGroups.Vote.verdictOf_threshold_congr': 'enunciato',
     'KelGroups.setInsert': 'provato', 'auth_referente_guard_inv': 'provato',
+    'enact_implies_threshold_met': 'provato', 'approvals_nodup': 'provato',
+    'proposer_mem_approvals': 'provato', 'KelGroups.majority': 'provato',
+    'KelGroups.validateEvent': 'provato', 'KelGroups.validateApproval': 'provato',
+    'KelGroups.finishEnact': 'provato', 'KelGroups.applyEventDetailed': 'provato',
     'close_guard_inv': 'provato', 'close_permission_to_close': 'provato',
     'close_spends_referente': 'provato', 'conservation_preserved': 'provato',
     'deposit_double_entry': 'provato', 'fail_guard_inv': 'provato',
@@ -1004,13 +1044,22 @@ const GUARD_CLAIMS = {
   'AUTH': 'auth', 'REFERENTE': 'referente', 'PERMITTED (L2)': 'permitted',
   'NO-PENDING (L4)': 'nopending', 'COVERED (L7)': 'covered', 'L8': 'l8',
 };
-// history event tag → effect claim ids
+// event constructor → effect claim ids. This is the CLAIM COVERAGE table
+// over the ACCEPTED pin's 18 constructors, not just this snapshot's 15:
+// claimAudit and the committed gate require every pinned constructor to
+// carry rows, with route-appropriate composition rows on the non-direct
+// ones (an omitted constructor or a hand-trimmed route is RED).
 const TAG_CLAIMS = {
-  addUser: ['membership'], electResponsabile: ['auth'],
-  removeResponsabile: ['remove-refunds', 'remove-refund-sum'],
+  addUser: ['membership'],
+  electResponsabile: ['auth', 'comp-routing', 'comp-base-threshold', 'kg-threshold', 'join-vote-econ'],
+  removeResponsabile: ['remove-refunds', 'remove-refund-sum', 'comp-routing', 'comp-base-threshold', 'kg-threshold', 'join-vote-econ'],
+  removeMember: ['ev-remove-member', 'comp-routing', 'comp-base-threshold', 'join-vote-econ'],
   openPurchase: ['open-referente'],
-  grantPermission: ['join-vote-econ'], denyPermission: ['join-vote-econ', 'close-gone'],
+  grantPermission: ['join-vote-econ', 'comp-routing', 'comp-app-verdict'],
+  denyPermission: ['join-vote-econ', 'comp-routing', 'comp-app-verdict', 'close-gone'],
   deposit: ['accredito'], withdraw: ['prelievo'], transferCassa: ['giro', 'conservation'],
+  donate: ['ev-donate'],
+  backdonate: ['ev-backdonate', 'comp-routing', 'comp-app-verdict', 'join-vote-econ'],
   pledge: ['impegno-escrow'], acceptPledge: ['accept-effect'],
   refusePledge: ['refuse-refund'], correctPledge: ['correct-conguaglio'],
   closePurchase: ['close-payout', 'cassa-negativa', 'close-gone'],
@@ -1028,6 +1077,9 @@ const TAG_CLAIMS = {
 function proofState(id) {
   const r = CLAIMS[id];
   if (!r || r.k === 'NON PROVATO' || !r.d) return 'npv';
+  // rows carrying `g` cite the accepted composition PIN, whose status the
+  // gate re-derives by elaborating the pinned module fresh
+  if (r.g) return CHECK_RECEIPT.composition.decls[r.d] === 'provato' ? 'ok' : 'enun';
   return CHECK_RECEIPT.axioms[r.d] === 'provato' ? 'ok' : 'enun';
 }
 
@@ -1049,7 +1101,8 @@ function claimRowHtml(id) {
   const kindTx = ps === 'npv' ? 'NON PROVATO'
     : (ps === 'enun' ? r.k + ' — enunciato, non dimostrato' : r.k + ' — provato');
   const prov = r.d
-    ? `<span class="pdecl mono">${esc(r.d)} · ${esc(r.f)}:${r.l}</span>`
+    ? `<span class="pdecl mono">${esc(r.d)} · ${esc(r.f)}:${r.l}${r.g
+        ? ` @ pin ${esc(r.g.slice(0, 10))}… (commit accettato, non in questo albero)` : ''}</span>`
     : `<span class="pdecl mono">NONE — nessuna dichiarazione Lean</span>`;
   return `<div class="prow"><span class="pkind ${kindCls}">${esc(kindTx)}</span>
     <span>${esc(r.c)}${prov}</span></div>`;
@@ -1086,6 +1139,14 @@ function claimAudit() {
     if (!r.c || !KINDS.includes(r.k)) { bad.push(id + ': forma non valida'); continue; }
     if (r.k === 'NON PROVATO') {
       if (r.d !== null) bad.push(id + ': NON PROVATO con dichiarazione');
+    } else if (r.g) {
+      // a pinned-commit citation: bound to the accepted composition pin
+      if (r.g !== CHECK_RECEIPT.composition.commit)
+        bad.push(id + ': pin diverso dalla composizione accettata');
+      if (!r.d || !['provato', 'enunciato'].includes(CHECK_RECEIPT.composition.decls[r.d]))
+        bad.push(id + ': stato non derivato al pin per ' + r.d);
+      if (!r.f || !Number.isInteger(r.l) || r.l <= 0)
+        bad.push(id + ': sorgente/riga non validi');
     } else {
       if (!r.d || !CHECK_RECEIPT.decls.includes(r.d))
         bad.push(id + ': dichiarazione senza ricevuta di verifica');
@@ -1099,6 +1160,26 @@ function claimAudit() {
   for (const d of Object.keys(CHECK_RECEIPT.axioms))
     if (!CHECK_RECEIPT.decls.includes(d))
       bad.push('assiomi per dichiarazione non citata: ' + d);
+  // exhaustive constructor coverage over the ACCEPTED pin's route table:
+  // every constructor carries claim rows; every non-direct constructor
+  // carries the routing theorem, its route-form theorem, and the honest
+  // unproved-join row; the witness row must keep its zeroThreshold caveat
+  for (const [tag2, route] of Object.entries(EVENT_ROUTES)) {
+    const ids2 = TAG_CLAIMS[tag2] || [];
+    if (!ids2.length) { bad.push('costruttore senza righe di manifesto: ' + tag2); continue; }
+    if (route !== 'direct') {
+      const need = ['comp-routing', 'join-vote-econ',
+        route === 'baseEnacted' ? 'comp-base-threshold' : 'comp-app-verdict'];
+      for (const nid of need)
+        if (!ids2.includes(nid)) bad.push(`costruttore ${tag2} (${route}) senza riga ${nid}`);
+    }
+  }
+  for (const tag2 of Object.keys(TAG_CLAIMS))
+    if (!EVENT_ROUTES[tag2]) bad.push('riga di copertura per costruttore non instradato: ' + tag2);
+  for (const tag2 of Object.keys(EV))
+    if (!EVENT_ROUTES[tag2]) bad.push('evento della macchina fuori dall\'instradamento accettato: ' + tag2);
+  if (!CLAIMS['comp-witness'].c.includes('zeroThreshold'))
+    bad.push('riga del testimone senza l\'avvertenza zeroThreshold');
   for (const g of Object.values(GUARD_CLAIMS))
     if (!CLAIMS[g]) bad.push('guardia senza riga: ' + g);
   for (const ids of Object.values(TAG_CLAIMS))
@@ -1583,6 +1664,237 @@ const VOTE_TRACES_V1 = {"V":{"initial":{"closed":[],"members":[],"openQuestions"
 
 kg = vtEmpty();
 
+/* --- Base governance channel: transcription of lean/KelGroups (merged) ----
+   The accepted composition (pin fcd4dc30…, lean/Reactivegas/Composition.lean)
+   classifies every economic constructor by its actual producer:
+   electResponsabile / removeResponsabile / removeMember are BASE-ENACTED —
+   produced by the faithful KelGroups proposal machine (propose/approve →
+   Enactment at the (n+1)/2 majority of the pre-state) — while grant/deny/
+   backdonate are APP-DECIDED by the required Vote machine above. Evidence
+   for a base-enacted economic event is a real Enactment whose pending
+   proposal is in the FAITHFUL vocabulary (changeRoles, removeMember;
+   introduceMember is excluded by construction: addUser stays direct and no
+   voted-admission path exists). The two evidence forms share no premise,
+   and the bridge from either channel into the economic machine remains the
+   local unproved join ('join-vote-econ'). α (the app fold) is fixed to a
+   unit: the toy sends no app events on this channel. */
+
+const bgEmpty = () => ({ members: [], pendingProposals: [] });
+let bg = bgEmpty();
+let bgSteps = [];        // kelgroups-base.trace applied steps of the live session
+let bgCredits = [];      // faithful enactments not yet consumed by the bridge
+
+/* State.lean (merged): counts, majority, membership */
+const bgAdminCount = gs => gs.members.reduce((n, [, m]) => n + (vtHasAdmin(m.roles) ? 1 : 0), 0);
+const bgMajority = gs => Math.floor((bgAdminCount(gs) + 1) / 2);   // KelGroups.majority
+const bgIsAdmin = (k, gs) => { const m = vtLookup(k, gs.members); return !!m && vtHasAdmin(m.roles); };
+const bgIsMember = (k, gs) => vtLookup(k, gs.members) !== null;
+const bgBootstrap = gs => bgAdminCount(gs) === 0;                  // authMode = .bootstrap
+
+/* a Proposal is exactly one of the three Lean constructors */
+const bgPropKind = p => 'introduceMember' in p ? 'introduceMember'
+  : ('removeMember' in p ? 'removeMember' : 'changeRoles');
+
+/* Composition.baseProposalFaithful (at the pin): only changeRoles and
+   removeMember enactments carry base-enacted economic evidence */
+const bgProposalFaithful = p => bgPropKind(p) !== 'introduceMember';
+
+/* digest is a machine PARAMETER (Proposal → ProposalId); the toy picks a
+   readable deterministic digest. Re-proposing the same digest replaces the
+   pending entry (assocInsert), exactly as Fold.lean does. */
+const bgDigest = p => {
+  const k = bgPropKind(p);
+  if (k === 'introduceMember') return 'entra:' + p.introduceMember.key;
+  if (k === 'removeMember') return 'esce:' + p.removeMember.key;
+  return 'ruoli:' + p.changeRoles.key + ':' +
+    (p.changeRoles.roles.some(r => 'adminRole' in r) ? 'admin' : 'app');
+};
+
+/* KelGroups.enact */
+const bgEnact = (gs, p) => {
+  const k = bgPropKind(p);
+  if (k === 'introduceMember') {
+    const { key, email, roles } = p.introduceMember;
+    return { ...gs, members: vtInsert(key, { key, email, roles }, gs.members) };
+  }
+  if (k === 'removeMember')
+    return { ...gs, members: vtErase(p.removeMember.key, gs.members) };
+  const { key, roles } = p.changeRoles;
+  return { ...gs, members: vtAdjust(key, m => ({ ...m, roles }), gs.members) };
+};
+
+/* KelGroups.tryEnactDetailed: majority is read on the state that already
+   contains the pending proposal, members unchanged by the pending entry */
+function bgTryEnactDetailed(gs, pid) {
+  const pending = vtLookup(pid, gs.pendingProposals);
+  if (!pending) return { state: gs, enactment: null };
+  if (pending.approvals.length >= bgMajority(gs)) {
+    const enacted = bgEnact(gs, pending.proposal);
+    return {
+      state: { ...enacted, pendingProposals: vtErase(pid, enacted.pendingProposals) },
+      enactment: { proposalId: pid, pending, preState: gs },
+    };
+  }
+  return { state: gs, enactment: null };
+}
+
+/* KelGroups.applyEventDetailed, base events only (the toy's α is unit):
+   propose inserts the pending with the proposer already approving and tries
+   the enactment at once; approve setInserts and tries again */
+function bgApply(gs, signer, ev) {
+  if ('propose' in ev) {
+    const pid = bgDigest(ev.propose.proposal);
+    const pending = { proposal: ev.propose.proposal, proposer: signer, approvals: [signer] };
+    const proposed = { ...gs, pendingProposals: vtInsert(pid, pending, gs.pendingProposals) };
+    return bgTryEnactDetailed(proposed, pid);
+  }
+  const pid = ev.approve.proposalId;
+  const pending = vtLookup(pid, gs.pendingProposals);
+  if (!pending) return { state: gs, enactment: null };
+  const approved = { ...pending, approvals: vtSetInsert(signer, pending.approvals) };
+  const updated = { ...gs, pendingProposals: vtInsert(pid, approved, gs.pendingProposals) };
+  return bgTryEnactDetailed(updated, pid);
+}
+
+/* KelGroups.validateEvent (base), with the toy's parameters: validKey = ⊤
+   and an empty GroupConfig (no app-role preconditions, so the changeRoles
+   role checks are vacuously ok — exactly the Lean code with roleDefs []).
+   Returns null or the Lean ValidationError constructor name. */
+function bgValidate(gs, signer, ev) {
+  if ('propose' in ev) {
+    const p = ev.propose.proposal;
+    if (bgBootstrap(gs)) {
+      if (bgPropKind(p) === 'introduceMember')
+        return p.introduceMember.roles.some(r => 'adminRole' in r) ? null : 'bootstrapRequiresAdmin';
+      return 'bootstrapRequiresAdmin';
+    }
+    if (!bgIsAdmin(signer, gs)) return 'notAnAdmin';
+    const k = bgPropKind(p);
+    if (k === 'introduceMember')
+      return bgIsMember(p.introduceMember.key, gs) ? 'memberAlreadyExists' : null;
+    if (k === 'removeMember')
+      return bgIsMember(p.removeMember.key, gs) ? null : 'memberNotFound';
+    return bgIsMember(p.changeRoles.key, gs) ? null : 'memberNotFound';
+  }
+  if (!bgIsAdmin(signer, gs)) return 'notAnAdmin';
+  const pending = vtLookup(ev.approve.proposalId, gs.pendingProposals);
+  if (!pending) return 'proposalNotFound';
+  return pending.approvals.includes(signer) ? 'alreadyApproved' : null;
+}
+
+const bgCanonProposal = p => {
+  const k = bgPropKind(p);
+  if (k === 'introduceMember') return { introduceMember: {
+    key: p.introduceMember.key, email: p.introduceMember.email,
+    roles: p.introduceMember.roles.map(vtCanonRole) } };
+  if (k === 'removeMember') return { removeMember: { key: p.removeMember.key } };
+  return { changeRoles: { key: p.changeRoles.key,
+    roles: p.changeRoles.roles.map(vtCanonRole) } };
+};
+const canonBaseState = gs => JSON.stringify({
+  members: gs.members.map(([k, m]) => [k,
+    { key: m.key, email: m.email, roles: m.roles.map(vtCanonRole) }]),
+  pendingProposals: gs.pendingProposals.map(([pid, pp]) => [pid,
+    { proposal: bgCanonProposal(pp.proposal), proposer: pp.proposer,
+      approvals: pp.approvals.slice() }]) });
+
+/* Crude-drift net for the base channel: approvals_nodup and
+   proposer_mem_approvals, transcribed and asserted after every applied
+   event. A violation means this transcription diverged from Fold.lean. */
+let bgLawBreaches = [];
+function bgLawViolations(gs) {
+  const out = [];
+  for (const [pid, pp] of gs.pendingProposals) {
+    if (new Set(pp.approvals).size !== pp.approvals.length)
+      out.push(`approvals_nodup: «${pid}»`);
+    if (!pp.approvals.includes(pp.proposer))
+      out.push(`proposer_mem_approvals: «${pid}»`);
+  }
+  return out;
+}
+
+/* v1 consumer for the base stream (local schema kelgroups-base.trace):
+   replay + verify each stored step against this transcription. */
+function verifyBaseTraceV1(env, opts) {
+  opts = opts || {};
+  const fail = m => { throw new Error('base: ' + m); };
+  if (!env || typeof env !== 'object') fail('non è un oggetto');
+  if (env.schema !== 'kelgroups-base.trace') fail('schema sconosciuto');
+  if (env.version !== 1) fail('versione non supportata');
+  if (!env.initial || !Array.isArray(env.steps)) fail('forma non valida');
+  let s = env.initial;
+  if (canonBaseState(s) !== canonBaseState(bgEmpty()))
+    fail('stato iniziale non vuoto');
+  const states = [JSON.parse(canonBaseState(s))];
+  env.steps.forEach((st, i) => {
+    if (!st || !st.input || !st.event || !st.result || !st.signer)
+      fail(`passo ${i}: forma non valida`);
+    if (canonBaseState(st.input) !== canonBaseState(s))
+      fail(`passo ${i}: input discontinuo`);
+    const verr = bgValidate(s, st.signer, st.event);
+    if (st.result.tag === 'applied') {
+      if (verr) fail(`passo ${i}: registrato applicato, la validazione rifiuta (${verr})`);
+      const det = bgApply(s, st.signer, st.event);
+      if (canonBaseState(det.state) !== canonBaseState(st.result.state))
+        fail(`passo ${i}: post-stato divergente`);
+      if (!!st.result.enacted !== !!det.enactment)
+        fail(`passo ${i}: presenza enactment divergente`);
+      s = det.state;
+    } else if (st.result.tag === 'refused') {
+      if (opts.appliedOnly) fail(`passo ${i}: rifiuto in un log di sessione`);
+      if (!verr) fail(`passo ${i}: registrato rifiutato, la validazione applica`);
+      if (st.result.error !== verr)
+        fail(`passo ${i}: errore divergente — atteso=${st.result.error} osservato=${verr}`);
+    } else fail(`passo ${i}: result.tag sconosciuto`);
+    states.push(JSON.parse(canonBaseState(s)));
+  });
+  return { steps: env.steps.length, states };
+}
+
+/* --- Composition routing (accepted pin) -----------------------------------
+   The 18-constructor route table of Composition.lean at the accepted pin.
+   The committed claim gate re-derives this table by parsing the pinned
+   source fresh on every run and REDs on any divergence (route-list drift),
+   so this literal cannot silently drift from the accepted classifier. The
+   three constructors this simulator snapshot does not execute yet
+   (removeMember, donate, backdonate) still carry claim rows. */
+const EVENT_ROUTES = {
+  addUser: 'direct', electResponsabile: 'baseEnacted',
+  removeResponsabile: 'baseEnacted', removeMember: 'baseEnacted',
+  openPurchase: 'direct', grantPermission: 'appDecided',
+  denyPermission: 'appDecided', deposit: 'direct', withdraw: 'direct',
+  transferCassa: 'direct', donate: 'direct', backdonate: 'appDecided',
+  pledge: 'direct', acceptPledge: 'direct', refusePledge: 'direct',
+  correctPledge: 'direct', closePurchase: 'direct', failPurchase: 'direct',
+};
+const voteDerivedTag = tag => EVENT_ROUTES[tag] !== undefined && EVENT_ROUTES[tag] !== 'direct';
+
+/* --- Governance credits: the model-level rejection ------------------------
+   A vote-derived economic event is applied ONLY against route-appropriate
+   evidence: a faithful base Enactment (baseEnacted) or a closed vote
+   verdict (appDecided). Base credits are consumable exactly once; app
+   evidence is the closure record itself (a question id can close at most
+   once, so existence is exactly-once by construction). Without evidence the
+   toy REFUSES the event before the machine ever sees it — electing four
+   responsabili without one vote is no longer expressible. */
+
+/* the economic event a faithful enactment authorizes, or null */
+function bgCreditOf(enactment) {
+  const p = enactment.pending.proposal;
+  if (!bgProposalFaithful(p)) return null;
+  if (bgPropKind(p) === 'removeMember')
+    return { kind: 'removeMember', key: p.removeMember.key, pid: enactment.proposalId };
+  const admin = p.changeRoles.roles.some(r => 'adminRole' in r);
+  return { kind: admin ? 'electResponsabile' : 'removeResponsabile',
+    key: p.changeRoles.key, pid: enactment.proposalId };
+}
+
+function bgTakeCredit(tag, targetKey) {
+  const i = bgCredits.findIndex(cr => cr.kind === tag && cr.key === targetKey);
+  if (i < 0) return null;
+  return bgCredits.splice(i, 1)[0];
+}
+
 /* --- Vote journey (toy-side wiring of the required Vote machine) ----------
    Names/keys and question phrasing are decoration; the machine sees keys,
    question ids, kinds and ballots. The permesso question for an acquisto is
@@ -1685,6 +1997,135 @@ function runVoteEvent(signer, ev) {
   return { ok: true, closedDelta: det.closedDelta };
 }
 
+/* --- Base journey (toy-side wiring of the base proposal channel) --------- */
+
+const kgUid = key => { const i = NAMES.findIndex(n => n.toLowerCase() === key);
+  return i >= 0 ? i : null; };
+const BG_ADMIN_ROLES = [{ adminRole: { admin: 'publicAdmin' } }];
+const BG_APP_ROLES = [{ appRole: { name: 'user' } }];
+
+function descrBase(signer, ev, enacted) {
+  let base;
+  if ('propose' in ev) {
+    const p = ev.propose.proposal, k = bgPropKind(p);
+    if (k === 'introduceMember')
+      base = `${kgName(signer)} propone: ${kgName(p.introduceMember.key)} entra nel canale base` +
+        (p.introduceMember.roles.some(r => 'adminRole' in r) ? ' (admin)' : '');
+    else if (k === 'removeMember')
+      base = `${kgName(signer)} propone: ${kgName(p.removeMember.key)} esce dal canale base`;
+    else
+      base = `${kgName(signer)} propone: ruoli ${p.changeRoles.roles.some(r => 'adminRole' in r)
+        ? 'admin (elezione)' : 'non-admin (revoca)'} a ${kgName(p.changeRoles.key)}`;
+  } else {
+    base = `${kgName(signer)} approva «${ev.approve.proposalId}»`;
+  }
+  return base + (enacted ? ' — DELIBERATA' : '');
+}
+
+const BG_TAG_CLAIMS = {
+  propose: ['kg-apply', 'kg-proposer', 'kg-validate'],
+  approve: ['kg-approve-guard', 'kg-nodup'],
+};
+
+function recordBaseApplied(signer, ev, det) {
+  bg = det.state;
+  const viol = bgLawViolations(bg);
+  if (viol.length) {
+    bgLawBreaches.push({ viol, what: descrBase(signer, ev, false) });
+    toast(`<b>⚠ RETE CANALE BASE</b> <span class="tiny">${esc(viol.join(' · '))} —
+      trascrizione divergente da Fold.lean</span>`, innerWidth / 2, 80);
+  }
+  const kind = 'propose' in ev ? 'propose' : 'approve';
+  const enacted = !!det.enactment;
+  const claims = [...BG_TAG_CLAIMS[kind],
+    ...(enacted ? ['kg-threshold', 'kg-enact-effect', 'comp-base-threshold'] : [])];
+  const flow = enacted
+    ? `DELIBERATA «${det.enactment.proposalId}»: assensi ${det.enactment.pending.approvals.length}` +
+      ` ≥ maggioranza ${bgMajority(det.enactment.preState)} dello stato precedente` +
+      (bgProposalFaithful(det.enactment.pending.proposal)
+        ? ' · proposta nel vocabolario fedele → evidenza economica'
+        : ' · introduceMember: MAI evidenza economica (esclusa per costruzione)')
+    : (kind === 'propose'
+      ? 'proposta pendente: chi propone è già fra gli assensi'
+      : 'assenso registrato: mai contato doppio');
+  history.unshift({ kind: 'acc', mk: 'bg', tag: kind,
+    descr: descrBase(signer, ev, enacted), flow, claims,
+    enacted, inv: invSnapshot() });
+  invNote = `dopo canale base: ${kind} ✓`;
+}
+
+/* one attempted base event through validate + apply, with durable logging;
+   a faithful enactment mints the credit and the bridge spends it at once */
+function runBaseEvent(signer, ev) {
+  const verr = bgValidate(bg, signer, ev);
+  if (verr) {
+    history.unshift({ kind: 'rej', mk: 'bg', tag: 'base',
+      descr: descrBase(signer, ev, false),
+      failed: [{ code: 'KelGroups.validateEvent = .error .' + verr,
+        why: 'validazione del canale base: ' + verr, law: null }],
+      ext: false, inv: invSnapshot() });
+    invNote = 'dopo proposta ✗ — stato invariato';
+    return { ok: false, error: verr };
+  }
+  const pre = JSON.parse(canonBaseState(bg));
+  const det = bgApply(bg, signer, ev);
+  recordBaseApplied(signer, ev, det);
+  bgSteps.push({ input: pre, signer, event: ev,
+    result: { tag: 'applied', state: JSON.parse(canonBaseState(bg)),
+      enacted: !!det.enactment } });
+  sessionSeq.push('b');
+  persistSession();
+  if (det.enactment) {
+    const cr = bgCreditOf(det.enactment);
+    if (cr) { bgCredits.push(cr); bridgeBaseCredit(cr); }
+  }
+  teachLearn('benvenuto');
+  return { ok: true, enacted: !!det.enactment };
+}
+
+/* the ONE bridge from a faithful base enactment into the economic machine:
+   spends the credit through the governed runAttempt (join NON PROVATO) */
+function bridgeBaseCredit(cr) {
+  const uid = kgUid(cr.key);
+  if (uid === null || !state.responsabili.length) return;
+  if (cr.kind === 'electResponsabile' && state.users.includes(uid) && !resp(uid))
+    runAttempt('electResponsabile', { author: state.responsabili[0], target: uid });
+  else if (cr.kind === 'removeResponsabile' && resp(uid))
+    runAttempt('removeResponsabile', { author: state.responsabili[0], target: uid });
+  // removeMember: routed baseEnacted at the pin but absent from this
+  // machine snapshot — the credit stays visible and unconsumed
+}
+
+/* the base-side admin key that signs toy-initiated proposals */
+function bgSignerFor(author) {
+  const k = kgKey(author);
+  if (bgIsAdmin(k, bg)) return k;
+  const admins = bg.members.filter(([, m]) => vtHasAdmin(m.roles)).map(([k2]) => k2);
+  return admins.length ? admins[0] : k;
+}
+
+/* the elect/remove task chain: bootstrap → membership → faithful proposal.
+   Every step is a REAL base event in the durable log; when the group has
+   three or more admins the faithful proposal stays pending and the gov
+   card's approve buttons carry it to the threshold. */
+function startBaseGovChain(tag, args) {
+  const targetKey = kgKey(args.target);
+  if (bgBootstrap(bg)) {
+    const founder = kgKey(args.author);
+    runBaseEvent(founder, { propose: { proposal: { introduceMember:
+      { key: founder, email: founder + '@toy.example', roles: BG_ADMIN_ROLES } } } });
+  }
+  if (tag === 'electResponsabile' && !bgIsMember(targetKey, bg)) {
+    const r = runBaseEvent(bgSignerFor(args.author), { propose: { proposal: { introduceMember:
+      { key: targetKey, email: targetKey + '@toy.example', roles: BG_APP_ROLES } } } });
+    if (!r.ok || !bgIsMember(targetKey, bg)) return r;   // pending or refused: approvals first
+  }
+  if (tag === 'removeResponsabile' && !bgIsMember(targetKey, bg))
+    return { ok: false, error: 'memberNotFound' };
+  return runBaseEvent(bgSignerFor(args.author), { propose: { proposal: { changeRoles:
+    { key: targetKey, roles: tag === 'electResponsabile' ? BG_ADMIN_ROLES : BG_APP_ROLES } } } });
+}
+
 
 /* --- Session log (persist the LOG, not the state) -------------------------
    The durable artifact is the sequence of applied Lean-shaped events in the
@@ -1720,20 +2161,26 @@ function kelEnvelope() {
     initial: JSON.parse(canonKelState(kgEmptyState())),
     steps: kelSteps };
 }
+function baseEnvelope() {
+  return { schema: 'kelgroups-base.trace', version: 1,
+    initial: JSON.parse(canonBaseState(bgEmpty())),
+    steps: bgSteps };
+}
 function buildExport() {
   return JSON.stringify({ format: 'reactivegas-sim-session', v: 2,
     labels: { ...colLabels }, trace: sessionEnvelope(), kel: kelEnvelope(),
-    seq: sessionSeq.join('') });
+    base: baseEnvelope(), seq: sessionSeq.join('') });
 }
 function persistSession() { lsSet(logKey(), buildExport()); }
 
 /* rebuild toy-side decoration + history from verified applied-only traces,
    walking the chronological seq across both machines */
-function adoptSession(env, kelEnv, seq, labels) {
+function adoptSession(env, kelEnv, baseEnv, seq, labels) {
   state = initState(FOUNDER);
   kg = kgEmptyState();
+  bg = bgEmpty(); bgCredits = [];
   history = []; completed = []; collSeq = 1; colLabels = { ...(labels || {}) };
-  let ei = 0, ki = 0;
+  let ei = 0, ki = 0, bi = 0;
   for (const m of seq) {
     if (m === 'e') {
       const st = env.steps[ei++];
@@ -1743,7 +2190,18 @@ function adoptSession(env, kelEnv, seq, labels) {
         const used = new Set(Object.values(colLabels));
         colLabels[args.c] = PRESETS.find(p => !used.has(p)) || ('acquisto ' + collSeq);
       }
+      // consume the governance credit the verified walk already required
+      if (voteDerivedTag(tag) && EVENT_ROUTES[tag] === 'baseEnacted')
+        bgTakeCredit(tag, kgKey(args.target));
       recordApplied(tag, args, attempt(state, e));
+    } else if (m === 'b') {
+      const st = baseEnv.steps[bi++];
+      const det = bgApply(bg, st.signer, st.event);
+      recordBaseApplied(st.signer, st.event, det);
+      if (det.enactment) {
+        const cr = bgCreditOf(det.enactment);
+        if (cr) bgCredits.push(cr);
+      }
     } else {
       const st = kelEnv.steps[ki++];
       const det = kgApplyDetailed(kg, st.signer, st.event);
@@ -1752,32 +2210,82 @@ function adoptSession(env, kelEnv, seq, labels) {
   }
   sessionSteps = env.steps.slice();
   kelSteps = kelEnv.steps.slice();
+  bgSteps = baseEnv.steps.slice();
   sessionSeq = seq.slice();
-  invNote = `sessione ripristinata: ${seq.length} eventi (${env.steps.length} economia, ${kelEnv.steps.length} voto)`;
+  invNote = `sessione ripristinata: ${seq.length} eventi (${env.steps.length} economia, ${kelEnv.steps.length} voto, ${baseEnv.steps.length} base)`;
 }
 
-/* normalize any accepted import/storage shape into {env, kelEnv, seq, labels} */
+/* normalize any accepted import/storage shape into {env, kelEnv, baseEnv, seq, labels} */
 function normalizeWrap(wrap) {
   const env = wrap && wrap.format === 'reactivegas-sim-session' ? wrap.trace : wrap;
   const kelEnv = (wrap && wrap.format === 'reactivegas-sim-session' && wrap.kel)
     ? wrap.kel
     : { schema: 'kelgroups-vote.trace', version: 1, threshold: VT_THRESHOLD_NAME,
         initial: JSON.parse(canonKelState(kgEmptyState())), steps: [] };
+  const baseEnv = (wrap && wrap.format === 'reactivegas-sim-session' && wrap.base)
+    ? wrap.base
+    : { schema: 'kelgroups-base.trace', version: 1,
+        initial: JSON.parse(canonBaseState(bgEmpty())), steps: [] };
   let seq;
   if (wrap && wrap.format === 'reactivegas-sim-session' && typeof wrap.seq === 'string')
     seq = wrap.seq.split('');
   else seq = env.steps.map(() => 'e');
-  return { env, kelEnv, seq, labels: (wrap && wrap.labels) || {} };
+  return { env, kelEnv, baseEnv, seq, labels: (wrap && wrap.labels) || {} };
+}
+
+/* Governance over the combined seq (model-level, also on import/restore):
+   walk the three verified streams in order, minting base credits from
+   faithful enactments and requiring route-appropriate evidence before any
+   vote-derived economic event. Throws on the first violation, so a log in
+   which four responsabili were elected without one vote is REFUSED. */
+function verifyGovernedSeq(n) {
+  let bgs = bgEmpty(), kgs = vtEmpty();
+  const credits = [];
+  let ei = 0, ki = 0, bi = 0;
+  for (const m of n.seq) {
+    if (m === 'b') {
+      const st = n.baseEnv.steps[bi++];
+      const det = bgApply(bgs, st.signer, st.event);
+      bgs = det.state;
+      if (det.enactment) {
+        const cr = bgCreditOf(det.enactment);
+        if (cr) credits.push(cr);
+      }
+    } else if (m === 'k') {
+      const st = n.kelEnv.steps[ki++];
+      kgs = vtApply(kgs, st.signer, st.event).state;
+    } else {
+      const st = n.env.steps[ei++];
+      const e = leanEventOf(st.event);
+      if (!voteDerivedTag(e.tag)) continue;
+      if (EVENT_ROUTES[e.tag] === 'baseEnacted') {
+        const key = kgKey(e.target);
+        const i = credits.findIndex(cr => cr.kind === e.tag && cr.key === key);
+        if (i < 0)
+          throw new Error(`governo: ${e.tag} senza enactment fedele del canale base`);
+        credits.splice(i, 1);
+      } else {
+        const want = e.tag === 'grantPermission' ? 'positive' : 'negative';
+        const rec = kgs.closed.find(r => r.questionId === permQid(e.c));
+        if (!rec || rec.verdict !== want)
+          throw new Error(`governo: ${e.tag} senza verdetto ${want === 'positive' ? 'positivo' : 'negativo'} chiuso`);
+      }
+    }
+  }
 }
 
 function verifySessionShape(n) {
   const eCount = n.seq.filter(m => m === 'e').length;
   const kCount = n.seq.filter(m => m === 'k').length;
+  const bCount = n.seq.filter(m => m === 'b').length;
   if (eCount !== n.env.steps.length || kCount !== n.kelEnv.steps.length ||
-      eCount + kCount !== n.seq.length)
-    throw new Error('seq incoerente con i due flussi');
+      bCount !== n.baseEnv.steps.length ||
+      eCount + kCount + bCount !== n.seq.length)
+    throw new Error('seq incoerente con i tre flussi');
   verifyTraceV1(n.env, { appliedOnly: true });
   verifyKelTraceV1(n.kelEnv, { appliedOnly: true });
+  verifyBaseTraceV1(n.baseEnv, { appliedOnly: true });
+  verifyGovernedSeq(n);
 }
 
 /* boot-time restore: never trust the stored final state — replay and verify */
@@ -1789,7 +2297,7 @@ function restoreSession() {
   const n = normalizeWrap(wrap);
   try { verifySessionShape(n); }
   catch (e) { return quarantineLog(e.message); }
-  adoptSession(n.env, n.kelEnv, n.seq, n.labels);
+  adoptSession(n.env, n.kelEnv, n.baseEnv, n.seq, n.labels);
   return n.seq.length;
 }
 
@@ -1806,8 +2314,9 @@ function newSession() {
   lsDel(logKey());
   state = initState(FOUNDER);
   kg = kgEmptyState();
+  bg = bgEmpty(); bgCredits = [];
   history = []; completed = []; collSeq = 1; colLabels = {};
-  sessionSteps = []; kelSteps = []; sessionSeq = [];
+  sessionSteps = []; kelSteps = []; bgSteps = []; sessionSeq = [];
   invNote = 'nuova sessione → State.init 0';
   navStack = [{ view: 'group' }];
   cancelFlow();
@@ -1816,18 +2325,22 @@ function newSession() {
 
 /* --- Presentation mode: replay a trace one applied event at a time -------- */
 
-let pres = null;   // combined two-machine presentation over the toy seq
+let pres = null;   // combined three-machine presentation over the toy seq
 
 function enterPresentation(n) {
-  // n = { env, kelEnv, seq, labels } — both envelopes verified independently
+  // n = { env, kelEnv, baseEnv, seq, labels } — every envelope verified
+  // independently, then the governance walk over the combined seq
   const ver = verifyTraceV1(n.env);
   const kver = verifyKelTraceV1(n.kelEnv);
+  const bver = verifyBaseTraceV1(n.baseEnv);
   const eCount = n.seq.filter(m => m === 'e').length;
-  if (eCount !== n.env.steps.length ||
-      n.seq.length - eCount !== n.kelEnv.steps.length)
-    throw new Error('seq incoerente con i due flussi');
-  pres = { n, eco: ver.states, kel: kver.states, idx: 0,
-    saved: { state, kg, nav: navStack, labels: colLabels, note: invNote,
+  const bCount = n.seq.filter(m => m === 'b').length;
+  if (eCount !== n.env.steps.length || bCount !== n.baseEnv.steps.length ||
+      n.seq.length - eCount - bCount !== n.kelEnv.steps.length)
+    throw new Error('seq incoerente con i tre flussi');
+  verifyGovernedSeq(n);
+  pres = { n, eco: ver.states, kel: kver.states, base: bver.states, idx: 0,
+    saved: { state, kg, bg, nav: navStack, labels: colLabels, note: invNote,
       hist: history, comp: completed, seq: collSeq } };
   colLabels = { ...(n.labels || {}) };
   n.env.steps.forEach(st => {
@@ -1844,17 +2357,19 @@ function enterPresentation(n) {
 
 function presSet(i) {
   pres.idx = Math.max(0, Math.min(pres.n.seq.length, i));
-  let ei = 0, ki = 0;
-  for (let j = 0; j < pres.idx; j++) (pres.n.seq[j] === 'e' ? ei++ : ki++);
+  let ei = 0, ki = 0, bi = 0;
+  for (let j = 0; j < pres.idx; j++)
+    (pres.n.seq[j] === 'e' ? ei++ : pres.n.seq[j] === 'b' ? bi++ : ki++);
   state = JSON.parse(JSON.stringify(pres.eco[ei]));
   kg = JSON.parse(JSON.stringify(pres.kel[ki]));
+  bg = JSON.parse(JSON.stringify(pres.base[bi]));
   renderAll();
 }
 
 function exitPresentation() {
   const s = pres.saved;
   pres = null;
-  state = s.state; kg = s.kg; navStack = s.nav; colLabels = s.labels; invNote = s.note;
+  state = s.state; kg = s.kg; bg = s.bg; navStack = s.nav; colLabels = s.labels; invNote = s.note;
   history = s.hist; completed = s.comp; collSeq = s.seq;
   renderAll();
 }
@@ -1862,11 +2377,17 @@ function exitPresentation() {
 function presWhat() {
   const i = pres.idx;
   if (i === 0) return 'stato iniziale';
-  let ei = 0, ki = 0;
-  for (let j = 0; j < i - 1; j++) (pres.n.seq[j] === 'e' ? ei++ : ki++);
+  let ei = 0, ki = 0, bi = 0;
+  for (let j = 0; j < i - 1; j++)
+    (pres.n.seq[j] === 'e' ? ei++ : pres.n.seq[j] === 'b' ? bi++ : ki++);
   if (pres.n.seq[i - 1] === 'e') {
     const d = leanEventOf(pres.n.env.steps[ei].event);
     return descr(d.tag, d);
+  }
+  if (pres.n.seq[i - 1] === 'b') {
+    const st = pres.n.baseEnv.steps[bi];
+    return descrBase(st.signer, st.event,
+      !!(st.result && st.result.tag === 'applied' && st.result.enacted));
   }
   const st = pres.n.kelEnv.steps[ki];
   return descrVote(st.signer, st.event,
@@ -1949,11 +2470,51 @@ function recordApplied(tag, args, res) {
 }
 
 function runAttempt(tag, args, toyLabel) {
+  // Composition gate (accepted pin fcd4dc30…): a vote-derived economic
+  // event is applied ONLY against its route-appropriate evidence — a
+  // faithful base Enactment or a closed vote verdict. The refusal happens
+  // BEFORE the economic machine is consulted: the machine itself has no
+  // such guard (that absence is exactly the unproved join), so the model
+  // boundary enforces it and says so honestly.
+  let evid = null;
+  if (voteDerivedTag(tag)) {
+    const route = EVENT_ROUTES[tag];
+    if (route === 'baseEnacted') {
+      evid = bgTakeCredit(tag, kgKey(args.target));
+      if (!evid) {
+        const failed = [{ code: 'Composition.route = .baseEnacted',
+          why: 'composizione: evento vote-derived senza enactment fedele del canale base',
+          law: null }];
+        history.unshift({ kind: 'rej', tag, args, descr: descr(tag, args),
+          governance: true, failed, ext: false, inv: invSnapshot() });
+        invNote = `dopo .${tag} ✗ — composizione: senza delibera`;
+        return { ok: false, governance: true, failed };
+      }
+    } else {
+      const want = tag === 'grantPermission' ? 'positive' : 'negative';
+      if (vtVerdictFor(args.c) !== want) {
+        const failed = [{ code: 'Composition.route = .appDecided',
+          why: `composizione: evento vote-derived senza verdetto ${want === 'positive' ? 'positivo' : 'negativo'} chiuso`,
+          law: null }];
+        history.unshift({ kind: 'rej', tag, args, descr: descr(tag, args),
+          governance: true, failed, ext: false, inv: invSnapshot() });
+        invNote = `dopo .${tag} ✗ — composizione: senza verdetto`;
+        return { ok: false, governance: true, failed };
+      }
+      evid = { kind: tag, qid: permQid(args.c) };
+    }
+  }
   if (tag === 'openPurchase' && toyLabel) colLabels[args.c] = toyLabel;
   const preCanon = JSON.parse(canonState(state));
   const res = attempt(state, { tag, ...args });
+  if (!res.ok && evid && EVENT_ROUTES[tag] === 'baseEnacted')
+    bgCredits.push(evid);   // machine refused: the enactment stays spendable
   if (res.ok) {
     recordApplied(tag, args, res);
+    if (evid) {
+      history[0].route = EVENT_ROUTES[tag];
+      history[0].evid = evid.pid || evid.qid;
+    }
     // the durable artifact is the applied-event log, in the frozen v1 shape
     sessionSteps.push({ input: preCanon, event: leanEventJson({ tag, ...args }),
       result: { tag: 'applied', state: JSON.parse(canonState(state)) } });
@@ -2340,6 +2901,23 @@ function commitFlow() {
   if (tag === 'openPurchase') args.c = params.c;
   if (EV[tag].amount) args.v = params.v;
   if (EV[tag].external) args.author = params.author;
+  // base-enacted route (accepted pin): the task runs the REAL proposal
+  // machine; the economic event applies only from a faithful enactment
+  // through the bridge — never directly from this click
+  if (EVENT_ROUTES[tag] === 'baseEnacted') {
+    const preResp = JSON.stringify(state.responsabili);
+    const r = startBaseGovChain(tag, args);
+    renderAll();
+    if (r.ok && JSON.stringify(state.responsabili) !== preResp)
+      toast(`<b>🗳 DELIBERATA e applicata</b>
+        <span class="tiny">enactment fedele del canale base · ponte economico NON PROVATO</span>`, xy[0], xy[1], 'ext');
+    else if (r.ok)
+      toast(`<b>🗳 proposta registrata</b>
+        <span class="tiny">in attesa di approvazioni nel canale base (soglia ${bgMajority(bg)})</span>`, xy[0], xy[1], 'ext');
+    else
+      toast(`<b>✗ canale base</b> <span class="tiny">validazione: ${esc(r.error)} · stato invariato</span>`, xy[0], xy[1]);
+    return;
+  }
   const preState = state;
   const preLayout = { ...layout };
   const res = runAttempt(tag, args, params._label);
@@ -2746,14 +3324,47 @@ function govCardHtml() {
     </div>
     ${qs || '<p class="empty">nessuna domanda in votazione</p>'}
     ${closedTail}`;
+  // base channel: members with roles, pending proposals with approvals,
+  // and any minted-but-unconsumed faithful credits
+  const bgAdmins = bg.members.filter(([, m]) => vtHasAdmin(m.roles)).map(([k]) => k);
+  const bgPend = bg.pendingProposals.map(([pid, pp]) => {
+    const missing = bgAdmins.filter(k => !pp.approvals.includes(k));
+    return `<div class="vq"><div class="qh">⚖ «${esc(pid)}»
+        <span class="qs">assensi ${pp.approvals.length} / soglia ${bgMajority(bg)}</span></div>
+      <div class="tiny">proposta di ${esc(kgName(pp.proposer))} — chi propone è già fra gli assensi
+        ${pkGlyph(['kg-proposer', 'kg-nodup'])}</div>
+      <div class="tasks" style="margin-top:4px">${missing.map(k =>
+        `<button type="button" class="mini" data-bgapprove="${esc(pid)}"
+          data-bgsigner="${esc(k)}" title=".approve">approva: ${esc(kgName(k))}</button>`).join('')
+        || '<span class="tiny">nessun altro admin può approvare</span>'}</div>
+    </div>`;
+  }).join('');
+  const bgCreditTx = bgCredits.length
+    ? `<div class="tiny">enactment fedeli non ancora consumati: ${bgCredits.map(cr =>
+        `<span class="mono">«${esc(cr.pid)}»</span>`).join(' ')}
+        <span class="npvbadge" data-claims="join-vote-econ">PONTE NON PROVATO</span></div>` : '';
+  const baseBody = `<div class="sect" style="margin-top:8px">canale base — proposte
+      <span class="mono">KelGroups (fedele: changeRoles, removeMember)</span></div>
+    <div class="tiny">membri: ${bg.members.length
+      ? bg.members.map(([k, m]) => esc(kgName(k)) + (vtHasAdmin(m.roles) ? ' ★' : '')).join(', ')
+      : '<i>vuoto — la prima elezione fonda il canale (bootstrap)</i>'}
+      · maggioranza (n+1)/2 = <b>${bgMajority(bg)}</b> ${pkGlyph(['kg-majority-def', 'kg-threshold'])}</div>
+    <div class="tiny">eleggere o revocare un responsabile passa SOLO di qui: proposta fedele →
+      assensi a maggioranza → enactment → ponte economico
+      ${pkGlyph(['comp-routing', 'comp-base-threshold'])}
+      <span class="npvbadge" data-claims="join-vote-econ">PONTE NON PROVATO</span></div>
+    ${bgPend}${bgCreditTx}`;
   return `<div class="card" id="govcard">
     <h2>Gruppo di voto <small class="mono">KelGroups.Vote — modello richiesto (#54)</small></h2>
     ${teachStrip('voto')}
     ${body}
+    ${baseBody}
     <div class="tiny" id="gov-status" style="margin-top:6px">verdetti sì/no/aperta, dissenso e
       permessi per-persona sono MODELLATI; le prove del modello sono
       <b>enunciate, non dimostrate</b>
       <span class="npvbadge" data-claims="vote-model-status">stato</span> ·
+      composizione accettata al pin: instradamento totale dei 18 costruttori
+      ${pkGlyph(['comp-routing', 'comp-app-verdict', 'comp-witness'])} ·
       il ponte con l'economia resta
       <span class="npvbadge" data-claims="join-vote-econ">NON PROVATO</span></div>
   </div>`;
@@ -2812,13 +3423,37 @@ function renderLog() {
         <div class="einv">stato invariato (entrambe le macchine)</div>
       </div>`;
     }
+    if (en.mk === 'bg') {
+      if (en.kind === 'acc') {
+        return `<div class="entry acc kel${en.enacted ? ' enacted' : ''}">
+          <div class="eh">⚖ ${esc(en.descr)} <span class="mono">.${en.tag}</span>${pkGlyph(en.claims || [])}</div>
+          <div class="efl">${esc(en.flow)}</div>
+          <div class="einv">canale base (proposte KelGroups) — economia invariata da questo evento</div>
+        </div>`;
+      }
+      return `<div class="entry rej kel">
+        <div class="eh">✗ ${esc(en.descr)} <span class="mono">validateEvent = .error</span>${pkGlyph(['kg-validate'])}</div>
+        <ul class="egs">${en.failed.map(gd => `<li><span class="gb dim" title="${esc(gd.code)}">.${esc(gd.why.split(': ')[1] || 'errore')}</span> <span>${esc(gd.why)}</span></li>`).join('')}</ul>
+        <div class="einv">stato invariato (tutte le macchine)</div>
+      </div>`;
+    }
     const prov = en.ext
-      ? '<div class="eprov">⇣ esito applicato al permesso economico — ponte NON PROVATO fra voto ed economia</div>' : '';
+      ? '<div class="eprov">⇣ esito applicato al permesso economico — ponte NON PROVATO fra voto ed economia</div>'
+      : (en.route === 'baseEnacted'
+        ? `<div class="eprov">🗳 da enactment fedele «${esc(en.evid || '')}» del canale base — ponte NON PROVATO</div>` : '');
     if (en.kind === 'acc') {
-      return `<div class="entry acc${en.ext ? ' ext' : ''}">
-        <div class="eh">${en.ext ? '⇣' : '✓'} ${esc(en.descr)} <span class="mono">.${en.tag}</span>${pkGlyph(TAG_CLAIMS[en.tag] || [])}</div>
+      return `<div class="entry acc${en.ext || en.route ? ' ext' : ''}">
+        <div class="eh">${en.ext || en.route ? '⇣' : '✓'} ${esc(en.descr)} <span class="mono">.${en.tag}</span>${pkGlyph(TAG_CLAIMS[en.tag] || [])}</div>
         <div class="efl">${esc(en.flow)}</div>${prov}
         <div class="einv">${en.inv.sc} − ${en.inv.sn} − ${en.inv.se} = ${en.inv.v}</div>
+      </div>`;
+    }
+    if (en.governance) {
+      return `<div class="entry rej">
+        <div class="eh">✗ ${esc(en.descr)} <span class="mono">Composition.route ≠ .direct</span>
+          <span class="npvbadge" data-claims="comp-routing,join-vote-econ">SENZA DELIBERA</span></div>
+        <ul class="egs">${en.failed.map(gd => `<li><span class="gb" data-claims="comp-routing" title="${esc(gd.code)}">COMPOSIZIONE</span> <span>${esc(gd.why)}</span></li>`).join('')}</ul>
+        <div class="einv">rifiutato PRIMA della macchina economica · stato invariato</div>
       </div>`;
     }
     const refMark = refusalProven(en.tag)
@@ -3156,6 +3791,17 @@ $('view').addEventListener('click', ev => {
   const t = ev.target;
   const tx = t.closest('[data-teachx]');
   if (tx) { teachLearn(tx.dataset.teachx); renderAll(); return; }
+  const bgEl = t.closest('[data-bgapprove]');
+  if (bgEl) {
+    if (pres) {
+      toast('<b>presentazione</b> <span class="tiny">sola lettura — esci per agire</span>',
+        ev.clientX, ev.clientY, 'ext');
+      return;
+    }
+    runBaseEvent(bgEl.dataset.bgsigner, { approve: { proposalId: bgEl.dataset.bgapprove } });
+    renderAll();
+    return;
+  }
   const kgEl = t.closest('[data-kgadmit],[data-kgremove],[data-kgpropose],[data-kgcast]');
   if (kgEl) {
     if (pres) {
@@ -3280,9 +3926,13 @@ renderAll();
 window.RG = { attempt, initState, sumBal, escrowSum, bal,
   lawViolations, traceConformance, verifyTraceV1, claimAudit, refusalInventory,
   kelTraceConformance, verifyKelTraceV1, kgLawViolations,
+  verifyBaseTraceV1, bgLawViolations, EVENT_ROUTES, voteDerivedTag,
   get lawBreaches() { return lawBreaches; },
   get kgLawBreaches() { return kgLawBreaches; },
+  get bgLawBreaches() { return bgLawBreaches; },
   get kg() { return kg; },
+  get bg() { return bg; },
+  get bgCredits() { return bgCredits; },
   get state() { return state; }, runAttempt, renderAll: () => renderAll() };
 
 /* --- ?selftest=1: drives the real visible controls, verdict in title ------ */
@@ -3373,12 +4023,30 @@ async function selftest() {
     await click(`#pop .chip[data-id="0"]`);
     expect(document.querySelector(`[data-key="member:${gid}"]`), 'membro non entrato');
   }
-  // task: eleggi Bruno dalla barra dei compiti
+  // task: eleggi Bruno — l'elezione passa SOLO dal canale base: la barra
+  // esegue bootstrap → ingresso → proposta fedele changeRoles; con un solo
+  // admin ogni passo delibera subito (chi propone è già fra gli assensi)
   await click('#gtasks [data-task="electResponsabile"]');
   await click('#pop .chip[data-id="1"]');
   await click('#pop .chip[data-id="0"]');
   expect(document.querySelector('[data-key="member:1"]').classList.contains('noderesp'),
     'Bruno non eletto');
+  expect(RG.bg.members.length === 2, 'canale base non fondato dalla prima elezione');
+  const electEn = history.find(en => en.kind === 'acc' && en.tag === 'electResponsabile');
+  expect(electEn && electEn.route === 'baseEnacted' && /^ruoli:/.test(electEn.evid || ''),
+    'elezione senza provenienza di enactment del canale base');
+  expect(document.querySelector('#log .entry .eprov'),
+    'provenienza del ponte assente dalla storia');
+  // the model boundary itself: a vote-derived event WITHOUT its enactment
+  // is refused before the economic machine — electing responsabili with no
+  // vote is no longer expressible
+  const gr = RG.runAttempt('electResponsabile', { author: 0, target: 2 });
+  expect(!gr.ok && gr.governance, 'elezione diretta senza delibera non rifiutata');
+  expect(!resp(2), 'elezione diretta ha comunque effetto');
+  renderAll();
+  expect(lastEntry().innerText.includes('SENZA DELIBERA') &&
+    lastEntry().innerText.includes('composizione'),
+    'rifiuto di composizione non spiegato nella storia');
   invOk();
 
   // teaching recedes once the machine has been used
@@ -3561,18 +4229,31 @@ async function selftest() {
   expect(here() !== 'collection' && here() !== 'pledge', 'vista su acquisto chiuso non rientrata');
   invOk();
 
-  // branch coverage: remove-with-no-open-purchases flow copy
+  // branch coverage: remove-with-no-open-purchases flow copy — and the
+  // operator scenario made impossible: with THREE base admins the faithful
+  // revoke proposal stays PENDING until a second admin approves; only the
+  // enactment applies the economic event
   await click('#crumbs [data-crumb="0"]');
   await click('#gtasks [data-task="electResponsabile"]');
-  await click('#pop .chip[data-id="2"]');       // Elena eletta
+  await click('#pop .chip[data-id="2"]');       // Elena eletta (2 admin: auto-delibera)
   await click('#pop .chip[data-id="0"]');       // registrata da Anna
+  expect(resp(2) && RG.bg.members.length === 3, 'Elena non eletta via canale base');
   await click('#gtasks [data-task="removeResponsabile"]');
-  await click('#pop .chip[data-id="2"]');       // Elena revocata
-  await click('#pop .chip[data-id="1"]');       // registrata da Bruno
+  await click('#pop .chip[data-id="2"]');       // Elena revocata…
+  await click('#pop .chip[data-id="1"]');       // …proposta da Bruno
+  expect(resp(2), 'revoca applicata SENZA delibera (3 admin, soglia 2)');
+  expect(RG.bg.pendingProposals.length === 1, 'proposta di revoca non pendente');
+  const pendQ = document.querySelector('#govcard [data-bgapprove]');
+  expect(pendQ && document.querySelector('#govcard .vq .qs').innerText.includes('assensi 1'),
+    'proposta pendente non mostrata con i suoi assensi');
+  await click('#govcard [data-bgapprove][data-bgsigner="anna"]');   // 2/2 → DELIBERATA
+  expect(!resp(2) && RG.bg.pendingProposals.length === 0,
+    'la seconda approvazione non ha deliberato e applicato la revoca');
   const re = lastEntry();
   expect(re.innerText.includes('nessun acquisto da chiudere'),
     'ramo revoca-senza-acquisti: copy legacy assente');
   expect(!/colletta/i.test(re.innerText), 'ramo revoca-senza-acquisti: termine vietato');   // DIAGLINT-ALLOW
+  expect(RG.bgLawBreaches.length === 0, 'rete del canale base scattata in sessione');
 
   // branch coverage: every member già impegnato → L8 note; pending → L4 note
   await click('[data-key="conto:0"]');          // Anna: conto 0, serve un accredito
@@ -3705,13 +4386,26 @@ async function selftest() {
   expect(pkGlyph(['vote-clean', 'join-vote-econ']).includes('npv'),
     'NON PROVATO non prevale sugli altri stati nel glifo composto');
 
-  // session log: persisted after every event, both machines, applied-only
+  // composition citations: pinned-commit rows render their pin and derived
+  // state; the route table covers exactly the accepted 18 constructors
+  expect(Object.keys(EVENT_ROUTES).length === 18, 'instradamento non copre i 18 costruttori');
+  const compRow = claimRowHtml('comp-routing');
+  expect(compRow.includes('@ pin fcd4dc3037') && compRow.includes('— provato'),
+    'riga della composizione senza pin o senza stato derivato');
+  expect(claimRowHtml('comp-witness').includes('zeroThreshold'),
+    'riga del testimone senza avvertenza zeroThreshold');
+  expect(pkGlyph(['comp-routing']).includes('⊢'),
+    'glifo del teorema di instradamento non provato');
+
+  // session log: persisted after every event, all three machines, applied-only
   const applied = sessionSteps.length;
   const kelApplied = kelSteps.length;
+  const bgApplied = bgSteps.length;
   const seqLen = sessionSeq.length;
   expect(applied >= 15, 'log sessione troppo corto: ' + applied);
   expect(kelApplied >= 10, 'log voto troppo corto: ' + kelApplied);
-  expect(seqLen === applied + kelApplied, 'seq non copre entrambe le macchine');
+  expect(bgApplied >= 7, 'log del canale base troppo corto: ' + bgApplied);
+  expect(seqLen === applied + kelApplied + bgApplied, 'seq non copre le tre macchine');
   const rawLog = lsGet(logKey());
   expect(rawLog, 'log non persistito');
   const wrap = JSON.parse(rawLog);
@@ -3720,22 +4414,29 @@ async function selftest() {
     && wrap.trace.steps.length === applied
     && wrap.kel.schema === 'kelgroups-vote.trace' && wrap.kel.version === 1
     && wrap.kel.threshold === 'legacyThreshold'
-    && wrap.kel.steps.length === kelApplied && wrap.seq.length === seqLen,
+    && wrap.kel.steps.length === kelApplied
+    && wrap.base.schema === 'kelgroups-base.trace' && wrap.base.version === 1
+    && wrap.base.steps.length === bgApplied && wrap.seq.length === seqLen,
     'involucro log v2 non conforme');
   expect(wrap.trace.steps.every(st => st.result.tag === 'applied') &&
-    wrap.kel.steps.every(st => st.result.tag === 'applied'),
+    wrap.kel.steps.every(st => st.result.tag === 'applied') &&
+    wrap.base.steps.every(st => st.result.tag === 'applied'),
     'log di sessione con passi non applicati');
   expect(canonState(state) === canonState(wrap.trace.steps[applied - 1].result.state),
     'stato vivo diverso dal log');
   expect(canonKelState(kg) === canonKelState(wrap.kel.steps[kelApplied - 1].result.state),
     'stato del voto diverso dal log');
+  expect(canonBaseState(bg) === canonBaseState(wrap.base.steps[bgApplied - 1].result.state),
+    'stato del canale base diverso dal log');
 
   // restore: replay from initial with per-step verification, never trust the tail
   const liveCanon = canonState(state);
   const liveKelCanon = canonKelState(kg);
+  const liveBgCanon = canonBaseState(bg);
   expect(restoreSession() === seqLen, 'ripristino non riuscito');
   expect(canonState(state) === liveCanon, 'replay diverge dallo stato vivo');
   expect(canonKelState(kg) === liveKelCanon, 'replay diverge dallo stato del voto');
+  expect(canonBaseState(bg) === liveBgCanon, 'replay diverge dallo stato del canale base');
   expect(history.length === seqLen, 'storia non ricostruita dal replay');
 
   // corruption: replay refused, log quarantined, then good log restores
@@ -3751,6 +4452,24 @@ async function selftest() {
   expect(restoreSession() === null, 'log voto corrotto accettato');
   lsSet(logKey(), rawLog);
   expect(restoreSession() === seqLen, 'ripristino post-corruzione voto fallito');
+  // corruption on the BASE stream is caught the same way
+  expect(rawLog.includes('"approvals":["bruno"]'), 'sonda del log base assente');
+  lsSet(logKey(), rawLog.replace('"approvals":["bruno"]', '"approvals":["bruno","bruno"]'));
+  expect(restoreSession() === null, 'log base corrotto accettato');
+  lsSet(logKey(), rawLog);
+  expect(restoreSession() === seqLen, 'ripristino post-corruzione base fallito');
+  // GOVERNANCE on import: an economic log that elects without any base
+  // enactment is REFUSED by the model, not adopted — the operator's exact
+  // pre-fix behavior cannot re-enter through the log
+  {
+    const sab = JSON.parse(rawLog);
+    sab.base.steps = []; sab.kel.steps = [];
+    sab.seq = sab.seq.replace(/[bk]/g, '');
+    lsSet(logKey(), JSON.stringify(sab));
+    expect(restoreSession() === null, 'log con elezioni senza delibera accettato');
+    lsSet(logKey(), rawLog);
+    expect(restoreSession() === seqLen, 'ripristino post-sonda governo fallito');
+  }
 
   // frozen-contract rejection matrix, on the real consumer
   const goodEnv = wrap.trace;

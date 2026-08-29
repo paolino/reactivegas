@@ -30,7 +30,16 @@
  *      a citation the report cannot classify is RED, never assumed proved;
  *   8. hashes the fresh driver output and compares it to CHECK_RECEIPT.sha;
  *   9. requires CHECK_RECEIPT.decls to equal the extracted citation set;
- *  10. exits nonzero with a precise reason on any mismatch, zero on GREEN.
+ *  10. verifies the ACCEPTED composition pin (immutable commit, exact tree):
+ *      resolves it fresh, checks every pinned-commit citation's file:line
+ *      inside the pinned source, derives the accepted routing/vote-derived
+ *      tables by parsing the pinned classifiers (never a hand-copied list),
+ *      requires the page's EVENT_ROUTES and per-constructor claim coverage
+ *      to match them exhaustively, and re-derives the pinned proof states
+ *      by ELABORATING the pinned module in a scratch worktree of the
+ *      immutable commit (its own #print axioms directives report the
+ *      axioms; its #guard witnesses fail the build if false);
+ *  11. exits nonzero with a precise reason on any mismatch, zero on GREEN.
  *
  * Together with the page's rendering (which draws the three user-facing
  * states provato / enunciato, non dimostrato / NON PROVATO exclusively from
@@ -67,29 +76,99 @@ const REPO = dirname(fileURLToPath(import.meta.url));
 const HTML = join(REPO, 'economics-simulator.html');
 const sha256 = b => createHash('sha256').update(b).digest('hex');
 
+/* The ACCEPTED composition pin (NOTE-025/028): an immutable commit, never a
+   branch. Acceptance data, mirrored by the parent-owned ./gate.sh; the
+   embedded receipt must agree, the commit must resolve to exactly this
+   tree, and the pinned module is re-elaborated fresh on every run. */
+const ACCEPTED_COMPOSITION = {
+  commit: 'fcd4dc3037c3621f2a8d5c452fe21c7a53443037',
+  tree: 'dee9dfde87bff8e5c5e1b0e37655c19ee5d9b917',
+  module: 'lean/Reactivegas/Composition.lean',
+};
+
 /* Parse the embedded CLAIMS manifest and CHECK_RECEIPT out of an HTML body. */
 function extract(doc) {
   const mm = doc.match(/const CLAIMS = \{([\s\S]*?)\n\};/);
   if (!mm) throw new Error('manifesto CLAIMS non trovato nel documento');
-  const rowRe = /'([a-z0-9-]+)':\s*\{ c: .*?k: '(teorema|definizione|NON PROVATO)', d: (null|'([A-Za-z_.]+)'), f: (null|'([^']+)'), l: (null|\d+) \}/g;
+  const rowRe = /'([a-z0-9-]+)':\s*\{ c: .*?k: '(teorema|definizione|NON PROVATO)', d: (null|'([A-Za-z_.]+)'), f: (null|'([^']+)'), l: (null|\d+)(?:, g: '([0-9a-f]{40})')? \}/g;
   const rows = [];
   let r;
   while ((r = rowRe.exec(mm[1])) !== null)
     rows.push({ id: r[1], k: r[2], d: r[4] || null, f: r[6] || null,
-      l: r[7] === 'null' ? null : Number(r[7]) });
+      l: r[7] === 'null' ? null : Number(r[7]), g: r[8] || null });
   if (!rows.length) throw new Error('nessuna riga estraibile dal manifesto');
-  const rm = doc.match(/const CHECK_RECEIPT = \{[\s\S]*?sha: '([0-9a-f]{64})',[\s\S]*?decls: \[([\s\S]*?)\],[\s\S]*?axioms: \{([\s\S]*?)\},[\s\S]*?sources: \{([\s\S]*?)\},\n\};/);
+  const rm = doc.match(/const CHECK_RECEIPT = \{[\s\S]*?sha: '([0-9a-f]{64})',[\s\S]*?decls: \[([\s\S]*?)\],[\s\S]*?composition: \{[\s\S]*?commit: '([0-9a-f]{40})',[\s\S]*?tree: '([0-9a-f]{40})',[\s\S]*?decls: \{([\s\S]*?)\},\n  \},[\s\S]*?axioms: \{([\s\S]*?)\},[\s\S]*?sources: \{([\s\S]*?)\},\n\};/);
   if (!rm) throw new Error('CHECK_RECEIPT non trovato nel documento');
+  const routesM = doc.match(/const EVENT_ROUTES = \{([\s\S]*?)\};/);
+  if (!routesM) throw new Error('EVENT_ROUTES non trovato nel documento');
+  const tagClaimsM = doc.match(/const TAG_CLAIMS = \{([\s\S]*?)\n\};/);
+  if (!tagClaimsM) throw new Error('TAG_CLAIMS non trovato nel documento');
+  const tagClaims = {};
+  for (const t of tagClaimsM[1].matchAll(/(\w+): \[([^\]]*)\]/g))
+    tagClaims[t[1]] = [...t[2].matchAll(/'([a-z0-9-]+)'/g)].map(x => x[1]);
   return {
     rows,
-    cited: [...new Set(rows.filter(x => x.d).map(x => x.d))].sort(),
+    cited: [...new Set(rows.filter(x => x.d && !x.g).map(x => x.d))].sort(),
+    citedAtPin: [...new Set(rows.filter(x => x.d && x.g).map(x => x.d))].sort(),
     sha: rm[1],
     decls: [...rm[2].matchAll(/'([A-Za-z_.]+)'/g)].map(x => x[1]).sort(),
+    composition: { commit: rm[3], tree: rm[4],
+      decls: Object.fromEntries([...rm[5].matchAll(/'([A-Za-z_.]+)':\s*'(provato|enunciato)'/g)]
+        .map(x => [x[1], x[2]])) },
     axioms: Object.fromEntries(
-      [...rm[3].matchAll(/'([A-Za-z_.]+)':\s*'(provato|enunciato)'/g)].map(x => [x[1], x[2]])),
+      [...rm[6].matchAll(/'([A-Za-z_.]+)':\s*'(provato|enunciato)'/g)].map(x => [x[1], x[2]])),
     sources: Object.fromEntries(
-      [...rm[4].matchAll(/'([^']+)':\s*'([0-9a-f]{64})'/g)].map(x => [x[1], x[2]])),
+      [...rm[7].matchAll(/'([^']+)':\s*'([0-9a-f]{64})'/g)].map(x => [x[1], x[2]])),
+    eventRoutes: Object.fromEntries(
+      [...routesM[1].matchAll(/(\w+): '(\w+)'/g)].map(x => [x[1], x[2]])),
+    tagClaims,
   };
+}
+
+/* Parse the two total classifiers out of the PINNED Composition source.
+   This is the accepted routing derived fresh — never a hand-copied list. */
+function parsePinnedClassifiers(src) {
+  const grab = name => {
+    const m = src.match(new RegExp(`def ${name} : Event → \\S+\\n([\\s\\S]*?)\\n\\n`));
+    if (!m) throw new Error(`classificatore ${name} non trovato nella sorgente al pin`);
+    const arms = [...m[1].matchAll(/\|\s*\.(\w+)[^=]*=>\s*\.?(\w+)/g)];
+    if (!arms.length) throw new Error(`classificatore ${name}: nessun braccio estraibile`);
+    return Object.fromEntries(arms.map(a => [a[1], a[2]]));
+  };
+  const route = grab('route');
+  const voteDerived = grab('voteDerived');
+  const ctors = Object.keys(route).sort();
+  if (JSON.stringify(ctors) !== JSON.stringify(Object.keys(voteDerived).sort()))
+    throw new Error('i due classificatori al pin coprono costruttori diversi');
+  for (const c of ctors)
+    if ((voteDerived[c] === 'true') !== (route[c] !== 'direct'))
+      throw new Error(`classificatori al pin incoerenti su ${c} (voteDerived vs route)`);
+  return { route, voteDerived, ctors };
+}
+
+/* Elaborate the pinned module in a scratch worktree of the immutable
+   commit, fresh on every gate process: the module's own #print axioms
+   directives yield the proof states and its #guard witnesses fail the
+   build if false. The repo's lake cache primes the scratch as a pure
+   optimization (lake re-hashes everything itself). Memoized per process:
+   the input is an immutable commit. */
+let pinElabMemo = null;
+function elaboratePin(work) {
+  if (pinElabMemo !== null) return pinElabMemo;
+  const pinDir = join(work, 'pin-composition');
+  execFileSync('git', ['-C', REPO, 'worktree', 'add', '--detach', pinDir,
+    ACCEPTED_COMPOSITION.commit], { stdio: ['ignore', 'pipe', 'pipe'] });
+  try {
+    try { cpSync(join(REPO, 'lean', '.lake'), join(pinDir, 'lean', '.lake'),
+      { recursive: true }); } catch (e) { /* cold cache: lake rebuilds */ }
+    pinElabMemo = execFileSync('nix',
+      ['develop', REPO, '-c', 'bash', '-c', 'cd lean && lake build Reactivegas.Composition 2>&1'],
+      { cwd: pinDir, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+  } finally {
+    try { execFileSync('git', ['-C', REPO, 'worktree', 'remove', '--force', pinDir],
+      { stdio: ['ignore', 'pipe', 'pipe'] }); } catch (e) { /* best effort */ }
+  }
+  return pinElabMemo;
 }
 
 /*
@@ -193,6 +272,111 @@ function runGate(opts) {
   for (const f of pinnedKel.filter(f => !discovered.includes(f)))
     reasons.push('pin per sorgente KelGroups non tracciata nell\'albero: ' + f);
 
+  /* --- accepted composition pin (NOTE-025/028) --------------------------- */
+  // resolve the receipt's pin fresh; unresolvable, moved, or drifted is RED
+  let resolvedTree = null;
+  try {
+    execFileSync('git', ['-C', lakeRepo, 'cat-file', '-e', ex.composition.commit + '^{commit}'],
+      { stdio: ['ignore', 'pipe', 'pipe'] });
+    resolvedTree = execFileSync('git', ['-C', lakeRepo, 'rev-parse', ex.composition.commit + '^{tree}'],
+      { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+  } catch (e) {
+    reasons.push('commit composizione non risolvibile: ' + ex.composition.commit);
+  }
+  if (resolvedTree !== null) {
+    if (resolvedTree !== ex.composition.tree)
+      reasons.push(`albero del pin divergente dal dichiarato — dichiarato=${ex.composition.tree.slice(0, 12)}… risolto=${resolvedTree.slice(0, 12)}…`);
+    if (ex.composition.commit !== ACCEPTED_COMPOSITION.commit ||
+        ex.composition.tree !== ACCEPTED_COMPOSITION.tree)
+      reasons.push('pin composizione ≠ composizione accettata');
+  }
+  let pinned = null;
+  if (resolvedTree === ACCEPTED_COMPOSITION.tree &&
+      ex.composition.commit === ACCEPTED_COMPOSITION.commit) {
+    let pinnedSrc;
+    try {
+      pinnedSrc = execFileSync('git', ['-C', lakeRepo, 'show',
+        ex.composition.commit + ':' + ACCEPTED_COMPOSITION.module],
+        { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+    } catch (e) { reasons.push('modulo Composition assente al pin'); }
+    if (pinnedSrc) {
+      // pinned file:line for every pinned-commit citation
+      const pinnedLines = pinnedSrc.split('\n');
+      for (const row of ex.rows) {
+        if (!row.g) continue;
+        if (row.g !== ex.composition.commit)
+          { reasons.push(`${row.id}: pin diverso dalla composizione della ricevuta`); continue; }
+        if (row.f !== ACCEPTED_COMPOSITION.module)
+          { reasons.push(`${row.id}: cita un modulo non accettato al pin`); continue; }
+        const line = pinnedLines[row.l - 1] || '';
+        const localName = row.d.split('.').pop();
+        if (!line.includes(localName))
+          reasons.push(`${row.id}: ${row.f}:${row.l}@pin non contiene ${localName} — «${line.trim().slice(0, 60)}»`);
+      }
+      // derive the accepted routing FRESH from the pinned classifiers
+      try {
+        pinned = parsePinnedClassifiers(pinnedSrc);
+      } catch (e) { reasons.push(e.message); }
+      if (!pinnedSrc.includes('#guard productionVerdictWitness'))
+        reasons.push('testimone productionVerdictWitness senza #guard al pin');
+      if (pinned) {
+        // route-list drift: the page table must equal the derived table
+        const pageRoutes = ex.eventRoutes;
+        for (const c of pinned.ctors)
+          if (pageRoutes[c] !== pinned.route[c])
+            reasons.push(`instradamento divergente dal pin per ${c}: pagina=${pageRoutes[c] || 'assente'} pin=${pinned.route[c]}`);
+        for (const c of Object.keys(pageRoutes))
+          if (!pinned.route[c])
+            reasons.push(`instradamento di pagina per costruttore non al pin: ${c}`);
+        // exhaustive claim coverage, derived from the pinned classifier
+        const rowIds = new Set(ex.rows.map(x => x.id));
+        for (const c of pinned.ctors) {
+          const ids = ex.tagClaims[c] || [];
+          if (!ids.length) { reasons.push('costruttore senza righe di manifesto: ' + c); continue; }
+          for (const id of ids)
+            if (!rowIds.has(id)) reasons.push(`costruttore ${c}: riga inesistente ${id}`);
+          if (pinned.route[c] !== 'direct') {
+            const need = ['comp-routing', 'join-vote-econ',
+              pinned.route[c] === 'baseEnacted' ? 'comp-base-threshold' : 'comp-app-verdict'];
+            for (const nid of need)
+              if (!ids.includes(nid))
+                reasons.push(`costruttore ${c} (${pinned.route[c]}) senza riga ${nid}`);
+          }
+        }
+      }
+      // re-derive the pinned proof states by ELABORATING the pinned module
+      let pinOut = null;
+      try { pinOut = elaboratePin(work); }
+      catch (e) {
+        reasons.push('elaborazione del modulo al pin fallita: ' +
+          (String(e.stdout || '') + String(e.stderr || '')).slice(-300));
+      }
+      if (pinOut !== null) {
+        const pinDecls = Object.keys(ex.composition.decls).sort();
+        if (JSON.stringify(pinDecls) !== JSON.stringify(ex.citedAtPin))
+          reasons.push('composition.decls ≠ citazioni al pin estratte dal manifesto');
+        const { derived: pinDerived, rawLine: pinRaw } = deriveAxioms(
+          pinDecls.filter(d => !d.endsWith('Witness')), pinOut);
+        for (const d of pinDecls) {
+          let got;
+          if (d.endsWith('Witness')) {
+            // a #guard-ed witness: the build fails if it is false
+            got = 'provato';
+          } else if (!pinDerived[d]) {
+            reasons.push(`stato al pin non classificabile per ${d} — il report fresco non lo nomina`);
+            continue;
+          } else {
+            got = pinDerived[d];
+            if (got === 'provato' && pinRaw[d].includes('sorryAx'))
+              reasons.push(`rilevatore sorryAx disattivato o guasto (pin): ${d}`);
+          }
+          if (ex.composition.decls[d] !== got)
+            reasons.push(`stato al pin divergente per ${d}: dichiarato=${ex.composition.decls[d]} derivato=${got}`);
+        }
+      }
+    }
+  }
+
   const srcCache = {};
   for (const [f, h] of Object.entries(ex.sources)) {
     let body;
@@ -203,6 +387,7 @@ function runGate(opts) {
   }
   for (const row of ex.rows) {
     if (row.k === 'NON PROVATO' || !row.d || !row.f || !row.l) continue;
+    if (row.g) continue;   // pinned-commit citations verified above at the pin
     if (!srcCache[row.f]) { reasons.push(`${row.id}: sorgente ${row.f} fuori dallo snapshot`); continue; }
     const line = srcCache[row.f][row.l - 1] || '';
     // namespaced citations appear unqualified at their declaration site
@@ -255,7 +440,8 @@ function runGate(opts) {
   const outSha = sha256(out);
   if (opts.emit) return { ok: true, rows: ex.rows.length, cited: ex.cited.length,
     sha: outSha, axioms: derived };
-  if (JSON.stringify(ex.axioms) !== JSON.stringify(derived)) {
+  const canonMap = m => JSON.stringify(Object.keys(m).sort().map(k => [k, m[k]]));
+  if (canonMap(ex.axioms) !== canonMap(derived)) {
     const diffs = [...new Set([...Object.keys(ex.axioms), ...Object.keys(derived)])]
       .filter(d => ex.axioms[d] !== derived[d])
       .map(d => `${d}: embedded=${ex.axioms[d] || 'assente'} derivato=${derived[d] || 'assente'}`);
@@ -382,6 +568,66 @@ function selftest(work) {
       run: () => touchedSourceControl(doc, work, 'lean/KelGroups/Vote/Invariants.lean', 'srcroot-vote'),
     },
     {
+      name: 'commit composizione non risolvibile',
+      expect: /commit composizione non risolvibile/,
+      run: () => {
+        const p = join(work, 'sab-comp-unres.html');
+        writeFileSync(p, doc.replace(`commit: '${ACCEPTED_COMPOSITION.commit}',`,
+          `commit: '${'f'.repeat(40)}',`));
+        return runGate({ html: p, work });
+      },
+    },
+    {
+      name: 'pin composizione spostato su un commit risolvibile',
+      expect: /albero del pin divergente dal dichiarato/,
+      run: () => {
+        const head = execFileSync('git', ['-C', REPO, 'rev-parse', 'HEAD'],
+          { encoding: 'utf8' }).trim();
+        const p = join(work, 'sab-comp-moved.html');
+        writeFileSync(p, doc.replace(`commit: '${ACCEPTED_COMPOSITION.commit}',`,
+          `commit: '${head}',`));
+        return runGate({ html: p, work });
+      },
+    },
+    {
+      name: 'stato del teorema al pin flippato',
+      expect: /stato al pin divergente per Reactivegas\.Composition\.voteDerived_iff_not_direct/,
+      run: () => {
+        const needle = "'Reactivegas.Composition.voteDerived_iff_not_direct': 'provato',";
+        if (!doc.includes(needle)) return { ok: false,
+          reasons: ['controllo mal costruito: stato al pin non trovato nel documento'] };
+        const p = join(work, 'sab-comp-status.html');
+        writeFileSync(p, doc.replace(needle,
+          "'Reactivegas.Composition.voteDerived_iff_not_direct': 'enunciato',"));
+        return runGate({ html: p, work });
+      },
+    },
+    {
+      name: 'instradamento di pagina divergente dal pin',
+      expect: /instradamento divergente dal pin per donate/,
+      run: () => {
+        const needle = "donate: 'direct'";
+        if (!doc.includes(needle)) return { ok: false,
+          reasons: ['controllo mal costruito: instradamento donate non trovato'] };
+        const p = join(work, 'sab-route-drift.html');
+        writeFileSync(p, doc.replace(needle, "donate: 'appDecided'"));
+        return runGate({ html: p, work });
+      },
+    },
+    {
+      name: 'costruttore senza righe di copertura',
+      expect: /costruttore senza righe di manifesto: backdonate/,
+      run: () => {
+        const ex = extract(doc);
+        const needle = `backdonate: [${ex.tagClaims.backdonate.map(i => `'${i}'`).join(', ')}],`;
+        if (!doc.includes(needle)) return { ok: false,
+          reasons: ['controllo mal costruito: copertura backdonate non trovata'] };
+        const p = join(work, 'sab-coverage.html');
+        writeFileSync(p, doc.replace(needle, 'backdonate: [],'));
+        return runGate({ html: p, work });
+      },
+    },
+    {
       name: 'pin KelGroups omesso dalla ricevuta',
       // the victim is DISCOVERED fresh from the tree, never hardcoded: the
       // first source the production coverage walk finds has its pin removed
@@ -457,7 +703,10 @@ try {
       console.log(`GREEN: ${r.rows} righe di manifesto, ${r.cited} citazioni verificate nel ` +
         `lake env; stati derivati (${r.enun} enunciate, ${r.cited - r.enun} provate); ` +
         `file:line risolti; hash sorgenti confermati; copertura KelGroups esaustiva ` +
-        `(${r.kelPins} sorgenti scoperte = pinnate); ricevuta legata (sha ${r.sha.slice(0, 12)}…)`);
+        `(${r.kelPins} sorgenti scoperte = pinnate); pin composizione ` +
+        `${ACCEPTED_COMPOSITION.commit.slice(0, 10)}… verificato (albero esatto, righe al pin, ` +
+        `instradamento derivato, copertura dei costruttori, stati elaborati freschi); ` +
+        `ricevuta legata (sha ${r.sha.slice(0, 12)}…)`);
       code = 0;
     } else {
       console.error(`RED: ${r.reasons.length} problemi`);
