@@ -8,9 +8,9 @@ Issue body SHA-256 (as stored, LF, no trailing newline):
 
 ## Scope of this document
 
-Both slices are specified. **Only Slice 1 is authorized to run.** Slice 2 is
-blocked until the #48 ticket owner delivers the accepted definitions commit and
-both frozen economic consumer signatures.
+Both slices are specified. Slice 1 and the required vote-machine extension are
+accepted inputs. Slice 2 is authorized at the exact ancestry-preserving merge
+of accepted emitter `719eb56` and accepted vote machine `13b44bc`.
 
 ## Fidelity source of truth
 
@@ -197,36 +197,48 @@ semantics to any of these without a separate ruling is a rejection reason.
 - **R-29** Point tests execute during `lake build` and are non-vacuous: a false
   point test makes the build red.
 
-## Requirements — Slice 2 (BLOCKED, specified for contract stability)
+## Requirements — Slice 2 (AUTHORIZED; NOTE-031 composition amendment)
 
 - **R-30** The composition lives under `lean/Reactivegas/`, which may import
-  `KelGroups.*`. R-2 continues to hold: nothing flows back the other way.
-- **R-31** *(structural first)* Evaluate **structural** composition before any
-  relational theorem: type the economic permission events so they **carry an
-  enacted verdict** and cannot be constructed without evidence emitted by the
-  vote machine. This replaces the current unilateral `isResponsabile s a`
-  guard — the defect leaves the *representable* event space rather than being
-  rejected after construction. A relational theorem between independent traces
-  is a fallback only, permitted after a concrete impracticality is recorded on
-  the record **before** implementation. Convenience or proof elegance is not a
-  sufficient reason.
-- **R-32** A responsabile cannot inject `grantPermission`/`denyPermission`
-  directly through the composed model.
-- **R-33** The derivation exposes the enacted verdict's identity, its question,
-  and its provenance.
-- **R-34** Purchase approval **and** the voted comune backdonation (#48) are
-  both enumerated as consumers of the same verdict interface.
+  `KelGroups.*`; R-2 remains one-way and mechanically enforced. The complete
+  production fence is one new module plus its root import.
+- **R-31** `route` is a total wildcard-free classifier over all 18 economic
+  event constructors. Its exact inventory is 12 `direct`, 3 `baseEnacted`, and
+  3 `appDecided`; an added constructor must fail at this classifier after
+  upstream masking matches are mechanically repaired.
+- **R-32** `voteDerived` is independently total and wildcard-free over the same
+  18 constructors. It classifies `donate` as not vote-derived and
+  `removeMember`/`backdonate` as vote-derived, so those accepted #48 additions
+  cannot be omitted silently.
+- **R-33** Base-enacted evidence is available only for
+  `electResponsabile`, `removeResponsabile`, and `removeMember`; it binds the
+  concrete production result `(KelGroups.applyEventDetailed ...).enactment`
+  and uses `KelGroups.enact_implies_threshold_met`. It never targets
+  `introduceMember`; `addUser` remains direct.
+- **R-34** App-decided evidence is available only for `grantPermission`,
+  `denyPermission`, and `backdonate`; it binds a production
+  `KelGroups.Vote.ClosureRecord.verdict` and eliminates `positive`, `negative`,
+  and `open` exhaustively. `open` derives no economic event. The faithful
+  threshold theorem is never used for this route.
 - **R-35** Documentation and theorem metadata use exactly
   `enforced: PROVED-IN-MODEL` and retain the later-port caveat. Unqualified
   end-to-end enforcement is never claimed.
+- **R-36** No cross-channel join, shared identity, `QuestionId`/`ProposalId`
+  bridge, abstract existential evidence, or independent-trace correspondence
+  premise is introduced. Each event is classified by its actual producer.
+- **R-37** Production provenance is non-vacuous: executed witnesses reach a
+  real faithful enactment and a real required-machine closure. Severing either
+  production record makes the corresponding control red after earlier masking
+  invariant sites are isolated.
 
-Slice 2 cannot start until EP-DENY has a ruling: without a deny verdict source,
-R-31 is unstatable for `denyPermission`.
+Preconditions are satisfied by accepted commits `719eb56` and `13b44bc`.
+NOTE-031 supersedes the earlier verdict-carrying event redesign and relational
+fallback language: the settled design is option D, route per event producer.
 
 ## Out of scope / rejection reasons
 
 - Any write to `/code/kelgroups`.
-- Any edit to `lean/Reactivegas/**` or to the economic definitions owned by #48.
+- Any edit to existing #48-owned `lean/Reactivegas/{Types,State,Step,Predicates,Invariants,Trace,TraceTests}.lean`.
 - Redesigning the Haskell vote semantics.
 - Push, PR creation beyond the ticket-owner-owned draft, or merge.
 - Claiming implementation or end-to-end enforcement.
@@ -271,8 +283,9 @@ withdrawal event … no vote-machine source for a deny verdict") as a Slice-2
 blocker. V-7 supplies dissent (legacy `Dissenso`, same `soglia` both sides) and
 V-5 supplies withdrawal (legacy `EventoFallimentoAssenso`, running the negative
 continuation). **EP-DENY is ruled**; this run delivers the deny-verdict source.
-Slice 2 remains blocked on its other precondition (#48 consumer signatures) and
-is not started here.
+At the vote-coverage run boundary, Slice 2 still waited on #48 consumer
+signatures and was not started in that run. NOTE-031 records that both inputs
+are now accepted and supersedes that historical dispatch state.
 
 ## Vocabulary
 

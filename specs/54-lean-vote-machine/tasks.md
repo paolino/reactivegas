@@ -31,21 +31,26 @@ independent audit has passed the exact candidate.
 - [x] T5411 `docs/en/design/kelgroups-vote-machine.md` — the reviewed fidelity
       matrix, plus its `mkdocs.yml` nav entry. (R-25, R-26)
 
-## Slice 2 — structural composition (BLOCKED)
+## Slice 2 — per-producer composition (AUTHORIZED)
 
-Blocked on P-1 (#48 definitions accepted, both consumer signatures frozen) and
-P-2 (EP-DENY ruled). Do not start.
+Inputs are accepted emitter `719eb56`, accepted vote machine `13b44bc`, and
+their frozen local merge `32c63850`. NOTE-031 settles option D.
 
-- [ ] T5412 Evaluate verdict-carrying permission events; record the design
-      decision, or the concrete impracticality justifying the relational
-      fallback, **before** implementation. (R-31)
-- [ ] T5413 Compose under `lean/Reactivegas/`, replacing the unilateral
-      `isResponsabile` permission guard. (R-30, R-32)
-- [ ] T5414 Expose enacted verdict identity, question, and provenance. (R-33)
-- [ ] T5415 Enumerate purchase approval and voted comune backdonation as
-      consumers of the one verdict interface. (R-34)
-- [ ] T5416 Status wording `enforced: PROVED-IN-MODEL` with the later-port
-      caveat, in documentation and theorem metadata. (R-35)
+- [ ] T5412 Add the closed `Route` type, exact 12/3/3 total `route`, and
+      independently total `voteDerived` over all 18 events. (R-31, R-32)
+- [ ] T5413 Bind base-enacted evidence to production
+      `applyEventDetailed(...).enactment`, restrict it to the faithful
+      `changeRoles`/`removeMember` vocabulary, and derive the threshold fact
+      only there. (R-33)
+- [ ] T5414 Bind app-decided evidence to production `ClosureRecord.verdict` and
+      eliminate `positive`/`negative`/`open` exhaustively, with `open` deriving
+      no event. (R-34)
+- [ ] T5415 Ship executed non-vacuous production witnesses, exact inventory and
+      layering controls, added-constructor controls, proof-trust checks, and
+      full CI receipts with Lean 4.25.0 named. (R-30, R-37)
+- [ ] T5416 Record exactly `enforced: PROVED-IN-MODEL`, retain the later-port
+      caveat, preserve direct admission, and introduce no cross-channel join or
+      identifier bridge. (R-35, R-36)
 
 ## Vote-coverage run — Slice A: the tally machine (AUTHORIZED)
 

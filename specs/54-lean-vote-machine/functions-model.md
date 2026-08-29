@@ -248,3 +248,34 @@ Executed witnesses, elaboration-time:
 - `departureCarriesStaleAssents` — R-53.
 - `admissionIsImmediate` — R-66.
 - plus one point test per distinct `VoteError` constructor.
+
+---
+
+# Functions — Slice 2 composition (NOTE-031)
+
+Only new public declarations in `Reactivegas.Composition` are modeled here.
+
+```text
+Route                                           : Type
+route       (event : Reactivegas.Event)         : Route
+voteDerived (event : Reactivegas.Event)         : Bool
+```
+
+Both functions are total wildcard-free matches over all 18 constructors.
+`voteDerived` is true exactly when `route` is `baseEnacted` or `appDecided`.
+
+The module also exposes theorem-level evidence for the two governed routes:
+
+- base evidence takes an economic event classified `baseEnacted`, the faithful
+  production call arguments, the actual returned `Enactment`, and the equality
+  binding that result to `applyEventDetailed(...).enactment`; its result is the
+  threshold fact from `KelGroups.enact_implies_threshold_met` plus the
+  route/proposal restriction;
+- app evidence takes an economic event classified `appDecided` and an actual
+  `ClosureRecord`; its result eliminates the record's `verdict` exhaustively,
+  allowing an economic event only from `positive` or `negative`, never `open`.
+
+Executed public witnesses demonstrate that both evidence forms are reachable
+through the production functions. Exact theorem/witness names may be selected
+by the implementation owner, but must be recorded in its receipt and checked
+with theorem-qualified `#print axioms`.

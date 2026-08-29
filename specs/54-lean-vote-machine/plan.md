@@ -58,21 +58,21 @@ specs/54-lean-vote-machine/tasks.md         (ticket-owner stamp only)
 
 Slice 1 is independent of #48 and may run alongside it.
 
-### Slice 2 — structural composition *(BLOCKED)*
+### Slice 2 — per-producer composition *(AUTHORIZED)*
 
-Delivers R-30..R-35. Two hard preconditions:
+Delivers R-30..R-37 in one bisect-safe owner campaign from planning base
+`32c63850478c17ac51f622ddbfa17d9b40be29e6`. The architecture is settled by
+NOTE-031 and is not reopened: one Reactivegas-side module classifies all 18
+events into `direct`, `baseEnacted`, or `appDecided`.
 
-- **P-1** #48's definitions commit is accepted and both economic consumer
-  signatures (purchase approval, voted comune backdonation) are frozen. #48 adds
-  the second consumer; a one-consumer interface is obsolete on arrival.
-- **P-2** EP-DENY has a ruling. kelgroups has no dissent, rejection, expiry or
-  withdrawal event, so `denyPermission` has **no vote-machine source today**.
-  R-31 is unstatable for `denyPermission` until that is ruled. Escalated to the
-  epic owner at Slice-1 dispatch; it is not a Slice-1 blocker.
+The base route binds the faithful production enactment and its threshold
+theorem. The app route binds the required machine's production closure verdict
+and exhausts all verdict constructors. Direct events bind neither. No
+cross-channel join or identifier bridge exists.
 
-Design order is fixed by NOTE-018: evaluate verdict-carrying event types first;
-the relational fallback needs a recorded concrete impracticality *before*
-implementation.
+Implementation is fenced to `lean/Reactivegas/Composition.lean` and one import
+in `lean/Reactivegas.lean`. The preceding accepted histories and every existing
+Reactivegas/KelGroups module remain byte-stable.
 
 ## Live-boundary consideration
 
@@ -200,10 +200,10 @@ upward explicitly rather than folded in silently.
 
 ## What this run does not do
 
-Slice 2 composition does not start. It still waits on #48's accepted consumer
-signatures. This run removes its **other** precondition by ruling EP-DENY, and
-says so, but starting it here would produce exactly the theorem NOTE-020 warns
-about: one that looks complete while omitting the voted comune payout.
+At this historical vote-coverage run boundary, Slice 2 did not start because
+it still waited on #48's accepted consumer signatures. NOTE-031 now records
+both accepted inputs and authorizes the separate composition campaign above;
+the old run itself remains correctly scoped to vote coverage.
 
 ## Live-boundary consideration
 

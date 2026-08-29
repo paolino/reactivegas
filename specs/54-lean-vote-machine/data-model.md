@@ -224,3 +224,29 @@ State invariants over the whole state:
 reused unchanged from `KelGroups.Types`. `PendingProposal`, `Proposal`,
 `BaseEvent`, and `GroupState` of the faithful machine are **not** reused and
 **not** modified.
+
+---
+
+# Data — Slice 2 composition (NOTE-031)
+
+## Route
+
+Closed three-way classification with exactly `direct`, `baseEnacted`, and
+`appDecided`. The accepted 18-event inventory is:
+
+- `direct`: `addUser`, `openPurchase`, `deposit`, `withdraw`,
+  `transferCassa`, `donate`, `pledge`, `acceptPledge`, `refusePledge`,
+  `correctPledge`, `closePurchase`, `failPurchase`;
+- `baseEnacted`: `electResponsabile`, `removeResponsabile`, `removeMember`;
+- `appDecided`: `grantPermission`, `denyPermission`, `backdonate`.
+
+## Evidence boundaries
+
+Base evidence contains the actual faithful `Enactment` returned by production
+`applyEventDetailed`; its pending proposal is restricted to `changeRoles` or
+`removeMember`. App evidence contains the actual production `ClosureRecord`;
+its verdict is inspected as the closed three-way `Verdict` vocabulary. These
+records are deliberately not joined and share no identity.
+
+`introduceMember` has no economic base route. This is a deliberate data
+boundary: direct `addUser` preserves the no-voted-admission rule.

@@ -53,14 +53,16 @@ correspondence explicitly.
 proves the substrate stands alone; touching the application would defeat the
 demonstration.
 
-## Slice 2 placement (specified, not authorized)
+## Slice 2 placement (authorized option D)
 
-Composition lives under `lean/Reactivegas/`. Preferred design is **structural**:
-permission events carry enacted-verdict evidence, so an unauthorized permission
-event is unrepresentable rather than rejected. This is the same principle the
-project already applies at the UI — remove the option, do not refuse the
-attempt — moved one level down into the type system. No new top-level module
-family is introduced.
+| Module | Responsibility | May depend on | Must not own |
+|---|---|---|---|
+| `Reactivegas.Composition` | closed 18-way event routing; base production-enactment evidence; app production-verdict evidence; executed provenance witnesses; honest model-status metadata | existing `Reactivegas` types plus `KelGroups` faithful and required vote surfaces | economic transition changes, vote-machine changes, cross-channel identity or correspondence |
+| `Reactivegas` (root) | import the composition module so ordinary Lean builds elaborate it | `Reactivegas.Composition` | any composition logic |
+
+The direction remains application → substrate. Every module under
+`lean/KelGroups/**` is unchanged and continues to import no `Reactivegas.*`.
+No second bridge module or shared abstraction is introduced.
 
 ## Abstraction promotion
 
