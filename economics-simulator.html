@@ -94,6 +94,8 @@
   }
   button.task:not(:disabled):hover { background: var(--accent); color: #fff; }
   button.task:disabled { background: var(--bg); border-color: var(--line); color: #9aa7b4; cursor: default; }
+  button.task.off { background: var(--bg); border-color: var(--line); color: #9aa7b4; cursor: help; }
+  button.task.off:hover { background: var(--bg); color: #9aa7b4; }
   button.task.ext { background: var(--viola-bg); border-color: var(--viola-line); }
   button.task.ext:not(:disabled):hover { background: var(--viola); color: #fff; }
   .gb {
@@ -273,14 +275,65 @@
     background: var(--bad); color: #fff; font-weight: 700; font-size: .9rem;
     padding: 8px 14px; box-shadow: 0 3px 14px rgba(0,0,0,.3);
   }
+
+  /* proof provenance */
+  .pk {
+    display: inline-flex; align-items: center; border: 1px solid #b9cbe2;
+    background: #eef4fb; color: #23538f; border-radius: 5px; cursor: pointer;
+    font-size: .66rem; font-weight: 700; padding: 0 5px; margin-left: 4px;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+  }
+  .pk:hover { background: #23538f; color: #fff; }
+  .pk.npv { border-color: #e0b4b0; background: #fdf1f0; color: var(--bad); }
+  .pk.npv:hover { background: var(--bad); color: #fff; }
+  .gb[data-claim], .gbx[data-claim] { cursor: pointer; }
+  .prow { display: flex; gap: 7px; align-items: baseline; padding: 4px 2px; font-size: .82rem; }
+  .prow .pkind { flex: none; font-size: .64rem; font-weight: 700; border-radius: 5px; padding: 1px 6px; }
+  .prow .pkind.thm { background: #eef4fb; color: #23538f; border: 1px solid #b9cbe2; }
+  .prow .pkind.def { background: var(--ok-bg); color: var(--ok); border: 1px solid #bcd8c3; }
+  .prow .pkind.npv { background: #fdf1f0; color: var(--bad); border: 1px solid #e0b4b0; }
+  .prow .pdecl { display: block; font-size: .72rem; color: var(--muted); }
+  .npvbadge {
+    border: 1px solid #e0b4b0; background: #fdf1f0; color: var(--bad);
+    border-radius: 5px; font-size: .62rem; font-weight: 700; padding: 1px 5px;
+    white-space: nowrap; cursor: pointer;
+  }
+
+  /* teaching that recedes */
+  .teach {
+    border: 1px solid #b9cbe2; border-left: 4px solid #23538f; background: #eef4fb;
+    border-radius: 8px; padding: 6px 10px; font-size: .82rem; margin-bottom: 4px;
+    display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  }
+  .teach .tx { border: none; background: none; cursor: pointer; color: var(--muted);
+    margin-left: auto; font-size: .8rem; padding: 0 2px; }
+
+  /* session log + presentation */
+  #presbar {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 90;
+    background: #23538f; color: #fff; padding: 7px 12px; font-size: .88rem;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  #presbar button {
+    border: 1px solid #fff; background: none; color: #fff; border-radius: 6px;
+    font: inherit; font-size: .82rem; padding: 2px 10px; cursor: pointer;
+  }
+  #presbar button:hover { background: rgba(255,255,255,.2); }
+  #presbar button:disabled { opacity: .4; cursor: default; }
+  .logta {
+    width: 100%; min-height: 90px; font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: .7rem; border: 1px solid var(--line); border-radius: 6px; padding: 5px;
+  }
 </style>
 </head>
 <body>
 <header>
   <h1>Reactivegas <small class="mono">Types.lean · Step.lean — 15 eventi</small></h1>
   <div class="hbtns">
-    <button type="button" id="inv-chip" class="ok" title="Σ casse − Σ conti − Σ escrow — clicca per dettaglio e contro-fattuale">⚖ <b>0 ✓</b></button>
-    <button type="button" class="ghost danger" id="btn-reset" title="State.init 0">Reset</button>
+    <button type="button" id="inv-chip" class="ok" title="bilancio della macchina — dettaglio, prove e contro-fattuale">⚖ <b>0 ✓</b></button>
+    <button type="button" class="ghost" id="btn-log" title="log della sessione: esporta, importa, presenta — dati solo locali">Log</button>
+    <button type="button" class="ghost" id="btn-teach" title="rivedi le spiegazioni">?</button>
+    <button type="button" class="ghost danger" id="btn-reset" title="nuova sessione → State.init 0">Reset</button>
   </div>
 </header>
 
@@ -293,7 +346,8 @@
   <section id="view"></section>
   <aside id="side">
     <div class="card" id="done-card">
-      <h2>Acquisti completati <small>solo <span class="mono">closePurchase</span></small></h2>
+      <h2>Acquisti completati <small>solo <span class="mono">closePurchase</span></small>
+        <span class="npvbadge" data-claims="done-list">NON PROVATO</span></h2>
       <div id="done-body"><p class="empty">nessuno</p></div>
     </div>
     <div class="card" id="history-card">
@@ -303,10 +357,17 @@
   </aside>
 </main>
 
+<div id="presbar" hidden></div>
 <div id="pop" hidden></div>
 
 <script>
 'use strict';
+
+/* selftest namespacing must precede any storage access: the selftest works
+   on temporary keys and never touches a visitor's real saved session */
+const IS_SELFTEST = /[?&]selftest=1/.test(location.search);
+if (IS_SELFTEST) window.__RG_NS = '-selftest';
+
 /* =====================================================================
    Machine core: faithful transcription of
    lean/Reactivegas/{Types,State,Step}.lean.
@@ -764,6 +825,179 @@ function descr(tag, a) {
   return tag;
 }
 
+/* --- Claim manifest: every interface assertion bound to a Lean proof -----
+   One row per claim the UI makes. kind: 'teorema' (proved property),
+   'definizione' (definitional effect of the cited declaration), or
+   'NON PROVATO' (no Lean backing — marked locally where the user meets it).
+   file:line points at the declaration in the accepted source snapshot and is
+   verified mechanically (CHECK_RECEIPT below + external resolution receipt).
+   The browser executes a JavaScript transcription: the binding is mechanical
+   (this manifest + Lean-generated trace conformance), not Lean-in-browser —
+   that honest limit is itself row 'js-transcription'. */
+
+const CLAIMS = {
+  'auth':              { c: 'Ogni evento è dichiarato da un responsabile eletto (AUTH)', k: 'teorema', d: 'step_authorized', f: 'lean/Reactivegas/Invariants.lean', l: 452 },
+  'referente':         { c: "Accettare, rifiutare, correggere, chiudere o fallire: solo il referente dell'acquisto", k: 'teorema', d: 'auth_referente_guard_inv', f: 'lean/Reactivegas/Invariants.lean', l: 148 },
+  'permitted':         { c: 'La chiusura positiva richiede il permesso del gruppo (L2)', k: 'teorema', d: 'close_permission_to_close', f: 'lean/Reactivegas/Invariants.lean', l: 543 },
+  'nopending':         { c: 'La chiusura richiede zero impegni pendenti', k: 'teorema', d: 'close_guard_inv', f: 'lean/Reactivegas/Invariants.lean', l: 154 },
+  'nopending-fail':    { c: 'Anche il fallimento richiede zero impegni pendenti', k: 'teorema', d: 'fail_guard_inv', f: 'lean/Reactivegas/Invariants.lean', l: 164 },
+  'covered':           { c: 'Un addebito che manderebbe un conto sotto zero è rifiutato (COVERED, L7)', k: 'teorema', d: 'solvent_preserved', f: 'lean/Reactivegas/Invariants.lean', l: 760 },
+  'covered-guards':    { c: "Le guardie dell'impegno (autorità, unicità, copertura) sono esattamente quelle Lean", k: 'teorema', d: 'pledge_guard_inv', f: 'lean/Reactivegas/Invariants.lean', l: 130 },
+  'l8':                { c: 'Un impegno duplicato nello stesso acquisto è rifiutato (L8)', k: 'teorema', d: 'pledge_rejected_when_member', f: 'lean/Reactivegas/Invariants.lean', l: 1066 },
+  'l8-preserved':      { c: "L'unicità degli impegni si conserva a ogni evento", k: 'teorema', d: 'pledge_preserves_allUnique', f: 'lean/Reactivegas/Invariants.lean', l: 1094 },
+  'exists-coll':       { c: 'Un evento su un acquisto inesistente è rifiutato', k: 'definizione', d: 'pullCollection', f: 'lean/Reactivegas/State.lean', l: 83 },
+  'exists-impegno':    { c: "Accettare/rifiutare/correggere richiede che l'impegno esista", k: 'definizione', d: 'splitUser', f: 'lean/Reactivegas/State.lean', l: 65 },
+  'membership':        { c: 'Accrediti, prelievi e impegni solo per persone del gruppo; ingresso solo se nuovo', k: 'definizione', d: 'step', f: 'lean/Reactivegas/Step.lean', l: 27 },
+  'atomic':            { c: 'Un tentativo è un passo atomico: rifiutato = stato invariato', k: 'definizione', d: 'step', f: 'lean/Reactivegas/Step.lean', l: 27 },
+  'conservation':      { c: 'Σ casse − Σ conti − Σ impegni = 0 dopo ogni evento (L6)', k: 'teorema', d: 'conservation_preserved', f: 'lean/Reactivegas/Invariants.lean', l: 316 },
+  'solvency':          { c: 'Nessun conto va sotto zero in nessuno stato raggiungibile (L7)', k: 'teorema', d: 'not_insolvent_of_reach', f: 'lean/Reactivegas/Invariants.lean', l: 1009 },
+  'solvency-reach':    { c: 'La solvibilità vale dallo stato iniziale lungo ogni esecuzione', k: 'teorema', d: 'reach_solvent', f: 'lean/Reactivegas/Invariants.lean', l: 1003 },
+  'nonneg-impegni':    { c: 'Ogni impegno resta non negativo (L7)', k: 'teorema', d: 'solvent_preserved', f: 'lean/Reactivegas/Invariants.lean', l: 760 },
+  'unique':            { c: 'In ogni acquisto, al più un impegno per persona (L8)', k: 'definizione', d: 'uniquePledges', f: 'lean/Reactivegas/Predicates.lean', l: 29 },
+  'accredito':         { c: "L'accredito muove insieme conto della persona e cassa del cassiere (+v, +v)", k: 'teorema', d: 'deposit_double_entry', f: 'lean/Reactivegas/Invariants.lean', l: 593 },
+  'prelievo':          { c: 'Il prelievo è speculare: conto −v e cassa −v insieme', k: 'teorema', d: 'withdraw_double_entry', f: 'lean/Reactivegas/Invariants.lean', l: 603 },
+  'giro':              { c: "Il giro sposta v dalla cassa del mittente a quella dell'autore", k: 'definizione', d: 'step', f: 'lean/Reactivegas/Step.lean', l: 27 },
+  'impegno-escrow':    { c: "All'impegno il denaro lascia subito il conto ed entra negli impegni dell'acquisto; il totale del gruppo non cambia (L3)", k: 'teorema', d: 'pledge_escrow_debit', f: 'lean/Reactivegas/Invariants.lean', l: 555 },
+  'accept-effect':     { c: "L'accettazione sposta l'impegno da pendente ad accettato conservando l'unicità", k: 'teorema', d: 'uniquePledges_pend_cons', f: 'lean/Reactivegas/Invariants.lean', l: 1053 },
+  'refuse-refund':     { c: "Il rifiuto rimborsa l'impegno pendente sul conto della persona", k: 'definizione', d: 'step', f: 'lean/Reactivegas/Step.lean', l: 27 },
+  'correct-conguaglio':{ c: 'La correzione conguaglia la differenza sul conto e non può mandarlo sotto zero', k: 'teorema', d: 'step_correct_inv', f: 'lean/Reactivegas/Invariants.lean', l: 260 },
+  'close-payout':      { c: "La chiusura addebita l'intero raccolto sulla cassa del referente, e solo lì (L4)", k: 'teorema', d: 'close_spends_referente', f: 'lean/Reactivegas/Invariants.lean', l: 575 },
+  'close-gone':        { c: "L'acquisto chiuso, negato o fallito sparisce dallo stato: la storia vive solo nel log", k: 'definizione', d: 'step', f: 'lean/Reactivegas/Step.lean', l: 27 },
+  'cassa-negativa':    { c: 'La cassa può andare sotto zero (ha pagato il fornitore): la solvibilità copre i conti, non le casse', k: 'definizione', d: 'solvent', f: 'lean/Reactivegas/Predicates.lean', l: 18 },
+  'remove-refunds':    { c: 'Revocare un responsabile chiude i suoi acquisti: nessun acquisto resta orfano', k: 'teorema', d: 'governance_enacts_remove', f: 'lean/Reactivegas/Invariants.lean', l: 528 },
+  'remove-refund-sum': { c: "Alla revoca il totale rimborsato è esattamente l'escrow degli acquisti chiusi", k: 'teorema', d: 'stripCollections_sum', f: 'lean/Reactivegas/State.lean', l: 331 },
+  'open-referente':    { c: "Chi apre l'acquisto ne è il referente", k: 'definizione', d: 'step', f: 'lean/Reactivegas/Step.lean', l: 27 },
+  'inv-pledge':        { c: "Il rifiuto di un impegno è spiegato esattamente dalle sue guardie Lean (inversione)", k: 'teorema', d: 'step_pledge_inv', f: 'lean/Reactivegas/Invariants.lean', l: 203 },
+  'inv-accept':        { c: "Il rifiuto di un'accettazione è spiegato esattamente dalle sue guardie Lean (inversione)", k: 'teorema', d: 'step_accept_inv', f: 'lean/Reactivegas/Invariants.lean', l: 223 },
+  'inv-refuse':        { c: "Il rifiuto di un rifiuto-impegno è spiegato esattamente dalle sue guardie Lean (inversione)", k: 'teorema', d: 'step_refuse_inv', f: 'lean/Reactivegas/Invariants.lean', l: 241 },
+  'inv-grant':         { c: "Il rifiuto di un assenso è spiegato esattamente dalle sue guardie Lean (inversione)", k: 'teorema', d: 'step_grant_inv', f: 'lean/Reactivegas/Invariants.lean', l: 173 },
+  'inv-deny':          { c: "Il rifiuto di un dissenso è spiegato esattamente dalle sue guardie Lean (inversione)", k: 'teorema', d: 'step_deny_inv', f: 'lean/Reactivegas/Invariants.lean', l: 187 },
+  'refusal-unproved':  { c: "Questo rifiuto non ha ancora un lemma di inversione accettato nella sorgente Lean verificata (li completa #48): la spiegazione del rifiuto è NON PROVATA", k: 'NON PROVATO', d: null, f: null, l: null },
+  'vote':              { c: 'Assenso e dissenso applicano un voto di maggioranza esterno: questa macchina non modella né verifica quel voto', k: 'NON PROVATO', d: null, f: null, l: null },
+  'done-list':         { c: "L'elenco «acquisti completati» è ricostruzione del toy: la macchina non conserva gli acquisti chiusi", k: 'NON PROVATO', d: null, f: null, l: null },
+  'toy-cap':           { c: 'Il limite 500 su accrediti e giri è del toy: la macchina Lean non ha limite superiore', k: 'NON PROVATO', d: null, f: null, l: null },
+  'names':             { c: 'Nomi ed etichette sono decorazione del toy, fuori dallo stato macchina', k: 'NON PROVATO', d: null, f: null, l: null },
+  'js-transcription':  { c: 'Il browser esegue una trascrizione JavaScript: il legame con Lean è meccanico (manifesto + tracce generate da Lean), non esecuzione Lean', k: 'NON PROVATO', d: null, f: null, l: null },
+};
+
+/* Bound mechanically by handoffs/citation-gate.mjs: `decls` must equal the
+   citation set extracted from CLAIMS above (no second hand-copied list), and
+   `sha` must equal the sha256 of the output of the #check driver the gate
+   GENERATES from that extraction and runs in the repository lake environment.
+   The gate fails on any dangling citation, hash drift, or binding mismatch. */
+const CHECK_RECEIPT = {
+  sha: '8086d591ec0a2e48c1fb7479d381ec3547580c8587239cf4654dd5c7d0ba4b95',
+  decls: ['auth_referente_guard_inv', 'close_guard_inv', 'close_permission_to_close',
+    'close_spends_referente', 'conservation_preserved', 'deposit_double_entry',
+    'fail_guard_inv', 'governance_enacts_remove', 'not_insolvent_of_reach',
+    'pledge_escrow_debit', 'pledge_guard_inv', 'pledge_preserves_allUnique',
+    'pledge_rejected_when_member', 'pullCollection', 'reach_solvent', 'solvent',
+    'solvent_preserved', 'splitUser', 'step', 'step_accept_inv', 'step_authorized',
+    'step_correct_inv', 'step_deny_inv', 'step_grant_inv', 'step_pledge_inv',
+    'step_refuse_inv', 'stripCollections_sum', 'uniquePledges',
+    'uniquePledges_pend_cons', 'withdraw_double_entry'],
+  sources: {
+    'lean/Reactivegas/Types.lean': 'd4c1f54ce6a86bb49f708ae3cf5b1a1911a29bc630b4884841910bab778c7615',
+    'lean/Reactivegas/State.lean': '23461c9d3b3cf4f686a7e459fff0645ce71f4924d0e1bb6cc5c6f81ca4ee8f2d',
+    'lean/Reactivegas/Step.lean': '682192f4c12bb4fa8b76f9b74445c8b465382b0db8e845722c3293fed5c5851b',
+    'lean/Reactivegas/Predicates.lean': 'aedaa51e3944f94a860c87e1eb9f6caea2b69ed7dc8aff4e66a25a58c2a4ccbd',
+    'lean/Reactivegas/Invariants.lean': 'f9964580396daebb2e8df292a084d045e883ed6ffdb00cdb7b5d824052d99462',
+  },
+};
+
+// guard badge label → claim id
+const GUARD_CLAIMS = {
+  'AUTH': 'auth', 'REFERENTE': 'referente', 'PERMITTED (L2)': 'permitted',
+  'NO-PENDING (L4)': 'nopending', 'COVERED (L7)': 'covered', 'L8': 'l8',
+};
+// history event tag → effect claim ids
+const TAG_CLAIMS = {
+  addUser: ['membership'], electResponsabile: ['auth'],
+  removeResponsabile: ['remove-refunds', 'remove-refund-sum'],
+  openPurchase: ['open-referente'],
+  grantPermission: ['vote'], denyPermission: ['vote', 'close-gone'],
+  deposit: ['accredito'], withdraw: ['prelievo'], transferCassa: ['giro', 'conservation'],
+  pledge: ['impegno-escrow'], acceptPledge: ['accept-effect'],
+  refusePledge: ['refuse-refund'], correctPledge: ['correct-conguaglio'],
+  closePurchase: ['close-payout', 'cassa-negativa', 'close-gone'],
+  failPurchase: ['close-gone'],
+};
+
+function pkGlyph(ids) {
+  const arr = Array.isArray(ids) ? ids : [ids];
+  const anyNpv = arr.some(i => CLAIMS[i] && CLAIMS[i].k === 'NON PROVATO');
+  return `<button type="button" class="pk${anyNpv ? ' npv' : ''}" data-claims="${arr.join(',')}"
+    title="prove Lean di questa affermazione">${anyNpv ? '⚠' : '⊢'}</button>`;
+}
+
+function claimRowHtml(id) {
+  const r = CLAIMS[id];
+  if (!r) return '';
+  const kindCls = r.k === 'teorema' ? 'thm' : (r.k === 'definizione' ? 'def' : 'npv');
+  const kindTx = r.k === 'NON PROVATO' ? 'NON PROVATO' : r.k;
+  const prov = r.d
+    ? `<span class="pdecl mono">${esc(r.d)} · ${esc(r.f)}:${r.l}</span>`
+    : `<span class="pdecl mono">NONE — nessuna dichiarazione Lean</span>`;
+  return `<div class="prow"><span class="pkind ${kindCls}">${esc(kindTx)}</span>
+    <span>${esc(r.c)}${prov}</span></div>`;
+}
+
+function openClaimPop(ids, x, y) {
+  const html = `<div class="pt">prove Lean
+      <button type="button" class="xbtn2" data-x="1">✕</button></div>` +
+    ids.map(claimRowHtml).join('') +
+    `<div class="tiny">manifesto verificato meccanicamente · <span class="mono">CheckDriver</span> sha ${CHECK_RECEIPT.sha.slice(0, 12)}…</div>`;
+  popAt(x, y, html);
+  const xb = $('pop').querySelector('[data-x]');
+  if (xb) xb.addEventListener('click', closePop);
+  teachLearn('guardie');
+}
+
+function openManifestPop(x, y) {
+  const html = `<div class="pt">manifesto delle prove — ${Object.keys(CLAIMS).length} affermazioni
+      <button type="button" class="xbtn2" data-x="1">✕</button></div>
+    <div style="max-height:55vh;overflow-y:auto">` +
+    Object.keys(CLAIMS).map(claimRowHtml).join('') + `</div>
+    <div class="tiny">fonti sha256: ${Object.keys(CHECK_RECEIPT.sources).length} file Lean ·
+      driver sha ${CHECK_RECEIPT.sha.slice(0, 12)}…</div>`;
+  popAt(x, y, html);
+  const xb = $('pop').querySelector('[data-x]');
+  if (xb) xb.addEventListener('click', closePop);
+}
+
+/* selftest gate: the manifest cannot be fictional or unmarked */
+function claimAudit() {
+  const bad = [];
+  const KINDS = ['teorema', 'definizione', 'NON PROVATO'];
+  for (const [id, r] of Object.entries(CLAIMS)) {
+    if (!r.c || !KINDS.includes(r.k)) { bad.push(id + ': forma non valida'); continue; }
+    if (r.k === 'NON PROVATO') {
+      if (r.d !== null) bad.push(id + ': NON PROVATO con dichiarazione');
+    } else {
+      if (!r.d || !CHECK_RECEIPT.decls.includes(r.d))
+        bad.push(id + ': dichiarazione senza ricevuta di verifica');
+      if (!r.f || !Number.isInteger(r.l) || r.l <= 0 || !CHECK_RECEIPT.sources[r.f])
+        bad.push(id + ': sorgente/riga non validi');
+    }
+  }
+  for (const g of Object.values(GUARD_CLAIMS))
+    if (!CLAIMS[g]) bad.push('guardia senza riga: ' + g);
+  for (const ids of Object.values(TAG_CLAIMS))
+    for (const i of ids) if (!CLAIMS[i]) bad.push('tag senza riga: ' + i);
+  // derived refusal coverage: a binding without a verified inversion theorem
+  // is a claim about Lean that Lean was not asked to confirm
+  for (const [tag, rowId] of Object.entries(REFUSAL_PROOFS)) {
+    const row = CLAIMS[rowId];
+    if (!EV[tag]) bad.push('inversione per evento inesistente: ' + tag);
+    if (!row || row.k !== 'teorema' || !row.d || !CHECK_RECEIPT.decls.includes(row.d))
+      bad.push('inversione non verificata per: ' + tag);
+  }
+  const inv = refusalInventory();
+  if (inv.proven.length + inv.missing.length !== inv.events.length)
+    bad.push('inventario inversioni incoerente');
+  return bad;
+}
+
 /* --- Crude-drift net: lean/Reactivegas/Predicates.lean, transcribed ------
    The state invariants of the law predicates, asserted after every applied
    event: conservation (L6), solvent (L7, both conjuncts), allUniquePledges
@@ -806,21 +1040,33 @@ function lawAlarm(viol, tag) {
   document.body.appendChild(b);
 }
 
-/* --- Subtle-drift net: trace conformance against the Lean machine ---------
-   LEAN_TRACES below is the verbatim output of TraceDriver.lean, which folds
-   two fixed traces through the authoritative `step` of
-   lean/Reactivegas/Step.lean (`lake env lean`, Lean 4.25.0 via the repo dev
-   shell) and serializes each event with the complete post-state the Lean
-   machine produced. Raw output sha256:
-   ff44db79a3db82e2cf8586348bcfa548c8759fb901a9076511fa38f1fc13fdbf
-   (2026-08-27; driver and raw output preserved in the runtime handoffs).
-   Events and expected post-states are both Lean-emitted — nothing here is a
-   hand-written expectation. Trace A exercises removeResponsabile with two
-   live collections (strip + refund of accepted and pending); trace B
-   exercises correctPledge in both directions, closePurchase driving a cassa
-   negative, and denyPermission refunding accepted and pending together. */
+/* --- Trace interchange v1 (FROZEN: reactivegas.trace, TRACE-FORMAT-v1) ----
+   LEAN_TRACES_V1 below is the verbatim output of TraceDriverV1.lean: the two
+   seed envelopes emitted by Lean `ToJson` instances over the authoritative
+   `step` of lean/Reactivegas/Step.lean (`lake env lean`, repo dev shell).
+   Raw output sha256:
+   f4722f098216841a3212bacc7ec965960d1d1412d8a08f080565b91277498608
+   (2026-08-29; driver and raw output preserved in the runtime handoffs).
+   Each step carries its explicit input state and an applied result computed
+   by Lean; nothing here is hand-written or JS-generated. The seed corpus
+   contains applied steps only: the typed diagnostic evaluator that would emit
+   refusal guard ids rides in #48 and is not fabricated here. Trace A
+   exercises removeResponsabile with two live collections (strip + refund of
+   accepted and pending); trace B exercises correctPledge in both directions,
+   closePurchase driving a cassa negative, and denyPermission refunding
+   accepted and pending together. */
 
-const LEAN_TRACES = {"A":[{"e":{"tag":"addUser","author":0,"target":1},"s":{"users":[0,1],"responsabili":[0],"conti":[],"casse":[],"collections":[]}},{"e":{"tag":"addUser","author":0,"target":2},"s":{"users":[0,1,2],"responsabili":[0],"conti":[],"casse":[],"collections":[]}},{"e":{"tag":"electResponsabile","author":0,"target":1},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[],"casse":[],"collections":[]}},{"e":{"tag":"deposit","author":0,"user":1,"v":100},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[1,100]],"casse":[[0,100]],"collections":[]}},{"e":{"tag":"deposit","author":1,"user":2,"v":80},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[1,100],[2,80]],"casse":[[0,100],[1,80]],"collections":[]}},{"e":{"tag":"openPurchase","author":1,"c":10},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[1,100],[2,80]],"casse":[[0,100],[1,80]],"collections":[{"id":10,"referente":1,"permitted":false,"accepted":[],"pending":[]}]}},{"e":{"tag":"pledge","author":0,"user":2,"c":10,"v":30},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[1,100],[2,50]],"casse":[[0,100],[1,80]],"collections":[{"id":10,"referente":1,"permitted":false,"accepted":[],"pending":[{"user":2,"amount":30}]}]}},{"e":{"tag":"acceptPledge","author":1,"user":2,"c":10},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[1,100],[2,50]],"casse":[[0,100],[1,80]],"collections":[{"id":10,"referente":1,"permitted":false,"accepted":[{"user":2,"amount":30}],"pending":[]}]}},{"e":{"tag":"pledge","author":1,"user":1,"c":10,"v":40},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[1,60],[2,50]],"casse":[[0,100],[1,80]],"collections":[{"id":10,"referente":1,"permitted":false,"accepted":[{"user":2,"amount":30}],"pending":[{"user":1,"amount":40}]}]}},{"e":{"tag":"openPurchase","author":1,"c":11},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[1,60],[2,50]],"casse":[[0,100],[1,80]],"collections":[{"id":11,"referente":1,"permitted":false,"accepted":[],"pending":[]},{"id":10,"referente":1,"permitted":false,"accepted":[{"user":2,"amount":30}],"pending":[{"user":1,"amount":40}]}]}},{"e":{"tag":"pledge","author":0,"user":2,"c":11,"v":20},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[1,60],[2,30]],"casse":[[0,100],[1,80]],"collections":[{"id":11,"referente":1,"permitted":false,"accepted":[],"pending":[{"user":2,"amount":20}]},{"id":10,"referente":1,"permitted":false,"accepted":[{"user":2,"amount":30}],"pending":[{"user":1,"amount":40}]}]}},{"e":{"tag":"removeResponsabile","author":0,"target":1},"s":{"users":[0,1,2],"responsabili":[0],"conti":[[1,100],[2,80]],"casse":[[0,100],[1,80]],"collections":[]}}],"B":[{"e":{"tag":"addUser","author":0,"target":1},"s":{"users":[0,1],"responsabili":[0],"conti":[],"casse":[],"collections":[]}},{"e":{"tag":"electResponsabile","author":0,"target":1},"s":{"users":[0,1],"responsabili":[1,0],"conti":[],"casse":[],"collections":[]}},{"e":{"tag":"addUser","author":0,"target":2},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[],"casse":[],"collections":[]}},{"e":{"tag":"deposit","author":0,"user":2,"v":50},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,50]],"casse":[[0,50]],"collections":[]}},{"e":{"tag":"openPurchase","author":1,"c":7},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,50]],"casse":[[0,50]],"collections":[{"id":7,"referente":1,"permitted":false,"accepted":[],"pending":[]}]}},{"e":{"tag":"pledge","author":0,"user":2,"c":7,"v":20},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,30]],"casse":[[0,50]],"collections":[{"id":7,"referente":1,"permitted":false,"accepted":[],"pending":[{"user":2,"amount":20}]}]}},{"e":{"tag":"acceptPledge","author":1,"user":2,"c":7},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,30]],"casse":[[0,50]],"collections":[{"id":7,"referente":1,"permitted":false,"accepted":[{"user":2,"amount":20}],"pending":[]}]}},{"e":{"tag":"correctPledge","author":1,"user":2,"c":7,"v":35},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,15]],"casse":[[0,50]],"collections":[{"id":7,"referente":1,"permitted":false,"accepted":[{"user":2,"amount":35}],"pending":[]}]}},{"e":{"tag":"correctPledge","author":1,"user":2,"c":7,"v":5},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,45]],"casse":[[0,50]],"collections":[{"id":7,"referente":1,"permitted":false,"accepted":[{"user":2,"amount":5}],"pending":[]}]}},{"e":{"tag":"grantPermission","author":0,"c":7},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,45]],"casse":[[0,50]],"collections":[{"id":7,"referente":1,"permitted":true,"accepted":[{"user":2,"amount":5}],"pending":[]}]}},{"e":{"tag":"closePurchase","author":1,"c":7},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,45]],"casse":[[0,50],[1,-5]],"collections":[]}},{"e":{"tag":"openPurchase","author":1,"c":8},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,45]],"casse":[[0,50],[1,-5]],"collections":[{"id":8,"referente":1,"permitted":false,"accepted":[],"pending":[]}]}},{"e":{"tag":"pledge","author":1,"user":2,"c":8,"v":10},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,35]],"casse":[[0,50],[1,-5]],"collections":[{"id":8,"referente":1,"permitted":false,"accepted":[],"pending":[{"user":2,"amount":10}]}]}},{"e":{"tag":"acceptPledge","author":1,"user":2,"c":8},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,35]],"casse":[[0,50],[1,-5]],"collections":[{"id":8,"referente":1,"permitted":false,"accepted":[{"user":2,"amount":10}],"pending":[]}]}},{"e":{"tag":"deposit","author":1,"user":0,"v":25},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,35],[0,25]],"casse":[[0,50],[1,20]],"collections":[{"id":8,"referente":1,"permitted":false,"accepted":[{"user":2,"amount":10}],"pending":[]}]}},{"e":{"tag":"pledge","author":0,"user":0,"c":8,"v":15},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,35],[0,10]],"casse":[[0,50],[1,20]],"collections":[{"id":8,"referente":1,"permitted":false,"accepted":[{"user":2,"amount":10}],"pending":[{"user":0,"amount":15}]}]}},{"e":{"tag":"denyPermission","author":0,"c":8},"s":{"users":[0,1,2],"responsabili":[1,0],"conti":[[2,45],[0,25]],"casse":[[0,50],[1,20]],"collections":[]}}]};
+const LEAN_TRACES_V1 = {"A":{"initial":{"casse":[],"collections":[],"conti":[],"responsabili":[0],"users":[0]},"schema":"reactivegas.trace","steps":[{"event":{"addUser":{"author":0,"target":1}},"input":{"casse":[],"collections":[],"conti":[],"responsabili":[0],"users":[0]},"result":{"state":{"casse":[],"collections":[],"conti":[],"responsabili":[0],"users":[0,1]},"tag":"applied"}},{"event":{"addUser":{"author":0,"target":2}},"input":{"casse":[],"collections":[],"conti":[],"responsabili":[0],"users":[0,1]},"result":{"state":{"casse":[],"collections":[],"conti":[],"responsabili":[0],"users":[0,1,2]},"tag":"applied"}},{"event":{"electResponsabile":{"author":0,"target":1}},"input":{"casse":[],"collections":[],"conti":[],"responsabili":[0],"users":[0,1,2]},"result":{"state":{"casse":[],"collections":[],"conti":[],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}},{"event":{"deposit":{"author":0,"user":1,"v":100}},"input":{"casse":[],"collections":[],"conti":[],"responsabili":[1,0],"users":[0,1,2]},"result":{"state":{"casse":[[0,100]],"collections":[],"conti":[[1,100]],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}},{"event":{"deposit":{"author":1,"user":2,"v":80}},"input":{"casse":[[0,100]],"collections":[],"conti":[[1,100]],"responsabili":[1,0],"users":[0,1,2]},"result":{"state":{"casse":[[0,100],[1,80]],"collections":[],"conti":[[1,100],[2,80]],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}},{"event":{"openPurchase":{"author":1,"c":10}},"input":{"casse":[[0,100],[1,80]],"collections":[],"conti":[[1,100],[2,80]],"responsabili":[1,0],"users":[0,1,2]},"result":{"state":{"casse":[[0,100],[1,80]],"collections":[{"accepted":[],"id":10,"pending":[],"permitted":false,"referente":1}],"conti":[[1,100],[2,80]],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}},{"event":{"pledge":{"author":0,"c":10,"user":2,"v":30}},"input":{"casse":[[0,100],[1,80]],"collections":[{"accepted":[],"id":10,"pending":[],"permitted":false,"referente":1}],"conti":[[1,100],[2,80]],"responsabili":[1,0],"users":[0,1,2]},"result":{"state":{"casse":[[0,100],[1,80]],"collections":[{"accepted":[],"id":10,"pending":[{"amount":30,"user":2}],"permitted":false,"referente":1}],"conti":[[1,100],[2,50]],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}},{"event":{"acceptPledge":{"author":1,"c":10,"user":2}},"input":{"casse":[[0,100],[1,80]],"collections":[{"accepted":[],"id":10,"pending":[{"amount":30,"user":2}],"permitted":false,"referente":1}],"conti":[[1,100],[2,50]],"responsabili":[1,0],"users":[0,1,2]},"result":{"state":{"casse":[[0,100],[1,80]],"collections":[{"accepted":[{"amount":30,"user":2}],"id":10,"pending":[],"permitted":false,"referente":1}],"conti":[[1,100],[2,50]],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}},{"event":{"pledge":{"author":1,"c":10,"user":1,"v":40}},"input":{"casse":[[0,100],[1,80]],"collections":[{"accepted":[{"amount":30,"user":2}],"id":10,"pending":[],"permitted":false,"referente":1}],"conti":[[1,100],[2,50]],"responsabili":[1,0],"users":[0,1,2]},"result":{"state":{"casse":[[0,100],[1,80]],"collections":[{"accepted":[{"amount":30,"user":2}],"id":10,"pending":[{"amount":40,"user":1}],"permitted":false,"referente":1}],"conti":[[1,60],[2,50]],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}},{"event":{"openPurchase":{"author":1,"c":11}},"input":{"casse":[[0,100],[1,80]],"collections":[{"accepted":[{"amount":30,"user":2}],"id":10,"pending":[{"amount":40,"user":1}],"permitted":false,"referente":1}],"conti":[[1,60],[2,50]],"responsabili":[1,0],"users":[0,1,2]},"result":{"state":{"casse":[[0,100],[1,80]],"collections":[{"accepted":[],"id":11,"pending":[],"permitted":false,"referente":1},{"accepted":[{"amount":30,"user":2}],"id":10,"pending":[{"amount":40,"user":1}],"permitted":false,"referente":1}],"conti":[[1,60],[2,50]],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}},{"event":{"pledge":{"author":0,"c":11,"user":2,"v":20}},"input":{"casse":[[0,100],[1,80]],"collections":[{"accepted":[],"id":11,"pending":[],"permitted":false,"referente":1},{"accepted":[{"amount":30,"user":2}],"id":10,"pending":[{"amount":40,"user":1}],"permitted":false,"referente":1}],"conti":[[1,60],[2,50]],"responsabili":[1,0],"users":[0,1,2]},"result":{"state":{"casse":[[0,100],[1,80]],"collections":[{"accepted":[],"id":11,"pending":[{"amount":20,"user":2}],"permitted":false,"referente":1},{"accepted":[{"amount":30,"user":2}],"id":10,"pending":[{"amount":40,"user":1}],"permitted":false,"referente":1}],"conti":[[1,60],[2,30]],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}},{"event":{"removeResponsabile":{"author":0,"target":1}},"input":{"casse":[[0,100],[1,80]],"collections":[{"accepted":[],"id":11,"pending":[{"amount":20,"user":2}],"permitted":false,"referente":1},{"accepted":[{"amount":30,"user":2}],"id":10,"pending":[{"amount":40,"user":1}],"permitted":false,"referente":1}],"conti":[[1,60],[2,30]],"responsabili":[1,0],"users":[0,1,2]},"result":{"state":{"casse":[[0,100],[1,80]],"collections":[],"conti":[[1,100],[2,80]],"responsabili":[0],"users":[0,1,2]},"tag":"applied"}}],"version":1},"B":{"initial":{"casse":[],"collections":[],"conti":[],"responsabili":[0],"users":[0]},"schema":"reactivegas.trace","steps":[{"event":{"addUser":{"author":0,"target":1}},"input":{"casse":[],"collections":[],"conti":[],"responsabili":[0],"users":[0]},"result":{"state":{"casse":[],"collections":[],"conti":[],"responsabili":[0],"users":[0,1]},"tag":"applied"}},{"event":{"electResponsabile":{"author":0,"target":1}},"input":{"casse":[],"collections":[],"conti":[],"responsabili":[0],"users":[0,1]},"result":{"state":{"casse":[],"collections":[],"conti":[],"responsabili":[1,0],"users":[0,1]},"tag":"applied"}},{"event":{"addUser":{"author":0,"target":2}},"input":{"casse":[],"collections":[],"conti":[],"responsabili":[1,0],"users":[0,1]},"result":{"state":{"casse":[],"collections":[],"conti":[],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}},{"event":{"deposit":{"author":0,"user":2,"v":50}},"input":{"casse":[],"collections":[],"conti":[],"responsabili":[1,0],"users":[0,1,2]},"result":{"state":{"casse":[[0,50]],"collections":[],"conti":[[2,50]],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}},{"event":{"openPurchase":{"author":1,"c":7}},"input":{"casse":[[0,50]],"collections":[],"conti":[[2,50]],"responsabili":[1,0],"users":[0,1,2]},"result":{"state":{"casse":[[0,50]],"collections":[{"accepted":[],"id":7,"pending":[],"permitted":false,"referente":1}],"conti":[[2,50]],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}},{"event":{"pledge":{"author":0,"c":7,"user":2,"v":20}},"input":{"casse":[[0,50]],"collections":[{"accepted":[],"id":7,"pending":[],"permitted":false,"referente":1}],"conti":[[2,50]],"responsabili":[1,0],"users":[0,1,2]},"result":{"state":{"casse":[[0,50]],"collections":[{"accepted":[],"id":7,"pending":[{"amount":20,"user":2}],"permitted":false,"referente":1}],"conti":[[2,30]],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}},{"event":{"acceptPledge":{"author":1,"c":7,"user":2}},"input":{"casse":[[0,50]],"collections":[{"accepted":[],"id":7,"pending":[{"amount":20,"user":2}],"permitted":false,"referente":1}],"conti":[[2,30]],"responsabili":[1,0],"users":[0,1,2]},"result":{"state":{"casse":[[0,50]],"collections":[{"accepted":[{"amount":20,"user":2}],"id":7,"pending":[],"permitted":false,"referente":1}],"conti":[[2,30]],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}},{"event":{"correctPledge":{"author":1,"c":7,"user":2,"v":35}},"input":{"casse":[[0,50]],"collections":[{"accepted":[{"amount":20,"user":2}],"id":7,"pending":[],"permitted":false,"referente":1}],"conti":[[2,30]],"responsabili":[1,0],"users":[0,1,2]},"result":{"state":{"casse":[[0,50]],"collections":[{"accepted":[{"amount":35,"user":2}],"id":7,"pending":[],"permitted":false,"referente":1}],"conti":[[2,15]],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}},{"event":{"correctPledge":{"author":1,"c":7,"user":2,"v":5}},"input":{"casse":[[0,50]],"collections":[{"accepted":[{"amount":35,"user":2}],"id":7,"pending":[],"permitted":false,"referente":1}],"conti":[[2,15]],"responsabili":[1,0],"users":[0,1,2]},"result":{"state":{"casse":[[0,50]],"collections":[{"accepted":[{"amount":5,"user":2}],"id":7,"pending":[],"permitted":false,"referente":1}],"conti":[[2,45]],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}},{"event":{"grantPermission":{"author":0,"c":7}},"input":{"casse":[[0,50]],"collections":[{"accepted":[{"amount":5,"user":2}],"id":7,"pending":[],"permitted":false,"referente":1}],"conti":[[2,45]],"responsabili":[1,0],"users":[0,1,2]},"result":{"state":{"casse":[[0,50]],"collections":[{"accepted":[{"amount":5,"user":2}],"id":7,"pending":[],"permitted":true,"referente":1}],"conti":[[2,45]],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}},{"event":{"closePurchase":{"author":1,"c":7}},"input":{"casse":[[0,50]],"collections":[{"accepted":[{"amount":5,"user":2}],"id":7,"pending":[],"permitted":true,"referente":1}],"conti":[[2,45]],"responsabili":[1,0],"users":[0,1,2]},"result":{"state":{"casse":[[0,50],[1,-5]],"collections":[],"conti":[[2,45]],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}},{"event":{"openPurchase":{"author":1,"c":8}},"input":{"casse":[[0,50],[1,-5]],"collections":[],"conti":[[2,45]],"responsabili":[1,0],"users":[0,1,2]},"result":{"state":{"casse":[[0,50],[1,-5]],"collections":[{"accepted":[],"id":8,"pending":[],"permitted":false,"referente":1}],"conti":[[2,45]],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}},{"event":{"pledge":{"author":1,"c":8,"user":2,"v":10}},"input":{"casse":[[0,50],[1,-5]],"collections":[{"accepted":[],"id":8,"pending":[],"permitted":false,"referente":1}],"conti":[[2,45]],"responsabili":[1,0],"users":[0,1,2]},"result":{"state":{"casse":[[0,50],[1,-5]],"collections":[{"accepted":[],"id":8,"pending":[{"amount":10,"user":2}],"permitted":false,"referente":1}],"conti":[[2,35]],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}},{"event":{"acceptPledge":{"author":1,"c":8,"user":2}},"input":{"casse":[[0,50],[1,-5]],"collections":[{"accepted":[],"id":8,"pending":[{"amount":10,"user":2}],"permitted":false,"referente":1}],"conti":[[2,35]],"responsabili":[1,0],"users":[0,1,2]},"result":{"state":{"casse":[[0,50],[1,-5]],"collections":[{"accepted":[{"amount":10,"user":2}],"id":8,"pending":[],"permitted":false,"referente":1}],"conti":[[2,35]],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}},{"event":{"deposit":{"author":1,"user":0,"v":25}},"input":{"casse":[[0,50],[1,-5]],"collections":[{"accepted":[{"amount":10,"user":2}],"id":8,"pending":[],"permitted":false,"referente":1}],"conti":[[2,35]],"responsabili":[1,0],"users":[0,1,2]},"result":{"state":{"casse":[[0,50],[1,20]],"collections":[{"accepted":[{"amount":10,"user":2}],"id":8,"pending":[],"permitted":false,"referente":1}],"conti":[[2,35],[0,25]],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}},{"event":{"pledge":{"author":0,"c":8,"user":0,"v":15}},"input":{"casse":[[0,50],[1,20]],"collections":[{"accepted":[{"amount":10,"user":2}],"id":8,"pending":[],"permitted":false,"referente":1}],"conti":[[2,35],[0,25]],"responsabili":[1,0],"users":[0,1,2]},"result":{"state":{"casse":[[0,50],[1,20]],"collections":[{"accepted":[{"amount":10,"user":2}],"id":8,"pending":[{"amount":15,"user":0}],"permitted":false,"referente":1}],"conti":[[2,35],[0,10]],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}},{"event":{"denyPermission":{"author":0,"c":8}},"input":{"casse":[[0,50],[1,20]],"collections":[{"accepted":[{"amount":10,"user":2}],"id":8,"pending":[{"amount":15,"user":0}],"permitted":false,"referente":1}],"conti":[[2,35],[0,10]],"responsabili":[1,0],"users":[0,1,2]},"result":{"state":{"casse":[[0,50],[1,20]],"collections":[],"conti":[[2,45],[0,25]],"responsabili":[1,0],"users":[0,1,2]},"tag":"applied"}}],"version":1}};
+
+/* Lean ToJson event shape {"tag":{...fields}} ↔ machine event {tag, ...} */
+const leanEventOf = ej => {
+  const tag = Object.keys(ej)[0];
+  return { tag, ...ej[tag] };
+};
+const leanEventJson = e => {
+  const { tag, ...fields } = e;
+  return { [tag]: fields };
+};
 
 const canonState = s => JSON.stringify({
   users: s.users, responsabili: s.responsabili, conti: s.conti, casse: s.casse,
@@ -829,25 +1075,280 @@ const canonState = s => JSON.stringify({
     accepted: c.accepted.map(p => ({ user: p.user, amount: p.amount })),
     pending: c.pending.map(p => ({ user: p.user, amount: p.amount })) })) });
 
-function traceConformance() {
-  let steps = 0;
-  for (const name of Object.keys(LEAN_TRACES)) {
-    let s = initState(FOUNDER);
-    LEAN_TRACES[name].forEach((st, i) => {
-      const res = attempt(s, st.e);
-      if (!res.ok)
-        throw new Error(`trace ${name} passo ${i} (.${st.e.tag}): respinto dal JS, accettato dal Lean`);
-      s = res.state;
-      if (canonState(s) !== canonState(st.s))
-        throw new Error(`trace ${name} passo ${i} (.${st.e.tag}): stato divergente dal Lean`);
-      const viol = lawViolations(s);
-      if (viol.length)
-        throw new Error(`trace ${name} passo ${i}: ${viol.join(' · ')}`);
-      steps++;
-    });
-  }
-  return { steps };
+/* Refusal explanations: DERIVED coverage, never a frozen list. An event's
+   refusal is proved iff its entry below binds a manifest row of kind
+   'teorema' whose declaration is mechanically verified in the Lean source
+   snapshot (CHECK_RECEIPT). Every event without such a verified binding
+   renders NON PROVATO locally — including any constructor a future Lean
+   amendment adds (#48's accepted surface carries events this snapshot does
+   not; they are discovered by inventory, not by a copied list). Never assume
+   future proof names. */
+const REFUSAL_PROOFS = {
+  pledge: 'inv-pledge', acceptPledge: 'inv-accept', refusePledge: 'inv-refuse',
+  correctPledge: 'correct-conguaglio', closePurchase: 'nopending',
+  failPurchase: 'nopending-fail', grantPermission: 'inv-grant',
+  denyPermission: 'inv-deny',
+};
+
+/* is this event's refusal explanation bound to a verified inversion theorem? */
+function refusalProven(tag) {
+  const row = CLAIMS[REFUSAL_PROOFS[tag]];
+  return !!(row && row.k === 'teorema' && row.d && CHECK_RECEIPT.decls.includes(row.d));
 }
+/* claim ids to show for a refusal/guard encounter on this event */
+function refusalClaims(tag) {
+  return refusalProven(tag) ? [REFUSAL_PROOFS[tag]] : ['refusal-unproved'];
+}
+/* live inventory: event constructors vs verified inversion bindings */
+function refusalInventory() {
+  const events = Object.keys(EV);
+  const proven = events.filter(refusalProven);
+  const missing = events.filter(t => !refusalProven(t));
+  return { events, proven, missing };
+}
+
+/* v1 consumer: validate + replay one envelope through the JS transcription.
+   Enforces every frozen-contract rejection: schema, version, shape,
+   input continuity from `initial` (stored inputs are never authority),
+   outcome match, post-state match, and refusal-guard validity. Returns
+   { steps, states } or throws with a precise reason. */
+function verifyTraceV1(env, opts) {
+  opts = opts || {};
+  const short = x => { const j = typeof x === 'string' ? x : JSON.stringify(x);
+    return j.length > 220 ? j.slice(0, 220) + '…' : j; };
+  const fail = m => { throw new Error('trace: ' + m); };
+  if (!env || typeof env !== 'object') fail('non è un oggetto');
+  if (env.schema !== 'reactivegas.trace') fail('schema sconosciuto');
+  if (env.version !== 1) fail('versione non supportata: ' + env.version);
+  if (!env.initial || !Array.isArray(env.steps)) fail('forma non valida');
+  let s = env.initial;
+  if (canonState(s) !== canonState(initState(FOUNDER)))
+    fail('stato iniziale non è State.init 0 — atteso=' + short(canonState(initState(FOUNDER))) +
+      ' osservato=' + short(canonState(s)));
+  const states = [JSON.parse(canonState(s))];
+  const refusedNotes = [];
+  env.steps.forEach((st, i) => {
+    if (!st || !st.input || !st.event || !st.result) fail(`passo ${i}: forma non valida`);
+    if (canonState(st.input) !== canonState(s))
+      fail(`passo ${i}: input discontinuo — derivato=${short(canonState(s))} memorizzato=${short(canonState(st.input))}`);
+    const e = leanEventOf(st.event);
+    if (!EV[e.tag]) fail(`passo ${i}: evento sconosciuto ${short(st.event)}`);
+    const res = attempt(JSON.parse(canonState(s)), e);
+    if (st.result.tag === 'applied') {
+      if (!res.ok)
+        fail(`passo ${i} (.${e.tag}): registrato applicato, la macchina rifiuta — guardie: ` +
+          short(res.failed.map(g => g.code).join(' ∧ ')));
+      if (canonState(res.state) !== canonState(st.result.state))
+        fail(`passo ${i} (.${e.tag}): post-stato divergente — atteso=${short(canonState(st.result.state))} osservato=${short(canonState(res.state))}`);
+      const viol = lawViolations(res.state);
+      if (viol.length) fail(`passo ${i}: ${viol.join(' · ')}`);
+      s = res.state;
+    } else if (st.result.tag === 'refused') {
+      if (opts.appliedOnly) fail(`passo ${i}: rifiuto in un log di sessione`);
+      if (res.ok) fail(`passo ${i} (.${e.tag}): registrato rifiutato, la macchina applica`);
+      const gu = st.result.guard;
+      if (!gu || typeof gu.id !== 'string') fail(`passo ${i}: guard mancante`);
+      if (refusalProven(e.tag) && gu.declaration !== CLAIMS[REFUSAL_PROOFS[e.tag]].d)
+        fail(`passo ${i}: GuardId/dichiarazione senza teorema di inversione accettato — ` +
+          `dichiarata=${short(gu.declaration)} attesa=${CLAIMS[REFUSAL_PROOFS[e.tag]].d}`);
+      // «entrambi rifiutati» non è conformità: senza il valutatore diagnostico
+      // provato di #48 non esiste un guard-id autorevole da confrontare, quindi
+      // la verifica del motivo resta dichiaratamente NON PROVATA, mai silenziosa
+      refusedNotes.push(`passo ${i} (.${e.tag}): guard-id «${gu.id}» non verificabile in questo snapshot (NON PROVATO, #48)`);
+    } else fail(`passo ${i}: result.tag sconosciuto «${short(st.result.tag)}»`);
+    states.push(JSON.parse(canonState(s)));
+  });
+  return { steps: env.steps.length, states,
+    refusedUnverified: refusedNotes.length, refusedNotes };
+}
+
+/* Subtle-drift net: replay the Lean seed envelopes through the JS `attempt`
+   and compare every post-state. Fails loudly on any divergence — and on an
+   EMPTY corpus: a conformance check that passes because it found no traces
+   is the failure this goal exists to prevent. The corpus below is the LOCAL
+   applied-only seed generated from this checkout's Step.lean; it is not the
+   forthcoming accepted #48 emitter corpus, and refused-step guard-id
+   verification stays NON PROVATO until that lands. */
+function traceConformance() {
+  const names = Object.keys(LEAN_TRACES_V1);
+  let steps = 0, refusedUnverified = 0;
+  for (const name of names) {
+    try {
+      const r = verifyTraceV1(LEAN_TRACES_V1[name]);
+      steps += r.steps;
+      refusedUnverified += r.refusedUnverified;
+    } catch (e) {
+      throw new Error(name + ' — ' + e.message);
+    }
+  }
+  if (!names.length || steps === 0)
+    throw new Error('corpus di conformità vuoto: nessuna traccia, nessuna prova');
+  return { steps, refusedUnverified, corpus: 'seme-locale-solo-applicati' };
+}
+
+/* --- Session log (persist the LOG, not the state) -------------------------
+   The durable artifact is the sequence of applied Lean-shaped events in the
+   frozen v1 trace envelope; state is derived by replay and verified step by
+   step. Everything stays in this browser's localStorage — no server, no
+   network. Export/share/presentation all consume the same envelope the
+   conformance corpus uses. */
+
+const LOG_KEY_BASE = 'rg-sim-log-v1';
+const TEACH_KEY_BASE = 'rg-teach-v1';
+const storeNS = () => window.__RG_NS || '';
+const logKey = () => LOG_KEY_BASE + storeNS();
+const teachKey = () => TEACH_KEY_BASE + storeNS();
+
+let sessionSteps = [];   // v1 applied steps of the live session
+
+function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
+function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+function sessionEnvelope() {
+  return { schema: 'reactivegas.trace', version: 1,
+    initial: JSON.parse(canonState(initState(FOUNDER))),
+    steps: sessionSteps };
+}
+function buildExport() {
+  return JSON.stringify({ format: 'reactivegas-sim-session', v: 1,
+    labels: { ...colLabels }, trace: sessionEnvelope() });
+}
+function persistSession() { lsSet(logKey(), buildExport()); }
+
+/* rebuild toy-side decoration + history from a verified applied-only trace */
+function adoptTrace(env, labels) {
+  state = initState(FOUNDER);
+  history = []; completed = []; collSeq = 1; colLabels = { ...(labels || {}) };
+  for (const st of env.steps) {
+    const e = leanEventOf(st.event);
+    const { tag, ...args } = e;
+    if (tag === 'openPurchase' && colLabels[args.c] === undefined) {
+      const used = new Set(Object.values(colLabels));
+      colLabels[args.c] = PRESETS.find(p => !used.has(p)) || ('acquisto ' + collSeq);
+    }
+    recordApplied(tag, args, attempt(state, e));
+  }
+  sessionSteps = env.steps.slice();
+  invNote = `sessione ripristinata: ${env.steps.length} eventi`;
+}
+
+/* boot-time restore: never trust the stored final state — replay and verify */
+function restoreSession() {
+  const raw = lsGet(logKey());
+  if (!raw) return null;
+  let wrap;
+  try { wrap = JSON.parse(raw); } catch (e) { return quarantineLog('log locale illeggibile'); }
+  const env = wrap && wrap.format === 'reactivegas-sim-session' ? wrap.trace : wrap;
+  try { verifyTraceV1(env, { appliedOnly: true }); }
+  catch (e) { return quarantineLog(e.message); }
+  adoptTrace(env, wrap && wrap.labels);
+  return env.steps.length;
+}
+
+function quarantineLog(reason) {
+  const raw = lsGet(logKey());
+  if (raw) lsSet(logKey() + '-corrotto', raw);
+  lsDel(logKey());
+  toast(`<b>log locale rifiutato</b> <span class="tiny">${esc(reason)} — nuova sessione; il log rifiutato è conservato</span>`,
+    innerWidth / 2, 80);
+  return null;
+}
+
+function newSession() {
+  lsDel(logKey());
+  state = initState(FOUNDER);
+  history = []; completed = []; collSeq = 1; colLabels = {}; sessionSteps = [];
+  invNote = 'nuova sessione → State.init 0';
+  navStack = [{ view: 'group' }];
+  cancelFlow();
+  renderAll();
+}
+
+/* --- Presentation mode: replay a trace one applied event at a time -------- */
+
+let pres = null;   // { env, labels, states, idx, saved:{state,nav,labels,note} }
+
+function enterPresentation(env, labels) {
+  const ver = verifyTraceV1(env);           // continuity + post-states, throws on bad
+  pres = { env, states: ver.states, idx: 0,
+    saved: { state, nav: navStack, labels: colLabels, note: invNote,
+      hist: history, comp: completed, seq: collSeq } };
+  colLabels = { ...(labels || {}) };
+  // derive labels for unlabelled acquisti (toy decoration only)
+  env.steps.forEach(st => {
+    const e = leanEventOf(st.event);
+    if (e.tag === 'openPurchase' && colLabels[e.c] === undefined) {
+      const used = new Set(Object.values(colLabels));
+      colLabels[e.c] = PRESETS.find(p => !used.has(p)) || ('acquisto ' + e.c);
+    }
+  });
+  navStack = [{ view: 'group' }];
+  closePop();
+  presSet(0);
+}
+
+function presSet(i) {
+  pres.idx = Math.max(0, Math.min(pres.env.steps.length, i));
+  state = JSON.parse(JSON.stringify(pres.states[pres.idx]));
+  renderAll();
+}
+
+function exitPresentation() {
+  const s = pres.saved;
+  pres = null;
+  state = s.state; navStack = s.nav; colLabels = s.labels; invNote = s.note;
+  history = s.hist; completed = s.comp; collSeq = s.seq;
+  renderAll();
+}
+
+function renderPresBar() {
+  const bar = $('presbar');
+  if (!pres) { bar.hidden = true; bar.innerHTML = ''; return; }
+  const n = pres.env.steps.length;
+  const i = pres.idx;
+  const what = i === 0 ? 'stato iniziale'
+    : descr(...(d => [d.tag, d])(leanEventOf(pres.env.steps[i - 1].event)));
+  bar.hidden = false;
+  bar.innerHTML = `<b>presentazione</b> <span>${i}/${n}</span>
+    <span style="opacity:.85">${esc(what)}</span>
+    <span style="margin-left:auto;display:flex;gap:6px">
+    <button type="button" id="pres-restart" ${i === 0 ? 'disabled' : ''}>⏮</button>
+    <button type="button" id="pres-prev" ${i === 0 ? 'disabled' : ''}>‹ prec</button>
+    <button type="button" id="pres-next" ${i >= n ? 'disabled' : ''}>succ ›</button>
+    <button type="button" id="pres-exit">✕ esci</button></span>`;
+  $('pres-restart').addEventListener('click', () => presSet(0));
+  $('pres-prev').addEventListener('click', () => presSet(pres.idx - 1));
+  $('pres-next').addEventListener('click', () => presSet(pres.idx + 1));
+  $('pres-exit').addEventListener('click', exitPresentation);
+}
+
+/* --- Teaching that recedes ------------------------------------------------ */
+
+const TEACH_ITEMS = {
+  benvenuto: { text: 'Clicca una persona, un saldo o un acquisto: ogni azione è un evento della macchina Lean, e ⊢ apre la prova di ogni affermazione.', claims: ['js-transcription'] },
+  impegno: { text: "L'impegno sposta subito il denaro dal conto negli impegni dell'acquisto: escrow reale, non una promessa.", claims: ['impegno-escrow'] },
+  guardie: { text: "Un'azione rifiutata nomina tutte le sue guardie; un compito spento mostra il motivo prima ancora di provare — cliccalo per la prova.", claims: ['auth', 'covered'] },
+  cassa: { text: 'La cassa del referente può andare sotto zero: ha pagato il fornitore. Non è un errore.', claims: ['cassa-negativa', 'close-payout'] },
+  chiusa: { text: "L'acquisto chiuso sparisce dallo stato: la storia resta solo nel log degli eventi.", claims: ['close-gone'] },
+};
+
+function loadTeach() {
+  try { return JSON.parse(lsGet(teachKey())) || {}; } catch (e) { return {}; }
+}
+let teach = loadTeach();
+function saveTeach() { lsSet(teachKey(), JSON.stringify(teach)); }
+function teachLearn(id) {
+  if (!TEACH_ITEMS[id] || teach[id]) return;
+  teach[id] = true; saveTeach();
+}
+function teachStrip(id) {
+  if (teach[id] || pres) return '';
+  const t = TEACH_ITEMS[id];
+  return `<div class="teach" data-teach="${id}">${esc(t.text)} ${pkGlyph(t.claims)}
+    <button type="button" class="tx" data-teachx="${id}" title="ho capito">✕</button></div>`;
+}
+function teachReplay() { teach = {}; saveTeach(); renderAll(); }
 
 /* --- Attempt driver ------------------------------------------------------ */
 
@@ -856,30 +1357,46 @@ function invSnapshot() {
   return { sc, sn, se, v: sc - sn - se };
 }
 
+/* apply an accepted result to toy-side state; shared by live attempts and
+   verified-log adoption so replay rebuilds exactly what the session showed */
+function recordApplied(tag, args, res) {
+  // toy-side snapshot of a successful close, taken from the pre-state
+  if (tag === 'closePurchase') {
+    const [col] = pullCollection(args.c, state.collections);
+    completed.unshift({ label: lbl(col.id), referente: col.referente,
+      contributors: col.accepted.map(p => ({ user: p.user, amount: p.amount })),
+      total: sumPledges(col.accepted) });
+  }
+  state = res.state;
+  if (tag === 'openPurchase') collSeq = Math.max(collSeq, args.c + 1);
+  const viol = lawViolations(state);
+  if (viol.length) lawAlarm(viol, tag);
+  history.unshift({ kind: 'acc', tag, args, descr: descr(tag, args), flow: res.flow,
+    ext: !!EV[tag].external, inv: invSnapshot() });
+  invNote = `dopo .${tag} ✓`;
+}
+
 function runAttempt(tag, args, toyLabel) {
   if (tag === 'openPurchase' && toyLabel) colLabels[args.c] = toyLabel;
+  const preCanon = JSON.parse(canonState(state));
   const res = attempt(state, { tag, ...args });
-  const d = descr(tag, args);
   if (res.ok) {
-    // toy-side snapshot of a successful close, taken from the pre-state
-    if (tag === 'closePurchase') {
-      const [col] = pullCollection(args.c, state.collections);
-      completed.unshift({ label: lbl(col.id), referente: col.referente,
-        contributors: col.accepted.map(p => ({ user: p.user, amount: p.amount })),
-        total: sumPledges(col.accepted) });
-    }
-    state = res.state;
-    if (tag === 'openPurchase') collSeq = Math.max(collSeq, args.c + 1);
-    const viol = lawViolations(state);
-    if (viol.length) lawAlarm(viol, tag);
-    history.unshift({ kind: 'acc', tag, args, descr: d, flow: res.flow,
-      ext: !!EV[tag].external, inv: invSnapshot() });
-    invNote = `dopo .${tag} ✓`;
+    recordApplied(tag, args, res);
+    // the durable artifact is the applied-event log, in the frozen v1 shape
+    sessionSteps.push({ input: preCanon, event: leanEventJson({ tag, ...args }),
+      result: { tag: 'applied', state: JSON.parse(canonState(state)) } });
+    persistSession();
+    // teaching recedes as the machine is used
+    teachLearn('benvenuto');
+    if (tag === 'pledge') teachLearn('impegno');
+    if (tag === 'closePurchase') { teachLearn('cassa'); teachLearn('chiusa'); }
+    if (tag === 'denyPermission' || tag === 'failPurchase') teachLearn('chiusa');
   } else {
     if (tag === 'openPurchase') delete colLabels[args.c];
-    history.unshift({ kind: 'rej', tag, args, descr: d, failed: res.failed,
+    history.unshift({ kind: 'rej', tag, args, descr: descr(tag, args), failed: res.failed,
       ext: !!EV[tag].external, inv: invSnapshot() });
     invNote = `dopo .${tag} ✗ — stato invariato`;
+    teachLearn('guardie');
   }
   return res;
 }
@@ -1145,7 +1662,7 @@ function openLabelPop() {
     <div class="tiny">${esc(ASK.label)}</div>
     <div class="chips">` +
     opts.map(p => `<button type="button" class="chip" data-l="${esc(p)}">${esc(p)}</button>`).join('') +
-    `</div><div class="tiny">etichetta toy — il CollId Lean resta un Nat interno</div>`;
+    `</div><div class="tiny">etichetta toy — il CollId Lean resta un Nat interno ${pkGlyph(['names'])}</div>`;
   popAt(flow.xy[0], flow.xy[1], html);
   $('pop').querySelectorAll('[data-l]').forEach(b => b.addEventListener('click', ev => {
     flow.params._label = b.dataset.l;
@@ -1163,6 +1680,8 @@ function openAmountPop() {
   const html = `<div class="pt">${esc(EV[flow.tag].it)} — importo
       <button type="button" class="xbtn2" data-x="1">✕</button></div>
     <div class="tiny">${esc(sp.what)}</div>
+    ${sp.max === TOYMAX ? `<div class="tiny">massimo del toy, non della macchina
+      <span class="npvbadge" data-claims="toy-cap">NON PROVATO</span></div>` : ''}
     <div class="ar"><span class="mono">${sp.min}</span>
       <input id="am-r" type="range" min="${sp.min}" max="${sp.max}" step="1" value="${sp.val}">
       <span class="mono">${sp.max}</span></div>
@@ -1199,6 +1718,7 @@ function openAmountPop() {
 // asked to authorize it; the Step.lean responsabile carrier stays internal.
 function openExternalConfirm() {
   const html = `<div class="pt">esito esterno <span class="gbx">VOTO NON MODELLATO</span>
+      <span class="npvbadge" data-claims="vote">NON PROVATO</span>
       <button type="button" class="xbtn2" data-x="1">✕</button></div>
     <div class="tiny">${esc(EV[flow.tag].it)} per «${esc(lbl(flow.params.c))}»</div>
     <div class="tiny">Nel sistema reale è l'esito di un voto di maggioranza del gruppo (kelgroups).<br>
@@ -1237,6 +1757,8 @@ function commitFlow() {
   } else {
     toast(`<b>✗ ${esc(EV[tag].it)}</b> ` +
       res.failed.map(guardChip).join(' ') +
+      (refusalProven(tag) ? '' :
+        ' <span class="npvbadge" data-claims="refusal-unproved">NON PROVATO</span>') +
       ` <span class="tiny">stato invariato</span>`, xy[0], xy[1]);
   }
 }
@@ -1254,8 +1776,13 @@ function taskBtn(tag, ctx, extra) {
   const it = (extra && extra.label) || EV[tag].it;
   const ext = EV[tag].external;
   if (dis) {
-    return `<button type="button" class="task${ext ? ' ext' : ''}" disabled
-      data-task="${tag}" title="${esc(dis.note)}">${esc(it)}
+    // a spent affordance stays clickable: the click opens the guard's proof
+    // (or its honest NON PROVATO refusal status) instead of starting the task
+    const claims = [];
+    if (GUARD_CLAIMS[dis.badge]) claims.push(GUARD_CLAIMS[dis.badge]);
+    claims.push(...refusalClaims(tag));
+    return `<button type="button" class="task off${ext ? ' ext' : ''}" aria-disabled="true"
+      data-task="${tag}" data-off-claims="${claims.join(',')}" title="${esc(dis.note)}">${esc(it)}
       <span class="${ext ? 'gbx' : (dis.badge === '—' ? 'gb dim' : 'gb')}">${esc(dis.badge === '—' ? dis.note || '—' : dis.badge)}</span></button>`;
   }
   return `<button type="button" class="task${ext ? ' ext' : ''}" data-task="${tag}"
@@ -1275,7 +1802,7 @@ function renderGroup() {
   const scene = `<div class="card" id="scene-card">
     <svg id="scene" viewBox="0 0 760 600" role="group" aria-label="scena del gruppo"></svg>
   </div>`;
-  $('view').innerHTML = tasks + scene;
+  $('view').innerHTML = teachStrip('benvenuto') + tasks + scene;
   drawScene();
 }
 
@@ -1396,6 +1923,7 @@ function renderPerson() {
   let body;
   if (hat === 'cassiere' && isR) {
     body = `<div class="hatbox" id="hat-cassiere">
+      ${teachStrip('cassa')}
       <div class="money cassa" id="card-cassa"><span class="k">cassa</span>
         <span class="v">${bal(state.casse, u)}</span></div>
       <div class="sect">compiti del cassiere</div>
@@ -1409,6 +1937,7 @@ function renderPerson() {
   } else {
     const pls = pledgesOf(u);
     body = `<div class="hatbox" id="hat-member">
+      ${teachStrip('guardie')}
       <div class="money" id="card-conto"><span class="k">conto</span>
         <span class="v">${bal(state.conti, u)}</span></div>
       <div class="sect">compiti</div>
@@ -1470,6 +1999,7 @@ function renderCollection() {
   const queue = `<div id="refpanel">
     <h3>cappello referente — ${esc(nm(ref))} ★
       <span class="tiny" style="margin-left:auto">esiste solo dentro questo acquisto</span></h3>
+    ${teachStrip('chiusa')}
     ${col.pending.length ? `<div class="rows">${col.pending.map(p =>
       `<div class="row" style="cursor:default">${esc(nm(p.user))}
         <span class="stag pend">pendente</span><span class="amt">${p.amount}</span>
@@ -1492,14 +2022,15 @@ function renderCollection() {
   </div>`;
 
   const external = `<div class="card">
-    <div class="msec">esito dall’esterno — voto non modellato</div>
+    <div class="msec">esito dall’esterno — voto non modellato
+      <span class="npvbadge" data-claims="vote">NON PROVATO</span></div>
     <div class="tasks" style="margin-top:6px">
       ${taskBtn('grantPermission', { c })}
       ${taskBtn('denyPermission', { c })}
     </div>
   </div>`;
 
-  $('view').innerHTML = head + queue + external;
+  $('view').innerHTML = teachStrip('impegno') + head + queue + external;
 }
 
 function renderPledge() {
@@ -1533,8 +2064,9 @@ function renderPledge() {
 /* side column */
 
 function guardChip(gd) {
+  const id = gd.law && GUARD_CLAIMS[gd.law];
   return gd.law
-    ? `<span class="gb" title="${esc(gd.code)}">${esc(gd.law)}</span>`
+    ? `<span class="gb"${id ? ` data-claims="${id}"` : ''} title="${esc(gd.code)}">${esc(gd.law)}</span>`
     : `<span class="gb dim" title="${esc(gd.code)}">guardia</span>`;
 }
 
@@ -1559,15 +2091,18 @@ function renderLog() {
       ? '<div class="eprov">⇣ voto di maggioranza esterno — non modellato né verificato qui</div>' : '';
     if (en.kind === 'acc') {
       return `<div class="entry acc${en.ext ? ' ext' : ''}">
-        <div class="eh">${en.ext ? '⇣' : '✓'} ${esc(en.descr)} <span class="mono">.${en.tag}</span></div>
+        <div class="eh">${en.ext ? '⇣' : '✓'} ${esc(en.descr)} <span class="mono">.${en.tag}</span>${pkGlyph(TAG_CLAIMS[en.tag] || [])}</div>
         <div class="efl">${esc(en.flow)}</div>${prov}
         <div class="einv">${en.inv.sc} − ${en.inv.sn} − ${en.inv.se} = ${en.inv.v}</div>
       </div>`;
     }
+    const refMark = refusalProven(en.tag)
+      ? pkGlyph(refusalClaims(en.tag))
+      : ` <span class="npvbadge" data-claims="refusal-unproved">spiegazione NON PROVATA</span>`;
     return `<div class="entry rej">
-      <div class="eh">✗ ${esc(en.descr)} <span class="mono">.${en.tag} = none</span></div>
+      <div class="eh">✗ ${esc(en.descr)} <span class="mono">.${en.tag} = none</span>${refMark}</div>
       <ul class="egs">${en.failed.map(gd => `<li>${guardChip(gd)} <span>${esc(gd.why)}</span></li>`).join('')}</ul>
-      <div class="einv">stato invariato · ${en.inv.sc} − ${en.inv.sn} − ${en.inv.se} = ${en.inv.v}</div>
+      <div class="einv"><span data-claims="atomic" style="cursor:pointer">stato invariato</span> · ${en.inv.sc} − ${en.inv.sn} − ${en.inv.se} = ${en.inv.v}</div>
     </div>`;
   }).join('');
 }
@@ -1592,8 +2127,12 @@ function openInvPop(x, y) {
   const html = `<div class="pt">bilancio della macchina
       <button type="button" class="xbtn2" data-x="1">✕</button></div>
     <div class="cfline mono">Σ casse ${sc} − Σ conti ${sn} − Σ impegni ${se} =
-      <span class="${v === 0 ? 'z' : 'nz'}">${v}${v === 0 ? ' ✓' : ' ✗'}</span></div>
+      <span class="${v === 0 ? 'z' : 'nz'}">${v}${v === 0 ? ' ✓' : ' ✗'}</span>
+      ${pkGlyph(['conservation', 'solvency', 'nonneg-impegni', 'unique'])}</div>
     <div class="tiny">${esc(invNote)} · ogni evento accettato la conserva (L6)</div>
+    <div class="tiny">il browser esegue una trascrizione JS legata a Lean da manifesto e tracce
+      <span class="npvbadge" data-claims="js-transcription">dettaglio</span></div>
+    <div class="tasks" style="margin-top:5px"><button type="button" class="linkchip" id="inv-manifest">manifesto delle prove</button></div>
     <div class="msec" style="border-color:var(--line);color:var(--muted)">contro-fattuale — manomissione fuori macchina</div>
     <div class="chips" style="margin-top:4px">${moneyChips || '<span class="empty">nessun saldo</span>'}</div>
     <div class="tiny">scegli un saldo per vedere l'effetto di un Δ esterno; lo stato reale non cambia</div>`;
@@ -1602,6 +2141,72 @@ function openInvPop(x, y) {
     const [kind, idRaw] = b.dataset.cf.split(':');
     openCfPop(kind, Number(idRaw), ev.clientX, ev.clientY);
   }));
+  const mb = $('inv-manifest');
+  if (mb) mb.addEventListener('click', ev => openManifestPop(ev.clientX, ev.clientY));
+  const xb = $('pop').querySelector('[data-x]');
+  if (xb) xb.addEventListener('click', closePop);
+}
+
+/* --- Session log popover --------------------------------------------------- */
+
+function logMsg(m) { const el = $('log-msg'); if (el) el.innerHTML = `<span style="color:var(--bad)">${esc(m)}</span>`; }
+
+function importText(t) {
+  let wrap;
+  try { wrap = JSON.parse(t); } catch (e) { return logMsg('JSON non valido'); }
+  const env = wrap && wrap.format === 'reactivegas-sim-session' ? wrap.trace : wrap;
+  try { enterPresentation(env, wrap && wrap.labels); }
+  catch (e) { return logMsg('traccia rifiutata — ' + e.message); }
+}
+
+function openLogPop(x, y) {
+  const n = sessionSteps.length;
+  const html = `<div class="pt">log della sessione
+      <button type="button" class="xbtn2" data-x="1">✕</button></div>
+    <div class="tiny">${n} eventi applicati · salvati solo in questo browser (localStorage) —
+      nessun server, nessuna rete · formato <span class="mono">reactivegas.trace v1</span></div>
+    <div class="tasks" style="margin:6px 0">
+      <button type="button" class="linkchip" id="log-show">mostra JSON</button>
+      <button type="button" class="linkchip" id="log-dl">scarica file</button>
+      <button type="button" class="linkchip" id="log-copy">copia</button>
+      <button type="button" class="linkchip" id="log-pres"${n ? '' : ' disabled'}>presenta</button>
+      <button type="button" class="linkchip" id="log-new">nuova sessione</button>
+    </div>
+    <textarea id="log-ta" class="logta" placeholder="incolla qui una traccia JSON da importare…"></textarea>
+    <div class="ar2"><button type="button" class="primary" id="log-import">importa e presenta</button>
+      <input type="file" id="log-file" accept="application/json,.json" style="font-size:.7rem"></div>
+    <div class="tiny" id="log-msg"></div>`;
+  popAt(x, y, html);
+  $('log-show').addEventListener('click', () => { $('log-ta').value = buildExport(); });
+  $('log-dl').addEventListener('click', () => {
+    const blob = new Blob([buildExport()], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'reactivegas-sessione.trace.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  });
+  $('log-copy').addEventListener('click', () => {
+    const data = buildExport();
+    if (navigator.clipboard && navigator.clipboard.writeText)
+      navigator.clipboard.writeText(data).then(
+        () => logMsg('copiato negli appunti'),
+        () => { $('log-ta').value = data; logMsg('copia manualmente dal riquadro'); });
+    else { $('log-ta').value = data; logMsg('copia manualmente dal riquadro'); }
+  });
+  $('log-pres').addEventListener('click', () => {
+    if (!sessionSteps.length) return;
+    enterPresentation(sessionEnvelope(), colLabels);
+  });
+  $('log-new').addEventListener('click', () => { closePop(); newSession(); });
+  $('log-import').addEventListener('click', () => importText($('log-ta').value));
+  $('log-file').addEventListener('change', ev => {
+    const f = ev.target.files && ev.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = () => importText(String(r.result));
+    r.readAsText(f);
+  });
   const xb = $('pop').querySelector('[data-x]');
   if (xb) xb.addEventListener('click', closePop);
 }
@@ -1647,6 +2252,8 @@ function renderAll() {
   renderInvChip();
   renderDone();
   renderLog();
+  renderPresBar();
+  $('side').style.display = pres ? 'none' : '';
 }
 
 /* --- FX (group scene only) ------------------------------------------------ */
@@ -1811,8 +2418,29 @@ function closePop() { const p = $('pop'); p.hidden = true; p.innerHTML = ''; }
 
 /* --- Wiring ---------------------------------------------------------------- */
 
+// proof provenance is reachable from anywhere a claim is rendered
+document.addEventListener('click', ev => {
+  const b = ev.target.closest('[data-claims]');
+  if (b) {
+    ev.stopPropagation();
+    openClaimPop(b.dataset.claims.split(','), ev.clientX, ev.clientY);
+  }
+}, true);
+
 $('view').addEventListener('click', ev => {
   const t = ev.target;
+  const tx = t.closest('[data-teachx]');
+  if (tx) { teachLearn(tx.dataset.teachx); renderAll(); return; }
+  if (pres && t.closest('[data-task],[data-act]')) {
+    toast('<b>presentazione</b> <span class="tiny">sola lettura — esci per agire</span>',
+      ev.clientX, ev.clientY, 'ext');
+    return;
+  }
+  const offEl = t.closest('.task.off[data-off-claims]');
+  if (offEl) {
+    openClaimPop(offEl.dataset.offClaims.split(','), ev.clientX, ev.clientY);
+    return;
+  }
   const taskEl = t.closest('[data-task]');
   if (taskEl && !taskEl.disabled) {
     const tag = taskEl.dataset.task;
@@ -1869,27 +2497,21 @@ $('crumbs').addEventListener('click', ev => {
   if (b && !b.disabled) goCrumb(Number(b.dataset.crumb));
 });
 $('inv-chip').addEventListener('click', ev => openInvPop(ev.clientX, ev.clientY));
+$('btn-log').addEventListener('click', ev => openLogPop(ev.clientX, ev.clientY));
+$('btn-teach').addEventListener('click', () => teachReplay());
 document.addEventListener('keydown', ev => { if (ev.key === 'Escape') { cancelFlow(); } });
 
-$('btn-reset').addEventListener('click', () => {
-  state = initState(FOUNDER);
-  history = [];
-  collSeq = 1;
-  completed = [];
-  colLabels = {};
-  invNote = 'reset → State.init 0';
-  navStack = [{ view: 'group' }];
-  cancelFlow();
-  renderAll();
-});
+$('btn-reset').addEventListener('click', () => newSession());
 
 /* --- Boot ------------------------------------------------------------------ */
 
+if (!IS_SELFTEST) restoreSession();
 renderAll();
 
 // Exposed for scripted verification (harmless in normal use).
 window.RG = { attempt, initState, sumBal, escrowSum, bal,
-  lawViolations, traceConformance, get lawBreaches() { return lawBreaches; },
+  lawViolations, traceConformance, verifyTraceV1, claimAudit, refusalInventory,
+  get lawBreaches() { return lawBreaches; },
   get state() { return state; }, runAttempt, renderAll: () => renderAll() };
 
 /* --- ?selftest=1: drives the real visible controls, verdict in title ------ */
@@ -1938,6 +2560,9 @@ async function selftest() {
     expect(r.min !== '' && r.max !== '', 'importo senza limiti visibili');
     if (expMax !== undefined)
       expect(Number(r.max) === expMax, `max importo atteso ${expMax}, trovato ${r.max}`);
+    if (Number(r.max) === TOYMAX)
+      expect(document.querySelector('#pop [data-claims="toy-cap"]'),
+        'limite del toy non marcato NON PROVATO');
     n.value = String(v);
     n.dispatchEvent(new Event('input', { bubbles: true }));
     await click('#am-ok');
@@ -1956,6 +2581,21 @@ async function selftest() {
   expect(document.querySelectorAll('#gtasks [data-task]').length === 4,
     'compiti di gruppo assenti');
 
+  // teaching present on first arrival
+  expect(document.querySelector('[data-teach="benvenuto"]'), 'spiegazione iniziale assente');
+
+  // derived refusal status: with only Anna ★ the accredito task is spent and
+  // clicking it opens the proof — AUTH theorem plus honest NON PROVATO refusal
+  await click('[data-key="member:0"]');
+  const depOff = document.querySelector('#hat-member [data-task="deposit"]');
+  expect(depOff && depOff.classList.contains('off'), 'accredito non spento con un solo ★');
+  await click('#hat-member [data-task="deposit"]');
+  const ppop = document.querySelector('#pop .pbox');
+  expect(ppop && ppop.innerText.includes('step_authorized'), 'prova AUTH assente dal dettaglio');
+  expect(ppop.innerText.includes('NON PROVAT'), 'stato NON PROVATO del rifiuto assente');
+  await click('#pop .xbtn2');
+  await click('#crumbs [data-crumb="0"]');
+
   // task: far entrare Bruno ed Elena (candidato → registrante ★)
   for (const gid of [1, 2]) {
     await click(`[data-key="ghost:${gid}"]`);
@@ -1969,6 +2609,9 @@ async function selftest() {
   expect(document.querySelector('[data-key="member:1"]').classList.contains('noderesp'),
     'Bruno non eletto');
   invOk();
+
+  // teaching recedes once the machine has been used
+  expect(!document.querySelector('[data-teach="benvenuto"]'), 'spiegazione iniziale non receduta');
 
   // navigation: person view + hats
   await click('[data-key="member:0"]');
@@ -2000,6 +2643,11 @@ async function selftest() {
   await click('#pop [data-l="Olio"]');
   expect(document.querySelector('[data-goto-coll]'), 'sezione referente-di assente');
 
+  // teaching for the impegno appears with the acquisto, before any impegno
+  await click('[data-goto-coll]');
+  expect(document.querySelector('[data-teach="impegno"]'), 'spiegazione impegno assente');
+  await click('#nav-back');
+
   // Bruno-as-member joins his own purchase? no — member hat: pledge 30 (bounded by conto 100)
   await click('[data-hat="member"]');
   expect(document.getElementById('hat-member'), 'ritorno al cappello membro fallito');
@@ -2018,6 +2666,7 @@ async function selftest() {
   await click('#nav-back');
   expect(here() === 'collection', "indietro non torna all'acquisto");
   expect(document.getElementById('refpanel'), "cappello referente assente nell'acquisto");
+  expect(!document.querySelector('[data-teach="impegno"]'), 'spiegazione impegno non receduta');
   await click('#nav-back');
   expect(here() === 'person', 'indietro non torna alla persona');
   await click('#nav-back');
@@ -2026,7 +2675,7 @@ async function selftest() {
   // guard affordance: Elena (conto 0) cannot pledge — COVERED (L7) on the task
   await click('[data-key="member:2"]');
   const pledgeBtn = document.querySelector('#hat-member [data-task="pledge"]');
-  expect(pledgeBtn && pledgeBtn.disabled, 'task impegno non disabilitato');
+  expect(pledgeBtn && pledgeBtn.classList.contains('off'), 'task impegno non disabilitato');
   expect(pledgeBtn.innerText.includes('COVERED (L7)'), 'badge COVERED (L7) assente');
   await click('#crumbs [data-crumb="0"]');
 
@@ -2040,6 +2689,8 @@ async function selftest() {
 
   // external outcome kept: marked before, disclosed during, marked after
   expect(document.querySelector('#view .msec'), 'sezione esito esterno assente');
+  expect(document.querySelector('#view .msec [data-claims="vote"]'),
+    'esito esterno senza marcatura NON PROVATO');
   const grantBtn = document.querySelector('#view [data-task="grantPermission"]');
   expect(grantBtn && grantBtn.innerText.includes('VOTO NON MODELLATO'),
     'marcatura VOTO NON MODELLATO assente prima dell’applicazione');
@@ -2097,16 +2748,16 @@ async function selftest() {
     await amount(5);
   }
   const pbtn = document.querySelector('#view [data-task="pledge"]');
-  expect(pbtn && pbtn.disabled, 'task impegno non disabilitato con tutti impegnati');
+  expect(pbtn && pbtn.classList.contains('off'), 'task impegno non disabilitato con tutti impegnati');
   expect(pbtn.getAttribute('title') === 'tutti hanno già un impegno',
     'ramo L8: nota legacy assente (' + pbtn.getAttribute('title') + ')');
   const fbtn = document.querySelector('#refpanel [data-task="failPurchase"]');
-  expect(fbtn && fbtn.disabled && fbtn.getAttribute('title') === 'impegni pendenti da risolvere',
+  expect(fbtn && fbtn.classList.contains('off') && fbtn.getAttribute('title') === 'impegni pendenti da risolvere',
     'ramo L4 (fallisci): nota legacy assente');
   await click('#view [data-task="grantPermission"]');
   await click('#ext-apply');
   const cbtn = document.querySelector('#refpanel [data-task="closePurchase"]');
-  expect(cbtn && cbtn.disabled && cbtn.getAttribute('title') === 'impegni pendenti da risolvere',
+  expect(cbtn && cbtn.classList.contains('off') && cbtn.getAttribute('title') === 'impegni pendenti da risolvere',
     'ramo L4 (chiudi): nota legacy assente');
 
   // tooltip sweep: no invented term in any non-provenance title attribute
@@ -2146,12 +2797,133 @@ async function selftest() {
   expect(lawBreaches.length === 0, 'rete invarianti Lean scattata in sessione');
   const tc = traceConformance();
   expect(tc.steps === 29, 'copertura tracce Lean inattesa: ' + tc.steps);
+
+  // claim manifest: audit clean, derived inversion inventory coherent
+  const ca = claimAudit();
+  expect(ca.length === 0, 'manifesto invalido: ' + ca.join('; '));
+  const inv2 = refusalInventory();
+  expect(inv2.proven.length + inv2.missing.length === inv2.events.length
+    && inv2.events.length === Object.keys(EV).length
+    && inv2.proven.every(t => refusalProven(t)) && inv2.missing.every(t => !refusalProven(t)),
+    'inventario inversioni incoerente');
+  const looseGb = [...document.querySelectorAll('.gb')].filter(b =>
+    GUARD_CLAIMS[b.textContent.trim()] && !b.dataset.claims && !b.closest('[data-off-claims]'));
+  expect(looseGb.length === 0, 'badge guardia senza associazione al manifesto: ' + looseGb.length);
+  expect(document.querySelector('#done-card [data-claims="done-list"]'),
+    'elenco completati senza marcatura NON PROVATO');
+
+  // session log: persisted after every event, frozen v1 envelope, applied-only
+  const applied = sessionSteps.length;
+  expect(applied >= 15, 'log sessione troppo corto: ' + applied);
+  const rawLog = lsGet(logKey());
+  expect(rawLog, 'log non persistito');
+  const wrap = JSON.parse(rawLog);
+  expect(wrap.format === 'reactivegas-sim-session' && wrap.trace.schema === 'reactivegas.trace'
+    && wrap.trace.version === 1 && wrap.trace.steps.length === applied,
+    'involucro log non conforme');
+  expect(wrap.trace.steps.every(st => st.result.tag === 'applied'),
+    'log di sessione con passi non applicati');
+  expect(canonState(state) === canonState(wrap.trace.steps[applied - 1].result.state),
+    'stato vivo diverso dal log');
+
+  // restore: replay from initial with per-step verification, never trust the tail
+  const liveCanon = canonState(state);
+  expect(restoreSession() === applied, 'ripristino non riuscito');
+  expect(canonState(state) === liveCanon, 'replay diverge dallo stato vivo');
+  expect(history.length === applied, 'storia non ricostruita dal replay');
+
+  // corruption: replay refused, log quarantined, then good log restores
+  lsSet(logKey(), rawLog.replace('"amount":30', '"amount":31'));
+  expect(restoreSession() === null, 'log corrotto accettato');
+  expect(!lsGet(logKey()) && lsGet(logKey() + '-corrotto'), 'quarantena assente');
+  lsSet(logKey(), rawLog);
+  expect(restoreSession() === applied && canonState(state) === liveCanon,
+    'ripristino del log valido fallito');
+
+  // frozen-contract rejection matrix, on the real consumer
+  const goodEnv = wrap.trace;
+  const tamper = (fn, expectMsg, what) => {
+    const cp = JSON.parse(JSON.stringify(goodEnv));
+    fn(cp);
+    let msg = null;
+    try { verifyTraceV1(cp); } catch (e) { msg = e.message; }
+    expect(msg && msg.includes(expectMsg), `matrice v1 (${what}): ${msg}`);
+  };
+  tamper(c => { c.version = 2; }, 'versione non supportata', 'versione');
+  tamper(c => { c.schema = 'x'; }, 'schema sconosciuto', 'schema');
+  tamper(c => { c.steps[2].input.users.push(9); }, 'discontinuo', 'input discontinuo');
+  tamper(c => { delete c.steps[2].input; }, 'forma non valida', 'input omesso');
+  tamper(c => { c.steps[1].result.state.conti = [[9, 9]]; }, 'divergente', 'post-stato mutato');
+  tamper(c => { c.steps[1].result = { tag: 'refused', guard: { id: 'x', declaration: 'y' } }; },
+    'la macchina applica', 'applicato→rifiutato');
+  tamper(c => {
+    const last = JSON.parse(JSON.stringify(c.steps[c.steps.length - 1].result.state));
+    c.steps.push({ input: last, event: { 'pledge': { author: 0, user: 0, c: 2, v: 5 } },
+      result: { tag: 'refused', guard: { id: 'x', declaration: 'not_a_theorem' } } });
+  }, 'inversione accettato', 'GuardId errato');
+  tamper(c => {
+    const last = JSON.parse(JSON.stringify(c.steps[c.steps.length - 1].result.state));
+    c.steps.push({ input: last, event: { 'pledge': { author: 0, user: 0, c: 2, v: 5 } },
+      result: { tag: 'refused' } });
+  }, 'guard mancante', 'guard omessa');
+  // «entrambi rifiutati» non basta: un rifiuto ben formato resta comunque
+  // segnalato come verifica del guard-id NON PROVATA, mai conformità silenziosa
+  {
+    const cp = JSON.parse(JSON.stringify(goodEnv));
+    const last = JSON.parse(JSON.stringify(cp.steps[cp.steps.length - 1].result.state));
+    cp.steps.push({ input: last, event: { 'pledge': { author: 0, user: 0, c: 2, v: 5 } },
+      result: { tag: 'refused', guard: { id: 'seed', declaration: 'step_pledge_inv' } } });
+    const rr = verifyTraceV1(cp);
+    expect(rr.refusedUnverified === 1 && rr.refusedNotes[0].includes('NON PROVATO'),
+      'rifiuto accettato senza nota NON PROVATO dal verificatore');
+  }
+  expect(tc.refusedUnverified === 0 && tc.corpus === 'seme-locale-solo-applicati',
+    'etichetta del corpus seme assente');
+
+  // export → import round trip and presentation stepping, on real controls
+  await click('#btn-log');
+  await click('#log-show');
+  const exported = document.getElementById('log-ta').value;
+  expect(JSON.parse(exported).trace.steps.length === applied, 'export non conforme');
+  await click('#log-import');
+  expect(pres && pres.env.steps.length === applied, 'import non entrato in presentazione');
+  expect(!document.getElementById('presbar').hidden, 'barra di presentazione assente');
+  expect(pres.idx === 0, 'presentazione non a passo 0');
+  await click('#pres-next'); await click('#pres-next');
+  expect(pres.idx === 2, 'passo successivo non avanza');
+  expect(document.querySelectorAll('[data-key^="member:"]').length === state.users.length,
+    'vista di presentazione incoerente con lo stato del passo');
+  await click('#pres-prev');
+  expect(pres.idx === 1, 'passo precedente non torna');
+  await click('#pres-exit');
+  expect(!pres, 'uscita dalla presentazione fallita');
+  expect(canonState(state) === liveCanon, 'stato vivo mutato dalla presentazione');
+  expect(lsGet(logKey()) === rawLog, 'log mutato dalla presentazione');
+
+  // corrupt import: clear local rejection through the real control
+  await click('#btn-log');
+  document.getElementById('log-ta').value = exported.replace('"tag":"applied"', '"tag":"refused"');
+  await click('#log-import');
+  expect(document.getElementById('log-msg').innerText.includes('rifiutata'),
+    'import corrotto non rifiutato');
+  expect(!pres, 'import corrotto entrato in presentazione');
+  await click('#pop .xbtn2');
+
+  // teaching persisted, replayable for demos, and dismissable by hand
+  expect(JSON.parse(lsGet(teachKey()) || '{}').benvenuto === true,
+    'apprendimento non persistito');
+  await click('#crumbs [data-crumb="0"]');
+  await click('#btn-teach');
+  expect(document.querySelector('[data-teach="benvenuto"]'), 'spiegazioni non ripristinate');
+  await click('#view [data-teachx="benvenuto"]');
+  expect(!document.querySelector('[data-teach="benvenuto"]'), 'spiegazione non congedabile');
 }
 
-if (/[?&]selftest=1/.test(location.search)) {
+if (IS_SELFTEST) {
   selftest()
     .then(() => { document.title = 'SELFTEST PASS — Reactivegas'; })
-    .catch(e => { document.title = 'SELFTEST FAIL — ' + e.message; });
+    .catch(e => { document.title = 'SELFTEST FAIL — ' + e.message; })
+    .finally(() => { lsDel(logKey()); lsDel(logKey() + '-corrotto'); lsDel(teachKey()); });
 }
 </script>
 </body>
