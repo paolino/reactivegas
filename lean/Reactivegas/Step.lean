@@ -44,9 +44,14 @@ def backdonateAuthorized (s : State) (w : Int) : Bool := sorry
 def memberKeys (view : KelGroups.GroupView) : List KelGroups.Key :=
   view.members.map Prod.fst
 
+/-- Caller-supplied backdonation authorization. The #47 true/false policy
+is not chosen here; production `appFold` takes this as an explicit
+argument so the fold itself does not depend on `sorryAx`. -/
+abbrev BackdonateAuth := State → Int → Bool
+
 /-- The rejecting transition of the integrated economic machine. -/
 def step (view : KelGroups.GroupView) (s : State) (signer : KelGroups.Key)
-    (e : AppEvent) : Option State :=
+    (e : AppEvent) (auth : BackdonateAuth) : Option State :=
   match e with
   | .openPurchase c =>
     if isResponsabile view signer
@@ -90,7 +95,7 @@ def step (view : KelGroups.GroupView) (s : State) (signer : KelGroups.Key)
     let members := memberKeys view
     let n : Int := members.length
     if isResponsabile view signer && decide (0 < w)
-        && decide (comuneBal s ≥ n * w) && backdonateAuthorized s w then
+        && decide (comuneBal s ≥ n * w) && auth s w then
       some { s with
         conti := members.foldl (fun acc u => bump acc u w)
           (bump s.conti comuneId (-(n * w))) }
@@ -147,40 +152,169 @@ membership/role constructors refuse; the fourteen economic constructors
 delegate to the integrated `step`. This is not a production root. -/
 abbrev stepEvent (view : KelGroups.GroupView) (s : State) (e : Event) :
     Option State :=
+  let go (signer : KelGroups.Key) (app : AppEvent) : Option State :=
+    step view s signer app backdonateAuthorized
   match e with
   | .addUser _ _ => none
   | .electResponsabile _ _ => none
   | .removeResponsabile _ _ => none
   | .removeMember _ _ => none
-  | .openPurchase a c => step view s a (.openPurchase c)
-  | .grantPermission a c => step view s a (.grantPermission c)
-  | .denyPermission a c => step view s a (.denyPermission c)
-  | .deposit a u v => step view s a (.deposit u v)
-  | .withdraw a u v => step view s a (.withdraw u v)
-  | .transferCassa a f v => step view s a (.transferCassa f v)
-  | .donate a v => step view s a (.donate v)
-  | .backdonate a w => step view s a (.backdonate w)
-  | .pledge a u c v => step view s a (.pledge u c v)
-  | .acceptPledge a u c => step view s a (.acceptPledge u c)
-  | .refusePledge a u c => step view s a (.refusePledge u c)
-  | .correctPledge a u c v' => step view s a (.correctPledge u c v')
-  | .closePurchase a c => step view s a (.closePurchase c)
-  | .failPurchase a c => step view s a (.failPurchase c)
+  | .openPurchase a c => go a (.openPurchase c)
+  | .grantPermission a c => go a (.grantPermission c)
+  | .denyPermission a c => go a (.denyPermission c)
+  | .deposit a u v => go a (.deposit u v)
+  | .withdraw a u v => go a (.withdraw u v)
+  | .transferCassa a f v => go a (.transferCassa f v)
+  | .donate a v => go a (.donate v)
+  | .backdonate a w => go a (.backdonate w)
+  | .pledge a u c v => go a (.pledge u c v)
+  | .acceptPledge a u c => go a (.acceptPledge u c)
+  | .refusePledge a u c => go a (.refusePledge u c)
+  | .correctPledge a u c v' => go a (.correctPledge u c v')
+  | .closePurchase a c => go a (.closePurchase c)
+  | .failPurchase a c => go a (.failPurchase c)
 
 namespace Reactivegas
 
-/-- The integrated app fold: payload or rejection, never a group. -/
-def appFold : KelGroups.IntegratedAppFold State AppEvent StepError :=
+/-- The integrated app fold: payload or rejection, never a group.
+Backdonation authorization is supplied by the caller; this definition
+does not mention `backdonateAuthorized` and does not depend on
+`sorryAx`. -/
+def appFold (auth : BackdonateAuth) :
+    KelGroups.IntegratedAppFold State AppEvent StepError :=
   fun signer pre _post s e =>
-    match step pre s signer e with
+    match step pre s signer e auth with
     | some s' => .ok s'
     | none => .error StepError.rejected
 
 /-- The Reactivegas integration bundle. The threshold is accepted for
 signature compatibility with the vote machine; S62-A app events do not
 consult it. `BaseProposal` is `Unit`: no live base route in this slice. -/
-def integration (_θ : KelGroups.Vote.Threshold) :
+def integration (_θ : KelGroups.Vote.Threshold) (auth : BackdonateAuth) :
     KelGroups.Integration State AppEvent Unit StepError where
-  appFold := appFold
+  appFold := appFold auth
+
+/-- Production well-formedness: the reserved comune account is not a
+canonical member (and therefore cannot be an admin, signer, voter, or
+proposer). Direct admission remains S62-B; this is the boot/input
+boundary of the S62-A production root. -/
+def productionWellFormed (gs : KelGroups.GroupState State) : Bool :=
+  !KelGroups.GroupView.isMember comuneId (KelGroups.groupView gs)
+
+/-- Guarded founding aggregate. `none` when `comuneId` appears in the
+supplied member list. -/
+def boot (members : List (KelGroups.Key × KelGroups.Member))
+    (payload : State) : Option (KelGroups.GroupState State) :=
+  let gs : KelGroups.GroupState State :=
+    { members, pendingProposals := [], appFold := payload }
+  if productionWellFormed gs then some gs else none
+
+inductive ProductionError where
+  | comuneReserved
+  | integrated (error : KelGroups.IntegratedError StepError)
+deriving DecidableEq, BEq, Repr
+
+/-- The sole Reactivegas production root. An arbitrary `GroupState State`
+that already lists `comuneId` as a member is refused before the
+generic integrated fold runs, so that reserved key cannot become
+authorized by being smuggled in as the initial aggregate. -/
+def apply (θ : KelGroups.Vote.Threshold) (auth : BackdonateAuth)
+    (gs : KelGroups.GroupState State) (signer : KelGroups.Key)
+    (event : KelGroups.IntegratedEvent Unit AppEvent) :
+    Except ProductionError (KelGroups.IntegratedResult State) :=
+  if productionWellFormed gs then
+    match KelGroups.applyIntegratedEvent (integration θ auth) gs signer event with
+    | .ok result =>
+        if productionWellFormed result.state then .ok result
+        else .error ProductionError.comuneReserved
+    | .error err => .error (ProductionError.integrated err)
+  else .error ProductionError.comuneReserved
+
+/-! ## Rooted S62-A production witnesses (lake-built; full CI elaborates them) -/
+
+/-- Probe-only authorization. Not the unruled #47 product policy. -/
+def probeAuth : BackdonateAuth := fun _ _ => false
+
+def probeQuestion : KelGroups.Vote.Question :=
+  { kind := .collective, proposer := "alice", assents := [], dissents := [] }
+
+def preservationGroup : KelGroups.GroupState State :=
+  { members :=
+      [ ("alice", { key := "alice", email := "alice@example",
+                    roles := [KelGroups.Role.adminRole KelGroups.Admin.publicAdmin] })
+      , ("bob", { key := "bob", email := "bob@example", roles := [] }) ]
+    pendingProposals := []
+    appFold :=
+      { State.empty with
+        votes := { openQuestions := [("q", probeQuestion)], closed := [] } } }
+
+def preservationDonate :
+    Except ProductionError (KelGroups.IntegratedResult State) :=
+  apply KelGroups.Vote.legacyThreshold probeAuth preservationGroup "alice"
+    (KelGroups.IntegratedEvent.app (AppEvent.donate 30))
+
+/-- Positive production check: members and vote payload stay, economy moves,
+no base change. -/
+def checkAppMembersPreservation : Bool :=
+  match preservationDonate with
+  | .ok result =>
+      (result.state.members == preservationGroup.members)
+        && (result.state.appFold.votes == preservationGroup.appFold.votes)
+        && !(result.state.appFold == preservationGroup.appFold)
+        && (result.change == none)
+  | .error _ => false
+
+/-- Member-writing mutant of the production root: after a successful app
+event it corrupts `result.state.members`. This is a mutated transition,
+not a comparison fixture. -/
+def memberWritingApply :
+    Except ProductionError (KelGroups.IntegratedResult State) :=
+  match preservationDonate with
+  | .ok result =>
+      .ok { result with
+        state := { result.state with members := result.state.members.tail } }
+  | .error err => .error err
+
+/-- The preservation property is false of the member-writing mutant, and
+the mutant actually executed (payload moved, members changed). -/
+def checkAppMembersPreservationMutant : Bool :=
+  match memberWritingApply with
+  | .ok result =>
+      !(result.state.members == preservationGroup.members)
+        && !(result.state.appFold == preservationGroup.appFold)
+        && (result.state.appFold.votes == preservationGroup.appFold.votes)
+  | .error _ => false
+
+theorem app_members_preservation_holds :
+    checkAppMembersPreservation = true := by decide
+
+theorem app_members_preservation_mutant_caught :
+    checkAppMembersPreservationMutant = true := by decide
+
+def comuneAdminMember : KelGroups.Member :=
+  { key := comuneId, email := "comune@reserved.invalid",
+    roles := [KelGroups.Role.adminRole KelGroups.Admin.publicAdmin] }
+
+def comuneBoot : KelGroups.GroupState State :=
+  { members := [(comuneId, comuneAdminMember)]
+    pendingProposals := []
+    appFold := State.empty }
+
+/-- Negative production witness: `comuneId` as founding admin cannot
+sign a donate through the production root. -/
+def checkComuneCannotAuthorize : Bool :=
+  (boot [(comuneId, comuneAdminMember)] State.empty).isNone &&
+    (match apply KelGroups.Vote.legacyThreshold probeAuth comuneBoot
+        comuneId (KelGroups.IntegratedEvent.app (AppEvent.donate 1)) with
+      | .error ProductionError.comuneReserved => true
+      | _ => false)
+
+theorem comune_cannot_authorize :
+    checkComuneCannotAuthorize = true := by decide
+
+#print axioms appFold
+#print axioms apply
+#print axioms app_members_preservation_holds
+#print axioms comune_cannot_authorize
 
 end Reactivegas

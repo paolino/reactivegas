@@ -562,7 +562,8 @@ by an app fold; these prove the transition around it does not write one either,
 so the app payload is the only thing an app event can move.
 
 The historical `applyEventDetailed` is not the subject here: both quantify over
-`applyIntegratedEvent`, the sole Reactivegas production transition. -/
+`applyIntegratedEvent`. Reactivegas layers a reserved-comune production
+root on top of this generic transition. -/
 
 theorem app_event_preserves_members
     {AppState AppEvent BaseProposal AppError : Type}

@@ -1,11 +1,12 @@
 import Reactivegas.Types
+import KelGroups.Vote.State
 
 /-!
-# Economic state of the machine
+# App payload of the machine
 
-List-based state: association lists for conti and casse, a list of
-open collections holding the escrow. Membership and roles live only in
-the canonical `GroupView`; this payload is money, not franchise.
+Association lists for conti and casse, open collections, and the
+membership-free vote payload (open questions and closures). Membership
+and roles live only in the canonical `GroupView`.
 -/
 
 /-- An open purchase: escrow at pledge (L3), closure permission (L2). -/
@@ -17,19 +18,22 @@ structure Collection where
   pending : List Pledge
 deriving DecidableEq, BEq, Repr
 
-/-- The whole economic state. Membership is not stored here. -/
+/-- The whole app payload: economy plus vote questions/closures.
+Membership is not stored here. -/
 structure State where
   /-- user credit accounts, keyed by substrate `KelGroups.Key` -/
   conti : List (KelGroups.Key × Int)
   /-- cash boxes, keyed by substrate `KelGroups.Key` -/
   casse : List (KelGroups.Key × Int)
   collections : List Collection
+  /-- Membership-free vote payload: open questions and closures. -/
+  votes : KelGroups.Vote.VoteState
 deriving DecidableEq, BEq, Repr
 
-/-- Empty economic payload: no accounts, no collections. Founding
-membership arrives through the canonical group, not through boot. -/
+/-- Empty app payload: no accounts, no collections, no questions. -/
 def State.empty : State :=
-  { conti := [], casse := [], collections := [] }
+  { conti := [], casse := [], collections := [],
+    votes := KelGroups.Vote.emptyVoteState }
 
 /-- Balance lookup on an association list; absent means zero. -/
 def bal (m : List (KelGroups.Key × Int)) (u : KelGroups.Key) : Int :=

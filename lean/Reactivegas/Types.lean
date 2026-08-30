@@ -15,9 +15,9 @@ abbrev CollId := Nat
 
 /-- **Reserved comune account key** (issue #48): the common fund lives
 at this `KelGroups.Key` inside `conti` — never as a standalone `State`
-field, and never as membership. `GroupView.isMember comuneId` is false
-by construction of the S62-A fixtures; direct admission of this key is
-S62-B (`validateDirectAdmission`). -/
+field, and never as membership. The production root `Reactivegas.apply`
+refuses any aggregate that already lists this key as a member; direct
+admission of this key remains S62-B (`validateDirectAdmission`). -/
 abbrev comuneId : KelGroups.Key := "comune"
 
 /-- A single pledge of money by a user inside a collection. Amounts are

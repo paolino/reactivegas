@@ -40,6 +40,13 @@ untouched. These have to precede every instance below that serialises a
 
 deriving instance Lean.ToJson for Pledge
 deriving instance Lean.ToJson for Collection
+deriving instance Lean.ToJson for KelGroups.Vote.Verdict
+deriving instance Lean.ToJson for KelGroups.Vote.Ballot
+deriving instance Lean.ToJson for KelGroups.Vote.QuestionKind
+deriving instance Lean.ToJson for KelGroups.Vote.ClosureCause
+deriving instance Lean.ToJson for KelGroups.Vote.Question
+deriving instance Lean.ToJson for KelGroups.Vote.ClosureRecord
+deriving instance Lean.ToJson for KelGroups.Vote.VoteState
 deriving instance Lean.ToJson for State
 deriving instance Lean.ToJson for Event
 

@@ -1008,63 +1008,29 @@ def missingNames : List String :=
 
 The executed counterpart of `app_event_preserves_members`.
 
-`checkAppMembersPreservation` runs one real production integrated app event
-through `KelGroups.applyIntegratedEvent` on the Reactivegas integration and
-requires three things at once: the canonical member relation is unchanged, the
-app payload *did* move, and no base change was reported. The middle conjunct is
-what stops the check passing vacuously — a rejected or inert transition leaves
-the payload alone and would otherwise report a preserved membership it never
-tested.
+`checkAppMembersPreservation` aliases the lake-built production check on
+`Reactivegas.apply`. `checkAppMembersPreservationMutant` aliases the
+member-writing production-transition mutant, not a fixture comparison.
 
-`checkAppMembersPreservationMutant` is the negative control: the same comparison
-against a perturbed member relation, which must be `false`. Without it a
-comparator that answers `true` on everything would read as proof.
-
-These are kernel-decided rather than `#eval`-ed, for the reason given at the top
-of this module: `backdonateAuthorized` is `sorry`, so `step` has no compiled
-code. Kernel reduction is lazy and a `donate` event never demands that branch.
+The production fold takes backdonation authorization as an explicit
+argument and does not depend on `sorryAx`. These names remain here so the
+frozen S62-A gate still sees `^def checkAppMembersPreservation`.
 -/
 
-/-- One admin and one ordinary member in the canonical store. -/
-def appPreservationGroup : KelGroups.GroupState State :=
-  { members :=
-      [ ("alice", { key := "alice", email := "alice@example",
-                    roles := [KelGroups.Role.adminRole KelGroups.Admin.publicAdmin] })
-      , ("bob", { key := "bob", email := "bob@example", roles := [] }) ]
-    pendingProposals := []
-    appFold := State.empty }
-
-/-- A perturbed member relation, used only by the negative control. -/
-def appPreservationGroupMutant : KelGroups.GroupState State :=
-  { appPreservationGroup with members := appPreservationGroup.members.tail }
-
-/-- The production integrated transition under test: an attested donation,
-which moves `casse` and the comune conto and touches no membership. -/
-def appPreservationResult :
-    Except (KelGroups.IntegratedError StepError) (KelGroups.IntegratedResult State) :=
-  KelGroups.applyIntegratedEvent
-    (Reactivegas.integration KelGroups.Vote.legacyThreshold)
-    appPreservationGroup "alice" (KelGroups.IntegratedEvent.app (AppEvent.donate 30))
-
+/-- Gate-visible names: the production checks live in `Reactivegas` so
+`lake build` / full CI elaborates them. The member-writing mutant is
+`Reactivegas.memberWritingApply`, not a fixture comparison. -/
 def checkAppMembersPreservation : Bool :=
-  match appPreservationResult with
-  | .ok result =>
-      (result.state.members == appPreservationGroup.members)
-        && !(result.state.appFold == appPreservationGroup.appFold)
-        && (result.change == none)
-  | .error _ => false
+  Reactivegas.checkAppMembersPreservation
 
-/-- Negative control. The mutant really differs from the original, and the same
-comparator returns `false` on it. -/
 def checkAppMembersPreservationMutant : Bool :=
-  !(appPreservationGroupMutant.members == appPreservationGroup.members)
-    && !(match appPreservationResult with
-         | .ok result => result.state.members == appPreservationGroupMutant.members
-         | .error _ => false)
+  Reactivegas.checkAppMembersPreservationMutant
 
-theorem app_members_preservation_holds : checkAppMembersPreservation = true := by decide
+theorem app_members_preservation_holds : checkAppMembersPreservation = true :=
+  Reactivegas.app_members_preservation_holds
 
 theorem app_members_preservation_mutant_caught :
-    checkAppMembersPreservationMutant = true := by decide
+    checkAppMembersPreservationMutant = true :=
+  Reactivegas.app_members_preservation_mutant_caught
 
 end TraceTests
