@@ -161,36 +161,40 @@ def productionEnactmentWitness : Bool :=
 produces one closure record, the app evidence accepts it, and its
 recorded verdict is `positive`. -/
 def productionVerdictWitness : Bool :=
+  let view : KelGroups.GroupView :=
+    { members :=
+        [("admin",
+          { key := "admin", email := "admin@example",
+            roles := [KelGroups.Role.adminRole KelGroups.Admin.publicAdmin] })] }
   let events : List (KelGroups.Key × KelGroups.Vote.VoteEvent) :=
-    [("admin", .admitMember "admin" "admin@example" [.adminRole .publicAdmin]),
-     ("admin", .openQuestion "question" .collective)]
-  match (KelGroups.Vote.foldVote KelGroups.Vote.zeroThreshold events).closed with
+    [("admin", .openQuestion "question" .collective)]
+  match (KelGroups.Vote.foldVote KelGroups.Vote.zeroThreshold view events).closed with
   | [record] => appVerdictAllows record && record.verdict == .positive
   | _ => false
 
 /-! ## Exact inventory point checks (R-31, R-32) -/
 
-example : route (.addUser 1 2) = .direct := by rfl
-example : route (.electResponsabile 1 2) = .baseEnacted := by rfl
-example : route (.removeResponsabile 1 2) = .baseEnacted := by rfl
-example : route (.removeMember 1 2) = .baseEnacted := by rfl
-example : route (.openPurchase 1 2) = .direct := by rfl
-example : route (.grantPermission 1 2) = .appDecided := by rfl
-example : route (.denyPermission 1 2) = .appDecided := by rfl
-example : route (.deposit 1 2 3) = .direct := by rfl
-example : route (.withdraw 1 2 3) = .direct := by rfl
-example : route (.transferCassa 1 2 3) = .direct := by rfl
-example : route (.donate 1 2) = .direct := by rfl
-example : route (.backdonate 1 2) = .appDecided := by rfl
-example : route (.pledge 1 2 3 4) = .direct := by rfl
-example : route (.acceptPledge 1 2 3) = .direct := by rfl
-example : route (.refusePledge 1 2 3) = .direct := by rfl
-example : route (.correctPledge 1 2 3 4) = .direct := by rfl
-example : route (.closePurchase 1 2) = .direct := by rfl
-example : route (.failPurchase 1 2) = .direct := by rfl
-example : voteDerived (.donate 1 2) = false := by rfl
-example : voteDerived (.removeMember 1 2) = true := by rfl
-example : voteDerived (.backdonate 1 2) = true := by rfl
+example : route (.addUser "1" "2") = .direct := by rfl
+example : route (.electResponsabile "1" "2") = .baseEnacted := by rfl
+example : route (.removeResponsabile "1" "2") = .baseEnacted := by rfl
+example : route (.removeMember "1" "2") = .baseEnacted := by rfl
+example : route (.openPurchase "1" 2) = .direct := by rfl
+example : route (.grantPermission "1" 2) = .appDecided := by rfl
+example : route (.denyPermission "1" 2) = .appDecided := by rfl
+example : route (.deposit "1" "2" 3) = .direct := by rfl
+example : route (.withdraw "1" "2" 3) = .direct := by rfl
+example : route (.transferCassa "1" "2" 3) = .direct := by rfl
+example : route (.donate "1" 2) = .direct := by rfl
+example : route (.backdonate "1" 2) = .appDecided := by rfl
+example : route (.pledge "1" "2" 3 4) = .direct := by rfl
+example : route (.acceptPledge "1" "2" 3) = .direct := by rfl
+example : route (.refusePledge "1" "2" 3) = .direct := by rfl
+example : route (.correctPledge "1" "2" 3 4) = .direct := by rfl
+example : route (.closePurchase "1" 2) = .direct := by rfl
+example : route (.failPurchase "1" 2) = .direct := by rfl
+example : voteDerived (.donate "1" 2) = false := by rfl
+example : voteDerived (.removeMember "1" "2") = true := by rfl
+example : voteDerived (.backdonate "1" 2) = true := by rfl
 
 #guard productionEnactmentWitness
 #guard productionVerdictWitness

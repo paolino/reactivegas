@@ -103,18 +103,20 @@ def eraseDiagnostic : StepDiagnostic → Option State
 
 /-- The diagnostic evaluator. It calls the existing `step` and classifies its
 `Option`; it does not reimplement any guard or effect. -/
-def stepDetailed (s : State) (e : Event) : StepDiagnostic :=
-  match step s e with
+def stepDetailed (view : KelGroups.GroupView) (s : State) (e : Event) :
+    StepDiagnostic :=
+  match stepEvent view s e with
   | some s' => .applied s'
   | none => .refused (guardOf e)
 
 /-- The diagnostic carries no information `step` does not, and loses none:
 erasing it returns exactly `step`. Without this a refusal explanation would be
 a second implementation rather than provable Lean output. -/
-theorem stepDetailed_erases (s : State) (e : Event) :
-    eraseDiagnostic (stepDetailed s e) = step s e := by
+theorem stepDetailed_erases (view : KelGroups.GroupView) (s : State)
+    (e : Event) :
+    eraseDiagnostic (stepDetailed view s e) = stepEvent view s e := by
   unfold stepDetailed
-  cases h : step s e with
+  cases h : stepEvent view s e with
   | none => simp [eraseDiagnostic]
   | some s' => simp [eraseDiagnostic]
 
@@ -179,7 +181,9 @@ def elabInversionManifest : TermElab := fun stx expected? => do
     for cand in inversionCandidates short do
       if bound.isNone then
         if let some (.thmInfo ti) := env.find? (Lean.Name.mkSimple cand) then
-          if mentionsConst ti.type (Lean.Name.mkSimple "step") && mentionsConst ti.type ctor then
+          if (mentionsConst ti.type (Lean.Name.mkSimple "stepEvent")
+                || mentionsConst ti.type (Lean.Name.mkSimple "step"))
+              && mentionsConst ti.type ctor then
             bound := declText (Lean.Name.mkSimple cand)
     let key := Lean.Syntax.mkStrLit short
     let row ← match bound with
@@ -264,19 +268,22 @@ deriving instance Lean.ToJson for Trace
 
 /-- Evaluate the events in order, keeping the state unchanged across a refusal
 so that the next step's `input` stays continuous. -/
-private def emitSteps (s : State) : List Event → List TraceStep
+private def emitSteps (view : KelGroups.GroupView) (s : State) :
+    List Event → List TraceStep
   | [] => []
   | e :: rest =>
-    match stepDetailed s e with
-    | .applied s' => ⟨s, e, .applied s'⟩ :: emitSteps s' rest
-    | .refused g => ⟨s, e, .refused (guardClaim g)⟩ :: emitSteps s rest
+    match stepDetailed view s e with
+    | .applied s' => ⟨s, e, .applied s'⟩ :: emitSteps view s' rest
+    | .refused g => ⟨s, e, .refused (guardClaim g)⟩ :: emitSteps view s rest
 
-/-- Emit the v1 trace of running `events` from `initial`. -/
-def emitTrace (initial : State) (events : List Event) : Trace :=
+/-- Emit the v1 trace of running `events` from `initial` under a fixed
+canonical view. -/
+def emitTrace (view : KelGroups.GroupView) (initial : State)
+    (events : List Event) : Trace :=
   { schema := "reactivegas.trace"
   , version := 1
   , initial := initial
-  , steps := emitSteps initial events }
+  , steps := emitSteps view initial events }
 
 /-- The envelope as JSON. -/
 def traceToJson (trace : Trace) : Lean.Json := Lean.toJson trace
@@ -293,68 +300,73 @@ provisional boundary and has neither compiled code nor a kernel value, so a
 corpus, not a property of the emitter.
 -/
 
-/-- removeResponsabile with live accepted and pending collections. -/
+/-- Canonical view for the seed corpus: two admins and one ordinary
+member. Membership is not grown by vote-local or economic events. -/
+def seedView : KelGroups.GroupView :=
+  { members :=
+      [ ("1", { key := "1", email := "1@trace",
+                roles := [KelGroups.Role.adminRole KelGroups.Admin.publicAdmin] })
+      , ("2", { key := "2", email := "2@trace",
+                roles := [KelGroups.Role.adminRole KelGroups.Admin.publicAdmin] })
+      , ("3", { key := "3", email := "3@trace", roles := [] }) ] }
+
+/-- Economic prefix of the former removeResponsabile seed, ending in an
+attested donation. S62-A has no production membership-cleanup event. -/
 private def seedRemoveResponsabile : List Event :=
-  [ .addUser 1 2, .addUser 1 3
-  , .electResponsabile 1 2
-  , .deposit 2 1 40
-  , .deposit 1 3 100
-  , .openPurchase 2 7
-  , .pledge 2 3 7 50
-  , .acceptPledge 2 3 7
-  , .pledge 2 1 7 20
-  , .removeResponsabile 1 2 ]
+  [ .deposit "2" "1" 40
+  , .deposit "1" "3" 100
+  , .openPurchase "2" 7
+  , .pledge "2" "3" 7 50
+  , .acceptPledge "2" "3" 7
+  , .pledge "2" "1" 7 20
+  , .donate "1" 10 ]
 
 /-- An accepted pledge corrected downward. -/
 private def seedCorrectPledgeDown : List Event :=
-  [ .addUser 1 2
-  , .deposit 1 2 100
-  , .openPurchase 1 5
-  , .pledge 1 2 5 60
-  , .acceptPledge 1 2 5
-  , .correctPledge 1 2 5 40 ]
+  [ .deposit "1" "2" 100
+  , .openPurchase "1" 5
+  , .pledge "1" "2" 5 60
+  , .acceptPledge "1" "2" 5
+  , .correctPledge "1" "2" 5 40 ]
 
 /-- The same collection corrected upward. -/
 private def seedCorrectPledgeUp : List Event :=
-  [ .addUser 1 2
-  , .deposit 1 2 100
-  , .openPurchase 1 5
-  , .pledge 1 2 5 60
-  , .acceptPledge 1 2 5
-  , .correctPledge 1 2 5 90 ]
+  [ .deposit "1" "2" 100
+  , .openPurchase "1" 5
+  , .pledge "1" "2" 5 60
+  , .acceptPledge "1" "2" 5
+  , .correctPledge "1" "2" 5 90 ]
 
 /-- A closure large enough to drive the referente's cassa negative. The close
 is attempted once before permission is granted, so the corpus carries a refused
 step whose identity has an accepted inversion. -/
 private def seedClosePurchaseNegative : List Event :=
-  [ .addUser 1 2, .addUser 1 3
-  , .electResponsabile 1 2
-  , .deposit 1 3 200
-  , .openPurchase 2 9
-  , .pledge 2 3 9 150
-  , .acceptPledge 2 3 9
-  , .closePurchase 2 9
-  , .grantPermission 2 9
-  , .closePurchase 2 9 ]
+  [ .deposit "1" "3" 200
+  , .openPurchase "2" 9
+  , .pledge "2" "3" 9 150
+  , .acceptPledge "2" "3" 9
+  , .closePurchase "2" 9
+  , .grantPermission "2" 9
+  , .closePurchase "2" 9 ]
 
 /-- A denial refunding both an accepted and a pending pledge. The refused
 withdrawal carries an identity with no accepted inversion, so the corpus also
 exercises an `UNPROVED` claim row. -/
 private def seedDenyPermissionRefunds : List Event :=
-  [ .addUser 1 2, .addUser 1 3
-  , .deposit 1 2 100
-  , .deposit 1 3 80
-  , .openPurchase 1 4
-  , .pledge 1 2 4 60
-  , .acceptPledge 1 2 4
-  , .pledge 1 3 4 30
-  , .withdraw 1 2 999
-  , .denyPermission 1 4 ]
+  [ .deposit "1" "2" 100
+  , .deposit "1" "3" 80
+  , .openPurchase "1" 4
+  , .pledge "1" "2" 4 60
+  , .acceptPledge "1" "2" 4
+  , .pledge "1" "3" 4 30
+  , .withdraw "1" "2" 999
+  , .denyPermission "1" 4 ]
 
-/-- The five mandated executions, all from the same boot state. -/
+/-- The five mandated executions, all from the empty payload under
+`seedView`. -/
 def seedCorpus : List Trace :=
-  [ emitTrace (State.init 1) seedRemoveResponsabile
-  , emitTrace (State.init 1) seedCorrectPledgeDown
-  , emitTrace (State.init 1) seedCorrectPledgeUp
-  , emitTrace (State.init 1) seedClosePurchaseNegative
-  , emitTrace (State.init 1) seedDenyPermissionRefunds ]
+  [ emitTrace seedView State.empty seedRemoveResponsabile
+  , emitTrace seedView State.empty seedCorrectPledgeDown
+  , emitTrace seedView State.empty seedCorrectPledgeUp
+  , emitTrace seedView State.empty seedClosePurchaseNegative
+  , emitTrace seedView State.empty seedDenyPermissionRefunds ]
