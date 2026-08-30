@@ -9,7 +9,7 @@ economic amendment adds the comune-membership law, the stall, and the
 group-closure guard facts.
 
 Membership is read from the canonical `GroupView`. There is no
-`s.users` / `s.responsabili` copy.
+payload-local member or admin copy.
 -/
 
 /-- **Comune is not a member** (issue #48): the reserved comune account
@@ -93,7 +93,9 @@ app-payload surface and cannot change the view; base transitions and
 their sealed cleanup are observed through `Reactivegas.apply` instead.
 The boot case requires the
 reserved `comuneId` not to be a member of that view. -/
-inductive Reach (view : KelGroups.GroupView) : State → Prop where
-  | boot (h : comune_not_a_member view) : Reach view State.empty
+inductive Reach (view : KelGroups.GroupView) (auth : BackdonateAuth) :
+    State → Prop where
+  | boot (h : comune_not_a_member view) : Reach view auth State.empty
   | trans {s : State} {e : Event} {s' : State} :
-    Reach view s → stepEvent view s e = some s' → Reach view s'
+    Reach view auth s → stepEvent view s e auth = some s' →
+      Reach view auth s'

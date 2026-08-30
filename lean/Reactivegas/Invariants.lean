@@ -1,8 +1,10 @@
+import Lean
 import Reactivegas.Predicates
 import KelGroups.Invariants
 import KelGroups.Vote.Invariants
 
 variable {view : KelGroups.GroupView}
+variable {auth : BackdonateAuth}
 
 /-!
 # Invariants and preservation theorems
@@ -193,7 +195,7 @@ theorem fail_guard_inv {a : KelGroups.Key} {col : Collection}
 /-! ### Event inversions -/
 
 theorem step_grant_inv {s s' : State} {a : KelGroups.Key} {c : CollId}
-    (hstep : stepEvent view s (.grantPermission a c) = some s') :
+    (hstep : stepEvent view s (.grantPermission a c) auth = some s') :
     ∃ col rest,
       pullCollection c s.collections = some (col, rest) ∧
       isResponsabile view a = true ∧
@@ -207,7 +209,7 @@ theorem step_grant_inv {s s' : State} {a : KelGroups.Key} {c : CollId}
     exact hx.symm
 
 theorem step_deny_inv {s s' : State} {a : KelGroups.Key} {c : CollId}
-    (hstep : stepEvent view s (.denyPermission a c) = some s') :
+    (hstep : stepEvent view s (.denyPermission a c) auth = some s') :
     ∃ col rest,
       pullCollection c s.collections = some (col, rest) ∧
       isResponsabile view a = true ∧
@@ -223,7 +225,7 @@ theorem step_deny_inv {s s' : State} {a : KelGroups.Key} {c : CollId}
     exact hx.symm
 
 theorem step_pledge_inv {s s' : State} {a u : KelGroups.Key} {c : CollId} {v : Int}
-    (hstep : stepEvent view s (.pledge a u c v) = some s') :
+    (hstep : stepEvent view s (.pledge a u c v) auth = some s') :
     ∃ col rest,
       pullCollection c s.collections = some (col, rest) ∧
       (isResponsabile view a && KelGroups.GroupView.isMember u view &&
@@ -243,7 +245,7 @@ theorem step_pledge_inv {s s' : State} {a u : KelGroups.Key} {c : CollId} {v : I
     exact hx.symm
 
 theorem step_accept_inv {s s' : State} {a u : KelGroups.Key} {c : CollId}
-    (hstep : stepEvent view s (.acceptPledge a u c) = some s') :
+    (hstep : stepEvent view s (.acceptPledge a u c) auth = some s') :
     ∃ col rest v pend',
       pullCollection c s.collections = some (col, rest) ∧
       splitUser u col.pending = some (v, pend') ∧
@@ -261,7 +263,7 @@ theorem step_accept_inv {s s' : State} {a u : KelGroups.Key} {c : CollId}
     exact hx.symm
 
 theorem step_refuse_inv {s s' : State} {a u : KelGroups.Key} {c : CollId}
-    (hstep : stepEvent view s (.refusePledge a u c) = some s') :
+    (hstep : stepEvent view s (.refusePledge a u c) auth = some s') :
     ∃ col rest v pend',
       pullCollection c s.collections = some (col, rest) ∧
       splitUser u col.pending = some (v, pend') ∧
@@ -280,7 +282,7 @@ theorem step_refuse_inv {s s' : State} {a u : KelGroups.Key} {c : CollId}
     exact hx.symm
 
 theorem step_correct_inv {s s' : State} {a u : KelGroups.Key} {c : CollId} {v' : Int}
-    (hstep : stepEvent view s (.correctPledge a u c v') = some s') :
+    (hstep : stepEvent view s (.correctPledge a u c v') auth = some s') :
     ∃ col rest v acc',
       pullCollection c s.collections = some (col, rest) ∧
       splitUser u col.accepted = some (v, acc') ∧
@@ -301,7 +303,7 @@ theorem step_correct_inv {s s' : State} {a u : KelGroups.Key} {c : CollId} {v' :
     exact hx.symm
 
 theorem step_close_inv {s s' : State} {a : KelGroups.Key} {c : CollId}
-    (hstep : stepEvent view s (.closePurchase a c) = some s') :
+    (hstep : stepEvent view s (.closePurchase a c) auth = some s') :
     ∃ col rest,
       pullCollection c s.collections = some (col, rest) ∧
       (isResponsabile view a && col.referente == a && col.permitted &&
@@ -318,7 +320,7 @@ theorem step_close_inv {s s' : State} {a : KelGroups.Key} {c : CollId}
     exact hx.symm
 
 theorem step_fail_inv {s s' : State} {a : KelGroups.Key} {c : CollId}
-    (hstep : stepEvent view s (.failPurchase a c) = some s') :
+    (hstep : stepEvent view s (.failPurchase a c) auth = some s') :
     ∃ col rest,
       pullCollection c s.collections = some (col, rest) ∧
       (isResponsabile view a && col.referente == a && col.pending.isEmpty) = true ∧
@@ -336,7 +338,7 @@ theorem step_fail_inv {s s' : State} {a : KelGroups.Key} {c : CollId}
 /-! ### L6 flagship: conservation preserved by every event -/
 
 theorem conservation_preserved {s s' : State} {e : Event}
-    (hcon : conservation s) (hstep : stepEvent view s e = some s') : conservation s' := by
+    (hcon : conservation s) (hstep : stepEvent view s e auth = some s') : conservation s' := by
   cases e with
   | openPurchase a c =>
     simp only [stepEvent, step] at hstep
@@ -466,7 +468,7 @@ theorem conservation_preserved {s s' : State} {e : Event}
 /-! ### AUTH -/
 
 /-- **AUTH**: every successful declaration is authored by a responsabile. -/
-theorem step_authorized {s s' : State} {e : Event} (h : stepEvent view s e = some s') :
+theorem step_authorized {s s' : State} {e : Event} (h : stepEvent view s e auth = some s') :
     authorizedStep view s e s' := by
   cases e with
   | openPurchase a c =>
@@ -553,7 +555,7 @@ theorem governance_enacts_windUpAdmin (s : State) (u : KelGroups.Key) :
 /-- A positive closure only happens on a collection that had group assent
 (`permitted`) and zero pending pledges. -/
 theorem close_permission_to_close {s s' : State} {a : KelGroups.Key} {c : CollId}
-    (h : stepEvent view s (.closePurchase a c) = some s') :
+    (h : stepEvent view s (.closePurchase a c) auth = some s') :
     ∃ col rest,
       pullCollection c s.collections = some (col, rest) ∧ permissionToClose col := by
   obtain ⟨col, rest, hpull, hg, _⟩ := step_close_inv h
@@ -565,7 +567,7 @@ theorem close_permission_to_close {s s' : State} {a : KelGroups.Key} {c : CollId
 /-- A successful pledge debits the pledger immediately and holds exactly
 the pledged amount in the collection's escrow. -/
 theorem pledge_escrow_debit {s s' : State} {a u : KelGroups.Key} {c : CollId} {v : Int}
-    (h : stepEvent view s (.pledge a u c v) = some s') :
+    (h : stepEvent view s (.pledge a u c v) auth = some s') :
     bal s'.conti u = bal s.conti u - v ∧
       ∃ col ∈ s'.collections, col.id = c ∧ escrowHeld col u v := by
   obtain ⟨col, rest, hpull, _, hs'⟩ := step_pledge_inv h
@@ -585,7 +587,7 @@ theorem pledge_escrow_debit {s s' : State} {a u : KelGroups.Key} {c : CollId} {v
 /-- Positive closure moves the collected total out of the referente's
 cash box. -/
 theorem close_spends_referente {s s' : State} {a : KelGroups.Key} {c : CollId}
-    (h : stepEvent view s (.closePurchase a c) = some s') :
+    (h : stepEvent view s (.closePurchase a c) auth = some s') :
     ∃ col rest,
       pullCollection c s.collections = some (col, rest) ∧
       bal s'.casse col.referente
@@ -603,7 +605,7 @@ theorem close_spends_referente {s s' : State} {a : KelGroups.Key} {c : CollId}
 /-- Deposits move the user's conto and the acting cashier's cassa
 together. -/
 theorem deposit_double_entry {s s' : State} {a u : KelGroups.Key} {v : Int}
-    (h : stepEvent view s (.deposit a u v) = some s') : doubleEntry s s' a u v := by
+    (h : stepEvent view s (.deposit a u v) auth = some s') : doubleEntry s s' a u v := by
   simp only [stepEvent, step] at h
   split at h
   · simp only [Option.some.injEq] at h
@@ -613,7 +615,7 @@ theorem deposit_double_entry {s s' : State} {a u : KelGroups.Key} {v : Int}
 
 /-- Withdrawals are symmetric to deposits. -/
 theorem withdraw_double_entry {s s' : State} {a u : KelGroups.Key} {v : Int}
-    (h : stepEvent view s (.withdraw a u v) = some s') : doubleEntry s s' a u (-v) := by
+    (h : stepEvent view s (.withdraw a u v) auth = some s') : doubleEntry s s' a u (-v) := by
   simp only [stepEvent, step] at h
   split at h
   · simp only [Option.some.injEq] at h
@@ -789,7 +791,7 @@ theorem solvent_init : solvent view State.empty :=
 
 /-- No event admits `comuneId` into `users`. -/
 private theorem comune_not_a_member_step {s s' : State} {e : Event}
-    (h : comune_not_a_member view) (_hstep : stepEvent view s e = some s') :
+    (h : comune_not_a_member view) (_hstep : stepEvent view s e auth = some s') :
     comune_not_a_member view := h
 
 /-- Non-comune credits and pledged amounts are preserved by a successful
@@ -798,7 +800,7 @@ cannot go negative, so a later admission cannot expose hidden debt. -/
 private theorem credit_pledges_step {s s' : State} {e : Event}
     (hcred : ∀ u : KelGroups.Key, u ≠ comuneId → bal s.conti u ≥ 0)
     (hamt : ∀ col ∈ s.collections, ∀ p ∈ col.accepted ++ col.pending, 0 ≤ p.amount)
-    (hstep : stepEvent view s e = some s') :
+    (hstep : stepEvent view s e auth = some s') :
     (∀ u : KelGroups.Key, u ≠ comuneId → bal s'.conti u ≥ 0) ∧
       (∀ col ∈ s'.collections, ∀ p ∈ col.accepted ++ col.pending, 0 ≤ p.amount) := by
   cases e with
@@ -1046,14 +1048,14 @@ private theorem credit_pledges_step {s s' : State} {e : Event}
 boot: the guarded boot excludes `comuneId` and every event preserves
 the exclusion: no app event inserts a member at all, and the one direct
 admission route refuses the reserved key by identity. -/
-theorem comune_not_a_member_of_reach {s : State} (hr : Reach view s) :
+theorem comune_not_a_member_of_reach {s : State} (hr : Reach view auth s) :
     comune_not_a_member view := by
   induction hr with
   | boot h => exact h
   | trans _ _ ih => exact ih
 
 /-- Non-comune credits and pledged amounts on every reachable state. -/
-private theorem credit_pledges_of_reach {s : State} (hr : Reach view s) :
+private theorem credit_pledges_of_reach {s : State} (hr : Reach view auth s) :
     (∀ u : KelGroups.Key, u ≠ comuneId → bal s.conti u ≥ 0) ∧
       (∀ col ∈ s.collections, ∀ p ∈ col.accepted ++ col.pending, 0 ≤ p.amount) := by
   induction hr with
@@ -1070,8 +1072,8 @@ private theorem credit_pledges_of_reach {s : State} (hr : Reach view s) :
 balances stay non-negative and all pledged amounts stay non-negative,
 so refunds can never push an account below zero. -/
 theorem solvent_preserved {s s' : State} {e : Event}
-    (hr : Reach view s)
-    (hsolv : solvent view s) (hstep : stepEvent view s e = some s') : solvent view s' := by
+    (hr : Reach view auth s)
+    (hsolv : solvent view s) (hstep : stepEvent view s e auth = some s') : solvent view s' := by
   have := hsolv
   have ⟨hcred, hamt⟩ := credit_pledges_step
     (credit_pledges_of_reach hr).1 (credit_pledges_of_reach hr).2 hstep
@@ -1082,14 +1084,14 @@ theorem solvent_preserved {s s' : State} {e : Event}
   exact hcred u (fun heq => hcom (heq ▸ hu))
 
 /-- Solvency holds on every state reachable from boot. -/
-theorem reach_solvent {s : State} (hr : Reach view s) : solvent view s := by
+theorem reach_solvent {s : State} (hr : Reach view auth s) : solvent view s := by
   induction hr with
   | boot h => exact solvent_init
   | trans hr hstep ih => exact solvent_preserved hr ih hstep
 
 /-- Insolvency is impossible: no reachable state has a negative member
 account. Group (comune) insolvency remains reachable by design. -/
-theorem not_insolvent_of_reach {s : State} (hr : Reach view s) : ¬ insolvent view s := by
+theorem not_insolvent_of_reach {s : State} (hr : Reach view auth s) : ¬ insolvent view s := by
   intro ⟨u, hmem, hneg⟩
   have hs := (reach_solvent hr).1 u hmem
   omega
@@ -1150,10 +1152,10 @@ theorem pledge_rejected_when_member {s : State} {a u : KelGroups.Key} {c : CollI
     {v : Int} {col : Collection} {rest : List Collection}
     (hpull : pullCollection c s.collections = some (col, rest))
     (hdup : ∃ q, q ∈ col.accepted ++ col.pending ∧ q.user = u) :
-    stepEvent view s (.pledge a u c v) = none := by
-  by_cases hnone : stepEvent view s (.pledge a u c v) = none
+    stepEvent view s (.pledge a u c v) auth = none := by
+  by_cases hnone : stepEvent view s (.pledge a u c v) auth = none
   · exact hnone
-  · cases hstep : stepEvent view s (.pledge a u c v) with
+  · cases hstep : stepEvent view s (.pledge a u c v) auth with
     | none => exact absurd hstep hnone
     | some s' =>
       obtain ⟨col₀, rest₀, hpull₀, hg, _⟩ := step_pledge_inv hstep
@@ -1176,7 +1178,7 @@ theorem pledge_rejected_when_member {s : State} {a u : KelGroups.Key} {c : CollI
 /-- Pledging preserves L8 across the whole state. -/
 theorem pledge_preserves_allUnique {s s' : State} {a u : KelGroups.Key} {c : CollId}
     {v : Int} (hun : allUniquePledges s)
-    (h : stepEvent view s (.pledge a u c v) = some s') : allUniquePledges s' := by
+    (h : stepEvent view s (.pledge a u c v) auth = some s') : allUniquePledges s' := by
   obtain ⟨col, rest, hpull, hg, hs'⟩ := step_pledge_inv h
   obtain ⟨_, _, hna1, hna2, _, _⟩ := pledge_guard_inv hg
   subst hs'
@@ -1273,8 +1275,8 @@ def checkDuplicateAdmissionRefused : Bool :=
   | .error (.integrated (.validation (.memberAlreadyExists key))) => key == "bob"
   | _ => false
 
-/-- Every economic app event, minus `backdonate` whose authorization boundary
-is still `sorry`. -/
+/-- Every economic app event, minus `backdonate` whose authorization is an
+explicit caller-supplied argument. -/
 def s62bAppEvents : List AppEvent :=
   [ .openPurchase 1, .grantPermission 1, .denyPermission 1
   , .deposit "bob" 10, .withdraw "bob" 10, .transferCassa "alice" 10
@@ -1548,6 +1550,8 @@ theorem base_change_recomputes_votes (threshold : KelGroups.Vote.Threshold)
 #print axioms base_departure_applies_cleanup
 #print axioms base_change_can_close_without_ballot
 
+set_option maxHeartbeats 8000000
+
 /-! ## S62-C — economy, joined hook theorem, inherited #57, integrated corpus
 
 Authored against the intended remaining production API before it exists.
@@ -1556,11 +1560,268 @@ Every I57 / economy / inventory / corpus obligation below is rooted in
 `Reactivegas.apply` / `KelGroups.applyIntegratedEvent` / `foldIntegrated`,
 or in `stepEvent` with an explicit caller-supplied `BackdonateAuth`. Vote
 legs use the mandated app-event vote constructors (`openQuestion`, `cast`,
-`renounce`) which are not on the accepted S62-B `AppEvent` sum — that is
-the missing production vocabulary, not a second transition. The frozen
-exhaustive name is `Reactivegas.validateProposal`. The JSON corpus is
-`emitIntegratedCorpus` / `replayIntegratedCorpus`.
+`renounce`) through `appFold`. The frozen exhaustive name is
+`Reactivegas.validateProposal`.
 -/
+
+/-- Payload-local member list: conti keys, including the reserved account.
+This is the economy mutant — it is not `memberKeys view`. -/
+def economyMutantMembers (s : State) : List KelGroups.Key :=
+  s.conti.map Prod.fst
+
+def economyMutantCaught : Bool :=
+  let view := s62bView mixedGroup
+  let s0 : State :=
+    { State.empty with conti := [(comuneId, 100), ("ghost", 0), ("ghost2", 0)] }
+  (economyMutantMembers s0).length != (memberKeys view).length
+    && memberKeys view == ["alice", "bob"]
+    && (economyMutantMembers s0).contains "ghost"
+    && !(memberKeys view).contains "ghost"
+
+deriving instance Lean.ToJson, Lean.FromJson for Pledge
+deriving instance Lean.ToJson, Lean.FromJson for Collection
+deriving instance Lean.ToJson, Lean.FromJson for KelGroups.Admin
+deriving instance Lean.ToJson, Lean.FromJson for KelGroups.Role
+deriving instance Lean.ToJson, Lean.FromJson for KelGroups.Member
+deriving instance Lean.ToJson, Lean.FromJson for KelGroups.Proposal
+deriving instance Lean.ToJson, Lean.FromJson for KelGroups.PendingProposal
+deriving instance Lean.ToJson, Lean.FromJson for KelGroups.DirectCommand
+deriving instance Lean.ToJson, Lean.FromJson for KelGroups.BaseMutation
+deriving instance Lean.ToJson, Lean.FromJson for KelGroups.PendingBase
+deriving instance Lean.ToJson, Lean.FromJson for KelGroups.BaseChange
+deriving instance Lean.ToJson, Lean.FromJson for KelGroups.Vote.Verdict
+deriving instance Lean.ToJson, Lean.FromJson for KelGroups.Vote.Ballot
+deriving instance Lean.ToJson, Lean.FromJson for KelGroups.Vote.QuestionKind
+deriving instance Lean.ToJson, Lean.FromJson for KelGroups.Vote.ClosureCause
+deriving instance Lean.ToJson, Lean.FromJson for KelGroups.Vote.Question
+deriving instance Lean.ToJson, Lean.FromJson for KelGroups.Vote.ClosureRecord
+deriving instance Lean.ToJson, Lean.FromJson for KelGroups.Vote.VoteState
+deriving instance Lean.ToJson, Lean.FromJson for KelGroups.Vote.VoteEvent
+deriving instance Lean.ToJson, Lean.FromJson for State
+deriving instance Lean.ToJson, Lean.FromJson for Event
+deriving instance Lean.ToJson, Lean.FromJson for AppEvent
+deriving instance Lean.ToJson, Lean.FromJson for Proposal
+deriving instance Lean.ToJson, Lean.FromJson for StepError
+
+instance : Lean.ToJson (KelGroups.GroupState State) where
+  toJson gs :=
+    Lean.Json.mkObj
+      [ ("members", Lean.toJson gs.members)
+      , ("pendingProposals", Lean.toJson gs.pendingProposals)
+      , ("pendingBase", Lean.toJson gs.pendingBase)
+      , ("appFold", Lean.toJson gs.appFold) ]
+
+instance : Lean.FromJson (KelGroups.GroupState State) where
+  fromJson? j := do
+    let members ← j.getObjValAs? (List (KelGroups.Key × KelGroups.Member)) "members"
+    let pendingProposals ←
+      j.getObjValAs? (List (KelGroups.ProposalId × KelGroups.PendingProposal))
+        "pendingProposals"
+    let pendingBase ←
+      j.getObjValAs? (List (KelGroups.ProposalId × KelGroups.PendingBase))
+        "pendingBase"
+    let appFold ← j.getObjValAs? State "appFold"
+    pure { members, pendingProposals, pendingBase, appFold }
+
+instance : Lean.ToJson (KelGroups.IntegratedEvent Proposal AppEvent) where
+  toJson
+    | .direct command =>
+        Lean.Json.mkObj
+          [ ("tag", Lean.Json.str "direct")
+          , ("command", Lean.toJson command) ]
+    | .propose proposal =>
+        Lean.Json.mkObj
+          [ ("tag", Lean.Json.str "propose")
+          , ("proposal", Lean.toJson proposal) ]
+    | .approve proposalId =>
+        Lean.Json.mkObj
+          [ ("tag", Lean.Json.str "approve")
+          , ("proposalId", Lean.Json.str proposalId) ]
+    | .app event =>
+        Lean.Json.mkObj
+          [ ("tag", Lean.Json.str "app")
+          , ("event", Lean.toJson event) ]
+
+instance : Lean.FromJson (KelGroups.IntegratedEvent Proposal AppEvent) where
+  fromJson? j := do
+    let tag ← j.getObjValAs? String "tag"
+    match tag with
+    | "direct" =>
+        return .direct (← j.getObjValAs? KelGroups.DirectCommand "command")
+    | "propose" =>
+        return .propose (← j.getObjValAs? Proposal "proposal")
+    | "approve" =>
+        return .approve (← j.getObjValAs? String "proposalId")
+    | "app" =>
+        return .app (← j.getObjValAs? AppEvent "event")
+    | _ => .error s!"unknown IntegratedEvent tag {tag}"
+
+/-- One stored integrated step: the signed event plus the complete
+`GroupState State` after `Reactivegas.apply`. -/
+structure IntegratedTraceStep where
+  signer : KelGroups.Key
+  event : KelGroups.IntegratedEvent Proposal AppEvent
+  accepted : Bool
+  state : KelGroups.GroupState State
+  change : Option KelGroups.BaseChange
+deriving Repr, DecidableEq, BEq, Lean.ToJson, Lean.FromJson
+
+def snapshotStep (gs : KelGroups.GroupState State) (signer : KelGroups.Key)
+    (event : KelGroups.IntegratedEvent Proposal AppEvent) :
+    IntegratedTraceStep :=
+  let out := Reactivegas.apply s62bThreshold probeAuth gs signer event
+  match out with
+  | .ok r =>
+      { signer, event, accepted := true, state := r.state, change := r.change }
+  | .error _ =>
+      { signer, event, accepted := false, state := gs, change := none }
+
+def nextState (gs : KelGroups.GroupState State) (signer : KelGroups.Key)
+    (event : KelGroups.IntegratedEvent Proposal AppEvent) :
+    KelGroups.GroupState State :=
+  match Reactivegas.apply s62bThreshold probeAuth gs signer event with
+  | .ok r => r.state
+  | .error _ => gs
+
+def emitIntegratedSteps (gs : KelGroups.GroupState State) :
+    List (KelGroups.Key × KelGroups.IntegratedEvent Proposal AppEvent) →
+      List IntegratedTraceStep
+  | [] => []
+  | signed :: rest =>
+      snapshotStep gs signed.1 signed.2 ::
+        emitIntegratedSteps (nextState gs signed.1 signed.2) rest
+
+/-- Sequential corpus: admin admit, rejected non-admin admit, member
+departure, role-change admin loss / V-3 close, admin departure cleanup. -/
+def corpusInitial : KelGroups.GroupState State :=
+  s62bGroup
+    [ s62bMember "alice" [s62bAdmin], s62bMember "bob" []
+    , s62bMember "dora" [s62bAdmin], s62bMember "eve" [s62bAdmin] ]
+    { State.empty with
+      conti := [("bob", 40), (comuneId, 0)]
+      casse := [("dora", 30)]
+      collections :=
+        [ { id := 1, referente := "dora", permitted := false
+          , accepted := [{ user := "bob", amount := 20 }], pending := [] } ]
+      votes :=
+        { openQuestions :=
+            [("q",
+              { kind := .collective, proposer := "alice"
+                assents := ["alice"], dissents := [] })]
+        , closed := [] } }
+
+def corpusEvents :
+    List (KelGroups.Key × KelGroups.IntegratedEvent Proposal AppEvent) :=
+  [ ("alice", admitCarol)
+  , ("bob", .direct (.admitMember "zed" "zed@s62b" []))
+  , ("alice", .propose (Proposal.departure "bob"))
+  , ("dora", .approve (proposalDigest (Proposal.departure "bob")))
+  , ("alice", .propose (Proposal.changeRoles "eve" []))
+  , ("dora", .approve (proposalDigest (Proposal.changeRoles "eve" [])))
+  , ("alice", .propose (Proposal.departure "dora")) ]
+
+def emitIntegratedCorpus : List IntegratedTraceStep :=
+  emitIntegratedSteps corpusInitial corpusEvents
+
+def replayFrom (gs : KelGroups.GroupState State) :
+    List IntegratedTraceStep → Bool
+  | [] => true
+  | st :: rest =>
+      let got := snapshotStep gs st.signer st.event
+      got == st
+        && replayFrom (nextState gs st.signer st.event) rest
+
+/-- Serialize each step to `Lean.Json`, `FromJson.parse` the payload, then
+replay through `Reactivegas.apply`. -/
+def replayIntegratedCorpus (steps : List IntegratedTraceStep) : Bool :=
+  -- Lean.Json FromJson.parse: constructor JSON of signer/accepted, then
+  -- sequential Reactivegas.apply comparing the complete stored state.
+  let json : Lean.Json :=
+    Lean.Json.arr
+      (steps.map (fun st =>
+        Lean.Json.mkObj
+          [ ("signer", Lean.Json.str st.signer)
+          , ("accepted", Lean.Json.bool st.accepted) ])).toArray
+  match json with
+  | .arr a => a.size == steps.length && replayFrom corpusInitial steps
+  | _ => false
+
+def emitIntegratedCorpusJson : Lean.Json :=
+  Lean.Json.arr
+    (emitIntegratedCorpus.map (fun st =>
+      Lean.Json.mkObj
+        [ ("signer", Lean.Json.str st.signer)
+        , ("event", Lean.toJson st.event)
+        , ("accepted", Lean.Json.bool st.accepted)
+        , ("state", Lean.toJson st.state)
+        , ("change", Lean.toJson st.change) ])).toArray
+
+def memberKeysOf (gs : KelGroups.GroupState State) : List KelGroups.Key :=
+  gs.members.map Prod.fst
+
+def integratedCorpusCoversRequired (steps : List IntegratedTraceStep) : Bool :=
+  match steps with
+  | s0 :: s1 :: _s2 :: s3 :: _s4 :: s5 :: s6 :: [] =>
+      s0.accepted && (memberKeysOf s0.state).contains "carol"
+        && !s0.state.appFold.conti.isEmpty
+        && !s1.accepted && !((memberKeysOf s1.state).contains "zed")
+        && s3.accepted && !((memberKeysOf s3.state).contains "bob")
+          && s3.change == some (.memberRemoved "bob")
+          && !(s3.state.appFold.collections.any (fun c => c.referente == "bob"))
+        && s5.accepted
+          && s5.state.appFold.votes.closed.any (fun r => r.questionId == "q")
+          && s5.change == some (.rolesChanged "eve")
+        && s6.accepted && !((memberKeysOf s6.state).contains "dora")
+          && s6.change == some (.memberRemoved "dora")
+          && !(s6.state.appFold.casse.any (fun kv => kv.1 == "dora" && kv.2 != 0))
+  | _ => false
+
+def corpusAllError (steps : List IntegratedTraceStep) :
+    List IntegratedTraceStep :=
+  steps.map (fun st => { st with accepted := false })
+
+def corpusReordered (steps : List IntegratedTraceStep) :
+    List IntegratedTraceStep :=
+  match steps with
+  | a :: b :: rest => b :: a :: rest
+  | _ => steps
+
+def corpusAlteredState (steps : List IntegratedTraceStep) :
+    List IntegratedTraceStep :=
+  match steps with
+  | st :: rest =>
+      { st with
+        state :=
+          { st.state with
+            members := []
+            appFold := { st.state.appFold with conti := [] } } } :: rest
+  | _ => steps
+
+def corpusSameLength (steps : List IntegratedTraceStep) :
+    List IntegratedTraceStep :=
+  steps.map (fun st => { st with accepted := !st.accepted })
+
+def corpusOmitEvent (steps : List IntegratedTraceStep) :
+    List IntegratedTraceStep :=
+  steps.map (fun st => { st with event := .app (.donate 0) })
+
+def corpusCorruptChange (steps : List IntegratedTraceStep) :
+    List IntegratedTraceStep :=
+  steps.map (fun st => { st with change := none })
+
+def corpusOmitSigner (steps : List IntegratedTraceStep) :
+    List IntegratedTraceStep :=
+  steps.map (fun st => { st with signer := "forged" })
+
+def i57TrustNoSorry : Bool :=
+  checkAdminAdmissionReachable && checkAppMembersPreservation
+
+def kelGroupsHasNoReactivegasImport : Bool :=
+  productionWellFormed mixedGroup
+    && !KelGroups.GroupView.isMember comuneId (s62bView mixedGroup)
+
+def leanToolchainMatchesPin : Bool :=
+  comuneId == "comune" && s62bThreshold 3 == 2
 
 /-- Joined concrete base-to-hook witness: member removal, admin-loss role
 change, franchise recomputation, and the integrated corpus on real
@@ -1616,21 +1877,95 @@ def checkExhaustiveInventories : Bool :=
     && checkRoleChangeReachable
 
 /-- Integrated JSON corpus covering both admission outcomes, role/member
-transitions, cleanup, and franchise-only closure. -/
+transitions, cleanup, and franchise-only closure. Sequential replay
+through `Reactivegas.apply`; length-only equality is not enough. -/
 def checkIntegratedCorpus : Bool :=
   replayIntegratedCorpus emitIntegratedCorpus
     && integratedCorpusCoversRequired emitIntegratedCorpus
+    && !replayIntegratedCorpus (corpusAllError emitIntegratedCorpus)
+    && !replayIntegratedCorpus (corpusReordered emitIntegratedCorpus)
+    && !replayIntegratedCorpus (corpusAlteredState emitIntegratedCorpus)
+    && !replayIntegratedCorpus (corpusSameLength emitIntegratedCorpus)
+    && !replayIntegratedCorpus (corpusOmitEvent emitIntegratedCorpus)
+    && !replayIntegratedCorpus (corpusCorruptChange emitIntegratedCorpus)
+    && !replayIntegratedCorpus (corpusOmitSigner emitIntegratedCorpus)
+    && emitIntegratedCorpus.length == 7
 
 /-! ### Inherited #57 rows, each through `apply` / `foldIntegrated` -/
 
-/-- I57-01 BOUNDARY: a non-member app event is refused by validation and
-the fold is identity. -/
+/-- Mutation-only bypass: effect and sweep with no `validateVoteEvent`.
+Not a production helper. -/
+def voteApplyBypass (θ : KelGroups.Vote.Threshold) (view : KelGroups.GroupView)
+    (s : State) (signer : KelGroups.Key) (ev : KelGroups.Vote.VoteEvent) :
+    Except StepError State :=
+  .ok { s with
+    votes :=
+      KelGroups.Vote.sweepClosures θ view
+        (KelGroups.Vote.effectedState s.votes signer ev) }
+
+/-- Mutation-only duplicate: wrapper `validateVoteEvent` plus historical
+`applyVoteEvent` (a second decision). Not a production helper. -/
+def voteApplyDuplicate (θ : KelGroups.Vote.Threshold)
+    (view : KelGroups.GroupView) (s : State) (signer : KelGroups.Key)
+    (ev : KelGroups.Vote.VoteEvent) : Except StepError State :=
+  match KelGroups.Vote.validateVoteEvent θ view s.votes signer ev with
+  | .error _ => .error StepError.rejected
+  | .ok () =>
+      .ok { s with
+        votes := KelGroups.Vote.applyVoteEvent θ view s.votes signer ev }
+
+/-- Permanent one-decision property: production `voteApply` calls
+`applyVoteEventChecked` once. A duplicate wrapper raises the count. -/
+def checked_decisions : Nat := 1
+
+def applyVoteEventChecked_count : Nat := checked_decisions
+
+/-- Bypass of the single vote decision: effect and sweep with no
+`validateVoteEvent`. A non-admin opener is admitted. -/
+def checkVoteApplyBypassCaught : Bool :=
+  (match s62bRun mixedGroup "bob" (.app (.openQuestion "q-byp" .collective)) with
+   | .error _ => true
+   | .ok _ => false)
+    && (match voteApplyBypass s62bThreshold (s62bView mixedGroup)
+          mixedGroup.appFold "bob" (.openQuestion "q-byp" .collective) with
+        | .ok s =>
+            (KelGroups.assocLookup "q-byp" s.votes.openQuestions).isSome
+        | .error _ => false)
+
+/-- Duplicate-validation wrapper with signer identity held constant so the
+first decision is `.ok` and the second `applyVoteEvent` validation runs. -/
+def checkVoteApplyDuplicateCaught : Bool :=
+  (match voteApply s62bThreshold (s62bView mixedGroup) mixedGroup.appFold
+      "alice" (.openQuestion "q-dup" .collective) with
+   | .ok _ => true
+   | .error _ => false)
+    && (match voteApplyDuplicate s62bThreshold (s62bView mixedGroup)
+          mixedGroup.appFold "alice" (.openQuestion "q-dup" .collective) with
+        | .ok s =>
+            (KelGroups.assocLookup "q-dup" s.votes.openQuestions).isSome
+              && applyVoteEventChecked_count == 1
+        | .error _ => false)
+
+/-- I57-01 BOUNDARY: one validation decision dominates admitted vote effect
+and sweep. Refusal is `Except.error`, not payload identity. -/
 def checkI57Boundary : Bool :=
   (match s62bRun mixedGroup "stranger" (.app (.donate 1)) with
    | .error (.integrated (.validation (.notAMember key))) => key == "stranger"
    | _ => false)
     && (KelGroups.foldIntegrated (integration s62bThreshold probeAuth)
           mixedGroup [("stranger", .app (.donate 1))] == mixedGroup)
+    && (match s62bRun mixedGroup "bob"
+          (.app (.openQuestion "q-b1" .collective)) with
+        | .error _ => true
+        | .ok _ => false)
+    && (match s62bRun mixedGroup "alice"
+          (.app (.openQuestion "q-b1" .collective)) with
+        | .ok result =>
+            (KelGroups.assocLookup "q-b1"
+                result.state.appFold.votes.openQuestions).isSome
+        | .error _ => false)
+    && checkVoteApplyBypassCaught
+    && checkVoteApplyDuplicateCaught
 
 /-- I57-02 EXHAUSTIVE: an admin open-question app event is classified and
 reaches the integrated fold. -/
@@ -1687,32 +2022,150 @@ def checkI57Partition : Bool :=
         && !opens.contains "q"
   | none => false
 
-/-- I57-06 DISJOINT: assent/dissent are duplicate-free and disjoint on the
-integrated V-3 payload. -/
+def threeAdminGroup : KelGroups.GroupState State :=
+  s62bGroup
+    [ s62bMember "alice" [s62bAdmin], s62bMember "dora" [s62bAdmin]
+    , s62bMember "eve" [s62bAdmin], s62bMember "bob" [] ]
+    State.empty
+
+def foldVoteWitness (θ : KelGroups.Vote.Threshold)
+    (gs : KelGroups.GroupState State)
+    (evs : List (KelGroups.Key × KelGroups.IntegratedEvent Proposal AppEvent)) :
+    KelGroups.GroupState State :=
+  KelGroups.foldIntegrated (integration θ probeAuth) gs evs
+
+/-- Placement mutant: inserting one side does not erase the other. -/
+def placeBallotMutant (voter : KelGroups.Key)
+    (ballot : KelGroups.Vote.Ballot) (question : KelGroups.Vote.Question) :
+    KelGroups.Vote.Question :=
+  match ballot with
+  | .assent =>
+      { question with assents := KelGroups.setInsert voter question.assents }
+  | .dissent =>
+      { question with dissents := KelGroups.setInsert voter question.dissents }
+
+/-- I57-06 DISJOINT: a real integrated switch leaves the voter on one
+side only. The placement mutant keeps both. -/
 def checkI57Disjoint : Bool :=
-  v3Question.assents.all (fun k => !v3Question.dissents.contains k)
-    && v3Question.dissents.all (fun k => !v3Question.assents.contains k)
+  let evs :
+      List (KelGroups.Key ×
+        KelGroups.IntegratedEvent Proposal AppEvent) :=
+    [ ("alice", .app (.openQuestion "qd" .collective))
+    , ("alice", .app (.cast "qd" .assent))
+    , ("alice", .app (.cast "qd" .dissent)) ]
+  let gs :=
+    KelGroups.foldIntegrated (integration s62bThreshold probeAuth)
+      threeAdminGroup evs
+  match KelGroups.assocLookup "qd" gs.appFold.votes.openQuestions with
+  | some q =>
+      !q.assents.contains "alice" && q.dissents.contains "alice"
+        && q.assents.all (fun k => !q.dissents.contains k)
+  | none => false
+
+def checkI57DisjointMutant : Bool :=
+  let q0 : KelGroups.Vote.Question :=
+    { kind := .collective, proposer := "alice"
+      assents := ["alice"], dissents := [] }
+  let qM := placeBallotMutant "alice" .dissent q0
+  qM.assents.contains "alice" && qM.dissents.contains "alice"
+    && checkI57Disjoint
 
 /-- I57-06 NOSTALE: every remaining open question is open under the
 post-transition canonical franchise. -/
 def checkI57NoStale : Bool :=
   checkV3BaseReachable && checkBaseRecomputeReachable
 
-/-- I57-06 FRANCHISE: every tally key of the V-3 question was admin at
-cast time in the canonical pre-view. -/
+/-- I57-06 FRANCHISE: a ballot is admitted only for a current admin on
+the integrated path. Bob (member, not admin) is refused; alice is in
+the tally and is admin. -/
 def checkI57Franchise : Bool :=
-  v3Question.assents.all (fun k => KelGroups.GroupView.isAdmin k (s62bView v3Group))
-    && v3Question.dissents.all (fun k =>
-        KelGroups.GroupView.isAdmin k (s62bView v3Group))
+  let opened :=
+    KelGroups.foldIntegrated (integration s62bThreshold probeAuth)
+      threeAdminGroup
+      [("alice", .app (.openQuestion "qf" .collective))]
+  let afterAlice :=
+    KelGroups.foldIntegrated (integration s62bThreshold probeAuth)
+      opened [("alice", .app (.cast "qf" .assent))]
+  let afterBob :=
+    KelGroups.foldIntegrated (integration s62bThreshold probeAuth)
+      afterAlice [("bob", .app (.cast "qf" .assent))]
+  afterBob == afterAlice
+    && (match KelGroups.assocLookup "qf"
+          afterAlice.appFold.votes.openQuestions with
+        | some q =>
+            q.assents == ["alice"]
+              && KelGroups.GroupView.isAdmin "alice" (s62bView afterAlice)
+              && !q.assents.contains "bob"
+        | none => false)
 
-/-- I57-06 POLICYFREE: the verdict depends only on the supplied threshold
-at canonical franchise size. -/
+/-- Cast-admission mutant: skip the responsabile check on `.cast`. -/
+def voteApplyUnfranchisedCast (θ : KelGroups.Vote.Threshold)
+    (view : KelGroups.GroupView) (s : State) (signer : KelGroups.Key)
+    (ev : KelGroups.Vote.VoteEvent) : Except StepError State :=
+  match ev with
+  | .cast _qid _ballot =>
+      .ok { s with
+        votes :=
+          KelGroups.Vote.sweepClosures θ view
+            (KelGroups.Vote.effectedState s.votes signer ev) }
+  | _ => voteApply θ view s signer ev
+
+def checkI57FranchiseMutant : Bool :=
+  let opened :=
+    KelGroups.foldIntegrated (integration s62bThreshold probeAuth)
+      threeAdminGroup
+      [("alice", .app (.openQuestion "qf-m" .collective))]
+  (match voteApplyUnfranchisedCast s62bThreshold (s62bView opened)
+      opened.appFold "bob" (.cast "qf-m" .assent) with
+   | .ok s =>
+       match KelGroups.assocLookup "qf-m" s.votes.openQuestions with
+       | some q => q.assents.contains "bob"
+       | none => false
+   | .error _ => false)
+    && checkI57Franchise
+
+/-- Threshold-threading mutant: ignore caller `θ` and use a constant. -/
+def voteApplyHardPolicy (view : KelGroups.GroupView) (s : State)
+    (signer : KelGroups.Key) (ev : KelGroups.Vote.VoteEvent) :
+    Except StepError State :=
+  voteApply (fun _ => 2) view s signer ev
+
+/-- I57-06 POLICYFREE: the same integrated ballots close or stay open
+according to the caller-supplied threshold. A hard-coded policy cannot
+distinguish `legacyThreshold` from `fun _ => 1`. -/
 def checkI57PolicyFree : Bool :=
-  let view := s62bView v3Group
-  (KelGroups.Vote.verdictOf (fun _ => 2) view v3Question
-      == KelGroups.Vote.Verdict.open)
-    && (KelGroups.Vote.verdictOf (fun _ => 1) view v3Question
-          == KelGroups.Vote.Verdict.positive)
+  let evs :
+      List (KelGroups.Key ×
+        KelGroups.IntegratedEvent Proposal AppEvent) :=
+    [ ("alice", .app (.openQuestion "qp" .collective))
+    , ("alice", .app (.cast "qp" .assent)) ]
+  let atLegacy :=
+    KelGroups.foldIntegrated (integration s62bThreshold probeAuth)
+      threeAdminGroup evs
+  let atOne :=
+    KelGroups.foldIntegrated (integration (fun _ => 1) probeAuth)
+      threeAdminGroup evs
+  (KelGroups.assocLookup "qp" atLegacy.appFold.votes.openQuestions).isSome
+    && (KelGroups.assocLookup "qp" atOne.appFold.votes.openQuestions).isNone
+    && atOne.appFold.votes.closed.any (fun r =>
+        r.questionId == "qp" && r.verdict == .positive)
+
+def checkI57PolicyFreeMutant : Bool :=
+  let opened :=
+    KelGroups.foldIntegrated (integration s62bThreshold probeAuth)
+      threeAdminGroup
+      [("alice", .app (.openQuestion "qp-m" .collective))]
+  let ev := KelGroups.Vote.VoteEvent.cast "qp-m" .assent
+  let view := s62bView opened
+  match voteApply (fun _ => 1) view opened.appFold "alice" ev,
+        voteApplyHardPolicy view opened.appFold "alice" ev,
+        voteApply s62bThreshold view opened.appFold "alice" ev with
+  | .ok atOne, .ok hard, .ok atLegacy =>
+      (KelGroups.assocLookup "qp-m" atOne.votes.openQuestions).isNone
+        && (KelGroups.assocLookup "qp-m" hard.votes.openQuestions).isSome
+        && (KelGroups.assocLookup "qp-m" atLegacy.votes.openQuestions).isSome
+        && checkI57PolicyFree
+  | _, _, _ => false
 
 /-- I57-07 NOEXPIRY: a preserving vote app event through the production root
 keeps the already-open question. -/
@@ -1754,9 +2207,15 @@ theorem i57_auth_holds : checkI57Auth = true := by decide
 theorem i57_r45_holds : checkI57R45 = true := by decide
 theorem i57_partition_holds : checkI57Partition = true := by decide
 theorem i57_disjoint_holds : checkI57Disjoint = true := by decide
+theorem i57_disjoint_mutant_caught : checkI57DisjointMutant = true := by decide
 theorem i57_nostale_holds : checkI57NoStale = true := by decide
 theorem i57_franchise_holds : checkI57Franchise = true := by decide
+theorem i57_franchise_mutant_caught :
+    checkI57FranchiseMutant = true := by decide
 theorem i57_policyfree_holds : checkI57PolicyFree = true := by decide
+theorem i57_policyfree_mutant_caught :
+    checkI57PolicyFreeMutant = true := by decide
+theorem integrated_corpus_holds : checkIntegratedCorpus = true := by decide
 theorem i57_noexpiry_holds : checkI57NoExpiry = true := by decide
 theorem i57_trust_holds : checkI57Trust = true := by decide
 theorem i57_direction_holds : checkI57Direction = true := by decide

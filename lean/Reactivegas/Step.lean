@@ -31,25 +31,13 @@ def findCollection (s : State) (c : CollId) : Option Collection :=
 def isResponsabile (view : KelGroups.GroupView) (u : KelGroups.Key) : Bool :=
   KelGroups.GroupView.isAdmin u view
 
-/-!
-### Provisional boundary: the backdonation vote authorization
-
-The vote encoding for the voted equal-share backdonation is an
-app-scoped proposal type **owned by issue #47** (open question Q-007).
-No faithful encoding exists in this model yet, so this named boundary
-is deliberately provisional: its body is proof debt for the next pass,
-it selects **no** true/false vote policy, and the `backdonate` step
-case routes its enacted-vote condition through this name.
--/
-def backdonateAuthorized (s : State) (w : Int) : Bool := sorry
-
 /-- Member keys of the canonical view, in store order. -/
 def memberKeys (view : KelGroups.GroupView) : List KelGroups.Key :=
   view.members.map Prod.fst
 
 /-- Caller-supplied backdonation authorization. The #47 true/false policy
-is not chosen here; production `appFold` takes this as an explicit
-argument so the fold itself does not depend on `sorryAx`. -/
+is not chosen here; production `appFold` and `stepEvent` take this as an
+explicit argument so neither definition chooses the product policy. -/
 abbrev BackdonateAuth := State → Int → Bool
 
 /-- The rejecting transition of the integrated economic machine. -/
@@ -149,15 +137,17 @@ def step (view : KelGroups.GroupView) (s : State) (signer : KelGroups.Key)
     pure { s with
       conti := refundAll s.conti (col.accepted ++ col.pending),
       collections := rest }
+  | .openQuestion _ _ => none
+  | .cast _ _ => none
+  | .renounce _ => none
 
 /-- Event-shaped wrapper used by inherited #45/#48 theorems. The fourteen
-surviving economic constructors
-delegate to the integrated `step`; there are no others left to refuse. This
-is not a production root. -/
-abbrev stepEvent (view : KelGroups.GroupView) (s : State) (e : Event) :
-    Option State :=
+surviving economic constructors delegate to `step`. Authorization is an
+explicit caller-supplied argument. -/
+def stepEvent (view : KelGroups.GroupView) (s : State) (e : Event)
+    (auth : BackdonateAuth) : Option State :=
   let go (signer : KelGroups.Key) (app : AppEvent) : Option State :=
-    step view s signer app backdonateAuthorized
+    step view s signer app auth
   match e with
   | .openPurchase a c => go a (.openPurchase c)
   | .grantPermission a c => go a (.grantPermission c)
@@ -176,16 +166,70 @@ abbrev stepEvent (view : KelGroups.GroupView) (s : State) (e : Event) :
 
 namespace Reactivegas
 
+/-- Apply a vote event to an integrated payload under the canonical view.
+Exactly one validation decision: `applyVoteEventChecked`. Refusal is
+`Except.error`, not payload identity. -/
+def voteApply (θ : KelGroups.Vote.Threshold) (view : KelGroups.GroupView)
+    (s : State) (signer : KelGroups.Key) (ev : KelGroups.Vote.VoteEvent) :
+    Except StepError State :=
+  match KelGroups.Vote.applyVoteEventChecked θ view s.votes signer ev with
+  | .error _ => .error StepError.rejected
+  | .ok votes => .ok { s with votes }
+
 /-- The integrated app fold: payload or rejection, never a group.
-Backdonation authorization is supplied by the caller; this definition
-does not mention `backdonateAuthorized` and does not depend on
-`sorryAx`. -/
-def appFold (auth : BackdonateAuth) :
+Vote constructors run `voteApply`; economic constructors run `step`. -/
+def appFold (θ : KelGroups.Vote.Threshold) (auth : BackdonateAuth) :
     KelGroups.IntegratedAppFold State AppEvent StepError :=
   fun signer pre _post s e =>
-    match step pre s signer e auth with
-    | some s' => .ok s'
-    | none => .error StepError.rejected
+    match e with
+    | .openQuestion qid kind =>
+        voteApply θ pre s signer (.openQuestion qid kind)
+    | .cast qid ballot =>
+        voteApply θ pre s signer (.cast qid ballot)
+    | .renounce qid =>
+        voteApply θ pre s signer (.renounce qid)
+    | .openPurchase c =>
+        match step pre s signer (.openPurchase c) auth with
+        | some s' => .ok s' | none => .error StepError.rejected
+    | .grantPermission c =>
+        match step pre s signer (.grantPermission c) auth with
+        | some s' => .ok s' | none => .error StepError.rejected
+    | .denyPermission c =>
+        match step pre s signer (.denyPermission c) auth with
+        | some s' => .ok s' | none => .error StepError.rejected
+    | .deposit u v =>
+        match step pre s signer (.deposit u v) auth with
+        | some s' => .ok s' | none => .error StepError.rejected
+    | .withdraw u v =>
+        match step pre s signer (.withdraw u v) auth with
+        | some s' => .ok s' | none => .error StepError.rejected
+    | .transferCassa f v =>
+        match step pre s signer (.transferCassa f v) auth with
+        | some s' => .ok s' | none => .error StepError.rejected
+    | .donate v =>
+        match step pre s signer (.donate v) auth with
+        | some s' => .ok s' | none => .error StepError.rejected
+    | .backdonate w =>
+        match step pre s signer (.backdonate w) auth with
+        | some s' => .ok s' | none => .error StepError.rejected
+    | .pledge u c v =>
+        match step pre s signer (.pledge u c v) auth with
+        | some s' => .ok s' | none => .error StepError.rejected
+    | .acceptPledge u c =>
+        match step pre s signer (.acceptPledge u c) auth with
+        | some s' => .ok s' | none => .error StepError.rejected
+    | .refusePledge u c =>
+        match step pre s signer (.refusePledge u c) auth with
+        | some s' => .ok s' | none => .error StepError.rejected
+    | .correctPledge u c v' =>
+        match step pre s signer (.correctPledge u c v') auth with
+        | some s' => .ok s' | none => .error StepError.rejected
+    | .closePurchase c =>
+        match step pre s signer (.closePurchase c) auth with
+        | some s' => .ok s' | none => .error StepError.rejected
+    | .failPurchase c =>
+        match step pre s signer (.failPurchase c) auth with
+        | some s' => .ok s' | none => .error StepError.rejected
 
 /-! ## The sealed base hook (T6223, R62-09, R62-10)
 
@@ -274,6 +318,22 @@ def proposalMutation : Proposal → KelGroups.BaseMutation
   | .departure key => .removeMember key
   | .changeRoles key roles => .changeRoles key roles
 
+/-- View-scoped admissibility of the restricted Reactivegas proposal.
+Exhaustive over `Proposal`; a current canonical admin may target a
+current member. Frozen gate name `validateProposal`. -/
+def validateProposal (view : KelGroups.GroupView) (signer : KelGroups.Key) :
+    Proposal → Except StepError Unit
+  | .departure key =>
+      if KelGroups.GroupView.isAdmin signer view then
+        if KelGroups.GroupView.isMember key view then .ok ()
+        else .error StepError.rejected
+      else .error StepError.rejected
+  | .changeRoles key _ =>
+      if KelGroups.GroupView.isAdmin signer view then
+        if KelGroups.GroupView.isMember key view then .ok ()
+        else .error StepError.rejected
+      else .error StepError.rejected
+
 /-- The Reactivegas integration bundle: the sole production instantiation of
 the substrate boundary. It supplies the reserved key, the restricted proposal's
 identity and mutation reading, the app fold, and the sealed base hook together
@@ -286,7 +346,7 @@ def integration (θ : KelGroups.Vote.Threshold) (auth : BackdonateAuth) :
   reserved := comuneId
   digest := proposalDigest
   proposalMutation := proposalMutation
-  appFold := appFold auth
+  appFold := appFold θ auth
   baseHook := baseHook θ
 
 /-- Production well-formedness: the reserved comune account is not a

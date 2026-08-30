@@ -14,16 +14,9 @@ This module is the slice's proof harness. It is imported by nothing, so
 
 ## Why the harness evaluates where it does
 
-`Step.lean:50` leaves `backdonateAuthorized := sorry`, the single provisional
-boundary owned by #47 / Q-007. A `sorry` produces no compiled code, so `step`
-has no IR and *every* runtime route through it is closed: `#eval` refuses with
-"depends on the 'sorry' axiom", `#eval!` refuses with "cannot evaluate code
-because 'backdonateAuthorized' uses 'sorry'", and `implemented_by` cannot be
-attached to an imported declaration.
-
-Kernel reduction has no such problem: it is lazy, and no event other than
-`backdonate` ever demands the authorization. So the harness evaluates in two
-places, and each is stronger than the runtime assertion it replaces:
+Backdonation authorization is an explicit caller-supplied argument.
+The seed corpus passes a refusing probe and contains no `backdonate`
+event. Kernel reduction still decides the economic seeds:
 
 * every semantic check is a `by decide` theorem — kernel-checked, not merely
   observed to print `true`;
@@ -62,18 +55,22 @@ mandated types, so a silently widened or weakened signature is a compile error.
 -/
 
 example : StepDiagnostic → Option State := eraseDiagnostic
-example : KelGroups.GroupView → State → Event → StepDiagnostic :=
+example : KelGroups.GroupView → State → Event → BackdonateAuth →
+    StepDiagnostic :=
   stepDetailed
 example : Event → GuardId := guardOf
 example : GuardId → GuardClaim := guardClaim
 example : TraceInventory := traceInventory
-example : KelGroups.GroupView → State → List Event → Trace := emitTrace
+example : KelGroups.GroupView → State → List Event → BackdonateAuth →
+    Trace := emitTrace
 example : Trace → Lean.Json := traceToJson
 example : List Trace := seedCorpus
 
 /-- The erasure theorem is pinned by its full statement, not by its name. -/
-example : ∀ (view : KelGroups.GroupView) (s : State) (e : Event),
-    eraseDiagnostic (stepDetailed view s e) = stepEvent view s e :=
+example : ∀ (view : KelGroups.GroupView) (s : State) (e : Event)
+    (auth : BackdonateAuth),
+    eraseDiagnostic (stepDetailed view s e auth) =
+      stepEvent view s e auth :=
   stepDetailed_erases
 
 /-! ## Freezing reduced values so they can be printed
@@ -229,7 +226,7 @@ def replayFrom (cur : State) : List TraceStep → Bool
   | [] => true
   | st :: rest =>
     st.input == cur &&
-      (match st.result, stepDetailed corpusView cur st.event with
+      (match st.result, stepDetailed corpusView cur st.event seedAuth with
         | .applied stored, .applied actual =>
             stored == actual && replayFrom actual rest
         | .refused claim, .refused actual =>
@@ -243,11 +240,12 @@ def replayCheck (t : Trace) : Bool :=
 /-- Erasure agreement, checked step by step against `step` itself, for an
 arbitrary candidate diagnostic evaluator. -/
 def erasureCheck
-    (f : KelGroups.GroupView → State → Event → StepDiagnostic)
+    (f : KelGroups.GroupView → State → Event → BackdonateAuth →
+      StepDiagnostic)
     (t : Trace) : Bool :=
   t.steps.all (fun st =>
-    eraseDiagnostic (f corpusView st.input st.event)
-      == stepEvent corpusView st.input st.event)
+    eraseDiagnostic (f corpusView st.input st.event seedAuth)
+      == stepEvent corpusView st.input st.event seedAuth)
 
 /-! ## Mutants
 
@@ -256,9 +254,9 @@ reachable from production code.
 -/
 
 /-- Divergent evaluator: reports every refusal as an application. -/
-def divergentDetailed (view : KelGroups.GroupView) (s : State) (e : Event) :
-    StepDiagnostic :=
-  match stepDetailed view s e with
+def divergentDetailed (view : KelGroups.GroupView) (s : State) (e : Event)
+    (auth : BackdonateAuth) : StepDiagnostic :=
+  match stepDetailed view s e auth with
   | .applied s' => .applied s'
   | .refused _ => .applied s
 
@@ -567,7 +565,7 @@ def acceptedOnlyDonation : Trace :=
     , .acceptPledge "2" "3" 7
     , .pledge "2" "1" 7 20
     , .acceptPledge "2" "1" 7
-    , .donate "1" 10 ]
+    , .donate "1" 10 ] seedAuth
 
 def acceptedOnlyDeny : Trace :=
   emitTrace corpusView State.empty
@@ -579,7 +577,7 @@ def acceptedOnlyDeny : Trace :=
     , .pledge "1" "3" 4 30
     , .acceptPledge "1" "3" 4
     , .withdraw "1" "2" 999
-    , .denyPermission "1" 4 ]
+    , .denyPermission "1" 4 ] seedAuth
 
 /-- The accepted-only mutant differs from the shipped seed, is rejected by the
 new pre-effect check, and — this is the part that matters — still refunds
@@ -612,9 +610,9 @@ def checkWrongGuard : Bool :=
 def checkDivergence : Bool :=
   erasureCheck stepDetailed seed3 &&
     !(divergentDetailed corpusView (seedAt 3).initial
-        (Event.withdraw "1" "2" 999)
+        (Event.withdraw "1" "2" 999) seedAuth
         == stepDetailed corpusView (seedAt 3).initial
-          (Event.withdraw "1" "2" 999)) &&
+          (Event.withdraw "1" "2" 999) seedAuth) &&
     !erasureCheck divergentDetailed seed4
 
 /-- A stored input that does not continue the replay must be rejected. -/
@@ -1076,8 +1074,8 @@ The executed counterpart of `app_event_preserves_members`.
 member-writing production-transition mutant, not a fixture comparison.
 
 The production fold takes backdonation authorization as an explicit
-argument and does not depend on `sorryAx`. These names remain here so the
-frozen S62-A gate still sees `^def checkAppMembersPreservation`.
+argument. These names remain here so the frozen S62-A gate still sees
+`^def checkAppMembersPreservation`.
 -/
 
 /-- Gate-visible names: the production checks live in `Reactivegas` so

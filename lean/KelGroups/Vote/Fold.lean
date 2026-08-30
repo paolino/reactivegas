@@ -100,13 +100,21 @@ def effectedState (gs : VoteState) (signer : Key) (event : VoteEvent) : VoteStat
       | none => gs
   | .renounce _ => gs
 
-/-- One fold step. The validation result is the sole production boundary
-(R57-01): it dominates both the event effect and the recompute-and-close
-sweep. On `.ok`, the effect runs and the sweep recomputes on the effected
-payload against the supplied canonical view; on any error the input payload is
-returned exactly — no franchise, question, tally, closure, or verdict
-computation is reached (R57-03). A branch that reaches an effect or the sweep
-without this decision is exactly the mutation the R-70/BYPASS controls redden. -/
+/-- Checked vote step: exactly one `validateVoteEvent` decision. On `.ok`
+that decision dominates `effectedState` and `sweepClosures`; on `.error`
+neither runs. The integrated production path (`Reactivegas.voteApply`)
+uses this function and must not validate again. -/
+def applyVoteEventChecked (threshold : Threshold) (view : GroupView)
+    (gs : VoteState) (signer : Key) (event : VoteEvent) :
+    Except VoteError VoteState :=
+  match validateVoteEvent threshold view gs signer event with
+  | .error err => .error err
+  | .ok () =>
+      .ok (sweepClosures threshold view (effectedState gs signer event))
+
+/-- Historical state-returning fold step. It erases the checked result:
+rejection is payload identity, which is *not* how the integrated path
+reports refusal (admitted no-ops exist). -/
 def applyVoteEvent (threshold : Threshold) (view : GroupView) (gs : VoteState)
     (signer : Key) (event : VoteEvent) : VoteState :=
   match validateVoteEvent threshold view gs signer event with

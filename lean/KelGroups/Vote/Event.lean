@@ -15,7 +15,7 @@ what changed by handing it the post-transition canonical view.
 
 That removal takes the old bootstrap admission capability with it: the
 founding admin arrives through the application's guarded initial aggregate,
-so an empty group can no longer admit its own first member by vote.
+so an empty group can no longer insert its own first member by vote.
 -/
 
 namespace KelGroups.Vote

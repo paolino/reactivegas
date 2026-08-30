@@ -1,4 +1,5 @@
 import KelGroups.Types
+import KelGroups.Vote.Types
 
 /-!
 # Reactivegas domain types
@@ -86,6 +87,11 @@ inductive AppEvent where
   | correctPledge (user : KelGroups.Key) (c : CollId) (v : Int)
   | closePurchase (c : CollId)
   | failPurchase (c : CollId)
+  | openQuestion (questionId : KelGroups.Vote.QuestionId)
+      (kind : KelGroups.Vote.QuestionKind)
+  | cast (questionId : KelGroups.Vote.QuestionId)
+      (ballot : KelGroups.Vote.Ballot)
+  | renounce (questionId : KelGroups.Vote.QuestionId)
 deriving DecidableEq, BEq, Repr
 
 /-- Rejection identity of the integrated economic step. A single

@@ -38,17 +38,9 @@ untouched. These have to precede every instance below that serialises a
 `State` or an `Event`.
 -/
 
-deriving instance Lean.ToJson for Pledge
-deriving instance Lean.ToJson for Collection
-deriving instance Lean.ToJson for KelGroups.Vote.Verdict
-deriving instance Lean.ToJson for KelGroups.Vote.Ballot
-deriving instance Lean.ToJson for KelGroups.Vote.QuestionKind
-deriving instance Lean.ToJson for KelGroups.Vote.ClosureCause
-deriving instance Lean.ToJson for KelGroups.Vote.Question
-deriving instance Lean.ToJson for KelGroups.Vote.ClosureRecord
-deriving instance Lean.ToJson for KelGroups.Vote.VoteState
-deriving instance Lean.ToJson for State
-deriving instance Lean.ToJson for Event
+-- ToJson/FromJson for Pledge/Collection/Vote/State/Event live in
+-- `Reactivegas.Invariants` (imported above) so the corpus and this
+-- emitter share one instance set.
 
 /-! ### Stable refusal identity -/
 
@@ -105,9 +97,9 @@ def eraseDiagnostic : StepDiagnostic → Option State
 
 /-- The diagnostic evaluator. It calls the existing `step` and classifies its
 `Option`; it does not reimplement any guard or effect. -/
-def stepDetailed (view : KelGroups.GroupView) (s : State) (e : Event) :
-    StepDiagnostic :=
-  match stepEvent view s e with
+def stepDetailed (view : KelGroups.GroupView) (s : State) (e : Event)
+    (auth : BackdonateAuth) : StepDiagnostic :=
+  match stepEvent view s e auth with
   | some s' => .applied s'
   | none => .refused (guardOf e)
 
@@ -115,10 +107,10 @@ def stepDetailed (view : KelGroups.GroupView) (s : State) (e : Event) :
 erasing it returns exactly `step`. Without this a refusal explanation would be
 a second implementation rather than provable Lean output. -/
 theorem stepDetailed_erases (view : KelGroups.GroupView) (s : State)
-    (e : Event) :
-    eraseDiagnostic (stepDetailed view s e) = stepEvent view s e := by
+    (e : Event) (auth : BackdonateAuth) :
+    eraseDiagnostic (stepDetailed view s e auth) = stepEvent view s e auth := by
   unfold stepDetailed
-  cases h : stepEvent view s e with
+  cases h : stepEvent view s e auth with
   | none => simp [eraseDiagnostic]
   | some s' => simp [eraseDiagnostic]
 
@@ -270,22 +262,23 @@ deriving instance Lean.ToJson for Trace
 
 /-- Evaluate the events in order, keeping the state unchanged across a refusal
 so that the next step's `input` stays continuous. -/
-private def emitSteps (view : KelGroups.GroupView) (s : State) :
-    List Event → List TraceStep
+private def emitSteps (view : KelGroups.GroupView) (s : State)
+    (auth : BackdonateAuth) : List Event → List TraceStep
   | [] => []
   | e :: rest =>
-    match stepDetailed view s e with
-    | .applied s' => ⟨s, e, .applied s'⟩ :: emitSteps view s' rest
-    | .refused g => ⟨s, e, .refused (guardClaim g)⟩ :: emitSteps view s rest
+    match stepDetailed view s e auth with
+    | .applied s' => ⟨s, e, .applied s'⟩ :: emitSteps view s' auth rest
+    | .refused g => ⟨s, e, .refused (guardClaim g)⟩ :: emitSteps view s auth rest
 
 /-- Emit the v1 trace of running `events` from `initial` under a fixed
-canonical view. -/
+canonical view. Authorization is explicit; the seed corpus passes a
+refusing probe and contains no backdonate event. -/
 def emitTrace (view : KelGroups.GroupView) (initial : State)
-    (events : List Event) : Trace :=
+    (events : List Event) (auth : BackdonateAuth) : Trace :=
   { schema := "reactivegas.trace"
   , version := 1
   , initial := initial
-  , steps := emitSteps view initial events }
+  , steps := emitSteps view initial auth events }
 
 /-- The envelope as JSON. -/
 def traceToJson (trace : Trace) : Lean.Json := Lean.toJson trace
@@ -296,10 +289,9 @@ The four high-risk classes the frozen format requires, in five executions.
 `correctPledge` needs two because the downward and upward settlements move
 money in opposite directions.
 
-No seed contains a `backdonate` event. `backdonateAuthorized` is the surviving
-provisional boundary and has neither compiled code nor a kernel value, so a
-`backdonate` event cannot be evaluated at all. That is a stated limit of this
-corpus, not a property of the emitter.
+No seed contains a `backdonate` event. Authorization is an explicit
+argument; the seed corpus passes a refusing probe so backdonation is
+not evaluated here.
 -/
 
 /-- Canonical view for the seed corpus: two admins and one ordinary
@@ -368,9 +360,11 @@ private def seedDenyPermissionRefunds : List Event :=
 
 /-- The five mandated executions, all from the empty payload under
 `seedView`. -/
+def seedAuth : BackdonateAuth := fun _ _ => false
+
 def seedCorpus : List Trace :=
-  [ emitTrace seedView State.empty seedDonationPrefix
-  , emitTrace seedView State.empty seedCorrectPledgeDown
-  , emitTrace seedView State.empty seedCorrectPledgeUp
-  , emitTrace seedView State.empty seedClosePurchaseNegative
-  , emitTrace seedView State.empty seedDenyPermissionRefunds ]
+  [ emitTrace seedView State.empty seedDonationPrefix seedAuth
+  , emitTrace seedView State.empty seedCorrectPledgeDown seedAuth
+  , emitTrace seedView State.empty seedCorrectPledgeUp seedAuth
+  , emitTrace seedView State.empty seedClosePurchaseNegative seedAuth
+  , emitTrace seedView State.empty seedDenyPermissionRefunds seedAuth ]
