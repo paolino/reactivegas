@@ -3260,9 +3260,10 @@ function drawScene() {
 
   state.users.forEach(u => {
     const { x, y } = memberPos[u];
+    const ux = (x - CX) / R, uy = (y - CY) / R;
     layout['member:' + u] = { x, y };
-    layout['conto:' + u] = { x, y: y + 58 };
-    if (resp(u)) layout['cassa:' + u] = { x, y: y + 84 };
+    layout['conto:' + u] = { x: x + ux * 55, y: y + uy * 55 };
+    if (resp(u)) layout['cassa:' + u] = { x: x + ux * 83, y: y + uy * 83 };
   });
 
   for (const p of geo.placements) {
@@ -3297,17 +3298,19 @@ function drawScene() {
       <text class="nm" y="18">${esc(nm(u))}</text>
     </g>`);
     const cv = bal(state.conti, u);
+    const cp = layout['conto:' + u];
     parts.push(`<g class="chipg" data-obj="conto" data-id="${u}" data-key="conto:${u}"
       role="button" tabindex="0" aria-label="conto di ${esc(nm(u))}: ${cv}"
-      transform="translate(${x},${y + 58})">
+      transform="translate(${cp.x},${cp.y})">
       <rect x="-36" y="-11" width="72" height="22" rx="6"/>
       <text y="4">conto ${cv}</text>
     </g>`);
     if (resp(u)) {
       const kv = bal(state.casse, u);
+      const kp = layout['cassa:' + u];
       parts.push(`<g class="cassag" data-obj="cassa" data-id="${u}" data-key="cassa:${u}"
         role="button" tabindex="0" aria-label="cassa di ${esc(nm(u))}: ${kv}"
-        transform="translate(${x},${y + 84})">
+        transform="translate(${kp.x},${kp.y})">
         <rect x="-36" y="-11" width="72" height="22" rx="6"/>
         <text y="4">cassa ${kv}</text>
       </g>`);
