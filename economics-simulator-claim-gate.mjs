@@ -96,15 +96,24 @@ const ACCEPTED_COMPOSITION = {
   module: 'lean/Reactivegas/Composition.lean',
 };
 
-/* Accepted #48 core pin: Event inventory is derived from this commit's
-   Types.lean, never from a JS constructor table. Pin-freshness compares
-   each derived file's blob at the pin with origin/master. */
+/* Accepted #48 core pin: Event inventory is derived from the unique
+   file in this freshness manifest — never from a parallel path constant,
+   EVENT_ROUTES, TAG_CLAIMS, or EV. Pin-freshness compares each declared
+   file's blob at the pin with origin/master. An empty, ambiguous, or
+   repointed files list is RED. */
+const MANIFEST_EVENT_FILE = 'lean/Reactivegas/Types.lean';
 const ACCEPTED_CORE = {
   commit: '024dcc723fb70132c8085db2e39c7ba6d4e3a4c8',
   tree: '2914b7c5a69461b5c25678d06ae0c1393da2bfea',
-  files: ['lean/Reactivegas/Types.lean'],
+  files: [MANIFEST_EVENT_FILE],
 };
-const EVENT_SOURCE = 'lean/Reactivegas/Types.lean';
+const DRIVER_IMPORTS = Object.freeze([
+  'Reactivegas.Invariants',
+  'KelGroups.Invariants',
+  'KelGroups.Validate',
+  'KelGroups.Vote.Invariants',
+  'KelGroups.Vote.Validate',
+]);
 const RETIRED = ['addUser', 'electResponsabile', 'removeMember',
   'removeResponsabile'];
 const RETIREMENT = Object.freeze({
@@ -282,6 +291,13 @@ function assertCitedFilesFresh(pin, files) {
   }
 }
 
+function eventSourceFromManifest(files = ACCEPTED_CORE.files) {
+  if (!Array.isArray(files) || files.length !== 1)
+    throw new Error('Event source manifest is not a unique derivation file: [' +
+      (Array.isArray(files) ? files.join(',') : String(files)) + ']');
+  return files[0];
+}
+
 function pinnedConstructors() {
   const gotTree = gitShow(`${ACCEPTED_CORE.commit}^{tree}`);
   if (gotTree !== ACCEPTED_CORE.tree)
@@ -289,8 +305,9 @@ function pinnedConstructors() {
   execFileSync('git', ['-C', REPO, 'merge-base', '--is-ancestor',
     ACCEPTED_CORE.commit, 'origin/master']);
   assertCitedFilesFresh(ACCEPTED_CORE.commit, ACCEPTED_CORE.files);
+  const eventSource = eventSourceFromManifest(ACCEPTED_CORE.files);
   const src = execFileSync('git', ['-C', REPO, 'show',
-    `${ACCEPTED_CORE.commit}:${EVENT_SOURCE}`], { encoding: 'utf8' });
+    `${ACCEPTED_CORE.commit}:${eventSource}`], { encoding: 'utf8' });
   const block = src.match(/inductive Event where([\s\S]*?)deriving DecidableEq, Repr/);
   if (!block) throw new Error('pinned Lean Event declaration not found');
   const ctors = [...block[1].matchAll(/^\s*\|\s+([A-Za-z][A-Za-z0-9_]*)\b/gm)]
@@ -425,25 +442,62 @@ async function checkMachineCoverage(corePath) {
 }
 
 function stalePinSelftest() {
-  const masterBlob = gitShow(`origin/master:${EVENT_SOURCE}`);
+  const eventSource = eventSourceFromManifest(ACCEPTED_CORE.files);
+  const masterBlob = gitShow(`origin/master:${eventSource}`);
   const history = execFileSync('git', ['-C', REPO, 'rev-list', `${ACCEPTED_CORE.commit}^`],
     { encoding: 'utf8' }).trim().split('\n');
   let stalePin = null;
   for (const candidate of history) {
     try {
       const blob = execFileSync('git', ['-C', REPO, 'rev-parse',
-        `${candidate}:${EVENT_SOURCE}`],
+        `${candidate}:${eventSource}`],
         { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
       if (blob !== masterBlob) { stalePin = candidate; break; }
     } catch { /* file did not yet exist */ }
   }
-  if (!stalePin) throw new Error(`no historical stale pin found for ${EVENT_SOURCE}`);
+  if (!stalePin) throw new Error(`no historical stale pin found for ${eventSource}`);
   let staleMessage = '';
-  try { assertCitedFilesFresh(stalePin, [EVENT_SOURCE]); }
+  try { assertCitedFilesFresh(stalePin, [eventSource]); }
   catch (e) { staleMessage = e.message; }
-  if (!new RegExp(`stale cited file ${EVENT_SOURCE}: pin blob=[0-9a-f]{40} origin/master blob=[0-9a-f]{40}`)
+  if (!new RegExp(`stale cited file ${eventSource}: pin blob=[0-9a-f]{40} origin/master blob=[0-9a-f]{40}`)
     .test(staleMessage))
     throw new Error(`stale-pin control did not RED with file and both blobs: ${staleMessage}`);
+}
+
+const MACHINE_CONTROLS = 'removed-attempt-case,stale-event-pin,manifest-removed,manifest-ambiguous,manifest-repointed';
+
+function requireUniqueManifestNeedle() {
+  const src = readFileSync(fileURLToPath(import.meta.url), 'utf8');
+  const needle = ['files: [', 'MANIFEST_EVENT_FILE],'].join('');
+  if (src.split(needle).length !== 2)
+    throw new Error('selftest mutation did not match exactly one live Event source manifest');
+}
+
+async function expectManifestRed(files, expect, name) {
+  requireUniqueManifestNeedle();
+  const orig = ACCEPTED_CORE.files;
+  if (JSON.stringify(orig) !== JSON.stringify([MANIFEST_EVENT_FILE]))
+    throw new Error(`${name}: live manifest is not the unique Types.lean entry`);
+  ACCEPTED_CORE.files = files;
+  try {
+    const r = await checkMachineCoverage(CORE);
+    const text = (r.reasons || []).join('\n');
+    if (r.ok || !expect.test(text))
+      throw new Error(`${name} did not RED as expected: ${text}`);
+  } finally {
+    ACCEPTED_CORE.files = orig;
+  }
+}
+
+let leanModulesReadyFor = null;
+function ensureLeanModules(lakeRepo) {
+  if (leanModulesReadyFor === lakeRepo) return;
+  if (!DRIVER_IMPORTS.length)
+    throw new Error('generated driver import list is empty');
+  execFileSync('nix',
+    ['develop', lakeRepo, '-c', 'lake', 'build', ...DRIVER_IMPORTS],
+    { cwd: join(lakeRepo, 'lean'), encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+  leanModulesReadyFor = lakeRepo;
 }
 
 async function removedAttemptCaseControl() {
@@ -655,15 +709,17 @@ function runGate(opts) {
   // for the derived three-state classification
   const driverPath = join(work, 'claim-gate-driver.lean');
   writeFileSync(driverPath, [
-    'import Reactivegas.Invariants',
-    'import KelGroups.Invariants',
-    'import KelGroups.Validate',
-    'import KelGroups.Vote.Invariants',
-    'import KelGroups.Vote.Validate',
+    ...DRIVER_IMPORTS.map(m => 'import ' + m),
     '',
     '-- generated by economics-simulator-claim-gate.mjs from the embedded manifest',
     ...ex.cited.flatMap(d => [`#check @${d}`, `#print axioms ${d}`]), ''].join('\n'));
   let out;
+  try { ensureLeanModules(lakeRepo); }
+  catch (e) {
+    const all = String(e.stdout || '') + '\n' + String(e.stderr || '');
+    return { ok: false, reasons: ['bootstrap Lean modules for generated driver failed: ' +
+      all.slice(-400)] };
+  }
   try {
     out = execFileSync('nix',
       ['develop', lakeRepo, '-c', 'lake', 'env', 'lean', driverPath],
@@ -713,13 +769,6 @@ function runGate(opts) {
 async function selftest(work) {
   const doc = readFileSync(HTML, 'utf8');
 
-  // run production FIRST: GREEN is required, and its fresh derivation is the
-  // material for the derived-flip control (nothing hardcoded)
-  const green = runGate({ work });
-  if (!green.ok) {
-    console.error('SELFTEST RED: il gate di produzione non torna GREEN:\n' + green.reasons.join('\n'));
-    return 1;
-  }
   const mc = await checkMachineCoverage(CORE);
   if (!mc.ok) {
     console.error('SELFTEST RED: copertura macchina non torna GREEN:\n' + mc.reasons.join('\n'));
@@ -728,11 +777,33 @@ async function selftest(work) {
   try {
     await removedAttemptCaseControl();
     stalePinSelftest();
+    await expectManifestRed([],
+      /Event source manifest is not a unique derivation file: \[\]/,
+      'manifest-removed');
+    await expectManifestRed(
+      [MANIFEST_EVENT_FILE, 'lean/Reactivegas/Step.lean'],
+      /Event source manifest is not a unique derivation file: \[lean\/Reactivegas\/Types.lean,lean\/Reactivegas\/Step.lean\]/,
+      'manifest-ambiguous');
+    await expectManifestRed(['lean/Reactivegas/Step.lean'],
+      /pinned Lean Event declaration not found/,
+      'manifest-repointed');
   } catch (e) {
     console.error('SELFTEST RED: controllo macchina: ' + e.message);
     return 1;
   }
-  console.log('machine-controls=removed-attempt-case,stale-event-pin');
+  console.log('machine-controls=' + MACHINE_CONTROLS);
+  if (process.env.RG_CLAIM_GATE_JS_ONLY === '1') {
+    console.log('selftest GREEN (js-only): machine-controls=' + MACHINE_CONTROLS);
+    return 0;
+  }
+
+  // production GREEN is required, and its fresh derivation is the
+  // material for the derived-flip control (nothing hardcoded)
+  const green = runGate({ work });
+  if (!green.ok) {
+    console.error('SELFTEST RED: il gate di produzione non torna GREEN:\n' + green.reasons.join('\n'));
+    return 1;
+  }
   const sorried = Object.entries(green.axioms).filter(([, s]) => s === 'enunciato').map(([d]) => d);
   if (!sorried.length) {
     console.error('SELFTEST RED: nessuna dichiarazione enunciata derivata — il controllo del ' +
@@ -945,7 +1016,7 @@ async function selftest(work) {
   console.log(`selftest GREEN: ${controls.length} controlli negativi RED per il motivo atteso; ` +
     `produzione GREEN (${green.rows} righe, ${green.cited} citazioni, ` +
     `${green.enun} enunciate, sha ${green.sha.slice(0, 12)}…); ` +
-    `machine-controls=removed-attempt-case,stale-event-pin`);
+    `machine-controls=${MACHINE_CONTROLS}`);
   return 0;
 }
 
