@@ -805,6 +805,18 @@ let flow = null;         // { tag, params, steps, xy }
 const $ = id => document.getElementById(id);
 const esc = x => String(x).replace(/[&<>"']/g,
   ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+function eur(n) {
+  const v = Number(n);
+  if (!Number.isFinite(v)) return '— €';
+  return (v < 0 ? '−' : '') + String(Math.abs(v)) + ' €';
+}
+function signedEur(n) {
+  const v = Number(n);
+  if (!Number.isFinite(v)) return '— €';
+  if (v > 0) return '+' + String(v) + ' €';
+  if (v < 0) return '−' + String(Math.abs(v)) + ' €';
+  return '0 €';
+}
 
 /* --- Event metadata: machine provenance for task flows ------------------- */
 
@@ -862,13 +874,13 @@ function descr(tag, a) {
     case 'openPurchase': return `${nm(a.author)} apre l'acquisto «${lbl(a.c)}»`;
     case 'grantPermission': return `«${lbl(a.c)}»: assenso del gruppo — esito esterno`;
     case 'denyPermission': return `«${lbl(a.c)}»: acquisto negato — esito esterno`;
-    case 'deposit': return `${nm(a.author)} accredita ${a.v} a ${nm(a.user)}`;
-    case 'withdraw': return `${nm(a.author)} consegna un prelievo di ${a.v} a ${nm(a.user)}`;
-    case 'transferCassa': return `${nm(a.author)} riceve ${a.v} dalla cassa di ${nm(a.from_)}`;
-    case 'pledge': return `${nm(a.author)} registra l'impegno di ${nm(a.user)}: ${a.v} su «${lbl(a.c)}»`;
+    case 'deposit': return `${nm(a.author)} accredita ${eur(a.v)} a ${nm(a.user)}`;
+    case 'withdraw': return `${nm(a.author)} consegna un prelievo di ${eur(a.v)} a ${nm(a.user)}`;
+    case 'transferCassa': return `${nm(a.author)} riceve ${eur(a.v)} dalla cassa di ${nm(a.from_)}`;
+    case 'pledge': return `${nm(a.author)} registra l'impegno di ${nm(a.user)}: ${eur(a.v)} su «${lbl(a.c)}»`;
     case 'acceptPledge': return `${nm(a.author)} accetta l'impegno di ${nm(a.user)} («${lbl(a.c)}»)`;
     case 'refusePledge': return `${nm(a.author)} rifiuta l'impegno di ${nm(a.user)} («${lbl(a.c)}»)`;
-    case 'correctPledge': return `${nm(a.author)} corregge l'impegno di ${nm(a.user)} a ${a.v} («${lbl(a.c)}»)`;
+    case 'correctPledge': return `${nm(a.author)} corregge l'impegno di ${nm(a.user)} a ${eur(a.v)} («${lbl(a.c)}»)`;
     case 'closePurchase': return `${nm(a.author)} chiude «${lbl(a.c)}»`;
     case 'failPurchase': return `${nm(a.author)} fallisce «${lbl(a.c)}»`;
   }
@@ -2844,12 +2856,12 @@ function chipsFor(role) {
     });
     case 'targetResp': return state.responsabili.map(person);
     case 'from': return state.responsabili.map(u => {
-      const ch = { id: u, label: `★ ${nm(u)} · cassa ${bal(state.casse, u)}` };
+      const ch = { id: u, label: `★ ${nm(u)} · cassa ${eur(bal(state.casse, u))}` };
       if (p.author === u) ch.dis = 'a ≠ f';
       return ch;
     });
     case 'coll': return state.collections.map(c => {
-      const ch = { id: c.id, label: `«${lbl(c.id)}» · ${escrowOf(c)}` };
+      const ch = { id: c.id, label: `«${lbl(c.id)}» · ${eur(escrowOf(c))}` };
       if (tag === 'pledge' && p.user !== undefined && inCol(c, p.user)) ch.dis = 'L8';
       return ch;
     });
@@ -2869,19 +2881,19 @@ function amountSpec(tag, p) {
       return { min: 0, max: TOYMAX, val: 50, what: `accredito: ${nm(p.user)} versa a ${nm(p.author)}` };
     case 'withdraw': {
       const b = Math.max(0, bal(state.conti, p.user));
-      return { min: 0, max: b, val: Math.min(b, 20), what: `prelievo di ${nm(p.user)} (conto ${b})` };
+      return { min: 0, max: b, val: Math.min(b, 20), what: `prelievo di ${nm(p.user)} (conto ${eur(b)})` };
     }
     case 'transferCassa':
       return { min: 1, max: TOYMAX, val: 50, what: `cassa ${nm(p.from_)} → cassa ${nm(p.author)}` };
     case 'pledge': {
       const b = bal(state.conti, p.user);
-      return { min: 1, max: b, val: Math.min(b, 20), what: `impegno di ${nm(p.user)} su «${lbl(p.c)}» (conto ${b})` };
+      return { min: 1, max: b, val: Math.min(b, 20), what: `impegno di ${nm(p.user)} su «${lbl(p.c)}» (conto ${eur(b)})` };
     }
     case 'correctPledge': {
       const col = state.collections.find(x => x.id === p.c);
       const cur = (col.accepted.find(q => q.user === p.user) || { amount: 0 }).amount;
       const mx = cur + Math.max(0, bal(state.conti, p.user));
-      return { min: 0, max: mx, val: cur, what: `impegno di ${nm(p.user)}: ora ${cur}` };
+      return { min: 0, max: mx, val: cur, what: `impegno di ${nm(p.user)}: ora ${eur(cur)}` };
     }
   }
   return null;
@@ -3008,11 +3020,12 @@ function openAmountPop() {
     <div class="tiny">${esc(sp.what)}</div>
     ${sp.max === TOYMAX ? `<div class="tiny">massimo del toy, non della macchina
       <span class="npvbadge" data-claims="toy-cap">NON PROVATO</span></div>` : ''}
-    <div class="ar"><span class="mono">${sp.min}</span>
+    <div class="ar"><span class="mono">${esc(eur(sp.min))}</span>
       <input id="am-r" type="range" min="${sp.min}" max="${sp.max}" step="1" value="${sp.val}">
-      <span class="mono">${sp.max}</span></div>
+      <span class="mono">${esc(eur(sp.max))}</span></div>
     <div class="ar2"><input id="am-n" type="number" min="${sp.min}" max="${sp.max}" step="1"
         inputmode="numeric" value="${sp.val}">
+      <span class="tiny">€</span>
       <button type="button" class="primary" id="am-ok">OK</button></div>`;
   popAt(flow.xy[0], flow.xy[1], html);
   const r = $('am-r'), n = $('am-n'), ok = $('am-ok');
@@ -3331,12 +3344,12 @@ function drawScene() {
     const st = c.pending.length ? `${c.pending.length} pend.` : (c.permitted ? 'L2 ✓' : 'aperto');
     parts.push(`<g class="pileg" data-obj="pile" data-id="${c.id}" data-key="pile:${c.id}"
       role="button" tabindex="0"
-      aria-label="acquisto ${esc(lbl(c.id))}: impegni ${escrowOf(c)} — trascina sull'anello"
+      aria-label="acquisto ${esc(lbl(c.id))}: impegni ${esc(eur(escrowOf(c)))} — trascina sull'anello"
       transform="translate(${x},${y})">
       <title>trascina sull'anello</title>
       <circle class="pc" r="${rr}"/>
       <text class="plbl" y="-12">«${esc(lbl(c.id))}»</text>
-      <text class="pamt" y="4">${escrowOf(c)}</text>
+      <text class="pamt" y="4">${esc(eur(escrowOf(c)))}</text>
       <text class="pmeta" y="17">${st} · ${esc(nm(c.referente))}</text>
     </g>`);
   });
@@ -3355,19 +3368,19 @@ function drawScene() {
     const cv = bal(state.conti, u);
     const cp = layout['conto:' + u];
     parts.push(`<g class="chipg" data-obj="conto" data-id="${u}" data-key="conto:${u}"
-      role="button" tabindex="0" aria-label="conto di ${esc(nm(u))}: ${cv}"
+      role="button" tabindex="0" aria-label="conto di ${esc(nm(u))}: ${esc(eur(cv))}"
       transform="translate(${cp.x},${cp.y})">
-      <rect x="-36" y="-11" width="72" height="22" rx="6"/>
-      <text y="4">conto ${cv}</text>
+      <rect x="-44" y="-11" width="88" height="22" rx="6"/>
+      <text y="4">conto ${esc(eur(cv))}</text>
     </g>`);
     if (resp(u)) {
       const kv = bal(state.casse, u);
       const kp = layout['cassa:' + u];
       parts.push(`<g class="cassag" data-obj="cassa" data-id="${u}" data-key="cassa:${u}"
-        role="button" tabindex="0" aria-label="cassa di ${esc(nm(u))}: ${kv}"
+        role="button" tabindex="0" aria-label="cassa di ${esc(nm(u))}: ${esc(eur(kv))}"
         transform="translate(${kp.x},${kp.y})">
-        <rect x="-36" y="-11" width="72" height="22" rx="6"/>
-        <text y="4">cassa ${kv}</text>
+        <rect x="-44" y="-11" width="88" height="22" rx="6"/>
+        <text y="4">cassa ${esc(eur(kv))}</text>
       </g>`);
     }
   });
@@ -3407,7 +3420,7 @@ function renderPerson() {
     </div>
     ${rc.length ? `<div class="sect">referente di</div>
       <div class="tasks">${rc.map(c =>
-        `<button type="button" class="linkchip" data-goto-coll="${c.id}">«${esc(lbl(c.id))}» · ${escrowOf(c)}</button>`).join('')}
+        `<button type="button" class="linkchip" data-goto-coll="${c.id}">«${esc(lbl(c.id))}» · ${esc(eur(escrowOf(c)))}</button>`).join('')}
       </div>
       <div class="tiny">il cappello referente si indossa dentro l’acquisto</div>` : ''}
   </div>`;
@@ -3423,7 +3436,7 @@ function renderPerson() {
   if (hat === 'cassiere' && isR) {
     body = `<div class="hatbox" id="hat-cassiere">
       <div class="money cassa" id="card-cassa"><span class="k">cassa</span>
-        <span class="v">${bal(state.casse, u)}</span></div>
+        <span class="v">${esc(eur(bal(state.casse, u)))}</span></div>
       <div class="sect">compiti del cassiere</div>
       <div class="tasks">
         ${taskBtn('deposit', { author: u }, { label: 'Incassa un accredito' })}
@@ -3436,7 +3449,7 @@ function renderPerson() {
     const pls = pledgesOf(u);
     body = `<div class="hatbox" id="hat-member">
       <div class="money" id="card-conto"><span class="k">conto</span>
-        <span class="v">${bal(state.conti, u)}</span></div>
+        <span class="v">${esc(eur(bal(state.conti, u)))}</span></div>
       <div class="sect">compiti</div>
       <div class="tasks">
         ${taskBtn('deposit', { user: u }, { label: 'Versa sul conto (accredito)' })}
@@ -3447,7 +3460,7 @@ function renderPerson() {
       ${pls.length ? `<div class="rows">${pls.map(p =>
         `<button type="button" class="row" data-pledge-c="${p.c}" data-pledge-u="${u}">
           «${esc(lbl(p.c))}» <span class="stag ${p.st === 'pendente' ? 'pend' : 'acc'}">${p.st}</span>
-          <span class="amt">${p.amount}</span></button>`).join('')}</div>`
+          <span class="amt">${esc(eur(p.amount))}</span></button>`).join('')}</div>`
         : '<p class="empty">nessun impegno aperto</p>'}
       <div class="sect">movimenti recenti</div>
       ${recentFor(u)}
@@ -3474,7 +3487,7 @@ function renderCollection() {
   const rows = (list, st) => list.map(p =>
     `<button type="button" class="row" data-pledge-c="${c}" data-pledge-u="${p.user}">
       ${esc(nm(p.user))} <span class="stag ${st === 'pendente' ? 'pend' : 'acc'}">${st}</span>
-      <span class="amt">${p.amount}</span></button>`).join('');
+      <span class="amt">${esc(eur(p.amount))}</span></button>`).join('');
 
   const head = `<div class="card"><div class="vhead">
       <div><div class="who">«${esc(lbl(c))}»</div>
@@ -3483,7 +3496,7 @@ function renderCollection() {
         title="${col.permitted ? 'permesso concesso da esito esterno (voto non modellato)' : 'il gruppo non ha ancora deciso'}">
         permesso: ${col.permitted ? 'sì ⇣' : 'no'}</span>
       <span class="money" style="padding:3px 10px"><span class="k">impegni</span>
-        <span class="v" style="font-size:1rem">${escrowOf(col)}</span></span>
+        <span class="v" style="font-size:1rem">${esc(eur(escrowOf(col)))}</span></span>
       <button type="button" class="linkchip" data-goto-person="${ref}">referente: ${esc(nm(ref))} ★</button>
     </div>
     <div class="sect">partecipa</div>
@@ -3499,7 +3512,7 @@ function renderCollection() {
       <span class="tiny" style="margin-left:auto">esiste solo dentro questo acquisto</span></h3>
     ${col.pending.length ? `<div class="rows">${col.pending.map(p =>
       `<div class="row" style="cursor:default">${esc(nm(p.user))}
-        <span class="stag pend">pendente</span><span class="amt">${p.amount}</span>
+        <span class="stag pend">pendente</span><span class="amt">${esc(eur(p.amount))}</span>
         <span class="inline-acts">
           <button type="button" class="mini" data-act="accept" data-u="${p.user}" title=".acceptPledge">accetta</button>
           <button type="button" class="mini no" data-act="refuse" data-u="${p.user}" title=".refusePledge">rifiuta</button>
@@ -3507,7 +3520,7 @@ function renderCollection() {
       : '<p class="empty">nessun impegno pendente da decidere</p>'}
     ${col.accepted.length ? `<div class="rows">${col.accepted.map(p =>
       `<div class="row" style="cursor:default">${esc(nm(p.user))}
-        <span class="stag acc">accettato</span><span class="amt">${p.amount}</span>
+        <span class="stag acc">accettato</span><span class="amt">${esc(eur(p.amount))}</span>
         <span class="inline-acts">
           <button type="button" class="mini" data-act="correct" data-u="${p.user}" title=".correctPledge">correggi</button>
         </span></div>`).join('')}</div>` : ''}
@@ -3606,7 +3619,7 @@ function renderPledge() {
         <div class="sub">su «${esc(lbl(c))}» · <span class="mono">.pledge</span></div></div>
       <span class="stag ${pend ? 'pend' : 'acc'}">${st}</span>
       <span class="money" style="padding:3px 10px"><span class="k">importo</span>
-        <span class="v" style="font-size:1rem">${p.amount}</span></span>
+        <span class="v" style="font-size:1rem">${esc(eur(p.amount))}</span></span>
     </div>
     <div class="tasks" style="margin-top:8px">
       <button type="button" class="linkchip" data-goto-person="${pu}">vai a ${esc(nm(pu))}</button>
@@ -3717,9 +3730,9 @@ function renderDone() {
   box.innerHTML = completed.map(d => `
     <div class="done">
       <div class="dh">«${esc(d.label)}» <small style="color:var(--muted)">ref. ${esc(nm(d.referente))}</small>
-        <span class="tot">${d.total}</span></div>
+        <span class="tot">${esc(eur(d.total))}</span></div>
       <ul>${d.contributors.length
-        ? d.contributors.map(p => `<li>${esc(nm(p.user))} · ${p.amount}</li>`).join('')
+        ? d.contributors.map(p => `<li>${esc(nm(p.user))} · ${esc(eur(p.amount))}</li>`).join('')
         : '<li class="empty">nessun contributo</li>'}</ul>
     </div>`).join('');
 }
@@ -3799,9 +3812,9 @@ function renderInvChip() {
 function openInvPop(x, y) {
   const { sc, sn, se, v } = invSnapshot();
   const moneyChips = [
-    ...state.users.map(u => `<button type="button" class="chip" data-cf="conto:${u}">conto ${esc(nm(u))} · ${bal(state.conti, u)}</button>`),
-    ...state.responsabili.map(u => `<button type="button" class="chip" data-cf="cassa:${u}">cassa ${esc(nm(u))} · ${bal(state.casse, u)}</button>`),
-    ...state.collections.map(c => `<button type="button" class="chip" data-cf="escrow:${c.id}">impegni «${esc(lbl(c.id))}» · ${escrowOf(c)}</button>`),
+    ...state.users.map(u => `<button type="button" class="chip" data-cf="conto:${u}">conto ${esc(nm(u))} · ${esc(eur(bal(state.conti, u)))}</button>`),
+    ...state.responsabili.map(u => `<button type="button" class="chip" data-cf="cassa:${u}">cassa ${esc(nm(u))} · ${esc(eur(bal(state.casse, u)))}</button>`),
+    ...state.collections.map(c => `<button type="button" class="chip" data-cf="escrow:${c.id}">impegni «${esc(lbl(c.id))}» · ${esc(eur(escrowOf(c)))}</button>`),
   ].join('');
   const html = `<div class="pt">bilancio della macchina
       <button type="button" class="xbtn2" data-x="1">✕</button></div>
@@ -3894,9 +3907,9 @@ function openCfPop(kind, id, x, y) {
   const what = kind === 'escrow' ? `impegni «${lbl(id)}»` : `${kind} di ${nm(id)}`;
   const html = `<div class="pt">contro-fattuale — ${esc(what)}
       <button type="button" class="xbtn2" data-x="1">✕</button></div>
-    <div class="ar"><span class="mono">−100</span>
+    <div class="ar"><span class="mono">−100 €</span>
       <input id="cf-r" type="range" min="-100" max="100" step="1" value="10">
-      <span class="mono">100</span></div>
+      <span class="mono">100 €</span></div>
     <div class="ar2"><input id="cf-n" type="number" min="-100" max="100" step="1"
       inputmode="numeric" value="10"></div>
     <div class="cfline" id="cf-line"></div>
@@ -4014,7 +4027,7 @@ function playFx(tag, a, preState, pre) {
     case 'removeResponsabile': {
       floatTx(`member:${a.target}`, '★✕', '#b3261e', 0, pre);
       const [, ps] = stripCollections(a.target, preState.collections);
-      ps.forEach((p, i) => floatTx(`conto:${p.user}`, `+${p.amount}`, '#1c7c43', 150 + i * 130, pre));
+      ps.forEach((p, i) => floatTx(`conto:${p.user}`, signedEur(p.amount), '#1c7c43', 150 + i * 130, pre));
       break;
     }
     case 'openPurchase': flashKeys([`pile:${a.c}`]); break;
@@ -4022,53 +4035,53 @@ function playFx(tag, a, preState, pre) {
     case 'denyPermission': {
       const col = preCol(a.c);
       [...col.accepted, ...col.pending].forEach((p, i) =>
-        fly(`pile:${a.c}`, `conto:${p.user}`, `+${p.amount}`, i * 140, pre));
+        fly(`pile:${a.c}`, `conto:${p.user}`, signedEur(p.amount), i * 140, pre));
       break;
     }
     case 'deposit':
-      fly(`member:${a.user}`, `cassa:${a.author}`, String(a.v));
-      floatTx(`conto:${a.user}`, `+${a.v}`, '#1c7c43', 250);
+      fly(`member:${a.user}`, `cassa:${a.author}`, eur(a.v));
+      floatTx(`conto:${a.user}`, signedEur(a.v), '#1c7c43', 250);
       flashKeys([`conto:${a.user}`, `cassa:${a.author}`]);
       break;
     case 'withdraw':
-      fly(`cassa:${a.author}`, `member:${a.user}`, String(a.v));
-      floatTx(`conto:${a.user}`, `−${a.v}`, '#b3261e', 250);
+      fly(`cassa:${a.author}`, `member:${a.user}`, eur(a.v));
+      floatTx(`conto:${a.user}`, signedEur(-a.v), '#b3261e', 250);
       flashKeys([`conto:${a.user}`, `cassa:${a.author}`]);
       break;
     case 'transferCassa':
-      fly(`cassa:${a.from_}`, `cassa:${a.author}`, String(a.v));
+      fly(`cassa:${a.from_}`, `cassa:${a.author}`, eur(a.v));
       flashKeys([`cassa:${a.from_}`, `cassa:${a.author}`]);
       break;
     case 'pledge':
-      fly(`conto:${a.user}`, `pile:${a.c}`, String(a.v));
+      fly(`conto:${a.user}`, `pile:${a.c}`, eur(a.v));
       flashKeys([`conto:${a.user}`, `pile:${a.c}`]);
       break;
     case 'acceptPledge':
       floatTx(`pile:${a.c}`, `✓ ${nm(a.user)}`, '#1c7c43'); flashKeys([`pile:${a.c}`]); break;
     case 'refusePledge': {
       const sp = splitUser(a.user, preCol(a.c).pending);
-      fly(`pile:${a.c}`, `conto:${a.user}`, `+${sp ? sp[0] : ''}`, 0, pre);
+      fly(`pile:${a.c}`, `conto:${a.user}`, sp ? signedEur(sp[0]) : '', 0, pre);
       break;
     }
     case 'correctPledge': {
       const sp = splitUser(a.user, preCol(a.c).accepted);
       const d = (sp ? sp[0] : 0) - a.v;
-      if (d > 0) fly(`pile:${a.c}`, `conto:${a.user}`, `+${d}`, 0, pre);
-      else if (d < 0) fly(`conto:${a.user}`, `pile:${a.c}`, String(-d), 0, pre);
+      if (d > 0) fly(`pile:${a.c}`, `conto:${a.user}`, signedEur(d), 0, pre);
+      else if (d < 0) fly(`conto:${a.user}`, `pile:${a.c}`, eur(-d), 0, pre);
       else floatTx(`pile:${a.c}`, '=', '#5b6b7b', 0, pre);
       break;
     }
     case 'closePurchase': {
       const tot = sumPledges(preCol(a.c).accepted);
-      fly(`pile:${a.c}`, 'world', String(tot), 0, pre);
-      fly(`cassa:${preCol(a.c).referente}`, 'world', String(tot), 160, pre);
+      fly(`pile:${a.c}`, 'world', eur(tot), 0, pre);
+      fly(`cassa:${preCol(a.c).referente}`, 'world', eur(tot), 160, pre);
       flashKeys([`cassa:${preCol(a.c).referente}`]);
       break;
     }
     case 'failPurchase': {
       const col = preCol(a.c);
       [...col.accepted, ...col.pending].forEach((p, i) =>
-        fly(`pile:${a.c}`, `conto:${p.user}`, `+${p.amount}`, i * 140, pre));
+        fly(`pile:${a.c}`, `conto:${p.user}`, signedEur(p.amount), i * 140, pre));
       break;
     }
   }
@@ -4576,7 +4589,8 @@ async function selftest() {
   await click('#hat-cassiere [data-task="deposit"]');
   await click('#pop .chip[data-id="1"]');
   await amount(100, 500);
-  expect(document.getElementById('card-cassa').innerText.includes('100'),
+  expect(document.getElementById('card-cassa').innerText.includes('100')
+    && document.getElementById('card-cassa').innerText.includes('€'),
     'cassa non aggiornata');
   invOk();
 
