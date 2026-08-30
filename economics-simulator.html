@@ -2174,24 +2174,62 @@ function runVoteEvent(signer, ev) {
 const BG_ADMIN_ROLES = [{ adminRole: { admin: 'publicAdmin' } }];
 const BG_APP_ROLES = [{ appRole: { name: 'user' } }];
 
-function descrBase(signer, ev, enacted) {
-  let base;
-  if ('propose' in ev) {
-    const p = ev.propose.proposal, k = bgPropKind(p);
-    if (k === 'introduceMember')
-      base = p.introduceMember.roles.some(r => 'adminRole' in r)
-        ? `${kgName(signer)} apre le decisioni del gruppo`
-        : `${kgName(signer)} propone di ammettere ${kgName(p.introduceMember.key)} tra chi decide`;
-    else if (k === 'removeMember')
-      base = `${kgName(signer)} propone di togliere ${kgName(p.removeMember.key)} da chi decide`;
-    else
-      base = p.changeRoles.roles.some(r => 'adminRole' in r)
-        ? `${kgName(signer)} propone di eleggere ${kgName(p.changeRoles.key)} responsabile`
-        : `${kgName(signer)} propone di revocare ${kgName(p.changeRoles.key)} da responsabile`;
-  } else {
-    base = `${kgName(signer)} dice sì alla proposta`;
+function descrProposal(p) {
+  if (!p) return 'una proposta';
+  const k = bgPropKind(p);
+  if (k === 'introduceMember') {
+    const name = kgName(p.introduceMember.key);
+    return p.introduceMember.roles.some(r => 'adminRole' in r)
+      ? 'aprire le decisioni del gruppo'
+      : `ammettere ${name} tra chi decide`;
   }
-  return base + (enacted ? ' — deciso' : '');
+  if (k === 'removeMember')
+    return `togliere ${kgName(p.removeMember.key)} da chi decide`;
+  const name = kgName(p.changeRoles.key);
+  return p.changeRoles.roles.some(r => 'adminRole' in r)
+    ? `eleggere ${name} responsabile`
+    : `revocare ${name} da responsabile`;
+}
+function proposalOf(ev, det, gs) {
+  if (ev && 'propose' in ev) return ev.propose.proposal;
+  if (det && det.enactment && det.enactment.pending)
+    return det.enactment.pending.proposal;
+  const pid = ev && ev.approve && ev.approve.proposalId;
+  if (!pid || !gs || !gs.pendingProposals) return null;
+  const hit = gs.pendingProposals.find(([id]) => id === pid);
+  return hit ? hit[1].proposal : null;
+}
+function flowBase(p, kind, enacted) {
+  if (!enacted)
+    return kind === 'propose'
+      ? 'in attesa: chi propone ha già detto sì; servono gli altri'
+      : 'sì registrato; non si conta due volte';
+  if (!p) return 'i responsabili hanno deciso. I conti non cambiano.';
+  const k = bgPropKind(p);
+  if (k === 'introduceMember') {
+    const name = kgName(p.introduceMember.key);
+    return p.introduceMember.roles.some(r => 'adminRole' in r)
+      ? 'le decisioni del gruppo sono aperte. I conti non cambiano.'
+      : `${name} è tra chi decide. I conti non cambiano.`;
+  }
+  if (k === 'removeMember')
+    return `${kgName(p.removeMember.key)} non è più tra chi decide. I conti non cambiano.`;
+  const name = kgName(p.changeRoles.key);
+  return p.changeRoles.roles.some(r => 'adminRole' in r)
+    ? `${name} è responsabile.`
+    : `${name} non è più responsabile.`;
+}
+function descrBase(signer, ev, enacted, proposal) {
+  const who = kgName(signer);
+  const p = ('propose' in ev) ? ev.propose.proposal : proposal;
+  if ('propose' in ev) {
+    const k = bgPropKind(p);
+    if (k === 'introduceMember' && p.introduceMember.roles.some(r => 'adminRole' in r))
+      return `${who} apre le decisioni del gruppo` + (enacted ? ' — deciso' : '');
+    return `${who} propone di ${descrProposal(p)}` + (enacted ? ' — deciso' : '');
+  }
+  const what = descrProposal(p);
+  return enacted ? `${who} conferma: ${what}` : `${who} dice sì: ${what}`;
 }
 
 const BG_TAG_CLAIMS = {
@@ -2212,16 +2250,9 @@ function recordBaseApplied(signer, ev, det) {
   const enacted = !!det.enactment;
   const claims = [...BG_TAG_CLAIMS[kind],
     ...(enacted ? ['kg-threshold', 'kg-enact-effect', 'comp-base-threshold'] : [])];
-  const flow = enacted
-    ? `i responsabili hanno deciso` +
-      (bgProposalFaithful(det.enactment.pending.proposal)
-        ? ' · ora si aggiornano i ruoli nel gruppo'
-        : ' · ammissione tra chi decide, senza toccare i conti')
-    : (kind === 'propose'
-      ? 'in attesa: chi propone ha già detto sì; servono gli altri'
-      : 'sì registrato; non si conta due volte');
+  const p = proposalOf(ev, det, bg);
   history.unshift({ kind: 'acc', mk: 'bg', tag: kind,
-    descr: descrBase(signer, ev, enacted), flow, claims,
+    descr: descrBase(signer, ev, enacted, p), flow: flowBase(p, kind, enacted), claims,
     enacted, inv: invSnapshot() });
   invNote = `dopo una proposta sui responsabili ✓`;
 }
@@ -2232,7 +2263,7 @@ function runBaseEvent(signer, ev) {
   const verr = bgValidate(bg, signer, ev);
   if (verr) {
     history.unshift({ kind: 'rej', mk: 'bg', tag: 'base',
-      descr: descrBase(signer, ev, false),
+      descr: descrBase(signer, ev, false, proposalOf(ev, null, bg)),
       failed: [{ code: 'KelGroups.validateEvent = .error .' + verr,
         why: 'la proposta non è andata a buon fine: ' + verr, law: null }],
       ext: false, inv: invSnapshot() });
@@ -2525,7 +2556,8 @@ function presWhat() {
   if (pres.n.seq[i - 1] === 'b') {
     const st = pres.n.baseEnv.steps[bi];
     return descrBase(st.signer, st.event,
-      !!(st.result && st.result.tag === 'applied' && st.result.enacted));
+      !!(st.result && st.result.tag === 'applied' && st.result.enacted),
+      proposalOf(st.event, null, st.input));
   }
   const st = pres.n.kelEnv.steps[ki];
   return descrVote(st.signer, st.event,
@@ -3663,7 +3695,7 @@ function govCardHtml() {
   const bgAdmins = bg.members.filter(([, m]) => vtHasAdmin(m.roles)).map(([k]) => k);
   const bgPend = bg.pendingProposals.map(([pid, pp]) => {
     const missing = bgAdmins.filter(k => !pp.approvals.includes(k));
-    return `<div class="vq"><div class="qh">⚖ «${esc(pid)}»
+    return `<div class="vq"><div class="qh">⚖ ${esc(descrProposal(pp.proposal))}
         <span class="qs">assensi ${pp.approvals.length} / soglia ${bgMajority(bg)}</span></div>
       <div class="tiny">proposta di ${esc(kgName(pp.proposer))} (ha già detto sì)
         ${pkGlyph(['kg-proposer', 'kg-nodup'])}</div>
@@ -3674,8 +3706,12 @@ function govCardHtml() {
     </div>`;
   }).join('');
   const bgCreditTx = bgCredits.length
-    ? `<div class="tiny">delibere fedeli non ancora consumate: ${bgCredits.map(cr =>
-        `<span class="mono">«${esc(cr.pid)}»</span>`).join(' ')}
+    ? `<div class="tiny">da applicare: ${bgCredits.map(cr => {
+        const name = kgName(cr.key);
+        const what = cr.kind === 'electResponsabile' ? `eleggere ${name}`
+          : cr.kind === 'removeResponsabile' ? `revocare ${name}` : name;
+        return esc(what);
+      }).join(', ')}
         <span class="npvbadge" data-claims="join-vote-econ">PONTE NON PROVATO</span></div>` : '';
   const baseBody = `<div class="sect" style="margin-top:8px">Decisioni sui responsabili</div>
     <div class="tiny">chi decide: ${bg.members.length
@@ -4795,7 +4831,12 @@ async function selftest() {
   const pendQ = document.querySelector('#govcard [data-bgapprove]');
   expect(pendQ && document.querySelector('#govcard .vq .qs').innerText.includes('assensi 1'),
     'proposta pendente non mostrata con i suoi assensi');
-  await click('#govcard [data-bgapprove][data-bgsigner="anna"]');   // 2/2 → DELIBERATA
+  expect(!/entra:|esce:|ruoli:/.test(document.querySelector('#govcard .vq .qh').innerText),
+    'identificatore di proposta in chiaro');
+  await click('#govcard [data-bgapprove][data-bgsigner="anna"]');   // 2/2 → deciso
+  expect(history.filter(en => en.mk === 'bg').every(en =>
+    !/entra:|esce:|ruoli:|introduceMember|MAI evidenza|DELIBERATA «/.test((en.descr || '') + (en.flow || ''))),
+    'gergo di proposta nella storia');
   expect(!resp(2) && RG.bg.pendingProposals.length === 0,
     'la seconda approvazione non ha deliberato e applicato la revoca');
   const re = lastEntry();
