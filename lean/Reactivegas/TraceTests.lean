@@ -894,6 +894,46 @@ def checkBothResultShapesOccur : Bool :=
 def checkErasureOnCorpus : Bool :=
   seedCorpus.all (erasureCheck stepDetailed)
 
+
+/-! ## S62-B — gate-visible names for the production witnesses
+
+The frozen S62-B gate rows scan this file for these names. The checks
+themselves live in `Reactivegas.Invariants`, which `lake build` and `just ci`
+elaborate; this module is imported by nothing, so a check defined *only* here
+would be a source string the build never decides. These are aliases, and the
+theorems below are the kernel results transported from the built module. -/
+
+def checkAdminAdmissionReachable : Bool := Reactivegas.checkAdminAdmissionReachable
+def checkNonAdminAdmissionRefused : Bool := Reactivegas.checkNonAdminAdmissionRefused
+def checkComuneAdmissionRefused : Bool := Reactivegas.checkComuneAdmissionRefused
+def checkDirectAdmissionOnly : Bool := Reactivegas.checkDirectAdmissionOnly
+def checkMemberDepartureCleanup : Bool := Reactivegas.checkMemberDepartureCleanup
+def checkAdminDepartureCleanup : Bool := Reactivegas.checkAdminDepartureCleanup
+def checkRoleChangeReachable : Bool := Reactivegas.checkRoleChangeReachable
+def checkBaseCleanupReachable : Bool := Reactivegas.checkBaseCleanupReachable
+def checkBaseRecomputeReachable : Bool := Reactivegas.checkBaseRecomputeReachable
+def checkV3BaseReachable : Bool := Reactivegas.checkV3BaseReachable
+def checkSweepIdempotent : Bool := Reactivegas.checkSweepIdempotent
+def checkSweepIdempotentMutant : Bool := Reactivegas.checkSweepIdempotentMutant
+
+theorem base_departure_applies_cleanup : checkBaseCleanupReachable = true :=
+  Reactivegas.base_departure_applies_cleanup
+
+theorem base_change_can_close_without_ballot : checkV3BaseReachable = true :=
+  Reactivegas.base_change_can_close_without_ballot
+
+theorem direct_admission_only_holds : checkDirectAdmissionOnly = true :=
+  Reactivegas.direct_admission_only_holds
+
+theorem base_recompute_reachable_holds : checkBaseRecomputeReachable = true :=
+  Reactivegas.base_recompute_reachable_holds
+
+theorem sweep_idempotent_witness : checkSweepIdempotent = true :=
+  Reactivegas.sweep_idempotent_witness
+
+theorem sweep_idempotent_mutant_caught : checkSweepIdempotentMutant = true :=
+  Reactivegas.sweep_idempotent_mutant_caught
+
 /-! ## The check table
 
 Every row is discharged by the kernel below. The table is also what the report
@@ -925,7 +965,16 @@ def checks : List (String × Bool) :=
   , ("denyMixedPreEffect", checkDenyMixedPreEffect)
   , ("removeMixedControl", checkRemoveMixedControl)
   , ("denyMixedControl", checkDenyMixedControl)
-  , ("importGraph", checkImportGraph) ]
+  , ("importGraph", checkImportGraph)
+  , ("adminAdmissionReachable", checkAdminAdmissionReachable)
+  , ("nonAdminAdmissionRefused", checkNonAdminAdmissionRefused)
+  , ("comuneAdmissionRefused", checkComuneAdmissionRefused)
+  , ("directAdmissionOnly", checkDirectAdmissionOnly)
+  , ("baseCleanupReachable", checkBaseCleanupReachable)
+  , ("baseRecomputeReachable", checkBaseRecomputeReachable)
+  , ("v3BaseReachable", checkV3BaseReachable)
+  , ("sweepIdempotent", checkSweepIdempotent)
+  , ("sweepIdempotentMutant", checkSweepIdempotentMutant) ]
 
 def failing : List String := (checks.filter (fun c => !c.2)).map Prod.fst
 
@@ -1032,5 +1081,6 @@ theorem app_members_preservation_holds : checkAppMembersPreservation = true :=
 theorem app_members_preservation_mutant_caught :
     checkAppMembersPreservationMutant = true :=
   Reactivegas.app_members_preservation_mutant_caught
+
 
 end TraceTests

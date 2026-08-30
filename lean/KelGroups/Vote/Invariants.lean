@@ -1154,6 +1154,96 @@ theorem franchise_of_tallies (θ : Threshold) (events : List (Key × VoteEvent))
   · exact absurd h0 (by simp [tallyKeysOfState, emptyVoteState])
   · exact ⟨pre, qid, ballot, suffix, hev, hfr⟩
 
+
+/-! ### T6223 — a sealed recomputation cannot duplicate a closure
+
+Ratified reliance `INV-62-B-SWEEP-IS-IDEMPOTENT-ON-A-SWEPT-PAYLOAD`. The base
+hook sweeps every open question against the post-transition franchise. Two base
+changes in a row therefore sweep an already-swept payload, and a closure record
+is money-bearing state: a purchase-approval question that closed twice would
+appear twice in the append-only log.
+
+`sweepDuplicating` is the named mutant that makes the danger concrete: it
+appends the same records but forgets to remove the closed questions from the
+open set, so applying it twice writes every record twice.
+-/
+
+/-- A question the sweep leaves open contributes no closure record. -/
+theorem sweepStep_of_open (threshold : Threshold) (view : GroupView)
+    (entry : QuestionId × Question)
+    (h : verdictOf threshold view entry.2 = .open) :
+    sweepStep threshold view entry = none := by
+  unfold sweepStep
+  rw [h]
+
+/-- Nothing survives the filter with a closable verdict, so a swept open set
+produces no further records. -/
+theorem sweep_filterMap_of_swept (threshold : Threshold) (view : GroupView) :
+    ∀ l : List (QuestionId × Question),
+      (l.filter (fun entry => verdictOf threshold view entry.2 = .open)).filterMap
+          (sweepStep threshold view) = []
+  | [] => rfl
+  | entry :: rest => by
+    rw [List.filter_cons]
+    by_cases h : verdictOf threshold view entry.2 = .open
+    · simp only [h, decide_true, if_true, List.filterMap_cons,
+        sweepStep_of_open threshold view entry h]
+      exact sweep_filterMap_of_swept threshold view rest
+    · simp only [h, decide_false, if_false]
+      exact sweep_filterMap_of_swept threshold view rest
+
+/-- The same filter applied twice keeps exactly the same questions. -/
+theorem filter_open_idem (threshold : Threshold) (view : GroupView) :
+    ∀ l : List (QuestionId × Question),
+      (l.filter (fun entry => verdictOf threshold view entry.2 = .open)).filter
+          (fun entry => verdictOf threshold view entry.2 = .open)
+        = l.filter (fun entry => verdictOf threshold view entry.2 = .open)
+  | [] => rfl
+  | entry :: rest => by
+    rw [List.filter_cons]
+    by_cases h : verdictOf threshold view entry.2 = .open
+    · simp only [h, decide_true, if_true, List.filter_cons]
+      exact congrArg _ (filter_open_idem threshold view rest)
+    · simp only [h, decide_false, if_false]
+      exact filter_open_idem threshold view rest
+
+/-- **Sealed recomputation is idempotent.** Sweeping a payload that was already
+swept at the same threshold and canonical view returns it unchanged: no
+question is re-closed and no closure record is appended twice. -/
+theorem sweepClosures_idempotent (threshold : Threshold) (view : GroupView)
+    (gs : VoteState) :
+    sweepClosures threshold view (sweepClosures threshold view gs)
+      = sweepClosures threshold view gs := by
+  simp only [sweepClosures, filter_open_idem threshold view gs.openQuestions,
+    sweep_filterMap_of_swept threshold view gs.openQuestions, List.append_nil]
+
+/-- Named mutant of the production sweep: it writes the closure records but
+leaves the closed questions in the open set. Applied twice it duplicates every
+record, which is exactly what `sweepClosures_idempotent` forbids. -/
+def sweepDuplicating (threshold : Threshold) (view : GroupView) (gs : VoteState) :
+    VoteState :=
+  { gs with closed := gs.closed ++ gs.openQuestions.filterMap (sweepStep threshold view) }
+
+/-- The mutant is not idempotent whenever the sweep closes anything: the second
+application appends the same records again. This is the negative control that
+makes `sweepClosures_idempotent` a claim about the production definition rather
+than about an empty case. -/
+theorem sweepDuplicating_duplicates (threshold : Threshold) (view : GroupView)
+    (gs : VoteState)
+    (h : gs.openQuestions.filterMap (sweepStep threshold view) ≠ []) :
+    sweepDuplicating threshold view (sweepDuplicating threshold view gs)
+      ≠ sweepDuplicating threshold view gs := by
+  intro hcontra
+  apply h
+  have hlen := congrArg (fun v => v.closed.length) hcontra
+  simp only [sweepDuplicating, List.length_append] at hlen
+  cases hF : gs.openQuestions.filterMap (sweepStep threshold view) with
+  | nil => rfl
+  | cons a t =>
+    rw [hF] at hlen
+    simp only [List.length_cons] at hlen
+    omega
+
 end KelGroups.Vote
 
 /- Axiom evidence for the contractual theorem names; the frozen gate reads

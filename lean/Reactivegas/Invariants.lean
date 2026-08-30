@@ -1191,3 +1191,351 @@ theorem pledge_preserves_allUnique {s s' : State} {a u : KelGroups.Key} {c : Col
   · subst hc0
     exact uniquePledges_pend_cons habs (hun col (pullCollection_mem hpull))
   · exact hun c0 (pullCollection_sublist hpull c0 hc0)
+
+/-! ## S62-B — the one transition system, executed against production
+
+Every witness below runs the production root `Reactivegas.apply`. They live in
+a `lake`-built module on purpose: `Reactivegas/TraceTests.lean` is imported by
+nothing, so `lake build` and `just ci` never elaborate it, and a check that only
+appears there is a source string rather than a decided fact. `TraceTests`
+carries gate-visible aliases of these names.
+-/
+
+namespace Reactivegas
+
+/-- The threshold the S62-B witnesses are read at. Legacy `maggioranza`: three
+responsabili require two, two require one. That gap is what makes the V-3
+franchise-only closure observable. -/
+def s62bThreshold : KelGroups.Vote.Threshold := KelGroups.Vote.legacyThreshold
+
+def s62bAdmin : KelGroups.Role := .adminRole .publicAdmin
+
+def s62bMember (key : KelGroups.Key) (roles : List KelGroups.Role) :
+    KelGroups.Key × KelGroups.Member :=
+  (key, { key, email := key ++ "@s62b", roles })
+
+def s62bGroup (members : List (KelGroups.Key × KelGroups.Member))
+    (payload : State) : KelGroups.GroupState State :=
+  { members, pendingProposals := [], pendingBase := [], appFold := payload }
+
+def s62bRun (gs : KelGroups.GroupState State) (signer : KelGroups.Key)
+    (event : KelGroups.IntegratedEvent Proposal AppEvent) :
+    Except ProductionError (KelGroups.IntegratedResult State) :=
+  Reactivegas.apply s62bThreshold probeAuth gs signer event
+
+def s62bView (gs : KelGroups.GroupState State) : KelGroups.GroupView :=
+  KelGroups.groupView gs
+
+/-! ### R62-06 — direct admission -/
+
+def admissionGroup : KelGroups.GroupState State :=
+  s62bGroup [s62bMember "alice" [s62bAdmin]] State.empty
+
+def mixedGroup : KelGroups.GroupState State :=
+  s62bGroup [s62bMember "alice" [s62bAdmin], s62bMember "bob" []] State.empty
+
+def admitCarol : KelGroups.IntegratedEvent Proposal AppEvent :=
+  .direct (.admitMember "carol" "carol@s62b" [])
+
+/-- A current admin admits a valid absent non-reserved key, the transition
+reports exactly that base change, and the economic payload does not move. -/
+def checkAdminAdmissionReachable : Bool :=
+  match s62bRun admissionGroup "alice" admitCarol with
+  | .ok result =>
+      KelGroups.GroupView.isMember "carol" (s62bView result.state)
+        && !(KelGroups.GroupView.isAdmin "carol" (s62bView result.state))
+        && (result.change == some (KelGroups.BaseChange.memberAdmitted "carol"))
+        && (result.state.appFold == admissionGroup.appFold)
+        && (result.state.members.length == admissionGroup.members.length + 1)
+  | .error _ => false
+
+/-- A member who is not an admin is refused by *exact* identity, and folding
+that signed event advances nothing. -/
+def checkNonAdminAdmissionRefused : Bool :=
+  (match s62bRun mixedGroup "bob" admitCarol with
+   | .error (.integrated (.validation (.notAnAdmin key))) => key == "bob"
+   | _ => false)
+    && (KelGroups.foldIntegrated (integration s62bThreshold probeAuth)
+          mixedGroup [("bob", admitCarol)] == mixedGroup)
+
+/-- The reserved comune key is refused with its own identity, ahead of the
+duplicate check, so "reserved" is distinguishable from "already a member". -/
+def checkComuneAdmissionRefused : Bool :=
+  match s62bRun admissionGroup "alice"
+      (.direct (.admitMember comuneId "comune@s62b" [s62bAdmin])) with
+  | .error (.integrated (.validation (.reservedKey key))) => key == comuneId
+  | _ => false
+
+/-- An existing member cannot be admitted twice. -/
+def checkDuplicateAdmissionRefused : Bool :=
+  match s62bRun mixedGroup "alice" (.direct (.admitMember "bob" "bob@s62b" [])) with
+  | .error (.integrated (.validation (.memberAlreadyExists key))) => key == "bob"
+  | _ => false
+
+/-- Every economic app event, minus `backdonate` whose authorization boundary
+is still `sorry`. -/
+def s62bAppEvents : List AppEvent :=
+  [ .openPurchase 1, .grantPermission 1, .denyPermission 1
+  , .deposit "bob" 10, .withdraw "bob" 10, .transferCassa "alice" 10
+  , .donate 10, .pledge "bob" 1 10, .acceptPledge "bob" 1
+  , .refusePledge "bob" 1, .correctPledge "bob" 1 10
+  , .closePurchase 1, .failPurchase 1 ]
+
+/-- `INV-62-DIRECT-ONLY` as an executed statement: no app event moves the
+members relation or reports a base change, the direct command is the one route
+that inserts, and it refuses non-admins, the reserved key and duplicates. The
+last conjunct is the non-vacuity control — at least one app event really did
+run on this fixture, so the first conjunct is not green by universal
+refusal. -/
+def checkDirectAdmissionOnly : Bool :=
+  s62bAppEvents.all (fun e =>
+      match s62bRun mixedGroup "alice" (.app e) with
+      | .ok result =>
+          (result.state.members == mixedGroup.members) && (result.change == none)
+      | .error _ => true)
+    && checkAdminAdmissionReachable
+    && checkNonAdminAdmissionRefused
+    && checkComuneAdmissionRefused
+    && checkDuplicateAdmissionRefused
+    && s62bAppEvents.any (fun e =>
+        match s62bRun mixedGroup "alice" (.app e) with
+        | .ok _ => true
+        | .error _ => false)
+
+/-! ### R62-09, R62-10 — sealed cleanup on a real base transition -/
+
+def departureGroup : KelGroups.GroupState State :=
+  s62bGroup [s62bMember "alice" [s62bAdmin], s62bMember "bob" []]
+    { State.empty with conti := [("bob", 40), (comuneId, 0)] }
+
+def removeBob : KelGroups.IntegratedEvent Proposal AppEvent :=
+  .propose (Proposal.removeMember "bob")
+
+/-- Departure absorbs the departing member's conto into the reserved comune
+account, and moves no other money. -/
+def checkMemberDepartureCleanup : Bool :=
+  match s62bRun departureGroup "alice" removeBob with
+  | .ok result =>
+      let s := result.state.appFold
+      (result.change == some (KelGroups.BaseChange.memberRemoved "bob"))
+        && !(KelGroups.GroupView.isMember "bob" (s62bView result.state))
+        && (bal s.conti "bob" == 0)
+        && (comuneBal s == 40)
+        && (sumBal s.conti == sumBal departureGroup.appFold.conti)
+  | .error _ => false
+
+/-- An admin holding a cassa and an open collection. Conservation holds on the
+pre-state: 30 − 10 − 20 = 0. -/
+def adminDepartureGroup : KelGroups.GroupState State :=
+  s62bGroup
+    [ s62bMember "alice" [s62bAdmin], s62bMember "dora" [s62bAdmin]
+    , s62bMember "bob" [] ]
+    { State.empty with
+      conti := [("bob", 10), (comuneId, 0)]
+      casse := [("dora", 30)]
+      collections :=
+        [ { id := 1, referente := "dora", permitted := false
+          , accepted := [{ user := "bob", amount := 20 }], pending := [] } ] }
+
+/-- Losing admin status through departure applies the accepted cassa /
+collection / refund cleanup: the departing admin's collections are cancelled,
+every held pledge is refunded, their cassa claim moves to the comune, and
+conservation still holds. -/
+def checkAdminDepartureCleanup : Bool :=
+  match s62bRun adminDepartureGroup "alice" (.propose (Proposal.removeMember "dora")) with
+  | .ok result =>
+      let s := result.state.appFold
+      (result.change == some (KelGroups.BaseChange.memberRemoved "dora"))
+        && !(KelGroups.GroupView.isMember "dora" (s62bView result.state))
+        && (s.collections == [])
+        && (bal s.conti "bob" == 30)
+        && (bal s.casse "dora" == 0)
+        && (comuneBal s == -30)
+        && (sumBal s.casse - sumBal s.conti - escrowSum s.collections == 0)
+  | .error _ => false
+
+/-- The same cleanup is owed to a *role change* that removes admin status: the
+key stays a member and keeps its conto, but its cassa and collections are wound
+up exactly as on departure. -/
+def checkRoleChangeReachable : Bool :=
+  match s62bRun adminDepartureGroup "alice" (.propose (Proposal.changeRoles "dora" [])) with
+  | .ok result =>
+      let s := result.state.appFold
+      (result.change == some (KelGroups.BaseChange.rolesChanged "dora"))
+        && KelGroups.GroupView.isMember "dora" (s62bView result.state)
+        && !(KelGroups.GroupView.isAdmin "dora" (s62bView result.state))
+        && (s.collections == [])
+        && (bal s.conti "bob" == 30)
+        && (bal s.casse "dora" == 0)
+  | .error _ => false
+
+/-- A stalled comune refuses departures, and the refusal is atomic: the group
+is not advanced by a transition whose hook rejected. -/
+def stalledDepartureGroup : KelGroups.GroupState State :=
+  s62bGroup [s62bMember "alice" [s62bAdmin], s62bMember "bob" []]
+    { State.empty with conti := [("bob", 40), (comuneId, -5)] }
+
+def checkHookRejectionIsAtomic : Bool :=
+  (match s62bRun stalledDepartureGroup "alice" removeBob with
+   | .error (.integrated (.app StepError.rejected)) => true
+   | _ => false)
+    && (KelGroups.foldIntegrated (integration s62bThreshold probeAuth)
+          stalledDepartureGroup [("alice", removeBob)] == stalledDepartureGroup)
+
+/-- `INV-62-ATOMIC-HOOK` as one executed row. -/
+def checkBaseCleanupReachable : Bool :=
+  checkMemberDepartureCleanup && checkAdminDepartureCleanup
+    && checkRoleChangeReachable && checkHookRejectionIsAtomic
+
+/-! ### R62-11, V-3 — a franchise-only closure with no ballot -/
+
+def v3Question : KelGroups.Vote.Question :=
+  { kind := .collective, proposer := "alice", assents := ["alice"], dissents := [] }
+
+/-- Three responsabili and one open collective question carrying a single
+assent. `legacyThreshold 3 = 2`, so the question is open. -/
+def v3Group : KelGroups.GroupState State :=
+  s62bGroup
+    [ s62bMember "alice" [s62bAdmin], s62bMember "dora" [s62bAdmin]
+    , s62bMember "eve" [s62bAdmin] ]
+    { State.empty with
+      votes := { openQuestions := [("q", v3Question)], closed := [] } }
+
+def removeEve : KelGroups.IntegratedEvent Proposal AppEvent :=
+  .propose (Proposal.removeMember "eve")
+
+/-- With three responsabili the majority is two, so the proposer alone does not
+enact: this step only records the pending base mutation. -/
+def v3Proposed : Option (KelGroups.GroupState State) :=
+  match s62bRun v3Group "alice" removeEve with
+  | .ok result => some result.state
+  | .error _ => none
+
+def v3Enacted : Option (KelGroups.IntegratedResult State) :=
+  match v3Proposed with
+  | some gs => (s62bRun gs "dora" (.approve (proposalDigest (Proposal.removeMember "eve")))).toOption
+  | none => none
+
+/-- **V-3.** No ballot is cast anywhere in this trace and no vote event occurs:
+the two signed events are a base proposal and a base approval. The recorded
+tallies are byte-identical to the ones the question opened with, and the
+franchise change alone moves the verdict from `open` to `positive` and writes
+the closure. -/
+def checkV3BaseReachable : Bool :=
+  (KelGroups.Vote.verdictOf s62bThreshold (s62bView v3Group) v3Question
+      == KelGroups.Vote.Verdict.open)
+    && (match v3Proposed with
+        | some gs =>
+            (gs.appFold.votes == v3Group.appFold.votes)
+              && (gs.members == v3Group.members)
+        | none => false)
+    && (match v3Enacted with
+        | some result =>
+            let s := result.state.appFold
+            (result.change == some (KelGroups.BaseChange.memberRemoved "eve"))
+              && (s.votes.openQuestions == [])
+              && (match s.votes.closed with
+                  | [record] =>
+                      (record.questionId == "q")
+                        && (record.verdict == KelGroups.Vote.Verdict.positive)
+                        && (record.question == v3Question)
+                  | _ => false)
+        | none => false)
+
+/-- The observable vote payload of a real base change *is* the post-view
+recomputation of the pre-transition payload, and that recomputation is not
+vacuous here: it moved the payload. -/
+def checkBaseRecomputeReachable : Bool :=
+  match v3Enacted with
+  | some result =>
+      (result.state.appFold.votes
+        == KelGroups.Vote.sweepClosures s62bThreshold (s62bView result.state)
+             v3Group.appFold.votes)
+        && !(result.state.appFold.votes == v3Group.appFold.votes)
+  | none => false
+
+/-! ### T6223 — the recomputation cannot duplicate a closure -/
+
+def v3SweptOnce : KelGroups.Vote.VoteState :=
+  match v3Enacted with
+  | some result => result.state.appFold.votes
+  | none => KelGroups.Vote.emptyVoteState
+
+def v3PostView : KelGroups.GroupView :=
+  match v3Enacted with
+  | some result => s62bView result.state
+  | none => s62bView v3Group
+
+/-- Production: a second sweep at the same threshold and view changes nothing,
+and the first sweep really did close something. -/
+def checkSweepIdempotent : Bool :=
+  (KelGroups.Vote.sweepClosures s62bThreshold v3PostView v3SweptOnce == v3SweptOnce)
+    && !(v3SweptOnce == v3Group.appFold.votes)
+
+/-- Negative control on the production definition: the named mutant that keeps
+closed questions in the open set *is* applied (its first application moves the
+payload) and *is not* idempotent (its second application duplicates the closure
+record). -/
+def checkSweepIdempotentMutant : Bool :=
+  let once := KelGroups.Vote.sweepDuplicating s62bThreshold v3PostView
+    v3Group.appFold.votes
+  let twice := KelGroups.Vote.sweepDuplicating s62bThreshold v3PostView once
+  !(once == v3Group.appFold.votes) && !(twice == once)
+
+/-! ### The S62-B obligations, decided -/
+
+/-- `base_departure_applies_cleanup`: concrete successful member removal and
+admin-role loss imply their respective economic cleanup effects, and a rejecting
+hook rejects the whole transition. -/
+theorem base_departure_applies_cleanup : checkBaseCleanupReachable = true := by decide
+
+/-- `base_change_can_close_without_ballot`: a real base transition alone closes
+V-3, with unchanged tallies and no vote event. -/
+theorem base_change_can_close_without_ballot : checkV3BaseReachable = true := by decide
+
+theorem direct_admission_only_holds : checkDirectAdmissionOnly = true := by decide
+
+theorem base_recompute_reachable_holds : checkBaseRecomputeReachable = true := by decide
+
+theorem sweep_idempotent_witness : checkSweepIdempotent = true := by decide
+
+theorem sweep_idempotent_mutant_caught : checkSweepIdempotentMutant = true := by decide
+
+/-- **`base_change_recomputes_votes`** — general, not a witness: every
+successful production transition that reports a base change has vote payload
+equal to the recomputation of the *pre*-transition payload under the *post*
+canonical view. Omitting the sweep, or sweeping against the pre view, breaks
+it. -/
+theorem base_change_recomputes_votes (threshold : KelGroups.Vote.Threshold)
+    (auth : BackdonateAuth) (gs : KelGroups.GroupState State)
+    (signer : KelGroups.Key)
+    (event : KelGroups.IntegratedEvent Proposal AppEvent)
+    (result : KelGroups.IntegratedResult State) (change : KelGroups.BaseChange)
+    (h : Reactivegas.apply threshold auth gs signer event = .ok result)
+    (hchange : result.change = some change) :
+    result.state.appFold.votes
+      = KelGroups.Vote.sweepClosures threshold (KelGroups.groupView result.state)
+          gs.appFold.votes := by
+  unfold Reactivegas.apply at h
+  split at h
+  · split at h
+    · next inner hinner =>
+      split at h
+      · simp only [Except.ok.injEq] at h
+        subst h
+        have hhook := KelGroups.base_change_runs_hook (integration threshold auth)
+          gs signer event inner change hinner hchange
+        unfold integration baseHook at hhook
+        split at hhook
+        · exact Except.noConfusion hhook
+        · simp only [Except.ok.injEq] at hhook
+          exact congrArg State.votes hhook.symm
+      · exact Except.noConfusion h
+    · exact Except.noConfusion h
+  · exact Except.noConfusion h
+
+#print axioms base_change_recomputes_votes
+#print axioms base_departure_applies_cleanup
+#print axioms base_change_can_close_without_ballot
+
+end Reactivegas
