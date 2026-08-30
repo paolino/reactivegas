@@ -597,15 +597,15 @@ async function selftest(work) {
   const sabotages = [
     {
       name: 'strisce soppresse nella pagina',
-      mutate: d => d.replace('${teachBarHtml()}', ''),
+      mutate: d => d.replace('const bar = teachBarHtml();', "const bar = '';"),
       expect: /attesa visibile=true, osservata=false|nessun testo di superficie/,
     },
     {
       name: 'ritiro-alla-causa reintrodotto (difetto NOTE-033)',
-      mutate: d => d.replace("if (tag === 'closePurchase') { teachLearn('cassa'); }",
-        '').replace('    if (tag === \'pledge\') teachLearn(\'impegno\');', '')
-        .replace('  if (res.ok) {\n    recordApplied(tag, args, res);',
-          "  if (res.ok) {\n    recordApplied(tag, args, res);\n    if (tag === 'closePurchase') teachDismiss('cassa');"),
+      // the exact pre-fix behavior: the event that CREATES the negative
+      // cassa permanently retires its explanation in the same instant
+      mutate: d => d.replace('  if (res.ok) {\n    recordApplied(tag, args, res);',
+        "  if (res.ok) {\n    recordApplied(tag, args, res);\n    if (tag === 'closePurchase') teachDismiss('cassa');"),
       expect: /cassa negativa senza spiegazione|cassa\.appear/,
     },
   ];

@@ -1123,7 +1123,6 @@ function openClaimPop(ids, x, y) {
   popAt(x, y, html);
   const xb = $('pop').querySelector('[data-x]');
   if (xb) xb.addEventListener('click', closePop);
-  teachLearn('guardie');
 }
 
 function openManifestPop(x, y) {
@@ -2019,6 +2018,7 @@ function voteEvKind(ev) {
 }
 
 function recordKelApplied(signer, ev, det) {
+  teachOffClick = false;
   kg = det.state;
   const viol = kgLawViolations(kg);
   if (viol.length) kgLawAlarm(viol, descrVote(signer, ev, false));
@@ -2063,7 +2063,6 @@ function runVoteEvent(signer, ev) {
       closedCount: kg.closed.length } });
   sessionSeq.push('k');
   persistSession();
-  if (det.closedDelta > 0) teachLearn('voto');
   teachLearn('benvenuto');
   return { ok: true, closedDelta: det.closedDelta };
 }
@@ -2097,6 +2096,7 @@ const BG_TAG_CLAIMS = {
 };
 
 function recordBaseApplied(signer, ev, det) {
+  teachOffClick = false;
   bg = det.state;
   const viol = bgLawViolations(bg);
   if (viol.length) {
@@ -2443,15 +2443,59 @@ function renderPresBar() {
   $('pres-exit').addEventListener('click', exitPresentation);
 }
 
-/* --- Teaching that recedes ------------------------------------------------ */
+/* --- Teaching that recedes (NOTE-032 + NOTE-033) --------------------------
+   Each strip's surface sentence is written for Giuseppe, the buyer: it says
+   what just happened in his world or what he can do now — never machine
+   mechanics, which stay complete behind the ⊢ glyph (claims unchanged).
+   Visibility is driven by the strip's REAL CONDITION, computed from live
+   session state on every render — never by which tab is open. Leaving the
+   condition hides the strip without marking it understood; returning shows
+   it again; only the explicit ✕ dismisses it permanently (persisted).
+   The ONE exception is `benvenuto`: it applies only on arrival, so it is
+   view-triggered and retires automatically at the first meaningful use
+   (first applied event of any machine). No other strip auto-retires. */
+
+// set when Giuseppe meets a spent (off) affordance — the page's refusal
+// surface, which refuses BEFORE the machine; cleared by any applied event
+let teachOffClick = false;
 
 const TEACH_ITEMS = {
-  benvenuto: { text: 'Clicca una persona, un saldo o un acquisto: ogni azione è un evento della macchina Lean, e ⊢ apre la prova di ogni affermazione.', claims: ['js-transcription'] },
-  impegno: { text: "L'impegno sposta subito il denaro dal conto negli impegni dell'acquisto: escrow reale, non una promessa.", claims: ['impegno-escrow'] },
-  guardie: { text: "Un'azione rifiutata nomina tutte le sue guardie; un compito spento mostra il motivo prima ancora di provare — cliccalo per la prova.", claims: ['auth', 'covered'] },
-  cassa: { text: 'La cassa del referente può andare sotto zero: ha pagato il fornitore. Non è un errore.', claims: ['cassa-negativa', 'close-payout'] },
-  chiusa: { text: "L'acquisto chiuso sparisce dallo stato: la storia resta solo nel log degli eventi.", claims: ['close-gone'] },
-  voto: { text: 'Una domanda si apre con conteggi VUOTI: chi propone non è contato come sì. Il primo lato a raggiungere la soglia chiude — qui la soglia scelta è (n+1)/2. Cambiare voto sposta la posizione, ripeterlo non conta mai doppio.', claims: ['vote-threshold-exhibit', 'vote-verdict', 'vote-open-empty', 'vote-place'] },
+  benvenuto: {
+    text: "Benvenuto! Questo è un gruppo d'acquisto da provare: clicca una persona, un saldo o un acquisto e fai qualche mossa. Il segno ⊢ accanto alle frasi apre il dettaglio, se ti incuriosisce il perché.",
+    claims: ['js-transcription'],
+    cond: () => true,   // arrival exception: gated only by the learned flag
+  },
+  impegno: {
+    text: 'Hai dei soldi da parte per un acquisto: sono già usciti dal conto e restano lì finché il referente decide. Se l’impegno viene rifiutato o l’acquisto non va in porto, tornano sul conto.',
+    claims: ['impegno-escrow'],
+    cond: () => state.collections.some(c => escrowOf(c) > 0),
+  },
+  guardie: {
+    text: 'Quell’azione per ora non si può fare, e infatti non è successo niente: conti e acquisti sono come prima. Accanto all’azione c’è scritto cosa manca: sistemalo e riprova.',
+    claims: ['auth', 'covered'],
+    cond: () => teachOffClick || (history.length > 0 && history[0].kind === 'rej'),
+  },
+  cassa: {
+    text: () => {
+      const neg = state.casse.filter(([, v]) => v < 0).map(([u]) => nm(u));
+      return `La cassa di ${neg.join(' e ') || '—'} è sotto zero perché ha pagato il fornitore: non è un errore. Si riequilibra con i prossimi versamenti e giri di cassa.`;
+    },
+    claims: ['cassa-negativa', 'close-payout'],
+    cond: () => state.casse.some(([, v]) => v < 0),
+  },
+  chiusa: {
+    text: 'L’acquisto si è concluso e non è più tra quelli aperti. Se è andato in porto lo trovi tra i completati; se no, i soldi impegnati sono tornati sui conti.',
+    claims: ['close-gone'],
+    cond: () => {
+      const e = history.find(en => en.kind === 'acc' && !en.mk);
+      return !!e && ['closePurchase', 'failPurchase', 'denyPurchase', 'denyPermission'].includes(e.tag);
+    },
+  },
+  voto: {
+    text: 'C’è una domanda aperta nel gruppo: puoi rispondere sì oppure no, e cambiare risposta finché resta aperta. Si chiude da sola quando una delle due risposte ha abbastanza voti.',
+    claims: ['vote-threshold-exhibit', 'vote-verdict', 'vote-open-empty', 'vote-place'],
+    cond: () => kg.openQuestions.length > 0,
+  },
 };
 
 function loadTeach() {
@@ -2459,15 +2503,25 @@ function loadTeach() {
 }
 let teach = loadTeach();
 function saveTeach() { lsSet(teachKey(), JSON.stringify(teach)); }
-function teachLearn(id) {
+/* the explicit ✕: the ONLY permanent retirement for condition strips */
+function teachDismiss(id) {
   if (!TEACH_ITEMS[id] || teach[id]) return;
   teach[id] = true; saveTeach();
 }
-function teachStrip(id) {
-  if (teach[id] || pres) return '';
-  const t = TEACH_ITEMS[id];
-  return `<div class="teach" data-teach="${id}">${esc(t.text)} ${pkGlyph(t.claims)}
-    <button type="button" class="tx" data-teachx="${id}" title="ho capito">✕</button></div>`;
+/* automatic retirement is allowed ONLY for the benvenuto arrival exception */
+function teachLearn(id) {
+  if (id !== 'benvenuto') return;
+  teachDismiss(id);
+}
+/* the condition — not the view — decides what is on screen */
+function teachBarHtml() {
+  if (pres) return '';
+  return Object.entries(TEACH_ITEMS).map(([id, t]) => {
+    if (teach[id] || !t.cond()) return '';
+    const tx = typeof t.text === 'function' ? t.text() : t.text;
+    return `<div class="teach" data-teach="${id}">${esc(tx)} ${pkGlyph(t.claims)}
+      <button type="button" class="tx" data-teachx="${id}" title="ho capito">✕</button></div>`;
+  }).join('');
 }
 function teachReplay() { teach = {}; saveTeach(); renderAll(); }
 
@@ -2481,6 +2535,7 @@ function invSnapshot() {
 /* apply an accepted result to toy-side state; shared by live attempts and
    verified-log adoption so replay rebuilds exactly what the session showed */
 function recordApplied(tag, args, res) {
+  teachOffClick = false;
   // toy-side snapshot of a successful close, taken from the pre-state
   if (tag === 'closePurchase') {
     const [col] = pullCollection(args.c, state.collections);
@@ -2550,15 +2605,11 @@ function runAttempt(tag, args, toyLabel) {
     persistSession();
     // teaching recedes as the machine is used
     teachLearn('benvenuto');
-    if (tag === 'pledge') teachLearn('impegno');
-    if (tag === 'closePurchase') { teachLearn('cassa'); teachLearn('chiusa'); }
-    if (tag === 'denyPermission' || tag === 'failPurchase') teachLearn('chiusa');
   } else {
     if (tag === 'openPurchase') delete colLabels[args.c];
     history.unshift({ kind: 'rej', tag, args, descr: descr(tag, args), failed: res.failed,
       ext: !!EV[tag].external, inv: invSnapshot() });
     invNote = `dopo .${tag} ✗ — stato invariato`;
-    teachLearn('guardie');
   }
   return res;
 }
@@ -3006,7 +3057,7 @@ function renderGroup() {
   const scene = `<div class="card" id="scene-card">
     <svg id="scene" viewBox="0 0 760 600" role="group" aria-label="scena del gruppo"></svg>
   </div>`;
-  $('view').innerHTML = teachStrip('benvenuto') + tasks + scene + govCardHtml();
+  $('view').innerHTML = tasks + scene + govCardHtml();
   drawScene();
 }
 
@@ -3127,7 +3178,6 @@ function renderPerson() {
   let body;
   if (hat === 'cassiere' && isR) {
     body = `<div class="hatbox" id="hat-cassiere">
-      ${teachStrip('cassa')}
       <div class="money cassa" id="card-cassa"><span class="k">cassa</span>
         <span class="v">${bal(state.casse, u)}</span></div>
       <div class="sect">compiti del cassiere</div>
@@ -3141,7 +3191,6 @@ function renderPerson() {
   } else {
     const pls = pledgesOf(u);
     body = `<div class="hatbox" id="hat-member">
-      ${teachStrip('guardie')}
       <div class="money" id="card-conto"><span class="k">conto</span>
         <span class="v">${bal(state.conti, u)}</span></div>
       <div class="sect">compiti</div>
@@ -3204,7 +3253,6 @@ function renderCollection() {
   const queue = `<div id="refpanel">
     <h3>cappello referente — ${esc(nm(ref))} ★
       <span class="tiny" style="margin-left:auto">esiste solo dentro questo acquisto</span></h3>
-    ${teachStrip('chiusa')}
     ${col.pending.length ? `<div class="rows">${col.pending.map(p =>
       `<div class="row" style="cursor:default">${esc(nm(p.user))}
         <span class="stag pend">pendente</span><span class="amt">${p.amount}</span>
@@ -3236,7 +3284,7 @@ function renderCollection() {
     </div>
   </div>`;
 
-  $('view').innerHTML = teachStrip('impegno') + head + queue + external;
+  $('view').innerHTML = head + queue + external;
 }
 
 /* per-franchise-member cast buttons for one open question; the voter's
@@ -3384,7 +3432,6 @@ function govCardHtml() {
     ${bgPend}${bgCreditTx}`;
   return `<div class="card" id="govcard">
     <h2>Gruppo di voto <small class="mono">KelGroups.Vote — modello richiesto (#54)</small></h2>
-    ${teachStrip('voto')}
     ${body}
     ${baseBody}
     <div class="tiny" id="gov-status" style="margin-top:6px">verdetti sì/no/aperta, dissenso e
@@ -3637,6 +3684,11 @@ function renderAll() {
   else if (v === 'person') renderPerson();
   else if (v === 'collection') renderCollection();
   else renderPledge();
+  // the teaching bar rides every view: its strips are chosen by their live
+  // conditions, so what is on screen depends on what is TRUE, not on which
+  // renderer just ran
+  const bar = teachBarHtml();
+  if (bar) $('view').insertAdjacentHTML('afterbegin', bar);
   renderInvChip();
   renderDone();
   renderLog();
@@ -3818,7 +3870,7 @@ document.addEventListener('click', ev => {
 $('view').addEventListener('click', ev => {
   const t = ev.target;
   const tx = t.closest('[data-teachx]');
-  if (tx) { teachLearn(tx.dataset.teachx); renderAll(); return; }
+  if (tx) { teachDismiss(tx.dataset.teachx); renderAll(); return; }
   const bgEl = t.closest('[data-bgapprove]');
   if (bgEl) {
     if (pres) {
@@ -3880,6 +3932,10 @@ $('view').addEventListener('click', ev => {
   }
   const offEl = t.closest('.task.off[data-off-claims]');
   if (offEl) {
+    // Giuseppe just met a refusal: the spent affordance is the page's way of
+    // refusing BEFORE the machine — the guardie explanation applies now
+    teachOffClick = true;
+    renderAll();
     openClaimPop(offEl.dataset.offClaims.split(','), ev.clientX, ev.clientY);
     return;
   }
@@ -4075,6 +4131,10 @@ async function selftest() {
   expect(lastEntry().innerText.includes('SENZA DELIBERA') &&
     lastEntry().innerText.includes('composizione'),
     'rifiuto di composizione non spiegato nella storia');
+  // a refusal just happened: the guardie explanation applies NOW (and only
+  // now — it was absent before this refusal)
+  expect(document.querySelector('[data-teach="guardie"]'),
+    'spiegazione del rifiuto assente subito dopo un rifiuto reale');
   invOk();
 
   // teaching recedes once the machine has been used
@@ -4110,9 +4170,11 @@ async function selftest() {
   await click('#pop [data-l="Olio"]');
   expect(document.querySelector('[data-goto-coll]'), 'sezione referente-di assente');
 
-  // teaching for the impegno appears with the acquisto, before any impegno
+  // NOTE-033: the impegno strip is CONDITION-driven — no money held yet, so
+  // opening the acquisto view alone must NOT show it
   await click('[data-goto-coll]');
-  expect(document.querySelector('[data-teach="impegno"]'), 'spiegazione impegno assente');
+  expect(!document.querySelector('[data-teach="impegno"]'),
+    'spiegazione impegno mostrata senza denaro impegnato (vista ≠ condizione)');
   await click('#nav-back');
 
   // Bruno-as-member joins his own purchase? no — member hat: pledge 30 (bounded by conto 100)
@@ -4133,7 +4195,10 @@ async function selftest() {
   await click('#nav-back');
   expect(here() === 'collection', "indietro non torna all'acquisto");
   expect(document.getElementById('refpanel'), "cappello referente assente nell'acquisto");
-  expect(!document.querySelector('[data-teach="impegno"]'), 'spiegazione impegno non receduta');
+  // money IS held now: the strip stays visible while the condition holds,
+  // and the causing event (the pledge) must NOT have retired it
+  expect(document.querySelector('[data-teach="impegno"]'),
+    'spiegazione impegno assente mentre il denaro è impegnato');
   await click('#nav-back');
   expect(here() === 'person', 'indietro non torna alla persona');
   await click('#nav-back');
@@ -4178,7 +4243,10 @@ async function selftest() {
   expect(document.querySelector('#gov-status [data-claims="vote-model-status"]') &&
     document.querySelector('#gov-status [data-claims="join-vote-econ"]'),
     'stato del modello di voto non dichiarato nella scheda');
-  expect(document.querySelector('[data-teach="voto"]'), 'spiegazione della soglia assente');
+  // NOTE-033: no question is open yet, so the voto strip must NOT show —
+  // the gov card being on screen is a view, not the condition
+  expect(!document.querySelector('[data-teach="voto"]'),
+    'spiegazione del voto mostrata senza una domanda aperta');
   const kgadmit = async id => {
     await click('#govcard [data-kgadmit]');
     await click(`#pop .chip[data-id="${id}"]`);
@@ -4206,6 +4274,9 @@ async function selftest() {
     'la domanda non si apre con conteggi vuoti (auto-sì del proponente?)');
   expect(document.querySelector('#view .vq .qs').innerText.includes('sì 0 · no 0'),
     'conteggi vuoti non mostrati');
+  // a REAL question is open now: the voto strip appears, wherever we are
+  expect(document.querySelector('[data-teach="voto"]'),
+    'spiegazione del voto assente mentre una domanda è aperta');
   const castBtn = (s, b) =>
     `#view [data-kgcast="permesso:1"][data-kgsigner="${s}"][data-kgballot="${b}"]`;
   await click(castBtn('anna', 'assent'));
@@ -4220,6 +4291,12 @@ async function selftest() {
     && RG.kg.closed[0].verdict === 'positive'
     && RG.kg.closed[0].question.dissents.length === 0,
     'il cambio di posizione a soglia non ha chiuso POSITIVA senza dissensi');
+  // the question closed: the condition ended, so the strip leaves WITHOUT
+  // being marked understood (it must return with the next open question)
+  expect(!document.querySelector('[data-teach="voto"]'),
+    'spiegazione del voto ancora mostrata a domanda chiusa');
+  expect(!JSON.parse(lsGet(teachKey()) || '{}').voto,
+    'la chiusura della domanda ha ritirato per sempre la spiegazione del voto');
   expect(document.querySelector('#view .vq .qh').innerText.includes('CHIUSA POSITIVA'),
     'verdetto positivo non mostrato');
   expect(lastEntry().innerText.includes('CHIUSA'), 'chiusura non registrata nella storia');
@@ -4255,6 +4332,17 @@ async function selftest() {
   expect(document.getElementById('done-body').innerText.includes('Olio'),
     'acquisto completato assente dopo la chiusura');
   expect(here() !== 'collection' && here() !== 'pledge', 'vista su acquisto chiuso non rientrata');
+  // NOTE-033, the exact operator regression: the close made Bruno's cassa
+  // negative, and the explanation is on screen IN THIS SAME render — the
+  // causing event did not retire it
+  expect(RG.state.casse.some(([, v]) => v < 0),
+    'la chiusura non ha prodotto la cassa negativa attesa');
+  expect(document.querySelector('[data-teach="cassa"]'),
+    'cassa negativa senza spiegazione a schermo dopo la chiusura');
+  expect(document.querySelector('[data-teach="cassa"]').innerText.includes('Bruno'),
+    'la spiegazione della cassa non nomina il cassiere rilevante');
+  expect(document.querySelector('[data-teach="chiusa"]'),
+    'spiegazione della chiusura assente nel contesto post-chiusura');
   invOk();
 
   // branch coverage: remove-with-no-open-purchases flow copy — and the
