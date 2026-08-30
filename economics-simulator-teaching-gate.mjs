@@ -172,6 +172,15 @@ window.__rgAmount = async v => {
   n.dispatchEvent(new Event('input', { bubbles: true }));
   await __rgClick('#am-ok');
 };
+window.__rgAddNamed = async name => {
+  await __rgClick('#gtasks [data-task="addUser"]');
+  const n = document.getElementById('un-n');
+  if (!n) throw new Error('campo nome assente');
+  n.value = name;
+  n.dispatchEvent(new Event('input', { bubbles: true }));
+  await __rgClick('#un-ok');
+  await __rgClick('#pop .chip[data-id="0"]');
+};
 window.__rgSnap = phase => ({
   nonce: window.__RG_TG_NONCE, phase,
   strips: Object.fromEntries(${JSON.stringify(STRIPS)}.map(id =>
@@ -221,8 +230,7 @@ async function runJourney(b, url, nonce) {
   // ------ benvenuto: the documented arrival exception ----------------------
   await step(b, s, snaps, 'benvenuto.appear', ``);
   await step(b, s, snaps, 'benvenuto.firstUse', `
-    await __rgClick('[data-key="ghost:1"]');
-    await __rgClick('#pop .chip[data-id="0"]');`);           // Bruno entra
+    await __rgAddNamed('Bruno');`);
   // persistence across a real reload (arrival again, already used)
   await b.send('Page.navigate', { url }, s);
   await sleep(900);
@@ -359,8 +367,7 @@ async function runJourney(b, url, nonce) {
   // must name exactly the derived negative set
   await step(b, s, snaps, 'cassa.identities', `
     await __rgClick('#crumbs [data-crumb="0"]');
-    await __rgClick('[data-key="ghost:2"]');
-    await __rgClick('#pop .chip[data-id="0"]');
+    await __rgAddNamed('Elena');
     await __rgClick('#gtasks [data-task="electResponsabile"]');
     await __rgClick('#pop .chip[data-id="2"]');
     await __rgClick('#pop .chip[data-id="0"]');

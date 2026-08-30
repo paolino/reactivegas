@@ -23,7 +23,9 @@
 const FOUNDER = 0;
 const NAMES = ['Anna', 'Bruno', 'Elena', 'Carlo', 'Dora', 'Enzo',
                'Febe', 'Gaia', 'Hugo', 'Irma', 'Luca', 'Mara'];
-const nm = u => NAMES[u] !== undefined ? NAMES[u] : '?';
+let userLabels = {};
+const nm = u => userLabels[u] !== undefined ? userLabels[u]
+  : (NAMES[u] !== undefined ? NAMES[u] : '?');
 const PRESETS = ['Olio', 'Vino', 'Farina', 'Caffè', 'Miele', 'Pasta', 'Riso', 'Sale'];
 let colLabels = {};                       // CollId -> toy label
 const lbl = c => colLabels[c] !== undefined ? colLabels[c] : '?';
@@ -1460,13 +1462,23 @@ function bgCreditOf(enactment) {
     key: p.changeRoles.key, pid: enactment.proposalId };
 }
 
-/* toy-side name↔key mapping shared by the governance walk: user ids map to
-   the fixed decoration pool; keys are the lowercase names */
+/* toy-side name↔key mapping shared by the governance walk: keys are the
+   lowercase usernames */
 const kgKey = u => nm(u).toLowerCase();
-const kgName = key => { const i = NAMES.findIndex(n => n.toLowerCase() === key);
-  return i >= 0 ? NAMES[i] : key; };
-const kgUid = key => { const i = NAMES.findIndex(n => n.toLowerCase() === key);
-  return i >= 0 ? i : null; };
+const kgName = key => {
+  const k = String(key || '').toLowerCase();
+  for (const u of Object.keys(userLabels))
+    if (String(userLabels[u]).toLowerCase() === k) return userLabels[u];
+  const i = NAMES.findIndex(n => n.toLowerCase() === k);
+  return i >= 0 ? NAMES[i] : key;
+};
+const kgUid = key => {
+  const k = String(key || '').toLowerCase();
+  for (const u of Object.keys(userLabels))
+    if (String(userLabels[u]).toLowerCase() === k) return Number(u);
+  const i = NAMES.findIndex(n => n.toLowerCase() === k);
+  return i >= 0 ? i : null;
+};
 const permQid = c => 'permesso:' + c;
 
 /* Governance over the combined seq (model-level, also on import/restore):

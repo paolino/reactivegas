@@ -122,7 +122,7 @@
   .ghostn .avatar { stroke-dasharray: 4 3; fill: #f7f9fb; stroke: #a9b8c6; }
   .init { font-size: 19px; font-weight: 700; text-anchor: middle; fill: #31465e; }
   .ghostn .init { fill: #93a5b6; }
-  .nm { font-size: 11px; text-anchor: middle; fill: var(--ink); font-weight: 700; }
+  .nm { font-size: 13px; text-anchor: middle; fill: var(--ink); font-weight: 700; }
   .ghostn .nm { fill: var(--muted); font-weight: 500; }
   .star { font-size: 12px; text-anchor: middle; }
   .chipg rect { fill: #eaf3ec; stroke: #bcd8c3; }
@@ -398,7 +398,9 @@ if (IS_SELFTEST) window.__RG_NS = '-selftest';
 const FOUNDER = 0;
 const NAMES = ['Anna', 'Bruno', 'Elena', 'Carlo', 'Dora', 'Enzo',
                'Febe', 'Gaia', 'Hugo', 'Irma', 'Luca', 'Mara'];
-const nm = u => NAMES[u] !== undefined ? NAMES[u] : '?';
+let userLabels = {};
+const nm = u => userLabels[u] !== undefined ? userLabels[u]
+  : (NAMES[u] !== undefined ? NAMES[u] : '?');
 const PRESETS = ['Olio', 'Vino', 'Farina', 'Caffè', 'Miele', 'Pasta', 'Riso', 'Sale'];
 let colLabels = {};                       // CollId -> toy label
 const lbl = c => colLabels[c] !== undefined ? colLabels[c] : '?';
@@ -792,6 +794,7 @@ let state = initState(FOUNDER);
 let kg = null;           // KelGroups vote-machine state (initialized below)
 let history = [];        // newest first (economic and vote entries, mk-tagged)
 let collSeq = 1;         // toy-side fresh CollId allocator
+let userSeq = 1;         // toy-side fresh UserId allocator (0 is the founder)
 let invNote = 'avvio';
 let completed = [];      // toy snapshots of accepted closePurchase, newest first
 
@@ -2010,13 +2013,23 @@ function bgCreditOf(enactment) {
     key: p.changeRoles.key, pid: enactment.proposalId };
 }
 
-/* toy-side name↔key mapping shared by the governance walk: user ids map to
-   the fixed decoration pool; keys are the lowercase names */
+/* toy-side name↔key mapping shared by the governance walk: keys are the
+   lowercase usernames */
 const kgKey = u => nm(u).toLowerCase();
-const kgName = key => { const i = NAMES.findIndex(n => n.toLowerCase() === key);
-  return i >= 0 ? NAMES[i] : key; };
-const kgUid = key => { const i = NAMES.findIndex(n => n.toLowerCase() === key);
-  return i >= 0 ? i : null; };
+const kgName = key => {
+  const k = String(key || '').toLowerCase();
+  for (const u of Object.keys(userLabels))
+    if (String(userLabels[u]).toLowerCase() === k) return userLabels[u];
+  const i = NAMES.findIndex(n => n.toLowerCase() === k);
+  return i >= 0 ? NAMES[i] : key;
+};
+const kgUid = key => {
+  const k = String(key || '').toLowerCase();
+  for (const u of Object.keys(userLabels))
+    if (String(userLabels[u]).toLowerCase() === k) return Number(u);
+  const i = NAMES.findIndex(n => n.toLowerCase() === k);
+  return i >= 0 ? i : null;
+};
 const permQid = c => 'permesso:' + c;
 
 /* Governance over the combined seq (model-level, also on import/restore):
@@ -2371,7 +2384,7 @@ function baseEnvelope() {
 }
 function buildExport() {
   return JSON.stringify({ format: 'reactivegas-sim-session', v: 2,
-    labels: { ...colLabels }, piles: dumpPiles(),
+    labels: { ...colLabels }, names: { ...userLabels }, piles: dumpPiles(),
     trace: sessionEnvelope(), kel: kelEnvelope(),
     base: baseEnvelope(), seq: sessionSeq.join('') });
 }
@@ -2383,13 +2396,15 @@ function adoptSession(env, kelEnv, baseEnv, seq, labels) {
   state = initState(FOUNDER);
   kg = kgEmptyState();
   bg = bgEmpty(); bgCredits = [];
-  history = []; completed = []; collSeq = 1; colLabels = { ...(labels || {}) };
+  history = []; completed = []; collSeq = 1; userSeq = 1;
+  colLabels = { ...(labels || {}) };
   let ei = 0, ki = 0, bi = 0;
   for (const m of seq) {
     if (m === 'e') {
       const st = env.steps[ei++];
       const e = leanEventOf(st.event);
       const { tag, ...args } = e;
+      if (tag === 'addUser') userSeq = Math.max(userSeq, args.target + 1);
       if (tag === 'openPurchase' && colLabels[args.c] === undefined) {
         const used = new Set(Object.values(colLabels));
         colLabels[args.c] = PRESETS.find(p => !used.has(p)) || ('acquisto ' + collSeq);
@@ -2436,6 +2451,7 @@ function normalizeWrap(wrap) {
   else seq = env.steps.map(() => 'e');
   return { env, kelEnv, baseEnv, seq,
     labels: (wrap && wrap.labels) || {},
+    names: (wrap && wrap.names) || {},
     piles: loadPiles(wrap && wrap.piles) };
 }
 
@@ -2462,6 +2478,13 @@ function restoreSession() {
   const n = normalizeWrap(wrap);
   try { verifySessionShape(n); }
   catch (e) { return quarantineLog(e.message); }
+  userLabels = {};
+  if (n.names && typeof n.names === 'object')
+    for (const [id, name] of Object.entries(n.names)) {
+      const u = Number(id);
+      if (Number.isFinite(u) && typeof name === 'string' && name.trim())
+        userLabels[u] = name.trim();
+    }
   adoptSession(n.env, n.kelEnv, n.baseEnv, n.seq, n.labels);
   pilePose = n.piles || {};
   return n.seq.length;
@@ -2481,7 +2504,8 @@ function newSession() {
   state = initState(FOUNDER);
   kg = kgEmptyState();
   bg = bgEmpty(); bgCredits = [];
-  history = []; completed = []; collSeq = 1; colLabels = {};
+  history = []; completed = []; collSeq = 1; userSeq = 1; colLabels = {};
+  userLabels = {};
   pilePose = {}; pileDrag = null; skipPileClick = false;
   sessionSteps = []; kelSteps = []; bgSteps = []; sessionSeq = [];
   invNote = 'nuova sessione → State.init 0';
@@ -2507,9 +2531,10 @@ function enterPresentation(n) {
     throw new Error('seq incoerente con i tre flussi');
   verifyGovernedSeq(n);
   pres = { n, eco: ver.states, kel: kver.states, base: bver.states, idx: 0,
-    saved: { state, kg, bg, nav: navStack, labels: colLabels, piles: { ...pilePose },
-      note: invNote, hist: history, comp: completed, seq: collSeq } };
+    saved: { state, kg, bg, nav: navStack, labels: colLabels, names: { ...userLabels },
+      piles: { ...pilePose }, note: invNote, hist: history, comp: completed, seq: collSeq } };
   colLabels = { ...(n.labels || {}) };
+  userLabels = { ...(n.names || {}) };
   pilePose = loadPiles(n.piles);
   n.env.steps.forEach(st => {
     const e = leanEventOf(st.event);
@@ -2538,6 +2563,7 @@ function exitPresentation() {
   const s = pres.saved;
   pres = null;
   state = s.state; kg = s.kg; bg = s.bg; navStack = s.nav; colLabels = s.labels; invNote = s.note;
+  userLabels = s.names || {};
   pilePose = s.piles || {};
   history = s.hist; completed = s.comp; collSeq = s.seq;
   renderAll();
@@ -2749,6 +2775,7 @@ function runAttempt(tag, args, toyLabel) {
     teachLearn('benvenuto');
   } else {
     if (tag === 'openPurchase') delete colLabels[args.c];
+    if (tag === 'addUser') delete userLabels[args.target];
     history.unshift({ kind: 'rej', tag, args, descr: descr(tag, args), failed: res.failed,
       ext: !!EV[tag].external, inv: invSnapshot() });
     invNote = `dopo .${tag} ✗ — stato invariato`;
@@ -2784,7 +2811,7 @@ function taskDis(tag, ctx) {
   switch (tag) {
     case 'addUser':
       if (!state.responsabili.length) return B('AUTH', 'nessun responsabile');
-      return candidates().length ? null : B('—', 'nessun candidato');
+      return state.users.length >= 12 ? B('—', 'gruppo pieno') : null;
     case 'electResponsabile':
       if (!state.responsabili.length) return B('AUTH', 'nessun responsabile');
       return state.users.some(u => !resp(u)) ? null : B('—', 'tutti già ★');
@@ -2990,13 +3017,19 @@ function nextStep() {
   if (!flow) return;
   const role = flow.steps[0];
   if (role === 'label') { openLabelPop(); return; }
+  if (role === 'targetGhost' && flow.tag === 'addUser') { openUserNamePop(); return; }
   if (role) { openChipPop(role); return; }
   if (EV[flow.tag].external) { openExternalConfirm(); return; }
   if (EV[flow.tag].amount) { openAmountPop(); return; }
   commitFlow();
 }
 
-function cancelFlow() { flow = null; closePop(); }
+function cancelFlow() {
+  if (flow && flow.tag === 'addUser' && flow.params.target !== undefined
+      && !state.users.includes(flow.params.target))
+    delete userLabels[flow.params.target];
+  flow = null; closePop();
+}
 
 function openChipPop(role) {
   const ask = ASK_BY_EV[flow.tag + '.' + role] || ASK[role];
@@ -3021,6 +3054,58 @@ function openChipPop(role) {
   }));
   const xb = $('pop').querySelector('[data-x]');
   if (xb) xb.addEventListener('click', cancelFlow);
+}
+
+function takenNames() {
+  return new Set(state.users.map(u => nm(u).toLowerCase()));
+}
+function allocUser() {
+  const used = new Set(state.users);
+  let id = Math.max(userSeq, 1);
+  while (used.has(id)) id++;
+  userSeq = id + 1;
+  return id;
+}
+function openUserNamePop() {
+  const html = `<div class="pt">${esc(EV[flow.tag].it)}
+      <span class="mono" style="font-size:.68rem">.${flow.tag}</span>
+      <button type="button" class="xbtn2" data-x="1">✕</button></div>
+    <div class="tiny">come si chiama? il nome deve essere unico nel gruppo</div>
+    <div class="ar2"><input id="un-n" type="text" maxlength="24" autocomplete="off"
+        placeholder="nome">
+      <button type="button" class="primary" id="un-ok">OK</button></div>
+    <div class="tiny" id="un-err"></div>`;
+  popAt(flow.xy[0], flow.xy[1], html);
+  const n = $('un-n'), ok = $('un-ok'), err = $('un-err');
+  n.focus();
+  const parsed = () => n.value.replace(/\s+/g, ' ').trim();
+  const reason = () => {
+    const name = parsed();
+    if (!name) return 'scrivi un nome';
+    if (takenNames().has(name.toLowerCase())) return `«${name}» è già nel gruppo`;
+    return '';
+  };
+  const sync = () => {
+    const r = reason();
+    err.textContent = r;
+    ok.disabled = !!r;
+  };
+  n.addEventListener('input', sync);
+  const go = () => {
+    if (reason()) { sync(); return; }
+    const name = parsed();
+    const id = allocUser();
+    userLabels[id] = name;
+    flow.params.target = id;
+    flow.steps = flow.steps.filter(r => r !== 'targetGhost');
+    flow.xy = [flow.xy[0], flow.xy[1]];
+    nextStep();
+  };
+  ok.addEventListener('click', go);
+  n.addEventListener('keydown', ev => { if (ev.key === 'Enter') go(); });
+  const xb = $('pop').querySelector('[data-x]');
+  if (xb) xb.addEventListener('click', cancelFlow);
+  sync();
 }
 
 function openLabelPop() {
@@ -3339,18 +3424,6 @@ function drawScene() {
   parts.push(`<text class="hintc" x="705" y="34">fuori</text>` +
     `<text x="705" y="56" style="font-size:17px;text-anchor:middle">🛒</text>`);
 
-  const ghosts = candidates();
-  ghosts.forEach((gid, i) => {
-    const x = 62 + i * 92, y = 50;
-    layout['ghost:' + gid] = { x, y };
-    parts.push(`<g class="ghostn" data-obj="ghost" data-id="${gid}" data-key="ghost:${gid}"
-      role="button" tabindex="0" aria-label="candidato ${esc(nm(gid))}" transform="translate(${x},${y})">
-      <circle class="avatar" r="21"/>
-      <text class="init" y="6">${esc(nm(gid)[0])}</text>
-      <text class="nm" y="38">${esc(nm(gid))}</text>
-    </g>`);
-  });
-
   state.users.forEach(u => {
     const { x, y } = memberPos[u];
     const ux = (x - CX) / R, uy = (y - CY) / R;
@@ -3394,9 +3467,8 @@ function drawScene() {
       data-key="member:${u}" role="button" tabindex="0"
       aria-label="${esc(nm(u))}${resp(u) ? ' responsabile' : ''}" transform="translate(${x},${y})">
       <circle class="avatar" r="38"/>
-      <text class="init" y="-2">${esc(nm(u)[0])}</text>
-      ${resp(u) ? '<text class="star" x="15" y="-15">★</text>' : ''}
-      <text class="nm" y="18">${esc(nm(u))}</text>
+      ${resp(u) ? '<text class="star" x="15" y="-16">★</text>' : ''}
+      <text class="nm" y="5" style="font-size:${nm(u).length > 8 ? 10 : 13}px">${esc(nm(u))}</text>
     </g>`);
     const cv = bal(state.conti, u);
     const cp = layout['conto:' + u];
@@ -3423,8 +3495,7 @@ function drawScene() {
 }
 
 /* Reader-facing text of a member or purchase glyph must stay inside its
-   circle. Four bbox corners, not just the text origin. Ghost labels sit
-   under the small candidate discs and are not part of this check. */
+   circle. Four bbox corners, not just the text origin. */
 function sceneCircleContentContained() {
   const groups = $('scene').querySelectorAll('g[data-obj="member"], g[data-obj="pile"]');
   return [...groups].every(group => {
@@ -3447,7 +3518,7 @@ function renderPerson() {
   const isR = resp(u);
   const rc = refCols(u);
   const head = `<div class="card"><div class="vhead">
-      <div class="bigav${isR ? ' resp' : ''}">${esc(nm(u)[0])}</div>
+      <div class="bigav${isR ? ' resp' : ''}"></div>
       <div><div class="who">${esc(nm(u))} ${isR ? '★' : ''}</div>
         <div class="sub">${isR ? 'membro e responsabile' : 'membro del gruppo'}</div></div>
     </div>
@@ -3647,7 +3718,7 @@ function renderPledge() {
   const st = pend ? 'pendente' : 'accettato';
   $('view').innerHTML = `<div class="card">
     <div class="vhead">
-      <div class="bigav${resp(pu) ? ' resp' : ''}">${esc(nm(pu)[0])}</div>
+      <div class="bigav${resp(pu) ? ' resp' : ''}"></div>
       <div><div class="who">impegno di ${esc(nm(pu))}</div>
         <div class="sub">su «${esc(lbl(c))}» · <span class="mono">.pledge</span></div></div>
       <span class="stag ${pend ? 'pend' : 'acc'}">${st}</span>
@@ -3924,7 +3995,8 @@ function openLogPop(x, y) {
   $('log-pres').addEventListener('click', () => {
     if (!sessionSeq.length) return;
     enterPresentation({ env: sessionEnvelope(), kelEnv: kelEnvelope(),
-      seq: sessionSeq.slice(), labels: colLabels, piles: dumpPiles() });
+      seq: sessionSeq.slice(), labels: colLabels, names: { ...userLabels },
+      piles: dumpPiles() });
   });
   $('log-new').addEventListener('click', () => { closePop(); newSession(); });
   $('log-import').addEventListener('click', () => importText($('log-ta').value));
@@ -4569,12 +4641,32 @@ async function selftest() {
   await click('#pop .xbtn2');
   await click('#crumbs [data-crumb="0"]');
 
-  // task: far entrare Bruno ed Elena (candidato → registrante ★)
-  for (const gid of [1, 2]) {
-    await click(`[data-key="ghost:${gid}"]`);
-    await click(`#pop .chip[data-id="0"]`);
-    expect(document.querySelector(`[data-key="member:${gid}"]`), 'membro non entrato');
+  // task: far entrare Bruno ed Elena (nome unico → registrante ★)
+  const addNamed = async name => {
+    await click('#gtasks [data-task="addUser"]');
+    const field = document.getElementById('un-n');
+    expect(field, 'campo nome assente');
+    field.value = name;
+    field.dispatchEvent(new Event('input', { bubbles: true }));
+    await click('#un-ok');
+    await click('#pop .chip[data-id="0"]');
+  };
+  await click('#gtasks [data-task="addUser"]');
+  {
+    const field = document.getElementById('un-n');
+    expect(field, 'campo nome assente');
+    field.value = 'Anna';
+    field.dispatchEvent(new Event('input', { bubbles: true }));
+    await click('#un-ok');
+    expect(document.getElementById('un-err')
+      && document.getElementById('un-err').textContent.includes('già nel gruppo'),
+      'unicità del nome non chiesta');
+    await click('#pop .xbtn2');
   }
+  await addNamed('Bruno');
+  await addNamed('Elena');
+  expect(document.querySelector('[data-key="member:1"]'), 'membro non entrato');
+  expect(document.querySelector('[data-key="member:2"]'), 'membro non entrato');
   // task: eleggi Bruno — l'elezione passa SOLO dal canale base: la barra
   // esegue bootstrap → ingresso → proposta fedele changeRoles; con un solo
   // admin ogni passo delibera subito (chi propone è già fra gli assensi)
@@ -4706,8 +4798,7 @@ async function selftest() {
   // (never a question), a question opens with EMPTY tallies, and the first
   // side to reach the threshold closes it
   await click('#crumbs [data-crumb="0"]');
-  await click('[data-key="ghost:3"]');                        // Carlo entra (4º utente)
-  await click('#pop .chip[data-id="0"]');
+  await addNamed('Carlo');                                    // 4º utente
   expect(document.getElementById('govcard'), 'scheda del gruppo di voto assente');
   expect(document.querySelector('#gov-status [data-claims="vote-model-status"]') &&
     document.querySelector('#gov-status [data-claims="join-vote-econ"]'),
