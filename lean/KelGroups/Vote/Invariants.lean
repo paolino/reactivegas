@@ -43,8 +43,7 @@ def tallyKeysOfState (gs : VoteState) : List Key :=
 /-- The state-side shape the sweep needs and every branch preserves: the
 representation invariants of the carrier minus the no-stale-open property,
 which is exactly what the sweep alone re-establishes. -/
-structure SweepReady (gs : VoteState) : Prop where
-  membersNodup : (gs.members.map Prod.fst).Nodup
+structure SweepReady (view : GroupView) (gs : VoteState) : Prop where
   openNodup : (gs.openQuestions.map Prod.fst).Nodup
   closedNodup : (gs.closed.map (·.questionId)).Nodup
   openClosedDisjoint : ∀ qid, qid ∈ gs.openQuestions.map Prod.fst →
@@ -57,10 +56,14 @@ structure SweepReady (gs : VoteState) : Prop where
 question under the current franchise and the threshold parameter. The
 threshold is carried explicitly because VC-4 is about *that* threshold —
 nothing hard-codes a policy (R-46). -/
-structure VoteWellFormed (θ : Threshold) (gs : VoteState) extends SweepReady gs : Prop where
+structure VoteWellFormed (θ : Threshold) (view : GroupView) (gs : VoteState) extends SweepReady view gs : Prop where
   opensOpen : ∀ qid q, assocLookup qid gs.openQuestions = some q →
-    verdictOf θ gs q = Verdict.open
+    verdictOf θ view q = Verdict.open
 
+
+/-! Every declaration below observes membership through one canonical view.
+There is no payload-local franchise for a statement to accidentally read. -/
+variable (view : GroupView)
 /-! ## Association-list and list lemmas
 
 Slice 1 proved private versions of these in the frozen `KelGroups.Invariants`,
@@ -365,38 +368,27 @@ private theorem filterMap_keys_nodup (f : QuestionId × Question → Option Clos
 
 end KeyLemmas
 
-/-! ## Verdict congruences (INV-54-POLICYFREE support) -/
-
-private theorem verdictOf_congr_members (θ : Threshold) {gs gs' : VoteState}
-    (h : gs.members = gs'.members) (q : Question) :
-    verdictOf θ gs q = verdictOf θ gs' q := by
-  cases q with
-  | mk kind proposer assents dissents =>
-    cases kind with
-    | collective =>
-        simp [verdictOf, franchiseSize, franchise, h]
-    | permission _ => rfl
 
 /-! ## The carrier at the empty state -/
 
-theorem emptyVoteState_sweepReady : SweepReady emptyVoteState := by
-  refine ⟨by simp [emptyVoteState], by simp [emptyVoteState], by simp [emptyVoteState],
+theorem emptyVoteState_sweepReady : SweepReady view emptyVoteState := by
+  refine ⟨by simp [emptyVoteState], by simp [emptyVoteState],
     by simp [emptyVoteState], ?_, ?_, by simp [emptyVoteState]⟩
   · intro qid q h
     simp [emptyVoteState, assocLookup] at h
   · intro c h
     simp [emptyVoteState] at h
 
-theorem emptyVoteState_wellFormed (θ : Threshold) : VoteWellFormed θ emptyVoteState := by
-  refine ⟨emptyVoteState_sweepReady, ?_⟩
+theorem emptyVoteState_wellFormed (θ : Threshold) : VoteWellFormed θ view emptyVoteState := by
+  refine ⟨emptyVoteState_sweepReady view, ?_⟩
   intro qid q h
   simp [emptyVoteState, assocLookup] at h
 
 /-! ## INV-54-POLICYFREE (R-46) -/
 
 theorem verdictOf_threshold_congr (θ θ' : Threshold) (gs : VoteState) (q : Question)
-    (h : θ (franchiseSize gs) = θ' (franchiseSize gs)) :
-    verdictOf θ gs q = verdictOf θ' gs q := by
+    (h : θ (franchiseSize view) = θ' (franchiseSize view)) :
+    verdictOf θ view q = verdictOf θ' view q := by
   cases q with
   | mk kind proposer assents dissents =>
     cases kind with
@@ -406,16 +398,12 @@ theorem verdictOf_threshold_congr (θ θ' : Threshold) (gs : VoteState) (q : Que
     | permission _ => rfl
 
 /-! ## The sweep -/
-
-private theorem sweepClosures_members (θ : Threshold) (gs : VoteState) :
-    (sweepClosures θ gs).members = gs.members := rfl
-
 private theorem sweepStep_key (θ : Threshold) (gs : VoteState) (entry : QuestionId × Question)
-    (c : ClosureRecord) (h : sweepStep θ gs entry = some c) : c.questionId = entry.1 ∧
-      c.verdict = verdictOf θ gs entry.2 ∧ c.verdict ≠ Verdict.open ∧
+    (c : ClosureRecord) (h : sweepStep θ view entry = some c) : c.questionId = entry.1 ∧
+      c.verdict = verdictOf θ view entry.2 ∧ c.verdict ≠ Verdict.open ∧
         c.question = entry.2 := by
   rw [sweepStep] at h
-  cases hv : verdictOf θ gs entry.2
+  cases hv : verdictOf θ view entry.2
   · rw [hv] at h
     simp only [Option.some.injEq] at h
     rw [← h]
@@ -429,15 +417,15 @@ private theorem sweepStep_key (θ : Threshold) (gs : VoteState) (entry : Questio
 
 private theorem sweepClosures_open_mem (θ : Threshold) (gs : VoteState)
     (entry : QuestionId × Question) :
-    entry ∈ (sweepClosures θ gs).openQuestions ↔
-      entry ∈ gs.openQuestions ∧ verdictOf θ gs entry.2 = Verdict.open := by
+    entry ∈ (sweepClosures θ view gs).openQuestions ↔
+      entry ∈ gs.openQuestions ∧ verdictOf θ view entry.2 = Verdict.open := by
   simp [sweepClosures, List.mem_filter]
 
 private theorem sweepClosures_closed_mem (θ : Threshold) (gs : VoteState) (c : ClosureRecord) :
-    c ∈ (sweepClosures θ gs).closed ↔
+    c ∈ (sweepClosures θ view gs).closed ↔
       c ∈ gs.closed ∨
         ∃ entry : QuestionId × Question, entry ∈ gs.openQuestions ∧
-          sweepStep θ gs entry = some c := by
+          sweepStep θ view entry = some c := by
   constructor
   · intro hc
     simp only [sweepClosures, List.mem_append, List.mem_filterMap] at hc
@@ -450,50 +438,50 @@ private theorem sweepClosures_closed_mem (θ : Threshold) (gs : VoteState) (c : 
     · exact List.mem_append.mpr (Or.inr (List.mem_filterMap.mpr ⟨entry, hentry, hsome⟩))
 
 private theorem sweepClosures_sweepReady (θ : Threshold) (gs : VoteState)
-    (h : SweepReady gs) : SweepReady (sweepClosures θ gs) := by
+    (h : SweepReady view gs) : SweepReady view (sweepClosures θ view gs) := by
   have hopenmem : ∀ entry : QuestionId × Question,
-      entry ∈ (sweepClosures θ gs).openQuestions →
-      entry ∈ gs.openQuestions ∧ verdictOf θ gs entry.2 = Verdict.open :=
-    fun entry he => (sweepClosures_open_mem θ gs entry).mp he
+      entry ∈ (sweepClosures θ view gs).openQuestions →
+      entry ∈ gs.openQuestions ∧ verdictOf θ view entry.2 = Verdict.open :=
+    fun entry he => (sweepClosures_open_mem view θ gs entry).mp he
   have hclosedmem : ∀ c : ClosureRecord,
-      c ∈ (sweepClosures θ gs).closed →
+      c ∈ (sweepClosures θ view gs).closed →
       c ∈ gs.closed ∨ ∃ entry : QuestionId × Question, entry ∈ gs.openQuestions ∧
         c.questionId = entry.1 ∧ c.question = entry.2 ∧
-        c.verdict = verdictOf θ gs entry.2 ∧ c.verdict ≠ Verdict.open := by
+        c.verdict = verdictOf θ view entry.2 ∧ c.verdict ≠ Verdict.open := by
     intro c hc
-    rcases (sweepClosures_closed_mem θ gs c).mp hc with hold | ⟨entry, hentry, hsome⟩
+    rcases (sweepClosures_closed_mem view θ gs c).mp hc with hold | ⟨entry, hentry, hsome⟩
     · exact Or.inl hold
-    · obtain ⟨hid, hv, hvne, heq⟩ := sweepStep_key θ gs entry c hsome
+    · obtain ⟨hid, hv, hvne, heq⟩ := sweepStep_key view θ gs entry c hsome
       exact Or.inr ⟨entry, hentry, hid, heq, hv, hvne⟩
-  refine ⟨h.membersNodup, ?_, ?_, ?_, ?_, ?_, ?_⟩
-  · have hsub : ((sweepClosures θ gs).openQuestions.map Prod.fst).Sublist
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · have hsub : ((sweepClosures θ view gs).openQuestions.map Prod.fst).Sublist
         (gs.openQuestions.map Prod.fst) := by
       refine List.Sublist.map Prod.fst ?_
       have hsf : (gs.openQuestions.filter
-          (fun entry : QuestionId × Question => verdictOf θ gs entry.2 = .open)).Sublist
+          (fun entry : QuestionId × Question => verdictOf θ view entry.2 = .open)).Sublist
           gs.openQuestions := List.filter_sublist
       simpa [sweepClosures] using hsf
     exact hsub.nodup h.openNodup
-  · have hres : ((gs.openQuestions.filterMap (sweepStep θ gs)).map (·.questionId)).Nodup :=
-      filterMap_keys_nodup (sweepStep θ gs)
-        (fun entry c hc => (sweepStep_key θ gs entry c hc).1) gs.openQuestions h.openNodup
+  · have hres : ((gs.openQuestions.filterMap (sweepStep θ view)).map (·.questionId)).Nodup :=
+      filterMap_keys_nodup (sweepStep θ view)
+        (fun entry c hc => (sweepStep_key view θ gs entry c hc).1) gs.openQuestions h.openNodup
     have hdisj : ∀ qid ∈ gs.closed.map (·.questionId),
-        qid ∉ (gs.openQuestions.filterMap (sweepStep θ gs)).map (·.questionId) := by
+        qid ∉ (gs.openQuestions.filterMap (sweepStep θ view)).map (·.questionId) := by
       intro qid qin hin
       rw [List.mem_map] at hin
       obtain ⟨c, hc, heq⟩ := hin
       rw [List.mem_filterMap] at hc
       obtain ⟨entry, hentry, hsome⟩ := hc
-      have hkey := (sweepStep_key θ gs entry c hsome).1
+      have hkey := (sweepStep_key view θ gs entry c hsome).1
       exact h.openClosedDisjoint qid
         (List.mem_map.mpr ⟨entry, hentry, hkey.symm.trans heq⟩) qin
-    have happend : ((sweepClosures θ gs).closed).map (·.questionId) =
+    have happend : ((sweepClosures θ view gs).closed).map (·.questionId) =
         gs.closed.map (·.questionId) ++
-          (gs.openQuestions.filterMap (sweepStep θ gs)).map (·.questionId) := by
+          (gs.openQuestions.filterMap (sweepStep θ view)).map (·.questionId) := by
       simp [sweepClosures, List.map_append]
     rw [happend]
     exact nodup_append_mem (gs.closed.map (·.questionId))
-      ((gs.openQuestions.filterMap (sweepStep θ gs)).map (·.questionId))
+      ((gs.openQuestions.filterMap (sweepStep θ view)).map (·.questionId))
       h.closedNodup hres hdisj
   · intro qid hopen hc
     rw [List.mem_map] at hopen hc
@@ -512,7 +500,7 @@ private theorem sweepClosures_sweepReady (θ : Threshold) (gs : VoteState)
       exact hne hv'
   · intro qid q hlookup
     obtain ⟨hentry, -⟩ := hopenmem (qid, q)
-      (assocLookup_some_mem' qid q (sweepClosures θ gs).openQuestions hlookup)
+      (assocLookup_some_mem' qid q (sweepClosures θ view gs).openQuestions hlookup)
     exact h.openClean qid q (mem_assocLookup_some' qid q gs.openQuestions h.openNodup hentry)
   · intro c hc
     rcases hclosedmem c hc with hold | ⟨entry, hentry, hid, heq, hv, hne⟩
@@ -527,12 +515,11 @@ private theorem sweepClosures_sweepReady (θ : Threshold) (gs : VoteState)
       exact hne
 
 private theorem sweepClosures_wellFormed (θ : Threshold) (gs : VoteState)
-    (h : SweepReady gs) : VoteWellFormed θ (sweepClosures θ gs) :=
-  ⟨sweepClosures_sweepReady θ gs h, by
+    (h : SweepReady view gs) : VoteWellFormed θ view (sweepClosures θ view gs) :=
+  ⟨sweepClosures_sweepReady view θ gs h, by
     intro qid q hlookup
-    obtain ⟨hentry, hv⟩ := (sweepClosures_open_mem θ gs (qid, q)).mp
-      (assocLookup_some_mem' qid q (sweepClosures θ gs).openQuestions hlookup)
-    rw [verdictOf_congr_members θ (sweepClosures_members θ gs) q]
+    obtain ⟨hentry, hv⟩ := (sweepClosures_open_mem view θ gs (qid, q)).mp
+      (assocLookup_some_mem' qid q (sweepClosures θ view gs).openQuestions hlookup)
     exact hv⟩
 
 /-! ## Per-branch effects -/
@@ -582,7 +569,7 @@ private theorem placeBallot_tally (voter : Key) (ballot : Ballot) (question : Qu
 /-! ## Step preservation -/
 
 private theorem effectedState_sweepReady (gs : VoteState) (signer : Key) (event : VoteEvent)
-    (h : SweepReady gs) : SweepReady (effectedState gs signer event) := by
+    (h : SweepReady view gs) : SweepReady view (effectedState gs signer event) := by
   cases event with
   | openQuestion questionId kind =>
       have hfresh : QuestionClean (Question.mk kind signer [] []) :=
@@ -598,7 +585,7 @@ private theorem effectedState_sweepReady (gs : VoteState) (signer : Key) (event 
               !(gs.closed.any (fun record : ClosureRecord => record.questionId == questionId)) := by
             simpa using hguard
           exact hguard'
-        refine ⟨h.membersNodup, assocInsert_keys_nodup' questionId _ gs.openQuestions
+        refine ⟨assocInsert_keys_nodup' questionId _ gs.openQuestions
           h.openNodup, h.closedNodup, ?_, ?_, h.closedClean, h.closedNotOpen⟩
         · intro qid hmem
           have hcons : { gs with openQuestions := assocInsert questionId (Question.mk kind signer [] []) gs.openQuestions }.openQuestions = (questionId, Question.mk kind signer [] []) :: assocErase questionId gs.openQuestions := rfl
@@ -642,7 +629,7 @@ private theorem effectedState_sweepReady (gs : VoteState) (signer : Key) (event 
             rw [heff]
             have hqmem : (questionId, question) ∈ gs.openQuestions :=
               assocLookup_some_mem' questionId question gs.openQuestions hlook
-            refine ⟨h.membersNodup, assocInsert_keys_nodup' questionId _ gs.openQuestions
+            refine ⟨assocInsert_keys_nodup' questionId _ gs.openQuestions
               h.openNodup, h.closedNodup, ?_, ?_, h.closedClean, h.closedNotOpen⟩
             · intro qid hmem
               have hcons : { gs with openQuestions := assocInsert questionId (placeBallot signer ballot question) gs.openQuestions }.openQuestions = (questionId, placeBallot signer ballot question) :: assocErase questionId gs.openQuestions := rfl
@@ -675,76 +662,73 @@ private theorem effectedState_sweepReady (gs : VoteState) (signer : Key) (event 
       rw [heff]
       exact h
   | admitMember key email roles =>
-      show SweepReady
-        { gs with members := assocInsert key (Member.mk key email roles) gs.members }
-      exact ⟨assocInsert_keys_nodup' key _ gs.members h.membersNodup, h.openNodup,
-        h.closedNodup, h.openClosedDisjoint, h.openClean, h.closedClean, h.closedNotOpen⟩
+      have heff : effectedState gs signer (.admitMember key email roles) = gs := rfl
+      rw [heff]
+      exact h
   | removeMember key =>
-      show SweepReady { gs with members := assocErase key gs.members }
-      exact ⟨assocErase_keys_nodup' key gs.members h.membersNodup, h.openNodup,
-        h.closedNodup, h.openClosedDisjoint, h.openClean, h.closedClean, h.closedNotOpen⟩
+      have heff : effectedState gs signer (.removeMember key) = gs := rfl
+      rw [heff]
+      exact h
   | setRoles key roles =>
-      show SweepReady
-        { gs with members := assocAdjust key (fun member : Member => { member with roles }) gs.members }
-      exact ⟨assocAdjust_keys_nodup' key (fun member : Member => { member with roles })
-        gs.members h.membersNodup, h.openNodup, h.closedNodup, h.openClosedDisjoint,
-        h.openClean, h.closedClean, h.closedNotOpen⟩
+      have heff : effectedState gs signer (.setRoles key roles) = gs := rfl
+      rw [heff]
+      exact h
 
 theorem applyVoteEvent_preserves_wellFormed (θ : Threshold) (gs : VoteState)
-    (signer : Key) (event : VoteEvent) (h : VoteWellFormed θ gs) :
-    VoteWellFormed θ (applyVoteEvent θ gs signer event) := by
+    (signer : Key) (event : VoteEvent) (h : VoteWellFormed θ view gs) :
+    VoteWellFormed θ view (applyVoteEvent θ view gs signer event) := by
   simp only [applyVoteEvent]
-  cases hval : validateVoteEvent θ gs signer event with
+  cases hval : validateVoteEvent θ view gs signer event with
   | error _ => exact h
   | ok u =>
       cases u
-      exact sweepClosures_wellFormed θ (effectedState gs signer event)
-        (effectedState_sweepReady gs signer event h.toSweepReady)
+      exact sweepClosures_wellFormed view θ (effectedState gs signer event)
+        (effectedState_sweepReady view gs signer event h.toSweepReady)
 
 private theorem foldFrom_preserves_wellFormed (θ : Threshold) :
     ∀ (events : List (Key × VoteEvent)) (initial : VoteState),
-      VoteWellFormed θ initial → VoteWellFormed θ (foldFrom θ initial events) := by
+      VoteWellFormed θ view initial → VoteWellFormed θ view (foldFrom θ view initial events) := by
   intro events
   induction events with
   | nil => intro initial h; exact h
   | cons signed rest ih =>
       intro initial h
-      exact ih (applyVoteEvent θ initial signed.1 signed.2)
-        (applyVoteEvent_preserves_wellFormed θ initial signed.1 signed.2 h)
+      exact ih (applyVoteEvent θ view initial signed.1 signed.2)
+        (applyVoteEvent_preserves_wellFormed view θ initial signed.1 signed.2 h)
 
 /-- The contractual carrier theorem: every reachable state is well formed. -/
 theorem foldVote_wellFormed (θ : Threshold) (events : List (Key × VoteEvent)) :
-    VoteWellFormed θ (foldVote θ events) :=
-  foldFrom_preserves_wellFormed θ events emptyVoteState (emptyVoteState_wellFormed θ)
+    VoteWellFormed θ view (foldVote θ view events) :=
+  foldFrom_preserves_wellFormed view θ events emptyVoteState (emptyVoteState_wellFormed view θ)
 
 private theorem foldVote_append (θ : Threshold) (pre suffix : List (Key × VoteEvent)) :
-    foldVote θ (pre ++ suffix) = foldFrom θ (foldVote θ pre) suffix := by
+    foldVote θ view (pre ++ suffix) = foldFrom θ view (foldVote θ view pre) suffix := by
   simp [foldVote, foldFrom, List.foldl_append]
 
 private theorem sweepClosures_preserves_qid (θ : Threshold) (gs : VoteState)
     (qid : QuestionId)
     (h : qid ∈ gs.openQuestions.map Prod.fst ∨
       qid ∈ gs.closed.map (·.questionId)) :
-    qid ∈ (sweepClosures θ gs).openQuestions.map Prod.fst ∨
-      qid ∈ (sweepClosures θ gs).closed.map (·.questionId) := by
+    qid ∈ (sweepClosures θ view gs).openQuestions.map Prod.fst ∨
+      qid ∈ (sweepClosures θ view gs).closed.map (·.questionId) := by
   rcases h with hopen | hclosed
   · rw [List.mem_map] at hopen
     obtain ⟨entry, hentry, hid⟩ := hopen
-    by_cases hv : verdictOf θ gs entry.2 = Verdict.open
-    · have hkept := (sweepClosures_open_mem θ gs entry).mpr ⟨hentry, hv⟩
+    by_cases hv : verdictOf θ view entry.2 = Verdict.open
+    · have hkept := (sweepClosures_open_mem view θ gs entry).mpr ⟨hentry, hv⟩
       exact Or.inl (List.mem_map.mpr ⟨entry, hkept, hid⟩)
-    · have hrecord : sweepStep θ gs entry = some
-          { questionId := entry.1, question := entry.2, verdict := verdictOf θ gs entry.2, cause := closureCause gs entry.2 (verdictOf θ gs entry.2) } := by
-        cases hvv : verdictOf θ gs entry.2
+    · have hrecord : sweepStep θ view entry = some
+          { questionId := entry.1, question := entry.2, verdict := verdictOf θ view entry.2, cause := closureCause view entry.2 (verdictOf θ view entry.2) } := by
+        cases hvv : verdictOf θ view entry.2
         · simp [sweepStep, hvv]
         · simp [sweepStep, hvv]
         · exact absurd hvv hv
       have hc :=
-        (sweepClosures_closed_mem θ gs _).mpr (Or.inr ⟨entry, hentry, hrecord⟩)
+        (sweepClosures_closed_mem view θ gs _).mpr (Or.inr ⟨entry, hentry, hrecord⟩)
       exact Or.inr (List.mem_map.mpr ⟨_, hc, by simpa using hid⟩)
   · rw [List.mem_map] at hclosed
     obtain ⟨c, hc, hid⟩ := hclosed
-    have hc' := (sweepClosures_closed_mem θ gs c).mpr (Or.inl hc)
+    have hc' := (sweepClosures_closed_mem view θ gs c).mpr (Or.inl hc)
     exact Or.inr (List.mem_map.mpr ⟨c, hc', hid⟩)
 
 private theorem effectedState_preserves_qid (gs : VoteState) (signer : Key)
@@ -797,18 +781,15 @@ private theorem effectedState_preserves_qid (gs : VoteState) (signer : Key)
       rw [heff]
       exact h
   | admitMember key email roles =>
-      have heff : effectedState gs signer (.admitMember key email roles) =
-          { gs with members := assocInsert key (Member.mk key email roles) gs.members } := rfl
+      have heff : effectedState gs signer (.admitMember key email roles) = gs := rfl
       rw [heff]
       exact h
   | removeMember key =>
-      have heff : effectedState gs signer (.removeMember key) =
-          { gs with members := assocErase key gs.members } := rfl
+      have heff : effectedState gs signer (.removeMember key) = gs := rfl
       rw [heff]
       exact h
   | setRoles key roles =>
-      have heff : effectedState gs signer (.setRoles key roles) =
-          { gs with members := assocAdjust key (fun member : Member => { member with roles }) gs.members } := rfl
+      have heff : effectedState gs signer (.setRoles key roles) = gs := rfl
       rw [heff]
       exact h
 
@@ -816,129 +797,132 @@ private theorem applyVoteEvent_preserves_qid (θ : Threshold) (gs : VoteState)
     (signer : Key) (event : VoteEvent) (qid : QuestionId)
     (h : qid ∈ gs.openQuestions.map Prod.fst ∨
       qid ∈ gs.closed.map (·.questionId)) :
-    qid ∈ (applyVoteEvent θ gs signer event).openQuestions.map Prod.fst ∨
-      qid ∈ (applyVoteEvent θ gs signer event).closed.map (·.questionId) := by
+    qid ∈ (applyVoteEvent θ view gs signer event).openQuestions.map Prod.fst ∨
+      qid ∈ (applyVoteEvent θ view gs signer event).closed.map (·.questionId) := by
   simp only [applyVoteEvent]
-  cases validateVoteEvent θ gs signer event with
+  cases validateVoteEvent θ view gs signer event with
   | error _ => exact h
   | ok u =>
       cases u
-      exact sweepClosures_preserves_qid θ (effectedState gs signer event) qid
+      exact sweepClosures_preserves_qid view θ (effectedState gs signer event) qid
         (effectedState_preserves_qid gs signer event qid h)
 
 private theorem foldFrom_preserves_qid (θ : Threshold) :
     ∀ (events : List (Key × VoteEvent)) (initial : VoteState) (qid : QuestionId),
       (qid ∈ initial.openQuestions.map Prod.fst ∨
         qid ∈ initial.closed.map (·.questionId)) →
-      qid ∈ (foldFrom θ initial events).openQuestions.map Prod.fst ∨
-        qid ∈ (foldFrom θ initial events).closed.map (·.questionId) := by
+      qid ∈ (foldFrom θ view initial events).openQuestions.map Prod.fst ∨
+        qid ∈ (foldFrom θ view initial events).closed.map (·.questionId) := by
   intro events
   induction events with
   | nil => intro initial qid h; exact h
   | cons signed rest ih =>
       intro initial qid h
-      exact ih (applyVoteEvent θ initial signed.1 signed.2) qid
-        (applyVoteEvent_preserves_qid θ initial signed.1 signed.2 qid h)
+      exact ih (applyVoteEvent θ view initial signed.1 signed.2) qid
+        (applyVoteEvent_preserves_qid view θ initial signed.1 signed.2 qid h)
 
 /-! ## INV-54-DISJOINT (R-57, VC-1) -/
 
 theorem ballots_nodup_disjoint (θ : Threshold) (events : List (Key × VoteEvent)) :
-    (∀ qid q, assocLookup qid (foldVote θ events).openQuestions = some q →
+    (∀ qid q, assocLookup qid (foldVote θ view events).openQuestions = some q →
       QuestionClean q) ∧
-    (∀ c, c ∈ (foldVote θ events).closed → QuestionClean c.question) :=
-  ⟨(foldVote_wellFormed θ events).openClean, (foldVote_wellFormed θ events).closedClean⟩
+    (∀ c, c ∈ (foldVote θ view events).closed → QuestionClean c.question) :=
+  ⟨(foldVote_wellFormed view θ events).openClean, (foldVote_wellFormed view θ events).closedClean⟩
 
 /-! ## INV-54-NOSTALE (R-52, VC-4) -/
 
 theorem open_questions_are_open (θ : Threshold) (events : List (Key × VoteEvent))
     (questionId : QuestionId) (q : Question)
-    (h : assocLookup questionId (foldVote θ events).openQuestions = some q) :
-    verdictOf θ (foldVote θ events) q = Verdict.open :=
-  (foldVote_wellFormed θ events).opensOpen questionId q h
+    (h : assocLookup questionId (foldVote θ view events).openQuestions = some q) :
+    verdictOf θ view q = Verdict.open :=
+  (foldVote_wellFormed view θ events).opensOpen questionId q h
 
 /-! ## INV-54-PARTITION (R-61, VC-3) -/
 
 theorem questions_partition (θ : Threshold) (events : List (Key × VoteEvent)) :
-    ((foldVote θ events).openQuestions.map Prod.fst).Nodup ∧
-    ((foldVote θ events).closed.map (·.questionId)).Nodup ∧
-    (∀ qid, qid ∈ (foldVote θ events).openQuestions.map Prod.fst →
-      qid ∉ (foldVote θ events).closed.map (·.questionId)) ∧
-    (∀ c, c ∈ (foldVote θ events).closed → c.verdict ≠ Verdict.open) ∧
+    ((foldVote θ view events).openQuestions.map Prod.fst).Nodup ∧
+    ((foldVote θ view events).closed.map (·.questionId)).Nodup ∧
+    (∀ qid, qid ∈ (foldVote θ view events).openQuestions.map Prod.fst →
+      qid ∉ (foldVote θ view events).closed.map (·.questionId)) ∧
+    (∀ c, c ∈ (foldVote θ view events).closed → c.verdict ≠ Verdict.open) ∧
     (∀ pre suffix qid,
       events = pre ++ suffix →
-      (qid ∈ (foldVote θ pre).openQuestions.map Prod.fst ∨
-        qid ∈ (foldVote θ pre).closed.map (·.questionId)) →
-      qid ∈ (foldVote θ events).openQuestions.map Prod.fst ∨
-        qid ∈ (foldVote θ events).closed.map (·.questionId)) := by
-  have hf := foldVote_wellFormed θ events
+      (qid ∈ (foldVote θ view pre).openQuestions.map Prod.fst ∨
+        qid ∈ (foldVote θ view pre).closed.map (·.questionId)) →
+      qid ∈ (foldVote θ view events).openQuestions.map Prod.fst ∨
+        qid ∈ (foldVote θ view events).closed.map (·.questionId)) := by
+  have hf := foldVote_wellFormed view θ events
   refine ⟨hf.openNodup, hf.closedNodup, hf.openClosedDisjoint, hf.closedNotOpen, ?_⟩
   intro pre suffix qid hev hin
   subst hev
-  rw [foldVote_append]
-  exact foldFrom_preserves_qid θ suffix (foldVote θ pre) qid hin
+  rw [foldVote_append view]
+  exact foldFrom_preserves_qid view θ suffix (foldVote θ view pre) qid hin
 
 /-! ## INV-54-NOEXPIRY (R-54) — semantic preservation premise (R57-07) -/
-
 /-- The observable content of "this signed event preserves the target
-question", read off the production step itself: the target question keeps
-its exact value, the franchise is unchanged, and the proposer's standing is
-unchanged. This is a semantic observation over arbitrary events, not a
-constructor whitelist: a non-admin member admission satisfies it, while a
-franchise-changing or target-ballot-changing event does not. -/
-def preservesQuestionDecide (threshold : Threshold) (gs : VoteState)
-    (signer : Key) (event : VoteEvent) (questionId : QuestionId) : Bool :=
+question", read off the production step itself: the target question keeps its
+exact value. This is a semantic observation over arbitrary events, not a
+constructor whitelist — a ballot on another question satisfies it, a ballot on
+this one does not.
+
+The franchise and proposer-standing conjuncts this premise carried while the
+vote payload owned membership are **gone rather than left standing as
+tautologies**: with one writable member store, a *vote* event cannot move the
+franchise or a proposer's standing at all, so `franchise view = franchise view`
+would be a conjunct that cannot fail. The observation those two conjuncts made
+is real, but it now belongs where the franchise can actually change — a base
+membership/role transition — and is R62-11's recomputation obligation (T6223,
+S62-B). Keeping them here would manufacture confidence in a check that has
+nothing left to test. -/
+def preservesQuestionDecide (threshold : Threshold) (view : GroupView)
+    (gs : VoteState) (signer : Key) (event : VoteEvent)
+    (questionId : QuestionId) : Bool :=
   match lookupQuestion questionId gs with
   | none => true
   | some q =>
       decide (lookupQuestion questionId
-          (applyVoteEvent threshold gs signer event) = some q) &&
-        decide (franchise (applyVoteEvent threshold gs signer event) =
-          franchise gs) &&
-        decide (isResponsabile q.proposer
-            (applyVoteEvent threshold gs signer event) =
-          isResponsabile q.proposer gs)
-
+        (applyVoteEvent threshold view gs signer event) = some q)
 /-- R57-07: the no-expiry preservation premise. It holds exactly when the
-event preserves the target's ballots, the current franchise, and the
-proposer's standing; its truth depends on those semantic observations, never
-on the event constructor. -/
-def PreservesQuestionSemantics (threshold : Threshold) (gs : VoteState)
+event preserves the target's ballots. The franchise and proposer-standing
+halves moved to the base transition with R62-11; see `preservesQuestionDecide`.
+Its truth depends on a semantic observation, never on the event constructor. -/
+def PreservesQuestionSemantics (threshold : Threshold) (view : GroupView) (gs : VoteState)
     (signer : Key) (event : VoteEvent) (questionId : QuestionId) : Prop :=
-  preservesQuestionDecide threshold gs signer event questionId = true
+  preservesQuestionDecide threshold view gs signer event questionId = true
 
-instance preservesQuestionSemanticsDecidable (threshold : Threshold)
+instance preservesQuestionSemanticsDecidable (threshold : Threshold) (view : GroupView)
     (gs : VoteState) (signer : Key) (event : VoteEvent)
     (questionId : QuestionId) :
-    Decidable (PreservesQuestionSemantics threshold gs signer event
+    Decidable (PreservesQuestionSemantics threshold view gs signer event
       questionId) :=
-  instDecidableEqBool (preservesQuestionDecide threshold gs signer event
+  instDecidableEqBool (preservesQuestionDecide threshold view gs signer event
     questionId) true
 
 theorem no_expiry (θ : Threshold) (events : List (Key × VoteEvent))
     (pre : List (Key × VoteEvent)) (signer : Key) (event : VoteEvent)
     (suffix : List (Key × VoteEvent)) (questionId : QuestionId) (q : Question)
     (hevents : events = pre ++ (signer, event) :: suffix)
-    (hopen : assocLookup questionId (foldVote θ pre).openQuestions = some q)
-    (hpres : PreservesQuestionSemantics θ (foldVote θ pre) signer event
+    (hopen : assocLookup questionId (foldVote θ view pre).openQuestions = some q)
+    (hpres : PreservesQuestionSemantics θ view (foldVote θ view pre) signer event
       questionId) :
     assocLookup questionId
-        (applyVoteEvent θ (foldVote θ pre) signer event).openQuestions = some q ∧
-      verdictOf θ (applyVoteEvent θ (foldVote θ pre) signer event) q = Verdict.open := by
+        (applyVoteEvent θ view (foldVote θ view pre) signer event).openQuestions = some q ∧
+      verdictOf θ view q = Verdict.open := by
   subst hevents
-  have hdec : preservesQuestionDecide θ (foldVote θ pre) signer event
+  have hdec : preservesQuestionDecide θ view (foldVote θ view pre) signer event
       questionId = true := hpres
   simp only [preservesQuestionDecide] at hdec
   rw [lookupQuestion, hopen] at hdec
-  simp only [Bool.and_eq_true, decide_eq_true_eq] at hdec
-  have hlook := hdec.1.1
-  have hform := applyVoteEvent_preserves_wellFormed θ (foldVote θ pre) signer
-    event (foldVote_wellFormed θ pre)
+  simp only [decide_eq_true_eq] at hdec
+  have hlook := hdec
+  have hform := applyVoteEvent_preserves_wellFormed view θ (foldVote θ view pre) signer
+    event (foldVote_wellFormed view θ pre)
   exact ⟨hlook, hform.opensOpen questionId q hlook⟩
 
 /-! ## INV-54-FRANCHISE (R-44, R-45, VC-5) -/
 
 private theorem sweepClosures_tallyKeys (θ : Threshold) (gs : VoteState) (k : Key) :
-    (k ∈ tallyKeysOfState (sweepClosures θ gs) ↔ k ∈ tallyKeysOfState gs) := by
+    (k ∈ tallyKeysOfState (sweepClosures θ view gs) ↔ k ∈ tallyKeysOfState gs) := by
   constructor
   · intro hk
     unfold tallyKeysOfState at hk ⊢
@@ -946,17 +930,17 @@ private theorem sweepClosures_tallyKeys (θ : Threshold) (gs : VoteState) (k : K
     · obtain ⟨keys, hkeys, hkin⟩ := List.mem_flatten.mp hopen
       rw [List.mem_map] at hkeys
       obtain ⟨entry, hentry, heq⟩ := hkeys
-      obtain ⟨hkept, -⟩ := (sweepClosures_open_mem θ gs entry).mp hentry
+      obtain ⟨hkept, -⟩ := (sweepClosures_open_mem view θ gs entry).mp hentry
       exact List.mem_append.mpr (Or.inl (List.mem_flatten.mpr
         ⟨keys, List.mem_map.mpr ⟨entry, hkept, heq⟩, hkin⟩))
     · obtain ⟨keys, hkeys, hkin⟩ := List.mem_flatten.mp hclosed
       rw [List.mem_map] at hkeys
       obtain ⟨r, hr, heq⟩ := hkeys
-      rcases (sweepClosures_closed_mem θ gs r).mp hr with hold |
+      rcases (sweepClosures_closed_mem view θ gs r).mp hr with hold |
         ⟨entry, hentry, hsome⟩
       · exact List.mem_append.mpr (Or.inr (List.mem_flatten.mpr
           ⟨keys, List.mem_map.mpr ⟨r, hold, heq⟩, hkin⟩))
-      · obtain ⟨_, _, _, hq⟩ := sweepStep_key θ gs entry r hsome
+      · obtain ⟨_, _, _, hq⟩ := sweepStep_key view θ gs entry r hsome
         have heq' : tallyKeysOfQuestion entry.2 = keys := by
           rw [hq] at heq; exact heq
         exact List.mem_append.mpr (Or.inl (List.mem_flatten.mpr
@@ -967,26 +951,26 @@ private theorem sweepClosures_tallyKeys (θ : Threshold) (gs : VoteState) (k : K
     · obtain ⟨keys, hkeys, hkin⟩ := List.mem_flatten.mp hopen
       rw [List.mem_map] at hkeys
       obtain ⟨entry, hentry, heq⟩ := hkeys
-      by_cases hv : verdictOf θ gs entry.2 = Verdict.open
-      · have hkept := (sweepClosures_open_mem θ gs entry).mpr ⟨hentry, hv⟩
+      by_cases hv : verdictOf θ view entry.2 = Verdict.open
+      · have hkept := (sweepClosures_open_mem view θ gs entry).mpr ⟨hentry, hv⟩
         exact List.mem_append.mpr (Or.inl (List.mem_flatten.mpr
           ⟨keys, List.mem_map.mpr ⟨entry, hkept, heq⟩, hkin⟩))
-      · have hrecord : sweepStep θ gs entry = some
-            { questionId := entry.1, question := entry.2, verdict := verdictOf θ gs entry.2, cause := closureCause gs entry.2 (verdictOf θ gs entry.2) } := by
-          cases hvv : verdictOf θ gs entry.2
+      · have hrecord : sweepStep θ view entry = some
+            { questionId := entry.1, question := entry.2, verdict := verdictOf θ view entry.2, cause := closureCause view entry.2 (verdictOf θ view entry.2) } := by
+          cases hvv : verdictOf θ view entry.2
           · simp [sweepStep, hvv]
           · simp [sweepStep, hvv]
           · exact absurd hvv hv
         have hc :
-            { questionId := entry.1, question := entry.2, verdict := verdictOf θ gs entry.2, cause := closureCause gs entry.2 (verdictOf θ gs entry.2) } ∈
-              (sweepClosures θ gs).closed :=
-          (sweepClosures_closed_mem θ gs _).mpr (Or.inr ⟨entry, hentry, hrecord⟩)
+            { questionId := entry.1, question := entry.2, verdict := verdictOf θ view entry.2, cause := closureCause view entry.2 (verdictOf θ view entry.2) } ∈
+              (sweepClosures θ view gs).closed :=
+          (sweepClosures_closed_mem view θ gs _).mpr (Or.inr ⟨entry, hentry, hrecord⟩)
         exact List.mem_append.mpr (Or.inr (List.mem_flatten.mpr
           ⟨keys, List.mem_map.mpr ⟨_, hc, by simpa using heq⟩, hkin⟩))
     · obtain ⟨keys, hkeys, hkin⟩ := List.mem_flatten.mp hclosed
       rw [List.mem_map] at hkeys
       obtain ⟨c, hc, heq⟩ := hkeys
-      have hc' := (sweepClosures_closed_mem θ gs c).mpr (Or.inl hc)
+      have hc' := (sweepClosures_closed_mem view θ gs c).mpr (Or.inl hc)
       exact List.mem_append.mpr (Or.inr (List.mem_flatten.mpr
         ⟨keys, List.mem_map.mpr ⟨c, hc', heq⟩, hkin⟩))
 
@@ -996,8 +980,8 @@ premise: the production boundary returns the input before both effect and
 sweep. -/
 theorem inadmissible_is_noop (θ : Threshold) (gs : VoteState) (signer : Key)
     (event : VoteEvent) (error : VoteError)
-    (rejected : validateVoteEvent θ gs signer event = .error error) :
-    applyVoteEvent θ gs signer event = gs := by
+    (rejected : validateVoteEvent θ view gs signer event = .error error) :
+    applyVoteEvent θ view gs signer event = gs := by
   simp only [applyVoteEvent, rejected]
 
 /-- R57-04: the universal non-responsabile corollary. Once a franchise
@@ -1005,23 +989,27 @@ exists, a signer who is not a current responsabile is inert for every
 `VoteEvent` — including `admitMember`, `removeMember`, and `setRoles`; there
 are no constructor exceptions. -/
 theorem nonresponsabile_event_noop (θ : Threshold) (gs : VoteState)
-    (signer : Key) (event : VoteEvent) (bootstrapped : franchiseSize gs > 0)
-    (unauthorized : isResponsabile signer gs = false) :
-    applyVoteEvent θ gs signer event = gs := by
-  have hs0 : (franchiseSize gs == 0) = false := by
-    cases hsz : franchiseSize gs with
+    (signer : Key) (event : VoteEvent) (bootstrapped : franchiseSize view > 0)
+    (unauthorized : isResponsabile signer view = false) :
+    applyVoteEvent θ view gs signer event = gs := by
+  have hs0 : (franchiseSize view == 0) = false := by
+    cases hsz : franchiseSize view with
     | zero => rw [hsz] at bootstrapped; simp at bootstrapped
     | succ n => simp [hsz]
-  have hval : validateVoteEvent θ gs signer event =
-      .error VoteError.notResponsabile := by
+  have hval : validateVoteEvent θ view gs signer event =
+      .error VoteError.notResponsabile ∨
+    validateVoteEvent θ view gs signer event =
+      .error VoteError.membershipNotVoteLocal := by
     cases event <;> simp [validateVoteEvent, unauthorized, hs0]
-  exact inadmissible_is_noop θ gs signer event _ hval
+  rcases hval with hv | hv
+  · exact inadmissible_is_noop view θ gs signer event _ hv
+  · exact inadmissible_is_noop view θ gs signer event _ hv
 
 theorem unfranchised_cast_noop (θ : Threshold) (gs : VoteState) (signer : Key)
     (questionId : QuestionId) (ballot : Ballot)
-    (h : isResponsabile signer gs = false) :
-    applyVoteEvent θ gs signer (.cast questionId ballot) = gs := by
-  have hval : validateVoteEvent θ gs signer (.cast questionId ballot) =
+    (h : isResponsabile signer view = false) :
+    applyVoteEvent θ view gs signer (.cast questionId ballot) = gs := by
+  have hval : validateVoteEvent θ view gs signer (.cast questionId ballot) =
       .error VoteError.notResponsabile := by
     simp [validateVoteEvent, h]
   simp only [applyVoteEvent, hval]
@@ -1056,11 +1044,11 @@ private theorem tallyKeysOfState_insert_cases (gs : VoteState) (qid : QuestionId
 
 private theorem effectedState_tally_growth (θ : Threshold) (gs : VoteState)
     (signer : Key) (event : VoteEvent) (k : Key)
-    (admitted : validateVoteEvent θ gs signer event = Except.ok ())
+    (admitted : validateVoteEvent θ view gs signer event = Except.ok ())
     (hk : k ∈ tallyKeysOfState (effectedState gs signer event)) :
     k ∈ tallyKeysOfState gs ∨
       (signer = k ∧ ∃ qid ballot, event = VoteEvent.cast qid ballot ∧
-        isResponsabile k gs = true) := by
+        isResponsabile k view = true) := by
   cases event with
   | openQuestion questionId kind =>
       by_cases hguard : (lookupQuestion questionId gs).isNone
@@ -1078,10 +1066,10 @@ private theorem effectedState_tally_growth (θ : Threshold) (gs : VoteState)
         rw [heff] at hk
         exact Or.inl hk
   | cast questionId ballot =>
-      cases hresp : isResponsabile signer gs with
+      cases hresp : isResponsabile signer view with
       | false => simp [validateVoteEvent, hresp] at admitted
       | true =>
-          have hresp : isResponsabile signer gs = true := hresp
+          have hresp : isResponsabile signer view = true := hresp
           cases hlook : lookupQuestion questionId gs with
           | none =>
               have heff : effectedState gs signer (.cast questionId ballot) = gs := by
@@ -1113,35 +1101,35 @@ private theorem effectedState_tally_growth (θ : Threshold) (gs : VoteState)
 
 private theorem tally_keys_franchised_from (θ : Threshold) :
     ∀ (events : List (Key × VoteEvent)) (initial : VoteState) (k : Key),
-      k ∈ tallyKeysOfState (foldFrom θ initial events) →
+      k ∈ tallyKeysOfState (foldFrom θ view initial events) →
       k ∈ tallyKeysOfState initial ∨
         ∃ (pre : List (Key × VoteEvent)) (qid : QuestionId) (ballot : Ballot)
           (suffix : List (Key × VoteEvent)),
           events = pre ++ (k, VoteEvent.cast qid ballot) :: suffix ∧
-          isResponsabile k (foldFrom θ initial pre) = true := by
+          isResponsabile k view = true := by
   intro events
   induction events with
   | nil => intro initial k hk; exact Or.inl hk
   | cons signed rest ih =>
       intro initial k hk
-      have hmid : foldFrom θ initial (signed :: rest) =
-          foldFrom θ (applyVoteEvent θ initial signed.1 signed.2) rest := rfl
+      have hmid : foldFrom θ view initial (signed :: rest) =
+          foldFrom θ view (applyVoteEvent θ view initial signed.1 signed.2) rest := rfl
       rw [hmid] at hk
-      rcases ih (applyVoteEvent θ initial signed.1 signed.2) k hk with
+      rcases ih (applyVoteEvent θ view initial signed.1 signed.2) k hk with
         hmem | ⟨pre, qid, ballot, suffix, hev, hfr⟩
       · have hgate : k ∈ tallyKeysOfState
-            (match validateVoteEvent θ initial signed.1 signed.2 with
-              | .ok () => sweepClosures θ (effectedState initial signed.1 signed.2)
+            (match validateVoteEvent θ view initial signed.1 signed.2 with
+              | .ok () => sweepClosures θ view (effectedState initial signed.1 signed.2)
               | .error _ => initial) := hmem
-        cases hval : validateVoteEvent θ initial signed.1 signed.2 with
+        cases hval : validateVoteEvent θ view initial signed.1 signed.2 with
         | error _ =>
             simp [hval] at hgate
             exact Or.inl hgate
         | ok u =>
             cases u
             simp [hval] at hgate
-            rcases effectedState_tally_growth θ initial signed.1 signed.2 k hval
-              ((sweepClosures_tallyKeys θ _ k).mp hgate) with
+            rcases effectedState_tally_growth view θ initial signed.1 signed.2 k hval
+              ((sweepClosures_tallyKeys view θ _ k).mp hgate) with
               hold | ⟨hsk, qid, ballot, hevc, hfr2⟩
             · exact Or.inl hold
             · have hsigned : signed = (k, VoteEvent.cast qid ballot) :=
@@ -1156,12 +1144,12 @@ the key's ballot was placed; `isResponsabile` there is the cast-time
 franchise check the fold's cast branch performs. The key may have lost
 standing since — tallies are counted as recorded (V-3, R-53). -/
 theorem franchise_of_tallies (θ : Threshold) (events : List (Key × VoteEvent)) (k : Key)
-    (hk : k ∈ tallyKeysOfState (foldVote θ events)) :
+    (hk : k ∈ tallyKeysOfState (foldVote θ view events)) :
     ∃ (pre : List (Key × VoteEvent)) (qid : QuestionId) (ballot : Ballot)
       (suffix : List (Key × VoteEvent)),
       events = pre ++ (k, VoteEvent.cast qid ballot) :: suffix ∧
-      isResponsabile k (foldVote θ pre) = true := by
-  rcases tally_keys_franchised_from θ events emptyVoteState k hk with
+      isResponsabile k view = true := by
+  rcases tally_keys_franchised_from view θ events emptyVoteState k hk with
     h0 | ⟨pre, qid, ballot, suffix, hev, hfr⟩
   · exact absurd h0 (by simp [tallyKeysOfState, emptyVoteState])
   · exact ⟨pre, qid, ballot, suffix, hev, hfr⟩

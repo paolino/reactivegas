@@ -23,14 +23,16 @@ zero-threshold pass really is a pass with no ballot cast at all.
 
 namespace KelGroups.Vote
 
+variable (view : GroupView)
+
 /-! ## Trace helpers -/
 
 private def witnessTraceValidFrom (θ : Threshold) (gs : VoteState) :
     List (Key × VoteEvent) → Bool
   | [] => true
   | (signer, event) :: rest =>
-      (validateVoteEvent θ gs signer event == Except.ok ()) &&
-        witnessTraceValidFrom θ (applyVoteEvent θ gs signer event) rest
+      (validateVoteEvent θ view gs signer event == Except.ok ()) &&
+        witnessTraceValidFrom θ (applyVoteEvent θ view gs signer event) rest
 
 private def witnessTraceValid (θ : Threshold) (events : List (Key × VoteEvent)) : Bool :=
   witnessTraceValidFrom θ emptyVoteState events
@@ -229,7 +231,7 @@ def votePointState : VoteState :=
 -- (sha256 1f7aa80a) against 757dac98 is the complementary mutant.
 #guard
   let gs := foldVote zeroThreshold [("stranger", .openQuestion "q" .collective)]
-  lookupQuestion "q" gs == none && gs.closed == [] && gs.members == []
+  lookupQuestion "q" gs == none && gs.closed == [] && view.members == []
 
 -- A cast on an unknown question id is rejected with the lookup error.
 #guard
@@ -313,7 +315,7 @@ def r45After : VoteState :=
   applyVoteEvent legacyThreshold r45Before "stranger" (.removeMember "b")
 
 #guard
-  franchiseSize r45Before == 3 &&
+  franchiseSize viewr45Before == 3 &&
     isResponsabile "stranger" r45Before == false &&
     validateVoteEvent legacyThreshold r45Before "stranger" (.removeMember "b") ==
       Except.error VoteError.notResponsabile &&

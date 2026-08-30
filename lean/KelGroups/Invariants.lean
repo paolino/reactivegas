@@ -1,5 +1,6 @@
 import KelGroups.Fold
 import KelGroups.Validate
+import KelGroups.Integration
 
 /-!
 # Vote-machine invariants and counterexamples
@@ -573,12 +574,15 @@ theorem app_event_preserves_members
     result.state.members = gs.members := by
   simp only [applyIntegratedEvent] at h
   split at h
-  · simp at h
-  · split at h
-    · simp at h
-    · simp only [Except.ok.injEq] at h
+  case isTrue =>
+    split at h
+    case h_1 appState hfold =>
+      simp only [Except.ok.injEq] at h
       subst h
       rfl
+    case h_2 err hfold => exact Except.noConfusion h
+  case isFalse => exact Except.noConfusion h
+
 
 /-- Companion to `app_event_preserves_members`: an app event never reports a
 base change, so no downstream consumer can read one out of an app transition. -/
@@ -592,12 +596,15 @@ theorem app_event_has_no_base_change
     result.change = none := by
   simp only [applyIntegratedEvent] at h
   split at h
-  · simp at h
-  · split at h
-    · simp at h
-    · simp only [Except.ok.injEq] at h
+  case isTrue =>
+    split at h
+    case h_1 appState hfold =>
+      simp only [Except.ok.injEq] at h
       subst h
       rfl
+    case h_2 err hfold => exact Except.noConfusion h
+  case isFalse => exact Except.noConfusion h
+
 end KelGroups
 
 /- The frozen gate prints these mandated names unqualified from the root

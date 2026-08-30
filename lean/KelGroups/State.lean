@@ -47,4 +47,10 @@ deriving DecidableEq, BEq, Repr
 def authMode (gs : GroupState α) : AuthMode :=
   if adminCount gs == 0 then .bootstrap else .normal
 
+/-- **The canonical projection.** The sole route from the writable aggregate to
+the read-only view every app fold, base hook and vote observation consumes. It
+copies nothing that can be written back: `GroupView` has no path to a
+`GroupState`. -/
+def groupView (gs : GroupState α) : GroupView := { members := gs.members }
+
 end KelGroups
