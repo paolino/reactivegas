@@ -552,6 +552,52 @@ def bootstrapPendingWitness : GroupState Unit := witnessFold bootstrapPendingEve
   witnessTraceValid bootstrapPendingEvents && adminCount bootstrapPendingWitness == 0 &&
     lookupPending "introduce:later" bootstrapPendingWitness != none
 
+
+/-! ### R62-04 — the integrated app boundary preserves canonical membership
+
+`INV-62-PAYLOAD-ONLY` stated as a theorem about the production transition.
+The type of `IntegratedAppFold` already makes a member relation *unreturnable*
+by an app fold; these prove the transition around it does not write one either,
+so the app payload is the only thing an app event can move.
+
+The historical `applyEventDetailed` is not the subject here: both quantify over
+`applyIntegratedEvent`, the sole Reactivegas production transition. -/
+
+theorem app_event_preserves_members
+    {AppState AppEvent BaseProposal AppError : Type}
+    (integration : Integration AppState AppEvent BaseProposal AppError)
+    (gs : GroupState AppState) (signer : Key) (event : AppEvent)
+    (result : IntegratedResult AppState)
+    (h : applyIntegratedEvent integration gs signer (IntegratedEvent.app event)
+      = .ok result) :
+    result.state.members = gs.members := by
+  simp only [applyIntegratedEvent] at h
+  split at h
+  · simp at h
+  · split at h
+    · simp at h
+    · simp only [Except.ok.injEq] at h
+      subst h
+      rfl
+
+/-- Companion to `app_event_preserves_members`: an app event never reports a
+base change, so no downstream consumer can read one out of an app transition. -/
+theorem app_event_has_no_base_change
+    {AppState AppEvent BaseProposal AppError : Type}
+    (integration : Integration AppState AppEvent BaseProposal AppError)
+    (gs : GroupState AppState) (signer : Key) (event : AppEvent)
+    (result : IntegratedResult AppState)
+    (h : applyIntegratedEvent integration gs signer (IntegratedEvent.app event)
+      = .ok result) :
+    result.change = none := by
+  simp only [applyIntegratedEvent] at h
+  split at h
+  · simp at h
+  · split at h
+    · simp at h
+    · simp only [Except.ok.injEq] at h
+      subst h
+      rfl
 end KelGroups
 
 /- The frozen gate prints these mandated names unqualified from the root

@@ -993,4 +993,67 @@ def missingNames : List String :=
     throw (IO.userError ("failing: " ++ String.intercalate ", " failedNames ++
       " missing: " ++ String.intercalate ", " missingNames))
 
+/-! ## R62-04 — integrated app events preserve canonical membership
+
+The executed counterpart of `app_event_preserves_members`.
+
+`checkAppMembersPreservation` runs one real production integrated app event
+through `KelGroups.applyIntegratedEvent` on the Reactivegas integration and
+requires three things at once: the canonical member relation is unchanged, the
+app payload *did* move, and no base change was reported. The middle conjunct is
+what stops the check passing vacuously — a rejected or inert transition leaves
+the payload alone and would otherwise report a preserved membership it never
+tested.
+
+`checkAppMembersPreservationMutant` is the negative control: the same comparison
+against a perturbed member relation, which must be `false`. Without it a
+comparator that answers `true` on everything would read as proof.
+
+These are kernel-decided rather than `#eval`-ed, for the reason given at the top
+of this module: `backdonateAuthorized` is `sorry`, so `step` has no compiled
+code. Kernel reduction is lazy and a `donate` event never demands that branch.
+-/
+
+/-- One admin and one ordinary member in the canonical store. -/
+def appPreservationGroup : KelGroups.GroupState State :=
+  { members :=
+      [ ("alice", { key := "alice", email := "alice@example",
+                    roles := [KelGroups.Role.adminRole KelGroups.Admin.publicAdmin] })
+      , ("bob", { key := "bob", email := "bob@example", roles := [] }) ]
+    pendingProposals := []
+    appFold := State.empty }
+
+/-- A perturbed member relation, used only by the negative control. -/
+def appPreservationGroupMutant : KelGroups.GroupState State :=
+  { appPreservationGroup with members := appPreservationGroup.members.tail }
+
+/-- The production integrated transition under test: an attested donation,
+which moves `casse` and the comune conto and touches no membership. -/
+def appPreservationResult :
+    Except (KelGroups.IntegratedError StepError) (KelGroups.IntegratedResult State) :=
+  KelGroups.applyIntegratedEvent
+    (Reactivegas.integration KelGroups.Vote.legacyThreshold)
+    appPreservationGroup "alice" (KelGroups.IntegratedEvent.app (AppEvent.donate 30))
+
+def checkAppMembersPreservation : Bool :=
+  match appPreservationResult with
+  | .ok result =>
+      (result.state.members == appPreservationGroup.members)
+        && !(result.state.appFold == appPreservationGroup.appFold)
+        && (result.change == none)
+  | .error _ => false
+
+/-- Negative control. The mutant really differs from the original, and the same
+comparator returns `false` on it. -/
+def checkAppMembersPreservationMutant : Bool :=
+  !(appPreservationGroupMutant.members == appPreservationGroup.members)
+    && !(match appPreservationResult with
+         | .ok result => result.state.members == appPreservationGroupMutant.members
+         | .error _ => false)
+
+theorem app_members_preservation_holds : checkAppMembersPreservation = true := by decide
+
+theorem app_members_preservation_mutant_caught :
+    checkAppMembersPreservationMutant = true := by decide
+
 end TraceTests
