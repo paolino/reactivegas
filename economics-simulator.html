@@ -3426,10 +3426,11 @@ function drawScene() {
 
   state.users.forEach(u => {
     const { x, y } = memberPos[u];
-    const ux = (x - CX) / R, uy = (y - CY) / R;
+    const uy = (y - CY) / R;
+    const dir = uy >= 0 ? 1 : -1;
     layout['member:' + u] = { x, y };
-    layout['conto:' + u] = { x: x + ux * 55, y: y + uy * 55 };
-    if (resp(u)) layout['cassa:' + u] = { x: x + ux * 83, y: y + uy * 83 };
+    layout['conto:' + u] = { x, y: y + dir * 55 };
+    if (resp(u)) layout['cassa:' + u] = { x, y: y + dir * 81 };
   });
 
   for (const p of geo.placements) {
