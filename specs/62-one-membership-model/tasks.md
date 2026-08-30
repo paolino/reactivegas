@@ -30,21 +30,21 @@ boxes after a fresh audit passes the exact candidate.
 
 ## Slice S62-B — one transition system
 
-- [ ] **T6220** Add the sole current-admin direct admission command with
+- [x] **T6220** Add the sole current-admin direct admission command with
       duplicate and reserved-key rejection plus reachable positive/negative
       controls. (R62-06)
-- [ ] **T6221** Close `Reactivegas.Proposal` without admission and falsify a
+- [x] **T6221** Close `Reactivegas.Proposal` without admission and falsify a
       seeded `introduceMember` reintroduction. (R62-07)
-- [ ] **T6222** Remove all four app membership/role events and all three
+- [x] **T6222** Remove all four app membership/role events and all three
       vote-local member/role events; signer is the sole author. (R62-08,
       R62-11)
-- [ ] **T6223** Seal economic cleanup and vote recomputation into every real
+- [x] **T6223** Seal economic cleanup and vote recomputation into every real
       base member/role transition. (R62-09, R62-10)
-- [ ] **T6224** Re-demonstrate V-3 from a real base transition with unchanged
+- [x] **T6224** Re-demonstrate V-3 from a real base transition with unchanged
       tallies and no new ballot. (R62-11)
-- [ ] **T6225** Make all app/direct/proposal/base-change/verdict classifications
+- [x] **T6225** Make all app/direct/proposal/base-change/verdict classifications
       exhaustive and falsify every seeded constructor. (R62-12)
-- [ ] **T6226** Pass the S62-B gate, focused build, proof-debt checks, full CI,
+- [x] **T6226** Pass the S62-B gate, focused build, proof-debt checks, full CI,
       and fresh independent audit.
 
 ## Slice S62-C — proof, mutation, trace, and observable closure
