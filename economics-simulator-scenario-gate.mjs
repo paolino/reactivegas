@@ -26,12 +26,17 @@
  *        no-vote-derived-without-evidence  governed walk ran and matched
  *        no-close-without-positive-permission
  *        no-negative-conto                 every prefix state, L7
- *        comune-tripwire                   this snapshot has no comune and
- *                                          no donate/backdonate execution;
- *                                          the day the core gains them this
- *                                          assertion REDs, forcing a
- *                                          conscious upgrade — never a
- *                                          silent vacuous pass;
+ *        comune-donation                   live donate witness: author
+ *                                          cassa +v and unique reserved
+ *                                          non-member comune +v; member
+ *                                          conti unchanged
+ *        comune-backdonation               live backdonate witness after a
+ *                                          funded comune: every member +w,
+ *                                          comune −n*w, casse unchanged
+ *        backdonate without closed-app     verifyGovernedSeq refuses a
+ *        evidence                          backdonate step with empty vote
+ *                                          evidence (honest NON PROVATO
+ *                                          join; no invented vote id);
  *   6. proves both surfaces consume the SAME core: runs
  *      economics-simulator-build.mjs --check (stale or forked inlined copy
  *      is RED) and executes the page's actual script in a vm, comparing its
@@ -59,7 +64,18 @@ const sha256 = b => createHash('sha256').update(b).digest('hex');
 const core = await import(join(REPO, 'economics-simulator-core.mjs'));
 
 const REQUIRED_KINDS = ['no-vote-derived-without-evidence',
-  'no-close-without-positive-permission', 'no-negative-conto', 'comune-tripwire'];
+  'no-close-without-positive-permission', 'no-negative-conto',
+  'comune-donation', 'comune-backdonation'];
+const clone = x => JSON.parse(JSON.stringify(x));
+const balOf = (m, k) => (m.find(([k2]) => k2 === k) || [null, 0])[1];
+const totalOf = m => m.reduce((n, [, v]) => n + v, 0);
+const donationBase = () => ({
+  users: [0, 1, 2],
+  responsabili: [0, 1],
+  conti: [[2, 100]],
+  casse: [[0, 100]],
+  collections: [],
+});
 
 /* --- assertion implementations (checks belong to the gate; data to the
        scenario files) ------------------------------------------------------ */
@@ -72,20 +88,20 @@ function assertNoNegativeConto(sc, ver) {
   return `${ver.states.length} stati, tutti i conti ≥ 0`;
 }
 
-function assertNoCloseWithoutPositive(sc) {
+function assertNoCloseWithoutPositive(sc, mod) {
   const wrap = sc.wrap;
-  let kgs = core.vtEmpty();
+  let kgs = mod.vtEmpty();
   const granted = new Set();
   let closes = 0;
   let ei = 0, ki = 0;
   for (const m of wrap.seq) {
     if (m === 'k') {
       const st = wrap.kel.steps[ki++];
-      kgs = core.vtApply(kgs, st.signer, st.event).state;
+      kgs = mod.vtApply(kgs, st.signer, st.event).state;
     } else if (m === 'e') {
-      const e = core.leanEventOf(wrap.trace.steps[ei++].event);
+      const e = mod.leanEventOf(wrap.trace.steps[ei++].event);
       if (e.tag === 'grantPermission') {
-        const rec = kgs.closed.find(r => r.questionId === core.permQid(e.c));
+        const rec = kgs.closed.find(r => r.questionId === mod.permQid(e.c));
         if (!rec || rec.verdict !== 'positive')
           throw new Error(`grantPermission su «${e.c}» senza verdetto positivo chiuso`);
         granted.add(e.c);
@@ -101,21 +117,74 @@ function assertNoCloseWithoutPositive(sc) {
   return `${closes} chiusure, ognuna preceduta dal permesso con verdetto positivo`;
 }
 
-function assertComuneTripwire(sc, ver) {
-  // the tripwire watches the LIVE core, not just the frozen envelope: the
-  // day the machine gains the comune (or executes donate/backdonate) this
-  // assertion refuses to stay absence-based
-  if ('comune' in core.initState(0))
-    throw new Error('il core ha guadagnato il comune: aggiorna questa asserzione a una legge di conservazione (donazione, assorbimento di uscita, backdonation)');
-  ver.states.forEach((s, i) => {
-    if ('comune' in s) throw new Error(`stato ${i} con campo comune inatteso`);
-  });
-  for (const st of sc.wrap.trace.steps) {
-    const e = core.leanEventOf(st.event);
-    if (e.tag === 'donate' || e.tag === 'backdonate')
-      throw new Error(`evento ${e.tag} eseguito ma l'asserzione comune è ancora assenza-based`);
+function assertComuneDonation(mod) {
+  if ('comune' in mod.initState(0))
+    throw new Error('il comune non può essere un campo State: è un conto riservato in conti');
+  const before = donationBase();
+  let r;
+  try { r = mod.attempt(clone(before), { tag: 'donate', author: 0, v: 90 }); }
+  catch (e) { throw new Error(`donate: ${e.message}`); }
+  if (!r || r.ok !== true) throw new Error('donate: live witness refused');
+  const after = r.state;
+  const common = after.conti.filter(([k]) => !after.users.includes(k));
+  if (balOf(after.casse, 0) - balOf(before.casse, 0) !== 90)
+    throw new Error('donate: author cassa delta is not +90');
+  if (totalOf(after.conti) - totalOf(before.conti) !== 90)
+    throw new Error('donate: total conti delta is not +90');
+  if (before.users.some(u => balOf(after.conti, u) !== balOf(before.conti, u)))
+    throw new Error('donate: changed a member conto');
+  if (common.length !== 1 || common[0][1] !== 90)
+    throw new Error('donate: no unique reserved non-member comune conto at +90');
+  if (JSON.stringify(after.users) !== JSON.stringify(before.users) ||
+      JSON.stringify(after.responsabili) !== JSON.stringify(before.responsabili) ||
+      JSON.stringify(after.collections) !== JSON.stringify(before.collections))
+    throw new Error('donate: changed membership, roles, or collections');
+  return 'donate +90 su cassa autore e conto comune riservato, conti membri invariati';
+}
+
+function assertComuneBackdonation(mod) {
+  const funded = (() => {
+    let setup;
+    try { setup = mod.attempt(clone(donationBase()), { tag: 'donate', author: 0, v: 90 }); }
+    catch (e) { throw new Error(`backdonate: donate setup threw: ${e.message}`); }
+    if (!setup || setup.ok !== true) throw new Error('backdonate: donate setup refused');
+    return setup.state;
+  })();
+  let r;
+  try { r = mod.attempt(clone(funded), { tag: 'backdonate', author: 0, w: 10 }); }
+  catch (e) { throw new Error(`backdonate: ${e.message}`); }
+  if (!r || r.ok !== true) throw new Error('backdonate: live witness refused');
+  const common = funded.conti.filter(([k]) => !funded.users.includes(k));
+  if (common.length !== 1)
+    throw new Error('backdonate: funded comune is not a unique non-member conto');
+  for (const u of funded.users)
+    if (balOf(r.state.conti, u) - balOf(funded.conti, u) !== 10)
+      throw new Error(`backdonate: member ${u} did not receive exactly +10`);
+  if (balOf(r.state.conti, common[0][0]) - balOf(funded.conti, common[0][0]) !== -30)
+    throw new Error('backdonate: comune delta is not -(member-count * share)');
+  if (JSON.stringify(r.state.casse) !== JSON.stringify(funded.casse))
+    throw new Error('backdonate: changed casse');
+  if (JSON.stringify(r.state.users) !== JSON.stringify(funded.users) ||
+      JSON.stringify(r.state.responsabili) !== JSON.stringify(funded.responsabili) ||
+      JSON.stringify(r.state.collections) !== JSON.stringify(funded.collections))
+    throw new Error('backdonate: changed membership, roles, or collections');
+  return 'backdonate +10 a ogni membro, comune −30, casse invariate';
+}
+
+function assertBackdonateGovernanceBoundary(mod) {
+  try {
+    mod.verifyGovernedSeq({
+      env: { steps: [{ event: { backdonate: { author: 0, w: 1 } } }] },
+      kelEnv: { steps: [] },
+      baseEnv: { steps: [] },
+      seq: ['e'],
+    });
+  } catch (e) {
+    if (/backdonate|verdetto|governo/.test(e.message))
+      return `rifiuto: ${e.message}`;
+    throw new Error(`backdonate governo: motivo sbagliato: ${e.message}`);
   }
-  return 'nessun comune in questo snapshot (tripwire vivo sul core)';
+  throw new Error('backdonate senza evidenza accettato dal governo');
 }
 
 /* --- one scenario --------------------------------------------------------- */
@@ -170,8 +239,9 @@ function runScenario(sc) {
   for (const kind of sc.assertions) {
     let note;
     if (kind === 'no-negative-conto') note = assertNoNegativeConto(sc, ver);
-    else if (kind === 'no-close-without-positive-permission') note = assertNoCloseWithoutPositive(sc);
-    else if (kind === 'comune-tripwire') note = assertComuneTripwire(sc, ver);
+    else if (kind === 'no-close-without-positive-permission') note = assertNoCloseWithoutPositive(sc, core);
+    else if (kind === 'comune-donation') note = assertComuneDonation(core);
+    else if (kind === 'comune-backdonation') note = assertComuneBackdonation(core);
     else if (kind === 'no-vote-derived-without-evidence') {
       if (governanceOff)
         throw new Error('asserzione di governo richiesta ma il governo è disattivato');
@@ -212,6 +282,16 @@ function runSuite(opts) {
   if (!ran && !reasons.length) reasons.push('suite senza scenari eseguiti');
   for (const k of REQUIRED_KINDS)
     if (!covered.has(k)) reasons.push('genere di asserzione richiesto non coperto dalla suite: ' + k);
+
+  if (core.EVENT_ROUTES.donate !== 'direct' || core.voteDerivedTag('donate'))
+    reasons.push('donate non è instradato direct');
+  if (core.EVENT_ROUTES.backdonate !== 'appDecided' || !core.voteDerivedTag('backdonate'))
+    reasons.push('backdonate non è instradato appDecided');
+  try {
+    assertBackdonateGovernanceBoundary(core);
+  } catch (e) {
+    reasons.push(e.message);
+  }
 
   // shared-core drift: the generated page must be byte-identical to the core
   try {
@@ -353,6 +433,33 @@ function selftest(work) {
         const p = join(work, 'sab-fork.html');
         writeFileSync(p, doc.replace(m[0], m[0] + '// forked transcription\n'));
         return runSuite({ html: p, skipVm: true });
+      },
+    },
+    {
+      name: 'legge di donazione violata (comune non accreditato)',
+      expect: /donate: (author cassa delta is not \+90|no unique reserved non-member comune conto at \+90|total conti delta is not \+90)/,
+      run: () => {
+        try {
+          assertComuneDonation({
+            initState: core.initState,
+            attempt: s => ({ ok: true, state: clone(s) }),
+          });
+          return { ok: true, reasons: [] };
+        } catch (e) {
+          return { ok: false, reasons: [e.message] };
+        }
+      },
+    },
+    {
+      name: 'backdonate senza evidenza accettato dal governo',
+      expect: /backdonate senza evidenza accettato dal governo/,
+      run: () => {
+        try {
+          assertBackdonateGovernanceBoundary({ verifyGovernedSeq() {} });
+          return { ok: true, reasons: [] };
+        } catch (e) {
+          return { ok: false, reasons: [e.message] };
+        }
       },
     },
   ];

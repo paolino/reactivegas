@@ -376,6 +376,7 @@
  "assertions": [
   "no-vote-derived-without-evidence",
   "no-negative-conto",
-  "comune-tripwire"
+  "comune-donation",
+  "comune-backdonation"
  ]
 }

@@ -39,7 +39,15 @@
  *      by ELABORATING the pinned module in a scratch worktree of the
  *      immutable commit (its own #print axioms directives report the
  *      axioms; its #guard witnesses fail the build if false);
- *  11. exits nonzero with a precise reason on any mismatch, zero on GREEN.
+ *  11. derives the Event constructor inventory from the accepted core pin's
+ *      lean/Reactivegas/Types.lean (never EVENT_ROUTES/TAG_CLAIMS/EV),
+ *      requires each cited source blob at the pin to equal origin/master,
+ *      subtracts the exact dated #62 retirement manifest, and executes a
+ *      valid witness through the exported real `attempt` for every remaining
+ *      constructor — returning/refusing is not coverage; ok:true is required
+ *      and `unknown event tag` is RED. A printed GREEN contains
+ *      `machine=14/14 pinned=18 retired=4`;
+ *  12. exits nonzero with a precise reason on any mismatch, zero on GREEN.
  *
  * Together with the page's rendering (which draws the three user-facing
  * states provato / enunciato, non dimostrato / NON PROVATO exclusively from
@@ -68,8 +76,8 @@ import { readFileSync, writeFileSync, mkdtempSync, mkdirSync, rmSync, cpSync,
   existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { tmpdir } from 'node:os';
 
 const REPO = dirname(fileURLToPath(import.meta.url));
@@ -87,6 +95,41 @@ const ACCEPTED_COMPOSITION = {
   tree: '641107474766534915f67651311b6bdcf1d1a574',
   module: 'lean/Reactivegas/Composition.lean',
 };
+
+/* Accepted #48 core pin: Event inventory is derived from this commit's
+   Types.lean, never from a JS constructor table. Pin-freshness compares
+   each derived file's blob at the pin with origin/master. */
+const ACCEPTED_CORE = {
+  commit: '024dcc723fb70132c8085db2e39c7ba6d4e3a4c8',
+  tree: '2914b7c5a69461b5c25678d06ae0c1393da2bfea',
+  files: ['lean/Reactivegas/Types.lean'],
+};
+const EVENT_SOURCE = 'lean/Reactivegas/Types.lean';
+const RETIRED = ['addUser', 'electResponsabile', 'removeMember',
+  'removeResponsabile'];
+const RETIREMENT = Object.freeze({
+  issue: '#62',
+  requirement: 'R62-08',
+  status: 'retired-by-#62',
+  declared: '2026-08-30',
+});
+const CORE = resolve(REPO, 'economics-simulator-core.mjs');
+const clone = x => JSON.parse(JSON.stringify(x));
+const balOf = (m, k) => (m.find(([k2]) => k2 === k) || [null, 0])[1];
+const totalOf = m => m.reduce((n, [, v]) => n + v, 0);
+const coverageBase = () => ({
+  users: [0, 1, 2],
+  responsabili: [0, 1],
+  conti: [[2, 100]],
+  casse: [[0, 100]],
+  collections: [],
+});
+const coverageCol = ({ accepted = [], pending = [], permitted = false } = {}) => ({
+  ...coverageBase(),
+  conti: [[2, 100 - accepted.reduce((n, p) => n + p.amount, 0)
+                    - pending.reduce((n, p) => n + p.amount, 0)]],
+  collections: [{ id: 7, referente: 0, permitted, accepted, pending }],
+});
 
 /* Parse the embedded CLAIMS manifest and CHECK_RECEIPT out of an HTML body. */
 function extract(doc) {
@@ -223,6 +266,202 @@ function deriveAxioms(cited, out) {
     derived[d] = sorried ? 'enunciato' : 'provato';
   }
   return { derived, rawLine };
+}
+
+function gitShow(revPath) {
+  return execFileSync('git', ['-C', REPO, 'rev-parse', revPath],
+    { encoding: 'utf8' }).trim();
+}
+
+function assertCitedFilesFresh(pin, files) {
+  for (const file of files) {
+    const pinnedBlob = gitShow(`${pin}:${file}`);
+    const masterBlob = gitShow(`origin/master:${file}`);
+    if (pinnedBlob !== masterBlob)
+      throw new Error(`stale cited file ${file}: pin blob=${pinnedBlob} origin/master blob=${masterBlob}`);
+  }
+}
+
+function pinnedConstructors() {
+  const gotTree = gitShow(`${ACCEPTED_CORE.commit}^{tree}`);
+  if (gotTree !== ACCEPTED_CORE.tree)
+    throw new Error(`accepted core tree mismatch: ${gotTree}`);
+  execFileSync('git', ['-C', REPO, 'merge-base', '--is-ancestor',
+    ACCEPTED_CORE.commit, 'origin/master']);
+  assertCitedFilesFresh(ACCEPTED_CORE.commit, ACCEPTED_CORE.files);
+  const src = execFileSync('git', ['-C', REPO, 'show',
+    `${ACCEPTED_CORE.commit}:${EVENT_SOURCE}`], { encoding: 'utf8' });
+  const block = src.match(/inductive Event where([\s\S]*?)deriving DecidableEq, Repr/);
+  if (!block) throw new Error('pinned Lean Event declaration not found');
+  const ctors = [...block[1].matchAll(/^\s*\|\s+([A-Za-z][A-Za-z0-9_]*)\b/gm)]
+    .map(m => m[1]);
+  if (ctors.length !== 18 || new Set(ctors).size !== 18)
+    throw new Error(`pinned Lean Event inventory is not exactly 18: ${ctors.join(',')}`);
+  return ctors;
+}
+
+function validWitness(tag) {
+  switch (tag) {
+    case 'openPurchase': return [coverageBase(), { tag, author: 0, c: 7 }];
+    case 'grantPermission': return [coverageCol(), { tag, author: 0, c: 7 }];
+    case 'denyPermission': return [coverageCol(), { tag, author: 0, c: 7 }];
+    case 'deposit': return [coverageBase(), { tag, author: 0, user: 2, v: 10 }];
+    case 'withdraw': return [coverageBase(), { tag, author: 0, user: 2, v: 10 }];
+    case 'transferCassa': return [coverageBase(), { tag, author: 0, from_: 1, v: 10 }];
+    case 'donate': return [coverageBase(), { tag, author: 0, v: 90 }];
+    case 'pledge': return [coverageCol(), { tag, author: 0, user: 2, c: 7, v: 10 }];
+    case 'acceptPledge': return [coverageCol({ pending: [{ user: 2, amount: 10 }] }),
+      { tag, author: 0, user: 2, c: 7 }];
+    case 'refusePledge': return [coverageCol({ pending: [{ user: 2, amount: 10 }] }),
+      { tag, author: 0, user: 2, c: 7 }];
+    case 'correctPledge': return [coverageCol({ accepted: [{ user: 2, amount: 10 }] }),
+      { tag, author: 0, user: 2, c: 7, v: 5 }];
+    case 'closePurchase': return [coverageCol({ accepted: [{ user: 2, amount: 10 }], permitted: true }),
+      { tag, author: 0, c: 7 }];
+    case 'failPurchase': return [coverageCol({ accepted: [{ user: 2, amount: 10 }] }),
+      { tag, author: 0, c: 7 }];
+    default: return null;
+  }
+}
+
+function requireRefused(attempt, state, event, label) {
+  let result;
+  try { result = attempt(clone(state), event); }
+  catch (e) { return `${label}: threw instead of refusing: ${e.message}`; }
+  if (!result || result.ok !== false) return `${label}: invalid event was not refused`;
+  return null;
+}
+
+async function loadCore(corePath) {
+  return import(`${pathToFileURL(corePath).href}?audit=${Date.now()}-${Math.random()}`);
+}
+
+async function checkMachineCoverage(corePath) {
+  const reasons = [];
+  let ctors;
+  try { ctors = pinnedConstructors(); }
+  catch (e) { return { ok: false, reasons: [e.message] }; }
+  const active = ctors.filter(x => !RETIRED.includes(x));
+  let mod;
+  try { mod = await loadCore(corePath); }
+  catch (e) { return { ok: false, reasons: ['core import failed: ' + e.message] }; }
+
+  const manifest = mod.EVENT_RETIREMENTS;
+  if (!manifest || typeof manifest !== 'object') {
+    reasons.push('EVENT_RETIREMENTS manifest missing');
+  } else {
+    const keys = Object.keys(manifest).sort();
+    if (JSON.stringify(keys) !== JSON.stringify(RETIRED))
+      reasons.push(`retirement manifest keys differ: ${keys.join(',')}`);
+    for (const tag of RETIRED) {
+      const row = manifest[tag];
+      for (const [k, v] of Object.entries(RETIREMENT))
+        if (!row || row[k] !== v) reasons.push(`${tag}: retirement ${k} is not ${v}`);
+    }
+  }
+
+  for (const tag of active) {
+    if (tag === 'donate' || tag === 'backdonate') continue;
+    const witness = validWitness(tag);
+    if (!witness) { reasons.push(`${tag}: oracle witness missing`); continue; }
+    try {
+      const result = mod.attempt(clone(witness[0]), witness[1]);
+      if (!result || result.ok !== true) reasons.push(`${tag}: live witness refused`);
+    } catch (e) { reasons.push(`${tag}: live witness threw: ${e.message}`); }
+  }
+
+  let donated = null;
+  try { donated = mod.attempt(coverageBase(), { tag: 'donate', author: 0, v: 90 }); }
+  catch (e) { reasons.push(`donate: live witness threw: ${e.message}`); }
+  if (donated && donated.ok === true) {
+    const before = coverageBase();
+    const after = donated.state;
+    const common = after.conti.filter(([k]) => !after.users.includes(k));
+    if (balOf(after.casse, 0) - balOf(before.casse, 0) !== 90)
+      reasons.push('donate: author cassa delta is not +90');
+    if (totalOf(after.conti) - totalOf(before.conti) !== 90)
+      reasons.push('donate: total conti delta is not +90');
+    if (before.users.some(u => balOf(after.conti, u) !== balOf(before.conti, u)))
+      reasons.push('donate: changed a member conto');
+    if (common.length !== 1 || common[0][1] !== 90)
+      reasons.push('donate: no unique reserved non-member comune conto at +90');
+    try {
+      const back = mod.attempt(clone(after), { tag: 'backdonate', author: 0, w: 10 });
+      if (!back || back.ok !== true) reasons.push('backdonate: live witness refused');
+      else {
+        for (const u of after.users)
+          if (balOf(back.state.conti, u) - balOf(after.conti, u) !== 10)
+            reasons.push(`backdonate: member ${u} did not receive exactly +10`);
+        const commonKey = common[0][0];
+        if (balOf(back.state.conti, commonKey) - balOf(after.conti, commonKey) !== -30)
+          reasons.push('backdonate: comune delta is not -(member-count * share)');
+        if (JSON.stringify(back.state.casse) !== JSON.stringify(after.casse))
+          reasons.push('backdonate: changed casse');
+      }
+    } catch (e) { reasons.push(`backdonate: live witness threw: ${e.message}`); }
+  } else if (donated && donated.ok !== true) {
+    reasons.push('donate: live witness refused');
+  }
+
+  if (typeof mod.attempt === 'function') {
+    for (const failure of [
+      requireRefused(mod.attempt, coverageBase(), { tag: 'donate', author: 2, v: 10 },
+        'donate non-responsabile'),
+      requireRefused(mod.attempt, coverageBase(), { tag: 'donate', author: 0, v: 0 },
+        'donate non-positive'),
+      requireRefused(mod.attempt, coverageBase(), { tag: 'backdonate', author: 2, w: 1 },
+        'backdonate non-responsabile'),
+      requireRefused(mod.attempt, coverageBase(), { tag: 'backdonate', author: 0, w: 0 },
+        'backdonate non-positive'),
+      requireRefused(mod.attempt, coverageBase(), { tag: 'backdonate', author: 0, w: 1 },
+        'backdonate insufficient comune'),
+    ]) if (failure) reasons.push(failure);
+  }
+
+  if (reasons.length) return { ok: false, reasons, pinned: ctors.length,
+    retired: RETIRED.length, executable: active.length };
+  return { ok: true, reasons: [], pinned: ctors.length, retired: RETIRED.length,
+    executable: active.length };
+}
+
+function stalePinSelftest() {
+  const masterBlob = gitShow(`origin/master:${EVENT_SOURCE}`);
+  const history = execFileSync('git', ['-C', REPO, 'rev-list', `${ACCEPTED_CORE.commit}^`],
+    { encoding: 'utf8' }).trim().split('\n');
+  let stalePin = null;
+  for (const candidate of history) {
+    try {
+      const blob = execFileSync('git', ['-C', REPO, 'rev-parse',
+        `${candidate}:${EVENT_SOURCE}`],
+        { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+      if (blob !== masterBlob) { stalePin = candidate; break; }
+    } catch { /* file did not yet exist */ }
+  }
+  if (!stalePin) throw new Error(`no historical stale pin found for ${EVENT_SOURCE}`);
+  let staleMessage = '';
+  try { assertCitedFilesFresh(stalePin, [EVENT_SOURCE]); }
+  catch (e) { staleMessage = e.message; }
+  if (!new RegExp(`stale cited file ${EVENT_SOURCE}: pin blob=[0-9a-f]{40} origin/master blob=[0-9a-f]{40}`)
+    .test(staleMessage))
+    throw new Error(`stale-pin control did not RED with file and both blobs: ${staleMessage}`);
+}
+
+async function removedAttemptCaseControl() {
+  const dir = mkdtempSync(join(tmpdir(), 'rg-claim-machine-'));
+  try {
+    const source = readFileSync(CORE, 'utf8');
+    const needle = "case 'deposit': {";
+    if (source.split(needle).length !== 2)
+      throw new Error('selftest mutation did not match exactly one live attempt case');
+    const mutant = join(dir, 'economics-simulator-core-mutant.mjs');
+    writeFileSync(mutant, source.replace(needle, "case 'deposit_REMOVED': {"));
+    const r = await checkMachineCoverage(mutant);
+    const message = (r.reasons || []).join('\n');
+    if (r.ok || !/deposit: live witness threw: unknown event tag: deposit/.test(message))
+      throw new Error(`removed-live-case control did not RED for machine reachability: ${message}`);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 }
 
 /*
@@ -471,7 +710,7 @@ function runGate(opts) {
 
 /* --- selftest: the mandatory negative axes, then production GREEN ---------- */
 
-function selftest(work) {
+async function selftest(work) {
   const doc = readFileSync(HTML, 'utf8');
 
   // run production FIRST: GREEN is required, and its fresh derivation is the
@@ -481,6 +720,19 @@ function selftest(work) {
     console.error('SELFTEST RED: il gate di produzione non torna GREEN:\n' + green.reasons.join('\n'));
     return 1;
   }
+  const mc = await checkMachineCoverage(CORE);
+  if (!mc.ok) {
+    console.error('SELFTEST RED: copertura macchina non torna GREEN:\n' + mc.reasons.join('\n'));
+    return 1;
+  }
+  try {
+    await removedAttemptCaseControl();
+    stalePinSelftest();
+  } catch (e) {
+    console.error('SELFTEST RED: controllo macchina: ' + e.message);
+    return 1;
+  }
+  console.log('machine-controls=removed-attempt-case,stale-event-pin');
   const sorried = Object.entries(green.axioms).filter(([, s]) => s === 'enunciato').map(([d]) => d);
   if (!sorried.length) {
     console.error('SELFTEST RED: nessuna dichiarazione enunciata derivata — il controllo del ' +
@@ -692,7 +944,8 @@ function selftest(work) {
   }
   console.log(`selftest GREEN: ${controls.length} controlli negativi RED per il motivo atteso; ` +
     `produzione GREEN (${green.rows} righe, ${green.cited} citazioni, ` +
-    `${green.enun} enunciate, sha ${green.sha.slice(0, 12)}…)`);
+    `${green.enun} enunciate, sha ${green.sha.slice(0, 12)}…); ` +
+    `machine-controls=removed-attempt-case,stale-event-pin`);
   return 0;
 }
 
@@ -716,7 +969,7 @@ const work = mkdtempSync(join(tmpdir(), 'rg-claim-gate-'));
 let code = 1;
 try {
   if (process.argv.includes('--selftest')) {
-    code = selftest(work);
+    code = await selftest(work);
   } else if (process.argv.includes('--emit-receipt')) {
     const r = runGate({ work, emit: true });
     if (r.ok) {
@@ -727,20 +980,28 @@ try {
       code = 1;
     }
   } else {
-    const r = runGate({ work });
-    if (r.ok) {
-      console.log(`GREEN: ${r.rows} righe di manifesto, ${r.cited} citazioni verificate nel ` +
-        `lake env; stati derivati (${r.enun} enunciate, ${r.cited - r.enun} provate); ` +
-        `file:line risolti; hash sorgenti confermati; copertura KelGroups esaustiva ` +
-        `(${r.kelPins} sorgenti scoperte = pinnate); pin composizione ` +
-        `${ACCEPTED_COMPOSITION.commit.slice(0, 10)}… verificato (albero esatto, righe al pin, ` +
-        `instradamento derivato, copertura dei costruttori, stati elaborati freschi); ` +
-        `ricevuta legata (sha ${r.sha.slice(0, 12)}…)`);
-      code = 0;
-    } else {
-      console.error(`RED: ${r.reasons.length} problemi`);
-      r.reasons.forEach(x => console.error(' - ' + x));
+    const mc = await checkMachineCoverage(CORE);
+    if (!mc.ok) {
+      console.error(`RED: ${mc.reasons.length} problemi`);
+      mc.reasons.forEach(x => console.error(' - ' + x));
       code = 1;
+    } else {
+      const r = runGate({ work });
+      if (r.ok) {
+        console.log(`GREEN: ${r.rows} righe di manifesto, ${r.cited} citazioni verificate nel ` +
+          `lake env; stati derivati (${r.enun} enunciate, ${r.cited - r.enun} provate); ` +
+          `file:line risolti; hash sorgenti confermati; copertura KelGroups esaustiva ` +
+          `(${r.kelPins} sorgenti scoperte = pinnate); pin composizione ` +
+          `${ACCEPTED_COMPOSITION.commit.slice(0, 10)}… verificato (albero esatto, righe al pin, ` +
+          `instradamento derivato, copertura dei costruttori, stati elaborati freschi); ` +
+          `ricevuta legata (sha ${r.sha.slice(0, 12)}…); ` +
+          `machine=${mc.executable}/${mc.executable} pinned=${mc.pinned} retired=${mc.retired}`);
+        code = 0;
+      } else {
+        console.error(`RED: ${r.reasons.length} problemi`);
+        r.reasons.forEach(x => console.error(' - ' + x));
+        code = 1;
+      }
     }
   }
 } finally {

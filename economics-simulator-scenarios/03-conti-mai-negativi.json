@@ -954,6 +954,7 @@
  },
  "assertions": [
   "no-negative-conto",
-  "comune-tripwire"
+  "comune-donation",
+  "comune-backdonation"
  ]
 }
