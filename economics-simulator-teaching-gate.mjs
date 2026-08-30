@@ -178,6 +178,13 @@ window.__rgSnap = phase => ({
     [id, !!document.querySelector('[data-teach="' + id + '"]')])),
   texts: Object.fromEntries([...document.querySelectorAll('[data-teach]')].map(el =>
     [el.dataset.teach, el.textContent.replace(/\\s+/g, ' ').trim()])),
+  claims: Object.fromEntries([...document.querySelectorAll('[data-teach]')].map(el =>
+    [el.dataset.teach, ((el.querySelector('.pk') || { dataset: {} }).dataset.claims) || ''])),
+  sceneNames: Object.fromEntries([...document.querySelectorAll('[data-key^="member:"]')].map(g =>
+    [g.dataset.key.split(':')[1], ((g.querySelector('.nm') || {}).textContent || '').trim()])),
+  escrowHeld: window.RG.state.collections.reduce((a, c) =>
+    a + [...c.accepted, ...c.pending].reduce((x, p) => x + p.amount, 0), 0),
+  lastLogLine: ((document.querySelector('#log .entry .eh') || {}).textContent || '').trim(),
   casseNeg: window.RG.state.casse.filter(([, v]) => v < 0),
   openQuestions: window.RG.kg.openQuestions.length,
   view: location.hash || 'n/a',
@@ -345,17 +352,52 @@ async function runJourney(b, url, nonce) {
     await __rgClick('#hat-cassiere [data-task="transferCassa"]');
     await __rgClick('#pop .chip[data-id="1"]');
     await __rgAmount(50);`);
-  const cassaDis = await b.eval(s, `__rgDismiss('cassa')`);
-  await step(b, s, snaps, 'cassa.dismiss', ``);
-  await step(b, s, snaps, 'cassa.recreateAfterDismiss', `
+  // identity value coverage (audit finding 2): a SECOND distinguishable
+  // cassiere goes negative too — Elena is elected and funded, Anna's cassa
+  // is drained to 5, and Anna closes her own mini-purchase for 6, so both
+  // Anna (−1) and Bruno (−40) are negative at once; the rendered sentence
+  // must name exactly the derived negative set
+  await step(b, s, snaps, 'cassa.identities', `
     await __rgClick('#crumbs [data-crumb="0"]');
-    await __rgClick('[data-key="member:1"]');
+    await __rgClick('[data-key="ghost:2"]');
+    await __rgClick('#pop .chip[data-id="0"]');
+    await __rgClick('#gtasks [data-task="electResponsabile"]');
+    await __rgClick('#pop .chip[data-id="2"]');
+    await __rgClick('#pop .chip[data-id="0"]');
+    await __rgClick('[data-key="member:2"]');
     await __rgClick('[data-hat="cassiere"]');
     await __rgClick('#hat-cassiere [data-task="transferCassa"]');
     await __rgClick('#pop .chip[data-id="0"]');
-    await __rgAmount(50);
+    await __rgAmount(95);
     await __rgClick('#crumbs [data-crumb="0"]');
     await __rgClick('[data-key="member:0"]');
+    await __rgClick('[data-hat="cassiere"]');
+    await __rgClick('#hat-cassiere [data-task="openPurchase"]');
+    await __rgClick('#pop [data-l="Caffè"]');
+    await __rgClick('#crumbs [data-crumb="0"]');
+    await __rgClick('[data-key="pile:4"]');
+    await __rgClick('#view [data-task="pledge"]');
+    await __rgClick('#pop .chip[data-id="1"]');
+    await __rgClick('#pop .chip[data-id="0"]');
+    await __rgAmount(15);
+    await __rgClick('#refpanel [data-act="accept"][data-u="1"]');
+    await __rgClick('#view [data-kgpropose]');
+    await __rgClick('#pop .chip[data-id="anna"]');
+    await __rgClick('#view [data-kgcast="permesso:4"][data-kgsigner="anna"][data-kgballot="assent"]');
+    await __rgClick('#view [data-task="grantPermission"]');
+    await __rgClick('#ext-apply');
+    await __rgClick('#refpanel [data-task="closePurchase"]');
+    await __rgClick('#crumbs [data-crumb="0"]');`);
+  const cassaDis = await b.eval(s, `__rgDismiss('cassa')`);
+  await step(b, s, snaps, 'cassa.dismiss', ``);
+  await step(b, s, snaps, 'cassa.recreateAfterDismiss', `
+    await __rgClick('[data-key="member:1"]');
+    await __rgClick('[data-hat="cassiere"]');
+    await __rgClick('#hat-cassiere [data-task="transferCassa"]');
+    await __rgClick('#pop .chip[data-id="2"]');
+    await __rgAmount(50);
+    await __rgClick('#crumbs [data-crumb="0"]');
+    await __rgClick('[data-key="member:2"]');
     await __rgClick('[data-hat="cassiere"]');
     await __rgClick('#hat-cassiere [data-task="transferCassa"]');
     await __rgClick('#pop .chip[data-id="1"]');
@@ -366,9 +408,9 @@ async function runJourney(b, url, nonce) {
     await __rgClick('#crumbs [data-crumb="0"]');
     await __rgClick('[data-key="cassa:1"]');
     await __rgClick('#hat-cassiere [data-task="openPurchase"]');
-    await __rgClick('#pop [data-l="Caffè"]');
+    await __rgClick('#pop [data-l="Miele"]');
     await __rgClick('#crumbs [data-crumb="0"]');
-    await __rgClick('[data-key="pile:4"]');
+    await __rgClick('[data-key="pile:5"]');
     await __rgClick('#refpanel [data-task="failPurchase"]');`);
   await step(b, s, snaps, 'chiusa.leave', `
     await __rgClick('#crumbs [data-crumb="0"]');
@@ -381,9 +423,9 @@ async function runJourney(b, url, nonce) {
   await step(b, s, snaps, 'chiusa.recreate', `
     await __rgClick('[data-key="cassa:1"]');
     await __rgClick('#hat-cassiere [data-task="openPurchase"]');
-    await __rgClick('#pop [data-l="Miele"]');
+    await __rgClick('#pop [data-l="Pasta"]');
     await __rgClick('#crumbs [data-crumb="0"]');
-    await __rgClick('[data-key="pile:5"]');
+    await __rgClick('[data-key="pile:6"]');
     await __rgClick('#refpanel [data-task="failPurchase"]');`);
   const chiusaDis = await b.eval(s, `__rgDismiss('chiusa')`);
   await step(b, s, snaps, 'chiusa.dismiss', ``);
@@ -391,22 +433,75 @@ async function runJourney(b, url, nonce) {
     await __rgClick('#crumbs [data-crumb="0"]');
     await __rgClick('[data-key="cassa:1"]');
     await __rgClick('#hat-cassiere [data-task="openPurchase"]');
-    await __rgClick('#pop [data-l="Pasta"]');
+    await __rgClick('#pop [data-l="Riso"]');
     await __rgClick('#crumbs [data-crumb="0"]');
-    await __rgClick('[data-key="pile:6"]');
+    await __rgClick('[data-key="pile:7"]');
     await __rgClick('#refpanel [data-task="failPurchase"]');`);
+
+  // ------ persisted dismissal (audit finding 4) ----------------------------
+  // set every condition true, then RELOAD the persisted real session and
+  // recreate the guardie encounter: each ✕-dismissed strip must stay absent
+  // even though its condition demonstrably holds again
+  await b.eval(s, `(async () => {
+    await __rgClick('#crumbs [data-crumb="0"]');
+    await __rgClick('[data-key="pile:2"]');
+    await __rgClick('#view [data-task="pledge"]');
+    await __rgClick('#pop .chip[data-id="1"]');
+    await __rgClick('#pop .chip[data-id="0"]');
+    await __rgAmount(10);
+    await __rgClick('#crumbs [data-crumb="0"]');
+    await __rgClick('[data-key="cassa:1"]');
+    await __rgClick('#hat-cassiere [data-task="openPurchase"]');
+    await __rgClick('#pop [data-l="Sale"]');
+    await __rgClick('#crumbs [data-crumb="0"]');
+    await __rgClick('[data-key="pile:8"]');
+    await __rgClick('#refpanel [data-task="failPurchase"]');
+    return 'persist-setup-ok';
+  })()`);
+  await b.send('Page.navigate', { url }, s);
+  await sleep(900);
+  await b.eval(s, HELPERS(nonce));
+  const persist = await b.eval(s, `(async () => {
+    await __rgClick('[data-key="pile:2"]');
+    let offClicked = false;
+    const off = document.querySelector('#refpanel [data-task="closePurchase"].off');
+    if (off) {
+      const r = off.getBoundingClientRect();
+      off.dispatchEvent(new MouseEvent('click', { bubbles: true,
+        clientX: r.x + 2, clientY: r.y + 2 }));
+      offClicked = true;
+      await new Promise(z => setTimeout(z, 90));
+      const pop = document.getElementById('pop');
+      if (pop && !pop.hidden) { const x = pop.querySelector('.xbtn2'); if (x) x.click(); }
+    }
+    return { ...__rgSnap('persist.all'), offClicked };
+  })()`);
 
   const dismissed = { voto: votoDis, impegno: impegnoDis, guardie: guardieDis,
     cassa: cassaDis, chiusa: chiusaDis };
-  return { session: s, snaps, dismissed,
+  return { session: s, snaps, dismissed, persist,
     errors: b.errorsFor(s), requests: b.requestsFor(s) };
 }
 
 /* --- report assembly + validation ------------------------------------------ */
 
 const PHASES = ['appear', 'leave', 'recreate', 'dismiss', 'recreateAfterDismiss'];
-const EXPECT = { appear: true, leave: false, recreate: true,
+const CASSA_PHASES = ['appear', 'leave', 'recreate', 'identities', 'dismiss',
+  'recreateAfterDismiss'];
+const EXPECT = { appear: true, leave: false, recreate: true, identities: true,
   dismiss: false, recreateAfterDismiss: false };
+
+/* The accepted strip→claims mapping (audit finding 3): the rendered ⊢ glyph
+   of every visible strip must carry exactly this, so teaching can never
+   silently rebind to a different proof surface. */
+const ACCEPTED_TEACH_CLAIMS = {
+  benvenuto: ['js-transcription'],
+  impegno: ['impegno-escrow'],
+  guardie: ['auth', 'covered'],
+  cassa: ['cassa-negativa', 'close-payout'],
+  chiusa: ['close-gone'],
+  voto: ['vote-threshold-exhibit', 'vote-verdict', 'vote-open-empty', 'vote-place'],
+};
 
 function buildReport(run, nonce) {
   const byPhase = {};
@@ -418,19 +513,23 @@ function buildReport(run, nonce) {
         phases: ['appear', 'firstUse', 'reloadPersist'].map(p => {
           const sn = byPhase['benvenuto.' + p];
           return sn && { phase: p, nonce: sn.nonce, visible: sn.strips.benvenuto,
-            expected: p === 'appear' };
+            expected: p === 'appear', text: sn.texts.benvenuto || null,
+            claims: sn.claims.benvenuto || null };
         }) };
       continue;
     }
     rows[id] = { dismissedClicked: run.dismissed[id] === true,
-      phases: PHASES.map(p => {
+      phases: (id === 'cassa' ? CASSA_PHASES : PHASES).map(p => {
         const sn = byPhase[id + '.' + p];
         return sn && { phase: p, nonce: sn.nonce, visible: sn.strips[id],
           expected: EXPECT[p], text: sn.texts[id] || null,
-          casseNeg: id === 'cassa' ? sn.casseNeg : undefined };
+          claims: sn.claims[id] || null,
+          casseNeg: id === 'cassa' ? sn.casseNeg : undefined,
+          sceneNames: id === 'cassa' && p === 'identities' ? sn.sceneNames : undefined };
       }) };
   }
-  return { nonce, rows, errors: run.errors.length, requests: run.requests };
+  return { nonce, rows, persist: run.persist,
+    errors: run.errors.length, requests: run.requests };
 }
 
 /* Buyer-register scan for the six surface sentences (NOTE-032): programmer
@@ -448,7 +547,7 @@ export function validateReport(rep, nonce) {
     const row = rep.rows[id];
     if (!row) { bad.push('riga mancante: ' + id); continue; }
     const phases = (row.phases || []).filter(Boolean);
-    const want = id === 'benvenuto' ? 3 : 5;
+    const want = id === 'benvenuto' ? 3 : (id === 'cassa' ? 6 : 5);
     if (phases.length < want) { bad.push(`${id}: fasi osservate ${phases.length} < ${want} (riga saltata o parziale)`); continue; }
     for (const ph of phases) {
       if (ph.nonce !== nonce)
@@ -458,27 +557,70 @@ export function validateReport(rep, nonce) {
     }
     if (id !== 'benvenuto' && row.dismissedClicked !== true)
       bad.push(`${id}: la ✕ non era cliccabile quando attesa (striscia assente al momento del congedo)`);
+    // EVERY strip, arrival included, must expose its observed sentence to
+    // the same buyer-register scan (audit finding 1) and carry the accepted
+    // proof-claim mapping on its rendered glyph (audit finding 3)
     const shown = phases.find(p => p.visible && p.text);
-    if (id !== 'benvenuto') {
-      if (!shown) bad.push(`${id}: nessun testo di superficie osservato`);
-      else {
-        for (const re of FORBIDDEN_SURFACE)
-          if (re.test(shown.text.replace(/⊢.*$/, '')))
-            bad.push(`${id}: registro sbagliato in superficie (${re}): «${shown.text.slice(0, 80)}»`);
-        if (id === 'voto' && !/\bno\b/i.test(shown.text))
-          bad.push('voto: la frase non dice che si può rispondere NO');
-      }
+    if (!shown) bad.push(`${id}: nessun testo di superficie osservato`);
+    else {
+      for (const re of FORBIDDEN_SURFACE)
+        if (re.test(shown.text.replace(/⊢.*$/, '')))
+          bad.push(`${id}: registro sbagliato in superficie (${re}): «${shown.text.slice(0, 80)}»`);
+      if (id === 'voto' && !/\bno\b/i.test(shown.text))
+        bad.push('voto: la frase non dice che si può rispondere NO');
+      if (shown.claims !== ACCEPTED_TEACH_CLAIMS[id].join(','))
+        bad.push(`${id}: claims della striscia divergenti dalla mappatura accettata — ` +
+          `attesi=${ACCEPTED_TEACH_CLAIMS[id].join(',')} osservati=${shown.claims}`);
     }
   }
   // the exact operator regression: negative cassa AND visible strip together
-  const ca = rep.rows.cassa && (rep.rows.cassa.phases || []).filter(Boolean)
-    .find(p => p.phase === 'appear');
+  const cassaPhases = rep.rows.cassa ? (rep.rows.cassa.phases || []).filter(Boolean) : [];
+  const ca = cassaPhases.find(p => p.phase === 'appear');
   if (!ca) bad.push('regressione cassa: fase mancante');
   else {
     if (!ca.casseNeg || !ca.casseNeg.length)
       bad.push('regressione cassa: nessuna cassa negativa dopo la chiusura (flusso non riuscito)');
     if (ca.visible !== true)
       bad.push('regressione cassa: cassa negativa senza spiegazione a schermo nello stesso render');
+  }
+  // identity value coverage (audit finding 2): with TWO distinguishable
+  // negative cassieri the rendered sentence names exactly the derived set
+  const ci = cassaPhases.find(p => p.phase === 'identities');
+  if (!ci) bad.push('identità cassa: fase mancante');
+  else {
+    const neg = ci.casseNeg || [];
+    const uids = [...new Set(neg.map(([u]) => u))];
+    if (uids.length < 2)
+      bad.push(`identità cassa: servono almeno due cassieri negativi distinguibili, osservati ${uids.length}`);
+    const names = ci.sceneNames || {};
+    for (const u of uids) {
+      const name = names[u];
+      if (!name) { bad.push(`identità cassa: nome del cassiere ${u} non osservabile`); continue; }
+      if (!ci.text || !ci.text.includes(name))
+        bad.push(`identità cassa: la frase non nomina ${name} (cassa negativa reale)`);
+    }
+    for (const [u, name] of Object.entries(names)) {
+      if (!name || uids.includes(Number(u))) continue;
+      if (ci.text && ci.text.includes(name))
+        bad.push(`identità cassa: la frase nomina ${name} la cui cassa NON è negativa`);
+    }
+  }
+  // persisted dismissal (audit finding 4): after a real reload of the
+  // persisted session, every ✕-dismissed strip stays absent although its
+  // condition demonstrably holds again
+  const pv = rep.persist;
+  if (!pv || pv.nonce !== nonce) bad.push('persistenza: fase post-reload mancante o non meccanica');
+  else {
+    if (pv.offClicked !== true)
+      bad.push('persistenza: il rifiuto post-reload non era ricreabile (controllo spento assente)');
+    if (!(pv.escrowHeld > 0)) bad.push('persistenza: nessun impegno vivo dopo il reload');
+    if (!(pv.casseNeg || []).length) bad.push('persistenza: nessuna cassa negativa dopo il reload');
+    if (!(pv.openQuestions > 0)) bad.push('persistenza: nessuna domanda aperta dopo il reload');
+    if (!/fallisce/.test(pv.lastLogLine || ''))
+      bad.push('persistenza: il contesto post-chiusura non è ricostruito dal replay');
+    for (const id of STRIPS)
+      if (pv.strips[id])
+        bad.push(`persistenza: striscia ${id} riapparsa dopo il reload nonostante la ✕`);
   }
   if (rep.errors > 0) bad.push(`errori console/pagina durante il giro: ${rep.errors}`);
   const external = (rep.requests || []).filter(u => !u.startsWith('file://'));
@@ -555,17 +697,30 @@ async function selftest(work) {
   const doc = readFileSync(HTML, 'utf8');
   // 1) report-validation controls: fabricated/partial/hand-authored reports
   const nonce = 'deadbeefdeadbeefdeadbeef';
-  const goodPhase = (id, p) => ({ phase: p, nonce, visible: EXPECT[p], text:
-    id === 'voto' ? 'puoi dire no' : 'frase' });
+  const goodPhase = (id, p) => ({ phase: p, nonce, visible: EXPECT[p],
+    expected: EXPECT[p],
+    text: id === 'voto' ? 'puoi dire no' : 'frase',
+    claims: ACCEPTED_TEACH_CLAIMS[id].join(','),
+    casseNeg: id === 'cassa' && (p === 'appear' || p === 'identities')
+      ? (p === 'identities' ? [[0, -1], [1, -40]] : [[1, -40]]) : undefined,
+    sceneNames: id === 'cassa' && p === 'identities'
+      ? { 0: 'Anna', 1: 'Bruno', 2: 'Elena' } : undefined });
   const goodRow = id => id === 'benvenuto'
     ? { exception: 'x', phases: [
-        { phase: 'appear', nonce, visible: true, expected: true },
+        { phase: 'appear', nonce, visible: true, expected: true, text: 'benvenuto, prova!',
+          claims: ACCEPTED_TEACH_CLAIMS.benvenuto.join(',') },
         { phase: 'firstUse', nonce, visible: false, expected: false },
         { phase: 'reloadPersist', nonce, visible: false, expected: false }] }
-    : { dismissedClicked: true, phases: PHASES.map(p => ({ ...goodPhase(id, p),
-        expected: EXPECT[p],
-        casseNeg: id === 'cassa' && p === 'appear' ? [[1, -40]] : undefined })) };
+    : { dismissedClicked: true,
+        phases: (id === 'cassa' ? CASSA_PHASES : PHASES).map(p => {
+          const ph = goodPhase(id, p);
+          if (id === 'cassa' && p === 'identities') ph.text = 'La cassa di Anna e Bruno è sotto zero';
+          return ph;
+        }) };
   const goodRep = () => ({ nonce, errors: 0, requests: [],
+    persist: { nonce, offClicked: true, escrowHeld: 10, casseNeg: [[0, -1]],
+      openQuestions: 2, lastLogLine: 'Bruno fallisce «Sale»',
+      strips: Object.fromEntries(STRIPS.map(id => [id, false])) },
     rows: Object.fromEntries(STRIPS.map(id => [id, goodRow(id)])) });
   const fabControls = [
     ['report vuoto', {}, /report assente|righe insufficienti|riga mancante/],
@@ -573,13 +728,26 @@ async function selftest(work) {
       /riga mancante: voto/],
     ['riga saltata (fasi parziali)', (() => { const r = goodRep();
       r.rows.cassa.phases = r.rows.cassa.phases.slice(0, 2); return r; })(),
-      /cassa: fasi osservate 2 < 5/],
+      /cassa: fasi osservate 2 < 6/],
     ['report scritto a mano (nonce estraneo)', (() => { const r = goodRep();
       r.rows.voto.phases[0].nonce = 'altro'; return r; })(),
       /nonce non del run/],
     ['regressione cassa senza spiegazione', (() => { const r = goodRep();
       r.rows.cassa.phases[0].visible = false; return r; })(),
       /senza spiegazione a schermo|attesa visibile=true/],
+    ['claims della striscia divergenti', (() => { const r = goodRep();
+      r.rows.cassa.phases.forEach(p => { p.claims = 'close-gone'; }); return r; })(),
+      /claims della striscia divergenti/],
+    ['identità cassa costante', (() => { const r = goodRep();
+      const ph = r.rows.cassa.phases.find(p => p.phase === 'identities');
+      ph.text = 'La cassa di Bruno è sotto zero'; return r; })(),
+      /identità cassa: la frase non nomina Anna/],
+    ['persistenza assente dal report', (() => { const r = goodRep();
+      delete r.persist; return r; })(),
+      /persistenza: fase post-reload mancante/],
+    ['striscia riapparsa dopo il reload', (() => { const r = goodRep();
+      r.persist.strips.voto = true; return r; })(),
+      /persistenza: striscia voto riapparsa/],
   ];
   for (const [name, rep, expect] of fabControls) {
     const bad = validateReport(rep, nonce);
@@ -607,6 +775,33 @@ async function selftest(work) {
       mutate: d => d.replace('  if (res.ok) {\n    recordApplied(tag, args, res);',
         "  if (res.ok) {\n    recordApplied(tag, args, res);\n    if (tag === 'closePurchase') teachDismiss('cassa');"),
       expect: /cassa negativa senza spiegazione|cassa\.appear/,
+    },
+    {
+      name: 'registro programmatore nella frase di arrivo (finding 1)',
+      mutate: d => d.replace(
+        "text: \"Benvenuto! Questo è un gruppo d'acquisto da provare: clicca una persona, un saldo o un acquisto e fai qualche mossa. Il segno ⊢ accanto alle frasi apre il dettaglio, se ti incuriosisce il perché.\",",
+        "text: 'Clicca: ogni azione è un evento della macchina Lean, registrato nello stato e nel log degli eventi.',"),
+      expect: /benvenuto: registro sbagliato in superficie/,
+    },
+    {
+      name: 'identità cassa costante «Bruno» (finding 2)',
+      mutate: d => d.replace(
+        'const neg = state.casse.filter(([, v]) => v < 0).map(([u]) => nm(u));',
+        "const neg = ['Bruno'];"),
+      expect: /identità cassa: la frase non nomina Anna/,
+    },
+    {
+      name: 'deriva dei claims della striscia cassa (finding 3)',
+      mutate: d => d.replace("claims: ['cassa-negativa', 'close-payout'],",
+        "claims: ['close-gone'],"),
+      expect: /cassa: claims della striscia divergenti/,
+    },
+    {
+      name: 'congedo persistito solo per benvenuto (finding 4)',
+      mutate: d => d.replace(
+        'function teachDismiss(id) {\n  if (!TEACH_ITEMS[id] || teach[id]) return;\n  teach[id] = true; saveTeach();\n}',
+        "function teachDismiss(id) {\n  if (!TEACH_ITEMS[id] || teach[id]) return;\n  teach[id] = true; if (id === 'benvenuto') saveTeach();\n}"),
+      expect: /persistenza: striscia \w+ riapparsa dopo il reload/,
     },
   ];
   for (const c of sabotages) {
