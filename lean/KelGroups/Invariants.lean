@@ -867,6 +867,8 @@ theorem base_change_runs_hook
     rw [app_event_has_no_base_change integration gs signer appEvent result h] at hchange
     exact Option.noConfusion hchange
 
+#print axioms base_change_runs_hook
+
 end KelGroups
 
 /- The frozen gate prints these mandated names unqualified from the root

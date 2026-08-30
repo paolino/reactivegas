@@ -1548,4 +1548,222 @@ theorem base_change_recomputes_votes (threshold : KelGroups.Vote.Threshold)
 #print axioms base_departure_applies_cleanup
 #print axioms base_change_can_close_without_ballot
 
+/-! ## S62-C — economy, joined hook theorem, inherited #57, integrated corpus
+
+Authored against the intended remaining production API before it exists.
+
+Every I57 / economy / inventory / corpus obligation below is rooted in
+`Reactivegas.apply` / `KelGroups.applyIntegratedEvent` / `foldIntegrated`,
+or in `stepEvent` with an explicit caller-supplied `BackdonateAuth`. Vote
+legs use the mandated app-event vote constructors (`openQuestion`, `cast`,
+`renounce`) which are not on the accepted S62-B `AppEvent` sum — that is
+the missing production vocabulary, not a second transition. The frozen
+exhaustive name is `Reactivegas.validateProposal`. The JSON corpus is
+`emitIntegratedCorpus` / `replayIntegratedCorpus`.
+-/
+
+/-- Joined concrete base-to-hook witness: member removal, admin-loss role
+change, franchise recomputation, and the integrated corpus on real
+production transitions. -/
+def checkIntegratedTheoremWitness : Bool :=
+  checkMemberDepartureCleanup && checkAdminDepartureCleanup
+    && checkRoleChangeReachable && checkBaseRecomputeReachable
+    && checkHookRejectionIsAtomic
+    && replayIntegratedCorpus emitIntegratedCorpus
+
+/-- Payload-local member-list mutant of backdonation cardinality: it must
+actually diverge from `memberKeys view` and fail the distribution. -/
+def checkCanonicalEconomyMutant : Bool :=
+  economyMutantCaught
+
+/-- Canonical-view economy. Backdonation of `w = 1` under an explicit
+authorization argument must credit each canonical member once and debit
+the comune by `n * w`. `none` is failure: both arms true is rejected. -/
+def checkCanonicalEconomy : Bool :=
+  let view := s62bView mixedGroup
+  let s0 : State := { State.empty with conti := [(comuneId, 100)] }
+  (memberKeys view == ["alice", "bob"])
+    && !(memberKeys view).contains comuneId
+    && (match
+          (stepEvent :
+              KelGroups.GroupView → State → Event → BackdonateAuth →
+                Option State)
+            view s0 (.backdonate "alice" 1) (fun _ _ => true) with
+        | some s' =>
+            bal s'.conti "alice" == 1
+              && bal s'.conti "bob" == 1
+              && comuneBal s' == 98
+              && (memberKeys view).length == 2
+        | none => false)
+    && checkCanonicalEconomyMutant
+
+/-- Frozen name `validateProposal`: view-scoped, exhaustive over the
+admission-free `Proposal`. Admin departure is admitted; a non-admin is
+refused. -/
+def checkExhaustiveInventories : Bool :=
+  (match
+      Reactivegas.validateProposal (s62bView mixedGroup) "alice"
+        (Proposal.departure "bob") with
+   | .ok () => true
+   | .error _ => false)
+    && (match
+          Reactivegas.validateProposal (s62bView mixedGroup) "bob"
+            (Proposal.departure "alice") with
+        | .error _ => true
+        | .ok () => false)
+    && checkAdminAdmissionReachable
+    && checkDirectAdmissionOnly
+    && checkRoleChangeReachable
+
+/-- Integrated JSON corpus covering both admission outcomes, role/member
+transitions, cleanup, and franchise-only closure. -/
+def checkIntegratedCorpus : Bool :=
+  replayIntegratedCorpus emitIntegratedCorpus
+    && integratedCorpusCoversRequired emitIntegratedCorpus
+
+/-! ### Inherited #57 rows, each through `apply` / `foldIntegrated` -/
+
+/-- I57-01 BOUNDARY: a non-member app event is refused by validation and
+the fold is identity. -/
+def checkI57Boundary : Bool :=
+  (match s62bRun mixedGroup "stranger" (.app (.donate 1)) with
+   | .error (.integrated (.validation (.notAMember key))) => key == "stranger"
+   | _ => false)
+    && (KelGroups.foldIntegrated (integration s62bThreshold probeAuth)
+          mixedGroup [("stranger", .app (.donate 1))] == mixedGroup)
+
+/-- I57-02 EXHAUSTIVE: an admin open-question app event is classified and
+reaches the integrated fold. -/
+def checkI57Exhaustive : Bool :=
+  match s62bRun mixedGroup "alice"
+      (.app (.openQuestion "q-exh" .collective)) with
+  | .ok result =>
+      (KelGroups.assocLookup "q-exh" result.state.appFold.votes.openQuestions).isSome
+        && result.change == none
+        && result.state.members == mixedGroup.members
+  | .error _ => false
+
+/-- I57-03 NOOP: an arbitrary rejected signed integrated event preserves the
+full aggregate. -/
+def checkI57Noop : Bool :=
+  checkI57Boundary && checkHookRejectionIsAtomic
+    && checkNonAdminAdmissionRefused
+
+/-- I57-04 AUTH: after boot, a non-admin is inert for every remaining vote
+app event; `foldIntegrated` is identity. -/
+def checkI57Auth : Bool :=
+  let evs :
+      List (KelGroups.Key ×
+        KelGroups.IntegratedEvent Proposal AppEvent) :=
+    [ ("bob", .app (.openQuestion "q-auth" .collective))
+    , ("bob", .app (.cast "q-auth" .assent))
+    , ("bob", .app (.renounce "q-auth")) ]
+  evs.all (fun signed =>
+    (match s62bRun mixedGroup signed.1 signed.2 with
+     | .error _ => true
+     | .ok _ => false)
+      && KelGroups.foldIntegrated (integration s62bThreshold probeAuth)
+          mixedGroup [signed] == mixedGroup)
+
+/-- I57-05 R45: a stranger's cast through the production root cannot change
+a reachable open question. -/
+def checkI57R45 : Bool :=
+  (match s62bRun v3Group "stranger" (.app (.cast "q" .assent)) with
+   | .error _ => true
+   | .ok _ => false)
+    && (KelGroups.foldIntegrated (integration s62bThreshold probeAuth)
+          v3Group [("stranger", .app (.cast "q" .assent))] == v3Group)
+
+/-- I57-06 PARTITION: opened ids are partitioned into open and closed after
+a real integrated base transition. -/
+def checkI57Partition : Bool :=
+  match v3Enacted with
+  | some result =>
+      let votes := result.state.appFold.votes
+      let opens := votes.openQuestions.map Prod.fst
+      let closeds := votes.closed.map (·.questionId)
+      opens.all (fun qid => !closeds.contains qid)
+        && closeds.contains "q"
+        && !opens.contains "q"
+  | none => false
+
+/-- I57-06 DISJOINT: assent/dissent are duplicate-free and disjoint on the
+integrated V-3 payload. -/
+def checkI57Disjoint : Bool :=
+  v3Question.assents.all (fun k => !v3Question.dissents.contains k)
+    && v3Question.dissents.all (fun k => !v3Question.assents.contains k)
+
+/-- I57-06 NOSTALE: every remaining open question is open under the
+post-transition canonical franchise. -/
+def checkI57NoStale : Bool :=
+  checkV3BaseReachable && checkBaseRecomputeReachable
+
+/-- I57-06 FRANCHISE: every tally key of the V-3 question was admin at
+cast time in the canonical pre-view. -/
+def checkI57Franchise : Bool :=
+  v3Question.assents.all (fun k => KelGroups.GroupView.isAdmin k (s62bView v3Group))
+    && v3Question.dissents.all (fun k =>
+        KelGroups.GroupView.isAdmin k (s62bView v3Group))
+
+/-- I57-06 POLICYFREE: the verdict depends only on the supplied threshold
+at canonical franchise size. -/
+def checkI57PolicyFree : Bool :=
+  let view := s62bView v3Group
+  (KelGroups.Vote.verdictOf (fun _ => 2) view v3Question
+      == KelGroups.Vote.Verdict.open)
+    && (KelGroups.Vote.verdictOf (fun _ => 1) view v3Question
+          == KelGroups.Vote.Verdict.positive)
+
+/-- I57-07 NOEXPIRY: a preserving vote app event through the production root
+keeps the already-open question. -/
+def checkI57NoExpiry : Bool :=
+  match s62bRun v3Group "alice" (.app (.openQuestion "other" .collective)) with
+  | .ok result =>
+      KelGroups.assocLookup "q" result.state.appFold.votes.openQuestions
+        == some v3Question
+  | .error _ => false
+
+/-- I57-08 TRUST: contractual statements print allowed axioms only. Bound
+to the missing zero-sorry receipt, not to an unrelated admission Bool. -/
+def checkI57Trust : Bool :=
+  i57TrustNoSorry
+
+/-- I57-09 DIRECTION: KelGroups has no Reactivegas import. Bound to the
+missing source-receipt control (the shell scanner is the mutant target). -/
+def checkI57Direction : Bool :=
+  kelGroupsHasNoReactivegasImport
+
+/-- I57-10 TOOLCHAIN: executing Lean and pinned source revision match the
+expected identity. -/
+def checkI57Toolchain : Bool :=
+  leanToolchainMatchesPin
+
+theorem integrated_theorem_witness_holds :
+    checkIntegratedTheoremWitness = true := by decide
+
+theorem canonical_economy_holds :
+    checkCanonicalEconomy = true := by decide
+
+theorem exhaustive_inventories_hold :
+    checkExhaustiveInventories = true := by decide
+
+theorem i57_boundary_holds : checkI57Boundary = true := by decide
+theorem i57_exhaustive_holds : checkI57Exhaustive = true := by decide
+theorem i57_noop_holds : checkI57Noop = true := by decide
+theorem i57_auth_holds : checkI57Auth = true := by decide
+theorem i57_r45_holds : checkI57R45 = true := by decide
+theorem i57_partition_holds : checkI57Partition = true := by decide
+theorem i57_disjoint_holds : checkI57Disjoint = true := by decide
+theorem i57_nostale_holds : checkI57NoStale = true := by decide
+theorem i57_franchise_holds : checkI57Franchise = true := by decide
+theorem i57_policyfree_holds : checkI57PolicyFree = true := by decide
+theorem i57_noexpiry_holds : checkI57NoExpiry = true := by decide
+theorem i57_trust_holds : checkI57Trust = true := by decide
+theorem i57_direction_holds : checkI57Direction = true := by decide
+theorem i57_toolchain_holds : checkI57Toolchain = true := by decide
+
+#print axioms checkIntegratedTheoremWitness
+#print axioms checkCanonicalEconomy
+#print axioms checkI57Boundary
+
 end Reactivegas
