@@ -14,18 +14,18 @@ boxes after a fresh audit passes the exact candidate.
 
 ## Slice S62-A — canonical integration boundary
 
-- [ ] **T6210** Introduce `GroupView`, distinct integrated app-state/app-event
+- [x] **T6210** Introduce `GroupView`, distinct integrated app-state/app-event
       types, payload-only fold result, and the atomic integration boundary.
       (R62-02, R62-04)
-- [ ] **T6211** Make `GroupState.members` the sole writable membership/role
+- [x] **T6211** Make `GroupState.members` the sole writable membership/role
       store; remove economic/vote copies. (R62-01)
-- [ ] **T6212** Replace every Reactivegas identity with `KelGroups.Key`; reserve
+- [x] **T6212** Replace every Reactivegas identity with `KelGroups.Key`; reserve
       and exclude the comune key with no bridge. (R62-03)
-- [ ] **T6213** Make vote state membership-free and bind franchise/verdict
+- [x] **T6213** Make vote state membership-free and bind franchise/verdict
       observations to the canonical view. (R62-11)
-- [ ] **T6214** Prove app-event member preservation and falsify a member-writing
+- [x] **T6214** Prove app-event member preservation and falsify a member-writing
       app-fold mutant. (R62-04)
-- [ ] **T6215** Preserve the historical fold/theorem bytes while proving the
+- [x] **T6215** Preserve the historical fold/theorem bytes while proving the
       integrated Reactivegas production root does not call them. (R62-05)
 
 ## Slice S62-B — one transition system
