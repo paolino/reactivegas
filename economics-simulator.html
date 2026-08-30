@@ -2179,17 +2179,19 @@ function descrBase(signer, ev, enacted) {
   if ('propose' in ev) {
     const p = ev.propose.proposal, k = bgPropKind(p);
     if (k === 'introduceMember')
-      base = `${kgName(signer)} propone: ${kgName(p.introduceMember.key)} entra nel canale base` +
-        (p.introduceMember.roles.some(r => 'adminRole' in r) ? ' (admin)' : '');
+      base = p.introduceMember.roles.some(r => 'adminRole' in r)
+        ? `${kgName(signer)} apre le decisioni del gruppo`
+        : `${kgName(signer)} propone di ammettere ${kgName(p.introduceMember.key)} tra chi decide`;
     else if (k === 'removeMember')
-      base = `${kgName(signer)} propone: ${kgName(p.removeMember.key)} esce dal canale base`;
+      base = `${kgName(signer)} propone di togliere ${kgName(p.removeMember.key)} da chi decide`;
     else
-      base = `${kgName(signer)} propone: ruoli ${p.changeRoles.roles.some(r => 'adminRole' in r)
-        ? 'admin (elezione)' : 'non-admin (revoca)'} a ${kgName(p.changeRoles.key)}`;
+      base = p.changeRoles.roles.some(r => 'adminRole' in r)
+        ? `${kgName(signer)} propone di eleggere ${kgName(p.changeRoles.key)} responsabile`
+        : `${kgName(signer)} propone di revocare ${kgName(p.changeRoles.key)} da responsabile`;
   } else {
-    base = `${kgName(signer)} approva «${ev.approve.proposalId}»`;
+    base = `${kgName(signer)} dice sì alla proposta`;
   }
-  return base + (enacted ? ' — DELIBERATA' : '');
+  return base + (enacted ? ' — deciso' : '');
 }
 
 const BG_TAG_CLAIMS = {
@@ -2203,7 +2205,7 @@ function recordBaseApplied(signer, ev, det) {
   const viol = bgLawViolations(bg);
   if (viol.length) {
     bgLawBreaches.push({ viol, what: descrBase(signer, ev, false) });
-    toast(`<b>⚠ RETE CANALE BASE</b> <span class="tiny">${esc(viol.join(' · '))} —
+    toast(`<b>⚠ disallineamento</b> <span class="tiny">${esc(viol.join(' · '))} —
       trascrizione divergente da Fold.lean</span>`, innerWidth / 2, 80);
   }
   const kind = 'propose' in ev ? 'propose' : 'approve';
@@ -2211,18 +2213,17 @@ function recordBaseApplied(signer, ev, det) {
   const claims = [...BG_TAG_CLAIMS[kind],
     ...(enacted ? ['kg-threshold', 'kg-enact-effect', 'comp-base-threshold'] : [])];
   const flow = enacted
-    ? `DELIBERATA «${det.enactment.proposalId}»: assensi ${det.enactment.pending.approvals.length}` +
-      ` ≥ maggioranza ${bgMajority(det.enactment.preState)} dello stato precedente` +
+    ? `i responsabili hanno deciso` +
       (bgProposalFaithful(det.enactment.pending.proposal)
-        ? ' · proposta nel vocabolario fedele → evidenza economica'
-        : ' · introduceMember: MAI evidenza economica (esclusa per costruzione)')
+        ? ' · ora si aggiornano i ruoli nel gruppo'
+        : ' · ammissione tra chi decide, senza toccare i conti')
     : (kind === 'propose'
-      ? 'proposta pendente: chi propone è già fra gli assensi'
-      : 'assenso registrato: mai contato doppio');
+      ? 'in attesa: chi propone ha già detto sì; servono gli altri'
+      : 'sì registrato; non si conta due volte');
   history.unshift({ kind: 'acc', mk: 'bg', tag: kind,
     descr: descrBase(signer, ev, enacted), flow, claims,
     enacted, inv: invSnapshot() });
-  invNote = `dopo canale base: ${kind} ✓`;
+  invNote = `dopo una proposta sui responsabili ✓`;
 }
 
 /* one attempted base event through validate + apply, with durable logging;
@@ -2233,7 +2234,7 @@ function runBaseEvent(signer, ev) {
     history.unshift({ kind: 'rej', mk: 'bg', tag: 'base',
       descr: descrBase(signer, ev, false),
       failed: [{ code: 'KelGroups.validateEvent = .error .' + verr,
-        why: 'validazione del canale base: ' + verr, law: null }],
+        why: 'la proposta non è andata a buon fine: ' + verr, law: null }],
       ext: false, inv: invSnapshot() });
     invNote = 'dopo proposta ✗ — stato invariato';
     return { ok: false, error: verr };
@@ -2675,7 +2676,7 @@ function runAttempt(tag, args, toyLabel) {
       evid = bgTakeCredit(tag, kgKey(args.target));
       if (!evid) {
         const failed = [{ code: 'Composition.route = .baseEnacted',
-          why: 'composizione: evento vote-derived senza delibera fedele del canale base',
+          why: 'non si può eleggere o revocare senza il sì degli altri responsabili',
           law: null }];
         history.unshift({ kind: 'rej', tag, args, descr: descr(tag, args),
           governance: true, failed, ext: false, inv: invSnapshot() });
@@ -3098,13 +3099,13 @@ function commitFlow() {
     const r = startBaseGovChain(tag, args);
     renderAll();
     if (r.ok && JSON.stringify(state.responsabili) !== preResp)
-      toast(`<b>🗳 DELIBERATA e applicata</b>
-        <span class="tiny">delibera fedele del canale base · ponte economico NON PROVATO</span>`, xy[0], xy[1], 'ext');
+      toast(`<b>🗳 deciso e applicato</b>
+        <span class="tiny">i responsabili hanno detto sì · i conti si aggiornano ora</span>`, xy[0], xy[1], 'ext');
     else if (r.ok)
       toast(`<b>🗳 proposta registrata</b>
-        <span class="tiny">in attesa di approvazioni nel canale base (soglia ${bgMajority(bg)})</span>`, xy[0], xy[1], 'ext');
+        <span class="tiny">in attesa del sì degli altri responsabili</span>`, xy[0], xy[1], 'ext');
     else
-      toast(`<b>✗ canale base</b> <span class="tiny">validazione: ${esc(r.error)} · stato invariato</span>`, xy[0], xy[1]);
+      toast(`<b>✗ proposta non accettata</b> <span class="tiny">${esc(r.error)} · niente è cambiato</span>`, xy[0], xy[1]);
     return;
   }
   const preState = state;
@@ -3664,7 +3665,7 @@ function govCardHtml() {
     const missing = bgAdmins.filter(k => !pp.approvals.includes(k));
     return `<div class="vq"><div class="qh">⚖ «${esc(pid)}»
         <span class="qs">assensi ${pp.approvals.length} / soglia ${bgMajority(bg)}</span></div>
-      <div class="tiny">proposta di ${esc(kgName(pp.proposer))} — chi propone è già fra gli assensi
+      <div class="tiny">proposta di ${esc(kgName(pp.proposer))} (ha già detto sì)
         ${pkGlyph(['kg-proposer', 'kg-nodup'])}</div>
       <div class="tasks" style="margin-top:4px">${missing.map(k =>
         `<button type="button" class="mini" data-bgapprove="${esc(pid)}"
@@ -3676,14 +3677,13 @@ function govCardHtml() {
     ? `<div class="tiny">delibere fedeli non ancora consumate: ${bgCredits.map(cr =>
         `<span class="mono">«${esc(cr.pid)}»</span>`).join(' ')}
         <span class="npvbadge" data-claims="join-vote-econ">PONTE NON PROVATO</span></div>` : '';
-  const baseBody = `<div class="sect" style="margin-top:8px">canale base — proposte
-      <span class="mono">KelGroups (fedele: changeRoles, removeMember)</span></div>
-    <div class="tiny">membri: ${bg.members.length
+  const baseBody = `<div class="sect" style="margin-top:8px">Decisioni sui responsabili</div>
+    <div class="tiny">chi decide: ${bg.members.length
       ? bg.members.map(([k, m]) => esc(kgName(k)) + (vtHasAdmin(m.roles) ? ' ★' : '')).join(', ')
-      : '<i>vuoto — la prima elezione fonda il canale (bootstrap)</i>'}
-      · maggioranza (n+1)/2 = <b>${bgMajority(bg)}</b> ${pkGlyph(['kg-majority-def', 'kg-threshold'])}</div>
-    <div class="tiny">eleggere o revocare un responsabile passa SOLO di qui: proposta fedele →
-      assensi a maggioranza → delibera → ponte economico
+      : '<i>nessuno ancora — la prima elezione apre questo elenco</i>'}
+      · servono <b>${bgMajority(bg)}</b> sì ${pkGlyph(['kg-majority-def', 'kg-threshold'])}</div>
+    <div class="tiny">Per nominare o togliere un responsabile serve il sì degli altri.
+      Finché manca, conti e casse restano com'erano.
       ${pkGlyph(['comp-routing', 'comp-base-threshold'])}
       <span class="npvbadge" data-claims="join-vote-econ">PONTE NON PROVATO</span></div>
     ${bgPend}${bgCreditTx}`;
@@ -3760,7 +3760,7 @@ function renderLog() {
         return `<div class="entry acc kel${en.enacted ? ' enacted' : ''}">
           <div class="eh">⚖ ${esc(en.descr)} <span class="mono">.${en.tag}</span>${pkGlyph(en.claims || [])}</div>
           <div class="efl">${esc(en.flow)}</div>
-          <div class="einv">canale base (proposte KelGroups) — economia invariata da questo evento</div>
+          <div class="einv">proposta sui responsabili — conti e casse invariati</div>
         </div>`;
       }
       return `<div class="entry rej kel">
@@ -3772,7 +3772,7 @@ function renderLog() {
     const prov = en.ext
       ? '<div class="eprov">⇣ esito applicato al permesso economico — ponte NON PROVATO fra voto ed economia</div>'
       : (en.route === 'baseEnacted'
-        ? `<div class="eprov">🗳 da delibera fedele «${esc(en.evid || '')}» del canale base — ponte NON PROVATO</div>` : '');
+        ? `<div class="eprov">🗳 da decisione dei responsabili «${esc(en.evid || '')}» — collegamento con i conti non ancora dimostrato</div>` : '');
     if (en.kind === 'acc') {
       return `<div class="entry acc${en.ext || en.route ? ' ext' : ''}">
         <div class="eh">${en.ext || en.route ? '⇣' : '✓'} ${esc(en.descr)} <span class="mono">.${en.tag}</span>${pkGlyph(TAG_CLAIMS[en.tag] || [])}</div>
@@ -4561,7 +4561,7 @@ async function selftest() {
   expect(!resp(2), 'elezione diretta ha comunque effetto');
   renderAll();
   expect(lastEntry().innerText.includes('SENZA DELIBERA') &&
-    lastEntry().innerText.includes('composizione'),
+    lastEntry().innerText.includes('sì degli altri responsabili'),
     'rifiuto di composizione non spiegato nella storia');
   // a refusal just happened: the guardie explanation applies NOW (and only
   // now — it was absent before this refusal)
