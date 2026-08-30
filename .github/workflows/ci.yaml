@@ -73,5 +73,10 @@ jobs:
               | xargs hlint
           '
 
+      # The compiler accepting the Lean proofs is part of the proof trust
+      # boundary: reject declared/running toolchain drift before building.
+      - name: Check the Lean toolchain contract
+        run: nix --quiet develop --command just lean-toolchain-contract
+
       - name: Build lean specification
         run: nix --quiet develop --command just lean

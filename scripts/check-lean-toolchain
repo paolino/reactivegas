@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+set -euo pipefail
+#
+# T-TC-001 — reconcile the declared Lean pin with the toolchain that actually
+# runs in the Nix dev shell (mandate INV-TC-01/INV-TC-03).
+#
+#   check-lean-toolchain [--self-test] [REPO_ROOT]
+#
+# Both compared versions are derived live, never hardcoded: the pinned side is
+# parsed from lean/lean-toolchain, the running side is read from `lake
+# --version` inside `nix develop` at REPO_ROOT. The negative control re-runs
+# the same parser and comparator against a throwaway pin mutated by one patch
+# component and requires the comparison to fail; it never edits the tracked pin
+# and never carries a second runtime expectation — the running side is the
+# version derived live in this invocation.
+
+TOOL=check-lean-toolchain
+
+usage() {
+    printf 'usage: %s [--self-test] [REPO_ROOT]\n' "$TOOL" >&2
+    exit 64
+}
+
+self_test=0
+while [ $# -gt 0 ]; do
+    case $1 in
+        --self-test) self_test=1 ;;
+        -h|--help) usage ;;
+        --) shift; break ;;
+        -*) usage ;;
+        *) break ;;
+    esac
+    shift
+done
+[ $# -le 1 ] || usage
+
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+root=$(cd -- "${1:-$script_dir/..}" && pwd)
+cd -- "$root"
+
+# FILE -> stdout: the semver in a `leanprover/lean4:vX.Y.Z` pin; nonzero on
+# anything else, so a malformed declaration fails closed.
+parse_pin() {
+    local pin
+    pin=$(<"$1") || {
+        printf '%s: unreadable pin file: %s\n' "$TOOL" "$1" >&2
+        return 1
+    }
+    pin=${pin%%$'\n'*}
+    pin=${pin%$'\r'}
+    if [[ $pin =~ ^leanprover/lean4:v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+        printf '%s\n' "${BASH_REMATCH[1]}"
+        return 0
+    fi
+    printf '%s: malformed pin: %s\n' "$TOOL" "$pin" >&2
+    return 1
+}
+
+# -> stdout: the Lean version of the toolchain invoked exactly as the build
+# invokes it (`nix develop -c ... lake --version`); nonzero if unparseable.
+derive_running() {
+    local out
+    out=$(nix develop --quiet -c bash -c 'cd lean && lake --version') || out=
+    if [[ $out =~ Lean\ version\ ([0-9]+\.[0-9]+\.[0-9]+) ]]; then
+        printf '%s\n' "${BASH_REMATCH[1]}"
+        return 0
+    fi
+    printf '%s: cannot derive running Lean version from: %s\n' \
+        "$TOOL" "${out:-<no output>}" >&2
+    return 1
+}
+
+# PINNED RUNNING -> the one comparator, shared by the check and the control.
+reconcile() {
+    local pinned=$1 running=$2
+    printf '%s: pinned=%s running=%s\n' "$TOOL" "$pinned" "$running"
+    if [ "$pinned" != "$running" ]; then
+        printf '%s: pinned/running mismatch: pin declares %s but the dev shell runs %s\n' \
+            "$TOOL" "$pinned" "$running" >&2
+        return 1
+    fi
+    printf '%s: declared and running toolchains agree\n' "$TOOL"
+}
+
+# PINNED RUNNING -> the permanent negative control. Writes a mutated pin
+# (patch component +1 of the live parsed pin) into a throwaway fixture and
+# requires the shared comparator to reject it against the live running
+# version — for the matching reason: the parser must accept the mutated pin
+# and only the comparison may fail.
+negative_control() {
+    local pinned=$1 running=$2 fixture maj min pat control_pin
+    IFS='.' read -r maj min pat <<<"$pinned"
+    fixture=$(mktemp -d)
+    trap 'rm -rf -- "$fixture"' RETURN
+    mkdir -p "$fixture/lean"
+    printf 'leanprover/lean4:v%s.%s.%d\n' "$maj" "$min" "$((10#$pat + 1))" \
+        > "$fixture/lean/lean-toolchain"
+    if ! control_pin=$(parse_pin "$fixture/lean/lean-toolchain"); then
+        printf '%s: negative control inconclusive: parser rejected the mutated pin\n' \
+            "$TOOL" >&2
+        return 1
+    fi
+    if reconcile "$control_pin" "$running" >/dev/null 2>&1; then
+        printf '%s: negative control failed to fail: mutated pin %s was accepted\n' \
+            "$TOOL" "$control_pin" >&2
+        return 1
+    fi
+    printf 'negative-control: mismatch detected\n'
+}
+
+pinned=$(parse_pin lean/lean-toolchain) || exit 1
+running=$(derive_running) || exit 1
+if [ "$self_test" -eq 0 ]; then
+    reconcile "$pinned" "$running" || exit 1
+fi
+negative_control "$pinned" "$running"

@@ -64,10 +64,17 @@ lean:
 ci:
     #!/usr/bin/env bash
     set -euo pipefail
+    just lean-toolchain-contract
     just build
     just format-check
     just hlint
     just lean
+
+# Assert the declared Lean pin matches the toolchain that actually runs
+lean-toolchain-contract:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    scripts/check-lean-toolchain
 
 # Clean build artifacts
 clean:
