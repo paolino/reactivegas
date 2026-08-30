@@ -14,7 +14,7 @@ Membership is read from the canonical `GroupView`. There is no
 
 /-- **Comune is not a member** (issue #48): the reserved comune account
 lives inside `conti` at `comuneId` and is never a member of the
-canonical view. Direct admission of this key is S62-B. -/
+canonical view. Direct admission refuses it by identity. -/
 def comune_not_a_member (view : KelGroups.GroupView) : Prop :=
   ¬ KelGroups.GroupView.isMember comuneId view
 
@@ -56,8 +56,9 @@ def escrowHeld (col : Collection) (u : KelGroups.Key) (v : Int) : Prop :=
   ∃ pend, splitUser u col.pending = some (v, pend)
 
 /-- **L1 Governance enacts**: after enacting the removal of `u`, no open
-question (collection) is left with `u` as referente. Owned by S62-B
-for production reachability; the predicate remains. -/
+question (collection) is left with `u` as referente. Discharged by the
+sealed base hook — `windUpAdmin` cancels them — and witnessed by
+`Reactivegas.checkAdminDepartureCleanup`. -/
 def governanceEnacts (u : KelGroups.Key) (s' : State) : Prop :=
   ∀ c ∈ s'.collections, c.referente ≠ u
 
@@ -67,14 +68,13 @@ def doubleEntry (s s' : State) (a u : KelGroups.Key) (v : Int) : Prop :=
   bal s'.conti u = bal s.conti u + v ∧ bal s'.casse a = bal s.casse a + v
 
 /-- **AUTH**: every declaration is signed by a current responsabile of
-the canonical view. Exhaustive over the 18-constructor `Event`
-vocabulary; membership constructors still name an author even though
-`stepEvent` refuses them. -/
+the canonical view. Exhaustive over the fourteen-constructor `Event`
+vocabulary, which no longer contains a membership or role constructor
+to name an author for. -/
 def authorizedStep (view : KelGroups.GroupView) (_s : State) (e : Event)
     (_s' : State) : Prop :=
   match e with
-  | .addUser a _ | .electResponsabile a _ | .removeResponsabile a _
-  | .removeMember a _ | .openPurchase a _ | .grantPermission a _
+  | .openPurchase a _ | .grantPermission a _
   | .denyPermission a _ | .donate a _ | .backdonate a _
   | .deposit a _ _ | .withdraw a _ _ | .transferCassa a _ _
   | .pledge a _ _ _ | .acceptPledge a _ _ | .refusePledge a _ _
@@ -88,8 +88,10 @@ def canCloseGroup (view : KelGroups.GroupView) (s : State) : Prop :=
   (∀ r : KelGroups.Key, bal s.casse r = 0)
 
 /-- Reachability from the empty economic payload through successful
-integrated app steps under a fixed canonical view. S62-A cannot change
-the view; base transitions stay rejected. The boot case requires the
+integrated app steps under a fixed canonical view. `stepEvent` is the
+app-payload surface and cannot change the view; base transitions and
+their sealed cleanup are observed through `Reactivegas.apply` instead.
+The boot case requires the
 reserved `comuneId` not to be a member of that view. -/
 inductive Reach (view : KelGroups.GroupView) : State → Prop where
   | boot (h : comune_not_a_member view) : Reach view State.empty

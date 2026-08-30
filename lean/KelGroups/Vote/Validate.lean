@@ -21,15 +21,14 @@ membership of its own to consult.
 extends rather than redesigns the vocabulary; nothing in Slice A produces
 them yet.
 
-## The three retired member events
+## No membership event to authorize
 
-`admitMember`, `removeMember` and `setRoles` no longer have anywhere to write:
-membership has exactly one writable store and it is not this payload. They are
-**refused** here with their own error identity, never accepted as a silent
-no-op — a caller cannot mistake a refusal for a committed membership change.
-The constructors themselves leave the sum in T6222 (S62-B), together with the
-bootstrap admission capability they used to carry; the founding admin now
-arrives through the guarded initial aggregate rather than through a vote event.
+`admitMember`, `removeMember` and `setRoles` have left the sum (T6222). They
+are not refused here, because there is nothing left to refuse: the vocabulary
+cannot express them. The exhaustive match below therefore covers exactly the
+three question events, and the bootstrap admission capability those
+constructors used to carry is gone with them — the founding admin arrives
+through the application's guarded initial aggregate.
 -/
 
 namespace KelGroups.Vote
@@ -41,7 +40,6 @@ inductive VoteError where
   | questionNotFound
   | notDesignee
   | notProposer
-  | membershipNotVoteLocal
 deriving DecidableEq, BEq, Repr
 
 instance : BEq (Except VoteError Unit) where
@@ -52,8 +50,7 @@ instance : BEq (Except VoteError Unit) where
 
 /-- Validate one signed event against the canonical view and the current vote
 payload. The authorization boundary is exhaustive: success implies
-`isResponsabile signer view = true` for every question event, and no membership
-event is admissible at all. -/
+`isResponsabile signer view = true` for every event in the sum. -/
 def validateVoteEvent (threshold : Threshold) (view : GroupView) (gs : VoteState)
     (signer : Key) (event : VoteEvent) : Except VoteError Unit :=
   match event with
@@ -71,8 +68,5 @@ def validateVoteEvent (threshold : Threshold) (view : GroupView) (gs : VoteState
         match lookupQuestion questionId gs with
         | some _ => .ok ()
         | none => .error VoteError.questionNotFound
-  | .admitMember _ _ _ => .error VoteError.membershipNotVoteLocal
-  | .removeMember _ => .error VoteError.membershipNotVoteLocal
-  | .setRoles _ _ => .error VoteError.membershipNotVoteLocal
 
 end KelGroups.Vote

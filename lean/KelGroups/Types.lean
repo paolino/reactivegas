@@ -66,6 +66,58 @@ def assocAdjust [BEq κ] (key : κ) (f : ν → ν) : List (κ × ν) → List (
       if candidate == key then (candidate, f value) :: rest
       else (candidate, value) :: assocAdjust key f rest
 
+
+/-- Erasing any key preserves the *absence* of another. -/
+theorem assocLookup_erase_of_none [BEq κ] (key other : κ) :
+    ∀ entries : List (κ × ν), assocLookup key entries = none →
+      assocLookup key (assocErase other entries) = none := by
+  intro entries
+  induction entries with
+  | nil => intro _; rfl
+  | cons entry rest ih =>
+    intro h
+    obtain ⟨candidate, value⟩ := entry
+    simp only [assocLookup] at h
+    split at h
+    · exact Option.noConfusion h
+    · next hne =>
+      simp only [assocErase]
+      split
+      · exact h
+      · simp only [assocLookup, if_neg hne]
+        exact ih h
+
+/-- Adjusting the value at any key preserves the *absence* of another. -/
+theorem assocLookup_adjust_of_none [BEq κ] (key other : κ) (f : ν → ν) :
+    ∀ entries : List (κ × ν), assocLookup key entries = none →
+      assocLookup key (assocAdjust other f entries) = none := by
+  intro entries
+  induction entries with
+  | nil => intro _; rfl
+  | cons entry rest ih =>
+    intro h
+    obtain ⟨candidate, value⟩ := entry
+    simp only [assocLookup] at h
+    split at h
+    · exact Option.noConfusion h
+    · next hne =>
+      simp only [assocAdjust]
+      split
+      · simp only [assocLookup, if_neg hne]
+        exact h
+      · simp only [assocLookup, if_neg hne]
+        exact ih h
+
+/-- Inserting under a different key preserves the absence of `key`. -/
+theorem assocLookup_insert_of_none [BEq κ] [LawfulBEq κ] (key other : κ)
+    (value : ν) (entries : List (κ × ν)) (hne : other ≠ key)
+    (h : assocLookup key entries = none) :
+    assocLookup key (assocInsert other value entries) = none := by
+  simp only [assocInsert, assocLookup]
+  split
+  · next hc => exact absurd (eq_of_beq hc) hne
+  · exact assocLookup_erase_of_none key other entries h
+
 theorem assocLookup_insert_self [BEq κ] [LawfulBEq κ]
     (key : κ) (value : ν) (entries : List (κ × ν)) :
     assocLookup key (assocInsert key value entries) = some value := by

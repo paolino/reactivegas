@@ -10,9 +10,9 @@ fold `foldVote` from the empty payload over a signed question-event
 trace, under an explicit canonical `GroupView`. Each trace is checked
 admissible by `validateVoteEvent` at every step (R-68, R-69).
 
-The franchise is never seeded by vote-local membership events: those
-constructors are refused (`VoteError.membershipNotVoteLocal`) and have
-nowhere to write. Fixtures below are literal `GroupView` values.
+The franchise is never seeded by vote-local membership events: the
+constructors that could have done so have left the sum (T6222) and had
+nowhere to write in any case. Fixtures below are literal `GroupView` values.
 
 The two franchise-change observation witnesses (R-53 and INV-54-FRANCHISE)
 evaluate the same payload under an explicit pre-change view and an
@@ -148,12 +148,12 @@ def zeroThresholdPassesWithNoBallot : VoteState :=
 
 /-! ## R-53 — a question can pass because a responsabile left
 
-S62-A cannot produce the post-departure view through a production
-transition: vote-local `removeMember` is refused, and a base membership
-transition rejects on the new integrated path (NOTE-002 point 5). This
-witness therefore evaluates the same open question under an explicit
-five-admin view and an explicit four-admin view. The post view is a
-fixture, not a claim of S62-A production reachability.
+This slice-local witness evaluates the same open question under an
+explicit five-admin view and an explicit four-admin view, isolating the
+verdict's sensitivity to the franchise from the transition that changes
+it. The production-reachable base transition that actually produces such
+a view is `Reactivegas.checkV3BaseReachable` (T6224); the post view here
+is a fixture, and says nothing on its own about reachability.
 -/
 
 /-- Five responsabili, two assents: under `legacyThreshold 5 = 3` the
@@ -328,11 +328,9 @@ def lostStandingOpen : VoteState :=
 /-! ## R57-04 universal class — question events rejected and inert after
 bootstrap (T5712)
 
-The three retired member/role events are no longer inside this class:
-`validateVoteEvent` refuses them with `membershipNotVoteLocal` for every
-signer, including a current responsabile. They still leave the payload
-unchanged, because a rejected event reaches neither its effect nor the
-sweep.
+The retired member/role events are not merely outside this class: they have
+left the sum (T6222), so the three question constructors below are the whole
+of it.
 -/
 
 /-- The three current question constructors, signed by a non-responsabile,
@@ -350,41 +348,13 @@ def strangerRejectedQuestionEvents : List VoteEvent :=
       applyVoteEvent legacyThreshold oneAdminView votePointState
         "stranger" event == votePointState)
 
-def retiredMemberEvents : List VoteEvent :=
-  [.admitMember "x" "x@vote.test" [.adminRole .publicAdmin],
-    .removeMember "a",
-    .setRoles "a" []]
-
-#guard
-  retiredMemberEvents.all (fun event =>
-    validateVoteEvent legacyThreshold oneAdminView votePointState
-        "stranger" event ==
-          Except.error VoteError.membershipNotVoteLocal &&
-      applyVoteEvent legacyThreshold oneAdminView votePointState
-        "stranger" event == votePointState)
-
--- Explicit no-op oracles for the three franchise-changing events
--- (risk-ledger control: authorization must not repair only `removeMember`).
--- They are refused for a responsabile too: the error identity is
--- membership, not standing.
-#guard
-  applyVoteEvent legacyThreshold oneAdminView votePointState "a"
-    (.admitMember "x" "x@vote.test" [.adminRole .publicAdmin]) ==
-      votePointState
-#guard
-  applyVoteEvent legacyThreshold oneAdminView votePointState "a"
-    (.removeMember "a") == votePointState
-#guard
-  applyVoteEvent legacyThreshold oneAdminView votePointState "a"
-    (.setRoles "a" []) == votePointState
-
 /-! ## R57-05 — the retained R-45 oracle on the production fold -/
 
-/-- Three responsabili, question `q` open on one assent. A stranger's
-`removeMember` is refused with `membershipNotVoteLocal` (the constructors
-are never vote-local) and leaves the entire payload unchanged: no
-threshold drop, no closure, no verdict. Franchise is read from the
-canonical view, which this event cannot write. -/
+/-- Three responsabili, question `q` open on one assent. A stranger's cast is
+refused with `notResponsabile` and leaves the entire payload unchanged: no
+tally, no threshold drop, no closure, no verdict. The franchise is read from
+the canonical view, which no vote event can write, and there is no membership
+constructor left for a stranger to reach for either. -/
 def r45PreEvents : List (Key × VoteEvent) :=
   [vOpen "a" "q", vCast "a" "q" .assent]
 
@@ -393,38 +363,35 @@ def r45Before : VoteState :=
 
 def r45After : VoteState :=
   applyVoteEvent legacyThreshold threeAdminView r45Before
-    "stranger" (.removeMember "b")
+    "stranger" (.cast "q" .assent)
 
 #guard
   franchiseSize threeAdminView == 3 &&
     isResponsabile "stranger" threeAdminView == false &&
     validateVoteEvent legacyThreshold threeAdminView r45Before
-      "stranger" (.removeMember "b") ==
-        Except.error VoteError.membershipNotVoteLocal &&
+      "stranger" (.cast "q" .assent) ==
+        Except.error VoteError.notResponsabile &&
     r45After == r45Before
 
 /-! ## R57-07 — the semantic no-expiry premise
 
-The franchise and proposer-standing conjuncts this premise carried while
-the vote payload owned membership are gone: a vote event cannot move the
-franchise. The observation is now "the target question keeps its exact
-value". Retired member events are refused, so they satisfy the premise
-as no-ops. A target-ballot cast still fails it.
+The franchise and proposer-standing conjuncts this premise carried while the
+vote payload owned membership are gone: a vote event cannot move the franchise,
+and there is no member/role event left to move it with. The observation is now
+"the target question keeps its exact value". A question event that touches
+another question satisfies the premise; a target-ballot cast fails it.
 -/
 
 example : PreservesQuestionSemantics legacyThreshold threeAdminView
-    r45Before "a"
-    (.admitMember "observer" "observer@vote.test" []) "q" := by decide
+    r45Before "a" (.openQuestion "other" .collective) "q" := by decide
 
 example : PreservesQuestionSemantics legacyThreshold threeAdminView
-    r45Before "a"
-    (.admitMember "x" "x@vote.test" [.adminRole .publicAdmin]) "q" :=
-  by decide
+    r45Before "a" (.renounce "q") "q" := by decide
 
 example : ¬ PreservesQuestionSemantics legacyThreshold threeAdminView
     r45Before "b" (.cast "q" .assent) "q" := by decide
 
 example : PreservesQuestionSemantics legacyThreshold threeAdminView
-    r45Before "a" (.setRoles "b" []) "q" := by decide
+    r45Before "stranger" (.cast "q" .dissent) "q" := by decide
 
 end KelGroups.Vote

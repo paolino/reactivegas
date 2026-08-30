@@ -24,18 +24,29 @@ This module is generic and policy-free.  It knows no economic account, no
 question kind, and no cleanup rule; it invokes the contracts an application
 supplies.
 
-## What this slice roots, and what it does not
+## One insertion path, and one pending store that cannot express insertion
 
-`applyIntegratedEvent` is the Reactivegas production root from S62-A onward. It
-does not call `applyEventDetailed`: the historical generic fold keeps its
-accepted theorem and receives no new production responsibility.
+Membership grows in exactly one place: `enactAdmission`, reachable only from
+the `direct` route behind `validateDirectAdmission`.  The voted routes enact
+`BaseMutation`, which has no admission constructor, and they read the
+`pendingBase` store, which is typed by it.  So an aggregate handed to this
+boundary — however it was constructed — cannot carry a pending approval that
+admits anybody.  The exclusion is structural, not a guard that could be
+reordered away.
 
-The base routes — direct admission, proposal, approval — are *rejected* here,
-not silently accepted and not mapped onto a compatibility app event. Their
-production semantics, the sealed hook invocation, and the restricted proposal
-type are T6220/T6221/T6223 in S62-B. Rejection is the honest state for a slice
-in which membership has exactly one writable store and no admission path yet:
-nothing can quietly write members while the route is closed.
+`applyIntegratedEvent` is the Reactivegas production root.  It does not call
+`applyEventDetailed`: the historical generic fold keeps its accepted theorem,
+its own `pendingProposals` store and its `Proposal.introduceMember`
+constructor, and receives no production responsibility.
+
+## Atomicity
+
+A committed base change and its consequences are one transition.  Every
+successful membership or role effect goes through `commitBaseChange`, which
+runs the sealed hook against the exact pre/post views before any result is
+returned; if the hook rejects, the whole transition rejects and the new
+aggregate is discarded.  There is no separately signable cleanup or sweep
+event, and no order in which the group can move without its consequences.
 -/
 
 namespace KelGroups
@@ -51,8 +62,7 @@ abbrev IntegratedAppFold (AppState AppEvent AppError : Type) :=
 
 /-- The sealed post-base hook.  It observes one committed base change through
 its exact pre/post views and returns the corresponding app payload or a
-rejection.  Its invocation site is S62-B (T6223); the contract is fixed here so
-the application and the substrate agree on it before either depends on it. -/
+rejection. -/
 abbrev BaseHook (AppState AppError : Type) :=
   (change : BaseChange) → (preGroup postGroup : GroupView) →
   (state : AppState) → Except AppError AppState
@@ -67,21 +77,12 @@ inductive IntegratedEvent (BaseProposal AppEvent : Type) where
   | app (event : AppEvent)
 deriving DecidableEq, BEq, Repr
 
-/-- The three base routes, named so a rejection identity is exhaustive and a
-future fourth route cannot arrive unnamed. -/
-inductive IntegratedRoute where
-  | direct
-  | propose
-  | approve
-deriving DecidableEq, BEq, Repr
-
-/-- Rejection identities of the integrated boundary.  `baseUnavailable` is the
-named, temporary S62-A state of the three base routes; it is a refusal, never a
-no-op, so no caller can mistake it for a committed transition. -/
+/-- Rejection identities of the integrated boundary: a substrate admissibility
+refusal, or the application's own — the latter covering both a refused app
+event and a refused post-base hook. -/
 inductive IntegratedError (AppError : Type) where
   | validation (error : ValidationError)
   | app (error : AppError)
-  | baseUnavailable (route : IntegratedRoute)
 deriving DecidableEq, BEq, Repr
 
 /-- Success: the new aggregate, and the concrete base change it committed if it
@@ -91,36 +92,117 @@ structure IntegratedResult (AppState : Type) where
   change : Option BaseChange
 deriving DecidableEq, BEq, Repr
 
-/-- The contract bundle an application supplies to the boundary.  It exposes no
-function from an unrestricted generic proposal into `BaseProposal`: there is no
-route by which a voted admission could be translated into this surface.
+/-- The contract bundle an application supplies to the boundary.
 
-`BaseProposal` is a parameter of the bundle rather than a field because S62-A
-has no live base route; S62-B adds the proposal semantics, validation policy and
-the sealed `BaseHook` alongside the routes that invoke them. -/
+It exposes no function from an unrestricted generic `Proposal` into
+`BaseProposal`, and none out of it either: `proposalMutation` lands in
+`BaseMutation`, which cannot admit.  There is therefore no route by which a
+voted admission could be translated into this surface. -/
 structure Integration (AppState AppEvent BaseProposal AppError : Type) where
+  /-- The one key that may never become a member. -/
+  reserved : Key
+  /-- Identity of a proposal in the pending store. -/
+  digest : BaseProposal → ProposalId
+  /-- The application's exhaustive reading of its own restricted proposal as a
+  substrate base mutation. -/
+  proposalMutation : BaseProposal → BaseMutation
   appFold : IntegratedAppFold AppState AppEvent AppError
+  baseHook : BaseHook AppState AppError
 
-/-! ## The sole production transition -/
+/-! ## Base effects -/
 
 variable {AppState AppEvent BaseProposal AppError : Type}
 
+/-- The sole member insertion (R62-06).  Nothing else in this module writes a
+new key into the members relation. -/
+def admitMemberInto (gs : GroupState AppState) (key : Key) (email : Email)
+    (roles : List Role) : GroupState AppState :=
+  { gs with members := assocInsert key { key, email, roles } gs.members }
+
+/-- The voted base effects.  Exhaustive over `BaseMutation`; neither arm can
+introduce a key, which is `enactMutation_preserves_absence`. -/
+def enactMutation (gs : GroupState AppState) :
+    BaseMutation → GroupState AppState
+  | .removeMember key => { gs with members := assocErase key gs.members }
+  | .changeRoles key roles =>
+      { gs with members := assocAdjust key (fun member => { member with roles }) gs.members }
+
+/-- The observable evidence a voted mutation commits.  Kept separate from the
+effect so a route cannot report one change while performing another. -/
+def mutationChange : BaseMutation → BaseChange
+  | .removeMember key => .memberRemoved key
+  | .changeRoles key _ => .rolesChanged key
+
+/-- Commit a base change together with its consequences, or reject both.  The
+hook sees the exact pre and post canonical views and the pre-transition
+payload; its output *is* the payload the caller observes. -/
+def commitBaseChange (integration : Integration AppState AppEvent BaseProposal AppError)
+    (pre post : GroupState AppState) (change : BaseChange) :
+    Except (IntegratedError AppError) (IntegratedResult AppState) :=
+  match integration.baseHook change (groupView pre) (groupView post) pre.appFold with
+  | .ok appState => .ok { state := { post with appFold := appState }, change := some change }
+  | .error err => .error (.app err)
+
+/-- Enact a pending base mutation once its approvals reach the majority of the
+current franchise; otherwise leave it pending and report no change. -/
+def tryEnactBase (integration : Integration AppState AppEvent BaseProposal AppError)
+    (gs : GroupState AppState) (proposalId : ProposalId) :
+    Except (IntegratedError AppError) (IntegratedResult AppState) :=
+  match lookupPendingBase proposalId gs with
+  | none => .ok { state := gs, change := none }
+  | some pending =>
+      if pending.approvals.length ≥ majority gs then
+        commitBaseChange integration gs
+          (enactMutation { gs with pendingBase := assocErase proposalId gs.pendingBase }
+            pending.mutation)
+          (mutationChange pending.mutation)
+      else .ok { state := gs, change := none }
+
+/-! ## The sole production transition -/
+
 /-- The one integrated transition.
 
-Validation dominates the effect: an app event from a non-member reaches no
-fold.  A successful app event replaces the app payload and nothing else — the
-members relation, the pending proposals and the base-change evidence are all
+Validation dominates the effect on every route: an app event from a non-member
+reaches no fold, and no base route reaches an effect without its admissibility
+decision.  A successful app event replaces the app payload and nothing else —
+the members relation, both pending stores and the base-change evidence are all
 untouched, which is `app_event_preserves_members` and
-`app_event_has_no_base_change`.  The three base routes reject. -/
+`app_event_has_no_base_change`.  Every successful base effect goes through
+`commitBaseChange`, which is `base_change_runs_hook`. -/
 def applyIntegratedEvent
     (integration : Integration AppState AppEvent BaseProposal AppError)
     (gs : GroupState AppState) (signer : Key)
     (event : IntegratedEvent BaseProposal AppEvent) :
     Except (IntegratedError AppError) (IntegratedResult AppState) :=
   match event with
-  | .direct _ => .error (.baseUnavailable .direct)
-  | .propose _ => .error (.baseUnavailable .propose)
-  | .approve _ => .error (.baseUnavailable .approve)
+  | .direct (.admitMember key email roles) =>
+      match validateDirectAdmission integration.reserved gs signer key email roles with
+      | .error err => .error (.validation err)
+      | .ok () =>
+          commitBaseChange integration gs (admitMemberInto gs key email roles)
+            (.memberAdmitted key)
+  | .propose proposal =>
+      let mutation := integration.proposalMutation proposal
+      match validateBaseMutation gs signer mutation with
+      | .error err => .error (.validation err)
+      | .ok () =>
+          let proposalId := integration.digest proposal
+          let pending : PendingBase :=
+            { mutation, proposer := signer, approvals := [signer] }
+          tryEnactBase integration
+            { gs with pendingBase := assocInsert proposalId pending gs.pendingBase }
+            proposalId
+  | .approve proposalId =>
+      match validateBaseApproval gs signer proposalId with
+      | .error err => .error (.validation err)
+      | .ok () =>
+          match lookupPendingBase proposalId gs with
+          | none => .error (.validation (.proposalNotFound proposalId))
+          | some pending =>
+              let approved := { pending with approvals := setInsert signer pending.approvals }
+              tryEnactBase integration
+                { gs with pendingBase := assocInsert proposalId approved gs.pendingBase }
+                proposalId
   | .app appEvent =>
       let view := groupView gs
       if GroupView.isMember signer view then

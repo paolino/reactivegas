@@ -26,6 +26,19 @@ inductive DirectCommand where
   | admitMember (key : Key) (email : Email) (roles : List Role)
 deriving DecidableEq, BEq, Repr
 
+/-- The **voted** base vocabulary (R62-07, INV-62-DIRECT-ONLY): removal and
+role change, and nothing else.  Admission is not representable here, so no
+pending approval — in any aggregate, however it was supplied — can enact one.
+That is a structural exclusion rather than a guard: adding an admission
+constructor stops the exhaustive enactment matching compiling.
+
+It is deliberately *not* the historical `Proposal`, which still carries
+`introduceMember` for the accepted #54 evidence. -/
+inductive BaseMutation where
+  | removeMember (key : Key)
+  | changeRoles (key : Key) (roles : List Role)
+deriving DecidableEq, BEq, Repr
+
 /-- The observable base-change vocabulary (R62-09, R62-12).  A committed
 substrate membership or role effect is exactly one of these three, each naming
 the affected key, so an exhaustive post-base hook cannot ignore a future

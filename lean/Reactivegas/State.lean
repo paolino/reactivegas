@@ -366,3 +366,22 @@ theorem stripCollections_sum (r : KelGroups.Key) (cols : List Collection) :
       rw [escrowSum_cons, escrowSum_cons, ← ih]
       simp only [escrowOf]
       omega
+
+/-- Detaching a referente's collections leaves none of theirs behind: the
+first component of `stripCollections r` names no collection whose referente is
+`r`. This is what makes the L1 governance obligation a fact about the sealed
+hook rather than about one fixture. -/
+theorem stripCollections_referente (r : KelGroups.Key) :
+    ∀ (cols : List Collection), ∀ c ∈ (stripCollections r cols).1, c.referente ≠ r := by
+  intro cols
+  induction cols with
+  | nil => intro c hc; cases hc
+  | cons x t ih =>
+    intro c hc
+    simp only [stripCollections] at hc
+    split at hc
+    · next _ => exact ih c hc
+    · next hne =>
+      rcases List.mem_cons.mp hc with heq | hmem
+      · exact heq ▸ hne
+      · exact ih c hmem

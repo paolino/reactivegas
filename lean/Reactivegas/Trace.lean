@@ -57,7 +57,6 @@ deriving instance Lean.ToJson for Event
 The derived `ToJson` renders each identity as its own constructor name, which
 *is* the `guard.id` string the frozen schema specifies. -/
 inductive GuardId where
-  | addUser | electResponsabile | removeResponsabile | removeMember
   | openPurchase | grantPermission | denyPermission | deposit | withdraw
   | transferCassa | donate | backdonate | pledge | acceptPledge
   | refusePledge | correctPledge | closePurchase | failPurchase
@@ -66,10 +65,6 @@ deriving DecidableEq, Lean.ToJson
 /-- The refusal identity of an event. Exhaustive by construction: a new `Event`
 constructor makes this fail to compile rather than fall through to a default. -/
 def guardOf : Event → GuardId
-  | .addUser _ _ => .addUser
-  | .electResponsabile _ _ => .electResponsabile
-  | .removeResponsabile _ _ => .removeResponsabile
-  | .removeMember _ _ => .removeMember
   | .openPurchase _ _ => .openPurchase
   | .grantPermission _ _ => .grantPermission
   | .denyPermission _ _ => .denyPermission
@@ -130,7 +125,7 @@ theorem stepDetailed_erases (view : KelGroups.GroupView) (s : State)
 /-! ### Accepted-inversion reconciliation
 
 The manifest is discovered from the environment at elaboration time. Neither
-the 18 constructors nor the 10 uncovered ones are written down anywhere in this
+the constructors nor the uncovered ones are written down anywhere in this
 file: adding a correctly named accepted inversion shrinks `missing` with no
 edit here.
 
@@ -138,8 +133,8 @@ An inversion for constructor `c` is a *theorem* named `step_<c>_inv` or
 `step_<stem>_inv`, where `stem` is the leading lowercase run of `c`, whose
 statement mentions both `step` and `Event.c`. Requiring the statement to
 mention the specific constructor is what makes the rule collision-safe:
-`step_remove_inv` can bind `removeResponsabile` or `removeMember`, never both,
-because it can only mention one of them.
+`step_close_inv` can bind `closePurchase` and nothing else,
+because it can only mention one constructor.
 
 The limit is declared, not hidden: this establishes that an accepted
 declaration of the right shape exists and is bound, not that its conclusion is
@@ -317,9 +312,11 @@ def seedView : KelGroups.GroupView :=
                 roles := [KelGroups.Role.adminRole KelGroups.Admin.publicAdmin] })
       , ("3", { key := "3", email := "3@trace", roles := [] }) ] }
 
-/-- Economic prefix of the former removeResponsabile seed, ending in an
-attested donation. S62-A has no production membership-cleanup event. -/
-private def seedRemoveResponsabile : List Event :=
+/-- A mixed-status collection (one accepted pledge, one pending) ending in an
+attested donation. Membership cleanup is not an economic event at all: it is
+the sealed consequence of a base transition, exercised by
+`Reactivegas.checkAdminDepartureCleanup`. -/
+private def seedDonationPrefix : List Event :=
   [ .deposit "2" "1" 40
   , .deposit "1" "3" 100
   , .openPurchase "2" 7
@@ -372,7 +369,7 @@ private def seedDenyPermissionRefunds : List Event :=
 /-- The five mandated executions, all from the empty payload under
 `seedView`. -/
 def seedCorpus : List Trace :=
-  [ emitTrace seedView State.empty seedRemoveResponsabile
+  [ emitTrace seedView State.empty seedDonationPrefix
   , emitTrace seedView State.empty seedCorrectPledgeDown
   , emitTrace seedView State.empty seedCorrectPledgeUp
   , emitTrace seedView State.empty seedClosePurchaseNegative

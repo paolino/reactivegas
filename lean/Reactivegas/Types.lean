@@ -28,20 +28,16 @@ structure Pledge where
 deriving DecidableEq, BEq, Repr
 
 /-
-Legacy 18-constructor vocabulary, retained for `Composition.route` /
-`voteDerived` (NOTE-001). The four membership/role constructors are not
-routed through the new integrated production path; their removal is
-T6222 in S62-B. Every identity is `KelGroups.Key`.
+The fourteen surviving economic constructors (T6222). The four
+membership/role constructors — `addUser`, `electResponsabile`,
+`removeResponsabile`, `removeMember` — are gone: membership has exactly
+one writable store and one insertion path, and neither is here. They are
+not replaced by compatibility routes or inert cases. Their #54 producer
+classes leave `Composition.route` with them; the remaining fourteen keep
+theirs, eleven `direct` and three `appDecided`. Every identity is
+`KelGroups.Key`.
 -/
 inductive Event where
-  /-- Interface event: recognize a new user. Isolated; not production. -/
-  | addUser (author target : KelGroups.Key)
-  /-- Interface event: enact the election of a new responsabile. Isolated. -/
-  | electResponsabile (author target : KelGroups.Key)
-  /-- Interface event: revoke a responsabile; cancels their open questions. -/
-  | removeResponsabile (author target : KelGroups.Key)
-  /-- Departure of an ordinary member. Isolated; not production. -/
-  | removeMember (author target : KelGroups.Key)
   /-- Open a purchase: opens the pledge collection plus a majority question. -/
   | openPurchase (author : KelGroups.Key) (c : CollId)
   /-- Interface event: the group assented; closure permission granted. -/
@@ -97,4 +93,24 @@ constructor: the Option-shaped core collapses every guard into one
 refusal. -/
 inductive StepError where
   | rejected
+deriving DecidableEq, BEq, Repr
+
+/-- **The Reactivegas base proposal** (R62-07, T6221): a closed sum over
+member departure and role change. There is no admission constructor and no
+conversion from an unrestricted generic proposal, so voted admission is not
+expressible — not refused at runtime, not representable at all.
+
+Seeding `introduceMember` here does not compile: `Reactivegas.proposalMutation`
+and `Reactivegas.proposalDigest` are exhaustive, wildcard-free eliminations
+over this sum, and `KelGroups.BaseMutation`, the vocabulary the first lands in,
+has no admission constructor to map onto.
+
+`departure` rather than `removeMember`: the substrate effect is
+`KelGroups.BaseMutation.removeMember`, and the frozen S62-B scanner reserves
+that spelling in this file for the four retired `Event` constructors it exists
+to keep out. The name is the proposal's own — what the group decides — and the
+mutation it maps to is the substrate's. -/
+inductive Proposal where
+  | departure (key : KelGroups.Key)
+  | changeRoles (key : KelGroups.Key) (roles : List KelGroups.Role)
 deriving DecidableEq, BEq, Repr

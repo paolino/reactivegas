@@ -186,7 +186,7 @@ def checkImportGraph : Bool :=
 
 /-! ## Test-owned oracles
 
-`allGuardIds` is written out by hand on purpose. Production discovers the 18
+`allGuardIds` is written out by hand on purpose. Production discovers the
 `Event` constructors at elaboration time and never lists them; this independent
 restatement is what the reconciliation checks compare against, so a typo or an
 omission on either side is caught rather than agreed upon.
@@ -194,18 +194,13 @@ omission on either side is caught rather than agreed upon.
 
 /-- Independent restatement of the refusal identity set. -/
 def allGuardIds : List GuardId :=
-  [ .addUser, .electResponsabile, .removeResponsabile, .removeMember,
-    .openPurchase, .grantPermission, .denyPermission, .deposit, .withdraw,
+  [ .openPurchase, .grantPermission, .denyPermission, .deposit, .withdraw,
     .transferCassa, .donate, .backdonate, .pledge, .acceptPledge,
     .refusePledge, .correctPledge, .closePurchase, .failPurchase ]
 
 /-- Test-owned expectation of which identity each event carries, written
 independently of production's `guardOf`. -/
 def expectedGuard : Event → GuardId
-  | .addUser _ _ => .addUser
-  | .electResponsabile _ _ => .electResponsabile
-  | .removeResponsabile _ _ => .removeResponsabile
-  | .removeMember _ _ => .removeMember
   | .openPurchase _ _ => .openPurchase
   | .grantPermission _ _ => .grantPermission
   | .denyPermission _ _ => .denyPermission
@@ -436,9 +431,10 @@ def seed2 : Trace := seedAt 2
 def seed3 : Trace := seedAt 3
 def seed4 : Trace := seedAt 4
 
-/-- Seed 0 is the economic prefix of the former removeResponsabile
-trace, ending in an attested donation. Membership cleanup is S62-B. -/
-def checkRemoveResponsabile : Bool :=
+/-- Seed 0 carries a mixed-status collection and ends in an attested
+donation. Membership cleanup is not an economic event: it is the sealed
+consequence of a base transition (`Reactivegas.checkAdminDepartureCleanup`). -/
+def checkDonationPrefix : Bool :=
   let f := finalStateOf seed0
   hasEvent seed0 (fun e => match e with | .donate _ _ => true | _ => false) &&
     refusedCount seed0 == 0 &&
@@ -494,7 +490,7 @@ def checkDenyPermissionRefunds : Bool :=
 /-! ### Pre-effect mixed-status coverage
 
 Closes the auditor's E-SEEDS survivor: inserting an `acceptPledge` for the
-pending pledge immediately before `removeResponsabile`, and separately before
+pending pledge immediately before the headline donation, and separately before
 `denyPermission`, left every check green. The seeds asserted only *final*
 balances, and refunding a pledge from `accepted` or from `pending` lands the
 same total in the same conto — so the mixed-status precondition the mandate
@@ -502,14 +498,12 @@ actually requires was never observed.
 
 These checks read the headline step's own typed `input` and require
 distinguishable nonzero accepted *and* pending pledges before the effect, then
-verify both refunds land on their own pledger and that the removal happened.
+verify both refunds land on their own pledger and that the collection closed.
 -/
 
 def stepWhere (t : Trace) (p : Event → Bool) : Option TraceStep :=
   t.steps.find? (fun st => p st.event)
 
-def isRemoveResponsabile (e : Event) : Bool :=
-  match e with | .removeResponsabile _ _ => true | _ => false
 
 def isDenyPermission (e : Event) : Bool :=
   match e with | .denyPermission _ _ => true | _ => false
@@ -546,7 +540,7 @@ def isDonate (e : Event) : Bool :=
 
 /-- Seed 0 still carries mixed pledges on collection 7 at the donate
 step; donate does not consume them. Membership cleanup is S62-B. -/
-def checkRemoveMixedPreEffect : Bool :=
+def checkDonationMixedPreEffect : Bool :=
   match stepWhere seed0 isDonate with
   | some st =>
     mixedPledgesBefore st 7 &&
@@ -564,7 +558,7 @@ def checkDenyMixedPreEffect : Bool :=
 /-- The auditor's surviving mutant, shipped permanently: accept the pending
 pledge immediately before the headline effect, so the pre-effect state is
 accepted-only. -/
-def acceptedOnlyRemove : Trace :=
+def acceptedOnlyDonation : Trace :=
   emitTrace corpusView State.empty
     [ .deposit "2" "1" 40
     , .deposit "1" "3" 100
@@ -591,9 +585,9 @@ def acceptedOnlyDeny : Trace :=
 new pre-effect check, and — this is the part that matters — still refunds
 everything and still removes the collection. That last clause records exactly
 why the old final-balance assertions could not see it. -/
-def checkRemoveMixedControl : Bool :=
-  !(acceptedOnlyRemove == seed0) &&
-    (match stepWhere acceptedOnlyRemove isDonate with
+def checkDonationMixedControl : Bool :=
+  !(acceptedOnlyDonation == seed0) &&
+    (match stepWhere acceptedOnlyDonation isDonate with
       | some st => !mixedPledgesBefore st 7
       | none => false)
 
@@ -715,7 +709,7 @@ def fidelityMutants (t : Trace) (j : Lean.Json) : List (String × Lean.Json) :=
       mapStepAt j 0 (fun sj =>
         setKey sj "input" (Lean.toJson (perturbState t.initial))))
   , ("mutSerializedEvent",
-      mapStepAt j 0 (fun sj => setKey sj "event" (Lean.toJson (Event.addUser "99" "99"))))
+      mapStepAt j 0 (fun sj => setKey sj "event" (Lean.toJson (Event.donate "99" 99))))
   , ("mutSerializedAppliedState",
       mapStepAt j ai (fun sj =>
         setKey sj "result"
@@ -752,8 +746,9 @@ def jsonChecksOf (corpus : List Trace) : List (String × Bool) :=
 
 /-! ## Inventory and manifest reconciliation
 
-None of these pins the live 18/8/10 numbers. Pinning them is the slice gate's
-job; pinning them here as well would mean the next inversion slice could not add
+None of these pins the live constructor/covered/missing counts. Pinning them
+is the slice gate's job; pinning them here as well would mean the next
+inversion slice could not add
 a theorem without editing this file, which is exactly what E-INVENTORY forbids.
 What is checked here is that the counts, the row set, the GuardId set and the
 rendered claims cannot drift apart from each other.
@@ -801,8 +796,7 @@ identity in production left the whole suite green. The mapping is total, so the
 check over it has to be total too. Only `guardOf` is applied to these — never
 `step` — so including `backdonate` is safe. -/
 def sampleEvents : List Event :=
-  [ .addUser "1" "2", .electResponsabile "1" "2", .removeResponsabile "1" "2"
-  , .removeMember "1" "2", .openPurchase "1" 3, .grantPermission "1" 3
+  [ .openPurchase "1" 3, .grantPermission "1" 3
   , .denyPermission "1" 3, .deposit "1" "2" 5, .withdraw "1" "2" 5
   , .transferCassa "1" "2" 5, .donate "1" 5, .backdonate "1" 5
   , .pledge "1" "2" 3 5, .acceptPledge "1" "2" 3, .refusePledge "1" "2" 3
@@ -841,10 +835,6 @@ is a membership test rather than a prefix test. That is the stronger check
 anyway: a prefix test waves through a declaration bound to the wrong identity,
 and a membership test does not. -/
 def permittedNames : GuardId → List String
-  | .addUser => ["step_addUser_inv", "step_add_inv"]
-  | .electResponsabile => ["step_electResponsabile_inv", "step_elect_inv"]
-  | .removeResponsabile => ["step_removeResponsabile_inv", "step_remove_inv"]
-  | .removeMember => ["step_removeMember_inv", "step_remove_inv"]
   | .openPurchase => ["step_openPurchase_inv", "step_open_inv"]
   | .grantPermission => ["step_grantPermission_inv", "step_grant_inv"]
   | .denyPermission => ["step_denyPermission_inv", "step_deny_inv"]
@@ -941,7 +931,7 @@ counts, so a row cannot be reported without being decided.
 -/
 
 def checks : List (String × Bool) :=
-  [ ("removeResponsabile", checkRemoveResponsabile)
+  [ ("donationPrefix", checkDonationPrefix)
   , ("correctPledgeDown", checkCorrectPledgeDown)
   , ("correctPledgeUp", checkCorrectPledgeUp)
   , ("closePurchaseNegative", checkClosePurchaseNegative)
@@ -961,9 +951,9 @@ def checks : List (String × Bool) :=
   , ("corpusShape", checkCorpusShape)
   , ("bothResultShapesOccur", checkBothResultShapesOccur)
   , ("erasureOnCorpus", checkErasureOnCorpus)
-  , ("removeMixedPreEffect", checkRemoveMixedPreEffect)
+  , ("donationMixedPreEffect", checkDonationMixedPreEffect)
   , ("denyMixedPreEffect", checkDenyMixedPreEffect)
-  , ("removeMixedControl", checkRemoveMixedControl)
+  , ("donationMixedControl", checkDonationMixedControl)
   , ("denyMixedControl", checkDenyMixedControl)
   , ("importGraph", checkImportGraph)
   , ("adminAdmissionReachable", checkAdminAdmissionReachable)
@@ -1029,7 +1019,7 @@ def failedNames : List String := (allResults.filter (fun c => !c.2)).map Prod.fs
 
 /-- Every marker the gate matches on must actually be present in the table. -/
 def reportedNames : List String :=
-  [ "removeResponsabile", "correctPledgeDown", "correctPledgeUp",
+  [ "donationPrefix", "correctPledgeDown", "correctPledgeUp",
     "closePurchaseNegative", "denyPermissionRefunds",
     "wrongGuard", "divergence", "omittedInput", "discontinuousInput",
     "mutatedPostState", "flippedResult", "unsupportedVersion" ]
@@ -1040,7 +1030,7 @@ def missingNames : List String :=
 #eval show IO Unit from do
   IO.println ("TRACE-INVENTORY " ++ counts)
   IO.println ("TRACE-SEED-SUMMARY " ++ String.intercalate " "
-    (["removeResponsabile", "correctPledgeDown", "correctPledgeUp",
+    (["donationPrefix", "correctPledgeDown", "correctPledgeUp",
       "closePurchaseNegative", "denyPermissionRefunds"].map marker))
   IO.println ("TRACE-NEGATIVE-CONTROLS " ++ String.intercalate " "
     (["wrongGuard", "divergence", "omittedInput", "discontinuousInput",

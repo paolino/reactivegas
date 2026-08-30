@@ -15,6 +15,7 @@ inductive ValidationError where
   | roleAddPrecondition (name : RoleName)
   | roleRemovePrecondition (name : RoleName)
   | invalidKey (key : Key)
+  | reservedKey (key : Key)
 deriving DecidableEq, BEq, Repr
 
 instance : BEq (Except ValidationError Unit) where
@@ -116,6 +117,53 @@ def validateApproval (gs : GroupState α) (signer : Key)
     (proposalId : ProposalId) : Except ValidationError Unit := do
   requireAdmin signer gs
   match lookupPending proposalId gs with
+  | none => .error (.proposalNotFound proposalId)
+  | some pending =>
+      if pending.approvals.contains signer then
+        .error (.alreadyApproved signer proposalId)
+      else .ok ()
+
+
+/-! ## The integrated base validators (R62-06, R62-07)
+
+These decide the *integrated* production routes.  `validateProposal` above
+stays with the historical fold.
+
+There is no bootstrap arm here.  A group with no admin admits nobody: the
+founding admin arrives through the application's already-guarded initial
+aggregate, never through a self-admitting first event.  That is what closes
+the empty-group bypass the vote machine used to carry.
+-/
+
+/-- The sole member-insertion validator.  Three guards, in a fixed order so the
+refusal identity is exact: a non-admin signer is `notAnAdmin`, the reserved key
+is `reservedKey` — distinguishable from "already a member" because it is
+checked first — and an existing key is `memberAlreadyExists`. -/
+def validateDirectAdmission (reserved : Key) (gs : GroupState α)
+    (signer target : Key) (_email : Email) (_roles : List Role) :
+    Except ValidationError Unit :=
+  if isAdmin signer gs then
+    if target = reserved then .error (.reservedKey target)
+    else if isMember target gs then .error (.memberAlreadyExists target)
+    else .ok ()
+  else .error (.notAnAdmin signer)
+
+/-- Admissibility of a voted base mutation.  Exhaustive over `BaseMutation`:
+an added constructor stops this compiling rather than acquiring a default. -/
+def validateBaseMutation (gs : GroupState α) (signer : Key) :
+    BaseMutation → Except ValidationError Unit
+  | .removeMember key => do
+      requireAdmin signer gs
+      requireMember key gs
+  | .changeRoles key _ => do
+      requireAdmin signer gs
+      requireMember key gs
+
+/-- Admissibility of an approval of a pending base mutation. -/
+def validateBaseApproval (gs : GroupState α) (signer : Key)
+    (proposalId : ProposalId) : Except ValidationError Unit := do
+  requireAdmin signer gs
+  match lookupPendingBase proposalId gs with
   | none => .error (.proposalNotFound proposalId)
   | some pending =>
       if pending.approvals.contains signer then

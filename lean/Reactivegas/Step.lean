@@ -1,6 +1,7 @@
 import Reactivegas.State
 import KelGroups.Integration
 import KelGroups.Vote.Types
+import KelGroups.Vote.Fold
 
 /-!
 # The rejecting step function
@@ -10,11 +11,13 @@ the event is rejected. The signer and the canonical `GroupView` are
 explicit: AUTH is `GroupView.isAdmin signer view`, and member-scoped
 guards read `GroupView.isMember`. This payload cannot write membership.
 
-The four legacy `Event` membership/role constructors are not handled
-here; they are not constructors of `AppEvent` and are not routed
-through the integrated production path (NOTE-001, NOTE-002).
+The retired legacy membership/role constructors are gone from `Event`
+entirely (T6222); nothing here refuses them because nothing can express
+them.
 
-Departure cleanup and base-transition success remain S62-B.
+`baseHook` is this module's other half: the sealed consequences of a
+committed base membership or role change, derived from the real pre/post
+canonical views and run inside the same transition (T6223).
 -/
 
 /-- Rejection guard: `demand b` succeeds exactly when `b` holds. -/
@@ -147,18 +150,15 @@ def step (view : KelGroups.GroupView) (s : State) (signer : KelGroups.Key)
       conti := refundAll s.conti (col.accepted ++ col.pending),
       collections := rest }
 
-/-- Event-shaped wrapper used by inherited #45/#48 theorems. The four
-membership/role constructors refuse; the fourteen economic constructors
-delegate to the integrated `step`. This is not a production root. -/
+/-- Event-shaped wrapper used by inherited #45/#48 theorems. The fourteen
+surviving economic constructors
+delegate to the integrated `step`; there are no others left to refuse. This
+is not a production root. -/
 abbrev stepEvent (view : KelGroups.GroupView) (s : State) (e : Event) :
     Option State :=
   let go (signer : KelGroups.Key) (app : AppEvent) : Option State :=
     step view s signer app backdonateAuthorized
   match e with
-  | .addUser _ _ => none
-  | .electResponsabile _ _ => none
-  | .removeResponsabile _ _ => none
-  | .removeMember _ _ => none
   | .openPurchase a c => go a (.openPurchase c)
   | .grantPermission a c => go a (.grantPermission c)
   | .denyPermission a c => go a (.denyPermission c)
@@ -187,16 +187,112 @@ def appFold (auth : BackdonateAuth) :
     | some s' => .ok s'
     | none => .error StepError.rejected
 
-/-- The Reactivegas integration bundle. The threshold is accepted for
-signature compatibility with the vote machine; S62-A app events do not
-consult it. `BaseProposal` is `Unit`: no live base route in this slice. -/
-def integration (_θ : KelGroups.Vote.Threshold) (auth : BackdonateAuth) :
-    KelGroups.Integration State AppEvent Unit StepError where
+/-! ## The sealed base hook (T6223, R62-09, R62-10)
+
+The economic and vote consequences of one committed base membership or role
+change. It runs *inside* `applyIntegratedEvent`, from the exact pre/post
+canonical views, so there is no separately signable cleanup or sweep event and
+no window in which the group has moved and its consequences have not.
+-/
+
+/-- Absorb a departing member's own claim into the reserved comune account.
+Legacy `removeMember`: the leaver's conto moves to the comune with no balance
+gate — a zero balance is a no-op movement, not a separate form. -/
+def absorbConto (s : State) (key : KelGroups.Key) : State :=
+  { s with
+    conti := bump (bump s.conti key (-(bal s.conti key))) comuneId (bal s.conti key) }
+
+/-- Wind up a key that has just lost admin status. Legacy
+`removeResponsabile`: their open collections are cancelled, every pledge those
+collections held is refunded to its pledger, and their cassa claim moves to the
+comune. This is the accepted #45/#48 cleanup, now derived from a real base
+transition instead of a separately signed event. -/
+def windUpAdmin (s : State) (key : KelGroups.Key) : State :=
+  let (rest, ps) := stripCollections key s.collections
+  { s with
+    conti := bump (refundAll s.conti ps) comuneId (-(bal s.casse key)),
+    casse := bump s.casse key (-(bal s.casse key)),
+    collections := rest }
+
+/-- The economic consequences of one committed base change. Exhaustive over
+`KelGroups.BaseChange`: a fourth substrate membership effect would stop this
+compiling rather than acquire a silent default.
+
+`none` is a refusal, and because the hook is inside the transition it rejects
+the base change with it. A stalled comune refuses departures and admin loss
+until a donation cures it, exactly as the legacy guard did.
+
+An admitted member has no economic consequence: they arrive with no conto, no
+cassa and no collection. A departure is both a member departure and, when the
+leaver held admin, an admin wind-up — the two accepted legacy events were
+role-disjoint, and unifying them here is what stops a departing responsabile
+escaping either half. -/
+def economicCleanup (change : KelGroups.BaseChange)
+    (pre post : KelGroups.GroupView) (s : State) : Option State :=
+  match change with
+  | .memberAdmitted _ => some s
+  | .memberRemoved key => do
+      demand (!(decide (stalled s)))
+      pure (absorbConto
+        (if KelGroups.GroupView.isAdmin key pre then windUpAdmin s key else s) key)
+  | .rolesChanged key =>
+      if KelGroups.GroupView.isAdmin key pre
+          && !(KelGroups.GroupView.isAdmin key post) then do
+        demand (!(decide (stalled s)))
+        pure (windUpAdmin s key)
+      else some s
+
+/-- **The sealed post-base hook.** Economic cleanup first, then the vote
+recomputation every base change owes the question set: all open questions are
+re-evaluated against the *post*-transition franchise, so a question can close
+because the electorate changed and no ballot was cast (V-3, R62-11).
+
+The recomputation reads `s.votes`, the pre-transition payload, because
+`economicCleanup` never touches the vote payload — writing it this way makes
+that independence visible rather than incidental. Sweeping twice at one view
+cannot duplicate a closure: `KelGroups.Vote.sweepClosures_idempotent`. -/
+def baseHook (θ : KelGroups.Vote.Threshold) : KelGroups.BaseHook State StepError :=
+  fun change pre post s =>
+    match economicCleanup change pre post s with
+    | none => .error StepError.rejected
+    | some cleaned =>
+        .ok { cleaned with votes := KelGroups.Vote.sweepClosures θ post s.votes }
+
+/-! ## The restricted Reactivegas base proposal (T6221) -/
+
+/-- Identity of a proposal in the pending base store. Exhaustive over
+`Proposal`. -/
+def proposalDigest : Proposal → KelGroups.ProposalId
+  | .departure key => "depart:" ++ key
+  | .changeRoles key _ => "roles:" ++ key
+
+/-- The application's reading of its own restricted proposal as a substrate
+base mutation. Exhaustive and wildcard-free, and its codomain
+`KelGroups.BaseMutation` has no admission constructor — so a seeded
+`Proposal.introduceMember` has nowhere to go and stops this compiling. -/
+def proposalMutation : Proposal → KelGroups.BaseMutation
+  | .departure key => .removeMember key
+  | .changeRoles key roles => .changeRoles key roles
+
+/-- The Reactivegas integration bundle: the sole production instantiation of
+the substrate boundary. It supplies the reserved key, the restricted proposal's
+identity and mutation reading, the app fold, and the sealed base hook together
+— an application cannot obtain the boundary while omitting one of them.
+
+`BaseProposal` is `Proposal`, the admission-free sum; the threshold reaches the
+boundary only through `baseHook`, since app events do not consult it. -/
+def integration (θ : KelGroups.Vote.Threshold) (auth : BackdonateAuth) :
+    KelGroups.Integration State AppEvent Proposal StepError where
+  reserved := comuneId
+  digest := proposalDigest
+  proposalMutation := proposalMutation
   appFold := appFold auth
+  baseHook := baseHook θ
 
 /-- Production well-formedness: the reserved comune account is not a
 canonical member (and therefore cannot be an admin, signer, voter, or
-proposer). Direct admission remains S62-B; this is the boot/input
+proposer). Direct admission refuses it by its own identity in
+`validateDirectAdmission`; this is the complementary boot/input
 boundary of the S62-A production root. -/
 def productionWellFormed (gs : KelGroups.GroupState State) : Bool :=
   !KelGroups.GroupView.isMember comuneId (KelGroups.groupView gs)
@@ -206,7 +302,7 @@ supplied member list. -/
 def boot (members : List (KelGroups.Key × KelGroups.Member))
     (payload : State) : Option (KelGroups.GroupState State) :=
   let gs : KelGroups.GroupState State :=
-    { members, pendingProposals := [], appFold := payload }
+    { members, pendingProposals := [], pendingBase := [], appFold := payload }
   if productionWellFormed gs then some gs else none
 
 inductive ProductionError where
@@ -220,7 +316,7 @@ generic integrated fold runs, so that reserved key cannot become
 authorized by being smuggled in as the initial aggregate. -/
 def apply (θ : KelGroups.Vote.Threshold) (auth : BackdonateAuth)
     (gs : KelGroups.GroupState State) (signer : KelGroups.Key)
-    (event : KelGroups.IntegratedEvent Unit AppEvent) :
+    (event : KelGroups.IntegratedEvent Proposal AppEvent) :
     Except ProductionError (KelGroups.IntegratedResult State) :=
   if productionWellFormed gs then
     match KelGroups.applyIntegratedEvent (integration θ auth) gs signer event with
@@ -244,6 +340,7 @@ def preservationGroup : KelGroups.GroupState State :=
                     roles := [KelGroups.Role.adminRole KelGroups.Admin.publicAdmin] })
       , ("bob", { key := "bob", email := "bob@example", roles := [] }) ]
     pendingProposals := []
+    pendingBase := []
     appFold :=
       { State.empty with
         votes := { openQuestions := [("q", probeQuestion)], closed := [] } } }
@@ -298,6 +395,7 @@ def comuneAdminMember : KelGroups.Member :=
 def comuneBoot : KelGroups.GroupState State :=
   { members := [(comuneId, comuneAdminMember)]
     pendingProposals := []
+    pendingBase := []
     appFold := State.empty }
 
 /-- Negative production witness: `comuneId` as founding admin cannot

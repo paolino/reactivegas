@@ -661,18 +661,6 @@ private theorem effectedState_sweepReady (gs : VoteState) (signer : Key) (event 
       have heff : effectedState gs signer (.renounce questionId) = gs := rfl
       rw [heff]
       exact h
-  | admitMember key email roles =>
-      have heff : effectedState gs signer (.admitMember key email roles) = gs := rfl
-      rw [heff]
-      exact h
-  | removeMember key =>
-      have heff : effectedState gs signer (.removeMember key) = gs := rfl
-      rw [heff]
-      exact h
-  | setRoles key roles =>
-      have heff : effectedState gs signer (.setRoles key roles) = gs := rfl
-      rw [heff]
-      exact h
 
 theorem applyVoteEvent_preserves_wellFormed (θ : Threshold) (gs : VoteState)
     (signer : Key) (event : VoteEvent) (h : VoteWellFormed θ view gs) :
@@ -778,18 +766,6 @@ private theorem effectedState_preserves_qid (gs : VoteState) (signer : Key)
             · exact Or.inr hclosed
   | renounce questionId =>
       have heff : effectedState gs signer (.renounce questionId) = gs := rfl
-      rw [heff]
-      exact h
-  | admitMember key email roles =>
-      have heff : effectedState gs signer (.admitMember key email roles) = gs := rfl
-      rw [heff]
-      exact h
-  | removeMember key =>
-      have heff : effectedState gs signer (.removeMember key) = gs := rfl
-      rw [heff]
-      exact h
-  | setRoles key roles =>
-      have heff : effectedState gs signer (.setRoles key roles) = gs := rfl
       rw [heff]
       exact h
 
@@ -984,10 +960,10 @@ theorem inadmissible_is_noop (θ : Threshold) (gs : VoteState) (signer : Key)
     applyVoteEvent θ view gs signer event = gs := by
   simp only [applyVoteEvent, rejected]
 
-/-- R57-04: the universal non-responsabile corollary. Once a franchise
-exists, a signer who is not a current responsabile is inert for every
-`VoteEvent` — including `admitMember`, `removeMember`, and `setRoles`; there
-are no constructor exceptions. -/
+/-- R57-04: the universal non-responsabile corollary. Once a franchise exists,
+a signer who is not a current responsabile is inert for **every** `VoteEvent`;
+there are no constructor exceptions, and since T6222 there is no membership
+constructor left that could have claimed one. -/
 theorem nonresponsabile_event_noop (θ : Threshold) (gs : VoteState)
     (signer : Key) (event : VoteEvent) (bootstrapped : franchiseSize view > 0)
     (unauthorized : isResponsabile signer view = false) :
@@ -997,13 +973,9 @@ theorem nonresponsabile_event_noop (θ : Threshold) (gs : VoteState)
     | zero => rw [hsz] at bootstrapped; simp at bootstrapped
     | succ n => simp [hsz]
   have hval : validateVoteEvent θ view gs signer event =
-      .error VoteError.notResponsabile ∨
-    validateVoteEvent θ view gs signer event =
-      .error VoteError.membershipNotVoteLocal := by
-    cases event <;> simp [validateVoteEvent, unauthorized, hs0]
-  rcases hval with hv | hv
-  · exact inadmissible_is_noop view θ gs signer event _ hv
-  · exact inadmissible_is_noop view θ gs signer event _ hv
+      .error VoteError.notResponsabile := by
+    cases event <;> simp [validateVoteEvent, unauthorized]
+  exact inadmissible_is_noop view θ gs signer event _ hval
 
 theorem unfranchised_cast_noop (θ : Threshold) (gs : VoteState) (signer : Key)
     (questionId : QuestionId) (ballot : Ballot)
@@ -1095,9 +1067,6 @@ private theorem effectedState_tally_growth (θ : Threshold) (gs : VoteState)
       have heff : effectedState gs signer (.renounce questionId) = gs := rfl
       rw [heff] at hk
       exact Or.inl hk
-  | admitMember _ _ _ => exact Or.inl hk
-  | removeMember _ => exact Or.inl hk
-  | setRoles _ _ => exact Or.inl hk
 
 private theorem tally_keys_franchised_from (θ : Threshold) :
     ∀ (events : List (Key × VoteEvent)) (initial : VoteState) (k : Key),

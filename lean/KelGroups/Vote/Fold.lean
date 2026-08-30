@@ -31,9 +31,9 @@ Three load-bearing shapes:
   (R-61): a purchase-approval question holds members' money in escrow, and a
   question erased without a verdict strands it.
 
-Slice-A treatment of the three retired member events: they are refused by
-`validateVoteEvent` and therefore never reach `effectedState`, which has nothing
-to write them into. `renounce` is carried in the vocabulary and is a no-op in
+The retired member events are gone from `VoteEvent` entirely (T6222); this
+payload never had anywhere to write them.
+`renounce` is carried in the vocabulary and is a no-op in
 this slice; its closing behaviour and the
 `closeProposerQuestions`/`proposerDeparted` route arrive with Slice B, as does
 the recomputation obligation that a *base* membership transition owes this
@@ -82,9 +82,8 @@ sweep. Effects are authorization-free by architecture (F-001 property class):
 they assume an already-admitted event — all signer authorization happens only
 in the total exhaustive `validateVoteEvent` boundary — and contain no
 independent standing decision. An `openQuestion` never overwrites or revives
-an existing id — decided questions stay decided. The three retired member
-events are unreachable here: `validateVoteEvent` refuses them, and this payload
-has no member relation for them to write. -/
+an existing id — decided questions stay decided. There is no membership
+event in the sum for this payload to have to ignore. -/
 def effectedState (gs : VoteState) (signer : Key) (event : VoteEvent) : VoteState :=
   match event with
   | .openQuestion questionId kind =>
@@ -100,9 +99,6 @@ def effectedState (gs : VoteState) (signer : Key) (event : VoteEvent) : VoteStat
           { gs with openQuestions := assocInsert questionId placed gs.openQuestions }
       | none => gs
   | .renounce _ => gs
-  | .admitMember _ _ _ => gs
-  | .removeMember _ => gs
-  | .setRoles _ _ => gs
 
 /-- One fold step. The validation result is the sole production boundary
 (R57-01): it dominates both the event effect and the recompute-and-close

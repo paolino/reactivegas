@@ -1,4 +1,6 @@
 import Reactivegas.Predicates
+import KelGroups.Invariants
+import KelGroups.Vote.Invariants
 
 variable {view : KelGroups.GroupView}
 
@@ -336,9 +338,6 @@ theorem step_fail_inv {s s' : State} {a : KelGroups.Key} {c : CollId}
 theorem conservation_preserved {s s' : State} {e : Event}
     (hcon : conservation s) (hstep : stepEvent view s e = some s') : conservation s' := by
   cases e with
-  | addUser a u | electResponsabile a u
-  | removeResponsabile a u | removeMember a u =>
-    exact Option.noConfusion hstep
   | openPurchase a c =>
     simp only [stepEvent, step] at hstep
     split at hstep
@@ -470,9 +469,6 @@ theorem conservation_preserved {s s' : State} {e : Event}
 theorem step_authorized {s s' : State} {e : Event} (h : stepEvent view s e = some s') :
     authorizedStep view s e s' := by
   cases e with
-  | addUser a u | electResponsabile a u
-  | removeResponsabile a u | removeMember a u =>
-    exact Option.noConfusion h
   | openPurchase a c =>
     simp only [stepEvent, step] at h
     show isResponsabile view a
@@ -538,12 +534,19 @@ theorem step_authorized {s s' : State} {e : Event} (h : stepEvent view s e = som
 
 /-! ### L1 governance enacts -/
 
-/-- Removing responsabile `u` cancels their open questions: no collection
-left in the state names `u` as referente. -/
-theorem governance_enacts_remove {s s' : State} {a u : KelGroups.Key}
-    (h : stepEvent view s (.removeResponsabile a u) = some s') :
-    governanceEnacts u s' :=
-  Option.noConfusion h
+/-- **L1 governance enacts**, discharged on the real transition. Whenever the
+sealed hook winds up a key that has lost admin status, no collection left in
+the resulting payload names that key as referente — the legacy
+`EventoEliminazioneResponsabile` obligation, now a consequence of a base
+transition rather than a separately signed event.
+
+This is the general fact; `Reactivegas.checkAdminDepartureCleanup` is its
+production-reachable witness through `Reactivegas.apply`. -/
+theorem governance_enacts_windUpAdmin (s : State) (u : KelGroups.Key) :
+    governanceEnacts u (Reactivegas.windUpAdmin s u) := by
+  intro c hc
+  simp only [Reactivegas.windUpAdmin] at hc
+  exact stripCollections_referente u s.collections c hc
 
 /-! ### L2 closure permission -/
 
@@ -791,7 +794,7 @@ private theorem comune_not_a_member_step {s s' : State} {e : Event}
 
 /-- Non-comune credits and pledged amounts are preserved by a successful
 step. Stronger than member-scoped `solvent`: a dormant non-member conto
-cannot go negative, so `addUser` cannot expose hidden debt. -/
+cannot go negative, so a later admission cannot expose hidden debt. -/
 private theorem credit_pledges_step {s s' : State} {e : Event}
     (hcred : ∀ u : KelGroups.Key, u ≠ comuneId → bal s.conti u ≥ 0)
     (hamt : ∀ col ∈ s.collections, ∀ p ∈ col.accepted ++ col.pending, 0 ≤ p.amount)
@@ -799,9 +802,6 @@ private theorem credit_pledges_step {s s' : State} {e : Event}
     (∀ u : KelGroups.Key, u ≠ comuneId → bal s'.conti u ≥ 0) ∧
       (∀ col ∈ s'.collections, ∀ p ∈ col.accepted ++ col.pending, 0 ≤ p.amount) := by
   cases e with
-  | addUser a u | electResponsabile a u
-  | removeResponsabile a u | removeMember a u =>
-    exact Option.noConfusion hstep
   | openPurchase a c =>
     simp only [stepEvent, step] at hstep
     split at hstep
@@ -1044,7 +1044,8 @@ private theorem credit_pledges_step {s s' : State} {e : Event}
 
 /-- The comune account is never a member of any state reachable from
 boot: the guarded boot excludes `comuneId` and every event preserves
-the exclusion (`addUser` refuses it and no other event inserts it). -/
+the exclusion: no app event inserts a member at all, and the one direct
+admission route refuses the reserved key by identity. -/
 theorem comune_not_a_member_of_reach {s : State} (hr : Reach view s) :
     comune_not_a_member view := by
   induction hr with
@@ -1309,7 +1310,7 @@ def departureGroup : KelGroups.GroupState State :=
     { State.empty with conti := [("bob", 40), (comuneId, 0)] }
 
 def removeBob : KelGroups.IntegratedEvent Proposal AppEvent :=
-  .propose (Proposal.removeMember "bob")
+  .propose (Proposal.departure "bob")
 
 /-- Departure absorbs the departing member's conto into the reserved comune
 account, and moves no other money. -/
@@ -1342,7 +1343,7 @@ collection / refund cleanup: the departing admin's collections are cancelled,
 every held pledge is refunded, their cassa claim moves to the comune, and
 conservation still holds. -/
 def checkAdminDepartureCleanup : Bool :=
-  match s62bRun adminDepartureGroup "alice" (.propose (Proposal.removeMember "dora")) with
+  match s62bRun adminDepartureGroup "alice" (.propose (Proposal.departure "dora")) with
   | .ok result =>
       let s := result.state.appFold
       (result.change == some (KelGroups.BaseChange.memberRemoved "dora"))
@@ -1402,7 +1403,7 @@ def v3Group : KelGroups.GroupState State :=
       votes := { openQuestions := [("q", v3Question)], closed := [] } }
 
 def removeEve : KelGroups.IntegratedEvent Proposal AppEvent :=
-  .propose (Proposal.removeMember "eve")
+  .propose (Proposal.departure "eve")
 
 /-- With three responsabili the majority is two, so the proposer alone does not
 enact: this step only records the pending base mutation. -/
@@ -1413,7 +1414,7 @@ def v3Proposed : Option (KelGroups.GroupState State) :=
 
 def v3Enacted : Option (KelGroups.IntegratedResult State) :=
   match v3Proposed with
-  | some gs => (s62bRun gs "dora" (.approve (proposalDigest (Proposal.removeMember "eve")))).toOption
+  | some gs => (s62bRun gs "dora" (.approve (proposalDigest (Proposal.departure "eve")))).toOption
   | none => none
 
 /-- **V-3.** No ballot is cast anywhere in this trace and no vote event occurs:
@@ -1501,6 +1502,20 @@ theorem sweep_idempotent_witness : checkSweepIdempotent = true := by decide
 
 theorem sweep_idempotent_mutant_caught : checkSweepIdempotentMutant = true := by decide
 
+/-- The sealed hook's vote half, isolated: whatever the economic cleanup did,
+a payload the hook returns carries the post-view recomputation of the payload
+it was given. -/
+theorem baseHook_votes {threshold : KelGroups.Vote.Threshold}
+    {change : KelGroups.BaseChange} {pre post : KelGroups.GroupView}
+    {s s' : State} (h : baseHook threshold change pre post s = .ok s') :
+    s'.votes = KelGroups.Vote.sweepClosures threshold post s.votes := by
+  unfold baseHook at h
+  split at h
+  · exact Except.noConfusion h
+  · simp only [Except.ok.injEq] at h
+    subst h
+    rfl
+
 /-- **`base_change_recomputes_votes`** — general, not a witness: every
 successful production transition that reports a base change has vote payload
 equal to the recomputation of the *pre*-transition payload under the *post*
@@ -1523,13 +1538,8 @@ theorem base_change_recomputes_votes (threshold : KelGroups.Vote.Threshold)
       split at h
       · simp only [Except.ok.injEq] at h
         subst h
-        have hhook := KelGroups.base_change_runs_hook (integration threshold auth)
-          gs signer event inner change hinner hchange
-        unfold integration baseHook at hhook
-        split at hhook
-        · exact Except.noConfusion hhook
-        · simp only [Except.ok.injEq] at hhook
-          exact congrArg State.votes hhook.symm
+        exact baseHook_votes (KelGroups.base_change_runs_hook
+          (integration threshold auth) gs signer event inner change hinner hchange)
       · exact Except.noConfusion h
     · exact Except.noConfusion h
   · exact Except.noConfusion h
