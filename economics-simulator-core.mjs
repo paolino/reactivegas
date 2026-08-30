@@ -93,6 +93,12 @@ function stripCollections(r, cols) {
 
 function isResponsabile(s, u) { return s.responsabili.includes(u); }
 
+/* Reserved non-member comune account inside conti (issue #48). Lean's
+   comuneId is 0, which is this toy's FOUNDER, so the executable key is
+   a sentinel that cannot collide with a member identity. It is never a
+   standalone State field. */
+const COMUNE_ID = -1;
+
 /* --- Guard labels (canonical Lean code + toy-side why text) ------------ */
 
 const g = (code, why, law) => ({ code, why, law: law || null });
@@ -376,6 +382,31 @@ function attempt(s, e) {
           (ps.length ? ps.map(p => `conto ${nm(p.user)} +${p.amount}`).join(', ') : 'nessuno'),
         state: { ...s, conti: refundAll(s.conti, ps), collections: rest } };
     }
+
+    case 'donate': {
+      need(isResponsabile(s, e.author), AUTH(e.author));
+      need(0 < e.v, g('0 < v', `l'importo deve essere positivo (${e.v})`));
+      if (fails.length) return rej();
+      return { ok: true,
+        flow: `donazione: cassa ${nm(e.author)} +${e.v} · comune +${e.v}`,
+        state: { ...s, casse: bump(s.casse, e.author, e.v),
+          conti: bump(s.conti, COMUNE_ID, e.v) } };
+    }
+
+    case 'backdonate': {
+      const n = s.users.length;
+      need(isResponsabile(s, e.author), AUTH(e.author));
+      need(0 < e.w, g('0 < w', `la quota deve essere positiva (${e.w})`));
+      need(bal(s.conti, COMUNE_ID) >= n * e.w,
+        g('comuneBal s ≥ n * w',
+          `comune insufficiente: ${bal(s.conti, COMUNE_ID)} < ${n * e.w}`));
+      if (fails.length) return rej();
+      let conti = bump(s.conti, COMUNE_ID, -(n * e.w));
+      for (const u of s.users) conti = bump(conti, u, e.w);
+      return { ok: true,
+        flow: `redistribuzione: comune −${n * e.w} · ${n} conti +${e.w}`,
+        state: { ...s, conti } };
+    }
   }
   throw new Error('unknown event tag: ' + e.tag);
 }
@@ -485,8 +516,8 @@ const CLAIMS = {
   'kg-enact-effect':   { c: 'Canale base: la delibera applica la proposta ai membri e rimuove la pendente, in un passo', k: 'definizione', d: 'KelGroups.finishEnact', f: 'lean/KelGroups/Fold.lean', l: 18 },
   'kg-apply':          { c: 'Canale base: proporre inserisce la pendente con il proponente già assenziente e tenta subito la delibera', k: 'definizione', d: 'KelGroups.applyEventDetailed', f: 'lean/KelGroups/Fold.lean', l: 75 },
   'ev-remove-member':  { c: 'removeMember esiste nella macchina economica accettata al pin (#48) ed è instradato baseEnacted (vocabolario fedele); questo snapshot del simulatore non lo esegue ancora', k: 'NON PROVATO', d: null, f: null, l: null },
-  'ev-donate':         { c: 'donate esiste nella macchina economica accettata al pin (#48), è instradato direct (NON vote-derived) e muove il comune; questo snapshot del simulatore non lo esegue ancora', k: 'NON PROVATO', d: null, f: null, l: null },
-  'ev-backdonate':     { c: 'backdonate esiste nella macchina economica accettata al pin (#48) ed è instradato appDecided; questo snapshot del simulatore non lo esegue ancora', k: 'NON PROVATO', d: null, f: null, l: null },
+  'ev-donate':         { c: 'donate è direct: alza insieme la cassa dell\'autore e il conto comune riservato (non-membro in conti) di +v; rifiuta autore non responsabile e v non positivo. Nessun teorema di donazione è ancora proved (sorry #48)', k: 'NON PROVATO', d: null, f: null, l: null },
+  'ev-backdonate':     { c: 'backdonate è appDecided: quota uguale w a ogni membro e −n*w dal comune; attempt non inventa backdonateAuthorized (sorry); il governo rifiuta senza ponte evento-voto (NON PROVATO)', k: 'NON PROVATO', d: null, f: null, l: null },
   'kg-setinsert':      { c: 'L’inserimento di posizione è idempotente per costruzione (substrato condiviso)', k: 'definizione', d: 'KelGroups.setInsert', f: 'lean/KelGroups/Types.lean', l: 46 },
   'kg-majority':       { c: 'Aritmetica della formula (n+1)/2: 0,1,1,2,2,3 per 0–5 — provata nella macchina fusa sullo stesso calcolo scelto qui come esibizione', k: 'teorema', d: 'majority_table', f: 'lean/KelGroups/Invariants.lean', l: 597 },
   'kg-tie':            { c: 'Con un numero pari la formula (n+1)/2 non è stretta: 2·soglia ≤ n — provato nella macchina fusa sullo stesso calcolo', k: 'teorema', d: 'majority_not_strict_on_even', f: 'lean/KelGroups/Invariants.lean', l: 606 },
@@ -1355,9 +1386,8 @@ function verifyBaseTraceV1(env, opts) {
    The 18-constructor route table of Composition.lean at the accepted pin.
    The committed claim gate re-derives this table by parsing the pinned
    source fresh on every run and REDs on any divergence (route-list drift),
-   so this literal cannot silently drift from the accepted classifier. The
-   three constructors this simulator snapshot does not execute yet
-   (removeMember, donate, backdonate) still carry claim rows. */
+   so this literal cannot silently drift from the accepted classifier.
+   removeMember remains unexecuted (retired-by-#62 / R62-08). */
 const EVENT_ROUTES = {
   addUser: 'direct', electResponsabile: 'baseEnacted',
   removeResponsabile: 'baseEnacted', removeMember: 'baseEnacted',
@@ -1367,6 +1397,21 @@ const EVENT_ROUTES = {
   pledge: 'direct', acceptPledge: 'direct', refusePledge: 'direct',
   correctPledge: 'direct', closePurchase: 'direct', failPurchase: 'direct',
 };
+
+/* Temporary dated exemption: #62 / R62-08 will delete these four Event
+   constructors. Coverage subtracts exactly these keys and must not treat
+   the exemption as permission to implement them now. */
+const EVENT_RETIREMENTS = {
+  addUser: { status: 'retired-by-#62', issue: '#62',
+    requirement: 'R62-08', declared: '2026-08-30' },
+  electResponsabile: { status: 'retired-by-#62', issue: '#62',
+    requirement: 'R62-08', declared: '2026-08-30' },
+  removeMember: { status: 'retired-by-#62', issue: '#62',
+    requirement: 'R62-08', declared: '2026-08-30' },
+  removeResponsabile: { status: 'retired-by-#62', issue: '#62',
+    requirement: 'R62-08', declared: '2026-08-30' },
+};
+
 const voteDerivedTag = tag => EVENT_ROUTES[tag] !== undefined && EVENT_ROUTES[tag] !== 'direct';
 
 /* --- Governance credits: the model-level rejection ------------------------
@@ -1429,11 +1474,15 @@ function verifyGovernedSeq(n) {
         if (i < 0)
           throw new Error(`governo: ${e.tag} senza enactment fedele del canale base`);
         credits.splice(i, 1);
-      } else {
+      } else if (e.tag === 'grantPermission' || e.tag === 'denyPermission') {
         const want = e.tag === 'grantPermission' ? 'positive' : 'negative';
         const rec = kgs.closed.find(r => r.questionId === permQid(e.c));
         if (!rec || rec.verdict !== want)
           throw new Error(`governo: ${e.tag} senza verdetto ${want === 'positive' ? 'positivo' : 'negativo'} chiuso`);
+      } else if (e.tag === 'backdonate') {
+        throw new Error('governo: backdonate senza ponte evento-voto provato (NON PROVATO)');
+      } else {
+        throw new Error(`governo: ${e.tag} appDecided senza evidenza di canale`);
       }
     }
   }
@@ -1448,6 +1497,7 @@ export {
   initState, attempt, canonState, leanEventOf, leanEventJson,
   verifyTraceV1, traceConformance, lawViolations, sumBal, escrowSum, bal,
   EV, CLAIMS, CHECK_RECEIPT, GUARD_CLAIMS, TAG_CLAIMS, EVENT_ROUTES,
+  EVENT_RETIREMENTS,
   claimAudit, proofState, refusalProven, refusalClaims, refusalInventory,
   vtEmpty, vtApply, vtValidate, canonVoteState, verifyKelTraceV1,
   kelTraceConformance, kgLawViolations, vtTheta, vtFranchiseSize,
