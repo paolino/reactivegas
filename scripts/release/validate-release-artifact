@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+set -euo pipefail
+#
+# F004 — the shared identity decision for a directory of release assets (D002,
+# D004, I006).
+#
+# One command answers "are these the bytes of exactly the release I asked for?"
+# for both sides of the seam: the producer runs it on what it just packaged,
+# and a stranger runs it on what `gh release download` just fetched. A single
+# implementation is the point — the previous split let the producer and the
+# documented consumer drift into the same substring bug independently.
+#
+# Identity is *exact equality* between three names, not a substring relation:
+#
+#   1. the requested tag,
+#   2. the tag in the archive's filename,
+#   3. the tag in the archive's one declaration record.
+#
+# `grep -F "release tag: $TAG"` looked like check 3 and was not: requested
+# v2021.12.0 matches declared v2021.12.0-wrong, so a genuine archive for a
+# neighbouring tag passed. Prefix and suffix collisions are the whole reason
+# every comparison below is a full-string `=` against a fixed record prefix.
+#
+# The directory is enumerated completely, not globbed. A glob answers "is a
+# matching asset present", which stays true beside an unrelated extra file;
+# fail-closed enumeration answers "is this asset the only thing here".
+
+RELEASE_TOOL=validate-release-artifact
+export RELEASE_TOOL
+
+usage() {
+    printf 'usage: %s TAG DIRECTORY\n' "$RELEASE_TOOL" >&2
+    exit 64
+}
+
+[ $# -eq 2 ] || usage
+
+tag=$1
+directory=$2
+
+platform=linux-x86_64
+declaration_prefix='- release tag: '
+
+die() {
+    printf '%s: %s\n' "$RELEASE_TOOL" "$*" >&2
+    exit 1
+}
+
+case "$tag" in
+    '' | */* | .*) die "refusing an empty, path-like, or dot-leading tag: '$tag'" ;;
+esac
+
+[ -d "$directory" ] || die "not a directory: $directory"
+directory=$(cd -- "$directory" && pwd)
+expected_name="reactivegas-server-$tag-$platform.tar.gz"
+
+# Every entry, not just archives matching the expected shape: an unrelated
+# extra asset is still an asset the release should not have.
+mapfile -t entries < <(find "$directory" -mindepth 1 -maxdepth 1 -printf '%f\n' | sort)
+if [ "${#entries[@]}" -ne 1 ]; then
+    printf '%s: expected exactly one release asset in %s, found %d:\n' \
+        "$RELEASE_TOOL" "$directory" "${#entries[@]}" >&2
+    [ "${#entries[@]}" -eq 0 ] || printf '  %s\n' "${entries[@]}" >&2
+    exit 1
+fi
+[ "${entries[0]}" = "$expected_name" ] \
+    || die "asset/tag mismatch: requested $tag needs $expected_name, found ${entries[0]}"
+
+archive="$directory/$expected_name"
+[ -f "$archive" ] || die "the sole release asset is not a regular file: $archive"
+
+extract_dir=$(mktemp -d)
+trap 'rm -rf -- "$extract_dir"' EXIT
+tar -xzf "$archive" -C "$extract_dir" \
+    || die "cannot extract the release archive: $expected_name"
+
+[ -x "$extract_dir/bin/server" ] \
+    || die "the archive does not carry an executable bin/server entrypoint"
+
+notice="$extract_dir/PROVISIONAL.md"
+[ -f "$notice" ] || die "the archive does not carry PROVISIONAL.md"
+
+# Exactly one declaration record, matched by prefix so that a wrong, duplicate,
+# or extra record is *found* and rejected rather than silently skipped. Reading
+# only the first match would let an appended second record pass unseen.
+mapfile -t declarations < <(grep -F -- "$declaration_prefix" "$notice" || true)
+if [ "${#declarations[@]}" -ne 1 ]; then
+    printf '%s: expected exactly one "%s" record in PROVISIONAL.md, found %d\n' \
+        "$RELEASE_TOOL" "$declaration_prefix" "${#declarations[@]}" >&2
+    [ "${#declarations[@]}" -eq 0 ] || printf '  %s\n' "${declarations[@]}" >&2
+    exit 1
+fi
+[ "${declarations[0]}" = "$declaration_prefix$tag" ] \
+    || die "declared tag mismatch: requested '$declaration_prefix$tag' but the archive declares '${declarations[0]}'"
+
+printf 'requested tag:    %s\n' "$tag"
+printf 'asset:            %s\n' "$archive"
+printf 'asset sha256:     %s\n' "$(sha256sum -- "$archive" | cut -d' ' -f1)"
+printf 'declared record:  %s\n' "${declarations[0]}"
+printf 'release artifact identity: requested tag, filename, and declaration agree exactly\n'

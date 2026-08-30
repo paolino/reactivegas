@@ -36,6 +36,7 @@ case "$tag" in
     '' | */* | .*) die "refusing an empty, path-like, or dot-leading tag: '$tag'" ;;
 esac
 
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 repo_root=$(git rev-parse --show-toplevel)
 mkdir -p -- "$output_directory"
 output_directory=$(cd -- "$output_directory" && pwd)
@@ -43,10 +44,17 @@ archive="$output_directory/reactivegas-server-$tag-$platform.tar.gz"
 
 stage_dir=$(mktemp -d)
 verify_dir=$(mktemp -d)
-# A run that fails any post-archive check must not leave an uploadable
-# archive behind: the next glob would happily find it (D002).
+# A run that fails *anywhere* after the archive exists must not leave an
+# uploadable archive behind: the next glob would happily find it (D002, F003).
+#
+# The guard is deliberately two-part. `package_succeeded` is set by the very
+# last statement of this script, so it means "every fallible step completed" —
+# and the trap additionally reads the real exit status, so the guarantee does
+# not rest on that assignment staying textually last. Either condition alone is
+# a positional invariant one future edit can strand; together, any nonzero exit
+# from any step, present or future, deletes the archive.
 package_succeeded=0
-trap 'rm -rf -- "$stage_dir" "$verify_dir"; [ "$package_succeeded" = 1 ] || rm -f -- "$archive"' EXIT
+trap 'exit_status=$?; rm -rf -- "$stage_dir" "$verify_dir"; { [ "$package_succeeded" = 1 ] && [ "$exit_status" -eq 0 ]; } || rm -f -- "$archive"' EXIT
 
 store_path=$(cd -- "$repo_root" && nix --quiet build .#default --no-link --print-out-paths)
 [ -x "$store_path/bin/server" ] \
@@ -84,24 +92,30 @@ extracted_digest=$(sha256sum -- "$verify_dir/bin/server" | cut -d' ' -f1)
 [ "$staged_digest" = "$extracted_digest" ] \
     || die "archive entrypoint $extracted_digest is not the smoked binary $staged_digest"
 
-# Producer side of the tag/asset identity seam: the bytes must say which
-# release they belong to, so a consumer can reconcile the tag it asked for
-# against the tag the archive declares (D004, F004).
-grep -qF "release tag: $tag" "$verify_dir/PROVISIONAL.md" \
-    || die "the archive does not declare tag $tag in PROVISIONAL.md"
 "$verify_dir/bin/server" --help | grep -qF "$smoke_banner" \
     || die "extracted smoke failed: 'bin/server --help' did not report '$smoke_banner'"
 
-# D002 — exactly one archive, so an upload glob cannot pick up a stale sibling.
-archive_count=$(find "$output_directory" -maxdepth 1 -type f \
-    -name "reactivegas-server-*-$platform.tar.gz" | wc -l)
-[ "$archive_count" = 1 ] \
-    || die "expected exactly one release archive in $output_directory, found $archive_count"
+# Producer side of the tag/asset identity seam (D002, D004, F004). The producer
+# does not carry its own opinion of what identity means: it submits what it just
+# built to the very command a stranger runs on what they just downloaded, so it
+# cannot ship bytes the consumer would reject. That covers exact tag/filename/
+# declaration equality and the "exactly one asset" enumeration in one place.
+#
+# Reaching `die` here reaches the EXIT trap, which removes $archive: a producer
+# that cannot prove identity leaves nothing uploadable behind (D002, F003).
+"$script_dir/validate-release-artifact" "$tag" "$output_directory" \
+    || die "the packaged archive failed the shared release identity check"
 
-package_succeeded=1
 archive_digest=$(sha256sum -- "$archive" | cut -d' ' -f1)
 printf 'tag:              %s\n' "$tag"
 printf 'nix .#default:    %s\n' "$store_path"
 printf 'entrypoint sha256: %s  bin/server\n' "$staged_digest"
 printf 'archive sha256:   %s\n' "$archive_digest"
 printf 'archive:          %s\n' "$archive"
+
+# Last statement on purpose. The digest and the five writes above are fallible
+# too — a full disk or a closed pipe fails them — and a producer that died
+# half-way through announcing its result has proved nothing about the bytes it
+# would leave behind. Disarming cleanup is the final act of a complete run, not
+# a checkpoint reached once identity was validated.
+package_succeeded=1
