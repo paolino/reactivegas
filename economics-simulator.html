@@ -137,6 +137,8 @@
   .pmeta { font-size: 10px; text-anchor: middle; fill: var(--muted); }
   .reflink { stroke: #b599dd; stroke-width: 1.5; stroke-dasharray: 3 4; fill: none; opacity: .6; }
   .ringc { fill: none; stroke: #e3e9ef; stroke-width: 2; }
+  a.clink { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+  a.clink:hover { color: var(--accent); }
   .hintc { font-size: 13px; text-anchor: middle; fill: var(--muted); font-style: italic; }
   @keyframes nodeflash { 0% { opacity: .15; } 100% { opacity: 1; } }
   .nflash { animation: nodeflash .9s ease-out; }
@@ -1074,6 +1076,32 @@ const CHECK_RECEIPT = {
     'lean/KelGroups/Vote/Invariants.lean': '199e849eb126cb18a681cae1528b3892fbc804e704a948d4fa281f05479272f3',
     'lean/KelGroups/Vote/Tests.lean': '2f561dd3b1655a58b39b8772cec726a646fe479477f65610ff99ce3f21d43e37',
   },
+  /* Per-source immutable commit pins. Each pin is an origin/master ancestor
+     whose blob sha256 equals the recorded source hash. Citation permalinks
+     must use these SHAs, never a branch. Derived independently from the
+     receipt hashes; not copied from a guessed branch tip. */
+  sourcePins: {
+    'lean/Reactivegas/Types.lean': '771b3c0b7ed083cf5b3c7778a02df274ab7eab83',
+    'lean/Reactivegas/State.lean': '771b3c0b7ed083cf5b3c7778a02df274ab7eab83',
+    'lean/Reactivegas/Step.lean': '771b3c0b7ed083cf5b3c7778a02df274ab7eab83',
+    'lean/Reactivegas/Predicates.lean': '771b3c0b7ed083cf5b3c7778a02df274ab7eab83',
+    'lean/Reactivegas/Invariants.lean': '771b3c0b7ed083cf5b3c7778a02df274ab7eab83',
+    'lean/KelGroups/Types.lean': '32c63850478c17ac51f622ddbfa17d9b40be29e6',
+    'lean/KelGroups/State.lean': '32c63850478c17ac51f622ddbfa17d9b40be29e6',
+    'lean/KelGroups/Fold.lean': '32c63850478c17ac51f622ddbfa17d9b40be29e6',
+    'lean/KelGroups/Validate.lean': '32c63850478c17ac51f622ddbfa17d9b40be29e6',
+    'lean/KelGroups/Invariants.lean': '32c63850478c17ac51f622ddbfa17d9b40be29e6',
+    'lean/KelGroups/Event.lean': '32c63850478c17ac51f622ddbfa17d9b40be29e6',
+    'lean/KelGroups/Tests.lean': '32c63850478c17ac51f622ddbfa17d9b40be29e6',
+    'lean/KelGroups.lean': 'c50f5275a42453ebc87a0c7011b3d8470fba4006',
+    'lean/KelGroups/Vote/Types.lean': 'c50f5275a42453ebc87a0c7011b3d8470fba4006',
+    'lean/KelGroups/Vote/Event.lean': 'c50f5275a42453ebc87a0c7011b3d8470fba4006',
+    'lean/KelGroups/Vote/State.lean': 'c50f5275a42453ebc87a0c7011b3d8470fba4006',
+    'lean/KelGroups/Vote/Fold.lean': 'cb81a194f499be8ca750c978d9985f4ac960ef7e',
+    'lean/KelGroups/Vote/Validate.lean': 'cb81a194f499be8ca750c978d9985f4ac960ef7e',
+    'lean/KelGroups/Vote/Invariants.lean': 'cb81a194f499be8ca750c978d9985f4ac960ef7e',
+    'lean/KelGroups/Vote/Tests.lean': 'cb81a194f499be8ca750c978d9985f4ac960ef7e',
+  },
 };
 
 // guard badge label → claim id
@@ -1130,6 +1158,13 @@ function pkGlyph(ids) {
     title="prove Lean di questa affermazione">${glyph}</button>`;
 }
 
+function citationPermalink(r) {
+  if (!r || !r.f || !Number.isInteger(r.l) || r.l <= 0) return null;
+  const pin = r.g || (CHECK_RECEIPT.sourcePins && CHECK_RECEIPT.sourcePins[r.f]);
+  if (!pin || !/^[0-9a-f]{40}$/.test(pin)) return null;
+  return `https://github.com/paolino/reactivegas/blob/${pin}/${r.f}#L${r.l}`;
+}
+
 function claimRowHtml(id) {
   const r = CLAIMS[id];
   if (!r) return '';
@@ -1138,10 +1173,14 @@ function claimRowHtml(id) {
     : (r.k === 'teorema' ? 'thm' : 'def'));
   const kindTx = ps === 'npv' ? 'NON PROVATO'
     : (ps === 'enun' ? r.k + ' — enunciato, non dimostrato' : r.k + ' — provato');
-  const prov = r.d
-    ? `<span class="pdecl mono">${esc(r.d)} · ${esc(r.f)}:${r.l}${r.g
-        ? ` @ pin ${esc(r.g.slice(0, 10))}… (commit accettato, non in questo albero)` : ''}</span>`
-    : `<span class="pdecl mono">NONE — nessuna dichiarazione Lean</span>`;
+  const loc = r.d
+    ? `${esc(r.d)} · ${esc(r.f)}:${r.l}${r.g
+        ? ` @ pin ${esc(r.g.slice(0, 10))}… (commit accettato, non in questo albero)` : ''}`
+    : 'NONE — nessuna dichiarazione Lean';
+  const href = r.d ? citationPermalink(r) : null;
+  const prov = href
+    ? `<a class="clink pdecl mono" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${loc}</a>`
+    : `<span class="pdecl mono">${loc}</span>`;
   return `<div class="prow"><span class="pkind ${kindCls}">${esc(kindTx)}</span>
     <span>${esc(r.c)}${prov}</span></div>`;
 }
@@ -2615,7 +2654,7 @@ function runAttempt(tag, args, toyLabel) {
       evid = bgTakeCredit(tag, kgKey(args.target));
       if (!evid) {
         const failed = [{ code: 'Composition.route = .baseEnacted',
-          why: 'composizione: evento vote-derived senza enactment fedele del canale base',
+          why: 'composizione: evento vote-derived senza delibera fedele del canale base',
           law: null }];
         history.unshift({ kind: 'rej', tag, args, descr: descr(tag, args),
           governance: true, failed, ext: false, inv: invSnapshot() });
@@ -3038,7 +3077,7 @@ function commitFlow() {
     renderAll();
     if (r.ok && JSON.stringify(state.responsabili) !== preResp)
       toast(`<b>🗳 DELIBERATA e applicata</b>
-        <span class="tiny">enactment fedele del canale base · ponte economico NON PROVATO</span>`, xy[0], xy[1], 'ext');
+        <span class="tiny">delibera fedele del canale base · ponte economico NON PROVATO</span>`, xy[0], xy[1], 'ext');
     else if (r.ok)
       toast(`<b>🗳 proposta registrata</b>
         <span class="tiny">in attesa di approvazioni nel canale base (soglia ${bgMajority(bg)})</span>`, xy[0], xy[1], 'ext');
@@ -3096,6 +3135,90 @@ function taskBtn(tag, ctx, extra) {
 /* group scene (SVG) */
 let layout = {};
 
+/* Pure deterministic purchase-ring geometry. Members stay on the outer
+   circle in stable user order; open purchases sit on a concentric inner
+   ring, clustered angularly around their referente when that fits, else
+   packed evenly so glyphs do not overlap. No DOM, storage, time, or
+   randomness. */
+function purchaseRingLayout(users, collections) {
+  const CX = 380, CY = 302, MEMBER_R = 178;
+  const CLUSTER_R = 50, PACK_R = 92, MIN_DIST = 64;
+  const CLUSTER_BIAS = 0;
+  const n = Math.max(users.length, 1);
+  const memberAngle = {};
+  const memberPos = {};
+  users.forEach((u, i) => {
+    const ang = -Math.PI / 2 + i * 2 * Math.PI / n;
+    memberAngle[u] = ang;
+    memberPos[u] = { x: CX + MEMBER_R * Math.cos(ang), y: CY + MEMBER_R * Math.sin(ang) };
+  });
+  if (!collections.length) return { memberPos, placements: [] };
+
+  const groups = [];
+  for (const u of users) {
+    const cols = collections.filter(c => c.referente === u);
+    if (cols.length) groups.push({ ref: u, cols });
+  }
+  for (const c of collections) {
+    if (groups.some(g => g.cols.includes(c))) continue;
+    let g = groups.find(x => x.ref === c.referente);
+    if (!g) { g = { ref: c.referente, cols: [] }; groups.push(g); }
+    g.cols.push(c);
+  }
+
+  const wedge = (2 * Math.PI / n) * 0.72;
+  const clusterOk = groups.every(g => g.cols.length <= 5);
+  const ringR = clusterOk ? CLUSTER_R : PACK_R;
+  const chordStep = 2 * Math.asin(Math.min(1, MIN_DIST / (2 * ringR)));
+
+  const at = (angle, c, ref) => ({
+    purchaseId: c.id, referente: ref,
+    x: CX + ringR * Math.cos(angle), y: CY + ringR * Math.sin(angle),
+    angle, radius: ringR,
+  });
+
+  if (clusterOk) {
+    const placements = [];
+    for (const g of groups) {
+      const base = (memberAngle[g.ref] != null ? memberAngle[g.ref] : -Math.PI / 2)
+        + CLUSTER_BIAS;
+      const m = g.cols.length;
+      const step = m <= 1 ? 0 : Math.min(1.05, wedge / Math.max(m - 1, 1));
+      const start = base - step * (m - 1) / 2;
+      g.cols.forEach((c, j) => placements.push(at(start + j * step, c, g.ref)));
+    }
+    return { memberPos, placements };
+  }
+
+  const ordered = groups.flatMap(g => g.cols);
+  const k = ordered.length;
+  const slot = 2 * Math.PI / k;
+  const angDiff = (a, b) => {
+    let d = Math.abs(a - b) % (2 * Math.PI);
+    if (d > Math.PI) d = 2 * Math.PI - d;
+    return d;
+  };
+  let bestR = 0, bestCost = Infinity, idx = 0;
+  for (const g of groups) {
+    const mid = idx + (g.cols.length - 1) / 2;
+    const target = memberAngle[g.ref] != null ? memberAngle[g.ref] : -Math.PI / 2;
+    const r = target - mid * slot;
+    let cost = 0, j = 0;
+    for (const gg of groups) {
+      const gm = j + (gg.cols.length - 1) / 2;
+      const want = memberAngle[gg.ref] != null ? memberAngle[gg.ref] : -Math.PI / 2;
+      cost += angDiff(r + gm * slot, want) * gg.cols.length;
+      j += gg.cols.length;
+    }
+    if (cost < bestCost) { bestCost = cost; bestR = r; }
+    idx += g.cols.length;
+  }
+  return {
+    memberPos,
+    placements: ordered.map((c, j) => at(bestR + j * slot, c, c.referente)),
+  };
+}
+
 function renderGroup() {
   const tasks = `<div class="card"><div class="tasks" id="gtasks">
       ${taskBtn('addUser')}
@@ -3114,8 +3237,11 @@ function drawScene() {
   const svg = $('scene');
   layout = { world: { x: 705, y: 52 } };
   const CX = 380, CY = 302, R = 178;
+  const geo = purchaseRingLayout(state.users, state.collections);
+  const memberPos = geo.memberPos;
   const parts = [];
   parts.push(`<circle class="ringc" cx="${CX}" cy="${CY}" r="${R}"/>`);
+  parts.push(`<circle class="ringc" cx="${CX}" cy="${CY}" r="${geo.placements[0] ? geo.placements[0].radius : 50}"/>`);
   parts.push(`<text class="hintc" x="705" y="34">fuori</text>` +
     `<text x="705" y="56" style="font-size:17px;text-anchor:middle">🛒</text>`);
 
@@ -3131,31 +3257,22 @@ function drawScene() {
     </g>`);
   });
 
-  const n = state.users.length;
-  const memberPos = {};
-  state.users.forEach((u, i) => {
-    const ang = -Math.PI / 2 + i * 2 * Math.PI / Math.max(n, 1);
-    const x = CX + R * Math.cos(ang), y = CY + R * Math.sin(ang);
-    memberPos[u] = { x, y };
+  state.users.forEach(u => {
+    const { x, y } = memberPos[u];
     layout['member:' + u] = { x, y };
     layout['conto:' + u] = { x, y: y + 58 };
     if (resp(u)) layout['cassa:' + u] = { x, y: y + 84 };
   });
 
+  for (const p of geo.placements) {
+    layout['pile:' + p.purchaseId] = { x: p.x, y: p.y };
+    const rp = memberPos[p.referente];
+    if (rp) parts.push(`<path class="reflink" d="M ${p.x} ${p.y} L ${rp.x} ${rp.y}"/>`);
+  }
   const k = state.collections.length;
-  state.collections.forEach((c, i) => {
-    let x = CX, y = CY - 8;
-    if (k > 1) {
-      const ang = -Math.PI / 2 + i * 2 * Math.PI / k;
-      x = CX + 78 * Math.cos(ang); y = CY - 8 + 78 * Math.sin(ang);
-    }
-    layout['pile:' + c.id] = { x, y };
-    const rp = memberPos[c.referente];
-    if (rp) parts.push(`<path class="reflink" d="M ${x} ${y} L ${rp.x} ${rp.y}"/>`);
-  });
   state.collections.forEach(c => {
     const { x, y } = layout['pile:' + c.id];
-    const rr = 30 + Math.min(22, escrowOf(c) / 8);
+    const rr = 20 + Math.min(14, escrowOf(c) / 8);
     parts.push(`<g class="pileg" data-obj="pile" data-id="${c.id}" data-key="pile:${c.id}"
       role="button" tabindex="0" aria-label="acquisto ${esc(lbl(c.id))}: impegni ${escrowOf(c)}"
       transform="translate(${x},${y})">
@@ -3465,7 +3582,7 @@ function govCardHtml() {
     </div>`;
   }).join('');
   const bgCreditTx = bgCredits.length
-    ? `<div class="tiny">enactment fedeli non ancora consumati: ${bgCredits.map(cr =>
+    ? `<div class="tiny">delibere fedeli non ancora consumate: ${bgCredits.map(cr =>
         `<span class="mono">«${esc(cr.pid)}»</span>`).join(' ')}
         <span class="npvbadge" data-claims="join-vote-econ">PONTE NON PROVATO</span></div>` : '';
   const baseBody = `<div class="sect" style="margin-top:8px">canale base — proposte
@@ -3475,7 +3592,7 @@ function govCardHtml() {
       : '<i>vuoto — la prima elezione fonda il canale (bootstrap)</i>'}
       · maggioranza (n+1)/2 = <b>${bgMajority(bg)}</b> ${pkGlyph(['kg-majority-def', 'kg-threshold'])}</div>
     <div class="tiny">eleggere o revocare un responsabile passa SOLO di qui: proposta fedele →
-      assensi a maggioranza → enactment → ponte economico
+      assensi a maggioranza → delibera → ponte economico
       ${pkGlyph(['comp-routing', 'comp-base-threshold'])}
       <span class="npvbadge" data-claims="join-vote-econ">PONTE NON PROVATO</span></div>
     ${bgPend}${bgCreditTx}`;
@@ -3564,7 +3681,7 @@ function renderLog() {
     const prov = en.ext
       ? '<div class="eprov">⇣ esito applicato al permesso economico — ponte NON PROVATO fra voto ed economia</div>'
       : (en.route === 'baseEnacted'
-        ? `<div class="eprov">🗳 da enactment fedele «${esc(en.evid || '')}» del canale base — ponte NON PROVATO</div>` : '');
+        ? `<div class="eprov">🗳 da delibera fedele «${esc(en.evid || '')}» del canale base — ponte NON PROVATO</div>` : '');
     if (en.kind === 'acc') {
       return `<div class="entry acc${en.ext || en.route ? ' ext' : ''}">
         <div class="eh">${en.ext || en.route ? '⇣' : '✓'} ${esc(en.descr)} <span class="mono">.${en.tag}</span>${pkGlyph(TAG_CLAIMS[en.tag] || [])}</div>
@@ -4060,6 +4177,9 @@ window.RG = { attempt, initState, sumBal, escrowSum, bal,
   lawViolations, traceConformance, verifyTraceV1, claimAudit, refusalInventory,
   kelTraceConformance, verifyKelTraceV1, kgLawViolations,
   verifyBaseTraceV1, bgLawViolations, EVENT_ROUTES, voteDerivedTag,
+  purchaseRingLayout, citationPermalink, drawScene,
+  setLabel: (c, l) => { colLabels[c] = l; },
+  get layout() { return layout; },
   get lawBreaches() { return lawBreaches; },
   get kgLawBreaches() { return kgLawBreaches; },
   get bgLawBreaches() { return bgLawBreaches; },
@@ -4134,6 +4254,49 @@ async function selftest() {
   expect(here() === 'group', 'vista iniziale non è il gruppo');
   expect(document.querySelectorAll('#gtasks [data-task]').length === 4,
     'compiti di gruppo assenti');
+
+  {
+    const col = (id, ref) => ({ id, referente: ref, permitted: false, accepted: [], pending: [] });
+    const users = [0, 1, 2];
+    const dist = (a, b) => (a.x - b.x) ** 2 + (a.y - b.y) ** 2;
+    const g3 = purchaseRingLayout(users, [col(1, 0), col(2, 0), col(3, 0)]);
+    expect(g3.placements.length === 3
+      && g3.placements.every(p => p.referente === 0)
+      && g3.memberPos[0] && g3.memberPos[1] && g3.memberPos[2],
+      'purchase-ring geometry contract');
+    for (const p of g3.placements)
+      expect(dist(p, g3.memberPos[0]) < dist(p, g3.memberPos[1])
+        && dist(p, g3.memberPos[0]) < dist(p, g3.memberPos[2]),
+        'purchase-ring geometry contract');
+    const g2 = purchaseRingLayout(users, [col(1, 0), col(2, 1)]);
+    const p0 = g2.placements.find(p => p.referente === 0);
+    const p1 = g2.placements.find(p => p.referente === 1);
+    expect(g2.placements.length === 2
+      && dist(p0, g2.memberPos[0]) < dist(p0, g2.memberPos[1])
+      && dist(p1, g2.memberPos[1]) < dist(p1, g2.memberPos[0]),
+      'purchase-ring geometry contract');
+    const gN = purchaseRingLayout(users, [col(1, 0)]);
+    expect(gN.placements.length === 1 && gN.placements[0].referente === 0
+      && !gN.placements.some(p => p.referente === 2)
+      && JSON.stringify(gN.memberPos) === JSON.stringify(g3.memberPos),
+      'purchase-ring geometry contract');
+    const a = purchaseRingLayout(users, [col(1, 0), col(2, 1)]);
+    const b = purchaseRingLayout(users, [col(1, 0), col(2, 1)]);
+    expect(JSON.stringify(a) === JSON.stringify(b), 'geometry-determinism');
+    const s1 = $('scene').innerHTML;
+    drawScene();
+    expect($('scene').innerHTML === s1, 'geometry-determinism');
+    const many = Array.from({ length: 8 }, (_, i) => col(i + 1, 0));
+    const gM = purchaseRingLayout(users, many);
+    expect(gM.placements.length === 8
+      && JSON.stringify(gM.memberPos) === JSON.stringify(purchaseRingLayout(users, []).memberPos),
+      'geometry-many-purchases');
+    for (let i = 0; i < gM.placements.length; i++)
+      for (let j = i + 1; j < gM.placements.length; j++)
+        expect(Math.hypot(gM.placements[i].x - gM.placements[j].x,
+          gM.placements[i].y - gM.placements[j].y) >= 56,
+          'geometry-many-purchases');
+  }
 
   // teaching present on first arrival
   expect(document.querySelector('[data-teach="benvenuto"]'), 'spiegazione iniziale assente');

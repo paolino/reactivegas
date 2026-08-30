@@ -640,6 +640,32 @@ const CHECK_RECEIPT = {
     'lean/KelGroups/Vote/Invariants.lean': '199e849eb126cb18a681cae1528b3892fbc804e704a948d4fa281f05479272f3',
     'lean/KelGroups/Vote/Tests.lean': '2f561dd3b1655a58b39b8772cec726a646fe479477f65610ff99ce3f21d43e37',
   },
+  /* Per-source immutable commit pins. Each pin is an origin/master ancestor
+     whose blob sha256 equals the recorded source hash. Citation permalinks
+     must use these SHAs, never a branch. Derived independently from the
+     receipt hashes; not copied from a guessed branch tip. */
+  sourcePins: {
+    'lean/Reactivegas/Types.lean': '771b3c0b7ed083cf5b3c7778a02df274ab7eab83',
+    'lean/Reactivegas/State.lean': '771b3c0b7ed083cf5b3c7778a02df274ab7eab83',
+    'lean/Reactivegas/Step.lean': '771b3c0b7ed083cf5b3c7778a02df274ab7eab83',
+    'lean/Reactivegas/Predicates.lean': '771b3c0b7ed083cf5b3c7778a02df274ab7eab83',
+    'lean/Reactivegas/Invariants.lean': '771b3c0b7ed083cf5b3c7778a02df274ab7eab83',
+    'lean/KelGroups/Types.lean': '32c63850478c17ac51f622ddbfa17d9b40be29e6',
+    'lean/KelGroups/State.lean': '32c63850478c17ac51f622ddbfa17d9b40be29e6',
+    'lean/KelGroups/Fold.lean': '32c63850478c17ac51f622ddbfa17d9b40be29e6',
+    'lean/KelGroups/Validate.lean': '32c63850478c17ac51f622ddbfa17d9b40be29e6',
+    'lean/KelGroups/Invariants.lean': '32c63850478c17ac51f622ddbfa17d9b40be29e6',
+    'lean/KelGroups/Event.lean': '32c63850478c17ac51f622ddbfa17d9b40be29e6',
+    'lean/KelGroups/Tests.lean': '32c63850478c17ac51f622ddbfa17d9b40be29e6',
+    'lean/KelGroups.lean': 'c50f5275a42453ebc87a0c7011b3d8470fba4006',
+    'lean/KelGroups/Vote/Types.lean': 'c50f5275a42453ebc87a0c7011b3d8470fba4006',
+    'lean/KelGroups/Vote/Event.lean': 'c50f5275a42453ebc87a0c7011b3d8470fba4006',
+    'lean/KelGroups/Vote/State.lean': 'c50f5275a42453ebc87a0c7011b3d8470fba4006',
+    'lean/KelGroups/Vote/Fold.lean': 'cb81a194f499be8ca750c978d9985f4ac960ef7e',
+    'lean/KelGroups/Vote/Validate.lean': 'cb81a194f499be8ca750c978d9985f4ac960ef7e',
+    'lean/KelGroups/Vote/Invariants.lean': 'cb81a194f499be8ca750c978d9985f4ac960ef7e',
+    'lean/KelGroups/Vote/Tests.lean': 'cb81a194f499be8ca750c978d9985f4ac960ef7e',
+  },
 };
 
 // guard badge label → claim id

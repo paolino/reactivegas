@@ -151,7 +151,7 @@ function extract(doc) {
     rows.push({ id: r[1], k: r[2], d: r[4] || null, f: r[6] || null,
       l: r[7] === 'null' ? null : Number(r[7]), g: r[8] || null });
   if (!rows.length) throw new Error('nessuna riga estraibile dal manifesto');
-  const rm = doc.match(/const CHECK_RECEIPT = \{[\s\S]*?sha: '([0-9a-f]{64})',[\s\S]*?decls: \[([\s\S]*?)\],[\s\S]*?composition: \{[\s\S]*?commit: '([0-9a-f]{40})',[\s\S]*?tree: '([0-9a-f]{40})',[\s\S]*?decls: \{([\s\S]*?)\},\n  \},[\s\S]*?axioms: \{([\s\S]*?)\},[\s\S]*?sources: \{([\s\S]*?)\},\n\};/);
+  const rm = doc.match(/const CHECK_RECEIPT = \{[\s\S]*?sha: '([0-9a-f]{64})',[\s\S]*?decls: \[([\s\S]*?)\],[\s\S]*?composition: \{[\s\S]*?commit: '([0-9a-f]{40})',[\s\S]*?tree: '([0-9a-f]{40})',[\s\S]*?decls: \{([\s\S]*?)\},\n  \},[\s\S]*?axioms: \{([\s\S]*?)\},[\s\S]*?sources: \{([\s\S]*?)\},[\s\S]*?sourcePins: \{([\s\S]*?)\},\n\};/);
   if (!rm) throw new Error('CHECK_RECEIPT non trovato nel documento');
   const routesM = doc.match(/const EVENT_ROUTES = \{([\s\S]*?)\};/);
   if (!routesM) throw new Error('EVENT_ROUTES non trovato nel documento');
@@ -173,6 +173,8 @@ function extract(doc) {
       [...rm[6].matchAll(/'([A-Za-z_.]+)':\s*'(provato|enunciato)'/g)].map(x => [x[1], x[2]])),
     sources: Object.fromEntries(
       [...rm[7].matchAll(/'([^']+)':\s*'([0-9a-f]{64})'/g)].map(x => [x[1], x[2]])),
+    sourcePins: Object.fromEntries(
+      [...rm[8].matchAll(/'([^']+)':\s*'([0-9a-f]{40})'/g)].map(x => [x[1], x[2]])),
     eventRoutes: Object.fromEntries(
       [...routesM[1].matchAll(/(\w+): '(\w+)'/g)].map(x => [x[1], x[2]])),
     tagClaims,
@@ -548,6 +550,38 @@ function runGate(opts) {
       reasons.push(`${row.id}: riferimenti mancanti`);
     }
   }
+  const pinKeys = Object.keys(ex.sourcePins || {}).sort();
+  const srcKeys = Object.keys(ex.sources).sort();
+  if (JSON.stringify(pinKeys) !== JSON.stringify(srcKeys))
+    reasons.push('sourcePins deve coprire esattamente CHECK_RECEIPT.sources');
+  for (const row of ex.rows) {
+    if (row.k === 'NON PROVATO') continue;
+    if (!row.f) reasons.push(`${row.id}: collegamento citazione senza file`);
+    if (!Number.isInteger(row.l) || row.l <= 0)
+      reasons.push(`${row.id}: collegamento citazione senza riga`);
+    const pin = row.g || (row.f && ex.sourcePins && ex.sourcePins[row.f]);
+    if (!pin) reasons.push(`${row.id}: collegamento citazione senza pin`);
+  }
+  for (const [f, pin] of Object.entries(ex.sourcePins || {})) {
+    if (!/^[0-9a-f]{40}$/.test(pin || '')) {
+      reasons.push(`pin mancante/non SHA per ${f}`);
+      continue;
+    }
+    try {
+      execFileSync('git', ['-C', lakeRepo, 'merge-base', '--is-ancestor',
+        pin, 'origin/master'], { stdio: ['ignore', 'pipe', 'pipe'] });
+    } catch (e) {
+      reasons.push(`pin non raggiungibile da origin/master: ${f}`);
+      continue;
+    }
+    try {
+      const body = execFileSync('git', ['-C', lakeRepo, 'show', `${pin}:${f}`]);
+      if (sha256(body) !== ex.sources[f])
+        reasons.push(`pin ${String(pin).slice(0, 10)} non risolve l'hash ricevuta per ${f}`);
+    } catch (e) {
+      reasons.push(`blob assente al pin per ${f}`);
+    }
+  }
   if (JSON.stringify(ex.decls) !== JSON.stringify(ex.cited))
     reasons.push('CHECK_RECEIPT.decls ≠ citazioni estratte — solo-ricevuta: [' +
       ex.decls.filter(d => !ex.cited.includes(d)) + '] solo-manifesto: [' +
@@ -834,6 +868,46 @@ async function selftest(work) {
   }
 
   const controls = [
+    {
+      name: 'collegamento citazione senza pin',
+      expect: /collegamento citazione senza pin/,
+      run: () => {
+        const ex = extract(doc);
+        const f = 'lean/Reactivegas/Invariants.lean';
+        const needle = `'${f}': '${ex.sourcePins[f]}',`;
+        if (!doc.includes(needle) || doc.split(needle).length !== 2)
+          return { ok: false, reasons: ['controllo mal costruito: pin sourcePins non unico'] };
+        const p = join(work, 'sab-link-pin.html');
+        writeFileSync(p, doc.replace(needle, ''));
+        return runGate({ html: p, work });
+      },
+    },
+    {
+      name: 'collegamento citazione senza file',
+      expect: /collegamento citazione senza file/,
+      run: () => {
+        const needle = "d: 'step_authorized', f: 'lean/Reactivegas/Invariants.lean', l: 452";
+        if (!doc.includes(needle) || doc.split(needle).length !== 2)
+          return { ok: false, reasons: ['controllo mal costruito: riga auth non unica'] };
+        const p = join(work, 'sab-link-file.html');
+        writeFileSync(p, doc.replace(needle,
+          "d: 'step_authorized', f: null, l: 452"));
+        return runGate({ html: p, work });
+      },
+    },
+    {
+      name: 'collegamento citazione senza riga',
+      expect: /collegamento citazione senza riga/,
+      run: () => {
+        const needle = "d: 'step_authorized', f: 'lean/Reactivegas/Invariants.lean', l: 452";
+        if (!doc.includes(needle) || doc.split(needle).length !== 2)
+          return { ok: false, reasons: ['controllo mal costruito: riga auth non unica'] };
+        const p = join(work, 'sab-link-line.html');
+        writeFileSync(p, doc.replace(needle,
+          "d: 'step_authorized', f: 'lean/Reactivegas/Invariants.lean', l: null"));
+        return runGate({ html: p, work });
+      },
+    },
     {
       name: 'citazione economica fasulla',
       // strict prefix of a real declaration: slips through set-equality and
