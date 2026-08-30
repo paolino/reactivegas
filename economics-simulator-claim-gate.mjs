@@ -792,10 +792,6 @@ async function selftest(work) {
     return 1;
   }
   console.log('machine-controls=' + MACHINE_CONTROLS);
-  if (process.env.RG_CLAIM_GATE_JS_ONLY === '1') {
-    console.log('selftest GREEN (js-only): machine-controls=' + MACHINE_CONTROLS);
-    return 0;
-  }
 
   // production GREEN is required, and its fresh derivation is the
   // material for the derived-flip control (nothing hardcoded)
