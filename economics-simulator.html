@@ -132,6 +132,8 @@
     font-family: ui-monospace, Menlo, Consolas, monospace;
   }
   .pileg .pc { fill: var(--viola-bg); stroke: #b599dd; stroke-width: 2.5; }
+  .pileg { cursor: grab; touch-action: none; }
+  .pileg.dragging { cursor: grabbing; }
   .plbl { font-size: 12px; text-anchor: middle; font-weight: 700; fill: #4a3175; }
   .pamt { font-size: 14px; text-anchor: middle; font-family: ui-monospace, Menlo, Consolas, monospace; fill: var(--ink); }
   .pmeta { font-size: 8.5px; text-anchor: middle; fill: var(--muted); }
@@ -2325,7 +2327,8 @@ function baseEnvelope() {
 }
 function buildExport() {
   return JSON.stringify({ format: 'reactivegas-sim-session', v: 2,
-    labels: { ...colLabels }, trace: sessionEnvelope(), kel: kelEnvelope(),
+    labels: { ...colLabels }, piles: dumpPiles(),
+    trace: sessionEnvelope(), kel: kelEnvelope(),
     base: baseEnvelope(), seq: sessionSeq.join('') });
 }
 function persistSession() { lsSet(logKey(), buildExport()); }
@@ -2387,7 +2390,9 @@ function normalizeWrap(wrap) {
   if (wrap && wrap.format === 'reactivegas-sim-session' && typeof wrap.seq === 'string')
     seq = wrap.seq.split('');
   else seq = env.steps.map(() => 'e');
-  return { env, kelEnv, baseEnv, seq, labels: (wrap && wrap.labels) || {} };
+  return { env, kelEnv, baseEnv, seq,
+    labels: (wrap && wrap.labels) || {},
+    piles: loadPiles(wrap && wrap.piles) };
 }
 
 function verifySessionShape(n) {
@@ -2414,6 +2419,7 @@ function restoreSession() {
   try { verifySessionShape(n); }
   catch (e) { return quarantineLog(e.message); }
   adoptSession(n.env, n.kelEnv, n.baseEnv, n.seq, n.labels);
+  pilePose = n.piles || {};
   return n.seq.length;
 }
 
@@ -2432,6 +2438,7 @@ function newSession() {
   kg = kgEmptyState();
   bg = bgEmpty(); bgCredits = [];
   history = []; completed = []; collSeq = 1; colLabels = {};
+  pilePose = {}; pileDrag = null; skipPileClick = false;
   sessionSteps = []; kelSteps = []; bgSteps = []; sessionSeq = [];
   invNote = 'nuova sessione → State.init 0';
   navStack = [{ view: 'group' }];
@@ -2456,9 +2463,10 @@ function enterPresentation(n) {
     throw new Error('seq incoerente con i tre flussi');
   verifyGovernedSeq(n);
   pres = { n, eco: ver.states, kel: kver.states, base: bver.states, idx: 0,
-    saved: { state, kg, bg, nav: navStack, labels: colLabels, note: invNote,
-      hist: history, comp: completed, seq: collSeq } };
+    saved: { state, kg, bg, nav: navStack, labels: colLabels, piles: { ...pilePose },
+      note: invNote, hist: history, comp: completed, seq: collSeq } };
   colLabels = { ...(n.labels || {}) };
+  pilePose = loadPiles(n.piles);
   n.env.steps.forEach(st => {
     const e = leanEventOf(st.event);
     if (e.tag === 'openPurchase' && colLabels[e.c] === undefined) {
@@ -2486,6 +2494,7 @@ function exitPresentation() {
   const s = pres.saved;
   pres = null;
   state = s.state; kg = s.kg; bg = s.bg; navStack = s.nav; colLabels = s.labels; invNote = s.note;
+  pilePose = s.piles || {};
   history = s.hist; completed = s.comp; collSeq = s.seq;
   renderAll();
 }
@@ -3134,13 +3143,40 @@ function taskBtn(tag, ctx, extra) {
 
 /* group scene (SVG) */
 let layout = {};
+let pilePose = {};   // CollId -> { angle, z }  view-only, not machine state
+let pileDrag = null;
+let skipPileClick = false;
+
+function dumpPiles() {
+  const out = {};
+  for (const c of state.collections) {
+    const p = pilePose[c.id];
+    if (!p || !Number.isFinite(p.angle)) continue;
+    out[String(c.id)] = {
+      angle: Math.round(p.angle * 1e6) / 1e6,
+      z: Number.isFinite(p.z) ? Math.trunc(p.z) : 0,
+    };
+  }
+  return out;
+}
+function loadPiles(raw) {
+  const out = {};
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return out;
+  for (const [id, p] of Object.entries(raw)) {
+    const n = Number(id);
+    if (!Number.isFinite(n) || !p || !Number.isFinite(p.angle)) continue;
+    out[n] = { angle: p.angle, z: Number.isFinite(p.z) ? Math.trunc(p.z) : 0 };
+  }
+  return out;
+}
 
 /* Pure deterministic purchase-ring geometry. Members stay on the outer
    circle in stable user order; open purchases sit on a concentric inner
    ring, clustered angularly around their referente when that fits, else
-   packed evenly so glyphs do not overlap. No DOM, storage, time, or
-   randomness. */
-function purchaseRingLayout(users, collections) {
+   packed evenly so glyphs do not overlap. Optional `poses` pins a
+   purchase to a user-chosen angle on the same ring. No DOM, storage,
+   time, or randomness. */
+function purchaseRingLayout(users, collections, poses) {
   const CX = 380, CY = 350, MEMBER_R = 220;
   const MEMBER_RR = 38, PURCHASE_RR = 42, GAP = 8;
   const MIN_DIST = 2 * PURCHASE_RR + GAP;
@@ -3188,7 +3224,8 @@ function purchaseRingLayout(users, collections) {
     }
     const separated = clustered.every((p, i) => clustered.slice(i + 1).every(q =>
       Math.hypot(p.x - q.x, p.y - q.y) >= MIN_DIST - 0.5));
-    if (separated) return { memberPos, placements: clustered };
+    if (separated)
+      return { memberPos, placements: applyPilePoses(clustered, poses, at) };
   }
 
   const ordered = groups.flatMap(g => g.cols);
@@ -3214,10 +3251,20 @@ function purchaseRingLayout(users, collections) {
     if (cost < bestCost) { bestCost = cost; bestR = r; }
     idx += g.cols.length;
   }
-  return {
-    memberPos,
-    placements: ordered.map((c, j) => at(PACK_R, bestR + j * slot, c, c.referente)),
-  };
+  const placements = ordered.map((c, j) => at(PACK_R, bestR + j * slot, c, c.referente));
+  return { memberPos, placements: applyPilePoses(placements, poses, at) };
+}
+
+function applyPilePoses(placements, poses, at) {
+  if (!poses) return placements;
+  return placements.map(p => {
+    const pose = poses[p.purchaseId];
+    if (!pose || !Number.isFinite(pose.angle)) return p;
+    const col = { id: p.purchaseId };
+    const q = at(p.radius, pose.angle, col, p.referente);
+    q.z = Number.isFinite(pose.z) ? pose.z : 0;
+    return q;
+  });
 }
 
 function renderGroup() {
@@ -3238,7 +3285,7 @@ function drawScene() {
   const svg = $('scene');
   layout = { world: { x: 705, y: 52 } };
   const CX = 380, CY = 350, R = 220;
-  const geo = purchaseRingLayout(state.users, state.collections);
+  const geo = purchaseRingLayout(state.users, state.collections, pilePose);
   const memberPos = geo.memberPos;
   const parts = [];
   parts.push(`<circle class="ringc" cx="${CX}" cy="${CY}" r="${R}"/>`);
@@ -3267,18 +3314,26 @@ function drawScene() {
   });
 
   for (const p of geo.placements) {
-    layout['pile:' + p.purchaseId] = { x: p.x, y: p.y };
+    layout['pile:' + p.purchaseId] = { x: p.x, y: p.y, angle: p.angle, radius: p.radius };
     const rp = memberPos[p.referente];
-    if (rp) parts.push(`<path class="reflink" d="M ${p.x} ${p.y} L ${rp.x} ${rp.y}"/>`);
+    if (rp) parts.push(`<path class="reflink" data-reflink="${p.purchaseId}"
+      d="M ${p.x} ${p.y} L ${rp.x} ${rp.y}"/>`);
   }
   const k = state.collections.length;
-  state.collections.forEach(c => {
+  const pileOrder = state.collections.slice().sort((a, b) => {
+    const za = (pilePose[a.id] && pilePose[a.id].z) || 0;
+    const zb = (pilePose[b.id] && pilePose[b.id].z) || 0;
+    return za - zb || a.id - b.id;
+  });
+  pileOrder.forEach(c => {
     const { x, y } = layout['pile:' + c.id];
     const rr = 42;
     const st = c.pending.length ? `${c.pending.length} pend.` : (c.permitted ? 'L2 ✓' : 'aperto');
     parts.push(`<g class="pileg" data-obj="pile" data-id="${c.id}" data-key="pile:${c.id}"
-      role="button" tabindex="0" aria-label="acquisto ${esc(lbl(c.id))}: impegni ${escrowOf(c)}"
+      role="button" tabindex="0"
+      aria-label="acquisto ${esc(lbl(c.id))}: impegni ${escrowOf(c)} — trascina sull'anello"
       transform="translate(${x},${y})">
+      <title>trascina sull'anello</title>
       <circle class="pc" r="${rr}"/>
       <text class="plbl" y="-12">«${esc(lbl(c.id))}»</text>
       <text class="pamt" y="4">${escrowOf(c)}</text>
@@ -3820,7 +3875,7 @@ function openLogPop(x, y) {
   $('log-pres').addEventListener('click', () => {
     if (!sessionSeq.length) return;
     enterPresentation({ env: sessionEnvelope(), kelEnv: kelEnvelope(),
-      seq: sessionSeq.slice(), labels: colLabels });
+      seq: sessionSeq.slice(), labels: colLabels, piles: dumpPiles() });
   });
   $('log-new').addEventListener('click', () => { closePop(); newSession(); });
   $('log-import').addEventListener('click', () => importText($('log-ta').value));
@@ -4056,6 +4111,85 @@ document.addEventListener('click', ev => {
   }
 }, true);
 
+function sceneClientToUser(svg, clientX, clientY) {
+  if (!svg || !svg.createSVGPoint) return null;
+  const pt = svg.createSVGPoint();
+  pt.x = clientX; pt.y = clientY;
+  const ctm = svg.getScreenCTM();
+  if (!ctm) return null;
+  return pt.matrixTransform(ctm.inverse());
+}
+function raisePileZ(id) {
+  let z = 0;
+  for (const p of Object.values(pilePose))
+    if (p && Number.isFinite(p.z) && p.z > z) z = p.z;
+  const cur = pilePose[id] || {};
+  const ang = Number.isFinite(cur.angle)
+    ? cur.angle
+    : (layout['pile:' + id] && layout['pile:' + id].angle);
+  pilePose[id] = { angle: ang, z: z + 1 };
+}
+function raisePileNode(el) {
+  const svg = el && el.ownerSVGElement;
+  if (!svg) return;
+  const member = svg.querySelector('[data-obj="member"]');
+  if (member) svg.insertBefore(el, member);
+  else svg.appendChild(el);
+}
+function movePileOnRing(id, el, clientX, clientY) {
+  const svg = $('scene');
+  const pt = sceneClientToUser(svg, clientX, clientY);
+  if (!pt) return;
+  const CX = 380, CY = 350;
+  const slot = layout['pile:' + id] || {};
+  const r = Number.isFinite(slot.radius) ? slot.radius : 132;
+  const angle = Math.atan2(pt.y - CY, pt.x - CX);
+  const x = CX + r * Math.cos(angle), y = CY + r * Math.sin(angle);
+  layout['pile:' + id] = { x, y, angle, radius: r };
+  const z = (pilePose[id] && pilePose[id].z) || 0;
+  pilePose[id] = { angle, z };
+  if (el) el.setAttribute('transform', `translate(${x},${y})`);
+  const link = svg && svg.querySelector(`[data-reflink="${id}"]`);
+  const col = state.collections.find(c => c.id === id);
+  const rp = col && layout['member:' + col.referente];
+  if (link && rp) link.setAttribute('d', `M ${x} ${y} L ${rp.x} ${rp.y}`);
+}
+
+$('view').addEventListener('pointerdown', ev => {
+  if (ev.button != null && ev.button !== 0) return;
+  const pile = ev.target.closest && ev.target.closest('[data-obj="pile"]');
+  if (!pile || !pile.closest('#scene')) return;
+  const id = Number(pile.dataset.id);
+  if (!Number.isFinite(id)) return;
+  pileDrag = { id, el: pile, moved: false, x: ev.clientX, y: ev.clientY,
+    pointerId: ev.pointerId };
+  try { pile.setPointerCapture(ev.pointerId); } catch (e) {}
+});
+document.addEventListener('pointermove', ev => {
+  if (!pileDrag || ev.pointerId !== pileDrag.pointerId) return;
+  const dx = ev.clientX - pileDrag.x, dy = ev.clientY - pileDrag.y;
+  if (!pileDrag.moved && dx * dx + dy * dy < 64) return;
+  if (!pileDrag.moved) {
+    pileDrag.moved = true;
+    pileDrag.el.classList.add('dragging');
+    raisePileZ(pileDrag.id);
+    raisePileNode(pileDrag.el);
+  }
+  ev.preventDefault();
+  movePileOnRing(pileDrag.id, pileDrag.el, ev.clientX, ev.clientY);
+}, { capture: true, passive: false });
+function endPileDrag(ev) {
+  if (!pileDrag || (ev && ev.pointerId !== pileDrag.pointerId)) return;
+  const moved = pileDrag.moved;
+  pileDrag = null;
+  if (!moved) return;
+  skipPileClick = true;
+  if (!pres) persistSession();
+  drawScene();
+}
+document.addEventListener('pointerup', endPileDrag, true);
+document.addEventListener('pointercancel', endPileDrag, true);
+
 $('view').addEventListener('click', ev => {
   const t = ev.target;
   const tx = t.closest('[data-teachx]');
@@ -4173,7 +4307,10 @@ $('view').addEventListener('click', ev => {
     const kind = obj.dataset.obj, id = Number(obj.dataset.id);
     if (kind === 'member' || kind === 'conto') go({ view: 'person', u: id, hat: 'member' });
     else if (kind === 'cassa') go({ view: 'person', u: id, hat: 'cassiere' });
-    else if (kind === 'pile') go({ view: 'collection', c: id });
+    else if (kind === 'pile') {
+      if (skipPileClick) { skipPileClick = false; return; }
+      go({ view: 'collection', c: id });
+    }
     else if (kind === 'ghost') startTask('addUser', { target: id }, ev.clientX, ev.clientY);
   }
 });
@@ -4201,6 +4338,7 @@ window.RG = { attempt, initState, sumBal, escrowSum, bal,
   kelTraceConformance, verifyKelTraceV1, kgLawViolations,
   verifyBaseTraceV1, bgLawViolations, EVENT_ROUTES, voteDerivedTag,
   purchaseRingLayout, citationPermalink, drawScene,
+  get pilePose() { return pilePose; },
   setLabel: (c, l) => { colLabels[c] = l; },
   get layout() { return layout; },
   get lawBreaches() { return lawBreaches; },
@@ -4306,6 +4444,13 @@ async function selftest() {
     const a = purchaseRingLayout(users, [col(1, 0), col(2, 1)]);
     const b = purchaseRingLayout(users, [col(1, 0), col(2, 1)]);
     expect(JSON.stringify(a) === JSON.stringify(b), 'geometry-determinism');
+    const posed = purchaseRingLayout(users, [col(1, 0), col(2, 0)], { 1: { angle: 0 } });
+    const pin = posed.placements.find(p => p.purchaseId === 1);
+    const other = posed.placements.find(p => p.purchaseId === 2);
+    expect(pin && pin.angle === 0
+      && Math.abs(pin.x - (380 + pin.radius)) < 1e-6
+      && other && other.angle !== 0,
+      'geometry-pile-pose');
     const clustered = purchaseRingLayout(users,
       Array.from({ length: 5 }, (_, i) => col(i + 1, 0)));
     expect(clustered.placements.length === 5
@@ -4320,9 +4465,32 @@ async function selftest() {
     drawScene();
     expect($('scene').innerHTML === s1, 'geometry-determinism');
     const savedCols = state.collections;
+    const savedPose = pilePose;
     state.collections = [col(1, 0), col(2, 0), col(3, 0)];
+    pilePose = {};
     drawScene();
     expect(sceneCircleContentContained(), 'scene-circle-containment');
+    {
+      const pile = document.querySelector('[data-key="pile:1"]');
+      expect(pile, 'geometry-pile-drag');
+      const br = pile.getBoundingClientRect();
+      const cx = br.x + br.width / 2, cy = br.y + br.height / 2;
+      pile.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true,
+        clientX: cx, clientY: cy, pointerId: 1, pointerType: 'mouse', buttons: 1, button: 0 }));
+      document.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, cancelable: true,
+        clientX: cx + 90, clientY: cy, pointerId: 1, pointerType: 'mouse', buttons: 1 }));
+      document.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, cancelable: true,
+        clientX: cx + 90, clientY: cy, pointerId: 1, pointerType: 'mouse' }));
+      expect(pilePose[1] && Number.isFinite(pilePose[1].angle), 'geometry-pile-drag');
+      const after = purchaseRingLayout(state.users, state.collections, pilePose);
+      const p1 = after.placements.find(p => p.purchaseId === 1);
+      expect(p1 && Math.abs(p1.angle - pilePose[1].angle) < 1e-6, 'geometry-pile-drag');
+      const dumped = dumpPiles();
+      expect(dumped['1'] && Number.isFinite(dumped['1'].angle), 'geometry-pile-persist');
+      expect(loadPiles(dumped)[1].angle === dumped['1'].angle, 'geometry-pile-persist');
+    }
+    pilePose = savedPose;
+    skipPileClick = false;
     state.collections = savedCols;
     drawScene();
     const many = Array.from({ length: 8 }, (_, i) => col(i + 1, 0));
