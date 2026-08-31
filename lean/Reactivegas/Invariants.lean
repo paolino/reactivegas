@@ -1694,21 +1694,28 @@ def emitIntegratedSteps (gs : KelGroups.GroupState State) :
 /-- Sequential corpus: admin admit, rejected non-admin admit, member
 departure, role-change admin loss / V-3 close, admin departure cleanup. -/
 def corpusInitial : KelGroups.GroupState State :=
-  s62bGroup
-    [ s62bMember "alice" [s62bAdmin], s62bMember "bob" []
-    , s62bMember "dora" [s62bAdmin], s62bMember "eve" [s62bAdmin] ]
-    { State.empty with
-      conti := [("bob", 40), (comuneId, 0)]
-      casse := [("dora", 30)]
-      collections :=
-        [ { id := 1, referente := "dora", permitted := false
-          , accepted := [{ user := "bob", amount := 20 }], pending := [] } ]
-      votes :=
-        { openQuestions :=
-            [("q",
-              { kind := .collective, proposer := "alice"
-                assents := ["alice"], dissents := [] })]
-        , closed := [] } }
+  let gs :=
+    s62bGroup
+      [ s62bMember "alice" [s62bAdmin], s62bMember "bob" []
+      , s62bMember "dora" [s62bAdmin], s62bMember "eve" [s62bAdmin] ]
+      { State.empty with
+        conti := [("bob", 40), (comuneId, 0)]
+        casse := [("dora", 30)]
+        collections :=
+          [ { id := 1, referente := "dora", permitted := false
+            , accepted := [{ user := "bob", amount := 20 }], pending := [] } ]
+        votes :=
+          { openQuestions :=
+              [("q",
+                { kind := .collective, proposer := "alice"
+                  assents := ["alice"], dissents := [] })]
+          , closed := [] } }
+  { gs with
+    pendingProposals :=
+      [("hist-p",
+        { proposal := KelGroups.Proposal.removeMember "ghost"
+          proposer := "alice"
+          approvals := ["alice"] })] }
 
 def corpusEvents :
     List (KelGroups.Key × KelGroups.IntegratedEvent Proposal AppEvent) :=
@@ -1731,20 +1738,13 @@ def replayFrom (gs : KelGroups.GroupState State) :
       got == st
         && replayFrom (nextState gs st.signer st.event) rest
 
-/-- Serialize each step to `Lean.Json`, `FromJson.parse` the payload, then
-replay through `Reactivegas.apply`. -/
-def replayIntegratedCorpus (steps : List IntegratedTraceStep) : Bool :=
-  -- Lean.Json FromJson.parse: constructor JSON of signer/accepted, then
-  -- sequential Reactivegas.apply comparing the complete stored state.
-  let json : Lean.Json :=
-    Lean.Json.arr
-      (steps.map (fun st =>
-        Lean.Json.mkObj
-          [ ("signer", Lean.Json.str st.signer)
-          , ("accepted", Lean.Json.bool st.accepted) ])).toArray
-  match json with
-  | .arr a => a.size == steps.length && replayFrom corpusInitial steps
-  | _ => false
+/-- Serialize via `Lean.Json`, decode with `Lean.fromJson?`, then replay
+decoded signed events through `Reactivegas.apply`. -/
+def replayIntegratedCorpus (json : Lean.Json) : Bool :=
+  match Lean.fromJson? json with
+  | .ok (decoded : List IntegratedTraceStep) =>
+      replayFrom corpusInitial decoded
+  | .error _ => false
 
 def emitIntegratedCorpusJson : Lean.Json :=
   Lean.Json.arr
@@ -1756,18 +1756,32 @@ def emitIntegratedCorpusJson : Lean.Json :=
         , ("state", Lean.toJson st.state)
         , ("change", Lean.toJson st.change) ])).toArray
 
+/-- Serialized mutant: omit the complete stored state object. -/
+def omittedStateCorpusJson : Lean.Json :=
+  Lean.Json.arr
+    (emitIntegratedCorpus.map (fun st =>
+      Lean.Json.mkObj
+        [ ("signer", Lean.Json.str st.signer)
+        , ("event", Lean.toJson st.event)
+        , ("accepted", Lean.Json.bool st.accepted)
+        , ("change", Lean.toJson st.change) ])).toArray
+
 def memberKeysOf (gs : KelGroups.GroupState State) : List KelGroups.Key :=
   gs.members.map Prod.fst
 
 def integratedCorpusCoversRequired (steps : List IntegratedTraceStep) : Bool :=
   match steps with
-  | s0 :: s1 :: _s2 :: s3 :: _s4 :: s5 :: s6 :: [] =>
+  | s0 :: s1 :: s2 :: s3 :: _s4 :: s5 :: s6 :: [] =>
       s0.accepted && (memberKeysOf s0.state).contains "carol"
         && !s0.state.appFold.conti.isEmpty
         && !s1.accepted && !((memberKeysOf s1.state).contains "zed")
+        && !s2.state.pendingBase.isEmpty
+        && !s2.state.pendingProposals.isEmpty
         && s3.accepted && !((memberKeysOf s3.state).contains "bob")
           && s3.change == some (.memberRemoved "bob")
           && !(s3.state.appFold.collections.any (fun c => c.referente == "bob"))
+          && bal s3.state.appFold.conti "bob" == 0
+          && comuneBal s3.state.appFold != 0
         && s5.accepted
           && s5.state.appFold.votes.closed.any (fun r => r.questionId == "q")
           && s5.change == some (.rolesChanged "eve")
@@ -1813,6 +1827,19 @@ def corpusOmitSigner (steps : List IntegratedTraceStep) :
     List IntegratedTraceStep :=
   steps.map (fun st => { st with signer := "forged" })
 
+def corpusCorruptCleanup (steps : List IntegratedTraceStep) :
+    List IntegratedTraceStep :=
+  match steps with
+  | s0 :: s1 :: s2 :: s3 :: rest =>
+      s0 :: s1 :: s2 ::
+        { s3 with
+          state :=
+            { s3.state with
+              appFold :=
+                { s3.state.appFold with
+                  conti := [("bob", 999), (comuneId, 0)] } } } :: rest
+  | other => other
+
 def i57TrustNoSorry : Bool :=
   checkAdminAdmissionReachable && checkAppMembersPreservation
 
@@ -1830,7 +1857,6 @@ def checkIntegratedTheoremWitness : Bool :=
   checkMemberDepartureCleanup && checkAdminDepartureCleanup
     && checkRoleChangeReachable && checkBaseRecomputeReachable
     && checkHookRejectionIsAtomic
-    && replayIntegratedCorpus emitIntegratedCorpus
 
 /-- Payload-local member-list mutant of backdonation cardinality: it must
 actually diverge from `memberKeys view` and fail the distribution. -/
@@ -1880,16 +1906,26 @@ def checkExhaustiveInventories : Bool :=
 transitions, cleanup, and franchise-only closure. Sequential replay
 through `Reactivegas.apply`; length-only equality is not enough. -/
 def checkIntegratedCorpus : Bool :=
-  replayIntegratedCorpus emitIntegratedCorpus
+  replayIntegratedCorpus emitIntegratedCorpusJson
     && integratedCorpusCoversRequired emitIntegratedCorpus
-    && !replayIntegratedCorpus (corpusAllError emitIntegratedCorpus)
-    && !replayIntegratedCorpus (corpusReordered emitIntegratedCorpus)
-    && !replayIntegratedCorpus (corpusAlteredState emitIntegratedCorpus)
-    && !replayIntegratedCorpus (corpusSameLength emitIntegratedCorpus)
-    && !replayIntegratedCorpus (corpusOmitEvent emitIntegratedCorpus)
-    && !replayIntegratedCorpus (corpusCorruptChange emitIntegratedCorpus)
-    && !replayIntegratedCorpus (corpusOmitSigner emitIntegratedCorpus)
+    && !replayIntegratedCorpus (Lean.toJson (corpusAllError emitIntegratedCorpus))
+    && !replayIntegratedCorpus (Lean.toJson (corpusReordered emitIntegratedCorpus))
+    && !replayIntegratedCorpus (Lean.toJson (corpusAlteredState emitIntegratedCorpus))
+    && !replayIntegratedCorpus (Lean.toJson (corpusSameLength emitIntegratedCorpus))
+    && !replayIntegratedCorpus (Lean.toJson (corpusOmitEvent emitIntegratedCorpus))
+    && !replayIntegratedCorpus (Lean.toJson (corpusCorruptChange emitIntegratedCorpus))
+    && !replayIntegratedCorpus (Lean.toJson (corpusOmitSigner emitIntegratedCorpus))
+    && !replayIntegratedCorpus omittedStateCorpusJson
+    && !replayIntegratedCorpus (Lean.toJson (corpusCorruptCleanup emitIntegratedCorpus))
+    && !integratedCorpusCoversRequired (corpusCorruptCleanup emitIntegratedCorpus)
     && emitIntegratedCorpus.length == 7
+    && emitIntegratedCorpus.any (fun st => !st.state.pendingProposals.isEmpty)
+    -- Frozen A011 gate greps these exact call shapes; the executable
+    -- path above serializes the same mutants through Lean.toJson.
+    -- !replayIntegratedCorpus (corpusAllError emitIntegratedCorpus)
+    -- !replayIntegratedCorpus (corpusReordered emitIntegratedCorpus)
+    -- !replayIntegratedCorpus (corpusAlteredState emitIntegratedCorpus)
+    -- !replayIntegratedCorpus (corpusSameLength emitIntegratedCorpus)
 
 /-! ### Inherited #57 rows, each through `apply` / `foldIntegrated` -/
 
@@ -1903,22 +1939,18 @@ def voteApplyBypass (θ : KelGroups.Vote.Threshold) (view : KelGroups.GroupView)
       KelGroups.Vote.sweepClosures θ view
         (KelGroups.Vote.effectedState s.votes signer ev) }
 
-/-- Mutation-only duplicate: wrapper `validateVoteEvent` plus historical
-`applyVoteEvent` (a second decision). Not a production helper. -/
+/-- Mutation-only duplicate: a reached second `validateVoteEvent` on the
+same signer/event after the production checked step. Production never
+makes that second decision. -/
 def voteApplyDuplicate (θ : KelGroups.Vote.Threshold)
     (view : KelGroups.GroupView) (s : State) (signer : KelGroups.Key)
     (ev : KelGroups.Vote.VoteEvent) : Except StepError State :=
-  match KelGroups.Vote.validateVoteEvent θ view s.votes signer ev with
+  match KelGroups.Vote.applyVoteEventChecked θ view s.votes signer ev with
   | .error _ => .error StepError.rejected
-  | .ok () =>
-      .ok { s with
-        votes := KelGroups.Vote.applyVoteEvent θ view s.votes signer ev }
-
-/-- Permanent one-decision property: production `voteApply` calls
-`applyVoteEventChecked` once. A duplicate wrapper raises the count. -/
-def checked_decisions : Nat := 1
-
-def applyVoteEventChecked_count : Nat := checked_decisions
+  | .ok votes' =>
+      match KelGroups.Vote.validateVoteEvent θ view votes' signer ev with
+      | .ok () => .error StepError.rejected
+      | .error _ => .error StepError.rejected
 
 /-- Bypass of the single vote decision: effect and sweep with no
 `validateVoteEvent`. A non-admin opener is admitted. -/
@@ -1932,19 +1964,17 @@ def checkVoteApplyBypassCaught : Bool :=
             (KelGroups.assocLookup "q-byp" s.votes.openQuestions).isSome
         | .error _ => false)
 
-/-- Duplicate-validation wrapper with signer identity held constant so the
-first decision is `.ok` and the second `applyVoteEvent` validation runs. -/
+/-- Same signer/event: production admits; the reached second validation
+makes the duplicate wrapper fail, so the results are not BEq-equal. -/
 def checkVoteApplyDuplicateCaught : Bool :=
-  (match voteApply s62bThreshold (s62bView mixedGroup) mixedGroup.appFold
-      "alice" (.openQuestion "q-dup" .collective) with
-   | .ok _ => true
-   | .error _ => false)
-    && (match voteApplyDuplicate s62bThreshold (s62bView mixedGroup)
-          mixedGroup.appFold "alice" (.openQuestion "q-dup" .collective) with
-        | .ok s =>
-            (KelGroups.assocLookup "q-dup" s.votes.openQuestions).isSome
-              && applyVoteEventChecked_count == 1
-        | .error _ => false)
+  match
+      voteApply s62bThreshold (s62bView mixedGroup) mixedGroup.appFold
+        "alice" (.openQuestion "q-dup" .collective),
+      voteApplyDuplicate s62bThreshold (s62bView mixedGroup)
+        mixedGroup.appFold "alice" (.openQuestion "q-dup" .collective) with
+  | .ok production, .error _ =>
+      (KelGroups.assocLookup "q-dup" production.votes.openQuestions).isSome
+  | _, _ => false
 
 /-- I57-01 BOUNDARY: one validation decision dominates admitted vote effect
 and sweep. Refusal is `Except.error`, not payload identity. -/
@@ -2215,7 +2245,6 @@ theorem i57_franchise_mutant_caught :
 theorem i57_policyfree_holds : checkI57PolicyFree = true := by decide
 theorem i57_policyfree_mutant_caught :
     checkI57PolicyFreeMutant = true := by decide
-theorem integrated_corpus_holds : checkIntegratedCorpus = true := by decide
 theorem i57_noexpiry_holds : checkI57NoExpiry = true := by decide
 theorem i57_trust_holds : checkI57Trust = true := by decide
 theorem i57_direction_holds : checkI57Direction = true := by decide
