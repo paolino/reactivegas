@@ -1,39 +1,42 @@
 import Reactivegas.Types
+import KelGroups.Vote.State
 
 /-!
-# Economic state of the machine
+# App payload of the machine
 
-List-based state: association lists for conti and casse, a list of
-open collections holding the escrow. The boot state mirrors the legacy
-`bootAnagrafe`, which starts every group with founding responsabili.
+Association lists for conti and casse, open collections, and the
+membership-free vote payload (open questions and closures). Membership
+and roles live only in the canonical `GroupView`.
 -/
 
 /-- An open purchase: escrow at pledge (L3), closure permission (L2). -/
 structure Collection where
   id : CollId
-  referente : UserId
+  referente : KelGroups.Key
   permitted : Bool
   accepted : List Pledge
   pending : List Pledge
-deriving DecidableEq, Repr
+deriving DecidableEq, BEq, Repr
 
-/-- The whole economic state. -/
+/-- The whole app payload: economy plus vote questions/closures.
+Membership is not stored here. -/
 structure State where
-  users : List UserId
-  responsabili : List UserId
-  /-- user credit accounts -/
-  conti : List (UserId × Int)
-  /-- cash boxes, one per responsabile -/
-  casse : List (UserId × Int)
+  /-- user credit accounts, keyed by substrate `KelGroups.Key` -/
+  conti : List (KelGroups.Key × Int)
+  /-- cash boxes, keyed by substrate `KelGroups.Key` -/
+  casse : List (KelGroups.Key × Int)
   collections : List Collection
-deriving DecidableEq, Repr
+  /-- Membership-free vote payload: open questions and closures. -/
+  votes : KelGroups.Vote.VoteState
+deriving DecidableEq, BEq, Repr
 
-/-- Boot state with `r` as the founding user/responsabile. -/
-def State.init (r : UserId) : State :=
-  ⟨[r], [r], [], [], []⟩
+/-- Empty app payload: no accounts, no collections, no questions. -/
+def State.empty : State :=
+  { conti := [], casse := [], collections := [],
+    votes := KelGroups.Vote.emptyVoteState }
 
 /-- Balance lookup on an association list; absent means zero. -/
-def bal (m : List (UserId × Int)) (u : UserId) : Int :=
+def bal (m : List (KelGroups.Key × Int)) (u : KelGroups.Key) : Int :=
   match m with
   | [] => 0
   | (k, v) :: t => if k = u then v else bal t u
@@ -56,13 +59,13 @@ instance stalledDecidable (s : State) : Decidable (stalled s) :=
   Int.decLt (comuneBal s) 0
 
 /-- Add `d` to the entry of `u`, appending a fresh entry when absent. -/
-def bump (m : List (UserId × Int)) (u : UserId) (d : Int) : List (UserId × Int) :=
+def bump (m : List (KelGroups.Key × Int)) (u : KelGroups.Key) (d : Int) : List (KelGroups.Key × Int) :=
   match m with
   | [] => [(u, d)]
   | (k, v) :: t => if k = u then (k, v + d) :: t else (k, v) :: bump t u d
 
 /-- Sum of the amounts in an account list. -/
-def sumBal (m : List (UserId × Int)) : Int := (m.map Prod.snd).sum
+def sumBal (m : List (KelGroups.Key × Int)) : Int := (m.map Prod.snd).sum
 
 /-- Sum of the pledged amounts. -/
 def sumPledges : List Pledge → Int
@@ -79,7 +82,7 @@ def escrowSum (cols : List Collection) : Int := (cols.map escrowOf).sum
 Split off the pledge of user `u` from a pledge list: the amount and the
 list without it. Fails when the user has no pledge in the list.
 -/
-def splitUser (u : UserId) : List Pledge → Option (Int × List Pledge)
+def splitUser (u : KelGroups.Key) : List Pledge → Option (Int × List Pledge)
   | [] => none
   | p :: t =>
     if p.user = u then some (p.amount, t)
@@ -88,7 +91,7 @@ def splitUser (u : UserId) : List Pledge → Option (Int × List Pledge)
       | none => none
 
 /-- Refund every pledge into an account list, one bump per pledge. -/
-def refundAll (m : List (UserId × Int)) (l : List Pledge) : List (UserId × Int) :=
+def refundAll (m : List (KelGroups.Key × Int)) (l : List Pledge) : List (KelGroups.Key × Int) :=
   l.foldl (fun acc p => bump acc p.user p.amount) m
 
 /-
@@ -110,7 +113,7 @@ Detach the collections whose referente is `r`: what remains, together
 with all their pledges (to be refunded). Legacy: revoking a responsabile
 cancels their open questions (`EventoEliminazioneResponsabile`).
 -/
-def stripCollections (r : UserId) : List Collection → List Collection × List Pledge
+def stripCollections (r : KelGroups.Key) : List Collection → List Collection × List Pledge
   | [] => ([], [])
   | c :: t =>
     let (rest, ps) := stripCollections r t
@@ -119,13 +122,13 @@ def stripCollections (r : UserId) : List Collection → List Collection × List 
 
 /-! ### Arithmetic facts about the helpers -/
 
-theorem sumBal_cons (k : UserId) (v : Int) (t : List (UserId × Int)) :
+theorem sumBal_cons (k : KelGroups.Key) (v : Int) (t : List (KelGroups.Key × Int)) :
     sumBal ((k, v) :: t) = v + sumBal t := rfl
 
-theorem bal_cons (k : UserId) (v : Int) (t : List (UserId × Int)) (u : UserId) :
+theorem bal_cons (k : KelGroups.Key) (v : Int) (t : List (KelGroups.Key × Int)) (u : KelGroups.Key) :
     bal ((k, v) :: t) u = if k = u then v else bal t u := rfl
 
-theorem bump_sum (m : List (UserId × Int)) (u : UserId) (d : Int) :
+theorem bump_sum (m : List (KelGroups.Key × Int)) (u : KelGroups.Key) (d : Int) :
     sumBal (bump m u d) = sumBal m + d := by
   induction m with
   | nil => simp [bump, sumBal]
@@ -136,7 +139,7 @@ theorem bump_sum (m : List (UserId × Int)) (u : UserId) (d : Int) :
     · next h => rw [sumBal_cons, sumBal_cons]; omega
     · next h => rw [sumBal_cons, sumBal_cons, ih]; omega
 
-theorem bal_bump (m : List (UserId × Int)) (u : UserId) (d : Int) :
+theorem bal_bump (m : List (KelGroups.Key × Int)) (u : KelGroups.Key) (d : Int) :
     bal (bump m u d) u = bal m u + d := by
   induction m with
   | nil => simp [bump, bal]
@@ -153,7 +156,7 @@ theorem sumPledges_append (l₁ l₂ : List Pledge) :
   | nil => simp [sumPledges]
   | cons p t ih => simp [sumPledges, ih]; omega
 
-theorem refundAll_sum (m : List (UserId × Int)) (l : List Pledge) :
+theorem refundAll_sum (m : List (KelGroups.Key × Int)) (l : List Pledge) :
     sumBal (refundAll m l) = sumBal m + sumPledges l := by
   induction l generalizing m with
   | nil => simp [refundAll, sumPledges]
@@ -166,7 +169,7 @@ theorem refundAll_sum (m : List (UserId × Int)) (l : List Pledge) :
     rw [h1, h2]
     omega
 
-theorem not_mem_users_of_splitUser_none {u : UserId} {l : List Pledge}
+theorem not_mem_users_of_splitUser_none {u : KelGroups.Key} {l : List Pledge}
     (h : splitUser u l = none) : ∀ p ∈ l, p.user ≠ u := by
   induction l with
   | nil =>
@@ -188,7 +191,7 @@ theorem not_mem_users_of_splitUser_none {u : UserId} {l : List Pledge}
         rw [hx] at h
         exact Option.noConfusion h
 
-private theorem splitUser_sum_lemma {u : UserId} :
+private theorem splitUser_sum_lemma {u : KelGroups.Key} :
     ∀ (l : List Pledge) (v : Int) (r : List Pledge),
       splitUser u l = some (v, r) → sumPledges l = v + sumPledges r := by
   intro l
@@ -215,11 +218,11 @@ private theorem splitUser_sum_lemma {u : UserId} :
         rw [hihr, ← h.1]
         omega
 
-theorem splitUser_sum {u : UserId} {l : List Pledge} {v : Int} {r : List Pledge}
+theorem splitUser_sum {u : KelGroups.Key} {l : List Pledge} {v : Int} {r : List Pledge}
     (h : splitUser u l = some (v, r)) : sumPledges l = v + sumPledges r :=
   splitUser_sum_lemma l v r h
 
-private theorem splitUser_sublist_lemma {u : UserId} :
+private theorem splitUser_sublist_lemma {u : KelGroups.Key} :
     ∀ (l : List Pledge) (v : Int) (r : List Pledge),
       splitUser u l = some (v, r) → ∀ q ∈ r, q ∈ l := by
   intro l
@@ -247,7 +250,7 @@ private theorem splitUser_sublist_lemma {u : UserId} :
         · exact List.mem_cons.mpr (Or.inl hc)
         · exact List.mem_cons_of_mem _ (ih wv wr hx q hc)
 
-theorem splitUser_sublist {u : UserId} {l : List Pledge} {v : Int} {r : List Pledge}
+theorem splitUser_sublist {u : KelGroups.Key} {l : List Pledge} {v : Int} {r : List Pledge}
     (h : splitUser u l = some (v, r)) : ∀ p ∈ r, p ∈ l :=
   splitUser_sublist_lemma l v r h
 
@@ -345,7 +348,7 @@ theorem pullCollection_sublist {c : CollId} {cols : List Collection} {x : Collec
     ∀ y ∈ rest, y ∈ cols :=
   pullCollection_sublist_lemma cols x rest h
 
-theorem stripCollections_sum (r : UserId) (cols : List Collection) :
+theorem stripCollections_sum (r : KelGroups.Key) (cols : List Collection) :
     sumPledges (stripCollections r cols).2 + escrowSum (stripCollections r cols).1
       = escrowSum cols := by
   induction cols with
@@ -363,3 +366,22 @@ theorem stripCollections_sum (r : UserId) (cols : List Collection) :
       rw [escrowSum_cons, escrowSum_cons, ← ih]
       simp only [escrowOf]
       omega
+
+/-- Detaching a referente's collections leaves none of theirs behind: the
+first component of `stripCollections r` names no collection whose referente is
+`r`. This is what makes the L1 governance obligation a fact about the sealed
+hook rather than about one fixture. -/
+theorem stripCollections_referente (r : KelGroups.Key) :
+    ∀ (cols : List Collection), ∀ c ∈ (stripCollections r cols).1, c.referente ≠ r := by
+  intro cols
+  induction cols with
+  | nil => intro c hc; cases hc
+  | cons x t ih =>
+    intro c hc
+    simp only [stripCollections] at hc
+    split at hc
+    · next _ => exact ih c hc
+    · next hne =>
+      rcases List.mem_cons.mp hc with heq | hmem
+      · exact heq ▸ hne
+      · exact ih c hmem

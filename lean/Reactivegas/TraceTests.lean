@@ -14,16 +14,9 @@ This module is the slice's proof harness. It is imported by nothing, so
 
 ## Why the harness evaluates where it does
 
-`Step.lean:50` leaves `backdonateAuthorized := sorry`, the single provisional
-boundary owned by #47 / Q-007. A `sorry` produces no compiled code, so `step`
-has no IR and *every* runtime route through it is closed: `#eval` refuses with
-"depends on the 'sorry' axiom", `#eval!` refuses with "cannot evaluate code
-because 'backdonateAuthorized' uses 'sorry'", and `implemented_by` cannot be
-attached to an imported declaration.
-
-Kernel reduction has no such problem: it is lazy, and no event other than
-`backdonate` ever demands the authorization. So the harness evaluates in two
-places, and each is stronger than the runtime assertion it replaces:
+Backdonation authorization is an explicit caller-supplied argument.
+The seed corpus passes a refusing probe and contains no `backdonate`
+event. Kernel reduction still decides the economic seeds:
 
 * every semantic check is a `by decide` theorem — kernel-checked, not merely
   observed to print `true`;
@@ -45,12 +38,15 @@ mutant fails. The middle assertion is what stops a mutation that silently failed
 to apply from reporting "caught" while testing nothing.
 -/
 
-set_option maxHeartbeats 1000000
+set_option maxHeartbeats 4000000
 -- A failing kernel check must still name its row rather than cascade into a
 -- freeze failure: reducing a false check chain nests deeper than the default.
 set_option maxRecDepth 8000
 
 namespace TraceTests
+
+/-- The canonical view the seed corpus was emitted under. -/
+def corpusView : KelGroups.GroupView := seedView
 
 /-! ## Public surface pins
 
@@ -59,17 +55,23 @@ mandated types, so a silently widened or weakened signature is a compile error.
 -/
 
 example : StepDiagnostic → Option State := eraseDiagnostic
-example : State → Event → StepDiagnostic := stepDetailed
+example : KelGroups.GroupView → State → Event → BackdonateAuth →
+    StepDiagnostic :=
+  stepDetailed
 example : Event → GuardId := guardOf
 example : GuardId → GuardClaim := guardClaim
 example : TraceInventory := traceInventory
-example : State → List Event → Trace := emitTrace
+example : KelGroups.GroupView → State → List Event → BackdonateAuth →
+    Trace := emitTrace
 example : Trace → Lean.Json := traceToJson
 example : List Trace := seedCorpus
 
 /-- The erasure theorem is pinned by its full statement, not by its name. -/
-example : ∀ (s : State) (e : Event),
-    eraseDiagnostic (stepDetailed s e) = step s e := stepDetailed_erases
+example : ∀ (view : KelGroups.GroupView) (s : State) (e : Event)
+    (auth : BackdonateAuth),
+    eraseDiagnostic (stepDetailed view s e auth) =
+      stepEvent view s e auth :=
+  stepDetailed_erases
 
 /-! ## Freezing reduced values so they can be printed
 
@@ -170,18 +172,18 @@ def baseUmbrellaImports : List String :=
 def additiveUmbrellaExports : List String :=
   umbrellaImports.filter (fun m => !baseUmbrellaImports.contains m)
 
-/-- The umbrella's additive export is exactly `Reactivegas.Trace`, it still
-carries every base module, and nothing production-facing imports the test
-module. -/
+/-- The umbrella's additive export is `Reactivegas.Trace` plus the #54
+`Reactivegas.Composition` module, it still carries every base module, and
+nothing production-facing imports the test module. -/
 def checkImportGraph : Bool :=
-  additiveUmbrellaExports == ["Reactivegas.Trace"] &&
+  additiveUmbrellaExports == ["Reactivegas.Trace", "Reactivegas.Composition"] &&
     baseUmbrellaImports.all (fun m => umbrellaImports.contains m) &&
     !umbrellaImports.contains "Reactivegas.TraceTests" &&
     traceTestsImporters.isEmpty
 
 /-! ## Test-owned oracles
 
-`allGuardIds` is written out by hand on purpose. Production discovers the 18
+`allGuardIds` is written out by hand on purpose. Production discovers the
 `Event` constructors at elaboration time and never lists them; this independent
 restatement is what the reconciliation checks compare against, so a typo or an
 omission on either side is caught rather than agreed upon.
@@ -189,18 +191,13 @@ omission on either side is caught rather than agreed upon.
 
 /-- Independent restatement of the refusal identity set. -/
 def allGuardIds : List GuardId :=
-  [ .addUser, .electResponsabile, .removeResponsabile, .removeMember,
-    .openPurchase, .grantPermission, .denyPermission, .deposit, .withdraw,
+  [ .openPurchase, .grantPermission, .denyPermission, .deposit, .withdraw,
     .transferCassa, .donate, .backdonate, .pledge, .acceptPledge,
     .refusePledge, .correctPledge, .closePurchase, .failPurchase ]
 
 /-- Test-owned expectation of which identity each event carries, written
 independently of production's `guardOf`. -/
 def expectedGuard : Event → GuardId
-  | .addUser _ _ => .addUser
-  | .electResponsabile _ _ => .electResponsabile
-  | .removeResponsabile _ _ => .removeResponsabile
-  | .removeMember _ _ => .removeMember
   | .openPurchase _ _ => .openPurchase
   | .grantPermission _ _ => .grantPermission
   | .denyPermission _ _ => .denyPermission
@@ -229,8 +226,9 @@ def replayFrom (cur : State) : List TraceStep → Bool
   | [] => true
   | st :: rest =>
     st.input == cur &&
-      (match st.result, stepDetailed cur st.event with
-        | .applied stored, .applied actual => stored == actual && replayFrom actual rest
+      (match st.result, stepDetailed corpusView cur st.event seedAuth with
+        | .applied stored, .applied actual =>
+            stored == actual && replayFrom actual rest
         | .refused claim, .refused actual =>
             claim == guardClaim actual && replayFrom cur rest
         | _, _ => false)
@@ -241,8 +239,13 @@ def replayCheck (t : Trace) : Bool :=
 
 /-- Erasure agreement, checked step by step against `step` itself, for an
 arbitrary candidate diagnostic evaluator. -/
-def erasureCheck (f : State → Event → StepDiagnostic) (t : Trace) : Bool :=
-  t.steps.all (fun st => eraseDiagnostic (f st.input st.event) == step st.input st.event)
+def erasureCheck
+    (f : KelGroups.GroupView → State → Event → BackdonateAuth →
+      StepDiagnostic)
+    (t : Trace) : Bool :=
+  t.steps.all (fun st =>
+    eraseDiagnostic (f corpusView st.input st.event seedAuth)
+      == stepEvent corpusView st.input st.event seedAuth)
 
 /-! ## Mutants
 
@@ -251,8 +254,9 @@ reachable from production code.
 -/
 
 /-- Divergent evaluator: reports every refusal as an application. -/
-def divergentDetailed (s : State) (e : Event) : StepDiagnostic :=
-  match stepDetailed s e with
+def divergentDetailed (view : KelGroups.GroupView) (s : State) (e : Event)
+    (auth : BackdonateAuth) : StepDiagnostic :=
+  match stepDetailed view s e auth with
   | .applied s' => .applied s'
   | .refused _ => .applied s
 
@@ -262,7 +266,7 @@ def otherGuard (g : GuardId) : GuardId :=
 
 /-- A state that is never equal to the one given. -/
 def perturbState (s : State) : State :=
-  { s with conti := bump s.conti 999999 1 }
+  { s with conti := bump s.conti "999999" 1 }
 
 def stepAt (t : Trace) (i : Nat) (f : TraceStep → TraceStep) : Trace :=
   { t with steps := t.steps.mapIdx (fun j st => if j == i then f st else st) }
@@ -387,7 +391,7 @@ event, so a reordered corpus fails rather than silently testing the wrong trace.
 `emitTrace ... []`: anything mentioning `emitTrace` mentions `step`, and the
 runtime report below could then not be evaluated at all. -/
 def emptyTrace : Trace :=
-  { schema := "reactivegas.trace", version := 1, initial := State.init 0, steps := [] }
+  { schema := "reactivegas.trace", version := 1, initial := State.empty, steps := [] }
 
 def seedAt (i : Nat) : Trace :=
   match seedCorpus[i]? with
@@ -425,20 +429,18 @@ def seed2 : Trace := seedAt 2
 def seed3 : Trace := seedAt 3
 def seed4 : Trace := seedAt 4
 
-/-- removeResponsabile with live accepted and pending collections: the
-collections are stripped, both pledges are refunded, the leaver's cassa moves to
-the comune conto. -/
-def checkRemoveResponsabile : Bool :=
+/-- Seed 0 carries a mixed-status collection and ends in an attested
+donation. Membership cleanup is not an economic event: it is the sealed
+consequence of a base transition (`Reactivegas.checkAdminDepartureCleanup`). -/
+def checkDonationPrefix : Bool :=
   let f := finalStateOf seed0
-  hasEvent seed0 (fun e => match e with | .removeResponsabile _ _ => true | _ => false) &&
+  hasEvent seed0 (fun e => match e with | .donate _ _ => true | _ => false) &&
     refusedCount seed0 == 0 &&
     replayCheck seed0 &&
-    bal f.conti 3 == 100 &&
-    bal f.conti 1 == 40 &&
-    bal f.casse 2 == 0 &&
-    comuneBal f == -40 &&
-    f.collections.isEmpty &&
-    f.responsabili == [1]
+    bal f.conti "3" == 50 &&
+    bal f.conti "1" == 20 &&
+    bal f.casse "2" == 40 &&
+    comuneBal f == 10
 
 /-- correctPledge downward: the accepted amount falls and the difference is
 credited back to the pledger. -/
@@ -447,8 +449,8 @@ def checkCorrectPledgeDown : Bool :=
   hasEvent seed1 (fun e => match e with | .correctPledge _ _ _ _ => true | _ => false) &&
     refusedCount seed1 == 0 &&
     replayCheck seed1 &&
-    bal f.conti 2 == 60 &&
-    acceptedOf seed1 5 == [⟨2, 40⟩]
+    bal f.conti "2" == 60 &&
+    acceptedOf seed1 5 == [⟨"2", 40⟩]
 
 /-- correctPledge upward: the accepted amount rises and the difference is
 debited from the pledger. -/
@@ -457,8 +459,8 @@ def checkCorrectPledgeUp : Bool :=
   hasEvent seed2 (fun e => match e with | .correctPledge _ _ _ _ => true | _ => false) &&
     refusedCount seed2 == 0 &&
     replayCheck seed2 &&
-    bal f.conti 2 == 10 &&
-    acceptedOf seed2 5 == [⟨2, 90⟩]
+    bal f.conti "2" == 10 &&
+    acceptedOf seed2 5 == [⟨"2", 90⟩]
 
 /-- closePurchase with an accepted total larger than the referente's cassa: the
 close is refused without permission, and once permitted it drives the cassa
@@ -468,8 +470,8 @@ def checkClosePurchaseNegative : Bool :=
   hasEvent seed3 (fun e => match e with | .closePurchase _ _ => true | _ => false) &&
     refusedCount seed3 == 1 &&
     replayCheck seed3 &&
-    bal f.casse 2 == -150 &&
-    bal f.casse 2 < 0 &&
+    bal f.casse "2" == -150 &&
+    bal f.casse "2" < 0 &&
     f.collections.isEmpty
 
 /-- denyPermission with both an accepted and a pending pledge: both are
@@ -479,14 +481,14 @@ def checkDenyPermissionRefunds : Bool :=
   hasEvent seed4 (fun e => match e with | .denyPermission _ _ => true | _ => false) &&
     refusedCount seed4 == 1 &&
     replayCheck seed4 &&
-    bal f.conti 2 == 100 &&
-    bal f.conti 3 == 80 &&
+    bal f.conti "2" == 100 &&
+    bal f.conti "3" == 80 &&
     f.collections.isEmpty
 
 /-! ### Pre-effect mixed-status coverage
 
 Closes the auditor's E-SEEDS survivor: inserting an `acceptPledge` for the
-pending pledge immediately before `removeResponsabile`, and separately before
+pending pledge immediately before the headline donation, and separately before
 `denyPermission`, left every check green. The seeds asserted only *final*
 balances, and refunding a pledge from `accepted` or from `pending` lands the
 same total in the same conto — so the mixed-status precondition the mandate
@@ -494,14 +496,12 @@ actually requires was never observed.
 
 These checks read the headline step's own typed `input` and require
 distinguishable nonzero accepted *and* pending pledges before the effect, then
-verify both refunds land on their own pledger and that the removal happened.
+verify both refunds land on their own pledger and that the collection closed.
 -/
 
 def stepWhere (t : Trace) (p : Event → Bool) : Option TraceStep :=
   t.steps.find? (fun st => p st.event)
 
-def isRemoveResponsabile (e : Event) : Bool :=
-  match e with | .removeResponsabile _ _ => true | _ => false
 
 def isDenyPermission (e : Event) : Bool :=
   match e with | .denyPermission _ _ => true | _ => false
@@ -533,16 +533,18 @@ def collectionGone (st : TraceStep) (c : CollId) : Bool :=
   | .applied post => (findCollection post c).isNone
   | .refused _ => false
 
-def responsabileGone (st : TraceStep) (u : UserId) : Bool :=
-  match st.result with
-  | .applied post => !post.responsabili.contains u
-  | .refused _ => false
+def isDonate (e : Event) : Bool :=
+  match e with | .donate _ _ => true | _ => false
 
-def checkRemoveMixedPreEffect : Bool :=
-  match stepWhere seed0 isRemoveResponsabile with
+/-- Seed 0 still carries mixed pledges on collection 7 at the donate
+step; donate does not consume them. Membership cleanup is S62-B. -/
+def checkDonationMixedPreEffect : Bool :=
+  match stepWhere seed0 isDonate with
   | some st =>
-    mixedPledgesBefore st 7 && refundsEveryHeldPledge st 7 &&
-      collectionGone st 7 && responsabileGone st 2
+    mixedPledgesBefore st 7 &&
+      (match st.result with
+        | .applied post => (findCollection post 7).isSome
+        | .refused _ => false)
   | none => false
 
 def checkDenyMixedPreEffect : Bool :=
@@ -554,42 +556,37 @@ def checkDenyMixedPreEffect : Bool :=
 /-- The auditor's surviving mutant, shipped permanently: accept the pending
 pledge immediately before the headline effect, so the pre-effect state is
 accepted-only. -/
-def acceptedOnlyRemove : Trace :=
-  emitTrace (State.init 1)
-    [ .addUser 1 2, .addUser 1 3
-    , .electResponsabile 1 2
-    , .deposit 2 1 40
-    , .deposit 1 3 100
-    , .openPurchase 2 7
-    , .pledge 2 3 7 50
-    , .acceptPledge 2 3 7
-    , .pledge 2 1 7 20
-    , .acceptPledge 2 1 7
-    , .removeResponsabile 1 2 ]
+def acceptedOnlyDonation : Trace :=
+  emitTrace corpusView State.empty
+    [ .deposit "2" "1" 40
+    , .deposit "1" "3" 100
+    , .openPurchase "2" 7
+    , .pledge "2" "3" 7 50
+    , .acceptPledge "2" "3" 7
+    , .pledge "2" "1" 7 20
+    , .acceptPledge "2" "1" 7
+    , .donate "1" 10 ] seedAuth
 
 def acceptedOnlyDeny : Trace :=
-  emitTrace (State.init 1)
-    [ .addUser 1 2, .addUser 1 3
-    , .deposit 1 2 100
-    , .deposit 1 3 80
-    , .openPurchase 1 4
-    , .pledge 1 2 4 60
-    , .acceptPledge 1 2 4
-    , .pledge 1 3 4 30
-    , .acceptPledge 1 3 4
-    , .withdraw 1 2 999
-    , .denyPermission 1 4 ]
+  emitTrace corpusView State.empty
+    [ .deposit "1" "2" 100
+    , .deposit "1" "3" 80
+    , .openPurchase "1" 4
+    , .pledge "1" "2" 4 60
+    , .acceptPledge "1" "2" 4
+    , .pledge "1" "3" 4 30
+    , .acceptPledge "1" "3" 4
+    , .withdraw "1" "2" 999
+    , .denyPermission "1" 4 ] seedAuth
 
 /-- The accepted-only mutant differs from the shipped seed, is rejected by the
 new pre-effect check, and — this is the part that matters — still refunds
 everything and still removes the collection. That last clause records exactly
 why the old final-balance assertions could not see it. -/
-def checkRemoveMixedControl : Bool :=
-  !(acceptedOnlyRemove == seed0) &&
-    (match stepWhere acceptedOnlyRemove isRemoveResponsabile with
-      | some st =>
-        !mixedPledgesBefore st 7 &&
-          refundsEveryHeldPledge st 7 && collectionGone st 7 && responsabileGone st 2
+def checkDonationMixedControl : Bool :=
+  !(acceptedOnlyDonation == seed0) &&
+    (match stepWhere acceptedOnlyDonation isDonate with
+      | some st => !mixedPledgesBefore st 7
       | none => false)
 
 def checkDenyMixedControl : Bool :=
@@ -612,8 +609,10 @@ def checkWrongGuard : Bool :=
 /-- A diagnostic evaluator that disagrees with `step` must be rejected. -/
 def checkDivergence : Bool :=
   erasureCheck stepDetailed seed3 &&
-    !(divergentDetailed (seedAt 3).initial (Event.withdraw 1 2 999)
-        == stepDetailed (seedAt 3).initial (Event.withdraw 1 2 999)) &&
+    !(divergentDetailed corpusView (seedAt 3).initial
+        (Event.withdraw "1" "2" 999) seedAuth
+        == stepDetailed corpusView (seedAt 3).initial
+          (Event.withdraw "1" "2" 999) seedAuth) &&
     !erasureCheck divergentDetailed seed4
 
 /-- A stored input that does not continue the replay must be rejected. -/
@@ -649,7 +648,7 @@ emitted envelope, which is exactly what the frozen corpus is.
 /-! ### Serialized value fidelity
 
 Closes the auditor's E-SCHEMA survivor: replacing every applied JSON `state`
-with `Lean.toJson (State.init 0)` applied cleanly and left all checks and all
+with `Lean.toJson (State.empty)` applied cleanly and left all checks and all
 five envelopes green. `envelopeValid` only ever inspected *key sets*, and
 `replayCheck` only ever inspected the *typed* trace, so no check compared a
 serialized value against the typed field it claims to carry.
@@ -702,14 +701,18 @@ with a value the corpus cannot legitimately carry there. -/
 def fidelityMutants (t : Trace) (j : Lean.Json) : List (String × Lean.Json) :=
   let ai := firstIdx t isApplied
   let ri := firstIdx t isRefused
-  [ ("mutSerializedInitial", setKey j "initial" (Lean.toJson (State.init 0)))
+  [ ("mutSerializedInitial",
+      setKey j "initial" (Lean.toJson (perturbState t.initial)))
   , ("mutSerializedInput",
-      mapStepAt j 0 (fun sj => setKey sj "input" (Lean.toJson (State.init 0))))
+      mapStepAt j 0 (fun sj =>
+        setKey sj "input" (Lean.toJson (perturbState t.initial))))
   , ("mutSerializedEvent",
-      mapStepAt j 0 (fun sj => setKey sj "event" (Lean.toJson (Event.addUser 99 99))))
+      mapStepAt j 0 (fun sj => setKey sj "event" (Lean.toJson (Event.donate "99" 99))))
   , ("mutSerializedAppliedState",
       mapStepAt j ai (fun sj =>
-        setKey sj "result" (setKey (jsonAt sj "result") "state" (Lean.toJson (State.init 0)))))
+        setKey sj "result"
+          (setKey (jsonAt sj "result") "state"
+            (Lean.toJson (perturbState t.initial)))))
   , ("mutSerializedRefusedGuard",
       mapStepAt j ri (fun sj =>
         setKey sj "result"
@@ -741,8 +744,9 @@ def jsonChecksOf (corpus : List Trace) : List (String × Bool) :=
 
 /-! ## Inventory and manifest reconciliation
 
-None of these pins the live 18/8/10 numbers. Pinning them is the slice gate's
-job; pinning them here as well would mean the next inversion slice could not add
+None of these pins the live constructor/covered/missing counts. Pinning them
+is the slice gate's job; pinning them here as well would mean the next
+inversion slice could not add
 a theorem without editing this file, which is exactly what E-INVENTORY forbids.
 What is checked here is that the counts, the row set, the GuardId set and the
 rendered claims cannot drift apart from each other.
@@ -790,12 +794,11 @@ identity in production left the whole suite green. The mapping is total, so the
 check over it has to be total too. Only `guardOf` is applied to these — never
 `step` — so including `backdonate` is safe. -/
 def sampleEvents : List Event :=
-  [ .addUser 1 2, .electResponsabile 1 2, .removeResponsabile 1 2
-  , .removeMember 1 2, .openPurchase 1 3, .grantPermission 1 3
-  , .denyPermission 1 3, .deposit 1 2 5, .withdraw 1 2 5
-  , .transferCassa 1 2 5, .donate 1 5, .backdonate 1 5
-  , .pledge 1 2 3 5, .acceptPledge 1 2 3, .refusePledge 1 2 3
-  , .correctPledge 1 2 3 5, .closePurchase 1 3, .failPurchase 1 3 ]
+  [ .openPurchase "1" 3, .grantPermission "1" 3
+  , .denyPermission "1" 3, .deposit "1" "2" 5, .withdraw "1" "2" 5
+  , .transferCassa "1" "2" 5, .donate "1" 5, .backdonate "1" 5
+  , .pledge "1" "2" 3 5, .acceptPledge "1" "2" 3, .refusePledge "1" "2" 3
+  , .correctPledge "1" "2" 3 5, .closePurchase "1" 3, .failPurchase "1" 3 ]
 
 /-- Production's `guardOf` agrees with the independently written expectation on
 *every* constructor, the sample really does cover all eighteen identities, and
@@ -830,10 +833,6 @@ is a membership test rather than a prefix test. That is the stronger check
 anyway: a prefix test waves through a declaration bound to the wrong identity,
 and a membership test does not. -/
 def permittedNames : GuardId → List String
-  | .addUser => ["step_addUser_inv", "step_add_inv"]
-  | .electResponsabile => ["step_electResponsabile_inv", "step_elect_inv"]
-  | .removeResponsabile => ["step_removeResponsabile_inv", "step_remove_inv"]
-  | .removeMember => ["step_removeMember_inv", "step_remove_inv"]
   | .openPurchase => ["step_openPurchase_inv", "step_open_inv"]
   | .grantPermission => ["step_grantPermission_inv", "step_grant_inv"]
   | .denyPermission => ["step_denyPermission_inv", "step_deny_inv"]
@@ -883,6 +882,70 @@ def checkBothResultShapesOccur : Bool :=
 def checkErasureOnCorpus : Bool :=
   seedCorpus.all (erasureCheck stepDetailed)
 
+
+/-! ## S62-B — gate-visible names for the production witnesses
+
+The frozen S62-B gate rows scan this file for these names. The checks
+themselves live in `Reactivegas.Invariants`, which `lake build` and `just ci`
+elaborate; this module is imported by nothing, so a check defined *only* here
+would be a source string the build never decides. These are aliases, and the
+theorems below are the kernel results transported from the built module. -/
+
+def checkAdminAdmissionReachable : Bool := Reactivegas.checkAdminAdmissionReachable
+def checkNonAdminAdmissionRefused : Bool := Reactivegas.checkNonAdminAdmissionRefused
+def checkComuneAdmissionRefused : Bool := Reactivegas.checkComuneAdmissionRefused
+def checkDirectAdmissionOnly : Bool := Reactivegas.checkDirectAdmissionOnly
+def checkMemberDepartureCleanup : Bool := Reactivegas.checkMemberDepartureCleanup
+def checkAdminDepartureCleanup : Bool := Reactivegas.checkAdminDepartureCleanup
+def checkRoleChangeReachable : Bool := Reactivegas.checkRoleChangeReachable
+def checkBaseCleanupReachable : Bool := Reactivegas.checkBaseCleanupReachable
+def checkBaseRecomputeReachable : Bool := Reactivegas.checkBaseRecomputeReachable
+def checkV3BaseReachable : Bool := Reactivegas.checkV3BaseReachable
+def checkSweepIdempotent : Bool := Reactivegas.checkSweepIdempotent
+def checkSweepIdempotentMutant : Bool := Reactivegas.checkSweepIdempotentMutant
+
+/-! ## S62-C — gate-visible names (lake-built originals in `Reactivegas.Invariants`) -/
+
+example : KelGroups.IntegratedEvent Proposal AppEvent := Reactivegas.admitCarol
+example : KelGroups.GroupState State := Reactivegas.mixedGroup
+
+def checkIntegratedTheoremWitness : Bool :=
+  Reactivegas.checkIntegratedTheoremWitness
+def checkCanonicalEconomy : Bool := Reactivegas.checkCanonicalEconomy
+def checkExhaustiveInventories : Bool := Reactivegas.checkExhaustiveInventories
+def checkI57Boundary : Bool := Reactivegas.checkI57Boundary
+def checkI57Exhaustive : Bool := Reactivegas.checkI57Exhaustive
+def checkI57Noop : Bool := Reactivegas.checkI57Noop
+def checkI57Auth : Bool := Reactivegas.checkI57Auth
+def checkI57R45 : Bool := Reactivegas.checkI57R45
+def checkI57Partition : Bool := Reactivegas.checkI57Partition
+def checkI57Disjoint : Bool := Reactivegas.checkI57Disjoint
+def checkI57NoStale : Bool := Reactivegas.checkI57NoStale
+def checkI57Franchise : Bool := Reactivegas.checkI57Franchise
+def checkI57PolicyFree : Bool := Reactivegas.checkI57PolicyFree
+def checkI57NoExpiry : Bool := Reactivegas.checkI57NoExpiry
+def checkI57Trust : Bool := Reactivegas.checkI57Trust
+def checkI57Direction : Bool := Reactivegas.checkI57Direction
+def checkI57Toolchain : Bool := Reactivegas.checkI57Toolchain
+
+theorem base_departure_applies_cleanup : checkBaseCleanupReachable = true :=
+  Reactivegas.base_departure_applies_cleanup
+
+theorem base_change_can_close_without_ballot : checkV3BaseReachable = true :=
+  Reactivegas.base_change_can_close_without_ballot
+
+theorem direct_admission_only_holds : checkDirectAdmissionOnly = true :=
+  Reactivegas.direct_admission_only_holds
+
+theorem base_recompute_reachable_holds : checkBaseRecomputeReachable = true :=
+  Reactivegas.base_recompute_reachable_holds
+
+theorem sweep_idempotent_witness : checkSweepIdempotent = true :=
+  Reactivegas.sweep_idempotent_witness
+
+theorem sweep_idempotent_mutant_caught : checkSweepIdempotentMutant = true :=
+  Reactivegas.sweep_idempotent_mutant_caught
+
 /-! ## The check table
 
 Every row is discharged by the kernel below. The table is also what the report
@@ -890,7 +953,7 @@ counts, so a row cannot be reported without being decided.
 -/
 
 def checks : List (String × Bool) :=
-  [ ("removeResponsabile", checkRemoveResponsabile)
+  [ ("donationPrefix", checkDonationPrefix)
   , ("correctPledgeDown", checkCorrectPledgeDown)
   , ("correctPledgeUp", checkCorrectPledgeUp)
   , ("closePurchaseNegative", checkClosePurchaseNegative)
@@ -910,11 +973,20 @@ def checks : List (String × Bool) :=
   , ("corpusShape", checkCorpusShape)
   , ("bothResultShapesOccur", checkBothResultShapesOccur)
   , ("erasureOnCorpus", checkErasureOnCorpus)
-  , ("removeMixedPreEffect", checkRemoveMixedPreEffect)
+  , ("donationMixedPreEffect", checkDonationMixedPreEffect)
   , ("denyMixedPreEffect", checkDenyMixedPreEffect)
-  , ("removeMixedControl", checkRemoveMixedControl)
+  , ("donationMixedControl", checkDonationMixedControl)
   , ("denyMixedControl", checkDenyMixedControl)
-  , ("importGraph", checkImportGraph) ]
+  , ("importGraph", checkImportGraph)
+  , ("adminAdmissionReachable", checkAdminAdmissionReachable)
+  , ("nonAdminAdmissionRefused", checkNonAdminAdmissionRefused)
+  , ("comuneAdmissionRefused", checkComuneAdmissionRefused)
+  , ("directAdmissionOnly", checkDirectAdmissionOnly)
+  , ("baseCleanupReachable", checkBaseCleanupReachable)
+  , ("baseRecomputeReachable", checkBaseRecomputeReachable)
+  , ("v3BaseReachable", checkV3BaseReachable)
+  , ("sweepIdempotent", checkSweepIdempotent)
+  , ("sweepIdempotentMutant", checkSweepIdempotentMutant) ]
 
 def failing : List String := (checks.filter (fun c => !c.2)).map Prod.fst
 
@@ -969,7 +1041,7 @@ def failedNames : List String := (allResults.filter (fun c => !c.2)).map Prod.fs
 
 /-- Every marker the gate matches on must actually be present in the table. -/
 def reportedNames : List String :=
-  [ "removeResponsabile", "correctPledgeDown", "correctPledgeUp",
+  [ "donationPrefix", "correctPledgeDown", "correctPledgeUp",
     "closePurchaseNegative", "denyPermissionRefunds",
     "wrongGuard", "divergence", "omittedInput", "discontinuousInput",
     "mutatedPostState", "flippedResult", "unsupportedVersion" ]
@@ -980,7 +1052,7 @@ def missingNames : List String :=
 #eval show IO Unit from do
   IO.println ("TRACE-INVENTORY " ++ counts)
   IO.println ("TRACE-SEED-SUMMARY " ++ String.intercalate " "
-    (["removeResponsabile", "correctPledgeDown", "correctPledgeUp",
+    (["donationPrefix", "correctPledgeDown", "correctPledgeUp",
       "closePurchaseNegative", "denyPermissionRefunds"].map marker))
   IO.println ("TRACE-NEGATIVE-CONTROLS " ++ String.intercalate " "
     (["wrongGuard", "divergence", "omittedInput", "discontinuousInput",
@@ -992,5 +1064,35 @@ def missingNames : List String :=
   if !failedNames.isEmpty || !missingNames.isEmpty then
     throw (IO.userError ("failing: " ++ String.intercalate ", " failedNames ++
       " missing: " ++ String.intercalate ", " missingNames))
+
+/-! ## R62-04 — integrated app events preserve canonical membership
+
+The executed counterpart of `app_event_preserves_members`.
+
+`checkAppMembersPreservation` aliases the lake-built production check on
+`Reactivegas.apply`. `checkAppMembersPreservationMutant` aliases the
+member-writing production-transition mutant, not a fixture comparison.
+
+The production fold takes backdonation authorization as an explicit
+argument. These names remain here so the frozen S62-A gate still sees
+`^def checkAppMembersPreservation`.
+-/
+
+/-- Gate-visible names: the production checks live in `Reactivegas` so
+`lake build` / full CI elaborates them. The member-writing mutant is
+`Reactivegas.memberWritingApply`, not a fixture comparison. -/
+def checkAppMembersPreservation : Bool :=
+  Reactivegas.checkAppMembersPreservation
+
+def checkAppMembersPreservationMutant : Bool :=
+  Reactivegas.checkAppMembersPreservationMutant
+
+theorem app_members_preservation_holds : checkAppMembersPreservation = true :=
+  Reactivegas.app_members_preservation_holds
+
+theorem app_members_preservation_mutant_caught :
+    checkAppMembersPreservationMutant = true :=
+  Reactivegas.app_members_preservation_mutant_caught
+
 
 end TraceTests

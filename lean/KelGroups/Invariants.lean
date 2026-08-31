@@ -1,5 +1,6 @@
 import KelGroups.Fold
 import KelGroups.Validate
+import KelGroups.Integration
 
 /-!
 # Vote-machine invariants and counterexamples
@@ -444,7 +445,7 @@ private def adminMember (key : Key) : Member :=
 
 def majorityAdminState (keys : List Key) : GroupState Unit :=
   { members := keys.map fun key => (key, adminMember key),
-    pendingProposals := [], appFold := () }
+    pendingProposals := [], pendingBase := [], appFold := () }
 
 theorem majority_table :
     majority (majorityAdminState []) = 0 ∧
@@ -551,6 +552,322 @@ def bootstrapPendingWitness : GroupState Unit := witnessFold bootstrapPendingEve
 #guard
   witnessTraceValid bootstrapPendingEvents && adminCount bootstrapPendingWitness == 0 &&
     lookupPending "introduce:later" bootstrapPendingWitness != none
+
+
+/-! ### R62-04 — the integrated app boundary preserves canonical membership
+
+`INV-62-PAYLOAD-ONLY` stated as a theorem about the production transition.
+The type of `IntegratedAppFold` already makes a member relation *unreturnable*
+by an app fold; these prove the transition around it does not write one either,
+so the app payload is the only thing an app event can move.
+
+The historical `applyEventDetailed` is not the subject here: both quantify over
+`applyIntegratedEvent`. Reactivegas layers a reserved-comune production
+root on top of this generic transition. -/
+
+theorem app_event_preserves_members
+    {AppState AppEvent BaseProposal AppError : Type}
+    (integration : Integration AppState AppEvent BaseProposal AppError)
+    (gs : GroupState AppState) (signer : Key) (event : AppEvent)
+    (result : IntegratedResult AppState)
+    (h : applyIntegratedEvent integration gs signer (IntegratedEvent.app event)
+      = .ok result) :
+    result.state.members = gs.members := by
+  simp only [applyIntegratedEvent] at h
+  split at h
+  case isTrue =>
+    split at h
+    case h_1 appState hfold =>
+      simp only [Except.ok.injEq] at h
+      subst h
+      rfl
+    case h_2 err hfold => exact Except.noConfusion h
+  case isFalse => exact Except.noConfusion h
+
+
+/-- Companion to `app_event_preserves_members`: an app event never reports a
+base change, so no downstream consumer can read one out of an app transition. -/
+theorem app_event_has_no_base_change
+    {AppState AppEvent BaseProposal AppError : Type}
+    (integration : Integration AppState AppEvent BaseProposal AppError)
+    (gs : GroupState AppState) (signer : Key) (event : AppEvent)
+    (result : IntegratedResult AppState)
+    (h : applyIntegratedEvent integration gs signer (IntegratedEvent.app event)
+      = .ok result) :
+    result.change = none := by
+  simp only [applyIntegratedEvent] at h
+  split at h
+  case isTrue =>
+    split at h
+    case h_1 appState hfold =>
+      simp only [Except.ok.injEq] at h
+      subst h
+      rfl
+    case h_2 err hfold => exact Except.noConfusion h
+  case isFalse => exact Except.noConfusion h
+
+
+/-! ### R62-06, R62-09 — the one transition system
+
+Three obligations about `applyIntegratedEvent`, stated before the routes that
+satisfy them exist.
+
+`direct_admission_requires_admin` and `non_admin_admission_is_noop` are
+`INV-62-DIRECT-ONLY` at the substrate: the single direct command is admin-only,
+target-absent and reserved-key-free, and its refusal is an *exact* error
+identity that advances no state — never a silently accepted no-op.
+
+`base_change_runs_hook` is `INV-62-ATOMIC-HOOK`: whenever a successful
+transition reports a concrete base change, the payload an observer reads is the
+one the sealed hook returned from the exact pre- and post-transition canonical
+views. A route that committed the membership change and skipped the hook, or
+handed the hook the pre view twice, cannot satisfy it. -/
+
+/-- Inversion of the direct-admission validator: `.ok` forces all three
+guards, so the guards cannot be reordered away. -/
+theorem validateDirectAdmission_ok {α : Type} {reserved : Key} {gs : GroupState α}
+    {signer target : Key} {email : Email} {roles : List Role}
+    (h : validateDirectAdmission reserved gs signer target email roles = .ok ()) :
+    isAdmin signer gs = true ∧ isMember target gs = false ∧ target ≠ reserved := by
+  unfold validateDirectAdmission at h
+  split at h
+  · next hadmin =>
+    split at h
+    · exact Except.noConfusion h
+    · next hreserved =>
+      split at h
+      · exact Except.noConfusion h
+      · next hmember =>
+        exact ⟨hadmin, Bool.eq_false_iff.mpr hmember, hreserved⟩
+  · exact Except.noConfusion h
+
+/-- Inversion of the sealed-hook commit: the committed change is the reported
+one, and the observable payload *is* the hook's output read at the observable
+post view. -/
+theorem commitBaseChange_ok {AppState AppEvent BaseProposal AppError : Type}
+    {integration : Integration AppState AppEvent BaseProposal AppError}
+    {pre post : GroupState AppState} {change : BaseChange}
+    {result : IntegratedResult AppState}
+    (h : commitBaseChange integration pre post change = .ok result) :
+    result.change = some change ∧
+      integration.baseHook change (groupView pre) (groupView result.state) pre.appFold
+        = .ok result.state.appFold := by
+  unfold commitBaseChange at h
+  split at h
+  · next appState hhook =>
+    simp only [Except.ok.injEq] at h
+    subst h
+    exact ⟨rfl, hhook⟩
+  · exact Except.noConfusion h
+
+/-- A successful `tryEnactBase` that reports a change ran the hook for it. -/
+theorem tryEnactBase_runs_hook {AppState AppEvent BaseProposal AppError : Type}
+    {integration : Integration AppState AppEvent BaseProposal AppError}
+    {gs : GroupState AppState} {proposalId : ProposalId}
+    {result : IntegratedResult AppState} {change : BaseChange}
+    (h : tryEnactBase integration gs proposalId = .ok result)
+    (hchange : result.change = some change) :
+    integration.baseHook change (groupView gs) (groupView result.state) gs.appFold
+      = .ok result.state.appFold := by
+  unfold tryEnactBase at h
+  split at h
+  · simp only [Except.ok.injEq] at h
+    subst h
+    exact Option.noConfusion hchange
+  · split at h
+    · obtain ⟨hreported, hhook⟩ := commitBaseChange_ok h
+      rw [hreported] at hchange
+      cases Option.some.inj hchange
+      exact hhook
+    · simp only [Except.ok.injEq] at h
+      subst h
+      exact Option.noConfusion hchange
+
+/-! ### `INV-62-DIRECT-ONLY` in its general form
+
+The theorems above constrain the direct route. This one constrains *every*
+route at once, and is what makes "one insertion path" a property of behaviour
+rather than of a constructor count. A second admission route — a new
+`DirectCommand` constructor that is also handled, an approval that inserts, an
+app fold that grows the relation — makes it false, whatever the vocabulary
+looks like. -/
+
+/-- The committed aggregate's members relation is the one the route built. -/
+theorem commitBaseChange_members {AppState AppEvent BaseProposal AppError : Type}
+    {integration : Integration AppState AppEvent BaseProposal AppError}
+    {pre post : GroupState AppState} {change : BaseChange}
+    {result : IntegratedResult AppState}
+    (h : commitBaseChange integration pre post change = .ok result) :
+    result.state.members = post.members := by
+  unfold commitBaseChange at h
+  split at h
+  · simp only [Except.ok.injEq] at h
+    subst h
+    rfl
+  · exact Except.noConfusion h
+
+/-- Neither voted base effect can make a stranger a member: removal erases and
+a role change adjusts, and both preserve absence. -/
+theorem enactMutation_preserves_absence {AppState : Type}
+    (gs : GroupState AppState) (mutation : BaseMutation) (key : Key)
+    (h : lookupMember key gs = none) :
+    lookupMember key (enactMutation gs mutation) = none := by
+  cases mutation with
+  | removeMember other => exact assocLookup_erase_of_none key other gs.members h
+  | changeRoles other roles =>
+      exact assocLookup_adjust_of_none key other _ gs.members h
+
+/-- Enacting a pending base mutation cannot make a stranger a member. -/
+theorem tryEnactBase_preserves_absence {AppState AppEvent BaseProposal AppError : Type}
+    {integration : Integration AppState AppEvent BaseProposal AppError}
+    {gs : GroupState AppState} {proposalId : ProposalId}
+    {result : IntegratedResult AppState} {key : Key}
+    (h : tryEnactBase integration gs proposalId = .ok result)
+    (habsent : lookupMember key gs = none) :
+    lookupMember key result.state = none := by
+  unfold tryEnactBase at h
+  split at h
+  · simp only [Except.ok.injEq] at h
+    subst h
+    exact habsent
+  · split at h
+    · show assocLookup key result.state.members = none
+      rw [commitBaseChange_members h]
+      exact enactMutation_preserves_absence _ _ key habsent
+    · simp only [Except.ok.injEq] at h
+      subst h
+      exact habsent
+
+/-- **One insertion path.** If a successful integrated transition made `key` a
+member and `key` was not one before, then the event was the direct admission of
+that exact key, the signer held an admin role in the pre-state, the key is not
+the reserved one, and the result reports `memberAdmitted key`.
+
+This is the property the frozen `G62-B-DIRECT-ADMIT` constructor-count leg was
+written to enforce but cannot (its `fail` is not returned, so the row reports
+PASS with two constructors — Q-001). It binds what a route *does* rather than
+how many constructors are declared, so a second admission route makes it false
+however it is spelled. -/
+theorem membership_growth_is_direct_admission
+    {AppState AppEvent BaseProposal AppError : Type}
+    (integration : Integration AppState AppEvent BaseProposal AppError)
+    (gs : GroupState AppState) (signer : Key)
+    (event : IntegratedEvent BaseProposal AppEvent)
+    (result : IntegratedResult AppState) (key : Key)
+    (h : applyIntegratedEvent integration gs signer event = .ok result)
+    (habsent : lookupMember key gs = none)
+    (hpresent : lookupMember key result.state ≠ none) :
+    isAdmin signer gs = true ∧ key ≠ integration.reserved ∧
+      result.change = some (BaseChange.memberAdmitted key) := by
+  cases event with
+  | direct command =>
+    cases command with
+    | admitMember target email roles =>
+      simp only [applyIntegratedEvent] at h
+      split at h
+      · exact Except.noConfusion h
+      · next hvalid =>
+        obtain ⟨hadmin, _, hreserved⟩ := validateDirectAdmission_ok hvalid
+        by_cases htarget : target = key
+        · subst htarget
+          have hchange := (commitBaseChange_ok h).1
+          exact ⟨hadmin, hreserved, hchange⟩
+        · exfalso
+          apply hpresent
+          show assocLookup key result.state.members = none
+          rw [commitBaseChange_members h]
+          exact assocLookup_insert_of_none key target _ gs.members htarget habsent
+  | propose proposal =>
+    simp only [applyIntegratedEvent] at h
+    split at h
+    · exact Except.noConfusion h
+    · exact absurd (tryEnactBase_preserves_absence h habsent) hpresent
+  | approve proposalId =>
+    simp only [applyIntegratedEvent] at h
+    split at h
+    · exact Except.noConfusion h
+    · split at h
+      · exact Except.noConfusion h
+      · exact absurd (tryEnactBase_preserves_absence h habsent) hpresent
+  | app appEvent =>
+    exfalso
+    apply hpresent
+    show assocLookup key result.state.members = none
+    rw [app_event_preserves_members integration gs signer appEvent result h]
+    exact habsent
+
+theorem direct_admission_requires_admin
+    {AppState AppEvent BaseProposal AppError : Type}
+    (integration : Integration AppState AppEvent BaseProposal AppError)
+    (gs : GroupState AppState) (signer key : Key) (email : Email)
+    (roles : List Role) (result : IntegratedResult AppState)
+    (h : applyIntegratedEvent integration gs signer
+      (IntegratedEvent.direct (DirectCommand.admitMember key email roles))
+      = .ok result) :
+    isAdmin signer gs = true ∧ isMember key gs = false ∧ key ≠ integration.reserved := by
+  simp only [applyIntegratedEvent] at h
+  split at h
+  · exact Except.noConfusion h
+  · next hvalid => exact validateDirectAdmission_ok hvalid
+
+theorem non_admin_admission_is_noop
+    {AppState AppEvent BaseProposal AppError : Type}
+    (integration : Integration AppState AppEvent BaseProposal AppError)
+    (gs : GroupState AppState) (signer key : Key) (email : Email)
+    (roles : List Role) (h : isAdmin signer gs = false) :
+    applyIntegratedEvent integration gs signer
+        (IntegratedEvent.direct (DirectCommand.admitMember key email roles))
+      = .error (IntegratedError.validation (ValidationError.notAnAdmin signer))
+    ∧ foldIntegrated integration gs
+        [(signer, IntegratedEvent.direct (DirectCommand.admitMember key email roles))]
+      = gs := by
+  have hstep :
+      applyIntegratedEvent integration gs signer
+          (IntegratedEvent.direct (DirectCommand.admitMember key email roles))
+        = .error (IntegratedError.validation (ValidationError.notAnAdmin signer)) := by
+    simp [applyIntegratedEvent, validateDirectAdmission, h]
+  exact ⟨hstep, by simp [foldIntegrated, hstep]⟩
+
+theorem base_change_runs_hook
+    {AppState AppEvent BaseProposal AppError : Type}
+    (integration : Integration AppState AppEvent BaseProposal AppError)
+    (gs : GroupState AppState) (signer : Key)
+    (event : IntegratedEvent BaseProposal AppEvent)
+    (result : IntegratedResult AppState) (change : BaseChange)
+    (h : applyIntegratedEvent integration gs signer event = .ok result)
+    (hchange : result.change = some change) :
+    integration.baseHook change (groupView gs) (groupView result.state) gs.appFold
+      = .ok result.state.appFold := by
+  cases event with
+  | direct command =>
+    cases command with
+    | admitMember key email roles =>
+      simp only [applyIntegratedEvent] at h
+      split at h
+      · exact Except.noConfusion h
+      · obtain ⟨hreported, hhook⟩ := commitBaseChange_ok h
+        rw [hreported] at hchange
+        cases Option.some.inj hchange
+        exact hhook
+  | propose proposal =>
+    simp only [applyIntegratedEvent] at h
+    split at h
+    · exact Except.noConfusion h
+    · have hb := tryEnactBase_runs_hook h hchange
+      exact hb
+  | approve proposalId =>
+    simp only [applyIntegratedEvent] at h
+    split at h
+    · exact Except.noConfusion h
+    · split at h
+      · exact Except.noConfusion h
+      · have hb := tryEnactBase_runs_hook h hchange
+        exact hb
+  | app appEvent =>
+    rw [app_event_has_no_base_change integration gs signer appEvent result h] at hchange
+    exact Option.noConfusion hchange
+
+#print axioms base_change_runs_hook
 
 end KelGroups
 

@@ -6,13 +6,16 @@ import KelGroups.Vote.Fold
 /-!
 # Per-producer composition (issue #54, Slice 2 — NOTE-031 option D)
 
-Classifies each of the eighteen `Reactivegas.Event` constructors by the
-producer that actually decides it:
+Classifies each of the fourteen surviving `Reactivegas.Event` constructors
+by the producer that actually decides it:
 
-* `direct` — the economic machine alone (twelve events);
-* `baseEnacted` — the faithful KelGroups proposal machine enacts it
-  (three events); evidence is bound to the production
-  `applyEventDetailed(...).enactment` result and its threshold theorem;
+* `direct` — the economic machine alone (eleven events);
+* `baseEnacted` — the faithful KelGroups proposal machine enacts it;
+  evidence is bound to the production `applyEventDetailed(...).enactment`
+  result and its threshold theorem. **No surviving constructor is classified
+  here**: T6222 retired the three that were, together with `addUser`.
+  `Route.baseEnacted` remains because the accepted historical theorem
+  quantifies over it;
 * `appDecided` — the required vote machine closes a question and the
   recorded verdict carries it (three events); evidence is bound to a
   production `KelGroups.Vote.ClosureRecord`.
@@ -38,14 +41,10 @@ inductive Route where
   | appDecided
 deriving DecidableEq, Repr
 
-/-- Total wildcard-free classifier over all 18 economic event constructors.
-Exact inventory: 12 `direct`, 3 `baseEnacted`, 3 `appDecided`. An added
-constructor fails to compile here. -/
+/-- Total wildcard-free classifier over the fourteen surviving economic event
+constructors. Exact inventory: 11 `direct`, 0 `baseEnacted`, 3 `appDecided`.
+An added constructor fails to compile here. -/
 def route : Event → Route
-  | .addUser _ _ => .direct
-  | .electResponsabile _ _ => .baseEnacted
-  | .removeResponsabile _ _ => .baseEnacted
-  | .removeMember _ _ => .baseEnacted
   | .openPurchase _ _ => .direct
   | .grantPermission _ _ => .appDecided
   | .denyPermission _ _ => .appDecided
@@ -61,14 +60,10 @@ def route : Event → Route
   | .closePurchase _ _ => .direct
   | .failPurchase _ _ => .direct
 
-/-- Independently total wildcard-free classifier: true exactly for the six
-base/app events. `donate` is not vote-derived; `removeMember` and
-`backdonate` are, so the accepted #48 additions cannot be omitted. -/
+/-- Independently total wildcard-free classifier: true exactly for the three
+surviving app-decided events. `donate` is not vote-derived;
+`backdonate` is, so the accepted #48 addition cannot be omitted. -/
 def voteDerived : Event → Bool
-  | .addUser _ _ => false
-  | .electResponsabile _ _ => true
-  | .removeResponsabile _ _ => true
-  | .removeMember _ _ => true
   | .openPurchase _ _ => false
   | .grantPermission _ _ => true
   | .denyPermission _ _ => true
@@ -94,8 +89,10 @@ theorem voteDerived_iff_not_direct (e : Event) :
 /-- The faithful base vocabulary: only `changeRoles` and `removeMember`
 proposals carry base-enacted economic evidence. An added `Proposal`
 constructor fails to compile here, and `introduceMember` — the voted
-admission — is excluded by construction: `addUser` stays direct and no
-voted-admission path exists (R-36). -/
+admission — is excluded by construction. `KelGroups.Proposal` keeps that
+constructor as historical evidence; the integrated production path does not
+reach it, and its own voted vocabulary `KelGroups.BaseMutation` cannot
+express admission at all (R-36, R62-07). -/
 def baseProposalFaithful : KelGroups.Proposal → Bool
   | .introduceMember _ _ _ => false
   | .removeMember _ => true
@@ -161,36 +158,35 @@ def productionEnactmentWitness : Bool :=
 produces one closure record, the app evidence accepts it, and its
 recorded verdict is `positive`. -/
 def productionVerdictWitness : Bool :=
+  let view : KelGroups.GroupView :=
+    { members :=
+        [("admin",
+          { key := "admin", email := "admin@example",
+            roles := [KelGroups.Role.adminRole KelGroups.Admin.publicAdmin] })] }
   let events : List (KelGroups.Key × KelGroups.Vote.VoteEvent) :=
-    [("admin", .admitMember "admin" "admin@example" [.adminRole .publicAdmin]),
-     ("admin", .openQuestion "question" .collective)]
-  match (KelGroups.Vote.foldVote KelGroups.Vote.zeroThreshold events).closed with
+    [("admin", .openQuestion "question" .collective)]
+  match (KelGroups.Vote.foldVote KelGroups.Vote.zeroThreshold view events).closed with
   | [record] => appVerdictAllows record && record.verdict == .positive
   | _ => false
 
 /-! ## Exact inventory point checks (R-31, R-32) -/
 
-example : route (.addUser 1 2) = .direct := by rfl
-example : route (.electResponsabile 1 2) = .baseEnacted := by rfl
-example : route (.removeResponsabile 1 2) = .baseEnacted := by rfl
-example : route (.removeMember 1 2) = .baseEnacted := by rfl
-example : route (.openPurchase 1 2) = .direct := by rfl
-example : route (.grantPermission 1 2) = .appDecided := by rfl
-example : route (.denyPermission 1 2) = .appDecided := by rfl
-example : route (.deposit 1 2 3) = .direct := by rfl
-example : route (.withdraw 1 2 3) = .direct := by rfl
-example : route (.transferCassa 1 2 3) = .direct := by rfl
-example : route (.donate 1 2) = .direct := by rfl
-example : route (.backdonate 1 2) = .appDecided := by rfl
-example : route (.pledge 1 2 3 4) = .direct := by rfl
-example : route (.acceptPledge 1 2 3) = .direct := by rfl
-example : route (.refusePledge 1 2 3) = .direct := by rfl
-example : route (.correctPledge 1 2 3 4) = .direct := by rfl
-example : route (.closePurchase 1 2) = .direct := by rfl
-example : route (.failPurchase 1 2) = .direct := by rfl
-example : voteDerived (.donate 1 2) = false := by rfl
-example : voteDerived (.removeMember 1 2) = true := by rfl
-example : voteDerived (.backdonate 1 2) = true := by rfl
+example : route (.openPurchase "1" 2) = .direct := by rfl
+example : route (.grantPermission "1" 2) = .appDecided := by rfl
+example : route (.denyPermission "1" 2) = .appDecided := by rfl
+example : route (.deposit "1" "2" 3) = .direct := by rfl
+example : route (.withdraw "1" "2" 3) = .direct := by rfl
+example : route (.transferCassa "1" "2" 3) = .direct := by rfl
+example : route (.donate "1" 2) = .direct := by rfl
+example : route (.backdonate "1" 2) = .appDecided := by rfl
+example : route (.pledge "1" "2" 3 4) = .direct := by rfl
+example : route (.acceptPledge "1" "2" 3) = .direct := by rfl
+example : route (.refusePledge "1" "2" 3) = .direct := by rfl
+example : route (.correctPledge "1" "2" 3 4) = .direct := by rfl
+example : route (.closePurchase "1" 2) = .direct := by rfl
+example : route (.failPurchase "1" 2) = .direct := by rfl
+example : voteDerived (.donate "1" 2) = false := by rfl
+example : voteDerived (.backdonate "1" 2) = true := by rfl
 
 #guard productionEnactmentWitness
 #guard productionVerdictWitness

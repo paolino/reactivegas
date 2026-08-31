@@ -3,6 +3,7 @@ import KelGroups.Event
 import KelGroups.State
 import KelGroups.Fold
 import KelGroups.Validate
+import KelGroups.Integration
 import KelGroups.Invariants
 import KelGroups.Tests
 import KelGroups.Vote.Types

@@ -60,6 +60,13 @@ lean:
     ./nix/lean-dependency-direction.sh
     cd lean && lake build
 
+# Execute the shipped integrated-corpus evaluator and require exact `true`
+lean-corpus-gate:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    result=$(cd lean && lake env lean Reactivegas/CorpusGate.lean)
+    [[ "$result" == "true" ]]
+
 # Full CI pipeline
 ci:
     #!/usr/bin/env bash
@@ -69,6 +76,7 @@ ci:
     just format-check
     just hlint
     just lean
+    just lean-corpus-gate
 
 # Assert the declared Lean pin matches the toolchain that actually runs
 lean-toolchain-contract:

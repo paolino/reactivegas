@@ -38,10 +38,9 @@ untouched. These have to precede every instance below that serialises a
 `State` or an `Event`.
 -/
 
-deriving instance Lean.ToJson for Pledge
-deriving instance Lean.ToJson for Collection
-deriving instance Lean.ToJson for State
-deriving instance Lean.ToJson for Event
+-- ToJson/FromJson for Pledge/Collection/Vote/State/Event live in
+-- `Reactivegas.Invariants` (imported above) so the corpus and this
+-- emitter share one instance set.
 
 /-! ### Stable refusal identity -/
 
@@ -50,7 +49,6 @@ deriving instance Lean.ToJson for Event
 The derived `ToJson` renders each identity as its own constructor name, which
 *is* the `guard.id` string the frozen schema specifies. -/
 inductive GuardId where
-  | addUser | electResponsabile | removeResponsabile | removeMember
   | openPurchase | grantPermission | denyPermission | deposit | withdraw
   | transferCassa | donate | backdonate | pledge | acceptPledge
   | refusePledge | correctPledge | closePurchase | failPurchase
@@ -59,10 +57,6 @@ deriving DecidableEq, Lean.ToJson
 /-- The refusal identity of an event. Exhaustive by construction: a new `Event`
 constructor makes this fail to compile rather than fall through to a default. -/
 def guardOf : Event → GuardId
-  | .addUser _ _ => .addUser
-  | .electResponsabile _ _ => .electResponsabile
-  | .removeResponsabile _ _ => .removeResponsabile
-  | .removeMember _ _ => .removeMember
   | .openPurchase _ _ => .openPurchase
   | .grantPermission _ _ => .grantPermission
   | .denyPermission _ _ => .denyPermission
@@ -103,25 +97,27 @@ def eraseDiagnostic : StepDiagnostic → Option State
 
 /-- The diagnostic evaluator. It calls the existing `step` and classifies its
 `Option`; it does not reimplement any guard or effect. -/
-def stepDetailed (s : State) (e : Event) : StepDiagnostic :=
-  match step s e with
+def stepDetailed (view : KelGroups.GroupView) (s : State) (e : Event)
+    (auth : BackdonateAuth) : StepDiagnostic :=
+  match stepEvent view s e auth with
   | some s' => .applied s'
   | none => .refused (guardOf e)
 
 /-- The diagnostic carries no information `step` does not, and loses none:
 erasing it returns exactly `step`. Without this a refusal explanation would be
 a second implementation rather than provable Lean output. -/
-theorem stepDetailed_erases (s : State) (e : Event) :
-    eraseDiagnostic (stepDetailed s e) = step s e := by
+theorem stepDetailed_erases (view : KelGroups.GroupView) (s : State)
+    (e : Event) (auth : BackdonateAuth) :
+    eraseDiagnostic (stepDetailed view s e auth) = stepEvent view s e auth := by
   unfold stepDetailed
-  cases h : step s e with
+  cases h : stepEvent view s e auth with
   | none => simp [eraseDiagnostic]
   | some s' => simp [eraseDiagnostic]
 
 /-! ### Accepted-inversion reconciliation
 
 The manifest is discovered from the environment at elaboration time. Neither
-the 18 constructors nor the 10 uncovered ones are written down anywhere in this
+the constructors nor the uncovered ones are written down anywhere in this
 file: adding a correctly named accepted inversion shrinks `missing` with no
 edit here.
 
@@ -129,8 +125,8 @@ An inversion for constructor `c` is a *theorem* named `step_<c>_inv` or
 `step_<stem>_inv`, where `stem` is the leading lowercase run of `c`, whose
 statement mentions both `step` and `Event.c`. Requiring the statement to
 mention the specific constructor is what makes the rule collision-safe:
-`step_remove_inv` can bind `removeResponsabile` or `removeMember`, never both,
-because it can only mention one of them.
+`step_close_inv` can bind `closePurchase` and nothing else,
+because it can only mention one constructor.
 
 The limit is declared, not hidden: this establishes that an accepted
 declaration of the right shape exists and is bound, not that its conclusion is
@@ -179,7 +175,9 @@ def elabInversionManifest : TermElab := fun stx expected? => do
     for cand in inversionCandidates short do
       if bound.isNone then
         if let some (.thmInfo ti) := env.find? (Lean.Name.mkSimple cand) then
-          if mentionsConst ti.type (Lean.Name.mkSimple "step") && mentionsConst ti.type ctor then
+          if (mentionsConst ti.type (Lean.Name.mkSimple "stepEvent")
+                || mentionsConst ti.type (Lean.Name.mkSimple "step"))
+              && mentionsConst ti.type ctor then
             bound := declText (Lean.Name.mkSimple cand)
     let key := Lean.Syntax.mkStrLit short
     let row ← match bound with
@@ -264,19 +262,23 @@ deriving instance Lean.ToJson for Trace
 
 /-- Evaluate the events in order, keeping the state unchanged across a refusal
 so that the next step's `input` stays continuous. -/
-private def emitSteps (s : State) : List Event → List TraceStep
+private def emitSteps (view : KelGroups.GroupView) (s : State)
+    (auth : BackdonateAuth) : List Event → List TraceStep
   | [] => []
   | e :: rest =>
-    match stepDetailed s e with
-    | .applied s' => ⟨s, e, .applied s'⟩ :: emitSteps s' rest
-    | .refused g => ⟨s, e, .refused (guardClaim g)⟩ :: emitSteps s rest
+    match stepDetailed view s e auth with
+    | .applied s' => ⟨s, e, .applied s'⟩ :: emitSteps view s' auth rest
+    | .refused g => ⟨s, e, .refused (guardClaim g)⟩ :: emitSteps view s auth rest
 
-/-- Emit the v1 trace of running `events` from `initial`. -/
-def emitTrace (initial : State) (events : List Event) : Trace :=
+/-- Emit the v1 trace of running `events` from `initial` under a fixed
+canonical view. Authorization is explicit; the seed corpus passes a
+refusing probe and contains no backdonate event. -/
+def emitTrace (view : KelGroups.GroupView) (initial : State)
+    (events : List Event) (auth : BackdonateAuth) : Trace :=
   { schema := "reactivegas.trace"
   , version := 1
   , initial := initial
-  , steps := emitSteps initial events }
+  , steps := emitSteps view initial auth events }
 
 /-- The envelope as JSON. -/
 def traceToJson (trace : Trace) : Lean.Json := Lean.toJson trace
@@ -287,74 +289,82 @@ The four high-risk classes the frozen format requires, in five executions.
 `correctPledge` needs two because the downward and upward settlements move
 money in opposite directions.
 
-No seed contains a `backdonate` event. `backdonateAuthorized` is the surviving
-provisional boundary and has neither compiled code nor a kernel value, so a
-`backdonate` event cannot be evaluated at all. That is a stated limit of this
-corpus, not a property of the emitter.
+No seed contains a `backdonate` event. Authorization is an explicit
+argument; the seed corpus passes a refusing probe so backdonation is
+not evaluated here.
 -/
 
-/-- removeResponsabile with live accepted and pending collections. -/
-private def seedRemoveResponsabile : List Event :=
-  [ .addUser 1 2, .addUser 1 3
-  , .electResponsabile 1 2
-  , .deposit 2 1 40
-  , .deposit 1 3 100
-  , .openPurchase 2 7
-  , .pledge 2 3 7 50
-  , .acceptPledge 2 3 7
-  , .pledge 2 1 7 20
-  , .removeResponsabile 1 2 ]
+/-- Canonical view for the seed corpus: two admins and one ordinary
+member. Membership is not grown by vote-local or economic events. -/
+def seedView : KelGroups.GroupView :=
+  { members :=
+      [ ("1", { key := "1", email := "1@trace",
+                roles := [KelGroups.Role.adminRole KelGroups.Admin.publicAdmin] })
+      , ("2", { key := "2", email := "2@trace",
+                roles := [KelGroups.Role.adminRole KelGroups.Admin.publicAdmin] })
+      , ("3", { key := "3", email := "3@trace", roles := [] }) ] }
+
+/-- A mixed-status collection (one accepted pledge, one pending) ending in an
+attested donation. Membership cleanup is not an economic event at all: it is
+the sealed consequence of a base transition, exercised by
+`Reactivegas.checkAdminDepartureCleanup`. -/
+private def seedDonationPrefix : List Event :=
+  [ .deposit "2" "1" 40
+  , .deposit "1" "3" 100
+  , .openPurchase "2" 7
+  , .pledge "2" "3" 7 50
+  , .acceptPledge "2" "3" 7
+  , .pledge "2" "1" 7 20
+  , .donate "1" 10 ]
 
 /-- An accepted pledge corrected downward. -/
 private def seedCorrectPledgeDown : List Event :=
-  [ .addUser 1 2
-  , .deposit 1 2 100
-  , .openPurchase 1 5
-  , .pledge 1 2 5 60
-  , .acceptPledge 1 2 5
-  , .correctPledge 1 2 5 40 ]
+  [ .deposit "1" "2" 100
+  , .openPurchase "1" 5
+  , .pledge "1" "2" 5 60
+  , .acceptPledge "1" "2" 5
+  , .correctPledge "1" "2" 5 40 ]
 
 /-- The same collection corrected upward. -/
 private def seedCorrectPledgeUp : List Event :=
-  [ .addUser 1 2
-  , .deposit 1 2 100
-  , .openPurchase 1 5
-  , .pledge 1 2 5 60
-  , .acceptPledge 1 2 5
-  , .correctPledge 1 2 5 90 ]
+  [ .deposit "1" "2" 100
+  , .openPurchase "1" 5
+  , .pledge "1" "2" 5 60
+  , .acceptPledge "1" "2" 5
+  , .correctPledge "1" "2" 5 90 ]
 
 /-- A closure large enough to drive the referente's cassa negative. The close
 is attempted once before permission is granted, so the corpus carries a refused
 step whose identity has an accepted inversion. -/
 private def seedClosePurchaseNegative : List Event :=
-  [ .addUser 1 2, .addUser 1 3
-  , .electResponsabile 1 2
-  , .deposit 1 3 200
-  , .openPurchase 2 9
-  , .pledge 2 3 9 150
-  , .acceptPledge 2 3 9
-  , .closePurchase 2 9
-  , .grantPermission 2 9
-  , .closePurchase 2 9 ]
+  [ .deposit "1" "3" 200
+  , .openPurchase "2" 9
+  , .pledge "2" "3" 9 150
+  , .acceptPledge "2" "3" 9
+  , .closePurchase "2" 9
+  , .grantPermission "2" 9
+  , .closePurchase "2" 9 ]
 
 /-- A denial refunding both an accepted and a pending pledge. The refused
 withdrawal carries an identity with no accepted inversion, so the corpus also
 exercises an `UNPROVED` claim row. -/
 private def seedDenyPermissionRefunds : List Event :=
-  [ .addUser 1 2, .addUser 1 3
-  , .deposit 1 2 100
-  , .deposit 1 3 80
-  , .openPurchase 1 4
-  , .pledge 1 2 4 60
-  , .acceptPledge 1 2 4
-  , .pledge 1 3 4 30
-  , .withdraw 1 2 999
-  , .denyPermission 1 4 ]
+  [ .deposit "1" "2" 100
+  , .deposit "1" "3" 80
+  , .openPurchase "1" 4
+  , .pledge "1" "2" 4 60
+  , .acceptPledge "1" "2" 4
+  , .pledge "1" "3" 4 30
+  , .withdraw "1" "2" 999
+  , .denyPermission "1" 4 ]
 
-/-- The five mandated executions, all from the same boot state. -/
+/-- The five mandated executions, all from the empty payload under
+`seedView`. -/
+def seedAuth : BackdonateAuth := fun _ _ => false
+
 def seedCorpus : List Trace :=
-  [ emitTrace (State.init 1) seedRemoveResponsabile
-  , emitTrace (State.init 1) seedCorrectPledgeDown
-  , emitTrace (State.init 1) seedCorrectPledgeUp
-  , emitTrace (State.init 1) seedClosePurchaseNegative
-  , emitTrace (State.init 1) seedDenyPermissionRefunds ]
+  [ emitTrace seedView State.empty seedDonationPrefix seedAuth
+  , emitTrace seedView State.empty seedCorrectPledgeDown seedAuth
+  , emitTrace seedView State.empty seedCorrectPledgeUp seedAuth
+  , emitTrace seedView State.empty seedClosePurchaseNegative seedAuth
+  , emitTrace seedView State.empty seedDenyPermissionRefunds seedAuth ]

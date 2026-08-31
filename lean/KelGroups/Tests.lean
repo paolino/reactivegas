@@ -20,7 +20,7 @@ def member (key : Key) (roles : List Role := []) : Member :=
   { key, email := key ++ "@example.test", roles }
 
 def stateWith (members : List (Key × Member)) (appFold : Nat := 0) : GroupState Nat :=
-  { members, pendingProposals := [], appFold }
+  { members, pendingProposals := [], pendingBase := [], appFold }
 
 def admins (keys : List Key) : GroupState Nat :=
   stateWith (keys.map fun key => (key, member key [adminRole]))
