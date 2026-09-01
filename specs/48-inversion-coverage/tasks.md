@@ -10,16 +10,16 @@ boxes, and only after a fresh independent audit passes the exact candidate.
 
 ## Slice S48-I — close inversion coverage
 
-- [ ] **T4810** Add successful-step inversion theorems for the mechanically
+- [x] **T4810** Add successful-step inversion theorems for the mechanically
       derived six-constructor gap. (R48-I01…R48-I03)
-- [ ] **T4811** Ship constructor/theorem coverage derivation with no copied
+- [x] **T4811** Ship constructor/theorem coverage derivation with no copied
       event registry and reject missing, duplicate, or phantom coverage.
       (R48-I01, R48-I04)
-- [ ] **T4812** Prove the permanent coverage detector can fail by dynamically
+- [x] **T4812** Prove the permanent coverage detector can fail by dynamically
       removing derived coverage, and execute it from the normal Lean gate.
       (R48-I04, R48-I07)
-- [ ] **T4813** Print clean axiom sets for all six new theorems and retain zero
+- [x] **T4813** Print clean axiom sets for all six new theorems and retain zero
       `sorry`, `admit`, or `sorryAx`. (R48-I05)
-- [ ] **T4814** Preserve all existing theorem behavior and every forbidden
+- [x] **T4814** Preserve all existing theorem behavior and every forbidden
       #62/membership/departure/vote/composition/toolchain/pledge-agency surface;
       pass focused Lean and full repository CI. (R48-I06)
