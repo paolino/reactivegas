@@ -58,6 +58,8 @@ lean:
     #!/usr/bin/env bash
     set -euo pipefail
     ./nix/lean-dependency-direction.sh
+    scripts/check-reactivegas-inversion-coverage
+    scripts/check-reactivegas-inversion-coverage --negative-control
     cd lean && lake build
 
 # Execute the shipped integrated-corpus evaluator and require exact `true`

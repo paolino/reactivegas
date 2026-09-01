@@ -335,6 +335,96 @@ theorem step_fail_inv {s s' : State} {a : KelGroups.Key} {c : CollId}
   · simp only [pure, Option.some.injEq] at hx
     exact hx.symm
 
+namespace Reactivegas
+
+variable {view : KelGroups.GroupView}
+variable {auth : BackdonateAuth}
+
+theorem step_open_inv {s s' : State} {a : KelGroups.Key} {c : CollId}
+    (hstep : stepEvent view s (.openPurchase a c) auth = some s') :
+    (isResponsabile view a &&
+        !(s.collections.any (fun x => x.id == c))) = true ∧
+      s' = { s with
+        collections := ⟨c, a, false, [], []⟩ :: s.collections } := by
+  simp only [stepEvent, step] at hstep
+  split at hstep
+  · next g =>
+    simp only [Option.some.injEq] at hstep
+    exact ⟨g, hstep.symm⟩
+  · exact Option.noConfusion hstep
+
+theorem step_deposit_inv {s s' : State} {a u : KelGroups.Key} {v : Int}
+    (hstep : stepEvent view s (.deposit a u v) auth = some s') :
+    (isResponsabile view a && KelGroups.GroupView.isMember u view
+        && a != u && decide (0 ≤ v)) = true ∧
+      s' = { s with
+        conti := bump s.conti u v, casse := bump s.casse a v } := by
+  simp only [stepEvent, step] at hstep
+  split at hstep
+  · next g =>
+    simp only [Option.some.injEq] at hstep
+    exact ⟨g, hstep.symm⟩
+  · exact Option.noConfusion hstep
+
+theorem step_withdraw_inv {s s' : State} {a u : KelGroups.Key} {v : Int}
+    (hstep : stepEvent view s (.withdraw a u v) auth = some s') :
+    (isResponsabile view a && KelGroups.GroupView.isMember u view
+        && a != u && decide (bal s.conti u ≥ v)
+        && !(decide (stalled s))) = true ∧
+      s' = { s with
+        conti := bump s.conti u (-v),
+        casse := bump s.casse a (-v) } := by
+  simp only [stepEvent, step] at hstep
+  split at hstep
+  · next g =>
+    simp only [Option.some.injEq] at hstep
+    exact ⟨g, hstep.symm⟩
+  · exact Option.noConfusion hstep
+
+theorem step_transferCassa_inv {s s' : State} {a f : KelGroups.Key} {v : Int}
+    (hstep : stepEvent view s (.transferCassa a f v) auth = some s') :
+    (isResponsabile view a && isResponsabile view f
+        && a != f && v > 0) = true ∧
+      s' = { s with
+        casse := bump (bump s.casse f (-v)) a v } := by
+  simp only [stepEvent, step] at hstep
+  split at hstep
+  · next g =>
+    simp only [Option.some.injEq] at hstep
+    exact ⟨g, hstep.symm⟩
+  · exact Option.noConfusion hstep
+
+theorem step_donate_inv {s s' : State} {a : KelGroups.Key} {v : Int}
+    (hstep : stepEvent view s (.donate a v) auth = some s') :
+    (isResponsabile view a && decide (0 < v)) = true ∧
+      s' = { s with
+        casse := bump s.casse a v,
+        conti := bump s.conti comuneId v } := by
+  simp only [stepEvent, step] at hstep
+  split at hstep
+  · next g =>
+    simp only [Option.some.injEq] at hstep
+    exact ⟨g, hstep.symm⟩
+  · exact Option.noConfusion hstep
+
+theorem step_backdonate_inv {s s' : State} {a : KelGroups.Key} {w : Int}
+    (hstep : stepEvent view s (.backdonate a w) auth = some s') :
+    (isResponsabile view a && decide (0 < w)
+        && decide (comuneBal s ≥ ((memberKeys view).length : Int) * w)
+        && auth s w) = true ∧
+      s' = { s with
+        conti := (memberKeys view).foldl (fun acc u => bump acc u w)
+          (bump s.conti comuneId
+            (-(((memberKeys view).length : Int) * w))) } := by
+  simp only [stepEvent, step] at hstep
+  split at hstep
+  · next g =>
+    simp only [Option.some.injEq] at hstep
+    exact ⟨g, hstep.symm⟩
+  · exact Option.noConfusion hstep
+
+end Reactivegas
+
 /-! ### L6 flagship: conservation preserved by every event -/
 
 theorem conservation_preserved {s s' : State} {e : Event}
