@@ -67,8 +67,9 @@ private theorem assocLookup_some_of_mem_nodupfree {κ ν : Type} [BEq κ] [Lawfu
         · obtain ⟨w', hw'⟩ := ih htail
           exact ⟨w', by simp [KelGroups.assocLookup, heq, hw']⟩
 
-/-- A key the canonical view counts as member occurs in its member list. -/
-private theorem view_mem_of_isMember {view : KelGroups.GroupView} {u : KelGroups.Key}
+/-- A key the canonical view counts as member occurs in its member list.
+(v3.1 promoted body/consumer obligation: this proof reads `isMember`'s body.) -/
+theorem view_mem_of_isMember {view : KelGroups.GroupView} {u : KelGroups.Key}
     (h : KelGroups.GroupView.isMember u view = true) : u ∈ view.members.map Prod.fst := by
   have hs : (KelGroups.assocLookup u view.members).isSome = true := h
   cases hv : KelGroups.assocLookup u view.members with
@@ -77,8 +78,9 @@ private theorem view_mem_of_isMember {view : KelGroups.GroupView} {u : KelGroups
       obtain hm := assocLookup_some_mem_nodupfree u v view.members hv
       exact List.mem_map.mpr ⟨(u, v), hm, rfl⟩
 
-/-- A key occurring in the member list counts as member (duplicates harmless). -/
-private theorem isMember_of_view_mem {view : KelGroups.GroupView} {u : KelGroups.Key}
+/-- A key occurring in the member list counts as member (duplicates harmless).
+(v3.1 promoted body/consumer obligation: this proof reads `isMember`'s body.) -/
+theorem isMember_of_view_mem {view : KelGroups.GroupView} {u : KelGroups.Key}
     {v : KelGroups.Member}
     (h : (u, v) ∈ view.members) : KelGroups.GroupView.isMember u view = true := by
   obtain ⟨w, hw⟩ := assocLookup_some_of_mem_nodupfree h
