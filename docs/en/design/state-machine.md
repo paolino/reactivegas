@@ -20,7 +20,7 @@ Every declaration-like claim carries a marker naming the Lean declaration at the
 gate discovers every such marker and requires it to resolve against the
 pinned Lean; an unknown marker fails the build. Marker names use the
 module path for readability (`lean:KelGroups.GroupView`), but the compiled
-constants for the app payload are root `State` and `Event` — there is no
+constants for the app payload are root `State` (`lean:State`) and `Event` (`lean:Event`) — there is no
 `Reactivegas.State` or `Reactivegas.Event` constant (CLOSURE-MAP C7). Where
 a name below is root, the marker says the root name.
 
@@ -61,7 +61,7 @@ event touches the state through `lean:pullCollection`; refunds run through
 
 Three balance facts that are easy to get backwards:
 
-- A zero balance is read, never stored. `lean:absorbConto` is a bump, not
+- A zero balance for an absent key is read via `lean:bal`, but an accepted zero deposit stores it: from empty, a zero deposit stores `(u, 0)` in `conti` and `(a, 0)` in `casse`. `lean:absorbConto` is a bump, not
   an erase: a departed member's `conti` entry survives at zero. Symmetrically,
   admission creates no `conti`/`casse` entry at all, and the zero a reader
   sees is what `lean:bal` returns for an absent key.
@@ -116,7 +116,7 @@ Authorization today, per event, at current source (`lean:step`):
 | event | authorized signer + guard |
 | --- | --- |
 | `openPurchase` | responsabile signer; collection id fresh |
-| `grantPermission` / `denyPermission` | responsabile signer (single-signer today; provably vote-derived is ruled, unbuilt — see “Composition”) |
+| `grantPermission` / `denyPermission` | `lean:pullCollection` must succeed (absent id refused) first, then responsabile signer (single-signer today; provably vote-derived is ruled, unbuilt — see “Composition”) |
 | `deposit` | responsabile signer; `u` a member; signer ≠ `u`; `0 ≤ v` |
 | `withdraw` | responsabile signer; `u` a member; signer ≠ `u`; `bal conti u ≥ v`; not stalled |
 | `transferCassa` | responsabile signer and responsabile `f`; signer ≠ `f`; `v > 0` |
@@ -130,7 +130,7 @@ Authorization today, per event, at current source (`lean:step`):
 
 Two honest tensions the reader must not miss. First, the 2026-08-25
 sovereign-members ruling says pledges are self-service, while `pledge`'s
-guard still opens with `isResponsabile` — a member cannot pledge for
+guard still opens with `isResponsabile` (`lean:Reactivegas/Step.lean:isResponsabile`) — a member cannot pledge for
 themselves at all, and `correctPledge` over accepted pledges is
 referente-only. That contradiction is ruled to change (#69: signer == `u`
 while pending, referente after acceptance) and has not landed; see the
@@ -184,11 +184,14 @@ collection and withdraw from someone else's account. Every one of those
 attempts bounces: the machine simply returns `none`.
 
 **What is proved.** `lean:authorizedStep` states that whenever
-`stepEvent view s e auth = some s'`, the event's author holds exactly the
-rights the event demands — membership where mere membership suffices,
-responsabile status where power does. `lean:step_authorized` proves it case
-by case over the fourteen constructors, so no future edit to the step can
-silently drop a guard without breaking this proof.
+`stepEvent view s e auth = some s'`, the event's author has the required role
+— and only that: the predicate checks author role alone and ignores state and
+args, so an admin authoring for an absent member still satisfies it. That
+absent-member illustration is the scope limit, not a Lean defect: the real step
+refuses it via membership guards. `lean:step_authorized` proves this role-only
+property case by case over the fourteen constructors. Collection lookup comes
+first: `lean:pullCollection` must succeed — an absent id is refused before any
+signer check — for `grantPermission`/`denyPermission`.
 
 ### L1 — Governance enacts removal (law, restated against the hook)
 
@@ -232,15 +235,16 @@ via `lean:splitUser`, and the global books still balance. The funds check
 is part of the guard that `lean:pledge_guard_inv` decomposes (with
 `lean:step_correct_inv` for corrections).
 
-### L4 — Closure pays out to the referente (law)
+### L4 — Closure spends the referente's cassa (law)
 
 **User story.** The oil arrives, permission is granted, Elena closes the
-collection. The pooled money is credited in one movement to Elena's
-account as referente, who then pays the supplier.
+collection. The pooled money moves out of Elena's cash box as referente — the
+full escrow decreases her `cassa` by the collected total — who then pays the
+supplier with the goods received.
 
 **What is proved.** `lean:close_spends_referente` shows that the closed
-collection's full escrow appears as a credit to `col.referente` — and only
-there — when the close event succeeds.
+collection's full escrow decreases `col.referente`'s `cassa` — a debit of the
+collected total from her cash box — when the close event succeeds.
 
 ### L5 — Double entry for cash movements (law)
 
@@ -248,7 +252,8 @@ there — when the close event succeeds.
 responsabile: Marco's account rises by €50 *and* Daniela's cash box rises
 by €50 — both sides rise together, because the cash box records custody
 taken, not cash spent. Withdrawal is the mirror image: both sides fall
-together. A deposit of a non-positive amount is rejected.
+together. Boundary: `-1` refused, `0` accepted, `+1` accepted — zero deposits
+are permitted.
 
 **What is proved.** Both movements produce the witness required by the
 `lean:doubleEntry` predicate: `lean:deposit_double_entry` and
@@ -272,7 +277,7 @@ duplicates money breaks the build.
 ### L7 — Solvency is enforced, insolvency unreachable (law, scoped)
 
 **User story.** Bruno has €12 and tries to pledge €30. The machine
-refuses: `step` returns `none`, no money moves. There is no “recorded with
+refuses: `step` (`lean:step`) returns `none`, no money moves. There is no “recorded with
 warning” middle ground for the machine's own acts — an overdrawing debit
 never happens.
 
@@ -361,7 +366,7 @@ composition work, not this record's to build.
 
 The economic step and the vote fold meet at exactly one door.
 `lean:appFold` sends the three vote constructors to `lean:voteApply` and
-everything else to `step`; exactly one validation decision
+everything else to `step` (`lean:step`); exactly one validation decision
 (`lean:applyVoteEventChecked` over `lean:validateVoteEvent`) dominates the
 effect (`lean:effectedState`) and the recompute-and-close sweep
 (`lean:sweepClosures`). A proposal opens with **empty tallies** — a
@@ -371,9 +376,9 @@ revives a decided id.
 Two limits the reader must hold:
 
 - **Renounce succeeds and changes nothing — unfinished against a ruling.**
-  `effectedState` on `renounce`
+  `effectedState` (`lean:effectedState`) on `renounce`
   is identity, discharged by `rfl` in three inversion proofs, while
-  `validateVoteEvent` accepts a renounce by any responsabile on an existing
+  `validateVoteEvent` (`lean:validateVoteEvent`) accepts a renounce by any responsabile on an existing
   question. On the integrated route a renounce is therefore told it worked
   and moves nothing; the bare economic step refuses it outright. V-5 has
   ruled (2026-08-27): proposer renounce or departure closes the question
@@ -384,7 +389,7 @@ Two limits the reader must hold:
   unfinished, not an open question.
 - **`notDesignee` and `notProposer` are declared but constructed nowhere —
   and neither refusal is ruled.**
-  `lean:VoteError` declares four errors; `validateVoteEvent` has three arms
+  `lean:VoteError` declares four errors; `validateVoteEvent` (`lean:validateVoteEvent`) has three arms
   and builds only the first two. They are Slice B forward declarations, not
   corpus gaps — no corpus row can observe them by construction. Current
   behavior is accepted-recorded-non-deciding (a non-designee ballot on a
@@ -396,12 +401,12 @@ Two limits the reader must hold:
   neither as delivered nor as required.
 
 Coverage, stated plainly. The simulator's `VOTE_TRACES_V1` drives signed
-vote events through `validateVoteEvent` on a standalone vote state (fifteen
+vote events through `validateVoteEvent` (`lean:validateVoteEvent`) on a standalone vote state (fifteen
 signed events over the documented journey, handoff pin `af9c1e5`, not in
 this repository). The two #74 corpora (`fed19b3` handoff) carry zero signed
-vote events: the economic corpus cannot reach votes (`step` returns none
+vote events: the economic corpus cannot reach votes (`step` (`lean:step`) returns none
 for the three constructors), and the integrated corpus exercises
-franchise-change (V-3) closure through `baseHook`'s sweep without ever
+franchise-change (V-3) closure through `baseHook` (`lean:baseHook`)'s sweep without ever
 emitting an `.app` event. Assenso is named in the milestone outcome and, in
 these two corpora, has no oracle behind it — extending coverage is separate
 filed work: #75 tracks the integrated vote corpus through the production root
@@ -515,7 +520,7 @@ snapshot complete because prose passes a checker.
 | #66 S1 (#79, `4a6cd87f`) | `Trace.lean` manifest missed namespaced declarations, so exactly ONE seeded byte is affected — the withdraw-refusal `declaration:UNPROVED` row (CORPUS-COVERAGE measured 1 UNPROVED + 1 step_close_inv); corpus content provisional | manifest resolves accepted inversions by unqualified name; `scripts/check-trace-coverage-agreement` wired into `just lean`; the byte moves only on #74 re-freeze | RECONCILIATION-001 + CLOSURE-MAP §3 | S1 landed at `4a6cd87f`; re-freeze + re-derive after #74 re-freeze |
 | #68 | proposer counts as an assent; at n=2 one carries a proposal alone | proposals open at zero; arithmetic `(n+1)/2` unchanged; n=2 needs someone other than the proposer | A-V2-AND-PLEDGE-AGENCY 2026-09-05 | #68 merge, then re-derive assent/authority rows |
 | #69 | `pledge` demands responsabile signer (member cannot pledge for self); `correctPledge` referente-only over accepted | member free while pending (`signer == u`, `v' = 0` withdraws); referente after acceptance; solvency guard, `closePurchase`, and UI-legibility rule as stated | A-V2-AND-PLEDGE-AGENCY 2026-09-05 | #69 merge, then re-derive pledge/correction rows |
-| V-5 lifecycle (#81) | renounce accept-and-no-op; `closureCause` tally/franchiseChange-only (rows 1–4 unfinished as above) | V-5 closure on proposer renounce/departure + negative continuation + refund | #81 merge, then re-derive vote-lifecycle rows |
+| V-5 lifecycle (#81) | renounce accept-and-no-op; `closureCause` (`lean:closureCause`) tally/franchiseChange-only (rows 1–4 unfinished as above) | V-5 closure on proposer renounce/departure + negative continuation + refund | #81 | #81 merge, then re-derive vote-lifecycle rows |
 
 ## Reconciliation hook
 
