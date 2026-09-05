@@ -1683,10 +1683,12 @@ const canonVoteState = gs => JSON.stringify({
   closed: gs.closed.map(r => ({ questionId: r.questionId, question: vtCanonQ(r.question),
     verdict: r.verdict, cause: r.cause })) });
 
-/* crude net — transcription of the STATED invariants (their Lean proofs are
-   currently «enunciato, non dimostrato»; this runtime check detects
-   transcription drift, it does not claim the proofs): QuestionClean,
-   partition, no-stale-open */
+/* crude net — transcription of the STATED invariants QuestionClean,
+   partition, no-stale-open: this runtime check detects transcription drift
+   between the Lean sources and this transcription. It does not itself
+   establish any Lean proof; the cited declarations' proof states are
+   whatever the claim receipt reports (CHECK_RECEIPT.axioms), which covers
+   the cited declarations only, not every Lean statement. */
 /* @@CORE:vote-a:END@@ */
 let kgLawBreaches = [];
 /* @@CORE:vote-b@@ */
