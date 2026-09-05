@@ -3529,7 +3529,7 @@ function purchaseRingLayout(users, collections, poses) {
       const m = g.cols.length;
       const step = m <= 1 ? 0 : chordStep;
       const start = base - step * (m - 1) / 2;
-      g.cols.forEach((c, j) => clustered.push(at(CLUSTER_R, start + j * step, c, g.ref)));
+      g.cols.forEach((c, j) => clustered.push({ ...at(CLUSTER_R, start + j * step, c, g.ref), rr: PURCHASE_RR }));
     }
     const separated = clustered.every((p, i) => clustered.slice(i + 1).every(q =>
       Math.hypot(p.x - q.x, p.y - q.y) >= MIN_DIST - 0.5));
@@ -3560,7 +3560,17 @@ function purchaseRingLayout(users, collections, poses) {
     if (cost < bestCost) { bestCost = cost; bestR = r; }
     idx += g.cols.length;
   }
-  const placements = ordered.map((c, j) => at(PACK_R, bestR + j * slot, c, c.referente));
+  // pack fallback: fixed ring, adaptive glyph radius. Centres on PACK_R
+  // spaced by slot have chord 2*PACK_R*sin(slot/2); the glyph radius is
+  // capped so two glyphs plus the gap always fit — by construction for
+  // every reachable count (a lone glyph needs no pair). Strictly positive
+  // below k≈104; past that glyphs collapse (named residual: cardinalities
+  // no human session reaches, and the separation predicate still reports).
+  // User-dragged poses are authored positions, not layout output, and are
+  // excluded from the guarantee by statement, not by check.
+  const packRR = k < 2 ? PURCHASE_RR
+    : Math.min(PURCHASE_RR, (2 * PACK_R * Math.sin(slot / 2) - GAP) / 2);
+  const placements = ordered.map((c, j) => ({ ...at(PACK_R, bestR + j * slot, c, c.referente), rr: packRR }));
   return { memberPos, placements: applyPilePoses(placements, poses, at) };
 }
 
@@ -3570,7 +3580,7 @@ function applyPilePoses(placements, poses, at) {
     const pose = poses[p.purchaseId];
     if (!pose || !Number.isFinite(pose.angle)) return p;
     const col = { id: p.purchaseId };
-    const q = at(p.radius, pose.angle, col, p.referente);
+    const q = { ...at(p.radius, pose.angle, col, p.referente), rr: p.rr };
     q.z = Number.isFinite(pose.z) ? pose.z : 0;
     return q;
   });
@@ -3626,7 +3636,8 @@ function drawScene() {
   });
   pileOrder.forEach(c => {
     const { x, y } = layout['pile:' + c.id];
-    const rr = 42;
+    const rr = (geo.placements.find(p => p.purchaseId === c.id) || {}).rr || 42;
+    const s = rr / 42;
     const st = c.pending.length ? `${c.pending.length} pend.` : (c.permitted ? 'L2 ✓' : 'aperto');
     parts.push(`<g class="pileg" data-obj="pile" data-id="${c.id}" data-key="pile:${c.id}"
       role="button" tabindex="0"
@@ -3634,9 +3645,9 @@ function drawScene() {
       transform="translate(${x},${y})">
       <title>trascina sull'anello</title>
       <circle class="pc" r="${rr}"/>
-      <text class="plbl" y="-12">«${esc(lbl(c.id))}»</text>
+      <text class="plbl" y="${-12 * s}">«${esc(lbl(c.id))}»</text>
       <text class="pamt" y="4">${esc(eur(escrowOf(c)))}</text>
-      <text class="pmeta" y="17">${st} · ${esc(nm(c.referente))}</text>
+      <text class="pmeta" y="${17 * s}">${st} · ${esc(nm(c.referente))}</text>
     </g>`);
   });
   if (!k) parts.push(`<text class="hintc" x="${CX}" y="${CY - 4}">nessun acquisto aperto</text>`);
@@ -5212,6 +5223,36 @@ async function selftest() {
   const fabProv = proofSentence({ a: 'provato', b: 'provato' });
   expect(/provate/.test(fabProv) && !/enunciate/.test(fabProv),
     'frase non resta su provate con ricevuta tutta provata fabbricata');
+
+  // F-02: la separazione dell'anello è quantificata sulle numerosità,
+  // non attestata da un conteggio fisso. purchaseRingLayout è pura (non
+  // tocca lo stato), quindi la spazzata k=1..103 non perturba il percorso;
+  // le posizioni trascinate restano escluse per dichiarazione. La garanzia
+  // è costruttiva (raggio dal passo angolare); qui è verificata
+  // numericamente, contenimento incluso; il caso vivo a 10 è T4 dell'audit.
+  {
+    const gusers = ['anna', 'bruno', 'elena'];
+    const mkCols = k => Array.from({ length: k },
+      (_, i) => ({ id: i + 1, referente: gusers[i % gusers.length] }));
+    for (let k = 1; k <= 103; k++) {
+      const g = purchaseRingLayout(gusers, mkCols(k), null);
+      expect(g.placements.length === k, `anello: attesi ${k} posizionamenti`);
+      let minC = Infinity;
+      for (let a = 0; a < k; a++) for (let b = a + 1; b < k; b++) {
+        const dd = Math.hypot(g.placements[a].x - g.placements[b].x,
+          g.placements[a].y - g.placements[b].y);
+        if (dd < minC) minC = dd;
+      }
+      const r0 = g.placements[0].rr;
+      expect(g.placements.every(p => p.rr === r0), `anello k=${k}: raggio non uniforme`);
+      expect(r0 > 0 && r0 <= 42, `anello k=${k}: raggio fuori (0,42]: ${r0}`);
+      if (k > 1) expect(minC >= 2 * r0 + 8 - 0.5,
+        `anello k=${k}: separazione ${minC} sotto ${2 * r0 + 8 - 0.5}`);
+      for (const p of g.placements)
+        expect(Math.abs(p.x - 380) + r0 <= 380 && Math.abs(p.y - 350) + r0 <= 350,
+          `anello k=${k}: fuori vista`);
+    }
+  }
 
   // fidelity nets: crude net silent all session, Lean traces replay clean
   expect(lawBreaches.length === 0, 'rete invarianti Lean scattata in sessione');
