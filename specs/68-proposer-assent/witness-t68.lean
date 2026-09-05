@@ -9,8 +9,14 @@ worker may neither edit this file nor tailor proofs to its spelling. It is
 the independent executable encoding of R68-09, cross-checking the
 worker-owned `#guard` theorems in `Tests.lean`.
 
-Execution: AFTER `lake build`, via `lake env lean WitnessT68.lean` (gate leg
-5). Every `#guard` elaborate-fails RED on a wrong candidate. On the
+Execution: AFTER `lake build`, via
+`cd lean && lake env lean ../specs/68-proposer-assent/witness-t68.lean`
+(gate leg 5). The file lives OUTSIDE lean/ on purpose:
+`scripts/check-reactivegas-inversion-coverage` quantifies over every lean/
+file as a lake target, so an unimported oracle inside lean/ breaks leg 2
+with `unknown target` (observed 2026-09-05); imports resolve through the
+lake-built oleans, not through file placement. Every `#guard`
+elaborate-fails RED on a wrong candidate. On the
 pre-change base the whole file must RED for the intended semantic reasons
 (proposals open non-empty; proposer credit enacts or mislabels) — that run is
 the base falsification proof.
