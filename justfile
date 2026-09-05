@@ -92,6 +92,19 @@ lean-corpus-verify:
     cmp "$tmp/economic.json" corpus/economic.json
     cmp "$tmp/integrated.json" corpus/integrated.json
     sha256sum -c corpus/corpus.sha256
+    # Repair 1: live-value binding of traces/steps (element-wise, nonzero extent)
+    ./.lake/build/bin/corpusExport check corpus/economic.json corpus/integrated.json
+    # Repair 2: exact key sets on the bytes, top level and one level in
+    jq -e '
+      (keys == ["auth","traces","view"]) and
+      ((.traces | length) > 0) and
+      ([.traces[] | keys] | all(. == ["initial","schema","steps","version"]))
+    ' corpus/economic.json > /dev/null
+    jq -e '
+      (keys == ["auth","initial","steps"]) and
+      ((.steps | length) > 0) and
+      ([.steps[] | keys] | all(. == ["accepted","change","event","signer","state"]))
+    ' corpus/integrated.json > /dev/null
 
 # Full CI pipeline
 ci:

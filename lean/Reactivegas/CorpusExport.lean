@@ -20,6 +20,12 @@ Wrapper bound (NOTE-001): each file carries the `GroupView` plus the
 authorization identity, and nothing else. The integrated file's `initial`
 (`corpusInitial`) is the same shape of need as `GroupView`, not a third
 thing. A third field needs a filed question, not an implementation decision.
+
+Live binding (finding 1 property class): `check` mode reads two wrapper
+files back from bytes and compares their `traces`/`steps` element for
+element against the live `seedCorpus`/`emitIntegratedCorpus` evaluated
+through this call site, requiring a nonzero extent derived from the data.
+Counts alone are not sufficient: a same-size swap must fail here.
 -/
 
 /-- JSON projection of `KelGroups.GroupView`. This is the only `ToJson`
@@ -67,16 +73,72 @@ def intWrapperJson : Lean.Json :=
     , ("auth", Lean.Json.str intAuthIdentity)
     , ("steps", Lean.toJson Reactivegas.emitIntegratedCorpus) ]
 
+/-- Repair 1 core: bind one file array to its live value, element for
+element. The extent is derived from the data: zero elements fail, and
+every element must equal the live one, so a same-size swap fails too.
+Both sides share the derived `ToJson` instance (call-site independence,
+not instance independence) — see the receipt residual. -/
+def checkLiveArray (name : String) (live file : Lean.Json) : Except String Nat := do
+  let liveArr ← live.getArr?.mapError (fun e => s!"{name}: live value is not an array: {e}")
+  let fileArr ← file.getArr?.mapError (fun e => s!"{name}: file value is not an array: {e}")
+  if fileArr.size == 0 then throw s!"{name}: zero extent (no elements to bind)"
+  if liveArr.size != fileArr.size then
+    throw s!"{name}: extent differs (live {liveArr.size}, file {fileArr.size})"
+  for i in [:fileArr.size] do
+    if liveArr[i]! != fileArr[i]! then throw s!"{name}: element {i} differs from live value"
+  return fileArr.size
+
+/-- Bind an economic wrapper file: `traces` equals live `seedCorpus`
+element for element, with nonzero trace and event extents from the bytes. -/
+def checkEconFile (j : Lean.Json) : Except String (Nat × Nat) := do
+  let traces ← (j.getObjVal? "traces").mapError (fun e => s!"economic: no traces key: {e}")
+  let ntraces ← checkLiveArray "economic.traces" (Lean.toJson seedCorpus) traces
+  let arr ← traces.getArr?.mapError (fun e => s!"economic: traces not an array: {e}")
+  let mut nevents := 0
+  for t in arr do
+    let steps ← (t.getObjVal? "steps").mapError (fun e => s!"economic: trace without steps: {e}")
+    let sarr ← steps.getArr?.mapError (fun e => s!"economic: steps not an array: {e}")
+    nevents := nevents + sarr.size
+  if nevents == 0 then throw "economic: zero events"
+  return (ntraces, nevents)
+
+/-- Bind an integrated wrapper file: `steps` equals live
+`emitIntegratedCorpus` element for element, with nonzero extent. -/
+def checkIntFile (j : Lean.Json) : Except String Nat := do
+  let steps ← (j.getObjVal? "steps").mapError (fun e => s!"integrated: no steps key: {e}")
+  checkLiveArray "integrated.steps" (Lean.toJson Reactivegas.emitIntegratedCorpus) steps
+
 /-- F74-MAIN: `lean_exe` entry point. The sole writer of the frozen files:
 writes the economic wrapper to the first path argument and the integrated
 wrapper to the second, as exact bytes the verify target compares. Exits
 non-zero on wrong arity or any write failure. -/
 def main (args : List String) : IO UInt32 := do
   match args with
+  | ["check", econPath, intPath] => do
+    let econBytes ← IO.FS.readFile econPath
+    let intBytes ← IO.FS.readFile intPath
+    match Lean.Json.parse econBytes, Lean.Json.parse intBytes with
+    | .ok ej, .ok ij =>
+      match checkEconFile ej, checkIntFile ij with
+      | .ok (nt, nev), .ok ns => do
+        IO.println s!"corpus-check: ntraces={nt} nevents={nev} nsteps={ns} live-bound"
+        return 0
+      | .error e, _ => do
+        IO.eprintln s!"corpus-check FAIL economic: {e}"
+        return 1
+      | _, .error e => do
+        IO.eprintln s!"corpus-check FAIL integrated: {e}"
+        return 1
+    | .error e, _ => do
+      IO.eprintln s!"corpus-check FAIL economic parse: {e}"
+      return 1
+    | _, .error e => do
+      IO.eprintln s!"corpus-check FAIL integrated parse: {e}"
+      return 1
   | [econPath, intPath] => do
     IO.FS.writeFile econPath (econWrapperJson.compress ++ "\n")
     IO.FS.writeFile intPath (intWrapperJson.compress ++ "\n")
     return 0
   | _ => do
-    IO.eprintln "usage: corpusExport <economic.json> <integrated.json>"
+    IO.eprintln "usage: corpusExport <economic.json> <integrated.json> | corpusExport check <economic.json> <integrated.json>"
     return 1
