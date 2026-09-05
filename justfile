@@ -69,6 +69,29 @@ lean-corpus-gate:
     result=$(cd lean && lake env lean Reactivegas/CorpusGate.lean)
     [[ "$result" == "true" ]]
 
+# Emit both frozen corpus files via the CorpusExport exe (sole writer of the JSON)
+lean-corpus-export:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd lean
+    mkdir -p corpus
+    lake build corpusExport
+    ./.lake/build/bin/corpusExport corpus/economic.json corpus/integrated.json
+    sha256sum corpus/economic.json corpus/integrated.json > corpus/corpus.sha256
+
+# Re-emit to temp and byte-compare against checked-in files + manifest; fail closed
+lean-corpus-verify:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd lean
+    lake build corpusExport
+    tmp=$(mktemp -d)
+    trap 'rm -rf "$tmp"' EXIT
+    ./.lake/build/bin/corpusExport "$tmp/economic.json" "$tmp/integrated.json"
+    cmp "$tmp/economic.json" corpus/economic.json
+    cmp "$tmp/integrated.json" corpus/integrated.json
+    sha256sum -c corpus/corpus.sha256
+
 # Full CI pipeline
 ci:
     #!/usr/bin/env bash
@@ -79,6 +102,7 @@ ci:
     just hlint
     just lean
     just lean-corpus-gate
+    just lean-corpus-verify
 
 # Assert the declared Lean pin matches the toolchain that actually runs
 lean-toolchain-contract:

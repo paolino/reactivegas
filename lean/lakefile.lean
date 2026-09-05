@@ -13,3 +13,6 @@ lean_lib Reactivegas where
 @[default_target]
 lean_lib KelGroups where
   srcDir := "."
+
+lean_exe corpusExport where
+  root := `Reactivegas.CorpusExport
