@@ -36,7 +36,21 @@ a negative witness; C leaves the n=2 defect.
 - R68-07 — Well-formedness restated: `Nodup` approvals kept;
   `proposer ∈ approvals` REPLACED by: proposer ∉ approvals whenever
   adminCount > 1 at the approving transition; sole-admin self-approval
-  permitted. Preserved by every transition on both paths.
+  permitted. BOUNDARY QUALIFICATION (F-01 resolution under A-001, desk
+  NOTE-008): preservation holds for every boundary-admitted transition —
+  validated historical traces (`TraceAdmissible`) and successful
+  integrated transitions. The validation-free raw fold preserves the
+  structural guarantees unconditionally (member/pending key uniqueness,
+  member-key coherence, approval Nodup where applicable,
+  enactment-threshold evidence shape, app-payload isolation,
+  duplicate-approval idempotence — each by named theorem + step/fold
+  induction cited in the repair receipt; any claim failing proof is
+  exhibited and reported, never narrowed away). The count-indexed
+  governance predicate is conditional on the raw domain. The excluded
+  raw-self-approval class is exhibited by the retained 7-event witness
+  (instrument sha 3b4229fc, run sha 0a2799b7) and refused at the boundary
+  (`proposerSelfApproval`). No originally promised reachable guarantee is
+  otherwise withdrawn.
 - R68-08 — Every theorem depending on the old regime restated and re-proved:
   `proposer_mem_approvals` family (both namespaces) becomes the ruled
   non-membership/exception pair; threshold-met evidence
