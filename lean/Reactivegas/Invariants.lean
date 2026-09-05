@@ -1930,14 +1930,14 @@ def corpusCorruptCleanup (steps : List IntegratedTraceStep) :
                   conti := [("bob", 999), (comuneId, 0)] } } } :: rest
   | other => other
 
-def i57TrustNoSorry : Bool :=
+def adminAdmissionAndPreservation : Bool :=
   checkAdminAdmissionReachable && checkAppMembersPreservation
 
-def kelGroupsHasNoReactivegasImport : Bool :=
+def mixedGroupComuneExcluded : Bool :=
   productionWellFormed mixedGroup
     && !KelGroups.GroupView.isMember comuneId (s62bView mixedGroup)
 
-def leanToolchainMatchesPin : Bool :=
+def fixtureComuneIdAndThreshold : Bool :=
   comuneId == "comune" && s62bThreshold 3 == 2
 
 /-- Joined concrete base-to-hook witness: member removal, admin-loss role
@@ -2296,20 +2296,28 @@ def checkI57NoExpiry : Bool :=
         == some v3Question
   | .error _ => false
 
-/-- I57-08 TRUST: contractual statements print allowed axioms only. Bound
-to the missing zero-sorry receipt, not to an unrelated admission Bool. -/
-def checkI57Trust : Bool :=
-  i57TrustNoSorry
+/-- I57-08 ADMISSION/PRESERVATION fixture: an admin can admit a member and
+app events preserve members, on the S62 fixtures. This Bool does not evidence
+zero-`sorry` or allowed axioms; that obligation is enforced by
+`scripts/check-lean-axioms` over the whole discovered extent in the mandatory
+path. -/
+def checkAdminAdmissionPreservation : Bool :=
+  adminAdmissionAndPreservation
 
-/-- I57-09 DIRECTION: KelGroups has no Reactivegas import. Bound to the
-missing source-receipt control (the shell scanner is the mutant target). -/
-def checkI57Direction : Bool :=
-  kelGroupsHasNoReactivegasImport
+/-- I57-09 COMUNE-EXCLUSION fixture: `comuneId` is not a member of the
+`mixedGroup` view (asserted both through `productionWellFormed` and the view).
+This Bool does not check import direction, which is not inherently uncheckable
+in Lean; dependency direction is enforced by
+`nix/lean-dependency-direction.sh` in `just lean`. -/
+def checkMixedGroupComuneExcluded : Bool :=
+  mixedGroupComuneExcluded
 
-/-- I57-10 TOOLCHAIN: executing Lean and pinned source revision match the
-expected identity. -/
-def checkI57Toolchain : Bool :=
-  leanToolchainMatchesPin
+/-- I57-10 FIXTURE-CONSTANT check: `comuneId` is `"comune"` and the S62
+threshold maps `3` to `2`. This Bool does not check the Lean toolchain pin,
+which is not inherently uncheckable in Lean; the pin is enforced by
+`scripts/check-lean-toolchain` via `lean-toolchain-contract` in `just ci`. -/
+def checkFixtureComuneIdAndThreshold : Bool :=
+  fixtureComuneIdAndThreshold
 
 theorem integrated_theorem_witness_holds :
     checkIntegratedTheoremWitness = true := by decide
@@ -2336,9 +2344,9 @@ theorem i57_policyfree_holds : checkI57PolicyFree = true := by decide
 theorem i57_policyfree_mutant_caught :
     checkI57PolicyFreeMutant = true := by decide
 theorem i57_noexpiry_holds : checkI57NoExpiry = true := by decide
-theorem i57_trust_holds : checkI57Trust = true := by decide
-theorem i57_direction_holds : checkI57Direction = true := by decide
-theorem i57_toolchain_holds : checkI57Toolchain = true := by decide
+theorem admin_admission_preservation_holds : checkAdminAdmissionPreservation = true := by decide
+theorem mixed_group_comune_excluded_holds : checkMixedGroupComuneExcluded = true := by decide
+theorem fixture_comune_id_and_threshold_holds : checkFixtureComuneIdAndThreshold = true := by decide
 
 #print axioms checkIntegratedTheoremWitness
 #print axioms checkCanonicalEconomy

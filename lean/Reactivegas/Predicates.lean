@@ -4,7 +4,7 @@ import Reactivegas.Step
 # The law predicates
 
 One predicate per documented law (issue #45); the prose record in
-`docs/design/state-machine.md` references these names. The issue #48
+`docs/en/design/state-machine.md` references these names. The issue #48
 economic amendment adds the comune-membership law, the stall, and the
 group-closure guard facts.
 
