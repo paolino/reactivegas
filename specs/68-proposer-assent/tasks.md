@@ -9,13 +9,14 @@ Slice S1 (OWNER, single slice). Task IDs stable; stamp only after acceptance.
 - [x] T68-02 Discovered extent probes (read-only) + spec/plan/tasks draft.
 - [x] T68-03 Gate v1 authored (ruling-certain rows; superseded by v2).
 - [x] T68-07 Gate v3 + fenced witness oracle
-  specs/68-proposer-assent/witness-t68.lean authored (unfalsified until
-  base-RED run).
+  specs/68-proposer-assent/witness-t68.lean authored; vacuity-hardened
+  (pending-shape preconditions); base falsification COMPLETE (legs 0-3
+  green, leg-4 tripwire 4 sites, driver 10/13 RED semantic, 1 build spent).
 - [x] T68-04 Q-001 filed (proposer self-approval + n=1 semantics).
 - [x] T68-05 Planning commit (spec/plan/tasks only, no production, no gate
   commit — gate.sh stays untracked/ignored).
 - [x] T68-06a A-001 ruling received (option A; B/C as negative witnesses).
-- [ ] T68-06b Desk release for implementation (Q-002; held on simulator campaign).
+- [x] T68-06b Desk release for implementation RECEIVED (Q-002/A-002).
 
 ## Implementation (commit owner, after release)
 

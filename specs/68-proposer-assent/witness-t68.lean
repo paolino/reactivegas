@@ -76,13 +76,17 @@ def hN3 : Bool :=
 #guard hN3
 
 /-- Historical admissibility boundary: above n=1 the proposer's own approval
-is refused, and the refusal is NOT `alreadyApproved` (different meaning). -/
+is refused, and the refusal is NOT `alreadyApproved` (different meaning).
+The pending-shape precondition is load-bearing: without it the guard passes
+vacuously on trees where propose auto-enacts. -/
 def hValidBar : Bool :=
   let gs1 := applyPropose Tests.digest (Tests.admins ["a", "b"]) "a" (.removeMember "b")
-  match validateApproval gs1 "a" "remove:b" with
-  | .error (.alreadyApproved _ _) => false
-  | .error _ => true
-  | .ok _ => false
+  match lookupPending "remove:b" gs1 with
+  | some pp => pp.approvals == [] && match validateApproval gs1 "a" "remove:b" with
+    | .error (.alreadyApproved _ _) => false
+    | .error _ => true
+    | .ok _ => false
+  | none => false
 
 #guard hValidBar
 
@@ -116,13 +120,17 @@ def iEmptyOpen : Bool :=
 #guard iEmptyOpen
 
 /-- n=2: the proposer's own approval is refused at the boundary, and the
-refusal is NOT `alreadyApproved`. -/
+refusal is NOT `alreadyApproved`. The pending-shape precondition is
+load-bearing (see `hValidBar`): it defeats vacuous passes where propose
+auto-enacts and the refusal would merely be `proposalNotFound`. -/
 def iSelfRefused : Bool :=
   match applyIntegratedEvent ig (iadm ["a", "b"]) "a" (.propose (.removeMember "b")) with
-  | .ok r => match applyIntegratedEvent ig r.state "a" (.approve "rm:b") with
-    | .error (.validation (.alreadyApproved _ _)) => false
-    | .error _ => true
-    | .ok _ => false
+  | .ok r => match lookupPendingBase "rm:b" r.state with
+    | some pb => pb.approvals == [] && match applyIntegratedEvent ig r.state "a" (.approve "rm:b") with
+      | .error (.validation (.alreadyApproved _ _)) => false
+      | .error _ => true
+      | .ok _ => false
+    | none => false
   | .error _ => false
 
 #guard iSelfRefused
