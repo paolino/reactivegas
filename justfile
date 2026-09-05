@@ -70,6 +70,42 @@ lean-corpus-gate:
     result=$(cd lean && lake env lean Reactivegas/CorpusGate.lean)
     [[ "$result" == "true" ]]
 
+# Emit both frozen corpus files via the CorpusExport exe (sole writer of the JSON)
+lean-corpus-export:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd lean
+    mkdir -p corpus
+    lake build corpusExport
+    ./.lake/build/bin/corpusExport corpus/economic.json corpus/integrated.json
+    sha256sum corpus/economic.json corpus/integrated.json > corpus/corpus.sha256
+
+# Re-emit to temp and byte-compare against checked-in files + manifest; fail closed
+lean-corpus-verify:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd lean
+    lake build corpusExport
+    tmp=$(mktemp -d)
+    trap 'rm -rf "$tmp"' EXIT
+    ./.lake/build/bin/corpusExport "$tmp/economic.json" "$tmp/integrated.json"
+    cmp "$tmp/economic.json" corpus/economic.json
+    cmp "$tmp/integrated.json" corpus/integrated.json
+    sha256sum -c corpus/corpus.sha256
+    # Repair 1: live-value binding of traces/steps (element-wise, nonzero extent)
+    ./.lake/build/bin/corpusExport check corpus/economic.json corpus/integrated.json
+    # Repair 2: exact key sets on the bytes, top level and one level in
+    jq -e '
+      (keys == ["auth","traces","view"]) and
+      ((.traces | length) > 0) and
+      ([.traces[] | keys] | all(. == ["initial","schema","steps","version"]))
+    ' corpus/economic.json > /dev/null
+    jq -e '
+      (keys == ["auth","initial","steps"]) and
+      ((.steps | length) > 0) and
+      ([.steps[] | keys] | all(. == ["accepted","change","event","signer","state"]))
+    ' corpus/integrated.json > /dev/null
+
 # Full CI pipeline
 ci:
     #!/usr/bin/env bash
@@ -80,6 +116,7 @@ ci:
     just hlint
     just lean
     just lean-corpus-gate
+    just lean-corpus-verify
 
 # Assert the declared Lean pin matches the toolchain that actually runs
 lean-toolchain-contract:

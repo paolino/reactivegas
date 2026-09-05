@@ -80,3 +80,9 @@ jobs:
 
       - name: Build lean specification
         run: nix --quiet develop --command just lean
+
+      # S86: the committed CI path runs corpus verification additively.
+      # `just lean` above stays intact (dependency direction, inversion
+      # coverage ± negative control, trace agreement, `lake build`).
+      - name: Verify corpus emission
+        run: nix --quiet develop --command just lean-corpus-verify
