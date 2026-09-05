@@ -5168,6 +5168,16 @@ async function selftest() {
       ? /enunciate, non dimostrate/.test(govSt.innerText)
       : (/provate/.test(govSt.innerText) && !/enunciate/.test(govSt.innerText))),
     'frase di stato delle prove non derivata dalla ricevuta');
+  // the sentence tracks the RECEIPT, not the day: both branches through the
+  // override seam with fabricated maps (the live-card assertion above stays
+  // as the tie to reality) — a check that cannot distinguish the two states
+  // is not measuring the thing it names
+  const fabEnun = proofSentence({ a: 'provato', b: 'enunciato' });
+  expect(/enunciate, non dimostrate/.test(fabEnun) && /\(1\)/.test(fabEnun),
+    'frase non volta allo stato enunciato con ricevuta fabbricata');
+  const fabProv = proofSentence({ a: 'provato', b: 'provato' });
+  expect(/provate/.test(fabProv) && !/enunciate/.test(fabProv),
+    'frase non resta su provate con ricevuta tutta provata fabbricata');
 
   // fidelity nets: crude net silent all session, Lean traces replay clean
   expect(lawBreaches.length === 0, 'rete invarianti Lean scattata in sessione');
