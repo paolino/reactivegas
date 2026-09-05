@@ -75,6 +75,18 @@ Parent: milestone desk %510. Lane: sole writer of `docs/en/design/` for this rew
   discovers actual cited extent (never a hand list); malformed/unknown/missing
   citations RED through an executable negative control; fails closed when Lean
   prerequisite fails on a cold tree; freshness quantifies over discovered set.
+  Claim-syntax definition (successor binding): a declaration-like claim is any
+  claim block (a list item, a table row, or a paragraph) containing a backticked
+  span whose inner text equals a Lean declaration basename (or qualified name)
+  from the discovered extent at PIN, plus the explicit required semantic claim
+  blocks named in this spec (AUTH table rows, pending-table rows, law/witness
+  caveat, composition limits, vote-lifecycle limits, Voci fact, closure
+  classification). Every such claim needs a co-located `lean:` marker in the
+  same block resolving to that declaration; an added claim using a real Lean
+  name with no marker REDs as added-uncited. The parser enforces
+  claim↔marker association only — never natural-language truth, which stays
+  human/auditor row-level duty. No required claim may be deleted or rephrased
+  to evade detection.
 - R71-12 — canCloseGroup classification: `Predicates.lean:85` orphan (zero
   usages), three conjuncts stated; record classifies against product intent as
   missing guarantee or justified non-goal; no deletion/implementation by this
