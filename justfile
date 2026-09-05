@@ -60,6 +60,7 @@ lean:
     ./nix/lean-dependency-direction.sh
     scripts/check-reactivegas-inversion-coverage
     scripts/check-reactivegas-inversion-coverage --negative-control
+    scripts/check-trace-coverage-agreement
     cd lean && lake build
 
 # Execute the shipped integrated-corpus evaluator and require exact `true`
