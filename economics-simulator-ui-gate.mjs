@@ -17,9 +17,16 @@
  *   node economics-simulator-ui-gate.mjs [--repo DIR] [--html PATH]
  *       Full run: derive, drive, reconcile. EXIT 0 GREEN, EXIT 1 RED.
  *   node economics-simulator-ui-gate.mjs --omit <control-id>
- *       Omission control: discard that control's witnesses, reconciliation
- *       MUST go red. A coverage claim surviving a dropped control is not
- *       measuring coverage.
+ *       Omission control: discard that control's witnesses; the SINGLE
+ *       ordinary reconciliation must go red naming it. RG_OMIT_NOOP=1
+ *       neuters the discard (debug): then --omit must go GREEN, proving
+ *       the RED came from the discard and not from the flag.
+ *   node economics-simulator-ui-gate.mjs --derive-only [PATH]
+ *       Fail-closed derivation without a browser: scan dataset reads,
+ *       classify, print inventory. RED on unclassified/changed reads.
+ *   node economics-simulator-ui-gate.mjs --vocab-only [--expect-red WORD]
+ *       Actual checking path (live extract + classifyVocab) without the
+ *       journey. With --expect-red, fires (exit 0) iff WORD is flagged.
  *   node economics-simulator-ui-gate.mjs --selftest
  *       Proves the instrument can fail: (a) full run GREEN; (b) --omit K-2
  *       RED; (c) intentional-coercion mutant RED on actual interaction;
@@ -145,39 +152,115 @@ class Browser {
   close() { try { this.child.kill(); } catch { /* gone */ } }
 }
 
-/* --- derived extent: every control whose handler writes nav().u or an
-   event user/target, plus the name-acquisition sink. Each entry names its
-   source patterns; the derive step requires every pattern to match the
-   CURRENT page source, so a renamed handler breaks loudly instead of
-   silently leaving the extent. K-14 is the named unreachable control. --- */
+/* --- D3 fail-closed derivation: the extent is COMPUTED from the page. ---
+   deriveExtent(src) scans every `.dataset.X` read in the page source and
+   classifies each against KNOWN_READS. An UNKNOWN read (an added
+   key-bearing control the table never heard of) or a CHANGED read-site
+   count is RED — fail-closed in the direction C-KEY names. The witness
+   registry maps derived controls to exercised witnesses; driving stays
+   hand-written work, discovery does not. K-12's sink is an input element,
+   derived from its element + param patterns. K-14 is proven unreachable by
+   the same scan: no emission and no read. --- */
 
-const CONTROLS = [
-  { id: 'K-1',  desc: 'data-goto-person -> nav().u', src: ['dataset.gotoPerson', 'data-goto-person="'] },
-  { id: 'K-2',  desc: 'data-act data-u -> event user', src: ['act.dataset.u', 'data-act="'] },
-  { id: 'K-3',  desc: 'task-flow chip -> event author/target/from/c/user', src: ['ROLEKEY[role]', 'openChipPop'] },
-  { id: 'K-4',  desc: 'vote-signer chip -> runVoteEvent signer', src: ['dataset.kgpropose', 'kgChipPop'] },
-  { id: 'K-5',  desc: 'data-pledge row -> nav().pu + nav().c', src: ['pr.dataset.pledgeU', 'data-pledge-c="'] },
-  { id: 'K-6',  desc: 'data-obj member/conto/cassa -> nav().u', src: ['obj.dataset.obj', 'data-obj="member"'] },
-  { id: 'K-7',  desc: 'data-obj pile -> nav().c (numeric)', src: ['obj.dataset.obj', 'data-obj="pile"'] },
-  { id: 'K-8',  desc: 'data-goto-coll -> nav().c (numeric)', src: ['dataset.gotoColl', 'data-goto-coll="'] },
-  { id: 'K-9',  desc: 'data-task + nav preset -> event author/user/c', src: ['taskEl.dataset.task', 'preset.user = d.u'] },
-  { id: 'K-10', desc: 'data-bgapprove -> base signer + proposal', src: ['dataset.bgapprove', 'data-bgapprove="'] },
-  { id: 'K-11', desc: 'data-kgcast -> vote signer + ballot', src: ['dataset.kgcast', 'data-kgcast="'] },
-  { id: 'K-12', desc: 'name input -> event target key', src: ['un-n', 'flow.params.target = key'] },
-  { id: 'K-13', desc: 'data-cf conto/cassa -> display id (adjacent hardening)', src: ['dataset.cf', 'data-cf="conto:'] },
-  { id: 'K-15', desc: 'data-crumb -> nav index (numeric)', src: ['dataset.crumb', 'data-crumb="'] },
+const KNOWN_READS = {
+  // read name: [expected read sites, covering witness controls]
+  gotoPerson: [1, ['K-1']],
+  u:          [1, ['K-2']],
+  id:         [5, ['K-3', 'K-4']],
+  pledgeU:    [1, ['K-5']],
+  obj:        [1, ['K-6', 'K-7']],
+  task:       [1, ['K-9']],
+  bgapprove:  [1, ['K-10']],
+  bgsigner:   [1, ['K-10']],
+  kgcast:     [1, ['K-11']],
+  kgsigner:   [1, ['K-11']],
+  kgpropose:  [2, ['K-4']],
+  cf:         [1, ['K-13']],
+  gotoColl:   [1, ['K-8']],
+  pledgeC:    [1, ['K-5']],
+  crumb:      [1, ['K-15']],
+  act:        [2, []],
+  hat:        [1, []],
+  kgballot:   [1, []],
+  l:          [1, []],
+  claims:     [2, []],
+  offClaims:  [1, []],
+  teachx:     [1, []],
+};
+const INPUT_SINKS = [
+  { id: 'K-12', desc: 'name input -> event target key', src: ['id="un-n"', 'flow.params.target'] },
 ];
-const UNREACHABLE = [
-  { id: 'K-14', desc: 'data-kgadmit/data-kgremove: selector only, no renderer emits them',
-    absent: ['data-kgadmit="', 'data-kgremove="'] },
-];
+const K14 = { id: 'K-14',
+  desc: 'data-kgadmit/data-kgremove: selector only — scan proves no emission and no read' };
+const CONTROL_DESC = {
+  'K-1': 'data-goto-person -> nav().u',
+  'K-2': 'data-act data-u -> event user',
+  'K-3': 'task-flow chip -> event author/target/from/c/user',
+  'K-4': 'vote-signer chip (+propose) -> runVoteEvent signer',
+  'K-5': 'data-pledge row -> nav().pu + nav().c',
+  'K-6': 'data-obj member/conto/cassa -> nav().u',
+  'K-7': 'data-obj pile -> nav().c (numeric)',
+  'K-8': 'data-goto-coll -> nav().c (numeric)',
+  'K-9': 'data-task + nav preset -> event author/user/c',
+  'K-10': 'data-bgapprove -> base signer + proposal',
+  'K-11': 'data-kgcast -> vote signer + ballot',
+  'K-12': 'name input -> event target key',
+  'K-13': 'data-cf conto/cassa -> display id (adjacent hardening)',
+  'K-15': 'data-crumb -> nav index (numeric)',
+};
+
+function deriveExtent(src) {
+  const problems = [];
+  const found = {};
+  for (const m of src.matchAll(/\.dataset\.([A-Za-z]+)/g))
+    found[m[1]] = (found[m[1]] || 0) + 1;
+  for (const [name, n] of Object.entries(found)) {
+    const k = KNOWN_READS[name];
+    if (!k) problems.push(`lettura dataset non classificata: .dataset.${name} ×${n} — estendere l'harness, non ignorarla`);
+    else if (k[0] !== n) problems.push(`sito di lettura mutato per .dataset.${name}: attesi ${k[0]}, trovati ${n}`);
+  }
+  for (const s of INPUT_SINKS)
+    for (const p of s.src)
+      if (!src.includes(p)) problems.push(`sorgente di ${s.id} assente: «${p}» — aggiornare l'harness, non ignorarlo`);
+  const k14emit = ['data-kgadmit="', 'data-kgremove="'].some(p => src.includes(p));
+  const k14read = ['dataset.kgadmit', 'dataset.kgremove'].some(p => src.includes(p));
+  if (k14emit || k14read) problems.push('K-14 non più irraggiungibile: emissione o lettura rilevata — serve un testimone');
+  const required = new Set(INPUT_SINKS.map(s => s.id));
+  for (const ctrls of Object.values(KNOWN_READS).map(k => k[1]))
+    for (const c of ctrls) required.add(c);
+  return { problems, required: [...required].sort(), reads: found };
+}
+
+/* --- D1 actual checking path: pure, single-escaped, unit-executable. ---
+   stripProvenance sets aside precisely-shaped machine tokens; classifyVocab
+   runs the banned/legacy verdicts on what remains. run() and --vocab-only
+   feed it the live-extracted copy; the D1 demo feeds it fabricated copies. */
+function stripProvenance(t) {
+  return t
+    .replace(/\.[A-Za-z][\w]*/g, '')
+    .replace(/[A-Za-z_][\w]*(\.[\w]+){2,}/g, '')
+    .replace(/[\w.-]+\.(mjs|lean|json|trace)(v\d+)?/gi, '')
+    .replace(/\b[0-9a-f]{7,}\b/gi, '');
+}
+function classifyVocab(copyText) {
+  const v = stripProvenance(copyText);
+  const banned = [];
+  if (/colletta/i.test(v)) banned.push('colletta');
+  if (/\bpledge\b/i.test(v)) banned.push('pledge');
+  return { banned, legacy: /impegn/i.test(v) && /acquist/i.test(v) };
+}
 const RENDER_CLASSES = ['H-1 cards', 'H-2 dialogs/pop', 'H-3 refusals', 'H-4 toasts', 'H-5 feed', 'H-6 strips'];
 
 const failures = [];
 const witnessed = new Set();
 const red = why => { failures.push(why); console.error('RED-ROW: ' + why); };
+/* D2: the discard changes the ORDINARY collected evidence; the single
+   ordinary reconciliation below decides. RG_OMIT_NOOP=1 neuters the discard
+   (debug only): with it set, --omit must go GREEN, proving the RED came
+   from the discard and not from the flag. */
+const OMIT_NOOP = process.env.RG_OMIT_NOOP === '1';
 const witness = (id, what) => {
-  if (OMIT === id) { console.log(`omit: witness ${id} (${what}) scartato`); return; }
+  if (OMIT === id && !OMIT_NOOP) { console.log(`omit: witness ${id} (${what}) scartato`); return; }
   witnessed.add(id);
   console.log(`witness ${id}: ${what}`);
 };
@@ -198,18 +281,11 @@ const CLICK = sel => `
 async function run() {
   const src = readFileSync(HTML, 'utf8');
 
-  /* ---- derive: every control pattern must match current source ---- */
-  for (const c of CONTROLS) {
-    for (const p of c.src) {
-      if (!src.includes(p)) red(`derivazione rotta per ${c.id} (${c.desc}): modello assente «${p}» — aggiornare l'harness, non ignorarlo`);
-    }
-  }
-  for (const u of UNREACHABLE) {
-    for (const p of u.absent) {
-      if (src.includes(p)) red(`${u.id} non più irraggiungibile: «${p}» ora emesso — serve un testimone`);
-    }
-  }
-  console.log(`derived ${CONTROLS.length} controls + ${UNREACHABLE.length} named-unreachable from ${HTML}`);
+  /* ---- derive: the extent is computed from the page source (D3) ---- */
+  const ext = deriveExtent(src);
+  for (const p of ext.problems) red(p);
+  console.log(`derived ${ext.required.length} controls from ${Object.keys(ext.reads).length} dataset reads + input sinks in ${HTML}`);
+  console.log(`K-14 scan-proven unreachable (no emission, no read)`);
 
   const bin = findChromium();
   const profile = mkdtempSync(join(tmpdir(), 'ui-gate-'));
@@ -477,32 +553,22 @@ async function run() {
     }
     console.log(`witness H-1: govcard heading + proof sentence (${EXPECT_ENUNCIATO ? 'enunciato' : 'provato'} state)`);
 
-    /* ---- full-text vocabulary scan: no erasure, provenance set aside by shape ---- */
-    const vocab = await ev(`() => {
-      const strip = tx => tx
-        .replace(/\\.[A-Za-z][\\w]*/g, '')
-        .replace(/[A-Za-z_][\\w]*(\\.[\\w]+){2,}/g, '')
-        .replace(/[\\w.-]+\\.(mjs|lean|json|trace)(v\\d+)?/gi, '')
-        .replace(/\\b[0-9a-f]{7,}\\b/gi, '');
+    /* ---- full-text vocabulary scan through the actual checking path ---- */
+    const copyText = await ev(`() => {
       const c = document.body.cloneNode(true);
       c.querySelectorAll('script, noscript, style').forEach(el => el.remove());
-      return strip(c.innerText);
+      return c.innerText;
     }`);
-    t(!/colletta/i.test(vocab), 'H-vocab: termine vietato (it) nel testo visibile');
-    t(!/\\bpledge\\b/i.test(vocab), 'H-vocab: termine vietato (en) nel testo visibile');
-    t(/impegn/i.test(vocab) && /acquist/i.test(vocab),
+    const vc = classifyVocab(copyText);
+    t(!vc.banned.length, 'H-vocab: termine vietato nel testo visibile: ' + vc.banned.join(','));
+    t(vc.legacy,
       'H-vocab: vocabolario legacy assente dal testo visibile');
     console.log('witness H-vocab: full-text scan without .mono/#pop/.toast erasure');
 
-    /* ---- reconcile: every derived control has an exercised witness ---- */
-    const missing = CONTROLS.filter(c => !witnessed.has(c.id));
-    if (OMIT) {
-      if (!missing.some(c => c.id === OMIT))
-        red(`controllo di omissione fallito: ${OMIT} risulta ancora coperto senza i suoi testimoni`);
-      else red(`omissione ${OMIT}: copertura correttamente rossa senza i suoi testimoni (${missing.map(c => c.id).join(',')})`);
-    } else if (missing.length) {
-      red(`copertura incompleta: ${missing.map(c => c.id + ' ' + c.desc).join('; ')}`);
-    }
+    /* ---- reconcile: ONE ordinary check over the derived extent (D2) ---- */
+    const missing = ext.required.filter(id => !witnessed.has(id));
+    if (missing.length)
+      red(`copertura incompleta: ${missing.map(id => id + ' ' + (CONTROL_DESC[id] || '?')).join('; ')}`);
   } finally {
     b.close();
     rmQuiet(profile);
@@ -514,7 +580,7 @@ async function run() {
     process.exitCode = 1;
     return;
   }
-  console.log('GREEN: ui-gate ' + HTML + ' — ' + witnessed.size + '/' + CONTROLS.length +
+  console.log('GREEN: ui-gate ' + HTML + ' — ' + witnessed.size + '/' + ext.required.length +
     ' controlli derivati testimoniati; classi ' + RENDER_CLASSES.join(', ') +
     '; K-14 irraggiungibile nominato; CollId numerici');
 }
@@ -548,13 +614,65 @@ async function sentenceOnly() {
   }
 }
 
+/* --- fast modes: no journey, targeted-class --- */
+
+async function deriveOnly() {
+  const dArg = argVal('--derive-only');
+  const target = (dArg && !dArg.startsWith('-')) ? dArg : HTML;
+  const src = readFileSync(target, 'utf8');
+  const ext = deriveExtent(src);
+  console.log(`reads: ${Object.entries(ext.reads).map(([k, n]) => `${k}×${n}`).join(' ')}`);
+  console.log(`required: ${ext.required.join(',')}`);
+  if (ext.problems.length) {
+    for (const p of ext.problems) console.error('RED-ROW: ' + p);
+    console.error(`DERIVE-RED: ${ext.problems.length} problemi in ${target}`);
+    process.exitCode = 1; return;
+  }
+  console.log(`DERIVE-GREEN: ${target} — ${ext.required.length} controlli da ${Object.keys(ext.reads).length} letture`);
+}
+
+async function vocabOnly() {
+  const wantRed = argVal('--expect-red');
+  const bin = findChromium();
+  const profile = mkdtempSync(join(tmpdir(), 'ui-gate-vocab-'));
+  const b = new Browser(bin, profile);
+  try {
+    const s = await b.page(pathToFileURL(HTML).href + '?ui-gate=vocab', 1280, 900);
+    const copyText = await b.eval(s, `(() => {
+      const c = document.body.cloneNode(true);
+      c.querySelectorAll('script, noscript, style').forEach(el => el.remove());
+      return c.innerText;
+    })()`);
+    const vc = classifyVocab(copyText);
+    /* banned-words only: legacy presence needs a driven journey and is
+       asserted by the full run + the page selftest, not by a boot probe */
+    if (wantRed) {
+      if (vc.banned.includes(wantRed)) {
+        console.log(`VOCAB-RED as required: actual checking path flags «${wantRed}»`);
+        return;
+      }
+      console.error(`RED-ROW: checking path does NOT flag «${wantRed}» (banned=[${vc.banned}])`);
+      process.exitCode = 1; return;
+    }
+    if (vc.banned.length) {
+      console.error('RED-ROW: vocab banned=[' + vc.banned.join(',') + ']');
+      process.exitCode = 1; return;
+    }
+    console.log('VOCAB-GREEN (no banned words): ' + HTML);
+  } finally {
+    b.close();
+    rmQuiet(profile);
+  }
+}
+
 /* --- selftest: prove every required control can fail --- */
 
 async function selftest() {
   const self = process.argv[1];
   const node = process.execPath;
-  const runChild = (args, opts) => new Promise(resolve => {
-    const p = spawn(node, [self, ...args], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const runChild = (args, env) => new Promise(resolve => {
+    const p = spawn(node, [self, ...args],
+      { stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, ...(env || {}) } });
     let out = '', err = '';
     p.stdout.on('data', d => { out += d; });
     p.stderr.on('data', d => { err += d; });
@@ -570,8 +688,12 @@ async function selftest() {
   check('full run GREEN', green.code === 0, green.err.slice(-2000));
 
   const omit = await runChild(['--omit', 'K-2']);
-  check('omission --omit K-2 RED', omit.code !== 0 && /K-2/.test(omit.out + omit.err),
+  check('omission --omit K-2 RED naming K-2 via ordinary reconcile',
+    omit.code !== 0 && /K-2/.test(omit.out + omit.err) && /copertura incompleta/.test(omit.out + omit.err),
     'exit=' + omit.code + ' ' + (omit.out + omit.err).slice(-1500));
+  const noop = await runChild(['--omit', 'K-2'], { RG_OMIT_NOOP: '1' });
+  check('neutered discard fails the assurance (GREEN)', noop.code === 0,
+    'exit=' + noop.code + ' ' + (noop.out + noop.err).slice(-1500));
 
   const scratch = mkdtempSync(join(tmpdir(), 'ui-gate-selftest-'));
   try {
@@ -606,12 +728,53 @@ async function selftest() {
       check('flipped receipt RED under provato expectation', fr2.code !== 0,
         'exit=' + fr2.code + ' la frase non segue la ricevuta');
     }
+    /* D1: actual checking path REDs on ordinary banned copy */
+    const ban = join(scratch, 'banned-copy.html');
+    copyFileSync(HTML, ban);
+    let bt = readFileSync(ban, 'utf8');
+    const bins = '<div id="vocabprobe">un pledge nel copy ordinario</div>';
+    if (!bt.includes('</body>')) {
+      check('banned copy planted', false, 'chiusura body assente');
+    } else {
+      bt = bt.replace('</body>', `${bins}</body>`);
+      const { writeFileSync: w3 } = await import('node:fs');
+      w3(ban, bt);
+      const br = await runChild(['--html', ban, '--vocab-only', '--expect-red', 'pledge']);
+      check('checking path flags ordinary banned copy', br.code === 0,
+        'exit=' + br.code + ' ' + (br.out + br.err).slice(-1500));
+      const bv = await runChild(['--html', ban, '--vocab-only']);
+      check('banned copy RED without expectation', bv.code !== 0,
+        'exit=' + bv.code + ' il percorso non vede il vocabolo');
+    }
+    /* D3: added reachable key-bearing control absent from the table is detected */
+    const add = join(scratch, 'added-control.html');
+    copyFileSync(HTML, add);
+    let at = readFileSync(add, 'utf8');
+    const aanchor = "if (gp) { go({ view: 'person', u: gp.dataset.gotoPerson, hat: 'member' }); return; }";
+    if (!at.includes(aanchor)) {
+      check('added control planted', false, 'ancora di innesto assente');
+    } else {
+      at = at.replace(aanchor, `${aanchor}\n  const vx = t.closest('[data-goto-vip]');\n  if (vx) { go({ view: 'person', u: vx.dataset.vip, hat: 'member' }); return; }`);
+      const { writeFileSync: w4 } = await import('node:fs');
+      w4(add, at);
+      const ar = await runChild(['--derive-only', add]);
+      check('added control detected (unclassified read RED)', ar.code !== 0 && /non classificata/.test(ar.out + ar.err),
+        'exit=' + ar.code + ' ' + (ar.out + ar.err).slice(-1500));
+    }
+    const dg = await runChild(['--derive-only']);
+    check('derive-only GREEN on production page', dg.code === 0,
+      'exit=' + dg.code + ' ' + (dg.out + dg.err).slice(-1500));
   } finally {
     rmQuiet(scratch);
   }
   if (bad) { console.error(`SELFTEST-RED: ${bad} controlli`); process.exitCode = 1; return; }
-  console.log('SELFTEST-GREEN: full, omission, mutant, both proof states');
+  console.log('SELFTEST-GREEN: full, omission both ways, mutant, both proof states, vocab path, derivation');
 }
 
-const mode = hasFlag('--selftest') ? 'selftest' : (SENTENCE_ONLY ? 'sentence' : 'run');
-await (mode === 'selftest' ? selftest() : (mode === 'sentence' ? sentenceOnly() : run()));
+const deriveOnlyOn = hasFlag('--derive-only');
+const vocabOnlyFlag = hasFlag('--vocab-only');
+const mode = hasFlag('--selftest') ? 'selftest'
+  : (deriveOnlyOn ? 'derive' : (vocabOnlyFlag ? 'vocab' : (SENTENCE_ONLY ? 'sentence' : 'run')));
+await (mode === 'selftest' ? selftest()
+  : (mode === 'derive' ? deriveOnly()
+  : (mode === 'vocab' ? vocabOnly() : (mode === 'sentence' ? sentenceOnly() : run()))));
