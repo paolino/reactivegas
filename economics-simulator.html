@@ -5158,6 +5158,7 @@ async function selftest() {
   // governance chrome: no internal identifier may hide in the group card,
   // inside .mono or otherwise — and the visible proof sentence tracks the
   // actual receipt rather than happening to match it today
+  await click('#crumbs [data-crumb="0"]');
   const govH2 = document.querySelector('#govcard h2');
   expect(govH2 && !/KelGroups|GroupState/.test(govH2.innerText),
     'intestazione della scheda gruppo con vocabolo interno');
