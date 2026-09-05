@@ -28,7 +28,11 @@ Slice S1 (OWNER, single slice). Task IDs stable; stamp only after acceptance.
 - [x] T68-14 Reachable executable witnesses R68-08 (positive + negatives).
 - [x] T68-15 Mutation control: proposer-credit mutant REDs (both paths).
 - [x] T68-16 Full local gate GREEN (toolchain-contract, just lean,
-  lean-corpus-gate) within 6-build budget; PROOF-COMPLETE submission.
+  lean-corpus-gate); PROOF-COMPLETE submission. Budget history (replaces
+  the original within-6 wording): opened 6/submission, raised 6→10
+  (NOTE-005, mutant campaign + integration) then 10→14 (NOTE-008, repair
+  + just-ci + reverify); final spend 13/14 full-gate, targeted classes
+  receipted, reserve 14 held for final-tree verification.
 
 ## Acceptance (ticket owner)
 
