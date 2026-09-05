@@ -7,12 +7,14 @@ Slice S1 (OWNER, single slice). Task IDs stable; stamp only after acceptance.
 - [x] T68-01 Bootstrap lane: runtime, worktree /code/reactivegas-issue-68,
   branch feat/68-proposer-assent at e6c5924, START with pane/argv/identity.
 - [x] T68-02 Discovered extent probes (read-only) + spec/plan/tasks draft.
-- [x] T68-03 Gate v1 authored (ruling-certain rows; unfalsified, 0 builds).
+- [x] T68-03 Gate v1 authored (ruling-certain rows; superseded by v2).
+- [x] T68-07 Gate v2 + fenced witness oracle lean/WitnessT68.lean authored
+  (unfalsified until base-RED run).
 - [x] T68-04 Q-001 filed (proposer self-approval + n=1 semantics).
 - [x] T68-05 Planning commit (spec/plan/tasks only, no production, no gate
   commit — gate.sh stays untracked/ignored).
-- [ ] T68-06 Desk release for implementation (held on simulator campaign) +
-  A-001 ruling received.
+- [x] T68-06a A-001 ruling received (option A; B/C as negative witnesses).
+- [ ] T68-06b Desk release for implementation (Q-002; held on simulator campaign).
 
 ## Implementation (commit owner, after release)
 

@@ -12,10 +12,12 @@ restatement and proof need semantic judgment no executable gate alone entails.
 
 1. Planning (this seat, no builds): spec/plan/tasks, gate v1 (ruling-certain
    rows), Q-001 to desk. Planning commit (no production). — in progress.
-2. Await A-001 + implementation release (simulator determinism campaign in
+2. A-001 received (option A bounded to V-2; B kept as negative witness).
+   Awaiting implementation release (simulator determinism campaign in
    flight; held, not poked).
-3. Freeze gate v2 (adds Q-001 witness rows); falsify v1/v2 per class (costs
-   builds; budget 6/submission, 0 spent).
+3. Freeze gate v2 (A-001 witness rows via fenced owner oracle
+   lean/WitnessT68.lean + worker `#guard`s); falsify v1/v2 per class (costs
+   builds; budget 6/submission, base-RED run counts openly).
 4. Dispatch muse commit owner (mode=OWNER, draft=NONE) with hash-bound packet.
 5. Fresh codex auditor (gpt-6-astra/high) in isolated read-only snapshot per
    submission; at most one repair bounce, then fresh re-audit.
@@ -29,10 +31,10 @@ restatement and proof need semantic judgment no executable gate alone entails.
 | lean/KelGroups/Fold.lean | `applyProposeDetailed` empty-open; approve bar/guard per A-001 |
 | lean/KelGroups/Integration.lean | `.propose` empty-open into `pendingBase`; `.approve` bar/guard; `tryEnactBase` per A-001 |
 | lean/KelGroups/State.lean | doc/type touch only if WellFormed moves; `majority` UNTOUCHED |
-| lean/KelGroups/Validate.lean | approval refusal for self-approval (option A) or new error variant |
+| lean/KelGroups/Validate.lean | approval refusal for self-approval above n=1 (option A): NEW error variant (NOT alreadyApproved) in `validateApproval` + `validateBaseApproval` |
 | lean/KelGroups/Invariants.lean | `PendingWellFormed` restatement; `proposer_mem_approvals` → ruled replacement; threshold evidence; fold preservation proofs |
 | lean/Reactivegas/Invariants.lean | wrappers; corpus emitters if approvals shape anion observations |
-| lean/KelGroups/Tests.lean | proposer-approval expectations; NEW reachable witnesses (R68-08) |
+| lean/KelGroups/Tests.lean | proposer-approval expectations rewritten; NEW worker `#guard` theorems mirroring the oracle scenarios (R68-09) |
 | lean/KelGroups/Trace*, CorpusGate | reconcile from fresh build; adopt, never weaken |
 | specs/54-lean-vote-machine/* | VI-2 docs updated ONLY if they describe the base channel (vote machine itself untouched) |
 
