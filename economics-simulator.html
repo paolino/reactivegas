@@ -383,13 +383,11 @@ if (IS_SELFTEST) window.__RG_NS = '-selftest';
 /* =====================================================================
    Machine core: faithful transcription of
    lean/Reactivegas/{Types,State,Step}.lean.
-   State: { users:[Nat], responsabili:[Nat],
-            conti:[[u,v]], casse:[[u,v]],
-            collections:[{id, referente, permitted, accepted:[{user,amount}],
-                          pending:[{user,amount}]}] }
-   Toy-side decoration (names, purchase labels, snapshots, navigation,
-   hats, tasks) never enters machine state or events; UserId/CollId stay
-   numeric inside.
+   Identity is the substrate KelGroups.Key (a string): members, conti and
+   casse are keyed by string keys — leading-zero, non-numeric and Unicode
+   keys survive exactly; only CollId stays numeric. Toy-side decoration
+   (display names, purchase labels, snapshots, navigation, hats, tasks)
+   never enters machine state or events.
    ===================================================================== */
 
 /* --- Toy-side fixed name/label pools (decoration, outside the machine) -- */
@@ -3885,6 +3883,20 @@ function renderPledge() {
   </div>`;
 }
 
+/* Visible proof-state sentence, derived from the actual receipt — never
+   hardcoded. Counts enunciato entries in the given axioms map (default the
+   committed CHECK_RECEIPT.axioms). The shipped gate exercises BOTH states:
+   the committed receipt (all provato) and a scratch copy with one entry
+   flipped to enunciato, which must flip this sentence. */
+function proofSentence(axioms) {
+  const ax = axioms || CHECK_RECEIPT.axioms;
+  const n = Object.values(ax).filter(s => s === 'enunciato').length;
+  const state = n
+    ? `le prove del modello sono <b>enunciate, non dimostrate</b> (${n})`
+    : `le prove del modello sono <b>provate</b>`;
+  return `verdetti sì/no/aperta, dissenso e permessi per-persona sono MODELLATI; ${state}`;
+}
+
 /* group-view governance card: the second machine, observable and usable */
 function govCardHtml() {
   const view = curView();
@@ -3928,12 +3940,10 @@ function govCardHtml() {
       ${pkGlyph(['kg-threshold', 'stripCollections_sum'])}</div>
     ${bgPend}`;
   return `<div class="card" id="govcard">
-    <h2>Il gruppo <small class="mono">KelGroups — una sola membership (GroupState.members)</small></h2>
+    <h2>Il gruppo <small>una sola membership</small></h2>
     ${body}
     ${baseBody}
-    <div class="tiny" id="gov-status" style="margin-top:6px">verdetti sì/no/aperta, dissenso e
-      permessi per-persona sono MODELLATI; le prove del modello sono
-      <b>enunciate, non dimostrate</b>
+    <div class="tiny" id="gov-status" style="margin-top:6px">${proofSentence()}
       <span class="npvbadge" data-claims="vote-model-status">stato</span> ·
       composizione accettata al pin: instradamento totale dei 14 costruttori
       ${pkGlyph(['comp-routing', 'comp-app-verdict', 'comp-witness'])} ·
@@ -4070,7 +4080,9 @@ function openInvPop(x, y) {
   popAt(x, y, html);
   $('pop').querySelectorAll('[data-cf]').forEach(b => b.addEventListener('click', ev => {
     const [kind, idRaw] = b.dataset.cf.split(':');
-    openCfPop(kind, Number(idRaw), ev.clientX, ev.clientY);
+    // escrow ids are numeric CollIds; conto/cassa ids are substrate string
+    // keys and survive exactly (leading-zero keys included)
+    openCfPop(kind, kind === 'escrow' ? Number(idRaw) : idRaw, ev.clientX, ev.clientY);
   }));
   const mb = $('inv-manifest');
   if (mb) mb.addEventListener('click', ev => openManifestPop(ev.clientX, ev.clientY));
@@ -4525,7 +4537,9 @@ $('view').addEventListener('click', ev => {
   const act = t.closest('[data-act]');
   if (act) {
     const d = nav();
-    const c = d.c, u = /^\d+$/.test(act.dataset.u) ? Number(act.dataset.u) : act.dataset.u;
+    // substrate string keys survive exactly through every control:
+    // digit-shaped keys stay strings, numeric collection ids stay numeric
+    const c = d.c, u = act.dataset.u;
     const col = state.collections.find(x => x.id === c);
     const author = col.referente;             // the hat is the context
     if (act.dataset.act === 'accept') directAct('acceptPledge', { author, user: u, c }, ev.clientX, ev.clientY);
@@ -4538,7 +4552,7 @@ $('view').addEventListener('click', ev => {
   const gc = t.closest('[data-goto-coll]');
   if (gc) { go({ view: 'collection', c: Number(gc.dataset.gotoColl) }); return; }
   const gp = t.closest('[data-goto-person]');
-  if (gp) { go({ view: 'person', u: Number(gp.dataset.gotoPerson), hat: 'member' }); return; }
+  if (gp) { go({ view: 'person', u: gp.dataset.gotoPerson, hat: 'member' }); return; }
   const pr = t.closest('[data-pledge-c]');
   if (pr) { goPledge(Number(pr.dataset.pledgeC), pr.dataset.pledgeU); return; }
   const obj = t.closest('[data-obj]');
@@ -5116,12 +5130,22 @@ async function selftest() {
     JSON.stringify(['casse', 'collections', 'conti', 'votes']),
     'stato macchina esteso oltre Lean');
 
-  // presentation vocabulary: legacy gruppo words in visible copy, never the
-  // invented ones; machine identifiers stay only as .mono provenance
+  // presentation vocabulary over the text a reader actually sees: nothing
+  // is deleted before looking. Only precisely-shaped machine provenance
+  // tokens are set aside first — dotted .tags, Lean dotted paths, file
+  // names, pins — so ordinary words hiding inside .mono, #pop or .toast
+  // stay visible to the check. The set-asides are sound for the banned set
+  // below: no strip can remove an ordinary colletta/pledge word (their
+  // letters fall outside every strip shape except the dotted provenance one).
+  const stripProvenance = t => t
+    .replace(/\.[A-Za-z][\w]*/g, '')
+    .replace(/[A-Za-z_][\w]*(\.[\w]+){2,}/g, '')
+    .replace(/[\w.-]+\.(mjs|lean|json|trace)(v\d+)?/gi, '')
+    .replace(/\b[0-9a-f]{7,}\b/gi, '');
   const copy = (() => {
     const c = document.body.cloneNode(true);
-    c.querySelectorAll('.mono, script, #pop, .toast').forEach(el => el.remove());
-    return c.innerText;
+    c.querySelectorAll('script, noscript, style').forEach(el => el.remove());
+    return stripProvenance(c.innerText);
   })();
   expect(!/colletta/i.test(copy), 'vocabolario: termine vietato (it) nel copy visibile');    // DIAGLINT-ALLOW
   expect(!/\bpledge\b/i.test(copy), 'vocabolario: termine vietato (en) nel copy visibile');  // DIAGLINT-ALLOW
@@ -5130,6 +5154,19 @@ async function selftest() {
   expect(ge.querySelector('.mono') &&
     ge.querySelector('.mono').textContent.trim().startsWith('.grantPermission'),
     'provenienza macchina assente dalla storia');
+
+  // governance chrome: no internal identifier may hide in the group card,
+  // inside .mono or otherwise — and the visible proof sentence tracks the
+  // actual receipt rather than happening to match it today
+  const govH2 = document.querySelector('#govcard h2');
+  expect(govH2 && !/KelGroups|GroupState/.test(govH2.innerText),
+    'intestazione della scheda gruppo con vocabolo interno');
+  const govSt = document.getElementById('gov-status');
+  const enunSelf = Object.values(CHECK_RECEIPT.axioms).filter(s => s === 'enunciato').length;
+  expect(govSt && (enunSelf
+      ? /enunciate, non dimostrate/.test(govSt.innerText)
+      : (/provate/.test(govSt.innerText) && !/enunciate/.test(govSt.innerText))),
+    'frase di stato delle prove non derivata dalla ricevuta');
 
   // fidelity nets: crude net silent all session, Lean traces replay clean
   expect(lawBreaches.length === 0, 'rete invarianti Lean scattata in sessione');
