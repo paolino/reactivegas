@@ -115,18 +115,18 @@ Authorization today, per event, at current source (`lean:step`):
 
 | event | authorized signer + guard |
 | --- | --- |
-| `openPurchase` | responsabile signer; collection id fresh |
+| `openPurchase` | responsabile signer; collection id fresh (`lean:step_open_inv`) |
 | `grantPermission` / `denyPermission` | `lean:pullCollection` must succeed (absent id refused) first, then responsabile signer (single-signer today; provably vote-derived is ruled, unbuilt — see “Composition”) |
-| `deposit` | responsabile signer; `u` a member; signer ≠ `u`; `0 ≤ v` |
-| `withdraw` | responsabile signer; `u` a member; signer ≠ `u`; `bal conti u ≥ v`; not stalled |
-| `transferCassa` | responsabile signer and responsabile `f`; signer ≠ `f`; `v > 0` |
-| `donate` | responsabile signer; `0 < v`; raises the comune conto, creating no member credit |
+| `deposit` | responsabile signer; `u` a member; signer ≠ `u`; `0 ≤ v` (`lean:step_deposit_inv`) |
+| `withdraw` | responsabile signer; `u` a member; signer ≠ `u`; `bal conti u ≥ v` (`lean:step_withdraw_inv`); not stalled |
+| `transferCassa` | responsabile signer and responsabile `f`; signer ≠ `f`; `v > 0` (`lean:step_transferCassa_inv`) |
+| `donate` | responsabile signer; `0 < v` (`lean:step_donate_inv`); raises the comune conto, creating no member credit |
 | `backdonate` | responsabile signer; `0 < w`; `comuneBal ≥ n * w` over the `lean:memberKeys` count; `auth s w` |
-| `pledge` | **responsabile signer today**; `u` a member; no existing pledge by `u` in either list; `0 < v`; `bal conti u ≥ v`; not stalled |
-| `acceptPledge` / `refusePledge` | responsabile signer who is the collection referente; pledge present in `pending`; `acceptPledge` additionally not stalled |
-| `correctPledge` | responsabile signer who is the referente; pledge present in `accepted`; `0 ≤ v'`; `bal conti u + (v − v') ≥ 0` |
-| `closePurchase` | responsabile signer who is the referente; `permitted`; `pending` empty; not stalled |
-| `failPurchase` | responsabile signer who is the referente; `pending` empty |
+| `pledge` | **responsabile signer today** (`lean:step_pledge_inv`); `u` a member; no existing pledge by `u` in either list; `0 < v`; `bal conti u ≥ v`; not stalled |
+| `acceptPledge` / `refusePledge` | responsabile signer who is the collection referente; pledge present in `pending` (`lean:step_accept_inv`, `lean:step_refuse_inv`); `acceptPledge` additionally not stalled |
+| `correctPledge` | responsabile signer who is the referente; pledge present in `accepted`; `0 ≤ v'` (`lean:step_correct_inv`); `bal conti u + (v − v') ≥ 0` |
+| `closePurchase` | responsabile signer who is the referente; `permitted` (`lean:step_close_inv`); `pending` empty; not stalled |
+| `failPurchase` | responsabile signer who is the referente; `pending` empty (`lean:step_fail_inv`) |
 
 Two honest tensions the reader must not miss. First, the 2026-08-25
 sovereign-members ruling says pledges are self-service, while `pledge`'s
@@ -245,6 +245,8 @@ supplier with the goods received.
 **What is proved.** `lean:close_spends_referente` shows that the closed
 collection's full escrow decreases `col.referente`'s `cassa` — a debit of the
 collected total from her cash box — when the close event succeeds.
+
+Committed versus available (Q-001 Correction-2, 2026-09-05). Closing discharges already-committed escrow and its paired cassa obligation: the accepted pledges leave the referente's cash box together, which is why close needs the referente's own signature plus permission — no other signer can spend her committed box. Withdrawal consumes only uncommitted backing: it draws on a plain account balance, never on escrow held by an open purchase, and the guard refuses whatever the balance cannot cover. Fairness outside the sealed purchase belongs to the stall, not the close: while the comune is short, no member may improve their position relative to another.
 
 ### L5 — Double entry for cash movements (law)
 
@@ -448,13 +450,11 @@ stays named rather than silently accepted.
 `Voci/Quantità.hs` as distinct blobs — with `Eventi/Ordine.hs`, and order-bound pledges
 (`ImpegnoVincolato` / `CorrezioneImpegnoVincolato` over `[Ordine]`,
 commented-out in `Eventi/Impegno.hs`) — has no Lean counterpart. The
-model's pledge carries a bare `(user, amount)`: no product, no order, no
+model's pledge (`lean:Pledge`) carries a bare `(user, amount)`: no product, no order, no
 quantity.
 
-**Ruling.** Out of scope for milestone 2. The outcome test is election →
-collection → pledge → assenso → purchase → refund; no catalogue appears in
-it. This is a non-goal, not an omission: an unmodelled subsystem nobody
-has decided about reads as settled and is not.
+**Inherited scope (not a settled exclusion).** The catalogue is out of the milestone-2 six-step outcome test's scope as inherited: the outcome test is election →
+collection → pledge → assenso → purchase → refund and names no catalogue — an inherited non-goal of that six-step wording, not a settled exclusion. Whether the catalogue belongs in the formal model is an OPEN product ruling, and no operator exclusion exists at this pin.
 
 **Reason and cost.** If the catalogue turns out to be load-bearing,
 `pledge` gains a payload and `correctPledge` a diff, landing in the Lean
@@ -507,6 +507,7 @@ title alone never supplies a missing ruling.
   consumers, `PROVED-IN-MODEL` caveat), A-Q001 option D (classify, don't
   join: direct / baseEnacted / app-decided, total and wildcard-free),
   NOTE-031 (vote machine accepted; composition dispatched as its own work).
+- **2026-09-05 (PR87 exporter landed at `d670323`):** the verified Lean trace corpora are accepted as landed provisional oracle input for the outcome test; vote/economic coverage beyond that corpus stays filed work and is not claimed here.
 
 ## Current versus ruled (pending merges)
 
@@ -517,9 +518,9 @@ snapshot complete because prose passes a checker.
 
 | id | current behavior at this pin | ruled behavior | source ruling | re-pin condition |
 | --- | --- | --- | --- | --- |
-| #66 S1 (#79, `4a6cd87f`) | `Trace.lean` manifest missed namespaced declarations, so exactly ONE seeded byte is affected — the withdraw-refusal `declaration:UNPROVED` row (CORPUS-COVERAGE measured 1 UNPROVED + 1 step_close_inv); corpus content provisional | manifest resolves accepted inversions by unqualified name; `scripts/check-trace-coverage-agreement` wired into `just lean`; the byte moves only on #74 re-freeze | RECONCILIATION-001 + CLOSURE-MAP §3 | S1 landed at `4a6cd87f`; re-freeze + re-derive after #74 re-freeze |
-| #68 | proposer counts as an assent; at n=2 one carries a proposal alone | proposals open at zero; arithmetic `(n+1)/2` unchanged; n=2 needs someone other than the proposer | A-V2-AND-PLEDGE-AGENCY 2026-09-05 | #68 merge, then re-derive assent/authority rows |
-| #69 | `pledge` demands responsabile signer (member cannot pledge for self); `correctPledge` referente-only over accepted | member free while pending (`signer == u`, `v' = 0` withdraws); referente after acceptance; solvency guard, `closePurchase`, and UI-legibility rule as stated | A-V2-AND-PLEDGE-AGENCY 2026-09-05 | #69 merge, then re-derive pledge/correction rows |
+| #66 S1 (#79, `4a6cd87f`) | `Trace.lean` manifest (`lean:guardManifest`) missed namespaced declarations, so exactly ONE seeded byte is affected — the withdraw-refusal `declaration:UNPROVED` row (CORPUS-COVERAGE measured 1 UNPROVED + 1 step_close_inv); corpus content provisional; PR87 exporter corpus accepted as landed provisional oracle input | manifest resolves accepted inversions by unqualified name; `scripts/check-trace-coverage-agreement` wired into `just lean`; the byte moves only on #74 re-freeze | RECONCILIATION-001 + CLOSURE-MAP §3 | S1 landed at `4a6cd87f`; re-freeze + re-derive after #74 re-freeze |
+| #68 | proposer counts as an assent; at n=2 one carries a proposal alone | proposals open at zero; arithmetic `(n+1)/2` (`lean:legacyThreshold`) unchanged; n=2 needs someone other than the proposer | A-V2-AND-PLEDGE-AGENCY 2026-09-05 | #68 merge, then re-derive assent/authority rows |
+| #69 | `pledge` (`lean:pledge_guard_inv`) demands responsabile signer (member cannot pledge for self); `correctPledge` referente-only over accepted | member free while pending (`signer == u`, `v' = 0` withdraws); referente after acceptance; solvency guard, `closePurchase`, and UI-legibility rule as stated | A-V2-AND-PLEDGE-AGENCY 2026-09-05 | #69 merge, then re-derive pledge/correction rows |
 | V-5 lifecycle (#81) | renounce accept-and-no-op; `closureCause` (`lean:closureCause`) tally/franchiseChange-only (rows 1–4 unfinished as above) | V-5 closure on proposer renounce/departure + negative continuation + refund | #81 | #81 merge, then re-derive vote-lifecycle rows |
 
 ## Reconciliation hook

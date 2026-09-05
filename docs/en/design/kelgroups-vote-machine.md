@@ -32,7 +32,7 @@ from Haskell and adds no semantics.
 | R-19 | FAITHFUL | lean:KelGroups.validateProposal | `Validate.hs` `validateNormalProposal` (`lean:validateNormalProposal`) | Admin authentication precedes payload checks in Haskell order. |
 | R-20 | FAITHFUL | lean:KelGroups.validateApproval | `Validate.hs` `validateApproval` | Admin, proposal existence, and duplicate approval fail distinctly and in order. |
 | R-21 | FAITHFUL | lean:KelGroups.validateEvent | `Validate.hs` `validateEvent` `App` | Application events require membership only. |
-| R-22 | FAITHFUL | lean:KelGroups.ValidationError | `Validate.hs` `ValidationError` and `Either` sequencing | The ten errors short-circuit in the same modeled order. |
+| R-22 | FAITHFUL | lean:KelGroups.ValidationError | `Validate.hs` `ValidationError` and `Either` sequencing | Eleven errors at PIN including reservedKey (live result of validateDirectAdmission); the ten-errors Haskell sequencing is a historical subset excluding the reserved-key refusal. |
 | R-23 | FAITHFUL | lean:KelGroups.validateProposal | `Validate.hs` `checkRole`, `checkRemoval` | Admin roles and unknown application role names bypass predicates. |
 | R-24 | FAITHFUL | lean:KelGroups.foldGroup | `Fold.hs` `applyEvent` (`lean:applyEvent`) | The total fold never calls validation. |
 | VI-1 | FAITHFUL | lean:KelGroups.approvals_nodup | `State.hs` `Set Text` | Pending approval cardinality is duplicate-free. |
