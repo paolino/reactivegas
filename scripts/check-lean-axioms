@@ -37,11 +37,20 @@ set -euo pipefail
 # This gate extends the policy the repo already enforces from six theorems to
 # the whole discovered extent; it chooses no new policy.
 #
-# Fail-closed: missing/unresolvable `REACTIVEGAS_ROOT`; empty or unset
-# `LEAN_PATH` (retained guard, element 5); modules with no loadable olean;
-# zero S/B/T; `S \ B` or `B \ S` non-empty; T-derivation disagreement; any
-# theorem depending on an axiom outside the permitted set (including `sorryAx`);
-# any `PANIC at` on either stream; missing `axiom-gate: ok` marker.
+# Fail-closed: unresolvable `REACTIVEGAS_ROOT` (`canonRoot` returns `.error` —
+# established by driver inspection, not by an executed control; see below);
+# empty or unset `LEAN_PATH` (retained guard, element 5, executed); modules
+# with no loadable olean; zero S/B/T; `S \ B` or `B \ S` non-empty;
+# T-derivation disagreement; any theorem depending on an axiom outside the
+# permitted set (including `sorryAx`); any `PANIC at` on either stream;
+# missing `axiom-gate: ok` marker.
+#
+# Actual `REACTIVEGAS_ROOT` behaviour, stated exactly: a missing variable does
+# NOT fail closed — the driver defaults it to `"."` — while an unresolvable
+# one fails via `canonRoot`. The mandatory wrapper always exports
+# `REACTIVEGAS_ROOT`, so the mandatory path never exercises the default; the
+# unresolvable branch is code-inspected, not control-executed, and nothing here
+# claims otherwise.
 #
 # Honest limit (`CI-T-SHARED-FILTER`): both T derivations share `thmInfo` and B
 # membership — two views of one inventory, not two independent theorem sources.
