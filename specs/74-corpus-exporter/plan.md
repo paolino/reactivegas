@@ -19,9 +19,10 @@ Format lands now; content is provisional. #68 (proposer is not an assent) and
 are re-frozen after they land, before D3 consumes them as an oracle. Do not
 wait for them; do not present the current content as final.
 
-#71 is rewriting the design record. The entry here is additive prose in the
-current `docs/en/design/` shape; if #71 relocates it, that is a forward move,
-not a reason to wait.
+#71 is rewriting the design record, so this slice writes no `docs/` file at
+all (NOTE-001). The coverage content is delivered as
+`handoffs/CORPUS-COVERAGE.md` in the ticket runtime root and routed to #71
+by the epic owner.
 
 ## Source horizon and fence
 
@@ -34,24 +35,28 @@ Implementation may add/change only:
   `modules-model.md`);
 - `justfile` (export + verify targets, additive) and the CI step that runs
   the verify target;
-- `docs/en/design/*` (one additive entry; no rewrite of existing prose);
 - task stamps in `specs/74-corpus-exporter/tasks.md`.
 
-Everything else is read-only, including all existing `lean/` content bytes,
-`Eventi/`, `Core/`, `Lib/`, `Voci/`, `Server/`, `paolino/kelgroups`, and prior
-`specs/` directories. The forbidden list in R74-05 is exact.
+`docs/` is read-only (NOTE-001 revocation). Everything else is read-only
+too, including all existing `lean/` content bytes, `Eventi/`, `Core/`,
+`Lib/`, `Voci/`, `Server/`, `paolino/kelgroups`, and prior `specs/`
+directories. The forbidden list in R74-05 is exact.
 
 ## Slice S74 — exporter, artifacts, gate, record
 
 Delivers R74-01…R74-05 and tasks T7400…T7404.
 
-- New module: `GroupView` JSON, file-level wrapper(s) for the economic corpus
-  (`seedView` + refusing `seedAuth` identity + initial + traces) and the
-  integrated corpus (`corpusInitial` + steps), `lean_exe` entry point writing
-  both files.
+- New module: `GroupView` JSON, file-level wrappers bounded by NOTE-001 —
+  economic file: `seedView` + refusing `seedAuth` identity + traces (initial
+  already lives in each `Trace`); integrated file: `corpusInitial` + steps
+  (+ the auth identity the steps were evaluated under) — `lean_exe` entry
+  point writing both files. Any third wrapper field needs a filed question,
+  not an implementation decision.
 - Frozen files + SHA-256 manifest beside them; `just` export target and
   `just` verify target (re-emit + byte-compare, fail closed); CI runs verify.
-- Design-record entry: coverage, vote hole, provisional-until-#68-#69 notice.
+- Coverage handoff content (for the ticket owner to place at
+  `handoffs/CORPUS-COVERAGE.md`): coverage, vote hole with mechanism,
+  assenso consequence, provisional-until-#68-#69 notice.
 - Verification: export → verify 0 clean; mutate one byte → non-zero; restore
   → zero (all three quoted); `just ci` green; additive-only proof by diff.
 

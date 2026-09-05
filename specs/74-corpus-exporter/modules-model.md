@@ -27,9 +27,13 @@ Artifact ceiling: 60 lines / 5 KiB.
   Owned bytes: the emitted wrappers. The emitter is the sole writer; humans
   never hand-edit. Location is fixed by the commit owner and recorded in the
   PR; the manifest lives beside the files.
-- **M74-RECORD (`docs/en/design/*`).** One additive entry (new section or new
-  page under the existing tree). Owns the coverage/hole/provisional prose.
-  Existing prose is untouched.
+- **M74-RECORD (NOTE-001: no `docs/` change).** The commit owner authors
+  the coverage/hole/provisional prose as evidence in its own root
+  (`handoffs/coverage.md`: what each corpus covers with exact counts, the
+  vote hole with mechanism, the assenso consequence, the provisional-until-
+  #68-#69 notice, the replayer field table). The ticket owner places it at
+  ticket `handoffs/CORPUS-COVERAGE.md` for routing to #71. `docs/` stays
+  byte-identical to base; the gate fails if it does not.
 
 ## Explicit non-goals
 

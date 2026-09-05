@@ -22,7 +22,12 @@ A person who has never seen this repository can, from a clean checkout:
 1. run one command and get both corpus files;
 2. run one command that verifies the checked-in files match what the Lean
    emits, and see it exit non-zero when a byte is changed;
-3. read the design record and learn what the corpora cover and what they do not.
+3. read `handoffs/CORPUS-COVERAGE.md` (ticket runtime root, routed to #71)
+   and learn what the corpora cover and what they do not.
+
+NOTE-001 (epic parent correction, 2026-09-05) revokes the design-record
+entry: `docs/en/design/` is read-only on this slice (#71 is rewriting it).
+Coverage content goes to the handoff file instead.
 
 ## Requirements
 
@@ -32,28 +37,39 @@ A person who has never seen this repository can, from a clean checkout:
   List IntegratedTraceStep` (`lean/Reactivegas/Invariants.lean`, 7 steps from
   `corpusInitial`). Both already have `Lean.ToJson`. No corpus content,
   `seedView`, `corpusInitial`, or `seedAuth` is restated in the new module.
-- **R74-02 — file-level envelope.** `Trace` is frozen and untouched. The
-  wrapper object at file level carries the view, the authorization identity,
-  the initial aggregate, and the traces, so a consumer needs nothing but the
-  file to replay. `KelGroups.GroupView` gets its `ToJson` in the new module
-  only, never in an existing one. The PR states what a replayer must do with
-  each field.
+- **R74-02 — file-level envelope, hard boundary (NOTE-001).** `Trace` is
+  frozen and untouched. Each wrapper file carries the `GroupView` plus the
+  authorization identity, and nothing else, without escalating first: if
+  replaying turns out to need a third thing — any third thing — stop and
+  file a question, because a wrapper that grows fields becomes the second
+  format this slice exists to prevent. The integrated file's initial
+  aggregate (`corpusInitial`) is the same shape of need as `GroupView`, not
+  a third thing. (Each economic `Trace` already carries its own `initial`;
+  the economic wrapper does not repeat it.) `KelGroups.GroupView` gets its
+  `ToJson` in the new module only, never in an existing one. The PR states
+  what a replayer must do with each field.
 - **R74-03 — frozen artifacts + failing-closed gate.** A `lean_exe` writes
   both corpora; the files are checked in; a hash manifest is checked in beside
   them; a `just` verify target re-emits and byte-compares, failing closed on
   drift; a CI step runs that target. The negative control (mutate one byte →
   non-zero → restore → zero) is demonstrated and quoted.
-- **R74-04 — honest record.** The design-record entry names what the corpora
-  cover, names the vote hole (no `openQuestion`/`cast`/`renounce`; `step`
-  returns `none` for them, they run via `voteApply`/`appFold` which neither
-  corpus reaches), and states the checked-in files are provisional until #68
-  and #69 land and must be re-frozen then. The PR body states the hole too.
+- **R74-04 — honest record (NOTE-001).** No `docs/` file is written. The
+  same content is delivered as `handoffs/CORPUS-COVERAGE.md` in the ticket
+  runtime root (routed to #71): what each corpus covers (economic vs base
+  channel, 5 traces / 32 events; 7 base steps), what neither covers —
+  **votes**, with the mechanism (`step` returns `none` for
+  `openQuestion`/`cast`/`renounce`, which run inside `appFold` via
+  `voteApply`, which the economic corpus never reaches and the integrated
+  corpus never emits) — the consequence (**assenso is named in the
+  milestone's outcome test and has no oracle behind it**), and that the
+  checked-in content is provisional until #68 and #69 land and must be
+  re-frozen then. The PR body states the hole too.
 - **R74-05 — additive only.** No theorem, `example`, `#guard`, proof, guard,
   `step`, `stepEvent`, `appFold`, `baseHook`, state type, event constructor,
   `Trace` structure, existing corpus content, `seedView`, `corpusInitial`, or
   `seedAuth` is changed. No change under `Eventi/`, `Core/`, `Lib/`, `Voci/`,
-  `Server/`, or `paolino/kelgroups`. If the oracle appears to need one, stop
-  and file a question instead of deciding.
+  `Server/`, `docs/`, or `paolino/kelgroups`. If the oracle appears to need
+  one, stop and file a question instead of deciding.
 
 ## Rejection behavior
 

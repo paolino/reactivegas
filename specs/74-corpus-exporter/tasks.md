@@ -11,7 +11,9 @@ boxes after a fresh audit passes the exact candidate.
       `lean_exe` calling `seedCorpus` / `emitIntegratedCorpus`. (R74-01, R74-02)
 - [ ] **T7402** Frozen corpus files + SHA-256 manifest + `just` export/verify
       + CI step; quoted negative control (0 / non-zero / 0). (R74-03)
-- [ ] **T7403** Design-record entry (coverage, vote hole, provisional until
-      #68 + #69) + PR body hole statement + replayer field table. (R74-04)
+- [ ] **T7403** Coverage evidence `handoffs/coverage.md` in the owner root
+      (coverage with counts, vote hole with mechanism, assenso consequence,
+      provisional until #68 + #69, replayer field table) for the ticket owner
+      to route to #71 + PR body hole statement. No `docs/` write. (R74-04)
 - [ ] **T7404** Full verification: export, verify, negative control, `just ci`,
       additive-only diff proof, fresh `grok` audit, push + draft PR. (R74-05)

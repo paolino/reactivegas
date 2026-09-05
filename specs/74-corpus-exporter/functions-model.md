@@ -8,12 +8,14 @@ no imports, no control flow.
   Constraint: total over `members`; must not alter or duplicate any existing
   instance.
 - `F74-ECONWRAP (new)`: builds the D74-ECONWRAP wrapper value from
-  (`seedView`, `seedAuth`-identity, `State.empty`, `seedCorpus`).
+  (`seedView`, `seedAuth`-identity, `seedCorpus`).
   Constraint: calls `seedCorpus`; takes no event list argument (a list
-  argument would be a second corpus).
+  argument would be a second corpus); adds no field beyond view/auth/traces
+  without a filed question.
 - `F74-INTWRAP (new)`: builds the D74-INTWRAP wrapper value from
-  (`corpusInitial`, `emitIntegratedCorpus`).
-  Constraint: calls `emitIntegratedCorpus`; takes no step-list argument.
+  (`corpusInitial`, auth-identity, `emitIntegratedCorpus`).
+  Constraint: calls `emitIntegratedCorpus`; takes no step-list argument;
+  adds no field beyond initial/auth/steps without a filed question.
 - `F74-MAIN (new, `lean_exe` entry)`: `IO UInt32` (or `IO Unit` per lake
   convention) writing both wrapper files to their frozen paths. Constraint:
   the sole writer of the frozen files; writes bytes the verify target
