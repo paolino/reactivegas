@@ -153,14 +153,18 @@ class Browser {
 }
 
 /* --- D3 fail-closed derivation: the extent is COMPUTED from the page. ---
-   deriveExtent(src) scans every `.dataset.X` read in the page source and
-   classifies each against KNOWN_READS. An UNKNOWN read (an added
-   key-bearing control the table never heard of) or a CHANGED read-site
-   count is RED — fail-closed in the direction C-KEY names. The witness
-   registry maps derived controls to exercised witnesses; driving stays
-   hand-written work, discovery does not. K-12's sink is an input element,
-   derived from its element + param patterns. K-14 is proven unreachable by
-   the same scan: no emission and no read. --- */
+   Recognised spelling set (C-KEY handlers only): dot reads (`.dataset.X`)
+   and quoted-bracket reads (`X.dataset['X']`, `dataset['X']`, on any
+   receiver). Fail-closed residue: non-literal (dynamic) keys RED as
+   statically unclassifiable, and any unknown literal name REDs — but no
+   claim of complete JavaScript discovery is made (getters, proxies,
+   reflective access and other spellings outside the recognised set are
+   not covered). An UNKNOWN read or a CHANGED read-site count is RED —
+   fail-closed in the direction C-KEY names. The witness registry maps
+   derived controls to exercised witnesses; driving stays hand-written
+   work, discovery does not. K-12's sink is an input element, derived from
+   its element + param patterns. K-14 is proven unreachable by the same
+   scan: no emission and no read. */
 
 const KNOWN_READS = {
   // read name: [expected read sites, covering witness controls]

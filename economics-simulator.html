@@ -2115,12 +2115,20 @@ const canonAggregate = agg => {
 const VOTE_TAGS = { openQuestion: 1, cast: 1, renounce: 1 };
 
 /* INV-3 actor binding (F-01 class): event arguments never carry the actor.
-   The signer travels separately (step signer / applyIntegrated signer);
-   Lean AppEvent has no `author` field, so one inside payload args is
-   foreign. payloadAuthorOf reports it for the mismatch refusal;
-   stripAuthor drops it so a payload field can neither override the recorded
-   signer at a merge site nor leak into stored events. Honest traffic (UI
-   flows, Lean corpora, canonical exports) never carries it. */
+   Agreement control against actual Lean source, two sides: (1) imported
+   application-event args ↔ AppEvent (lean/Reactivegas/Types.lean:75 — no
+   ctor declares `author`, so one inside payload args is foreign); (2)
+   constructed machine event ↔ legacy Event (Types.lean:43 — every ctor
+   declares `author`, and the signer is its only source, supplied
+   separately: appFold takes signer apart from the event,
+   lean/Reactivegas/Step.lean:181). payloadAuthorOf reports a payload
+   author for the mismatch refusal; stripAuthor drops it so such a field
+   can neither override the recorded signer at a merge site nor leak into
+   stored events. Equal-author payloads are stripped, not refused: every
+   honest pre-fix page export carries author==signer (old leanEventJson
+   kept all fields, commitFlow always set args.author, pushIntegratedStep
+   used it as the step signer), so refusal there would break roundtrip
+   without privilege delta. Honest traffic never carries a mismatching one. */
 const payloadAuthorOf = a =>
   (a && typeof a === 'object' &&
     Object.prototype.hasOwnProperty.call(a, 'author')) ? a.author : undefined;
