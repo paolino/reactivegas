@@ -1,0 +1,92 @@
+[
+  {
+    "source": "/tmp/reactivegas/ms2/questions/Q-001-operator-rulings.md",
+    "snapshot": "inputs/Q-001-operator-rulings.md",
+    "sha256": "98837654cdf99505d1df093432a8c80d24c67727618f2b0d2864a8a20ded193a"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/questions/A-V2-AND-PLEDGE-AGENCY.md",
+    "snapshot": "inputs/A-V2-AND-PLEDGE-AGENCY.md",
+    "sha256": "c34b90c73d8b1b3429e6a583a9b7f9dc4e5e056da6ead290bce29de5aefe0306"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/artifacts/NOTE-010-design-successor-authorized.md",
+    "snapshot": "inputs/NOTE-010-design-successor-authorized.md",
+    "sha256": "5b9cb6cf95ebc0dc241931f2264ea0eb9039e7b11d751045d92757fc2f59c348"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/artifacts/NOTE-013-design71-terminal-receipt-and-full-audit.md",
+    "snapshot": "inputs/NOTE-013-design71-terminal-receipt-and-full-audit.md",
+    "sha256": "dbc79cd8473470a0dc94e2d0b01ece37481a999d35c08fdaa3001dad4cde083b"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/t71-design-record/inbox/NOTE-001-vote-lifecycle-evidence-boundary.md",
+    "snapshot": "inputs/NOTE-001-vote-lifecycle-evidence-boundary.md",
+    "sha256": "843e193526504d59ba6207d4d2796d6f6ebd17cd49f0906ed009768e060762af"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/handoffs/CLOSURE-MAP.md",
+    "snapshot": "inputs/CLOSURE-MAP.md",
+    "sha256": "b5f304bca000d24354d8ebd642f14a078b31c17a25c9a0207b478f762c8e0427"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/handoffs/RECONCILIATION-001.md",
+    "snapshot": "inputs/RECONCILIATION-001.md",
+    "sha256": "11063ed518c3a8934c538ede9045115999d505d27424a1c33dd040a60e4309e1"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/handoffs/S1-MERGE-RECEIPT.md",
+    "snapshot": "inputs/S1-MERGE-RECEIPT.md",
+    "sha256": "d0ce0333c3ac888657dceacc283fa0a654fb9c7132c5edb9f05749cf62887ea0"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-haskell-impl/t74-corpus-exporter/handoffs/CORPUS-COVERAGE.md",
+    "snapshot": "inputs/CORPUS-COVERAGE.md",
+    "sha256": "e7477caaab1073d4d0992c61d85f16a5e856729d9390c5b301bc96eb73b6298f"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-haskell-impl/handoffs/VOTE-LIFECYCLE-PROPOSAL.md",
+    "snapshot": "inputs/VOTE-LIFECYCLE-PROPOSAL.md",
+    "sha256": "56b4c45d73cd072614dbcb20a6a44d36181fa04a1acd928b44b17528172769ab"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/t71-design-record/.archived/audit-s2r/evidence/inputs/NOTE-016-vote-machine-composition.md",
+    "snapshot": "inputs/NOTE-016-vote-machine-composition.md",
+    "sha256": "93d6745b72dd509203936dec0925e27576c4c82f4591ce06b3171c82c8fc2705"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/t71-design-record/.archived/audit-s2r/evidence/inputs/NOTE-031-dispatch-composition.md",
+    "snapshot": "inputs/NOTE-031-dispatch-composition.md",
+    "sha256": "2bcb3297c51d0ce3df820fa83edc79c19c145b29da699b16f4027bacccf151b1"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e43/answers/A-Q001-route-per-event-not-join.md",
+    "snapshot": "inputs/A-Q001-route-per-event-not-join.md",
+    "sha256": "bbe83f68292f71ab3f7a94bd738baa933c1666783a734b53dd0fe529461fe23f"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/t71-design-record/commit-owner-s2/handoffs/RECEIPT-S71B.md",
+    "snapshot": "inputs/RECEIPT-S71B.md",
+    "sha256": "2305cf2aba7ed2169e31e4e3b0dea58fb41fdaa67aeec5e575e0e93091577286"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/t71-design-record/commit-owner-s2/handoffs/RELIANCE.md",
+    "snapshot": "inputs/RELIANCE.md",
+    "sha256": "0fb9eb0bf1b210f60c1228cb0100966c0ad75fc0d6b5f7368f4ff115c79e4d35"
+  },
+  {
+    "source": "8e4cbb8:docs/en/design/state-machine.md",
+    "snapshot": "inputs/state-machine.md",
+    "sha256": "2a3068f17c3093747969f1c4980071b43f0d95129275164a532c9683d0d32564"
+  },
+  {
+    "source": "8e4cbb8:docs/en/design/kelgroups-vote-machine.md",
+    "snapshot": "inputs/kelgroups-vote-machine.md",
+    "sha256": "55d4a16529828326473804a605cd08cd6f67ffdb7064cebb95ca60ce3a6284c0"
+  },
+  {
+    "source": "90dae99:specs/71-design-record/spec.md",
+    "snapshot": "inputs/spec.md",
+    "sha256": "ab1c8365460c459c9ab1a9346405454a503591289c7de9ac672c30e519527b69"
+  }
+]

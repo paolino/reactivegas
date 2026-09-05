@@ -1,0 +1,908 @@
+diff --git a/.github/workflows/ci.yaml b/.github/workflows/ci.yaml
+index ee1308c..e7bc649 100644
+--- a/.github/workflows/ci.yaml
++++ b/.github/workflows/ci.yaml
+@@ -80,3 +80,9 @@ jobs:
+ 
+       - name: Build lean specification
+         run: nix --quiet develop --command just lean
++
++      # S86: the committed CI path runs corpus verification additively.
++      # `just lean` above stays intact (dependency direction, inversion
++      # coverage ± negative control, trace agreement, `lake build`).
++      - name: Verify corpus emission
++        run: nix --quiet develop --command just lean-corpus-verify
+diff --git a/justfile b/justfile
+index 48584f3..266e112 100644
+--- a/justfile
++++ b/justfile
+@@ -70,6 +70,42 @@ lean-corpus-gate:
+     result=$(cd lean && lake env lean Reactivegas/CorpusGate.lean)
+     [[ "$result" == "true" ]]
+ 
++# Emit both frozen corpus files via the CorpusExport exe (sole writer of the JSON)
++lean-corpus-export:
++    #!/usr/bin/env bash
++    set -euo pipefail
++    cd lean
++    mkdir -p corpus
++    lake build corpusExport
++    ./.lake/build/bin/corpusExport corpus/economic.json corpus/integrated.json
++    sha256sum corpus/economic.json corpus/integrated.json > corpus/corpus.sha256
++
++# Re-emit to temp and byte-compare against checked-in files + manifest; fail closed
++lean-corpus-verify:
++    #!/usr/bin/env bash
++    set -euo pipefail
++    cd lean
++    lake build corpusExport
++    tmp=$(mktemp -d)
++    trap 'rm -rf "$tmp"' EXIT
++    ./.lake/build/bin/corpusExport "$tmp/economic.json" "$tmp/integrated.json"
++    cmp "$tmp/economic.json" corpus/economic.json
++    cmp "$tmp/integrated.json" corpus/integrated.json
++    sha256sum -c corpus/corpus.sha256
++    # Repair 1: live-value binding of traces/steps (element-wise, nonzero extent)
++    ./.lake/build/bin/corpusExport check corpus/economic.json corpus/integrated.json
++    # Repair 2: exact key sets on the bytes, top level and one level in
++    jq -e '
++      (keys == ["auth","traces","view"]) and
++      ((.traces | length) > 0) and
++      ([.traces[] | keys] | all(. == ["initial","schema","steps","version"]))
++    ' corpus/economic.json > /dev/null
++    jq -e '
++      (keys == ["auth","initial","steps"]) and
++      ((.steps | length) > 0) and
++      ([.steps[] | keys] | all(. == ["accepted","change","event","signer","state"]))
++    ' corpus/integrated.json > /dev/null
++
+ # Full CI pipeline
+ ci:
+     #!/usr/bin/env bash
+@@ -80,6 +116,7 @@ ci:
+     just hlint
+     just lean
+     just lean-corpus-gate
++    just lean-corpus-verify
+ 
+ # Assert the declared Lean pin matches the toolchain that actually runs
+ lean-toolchain-contract:
+diff --git a/lean/Reactivegas/CorpusExport.lean b/lean/Reactivegas/CorpusExport.lean
+new file mode 100644
+index 0000000..9e36b7a
+--- /dev/null
++++ b/lean/Reactivegas/CorpusExport.lean
+@@ -0,0 +1,186 @@
++import Reactivegas.Trace
++
++/-!
++# Corpus exporter (`reactivegas#74`, slice S74)
++
++The additive Lean end of the frozen corpus oracle: a `lean_exe` entry point
++that calls the two existing corpus definitions and writes both wrapper files.
++
++Dependency direction is one-way, mirroring the `Trace.lean` header rule: this
++module imports `Reactivegas.Trace` (hence `Invariants`, hence the machine),
++and no existing module imports it back.
++
++Call, do not restate: the wrappers reference `seedCorpus` and
++`Reactivegas.emitIntegratedCorpus` directly. No corpus content, `seedView`,
++`corpusInitial`, or `seedAuth` is restated here. Each economic `Trace`
++already carries its own `initial` (`State.empty`), so the economic wrapper
++does not repeat it.
++
++Wrapper bound (NOTE-001): each file carries the `GroupView` plus the
++authorization identity, and nothing else. The integrated file's `initial`
++(`corpusInitial`) is the same shape of need as `GroupView`, not a third
++thing. A third field needs a filed question, not an implementation decision.
++
++Live binding (finding 1 property class + R86-C): `check` mode reads two wrapper
++files back from bytes and compares their `traces`/`steps` element for
++element against the live `seedCorpus`/`emitIntegratedCorpus` evaluated
++through this call site, requiring a nonzero extent derived from the data.
++Counts alone are not sufficient: a same-size swap must fail here.
++The wrapper context is bound the same way: economic `view` against live
++`seedView`, integrated `initial` against live `corpusInitial`, and each
++`auth` string against its identity def, with nonzero member extents.
++Bounded claim: this live-call/derived-ToJson method does not establish
++serializer-instance independence (an independent encoder could differ;
++none is required here).
++-/
++
++/-- JSON projection of `KelGroups.GroupView`. This is the only `ToJson`
++instance for `GroupView` in the tree: it lives here, never in an existing
++module. Total over `members`; each entry keeps the association pair shape
++`(key, member)` of the canonical relation. -/
++instance : Lean.ToJson KelGroups.GroupView where
++  toJson v :=
++    Lean.Json.mkObj
++      [ ("members",
++         Lean.Json.arr
++           (v.members.map (fun entry =>
++             Lean.Json.mkObj
++               [ ("key", Lean.Json.str entry.1)
++               , ("member", Lean.toJson entry.2) ])).toArray) ]
++
++/-- Authorization identity the economic corpus was evaluated under: the
++refusing probe `seedAuth` (`fun _ _ => false`). Rendered as an explicit
++identity string the replayer can match, never as an opaque closure. The
++corpus contains no backdonate event, so backdonation is not evaluated here. -/
++def econAuthIdentity : String :=
++  "seedAuth:refusing-probe(fun _ _ => false);corpus-contains-no-backdonate-event"
++
++/-- Authorization identity the integrated corpus was evaluated under: the
++refusing probe `probeAuth` (`fun _ _ => false`). Same rendering rule as
++`econAuthIdentity`. -/
++def intAuthIdentity : String :=
++  "probeAuth:refusing-probe(fun _ _ => false);corpus-contains-no-backdonate-event"
++
++/-- F74-ECONWRAP: the D74-ECONWRAP wrapper value, from (`seedView`,
++`seedAuth`-identity, `seedCorpus`). Takes no event-list argument: a list
++argument would be a second corpus. Adds no field beyond view/auth/traces. -/
++def econWrapperJson : Lean.Json :=
++  Lean.Json.mkObj
++    [ ("view", Lean.toJson seedView)
++    , ("auth", Lean.Json.str econAuthIdentity)
++    , ("traces", Lean.toJson seedCorpus) ]
++
++/-- F74-INTWRAP: the D74-INTWRAP wrapper value, from (`corpusInitial`,
++auth-identity, `emitIntegratedCorpus`). Takes no step-list argument. Adds
++no field beyond initial/auth/steps. -/
++def intWrapperJson : Lean.Json :=
++  Lean.Json.mkObj
++    [ ("initial", Lean.toJson Reactivegas.corpusInitial)
++    , ("auth", Lean.Json.str intAuthIdentity)
++    , ("steps", Lean.toJson Reactivegas.emitIntegratedCorpus) ]
++
++/-- Repair 1 core: bind one file array to its live value, element for
++element. The extent is derived from the data: zero elements fail, and
++every element must equal the live one, so a same-size swap fails too.
++Both sides share the derived `ToJson` instance (call-site independence,
++not instance independence) — see the receipt residual. -/
++def checkLiveArray (name : String) (live file : Lean.Json) : Except String Nat := do
++  let liveArr ← live.getArr?.mapError (fun e => s!"{name}: live value is not an array: {e}")
++  let fileArr ← file.getArr?.mapError (fun e => s!"{name}: file value is not an array: {e}")
++  if fileArr.size == 0 then throw s!"{name}: zero extent (no elements to bind)"
++  if liveArr.size != fileArr.size then
++    throw s!"{name}: extent differs (live {liveArr.size}, file {fileArr.size})"
++  for i in [:fileArr.size] do
++    if liveArr[i]! != fileArr[i]! then throw s!"{name}: element {i} differs from live value"
++  return fileArr.size
++
++/-- Bind the economic wrapper context: `view` equals live `seedView`
++(value equality through the same call-site `ToJson`), with a nonzero member
++extent read from the bytes; `auth` equals the refusing-probe identity.
++Kills: `.view.members[0].key` → `"ZZZ"`, permissive-`auth` swaps. -/
++def checkEconContext (j : Lean.Json) : Except String Nat := do
++  let view ← (j.getObjVal? "view").mapError (fun e => s!"economic: no view key: {e}")
++  if view != Lean.toJson seedView then throw "economic: view differs from live seedView"
++  let members ← (view.getObjVal? "members").mapError (fun e => s!"economic: view without members: {e}")
++  let marr ← members.getArr?.mapError (fun e => s!"economic: view members not an array: {e}")
++  if marr.size == 0 then throw "economic: zero view members"
++  let auth ← (j.getObjVal? "auth").mapError (fun e => s!"economic: no auth key: {e}")
++  if auth != Lean.Json.str econAuthIdentity then
++    throw "economic: auth differs from live econAuthIdentity"
++  return marr.size
++
++/-- Bind the integrated wrapper context: `initial` equals live
++`corpusInitial`, with a nonzero member extent from the bytes; `auth`
++equals the refusing-probe identity. Kills: `.initial.members` → `[]`,
++permissive-`auth` swaps. -/
++def checkIntContext (j : Lean.Json) : Except String Nat := do
++  let initial ← (j.getObjVal? "initial").mapError (fun e => s!"integrated: no initial key: {e}")
++  if initial != Lean.toJson Reactivegas.corpusInitial then
++    throw "integrated: initial differs from live corpusInitial"
++  let members ← (initial.getObjVal? "members").mapError (fun e => s!"integrated: initial without members: {e}")
++  let marr ← members.getArr?.mapError (fun e => s!"integrated: initial members not an array: {e}")
++  if marr.size == 0 then throw "integrated: zero initial members"
++  let auth ← (j.getObjVal? "auth").mapError (fun e => s!"integrated: no auth key: {e}")
++  if auth != Lean.Json.str intAuthIdentity then
++    throw "integrated: auth differs from live intAuthIdentity"
++  return marr.size
++
++/-- Bind an economic wrapper file: context (`view`/`auth`) plus `traces`
++element for element, with nonzero trace and event extents from the bytes. -/
++def checkEconFile (j : Lean.Json) : Except String (Nat × Nat) := do
++  let _ ← checkEconContext j
++  let traces ← (j.getObjVal? "traces").mapError (fun e => s!"economic: no traces key: {e}")
++  let ntraces ← checkLiveArray "economic.traces" (Lean.toJson seedCorpus) traces
++  let arr ← traces.getArr?.mapError (fun e => s!"economic: traces not an array: {e}")
++  let mut nevents := 0
++  for t in arr do
++    let steps ← (t.getObjVal? "steps").mapError (fun e => s!"economic: trace without steps: {e}")
++    let sarr ← steps.getArr?.mapError (fun e => s!"economic: steps not an array: {e}")
++    nevents := nevents + sarr.size
++  if nevents == 0 then throw "economic: zero events"
++  return (ntraces, nevents)
++
++/-- Bind an integrated wrapper file: `steps` equals live
++`emitIntegratedCorpus` element for element, with nonzero extent. -/
++def checkIntFile (j : Lean.Json) : Except String Nat := do
++  let _ ← checkIntContext j
++  let steps ← (j.getObjVal? "steps").mapError (fun e => s!"integrated: no steps key: {e}")
++  checkLiveArray "integrated.steps" (Lean.toJson Reactivegas.emitIntegratedCorpus) steps
++
++/-- F74-MAIN: `lean_exe` entry point. The sole writer of the frozen files:
++writes the economic wrapper to the first path argument and the integrated
++wrapper to the second, as exact bytes the verify target compares. Exits
++non-zero on wrong arity or any write failure. -/
++def main (args : List String) : IO UInt32 := do
++  match args with
++  | ["check", econPath, intPath] => do
++    let econBytes ← IO.FS.readFile econPath
++    let intBytes ← IO.FS.readFile intPath
++    match Lean.Json.parse econBytes, Lean.Json.parse intBytes with
++    | .ok ej, .ok ij =>
++      match checkEconFile ej, checkIntFile ij with
++      | .ok (nt, nev), .ok ns => do
++        IO.println s!"corpus-check: ntraces={nt} nevents={nev} nsteps={ns} live-bound"
++        return 0
++      | .error e, _ => do
++        IO.eprintln s!"corpus-check FAIL economic: {e}"
++        return 1
++      | _, .error e => do
++        IO.eprintln s!"corpus-check FAIL integrated: {e}"
++        return 1
++    | .error e, _ => do
++      IO.eprintln s!"corpus-check FAIL economic parse: {e}"
++      return 1
++    | _, .error e => do
++      IO.eprintln s!"corpus-check FAIL integrated parse: {e}"
++      return 1
++  | [econPath, intPath] => do
++    if econPath == "check" then do
++      IO.eprintln "usage: corpusExport <economic.json> <integrated.json> | corpusExport check <economic.json> <integrated.json>"
++      return 1
++    IO.FS.writeFile econPath (econWrapperJson.compress ++ "\n")
++    IO.FS.writeFile intPath (intWrapperJson.compress ++ "\n")
++    return 0
++  | _ => do
++    IO.eprintln "usage: corpusExport <economic.json> <integrated.json> | corpusExport check <economic.json> <integrated.json>"
++    return 1
+diff --git a/lean/corpus/corpus.sha256 b/lean/corpus/corpus.sha256
+new file mode 100644
+index 0000000..c919c5b
+--- /dev/null
++++ b/lean/corpus/corpus.sha256
+@@ -0,0 +1,2 @@
++73a077fc514038e40f84aca4a995fe68623e3af46ed11c0280d5b963137576aa  corpus/economic.json
++1f173aec9c3afd9cb95265e4be2966b9316e810a969d9fc40f672b17120f3675  corpus/integrated.json
+diff --git a/lean/corpus/economic.json b/lean/corpus/economic.json
+new file mode 100644
+index 0000000..a1d3cc5
+--- /dev/null
++++ b/lean/corpus/economic.json
+@@ -0,0 +1 @@
++{"auth":"seedAuth:refusing-probe(fun _ _ => false);corpus-contains-no-backdonate-event","traces":[{"initial":{"casse":[],"collections":[],"conti":[],"votes":{"closed":[],"openQuestions":[]}},"schema":"reactivegas.trace","steps":[{"event":{"deposit":{"author":"2","user":"1","v":40}},"input":{"casse":[],"collections":[],"conti":[],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["2",40]],"collections":[],"conti":[["1",40]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"deposit":{"author":"1","user":"3","v":100}},"input":{"casse":[["2",40]],"collections":[],"conti":[["1",40]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["2",40],["1",100]],"collections":[],"conti":[["1",40],["3",100]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"openPurchase":{"author":"2","c":7}},"input":{"casse":[["2",40],["1",100]],"collections":[],"conti":[["1",40],["3",100]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["2",40],["1",100]],"collections":[{"accepted":[],"id":7,"pending":[],"permitted":false,"referente":"2"}],"conti":[["1",40],["3",100]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"pledge":{"author":"2","c":7,"user":"3","v":50}},"input":{"casse":[["2",40],["1",100]],"collections":[{"accepted":[],"id":7,"pending":[],"permitted":false,"referente":"2"}],"conti":[["1",40],["3",100]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["2",40],["1",100]],"collections":[{"accepted":[],"id":7,"pending":[{"amount":50,"user":"3"}],"permitted":false,"referente":"2"}],"conti":[["1",40],["3",50]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"acceptPledge":{"author":"2","c":7,"user":"3"}},"input":{"casse":[["2",40],["1",100]],"collections":[{"accepted":[],"id":7,"pending":[{"amount":50,"user":"3"}],"permitted":false,"referente":"2"}],"conti":[["1",40],["3",50]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["2",40],["1",100]],"collections":[{"accepted":[{"amount":50,"user":"3"}],"id":7,"pending":[],"permitted":false,"referente":"2"}],"conti":[["1",40],["3",50]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"pledge":{"author":"2","c":7,"user":"1","v":20}},"input":{"casse":[["2",40],["1",100]],"collections":[{"accepted":[{"amount":50,"user":"3"}],"id":7,"pending":[],"permitted":false,"referente":"2"}],"conti":[["1",40],["3",50]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["2",40],["1",100]],"collections":[{"accepted":[{"amount":50,"user":"3"}],"id":7,"pending":[{"amount":20,"user":"1"}],"permitted":false,"referente":"2"}],"conti":[["1",20],["3",50]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"donate":{"author":"1","v":10}},"input":{"casse":[["2",40],["1",100]],"collections":[{"accepted":[{"amount":50,"user":"3"}],"id":7,"pending":[{"amount":20,"user":"1"}],"permitted":false,"referente":"2"}],"conti":[["1",20],["3",50]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["2",40],["1",110]],"collections":[{"accepted":[{"amount":50,"user":"3"}],"id":7,"pending":[{"amount":20,"user":"1"}],"permitted":false,"referente":"2"}],"conti":[["1",20],["3",50],["comune",10]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}}],"version":1},{"initial":{"casse":[],"collections":[],"conti":[],"votes":{"closed":[],"openQuestions":[]}},"schema":"reactivegas.trace","steps":[{"event":{"deposit":{"author":"1","user":"2","v":100}},"input":{"casse":[],"collections":[],"conti":[],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["1",100]],"collections":[],"conti":[["2",100]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"openPurchase":{"author":"1","c":5}},"input":{"casse":[["1",100]],"collections":[],"conti":[["2",100]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["1",100]],"collections":[{"accepted":[],"id":5,"pending":[],"permitted":false,"referente":"1"}],"conti":[["2",100]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"pledge":{"author":"1","c":5,"user":"2","v":60}},"input":{"casse":[["1",100]],"collections":[{"accepted":[],"id":5,"pending":[],"permitted":false,"referente":"1"}],"conti":[["2",100]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["1",100]],"collections":[{"accepted":[],"id":5,"pending":[{"amount":60,"user":"2"}],"permitted":false,"referente":"1"}],"conti":[["2",40]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"acceptPledge":{"author":"1","c":5,"user":"2"}},"input":{"casse":[["1",100]],"collections":[{"accepted":[],"id":5,"pending":[{"amount":60,"user":"2"}],"permitted":false,"referente":"1"}],"conti":[["2",40]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["1",100]],"collections":[{"accepted":[{"amount":60,"user":"2"}],"id":5,"pending":[],"permitted":false,"referente":"1"}],"conti":[["2",40]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"correctPledge":{"author":"1","c":5,"user":"2","v":40}},"input":{"casse":[["1",100]],"collections":[{"accepted":[{"amount":60,"user":"2"}],"id":5,"pending":[],"permitted":false,"referente":"1"}],"conti":[["2",40]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["1",100]],"collections":[{"accepted":[{"amount":40,"user":"2"}],"id":5,"pending":[],"permitted":false,"referente":"1"}],"conti":[["2",60]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}}],"version":1},{"initial":{"casse":[],"collections":[],"conti":[],"votes":{"closed":[],"openQuestions":[]}},"schema":"reactivegas.trace","steps":[{"event":{"deposit":{"author":"1","user":"2","v":100}},"input":{"casse":[],"collections":[],"conti":[],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["1",100]],"collections":[],"conti":[["2",100]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"openPurchase":{"author":"1","c":5}},"input":{"casse":[["1",100]],"collections":[],"conti":[["2",100]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["1",100]],"collections":[{"accepted":[],"id":5,"pending":[],"permitted":false,"referente":"1"}],"conti":[["2",100]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"pledge":{"author":"1","c":5,"user":"2","v":60}},"input":{"casse":[["1",100]],"collections":[{"accepted":[],"id":5,"pending":[],"permitted":false,"referente":"1"}],"conti":[["2",100]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["1",100]],"collections":[{"accepted":[],"id":5,"pending":[{"amount":60,"user":"2"}],"permitted":false,"referente":"1"}],"conti":[["2",40]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"acceptPledge":{"author":"1","c":5,"user":"2"}},"input":{"casse":[["1",100]],"collections":[{"accepted":[],"id":5,"pending":[{"amount":60,"user":"2"}],"permitted":false,"referente":"1"}],"conti":[["2",40]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["1",100]],"collections":[{"accepted":[{"amount":60,"user":"2"}],"id":5,"pending":[],"permitted":false,"referente":"1"}],"conti":[["2",40]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"correctPledge":{"author":"1","c":5,"user":"2","v":90}},"input":{"casse":[["1",100]],"collections":[{"accepted":[{"amount":60,"user":"2"}],"id":5,"pending":[],"permitted":false,"referente":"1"}],"conti":[["2",40]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["1",100]],"collections":[{"accepted":[{"amount":90,"user":"2"}],"id":5,"pending":[],"permitted":false,"referente":"1"}],"conti":[["2",10]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}}],"version":1},{"initial":{"casse":[],"collections":[],"conti":[],"votes":{"closed":[],"openQuestions":[]}},"schema":"reactivegas.trace","steps":[{"event":{"deposit":{"author":"1","user":"3","v":200}},"input":{"casse":[],"collections":[],"conti":[],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["1",200]],"collections":[],"conti":[["3",200]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"openPurchase":{"author":"2","c":9}},"input":{"casse":[["1",200]],"collections":[],"conti":[["3",200]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["1",200]],"collections":[{"accepted":[],"id":9,"pending":[],"permitted":false,"referente":"2"}],"conti":[["3",200]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"pledge":{"author":"2","c":9,"user":"3","v":150}},"input":{"casse":[["1",200]],"collections":[{"accepted":[],"id":9,"pending":[],"permitted":false,"referente":"2"}],"conti":[["3",200]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["1",200]],"collections":[{"accepted":[],"id":9,"pending":[{"amount":150,"user":"3"}],"permitted":false,"referente":"2"}],"conti":[["3",50]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"acceptPledge":{"author":"2","c":9,"user":"3"}},"input":{"casse":[["1",200]],"collections":[{"accepted":[],"id":9,"pending":[{"amount":150,"user":"3"}],"permitted":false,"referente":"2"}],"conti":[["3",50]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["1",200]],"collections":[{"accepted":[{"amount":150,"user":"3"}],"id":9,"pending":[],"permitted":false,"referente":"2"}],"conti":[["3",50]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"closePurchase":{"author":"2","c":9}},"input":{"casse":[["1",200]],"collections":[{"accepted":[{"amount":150,"user":"3"}],"id":9,"pending":[],"permitted":false,"referente":"2"}],"conti":[["3",50]],"votes":{"closed":[],"openQuestions":[]}},"result":{"guard":{"declaration":"step_close_inv","id":"closePurchase"},"tag":"refused"}},{"event":{"grantPermission":{"author":"2","c":9}},"input":{"casse":[["1",200]],"collections":[{"accepted":[{"amount":150,"user":"3"}],"id":9,"pending":[],"permitted":false,"referente":"2"}],"conti":[["3",50]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["1",200]],"collections":[{"accepted":[{"amount":150,"user":"3"}],"id":9,"pending":[],"permitted":true,"referente":"2"}],"conti":[["3",50]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"closePurchase":{"author":"2","c":9}},"input":{"casse":[["1",200]],"collections":[{"accepted":[{"amount":150,"user":"3"}],"id":9,"pending":[],"permitted":true,"referente":"2"}],"conti":[["3",50]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["1",200],["2",-150]],"collections":[],"conti":[["3",50]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}}],"version":1},{"initial":{"casse":[],"collections":[],"conti":[],"votes":{"closed":[],"openQuestions":[]}},"schema":"reactivegas.trace","steps":[{"event":{"deposit":{"author":"1","user":"2","v":100}},"input":{"casse":[],"collections":[],"conti":[],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["1",100]],"collections":[],"conti":[["2",100]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"deposit":{"author":"1","user":"3","v":80}},"input":{"casse":[["1",100]],"collections":[],"conti":[["2",100]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["1",180]],"collections":[],"conti":[["2",100],["3",80]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"openPurchase":{"author":"1","c":4}},"input":{"casse":[["1",180]],"collections":[],"conti":[["2",100],["3",80]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["1",180]],"collections":[{"accepted":[],"id":4,"pending":[],"permitted":false,"referente":"1"}],"conti":[["2",100],["3",80]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"pledge":{"author":"1","c":4,"user":"2","v":60}},"input":{"casse":[["1",180]],"collections":[{"accepted":[],"id":4,"pending":[],"permitted":false,"referente":"1"}],"conti":[["2",100],["3",80]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["1",180]],"collections":[{"accepted":[],"id":4,"pending":[{"amount":60,"user":"2"}],"permitted":false,"referente":"1"}],"conti":[["2",40],["3",80]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"acceptPledge":{"author":"1","c":4,"user":"2"}},"input":{"casse":[["1",180]],"collections":[{"accepted":[],"id":4,"pending":[{"amount":60,"user":"2"}],"permitted":false,"referente":"1"}],"conti":[["2",40],["3",80]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["1",180]],"collections":[{"accepted":[{"amount":60,"user":"2"}],"id":4,"pending":[],"permitted":false,"referente":"1"}],"conti":[["2",40],["3",80]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"pledge":{"author":"1","c":4,"user":"3","v":30}},"input":{"casse":[["1",180]],"collections":[{"accepted":[{"amount":60,"user":"2"}],"id":4,"pending":[],"permitted":false,"referente":"1"}],"conti":[["2",40],["3",80]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["1",180]],"collections":[{"accepted":[{"amount":60,"user":"2"}],"id":4,"pending":[{"amount":30,"user":"3"}],"permitted":false,"referente":"1"}],"conti":[["2",40],["3",50]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}},{"event":{"withdraw":{"author":"1","user":"2","v":999}},"input":{"casse":[["1",180]],"collections":[{"accepted":[{"amount":60,"user":"2"}],"id":4,"pending":[{"amount":30,"user":"3"}],"permitted":false,"referente":"1"}],"conti":[["2",40],["3",50]],"votes":{"closed":[],"openQuestions":[]}},"result":{"guard":{"declaration":"step_withdraw_inv","id":"withdraw"},"tag":"refused"}},{"event":{"denyPermission":{"author":"1","c":4}},"input":{"casse":[["1",180]],"collections":[{"accepted":[{"amount":60,"user":"2"}],"id":4,"pending":[{"amount":30,"user":"3"}],"permitted":false,"referente":"1"}],"conti":[["2",40],["3",50]],"votes":{"closed":[],"openQuestions":[]}},"result":{"state":{"casse":[["1",180]],"collections":[],"conti":[["2",100],["3",80]],"votes":{"closed":[],"openQuestions":[]}},"tag":"applied"}}],"version":1}],"view":{"members":[{"key":"1","member":{"email":"1@trace","key":"1","roles":[{"adminRole":{"admin":"publicAdmin"}}]}},{"key":"2","member":{"email":"2@trace","key":"2","roles":[{"adminRole":{"admin":"publicAdmin"}}]}},{"key":"3","member":{"email":"3@trace","key":"3","roles":[]}}]}}
+diff --git a/lean/corpus/integrated.json b/lean/corpus/integrated.json
+new file mode 100644
+index 0000000..fe31055
+--- /dev/null
++++ b/lean/corpus/integrated.json
+@@ -0,0 +1 @@
++{"auth":"probeAuth:refusing-probe(fun _ _ => false);corpus-contains-no-backdonate-event","initial":{"appFold":{"casse":[["dora",30]],"collections":[{"accepted":[{"amount":20,"user":"bob"}],"id":1,"pending":[],"permitted":false,"referente":"dora"}],"conti":[["bob",40],["comune",0]],"votes":{"closed":[],"openQuestions":[["q",{"assents":["alice"],"dissents":[],"kind":"collective","proposer":"alice"}]]}},"members":[["alice",{"email":"alice@s62b","key":"alice","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bob",{"email":"bob@s62b","key":"bob","roles":[]}],["dora",{"email":"dora@s62b","key":"dora","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["eve",{"email":"eve@s62b","key":"eve","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"pendingBase":[],"pendingProposals":[["hist-p",{"approvals":["alice"],"proposal":{"removeMember":{"key":"ghost"}},"proposer":"alice"}]]},"steps":[{"accepted":true,"change":{"memberAdmitted":{"key":"carol"}},"event":{"command":{"admitMember":{"email":"carol@s62b","key":"carol","roles":[]}},"tag":"direct"},"signer":"alice","state":{"appFold":{"casse":[["dora",30]],"collections":[{"accepted":[{"amount":20,"user":"bob"}],"id":1,"pending":[],"permitted":false,"referente":"dora"}],"conti":[["bob",40],["comune",0]],"votes":{"closed":[],"openQuestions":[["q",{"assents":["alice"],"dissents":[],"kind":"collective","proposer":"alice"}]]}},"members":[["carol",{"email":"carol@s62b","key":"carol","roles":[]}],["alice",{"email":"alice@s62b","key":"alice","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bob",{"email":"bob@s62b","key":"bob","roles":[]}],["dora",{"email":"dora@s62b","key":"dora","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["eve",{"email":"eve@s62b","key":"eve","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"pendingBase":[],"pendingProposals":[["hist-p",{"approvals":["alice"],"proposal":{"removeMember":{"key":"ghost"}},"proposer":"alice"}]]}},{"accepted":false,"change":null,"event":{"command":{"admitMember":{"email":"zed@s62b","key":"zed","roles":[]}},"tag":"direct"},"signer":"bob","state":{"appFold":{"casse":[["dora",30]],"collections":[{"accepted":[{"amount":20,"user":"bob"}],"id":1,"pending":[],"permitted":false,"referente":"dora"}],"conti":[["bob",40],["comune",0]],"votes":{"closed":[],"openQuestions":[["q",{"assents":["alice"],"dissents":[],"kind":"collective","proposer":"alice"}]]}},"members":[["carol",{"email":"carol@s62b","key":"carol","roles":[]}],["alice",{"email":"alice@s62b","key":"alice","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bob",{"email":"bob@s62b","key":"bob","roles":[]}],["dora",{"email":"dora@s62b","key":"dora","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["eve",{"email":"eve@s62b","key":"eve","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"pendingBase":[],"pendingProposals":[["hist-p",{"approvals":["alice"],"proposal":{"removeMember":{"key":"ghost"}},"proposer":"alice"}]]}},{"accepted":true,"change":null,"event":{"proposal":{"departure":{"key":"bob"}},"tag":"propose"},"signer":"alice","state":{"appFold":{"casse":[["dora",30]],"collections":[{"accepted":[{"amount":20,"user":"bob"}],"id":1,"pending":[],"permitted":false,"referente":"dora"}],"conti":[["bob",40],["comune",0]],"votes":{"closed":[],"openQuestions":[["q",{"assents":["alice"],"dissents":[],"kind":"collective","proposer":"alice"}]]}},"members":[["carol",{"email":"carol@s62b","key":"carol","roles":[]}],["alice",{"email":"alice@s62b","key":"alice","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["bob",{"email":"bob@s62b","key":"bob","roles":[]}],["dora",{"email":"dora@s62b","key":"dora","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["eve",{"email":"eve@s62b","key":"eve","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"pendingBase":[["depart:bob",{"approvals":["alice"],"mutation":{"removeMember":{"key":"bob"}},"proposer":"alice"}]],"pendingProposals":[["hist-p",{"approvals":["alice"],"proposal":{"removeMember":{"key":"ghost"}},"proposer":"alice"}]]}},{"accepted":true,"change":{"memberRemoved":{"key":"bob"}},"event":{"proposalId":"depart:bob","tag":"approve"},"signer":"dora","state":{"appFold":{"casse":[["dora",30]],"collections":[{"accepted":[{"amount":20,"user":"bob"}],"id":1,"pending":[],"permitted":false,"referente":"dora"}],"conti":[["bob",0],["comune",40]],"votes":{"closed":[],"openQuestions":[["q",{"assents":["alice"],"dissents":[],"kind":"collective","proposer":"alice"}]]}},"members":[["carol",{"email":"carol@s62b","key":"carol","roles":[]}],["alice",{"email":"alice@s62b","key":"alice","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["dora",{"email":"dora@s62b","key":"dora","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["eve",{"email":"eve@s62b","key":"eve","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"pendingBase":[],"pendingProposals":[["hist-p",{"approvals":["alice"],"proposal":{"removeMember":{"key":"ghost"}},"proposer":"alice"}]]}},{"accepted":true,"change":null,"event":{"proposal":{"changeRoles":{"key":"eve","roles":[]}},"tag":"propose"},"signer":"alice","state":{"appFold":{"casse":[["dora",30]],"collections":[{"accepted":[{"amount":20,"user":"bob"}],"id":1,"pending":[],"permitted":false,"referente":"dora"}],"conti":[["bob",0],["comune",40]],"votes":{"closed":[],"openQuestions":[["q",{"assents":["alice"],"dissents":[],"kind":"collective","proposer":"alice"}]]}},"members":[["carol",{"email":"carol@s62b","key":"carol","roles":[]}],["alice",{"email":"alice@s62b","key":"alice","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["dora",{"email":"dora@s62b","key":"dora","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["eve",{"email":"eve@s62b","key":"eve","roles":[{"adminRole":{"admin":"publicAdmin"}}]}]],"pendingBase":[["roles:eve",{"approvals":["alice"],"mutation":{"changeRoles":{"key":"eve","roles":[]}},"proposer":"alice"}]],"pendingProposals":[["hist-p",{"approvals":["alice"],"proposal":{"removeMember":{"key":"ghost"}},"proposer":"alice"}]]}},{"accepted":true,"change":{"rolesChanged":{"key":"eve"}},"event":{"proposalId":"roles:eve","tag":"approve"},"signer":"dora","state":{"appFold":{"casse":[["dora",30],["eve",0]],"collections":[{"accepted":[{"amount":20,"user":"bob"}],"id":1,"pending":[],"permitted":false,"referente":"dora"}],"conti":[["bob",0],["comune",40]],"votes":{"closed":[{"cause":"tally","question":{"assents":["alice"],"dissents":[],"kind":"collective","proposer":"alice"},"questionId":"q","verdict":"positive"}],"openQuestions":[]}},"members":[["carol",{"email":"carol@s62b","key":"carol","roles":[]}],["alice",{"email":"alice@s62b","key":"alice","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["dora",{"email":"dora@s62b","key":"dora","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["eve",{"email":"eve@s62b","key":"eve","roles":[]}]],"pendingBase":[],"pendingProposals":[["hist-p",{"approvals":["alice"],"proposal":{"removeMember":{"key":"ghost"}},"proposer":"alice"}]]}},{"accepted":true,"change":{"memberRemoved":{"key":"dora"}},"event":{"proposal":{"departure":{"key":"dora"}},"tag":"propose"},"signer":"alice","state":{"appFold":{"casse":[["dora",0],["eve",0]],"collections":[],"conti":[["bob",20],["comune",10],["dora",0]],"votes":{"closed":[{"cause":"tally","question":{"assents":["alice"],"dissents":[],"kind":"collective","proposer":"alice"},"questionId":"q","verdict":"positive"}],"openQuestions":[]}},"members":[["carol",{"email":"carol@s62b","key":"carol","roles":[]}],["alice",{"email":"alice@s62b","key":"alice","roles":[{"adminRole":{"admin":"publicAdmin"}}]}],["eve",{"email":"eve@s62b","key":"eve","roles":[]}]],"pendingBase":[],"pendingProposals":[["hist-p",{"approvals":["alice"],"proposal":{"removeMember":{"key":"ghost"}},"proposer":"alice"}]]}}]}
+diff --git a/lean/lakefile.lean b/lean/lakefile.lean
+index 13b29a6..69c70b4 100644
+--- a/lean/lakefile.lean
++++ b/lean/lakefile.lean
+@@ -13,3 +13,6 @@ lean_lib Reactivegas where
+ @[default_target]
+ lean_lib KelGroups where
+   srcDir := "."
++
++lean_exe corpusExport where
++  root := `Reactivegas.CorpusExport
+diff --git a/nix/project.nix b/nix/project.nix
+index bef7cb8..765dde2 100644
+--- a/nix/project.nix
++++ b/nix/project.nix
+@@ -13,6 +13,7 @@ in pkgs.haskell-nix.cabalProject' {
+   };
+   shell.buildInputs = with pkgs; [
+     just
++    jq
+     lean4
+     nixfmt-classic
+     shellcheck
+diff --git a/specs/74-corpus-exporter/data-model.md b/specs/74-corpus-exporter/data-model.md
+new file mode 100644
+index 0000000..1952b6f
+--- /dev/null
++++ b/specs/74-corpus-exporter/data-model.md
+@@ -0,0 +1,53 @@
++# Data model — #74 corpus exporter
++
++Artifact ceiling: 60 lines / 5 KiB.
++
++## Wrapper principle
++
++`Trace = { schema, version, initial, steps }` is frozen. The gap (evaluation
++`GroupView`, backdonate authorization, initial aggregate for the integrated
++corpus) closes one level up: each checked-in file is a wrapper object. A
++consumer holding only the file can replay without out-of-band knowledge.
++Hard boundary (NOTE-001): the wrapper carries `GroupView` plus the
++authorization identity, and nothing else, without a filed question. The
++integrated file's `corpusInitial` is the same shape of need as `GroupView`,
++not a third thing.
++
++## D74-ECONWRAP — economic corpus file
++
++- `view`: the full `KelGroups.GroupView` under which the traces were
++  evaluated (today `seedView`: two admins + one member). JSON projection
++  owned by the new module.
++- `auth`: the authorization identity the traces were evaluated under (today
++  the refusing probe `seedAuth`, `fun _ _ => false`, containing no
++  backdonate event). Rendered as an explicit identity string/flag the
++  replayer can match, never as an opaque closure.
++- `traces`: exactly `Reactivegas.seedCorpus` (5 traces, 32 events), via
++  `Lean.toJson`, unedited. Each trace already carries its own `initial`
++  (`State.empty`); the wrapper does not repeat it.
++
++State invariant: `traces == seedCorpus` element for element; `view`/`auth`
++  are the exact context `emitTrace` received. No further file-level field
++  without a filed question.
++
++## D74-INTWRAP — integrated corpus file
++
++- `initial`: exactly `corpusInitial : KelGroups.GroupState State` (same
++  shape of need as `GroupView`, not a third thing).
++- `auth`: the authorization identity the steps were evaluated under (today
++  the refusing `probeAuth`), rendered as an explicit identity the replayer
++  can match.
++- `steps`: exactly `Reactivegas.emitIntegratedCorpus` (7 steps), via the
++  existing `ToJson` set, unedited.
++- Anything beyond `initial` + `auth` + `steps` that replaying turns out to
++  need (threshold, or equivalent): file a question first — do not add the
++  field. The PR enumerates each carried field and the replayer action for
++  it.
++
++State invariant: `steps == emitIntegratedCorpus`; `initial == corpusInitial`.
++
++## D74-MANIFEST — hash manifest
++
++Checked in beside the corpus files. One SHA-256 per corpus file over exact
++bytes. The verify target recomputes and byte-compares; any mismatch fails
++closed (non-zero, naming the file).
+diff --git a/specs/74-corpus-exporter/functions-model.md b/specs/74-corpus-exporter/functions-model.md
+new file mode 100644
+index 0000000..0f5ab83
+--- /dev/null
++++ b/specs/74-corpus-exporter/functions-model.md
+@@ -0,0 +1,29 @@
++# Functions model — #74 corpus exporter
++
++Artifact ceiling: 60 lines / 5 KiB. New/changed signatures only. No bodies,
++no imports, no control flow.
++
++- `F74-VIEWJSON (new, in CorpusExport module)`: `KelGroups.GroupView → Lean.Json`
++  via a `Lean.ToJson KelGroups.GroupView` instance declared in the new module.
++  Constraint: total over `members`; must not alter or duplicate any existing
++  instance.
++- `F74-ECONWRAP (new)`: builds the D74-ECONWRAP wrapper value from
++  (`seedView`, `seedAuth`-identity, `seedCorpus`).
++  Constraint: calls `seedCorpus`; takes no event list argument (a list
++  argument would be a second corpus); adds no field beyond view/auth/traces
++  without a filed question.
++- `F74-INTWRAP (new)`: builds the D74-INTWRAP wrapper value from
++  (`corpusInitial`, auth-identity, `emitIntegratedCorpus`).
++  Constraint: calls `emitIntegratedCorpus`; takes no step-list argument;
++  adds no field beyond initial/auth/steps without a filed question.
++- `F74-MAIN (new, `lean_exe` entry)`: `IO UInt32` (or `IO Unit` per lake
++  convention) writing both wrapper files to their frozen paths. Constraint:
++  the sole writer of the frozen files; writes bytes the verify target
++  compares exactly.
++- `F74-VERIFY (justfile, not Lean)`: verify target re-emits to temp and
++  byte-compares against checked-in files + manifest. Constraint: fails closed
++  (non-zero) on drift, missing file, or emitter failure.
++
++Unchanged and called, never redefined: `Reactivegas.seedCorpus`,
++`Reactivegas.emitIntegratedCorpus`, `Reactivegas.traceToJson`,
++`Lean.toJson` for `Trace` / `IntegratedTraceStep` / `State`.
+diff --git a/specs/74-corpus-exporter/modules-model.md b/specs/74-corpus-exporter/modules-model.md
+new file mode 100644
+index 0000000..f6ca56d
+--- /dev/null
++++ b/specs/74-corpus-exporter/modules-model.md
+@@ -0,0 +1,41 @@
++# Modules model — #74 corpus exporter
++
++Artifact ceiling: 60 lines / 5 KiB.
++
++## New responsibility
++
++- **M74-EXPORT (`lean/Reactivegas/CorpusExport*.lean`, new).** Owns: the
++  `KelGroups.GroupView` JSON projection; the file-level wrapper object(s)
++  carrying view + authorization identity + initial aggregate + traces; the
++  `lean_exe` entry point that writes both corpus files by calling
++  `Reactivegas.seedCorpus` and `Reactivegas.emitIntegratedCorpus`. Nothing
++  else in the tree owns wrapper bytes.
++  - Depends on: `Reactivegas.Trace` (hence `Invariants`, hence the machine).
++  - Depended on by: nothing. No existing module imports it. One-way, mirroring
++    the `Trace.lean` header rule.
++  - Promotion: none. This stays a leaf emitter; a future Haskell replayer (D3)
++    consumes its files, never imports it.
++
++## Changed responsibilities
++
++- **M74-BUILD (`lean/lakefile.lean`).** Gains one additive `lean_exe` stanza
++  pointing at the new module's `main`. No existing stanza is edited.
++- **M74-JUST (`justfile`).** Gains two additive targets: export (emit both
++  files) and verify (re-emit + byte-compare, fail closed). No existing recipe
++  is edited; `ci` gains one line invoking verify.
++- **M74-CORPUS (new frozen files, e.g. `lean/corpus/*.json` + `.sha256`).**
++  Owned bytes: the emitted wrappers. The emitter is the sole writer; humans
++  never hand-edit. Location is fixed by the commit owner and recorded in the
++  PR; the manifest lives beside the files.
++- **M74-RECORD (NOTE-001: no `docs/` change).** The commit owner authors
++  the coverage/hole/provisional prose as evidence in its own root
++  (`handoffs/coverage.md`: what each corpus covers with exact counts, the
++  vote hole with mechanism, the assenso consequence, the provisional-until-
++  #68-#69 notice, the replayer field table). The ticket owner places it at
++  ticket `handoffs/CORPUS-COVERAGE.md` for routing to #71. `docs/` stays
++  byte-identical to base; the gate fails if it does not.
++
++## Explicit non-goals
++
++`Eventi/`, `Core/`, `Lib/`, `Voci/`, `Server/`, `paolino/kelgroups`, the
++Haskell replayer (D3, blocked on #73), and any model edit per R74-05.
+diff --git a/specs/74-corpus-exporter/plan.md b/specs/74-corpus-exporter/plan.md
+new file mode 100644
+index 0000000..b6063d8
+--- /dev/null
++++ b/specs/74-corpus-exporter/plan.md
+@@ -0,0 +1,64 @@
++# Plan — #74 corpus exporter
++
++Artifact ceiling: 120 lines / 9 KiB.
++
++## Fixed decisions
++
++Single OWNER slice S74. LIGHT is ineligible: the wrapper shape (what a
++replayer must do with each field), the `GroupView` JSON projection, and the
++claim that no model definition moved are semantic judgments no executable
++gate alone entails. `draft=NONE`. Commit owner `muse`, auditor `grok`.
++
++The exporter is a new Lean module plus a `lean_exe`. It imports the machine
++(`Reactivegas.Trace`, hence `Invariants`) and calls the two existing
++definitions. Dependency direction stays one-way: nothing existing imports the
++new module back (same rule `Trace.lean` documents for itself).
++
++Format lands now; content is provisional. #68 (proposer is not an assent) and
++#69 (pledge sovereignty) change what the corpora emit. The checked-in files
++are re-frozen after they land, before D3 consumes them as an oracle. Do not
++wait for them; do not present the current content as final.
++
++#71 is rewriting the design record, so this slice writes no `docs/` file at
++all (NOTE-001). The coverage content is delivered as
++`handoffs/CORPUS-COVERAGE.md` in the ticket runtime root and routed to #71
++by the epic owner.
++
++## Source horizon and fence
++
++Implementation may add/change only:
++
++- `lean/Reactivegas/CorpusExport*.lean` (new module(s); the `GroupView`
++  `ToJson` lives here);
++- `lean/lakefile.lean` (one `lean_exe` stanza, additive);
++- frozen corpus JSON + hash manifest (new checked-in files, location named in
++  `modules-model.md`);
++- `justfile` (export + verify targets, additive) and the CI step that runs
++  the verify target;
++- task stamps in `specs/74-corpus-exporter/tasks.md`.
++
++`docs/` is read-only (NOTE-001 revocation). Everything else is read-only
++too, including all existing `lean/` content bytes, `Eventi/`, `Core/`,
++`Lib/`, `Voci/`, `Server/`, `paolino/kelgroups`, and prior `specs/`
++directories. The forbidden list in R74-05 is exact.
++
++## Slice S74 — exporter, artifacts, gate, record
++
++Delivers R74-01…R74-05 and tasks T7400…T7404.
++
++- New module: `GroupView` JSON, file-level wrappers bounded by NOTE-001 —
++  economic file: `seedView` + refusing `seedAuth` identity + traces (initial
++  already lives in each `Trace`); integrated file: `corpusInitial` + steps
++  (+ the auth identity the steps were evaluated under) — `lean_exe` entry
++  point writing both files. Any third wrapper field needs a filed question,
++  not an implementation decision.
++- Frozen files + SHA-256 manifest beside them; `just` export target and
++  `just` verify target (re-emit + byte-compare, fail closed); CI runs verify.
++- Coverage handoff content (for the ticket owner to place at
++  `handoffs/CORPUS-COVERAGE.md`): coverage, vote hole with mechanism,
++  assenso consequence, provisional-until-#68-#69 notice.
++- Verification: export → verify 0 clean; mutate one byte → non-zero; restore
++  → zero (all three quoted); `just ci` green; additive-only proof by diff.
++
++Frozen gate rows: `G74-CALLS-EXISTING`, `G74-ENVELOPE-CLOSED`,
++`G74-VERIFY-FAILS-CLOSED`, `G74-RECORD-HONEST`, `G74-ADDITIVE-ONLY`.
+diff --git a/specs/74-corpus-exporter/spec.md b/specs/74-corpus-exporter/spec.md
+new file mode 100644
+index 0000000..f15026a
+--- /dev/null
++++ b/specs/74-corpus-exporter/spec.md
+@@ -0,0 +1,81 @@
++# Spec — #74 corpus exporter
++
++Issue: https://github.com/paolino/reactivegas/issues/74 (parent #67, under #72)
++
++Authoritative inputs:
++
++- issue body: exporter calls `seedCorpus` / `emitIntegratedCorpus`, closes the
++  envelope gap at file level, additive only, records the vote hole, format now
++  / content re-frozen after #68 + #69;
++- ticket-owner brief `/tmp/reactivegas/ms2/e-haskell-impl/t74-corpus-exporter/brief.md`
++  (base `e6c5924`, worktree `/code/reactivegas-issue-74`, branch
++  `feat/74-corpus-exporter`, seat `muse`, auditor `grok`);
++- epic map `/tmp/reactivegas/ms2/e-haskell-impl/EPIC-MAP.md` (D0c unblocked,
++  D3 blocked on #73 + #68 + #69).
++
++Artifact ceiling: 120 lines / 9 KiB.
++
++## Observable outcome
++
++A person who has never seen this repository can, from a clean checkout:
++
++1. run one command and get both corpus files;
++2. run one command that verifies the checked-in files match what the Lean
++   emits, and see it exit non-zero when a byte is changed;
++3. read `handoffs/CORPUS-COVERAGE.md` (ticket runtime root, routed to #71)
++   and learn what the corpora cover and what they do not.
++
++NOTE-001 (epic parent correction, 2026-09-05) revokes the design-record
++entry: `docs/en/design/` is read-only on this slice (#71 is rewriting it).
++Coverage content goes to the handoff file instead.
++
++## Requirements
++
++- **R74-01 — call, do not restate.** The exporter calls
++  `Reactivegas.seedCorpus : List Trace` (`lean/Reactivegas/Trace.lean`, 5
++  traces / 32 events) and `Reactivegas.emitIntegratedCorpus :
++  List IntegratedTraceStep` (`lean/Reactivegas/Invariants.lean`, 7 steps from
++  `corpusInitial`). Both already have `Lean.ToJson`. No corpus content,
++  `seedView`, `corpusInitial`, or `seedAuth` is restated in the new module.
++- **R74-02 — file-level envelope, hard boundary (NOTE-001).** `Trace` is
++  frozen and untouched. Each wrapper file carries the `GroupView` plus the
++  authorization identity, and nothing else, without escalating first: if
++  replaying turns out to need a third thing — any third thing — stop and
++  file a question, because a wrapper that grows fields becomes the second
++  format this slice exists to prevent. The integrated file's initial
++  aggregate (`corpusInitial`) is the same shape of need as `GroupView`, not
++  a third thing. (Each economic `Trace` already carries its own `initial`;
++  the economic wrapper does not repeat it.) `KelGroups.GroupView` gets its
++  `ToJson` in the new module only, never in an existing one. The PR states
++  what a replayer must do with each field.
++- **R74-03 — frozen artifacts + failing-closed gate.** A `lean_exe` writes
++  both corpora; the files are checked in; a hash manifest is checked in beside
++  them; a `just` verify target re-emits and byte-compares, failing closed on
++  drift; a CI step runs that target. The negative control (mutate one byte →
++  non-zero → restore → zero) is demonstrated and quoted.
++- **R74-04 — honest record (NOTE-001).** No `docs/` file is written. The
++  same content is delivered as `handoffs/CORPUS-COVERAGE.md` in the ticket
++  runtime root (routed to #71): what each corpus covers (economic vs base
++  channel, 5 traces / 32 events; 7 base steps), what neither covers —
++  **votes**, with the mechanism (`step` returns `none` for
++  `openQuestion`/`cast`/`renounce`, which run inside `appFold` via
++  `voteApply`, which the economic corpus never reaches and the integrated
++  corpus never emits) — the consequence (**assenso is named in the
++  milestone's outcome test and has no oracle behind it**), and that the
++  checked-in content is provisional until #68 and #69 land and must be
++  re-frozen then. The PR body states the hole too.
++- **R74-05 — additive only.** No theorem, `example`, `#guard`, proof, guard,
++  `step`, `stepEvent`, `appFold`, `baseHook`, state type, event constructor,
++  `Trace` structure, existing corpus content, `seedView`, `corpusInitial`, or
++  `seedAuth` is changed. No change under `Eventi/`, `Core/`, `Lib/`, `Voci/`,
++  `Server/`, `docs/`, or `paolino/kelgroups`. If the oracle appears to need
++  one, stop and file a question instead of deciding.
++
++## Rejection behavior
++
++- `just <verify-target>` exits non-zero on any byte drift, missing file, or
++  emitter failure. It never silently passes when it cannot resolve the Lean.
++- A candidate that edits `Trace`, the model, or restates corpus content is
++  rejected even if all gates are green.
++- A gate that has never been seen to fail is not a gate; without the quoted
++  negative control the slice is not accepted.
+diff --git a/specs/74-corpus-exporter/tasks.md b/specs/74-corpus-exporter/tasks.md
+new file mode 100644
+index 0000000..d58735b
+--- /dev/null
++++ b/specs/74-corpus-exporter/tasks.md
+@@ -0,0 +1,19 @@
++# Tasks — #74 corpus exporter
++
++Artifact ceiling: 60 lines / 5 KiB. Only the ticket owner checks behavior-task
++boxes after a fresh audit passes the exact candidate.
++
++## Planning and gate
++
++- [ ] **T7400** Freeze mandate + immutable slice gate + falsification proof
++      (gate RED on base: no exe, no corpus files, no verify target).
++- [ ] **T7401** New `CorpusExport` module + `GroupView` JSON + wrappers +
++      `lean_exe` calling `seedCorpus` / `emitIntegratedCorpus`. (R74-01, R74-02)
++- [ ] **T7402** Frozen corpus files + SHA-256 manifest + `just` export/verify
++      + CI step; quoted negative control (0 / non-zero / 0). (R74-03)
++- [ ] **T7403** Coverage evidence `handoffs/coverage.md` in the owner root
++      (coverage with counts, vote hole with mechanism, assenso consequence,
++      provisional until #68 + #69, replayer field table) for the ticket owner
++      to route to #71 + PR body hole statement. No `docs/` write. (R74-04)
++- [ ] **T7404** Full verification: export, verify, negative control, `just ci`,
++      additive-only diff proof, fresh `grok` audit, push + draft PR. (R74-05)
+diff --git a/specs/86-exporter-successor/data-model.md b/specs/86-exporter-successor/data-model.md
+new file mode 100644
+index 0000000..ab08db4
+--- /dev/null
++++ b/specs/86-exporter-successor/data-model.md
+@@ -0,0 +1,38 @@
++# Data model — #86 exporter successor (extends D74, no widening)
++
++Wrapper shape unchanged: economic `{view,auth,traces}`, integrated
++`{initial,auth,steps}`. Binding the values of fields already present is not
++widening. Exact key-set checks stay mandatory for their shape scope.
++
++## D86-ECON-VIEW — economic `.view` live-bound
++
++- Value: exactly `seedView` via `Lean.toJson` at this call site.
++- Kill: `.view.members[0].key` → `"ZZZ"` must fail compiled `check` AND the
++  shipped `jq` path must not rescue it (separability: key-set checks pass,
++  value check fails — the right row kills).
++- Bounded claim: call-site independence only (both sides share the derived
++  `ToJson`); serializer-instance independence NOT established by this method.
++
++## D86-INT-INITIAL — integrated `.initial` live-bound
++
++- Value: exactly `corpusInitial`.
++- Kill: `.initial.members` → `[]` must fail compiled `check`.
++
++## D86-AUTH — both `.auth` identities live-bound
++
++- Values: `econAuthIdentity` / `intAuthIdentity` strings matching the
++  refusing probes under which emission ran (no backdonate event in corpus).
++- Kills: (3) economic `.auth` → permissive string must fail; (4) integrated
++  `.auth` → permissive string must fail. Four named controls, none left as
++  "the fourth the audit measured".
++
++## D86-ARITY — malformed check writes nothing
++
++- `["check", onePath]` is a malformed `check` invocation, never a write to
++  a file named `check`. Exits non-zero; pre-placed sentinels + full
++  directory comparison prove no mutation (exit code alone insufficient).
++
++## D86-MANIFEST — manifest + bytes
++
++Unchanged: one SHA-256 per file over exact bytes; verify re-emits to temp,
++`cmp`s both, `sha256sum -c`; any drift fails closed naming the file.
+diff --git a/specs/86-exporter-successor/functions-model.md b/specs/86-exporter-successor/functions-model.md
+new file mode 100644
+index 0000000..dfe7668
+--- /dev/null
++++ b/specs/86-exporter-successor/functions-model.md
+@@ -0,0 +1,26 @@
++# Functions model — #86 exporter successor (new/changed signatures only)
++
++- `F86-CHECKCTX (extended, in CorpusExport module)`: bind wrapper context to
++  live defs — economic `view` vs `seedView`, integrated `initial` vs
++  `corpusInitial`, each `auth` vs its identity def — element/value equality,
++  nonzero extent where applicable. Constraint: same call-site `ToJson` path
++  as emission; bounded independence claim in the module comment (does not
++  establish serializer-instance independence); no new encoder required.
++- `F86-ARITY (changed, `main`)`: `["check", onePath]` (and any non-3-arg
++  `check`-headed form) → usage to stderr, exit 1, zero filesystem mutation.
++  Constraint: write arm never triggers when `args[0] == "check"`; existing
++  `["check", econ, int]` + 2-path write arms unchanged; declared
++  second-write-failure limit stands.
++- `F86-VERIFY (justfile, extended)`: verify target runs re-emit + `cmp` +
++  manifest + compiled `check` + both exact `jq` key-set programs (top level
++  AND one level in, nonzero-extent guards). Constraint: fails closed naming
++  the file/row; no existing `just lean` leg weakened.
++- `F86-CIVERIFY (ci.yaml, additive)`: one committed step invoking corpus
++  verification (exact command frozen in gate). Constraint: additive only.
++- `F86-JQDECL (nix/, additive)`: `jq` in dev-shell inputs (exact attr frozen
++  in gate). Constraint: clean-env resolution, correct misattribution on
++  omission.
++
++Unchanged and called: `seedCorpus`, `emitIntegratedCorpus`, `seedView`,
++`corpusInitial`, `checkLiveArray`/`checkEconFile`/`checkIntFile` cores
++(extended, not replaced), `Trace`/`ToJson` set.
+diff --git a/specs/86-exporter-successor/modules-model.md b/specs/86-exporter-successor/modules-model.md
+new file mode 100644
+index 0000000..071dfcc
+--- /dev/null
++++ b/specs/86-exporter-successor/modules-model.md
+@@ -0,0 +1,32 @@
++# Modules model — #86 exporter successor
++
++## Changed responsibilities (all additive, on `9c8756a`)
++
++- **M86-EXPORT (`lean/Reactivegas/CorpusExport.lean`).** Gains: live binding
++  of `view` + both `auth` identities + integrated `initial` to their
++  authoritative defs (`seedView`, `econAuthIdentity`/`intAuthIdentity` sources,
++  `corpusInitial`) through the same call-site `check` path; malformed-arity
++  guard so `["check", onePath]` no longer falls into the 2-arg write arm.
++  Still calls `seedCorpus`/`emitIntegratedCorpus`; takes no list args; adds
++  no wrapper field. One-way import direction unchanged.
++- **M86-JUST (`justfile`).** Gains: extended `lean-corpus-verify` (context
++  binding + key-set checks stay; exact post-repair body frozen in gate);
++  no existing recipe weakened. `ci` keeps invoking verify.
++- **M86-CI (`.github/workflows/ci.yaml`, additive).** Gains one step running
++  corpus verification on the committed path (exact command frozen in gate).
++  Loses nothing: `lean-toolchain-contract` + `just lean` (direction,
++  inversion coverage ± negative control, trace agreement, `lake build`) stay.
++- **M86-NIX (`nix/project.nix` or owned shell decl).** Gains `jq` in shell
++  inputs (exact attr frozen in gate). Nothing else moves.
++- **M86-CORPUS (`lean/corpus/*`).** Unchanged bytes by default (fence).
++  Only a separately accepted upstream integration may re-emit, recorded
++  separately with new hashes + dated handoff entry.
++- **M86-RECORD (`handoffs/CORPUS-COVERAGE.md`, ticket root).** Corrected to
++  current hashes + zero `UNPROVED`, dated pre-S1 evidence preserved, vote
++  hole + provisional list (#68/#69/#76/#81/#75-context) + replayer table kept.
++
++## Explicit non-goals
++
++Model edits, `Trace`/schema changes, wrapper widening, `docs/`, kelgroups
++implementation, vote-corpus (#75), composition (#76), V-5 lifecycle (#81),
++replay sidecar (#75-context). Still provisional after acceptance.
+diff --git a/specs/86-exporter-successor/plan.md b/specs/86-exporter-successor/plan.md
+new file mode 100644
+index 0000000..ac48f6c
+--- /dev/null
++++ b/specs/86-exporter-successor/plan.md
+@@ -0,0 +1,45 @@
++# Plan — #86 exporter successor
++
++Single OWNER slice S86 (LIGHT ineligible: CI-wiring entailment, wrapper-value
++semantics, refusal-without-write, and additive-only scope need semantic
++judgment no pure gate entails). `draft=NONE`. Ticket owner `muse`, commit
++owner `muse` (operator-suspended alternation), auditor `codex`|`grok` FULL
++per candidate (never `muse`/`glm`/`claude`).
++
++## Fixed decisions
++
++Start from inherited `9c8756a` (descendant of `4a6cd87` via `bc44998`), new
++branch `feat/86-exporter-successor`. Repairs ride as uncommitted work on that
++base; emitter bytes stay identical (spec fence) so the corpus files +
++manifest do not move. Format + gate + apparatus change; content does not.
++
++Order: (1) freeze mandate + immutable gate with per-row RED on the unrepaired
++tree (A–E RED, 4 inherited GREEN expected); (2) dispatch commit owner with
++the frozen packet; (3) submission → fresh FULL auditor; (4) one
++findings-driven repair max, then fresh FULL re-audit; (5) accept → stamp →
++`just ci` GREEN → draft PR (provisional body, no merge/comments).
++
++## Source horizon and fence
++
++Owned (additive unless named): `lean/Reactivegas/CorpusExport.lean`,
++`lean/corpus/*`, `lean/lakefile.lean`, corpus recipes in `justfile`,
++`.github/workflows/ci.yaml` additively, dev-shell tool decl under `nix/`,
++`handoffs/CORPUS-COVERAGE.md` (ticket root, routed to #71), task stamps here.
++
++Forbidden: any Lean theorem/guard/`step`/`stepEvent`/`appFold`/`baseHook`/
++state type/`Trace`/`reactivegas.trace/v1`; existing corpus content,
++`seedView`, `corpusInitial`, `seedAuth`; `docs/en/design/` (#71);
++`paolino/kelgroups` implementation. Crossing → stop + `questions/Q-NNN`.
++
++## Slice S86 — five repairs + four re-established rows
++
++Delivers R86-A…R86-F and tasks T8600…T8606. Commit owner binds traces/steps
+++ view/initial/both-auths to live defs (bounded call-site claim), fixes
++`check`-one-path fallthrough (usage exit 1, no writes), wires CI verifier
++additively, declares `jq`, corrects coverage handoff with dated history.
++Auditor scope: entire unaccepted exporter vs `4a6cd87`, all 9 rows open.
++
++Frozen gate rows: `G86-A-CI-PATH`, `G86-B-JQ-DECLARED`, `G86-C-CONTEXT-BOUND`,
++`G86-D-ARITY-REFUSES-NOWRITE`, `G86-E-COVERAGE-CURRENT`,
++`G74-CALLS-EXISTING`, `G74-ENVELOPE-CLOSED`, `G74-VERIFY-FAILS-CLOSED`,
++`G74-ADDITIVE-ONLY`.
+diff --git a/specs/86-exporter-successor/spec.md b/specs/86-exporter-successor/spec.md
+new file mode 100644
+index 0000000..f7a77c2
+--- /dev/null
++++ b/specs/86-exporter-successor/spec.md
+@@ -0,0 +1,80 @@
++# Spec — #86 exporter successor (full acceptance + CI/tooling/context/arity repairs)
++
++Issue: https://github.com/paolino/reactivegas/issues/86 (under #67, #72, milestone 2).
++Successor to #74 — **not a third #74 submission**. #74/PR#78 stay open, frozen, undelivered.
++Base: accepted S1 `4a6cd87`. Inherited candidate: `9c8756a` (frozen, unaccepted).
++Audit of record: `audit-s3` report `654f14ce…73853866`, verdict AUDIT-FINDINGS, blocking 3.
++
++Authoritative inputs: issue #86 body (complete); ticket brief
++`/tmp/reactivegas/ms2/e-haskell-impl/t86-exporter-successor/brief.md`
++sha `659c37be…0405a5f4`; `RECUT-74-PROPOSAL.md` sha `bee72ccc…08bd1c`;
++`audit-s3/report.md` + `onward-discoveries.md`; `.archived/audit-s1+s2`.
++
++## Observable outcome
++
++A stranger from a clean checkout can: run one command to get both corpus
++files; run one command proving checked-in files match live Lean emission,
++seeing non-zero on any byte drift; confirm the committed CI workflow invokes
++that verifier (local execution of the committed path + real remote CI green
++at the clean SHA, neither substituting); reproduce in a clean dev shell
++(`jq` declared); trust every wrapper value is live-bound (4 mutants killed);
++see malformed `check` arity refuse without writing; read a coverage handoff
++describing today with dated history preserved.
++
++## Requirements
++
++- **R86-A — committed CI path runs the verifier.** `.github/workflows/ci.yaml`
++  invokes corpus verification additively (loses nothing: `just lean` keeps
++  dependency direction, inversion coverage + negative control, trace-coverage
++  agreement, `lake build`). Evidence: (1) local execution of the committed
++  CI job/step command on corrupted fixtures in an isolated env, wiring +
++  command identity bound to the candidate, removal/bypass detected, reported
++  as local execution; (2) real remote CI green at the clean final SHA.
++  No mutant push authorized or required. Do not weaken existing steps.
++- **R86-B — declared reproducible tooling.** `jq` (+ any other recipe tool)
++  declared in the dev shell (`nix/`). Evidence: success in a clean
++  reproducible env (`nix develop --ignore-environment` or equivalent), not
++  via host binary; omission control (remove declaration → fails, attributed
++  correctly to the missing declared tool). Failing closed necessary, not
++  sufficient. No "portability advisory" label.
++- **R86-C — every approved wrapper value live-bound.** `view`, `initial`,
++  `auth` as well as `traces`/`steps`. All four survive-mutants killed: (1)
++  economic `.view.members[0].key` → `"ZZZ"`; (2) integrated
++  `.initial.members` → `[]`; (3) economic `.auth` refusing → permissive;
++  (4) integrated `.auth` refusing → permissive. Bounded claim only: **the
++  selected live-call / derived-`ToJson` method does not establish
++  serializer-instance independence** (an independent encoder could differ;
++  none required here). Exact byte-level key-set checks stay mandatory for
++  their shape scope. No wrapper/schema widening.
++- **R86-D — malformed check arity refuses without writing.**
++  `corpusExport check <one-path>` exits non-zero, no output mutation —
++  proven by pre-placed sentinels + unchanged-directory comparison, not exit
++  code alone. Scope: malformed-arity only; no broader atomic two-write
++  promise; declared limit (failed second write leaves first) stands.
++- **R86-E — coverage handoff describes today.**
++  `handoffs/CORPUS-COVERAGE.md` reflects current hashes + zero `UNPROVED`,
++  preserving dated older evidence (pre-S1 measurement stays, dated). Stale
++  `Trace.lean` comment routes desk → #66/#71 as quality/docs follow-up, no
++  model-edit grant, no exporter semantics change.
++- **R86-F — inherited rows re-established, all open to falsification.**
++  `G74-CALLS-EXISTING`, `G74-ENVELOPE-CLOSED`, `G74-VERIFY-FAILS-CLOSED`,
++  `G74-ADDITIVE-ONLY` each re-run on the successor candidate. Prior KILLED
++  receipts are inputs, never acceptance; auditor may challenge any PASS.
++
++## Corpus content fence
++
++Emitter output stays **byte-identical to `9c8756a` inputs**
++(`economic.json 14494B 73a077fc…`, `integrated.json 7673B 1f173aec…`)
++unless a separately accepted upstream integration forces a separately
++recorded re-emission. Do not anticipate #68/#69. No wrapper/replay-schema
++widening. If accepted master advances, integrate + re-establish complete
++acceptance at that final base, caps + identities preserved.
++
++## Rejection behavior
++
++- Any row without an executable check + demonstrated-failing control rejects.
++- Source-text grep alone never closes a row (lead, not evidence).
++- Green gate ≠ mandate: rows ARE the mandate.
++- Wrapper widening, schema widening, `docs/en/design/` write, Lean
++  theorem/guard/step/state/`Trace` change, or `paolino/kelgroups`
++  implementation rejects even if green. Fence crossing → stop + question.
+diff --git a/specs/86-exporter-successor/tasks.md b/specs/86-exporter-successor/tasks.md
+new file mode 100644
+index 0000000..b8e5dcb
+--- /dev/null
++++ b/specs/86-exporter-successor/tasks.md
+@@ -0,0 +1,22 @@
++# Tasks — #86 exporter successor
++
++Only the ticket owner checks behavior-task boxes, after a fresh FULL
++`codex`|`grok` audit passes the exact candidate. Commit owner never stamps.
++
++## Planning and gate
++
++- [ ] **T8600** Freeze mandate (this dir) + immutable slice gate + per-row
++      RED proof on unrepaired `9c8756a` (A–E RED, 4 inherited GREEN).
++- [ ] **T8601** Context binding: `view`/`initial`/both-`auth` live-bound in
++      `check` path + bounded claim comment + 4 mutants killed. (R86-C)
++- [ ] **T8602** Arity fix: `check`-one-path refuses nonzero + zero writes
++      (sentinels + dircmp). (R86-D)
++- [ ] **T8603** CI wiring additive + local-committed-path execution +
++      removal detection; remote CI green at clean SHA recorded. (R86-A)
++- [ ] **T8604** `jq` declared + clean-env success + omission control with
++      correct attribution. (R86-B)
++- [ ] **T8605** Coverage handoff current (hashes + zero UNPROVED) with dated
++      history preserved; stale comment routed, no model edit. (R86-E)
++- [ ] **T8606** Full acceptance: 9/9 rows GREEN, emitter bytes identical to
++      `9c8756a`, `nix develop --quiet -c just ci` GREEN, fresh FULL audit
++      per candidate, draft PR provisional (no merge/comments). (R86-F)

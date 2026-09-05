@@ -1,0 +1,493 @@
+diff --git a/docs/en/design/kelgroups-mapping.md b/docs/en/design/kelgroups-mapping.md
+new file mode 100644
+index 0000000..fcd1e39
+--- /dev/null
++++ b/docs/en/design/kelgroups-mapping.md
+@@ -0,0 +1,476 @@
++# Substrate mapping: the reactivegas machine on kelgroups
++
++This page is the design record for issue
++[#47](https://github.com/paolino/reactivegas/issues/47): how the economic
++machine specified in [`lean/Reactivegas/`](https://github.com/paolino/reactivegas/tree/main/lean/Reactivegas)
++(see [State machine](state-machine.md)) plugs into the
++[kelgroups](https://github.com/paolino/kelgroups) substrate. It is the
++requirements input to paolino/kelgroups#28 (application API v2) and
++paolino/kelgroups#30 (app-scoped proposals); those tickets freeze their
++contracts against it.
++
++Standing rulings (epic [#43](https://github.com/paolino/reactivegas/issues/43),
++2026-08-25): the legacy `Eventi/` reactors are the specification; members are
++sovereign (every utente holds their own key); responsabili may still declare
++on behalf of a keyless member; deposits stay responsabile-authored because
++they record physical cash custody; insolvency is banned.
++
++The Lean machine is authoritative and unchanged by this mapping. Where the
++substrate seems to demand a semantics change, this document records an open
++question instead of an edit — see [Open questions](#open-questions).
++
++## Role mapping
++
++| legacy concept | kelgroups reality | evidence |
++| --- | --- | --- |
++| responsabile | a member holding an admin role (`AdminRole`) | `KelGroups.Types.hasAdmin`, `KelGroups.State.isAdmin` |
++| utente | any group member (`members :: Map Text Member`) | `KelGroups.State.GroupState` |
++| referente of a collection | per-collection application state (`Collection.referente`), set from the opener at `openPurchase` | `Reactivegas.State.Collection`; legacy `Impegni.referente` in `Eventi/Impegno.hs` |
++| assenso majority | admin-majority proposals, `ceil(admins / 2)` | `KelGroups.State.majority`; legacy `maggioranza` in `Eventi/Anagrafe.hs` |
++
++There are **no application roles**: reactivegas registers no `RoleDef`
++entries (`roleDefs` stays empty, as in `KelGroups.Trivial`). Everything the
++legacy system expressed through roles is either an admin distinction
++(responsabile) or pure application state (referente). This keeps the base
++layer free of reactivegas vocabulary: `AppRole` exists in
++`KelGroups.Types` but the reactivegas configuration never uses it.
++
++Consequences:
++
++* **Admission** is owned by the base layer. `NuovoUtente`
++  (`Eventi/Anagrafe.hs`) becomes a base `IntroduceMember` proposal with a CESR
++  key; the app observes enactment as its `addUser` interface event. The Lean
++  guards (`!s.users.contains u`) mirror the base's own
++  `MemberAlreadyExists` check in `KelGroups.Validate`, so the app transition
++  cannot fail on provenance-respecting input. The proposal's CESR key is the
++  introduced member's own when they hold one; for a keyless target it is a
++  base-layer handle the target does not hold (see **Keylessness** below).
++* **Election and revocation** of responsabili are owned by the base layer:
++  `ChangeRoles` granting or revoking the admin role, decided by admin
++  majority — already native kelgroups machinery. The app observes enactment
++  as `electResponsabile` / `removeResponsabile`. Demotion is ordinary
++  **rotation, not sanction** — how responsabili come and go, routine turnover
++  of which members act for the group — with no emergency, hostile-cassiere or
++  deposition procedure attached; the same admin-majority vote that elects
++  also demotes. Revocation carries the L1/L4
++  economics: the removed responsabile's open collections are stripped and all
++  their pledges refunded (`stripCollections` + `refundAll`, theorems
++  `governance_enacts_remove`, `conservation_preserved`). This mirrors the
++  legacy internal event `EventoEliminazioneResponsabile`
++  (`Eventi/Anagrafe.hs`). What becomes of a departing responsabile's cassa is
++  owned by a future Lean amendment (settle-at-zero before removal, in either
++  sign) that is already routed ahead of the Haskell core and is out of scope
++  for this mapping; today's `removeResponsabile` has no balance precondition,
++  and nothing here depends on one.
++* **Bootstrap**: legacy `bootAnagrafe` seeds founding responsabili;
++  kelgroups bootstrap mode (zero admins, passphrase auth,
++  `KelGroups.Bootstrap.authMode`) requires the first `IntroduceMember` to
++  carry an admin role (`BootstrapRequiresAdmin` in `KelGroups.Validate`). The
++  app boot state is `State.init r` with `r` = the founding responsabile. One
++  founder plays both sides: first admin of the base group and initial state
++  of the app fold.
++* **Keylessness**: a keyless utente cannot sign anything themselves — they
++  hold no key — but they are not outside the machine. A responsabile admits
++  them through the same base `IntroduceMember` route as anyone else: the
++  responsabile proposes and signs, the proposal's CESR key is a base-layer
++  handle the utente does not hold, and the base records the member under
++  that handle. On enactment the app folds the `addUser a u` interface
++  event — author `a` is the proposing responsabile (`BaseOutcome` carries
++  the proposer), target `u` the fresh id — and `addUser` is the sole Lean
++  transition that appends to `State.users`; its guard,
++  `isResponsabile s a && !s.users.contains u`, mentions no key, so a
++  keyless target enters the users set exactly like a key-holding member.
++  Every later deposit or pledge naming them is authored on their behalf by
++  a responsabile (the epic ruling) and satisfies `s.users.contains u`. See
++  the AUTH matrix.
++
++## Assensi → proposals
++
++The legacy `programmazioneAssenso` / `programmazionePermesso` machinery in
++`Eventi/Anagrafe.hs` collected pros and cons (`Assensi richiedente [pros]
++[cons]`) or asked a single named responsabile (`Permesso richiedente
++interrogato`). The three legacy flows map onto three different kelgroups
++mechanisms:
++
++### Elections and revocations — base proposals (already native)
++
++Legacy election (`ElezioneResponsabile`) and revocation
++(`EliminazioneResponsabile`) ran `programmazioneAssenso` with the
++`maggioranza` threshold over elected responsabili. kelgroups base proposals
++(`Propose`/`Approve` over `ChangeRoles`) implement exactly this: proposed by
++an admin, approved by admin majority, enacted into the membership map. No
++application payload needed; the app reacts to the enactment
++([Interface events](#the-applogic-interface-contract)).
++
++### Purchase approval — app-scoped proposal (kelgroups#30)
++
++Opening a purchase in legacy code started *two* things: the pledge collection
++and a majority assenso whose positive outcome set the closure permission
++(`positivo -> ci` sets `permesso = True` in `Eventi/Acquisto.hs` /
++`Eventi/Impegno.hs`) and whose negative outcome failed the purchase with full
++refunds. This is law L2: closing needs group assent (`permissionToClose`),
++and denial is also a verdict — `denyPermission` refunds every pledge
++(`Step.lean`).
++
++Mapping: the purchase-approval question is an **app-scoped proposal** per
++kelgroups#30 carrying the payload "grant closure permission to collection
++*c*". Admins (= responsabili) vote exactly as for base proposals; the
++majority rule is unchanged, including single-admin immediate enactment
++(legacy behaves identically at one responsabile: `(1+1) div 2 = 1`). At
++enactment — whichever way the verdict falls — kelgroups injects an ordinary
++app event into the fold with KEL provenance:
++
++* assent verdict → `grantPermission(a, c)`
++* dissent (or withdrawal, see Q-5) → `denyPermission(a, c)` — which fails
++  the purchase with full refunds, exactly the legacy `negativo` branch.
++
++Both verdicts must be observable: reactivegas L2 gives dissent real economic
++content (refund everything), so a rejected proposal may not simply vanish.
++
++### The per-pledge Permesso — direct referente app event (not a proposal)
++
++In legacy code a pledge by anyone other than the referente opened a
++`programmazionePermesso` addressed to the referente alone
++(`fallimento (ut /= r)` — anyone else attempting to answer it is rejected,
++`Eventi/Anagrafe.hs`), whose two outcomes are accept (`pending → accepted`)
++or refuse (refund). This is precisely the Lean pair `acceptPledge` /
++`refusePledge` with guard `col.referente == a`.
++
++It maps to a **direct app event signed by the referente**, not to a proposal,
++for three reasons:
++
++1. **It is not a majority question.** The decision right belongs to one
++   designated person, resolved from application state (`Collection.referente`).
++   Routing it through proposal voting would hand the decision to whoever
++   happens to be admin — a semantics change, and the referente may not even
++   be distinguishable from other admins at the base layer.
++2. **The voters would be wrong.** Base/admin proposals are voted by admins at
++   large; the legacy Permesso is answerable *only* by the named interrogato.
++   kelgroups#30 proposals have no per-designee restriction, and adding one
++   would complicate the base machinery for a case the app already expresses
++   perfectly with signer-based authorization inside `appStep`.
++3. **No escrow semantics belong at the base layer.** Accept/refuse move money
++   between a user's conto and a collection's escrow lists. Keeping them as
++   plain app events means the existing Lean proofs
++   (`pledge_escrow_debit`, `conservation_preserved`) apply verbatim.
++
++## AUTH matrix under sovereign members
++
++One row per event of the Lean `Step`. "Signer" is the CESR key submitted
++with the event, resolved to the authoring user `a` (see
++[Identity resolution](#identity-resolution)). Every row's authorization
++condition is exactly the Lean guard; the channel column says how the event
++reaches the fold. The final column is the row's **declaration meaning**
++under the operator principle: *the machine may gate its own acts, but it
++must never lie about physical events that have already happened*.
++**Authorization** declares an act the machine may refuse; **Attestation**
++records a physical event that already happened; **Mixed** does both. The
++classification is part of the interface contract kelgroups #28 freezes
++against, not a gloss.
++
++| Lean event | authorized signer(s) | additional guard | channel | declaration meaning |
++| --- | --- | --- | --- | --- |
++| `addUser a u` | proposing admin | target not yet a user | base enactment (`IntroduceMember`) via `appOnBase` | **Authorization** |
++| `electResponsabile a u` | proposing admin | target a user, not yet responsabile | base enactment (`ChangeRoles` +admin) via `appOnBase` | **Authorization** |
++| `removeResponsabile a u` | proposing admin | target currently responsabile | base enactment (`ChangeRoles` −admin, or `RemoveMember`) via `appOnBase` | **Authorization** |
++| `openPurchase a c` | responsabile | fresh collection id | direct app event | **Authorization** |
++| `grantPermission a c` | verdict attribution (proposing admin) | collection exists | #30 app-proposal enactment (assent verdict) | **Authorization** |
++| `denyPermission a c` | verdict attribution (proposing admin) | collection exists | #30 app-proposal enactment (dissent/withdrawal verdict) | **Authorization** |
++| `deposit a u v` | responsabile, `a ≠ u` | `v ≥ 0`, target a user | direct app event | **Attestation** |
++| `withdraw a u v` | responsabile, `a ≠ u` | `bal u ≥ v`, target a user | direct app event | **Authorization** |
++| `transferCassa a f v` | responsabile, `a ≠ f` | `f` responsabile, `v > 0` | direct app event | **Attestation** |
++| `pledge a u c v` | see Q-1: responsabile today; epic ruling adds self-service (`a = u`) | `v > 0`, `bal u ≥ v`, no prior pledge by `u` in `c` | direct app event | **Authorization** |
++| `acceptPledge a u c` | referente only (`col.referente = a`) | pending pledge by `u` | direct app event | **Authorization** |
++| `refusePledge a u c` | referente only | pending pledge by `u` | direct app event | **Authorization** |
++| `correctPledge a u c v'` | referente only | accepted pledge by `u`, `v' ≥ 0`, no overdraft | direct app event | **Authorization** |
++| `closePurchase a c` | referente only | permitted, zero pending pledges | direct app event | **Mixed** |
++| `failPurchase a c` | referente only | zero pending pledges | direct app event | **Authorization** |
++
++Notes on specific rows:
++
++* **Deposits and withdrawals stay responsabile-only** (`a ≠ u` mirrors the
++  legacy `fallimento (r == u)` in `Eventi/Accredito.hs`; L5 double entry,
++  `deposit_double_entry` / `withdraw_double_entry`). Their declaration
++  meanings differ: `deposit` attests cash that already entered the acting
++  responsabile's cassa, while `withdraw` is accepted and appended before
++  physical cash payout; its declaration is authorization, not attestation
++  of a prior payout. A rejected `withdraw` (the `bal u ≥ v` guard fails)
++  means no cash may be handed over and nothing is appended.
++* **Transfers are attestations.** `transferCassa` is receiver-signed: the
++  receiver signs testimony for cash they received after the physical
++  cassa-to-cassa handover. Lean fixes the direction — `transferCassa a f v`
++  moves `v` out of `f`'s cassa into author `a`'s (`Step.lean`), so the
++  author is the receiver and the event records a transfer that already
++  happened rather than licensing a future one.
++* **Closure is mixed.** `closePurchase` discharges the escrow and attests
++  that the supplier was paid by the referente — one declaration doing both
++  jobs: it ends the collection, releasing the escrow the pledges built up,
++  and records the physical settlement. The machine side is the cassa sign
++  convention above: closing debits the collected total from the
++  referente's cassa
++  (`bump s.casse col.referente (-(sumPledges col.accepted))`), which is
++  exactly why a negative cassa is the ordinary operating state of an
++  active referente, not an error and not a debt to chase.
++* **Cassa sign convention.** `casse u` records what cassiere `u` owes the
++  group: Positive means they physically hold group money, and Negative means
++  the group owes them. The machine corroborates the convention: `deposit`
++  raises the receiving cassiere's cassa (`bump s.casse a v`), `withdraw`
++  lowers the acting cassiere's (`bump s.casse a (-v)`), and `closePurchase`
++  lowers the referente's by the collected total
++  (`bump s.casse col.referente (-(sumPledges col.accepted))`) — so a Negative
++  cassa is a normal operating state for an active referente, not an error
++  and not a debt to chase.
++* **On-behalf declarations** (responsabile authors for a keyless or present
++  user) are legal wherever the matrix says "responsabile": the signer context
++  supplies the author, the event names the target. This preserves the legacy
++  model where users do not sign (`Types.lean`: "users do not sign,
++  responsabili declare on their behalf").
++* **Self-service pledges** are demanded by the sovereign-members ruling but
++  conflict with today's Lean AUTH guard, which requires a responsabile author
++  on *every* successful step (`authorizedStep`, `step_authorized`). Per the
++  ticket constraints this is recorded as **Q-1**, not silently resolved.
++* **Referente-only rows** authorize inside `appStep` by comparing the
++  resolved signer against `col.referente` — application state, not a base
++  role. A responsabile who is not the referente fails these rows, matching
++  the legacy `solo <referente> può chiudere` checks in
++  `Eventi/Impegno.hs`.
++
++## The AppLogic interface contract
++
++This section states what reactivegas needs from kelgroups#28, aligned with
++the sketch in that ticket:
++
++```haskell
++data GroupEvent e = Base BaseEvent | App e
++data GroupState s = GroupState { members, pendingProposals, appState :: s }
++
++data AppLogic e s = AppLogic
++    { appInitial :: s
++    , appStep   :: GroupView -> Signer -> s -> e -> Either AppError s
++    , appOnBase :: GroupView -> BaseOutcome -> s -> s
++    }
++```
++
++For reactivegas:
++
++* `e` = `Reactivegas.Event` (all 15 events, interface events included);
++* `s` = `Reactivegas.State`;
++* `appInitial` = `State.init founderId`;
++* `appStep` **is** the Lean `step`, with `none` mapped to `Left`;
++  validation and folding share it, so acceptance-time rejection and replay
++  can never disagree (the #28 invariant).
++
++Requirements reactivegas places on the generalized API:
++
++1. **Distinct event/state types.** Today's `AppFold a = a -> a -> a`
++   (`KelGroups.Fold`) conflates event and fold result; reactivegas needs
++   `GroupEvent e` / `GroupState s` with independent parameters, as sketched
++   above. The current `foldGroup` also ignores the signer when folding app
++   events; `appStep` must receive it.
++2. **Signer + role context.** `Signer` is the submitting member's CESR key;
++   `GroupView` must expose, read-only: the member map keyed by CESR key, each
++   member's roles (so the app can evaluate `isResponsabile` = holds an admin
++   role), and enough information to resolve identities (see below).
++3. **Rejection before append.** `validateEvent` runs `appStep` and refuses
++   the event on `Left`; a refused event never enters the KEL. This is what
++   makes domain-invalid events (an overdraft, a duplicate pledge, a
++   non-referente closure) impossible *in the record*, not merely corrected
++   after the fact — the improvement over the legacy `fallimento` logging
++   described in [Solvency](#solvency-insolvency-is-banned).
++4. **Base→app observation with provenance.** `appOnBase` delivers each
++   enacted base transition in KEL order, exactly once, total (the base never
++   rolls back). `BaseOutcome` must carry the *proposer* of the enacted
++   proposal (`PendingProposal.proposer` already stores it), because the Lean
++   interface events name an author `a`.
++5. **Verdict delivery (#30).** An enacted app-scoped proposal injects its
++   agreed payload as an ordinary app event at the enactment point; a
++   rejected/expired/withdrawn app-scoped proposal injects the denial payload.
++   Both carry KEL provenance so replay reproduces identical app state —
++   reactivegas dissent moves money (`denyPermission` refunds), so an
++   unobservable dissent would corrupt the books.
++
++### Interface events, one-to-one
++
++Every Lean event the substrate produces (rather than a member directly
++signing) with its delivery mechanism:
++
++| interface event | produced by | delivered through |
++| --- | --- | --- |
++| `addUser a u` | `IntroduceMember` enactment | `appOnBase` (`BaseOutcome`: member introduced) |
++| `electResponsabile a u` | `ChangeRoles` adding an admin role, enactment | `appOnBase` (`BaseOutcome`: roles changed) |
++| `removeResponsabile a u` | `ChangeRoles` removing the admin role, or `RemoveMember`, enactment | `appOnBase` (`BaseOutcome`: roles changed / member removed) |
++| `grantPermission a c` | assent verdict on the purchase-approval question | #30 verdict injection (`App` event) |
++| `denyPermission a c` | dissent, expiry or withdrawal verdict on the same question | #30 verdict injection (`App` event) |
++
++All ten remaining events arrive as directly signed `App` events (see the
++AUTH matrix). Inside `appOnBase`, the app applies the corresponding Lean
++transition — sharing `step`'s code path, since the provenance guarantees
++(base validated the proposal; the target held the role) satisfy the guards,
++and replay determinism demands the same arithmetic as acceptance.
++
++### Identity resolution
++
++Lean identifiers are `UserId := Nat`; kelgroups identities are CESR keys.
++The contract needs one explicit binding rule, frozen in #28:
++
++* the app maintains a registry `CESR key ↦ UserId`, appended when
++  `addUser` enacts (see Q-4 for how the number is chosen). For a keyless
++  utente the registered key is the handle carried by their
++  `IntroduceMember` proposal — a key they do not hold, so no signature
++  ever names it; the entry serves the base membership record and
++  rendering, never the `Signer` direction (see
++  [Role mapping](#role-mapping));
++* `appStep` resolves the `Signer` key through this registry before applying
++  the guard; an unregistered signer is `Left` (equivalent to the base's own
++  `NotAMember`);
++* `GroupView` supplies the lookup direction `UserId ↦ key` for rendering.
++
++## Solvency: insolvency is banned
++
++The 2026-08-25 amendment bans insolvency outright. In the Lean machine this
++is theorem-grade: solvency guards reject every debit that would overdraw an
++account (withdrawal beyond balance, pledge beyond balance, correction beyond
++the corrected balance) and require positive pledge amounts, so refunds can
++never push anyone under either; `reach_solvent` and `not_insolvent_of_reach`
++prove insolvency unreachable from boot ([State machine](state-machine.md),
++L7).
++
++In the kelgroups flow the guard sits in **`appStep`, executed by
++`validateEvent` at submission time**: a refused debit returns `Left` and is
++never appended to the KEL. There is no "recorded with warning" middle ground
++— that middle ground is exactly what the legacy reactors had
++(`accredita` returned the negative resulting balance and merely logged
++"il credito non copre l'operazione", `Eventi/Accredito.hs` and
++`Eventi/Impegno.hs`).
++
++Client experience of a refused overdraft:
++
++1. the client (wasm core mirroring `step`) pre-checks locally and typically
++   refuses at the UI before anything is sent;
++2. if submitted regardless, the server runs `appStep`, gets `Left`, rejects
++   synchronously with an `AppError` naming the violated guard (e.g.
++   insufficient balance for the pledge);
++3. nothing is appended: no event, no state change, no log entry in the KEL.
++   The proposer sees the refusal immediately and may resubmit a smaller
++   amount; no other member observes anything.
++
++Because rejection happens before append, the KEL contains only transitions
++that were valid when accepted, and replay re-runs the same `appStep` on the
++same prefixes — acceptance and replay cannot disagree (#28 property).
++
++## Vote-machine composition
++
++`grantPermission` and `denyPermission` are valid only when **provably
++vote-derived**. Responsabile authorship alone does not grant or deny
++permission. The **composition theorem** states the cross-machine requirement.
++The economic machine consumes `grantPermission` and `denyPermission` **only
++when the vote machine emitted them**. The composed model has **no direct
++unilateral-responsabile route** to either transition.
++
++The kelgroups#30 vote-result interface exposes the enacted verdict's
++**identity**, the **question** it answers, and its KEL **provenance**. It
++serves **two consumers**: purchase approval and voted comune backdonation.
++
++Status: **enforced: PROVED-IN-MODEL**.
++This status covers the two Lean models only: the paolino/kelgroups
++implementation must mirror the verdict interface and composition theorem;
++the proof is not yet end-to-end.
++
++Reactivegas#54 owns the independent vote machine in `lean/KelGroups/`, the
++composition theorem, and the shared two-consumer verdict interface. It is a
++sub-issue of #43 in the "Reactivegas on kelgroups" milestone and changes the
++model in this repository, not paolino/kelgroups.
++
++The layering is deliberately one-way: `lean/KelGroups/` **imports nothing
++from** `Reactivegas`. `lean/Reactivegas/` is the application and **may import
++KelGroups**. There is **no separate bridge module**: composition lives in
++Reactivegas, where both models are visible.
++
++**Structural composition is evaluated first.** The permission events carry
++the enacted verdict.
++
++## Out of scope, inherited constraints
++
++* Legacy modules with no Lean counterpart — `Eventi/Voci.hs`,
++  `Eventi/Ordine.hs` (order lines attached to purchases),
++  `Eventi/Sincronizzatore.hs`, `Eventi/Logger.hs` — are outside this
++  mapping; they were not extracted in #45 and are not requirements on
++  kelgroups.
++* Multi-gruppo is multiple server instances for the MVP (epic ruling); no
++  cross-group protocol is designed here.
++* Shared infrastructure (default devshell, CI workflows, flake pins) is
++  operator-owned; this document imposes nothing on it.
++
++## Open questions
++
++Each item below needs an operator ruling; none is resolved by editing the
++Lean machine in this ticket.
++
++### Q-1 — Self-service pledges vs the Lean AUTH guard
++
++The sovereign-members ruling makes member-authored pledges ("self-service")
++legal, but `step_authorized` proves every successful step is
++responsabile-authored, and `pledge`'s six-way guard opens with
++`isResponsabile s a` (`Step.lean`, `pledge_guard_inv`). Honouring the ruling
++therefore requires a semantics change, which this ticket may not make.
++**Recommendation:** a minimal follow-up amendment to the Lean spec allowing
++`isResponsabile s a || a == u` for `pledge` only — the solvency, uniqueness
++and conservation proofs survive unchanged because the monetary part of the
++guard does not mention `a` — landed *before* the Haskell core (child 3)
++freezes its implementation. The alternative reading (introduce every member
++as an admin, making everyone a responsabile) is rejected: it collapses the
++role distinction the epic explicitly keeps and changes the voting base of
++every future proposal.
++
++### Q-2 — Expelling a member who owes or is owed money
++
++Legacy never removed ordinary users (`EsternoAnagrafico` has no such event;
++only responsabile revocation exists, and L4 handles its economics).
++kelgroups offers `RemoveMember` outright. Removing a member holding a
++nonzero conto, or with live pledges inside others' collections, has no
++legacy-defined meaning. **Recommendation:** restrict expulsion to
++economically settled members (zero conto, no live pledges), enforced as a
++reactivegas requirement on the operator runbook plus an explicit
++`appOnBase` policy that treats a violating removal as a bug (loud failure),
++until an operator rules otherwise.
++
++### Q-3 — Pending questions opened by a deposed admin
++
++Legacy cancelled the eliminated responsabile's open questions at revocation
++(`reattoreAssenso` on `EventoEliminazioneResponsabile`,
++`Eventi/Anagrafe.hs`). kelgroups' current fold leaves a removed member's
++pending proposals in place (approvals accumulate; the majority threshold is
++recomputed from current admins). Reactivegas needs deposed-proposer
++questions resolved, not orphaned. **Recommendation:** kelgroups#28/#30
++specify cancellation-at-enactment: when a proposal's proposer loses admin
++(or membership), the proposal is removed and — if it was an app-scoped
++purchase-approval question — delivered to the app as a denial verdict, so
++the L2 refund path triggers exactly as in legacy.
++
++### Q-4 — Key→UserId assignment
++
++The identity registry of [Identity resolution](#identity-resolution) needs a
++deterministic rule for choosing the `Nat` given a CESR key. **Recommendation:**
++a monotonic counter in app state, advanced by `addUser`; replay reproduces
++it trivially, and the numbers never appear in the base layer. Freezing this
++in #28 avoids ad-hoc digests leaking into the economic state.
++
++### Q-5 — Withdrawal of a purchase-approval proposal
++
++Legacy let the promoter close their own assenso question early
++(`EventoFallimentoAssenso`, "rinuncia", restricted to the promoter by
++`fallimento (ur /= r)`), and the closing ran the *negative* continuation —
++for a purchase, full refunds. For #30 parity, a withdrawn app-scoped
++proposal must be observable as a denial verdict, not silently deleted.
++**Recommendation:** support proposer-withdrawal in #30 delivering the same
++denial payload as dissent; until then, clients express withdrawal as a
++campaign for dissent, which is semantically equivalent but slower.
++
++## Verification of this document
++
++* Every Lean `Step` event appears in the [AUTH matrix](#auth-matrix-under-sovereign-members)
++  and every interface event in the [one-to-one table](#interface-events-one-to-one).
++* Claims about legacy behaviour cite `Eventi/*.hs`; claims about the machine
++  cite `lean/Reactivegas/` predicates/theorems or
++  [State machine](state-machine.md); claims about kelgroups cite
++  `lib/KelGroups/*` and issues #28/#30.
+diff --git a/mkdocs.yml b/mkdocs.yml
+index 764362b..d022da3 100644
+--- a/mkdocs.yml
++++ b/mkdocs.yml
+@@ -51,5 +51,6 @@ nav:
+     - Usage: usage.md
+   - Design:
+     - State machine: design/state-machine.md
++    - Kelgroups mapping: design/kelgroups-mapping.md
+   - Reference:
+     - Help: help.md

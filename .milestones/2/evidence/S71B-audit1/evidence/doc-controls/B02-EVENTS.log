@@ -1,0 +1,8 @@
+== leg 0: tracked hygiene + base + source-blob freshness ==
+== leg 1: prerequisites fail-closed ==
+prereqs present at pin 4a6cd87fcbc3e4a536bbc9f240f5efe5704022af
+== leg 2: State mapping ==
+state green
+== leg 3: Event count 14 ==
+discovered Event constructors: 14
+EVENT-RED: docs still claim 15 events

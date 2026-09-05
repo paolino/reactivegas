@@ -1,0 +1,1 @@
+usage: corpusExport <economic.json> <integrated.json> | corpusExport check <economic.json> <integrated.json>

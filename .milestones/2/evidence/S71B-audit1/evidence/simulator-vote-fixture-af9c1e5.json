@@ -1,0 +1,1972 @@
+{
+  "V": {
+    "initial": {
+      "closed": [],
+      "openQuestions": []
+    },
+    "schema": "kelgroups-vote.trace",
+    "steps": [
+      {
+        "event": {
+          "openQuestion": {
+            "kind": "collective",
+            "questionId": "q:permesso-olio"
+          }
+        },
+        "input": {
+          "closed": [],
+          "openQuestions": []
+        },
+        "result": {
+          "closedCount": 0,
+          "state": {
+            "closed": [],
+            "openQuestions": [
+              [
+                "q:permesso-olio",
+                {
+                  "assents": [],
+                  "dissents": [],
+                  "kind": "collective",
+                  "proposer": "anna"
+                }
+              ]
+            ]
+          },
+          "tag": "applied"
+        },
+        "signer": "anna",
+        "view": [
+          [
+            "anna",
+            {
+              "email": "anna@toy.example",
+              "key": "anna",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "bruno",
+            {
+              "email": "bruno@toy.example",
+              "key": "bruno",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "elena",
+            {
+              "email": "elena@toy.example",
+              "key": "elena",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "carlo",
+            {
+              "email": "carlo@toy.example",
+              "key": "carlo",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      },
+      {
+        "event": {
+          "cast": {
+            "ballot": "assent",
+            "questionId": "q:permesso-olio"
+          }
+        },
+        "input": {
+          "closed": [],
+          "openQuestions": [
+            [
+              "q:permesso-olio",
+              {
+                "assents": [],
+                "dissents": [],
+                "kind": "collective",
+                "proposer": "anna"
+              }
+            ]
+          ]
+        },
+        "result": {
+          "error": "notResponsabile",
+          "tag": "refused"
+        },
+        "signer": "dora",
+        "view": [
+          [
+            "anna",
+            {
+              "email": "anna@toy.example",
+              "key": "anna",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "bruno",
+            {
+              "email": "bruno@toy.example",
+              "key": "bruno",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "elena",
+            {
+              "email": "elena@toy.example",
+              "key": "elena",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "carlo",
+            {
+              "email": "carlo@toy.example",
+              "key": "carlo",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      },
+      {
+        "event": {
+          "cast": {
+            "ballot": "assent",
+            "questionId": "q:nessuna"
+          }
+        },
+        "input": {
+          "closed": [],
+          "openQuestions": [
+            [
+              "q:permesso-olio",
+              {
+                "assents": [],
+                "dissents": [],
+                "kind": "collective",
+                "proposer": "anna"
+              }
+            ]
+          ]
+        },
+        "result": {
+          "error": "questionNotFound",
+          "tag": "refused"
+        },
+        "signer": "anna",
+        "view": [
+          [
+            "anna",
+            {
+              "email": "anna@toy.example",
+              "key": "anna",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "bruno",
+            {
+              "email": "bruno@toy.example",
+              "key": "bruno",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "elena",
+            {
+              "email": "elena@toy.example",
+              "key": "elena",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "carlo",
+            {
+              "email": "carlo@toy.example",
+              "key": "carlo",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      },
+      {
+        "event": {
+          "cast": {
+            "ballot": "assent",
+            "questionId": "q:permesso-olio"
+          }
+        },
+        "input": {
+          "closed": [],
+          "openQuestions": [
+            [
+              "q:permesso-olio",
+              {
+                "assents": [],
+                "dissents": [],
+                "kind": "collective",
+                "proposer": "anna"
+              }
+            ]
+          ]
+        },
+        "result": {
+          "closedCount": 0,
+          "state": {
+            "closed": [],
+            "openQuestions": [
+              [
+                "q:permesso-olio",
+                {
+                  "assents": [
+                    "anna"
+                  ],
+                  "dissents": [],
+                  "kind": "collective",
+                  "proposer": "anna"
+                }
+              ]
+            ]
+          },
+          "tag": "applied"
+        },
+        "signer": "anna",
+        "view": [
+          [
+            "anna",
+            {
+              "email": "anna@toy.example",
+              "key": "anna",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "bruno",
+            {
+              "email": "bruno@toy.example",
+              "key": "bruno",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "elena",
+            {
+              "email": "elena@toy.example",
+              "key": "elena",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "carlo",
+            {
+              "email": "carlo@toy.example",
+              "key": "carlo",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      },
+      {
+        "event": {
+          "cast": {
+            "ballot": "dissent",
+            "questionId": "q:permesso-olio"
+          }
+        },
+        "input": {
+          "closed": [],
+          "openQuestions": [
+            [
+              "q:permesso-olio",
+              {
+                "assents": [
+                  "anna"
+                ],
+                "dissents": [],
+                "kind": "collective",
+                "proposer": "anna"
+              }
+            ]
+          ]
+        },
+        "result": {
+          "closedCount": 0,
+          "state": {
+            "closed": [],
+            "openQuestions": [
+              [
+                "q:permesso-olio",
+                {
+                  "assents": [
+                    "anna"
+                  ],
+                  "dissents": [
+                    "bruno"
+                  ],
+                  "kind": "collective",
+                  "proposer": "anna"
+                }
+              ]
+            ]
+          },
+          "tag": "applied"
+        },
+        "signer": "bruno",
+        "view": [
+          [
+            "anna",
+            {
+              "email": "anna@toy.example",
+              "key": "anna",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "bruno",
+            {
+              "email": "bruno@toy.example",
+              "key": "bruno",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "elena",
+            {
+              "email": "elena@toy.example",
+              "key": "elena",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "carlo",
+            {
+              "email": "carlo@toy.example",
+              "key": "carlo",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      },
+      {
+        "event": {
+          "cast": {
+            "ballot": "assent",
+            "questionId": "q:permesso-olio"
+          }
+        },
+        "input": {
+          "closed": [],
+          "openQuestions": [
+            [
+              "q:permesso-olio",
+              {
+                "assents": [
+                  "anna"
+                ],
+                "dissents": [
+                  "bruno"
+                ],
+                "kind": "collective",
+                "proposer": "anna"
+              }
+            ]
+          ]
+        },
+        "result": {
+          "closedCount": 1,
+          "state": {
+            "closed": [
+              {
+                "cause": "tally",
+                "question": {
+                  "assents": [
+                    "bruno",
+                    "anna"
+                  ],
+                  "dissents": [],
+                  "kind": "collective",
+                  "proposer": "anna"
+                },
+                "questionId": "q:permesso-olio",
+                "verdict": "positive"
+              }
+            ],
+            "openQuestions": []
+          },
+          "tag": "applied"
+        },
+        "signer": "bruno",
+        "view": [
+          [
+            "anna",
+            {
+              "email": "anna@toy.example",
+              "key": "anna",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "bruno",
+            {
+              "email": "bruno@toy.example",
+              "key": "bruno",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "elena",
+            {
+              "email": "elena@toy.example",
+              "key": "elena",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "carlo",
+            {
+              "email": "carlo@toy.example",
+              "key": "carlo",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      },
+      {
+        "event": {
+          "openQuestion": {
+            "kind": "collective",
+            "questionId": "q:sconto"
+          }
+        },
+        "input": {
+          "closed": [
+            {
+              "cause": "tally",
+              "question": {
+                "assents": [
+                  "bruno",
+                  "anna"
+                ],
+                "dissents": [],
+                "kind": "collective",
+                "proposer": "anna"
+              },
+              "questionId": "q:permesso-olio",
+              "verdict": "positive"
+            }
+          ],
+          "openQuestions": []
+        },
+        "result": {
+          "closedCount": 1,
+          "state": {
+            "closed": [
+              {
+                "cause": "tally",
+                "question": {
+                  "assents": [
+                    "bruno",
+                    "anna"
+                  ],
+                  "dissents": [],
+                  "kind": "collective",
+                  "proposer": "anna"
+                },
+                "questionId": "q:permesso-olio",
+                "verdict": "positive"
+              }
+            ],
+            "openQuestions": [
+              [
+                "q:sconto",
+                {
+                  "assents": [],
+                  "dissents": [],
+                  "kind": "collective",
+                  "proposer": "anna"
+                }
+              ]
+            ]
+          },
+          "tag": "applied"
+        },
+        "signer": "anna",
+        "view": [
+          [
+            "anna",
+            {
+              "email": "anna@toy.example",
+              "key": "anna",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "bruno",
+            {
+              "email": "bruno@toy.example",
+              "key": "bruno",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "elena",
+            {
+              "email": "elena@toy.example",
+              "key": "elena",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "carlo",
+            {
+              "email": "carlo@toy.example",
+              "key": "carlo",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      },
+      {
+        "event": {
+          "cast": {
+            "ballot": "dissent",
+            "questionId": "q:sconto"
+          }
+        },
+        "input": {
+          "closed": [
+            {
+              "cause": "tally",
+              "question": {
+                "assents": [
+                  "bruno",
+                  "anna"
+                ],
+                "dissents": [],
+                "kind": "collective",
+                "proposer": "anna"
+              },
+              "questionId": "q:permesso-olio",
+              "verdict": "positive"
+            }
+          ],
+          "openQuestions": [
+            [
+              "q:sconto",
+              {
+                "assents": [],
+                "dissents": [],
+                "kind": "collective",
+                "proposer": "anna"
+              }
+            ]
+          ]
+        },
+        "result": {
+          "closedCount": 1,
+          "state": {
+            "closed": [
+              {
+                "cause": "tally",
+                "question": {
+                  "assents": [
+                    "bruno",
+                    "anna"
+                  ],
+                  "dissents": [],
+                  "kind": "collective",
+                  "proposer": "anna"
+                },
+                "questionId": "q:permesso-olio",
+                "verdict": "positive"
+              }
+            ],
+            "openQuestions": [
+              [
+                "q:sconto",
+                {
+                  "assents": [],
+                  "dissents": [
+                    "elena"
+                  ],
+                  "kind": "collective",
+                  "proposer": "anna"
+                }
+              ]
+            ]
+          },
+          "tag": "applied"
+        },
+        "signer": "elena",
+        "view": [
+          [
+            "anna",
+            {
+              "email": "anna@toy.example",
+              "key": "anna",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "bruno",
+            {
+              "email": "bruno@toy.example",
+              "key": "bruno",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "elena",
+            {
+              "email": "elena@toy.example",
+              "key": "elena",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "carlo",
+            {
+              "email": "carlo@toy.example",
+              "key": "carlo",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      },
+      {
+        "event": {
+          "cast": {
+            "ballot": "dissent",
+            "questionId": "q:sconto"
+          }
+        },
+        "input": {
+          "closed": [
+            {
+              "cause": "tally",
+              "question": {
+                "assents": [
+                  "bruno",
+                  "anna"
+                ],
+                "dissents": [],
+                "kind": "collective",
+                "proposer": "anna"
+              },
+              "questionId": "q:permesso-olio",
+              "verdict": "positive"
+            }
+          ],
+          "openQuestions": [
+            [
+              "q:sconto",
+              {
+                "assents": [],
+                "dissents": [
+                  "elena"
+                ],
+                "kind": "collective",
+                "proposer": "anna"
+              }
+            ]
+          ]
+        },
+        "result": {
+          "closedCount": 1,
+          "state": {
+            "closed": [
+              {
+                "cause": "tally",
+                "question": {
+                  "assents": [
+                    "bruno",
+                    "anna"
+                  ],
+                  "dissents": [],
+                  "kind": "collective",
+                  "proposer": "anna"
+                },
+                "questionId": "q:permesso-olio",
+                "verdict": "positive"
+              }
+            ],
+            "openQuestions": [
+              [
+                "q:sconto",
+                {
+                  "assents": [],
+                  "dissents": [
+                    "elena"
+                  ],
+                  "kind": "collective",
+                  "proposer": "anna"
+                }
+              ]
+            ]
+          },
+          "tag": "applied"
+        },
+        "signer": "elena",
+        "view": [
+          [
+            "anna",
+            {
+              "email": "anna@toy.example",
+              "key": "anna",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "bruno",
+            {
+              "email": "bruno@toy.example",
+              "key": "bruno",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "elena",
+            {
+              "email": "elena@toy.example",
+              "key": "elena",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "carlo",
+            {
+              "email": "carlo@toy.example",
+              "key": "carlo",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      },
+      {
+        "event": {
+          "cast": {
+            "ballot": "dissent",
+            "questionId": "q:sconto"
+          }
+        },
+        "input": {
+          "closed": [
+            {
+              "cause": "tally",
+              "question": {
+                "assents": [
+                  "bruno",
+                  "anna"
+                ],
+                "dissents": [],
+                "kind": "collective",
+                "proposer": "anna"
+              },
+              "questionId": "q:permesso-olio",
+              "verdict": "positive"
+            }
+          ],
+          "openQuestions": [
+            [
+              "q:sconto",
+              {
+                "assents": [],
+                "dissents": [
+                  "elena"
+                ],
+                "kind": "collective",
+                "proposer": "anna"
+              }
+            ]
+          ]
+        },
+        "result": {
+          "closedCount": 2,
+          "state": {
+            "closed": [
+              {
+                "cause": "tally",
+                "question": {
+                  "assents": [
+                    "bruno",
+                    "anna"
+                  ],
+                  "dissents": [],
+                  "kind": "collective",
+                  "proposer": "anna"
+                },
+                "questionId": "q:permesso-olio",
+                "verdict": "positive"
+              },
+              {
+                "cause": "tally",
+                "question": {
+                  "assents": [],
+                  "dissents": [
+                    "carlo",
+                    "elena"
+                  ],
+                  "kind": "collective",
+                  "proposer": "anna"
+                },
+                "questionId": "q:sconto",
+                "verdict": "negative"
+              }
+            ],
+            "openQuestions": []
+          },
+          "tag": "applied"
+        },
+        "signer": "carlo",
+        "view": [
+          [
+            "anna",
+            {
+              "email": "anna@toy.example",
+              "key": "anna",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "bruno",
+            {
+              "email": "bruno@toy.example",
+              "key": "bruno",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "elena",
+            {
+              "email": "elena@toy.example",
+              "key": "elena",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "carlo",
+            {
+              "email": "carlo@toy.example",
+              "key": "carlo",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      },
+      {
+        "event": {
+          "openQuestion": {
+            "kind": {
+              "permission": {
+                "designee": "bruno"
+              }
+            },
+            "questionId": "q:incarico"
+          }
+        },
+        "input": {
+          "closed": [
+            {
+              "cause": "tally",
+              "question": {
+                "assents": [
+                  "bruno",
+                  "anna"
+                ],
+                "dissents": [],
+                "kind": "collective",
+                "proposer": "anna"
+              },
+              "questionId": "q:permesso-olio",
+              "verdict": "positive"
+            },
+            {
+              "cause": "tally",
+              "question": {
+                "assents": [],
+                "dissents": [
+                  "carlo",
+                  "elena"
+                ],
+                "kind": "collective",
+                "proposer": "anna"
+              },
+              "questionId": "q:sconto",
+              "verdict": "negative"
+            }
+          ],
+          "openQuestions": []
+        },
+        "result": {
+          "closedCount": 2,
+          "state": {
+            "closed": [
+              {
+                "cause": "tally",
+                "question": {
+                  "assents": [
+                    "bruno",
+                    "anna"
+                  ],
+                  "dissents": [],
+                  "kind": "collective",
+                  "proposer": "anna"
+                },
+                "questionId": "q:permesso-olio",
+                "verdict": "positive"
+              },
+              {
+                "cause": "tally",
+                "question": {
+                  "assents": [],
+                  "dissents": [
+                    "carlo",
+                    "elena"
+                  ],
+                  "kind": "collective",
+                  "proposer": "anna"
+                },
+                "questionId": "q:sconto",
+                "verdict": "negative"
+              }
+            ],
+            "openQuestions": [
+              [
+                "q:incarico",
+                {
+                  "assents": [],
+                  "dissents": [],
+                  "kind": {
+                    "permission": {
+                      "designee": "bruno"
+                    }
+                  },
+                  "proposer": "anna"
+                }
+              ]
+            ]
+          },
+          "tag": "applied"
+        },
+        "signer": "anna",
+        "view": [
+          [
+            "anna",
+            {
+              "email": "anna@toy.example",
+              "key": "anna",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "bruno",
+            {
+              "email": "bruno@toy.example",
+              "key": "bruno",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "elena",
+            {
+              "email": "elena@toy.example",
+              "key": "elena",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "carlo",
+            {
+              "email": "carlo@toy.example",
+              "key": "carlo",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      },
+      {
+        "event": {
+          "cast": {
+            "ballot": "assent",
+            "questionId": "q:incarico"
+          }
+        },
+        "input": {
+          "closed": [
+            {
+              "cause": "tally",
+              "question": {
+                "assents": [
+                  "bruno",
+                  "anna"
+                ],
+                "dissents": [],
+                "kind": "collective",
+                "proposer": "anna"
+              },
+              "questionId": "q:permesso-olio",
+              "verdict": "positive"
+            },
+            {
+              "cause": "tally",
+              "question": {
+                "assents": [],
+                "dissents": [
+                  "carlo",
+                  "elena"
+                ],
+                "kind": "collective",
+                "proposer": "anna"
+              },
+              "questionId": "q:sconto",
+              "verdict": "negative"
+            }
+          ],
+          "openQuestions": [
+            [
+              "q:incarico",
+              {
+                "assents": [],
+                "dissents": [],
+                "kind": {
+                  "permission": {
+                    "designee": "bruno"
+                  }
+                },
+                "proposer": "anna"
+              }
+            ]
+          ]
+        },
+        "result": {
+          "closedCount": 2,
+          "state": {
+            "closed": [
+              {
+                "cause": "tally",
+                "question": {
+                  "assents": [
+                    "bruno",
+                    "anna"
+                  ],
+                  "dissents": [],
+                  "kind": "collective",
+                  "proposer": "anna"
+                },
+                "questionId": "q:permesso-olio",
+                "verdict": "positive"
+              },
+              {
+                "cause": "tally",
+                "question": {
+                  "assents": [],
+                  "dissents": [
+                    "carlo",
+                    "elena"
+                  ],
+                  "kind": "collective",
+                  "proposer": "anna"
+                },
+                "questionId": "q:sconto",
+                "verdict": "negative"
+              }
+            ],
+            "openQuestions": [
+              [
+                "q:incarico",
+                {
+                  "assents": [
+                    "elena"
+                  ],
+                  "dissents": [],
+                  "kind": {
+                    "permission": {
+                      "designee": "bruno"
+                    }
+                  },
+                  "proposer": "anna"
+                }
+              ]
+            ]
+          },
+          "tag": "applied"
+        },
+        "signer": "elena",
+        "view": [
+          [
+            "anna",
+            {
+              "email": "anna@toy.example",
+              "key": "anna",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "bruno",
+            {
+              "email": "bruno@toy.example",
+              "key": "bruno",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "elena",
+            {
+              "email": "elena@toy.example",
+              "key": "elena",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "carlo",
+            {
+              "email": "carlo@toy.example",
+              "key": "carlo",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      },
+      {
+        "event": {
+          "cast": {
+            "ballot": "assent",
+            "questionId": "q:incarico"
+          }
+        },
+        "input": {
+          "closed": [
+            {
+              "cause": "tally",
+              "question": {
+                "assents": [
+                  "bruno",
+                  "anna"
+                ],
+                "dissents": [],
+                "kind": "collective",
+                "proposer": "anna"
+              },
+              "questionId": "q:permesso-olio",
+              "verdict": "positive"
+            },
+            {
+              "cause": "tally",
+              "question": {
+                "assents": [],
+                "dissents": [
+                  "carlo",
+                  "elena"
+                ],
+                "kind": "collective",
+                "proposer": "anna"
+              },
+              "questionId": "q:sconto",
+              "verdict": "negative"
+            }
+          ],
+          "openQuestions": [
+            [
+              "q:incarico",
+              {
+                "assents": [
+                  "elena"
+                ],
+                "dissents": [],
+                "kind": {
+                  "permission": {
+                    "designee": "bruno"
+                  }
+                },
+                "proposer": "anna"
+              }
+            ]
+          ]
+        },
+        "result": {
+          "closedCount": 3,
+          "state": {
+            "closed": [
+              {
+                "cause": "tally",
+                "question": {
+                  "assents": [
+                    "bruno",
+                    "anna"
+                  ],
+                  "dissents": [],
+                  "kind": "collective",
+                  "proposer": "anna"
+                },
+                "questionId": "q:permesso-olio",
+                "verdict": "positive"
+              },
+              {
+                "cause": "tally",
+                "question": {
+                  "assents": [],
+                  "dissents": [
+                    "carlo",
+                    "elena"
+                  ],
+                  "kind": "collective",
+                  "proposer": "anna"
+                },
+                "questionId": "q:sconto",
+                "verdict": "negative"
+              },
+              {
+                "cause": "tally",
+                "question": {
+                  "assents": [
+                    "bruno",
+                    "elena"
+                  ],
+                  "dissents": [],
+                  "kind": {
+                    "permission": {
+                      "designee": "bruno"
+                    }
+                  },
+                  "proposer": "anna"
+                },
+                "questionId": "q:incarico",
+                "verdict": "positive"
+              }
+            ],
+            "openQuestions": []
+          },
+          "tag": "applied"
+        },
+        "signer": "bruno",
+        "view": [
+          [
+            "anna",
+            {
+              "email": "anna@toy.example",
+              "key": "anna",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "bruno",
+            {
+              "email": "bruno@toy.example",
+              "key": "bruno",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "elena",
+            {
+              "email": "elena@toy.example",
+              "key": "elena",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "carlo",
+            {
+              "email": "carlo@toy.example",
+              "key": "carlo",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      },
+      {
+        "event": {
+          "openQuestion": {
+            "kind": "collective",
+            "questionId": "q:aperta"
+          }
+        },
+        "input": {
+          "closed": [
+            {
+              "cause": "tally",
+              "question": {
+                "assents": [
+                  "bruno",
+                  "anna"
+                ],
+                "dissents": [],
+                "kind": "collective",
+                "proposer": "anna"
+              },
+              "questionId": "q:permesso-olio",
+              "verdict": "positive"
+            },
+            {
+              "cause": "tally",
+              "question": {
+                "assents": [],
+                "dissents": [
+                  "carlo",
+                  "elena"
+                ],
+                "kind": "collective",
+                "proposer": "anna"
+              },
+              "questionId": "q:sconto",
+              "verdict": "negative"
+            },
+            {
+              "cause": "tally",
+              "question": {
+                "assents": [
+                  "bruno",
+                  "elena"
+                ],
+                "dissents": [],
+                "kind": {
+                  "permission": {
+                    "designee": "bruno"
+                  }
+                },
+                "proposer": "anna"
+              },
+              "questionId": "q:incarico",
+              "verdict": "positive"
+            }
+          ],
+          "openQuestions": []
+        },
+        "result": {
+          "closedCount": 3,
+          "state": {
+            "closed": [
+              {
+                "cause": "tally",
+                "question": {
+                  "assents": [
+                    "bruno",
+                    "anna"
+                  ],
+                  "dissents": [],
+                  "kind": "collective",
+                  "proposer": "anna"
+                },
+                "questionId": "q:permesso-olio",
+                "verdict": "positive"
+              },
+              {
+                "cause": "tally",
+                "question": {
+                  "assents": [],
+                  "dissents": [
+                    "carlo",
+                    "elena"
+                  ],
+                  "kind": "collective",
+                  "proposer": "anna"
+                },
+                "questionId": "q:sconto",
+                "verdict": "negative"
+              },
+              {
+                "cause": "tally",
+                "question": {
+                  "assents": [
+                    "bruno",
+                    "elena"
+                  ],
+                  "dissents": [],
+                  "kind": {
+                    "permission": {
+                      "designee": "bruno"
+                    }
+                  },
+                  "proposer": "anna"
+                },
+                "questionId": "q:incarico",
+                "verdict": "positive"
+              }
+            ],
+            "openQuestions": [
+              [
+                "q:aperta",
+                {
+                  "assents": [],
+                  "dissents": [],
+                  "kind": "collective",
+                  "proposer": "anna"
+                }
+              ]
+            ]
+          },
+          "tag": "applied"
+        },
+        "signer": "anna",
+        "view": [
+          [
+            "anna",
+            {
+              "email": "anna@toy.example",
+              "key": "anna",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "bruno",
+            {
+              "email": "bruno@toy.example",
+              "key": "bruno",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "elena",
+            {
+              "email": "elena@toy.example",
+              "key": "elena",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "carlo",
+            {
+              "email": "carlo@toy.example",
+              "key": "carlo",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      },
+      {
+        "event": {
+          "renounce": {
+            "questionId": "q:aperta"
+          }
+        },
+        "input": {
+          "closed": [
+            {
+              "cause": "tally",
+              "question": {
+                "assents": [
+                  "bruno",
+                  "anna"
+                ],
+                "dissents": [],
+                "kind": "collective",
+                "proposer": "anna"
+              },
+              "questionId": "q:permesso-olio",
+              "verdict": "positive"
+            },
+            {
+              "cause": "tally",
+              "question": {
+                "assents": [],
+                "dissents": [
+                  "carlo",
+                  "elena"
+                ],
+                "kind": "collective",
+                "proposer": "anna"
+              },
+              "questionId": "q:sconto",
+              "verdict": "negative"
+            },
+            {
+              "cause": "tally",
+              "question": {
+                "assents": [
+                  "bruno",
+                  "elena"
+                ],
+                "dissents": [],
+                "kind": {
+                  "permission": {
+                    "designee": "bruno"
+                  }
+                },
+                "proposer": "anna"
+              },
+              "questionId": "q:incarico",
+              "verdict": "positive"
+            }
+          ],
+          "openQuestions": [
+            [
+              "q:aperta",
+              {
+                "assents": [],
+                "dissents": [],
+                "kind": "collective",
+                "proposer": "anna"
+              }
+            ]
+          ]
+        },
+        "result": {
+          "closedCount": 3,
+          "state": {
+            "closed": [
+              {
+                "cause": "tally",
+                "question": {
+                  "assents": [
+                    "bruno",
+                    "anna"
+                  ],
+                  "dissents": [],
+                  "kind": "collective",
+                  "proposer": "anna"
+                },
+                "questionId": "q:permesso-olio",
+                "verdict": "positive"
+              },
+              {
+                "cause": "tally",
+                "question": {
+                  "assents": [],
+                  "dissents": [
+                    "carlo",
+                    "elena"
+                  ],
+                  "kind": "collective",
+                  "proposer": "anna"
+                },
+                "questionId": "q:sconto",
+                "verdict": "negative"
+              },
+              {
+                "cause": "tally",
+                "question": {
+                  "assents": [
+                    "bruno",
+                    "elena"
+                  ],
+                  "dissents": [],
+                  "kind": {
+                    "permission": {
+                      "designee": "bruno"
+                    }
+                  },
+                  "proposer": "anna"
+                },
+                "questionId": "q:incarico",
+                "verdict": "positive"
+              }
+            ],
+            "openQuestions": [
+              [
+                "q:aperta",
+                {
+                  "assents": [],
+                  "dissents": [],
+                  "kind": "collective",
+                  "proposer": "anna"
+                }
+              ]
+            ]
+          },
+          "tag": "applied"
+        },
+        "signer": "anna",
+        "view": [
+          [
+            "anna",
+            {
+              "email": "anna@toy.example",
+              "key": "anna",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "bruno",
+            {
+              "email": "bruno@toy.example",
+              "key": "bruno",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "elena",
+            {
+              "email": "elena@toy.example",
+              "key": "elena",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ],
+          [
+            "carlo",
+            {
+              "email": "carlo@toy.example",
+              "key": "carlo",
+              "roles": [
+                {
+                  "adminRole": {
+                    "admin": "publicAdmin"
+                  }
+                }
+              ]
+            }
+          ]
+        ]
+      }
+    ],
+    "threshold": "legacyThreshold",
+    "version": 1
+  }
+}

@@ -1,0 +1,32 @@
+axiom-sources tracked=27 built=27
+axiom-module KelGroups.Types
+axiom-module KelGroups.Event
+axiom-module KelGroups.State
+axiom-module KelGroups.Fold
+axiom-module KelGroups.Validate
+axiom-module KelGroups.Integration
+axiom-module KelGroups.Invariants
+axiom-module KelGroups.Tests
+axiom-module KelGroups.Vote.Types
+axiom-module KelGroups.Vote.State
+axiom-module KelGroups.Vote.Event
+axiom-module KelGroups.Vote.Validate
+axiom-module KelGroups.Vote.Fold
+axiom-module KelGroups.Vote.Invariants
+axiom-module KelGroups.Vote.Tests
+axiom-module KelGroups
+axiom-module Reactivegas.Types
+axiom-module Reactivegas.State
+axiom-module Reactivegas.Step
+axiom-module Reactivegas.Predicates
+axiom-module Reactivegas.Invariants
+axiom-module Reactivegas.Trace
+axiom-module Reactivegas.Composition
+axiom-module Reactivegas
+axiom-module Reactivegas.CorpusExport
+axiom-module Reactivegas.CorpusGate
+axiom-module Reactivegas.TraceTests
+axiom-theorems walkOcc=0 distinct=0 fold=0
+axiom-theorems count=0
+axiom-gate: derived zero theorems
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s2r-final-codex/instruments/tzero.lean:189:0: error: axiom-gate failed with 1 finding(s)

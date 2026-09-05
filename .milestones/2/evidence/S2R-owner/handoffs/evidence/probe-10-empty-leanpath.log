@@ -1,0 +1,4 @@
+path '/code/reactivegas-66-s2r/lean' does not contain a 'flake.nix', searching up
+warning: Git tree '/code/reactivegas-66-s2r' is dirty
+axiom-gate: ownership authority missing: LEAN_PATH empty or unset
+/tmp/probe-emptyguard-driver.lean:161:0: error: axiom-gate failed with 1 finding(s)

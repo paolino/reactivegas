@@ -1,0 +1,2 @@
+axiom-gate: ownership authority missing: LEAN_PATH empty or unset
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s2r-final-codex/instruments/minimal.lean:162:0: error: axiom-gate failed with 1 finding(s)

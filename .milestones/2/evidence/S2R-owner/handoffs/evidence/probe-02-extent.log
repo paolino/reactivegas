@@ -1,0 +1,30 @@
+path '/code/reactivegas-66-s2r/lean' does not contain a 'flake.nix', searching up
+warning: Git tree '/code/reactivegas-66-s2r' is dirty
+extent-built count=26
+extent-module KelGroups.Types thmAll=51 thmVisible=28
+extent-module KelGroups.Event thmAll=89 thmVisible=39
+extent-module KelGroups.State thmAll=27 thmVisible=12
+extent-module KelGroups.Fold thmAll=13 thmVisible=6
+extent-module KelGroups.Validate thmAll=53 thmVisible=31
+extent-module KelGroups.Integration thmAll=53 thmVisible=24
+extent-module KelGroups.Invariants thmAll=99 thmVisible=39
+extent-module KelGroups.Tests thmAll=0 thmVisible=0
+extent-module KelGroups.Vote.Types thmAll=26 thmVisible=16
+extent-module KelGroups.Vote.State thmAll=22 thmVisible=9
+extent-module KelGroups.Vote.Event thmAll=23 thmVisible=9
+extent-module KelGroups.Vote.Validate thmAll=7 thmVisible=5
+extent-module KelGroups.Vote.Fold thmAll=0 thmVisible=0
+extent-module KelGroups.Vote.Invariants thmAll=116 thmVisible=26
+extent-module KelGroups.Vote.Tests thmAll=0 thmVisible=0
+extent-module KelGroups thmAll=0 thmVisible=0
+extent-module Reactivegas.Types thmAll=213 thmVisible=104
+extent-module Reactivegas.Composition thmAll=55 thmVisible=7
+extent-module Reactivegas.State thmAll=77 thmVisible=27
+extent-module Reactivegas.Step thmAll=11 thmVisible=7
+extent-module Reactivegas.Predicates thmAll=1 thmVisible=1
+extent-module Reactivegas.Invariants thmAll=196 thmVisible=75
+extent-module Reactivegas.CorpusGate thmAll=0 thmVisible=0
+extent-module Reactivegas.Trace thmAll=70 thmVisible=40
+extent-module Reactivegas thmAll=0 thmVisible=0
+extent-module Reactivegas.TraceTests thmAll=12 thmVisible=12
+extent-total thmAll=1214 thmVisible=517

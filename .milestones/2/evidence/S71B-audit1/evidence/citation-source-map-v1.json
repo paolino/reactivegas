@@ -1,0 +1,938 @@
+[
+  {
+    "marker": "lean:AppEvent",
+    "name": "AppEvent",
+    "basename": "AppEvent",
+    "kind": "inductive",
+    "file": "Reactivegas/Types.lean",
+    "line": 75
+  },
+  {
+    "marker": "lean:BackdonateAuth",
+    "name": "BackdonateAuth",
+    "basename": "BackdonateAuth",
+    "kind": "abbrev",
+    "file": "Reactivegas/Step.lean",
+    "line": 41
+  },
+  {
+    "marker": "lean:BaseChange",
+    "name": "KelGroups.BaseChange",
+    "basename": "BaseChange",
+    "kind": "inductive",
+    "file": "KelGroups/Event.lean",
+    "line": 46
+  },
+  {
+    "marker": "lean:ClosureCause",
+    "name": "KelGroups.Vote.ClosureCause",
+    "basename": "ClosureCause",
+    "kind": "inductive",
+    "file": "KelGroups/Vote/Types.lean",
+    "line": 73
+  },
+  {
+    "marker": "lean:ClosureRecord",
+    "name": "KelGroups.Vote.ClosureRecord",
+    "basename": "ClosureRecord",
+    "kind": "structure",
+    "file": "KelGroups/Vote/State.lean",
+    "line": 41
+  },
+  {
+    "marker": "lean:Collection",
+    "name": "Collection",
+    "basename": "Collection",
+    "kind": "structure",
+    "file": "Reactivegas/State.lean",
+    "line": 13
+  },
+  {
+    "marker": "lean:Event",
+    "name": "Event",
+    "basename": "Event",
+    "kind": "inductive",
+    "file": "Reactivegas/Types.lean",
+    "line": 41
+  },
+  {
+    "marker": "lean:GroupView",
+    "name": "KelGroups.GroupView",
+    "basename": "GroupView",
+    "kind": "structure",
+    "file": "KelGroups/Types.lean",
+    "line": 134
+  },
+  {
+    "marker": "lean:KelGroups.AppFold",
+    "name": "KelGroups.AppFold",
+    "basename": "AppFold",
+    "kind": "abbrev",
+    "file": "KelGroups/Fold.lean",
+    "line": 5
+  },
+  {
+    "marker": "lean:KelGroups.BaseEvent",
+    "name": "KelGroups.BaseEvent",
+    "basename": "BaseEvent",
+    "kind": "inductive",
+    "file": "KelGroups/Event.lean",
+    "line": 11
+  },
+  {
+    "marker": "lean:KelGroups.Enacts",
+    "name": "KelGroups.Enacts",
+    "basename": "Enacts",
+    "kind": "def",
+    "file": "KelGroups/Invariants.lean",
+    "line": 322
+  },
+  {
+    "marker": "lean:KelGroups.GroupState",
+    "name": "KelGroups.GroupState",
+    "basename": "GroupState",
+    "kind": "structure",
+    "file": "KelGroups/State.lean",
+    "line": 25
+  },
+  {
+    "marker": "lean:KelGroups.GroupView",
+    "name": "KelGroups.GroupView",
+    "basename": "GroupView",
+    "kind": "structure",
+    "file": "KelGroups/Types.lean",
+    "line": 134
+  },
+  {
+    "marker": "lean:KelGroups.RoleDef",
+    "name": "KelGroups.RoleDef",
+    "basename": "RoleDef",
+    "kind": "structure",
+    "file": "KelGroups/Types.lean",
+    "line": 37
+  },
+  {
+    "marker": "lean:KelGroups.Tests.proposerAutoApproval",
+    "name": "KelGroups.Tests.proposerAutoApproval",
+    "basename": "proposerAutoApproval",
+    "kind": "def",
+    "file": "KelGroups/Tests.lean",
+    "line": 46
+  },
+  {
+    "marker": "lean:KelGroups.ValidationError",
+    "name": "KelGroups.ValidationError",
+    "basename": "ValidationError",
+    "kind": "inductive",
+    "file": "KelGroups/Validate.lean",
+    "line": 7
+  },
+  {
+    "marker": "lean:KelGroups.Vote.VoteState",
+    "name": "KelGroups.Vote.VoteState",
+    "basename": "VoteState",
+    "kind": "structure",
+    "file": "KelGroups/Vote/State.lean",
+    "line": 51
+  },
+  {
+    "marker": "lean:KelGroups.applyApprove",
+    "name": "KelGroups.applyApprove",
+    "basename": "applyApprove",
+    "kind": "def",
+    "file": "KelGroups/Fold.lean",
+    "line": 71
+  },
+  {
+    "marker": "lean:KelGroups.applyEvent",
+    "name": "KelGroups.applyEvent",
+    "basename": "applyEvent",
+    "kind": "def",
+    "file": "KelGroups/Fold.lean",
+    "line": 84
+  },
+  {
+    "marker": "lean:KelGroups.applyPropose",
+    "name": "KelGroups.applyPropose",
+    "basename": "applyPropose",
+    "kind": "def",
+    "file": "KelGroups/Fold.lean",
+    "line": 54
+  },
+  {
+    "marker": "lean:KelGroups.approvals_nodup",
+    "name": "KelGroups.approvals_nodup",
+    "basename": "approvals_nodup",
+    "kind": "theorem",
+    "file": "KelGroups/Invariants.lean",
+    "line": 312
+  },
+  {
+    "marker": "lean:KelGroups.authMode",
+    "name": "KelGroups.authMode",
+    "basename": "authMode",
+    "kind": "def",
+    "file": "KelGroups/State.lean",
+    "line": 65
+  },
+  {
+    "marker": "lean:KelGroups.bootstrapNonMemberWitness",
+    "name": "KelGroups.bootstrapNonMemberWitness",
+    "basename": "bootstrapNonMemberWitness",
+    "kind": "def",
+    "file": "KelGroups/Invariants.lean",
+    "line": 521
+  },
+  {
+    "marker": "lean:KelGroups.bootstrapPendingWitness",
+    "name": "KelGroups.bootstrapPendingWitness",
+    "basename": "bootstrapPendingWitness",
+    "kind": "def",
+    "file": "KelGroups/Invariants.lean",
+    "line": 550
+  },
+  {
+    "marker": "lean:KelGroups.enact",
+    "name": "KelGroups.enact",
+    "basename": "enact",
+    "kind": "def",
+    "file": "KelGroups/Fold.lean",
+    "line": 9
+  },
+  {
+    "marker": "lean:KelGroups.enact_implies_threshold_met",
+    "name": "KelGroups.enact_implies_threshold_met",
+    "basename": "enact_implies_threshold_met",
+    "kind": "theorem",
+    "file": "KelGroups/Invariants.lean",
+    "line": 342
+  },
+  {
+    "marker": "lean:KelGroups.finishEnact",
+    "name": "KelGroups.finishEnact",
+    "basename": "finishEnact",
+    "kind": "def",
+    "file": "KelGroups/Fold.lean",
+    "line": 18
+  },
+  {
+    "marker": "lean:KelGroups.foldGroup",
+    "name": "KelGroups.foldGroup",
+    "basename": "foldGroup",
+    "kind": "def",
+    "file": "KelGroups/Fold.lean",
+    "line": 88
+  },
+  {
+    "marker": "lean:KelGroups.majority",
+    "name": "KelGroups.majority",
+    "basename": "majority",
+    "kind": "def",
+    "file": "KelGroups/State.lean",
+    "line": 50
+  },
+  {
+    "marker": "lean:KelGroups.majority_not_strict_on_even",
+    "name": "KelGroups.majority_not_strict_on_even",
+    "basename": "majority_not_strict_on_even",
+    "kind": "theorem",
+    "file": "KelGroups/Invariants.lean",
+    "line": 459
+  },
+  {
+    "marker": "lean:KelGroups.majority_table",
+    "name": "KelGroups.majority_table",
+    "basename": "majority_table",
+    "kind": "theorem",
+    "file": "KelGroups/Invariants.lean",
+    "line": 450
+  },
+  {
+    "marker": "lean:KelGroups.member_key_coherent",
+    "name": "KelGroups.member_key_coherent",
+    "basename": "member_key_coherent",
+    "kind": "theorem",
+    "file": "KelGroups/Invariants.lean",
+    "line": 374
+  },
+  {
+    "marker": "lean:KelGroups.members_change_implies_enacted",
+    "name": "KelGroups.members_change_implies_enacted",
+    "basename": "members_change_implies_enacted",
+    "kind": "theorem",
+    "file": "KelGroups/Invariants.lean",
+    "line": 379
+  },
+  {
+    "marker": "lean:KelGroups.proposer_mem_approvals",
+    "name": "KelGroups.proposer_mem_approvals",
+    "basename": "proposer_mem_approvals",
+    "kind": "theorem",
+    "file": "KelGroups/Invariants.lean",
+    "line": 317
+  },
+  {
+    "marker": "lean:KelGroups.setInsert",
+    "name": "KelGroups.setInsert",
+    "basename": "setInsert",
+    "kind": "def",
+    "file": "KelGroups/Types.lean",
+    "line": 46
+  },
+  {
+    "marker": "lean:KelGroups.stalePendingWitness",
+    "name": "KelGroups.stalePendingWitness",
+    "basename": "stalePendingWitness",
+    "kind": "def",
+    "file": "KelGroups/Invariants.lean",
+    "line": 504
+  },
+  {
+    "marker": "lean:KelGroups.tryEnact",
+    "name": "KelGroups.tryEnact",
+    "basename": "tryEnact",
+    "kind": "def",
+    "file": "KelGroups/Fold.lean",
+    "line": 43
+  },
+  {
+    "marker": "lean:KelGroups.validateApproval",
+    "name": "KelGroups.validateApproval",
+    "basename": "validateApproval",
+    "kind": "def",
+    "file": "KelGroups/Validate.lean",
+    "line": 116
+  },
+  {
+    "marker": "lean:KelGroups.validateEvent",
+    "name": "KelGroups.validateEvent",
+    "basename": "validateEvent",
+    "kind": "def",
+    "file": "KelGroups/Validate.lean",
+    "line": 180
+  },
+  {
+    "marker": "lean:KelGroups.validateProposal",
+    "name": "KelGroups.validateProposal",
+    "basename": "validateProposal",
+    "kind": "def",
+    "file": "KelGroups/Validate.lean",
+    "line": 107
+  },
+  {
+    "marker": "lean:Pledge",
+    "name": "Pledge",
+    "basename": "Pledge",
+    "kind": "structure",
+    "file": "Reactivegas/Types.lean",
+    "line": 26
+  },
+  {
+    "marker": "lean:Reach",
+    "name": "Reach",
+    "basename": "Reach",
+    "kind": "inductive",
+    "file": "Reactivegas/Predicates.lean",
+    "line": 96
+  },
+  {
+    "marker": "lean:Reactivegas/Invariants.lean:checkAdminDepartureCleanup",
+    "name": "Reactivegas.checkAdminDepartureCleanup",
+    "basename": "checkAdminDepartureCleanup",
+    "kind": "def",
+    "file": "Reactivegas/Invariants.lean",
+    "line": 1437
+  },
+  {
+    "marker": "lean:Reactivegas/Step.lean:isResponsabile",
+    "name": "isResponsabile",
+    "basename": "isResponsabile",
+    "kind": "def",
+    "file": "Reactivegas/Step.lean",
+    "line": 31
+  },
+  {
+    "marker": "lean:Reactivegas/Types.lean:Proposal",
+    "name": "Proposal",
+    "basename": "Proposal",
+    "kind": "inductive",
+    "file": "Reactivegas/Types.lean",
+    "line": 119
+  },
+  {
+    "marker": "lean:Route",
+    "name": "Reactivegas.Composition.Route",
+    "basename": "Route",
+    "kind": "inductive",
+    "file": "Reactivegas/Composition.lean",
+    "line": 38
+  },
+  {
+    "marker": "lean:State",
+    "name": "State",
+    "basename": "State",
+    "kind": "structure",
+    "file": "Reactivegas/State.lean",
+    "line": 23
+  },
+  {
+    "marker": "lean:VoteError",
+    "name": "KelGroups.Vote.VoteError",
+    "basename": "VoteError",
+    "kind": "inductive",
+    "file": "KelGroups/Vote/Validate.lean",
+    "line": 38
+  },
+  {
+    "marker": "lean:absorbConto",
+    "name": "Reactivegas.absorbConto",
+    "basename": "absorbConto",
+    "kind": "def",
+    "file": "Reactivegas/Step.lean",
+    "line": 245
+  },
+  {
+    "marker": "lean:allUniquePledges",
+    "name": "allUniquePledges",
+    "basename": "allUniquePledges",
+    "kind": "def",
+    "file": "Reactivegas/Predicates.lean",
+    "line": 45
+  },
+  {
+    "marker": "lean:appDecided_verdict_exhaustive",
+    "name": "Reactivegas.Composition.appDecided_verdict_exhaustive",
+    "basename": "appDecided_verdict_exhaustive",
+    "kind": "theorem",
+    "file": "Reactivegas/Composition.lean",
+    "line": 139
+  },
+  {
+    "marker": "lean:appFold",
+    "name": "Reactivegas.appFold",
+    "basename": "appFold",
+    "kind": "def",
+    "file": "Reactivegas/Step.lean",
+    "line": 181
+  },
+  {
+    "marker": "lean:appVerdictAllows",
+    "name": "Reactivegas.Composition.appVerdictAllows",
+    "basename": "appVerdictAllows",
+    "kind": "def",
+    "file": "Reactivegas/Composition.lean",
+    "line": 130
+  },
+  {
+    "marker": "lean:applyEvent",
+    "name": "KelGroups.applyEvent",
+    "basename": "applyEvent",
+    "kind": "def",
+    "file": "KelGroups/Fold.lean",
+    "line": 84
+  },
+  {
+    "marker": "lean:applyVoteEventChecked",
+    "name": "KelGroups.Vote.applyVoteEventChecked",
+    "basename": "applyVoteEventChecked",
+    "kind": "def",
+    "file": "KelGroups/Vote/Fold.lean",
+    "line": 107
+  },
+  {
+    "marker": "lean:authorizedStep",
+    "name": "authorizedStep",
+    "basename": "authorizedStep",
+    "kind": "def",
+    "file": "Reactivegas/Predicates.lean",
+    "line": 74
+  },
+  {
+    "marker": "lean:bal",
+    "name": "bal",
+    "basename": "bal",
+    "kind": "def",
+    "file": "Reactivegas/State.lean",
+    "line": 39
+  },
+  {
+    "marker": "lean:baseHook",
+    "name": "Reactivegas.baseHook",
+    "basename": "baseHook",
+    "kind": "def",
+    "file": "Reactivegas/Step.lean",
+    "line": 298
+  },
+  {
+    "marker": "lean:baseProposalFaithful",
+    "name": "Reactivegas.Composition.baseProposalFaithful",
+    "basename": "baseProposalFaithful",
+    "kind": "def",
+    "file": "Reactivegas/Composition.lean",
+    "line": 96
+  },
+  {
+    "marker": "lean:bump",
+    "name": "bump",
+    "basename": "bump",
+    "kind": "def",
+    "file": "Reactivegas/State.lean",
+    "line": 62
+  },
+  {
+    "marker": "lean:canCloseGroup",
+    "name": "canCloseGroup",
+    "basename": "canCloseGroup",
+    "kind": "def",
+    "file": "Reactivegas/Predicates.lean",
+    "line": 85
+  },
+  {
+    "marker": "lean:close_permission_to_close",
+    "name": "close_permission_to_close",
+    "basename": "close_permission_to_close",
+    "kind": "theorem",
+    "file": "Reactivegas/Invariants.lean",
+    "line": 647
+  },
+  {
+    "marker": "lean:close_spends_referente",
+    "name": "close_spends_referente",
+    "basename": "close_spends_referente",
+    "kind": "theorem",
+    "file": "Reactivegas/Invariants.lean",
+    "line": 679
+  },
+  {
+    "marker": "lean:closureCause",
+    "name": "KelGroups.Vote.closureCause",
+    "basename": "closureCause",
+    "kind": "def",
+    "file": "KelGroups/Vote/State.lean",
+    "line": 109
+  },
+  {
+    "marker": "lean:comuneBal",
+    "name": "comuneBal",
+    "basename": "comuneBal",
+    "kind": "def",
+    "file": "Reactivegas/State.lean",
+    "line": 47
+  },
+  {
+    "marker": "lean:comuneId",
+    "name": "comuneId",
+    "basename": "comuneId",
+    "kind": "abbrev",
+    "file": "Reactivegas/Types.lean",
+    "line": 22
+  },
+  {
+    "marker": "lean:conservation",
+    "name": "conservation",
+    "basename": "conservation",
+    "kind": "def",
+    "file": "Reactivegas/Predicates.lean",
+    "line": 22
+  },
+  {
+    "marker": "lean:conservation_preserved",
+    "name": "conservation_preserved",
+    "basename": "conservation_preserved",
+    "kind": "theorem",
+    "file": "Reactivegas/Invariants.lean",
+    "line": 430
+  },
+  {
+    "marker": "lean:deposit_double_entry",
+    "name": "deposit_double_entry",
+    "basename": "deposit_double_entry",
+    "kind": "theorem",
+    "file": "Reactivegas/Invariants.lean",
+    "line": 697
+  },
+  {
+    "marker": "lean:doubleEntry",
+    "name": "doubleEntry",
+    "basename": "doubleEntry",
+    "kind": "def",
+    "file": "Reactivegas/Predicates.lean",
+    "line": 67
+  },
+  {
+    "marker": "lean:economicCleanup",
+    "name": "Reactivegas.economicCleanup",
+    "basename": "economicCleanup",
+    "kind": "def",
+    "file": "Reactivegas/Step.lean",
+    "line": 274
+  },
+  {
+    "marker": "lean:effectedState",
+    "name": "KelGroups.Vote.effectedState",
+    "basename": "effectedState",
+    "kind": "def",
+    "file": "KelGroups/Vote/Fold.lean",
+    "line": 87
+  },
+  {
+    "marker": "lean:escrowHeld",
+    "name": "escrowHeld",
+    "basename": "escrowHeld",
+    "kind": "def",
+    "file": "Reactivegas/Predicates.lean",
+    "line": 55
+  },
+  {
+    "marker": "lean:escrowOf",
+    "name": "escrowOf",
+    "basename": "escrowOf",
+    "kind": "def",
+    "file": "Reactivegas/State.lean",
+    "line": 76
+  },
+  {
+    "marker": "lean:escrowSum",
+    "name": "escrowSum",
+    "basename": "escrowSum",
+    "kind": "def",
+    "file": "Reactivegas/State.lean",
+    "line": 79
+  },
+  {
+    "marker": "lean:governanceEnacts",
+    "name": "governanceEnacts",
+    "basename": "governanceEnacts",
+    "kind": "def",
+    "file": "Reactivegas/Predicates.lean",
+    "line": 62
+  },
+  {
+    "marker": "lean:governance_enacts_windUpAdmin",
+    "name": "governance_enacts_windUpAdmin",
+    "basename": "governance_enacts_windUpAdmin",
+    "kind": "theorem",
+    "file": "Reactivegas/Invariants.lean",
+    "line": 637
+  },
+  {
+    "marker": "lean:insolvent",
+    "name": "insolvent",
+    "basename": "insolvent",
+    "kind": "def",
+    "file": "Reactivegas/Predicates.lean",
+    "line": 35
+  },
+  {
+    "marker": "lean:legacyThreshold",
+    "name": "KelGroups.Vote.legacyThreshold",
+    "basename": "legacyThreshold",
+    "kind": "def",
+    "file": "KelGroups/Vote/Types.lean",
+    "line": 44
+  },
+  {
+    "marker": "lean:majority",
+    "name": "KelGroups.majority",
+    "basename": "majority",
+    "kind": "def",
+    "file": "KelGroups/State.lean",
+    "line": 50
+  },
+  {
+    "marker": "lean:memberKeys",
+    "name": "memberKeys",
+    "basename": "memberKeys",
+    "kind": "def",
+    "file": "Reactivegas/Step.lean",
+    "line": 35
+  },
+  {
+    "marker": "lean:not_insolvent_of_reach",
+    "name": "not_insolvent_of_reach",
+    "basename": "not_insolvent_of_reach",
+    "kind": "theorem",
+    "file": "Reactivegas/Invariants.lean",
+    "line": 1184
+  },
+  {
+    "marker": "lean:open_questions_are_open",
+    "name": "open_questions_are_open",
+    "basename": "open_questions_are_open",
+    "kind": "theorem",
+    "file": "KelGroups/Vote/Invariants.lean",
+    "line": 810
+  },
+  {
+    "marker": "lean:permissionToClose",
+    "name": "permissionToClose",
+    "basename": "permissionToClose",
+    "kind": "def",
+    "file": "Reactivegas/Predicates.lean",
+    "line": 50
+  },
+  {
+    "marker": "lean:pledge_escrow_debit",
+    "name": "pledge_escrow_debit",
+    "basename": "pledge_escrow_debit",
+    "kind": "theorem",
+    "file": "Reactivegas/Invariants.lean",
+    "line": 659
+  },
+  {
+    "marker": "lean:pledge_guard_inv",
+    "name": "pledge_guard_inv",
+    "basename": "pledge_guard_inv",
+    "kind": "theorem",
+    "file": "Reactivegas/Invariants.lean",
+    "line": 154
+  },
+  {
+    "marker": "lean:pledge_preserves_allUnique",
+    "name": "pledge_preserves_allUnique",
+    "basename": "pledge_preserves_allUnique",
+    "kind": "theorem",
+    "file": "Reactivegas/Invariants.lean",
+    "line": 1269
+  },
+  {
+    "marker": "lean:pledge_rejected_when_member",
+    "name": "pledge_rejected_when_member",
+    "basename": "pledge_rejected_when_member",
+    "kind": "theorem",
+    "file": "Reactivegas/Invariants.lean",
+    "line": 1241
+  },
+  {
+    "marker": "lean:proposalDigest",
+    "name": "Reactivegas.proposalDigest",
+    "basename": "proposalDigest",
+    "kind": "def",
+    "file": "Reactivegas/Step.lean",
+    "line": 309
+  },
+  {
+    "marker": "lean:pullCollection",
+    "name": "pullCollection",
+    "basename": "pullCollection",
+    "kind": "def",
+    "file": "Reactivegas/State.lean",
+    "line": 103
+  },
+  {
+    "marker": "lean:reach_solvent",
+    "name": "reach_solvent",
+    "basename": "reach_solvent",
+    "kind": "theorem",
+    "file": "Reactivegas/Invariants.lean",
+    "line": 1177
+  },
+  {
+    "marker": "lean:refundAll",
+    "name": "refundAll",
+    "basename": "refundAll",
+    "kind": "def",
+    "file": "Reactivegas/State.lean",
+    "line": 94
+  },
+  {
+    "marker": "lean:route",
+    "name": "Reactivegas.Composition.route",
+    "basename": "route",
+    "kind": "def",
+    "file": "Reactivegas/Composition.lean",
+    "line": 47
+  },
+  {
+    "marker": "lean:s62bThreshold",
+    "name": "Reactivegas.s62bThreshold",
+    "basename": "s62bThreshold",
+    "kind": "def",
+    "file": "Reactivegas/Invariants.lean",
+    "line": 1302
+  },
+  {
+    "marker": "lean:solvent",
+    "name": "solvent",
+    "basename": "solvent",
+    "kind": "def",
+    "file": "Reactivegas/Predicates.lean",
+    "line": 30
+  },
+  {
+    "marker": "lean:solvent_init",
+    "name": "solvent_init",
+    "basename": "solvent_init",
+    "kind": "theorem",
+    "file": "Reactivegas/Invariants.lean",
+    "line": 877
+  },
+  {
+    "marker": "lean:solvent_preserved",
+    "name": "solvent_preserved",
+    "basename": "solvent_preserved",
+    "kind": "theorem",
+    "file": "Reactivegas/Invariants.lean",
+    "line": 1164
+  },
+  {
+    "marker": "lean:splitUser",
+    "name": "splitUser",
+    "basename": "splitUser",
+    "kind": "def",
+    "file": "Reactivegas/State.lean",
+    "line": 85
+  },
+  {
+    "marker": "lean:stalled",
+    "name": "stalled",
+    "basename": "stalled",
+    "kind": "def",
+    "file": "Reactivegas/State.lean",
+    "line": 55
+  },
+  {
+    "marker": "lean:step",
+    "name": "step",
+    "basename": "step",
+    "kind": "def",
+    "file": "Reactivegas/Step.lean",
+    "line": 44
+  },
+  {
+    "marker": "lean:stepEvent",
+    "name": "stepEvent",
+    "basename": "stepEvent",
+    "kind": "def",
+    "file": "Reactivegas/Step.lean",
+    "line": 147
+  },
+  {
+    "marker": "lean:step_authorized",
+    "name": "step_authorized",
+    "basename": "step_authorized",
+    "kind": "theorem",
+    "file": "Reactivegas/Invariants.lean",
+    "line": 561
+  },
+  {
+    "marker": "lean:step_correct_inv",
+    "name": "step_correct_inv",
+    "basename": "step_correct_inv",
+    "kind": "theorem",
+    "file": "Reactivegas/Invariants.lean",
+    "line": 284
+  },
+  {
+    "marker": "lean:stripCollections",
+    "name": "stripCollections",
+    "basename": "stripCollections",
+    "kind": "def",
+    "file": "Reactivegas/State.lean",
+    "line": 116
+  },
+  {
+    "marker": "lean:sweepClosures",
+    "name": "KelGroups.Vote.sweepClosures",
+    "basename": "sweepClosures",
+    "kind": "def",
+    "file": "KelGroups/Vote/Fold.lean",
+    "line": 74
+  },
+  {
+    "marker": "lean:tryEnact",
+    "name": "KelGroups.tryEnact",
+    "basename": "tryEnact",
+    "kind": "def",
+    "file": "KelGroups/Fold.lean",
+    "line": 43
+  },
+  {
+    "marker": "lean:uniquePledges",
+    "name": "uniquePledges",
+    "basename": "uniquePledges",
+    "kind": "def",
+    "file": "Reactivegas/Predicates.lean",
+    "line": 40
+  },
+  {
+    "marker": "lean:uniquePledges_pend_cons",
+    "name": "uniquePledges_pend_cons",
+    "basename": "uniquePledges_pend_cons",
+    "kind": "theorem",
+    "file": "Reactivegas/Invariants.lean",
+    "line": 1228
+  },
+  {
+    "marker": "lean:validateBootstrapProposal",
+    "name": "KelGroups.validateBootstrapProposal",
+    "basename": "validateBootstrapProposal",
+    "kind": "def",
+    "file": "KelGroups/Validate.lean",
+    "line": 88
+  },
+  {
+    "marker": "lean:validateNormalProposal",
+    "name": "KelGroups.validateNormalProposal",
+    "basename": "validateNormalProposal",
+    "kind": "def",
+    "file": "KelGroups/Validate.lean",
+    "line": 96
+  },
+  {
+    "marker": "lean:validateRoleChanges",
+    "name": "KelGroups.validateRoleChanges",
+    "basename": "validateRoleChanges",
+    "kind": "def",
+    "file": "KelGroups/Validate.lean",
+    "line": 79
+  },
+  {
+    "marker": "lean:validateVoteEvent",
+    "name": "KelGroups.Vote.validateVoteEvent",
+    "basename": "validateVoteEvent",
+    "kind": "def",
+    "file": "KelGroups/Vote/Validate.lean",
+    "line": 54
+  },
+  {
+    "marker": "lean:voteApply",
+    "name": "Reactivegas.voteApply",
+    "basename": "voteApply",
+    "kind": "def",
+    "file": "Reactivegas/Step.lean",
+    "line": 172
+  },
+  {
+    "marker": "lean:voteDerived",
+    "name": "Reactivegas.Composition.voteDerived",
+    "basename": "voteDerived",
+    "kind": "def",
+    "file": "Reactivegas/Composition.lean",
+    "line": 66
+  },
+  {
+    "marker": "lean:windUpAdmin",
+    "name": "Reactivegas.windUpAdmin",
+    "basename": "windUpAdmin",
+    "kind": "def",
+    "file": "Reactivegas/Step.lean",
+    "line": 254
+  },
+  {
+    "marker": "lean:withdraw_double_entry",
+    "name": "withdraw_double_entry",
+    "basename": "withdraw_double_entry",
+    "kind": "theorem",
+    "file": "Reactivegas/Invariants.lean",
+    "line": 707
+  },
+  {
+    "marker": "lean:zeroThreshold",
+    "name": "KelGroups.Vote.zeroThreshold",
+    "basename": "zeroThreshold",
+    "kind": "def",
+    "file": "KelGroups/Vote/Types.lean",
+    "line": 48
+  }
+]

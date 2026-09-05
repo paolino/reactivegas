@@ -1,0 +1,1 @@
+VERIFY-RECEIPT exit=1 duration_ms=1026 command_sha256=676b38949ddda8548a3dc82dc1d403f23dcf2ba987594083f00a876de03d7ab8 evidence_sha256=a4ae770a617f8e8617137f6044a676efff959d4d2407aad74e2a16b5ebe5bca1 bytes=254 lines=4 evidence=/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s2r-final-codex/evidence/S3-sorry.log
