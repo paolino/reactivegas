@@ -128,23 +128,15 @@ mention the specific constructor is what makes the rule collision-safe:
 `step_close_inv` can bind `closePurchase` and nothing else,
 because it can only mention one constructor.
 
+Candidates resolve by unqualified name, so a theorem binds whether it
+elaborates bare or under a namespace; the bound declaration always renders
+the unqualified candidate.
+
 The limit is declared, not hidden: this establishes that an accepted
 declaration of the right shape exists and is bound, not that its conclusion is
 a genuine guard inversion. Proving that belongs to the inversion slice that
 owns the new theorems.
 -/
-
-/-- Fully qualified name text, without going through a display rendering.
-`none` for a name with a numeric component, which no declaration name here
-has. -/
-private def declText : Lean.Name → Option String
-  | .anonymous => some ""
-  | .str .anonymous s => some s
-  | .str p s =>
-    match declText p with
-    | some ps => some (ps ++ "." ++ s)
-    | none => none
-  | .num _ _ => none
 
 /-- Does an expression mention this constant? -/
 private def mentionsConst (e : Lean.Expr) (n : Lean.Name) : Bool :=
@@ -168,17 +160,30 @@ def elabInversionManifest : TermElab := fun stx expected? => do
   let env ← getEnv
   let some (.inductInfo iv) := env.find? indName
     | throwError "inversion_manifest%: {indName} is not an inductive type"
+  -- Every accepted-inversion-shaped theorem in the environment, keyed by
+  -- unqualified (last-component) name and swept once. A candidate binds
+  -- whether its theorem elaborates bare or under any namespace; the bound
+  -- declaration always renders the unqualified candidate.
+  let allThms : Array (String × TheoremVal) :=
+    env.constants.toList.toArray.filterMap fun (n, ci) =>
+      match ci with
+      | .thmInfo ti =>
+        let s := n.getString!
+        if "step_".isPrefixOf s && s.endsWith "_inv" then some (s, ti)
+        else none
+      | _ => none
   let mut rows : Array (TSyntax `term) := #[]
   for ctor in iv.ctors do
     let short := ctor.getString!
     let mut bound : Option String := none
     for cand in inversionCandidates short do
-      if bound.isNone then
-        if let some (.thmInfo ti) := env.find? (Lean.Name.mkSimple cand) then
-          if (mentionsConst ti.type (Lean.Name.mkSimple "stepEvent")
+      if bound.isNone
+          && allThms.any fun (s, ti) =>
+            s == cand
+              && (mentionsConst ti.type (Lean.Name.mkSimple "stepEvent")
                 || mentionsConst ti.type (Lean.Name.mkSimple "step"))
               && mentionsConst ti.type ctor then
-            bound := declText (Lean.Name.mkSimple cand)
+        bound := some cand
     let key := Lean.Syntax.mkStrLit short
     let row ← match bound with
       | none => `(($key, (none : Option String)))
