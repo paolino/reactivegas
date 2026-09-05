@@ -163,14 +163,18 @@ def elabInversionManifest : TermElab := fun stx expected? => do
   -- Every accepted-inversion-shaped theorem in the environment, keyed by
   -- unqualified (last-component) name and swept once. A candidate binds
   -- whether its theorem elaborates bare or under any namespace; the bound
-  -- declaration always renders the unqualified candidate.
+  -- declaration always renders the unqualified candidate. The match is
+  -- total: non-string last components (e.g. numeric) cannot be candidates
+  -- and are skipped, so no declaration name can panic the elaborator.
   let allThms : Array (String × TheoremVal) :=
     env.constants.toList.toArray.filterMap fun (n, ci) =>
       match ci with
       | .thmInfo ti =>
-        let s := n.getString!
-        if "step_".isPrefixOf s && s.endsWith "_inv" then some (s, ti)
-        else none
+        match n with
+        | .str _ s =>
+          if "step_".isPrefixOf s && s.endsWith "_inv" then some (s, ti)
+          else none
+        | _ => none
       | _ => none
   let mut rows : Array (TSyntax `term) := #[]
   for ctor in iv.ctors do
