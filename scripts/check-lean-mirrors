@@ -143,8 +143,12 @@ def s4bExceptions : Array String :=
 
 /-- Promoted body/consumer obligations (v3.1 Obligation 2): the two P01 helper
 theorems whose proofs read `isMember`'s definition body. Checked for existence
-as theorem info mentioning the operative definition; their failure under the
-audited constant-false mutant is established by O5, their isolation by OT2. -/
+as theorem info mentioning the operative definition ANYWHERE in the statement
+(hypotheses and conclusion both harvested — a conclusion-only harvest would
+falsely reject `view_mem_of_isMember`, whose occurrence sits in its
+hypothesis). Mention establishes BINDING (right theorem, right operative)
+only: mention is not use, and neither is sensitivity, which is established by
+O5 (mandatory path) and OT2 (isolation). -/
 def s4bPromotedTable : Array String := #["view_mem_of_isMember", "isMember_of_view_mem"]
 
 /-- Harvest all referenced constant names from an expression. -/
@@ -303,8 +307,11 @@ run_cmd do
         | .thmInfo _ => pure ()
         | _ => fail m!"MIRROR-PROMOTED-NOT-THEOREM {p}"
         let mentioned ← liftTermElabM (try
-          forallTelescopeReducing pi.type fun _ ty => do
-            pure (s4bHarvestConsts ty #[] |>.contains `KelGroups.GroupView.isMember)
+          forallTelescopeReducing pi.type fun xs ty => do
+            let mut acc := s4bHarvestConsts ty #[]
+            for x in xs do
+              acc := s4bHarvestConsts (← inferType x) acc
+            pure (acc.contains `KelGroups.GroupView.isMember)
           catch _ => pure false)
         if !mentioned then fail m!"MIRROR-PROMOTED-SHAPE-MISMATCH {p} (does not mention the operative definition)"
         else
