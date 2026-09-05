@@ -1405,16 +1405,22 @@ def removeBob : KelGroups.IntegratedEvent Proposal AppEvent :=
   .propose (Proposal.departure "bob")
 
 /-- Departure absorbs the departing member's conto into the reserved comune
-account, and moves no other money. -/
+account, and moves no other money. V-2: at n=1 the sole admin proposes
+(pending, no change) and enacts with a separate self-approval. -/
 def checkMemberDepartureCleanup : Bool :=
   match s62bRun departureGroup "alice" removeBob with
-  | .ok result =>
-      let s := result.state.appFold
-      (result.change == some (KelGroups.BaseChange.memberRemoved "bob"))
-        && !(KelGroups.GroupView.isMember "bob" (s62bView result.state))
-        && (bal s.conti "bob" == 0)
-        && (comuneBal s == 40)
-        && (sumBal s.conti == sumBal departureGroup.appFold.conti)
+  | .ok proposed =>
+      (proposed.change == none)
+        && (match s62bRun proposed.state "alice"
+              (.approve (proposalDigest (Proposal.departure "bob"))) with
+            | .ok result =>
+                let s := result.state.appFold
+                (result.change == some (KelGroups.BaseChange.memberRemoved "bob"))
+                  && !(KelGroups.GroupView.isMember "bob" (s62bView result.state))
+                  && (bal s.conti "bob" == 0)
+                  && (comuneBal s == 40)
+                  && (sumBal s.conti == sumBal departureGroup.appFold.conti)
+            | .error _ => false)
   | .error _ => false
 
 /-- An admin holding a cassa and an open collection. Conservation holds on the
@@ -1433,33 +1439,44 @@ def adminDepartureGroup : KelGroups.GroupState State :=
 /-- Losing admin status through departure applies the accepted cassa /
 collection / refund cleanup: the departing admin's collections are cancelled,
 every held pledge is refunded, their cassa claim moves to the comune, and
-conservation still holds. -/
+conservation still holds. V-2: at n=2 the proposer pends and a fellow
+admin's assent enacts. -/
 def checkAdminDepartureCleanup : Bool :=
   match s62bRun adminDepartureGroup "alice" (.propose (Proposal.departure "dora")) with
-  | .ok result =>
-      let s := result.state.appFold
-      (result.change == some (KelGroups.BaseChange.memberRemoved "dora"))
-        && !(KelGroups.GroupView.isMember "dora" (s62bView result.state))
-        && (s.collections == [])
-        && (bal s.conti "bob" == 30)
-        && (bal s.casse "dora" == 0)
-        && (comuneBal s == -30)
-        && (sumBal s.casse - sumBal s.conti - escrowSum s.collections == 0)
+  | .ok proposed =>
+      (proposed.change == none)
+        && (match s62bRun proposed.state "dora"
+              (.approve (proposalDigest (Proposal.departure "dora"))) with
+            | .ok result =>
+                let s := result.state.appFold
+                (result.change == some (KelGroups.BaseChange.memberRemoved "dora"))
+                  && !(KelGroups.GroupView.isMember "dora" (s62bView result.state))
+                  && (s.collections == [])
+                  && (bal s.conti "bob" == 30)
+                  && (bal s.casse "dora" == 0)
+                  && (comuneBal s == -30)
+                  && (sumBal s.casse - sumBal s.conti - escrowSum s.collections == 0)
+            | .error _ => false)
   | .error _ => false
 
 /-- The same cleanup is owed to a *role change* that removes admin status: the
 key stays a member and keeps its conto, but its cassa and collections are wound
-up exactly as on departure. -/
+up exactly as on departure. V-2: fellow-admin assent enacts. -/
 def checkRoleChangeReachable : Bool :=
   match s62bRun adminDepartureGroup "alice" (.propose (Proposal.changeRoles "dora" [])) with
-  | .ok result =>
-      let s := result.state.appFold
-      (result.change == some (KelGroups.BaseChange.rolesChanged "dora"))
-        && KelGroups.GroupView.isMember "dora" (s62bView result.state)
-        && !(KelGroups.GroupView.isAdmin "dora" (s62bView result.state))
-        && (s.collections == [])
-        && (bal s.conti "bob" == 30)
-        && (bal s.casse "dora" == 0)
+  | .ok proposed =>
+      (proposed.change == none)
+        && (match s62bRun proposed.state "dora"
+              (.approve (proposalDigest (Proposal.changeRoles "dora" []))) with
+            | .ok result =>
+                let s := result.state.appFold
+                (result.change == some (KelGroups.BaseChange.rolesChanged "dora"))
+                  && KelGroups.GroupView.isMember "dora" (s62bView result.state)
+                  && !(KelGroups.GroupView.isAdmin "dora" (s62bView result.state))
+                  && (s.collections == [])
+                  && (bal s.conti "bob" == 30)
+                  && (bal s.casse "dora" == 0)
+            | .error _ => false)
   | .error _ => false
 
 /-- A stalled comune refuses departures, and the refusal is atomic: the group
@@ -1470,10 +1487,19 @@ def stalledDepartureGroup : KelGroups.GroupState State :=
 
 def checkHookRejectionIsAtomic : Bool :=
   (match s62bRun stalledDepartureGroup "alice" removeBob with
-   | .error (.integrated (.app StepError.rejected)) => true
-   | _ => false)
+   | .ok proposed =>
+       (proposed.change == none)
+         && (match s62bRun proposed.state "alice"
+               (.approve (proposalDigest (Proposal.departure "bob"))) with
+             | .error (.integrated (.app StepError.rejected)) => true
+             | _ => false)
+   | .error _ => false)
     && (KelGroups.foldIntegrated (integration s62bThreshold probeAuth)
-          stalledDepartureGroup [("alice", removeBob)] == stalledDepartureGroup)
+          stalledDepartureGroup
+          [("alice", removeBob),
+           ("alice", .approve (proposalDigest (Proposal.departure "bob")))] ==
+        KelGroups.foldIntegrated (integration s62bThreshold probeAuth)
+          stalledDepartureGroup [("alice", removeBob)])
 
 /-- `INV-62-ATOMIC-HOOK` as one executed row. -/
 def checkBaseCleanupReachable : Bool :=
@@ -1504,13 +1530,22 @@ def v3Proposed : Option (KelGroups.GroupState State) :=
   | .ok result => some result.state
   | .error _ => none
 
-def v3Enacted : Option (KelGroups.IntegratedResult State) :=
+def v3ApprovedOnce : Option (KelGroups.GroupState State) :=
   match v3Proposed with
-  | some gs => (s62bRun gs "dora" (.approve (proposalDigest (Proposal.departure "eve")))).toOption
+  | some gs =>
+      match s62bRun gs "dora" (.approve (proposalDigest (Proposal.departure "eve"))) with
+      | .ok result => some result.state
+      | .error _ => none
+  | none => none
+
+def v3Enacted : Option (KelGroups.IntegratedResult State) :=
+  match v3ApprovedOnce with
+  | some gs => (s62bRun gs "eve" (.approve (proposalDigest (Proposal.departure "eve")))).toOption
   | none => none
 
 /-- **V-3.** No ballot is cast anywhere in this trace and no vote event occurs:
-the two signed events are a base proposal and a base approval. The recorded
+the three signed events are a base proposal and two base approvals (V-2:
+one fellow assent still pends at n=3). The recorded
 tallies are byte-identical to the ones the question opened with, and the
 franchise change alone moves the verdict from `open` to `positive` and writes
 the closure. -/
@@ -1813,9 +1848,13 @@ def corpusEvents :
   , ("bob", .direct (.admitMember "zed" "zed@s62b" []))
   , ("alice", .propose (Proposal.departure "bob"))
   , ("dora", .approve (proposalDigest (Proposal.departure "bob")))
+  , ("eve", .approve (proposalDigest (Proposal.departure "bob")))
   , ("alice", .propose (Proposal.changeRoles "eve" []))
   , ("dora", .approve (proposalDigest (Proposal.changeRoles "eve" [])))
-  , ("alice", .propose (Proposal.departure "dora")) ]
+  , ("eve", .approve (proposalDigest (Proposal.changeRoles "eve" [])))
+  , ("alice", .propose (Proposal.departure "dora"))
+  , ("dora", .approve (proposalDigest (Proposal.departure "dora")))
+  ]
 
 def emitIntegratedCorpus : List IntegratedTraceStep :=
   emitIntegratedSteps corpusInitial corpusEvents
@@ -1861,23 +1900,27 @@ def memberKeysOf (gs : KelGroups.GroupState State) : List KelGroups.Key :=
 
 def integratedCorpusCoversRequired (steps : List IntegratedTraceStep) : Bool :=
   match steps with
-  | s0 :: s1 :: s2 :: s3 :: _s4 :: s5 :: s6 :: [] =>
+  | s0 :: s1 :: s2 :: s3 :: s4 :: s5 :: s6 :: s7 :: s8 :: s9 :: [] =>
       s0.accepted && (memberKeysOf s0.state).contains "carol"
         && !s0.state.appFold.conti.isEmpty
         && !s1.accepted && !((memberKeysOf s1.state).contains "zed")
         && !s2.state.pendingBase.isEmpty
         && !s2.state.pendingProposals.isEmpty
-        && s3.accepted && !((memberKeysOf s3.state).contains "bob")
-          && s3.change == some (.memberRemoved "bob")
-          && !(s3.state.appFold.collections.any (fun c => c.referente == "bob"))
-          && bal s3.state.appFold.conti "bob" == 0
-          && comuneBal s3.state.appFold != 0
-        && s5.accepted
-          && s5.state.appFold.votes.closed.any (fun r => r.questionId == "q")
-          && s5.change == some (.rolesChanged "eve")
-        && s6.accepted && !((memberKeysOf s6.state).contains "dora")
-          && s6.change == some (.memberRemoved "dora")
-          && !(s6.state.appFold.casse.any (fun kv => kv.1 == "dora" && kv.2 != 0))
+        && s3.accepted && (s3.change == none) && !s3.state.pendingBase.isEmpty
+        && s4.accepted && !((memberKeysOf s4.state).contains "bob")
+          && s4.change == some (.memberRemoved "bob")
+          && !(s4.state.appFold.collections.any (fun c => c.referente == "bob"))
+          && bal s4.state.appFold.conti "bob" == 0
+          && comuneBal s4.state.appFold != 0
+        && s5.accepted && !s5.state.pendingBase.isEmpty
+        && s6.accepted && (s6.change == none) && !s6.state.pendingBase.isEmpty
+        && s7.accepted
+          && s7.state.appFold.votes.closed.any (fun r => r.questionId == "q")
+          && s7.change == some (.rolesChanged "eve")
+        && s8.accepted && !s8.state.pendingBase.isEmpty
+        && s9.accepted && !((memberKeysOf s9.state).contains "dora")
+          && s9.change == some (.memberRemoved "dora")
+          && !(s9.state.appFold.casse.any (fun kv => kv.1 == "dora" && kv.2 != 0))
   | _ => false
 
 def corpusAllError (steps : List IntegratedTraceStep) :
@@ -1920,13 +1963,13 @@ def corpusOmitSigner (steps : List IntegratedTraceStep) :
 def corpusCorruptCleanup (steps : List IntegratedTraceStep) :
     List IntegratedTraceStep :=
   match steps with
-  | s0 :: s1 :: s2 :: s3 :: rest =>
-      s0 :: s1 :: s2 ::
-        { s3 with
+  | s0 :: s1 :: s2 :: s3 :: s4 :: rest =>
+      s0 :: s1 :: s2 :: s3 ::
+        { s4 with
           state :=
-            { s3.state with
+            { s4.state with
               appFold :=
-                { s3.state.appFold with
+                { s4.state.appFold with
                   conti := [("bob", 999), (comuneId, 0)] } } } :: rest
   | other => other
 
@@ -2008,7 +2051,7 @@ def checkIntegratedCorpus : Bool :=
     && !replayIntegratedCorpus omittedStateCorpusJson
     && !replayIntegratedCorpus (Lean.toJson (corpusCorruptCleanup emitIntegratedCorpus))
     && !integratedCorpusCoversRequired (corpusCorruptCleanup emitIntegratedCorpus)
-    && emitIntegratedCorpus.length == 7
+    && emitIntegratedCorpus.length == 10
     && emitIntegratedCorpus.any (fun st => !st.state.pendingProposals.isEmpty)
     -- Frozen A011 gate greps these exact call shapes; the executable
     -- path above serializes the same mutants through Lean.toJson.

@@ -20,21 +20,31 @@ Slice S1 (OWNER, single slice). Task IDs stable; stamp only after acceptance.
 
 ## Implementation (commit owner, after release)
 
-- [ ] T68-10 Empty-open on both propose paths (Fold + Integration).
-- [ ] T68-11 A-001 regime (approval bar/guard + sole-admin exception).
-- [ ] T68-12 WellFormed restatement + preservation proofs, both paths.
-- [ ] T68-13 Dependent theorems restated/re-proved; majority theorems
+- [x] T68-10 Empty-open on both propose paths (Fold + Integration).
+- [x] T68-11 A-001 regime (approval bar/guard + sole-admin exception).
+- [x] T68-12 WellFormed restatement + preservation proofs, both paths.
+- [x] T68-13 Dependent theorems restated/re-proved; majority theorems
   meaning-identical; wrappers updated.
-- [ ] T68-14 Reachable executable witnesses R68-08 (positive + negatives).
-- [ ] T68-15 Mutation control: proposer-credit mutant REDs (both paths).
-- [ ] T68-16 Full local gate GREEN (toolchain-contract, just lean,
+- [x] T68-14 Reachable executable witnesses R68-08 (positive + negatives).
+- [x] T68-15 Mutation control: proposer-credit mutant REDs (both paths).
+- [x] T68-16 Full local gate GREEN (toolchain-contract, just lean,
   lean-corpus-gate) within 6-build budget; PROOF-COMPLETE submission.
 
 ## Acceptance (ticket owner)
 
-- [ ] T68-20 Fresh codex audit per submission (gpt-6-astra/high, isolated
-  snapshot, pane-bound START, live argv verified).
+- [x] T68-20 Fresh independent audit per submission (s1 codex, s2 grok per
+  desk NOTE-009; gpt-6-astra/high resp. grok-4.6/high, isolated snapshot,
+  pane-bound START, live argv verified).
 - [ ] T68-21 Accept or single repair bounce + fresh re-audit; task stamp;
   quiet final verification; push exact SHA; draft PR; CI green.
 - [ ] T68-22 Design-content handoff (cited) for #71; scope reconciliation;
   resume handback; merge-permission request (no merge by this lane).
+- [x] T68-25 Single repair submission (desk NOTE-008): F01 corrections 1-5
+  (unconditional raw structural theorems + prefix-admissibility proof or
+  retained limits + TraceAdmissible antecedent enumeration + no
+  promotion maneuver + required 7-event worker regression), proof
+  doc-comments (no signature change), F02 reproof (both paths rebound to
+  repaired bytes, rebuild-before-run both sides, retained artifacts),
+  full gate GREEN + just-ci on final bytes, re-freeze, PROOF-COMPLETE
+  submission 2. Budgets: full-gate ceiling 14 cumulative; targeted ≤24
+  with individual receipts.
