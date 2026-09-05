@@ -103,7 +103,6 @@ def requiredInversions : List Name :=
   [`Reactivegas.step_open_inv, `Reactivegas.step_deposit_inv,
    `Reactivegas.step_withdraw_inv, `Reactivegas.step_transferCassa_inv,
    `Reactivegas.step_donate_inv, `Reactivegas.step_backdonate_inv]
-def expectedDeclarations : Nat := 163
 
 /-- The Lake package description is not a library module: nothing declared in
 it can reach the project environment, and it is elaborated by Lake, not here. -/
@@ -392,16 +391,25 @@ def audit (root : String) (negative : Bool) : Report Unit := do
       | none =>
         fail s!"{f} declares theorems but is not in the audited environment"
       | some m =>
+        let mut fileBacked := 0
         for (line, name) in declared do
           match elaborated.find? (fun p => p.1 == m && p.2.1 == line) with
           | none =>
             fail s!"{f}:{line}: `{name}` is declared in source but no theorem elaborated there"
           | some (_, _, actual) =>
-            if actual.toString.endsWith name then backedTotal := backedTotal + 1
+            if actual.toString.endsWith name then
+              backedTotal := backedTotal + 1
+              fileBacked := fileBacked + 1
             else fail s!"{f}:{line}: source declares `{name}` but `{actual}` elaborated"
-  IO.println s!"lean-theorems declared={declaredTotal} elaborated-backed={backedTotal} expected={expectedDeclarations}"
-  unless backedTotal == expectedDeclarations && declaredTotal == expectedDeclarations do
-    fail s!"elaborated theorem declarations {backedTotal} (source-declared {declaredTotal}) is not the expected {expectedDeclarations}"
+        IO.println s!"lean-census {f} declared={declared.size} backed={fileBacked}"
+  -- No expected-count constant (A2'): every source-declared theorem is
+  -- matched individually above against an elaborated theorem at its own
+  -- source position, so any declared/backed divergence already fails per
+  -- location with its identity attached. The totals are reported; an empty
+  -- census fails closed.
+  IO.println s!"lean-theorems declared={declaredTotal} elaborated-backed={backedTotal}"
+  if declaredTotal == 0 then
+    fail "derived zero theorem declarations from the audited sources"
 
 def main : TermElabM Unit := do
   let root := (← IO.getEnv "REACTIVEGAS_ROOT").getD "."

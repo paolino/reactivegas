@@ -1,0 +1,316 @@
+#!/usr/bin/env bash
+set -euo pipefail
+#
+# Total axiom gate over the discovered Lean extent (issue #66, slice S2).
+#
+# Three sets are derived independently and reconciled:
+#
+#   S -- source modules: the TRACKED `.lean` files under `lean/`, discovered
+#        here in the shell from `git ls-files` and cross-checked against a
+#        filesystem walk, so an untracked file cannot sit outside the sweep.
+#        Never derived from an import list.
+#   B -- built/imported modules: `env.header.moduleNames` of this gate's own
+#        elaborated environment, restricted to the project roots. Never
+#        derived from the filesystem walk.
+#   T -- compiled theorem identities: the `thmInfo` constants attributed to
+#        the modules in B through their own module data. Never derived from
+#        any name list.
+#
+# An import list checking itself cannot detect its own omission, so the gate
+# fails when S \ B is non-empty (a tracked source module that never reached
+# the environment) and when the shell discovery and the independent Lean
+# filesystem walk disagree (a truncated inventory or an untracked file).
+#
+# Every theorem in T must depend only on the permitted standard axioms. The
+# permitted set is exactly `permittedAxioms` at
+# `scripts/check-reactivegas-inversion-coverage:101`, already applied by the
+# mandatory path to the six `requiredInversions`: this gate does not choose a
+# new policy, it extends the policy the repo already enforces from six
+# theorems to the whole discovered extent.
+#
+# Counts are reported, never quotas: no expected-count constant appears here
+# or in the driver. The reconciliation is what passes or fails.
+
+TOOL=check-lean-axioms
+
+usage() {
+    printf 'usage: %s [REPO_ROOT]\n' "$TOOL" >&2
+    exit 64
+}
+
+while [ $# -gt 0 ]; do
+    case $1 in
+        -h|--help) usage ;;
+        --) shift; break ;;
+        -*) usage ;;
+        *) break ;;
+    esac
+    shift
+done
+[ $# -le 1 ] || usage
+
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+root=$(cd -- "${1:-$script_dir/..}" && pwd)
+lean_dir="$root/lean"
+
+[ -d "$lean_dir" ] || {
+    printf '%s: missing Lean sources: %s\n' "$TOOL" "$lean_dir" >&2
+    exit 1
+}
+
+tmp=$(mktemp -d)
+trap 'rm -rf -- "$tmp"' EXIT
+
+# S from the tracked set: every `.lean` file git knows under `lean/`, except
+# the Lake package configuration, which is not part of the library.
+mapfile -t s_git < <(
+    git -C "$root" ls-files -- 'lean/*.lean' \
+        | sort \
+        | while IFS= read -r file; do
+            rel=${file#"lean"/}
+            [ "$rel" = lakefile.lean ] && continue
+            printf '%s\n' "${rel%.lean}" | tr '/' '.'
+        done
+)
+
+# S from the filesystem: every `.lean` file on disk under `lean/`, except the
+# build tree and the Lake package configuration. A `.lean` file that exists
+# but is not tracked would otherwise sit outside the sweep entirely.
+mapfile -t s_fs < <(
+    find "$lean_dir" -name '.lake' -prune -o -name '*.lean' -type f -print \
+        | sort \
+        | while IFS= read -r file; do
+            rel=${file#"$lean_dir"/}
+            [ "$rel" = lakefile.lean ] && continue
+            printf '%s\n' "${rel%.lean}" | tr '/' '.'
+        done
+)
+
+if [ "${#s_git[@]}" -eq 0 ]; then
+    printf '%s: derived zero tracked source modules from %s\n' \
+        "$TOOL" "$lean_dir" >&2
+    exit 1
+fi
+
+# The two independent source discoveries must agree exactly: a truncated
+# inventory and an untracked file both fail here, before anything is built.
+if ! diff <(printf '%s\n' "${s_git[@]}") <(printf '%s\n' "${s_fs[@]}") \
+        >"$tmp/discovery.diff" 2>&1; then
+    printf '%s: tracked and on-disk source discoveries disagree\n' \
+        "$TOOL" >&2
+    cat "$tmp/discovery.diff" >&2
+    exit 1
+fi
+modules=("${s_git[@]}")
+
+# The environment must be the current source, not whatever was compiled last.
+(cd "$lean_dir" && lake build "${modules[@]}" >"$tmp/build.log" 2>&1) || {
+    printf '%s: lake build failed\n' "$TOOL" >&2
+    cat "$tmp/build.log" >&2
+    exit 1
+}
+
+{
+    printf 'import Lean\n'
+    printf 'import %s\n' "${modules[@]}"
+    cat <<'LEANEOF'
+
+open Lean Meta Elab Term
+
+namespace AxiomGate
+
+def projectRoots : List Name := [`Reactivegas, `KelGroups]
+
+/-- The permitted standard axioms. This is exactly `permittedAxioms` at
+`scripts/check-reactivegas-inversion-coverage:101`, already applied by the
+mandatory path to the six `requiredInversions`. This gate does not choose a
+new policy; it extends the policy the repo already enforces from six theorems
+to the whole discovered extent. -/
+def permittedAxioms : List Name := [`propext, `Classical.choice, `Quot.sound]
+
+/-- The Lake package description is not a library module: nothing declared in
+it can reach the project environment, and it is elaborated by Lake, not here. -/
+def lakeConfig : String := "lakefile.lean"
+
+def isProjectModule (m : Name) : Bool :=
+  projectRoots.any (fun r => r == m || r.isPrefixOf m)
+
+/-- Every `.lean` source under `lean/`, found by walking the filesystem here
+in the elaborator, independently of the shell discovery passed in through the
+environment. A file the walk cannot read as a directory entry list is a
+finding, not an empty directory. -/
+partial def leanSources (dir : System.FilePath) : IO (Array System.FilePath) := do
+  let mut acc := #[]
+  let entries ← dir.readDir
+  for e in entries do
+    if e.fileName == ".lake" then
+      continue
+    else if (← e.path.isDir) then
+      acc := acc ++ (← leanSources e.path)
+    else if e.fileName.endsWith ".lean" then
+      acc := acc.push e.path
+  return acc
+
+/-- `lean/A/B.lean`, relative to the repository root, for module `A.B`. -/
+def moduleOfPath (root : String) (p : System.FilePath) : Option String :=
+  let dirPrefix : String := root ++ "/lean/"
+  let s := p.toString
+  if dirPrefix.isPrefixOf s then
+    let rel := s.drop dirPrefix.length
+    if rel.endsWith ".lean" && rel != lakeConfig then
+      some ((rel.dropRight ".lean".length).replace "/" ".")
+    else
+      none
+  else
+    none
+
+/-- The shell discovery, passed through the environment: the tracked source
+modules, one per line. -/
+def expectedModules : IO (List String) := do
+  let raw := (← IO.getEnv "REACTIVEGAS_AXIOM_MODULES").getD ""
+  return (raw.splitOn "\n").filter (fun s => !s.isEmpty)
+
+/-- The built/imported project modules: `env.header.moduleNames` of this
+gate's own elaborated environment, restricted to the project roots. Derived
+from the environment alone, never from the filesystem walk. -/
+def builtModules (env : Environment) : List Name :=
+  env.header.moduleNames.toList.filter isProjectModule
+
+abbrev Report := StateT (Array String) TermElabM
+
+def fail (m : String) : Report Unit := modify (·.push m)
+
+def audit (root : String) : Report Unit := do
+  let env ← getEnv
+  let expected ← expectedModules
+  if expected.isEmpty then
+    fail "derived zero expected source modules from REACTIVEGAS_AXIOM_MODULES"
+
+  let files ← leanSources (root ++ "/lean")
+  let mut walked : Array String := #[]
+  for f in files do
+    if f.toString == root ++ "/lean/" ++ lakeConfig then
+      continue
+    else match moduleOfPath root f with
+    | some m => walked := walked.push m
+    | none =>
+      if f.toString.endsWith ".lean" then
+        fail s!"{f}: on-disk source maps to no module name"
+  let walkedList := walked.toList.mergeSort (· ≤ ·)
+  let expectedSorted := expected.mergeSort (· ≤ ·)
+  if walkedList != expectedSorted then
+    let missingFromWalk := expected.filter (fun s => !walked.toList.contains s)
+    let missingFromExpected := walked.toList.filter (fun s => !expected.contains s)
+    unless missingFromWalk.isEmpty do
+      fail s!"tracked modules absent from the filesystem walk: {", ".intercalate missingFromWalk}"
+    unless missingFromExpected.isEmpty do
+      fail s!"walked sources outside the tracked discovery: {", ".intercalate missingFromExpected}"
+    if missingFromWalk.isEmpty && missingFromExpected.isEmpty then
+      fail "source discovery and filesystem walk disagree in multiplicity"
+  IO.println s!"axiom-sources tracked={expected.length} walked={walked.size}"
+
+  let built := builtModules env
+  let builtStrings := (built.map (·.toString)).mergeSort (· ≤ ·)
+  if builtStrings.isEmpty then
+    fail "derived zero built project modules from the elaborated environment"
+  for m in builtStrings do
+    IO.println s!"axiom-module {m}"
+  IO.println s!"axiom-built count={builtStrings.length}"
+
+  -- An import list checking itself cannot detect its own omission: fail when
+  -- a tracked source module never reached the elaborated environment, and
+  -- symmetrically when the environment holds a project module no discovery
+  -- accounts for.
+  let unreached := expected.filter (fun s => !builtStrings.contains s)
+  unless unreached.isEmpty do
+    fail s!"tracked source modules that never reached the environment: {", ".intercalate unreached}"
+  let unaccounted := builtStrings.filter (fun s => !expected.contains s)
+  unless unaccounted.isEmpty do
+    fail s!"built project modules outside the source discovery: {", ".intercalate unaccounted}"
+
+  -- The compiled theorem identities: every `thmInfo` constant attributed to
+  -- a built project module through its own module data. Module names and
+  -- module data travel positionally in the header; a length mismatch between
+  -- the two parallel arrays is a finding, not a silent truncation.
+  let names := env.header.moduleNames.toList
+  let datas := env.header.moduleData.toList
+  let paired := names.zip datas
+  if paired.length != names.length then
+    fail "environment header module names and module data disagree in length"
+  let mut theorems : Array String := #[]
+  let mut offenders : Array (String × List Name) := #[]
+  let mut sorryOnes : Array String := #[]
+  for (m, data) in paired do
+    if !isProjectModule m then continue
+    for n in data.constNames do
+      match env.find? n with
+      | some (.thmInfo _) =>
+        theorems := theorems.push n.toString
+        let axs ← collectAxioms n
+        let axList := axs.toList
+        if axList.contains `sorryAx then
+          sorryOnes := sorryOnes.push n.toString
+        let extra := axList.filter (fun a =>
+          a != `sorryAx && !permittedAxioms.contains a)
+        unless extra.isEmpty do
+          offenders := offenders.push (n.toString, extra)
+      | _ => continue
+  let theoremList := theorems.toList.mergeSort (· ≤ ·)
+  if theoremList.isEmpty then
+    fail "derived zero theorems from the built project modules"
+  for t in theoremList do
+    IO.println s!"axiom-theorem {t}"
+  IO.println s!"axiom-theorems count={theoremList.length}"
+  for s in (sorryOnes.toList.mergeSort (· ≤ ·)) do
+    fail s!"{s}: depends on sorryAx (a sorry-bodied theorem in the extent)"
+  for (t, extra) in offenders do
+    fail s!"{t}: depends on axioms outside the permitted standard set: {", ".intercalate (extra.map (·.toString))}"
+
+def main : TermElabM Unit := do
+  let root := (← IO.getEnv "REACTIVEGAS_ROOT").getD "."
+  let (_, failures) ← (audit root).run #[]
+  if failures.isEmpty then
+    IO.println "axiom-gate: ok"
+  else
+    for f in failures do IO.eprintln s!"axiom-gate: {f}"
+    throwError s!"axiom-gate failed with {failures.size} finding(s)"
+
+end AxiomGate
+
+#eval AxiomGate.main
+LEANEOF
+} >"$tmp/AxiomGate.lean"
+
+export REACTIVEGAS_ROOT="$root"
+export REACTIVEGAS_AXIOM_MODULES="$(printf '%s\n' "${modules[@]}")"
+status=0
+(cd "$lean_dir" && lake env lean "$tmp/AxiomGate.lean") \
+    >"$tmp/gate.out" 2>"$tmp/gate.err" || status=$?
+cat "$tmp/gate.out"
+cat "$tmp/gate.err" >&2
+
+# Totality, by absence of the panic string: this lane's rule is that a process
+# can emit the expected rows and exit zero despite an internal panic fallback,
+# so exit status and correct output are not evidence of totality. The driver
+# above is written with no partial call, and the gate fails closed if a panic
+# string ever appears in its output.
+if grep -q "PANIC at" "$tmp/gate.out" "$tmp/gate.err"; then
+    printf '%s: gate output contains a panic string; totality not shown\n' \
+        "$TOOL" >&2
+    exit 1
+fi
+
+# Inspect the emitted results, not just the exit code: the reconciliation
+# rows must actually be present.
+for marker in '^axiom-sources tracked=[0-9][0-9]* walked=[0-9][0-9]*$' \
+              '^axiom-built count=[0-9][0-9]*$' \
+              '^axiom-theorems count=[0-9][0-9]*$' \
+              '^axiom-gate: ok$'; do
+    grep -Eq "$marker" "$tmp/gate.out" || {
+        printf '%s: gate output is missing the reconciliation row: %s\n' \
+            "$TOOL" "$marker" >&2
+        exit 1
+    }
+done
+
+exit "$status"
