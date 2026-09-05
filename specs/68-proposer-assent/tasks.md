@@ -39,10 +39,14 @@ Slice S1 (OWNER, single slice). Task IDs stable; stamp only after acceptance.
 - [x] T68-20 Fresh independent audit per submission (s1 codex, s2 grok per
   desk NOTE-009; gpt-6-astra/high resp. grok-4.6/high, isolated snapshot,
   pane-bound START, live argv verified).
-- [ ] T68-21 Accept or single repair bounce + fresh re-audit; task stamp;
-  quiet final verification; push exact SHA; draft PR; CI green.
-- [ ] T68-22 Design-content handoff (cited) for #71; scope reconciliation;
-  resume handback; merge-permission request (no merge by this lane).
+- [x] T68-21 Accept (audit-2 PASS + clean reconciliation) after single repair
+  bounce + fresh FULL re-audit; task stamp; quiet final verification
+  (existing gate-14 receipt verified to final tree, no rerun per desk);
+  push exact SHA; draft PR; CI green re-verified on final head before
+  ready-marking.
+- [x] T68-22 Design-content handoff (cited) for #71; scope reconciliation;
+  resume handback; merge-permission request transmitted in handback
+  (no merge by this lane; desk authorization inbound).
 - [x] T68-25 Single repair submission (desk NOTE-008): F01 corrections 1-5
   (unconditional raw structural theorems + prefix-admissibility proof or
   retained limits + TraceAdmissible antecedent enumeration + no
