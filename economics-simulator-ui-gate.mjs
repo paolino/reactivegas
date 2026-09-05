@@ -212,8 +212,16 @@ const CONTROL_DESC = {
 function deriveExtent(src) {
   const problems = [];
   const found = {};
-  for (const m of src.matchAll(/\.dataset\.([A-Za-z]+)/g))
-    found[m[1]] = (found[m[1]] || 0) + 1;
+  const count = name => { found[name] = (found[name] || 0) + 1; };
+  // every spelling of a dataset read, on any receiver: dot notation,
+  // quoted-bracket notation, bare or dotted. A non-literal key cannot be
+  // classified statically and is RED fail-closed (registered explicitly
+  // or not at all). String mentions of a read shape count as reads: the
+  // direction is fail-closed by design, and today the page has none.
+  for (const m of src.matchAll(/\.dataset\.([A-Za-z]+)/g)) count(m[1]);
+  for (const m of src.matchAll(/(?<![\w$])dataset\[\s*['"]([A-Za-z]+)['"]\s*\]/g)) count(m[1]);
+  for (const m of src.matchAll(/(?<![\w$])dataset\[(?!\s*['"])[^\]]+\]/g))
+    problems.push(`accesso dataset dinamico, chiave non classificabile staticamente: «${m[0].trim().slice(0, 48)}» — registrare esplicitamente`);
   for (const [name, n] of Object.entries(found)) {
     const k = KNOWN_READS[name];
     if (!k) problems.push(`lettura dataset non classificata: .dataset.${name} ×${n} — estendere l'harness, non ignorarla`);
