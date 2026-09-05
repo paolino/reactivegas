@@ -42,6 +42,12 @@ import { tmpdir } from 'node:os';
 import vm from 'node:vm';
 
 const REPO = dirname(fileURLToPath(import.meta.url));
+
+/* Teardown of a disposable resource must never determine the gate's verdict:
+   scratch-dir cleanup is housekeeping and cannot veto the exit code. */
+function rmQuiet(p) {
+  try { rmSync(p, { recursive: true, force: true }); } catch { /* housekeeping */ }
+}
 const HTML = join(REPO, 'economics-simulator.html');
 const sha256 = b => createHash('sha256').update(b).digest('hex');
 
@@ -276,6 +282,6 @@ try {
     }
   }
 } finally {
-  rmSync(work, { recursive: true, force: true });
+  rmQuiet(work);
 }
 process.exit(code);

@@ -51,6 +51,15 @@ import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
 
 const REPO = dirname(fileURLToPath(import.meta.url));
+
+/* Teardown of a disposable resource must never determine the gate's verdict:
+   cleanup of a temp profile or scratch dir is housekeeping. rmSync force:true
+   forgives a MISSING path, never a BUSY one — a Chromium profile can still be
+   held for a beat after the child dies, and an ENOTEMPTY throw there would
+   turn housekeeping into a veto. Best effort, errors swallowed on purpose. */
+function rmQuiet(p) {
+  try { rmSync(p, { recursive: true, force: true }); } catch { /* housekeeping */ }
+}
 const HTML = join(REPO, 'economics-simulator.html');
 const STRIPS = ['benvenuto', 'impegno', 'guardie', 'cassa', 'chiusa', 'voto'];
 
@@ -173,13 +182,13 @@ window.__rgAmount = async v => {
   await __rgClick('#am-ok');
 };
 window.__rgAddNamed = async name => {
-  await __rgClick('#gtasks [data-task="addUser"]');
+  await __rgClick('#gtasks [data-task="admitMember"]');
   const n = document.getElementById('un-n');
   if (!n) throw new Error('campo nome assente');
   n.value = name;
   n.dispatchEvent(new Event('input', { bubbles: true }));
   await __rgClick('#un-ok');
-  await __rgClick('#pop .chip[data-id="0"]');
+  await __rgClick('#pop .chip[data-id="anna"]');
 };
 window.__rgSnap = phase => ({
   nonce: window.__RG_TG_NONCE, phase,
@@ -195,7 +204,7 @@ window.__rgSnap = phase => ({
     a + [...c.accepted, ...c.pending].reduce((x, p) => x + p.amount, 0), 0),
   lastLogLine: ((document.querySelector('#log .entry .eh') || {}).textContent || '').trim(),
   casseNeg: window.RG.state.casse.filter(([, v]) => v < 0),
-  openQuestions: window.RG.kg.openQuestions.length,
+  openQuestions: window.RG.state.votes.openQuestions.length,
   view: location.hash || 'n/a',
 });
 window.__rgDismiss = async id => {
@@ -237,29 +246,30 @@ async function runJourney(b, url, nonce) {
   await b.eval(s, HELPERS(nonce));
   await step(b, s, snaps, 'benvenuto.reloadPersist', ``);
 
-  // ------ shared setup: elect Bruno, fund, open Olio -----------------------
+  // ------ shared setup: elect Bruno, fund him, open Olio -------------------
+  // one membership: admission is direct, election is ONE restricted proposal
+  // that enacts at once (single admin, majority 1) — cassa bruno appears read
+  // at zero, nothing is stored
   await b.eval(s, `(async () => {
-    await __rgClick('#gtasks [data-task="electResponsabile"]');
-    await __rgClick('#pop .chip[data-id="1"]');
-    await __rgClick('#pop .chip[data-id="0"]');
-    await __rgClick('[data-key="member:0"]');
+    await __rgClick('#gtasks [data-task="elect"]');
+    await __rgClick('#pop .chip[data-id="bruno"]');
+    await __rgClick('#pop .chip[data-id="anna"]');
+    await __rgClick('[data-key="member:anna"]');
     await __rgClick('[data-hat="cassiere"]');
     await __rgClick('#hat-cassiere [data-task="deposit"]');
-    await __rgClick('#pop .chip[data-id="1"]');
+    await __rgClick('#pop .chip[data-id="bruno"]');
     await __rgAmount(100);
     await __rgClick('#crumbs [data-crumb="0"]');
-    await __rgClick('[data-key="cassa:1"]');
+    await __rgClick('[data-key="cassa:bruno"]');
     await __rgClick('#hat-cassiere [data-task="openPurchase"]');
     await __rgClick('#pop [data-l="Olio"]');
     await __rgClick('#crumbs [data-crumb="0"]');
-    await __rgClick('#govcard [data-kgadmit]');
-    await __rgClick('#pop .chip[data-id="0"]');
-    await __rgClick('#govcard [data-kgadmit]');
-    await __rgClick('#pop .chip[data-id="1"]');
     return 'setup-ok';
   })()`);
 
   // ------ voto: while a real question is open ------------------------------
+  // the electorate is the group's admin set; a question opens with EMPTY
+  // tallies and the first side to reach the threshold closes it
   await step(b, s, snaps, 'voto.appear', `
     await __rgClick('[data-key="pile:1"]');
     await __rgClick('#view [data-kgpropose]');
@@ -268,7 +278,7 @@ async function runJourney(b, url, nonce) {
     await __rgClick('#view [data-kgcast="permesso:1"][data-kgsigner="anna"][data-kgballot="assent"]');`);
   await step(b, s, snaps, 'voto.recreate', `
     await __rgClick('#crumbs [data-crumb="0"]');
-    await __rgClick('[data-key="cassa:1"]');
+    await __rgClick('[data-key="cassa:bruno"]');
     await __rgClick('#hat-cassiere [data-task="openPurchase"]');
     await __rgClick('#pop [data-l="Vino"]');
     await __rgClick('#crumbs [data-crumb="0"]');
@@ -279,7 +289,7 @@ async function runJourney(b, url, nonce) {
   await step(b, s, snaps, 'voto.dismiss', ``);
   await step(b, s, snaps, 'voto.recreateAfterDismiss', `
     await __rgClick('#crumbs [data-crumb="0"]');
-    await __rgClick('[data-key="cassa:1"]');
+    await __rgClick('[data-key="cassa:bruno"]');
     await __rgClick('#hat-cassiere [data-task="openPurchase"]');
     await __rgClick('#pop [data-l="Farina"]');
     await __rgClick('#crumbs [data-crumb="0"]');
@@ -292,39 +302,37 @@ async function runJourney(b, url, nonce) {
     await __rgClick('#crumbs [data-crumb="0"]');
     await __rgClick('[data-key="pile:1"]');
     await __rgClick('#view [data-task="pledge"]');
-    await __rgClick('#pop .chip[data-id="1"]');
-    await __rgClick('#pop .chip[data-id="0"]');
+    await __rgClick('#pop .chip[data-id="bruno"]');
+    await __rgClick('#pop .chip[data-id="anna"]');
     await __rgAmount(40);`);
   await step(b, s, snaps, 'impegno.leave', `
-    await __rgClick('#refpanel [data-act="refuse"][data-u="1"]');`);
+    await __rgClick('#refpanel [data-act="refuse"][data-u="bruno"]');`);
   await step(b, s, snaps, 'impegno.recreate', `
     await __rgClick('#view [data-task="pledge"]');
-    await __rgClick('#pop .chip[data-id="1"]');
-    await __rgClick('#pop .chip[data-id="0"]');
+    await __rgClick('#pop .chip[data-id="bruno"]');
+    await __rgClick('#pop .chip[data-id="anna"]');
     await __rgAmount(40);`);
   const impegnoDis = await b.eval(s, `__rgDismiss('impegno')`);
   await step(b, s, snaps, 'impegno.dismiss', ``);
   await step(b, s, snaps, 'impegno.recreateAfterDismiss', `
-    await __rgClick('#refpanel [data-act="refuse"][data-u="1"]');
+    await __rgClick('#refpanel [data-act="refuse"][data-u="bruno"]');
     await __rgClick('#view [data-task="pledge"]');
-    await __rgClick('#pop .chip[data-id="1"]');
-    await __rgClick('#pop .chip[data-id="0"]');
+    await __rgClick('#pop .chip[data-id="bruno"]');
+    await __rgClick('#pop .chip[data-id="anna"]');
     await __rgAmount(40);
-    await __rgClick('#refpanel [data-act="accept"][data-u="1"]');`);
+    await __rgClick('#refpanel [data-act="accept"][data-u="bruno"]');`);
 
   // ------ guardie: after meeting a real refusal ----------------------------
-  // the page's affordances refuse BEFORE the machine: a spent (off) task is
-  // the refusal surface Giuseppe meets; clicking it is the encounter
   await step(b, s, snaps, 'guardie.appear', `
     await __rgClick('#refpanel [data-task="closePurchase"]');
     const pop = document.getElementById('pop');
     if (pop && !pop.hidden) { const x = pop.querySelector('.xbtn2'); if (x) { x.click(); await new Promise(z => setTimeout(z, 60)); } }`);
   await step(b, s, snaps, 'guardie.leave', `
     await __rgClick('#crumbs [data-crumb="0"]');
-    await __rgClick('[data-key="member:0"]');
+    await __rgClick('[data-key="member:anna"]');
     await __rgClick('[data-hat="cassiere"]');
     await __rgClick('#hat-cassiere [data-task="deposit"]');
-    await __rgClick('#pop .chip[data-id="1"]');
+    await __rgClick('#pop .chip[data-id="bruno"]');
     await __rgAmount(5);
     await __rgClick('#crumbs [data-crumb="0"]');`);
   await step(b, s, snaps, 'guardie.recreate', `
@@ -340,57 +348,58 @@ async function runJourney(b, url, nonce) {
     if (pop && !pop.hidden) { const x = pop.querySelector('.xbtn2'); if (x) { x.click(); await new Promise(z => setTimeout(z, 60)); } }`);
 
   // ------ cassa: the exact operator regression -----------------------------
-  // grant from the positive verdict, close: cassa Bruno goes negative and
-  // the explanation must be on screen IN THE SAME RENDERED RESULT
+  // the positive verdict of permesso:1 enables the grant; closing sends
+  // Bruno's cassa negative and the explanation must be on screen in the same
+  // rendered result
   await step(b, s, snaps, 'cassa.appear', `
     await __rgClick('#view [data-task="grantPermission"]');
     await __rgClick('#ext-apply');
     await __rgClick('#refpanel [data-task="closePurchase"]');`);
   await step(b, s, snaps, 'cassa.leave', `
     await __rgClick('#crumbs [data-crumb="0"]');
-    await __rgClick('[data-key="member:1"]');
+    await __rgClick('[data-key="member:bruno"]');
     await __rgClick('[data-hat="cassiere"]');
     await __rgClick('#hat-cassiere [data-task="transferCassa"]');
-    await __rgClick('#pop .chip[data-id="0"]');
+    await __rgClick('#pop .chip[data-id="anna"]');
     await __rgAmount(50);`);
   await step(b, s, snaps, 'cassa.recreate', `
     await __rgClick('#crumbs [data-crumb="0"]');
-    await __rgClick('[data-key="member:0"]');
+    await __rgClick('[data-key="member:anna"]');
     await __rgClick('[data-hat="cassiere"]');
     await __rgClick('#hat-cassiere [data-task="transferCassa"]');
-    await __rgClick('#pop .chip[data-id="1"]');
+    await __rgClick('#pop .chip[data-id="bruno"]');
     await __rgAmount(50);`);
   // identity value coverage (audit finding 2): a SECOND distinguishable
-  // cassiere goes negative too — Elena is elected and funded, Anna's cassa
-  // is drained to 5, and Anna closes her own mini-purchase for 6, so both
-  // Anna (−1) and Bruno (−40) are negative at once; the rendered sentence
-  // must name exactly the derived negative set
+  // cassiere goes negative too — Elena is elected, Anna's cassa is drained
+  // to below zero, and Anna closes her own mini-purchase, so both Anna and
+  // Bruno are negative at once; the rendered sentence names exactly the set
   await step(b, s, snaps, 'cassa.identities', `
     await __rgClick('#crumbs [data-crumb="0"]');
     await __rgAddNamed('Elena');
-    await __rgClick('#gtasks [data-task="electResponsabile"]');
-    await __rgClick('#pop .chip[data-id="2"]');
-    await __rgClick('#pop .chip[data-id="0"]');
-    await __rgClick('[data-key="member:2"]');
+    await __rgClick('#gtasks [data-task="elect"]');
+    await __rgClick('#pop .chip[data-id="elena"]');
+    await __rgClick('#pop .chip[data-id="anna"]');
+    await __rgClick('[data-key="member:elena"]');
     await __rgClick('[data-hat="cassiere"]');
     await __rgClick('#hat-cassiere [data-task="transferCassa"]');
-    await __rgClick('#pop .chip[data-id="0"]');
+    await __rgClick('#pop .chip[data-id="anna"]');
     await __rgAmount(95);
     await __rgClick('#crumbs [data-crumb="0"]');
-    await __rgClick('[data-key="member:0"]');
+    await __rgClick('[data-key="member:anna"]');
     await __rgClick('[data-hat="cassiere"]');
     await __rgClick('#hat-cassiere [data-task="openPurchase"]');
     await __rgClick('#pop [data-l="Caffè"]');
     await __rgClick('#crumbs [data-crumb="0"]');
     await __rgClick('[data-key="pile:4"]');
     await __rgClick('#view [data-task="pledge"]');
-    await __rgClick('#pop .chip[data-id="1"]');
-    await __rgClick('#pop .chip[data-id="0"]');
+    await __rgClick('#pop .chip[data-id="bruno"]');
+    await __rgClick('#pop .chip[data-id="anna"]');
     await __rgAmount(15);
-    await __rgClick('#refpanel [data-act="accept"][data-u="1"]');
+    await __rgClick('#refpanel [data-act="accept"][data-u="bruno"]');
     await __rgClick('#view [data-kgpropose]');
     await __rgClick('#pop .chip[data-id="anna"]');
     await __rgClick('#view [data-kgcast="permesso:4"][data-kgsigner="anna"][data-kgballot="assent"]');
+    await __rgClick('#view [data-kgcast="permesso:4"][data-kgsigner="bruno"][data-kgballot="assent"]');
     await __rgClick('#view [data-task="grantPermission"]');
     await __rgClick('#ext-apply');
     await __rgClick('#refpanel [data-task="closePurchase"]');
@@ -398,22 +407,22 @@ async function runJourney(b, url, nonce) {
   const cassaDis = await b.eval(s, `__rgDismiss('cassa')`);
   await step(b, s, snaps, 'cassa.dismiss', ``);
   await step(b, s, snaps, 'cassa.recreateAfterDismiss', `
-    await __rgClick('[data-key="member:1"]');
+    await __rgClick('[data-key="member:bruno"]');
     await __rgClick('[data-hat="cassiere"]');
     await __rgClick('#hat-cassiere [data-task="transferCassa"]');
-    await __rgClick('#pop .chip[data-id="2"]');
+    await __rgClick('#pop .chip[data-id="elena"]');
     await __rgAmount(50);
     await __rgClick('#crumbs [data-crumb="0"]');
-    await __rgClick('[data-key="member:2"]');
+    await __rgClick('[data-key="member:elena"]');
     await __rgClick('[data-hat="cassiere"]');
     await __rgClick('#hat-cassiere [data-task="transferCassa"]');
-    await __rgClick('#pop .chip[data-id="1"]');
+    await __rgClick('#pop .chip[data-id="bruno"]');
     await __rgAmount(50);`);
 
   // ------ chiusa: in the post-close context --------------------------------
   await step(b, s, snaps, 'chiusa.appear', `
     await __rgClick('#crumbs [data-crumb="0"]');
-    await __rgClick('[data-key="cassa:1"]');
+    await __rgClick('[data-key="cassa:bruno"]');
     await __rgClick('#hat-cassiere [data-task="openPurchase"]');
     await __rgClick('#pop [data-l="Miele"]');
     await __rgClick('#crumbs [data-crumb="0"]');
@@ -421,14 +430,14 @@ async function runJourney(b, url, nonce) {
     await __rgClick('#refpanel [data-task="failPurchase"]');`);
   await step(b, s, snaps, 'chiusa.leave', `
     await __rgClick('#crumbs [data-crumb="0"]');
-    await __rgClick('[data-key="member:0"]');
+    await __rgClick('[data-key="member:anna"]');
     await __rgClick('[data-hat="cassiere"]');
     await __rgClick('#hat-cassiere [data-task="deposit"]');
-    await __rgClick('#pop .chip[data-id="1"]');
+    await __rgClick('#pop .chip[data-id="bruno"]');
     await __rgAmount(5);
     await __rgClick('#crumbs [data-crumb="0"]');`);
   await step(b, s, snaps, 'chiusa.recreate', `
-    await __rgClick('[data-key="cassa:1"]');
+    await __rgClick('[data-key="cassa:bruno"]');
     await __rgClick('#hat-cassiere [data-task="openPurchase"]');
     await __rgClick('#pop [data-l="Pasta"]');
     await __rgClick('#crumbs [data-crumb="0"]');
@@ -438,7 +447,7 @@ async function runJourney(b, url, nonce) {
   await step(b, s, snaps, 'chiusa.dismiss', ``);
   await step(b, s, snaps, 'chiusa.recreateAfterDismiss', `
     await __rgClick('#crumbs [data-crumb="0"]');
-    await __rgClick('[data-key="cassa:1"]');
+    await __rgClick('[data-key="cassa:bruno"]');
     await __rgClick('#hat-cassiere [data-task="openPurchase"]');
     await __rgClick('#pop [data-l="Riso"]');
     await __rgClick('#crumbs [data-crumb="0"]');
@@ -446,18 +455,15 @@ async function runJourney(b, url, nonce) {
     await __rgClick('#refpanel [data-task="failPurchase"]');`);
 
   // ------ persisted dismissal (audit finding 4) ----------------------------
-  // set every condition true, then RELOAD the persisted real session and
-  // recreate the guardie encounter: each ✕-dismissed strip must stay absent
-  // even though its condition demonstrably holds again
   await b.eval(s, `(async () => {
     await __rgClick('#crumbs [data-crumb="0"]');
     await __rgClick('[data-key="pile:2"]');
     await __rgClick('#view [data-task="pledge"]');
-    await __rgClick('#pop .chip[data-id="1"]');
-    await __rgClick('#pop .chip[data-id="0"]');
+    await __rgClick('#pop .chip[data-id="bruno"]');
+    await __rgClick('#pop .chip[data-id="anna"]');
     await __rgAmount(10);
     await __rgClick('#crumbs [data-crumb="0"]');
-    await __rgClick('[data-key="cassa:1"]');
+    await __rgClick('[data-key="cassa:bruno"]');
     await __rgClick('#hat-cassiere [data-task="openPurchase"]');
     await __rgClick('#pop [data-l="Sale"]');
     await __rgClick('#crumbs [data-crumb="0"]');
@@ -490,7 +496,7 @@ async function runJourney(b, url, nonce) {
     errors: b.errorsFor(s), requests: b.requestsFor(s) };
 }
 
-/* --- report assembly + validation ------------------------------------------ */
+/* --- report assembly + validation ------------------------------------------ *//* --- report assembly + validation ------------------------------------------ */
 
 const PHASES = ['appear', 'leave', 'recreate', 'dismiss', 'recreateAfterDismiss'];
 const CASSA_PHASES = ['appear', 'leave', 'recreate', 'identities', 'dismiss',
@@ -607,7 +613,7 @@ export function validateReport(rep, nonce) {
         bad.push(`identità cassa: la frase non nomina ${name} (cassa negativa reale)`);
     }
     for (const [u, name] of Object.entries(names)) {
-      if (!name || uids.includes(Number(u))) continue;
+      if (!name || uids.includes(u)) continue;
       if (ci.text && ci.text.includes(name))
         bad.push(`identità cassa: la frase nomina ${name} la cui cassa NON è negativa`);
     }
@@ -682,7 +688,7 @@ async function runGate(opts) {
     return { ok: !reasons.length, reasons, report: rep, selftests, nonce };
   } finally {
     b.close();
-    rmSync(profile, { recursive: true, force: true });
+    rmQuiet(profile);
   }
 }
 
@@ -709,9 +715,9 @@ async function selftest(work) {
     text: id === 'voto' ? 'puoi dire no' : 'frase',
     claims: ACCEPTED_TEACH_CLAIMS[id].join(','),
     casseNeg: id === 'cassa' && (p === 'appear' || p === 'identities')
-      ? (p === 'identities' ? [[0, -1], [1, -40]] : [[1, -40]]) : undefined,
+      ? (p === 'identities' ? [['anna', -1], ['bruno', -40]] : [['bruno', -40]]) : undefined,
     sceneNames: id === 'cassa' && p === 'identities'
-      ? { 0: 'Anna', 1: 'Bruno', 2: 'Elena' } : undefined });
+      ? { anna: 'Anna', bruno: 'Bruno', elena: 'Elena' } : undefined });
   const goodRow = id => id === 'benvenuto'
     ? { exception: 'x', phases: [
         { phase: 'appear', nonce, visible: true, expected: true, text: 'benvenuto, prova!',
@@ -725,7 +731,7 @@ async function selftest(work) {
           return ph;
         }) };
   const goodRep = () => ({ nonce, errors: 0, requests: [],
-    persist: { nonce, offClicked: true, escrowHeld: 10, casseNeg: [[0, -1]],
+    persist: { nonce, offClicked: true, escrowHeld: 10, casseNeg: [['anna', -1]],
       openQuestions: 2, lastLogLine: 'Bruno fallisce «Sale»',
       strips: Object.fromEntries(STRIPS.map(id => [id, false])) },
     rows: Object.fromEntries(STRIPS.map(id => [id, goodRow(id)])) });
@@ -867,7 +873,7 @@ if (isMain) {
       }
     }
   } finally {
-    rmSync(work, { recursive: true, force: true });
+    rmQuiet(work);
   }
   process.exit(code);
 }

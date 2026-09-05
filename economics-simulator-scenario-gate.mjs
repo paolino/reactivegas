@@ -57,6 +57,12 @@ import { tmpdir } from 'node:os';
 import vm from 'node:vm';
 
 const REPO = dirname(fileURLToPath(import.meta.url));
+
+/* Teardown of a disposable resource must never determine the gate's verdict:
+   scratch-dir cleanup is housekeeping and cannot veto the exit code. */
+function rmQuiet(p) {
+  try { rmSync(p, { recursive: true, force: true }); } catch { /* housekeeping */ }
+}
 const HTML = join(REPO, 'economics-simulator.html');
 const SCENARIOS = join(REPO, 'economics-simulator-scenarios');
 const sha256 = b => createHash('sha256').update(b).digest('hex');
@@ -69,118 +75,124 @@ const REQUIRED_KINDS = ['no-vote-derived-without-evidence',
 const clone = x => JSON.parse(JSON.stringify(x));
 const balOf = (m, k) => (m.find(([k2]) => k2 === k) || [null, 0])[1];
 const totalOf = m => m.reduce((n, [, v]) => n + v, 0);
+const ADMIN = { adminRole: { admin: 'publicAdmin' } };
+const APP = { appRole: { name: 'socio' } };
+const covMember = (k, admin) => [k, { key: k, email: k + '@toy.example', roles: admin ? [ADMIN] : [APP] }];
+const donationView = () => ({ members: [covMember('anna', true), covMember('bruno', true), covMember('carla', false)] });
 const donationBase = () => ({
-  users: [0, 1, 2],
-  responsabili: [0, 1],
-  conti: [[2, 100]],
-  casse: [[0, 100]],
+  conti: [['carla', 100]],
+  casse: [['anna', 100]],
   collections: [],
+  votes: { openQuestions: [], closed: [] },
 });
+const COMUNE = 'comune';   // Reactivegas.comuneId
 
 /* --- assertion implementations (checks belong to the gate; data to the
        scenario files) ------------------------------------------------------ */
 
 function assertNoNegativeConto(sc, ver) {
   ver.states.forEach((s, i) => {
-    for (const [u, v] of s.conti)
-      if (v < 0) throw new Error(`stato ${i}: conto ${u} negativo (${v})`);
+    for (const [k, v] of (s.payload ? s.payload.conti : s.conti))
+      if (k !== 'comune' && v < 0) throw new Error(`stato ${i}: conto ${k} negativo (${v})`);
   });
   return `${ver.states.length} stati, tutti i conti ≥ 0`;
 }
 
 function assertNoCloseWithoutPositive(sc, mod) {
   const wrap = sc.wrap;
-  let kgs = mod.vtEmpty();
+  let votes = mod.vtEmpty();
   const granted = new Set();
   let closes = 0;
-  let ei = 0, ki = 0;
-  for (const m of wrap.seq) {
-    if (m === 'k') {
-      const st = wrap.kel.steps[ki++];
-      kgs = mod.vtApply(kgs, st.signer, st.event).state;
-    } else if (m === 'e') {
-      const e = mod.leanEventOf(wrap.trace.steps[ei++].event);
-      if (e.tag === 'grantPermission') {
-        const rec = kgs.closed.find(r => r.questionId === mod.permQid(e.c));
-        if (!rec || rec.verdict !== 'positive')
-          throw new Error(`grantPermission su «${e.c}» senza verdetto positivo chiuso`);
-        granted.add(e.c);
-      }
-      if (e.tag === 'closePurchase') {
-        closes += 1;
-        if (!granted.has(e.c))
-          throw new Error(`closePurchase su «${e.c}» senza permesso da verdetto positivo`);
-      }
+  for (const st of wrap.steps) {
+    if (st.event.app === undefined) continue;
+    const ae = st.event.app;
+    if ('openQuestion' in ae) {
+      votes = mod.vtApply({ members: st.input.members || [] }, votes, st.signer,
+        { openQuestion: ae.openQuestion }).state;
+    } else if ('cast' in ae) {
+      votes = mod.vtApply({ members: st.input.members || [] }, votes, st.signer,
+        { cast: ae.cast }).state;
+    } else if ('grantPermission' in ae) {
+      const rec = votes.closed.find(r => r.questionId === mod.permQid(ae.grantPermission.c));
+      if (!rec || rec.verdict !== 'positive')
+        throw new Error('grantPermission senza verdetto positivo chiuso');
+      granted.add(ae.grantPermission.c);
+    }
+    if ('closePurchase' in ae) {
+      closes += 1;
+      if (!granted.has(ae.closePurchase.c))
+        throw new Error('closePurchase senza permesso da verdetto positivo');
     }
   }
   if (!closes) throw new Error('asserzione vacua: nessuna chiusura nello scenario');
-  return `${closes} chiusure, ognuna preceduta dal permesso con verdetto positivo`;
+  return closes + ' chiusure, ognuna preceduta dal permesso con verdetto positivo';
 }
 
 function assertComuneDonation(mod) {
-  if ('comune' in mod.initState(0))
+  if ('comune' in mod.emptyState())
     throw new Error('il comune non può essere un campo State: è un conto riservato in conti');
+  const view = donationView();
+  const memberKeys = view.members.map(([k]) => k);
   const before = donationBase();
   let r;
-  try { r = mod.attempt(clone(before), { tag: 'donate', author: 0, v: 90 }); }
+  try { r = mod.attempt(view, clone(before), { tag: 'donate', author: 'anna', v: 90 }); }
   catch (e) { throw new Error(`donate: ${e.message}`); }
   if (!r || r.ok !== true) throw new Error('donate: live witness refused');
   const after = r.state;
-  const common = after.conti.filter(([k]) => !after.users.includes(k));
-  if (balOf(after.casse, 0) - balOf(before.casse, 0) !== 90)
+  const common = after.conti.filter(([k]) => !memberKeys.includes(k));
+  if (balOf(after.casse, 'anna') - balOf(before.casse, 'anna') !== 90)
     throw new Error('donate: author cassa delta is not +90');
   if (totalOf(after.conti) - totalOf(before.conti) !== 90)
     throw new Error('donate: total conti delta is not +90');
-  if (before.users.some(u => balOf(after.conti, u) !== balOf(before.conti, u)))
+  if (memberKeys.some(u => balOf(after.conti, u) !== balOf(before.conti, u)))
     throw new Error('donate: changed a member conto');
-  if (common.length !== 1 || common[0][1] !== 90)
+  if (common.length !== 1 || common[0][0] !== COMUNE || common[0][1] !== 90)
     throw new Error('donate: no unique reserved non-member comune conto at +90');
-  if (JSON.stringify(after.users) !== JSON.stringify(before.users) ||
-      JSON.stringify(after.responsabili) !== JSON.stringify(before.responsabili) ||
-      JSON.stringify(after.collections) !== JSON.stringify(before.collections))
-    throw new Error('donate: changed membership, roles, or collections');
+  if (JSON.stringify(after.collections) !== JSON.stringify(before.collections))
+    throw new Error('donate: changed collections');
   return 'donate +90 su cassa autore e conto comune riservato, conti membri invariati';
 }
 
 function assertComuneBackdonation(mod) {
+  const view = donationView();
+  const memberKeys = view.members.map(([k]) => k);
   const funded = (() => {
     let setup;
-    try { setup = mod.attempt(clone(donationBase()), { tag: 'donate', author: 0, v: 90 }); }
+    try { setup = mod.attempt(view, clone(donationBase()), { tag: 'donate', author: 'anna', v: 90 }); }
     catch (e) { throw new Error(`backdonate: donate setup threw: ${e.message}`); }
     if (!setup || setup.ok !== true) throw new Error('backdonate: donate setup refused');
     return setup.state;
   })();
   let r;
-  try { r = mod.attempt(clone(funded), { tag: 'backdonate', author: 0, w: 10 }); }
+  try { r = mod.attempt(view, clone(funded), { tag: 'backdonate', author: 'anna', w: 10 }); }
   catch (e) { throw new Error(`backdonate: ${e.message}`); }
   if (!r || r.ok !== true) throw new Error('backdonate: live witness refused');
-  const common = funded.conti.filter(([k]) => !funded.users.includes(k));
+  const common = funded.conti.filter(([k]) => !memberKeys.includes(k));
   if (common.length !== 1)
     throw new Error('backdonate: funded comune is not a unique non-member conto');
-  for (const u of funded.users)
+  for (const u of memberKeys)
     if (balOf(r.state.conti, u) - balOf(funded.conti, u) !== 10)
       throw new Error(`backdonate: member ${u} did not receive exactly +10`);
   if (balOf(r.state.conti, common[0][0]) - balOf(funded.conti, common[0][0]) !== -30)
     throw new Error('backdonate: comune delta is not -(member-count * share)');
   if (JSON.stringify(r.state.casse) !== JSON.stringify(funded.casse))
     throw new Error('backdonate: changed casse');
-  if (JSON.stringify(r.state.users) !== JSON.stringify(funded.users) ||
-      JSON.stringify(r.state.responsabili) !== JSON.stringify(funded.responsabili) ||
-      JSON.stringify(r.state.collections) !== JSON.stringify(funded.collections))
-    throw new Error('backdonate: changed membership, roles, or collections');
+  if (JSON.stringify(r.state.collections) !== JSON.stringify(funded.collections))
+    throw new Error('backdonate: changed collections');
   return 'backdonate +10 a ogni membro, comune −30, casse invariate';
 }
 
 function assertBackdonateGovernanceBoundary(mod) {
+  const empty = { members: [], pendingBase: [],
+    payload: { conti: [], casse: [], collections: [], votes: { openQuestions: [], closed: [] } } };
   try {
-    mod.verifyGovernedSeq({
-      env: { steps: [{ event: { backdonate: { author: 0, w: 1 } } }] },
-      kelEnv: { steps: [] },
-      baseEnv: { steps: [] },
-      seq: ['e'],
+    mod.verifyGovernedIntegrated({
+      schema: 'reactivegas-integrated.trace', version: 1, initial: empty,
+      steps: [{ input: empty, signer: 'anna', event: { app: { backdonate: { w: 1 } } },
+        result: { tag: 'applied', aggregate: empty } }],
     });
   } catch (e) {
-    if (/backdonate|verdetto|governo/.test(e.message))
+    if (/backdonate|verdetto|governo|rejected|rifiutato/.test(e.message))
       return `rifiuto: ${e.message}`;
     throw new Error(`backdonate governo: motivo sbagliato: ${e.message}`);
   }
@@ -196,21 +208,13 @@ function runScenario(sc) {
   if (!Array.isArray(sc.assertions) || !sc.assertions.length)
     throw new Error('scenario senza asserzioni');
   const wrap = sc.wrap;
-  if (!wrap.trace || !wrap.kel || !wrap.base || typeof wrap.seq !== 'string')
-    throw new Error('wrap senza i tre flussi + seq');
+  if (!wrap.schema || !Array.isArray(wrap.steps))
+    throw new Error('wrap senza lo stream integrato');
 
   // envelope verification: malformed/non-v1/poststate mismatch/refused → throw
-  const ver = core.verifyTraceV1(wrap.trace, { appliedOnly: true });
-  core.verifyKelTraceV1(wrap.kel, { appliedOnly: true });
-  core.verifyBaseTraceV1(wrap.base, { appliedOnly: true });
+  const ver = core.verifyIntegratedV1(wrap, { appliedOnly: true });
 
-  // ignored events: every step of every stream is walked exactly once
-  const eC = [...wrap.seq].filter(m => m === 'e').length;
-  const kC = [...wrap.seq].filter(m => m === 'k').length;
-  const bC = [...wrap.seq].filter(m => m === 'b').length;
-  if (eC !== wrap.trace.steps.length || kC !== wrap.kel.steps.length ||
-      bC !== wrap.base.steps.length || eC + kC + bC !== wrap.seq.length)
-    throw new Error('seq incoerente con i flussi: eventi ignorati o inventati');
+  // single integrated stream
 
   // governance walk vs declared expectation. RG_SCENARIO_GOVERNANCE=off is
   // the controlled reintroduction of the pre-fix model (no governance):
@@ -219,8 +223,7 @@ function runScenario(sc) {
   let outcome = 'accepted', reason = null;
   if (!governanceOff) {
     try {
-      core.verifyGovernedSeq({ env: wrap.trace, kelEnv: wrap.kel,
-        baseEnv: wrap.base, seq: [...wrap.seq] });
+      core.verifyGovernedIntegrated(wrap);
     } catch (e) { outcome = 'refused'; reason = e.message; }
   }
   if (sc.expect.governed === 'refused') {
@@ -249,7 +252,7 @@ function runScenario(sc) {
     } else throw new Error('asserzione sconosciuta: ' + kind);
     notes.push(`${kind}: ${note}`);
   }
-  return { steps: wrap.seq.length, notes };
+  return { steps: wrap.steps.length, notes };
 }
 
 /* --- the suite + the shared-core gate -------------------------------------- */
@@ -328,10 +331,13 @@ function runSuite(opts) {
       const RG = ctx.window.RG;
       if (!RG || typeof RG.attempt !== 'function')
         throw new Error('la pagina non espone il core');
-      const probe = { tag: 'deposit', author: 0, user: 1, v: 7 };
-      const s0 = core.initState(0);
-      const viaPage = RG.attempt(core.attempt(s0, { tag: 'addUser', author: 0, target: 1 }).state, probe);
-      const viaCore = core.attempt(core.attempt(s0, { tag: 'addUser', author: 0, target: 1 }).state, probe);
+      const v0 = { members: [
+        ['anna', { key: 'anna', email: 'anna@toy.example', roles: [{ adminRole: { admin: 'publicAdmin' } }] }],
+        ['bruno', { key: 'bruno', email: 'bruno@toy.example', roles: [{ appRole: { name: 'socio' } }] }]] };
+      const s0 = core.emptyState();
+      const e1 = { tag: 'openPurchase', author: 'anna', c: 7 };
+      const viaPage = RG.attempt(v0, RG.attempt(v0, s0, e1).state, { tag: 'deposit', author: 'anna', user: 'bruno', v: 7 });
+      const viaCore = core.attempt(v0, core.attempt(v0, s0, e1).state, { tag: 'deposit', author: 'anna', user: 'bruno', v: 7 });
       if (core.canonState(viaPage.state) !== core.canonState(viaCore.state))
         throw new Error('la pagina e il modulo divergono sullo stesso evento');
       if (JSON.stringify(RG.EVENT_ROUTES) !== JSON.stringify(core.EVENT_ROUTES))
@@ -373,7 +379,7 @@ function selftest(work) {
         const d = sabDir('sab-state');
         const p = join(d, first);
         const sc = JSON.parse(readFileSync(p, 'utf8'));
-        sc.wrap.trace.steps[0].result.state.users.push(99);
+        sc.wrap.steps[0].result.aggregate.payload.conti.push(['zz', 99]);
         writeFileSync(p, JSON.stringify(sc));
         return runSuite({ dir: d, skipVm: true });
       },
@@ -406,19 +412,7 @@ function selftest(work) {
         const d = sabDir('sab-schema');
         const p = join(d, first);
         const sc = JSON.parse(readFileSync(p, 'utf8'));
-        sc.wrap.trace.schema = 'x';
-        writeFileSync(p, JSON.stringify(sc));
-        return runSuite({ dir: d, skipVm: true });
-      },
-    },
-    {
-      name: 'evento ignorato (seq tronca)',
-      expect: /seq incoerente/,
-      run: () => {
-        const d = sabDir('sab-seq');
-        const p = join(d, first);
-        const sc = JSON.parse(readFileSync(p, 'utf8'));
-        sc.wrap.seq = sc.wrap.seq.slice(0, -1);
+        sc.wrap.schema = 'x';
         writeFileSync(p, JSON.stringify(sc));
         return runSuite({ dir: d, skipVm: true });
       },
@@ -441,8 +435,8 @@ function selftest(work) {
       run: () => {
         try {
           assertComuneDonation({
-            initState: core.initState,
-            attempt: s => ({ ok: true, state: clone(s) }),
+            emptyState: core.emptyState,
+            attempt: (v, s) => ({ ok: true, state: clone(s) }),
           });
           return { ok: true, reasons: [] };
         } catch (e) {
@@ -455,7 +449,7 @@ function selftest(work) {
       expect: /backdonate senza evidenza accettato dal governo/,
       run: () => {
         try {
-          assertBackdonateGovernanceBoundary({ verifyGovernedSeq() {} });
+          assertBackdonateGovernanceBoundary({ verifyGovernedIntegrated() {} });
           return { ok: true, reasons: [] };
         } catch (e) {
           return { ok: false, reasons: [e.message] };
@@ -508,6 +502,6 @@ try {
     }
   }
 } finally {
-  rmSync(work, { recursive: true, force: true });
+  rmQuiet(work);
 }
 process.exit(code);

@@ -46,7 +46,7 @@
  *      valid witness through the exported real `attempt` for every remaining
  *      constructor — returning/refusing is not coverage; ok:true is required
  *      and `unknown event tag` is RED. A printed GREEN contains
- *      `machine=14/14 pinned=18 retired=4`;
+ *      `machine=14/14 pinned=14 retired=0`;
  *  12. exits nonzero with a precise reason on any mismatch, zero on GREEN.
  *
  * Together with the page's rendering (which draws the three user-facing
@@ -81,6 +81,12 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { tmpdir } from 'node:os';
 
 const REPO = dirname(fileURLToPath(import.meta.url));
+
+/* Teardown of a disposable resource must never determine the gate's verdict:
+   scratch-dir cleanup is housekeeping and cannot veto the exit code. */
+function rmQuiet(p) {
+  try { rmSync(p, { recursive: true, force: true }); } catch { /* housekeeping */ }
+}
 const HTML = join(REPO, 'economics-simulator.html');
 const sha256 = b => createHash('sha256').update(b).digest('hex');
 
@@ -91,8 +97,8 @@ const sha256 = b => createHash('sha256').update(b).digest('hex');
    REACHABLE FROM origin/master (an orphaned pin is RED even if locally
    resolvable), and the pinned module is re-elaborated fresh on every run. */
 const ACCEPTED_COMPOSITION = {
-  commit: 'c8c4dd8903cca817c814e9f84e9ff21ceba2de0c',
-  tree: '641107474766534915f67651311b6bdcf1d1a574',
+  commit: '934de7a8df136d86a8ad2caadbda99af60e58b59',
+  tree: 'b306b0ce6fc57b2b7fb880a5930f9740699cc637',
   module: 'lean/Reactivegas/Composition.lean',
 };
 
@@ -103,8 +109,8 @@ const ACCEPTED_COMPOSITION = {
    repointed files list is RED. */
 const MANIFEST_EVENT_FILE = 'lean/Reactivegas/Types.lean';
 const ACCEPTED_CORE = {
-  commit: '024dcc723fb70132c8085db2e39c7ba6d4e3a4c8',
-  tree: '2914b7c5a69461b5c25678d06ae0c1393da2bfea',
+  commit: '934de7a8df136d86a8ad2caadbda99af60e58b59',
+  tree: 'b306b0ce6fc57b2b7fb880a5930f9740699cc637',
   files: [MANIFEST_EVENT_FILE],
 };
 const DRIVER_IMPORTS = Object.freeze([
@@ -114,33 +120,26 @@ const DRIVER_IMPORTS = Object.freeze([
   'KelGroups.Vote.Invariants',
   'KelGroups.Vote.Validate',
 ]);
-const RETIRED = ['addUser', 'electResponsabile', 'removeMember',
-  'removeResponsabile'];
-const RETIREMENT = Object.freeze({
-  issue: '#62',
-  requirement: 'R62-08',
-  status: 'retired-by-#62',
-  declared: '2026-08-30',
-});
+/* The retirement manifest is GONE: #62 merged, the four constructors are out
+   of the pinned Lean itself — the inventory needs no dated subtraction and
+   the transcription carries no exemption any more. */
 const CORE = resolve(REPO, 'economics-simulator-core.mjs');
 const clone = x => JSON.parse(JSON.stringify(x));
 const balOf = (m, k) => (m.find(([k2]) => k2 === k) || [null, 0])[1];
 const totalOf = m => m.reduce((n, [, v]) => n + v, 0);
-const coverageBase = () => ({
-  users: [0, 1, 2],
-  responsabili: [0, 1],
-  conti: [[2, 100]],
-  casse: [[0, 100]],
-  collections: [],
-});
+const ADMIN = { adminRole: { admin: 'publicAdmin' } };
+const APP = { appRole: { name: 'socio' } };
+const covMember = (k, admin) => [k, { key: k, email: k + '@toy.example', roles: admin ? [ADMIN] : [APP] }];
+const coverageView = () => ({ members: [covMember('anna', true), covMember('bruno', true), covMember('carla', false)] });
+const COMUNE = 'comune';   // Reactivegas.comuneId
 const coverageCol = ({ accepted = [], pending = [], permitted = false } = {}) => ({
-  ...coverageBase(),
-  conti: [[2, 100 - accepted.reduce((n, p) => n + p.amount, 0)
+  conti: [['carla', 100 - accepted.reduce((n, p) => n + p.amount, 0)
                     - pending.reduce((n, p) => n + p.amount, 0)]],
-  collections: [{ id: 7, referente: 0, permitted, accepted, pending }],
+  casse: [], collections: [{ id: 7, referente: 'bruno', permitted, accepted, pending }],
+  votes: { openQuestions: [], closed: [] },
 });
 
-/* Parse the embedded CLAIMS manifest and CHECK_RECEIPT out of an HTML body. */
+/* Parse the embedded CLAIMS manifest/* Parse the embedded CLAIMS manifest and CHECK_RECEIPT out of an HTML body. */
 function extract(doc) {
   const mm = doc.match(/const CLAIMS = \{([\s\S]*?)\n\};/);
   if (!mm) throw new Error('manifesto CLAIMS non trovato nel documento');
@@ -293,6 +292,17 @@ function assertCitedFilesFresh(pin, files) {
   }
 }
 
+/* INV-8: the cited composition module joins the freshness manifest — its
+   blob at the pin must equal its blob at origin/master, so the silent drift
+   that slipped through #62 REDs from now on. */
+function assertCompositionModuleFresh(pin, module) {
+  const pinnedBlob = gitShow(pin + ':' + module);
+  const masterBlob = gitShow('origin/master:' + module);
+  if (pinnedBlob !== masterBlob)
+    throw new Error('modulo composizione obsoleto al pin: pin=' + pinnedBlob +
+      ' origin/master=' + masterBlob);
+}
+
 function eventSourceFromManifest(files = ACCEPTED_CORE.files) {
   if (!Array.isArray(files) || files.length !== 1)
     throw new Error('Event source manifest is not a unique derivation file: [' +
@@ -301,51 +311,57 @@ function eventSourceFromManifest(files = ACCEPTED_CORE.files) {
 }
 
 function pinnedConstructors() {
-  const gotTree = gitShow(`${ACCEPTED_CORE.commit}^{tree}`);
+  const gotTree = gitShow(ACCEPTED_CORE.commit + "^{tree}");
   if (gotTree !== ACCEPTED_CORE.tree)
-    throw new Error(`accepted core tree mismatch: ${gotTree}`);
+    throw new Error("accepted core tree mismatch: " + gotTree);
   execFileSync('git', ['-C', REPO, 'merge-base', '--is-ancestor',
     ACCEPTED_CORE.commit, 'origin/master']);
   assertCitedFilesFresh(ACCEPTED_CORE.commit, ACCEPTED_CORE.files);
   const eventSource = eventSourceFromManifest(ACCEPTED_CORE.files);
   const src = execFileSync('git', ['-C', REPO, 'show',
-    `${ACCEPTED_CORE.commit}:${eventSource}`], { encoding: 'utf8' });
+    ACCEPTED_CORE.commit + ':' + eventSource], { encoding: 'utf8' });
   const block = src.match(/inductive Event where([\s\S]*?)deriving DecidableEq, Repr/);
   if (!block) throw new Error('pinned Lean Event declaration not found');
   const ctors = [...block[1].matchAll(/^\s*\|\s+([A-Za-z][A-Za-z0-9_]*)\b/gm)]
     .map(m => m[1]);
-  if (ctors.length !== 18 || new Set(ctors).size !== 18)
-    throw new Error(`pinned Lean Event inventory is not exactly 18: ${ctors.join(',')}`);
+  if (ctors.length !== 14 || new Set(ctors).size !== 14)
+    throw new Error("pinned Lean Event inventory is not exactly 14: " + ctors.join(','));
   return ctors;
 }
 
 function validWitness(tag) {
+  const base = () => [coverageView(), { conti: [['carla', 100]], casse: [], collections: [],
+    votes: { openQuestions: [], closed: [] } }];
+  const col = opts => ({ conti: [['carla', 100]], casse: [],
+    collections: [{ id: 7, referente: 'bruno', permitted: !!(opts && opts.permitted),
+      accepted: (opts && opts.accepted) || [], pending: (opts && opts.pending) || [] }],
+    votes: { openQuestions: [], closed: [] } });
   switch (tag) {
-    case 'openPurchase': return [coverageBase(), { tag, author: 0, c: 7 }];
-    case 'grantPermission': return [coverageCol(), { tag, author: 0, c: 7 }];
-    case 'denyPermission': return [coverageCol(), { tag, author: 0, c: 7 }];
-    case 'deposit': return [coverageBase(), { tag, author: 0, user: 2, v: 10 }];
-    case 'withdraw': return [coverageBase(), { tag, author: 0, user: 2, v: 10 }];
-    case 'transferCassa': return [coverageBase(), { tag, author: 0, from_: 1, v: 10 }];
-    case 'donate': return [coverageBase(), { tag, author: 0, v: 90 }];
-    case 'pledge': return [coverageCol(), { tag, author: 0, user: 2, c: 7, v: 10 }];
-    case 'acceptPledge': return [coverageCol({ pending: [{ user: 2, amount: 10 }] }),
-      { tag, author: 0, user: 2, c: 7 }];
-    case 'refusePledge': return [coverageCol({ pending: [{ user: 2, amount: 10 }] }),
-      { tag, author: 0, user: 2, c: 7 }];
-    case 'correctPledge': return [coverageCol({ accepted: [{ user: 2, amount: 10 }] }),
-      { tag, author: 0, user: 2, c: 7, v: 5 }];
-    case 'closePurchase': return [coverageCol({ accepted: [{ user: 2, amount: 10 }], permitted: true }),
-      { tag, author: 0, c: 7 }];
-    case 'failPurchase': return [coverageCol({ accepted: [{ user: 2, amount: 10 }] }),
-      { tag, author: 0, c: 7 }];
+    case 'openPurchase': return [coverageView(), base()[1], { tag, author: 'anna', c: 7 }];
+    case 'grantPermission': return [coverageView(), col(), { tag, author: 'anna', c: 7 }];
+    case 'denyPermission': return [coverageView(), col(), { tag, author: 'anna', c: 7 }];
+    case 'deposit': return [coverageView(), base()[1], { tag, author: 'anna', user: 'carla', v: 10 }];
+    case 'withdraw': return [coverageView(), base()[1], { tag, author: 'anna', user: 'carla', v: 10 }];
+    case 'transferCassa': return [coverageView(), base()[1], { tag, author: 'anna', from_: 'bruno', v: 10 }];
+    case 'donate': return [coverageView(), base()[1], { tag, author: 'anna', v: 90 }];
+    case 'pledge': return [coverageView(), col(), { tag, author: 'anna', user: 'carla', c: 7, v: 10 }];
+    case 'acceptPledge': return [coverageView(), col({ pending: [{ user: 'carla', amount: 10 }] }),
+      { tag, author: 'bruno', user: 'carla', c: 7 }];
+    case 'refusePledge': return [coverageView(), col({ pending: [{ user: 'carla', amount: 10 }] }),
+      { tag, author: 'bruno', user: 'carla', c: 7 }];
+    case 'correctPledge': return [coverageView(), col({ accepted: [{ user: 'carla', amount: 10 }] }),
+      { tag, author: 'bruno', user: 'carla', c: 7, v: 5 }];
+    case 'closePurchase': return [coverageView(), col({ accepted: [{ user: 'carla', amount: 10 }], permitted: true }),
+      { tag, author: 'bruno', c: 7 }];
+    case 'failPurchase': return [coverageView(), col({ accepted: [{ user: 'carla', amount: 10 }], permitted: true }),
+      { tag, author: 'bruno', c: 7 }];
     default: return null;
   }
 }
 
-function requireRefused(attempt, state, event, label) {
+function requireRefused(attempt, view, state, event, label) {
   let result;
-  try { result = attempt(clone(state), event); }
+  try { result = attempt(view, clone(state), event); }
   catch (e) { return `${label}: threw instead of refusing: ${e.message}`; }
   if (!result || result.ok !== false) return `${label}: invalid event was not refused`;
   return null;
@@ -360,59 +376,48 @@ async function checkMachineCoverage(corePath) {
   let ctors;
   try { ctors = pinnedConstructors(); }
   catch (e) { return { ok: false, reasons: [e.message] }; }
-  const active = ctors.filter(x => !RETIRED.includes(x));
+  const active = ctors;   // no dated subtraction: the pin itself is post-#62
   let mod;
   try { mod = await loadCore(corePath); }
   catch (e) { return { ok: false, reasons: ['core import failed: ' + e.message] }; }
 
-  const manifest = mod.EVENT_RETIREMENTS;
-  if (!manifest || typeof manifest !== 'object') {
-    reasons.push('EVENT_RETIREMENTS manifest missing');
-  } else {
-    const keys = Object.keys(manifest).sort();
-    if (JSON.stringify(keys) !== JSON.stringify(RETIRED))
-      reasons.push(`retirement manifest keys differ: ${keys.join(',')}`);
-    for (const tag of RETIRED) {
-      const row = manifest[tag];
-      for (const [k, v] of Object.entries(RETIREMENT))
-        if (!row || row[k] !== v) reasons.push(`${tag}: retirement ${k} is not ${v}`);
-    }
-  }
-
+  // EVENT_RETIREMENTS is gone from the transcription: the exemption died
+  // with the constructors it excused
   for (const tag of active) {
     if (tag === 'donate' || tag === 'backdonate') continue;
     const witness = validWitness(tag);
     if (!witness) { reasons.push(`${tag}: oracle witness missing`); continue; }
     try {
-      const result = mod.attempt(clone(witness[0]), witness[1]);
+      const result = mod.attempt(witness[0], clone(witness[1]), witness[2]);
       if (!result || result.ok !== true) reasons.push(`${tag}: live witness refused`);
     } catch (e) { reasons.push(`${tag}: live witness threw: ${e.message}`); }
   }
 
   let donated = null;
-  try { donated = mod.attempt(coverageBase(), { tag: 'donate', author: 0, v: 90 }); }
+  const base0 = { conti: [], casse: [], collections: [], votes: { openQuestions: [], closed: [] } };
+  try { donated = mod.attempt(coverageView(), base0, { tag: 'donate', author: 'anna', v: 90 }); }
   catch (e) { reasons.push(`donate: live witness threw: ${e.message}`); }
   if (donated && donated.ok === true) {
-    const before = coverageBase();
+    const before = base0;
     const after = donated.state;
-    const common = after.conti.filter(([k]) => !after.users.includes(k));
-    if (balOf(after.casse, 0) - balOf(before.casse, 0) !== 90)
+    const memberKeys0 = coverageView().members.map(([k]) => k);
+    const common = after.conti.filter(([k]) => !memberKeys0.includes(k));
+    if (balOf(after.casse, 'anna') - balOf(before.casse, 'anna') !== 90)
       reasons.push('donate: author cassa delta is not +90');
     if (totalOf(after.conti) - totalOf(before.conti) !== 90)
       reasons.push('donate: total conti delta is not +90');
-    if (before.users.some(u => balOf(after.conti, u) !== balOf(before.conti, u)))
+    if (memberKeys0.some(u => u !== COMUNE && balOf(after.conti, u) !== balOf(before.conti, u)))
       reasons.push('donate: changed a member conto');
-    if (common.length !== 1 || common[0][1] !== 90)
+    if (common.length !== 1 || common[0][0] !== COMUNE || common[0][1] !== 90)
       reasons.push('donate: no unique reserved non-member comune conto at +90');
     try {
-      const back = mod.attempt(clone(after), { tag: 'backdonate', author: 0, w: 10 });
+      const back = mod.attempt(coverageView(), clone(after), { tag: 'backdonate', author: 'anna', w: 10 });
       if (!back || back.ok !== true) reasons.push('backdonate: live witness refused');
       else {
-        for (const u of after.users)
+        for (const u of memberKeys0)
           if (balOf(back.state.conti, u) - balOf(after.conti, u) !== 10)
             reasons.push(`backdonate: member ${u} did not receive exactly +10`);
-        const commonKey = common[0][0];
-        if (balOf(back.state.conti, commonKey) - balOf(after.conti, commonKey) !== -30)
+        if (balOf(back.state.conti, COMUNE) - balOf(after.conti, COMUNE) !== -30)
           reasons.push('backdonate: comune delta is not -(member-count * share)');
         if (JSON.stringify(back.state.casse) !== JSON.stringify(after.casse))
           reasons.push('backdonate: changed casse');
@@ -424,22 +429,22 @@ async function checkMachineCoverage(corePath) {
 
   if (typeof mod.attempt === 'function') {
     for (const failure of [
-      requireRefused(mod.attempt, coverageBase(), { tag: 'donate', author: 2, v: 10 },
+      requireRefused(mod.attempt, coverageView(), base0, { tag: 'donate', author: 'carla', v: 10 },
         'donate non-responsabile'),
-      requireRefused(mod.attempt, coverageBase(), { tag: 'donate', author: 0, v: 0 },
+      requireRefused(mod.attempt, coverageView(), base0, { tag: 'donate', author: 'anna', v: 0 },
         'donate non-positive'),
-      requireRefused(mod.attempt, coverageBase(), { tag: 'backdonate', author: 2, w: 1 },
+      requireRefused(mod.attempt, coverageView(), base0, { tag: 'backdonate', author: 'carla', w: 1 },
         'backdonate non-responsabile'),
-      requireRefused(mod.attempt, coverageBase(), { tag: 'backdonate', author: 0, w: 0 },
+      requireRefused(mod.attempt, coverageView(), base0, { tag: 'backdonate', author: 'anna', w: 0 },
         'backdonate non-positive'),
-      requireRefused(mod.attempt, coverageBase(), { tag: 'backdonate', author: 0, w: 1 },
+      requireRefused(mod.attempt, coverageView(), base0, { tag: 'backdonate', author: 'anna', w: 1 },
         'backdonate insufficient comune'),
     ]) if (failure) reasons.push(failure);
   }
 
   if (reasons.length) return { ok: false, reasons, pinned: ctors.length,
-    retired: RETIRED.length, executable: active.length };
-  return { ok: true, reasons: [], pinned: ctors.length, retired: RETIRED.length,
+    retired: 0, executable: active.length };
+  return { ok: true, reasons: [], pinned: ctors.length, retired: 0,
     executable: active.length };
 }
 
@@ -466,7 +471,27 @@ function stalePinSelftest() {
     throw new Error(`stale-pin control did not RED with file and both blobs: ${staleMessage}`);
 }
 
-const MACHINE_CONTROLS = 'removed-attempt-case,stale-event-pin,manifest-removed,manifest-ambiguous,manifest-repointed';
+/* INV-8 negative control: the composition freshness assertion must be able
+   to fail for its own stated reason. The witness is the pin this slice
+   replaced — c8c4dd89's Composition.lean blob is the drift that went through
+   #62 in silence. Point the production assertion at it and require the exact
+   staleness RED. */
+function staleCompositionPinSelftest() {
+  const driftPin = 'c8c4dd8903cca817c814e9f84e9ff21ceba2de0c';
+  const module = ACCEPTED_COMPOSITION.module;
+  const pinnedBlob = gitShow(driftPin + ':' + module);
+  const masterBlob = gitShow('origin/master:' + module);
+  if (pinnedBlob === masterBlob)
+    throw new Error('drift witness is stale itself: c8c4dd89 blob equals master');
+  let message = '';
+  try { assertCompositionModuleFresh(driftPin, module); }
+  catch (e) { message = e.message; }
+  if (message !== 'modulo composizione obsoleto al pin: pin=' + pinnedBlob +
+      ' origin/master=' + masterBlob)
+    throw new Error('stale-composition control did not RED with pin and master blobs: ' + message);
+}
+
+const MACHINE_CONTROLS = 'removed-attempt-case,stale-event-pin,stale-composition-pin,manifest-removed,manifest-ambiguous,manifest-repointed';
 
 function requireUniqueManifestNeedle() {
   const src = readFileSync(fileURLToPath(import.meta.url), 'utf8');
@@ -627,9 +652,26 @@ function runGate(opts) {
         ex.composition.commit);
     if (resolvedTree !== ex.composition.tree)
       reasons.push(`albero del pin divergente dal dichiarato — dichiarato=${ex.composition.tree.slice(0, 12)}… risolto=${resolvedTree.slice(0, 12)}…`);
+    // INV-8: the cited module joins the freshness manifest — its blob at the
+    // pin must equal its blob at origin/master, so the same silent staleness
+    // that let the composition pin drift through #62 REDs from now on
+    try {
+      const pinnedBlob = gitShow(ex.composition.commit + ':' + ACCEPTED_COMPOSITION.module);
+      const masterBlob = gitShow('origin/master:' + ACCEPTED_COMPOSITION.module);
+      if (pinnedBlob !== masterBlob)
+        reasons.push('modulo composizione obsoleto al pin: pin=' + pinnedBlob + ' origin/master=' + masterBlob);
+    } catch (e) {
+      reasons.push('freshness del modulo composizione non verificabile: ' + e.message);
+    }
     if (ex.composition.commit !== ACCEPTED_COMPOSITION.commit ||
         ex.composition.tree !== ACCEPTED_COMPOSITION.tree)
       reasons.push('pin composizione ≠ composizione accettata');
+    // INV-8: the cited module joins the freshness manifest
+    try {
+      assertCompositionModuleFresh(ex.composition.commit, ACCEPTED_COMPOSITION.module);
+    } catch (e) {
+      reasons.push(e.message);
+    }
   }
   let pinned = null;
   if (resolvedTree === ACCEPTED_COMPOSITION.tree &&
@@ -811,6 +853,7 @@ async function selftest(work) {
   try {
     await removedAttemptCaseControl();
     stalePinSelftest();
+    staleCompositionPinSelftest();
     await expectManifestRed([],
       /Event source manifest is not a unique derivation file: \[\]/,
       'manifest-removed');
@@ -834,14 +877,16 @@ async function selftest(work) {
     console.error('SELFTEST RED: il gate di produzione non torna GREEN:\n' + green.reasons.join('\n'));
     return 1;
   }
-  const sorried = Object.entries(green.axioms).filter(([, s]) => s === 'enunciato').map(([d]) => d);
-  if (!sorried.length) {
-    console.error('SELFTEST RED: nessuna dichiarazione enunciata derivata — il controllo del ' +
-      'flip non ha materiale (atteso: le invarianti del voto portano sorry)');
+  // every citation at the merged pin is sorry-free today; the flip control
+  // therefore flips a PROVATO row to enunciato and expects the same
+  // derivation-divergence RED a hand-flipped sorry row produces
+  const proved = Object.entries(green.axioms).filter(([, s]) => s === 'provato').map(([d]) => d);
+  if (!proved.length) {
+    console.error('SELFTEST RED: nessuna dichiarazione provata derivata — il controllo del flip non ha materiale');
     return 1;
   }
-  const flipTarget = sorried[0];
-  console.log(`derivazione fresca: ${sorried.length} dichiarazioni enunciate; ` +
+  const flipTarget = proved[0];
+  console.log(`derivazione fresca: ${proved.length} dichiarazioni provate, 0 enunciate (scarico #48/#65); ` +
     `controllo flip su ${flipTarget}`);
 
   // positive control: an UNTRACKED scratch source under lean/KelGroups/ must
@@ -886,12 +931,12 @@ async function selftest(work) {
       name: 'collegamento citazione senza file',
       expect: /collegamento citazione senza file/,
       run: () => {
-        const needle = "d: 'step_authorized', f: 'lean/Reactivegas/Invariants.lean', l: 452";
+        const needle = "d: 'step_authorized', f: 'lean/Reactivegas/Invariants.lean', l: 561";
         if (!doc.includes(needle) || doc.split(needle).length !== 2)
           return { ok: false, reasons: ['controllo mal costruito: riga auth non unica'] };
         const p = join(work, 'sab-link-file.html');
         writeFileSync(p, doc.replace(needle,
-          "d: 'step_authorized', f: null, l: 452"));
+          "d: 'step_authorized', f: null, l: 561"));
         return runGate({ html: p, work });
       },
     },
@@ -899,7 +944,7 @@ async function selftest(work) {
       name: 'collegamento citazione senza riga',
       expect: /collegamento citazione senza riga/,
       run: () => {
-        const needle = "d: 'step_authorized', f: 'lean/Reactivegas/Invariants.lean', l: 452";
+        const needle = "d: 'step_authorized', f: 'lean/Reactivegas/Invariants.lean', l: 561";
         if (!doc.includes(needle) || doc.split(needle).length !== 2)
           return { ok: false, reasons: ['controllo mal costruito: riga auth non unica'] };
         const p = join(work, 'sab-link-line.html');
@@ -948,20 +993,41 @@ async function selftest(work) {
       expect: /CHECK_RECEIPT\.axioms ≠ derivazione fresca/,
       run: () => {
         const p = join(work, 'sab-flip.html');
-        const before = `'${flipTarget}': 'enunciato'`;
+        const before = `'${flipTarget}': 'provato'`;
         if (!doc.includes(before)) return { ok: false,
           reasons: [`controllo mal costruito: ${before} assente dal documento`] };
-        writeFileSync(p, doc.replace(before, `'${flipTarget}': 'provato'`));
+        writeFileSync(p, doc.replace(before, `'${flipTarget}': 'enunciato'`));
         return runGate({ html: p, work });
       },
     },
     {
-      name: 'rilevatore sorry disattivato (hook di test)',
-      expect: /rilevatore sorryAx disattivato o guasto/,
+      // SENSITIVITY: the production classifier must distinguish a
+      // sorry-backed report from a sorry-free one, in BOTH directions. With
+      // every citation sorry-free at the merged pin, the control feeds a
+      // FABRICATED sorryAx report for a real cited declaration through the
+      // production deriveAxioms: detector on must classify enunciato,
+      // detector off (the broken-detector simulation) must classify provato.
+      // Either corruption of the detector (always-false, always-true, hook
+      // removed) breaks one direction and fails this control; an unreachable
+      // fixture fails it too — never a silent pass.
+      name: 'rilevatore sorry: sensibilità on=enunciato off=provato',
+      expect: /sensibilità del rilevatore confermata/,
       run: () => {
-        process.env.RG_GATE_SORRY_DETECTOR = 'off';
-        try { return runGate({ work }); }
-        finally { delete process.env.RG_GATE_SORRY_DETECTOR; }
+        const target = Object.entries(green.axioms).find(([, s]) => s === 'provato');
+        if (!target) return { ok: false, reasons: ['sensibilità del rilevatore non costruibile: nessuna dichiarazione provata da fabbricare'] };
+        const [decl] = target;
+        const fake = `'${decl}' depends on axioms: [sorryAx, propext]`;
+        process.env.RG_GATE_SORRY_DETECTOR = 'on';
+        let on, off;
+        try {
+          on = deriveAxioms([decl], fake);
+          process.env.RG_GATE_SORRY_DETECTOR = 'off';
+          off = deriveAxioms([decl], fake);
+        } finally { delete process.env.RG_GATE_SORRY_DETECTOR; }
+        if (on.derived[decl] === 'enunciato' && off.derived[decl] === 'provato' &&
+            off.rawLine[decl].includes('sorryAx'))
+          return { ok: false, reasons: [`sensibilità del rilevatore confermata: ${decl} enunciato col rilevatore attivo, provato con sorryAx nel report a rilevatore spento`] };
+        return { ok: false, reasons: [`sensibilità del rilevatore ASSENTE: on=${JSON.stringify(on.derived[decl])} off=${JSON.stringify(off.derived[decl])}`] };
       },
     },
     {
@@ -1136,7 +1202,7 @@ try {
           `${ACCEPTED_COMPOSITION.commit.slice(0, 10)}… verificato (albero esatto, righe al pin, ` +
           `instradamento derivato, copertura dei costruttori, stati elaborati freschi); ` +
           `ricevuta legata (sha ${r.sha.slice(0, 12)}…); ` +
-          `machine=${mc.executable}/${mc.executable} pinned=${mc.pinned} retired=${mc.retired}`);
+          `machine=${mc.executable}/${mc.executable} pinned=${mc.pinned} retired=0`);
         code = 0;
       } else {
         console.error(`RED: ${r.reasons.length} problemi`);
@@ -1146,6 +1212,6 @@ try {
     }
   }
 } finally {
-  rmSync(work, { recursive: true, force: true });
+  rmQuiet(work);
 }
 process.exit(code);
