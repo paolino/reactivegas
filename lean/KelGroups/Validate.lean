@@ -12,6 +12,7 @@ inductive ValidationError where
   | memberNotFound (key : Key)
   | proposalNotFound (proposalId : ProposalId)
   | alreadyApproved (key : Key) (proposalId : ProposalId)
+  | proposerSelfApproval (key : Key) (proposalId : ProposalId)
   | roleAddPrecondition (name : RoleName)
   | roleRemovePrecondition (name : RoleName)
   | invalidKey (key : Key)
@@ -24,7 +25,10 @@ instance : BEq (Except ValidationError Unit) where
     | .error left, .error right => left == right
     | _, _ => false
 
-private def requireAdmin (signer : Key) (gs : GroupState α) :
+/-- Admin gate shared by the approval validators. Public (not
+`private`) so the V-2 preservation proofs can invert successful
+validations; behavior unchanged. -/
+def requireAdmin (signer : Key) (gs : GroupState α) :
     Except ValidationError Unit :=
   if isAdmin signer gs then .ok () else .error (.notAnAdmin signer)
 
@@ -119,7 +123,13 @@ def validateApproval (gs : GroupState α) (signer : Key)
   match lookupPending proposalId gs with
   | none => .error (.proposalNotFound proposalId)
   | some pending =>
-      if pending.approvals.contains signer then
+      -- V-2/A-001: above one current admin the proposer's own approval is
+      -- refused at the boundary under its own identity, never `alreadyApproved`
+      -- (different meaning: barred by proposer identity, not duplication).
+      -- The sole admin's separate approval passes (no threshold special case).
+      if signer == pending.proposer && decide (1 < adminCount gs) then
+        .error (.proposerSelfApproval signer proposalId)
+      else if pending.approvals.contains signer then
         .error (.alreadyApproved signer proposalId)
       else .ok ()
 
@@ -166,7 +176,10 @@ def validateBaseApproval (gs : GroupState α) (signer : Key)
   match lookupPendingBase proposalId gs with
   | none => .error (.proposalNotFound proposalId)
   | some pending =>
-      if pending.approvals.contains signer then
+      -- V-2/A-001 integrated bar: same identity rule as `validateApproval`.
+      if signer == pending.proposer && decide (1 < adminCount gs) then
+        .error (.proposerSelfApproval signer proposalId)
+      else if pending.approvals.contains signer then
         .error (.alreadyApproved signer proposalId)
       else .ok ()
 
