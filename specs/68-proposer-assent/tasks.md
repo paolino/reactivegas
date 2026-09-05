@@ -8,8 +8,9 @@ Slice S1 (OWNER, single slice). Task IDs stable; stamp only after acceptance.
   branch feat/68-proposer-assent at e6c5924, START with pane/argv/identity.
 - [x] T68-02 Discovered extent probes (read-only) + spec/plan/tasks draft.
 - [x] T68-03 Gate v1 authored (ruling-certain rows; superseded by v2).
-- [x] T68-07 Gate v2 + fenced witness oracle lean/WitnessT68.lean authored
-  (unfalsified until base-RED run).
+- [x] T68-07 Gate v3 + fenced witness oracle
+  specs/68-proposer-assent/witness-t68.lean authored (unfalsified until
+  base-RED run).
 - [x] T68-04 Q-001 filed (proposer self-approval + n=1 semantics).
 - [x] T68-05 Planning commit (spec/plan/tasks only, no production, no gate
   commit — gate.sh stays untracked/ignored).

@@ -15,8 +15,8 @@ restatement and proof need semantic judgment no executable gate alone entails.
 2. A-001 received (option A bounded to V-2; B kept as negative witness).
    Awaiting implementation release (simulator determinism campaign in
    flight; held, not poked).
-3. Freeze gate v2 (A-001 witness rows via fenced owner oracle
-   lean/WitnessT68.lean + worker `#guard`s); falsify v1/v2 per class (costs
+3. Freeze gate v3 (A-001 witness rows via fenced owner oracle
+   specs/68-proposer-assent/witness-t68.lean + worker `#guard`s); falsify v1/v2 per class (costs
    builds; budget 6/submission, base-RED run counts openly).
 4. Dispatch muse commit owner (mode=OWNER, draft=NONE) with hash-bound packet.
 5. Fresh codex auditor (gpt-6-astra/high) in isolated read-only snapshot per
