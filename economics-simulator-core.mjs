@@ -931,7 +931,7 @@ const leanEventOf = ej => {
 };
 const leanEventJson = e => {
   const { tag, ...fields } = e;
-  return { [tag]: fields };
+  return { [tag]: stripAuthor(fields) };
 };
 
 /* The economic stream's canonical projection: conti, casse, collections.
@@ -1571,6 +1571,23 @@ const canonAggregate = agg => {
 
 const VOTE_TAGS = { openQuestion: 1, cast: 1, renounce: 1 };
 
+/* INV-3 actor binding (F-01 class): event arguments never carry the actor.
+   The signer travels separately (step signer / applyIntegrated signer);
+   Lean AppEvent has no `author` field, so one inside payload args is
+   foreign. payloadAuthorOf reports it for the mismatch refusal;
+   stripAuthor drops it so a payload field can neither override the recorded
+   signer at a merge site nor leak into stored events. Honest traffic (UI
+   flows, Lean corpora, canonical exports) never carries it. */
+const payloadAuthorOf = a =>
+  (a && typeof a === 'object' &&
+    Object.prototype.hasOwnProperty.call(a, 'author')) ? a.author : undefined;
+const stripAuthor = a => {
+  if (!a || typeof a !== 'object' || Array.isArray(a) ||
+    !Object.prototype.hasOwnProperty.call(a, 'author')) return a;
+  const { author: _dropped, ...rest } = a;
+  return rest;
+};
+
 /* the integrated event of the toy aggregate, from the LEAN event JSON:
    {direct:{admitMember}} | {propose:{proposal}} | {approve:{proposalId}}
    | {app:{<AppEvent ctor>}} — the vote constructors openQuestion/cast/
@@ -1598,6 +1615,13 @@ function applyIntegrated(gs, signer, ev) {
   if ('app' in ev) {
     const ae = ev.app;
     const tag = Object.keys(ae)[0];
+    // a payload `author` mismatching the recorded signer is refused here,
+    // at verification and replay alike (both run through applyIntegrated);
+    // the merge below then only ever sees authorless args.
+    const smuggled = payloadAuthorOf(ae[tag]);
+    if (smuggled !== undefined && smuggled !== signer)
+      return { refused: 'author-mismatch' };
+    const args = stripAuthor(ae[tag]);
     const pre = { members: gs.members };
     if (!isMemberView(signer, pre)) return { refused: 'notAMember' };
     if (VOTE_TAGS[tag]) {
@@ -1607,7 +1631,7 @@ function applyIntegrated(gs, signer, ev) {
       return { gs: { ...gs, appFold: { ...gs.appFold, votes: det.state } },
         payload: { ...gs.appFold, votes: det.state }, change: null };
     }
-    const res = attempt(pre, gs.appFold, { tag, author: signer, ...ae[tag] });
+    const res = attempt(pre, gs.appFold, { tag, author: signer, ...args });
     if (!res.ok) return { refused: 'rejected', failed: res.failed };
     return { gs: { ...gs, appFold: res.state }, payload: res.state, change: null };
   }
