@@ -60,13 +60,21 @@ lean_dir="$root/lean"
 tmp=$(mktemp -d)
 trap 'rm -rf -- "$tmp"' EXIT
 
-# Every library module of this project: every Lean source under `lean/` except
-# the Lake package configuration, which is not part of the library. Nothing
-# about a module's *text* selects it, so no declaration can stay out of the
-# audited environment by the way it is written. The audit independently refuses
-# to pass if a source file holding theorem commands is missing from that
-# environment.
-mapfile -t modules < <(
+# S — tracked source modules: git-tracked `.lean` under `lean/` except the Lake
+# package configuration. Walked sources on disk are derived independently and
+# must agree as sets; a tracked-but-missing or untracked-but-present source is
+# a finding. Nothing about a module's *text* selects it.
+mapfile -t tracked < <(
+    git -C "$root" ls-files -- 'lean' \
+        | grep -E '\.lean$' \
+        | sort \
+        | while IFS= read -r f; do
+            rel=${f#lean/}
+            [ "$rel" = lakefile.lean ] && continue
+            printf '%s\n' "${rel%.lean}" | tr '/' '.'
+        done
+)
+mapfile -t walked < <(
     find "$lean_dir" -name '.lake' -prune -o -name '*.lean' -type f -print \
         | sort \
         | while IFS= read -r file; do
@@ -75,11 +83,23 @@ mapfile -t modules < <(
             printf '%s\n' "${rel%.lean}" | tr '/' '.'
         done
 )
-if [ "${#modules[@]}" -eq 0 ]; then
-    printf '%s: derived zero modules from %s\n' \
+if [ "${#tracked[@]}" -eq 0 ]; then
+    printf '%s: derived zero tracked source modules from %s\n' \
         "$TOOL" "$lean_dir" >&2
     exit 1
 fi
+if [ "${#walked[@]}" -eq 0 ]; then
+    printf '%s: derived zero walked source modules from %s\n' \
+        "$TOOL" "$lean_dir" >&2
+    exit 1
+fi
+if ! diff <(printf '%s\n' "${tracked[@]}") <(printf '%s\n' "${walked[@]}") >"$tmp/swalk.diff" 2>&1; then
+    printf '%s: tracked/walked source discovery disagrees\n' "$TOOL" >&2
+    cat "$tmp/swalk.diff" >&2
+    exit 1
+fi
+modules=("${tracked[@]}")
+printf '%s: sources tracked=%s walked=%s\n' "$TOOL" "${#tracked[@]}" "${#walked[@]}" >&2
 
 # The environment must be the current source, not whatever was compiled last.
 (cd "$lean_dir" && lake build "${modules[@]}" >"$tmp/build.log" 2>&1) || {
@@ -97,37 +117,75 @@ open Lean Meta Elab Term
 
 namespace InversionAudit
 
-def projectRoots : List Name := [`Reactivegas, `KelGroups]
 def permittedAxioms : List Name := [`propext, `Classical.choice, `Quot.sound]
+
+/-- Ownership authority (canonicalized resolved-olean provenance). The loader's own
+search path (`searchPathRef`: `LEAN_PATH` order plus the toolchain builtin)
+resolves each environment module to the olean artifact it actually loaded
+(`findModuleWithExt`, existence-checked, first-package-root rule). Both the
+repo root and each resolved artifact are canonicalized with `IO.FS.realPath`
+(relative entries, `.`/`..`, symlinked vendor dirs) before a
+trailing-separator prefix comparison. No name list, no import closure. -/
+def canonRoot (root : String) : TermElabM (Except String String) := do
+  try
+    let p ← IO.FS.realPath root
+    let mut s := p.toString
+    if !s.endsWith "/" then s := s ++ "/"
+    return .ok s
+  catch _ => return .error s!"cannot canonicalize project root {root}"
+
+def artifactInsideRoot (rootCanon : String) (art : System.FilePath) :
+    TermElabM Bool := do
+  try
+    let r ← IO.FS.realPath art
+    return rootCanon.isPrefixOf r.toString
+  catch _ => return false
+
+def resolveProjectModules (env : Environment) (rootCanon : String) :
+    TermElabM (Except String (Array Name)) := do
+  let sp ← Lean.searchPathRef.get
+  let mut acc := #[]
+  let mut noArtifact : Array String := #[]
+  for m in env.header.moduleNames do
+    let found ← sp.findModuleWithExt "olean" m
+    match found with
+    | none => noArtifact := noArtifact.push m.toString
+    | some p =>
+      if ← artifactInsideRoot rootCanon p then acc := acc.push m
+  if !noArtifact.isEmpty then
+    return .error
+      s!"modules with no loadable olean artifact: {", ".intercalate noArtifact.toList}"
+  return .ok acc
 def requiredInversions : List Name :=
   [`Reactivegas.step_open_inv, `Reactivegas.step_deposit_inv,
    `Reactivegas.step_withdraw_inv, `Reactivegas.step_transferCassa_inv,
    `Reactivegas.step_donate_inv, `Reactivegas.step_backdonate_inv]
-def expectedDeclarations : Nat := 163
 
 /-- The Lake package description is not a library module: nothing declared in
 it can reach the project environment, and it is elaborated by Lake, not here. -/
 def lakeConfig : String := "lakefile.lean"
 
-def isProjectModule (m : Name) : Bool :=
-  projectRoots.any (fun r => r == m || r.isPrefixOf m)
-
-/-- Every constant this project itself declares, with its module. Restricting
-the sweep this way keeps the audit off the whole `import Lean` environment. -/
-def projectConstants (env : Environment) : Array (Name × Name × ConstantInfo) := Id.run do
+/-- Every constant this project itself declares, with its module. The project set
+comes from resolved-olean provenance, never from a name list or import closure. -/
+def projectConstants (env : Environment) (proj : Array Name) :
+    Array (Name × Name × ConstantInfo) := Id.run do
   let mut acc := #[]
   for i in [0 : env.header.moduleNames.size] do
     let some m := env.header.moduleNames[i]? | continue
-    if !isProjectModule m then continue
+    if !proj.contains m then continue
     let some data := env.header.moduleData[i]? | continue
     for n in data.constNames do
       if n.isInternalDetail then continue
       if let some ci := env.find? n then acc := acc.push (m, n, ci)
   return acc
 
-/-- `lean/A/B.lean` for module `A.B`. -/
+/-- `lean/A/B.lean` for module `A.B`, total: non-string components yield an
+unmatchable sentinel rather than panicking. Callers compare canonical realpaths,
+so a sentinel is a finding, never a crash. -/
 def modulePath (root : String) (m : Name) : String :=
-  root ++ "/lean/" ++ "/".intercalate (m.components.map (·.getString!)) ++ ".lean"
+  let parts := m.components.filterMap (fun c => match c with | .str _ s => some s | _ => none)
+  if parts.length != m.components.length then root ++ "/lean/__nonstring__.lean"
+  else root ++ "/lean/" ++ "/".intercalate parts ++ ".lean"
 
 partial def leanSources (dir : System.FilePath) : IO (Array System.FilePath) := do
   let mut acc := #[]
@@ -191,9 +249,10 @@ def parsedTheoremDecls (env : Environment) (path : System.FilePath) :
   return .ok acc
 
 /-- Elaborated theorems of this project, at the source position they occupy. -/
-def elaboratedTheorems (env : Environment) : CoreM (Array (Name × Nat × Name)) := do
+def elaboratedTheorems (env : Environment) (proj : Array Name) :
+    CoreM (Array (Name × Nat × Name)) := do
   let mut acc := #[]
-  for (m, n, ci) in projectConstants env do
+  for (m, n, ci) in projectConstants env proj do
     if let .thmInfo _ := ci then
       if let some r ← findDeclarationRanges? n then
         acc := acc.push (m, r.selectionRange.pos.line, n)
@@ -308,7 +367,15 @@ def fail (m : String) : Report Unit := modify (·.push m)
 
 def audit (root : String) (negative : Bool) : Report Unit := do
   let env ← getEnv
-  let constants := projectConstants env
+  let rootCanon ← match ← canonRoot root with
+    | .ok r => pure r
+    | .error e => fail e; pure (root ++ "/")
+  let proj ← match ← resolveProjectModules env rootCanon with
+    | .ok p => pure p
+    | .error e => fail e; pure #[]
+  let constants := projectConstants env proj
+  IO.println s!"inversion-sources root={rootCanon} modules={proj.size}"
+  if proj.isEmpty then fail "derived zero built project modules"
 
   let ctors ←
     match eventCtors env with
@@ -377,8 +444,9 @@ def audit (root : String) (negative : Bool) : Report Unit := do
     | some _ =>
       fail s!"{n}: exists but is not a theorem declaration"
 
-  let elaborated ← elaboratedTheorems env
-  let files ← leanSources (root ++ "/lean")
+  let elaborated ← elaboratedTheorems env proj
+  let rootNoSlash := rootCanon.dropRight 1
+  let files ← leanSources (rootNoSlash ++ "/lean")
   let mut declaredTotal := 0
   let mut backedTotal := 0
   for f in files do
@@ -387,21 +455,26 @@ def audit (root : String) (negative : Bool) : Report Unit := do
     | .ok declared =>
       if declared.isEmpty then continue
       declaredTotal := declaredTotal + declared.size
-      match env.header.moduleNames.find? (fun m =>
-          isProjectModule m && modulePath root m == f.toString) with
-      | none =>
-        fail s!"{f} declares theorems but is not in the audited environment"
-      | some m =>
-        for (line, name) in declared do
-          match elaborated.find? (fun p => p.1 == m && p.2.1 == line) with
-          | none =>
-            fail s!"{f}:{line}: `{name}` is declared in source but no theorem elaborated there"
-          | some (_, _, actual) =>
-            if actual.toString.endsWith name then backedTotal := backedTotal + 1
-            else fail s!"{f}:{line}: source declares `{name}` but `{actual}` elaborated"
-  IO.println s!"lean-theorems declared={declaredTotal} elaborated-backed={backedTotal} expected={expectedDeclarations}"
-  unless backedTotal == expectedDeclarations && declaredTotal == expectedDeclarations do
-    fail s!"elaborated theorem declarations {backedTotal} (source-declared {declaredTotal}) is not the expected {expectedDeclarations}"
+      let fCanonOpt ← try pure (some (← IO.FS.realPath f).toString) catch _ => pure none
+      match fCanonOpt with
+      | none => fail s!"{f}: cannot canonicalize source path"
+      | some fCanon =>
+        match proj.find? (fun m => modulePath rootNoSlash m == fCanon) with
+        | none =>
+          fail s!"{f} declares theorems but is not in the audited environment"
+        | some m =>
+          for (line, name) in declared do
+            match elaborated.find? (fun p => p.1 == m && p.2.1 == line) with
+            | none =>
+              fail s!"{f}:{line}: `{name}` is declared in source but no theorem elaborated there"
+            | some (_, _, actual) =>
+              if actual.toString.endsWith name then backedTotal := backedTotal + 1
+              else fail s!"{f}:{line}: source declares `{name}` but `{actual}` elaborated"
+  IO.println s!"lean-theorems declared={declaredTotal} elaborated-backed={backedTotal}"
+  if declaredTotal == 0 then fail "census found zero source-declared theorems"
+  if backedTotal == 0 then fail "census found zero elaborated-backed theorems"
+  unless declaredTotal == backedTotal do
+    fail s!"source/elaborated census disagrees: declared={declaredTotal} backed={backedTotal}"
 
 def main : TermElabM Unit := do
   let root := (← IO.getEnv "REACTIVEGAS_ROOT").getD "."
@@ -425,4 +498,18 @@ else
     unset REACTIVEGAS_INVERSION_NEGATIVE_CONTROL
 fi
 export REACTIVEGAS_ROOT="$root"
-(cd "$lean_dir" && lake env lean "$tmp/InversionAudit.lean")
+set +e
+(cd "$lean_dir" && lake env lean "$tmp/InversionAudit.lean" >"$tmp/audit.out" 2>"$tmp/audit.err")
+code=$?
+set -e
+cat "$tmp/audit.out" 2>/dev/null || true
+cat "$tmp/audit.err" >&2 2>/dev/null || true
+if grep -q 'PANIC at' "$tmp/audit.out" "$tmp/audit.err" 2>/dev/null; then
+    printf '%s: gate output contains a panic string\n' "$TOOL" >&2
+    exit 1
+fi
+if [ $code -ne 0 ]; then exit $code; fi
+if ! grep -q '^inversion-audit: ok' "$tmp/audit.out" 2>/dev/null; then
+    printf '%s: missing inversion-audit: ok marker\n' "$TOOL" >&2
+    exit 1
+fi

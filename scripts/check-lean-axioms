@@ -1,0 +1,309 @@
+#!/usr/bin/env bash
+set -euo pipefail
+#
+# Axiom gate over the discovered project extent.
+#
+# Derives three sets independently and reconciles them:
+#   S — tracked source modules, from `git ls-files` under `lean/` (minus the
+#       Lake package configuration), cross-checked against a filesystem walk;
+#       the two must agree as sets.
+#   B — built project modules, from `env.header.moduleNames` of this gate's own
+#       elaborated environment, filtered by resolved-olean provenance.
+#   T — compiled theorem identities, from `thmInfo` constants in B modules,
+#       UNFILTERED (internal-detail and generated equation lemmas included,
+#       matching independent enumeration: 1214 occurrences / 1213 distinct),
+#       derived twice (module-data walk and whole-environment fold) and required
+#       to agree.
+#
+# Ownership authority (element 1): the loader's own search path
+# (`Lean.searchPathRef`: `LEAN_PATH` order plus the toolchain builtin) resolves
+# each environment module to the olean artifact it actually loaded
+# (`findModuleWithExt`, existence-checked, first-package-root rule). Both the
+# repo root (`REACTIVEGAS_ROOT`) and each resolved artifact are canonicalized
+# with `IO.FS.realPath` — relative entries, `.`/`..`, symlinked or aliased
+# vendor dirs — before a trailing-separator prefix comparison. No name or
+# namespace list, no `import Lean` closure, no `B := S`. S (git) and B
+# (environment plus provenance) stay distinct layers, so `S \ B` and `B \ S`
+# are both representable and both fail the gate on genuinely project-owned
+# subjects (element 4). Equivalent loader paths (relative vs absolute,
+# symlinked, aliased) classify identically because only canonical realpaths are
+# compared (elements 1 and 3). The real source-output relation (element 2) is
+# the loader resolution itself: a tracked source counts as built exactly when
+# the environment's module resolves to an artifact inside the canonical root.
+#
+# Allowed axioms: `propext`, `Classical.choice`, `Quot.sound` — exactly
+# `permittedAxioms` already enforced by the mandatory path on the six
+# `requiredInversions` in `scripts/check-reactivegas-inversion-coverage`.
+# This gate extends the policy the repo already enforces from six theorems to
+# the whole discovered extent; it chooses no new policy.
+#
+# Fail-closed: missing/unresolvable `REACTIVEGAS_ROOT`; empty or unset
+# `LEAN_PATH` (retained guard, element 5); modules with no loadable olean;
+# zero S/B/T; `S \ B` or `B \ S` non-empty; T-derivation disagreement; any
+# theorem depending on an axiom outside the permitted set (including `sorryAx`);
+# any `PANIC at` on either stream; missing `axiom-gate: ok` marker.
+#
+# Honest limit (`CI-T-SHARED-FILTER`): both T derivations share `thmInfo` and B
+# membership — two views of one inventory, not two independent theorem sources.
+# One-sided truncation is detected; a theorem dropped from both views, or a
+# B-shrink applied to both, agrees while omitting. Not claimed otherwise.
+
+TOOL=check-lean-axioms
+
+usage() {
+    printf 'usage: %s [REPO_ROOT]\n' "$TOOL" >&2
+    exit 64
+}
+
+while [ $# -gt 0 ]; do
+    case $1 in
+        -h|--help) usage ;;
+        --) shift; break ;;
+        -*) usage ;;
+        *) break ;;
+    esac
+    shift
+done
+[ $# -le 1 ] || usage
+
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+root=$(cd -- "${1:-$script_dir/..}" && pwd)
+lean_dir="$root/lean"
+
+[ -d "$lean_dir" ] || {
+    printf '%s: missing Lean sources: %s\n' "$TOOL" "$lean_dir" >&2
+    exit 1
+}
+
+tmp=$(mktemp -d)
+trap 'rm -rf -- "$tmp"' EXIT
+
+# S — tracked vs walked agreement (see header).
+mapfile -t tracked < <(
+    git -C "$root" ls-files -- 'lean' \
+        | grep -E '\.lean$' \
+        | sort \
+        | while IFS= read -r f; do
+            rel=${f#lean/}
+            [ "$rel" = lakefile.lean ] && continue
+            printf '%s\n' "${rel%.lean}" | tr '/' '.'
+        done
+)
+mapfile -t walked < <(
+    find "$lean_dir" -name '.lake' -prune -o -name '*.lean' -type f -print \
+        | sort \
+        | while IFS= read -r file; do
+            rel=${file#"$lean_dir"/}
+            [ "$rel" = lakefile.lean ] && continue
+            printf '%s\n' "${rel%.lean}" | tr '/' '.'
+        done
+)
+if [ "${#tracked[@]}" -eq 0 ]; then
+    printf '%s: derived zero tracked source modules from %s\n' \
+        "$TOOL" "$lean_dir" >&2
+    exit 1
+fi
+if [ "${#walked[@]}" -eq 0 ]; then
+    printf '%s: derived zero walked source modules from %s\n' \
+        "$TOOL" "$lean_dir" >&2
+    exit 1
+fi
+if ! diff <(printf '%s\n' "${tracked[@]}") <(printf '%s\n' "${walked[@]}") >"$tmp/swalk.diff" 2>&1; then
+    printf '%s: tracked/walked source discovery disagrees\n' "$TOOL" >&2
+    cat "$tmp/swalk.diff" >&2
+    exit 1
+fi
+modules=("${tracked[@]}")
+printf '%s: sources tracked=%s walked=%s\n' "$TOOL" "${#tracked[@]}" "${#walked[@]}" >&2
+
+# The environment must be the current source, not whatever was compiled last.
+(cd "$lean_dir" && lake build "${modules[@]}" >"$tmp/build.log" 2>&1) || {
+    printf '%s: lake build failed\n' "$TOOL" >&2
+    cat "$tmp/build.log" >&2
+    exit 1
+}
+
+{
+    printf 'import Lean\n'
+    printf 'import %s\n' "${modules[@]}"
+    cat <<'LEANEOF'
+
+open Lean Meta Elab Term
+
+namespace AxiomGate
+
+def permittedAxioms : List Name := [`propext, `Classical.choice, `Quot.sound]
+
+def canonRoot (root : String) : TermElabM (Except String String) := do
+  try
+    let p ← IO.FS.realPath root
+    let mut s := p.toString
+    if !s.endsWith "/" then s := s ++ "/"
+    return .ok s
+  catch _ => return .error s!"cannot canonicalize project root {root}"
+
+def artifactInsideRoot (rootCanon : String) (art : System.FilePath) :
+    TermElabM Bool := do
+  try
+    let r ← IO.FS.realPath art
+    return rootCanon.isPrefixOf r.toString
+  catch _ => return false
+
+def resolveProjectModules (env : Environment) (rootCanon : String) :
+    TermElabM (Except String (Array Name)) := do
+  let sp ← Lean.searchPathRef.get
+  let mut acc := #[]
+  let mut noArtifact : Array String := #[]
+  for m in env.header.moduleNames do
+    let found ← sp.findModuleWithExt "olean" m
+    match found with
+    | none => noArtifact := noArtifact.push m.toString
+    | some p =>
+      if ← artifactInsideRoot rootCanon p then acc := acc.push m
+  if !noArtifact.isEmpty then
+    return .error
+      s!"modules with no loadable olean artifact: {", ".intercalate noArtifact.toList}"
+  return .ok acc
+
+/-- Module-data walk: `thmInfo` constants per built project module. -/
+def theoremsByWalk (env : Environment) (proj : Array Name) :
+    Array (Name × Name) := Id.run do
+  let mut acc := #[]
+  for i in [0 : env.header.moduleNames.size] do
+    let some m := env.header.moduleNames[i]? | continue
+    if !proj.contains m then continue
+    let some data := env.header.moduleData[i]? | continue
+    -- T intentionally unfiltered (see header): generated and internal-detail
+    -- theorems sweep like any other.
+    for n in data.constNames do
+      match env.find? n with
+      | some (.thmInfo _) => acc := acc.push (m, n)
+      | _ => pure ()
+  return acc
+
+/-- Whole-environment fold: `thmInfo` constants attributed via the module
+index, filtered to built project modules. Independent walk, same filter
+(see `CI-T-SHARED-FILTER` in the script header). -/
+def theoremsByFold (env : Environment) (proj : Array Name) :
+    Array (Name × Name) := Id.run do
+  let mut acc := #[]
+  for (n, ci) in env.constants.toList do
+    match ci with
+    | .thmInfo _ =>
+      -- Same unfiltered extent as the walk (see header).
+      match env.getModuleIdxFor? n with
+      | none => continue
+      | some idx =>
+        match env.header.moduleNames[idx.toNat]? with
+        | none => continue
+        | some m =>
+          if !proj.contains m then continue
+          acc := acc.push (m, n)
+    | _ => pure ()
+  return acc
+
+abbrev Report := StateT (Array String) TermElabM
+
+def fail (m : String) : Report Unit := modify (·.push m)
+
+def audit (root : String) (sModules : List String) : Report Unit := do
+  -- Element 5 retained guard: empty or unset LEAN_PATH fails here, before any
+  -- provenance claim. Executed by the missing-authority control.
+  let leanPath := (← IO.getEnv "LEAN_PATH").getD ""
+  if leanPath == "" then
+    fail "ownership authority missing: LEAN_PATH empty or unset"
+    return ()
+  let env ← getEnv
+  let rootCanon ← match ← canonRoot root with
+    | .ok r => pure r
+    | .error e => fail e; pure (root ++ "/")
+  let proj ← match ← resolveProjectModules env rootCanon with
+    | .ok p => pure p
+    | .error e => fail e; pure #[]
+  let projNames := (proj.map (·.toString)).toList
+  IO.println s!"axiom-sources tracked={sModules.length} built={proj.size}"
+  if sModules.isEmpty then fail "derived zero tracked source modules"
+  if proj.isEmpty then fail "derived zero built project modules"
+  for m in proj do IO.println s!"axiom-module {m}"
+  let sOnly := sModules.filter (fun s => !projNames.contains s)
+  let bOnly := projNames.filter (fun b => !sModules.contains b)
+  unless sOnly.isEmpty do
+    fail s!"tracked source modules never reaching the environment: {", ".intercalate sOnly}"
+  unless bOnly.isEmpty do
+    fail s!"built project modules outside the source discovery: {", ".intercalate bOnly}"
+  let walkSet := theoremsByWalk env proj
+  let foldSet := theoremsByFold env proj
+  let sortIds (xs : Array (Name × Name)) :=
+    (xs.toList.mergeSort (fun a b => (a.1.toString ++ "." ++ a.2.toString) ≤ (b.1.toString ++ "." ++ b.2.toString)))
+  let wSorted := sortIds walkSet
+  let fSorted := sortIds foldSet
+  -- Set semantics: walk traverses occurrences, fold is distinct by construction.
+  -- Occurrences REPORTED; agreement is on identities.
+  -- Identities are NAMES: one constant may be traversed under two modules.
+  -- Occurrences REPORTED; agreement is on distinct names.
+  let dedupByName : List (Name × Name) → List (Name × Name) :=
+    fun xs => xs.foldl (fun acc p => if acc.any (fun q => q.2 == p.2) then acc else acc ++ [p]) []
+  let wDedup := dedupByName wSorted
+  let fDedup := dedupByName fSorted
+  let dupNames := ((wSorted.filter (fun x => (wSorted.filter (fun y => y.2 == x.2)).length > 1)).map (fun x => x.2.toString)).eraseDups
+  IO.println s!"axiom-theorems walkOcc={wSorted.length} distinct={wDedup.length} fold={fSorted.length}"
+  unless dupNames.isEmpty do
+    IO.println s!"axiom-duplicate-names={dupNames.length} {", ".intercalate dupNames}"
+  unless wDedup.length == fDedup.length do
+    fail s!"theorem derivations disagree on count: walk-distinct={wDedup.length} fold={fDedup.length}"
+  let wOnly := wDedup.filter (fun x => !fDedup.contains x)
+  let fOnly := fDedup.filter (fun x => !wDedup.contains x)
+  unless wOnly.isEmpty do
+    fail s!"theorem identities absent from the constant-fold derivation: {", ".intercalate (wOnly.map (fun x => x.2.toString))}"
+  unless fOnly.isEmpty do
+    fail s!"theorem identities absent from the module-walk derivation: {", ".intercalate (fOnly.map (fun x => x.2.toString))}"
+  if wDedup.isEmpty then fail "derived zero theorems"
+  for (_, n) in wDedup do IO.println s!"axiom-theorem {n}"
+  for (ms, n) in wDedup do
+    match env.find? n with
+    | some (.thmInfo _) =>
+      let axs ← collectAxioms n
+      let extra := axs.toList.filter (fun a => !permittedAxioms.contains a)
+      unless extra.isEmpty do
+        fail s!"{n}: depends on axioms outside the permitted standard set: {", ".intercalate (extra.map (·.toString))}"
+      -- Transitivity rides `collectAxioms`: a theorem using a def that uses a
+      -- forbidden axiom is flagged for the use, not the declaration.
+      IO.println s!"axioms {n} = [{", ".intercalate (axs.toList.map (·.toString))}]"
+    | _ =>
+      fail s!"{n} (in {ms}): absent from the elaborated environment as a theorem"
+  IO.println s!"axiom-theorems count={wDedup.length}"
+
+def main : TermElabM Unit := do
+  let root := (← IO.getEnv "REACTIVEGAS_ROOT").getD "."
+  let sRaw := (← IO.getEnv "AXIOM_S_MODULES").getD ""
+  let sModules := (sRaw.splitOn "\n").filter (fun s => s != "")
+  let (_, failures) ← (audit root sModules).run #[]
+  if failures.isEmpty then
+    IO.println "axiom-gate: ok"
+  else
+    for f in failures do IO.eprintln s!"axiom-gate: {f}"
+    throwError s!"axiom-gate failed with {failures.size} finding(s)"
+
+end AxiomGate
+
+#eval AxiomGate.main
+LEANEOF
+} >"$tmp/AxiomGate.lean"
+
+export REACTIVEGAS_ROOT="$root"
+export AXIOM_S_MODULES="$(printf '%s\n' "${modules[@]}")"
+set +e
+(cd "$lean_dir" && lake env lean "$tmp/AxiomGate.lean" >"$tmp/axioms.out" 2>"$tmp/axioms.err")
+code=$?
+set -e
+cat "$tmp/axioms.out" 2>/dev/null || true
+cat "$tmp/axioms.err" >&2 2>/dev/null || true
+if grep -q 'PANIC at' "$tmp/axioms.out" "$tmp/axioms.err" 2>/dev/null; then
+    printf '%s: gate output contains a panic string\n' "$TOOL" >&2
+    exit 1
+fi
+if [ $code -ne 0 ]; then exit $code; fi
+if ! grep -q '^axiom-gate: ok' "$tmp/axioms.out" 2>/dev/null; then
+    printf '%s: missing axiom-gate: ok marker\n' "$TOOL" >&2
+    exit 1
+fi
