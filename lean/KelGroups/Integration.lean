@@ -188,7 +188,7 @@ def applyIntegratedEvent
       | .ok () =>
           let proposalId := integration.digest proposal
           let pending : PendingBase :=
-            { mutation, proposer := signer, approvals := [signer] }
+            { mutation, proposer := signer, approvals := [] }
           tryEnactBase integration
             { gs with pendingBase := assocInsert proposalId pending gs.pendingBase }
             proposalId
