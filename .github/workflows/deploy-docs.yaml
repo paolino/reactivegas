@@ -7,6 +7,7 @@ on:
     paths:
       - 'docs/**'
       - 'mkdocs.yml'
+      - 'economics-simulator.html'
   workflow_dispatch:
 
 permissions:
@@ -33,6 +34,17 @@ jobs:
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
       - name: Build docs
         run: nix --quiet develop --command mkdocs build
+      - name: Copy the tracked simulator and bind the bytes
+        run: |
+          set -euo pipefail
+          mkdir -p site/simulator
+          cp economics-simulator.html site/simulator/index.html
+          src=$(sha256sum economics-simulator.html | cut -d" " -f1)
+          dst=$(sha256sum site/simulator/index.html | cut -d" " -f1)
+          printf "tracked source sha256 %s\n" "$src"
+          printf "copied asset   sha256 %s\n" "$dst"
+          test "$src" = "$dst"
+          cmp economics-simulator.html site/simulator/index.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
