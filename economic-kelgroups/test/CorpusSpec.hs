@@ -10,6 +10,7 @@ the replay and are never stepped as successful no-ops.
 -}
 module CorpusSpec (spec) where
 
+import Control.Applicative ((<|>))
 import Control.Monad (filterM, forM_)
 import Data.Aeson (
     FromJSON (..),
