@@ -292,6 +292,10 @@ const CLICK = sel => `
 
 async function run() {
   const src = readFileSync(HTML, 'utf8');
+  // execution prerequisite for GREEN: declared at function scope so the
+  // guard after the browser block reads it (a block-scoped flag here
+  // throws ReferenceError instead of detecting omission).
+  let geoRan = false;
 
   /* ---- derive: the extent is computed from the page source (D3) ---- */
   const ext = deriveExtent(src);
@@ -577,7 +581,6 @@ async function run() {
       'H-vocab: vocabolario legacy assente dal testo visibile');
     console.log('witness H-vocab: full-text scan without .mono/#pop/.toast erasure');
 
-    let geoRan = false;
     /* ---- geometry rows: observable enforcement on the ordinary suite ----
        Every row prints its MEASURED numbers as it checks them, so the
        retained log carries execution evidence. geoRan gates GREEN: a
