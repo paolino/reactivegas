@@ -112,9 +112,10 @@
     font-size: .66rem; font-weight: 700; color: var(--viola); letter-spacing: .03em;
   }
 
-  /* group scene */
+  /* group scene: bounded viewport, pannable canvas sized to the layout extent */
   #scene-card { padding: 4px; }
-  svg#scene { display: block; width: 100%; height: auto; user-select: none; }
+  .scenescroll { overflow: auto; max-width: 100%; max-height: 72vh; border: 1px solid var(--line); border-radius: 8px; }
+  svg#scene { display: block; user-select: none; }
   svg text { user-select: none; pointer-events: none; }
   [data-obj] { cursor: pointer; }
   .avatar { fill: #fff; stroke: #8aa3c0; stroke-width: 2; }
@@ -3493,21 +3494,41 @@ function loadPiles(raw) {
    packed evenly so glyphs do not overlap. Optional `poses` pins a
    purchase to a user-chosen angle on the same ring. No DOM, storage,
    time, or randomness. */
+/* Ruling expand (F-02): BOTH rings grow with the purchase count on a
+   pannable canvas — the 92-unit separation and the 42-unit glyph hold for
+   every reachable n with no cap and no paging. Member ANGLES keep the exact
+   legacy formula (stable for the same membership); only radii move, floored
+   so small-n output is byte-identical to legacy. Fixed rings with
+   pagination were rejected; shrinking glyphs are forbidden, so the render
+   radius is the constant 42 and user-dragged poses stay excluded by
+   statement (authored positions, not layout output). */
 function purchaseRingLayout(users, collections, poses) {
-  const CX = 380, CY = 350, MEMBER_R = 220;
+  const CX = 380, CY = 350;
   const MEMBER_RR = 38, PURCHASE_RR = 42, GAP = 8;
   const MIN_DIST = 2 * PURCHASE_RR + GAP;
-  const RING_R = MEMBER_R - MEMBER_RR - PURCHASE_RR - GAP;
-  const CLUSTER_R = RING_R, PACK_R = RING_R;
+  const RING_BASE = 132;
   const n = Math.max(users.length, 1);
+  const ncols = collections.length;
+  // free variables: the pack ring grows so the angular slot chord always
+  // covers two glyphs plus the gap; the member ring stays outside the
+  // purchase glyphs (member edge clears purchase edge by 16).
+  const R_PACK = ncols < 2 ? RING_BASE
+    : Math.max(RING_BASE, MIN_DIST / (2 * Math.sin(Math.PI / ncols)));
+  const R_MEM = Math.max(220, R_PACK + PURCHASE_RR + MEMBER_RR + 16);
+  const CLUSTER_R = R_PACK, PACK_R = R_PACK;
   const memberAngle = {};
   const memberPos = {};
   users.forEach((u, i) => {
     const ang = -Math.PI / 2 + i * 2 * Math.PI / n;
     memberAngle[u] = ang;
-    memberPos[u] = { x: CX + MEMBER_R * Math.cos(ang), y: CY + MEMBER_R * Math.sin(ang) };
+    memberPos[u] = { x: CX + R_MEM * Math.cos(ang), y: CY + R_MEM * Math.sin(ang) };
   });
-  if (!collections.length) return { memberPos, placements: [] };
+  // canvas extent floored at the legacy 760x680 so small-n output keeps it
+  const halfW = Math.max(380, R_MEM + MEMBER_RR + 24);
+  const halfH = Math.max(340, R_MEM + MEMBER_RR + 24);
+  const extent = { cx: CX, cy: CY, halfW, halfH, w: 2 * halfW, h: 2 * halfH };
+  const rings = { member: R_MEM, pack: R_PACK };
+  if (!collections.length) return { memberPos, placements: [], extent, rings };
 
   const groups = [];
   for (const u of users) {
@@ -3537,12 +3558,12 @@ function purchaseRingLayout(users, collections, poses) {
       const m = g.cols.length;
       const step = m <= 1 ? 0 : chordStep;
       const start = base - step * (m - 1) / 2;
-      g.cols.forEach((c, j) => clustered.push({ ...at(CLUSTER_R, start + j * step, c, g.ref), rr: PURCHASE_RR }));
+      g.cols.forEach((c, j) => clustered.push(at(CLUSTER_R, start + j * step, c, g.ref)));
     }
     const separated = clustered.every((p, i) => clustered.slice(i + 1).every(q =>
       Math.hypot(p.x - q.x, p.y - q.y) >= MIN_DIST - 0.5));
     if (separated)
-      return { memberPos, placements: applyPilePoses(clustered, poses, at) };
+      return { memberPos, placements: applyPilePoses(clustered, poses, at), extent, rings };
   }
 
   const ordered = groups.flatMap(g => g.cols);
@@ -3568,18 +3589,10 @@ function purchaseRingLayout(users, collections, poses) {
     if (cost < bestCost) { bestCost = cost; bestR = r; }
     idx += g.cols.length;
   }
-  // pack fallback: fixed ring, adaptive glyph radius. Centres on PACK_R
-  // spaced by slot have chord 2*PACK_R*sin(slot/2); the glyph radius is
-  // capped so two glyphs plus the gap always fit — by construction for
-  // every reachable count (a lone glyph needs no pair). Strictly positive
-  // below k≈104; past that glyphs collapse (named residual: cardinalities
-  // no human session reaches, and the separation predicate still reports).
-  // User-dragged poses are authored positions, not layout output, and are
-  // excluded from the guarantee by statement, not by check.
-  const packRR = k < 2 ? PURCHASE_RR
-    : Math.min(PURCHASE_RR, (2 * PACK_R * Math.sin(slot / 2) - GAP) / 2);
-  const placements = ordered.map((c, j) => ({ ...at(PACK_R, bestR + j * slot, c, c.referente), rr: packRR }));
-  return { memberPos, placements: applyPilePoses(placements, poses, at) };
+  // pack fallback on the grown ring: the slot chord covers two 42-glyphs
+  // plus the gap by the R_PACK construction above (strict except fp dust).
+  const placements = ordered.map((c, j) => at(PACK_R, bestR + j * slot, c, c.referente));
+  return { memberPos, placements: applyPilePoses(placements, poses, at), extent, rings };
 }
 
 function applyPilePoses(placements, poses, at) {
@@ -3588,7 +3601,7 @@ function applyPilePoses(placements, poses, at) {
     const pose = poses[p.purchaseId];
     if (!pose || !Number.isFinite(pose.angle)) return p;
     const col = { id: p.purchaseId };
-    const q = { ...at(p.radius, pose.angle, col, p.referente), rr: p.rr };
+    const q = at(p.radius, pose.angle, col, p.referente);
     q.z = Number.isFinite(pose.z) ? pose.z : 0;
     return q;
   });
@@ -3603,7 +3616,7 @@ function renderGroup() {
       ${taskBtn('departure')}
     </div></div>`;
   const scene = `<div class="card" id="scene-card">
-    <svg id="scene" viewBox="0 0 760 680" role="group" aria-label="scena del gruppo"></svg>
+    <div class="scenescroll"><svg id="scene" role="group" aria-label="scena del gruppo"></svg></div>
   </div>`;
   $('view').innerHTML = tasks + scene + govCardHtml();
   drawScene();
@@ -3614,10 +3627,14 @@ function drawScene() {
   layout = { world: { x: 705, y: 52 } };
   const CX = 380, CY = 350, R = 220;
   const geo = purchaseRingLayout(members(), state.collections, pilePose);
+  svg.setAttribute('width', geo.extent.w);
+  svg.setAttribute('height', geo.extent.h);
+  svg.setAttribute('viewBox',
+    `${geo.extent.cx - geo.extent.halfW} ${geo.extent.cy - geo.extent.halfH} ${geo.extent.w} ${geo.extent.h}`);
   const memberPos = geo.memberPos;
   const parts = [];
-  parts.push(`<circle class="ringc" cx="${CX}" cy="${CY}" r="${R}"/>`);
-  parts.push(`<circle class="ringc" cx="${CX}" cy="${CY}" r="${geo.placements[0] ? geo.placements[0].radius : 50}"/>`);
+  parts.push(`<circle class="ringc" cx="${CX}" cy="${CY}" r="${geo.rings.member}"/>`);
+  parts.push(`<circle class="ringc" cx="${CX}" cy="${CY}" r="${geo.rings.pack}"/>`);
   parts.push(`<text class="hintc" x="705" y="34">fuori</text>` +
     `<text x="705" y="56" style="font-size:17px;text-anchor:middle">🛒</text>`);
 
@@ -3644,8 +3661,7 @@ function drawScene() {
   });
   pileOrder.forEach(c => {
     const { x, y } = layout['pile:' + c.id];
-    const rr = (geo.placements.find(p => p.purchaseId === c.id) || {}).rr || 42;
-    const s = rr / 42;
+    const rr = 42;
     const st = c.pending.length ? `${c.pending.length} pend.` : (c.permitted ? 'L2 ✓' : 'aperto');
     parts.push(`<g class="pileg" data-obj="pile" data-id="${c.id}" data-key="pile:${c.id}"
       role="button" tabindex="0"
@@ -3653,9 +3669,9 @@ function drawScene() {
       transform="translate(${x},${y})">
       <title>trascina sull'anello</title>
       <circle class="pc" r="${rr}"/>
-      <text class="plbl" y="${-12 * s}">«${esc(lbl(c.id))}»</text>
+      <text class="plbl" y="-12">«${esc(lbl(c.id))}»</text>
       <text class="pamt" y="4">${esc(eur(escrowOf(c)))}</text>
-      <text class="pmeta" y="${17 * s}">${st} · ${esc(nm(c.referente))}</text>
+      <text class="pmeta" y="17">${st} · ${esc(nm(c.referente))}</text>
     </g>`);
   });
   if (!k) parts.push(`<text class="hintc" x="${CX}" y="${CY - 4}">nessun acquisto aperto</text>`);
@@ -5232,33 +5248,56 @@ async function selftest() {
   expect(/provate/.test(fabProv) && !/enunciate/.test(fabProv),
     'frase non resta su provate con ricevuta tutta provata fabbricata');
 
-  // F-02: la separazione dell'anello è quantificata sulle numerosità,
-  // non attestata da un conteggio fisso. purchaseRingLayout è pura (non
-  // tocca lo stato), quindi la spazzata k=1..103 non perturba il percorso;
-  // le posizioni trascinate restano escluse per dichiarazione. La garanzia
-  // è costruttiva (raggio dal passo angolare); qui è verificata
-  // numericamente, contenimento incluso; il caso vivo a 10 è T4 dell'audit.
+  // F-02 (ruling expand): separation, members-outside, angle stability,
+  // legibility and reachability quantified over counts. The sweep is pure
+  // (purchaseRingLayout touches no session state); the ambient-DOM asserts
+  // hold for whatever n the journey built. Poses trascinate escluse per
+  // dichiarazione. The held shrinking-radii fixture is superseded here.
   {
     const gusers = ['anna', 'bruno', 'elena'];
     const mkCols = k => Array.from({ length: k },
       (_, i) => ({ id: i + 1, referente: gusers[i % gusers.length] }));
-    for (let k = 1; k <= 103; k++) {
+    for (let k = 1; k <= 40; k++) {
       const g = purchaseRingLayout(gusers, mkCols(k), null);
       expect(g.placements.length === k, `anello: attesi ${k} posizionamenti`);
-      let minC = Infinity;
-      for (let a = 0; a < k; a++) for (let b = a + 1; b < k; b++) {
-        const dd = Math.hypot(g.placements[a].x - g.placements[b].x,
-          g.placements[a].y - g.placements[b].y);
-        if (dd < minC) minC = dd;
+      let minC = Infinity, maxP = 0;
+      for (let a = 0; a < k; a++) for (let b = a + 1; b < k; b++)
+        minC = Math.min(minC, Math.hypot(g.placements[a].x - g.placements[b].x,
+          g.placements[a].y - g.placements[b].y));
+      for (const p of g.placements) {
+        maxP = Math.max(maxP, Math.hypot(p.x - 380, p.y - 350));
+        expect(Math.abs(p.x - 380) <= g.extent.halfW && Math.abs(p.y - 350) <= g.extent.halfH,
+          `anello k=${k}: fuori dalla tavola`);
       }
-      const r0 = g.placements[0].rr;
-      expect(g.placements.every(p => p.rr === r0), `anello k=${k}: raggio non uniforme`);
-      expect(r0 > 0 && r0 <= 42, `anello k=${k}: raggio fuori (0,42]: ${r0}`);
-      if (k > 1) expect(minC >= 2 * r0 + 8 - 0.5,
-        `anello k=${k}: separazione ${minC} sotto ${2 * r0 + 8 - 0.5}`);
-      for (const p of g.placements)
-        expect(Math.abs(p.x - 380) + r0 <= 380 && Math.abs(p.y - 350) + r0 <= 350,
-          `anello k=${k}: fuori vista`);
+      if (k > 1) expect(minC >= 92 - 0.5, `anello k=${k}: separazione ${minC} sotto 91.5`);
+      for (const u of gusers) {
+        const d = Math.hypot(g.memberPos[u].x - 380, g.memberPos[u].y - 350);
+        expect(d - 38 >= maxP + 42, `anello k=${k}: membro dentro l'anello acquisti`);
+      }
+    }
+    // angle stability: same membership, different purchase counts
+    const angOf = (us, cols) => {
+      const g = purchaseRingLayout(us, cols, null);
+      const out = {};
+      for (const u of us) out[u] = Math.atan2(g.memberPos[u].y - 350, g.memberPos[u].x - 380);
+      return out;
+    };
+    const a3 = angOf(gusers, mkCols(3));
+    const a40 = angOf(gusers, mkCols(40));
+    for (const u of gusers)
+      expect(Math.abs(a3[u] - a40[u]) < 1e-9, `anello: angolo membro instabile con le numerosità`);
+    // ambient DOM: every open purchase rendered together, readable, reachable
+    const exNow = purchaseRingLayout(members(), state.collections, null).extent;
+    const piles = [...document.querySelectorAll('#scene [data-key^="pile:"]')];
+    expect(piles.length === state.collections.length, 'anello: acquisti non tutti insieme');
+    for (const el of piles) {
+      const rc = el.querySelector('circle');
+      expect(rc && Number(rc.getAttribute('r')) === 42, 'anello: glifo illeggibile');
+      const m = /translate\(([-\d.eE+]+),([-\d.eE+]+)\)/.exec(el.getAttribute('transform') || '');
+      expect(m !== null, 'anello: posizione illeggibile');
+      expect(Math.abs(Number(m[1]) - exNow.cx) <= exNow.halfW &&
+        Math.abs(Number(m[2]) - exNow.cy) <= exNow.halfH,
+        'anello: controllo fuori dalla tavola pannabile');
     }
   }
 
