@@ -60,6 +60,8 @@ import Reactivegas
 import Reactivegas.Mirrors
 import KelGroups.Mirrors
 import Reactivegas.CorpusExport
+import Reactivegas.CorpusGate
+import Reactivegas.TraceTests
 
 -- V4 exception evidence: definitional identity (EQ form, closes by rfl).
 example (theta : KelGroups.Vote.Threshold) (view : KelGroups.GroupView)
