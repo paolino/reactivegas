@@ -150,7 +150,8 @@ def s4bCorrTable : Array (String × Option String × String) := #[
   ("KelGroups.Vote.VoteWellFormed", some "KelGroups.Vote.voteWellFormedB", "KelGroups.Vote.voteWellFormed_corr")]
 
 /-- Separately named legitimate exceptions (V4, P11, R0 definitional or
-executable evidence above; P13 bounded, no oracle required). -/
+executable evidence above; P13 bounded per ruling RG-S4-REACH-20260906, which
+holds arbitrary-state decision NOT-REQUIRED — not undecidability). -/
 def s4bExceptions : Array String :=
   #["KelGroups.Vote.PreservesQuestionSemantics", "authorizedStep", "stalled", "Reach"]
 

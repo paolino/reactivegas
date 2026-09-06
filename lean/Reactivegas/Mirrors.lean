@@ -27,9 +27,10 @@ Named exceptions (covered by `scripts/check-lean-mirrors`, not here):
 * `authorizedStep` (P11) — definitional projection onto the existing
   `isResponsabile`; per-constructor relating evidence lives in the checker;
 * `stalled` (R0) — already executable (`stalledDecidable`, and it evaluates);
-* `Reach` (P13) — NOT-EXECUTABLE, bounded: no arbitrary-`Reach` oracle is
-  required under the standing boundary, and that lack is not an
-  undecidability proof.
+* `Reach` (P13) — NOT-EXECUTABLE, bounded: per ruling RG-S4-REACH-20260906 an
+  arbitrary-state decision procedure is NOT-REQUIRED for this milestone (the
+  required observable is finite-history validation, owned as S5); not an
+  undecidability claim and not inferred from absent callers.
 -/
 
 /-- Membership in an association list yields a lookup hit (no `Nodup` needed). -/
