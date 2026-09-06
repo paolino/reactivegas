@@ -21,6 +21,7 @@ import MoneyCustodySpec (
     Outcome (..),
     donateSignerFaultQueries,
     frame,
+    memberFaultKey,
     memberFaultQueries,
     oracle,
     realQueries,
@@ -50,7 +51,9 @@ depositControl =
         oracle Refused mutant `shouldBe` False
         putStrLn
             ( "CONTROL arm=deposit guard=memberQuery(user)"
-                <> " mutation=memberQuery:=(const True)"
+                <> " mutation=memberQuery("
+                <> show memberFaultKey
+                <> "):=True;others=unchanged"
                 <> " witness=deposit 5 to nonmember 9 by admin 2"
                 <> " baseline=Nothing mutant=applied-just"
                 <> " oracle-rejection=yes"
@@ -72,7 +75,9 @@ withdrawControl =
         oracle Refused mutant `shouldBe` False
         putStrLn
             ( "CONTROL arm=withdraw guard=memberQuery(user)"
-                <> " mutation=memberQuery:=(const True)"
+                <> " mutation=memberQuery("
+                <> show memberFaultKey
+                <> "):=True;others=unchanged"
                 <> " witness=withdraw 5 from funded nonmember 9 by admin 2"
                 <> " baseline=Nothing mutant=Just(State [(9,45)] [(2,-5)] frame)"
                 <> " oracle-rejection=yes"

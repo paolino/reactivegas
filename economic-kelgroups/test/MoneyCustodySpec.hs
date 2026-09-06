@@ -12,6 +12,7 @@ module MoneyCustodySpec (
     frame,
     adminView,
     realQueries,
+    memberFaultKey,
     memberFaultQueries,
     transferSignerFaultQueries,
     donateSignerFaultQueries,
@@ -70,10 +71,13 @@ realQueries :: Queries
 realQueries = queriesFromView adminView
 
 -- | Fault-injected boundary: only the member query is mutated.
+memberFaultKey :: Key
+memberFaultKey = "9"
+
 memberFaultQueries :: Queries
 memberFaultQueries =
     realQueries
-        { memberQuery = \key -> key == "9" || memberQuery realQueries key
+        { memberQuery = \key -> key == memberFaultKey || memberQuery realQueries key
         }
 
 -- | Fault-injected boundary: only the transfer signer's admin answer changes.
@@ -171,6 +175,29 @@ withdrawSpec =
         it "refuses while the comune account is stalled" $
             apply (State [("comune", -1), ("1", 40)] [] frame) "2" (Withdraw "1" 10)
                 `shouldBe` Nothing
+        it "uses the first duplicate user balance when it is insufficient" $
+            apply (State [("1", 5), ("1", 100)] [] frame) "2" (Withdraw "1" 10)
+                `shouldBe` Nothing
+        it "uses and updates only the first sufficient duplicate user balance" $
+            apply (State [("1", 20), ("1", -100)] [] frame) "2" (Withdraw "1" 10)
+                `shouldBe` Just (State [("1", 10), ("1", -100)] [("2", -10)] frame)
+        it "uses the first negative duplicate comune balance to detect a stall" $
+            apply
+                (State [("comune", -1), ("comune", 100), ("1", 20)] [] frame)
+                "2"
+                (Withdraw "1" 10)
+                `shouldBe` Nothing
+        it "uses the first nonnegative duplicate comune balance" $
+            apply
+                (State [("comune", 1), ("comune", -100), ("1", 20)] [] frame)
+                "2"
+                (Withdraw "1" 10)
+                `shouldBe` Just
+                    ( State
+                        [("comune", 1), ("comune", -100), ("1", 10)]
+                        [("2", -10)]
+                        frame
+                    )
 
 transferSpec :: Spec
 transferSpec =

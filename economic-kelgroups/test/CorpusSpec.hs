@@ -53,6 +53,19 @@ data SelectedEvent
 data CorpusResult
     = AppliedResult (State Value)
     | RefusedResult Text Text
+    deriving (Show)
+
+expectedRefusalGuard :: CustodyEvent -> (Text, Text)
+expectedRefusalGuard event = case event of
+    Deposit _ _ -> ("deposit", "step_deposit_inv")
+    Withdraw _ _ -> ("withdraw", "step_withdraw_inv")
+    TransferCassa _ _ -> ("transferCassa", "step_transferCassa_inv")
+    Donate _ -> ("donate", "step_donate_inv")
+
+refusalMatches :: CustodyEvent -> CorpusResult -> Bool
+refusalMatches event result = case result of
+    RefusedResult gid decl -> (gid, decl) == expectedRefusalGuard event
+    AppliedResult _ -> False
 
 data RawStep = RawStep
     { rsName :: Text
@@ -246,10 +259,9 @@ replayStep view loc s = case rsEvent s of
                 conti got `shouldBe` conti want
                 casse got `shouldBe` casse want
                 untouched got `shouldBe` untouched want
-        RefusedResult gid decl -> do
+        RefusedResult _ _ -> do
             stepInView view (rsInput s) signer ev `shouldBe` Nothing
-            gid `shouldBe` rsName s
-            decl `shouldSatisfy` not . T.null
+            rsResult s `shouldSatisfy` refusalMatches ev
 
 spec :: Spec
 spec = before loadCorpus $
@@ -282,6 +294,26 @@ spec = before loadCorpus $
             forM_
                 (filter (isSelected . rsName . thirdOf) steps)
                 (\s@(_, _, raw) -> replayStep view (fst3 s, snd3 s) raw)
+        it "rejects wrong nonempty refusal guard identities" $ \(_, steps) -> do
+            let refusals =
+                    [ (ev, gid, decl)
+                    | (_, _, raw) <- filter (isSelected . rsName . thirdOf) steps
+                    , Selected _ ev <- [rsEvent raw]
+                    , RefusedResult gid decl <- [rsResult raw]
+                    ]
+            refusals `shouldSatisfy` not . null
+            forM_ refusals $ \(ev, gid, decl) -> do
+                refusalMatches ev (RefusedResult gid decl) `shouldBe` True
+                refusalMatches ev (RefusedResult (gid <> ".wrong") decl)
+                    `shouldBe` False
+                let wrongDeclaration = decl <> ".wrong"
+                wrongDeclaration `shouldSatisfy` not . T.null
+                refusalMatches ev (RefusedResult gid wrongDeclaration)
+                    `shouldBe` False
+            putStrLn $
+                "REFUSAL-COMPARATOR-CONTROL rows="
+                    <> show (length refusals)
+                    <> " wrong-id-rejected=yes wrong-nonempty-declaration-rejected=yes"
         it "never steps an unsupported constructor as a successful no-op" $ \(_, steps) -> do
             let unsupportedNames =
                     Set.fromList
