@@ -5257,7 +5257,7 @@ async function selftest() {
     const gusers = ['anna', 'bruno', 'elena'];
     const mkCols = k => Array.from({ length: k },
       (_, i) => ({ id: i + 1, referente: gusers[i % gusers.length] }));
-    for (let k = 1; k <= 40; k++) {
+    for (let k = 1; k <= 103; k++) {
       const g = purchaseRingLayout(gusers, mkCols(k), null);
       expect(g.placements.length === k, `anello: attesi ${k} posizionamenti`);
       let minC = Infinity, maxP = 0;

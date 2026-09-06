@@ -577,6 +577,81 @@ async function run() {
       'H-vocab: vocabolario legacy assente dal testo visibile');
     console.log('witness H-vocab: full-text scan without .mono/#pop/.toast erasure');
 
+    let geoRan = false;
+    /* ---- geometry rows: observable enforcement on the ordinary suite ----
+       Every row prints its MEASURED numbers as it checks them, so the
+       retained log carries execution evidence. geoRan gates GREEN: a
+       deleted/bypassed section cannot pass silently. The planted-overlap
+       row calibrates threshold sensitivity (thresholds that cannot fail
+       are not checks). Spot counts cover the pack transition (8/9/10),
+       the old 103 boundary and small n; the page selftest sweeps 1..103. */
+    const geoEval = `() => {
+      const gusers = ['anna', 'bruno', 'elena'];
+      const mkCols = k => Array.from({ length: k },
+        (_, i) => ({ id: i + 1, referente: gusers[i % gusers.length] }));
+      const sweep = k => {
+        const g = purchaseRingLayout(gusers, mkCols(k), null);
+        let minC = Infinity, maxP = 0;
+        for (let a = 0; a < k; a++) for (let b = a + 1; b < k; b++)
+          minC = Math.min(minC, Math.hypot(g.placements[a].x - g.placements[b].x,
+            g.placements[a].y - g.placements[b].y));
+        for (const p of g.placements) {
+          maxP = Math.max(maxP, Math.hypot(p.x - 380, p.y - 350));
+          if (!(Math.abs(p.x - 380) <= g.extent.halfW && Math.abs(p.y - 350) <= g.extent.halfH))
+            return { k, fail: 'containment' };
+        }
+        if (g.placements.length !== k) return { k, fail: 'count' };
+        if (k > 1 && !(minC >= 92 - 0.5)) return { k, fail: 'separation', minC };
+        for (const u of gusers) {
+          const d = Math.hypot(g.memberPos[u].x - 380, g.memberPos[u].y - 350);
+          if (!(d - 38 >= maxP + 42)) return { k, fail: 'members-outside' };
+        }
+        return { k, minC: k > 1 ? minC : null, ok: true };
+      };
+      const rows = [1, 2, 3, 8, 9, 10, 40, 103].map(sweep);
+      const angOf = cols => {
+        const g = purchaseRingLayout(gusers, cols, null);
+        const o = {};
+        for (const u of gusers) o[u] = Math.atan2(g.memberPos[u].y - 350, g.memberPos[u].x - 380);
+        return o;
+      };
+      const a3 = angOf(mkCols(3)), a103 = angOf(mkCols(103));
+      const stable = gusers.every(u => Math.abs(a3[u] - a103[u]) < 1e-9);
+      const planted = (() => {
+        const g = purchaseRingLayout(gusers, mkCols(9), null);
+        g.placements[1].x = g.placements[0].x;
+        g.placements[1].y = g.placements[0].y;
+        let m = Infinity;
+        for (let a = 0; a < 9; a++) for (let b = a + 1; b < 9; b++)
+          m = Math.min(m, Math.hypot(g.placements[a].x - g.placements[b].x,
+            g.placements[a].y - g.placements[b].y));
+        return m;
+      })();
+      return { rows, stable, planted };
+    }`;
+    const geo = await ev(geoEval);
+    for (const r of geo.rows) {
+      if (!r.ok) red(`geometry k=${r.k}: ${r.fail}${r.minC !== undefined ? ' minC=' + r.minC : ''}`);
+      else console.log(`geometry k=${r.k}: minC=${r.minC === null ? 'none' : r.minC.toFixed(2)} separated+contained+outside`);
+    }
+    t(geo.stable, 'geometry: member angles unstable across counts');
+    console.log('geometry angles stable 3-vs-103');
+    t(geo.planted < 91.5, 'geometry omission calibration blind: planted overlap unreported');
+    console.log(`geometry planted overlap reported minC=${geo.planted.toFixed(2)}`);
+    const amb = await ev(`() => ({ n: state.collections.length, ex: purchaseRingLayout(members(), state.collections, null).extent, piles: [...document.querySelectorAll('#scene [data-key^="pile:"]')].map(el => {
+      const q = el.querySelector('circle');
+      const m = /translate\\(([-\\d.eE+]+),([-\\d.eE+]+)\\)/.exec(el.getAttribute('transform') || '');
+      return { r: q ? Number(q.getAttribute('r')) : NaN, x: m ? Number(m[1]) : NaN, y: m ? Number(m[2]) : NaN };
+    }) })`);
+    t(amb.piles.length === amb.n, `geometry: rendered ${amb.piles.length} piles for ${amb.n} collections`);
+    for (const [i, p] of amb.piles.entries()) {
+      t(p.r === 42, `geometry: pile ${i} glyph r=${p.r}, legibility floor 42`);
+      t(Math.abs(p.x - amb.ex.cx) <= amb.ex.halfW && Math.abs(p.y - amb.ex.cy) <= amb.ex.halfH,
+        `geometry: pile ${i} outside pannable reach`);
+    }
+    console.log(`geometry ambient: ${amb.piles.length}/${amb.n} piles together, r==42, in reach`);
+    geoRan = true;
+
     /* ---- reconcile: ONE ordinary check over the derived extent (D2) ---- */
     const missing = ext.required.filter(id => !witnessed.has(id));
     if (missing.length)
@@ -586,6 +661,7 @@ async function run() {
     rmQuiet(profile);
   }
 
+  if (!geoRan) red('geometry rows omitted: section did not execute');
   if (failures.length) {
     console.error(`RED: ui-gate ${HTML} — ${failures.length} righe`);
     for (const f of failures) console.error(' - ' + f);
@@ -594,7 +670,7 @@ async function run() {
   }
   console.log('GREEN: ui-gate ' + HTML + ' — ' + witnessed.size + '/' + ext.required.length +
     ' controlli derivati testimoniati; classi ' + RENDER_CLASSES.join(', ') +
-    '; K-14 irraggiungibile nominato; CollId numerici');
+    '; K-14 irraggiungibile nominato; CollId numerici; geometry executed');
 }
 
 /* --- sentence-only: fast H-1 probe for both-states flips --- */
