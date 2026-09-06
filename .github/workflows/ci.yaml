@@ -73,6 +73,11 @@ jobs:
               | xargs hlint
           '
 
+      # S90: the permanent money custody economic suite is part of the
+      # committed CI path, the same recipe `just ci` invokes additively.
+      - name: Run money custody economic suite
+        run: nix --quiet develop --command just economic-test
+
       # The compiler accepting the Lean proofs is part of the proof trust
       # boundary: reject declared/running toolchain drift before building.
       - name: Check the Lean toolchain contract

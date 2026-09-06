@@ -1,0 +1,50 @@
+cabal-version: 3.0
+name:          reactivegas-economic-kelgroups
+version:       0.1.0.0
+synopsis:      GroupView binding of the reactivegas custody core
+description:
+  Binds the pure money custody core to the accepted KelGroups substrate:
+  both queries derive from one canonical GroupView and the transition is
+  exactly the core's step under those queries. JSON dependencies stay in
+  the test component.
+
+license:       BSD-3-Clause
+author:        Paolo Veronelli
+maintainer:    Paolo Veronelli <paolo.veronelli@gmail.com>
+category:      Economics
+build-type:    Simple
+
+library
+  exposed-modules:    Reactivegas.Economic.KelGroups
+  hs-source-dirs:     src
+  default-language:   GHC2021
+  default-extensions: OverloadedStrings
+  ghc-options:        -Wall
+  build-depends:
+    , base                       >=4.18 && <5
+    , kelgroups                  >=0.1  && <0.2
+    , reactivegas-economic-core  >=0.1  && <0.2
+    , text                       >=2.0  && <2.2
+
+test-suite money-custody-tests
+  type:               exitcode-stdio-1.0
+  main-is:            Main.hs
+  other-modules:
+    CorpusSpec
+    MoneyCustodySpec
+    MutationSpec
+
+  hs-source-dirs:     test
+  default-language:   GHC2021
+  default-extensions: OverloadedStrings
+  ghc-options:        -Wall -threaded
+  build-depends:
+    , aeson                           >=2.1  && <2.3
+    , base                            >=4.18 && <5
+    , containers                      >=0.6  && <0.8
+    , directory                       >=1.3  && <1.5
+    , hspec                           >=2.11 && <2.12
+    , kelgroups                       >=0.1  && <0.2
+    , reactivegas-economic-core       >=0.1  && <0.2
+    , reactivegas-economic-kelgroups  >=0.1  && <0.2
+    , text                            >=2.0  && <2.2

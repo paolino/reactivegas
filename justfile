@@ -47,6 +47,19 @@ hlint:
         -not -path './Core/Aggiornamento.hs' \
         | xargs hlint
 
+# Execute the permanent money custody economic suite (#90 S90-CUSTODY)
+economic-test:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    start=$(date +%s.%N)
+    echo "[stage] economic-test START: cabal test money-custody-tests"
+    rc=0
+    cabal test money-custody-tests || rc=$?
+    end=$(date +%s.%N)
+    elapsed=$(awk -v a="$start" -v b="$end" 'BEGIN { printf "%.3f", b - a }')
+    echo "[stage] economic-test EXIT=${rc} ELAPSED=${elapsed}s"
+    exit "$rc"
+
 # Build all components
 build:
     #!/usr/bin/env bash
@@ -112,16 +125,30 @@ lean-corpus-verify:
     ' corpus/integrated.json > /dev/null
 
 # Full CI pipeline
+# Every stage reports its invocation, exit and elapsed cost; nothing is
+# skipped or hidden. The money custody suite runs additively (S90).
 ci:
     #!/usr/bin/env bash
     set -euo pipefail
-    just lean-toolchain-contract
-    just build
-    just format-check
-    just hlint
-    just lean
-    just lean-corpus-gate
-    just lean-corpus-verify
+    stage() {
+        local name start end elapsed rc
+        name="$1"; shift
+        start=$(date +%s.%N)
+        echo "[ci-stage] ${name} START"
+        if "$@"; then rc=0; else rc=$?; fi
+        end=$(date +%s.%N)
+        elapsed=$(awk -v a="$start" -v b="$end" 'BEGIN { printf "%.3f", b - a }')
+        echo "[ci-stage] ${name} EXIT=${rc} ELAPSED=${elapsed}s"
+        return "$rc"
+    }
+    stage lean-toolchain-contract just lean-toolchain-contract
+    stage build just build
+    stage format-check just format-check
+    stage hlint just hlint
+    stage economic-test just economic-test
+    stage lean just lean
+    stage lean-corpus-gate just lean-corpus-gate
+    stage lean-corpus-verify just lean-corpus-verify
 
 # Assert the declared Lean pin matches the toolchain that actually runs
 lean-toolchain-contract:
