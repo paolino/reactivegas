@@ -75,4 +75,69 @@ data State frame = State
 'Nothing'. There are no invented per-guard reasons.
 -}
 step :: Queries -> State frame -> Key -> CustodyEvent -> Maybe (State frame)
-step _ _ _ _ = Nothing
+step queries state signer event = case event of
+    Deposit user amount
+        | adminQuery queries signer
+            && memberQuery queries user
+            && signer /= user
+            && amount >= 0 ->
+            Just
+                state
+                    { conti = bump (conti state) user amount
+                    , casse = bump (casse state) signer amount
+                    }
+        | otherwise -> Nothing
+    Withdraw user amount
+        | adminQuery queries signer
+            && memberQuery queries user
+            && signer /= user
+            && balance (conti state) user >= amount
+            && not (stalled state) ->
+            Just
+                state
+                    { conti = bump (conti state) user (-amount)
+                    , casse = bump (casse state) signer (-amount)
+                    }
+        | otherwise -> Nothing
+    TransferCassa from amount
+        | adminQuery queries signer
+            && adminQuery queries from
+            && signer /= from
+            && amount > 0 ->
+            Just
+                state
+                    { casse =
+                        bump
+                            (bump (casse state) from (-amount))
+                            signer
+                            amount
+                    }
+        | otherwise -> Nothing
+    Donate amount
+        | adminQuery queries signer && amount > 0 ->
+            Just
+                state
+                    { conti = bump (conti state) "comune" amount
+                    , casse = bump (casse state) signer amount
+                    }
+        | otherwise -> Nothing
+
+-- | First-match balance lookup; an absent account has zero balance.
+balance :: [(Key, Integer)] -> Key -> Integer
+balance [] _ = 0
+balance ((key, amount) : rest) wanted
+    | key == wanted = amount
+    | otherwise = balance rest wanted
+
+{- | Add an amount to the first matching account, appending a new entry
+when absent. Duplicate and zero entries are retained.
+-}
+bump :: [(Key, Integer)] -> Key -> Integer -> [(Key, Integer)]
+bump [] key amount = [(key, amount)]
+bump ((key, current) : rest) wanted amount
+    | key == wanted = (key, current + amount) : rest
+    | otherwise = (key, current) : bump rest wanted amount
+
+-- | The machine is stalled exactly when the reserved comune account is negative.
+stalled :: State frame -> Bool
+stalled state = balance (conti state) "comune" < 0
