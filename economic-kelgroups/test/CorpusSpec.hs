@@ -13,6 +13,7 @@ module CorpusSpec (spec) where
 import Control.Monad (filterM, forM_)
 import Data.Aeson (
     FromJSON (..),
+    Object,
     Value (..),
     decodeFileStrict',
     withObject,
@@ -74,7 +75,7 @@ instance FromJSON Corpus where
         view <- o .: "view"
         traces <- o .: "traces"
         Corpus
-            <$> parseJSON (view :: Value)
+            <$> (unView <$> parseJSON (view :: Value))
             <*> mapM parseJSON (traces :: [Value])
 
 instance FromJSON RawTrace where
@@ -217,7 +218,7 @@ loadCorpus = do
             | (t, trace) <- zip [0 :: Int ..] (cTraces corpus)
             , (i, s) <- zip [0 :: Int ..] (rtSteps trace)
             ]
-    pure (unView corpus, steps)
+    pure (cView corpus, steps)
 
 thirdOf :: (Int, Int, RawStep) -> RawStep
 thirdOf (_, _, s) = s

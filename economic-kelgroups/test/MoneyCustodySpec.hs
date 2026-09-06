@@ -189,7 +189,7 @@ transferSpec =
             fmap
                 (\s -> (conti s, untouched s))
                 (apply (State [("1", 3)] [("1", 10)] frame) "2" (TransferCassa "1" 4))
-                `shouldBe` Just (("1", 3), frame)
+                `shouldBe` Just ([("1", 3)], frame)
 
 donateSpec :: Spec
 donateSpec =
@@ -218,9 +218,18 @@ identitySpec =
         it "keeps arbitrary unicode keys distinct without normalization" $ do
             let greek = "Κέλυφος-π"
                 greekSpaced = "Κέλυφος-π "
-            apply (State [] [] frame) "2" (Deposit greek 7)
+                greekMember = Member greek "greek@trace" Set.empty
+                spacedMember = Member greekSpaced "spaced@trace" Set.empty
+                uniExtras =
+                    Map.fromList
+                        [ (greek, greekMember)
+                        , (greekSpaced, spacedMember)
+                        ]
+                uniView = GroupView (Map.union uniExtras (gvMembers adminView))
+                uniApply = stepInView uniView
+            uniApply (State [] [] frame) "2" (Deposit greek 7)
                 `shouldBe` Just (State [(greek, 7)] [("2", 7)] frame)
-            apply (State [(greek, 7)] [] frame) "2" (Deposit greekSpaced 1)
+            uniApply (State [(greek, 7)] [] frame) "2" (Deposit greekSpaced 1)
                 `shouldBe` Just (State [(greek, 7), (greekSpaced, 1)] [("2", 1)] frame)
         it "carries large integer amounts exactly" $
             apply (State [] [] frame) "2" (Deposit "1" (10 ^ (40 :: Int)))
