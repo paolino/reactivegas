@@ -48,7 +48,7 @@ TRACKED_LEAN=$(git -C "$HERE/.." ls-files -- 'lean' | grep -E '\.lean$' | sort |
   rel=${f#lean/}; [ "$rel" = lakefile.lean ] && continue
   printf '%s\n' "${rel%.lean}" | tr '/' '.'
 done)
-TRACKED_LIT=$(printf '%s\n' "$TRACKED_LEAN" | sed 's/.*/"&"/' | paste -sd' ' -)
+TRACKED_LIT=$(printf '%s\n' "$TRACKED_LEAN" | sed 's/.*/"&"/' | paste -sd, -)
 cat > "$DRIVER" <<'LEAN_EOF'
 -- S4-B mandatory mirror checker driver (heredoc-embedded, not a repo file).
 -- Contract: scripts/check-lean-mirrors header comment. This driver defines no
@@ -162,8 +162,6 @@ only: mention is not use, and neither is sensitivity, which is established by
 O5 (mandatory path) and OT2 (isolation). -/
 def s4bPromotedTable : Array String := #["view_mem_of_isMember", "isMember_of_view_mem"]
 
-open Lean Elab Command Meta in
-run_cmd do
 partial def s4bHarvestConsts (e : Lean.Expr) (acc : Array Lean.Name) : Array Lean.Name :=
   match e with
   | .const n _ => if acc.contains n then acc else acc.push n
@@ -180,7 +178,10 @@ script (see TRACKED_LIT). Authority for provenance-based ownership and the
 import-reach completeness check. This is derived live, never a frozen list:
 a future owned module appears here automatically and either resolves (imported)
 or fires the reach gap loudly. -/
-def s4bTrackedModules : Array String := #__TRACKED_MODULES__
+def s4bTrackedModules : Array String := #[__TRACKED_MODULES__]
+
+open Lean Elab Command Meta in
+run_cmd do
   let env ← getEnv
   let mods := env.header.moduleNames
   let nonce ← IO.getEnv "S4B_MIRROR_NONCE"
