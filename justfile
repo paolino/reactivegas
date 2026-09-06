@@ -63,6 +63,10 @@ lean:
     scripts/check-lean-axioms
     scripts/check-trace-coverage-agreement
     cd lean && lake build
+    cd "{{ justfile_directory() }}"
+    date +%s%N > lean/.lake/s4b-mirror-nonce
+    scripts/check-lean-mirrors
+    grep -q "nonce=$(cat lean/.lake/s4b-mirror-nonce)" lean/.lake/s4b-mirror-receipt && grep -q '^MIRROR-CHECK-OK' lean/.lake/s4b-mirror-receipt || (echo 'MIRROR-RECEIPT-ABSENT: checker did not operate' >&2; exit 1)
 
 # Execute the shipped integrated-corpus evaluator and require exact `true`
 lean-corpus-gate:
@@ -165,3 +169,9 @@ serve-docs:
 build-docs:
     #!/usr/bin/env bash
     mkdocs build
+
+# Verify S4-B Prop/Bool mirror correspondence (mandatory; S4-B lane owns these lines)
+lean-mirrors:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    scripts/check-lean-mirrors
