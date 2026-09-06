@@ -19,11 +19,12 @@ import Test.Hspec
 
 import MoneyCustodySpec (
     Outcome (..),
-    adminFaultQueries,
+    donateSignerFaultQueries,
     frame,
     memberFaultQueries,
     oracle,
     realQueries,
+    transferSignerFaultQueries,
  )
 
 spec :: Spec
@@ -85,14 +86,14 @@ transferControl =
         let start = State [] [("1", 100), ("2", 50)] frame
             witness = TransferCassa "1" 30
             baseline = step realQueries start "2" witness
-            mutant = step adminFaultQueries start "2" witness
+            mutant = step transferSignerFaultQueries start "2" witness
         baseline `shouldBe` Just (State [] [("1", 70), ("2", 80)] frame)
         oracle (Applied [] [("1", 70), ("2", 80)] frame) baseline `shouldBe` True
         mutant `shouldBe` Nothing
         oracle (Applied [] [("1", 70), ("2", 80)] frame) mutant `shouldBe` False
         putStrLn
             ( "CONTROL arm=transferCassa guard=adminQuery(signer)"
-                <> " mutation=adminQuery:=(const False)"
+                <> " mutation=adminQuery(2):=False;adminQuery(1):=unchanged"
                 <> " witness=transfer 30 from cash 1 to admin signer 2"
                 <> " baseline=Just(State [] [(1,70),(2,80)] frame)"
                 <> " mutant=Nothing oracle-rejection=yes"
@@ -106,14 +107,14 @@ donateControl =
         let start = State [("comune", -5)] [] frame
             witness = Donate 10
             baseline = step realQueries start "1" witness
-            mutant = step adminFaultQueries start "1" witness
+            mutant = step donateSignerFaultQueries start "1" witness
         baseline `shouldBe` Just (State [("comune", 5)] [("1", 10)] frame)
         oracle (Applied [("comune", 5)] [("1", 10)] frame) baseline `shouldBe` True
         mutant `shouldBe` Nothing
         oracle (Applied [("comune", 5)] [("1", 10)] frame) mutant `shouldBe` False
         putStrLn
             ( "CONTROL arm=donate guard=adminQuery(signer)"
-                <> " mutation=adminQuery:=(const False)"
+                <> " mutation=adminQuery(1):=False;others=unchanged"
                 <> " witness=donate 10 by admin 1 over comune -5"
                 <> " baseline=Just(State [(comune,5)] [(1,10)] frame)"
                 <> " mutant=Nothing oracle-rejection=yes"

@@ -13,7 +13,8 @@ module MoneyCustodySpec (
     adminView,
     realQueries,
     memberFaultQueries,
-    adminFaultQueries,
+    transferSignerFaultQueries,
+    donateSignerFaultQueries,
     oracle,
 ) where
 
@@ -70,11 +71,24 @@ realQueries = queriesFromView adminView
 
 -- | Fault-injected boundary: only the member query is mutated.
 memberFaultQueries :: Queries
-memberFaultQueries = realQueries{memberQuery = const True}
+memberFaultQueries =
+    realQueries
+        { memberQuery = \key -> key == "9" || memberQuery realQueries key
+        }
 
--- | Fault-injected boundary: only the admin query is mutated.
-adminFaultQueries :: Queries
-adminFaultQueries = realQueries{adminQuery = const False}
+-- | Fault-injected boundary: only the transfer signer's admin answer changes.
+transferSignerFaultQueries :: Queries
+transferSignerFaultQueries =
+    realQueries
+        { adminQuery = \key -> key /= "2" && adminQuery realQueries key
+        }
+
+-- | Fault-injected boundary: only the donation signer's admin answer changes.
+donateSignerFaultQueries :: Queries
+donateSignerFaultQueries =
+    realQueries
+        { adminQuery = \key -> key /= "1" && adminQuery realQueries key
+        }
 
 {- | Complete expected result at the comparison boundary: the one refusal,
 or the complete applied state including conti, casse and the frame.
