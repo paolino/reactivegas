@@ -25,7 +25,20 @@ jobs:
     if: github.event.action != 'closed'
     runs-on: nixos
     steps:
+      # bind to the PR HEAD, not the default merge commit: the preview must
+      # serve the bytes of the head the reviewer is looking at
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Confirm the checkout is the PR head
+        run: |
+          set -euo pipefail
+          got=$(git rev-parse HEAD)
+          want=${{ github.event.pull_request.head.sha }}
+          printf "checked out %s\n" "$got"
+          printf "PR head     %s\n" "$want"
+          test "$got" = "$want"
 
       - uses: cachix/cachix-action@v17
         with:
