@@ -1,0 +1,91 @@
+name: Simulator PR preview
+
+# Publishes the docs site plus the tracked economics-simulator.html to the
+# shared PR-preview service, so the simulator can be tested from a real URL
+# instead of a local server. Delivery only: it never rebuilds or regenerates
+# the simulator, it copies the tracked file byte-for-byte.
+
+on:
+  pull_request:
+    branches: [master]
+    types: [opened, synchronize, reopened, closed]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: simulator-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    name: Build and publish simulator preview
+    if: github.event.action != 'closed'
+    runs-on: nixos
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: cachix/cachix-action@v17
+        with:
+          name: paolino
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+
+      - name: Build docs into preview-site
+        run: nix --quiet develop --command mkdocs build --site-dir preview-site
+
+      - name: Copy the tracked simulator and bind the bytes
+        run: |
+          set -euo pipefail
+          mkdir -p preview-site/simulator
+          cp economics-simulator.html preview-site/simulator/index.html
+          src=$(sha256sum economics-simulator.html | cut -d' ' -f1)
+          dst=$(sha256sum preview-site/simulator/index.html | cut -d' ' -f1)
+          printf 'tracked source sha256 %s\n' "$src"
+          printf 'copied asset   sha256 %s\n' "$dst"
+          # the copy must be the tracked file, not a rebuild of it
+          test "$src" = "$dst"
+          cmp economics-simulator.html preview-site/simulator/index.html
+          printf 'bytes %s\n' "$(wc -c < economics-simulator.html)"
+
+      - uses: paolino/dev-assets/static-preview@main
+        with:
+          path: preview-site
+
+      - name: Smoke the LIVE preview URL
+        run: |
+          set -euo pipefail
+          url="https://preview.dev.plutimus.com/paolino/reactivegas/pr-${{ github.event.pull_request.number }}/simulator/"
+          want_sha=$(sha256sum economics-simulator.html | cut -d' ' -f1)
+          want_bytes=$(wc -c < economics-simulator.html)
+          printf 'smoking %s\n' "$url"
+          # publication is not instantaneous; retry before declaring failure
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /tmp/served.html -w '%{http_code}' "$url" || echo 000)
+            if [ "$code" = "200" ]; then break; fi
+            printf '  attempt %s: status %s, retrying\n' "$i" "$code"
+            sleep 10
+          done
+          test "$code" = "200"
+          got_sha=$(sha256sum /tmp/served.html | cut -d' ' -f1)
+          got_bytes=$(wc -c < /tmp/served.html)
+          title=$(grep -o '<title>[^<]*' /tmp/served.html | head -1 | cut -c8-)
+          printf 'status %s\n' "$code"
+          printf 'bytes  served %s want %s\n' "$got_bytes" "$want_bytes"
+          printf 'sha256 served %s\n' "$got_sha"
+          printf 'sha256 want   %s\n' "$want_sha"
+          printf 'title  %s\n' "$title"
+          # the LIVE response must be the tracked bytes; a local server is not evidence
+          test "$got_bytes" = "$want_bytes"
+          test "$got_sha" = "$want_sha"
+          printf '%s' "$title" | grep -q 'Reactivegas'
+
+  cleanup:
+    name: Remove simulator preview
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: nixos
+    steps:
+      - uses: paolino/dev-assets/static-preview@main
+        with:
+          mode: cleanup
