@@ -1,0 +1,8 @@
+accepted events persist with readable rows
+two appends conserve state, rows, length and replay
+concurrent appends conserve every committed transition
+faulting codec from member throws observably
+faulting codec from nonmember keeps exact refusal
+faulting codec leaves zero state, counts and rows
+domain-invalid add never appends a byte
+nonmember append persists nothing byte-identical

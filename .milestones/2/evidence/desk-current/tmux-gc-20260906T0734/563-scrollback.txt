@@ -1,0 +1,506 @@
+• Ran sed -n '1,30p' /home/paolino/.codex/memories/MEMORY.md
+  │ rg --files -g AGENTS.md /code /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r2 2>/dev/null | rg '(^/code/AGENTS.md|reactivegas-66-s4b-audit2)'
+  └ (no output)
+
+• Explored
+  └ Read SKILL.md
+
+• Ran rg -n 'onward|backlog|census|CLASSIFICATION|Phase A|#66|system-design|family|scope|ledger|budget' brief.md admitted/*.md
+  └ admitted/S4-CONTRACT-ORIGINAL-REQUIREMENTS.md:21:## Phase A — classify along two independent axes, and do not force a fit
+    admitted/S4-CONTRACT-ORIGINAL-REQUIREMENTS.md:51:| **REQUIRED-CONSUMER-IMPLEMENTED** | the #66 / `system-design` contract requires an executable predicate here, and one exists | the
+    … +41 lines (ctrl + t to view transcript)
+    brief.md:60:**Ceiling-raise ledger for this ticket, complete:**
+    brief.md:76:Phase A is an input, never inherited acceptance.
+
+
+› Read /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r2/inbox-NOTE-001-ledger-and-scope-corrections.md in full and act on it. Acknowledge in /tmp/reactivegas/ms2/e-lean-
+  compliance/candidate-auditor-s4b-codex-r2/STATUS.md. [POINTER-1788646000-2509218]
+
+
+• Explored
+  └ Read inbox-NOTE-001-ledger-and-scope-corrections.md
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• I’ve read NOTE-001. I’ll use the auditor-owned campaign ledger, retain the corrected S4-B budget history, and record the predecessor’s contract verdict separately from its unjudged semantic
+  status. Preflight is still in progress; no builds or mutations have run.
+
+• Ran /code/llm-settings/shared/skills/worker-protocol/scripts/status-event /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r2/STATUS.md NOTE 'ACK POINTER-1788646000-2509218
+  │ inbox-NOTE-001-ledger-and-scope-corrections.md read in full; own ledger=handoffs/CAMPAIGN-LEDGER.md; owner STATUS read-only; raises=1 S4-B-only, ticket-wide history unbound; predecessor
+  │ terminal contract verdict acknowledged, semantics unjudged; no restart; spend=0-substantive,0-targeted'
+  └ (no output)
+
+• Explored
+  └ Read PREDECESSOR-CONTRACT-BLOCKED-REPORT.md
+    List handoffs
+
+• Ran command -v python3
+  │ sed -n '490,545p' /home/paolino/.codex/skills/commit-auditor/SKILL.md
+  │ sed -n '200,340p' /home/paolino/.codex/skills/tmux-orchestrator/SKILL.md
+  └
+    The coverage floor is the sketch's central point and survives intact: **no row
+    … +193 lines (ctrl + t to view transcript)
+
+    ### GLM model and harness pinning
+
+• Ran ls -la /code/AGENTS.md /AGENTS.md /code/reactivegas-66-s4b-audit2/AGENTS.md 2>/dev/null
+  │ ls -la /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r2
+  └ total 48
+    drwxr-xr-x  7 paolino users 4096 Sep  5 23:06 .
+    … +7 lines (ctrl + t to view transcript)
+    -rw-r--r--  1 paolino users 4496 Sep  5 23:06 inbox-NOTE-001-ledger-and-scope-corrections.md
+    drwxr-xr-x  2 paolino users 4096 Sep  5 23:03 questions
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• Two required bindings remain unresolved: the onward-discovery report path and owner are absent, and NOTE-001 supplies only S4-B ceiling history. I’m recording these gaps before START; the
+  candidate remains unjudged.
+
+  The loaded commit-auditor skill (/home/paolino/.codex/skills/commit-auditor/SKILL.md) says “Refuse the audit unless” the packet binds the onward destination and “the ticket’s ceiling-raise
+  ledger and count.” The brief explicitly requires me to return missing fields rather than reconstruct them.
+
+• Ran date -u +%FT%TZ
+  │ command -v node
+  │ command -v perl
+  │ … +6 lines
+  └ 2026-09-05T22:07:52Z
+    /run/current-system/sw/bin/node
+    … +3 lines (ctrl + t to view transcript)
+    2026-09-05 23:04:56.315752161 +0100 /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r2/brief.md
+    2026-09-05 23:06:40.715230862 +0100 /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r2/inbox-NOTE-001-ledger-and-scope-corrections.md
+
+• Edited 2 files (+120 -0)
+  └ /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r2/evidence/record-preflight.mjs (+85 -0)
+     1 +import fs from 'node:fs';
+     2 +import { spawnSync } from 'node:child_process';
+     3 +import crypto from 'node:crypto';
+     4 +const root = '/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r2';
+     5 +const cwd = '/code/reactivegas-66-s4b-audit2';
+     6 +const checks = [
+     7 +  ['manifest', 'sha256sum', ['-c', 'MANIFEST.sha256'], `${root}/admitted`],
+     8 +  ['clock', 'date', ['-u', '+%FT%TZ'], cwd],
+     9 +  ['HEAD', 'git', ['rev-parse', 'HEAD'], cwd],
+    10 +  ['detached', 'git', ['symbolic-ref', '-q', 'HEAD'], cwd],
+    11 +  ['status', 'git', ['status', '--porcelain=v1'], cwd],
+    12 +  ['oleans', 'find', ['.', '-type', 'f', '-name', '*.olean', '-print'], cwd],
+    13 +  ['seats', 'tmux', ['list-panes', '-a', '-F', '#{pane_id} #{session_name}:#{window_index} #{window_name} pid=#{pane_pid} cmd=#{pane_current_command} cwd=#{pane_current_path}'], cwd],
+    14 +  ['processes', 'ps', ['-o', 'pid,ppid,pgid,lstart,args', '-p', '2503883,1493708'], cwd],
+    15 +  ['worktree-bytes', 'du', ['-sb', cwd], cwd],
+    16 +];
+    17 +const out = [];
+    18 +for (const [id, command, args, workdir] of checks) {
+    19 +  const r = spawnSync(command, args, {cwd:workdir, encoding:'utf8'});
+    20 +  const stdout = id === 'seats' ? r.stdout.split('\n').filter(x => /^(%503|%547|%563) /.test(x)).join('\n')+'\n' : r.stdout;
+    21 +  out.push({id, command, args, cwd:workdir, exit:r.status, stdout, stderr:r.stderr, error:r.error?.message, method:'inspection'});
+    22 +}
+    23 +for (const pid of [2503883,1493708]) {
+    24 +  out.push({id:`proc-${pid}`, argv:fs.readFileSync(`/proc/${pid}/cmdline`,'utf8').split('\0').filter(Boolean), cwd:fs.readlinkSync(`/proc/${pid}/cwd`), method:'inspection'});
+    25 +}
+    26 +out.push({id:'pane', value:process.env.TMUX_PANE, method:'inspection'});
+    27 +fs.writeFileSync(`${root}/evidence/preflight.json`, JSON.stringify(out,null,2)+'\n');
+    28 +const names = ['brief.md','inbox-NOTE-001-ledger-and-scope-corrections.md',...fs.readdirSync(`${root}/admitted`).map(x=>`admitted/${x}`)];
+    29 +fs.writeFileSync(`${root}/evidence/INPUTS.sha256`, names.map(n=>`${crypto.createHash('sha256').update(fs.readFileSync(`${root}/${n}`)).digest('hex')}  ${n}`).join('\n')+'\n');
+    30 +const original = [
+    31 + ['S4-A01','Keep correspondence and consumer classification as independent axes'],
+    32 + ['S4-A02','DEFINITIONAL-IDENTITY requires cited reduction'],
+    33 + ['S4-A03','PROVED-EQUIVALENCE requires a named theorem for the independent Bool'],
+    34 + ['S4-A04','LOGICAL-DECISION-EVIDENCE records the instance without claiming correspondence or runtime capability'],
+    35 + ['S4-A05','EXECUTABLE-DECISION requires successful compilation and evaluation'],
+    36 + ['S4-A06','Existing mirror with missing correspondence owes a theorem and no duplicate mirror'],
+    37 + ['S4-A07','Missing required mirror owes both counterpart and correctness theorem'],
+    38 + ['S4-A08','NOT-EXECUTABLE claims carry bounded evidence'],
+    39 + ['S4-A09','NOT-ESTABLISHED records attempts and what would settle the identity'],
+    40 + ['S4-A10','UNDECIDABLE requires proof or cited authority; failed synthesis does not suffice for Reach'],
+    41 + ['S4-A11','REQUIRED-CONSUMER-IMPLEMENTED is justified by contract and existing implementation'],
+    42 + ['S4-A12','REQUIRED-CONSUMER-UNIMPLEMENTED remains a finding justified by contract'],
+    43 + ['S4-A13','NOT-REQUIRED is justified by authority rather than developer preference or absent caller'],
+    44 + ['S4-A14','Classification is not forced into an unsupported category'],
+    45 + ['S4-A15','Each identity names affected source paths and 68/69 rebind dependencies'],
+    46 + ['S4-A16','Historical counts 17 and 23 are not seeds, bounds, quotas or validators'],
+    47 + ['S4-A17','No manufactured decidability or mirror quota'],
+    48 + ['S4-A18','Phase A classification evidence is an input and confers no implementation acceptance'],
+    49 + ['S4-B01','Implement only finite obligations established as owed by Phase A and current authority'],
+    50 + ['S4-AUD01','Fresh independent auditor family is codex or grok, never muse or claude'],
+    51 + ['S4-AUD02','Validate both classification axes and proofs against external contract authority'],
+    52 + ['S4-AUD03','Misclassification cannot remove required or missing correspondence identities'],
+    53 + ['S4-AUD04','Set and preserve numeric substantive and targeted ceilings; failed calls count'],
+    54 + ['S4-F01','No model, original theorem statement, or statement-strengthening changes'],
+    55 + ['S4-F02','Only issue 71 writes docs/en/design; semantic questions route to the desk'],
+    56 + ['S4-F03','Local-only delivery and no human-pane writes'],
+    57 + ['S4-COMP01','Every required-unimplemented or missing-correspondence row retains an owned repair or dependency on the completion map'],
+    58 + ['S4-COMP02','Open questions are outcomes and never closures of required work'],
+    59 +];
+    60 +const v1 = fs.readFileSync(`${root}/admitted/INSTRUMENT-v1-SUPERSEDED.md`,'utf8');
+    61 +const requirements = v1.split('\n').filter(l=>/^\| R\d+ \|/.test(l)).map(l=>{const a=l.split(' | ');return [a[0].slice(2),a[1]]});
+    62 +const controls = [
+    63 + ['C1','Clean actual mandatory path returns zero'],['C2','New owned predicate without counterpart rejected and named through mandatory path'],
+    64 + ['C3','New owned predicate without theorem rejected and named through mandatory path'],
+    65 + ['C4','Ineffective checker or invocation while present detected by permanent mandatory mechanism with correct attribution; not exit 127'],
+    66 + ...Array.from({length:19},(_,i)=>[`C${i+5}`,`Separate well-typed executable-definition/input mutant for correspondence claim ${i+1}; original statement preserved and intended original
+         theorem fails without first-failure masking`]),
+    67 + ['C24','Final-tree proof axioms permitted'],['C25','Final-tree totality and no PANIC at in either stream'],['C26','Restored full just ci at final accepted base returns zero'],
+    68 + ['V2-ID','Mechanically derive actual required identities and reconcile; nineteen is not an allowlist'],
+    69 + ['V2-DEFEQ','Definitional-equality sensitivity limits accurately stated; theorem mutation is not expression-body strength'],
+    70 + ['V2-BASE','Preserve full owned diff and controls across landed-base integration with incoming byte accounting'],
+    71 + ['V2-EVID','No unexecuted or wrong-reason control closes a row; parse/type/missing-tool failures are setup failures'],
+    72 + ['N1-COUNT','Full actual command classification; whole-module wrappers substantive, failed and warm calls retained'],
+    73 + ['N4-BASE','Accepted base is 3590c0015b84fd58004bf6fb44dd18b107304c48; re-establish affected final-candidate evidence'],
+    74 + ['B-MUT','Retain every raw mutant and final restoration evidence inside typed mutation fence'],
+    75 + ['B-PLAN','Enumerate actual full command set within carried 8/60 before START'],
+    76 + ['B-LABEL','Each conclusion labelled new-execution, unchanged-input with byte identity, or inspection'],
+    77 + ['N001-LEDGER','Own ledger distinct from read-only owner spend input; all rows initialized before START'],
+    78 + ['N001-COUNTERS','Carry S4-B-only counters; do not erase or substitute S4-A or other ticket histories'],
+    79 + ['N001-PREV','Predecessor terminal contract verdict preserved; semantic verdict unjudged'],
+    80 +];
+    81 +const rows=[...original,...requirements,...controls];
+    82 +const head = `# S4-B audit campaign ledger\n\nCandidate: 189e1ed306f8f8e8bcdd11eeab4fc5657a518fc8. Base: 3590c0015b84fd58004bf6fb44dd18b107304c48. Submission 1/2.\n\nAuditor carried an
+        d current spend: **0/8 substantive, 0/60 targeted**, TOTAL across both submissions. Owner spend input: 8/8 substantive, 42/60 targeted (packet claim, not independently audited). S4-A i
+        s separate: 3/3 and 15/20 (NOTE-001 claim). One S4-B ceiling increase; complete ticket-wide count unbound.\n\nInitialized pre-START from original S4 requirements, R1-R18 as incorporate
+        d by operative v2, C1-C26, and normative amendments/brief. These are obligation rows, not a discovered predicate inventory or distinct-mutant count. C5-C23 are the claimed control slot
+        s and may not bound the actual required identities. R10/R11 use v2 corrections; R18 uses amended ceilings.\n\nAll semantic verdicts remain OPEN. Campaign state BLOCKED records the disp
+        atch precondition Q-001, not a semantic failure. No row below has an establishing semantic command. Observation for each: no dependent execution; authority preflight stopped by questio
+        ns/Q-001-required-dispatch-bindings.md. Method is inspection. Administrative evidence is reported separately in AUDIT-REPORT.\n\n| Row | Obligation | Severity | Verdict | State | Subst
+        antive spent | Targeted spent | Mutants attempted/killed | Establishing command / observation | Method |\n|---|---|---|---|---|---:|---:|---|---|---|\n`;
+    83 +const body=rows.map(([id,claim])=>`| ${id} | ${claim.replaceAll('|','/')} | BLOCKING | OPEN | BLOCKED | 0 | 0 | 0/0 | None; pre-START Q-001 | inspection |`).join('\n');
+    84 +fs.writeFileSync(`${root}/handoffs/CAMPAIGN-LEDGER.md`,head+body+`\n\nRows: ${rows.length}; killed 0; residual 0; blocked ${rows.length}; experiments 0. Campaign has not begun and is n
+        ot semantically closed. No full command set or numeric shortfall is claimed.\n`);
+    85 +console.log(JSON.stringify({rows:rows.length,checks:out.length,spend:{substantive:0,targeted:0}}));
+
+  └ /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r2/questions/Q-001-required-dispatch-bindings.md (+35 -0)
+     1 +# Q-001 — remaining required dispatch bindings
+     2 +
+     3 +Read the replacement brief and NOTE-001 in full. Both pointers are acknowledged
+     4 +in STATUS. No START, build, elaboration, checker invocation or mutation occurred.
+     5 +
+     6 +1. `commit-auditor` Required audit packet explicitly requires an
+     7 +   **onward-discovery report path and named census/backlog owner**, reached through
+     8 +   the ticket owner. Neither brief nor admitted authority nor NOTE-001 binds them.
+     9 +   The main AUDIT-REPORT path and commissioner identity are different fields;
+    10 +   assigning either to the missing role would be reconstruction.
+    11 +2. The same skill requires **the ticket's ceiling-raise ledger and count,
+    12 +   covering every increase to a ceiling governing its audit or repair work**.
+    13 +   NOTE-001 correctly withdraws the brief's ticket-wide completeness claim and
+    14 +   supplies **S4-B current-campaign** history only. It expressly says S1, S2/S2R,
+    15 +   S3 and S4-A histories are separate and not zero. The ticket-wide count is
+    16 +   therefore unknown; one is established only for S4-B. The packet still asks
+    17 +   this auditor to check the skill's required fields before START. It does not
+    18 +   explicitly waive or replace this particular ticket-wide precondition as it
+    19 +   explicitly replaces the same-window precondition.
+    20 +
+    21 +Required commissioning resolution: bind the onward path and owner; provide the
+    22 +complete required ceiling history/count, or an explicit authorized exception to
+    23 +that skill requirement establishing the applicable campaign-level rule. The
+    24 +auditor cannot decide that exception itself. This requests dispatch authority,
+    25 +not implementation changes, another build grant, or a new submission.
+    26 +
+    27 +All other already-bound authority remains carried: candidate 189e1ed306f8f8e8bcdd11eeab4fc5657a518fc8;
+    28 +base 3590c0015b84fd58004bf6fb44dd18b107304c48; submission 1/2; auditor spend
+    29 +0/8 substantive and 0/60 targeted TOTAL across both submissions. No overrun is
+    30 +alleged. No numeric command shortfall is asserted: full-scope execution planning
+    31 +has not passed the authority precondition. Five named mandatory whole-path
+    32 +controls alone do not constitute the full command set.
+    33 +
+    34 +Disposition: return AUDIT-CONTRACT-BLOCKED, semantics unjudged, local files only.
+    35 +No seat was contacted. No candidate row is closed by this question.
+
+• Ran node /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r2/evidence/record-preflight.mjs
+  │ cat /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r2/evidence/preflight.json
+  └ {"rows":84,"checks":12,"spend":{"substantive":0,"targeted":0}}
+    [
+    … +158 lines (ctrl + t to view transcript)
+      }
+    ]
+
+• Added /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r2/handoffs/AUDIT-REPORT.md (+147 -0)
+      1 +# S4-B independent audit — preflight disposition
+      2 +
+      3 +**Terminal verdict: AUDIT-CONTRACT-BLOCKED. Semantic verdict: unjudged.**
+      4 +
+      5 +- Submission: 1/2, full original S4 obligations and operative v2/amendments.
+      6 +- Candidate: `189e1ed306f8f8e8bcdd11eeab4fc5657a518fc8`.
+      7 +- Base: `3590c0015b84fd58004bf6fb44dd18b107304c48`.
+      8 +- Auditor: Codex gpt-6-astra/high, pane `%563`, fresh replacement runtime
+      9 +  `/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r2`.
+     10 +- Commissioner: `%503`; implementation owner: Muse, `%547`.
+     11 +- Spend: **0/8 substantive, 0/60 targeted**, carried TOTAL across both submissions.
+     12 +- Ceiling history: **one increase within S4-B** (owner substantive 6 to 8);
+     13 +  complete #66-wide history/count **unbound**, per commissioning NOTE-001.
+     14 +- Campaign: **not started; contract-blocked**. No budget exhaustion or overrun.
+     15 +- Next semantic submission: no finding or rejection produced here; submission
+     16 +  counters are not advanced by an inferred semantic verdict.
+     17 +
+     18 +The brief and NOTE-001 were read in full and acknowledged in STATUS against
+     19 +their respective pointers. NOTE-001 governs conflicts with the brief. It
+     20 +correctly establishes this runtime's `handoffs/CAMPAIGN-LEDGER.md` as the writable
+     21 +ledger, limits the supplied ceiling history to S4-B, and preserves the
+     22 +predecessor's terminal contract verdict while leaving semantics unjudged.
+     23 +
+     24 +## Remaining dispatch gaps
+     25 +
+     26 +The loaded `/home/paolino/.codex/skills/commit-auditor/SKILL.md`, under
+     27 +Required audit packet, says **"Refuse the audit unless"** the brief binds,+among its other fields:
+     28 +
+     29 +1. **"onward-discovery report path and the named census/backlog owner to receive
+     30 +   it through the ticket owner"**. Those fields remain absent. The main report
+     31 +   path and commissioner identity do not explicitly bind the onward destination.
+     32 +2. **"the ticket's ceiling-raise ledger and count, covering every increase to a
+     33 +   ceiling governing its audit or repair work"**. NOTE-001 withdraws the earlier
+     34 +   ticket-wide completeness claim and supplies campaign-level history only.
+     35 +   It expressly preserves separate S1, S2/S2R, S3 and S4-A histories without
+     36 +   binding their relevant raises/count. One cannot be presented as #66's total.
+     37 +   The packet requires this skill preflight and does not expressly replace that
+     38 +   particular precondition. An explicit authorized exception can resolve the
+     39 +   mismatch; this auditor cannot invent one from the narrower budget scope.
+     40 +
+     41 +Both are **inspection** conclusions from the complete brief, NOTE-001, admitted
+     42 +normative instruments and required-field text. They concern the commission,
+     43 +not candidate correctness. Exact resolution is recorded in
+     44 +`questions/Q-001-required-dispatch-bindings.md`. No additional gate.sh,
+     45 +same-window approval, build increase, or implementation repair is requested.
+     46 +
+     47 +## Authority and input identity
+     48 +
+     49 +All **12 admitted files** verify against `admitted/MANIFEST.sha256` using
+     50 +`sha256sum -c MANIFEST.sha256` (exit 0). `evidence/INPUTS.sha256` additionally
+     51 +binds the actual brief, NOTE-001 and admitted bytes read in this run.
+     52 +
+     53 +Operative authority is v2
+     54 +`2214ff8a0d25f47afded7b7215e9873b5a237d97caea55eb72b1d8f884c5ca4f`, the original
+     55 +S4 contract, and the named normative amendments. R1-R18 are incorporated by
+     56 +v2; R10/R11 and control expectations use v2's corrections. Superseded v1's
+     57 +control wording and the owner brief's old base/instrument citations do not
+     58 +govern. Candidate-bound `just lean` and `just ci` are the commissioned gate
+     59 +mechanism. Requirements prose is not executable gate evidence.
+     60 +
+     61 +Predecessor report identity verifies as
+     62 +`f151d6f4cc4cca337c2c826ed1e436a687c900caf6f3cb613a7cd25cac4175a0` via the manifest.
+     63 +Its **AUDIT-CONTRACT-BLOCKED** verdict is an actual terminal contract artifact,
+     64 +not inherited semantic acceptance. Its stated zero spend is carried from the
+     65 +commission; historical commands and all owner raw evidence were not independently
+     66 +replayed or audited here. Hashing OWNER-EVIDENCE.sha256 does not verify its
+     67 +186 referenced artifacts.
+     68 +
+     69 +## Live seat and worktree evidence — inspection
+     70 +
+     71 +`evidence/preflight.json` retains exact commands, exits, stdout/stderr and `/proc`
+     72 +observations at **2026-09-05T22:09:47Z**:
+     73 +
+     74 +- Auditor PID/PGID `2503883`, PPID `2503671`, start Sat Sep 5 23:04:21 2026
+     75 +  local time. Full `/proc` argv:
+     76 +  `/nix/store/nqhk0522q8ncygwwx054iq76ckcjll82-codex-0.153.2/libexec/codex -m gpt-6-astra -c model_reasoning_effort=high --dangerously-bypass-approvals-and-sandbox`.
+     77 +- Auditor `/proc` cwd `/code/reactivegas-66-s4b-audit2`; `$TMUX_PANE=%563`.
+     78 +- Owner PID/PGID `1493708`, PPID `1493607`, start Sat Sep 5 13:40:16 2026
+     79 +  local time; `/proc` argv pins `pi --provider opencode-go --model
+     80 +  muse-spark-1.3-contributor --thinking xhigh --approve`; cwd
+     81 +  `/code/reactivegas-66-s4b`.
+     82 +- `%503` and `%547` resolve to window **lean-quality**, session **reactivegas**;
+     83 +  `%563` resolves to sibling window **rg-s4b-audit2** in that session. Names,
+     84 +  not volatile indices, establish the relationship. The brief expressly
+     85 +  authorizes this departure via
+     86 +  **QUALITY-S4B-TERMINAL-CONTRACT-RECOVERY-20260905**, item 2. No new window
+     87 +  exception is sought. This seat differs from both owners.
+     88 +- `git rev-parse HEAD` matches the candidate; `git symbolic-ref -q HEAD` exits 1;
+     89 +  `git status --porcelain=v1` is empty; filesystem enumeration finds zero oleans.
+     90 +
+     91 +These establish current identity/hygiene only. No candidate diff, theorem,
+     92 +checker, original-model semantics or historical restoration claim was audited.
+     93 +No START was emitted because the pre-START authority checks remain unsatisfied.
+     94 +
+     95 +## Row ledger and command reconciliation
+     96 +
+     97 +`handoffs/CAMPAIGN-LEDGER.md` contains **84 obligation rows**, each with its own
+     98 +verdict, campaign state, substantive/targeted counters, mutation counters,
+     99 +command/observation and method. It includes the original two-axis requirements,
+    100 +scope/completion duties, incorporated R1-R18, all C1-C26, and the normative
+    101 +amendments and runtime requirements. All semantic verdicts are **OPEN**, each
+    102 +with **zero executions**, and state **BLOCKED by Q-001**. Severity defaults to
+    103 +BLOCKING. No implication from an aggregate or owner claim closes a row.
+    104 +
+    105 +Eighty-four is this document's obligation decomposition, **not a compiled
+    106 +predicate, theorem or semantic-atom denominator**. C5-C23 remain provisional
+    107 +claimed identity slots; a subsequent authorized audit must derive and reconcile
+    108 +the actual required identities. Neither nineteen nor the owner-selected 26
+    109 +bounds the scope.
+    110 +
+    111 +No actual full command set is represented as finalized. Authority preflight
+    112 +stopped before candidate inspection and runner classification. The known whole
+    113 +path obligations C1/C2/C3/C4/C26 alone are five invocations; that is **not** a
+    114 +complete cost estimate and does not establish that full original-S4 work fits
+    115 +8/60. There is no measured numeric overrun or numeric shortfall to report;
+    116 +the exact current gap is the two dispatch bindings above. No readiness call,
+    117 +warm call or failed build was omitted: none was run.
+    118 +
+    119 +## Administrative verification receipts
+    120 +
+    121 +| Claim | Verdict | Establishing command / observation | Method |
+    122 +|---|---|---|---|
+    123 +| Frozen admitted bytes | CLOSED | `sha256sum -c MANIFEST.sha256`, exit 0; 12 OK | unchanged-input with byte identity |
+    124 +| Live model/effort and distinct seats | CLOSED | `/proc` reads, `ps`, named `tmux list-panes -a`; observed identities above | inspection |
+    125 +| Current candidate identity/hygiene | CLOSED | Git identity/status and filesystem olean enumeration; detached clean exact HEAD, zero oleans | inspection |
+    126 +| Required dispatch bindings | OPEN | Complete packet and required-field inspection; Q-001 | inspection |
+    127 +| Full semantic scope and command affordability | OPEN | No dependent command executed; full plan not finalized | inspection |
+    128 +
+    129 +Administrative CLOSED rows are not semantic acceptance or mutation evidence.
+    130 +The saved recording script is bookkeeping, not a self-falsified semantic
+    131 +instrument. No new-execution semantic conclusion exists.
+    132 +
+    133 +## Failure modes, residuals, and return boundary
+    134 +
+    135 +Failure modes altered: **not examined**, because authority preflight stopped
+    136 +before diff inspection. This is not a claim that none changed.
+    137 +
+    138 +Candidate blocking findings: none established. Candidate invariants: none.
+    139 +Advisories: none. Onward discoveries: none produced; routing remains unbound.
+    140 +Mutants attempted/killed: 0/0. No restoration work is required because no mutation
+    141 +occurred. No worktree, reference candidate, admitted file or other lane was
+    142 +modified; no build output was created. No other seat was contacted and no remote
+    143 +action occurred.
+    144 +
+    145 +The commissioner receives this local contract disposition and owns any subsequent
+    146 +dispatch decision. Candidate soundness, gate success, classification completeness,
+    147 +proof trust, mutation adequacy, CI execution and acceptance remain unjudged.
+
+• Ran sed -n '22,42p' handoffs/AUDIT-REPORT.md
+  │ head -n 16 handoffs/CAMPAIGN-LEDGER.md
+  │ sha256sum handoffs/AUDIT-REPORT.md handoffs/CAMPAIGN-LEDGER.md evidence/preflight.json
+  │ … +1 lines
+  └ predecessor's terminal contract verdict while leaving semantics unjudged.
+
+    … +47 lines (ctrl + t to view transcript)
+    -rw-r--r--  1 paolino users 4496 Sep  5 23:06 inbox-NOTE-001-ledger-and-scope-corrections.md
+    drwxr-xr-x  2 paolino users 4096 Sep  5 23:09 questions
+
+• Edited /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r2/handoffs/AUDIT-REPORT.md (+2 -1)
+    26  The loaded `/home/paolino/.codex/skills/commit-auditor/SKILL.md`, under
+    27 -Required audit packet, says **"Refuse the audit unless"** the brief binds,+among its other fields:
+    27 +Required audit packet, says **"Refuse the audit unless"** the brief binds,
+    28 +among its other fields:
+    29
+
+• Ran sha256sum -c evidence/INPUTS.sha256
+  │ sha256sum handoffs/AUDIT-REPORT.md handoffs/CAMPAIGN-LEDGER.md questions/Q-001-required-dispatch-bindings.md evidence/record-preflight.mjs evidence/preflight.json evidence/INPUTS.sha256 >
+  │ handoffs/EVIDENCE.sha256
+  │ … +2 lines
+  └ brief.md: OK
+    inbox-NOTE-001-ledger-and-scope-corrections.md: OK
+    … +18 lines (ctrl + t to view transcript)
+    evidence/INPUTS.sha256: OK
+    146097    .
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• The report and 84-row obligation ledger are written and their hashes verified. I’m closing this run as AUDIT-CONTRACT-BLOCKED: zero builds, zero targeted executions, and no mutations. The
+  candidate remains clean and semantically unjudged.
+
+• Ran node --input-type=module <<'NODE'
+  │ import fs from 'node:fs';
+  │ import crypto from 'node:crypto';
+  │ … +21 lines
+  └ (no output)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• Read both documents fully and acknowledged both pointers in STATUS.md.
+
+  Report (/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r2/handoffs/AUDIT-REPORT.md): AUDIT-CONTRACT-BLOCKED. Missing onward-discovery destination/owner and unresolved
+  ticket-wide ceiling history. Zero builds or mutations; candidate unjudged.
+
+  The commit-auditor skill (/home/paolino/.codex/skills/commit-auditor/SKILL.md) requires “Refuse the audit unless” those dispatch fields are bound. Exact gaps are recorded in Q-001.
+
+─ Worked for 7m 14s ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+› Read /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r2/answers/A-001-onward-binding-and-ceiling-scope-exception.md in full and act on it. Acknowledge in /tmp/
+  reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r2/STATUS.md. [POINTER-1788646358-2518529]
+
+
+• I’ll read the answer in full, record its acknowledgement in STATUS.md, and apply its instructions to this run’s terminal disposition.
+
+• Explored
+  └ Read A-001-onward-binding-and-ceiling-scope-exception.md
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• A-001 resolves both dispatch gaps. Its timing statement is stale: AUDIT-CONTRACT-BLOCKED and COMPLETE were recorded at 22:12:05Z. I’ll preserve those events and the report, record this
+  explicit instruction to continue in the same context, and proceed with the command-budget preflight. Spend remains zero.
+
+• Ran /code/llm-settings/shared/skills/worker-protocol/scripts/status-event /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r2/STATUS.md NOTE 'ACK POINTER-1788646358-2518529
+  │ A-001 read in full; both Q-001 fields resolved; timing correction: terminal verdict and COMPLETE already existed at 22:12:05Z; preserve prior artifacts/events; current explicit
+  │ instruction authorizes same-context continuation; no reset or refund; spend=0/8 substantive,0/60 targeted'
+  │ … +7 lines
+  └ (no output)
+
+• Ran git diff --stat 3590c0015b84fd58004bf6fb44dd18b107304c48..HEAD
+  │ git diff 3590c0015b84fd58004bf6fb44dd18b107304c48..HEAD -- justfile
+  │ cat lean/lean-toolchain
+  │ … +2 lines
+  └  justfile                      |  10 ++
+     lean/KelGroups/Mirrors.lean   | 259 +++++++++++++++++++++++++++++++++++
+    … +83 lines (ctrl + t to view transcript)
+          });
+    }
+
+• Explored
+  └ Read check-lean-mirrors, SKILL.md
+
+• Ran cat lean/Reactivegas/Mirrors.lean lean/KelGroups/Mirrors.lean
+  └ import Reactivegas.Predicates
+    import Reactivegas.Step
+    … +512 lines (ctrl + t to view transcript)
+
+    end KelGroups
+
+• Ran cat /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/handoffs/PHASE-A-REPORT.md
+  │ cat justfile
+  │ sed -n '288,310p' scripts/check-lean-mirrors
+  │ … +1 lines
+  └ # S4 Phase A report — CORRECTED v3 (NOTE-003 / desk NOTE-035)
+
+    … +430 lines (ctrl + t to view transcript)
+    scripts/check-lean-axioms:300:} >"$tmp/AxiomGate.lean"
+    scripts/check-lean-axioms:305:(cd "$lean_dir" && lake env lean "$tmp/AxiomGate.lean" >"$tmp/axioms.out" 2>"$tmp/axioms.err")
+
+• Explored
+  └ Read PHASE-A-REPORT.md
+
+• Ran cat lean/Reactivegas/Predicates.lean
+  │ sed -n '185,265p' lean/KelGroups/Mirrors.lean
+  │ cat lean/Reactivegas.lean lean/KelGroups.lean
+  │ … +3 lines
+  └ import Reactivegas.Step
+
+    … +281 lines (ctrl + t to view transcript)
+
+    exit "$status"
+
+
+› Read /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r2/answers/A-002-STAND-DOWN-terminal-context.md in full and act on it. Acknowledge in /tmp/reactivegas/ms2/e-lean-
+  compliance/candidate-auditor-s4b-codex-r2/STATUS.md. [POINTER-1788646430-2520699]
+
+
+• Explored
+  └ Read A-002-STAND-DOWN-terminal-context.md
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• I’ve read A-002 and am standing down. Read-only source inspection occurred after A-001; no build, elaboration, probe, or mutation ran. I’ll append the final acknowledgement and leave the
+  report, ledger, and worktree untouched.
+
+• Ran /code/llm-settings/shared/skills/worker-protocol/scripts/status-event /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r2/STATUS.md STAND-DOWN 'ACK
+  │ POINTER-1788646430-2520699 A-002 read in full; A-001 arrived after COMPLETE and resumed context is withdrawn; read-only source/preflight inspection occurred after RESUMED, but no
+  │ dependent build/elaboration/probe/mutation execution was admitted or performed; spend remains 0/8 substantive,0/60 targeted; terminal report/84-obligation ledger/evidence preserved;
+  │ … +2 lines
+  └ (no output)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• A-002 read fully and acknowledged in STATUS.md. Standing down.
+
+  No builds, elaborations, probes, or mutations ran; spend remains 0/0. Terminal artifacts and worktree preserved. Candidate remains unjudged.
+
+─ Worked for 1m 59s ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+› Ask Codex to do anything
+
+  gpt-6-astra high · /code/reactivegas-66-s4b-audit2

@@ -1,0 +1,1940 @@
+[
+  {
+    "path": "admitted-supplement/INDEX.md",
+    "hash": "d14506a53d0d70ecce07d044f670a179491760b145b52231de9af2e7d7247e10",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted-supplement/OP10-RESULT.md",
+    "hash": "fd07fc90dee43a48b4d8121b5c947a2334da13d89920debf2006f2ed7a9c1c26",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted-supplement/OP10-identity-classes.txt",
+    "hash": "2abb21bb30157e4002da64aa043cba05df56c49c3dc1182a6ff23169bb48e51a",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted-supplement/OP10-stderr.txt",
+    "hash": "28cff59b480bf04c5d599765aceb06b9dd9d732cacc1719b271da55bfb3af1bf",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted-supplement/OP10-stdout.txt",
+    "hash": "e2770204fb00d37773b6bf225d6b2fd3dba9bcf404facb467b84b683ea80a6ad",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted-supplement/P1A-S-modules.txt",
+    "hash": "f445c427276e725d90f7c29c4c57d6d4af74dc3352ea20d9b1db09070a4c7f38",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted-supplement/P1A-theorems-grep.txt",
+    "hash": "9784ca8f96d67fa330fd0194e72c37222f9e53a7e180ae7a84303258e089834f",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted-supplement/P1C-build2-incremental.log",
+    "hash": "6dedd250255e6a4031f25b194be8f05a730c20c5048ba7ac26256400b93c07ea",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted-supplement/P1C-build3-restore.log",
+    "hash": "43fae2215b03e66c090c384e78165be671e5fdd5e6cad3375faafe226b450d0a",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted-supplement/P1C-corpusgate.out",
+    "hash": "a17fcf0a2f50e2d495e4f90ce263410edc183add6c62699a2facbccf60410f74",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted-supplement/P1C-scratch-variant-donate.diff",
+    "hash": "0bdf4e0ab8bd217f43019a569ce0b5d7d7506b295c2cf1d0bd1d75c5e778c2b9",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted-supplement/P1C-tracetests-summary.txt",
+    "hash": "4d4bfc7ef1fdb5c76072a6bf5d0e897549fc8f43e3f5cb48edab9ec31d5b0082",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted-supplement/SUPPLEMENT-INDEX.md",
+    "hash": "9a58f87dc78bdf50d22b122a7beea96fae6fc5479811516ac28e33ed6fc95abb",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted-supplement/SUPPLEMENT-MANIFEST.sha256",
+    "hash": "8013675e53916e6bf11668f311a90f01944844ff58fecf224a40cc0568c2e4c5",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted/COMMISSION.md",
+    "hash": "ce54559880038d331e9a00eb74d75d0ddc22919e7f52ff11a395e6e3b3d47bca",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted/CORRECTIONS-008.md",
+    "hash": "827a7678e19de41bff76a3d674038ca881489edab1bb6cc3dce70af38f5c6d70",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted/CORRECTIONS-009.md",
+    "hash": "a906172f424dc7f3694f1ece2f35dd92f07dea982466db52922d411f5ce870a6",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted/CORRECTIONS-010.md",
+    "hash": "897b7afdcb6f44b7a3a4a3f452e3e617be6e73712f9537ac9080cfeaa370475d",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted/FINAL-RECEIPT.md",
+    "hash": "dc616c6a17d978a128c1a165d6eea534df8afe2bc4b10c42f72e31eb39bea000",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted/MANIFEST.sha256",
+    "hash": "2a809b3fbe4304d59b08abcf836e126a85e8f5b2e9847f49e3bde29af1f572a7",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted/OP10-identities.txt",
+    "hash": "8fa4cc7c3439f9a315f981ade19c4917f0fd15047dfbc372a5c446b6f0113795",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted/P1A-classification-working.txt",
+    "hash": "4b03798de83607d9963feaa88139c7f8dab0182dc3fe721ec10b62a51a58b024",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted/P1A-qualified-classified.txt",
+    "hash": "ef93b94d83a2dd2b1e573d18af1d428679eb14d13cfe667359d5fe41240e9288",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted/PHASE1-BRIEF.md",
+    "hash": "77c9d6bf8425afdde42be2cd3fa779901f0664a0de88fcfa3c58c808caabdac2",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted/PHASE1-REPORT-R2.md",
+    "hash": "32c06530a3a1664f4d01f4222158407f68df0d06384f353a117ad73e987edfc9",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted/PHASE1-REPORT-R3.md",
+    "hash": "9b5bf6c2c1af0c08e19afa058340ec127b9ffcf005bec76f21f6800b7939bb96",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted/PHASE1-REPORT-R4.md",
+    "hash": "5216adc3a4493c6c4155dbd987a015938b953f9587a95df7e30072059cf2a67d",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted/PHASE1-REPORT-R5.md",
+    "hash": "3e51f2292499d4b04a468644fc1c8cc23c7788033ee0f55faff3d0d895d06b4f",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted/PHASE1-REPORT.md",
+    "hash": "dbc2cb681ea92c19fc452411ec120a4a91b0ee5d23102dd0264f4c088a188192",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted/S3-MANDATE-rev3.md",
+    "hash": "86a171d665bcd9e0b873a479ac6846a27113d94b610f1fd93710fbd2b0cc3c7a",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "admitted/S3-OP10-independent-identity-map-20260905.json",
+    "hash": "d9cfb02bddd6ad74e16329d2a43fab536a936615c2a4034f8bcb6567eb3d6208",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "brief.md",
+    "hash": "4b8a8e5c36c164e14c0bf8e09e0d768fedd56f957479c2fa07afdcbd0710a319",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/START-identity.txt",
+    "hash": "3447d31510e7868f61a8d84a629f113b57ca1262bed49fce53aa14120cbc3037",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive-list.txt",
+    "hash": "4ffaaf62f23eee14ccd9b64016879192a07f0e4c125a551164d44ba8d84e4187",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive-retrieval-candidates.txt",
+    "hash": "f5f793393e18b728bbc00255ae17c323901fe6d9c723349a6192f786c54a2d4d",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive-sha256.txt",
+    "hash": "95f894ed5f7b6723694052b51fd34a6841f916ebe446e5ce39651b7e25c2f12c",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/.archived/t-simulator/.archived/auditor-claude-round2-s1/handoffs/campaign-ledger.md",
+    "hash": "694e98cfde8383fa0bbd762ddc4254b96d4ef8eaab70aaa4dea5a5c58f1df658",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/.archived/t-simulator/.archived/commit-owner-glm-vote-gap/handoffs/campaign-ledger.md",
+    "hash": "ae521b870b936ee3520c294b6e6eca0252bc481e78cc4e3c5c31aeeb686ae9bd",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e-haskell-impl/t74-corpus-exporter/evidence/campaign-ledger.md",
+    "hash": "c249ceb6b0afb3d3da7e30fc06f64e9df48bfcbf5404e12da7655431a5368118",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e-lean-compliance/auditor-choices-codex/evidence/inputs/t48-campaign-ledger.md",
+    "hash": "da76a3c4c6b7e201b50ec417004fcd94d8c1729bd1e09a3030f457c47160ca10",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e-lean-compliance/auditor-choices-codex/evidence/inputs/t54-campaign-ledger.md",
+    "hash": "9667b9f048dbb02fc2a9aa09c40139d3674b340005efd113c95c0c267df33d98",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t48-owner-codex/campaign-ledger.tsv",
+    "hash": "43b078435842cf31545c673ae9488de80efd66b794caaaa87996ef5006a4a62b",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t48-owner-codex/docs-auditor-1/handoffs/campaign-ledger.tsv",
+    "hash": "597678149915ffb93798ca568bff5e264a5624b08833a207800618d04ae8d276",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t48-owner-codex/docs-auditor-2/handoffs/campaign-ledger.tsv",
+    "hash": "6295ad152d060eca149cd600842170ef43faf18e12d731c10ce289ec55719ca7",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t48-owner-codex/emitter-auditor-1/handoffs/campaign-ledger.tsv",
+    "hash": "fa1bfc7942e961c4ea7319608fae7661a6f1fb549b7e642bdb53440fd830878d",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t48-owner-codex/emitter-auditor-2/handoffs/campaign-ledger.tsv",
+    "hash": "e5848d5cc222d0475ef668af78074fc818486ffadce69791844e13ad74f351c8",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t48-owner-codex/inversions-auditor-1/handoffs/campaign-ledger.md",
+    "hash": "ab0d3fb4a53a8acd9fdc10dbdfdbf0bd6f29dd247dc6225f8303edc05d08871e",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t48-owner-codex/pledge-auditor-1/handoffs/campaign-ledger.md",
+    "hash": "cc3b7654ce85ea6d437700bf77c0329726ccd7fc36efa5684798a274d4122889",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t54-composition-owner-codex/campaign-ledger-v3.md",
+    "hash": "4614e6daafe4459c8f5622544cdfbe027a893f56af2d915a7d71a582523494b2",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t54-composition-owner-codex/campaign-ledger.md",
+    "hash": "1d1cb89c16d003d7f230a0a695801dd63a02946f0fe6854d5fc738a57aba9408",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/auditor-s57-a-s1-codex/STATUS.md",
+    "hash": "3c9bf46f9a2e3bbde0029ea62baaded7afd0bfe9a4d74f3b293846ddf23ca390",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/auditor-s57-a-s1-codex/answers/A-001-corrected-frozen-packet.md",
+    "hash": "f99d00238dcf6570b9e8f1a30afadbbfdd9ded253537084fa3710447b45902c5",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/auditor-s57-a-s1-codex/brief.md",
+    "hash": "61f1d77a62ad6266cea4ed56648c6e75c6c95cd648629ce60d7194588921b425",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/auditor-s57-a-s1-codex/evidence/focused-vote-build.log",
+    "hash": "3919030b7e298024cf371bff3e786c1c788a4a36363c511f7f6045f62cd1a368",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/auditor-s57-a-s1-codex/evidence/future-surface-negative-control.log",
+    "hash": "60baa9cd30fa25d93600849695680a0d2e69a26aacde1f9ed3de9962275485f3",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/auditor-s57-a-s1-codex/evidence/independent-gate-v2-warm.log",
+    "hash": "5ac10a79342d78be62ea7ca5706097175904d25eafa054412dcb4be9a6451ffc",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/auditor-s57-a-s1-codex/evidence/independent-gate-v2.log",
+    "hash": "7b6c8f5d062b55db69b2220723fa20283c41ca62c42be91bca2af1a9c5826f06",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/auditor-s57-a-s1-codex/evidence/stale-rejection-bypass-red.log",
+    "hash": "cd60312c92cc850421806468a2d10da376288fd916bb25e4dd550be23251cb4a",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/auditor-s57-a-s1-codex/evidence/stale-rejection-candidate-green.log",
+    "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/auditor-s57-a-s1-codex/handoffs/audit-report.md",
+    "hash": "6a4985eeb95c440dfbf891c86bb49dce06ee928aeacd636141c755deb4e813ba",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/auditor-s57-a-s1-codex/handoffs/build-ledger.md",
+    "hash": "2f09c2b0981a5bf3fce7d13a552cad5c6a2cf1b56e407cac1597414cd80b6dba",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/auditor-s57-a-s1-codex/handoffs/stale-rejection-bypass-red.lean",
+    "hash": "a5a0a53b90d9b2539612a485f94f027f10b830ae55f249185cc1cda05ea3222c",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/auditor-s57-a-s1-codex/handoffs/stale-rejection-candidate-green.lean",
+    "hash": "0b2e8a246d11938274b37f5b14583603f68a07d7cfb8127872696e9df07f5b64",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/auditor-s57-a-s1-codex/questions/Q-001-missing-frozen-inputs.md",
+    "hash": "423a209cc348f9b14be9f5746ec4e86ee1f677827bb13cd372dae16b0a02c615",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/auditor-s57-a-s2-codex/STATUS.md",
+    "hash": "5676a4b2810e9a63d559edbd685df446ddc61a53f462b2dc7e824624ac657f19",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/auditor-s57-a-s2-codex/brief.md",
+    "hash": "32223cefe557187224e68e1347b931b49f993eed1132fc985afa1e66c7aa7dd4",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/auditor-s57-a-s2-codex/evidence/independent-gate-v3.log",
+    "hash": "c5e38f000a9849cbd15ab460e5f83d6be3809e9eca75fd063566b8e590c425eb",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/auditor-s57-a-s2-codex/evidence/probe-f001-architecture.log",
+    "hash": "d22261ff926263e46f8be3e72817f53ecce3982e4b8683878ecac59fcbda0192",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/auditor-s57-a-s2-codex/handoffs/audit-report.md",
+    "hash": "c3d54428eab8ad2e6b6a85f7e0feb2a19620a25c96fd31efc7ba6fef6981e3dd",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/auditor-s57-a-s2-codex/handoffs/build-ledger.md",
+    "hash": "f74ebae9b872b961f94dac378ec83e021e62dd76fb346734ce657369890d5881",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/auditor-s57-a-s2-codex/inbox/NOTE-003-terminalize-merged-ticket.md",
+    "hash": "034a590949a3b994294aa5ecc85e8b22e5a8930095259cc4385a4c19253c1bd0",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/auditor-s57-a-s2-codex/instruments/probe-f001-architecture.sh",
+    "hash": "dc737c8de52bdcc0a5447fee806ab2eb23c963ba549af48b81ffb6c0dcfae5df",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/STATUS.md",
+    "hash": "1eeba195df6fb76f6fcff54235440b3193506f27730d6a6f4d997f143b754e77",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/answers/A-001-gate-v2.md",
+    "hash": "a6e2c9c5b2a02eaeee8c643262964a2551d0ab9ae88f78308ea390ae80c1259d",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/brief.md",
+    "hash": "9bcbd6d16cbfc25e6dc0d3e706a38bd00afc05f6c83d516e4ddb59c2094867ca",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/evidence/base-invariants-copy.lean",
+    "hash": "ff6accf87c091fc6f270f2fa13bc4297cd31c4200cf763f1d756f2a59daf7faa",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/evidence/gate-s57-a-final-commit.log",
+    "hash": "5d2bae3c5ae6ebe9bfde022e8ca9878663842e9a8bcf65f7a56adb6cb19ddcc5",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/evidence/gate-s57-a-green-v2.log",
+    "hash": "830ac4c484f06eee316de3d486fb6093c8ff4951d0779412cb28fd77d93a9256",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/evidence/gate-s57-a-green-v3-repair.log",
+    "hash": "fc554d8e8b7f5534fa66c8aa40dfb1168f272561b5c83462b3a8f8103656da0d",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/evidence/gate-s57-a-green-v3.log",
+    "hash": "3ed28452550df0da1276fb53d606ee880c013dae1f86735c9eca8a2f139ed7a5",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/evidence/gate-s57-a-green.log",
+    "hash": "bf305b0da995cb8eafa24d506ffb744e337d7ae0de6a14c48db07b4aff467f2d",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/evidence/green-focused-v2.log",
+    "hash": "1fd4548d129f2a3b573078ab4635c968b4adf37896145c66df37c2a7f1ec9dfa",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/evidence/green-focused-v3.log",
+    "hash": "1f2cb610874f652cdf0d199de27a2c1b9ebc7542a4c1ea8c389b9216dbf977b1",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/evidence/green-focused.log",
+    "hash": "98f2cfc7ff8f2f4f258a03db1623dab600a555e26cf8abb05f022ef754404002",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/evidence/probe-extract.lean",
+    "hash": "bc1fd50a89fc9e3f77fc6fb31ec56f2e639221a49250b215074e879dd8e9b312",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/evidence/probe-invariants-copy.lean",
+    "hash": "075e6fd70d406fddd13fda9435b9bbb86f4b32b45f435d2f3ba270b1dd07b281",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/evidence/red-focused-v2.log",
+    "hash": "b148c821a143a9fabb6924945d6a26b87576b9820ff1243029732a7ecaa0d903",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/evidence/red-focused-v3.log",
+    "hash": "00b3e9c4b2fd1c28a8e715e5347617d31a2be63848ca7fafe9f09f6a3ad42861",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/evidence/red-focused-v4.log",
+    "hash": "4d4de71ea5fad74565b59a586626ed7f7e06e332d0e38f43c036ba833a6f90a1",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/evidence/red-focused.log",
+    "hash": "61386ed35d21d4ed70c96b3a12382f6a9859f5906ba2e72c9b188e3751d8d8e8",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/evidence/repair-focused.log",
+    "hash": "840ea9873cb5a45677744696b8eaa45da2086dc06aa04403ea45a3a3c5833ad7",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/handoffs/RELIANCE-s57-a.md",
+    "hash": "0155d6cbc859339a6b173c3f4ab51e046ef96eb9689a93bebefffe8b59c07032",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/handoffs/SUBMISSION-s57-a-1.md",
+    "hash": "73518209c64901dda2d2149f99b9f18968a3c366a5bdea5dfff025e1594cabb2",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/handoffs/green-s57-a.diff",
+    "hash": "6af7a6198104f6e162236ce28b03df4c93110764b28ba02fcd6d34a9aa72d4f4",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/handoffs/green-s57-a.diff.manifest",
+    "hash": "e574d79bf34d67919c677fb4bdea8ee17dd2492a8cbd37c0601cd89d55313ea6",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/handoffs/red-s57-a.diff",
+    "hash": "fa299779ed9e170c9a938303a47d6e6e51c0d16f266753ad3345380a99849e47",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/handoffs/red-s57-a.diff.manifest",
+    "hash": "d77f3d66d334718e9f785c8ba44263dd822d5ce199eafbc518ebe5f2b81f4e37",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/handoffs/repair-s57-a-f001.diff",
+    "hash": "ee4e96f403e1b80b3a55f672023113f53e5fc40b1cec0e52e9ff728c9aa89477",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/handoffs/repair-s57-a-f001.diff.manifest",
+    "hash": "7f367a1daeb0b393b1fc8a2e1db86a97192dcbcd8537232dcf4d0d57a3087a83",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/inbox/AUDIT-REPAIR-AUTHORIZED-s1.md",
+    "hash": "6651b26d183dd58c1e9d717af3c98a5a453fb9a8f9ed8a1da8f714940ec16772",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/inbox/IMPLEMENTATION-ACCEPTED-finalize.md",
+    "hash": "dc5c8c1bce7b8dd96c08406daaa966327ab07db4b4836d3ddf260e0038fcdcf0",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/inbox/NOTE-001-status-event-format.md",
+    "hash": "6ad007bf30dc4c10ee0a96d5959d541bbd50b8c1a797445846b62b905cb9f369",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/inbox/NOTE-002-journal-cadence.md",
+    "hash": "06c2b4011f7d4d8c1eedea2c5c27abeaa557dedb04aff66c9af9874c100bc0f4",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/inbox/NOTE-003-terminalize-merged-ticket.md",
+    "hash": "887cffcdad4d89c244bc4c72754a5705a9f7bd225c352e694139346d215c8d7a",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.archived/commit-owner-s57-a-glm/questions/Q-001-gate-run-local-unbound.md",
+    "hash": "a2c4fcbde8a1185b7eecf775b0647e8f1c648d0c55fa69d37356187b7261ca0a",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/.orch/resume.md",
+    "hash": "5d1a4d495c86b7f2b732de50e866ec92d6ce1183d257e814123ca657cc478007",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/STATUS.md",
+    "hash": "d5023c4e763dea4451e5a832c3bbd86f1a7f940e72d35d8725f503f87d4f2fa4",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/brief.md",
+    "hash": "4518a5df154b0615bc1ac6dc191ca92e602e8946b01fcfb0099989f42e2e175c",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/campaign-ledger.md",
+    "hash": "758584a315bc132da4ca8781e46cb0737ac8d3475c954de2ae6a026a299b188c",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/evidence/baseline-ci.log",
+    "hash": "d9f97c4ae2fbb7f182be44d54c71c23e1182769793fc039d6d046e3baf56b1c2",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/evidence/gate-negative-controls-v1.log",
+    "hash": "1ce7ceccbbf55cd38a829ef4b27ea753afc8d8d4ed1abdf87d5a3f97945b5a93",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/evidence/gate-negative-controls-v2.log",
+    "hash": "110367e34ce105bf0b49d70add2b6c84bc2a0022d87660c8c399f7cc6c7cfc37",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/evidence/gate-s57-a-f001-red.log",
+    "hash": "0fa6d82c5f30613314e0099f220f5aa9c2d3576953e6df8d23448d3c083810b0",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/evidence/gate-s57-a-red-v2.log",
+    "hash": "4e06c82be83268e2b972f40c7f4c4745adc453b0407c40f06766c388167581cb",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/evidence/gate-s57-a-red.log",
+    "hash": "7c37e7cf63855dbfe65487cf340cc49bb9f44bc8ad6cdb0af3ea6f38938cce93",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/evidence/toolchain-lean-4.25.0.log",
+    "hash": "649da3bb544c39ee568938f3ce4b020677f612515a647f923018f025046c1544",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/check-event-boundary.sh",
+    "hash": "f0ea4974fdf7aa0e2b307594b0c2c216d51fbd1dc5c58c41f8a552ec5668a25f",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/evidence-arbitrary-surface-noop.log",
+    "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/evidence-inherited-disjoint.log",
+    "hash": "a031c50de7555e425369068cb0c51d48f9203819cedb7ab0699200dc872d433c",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/evidence-inherited-franchise.log",
+    "hash": "17765e37a6fd2a357f0f1b287f7e5e4c63cb25048c1a56daf0fdd912b9c9b1bf",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/evidence-inherited-nostale.log",
+    "hash": "db07341b2c96639957bf94140ecb796926adb3ad0b5bf1db78a321e966efd514",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/evidence-inherited-partition.log",
+    "hash": "fcbd02d28fbe5f48119714b1440aef82dd4ffaae4d1ab70e7053f86d85e8aae8",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/evidence-inherited-policyfree.log",
+    "hash": "27c344eed98736d341dbf94d7333cab70fb3381e39964e6a7fc6dcd7c0f1c85f",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/evidence-no-expiry-member.log",
+    "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/evidence-r45-preflight.log",
+    "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/evidence-r45-production.log",
+    "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/evidence-structural-bypass.log",
+    "hash": "af60de39e9198f3c17f2f6333c9189c4a71925f854c91fb5eb94d555878f651e",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/falsify-arbitrary-state-baseline.log",
+    "hash": "9b54bc4317f74d369e85f7189232e014ece75db26bef17fa56ab02d7d19889fd",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/falsify-mutant-bypass.log",
+    "hash": "af60de39e9198f3c17f2f6333c9189c4a71925f854c91fb5eb94d555878f651e",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/falsify-mutant-disjoint.log",
+    "hash": "a031c50de7555e425369068cb0c51d48f9203819cedb7ab0699200dc872d433c",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/falsify-mutant-franchise.log",
+    "hash": "17765e37a6fd2a357f0f1b287f7e5e4c63cb25048c1a56daf0fdd912b9c9b1bf",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/falsify-mutant-nostale.log",
+    "hash": "db07341b2c96639957bf94140ecb796926adb3ad0b5bf1db78a321e966efd514",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/falsify-mutant-partition.log",
+    "hash": "fcbd02d28fbe5f48119714b1440aef82dd4ffaae4d1ab70e7053f86d85e8aae8",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/falsify-mutant-policyfree.log",
+    "hash": "27c344eed98736d341dbf94d7333cab70fb3381e39964e6a7fc6dcd7c0f1c85f",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/falsify-no-expiry-member-baseline.log",
+    "hash": "84551b10fe1dfb546da704a2e949856f448d9f97ea93e911cfb3da1db371405d",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/falsify-r45-baseline.log",
+    "hash": "319e8879c4b059328c1768cb4656ef5a4dc06281124c5ec0178d08a4d7f8d5c1",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/falsify-surface.sh",
+    "hash": "624c288549cfcfda41aeff64cf36d15c87d798f00a0ac77bb2b21241ce8599f5",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/frozen-manifest-v1.txt",
+    "hash": "fc81eb6995031e6da25b154a3097a4e6ea79491ccfac36303e2c9266f92e2b66",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/frozen-manifest-v2.txt",
+    "hash": "a0dc3c5ae2505535d9e53d7f4ac44dc72f0014aec30c399f9c158a72cf336942",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/frozen-manifest-v3.txt",
+    "hash": "b628b5673f031671393e6fe5ef30d53b4c1034bdd44e0aa3b3ee6a6172f52a9a",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/gate-s57-a.sh.v1",
+    "hash": "f020731a0948880ee14fb39e4a9da6333de871f21672c5d89427bcaeed9028ff",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/gate-s57-a.sh.v2",
+    "hash": "bc9c336bcf854f84192f4c6f62d107ff9613bfd0cb21bd8004b7aeb9f348fc1b",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/gate-s57-a.sh.v3",
+    "hash": "96fba04a558994d57d6bb12a5ee9fbfcdab442f460e46ab9ccaeee45124f2997",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/instruments/arbitrary-and-surface-noop.lean",
+    "hash": "5c28e801651034370d50d90954bdea90d2eff024c0b32fc10e4b8e2a8625bb82",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/instruments/mutant-bypass.lean",
+    "hash": "b7ff6c61f0169841adace02b17235607ea4edcdb8b520617ff32149f735c4337",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/instruments/mutant-disjoint.lean",
+    "hash": "ef886d9bc927fb0905284c8927995f873fd426508b3a65520460937bc90a589d",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/instruments/mutant-franchise.lean",
+    "hash": "c38bf43993ba70b97ab8fddb623e06d221f9eac02317cf1ccb5822c16694bfd5",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/instruments/mutant-nostale.lean",
+    "hash": "096c2054b672551bc7f347e2c83eccded55599ee34874baea7bf59404eb654c9",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/instruments/mutant-partition.lean",
+    "hash": "b6ca019c7dfba4eec573c8f6c605eab73b50e141ae97eb4dd852ade15e17991f",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/instruments/mutant-policyfree.lean",
+    "hash": "db324526216d6867e31cd0d94a38fbfb1e9beb2a1f6ee52ca3d9a2cfe0451e95",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/instruments/no-expiry-member.lean",
+    "hash": "19d0d4d7204ea684813e7c12770b702db425912adcb71f35bfecc70ff1b4b181",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/instruments/r45-production-noop.lean",
+    "hash": "bbd070478177dfff327f42dfaca637ee4edbdbc5b26ee367832ce0304b87c1ce",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/preflight-ARBITRARY.log",
+    "hash": "9b54bc4317f74d369e85f7189232e014ece75db26bef17fa56ab02d7d19889fd",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/preflight-BYPASS.log",
+    "hash": "af60de39e9198f3c17f2f6333c9189c4a71925f854c91fb5eb94d555878f651e",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/preflight-DISJOINT.log",
+    "hash": "a031c50de7555e425369068cb0c51d48f9203819cedb7ab0699200dc872d433c",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/preflight-FRANCHISE.log",
+    "hash": "17765e37a6fd2a357f0f1b287f7e5e4c63cb25048c1a56daf0fdd912b9c9b1bf",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/preflight-NOEXPIRY.log",
+    "hash": "84551b10fe1dfb546da704a2e949856f448d9f97ea93e911cfb3da1db371405d",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/preflight-NOSTALE.log",
+    "hash": "db07341b2c96639957bf94140ecb796926adb3ad0b5bf1db78a321e966efd514",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/preflight-PARTITION.log",
+    "hash": "fcbd02d28fbe5f48119714b1440aef82dd4ffaae4d1ab70e7053f86d85e8aae8",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/preflight-POLICYFREE.log",
+    "hash": "27c344eed98736d341dbf94d7333cab70fb3381e39964e6a7fc6dcd7c0f1c85f",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/preflight-R45.log",
+    "hash": "319e8879c4b059328c1768cb4656ef5a4dc06281124c5ec0178d08a4d7f8d5c1",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/verify-negative-controls.sh",
+    "hash": "3af12f5f3d06cbc41fdb703dd4ec8367c3ab741939aff2202e24716f41e59ec0",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/handoffs/HANDOFF-to-e43-published.md",
+    "hash": "7a106f4f2f83585faac479cdebc7aa583f093e6bd06921a09cb78e52fd04549e",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/handoffs/HANDOFF-to-e43.md",
+    "hash": "ab241306531ae1d4f26ba74be429d2c712b9cd62c089f86facd75ef85d8f47b4",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/handoffs/pr-body.md",
+    "hash": "0c76c3a3e6e345e95de4004d1f3e3733b67ec3435b6f6a2464a3ddd4582e5778",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/inbox/NOTE-001-epic-local-accepted-push-pr.md",
+    "hash": "91bd15102a47d1375e9449aa363be4249c2acf8f1d17ff6aeb178dbf81995c0e",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/inbox/NOTE-002-epic-draft-accepted-park.md",
+    "hash": "533cd3e22611526c8614a70c5dc692cd380dfdbc8683a1365e2faedfa9a0b430",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/inbox/NOTE-003-terminalize-merged-ticket.md",
+    "hash": "3270eaf78c0db57c825155a2909538cad3c3704e5a7ad012a86d270f3eab401d",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t59-owner-claude/docs-auditor-1/evidence/campaign-ledger.tsv",
+    "hash": "6a1662e9cdc1322c14336270e2f7c6bc348fac6330a5864ea78e9f3e0378cf31",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t59-owner-claude/mandate/campaign-ledger.tsv",
+    "hash": "f20f11153afe8d13485dfcc94f271692ef7f6e53e466d67f678e20b2dc46221b",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-a-codex/report.md",
+    "hash": "047dae3ed0af81dc2c2623878d78c49f425339a4c9942c25f86edcefc824900d",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-a-s2-codex/STATUS.md",
+    "hash": "656afacaffeb09d9250a56d59f0b5aa45a9e6ddd58812264a414cf61f7dcadd8",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-a-s2-codex/brief.md",
+    "hash": "c0585c2247b4b517e03328ce7582b4d468c319187a23815c2ab1305d15507f3d",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-a-s2-codex/evidence/false-preservation.log",
+    "hash": "060790281562dfd07796ba81777cd5d47803e5a999f59d1686a79d542603bee0",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-a-s2-codex/evidence/repair-properties.log",
+    "hash": "7dbd79ca45d37203cc1cac19b2b783be6e66d7df13d801a2da56725d532faddf",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-a-s2-codex/evidence/slice-gate-s62-a.log",
+    "hash": "71c8588c120d7a68ec267bab53e3360a4f084bde805d0411d1a5db835274bcd4",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-a-s2-codex/instruments/false-preservation.lean",
+    "hash": "de5375f9db22f88226f4adcc7d82a022f2f77e8cd0322a42a76d7ac0065c867a",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-a-s2-codex/instruments/repair-properties.lean",
+    "hash": "82b304a5c37e46b809ea3af95a013711d78fba7e177a924199ac4606c6680787",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-a-s2-codex/report.md",
+    "hash": "3a7b355a260b018c70a004f4c9384d7e408d28737ebc240fef6de10a57853ae1",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-b-s1-grok/report.md",
+    "hash": "f5afd41a2ff83ad386e3030038a528ec16aff1352c5ff48365f8d61a91e473f5",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-a011-s1-codex-r1/campaign-ledger.md",
+    "hash": "53e5bee359d31919a4c9f3ee343548bdfb82cf2b57935d12c63db3f3fa292896",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-a011-s1-codex-r1/report.md",
+    "hash": "29aadedd5c51c5062c7014a972e266499608c22fb53eda3ec0c0e3dc166c905c",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-a011-s1-codex-r1/report.md.sha256",
+    "hash": "dc8291e9beb0439ea61658a97b16a3eb2d43d41cc2288e75c735ca92ec39fa8f",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-a011-s2-glm/campaign-ledger.md",
+    "hash": "5423fa5664733442eb01e6303d1c3ee80a32e0c238d1987122daec1260462ade",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-a011-s2-glm/report.md",
+    "hash": "5594b58b35053fb30d13539ff43863a927dc1a440a65a033f38bbfb439c9c3c1",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-a011-s2-glm/report.md.sha256",
+    "hash": "c78437091617a94a85d58265f2bf85e1fa5c1d0fa53cfaf11c06643b28a42d59",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-a013-grok/campaign-ledger.md",
+    "hash": "dd23b865079854956a1505fdbc75e7b1fe8d0abc2e29601ea1efee83a17cf31f",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-a013-grok/report.md",
+    "hash": "a9a9e434bd0033bc2cfd138edcec48dc1b85e872e5574868161a4b944138ca21",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-a013-grok/report.sha256",
+    "hash": "04322ed9888a9f8d305e5738bf00d095992ef6a745340fabb22377bdf32cae88",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-s1-codex/campaign-ledger.md",
+    "hash": "f033dd3b1e78c237798d49f6e273d403f3a50d9cf1dcc7c3373fd62b4c2f3799",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-s1-codex/report.md",
+    "hash": "fc255066cc66e118d1d456f3549d7d3573704e53e46396254bb0fb0e8a9e4d68",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-s1-codex/report.md.sha256",
+    "hash": "539c37a24f1d088a16b44f5da43263484d4d348423088876eefbb69a0b2cd4e8",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-s2-codex/campaign-ledger.md",
+    "hash": "286c4f04618b5eae564771ce55cea0698ecd1967e3d31d5580ae40eb766ba006",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-s2-codex/report.md",
+    "hash": "384f5e7c7e06655f821091c73cf1d8818329e8bff5faec692d615c77b8dc8df2",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-s2-codex/report.md.sha256",
+    "hash": "74a2b7382e22848d2d9acf3b685f5aae52598cdd788ce453a6116dd1da2373ab",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-owner-s62-c-a011-grok-a012/handoffs/campaign-ledger.md",
+    "hash": "27555f19caf6574b6cdc431c3a4d944d2485e2d0e0b83abe4ad704e67effb480",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/campaign-a013/campaign-ledger.md",
+    "hash": "3b73cf0a403b72bbd8d68bf0d3e9ca1727f3f5b4883fc95819b7f2c0ea9af3c9",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/campaign-ledger-s62-c-a011.md",
+    "hash": "ec8389404c5a32fb0401f2f5c7756f8f828e1dec44d5aacafbc46b884f050034",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/campaign-ledger.md",
+    "hash": "8a1cc8ecdac6dd37fb9da21fb7a22ea3a1710c48f4921103e07590119b287fa9",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s1/handoffs/audit-report.md",
+    "hash": "3fa76a04a8d6a18bef045cc6b64d11d311b06be14d1a2256de633e8a37b2e6c2",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s1/handoffs/campaign-ledger.md",
+    "hash": "98c26657f347f53066c5ef1c2e3a7bb631e0f8944eb9dee6026a150bc5765a0f",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s1/instruments/franchise-policy-mutants.sh",
+    "hash": "78d608dd3eb067abb1b5d672f0174c1f128c67ce65c6a5a901eeb66fb3839595",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s1/instruments/nonresponsabile-open.lean",
+    "hash": "1f7aa80ace8dfee1fd6240832d5cc04b04241715383e43a0877e7dae5264bc2b",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s1/instruments/run.qc8DOU/logs/policy-fold.log",
+    "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s1/instruments/run.qc8DOU/logs/policy-state.log",
+    "hash": "1b67b57352beb36b6b3eb2b020a8672a6034ca5e4654a81a86794a9386acb118",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s1/instruments/run.qc8DOU/logs/policy-tests.log",
+    "hash": "e0b3703a2462d0116945a809485fc18a72356f5d07247084262116331c6248a6",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s1/instruments/run.qc8DOU/src/KelGroups/Vote/Fold.lean",
+    "hash": "ee959c6c0d91dc5fb7e99332a099b2c0eed8606900464cce2127fc405296d72a",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s1/instruments/run.qc8DOU/src/KelGroups/Vote/Invariants.lean",
+    "hash": "911542a68c3fc217a1bbfff59a5ca0abaa0bb8f95390902a7f3cf7177adb135c",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s1/instruments/run.qc8DOU/src/KelGroups/Vote/State.lean",
+    "hash": "9e738cfb0d4e7794e0c11b6a9bdab88e33c4469f59a406d1595a17317fc28cc5",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s1/instruments/run.qc8DOU/src/KelGroups/Vote/Tests.lean",
+    "hash": "2f561dd3b1655a58b39b8772cec726a646fe479477f65610ff99ce3f21d43e37",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s1/instruments/run.uUdSk4/logs/policy-state.log",
+    "hash": "f6d1f0c000cc05538ff4ac93e1e34d9536e45bd6c7e723df7b2067c5dc50c745",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s1/instruments/run.uUdSk4/src/KelGroups/Vote/Fold.lean",
+    "hash": "ee959c6c0d91dc5fb7e99332a099b2c0eed8606900464cce2127fc405296d72a",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s1/instruments/run.uUdSk4/src/KelGroups/Vote/Invariants.lean",
+    "hash": "911542a68c3fc217a1bbfff59a5ca0abaa0bb8f95390902a7f3cf7177adb135c",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s1/instruments/run.uUdSk4/src/KelGroups/Vote/State.lean",
+    "hash": "9e738cfb0d4e7794e0c11b6a9bdab88e33c4469f59a406d1595a17317fc28cc5",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s1/instruments/run.uUdSk4/src/KelGroups/Vote/Tests.lean",
+    "hash": "2f561dd3b1655a58b39b8772cec726a646fe479477f65610ff99ce3f21d43e37",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s1/instruments/run.wn5yys/logs/policy-state.log",
+    "hash": "a3cb95cab41d3e0e24057e9a21552d9906573d6e674f1c75164c6f12034eb7f8",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s1/instruments/run.wn5yys/src/KelGroups/Vote/State.lean",
+    "hash": "9e738cfb0d4e7794e0c11b6a9bdab88e33c4469f59a406d1595a17317fc28cc5",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s2/evidence/franchise-mutant-red.log",
+    "hash": "a045991ca9d26e7f5c8223a54d87dcdbb686ff2143f1e70eff66e74174889b84",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s2/evidence/partition-mutant-red.log",
+    "hash": "7846a04f598486abce852bb2f3f9dfe073045db2e4d8c20e53fe94e1c07baf64",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s2/evidence/r45-candidate-red.log",
+    "hash": "04dac10a8e05ad2c89c57f52b62c505da1a8107745d27843bb2db26b1b5a59a7",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s2/evidence/r45-seed-red.log",
+    "hash": "b222b723a170b6ff5f88ea61287bf11a2de2c3ce166bfb047c31e9a3b25703dd",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s2/handoffs/audit-report.md",
+    "hash": "835f79e6ec605871ca64b3cee2d72b55e495fb02d852b65215522eb4280fc3de",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s2/handoffs/campaign-ledger.md",
+    "hash": "9667b9f048dbb02fc2a9aa09c40139d3674b340005efd113c95c0c267df33d98",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s2/instruments/franchise-unfranchised-recast-mutant.lean",
+    "hash": "08ccdb22771d9a6b8746bbb3e8d1441fc95c0b70217fdcf27c49532240c6db19",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s2/instruments/no-expiry-member-event-gap-v2.lean",
+    "hash": "1f146f5b889d8990af499d1d57791a1dd083a738119b3aa6001fa6c8477859b7",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s2/instruments/no-expiry-member-event-gap.lean",
+    "hash": "585e2bdafc28107e08746158e6d72bb906a2f5f545f046c0696d2deb5ac39dbf",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s2/instruments/partition-silent-deletion-mutant.lean",
+    "hash": "ea9882087e28a20a3e47532a4b5081419161ee9189df7d5ec3b188dbf350cf42",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s2/instruments/r45-nonresponsabile-franchise-change.lean",
+    "hash": "d91fe846783a38dda02f39bfd419583c9c93b136449b947fc309046d3ca4c0fc",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s2/instruments/r45-observed-impact.lean",
+    "hash": "16316e4de3ee4810ec7ab12bb1ddcb0c8917a4f63148b65dbc4536e38641927e",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s2/instruments/r45-seed-unvalidated-member-event.lean",
+    "hash": "89d49bfaa14ac868101d9cc49d1347fd3db37bc681e7c5d7005a83785f5b3150",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54/.archived/commit-auditor-s1/handoffs/campaign-ledger.md",
+    "hash": "488ce9318325d76e783c6eb177d53d8e910e9a64a04faeea765e21cb96809f87",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/e43/t54/.archived/commit-auditor-s2/handoffs/campaign-ledger.md",
+    "hash": "beb43d3c7b6684aa5afe919f2ba1880dc6c222379d4609603360310ec676ebf2",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/t-release-pipeline/.archived/recut-s001-auditor/handoffs/campaign-ledger.md",
+    "hash": "cfc64da8f0ab38fbb05987f640a6dabe32b45d89acf15ea4714760c925300fb2",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/t-simulator-fable/.archived/commit-auditor-grok-batch1-s1/handoffs/campaign-ledger.md",
+    "hash": "79021062619049d80ad60751c1711b5e4888360076921194b8900be37532e10c",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/t-simulator-fable/handoffs/batch2-campaign-ledger.md",
+    "hash": "d43b57a0cf9e6d26e3643342cf101f3a7a4e39e433cbc70b26e4a726135d32cb",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/t-simulator-fable/handoffs/fidelity-campaign-ledger.md",
+    "hash": "0ebbc65528473098c6e0c8b768d6820be9ad3e61b5ff2ef7f6b5758bd91f5b23",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/t-simulator-fable/handoffs/fidelity-recut-campaign-ledger.md",
+    "hash": "c084e85cfe5ae649558e9c37d37b951c3c0ae6d6456243bea89503b45d7478f5",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/t-simulator-fable/handoffs/geometry-permalinks-campaign-ledger.md",
+    "hash": "14762d637db19d6fa01672dbf5682c99125e496ee594a4307b351764040c4f49",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/t-simulator-fable/handoffs/strips-campaign-ledger.md",
+    "hash": "5b550d035ab1e23f762d61a78ba945f81724ffbf0ab1508a65f030ff1ceb4877",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/t-toolchain-contract/.archived/auditor-s1-corrected/handoffs/campaign-ledger.tsv",
+    "hash": "ae6f0ca8a0ee23ff037d0b6e686c92eb5edae5bdb4c1c9563b183cda8a5666e8",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/t-toolchain-contract/handoffs/campaign-ledger.tsv",
+    "hash": "ae41c77924dd8d90627cc8af6e49643b8dd186c2b328bcbe57785ab53eb4b603",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/t48-inversions/.archived/commit-auditor-s48-i-recut1-s1/handoffs/mutation-campaign-ledger.md",
+    "hash": "c0af6afb924658db2b4cb6f519dc8aa72c0e3b7c706daa62ffd4de21993bc381",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/t48-inversions/.archived/commit-auditor-s48-i-s1/handoffs/campaign-ledger.md",
+    "hash": "75a7a3d2207924acc44437c981e7d0934d6d80400f4f97f3b78a6823279707a1",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/t48-inversions/.archived/commit-auditor-s48-i-s2/handoffs/campaign-ledger.md",
+    "hash": "bc23e58bd29a1f7c9a07e348bfbae62a20088dcb363a5f1ba9eed780ce364caf",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/archive/reactivegas/ms2/t48-inversions/campaign-ledger.md",
+    "hash": "da76a3c4c6b7e201b50ec417004fcd94d8c1729bd1e09a3030f457c47160ca10",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-final-identity.txt",
+    "hash": "d8aa67650b522fd7e77c98bf37dabc1d08f58ef2adc51a71e0d8622c10c05af3",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/flake.lock",
+    "hash": "2adcd4451ab54f641fe9ca4b78b3332e6ec13a2aa80f4154415abf98a7d8487c",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/KelGroups.lean",
+    "hash": "fa7ca68cd42e9630deaa8ed0ce8943c6d0146f0ea716ea719514583f4c0a8ffc",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/KelGroups/Event.lean",
+    "hash": "c89e135ba8ed919865eacdf7ed6c1c33953450997cbcbddbf3daf4510c61a449",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/KelGroups/Fold.lean",
+    "hash": "c6cbb818705db481b5f6fd8469e7a7b279fe2e6f9a9675f4cb262df570d679cf",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/KelGroups/Integration.lean",
+    "hash": "a23b27e8265024368e7b39399d4111548f9ce56ce18782550799d76199c706e2",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/KelGroups/Invariants.lean",
+    "hash": "86f200cb8dccd63d5d14a362e46286b7781040e2df1b214baedfb23e065a88e2",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/KelGroups/State.lean",
+    "hash": "25c2109e304fa9cdb084daabb267deb4a4a8a15749c9f66bae878d190fea49a6",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/KelGroups/Tests.lean",
+    "hash": "b9d8aa9f3d25292114f8ba5019bd55c99969ef9aecbaa2c646d1732a886f04c9",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/KelGroups/Types.lean",
+    "hash": "971a2a2ee774c3af63270e8f0bb8f1d5346f1da5c97f5faea1856dbe460acd07",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/KelGroups/Validate.lean",
+    "hash": "109a0c5ac27cfbed634fde0abc82667b6246b5276a74a8c0091cafcce79ea36f",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/KelGroups/Vote/Event.lean",
+    "hash": "84a186d5977f61c047d728f279ada07ad5908f77b0090942876132021e72b596",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/KelGroups/Vote/Fold.lean",
+    "hash": "690d64668aac52013f03f9debde79f5f23c62825d7faae4615fb8b3a2df31e63",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/KelGroups/Vote/Invariants.lean",
+    "hash": "a1c5dc24aaac89bbeb55d8459fde4f8b8d22d7224045d960edbb3826b9192da9",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/KelGroups/Vote/State.lean",
+    "hash": "1a179920a0d5de725642b6254e223cfb3f61a1a06aed617cee59ee93b553214b",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/KelGroups/Vote/Tests.lean",
+    "hash": "d074d3943bcd2d3528c000458b7c80f0198991b73e603d98095fb757553dcec7",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/KelGroups/Vote/Types.lean",
+    "hash": "dc6227f8c785b566aa08c3baab35deae5bc58d6ae420d1cf4e8df923b97fedc8",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/KelGroups/Vote/Validate.lean",
+    "hash": "8d2ee979ca838b3fd4d25daca182ae77f10a00245dd6c7cc71edaddf18ae8846",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/Reactivegas.lean",
+    "hash": "e00e78665774ec15ead7f62021b79c08135f0fa7dcf53d831b6db340405ff4ba",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/Reactivegas/Composition.lean",
+    "hash": "43b52f8b30bd4d96383bfd676660e78780a4d43436be76e74bd2ee5d6eee0743",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/Reactivegas/CorpusExport.lean",
+    "hash": "e53935aadddeda93d607d15626d26584ad587015598a2f190b134b9667c2440e",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/Reactivegas/CorpusGate.lean",
+    "hash": "62bd769fe5ba2e02b3826d78ca73f15090a111c96805d7783dae8a6812bc8c4f",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/Reactivegas/Invariants.lean",
+    "hash": "0ffbbfc7cfb61265ab7ae767ba3e7f2004ccad69653b86ec178cf017264667d1",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/Reactivegas/Predicates.lean",
+    "hash": "6ae3a61dea55f9c81b45de2e2898d416b17f441605561a4b96e93ed5324e9729",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/Reactivegas/State.lean",
+    "hash": "de2651bf189c3a30258250e4dd06eb27441fa60390e61256395249ffef8c01ef",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/Reactivegas/Step.lean",
+    "hash": "f498490c0a3eca78692d51119d6298115c456f79ce3526bf9210892a658f46fb",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/Reactivegas/Trace.lean",
+    "hash": "254b126ee7a9e072d5f397c4f982841b7f1f87e43992d501c6a23443e49c0979",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/Reactivegas/TraceTests.lean",
+    "hash": "b8b3c139e97f36518e7036704b1f4fe5866c2ec02721a685cbae9898577bb122",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/Reactivegas/Types.lean",
+    "hash": "fb01d7d74bda2aa598fa83ea056bc4a53aaf10de21a240b6469bb38b88edaa1f",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/corpus/corpus.sha256",
+    "hash": "c76836ac5ee3f1d672418d7b0580bbecf695d5f54d468030b125843974c180c7",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/corpus/economic.json",
+    "hash": "73a077fc514038e40f84aca4a995fe68623e3af46ed11c0280d5b963137576aa",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/corpus/integrated.json",
+    "hash": "1f173aec9c3afd9cb95265e4be2966b9316e810a969d9fc40f672b17120f3675",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/lake-manifest.json",
+    "hash": "bb77c1108b5fa7944a64039ac556f56fea9431695c01d1df7143ac4782ed51d4",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/lakefile.lean",
+    "hash": "4373a87fde74c6ba406b7f363abab5c1630b515179574019289f9a67d59cd19f",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/lean/lean-toolchain",
+    "hash": "dbbf063fc415c8e718172605f23a8f86679a3c320eff6d3890cc009534452925",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/scripts/check-lean-axioms",
+    "hash": "4fb40d5089e908d16f91ae35cfb479d9d454b2a6fd6f337627789a40851bc01b",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/candidate-source/scripts/check-reactivegas-inversion-coverage",
+    "hash": "57e5745602b75a003f31854f672cbb216d25c84b0619a822b30c6cf349107de0",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/receipt-archive-index.json",
+    "hash": "b74fc81709fa0653cce894ea92342ce79c31b94f0f313d86ea975adb52347db2",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/receipt-file-roster.md",
+    "hash": "a925fd5e82be692dd48a0c88e2807968e4179b779d2e602e64a21dc714c31df3",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/receipt-index-static.mjs",
+    "hash": "3474a21a27b44f72da48bd8e5190a3c9448c96f89c3392975dda4ae1d6162838",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/receipt-table-summary.json",
+    "hash": "b2736077212fbc2cd84cfe8f426f9fd05232137fe285c81da5db29f0acd9f6e9",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/reconcile-static.mjs",
+    "hash": "b84adb54d47f078085b1819cf4f98847af53419fc72cc231153521667f20e400",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/reconciliation.json",
+    "hash": "df1bcead18a717e3abe43937ea41cc68bc6dbbab5ab7852525611741be2f85c6",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/source-compiled-map.json",
+    "hash": "7f2e40e4d09239d3d0d50b797f80fa6db0df4082738ec856e51e950fac83ebe4",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/source-extraction-limit.txt",
+    "hash": "762b8a63e753efc64043e8965a63aaba8fb2a1712e6636551db1788c8311e25d",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/source-import-graph.json",
+    "hash": "70efcaf570151a4006df502c79d78fe196e4a24c19447de22a56b02bac95dfdc",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/source-statements.txt",
+    "hash": "94711aeff33bfb46c206f27f01b4f5cf73e56e8407d0a3dd3d7a4c006926a854",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplement-comparison.json",
+    "hash": "e8611abe753d4ecdf1ca08346f86e6b53e7af773c7933d23c68dc50779fbb7e0",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental-origin-stat.txt",
+    "hash": "6a8488f38e7e174bff36ab1c37d1709749a2f1fbb21e74f2e673373607e7accd",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/INDEX.md",
+    "hash": "d14506a53d0d70ecce07d044f670a179491760b145b52231de9af2e7d7247e10",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/OP10-RESULT.md",
+    "hash": "fd07fc90dee43a48b4d8121b5c947a2334da13d89920debf2006f2ed7a9c1c26",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/OP10-identity-classes.txt",
+    "hash": "2abb21bb30157e4002da64aa043cba05df56c49c3dc1182a6ff23169bb48e51a",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/OP10-stderr.txt",
+    "hash": "28cff59b480bf04c5d599765aceb06b9dd9d732cacc1719b271da55bfb3af1bf",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/OP10-stdout.txt",
+    "hash": "e2770204fb00d37773b6bf225d6b2fd3dba9bcf404facb467b84b683ea80a6ad",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/OWNER-STATUS-snapshot.md",
+    "hash": "e01d2114b7731ade9d7d96b0185aed06ec1dfb54ae9504e7dd7dbab72ed5075c",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/P1A-S-modules.txt",
+    "hash": "f445c427276e725d90f7c29c4c57d6d4af74dc3352ea20d9b1db09070a4c7f38",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/P1A-qualified-inventory.txt",
+    "hash": "efdeb32befac3475d174b29d77731173dafb909d1225fc817d1ff28b5a5cbed1",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/P1A-theorems-grep.txt",
+    "hash": "9784ca8f96d67fa330fd0194e72c37222f9e53a7e180ae7a84303258e089834f",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/P1C-build2-incremental.log",
+    "hash": "6dedd250255e6a4031f25b194be8f05a730c20c5048ba7ac26256400b93c07ea",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/P1C-build3-restore.log",
+    "hash": "43fae2215b03e66c090c384e78165be671e5fdd5e6cad3375faafe226b450d0a",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/P1C-corpusgate.out",
+    "hash": "a17fcf0a2f50e2d495e4f90ce263410edc183add6c62699a2facbccf60410f74",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/P1C-scratch-variant-donate.diff",
+    "hash": "0bdf4e0ab8bd217f43019a569ce0b5d7d7506b295c2cf1d0bd1d75c5e778c2b9",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/P1C-tracetests-summary.txt",
+    "hash": "4d4bfc7ef1fdb5c76072a6bf5d0e897549fc8f43e3f5cb48edab9ec31d5b0082",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/inbox-NOTE-001-dispatch-on-landed-base.md",
+    "hash": "923ef0362700aed36151546ec278b1d445c498ec60d446c06ab78c483e4ca622",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/inbox-NOTE-002-record-harness-identity.md",
+    "hash": "21c0539dda76a3e7354b801466d9f56c8891e59fef9a305db6db6e2cd7d3e36a",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/inbox-NOTE-003-packet-not-accepted-five-gaps.md",
+    "hash": "582db6d0c76b2dd58fbda9292724bac8079d6a2bb7a37e8c33028580b2747647",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/inbox-NOTE-004-static-repairs-now.md",
+    "hash": "88bf12117752725ec78ea26b1ee04bc7598831b1f1b0fc63c80d67494aea59de",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/inbox-NOTE-005-r3-roster-and-plan.md",
+    "hash": "89c76c849d3b425229b4e8a2fcb582e552faadbdafdc02e4a01213ece49c641d",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/inbox-NOTE-006-r4-finite-remaining.md",
+    "hash": "e6ba547a6d5ccbfd3eaa718c93cfdf56628e0be1b4e2009610c5337ad222bc89",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/inbox-NOTE-007-op10-resolved-at-source.md",
+    "hash": "6adcb227c08f6e979142d304c45574a34f0ed73eb0ce7f9dfda2fcba297c8926",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/inbox-NOTE-008-r5-three-corrections-and-op10-grant.md",
+    "hash": "4e2a2cb485346525c79f7c3d8f5b0986507db8db982ada690c38fd6e4232b63e",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/inbox-NOTE-009-no-false-runtime-absence.md",
+    "hash": "fee7d6642aa4d06c53dc451acd1a72d86bad0af10042f6ad04d4b1b77318659f",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/inbox-NOTE-010-dependency-cost-and-inventory.md",
+    "hash": "baf9af8a8a8dea6351568eea00dc61f74d786deea6984b21be7de581ae849638",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "evidence/supplemental/inbox-NOTE-011-three-finishes.md",
+    "hash": "a991ad5f713394d5973ac5637936842948bfbd92a5c1dbb24d0594eeeed22cfe",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "handoffs/AUDIT-REPORT.md",
+    "hash": "3e31cde1ee9a237a6d075500f3e99ae836d88444f25472f026a6d282aef53d15",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "handoffs/ONWARD-DISCOVERIES.md",
+    "hash": "a3f13df96009046a13cad0b941123e53a8b4c6e2cc3e02ca44f14c924af6a4c2",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "handoffs/REQUIREMENT-LEDGER.md",
+    "hash": "cb5ec11ceeec57eb4baa73a7a00a7136cfd1101c79058a2dea56b86f61b356a1",
+    "ok": true,
+    "oldCheck": true
+  },
+  {
+    "path": "inbox-NOTE-001-supplement-and-placement.md",
+    "hash": "0c800ca0fa53eec3e97099811dbd035b10eb4aebbcb168f8121ccd0452a22130",
+    "ok": true,
+    "oldCheck": true
+  }
+]

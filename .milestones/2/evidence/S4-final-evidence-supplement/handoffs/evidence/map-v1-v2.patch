@@ -1,0 +1,62 @@
+--- inputs-amendment-1/CLOSURE-MAP.v1-fs02-only-preserved.md	2026-09-06 08:19:43.892875367 +0100
++++ inputs-amendment-1/CLOSURE-MAP.v2-CURRENT.md	2026-09-06 08:19:43.890875243 +0100
+@@ -9,12 +9,13 @@
+ 
+ | | |
+ |---|---|
+-| **`master`** | **`4a6cd87fcbc3e4a536bbc9f240f5efe5704022af`** — S1 landed, squash, verified tree-identical to accepted `fa01779` |
++| **`master`** | **`3590c0015b84fd58004bf6fb44dd18b107304c48`** — S2R landed as PR #88 (`fix(lean): total axiom gate over discovered extent with resolved-olean ownership (#66 S2R)`). S1's `4a6cd87` is now an ancestor, not the head. |
+ | **#66** | **OPEN**, and stays open until S2–S5 and the routed items are done |
+ | **S1** | **CLOSED.** Accepted at `fa01779`, merged as `4a6cd87`. Receipt `handoffs/S1-MERGE-RECEIPT.md`, acceptance `handoffs/S1-ACCEPTANCE.md` |
+-| **S2** | **IN FLIGHT — submission 3.** Branch `chore/66-s2-axiom-gate`, worktree `/code/reactivegas-66-s2`, PR #85 draft. **Mandate v3 `a8e18e478ca8d063`** (brief ∥ AMENDMENT-1 ∥ AMENDMENT-2); v1 `0a1db9887ccc9d8f` and v2 `7cfb7aec95a37448` preserved as evidence. Gate at `561347d` = `cd67ade9bc137f87`. **Submissions 2/2 exhausted, then explicit desk extension 2→3 (NOTE-024); no fourth.** Owner ceiling **11→14, second and final raise**; 10 spent, **4 attempts remain including failures**, plus ≤16 separately counted probes. **Campaign EXHAUSTED and preserved.** Three submissions incl. the exceptional third; owner **14/14**; final audit **6/6 builds + 24/24 probes**. `b0c2cdb` **NOT ACCEPTED**, terminal verdict **AUDIT-FINDINGS** (report sha256 `8e27e455…`). **TWO binding items.** **F-004**: equivalent relative project path yields B=0/T=0; the completed Std-alias probe finished exit 1 in 712 s at **S=26/26, B=288, T=15707**, misclassifying **all 262 dependency `Std` modules as project-built**, no panic, no import error. **G-001**: the empty/unset `LEAN_PATH` entry guard was **never fired** — an unexecuted required control under AMENDMENT-2 row 6, instrument prepared and hashed, cost **one elaboration, zero builds**; an **assurance gap, not proof the guard is broken**. Supported statements only: the audited default inventory agrees and CI passes, and the adverse-path controls are **loud false refusals**, which is **not** evidence of current silent poison acceptance. **No "fails safe" generalization.** **Desk NOTE-030: re-cut** — no fourth submission, no narrowed acceptance. Successor campaign proposed: `handoffs/S2-SUCCESSOR-CAMPAIGN-PROPOSAL.md`, **awaiting desk disposition; nothing dispatched**. Rejected: `5745a2c` (F-001, F-002) and `561347d` (F-003) — both preserved with their audits |
+-| **S3** | Contract at **revision 3**, `handoffs/S3-MANDATE.md` (v1/v2 preserved). **Phase 1 AUTHORIZED** (NOTE-021) but **not dispatched** — conditional on the **accepted, landed** S2 base. Brief bound at `77c9d6bf8425afdd`, **3-build cap**, no coverage claim. Phases 2..n unauthorized |
+-| **S4, S5** | Authorized, not started, **not discharged by S3**. Contract packets at **revision 2** (NOTE-027): `handoffs/S4-CONTRACT.md`, `handoffs/S5-CONTRACT.md`, v1 of each preserved. Auditors restricted to the inherited set `codex`/`grok`; numeric targeted-query ceilings set; blocked rows stay on the milestone completion map. S5 owns **both** retention completeness outside the ruled #81 lifecycle **and** `ONWARD-68-INV-01` |
++| **S2** | **ACCEPTED AND LANDED** at `3590c0015b84fd58004bf6fb44dd18b107304c48` (PR #88); it is now `master` and the fixed base for S3 and S4. The submission-3 / successor-campaign wording preserved in the historical section below describes the state **before** that landing and is superseded by this row. |
++| **S3** | Static author cap **3/3 spent**. Independent full static audit **TERMINAL — AUDIT-FINDINGS** (report `3f7260b6…`, manifest `65a6c29e…`, 30/30): **F-01, F-02, F-03, F-06, F-07 PARTLY — blocking**; F-04, F-05, F-08 closed. **SS-0** bounded real experiment **EXECUTED** — cumulative **9 substantive / 4 targeted** — assessed in `handoffs/SS0-CONSOLIDATED-ASSESSMENT.md` (`f5cc8711…`). **New finite static successor commission authorized (NOTE-071)**: SS-1–SS-6, one frozen terminal submission, **zero executions**. **S3 is not closed; no Phase 2 is granted; no execution ceiling is granted.** |
++| **S4** | Candidate `04eb6c7d9aeb2a3602fca5ece14cbc033221cb43`, tree `caaa0488f39a6afb2553680a11fd6bfd86d1c90b`, branch `chore/66-s4b-mirrors` — **not pushed, no PR**. Independent full static audit **TERMINAL — AUDIT-FINDINGS** at 2026-09-06T07:06:01Z (report `43db9049…`, 74-entry manifest): **FS-01**, **FS-02**. FS-02 is discharged by the ruling section below. Clean-committed `just ci` **exit 0** at 07:07:14Z — **after** that verdict, therefore **not** admitted to it — and **cache-assisted, not cold**. **STATIC FINAL EVIDENCE SUPPLEMENT commissioned**, `%578` START 07:18:19Z. Owner **20 substantive / 52 targeted — spent**. **F-001, H-01, H-02, H-03 remain OPEN.** No acceptance, no push, no merge. |
++| **S5** | Authorized, **not started**, and discharged by neither S3 nor S4. **Three** owned obligations — see the owed list. Contract packet at **revision 2** (NOTE-027), `handoffs/S5-CONTRACT.md`, v1 preserved. Auditors restricted to the inherited `codex`/`grok` set; numeric targeted-query ceilings set; blocked rows stay on the milestone completion map. |
+ | **#71** | Holds §5a, §5c, §8b content and C7. **#71 alone writes `docs/en/design/`** |
+ | **Desk** | Owns any semantic ticket arising from §10; #81 owns the V-5 lifecycle |
+ 
+@@ -152,7 +153,11 @@
+ | view / auth | integrated `apply` histories can **change the view** | fixed `view` and `auth` throughout `Reach.trans` |
+ | refusals | `TraceResult.refused` **retains** the state and continues | `Reach.trans` covers **only** successful `stepEvent view s e auth = some s'` |
+ 
+-Integrated `apply` histories therefore fall outside the predicate. Validation of
++So an integrated `apply` history is **not guaranteed** to satisfy this
++fixed-premise relation. Some such histories may still preserve the required
++premises; the absence of a **general** correspondence is **not** proof that
++every history falls outside the predicate, and no bridge proof is claimed or
++requested here. Validation of
+ one supplied history must never masquerade as deciding existential reachability.
+ 
+ **Owed, and OPEN.** The **finite-history correspondence remains OPEN** as an owned
+@@ -172,17 +177,17 @@
+ 
+ ## Current owed list
+ 
+-- **S2** — submission 3 in flight for **F-003's discriminator only**; F-001 and
+-  F-002 are **closed at `561347d`** on executed evidence and not reopened. Then a
+-  **fresh FULL Codex audit** (`gpt-6-astra`, effort `high` **argv-pinned**, fresh
+-  context/root/START, `.lake` initially absent) over the **entire unaccepted
+-  candidate** `4a6cd87..final SHA` — ≤6 build/gate attempts, ≤24 probes, no
+-  automatic raise. **Both build ceilings are now exhausted as raises: owner 2/2
+-  used, and there is nothing left to grant.** Budgets itemized in
+-  `handoffs/S2-BUDGET-PLAN-SUBMISSION3.md`; both fit with zero slack.
+-- **S3** — `handoffs/S3-MANDATE.md`, not dispatched.
+-- **S4** — Prop/Bool correspondence, classify before writing, fresh audit.
+-- **S5** — two owned obligations now:
++- **S2** — **DONE.** Accepted and landed at `3590c001` (PR #88). The submission-3
++  and successor-campaign text that stood here is preserved in the historical
++  section below and no longer states current work.
++- **S3** — five partly-blocking findings (**F-01, F-02, F-03, F-06, F-07**) open;
++  new static successor commission (**SS-1–SS-6**) authorized under NOTE-071 — one
++  frozen terminal submission, zero executions. `handoffs/S3-MANDATE.md` and every
++  original obligation stand.
++- **S4** — FS-01 evidence supplement under independent review (`%578`); FS-02
++  discharged by the ruling section above. **F-001, H-01, H-02, H-03** open. The
++  Prop/Bool correspondence obligations are retained, not discharged.
++- **S5** — three owned obligations now:
+   - retention statement-completeness, bounded outside V-5;
+   - **`ONWARD-68-INV-01`** — inversion **exactness**, inherited from the terminal
+     #68 audit (NOTE-023). See the row below;

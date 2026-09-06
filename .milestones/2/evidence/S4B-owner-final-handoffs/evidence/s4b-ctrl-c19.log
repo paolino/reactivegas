@@ -1,0 +1,17 @@
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+KelGroups/Mirrors.lean:108:52: error: Application type mismatch: The argument
+  (pendingCoherent_corr gs).mp pC
+has type
+  pendingCoherentB gs = true
+but is expected to have type
+  (!pendingCoherentB gs) = true
+in the application
+  ⟨(membersCoherent_corr gs).mp mC, (pendingCoherent_corr gs).mp pC⟩
+KelGroups/Mirrors.lean:111:83: error: Application type mismatch: The argument
+  pC
+has type
+  (!pendingCoherentB gs) = true
+but is expected to have type
+  pendingCoherentB gs = true
+in the application
+  (pendingCoherent_corr gs).mpr pC

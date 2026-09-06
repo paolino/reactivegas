@@ -1,0 +1,979 @@
+diff --git a/justfile b/justfile
+index 23171a9..3695a95 100644
+--- a/justfile
++++ b/justfile
+@@ -63,6 +63,10 @@ lean:
+     scripts/check-lean-axioms
+     scripts/check-trace-coverage-agreement
+     cd lean && lake build
++    cd "{{ justfile_directory() }}"
++    date +%s%N > lean/.lake/s4b-mirror-nonce
++    scripts/check-lean-mirrors
++    grep -q "nonce=$(cat lean/.lake/s4b-mirror-nonce)" lean/.lake/s4b-mirror-receipt && grep -q '^MIRROR-CHECK-OK' lean/.lake/s4b-mirror-receipt || (echo 'MIRROR-RECEIPT-ABSENT: checker did not operate' >&2; exit 1)
+ 
+ # Execute the shipped integrated-corpus evaluator and require exact `true`
+ lean-corpus-gate:
+@@ -165,3 +169,9 @@ serve-docs:
+ build-docs:
+     #!/usr/bin/env bash
+     mkdocs build
++
++# Verify S4-B Prop/Bool mirror correspondence (mandatory; S4-B lane owns these lines)
++lean-mirrors:
++    #!/usr/bin/env bash
++    set -euo pipefail
++    scripts/check-lean-mirrors
+diff --git a/lean/KelGroups/Mirrors.lean b/lean/KelGroups/Mirrors.lean
+new file mode 100644
+index 0000000..7e8f4b0
+--- /dev/null
++++ b/lean/KelGroups/Mirrors.lean
+@@ -0,0 +1,259 @@
++import KelGroups.Invariants
++import KelGroups.Vote.Invariants
++
++/-!
++# Executable Bool mirrors for the KelGroups and vote invariants (S4-B, #66)
++
++For each finite `Prop` in `KelGroups.Invariants` and
++`KelGroups.Vote.Invariants` (except the named exceptions below) this module
++ships an independently implemented `Bool` mirror and proves the exact
++correspondence `P … ↔ B … = true`.
++
++Rules honoured throughout:
++* equality is decided with `decide` over `DecidableEq` instances, never with
++  bare `BEq` (NOTE-003). The only generic equality assumption in this module
++  is `[DecidableEq α]` on the new K5 counterpart and correctness statement —
++  no original theorem is weakened (R5);
++* the threshold `θ` is a callable policy parameter carried explicitly by the
++  V3 counterpart and statement. No default is chosen and no equality on `θ`
++  is ever needed (R6);
++* finite reductions over association lists preserve lookup semantics on
++  ARBITRARY states: the open-question carrier is read through `assocLookup`
++  at the occurring keys, so duplicate keys give redundant identical checks
++  and no duplicate-free premise appears in any statement (R14, R15);
++* no original definition or theorem is touched (R1, R5).
++
++Named exceptions (covered by `scripts/check-lean-mirrors`, not here):
++* `PreservesQuestionSemantics` (V4) — DEFINITIONAL identity with the existing
++  `preservesQuestionDecide` (`Prop` IS the `= true` equation; closes by `rfl`);
++* `Reach` (P13) — NOT-EXECUTABLE, bounded (see `Reactivegas.Mirrors`).
++-/
++
++namespace KelGroups
++
++variable {α : Type}
++
++/-- Membership in an association list yields a lookup hit (no `Nodup` needed). -/
++private theorem assocLookup_some_mem_nodupfree {κ ν : Type} [BEq κ] [LawfulBEq κ]
++    (key : κ) (value : ν) (entries : List (κ × ν))
++    (h : assocLookup key entries = some value) : (key, value) ∈ entries := by
++  induction entries with
++  | nil => simp [assocLookup] at h
++  | cons entry rest ih =>
++      obtain ⟨candidate, current⟩ := entry
++      simp only [assocLookup] at h
++      split at h
++      · next equal =>
++          have keyEq : candidate = key := beq_iff_eq.mp equal
++          subst keyEq
++          simp only [Option.some.injEq] at h
++          subst h
++          exact List.mem_cons_self
++      · exact List.mem_cons_of_mem _ (ih h)
++
++/-- K1 mirror: duplicate-free approvals containing the proposer. -/
++def pendingWellFormedB (pending : PendingProposal) : Bool :=
++  decide (pending.approvals.Nodup) && decide (pending.proposer ∈ pending.approvals)
++
++/-- K1 correspondence. -/
++theorem pendingWellFormed_corr (pending : PendingProposal) :
++    PendingWellFormed pending ↔ pendingWellFormedB pending = true := by
++  simp only [PendingWellFormed, pendingWellFormedB, Bool.and_eq_true, decide_eq_true_eq]
++
++/-- K2 mirror: every member entry is keyed by its own key. -/
++def membersCoherentB (gs : GroupState α) : Bool :=
++  gs.members.all fun e => decide (e.2.key = e.1)
++
++/-- K2 correspondence (no `α` equality needed: only keys are compared). -/
++theorem membersCoherent_corr (gs : GroupState α) :
++    MembersCoherent gs ↔ membersCoherentB gs = true := by
++  simp only [MembersCoherent, membersCoherentB, List.all_eq_true, decide_eq_true_eq]
++  constructor
++  · intro h e he
++    obtain ⟨k, m⟩ := e
++    exact h k m he
++  · intro h k m hm
++    exact h (k, m) hm
++
++/-- K3 mirror: every pending proposal is well formed. -/
++def pendingCoherentB (gs : GroupState α) : Bool :=
++  gs.pendingProposals.all fun e => pendingWellFormedB e.2
++
++/-- K3 correspondence (no `α` equality needed). -/
++theorem pendingCoherent_corr (gs : GroupState α) :
++    PendingCoherent gs ↔ pendingCoherentB gs = true := by
++  simp only [PendingCoherent, pendingCoherentB, List.all_eq_true]
++  constructor
++  · intro h e he
++    obtain ⟨pid, p⟩ := e
++    exact (pendingWellFormed_corr p).mp (h pid p he)
++  · intro h pid p hp
++    have he := h (pid, p) hp
++    exact (pendingWellFormed_corr p).mpr he
++
++/-- K4 mirror: key uniqueness plus both coherence checks. -/
++def wellFormedB (gs : GroupState α) : Bool :=
++  decide ((gs.members.map Prod.fst).Nodup) &&
++  (decide ((gs.pendingProposals.map Prod.fst).Nodup) &&
++  (membersCoherentB gs && pendingCoherentB gs))
++
++/-- K4 correspondence (no `α` equality needed). -/
++theorem wellFormed_corr (gs : GroupState α) :
++    WellFormed gs ↔ wellFormedB gs = true := by
++  unfold wellFormedB
++  simp only [Bool.and_eq_true, decide_eq_true_eq]
++  constructor
++  · intro h
++    obtain ⟨mK, pK, mC, pC⟩ := h
++    exact ⟨mK, pK, (membersCoherent_corr gs).mp mC, (pendingCoherent_corr gs).mp pC⟩
++  · intro h
++    obtain ⟨mK, pK, mC, pC⟩ := h
++    exact ⟨mK, pK, (membersCoherent_corr gs).mpr mC, (pendingCoherent_corr gs).mpr pC⟩
++
++/-- K5 mirror: an enactment is reported and the resulting state matches.
++The generic `[DecidableEq α]` assumption lives ONLY in this new counterpart
++and its correctness statement (R5). -/
++def enactsB {α : Type} [DecidableEq α] (gs : GroupState α) (proposalId : ProposalId)
++    (result : GroupState α) : Bool :=
++  (tryEnactDetailed gs proposalId).enactment.isSome &&
++  decide ((tryEnactDetailed gs proposalId).state = result)
++
++/-- K5 correspondence. -/
++theorem enacts_corr {α : Type} [DecidableEq α] (gs : GroupState α)
++    (proposalId : ProposalId) (result : GroupState α) :
++    Enacts gs proposalId result ↔ enactsB gs proposalId result = true := by
++  unfold Enacts enactsB
++  simp only [Bool.and_eq_true]
++  constructor
++  · intro ⟨en, h1, h2⟩
++    refine ⟨?_, ?_⟩
++    · simp [h1]
++    · rw [decide_eq_true_eq]
++      exact h2.symm
++  · intro ⟨hs, hd⟩
++    have hst : (tryEnactDetailed gs proposalId).state = result := of_decide_eq_true hd
++    cases he : (tryEnactDetailed gs proposalId).enactment with
++    | none => simp [he] at hs
++    | some en => exact ⟨en, rfl, hst.symm⟩
++
++namespace Vote
++
++/-- V1 mirror: duplicate-free disjoint tallies. -/
++def questionCleanB (q : Question) : Bool :=
++  decide (q.assents.Nodup) && (decide (q.dissents.Nodup) &&
++    q.assents.all (fun k => decide (k ∉ q.dissents)))
++
++/-- V1 correspondence (only keys are compared). -/
++theorem questionClean_corr (q : Question) :
++    QuestionClean q ↔ questionCleanB q = true := by
++  simp only [QuestionClean, questionCleanB, Bool.and_eq_true, List.all_eq_true,
++    decide_eq_true_eq]
++
++/-- The open-question cleanliness obligation, finitised through `assocLookup`
++at the occurring keys: for a fixed key the lookup returns at most one
++question, so the check is exact on arbitrary open-question lists, including
++ones with duplicate keys. -/
++private theorem openCleanIff (gs : VoteState) :
++    (∀ qid q, assocLookup qid gs.openQuestions = some q → QuestionClean q) ↔
++      ∀ qid ∈ gs.openQuestions.map Prod.fst,
++        (match assocLookup qid gs.openQuestions with
++        | some q => questionCleanB q
++        | none => true) = true := by
++  constructor
++  · intro h qid hmem
++    cases hm : assocLookup qid gs.openQuestions with
++    | none => rfl
++    | some q => exact (questionClean_corr q).mp (h qid q hm)
++  · intro h qid q hq
++    have hmem : qid ∈ gs.openQuestions.map Prod.fst := by
++      obtain hm := assocLookup_some_mem_nodupfree qid q gs.openQuestions hq
++      exact List.mem_map.mpr ⟨(qid, q), hm, rfl⟩
++    have he := h qid hmem
++    simp only [hq] at he
++    exact (questionClean_corr q).mpr he
++
++/-- V2 mirror: key uniqueness, open/closed disjointness, per-question
++cleanliness through lookup, closed cleanliness, no open verdict in `closed`.
++`view` is phantom here (as in `SweepReady` itself): the franchise enters only
++at V3 through the threshold. -/
++def sweepReadyB (_view : GroupView) (gs : VoteState) : Bool :=
++  decide ((gs.openQuestions.map Prod.fst).Nodup) &&
++  (decide ((gs.closed.map (·.questionId)).Nodup) &&
++  ((gs.openQuestions.map Prod.fst).all
++    (fun qid => decide (qid ∉ gs.closed.map (·.questionId))) &&
++  ((gs.openQuestions.map Prod.fst).all (fun qid =>
++    match assocLookup qid gs.openQuestions with
++    | some q => questionCleanB q
++    | none => true) &&
++  (gs.closed.all (fun c => questionCleanB c.question) &&
++  gs.closed.all (fun c => decide (c.verdict ≠ Verdict.open))))))
++
++/-- V2 correspondence (no threshold, no `α`: only keys and verdicts). -/
++theorem sweepReady_corr (view : GroupView) (gs : VoteState) :
++    SweepReady view gs ↔ sweepReadyB view gs = true := by
++  unfold sweepReadyB
++  simp only [Bool.and_eq_true, List.all_eq_true, decide_eq_true_eq]
++  constructor
++  · intro h
++    obtain ⟨oN, cN, dj, oC, cC, cO⟩ := h
++    refine ⟨oN, cN, dj, (openCleanIff gs).mp oC, ?_, ?_⟩
++    · intro c hc
++      exact (questionClean_corr c.question).mp (cC c hc)
++    · intro c hc
++      exact cO c hc
++  · intro h
++    obtain ⟨oN, cN, dj, oC, cC, cO⟩ := h
++    refine ⟨oN, cN, dj, (openCleanIff gs).mpr oC, ?_, ?_⟩
++    · intro c hc
++      exact (questionClean_corr c.question).mpr (cC c hc)
++    · intro c hc
++      exact cO c hc
++
++/-- The no-stale-open obligation, finitised like `openCleanIff`: the threshold
++`θ` is applied as a callable policy, never compared (R6). -/
++private theorem opensOpenIff (θ : Threshold) (view : GroupView) (gs : VoteState) :
++    (∀ qid q, assocLookup qid gs.openQuestions = some q →
++      verdictOf θ view q = Verdict.open) ↔
++      ∀ qid ∈ gs.openQuestions.map Prod.fst,
++        (match assocLookup qid gs.openQuestions with
++        | some q => decide (verdictOf θ view q = Verdict.open)
++        | none => true) = true := by
++  constructor
++  · intro h qid hmem
++    cases hm : assocLookup qid gs.openQuestions with
++    | none => rfl
++    | some q =>
++        show decide (verdictOf θ view q = Verdict.open) = true
++        rw [decide_eq_true_eq]
++        exact h qid q hm
++  · intro h qid q hq
++    have hmem : qid ∈ gs.openQuestions.map Prod.fst := by
++      obtain hm := assocLookup_some_mem_nodupfree qid q gs.openQuestions hq
++      exact List.mem_map.mpr ⟨(qid, q), hm, rfl⟩
++    have he := h qid hmem
++    simp only [hq] at he
++    exact of_decide_eq_true he
++
++/-- V3 mirror: the sweep shape plus the per-question open verdict. -/
++def voteWellFormedB (θ : Threshold) (view : GroupView) (gs : VoteState) : Bool :=
++  sweepReadyB view gs &&
++  (gs.openQuestions.map Prod.fst).all (fun qid =>
++    match assocLookup qid gs.openQuestions with
++    | some q => decide (verdictOf θ view q = Verdict.open)
++    | none => true)
++
++/-- V3 correspondence. -/
++theorem voteWellFormed_corr (θ : Threshold) (view : GroupView) (gs : VoteState) :
++    VoteWellFormed θ view gs ↔ voteWellFormedB θ view gs = true := by
++  unfold voteWellFormedB
++  simp only [Bool.and_eq_true, List.all_eq_true]
++  constructor
++  · intro h
++    exact ⟨(sweepReady_corr view gs).mp h.toSweepReady,
++      (opensOpenIff θ view gs).mp h.opensOpen⟩
++  · intro ⟨hs, ho⟩
++    exact ⟨(sweepReady_corr view gs).mpr hs, (opensOpenIff θ view gs).mpr ho⟩
++
++end Vote
++
++end KelGroups
+diff --git a/lean/Reactivegas/Mirrors.lean b/lean/Reactivegas/Mirrors.lean
+new file mode 100644
+index 0000000..94a3999
+--- /dev/null
++++ b/lean/Reactivegas/Mirrors.lean
+@@ -0,0 +1,259 @@
++import Reactivegas.Predicates
++import Reactivegas.Step
++
++/-!
++# Executable Bool mirrors for the law predicates (S4-B, #66)
++
++For each finite law/state `Prop` in `Reactivegas.Predicates` (except the named
++exceptions below) this module ships an independently implemented `Bool` mirror
++and proves the exact correspondence `P … ↔ B … = true`.
++
++Rules honoured throughout:
++* existing expressions are RELATED, never duplicated: `P01` relates
++  `comune_not_a_member` to the existing `KelGroups.GroupView.isMember`, and
++  `P07` relates `permissionToClose` to its existing
++  `permitted && pending.isEmpty` expression. No new runtime is introduced for
++  either (R4);
++* equality is decided with `decide` over `DecidableEq` instances, never with
++  bare `BEq` (NOTE-003);
++* finite list reductions preserve lookup semantics on ARBITRARY states: no
++  well-formedness (`Nodup`) premise appears in any statement. Duplicate keys
++  are handled by first-match-consistent reductions (`view_mem_of_isMember`,
++  `isMember_of_view_mem`), absent keys by the default-balance lemma
++  (`bal_absent`) (R14, R15);
++* no original definition or theorem is touched (R1, R5).
++
++Named exceptions (covered by `scripts/check-lean-mirrors`, not here):
++* `authorizedStep` (P11) — definitional projection onto the existing
++  `isResponsabile`; per-constructor relating evidence lives in the checker;
++* `stalled` (R0) — already executable (`stalledDecidable`, and it evaluates);
++* `Reach` (P13) — NOT-EXECUTABLE, bounded: no arbitrary-`Reach` oracle is
++  required under the standing boundary, and that lack is not an
++  undecidability proof.
++-/
++
++/-- Membership in an association list yields a lookup hit (no `Nodup` needed). -/
++private theorem assocLookup_some_mem_nodupfree {κ ν : Type} [BEq κ] [LawfulBEq κ]
++    (key : κ) (value : ν) (entries : List (κ × ν))
++    (h : KelGroups.assocLookup key entries = some value) : (key, value) ∈ entries := by
++  induction entries with
++  | nil => simp [KelGroups.assocLookup] at h
++  | cons entry rest ih =>
++      obtain ⟨candidate, current⟩ := entry
++      simp only [KelGroups.assocLookup] at h
++      split at h
++      · next equal =>
++          have keyEq : candidate = key := beq_iff_eq.mp equal
++          subst keyEq
++          simp only [Option.some.injEq] at h
++          subst h
++          exact List.mem_cons_self
++      · exact List.mem_cons_of_mem _ (ih h)
++
++/-- Any entry present in the list is found by lookup (no `Nodup` needed). -/
++private theorem assocLookup_some_of_mem_nodupfree {κ ν : Type} [BEq κ] [LawfulBEq κ]
++    {key : κ} {value : ν} {entries : List (κ × ν)}
++    (h : (key, value) ∈ entries) : ∃ w, KelGroups.assocLookup key entries = some w := by
++  induction entries with
++  | nil => cases h
++  | cons entry rest ih =>
++      obtain ⟨k, w⟩ := entry
++      simp only [List.mem_cons, Prod.mk.injEq] at h
++      by_cases heq : k == key
++      · exact ⟨w, by simp [KelGroups.assocLookup, heq]⟩
++      · rcases h with ⟨hku, -⟩ | htail
++        · subst hku
++          simp at heq
++        · obtain ⟨w', hw'⟩ := ih htail
++          exact ⟨w', by simp [KelGroups.assocLookup, heq, hw']⟩
++
++/-- A key the canonical view counts as member occurs in its member list.
++(v3.1 promoted body/consumer obligation: this proof reads `isMember`'s body.) -/
++theorem view_mem_of_isMember {view : KelGroups.GroupView} {u : KelGroups.Key}
++    (h : KelGroups.GroupView.isMember u view = true) : u ∈ view.members.map Prod.fst := by
++  have hs : (KelGroups.assocLookup u view.members).isSome = true := h
++  cases hv : KelGroups.assocLookup u view.members with
++  | none => simp [hv] at hs
++  | some v =>
++      obtain hm := assocLookup_some_mem_nodupfree u v view.members hv
++      exact List.mem_map.mpr ⟨(u, v), hm, rfl⟩
++
++/-- A key occurring in the member list counts as member (duplicates harmless).
++(v3.1 promoted body/consumer obligation: this proof reads `isMember`'s body.) -/
++theorem isMember_of_view_mem {view : KelGroups.GroupView} {u : KelGroups.Key}
++    {v : KelGroups.Member}
++    (h : (u, v) ∈ view.members) : KelGroups.GroupView.isMember u view = true := by
++  obtain ⟨w, hw⟩ := assocLookup_some_of_mem_nodupfree h
++  show (KelGroups.assocLookup u view.members).isSome = true
++  rw [hw]
++  rfl
++
++/-- Balance lookup of an absent key is the default zero. -/
++private theorem bal_absent {m : List (KelGroups.Key × Int)} {u : KelGroups.Key}
++    (h : u ∉ m.map Prod.fst) : bal m u = 0 := by
++  induction m with
++  | nil => rfl
++  | cons entry rest ih =>
++      obtain ⟨k, v⟩ := entry
++      rw [bal_cons]
++      by_cases hku : k = u
++      · subst hku
++        exact absurd (List.mem_map.mpr ⟨(k, v), List.mem_cons_self, rfl⟩) h
++      · simp only [hku, if_false]
++        exact ih (fun hm => h (List.mem_cons_of_mem _ hm))
++
++/-- Member-list occurrence and the canonical membership test coincide. -/
++private theorem keys_mem_coe (view : KelGroups.GroupView) (u : KelGroups.Key) :
++    (u ∈ view.members.map Prod.fst) ↔ ↑(KelGroups.GroupView.isMember u view) := by
++  constructor
++  · intro h
++    obtain ⟨⟨k, v⟩, he, heq⟩ := List.mem_map.mp h
++    have heq' : k = u := heq
++    subst heq'
++    exact isMember_of_view_mem he
++  · intro h
++    exact view_mem_of_isMember h
++
++/-- P02 mirror: conservation is already a closed arithmetic equation. -/
++def conservationB (s : State) : Bool :=
++  decide (sumBal s.casse - sumBal s.conti - escrowSum s.collections = 0)
++
++/-- P02 correspondence. -/
++theorem conservation_corr (s : State) : conservation s ↔ conservationB s = true := by
++  simp only [conservation, conservationB, decide_eq_true_eq]
++
++/-- P01 correspondence: RELATES the existing `isMember` expression (R4).
++No new runtime is introduced. -/
++theorem comune_not_a_member_corr (view : KelGroups.GroupView) :
++    comune_not_a_member view ↔ ((!KelGroups.GroupView.isMember comuneId view) = true) := by
++  unfold comune_not_a_member
++  cases KelGroups.GroupView.isMember comuneId view <;> simp
++
++/-- P01 supporting projection: `productionWellFormed` IS that expression
++read at the canonical view (definitional, `Step.lean:357`). -/
++theorem productionWellFormed_proj (gs : KelGroups.GroupState State) :
++    Reactivegas.productionWellFormed gs =
++      !KelGroups.GroupView.isMember comuneId (KelGroups.groupView gs) := rfl
++
++/-- P03 mirror: member balances over the member-list keys (duplicates give
++redundant identical checks), pledged amounts over the collection lists. -/
++def solventB (view : KelGroups.GroupView) (s : State) : Bool :=
++  (view.members.map Prod.fst).all (fun u => decide (bal s.conti u ≥ 0)) &&
++  s.collections.all (fun col =>
++    (col.accepted ++ col.pending).all (fun p => decide (0 ≤ p.amount)))
++
++/-- P03 correspondence: exact on arbitrary states, no well-formedness premise. -/
++theorem solvent_corr (view : KelGroups.GroupView) (s : State) :
++    solvent view s ↔ solventB view s = true := by
++  simp only [solvent, solventB, Bool.and_eq_true, List.all_eq_true, decide_eq_true_eq,
++    keys_mem_coe]
++
++/-- P04 mirror: existential over the member-list keys. -/
++def insolventB (view : KelGroups.GroupView) (s : State) : Bool :=
++  (view.members.map Prod.fst).any (fun u => decide (bal s.conti u < 0))
++
++/-- P04 correspondence: exact on arbitrary states, no well-formedness premise. -/
++theorem insolvent_corr (view : KelGroups.GroupView) (s : State) :
++    insolvent view s ↔ insolventB view s = true := by
++  simp only [insolvent, insolventB, List.any_eq_true, decide_eq_true_eq, keys_mem_coe]
++
++/-- P05 mirror: pairwise uniqueness check over the pledge lists. -/
++def uniquePledgesB (col : Collection) : Bool :=
++  (col.accepted ++ col.pending).all fun p =>
++    (col.accepted ++ col.pending).all fun q =>
++      (!decide (p.user = q.user) || decide (p = q))
++
++/-- Pointwise step for P05 (decided Booleans, `DecidableEq Pledge`). -/
++private theorem uniquePledges_pt (p q : Pledge) :
++    ((!decide (p.user = q.user) || decide (p = q)) = true) ↔
++      (p.user = q.user → p = q) := by
++  cases h1 : decide (p.user = q.user) <;> cases h2 : decide (p = q) <;> simp_all
++
++/-- P05 correspondence. -/
++theorem uniquePledges_corr (col : Collection) :
++    uniquePledges col ↔ uniquePledgesB col = true := by
++  simp only [uniquePledges, uniquePledgesB, List.all_eq_true, uniquePledges_pt]
++
++/-- P06 mirror: per-collection uniqueness over the state lists. -/
++def allUniquePledgesB (s : State) : Bool :=
++  s.collections.all fun col => uniquePledgesB col
++
++/-- P06 correspondence. -/
++theorem allUniquePledges_corr (s : State) :
++    allUniquePledges s ↔ allUniquePledgesB s = true := by
++  simp only [allUniquePledges, allUniquePledgesB, List.all_eq_true, uniquePledges_corr]
++
++/-- P07 correspondence: RELATES the existing `permitted && pending.isEmpty`
++expression (R4). No new runtime is introduced. -/
++theorem permissionToClose_corr (col : Collection) :
++    permissionToClose col ↔ ((col.permitted && col.pending.isEmpty) = true) := by
++  obtain ⟨id, ref, perm, acc, pend⟩ := col
++  cases perm <;> cases pend <;> simp [permissionToClose]
++
++/-- P08 mirror: the `splitUser` outcome determines the held amount. -/
++def escrowHeldB (col : Collection) (u : KelGroups.Key) (v : Int) : Bool :=
++  match splitUser u col.pending with
++  | some (amt, _) => decide (amt = v)
++  | none => false
++
++/-- P08 correspondence. -/
++theorem escrowHeld_corr (col : Collection) (u : KelGroups.Key) (v : Int) :
++    escrowHeld col u v ↔ escrowHeldB col u v = true := by
++  unfold escrowHeld escrowHeldB
++  cases h : splitUser u col.pending with
++  | none =>
++      simp
++  | some w =>
++      obtain ⟨v', r⟩ := w
++      simp only [Option.some.injEq, Prod.mk.injEq, decide_eq_true_eq]
++      constructor
++      · intro ⟨pend, heq, _⟩
++        exact heq
++      · intro heq
++        exact ⟨r, heq, rfl⟩
++
++/-- P09 mirror: every collection's referente differs from `u`. -/
++def governanceEnactsB (u : KelGroups.Key) (s' : State) : Bool :=
++  s'.collections.all fun c => decide (c.referente ≠ u)
++
++/-- P09 correspondence. -/
++theorem governanceEnacts_corr (u : KelGroups.Key) (s' : State) :
++    governanceEnacts u s' ↔ governanceEnactsB u s' = true := by
++  simp only [governanceEnacts, governanceEnactsB, List.all_eq_true, decide_eq_true_eq]
++
++/-- P10 mirror: the two balance equations, decided separately. -/
++def doubleEntryB (s s' : State) (a u : KelGroups.Key) (v : Int) : Bool :=
++  decide (bal s'.conti u = bal s.conti u + v) &&
++  decide (bal s'.casse a = bal s.casse a + v)
++
++/-- P10 correspondence. -/
++theorem doubleEntry_corr (s s' : State) (a u : KelGroups.Key) (v : Int) :
++    doubleEntry s s' a u v ↔ doubleEntryB s s' a u v = true := by
++  simp only [doubleEntry, doubleEntryB, Bool.and_eq_true, decide_eq_true_eq]
++
++/-- Third conjunct of P12, finitised: checking the balance at every occurring
++key is exactly checking it at every key, because absent keys read the default
++zero (`bal_absent`). Duplicate keys give redundant identical checks. -/
++private theorem canClose_third (s : State) :
++    (∀ r : KelGroups.Key, bal s.casse r = 0) ↔
++      ∀ r ∈ s.casse.map Prod.fst, bal s.casse r = 0 := by
++  constructor
++  · intro h r _
++    exact h r
++  · intro h r
++    by_cases hm : r ∈ s.casse.map Prod.fst
++    · exact h r hm
++    · exact bal_absent hm
++
++/-- P12 mirror: member conti over the member-list keys, no open collections,
++cassa over the occurring cassa keys (exact by `canClose_third`). -/
++def canCloseGroupB (view : KelGroups.GroupView) (s : State) : Bool :=
++  (view.members.map Prod.fst).all (fun u => decide (bal s.conti u = 0)) &&
++  (decide (s.collections = []) &&
++  (s.casse.map Prod.fst).all (fun r => decide (bal s.casse r = 0)))
++
++/-- P12 correspondence: exact on arbitrary states, no well-formedness premise. -/
++theorem canCloseGroup_corr (view : KelGroups.GroupView) (s : State) :
++    canCloseGroup view s ↔ canCloseGroupB view s = true := by
++  simp only [canCloseGroup, canCloseGroupB, Bool.and_eq_true, List.all_eq_true,
++    decide_eq_true_eq, keys_mem_coe, canClose_third]
+diff --git a/scripts/check-lean-mirrors b/scripts/check-lean-mirrors
+new file mode 100755
+index 0000000..ddf10f9
+--- /dev/null
++++ b/scripts/check-lean-mirrors
+@@ -0,0 +1,418 @@
++#!/usr/bin/env bash
++# scripts/check-lean-mirrors — S4-B mandatory mirror checker (R7-R9, C1-C3).
++#
++# Reconciles, per identity, source → compiled inventory → counterpart /
++# correctness relation for the #66 Prop/Bool correspondence scope:
++#   * discovers every Prop-valued project definition/inductive/OPAQUE from the
++#     COMPILED environment (TOTAL ConstantInfo classification, F01: home first,
++#     kind second with every arm explicit, result sort third; opaqueInfo is
++#     predicate-bearing, thm/axiom/ctor/rec are excluded with named reasons
++#     counted in the receipt, and any unclassified kind fails closed with the
++#     classifier's own diagnostic. Prop-parameter/non-Prop-result shapes
++#     excluded; `<I>.below` eliminator machinery of a discovered inductive `I`
++#     excluded by structural rule and logged);
++#   * requires each discovered identity to be either a tabled correspondence
++#     row (mirror const and theorem const both exist; the theorem is an `Iff`
++#     off the discovered Prop; the right-hand side mentions the mirror) or a
++#     separately named exception (V4 definitional identity, P11
++#     per-constructor projection, R0 executable instance + evaluation, P13
++#     bounded non-executable);
++#   * rejects stale table rows, missing mirrors/theorems, shape mismatches,
++#     orphan Bool mirrors in the new mirror modules, and an empty discovery.
++#   * checks the two promoted P01 body/consumer obligations (v3.1 Obligation 2)
++#     for existence as theorems mentioning the operative definition.
++# Exit 0 with a MIRROR-CHECK-OK receipt iff everything reconciles; exit 1
++# NAMING the offending identity otherwise. On success the driver ALSO writes
++# `lean/.lake/s4b-mirror-receipt` binding the reconciled extent to a freshness
++# nonce: the `just lean` recipe writes a fresh nonce before invoking this script
++# and asserts the receipt afterwards, so a checker neutered to unconditional
++# success — or a removed/bypassed invocation — fails loudly as
++# MIRROR-RECEIPT-ABSENT instead of passing silently (C4, instrument v2). The
++# `just lean` evidence must contain the receipt line: its absence means this
++# checker did not run (R10).
++set -euo pipefail
++HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
++RECEIPT_DIR="$HERE/../lean/.lake"
++RECEIPT="$RECEIPT_DIR/s4b-mirror-receipt"
++NONCE_FILE="$RECEIPT_DIR/s4b-mirror-nonce"
++rm -f "$RECEIPT"
++if [ -f "$NONCE_FILE" ]; then NONCE="$(cat "$NONCE_FILE")"; else NONCE="leaf-$(date +%s%N)-$$"; fi
++DRIVER="$(mktemp /tmp/s4b-mirror-driver.XXXXXX.lean)"
++trap 'rm -f "$DRIVER"' EXIT
++# Owned-module inventory for provenance-based ownership and import-reach
++# completeness (NOTE-015): mirrors the S2R tracked rule exactly (git-tracked
++# `.lean` under `lean/`, minus `lakefile.lean`, path mapped to module name).
++# S2R's tracked/walked gate already rejects untracked-but-present sources
++# upstream, so `ls-files` is the complete owned set here by layering.
++TRACKED_LEAN=$(git -C "$HERE/.." ls-files -- 'lean' | grep -E '\.lean$' | sort | while IFS= read -r f; do
++  rel=${f#lean/}; [ "$rel" = lakefile.lean ] && continue
++  printf '%s\n' "${rel%.lean}" | tr '/' '.'
++done)
++TRACKED_LIT=$(printf '%s\n' "$TRACKED_LEAN" | sed 's/.*/"&"/' | paste -sd, -)
++cat > "$DRIVER" <<'LEAN_EOF'
++-- S4-B mandatory mirror checker driver (heredoc-embedded, not a repo file).
++-- Contract: scripts/check-lean-mirrors header comment. This driver defines no
++-- Prop-valued def: all evidence below is `example`s (theorem info, excluded
++-- from discovery) plus Bool-typed table data.
++
++import KelGroups
++import Reactivegas
++import Reactivegas.Mirrors
++import KelGroups.Mirrors
++import Reactivegas.CorpusExport
++import Reactivegas.CorpusGate
++import Reactivegas.TraceTests
++
++-- V4 exception evidence: definitional identity (EQ form, closes by rfl).
++example (theta : KelGroups.Vote.Threshold) (view : KelGroups.GroupView)
++    (gs : KelGroups.Vote.VoteState) (s : KelGroups.Key)
++    (ev : KelGroups.Vote.VoteEvent) (qid : KelGroups.Vote.QuestionId) :
++    KelGroups.Vote.PreservesQuestionSemantics theta view gs s ev qid =
++      (KelGroups.Vote.preservesQuestionDecide theta view gs s ev qid = true) := rfl
++
++-- P11 exception evidence: per-constructor definitional projection (14x rfl).
++-- Each arm of `authorizedStep` IS the existing `isResponsabile` application.
++example (view : KelGroups.GroupView) (s s' : State) (a : KelGroups.Key) (c : CollId) :
++    authorizedStep view s (.openPurchase a c) s' = (isResponsabile view a = true) := rfl
++example (view : KelGroups.GroupView) (s s' : State) (a : KelGroups.Key) (c : CollId) :
++    authorizedStep view s (.grantPermission a c) s' = (isResponsabile view a = true) := rfl
++example (view : KelGroups.GroupView) (s s' : State) (a : KelGroups.Key) (c : CollId) :
++    authorizedStep view s (.denyPermission a c) s' = (isResponsabile view a = true) := rfl
++example (view : KelGroups.GroupView) (s s' : State) (a u : KelGroups.Key) (v : Int) :
++    authorizedStep view s (.deposit a u v) s' = (isResponsabile view a = true) := rfl
++example (view : KelGroups.GroupView) (s s' : State) (a u : KelGroups.Key) (v : Int) :
++    authorizedStep view s (.withdraw a u v) s' = (isResponsabile view a = true) := rfl
++example (view : KelGroups.GroupView) (s s' : State) (a f : KelGroups.Key) (v : Int) :
++    authorizedStep view s (.transferCassa a f v) s' = (isResponsabile view a = true) := rfl
++example (view : KelGroups.GroupView) (s s' : State) (a : KelGroups.Key) (v : Int) :
++    authorizedStep view s (.donate a v) s' = (isResponsabile view a = true) := rfl
++example (view : KelGroups.GroupView) (s s' : State) (a : KelGroups.Key) (w : Int) :
++    authorizedStep view s (.backdonate a w) s' = (isResponsabile view a = true) := rfl
++example (view : KelGroups.GroupView) (s s' : State) (a u : KelGroups.Key) (c : CollId) (v : Int) :
++    authorizedStep view s (.pledge a u c v) s' = (isResponsabile view a = true) := rfl
++example (view : KelGroups.GroupView) (s s' : State) (a u : KelGroups.Key) (c : CollId) :
++    authorizedStep view s (.acceptPledge a u c) s' = (isResponsabile view a = true) := rfl
++example (view : KelGroups.GroupView) (s s' : State) (a u : KelGroups.Key) (c : CollId) :
++    authorizedStep view s (.refusePledge a u c) s' = (isResponsabile view a = true) := rfl
++example (view : KelGroups.GroupView) (s s' : State) (a u : KelGroups.Key) (c : CollId) (v : Int) :
++    authorizedStep view s (.correctPledge a u c v) s' = (isResponsabile view a = true) := rfl
++example (view : KelGroups.GroupView) (s s' : State) (a : KelGroups.Key) (c : CollId) :
++    authorizedStep view s (.closePurchase a c) s' = (isResponsabile view a = true) := rfl
++example (view : KelGroups.GroupView) (s s' : State) (a : KelGroups.Key) (c : CollId) :
++    authorizedStep view s (.failPurchase a c) s' = (isResponsabile view a = true) := rfl
++
++-- R0 exception evidence: executable (Decidable instance + evaluation).
++example (s : State) : Decidable (stalled s) := inferInstance
++example : decide (stalled State.empty) = false := by decide
++
++-- Executable-evaluation assertions for the 17 new mirrors (tiny witnesses).
++-- Each elaborates only if the mirror compiles AND evaluates to the asserted
++-- value: this is EXECUTABLE-DECISION evidence, not a Decidable instance.
++example : conservationB State.empty = true := by decide
++example : solventB { members := [] } State.empty = true := by decide
++example : insolventB { members := [] } State.empty = false := by decide
++example : uniquePledgesB { id := 0, referente := "r", permitted := false, accepted := [], pending := [] } = true := by decide
++example : allUniquePledgesB State.empty = true := by decide
++example : escrowHeldB { id := 0, referente := "r", permitted := false, accepted := [], pending := [] } "u" 0 = false := by decide
++example : governanceEnactsB "u" State.empty = true := by decide
++example : doubleEntryB State.empty State.empty "a" "u" 0 = true := by decide
++example : canCloseGroupB { members := [] } State.empty = true := by decide
++example : KelGroups.pendingWellFormedB { proposal := .removeMember "k", proposer := "p", approvals := [] } = false := by decide
++example : KelGroups.membersCoherentB (KelGroups.emptyState ()) = true := by decide
++example : KelGroups.pendingCoherentB (KelGroups.emptyState ()) = true := by decide
++example : KelGroups.wellFormedB (KelGroups.emptyState ()) = true := by decide
++example : KelGroups.enactsB (KelGroups.emptyState ()) "pid" (KelGroups.emptyState ()) = false := by decide
++example : KelGroups.Vote.questionCleanB { kind := .collective, proposer := "a", assents := [], dissents := [] } = true := by decide
++example : KelGroups.Vote.sweepReadyB { members := [] } KelGroups.Vote.emptyVoteState = true := by decide
++example : KelGroups.Vote.voteWellFormedB (fun _ => 0) { members := [] } KelGroups.Vote.emptyVoteState = true := by decide
++
++/-- The 19 claimed correspondence rows: discovered Prop, optional existing or
++new mirror const, correctness theorem const. -/
++def s4bCorrTable : Array (String × Option String × String) := #[
++  ("comune_not_a_member", some "KelGroups.GroupView.isMember", "comune_not_a_member_corr"),
++  ("conservation", some "conservationB", "conservation_corr"),
++  ("solvent", some "solventB", "solvent_corr"),
++  ("insolvent", some "insolventB", "insolvent_corr"),
++  ("uniquePledges", some "uniquePledgesB", "uniquePledges_corr"),
++  ("allUniquePledges", some "allUniquePledgesB", "allUniquePledges_corr"),
++  ("permissionToClose", none, "permissionToClose_corr"),
++  ("escrowHeld", some "escrowHeldB", "escrowHeld_corr"),
++  ("governanceEnacts", some "governanceEnactsB", "governanceEnacts_corr"),
++  ("doubleEntry", some "doubleEntryB", "doubleEntry_corr"),
++  ("canCloseGroup", some "canCloseGroupB", "canCloseGroup_corr"),
++  ("KelGroups.PendingWellFormed", some "KelGroups.pendingWellFormedB", "KelGroups.pendingWellFormed_corr"),
++  ("KelGroups.MembersCoherent", some "KelGroups.membersCoherentB", "KelGroups.membersCoherent_corr"),
++  ("KelGroups.PendingCoherent", some "KelGroups.pendingCoherentB", "KelGroups.pendingCoherent_corr"),
++  ("KelGroups.WellFormed", some "KelGroups.wellFormedB", "KelGroups.wellFormed_corr"),
++  ("KelGroups.Enacts", some "KelGroups.enactsB", "KelGroups.enacts_corr"),
++  ("KelGroups.Vote.QuestionClean", some "KelGroups.Vote.questionCleanB", "KelGroups.Vote.questionClean_corr"),
++  ("KelGroups.Vote.SweepReady", some "KelGroups.Vote.sweepReadyB", "KelGroups.Vote.sweepReady_corr"),
++  ("KelGroups.Vote.VoteWellFormed", some "KelGroups.Vote.voteWellFormedB", "KelGroups.Vote.voteWellFormed_corr")]
++
++/-- Separately named legitimate exceptions (V4, P11, R0 definitional or
++executable evidence above; P13 bounded, no oracle required). -/
++def s4bExceptions : Array String :=
++  #["KelGroups.Vote.PreservesQuestionSemantics", "authorizedStep", "stalled", "Reach"]
++
++/-- Promoted body/consumer obligations (v3.1 Obligation 2): the two P01 helper
++theorems whose proofs read `isMember`'s definition body. Checked for existence
++as theorem info mentioning the operative definition ANYWHERE in the statement
++(hypotheses and conclusion both harvested — a conclusion-only harvest would
++falsely reject `view_mem_of_isMember`, whose occurrence sits in its
++hypothesis). Mention establishes BINDING (right theorem, right operative)
++only: mention is not use, and neither is sensitivity, which is established by
++O5 (mandatory path) and OT2 (isolation). -/
++def s4bPromotedTable : Array String := #["view_mem_of_isMember", "isMember_of_view_mem"]
++
++partial def s4bHarvestConsts (e : Lean.Expr) (acc : Array Lean.Name) : Array Lean.Name :=
++  match e with
++  | .const n _ => if acc.contains n then acc else acc.push n
++  | .app f a => s4bHarvestConsts a (s4bHarvestConsts f acc)
++  | .lam _ t b _ => s4bHarvestConsts b (s4bHarvestConsts t acc)
++  | .forallE _ t b _ => s4bHarvestConsts b (s4bHarvestConsts t acc)
++  | .letE _ t v b _ => s4bHarvestConsts b (s4bHarvestConsts v (s4bHarvestConsts t acc))
++  | .mdata _ b => s4bHarvestConsts b acc
++  | .proj _ _ b => s4bHarvestConsts b acc
++  | _ => acc
++
++/-- Tracked owned modules, baked per-run from `git ls-files` by the wrapper
++script (see TRACKED_LIT). Authority for provenance-based ownership and the
++import-reach completeness check. This is derived live, never a frozen list:
++a future owned module appears here automatically and either resolves (imported)
++or fires the reach gap loudly. -/
++def s4bTrackedModules : Array String := #[__TRACKED_MODULES__]
++
++open Lean Elab Command Meta in
++run_cmd do
++  let env ← getEnv
++  let mods := env.header.moduleNames
++  let nonce ← IO.getEnv "S4B_MIRROR_NONCE"
++  let nonce := nonce.getD "unset"
++  let failedRef ← IO.mkRef false
++  let fail (msg : MessageData) : CommandElabM Unit := do
++    logError msg
++    failedRef.set true
++  -- 1. Discovery: TOTAL ConstantInfo classification over owned modules (F01).
++  -- Provenance first, kind second with every arm explicit, result sort third.
++  -- Predicate-bearing kinds (defn/induct/opaque) are result-sort tested;
++  -- thm/axiom/ctor/rec are excluded with named reasons counted below; any
++  -- unclassified kind fails closed with the classifier's own diagnostic
++  -- (never a Lean error, never silent). Deleting any kind arm below (as the
++  -- classifier-omit control does) routes real constants of that kind to the
++  -- fail-closed arm instead of silently dropping them.
++  let mut found : Array (String × String) := #[]
++  let mut skipped : Array String := #[]
++  let mut predDefnCount := 0
++  let mut predInductCount := 0
++  let mut predOpaqueCount := 0
++  let mut nonpredDefn := 0
++  let mut nonpredInduct := 0
++  let mut nonpredOpaque := 0
++  let mut nonowned := 0
++  let mut exclThm := 0
++  let mut exclAxiom := 0
++  let mut exclCtorRec := 0
++  for (n, ci) in env.constants.toList do
++    let home : String :=
++      match env.getModuleIdxFor? n with
++      | some idx =>
++          match mods[idx]? with
++          | some m => toString m
++          | none => "<no-mod>"
++      | none => "<current-file>"
++    if !s4bTrackedModules.contains home then
++      nonowned := nonowned + 1
++      continue
++    match ci with
++    | .defnInfo _ | .inductInfo _ | .opaqueInfo _ =>
++        let kindTag : String :=
++          match ci with
++          | .defnInfo _ => "defn"
++          | .inductInfo _ => "induct"
++          | .opaqueInfo _ => "opaque"
++          | _ => "UNREACHABLE-INNER"
++        if kindTag == "UNREACHABLE-INNER" then do
++          fail m!"MIRROR-UNCLASSIFIED-KIND {home} :: {toString n} (fail-closed: inner classification unreachable)"
++          continue
++        let verdict : Option Bool ← liftTermElabM (try
++          forallTelescopeReducing ci.type fun _ cod => do
++            let c ← whnf cod
++            match c with
++            | .sort .zero => pure (some true)
++            | .sort _ => pure (some false)
++            | _ => pure (some false)
++          catch _ => pure none)
++        match verdict with
++        | some true =>
++            found := found.push (home, toString n)
++            if kindTag == "defn" then predDefnCount := predDefnCount + 1
++            else if kindTag == "induct" then predInductCount := predInductCount + 1
++            else predOpaqueCount := predOpaqueCount + 1
++        | some false =>
++            if kindTag == "defn" then nonpredDefn := nonpredDefn + 1
++            else if kindTag == "induct" then nonpredInduct := nonpredInduct + 1
++            else nonpredOpaque := nonpredOpaque + 1
++        | none => skipped := skipped.push (toString n)
++    | .thmInfo _ => exclThm := exclThm + 1
++    | .axiomInfo _ => exclAxiom := exclAxiom + 1
++    | .ctorInfo _ | .recInfo _ => exclCtorRec := exclCtorRec + 1
++    | _ =>
++        fail m!"MIRROR-UNCLASSIFIED-KIND {home} :: {toString n} (fail-closed: no classification rule covers this declaration kind)"
++        continue
++  if found.size == 0 then fail m!"MIRROR-EMPTY-DISCOVERY"
++  for sk in skipped do logInfo m!"MIRROR-SKIP {sk}"
++  logInfo m!"MIRROR-KIND-CENSUS pred(defn/induct/opaque)={predDefnCount}/{predInductCount}/{predOpaqueCount} nonpred(defn/induct/opaque)={nonpredDefn}/{nonpredInduct}/{nonpredOpaque} nonowned={nonowned} excluded(thm/axiom/ctor-rec)={exclThm}/{exclAxiom}/{exclCtorRec} sort-undecided={skipped.size}"
++  -- 1b. Import-reach completeness (Boundary 1): every tracked owned module
++  -- must be present in the imported closure. A tracked-but-unimported module
++  -- fails closed NAMING it plus remediation (module-level refusal); predicate
++  -- naming inside it follows once imported (O2 demonstrates both directions
++  -- at CorpusExport). Never silent, never narrowing.
++  for t in s4bTrackedModules do
++    let present := mods.any (fun m => toString m == t)
++    if !present then
++      fail m!"MIRROR-IMPORT-REACH-GAP {t} (tracked owned module outside the checker's import closure; import it into an umbrella or the driver)"
++  -- 2. Structural below-rule: `<I>.below` of a discovered induct `I` is
++  -- eliminator machinery, not an owned predicate. Logged, never silent.
++  let mut covered : Array String := #[]
++  let mut belowCount := 0
++  for (_, s) in found do
++    if s.endsWith ".below" then
++      let parent := s.dropRight ".below".length
++      match env.find? parent.toName with
++      | some (.inductInfo _) =>
++          logInfo m!"MIRROR-BELOW-EXCLUDED {s} (machinery of discovered induct {parent})"
++          covered := covered.push s
++          belowCount := belowCount + 1
++      | _ => pure ()
++  -- 3. Per-identity reconciliation of the 19 claimed rows.
++  let mut rowCount := 0
++  for (prop, mirrorOpt, thm) in s4bCorrTable do
++    if !found.any (fun (_, s) => s == prop) then
++      fail m!"MIRROR-STALE-ROW {prop} (tabled but not discovered)"
++      continue
++    covered := covered.push prop
++    match mirrorOpt with
++    | some m =>
++        match env.find? m.toName with
++        | some _ => pure ()
++        | none => fail m!"MIRROR-MISSING {prop} (no const {m})"
++    | none => pure ()
++    match env.find? thm.toName with
++    | none => fail m!"MIRROR-THEOREM-MISSING {prop} (no const {thm})"
++    | some ti =>
++        match ti with
++        | .thmInfo _ => pure ()
++        | _ => fail m!"MIRROR-NOT-THEOREM {prop} ({thm} is not theorem info)"
++        let shape ← liftTermElabM (try
++          forallTelescopeReducing ti.type fun _ ty => do
++            let t ← whnf ty
++            match t with
++            | .app (.app (.const ``Iff _) lhs) rhs =>
++                -- NOTE: no whnf on `lhs` here: unfolding would dissolve
++                -- def-Props into their bodies and hide the head const.
++                match lhs.getAppFn with
++                | .const pn _ =>
++                    if toString pn == prop then
++                      match mirrorOpt with
++                      | some m =>
++                          pure (s4bHarvestConsts rhs #[] |>.contains m.toName)
++                      | none => pure true
++                    else pure false
++                | _ => pure false
++            | _ => pure false
++          catch _ => pure false)
++        if !shape then fail m!"MIRROR-SHAPE-MISMATCH {prop} (theorem {thm} is not an Iff off {prop} mentioning its mirror)"
++        else
++          logInfo m!"MIRROR-ROW {prop} {mirrorOpt.getD "(inline-expr)"} {thm} OK"
++          rowCount := rowCount + 1
++  -- 3b. Promoted obligations: existence as theorems mentioning the operative def.
++  let mut promotedCount := 0
++  for p in s4bPromotedTable do
++    match env.find? p.toName with
++    | none => fail m!"MIRROR-PROMOTED-MISSING {p}"
++    | some pi =>
++        match pi with
++        | .thmInfo _ => pure ()
++        | _ => fail m!"MIRROR-PROMOTED-NOT-THEOREM {p}"
++        let mentioned ← liftTermElabM (try
++          forallTelescopeReducing pi.type fun xs ty => do
++            let mut acc := s4bHarvestConsts ty #[]
++            for x in xs do
++              acc := s4bHarvestConsts (← inferType x) acc
++            pure (acc.contains `KelGroups.GroupView.isMember)
++          catch _ => pure false)
++        if !mentioned then fail m!"MIRROR-PROMOTED-SHAPE-MISMATCH {p} (does not mention the operative definition)"
++        else
++          logInfo m!"MIRROR-PROMOTED {p} OK"
++          promotedCount := promotedCount + 1
++  -- 4. Named exceptions must be discovered (else the exception is stale).
++  for e in s4bExceptions do
++    if !found.any (fun (_, s) => s == e) then
++      fail m!"MIRROR-STALE-EXCEPTION {e}"
++    else
++      covered := covered.push e
++      logInfo m!"MIRROR-EXCEPTION {e} OK"
++  -- 5. Anything discovered but unaccounted for is an uncovered owned predicate.
++  for (home, s) in found do
++    if !covered.contains s then
++      fail m!"MIRROR-UNCOVERED {home} :: {s}"
++  -- 6. Orphan Bool mirrors: every Bool def in the new mirror modules must be
++  -- claimed by exactly one table row.
++  let mut claimedMirrors : Array String := #[]
++  for (_, mOpt, _) in s4bCorrTable do
++    match mOpt with
++    | some m => claimedMirrors := claimedMirrors.push m
++    | none => pure ()
++  let mut orphanCount := 0
++  for (n, ci) in env.constants.toList do
++    match ci with
++    | .defnInfo _ => pure ()
++    | _ => continue
++    let home : String :=
++      match env.getModuleIdxFor? n with
++      | some idx =>
++          match mods[idx]? with
++          | some m => toString m
++          | none => "<no-mod>"
++      | none => "<current-file>"
++    if !(home == "Reactivegas.Mirrors" || home == "KelGroups.Mirrors") then continue
++    let isBool ← liftTermElabM (try
++      forallTelescopeReducing ci.type fun _ cod => do
++        let c ← whnf cod
++        match c with
++        | .const ``Bool _ => pure true
++        | _ => pure false
++      catch _ => pure false)
++    if isBool then
++      let s := toString n
++      if !claimedMirrors.contains s then
++        fail m!"MIRROR-ORPHAN {s} (Bool mirror in {home} claimed by no row)"
++      else orphanCount := orphanCount + 1
++  logInfo m!"MIRROR-SUMMARY rows={rowCount} exceptions={s4bExceptions.size} below={belowCount} orphans-checked={orphanCount} discovered={found.size} promoted={promotedCount}"
++  logInfo m!"MIRROR-KIND-CENSUS-OK pred={predDefnCount + predInductCount + predOpaqueCount} excluded-thm={exclThm} unclassified=0"
++  let failed ← failedRef.get
++  if failed then fail m!"MIRROR-CHECK-FAILED"
++  else do
++    logInfo m!"MIRROR-CHECK-OK rows={rowCount} exceptions={s4bExceptions.size} discovered={found.size} promoted={promotedCount} tracked={s4bTrackedModules.size}"
++    let names := (found.map (·.2)).qsort (· < ·)
++    let receipt := "MIRROR-CHECK-OK rows=" ++ toString rowCount ++
++      " exceptions=" ++ toString s4bExceptions.size ++
++      " discovered=" ++ toString found.size ++
++      " promoted=" ++ toString promotedCount ++
++      " tracked=" ++ toString s4bTrackedModules.size ++ "\n" ++
++      "nonce=" ++ nonce ++ "\n" ++
++      "\n".intercalate (names.toList.map (fun s => "extent " ++ s)) ++ "\n" ++
++      "\n".intercalate (s4bTrackedModules.toList.map (fun s => "tracked " ++ s)) ++ "\n"
++    IO.FS.writeFile ".lake/s4b-mirror-receipt" receipt
++    logInfo m!"MIRROR-RECEIPT-WROTE nonce={nonce}"
++LEAN_EOF
++# Bake the per-run tracked inventory into the driver (pure bash: the heredoc
++# stays quoted so Lean backticks never expand). Then build the exe target the
++# driver imports (incremental; same substantive run, log-visible, never hidden
++# work — default `lake build` skips non-default exe targets, verified against
++# the lakefile and the S2R worktree's missing exe oleans).
++driver_text=$(cat "$DRIVER")
++driver_text=${driver_text//__TRACKED_MODULES__/$TRACKED_LIT}
++printf '%s' "$driver_text" > "$DRIVER"
++cd "$HERE/../lean" && lake build corpusExport
++cd "$HERE/../lean" && S4B_MIRROR_NONCE="$NONCE" lake env lean "$DRIVER"

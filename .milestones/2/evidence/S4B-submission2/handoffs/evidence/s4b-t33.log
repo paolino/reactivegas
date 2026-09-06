@@ -1,0 +1,22 @@
+path '/code/reactivegas-66-s4b/lean' does not contain a 'flake.nix', searching up
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+'comune_not_a_member_corr' depends on axioms: [propext]
+'conservation_corr' depends on axioms: [propext]
+'solvent_corr' depends on axioms: [propext, Quot.sound]
+'insolvent_corr' depends on axioms: [propext, Quot.sound]
+'uniquePledges_corr' depends on axioms: [propext, Quot.sound]
+'allUniquePledges_corr' depends on axioms: [propext, Quot.sound]
+'permissionToClose_corr' depends on axioms: [propext]
+'escrowHeld_corr' depends on axioms: [propext, Quot.sound]
+'governanceEnacts_corr' depends on axioms: [propext, Quot.sound]
+'doubleEntry_corr' depends on axioms: [propext]
+'canCloseGroup_corr' depends on axioms: [propext, Quot.sound]
+'productionWellFormed_proj' does not depend on any axioms
+'KelGroups.pendingWellFormed_corr' depends on axioms: [propext]
+'KelGroups.membersCoherent_corr' depends on axioms: [propext, Quot.sound]
+'KelGroups.pendingCoherent_corr' depends on axioms: [propext, Quot.sound]
+'KelGroups.wellFormed_corr' depends on axioms: [propext, Quot.sound]
+'KelGroups.enacts_corr' depends on axioms: [propext]
+'KelGroups.Vote.questionClean_corr' depends on axioms: [propext, Quot.sound]
+'KelGroups.Vote.sweepReady_corr' depends on axioms: [propext, Quot.sound]
+'KelGroups.Vote.voteWellFormed_corr' depends on axioms: [propext, Quot.sound]

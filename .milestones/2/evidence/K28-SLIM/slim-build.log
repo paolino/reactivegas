@@ -1,0 +1,2 @@
+cabal build all -O0
+Up to date

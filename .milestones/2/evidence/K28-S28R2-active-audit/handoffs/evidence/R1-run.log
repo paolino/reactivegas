@@ -1,0 +1,12 @@
+R1-NC wrong-empty-view-detected=True
+R1 founding exact=True
+R1 founding view=True
+R1 direct-validator=True
+R1 admission exact pre-post-payload=True
+R1 mutation-validator=True
+R1 proposal exact pending=True
+R1 approval-validator=True
+R1 roles exact pre-post-payload=True
+R1 nonmember identity=True
+R1 nonmember exact state=True
+R1 nonmember bytes=True

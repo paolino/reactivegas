@@ -1,0 +1,38 @@
+commit 04eb6c7d9aeb2a3602fca5ece14cbc033221cb43
+Author: Paolo Veronelli <paolo.veronelli@gmail.com>
+Date:   Sun Sep 6 07:34:03 2026 +0100
+
+    docs(lean): cite RG-S4-REACH-20260906 as warrant for P13 exemption (S4-B NOTE-035, comments only)
+
+diff --git a/lean/Reactivegas/Mirrors.lean b/lean/Reactivegas/Mirrors.lean
+index 94a3999..98863cf 100644
+--- a/lean/Reactivegas/Mirrors.lean
++++ b/lean/Reactivegas/Mirrors.lean
+@@ -27,9 +27,10 @@ Named exceptions (covered by `scripts/check-lean-mirrors`, not here):
+ * `authorizedStep` (P11) — definitional projection onto the existing
+   `isResponsabile`; per-constructor relating evidence lives in the checker;
+ * `stalled` (R0) — already executable (`stalledDecidable`, and it evaluates);
+-* `Reach` (P13) — NOT-EXECUTABLE, bounded: no arbitrary-`Reach` oracle is
+-  required under the standing boundary, and that lack is not an
+-  undecidability proof.
++* `Reach` (P13) — NOT-EXECUTABLE, bounded: per ruling RG-S4-REACH-20260906 an
++  arbitrary-state decision procedure is NOT-REQUIRED for this milestone (the
++  required observable is finite-history validation, owned as S5); not an
++  undecidability claim and not inferred from absent callers.
+ -/
+ 
+ /-- Membership in an association list yields a lookup hit (no `Nodup` needed). -/
+diff --git a/scripts/check-lean-mirrors b/scripts/check-lean-mirrors
+index ddf10f9..afa5705 100755
+--- a/scripts/check-lean-mirrors
++++ b/scripts/check-lean-mirrors
+@@ -150,7 +150,8 @@ def s4bCorrTable : Array (String × Option String × String) := #[
+   ("KelGroups.Vote.VoteWellFormed", some "KelGroups.Vote.voteWellFormedB", "KelGroups.Vote.voteWellFormed_corr")]
+ 
+ /-- Separately named legitimate exceptions (V4, P11, R0 definitional or
+-executable evidence above; P13 bounded, no oracle required). -/
++executable evidence above; P13 bounded per ruling RG-S4-REACH-20260906, which
++holds arbitrary-state decision NOT-REQUIRED — not undecidability). -/
+ def s4bExceptions : Array String :=
+   #["KelGroups.Vote.PreservesQuestionSemantics", "authorizedStep", "stalled", "Reach"]
+ 

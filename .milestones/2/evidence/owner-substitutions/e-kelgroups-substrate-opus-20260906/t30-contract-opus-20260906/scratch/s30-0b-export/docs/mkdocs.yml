@@ -1,0 +1,31 @@
+site_name: kelgroups
+site_url: https://paolino.github.io/kelgroups/
+repo_url: https://github.com/paolino/kelgroups
+repo_name: paolino/kelgroups
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: teal
+  features:
+    - navigation.sections
+    - content.code.copy
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+extra_javascript:
+  - javascripts/mermaid.mjs
+
+nav:
+  - Home: index.md
+  - Design: design.md
+  - Implementation: implementation.md
+  - Properties: properties.md
+  - Key Export: key-export.md
+  - Roadmap: roadmap.md

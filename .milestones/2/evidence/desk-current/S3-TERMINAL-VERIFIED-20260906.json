@@ -1,0 +1,22 @@
+{
+  "verifiedAt": "2026-09-06T06:23:36.519Z",
+  "entries": 30,
+  "reportSha256": "3f7260b6799d752b9d756ac8bcf84dea460e6de55310949aa3af815c6c62f41e",
+  "manifestSha256": "65a6c29e1867ac84d848728892b405154cdb365a254fb99771ef9382afa457d5",
+  "verdict": "AUDIT-FINDINGS",
+  "originalFindings": {
+    "closed": [
+      "F04",
+      "F05",
+      "F08"
+    ],
+    "partlyBlocking": [
+      "F01",
+      "F02",
+      "F03",
+      "F06",
+      "F07"
+    ]
+  },
+  "scope": "Static full audit, zero project execution; parent disposition required, no fourth author grant."
+}

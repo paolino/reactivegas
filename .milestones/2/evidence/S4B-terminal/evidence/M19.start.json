@@ -1,0 +1,22 @@
+{
+  "start": "2026-09-05T22:28:24.694Z",
+  "kind": "targeted",
+  "argv": [
+    "nix",
+    "develop",
+    "--quiet",
+    "-c",
+    "bash",
+    "-c",
+    "cd lean && lake env lean /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M19.lean"
+  ],
+  "counts": {
+    "substantive": 1,
+    "targeted": 19
+  },
+  "before": {
+    "git": "",
+    "head": "189e1ed306f8f8e8bcdd11eeab4fc5657a518fc8",
+    "df": "Filesystem               1B-blocks         Used    Available Use% Mounted on\n/dev/mapper/fast-code 844362571776 584155136000 217240985600  73% /code\n"
+  }
+}

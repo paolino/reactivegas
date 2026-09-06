@@ -1,0 +1,13 @@
+# NOTE-074 — C1 findings and bounded successor proposal
+
+Desk read the complete report 52580d5c904727cd59c92782f181481f77efaed0f612f77c00c58924ed330c62 and independently inspected the named production DOM/handlers at frozen 280b67f. F4 remainder and F8 are blocking; candidate remains unaccepted. Cold CI and original-row kills retain exactly their credit. No third bounce inside the exhausted 2/2 campaign.
+
+Prepare a concrete successor campaign proposal under #70, with a FRESH Muse commit owner, preserving all prior roots, evidence, commit history and actual spending. No implementation dispatch until desk dispositions on the proposal. This is not a request to stop at another vague plan: produce the bounded executable acceptance contract, file fence, whole-candidate audit scope, and itemized owner/auditor budgets now, locally without builds. The complete unaccepted 6879970f..candidate remains the audit subject, including prefix guarantees and actual final-master integration; neither prior PASS nor a new campaign grants inherited acceptance.
+
+The repair must close the classes: discover and exercise all UI controls feeding string member keys into navigation/events, with leading-zero and nonnumeric identities preserved and an intentional coercion caught on actual interaction; numeric collection IDs remain numeric. Cover ordinary rendered chrome without removing .mono evidence, and drive visible proof-state text from the actual receipt with both proved and enunciated states tested. Do not hide the sentence or remove the user-visible proof explanation merely to pass.
+
+The fixture-shape advisory stays bounded: a parked token is not an executable retired branch. Propose an explicit disposition; do not claim the current regex binds exemptions to verified Lean-emitted constants. A repair may bind that existing text-layer exception and prove the dressed-as-fixture control fails, without semantics widening. Stale numeric UserId commentary can be corrected in the owned HTML.
+
+Reconcile the report header saying campaign OPEN/ended none against terminal CLOSED/set-point as an append-only owner disposition; never rewrite the auditor's evidence or interpret CLOSED as accepted. Enumerate historical owner attempts if recoverable, otherwise report UNKNOWN with receipt coverage, never zero. Propose finite new counters, no automatic raises, and one fresh FULL Codex audit with explicit model+effort and genuinely cold project outputs. Family fence remains Codex/Grok only; Grok ticket allowance is consumed.
+
+C1 landing priority over #68/#69 remains for now; this proposal is urgent because it holds their integration order. C2 preparation may continue, no C2 implementation on rejected C1. Upward local inbox/STATUS only.

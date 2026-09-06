@@ -1,0 +1,27 @@
+[
+  {
+    "source": "/code/kelgroups-audit-3af3d06/dist-newstyle/packagedb/ghc-9.8.4/kelgroups-0.1.0.0-inplace.conf",
+    "snapshot": "candidate-package.conf",
+    "sha256": "8cb693f1f24cbc3c1f8d330656922c02fb1c022f35a25b553952097227578fe1"
+  },
+  {
+    "source": "/code/kelgroups-audit-3af3d06/lib/KelGroups/Store.hs",
+    "snapshot": "candidate-Store.hs",
+    "sha256": "a3735a8318ec549f8c92a7f53b622c8e3f99433d3218a39f7cb18bc2afec4d2a"
+  },
+  {
+    "source": "/code/kelgroups-audit-3af3d06/.github/workflows/ci.yml",
+    "snapshot": "candidate-ci.yml",
+    "sha256": "c4a1f6baeb2934e83e331d607685ecda8d232fef03cf6c15c3e820d4e9ae598a"
+  },
+  {
+    "source": "/code/kelgroups-audit-3af3d06/justfile",
+    "snapshot": "candidate-justfile",
+    "sha256": "29e8557d2e823fe74d2b33390c33e945bd6f4d9a0764c4d7858da08275f66d01"
+  },
+  {
+    "source": "/code/kelgroups-audit-3af3d06/flake.lock",
+    "snapshot": "candidate-flake.lock",
+    "sha256": "6ebb67362a7d206297adb2bc65af224ece385cd2cc7f73934934a0ce81d439c0"
+  }
+]

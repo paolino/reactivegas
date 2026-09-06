@@ -1,0 +1,4 @@
+MUTATION-APPLIED:STALE-REJECTION-SWEEP
+/tmp/reactivegas/ms2/e43/t57-owner-codex/auditor-s57-a-s1-codex/handoffs/stale-rejection-bypass-red.lean:31:0: error: Expression
+  mutated == staleState
+did not evaluate to `true`

@@ -1,0 +1,4 @@
+VALIDATE-PACKET: FAIL (2 findings)
+NOTE: This is DATA VALIDATION, not project execution; success would establish data consistency, not semantic correctness.
+[MISSING-IDENTITY-MAPPING] missing original row identity 207 (every old row ID must carry a successor reference)
+[DUPLICATE-IDENTITY-MAPPING] duplicate original identity mappings: 1

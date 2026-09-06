@@ -1,0 +1,2 @@
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+/tmp/s4b-driver-dev.lean:121:4: error: `failed` cannot be mutated, only variables declared using `let mut` can be mutated. If you did not intend to mutate but define `failed`, consider using `let failed` instead

@@ -1,0 +1,28 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A33.lean:117:5: warning: unused variable `result`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+KelGroups.enactsB {α : Type} [DecidableEq α] (gs : GroupState α) (proposalId : ProposalId) (result : GroupState α) :
+  Bool
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A33.lean:133:10: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  decide ?m.45 = true
+in the target expression
+  True
+
+case mp.refine_2
+α : Type
+inst✝ : DecidableEq α
+gs : GroupState α
+proposalId : ProposalId
+result : GroupState α
+en : Enactment α
+h1 : (tryEnactDetailed gs proposalId).enactment = some en
+h2 : result = (tryEnactDetailed gs proposalId).state
+⊢ True
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A33.lean:136:84: error: Application type mismatch: The argument
+  hd
+has type
+  True
+but is expected to have type
+  decide ((tryEnactDetailed gs proposalId).state = result) = true
+in the application
+  of_decide_eq_true hd

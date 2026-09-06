@@ -1,0 +1,16 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M36.lean:199:16: error: Application type mismatch: The argument
+  cN
+has type
+  (List.map (fun x => x.questionId) gs.closed).Nodup
+but is expected to have type
+  (!decide (List.map (fun x => x.questionId) gs.closed).Nodup) = true
+in the application
+  And.intro cN
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M36.lean:206:16: error: Application type mismatch: The argument
+  cN
+has type
+  (!decide (List.map (fun x => x.questionId) gs.closed).Nodup) = true
+but is expected to have type
+  (List.map (fun x => x.questionId) gs.closed).Nodup
+in the application
+  SweepReady.mk oN cN

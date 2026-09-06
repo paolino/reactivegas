@@ -1,0 +1,167 @@
+warning: Git tree '/code/kelgroups-issue-28' is dirty
+Build profile: -w ghc-9.8.4 -O0
+In order, the following will be built (use -v for more details):
+ - kelgroups-0.1.0.0 (lib) (file lib/KelGroups/Store.hs changed)
+ - keri-hs-0.1.0.0 (test:unit-tests) (first run)
+ - kelgroups-0.1.0.0 (test:invariants) (dependency rebuilt)
+Preprocessing library for kelgroups-0.1.0.0...
+Building library for kelgroups-0.1.0.0...
+Preprocessing test suite 'unit-tests' for keri-hs-0.1.0.0...
+Building test suite 'unit-tests' for keri-hs-0.1.0.0...
+[ 8 of 11] Compiling KelGroups.Fold   ( lib/KelGroups/Fold.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Fold.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Fold.dyn_o ) [Source file changed]
+[10 of 11] Compiling KelGroups.Store  ( lib/KelGroups/Store.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Store.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Store.dyn_o ) [Source file changed]
+
+lib/KelGroups/Store.hs:626:23: error: [GHC-88464]
+    Variable not in scope: payloadText
+    |
+626 |         _ <- evaluate payloadText -- MUTANT-M8-PREFORCE: encode forced pre-decision
+    |                       ^^^^^^^^^^^
+Running 1 test suites...
+Test suite unit-tests: RUNNING...
+
+Keri.Cesr
+  CESR roundtrip
+    roundtrips arbitrary 32-byte Ed25519 keys [✔]
+      +++ OK, passed 100 tests.
+    roundtrips arbitrary 32-byte digests [✔]
+      +++ OK, passed 100 tests.
+    roundtrips arbitrary 64-byte signatures [✔]
+      +++ OK, passed 100 tests.
+  mkPrimitive
+    rejects wrong size [✔]
+    accepts correct size [✔]
+Keri.Cesr.Decode
+  decode
+    roundtrips Ed25519PubKey [✔]
+    roundtrips Ed25519Sig [✔]
+    roundtrips Blake2bDigest [✔]
+    decodes keripy test vector [✔]
+    rejects too-short input [✔]
+    rejects unknown codes [✔]
+  cesr-test-vectors
+    decodes code D [✔]
+    decodes code F [✔]
+    decodes code 0B [✔]
+Keri.Cesr.DerivationCode
+  codeText
+    Ed25519PubKey is D [✔]
+    Blake2bDigest is F [✔]
+    Ed25519Sig is 0B [✔]
+  rawSize
+    Ed25519PubKey is 32 bytes [✔]
+    Blake2bDigest is 32 bytes [✔]
+    Ed25519Sig is 64 bytes [✔]
+  codeLength
+    Ed25519PubKey is 1 char [✔]
+    Blake2bDigest is 1 char [✔]
+    Ed25519Sig is 2 chars [✔]
+  totalLength
+    Ed25519PubKey is 44 chars [✔]
+    Blake2bDigest is 44 chars [✔]
+    Ed25519Sig is 88 chars [✔]
+  identifyCode
+    identifies D as Ed25519PubKey [✔]
+    identifies F as Blake2bDigest [✔]
+    identifies 0B as Ed25519Sig [✔]
+    rejects unknown codes [✔]
+Keri.Cesr.Encode
+  encode
+    encodes a 32-byte key to 44 chars [✔]
+    starts with code prefix D [✔]
+    encodes a 64-byte sig to 88 chars [✔]
+    starts with code prefix 0B [✔]
+    encodes a digest with code F [✔]
+    matches keripy test vector for Ed25519 [✔]
+  cesr-test-vectors
+    code D (Ed25519 transferable) [✔]
+    code F (Blake2b-256 digest) [✔]
+    code 0B (Ed25519 signature) [✔]
+Keri.Crypto.Blake3
+  hash
+    produces 32 bytes [✔]
+    is deterministic [✔]
+    differs for different inputs [✔]
+    hash size is 32 [✔]
+Keri.Crypto.Digest
+  saidPlaceholder
+    is 44 characters [✔]
+    is all # characters [✔]
+  computeSaid
+    returns 44-char CESR text [✔]
+    starts with F (digest code) [✔]
+    is deterministic [✔]
+    differs for different inputs [✔]
+Keri.Crypto.Ed25519
+  generateKeyPair
+    generates a key pair [✔]
+    generates distinct key pairs [✔]
+  sign and verify
+    verifies a valid signature [✔]
+    rejects wrong message [✔]
+    rejects wrong key [✔]
+  publicKeyFromBytes
+    roundtrips [✔]
+    rejects wrong size [✔]
+Keri.Event.Inception
+  mkInception
+    creates an inception event [✔]
+    sets prefix equal to digest [✔]
+    sets sequence number to 0 [✔]
+    SAID is not placeholder [✔]
+    SAID starts with F (digest code) [✔]
+    version has correct size [✔]
+Keri.Event.Interaction
+  mkInteraction
+    creates an interaction event [✔]
+    preserves prefix [✔]
+    SAID starts with F [✔]
+Keri.Event.Rotation
+  mkRotation
+    creates a rotation event [✔]
+    preserves prefix [✔]
+    SAID differs from prefix [✔]
+    SAID starts with F [✔]
+Keri.Event.Serialize
+  serializeEvent
+    produces valid JSON for inception [✔]
+    has deterministic field order [✔]
+    serializes interaction [✔]
+    serializes receipt [✔]
+Keri.Kel
+  append
+    appends inception to empty KEL [✔]
+    rejects non-inception as first event [✔]
+  replay
+    replays single inception [✔]
+    replays inception + interaction [✔]
+    rejects empty KEL [✔]
+Keri.KeyState
+  initialState
+    sets prefix from inception [✔]
+    sets sequence number to 0 [✔]
+  applyEvent
+    rejects inception on existing state [✔]
+    applies rotation with valid pre-rotation [✔]
+    rejects wrong sequence number [✔]
+    rejects wrong prefix [✔]
+    receipt does not change state [✔]
+    rotation with empty pre-rotation [✔]
+  verifySignatures
+    threshold zero is always met [✔]
+Keri.KeyState.PreRotation
+  commitKey
+    produces a digest commitment [✔]
+    is deterministic [✔]
+  verifyCommitment
+    verifies matching key and commitment [✔]
+    rejects wrong key [✔]
+
+Finished in 0.0295 seconds
+91 examples, 0 failures
+Test suite unit-tests: PASS
+Test suite logged to:
+/code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/t/unit-tests/noopt/test/keri-hs-0.1.0.0-unit-tests.log
+1 of 1 test suites (1 of 1 test cases) passed.
+Error: [Cabal-7125]
+Failed to build kelgroups-0.1.0.0 (which is required by test:invariants from kelgroups-0.1.0.0).
+

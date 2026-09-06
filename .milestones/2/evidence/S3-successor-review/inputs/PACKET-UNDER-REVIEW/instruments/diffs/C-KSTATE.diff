@@ -1,0 +1,11 @@
+diff --git a/lean/KelGroups/State.lean b/lean/KelGroups/State.lean
+index 0000000..7777777 100644
+--- a/lean/KelGroups/State.lean
++++ b/lean/KelGroups/State.lean
+@@ -47,7 +47,7 @@ def adminCount (gs : GroupState α) : Nat :=
+     (fun count entry => if hasAdmin entry.2.roles then count + 1 else count) 0
+
+-def majority (gs : GroupState α) : Nat := (adminCount gs + 1) / 2
++def majority (gs : GroupState α) : Nat := adminCount gs + 1
+
+ def isAdmin (pubKey : Key) (gs : GroupState α) : Bool :=

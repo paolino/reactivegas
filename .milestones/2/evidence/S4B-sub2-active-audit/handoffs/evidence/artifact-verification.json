@@ -1,0 +1,13 @@
+{
+  "kind": "STATIC-ARTIFACT-VERIFICATION",
+  "commands": 44,
+  "inputsHashMatched": 44,
+  "theoremTargets": 17,
+  "admittedManifest": "12/12",
+  "candidateClean": true,
+  "lakeAbsent": true,
+  "spend": {
+    "substantive": 0,
+    "targeted": 0
+  }
+}

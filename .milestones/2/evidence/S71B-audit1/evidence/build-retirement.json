@@ -1,0 +1,16 @@
+{
+  "retired": [
+    {
+      "path": "/code/reactivegas-issue-71-audit-b1/dist-newstyle",
+      "logical_bytes_removed": 53578815,
+      "absent": true
+    },
+    {
+      "path": "/code/reactivegas-issue-71-audit-b1/lean/.lake",
+      "logical_bytes_removed": 25195124,
+      "absent": true
+    }
+  ],
+  "logical_bytes_removed": 78773939,
+  "evidence_indexes_retained": "/tmp/reactivegas/ms2/t71-design-record/audit-b1/evidence/compiled-indexes"
+}

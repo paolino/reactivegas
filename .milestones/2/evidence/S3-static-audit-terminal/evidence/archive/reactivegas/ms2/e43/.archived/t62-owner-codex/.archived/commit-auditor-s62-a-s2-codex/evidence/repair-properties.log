@@ -1,0 +1,8 @@
+AUDIT-PROPERTIES PASS payload=carried comune=refused mutant=applied backdonate-auth=explicit
+'Reactivegas.appFold' does not depend on any axioms
+'Reactivegas.apply' does not depend on any axioms
+'Reactivegas.app_members_preservation_holds' does not depend on any axioms
+'Reactivegas.comune_cannot_authorize' does not depend on any axioms
+'Reactivegas.memberWritingApply' does not depend on any axioms
+'stepEvent' depends on axioms: [sorryAx]
+'backdonateAuthorized' depends on axioms: [sorryAx]

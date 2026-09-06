@@ -1,0 +1,13 @@
+diff --git a/lean/Reactivegas/Step.lean b/lean/Reactivegas/Step.lean
+index 06b2d12..93b3fdc 100644
+--- a/lean/Reactivegas/Step.lean
++++ b/lean/Reactivegas/Step.lean
+@@ -77,7 +77,7 @@ def step (view : KelGroups.GroupView) (s : State) (signer : KelGroups.Key)
+       some { s with casse := bump (bump s.casse f (-v)) signer v }
+     else none
+   | .donate v =>
+-    if isResponsabile view signer && decide (0 < v) then
++    if isResponsabile view signer && decide (0 < v + 1) then
+       some { s with
+         casse := bump s.casse signer v,
+         conti := bump s.conti comuneId v }

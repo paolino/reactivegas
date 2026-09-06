@@ -1,0 +1,26 @@
+
+  Three of my own claims withdrawn, each because I asserted before inspecting:
+
+  - The fence question was wrong as posed — the earlier C2 mandate already listed justfile, the generator files and ci.yaml, so no C1-successor ticket is needed.
+  - "A new export may be necessary" — verified by import, not reading: attempt, applyIntegrated, bootAggregate, canonState, lawViolations, the trace verifiers and the vote functions all
+  already resolve. Prefer reuse. Availability still isn't sufficiency, so any export need must be a demonstrated route failure.
+  - "Wall-clock is not a contract" — withdrawn; a finite runtime limit is a valid operational bound. What survives is narrower: a timeout can't substitute for coverage. Counts, a case ceiling
+  fixed before the run and reported after, and a fail-closed timeout all coexist.
+
+  Domains restored. My table had shrunk constructor discovery to AppEvent — the surface with the tidiest schema. Legacy Event, integrated/base/mutation/change, and VoteEvent are back with
+  their actual adapters.
+
+  Witness independence tightened: selection and validation must be independent of the scheduler under test, with the omission control leaving the denominator unchanged — otherwise a broken
+  scheduler shrinks its own denominator and scores itself. The inconclusive-vs-unreachable distinction is preserved.
+
+  On tools I stated the fact without overreach: jq is declared; nodejs is not declared anywhere in the repo's nix inputs — but it plainly runs here, so the honest claim is that its provision
+  isn't reproducible from the repository, not that Node is absent.
+
+  Blockers unchanged: geometry pending, C1 unaccepted, owner at 0 targeted with the F-02 control gap unresolved.
+
+✻ Baked for 2m 9s · 1 monitor still running
+                                                                                                                                                         new task? /clear to save 570.6k tokens
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯ Read /tmp/reactivegas/ms2/artifacts/ in full and act on it.
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  ⏵⏵ bypass permissions on · 1 monitor · ← 2 agents · ↓ to manage                                                                                                                           /rc

@@ -1,0 +1,16 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M27.lean:108:15: error: Application type mismatch: The argument
+  pK
+has type
+  (List.map Prod.fst gs.pendingProposals).Nodup
+but is expected to have type
+  (!decide (List.map Prod.fst gs.pendingProposals).Nodup) = true
+in the application
+  And.intro pK
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M27.lean:111:15: error: Application type mismatch: The argument
+  pK
+has type
+  (!decide (List.map Prod.fst gs.pendingProposals).Nodup) = true
+but is expected to have type
+  (List.map Prod.fst gs.pendingProposals).Nodup
+in the application
+  WellFormed.mk mK pK

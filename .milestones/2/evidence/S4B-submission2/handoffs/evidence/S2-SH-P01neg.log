@@ -1,0 +1,10 @@
+/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/instruments/S2-chain-P01.lean:72:68: error: Type mismatch
+  h
+has type
+  KelGroups.GroupView.isMember u view = true
+but is expected to have type
+  (KelGroups.assocLookup u view.members).isSome = true
+/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/instruments/S2-chain-P01.lean:84:2: error: 'show' tactic failed, pattern
+  (KelGroups.assocLookup u view.members).isSome = true
+is not definitionally equal to target
+  KelGroups.GroupView.isMember u view = true

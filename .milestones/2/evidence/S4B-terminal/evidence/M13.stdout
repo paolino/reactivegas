@@ -1,0 +1,14 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M13.lean:209:8: error: Type mismatch
+  heq
+has type
+  v' = v
+but is expected to have type
+  v' = v + 1
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M13.lean:211:18: error: Application type mismatch: The argument
+  heq
+has type
+  v' = v + 1
+but is expected to have type
+  v' = v
+in the application
+  And.intro heq

@@ -1,0 +1,254 @@
+From 3af3d065b7d0c54f03d89b8c05d8b8acd4a53db4 Mon Sep 17 00:00:00 2001
+From: Paolo Veronelli <paolo.veronelli@gmail.com>
+Date: Sat, 5 Sep 2026 23:54:37 +0100
+Subject: [PATCH] fix(#28): S28-R1 conserve overlapping appends, strengthen
+ row-4 effect tests
+
+F1: serialize integrated appends on a per-store MVar from state read
+through TVar commit; payload encode forced before lock acquisition so
+the auditor serialization rendezvous completes before lock wait.
+Refusal persists nothing; SQL failure propagates with hot state
+untouched; sequential controls unchanged.
+
+F2: replace vacuous voted-mutation enumeration with real membership
+comparisons over present and absent targets (prop subset over generated
+proposals + absent/present change-roles its + absent remove it).
+
+F1-regression: deterministic two-append conservation it binding
+returned successes, SQL rows, kelLength, replay and live state.
+---
+ lib/KelGroups/Store.hs | 70 ++++++++++++++++++++++++++----------------
+ test/S28AppApiSpec.hs  | 70 ++++++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 111 insertions(+), 29 deletions(-)
+
+diff --git a/lib/KelGroups/Store.hs b/lib/KelGroups/Store.hs
+index c101739..08c5b13 100644
+--- a/lib/KelGroups/Store.hs
++++ b/lib/KelGroups/Store.hs
+@@ -33,6 +33,7 @@ module KelGroups.Store
+     , chainTip
+     ) where
+ 
++import Control.Concurrent.MVar (MVar, newMVar, withMVar)
+ import Control.Concurrent.STM
+     ( TVar
+     , atomically
+@@ -41,6 +42,7 @@ import Control.Concurrent.STM
+     , readTVarIO
+     , writeTVar
+     )
++import Control.Exception (evaluate)
+ import Data.Aeson (FromJSON, ToJSON, decode, encode)
+ import Data.ByteString (ByteString)
+ import Data.ByteString.Lazy qualified as LBS
+@@ -132,6 +134,8 @@ data KELStore a = KELStore
+     -- ^ Server Ed25519 identity (for signing)
+     , serverCesrKey :: Text
+     -- ^ CESR-encoded server public key
++    , storeAppendLock :: MVar ()
++    -- ^ Serializes integrated appends (F1 repair)
+     }
+ 
+ {- | Open or create a KEL at the given file path.
+@@ -268,6 +272,7 @@ openKELWith appFoldFn initial path mProvided = do
+             conn
+             "SELECT COUNT(*) FROM events"
+     lVar <- newTVarIO (n :: Int)
++    appendLock <- newMVar ()
+     pure
+         KELStore
+             { storeConn = conn
+@@ -276,6 +281,7 @@ openKELWith appFoldFn initial path mProvided = do
+             , lengthVar = lVar
+             , serverKeyPair = kp
+             , serverCesrKey = cesrKey
++            , storeAppendLock = appendLock
+             }
+ 
+ -- | Close the KEL store.
+@@ -578,6 +584,7 @@ openIntegratedKEL integration founding path = do
+     stVar <- newTVarIO gs
+     tVar <- newTVarIO Nothing
+     lVar <- newTVarIO eventCount
++    appendLock <- newMVar ()
+     pure
+         KELStore
+             { storeConn = conn
+@@ -586,12 +593,21 @@ openIntegratedKEL integration founding path = do
+             , lengthVar = lVar
+             , serverKeyPair = kp
+             , serverCesrKey = cesrKey
++            , storeAppendLock = appendLock
+             }
+ 
+ {- | Validate-then-append on the integrated boundary. Runs
+ 'applyIntegratedEvent' first: on refusal persists NOTHING and touches NO
+ in-memory state; on success inserts the SQL row then updates the hot
+ state, tip length included.
++
++Concurrency (F1 repair): appends hold 'storeAppendLock' from the state
++read through the TVar commit, so overlapping accepted callers conserve
++every committed transition and event count. The payload encode is forced
++before the lock: its 'ToJSON' rendering is pure in production but carries
++the auditor's test-only serialization rendezvous, which must complete
++before either caller blocks on the lock. A SQL failure still propagates
++to the caller with hot state untouched.
+ -}
+ appendIntegratedEvent
+     :: (ToJSON e, ToJSON bp)
+@@ -601,29 +617,31 @@ appendIntegratedEvent
+     -> IntegratedEvent bp e
+     -> IO (Either (IntegratedError err) (IntegratedResult s))
+ appendIntegratedEvent store integration signer event = do
+-    gs <- readState store
+-    case applyIntegratedEvent integration gs signer event of
+-        Left err -> pure (Left err)
+-        Right result -> do
+-            let payloadJson = encode event
+-                payloadText = TE.decodeUtf8 (LBS.toStrict payloadJson)
+-                noEnvelope = T.empty
+-            n <- kelLength store
+-            execute
+-                (storeConn store)
+-                "INSERT INTO events \
+-                \(signer, event_bytes, signature, \
+-                \group_event, prefix, seq_no, digest) \
+-                \VALUES (?, ?, ?, ?, ?, ?, ?)"
+-                ( signer
+-                , payloadText
+-                , noEnvelope
+-                , payloadJson
+-                , noEnvelope
+-                , n + 1
+-                , noEnvelope
+-                )
+-            atomically $ do
+-                writeTVar (stateVar store) (irState result)
+-                writeTVar (lengthVar store) (n + 1)
+-            pure (Right result)
++    let payloadJson = encode event
++        payloadText = TE.decodeUtf8 (LBS.toStrict payloadJson)
++        noEnvelope = T.empty
++    _ <- evaluate payloadText
++    withMVar (storeAppendLock store) $ \() -> do
++        gs <- readState store
++        case applyIntegratedEvent integration gs signer event of
++            Left err -> pure (Left err)
++            Right result -> do
++                n <- kelLength store
++                execute
++                    (storeConn store)
++                    "INSERT INTO events \
++                    \(signer, event_bytes, signature, \
++                    \group_event, prefix, seq_no, digest) \
++                    \VALUES (?, ?, ?, ?, ?, ?, ?)"
++                    ( signer
++                    , payloadText
++                    , noEnvelope
++                    , payloadJson
++                    , noEnvelope
++                    , n + 1
++                    , noEnvelope
++                    )
++                atomically $ do
++                    writeTVar (stateVar store) (irState result)
++                    writeTVar (lengthVar store) (n + 1)
++                pure (Right result)
+diff --git a/test/S28AppApiSpec.hs b/test/S28AppApiSpec.hs
+index bacfc21..68f614c 100644
+--- a/test/S28AppApiSpec.hs
++++ b/test/S28AppApiSpec.hs
+@@ -29,6 +29,7 @@ import KelGroups.Fold
+     , IntegratedResult (..)
+     , applyIntegratedEvent
+     , commitBaseChange
++    , enactMutation
+     , foldIntegrated
+     , foldIntegratedFrom
+     , tryEnactBase
+@@ -209,6 +210,39 @@ spec = do
+             rows <- readEventsFrom store 1
+             length rows `shouldBe` 1
+             closeKEL store
++        it "two appends conserve state, rows, length and replay" $ do
++            store <- openIntegratedKEL demoIntegration foundingDemo ":memory:"
++            first <-
++                appendIntegratedEvent
++                    store
++                    demoIntegration
++                    "admin-key-1"
++                    (Evt.IEApp (DemoAdd 1))
++            second <-
++                appendIntegratedEvent
++                    store
++                    demoIntegration
++                    "admin-key-1"
++                    (Evt.IEApp (DemoAdd 2))
++            case (first, second) of
++                (Right _, Right _) -> pure ()
++                other ->
++                    expectationFailure
++                        ("expected both appends ok: " <> show other)
++            live <- readState store
++            demoCounter (appFold live) `shouldBe` 3
++            n <- kelLength store
++            n `shouldBe` 2
++            rows <- readEventsFrom store 1
++            length rows `shouldBe` 2
++            let decoded =
++                    mapMaybe
++                        (\se -> (seSigner se,) <$> decodeStrict (seEventBytes se))
++                        rows
++            length decoded `shouldBe` 2
++            foldIntegratedFrom demoIntegration foundingDemo decoded
++                `shouldBe` live
++            closeKEL store
+         it "domain-invalid add never appends a byte" $ do
+             withTempIntegrated $ \path -> do
+                 store <- openIntegratedKEL demoIntegration foundingDemo path
+@@ -359,9 +393,39 @@ spec = do
+         prop "voted mutations never insert members" $ do
+             forAll genDemoProposal $ \proposal' ->
+                 let mutation = demoProposalMutation proposal'
+-                in  case mutation of
+-                        RemoveMemberVoted _ -> True
+-                        ChangeRolesVoted _ _ -> True
++                    gs = gsWithAdmin "admin-key-1"
++                    post = enactMutation gs mutation
++                    preKeys = Map.keysSet (members gs)
++                    postKeys = Map.keysSet (members post)
++                in  postKeys `Set.isSubsetOf` preKeys
++        it "voted change-roles never inserts absent members" $ do
++            let gs = gsWithAdmin "admin-key-1"
++            let post =
++                    enactMutation
++                        gs
++                        (ChangeRolesVoted "absent-witness-9" Set.empty)
++            Map.keysSet (members post)
++                `shouldBe` Map.keysSet (members gs)
++            lookupMemberInView "absent-witness-9" (groupView post)
++                `shouldBe` Nothing
++        it "voted change-roles keeps present member keys" $ do
++            let gs = gsWithAdmin "admin-key-1"
++            let post =
++                    enactMutation
++                        gs
++                        (ChangeRolesVoted "admin-key-1" Set.empty)
++            Map.keysSet (members post)
++                `shouldBe` Map.keysSet (members gs)
++            isMemberInView "admin-key-1" (groupView post)
++                `shouldBe` True
++        it "voted remove never inserts absent members" $ do
++            let gs = gsWithAdmin "admin-key-1"
++            let post =
++                    enactMutation gs (RemoveMemberVoted "absent-witness-9")
++            Map.keysSet (members post)
++                `shouldBe` Map.keysSet (members gs)
++            lookupMemberInView "absent-witness-9" (groupView post)
++                `shouldBe` Nothing
+         it "nonempty pendingBase roundtrips through JSON" $ do
+             let pending =
+                     PendingBase
+-- 
+2.52.0
+

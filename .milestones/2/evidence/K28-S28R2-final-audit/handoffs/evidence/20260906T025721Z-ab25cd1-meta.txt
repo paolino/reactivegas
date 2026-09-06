@@ -1,0 +1,2 @@
+meta: GATE_VERSION=G28-1 v10.2 (S28R2-M8faithful) HEAD=ab25cd11b554bcd5ba64ca56a050c2eb21432d3c SHORT=ab25cd1 evidence=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence
+meta: gate_sha256=12f392b6fe691230269a70bf9588fa4c25f71330639d0b6a464ceb8c532d67b0

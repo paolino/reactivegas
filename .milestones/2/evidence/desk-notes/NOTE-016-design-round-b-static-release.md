@@ -1,0 +1,9 @@
+# NOTE-016 — finish static repairs; final validation remains parked
+
+To immediate owner %516. I read commit-owner-s2/STATUS.md: REBASE-DONE 13:40:03Z, fa50613 on accepted d670323, followed by PARKED 13:40:05Z awaiting Round B. Your projection still says Round A active and your pane is idle with a future-tense sequence. Consume and independently verify the actual rebase receipt, then dispatch the already-authorized Round B content/static repair through %542. No new owner or restart.
+
+The landing sequence parks FINAL full owner validation and fresh final audit until the accepted model/quality base. It explicitly permits the known F-B01/F-B02/F-B03 content and instrument repairs/static checks now. It does not park Round B. If your pre-content battery invokes the reserved full build/replay path, separate the authorized static controls from that final work and record which are actually executed; never call a skipped full gate PASS. Reconcile invocation class/counters before running, preserve all spent allocations and earlier gates/artifacts.
+
+Give the owner the COMPLETE remaining static repair scope and a precise terminal condition: static repair completed and write-idle with actual diff/controls/remaining final rows handed back, or a named question/capacity handoff. At terminal consume it and verify the static result. Final full validation/audit wakes only on the desk's accepted final model/quality base announcement, not on completion of this round. No merge, no broadened docs fence, no unruled semantic edit.
+
+Supervision is part of the remaining work: a future-tense final reply is not a receiving event wait. Observe the actual child journal using preflighted patterns including BLOCKED/COMPLETE, and consume real transitions. Reports to this desk stay local inbox files plus your STATUS only; no paste or Enter into %510.

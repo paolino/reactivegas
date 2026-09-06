@@ -1,0 +1,110 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["b2a03203f5f6b1ef.olean"],
+  "i": "4dc24c4c852b829e.ilean",
+  "c": "7ed4d0baf9f55ded.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/code/reactivegas-66-s4/lean/.lake/build/lib/lean /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean /code/reactivegas-66-s4/lean/KelGroups/Vote/Invariants.lean -o /code/reactivegas-66-s4/lean/.lake/build/lib/lean/KelGroups/Vote/Invariants.olean -i /code/reactivegas-66-s4/lean/.lake/build/lib/lean/KelGroups/Vote/Invariants.ilean -c /code/reactivegas-66-s4/lean/.lake/build/ir/KelGroups/Vote/Invariants.c --setup /code/reactivegas-66-s4/lean/.lake/build/ir/KelGroups/Vote/Invariants.setup.json --json",
+   "level": "trace"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:59:104: The syntax is now `structure S : Type extends P` rather than `structure S extends P : Type`\n\nNote: The purpose of this change is to accommodate `structure S extends toP : P` syntax for naming parent projections.",
+   "level": "warning"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:77:8: automatically included section variable(s) unused in theorem `_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_sublist'`:\n  [LawfulBEq κ]\nconsider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:\n  omit [LawfulBEq κ] in theorem ...\n\nNote: This linter can be disabled with `set_option linter.unusedSectionVars false`",
+   "level": "warning"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:175:51: unused variable `v`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:187:16: This simp argument is unused:\n  assocErase\n\nHint: Omit it from the simp argument list.\n  simp [assocE̵r̵a̵s̵e̵,̵ ̵a̵s̵s̵o̵c̵Lookup, hc, hck, ih]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:187:28: This simp argument is unused:\n  assocLookup\n\nHint: Omit it from the simp argument list.\n  simp [assocErase, a̵s̵s̵o̵c̵L̵o̵o̵k̵u̵p̵,̵ ̵hc, hck, ih]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:187:50: This simp argument is unused:\n  ih\n\nHint: Omit it from the simp argument list.\n  simp [assocErase, assocLookup, hc, hck,̵ ̵i̵h̵]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:189:16: This simp argument is unused:\n  assocErase\n\nHint: Omit it from the simp argument list.\n  simp [assocE̵r̵a̵s̵e̵,̵ ̵a̵s̵s̵o̵c̵Lookup, hc, hck]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:190:16: This simp argument is unused:\n  assocErase\n\nHint: Omit it from the simp argument list.\n  simp [assocE̵r̵a̵s̵e̵,̵ ̵a̵s̵s̵o̵c̵Lookup, hc, hck, ih]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:203:8: automatically included section variable(s) unused in theorem `_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_mem_cases`:\n  [LawfulBEq κ]\nconsider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:\n  omit [LawfulBEq κ] in theorem ...\n\nNote: This linter can be disabled with `set_option linter.unusedSectionVars false`",
+   "level": "warning"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:235:8: automatically included section variable(s) unused in theorem `_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_map_fst_insert`:\n  [LawfulBEq κ]\nconsider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:\n  omit [LawfulBEq κ] in theorem ...\n\nNote: This linter can be disabled with `set_option linter.unusedSectionVars false`",
+   "level": "warning"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:389:54: unused variable `gs`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:396:45: This simp argument is unused:\n  List.length_map\n\nHint: Omit it from the simp argument list.\n  simp only [franchiseSize, franchise,̵ ̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵m̵a̵p̵] at h\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:401:47: unused variable `gs`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:463:6: try 'simp' instead of 'simpa'\n\nNote: This linter can be disabled with `set_option linter.unnecessarySimpa false`",
+   "level": "warning"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:880:5: unused variable `hevents`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:974:22: This simp argument is unused:\n  hsz\n\nHint: Omit it from the simp argument list.\n  simp ̵[̵h̵s̵z̵]̵\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:1161:34: This simp argument is unused:\n  if_false\n\nHint: Omit it from the simp argument list.\n  simp only [h, decide_false,̵ ̵i̵f̵_̵f̵a̵l̵s̵e̵]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:1176:34: This simp argument is unused:\n  if_false\n\nHint: Omit it from the simp argument list.\n  simp only [h, decide_false,̵ ̵i̵f̵_̵f̵a̵l̵s̵e̵]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`",
+   "level": "warning"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:1220:0: 'KelGroups.Vote.foldVote_wellFormed' depends on axioms: [propext, Classical.choice, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:1221:0: 'KelGroups.Vote.ballots_nodup_disjoint' depends on axioms: [propext, Classical.choice, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:1222:0: 'KelGroups.Vote.open_questions_are_open' depends on axioms: [propext, Classical.choice, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:1223:0: 'KelGroups.Vote.questions_partition' depends on axioms: [propext, Classical.choice, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:1224:0: 'KelGroups.Vote.no_expiry' depends on axioms: [propext, Classical.choice, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:1225:0: 'KelGroups.Vote.franchise_of_tallies' depends on axioms: [propext, Quot.sound]",
+   "level": "info"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:1226:0: 'KelGroups.Vote.verdictOf_threshold_congr' depends on axioms: [propext]",
+   "level": "info"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:1227:0: 'KelGroups.Vote.inadmissible_is_noop' depends on axioms: [propext]",
+   "level": "info"},
+  {"message":
+   "KelGroups/Vote/Invariants.lean:1228:0: 'KelGroups.Vote.nonresponsabile_event_noop' depends on axioms: [propext, Quot.sound]",
+   "level": "info"}],
+ "inputs":
+ [["KelGroups.Vote.Invariants:deps",
+   [["deps",
+     [["reactivegas/KelGroups:extraDep",
+       [["@reactivegas:extraDep", "00000000000006bb"]]],
+      ["imports",
+       [["KelGroups.Vote.Fold transitive imports (legacy)", "65f6f97a7d3de474"],
+        ["KelGroups.Vote.Fold:importAllArts", "6fb8b1f3e6894c51"]]]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.25.0, commit v4.25.0", "9c3a3ade3a41d5d0"],
+  ["/code/reactivegas-66-s4/lean/KelGroups/Vote/Invariants.lean",
+   "c916bc6c04fe57ec"],
+  ["options", [["-DautoImplicit=false", "4a85acb881fd49d0"]]],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "0c7dd9895b91c78d"}

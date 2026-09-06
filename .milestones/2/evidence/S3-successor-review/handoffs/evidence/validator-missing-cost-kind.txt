@@ -1,0 +1,3 @@
+VALIDATE-PACKET: FAIL (1 findings)
+NOTE: This is DATA VALIDATION, not project execution; success would establish data consistency, not semantic correctness.
+[MISSING-COST-KIND] measurement plan missing required cost kind U-COLD (cold/incremental/restore/check/replay-prod/replay-exec/separate/shared/comparator all required)

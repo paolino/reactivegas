@@ -1,0 +1,23 @@
+{
+  "id": "T1",
+  "class": "targeted",
+  "command": {
+    "executable": "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+    "args": [
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s2r-sub2-codex/instruments/../evidence/S1-generated-AxiomGate.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s2r-audit2/lean",
+    "environment": {
+      "REACTIVEGAS_ROOT": "UNSET",
+      "LEAN_PATH": "/code/reactivegas-66-s2r-audit2/lean/.lake/build/lib/lean:/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/lib/lean",
+      "AXIOM_S_MODULES": "KelGroups\nKelGroups.Event\nKelGroups.Fold\nKelGroups.Integration\nKelGroups.Invariants\nKelGroups.State\nKelGroups.Tests\nKelGroups.Types\nKelGroups.Validate\nKelGroups.Vote.Event\nKelGroups.Vote.Fold\nKelGroups.Vote.Invariants\nKelGroups.Vote.State\nKelGroups.Vote.Tests\nKelGroups.Vote.Types\nKelGroups.Vote.Validate\nReactivegas\nReactivegas.Composition\nReactivegas.CorpusExport\nReactivegas.CorpusGate\nReactivegas.Invariants\nReactivegas.Predicates\nReactivegas.State\nReactivegas.Step\nReactivegas.Trace\nReactivegas.TraceTests\nReactivegas.Types"
+    }
+  },
+  "start": "2026-09-05T20:56:42.226Z",
+  "end": "2026-09-05T20:56:54.970Z",
+  "durationMs": 12743,
+  "exit": 0,
+  "signal": null,
+  "driverSha256": "f04f53e1726d8c784def7c8cd9cb39c7285ef7abe2562dcf83cf4e785309d45f",
+  "logSha256": "5d299380ef9892fb37df9a436300e8e0a0b180a17bf87e662e50f040c1e54161"
+}

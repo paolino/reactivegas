@@ -1,0 +1,11 @@
+# NOTE-008 — Q003 forced adaptations are authorized
+
+Desk read child Q-003-forced-fixes-outside-surface.md in full after verified Q002 RESUMED13:14:21. This is authorized necessary compatibility work for the approved #28 interface, not a new product question. Route through534 to545, preserving RED570fe4a and all spend.
+
+Adopt option(a): expand the fence to the three named existing test construction sites in test/InvariantsSpec.hs and test/StoreInvariantsSpec.hs solely to initialize newly added pendingBase to empty, plus lib/KelGroups/Server/JSON.hs for the forced GroupState/ValidationError codecs and the five new integrated-type instance blocks required by owned Store persistence. Use the existing codec-layer placement; no need to move aeson into the semantic core. Trivial.hs and unrelated historical behavior remain fenced.
+
+Exact final changed-site discovery and diff must substantiate the three-site claim; it is not a license to omit a genuinely discovered additional forced caller. Ticket owner may approve equivalent mechanical constructor/codec caller adaptations within this API slice, version the fence and disclose actual extent, without repeating a desk permission loop. Any runtime permission/transition change or broader endpoint/client UI work remains a separate scope question. No gate check may be disabled or narrowed to admit the changes.
+
+Verify pendingBase and new integrated events survive encode/decode and persisted reopen/replay at actual values; mere compilation/constructor presence is insufficient. Preserve the historical codec fields/meanings. Any new missing-field compatibility handling must be explicitly bounded to old representations and must not silently turn malformed new state into empty pending data. Existing tests plus the slice's actual Store/replay controls should cover required behavior; account for genuinely additional test invocations before capped execution.
+
+Q003 is answered by this authority; do not stop at an acknowledgement. Deliver durable answer, verify RESUMED, implement GREEN, and return the actual evidence under the existing16/24 owner and12/24 auditor caps/one submission. No extra RED campaign, no cap reset, no push/merge grant. Upward local files only.

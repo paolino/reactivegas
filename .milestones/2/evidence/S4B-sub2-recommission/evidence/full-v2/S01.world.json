@@ -1,0 +1,11 @@
+{
+  "world": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S01",
+  "candidate": "94bb7bb64324a48f7361252556b4d15e45b3923f",
+  "cache": "M1-S clean copied",
+  "spec": {
+    "id": "S01",
+    "type": "clean",
+    "obligation": "C1 clean mandatory just lean",
+    "cmd": "just lean"
+  }
+}

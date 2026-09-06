@@ -1,0 +1,4 @@
+MUTATION-APPLIED:BYPASS
+/tmp/reactivegas/ms2/e43/t57-owner-codex/gate/instruments/mutant-bypass.lean:19:0: error: Expression
+  after == before
+did not evaluate to `true`

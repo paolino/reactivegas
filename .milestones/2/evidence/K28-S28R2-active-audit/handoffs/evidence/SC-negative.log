@@ -1,0 +1,17 @@
+
+S28-1 rejecting step before append
+  concurrent appends conserve every committed transition [✘]
+
+Failures:
+
+  test/S28AppApiSpec.hs:403:48: 
+  1) S28-1 rejecting step before append concurrent appends conserve every committed transition
+       expected: 958
+        but got: 558
+
+  To rerun use: --match "/S28-1 rejecting step before append/concurrent appends conserve every committed transition/" --seed 149303592
+
+Randomized with seed 149303592
+
+Finished in 0.0197 seconds
+1 example, 1 failure

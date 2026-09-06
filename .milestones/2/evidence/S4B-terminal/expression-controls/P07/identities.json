@@ -1,0 +1,11 @@
+{
+  "id": "P07",
+  "file": "Reactivegas/Step.lean",
+  "original": "f498490c0a3eca78692d51119d6298115c456f79ce3526bf9210892a658f46fb",
+  "mutant": "c4a65fba86e15aae49e064594bfe1efb55d7db7f13aa7d1ffa6b8b699e84fc48",
+  "originalMirrors": "89684a7d35aaa4aca1139a4ac90577df1e79524be7a1bb8597750668e5163603",
+  "probe": "57973426199c26f55fd19f4dab248b6676600840162157accecd4144db2e9d4b",
+  "statementProofPrefixPreserved": true,
+  "originalTheoremBytes": "36319a42fe257e5831d80e9acf60ded57f04d9be1ae946f3b7810e0bc153f754",
+  "probeScope": "original target theorem only, excluding unrelated helper proofs to avoid first-error masking"
+}

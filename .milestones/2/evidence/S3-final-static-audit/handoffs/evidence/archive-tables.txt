@@ -1,0 +1,565 @@
+FILE 1 reactivegas/ms2/.archived/t-simulator/.archived/auditor-claude-round2-s1/handoffs/campaign-ledger.md 694e98cfde8383fa0bbd762ddc4254b96d4ef8eaab70aaa4dea5a5c58f1df658
+14 Row | State | Killing mutant (verified applied) | Gate response | Evidence
+15 --- | --- | --- | --- | ---
+16 R2-CORE | KILLED | core `s+=escrowOf(c);` → `s+=0;` (inside MACHINE-CORE) | exit 1, 15 new fails incl. `C: machine core byte-identical to accepted base` + flow invariant rows | `receipts/mutants.log`
+17 R2-SUBJECTS | KILLED | suppress `data-node` on `conto:/cassa:/escrow:` keys | exit 1, 61 new fails incl. `U: stage has clickable conto/cassa quantity` | `receipts/mutants.log`
+18 R2-CLICK-PARAMS | KILLED | inject `<select>` + `<input data-pkey="u" name="u">` | exit 1, 3 new fails: no-`<select>`, no-`data-pkey`, no entity-named inputs | `receipts/mutants.log`
+19 R2-GUARDS | KILLED | six independent guard-name renames + reason-derivation neutralisation (G1–G7, G2) | each exit 1; `AUTH`, `REFERENTE`, `COVERED`, `L8`, `PERMITTED (L2)`, `NO-PENDING (L4)` each has its own killing mutant; `G2` (reason → `null`) trips 5 | `receipts/mutants2.log`
+20 R2-VALUES | KILLED | drop the commit-time clamp `v = b.max;` | exit 1, 8 new fails incl. `B: over-max commit clamps to 100`, `B: input snaps to the applied bound` | `receipts/mutants.log`
+21 R2-FLOW | KILLED | `F2`: refund count forced to `0` (assertion-shaped) — plus `toy.refundEvents.push` → `toy.donePurchases.push` (crash-shaped) | `F2` exit 1, fails `U: refunds shown separately from purchases` and the in-page selftest | `receipts/mutants2.log`
+22 R2-NAMES | KILLED | `state = Object.assign(bootState(0), {ownerName:'Anna'})` | exit 1, fails `U: boot state is Lean boot`, `U: toy label attaches toy-side only` | `receipts/mutants.log`
+23 R2-SURFACE | KILLED | reintroduce `<div class="legend">` | exit 1, fails `S: no legend blocks` | `receipts/mutants.log`
+24 R2-PUBLISH | KILLED | inject `<script src="https://cdn.example.com/x.js">` | exit 1, fails `S: no <script src=…>`, `S: no http(s) URL` | `receipts/mutants.log`
+35 Path | sha256
+36 --- | ---
+37 `mutants.mjs` | `802e038b180ba3b6730b2d5a6af7076e8a98a2d92cd2e145280ab3aabce28be1`
+38 `mutants2.mjs` | `3b82dca6c60d8ea427935510985bcb9606adefcc8f1ae4c0a217f0fcda09ea7a`
+39 `receipts/mutants.log` | `3c11a60bb21058da0b5a42e326d369d2c29c59641f32ef52c562737db3f9f24e`
+40 `receipts/mutants2.log` | `a163886c36ebcafc47927e537db1eed28ce822e285aa2d5da51db0cb116d78fc`
+41 `receipts/gate-candidate.log` | `865036bb81a608fca234ef17cbcbb9028b9159a00608d5a1ad9830abcfb9ec5c`
+42 `receipts/gate-base-RED.log` | `320ad77cffded4007fbdd1b2c70348780e684a6bbc85588917890112947e6f79`
+FILE 2 reactivegas/ms2/.archived/t-simulator/.archived/commit-owner-glm-vote-gap/handoffs/campaign-ledger.md ae521b870b936ee3520c294b6e6eca0252bc481e78cc4e3c5c31aeeb686ae9bd
+FILE 3 reactivegas/ms2/e-haskell-impl/t74-corpus-exporter/evidence/campaign-ledger.md c249ceb6b0afb3d3da7e30fc06f64e9df48bfcbf5404e12da7655431a5368118
+10 Invariant | Severity | State | Killing mutant / evidence | Owner
+11 --- | --- | --- | --- | ---
+12 G74-CALLS-EXISTING — exporter calls `seedCorpus`/`emitIntegratedCorpus`, no restatement; `lean_exe` present | BLOCKING (second corpus = oracle-integrity basis for money-path conformance) | OPEN | — | audit-s1
+13 G74-ENVELOPE-CLOSED — `Trace` untouched; wrapper is view/auth (+initial for integrated) and nothing else | BLOCKING (unreplayable oracle = no conformance) | OPEN | — | audit-s1
+14 G74-VERIFY-FAILS-CLOSED — export+verify pass clean; one-byte mutation and manifest corruption each force non-zero with byte-identical restore | BLOCKING (blind drift detector arbitrates Lean vs Haskell) | OPEN | — | audit-s1
+15 G74-RECORD-HONEST — `docs/` byte-identical to base; coverage evidence in owner root | ADVISORY (prose routing; content judged by auditor+T.O.) | OPEN | — | audit-s1
+16 G74-ADDITIVE-ONLY — no model/theorem/guard/step/`Trace`/content change; fence paths untouched | BLOCKING (model integrity) | OPEN | — | audit-s1
+FILE 4 reactivegas/ms2/e-lean-compliance/auditor-choices-codex/evidence/inputs/t48-campaign-ledger.md da76a3c4c6b7e201b50ec417004fcd94d8c1729bd1e09a3030f457c47160ca10
+9 Invariant | Severity | State | Evidence
+10 --- | --- | --- | ---
+11 INV-48-I-SURFACE | BLOCKING | OPEN | Commented theorem plus custom axiom survived (`afdacbc8…`); active-declaration binding required.
+12 INV-48-I-GUARDS | BLOCKING | OPEN | Weakened guard to `True` elaborated and survived (`66334616…`); exact live guard/successor binding required.
+13 INV-48-I-CANFAIL | BLOCKING | OPEN | Direct removal/unwiring killed; composed missing-proof bypass survived (`afdacbc8…`).
+14 INV-48-I-AXIOMS | BLOCKING | OPEN | `sorry` killed; custom axiom survived six-report acceptance (`afdacbc8…`).
+15 INV-48-I-REGRESSION | BLOCKING | OPEN | Direct removal killed; comment-backed lexical count survived (`afdacbc8…`).
+16 INV-48-I-FENCE | BLOCKING | KILLED | Forbidden `lean/Reactivegas/Step.lean` edit rejected (`2da5c149…`).
+17 INV-48-I-EVENT-SYNTAX | BLOCKING | KILLED | Unparsed constructor marker rejected (`66334616…`).
+18 INV-48-I-INV-HYP-SYNTAX | BLOCKING | OPEN | Alternate spelling/wrong association killed; raw commented hypothesis survived (`afdacbc8…`).
+19 INV-48-I-STEP-ITE | BLOCKING | KILLED | Removing live `step` unfolding made elaboration fail (`2da5c149…`).
+20 INV-48-I-STEPEVENT-DELEGATE | BLOCKING | KILLED | Removing live `stepEvent` unfolding made elaboration fail (`2da5c149…`).
+FILE 5 reactivegas/ms2/e-lean-compliance/auditor-choices-codex/evidence/inputs/t54-campaign-ledger.md 9667b9f048dbb02fc2a9aa09c40139d3674b340005efd113c95c0c267df33d98
+5 Row | Severity | State | Killing mutant / evidence
+6 --- | --- | --- | ---
+7 INV-54-PARTITION | BLOCKING | KILLED | Independent silent-deletion mutant verified its edit, then lost opened ID `q`; source `instruments/partition-silent-deletion-mutant.lean` `ea9882087e28a20a3e47532a4b5081419161ee9189df7d5ec3b188dbf350cf42`, RED log `7846a04f598486abce852bb2f3f9dfe073045db2e4d8c20e53fe94e1c07baf64`. The shipped `questions_partition` now preserves every prefix-observed ID through the production fold.
+8 INV-54-DISJOINT | BLOCKING | KILLED | C2 omitted the opposite-tally erase; test and proof went red, `203c8a3e3cfbe8952afece5166405296e21ac33edab16cf19f64550e73e9c462`
+9 INV-54-NOSTALE | BLOCKING | KILLED | C4 swept only ballot events; witnesses and carrier proof went red, `736207103c130c59f36d8dfe2b82a94b712526e0671ecba0bf7ff8e77a27d446`
+10 INV-54-FRANCHISE | BLOCKING | KILLED | Independent unfranchised-recast mutant verified the post-standing-loss tally switch, then the complete-tally no-op oracle went RED; source `instruments/franchise-unfranchised-recast-mutant.lean` `08ccdb22771d9a6b8746bbb3e8d1441fc95c0b70217fdcf27c49532240c6db19`, log `a045991ca9d26e7f5c8223a54d87dcdbb686ff2143f1e70eff66e74174889b84`. The shipped theorem names the cast event and immediate prefix, and `unfranchised_cast_noop` is complete state identity.
+11 INV-54-NOEXPIRY | ADVISORY | OPEN | The theorem is now over a production-fold prefix but `EventPreservesQuestion` categorically excludes every member event. A non-admin admission preserves the franchise, proposer, and non-degenerate target tally yet the theorem premise reduces to `False`; source `instruments/no-expiry-member-event-gap-v2.lean` `1f146f5b889d8990af499d1d57791a1dd083a738119b3aa6001fa6c8477859b7`, log `b71f1ac28b0b84bd4c11a95600c5e951109fb0de59c74f5c1c69cd419d51bf86`.
+12 INV-54-POLICYFREE | BLOCKING | KILLED | hard-coded `legacyThreshold` mutation made the zero-policy witness red; source `9e738cfb0d4e7794e0c11b6a9bdab88e33c4469f59a406d1595a17317fc28cc5`, log `e0b3703a2462d0116945a809485fc18a72356f5d07247084262116331c6248a6`
+FILE 6 reactivegas/ms2/e43/.archived/t48-owner-codex/campaign-ledger.tsv 43b078435842cf31545c673ae9488de80efd66b794caaaa87996ef5006a4a62b
+2 row_id | severity | state | submission | evidence | residual_owner | followup | honest_limit
+3 E-SCHEMA | BLOCKING | OPEN | 0 | NONE | NONE | NONE | NONE
+4 E-TOJSON | BLOCKING | OPEN | 0 | NONE | NONE | NONE | NONE
+5 E-DIAG | BLOCKING | OPEN | 0 | NONE | NONE | NONE | NONE
+6 E-MANIFEST | BLOCKING | OPEN | 0 | NONE | NONE | NONE | NONE
+7 E-INVENTORY | BLOCKING | OPEN | 0 | NONE | NONE | NONE | NONE
+8 E-SEEDS | BLOCKING | OPEN | 0 | NONE | NONE | NONE | NONE
+9 E-NEGATIVE | BLOCKING | OPEN | 0 | NONE | NONE | NONE | NONE
+10 E-ADDITIVE | BLOCKING | OPEN | 0 | NONE | NONE | NONE | NONE
+11 E-FENCE | BLOCKING | OPEN | 0 | NONE | NONE | NONE | NONE
+12 INV-48-STEP-TOTAL | BLOCKING | OPEN | 0 | NONE | NONE | NONE | NONE
+13 INV-48-EVENT-CTORS-COMPLETE | BLOCKING | OPEN | 0 | NONE | NONE | NONE | NONE
+14 INV-48-INVERSION-NAMING | BLOCKING | OPEN | 0 | NONE | NONE | NONE | NONE
+15 INV-48-SORRY-BOUNDARY | BLOCKING | OPEN | 0 | NONE | NONE | NONE | NONE
+16 INV-48-TOJSON-DERIVABLE | BLOCKING | OPEN | 0 | NONE | NONE | NONE | NONE
+17 INV-48-STATE-DECEQ | BLOCKING | OPEN | 0 | NONE | NONE | NONE | NONE
+18 INV-48-ONE-GUARD-PER-CONSTRUCTOR | ADVISORY | OPEN | 0 | NONE | #48-docs | R48-GUARD-GRANULARITY | A green event-level refusal identity does not establish clause-level cause.
+19 INV-48-NO-BACK-EDGE | ADVISORY | OPEN | 0 | NONE | #48-architecture | R48-TRACE-DEPENDENCY-DIRECTION | Current slice fencing does not prevent a future machine-to-Trace import.
+FILE 7 reactivegas/ms2/e43/.archived/t48-owner-codex/docs-auditor-1/handoffs/campaign-ledger.tsv 597678149915ffb93798ca568bff5e264a5624b08833a207800618d04ae8d276
+1 id | class | mutation | applied_control | gate | expected_rejection | observed | exit | receipt_sha256 | restored | builds
+2 M1 | citation-and-retired-constructor | reintroduced Event.removeUser prose plus structured marker | rg found prose and marker | design-record-3 -> v2 -> v1 | v1 no-nonexistent-removeUser and citation elaboration | both v1 legs red | 1 | eb1261e1faf6b7d395a96728cea89519375013ba02abb96dc9fca2ef395cb72b | byte-exact | 0
+3 M2 | constructor-reconciliation | deleted Event.transferCassa inventory row | inventory count observed 17 | design-record-3 -> v2 -> v1 | v1 inventory reconciliation | v1 inventory leg red | 1 | f701fbe6d20516b037b5e5471fbc0fddc3f41143f28c17ab44edfeec7ab0664e | byte-exact | 0
+4 M3 | economic-prose-sign | reversed positive and negative cassa meanings | mutated paragraph printed before gate | design-record-3 -> v2 -> v1 | v1 positive-sign and negative-sign legs | both v1 sign legs red | 1 | fc42388bad79dbbba6271906628bd11b253d079bfd8dab6451e52c4ef0fb23e1 | byte-exact | 0
+5 M4 | regression-nonvacuity | changed referente-success control isSome to isNone | region hash changed to 8580ed634ac905d0092e517217271a0cc853f054df2d674a4c85eef21aa4dbbd | design-record-3 -> v2 | v2 exact-region rejection before v1 | v2 region leg red; v1 not entered | 1 | bffcc43e272d655108427e7b3f39d188bc652c0a2603f4e939e4d00d5f6cebc4 | byte-exact | 0
+6 M5 | executable-production-token | changed conservation RHS 0 to 1 | mutant executable projection differed from base | design-record-3 -> v2 -> v1 | v1 Predicates executable-text fence | v1 production fence red | 1 | 86c914d7914e3f66b7e0900df2b32da87b679d19310b59a23ac306c1777895b5 | byte-exact | 0
+FILE 8 reactivegas/ms2/e43/.archived/t48-owner-codex/docs-auditor-2/handoffs/campaign-ledger.tsv 6295ad152d060eca149cd600842170ef43faf18e12d731c10ce289ec55719ca7
+1 id | class | mutation | applied_control | gate | expected_rejection | observed | exit | receipt_sha256 | restored | builds
+2 M1 | repaired-document-hash | changed one repaired prose byte (comma to period) | document sha256 became 3abcec0580c566d8ebc4e889d29998fe60980c5a0036ff8a4e04220252acedb2 | design-record-4 | v4 exact repaired-document hash | v4 hash mismatch before delegation | 1 | fb9d2f06d0bc92dfaa939e18188895fb6545472e08422c311cda62ef8595e430 | byte-exact sha256 8fa1075b503773068ed3df8832bc28edbc734dad6703e957eb9f4e9b8fff7dce | 0
+3 M2 | citation-and-retired-constructor | inserted structured Event.removeUser marker | rg found exactly one retired marker | design-record-3 -> v2 -> v1 | v1 retired-name and citation-elaboration legs | both v1 legs red | 1 | eb1261e1faf6b7d395a96728cea89519375013ba02abb96dc9fca2ef395cb72b | byte-exact sha256 8fa1075b503773068ed3df8832bc28edbc734dad6703e957eb9f4e9b8fff7dce | 0
+4 M3 | regression-nonvacuity | changed referente-success control isSome to isNone | region sha256 became 8580ed634ac905d0092e517217271a0cc853f054df2d674a4c85eef21aa4dbbd | design-record-3 -> v2 | v2 pinned regression region | v2 region leg red before v1 | 1 | bffcc43e272d655108427e7b3f39d188bc652c0a2603f4e939e4d00d5f6cebc4 | byte-exact blob c05498b70a7c06c0ebe5ac2f9d21d6ffee28d022 | 0
+5 M4 | executable-production-fence | changed conservation RHS 0 to 1 | Predicates blob differed from candidate | design-record-3 -> v2 -> v1 | v1 comment-erased executable fence | v1 Predicates executable-text leg red | 1 | 86c914d7914e3f66b7e0900df2b32da87b679d19310b59a23ac306c1777895b5 | byte-exact blob 812f3115ca39ba2efc61421b9438b73b52affb68 | 0
+FILE 9 reactivegas/ms2/e43/.archived/t48-owner-codex/emitter-auditor-1/handoffs/campaign-ledger.tsv fa1bfc7942e961c4ea7319608fae7661a6f1fb549b7e642bdb53440fd830878d
+2 row_id | severity | state | submission | evidence | residual_owner | followup | honest_limit
+3 E-SCHEMA | BLOCKING | OPEN | 1 | evidence/survivor-campaign-v3.log#survivor-json-applied-state | NONE | NONE | Shape checks do not establish that serialized payload values equal the typed trace.
+4 E-TOJSON | BLOCKING | KILLED | 1 | evidence/survivor-campaign-v3.log#killed-tojson-instance | NONE | NONE | NONE
+5 E-DIAG | BLOCKING | KILLED | 1 | Reactivegas/TraceTests.lean:404-409+evidence/focused-warm.log | NONE | NONE | NONE
+6 E-MANIFEST | BLOCKING | KILLED | 1 | evidence/survivor-campaign-v3.log#killed-manifest-all-unproved | NONE | NONE | NONE
+7 E-INVENTORY | BLOCKING | KILLED | 1 | evidence/survivor-campaign-v3.log#killed-inventory-missing-covered | NONE | NONE | NONE
+8 E-SEEDS | BLOCKING | OPEN | 1 | evidence/survivor-campaign-v3.log#survivor-remove-no-pending,survivor-deny-no-pending | NONE | NONE | Final refunds do not establish live accepted and pending lists at the headline event.
+9 E-NEGATIVE | BLOCKING | KILLED | 1 | Reactivegas/TraceTests.lean:399-453+evidence/focused-warm.log | NONE | NONE | NONE
+10 E-ADDITIVE | BLOCKING | KILLED | 1 | evidence/full-gate.log | NONE | NONE | NONE
+11 E-FENCE | BLOCKING | OPEN | 1 | evidence/umbrella-import-survivor.log | NONE | NONE | The gate does not reject production importing TraceTests through the allowed umbrella path.
+12 INV-48-STEP-TOTAL | BLOCKING | KILLED | 1 | Reactivegas/Trace.lean:114-119+Reactivegas/TraceTests.lean:404-409 | NONE | NONE | NONE
+13 INV-48-EVENT-CTORS-COMPLETE | BLOCKING | KILLED | 1 | Reactivegas/TraceTests.lean:498-522+owner-canfail-M1 | NONE | NONE | NONE
+14 INV-48-INVERSION-NAMING | BLOCKING | KILLED | 1 | evidence/survivor-campaign-v3.log#killed-manifest-all-unproved+evidence/full-gate.log#52-type-pins | NONE | NONE | NONE
+15 INV-48-SORRY-BOUNDARY | BLOCKING | KILLED | 1 | Reactivegas/TraceTests.lean:578-587+evidence/full-gate.log | NONE | NONE | NONE
+16 INV-48-TOJSON-DERIVABLE | BLOCKING | KILLED | 1 | evidence/survivor-campaign-v3.log#killed-tojson-instance | NONE | NONE | NONE
+17 INV-48-STATE-DECEQ | BLOCKING | KILLED | 1 | evidence/survivor-campaign-v3.log#killed-applied-poststate | NONE | NONE | NONE
+18 INV-48-ONE-GUARD-PER-CONSTRUCTOR | ADVISORY | RESIDUAL | 1 | RELIANCE.md | #48-docs | R48-GUARD-GRANULARITY | A green event-level refusal identity does not establish clause-level cause.
+19 INV-48-NO-BACK-EDGE | ADVISORY | RESIDUAL | 1 | RELIANCE.md | #48-architecture | R48-TRACE-DEPENDENCY-DIRECTION | Current slice fencing does not prevent a future machine-to-Trace import.
+FILE 10 reactivegas/ms2/e43/.archived/t48-owner-codex/emitter-auditor-2/handoffs/campaign-ledger.tsv e5848d5cc222d0475ef668af78074fc818486ffadce69791844e13ad74f351c8
+2 row_id | severity | state | submission | evidence | residual_owner | followup | honest_limit
+3 E-SCHEMA | BLOCKING | KILLED | 2 | evidence/mutations/schema_{initial,input,event,applied_state,refused_claim}.log | NONE | NONE | NONE
+4 E-TOJSON | BLOCKING | KILLED | 1 | evidence/survivor-campaign-v3.log#killed-tojson-instance | NONE | NONE | NONE
+5 E-DIAG | BLOCKING | KILLED | 1 | Reactivegas/TraceTests.lean:404-409+evidence/focused-warm.log | NONE | NONE | NONE
+6 E-MANIFEST | BLOCKING | KILLED | 1 | evidence/survivor-campaign-v3.log#killed-manifest-all-unproved | NONE | NONE | NONE
+7 E-INVENTORY | BLOCKING | KILLED | 1 | evidence/survivor-campaign-v3.log#killed-inventory-missing-covered | NONE | NONE | NONE
+8 E-SEEDS | BLOCKING | KILLED | 2 | evidence/mutations/seed_remove_accepted_only.log,evidence/mutations/seed_deny_accepted_only.log | NONE | NONE | NONE
+9 E-NEGATIVE | BLOCKING | KILLED | 1 | Reactivegas/TraceTests.lean:399-453+evidence/focused-warm.log | NONE | NONE | NONE
+10 E-ADDITIVE | BLOCKING | KILLED | 1 | evidence/full-gate.log | NONE | NONE | NONE
+11 E-FENCE | BLOCKING | KILLED | 2 | evidence/mutations/fence_module_edge.log,evidence/mutations/fence_actual_umbrella.log | NONE | NONE | NONE
+12 INV-48-STEP-TOTAL | BLOCKING | KILLED | 1 | Reactivegas/Trace.lean:114-119+Reactivegas/TraceTests.lean:404-409 | NONE | NONE | NONE
+13 INV-48-EVENT-CTORS-COMPLETE | BLOCKING | KILLED | 1 | Reactivegas/TraceTests.lean:498-522+owner-canfail-M1 | NONE | NONE | NONE
+14 INV-48-INVERSION-NAMING | BLOCKING | KILLED | 1 | evidence/survivor-campaign-v3.log#killed-manifest-all-unproved+evidence/full-gate.log#52-type-pins | NONE | NONE | NONE
+15 INV-48-SORRY-BOUNDARY | BLOCKING | KILLED | 1 | Reactivegas/TraceTests.lean:578-587+evidence/full-gate.log | NONE | NONE | NONE
+16 INV-48-TOJSON-DERIVABLE | BLOCKING | KILLED | 1 | evidence/survivor-campaign-v3.log#killed-tojson-instance | NONE | NONE | NONE
+17 INV-48-STATE-DECEQ | BLOCKING | KILLED | 1 | evidence/survivor-campaign-v3.log#killed-applied-poststate | NONE | NONE | NONE
+18 INV-48-ONE-GUARD-PER-CONSTRUCTOR | ADVISORY | RESIDUAL | 1 | RELIANCE.md | #48-docs | R48-GUARD-GRANULARITY | A green event-level refusal identity does not establish clause-level cause.
+19 INV-48-NO-BACK-EDGE | ADVISORY | RESIDUAL | 1 | RELIANCE.md | #48-architecture | R48-TRACE-DEPENDENCY-DIRECTION | Current checks do not prevent a future machine module from importing Reactivegas.Trace.
+FILE 11 reactivegas/ms2/e43/.archived/t48-owner-codex/inversions-auditor-1/handoffs/campaign-ledger.md ab0d3fb4a53a8acd9fdc10dbdfdbf0bd6f29dd247dc6225f8303edc05d08871e
+8 Invariant | Severity | State | Evidence
+9 --- | --- | --- | ---
+10 I10-FENCE | BLOCKING | OPEN | Pending independent declaration-inventory mutant.
+11 I10-TYPES | BLOCKING | OPEN | Pending bundled exact-type weakening mutant.
+12 I10-COVERAGE | BLOCKING | OPEN | Pending live reconciliation and can-fail control.
+13 I10-SEMANTICS | BLOCKING | OPEN | Pending four-class bundled weakening mutant.
+14 I10-ADDITIVE | BLOCKING | OPEN | Pending base-to-candidate and unrelated-declaration controls.
+15 I10-DEBT | BLOCKING | OPEN | Pending inherited-debt/static negative controls.
+16 I10-REGRESSION | BLOCKING | OPEN | Pending emitter/runtime/CI and matcher negative control.
+FILE 12 reactivegas/ms2/e43/.archived/t48-owner-codex/pledge-auditor-1/handoffs/campaign-ledger.md cc3b7654ce85ea6d437700bf77c0329726ccd7fc36efa5684798a274d4122889
+7 Row | Severity | Initial state | Contract
+8 --- | --- | --- | ---
+9 A1 | BLOCKING | OPEN | Identity, detached cleanliness, ancestry, trees, subjects/trailers, diff hash, three-path fence, live origin-tip absence
+10 A2 | BLOCKING | OPEN | Independent source/proof review of `step`, `authorizedStep`, `pledge_guard_inv`, `step_pledge_inv`, `step_authorized`
+11 A3 | BLOCKING | OPEN | Relaxed behavior, exact public surface, 59 unrelated types, 62-theorem inventory, zero new debt
+12 A4 | BLOCKING | OPEN | Trace/emitter contract 18/18/0, 34/34, five v1 envelopes
+16 Row | Severity | Initial state | Mutant class
+17 --- | --- | --- | ---
+18 M1 | BLOCKING | OPEN | Remove self disjunct; static exact-source control first
+19 M2 | BLOCKING | OPEN | Widen author condition to any member/admit third party
+20 M3 | BLOCKING | OPEN | Weaken monetary and stall guards
+21 M4 | BLOCKING | OPEN | Weaken both changed inversion public types
+22 M5 | BLOCKING | OPEN | Change unrelated authorization branch and unrelated theorem type
+FILE 13 reactivegas/ms2/e43/.archived/t54-composition-owner-codex/campaign-ledger-v3.md 4614e6daafe4459c8f5622544cdfbe027a893f56af2d915a7d71a582523494b2
+5 Row | Severity | Preflight | Candidate audit | Terminal rule
+6 --- | --- | --- | --- | ---
+7 EVENT-EXHAUSTIVE | BLOCKING | KILLED | OPEN | KILLED only
+8 VERDICT-EXHAUSTIVE | BLOCKING | KILLED | OPEN | KILLED only
+9 R-2/R-3-LAYERING | BLOCKING | KILLED/GREEN | OPEN | reverse KILLED and legal GREEN
+10 PRODUCTION-ENACTMENT | BLOCKING | KILLED | OPEN | KILLED only
+11 PRODUCTION-VERDICT | BLOCKING | KILLED | OPEN | KILLED only
+12 ROUTE-THRESHOLD | BLOCKING | KILLED | OPEN | KILLED only
+13 DIRECT-NOT-VOTE-DERIVED | BLOCKING | KILLED | OPEN | KILLED only
+14 FENCE-DEBT-PROOF-TRUST | BLOCKING | RED (production absent) | OPEN | GREEN only
+15 FULL-CI | BLOCKING | baseline GREEN | OPEN | GREEN only
+FILE 14 reactivegas/ms2/e43/.archived/t54-composition-owner-codex/campaign-ledger.md 1d1cb89c16d003d7f230a0a695801dd63a02946f0fe6854d5fc738a57aba9408
+9 Row | Severity | Preflight | Candidate audit | Terminal rule
+10 --- | --- | --- | --- | ---
+11 EVENT-EXHAUSTIVE | BLOCKING | KILLED | KILLED | KILLED only
+12 VERDICT-EXHAUSTIVE | BLOCKING | KILLED | KILLED | KILLED only
+13 R-2/R-3-LAYERING | BLOCKING | KILLED/GREEN | KILLED/GREEN | reverse KILLED and legal GREEN
+14 PRODUCTION-ENACTMENT | BLOCKING | KILLED | KILLED | KILLED only
+15 PRODUCTION-VERDICT | BLOCKING | KILLED | KILLED | KILLED only
+16 ROUTE-THRESHOLD | BLOCKING | KILLED | KILLED | KILLED only
+17 DIRECT-NOT-VOTE-DERIVED | BLOCKING | KILLED | KILLED | KILLED only
+18 FENCE-DEBT-PROOF-TRUST | BLOCKING | RED (production absent) | GREEN | GREEN only
+19 FULL-CI | BLOCKING | baseline GREEN | GREEN | GREEN only
+FILE 15 reactivegas/ms2/e43/.archived/t57-owner-codex/campaign-ledger.md 758584a315bc132da4ca8781e46cb0737ac8d3475c954de2ae6a026a299b188c
+8 Row | Severity | State | Required killing evidence
+9 --- | --- | --- | ---
+10 INV-57-BOUNDARY | BLOCKING | KILLED | effect/sweep bypass mutant; six-arm checker; F-001 guard RED→GREEN
+11 INV-57-NOOP | BLOCKING | KILLED | arbitrary stale-state rejection identity; sweep discriminator
+12 INV-57-AUTH | BLOCKING | KILLED | all six current events plus stranger/removeMember production trace
+13 INV-57-EXHAUSTIVE | BLOCKING | KILLED | new constructor/effect rejected at authorization boundary; no wildcard
+14 INV-57-NOEXPIRY | ADVISORY-BUT-REQUIRED | KILLED | preserving admission plus three semantic discrimination witnesses
+15 INV-54-PARTITION | BLOCKING | KILLED | fresh silent-deletion mutant
+16 INV-54-DISJOINT | BLOCKING | KILLED | fresh both-tallies mutant
+17 INV-54-NOSTALE | BLOCKING | KILLED | fresh non-ballot sweep omission mutant
+18 INV-54-FRANCHISE | BLOCKING | KILLED | fresh unfranchised recast mutant; admitted-event proof dependency
+19 INV-54-POLICYFREE | BLOCKING | KILLED | fresh hard-coded threshold mutant
+FILE 16 reactivegas/ms2/e43/.archived/t59-owner-claude/docs-auditor-1/evidence/campaign-ledger.tsv 6a1662e9cdc1322c14336270e2f7c6bc348fac6330a5864ea78e9f3e0378cf31
+1 invariant | severity | verdict | state | mutant_or_limit
+2 I-FENCE-1 | BLOCKING | PASS | KILLED | fence_extra; 5344e360cca867ce7274eaad5060db49f2c20772d3afec25c920393e96a2f44b
+3 I-FENCE-2 | BLOCKING | PASS | KILLED | proof_debt also trips frozen Step blob; 9384769d0b5aa2dba06c5df5b6efc7667f88018bf920e19202cbd325dad276de
+4 I-FENCE-3 | BLOCKING | PASS | OPEN | observed pass; no independent killing mutant this round
+5 I-FENCE-4 | BLOCKING | PASS | OPEN | observed pass; no independent killing mutant this round
+6 I-FENCE-5 | BLOCKING | PASS | OPEN | observed pass; no independent killing mutant this round
+7 I-R1-1 | BLOCKING | PASS | KILLED | r1_displaced; ac0bd476fe707a7149f2b5ee8dd6f86fa55b4cf3fd010f2bf109ae56ba66e250
+8 I-R1-2 | BLOCKING | PASS | OPEN | citing_blocks=70; no independent floor mutant this round
+9 I-R1-3 | BLOCKING | PASS | KILLED | cold-probe control; d6764c29018ebbaec68d5bc4b117ea76c4d35780bf7b4d2ea769fa2e4ced72d6
+10 I-R1-4 | BLOCKING | PASS | OPEN | 91 live names and all markers elaborate; no independent retired-name mutant this round
+11 I-R1-5 | BLOCKING | PASS | OPEN | harness names unknown and category retained; no independent killing mutant this round
+12 I-R2-1 | BLOCKING | PASS | KILLED | r2_false; b53ece6f3fa03f4a2c6cf20d1107c9fcf716728038605ab699fdd0c402a713a9
+13 I-R2-2 | BLOCKING | PASS | OPEN | prose matches definitions; no independent killing mutant this round
+14 I-R2-3 | BLOCKING | PASS | OPEN | prose and opposite-balance argument correct; no independent killing mutant this round
+15 I-R2-4 | BLOCKING | PASS | OPEN | prose requires total conti zero including comune; no independent killing mutant this round
+16 I-R2-5 | BLOCKING | PASS | OPEN | kernel counterexample elaborates; no independent definition mutant this round
+17 I-R2-6 | BLOCKING | PASS | KILLED | r2_false rejected on I-R2-1 leg; b53ece6f3fa03f4a2c6cf20d1107c9fcf716728038605ab699fdd0c402a713a9
+18 I-F2-1 | BLOCKING | PASS | OPEN | live Step/State read and gate rows pass; no independent killing mutant this round
+19 I-F2-2 | BLOCKING | PASS | OPEN | reachable/arbitrary scope and non-stalled arms match live Step; no independent killing mutant this round
+20 I-F2-3 | BLOCKING | PASS | KILLED | f2_guard_count; 13381a6788323898f5c37bd751aa16fc76b4deaf9c43cf26237db08e397942c4
+21 I-F3-1 | BLOCKING | PASS | OPEN | live theorem is one referente equation; no independent killing mutant this round
+22 I-F3-2 | BLOCKING | PASS | OPEN | live inversion plus bal_bump_ne supports untouched-key claim; no independent killing mutant this round
+23 I-F3-3 | BLOCKING | PASS | KILLED | f3_solvency_premises; e0216365df3e0f666c2202125bc801aa46f531283fb9d3b252dcbc3c218fd3ce
+24 I-F3-4 | BLOCKING | PASS | KILLED | f3_conservation_premises; d38e272a2323b387df471ab4721f284c9d41c073066f5d706634eb3c9fe840be
+25 I-F2/F3-CARRY | BLOCKING | PASS | OPEN | all live semantic rows re-read and gate passes; aggregate class not independently killed this round
+26 I-M-1 | BLOCKING | PASS | OPEN | effective Lean 4.25.0 observed; no toolchain mutant this round
+27 I-M-2 | BLOCKING | PASS | OPEN | cold full gate built umbrella before citation; no independent build-order mutant this round
+28 I-M-3 | BLOCKING | PASS | OPEN | 35/35 observed; no compiled trace mutant this round
+29 I-M-4 | BLOCKING | PASS | OPEN | 18/18/0 observed; no compiled trace mutant this round
+30 I-M-5 | BLOCKING | PASS | OPEN | five envelopes observed; no compiled envelope mutant this round
+31 I-M-6 | BLOCKING | PASS | KILLED | inventory_missing; 4020a506d8ac8a0b7b1fc3f93e99b0dd2e50ba46cda2afa9d9aa485c5c16bad9
+32 I-M-7 | BLOCKING | PASS | OPEN | just ci exit 0; no independent CI mutant this round
+33 I-M-8 | BLOCKING | PASS | KILLED | proof_debt; 9384769d0b5aa2dba06c5df5b6efc7667f88018bf920e19202cbd325dad276de
+FILE 17 reactivegas/ms2/e43/.archived/t59-owner-claude/mandate/campaign-ledger.tsv f20f11153afe8d13485dfcc94f271692ef7f6e53e466d67f678e20b2dc46221b
+1 id | class | row | expected_rejection | observed | exit | receipt_sha256 | status
+2 M1 | gate-falsification | I-R1-1 | I-R1-1 immediate citation placement | GATE-FAIL  I-R1-1 immediate citation placement: IMMEDIATE-CITATION-AUDIT citing_blocks=69 placement_gaps=1 result=FAIL; | 1 | 09c8f2727f95a464c07dfef2931df0b2fcad78d8877d4b8dd8d440250f3d655c | KILLED
+3 M2 | gate-falsification | I-R1-2 | I-R1-2 non-vacuity | GATE-FAIL  I-R1-2 non-vacuity: citing_blocks=0 < 60 (citations deleted, not placed);GATE-FAIL  I-F2-1b comune: explicit comuneId writes named; | 1 | 41b977dace2d681056f93fabec99f1b1dda78e9c2802ef3a7602d2fa6a23117c | KILLED
+4 M3 | gate-falsification | I-R1-4 | I-R1-4 structured citation elaboration | GATE-FAIL  I-R1-4 a structured citation does not elaborate;GATE-FAIL  carry: no nonexistent removeUser; | 1 | eb5ff9e59aadbf88b54095e510c8bb5a0801e0fd1bf16bfcb4a05c68ecc4c25a | KILLED
+5 M5 | gate-falsification | I-FENCE-2 | I-FENCE-2 exact frozen blob | GATE-FAIL  I-FENCE-2 Predicates.lean blob 908a8b47c416760e834a31e5775ea854b40afc36 != frozen 812f3115ca39ba2efc61421b9438b73b52affb68; | 1 | 3cb1c586a6d41062c24f1d75498934c5d3b34f5ec636f2148b0f81837316c8af | KILLED
+6 M6 | gate-falsification | I-FENCE-1 | I-FENCE-1 six-path fence | GATE-FAIL  I-FENCE-1 path set mismatch: docs/en/design/state-machine.md,docs/en/design/t59-scratch.md,lean/Reactivegas/Invariants.lean,lean/Reactivegas/Predicates.lean,lean/Reactivegas/Step.lean,lean/Reactivegas/TraceTests.lean,lean/Reactivegas/Types.lean; | 1 | b5a89aaed9e371700f2006b1660156e0c8b7deee739df5da31e4594fc700b519 | KILLED
+7 M7 | gate-falsification | I-FENCE-3 | I-FENCE-3 rejected blob not final | GATE-FAIL  I-FENCE-3 design record is pinned at the rejected blob; R1/R2 require it to change;GATE-FAIL  I-R1-1 immediate citation placement: IMMEDIATE-CITATION-AUDIT citing_blocks=68 placement_gaps=41 result=FAIL;GATE-FAIL  I-R2-1 no affirmative derivability claim (whole document); | 1 | 0971ac5ab0861e9a9ceec11341f1854d4a58bd5b0d372c20e55efa5a14f0271d | KILLED
+8 M8 | gate-falsification | I-M-6 | I-M-6 inventory reconciliation | GATE-FAIL  I-M-6 document Event inventory does not reconcile with live Types.lean; | 1 | eb79e98e88b5bcaebc33700cd18e44f33e6b7138e486c4fdfaf9aaeaba828c95 | KILLED
+9 M9 | gate-falsification | carry-removeUser | carry: no nonexistent removeUser | GATE-FAIL  carry: no nonexistent removeUser; | 1 | e5ee91910ac28490595cfaa5340f039dadc0b866990f79dacb2f782beb5370e0 | KILLED
+10 M10 | gate-falsification | instrument-identity | [0] frozen checker hash | GATE-FAIL  frozen citation checker hash mismatch: 9d23368e355c4c6e4f9b2bbe71328753c0d368b0662482250e112cd4d752f3cf; | 1 | b067f56838a4528eb5a78c0dc7cdb707671c03945632cd30fa5be3cd5b4f4b32 | KILLED
+11 M11 | gate-falsification | I-F3-4c | I-F3-4c reachability explicitly not a premise | GATE-FAIL  I-F3-4c L6: reachability is explicitly not a premise; | 1 | 067e40d45693ea5ae9b593cf840c8cec97b2dee6bf4397046c625a69485ede11 | KILLED
+12 M4b | gate-falsification | I-R2-1 | I-R2-1 affirmative derivability + explicit non-derivability | GATE-FAIL  I-R2-1 no affirmative derivability claim (whole document);GATE-FAIL  I-R2-1 the non-derivability is stated explicitly; | 1 | 4f2404b1ff9f54e4bfc8640182d5ed9c781f63b64bd936763e5008fb8529a125 | KILLED
+13 M4c | gate-falsification | I-R2-1 | I-R2-1 rejected sentence fragment + affirmative derivability | GATE-FAIL  I-R2-1 no affirmative derivability claim (whole document);GATE-FAIL  I-R2-1 rejected sentence fragment absent; | 1 | 1d4df46331b4f95f6a73dd77e9cadcea9a02ec7becf2e4e09ddb2d8ba5de6895 | KILLED
+14 M12 | gate-falsification | I-R1-3/I-M-2 | gate exits at [0] with reason=cold-prerequisite-build and emits no citation verdict | T59-GATE-SUMMARY version=t59-design-record-1 failures=1 reason=cold-prerequisite-build | 1 | 2ed0e09580ed8752f7b306b0246c5c8280e0205ba26e335bc1d19bf7fd1b529e | KILLED
+15 M4 | gate-falsification | I-R2-1 | n/a | SUPERSEDED by M4b/M4c: multi-line splice did not apply | 0 | - | SUPERSEDED
+16 S1 | satisfiability | all rows | gate must be able to PASS | full gate exit=0 on ticket-owner witness | 0 | 1e35eb1c7a95287be69a2a13f9017916f3523296d710c8f201fe455775c6bca6 | PROVEN
+17 S2 | instrument-satisfiability | I-R1-1 | frozen checker must be able to return PASS | synthetic doc PASS exit=0; real-scale witness PASS citing_blocks=69 | 0 | - | PROVEN
+18 C1 | comparative-control | I-R1-3 | retired #48 probe on a cold tree | exits 0 and reports 230/230 live (the defect) | 0 | - | DEFECT-REPRODUCED
+FILE 18 reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-a011-s1-codex-r1/campaign-ledger.md 53e5bee359d31919a4c9f3ee343548bdfb82cf2b57935d12c63db3f3fa292896
+9 Row | Verdict | Terminal state | Bound evidence
+10 --- | --- | --- | ---
+11 `G62-C-THEOREMS` | PASS | `KILLED` (inherited) | Historical declaration remains `ab9b4aadb52fbbcdb62bb8de39f62acbc76f0ffbfa4c8eeb5d1d79f6fff334f4`; fresh full ticket receipt `d369103c357b5a3f4f3d49107bccf8e676ccde832ea893dbd5aaccf790b92b1b`.
+12 `G62-C-ECONOMY` | PASS | `KILLED` (inherited) | Non-degenerate canonical economy proof carried at `76c32a87d1099fe0d3fb3cbae84fa9e408afaa6e9d454a433e4e6c02999b5b21`; fresh full ticket receipt passes.
+13 `G62-C-EXHAUSTIVE` | PASS | `KILLED` (inherited) | Constructor seeds execute in fresh full ticket receipt `d369103c357b5a3f4f3d49107bccf8e676ccde832ea893dbd5aaccf790b92b1b`.
+14 `G62-C-TRUST-CI` | PASS | `KILLED` (inherited) | Released toolchain blobs match; fresh mismatch control, dependency direction, zero escape hatches, and allowed-axiom build pass in `d369103c357b5a3f4f3d49107bccf8e676ccde832ea893dbd5aaccf790b92b1b`.
+15 `I57-01-BOUNDARY` | FAIL | `BLOCKED` | Production currently has one checked decision and the bypass mutant is killed, but the reached duplicate produces the same state while `checkVoteApplyDuplicateCaught` remains true behind disconnected `checked_decisions := 1`; focused evidence `d53064ca7972a0a747e1da6c85671573d90becfb206fe079345b639751ba0f04`.
+16 `G62-C-INHERITED57` | PASS | `KILLED` | Production-rooted non-degenerate franchise cast-admission and caller-threshold controls both distinguish their targeted mutants; DISJOINT remains inherited killed. Focused evidence `d53064ca7972a0a747e1da6c85671573d90becfb206fe079345b639751ba0f04`.
+17 `G62-C-TRACE` | FAIL | `BLOCKED` | No executable JSON decode/replay exists; omitted-state emitter, corrupted member-cleanup value, and degenerate historical pending-store coordinate survive the relevant shipped acceptance/value oracles. Focused evidence `d53064ca7972a0a747e1da6c85671573d90becfb206fe079345b639751ba0f04`.
+FILE 19 reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-a011-s2-glm/campaign-ledger.md 5423fa5664733442eb01e6303d1c3ee80a32e0c238d1987122daec1260462ade
+10 Row | Verdict | Terminal state | Bound evidence
+11 --- | --- | --- | ---
+12 `G62-C-THEOREMS` | PASS | `KILLED` (carried) | Historical declaration blob `ab9b4aadb52fbbcdb62bb8de39f62acbc76f0ffbfa4c8eeb5d1d79f6fff334f4` byte-identical base→candidate; `integrated_theorem_witness_holds` prints `[propext]`; fresh slice + ticket gates pass. Not reopened.
+13 `G62-C-ECONOMY` | PASS | `KILLED` (carried) | `canonical_economy_holds` prints `[propext]`; `Predicates.lean` and all economy surfaces byte-identical rejected→candidate (repair delta is one file). Not reopened.
+14 `G62-C-EXHAUSTIVE` | PASS | `KILLED` (carried) | `exhaustive_inventories_hold` prints `[propext]`; inventory defs untouched by the repair delta; fresh ticket gate executes constructor seeds. Not reopened.
+15 `G62-C-TRUST-CI` | PASS | `KILLED` (carried) | Fresh escape-hatch scan zero hits; all printed axiom sets within allowed `{propext}` (fresh probe); frozen gate hashes verified before and after; full CI green twice fresh. Not reopened.
+16 `I57-01-BOUNDARY` | PASS | `KILLED` | Fresh instrument `evidence/probe-main2.log`: production `voteApply` admits (`true`), shipped `voteApplyDuplicate` reaches a second `validateVoteEvent` on the same signer/event and fails (`true`), bypass really admits and `checkVoteApplyBypassCaught=true`; the shipped check pattern goes red for a duplicate-production and for the submission-1 pure-duplicate shape; `checkI57Boundary` is bound by `i57_boundary_holds := by decide`, prints `[propext]`.
+17 `G62-C-INHERITED57` | PASS | `KILLED` (carried) | `i57_disjoint_holds`, `i57_disjoint_mutant_caught`, `i57_franchise_mutant_caught`, `i57_policyfree_mutant_caught` all print `[propext]`; the I57-06 franchise/policyfree/disjoint sections are outside every repair hunk; `KelGroups/Vote/Invariants.lean` untouched. Not reopened.
+18 `G62-C-TRACE` | FAIL | `BLOCKED` | Fresh instrument `evidence/probe-main2.log`: the repaired machinery is evaluator-correct — `checkIntegratedCorpus=true`, real `Lean.fromJson?` decode of the full emitter (`decodedLength=7`), omitted-state emitter dies, corrupted stored coordinate dies, all 7 typed mutants die through real `Lean.toJson`, decoded coordinates non-degenerate. But `git grep checkIntegratedCorpus` at the candidate has exactly one hit: the definition. No theorem, `#eval`, caller, gate row, or CI step evaluates it (`just ci` = compile only; both gates are textual + `just ci`). `evidence/probe-decide.log`: `by decide` cannot reduce the check ("reduction got stuck"), and `native_decide` is forbidden by the repo's own escape-hatch scan. The repair removed the only two prior bindings (`theorem integrated_corpus_holds`; the `checkIntegratedTheoremWitness` conjunct) and shipped no replacement, so no permanent red exists for this row's class. Exact blocking fact: the control is not kernel-decidable, and no lawful permanent-binding surface (decide theorem, gate execution hook, `#eval` red mechanism) exists within the frozen gate and forbidden-hatch fences of this campaign.
+FILE 20 reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-a013-grok/campaign-ledger.md dd23b865079854956a1505fdbc75e7b1fe8d0abc2e29601ea1efee83a17cf31f
+16 Row | Severity | State | Evidence
+17 --- | --- | --- | ---
+18 `G62-C-THEOREMS` | BLOCKING | `KILLED` carried | base blobs unchanged; `GATE-ROW G62-C-THEOREMS PASS` in `evidence/a013-gate.log` `716afe5dd56b90772a556aa1f2d299a6f9279b95ec85d84ffee4bcab0ded415d`
+19 `G62-C-ECONOMY` | BLOCKING | `KILLED` carried | same; `GATE-ROW G62-C-ECONOMY PASS`
+20 `G62-C-EXHAUSTIVE` | BLOCKING | `KILLED` carried | same; `FALSIFY-OK constructor-seeds count=6`; `GATE-ROW G62-C-EXHAUSTIVE PASS`
+21 `G62-C-TRUST-CI` | BLOCKING | `KILLED` carried | same; `GATE-ROW G62-C-TRUST-CI PASS`; shipped `just ci` re-run inside A013 and ticket gates
+22 `I57-01-BOUNDARY` | BLOCKING | `KILLED` carried | `Step.lean` blob `06b2d12eb3dc09a060f99f88297290ac776c13dc` identical to base; single `applyVoteEventChecked`; `checkI57Boundary` still present; `GATE-ROW G62-C-INHERITED57 PASS`
+23 `G62-C-INHERITED57` | BLOCKING | `KILLED` carried | KelGroups blobs identical to base; includes DISJOINT; `GATE-ROW G62-C-INHERITED57 PASS`
+24 `G62-C-TRACE` | BLOCKING | `KILLED` | production/value-level carried (Invariants blob `f14bbd7614fe29d1680c7f97c6f84a3df7e8eaa7`); wiring killed by throwaway `false &&` mutant `3e6349021426a31ebdf402ab145d9f202b1906c056a889ae5971a856ce5095b8` → tracked `just ci` exit 1 at `lean-corpus-gate` with 0 Lean elaboration errors (`evidence/mutant-ci.log` `a0318b2098112f32d4e3d51ea2ea3105ecb7797c26886f20f2fececb98eb0f85`); restored candidate GREEN via frozen A013 + ticket gates
+FILE 21 reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-s1-codex/campaign-ledger.md f033dd3b1e78c237798d49f6e273d403f3a50d9cf1dcc7c3373fd62b4c2f3799
+11 Row | Severity | State | Independent audit evidence
+12 --- | --- | --- | ---
+13 G62-C-THEOREMS | BLOCKING | KILLED | Historical block independently equals accepted `ab9b4...`; focused proof prints only allowed axioms; omission/source controls are live. `evidence/static-trust-and-history-v2.log` sha256 `968fc50f...`, `evidence/fresh-focused-proof.log` sha256 `76c32a87...`.
+14 G62-C-ECONOMY | BLOCKING | KILLED | Explicit caller auth reaches production; canonical two-member/ghost-value fixture distinguishes payload-local membership and the proved check elaborates. `evidence/fresh-focused-proof.log` sha256 `76c32a87...`.
+15 G62-C-TRACE | BLOCKING | BLOCKED | Candidate has no integrated JSON type/emitter/replayer; `replayIntegratedCorpus` is length-only and its events are independently mapped from one initial state. F-TRACE. `evidence/semantic-findings.log` sha256 `9a4ae25d...`, frozen instrument sha256 `6dee1ad1...`.
+16 G62-C-EXHAUSTIVE | BLOCKING | KILLED | App/direct/proposal/base-change/vote/verdict eliminations are closed and wildcard-free; fresh constructor selftest and full ticket gate pass. `evidence/fresh-full-ticket-gate.log` sha256 `28d6a8fb...`.
+17 G62-C-INHERITED57 | BLOCKING | BLOCKED | F-I57-ONE-DECISION: admitted vote route validates twice. F-I57-INTEGRATED-LEGS: DISJOINT, FRANCHISE, POLICYFREE checks do not reach the integrated transition and are insensitive to path mutations. F-I57-TOOLCHAIN: pin `4.27.0` differs from executing Lean `4.25.0`. `evidence/semantic-findings.log` sha256 `9a4ae25d...`, frozen instrument sha256 `6dee1ad1...`, `evidence/toolchain-pin-compare.log` sha256 `b018190f...`.
+18 G62-C-TRUST-CI | BLOCKING | BLOCKED | Escape-hatch, axiom, history, source, direction, and CI checks pass, but the required toolchain identity does not: pin `4.27.0`, executing Lean `4.25.0`; the shipped Bool checks unrelated domain values. F-I57-TOOLCHAIN. `evidence/toolchain-pin-compare.log` sha256 `b018190f...`.
+FILE 22 reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-s2-codex/campaign-ledger.md 286c4f04618b5eae564771ce55cea0698ecd1967e3d31d5580ae40eb766ba006
+14 Row | Severity | Carried state | Submission-2 active scope
+15 --- | --- | --- | ---
+16 `G62-C-THEOREMS` | BLOCKING | `KILLED` | Carried terminal; do not reopen.
+17 `G62-C-ECONOMY` | BLOCKING | `KILLED` | Carried terminal; do not reopen.
+18 `G62-C-TRACE` | BLOCKING | `BLOCKED` | Active: F-TRACE, serialized sequential integrated replay and four named mutants.
+19 `G62-C-EXHAUSTIVE` | BLOCKING | `KILLED` | Carried terminal; do not reopen.
+20 `G62-C-INHERITED57` | BLOCKING | `BLOCKED` | Active: F-I57-ONE-DECISION, F-I57-INTEGRATED-LEGS, and I57-10 live toolchain boundary.
+21 `G62-C-TRUST-CI` | BLOCKING | `BLOCKED` | Active: F-I57-TOOLCHAIN; running toolchain must equal pin and mismatch control must fail.
+29 Row | Final state | Independent settlement
+30 --- | --- | ---
+31 `G62-C-THEOREMS` | `KILLED` | Carried terminal without reopening; historical bytes and full gate remain exact.
+32 `G62-C-ECONOMY` | `KILLED` | Carried terminal without reopening; repair did not touch the row boundary.
+33 `G62-C-TRACE` | `BLOCKED` | The emitter omits stored fields, replay consumes in-memory steps rather than serialized data, and pending/economic/vote state is not compared.
+34 `G62-C-EXHAUSTIVE` | `KILLED` | Carried terminal without reopening; seeded constructor controls remain green.
+35 `G62-C-INHERITED57` | `BLOCKED` | Production witnesses now reach the integrated fold, but I57-01 duplicate, I57-06-FRANCHISE cast-admission, and I57-06-POLICYFREE threshold-threading mutants are not discriminated.
+36 `G62-C-TRUST-CI` | `KILLED` | Live pin/runtime comparator reports `4.25.0 = 4.25.0`; its mutated-pin negative control fails and local/CI wiring executes it.
+FILE 23 reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-owner-s62-c-a011-grok-a012/handoffs/campaign-ledger.md 27555f19caf6574b6cdc431c3a4d944d2485e2d0e0b83abe4ad704e67effb480
+3 Row | Severity | State | Evidence
+4 --- | --- | --- | ---
+5 G62-C-THEOREMS | BLOCKING | KILLED (inherited) | not reopened
+6 G62-C-ECONOMY | BLOCKING | KILLED (inherited) | not reopened
+7 G62-C-EXHAUSTIVE | BLOCKING | KILLED (inherited) | not reopened
+8 G62-C-TRUST-CI | BLOCKING | KILLED (inherited) | no sorry; toolchain blobs = release
+9 I57-01-BOUNDARY | BLOCKING | KILLED | one checked decision; duplicate/bypass mutants
+10 G62-C-INHERITED57 | BLOCKING | KILLED | FRANCHISE+POLICYFREE `.cast` mutants; DISJOINT inherited
+11 G62-C-TRACE | BLOCKING | KILLED | complete GroupState JSON + apply replay
+FILE 24 reactivegas/ms2/e43/.archived/t62-owner-codex/campaign-a013/campaign-ledger.md 3b73cf0a403b72bbd8d68bf0d3e9ca1727f3f5b4883fc95819b7f2c0ea9af3c9
+10 Row | Initial state | A013 obligation
+11 --- | --- | ---
+12 `G62-C-THEOREMS` | `KILLED` inherited | Carry exact production blobs; do not reopen.
+13 `G62-C-ECONOMY` | `KILLED` inherited | Carry exact production blobs; do not reopen.
+14 `G62-C-EXHAUSTIVE` | `KILLED` inherited | Carry exact production blobs; do not reopen.
+15 `G62-C-TRUST-CI` | `KILLED` inherited | Carry exact trust boundary; re-run shipped CI.
+16 `I57-01-BOUNDARY` | `KILLED` inherited | Carry exact one-decision/bypass/duplicate control; do not reopen.
+17 `G62-C-INHERITED57` | `KILLED` inherited | Carry all inherited #57 rows including DISJOINT.
+18 `G62-C-TRACE` | `OPEN` | Tracked CI executes corpus evaluator; targeted corpus mutant makes that same tracked CI RED; restored candidate GREEN.
+FILE 25 reactivegas/ms2/e43/.archived/t62-owner-codex/campaign-ledger-s62-c-a011.md ec8389404c5a32fb0401f2f5c7756f8f828e1dec44d5aacafbc46b884f050034
+15 Row | Severity | Initial state | Bound evidence / obligation
+16 --- | --- | --- | ---
+17 `G62-C-THEOREMS` | BLOCKING | `KILLED` (inherited) | Historical declaration `ab9b4aadb52fbbcdb62bb8de39f62acbc76f0ffbfa4c8eeb5d1d79f6fff334f4`; static/axiom receipt `968fc50fbeb0c3f47759e3cdf2de2ff324c740b2c3ea199ee3342435c2b21a71`. Do not reopen or rebuild.
+18 `G62-C-ECONOMY` | BLOCKING | `KILLED` (inherited) | Non-degenerate canonical economy focused proof `76c32a87d1099fe0d3fb3cbae84fa9e408afaa6e9d454a433e4e6c02999b5b21`. Do not reopen or rebuild.
+19 `G62-C-EXHAUSTIVE` | BLOCKING | `KILLED` (inherited) | Constructor controls plus full-ticket receipt `90c28b3780d17c2970231b2f880dd1a6d558491a81d5064c854b394ac4947521`. Do not reopen or rebuild.
+20 `G62-C-TRUST-CI` | BLOCKING | `KILLED` (released dependency) | Live pin/runtime and mismatch-control receipt `b6117b60dfe019f8dd528dbcfd77de5b2c0fa23135c0c3af37bb1ee4096d5d15`. Preserve exact release blobs.
+21 `I57-01-BOUNDARY` | BLOCKING | `OPEN` | Keep signer identity constant, reach the duplicate arm, and permanently prove exactly one production validation decision dominating effects/sweep; both reached-duplicate and bypass mutants must fail.
+22 `G62-C-INHERITED57` | BLOCKING | `OPEN` | Exercise franchise cast-admission and policy-free threshold threading through the integrated production path with self-applying targeted mutants. `I57-06-DISJOINT` remains inherited `KILLED`.
+23 `G62-C-TRACE` | BLOCKING | `OPEN` | Serialize/deserialize signed sequential events and complete integrated state, replay through production, compare every stored value, and kill all-error, reordered, altered-state, same-length, and per-coordinate mutants.
+FILE 26 reactivegas/ms2/e43/.archived/t62-owner-codex/campaign-ledger.md 8a1cc8ecdac6dd37fb9da21fb7a22ea3a1710c48f4921103e07590119b287fa9
+7 Row | Severity | State | Evidence / residual
+8 --- | --- | --- | ---
+9 INV-62-ONE-STORE | BLOCKING | KILLED | Final fresh audit report `3a7b355a260b`: sole `GroupState.members`, membership-free app/vote payloads; frozen duplicate-field seeds for `users`, `responsabili`, and vote `members` all RED; gate `71c8588c120d`.
+10 INV-62-PAYLOAD-ONLY | BLOCKING | KILLED | Actual member-writing transition mutant false-preservation claim RED `060790281562`; independent payload/member/vote carry probe GREEN `7dbd79ca45d3`; production result remains payload-only.
+11 INV-62-ONE-KEY | BLOCKING | KILLED | Submission-1 audit exposed production `comuneId` authorization; final independent probe requires valid non-comune success plus guarded boot/root comune refusal, GREEN `7dbd79ca45d3`; no identity bridge remains.
+12 INV-62-HISTORICAL | BLOCKING | OPEN | S62-A byte boundary independently PASS: exact declaration hashes `ab9b4aadb52f` and production call graph is isolated. Mutation-terminal integrated-theorem evidence remains intentionally deferred to `G62-C-THEOREMS`.
+13 INV-62-DIRECT-ONLY | BLOCKING | OPEN | pending S62-B
+14 INV-62-ATOMIC-HOOK | BLOCKING | OPEN | pending S62-B
+15 INV-62-V3-BASE | BLOCKING | OPEN | pending S62-B
+16 INV-62-CLOSED-SUMS | BLOCKING | OPEN | pending S62-B/S62-C
+17 INV-62-PROOF-TRUST | BLOCKING | OPEN | pending S62-C
+FILE 27 reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s1/handoffs/campaign-ledger.md 98c26657f347f53066c5ef1c2e3a7bb631e0f8944eb9dee6026a150bc5765a0f
+5 Row | Severity | State | Killing mutant / evidence
+6 --- | --- | --- | ---
+7 INV-54-PARTITION | BLOCKING | OPEN | C3 `closed := gs.closed` went red, but `questions_partition` does not quantify opened history; owner log `42beba4a09c86eb3d94188a858873b260d15ffca310040c960c3cbf464a55b8c`
+8 INV-54-DISJOINT | BLOCKING | KILLED | C2 omitted the opposite-tally erase; test and proof went red, `203c8a3e3cfbe8952afece5166405296e21ac33edab16cf19f64550e73e9c462`
+9 INV-54-NOSTALE | BLOCKING | KILLED | C4 swept only ballot events; witnesses and carrier proof went red, `736207103c130c59f36d8dfe2b82a94b712526e0671ecba0bf7ff8e77a27d446`
+10 INV-54-FRANCHISE | BLOCKING | OPEN | `franchise_of_tallies` exposes no cast event at its responsible prefix, and `unfranchised_cast_noop` observes only global key membership
+11 INV-54-NOEXPIRY | ADVISORY | OPEN | C5 field mutation went red, but `no_expiry` covers only a cast on one distinct question and is not an event-list theorem; `1c9a019b840e1a2e5ccb8256d428860c8b66922160cb1d01952405b7c4f11e40`
+12 INV-54-POLICYFREE | BLOCKING | KILLED | hard-coded `legacyThreshold` mutation made the zero-policy witness red; source `9e738cfb0d4e7794e0c11b6a9bdab88e33c4469f59a406d1595a17317fc28cc5`, log `e0b3703a2462d0116945a809485fc18a72356f5d07247084262116331c6248a6`
+FILE 28 reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s2/handoffs/campaign-ledger.md 9667b9f048dbb02fc2a9aa09c40139d3674b340005efd113c95c0c267df33d98
+5 Row | Severity | State | Killing mutant / evidence
+6 --- | --- | --- | ---
+7 INV-54-PARTITION | BLOCKING | KILLED | Independent silent-deletion mutant verified its edit, then lost opened ID `q`; source `instruments/partition-silent-deletion-mutant.lean` `ea9882087e28a20a3e47532a4b5081419161ee9189df7d5ec3b188dbf350cf42`, RED log `7846a04f598486abce852bb2f3f9dfe073045db2e4d8c20e53fe94e1c07baf64`. The shipped `questions_partition` now preserves every prefix-observed ID through the production fold.
+8 INV-54-DISJOINT | BLOCKING | KILLED | C2 omitted the opposite-tally erase; test and proof went red, `203c8a3e3cfbe8952afece5166405296e21ac33edab16cf19f64550e73e9c462`
+9 INV-54-NOSTALE | BLOCKING | KILLED | C4 swept only ballot events; witnesses and carrier proof went red, `736207103c130c59f36d8dfe2b82a94b712526e0671ecba0bf7ff8e77a27d446`
+10 INV-54-FRANCHISE | BLOCKING | KILLED | Independent unfranchised-recast mutant verified the post-standing-loss tally switch, then the complete-tally no-op oracle went RED; source `instruments/franchise-unfranchised-recast-mutant.lean` `08ccdb22771d9a6b8746bbb3e8d1441fc95c0b70217fdcf27c49532240c6db19`, log `a045991ca9d26e7f5c8223a54d87dcdbb686ff2143f1e70eff66e74174889b84`. The shipped theorem names the cast event and immediate prefix, and `unfranchised_cast_noop` is complete state identity.
+11 INV-54-NOEXPIRY | ADVISORY | OPEN | The theorem is now over a production-fold prefix but `EventPreservesQuestion` categorically excludes every member event. A non-admin admission preserves the franchise, proposer, and non-degenerate target tally yet the theorem premise reduces to `False`; source `instruments/no-expiry-member-event-gap-v2.lean` `1f146f5b889d8990af499d1d57791a1dd083a738119b3aa6001fa6c8477859b7`, log `b71f1ac28b0b84bd4c11a95600c5e951109fb0de59c74f5c1c69cd419d51bf86`.
+12 INV-54-POLICYFREE | BLOCKING | KILLED | hard-coded `legacyThreshold` mutation made the zero-policy witness red; source `9e738cfb0d4e7794e0c11b6a9bdab88e33c4469f59a406d1595a17317fc28cc5`, log `e0b3703a2462d0116945a809485fc18a72356f5d07247084262116331c6248a6`
+FILE 29 reactivegas/ms2/e43/t54/.archived/commit-auditor-s1/handoffs/campaign-ledger.md 488ce9318325d76e783c6eb177d53d8e910e9a64a04faeea765e21cb96809f87
+8 ID | Severity | Verdict | Row state | Killer / note
+9 --- | --- | --- | --- | ---
+10 R-1 | BLOCKING | PASS | OPEN | root + imports; G2 existence in gate log
+11 R-2 | BLOCKING | PASS | KILLED | gate G1 + G1b injected `import Reactivegas.Types` made `just lean` exit 1
+12 R-2b | BLOCKING | PASS | KILLED | same wiring control; tracked checker invoked before `lake build`
+13 R-3 | BLOCKING | PASS | OPEN | legal-direction count 0, not rejected
+14 R-4 | BLOCKING | PASS | KILLED | G2b: clean copy built, then type error in Types.lean made `lake build` exit 1
+15 R-5 | BLOCKING | PASS | OPEN | no `Reactivegas.*` in KelGroups types/theorems
+16 R-6 | BLOCKING | PASS | OPEN | `proposerAutoApproval`
+17 R-7 | BLOCKING | PASS | OPEN | `proposeReplacesPending` (5 admins so replace is observable)
+18 R-8 | BLOCKING | PASS | OPEN | propose/approve call `tryEnact`; no other callers of `finishEnact`
+19 R-9 | BLOCKING | PASS | OPEN | `majority_table` 0..5 + `majority_not_strict_on_even` via `omega`
+20 R-10 | BLOCKING | PASS | OPEN | `zeroAdminsEnactImmediately`
+21 R-11 | BLOCKING | FAIL | OPEN | code uses pre-state `majority gs`; shipped tests survive post-state swap
+22 R-12 | BLOCKING | PASS | OPEN | `approveUnknownIsNoOp`
+23 R-13 | BLOCKING | PASS | OPEN | `duplicateApprovalIsIdempotent`; re-attempt is structural
+24 R-14 | BLOCKING | PASS | OPEN | `enactDeletesOnlySelected`
+25 R-15 | BLOCKING | PASS | OPEN | overwrite + two no-ops guarded
+26 R-16 | BLOCKING | PASS | OPEN | `member_key_coherent`
+27 R-17 | BLOCKING | PASS | OPEN | `applicationSignerDiscarded`
+28 R-18 | BLOCKING | PASS | OPEN | `bootstrapAcceptsUninspectedSigner`
+29 R-19 | BLOCKING | PASS | OPEN | current-admin accept/reject + payload order
+30 R-20 | BLOCKING | PASS | OPEN | approval errors distinct
+31 R-21 | BLOCKING | PASS | OPEN | `errorNotAMember`
+32 R-22 | BLOCKING | PASS | OPEN | ten constructors; bootstrap invalid-key-first
+33 R-23 | BLOCKING | PASS | OPEN | admin bypass + unknown app role
+34 R-24 | BLOCKING | PASS | OPEN | `foldDoesNotValidate`
+35 R-25 | BLOCKING | PASS | OPEN | 29 `lean:` anchors exist; G5 checked them
+36 R-26 | BLOCKING | PASS | OPEN | no end-to-end enforcement claim
+37 R-27 | BLOCKING | PASS | OPEN | no `sorry` / `axiom`
+38 R-28 | BLOCKING | PASS | OPEN | live `Classical.em` control; axiom sets ⊆ {propext, Classical.choice, Quot.sound}; no `native_decide`
+39 R-29 | BLOCKING | PASS | KILLED | `#guard false` in Tests.lean made `lake build` exit 1
+40 VI-1 | BLOCKING | PASS | OPEN | `approvals_nodup` from `WellFormed` preservation
+41 VI-2 | BLOCKING | PASS | OPEN | `proposer_mem_approvals`
+42 VI-3 | BLOCKING | FAIL | OPEN | theorem is a destructor of `Enacts`, not a fold-step property
+43 VI-4 | BLOCKING | PASS | OPEN | `members_change_implies_enacted`
+44 VI-5 | BLOCKING | PASS | OPEN | `member_key_coherent`
+45 VI-6 | BLOCKING | PASS | OPEN | `stalePendingWitness` is a real 3-admin removal trace; `#guard` requires ≥ current threshold
+46 VI-7 | BLOCKING | FAIL | OPEN | `bootstrapNonMemberWitness` is a record literal, not a fold trace
+47 EP-DENY | BLOCKING | PASS | OPEN | `BaseEvent` = propose \ | approve
+48 EP-DIGEST | BLOCKING | PASS | OPEN | `digest` is a parameter; no injectivity axiom
+49 EP-CESR | BLOCKING | PASS | OPEN | `validKey` is a parameter; no CESR axiom
+50 EP-LAST-ADMIN | BLOCKING | PASS | OPEN | `authMode` only; no prevention
+51 EP-ROLE-PRED | BLOCKING | PASS | OPEN | abstract `RoleDef`
+52 EP-REDUNDANT-LOOKUP | BLOCKING | PASS | OPEN | second `lookupMember` retained in `validateRoleChanges`
+FILE 30 reactivegas/ms2/e43/t54/.archived/commit-auditor-s2/handoffs/campaign-ledger.md beb43d3c7b6684aa5afe919f2ba1880dc6c222379d4609603360310ec676ebf2
+9 ID | Severity | Verdict | Row state | Killer / note
+10 --- | --- | --- | --- | ---
+11 R-1 | BLOCKING | PASS | OPEN | carried s1; root + imports
+12 R-2 | BLOCKING | PASS | KILLED | carried s1; G1b injected import
+13 R-2b | BLOCKING | PASS | KILLED | carried s1; tracked checker
+14 R-3 | BLOCKING | PASS | OPEN | carried s1; legal-direction 0
+15 R-4 | BLOCKING | PASS | KILLED | carried s1; G2b type error
+16 R-5 | BLOCKING | PASS | OPEN | carried s1
+17 R-6 | BLOCKING | PASS | OPEN | carried s1
+18 R-7 | BLOCKING | PASS | OPEN | carried s1
+19 R-8 | BLOCKING | PASS | OPEN | repair: `finishEnact` still only from `tryEnactDetailed` then-branch
+20 R-9 | BLOCKING | PASS | OPEN | carried s1
+21 R-10 | BLOCKING | PASS | OPEN | carried s1
+22 R-11 | BLOCKING | PASS | KILLED | M1 `majority (finishEnact …)`; shipped admin-intro guard false; old fold tests true
+23 R-12 | BLOCKING | PASS | OPEN | carried s1
+24 R-13 | BLOCKING | PASS | OPEN | carried s1
+25 R-14 | BLOCKING | PASS | OPEN | carried s1; VI-8 leftover pending relies on this
+26 R-15 | BLOCKING | PASS | OPEN | no-op payloads still guarded; recording of those paths added
+27 R-16 | BLOCKING | PASS | OPEN | carried s1
+28 R-17 | BLOCKING | PASS | OPEN | carried s1; pins pre-state `appFold`
+29 R-18 | BLOCKING | PASS | OPEN | carried s1
+30 R-19 | BLOCKING | PASS | OPEN | carried s1
+31 R-20 | BLOCKING | PASS | OPEN | carried s1
+32 R-21 | BLOCKING | PASS | OPEN | carried s1
+33 R-22 | BLOCKING | PASS | OPEN | carried s1
+34 R-23 | BLOCKING | PASS | OPEN | carried s1
+35 R-24 | BLOCKING | PASS | OPEN | carried s1
+36 R-25 | BLOCKING | PASS | OPEN | G5 now 30 lean: anchors (was 29)
+37 R-26 | BLOCKING | PASS | OPEN | carried s1
+38 R-27 | BLOCKING | PASS | OPEN | carried s1
+39 R-28 | BLOCKING | PASS | OPEN | `enact_implies_threshold_met` now `[propext]`; still ⊆ allowed set
+40 R-29 | BLOCKING | PASS | KILLED | carried s1; G4 now 40 Tests.lean guards
+41 VI-1 | BLOCKING | PASS | OPEN | carried s1
+42 VI-2 | BLOCKING | PASS | OPEN | carried s1
+43 VI-3 | BLOCKING | PASS | KILLED | production `applyEventDetailed`; M1-full `exact threshold` type-mismatch at :338
+44 VI-4 | BLOCKING | PASS | OPEN | still compiles; M3 dropped-recording leaves unsolved goals here
+45 VI-5 | BLOCKING | PASS | OPEN | carried s1
+46 VI-6 | BLOCKING | PASS | OPEN | now a validated production fold; independent walker `vi6Reachable`
+47 VI-7 | BLOCKING | PASS | KILLED | production fold + detailed step; leftover-literal mutant reddens shipped guard
+48 EP-DENY | BLOCKING | PASS | OPEN | carried s1
+49 EP-DIGEST | BLOCKING | PASS | OPEN | carried s1
+50 EP-CESR | BLOCKING | PASS | OPEN | carried s1
+51 EP-LAST-ADMIN | BLOCKING | PASS | OPEN | carried s1; VI-8 refutation uses this gap
+52 EP-ROLE-PRED | BLOCKING | PASS | OPEN | carried s1
+53 EP-REDUNDANT-LOOKUP | BLOCKING | PASS | OPEN | carried s1
+FILE 31 reactivegas/ms2/t-release-pipeline/.archived/recut-s001-auditor/handoffs/campaign-ledger.md cfc64da8f0ab38fbb05987f640a6dabe32b45d89acf15ea4714760c925300fb2
+9 Row | Severity | State | Named negative control / evidence
+10 --- | --- | --- | ---
+11 I001 | BLOCKING | KILLED-S001 | frozen gate rejects `9999.0.0.0` drift; wiring battery kills malformed manifest and exercises nine domain rows; C002 remains explicitly `DEFERRED-S002`
+12 I002 | BLOCKING | KILLED-S001 | `ci-no-dispatch`, `sync-no-dispatch`, `sync-guard-pr-only`, `sync-checkout-head-only`, missing-command, and wrong-order mutants are killed; RED→sync→GREEN model passes
+13 I003 | BLOCKING | KILLED-S001 | `release-mutable-ref` is killed; checkout and `TAG` are bound to the Release Please `tag_name` output
+14 I004 | BLOCKING | KILLED-S001 | `prerelease-off`, `prerelease-versioning`, and `release-not-prerelease` are killed; staged bytes also carry `PROVISIONAL.md`
+15 I005 | BLOCKING | KILLED-S001 | `post-smoke-entrypoint-tamper` is killed for digest mismatch and leaves zero uploadable archives; the real packager then passes
+16 I006 | BLOCKING | OPEN — PENDING-POST-MERGE | local clean-directory validator and smoke pass, but the required GitHub Release download has not happened; C001 remains explicitly `DEFERRED-S002`
+17 I007 | BLOCKING | KILLED-S001 | `release-from-pull-request` and `release-ungated` are killed; publication workflow has no PR trigger
+18 I008 | BLOCKING | KILLED-S001 | `forbidden-state-machine-append` changes the bound blob and is detected; real state-machine and Lean identities match the base
+FILE 32 reactivegas/ms2/t-simulator-fable/.archived/commit-auditor-grok-batch1-s1/handoffs/campaign-ledger.md 79021062619049d80ad60751c1711b5e4888360076921194b8900be37532e10c
+6 Invariant | Severity | Row state | Killing mutant / negative control | Evidence | Notes
+7 --- | --- | --- | --- | --- | ---
+8 INV-PROVENANCE | BLOCKING | KILLED | extra-path filter (8 allowed names only; empty remainder) | `git diff --name-status d44d353..a9c9462`; porcelain empty before/after | base→610f7d9→a9c9462; tree 1f2ac82
+9 INV-PIN-STABILITY | BLOCKING | KILLED | production SHA grep: no `fcd4dc3` / no branch fallback | pin-failures + claim-prod | old SHA fixture-only in claim-gate selftest
+10 INV-PIN-FAILURES | BLOCKING | KILLED | unresolvable `f{40}`; moved reachable `ea15d8d` tree mismatch; orphan `fcd4dc3` | instruments/pin-failures.mjs sha256=7ab7e89a…; instrument-pin.log sha256=c5d11b81… | three distinct reasons
+11 INV-CITATION-BOUNDARY | BLOCKING | KILLED | pin-status flip `voteDerived_iff_not_direct` provato→enunciato | claim-selftest.log sha256=635486e4… | join-vote-econ remains NON PROVATO; witness is definizione
+12 INV-CLAIM-COVERAGE | BLOCKING | KILLED | `backdonate: []`; donate route drift | claim-selftest; mutants.mjs sha256=ee97aa78… | 18/18 constructors
+13 INV-GOVERNANCE-MODEL | BLOCKING | KILLED | noop `verifyGovernedSeq`; live `runAttempt` without credit | operator-causality.mjs sha256=7587dc7f…; playwright selftest | refusal before `attempt()`
+14 INV-OPERATOR-SCENARIO | BLOCKING | KILLED | 01 empty kel/base; match `senza enactment fedele del canale base` | scenario-prod.log sha256=3ee034c6…; operator-causality | 4 addUser + 4 elect; economic machine still applies
+15 INV-RED-GREEN-CAUSALITY | BLOCKING | KILLED | `RG_SCENARIO_GOVERNANCE=off`; noop-gov mutant ACCEPTs 01 | instrument-operator.log sha256=f889dcee… | scenario still expects refused
+16 INV-ONE-CORE | BLOCKING | KILLED | forked `@@CORE:machine@@` slice | mutants.mjs; build-check.log sha256=be565467… | 13 slices byte-identical
+17 INV-SCENARIO-SUITE | BLOCKING | KILLED | empty dir; non-v1; omitted asserts; truncated seq; mutated poststate; comune in `initState` | scenario-selftest.log sha256=dd07f595…; mutants | no skip-flag exists; empty covered
+18 INV-PUBLISHABLE-BOUNDARY | BLOCKING | KILLED | live `?selftest=1` at 1280 and 390 | playwright-selftest.json sha256=2fae6c37… | 1 document request each; 0 console/page errors; no overflow
+19 INV-GATE-WIRING | BLOCKING | KILLED | frozen gate-v3 exit 0; cold-cache trace RED then warm GREEN | gate-v3.log sha256=362626af…; trace-prod.log (cold miss) | lake + claim/trace/vote/scenario prod+selftest
+FILE 33 reactivegas/ms2/t-simulator-fable/handoffs/batch2-campaign-ledger.md d43b57a0cf9e6d26e3643342cf101f3a7a4e39e433cbc70b26e4a726135d32cb
+FILE 34 reactivegas/ms2/t-simulator-fable/handoffs/fidelity-campaign-ledger.md 0ebbc65528473098c6e0c8b768d6820be9ad3e61b5ff2ef7f6b5758bd91f5b23
+23 Row | Severity | State | Observable terminal proof
+24 --- | --- | --- | ---
+25 FID-PIN-FRESH | BLOCKING | KILLED | Submission-2 occurrence-checked repair instrument killed the original disconnect/removal, ambiguous-addition, and repoint mutants through `checkMachineCoverage` → `pinnedConstructors`; permanent stale-pin control still names path and both blobs
+26 FID-MACHINE-COVERAGE | BLOCKING | KILLED | pinned 18, exact four dated `retired-by-#62/R62-08`, remaining 14 execute through real `attempt`
+27 FID-CAN-FAIL | BLOCKING | KILLED | removing one live `attempt` case makes both frozen and permanent coverage RED for `unknown event tag`
+28 FID-DONATE | BLOCKING | KILLED | positive donation raises author cassa and reserved non-member comune conto equally; invalid author/value refused
+29 FID-BACKDONATE | BLOCKING | KILLED | positive affordable share raises every current member by `w`, lowers comune by `n*w`, changes no cassa; invalid/insolvent cases refused
+30 FID-GOVERNANCE-BOUNDARY | BLOCKING | KILLED | `donate` direct; `backdonate` remains app-decided and cannot bypass governed-sequence evidence; no invented proved join
+31 FID-SINGLE-CORE | BLOCKING | KILLED | scenario runner imports the shared core and generated page slices are byte-identical
+32 FID-RETIRE-62 | BLOCKING | KILLED | no implementation or repair of the four R62-08 membership/role events; exemption is visible, exact, and dated
+FILE 35 reactivegas/ms2/t-simulator-fable/handoffs/fidelity-recut-campaign-ledger.md c084e85cfe5ae649558e9c37d37b951c3c0ae6d6456243bea89503b45d7478f5
+20 Row | Severity | State | Observable terminal proof
+21 --- | --- | --- | ---
+22 FID-PREFIX-COMPLETION | BLOCKING | KILLED | Candidate `5e3ebaa2`; owner, auditor, and ticket-owner frozen-v7 builds exit 0; audit report SHA-256 `a61d4b1d71bd58903abdf4c8ff65c48810a956dcb419f84067524d192032f0da`; final receipt SHA-256 `e136f75153f3c5e3199abc1bb3bba6e56c14c620c6d7c6b05b95bfe5b8390c62`; old prefix mutant reproduced and rejected by real v7 validator; restored environment flag full 14/14
+FILE 36 reactivegas/ms2/t-simulator-fable/handoffs/geometry-permalinks-campaign-ledger.md 14762d637db19d6fa01672dbf5682c99125e496ee594a4307b351764040c4f49
+8 invariant | severity | dispatch state | required kill
+9 --- | --- | --- | ---
+10 GEO-1 | BLOCKING | OPEN | centered/independent purchase placement, member drift, nondeterministic repeat, dense overlap
+11 LINK-1 | BLOCKING | OPEN | missing source pin, missing file, missing line, branch/wrong-source pin
+12 IT-1 | BLOCKING | OPEN | user-visible `enacting`; membership-vocabulary mutation is forbidden scope
+FILE 37 reactivegas/ms2/t-simulator-fable/handoffs/strips-campaign-ledger.md 5b550d035ab1e23f762d61a78ba945f81724ffbf0ab1508a65f030ff1ceb4877
+24 Row | Severity | State | Evidence
+25 --- | --- | --- | ---
+26 STRIP-READER | ADVISORY | KILLED | submission-2 audit: arrival-register and two-cassiere identity mutants rejected
+27 STRIP-PROOF-BOUNDARY | ADVISORY | KILLED | submission-2 audit: accepted claim arrays bound to rendered glyph data; drift rejected
+28 STRIP-SHOW | ADVISORY | KILLED | always-visible `voto` mutant rejected at leave phase
+29 STRIP-RETIRE | ADVISORY | KILLED | submission-2 audit: all five condition dismissals remain absent across reload/restore
+30 STRIP-CASSA | ADVISORY | KILLED | suppressed negative-cassa strip mutant rejected
+31 STRIP-LIFECYCLE | ADVISORY | KILLED | no-op condition dismissal mutant rejected across five rows
+32 STRIP-SAFETY-UX | ADVISORY | KILLED | page console-error mutant rejected
+FILE 38 reactivegas/ms2/t-toolchain-contract/.archived/auditor-s1-corrected/handoffs/campaign-ledger.tsv ae6f0ca8a0ee23ff037d0b6e686c92eb5edae5bdb4c1c9563b183cda8a5666e8
+1 invariant | severity | state | evidence
+2 INV-TC-01 | BLOCKING | KILLED | mutant=M01-historical-4.27.0-pin; instrument=instruments/m01-pin-mismatch.sh sha256=6ac1bbc12c1b2351dcd940a8728885e2a45b0c0a02fc32dc24552416fdf571c0; red=evidence/m01-pin-mismatch.log sha256=7606b51e47be7d9b63448545c51da544a0475b3c749d517ab052ea249345c150 exit=1 pinned=4.27.0 running=4.25.0; shipped=scripts/check-lean-toolchain via just lean-toolchain-contract
+3 INV-TC-02 | BLOCKING | KILLED | mutant=M02-exact-bytes+trailing-space+missing-v+empty; instrument=instruments/m02-exact-pin.sh sha256=70146ea51726bcc820baa7582536e59385696f8306dbf869e782c8f5f6e1f9cb; evidence=evidence/m02-exact-pin.log sha256=a002831918d1d0c0e6313f35faa00541de3dce2e15886ee5a678e3ef5e7d28e9; old-declaration-class also M01; candidate pin bytes=leanprover/lean4:v4.25.0; no nix/.lean/specs in base..candidate
+4 INV-TC-03 | BLOCKING | KILLED | mutant=M03-always-agree-comparator; instrument=instruments/m03-always-agree.sh sha256=71e71d53da202dcfbef9160f5e7f4674ae8a9e3e5008b30177d4bd931586e109; red=evidence/m03-always-agree.log sha256=a9ea57c14a752688556eb5b3a2ab6a5d0495ac30fef3132e13b0f407b191205e exit=1 accepted-mutated-pin=4.25.1 (live patch+1, no second hardcoded runtime)
+5 INV-TC-04 | BLOCKING | KILLED | mutant=M04-justfile-drop-call+yaml-swap; instrument=instruments/m04-ci-order.sh sha256=5e950b2d463bc5610ae8dcf47787b135181741ac39b6a88334f9d07d00f08a96; evidence=evidence/m04-ci-order-v2.log sha256=f4a73526e708366116dba69a03e07658882e83bedc87d297564bf2e5249e1d12; execution=gate-v1.log sha256=ccfcb62a25e45e6a53ddd3b033d98d5ddf4613ef2b54e07378278b0b1d5888dd marker x2 at lines 4 and 7, lean build at 15014
+FILE 39 reactivegas/ms2/t-toolchain-contract/handoffs/campaign-ledger.tsv ae41c77924dd8d90627cc8af6e49643b8dd186c2b328bcbe57785ab53eb4b603
+1 invariant | severity | state | evidence
+2 INV-TC-01 | BLOCKING | OPEN | NONE
+3 INV-TC-02 | BLOCKING | OPEN | NONE
+4 INV-TC-03 | BLOCKING | OPEN | NONE
+5 INV-TC-04 | BLOCKING | OPEN | NONE
+FILE 40 reactivegas/ms2/t48-inversions/.archived/commit-auditor-s48-i-recut1-s1/handoffs/mutation-campaign-ledger.md c0af6afb924658db2b4cb6f519dc8aa72c0e3b7c706daa62ffd4de21993bc381
+7 Row | Credited probes | Outcome
+8 --- | --- | ---
+9 INV-48-I-SURFACE | removed inversion; hidden/imported/unimported/indented theorem; comment/string/private/non-theorem decoys; duplicate theorem | killed; four controls passed
+10 NAME-BINDING | swapped association; deposit/withdraw swap; invalid name; phantom constructor | killed
+11 GUARDS | duplicate hypothesis; dropped guard; weakened guard to true | killed
+12 CANFAIL | wrong last hypothesis; weakened successor; removed `step`; removed `stepEvent` | killed
+13 AXIOMS | proof escape; valid custom axiom | killed
+14 REGRESSION | no-op checker with restored baseline; unwired checker | killed
+15 FENCE | forbidden `Step.lean` path | killed
+16 STEP-ITE | wrong successor and live-branch guard/successor probes | killed
+17 STEPEVENT-DELEGATE | unfold-dependency probes | killed
+18 BOUNDARY | normal/negative space roots; invalid option/root/excess args/outside Nix; child build/generated-Lean failures; final normal | expected statuses; cleanup passed
+FILE 41 reactivegas/ms2/t48-inversions/.archived/commit-auditor-s48-i-s1/handoffs/campaign-ledger.md 75a7a3d2207924acc44437c981e7d0934d6d80400f4f97f3b78a6823279707a1
+10 Invariant | Severity | State | Mutant / evidence
+11 --- | --- | --- | ---
+12 INV-48-I-SURFACE | BLOCKING | OPEN | Simple theorem removal killed; comment-plus-custom-axiom survivor reported 14/14 (`afdacbc8…`).
+13 INV-48-I-GUARDS | BLOCKING | OPEN | False conclusion killed, but weakened guard-to-`True` survived coverage and elaboration (`66334616…`).
+14 INV-48-I-CANFAIL | BLOCKING | OPEN | Removal, withheld coverage, and unwiring killed; composed missing-proof bypass survived (`afdacbc8…`).
+15 INV-48-I-AXIOMS | BLOCKING | OPEN | `sorry` killed; custom axiom survived six-report/`sorryAx=0` acceptance (`afdacbc8…`).
+16 INV-48-I-REGRESSION | BLOCKING | OPEN | Simple declaration removal killed; raw-text count stayed 163 for commented theorem plus axiom (`afdacbc8…`).
+17 INV-48-I-FENCE | BLOCKING | KILLED | Added `lean/Reactivegas/Step.lean` path rejected (`2da5c149…`).
+18 INV-48-I-EVENT-SYNTAX | BLOCKING | KILLED | Unparsed ` | donate` marker rejected (`66334616…`).
+19 INV-48-I-INV-HYP-SYNTAX | BLOCKING | OPEN | Alternative spelling and wrong association killed; raw commented hypothesis survived (`afdacbc8…`).
+20 INV-48-I-STEP-ITE | BLOCKING | KILLED | Removing `step` unfolding made elaboration fail (`2da5c149…`).
+21 INV-48-I-STEPEVENT-DELEGATE | BLOCKING | KILLED | Removing `stepEvent` unfolding made elaboration fail (`2da5c149…`).
+FILE 42 reactivegas/ms2/t48-inversions/.archived/commit-auditor-s48-i-s2/handoffs/campaign-ledger.md bc23e58bd29a1f7c9a07e348bfbae62a20088dcb363a5f1ba9eed780ce364caf
+11 Invariant | Severity | State | Mutant / evidence
+12 --- | --- | --- | ---
+13 INV-48-I-SURFACE | BLOCKING | OPEN | Comment/string/private/non-theorem/removal/duplicate-declaration/phantom killed; complete required-name/event swap survived (`fba84ff0…`).
+14 INV-48-I-GUARDS | BLOCKING | OPEN | `True`, dropped conjunct, and wrong successor killed; complete required-name/event swap survived with all tightness reports green (`fba84ff0…`).
+15 INV-48-I-CANFAIL | BLOCKING | KILLED | Removed live inversion and checker unwiring returned nonzero after a RED preflight; normal and final baselines passed (`273c8b65…`).
+16 INV-48-I-AXIOMS | BLOCKING | KILLED | Disguised custom opaque dependency and `admit` returned nonzero; candidate six reports are exactly `[propext]` (`c30bd8a5…`).
+17 INV-48-I-REGRESSION | BLOCKING | OPEN | Active indented theorem survived ordinary gate; environment theorem constants increased `517 → 518` while checker printed 163/163 (`d57c155c…`).
+18 INV-48-I-FENCE | BLOCKING | KILLED | Fresh forbidden `Step.lean` path mutant rejected (`e408a627…`).
+19 INV-48-I-EVENT-SYNTAX | BLOCKING | KILLED | Elaborated environment supplies constructors; phantom event constant in inversion rejected (`5a0d5bda…`).
+20 INV-48-I-INV-HYP-SYNTAX | BLOCKING | OPEN | Wrong last hypothesis killed; duplicate identical successful-step hypothesis survived (`3ecb6b54…`).
+21 INV-48-I-STEP-ITE | BLOCKING | KILLED | Fresh no-`step`-unfold mutant failed at `split` (`4ebb7324…`).
+22 INV-48-I-STEPEVENT-DELEGATE | BLOCKING | KILLED | Fresh no-`stepEvent`-unfold mutant failed elaboration (`196738e4…`).
+FILE 43 reactivegas/ms2/t48-inversions/campaign-ledger.md da76a3c4c6b7e201b50ec417004fcd94d8c1729bd1e09a3030f457c47160ca10
+9 Invariant | Severity | State | Evidence
+10 --- | --- | --- | ---
+11 INV-48-I-SURFACE | BLOCKING | OPEN | Commented theorem plus custom axiom survived (`afdacbc8…`); active-declaration binding required.
+12 INV-48-I-GUARDS | BLOCKING | OPEN | Weakened guard to `True` elaborated and survived (`66334616…`); exact live guard/successor binding required.
+13 INV-48-I-CANFAIL | BLOCKING | OPEN | Direct removal/unwiring killed; composed missing-proof bypass survived (`afdacbc8…`).
+14 INV-48-I-AXIOMS | BLOCKING | OPEN | `sorry` killed; custom axiom survived six-report acceptance (`afdacbc8…`).
+15 INV-48-I-REGRESSION | BLOCKING | OPEN | Direct removal killed; comment-backed lexical count survived (`afdacbc8…`).
+16 INV-48-I-FENCE | BLOCKING | KILLED | Forbidden `lean/Reactivegas/Step.lean` edit rejected (`2da5c149…`).
+17 INV-48-I-EVENT-SYNTAX | BLOCKING | KILLED | Unparsed constructor marker rejected (`66334616…`).
+18 INV-48-I-INV-HYP-SYNTAX | BLOCKING | OPEN | Alternate spelling/wrong association killed; raw commented hypothesis survived (`afdacbc8…`).
+19 INV-48-I-STEP-ITE | BLOCKING | KILLED | Removing live `step` unfolding made elaboration fail (`2da5c149…`).
+20 INV-48-I-STEPEVENT-DELEGATE | BLOCKING | KILLED | Removing live `stepEvent` unfolding made elaboration fail (`2da5c149…`).

@@ -1,0 +1,8 @@
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+lean dependency direction: OK (control imports=19)
+check-reactivegas-inversion-coverage: tracked/walked source discovery disagrees
+5a6
+> KelGroups.Mirrors
+21a23
+> Reactivegas.Mirrors
+error: Recipe `lean` failed with exit code 1

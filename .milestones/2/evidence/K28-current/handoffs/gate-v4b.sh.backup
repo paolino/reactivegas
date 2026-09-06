@@ -1,0 +1,287 @@
+#!/usr/bin/env bash
+# G28-1 FROZEN GATE v4 (r5) — kelgroups #28 slice S28-1.
+# Frozen by ticket owner t28-app-api (Muse %534) 2026-09-05 per NOTE-004 (D1-D4 + binding rule) + child Q-001.
+# Immutable for this slice; any change = new version + fresh falsification.
+# Base: pinned origin/main = frozen base 368b596fef0b6d393c2ac7afc631d236c55d86d1
+#   (no setup commit: `/gate.sh` already ignored via the shared info/exclude).
+# Worktree: /code/kelgroups-issue-28, branch feat/28-generalize-app-api.
+# Run from the worktree root: ./gate.sh
+# Fence: lib/KelGroups/{Event,State,Validate,Fold,Types,Store}.hs,
+#   test/S28DemoApp.hs, test/S28AppApiSpec.hs, kelgroups.cabal, test/Main.hs;
+#   minimal forced Bootstrap.hs/Server.hs fixes only. FENCED: rest of client/,
+#   lean/ semantics, historical bodies, Trivial.hs (unchanged, uncounted).
+# Counting (A-001): every whole-project invocation is BUILD-class incl.
+#   expected-RED and warm runs (envelope: legs 3,4,5x6,6 = 9B; RED on base =
+#   3B with leg-5 refusing pre-spend). Version interrogations/recon charge 0.
+# Proof chain: inventory (presence) + execution (all registered run, no
+#   #PENDING, 0 failures) + kills (Failures: names a registered example of the
+#   row; empty sections, crashes, parse errors NEVER count).
+# Safety (F4-B): leg 5 mutates only a tracked-clean committed candidate at a
+#   recorded HEAD; hash-verified restore on every exit path; restoration
+#   failure aborts immediately (exit 3, no fallthrough).
+# Pinned instruments (exact full-line stdout pins; symmetric trailing-WS fold):
+PIN_NIX="nix (Nix) 2.31.3+2"
+PIN_GHC="The Glorious Glasgow Haskell Compilation System, version 9.8.4"
+PIN_CABAL="cabal-install version 3.16.1.0"
+PIN_LAKE="Lake version 5.0.0-src+v4.25.0 (Lean version 4.25.0)"
+PIN_NODE="v20.19.6"
+PIN_SPAGO="1.0.3"
+PIN_JUST="just 1.43.1"
+# Self-hash (blank-normalized): sed 's/^GATE_SHA256=".*"/GATE_SHA256=""/' gate.sh | sha256sum
+GATE_SHA256="ad7826a5bfd1d6afce9418a223d329135967f18d3842be5706c2ca21e9f8292c"
+GATE_VERSION="G28-1 v4 (r5)"
+FROZEN_BASE="570fe4a68f510fad3c9912ea59c1e492f3e11740"
+# Required: capture failing commands diagnosably. Do NOT set -e.
+set +e
+GATE_FILE="$(cd "$(dirname "$0")" && pwd)/gate.sh"
+cd "$(dirname "$0")"
+NIX="nix develop .#ci --quiet -c"
+OVERALL_FAIL=0
+EVIDENCE_DIR="${G28_EVIDENCE_DIR:-/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/evidence}"
+mkdir -p "$EVIDENCE_DIR" 2>/dev/null
+STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
+SHORT="$(git rev-parse --short HEAD 2>/dev/null || echo unknown)"
+FULLLOG="$EVIDENCE_DIR/$STAMP-$SHORT-gate-full.log"
+exec > >(tee "$FULLLOG") 2>&1
+abort3() { echo "ABORT(exit 3): $1"; echo "RECOVERY: inspect 'git status'/'git diff', restore by hand, re-run gate"; sleep 1; exit 3; }
+leg() { echo "===== LEG $1: $2 ====="; }
+pass() { echo "LEG-PASS: $1"; }
+fail() { echo "LEG-FAIL: $1"; OVERALL_FAIL=1; }
+strip_ws() { printf '%s' "$1" | sed 's/[[:space:]]*$//'; }
+evlog() { echo "$EVIDENCE_DIR/$STAMP-$SHORT-$1"; }
+sha_of() { sha256sum "$1" | cut -d' ' -f1; }
+# --- leg 1 (before) ---
+leg 1 "tracked hygiene (before)"
+tracked_before="$(git status --porcelain | grep -v '^??' || true)"
+if [ -z "$tracked_before" ]; then pass "1-before: no tracked drift"; else fail "1-before: tracked drift present:
+$tracked_before"; fi
+# --- leg 2 ---
+leg 2 "identity + self-hash"
+head_sha="$(git rev-parse HEAD 2>&1)"; echo "HEAD=$head_sha"
+SHORT="$(git rev-parse --short HEAD 2>/dev/null || echo "$SHORT")"
+norm_hash="$(sed 's/^GATE_SHA256=".*"/GATE_SHA256=""/' "$GATE_FILE" | sha256sum | cut -d' ' -f1)"
+echo "GATE_SHA256(header)=$GATE_SHA256"
+echo "GATE_SHA256(normalized-bytes)=$norm_hash"
+if [ "$GATE_SHA256" = "$norm_hash" ]; then pass "2: header hash equals executable bytes (normalized)"; else fail "2: header hash MISMATCH (expected $GATE_SHA256, got $norm_hash)"; fi
+if [ "$head_sha" = "$FROZEN_BASE" ]; then echo "NOTE leg2: HEAD equals frozen RED base (GREEN parent)"; else echo "NOTE leg2: HEAD=$head_sha differs from frozen RED base (candidate run)"; fi
+if git merge-base --is-ancestor "$FROZEN_BASE" "$head_sha" 2>/dev/null; then pass "2-ancestry: HEAD descends from frozen RED base"; else fail "2-ancestry: HEAD does NOT descend from $FROZEN_BASE (history breach)"; fi
+{ echo "meta: GATE_VERSION=$GATE_VERSION HEAD=$head_sha SHORT=$SHORT evidence=$EVIDENCE_DIR"; echo "meta: gate_sha256=$GATE_SHA256"; } | tee "$EVIDENCE_DIR/$STAMP-$SHORT-meta.txt" >/dev/null
+echo "evidence dir: $EVIDENCE_DIR (override via G28_EVIDENCE_DIR)"
+# --- leg 2b: exact pins, exit-first, stdout-only ---
+leg "2b" "instruments pinned exact, fail closed"
+check_pin() { # $1=name $2=got_stdout $3=got_exit $4=errfile $5=want
+  if [ "$3" -ne 0 ]; then fail "2b: $1 tool REFUSED (exit $3): $(head -n3 "$4")"; return; fi
+  if [ "$(strip_ws "$2")" = "$(strip_ws "$5")" ]; then pass "2b: $1 exact pin"; else fail "2b: $1 MISMATCH (want [$5], got [$2]) — refused"; fi
+}
+e1="$(mktemp)"; v_nix="$(nix --version 2>"$e1")"; x_nix=$?; echo "nix: [$v_nix] exit=$x_nix"
+e2="$(mktemp)"; v_all="$($NIX bash -c '{ ghc --version | head -n1; echo "---"; cabal --version | head -n1; echo "---"; lake --version; echo "---"; node --version 2>/dev/null; echo "---"; spago --version 2>/dev/null | head -n1; echo "---"; just --version; }' 2>"$e2")"; x_all=$?
+v_ghc="$(echo "$v_all" | sed -n '1p')"; v_cabal="$(echo "$v_all" | sed -n '3p')"; v_lake="$(echo "$v_all" | sed -n '5p')"; v_node="$(echo "$v_all" | sed -n '7p')"; v_spago="$(echo "$v_all" | sed -n '9p')"; v_just="$(echo "$v_all" | sed -n '11p')"
+for v in "ghc: [$v_ghc]" "cabal: [$v_cabal]" "lake: [$v_lake]" "node: [$v_node]" "spago: [$v_spago]" "just: [$v_just]"; do echo "$v (batch exit=$x_all)"; done
+for pair in "ghc|$v_ghc" "cabal|$v_cabal" "lake|$v_lake" "node|$v_node" "spago|$v_spago" "just|$v_just"; do
+  [ -n "${pair#*|}" ] || fail "2b: empty instrument output for ${pair%%|*} (masked tool failure)"
+done
+check_pin "nix" "$v_nix" "$x_nix" "$e1" "$PIN_NIX"
+if [ "$x_all" -ne 0 ]; then fail "2b: instrument batch REFUSED (exit $x_all): $(head -n5 "$e2")"; else
+  check_pin "ghc" "$v_ghc" 0 "$e2" "$PIN_GHC"
+  check_pin "cabal" "$v_cabal" 0 "$e2" "$PIN_CABAL"
+  check_pin "lake+lean" "$v_lake" 0 "$e2" "$PIN_LAKE"
+  check_pin "node" "$v_node" 0 "$e2" "$PIN_NODE"
+  check_pin "spago" "$v_spago" 0 "$e2" "$PIN_SPAGO"
+  check_pin "just" "$v_just" 0 "$e2" "$PIN_JUST"
+fi
+# --- stop-before-spend (covers legs 1/2/2b) ---
+if [ "$OVERALL_FAIL" -ne 0 ]; then echo "IDENTITY-FAIL: stopping before any build/mutation (exit $OVERALL_FAIL)"; exit "$OVERALL_FAIL"; fi
+# --- leg 3 ---
+leg 3 "build (measured cold/warm)"
+if [ -d dist-newstyle ] && [ "$(find dist-newstyle -name '*.o' 2>/dev/null | wc -l)" -gt 0 ]; then echo "tree state: WARM (dist-newstyle holds objects)"; else echo "tree state: COLD (no dist-newstyle objects)"; fi
+$NIX just build 2>&1 | tee "$(evlog leg3-build.log)"; build_exit=${PIPESTATUS[0]}
+echo "build exit=$build_exit sha256=$(sha_of "$(evlog leg3-build.log)")"
+tail -n 20 "$(evlog leg3-build.log)"
+if [ "$build_exit" -eq 0 ]; then pass "3: just build exit 0"; else fail "3: just build exit=$build_exit"; fi
+# --- leg 4: inventory + registered + execution ---
+leg 4 "tests: inventory + registered + execution proof"
+find test -name '*.hs' | sort
+if [ ! -f test/S28AppApiSpec.hs ]; then
+  echo "NOTE leg4: test/S28AppApiSpec.hs absent (expected on pre-implementation base)"
+  group_count=0
+else
+  group_hits="$(grep -h 'S28-1 ' test/*.hs 2>/dev/null | grep -o 'S28-1 [^"]*' | sort -u || true)"
+  echo "distinct S28-1 describes:"; echo "$group_hits"
+  group_count="$(echo "$group_hits" | grep -c 'S28-1 ' || true)"
+fi
+echo "group_count=$group_count"
+if [ "$group_count" -ge 6 ]; then pass "4a-INVENTORY: >=6 S28-1 groups ($group_count; presence only)"; else fail "4a-INVENTORY: only $group_count S28-1 groups (need >=6; base RED for absence)"; fi
+SLUGS="S28-1 distinct types + signer + GroupView|S28-1 rejecting step before append|S28-1 atomic hook|S28-1 direct-only admission|S28-1 validate/fold agreement|S28-1 no client-decided authority"
+REGDIR="$EVIDENCE_DIR/$STAMP-$SHORT-registered"; mkdir -p "$REGDIR"
+total_reg=0
+if [ -f test/S28AppApiSpec.hs ]; then
+  i=0
+  echo "$SLUGS" | tr '|' '\n' | while IFS= read -r slug; do
+    i=$((i+1))
+    awk -v slug="$slug" 'index($0, "describe \"" slug "\""){inb=1; next} inb && /^    describe "/{inb=0; next} !inb{next} /^[ \t]*(it|prop)[ \t]*$/{want=1; next} want==1{if (match($0, /^[ \t]*"[^"]*"/)) { s=substr($0, RSTART, RLENGTH); sub(/^[ \t]*"/, "", s); sub(/"$/, "", s); print s } else { print "EXTRACT-FAIL: " $0 } want=0; next} { if (match($0, /^[ \t]*(it|prop) "[^"]*"/)) { s=substr($0, RSTART, RLENGTH); sub(/^[^"]*"/, "", s); sub(/"$/, "", s); print s } }' test/S28AppApiSpec.hs > "$REGDIR/row$i.txt" || true
+    if grep -q 'EXTRACT-FAIL' "$REGDIR/row$i.txt"; then echo "row$i [$slug]: EXTRACT-FAIL (malformed layout)"; echo "EXTRACT" >> "$REGDIR/failflag2"; else
+      n=$(grep -c . "$REGDIR/row$i.txt" || true)
+      if [ "$n" -ge 1 ]; then echo "row$i [$slug]: registered=$n"; else echo "row$i [$slug]: ZERO registered (omission)"; echo "EMPTY" >> "$REGDIR/failflag2"; fi
+    fi
+  done
+  total_reg=$(cat "$REGDIR"/row*.txt 2>/dev/null | grep -vc 'EXTRACT-FAIL' || true)
+  same_examples=$(grep -cE '^[ \t]*(it|prop) "' test/S28AppApiSpec.hs || true)
+  split_examples=$(grep -cE '^[ \t]*(it|prop)[ \t]*$' test/S28AppApiSpec.hs || true)
+  all_examples=$((same_examples + split_examples))
+  echo "registered total=$total_reg vs file examples=$all_examples (same=$same_examples split=$split_examples)"
+  if [ -f "$REGDIR/failflag2" ]; then fail "4a-REGISTERED: extraction or omission failure (see row lines above)"; elif [ "$total_reg" -ge 6 ] && [ "$total_reg" -eq "$all_examples" ]; then pass "4a-REGISTERED: $total_reg examples, all inside the six groups (no orphans)"; else fail "4a-REGISTERED: total=$total_reg file=$all_examples (need >=6 and equal; omission control)"; fi
+fi
+$NIX cabal test all -O0 --test-show-details=direct 2>&1 | tee "$(evlog leg4-test.log)"; test_exit=${PIPESTATUS[0]}
+echo "test exit=$test_exit sha256=$(sha_of "$(evlog leg4-test.log)")"
+grep -E "Failures:|examples, .* failures|FAILED" "$(evlog leg4-test.log)" | tail -n 10 || true
+if [ -f test/S28AppApiSpec.hs ] && [ "$total_reg" -ge 1 ]; then
+  i=0
+  echo "$SLUGS" | tr '|' '\n' | while IFS= read -r slug; do
+    i=$((i+1))
+    while IFS= read -r nm; do
+      [ -z "$nm" ] && continue
+      if grep -qF "$nm" "$(evlog leg4-test.log)"; then
+        if grep -A3 -F "$nm" "$(evlog leg4-test.log)" | tail -n +2 | grep -q '# PENDING'; then echo "PENDING-VACUOUS: [$slug] $nm"; echo "PENDING" >> "$REGDIR/failflag"; else echo "executed: [$slug] $nm"; fi
+      else echo "NOT-EXECUTED: [$slug] $nm"; echo "MISSING" >> "$REGDIR/failflag"; fi
+    done < "$REGDIR/row$i.txt"
+  done
+  if [ -f "$REGDIR/failflag" ]; then fail "4b-EXECUTION: missing or pending examples (see above; zero-executed rows FAIL)"; else pass "4b-EXECUTION: all registered examples executed, none pending"; fi
+else
+  echo "NOTE leg4b: no registered examples (expected on base)"
+fi
+if [ "$test_exit" -eq 0 ]; then pass "4b-EXIT: cabal test exit 0"; else fail "4b-EXIT: cabal test exit=$test_exit"; fi
+if [ "$group_count" -eq 0 ] && [ "$test_exit" -eq 0 ]; then echo "NOTE leg4: absence-RED is clean (historical suites green; failure is absence, not breakage). RED-commit Not-in-scope log is owner-verified separately (r4 §7)."; fi
+if [ "$group_count" -eq 0 ] && [ "$test_exit" -ne 0 ]; then echo "NOTE leg4: BREAKAGE-RED (historical suites failing) — investigate; no absence claim"; fi
+# --- leg 5 (option B) ---
+leg 5 "mutants M1-M6 (refuse-closed entry; hash-verified restore; example-quoted kills)"
+revert_all() { git checkout -- lib/KelGroups/Event.hs lib/KelGroups/Fold.hs lib/KelGroups/Types.hs lib/KelGroups/Store.hs test/S28DemoApp.hs 2>/dev/null; }
+LEG5_OK=1
+leg5_entry_ok=1
+HEAD5="$(git rev-parse HEAD 2>&1)"
+[ "$HEAD5" = "$head_sha" ] || { echo "leg5 entry REFUSED: HEAD moved mid-gate ($head_sha -> $HEAD5)"; leg5_entry_ok=0; }
+tracked_mid="$(git status --porcelain | grep -v '^??' || true)"
+[ -z "$tracked_mid" ] || { echo "leg5 entry REFUSED: tracked drift:"; echo "$tracked_mid"; leg5_entry_ok=0; }
+for f in lib/KelGroups/Event.hs lib/KelGroups/Fold.hs lib/KelGroups/Types.hs lib/KelGroups/Store.hs test/S28DemoApp.hs; do
+  git ls-files --error-unmatch "$f" >/dev/null 2>&1 || { echo "leg5 entry REFUSED: not tracked: $f"; leg5_entry_ok=0; }
+done
+if [ "$leg5_entry_ok" -ne 1 ]; then
+  if [ "$head_sha" = "$FROZEN_BASE" ]; then echo "NOTE leg5: entry refusal EXPECTED on pre-implementation base (RED for absence)"; else echo "NOTE leg5: entry refusal on candidate = FAIL-closed defect"; fi
+  fail "5-entry: refused (see above)"; LEG5_OK=0
+else
+  H_Event=$(git hash-object lib/KelGroups/Event.hs); H_Fold=$(git hash-object lib/KelGroups/Fold.hs); H_Types=$(git hash-object lib/KelGroups/Types.hs); H_Store=$(git hash-object lib/KelGroups/Store.hs); H_Demo=$(git hash-object test/S28DemoApp.hs)
+  echo "entry hashes: Event=$H_Event Fold=$H_Fold Types=$H_Types Store=$H_Store Demo=$H_Demo"
+  verify_restore() { # $1=file $2=prehash $3=mutant
+    post=$(git hash-object "$1")
+    if [ "$post" = "$2" ]; then echo "restored byte-exact: $1 ($3)"; else abort3 "restoration FAILED for $1 ($3): pre=$2 post=$post"; fi
+  }
+  mutant_diff_hash() { git diff -- lib test | sha256sum | cut -d' ' -f1; }
+  kill_check() { # $1=log $2=row-slug $3=rownum $4=label
+    fsec=$(awk '/^Failures:/,0' "$1")
+    if [ -z "$fsec" ]; then echo "MUTANT-INCONCLUSIVE($4): nonzero exit with EMPTY Failures section (crash/timeout/infra — never a kill)"; return 1; fi
+    while IFS= read -r nm; do
+      [ -z "$nm" ] && continue
+      if echo "$fsec" | grep -qF "$nm"; then echo "KILL-QUOTE($4): failing example: $nm"; echo "$fsec" | grep -B1 -A12 -F "$nm" | head -n 20; return 0; fi
+    done < "$REGDIR/row$3.txt"
+    echo "MUTANT-FAILURE($4): Failures section names NONE of the row's registered examples:"; echo "$fsec" | head -n 15; return 1
+  }
+  # M1 (build): unification failure AT the production boundary use.
+  echo "--- M1 boundary separation (expect BUILD red: unification at applyIntegratedEvent) ---"
+  flat_demo="$(tr '\n' ' ' < test/S28DemoApp.hs)"
+  m1_pre=1
+  grep -q '^data DemoState' test/S28DemoApp.hs || m1_pre=0
+  grep -q '^data DemoEvent' test/S28DemoApp.hs || m1_pre=0
+  echo "$flat_demo" | grep -qE 'demoIntegration +:: +Integration DemoState DemoEvent DemoProposal DemoError' || m1_pre=0
+  grep -q '^demoIntegration' test/S28DemoApp.hs || m1_pre=0
+  grep -q 'applyIntegratedEvent' test/S28DemoApp.hs || m1_pre=0
+  grep -q 'emptyState' test/S28DemoApp.hs || m1_pre=0
+  grep -q '_m1_boundarySeparates' test/S28DemoApp.hs && m1_pre=0
+  if [ "$m1_pre" -eq 1 ]; then
+    { echo "-- MUTANT-M1: DemoEvent and DemoState must stay distinct where the production boundary consumes them"; echo "_m1_boundarySeparates :: Integration DemoState DemoEvent DemoProposal DemoError -> IntegratedEvent DemoState DemoState -> Text -> Either (IntegratedError DemoError) (IntegratedResult DemoState)"; echo "_m1_boundarySeparates integration event signer = applyIntegratedEvent integration (emptyState (DemoState 0 [])) signer event"; } >> test/S28DemoApp.hs
+    echo "M1 diff sha256=$(mutant_diff_hash)"
+    $NIX cabal build all -O0 2>&1 | tee "$(evlog leg5-M1-build.log)"; m1_exit=${PIPESTATUS[0]}; echo "M1 build exit=$m1_exit sha256=$(sha_of "$(evlog leg5-M1-build.log)")"
+    if [ "$m1_exit" -ne 0 ] && grep -qE "Couldn't match|mismatch" "$(evlog leg5-M1-build.log)" && grep -q DemoEvent "$(evlog leg5-M1-build.log)" && grep -q DemoState "$(evlog leg5-M1-build.log)" && grep -q applyIntegratedEvent "$(evlog leg5-M1-build.log)" && ! grep -qi "parse error" "$(evlog leg5-M1-build.log)"; then pass "5-M1: build RED, unification failure at boundary use"; else fail "5-M1: expected boundary unification RED (exit=$m1_exit)"; LEG5_OK=0; fi
+    revert_all; verify_restore test/S28DemoApp.hs "$H_Demo" M1
+  else fail "5-M1: PRECONDITION missing (A6 + boundary imports in test/S28DemoApp.hs)"; LEG5_OK=0; fi
+  # M2 (test): bypass membership gate.
+  echo "--- M2 bypass gate (expect TEST red quoting a rejecting-step example) ---"
+  if grep -q '^applyIntegratedEvent' lib/KelGroups/Fold.hs && [ "$(grep -c 'if isMemberInView signer view' lib/KelGroups/Fold.hs)" -eq 1 ]; then
+    perl -pi -e 's/^( *)if isMemberInView signer view(.*)$/$1-- MUTANT-M2: membership gate bypassed\n$1if True$2/' lib/KelGroups/Fold.hs
+    [ "$(grep -c 'MUTANT-M2' lib/KelGroups/Fold.hs)" -eq 1 ] || { fail "5-M2: splice count != 1"; LEG5_OK=0; }
+    echo "M2 diff sha256=$(mutant_diff_hash)"
+    $NIX cabal test all -O0 --test-show-details=direct 2>&1 | tee "$(evlog leg5-M2-test.log)"; m2_exit=${PIPESTATUS[0]}; echo "M2 test exit=$m2_exit sha256=$(sha_of "$(evlog leg5-M2-test.log)")"
+    if [ "$m2_exit" -ne 0 ] && kill_check "$(evlog leg5-M2-test.log)" "S28-1 rejecting step before append" 2 "M2"; then pass "5-M2: test RED quoting rejecting-step witness"; else fail "5-M2: expected witness-quoted RED (exit=$m2_exit)"; LEG5_OK=0; fi
+    revert_all; verify_restore lib/KelGroups/Fold.hs "$H_Fold" M2
+  else fail "5-M2: PRECONDITION missing (H1 x1 in Fold.hs)"; LEG5_OK=0; fi
+  # M3 (test): ignore hook refusal.
+  echo "--- M3 always-commit (expect TEST red quoting an atomic-hook example) ---"
+  if grep -q '^commitBaseChange ::' lib/KelGroups/Fold.hs && grep -q '^commitBaseChange ' lib/KelGroups/Fold.hs; then
+    awk '/^commitBaseChange ::/ { print; next } /^commitBaseChange / && !done_m3 { print "-- MUTANT-M3: hook ignored, post-base kept"; print "commitBaseChange _ _ post change = Right (IntegratedResult post (Just change))"; done_m3=1; skip_m3=1; next } skip_m3==1 && /^[A-Za-z_]/ { skip_m3=0; print; next } skip_m3==1 { next } { print }' lib/KelGroups/Fold.hs > /tmp/g28m3.hs && mv /tmp/g28m3.hs lib/KelGroups/Fold.hs
+    [ "$(grep -c 'MUTANT-M3' lib/KelGroups/Fold.hs)" -eq 1 ] || { fail "5-M3: splice count != 1"; LEG5_OK=0; }
+    echo "M3 diff sha256=$(mutant_diff_hash)"
+    $NIX cabal test all -O0 --test-show-details=direct 2>&1 | tee "$(evlog leg5-M3-test.log)"; m3_exit=${PIPESTATUS[0]}; echo "M3 test exit=$m3_exit sha256=$(sha_of "$(evlog leg5-M3-test.log)")"
+    if [ "$m3_exit" -ne 0 ] && kill_check "$(evlog leg5-M3-test.log)" "S28-1 atomic hook" 3 "M3"; then pass "5-M3: test RED quoting atomic-hook witness"; else fail "5-M3: expected witness-quoted RED (exit=$m3_exit)"; LEG5_OK=0; fi
+    revert_all; verify_restore lib/KelGroups/Fold.hs "$H_Fold" M3
+  else fail "5-M3: PRECONDITION missing (^commitBaseChange in Fold.hs)"; LEG5_OK=0; fi
+  # M4 (build): voted admission constructor.
+  echo "--- M4 AdmitMemberVoted (expect BUILD red: exhaustiveness) ---"
+  if grep -q '^data BaseMutation' lib/KelGroups/Event.hs && ! grep -q 'AdmitMemberVoted' lib/KelGroups/Event.hs; then
+    awk '/^data BaseMutation/{inb=1} inb && /[|] ChangeRolesVoted Text [(]Set Role[)]/ && !done{print; match($0,/^[ \t]*/); ind=substr($0,RSTART,RLENGTH); print ind "-- MUTANT-M4: voted admission re-added (must not compile)"; print ind "| AdmitMemberVoted Text Text (Set Role)"; done=1; next} /^data / && !/^data BaseMutation/{inb=0} {print}' lib/KelGroups/Event.hs > /tmp/g28m4.hs && mv /tmp/g28m4.hs lib/KelGroups/Event.hs
+    [ "$(grep -c 'MUTANT-M4' lib/KelGroups/Event.hs)" -eq 1 ] || { fail "5-M4: splice count != 1 (marker)"; LEG5_OK=0; }
+    echo "M4 diff sha256=$(mutant_diff_hash)"
+    $NIX cabal build all -O0 2>&1 | tee "$(evlog leg5-M4-build.log)"; m4_exit=${PIPESTATUS[0]}; echo "M4 build exit=$m4_exit sha256=$(sha_of "$(evlog leg5-M4-build.log)")"
+    if [ "$m4_exit" -ne 0 ] && grep -qiE "non-exhaustive|incomplete" "$(evlog leg5-M4-build.log)" && grep -q "AdmitMemberVoted" "$(evlog leg5-M4-build.log)" && ! grep -qi "parse error" "$(evlog leg5-M4-build.log)"; then pass "5-M4: build RED, exhaustiveness failure quoted"; else fail "5-M4: expected exhaustiveness RED (exit=$m4_exit)"; LEG5_OK=0; fi
+    revert_all; verify_restore lib/KelGroups/Event.hs "$H_Event" M4
+  else fail "5-M4: PRECONDITION missing (^data BaseMutation in Event.hs)"; LEG5_OK=0; fi
+  # M5 (test): replay refusal divergence (Haskell branch syntax; H2/H2b selection).
+  echo "--- M5 replay refusal divergence (expect TEST red quoting an agreement example) ---"
+  m5block="$(sed -n '/^foldIntegrated/,/^[^ \t]/p' lib/KelGroups/Fold.hs)"
+  m5a=$(echo "$m5block" | grep -c 'Left _ -> gs' || true)
+  m5b=$(echo "$m5block" | grep -c 'either (const gs)' || true)
+  if grep -q '^foldIntegrated' lib/KelGroups/Fold.hs && { { [ "$m5a" -eq 1 ] && [ "$m5b" -eq 0 ]; } || { [ "$m5a" -eq 0 ] && [ "$m5b" -eq 1 ]; }; }; then
+    if [ "$m5a" -eq 1 ]; then
+      awk '/^foldIntegrated/ { in_f=1 } in_f && /^[A-Za-z_]/ && $0 !~ /^foldIntegrated/ { in_f=0 } in_f && /Left _ -> gs/ && !done5 { sub(/Left _ -> gs/, "Left _ -> error \"MUTANT-M5\""); done5=1 } { print }' lib/KelGroups/Fold.hs > /tmp/g28m5.hs && mv /tmp/g28m5.hs lib/KelGroups/Fold.hs
+    else
+      awk '/^foldIntegrated/ { in_f=1 } in_f && /^[A-Za-z_]/ && $0 !~ /^foldIntegrated/ { in_f=0 } in_f && /either [(]const gs[)]/ && !done5 { sub(/either [(]const gs[)]/, "either (const (error \"MUTANT-M5\")) "); done5=1 } { print }' lib/KelGroups/Fold.hs > /tmp/g28m5.hs && mv /tmp/g28m5.hs lib/KelGroups/Fold.hs
+    fi
+    [ "$(grep -c 'MUTANT-M5' lib/KelGroups/Fold.hs)" -eq 1 ] || { fail "5-M5: splice count != 1"; LEG5_OK=0; }
+    echo "M5 diff sha256=$(mutant_diff_hash)"
+    $NIX cabal test all -O0 --test-show-details=direct 2>&1 | tee "$(evlog leg5-M5-test.log)"; m5_exit=${PIPESTATUS[0]}; echo "M5 test exit=$m5_exit sha256=$(sha_of "$(evlog leg5-M5-test.log)")"
+    if [ "$m5_exit" -ne 0 ] && grep -q 'MUTANT-M5' "$(evlog leg5-M5-test.log)" && kill_check "$(evlog leg5-M5-test.log)" "S28-1 validate/fold agreement" 5 "M5"; then pass "5-M5: test RED quoting agreement witness"; else fail "5-M5: expected witness-quoted RED (exit=$m5_exit)"; LEG5_OK=0; fi
+    revert_all; verify_restore lib/KelGroups/Fold.hs "$H_Fold" M5
+  else fail "5-M5: PRECONDITION missing (exactly one of H2/H2b in foldIntegrated block: H2=$m5a H2b=$m5b)"; LEG5_OK=0; fi
+  # M6 (test): STM-disciplined second path with routed verdict.
+  echo "--- M6 second path + rewired verdict (expect TEST red quoting an authority example) ---"
+  if [ "$(grep -c '^    , closeKEL$' lib/KelGroups/Store.hs)" -eq 1 ] && [ "$(grep -c '^    , writeTVar$' lib/KelGroups/Store.hs)" -eq 1 ] && grep -q '^appendIntegratedEvent' lib/KelGroups/Store.hs && [ "$(grep -cF 'writeTVar (stateVar store) (irState result)' lib/KelGroups/Store.hs)" -eq 1 ] && ! grep -q 'unsafeSetAppStateSTM' lib/KelGroups/Store.hs; then
+    perl -pi -e 'if (/^    , closeKEL$/) { $_ .= "    -- MUTANT-M6-EXPORT: second decision path (must never exist)\n    , unsafeSetAppStateSTM\n" }' lib/KelGroups/Store.hs
+    perl -pi -e 'if (/^    , writeTVar$/) { $_ .= "    , STM -- MUTANT-M6-IMPORT\n" }' lib/KelGroups/Store.hs
+    printf '%s\n' '-- MUTANT-M6: second decision path, STM-disciplined (must never exist on the candidate)' 'unsafeSetAppStateSTM :: TVar (GroupState s) -> STM ()' 'unsafeSetAppStateSTM var newApp = readTVar var >>= \gs -> writeTVar var (gs { appFold = newApp })' >> lib/KelGroups/Store.hs
+    perl -pi -e 's/^([ ]*)writeTVar \(stateVar store\) \(irState result\)([ ]*)$/$1unsafeSetAppStateSTM (stateVar store) (appFold gs) -- MUTANT-M6-REWIRE$2/' lib/KelGroups/Store.hs
+    [ "$(grep -c 'MUTANT-M6' lib/KelGroups/Store.hs)" -eq 4 ] || { fail "5-M6: splice count != 4 (export+import+backdoor+rewire)"; LEG5_OK=0; }
+    echo "M6 diff sha256=$(mutant_diff_hash)"
+    $NIX cabal test all -O0 --test-show-details=direct 2>&1 | tee "$(evlog leg5-M6-test.log)"; m6_exit=${PIPESTATUS[0]}; echo "M6 test exit=$m6_exit sha256=$(sha_of "$(evlog leg5-M6-test.log)")"
+    if [ "$m6_exit" -ne 0 ] && kill_check "$(evlog leg5-M6-test.log)" "S28-1 no client-decided authority" 6 "M6"; then pass "5-M6: test RED quoting authority witness"; else fail "5-M6: expected witness-quoted RED (exit=$m6_exit)"; LEG5_OK=0; fi
+    revert_all; verify_restore lib/KelGroups/Store.hs "$H_Store" M6
+  else fail "5-M6: PRECONDITION missing (export/import anchors / ^appendIntegratedEvent / success-write literal in Store.hs)"; LEG5_OK=0; fi
+  tracked_post5="$(git status --porcelain | grep -v '^??' || true)"
+  if [ -z "$tracked_post5" ]; then pass "5-reverted: tracked tree clean after mutants"; else echo "ABORT: mutant residue: $tracked_post5"; git checkout -- lib test 2>/dev/null || true; abort3 "mutant residue after leg 5"; fi
+fi
+if [ "$LEG5_OK" -ne 1 ]; then fail "5: one or more mutant rows did not pass (see above)"; else pass "5: all six kills quote their witnesses; tree restored hash-verified"; fi
+# --- leg 6 ---
+leg 6 "full just ci (ACTUAL CI: nix develop .#ci --quiet -c just ci)"
+$NIX just ci 2>&1 | tee "$(evlog leg6-ci.log)"; ci_exit=${PIPESTATUS[0]}
+echo "ci exit=$ci_exit sha256=$(sha_of "$(evlog leg6-ci.log)")"
+tail -n 15 "$(evlog leg6-ci.log)"
+if [ "$ci_exit" -eq 0 ]; then pass "6: just ci exit 0"; else fail "6: just ci exit=$ci_exit"; fi
+# --- leg 7 ---
+leg 7 "Trivial degenerate presence (not counted)"
+if grep -q 'trivialConfig' lib/KelGroups/Trivial.hs 2>/dev/null && grep -q 'trivialFold' lib/KelGroups/Trivial.hs 2>/dev/null && grep -q 'trivialInitial' lib/KelGroups/Trivial.hs 2>/dev/null; then pass "7a: Trivial exports present"; else fail "7a: Trivial exports missing"; fi
+if grep -q 'S28-1 ' lib/KelGroups/Trivial.hs 2>/dev/null; then fail "7b: Trivial.hs contains S28-1 (must NOT be counted)"; else pass "7b: Trivial.hs contains no S28-1 (not counted)"; fi
+# --- leg 1 (after) ---
+leg 1 "tracked hygiene (after)"
+tracked_after="$(git status --porcelain | grep -v '^??' || true)"
+if [ -z "$tracked_after" ]; then pass "1-after: no tracked drift"; else fail "1-after: tracked drift present:
+$tracked_after"; fi
+echo "evidence: $EVIDENCE_DIR/$STAMP-$SHORT-*.log (full log: $FULLLOG)"
+echo "===== GATE $GATE_VERSION COMPLETE: OVERALL_FAIL=$OVERALL_FAIL ====="
+sleep 1
+exit "$OVERALL_FAIL"

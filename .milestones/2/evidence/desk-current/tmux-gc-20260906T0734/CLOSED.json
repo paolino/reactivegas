@@ -1,0 +1,142 @@
+[
+  {
+    "pane": "%562",
+    "closedAt": "2026-09-06T07:30:06.987Z",
+    "runtime": "/tmp/reactivegas/ms2/t-simulator-fable/commit-auditor-c1r-codex-s1b"
+  },
+  {
+    "pane": "%568",
+    "closedAt": "2026-09-06T07:30:07.017Z",
+    "runtime": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex"
+  },
+  {
+    "pane": "%564",
+    "closedAt": "2026-09-06T07:30:07.041Z",
+    "runtime": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3"
+  },
+  {
+    "pane": "%563",
+    "closedAt": "2026-09-06T07:30:07.067Z",
+    "runtime": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r2"
+  },
+  {
+    "pane": "%561",
+    "closedAt": "2026-09-06T07:30:07.091Z",
+    "runtime": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex"
+  },
+  {
+    "pane": "%548",
+    "closedAt": "2026-09-06T07:30:07.111Z",
+    "runtime": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s2r-final-codex"
+  },
+  {
+    "pane": "%544",
+    "closedAt": "2026-09-06T07:30:07.138Z",
+    "runtime": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s2r-muse"
+  },
+  {
+    "pane": "%569",
+    "closedAt": "2026-09-06T07:30:07.163Z",
+    "runtime": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2"
+  },
+  {
+    "pane": "%567",
+    "closedAt": "2026-09-06T07:30:07.187Z",
+    "runtime": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b"
+  },
+  {
+    "pane": "%534",
+    "closedAt": "2026-09-06T07:30:07.209Z",
+    "runtime": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api"
+  },
+  {
+    "pane": "%557",
+    "closedAt": "2026-09-06T07:30:07.230Z",
+    "runtime": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28b"
+  },
+  {
+    "pane": "%554",
+    "closedAt": "2026-09-06T07:30:07.256Z",
+    "runtime": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/.archived/commit-auditor-s28"
+  },
+  {
+    "pane": "%545",
+    "closedAt": "2026-09-06T07:30:07.281Z",
+    "runtime": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-owner-s28r2"
+  },
+  {
+    "pane": "%315",
+    "closedAt": "2026-09-06T07:30:07.306Z",
+    "runtime": "/tmp/reactivegas/ms2/t-simulator-fable/commit-owner-one-membership-glm"
+  },
+  {
+    "pane": "%505",
+    "closedAt": "2026-09-06T07:30:07.331Z",
+    "runtime": "/tmp/reactivegas/ms2/e-haskell-impl/t74-corpus-exporter"
+  },
+  {
+    "pane": "%535",
+    "closedAt": "2026-09-06T07:30:07.363Z",
+    "runtime": "/tmp/reactivegas/ms2/t-simulator-fable/commit-auditor-s62sim-grok-s2"
+  },
+  {
+    "pane": "%529",
+    "closedAt": "2026-09-06T07:30:07.390Z",
+    "runtime": "/tmp/reactivegas/ms2/e-haskell-impl/t86-exporter-successor"
+  },
+  {
+    "pane": "%541",
+    "closedAt": "2026-09-06T07:30:07.419Z",
+    "runtime": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a"
+  },
+  {
+    "pane": "%518",
+    "closedAt": "2026-09-06T07:30:07.449Z",
+    "runtime": "/tmp/reactivegas/ms2/t71-design-record/.archived/commit-owner-s1"
+  },
+  {
+    "pane": "%555",
+    "closedAt": "2026-09-06T07:30:07.470Z",
+    "runtime": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s2r-sub2-codex"
+  },
+  {
+    "pane": "%558",
+    "closedAt": "2026-09-06T07:30:07.494Z",
+    "runtime": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1"
+  },
+  {
+    "pane": "%566",
+    "closedAt": "2026-09-06T07:30:07.520Z",
+    "runtime": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1"
+  },
+  {
+    "pane": "%570",
+    "closedAt": "2026-09-06T07:30:07.548Z",
+    "runtime": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final"
+  },
+  {
+    "pane": "%571",
+    "closedAt": "2026-09-06T07:30:07.572Z",
+    "runtime": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2"
+  },
+  {
+    "pane": "%573",
+    "closedAt": "2026-09-06T07:30:07.600Z",
+    "runtime": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-repair"
+  },
+  {
+    "pane": "%575",
+    "closedAt": "2026-09-06T07:30:07.629Z",
+    "runtime": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-final-static"
+  },
+  {
+    "pane": "%576",
+    "closedAt": "2026-09-06T07:30:07.654Z",
+    "runtime": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-final"
+  },
+  {
+    "pane": "%577",
+    "closedAt": "2026-09-06T07:30:07.674Z",
+    "runtime": "/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0"
+  }
+]

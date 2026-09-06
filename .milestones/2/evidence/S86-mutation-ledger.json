@@ -1,0 +1,210 @@
+{
+  "fault_model": "19 named data/config/source mutations; no global completeness claim",
+  "applied": 19,
+  "executed": 19,
+  "killed": 19,
+  "survivors": 0,
+  "excluded_attempts": [
+    "P26 setup failed before recipe",
+    "P31 supplemental axiom query instrument namespace error"
+  ],
+  "additional_failure_injections": [
+    "P20 missing economic",
+    "P21 missing integrated",
+    "P22 malformed economic",
+    "P23 malformed integrated",
+    "P24 second output is directory"
+  ],
+  "rows": [
+    {
+      "mutation": "C1 economic view key",
+      "applied": true,
+      "executed": true,
+      "killed": true,
+      "survivor": false,
+      "receipt": "P01",
+      "evidence": "/tmp/reactivegas/ms2/e-haskell-impl/t86-exporter-successor/s86-audit-2/evidence/P01-C1.log",
+      "sha256": "58b2d693d0de820fb7e12c98b4a6f181ff31c6aa20617defb2c283c30f8600c4"
+    },
+    {
+      "mutation": "C2 integrated initial members",
+      "applied": true,
+      "executed": true,
+      "killed": true,
+      "survivor": false,
+      "receipt": "P03",
+      "evidence": "/tmp/reactivegas/ms2/e-haskell-impl/t86-exporter-successor/s86-audit-2/evidence/P03-C2.log",
+      "sha256": "f40e7d1568623b21449581dd3fa9178c877dbe3481aa7250aa7f2239b0074de9"
+    },
+    {
+      "mutation": "C3 economic auth",
+      "applied": true,
+      "executed": true,
+      "killed": true,
+      "survivor": false,
+      "receipt": "P04",
+      "evidence": "/tmp/reactivegas/ms2/e-haskell-impl/t86-exporter-successor/s86-audit-2/evidence/P04-C3.log",
+      "sha256": "fe546abc9bdac3f0e0c2068284c1751bf28d76981358444c94ac9fd0984db326"
+    },
+    {
+      "mutation": "C4 integrated auth",
+      "applied": true,
+      "executed": true,
+      "killed": true,
+      "survivor": false,
+      "receipt": "P05",
+      "evidence": "/tmp/reactivegas/ms2/e-haskell-impl/t86-exporter-successor/s86-audit-2/evidence/P05-C4.log",
+      "sha256": "abf739c6841cf53ae8bcd5557624a41555519b41a1f5b98d84d8d0ffa12f8567"
+    },
+    {
+      "mutation": "economic extra top key",
+      "applied": true,
+      "executed": true,
+      "killed": true,
+      "survivor": false,
+      "receipt": "P10",
+      "evidence": "/tmp/reactivegas/ms2/e-haskell-impl/t86-exporter-successor/s86-audit-2/evidence/P10-keys.log",
+      "sha256": "2ed27c1421e6928dbe13dbfdb5c59e1045b30341fe7ebe05700006bc5ac572c0"
+    },
+    {
+      "mutation": "integrated extra top key",
+      "applied": true,
+      "executed": true,
+      "killed": true,
+      "survivor": false,
+      "receipt": "P11",
+      "evidence": "/tmp/reactivegas/ms2/e-haskell-impl/t86-exporter-successor/s86-audit-2/evidence/P11-keys.log",
+      "sha256": "2ed27c1421e6928dbe13dbfdb5c59e1045b30341fe7ebe05700006bc5ac572c0"
+    },
+    {
+      "mutation": "economic extra nested key",
+      "applied": true,
+      "executed": true,
+      "killed": true,
+      "survivor": false,
+      "receipt": "P12",
+      "evidence": "/tmp/reactivegas/ms2/e-haskell-impl/t86-exporter-successor/s86-audit-2/evidence/P12-keys.log",
+      "sha256": "2ed27c1421e6928dbe13dbfdb5c59e1045b30341fe7ebe05700006bc5ac572c0"
+    },
+    {
+      "mutation": "integrated extra nested key",
+      "applied": true,
+      "executed": true,
+      "killed": true,
+      "survivor": false,
+      "receipt": "P13",
+      "evidence": "/tmp/reactivegas/ms2/e-haskell-impl/t86-exporter-successor/s86-audit-2/evidence/P13-keys.log",
+      "sha256": "2ed27c1421e6928dbe13dbfdb5c59e1045b30341fe7ebe05700006bc5ac572c0"
+    },
+    {
+      "mutation": "empty traces",
+      "applied": true,
+      "executed": true,
+      "killed": true,
+      "survivor": false,
+      "receipt": "P16",
+      "evidence": "/tmp/reactivegas/ms2/e-haskell-impl/t86-exporter-successor/s86-audit-2/evidence/P16-empty-traces.log",
+      "sha256": "1abbbad162a255551f23cb687febdb8e78f0be1be1c655561a592e8753c84d73"
+    },
+    {
+      "mutation": "empty steps",
+      "applied": true,
+      "executed": true,
+      "killed": true,
+      "survivor": false,
+      "receipt": "P17",
+      "evidence": "/tmp/reactivegas/ms2/e-haskell-impl/t86-exporter-successor/s86-audit-2/evidence/P17-empty-steps.log",
+      "sha256": "2f3366181c10df572720e7165419e0d0b93183432257f576d3e9172fc6c51f36"
+    },
+    {
+      "mutation": "same-length trace permutation",
+      "applied": true,
+      "executed": true,
+      "killed": true,
+      "survivor": false,
+      "receipt": "P18",
+      "evidence": "/tmp/reactivegas/ms2/e-haskell-impl/t86-exporter-successor/s86-audit-2/evidence/P18-trace-swap.log",
+      "sha256": "26168b72ca3897561b76940d2aae15a692bdbff4ae51c53550babe5c4bda86dc"
+    },
+    {
+      "mutation": "same-length step permutation",
+      "applied": true,
+      "executed": true,
+      "killed": true,
+      "survivor": false,
+      "receipt": "P19",
+      "evidence": "/tmp/reactivegas/ms2/e-haskell-impl/t86-exporter-successor/s86-audit-2/evidence/P19-step-swap.log",
+      "sha256": "a607e85c23f969d38600a1cd56a105ad159665661fa6ba4d247c6667c6605161"
+    },
+    {
+      "mutation": "economic byte drift",
+      "applied": true,
+      "executed": true,
+      "killed": true,
+      "survivor": false,
+      "receipt": "P27",
+      "evidence": "/tmp/reactivegas/ms2/e-haskell-impl/t86-exporter-successor/s86-audit-2/evidence/P27-ci-econ.log",
+      "sha256": "2d5db125cc4b4ffe47b40a0d9ca85bb405d5644fa9b874d6e391c92b129e2d16"
+    },
+    {
+      "mutation": "integrated byte drift",
+      "applied": true,
+      "executed": true,
+      "killed": true,
+      "survivor": false,
+      "receipt": "P28",
+      "evidence": "/tmp/reactivegas/ms2/e-haskell-impl/t86-exporter-successor/s86-audit-2/evidence/P28-ci-int.log",
+      "sha256": "0c53d6d456e4eb21039b24967afbc4895bf1ddbb509ea4621c3e0faf1ecff973"
+    },
+    {
+      "mutation": "manifest hash drift",
+      "applied": true,
+      "executed": true,
+      "killed": true,
+      "survivor": false,
+      "receipt": "P29",
+      "evidence": "/tmp/reactivegas/ms2/e-haskell-impl/t86-exporter-successor/s86-audit-2/evidence/P29-ci-manifest.log",
+      "sha256": "660fc8d92f53b2f81d22669147a705c55792201c349d56fe8b4d22040a727c2c"
+    },
+    {
+      "mutation": "jq declaration omission",
+      "applied": true,
+      "executed": true,
+      "killed": true,
+      "survivor": false,
+      "receipt": "P33",
+      "evidence": "/tmp/reactivegas/ms2/e-haskell-impl/t86-exporter-successor/s86-audit-2/evidence/P33-jq-omission.log",
+      "sha256": "e5e295e3fbb1d58e7794135c22d27b2cdb538376b8d6081ed5b3462928ca532e"
+    },
+    {
+      "mutation": "CI step deletion",
+      "applied": true,
+      "executed": true,
+      "killed": true,
+      "survivor": false,
+      "receipt": "P34",
+      "evidence": "/tmp/reactivegas/ms2/e-haskell-impl/t86-exporter-successor/s86-audit-2/evidence/P34-wiring-removed.log",
+      "sha256": "0b0f04ecd565cbe27e21a7e3c9972fbf7961bad9679877af860a2fb12615075d"
+    },
+    {
+      "mutation": "CI step no-op bypass",
+      "applied": true,
+      "executed": true,
+      "killed": true,
+      "survivor": false,
+      "receipt": "P35",
+      "evidence": "/tmp/reactivegas/ms2/e-haskell-impl/t86-exporter-successor/s86-audit-2/evidence/P35-wiring-bypass.log",
+      "sha256": "6fbd9da32607f96ebc88d1e60a5be9f063b8952b1691e5f2218f63f9e50e588c"
+    },
+    {
+      "mutation": "pre-repair arity guard absent",
+      "applied": true,
+      "executed": true,
+      "killed": true,
+      "survivor": false,
+      "receipt": "P38",
+      "evidence": "/tmp/reactivegas/ms2/e-haskell-impl/t86-exporter-successor/s86-audit-2/evidence/P38-arity-control.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

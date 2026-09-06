@@ -1,0 +1,12 @@
+{
+  "at": "2026-09-06T07:14:07.650Z",
+  "candidate": "04eb6c7d9aeb2a3602fca5ece14cbc033221cb43",
+  "report": "43db90494fbad83282092d388382651d9f2d56e7aefe30da7b2c66e08443fe9c",
+  "manifest": "93fa7d84095ab0a0086d92650f45d4e1ea0ecd66aeb2fe7dd21f53d4ac0e65bc",
+  "verifiedEntries": 74,
+  "verdict": "AUDIT-FINDINGS FS-01 FS-02",
+  "cleanCiSha256": "fbc50e0d75d365f3d0a60d5641d24c58d65f3270dd70f81b7051072164818564",
+  "cleanCiCompleted": "2026-09-06T07:07:14Z",
+  "auditorTerminal": "2026-09-06T07:06:01Z",
+  "scope": "New clean CI is later evidence, not admitted in original terminal verdict; parent must repair closure map and fresh static supplement assess new evidence."
+}

@@ -1,0 +1,24 @@
+{
+  "id": "panic-final",
+  "argv": [
+    "timeout",
+    "60s",
+    "node",
+    "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v4/panic-check.mjs",
+    "final"
+  ],
+  "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2",
+  "charge": "targeted",
+  "launched": true,
+  "start": "2026-09-06T05:53:59.551Z",
+  "spend": {
+    "substantive": 12,
+    "targeted": 73
+  },
+  "obligation": "C25 both-stream PANIC at absence final",
+  "finish": "2026-09-06T05:53:59.603Z",
+  "exit": 0,
+  "signal": null,
+  "stdoutSha256": "3556e83e1767c7869c0db90fa74cdfdcbccc9a4387b994b9a20b6a5c672b166a",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

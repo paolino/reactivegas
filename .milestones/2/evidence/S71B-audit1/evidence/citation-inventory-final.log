@@ -1,0 +1,24 @@
+markers=117 source_declarations=805 theorem_markers=26
+VM prose equality after removing newly added parenthesized markers:
+true; all eight additions are citation markers only
+100644 blob 0bb3af4ed56c3e5904e3a6ae8a406938c6aa0405	Voci/Beni.hs
+100644 blob afaa2140a9d7a492b84c4d57ed7ff2ce5833671b	Voci/Boxes.hs
+100644 blob 128fa08563ccde9c24332c03204ef38b12273a4a	Voci/Compare.hs
+100644 blob 1fffe51c2d85c932146ff521ddfd05ff0df5ab2a	Voci/Core.hs
+100644 blob 565a04c25540418f4dd9a6d859ec6371d5977ce1	Voci/Data.hs
+100644 blob 62edeaf015a14d555eaabc002bf15736c2157185	Voci/Dynamics.hs
+100644 blob e33c64542a7faac1394bc0a5f3bd9c5246b6cde0	Voci/Esempi.hs
+100644 blob 77427b56ea61a9dbbbc7dc568964eb1ca8f76a5c	Voci/Instances.hs
+100644 blob dfbfac259b5a9723e637eb84dff021eea5771ede	Voci/Language.hs
+100644 blob 7f2d0da3aebea1bbd6cdaf9fe9fbf67e45ef2da6	Voci/Names.hs
+100644 blob 383e144b24ac7fdc42a9d3c3351cb043b947ba9d	Voci/Ordine.hs
+100644 blob 06d781a81a1a0207e7c739fb860d45739f522980	Voci/Ordini.hs
+100644 blob 5464eb6f0edf7397a0997a42098be04a0ffb2cc2	Voci/Quantita.hs
+100644 blob 0c3db8b440838e64c792d32f7599823b3b2a8c25	Voci/Quantità.hs
+100644 blob 200a110ea1371c2eae03cb9c32b80bc047585653	Voci/Serializzazione.hs
+100644 blob e69de29bb2d1d6434b8b29ae775ad8c2e48c5391	Voci/Test.hs
+100644 blob d9454f2b5e96e1655779a9e62ecf3ef678433777	Voci/UI/Commercio.hs
+100644 blob 497d33b27b0ef7afaf87a8b1a8560b3221999c49	Voci/UI/Ordini.hs
+100644 blob 98e8411801e684e434d5f61ddad3e5206e3a9e4b	Voci/UI/Voce.hs
+100644 blob bff47aaa0d6c3da5c016eef3f77b98a4a1040b56	Voci/UI/Voci.hs
+100644 blob 6cb464dda833586e99254bf5308db953a9ca2842	Voci/Valuta.hs

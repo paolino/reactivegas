@@ -1,0 +1,4 @@
+warning: Git tree '/code/reactivegas-issue-57' is dirty
+Lean (version 4.25.0, commit v4.25.0, Release)
+gate: ok   toolchain Lean 4.25.0
+gate: FAIL worktree or index is not clean

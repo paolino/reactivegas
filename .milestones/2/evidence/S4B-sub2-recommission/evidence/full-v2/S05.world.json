@@ -1,0 +1,18 @@
+{
+  "world": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S05",
+  "candidate": "94bb7bb64324a48f7361252556b4d15e45b3923f",
+  "cache": "M1-S clean copied",
+  "spec": {
+    "id": "S05",
+    "type": "classifier-omit",
+    "obligation": "explicit theorem-kind arm omitted: permanent classifier must name actual unclassified declarations",
+    "cmd": "just lean",
+    "edits": [
+      {
+        "path": "scripts/check-lean-mirrors",
+        "old": "    | .thmInfo _ => exclThm := exclThm + 1",
+        "replacement": "    -- auditor removes exactly the theorem-info classification arm"
+      }
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+Lean (version 4.25.0, commit v4.25.0, Release)
+gate: ok   toolchain Lean 4.25.0
+gate: ok   source fence changed_paths=4
+gate: ok   Slice-1 modules blob-identical to ccdda830
+lean dependency direction: OK (control imports=9)
+gate: ok   KelGroups to Reactivegas dependency direction
+gate: ok   proof-source hygiene
+gate: ok   exhaustive VoteEvent authorization constructors=6 wildcard=absent
+/tmp/reactivegas/ms2/e43/t57-owner-codex/gate/instruments/r45-production-noop.lean:1:0: error: unknown module prefix 'KelGroups'
+
+No directory 'KelGroups' or file 'KelGroups.olean' in the search path entries:
+/code/reactivegas-issue-57-audit-s57-a-s1/lean/.lake/build/lib/lean
+/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/lib/lean
+/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/lib/lean
+gate: FAIL R-45 stranger/removeMember rejection and complete-state no-op

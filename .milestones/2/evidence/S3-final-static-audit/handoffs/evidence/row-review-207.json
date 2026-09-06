@@ -1,0 +1,2072 @@
+[
+  {
+    "row": 1,
+    "operation": "OP-11",
+    "identity": "step_grant_inv",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:197",
+    "status": "SUPPORTED-STATIC",
+    "note": "Grant: permitted=false collection, admin signer; keeping col contradicts permitted=true output. No executed kill."
+  },
+  {
+    "row": 2,
+    "operation": "OP-11..24-COLL",
+    "identity": "conservation_preserved",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:MIXED",
+    "site": "Reactivegas/Invariants.lean:430",
+    "status": "CHALLENGED",
+    "note": "Ten fund-changing interpretations are semantically plausible, but OP13 is ambiguous. Donate OP22 preserves both conservation and its actual direct-unfold proof (guard value is unused), not PROOF-FAIL. Grant/accept consumers do not automatically fail after an earlier same-module error. See S-03."
+  },
+  {
+    "row": 3,
+    "operation": "OP-11..24-COLL",
+    "identity": "step_authorized",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "Reactivegas/Invariants.lean:561",
+    "status": "CHALLENGED",
+    "note": "AUTH remains true. Actual proof calls eight inversion lemmas; six arms unfold step directly (open/deposit/withdraw/transfer/donate/backdonate). Claimed fourteen consumed upstreams is false; no automatic cascade."
+  },
+  {
+    "row": 4,
+    "operation": "OP-12",
+    "identity": "pledge_escrow_debit",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "Reactivegas/Invariants.lean:659",
+    "status": "DEPENDENCY-ONLY",
+    "note": "Consumes step_pledge_inv. Statement also becomes false with v=1 and omitted debit; dependency alone does not locate a downstream diagnostic."
+  },
+  {
+    "row": 5,
+    "operation": "OP-12",
+    "identity": "pledge_preserves_allUnique",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "Reactivegas/Invariants.lean:1269",
+    "status": "DEPENDENCY-ONLY",
+    "note": "Consumes step_pledge_inv. Conti debit omission preserves uniqueness and duplicate refusal; no semantic kill or automatic consumer diagnostic."
+  },
+  {
+    "row": 6,
+    "operation": "OP-12",
+    "identity": "pledge_rejected_when_member",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "Reactivegas/Invariants.lean:1241",
+    "status": "DEPENDENCY-ONLY",
+    "note": "Consumes step_pledge_inv. Conti debit omission preserves uniqueness and duplicate refusal; no semantic kill or automatic consumer diagnostic."
+  },
+  {
+    "row": 7,
+    "operation": "OP-12",
+    "identity": "step_pledge_inv",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:227",
+    "status": "SUPPORTED-STATIC",
+    "note": "Positive funded pledge with fresh user and collection contradicts debit equation when debit omitted."
+  },
+  {
+    "row": 8,
+    "operation": "OP-13",
+    "identity": "step_accept_inv",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:247",
+    "status": "CONDITIONAL",
+    "note": "Exact post-state differs if accepted transfer omitted; freeze whether pending removal remains. That distinction changes conservation row 2."
+  },
+  {
+    "row": 9,
+    "operation": "OP-14",
+    "identity": "step_refuse_inv",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:265",
+    "status": "SUPPORTED-STATIC",
+    "note": "Pending pledge amount 1, correct admin/referee: omitting refund violates post-state equation."
+  },
+  {
+    "row": 10,
+    "operation": "OP-15",
+    "identity": "step_correct_inv",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:284",
+    "status": "SUPPORTED-STATIC",
+    "note": "Accepted amount 2 corrected to 1 with sufficient balance; omitted balance difference violates post-state equation."
+  },
+  {
+    "row": 11,
+    "operation": "OP-16",
+    "identity": "close_permission_to_close",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "Reactivegas/Invariants.lean:647",
+    "status": "CHALLENGED",
+    "note": "Consumes step_close_inv and close_guard_inv; permission statement survives spending omission. MUT site128 is a guard, unlike same OP16 spending atom131."
+  },
+  {
+    "row": 12,
+    "operation": "OP-16",
+    "identity": "close_spends_referente",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "Reactivegas/Invariants.lean:679",
+    "status": "DEPENDENCY-ONLY",
+    "note": "Consumes step_close_inv; statement itself false for nonzero accepted total when cassa spending omitted. No observed downstream diagnostic."
+  },
+  {
+    "row": 13,
+    "operation": "OP-16",
+    "identity": "step_close_inv",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:305",
+    "status": "SUPPORTED-STATIC",
+    "note": "Permitted nonempty accepted collection, no pending: omitted cassa spend contradicts stated result."
+  },
+  {
+    "row": 14,
+    "operation": "OP-17",
+    "identity": "step_fail_inv",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:322",
+    "status": "SUPPORTED-STATIC",
+    "note": "Nonzero refundable accepted pledge on fail; retained collection removal without refund contradicts result equation."
+  },
+  {
+    "row": 15,
+    "operation": "OP-18",
+    "identity": "Reactivegas.step_open_inv",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:343",
+    "status": "SUPPORTED-STATIC",
+    "note": "Admin opens fresh id; omitting new collection contradicts cons output."
+  },
+  {
+    "row": 16,
+    "operation": "OP-19",
+    "identity": "deposit_double_entry",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:697",
+    "status": "SUPPORTED-STATIC",
+    "note": "Admin distinct from member, deposit1: missing conti credit contradicts double-entry/result equation."
+  },
+  {
+    "row": 17,
+    "operation": "OP-19",
+    "identity": "Reactivegas.step_deposit_inv",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:356",
+    "status": "SUPPORTED-STATIC",
+    "note": "Admin distinct from member, deposit1: missing conti credit contradicts double-entry/result equation."
+  },
+  {
+    "row": 18,
+    "operation": "OP-20",
+    "identity": "Reactivegas.step_withdraw_inv",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:369",
+    "status": "SUPPORTED-STATIC",
+    "note": "Admin distinct from member, funded withdrawal1, non-stalled state: missing conti debit contradicts result/double-entry."
+  },
+  {
+    "row": 19,
+    "operation": "OP-20",
+    "identity": "withdraw_double_entry",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:707",
+    "status": "SUPPORTED-STATIC",
+    "note": "Admin distinct from member, funded withdrawal1, non-stalled state: missing conti debit contradicts result/double-entry."
+  },
+  {
+    "row": 20,
+    "operation": "OP-21",
+    "identity": "Reactivegas.step_transferCassa_inv",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:384",
+    "status": "SUPPORTED-STATIC",
+    "note": "Two distinct admins transfer1: dropping outer signer credit changes cassa equation."
+  },
+  {
+    "row": 21,
+    "operation": "OP-22",
+    "identity": "Reactivegas.step_donate_inv",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:397",
+    "status": "SUPPORTED-STATIC",
+    "note": "Admin donate0 admitted under constant-true positivity atom; original positive guard conjunct is false. Historical +1 mutant is different."
+  },
+  {
+    "row": 22,
+    "operation": "OP-23",
+    "identity": "Reactivegas.step_backdonate_inv",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:410",
+    "status": "CONDITIONAL",
+    "note": "Omit member distribution while retaining comune debit; positive w and nonempty members contradict result. Precise retained debit must be frozen."
+  },
+  {
+    "row": 23,
+    "operation": "OP-24",
+    "identity": "step_deny_inv",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:211",
+    "status": "SUPPORTED-STATIC",
+    "note": "Deny collection carrying amount1: omission of refund while deleting escrow contradicts result equation."
+  },
+  {
+    "row": 24,
+    "operation": "OP-25",
+    "identity": "credit_pledges_of_reach",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "Reactivegas/Invariants.lean:1148",
+    "status": "DEPENDENCY-ONLY",
+    "note": "Reach induction consumes credit_pledges_step; comune-only credit omission preserves non-comune statement, not automatic failure."
+  },
+  {
+    "row": 25,
+    "operation": "OP-25",
+    "identity": "credit_pledges_step",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:PROOF-FAIL",
+    "site": "Reactivegas/Invariants.lean:890",
+    "status": "SUPPORTED-STATIC",
+    "note": "Statement excludes comune; donate rw bal_bump_ne loses rewrite target. Proof-script sensitivity only, insufficient for semantic D2 obligation."
+  },
+  {
+    "row": 26,
+    "operation": "OP-25",
+    "identity": "not_insolvent_of_reach",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "Reactivegas/Invariants.lean:1184",
+    "status": "DEPENDENCY-ONLY",
+    "note": "Solvency consumers call named helper/carrier; comune credit omitted does not falsify member solvency. Same-module recovery must not be treated as obligatory cascading RED."
+  },
+  {
+    "row": 27,
+    "operation": "OP-25",
+    "identity": "reach_solvent",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "Reactivegas/Invariants.lean:1177",
+    "status": "DEPENDENCY-ONLY",
+    "note": "Solvency consumers call named helper/carrier; comune credit omitted does not falsify member solvency. Same-module recovery must not be treated as obligatory cascading RED."
+  },
+  {
+    "row": 28,
+    "operation": "OP-25",
+    "identity": "solvent_preserved",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "Reactivegas/Invariants.lean:1164",
+    "status": "DEPENDENCY-ONLY",
+    "note": "Solvency consumers call named helper/carrier; comune credit omitted does not falsify member solvency. Same-module recovery must not be treated as obligatory cascading RED."
+  },
+  {
+    "row": 29,
+    "operation": "OP-25B",
+    "identity": "conservation_preserved",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:430",
+    "status": "CONDITIONAL",
+    "note": "RefundAll->m falsifies conservation for escrow refund, but State.refundAll_sum fails in imported producer module first. Intended higher row needs separately bound observation path."
+  },
+  {
+    "row": 30,
+    "operation": "OP-28",
+    "identity": "comune_not_a_member_of_reach",
+    "candidateVerdict": "STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:1141",
+    "status": "SUPPORTED-STATIC",
+    "note": "Fixed canonical view premise transport; actual boot/apply/admission producers exist. No production-absence conclusion."
+  },
+  {
+    "row": 31,
+    "operation": "OP-30",
+    "identity": "comune_not_a_member_step",
+    "candidateVerdict": "STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:883",
+    "status": "SUPPORTED-STATIC",
+    "note": "Fixed canonical view premise transport; actual boot/apply/admission producers exist. No production-absence conclusion."
+  },
+  {
+    "row": 32,
+    "operation": "OP-39",
+    "identity": "KelGroups.Vote.ballots_nodup_disjoint",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "KelGroups/Vote/Invariants.lean:802",
+    "status": "DEPENDENCY-ONLY",
+    "note": "Carrier projection; opposite-side erase omission can falsify disjointness at a switching trace, but call does not establish this declaration emits RED."
+  },
+  {
+    "row": 33,
+    "operation": "OP-39",
+    "identity": "KelGroups.Vote.placeBallot_clean",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Vote/Invariants.lean:527",
+    "status": "SUPPORTED-STATIC",
+    "note": "Clean q with dissent[a], cast assent a: retaining dissent puts a in both tallies."
+  },
+  {
+    "row": 34,
+    "operation": "OP-39",
+    "identity": "KelGroups.Vote.placeBallot_tally",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:PROOF-FAIL",
+    "site": "KelGroups/Vote/Invariants.lean:550",
+    "status": "SUPPORTED-STATIC",
+    "note": "Tally inclusion remains true; assent-arm List.erase_subset no longer matches non-erased hypothesis. Proof-script sensitivity."
+  },
+  {
+    "row": 35,
+    "operation": "OP-39",
+    "identity": "KelGroups.Vote.sweepClosures_tallyKeys",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "KelGroups/Vote/Invariants.lean:900",
+    "status": "CHALLENGED",
+    "note": "sweepClosures_tallyKeys and consumed open/closed_mem/sweepStep_key do not depend on placeBallot. OP39 supplies no failing open_mem; attribution false."
+  },
+  {
+    "row": 36,
+    "operation": "OP-39",
+    "identity": "KelGroups.Vote.tally_keys_franchised_from",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "KelGroups/Vote/Invariants.lean:1071",
+    "status": "DEPENDENCY-ONLY",
+    "note": "Uses effectedState_tally_growth/placeBallot_tally. Inclusion statement remains true under omitted erase; script/dependency distinction required."
+  },
+  {
+    "row": 37,
+    "operation": "OP-39",
+    "identity": "KelGroups.Vote.tallyKeysOfState_erased_le",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Vote/Invariants.lean:989",
+    "status": "SUPPORTED-STATIC",
+    "note": "Association-list/tally membership decomposition; no changed placeBallot call. Baseline structural classification only."
+  },
+  {
+    "row": 38,
+    "operation": "OP-39",
+    "identity": "KelGroups.Vote.tallyKeysOfState_insert_cases",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Vote/Invariants.lean:1004",
+    "status": "SUPPORTED-STATIC",
+    "note": "Association-list/tally membership decomposition; no changed placeBallot call. Baseline structural classification only."
+  },
+  {
+    "row": 39,
+    "operation": "OP-40",
+    "identity": "KelGroups.Vote.open_questions_are_open",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "KelGroups/Vote/Invariants.lean:810",
+    "status": "DEPENDENCY-ONLY",
+    "note": "Carrier opensOpen projection; OP40 can leave a closable q open, but projection is not independent observed kill."
+  },
+  {
+    "row": 40,
+    "operation": "OP-40",
+    "identity": "KelGroups.Vote.sweepClosures_closed_mem",
+    "candidateVerdict": "PREDICTED-SURVIVE",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Vote/Invariants.lean:424",
+    "status": "SUPPORTED-STATIC",
+    "note": "closed projection unchanged by openQuestions filter change; proof uses only append/filterMap. Survivor prediction well supported."
+  },
+  {
+    "row": 41,
+    "operation": "OP-40",
+    "identity": "KelGroups.Vote.sweepClosures_idempotent",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Vote/Invariants.lean:1182",
+    "status": "SUPPORTED-STATIC",
+    "note": "Closable singleton under threshold0 is retained open; second sweep duplicates closure, and open_mem iff fails."
+  },
+  {
+    "row": 42,
+    "operation": "OP-40",
+    "identity": "KelGroups.Vote.sweepClosures_open_mem",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Vote/Invariants.lean:418",
+    "status": "SUPPORTED-STATIC",
+    "note": "Closable singleton under threshold0 is retained open; second sweep duplicates closure, and open_mem iff fails."
+  },
+  {
+    "row": 43,
+    "operation": "OP-40",
+    "identity": "KelGroups.Vote.sweepClosures_preserves_qid",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "KelGroups/Vote/Invariants.lean:696",
+    "status": "DEPENDENCY-ONLY",
+    "note": "Qids remain a superset; proof consumes open_mem, whose same-module failure does not itself imply this proof fails."
+  },
+  {
+    "row": 44,
+    "operation": "OP-40",
+    "identity": "KelGroups.Vote.sweepClosures_sweepReady",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "KelGroups/Vote/Invariants.lean:440",
+    "status": "DEPENDENCY-ONLY",
+    "note": "OP40 creates open/closed overlap and stale open; semantic carrier failure distinct from assumed same-module cascade."
+  },
+  {
+    "row": 45,
+    "operation": "OP-40",
+    "identity": "KelGroups.Vote.sweepClosures_wellFormed",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "KelGroups/Vote/Invariants.lean:517",
+    "status": "DEPENDENCY-ONLY",
+    "note": "OP40 creates open/closed overlap and stale open; semantic carrier failure distinct from assumed same-module cascade."
+  },
+  {
+    "row": 46,
+    "operation": "OP-42",
+    "identity": "KelGroups.Vote.filter_open_idem",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Vote/Invariants.lean:1165",
+    "status": "SUPPORTED-STATIC",
+    "note": "Idempotence of the explicitly written filter is a pure list equation; mutant changes production sweep call-site, not this statement."
+  },
+  {
+    "row": 47,
+    "operation": "OP-42",
+    "identity": "KelGroups.Vote.questions_partition",
+    "candidateVerdict": "RECOVERED",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Vote/Invariants.lean:818",
+    "status": "HISTORICAL-ONLY",
+    "note": "Recovered standalone partition instrument; actual old dropSweep/fold and receipt differ from current production definition. No current kill."
+  },
+  {
+    "row": 48,
+    "operation": "OP-42",
+    "identity": "KelGroups.Vote.sweep_filterMap_of_swept",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "KelGroups/Vote/Invariants.lean:1150",
+    "status": "CHALLENGED",
+    "note": "No mutant specified; named sweepStep_of_open dependency is real, but OP42 has no failing atom and cannot establish cascade."
+  },
+  {
+    "row": 49,
+    "operation": "OP-43",
+    "identity": "KelGroups.Vote.ballots_nodup_disjoint",
+    "candidateVerdict": "RECOVERED",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Vote/Invariants.lean:802",
+    "status": "HISTORICAL-ONLY",
+    "note": "Recovered badPlace/badEffect/own-fold instrument establishes its historical check result only; not three production theorem kills."
+  },
+  {
+    "row": 50,
+    "operation": "OP-43",
+    "identity": "KelGroups.Vote.placeBallot_clean",
+    "candidateVerdict": "RECOVERED",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Vote/Invariants.lean:527",
+    "status": "HISTORICAL-ONLY",
+    "note": "Recovered badPlace/badEffect/own-fold instrument establishes its historical check result only; not three production theorem kills."
+  },
+  {
+    "row": 51,
+    "operation": "OP-43",
+    "identity": "KelGroups.Vote.placeBallot_tally",
+    "candidateVerdict": "RECOVERED",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Vote/Invariants.lean:550",
+    "status": "HISTORICAL-ONLY",
+    "note": "Recovered badPlace/badEffect/own-fold instrument establishes its historical check result only; not three production theorem kills."
+  },
+  {
+    "row": 52,
+    "operation": "OP-44",
+    "identity": "KelGroups.Vote.open_questions_are_open",
+    "candidateVerdict": "RECOVERED",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Vote/Invariants.lean:810",
+    "status": "HISTORICAL-ONLY",
+    "note": "Recovered nostale instrument uses retired member events and own fold; no present row kill."
+  },
+  {
+    "row": 53,
+    "operation": "OP-45",
+    "identity": "KelGroups.Vote.franchise_of_tallies",
+    "candidateVerdict": "RECOVERED",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Vote/Invariants.lean:1115",
+    "status": "HISTORICAL-ONLY",
+    "note": "Recovered unfranchised recast instrument uses retired setRoles/admitMember; actual current franchise theorem remains required."
+  },
+  {
+    "row": 54,
+    "operation": "OP-45",
+    "identity": "KelGroups.Vote.inadmissible_is_noop",
+    "candidateVerdict": "RECOVERED",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Vote/Invariants.lean:957",
+    "status": "HISTORICAL-ONLY",
+    "note": "Bypass instrument compares its separately defined bypassApply result, not current universal noop theorem."
+  },
+  {
+    "row": 55,
+    "operation": "OP-45",
+    "identity": "KelGroups.Vote.nonresponsabile_event_noop",
+    "candidateVerdict": "RECOVERED",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Vote/Invariants.lean:967",
+    "status": "HISTORICAL-ONLY",
+    "note": "Bypass instrument compares its separately defined bypassApply result, not current universal noop theorem."
+  },
+  {
+    "row": 56,
+    "operation": "OP-45",
+    "identity": "KelGroups.Vote.unfranchised_cast_noop",
+    "candidateVerdict": "RECOVERED",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Vote/Invariants.lean:980",
+    "status": "HISTORICAL-ONLY",
+    "note": "Recovered franchise instrument is not an independently observed current cast-noop failure."
+  },
+  {
+    "row": 57,
+    "operation": "OP-46a",
+    "identity": "KelGroups.Vote.sweepStep_of_open",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Vote/Invariants.lean:1141",
+    "status": "CONDITIONAL",
+    "note": "An open arm returning a concrete closure falsifies none equality; close-branch lacks a complete record/precise diff."
+  },
+  {
+    "row": 58,
+    "operation": "OP-46b",
+    "identity": "KelGroups.Vote.sweepStep_key",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Vote/Invariants.lean:401",
+    "status": "CONDITIONAL",
+    "note": "wrong is no bound replacement term. Define a total qid-changing value (including a differing witness) before well-typed semantic prediction."
+  },
+  {
+    "row": 59,
+    "operation": "OP-47",
+    "identity": "KelGroups.Vote.verdictOf_threshold_congr",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Vote/Invariants.lean:389",
+    "status": "SUPPORTED-STATIC",
+    "note": "Congruence assumes pointwise threshold agreement and unfolds verdictOf; no threshold-value-dependent property claimed."
+  },
+  {
+    "row": 60,
+    "operation": "OP-48",
+    "identity": "KelGroups.Vote.no_expiry",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "KelGroups/Vote/Invariants.lean:877",
+    "status": "DEPENDENCY-ONLY",
+    "note": "Arbitrary event, prefix, hopen and semantic preservation premise; uses both WF lemmas. No mutant specified and no observation; original scope correction accepted."
+  },
+  {
+    "row": 61,
+    "operation": "OP-49",
+    "identity": "KelGroups.Vote.inadmissible_is_noop",
+    "candidateVerdict": "PREDICTED-SURVIVE",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Vote/Invariants.lean:957",
+    "status": "SUPPORTED-STATIC",
+    "note": "Rejected premise drives simp; affected openQuestion has no error witness under bypass, other rejected arms remain."
+  },
+  {
+    "row": 62,
+    "operation": "OP-49",
+    "identity": "KelGroups.Vote.nonresponsabile_event_noop",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Vote/Invariants.lean:967",
+    "status": "SUPPORTED-STATIC",
+    "note": "Nonadmin opens fresh question in positive franchise view; bypass admits/effects it, falsifying identity."
+  },
+  {
+    "row": 63,
+    "operation": "OP-49",
+    "identity": "KelGroups.Vote.unfranchised_cast_noop",
+    "candidateVerdict": "PREDICTED-SURVIVE",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Vote/Invariants.lean:980",
+    "status": "SUPPORTED-STATIC",
+    "note": "Cast branch unchanged by openQuestion-only validation mutation."
+  },
+  {
+    "row": 64,
+    "operation": "OP-50",
+    "identity": "KelGroups.Vote.effectedState_preserves_qid",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:PROOF-FAIL",
+    "site": "KelGroups/Vote/Invariants.lean:722",
+    "status": "SUPPORTED-STATIC",
+    "note": "Cast->gs preserves qids/SweepReady/tally inclusion; existing cast proof insists on assocInsert/placeBallot shape. Script sensitivity only."
+  },
+  {
+    "row": 65,
+    "operation": "OP-50",
+    "identity": "KelGroups.Vote.effectedState_sweepReady",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:PROOF-FAIL",
+    "site": "KelGroups/Vote/Invariants.lean:571",
+    "status": "SUPPORTED-STATIC",
+    "note": "Cast->gs preserves qids/SweepReady/tally inclusion; existing cast proof insists on assocInsert/placeBallot shape. Script sensitivity only."
+  },
+  {
+    "row": 66,
+    "operation": "OP-50",
+    "identity": "KelGroups.Vote.effectedState_tally_growth",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:PROOF-FAIL",
+    "site": "KelGroups/Vote/Invariants.lean:1017",
+    "status": "SUPPORTED-STATIC",
+    "note": "Cast->gs preserves qids/SweepReady/tally inclusion; existing cast proof insists on assocInsert/placeBallot shape. Script sensitivity only."
+  },
+  {
+    "row": 67,
+    "operation": "OP-51",
+    "identity": "KelGroups.Vote.applyVoteEvent_preserves_qid",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:PROOF-FAIL",
+    "site": "KelGroups/Vote/Invariants.lean:772",
+    "status": "SUPPORTED-STATIC",
+    "note": "Without sweep, effectedState still preserves qids; exact sweepClosures_preserves_qid term has changed target. Script sensitivity only."
+  },
+  {
+    "row": 68,
+    "operation": "OP-51",
+    "identity": "KelGroups.Vote.applyVoteEvent_preserves_wellFormed",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:PROOF-FAIL",
+    "site": "KelGroups/Vote/Invariants.lean:665",
+    "status": "CHALLENGED",
+    "note": "Without sweep, well-formedness is semantically false: empty WF state, admin opens collective q at threshold0; q remains open despite positive verdict. opensOpen fails."
+  },
+  {
+    "row": 69,
+    "operation": "OP-52",
+    "identity": "KelGroups.Vote.foldFrom_preserves_qid",
+    "candidateVerdict": "PREDICTED-SURVIVE",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Vote/Invariants.lean:786",
+    "status": "CHALLENGED",
+    "note": "Fixed-initial fold preserves these properties semantically, but cons proof invokes ih at updated seed; tail mutant uses original seed. Exact terms are not definitionally equal. Literal accum->current is also not exact source text."
+  },
+  {
+    "row": 70,
+    "operation": "OP-52",
+    "identity": "KelGroups.Vote.foldFrom_preserves_wellFormed",
+    "candidateVerdict": "PREDICTED-SURVIVE",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Vote/Invariants.lean:676",
+    "status": "CHALLENGED",
+    "note": "Fixed-initial fold preserves these properties semantically, but cons proof invokes ih at updated seed; tail mutant uses original seed. Exact terms are not definitionally equal. Literal accum->current is also not exact source text."
+  },
+  {
+    "row": 71,
+    "operation": "OP-52B",
+    "identity": "KelGroups.Vote.foldVote_append",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Vote/Invariants.lean:692",
+    "status": "CONDITIONAL",
+    "note": "Changing foldVote alone to fixed empty seed breaks append at two fresh opens with threshold high; exact substitution still unfrozen. Distinct from OP52 foldFrom mutation."
+  },
+  {
+    "row": 72,
+    "operation": "OP-53",
+    "identity": "KelGroups.Vote.emptyVoteState_sweepReady",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Vote/Invariants.lean:374",
+    "status": "CONDITIONAL",
+    "note": "Nonempty is not sufficient for failure: a unique clean open permission question can satisfy both carriers. Need concrete violating list; no unconditional THEOREM-FAIL."
+  },
+  {
+    "row": 73,
+    "operation": "OP-53",
+    "identity": "KelGroups.Vote.emptyVoteState_wellFormed",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Vote/Invariants.lean:382",
+    "status": "CONDITIONAL",
+    "note": "Nonempty is not sufficient for failure: a unique clean open permission question can satisfy both carriers. Need concrete violating list; no unconditional THEOREM-FAIL."
+  },
+  {
+    "row": 74,
+    "operation": "OP-54",
+    "identity": "KelGroups.direct_admission_requires_admin",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "KelGroups/Invariants.lean:799",
+    "status": "DEPENDENCY-ONLY",
+    "note": "Admin projection consumes validateDirectAdmission_ok; nonadmin fresh-target witness falsifies statement under OP54 but does not prove consumer diagnostic."
+  },
+  {
+    "row": 75,
+    "operation": "OP-54",
+    "identity": "KelGroups.membership_growth_is_direct_admission",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Invariants.lean:751",
+    "status": "SUPPORTED-STATIC",
+    "note": "OP54 permits nonadmin fresh nonreserved target under accepting hook; admin conjunct/refusal fails."
+  },
+  {
+    "row": 76,
+    "operation": "OP-54",
+    "identity": "KelGroups.non_admin_admission_is_noop",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Invariants.lean:813",
+    "status": "SUPPORTED-STATIC",
+    "note": "OP54 permits nonadmin fresh nonreserved target under accepting hook; admin conjunct/refusal fails."
+  },
+  {
+    "row": 77,
+    "operation": "OP-54",
+    "identity": "KelGroups.validateDirectAdmission_ok",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Invariants.lean:628",
+    "status": "SUPPORTED-STATIC",
+    "note": "OP54 permits nonadmin fresh nonreserved target under accepting hook; admin conjunct/refusal fails."
+  },
+  {
+    "row": 78,
+    "operation": "OP-54a",
+    "identity": "KelGroups.Vote.foldVote_wellFormed",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "KelGroups/Vote/Invariants.lean:688",
+    "status": "CHALLENGED",
+    "note": "No mutated atom; cites foldFrom_preserves_wellFormed while OP52 claims survivor. Original foldVote differs from mutated foldFrom, so exact carrier term may mismatch, not inherited observed RED."
+  },
+  {
+    "row": 79,
+    "operation": "OP-55",
+    "identity": "KelGroups.direct_admission_requires_admin",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "KelGroups/Invariants.lean:799",
+    "status": "DEPENDENCY-ONLY",
+    "note": "Under OP55 reserved-target conjunct false, but direct_admission_requires_admin admin conjunct still true. Consumer dependency not semantic failure."
+  },
+  {
+    "row": 80,
+    "operation": "OP-55",
+    "identity": "KelGroups.membership_growth_is_direct_admission",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Invariants.lean:751",
+    "status": "SUPPORTED-STATIC",
+    "note": "Reserved fresh target can be admitted in generic integration with accepting hook, falsifying key!=reserved. Production apply may separately reject it."
+  },
+  {
+    "row": 81,
+    "operation": "OP-55",
+    "identity": "KelGroups.validateDirectAdmission_ok",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Invariants.lean:628",
+    "status": "SUPPORTED-STATIC",
+    "note": "Reserved fresh target can be admitted in generic integration with accepting hook, falsifying key!=reserved. Production apply may separately reject it."
+  },
+  {
+    "row": 82,
+    "operation": "OP-57",
+    "identity": "KelGroups.commitBaseChange_ok",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Invariants.lean:647",
+    "status": "SUPPORTED-STATIC",
+    "note": "Hook returns changed payload, mutation retains pre.appFold: hook/output equation false."
+  },
+  {
+    "row": 83,
+    "operation": "OP-57B",
+    "identity": "KelGroups.commitBaseChange_members",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Invariants.lean:696",
+    "status": "SUPPORTED-STATIC",
+    "note": "Pre/post members differ, hook succeeds: returning pre members falsifies post-member projection."
+  },
+  {
+    "row": 84,
+    "operation": "OP-58",
+    "identity": "KelGroups.tryEnactBase_preserves_absence",
+    "candidateVerdict": "PREDICTED-SURVIVE",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Invariants.lean:721",
+    "status": "SUPPORTED-STATIC",
+    "note": "Threshold strengthening changes when hook runs, not absence or hook-on-reported-change; split proofs do not consume >= type."
+  },
+  {
+    "row": 85,
+    "operation": "OP-58",
+    "identity": "KelGroups.tryEnactBase_runs_hook",
+    "candidateVerdict": "PREDICTED-SURVIVE",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Invariants.lean:664",
+    "status": "SUPPORTED-STATIC",
+    "note": "Threshold strengthening changes when hook runs, not absence or hook-on-reported-change; split proofs do not consume >= type."
+  },
+  {
+    "row": 86,
+    "operation": "OP-58B",
+    "identity": "KelGroups.app_event_preserves_members",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Invariants.lean:568",
+    "status": "SUPPORTED-STATIC",
+    "note": "Admitted app with nonempty members and successful fold; wiping members falsifies preservation."
+  },
+  {
+    "row": 87,
+    "operation": "OP-58C",
+    "identity": "KelGroups.enactMutation_preserves_absence",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:PROOF-FAIL",
+    "site": "KelGroups/Invariants.lean:711",
+    "status": "SUPPORTED-STATIC",
+    "note": "No-op removal preserves absence; existing assocLookup_erase_of_none exact term mentions erased list. Script sensitivity."
+  },
+  {
+    "row": 88,
+    "operation": "OP-58D",
+    "identity": "KelGroups.app_event_has_no_base_change",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Invariants.lean:590",
+    "status": "CONDITIONAL",
+    "note": "Setting app change to concrete some value falsifies none equation; map some(admit) still needs exact payload. Measurement sidecar supplies a separate concrete sample."
+  },
+  {
+    "row": 89,
+    "operation": "OP-59",
+    "identity": "KelGroups.base_change_recomputes_votes",
+    "candidateVerdict": "WITHDRAWN-DUPLICATE",
+    "candidateEvidence": "EVID:N-A",
+    "site": "PHANTOM-WITHDRAWN",
+    "status": "SUPPORTED-STATIC",
+    "note": "Exactly two phantom KelGroups namespace rows withdrawn; actual Reactivegas declarations retained at rows97/98."
+  },
+  {
+    "row": 90,
+    "operation": "OP-59",
+    "identity": "KelGroups.baseHook_votes",
+    "candidateVerdict": "WITHDRAWN-DUPLICATE",
+    "candidateEvidence": "EVID:N-A",
+    "site": "PHANTOM-WITHDRAWN",
+    "status": "SUPPORTED-STATIC",
+    "note": "Exactly two phantom KelGroups namespace rows withdrawn; actual Reactivegas declarations retained at rows97/98."
+  },
+  {
+    "row": 91,
+    "operation": "OP-60",
+    "identity": "KelGroups.enact_preserves_wellFormed",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:PROOF-FAIL",
+    "site": "KelGroups/Invariants.lean:183",
+    "status": "SUPPORTED-STATIC",
+    "note": "Removal identity preserves WF; current proof uses assocErase_keys_nodup/property at target fields. Script sensitivity."
+  },
+  {
+    "row": 92,
+    "operation": "OP-60",
+    "identity": "KelGroups.members_change_implies_enacted",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:PROOF-FAIL",
+    "site": "KelGroups/Invariants.lean:379",
+    "status": "CHALLENGED",
+    "note": "Proof never splits removeMember or unfolds enact; it derives Enacts from propose/approve threshold metadata, retaining finishEnact symbolically. Statement and proof survive the remove-member no-op."
+  },
+  {
+    "row": 93,
+    "operation": "OP-61",
+    "identity": "KelGroups.finishEnact_preserves_wellFormed",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:PROOF-FAIL",
+    "site": "KelGroups/Invariants.lean:215",
+    "status": "SUPPORTED-STATIC",
+    "note": "Retaining pending proposal preserves existing WF; proof builds pendingKeys via erase lemma, so term shape mismatches."
+  },
+  {
+    "row": 94,
+    "operation": "OP-62",
+    "identity": "KelGroups.enact_implies_threshold_met",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "KelGroups/Invariants.lean:342",
+    "status": "DEPENDENCY-ONLY",
+    "note": "Consumes threshold lemma; > implies >=, so statement remains true, and call alone does not imply downstream RED."
+  },
+  {
+    "row": 95,
+    "operation": "OP-62",
+    "identity": "KelGroups.tryEnactDetailed_enactment_threshold_met",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:PROOF-FAIL",
+    "site": "KelGroups/Invariants.lean:327",
+    "status": "SUPPORTED-STATIC",
+    "note": "Threshold statement remains true under stricter >; exact threshold has wrong relation and WF proof splits old >=. Script sensitivity, no semantic kill."
+  },
+  {
+    "row": 96,
+    "operation": "OP-62",
+    "identity": "KelGroups.tryEnact_preserves_wellFormed",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:PROOF-FAIL",
+    "site": "KelGroups/Invariants.lean:228",
+    "status": "SUPPORTED-STATIC",
+    "note": "Threshold statement remains true under stricter >; exact threshold has wrong relation and WF proof splits old >=. Script sensitivity, no semantic kill."
+  },
+  {
+    "row": 97,
+    "operation": "OP-63",
+    "identity": "Reactivegas.base_change_recomputes_votes",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:1616",
+    "status": "SUPPORTED-STATIC",
+    "note": "Pre franchise3/post2 with one assent: pre sweep leaves open, post sweep closes; projected vote equality can be false."
+  },
+  {
+    "row": 98,
+    "operation": "OP-63",
+    "identity": "Reactivegas.baseHook_votes",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:1600",
+    "status": "SUPPORTED-STATIC",
+    "note": "Pre franchise3/post2 with one assent: pre sweep leaves open, post sweep closes; projected vote equality can be false."
+  },
+  {
+    "row": 99,
+    "operation": "OP-63B",
+    "identity": "KelGroups.applyPropose_preserves_wellFormed",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Invariants.lean:238",
+    "status": "SUPPORTED-STATIC",
+    "note": "Existing same pending id, enough admins that new proposal does not enact; cons creates duplicate pending keys."
+  },
+  {
+    "row": 100,
+    "operation": "OP-64",
+    "identity": "KelGroups.applyApprove_preserves_wellFormed",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Invariants.lean:256",
+    "status": "SUPPORTED-STATIC",
+    "note": "Existing signer approval, high majority so pending retained; cons duplicates approval. Lower-level theorem does not require validator admission."
+  },
+  {
+    "row": 101,
+    "operation": "OP-64",
+    "identity": "KelGroups.approvePending_wellFormed",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Invariants.lean:156",
+    "status": "SUPPORTED-STATIC",
+    "note": "Existing signer approval, high majority so pending retained; cons duplicates approval. Lower-level theorem does not require validator admission."
+  },
+  {
+    "row": 102,
+    "operation": "OP-64a",
+    "identity": "members_change_implies_enacted",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "KelGroups/Invariants.lean:899",
+    "status": "CHALLENGED",
+    "note": "Root wrapper is real, but named OP60 counterpart row92 survives; no failing upstream supplied."
+  },
+  {
+    "row": 103,
+    "operation": "OP-64c",
+    "identity": "enact_implies_threshold_met",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "KelGroups/Invariants.lean:889",
+    "status": "DEPENDENCY-ONLY",
+    "note": "Real root wrapper consumes KelGroups threshold theorem; retain distinct identity and conditional dependency, no observed kill."
+  },
+  {
+    "row": 104,
+    "operation": "OP-65",
+    "identity": "KelGroups.applyEvent_preserves_wellFormed",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "KelGroups/Invariants.lean:279",
+    "status": "DEPENDENCY-ONLY",
+    "note": "Actual WF/fold carrier consumers; may semantically fail under duplicate mutations, but declaration-specific diagnostics are unobserved."
+  },
+  {
+    "row": 105,
+    "operation": "OP-65",
+    "identity": "KelGroups.foldEvents_preserves_wellFormed",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "KelGroups/Invariants.lean:295",
+    "status": "DEPENDENCY-ONLY",
+    "note": "Actual WF/fold carrier consumers; may semantically fail under duplicate mutations, but declaration-specific diagnostics are unobserved."
+  },
+  {
+    "row": 106,
+    "operation": "OP-65",
+    "identity": "KelGroups.foldGroup_wellFormed",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "KelGroups/Invariants.lean:306",
+    "status": "DEPENDENCY-ONLY",
+    "note": "Actual WF/fold carrier consumers; may semantically fail under duplicate mutations, but declaration-specific diagnostics are unobserved."
+  },
+  {
+    "row": 107,
+    "operation": "OP-66E",
+    "identity": "approvals_nodup",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Invariants.lean:877",
+    "status": "SUPPORTED-STATIC",
+    "note": "Distinct root wrappers of structural WF projections; no new production kill."
+  },
+  {
+    "row": 108,
+    "operation": "OP-66E",
+    "identity": "member_key_coherent",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Invariants.lean:909",
+    "status": "SUPPORTED-STATIC",
+    "note": "Distinct root wrappers of structural WF projections; no new production kill."
+  },
+  {
+    "row": 109,
+    "operation": "OP-66E",
+    "identity": "proposer_mem_approvals",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Invariants.lean:883",
+    "status": "SUPPORTED-STATIC",
+    "note": "Distinct root wrappers of structural WF projections; no new production kill."
+  },
+  {
+    "row": 110,
+    "operation": "OP-67",
+    "identity": "KelGroups.majority_not_strict_on_even",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Invariants.lean:459",
+    "status": "SUPPORTED-STATIC",
+    "note": "Two admins satisfy positive even antecedent; mutated majority=3 gives 2*3<=2 false."
+  },
+  {
+    "row": 111,
+    "operation": "OP-67",
+    "identity": "KelGroups.majority_table",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Invariants.lean:450",
+    "status": "SUPPORTED-STATIC",
+    "note": "One-admin sample expects1, mutated majority yields2."
+  },
+  {
+    "row": 112,
+    "operation": "OP-67a",
+    "identity": "majority_not_strict_on_even",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "KelGroups/Invariants.lean:923",
+    "status": "CHALLENGED",
+    "note": "Real wrapper counterparts, but text says OP67a kill (self operation); actual producer is OP67. Source call does not guarantee independent RED."
+  },
+  {
+    "row": 113,
+    "operation": "OP-67a",
+    "identity": "majority_table",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "KelGroups/Invariants.lean:914",
+    "status": "CHALLENGED",
+    "note": "Real wrapper counterparts, but text says OP67a kill (self operation); actual producer is OP67. Source call does not guarantee independent RED."
+  },
+  {
+    "row": 114,
+    "operation": "OP-67b",
+    "identity": "KelGroups.emptyState_wellFormed",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Invariants.lean:162",
+    "status": "CONDITIONAL",
+    "note": "Any concrete duplicate key pair violates memberKeys Nodup; actual pair/type content must be frozen before execution."
+  },
+  {
+    "row": 115,
+    "operation": "OP-67G",
+    "identity": "governance_enacts_windUpAdmin",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:637",
+    "status": "SUPPORTED-STATIC",
+    "note": "Collection belonging to removed admin remains under keep-collections mutation; governanceEnacts false."
+  },
+  {
+    "row": 116,
+    "operation": "OP-68",
+    "identity": "auth_referente_guard_inv",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:172",
+    "status": "SUPPORTED-STATIC",
+    "note": "Explicit Bool conjunction projections; no production step invocation. Keep distinct required disposition, not mutation coverage."
+  },
+  {
+    "row": 117,
+    "operation": "OP-68",
+    "identity": "close_guard_inv",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:178",
+    "status": "SUPPORTED-STATIC",
+    "note": "Explicit Bool conjunction projections; no production step invocation. Keep distinct required disposition, not mutation coverage."
+  },
+  {
+    "row": 118,
+    "operation": "OP-68",
+    "identity": "fail_guard_inv",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:188",
+    "status": "SUPPORTED-STATIC",
+    "note": "Explicit Bool conjunction projections; no production step invocation. Keep distinct required disposition, not mutation coverage."
+  },
+  {
+    "row": 119,
+    "operation": "OP-68",
+    "identity": "pledge_guard_inv",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:154",
+    "status": "SUPPORTED-STATIC",
+    "note": "Explicit Bool conjunction projections; no production step invocation. Keep distinct required disposition, not mutation coverage."
+  },
+  {
+    "row": 120,
+    "operation": "OP-68",
+    "identity": "Reactivegas.admissionPreservation_holds",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:2347",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 121,
+    "operation": "OP-68",
+    "identity": "Reactivegas.base_change_can_close_without_ballot",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:1587",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 122,
+    "operation": "OP-68",
+    "identity": "Reactivegas.base_departure_applies_cleanup",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:1583",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 123,
+    "operation": "OP-68",
+    "identity": "Reactivegas.base_recompute_reachable_holds",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:1591",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 124,
+    "operation": "OP-68",
+    "identity": "Reactivegas.canonical_economy_holds",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:2325",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 125,
+    "operation": "OP-68",
+    "identity": "Reactivegas.comune_cannot_authorize",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Step.lean:470",
+    "status": "BASELINE-ONLY",
+    "note": "Actual declaration is Reactivegas.Step:470; decides boot/apply comune refusal and is value-sensitive under OP69L."
+  },
+  {
+    "row": 126,
+    "operation": "OP-68",
+    "identity": "Reactivegas.comuneThresholdSanity_holds",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:2349",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 127,
+    "operation": "OP-68",
+    "identity": "Reactivegas.direct_admission_only_holds",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:1589",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 128,
+    "operation": "OP-68",
+    "identity": "Reactivegas.exhaustive_inventories_hold",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:2328",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 129,
+    "operation": "OP-68",
+    "identity": "Reactivegas.i57_auth_holds",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:2334",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 130,
+    "operation": "OP-68",
+    "identity": "Reactivegas.i57_boundary_holds",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:2331",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 131,
+    "operation": "OP-68",
+    "identity": "Reactivegas.i57_disjoint_holds",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:2337",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 132,
+    "operation": "OP-68",
+    "identity": "Reactivegas.i57_disjoint_mutant_caught",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:2338",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 133,
+    "operation": "OP-68",
+    "identity": "Reactivegas.i57_exhaustive_holds",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:2332",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 134,
+    "operation": "OP-68",
+    "identity": "Reactivegas.i57_franchise_holds",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:2340",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 135,
+    "operation": "OP-68",
+    "identity": "Reactivegas.i57_franchise_mutant_caught",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:2341",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 136,
+    "operation": "OP-68",
+    "identity": "Reactivegas.i57_noexpiry_holds",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:2346",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 137,
+    "operation": "OP-68",
+    "identity": "Reactivegas.i57_noop_holds",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:2333",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 138,
+    "operation": "OP-68",
+    "identity": "Reactivegas.i57_nostale_holds",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:2339",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 139,
+    "operation": "OP-68",
+    "identity": "Reactivegas.i57_partition_holds",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:2336",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 140,
+    "operation": "OP-68",
+    "identity": "Reactivegas.i57_policyfree_holds",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:2343",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 141,
+    "operation": "OP-68",
+    "identity": "Reactivegas.i57_policyfree_mutant_caught",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:2344",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 142,
+    "operation": "OP-68",
+    "identity": "Reactivegas.i57_r45_holds",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:2335",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 143,
+    "operation": "OP-68",
+    "identity": "Reactivegas.integrated_theorem_witness_holds",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:2322",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 144,
+    "operation": "OP-68",
+    "identity": "Reactivegas.productionWellFormed_holds",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:2348",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 145,
+    "operation": "OP-68",
+    "identity": "Reactivegas.sweep_idempotent_mutant_caught",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:1595",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 146,
+    "operation": "OP-68",
+    "identity": "Reactivegas.sweep_idempotent_witness",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:1593",
+    "status": "BASELINE-ONLY",
+    "note": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "row": 147,
+    "operation": "OP-68",
+    "identity": "solvent_init",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:877",
+    "status": "CHALLENGED",
+    "note": "Structural is right; boot elimination is not: solvent_init directly proves balances/collection facts of State.empty and has no boot premise."
+  },
+  {
+    "row": 148,
+    "operation": "OP-69",
+    "identity": "Reactivegas.app_members_preservation_holds",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Step.lean:445",
+    "status": "CONDITIONAL",
+    "note": "Members wipe after successful production app falsifies equality on preservationDonate. Exact root edit/branch placement still not frozen."
+  },
+  {
+    "row": 149,
+    "operation": "OP-69",
+    "identity": "Reactivegas.app_members_preservation_mutant_caught",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Step.lean:448",
+    "status": "CHALLENGED",
+    "note": "Shipped memberWritingApply check depends on preservationDonate/apply, not self-contained; OP69L rejects input and makes it false."
+  },
+  {
+    "row": 150,
+    "operation": "OP-69",
+    "identity": "TraceTests.app_members_preservation_holds",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/TraceTests.lean:1087",
+    "status": "CONDITIONAL",
+    "note": "Distinct TraceTests proof-term mirror; same Bool can be false under OP69 but failed Step import prevents baseline wrapper loading. Not independent diagnostic."
+  },
+  {
+    "row": 151,
+    "operation": "OP-69L",
+    "identity": "Reactivegas.comune_cannot_authorize",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Step.lean:470",
+    "status": "SUPPORTED-STATIC",
+    "note": "Dropping productionWellFormed negation accepts comune boot and rejects mixed non-comune group: both decided claims become false."
+  },
+  {
+    "row": 152,
+    "operation": "OP-69L",
+    "identity": "Reactivegas.productionWellFormed_holds",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:2348",
+    "status": "SUPPORTED-STATIC",
+    "note": "Dropping productionWellFormed negation accepts comune boot and rejects mixed non-comune group: both decided claims become false."
+  },
+  {
+    "row": 153,
+    "operation": "OP-70",
+    "identity": "TraceTests.all_checks_pass",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/TraceTests.lean:992",
+    "status": "BASELINE-ONLY",
+    "note": "all_checks_pass decides failing=[] from check table; no mutant allocated."
+  },
+  {
+    "row": 154,
+    "operation": "OP-70",
+    "identity": "TraceTests.app_members_preservation_mutant_caught",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/TraceTests.lean:1090",
+    "status": "BASELINE-ONLY",
+    "note": "Real mutant-check mirror; OP69L false value path, Step import may fail."
+  },
+  {
+    "row": 155,
+    "operation": "OP-70",
+    "identity": "TraceTests.base_change_can_close_without_ballot",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/TraceTests.lean:931",
+    "status": "BASELINE-ONLY",
+    "note": "Real RI proof-term mirror sites931/928/937/934; retain distinct identities and imported-module outcome."
+  },
+  {
+    "row": 156,
+    "operation": "OP-70",
+    "identity": "TraceTests.base_departure_applies_cleanup",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/TraceTests.lean:928",
+    "status": "BASELINE-ONLY",
+    "note": "Real RI proof-term mirror sites931/928/937/934; retain distinct identities and imported-module outcome."
+  },
+  {
+    "row": 157,
+    "operation": "OP-70",
+    "identity": "TraceTests.base_recompute_reachable_holds",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/TraceTests.lean:937",
+    "status": "BASELINE-ONLY",
+    "note": "Real RI proof-term mirror sites931/928/937/934; retain distinct identities and imported-module outcome."
+  },
+  {
+    "row": 158,
+    "operation": "OP-70",
+    "identity": "TraceTests.direct_admission_only_holds",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/TraceTests.lean:934",
+    "status": "BASELINE-ONLY",
+    "note": "Real RI proof-term mirror sites931/928/937/934; retain distinct identities and imported-module outcome."
+  },
+  {
+    "row": 159,
+    "operation": "OP-70",
+    "identity": "TraceTests.frozen_checks_faithful",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/TraceTests.lean:1005",
+    "status": "BASELINE-ONLY",
+    "note": "Decide frozen check/inventory/corpus equalities; source baseline consistency, not production mutant evidence."
+  },
+  {
+    "row": 160,
+    "operation": "OP-70",
+    "identity": "TraceTests.frozen_corpus_faithful",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/TraceTests.lean:1010",
+    "status": "BASELINE-ONLY",
+    "note": "Decide frozen check/inventory/corpus equalities; source baseline consistency, not production mutant evidence."
+  },
+  {
+    "row": 161,
+    "operation": "OP-70",
+    "identity": "TraceTests.frozen_inventory_faithful",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/TraceTests.lean:1006",
+    "status": "BASELINE-ONLY",
+    "note": "Decide frozen check/inventory/corpus equalities; source baseline consistency, not production mutant evidence."
+  },
+  {
+    "row": 162,
+    "operation": "OP-70",
+    "identity": "TraceTests.sweep_idempotent_mutant_caught",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/TraceTests.lean:943",
+    "status": "BASELINE-ONLY",
+    "note": "Actual sweep mirrors943/940; changes to fixture/production dependencies can falsify checks."
+  },
+  {
+    "row": 163,
+    "operation": "OP-70",
+    "identity": "TraceTests.sweep_idempotent_witness",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/TraceTests.lean:940",
+    "status": "BASELINE-ONLY",
+    "note": "Actual sweep mirrors943/940; changes to fixture/production dependencies can falsify checks."
+  },
+  {
+    "row": 164,
+    "operation": "OP-71",
+    "identity": "stepDetailed_erases",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Trace.lean:109",
+    "status": "BASELINE-ONLY",
+    "note": "Trace stepDetailed/stepEvent erasure equation; generic wrapper shape, no current mutation receipt."
+  },
+  {
+    "row": 165,
+    "operation": "OP-72",
+    "identity": "Reactivegas.Composition.appDecided_verdict_exhaustive",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Composition.lean:139",
+    "status": "BASELINE-ONLY",
+    "note": "Composition appDecided exhaustive verdict disjunction from appVerdictAllows; structural cases."
+  },
+  {
+    "row": 166,
+    "operation": "OP-72",
+    "identity": "Reactivegas.Composition.baseEnacted_threshold_met",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Composition.lean:108",
+    "status": "BASELINE-ONLY",
+    "note": "Exact threshold consumer, not routing equation. Mutation changes upstream proof; no independent execution or auto-cascade."
+  },
+  {
+    "row": 167,
+    "operation": "OP-72",
+    "identity": "Reactivegas.Composition.voteDerived_iff_not_direct",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Composition.lean:83",
+    "status": "BASELINE-ONLY",
+    "note": "Composition route cases characterize voteDerived/not-direct; source equation only."
+  },
+  {
+    "row": 168,
+    "operation": "OP-73",
+    "identity": "solvent_init",
+    "candidateVerdict": "ACCEPT",
+    "candidateEvidence": "EVID:N-A",
+    "site": "Reactivegas/Invariants.lean:877",
+    "status": "OPEN",
+    "note": "ACCEPT is proposed operation label, not accepted result. Plain full-tree/default lake build does not bind final full mandate targets."
+  },
+  {
+    "row": 169,
+    "operation": "OP-74",
+    "identity": "KelGroups.Vote.sweepDuplicating_duplicates",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Vote/Invariants.lean:1200",
+    "status": "BASELINE-ONLY",
+    "note": "sweepDuplicating duplicates when filterMap nonempty; no claim about production sweep correctness follows."
+  },
+  {
+    "row": 170,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.admissionPreservation_holds",
+    "candidateVerdict": "OPEN-KILL",
+    "candidateEvidence": "EVID:NONE",
+    "site": "Reactivegas/Invariants.lean:2347",
+    "status": "CHALLENGED",
+    "note": "OPEN extent1 false: OP58B or OP69 wipes members on successful donate30; checkAppMembersPreservation=false, hence conjunction false."
+  },
+  {
+    "row": 171,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.app_members_preservation_mutant_caught",
+    "candidateVerdict": "OPEN-KILL",
+    "candidateEvidence": "EVID:NONE",
+    "site": "Reactivegas/Step.lean:448",
+    "status": "CHALLENGED",
+    "note": "OPEN extent2 false: OP69L reverses input well-formedness; preservationDonate errors, memberWritingApply propagates, check=false."
+  },
+  {
+    "row": 172,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.base_change_can_close_without_ballot",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:1587",
+    "status": "CONDITIONAL",
+    "note": "OP63 and OP40 each flip fixture independently; plus must mean alternatives, not combined mutation. Same-module first-proof block claim unsupported."
+  },
+  {
+    "row": 173,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.base_departure_applies_cleanup",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:1583",
+    "status": "CONDITIONAL",
+    "note": "OP67G leaves admin collection; OP57 retains pre payload; OP57B retains old members. Distinct alternatives need unique operation receipts. Same-module block not proved."
+  },
+  {
+    "row": 174,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.base_recompute_reachable_holds",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:1591",
+    "status": "SUPPORTED-STATIC",
+    "note": "OP63 leaves pre-franchise sweep, differing from expected post-view sweep; source-site ordering cannot decide execution reachability."
+  },
+  {
+    "row": 175,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.canonical_economy_holds",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:2325",
+    "status": "SUPPORTED-STATIC",
+    "note": "OP23 distribution omission leaves alice/bob balances0 instead of1. Same-module :410 failure does not preclude later check elaboration."
+  },
+  {
+    "row": 176,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.comuneThresholdSanity_holds",
+    "candidateVerdict": "OPEN-KILL",
+    "candidateEvidence": "EVID:NONE",
+    "site": "Reactivegas/Invariants.lean:2349",
+    "status": "OPEN",
+    "note": "Sanity uses comuneId and s62bThreshold=Vote.legacyThreshold. No listed current-map atom changes these values; pure/no-production overstates threshold dependency. Not inherently unfalsifiable or exempt."
+  },
+  {
+    "row": 177,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.direct_admission_only_holds",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:1589",
+    "status": "CONDITIONAL",
+    "note": "Separate admin/reserved/duplicate mutations flip exact error checks. Under OP55 production post-WF rejects with different error, not necessarily admission."
+  },
+  {
+    "row": 178,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.exhaustive_inventories_hold",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:2328",
+    "status": "SUPPORTED-STATIC",
+    "note": "Conjunction includes direct admission; its false value carries. No independently observed diagnostic."
+  },
+  {
+    "row": 179,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.i57_auth_holds",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:2334",
+    "status": "SUPPORTED-STATIC",
+    "note": "OP49 admits bob openQuestion; explicit refusal/identity checks false. Failed Vote.Invariants import can block importing RI, distinct from same-module errors."
+  },
+  {
+    "row": 180,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.i57_boundary_holds",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:2331",
+    "status": "SUPPORTED-STATIC",
+    "note": "OP49 admits bob openQuestion; explicit refusal/identity checks false. Failed Vote.Invariants import can block importing RI, distinct from same-module errors."
+  },
+  {
+    "row": 181,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.i57_disjoint_mutant_caught",
+    "candidateVerdict": "OPEN-KILL",
+    "candidateEvidence": "EVID:NONE",
+    "site": "Reactivegas/Invariants.lean:2338",
+    "status": "CHALLENGED",
+    "note": "OPEN extent12 false: OP58B wipes membership on first openQuestion, subsequent votes rejected, expected dissent absent. OP39-only survival is narrower than stated all-current-map claim."
+  },
+  {
+    "row": 182,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.i57_exhaustive_holds",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:2332",
+    "status": "SUPPORTED-STATIC",
+    "note": "OP58B member equality false on successful openQuestion; exact app output source inspected."
+  },
+  {
+    "row": 183,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.i57_franchise_mutant_caught",
+    "candidateVerdict": "OPEN-KILL",
+    "candidateEvidence": "EVID:NONE",
+    "site": "Reactivegas/Invariants.lean:2341",
+    "status": "CHALLENGED",
+    "note": "OPEN extent14 false: OP50 cast->gs prevents alice and shipped bypass bob ballot placement; contains/equality conjunct false."
+  },
+  {
+    "row": 184,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.i57_noexpiry_holds",
+    "candidateVerdict": "OPEN-KILL",
+    "candidateEvidence": "EVID:NONE",
+    "site": "Reactivegas/Invariants.lean:2346",
+    "status": "CHALLENGED",
+    "note": "OPEN extent15 false: OP69L rejects non-comune v3Group input; checkI57NoExpiry error branch false."
+  },
+  {
+    "row": 185,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.i57_noop_holds",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:2333",
+    "status": "CONDITIONAL",
+    "note": "OP49 boundary or OP54 nonadmin-refusal conjunct can fail; alternatives must remain single-atom operations."
+  },
+  {
+    "row": 186,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.i57_nostale_holds",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:2339",
+    "status": "SUPPORTED-STATIC",
+    "note": "NoStale is V3BaseReachable && BaseRecomputeReachable; their OP63/40 flips inherit."
+  },
+  {
+    "row": 187,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.i57_partition_holds",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:2336",
+    "status": "SUPPORTED-STATIC",
+    "note": "OP63 leaves q open/not closed; OP40 retains q both open and closed. Either falsifies partition fixture independently."
+  },
+  {
+    "row": 188,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.i57_policyfree_holds",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:2343",
+    "status": "SUPPORTED-STATIC",
+    "note": "OP40 retains closed qp in open set at threshold1, falsifying isNone; policy mutant check includes same production assertion."
+  },
+  {
+    "row": 189,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.i57_policyfree_mutant_caught",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:2344",
+    "status": "SUPPORTED-STATIC",
+    "note": "OP40 retains closed qp in open set at threshold1, falsifying isNone; policy mutant check includes same production assertion."
+  },
+  {
+    "row": 190,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.i57_r45_holds",
+    "candidateVerdict": "OPEN-KILL",
+    "candidateEvidence": "EVID:NONE",
+    "site": "Reactivegas/Invariants.lean:2335",
+    "status": "OPEN",
+    "note": "Current map retains stranger membership rejection/cast responsibility; no listed atom shown to affect these two refusal/identity assertions. Bounded unresolved relevance, not universal insensitivity."
+  },
+  {
+    "row": 191,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.integrated_theorem_witness_holds",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:2322",
+    "status": "SUPPORTED-STATIC",
+    "note": "Conjunction includes base recomputation so OP63 false value carries; same-file order not sufficient for execution block."
+  },
+  {
+    "row": 192,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.sweep_idempotent_mutant_caught",
+    "candidateVerdict": "OPEN-KILL",
+    "candidateEvidence": "EVID:NONE",
+    "site": "Reactivegas/Invariants.lean:1595",
+    "status": "CHALLENGED",
+    "note": "OPEN extent23 false: OP58 stricter base threshold prevents Eve removal; v3PostView still3, required2, q one assent stays open. sweepDuplicating once==input, check=false."
+  },
+  {
+    "row": 193,
+    "operation": "OP-OPEN",
+    "identity": "Reactivegas.sweep_idempotent_witness",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/Invariants.lean:1593",
+    "status": "SUPPORTED-STATIC",
+    "note": "OP40 retains q after enacted sweep; second sweep adds another closure so idempotence equation false."
+  },
+  {
+    "row": 194,
+    "operation": "OP-OPEN",
+    "identity": "TraceTests.app_members_preservation_mutant_caught",
+    "candidateVerdict": "OPEN-KILL",
+    "candidateEvidence": "EVID:NONE",
+    "site": "Reactivegas/TraceTests.lean:1090",
+    "status": "CHALLENGED",
+    "note": "Distinct mirror of extent2; same OP69L false path. OPEN source pointer1084 is wrong (actual1090)."
+  },
+  {
+    "row": 195,
+    "operation": "OP-OPEN",
+    "identity": "TraceTests.base_change_can_close_without_ballot",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/TraceTests.lean:931",
+    "status": "CHALLENGED",
+    "note": "Mirror refers line175 canonical economy, not its base-close producer172. Correct semantic atoms OP63/40; site931, not903."
+  },
+  {
+    "row": 196,
+    "operation": "OP-OPEN",
+    "identity": "TraceTests.base_departure_applies_cleanup",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/TraceTests.lean:928",
+    "status": "CHALLENGED",
+    "note": "Mirror refers line172 base-close, not departure173. Correct alternatives OP67G/57/57B; site928, not901."
+  },
+  {
+    "row": 197,
+    "operation": "OP-OPEN",
+    "identity": "TraceTests.base_recompute_reachable_holds",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/TraceTests.lean:937",
+    "status": "CHALLENGED",
+    "note": "Mirror refers line173 departure, not recompute174. Correct OP63; site937, not902."
+  },
+  {
+    "row": 198,
+    "operation": "OP-OPEN",
+    "identity": "TraceTests.direct_admission_only_holds",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/TraceTests.lean:934",
+    "status": "CHALLENGED",
+    "note": "Mirror refers line174 recompute, not direct admission177. Correct OP54/55/56; site934, not897."
+  },
+  {
+    "row": 199,
+    "operation": "OP-OPEN",
+    "identity": "TraceTests.sweep_idempotent_mutant_caught",
+    "candidateVerdict": "OPEN-KILL",
+    "candidateEvidence": "EVID:NONE",
+    "site": "Reactivegas/TraceTests.lean:943",
+    "status": "CHALLENGED",
+    "note": "Distinct sweep-mutant mirror shares OP58 false path; site943, not905."
+  },
+  {
+    "row": 200,
+    "operation": "OP-OPEN",
+    "identity": "TraceTests.sweep_idempotent_witness",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "Reactivegas/TraceTests.lean:940",
+    "status": "SUPPORTED-STATIC",
+    "note": "Correct producer row193 and OP40 semantic flip; OPEN extent site904 wrong (actual940); downstream failed import unobserved."
+  },
+  {
+    "row": 201,
+    "operation": "OP-42K",
+    "identity": "KelGroups.Vote.questions_partition",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Vote/Invariants.lean:818",
+    "status": "CONDITIONAL",
+    "note": "Silent closure-record deletion falsifies history-preservation at threshold1 trace open then assent; old standalone fixture receipt is not exact current atom evidence."
+  },
+  {
+    "row": 202,
+    "operation": "OP-66",
+    "identity": "KelGroups.approvals_nodup",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Invariants.lean:312",
+    "status": "SUPPORTED-STATIC",
+    "note": "Actual KelGroups carrier projections; states premise-provided Nodup/coherence, not production guard behavior."
+  },
+  {
+    "row": 203,
+    "operation": "OP-66",
+    "identity": "KelGroups.proposer_mem_approvals",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Invariants.lean:317",
+    "status": "SUPPORTED-STATIC",
+    "note": "Actual KelGroups carrier projections; states premise-provided Nodup/coherence, not production guard behavior."
+  },
+  {
+    "row": 204,
+    "operation": "OP-66",
+    "identity": "KelGroups.member_key_coherent",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Invariants.lean:374",
+    "status": "SUPPORTED-STATIC",
+    "note": "Actual KelGroups carrier projections; states premise-provided Nodup/coherence, not production guard behavior."
+  },
+  {
+    "row": 205,
+    "operation": "OP-66",
+    "identity": "KelGroups.tryEnact_eq_of_enacts",
+    "candidateVerdict": "ELAB-STATIC",
+    "candidateEvidence": "EVID:N-A",
+    "site": "KelGroups/Invariants.lean:368",
+    "status": "SUPPORTED-STATIC",
+    "note": "tryEnact_eq_of_enacts follows definition of Enacts and rfl; no production mutation sensitivity."
+  },
+  {
+    "row": 206,
+    "operation": "OP-56",
+    "identity": "KelGroups.validateDirectAdmission_ok",
+    "candidateVerdict": "KILL",
+    "candidateEvidence": "EVID:THEOREM-FAIL",
+    "site": "KelGroups/Invariants.lean:628",
+    "status": "SUPPORTED-STATIC",
+    "note": "Bypass duplicate admission: existing member admitted, member-absent conjunct false. Nonadmin refusal and growth-on-absent premises are distinct and may survive."
+  },
+  {
+    "row": 207,
+    "operation": "OP-58",
+    "identity": "KelGroups.base_change_runs_hook",
+    "candidateVerdict": "OBSERVED",
+    "candidateEvidence": "EVID:CASCADE",
+    "site": "KelGroups/Invariants.lean:831",
+    "status": "CHALLENGED",
+    "note": "Exactly one real base_change_runs_hook row. OP58 upstream tryEnactBase_runs_hook survives, so proposed failure cascade has no source."
+  }
+]

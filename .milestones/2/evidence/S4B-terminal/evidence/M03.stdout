@@ -1,0 +1,4 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M03.lean:120:83: error: unsolved goals
+s : State
+⊢ sumBal s.casse - sumBal s.conti - escrowSum s.collections = 0 ↔
+    sumBal s.casse - sumBal s.conti - (escrowSum s.collections + 1) = 0

@@ -1,0 +1,43 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A44.lean:238:21: warning: unused variable `θ`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A44.lean:242:11: warning: unused variable `q`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+KelGroups.Vote.voteWellFormedB (θ : Threshold) (view : GroupView) (gs : VoteState) : Bool
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A44.lean:255:6: error: Application type mismatch: The argument
+  (opensOpenIff θ view gs).mp h.opensOpen
+has type
+  ∀ (qid : QuestionId),
+    qid ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup qid gs.openQuestions with
+        | some q => decide (verdictOf θ view q = Verdict.open)
+        | none => true) =
+        true
+but is expected to have type
+  ∀ (x : QuestionId),
+    x ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup x gs.openQuestions with
+        | some q => true
+        | none => true) =
+        true
+in the application
+  ⟨(sweepReady_corr view gs).mp h.toSweepReady, (opensOpenIff θ view gs).mp h.opensOpen⟩
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A44.lean:257:74: error: Application type mismatch: The argument
+  ho
+has type
+  ∀ (x : QuestionId),
+    x ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup x gs.openQuestions with
+        | some q => true
+        | none => true) =
+        true
+but is expected to have type
+  ∀ (qid : QuestionId),
+    qid ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup qid gs.openQuestions with
+        | some q => decide (verdictOf θ view q = Verdict.open)
+        | none => true) =
+        true
+in the application
+  (opensOpenIff θ view gs).mpr ho

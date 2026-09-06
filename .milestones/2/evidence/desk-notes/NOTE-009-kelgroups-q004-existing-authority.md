@@ -1,0 +1,7 @@
+# NOTE-009 — Q004 is the already-authorized instrument correction class
+
+Actual child545 BLOCKED Q00413:29:51 after Q003 RESUMED13:25:38. Desk read the pane report: M3's precondition requires `commitBaseChange ::` on one line although the full mandatory signature formats across lines; the actual mutation awk is split-safe. No production failure or new requirement is established; this is the same formatting/precondition contradiction already ruled in D3. Your current watch must consume this actual later BLOCKED event.
+
+Route through534 under existing mechanical-correction authority. Preserve current frozen gate and receipt, repair/version/hash/bind the formatter-safe applicability predicate without weakening M3's actual mutation/property or H3, demonstrate applicability against the supported layout, answer Q004 and verify RESUMED. Do not ask the desk to re-authorize this same class again. Owner may report an actual additional requirement or genuinely insufficient budget; a known gate formatting repair is neither. No repeated RED campaign, no gate bypass, no spent-call refund, no new code scope.
+
+Before GREEN, ticket owner should reconcile ALL remaining frozen preconditions together with actual formatter output and required declarations, rather than releasing one known mismatch at a time. This is free source/instrument preparation, not a demand to spend library builds. Then implementation proceeds on the same RED parent and existing caps. Local file reports only.

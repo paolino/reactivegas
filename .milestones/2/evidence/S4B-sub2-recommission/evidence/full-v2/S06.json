@@ -1,0 +1,29 @@
+{
+  "id": "S06",
+  "argv": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=30s",
+    "1800s",
+    "nix",
+    "develop",
+    "--quiet",
+    "-c",
+    "just",
+    "lean"
+  ],
+  "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S06",
+  "charge": "substantive",
+  "launched": true,
+  "start": "2026-09-06T05:15:35.122Z",
+  "spend": {
+    "substantive": 7,
+    "targeted": 5
+  },
+  "obligation": "C4 present executable checker unconditional success; mandatory receipt must reject",
+  "finish": "2026-09-06T05:16:27.677Z",
+  "exit": 1,
+  "signal": null,
+  "stdoutSha256": "3074861b47d2505ab5d1305c7d9b936dc53024a4565c1a12f42257d8daba908f",
+  "stderrSha256": "4018a5dbcc8c8fc34b39388b22ae1a2a8543b2099947157046321de613606a34"
+}

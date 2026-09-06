@@ -1,0 +1,13 @@
+diff --git a/lean/KelGroups/Types.lean b/lean/KelGroups/Types.lean
+index 18c4678..2ebd7b8 100644
+--- a/lean/KelGroups/Types.lean
++++ b/lean/KelGroups/Types.lean
+@@ -143,7 +143,7 @@ def lookupMember (key : Key) (view : GroupView) : Option Member :=
+ 
+ /-- Is `key` a current member of the canonical relation? -/
+ def isMember (key : Key) (view : GroupView) : Bool :=
+-  (lookupMember key view).isSome
++  false
+ 
+ /-- Is `key` a current member holding an admin role?  This is the one notion of
+ "responsabile" every consumer reads; there is no second list to disagree with

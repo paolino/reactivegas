@@ -1,0 +1,26 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["8a74648accb1fad4.olean"],
+  "i": "31c6f8ca5fbd8514.ilean",
+  "c": "90428c9c67d65dfe.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/code/reactivegas-66-s4/lean/.lake/build/lib/lean /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean /code/reactivegas-66-s4/lean/KelGroups/Types.lean -o /code/reactivegas-66-s4/lean/.lake/build/lib/lean/KelGroups/Types.olean -i /code/reactivegas-66-s4/lean/.lake/build/lib/lean/KelGroups/Types.ilean -c /code/reactivegas-66-s4/lean/.lake/build/ir/KelGroups/Types.c --setup /code/reactivegas-66-s4/lean/.lake/build/ir/KelGroups/Types.setup.json --json",
+   "level": "trace"}],
+ "inputs":
+ [["KelGroups.Types:deps",
+   [["deps",
+     [["reactivegas/KelGroups:extraDep",
+       [["@reactivegas:extraDep", "00000000000006bb"]]],
+      ["imports", "00000000000006bb"]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.25.0, commit v4.25.0", "9c3a3ade3a41d5d0"],
+  ["/code/reactivegas-66-s4/lean/KelGroups/Types.lean", "67f3c21eb4b88933"],
+  ["options", [["-DautoImplicit=false", "4a85acb881fd49d0"]]],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "c0bfe7082b7d6a61"}

@@ -1,0 +1,558 @@
+• Explored
+  └ Read SKILL.md
+
+• Ran git -C /code/reactivegas-66-s4b-final-audit status --porcelain=v1 --untracked-files=all; git -C /code/
+  │ reactivegas-66-s4b-final-audit rev-parse HEAD; find /code/reactivegas-66-s4b-final-audit -name '*.olean' -print; jq
+  │ -c 'select(.type == "turn_context") |
+  │ … +3 lines
+  └ 04eb6c7d9aeb2a3602fca5ece14cbc033221cb43
+    {"timestamp":"2026-09-06T06:38:21.380Z","model":"gpt-6-astra","effort":"high","control_model":"gpt-6-astra","control_ef
+    … +2 lines (ctrl + t to view transcript)
+    fort":"high"}
+    2026-09-06T06:59:23Z
+
+• Added handoffs/AUDIT-REPORT.md (+325 -0)
+      1 +# S4-B final candidate — FULL STATIC audit
+      2 +
+      3 +**Terminal verdict: AUDIT-FINDINGS.** Comment containment and preservation of
+      4 +non-comment program bytes are established. The dated ruling establishes the
+      5 +current arbitrary-state Reach consumer classification. The complete required
+      6 +source-sensitive/final-evidence boundary is not established: the supplied final
+      7 +CI is a dirty-tree, pre-commit run without a retained source-input binding to the
+      8 +final tree. There is also an unfulfilled closure-map recording requirement.
+      9 +Neither finding asserts a false theorem or a broken mirror implementation.
+     10 +
+     11 +Candidate: `04eb6c7d9aeb2a3602fca5ece14cbc033221cb43`, tree
+     12 +`caaa0488f39a6afb2553680a11fd6bfd86d1c90b`.
+     13 +Prior candidate: `94bb7bb64324a48f7361252556b4d15e45b3923f`.
+     14 +Accepted base: `3590c0015b84fd58004bf6fb44dd18b107304c48`.
+     15 +Scope is the entire eight-commit unaccepted range, the original S4 contract and
+     16 +admitted amendments, the dated ruling, current/historical closure limits,
+     17 +prior frozen execution evidence, and final owner CI evidence.
+     18 +
+     19 +This is one local verdict, with no repair round. **Project executions: zero**:
+     20 +no build, elaboration, project probe, mutant, checker invocation, LSP request,
+     21 +Nix evaluation, or CI rerun. Mechanical parsing, Git reads and hashing are the
+     22 +only executed audit instruments. No source edits, author contact, remote action,
+     23 +acceptance or issue closure occurred.
+     24 +
+     25 +## Authority, identity and chronology
+     26 +
+     27 +The brief hash is
+     28 +`4ae525975afce63253809d2fafc341e38644d64e20700ca421b7f16c06b59db5`.
+     29 +Amendment 1 hash is
+     30 +`d6a20dc6cfa5e55fabda53e66d06535c3fd5927131af0372a269851ace9f9297`.
+     31 +Both were read and verified before my own START. Amendment 1 governs the
+     32 +distinction between the immutable historical finding and the independently
+     33 +decidable current classification obligation.
+     34 +
+     35 +All 20 admitted files, including superseded instruments and the complete prior
+     36 +report/classification, were read before START. Manifest hash
+     37 +`faa5c2ce6500dd5e03a998edf0ff1880c162b9b8d8b550f265e7fe8c19cb8c8f`
+     38 +verified 20/20 with no self-entry. The first check was issued from the runtime
+     39 +directory, where its bare relative filenames did not resolve; the corrected
+     40 +`sha256sum -c MANIFEST.sha256` from `admitted/` verified all entries. This was a
+     41 +check-CWD error, not corrupt evidence. A second independent byte-hash parser
+     42 +confirmed the same manifest.
+     43 +
+     44 +Launch identity was independently observed from `/proc/3437463/cmdline`:
+     45 +Codex 0.153.2, `-m gpt-6-astra -c model_reasoning_effort=high`, PID/PGID 3437463,
+     46 +parent shell 3435517. Own pane `%576` resolved to
+     47 +`reactivegas:rg-s4b-final-audit.1`, distinct from commissioner `%503` and
+     48 +terminal predecessor `%571`. The initial request containing host-wide `ps -eo`
+     49 +was declined and did not execute. The accepted observation was restricted to
+     50 +`ps -p 3437463`, `ps --ppid 3437463`, that PID's `/proc/cmdline`, and own-pane
+     51 +`tmux display-message`. No host-wide process enumeration was performed.
+     52 +
+     53 +Separately, this session's own persisted **turn_context and collaboration
+     54 +control settings** report active `gpt-6-astra`, effort `high` at
+     55 +`2026-09-06T06:39:46.969Z`, session
+     56 +`01a0756f-c8cd-7581-b8cd-48b798c0b8c6`. Both model fields agree, independently of
+     57 +argv. The preceding turn at `06:38:21.380Z` also reports those values. These
+     58 +records are captured in `evidence/session-model.jsonl` and were reread before
+     59 +report assembly. This is session-state evidence, not a claim of opening the
+     60 +interactive model menu or measuring an unrecorded switch interval.
+     61 +
+     62 +My first STATUS line states both launch and active-session identities, the
+     63 +amendment, manifest, clean detached candidate and zero oleans. Journal timestamps
+     64 +come from live local `date -u`; the owner-supplied UTC was not needed. The
+     65 +dedicated window, exceptional submission and static-only scope are express
+     66 +commissioned exceptions; generic skill mutation/build requirements do not grant
+     67 +execution here.
+     68 +
+     69 +## Independently established source facts
+     70 +
+     71 +`instruments/static-boundary.mjs` enumerated all 269 tracked blobs and modes,
+     72 +verified every current worktree file against its final Git blob, and compared
+     73 +the two commits without Git external diff/textconv. Exactly two files differ;
+     74 +the other 267 blobs and all file modes are identical. The repair is +6/-4.
+     75 +
+     76 +| Changed file | Exact boundary | Result |
+     77 +|---|---|---|
+     78 +| `lean/Reactivegas/Mirrors.lean` | Existing `/-!` module documentation, opening line 4; changed bullet at 29–32;
+         closing delimiter moves from 33 to 34 | One documentation span changes; every byte outside comments is identical |
+     79 +| `scripts/check-lean-mirrors` | Existing `/--` declaration documentation at 151–154, inside the single-quoted `LE
+         AN_EOF` heredoc | One documentation span changes; shell prefix/suffix and non-comment Lean bytes are identical |
+     80 +
+     81 +The scanner recognizes nested block comments, line comments and strings. It
+     82 +rejected an unclosed synthetic comment and distinguished synthetic executable
+     83 +token/string changes and additions outside comments. These controls exercise
+     84 +the mechanical parser only; no project mutation was created or executed. The
+     85 +first invocation hit Node `spawnSync git EPERM` under the sandbox; its approved
+     86 +retry completed unchanged. This setup failure is retained in the audit history
+     87 +and consumed no project execution allowance.
+     88 +
+     89 +The exact current source SHA256 values are:
+     90 +
+     91 +| Source | SHA256 |
+     92 +|---|---|
+     93 +| `lean/Reactivegas/Mirrors.lean` | `7fefa8cd8e034c1e2f5a353d28270d7a68e940c7be5d0f52eabaca0d6193e1fb` |
+     94 +| `scripts/check-lean-mirrors` | `f17ecfb0c4d89436261ad202a3b83956fa89392e92d085d309880ae2d31745e6` |
+     95 +
+     96 +The complete base-to-final range adds two mirror modules, the checker, and ten
+     97 +justfile lines: four files, 948 additions, no deletions. It contains
+     98 +`189e1ed`, `59309d6`, `0f3ad01`, `4d0a324`, `b667648`, `ba623667`, `94bb7bb`,
+     99 +`04eb6c7d`, in ancestry order. Old model definitions, old theorem statements and
+    100 +proofs, Invariants files, imports, Lake configuration, CI YAML and design docs
+    101 +are unchanged relative to the accepted base. The two mirror modules and entire
+    102 +checker were read, together with their predicate definitions, relevant existing
+    103 +P01/P07 chain, Reach/Trace boundary and mandatory script/CI consumers.
+    104 +
+    105 +For the repair itself, **no non-comment executable token, s4bExceptions member,
+    106 +proof, statement, import, nonce logic or check wiring changed**. The exception
+    107 +array remains exactly `KelGroups.Vote.PreservesQuestionSemantics`,
+    108 +`authorizedStep`, `stalled`, `Reach`. No duplicate P01/P07 mirror, extra
+    109 +threshold default, equality-on-threshold or new runtime call site appears.
+    110 +
+    111 +## Generated driver and source-sensitive boundary
+    112 +
+    113 +The wrapper uses `cat <<'LEAN_EOF'`, so shell expansion does not interpret the
+    114 +documentation. The delimiter and all outer shell bytes are unchanged. Its sole
+    115 +later textual replacement is `__TRACKED_MODULES__`; that token occurs once in
+    116 +both bodies, outside the changed documentation, and the same 29 tracked module
+    117 +names supply its replacement. There is no delimiter escape, new placeholder,
+    118 +shell interpolation, or program-body change.
+    119 +
+    120 +Mechanical extraction and substitution, without invoking the wrapper, yield:
+    121 +
+    122 +| Driver representation | Old SHA256 | Final SHA256 |
+    123 +|---|---|---|
+    124 +| Raw generated source text | `2c9e36260e56d959de7d7acaec0dae5d23e4cf711a2ba81f4dda20192defbd8d` | `083485a67ca7f7
+         1cbd69180638ad4c3e7033e50674f6f003a6839ae2b77dd16b` |
+    125 +| Comment-erased source | `e6d529bb4606bec57c095fbef6df18368336a024e7bab8fd861249d785b62fef` | Same |
+    126 +
+    127 +The raw driver is therefore **not byte-identical**. This difference is confined
+    128 +to its intended documentation. It is not evidence of altered checker program
+    129 +logic or emitted machine instructions.
+    130 +
+    131 +However, the stronger assertion that these comments have *no source-sensitive
+    132 +effect at all* is unavailable. `/-!` and `/--` are Lean documentation syntax,
+    133 +not wholly discarded trivia: local toolchain source shows `elabModuleDoc`
+    134 +calling `addMainModuleDoc` with text/range, and `addMarkdownDocString` validating
+    135 +and storing a declaration docstring. The added module-doc line also moves every
+    136 +subsequent declaration's source line by one. This matters to a real mandatory
+    137 +consumer: `scripts/check-reactivegas-inversion-coverage:212–257,439–464` obtains
+    138 +parsed theorem line numbers and compares them with `findDeclarationRanges?` from
+    139 +the compiled environment. Its wrapper rebuilds sources first. Lake's
+    140 +`Module.recFetchInput` hashes the complete file contents.
+    141 +
+    142 +Static inspection supports unchanged logical checking with consistently rebuilt
+    143 +source/artifacts; it does **not** make old ranges, doc metadata, raw driver
+    144 +bytes or compiled artifacts interchangeable with final ones. No new manual-link
+    145 +syntax is introduced, and neither the mirror checker nor the two mirror modules
+    146 +reads documentation to choose its coverage verdict. I observed no injected
+    147 +executable behavior. Documentation/range effects are stated as such, not
+    148 +misreported as proof failure or a demonstrated changed acceptance result.
+    149 +
+    150 +The unqualified boundary is consequently **BLOCKED**, rather than silently
+    151 +narrowed to token equality. In particular, final source/compiled consistency
+    152 +cannot be supplied by relabeling the old execution evidence; the final-CI
+    153 +binding defect below prevents that evidence bridge too.
+    154 +
+    155 +## Finding FS-01 — final CI cannot establish the required final-candidate receipt
+    156 +
+    157 +**Blocking evidence incompatibility.** The admitted original grant
+    158 +`QUALITY-S4B-TWO-COMMAND-GAP-GRANTED-20260905.md` explicitly requires final CI at
+    159 +the exact clean committed candidate, with actual exit and raw hashed evidence.
+    160 +The new ruling requires the final SHA and clean full-CI receipt, and the brief
+    161 +requires evidence compatibility at this final candidate.
+    162 +
+    163 +The supplied log, independently hashed in full, is
+    164 +`b6a16cfe60e6e07204b4191fd0c93dbdb2c8def107715144cc16ebfef946e34d`,
+    165 +175,819 bytes / 3,098 lines. Its first **two lines** state:
+    166 +`warning: Git tree '/code/reactivegas-66-s4b' is dirty`.
+    167 +It contains no candidate SHA, pre/post tracked-input hashes, execution
+    168 +start/finish envelope or mechanically captured exit field. The owner reports
+    169 +exit 0; the log itself shows the expected final success markers.
+    170 +
+    171 +The actual ordering is explicit in the retained author's NOTE-035: run the one
+    172 +CI operation, **then commit**. The owner's STATUS also reports the run followed
+    173 +by the commit. The file mtime is `2026-09-06T06:33:56.876352378Z`; commit
+    174 +`04eb6c7d` has author/committer time `2026-09-06T06:34:03Z`. The log's nonce is
+    175 +`1788676427576021718`. File/commit timestamps corroborate the written ordering;
+    176 +they are not a replacement for missing execution-input provenance.
+    177 +
+    178 +This is **not a charge that the author ignored NOTE-035**: that note ordered
+    179 +this sequence. It is a discrepancy between the commissioned receipt criterion
+    180 +and the delivered execution evidence. Post-run cleanliness and a later final
+    181 +commit do not independently bind all inputs used by the earlier dirty run.
+    182 +No evidence proves that it built different executable bytes, and no such
+    183 +claim is made; the required identity/cleanliness claim is unestablished.
+    184 +
+    185 +The same log demonstrates why an aggregate green is not the missing binding:
+    186 +it reports 1,285 axiom checks, 185 source/elaborated theorem matches, mirror
+    187 +19/4/24/2/29, fresh nonce and corpus 5/32/7. Those are real retained log
+    188 +observations, not an independently witnessed final-SHA CI execution by this
+    189 +auditor. Its `Up to date` and `Replayed` output also cannot establish a wholly
+    190 +cold build merely from the phrase “cold-path.”
+    191 +
+    192 +Evidence: `evidence/owner-final-ci.log`, `final-ci-assessment.json`,
+    193 +`owner-submission-3.md`, `owner-STATUS.txt`, `owner-NOTE-035.md`, and
+    194 +`tree-comparison.json`. No extra execution or repair is authorized by this
+    195 +finding. It concerns provenance and claim strength, not an observed failing
+    196 +candidate test.
+    197 +
+    198 +## Finding FS-02 — required ruling/obligation entry absent from the closure map
+    199 +
+    200 +**Blocking acceptance-record gap.** The admitted dated ruling requires recording
+    201 +the ruling in both the issue body and closure map. The issue-body readback
+    202 +satisfies its part. The current local
+    203 +`/tmp/reactivegas/ms2/e-lean-compliance/handoffs/CLOSURE-MAP.md`, read in full and
+    204 +snapshotted, contains neither `RG-S4-REACH-20260906` nor the newly required
+    205 +finite-history correspondence with its #75/#71 ownership. Its “Current owed
+    206 +list” still gives S5 only retention and `ONWARD-68-INV-01`.
+    207 +
+    208 +The separate D1 fit report says that the ruling is recorded in the closure map;
+    209 +the examined map does not substantiate that statement. The ruling, issue body,
+    210 +amendment and D1 report do retain the obligation, so this is **not** evidence
+    211 +that nobody owns S5 or that the obligation was waived. It is the narrower
+    212 +failure to complete the specifically required durable completion-map entry.
+    213 +
+    214 +The classification decision below does not depend on retroactively repairing
+    215 +this record. Evidence: `evidence/closure-map.md`, `owner-d1-fit.md`,
+    216 +`external-snapshot-index.json`, and admitted ruling/issue-body readback.
+    217 +Commissioner `%503` owns this record and onward routing to desk `%510`.
+    218 +
+    219 +## Current Reach classification — independently decided under Amendment 1
+    220 +
+    221 +**The arbitrary-state consumer classification at 04eb6c7d is established:
+    222 +NOT-REQUIRED for this milestone.** The authority is
+    223 +**RG-S4-REACH-20260906, issued 2026-09-06**, not the historical “standing boundary,”
+    224 +failure to synthesize Decidable, general reachability theory or absent callers.
+    225 +Both replacement comments accurately cite that dated ruling. The module text
+    226 +expressly rejects both undecidability and the absent-callers inference; the
+    227 +checker text cites the ruling and rejects undecidability without making an
+    228 +absent-callers argument. Neither presents the ruling as pre-existing authority.
+    229 +
+    230 +The original axes remain separate: executable arbitrary Reach decision is still
+    231 +NOT-ESTABLISHED by retained bounded evidence. The phrase “NOT-EXECUTABLE,
+    232 +bounded” does not become a mathematical impossibility theorem. No new decision
+    233 +procedure is observed or inferred.
+    234 +
+    235 +The actual Reach definition has boot at `State.empty` with comune exclusion,
+    236 +and trans on successful `stepEvent` under fixed view/auth. Trace accepts an
+    237 +arbitrary initial state and `emitSteps` preserves state on refusal. Integrated
+    238 +apply can change the view. The ruling accurately distinguishes these objects.
+    239 +It does not establish a bridge or authorize one here. Validation of one supplied
+    240 +history is not existential reachability decision.
+    241 +
+    242 +**Historical F-001 at 94bb7bb and its terminal AUDIT-FINDINGS remain immutable.**
+    243 +This current classification decision does not correct, overturn, or re-date that
+    244 +prior result. The separate finite-history correspondence remains **OPEN under
+    245 +S5**, retaining **#75 replay and #71 reporting**, with genesis, fixed view/auth
+    246 +and refusal-preservation premises to be assessed. #66 and the milestone remain
+    247 +incomplete.
+    248 +
+    249 +## Full-contract coverage and retained evidence
+    250 +
+    251 +The prior manifest
+    252 +`eb05530995bde80878203222a4430b1afce1d05002cb4bd60d59d60e75f40cc0`
+    253 +was independently checked **665/665, no self-entry**. A separate parser checked
+    254 +every digest again, matched all 82 command records to their receipts and both
+    255 +raw streams (**164 stream checks**), and retained all 44 distinct atom rows,
+    256 +their one-edit counts, original proof locations, errors and original source
+    257 +hashes. This is evidence-integrity review, not execution replay or new kills.
+    258 +
+    259 +The prior actual substantive count is 12 and targeted count 73: the 82-row sheet
+    260 +contains 11/71, plus M1-S, failed M1-T and M1R-T. Campaign actual remains 18/132
+    261 +against 18/139. Prior author 18/52 remains spent; the exceptional third
+    262 +submission adds the one authorized substantive operation to 19/19 and zero
+    263 +targeted operations. No unused historical allowance is granted to this audit.
+    264 +
+    265 +Prior S10 executed **2026-09-06T05:50:26.431Z–05:53:21.856Z**, exit 0,
+    266 +at **94bb7bb**. Its stdout hash is
+    267 +`c0d10f287764f222b46f804aba22ffd62ab6e08bb478cbb40b687a6e02ee54fa`;
+    268 +stderr is
+    269 +`b52f164044a7f30051a39b242933fca8827238913d17d2123a2d3054b4df00f0`.
+    270 +The prior inventory/axiom and mutation executions retain their individual
+    271 +timestamps in `prior-command-integrity.json`. None becomes an execution at
+    272 +04eb6c7d. Prior source hashes, line numbers and oleans retain their original
+    273 +identities even where non-comment statements remain identical.
+    274 +
+    275 +| Contract rows | Static final-candidate assessment and actual execution provenance |
+    276 +|---|---|
+    277 +| Original Phase A / R7, both axes | All 24 prior predicate identities retained; current Reach consumer classifica
+         tion established by new authority. No new compiled census claimed; prior 3,478 declarations / 29 modules / 24 pred
+         icates remain 94bb7bb measurements |
+    278 +| R1–R3, R5, R15–R17 | Complete four-file diff and Git blobs establish fence, old-definition/statement preservatio
+         n, no new runtime call sites, new modules only and additive justfile wiring |
+    279 +| R4, v3.1 P01/P07 | Original expression correspondences remain value-parametric/inline. Two membership helpers an
+         d existing close/inversion chain are retained; no duplicate theorem or mirror added |
+    280 +| R6, R14 | Callable threshold and generic DecidableEq only in new K5 counterpart/theorem remain. Finite list/look
+         up proofs have arbitrary-state statements, duplicate-key first lookup and absent-key zero; no new well-formedness
+         premise |
+    281 +| R8–R10 / C1–C4 | Mandatory missing-counterpart, missing-theorem and present-but-disabled checker evidence retain
+         ed at 94bb7bb, including S11 after failed S02. Identical final invocation/nonce logic; no newly executed controls
+         |
+    282 +| R11–R12 / C5–C23 | All 44 atom records and distinct streams retained; P01 selected-helper and P07-negR selected-
+         inversion evidence remains at 94bb7bb. No first-error credit added; relatum survivors are never relabeled implemen
+         tation kills |
+    283 +| R13 / C24–C26 | Prior cold S10/final inventory/axioms/panic controls retain exact scope and hashes. Current full
+          final receipt is blocked by FS-01; no transfer of compiled artifacts or dates |
+    284 +| R18 | Separate substantive/targeted accounting retained; four prior setup failures remain spent. This audit has
+         zero project execution and one mechanical-parser sandbox setup failure |
+    285 +| Ruling closure-map requirement | Issue-body readback present; closure map incomplete, FS-02 |
+    286 +| Load-bearing comment boundary | Comment/non-comment and wrapper-substitution boundary established; unqualified s
+         ource-sensitive invariance not certified, as explained above |
+    287 +
+    288 +The final mirror source preserves the 19 correspondence identities and 17 new
+    289 +Bool counterparts. Required exceptions V4, P11 and stalled retain the prior
+    290 +definitional/evaluation evidence; Reach's consumer authority is new and dated.
+    291 +The prior S4 classification remains historical verbatim. The current change in
+    292 +its P13 consumer-axis disposition is stated here rather than rewriting that file.
+    293 +
+    294 +## Historical and onward limits — all retained
+    295 +
+    296 +| Obligation | Disposition |
+    297 +|---|---|
+    298 +| Historical F-001 | Immutable finding and prior verdict at 94bb7bb; current classification assessed separately ab
+         ove |
+    299 +| S5 finite-history correspondence | OPEN, owned, #75/#71 retained; no bridge proved, no absence-of-bridge inferen
+         ce from spelling searches |
+    300 +| H-01 P07 | OPEN: historical single-variable isolation cannot be established from the old Step diagnostic; later
+         clean overlay does not reconstruct history |
+    301 +| H-02 census sortUndecided | OPEN: source-verified-not-executed historical failure path; clean zero and independe
+         nt UnknownInventory are not its execution |
+    302 +| H-03 ba623667 | OPEN: recovered-from-snapshot after overwrite, never never-overwritten provenance |
+    303 +
+    304 +Original S5 retention and inversion-exactness obligations, #71 content, S3's
+    305 +separate campaign, and other inherited closure-map limits remain where owned.
+    306 +No remote workflow, full milestone completion, or future-source assurance is
+    307 +established. The six commissioning record corrections remain corrections at
+    308 +their recorded scope, including the invalid 42-character SHA, seven old commits,
+    309 +distinct P07 failure/retry logs, spent submissions, prior retry-grant chronology
+    310 +and the 3,117-line O6 binding. None is rewritten as new execution.
+    311 +
+    312 +## Stopping receipt
+    313 +
+    314 +Finite static scope completed: all admitted text, entire unaccepted diff and
+    315 +affected source/wiring, dated ruling/current classification, all 665 frozen
+    316 +evidence digests, 82 receipt pairs, 44 atom records, final local CI and closure
+    317 +records. No additional source or runtime investigation is silently promised.
+    318 +The blocked stronger claim and two findings are returned without executing past
+    319 +the zero allowance or opening a repair round.
+    320 +
+    321 +The candidate remains clean and detached, with zero oleans in this audit
+    322 +worktree. No build tree was created or retired. `ONWARD-DISCOVERIES.md` carries
+    323 +the named open obligations to commissioner `%503`; only that commissioning chain
+    324 +owns further disposition. The final manifest hashes this report and all locally
+    325 +retained evidence without including itself.
+
+• Edited 2 files (+69 -0)
+  └ evidence/IDENTITY-AND-OPERATIONS.md (+49 -0)
+     1 +# Identity and operation receipt
+     2 +
+     3 +The current session is 01a0756f-c8cd-7581-b8cd-48b798c0b8c6. Its own
+     4 +turn_context/collaboration settings are snapshotted in session-model.jsonl.
+     5 +The latest current-turn record independently says gpt-6-astra/high; no model
+     6 +claim is inferred from /proc alone.
+     7 +
+     8 +The accepted live host read was exactly:
+     9 +
+    10 +```
+    11 +tmux display-message -p -t %576 '#{session_name}:#{window_name}.#{pane_index} #{pane_id} #{pane_pid}'
+    12 +ps -o pid,ppid,pgid,lstart,args -p 3437463
+    13 +ps -o pid,ppid,args --ppid 3437463
+    14 +tr '\0' ' ' < /proc/3437463/cmdline
+    15 +```
+    16 +
+    17 +Observed pane: reactivegas:rg-s4b-final-audit.1 %576 3435517.
+    18 +Observed PID/PPID/PGID: 3437463 / 3435517 / 3437463.
+    19 +Observed launch timestamp as printed by ps: Sun Sep 6 07:37:18 2026
+    20 +(host local time; not mislabeled UTC).
+    21 +Observed executable/argv:
+    22 +`/nix/store/nqhk0522q8ncygwwx054iq76ckcjll82-codex-0.153.2/libexec/codex -m gpt-6-astra -c model_reasoning_effort=h
+        igh`.
+    23 +
+    24 +Immediate children were the session's MCP transports, code-mode host and the
+    25 +read-only identity shell. The listing was not extended to other host processes
+    26 +or other agents. A preceding request with host-wide ps was explicitly declined
+    27 +before execution. The restricted read was approved. The sandbox-only initial
+    28 +read saw its isolated wrapper, and is not credited as the host launch identity.
+    29 +
+    30 +Live UTC was available through date -u. The owner's supplied 06:39:41Z was not
+    31 +used as a fabricated observation time. The first START is appended at its actual
+    32 +UTC time in STATUS.md; the pre-START interval included input reading, the
+    33 +interruption/amendment, manifest path correction and required identity approval.
+    34 +
+    35 +Operation classes:
+    36 +
+    37 +* Project builds, elaborations, probes, mutants, checkers, LSP and Nix: ZERO.
+    38 +* Read-only Git identity/tree/blob/diff/log operations and filesystem reads.
+    39 +* sha256sum manifest checks, and Node byte parsing/hashing instruments.
+    40 +* static-boundary.mjs first hit sandbox EPERM at a Git child read; unchanged
+    41 +  approved retry passed. Synthetic parser controls ran, not project mutants.
+    42 +* evidence-reconcile.mjs verified 20 admitted files, 665 prior files, all 82
+    43 +  command receipts and 164 raw streams; it executed none of those commands.
+    44 +* Source-sensitive toolchain files were read from the local Nix store only.
+    45 +* Reports and evidence were written only under this runtime root. No source,
+    46 +  admitted file, reference worktree or other lane was changed.
+    47 +
+    48 +No new audit allowance was derived from superseded grants. No prior failure,
+    49 +model incident, source hash or execution date was erased or reclassified.
+
+  └ handoffs/ONWARD-DISCOVERIES.md (+20 -0)
+     1 +# Onward record — local return to commissioner %503
+     2 +
+     3 +No unrelated new discovery was opened. The independently recorded in-scope
+     4 +findings are FS-01 final-CI provenance/source-sensitive evidence boundary and
+     5 +FS-02 closure-map recording, in AUDIT-REPORT.md. No repair is prescribed or
+     6 +authorized. Commissioner %503 owns disposition and any onward routing to desk
+     7 +%510 through local records only.
+     8 +
+     9 +| Item | Retained state | Owner / limit |
+    10 +|---|---|---|
+    11 +| Historical F-001 at 94bb7bb | Immutable finding and prior terminal result | No retrospective closure or correctio
+        n by this audit |
+    12 +| Current Reach classification at 04eb6c7d | NOT-REQUIRED arbitrary-state consumer established under dated RG-S4-RE
+        ACH-20260906 | Independent current decision; not undecidability and not absence-of-callers inference |
+    13 +| Finite-history correspondence | OPEN | S5, #75 replay and #71 reporting retained; genesis/fixed view/auth/refusal
+         preservation required; #66 remains incomplete |
+    14 +| H-01 P07 historical isolation | OPEN | %503 retains original limit; later current overlay does not reconstruct hi
+        storical Types provenance |
+    15 +| H-02 census sortUndecided | OPEN | %503 retains source-verified-not-executed path; zero unknowns and another inst
+        rument do not close it |
+    16 +| H-03 ba623667 | OPEN | %503 retains recovered-from-snapshot-after-overwrite provenance permanently |
+    17 +
+    18 +Other original closure-map obligations, including S5 retention outside V-5,
+    19 +ONWARD-68-INV-01 inversion exactness, and #71 content, remain where assigned.
+    20 +No source repair, author contact, remote action, ticket closure or acceptance.
+
+• Ran cp /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/inbox/
+  │ NOTE-035-third-submission-comment-only-reach-warrant.md evidence/owner-NOTE-035.md; nl -ba /home/paolino/.codex/
+  │ memories/MEMORY.md | sed -n '39,53p'; nl -ba /code/reactivegas-66-s4b-final-audit/scripts/check-lean-mirrors | sed -n
+  │ … +1 lines
+  └     39    - TraceAdmissible, raw_reachable_violation, foldGroup_wellFormed, F-01, F-02, F11-WRONG-DECL,
+    F11-SOLE-MARKER, ValidationError, reservedKey, design record
+    … +47 lines (ctrl + t to view transcript)
+
+    inbox:
+
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• The report is being finalized with two findings: the final CI lacks the required clean-candidate input binding, and the
+  examined closure map lacks the dated ruling and finite-history entry. It records comment/token preservation and the
+  current Reach classification separately, while leaving the stronger source-sensitive claim uncertified. No project code
+  has run.
+
+• Edited 2 files (+29 -1)
+  └ handoffs/AUDIT-REPORT.md (+1 -1)
+    78  | `lean/Reactivegas/Mirrors.lean` | Existing `/-!` module documentation, opening line 4; changed bullet at 29–32; c
+        losing delimiter moves from 33 to 34 | One documentation span changes; every byte outside comments is identical |
+    79 -| `scripts/check-lean-mirrors` | Existing `/--` declaration documentation at 151–154, inside the single-quoted `LEA
+        N_EOF` heredoc | One documentation span changes; shell prefix/suffix and non-comment Lean bytes are identical |
+    79 +| `scripts/check-lean-mirrors` | Existing `/--` declaration documentation at 152–154, inside the single-quoted `LEA
+        N_EOF` heredoc | One documentation span changes; shell prefix/suffix and non-comment Lean bytes are identical |
+    80
+
+  └ instruments/freeze.mjs (+28 -0)
+     1 +import fs from 'node:fs';
+     2 +import crypto from 'node:crypto';
+     3 +import assert from 'node:assert/strict';
+     4 +const h=s=>crypto.createHash('sha256').update(s).digest('hex');
+     5 +const read=p=>fs.readFileSync(p);
+     6 +const write=(p,s)=>fs.writeFileSync(p,typeof s==='string'||Buffer.isBuffer(s)?s:JSON.stringify(s,null,2)+'\n');
+     7 +const root='/code/reactivegas-66-s4b-final-audit';
+     8 +const inputs=JSON.parse(read('evidence/candidate-inputs.json'));
+     9 +for(const i of inputs)assert.equal(h(read(root+'/'+i.path)),i.sha256,i.path);
+    10 +function walk(d){return fs.readdirSync(d,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(d+'/'+e.name):[d+'/'
+        +e.name]);}
+    11 +assert.equal(walk(root).filter(p=>p.endsWith('.olean')).length,0);
+    12 +const originals=JSON.parse(read('evidence/external-snapshot-index.json'));
+    13 +for(const f of originals)assert.equal(h(read(f.source)),f.sha256,f.source+' changed since snapshot');
+    14 +const store='/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/src/lean/';
+    15 +const selected=[['Lean/Elab/BuiltinCommand.lean','toolchain-BuiltinCommand.lean.txt'],['Lean/DocString/Add.lean','t
+        oolchain-DocString-Add.lean.txt'],['Lean/DocString/Extension.lean','toolchain-DocString-Extension.lean.txt'],['Lean
+        /Parser/Command.lean','toolchain-Parser-Command.lean.txt'],['lake/Lake/Build/Module.lean','toolchain-Lake-Module.le
+        an.txt']];
+    16 +const index=[];
+    17 +for(const [s,d]of selected){const b=read(store+s);write('evidence/'+d,b);index.push({source:store+s,snapshot:'evide
+        nce/'+d,sha256:h(b)});}
+    18 +for(const p of ['scripts/check-reactivegas-inversion-coverage','scripts/check-lean-axioms','scripts/check-trace-cov
+        erage-agreement','nix/lean-dependency-direction.sh','justfile','.github/workflows/ci.yaml','lean/lakefile.lean']){c
+        onst b=read(root+'/'+p),d='evidence/context-'+p.replaceAll('/','_')+'.txt';write(d,b);index.push({source:root+'/'+p
+        ,snapshot:d,sha256:h(b)});}
+    19 +write('evidence/source-context-index.json',index);
+    20 +const session='/home/paolino/.codex/sessions/2026/09/06/rollout-2026-09-06T07-37-35-01a0756f-c8cd-7581-b8cd-48b798c
+        0b8c6.jsonl';
+    21 +const turns=read(session).toString().trim().split('\n').map(s=>JSON.parse(s)).filter(x=>x.type==='turn_context');
+    22 +const t=turns.at(-1);assert.equal(t.payload.model,'gpt-6-astra');assert.equal(t.payload.effort,'high');assert.equal
+        (t.payload.collaboration_mode.settings.model,'gpt-6-astra');assert.equal(t.payload.collaboration_mode.settings.reas
+        oning_effort,'high');
+    23 +write('evidence/final-verification.json',{utc:new Date().toISOString(),verifiedTrackedInputs:inputs.length,oleans:0
+        ,externalSnapshotsUnchanged:true,activeSessionRecord:{timestamp:t.timestamp,model:t.payload.model,effort:t.payload.
+        effort,controlModel:t.payload.collaboration_mode.settings.model,controlEffort:t.payload.collaboration_mode.settings
+        .reasoning_effort},projectExecutions:0,reportSha256:h(read('handoffs/AUDIT-REPORT.md')),onwardSha256:h(read('handof
+        fs/ONWARD-DISCOVERIES.md'))});
+    24 +write('evidence/STATUS-before-verdict.md',read('STATUS.md'));
+    25 +const files=['brief.md','AMENDMENT-1-F001-DISTINCTION.md',...walk('admitted'),...walk('evidence'),...walk('instrume
+        nts'),...walk('handoffs')].filter(p=>!['handoffs/MANIFEST.sha256','handoffs/MANIFEST-CHECK.txt'].includes(p)).sort(
+        );
+    26 +assert.equal(new Set(files).size,files.length);
+    27 +write('handoffs/MANIFEST.sha256',files.map(p=>h(read(p))+'  '+p+'\n').join(''));
+    28 +console.log(JSON.stringify({files:files.length,manifestSha256:h(read('handoffs/MANIFEST.sha256')),reportSha256:h(re
+        ad('handoffs/AUDIT-REPORT.md')),onwardSha256:h(read('handoffs/ONWARD-DISCOVERIES.md')),utc:new Date().toISOString()
+        },null,2));
+
+• Ran node instruments/freeze.mjs
+  └ {
+      "files": 74,
+    … +3 lines (ctrl + t to view transcript)
+      "utc": "2026-09-06T07:05:23.590Z"
+    }
+
+• Ran sha256sum -c handoffs/MANIFEST.sha256 > handoffs/MANIFEST-CHECK.txt; wc -l handoffs/MANIFEST-CHECK.txt; rg -n
+  │ 'FAILED|WARNING' handoffs/MANIFEST-CHECK.txt; git -C /code/reactivegas-66-s4b-final-audit rev-parse HEAD HEAD^{tree};
+  │ git -C /code/reactivegas-66-s4b-final-audit status --porcelain=v1 --untracked-files=all; sha256sum handoffs/
+  │ … +1 lines
+  └ 74 handoffs/MANIFEST-CHECK.txt
+    04eb6c7d9aeb2a3602fca5ece14cbc033221cb43
+    … +5 lines (ctrl + t to view transcript)
+
+    inbox:
+
+• Ran printf '%s  AUDIT-FINDINGS  candidate=04eb6c7d9aeb2a3602fca5ece14cbc033221cb43 report=handoffs/AUDIT-REPORT.md
+  │ sha256=43db90494fbad83282092d388382651d9f2d56e7aefe30da7b2c66e08443fe9c findings=FS-01,FS-02;
+  │ comment-and-noncomment-byte-boundary-established; unqualified-source-sensitive-boundary=BLOCKED;
+  │ … +11 lines
+  └ (no output)
+
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• AUDIT-FINDINGS — report (handoffs/AUDIT-REPORT.md).
+
+  - Final CI ran on a dirty, pre-commit tree without the required final-input binding.
+  - The closure map lacks the dated ruling and finite-history obligation.
+
+  Comment/token preservation and the current Reach classification are established. The stronger source-sensitive boundary
+  remains uncertified.
+
+  Zero project execution. Historical F-001 remains immutable; S5/#75/#71 and H-01–H-03 remain open. Evidence manifest
+  verified 74/74; terminal STATUS posted.
+
+─ Worked for 26m 24s ──────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+› Ask Codex to do anything
+
+  gpt-6-astra high · /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-final

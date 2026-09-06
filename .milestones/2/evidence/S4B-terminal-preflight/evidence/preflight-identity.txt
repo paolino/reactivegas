@@ -1,0 +1,9 @@
+observed_at=2026-09-05T21:57:22Z
+    PID    PPID    PGID                  STARTED COMMAND
+2474577 2474474 2474577 Sat Sep  5 22:49:16 2026 /nix/store/nqhk0522q8ncygwwx054iq76ckcjll82-codex-0.153.2/libexec/codex -m gpt-6-astra -c model_reasoning_effort=high --dangerously-bypass-approvals-and-sandbox
+/code/reactivegas-66-s4b-audit
+reactivegas @165 rg-s4b-audit %561 2474474 /code/reactivegas-66-s4b-audit
+189e1ed306f8f8e8bcdd11eeab4fc5657a518fc8
+symbolic_ref_exit=1
+olean_count=0
+brief_mtime=2026-09-05 22:48:44.305517979 +0100

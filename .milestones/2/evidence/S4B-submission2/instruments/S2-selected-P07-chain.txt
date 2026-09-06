@@ -1,0 +1,35 @@
+theorem close_guard_inv {a : KelGroups.Key} {col : Collection}
+    (h : (isResponsabile view a && col.referente == a && col.permitted &&
+      col.pending.isEmpty) = true) :
+    isResponsabile view a = true ∧ col.referente = a ∧ col.permitted ∧ col.pending = [] :=
+  ⟨bool_and_left (bool_and_left (bool_and_left h)),
+    beq_iff_eq.mp (bool_and_right (bool_and_left (bool_and_left h))),
+    bool_and_right (bool_and_left h),
+    eq_nil_of_isEmpty (bool_and_right h)⟩
+
+/-- Decompose the failure-closure guard. -/
+theorem fail_guard_inv {a : KelGroups.Key} {col : Collection}
+    (h : (isResponsabile view a && col.referente == a && col.pending.isEmpty) = true) :
+theorem step_close_inv {s s' : State} {a : KelGroups.Key} {c : CollId}
+    (hstep : stepEvent view s (.closePurchase a c) auth = some s') :
+    ∃ col rest,
+      pullCollection c s.collections = some (col, rest) ∧
+      (isResponsabile view a && col.referente == a && col.permitted &&
+        col.pending.isEmpty) = true ∧
+      s' = { s with
+        casse := bump s.casse col.referente (-(sumPledges col.accepted)),
+        collections := rest } := by
+  obtain ⟨w1, hw1, hw2⟩ := option_bind_inv hstep
+  obtain ⟨col, rest⟩ := w1
+  obtain ⟨_, hdem, hx⟩ := option_bind_inv hw2
+  refine ⟨col, rest, hw1, ?_, ?_⟩
+  · exact bool_and_left (demand_eq_true_of_some hdem)
+theorem close_permission_to_close {s s' : State} {a : KelGroups.Key} {c : CollId}
+    (h : stepEvent view s (.closePurchase a c) auth = some s') :
+    ∃ col rest,
+      pullCollection c s.collections = some (col, rest) ∧ permissionToClose col := by
+  obtain ⟨col, rest, hpull, hg, _⟩ := step_close_inv h
+  obtain ⟨_, _, hperm, hempty⟩ := close_guard_inv hg
+  exact ⟨col, rest, hpull, hperm, hempty⟩
+
+/-! ### L3 escrow at pledge -/

@@ -1,0 +1,2 @@
+DRIFT-PASS: config: build receipt records exit=0 (touch-faked outputs refused)
+DRIFT-REFUSE: 0-overlay-base: export base [52418cb62e1758a100502770ad15a9cec6632653] != frozen [7b087768cf146c4e63f86967f70a19f3cb34de91] (unfounded overlay)

@@ -1,0 +1,474 @@
+[
+  {
+    "id": "P2-compile",
+    "argv": [
+      "nix",
+      "develop",
+      ".#ci",
+      "--quiet",
+      "-c",
+      "cabal",
+      "exec",
+      "-O0",
+      "--",
+      "ghc",
+      "--make",
+      "-O0",
+      "-threaded",
+      "-XGHC2021",
+      "-XOverloadedStrings",
+      "-XDerivingStrategies",
+      "-XLambdaCase",
+      "-XStrictData",
+      "-package",
+      "kelgroups",
+      "-itest",
+      "-i/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/StoreProbe-v2.hs",
+      "-odir",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/store",
+      "-hidir",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/store",
+      "-o",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/store/probe"
+    ],
+    "charge": {
+      "builds": 0,
+      "targeted": 1
+    },
+    "expectedExit": 0
+  },
+  {
+    "id": "P3",
+    "argv": [
+      "nix",
+      "develop",
+      ".#ci",
+      "--quiet",
+      "-c",
+      "cabal",
+      "exec",
+      "-O0",
+      "--",
+      "ghc",
+      "--make",
+      "-O0",
+      "-threaded",
+      "-XGHC2021",
+      "-XOverloadedStrings",
+      "-XDerivingStrategies",
+      "-XLambdaCase",
+      "-XStrictData",
+      "-package",
+      "kelgroups",
+      "-itest",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/Row4Probe.hs",
+      "-odir",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/row4",
+      "-hidir",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/row4",
+      "-o",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/row4/probe"
+    ],
+    "charge": {
+      "builds": 0,
+      "targeted": 1
+    },
+    "expectedExit": 0
+  },
+  {
+    "id": "P4",
+    "argv": [
+      "nix",
+      "develop",
+      ".#ci",
+      "--quiet",
+      "-c",
+      "cabal",
+      "exec",
+      "-O0",
+      "--",
+      "ghc",
+      "--make",
+      "-O0",
+      "-threaded",
+      "-XGHC2021",
+      "-XOverloadedStrings",
+      "-XDerivingStrategies",
+      "-XLambdaCase",
+      "-XStrictData",
+      "-package",
+      "kelgroups",
+      "-i/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/row4-shadow:lib",
+      "-itest",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/Row4Probe.hs",
+      "-odir",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/row4-mutant",
+      "-hidir",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/row4-mutant",
+      "-o",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/row4-mutant/probe"
+    ],
+    "charge": {
+      "builds": 0,
+      "targeted": 1
+    },
+    "expectedExit": 0
+  },
+  {
+    "id": "P5",
+    "argv": [
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/row4-mutant/probe",
+      "witness"
+    ],
+    "charge": {
+      "builds": 0,
+      "targeted": 1
+    },
+    "expectedExit": 1
+  },
+  {
+    "id": "P6",
+    "argv": [
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/row4/probe",
+      "witness"
+    ],
+    "charge": {
+      "builds": 0,
+      "targeted": 1
+    },
+    "expectedExit": 0
+  },
+  {
+    "id": "P7",
+    "argv": [
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/row4-mutant/probe",
+      "--match",
+      "S28-1 direct-only admission"
+    ],
+    "charge": {
+      "builds": 0,
+      "targeted": 1
+    },
+    "expectedExit": 1
+  },
+  {
+    "id": "R1-compile",
+    "argv": [
+      "nix",
+      "develop",
+      ".#ci",
+      "--quiet",
+      "-c",
+      "cabal",
+      "exec",
+      "-O0",
+      "--",
+      "ghc",
+      "--make",
+      "-O0",
+      "-threaded",
+      "-XGHC2021",
+      "-XOverloadedStrings",
+      "-XDerivingStrategies",
+      "-XLambdaCase",
+      "-XStrictData",
+      "-package",
+      "kelgroups",
+      "-itest",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/TraceProbe.hs",
+      "-odir",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/R1",
+      "-hidir",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/R1",
+      "-o",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/R1/probe"
+    ],
+    "charge": {
+      "builds": 0,
+      "targeted": 1
+    },
+    "expectedExit": 0
+  },
+  {
+    "id": "R1-run",
+    "argv": [
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/R1/probe",
+      "R1"
+    ],
+    "charge": {
+      "builds": 0,
+      "targeted": 1
+    },
+    "expectedExit": 0
+  },
+  {
+    "id": "R3-compile",
+    "argv": [
+      "nix",
+      "develop",
+      ".#ci",
+      "--quiet",
+      "-c",
+      "cabal",
+      "exec",
+      "-O0",
+      "--",
+      "ghc",
+      "--make",
+      "-O0",
+      "-threaded",
+      "-XGHC2021",
+      "-XOverloadedStrings",
+      "-XDerivingStrategies",
+      "-XLambdaCase",
+      "-XStrictData",
+      "-package",
+      "kelgroups",
+      "-itest",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/TraceProbe.hs",
+      "-odir",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/R3",
+      "-hidir",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/R3",
+      "-o",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/R3/probe"
+    ],
+    "charge": {
+      "builds": 0,
+      "targeted": 1
+    },
+    "expectedExit": 0
+  },
+  {
+    "id": "R3-run",
+    "argv": [
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/R3/probe",
+      "R3"
+    ],
+    "charge": {
+      "builds": 0,
+      "targeted": 1
+    },
+    "expectedExit": 0
+  },
+  {
+    "id": "R5-compile",
+    "argv": [
+      "nix",
+      "develop",
+      ".#ci",
+      "--quiet",
+      "-c",
+      "cabal",
+      "exec",
+      "-O0",
+      "--",
+      "ghc",
+      "--make",
+      "-O0",
+      "-threaded",
+      "-XGHC2021",
+      "-XOverloadedStrings",
+      "-XDerivingStrategies",
+      "-XLambdaCase",
+      "-XStrictData",
+      "-package",
+      "kelgroups",
+      "-itest",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/TraceProbe.hs",
+      "-odir",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/R5",
+      "-hidir",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/R5",
+      "-o",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/R5/probe"
+    ],
+    "charge": {
+      "builds": 0,
+      "targeted": 1
+    },
+    "expectedExit": 0
+  },
+  {
+    "id": "R5-run",
+    "argv": [
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/R5/probe",
+      "R5"
+    ],
+    "charge": {
+      "builds": 0,
+      "targeted": 1
+    },
+    "expectedExit": 0
+  },
+  {
+    "id": "MAJ-compile",
+    "argv": [
+      "nix",
+      "develop",
+      ".#ci",
+      "--quiet",
+      "-c",
+      "cabal",
+      "exec",
+      "-O0",
+      "--",
+      "ghc",
+      "--make",
+      "-O0",
+      "-threaded",
+      "-XGHC2021",
+      "-XOverloadedStrings",
+      "-XDerivingStrategies",
+      "-XLambdaCase",
+      "-XStrictData",
+      "-package",
+      "kelgroups",
+      "-itest",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/TraceProbe.hs",
+      "-odir",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/MAJ",
+      "-hidir",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/MAJ",
+      "-o",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/MAJ/probe"
+    ],
+    "charge": {
+      "builds": 0,
+      "targeted": 1
+    },
+    "expectedExit": 0
+  },
+  {
+    "id": "MAJ-run",
+    "argv": [
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/MAJ/probe",
+      "MAJ"
+    ],
+    "charge": {
+      "builds": 0,
+      "targeted": 1
+    },
+    "expectedExit": 0
+  },
+  {
+    "id": "P2-conservation",
+    "argv": [
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/store/probe",
+      "conservation",
+      "+RTS",
+      "-N2",
+      "-RTS"
+    ],
+    "charge": {
+      "builds": 0,
+      "targeted": 1
+    },
+    "expectedExit": 0
+  },
+  {
+    "id": "P2-codec",
+    "argv": [
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/store/probe",
+      "codec",
+      "+RTS",
+      "-N2",
+      "-RTS"
+    ],
+    "charge": {
+      "builds": 0,
+      "targeted": 1
+    },
+    "expectedExit": 0
+  },
+  {
+    "id": "P2-lock",
+    "argv": [
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/store/probe",
+      "lock",
+      "+RTS",
+      "-N2",
+      "-RTS"
+    ],
+    "charge": {
+      "builds": 0,
+      "targeted": 1
+    },
+    "expectedExit": 0
+  },
+  {
+    "id": "TYP-Event",
+    "argv": [
+      "nix",
+      "develop",
+      ".#ci",
+      "--quiet",
+      "-c",
+      "cabal",
+      "exec",
+      "-O0",
+      "--",
+      "ghc",
+      "--make",
+      "-O0",
+      "-threaded",
+      "-XGHC2021",
+      "-XOverloadedStrings",
+      "-XDerivingStrategies",
+      "-XLambdaCase",
+      "-XStrictData",
+      "-package",
+      "kelgroups",
+      "-itest",
+      "-fno-code",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/TypeEvent.hs",
+      "-odir",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/typeEvent",
+      "-hidir",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/typeEvent"
+    ],
+    "charge": {
+      "builds": 0,
+      "targeted": 1
+    },
+    "expectedExit": 1
+  },
+  {
+    "id": "TYP-Historical",
+    "argv": [
+      "nix",
+      "develop",
+      ".#ci",
+      "--quiet",
+      "-c",
+      "cabal",
+      "exec",
+      "-O0",
+      "--",
+      "ghc",
+      "--make",
+      "-O0",
+      "-threaded",
+      "-XGHC2021",
+      "-XOverloadedStrings",
+      "-XDerivingStrategies",
+      "-XLambdaCase",
+      "-XStrictData",
+      "-package",
+      "kelgroups",
+      "-itest",
+      "-fno-code",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/TypeHistorical.hs",
+      "-odir",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/typeHistorical",
+      "-hidir",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/typeHistorical"
+    ],
+    "charge": {
+      "builds": 0,
+      "targeted": 1
+    },
+    "expectedExit": 1
+  }
+]

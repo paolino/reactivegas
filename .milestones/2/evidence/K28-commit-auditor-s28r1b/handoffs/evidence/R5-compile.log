@@ -1,0 +1,4 @@
+Loaded package environment from /code/kelgroups-audit-3af3d06/dist-newstyle/tmp/environment.-2757112/.ghc.environment.x86_64-linux-9.8.4
+[1 of 3] Compiling S28DemoApp       ( test/S28DemoApp.hs, /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/R5/S28DemoApp.o )
+[2 of 3] Compiling Main             ( /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/TraceProbe.hs, /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/R5/Main.o )
+[3 of 3] Linking /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/R5/probe

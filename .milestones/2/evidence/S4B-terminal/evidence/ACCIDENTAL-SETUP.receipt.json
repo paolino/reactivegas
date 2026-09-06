@@ -1,0 +1,27 @@
+{
+  "start": null,
+  "end": null,
+  "recordedAt": "2026-09-05T22:48:01.282Z",
+  "kind": "targeted",
+  "argv": [
+    "node",
+    "/tmp/reactgas-no-such-path"
+  ],
+  "code": 1,
+  "signal": null,
+  "counts": {
+    "substantive": 6,
+    "targeted": 59
+  },
+  "classification": "conservatively charged non-Lean setup failure; no script loaded",
+  "source": "exec_command chunk6a1626 exit1, wall_time_seconds0.000005601; no exact UTC start/end retained",
+  "stdout": {
+    "observed": ""
+  },
+  "stderr": {
+    "captured": false,
+    "reason": "command redirected stderr to /dev/null; no diagnostic or semantic claim derived"
+  },
+  "before": null,
+  "after": null
+}

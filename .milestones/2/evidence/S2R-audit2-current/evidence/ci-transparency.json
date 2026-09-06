@@ -1,0 +1,46 @@
+{
+  "results": [
+    {
+      "name": "new-S1",
+      "file": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s2r-sub2-codex/instruments/../evidence/S1-ci.log",
+      "expected": "2400910d2227528756813c7c5d370721ae2d08c4f09b12155542619b06f176f6",
+      "lines": 17815,
+      "semanticLineCount": 2495,
+      "semanticSha256": "ed8cf351fb5bd5bf9168b487757b1a571ddd7a68babebd859b8cfdc04826d4ad",
+      "moduleIdentitySha256": "9409923401aca98f6050ae41631dd81520508d71ac661e5a0fc5f9f609c09422",
+      "theoremIdentitySha256": "b632fb0dc878b1a50eb0a32190b20ab0463de41aaf283c5e8e8918be9a963c9d",
+      "modules": 27,
+      "theorems": 1213,
+      "panicCount": 0
+    },
+    {
+      "name": "owner-S18",
+      "file": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s2r-muse/handoffs/evidence/S18-final-ci.log",
+      "expected": "5efd36bb2291fd0a57d65638136adc29b9e479ed1b98b197af914d62b81c28c4",
+      "lines": 2792,
+      "semanticLineCount": 2495,
+      "semanticSha256": "5841bb2d22c28ff2fc2519e3936451262063059d8c2ac99c25f0b1d58ea96794",
+      "moduleIdentitySha256": "cb4abf697c460f1d24b59311df4593f18c64a089008552e990ff6f8abcda6541",
+      "theoremIdentitySha256": "b632fb0dc878b1a50eb0a32190b20ab0463de41aaf283c5e8e8918be9a963c9d",
+      "modules": 27,
+      "theorems": 1213,
+      "panicCount": 0
+    },
+    {
+      "name": "prior-S2",
+      "file": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s2r-final-codex/evidence/S2-full-ci.log",
+      "expected": "e15cef111aa980a2919ee9f233e4ffa87294258b1d1c2d0e22f1cd73e3bd1463",
+      "lines": 17815,
+      "semanticLineCount": 2495,
+      "semanticSha256": "ed8cf351fb5bd5bf9168b487757b1a571ddd7a68babebd859b8cfdc04826d4ad",
+      "moduleIdentitySha256": "9409923401aca98f6050ae41631dd81520508d71ac661e5a0fc5f9f609c09422",
+      "theoremIdentitySha256": "b632fb0dc878b1a50eb0a32190b20ab0463de41aaf283c5e8e8918be9a963c9d",
+      "modules": 27,
+      "theorems": 1213,
+      "panicCount": 0
+    }
+  ],
+  "comparison": "Prior S2 selected output byte-identical in original order. Owner S18 differs only in the ordering of axiom-module lines; module multisets sorted explicitly, all other selected lines identical in original order. No identity or classification difference. Full logs differ in build output, timing and repository paths.",
+  "negativeMissingModuleRejected": true,
+  "limits": "Observed transparency for this candidate and commissioned gate outputs, not equivalence for arbitrary TMPDIR permissions/filesystems or third-party compiler temp behavior."
+}

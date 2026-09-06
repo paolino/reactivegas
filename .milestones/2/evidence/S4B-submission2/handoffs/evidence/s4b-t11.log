@@ -1,0 +1,27 @@
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+MIRROR-BELOW-EXCLUDED Reach.below (machinery of discovered induct Reach)
+MIRROR-ROW comune_not_a_member KelGroups.GroupView.isMember comune_not_a_member_corr OK
+MIRROR-ROW conservation conservationB conservation_corr OK
+MIRROR-ROW solvent solventB solvent_corr OK
+MIRROR-ROW insolvent insolventB insolvent_corr OK
+MIRROR-ROW uniquePledges uniquePledgesB uniquePledges_corr OK
+MIRROR-ROW allUniquePledges allUniquePledgesB allUniquePledges_corr OK
+MIRROR-ROW permissionToClose (inline-expr) permissionToClose_corr OK
+MIRROR-ROW escrowHeld escrowHeldB escrowHeld_corr OK
+MIRROR-ROW governanceEnacts governanceEnactsB governanceEnacts_corr OK
+MIRROR-ROW doubleEntry doubleEntryB doubleEntry_corr OK
+MIRROR-ROW canCloseGroup canCloseGroupB canCloseGroup_corr OK
+MIRROR-ROW KelGroups.PendingWellFormed KelGroups.pendingWellFormedB KelGroups.pendingWellFormed_corr OK
+MIRROR-ROW KelGroups.MembersCoherent KelGroups.membersCoherentB KelGroups.membersCoherent_corr OK
+MIRROR-ROW KelGroups.PendingCoherent KelGroups.pendingCoherentB KelGroups.pendingCoherent_corr OK
+MIRROR-ROW KelGroups.WellFormed KelGroups.wellFormedB KelGroups.wellFormed_corr OK
+MIRROR-ROW KelGroups.Enacts KelGroups.enactsB KelGroups.enacts_corr OK
+MIRROR-ROW KelGroups.Vote.QuestionClean KelGroups.Vote.questionCleanB KelGroups.Vote.questionClean_corr OK
+MIRROR-ROW KelGroups.Vote.SweepReady KelGroups.Vote.sweepReadyB KelGroups.Vote.sweepReady_corr OK
+MIRROR-ROW KelGroups.Vote.VoteWellFormed KelGroups.Vote.voteWellFormedB KelGroups.Vote.voteWellFormed_corr OK
+MIRROR-EXCEPTION KelGroups.Vote.PreservesQuestionSemantics OK
+MIRROR-EXCEPTION authorizedStep OK
+MIRROR-EXCEPTION stalled OK
+MIRROR-EXCEPTION Reach OK
+MIRROR-SUMMARY rows=19 exceptions=4 below=1 orphans-checked=17 discovered=24
+MIRROR-CHECK-OK rows=19 exceptions=4 discovered=24

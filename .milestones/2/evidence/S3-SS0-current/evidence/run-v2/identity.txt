@@ -1,0 +1,11 @@
+runner-invoking-cwd=/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0
+intended-scratch=/code/reactivegas-66-s3-ss0-scratch
+scratch-HEAD=3590c0015b84fd58004bf6fb44dd18b107304c48
+scratch-porcelain=0
+lake-present-before=no
+oleans-before=0
+LEAN_PATH=<unset>
+which-nix=/run/current-system/sw/bin/nix
+d297afcd05d1fbb1fc805fc96d19ce91bbfcad4dfdf3b9cbd819095337059f74  /nix/store/58fpxqwhlkg00a3n7xm3h94vvjxb12v2-nix-2.31.3+2/bin/nix
+--- env referencing a candidate/repair worktree? ---
+none

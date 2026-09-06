@@ -1,0 +1,13 @@
+diff --git a/lib/KelGroups/Fold.hs b/lib/KelGroups/Fold.hs
+index d76219e..3d43ca0 100644
+--- a/lib/KelGroups/Fold.hs
++++ b/lib/KelGroups/Fold.hs
+@@ -465,7 +465,7 @@ foldIntegrated integration initial =
+         ( \gs (signer, evt) ->
+             case applyIntegratedEvent integration gs signer evt of
+                 Right result -> irState result
+-                Left _ -> gs
++                Left _ -> error "MUTANT-M5"
+         )
+         (emptyState initial)
+ 

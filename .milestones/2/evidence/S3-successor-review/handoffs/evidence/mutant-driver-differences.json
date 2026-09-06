@@ -1,0 +1,281 @@
+[
+  {
+    "file": "mutant-C-FOLD.sh",
+    "differences": [
+      {
+        "line": 2,
+        "text": "# SS-4 frozen C-FOLD: single-atom mutant build (U-CHAIN) + loading proof."
+      },
+      {
+        "line": 4,
+        "text": "# Target closure: KelGroups.Fold -> KelGroups.Invariants. Exact target: KelGroups.Invariants (no ... , no presumed full-tree)."
+      },
+      {
+        "line": 5,
+        "text": "# Diff: diffs/C-FOLD.diff (single-atom, well-typed; mutated definition compiles, theorem meant to fail need not)."
+      },
+      {
+        "line": 10,
+        "text": "DIFF=/tmp/reactivegas/ms2/e-lean-compliance/s3-successor-spec-1/handoffs/instruments/diffs/C-FOLD.diff"
+      },
+      {
+        "line": 12,
+        "text": "OUTPREFIX=m-C-FOLD"
+      },
+      {
+        "line": 18,
+        "text": "echo \"CLOSURE: KelGroups.Fold -> KelGroups.Invariants\""
+      },
+      {
+        "line": 43,
+        "text": "echo \"EXPECTED-OBSERVABLE: threshold-equation/split-shape REDs (Fold.lean:37 >= to >; exact threshold has wrong relation, WF proof splits old >=).\""
+      },
+      {
+        "line": 44,
+        "text": "echo \"WRONG-REASON-REJECTION: Wrong reason: generic WF failure without threshold-equation mismatch is not the expected observable.\""
+      }
+    ]
+  },
+  {
+    "file": "mutant-C-INTEGRATION.sh",
+    "differences": [
+      {
+        "line": 2,
+        "text": "# SS-4 frozen C-INTEGRATION: single-atom mutant build (U-CHAIN) + loading proof."
+      },
+      {
+        "line": 4,
+        "text": "# Target closure: KelGroups.Integration -> KelGroups.Invariants. Exact target: KelGroups.Invariants (no ... , no presumed full-tree)."
+      },
+      {
+        "line": 5,
+        "text": "# Diff: diffs/C-INTEGRATION.diff (single-atom, well-typed; mutated definition compiles, theorem meant to fail need not)."
+      },
+      {
+        "line": 10,
+        "text": "DIFF=/tmp/reactivegas/ms2/e-lean-compliance/s3-successor-spec-1/handoffs/instruments/diffs/C-INTEGRATION.diff"
+      },
+      {
+        "line": 12,
+        "text": "OUTPREFIX=m-C-INTEGRATION"
+      },
+      {
+        "line": 18,
+        "text": "echo \"CLOSURE: KelGroups.Integration -> KelGroups.Invariants\""
+      },
+      {
+        "line": 43,
+        "text": "echo \"EXPECTED-OBSERVABLE: app-route projection REDs: app_event_has_no_base_change change=none equation false at concrete some (BaseChange.memberAdmitted \"measure\") at :210 (not some(admit) placeholder).\""
+      },
+      {
+        "line": 44,
+        "text": "echo \"WRONG-REASON-REJECTION: Wrong reason: some(admit)/wrong/ellipsis placeholder must be rejected; only concrete memberAdmitted \"measure\" counts.\""
+      }
+    ]
+  },
+  {
+    "file": "mutant-C-KSTATE.sh",
+    "differences": [
+      {
+        "line": 2,
+        "text": "# SS-4 frozen C-KSTATE: single-atom mutant build (U-CHAIN) + loading proof."
+      },
+      {
+        "line": 4,
+        "text": "# Target closure: KelGroups.State -> KelGroups.Fold/Validate/Integration -> KelGroups.Invariants. Exact target: KelGroups.Invariants (no ... , no presumed full-tree)."
+      },
+      {
+        "line": 5,
+        "text": "# Diff: diffs/C-KSTATE.diff (single-atom, well-typed; mutated definition compiles, theorem meant to fail need not)."
+      },
+      {
+        "line": 10,
+        "text": "DIFF=/tmp/reactivegas/ms2/e-lean-compliance/s3-successor-spec-1/handoffs/instruments/diffs/C-KSTATE.diff"
+      },
+      {
+        "line": 12,
+        "text": "OUTPREFIX=m-C-KSTATE"
+      },
+      {
+        "line": 18,
+        "text": "echo \"CLOSURE: KelGroups.State -> KelGroups.Fold/Validate/Integration -> KelGroups.Invariants\""
+      },
+      {
+        "line": 43,
+        "text": "echo \"EXPECTED-OBSERVABLE: majority decide REDs: one-admin sample expects 1, mutated yields 2 (majority_table :450); two admins satisfy even antecedent, mutated majority=3 gives 2*3<=2 false (majority_not_strict_on_even :459).\""
+      },
+      {
+        "line": 44,
+        "text": "echo \"WRONG-REASON-REJECTION: Wrong reason: any decide failure without 1->2 / 6<=2 values is not the expected observable.\""
+      }
+    ]
+  },
+  {
+    "file": "mutant-C-RSTATE.sh",
+    "differences": [
+      {
+        "line": 2,
+        "text": "# SS-4 frozen C-RSTATE: single-atom mutant build (U-CHAIN) + loading proof."
+      },
+      {
+        "line": 4,
+        "text": "# Target closure: Reactivegas.State (primary); conditional higher target Reactivegas.Invariants requires separately authorized isolation. Exact target: Reactivegas.State (no ... , no presumed full-tree)."
+      },
+      {
+        "line": 5,
+        "text": "# Diff: diffs/C-RSTATE.diff (single-atom, well-typed; mutated definition compiles, theorem meant to fail need not)."
+      },
+      {
+        "line": 10,
+        "text": "DIFF=/tmp/reactivegas/ms2/e-lean-compliance/s3-successor-spec-1/handoffs/instruments/diffs/C-RSTATE.diff"
+      },
+      {
+        "line": 11,
+        "text": "TARGET=Reactivegas.State"
+      },
+      {
+        "line": 12,
+        "text": "OUTPREFIX=m-C-RSTATE"
+      },
+      {
+        "line": 18,
+        "text": "echo \"CLOSURE: Reactivegas.State (primary); conditional higher target Reactivegas.Invariants requires separately authorized isolation\""
+      },
+      {
+        "line": 43,
+        "text": "echo \"EXPECTED-OBSERVABLE: PRIMARY: State.refundAll_sum theorem (Reactivegas/State.lean:159) fails in imported producer module FIRST (fold dropped to m). Higher-row deny/fail fund-equation (Invariants.lean:211/322) is CONDITIONAL observation path separately bound, not conflated; single-mutant full build halts at first failing obligation, downstream flips need isolation design.\""
+      },
+      {
+        "line": 44,
+        "text": "echo \"WRONG-REASON-REJECTION: Wrong reason: deny/fail RED without prior refundAll_sum failure must be rejected as misordered attribution.\""
+      }
+    ]
+  },
+  {
+    "file": "mutant-C-VALIDATE.sh",
+    "differences": []
+  },
+  {
+    "file": "mutant-C-VOTEFOLD.sh",
+    "differences": [
+      {
+        "line": 2,
+        "text": "# SS-4 frozen C-VOTEFOLD: single-atom mutant build (U-CHAIN) + loading proof."
+      },
+      {
+        "line": 4,
+        "text": "# Target closure: KelGroups.Vote.Fold -> KelGroups.Vote.Invariants. Exact target: KelGroups.Vote.Invariants (no ... , no presumed full-tree)."
+      },
+      {
+        "line": 5,
+        "text": "# Diff: diffs/C-VOTEFOLD.diff (single-atom, well-typed; mutated definition compiles, theorem meant to fail need not)."
+      },
+      {
+        "line": 10,
+        "text": "DIFF=/tmp/reactivegas/ms2/e-lean-compliance/s3-successor-spec-1/handoffs/instruments/diffs/C-VOTEFOLD.diff"
+      },
+      {
+        "line": 11,
+        "text": "TARGET=KelGroups.Vote.Invariants"
+      },
+      {
+        "line": 12,
+        "text": "OUTPREFIX=m-C-VOTEFOLD"
+      },
+      {
+        "line": 18,
+        "text": "echo \"CLOSURE: KelGroups.Vote.Fold -> KelGroups.Vote.Invariants\""
+      },
+      {
+        "line": 43,
+        "text": "echo \"EXPECTED-OBSERVABLE: sweep-lemma REDs with failing-obligation span lines (open_mem iff :418, idempotent equation :1182); statement false at closable singleton threshold0 (retained open, second sweep duplicates closure)\""
+      },
+      {
+        "line": 44,
+        "text": "echo \"WRONG-REASON-REJECTION: A nonzero exit alone is not a named RED; wrong-reason rejection: KelGroups/Vote/Invariants.lean:870 replayed warning (different file KelGroups/Invariants.lean) or unrelated :190 warning must not be counted as obligation failure.\""
+      }
+    ]
+  },
+  {
+    "file": "mutant-C-VOTESTATE.sh",
+    "differences": [
+      {
+        "line": 2,
+        "text": "# SS-4 frozen C-VOTESTATE: single-atom mutant build (U-CHAIN) + loading proof."
+      },
+      {
+        "line": 4,
+        "text": "# Target closure: KelGroups.Vote.State -> KelGroups.Vote.Validate/Fold -> KelGroups.Vote.Invariants. Exact target: KelGroups.Vote.Invariants (no ... , no presumed full-tree)."
+      },
+      {
+        "line": 5,
+        "text": "# Diff: diffs/C-VOTESTATE.diff (single-atom, well-typed; mutated definition compiles, theorem meant to fail need not)."
+      },
+      {
+        "line": 10,
+        "text": "DIFF=/tmp/reactivegas/ms2/e-lean-compliance/s3-successor-spec-1/handoffs/instruments/diffs/C-VOTESTATE.diff"
+      },
+      {
+        "line": 11,
+        "text": "TARGET=KelGroups.Vote.Invariants"
+      },
+      {
+        "line": 12,
+        "text": "OUTPREFIX=m-C-VOTESTATE"
+      },
+      {
+        "line": 18,
+        "text": "echo \"CLOSURE: KelGroups.Vote.State -> KelGroups.Vote.Validate/Fold -> KelGroups.Vote.Invariants\""
+      },
+      {
+        "line": 43,
+        "text": "echo \"EXPECTED-OBSERVABLE: ACTUAL value-dependent check: collective question with assents.length == required (e.g., legacyThreshold franchise3 required2, 2 assents): verdict positive under >= becomes open under >; sweepStep some->none, sweepClosures_open_mem iff fails at :418. Generic congruence/WF lemmas (verdictOf_threshold_congr :389) need not fail; they are not the expected observable.\""
+      },
+      {
+        "line": 44,
+        "text": "echo \"WRONG-REASON-REJECTION: Wrong reason: verdictOf_threshold_congr congruence failure alone does not establish value-dependent kill; must name boundary witness above.\""
+      }
+    ]
+  },
+  {
+    "file": "mutant-C-VOTEVAL.sh",
+    "differences": [
+      {
+        "line": 2,
+        "text": "# SS-4 frozen C-VOTEVAL: single-atom mutant build (U-CHAIN) + loading proof."
+      },
+      {
+        "line": 4,
+        "text": "# Target closure: KelGroups.Vote.Validate -> KelGroups.Vote.Fold -> KelGroups.Vote.Invariants. Exact target: KelGroups.Vote.Invariants (no ... , no presumed full-tree)."
+      },
+      {
+        "line": 5,
+        "text": "# Diff: diffs/C-VOTEVAL.diff (single-atom, well-typed; mutated definition compiles, theorem meant to fail need not)."
+      },
+      {
+        "line": 10,
+        "text": "DIFF=/tmp/reactivegas/ms2/e-lean-compliance/s3-successor-spec-1/handoffs/instruments/diffs/C-VOTEVAL.diff"
+      },
+      {
+        "line": 11,
+        "text": "TARGET=KelGroups.Vote.Invariants"
+      },
+      {
+        "line": 12,
+        "text": "OUTPREFIX=m-C-VOTEVAL"
+      },
+      {
+        "line": 18,
+        "text": "echo \"CLOSURE: KelGroups.Vote.Validate -> KelGroups.Vote.Fold -> KelGroups.Vote.Invariants\""
+      },
+      {
+        "line": 43,
+        "text": "echo \"EXPECTED-OBSERVABLE: nonresponsabile/openQuestion hval REDs (Vote/Invariants.lean:967 nonresponsabile_event_noop: nonadmin opens fresh question in positive franchise view, bypass admits/effects it, identity falsified); cast/renounce arms unaffected (Row63 survive).\""
+      },
+      {
+        "line": 44,
+        "text": "echo \"WRONG-REASON-REJECTION: Wrong reason: cast-path failure when mutant touches openQuestion arm only (:58) must be rejected as misattribution.\""
+      }
+    ]
+  }
+]

@@ -1,0 +1,115 @@
+--- /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/auditor-brief-v1-superseded.md	2026-09-05 22:27:33.836880295 +0100
++++ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28b/brief.md	2026-09-05 22:28:41.562070908 +0100
+@@ -7,14 +7,14 @@
+ Your runtime root: `.../t28-app-api/commit-auditor-s28b/` (`brief.md` = this
+ file, `STATUS.md`, `questions/`, `answers/`, `inbox/`, `handoffs/`).
+ Execution worktree (disposable, exact candidate, DETACHED — the ONLY tree
+-you execute in): `.../commit-auditor-s28b/exec-84a2dae/` at `84a2dae…`
++you execute in): `.../commit-auditor-s28b/exec-84a2dae/` at `84a2daea1db81b1baf73c73a7874dcd68ce9f4b2`
+ (verified clean at binding). Reference checkout (IMMUTABLE, read/compare
+-only): `/code/kelgroups-audit-84a2dae-b` at `84a2dae…`. Author checkout
++only): `/code/kelgroups-audit-84a2dae-b` at `84a2daea1db81b1baf73c73a7874dcd68ce9f4b2`. Author checkout
+ `/code/kelgroups-issue-28`: UNTOUCHED, never executed (no builds, no gate
+ runs, no reads required — leave it alone entirely). No children ever.
+ `draft=NONE`. This is a FRESH context: a prior seat
+ (`commit-auditor-s28`, archived) terminalized CONTRACT-BLOCKED pre-execution
+-(report `93a16836…`, 0/0 spend, candidate unexamined — preserved, never
++(report `93a16836d1d60e78d4a3c693fde14247a9a98ba88c8941c0e5109a10c5cdb6fe`, 0/0 spend, candidate unexamined — preserved, never
+ reopened); you inherit NOTHING except this brief and the bindings below.
+ Family/seat: Codex via `codex --dangerously-bypass-approvals-and-sandbox
+ -m gpt-6-astra -c model_reasoning_effort=high -C
+@@ -42,8 +42,7 @@
+ 
+ ## Absolute prohibitions
+ 
+-NO edits to any candidate tree (read-only; builds may write ONLY ignored
+-`dist-newstyle/` inside your execution worktree). NO commits, NO push. NO
++NO edits to any candidate tree (read-only; builds may write ONLY what the Permitted writes section allows — ignored build outputs inside your execution worktree). NO commits, NO push. NO
+ contact with the commit owner (sibling — never speak to it, never edit for
+ it). NO acceptance decision (you RECOMMEND with evidence; the ticket owner
+ decides). After ONE terminal compact report you STOP and exit (root archived
+@@ -68,14 +67,11 @@
+ submission, refund, scope reduction, or result. All original rows remain
+ binding. Owner 34/34 retained (spent: RED 4 + v6/v7/v8 GREEN 9×3 + SLIM 3;
+ no extra owner execution authorized). NO later raise is authorized. The
+-prior seat's diagnosis (missing precedence binding, CB-001) is hereby
+-ANSWERED by this section — no re-derivation needed, no re-litigation
+-wanted: EXECUTE.
++prior seat's diagnosis (missing precedence binding, CB-001) is preserved quoted in answers/A-002-commissioning-addendum.md (addendum hash in ticket STATUS) — answered, not erased. The auditor envelope itself was raised 5→12 substantive / 20→24 targeted attached to the first funding decision (initial brief §Budgets vs the A-001 budget answer — both verified pre-dispatch; desk artifacts/NOTE-014-kelgroups-q007-final-instrument-pass.md read in full this turn). You independently verify scope, authority, and adequacy, including whether this complete mandate is establishable as specified; you may return a NEW concrete contradiction with exact evidence, and you own your verdict. (You need not invent a new operator ruling for the express exception above, but nothing here forbids you from questioning it.) Then EXECUTE what is established.
+ 
+ ## Mandate (complete subject — nothing inherited as PASS)
+ 
+-- ENTIRE candidate `84a2dae…` against base `368b596…` (RED `570fe4a…` as the
+-  absence-baseline context only): the full diff, test-only demo + spec and
++- ENTIRE candidate `84a2daea1db81b1baf73c73a7874dcd68ce9f4b2` against base `368b596fef0b6d393c2ac7afc631d236c55d86d1`, INCLUDING the RED-baseline changes (RED `570fe4a68f510fad3c9912ea59c1e492f3e11740` is contextual evidence for the absence baseline, not an accepted base hiding earlier changes — verify the fence over the full BASE→candidate diff): the full diff, test-only demo + spec and
+   production boundary.
+ - Ticket contract r5 (`.../t28-app-api/handoffs/S28-1-CONTRACT-r5.md`) +
+   addenda R5-ADDENDUM-Q004-D3CLASS / -Q005-M5ONLY / -Q006-GATESIDE /
+@@ -87,7 +83,7 @@
+ - Frozen gate v8 (YOUR copy at `.../exec-84a2dae/gate.sh`, full sha256
+   `7a7a99e351df0a34a8147804f68bc85a3f182556cbfafccaf62e46105743c30a`,
+   blank-normalized `f5796d1e5524f57c98b7d92168ad4fc10b22b6d318c57e0c989a1bf02f1b3650`,
+-  version `G28-1 v8 (r5-Q007-addendum)`, FROZEN_BASE RED `570fe4a…`):
++  version `G28-1 v8 (r5-Q007-addendum)`, FROZEN_BASE RED `570fe4a68f510fad3c9912ea59c1e492f3e11740`):
+   execute the COMPLETE envelope legs 1–7 with YOUR OWN hand on YOUR
+   execution tree (cold first build expected), evidence to YOUR
+   `handoffs/evidence/` via `G28_EVIDENCE_DIR` (set it before leg-3; the
+@@ -115,12 +111,27 @@
+ after the envelope too). Preconditions + splice cardinalities per the gate
+ (fail closed, never skip).
+ 
+-## Permitted writes (CLOSED list — nothing else)
++## Permitted writes (ONE coherent fence: general rule + expressly-scoped exception)
+ 
+-Inside the execution worktree ONLY: gate-generated temporary M1–M6 mutant
+-file states + their `checkout --` restorations (hash-verified by the gate),
+-and necessary ignored build outputs (`dist-newstyle/` and equivalents).
+-A write outside this list is a SCOPE-FAIL: stop, journal it, BLOCK.
++IMMUTABLE (never written by you — verify cleanliness instead): the author
++checkout `/code/kelgroups-issue-28` and the reference checkout
++`/code/kelgroups-audit-84a2dae-b` (record `rev-parse` + `status --porcelain`
++for both before the first build and after the envelope completes).
++PERMITTED inside the execution worktree ONLY: gate-generated temporary
++M1–M6 mutant file states + their `checkout --` restorations (hash-verified
++by the gate), and necessary ignored build outputs (`dist-newstyle/` and
++equivalents).
++PERMITTED, exactly these paths outside it, for THIS SINGLE envelope only
++(see Temp-path envelope below for the complete conditions): `/tmp/g28m3.hs`,
++`/tmp/g28m4.hs`, `/tmp/g28m5.hs` (auditor-reserved regular files you create
++exclusively pre-build; the gate overwrites them and moves them into the
++execution tree as frozen) and bounded `mktemp` stderr outputs under your
++`$TMPDIR`-override directory (created fresh inside your runtime; propagation
++verified pre-build).
++PERMITTED: runtime evidence under your `handoffs/evidence/` via
++`G28_EVIDENCE_DIR` (the gate default pointing at the author root is never
++used).
++A write outside this section is a SCOPE-FAIL: stop, journal it, BLOCK.
+ 
+ ## Verification commands (exact set; journal every invocation with exit/cause)
+ 
+@@ -163,6 +174,22 @@
+ without ruling; material claim relayed without artifact verification;
+ repair/commit/push attempted or requested; second run without a new mandate.
+ 
+-Brief sha256 (this file): recorded by the ticket owner at dispatch; quote it
+-in START. Gate v8 sha256: `f5796d1e…` (verify by eye pre-START; mismatch is
+-a BLOCKED question, never a silent fix).
++Brief sha256 (THIS file, version 2 — v1 bytes preserved at ticket handoffs/auditor-brief-v1-superseded.md, sha cbcb191ec8dcc33ed05b885cee3a08c2af1268df71025288ea32900f750c3bec): re-read IN FULL (do not rely on v1 memory); quote THIS version's sha in START (re-hash at START time). Gate v8: full raw sha256 `7a7a99e351df0a34a8147804f68bc85a3f182556cbfafccaf62e46105743c30a` and blank-normalized self-hash `f5796d1e5524f57c98b7d92168ad4fc10b22b6d318c57e0c989a1bf02f1b3650` — verify BOTH by byte-hash equality (recompute each and compare character-for-character; no abbreviated substitutes, no eye-matching of prefixes); mismatch is a BLOCKED question, never a silent fix.
++
++## Version record (v2 — read this on every re-read)
++
++- VERSION 2. Brief v1 bytes (sha cbcb191ec8dcc33ed05b885cee3a08c2af1268df71025288ea32900f750c3bec, acknowledged at your ACK) are preserved byte-identical at ticket `handoffs/auditor-brief-v1-superseded.md` and are EVIDENCE ONLY, never instruction.
++- Changes v1→v2 (ONLY these hunks differ — verify with `diff` against the preserved copy): (1) build-writes absolute now points at the unified fence; (2) precedence section: auditor independence restored + CB-001 quoted below + auditor-limit history added; (3) fence-verification scope BASE→candidate including RED baseline + every abbreviated SHA expanded to full; (4) footer requires byte-hash verification; (5) this record + Temp-path envelope section added. Authority: NOTE-018 + NOTE-019 + NOTE-020 (desk/epic, binding).
++- CB-001 preserved (quoted verbatim from archived `commit-auditor-s28/handoffs/AUDIT-REPORT.md`): the supplied execution answer resolves the write fence but binds the same campaign's 34 ceiling; three ceiling grants 8→16→25→34 with no binding authorizing reliance; generic two-raise rule requires `AUDIT-CONTRACT-BLOCKED reason=third-ceiling-grant`, complete, exit without auditing. Property class: commissioning must carry the full ceiling history. Answered by the Precedence binding above + answers/A-002-commissioning-addendum.md — not erased.
++- Path `...` abbreviations in this file are readability shorthands for the fixed runtime root defined above, never measurements; every SHA constraining execution is full-length above.
++
++## Temp-path envelope (authorized for THIS SINGLE audit envelope — NOTE-019)
++
++The three frozen staging paths the gate writes outside any checkout — `/tmp/g28m3.hs`, `/tmp/g28m4.hs`, `/tmp/g28m5.hs` — plus bounded `mktemp` stderr outputs, are AUTHORIZED under exactly these conditions (same D3-class mechanical bounds as the M-splices; no gate rewrite, no budget or candidate change):
++- `lstat` BEFORE first use: `ls -la` + `test -L` each path, journal type/uid/inode-or-absent. A PRE-EXISTING file or symlink at any of the three is a CONCRETE BLOCKER: stop, journal it, BLOCKED — never overwrite, delete, or follow it silently.
++- If absent: reserve each with EXCLUSIVE creation owned by this execution (`set -o noclobber` + `: >` the path fails closed if present); record type/uid/inode. Any collision fails BEFORE compilation.
++- TMPDIR: create a NEW directory inside YOUR runtime (plain `mkdir`, never `-p` over an existing dir — pre-existence fails closed); `export TMPDIR` to it for the gate invocation; VERIFY propagation pre-build (`TMPDIR=<dir> mktemp -u` must print a path under it — dry-run, creates nothing); after leg-2b `ls` the dir (e1/e2 must be there, not /tmp). Record the override as envelope configuration. Gate bytes, cwd, and evidence dir are unchanged by this.
++- Process table + owner park re-checked AT execution time: no concurrent k28 gate may use those names (bounded now-observation, not a universal proof); ticket owner runs no gates concurrently (stated in the commissioning answers; verify ticket STATUS shows no active gate).
++- The gate may overwrite ONLY your reserved regular files (identity-checked against reservation records) and move them into the isolated execution tree exactly as frozen. Preserve generated mutants, intended failure receipts, and byte-exact restoration.
++- On exit: retain all evidence; verify source restoration + author/reference cleanliness; remove ONLY this audit's residual reserved temp files whose identity still matches reservation records — never an unexplained replacement; any leftover or collision is journaled honestly, never cleaned broadly (`/tmp` at large is not yours; no unrelated-file reads).
++- These controls are discretionary bounds, not an OS sandbox — do not claim one.

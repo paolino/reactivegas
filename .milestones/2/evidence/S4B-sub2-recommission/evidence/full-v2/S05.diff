@@ -1,0 +1,13 @@
+diff --git a/scripts/check-lean-mirrors b/scripts/check-lean-mirrors
+index ddf10f9..4b21240 100755
+--- a/scripts/check-lean-mirrors
++++ b/scripts/check-lean-mirrors
+@@ -253,7 +253,7 @@ run_cmd do
+             else if kindTag == "induct" then nonpredInduct := nonpredInduct + 1
+             else nonpredOpaque := nonpredOpaque + 1
+         | none => skipped := skipped.push (toString n)
+-    | .thmInfo _ => exclThm := exclThm + 1
++    -- auditor removes exactly the theorem-info classification arm
+     | .axiomInfo _ => exclAxiom := exclAxiom + 1
+     | .ctorInfo _ | .recInfo _ => exclCtorRec := exclCtorRec + 1
+     | _ =>

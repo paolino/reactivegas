@@ -1,0 +1,239 @@
+./KelGroups/Invariants.lean:100:private theorem assocAdjust_keys (key : Key) (f : ν → ν) (entries : List (Key × ν)) :
+./KelGroups/Invariants.lean:109:private theorem assocAdjust_property (key : Key) (f : ν → ν)
+./KelGroups/Invariants.lean:141:private theorem setInsert_nodup (value : Key) (values : List Key)
+./KelGroups/Invariants.lean:149:private theorem setInsert_mem (value existing : Key) (values : List Key)
+./KelGroups/Invariants.lean:156:private theorem approvePending_wellFormed (signer : Key) (pending : PendingProposal)
+./KelGroups/Invariants.lean:162:theorem emptyState_wellFormed (initial : α) : WellFormed (emptyState initial) := by
+./KelGroups/Invariants.lean:166:private theorem assocLookup_some_mem [BEq κ] [LawfulBEq κ]
+./KelGroups/Invariants.lean:183:theorem enact_preserves_wellFormed (gs : GroupState α) (proposal : Proposal)
+./KelGroups/Invariants.lean:215:theorem finishEnact_preserves_wellFormed (gs : GroupState α) (proposalId : ProposalId)
+./KelGroups/Invariants.lean:228:theorem tryEnact_preserves_wellFormed (gs : GroupState α) (proposalId : ProposalId)
+./KelGroups/Invariants.lean:238:theorem applyPropose_preserves_wellFormed (digest : Proposal → ProposalId)
+./KelGroups/Invariants.lean:256:theorem applyApprove_preserves_wellFormed (gs : GroupState α) (signer : Key)
+./KelGroups/Invariants.lean:279:theorem applyEvent_preserves_wellFormed (digest : Proposal → ProposalId)
+./KelGroups/Invariants.lean:295:private theorem foldEvents_preserves_wellFormed (digest : Proposal → ProposalId)
+./KelGroups/Invariants.lean:306:theorem foldGroup_wellFormed (digest : Proposal → ProposalId) (appFoldFn : AppFold α)
+./KelGroups/Invariants.lean:312:theorem approvals_nodup {gs : GroupState α} (h : WellFormed gs)
+./KelGroups/Invariants.lean:317:theorem proposer_mem_approvals {gs : GroupState α} (h : WellFormed gs)
+./KelGroups/Invariants.lean:327:private theorem tryEnactDetailed_enactment_threshold_met
+./KelGroups/Invariants.lean:342:theorem enact_implies_threshold_met
+./KelGroups/Invariants.lean:34:private theorem assocErase_sublist [BEq κ] (key : κ) (entries : List (κ × ν)) :
+./KelGroups/Invariants.lean:368:theorem tryEnact_eq_of_enacts {gs result : GroupState α} {proposalId : ProposalId}
+./KelGroups/Invariants.lean:374:theorem member_key_coherent {gs : GroupState α} (h : WellFormed gs)
+./KelGroups/Invariants.lean:379:theorem members_change_implies_enacted
+./KelGroups/Invariants.lean:450:theorem majority_table :
+./KelGroups/Invariants.lean:459:theorem majority_not_strict_on_even (gs : GroupState α)
+./KelGroups/Invariants.lean:45:private theorem assocErase_keys_nodup [BEq κ] (key : κ) (entries : List (κ × ν))
+./KelGroups/Invariants.lean:50:private theorem assocErase_key_absent [BEq κ] [LawfulBEq κ]
+./KelGroups/Invariants.lean:568:theorem app_event_preserves_members
+./KelGroups/Invariants.lean:590:theorem app_event_has_no_base_change
+./KelGroups/Invariants.lean:628:theorem validateDirectAdmission_ok {α : Type} {reserved : Key} {gs : GroupState α}
+./KelGroups/Invariants.lean:647:theorem commitBaseChange_ok {AppState AppEvent BaseProposal AppError : Type}
+./KelGroups/Invariants.lean:664:theorem tryEnactBase_runs_hook {AppState AppEvent BaseProposal AppError : Type}
+./KelGroups/Invariants.lean:696:theorem commitBaseChange_members {AppState AppEvent BaseProposal AppError : Type}
+./KelGroups/Invariants.lean:711:theorem enactMutation_preserves_absence {AppState : Type}
+./KelGroups/Invariants.lean:721:theorem tryEnactBase_preserves_absence {AppState AppEvent BaseProposal AppError : Type}
+./KelGroups/Invariants.lean:72:private theorem assocInsert_keys_nodup [BEq κ] [LawfulBEq κ]
+./KelGroups/Invariants.lean:751:theorem membership_growth_is_direct_admission
+./KelGroups/Invariants.lean:799:theorem direct_admission_requires_admin
+./KelGroups/Invariants.lean:79:private theorem assocErase_property [BEq κ] (key : κ) (entries : List (κ × ν))
+./KelGroups/Invariants.lean:813:theorem non_admin_admission_is_noop
+./KelGroups/Invariants.lean:831:theorem base_change_runs_hook
+./KelGroups/Invariants.lean:877:theorem approvals_nodup {α : Type} {gs : KelGroups.GroupState α}
+./KelGroups/Invariants.lean:87:private theorem assocInsert_property [BEq κ] (key : κ) (value : ν)
+./KelGroups/Invariants.lean:883:theorem proposer_mem_approvals {α : Type} {gs : KelGroups.GroupState α}
+./KelGroups/Invariants.lean:889:theorem enact_implies_threshold_met {α : Type}
+./KelGroups/Invariants.lean:899:theorem members_change_implies_enacted {α : Type}
+./KelGroups/Invariants.lean:909:theorem member_key_coherent {α : Type} {gs : KelGroups.GroupState α}
+./KelGroups/Invariants.lean:914:theorem majority_table :
+./KelGroups/Invariants.lean:923:theorem majority_not_strict_on_even {α : Type} (gs : KelGroups.GroupState α)
+./KelGroups/Types.lean:112:theorem assocLookup_insert_of_none [BEq κ] [LawfulBEq κ] (key other : κ)
+./KelGroups/Types.lean:121:theorem assocLookup_insert_self [BEq κ] [LawfulBEq κ]
+./KelGroups/Types.lean:71:theorem assocLookup_erase_of_none [BEq κ] (key other : κ) :
+./KelGroups/Types.lean:91:theorem assocLookup_adjust_of_none [BEq κ] (key other : κ) (f : ν → ν) :
+./KelGroups/Vote/Invariants.lean:1004:private theorem tallyKeysOfState_insert_cases (gs : VoteState) (qid : QuestionId)
+./KelGroups/Vote/Invariants.lean:1017:private theorem effectedState_tally_growth (θ : Threshold) (gs : VoteState)
+./KelGroups/Vote/Invariants.lean:1071:private theorem tally_keys_franchised_from (θ : Threshold) :
+./KelGroups/Vote/Invariants.lean:1115:theorem franchise_of_tallies (θ : Threshold) (events : List (Key × VoteEvent)) (k : Key)
+./KelGroups/Vote/Invariants.lean:1141:theorem sweepStep_of_open (threshold : Threshold) (view : GroupView)
+./KelGroups/Vote/Invariants.lean:114:private theorem assocInsert_keys_nodup' (key : κ) (value : ν) (entries : List (κ × ν))
+./KelGroups/Vote/Invariants.lean:1150:theorem sweep_filterMap_of_swept (threshold : Threshold) (view : GroupView) :
+./KelGroups/Vote/Invariants.lean:1165:theorem filter_open_idem (threshold : Threshold) (view : GroupView) :
+./KelGroups/Vote/Invariants.lean:1182:theorem sweepClosures_idempotent (threshold : Threshold) (view : GroupView)
+./KelGroups/Vote/Invariants.lean:1200:theorem sweepDuplicating_duplicates (threshold : Threshold) (view : GroupView)
+./KelGroups/Vote/Invariants.lean:120:private theorem assocAdjust_keys' (key : Key) (f : ν → ν) (entries : List (Key × ν)) :
+./KelGroups/Vote/Invariants.lean:129:private theorem assocAdjust_keys_nodup' (key : Key) (f : ν → ν) (entries : List (Key × ν))
+./KelGroups/Vote/Invariants.lean:135:private theorem assocLookup_some_mem' (key : κ) (value : ν) (entries : List (κ × ν))
+./KelGroups/Vote/Invariants.lean:151:private theorem mem_assocLookup_some' (key : κ) (value : ν) (entries : List (κ × ν))
+./KelGroups/Vote/Invariants.lean:175:private theorem assocErase_other_lookup (k j : κ) (v : ν) (entries : List (κ × ν))
+./KelGroups/Vote/Invariants.lean:192:private theorem assocInsert_other_lookup (k j : κ) (v : ν) (entries : List (κ × ν))
+./KelGroups/Vote/Invariants.lean:203:private theorem assocInsert_mem_cases (k j : κ) (v w : ν) (entries : List (κ × ν))
+./KelGroups/Vote/Invariants.lean:213:private theorem mem_map_fst_erase_of_ne (k j : κ) (entries : List (κ × ν))
+./KelGroups/Vote/Invariants.lean:235:private theorem mem_map_fst_insert (k j : κ) (value : ν) (entries : List (κ × ν)) :
+./KelGroups/Vote/Invariants.lean:246:private theorem setInsert_mem_cases (v k : Key) (l : List Key)
+./KelGroups/Vote/Invariants.lean:255:private theorem nodup_append_mem {α : Type} [BEq α] [LawfulBEq α]
+./KelGroups/Vote/Invariants.lean:268:private theorem setInsert_nodup' (value : Key) (values : List Key)
+./KelGroups/Vote/Invariants.lean:276:private theorem mem_erase_inv (a : Key) : ∀ (l : List Key), l.Nodup →
+./KelGroups/Vote/Invariants.lean:303:private theorem nodup_erase (a : Key) (l : List Key) (h : l.Nodup) : (l.erase a).Nodup := by
+./KelGroups/Vote/Invariants.lean:317:private theorem closed_guard_absent (qid : QuestionId) (records : List ClosureRecord)
+./KelGroups/Vote/Invariants.lean:326:private theorem assoc_entries_key_unique (entries : List (Key × Question))
+./KelGroups/Vote/Invariants.lean:346:private theorem filterMap_keys_nodup (f : QuestionId × Question → Option ClosureRecord)
+./KelGroups/Vote/Invariants.lean:374:theorem emptyVoteState_sweepReady : SweepReady view emptyVoteState := by
+./KelGroups/Vote/Invariants.lean:382:theorem emptyVoteState_wellFormed (θ : Threshold) : VoteWellFormed θ view emptyVoteState := by
+./KelGroups/Vote/Invariants.lean:389:theorem verdictOf_threshold_congr (θ θ' : Threshold) (gs : VoteState) (q : Question)
+./KelGroups/Vote/Invariants.lean:401:private theorem sweepStep_key (θ : Threshold) (gs : VoteState) (entry : QuestionId × Question)
+./KelGroups/Vote/Invariants.lean:418:private theorem sweepClosures_open_mem (θ : Threshold) (gs : VoteState)
+./KelGroups/Vote/Invariants.lean:424:private theorem sweepClosures_closed_mem (θ : Threshold) (gs : VoteState) (c : ClosureRecord) :
+./KelGroups/Vote/Invariants.lean:440:private theorem sweepClosures_sweepReady (θ : Threshold) (gs : VoteState)
+./KelGroups/Vote/Invariants.lean:517:private theorem sweepClosures_wellFormed (θ : Threshold) (gs : VoteState)
+./KelGroups/Vote/Invariants.lean:527:private theorem placeBallot_clean (voter : Key) (ballot : Ballot) (question : Question)
+./KelGroups/Vote/Invariants.lean:550:private theorem placeBallot_tally (voter : Key) (ballot : Ballot) (question : Question)
+./KelGroups/Vote/Invariants.lean:571:private theorem effectedState_sweepReady (gs : VoteState) (signer : Key) (event : VoteEvent)
+./KelGroups/Vote/Invariants.lean:665:theorem applyVoteEvent_preserves_wellFormed (θ : Threshold) (gs : VoteState)
+./KelGroups/Vote/Invariants.lean:676:private theorem foldFrom_preserves_wellFormed (θ : Threshold) :
+./KelGroups/Vote/Invariants.lean:688:theorem foldVote_wellFormed (θ : Threshold) (events : List (Key × VoteEvent)) :
+./KelGroups/Vote/Invariants.lean:692:private theorem foldVote_append (θ : Threshold) (pre suffix : List (Key × VoteEvent)) :
+./KelGroups/Vote/Invariants.lean:696:private theorem sweepClosures_preserves_qid (θ : Threshold) (gs : VoteState)
+./KelGroups/Vote/Invariants.lean:722:private theorem effectedState_preserves_qid (gs : VoteState) (signer : Key)
+./KelGroups/Vote/Invariants.lean:772:private theorem applyVoteEvent_preserves_qid (θ : Threshold) (gs : VoteState)
+./KelGroups/Vote/Invariants.lean:77:private theorem assocErase_sublist' (key : κ) (entries : List (κ × ν)) :
+./KelGroups/Vote/Invariants.lean:786:private theorem foldFrom_preserves_qid (θ : Threshold) :
+./KelGroups/Vote/Invariants.lean:802:theorem ballots_nodup_disjoint (θ : Threshold) (events : List (Key × VoteEvent)) :
+./KelGroups/Vote/Invariants.lean:810:theorem open_questions_are_open (θ : Threshold) (events : List (Key × VoteEvent))
+./KelGroups/Vote/Invariants.lean:818:theorem questions_partition (θ : Threshold) (events : List (Key × VoteEvent)) :
+./KelGroups/Vote/Invariants.lean:877:theorem no_expiry (θ : Threshold) (events : List (Key × VoteEvent))
+./KelGroups/Vote/Invariants.lean:88:private theorem assocErase_keys_nodup' (key : κ) (entries : List (κ × ν))
+./KelGroups/Vote/Invariants.lean:900:private theorem sweepClosures_tallyKeys (θ : Threshold) (gs : VoteState) (k : Key) :
+./KelGroups/Vote/Invariants.lean:93:private theorem assocErase_key_absent' (key : κ) (entries : List (κ × ν))
+./KelGroups/Vote/Invariants.lean:957:theorem inadmissible_is_noop (θ : Threshold) (gs : VoteState) (signer : Key)
+./KelGroups/Vote/Invariants.lean:967:theorem nonresponsabile_event_noop (θ : Threshold) (gs : VoteState)
+./KelGroups/Vote/Invariants.lean:980:theorem unfranchised_cast_noop (θ : Threshold) (gs : VoteState) (signer : Key)
+./KelGroups/Vote/Invariants.lean:989:private theorem tallyKeysOfState_erased_le (gs : VoteState) (qid : QuestionId) (k : Key)
+./Reactivegas/Composition.lean:108:theorem baseEnacted_threshold_met {α : Type}
+./Reactivegas/Composition.lean:139:theorem appDecided_verdict_exhaustive (e : Event)
+./Reactivegas/Composition.lean:83:theorem voteDerived_iff_not_direct (e : Event) :
+./Reactivegas/Invariants.lean:110:theorem pullCollection_mem {c : CollId} {cols : List Collection} {x : Collection}
+./Reactivegas/Invariants.lean:1141:theorem comune_not_a_member_of_reach {s : State} (hr : Reach view auth s) :
+./Reactivegas/Invariants.lean:1148:private theorem credit_pledges_of_reach {s : State} (hr : Reach view auth s) :
+./Reactivegas/Invariants.lean:1164:theorem solvent_preserved {s s' : State} {e : Event}
+./Reactivegas/Invariants.lean:116:private theorem pullCollection_det {c : CollId} {cols : List Collection}
+./Reactivegas/Invariants.lean:1177:theorem reach_solvent {s : State} (hr : Reach view auth s) : solvent view s := by
+./Reactivegas/Invariants.lean:1184:theorem not_insolvent_of_reach {s : State} (hr : Reach view auth s) : ¬ insolvent view s := by
+./Reactivegas/Invariants.lean:1194:private theorem unique_mem_cons_inv {acc pend : List Pledge} {u : KelGroups.Key} {v : Int}
+./Reactivegas/Invariants.lean:1228:theorem uniquePledges_pend_cons {col : Collection} {u : KelGroups.Key} {v : Int}
+./Reactivegas/Invariants.lean:1241:theorem pledge_rejected_when_member {s : State} {a u : KelGroups.Key} {c : CollId}
+./Reactivegas/Invariants.lean:124:theorem user_absent_of_any_false {u : KelGroups.Key} {l : List Pledge}
+./Reactivegas/Invariants.lean:1269:theorem pledge_preserves_allUnique {s s' : State} {a u : KelGroups.Key} {c : CollId}
+./Reactivegas/Invariants.lean:135:private theorem sumBal_foldl_bump :
+./Reactivegas/Invariants.lean:154:theorem pledge_guard_inv {s : State} {a u : KelGroups.Key} {col : Collection} {v : Int}
+./Reactivegas/Invariants.lean:1583:theorem base_departure_applies_cleanup : checkBaseCleanupReachable = true := by decide
+./Reactivegas/Invariants.lean:1587:theorem base_change_can_close_without_ballot : checkV3BaseReachable = true := by decide
+./Reactivegas/Invariants.lean:1589:theorem direct_admission_only_holds : checkDirectAdmissionOnly = true := by decide
+./Reactivegas/Invariants.lean:1591:theorem base_recompute_reachable_holds : checkBaseRecomputeReachable = true := by decide
+./Reactivegas/Invariants.lean:1593:theorem sweep_idempotent_witness : checkSweepIdempotent = true := by decide
+./Reactivegas/Invariants.lean:1595:theorem sweep_idempotent_mutant_caught : checkSweepIdempotentMutant = true := by decide
+./Reactivegas/Invariants.lean:1600:theorem baseHook_votes {threshold : KelGroups.Vote.Threshold}
+./Reactivegas/Invariants.lean:1616:theorem base_change_recomputes_votes (threshold : KelGroups.Vote.Threshold)
+./Reactivegas/Invariants.lean:172:theorem auth_referente_guard_inv {a : KelGroups.Key} {col : Collection}
+./Reactivegas/Invariants.lean:178:theorem close_guard_inv {a : KelGroups.Key} {col : Collection}
+./Reactivegas/Invariants.lean:188:theorem fail_guard_inv {a : KelGroups.Key} {col : Collection}
+./Reactivegas/Invariants.lean:197:theorem step_grant_inv {s s' : State} {a : KelGroups.Key} {c : CollId}
+./Reactivegas/Invariants.lean:211:theorem step_deny_inv {s s' : State} {a : KelGroups.Key} {c : CollId}
+./Reactivegas/Invariants.lean:227:theorem step_pledge_inv {s s' : State} {a u : KelGroups.Key} {c : CollId} {v : Int}
+./Reactivegas/Invariants.lean:22:theorem option_bind_inv {α β : Type} {o : Option α} {f : α → Option β} {b : β}
+./Reactivegas/Invariants.lean:2322:theorem integrated_theorem_witness_holds :
+./Reactivegas/Invariants.lean:2325:theorem canonical_economy_holds :
+./Reactivegas/Invariants.lean:2328:theorem exhaustive_inventories_hold :
+./Reactivegas/Invariants.lean:2331:theorem i57_boundary_holds : checkI57Boundary = true := by decide
+./Reactivegas/Invariants.lean:2332:theorem i57_exhaustive_holds : checkI57Exhaustive = true := by decide
+./Reactivegas/Invariants.lean:2333:theorem i57_noop_holds : checkI57Noop = true := by decide
+./Reactivegas/Invariants.lean:2334:theorem i57_auth_holds : checkI57Auth = true := by decide
+./Reactivegas/Invariants.lean:2335:theorem i57_r45_holds : checkI57R45 = true := by decide
+./Reactivegas/Invariants.lean:2336:theorem i57_partition_holds : checkI57Partition = true := by decide
+./Reactivegas/Invariants.lean:2337:theorem i57_disjoint_holds : checkI57Disjoint = true := by decide
+./Reactivegas/Invariants.lean:2338:theorem i57_disjoint_mutant_caught : checkI57DisjointMutant = true := by decide
+./Reactivegas/Invariants.lean:2339:theorem i57_nostale_holds : checkI57NoStale = true := by decide
+./Reactivegas/Invariants.lean:2340:theorem i57_franchise_holds : checkI57Franchise = true := by decide
+./Reactivegas/Invariants.lean:2341:theorem i57_franchise_mutant_caught :
+./Reactivegas/Invariants.lean:2343:theorem i57_policyfree_holds : checkI57PolicyFree = true := by decide
+./Reactivegas/Invariants.lean:2344:theorem i57_policyfree_mutant_caught :
+./Reactivegas/Invariants.lean:2346:theorem i57_noexpiry_holds : checkI57NoExpiry = true := by decide
+./Reactivegas/Invariants.lean:2347:theorem admissionPreservation_holds : checkAdmissionPreservation = true := by decide
+./Reactivegas/Invariants.lean:2348:theorem productionWellFormed_holds : checkProductionWellFormed = true := by decide
+./Reactivegas/Invariants.lean:2349:theorem comuneThresholdSanity_holds : checkComuneThresholdSanity = true := by decide
+./Reactivegas/Invariants.lean:247:theorem step_accept_inv {s s' : State} {a u : KelGroups.Key} {c : CollId}
+./Reactivegas/Invariants.lean:265:theorem step_refuse_inv {s s' : State} {a u : KelGroups.Key} {c : CollId}
+./Reactivegas/Invariants.lean:284:theorem step_correct_inv {s s' : State} {a u : KelGroups.Key} {c : CollId} {v' : Int}
+./Reactivegas/Invariants.lean:29:theorem demand_eq_true_of_some {b : Bool} (h : demand b = some ()) : b = true := by
+./Reactivegas/Invariants.lean:305:theorem step_close_inv {s s' : State} {a : KelGroups.Key} {c : CollId}
+./Reactivegas/Invariants.lean:322:theorem step_fail_inv {s s' : State} {a : KelGroups.Key} {c : CollId}
+./Reactivegas/Invariants.lean:343:theorem step_open_inv {s s' : State} {a : KelGroups.Key} {c : CollId}
+./Reactivegas/Invariants.lean:356:theorem step_deposit_inv {s s' : State} {a u : KelGroups.Key} {v : Int}
+./Reactivegas/Invariants.lean:369:theorem step_withdraw_inv {s s' : State} {a u : KelGroups.Key} {v : Int}
+./Reactivegas/Invariants.lean:36:theorem demand_none_of_ne_true {b : Bool} (h : ¬(b = true)) : demand b = none := by
+./Reactivegas/Invariants.lean:384:theorem step_transferCassa_inv {s s' : State} {a f : KelGroups.Key} {v : Int}
+./Reactivegas/Invariants.lean:397:theorem step_donate_inv {s s' : State} {a : KelGroups.Key} {v : Int}
+./Reactivegas/Invariants.lean:410:theorem step_backdonate_inv {s s' : State} {a : KelGroups.Key} {w : Int}
+./Reactivegas/Invariants.lean:430:theorem conservation_preserved {s s' : State} {e : Event}
+./Reactivegas/Invariants.lean:43:private theorem bool_not_true {b : Bool} (h : (!b) = true) : b = false := by
+./Reactivegas/Invariants.lean:49:private theorem bool_and_left {b₁ b₂ : Bool} (h : (b₁ && b₂) = true) : b₁ = true := by
+./Reactivegas/Invariants.lean:55:private theorem bool_and_right {b₁ b₂ : Bool} (h : (b₁ && b₂) = true) : b₂ = true := by
+./Reactivegas/Invariants.lean:561:theorem step_authorized {s s' : State} {e : Event} (h : stepEvent view s e auth = some s') :
+./Reactivegas/Invariants.lean:61:private theorem eq_nil_of_isEmpty {α : Type} {l : List α} (h : l.isEmpty = true) :
+./Reactivegas/Invariants.lean:637:theorem governance_enacts_windUpAdmin (s : State) (u : KelGroups.Key) :
+./Reactivegas/Invariants.lean:647:theorem close_permission_to_close {s s' : State} {a : KelGroups.Key} {c : CollId}
+./Reactivegas/Invariants.lean:659:theorem pledge_escrow_debit {s s' : State} {a u : KelGroups.Key} {c : CollId} {v : Int}
+./Reactivegas/Invariants.lean:679:theorem close_spends_referente {s s' : State} {a : KelGroups.Key} {c : CollId}
+./Reactivegas/Invariants.lean:68:theorem stripCollections_referente_ne (u : KelGroups.Key) (cols : List Collection) :
+./Reactivegas/Invariants.lean:697:theorem deposit_double_entry {s s' : State} {a u : KelGroups.Key} {v : Int}
+./Reactivegas/Invariants.lean:707:theorem withdraw_double_entry {s s' : State} {a u : KelGroups.Key} {v : Int}
+./Reactivegas/Invariants.lean:719:private theorem bal_bump_ne_lemma {u : KelGroups.Key} {d : Int} :
+./Reactivegas/Invariants.lean:745:theorem bal_bump_ne {m : List (KelGroups.Key × Int)} {u : KelGroups.Key} {d : Int} {k : KelGroups.Key}
+./Reactivegas/Invariants.lean:750:private theorem bal_foldl_bump_ge :
+./Reactivegas/Invariants.lean:771:private theorem splitUser_amount_lemma {u : KelGroups.Key} :
+./Reactivegas/Invariants.lean:796:theorem splitUser_amount {u : KelGroups.Key} {l : List Pledge} {v : Int} {r : List Pledge}
+./Reactivegas/Invariants.lean:801:private theorem refundAll_bal_ge_lemma {l : List Pledge} :
+./Reactivegas/Invariants.lean:823:theorem refundAll_bal_ge {m : List (KelGroups.Key × Int)} {l : List Pledge} {w : KelGroups.Key}
+./Reactivegas/Invariants.lean:828:private theorem stripCollections_sublist_lemma (r : KelGroups.Key) :
+./Reactivegas/Invariants.lean:83:private theorem pullCollection_mem_lemma {c : CollId} :
+./Reactivegas/Invariants.lean:847:theorem stripCollections_sublist (r : KelGroups.Key) (cols : List Collection)
+./Reactivegas/Invariants.lean:852:private theorem stripCollections_amount_lemma (r : KelGroups.Key) :
+./Reactivegas/Invariants.lean:877:theorem solvent_init : solvent view State.empty :=
+./Reactivegas/Invariants.lean:883:private theorem comune_not_a_member_step {s s' : State} {e : Event}
+./Reactivegas/Invariants.lean:890:private theorem credit_pledges_step {s s' : State} {e : Event}
+./Reactivegas/State.lean:125:theorem sumBal_cons (k : KelGroups.Key) (v : Int) (t : List (KelGroups.Key × Int)) :
+./Reactivegas/State.lean:128:theorem bal_cons (k : KelGroups.Key) (v : Int) (t : List (KelGroups.Key × Int)) (u : KelGroups.Key) :
+./Reactivegas/State.lean:131:theorem bump_sum (m : List (KelGroups.Key × Int)) (u : KelGroups.Key) (d : Int) :
+./Reactivegas/State.lean:142:theorem bal_bump (m : List (KelGroups.Key × Int)) (u : KelGroups.Key) (d : Int) :
+./Reactivegas/State.lean:153:theorem sumPledges_append (l₁ l₂ : List Pledge) :
+./Reactivegas/State.lean:159:theorem refundAll_sum (m : List (KelGroups.Key × Int)) (l : List Pledge) :
+./Reactivegas/State.lean:172:theorem not_mem_users_of_splitUser_none {u : KelGroups.Key} {l : List Pledge}
+./Reactivegas/State.lean:194:private theorem splitUser_sum_lemma {u : KelGroups.Key} :
+./Reactivegas/State.lean:221:theorem splitUser_sum {u : KelGroups.Key} {l : List Pledge} {v : Int} {r : List Pledge}
+./Reactivegas/State.lean:225:private theorem splitUser_sublist_lemma {u : KelGroups.Key} :
+./Reactivegas/State.lean:253:theorem splitUser_sublist {u : KelGroups.Key} {l : List Pledge} {v : Int} {r : List Pledge}
+./Reactivegas/State.lean:257:theorem escrowSum_cons (c : Collection) (t : List Collection) :
+./Reactivegas/State.lean:260:private theorem pullCollection_id_lemma {c : CollId} :
+./Reactivegas/State.lean:283:theorem pullCollection_id {c : CollId} {cols : List Collection} {x : Collection}
+./Reactivegas/State.lean:287:private theorem pullCollection_sum_lemma {c : CollId} :
+./Reactivegas/State.lean:313:theorem pullCollection_sum {c : CollId} {cols : List Collection} {x : Collection}
+./Reactivegas/State.lean:318:private theorem pullCollection_sublist_lemma {c : CollId} :
+./Reactivegas/State.lean:346:theorem pullCollection_sublist {c : CollId} {cols : List Collection} {x : Collection}
+./Reactivegas/State.lean:351:theorem stripCollections_sum (r : KelGroups.Key) (cols : List Collection) :
+./Reactivegas/State.lean:374:theorem stripCollections_referente (r : KelGroups.Key) :
+./Reactivegas/Step.lean:445:theorem app_members_preservation_holds :
+./Reactivegas/Step.lean:448:theorem app_members_preservation_mutant_caught :
+./Reactivegas/Step.lean:470:theorem comune_cannot_authorize :
+./Reactivegas/Trace.lean:109:theorem stepDetailed_erases (view : KelGroups.GroupView) (s : State)
+./Reactivegas/TraceTests.lean:1005:theorem frozen_checks_faithful : frozenChecks = checks := by decide
+./Reactivegas/TraceTests.lean:1006:theorem frozen_inventory_faithful :
+./Reactivegas/TraceTests.lean:1010:theorem frozen_corpus_faithful : frozenCorpus = seedCorpus := by decide
+./Reactivegas/TraceTests.lean:1087:theorem app_members_preservation_holds : checkAppMembersPreservation = true :=
+./Reactivegas/TraceTests.lean:1090:theorem app_members_preservation_mutant_caught :
+./Reactivegas/TraceTests.lean:928:theorem base_departure_applies_cleanup : checkBaseCleanupReachable = true :=
+./Reactivegas/TraceTests.lean:931:theorem base_change_can_close_without_ballot : checkV3BaseReachable = true :=
+./Reactivegas/TraceTests.lean:934:theorem direct_admission_only_holds : checkDirectAdmissionOnly = true :=
+./Reactivegas/TraceTests.lean:937:theorem base_recompute_reachable_holds : checkBaseRecomputeReachable = true :=
+./Reactivegas/TraceTests.lean:940:theorem sweep_idempotent_witness : checkSweepIdempotent = true :=
+./Reactivegas/TraceTests.lean:943:theorem sweep_idempotent_mutant_caught : checkSweepIdempotentMutant = true :=
+./Reactivegas/TraceTests.lean:992:theorem all_checks_pass : failing = [] := by decide

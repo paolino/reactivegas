@@ -1,0 +1,50 @@
+[
+  {
+    "name": "INDEX.md",
+    "same": true
+  },
+  {
+    "name": "OP10-RESULT.md",
+    "same": true
+  },
+  {
+    "name": "OP10-identity-classes.txt",
+    "same": true
+  },
+  {
+    "name": "OP10-stderr.txt",
+    "same": true
+  },
+  {
+    "name": "OP10-stdout.txt",
+    "same": true
+  },
+  {
+    "name": "P1A-S-modules.txt",
+    "same": true
+  },
+  {
+    "name": "P1A-theorems-grep.txt",
+    "same": true
+  },
+  {
+    "name": "P1C-build2-incremental.log",
+    "same": true
+  },
+  {
+    "name": "P1C-build3-restore.log",
+    "same": true
+  },
+  {
+    "name": "P1C-corpusgate.out",
+    "same": true
+  },
+  {
+    "name": "P1C-scratch-variant-donate.diff",
+    "same": true
+  },
+  {
+    "name": "P1C-tracetests-summary.txt",
+    "same": true
+  }
+]

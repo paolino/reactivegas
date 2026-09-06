@@ -1,0 +1,15 @@
+== leg 0: tracked hygiene + base + source-blob freshness ==
+== leg 1: prerequisites fail-closed ==
+prereqs present at pin 4a6cd87fcbc3e4a536bbc9f240f5efe5704022af
+== leg 2: State mapping ==
+state green
+== leg 3: Event count 14 ==
+discovered Event constructors: 14
+event green
+== leg 4: step signature with GroupView ==
+step green
+== leg 5: Route 11 direct + 0 baseEnacted + 3 appDecided ==
+route green
+== leg 6: L1 deleted transition + canCloseGroup classification ==
+canCloseGroup source usages (discovered extent): 1
+CLOSE-RED: docs invent a group-closure theorem

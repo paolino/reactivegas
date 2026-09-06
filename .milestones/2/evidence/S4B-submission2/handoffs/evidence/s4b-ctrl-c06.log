@@ -1,0 +1,4 @@
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+Reactivegas/Mirrors.lean:120:83: error: unsolved goals
+s : State
+⊢ sumBal s.casse - sumBal s.conti - escrowSum s.collections = 0 ↔ sumBal s.casse - sumBal s.conti = 0

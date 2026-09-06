@@ -1,0 +1,20 @@
+diff --git a/lean/Reactivegas/Mirrors.lean b/lean/Reactivegas/Mirrors.lean
+index 4ac7ac8..0d64bfa 100644
+--- a/lean/Reactivegas/Mirrors.lean
++++ b/lean/Reactivegas/Mirrors.lean
+@@ -255,3 +255,5 @@ theorem canCloseGroup_corr (view : KelGroups.GroupView) (s : State) :
+     canCloseGroup view s ↔ canCloseGroupB view s = true := by
+   simp only [canCloseGroup, canCloseGroupB, Bool.and_eq_true, List.all_eq_true,
+     decide_eq_true_eq, keys_mem_coe, canClose_third]
++
++def auditTheoremlessB (s : State) : Bool := decide (s.conti = [])
+diff --git a/lean/Reactivegas/Predicates.lean b/lean/Reactivegas/Predicates.lean
+index fc941f5..38ecd5a 100644
+--- a/lean/Reactivegas/Predicates.lean
++++ b/lean/Reactivegas/Predicates.lean
+@@ -99,3 +99,5 @@ inductive Reach (view : KelGroups.GroupView) (auth : BackdonateAuth) :
+   | trans {s : State} {e : Event} {s' : State} :
+     Reach view auth s → stepEvent view s e auth = some s' →
+       Reach view auth s'
++
++def auditTheoremless (s : State) : Prop := s.conti = []

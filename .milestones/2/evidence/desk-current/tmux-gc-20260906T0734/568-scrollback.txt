@@ -1,0 +1,528 @@
+        ludes('t74-')?'Haskell exporter':name.includes('release-pipeline')?'release':name.includes('t59')||name.includes('docs-auditor')?'documentation':name.includes('t62')?'S62 mixed phases'
+        :name.includes('t57')?'S57':name.includes('t54')?'S54':name.includes('t48')?'S48':'unresolved'};
+    10 +});
+    11 +fs.writeFileSync(root+'receipt-archive-index.json',JSON.stringify(rows,null,2)+'\n');
+    12 +fs.writeFileSync(root+'receipt-file-roster.md','# Retained campaign file inventory\n\nInspection only. Table-line counts include headers and are not receipt counts; each raw table is r
+        etained in receipt-archive-index.json. Multiple mutations per INV row must remain distinct during admissibility assessment.\n\n| File | Scope | SHA-256 |\n|---|---|---|\n'+rows.map(r=>
+        `| ${r.name} | ${r.scope} | ${r.sha256} |`).join('\n')+'\n');
+    13 +console.log(JSON.stringify(rows.map(r=>({name:r.name,scope:r.scope,rows:r.tableLines.filter(x=>!x.cells.every(c=>/^[- :]+$/.test(c))).map(x=>x.cells.slice(0,4))})),null,2));
+
+• Ran node /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex/evidence/receipt-index-static.mjs > /tmp/reactivegas/ms2/e-lean-compliance/
+  │ candidate-auditor-s3-phase1-static-codex/evidence/receipt-table-summary.json
+  │ wc -l /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex/evidence/receipt-table-summary.json
+  │ … +1 lines
+  └ 3140 /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex/evidence/receipt-table-summary.json
+    3:    "name": "reactivegas/ms2/.archived/t-simulator/.archived/auditor-claude-round2-s1/handoffs/campaign-ledger.md",
+    … +83 lines (ctrl + t to view transcript)
+    3069:    "name": "reactivegas/ms2/t48-inversions/campaign-ledger.md",
+    3070:    "scope": "S48",
+
+• Ran node --input-type=module <<'JS'
+  │ import fs from 'node:fs';
+  │ const p='/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex/evidence/receipt-archive-index.json';
+  │ … +3 lines
+  └
+    reactivegas/ms2/.archived/t-simulator/.archived/auditor-claude-round2-s1/handoffs/campaign-ledger.md
+    … +570 lines (ctrl + t to view transcript)
+    19: INV-48-I-STEP-ITE | BLOCKING | KILLED | Removing live `step` unfolding made elaboration fail (`2da5c149…`).
+    20: INV-48-I-STEPEVENT-DELEGATE | BLOCKING | KILLED | Removing live `stepEvent` unfolding made elaboration fail (`2da5c149…`).
+
+• Ran node --input-type=module <<'JS'
+  │ import fs from 'node:fs';
+  │ const p='/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex/evidence/receipt-archive-index.json';
+  │ … +3 lines
+  └
+    reactivegas/ms2/e43/.archived/t54-composition-owner-codex/campaign-ledger-v3.md
+    … +117 lines (ctrl + t to view transcript)
+    16: INV-62-CLOSED-SUMS | BLOCKING | OPEN | pending S62-B/S62-C
+    17: INV-62-PROOF-TRUST | BLOCKING | OPEN | pending S62-C
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• All 12 supplemental entries match my captures. The 239 source identities reconcile with the retained 1,213-name output, and the new classification file covers every name once.
+
+  The remaining findings concern the assessment itself: incorrect receipt states and provenance claims, incomplete semantic ownership and operation mappings, and helper witnesses that do not
+  supply all stated hypotheses. No Lean execution has been performed.
+
+• Ran audit_root=/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex
+  │ /code/llm-settings/shared/skills/worker-protocol/scripts/status-event "$audit_root/STATUS.md" NOTE '12/12 supplement hashes passed and 12/12 bytes equal own captures; source=239 (158
+  │ authored/81 helper;76 private) maps uniquely to retained OP10 1213; classifier has 1213 unique rows. Findings independently witnessed: t62 report digest resolves in archive with candidate,
+  │ … +21 lines
+  └ 2026-09-06T00:28:31Z
+    3590c0015b84fd58004bf6fb44dd18b107304c48
+    … +2 lines (ctrl + t to view transcript)
+    symbolic_ref_exit=1
+    4fb40d5089e908d16f91ae35cfb479d9d454b2a6fd6f337627789a40851bc01b  scripts/check-lean-axioms
+
+• Ran audit_root=/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex
+  │ sha256sum "$audit_root/evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/"{falsify-mutant-partition.log,evidence-inherited-partition.log,instruments/
+  │ mutant-partition.lean,verify-negative-controls.sh}
+  │ … +4 lines
+  └ fcbd02d28fbe5f48119714b1440aef82dd4ffaae4d1ab70e7053f86d85e8aae8  /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex/evidence/archive/reactivegas/ms2/
+    e43/.archived/t57-owner-codex/gate/falsify-mutant-partition.log
+    … +25 lines (ctrl + t to view transcript)
+    452:  result record). No second driver built (NOTE-007 stands).
+    453:- Next: pre-run confirmations, then the single OP-10 run, then corrections +
+
+• Added /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex/handoffs/AUDIT-REPORT.md (+140 -0)
+      1 +# S3 Phase 1 static assessment audit — submission 1
+      2 +
+      3 +Terminal verdict: **AUDIT-FINDINGS**.
+      4 +
+      5 +The complete Phase 1 assessment is not established as complete. Its source/retained-compiled identity reconciliation is reproducible, and the supplemental index resolves the advertise
+         d Validate arithmetic and missing literal class-list issues. Material defects remain in receipt transcription and retrieval, the semantic ownership map, helper antecedent witnesses, a
+         nd the proposed coverage/cost plan. These are assessment findings, not theorem refutations or fresh mutation results.
+      6 +
+      7 +## Authority and identity
+      8 +
+      9 +Subject: #66 / S3 Phase 1, original Phase-1 brief, operative S3 mandate revision 3 (despite its revision-2 header), reports original/R2–R5, corrections 008–010, final receipt, origina
+         l 16-entry packet, and the post-START 12-entry supplement. All original amendment notes 001–011 were read and captured locally. Commissioner: `%503`; subject owner: `%558`; auditor: `
+         %568`.
+     10 +
+     11 +Live START at **2026-09-06T00:21:07Z** postdates brief modification **00:20:16Z**. `/proc` identifies PID/PGID **2738580**, full argv `/nix/store/nqhk0522q8ncygwwx054iq76ckcjll82-code
+         x-0.153.2/libexec/codex -m gpt-6-astra -c model_reasoning_effort=high --dangerously-bypass-approvals-and-sandbox`, cwd `/code/reactivegas-66-s3-audit`, `$TMUX_PANE=%568`. HEAD is **35
+         90c0015b84fd58004bf6fb44dd18b107304c48**, detached and clean; tree **44a1f0bce4796c63203070e23b96172a7774956e**, parent **d67032313acf3699cc50358a057391b88d002192**. Evidence: `eviden
+         ce/START-identity.txt`, `candidate-final-identity.txt`.
+     12 +
+     13 +Targeted pane queries resolved three separate named windows in session `reactivegas`: `rg-s3-static-audit`, `lean-quality`, `rg-s3-phase1`. No seat was contacted. Owner family is Muse
+          per mandate and original owner argv binding; live pane transport is Pi, not itself a provider identity. This is a fresh Codex process/context, with a distinct readonly subject checko
+         ut.
+     14 +
+     15 +**Placement correction:** inbox NOTE-001 withdraws the brief's “more strongly” rationale. Separate windows are an organizational choice, not stronger independence evidence. Placement
+         is accepted by the desk's disposition in that later note, **not retroactive pre-launch authority**, and creates no precedent for code audits. The earlier authority defect remains visi
+         ble in this record; it was not repaired by pretending it never existed.
+     16 +
+     17 +**Packet correction:** all 16 original checks passed. The original packet omitted the operative index, literal class list, raw OP-10 streams and costing inputs. Auditor captures found
+          those owner-retained bytes; NOTE-001 subsequently bound 12 supplemental entries. All 12 checks pass and all 12 are byte-identical to the auditor's earlier captures (`evidence/supplem
+         ent-comparison.json`). Their binding is **post-START**. The commissioning omission is now resolved for this review, not attributed to the subject owner. Neither frozen manifest was re
+         written.
+     18 +
+     19 +## Method and finite extent
+     20 +
+     21 +Mode: commissioned **static assessment review**, using auditor/lean-auditor with the explicit zero-execution exception. The floor is P1-A/B/C/D, mandate D1–D6 as applicable to Phase 1
+         , all amendments, and the commission's reporting/boundary requirements; `REQUIREMENT-LEDGER.md` enumerates each requirement and its evidence class.
+     22 +
+     23 +Inspection covered the entire report/correction chain, 239 source roster entries, all 1,213 retained names and their class records, 27 module import relationships, all 43 archived cam
+         paign-ledger files, retained costing and OP-10 outputs, and focused source/instrument bodies needed to challenge claims. The archive contains 6,489 **entries**, of which 5,035 names a
+         re non-directory entries; “6,489 files” is imprecise. `receipt-file-roster.md` and `receipt-archive-index.json` preserve every campaign file/table; table lines are not misreported as
+         a count of mutation experiments.
+     24 +
+     25 +No candidate gate, Lean executable, elaboration/query, mutation, runtime probe, build, Nix evaluation, or external service was invoked. Node scripts perform only file/JSON/text/hash r
+         econciliation and readonly Git inventory. Their outputs are **inspection**, never compiled controls. Source statement prefixes are navigational excerpts and may stop at record-update
+         `:=`; exact source copies, not those prefixes, govern the cited statements.
+     26 +
+     27 +## What is established at its stated scope
+     28 +
+     29 +- **Identity accounting:** 239 source theorem declarations at 239 distinct qualified identities, 163 public / 76 private, 158 authored / 81 helper labels. All source locations match;
+         private-name matching was anchored to the exact module, numeric private index and full source name. The independent reconstruction equals the desk JSON mapping with no discrepancies.
+         No helper exemption was granted or inferred.
+     30 +- **Retained OP-10:** raw output contains 1,213 distinct `axiom-theorem` names, 1,213 corresponding axiom rows, 27 modules, `walkOcc=1214 distinct=1213 fold=1213`, one duplicate occur
+         rence `KelGroups.setInsert.eq_1`, and `axiom-gate: ok`. All reported axiom lists use only the permitted names. Source script hash matches **4fb40d5089e908d16f91ae35cfb479d9d454b2a6fd6
+         f337627789a40851bc01b**. This evaluates an owner's retained execution, not an independent rerun, fresh axiom proof or coverage result. The shipped script discloses the two theorem tra
+         versals' shared filters.
+     31 +- **The 974 remainder:** the newly admitted `OP10-identity-classes.txt` lists every retained name exactly once, with no missing/extra names. Counts reproduce: SOURCE 163, SOURCE-PRIVA
+         TE 76, GEN-PROOF 357, GEN-SIZEOF 133, GEN-PRIVATE 133, GEN-EQ 130, GEN-INJEQ 95, GEN-INJ 95, GEN-PROJECTION 12, GEN-EQDEF 9, GEN-CTORIDX 9, GEN-RECURSOR 1. This is adequate **bounded
+         static name/site accounting**; the old overlapping GEN-OTHER census alone was not. It does not independently establish Lean's generation mechanism, semantic irrelevance, or a compiler
+          provenance property for each name. No observed unmatched source theorem is hidden by this conclusion.
+     32 +- **Three-node costs:** under the stated one-module-per-invocation method, Validate→Integration→KelGroups.Invariants and Step→Predicates→Reactivegas.Invariants each have two rebuilds
+         plus one checker elaboration. The supplemental index corrects Validate from four to three. Its subtotal is **129 targeted before OP-71**, hence **131 targeted plus one build including
+          OP-71**. This is arithmetic over the proposed operations, not a demonstrated completion ceiling.
+     33 +- **Premise versus producer:** source shows `comune_not_a_member_of_reach` returning the fixed-view Reach boot premise and carrying the induction hypothesis. Separately, `productionWe
+         llFormed`, `boot`, `apply` and reserved-key admission checks visibly implement production guards. No runtime-absence finding or theorem refutation follows. The production/theorem conn
+         ection remains a scope question, not an established missing theorem.
+     34 +- **Aliases:** all seven root names remain distinct identities; call-through bodies support a shared dependency account. Removing the proposed theorem-statement mutations and duplicat
+         e mutation counts is correct. Shared dependency is not property-specific failure evidence for every alias.
+     35 +- **Historical accounting:** four original `lake build` invocations against three remain an overrun, including the wrong-cwd failure. OP-10 was separately granted and charged, yieldin
+         g five substantive / three recorded top-level targeted operations. The later allowance does not refund the overrun. Phase 2 and exploration remain unauthorized.
+     36 +
+     37 +## Findings
+     38 +
+     39 +All next dispositions below belong to commissioner **%503**, through the commissioning chain. The auditor does not repair or accept the subject. “Blocking” means an explicit required
+         Phase-1 input is still unresolved, not a claim about production severity.
+     40 +
+     41 +### F-01 — receipt inventory changes recorded identities and states (blocking: P1-B, D3)
+     42 +
+     43 +R3 §1's “exact” roster and §1C, carried forward by R4/R5 and INDEX, disagree with the archive itself. Examples with retained raw evidence:
+     44 +
+     45 +| Claimed assessment | Archive text |
+     46 +|---|---|
+     47 +| R3 files 3/6/7, all 18 rows OPEN/NONE | main TSV has 17 data rows; emitter-auditor-1 has KILLED rows plus OPEN/RESIDUAL; emitter-auditor-2 has KILLED rows plus RESIDUAL. `E-TOJSON`
+         is KILLED, not OPEN/NONE. |
+     48 +| docs auditors have M1–M8, eight rows each | docs-auditor-1 has M1–M5; docs-auditor-2 has M1–M4. |
+     49 +| t62 archived files are decision/SHA prose, no mutant rows | `commit-auditor-s62-c-a011-s1-codex-r1/campaign-ledger.md:11–17` has seven named theorem/economy/trace/boundary rows, inc
+         luding BLOCKED findings and mutation evidence. Other listed t62 ledgers likewise contain actual row tables. |
+     50 +| t54 auditor files have 31 rows, all pipeline properties | tables also contain VI and EP rows; s2 `VI-3` names the production `applyEventDetailed` threshold mutant and theorem proof
+         mismatch. These cannot be dismissed collectively as having no theorem subject. |
+     51 +| both toolchain ledgers OPEN/NONE | archived auditor ledger has four KILLED rows with named mutants and hashes; only the owner ledger is OPEN/NONE. |
+     52 +| t48 recut1 has six rows | its table has ten rows, including FENCE, STEP-ITE, STEPEVENT-DELEGATE, BOUNDARY. |
+     53 +| t74 ledger has two E-CLOSED/E-ONLY rows | it has five G74-* OPEN rows. |
+     54 +
+     55 +The 43-file total is correct; the receipt transcription is not. Excluding a non-theorem receipt from D2 can be valid, but does not authorize altering its historical state or replacing
+          its identity. An INV table row can also reference multiple experiments; one grouped marking is not the demanded subject/mutation/checker/fixture/footprint/toolchain/command record fo
+         r each receipt.
+     56 +
+     57 +Evidence: `evidence/receipt-archive-index.json`, the complete readonly copies under `evidence/archive/`, and `receipt-file-roster.md`. Required disposition: a corrected receipt-level
+         assessment over the existing archive, retaining missing/unknown fields explicitly. **No execution is necessary to establish these transcription findings.**
+     58 +
+     59 +### F-02 — declared unrecoverable provenance is recoverable (blocking: P1-B, D3, absence/provenance challenge)
+     60 +
+     61 +R3/R4/R5 and INDEX treat t62's `3a7b355a` as a failed Git-object lookup and say no candidate was recorded, then call the loss permanent. The main t62 ledger itself names submission-2
+         candidate `000ff76`. The referenced object is a **report SHA-256**, not a Git commit:
+     62 +
+     63 +`evidence/archive/reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-a-s2-codex/report.md`
+     64 +
+     65 +hashes to **3a7b355a260b018c70a004f4c9384d7e408d28737ebc240fef6de10a57853ae1**. It names full candidate **000ff76a52b3972f232ef18fbeaa96ac6a6b0f20**, tree, gate, exact commands, input
+          hashes and output hashes. That candidate is present in the local Git object database. Retrieved outputs reproduce the ledger's prefixes:
+     66 +
+     67 +- false-preservation RED: **060790281562dfd07796ba81777cd5d47803e5a999f59d1686a79d542603bee0**;
+     68 +- repair-properties GREEN: **7dbd79ca45d37203cc1cac19b2b783be6e66d7df13d801a2da56725d532faddf**;
+     69 +- slice gate: **71c8588c120d7a68ec267bab53e3360a4f084bde805d0411d1a5db835274bcd4**.
+     70 +
+     71 +Likewise, t57 retrieval is not exhausted by its high-level prose. Its archived gate has six literal mutant source files, `verify-negative-controls.sh`, and RED outputs. `falsify-mutan
+         t-partition.log` hashes to **fcbd02d28fbe5f48119714b1440aef82dd4ffaae4d1ab70e7053f86d85e8aae8**, exactly the t57 audit report's PARTITION receipt. The source defines a separate `mutan
+         tFold`, and the driver names that file explicitly. This permits substantially more binding and mutation-kind assessment than “prose only.” It does **not** by itself settle the entire
+         old compiled dependency footprint or establish current reuse.
+     72 +
+     73 +Required disposition: reopen those receipt assessments from the recovered evidence. **Do not automatically upgrade them to REUSABLE-BOUNDED.** New execution cannot recreate missing hi
+         story, but that principle is inapplicable to history still present. No new execution is required for the recovery shown here.
+     74 +
+     75 +### F-03 — the semantic denominator and ownership relation remain coarse (blocking: P1-A, D1b, D2 planning)
+     76 +
+     77 +The reports enumerate entry-point names and broad G/E/V/B families, but provide no complete literal atom ledger covering each conjunct, refusal arm, effect and reached hook, paired to
+          exact theorem properties. R3's ownership annex still groups families by “as named” and wildcard/check-family shorthand; a separate 239-name authorship roster does not supply the miss
+         ing relation.
+     78 +
+     79 +Concrete source obligations absent from that finite account include the reached `checkRoleAddition`/`checkRoleRemoval` calls into `roleDef.canAdd`/`canRemove` (`KelGroups/Validate.lea
+         n:43–60`, reached through normal proposal role validation), and the individual hook pre/post/input/result bindings in `commitBaseChange` (`Integration.lean:139–145`). Label B-hook or
+         B-propose does not enumerate these atoms. Counting 14 constructor arms or naming `hstep` shows a structural branch relationship, not that every guard conjunct constrains each reported
+          property. For example, source `step_authorized` extracts signer responsibility from each branch; its donate proof extracts the left conjunct, whereas `step_donate_inv` states the pos
+         itive-value conjunct too. The report cannot substitute the constructor count for that distinction.
+     80 +
+     81 +Required disposition: preserve all 239 source identities and derive the finite atom/property relation at statement/body scope, marking any unresolved semantic relevance explicitly. La
+         ter mutation sensitivity needs separately funded execution. This audit establishes only the documentary/source mismatch, not which unseen mutants would survive.
+     82 +
+     83 +### F-04 — a current theorem's statement is described using obsolete scope (blocking: P1-A/D2, exactness)
+     84 +
+     85 +R3 §3 Family C says `no_expiry` owns “V-cast on one distinct question ONLY” and that its statement covers a cast. This remains operative through INDEX. At accepted source `KelGroups/V
+         ote/Invariants.lean:877–896`, the statement takes **arbitrary `event : VoteEvent`**, a production-prefix state, and `hpres : PreservesQuestionSemantics ... event questionId`. It does
+         not restrict the event to `.cast`, nor state a distinct-question premise. `preservesQuestionDecide` at :852–860 inspects target preservation through `applyVoteEvent`; the proof uses t
+         hat premise and well-formedness.
+     86 +
+     87 +The scope is still one target question across one event under an explicit semantic-preservation premise, not an unconditional guarantee over an entire trace. Both that limit and the g
+         eneral event parameter must be represented. Historical t54 experiment scope cannot stand in for the accepted theorem type. Required disposition: correct this source-derived property/o
+         wnership row. No theorem change or compiler run is requested.
+     88 +
+     89 +### F-05 — the helper roster is repaired, but “all hypotheses exhibited” is false (blocking: P1-A helper obligation)
+     90 +
+     91 +The R4 deletion repairs 84 printed names to 81, with exactly the reported six group counts. But R3 §4/R4 §4/INDEX still say every helper has a concrete satisfiable antecedent and is d
+         one at zero further work. H-none assigns `cols=[]` to:
+     92 +
+     93 +- `stripCollections_sublist` (`Reactivegas/Invariants.lean:847`), which has explicit `hy : y ∈ (stripCollections r cols).1`;
+     94 +- `stripCollections_sublist_lemma` (:828), whose quantified premise requires the same membership;
+     95 +- `stripCollections_amount_lemma` (:852), whose premise requires `p ∈ (stripCollections r cols).2`.
+     96 +
+     97 +The cited definition's empty branch is `([],[])` (`Reactivegas/State.lean:116–117`). The offered empty instantiation supplies **neither required membership premise**. It is a vacuous
+         instance of a universally quantified implication, not the required satisfiable-hypotheses witness. Other grouped accounts leave parameters unsupplied: `option_bind_inv` names `o=some
+         ()` without `f` and `b`; `assocLookup_insert_of_none` has `hne : other ≠ key`, omitted from its H-none recipe.
+     98 +
+     99 +This is an inspection finding about the **offered witness**, not a claim that these helpers are unsatisfiable or false. Required disposition: actual per-hypothesis static instantiatio
+         ns or explicit OPEN rows. The original amendment expressly permits static arguments for harmless helper facts; no universal compiler-testing requirement is invented here.
+    100 +
+    101 +### F-06 — the corrected envelope is not an executable complete phase plan (blocking: P1-D, D4/D5)
+    102 +
+    103 +INDEX fixes Validate arithmetic, but carries R5's grouped operation map through corrections. There is still no identity-level allocation proving every theorem property and every atom
+         crosses phase boundaries without omission. The original blanket estimates are withdrawn, yet their underlying operation multiplicities remain unsupported.
+    104 +
+    105 +Specific unresolved seams:
+    106 +
+    107 +- OP-25..31 still allocates seven runtime mutant operations including the comune transport rows; corrections correctly remove their runtime guard ownership without publishing the corr
+         esponding exact operation/requirement replacement. Mutating `credit_pledges_step` proof arms as written is also not automatically a production-definition mutation.
+    108 +- OP-11..24 names one weakened guard per inversion, while P1-A promises guard **and effect** atoms and each guard can have multiple conjuncts. No argument or literal allocation accoun
+         ts for the additional obligations.
+    109 +- OP-46..65 still groups approximate vote/substrate families; t57's target module is fixed “at authoring.” A module-unknown bound does not name a driver, exact atom, affected closure
+         and owning checker for each operation.
+    110 +- OP-66..70 performs baseline witness re-elaboration without production mutation. That can evaluate a witness, but cannot discharge a required production-definition kill; it needs an
+         explicit separate disposition in the identity map.
+    111 +- M-elab** now correctly requires the affected closure and actual loading evidence, but the plan does not state how all later theorem rows are checked if an intermediate module's own
+         theorem proof fails, or which additional invocations follow. No such mechanism was measured.
+    112 +- The index correctly yields 129 targeted **plus** final two targeted and one build. The owner's terminal prose says 129 targeted plus one build, dropping the two final elaborations f
+         rom that headline.
+    113 +
+    114 +Required disposition: a finite, numbered requirement-to-operation plan with explicit unresolved rows and measurements/estimates separated; then a new numeric authorization from the co
+         mmissioner. **131 targeted + one build is only the sum of the present proposal, not an auditor-endorsed sufficient budget.** There is no funded next-phase execution in this audit.
+    115 +
+    116 +### F-07 — costing evidence does not establish all timing and isolation claims (blocking limit: P1-C)
+    117 +
+    118 +Retained Build-2 output reports Step rebuilt (1.2s), Predicates rebuilt (445ms), Invariants failed (7.6s), with the changed donate conjunct `(0 < v + 1)` versus `(0 < v)` at :407. The
+          retained one-line diff matches that change. This is coherent historical costing evidence for that particular definition/proof interaction, not this auditor's executed kill.
+    119 +
+    120 +The historical cold log is missing; 19s total is only narrated. The 10s/3s/11s/2s top-level elapsed measurements likewise are report observations rather than separately retained timer
+         /exit receipts; the logs/summaries support their narrower module results. The 2s command was elaboration plus `#eval`, not isolated runtime replay. No isolated per-module or shared-co
+         mpilation throughput measurement exists in the supplied costs, and no bound follows from those numbers.
+    121 +
+    122 +Isolation also remains unestablished: Build-2's actual compiler argv and `LEAN_PATH` name **`/code/reactivegas-66-s3-phase1/lean/...`**, the candidate worktree; the report describes m
+         utating and restoring its Step source. No separate scratch checkout/source-root or filesystem-mapping evidence establishes that the candidate/source fence was preserved during the mea
+         surement. Final clean status establishes restoration, not absence of a transient source edit. This is a retained-evidence provenance/fence finding; this auditor did not mutate or exec
+         ute anything.
+    123 +
+    124 +Required disposition: preserve the historic overrun and missing timing/cold/isolation evidence as limits; reconcile any surviving execution-location records. Do not reconstruct a lost
+          log or rerun it under this commission. Any genuinely new measurement needs a concrete separately authorized operation after F-06 is resolved.
+    125 +
+    126 +### F-08 — owner handback is not at the journal tail (required administrative disposition)
+    127 +
+    128 +The captured journal contains an INDEX terminal section, then a later corrections terminal section, then an old NOTE-008 acknowledgement. Its actual last paragraph again says “Next: p
+         re-run confirmations, then the single OP-10 run.” INDEX's assertion that the terminal is at the tail is therefore false. Evidence: `evidence/supplemental/OWNER-STATUS-snapshot.md:438–
+         454`; prior terminal at :362 onward remains visible. This does not license another OP-10 run.
+    129 +
+    130 +Required disposition: commissioner routes an append-only, hash-bound current handback through the owner. The auditor must not edit another seat's journal.
+    131 +
+    132 +## Coverage, stopping and return
+    133 +
+    134 +No theorem is declared READY-TO-PROVE, PROVED, REFUTED or mutation-covered by this audit. Source-type comparisons are inspection; retained historical RED/GREEN outputs are evaluated o
+         nly at their recorded subject/layer. Fresh compiled reachability, exact inversion sensitivity, theorem-to-atom adequacy, helper compilation, loading controls, current receipt reuse an
+         d final acceptance remain unestablished where required. The closed structural name counts do not close these semantic surfaces.
+    135 +
+    136 +D6 is retained as later work: the historical reader experiment remains VOID by the mandate, not reconstructed; known comment/definition disagreements are carried in `ONWARD-DISCOVERIE
+         S.md`. S3 completion, #66 closure, S4/S5 discharge, remote CI and owner acceptance are not established.
+    137 +
+    138 +Stopped after the full finite requirement ledger, original/supplement reconciliation, complete campaign-file/table census, and concrete challenges to each remaining material assessmen
+         t class. This is not an exhaustive mutation search; additional arbitrary semantic claims are outside the static floor. **Auditor spend: builds 0, Lean elaborations/queries 0, probes 0
+         .** No code edits, commit, push, PR, comment, merge, publication or seat contact occurred. Candidate remained detached and clean.
+    139 +
+    140 +Local evidence and reports are bound by `handoffs/AUDIT-MANIFEST.sha256`; its own hash and this report hash are recorded in the final append-only STATUS event. Commissioner %503 owns
+         acceptance and every next dispatch. No second audit, rerun or Phase-2 grant is implied.
+
+• Edited 2 files (+61 -0)
+  └ /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex/handoffs/ONWARD-DISCOVERIES.md (+13 -0)
+     1 +# Onward discoveries — static observations only
+     2 +
+     3 +Named census/backlog owner: **%503**, reached only through the commissioning chain. No other seat was contacted. The witnessed new semantic-defect/refutation set is **empty**: no compi
+        led witness, runtime counterexample or fresh mutation was authorized or produced.
+     4 +
+     5 +| ID | Observation and exact inspection scope | Next disposition |
+     6 +|---|---|---|
+     7 +| OD-S3-01 | `lean/Reactivegas/Invariants.lean:1137–1140` describes guarded production boot and direct admission above `comune_not_a_member_of_reach`; the body at :1141–1146 instead tr
+        ansports a fixed-view Reach boot premise. This is an observed comment/body scope mismatch, not proof that production lacks the guard or that a connecting theorem is absent. | %503→D6 c
+        larity census; S5 may assess how existing statements connect to production producers under its own authority. No theorem/model change proposed. |
+     8 +| OD-S3-02 | `CORRECTIONS-009.md` says reserved-key refusal is checked FIRST. At accepted `lean/KelGroups/Validate.lean:145–149`, signer admin status is checked before reserved-key ide
+        ntity; reserved-key identity is checked before existing membership. Static report wording overstates the order. | %503→Phase-1 record correction/semantic-atom census, F-03. No new runt
+        ime error-order result claimed. |
+     9 +| OD74-S1-COMMENT (inherited, verified) | `lean/Reactivegas/Trace.lean:357–359` still says the deny/refund seed exercises an UNPROVED claim row. The mandate's correction routes this as
+         inherited stale prose; source comment text is present. | %503→D6; any `docs/en/design/` edits through #71 only. |
+    10 +| OD-S3-03 (inherited, verified) | `lean/Reactivegas/TraceTests.lean:804,816,828` refers to eighteen identities and an 8/10 split; retained current inventory reports 14 constructors. S
+        tatic comment/inventory disagreement only. | %503→D6 clarity census. |
+    11 +| OD-S3-04 (inherited scope question) | The mandate/report carry the `Predicates.lean` design-page reference and renounce/V-5 disagreement. This audit does not manufacture a V-5 semant
+        ic result or reconstruct the VOID reader experiment. | %503 retains these for D6/#71 and V-5 owner #81 respectively; existing authority controls further work. |
+    12 +
+    13 +All eight in-scope assessment findings remain in AUDIT-REPORT.md; none is displaced into this onward file to weaken the verdict. These observations add no execution, code-edit, publica
+        tion or contact authority.
+
+  └ /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex/handoffs/REQUIREMENT-LEDGER.md (+48 -0)
+     1 +# Per-requirement ledger — full S3 Phase 1 assessment
+     2 +
+     3 +Bound subject: `3590c0015b84fd58004bf6fb44dd18b107304c48`. This ledger uses the original Phase-1 brief, operative mandate rev3, all amendments and the audit commission. It assesses com
+        pleteness of Phase 1, not completion of S3 coverage.
+     4 +
+     5 +Evidence classes: **I = inspection** of actual source/artifact/graph/hash/JSON; **R = retained-evidence evaluation at its stated scope**; **U = unestablished**. CLOSED is always qualif
+        ied by the row's stated observable. A CLOSED document/accounting row is not a compiled semantic verdict. For PARTLY rows, the evidence column distinguishes the established part from th
+        e unestablished part.
+     6 +
+     7 +All OPEN/PARTLY rows return to **%503 through the commissioning chain**. Named implementation or later-slice owners below are onward dispositions for that commissioner, not auditor con
+        tact or work grants. F-numbers refer to `AUDIT-REPORT.md`.
+     8 +
+     9 +| ID | Authorized requirement / observable | Status | Evidence class and what establishes it | Remaining disposition |
+    10 +|---|---|---|---|---|
+    11 +| A-01 | Fresh subject, accepted SHA, isolated readonly auditor checkout | CLOSED | I: START `/proc`, Git SHA/tree/parent, clean detached checkout; `START-identity.txt`, `candidate-fin
+        al-identity.txt` | No build or semantic inference from clean status. |
+    12 +| A-02 | Actual model/effort/PID/PGID/cwd/pane and post-brief START | CLOSED | I: PID=PGID=2738580, argv gpt-6-astra/high, pane %568, START 00:21:07Z after brief mtime 00:20:16Z | Full
+         argv retained; no process identity inferred from tool shell. |
+    13 +| A-03 | Placement authority and independent context | CLOSED | I: distinct named windows; later inbox NOTE-001 explicitly dispositions placement for this review | Original stronger-in
+        dependence/pre-launch framing withdrawn; disposition is post-START, not retroactive. |
+    14 +| A-04 | Immutable complete input packet | CLOSED | I: 16/16 original plus 12/12 supplemental manifest checks; all 12 supplement bytes equal prior auditor captures | Commissioning omis
+        sion preserved in report; later supplement closes present review inputs, not historical launch timing. |
+    15 +| A-05 | Read full mandate, original report, every revision/amendment; no delta-only review | CLOSED | I: entire report/amendment chain captured/read; requirement rows cover P1-A/B/C/D
+        , D1–D6 and boundaries | Earlier statements treated as claims, corrected where later artifacts govern. |
+    16 +| A-06 | Auditor zero execution, local files only, no contact or candidate changes | CLOSED | I: tool record; only source/artifact reads, graph/hash/JSON reconciliation and own evidenc
+        e writing; final Git status empty | Builds=0; Lean elaborations/queries=0; probes=0. |
+    17 +| P1A-01 | Re-derive source theorem extent, including private and repeated short names | CLOSED | I: 28 Lean/config files, 27 modules, 239 source declaration sites / 224 short spelling
+        s / 239 qualified roster identities; exact source locations verified | Source scan is lexical, not a fresh compiled discovery. Retained compiled cross-check in P1A-02. |
+    18 +| P1A-02 | OP-10 retained compiled identities, public/private source mapping, no quota | CLOSED | I+R: 1,213 names and axiom rows, 163 exact public + 76 anchored private matches, 239 u
+        nique mappings equal desk map; raw count walkOcc 1,214 vs 1,213 distinct | Retained execution only; no independent OP-10 rerun or coverage claim. |
+    19 +| P1A-03 | Classify every source row; helper facts retained, no class exemption | CLOSED | I: 158 AUTHORED-STATEMENT + 81 HELPER-FACT labels with source identity/site; structural helpe
+        r statements inspected, all identities retained | Classification is static; no helper exclusion or desk exemption inferred. Hypothesis witnesses remain P1A-05. |
+    20 +| P1A-04 | List excluded compiled identities and classification rule; assess name-based limits | CLOSED | I: supplemental identity-class artifact accounts for all 1,213 names once and
+        all 974 non-source names; no missing/extra/misassigned source names | CLOSED for bounded name/site accounting only. Compiler generation mechanism and semantic irrelevance are U, not su
+        pplied by suffix recognition. |
+    21 +| P1A-05 | Every helper has actual satisfiable hypotheses, no invented Reach premise | PARTLY | I: corrected 81-name helper roster and group counts match; literals/empty/singleton reci
+        pes exist. U: F-05 has unsupplied membership and other hypotheses | %503→Phase-1 owner: per-hypothesis static witness or explicit OPEN, without compulsory compiler tests. |
+    22 +| P1A-06 | Re-derive actual entry points and reached hooks; table not an allowlist | PARTLY | I: listed production entries and extra definitions exist; source shows further reached pri
+        vate role validators and `canAdd`/`canRemove`. U: complete reached-hook ledger | F-03: derive finite domain from actual bodies and preserve historical versus integrated surfaces. |
+    23 +| P1A-07 | Finite guard/conjunct/refusal/effect/base-hook atom identities | OPEN | I: report supplies broad G/E/V/B labels and constructor/error vocabulary. U: no full literal atom ext
+        ent | F-03: every conjunct, branch and effect needs its own inspectable identity or an explicit grouping rationale. |
+    24 +| P1A-08 | Actual theorem-property-to-atom relation, not Cartesian product or names | PARTLY | I: individual inversion source shapes, alias calls, premise transport and some proof depe
+        ndencies are visible. U: families/wildcards/14-arm counts do not close full relation | F-03/F-04: retain every theorem row and distinguish semantic relevance from proof-branch enumerat
+        ion. |
+    25 +| P1A-09 | Precise accepted theorem scope, including no_expiry | OPEN | I: accepted source `event : VoteEvent` plus `PreservesQuestionSemantics` differs from operative “V-cast ... ONLY
+        ” account | F-04: correct property row without modifying theorem or claiming refutation. |
+    26 +| P1A-10 | Premise transport distinguished from production producer; no invented absence | CLOSED | I: Reach boot/trans proof and actual `productionWellFormed`/boot/apply/admission sou
+        rce bodies; false absence explicitly withdrawn | S5 question remains whether/how statements connect to producers; no established missing connection. |
+    27 +| P1A-11 | Alias identities preserved, original statements fixed, no duplicate mutation credit | PARTLY | I: seven pairs remain listed and call bodies exist; statement-mutation proposa
+        l withdrawn. U: per-alias property outcomes/dispositions in future plan | F-06: shared dependency is one mutation, with distinct theorem identities still requiring proper accounting. |
+    28 +| P1B-01 | Complete archive campaign-file roster, distinct from receipts | CLOSED | I: archive list has 43 distinct campaign-ledger files; copied/hash-bound in `receipt-file-roster.md`
+         | Archive's 6,489 count is entries including directories, not regular files. |
+    29 +| P1B-02 | Every receipt retains actual row identity and historical state | OPEN | I: F-01 shows fabricated/missing row counts and OPEN/KILLED/RESIDUAL substitutions in carried assessm
+        ent | %503→Phase-1 owner: reconcile actual tables and distinguish multiple receipts within one INV row. |
+    30 +| P1B-03 | Subject, exact mutation, checker, input, evidenced transitive footprint, toolchain, command per receipt | OPEN | I+R: several full instruments/results recoverable; assessmen
+        t uses broad family/file marks. U: complete seven-field receipt-level relation | F-01/F-02: bound retrieval and honest missing-field records, not blanket demotion. |
+    31 +| P1B-04 | Reuse/staleness/unrecoverable distinction supported per receipt | OPEN | I: t62 alleged permanent loss disproved by matching archived report/candidate; t57 source/command/lo
+        g route present | F-02: reassess, but do not infer current reuse just because old records exist. |
+    32 +| P1B-05 | Historical GREEN not relabelled as current theorem coverage; mutation kinds separate | PARTLY | I+R: no current coverage claim; t54 standalone instrument versus production d
+        istinction is credited. U: all receipt kinds cannot be accepted because omitted/misread t57/t62 rows remain | F-01/F-02: preserve raw outcomes and classify the actual mutated subject.
+        |
+    33 +| P1C-01 | Observed costs separated by cold/incremental/check/replay layer | PARTLY | R: Build-2/3 module results, check summary and corpus output retained; R2 withdraws false bound/is
+        olated-replay readings. U: raw cold timer/log and complete top-level timing receipts | F-07: retain narrated timing as such, no reconstructed cold log. |
+    34 +| P1C-02 | Genuine single-atom production-change costing example | PARTLY | I+R: exact donate diff and historical diagnostic show changed guard in Step→Predicates→Invariants chain; def
+        inition built, dependent proof failed | F-07: sufficient narrow historical costing interaction; isolation provenance remains separate; no audit kill credited. |
+    35 +| P1C-03 | Scratch isolation preserves candidate and sources during costing | OPEN | R: actual Build-2 argv names candidate worktree and report describes mutating/restoring Step there.
+         U: separate scratch/source mapping proving fence preservation | F-07: reconcile surviving provenance or record historical noncompliance/unknown; final clean state is only restoration
+        evidence. |
+    36 +| P1C-04 | Measured per-row/per-batch costs, no unsupported sharing/throughput claims | PARTLY | I: batching explicitly unmeasured and unsubtracted; estimates corrected from bounds. U:
+         proposed targeted-class throughputs and complete arrangement not measured | F-06/F-07: any new measurement separately and concretely authorized after operation map. |
+    37 +| P1C-05 | Full build-spend account, retained overrun, OP-10 separate | CLOSED | I+R: original four invocations, NOTE-003 ruling, NOTE-008 extra operation and OP10-RESULT; 4v3 retained
+        , five substantive/three recorded top-level targeted total | No retrospective refund; raw independent proof of every historical invocation is not claimed. |
+    38 +| P1D-01 | Numeric ceilings from an exact operation-to-requirement plan | OPEN | I: corrected arithmetic exists; 129+2 targeted plus one final build. U: sufficiency, exact per-op targe
+        ts/closures and all identity allocations | F-06: current arithmetic is neither a complete plan nor a sufficient ceiling. |
+    39 +| P1D-02 | All required identities preserved across phases; relevant coverage for both axes | OPEN | I: literal source roster retained. U: no exhaustive identity/atom-to-operation/defe
+        r/disposition mapping; guard-only and baseline-check operations omit obligations | F-03/F-06: no identity is silently discharged by a family count or zero-cost label. |
+    40 +| P1D-03 | Actual changed-definition loading, closure rebuilds and property-specific failure | PARTLY | I: M-elab corrected to closure rebuild plus observable loading evidence or equiv
+        alent; Validate three-node arithmetic corrected. U: concrete per-op implementation and intermediate-failure handling | F-06: no proof of actual loading from hashes/PATH alone, no execu
+        tion granted here. |
+    41 +| D4 | Six coverage sets and homogeneous accounting when coverage claimed | CLOSED | I: Phase 1 explicitly claims no coverage; costing RED not placed in KILLED | Future D4 reconciliati
+        on remains U and required before any coverage claim. |
+    42 +| D5 | Phase 1 is a checkpoint; S3/#66 not complete; later phases ungranted; exploration 0 | CLOSED | I: briefs/amendments explicitly preserve all these boundaries | No Phase-2 plan or
+         ceiling accepted by this audit. |
+    43 +| D6 | VOID reader experiment and known ambiguities retained with onward owner | PARTLY | I: mandate declares VOID; source confirms stale comments; report carries some D6 leads. U: fin
+        al LEAN-CLARITY deliverable/evidence reconciliation | %503→D6; design-page edits only through #71; V-5 disposition through #81. This later deliverable is not presumed due as Phase-1 co
+        de work. |
+    44 +| B-01 | Subject model/statement/fence integrity, local reporting only | PARTLY | I: accepted source identity retained; amendments withdraw alias statement mutation; no new audit-side
+        change. U: historical scratch source fence, F-07 | No antecedent strengthening, source repair or docs edits authorized. |
+    45 +| B-02 | Actual owner journal-tail terminal handback with counters/hashes | OPEN | I: captured journal ends with stale OP-10 “Next” paragraph after terminal sections | F-08: %503 route
+        s append-only owner disposition; auditor cannot write owner's STATUS. |
+    46 +| OUT-01 | One terminal report, requirement ledger, onward file and hashed local evidence | CLOSED | I: this ledger, AUDIT-REPORT.md, ONWARD-DISCOVERIES.md, AUDIT-MANIFEST.sha256 and f
+        inal STATUS receipt | Terminal AUDIT-FINDINGS; commissioner retains acceptance and further authorization. |
+    47 +
+    48 +Closure of OUT-01 is limited to verified delivery of these artifacts. It does not convert the subject's open Phase-1 requirements into completed coverage.
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• The report and requirement ledger are written with terminal verdict AUDIT-FINDINGS. They credit the verified identity accounting and corrected three-command Validate cost, while documenting
+  eight unresolved assessment findings. I’m checking the final artifact hashes and confirming the checkout remains unchanged before appending the terminal STATUS receipt.
+
+• Ran node --input-type=module <<'JS'
+  │ import fs from 'node:fs';
+  │ const root='/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex';
+  │ … +12 lines
+  └ AUDIT-REPORT.md 22801 bytes
+    REQUIREMENT-LEDGER.md 12711 bytes
+    … +18 lines (ctrl + t to view transcript)
+    S3-MANDATE-rev3.md: OK
+    S3-OP10-independent-identity-map-20260905.json: OK
+
+• Ran git status --porcelain=v1
+  │  git rev-parse HEAD
+  │  tail -7 /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/STATUS.md
+  │ … +2 lines
+  └ 3590c0015b84fd58004bf6fb44dd18b107304c48
+    - OP-10 grant accepted as bounded: entry `nix develop --quiet -c bash
+    … +8 lines (ctrl + t to view transcript)
+    2026-09-06 00:30:11.541335610 +0100 138765 /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/OP10-stdout.txt
+    2e497b228ff7db55517b53757cd3b147b7832f920ccf25125cdb391e91e47a22  /home/paolino/reactivegas-ms2-runtime-archive/ms2-runtime-20260905-0833.tar.gz
+
+• Edited /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex/handoffs/REQUIREMENT-LEDGER.md (+2 -0)
+     8
+     9 +Ledger count: **36 requirements — 16 CLOSED, 11 PARTLY, 9 OPEN**. These are assessment/disposition counts, not theorem or mutation coverage.
+    10 +
+    11  | ID | Authorized requirement / observable | Status | Evidence class and what establishes it | Remaining disposition |
+
+• Ran node --input-type=module <<'JS'
+  │ import fs from 'node:fs';import crypto from 'node:crypto';import path from 'node:path';
+  │ const root='/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex';
+  │ … +11 lines
+  └ Bound files=323
+    manifest_check_exit=0
+    … +4 lines (ctrl + t to view transcript)
+    ac172dbfecad4447e105707fef8e3f6674712a3f5d735e9a1cf73497342a771e  handoffs/AUDIT-MANIFEST.sha256
+    c7282f68069db41e38a6248fea8b0562cb7d97a6bcfbb720894492ccb1d41de1  handoffs/AUDIT-MANIFEST-CHECK.txt
+
+• Ran audit_root=/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex
+  │ /code/llm-settings/shared/skills/worker-protocol/scripts/status-event "$audit_root/STATUS.md" AUDIT-FINDINGS 'submission=1 full S3 Phase1 static review; findings=8; requirement ledger=36
+  │ (CLOSED=16 PARTLY=11 OPEN=9); report=handoffs/AUDIT-REPORT.md sha256=3e31cde1ee9a237a6d075500f3e99ae836d88444f25472f026a6d282aef53d15;
+  │ … +7 lines
+  └ 2026-09-06T00:35:23Z  AUDIT-FINDINGS  submission=1 full S3 Phase1 static review; findings=8; requirement ledger=36 (CLOSED=16 PARTLY=11 OPEN=9); report=handoffs/AUDIT-REPORT.md
+    sha256=3e31cde1ee9a237a6d075500f3e99ae836d88444f25472f026a6d282aef53d15; ledger_sha256=cb5ec11ceeec57eb4baa73a7a00a7136cfd1101c79058a2dea56b86f61b356a1;
+    … +4 lines (ctrl + t to view transcript)
+    sha256=c7282f68069db41e38a6248fea8b0562cb7d97a6bcfbb720894492ccb1d41de1 exit=0 entries=323; HEAD=3590c0015b84fd58004bf6fb44dd18b107304c48 detached clean; builds=0 Lean elaborations/
+    queries=0 probes=0; no code edits/contact/push/PR/comment/merge; Phase2 unauthorized; no second audit or rerun implied; stopping.
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• Completed and acknowledged both pointers in STATUS.md.
+
+  AUDIT-FINDINGS: 8 findings; 36 requirements assessed. Zero builds, Lean queries or probes; checkout unchanged.
+
+  Report (/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex/handoffs/AUDIT-REPORT.md) and ledger delivered with 323 verified artifact hashes.
+
+─ Worked for 15m 12s ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+› debrief
+
+
+• I’ll use the debrief skill to summarize the outcome, the evidence, and the next decisions.
+
+• Explored
+  └ Read SKILL.md, STATUS.md
+
+⚠ Heads up, you have less than 10% of your weekly limit left. Run /status for a breakdown.
+
+• Ran git remote get-url origin
+  │ sed -n '1,16p' /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex/handoffs/AUDIT-REPORT.md
+  │ rg -n '^### F-|^Required disposition|^The 43|^The scope|^Specific unresolved' /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex/handoffs/AUDIT-REPORT.md
+  └ git@github.com:paolino/reactivegas.git
+    # S3 Phase 1 static assessment audit — submission 1
+    … +31 lines (ctrl + t to view transcript)
+    126:### F-08 — owner handback is not at the journal tail (required administrative disposition)
+    130:Required disposition: commissioner routes an append-only, hash-bound current handback through the owner. The auditor must not edit another seat's journal.
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• The audit is finished: Phase 1 is not ready for acceptance or funding Phase 2. This concerns the assessment for #66, S3 (https://github.com/paolino/reactivegas/issues/66); it establishes no
+  new theorem refutation.
+
+  What holds:
+
+  - All 239 source theorem identities reconcile with the retained 1,213 compiled names.
+  - The completed classification file accounts for every name once.
+  - The supplemental index corrects Validate’s cost to three commands.
+
+  The eight findings fall into three practical groups:
+
+  - Trusting historical evidence: receipt tables misstate identities and OPEN/KILLED states. Most decisively, supposedly unrecoverable t62 provenance was present in the archive, with matching
+    hashes and a full candidate identity.
+
+  - Knowing what needs coverage: the guard/effect-to-theorem map remains incomplete; no_expiry is described using obsolete scope; some helper witnesses leave required hypotheses unsatisfied.
+  - Funding the next phase: corrected arithmetic still lacks a complete operation plan. Timing and scratch-isolation evidence have limits, and the owner’s journal ends with stale instructions
+    to run the already-spent OP-10.
+
+  The next step belongs to the commissioner: have the owner correct the static assessment, then derive a concrete phase proposal before authorizing execution. Most findings need careful
+  reconciliation, not additional builds.
+
+  I performed zero builds, Lean queries or probes and left the checkout unchanged. Full report (/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex/handoffs/AUDIT-
+  REPORT.md).
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+› talk me into a
+
+  gpt-6-astra high · /code/reactivegas-66-s3-audit

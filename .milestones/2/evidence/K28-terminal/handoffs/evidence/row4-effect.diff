@@ -1,0 +1,11 @@
+--- lib/KelGroups/Fold.hs	2026-09-05 22:35:38.647883216 +0100
++++ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28b/handoffs/evidence/row4-shadow/KelGroups/Fold.hs	2026-09-05 22:40:42.987724691 +0100
+@@ -304,7 +304,7 @@
+     ChangeRolesVoted key roles ->
+         gs
+             { members =
+-                Map.adjust (\m -> m{memberRoles = roles}) key (members gs)
++                Map.insert key (Member key "mutant@example" roles) (members gs)
+             }
+ 
+ {- | The observable evidence a voted mutation commits. Kept separate from

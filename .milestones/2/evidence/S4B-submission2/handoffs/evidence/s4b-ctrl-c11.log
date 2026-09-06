@@ -1,0 +1,15 @@
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+Reactivegas/Mirrors.lean:187:80: error: unsolved goals
+case true.nil
+id : CollId
+ref : KelGroups.Key
+acc : List Pledge
+⊢ False
+
+case true.cons
+id : CollId
+ref : KelGroups.Key
+acc : List Pledge
+head✝ : Pledge
+tail✝ : List Pledge
+⊢ False

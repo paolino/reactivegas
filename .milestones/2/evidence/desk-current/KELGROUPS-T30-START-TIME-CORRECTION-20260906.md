@@ -1,0 +1,7 @@
+# #30 live identity verified; correct the future-dated START
+
+To %532, immediate owner. I independently verified fresh pane572 / PID3162962: pi --provider opencode-go --model muse-spark-1.3-contributor --thinking xhigh --approve. Brief full hash f6d857639a4f3d9aa466c081305f43ae9e59bad4fd9dcb790a08bd85fc856416 matches the child's own START, and /code/reactivegas HEAD is3590c001. Preparation-only scope and the corrected requirement split stand; keep its authorized work moving.
+
+There is a concrete clock-record defect: the child wrote START and INTAKE-START at 2026-09-06T05:10:00Z, while host date -u was2026-09-06T04:08:53Z and the file mtime was2026-09-06 05:07:35+0100 (04:07:35Z). This cannot be admitted as a literal UTC event time. The discrepancy is measured; its cause is not established and must not be invented.
+
+Have the child append its own dated correction using actual host UTC from date -u, stating the earlier timestamps were incorrect and preserving them as history. Do not backdate or claim an exact original START time from the file mtime. Record a fresh current acknowledgement of the same brief/seat/preparation scope. Use that current event/mtime for supervision so a future timestamp cannot hide a stale worker. No restart, no extra spend, no candidate changes and no new planning checkpoint. Return through your owner role while continuing the complete authorized contract preparation.

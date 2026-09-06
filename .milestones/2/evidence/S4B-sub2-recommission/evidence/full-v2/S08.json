@@ -1,0 +1,29 @@
+{
+  "id": "S08",
+  "argv": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=30s",
+    "1800s",
+    "nix",
+    "develop",
+    "--quiet",
+    "-c",
+    "just",
+    "lean"
+  ],
+  "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S08",
+  "charge": "substantive",
+  "launched": true,
+  "start": "2026-09-06T05:16:44.750Z",
+  "spend": {
+    "substantive": 9,
+    "targeted": 5
+  },
+  "obligation": "P07 close permission body original whole mandatory path",
+  "finish": "2026-09-06T05:17:03.736Z",
+  "exit": 1,
+  "signal": null,
+  "stdoutSha256": "6bdc41758806f3442a99d0c9d16e298a68630a572c6a64e654dfdf39b8856c08",
+  "stderrSha256": "0af63d64cf704f7f53df6e0e00354919d3712fb0d94734f7ef6aca50338ddc45"
+}

@@ -1,0 +1,14 @@
+# Mutant -> predicate attribution (gate v4; auditor's exact edits)
+# C-controls prove checker machinery; R-replays prove each documentary predicate.
+# Row-level AUTH-table and pending-table TRUTH is submission-2 human-audit duty.
+M-01-USERS/RESP/NOCONTI -> leg 2 (R1/R2/R3) | M-02-15/NO14 -> leg 3 (R4/R5)
+M-03-NOAPP/NOBASE/STALESTEP -> leg 4/5 (R6/R7/R8) | M-04-NOTENSION -> leg 10 tension (R9)
+M-05-NOWITNESS/29NOCAVEAT -> leg 7 heading+dotted-marker (R10/R11)
+M-06-NOCOMP/NOUNBOUND -> leg 8 composition+unbound block (R12/R13)
+M-07-NOVOTE/NOTHETA(F-07-THETAONLY same) -> leg 8 vote limits+theta sentence (R14/R15/R15b)
+M-08-NOVOCI/NOOPENQ -> leg 9 Voci+open-question (R16/R17) | M-09-NODATES -> leg 10 (R18)
+M-10-NOTABLE/NOV5/NOHOOK -> leg 10 anchors+hook section (R19/R20/R21)
+M-12-NOCLOSE/INVENT -> leg 6 (R22/R23) | F-05-SECTION/SCRUB -> leg 7 heading (R24/R25)
+F-05-29KEEP -> leg 7 caveat clause (R26) | M-11-BOGUS/EMPTY/MALFORMED -> C2/C3/C1
+C4/C4m removal, C5/C5b ambiguity, C6 fail-closed, C7/C7m cross-section, C8/C9 file/line, SYNTH satisfiability.
+SYNTH GREEN proves the required table satisfiable, NOT document correctness.

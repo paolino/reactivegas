@@ -1,0 +1,18 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A18.lean:216:23: warning: unused variable `u`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A18.lean:217:25: warning: unused variable `c`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+governanceEnactsB (u : KelGroups.Key) (s' : State) : Bool
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A18.lean:223:61: error: unsolved goals
+u : KelGroups.Key
+s' : State
+⊢ (∀ (c : Collection), c ∈ s'.collections → c.referente ≠ u) ↔ ∀ (x : Collection), x ∈ s'.collections → True
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A18.lean:224:68: warning: This simp argument is unused:
+  decide_eq_true_eq
+
+Hint: Omit it from the simp argument list.
+  simp only [governanceEnacts, governanceEnactsB, List.all_eq_true,̵ ̵d̵e̵c̵i̵d̵e̵_̵e̵q̵_̵t̵r̵u̵e̵_̵e̵q̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

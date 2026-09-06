@@ -1,0 +1,7 @@
+KelGroups/Vote/Tests.lean:94:0: error: Expression
+  witnessTraceValid zeroThreshold zeroEvents && lookupQuestion "q" zeroThresholdPassesWithNoBallot == none &&
+    match soleClosure zeroThresholdPassesWithNoBallot "q" with
+    | some record =>
+      record.verdict == Verdict.positive && record.question.assents == [] && record.question.dissents == []
+    | none => false
+did not evaluate to `true`

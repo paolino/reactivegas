@@ -1,0 +1,20 @@
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+KelGroups/Mirrors.lean:74:4: error: Type mismatch
+  h k m he
+has type
+  m.key = k
+but is expected to have type
+  (!decide ((k, m).snd.key = (k, m).fst)) = true
+KelGroups/Mirrors.lean:76:4: error: Type mismatch
+  h (k, m) hm
+has type
+  (!decide ((k, m).snd.key = (k, m).fst)) = true
+but is expected to have type
+  m.key = k
+KelGroups/Mirrors.lean:70:66: warning: This simp argument is unused:
+  decide_eq_true_eq
+
+Hint: Omit it from the simp argument list.
+  simp only [MembersCoherent, membersCoherentB, List.all_eq_true,̵ ̵d̵e̵c̵i̵d̵e̵_̵e̵q̵_̵t̵r̵u̵e̵_̵e̵q̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

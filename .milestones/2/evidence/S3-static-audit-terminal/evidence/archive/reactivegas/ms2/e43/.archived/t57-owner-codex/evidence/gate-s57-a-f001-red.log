@@ -1,0 +1,9 @@
+Lean (version 4.25.0, commit v4.25.0, Release)
+gate: ok   toolchain Lean 4.25.0
+gate: ok   source fence changed_paths=4
+gate: ok   Slice-1 modules blob-identical to ccdda830
+lean dependency direction: OK (control imports=9)
+gate: ok   KelGroups to Reactivegas dependency direction
+gate: ok   proof-source hygiene
+gate: ok   exhaustive VoteEvent authorization constructors=6 wildcard=absent
+gate: FAIL effectedState retains event-local authorization guard

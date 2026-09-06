@@ -1,0 +1,22 @@
+2026-09-06T03:27:57Z
+d0f81316bbc896633a9004fe007553397d52d93824be5e2fb34beaf0b3a74653  brief.md
+ba4c073af152353ce58cc778c41e8fa1e688fa92eae6ccdfd7064bbde7478dfc  admitted/COMMISSIONING-SUPPLEMENT-AUTHORITATIVE.md
+22cb04730a3ea46343f9e806b923ebc2ece4a84128970f78f8a88616d08e5348  /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/SUBMISSION-2.md
+94bb7bb64324a48f7361252556b4d15e45b3923f
+3ee3dc26deff4fde7b7ed9d3f253dd0fbd5efced
+HEAD-detached
+189e1ed306f8f8e8bcdd11eeab4fc5657a518fc8 feat(lean): S4-B Prop/Bool mirrors, correspondence proofs and mandatory checker (#66 S4-B)
+59309d668966206df6b01a7e9027614f79e52e5f feat(lean): submission-2 repair — total discovery classification with fail-closed kinds, P01 promotion table (S4-B F01/v3.1)
+0f3ad01a447f40a23eb282ff5b4a8adc2b303ca1 fix(lean): promotion mention-check harvests hypotheses as well as conclusion (S4-B NOTE-013 defect 1)
+4d0a324068d4ee367595adf1c68d45133cab6b12 feat(lean): submission-2 Boundary-1 design — exe build in-run, CorpusExport import, tracked-set ownership, import-reach completeness (S4-B NOTE-015)
+b667648752b8fa8a7b890f115413a99ba04518dc fix(lean): checker driver block structure — top-level defs precede run_cmd; comma+bracket tracked array literal (S4-B O1 findings)
+ba62366766aeb72c988c1f5418a54907c425ac14 fix(lean): tracked-list substitution pattern must not anchor with #-prefix (S4-B O1retry finding)
+94bb7bb64324a48f7361252556b4d15e45b3923f fix(lean): checker driver imports CorpusGate and TraceTests closing import-reach gap (S4-B O1retry finding)
+ justfile                      |  10 +
+ lean/KelGroups/Mirrors.lean   | 259 ++++++++++++++++++++++++++
+ lean/Reactivegas/Mirrors.lean | 259 ++++++++++++++++++++++++++
+ scripts/check-lean-mirrors    | 418 ++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 946 insertions(+)
+lean/.lake absent
+90cd9d9bb9bade9d4e0e08c3fb09334ffa108a685974c199511362192a2cac00  /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/handoffs/AUDIT-REPORT.md
+f31ed328401796fd3488eb17c03e0d2b657313b63a7fae2d3c36ac9996e3c2c3  /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/handoffs/CAMPAIGN-LEDGER.md

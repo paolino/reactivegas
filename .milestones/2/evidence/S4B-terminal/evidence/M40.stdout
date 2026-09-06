@@ -1,0 +1,12 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M40.lean:203:6: error: Type mismatch
+  cO c hc
+has type
+  c.verdict ≠ Verdict.open
+but is expected to have type
+  c.verdict = Verdict.open
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M40.lean:210:6: error: Type mismatch
+  cO c hc
+has type
+  c.verdict = Verdict.open
+but is expected to have type
+  c.verdict ≠ Verdict.open

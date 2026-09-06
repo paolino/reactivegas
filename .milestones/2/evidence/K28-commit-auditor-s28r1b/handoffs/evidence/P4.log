@@ -1,0 +1,13 @@
+Loaded package environment from /code/kelgroups-audit-3af3d06/dist-newstyle/tmp/environment.-2754669/.ghc.environment.x86_64-linux-9.8.4
+[ 1 of 12] Compiling KelGroups.Types  ( lib/KelGroups/Types.hs, /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/row4-mutant/KelGroups/Types.o )
+[ 2 of 12] Compiling KelGroups.Event  ( lib/KelGroups/Event.hs, /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/row4-mutant/KelGroups/Event.o )
+[ 3 of 12] Compiling KelGroups.State  ( lib/KelGroups/State.hs, /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/row4-mutant/KelGroups/State.o )
+[ 4 of 12] Compiling KelGroups.Bootstrap ( lib/KelGroups/Bootstrap.hs, /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/row4-mutant/KelGroups/Bootstrap.o )
+[ 5 of 12] Compiling KelGroups.Validate ( lib/KelGroups/Validate.hs, /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/row4-mutant/KelGroups/Validate.o )
+[ 6 of 12] Compiling KelGroups.Server.JSON ( lib/KelGroups/Server/JSON.hs, /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/row4-mutant/KelGroups/Server/JSON.o )
+[ 7 of 12] Compiling KelGroups.Fold   ( /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/row4-shadow/KelGroups/Fold.hs, /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/row4-mutant/KelGroups/Fold.o )
+[ 8 of 12] Compiling KelGroups.Store  ( lib/KelGroups/Store.hs, /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/row4-mutant/KelGroups/Store.o )
+[ 9 of 12] Compiling S28DemoApp       ( test/S28DemoApp.hs, /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/row4-mutant/S28DemoApp.o )
+[10 of 12] Compiling S28AppApiSpec    ( test/S28AppApiSpec.hs, /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/row4-mutant/S28AppApiSpec.o )
+[11 of 12] Compiling Main             ( /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/Row4Probe.hs, /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/row4-mutant/Main.o )
+[12 of 12] Linking /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/row4-mutant/probe

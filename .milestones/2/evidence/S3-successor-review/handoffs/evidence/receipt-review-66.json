@@ -1,0 +1,713 @@
+[
+  {
+    "line": 1,
+    "id": "SS-R-001",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/.archived/t-simulator/.archived/auditor-claude-round2-s1/handoffs/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "694e98cfde8383fa0bbd762ddc4254b96d4ef8eaab70aaa4dea5a5c58f1df658"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 2,
+    "id": "SS-R-002",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/.archived/t-simulator/.archived/commit-owner-glm-vote-gap/handoffs/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "ae521b870b936ee3520c294b6e6eca0252bc481e78cc4e3c5c31aeeb686ae9bd"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 3,
+    "id": "SS-R-003",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e-haskell-impl/t74-corpus-exporter/evidence/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "c249ceb6b0afb3d3da7e30fc06f64e9df48bfcbf5404e12da7655431a5368118"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 4,
+    "id": "SS-R-004",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e-lean-compliance/auditor-choices-codex/evidence/inputs/t48-campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "da76a3c4c6b7e201b50ec417004fcd94d8c1729bd1e09a3030f457c47160ca10"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 5,
+    "id": "SS-R-005",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e-lean-compliance/auditor-choices-codex/evidence/inputs/t54-campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "9667b9f048dbb02fc2a9aa09c40139d3674b340005efd113c95c0c267df33d98"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 6,
+    "id": "SS-R-006",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/.archived/t48-owner-codex/campaign-ledger.tsv",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "43b078435842cf31545c673ae9488de80efd66b794caaaa87996ef5006a4a62b"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 7,
+    "id": "SS-R-007",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/.archived/t48-owner-codex/docs-auditor-1/handoffs/campaign-ledger.tsv",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "597678149915ffb93798ca568bff5e264a5624b08833a207800618d04ae8d276"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 8,
+    "id": "SS-R-008",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/.archived/t48-owner-codex/docs-auditor-2/handoffs/campaign-ledger.tsv",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "6295ad152d060eca149cd600842170ef43faf18e12d731c10ce289ec55719ca7"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 9,
+    "id": "SS-R-009",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/.archived/t48-owner-codex/emitter-auditor-1/handoffs/campaign-ledger.tsv",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "fa1bfc7942e961c4ea7319608fae7661a6f1fb549b7e642bdb53440fd830878d"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 10,
+    "id": "SS-R-010",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/.archived/t48-owner-codex/emitter-auditor-2/handoffs/campaign-ledger.tsv",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "e5848d5cc222d0475ef668af78074fc818486ffadce69791844e13ad74f351c8"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 11,
+    "id": "SS-R-011",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/.archived/t48-owner-codex/inversions-auditor-1/handoffs/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "ab0d3fb4a53a8acd9fdc10dbdfdbf0bd6f29dd247dc6225f8303edc05d08871e"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 12,
+    "id": "SS-R-012",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/.archived/t48-owner-codex/pledge-auditor-1/handoffs/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "cc3b7654ce85ea6d437700bf77c0329726ccd7fc36efa5684798a274d4122889"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 13,
+    "id": "SS-R-013",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/.archived/t54-composition-owner-codex/campaign-ledger-v3.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "4614e6daafe4459c8f5622544cdfbe027a893f56af2d915a7d71a582523494b2"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 14,
+    "id": "SS-R-014",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/.archived/t54-composition-owner-codex/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "1d1cb89c16d003d7f230a0a695801dd63a02946f0fe6854d5fc738a57aba9408"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 15,
+    "id": "SS-R-015",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/.archived/t57-owner-codex/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "758584a315bc132da4ca8781e46cb0737ac8d3475c954de2ae6a026a299b188c"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 16,
+    "id": "SS-R-016",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/.archived/t59-owner-claude/docs-auditor-1/evidence/campaign-ledger.tsv",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "6a1662e9cdc1322c14336270e2f7c6bc348fac6330a5864ea78e9f3e0378cf31"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 17,
+    "id": "SS-R-017",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/.archived/t59-owner-claude/mandate/campaign-ledger.tsv",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "f20f11153afe8d13485dfcc94f271692ef7f6e53e466d67f678e20b2dc46221b"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 18,
+    "id": "SS-R-018",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-a011-s1-codex-r1/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "53e5bee359d31919a4c9f3ee343548bdfb82cf2b57935d12c63db3f3fa292896"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 19,
+    "id": "SS-R-019",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-a011-s2-glm/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "5423fa5664733442eb01e6303d1c3ee80a32e0c238d1987122daec1260462ade"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 20,
+    "id": "SS-R-020",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-a013-grok/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "dd23b865079854956a1505fdbc75e7b1fe8d0abc2e29601ea1efee83a17cf31f"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 21,
+    "id": "SS-R-021",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-s1-codex/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "f033dd3b1e78c237798d49f6e273d403f3a50d9cf1dcc7c3373fd62b4c2f3799"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 22,
+    "id": "SS-R-022",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-auditor-s62-c-s2-codex/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "286c4f04618b5eae564771ce55cea0698ecd1967e3d31d5580ae40eb766ba006"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 23,
+    "id": "SS-R-023",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/.archived/t62-owner-codex/.archived/commit-owner-s62-c-a011-grok-a012/handoffs/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "27555f19caf6574b6cdc431c3a4d944d2485e2d0e0b83abe4ad704e67effb480"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 24,
+    "id": "SS-R-024",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/.archived/t62-owner-codex/campaign-a013/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "3b73cf0a403b72bbd8d68bf0d3e9ca1727f3f5b4883fc95819b7f2c0ea9af3c9"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 25,
+    "id": "SS-R-025",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/.archived/t62-owner-codex/campaign-ledger-s62-c-a011.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "ec8389404c5a32fb0401f2f5c7756f8f828e1dec44d5aacafbc46b884f050034"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 26,
+    "id": "SS-R-026",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/.archived/t62-owner-codex/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "8a1cc8ecdac6dd37fb9da21fb7a22ea3a1710c48f4921103e07590119b287fa9"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 27,
+    "id": "SS-R-027",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s1/handoffs/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "98c26657f347f53066c5ef1c2e3a7bb631e0f8944eb9dee6026a150bc5765a0f"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 28,
+    "id": "SS-R-028",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s2/handoffs/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "9667b9f048dbb02fc2a9aa09c40139d3674b340005efd113c95c0c267df33d98"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 29,
+    "id": "SS-R-029",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/t54/.archived/commit-auditor-s1/handoffs/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "488ce9318325d76e783c6eb177d53d8e910e9a64a04faeea765e21cb96809f87"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 30,
+    "id": "SS-R-030",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/e43/t54/.archived/commit-auditor-s2/handoffs/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "beb43d3c7b6684aa5afe919f2ba1880dc6c222379d4609603360310ec676ebf2"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 31,
+    "id": "SS-R-031",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/t-release-pipeline/.archived/recut-s001-auditor/handoffs/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "cfc64da8f0ab38fbb05987f640a6dabe32b45d89acf15ea4714760c925300fb2"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 32,
+    "id": "SS-R-032",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/t-simulator-fable/.archived/commit-auditor-grok-batch1-s1/handoffs/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "79021062619049d80ad60751c1711b5e4888360076921194b8900be37532e10c"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 33,
+    "id": "SS-R-033",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/t-simulator-fable/handoffs/batch2-campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "d43b57a0cf9e6d26e3643342cf101f3a7a4e39e433cbc70b26e4a726135d32cb"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 34,
+    "id": "SS-R-034",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/t-simulator-fable/handoffs/fidelity-campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "0ebbc65528473098c6e0c8b768d6820be9ad3e61b5ff2ef7f6b5758bd91f5b23"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 35,
+    "id": "SS-R-035",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/t-simulator-fable/handoffs/fidelity-recut-campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "c084e85cfe5ae649558e9c37d37b951c3c0ae6d6456243bea89503b45d7478f5"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 36,
+    "id": "SS-R-036",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/t-simulator-fable/handoffs/geometry-permalinks-campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "14762d637db19d6fa01672dbf5682c99125e496ee594a4307b351764040c4f49"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 37,
+    "id": "SS-R-037",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/t-simulator-fable/handoffs/strips-campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "5b550d035ab1e23f762d61a78ba945f81724ffbf0ab1508a65f030ff1ceb4877"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 38,
+    "id": "SS-R-038",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/t-toolchain-contract/.archived/auditor-s1-corrected/handoffs/campaign-ledger.tsv",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "ae6f0ca8a0ee23ff037d0b6e686c92eb5edae5bdb4c1c9563b183cda8a5666e8"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 39,
+    "id": "SS-R-039",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/t-toolchain-contract/handoffs/campaign-ledger.tsv",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "ae41c77924dd8d90627cc8af6e49643b8dd186c2b328bcbe57785ab53eb4b603"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 40,
+    "id": "SS-R-040",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/t48-inversions/.archived/commit-auditor-s48-i-recut1-s1/handoffs/mutation-campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "c0af6afb924658db2b4cb6f519dc8aa72c0e3b7c706daa62ffd4de21993bc381"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 41,
+    "id": "SS-R-041",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/t48-inversions/.archived/commit-auditor-s48-i-s1/handoffs/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "75a7a3d2207924acc44437c981e7d0934d6d80400f4f97f3b78a6823279707a1"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 42,
+    "id": "SS-R-042",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/t48-inversions/.archived/commit-auditor-s48-i-s2/handoffs/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "bc23e58bd29a1f7c9a07e348bfbae62a20088dcb363a5f1ba9eed780ce364caf"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 43,
+    "id": "SS-R-043",
+    "result": "ROSTER-ONLY",
+    "source": "reactivegas/ms2/t48-inversions/campaign-ledger.md",
+    "row": "TABLE-HEADER (not a kill count; table lines/headers/multi-experiment rows never summed as kills)",
+    "hashes": {
+      "tableSHA256": "da76a3c4c6b7e201b50ec417004fcd94d8c1729bd1e09a3030f457c47160ca10"
+    },
+    "search": "Bounded search: archive-tables.txt preserves raw table contents losslessly; per-experiment seven-field search recorded per-row; unknown stays unknown."
+  },
+  {
+    "line": 44,
+    "id": "SS-R-044",
+    "result": "KILLED (historical)",
+    "source": "reactivegas/ms2/e-lean-compliance/auditor-choices-codex/evidence/inputs/t54-campaign-ledger.md (s2 VI-3)",
+    "row": "VI-3",
+    "hashes": {
+      "tableRef": "9667b9f048dbb02fc2a9aa09c40139d3674b340005efd113c95c0c267df33d98 (t54 ledger file hash)"
+    },
+    "search": "Bounded search: s2 VI-3 row read in archive-tables.txt; operative AUTHORITATIVE S3F still declares neither t54 wiring auditor has theorem identity — refuted by this row. Fixture/toolchain/argv hashes unknown after search; owner %503, reason historical log loss."
+  },
+  {
+    "line": 45,
+    "id": "SS-R-045",
+    "result": "BLOCKED",
+    "source": "reactivegas/ms2/e43/.archived/t62-owner-codex/*/a011-s1/campaign-ledger.md",
+    "row": "a011-s1 :: BLOCKED",
+    "hashes": {},
+    "search": "Bounded search: archive-tables.txt + original 323-file tree; seven fields not supplied per experiment after search; owner %503."
+  },
+  {
+    "line": 46,
+    "id": "SS-R-046",
+    "result": "BLOCKED",
+    "source": "reactivegas/ms2/e43/.archived/t62-owner-codex/*/a011-s2/campaign-ledger.md",
+    "row": "a011-s2 :: BLOCKED",
+    "hashes": {},
+    "search": "Bounded search: archive-tables.txt + original 323-file tree; seven fields not supplied per experiment after search; owner %503."
+  },
+  {
+    "line": 47,
+    "id": "SS-R-047",
+    "result": "KILLED with tracked-CI false && mutant",
+    "source": "reactivegas/ms2/e43/.archived/t62-owner-codex/*/a013-grok/campaign-ledger.md",
+    "row": "a013-grok :: KILLED with tracked-CI false && mutant",
+    "hashes": {},
+    "search": "Bounded search: archive-tables.txt + original 323-file tree; seven fields not supplied per experiment after search; owner %503."
+  },
+  {
+    "line": 48,
+    "id": "SS-R-048",
+    "result": "KILLED",
+    "source": "reactivegas/ms2/e43/.archived/t62-owner-codex/*/owner-a011-a012/campaign-ledger.md",
+    "row": "owner-a011-a012 :: KILLED",
+    "hashes": {},
+    "search": "Bounded search: archive-tables.txt + original 323-file tree; seven fields not supplied per experiment after search; owner %503."
+  },
+  {
+    "line": 49,
+    "id": "SS-R-049",
+    "result": "OPEN",
+    "source": "reactivegas/ms2/e43/.archived/t62-owner-codex/*/campaign-a013/campaign-ledger.md",
+    "row": "campaign-a013 :: OPEN",
+    "hashes": {},
+    "search": "Bounded search: archive-tables.txt + original 323-file tree; seven fields not supplied per experiment after search; owner %503."
+  },
+  {
+    "line": 50,
+    "id": "SS-R-050",
+    "result": "OPEN",
+    "source": "reactivegas/ms2/e43/.archived/t62-owner-codex/*/ceiling-ledger/campaign-ledger.md",
+    "row": "ceiling-ledger :: OPEN",
+    "hashes": {},
+    "search": "Bounded search: archive-tables.txt + original 323-file tree; seven fields not supplied per experiment after search; owner %503."
+  },
+  {
+    "line": 51,
+    "id": "SS-R-051",
+    "result": "PRESENT (omitted from AUTHORITATIVE S3G six-row account)",
+    "source": "reactivegas/ms2/e43/.archived/t62-owner-codex/*/G62-C-TRACE (omitted file)/campaign-ledger.md",
+    "row": "G62-C-TRACE (omitted file) :: PRESENT (omitted from AUTHORITATIVE S3G six-row account)",
+    "hashes": {},
+    "search": "Bounded search: archive-tables.txt + original 323-file tree; seven fields not supplied per experiment after search; owner %503."
+  },
+  {
+    "line": 52,
+    "id": "SS-R-052",
+    "result": "BLOCKED (initial, superseded)",
+    "source": "s2-codex ledger (initial and final tables)",
+    "row": "INITIAL-BLOCKED",
+    "hashes": {},
+    "search": "Bounded search recorded; unknown stays unknown."
+  },
+  {
+    "line": 53,
+    "id": "SS-R-053",
+    "result": "KILLED (terminal)",
+    "source": "s2-codex ledger (initial and final tables)",
+    "row": "FINAL-KILLED",
+    "hashes": {},
+    "search": "Bounded search recorded; unknown stays unknown."
+  },
+  {
+    "line": 54,
+    "id": "SS-R-054",
+    "result": "OPEN (main TSV); KILLED in emitter auditor TSVs (separate)",
+    "source": "reactivegas/ms2/e43/.archived/t48-owner-codex/campaign-ledger.tsv (main t48 TSV)",
+    "row": "E-TOJSON + counts",
+    "hashes": {},
+    "search": "Bounded search: main t48 TSV has 17 data rows, 9 E-*, E-TOJSON OPEN (not 18/10/KILLED as AUTHORITATIVE S3H reports). Emitter TSVs have KILLED E-TOJSON (separate). I10-REGRESSION (file8) and M1-M5 (file9) omitted from S3H account; file1 three-name summary omits further simulator rows; composition preflight/candidate tables cannot be compressed into all KILLED."
+  },
+  {
+    "line": 55,
+    "id": "SS-R-055",
+    "result": "RECOVERED (historical instrument binding, not current reuse)",
+    "source": "t62 recovered report (hash 3a7b355a260b018c70a004f4c9384d7e408d28737ebc240fef6de10a57853ae1)",
+    "row": "candidate 000ff76a52b3972f232ef18fbeaa96ac6a6b0f20",
+    "hashes": {
+      "reportSHA256": "3a7b355a260b018c70a004f4c9384d7e408d28737ebc240fef6de10a57853ae1",
+      "candidate": "000ff76a52b3972f232ef18fbeaa96ac6a6b0f20"
+    },
+    "search": "Available t62 instrument/command/hash bindings collapsed to prose in current assessment; restored here by hash. No current reuse inferred."
+  },
+  {
+    "line": 56,
+    "id": "SS-R-056",
+    "result": "RECOVERED-HISTORICAL (check result only, not production theorem kill)",
+    "source": "t57 instruments/mutant-policyfree.lean",
+    "row": "mutant-policyfree.lean",
+    "hashes": {},
+    "search": "Bounded search: six t57 sources readable; cross-property links (policyfree->NOEXPIRY, disjoint->AUTH, nostale->NOOP) unsupported after source read; owner %503."
+  },
+  {
+    "line": 57,
+    "id": "SS-R-057",
+    "result": "RECOVERED-HISTORICAL (check result only, not production theorem kill)",
+    "source": "t57 instruments/mutant-disjoint.lean",
+    "row": "mutant-disjoint.lean",
+    "hashes": {},
+    "search": "Bounded search: six t57 sources readable; cross-property links (policyfree->NOEXPIRY, disjoint->AUTH, nostale->NOOP) unsupported after source read; owner %503."
+  },
+  {
+    "line": 58,
+    "id": "SS-R-058",
+    "result": "RECOVERED-HISTORICAL (check result only, not production theorem kill)",
+    "source": "t57 instruments/mutant-nostale.lean",
+    "row": "mutant-nostale.lean",
+    "hashes": {},
+    "search": "Bounded search: six t57 sources readable; cross-property links (policyfree->NOEXPIRY, disjoint->AUTH, nostale->NOOP) unsupported after source read; owner %503."
+  },
+  {
+    "line": 59,
+    "id": "SS-R-059",
+    "result": "RECOVERED-HISTORICAL (check result only, not production theorem kill)",
+    "source": "t57 instruments/mutant-bypass.lean",
+    "row": "mutant-bypass.lean",
+    "hashes": {},
+    "search": "Bounded search: six t57 sources readable; cross-property links (policyfree->NOEXPIRY, disjoint->AUTH, nostale->NOOP) unsupported after source read; owner %503."
+  },
+  {
+    "line": 60,
+    "id": "SS-R-060",
+    "result": "RECOVERED-HISTORICAL (check result only, not production theorem kill)",
+    "source": "t57 instruments/mutant-franchise.lean",
+    "row": "mutant-franchise.lean",
+    "hashes": {},
+    "search": "Bounded search: six t57 sources readable; cross-property links (policyfree->NOEXPIRY, disjoint->AUTH, nostale->NOOP) unsupported after source read; owner %503."
+  },
+  {
+    "line": 61,
+    "id": "SS-R-061",
+    "result": "RECOVERED-HISTORICAL (check result only, not production theorem kill)",
+    "source": "t57 instruments/no-expiry-member baseline instrument (driver separately names)",
+    "row": "no-expiry-member baseline instrument (driver separately names)",
+    "hashes": {},
+    "search": "Bounded search: six t57 sources readable; cross-property links (policyfree->NOEXPIRY, disjoint->AUTH, nostale->NOOP) unsupported after source read; owner %503."
+  },
+  {
+    "line": 62,
+    "id": "SS-R-062",
+    "result": "setup-baseline GREEN (Build completed successfully 19 jobs; 19 oleans in op1-oleans.txt; not a theorem result)",
+    "source": "measure-owner-s3-ss0/evidence/run-v2/op1 + handoffs/SS0-RETURN-v2.md (12ffdfdb...) + SS0-CONSOLIDATED-ASSESSMENT.md (f5cc8711...)",
+    "row": "OP1 cold baseline (substantive)",
+    "hashes": {
+      "ss0ReturnV2": "12ffdfdb4e3c162a2e1236da69caf48dd564a156a420d11b7fcade91952d46b7",
+      "ss0Assessment": "f5cc87116cd4149557100e75b97706fc57d68c0a8485f6518f332fc176520245",
+      "instrumentsManifest": "467674ce5c39049df7233bf8de18317373fb015ab31dc2339b22d03bf6979235",
+      "atomDiff": "8c0b9e5d3431238ed7431bf107ccdf69534de42105fbc9bdd681c2ddf143e003",
+      "checkLean": "f84ad9382329a44f2947d1cbcb744128068cb8e87e4642a9a324a54a81890540"
+    },
+    "search": "N/A (SS0 fully bound; limits L1-L3 + consolidated assessment S1-9 retained: :209:4 not :197, absence+continuation not positive marker, check.sh path identity with byte-identical hash)."
+  },
+  {
+    "line": 63,
+    "id": "SS-R-063",
+    "result": "SEMANTIC statement failure inside step_grant_inv span :197-209, error at :209:4 type mismatch (symbolic record exprs col/s/rest, not concrete states); mutated Step COMPILED (Built Reactivegas.Step 1.3s); continuation infos :1639-1641,:2351-2353 past :211; nonzero exit alone NOT basis, diagnostic is. Runner op2-classification.txt :19[0-9] grep MISSED error (caught unrelated KelGroups/Vote/Invariants.lean:190 warning); :209:4 established by direct log inspection. Reach of :211 via exactly-one-error + post-:211 elaboration (inference, not positive receipt; step_deny_inv/step_grant_inv never NAMED in logs).",
+    "source": "measure-owner-s3-ss0/evidence/run-v2/op2 + handoffs/SS0-RETURN-v2.md (12ffdfdb...) + SS0-CONSOLIDATED-ASSESSMENT.md (f5cc8711...)",
+    "row": "OP2 single-atom mutant (substantive)",
+    "hashes": {
+      "ss0ReturnV2": "12ffdfdb4e3c162a2e1236da69caf48dd564a156a420d11b7fcade91952d46b7",
+      "ss0Assessment": "f5cc87116cd4149557100e75b97706fc57d68c0a8485f6518f332fc176520245",
+      "instrumentsManifest": "467674ce5c39049df7233bf8de18317373fb015ab31dc2339b22d03bf6979235",
+      "atomDiff": "8c0b9e5d3431238ed7431bf107ccdf69534de42105fbc9bdd681c2ddf143e003",
+      "checkLean": "f84ad9382329a44f2947d1cbcb744128068cb8e87e4642a9a324a54a81890540"
+    },
+    "search": "N/A (SS0 fully bound; limits L1-L3 + consolidated assessment S1-9 retained: :209:4 not :197, absence+continuation not positive marker, check.sh path identity with byte-identical hash)."
+  },
+  {
+    "line": 64,
+    "id": "SS-R-064",
+    "result": "setup-restoration GREEN (Build completed successfully 19 jobs)",
+    "source": "measure-owner-s3-ss0/evidence/run-v2/op3 + handoffs/SS0-RETURN-v2.md (12ffdfdb...) + SS0-CONSOLIDATED-ASSESSMENT.md (f5cc8711...)",
+    "row": "OP3 restore + matching build (substantive)",
+    "hashes": {
+      "ss0ReturnV2": "12ffdfdb4e3c162a2e1236da69caf48dd564a156a420d11b7fcade91952d46b7",
+      "ss0Assessment": "f5cc87116cd4149557100e75b97706fc57d68c0a8485f6518f332fc176520245",
+      "instrumentsManifest": "467674ce5c39049df7233bf8de18317373fb015ab31dc2339b22d03bf6979235",
+      "atomDiff": "8c0b9e5d3431238ed7431bf107ccdf69534de42105fbc9bdd681c2ddf143e003",
+      "checkLean": "f84ad9382329a44f2947d1cbcb744128068cb8e87e4642a9a324a54a81890540"
+    },
+    "search": "N/A (SS0 fully bound; limits L1-L3 + consolidated assessment S1-9 retained: :209:4 not :197, absence+continuation not positive marker, check.sh path identity with byte-identical hash)."
+  },
+  {
+    "line": 65,
+    "id": "SS-R-065",
+    "result": "setup-elaboration GREEN (silent stdout/stderr beyond ACTUAL-CWD lines = clean elaboration of ss0_check_elaboration : Reactivegas.checkSweepIdempotent = true := by decide; not #eval, not runtime replay)",
+    "source": "measure-owner-s3-ss0/evidence/run-v2/op4 + handoffs/SS0-RETURN-v2.md (12ffdfdb...) + SS0-CONSOLIDATED-ASSESSMENT.md (f5cc8711...)",
+    "row": "OP4 U-CHECK (targeted)",
+    "hashes": {
+      "ss0ReturnV2": "12ffdfdb4e3c162a2e1236da69caf48dd564a156a420d11b7fcade91952d46b7",
+      "ss0Assessment": "f5cc87116cd4149557100e75b97706fc57d68c0a8485f6518f332fc176520245",
+      "instrumentsManifest": "467674ce5c39049df7233bf8de18317373fb015ab31dc2339b22d03bf6979235",
+      "atomDiff": "8c0b9e5d3431238ed7431bf107ccdf69534de42105fbc9bdd681c2ddf143e003",
+      "checkLean": "f84ad9382329a44f2947d1cbcb744128068cb8e87e4642a9a324a54a81890540"
+    },
+    "search": "N/A (SS0 fully bound; limits L1-L3 + consolidated assessment S1-9 retained: :209:4 not :197, absence+continuation not positive marker, check.sh path identity with byte-identical hash)."
+  },
+  {
+    "line": 66,
+    "id": "SS-R-066",
+    "result": "COPY (no independent credit)",
+    "source": "COPY-LINK: auditor-choices-codex/evidence/inputs/t54-campaign-ledger.md == e43/t48-inversions/campaign-ledger.md (both da76a3c4...)",
+    "row": "COPY (same bytes, two archive paths)",
+    "hashes": {
+      "sha256": "da76a3c4c6b7e201b50ec417004fcd94d8c1729bd1e09a3030f457c47160ca10"
+    },
+    "search": "N/A (copy link)"
+  }
+]

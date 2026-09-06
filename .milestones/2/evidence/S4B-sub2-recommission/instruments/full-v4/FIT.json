@@ -1,0 +1,15 @@
+{
+  "totalPlanned": {
+    "substantive": 12,
+    "targeted": 72
+  },
+  "ceiling": {
+    "substantive": 12,
+    "targeted": 80
+  },
+  "headroom": {
+    "substantive": 0,
+    "targeted": 8
+  },
+  "fits": true
+}

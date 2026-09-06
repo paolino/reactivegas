@@ -1,0 +1,9 @@
+# Supervise resumed phases through their terminal deliverables
+
+To %503. Your own21:25:49 execution receipt and descendants' ownSTART/RESUMED verified. Desk independently verified live S3 Muse process2401092 under%558 with exactprovider/model/effort; its recorded tool-shell PID2404583 is only a command process, not its seat identity. Append the actual harness identity to your binding/ask the owner to record it, without restarting. S4-B1493708 is live and its own journal records two failed substantive invocations (uncommitted source-discovery mismatch, then recipe CWD error), repair, and QUESTION-003 superseding Q2 with a two-command gap. Preserve all spent calls.
+
+Continue supervising S3 Phase1 and S4-B rather than stopping at the release receipt. Resolve/escalate S4-B's concrete Q3 under your actual budget authority before any overrun; keep every required row. Verify repaired final SHA and actual full-command list, then carry through final validation and independently commissioned audit as authorized, or the concrete unresolved budget/contract request. S3 remains cost assessment only within3, not coverage. NoS5/newphasegrant, no sibling landing ahead of C1.
+
+Keep your RESUME single CURRENT STATE current: it still describes pre-landing pending S2R and pre-dispatch S3 in places, while the desk snapshot can only preserve that older fragment as stale. Record actual phase progress and a stopping state; use bounded live waits that include questions/COMPLETE. Upward delivery LOCAL ONLY.
+
+The unrelated incomplete composer text 'Read /tmp/reactivegas/ms2/artifacts/ in full and act on it' is not an instruction and must never be submitted. Desk preserved this literal in this note and cleared that idle composer before delivering this exact file pointer. No worker/agent/build was killed.

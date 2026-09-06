@@ -1,0 +1,194 @@
+warning: Git tree '/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S07' is dirty
+check-reactivegas-inversion-coverage: sources tracked=29 walked=29
+check-reactivegas-inversion-coverage: lake build failed
+⚠ [2/32] Built KelGroups.Types (894ms)
+warning: KelGroups/Types.lean:145:14: unused variable `key`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: KelGroups/Types.lean:145:26: unused variable `view`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✔ [3/32] Built KelGroups.Vote.Types (516ms)
+✔ [4/32] Built KelGroups.Event (789ms)
+✔ [5/32] Built KelGroups.Vote.Event (426ms)
+✔ [6/32] Built KelGroups.Vote.State (666ms)
+✔ [7/32] Built KelGroups.State (732ms)
+⚠ [8/32] Built KelGroups.Vote.Validate (378ms)
+warning: KelGroups/Vote/Validate.lean:54:23: unused variable `threshold`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✔ [9/32] Built KelGroups.Vote.Fold (382ms)
+✔ [10/32] Built Reactivegas.Types (1.4s)
+✔ [11/32] Built KelGroups.Fold (548ms)
+✔ [12/32] Built KelGroups.Validate (767ms)
+✔ [13/32] Built Reactivegas.State (988ms)
+✔ [14/32] Built KelGroups.Integration (807ms)
+⚠ [15/32] Built KelGroups.Vote.Invariants (1.7s)
+warning: KelGroups/Vote/Invariants.lean:59:104: The syntax is now `structure S : Type extends P` rather than `structure S extends P : Type`
+
+Note: The purpose of this change is to accommodate `structure S extends toP : P` syntax for naming parent projections.
+warning: KelGroups/Vote/Invariants.lean:77:8: automatically included section variable(s) unused in theorem `_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_sublist'`:
+  [LawfulBEq κ]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [LawfulBEq κ] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: KelGroups/Vote/Invariants.lean:175:51: unused variable `v`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: KelGroups/Vote/Invariants.lean:187:16: This simp argument is unused:
+  assocErase
+
+Hint: Omit it from the simp argument list.
+  simp [assocE̵r̵a̵s̵e̵,̵ ̵a̵s̵s̵o̵c̵Lookup, hc, hck, ih]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: KelGroups/Vote/Invariants.lean:187:28: This simp argument is unused:
+  assocLookup
+
+Hint: Omit it from the simp argument list.
+  simp [assocErase, a̵s̵s̵o̵c̵L̵o̵o̵k̵u̵p̵,̵ ̵hc, hck, ih]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: KelGroups/Vote/Invariants.lean:187:50: This simp argument is unused:
+  ih
+
+Hint: Omit it from the simp argument list.
+  simp [assocErase, assocLookup, hc, hck,̵ ̵i̵h̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: KelGroups/Vote/Invariants.lean:189:16: This simp argument is unused:
+  assocErase
+
+Hint: Omit it from the simp argument list.
+  simp [assocE̵r̵a̵s̵e̵,̵ ̵a̵s̵s̵o̵c̵Lookup, hc, hck]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: KelGroups/Vote/Invariants.lean:190:16: This simp argument is unused:
+  assocErase
+
+Hint: Omit it from the simp argument list.
+  simp [assocE̵r̵a̵s̵e̵,̵ ̵a̵s̵s̵o̵c̵Lookup, hc, hck, ih]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: KelGroups/Vote/Invariants.lean:203:8: automatically included section variable(s) unused in theorem `_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_mem_cases`:
+  [LawfulBEq κ]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [LawfulBEq κ] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: KelGroups/Vote/Invariants.lean:235:8: automatically included section variable(s) unused in theorem `_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_map_fst_insert`:
+  [LawfulBEq κ]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [LawfulBEq κ] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: KelGroups/Vote/Invariants.lean:389:54: unused variable `gs`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: KelGroups/Vote/Invariants.lean:396:45: This simp argument is unused:
+  List.length_map
+
+Hint: Omit it from the simp argument list.
+  simp only [franchiseSize, franchise,̵ ̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵m̵a̵p̵] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: KelGroups/Vote/Invariants.lean:401:47: unused variable `gs`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: KelGroups/Vote/Invariants.lean:463:6: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: KelGroups/Vote/Invariants.lean:880:5: unused variable `hevents`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: KelGroups/Vote/Invariants.lean:974:22: This simp argument is unused:
+  hsz
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵h̵s̵z̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: KelGroups/Vote/Invariants.lean:1161:34: This simp argument is unused:
+  if_false
+
+Hint: Omit it from the simp argument list.
+  simp only [h, decide_false,̵ ̵i̵f̵_̵f̵a̵l̵s̵e̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: KelGroups/Vote/Invariants.lean:1176:34: This simp argument is unused:
+  if_false
+
+Hint: Omit it from the simp argument list.
+  simp only [h, decide_false,̵ ̵i̵f̵_̵f̵a̵l̵s̵e̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+info: KelGroups/Vote/Invariants.lean:1220:0: 'KelGroups.Vote.foldVote_wellFormed' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: KelGroups/Vote/Invariants.lean:1221:0: 'KelGroups.Vote.ballots_nodup_disjoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: KelGroups/Vote/Invariants.lean:1222:0: 'KelGroups.Vote.open_questions_are_open' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: KelGroups/Vote/Invariants.lean:1223:0: 'KelGroups.Vote.questions_partition' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: KelGroups/Vote/Invariants.lean:1224:0: 'KelGroups.Vote.no_expiry' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: KelGroups/Vote/Invariants.lean:1225:0: 'KelGroups.Vote.franchise_of_tallies' depends on axioms: [propext, Quot.sound]
+info: KelGroups/Vote/Invariants.lean:1226:0: 'KelGroups.Vote.verdictOf_threshold_congr' depends on axioms: [propext]
+info: KelGroups/Vote/Invariants.lean:1227:0: 'KelGroups.Vote.inadmissible_is_noop' depends on axioms: [propext]
+info: KelGroups/Vote/Invariants.lean:1228:0: 'KelGroups.Vote.nonresponsabile_event_noop' depends on axioms: [propext, Quot.sound]
+✖ [16/32] Building Reactivegas.Step (905ms)
+trace: .> LEAN_PATH=/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S07/lean/.lake/build/lib/lean /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S07/lean/Reactivegas/Step.lean -o /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S07/lean/.lake/build/lib/lean/Reactivegas/Step.olean -i /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S07/lean/.lake/build/lib/lean/Reactivegas/Step.ilean -c /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S07/lean/.lake/build/ir/Reactivegas/Step.c --setup /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S07/lean/.lake/build/ir/Reactivegas/Step.setup.json --json
+error: Reactivegas/Step.lean:446:45: Tactic `decide` proved that the proposition
+  checkAppMembersPreservation = true
+is false
+error: Reactivegas/Step.lean:449:51: Tactic `decide` proved that the proposition
+  checkAppMembersPreservationMutant = true
+is false
+error: Reactivegas/Step.lean:471:44: Tactic `decide` proved that the proposition
+  checkComuneCannotAuthorize = true
+is false
+info: Reactivegas/Step.lean:473:0: 'Reactivegas.appFold' does not depend on any axioms
+info: Reactivegas/Step.lean:474:0: 'Reactivegas.apply' depends on axioms: [propext]
+info: Reactivegas/Step.lean:475:0: 'Reactivegas.app_members_preservation_holds' depends on axioms: [propext, sorryAx]
+info: Reactivegas/Step.lean:476:0: 'Reactivegas.comune_cannot_authorize' depends on axioms: [propext, sorryAx]
+error: Lean exited with code 1
+ℹ [19/32] Built KelGroups.Invariants (1.2s)
+info: KelGroups/Invariants.lean:870:0: 'KelGroups.base_change_runs_hook' depends on axioms: [propext]
+✔ [24/32] Built KelGroups.Vote.Tests (735ms)
+✔ [25/32] Built KelGroups.Mirrors (466ms)
+⚠ [26/32] Built Reactivegas.Composition (606ms)
+warning: Reactivegas/Composition.lean:114:5: unused variable `hroute`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: Reactivegas/Composition.lean:141:5: unused variable `hroute`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+info: Reactivegas/Composition.lean:194:0: 'Reactivegas.Composition.voteDerived_iff_not_direct' depends on axioms: [propext]
+info: Reactivegas/Composition.lean:195:0: 'Reactivegas.Composition.baseEnacted_threshold_met' depends on axioms: [propext]
+info: Reactivegas/Composition.lean:196:0: 'Reactivegas.Composition.appDecided_verdict_exhaustive' depends on axioms: [propext]
+ℹ [30/32] Built KelGroups.Tests (1.0s)
+info: KelGroups/Tests.lean:336:0: @approvals_nodup : ∀ {α : Type} {gs : GroupState α},
+  WellFormed gs → ∀ (entry : ProposalId × PendingProposal), entry ∈ gs.pendingProposals → entry.snd.approvals.Nodup
+info: KelGroups/Tests.lean:337:0: @proposer_mem_approvals : ∀ {α : Type} {gs : GroupState α},
+  WellFormed gs →
+    ∀ (entry : ProposalId × PendingProposal), entry ∈ gs.pendingProposals → entry.snd.proposer ∈ entry.snd.approvals
+info: KelGroups/Tests.lean:338:0: @enact_implies_threshold_met : ∀ {α : Type} (digest : Proposal → ProposalId) (appFoldFn : AppFold α) (gs : GroupState α)
+  (signer : Key) (event : GroupEvent α) (enacted : Enactment α),
+  (applyEventDetailed digest appFoldFn gs signer event).enactment = some enacted →
+    enacted.pending.approvals.length ≥ majority enacted.preState
+info: KelGroups/Tests.lean:339:0: @members_change_implies_enacted : ∀ {α : Type} (digest : Proposal → ProposalId) (appFoldFn : AppFold α)
+  (gs : GroupState α) (signer : Key) (event : GroupEvent α),
+  (applyEvent digest appFoldFn gs signer event).members ≠ gs.members →
+    ∃ before proposalId, Enacts before proposalId (applyEvent digest appFoldFn gs signer event)
+info: KelGroups/Tests.lean:340:0: @member_key_coherent : ∀ {α : Type} {gs : GroupState α},
+  WellFormed gs → ∀ (key : Key) (member : Member), (key, member) ∈ gs.members → member.key = key
+info: KelGroups/Tests.lean:341:0: KelGroups.majority_table :
+  majority (majorityAdminState []) = 0 ∧
+    majority (majorityAdminState ["a"]) = 1 ∧
+      majority (majorityAdminState ["a", "b"]) = 1 ∧
+        majority (majorityAdminState ["a", "b", "c"]) = 2 ∧
+          majority (majorityAdminState ["a", "b", "c", "d"]) = 2 ∧
+            majority (majorityAdminState ["a", "b", "c", "d", "e"]) = 3
+info: KelGroups/Tests.lean:342:0: @majority_not_strict_on_even : ∀ {α : Type} (gs : GroupState α),
+  0 < adminCount gs → adminCount gs % 2 = 0 → 2 * majority gs ≤ adminCount gs
+✔ [31/32] Built KelGroups (270ms)
+Some required targets logged failures:
+- Reactivegas.Step
+error: build failed
+error: Recipe `lean` failed with exit code 1

@@ -1,0 +1,25 @@
+NEGATIVE-CONTROL detects seeded lost update=True
+POSITIVE-CONTROL sequential counts=(3,2,2,3,2)
+SQL-ERROR callerObserved=True unchanged=(3,2,2,3,2)
+REFUSAL-CONTROL unchanged=True POST-SQL-ERROR counts=(7,3,3,7,3)
+ORDER-REPLAY values=(1,2) events=Just [("admin-key-1",IEApp (DemoAdd 2)),("admin-key-1",IEApp (DemoAdd 1))] seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] fullState=True
+CONCURRENT values=(1,2) accepted=True hot=3 sqlRows=2 hotLength=2 replay=3 decoded=2 invariant=True
+ORDER-REPLAY values=(3,7) events=Just [("admin-key-1",IEApp (DemoAdd 7)),("admin-key-1",IEApp (DemoAdd 3))] seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] fullState=True
+CONCURRENT values=(3,7) accepted=True hot=10 sqlRows=2 hotLength=2 replay=10 decoded=2 invariant=True
+ORDER-REPLAY values=(11,19) events=Just [("admin-key-1",IEApp (DemoAdd 11)),("admin-key-1",IEApp (DemoAdd 19))] seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] fullState=True
+CONCURRENT values=(11,19) accepted=True hot=30 sqlRows=2 hotLength=2 replay=30 decoded=2 invariant=True
+ORDER-REPLAY values=(101,307) events=Just [("admin-key-1",IEApp (DemoAdd 101)),("admin-key-1",IEApp (DemoAdd 307))] seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] fullState=True
+CONCURRENT values=(101,307) accepted=True hot=408 sqlRows=2 hotLength=2 replay=408 decoded=2 invariant=True
+ORDER-REPLAY values=(5,11) events=Just [("admin-key-1",IEApp (DemoAdd 5)),("admin-key-1",IEApp (DemoAdd 11))] seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] fullState=True
+CONCURRENT values=(5,11) accepted=True hot=16 sqlRows=2 hotLength=2 replay=16 decoded=2 invariant=True
+ORDER-REPLAY values=(42,43) events=Just [("admin-key-1",IEApp (DemoAdd 42)),("admin-key-1",IEApp (DemoAdd 43))] seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] fullState=True
+CONCURRENT values=(42,43) accepted=True hot=85 sqlRows=2 hotLength=2 replay=85 decoded=2 invariant=True
+ORDER-REPLAY values=(1000,7) events=Just [("admin-key-1",IEApp (DemoAdd 7)),("admin-key-1",IEApp (DemoAdd 1000))] seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] fullState=True
+CONCURRENT values=(1000,7) accepted=True hot=1007 sqlRows=2 hotLength=2 replay=1007 decoded=2 invariant=True
+ORDER-REPLAY values=(0,999) events=Just [("admin-key-1",IEApp (DemoAdd 999)),("admin-key-1",IEApp (DemoAdd 0))] seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] fullState=True
+CONCURRENT values=(0,999) accepted=True hot=999 sqlRows=2 hotLength=2 replay=999 decoded=2 invariant=True
+CONSERVATION passing=8/8
+CODEC-CONTROL member-exception-observed=True pure-nonmember-refusal=Left (IEValidation (NotAMember "outsider"))
+CODEC-REFUSAL actual=AUDIT-SEED-SERIALIZATION
+CallStack (from HasCallStack):
+  error, called at /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/StoreProbe.hs:98:14 in main:Main preserves-refusal=False counts=(0,0,0,0,0)

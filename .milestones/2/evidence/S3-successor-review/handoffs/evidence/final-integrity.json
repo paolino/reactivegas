@@ -1,0 +1,10 @@
+{
+  "verifiedAt": "2026-09-06T07:59:30.799Z",
+  "sourceFilesRehashed": 28,
+  "sourceDrift": [],
+  "outerEntriesRehashed": 109,
+  "packetManifest": "9f6a6bc5be903a79d668c6e0d07b5306579a113af438b56a23dfc2a69c38eeca",
+  "projectExecutions": 0,
+  "validatorInvocations": 9,
+  "verdict": "AUDIT-FINDINGS"
+}

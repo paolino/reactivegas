@@ -1,0 +1,174 @@
+OP-11|step_grant_inv|MUT:Step.lean:54:demand(isResponsabile)→demand True|step_grant_inv RED
+OP-24|step_deny_inv|MUT:Step.lean:58:demand(isResponsabile)→demand True|step_deny_inv RED
+OP-12|step_pledge_inv|MUT:Step.lean:99:decide(0<v)→decide True|step_pledge_inv RED
+OP-12|pledge_guard_inv|MUT:Step.lean:99 (same)|pledge_guard_inv RED
+OP-12|pledge_escrow_debit|MUT:Step.lean:99 (same)|pledge_escrow_debit RED
+OP-12|pledge_rejected_when_member|MUT:Step.lean:99 (same)|pledge_rejected_when_member RED
+OP-12|pledge_preserves_allUnique|MUT:Step.lean:99 (same)|pledge_preserves_allUnique RED
+OP-13|step_accept_inv|MUT:Step.lean:107:isResponsabile→True|step_accept_inv RED
+OP-13|auth_referente_guard_inv|MUT:Step.lean:107 (same)|auth RED (accept arm)
+OP-14|step_refuse_inv|MUT:Step.lean:114:isResponsabile→True|step_refuse_inv RED
+OP-14|auth_referente_guard_inv|MUT:Step.lean:114 (same)|auth RED (refuse arm)
+OP-15|step_correct_inv|MUT:Step.lean:121:isResponsabile→True|step_correct_inv RED
+OP-16|step_close_inv|MUT:Step.lean:128:isResponsabile→True|step_close_inv RED
+OP-16|close_guard_inv|MUT:Step.lean:128 (same)|close_guard_inv RED
+OP-16|close_spends_referente|MUT:Step.lean:128 (same)|close_spends_referente RED
+OP-16|close_permission_to_close|MUT:Step.lean:128 (same); E02 read observed in OP-11|close_permission_to_close RED
+OP-17|step_fail_inv|MUT:Step.lean:135:isResponsabile→True|step_fail_inv RED
+OP-17|fail_guard_inv|MUT:Step.lean:135 (same)|fail_guard_inv RED
+OP-18|Reactivegas.step_open_inv|MUT:Step.lean:48:isResponsabile→True|step_open_inv RED
+OP-19|Reactivegas.step_deposit_inv|MUT:Step.lean:63:isResponsabile→True|step_deposit_inv RED
+OP-19|deposit_double_entry|MUT:Step.lean:63 (same)|deposit_double_entry RED
+OP-20|Reactivegas.step_withdraw_inv|MUT:Step.lean:68:isResponsabile→True|step_withdraw_inv RED
+OP-20|withdraw_double_entry|MUT:Step.lean:68 (same)|withdraw_double_entry RED
+OP-21|Reactivegas.step_transferCassa_inv|MUT:Step.lean:75:isResponsabile→True|step_transferCassa_inv RED
+OP-22|Reactivegas.step_donate_inv|MUT:Step.lean:80:decide(0<v)→decide True|step_donate_inv RED (demonstrated form)
+OP-23|Reactivegas.step_backdonate_inv|MUT:Step.lean:89:auth s w→True|step_backdonate_inv RED
+OP-11..24-COLL|conservation_preserved|COLL-ALL14:observation across OP-11..24 runs (targets=each arm op; no separate invocation)|failure observed per run where its arm breaks
+OP-11..24-COLL|step_authorized|COLL-ALL14: same|failure observed per run where its arm breaks
+OP-25|solvent_preserved|MUT:Step.lean:82-83:drop conti-comune-credit line|solvent_preserved RED
+OP-26|reach_solvent|OBSERVED-IN-OP-25(+boot OP-73):trans-case|reach_solvent RED observed
+OP-27|not_insolvent_of_reach|OBSERVED-IN-OP-25/26|not_insolvent RED observed
+OP-29|credit_pledges_of_reach|MUT:Step.lean:102:drop conti-debit line|credit_pledges_of_reach RED
+OP-31|credit_pledges_step|MUT:Step.lean:131:drop casse-spend line|credit_pledges_step RED
+OP-28|comune_not_a_member_of_reach|PREMISE-STATIC:no-mutant|none (S5 connection question)
+OP-30|comune_not_a_member_step|VACUOUS-STATIC:no-mutant|none (ignores hstep)
+OP-32..38-STATIC|approvals_nodup|SHARED-COUNTERPART:call-body|none (single-count)
+OP-32..38-STATIC|proposer_mem_approvals|SHARED-COUNTERPART:call-body|none (single-count)
+OP-32..38-STATIC|enact_implies_threshold_met|SHARED-COUNTERPART:call-body|none (single-count)
+OP-32..38-STATIC|members_change_implies_enacted|SHARED-COUNTERPART:call-body|none (single-count)
+OP-32..38-STATIC|member_key_coherent|SHARED-COUNTERPART:call-body|none (single-count)
+OP-32..38-STATIC|majority_table|SHARED-COUNTERPART:call-body|none (single-count)
+OP-32..38-STATIC|majority_not_strict_on_even|SHARED-COUNTERPART:call-body|none (single-count)
+OP-39|KelGroups.Vote.ballots_nodup_disjoint|MUT:Vote/Fold.lean:55:dissents.erase→dissents|ballots_nodup_disjoint RED
+OP-39|KelGroups.Vote.placeBallot_clean|MUT:Vote/Fold.lean:55 (same)|placeBallot_clean RED
+OP-39|KelGroups.Vote.placeBallot_tally|MUT:Vote/Fold.lean:55 (same)|placeBallot_tally RED
+OP-39|KelGroups.Vote.sweepClosures_tallyKeys|MUT:Vote/Fold.lean:55 (same)|tallyKeys RED
+OP-39|KelGroups.Vote.tally_keys_franchised_from|MUT:Vote/Fold.lean:55 (same)|franchised_from RED
+OP-39|KelGroups.Vote.tallyKeysOfState_erased_le|MUT:Vote/Fold.lean:55 (same)|erased_le RED
+OP-39|KelGroups.Vote.tallyKeysOfState_insert_cases|MUT:Vote/Fold.lean:55 (same)|insert_cases RED
+OP-40|KelGroups.Vote.open_questions_are_open|MUT:Vote/Fold.lean:76:filter-pred→fun-true|open_questions_are_open RED
+OP-40|KelGroups.Vote.sweepClosures_idempotent|MUT:Vote/Fold.lean:76 (same)|idempotent RED
+OP-40|KelGroups.Vote.sweepClosures_sweepReady|MUT:Vote/Fold.lean:76 (same)|sweepReady RED
+OP-40|KelGroups.Vote.sweepClosures_wellFormed|MUT:Vote/Fold.lean:76 (same)|wellFormed RED
+OP-40|KelGroups.Vote.sweepClosures_open_mem|MUT:Vote/Fold.lean:76 (same)|open_mem RED
+OP-40|KelGroups.Vote.sweepClosures_closed_mem|MUT:Vote/Fold.lean:76 (same)|closed_mem RED
+OP-40|KelGroups.Vote.sweepClosures_preserves_qid|MUT:Vote/Fold.lean:76 (same)|preserves_qid RED
+OP-41|KelGroups.Vote.foldVote_wellFormed|MUT:Vote/Types.lean:44 (same)|foldVote_wellFormed RED
+OP-41|KelGroups.Vote.franchise_of_tallies|MUT:Vote/Types.lean:44 (same)|franchise RED
+OP-41|KelGroups.Vote.no_expiry|MUT:Vote/Types.lean:44 (same)|no_expiry RED
+OP-42|KelGroups.Vote.questions_partition|RECOVERED:mutant-partition.lean|sensitivity reproduced (no kill)
+OP-43|KelGroups.Vote.ballots_nodup_disjoint|RECOVERED:mutant-disjoint.lean|sensitivity reproduced
+OP-43|KelGroups.Vote.placeBallot_clean|RECOVERED:mutant-disjoint.lean|observed
+OP-43|KelGroups.Vote.placeBallot_tally|RECOVERED:mutant-disjoint.lean|observed
+OP-44|KelGroups.Vote.open_questions_are_open|RECOVERED:mutant-nostale.lean|sensitivity reproduced
+OP-45|KelGroups.Vote.franchise_of_tallies|RECOVERED:mutant-franchise.lean|sensitivity reproduced
+OP-45|KelGroups.Vote.unfranchised_cast_noop|RECOVERED:mutant-franchise.lean|observed
+OP-45|KelGroups.Vote.inadmissible_is_noop|RECOVERED:mutant-bypass.lean|sensitivity reproduced
+OP-45|KelGroups.Vote.nonresponsabile_event_noop|RECOVERED:mutant-bypass.lean|observed
+OP-49|KelGroups.Vote.inadmissible_is_noop|MUT:Vote/Validate.lean:58:if-isResponsabile→.ok|inadmissible RED
+OP-49|KelGroups.Vote.nonresponsabile_event_noop|MUT:Vote/Validate.lean:58 (same)|nonresponsabile RED
+OP-49|KelGroups.Vote.unfranchised_cast_noop|MUT:Vote/Validate.lean:58 (same)|unfranchised RED
+OP-50a|KelGroups.Vote.sweepStep_of_open|MUT:Vote/Fold.lean:63-64:.open-arm→close-branch-duplicate|of_open RED
+OP-50b|KelGroups.Vote.sweepStep_key|MUT:Vote/Fold.lean:65:entry.1→"wrong"|key RED
+OP-52|KelGroups.Vote.effectedState_sweepReady|MUT:Vote/Fold.lean:96-100:cast-some-arm→gs|sweepReady RED
+OP-52|KelGroups.Vote.effectedState_tally_growth|MUT:Vote/Fold.lean:96-100 (same)|tally_growth RED
+OP-52|KelGroups.Vote.effectedState_preserves_qid|MUT:Vote/Fold.lean:96-100 (same)|preserves_qid RED
+OP-53|KelGroups.Vote.applyVoteEvent_preserves_wellFormed|MUT:Vote/Fold.lean:121:ok-arm-sweep-call→effectedState-only:sweep-call→effectedState-only|wellFormed RED
+OP-53|KelGroups.Vote.applyVoteEvent_preserves_qid|MUT:Vote/Fold.lean (same)|preserves_qid RED
+OP-54a|KelGroups.Vote.foldFrom_preserves_wellFormed|MUT:Vote/Fold.lean:137-138:accum→current→current|foldFrom wellFormed RED
+OP-54a|KelGroups.Vote.foldFrom_preserves_qid|MUT:Vote/Fold.lean:137-138:accum→current (same)|foldFrom qid RED
+OP-58|KelGroups.validateDirectAdmission_ok|MUT:Validate.lean:146:if-isAdmin→if-True|validateDirectAdmission_ok RED
+OP-58|KelGroups.direct_admission_requires_admin|MUT:Validate.lean:146 (same)|requires_admin RED
+OP-58|KelGroups.non_admin_admission_is_noop|MUT:Validate.lean:146 (same)|no-op RED
+OP-58|KelGroups.membership_growth_is_direct_admission|MUT:Validate.lean:146 (same)|growth RED
+OP-59|KelGroups.validateDirectAdmission_ok|MUT:Validate.lean:147:if-target-reserved→if-False|reserved-refusal RED
+OP-59|KelGroups.direct_admission_requires_admin|MUT:Validate.lean:147 (same)|observed
+OP-60|KelGroups.non_admin_admission_is_noop|MUT:Validate.lean:148:if-isMember→if-False|dup-refusal RED
+OP-60|KelGroups.membership_growth_is_direct_admission|MUT:Validate.lean:148 (same)|observed
+OP-61|KelGroups.commitBaseChange_ok|MUT:Integration.lean:143:{post-with-appFold}→{post-with-pre.appFold}|commitBaseChange_ok RED
+OP-61|KelGroups.commitBaseChange_members|MUT:Integration.lean:143 (same)|members RED
+OP-61|KelGroups.base_change_runs_hook|MUT:Integration.lean:143 (same)|runs_hook RED
+OP-62|KelGroups.tryEnactBase_runs_hook|MUT:Integration.lean:154:length->-majority→>:≥→>|runs_hook RED
+OP-62|KelGroups.tryEnactBase_preserves_absence|MUT:Integration.lean (same)|preserves_absence RED
+OP-62B|KelGroups.app_event_preserves_members|MUT:Integration.lean:app-branch-result:members→[]|preserves_members RED
+OP-62B|KelGroups.app_event_has_no_base_change|MUT:Integration.lean:app-branch (same)|no_base_change RED
+OP-62C|KelGroups.enactMutation_preserves_absence|MUT:Integration.lean:enactMutation-removeMember-arm:assocErase→identity|enactMutation RED
+OP-63|Reactivegas.baseHook_votes|MUT:Step.lean:baseHook:sweepClosures-θ-post→θ-pre|baseHook_votes RED
+OP-63|Reactivegas.base_change_recomputes_votes|MUT:Step.lean (same)|recomputes RED
+OP-64a|KelGroups.enact_preserves_wellFormed|MUT:Fold.lean:14:assocErase-key→gs.members|enact_preserves RED
+OP-64a|KelGroups.members_change_implies_enacted|MUT:Fold.lean:14 (same)|members_change OBSERVED (enact-body)
+OP-64b|KelGroups.finishEnact_preserves_wellFormed|MUT:Fold.lean:21:assocErase-proposalId→identity|finishEnact RED
+OP-64c|KelGroups.tryEnact_preserves_wellFormed|MUT:Fold.lean:37:length-≥-majority→>|tryEnact RED
+OP-64c|KelGroups.tryEnact_eq_of_enacts|MUT:Fold.lean:37 (same)|eq_of_enacts RED
+OP-64c|KelGroups.tryEnactDetailed_enactment_threshold_met|MUT:Fold.lean:37 (same)|threshold_met RED
+OP-64c|KelGroups.enact_implies_threshold_met|MUT:Fold.lean:37 (same)|enact_implies OBSERVED (threshold branch)
+OP-65a|KelGroups.applyPropose_preserves_wellFormed|MUT:Fold.lean:48-52:assocInsert-proposalId→skip|applyPropose RED
+OP-65b|KelGroups.applyApprove_preserves_wellFormed|MUT:Fold.lean:58-59:setInsert→cons-dup|applyApprove RED
+OP-65b|KelGroups.approvePending_wellFormed|MUT:Fold.lean:58-59 (same)|approvePending RED
+OP-65c|KelGroups.applyEvent_preserves_wellFormed|MUT:Fold.lean:82:app-branch-appFoldFn-call→gs.appFold|applyEvent RED
+OP-65c|KelGroups.foldEvents_preserves_wellFormed|MUT:Fold.lean:82 (same; inline fold over applyEvent)|foldEvents OBSERVED
+OP-65c|KelGroups.foldGroup_wellFormed|MUT:Fold.lean:82 (same; via foldEvents+emptyState)|foldGroup OBSERVED
+OP-66a|KelGroups.approvals_nodup|MUT:Fold.lean:58-59:setInsert→cons-dup|approvals_nodup RED
+OP-66a|KelGroups.proposer_mem_approvals|MUT:Fold.lean:58-59 (same)|proposer RED
+OP-66b|KelGroups.member_key_coherent|MUT:Fold.lean:11:introduce-arm-record-key→"other"|member_key RED
+OP-67a|KelGroups.majority_table|MUT:State.lean:50:(adminCount+1)/2→adminCount/2|majority_table RED
+OP-67a|KelGroups.majority_not_strict_on_even|MUT:State.lean:50 (same)|not_strict RED
+OP-67b|KelGroups.emptyState_wellFormed|MUT:State.lean:34:members:=[]→dup-pair|emptyState RED
+OP-67G|governance_enacts_windUpAdmin|MUT:Step.lean:257:refundAll-conti→conti|governance RED
+OP-68|Reactivegas.admissionPreservation_holds|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.canonical_economy_holds|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.exhaustive_inventories_hold|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.integrated_theorem_witness_holds|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.productionWellFormed_holds|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.comuneThresholdSanity_holds|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.i57_boundary_holds|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.i57_exhaustive_holds|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.i57_noop_holds|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.i57_auth_holds|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.i57_r45_holds|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.i57_partition_holds|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.i57_disjoint_holds|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.i57_disjoint_mutant_caught|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.i57_nostale_holds|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.i57_franchise_holds|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.i57_franchise_mutant_caught|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.i57_noexpiry_holds|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.i57_policyfree_holds|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.i57_policyfree_mutant_caught|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.comune_cannot_authorize|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.base_departure_applies_cleanup|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.base_change_can_close_without_ballot|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.direct_admission_only_holds|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.base_recompute_reachable_holds|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.sweep_idempotent_witness|ELAB:Invariants.lean|GREEN (witness)
+OP-68|Reactivegas.sweep_idempotent_mutant_caught|ELAB:Invariants.lean|GREEN (witness)
+OP-68|solvent_init|ELAB:Invariants.lean|GREEN (witness)
+OP-69|Reactivegas.app_members_preservation_holds|ELAB:Step.lean|GREEN
+OP-69|Reactivegas.app_members_preservation_mutant_caught|ELAB:Step.lean|GREEN
+OP-70|TraceTests.app_members_preservation_holds|ELAB:TraceTests.lean|GREEN
+OP-70|TraceTests.app_members_preservation_mutant_caught|ELAB:TraceTests.lean|GREEN
+OP-70|TraceTests.all_checks_pass|ELAB:TraceTests.lean|GREEN
+OP-70|TraceTests.frozen_checks_faithful|ELAB:TraceTests.lean|GREEN
+OP-70|TraceTests.frozen_inventory_faithful|ELAB:TraceTests.lean|GREEN
+OP-70|TraceTests.frozen_corpus_faithful|ELAB:TraceTests.lean|GREEN
+OP-70|TraceTests.base_departure_applies_cleanup|ELAB:TraceTests.lean|GREEN
+OP-70|TraceTests.base_change_can_close_without_ballot|ELAB:TraceTests.lean|GREEN
+OP-70|TraceTests.direct_admission_only_holds|ELAB:TraceTests.lean|GREEN
+OP-70|TraceTests.base_recompute_reachable_holds|ELAB:TraceTests.lean|GREEN
+OP-70|TraceTests.sweep_idempotent_witness|ELAB:TraceTests.lean|GREEN
+OP-70|TraceTests.sweep_idempotent_mutant_caught|ELAB:TraceTests.lean|GREEN
+OP-71|stepDetailed_erases|ELAB:Trace.lean|GREEN
+OP-72|Reactivegas.Composition.voteDerived_iff_not_direct|ELAB:Composition.lean|GREEN
+OP-72|Reactivegas.Composition.baseEnacted_threshold_met|ELAB:Composition.lean|GREEN
+OP-72|Reactivegas.Composition.appDecided_verdict_exhaustive|ELAB:Composition.lean|GREEN
+OP-73|solvent_init|ACCEPT:full-tree-build|acceptance GREEN
+OP-74|KelGroups.Vote.verdictOf_threshold_congr|ELAB:Vote/Invariants.lean|GREEN (structural-parametric)
+OP-74|KelGroups.Vote.emptyVoteState_sweepReady|ELAB:Vote/Invariants.lean|GREEN (structural-parametric)
+OP-74|KelGroups.Vote.emptyVoteState_wellFormed|ELAB:Vote/Invariants.lean|GREEN (structural-parametric)
+OP-74|KelGroups.Vote.sweep_filterMap_of_swept|ELAB:Vote/Invariants.lean|GREEN (structural-parametric)
+OP-74|KelGroups.Vote.filter_open_idem|ELAB:Vote/Invariants.lean|GREEN (structural-parametric)
+OP-74|KelGroups.Vote.sweepDuplicating_duplicates|ELAB:Vote/Invariants.lean|GREEN (structural-parametric)
+OP-74|KelGroups.Vote.foldVote_append|ELAB:Vote/Invariants.lean|GREEN (structural-parametric)
+OP-42K|KelGroups.Vote.questions_partition|MUT:Vote/Fold.lean:77:closed-append-drop|questions_partition RED
+OP-42K|KelGroups.Vote.sweep_filterMap_of_swept|MUT:Vote/Fold.lean:77 (same)|filterMap OBSERVED

@@ -1,0 +1,102 @@
+[
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/command-receipts.json",
+    "sha256": "7825b12304720fab872de7e692e677bb122c33791592ee3c4b8605f960429224",
+    "bytes": 3507
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/gate-identity.json",
+    "sha256": "083608277d66f6720371b4a35c2387eae839fbc3ba25b3b6871eb0d948359c98",
+    "bytes": 186
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/input-0-brief.md",
+    "sha256": "cf6144d7c560cb9da1d2264676b2e4f437246a5d311e8293b18e7c3d4f242486",
+    "bytes": 4158
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/input-1-launch.sh",
+    "sha256": "7b94dcbefd49b274605db78e98a92c937c6fd079aac6761d16261e41b4325caa",
+    "bytes": 546
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/input-2-S28-R1-COMMAND-PLAN-v2.md",
+    "sha256": "eff38e3bca5022a0bcacdbc37deec44766917c755d2ac68fc96c7fdcfdc3c9e0",
+    "bytes": 8586
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/input-3-NOTE-024-s28r1-commission.md",
+    "sha256": "d431cdd3ffe14037dcc2fd981336caf1a3151a73bac19ebacbfb5ea9a3bdc591",
+    "bytes": 4184
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/input-4-NOTE-025-plan-correction.md",
+    "sha256": "4f6df4d1dbba4d640a2ba4f7659164a11afa649bfdbf8e2b0574614ef477eec2",
+    "bytes": 2576
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/input-5-NOTE-026-s28r1-validation.md",
+    "sha256": "4451e0330352ea3a333307c639fa83a26ab9da0d4675708442564ddb1a205cfb",
+    "bytes": 2727
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/input-6-NOTE-028-frozen-handback.md",
+    "sha256": "981c30166afb176d576d65c93049acf36071c3527160bfb684ad51810788e25b",
+    "bytes": 2340
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/input-7-SKILL.md",
+    "sha256": "e34f272f45204d4e5bb2d72653fc4909b4401050f31dca85dbed275cfd309639",
+    "bytes": 41562
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/input-manifest.json",
+    "sha256": "9e0c28510fc7f934fc1717d2032f1d5c0d413a566b0639ef6c672400629d4ba3",
+    "bytes": 2818
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/preflight-0.log",
+    "sha256": "3050c9a50fff288414167e583b310efeb91ff8e5f5d489756a08e825fd1104bc",
+    "bytes": 177
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/preflight-1.log",
+    "sha256": "3b840634065f9cea5437708b15ee070fd878511f8959f4241d92acd8dcc0a63e",
+    "bytes": 819
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/preflight-2.log",
+    "sha256": "c38f63c72cfc6429ba9f0ce54a8ea60d7594a29e27bf1acc813eb6b3e83a4c55",
+    "bytes": 82
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/preflight-3.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/preflight-4.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/preflight-5.log",
+    "sha256": "2d79655a63ca74d317c860bbd917de90b4ebb810a0f5514e61faf702c820eb3b",
+    "bytes": 230
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/preflight-6.log",
+    "sha256": "6891ede413c8f4b259bd4a8ccca189795644e9efcbb7be63ea73a236810d7b38",
+    "bytes": 37
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/AUDIT-REPORT.md",
+    "sha256": "22c79c048bfc5a63eff7013d80da5a8afd6f18f3a436b9d988a23e1cb9a3656f",
+    "bytes": 3421
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/REQUIREMENT-LEDGER.md",
+    "sha256": "00b4d4f05cd1570b3cc5bebc975e00f36cf75d62f10eb50c0eb34c9d99265a77",
+    "bytes": 1555
+  }
+]

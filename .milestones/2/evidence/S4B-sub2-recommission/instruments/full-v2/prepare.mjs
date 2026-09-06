@@ -1,0 +1,67 @@
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+const rt='/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2';
+const candidate='/code/reactivegas-66-s4b-audit5';
+const lib=candidate+'/lean/.lake/build/lib/lean';
+const lean='/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean';
+const hash=s=>crypto.createHash('sha256').update(s).digest('hex');
+const rows=[];const atoms=[];
+function save(p,s){fs.mkdirSync(p.slice(0,p.lastIndexOf('/')),{recursive:true});fs.writeFileSync(p,s);return hash(s);}
+function row(id,obligation,argv,cwd,inputs,world,prereq,observation,charge='targeted'){rows.push({id,obligation,argv,cwd,inputs,world,prerequisite:prereq,outputs:{stdout:`${rt}/evidence/full-v2/${id}.stdout`,stderr:`${rt}/evidence/full-v2/${id}.stderr`,receipt:`${rt}/evidence/full-v2/${id}.json`},observation,charge,cost:1});}
+function atom(id,file,def,thm,old,replacement,obligation,occurrence=0){
+ const path=candidate+'/lean/'+file;const src=fs.readFileSync(path,'utf8');const start=src.indexOf('\ndef '+def+' ')+1;if(start===0)throw Error('missing def '+def);const end=src.indexOf('\n/--',start);if(end<0)throw Error('missing end');const chunk=src.slice(start,end);let i=-1;for(let n=0;n<=occurrence;n++){i=chunk.indexOf(old,i+1);if(i<0)throw Error('missing atom '+id+' '+old);}const changed=src.slice(0,start+i)+replacement+src.slice(start+i+old.length);const fn=rt+'/instruments/full-v2/atoms/'+id+'.lean';
+ const fullThm=(file.startsWith('KelGroups/')?'KelGroups.':'')+thm;
+ const printed=changed.slice(0,end+replacement.length-old.length)+`\n#check ${fullThm.replace(/_corr$/, 'B')}\n`+changed.slice(end+replacement.length-old.length);
+ // Check the actual mutated definition, whose spelling may differ from theorem stem.
+ const final=printed.replace(`#check ${fullThm.replace(/_corr$/, 'B')}`,`#check ${file.startsWith('KelGroups/')?(thm.startsWith('Vote.')?'KelGroups.Vote.':'KelGroups.'):''}${def}`);
+ const sha=save(fn,final);let needle='theorem '+thm+' ';if(thm.startsWith('Vote.'))needle='theorem '+thm.slice(5)+' ';const ts=final.indexOf(needle);if(ts<0)throw Error('theorem missing '+thm);const te=final.indexOf('\n/--',ts);const first=final.slice(0,ts).split('\n').length;const last=final.slice(0,te<0?final.length:te).split('\n').length;
+ atoms.push({id,obligation,source:file,definition:def,theorem:fullThm,old,replacement,occurrence,sourceSha256:hash(src),instrumentSha256:sha,proofLines:[first,last],wellTyped:'Bool-preserving expression replacement; #check marker must appear; no definition-range error',editCount:1});
+ row(id,obligation,['env','LEAN_PATH='+lib,lean,'-DautoImplicit=false',fn],candidate+'/lean',[{path:fn,sha256:sha},{path,sha256:hash(src)},{manifest:'evidence/M1/oleans.sha256'}],`isolated elaboration ${id}; immutable clean dependency lib, no olean output`,['S01','M1R-T'],`original ${fullThm} must fail in proof lines ${first}-${last}; definition #check succeeds; unchanged statement/proof bytes; downstream errors not credited`);
+}
+const R='Reactivegas/Mirrors.lean',K='KelGroups/Mirrors.lean';
+atom('A01',R,'conservationB','conservation_corr','sumBal s.casse','0','P02 cassa contribution');
+atom('A02',R,'conservationB','conservation_corr','sumBal s.conti','0','P02 conto contribution');
+atom('A03',R,'conservationB','conservation_corr','escrowSum s.collections','0','P02 escrow contribution');
+atom('A04',R,'solventB','solvent_corr','decide (bal s.conti u ≥ 0)','true','P03 member balance nonnegative');
+atom('A05',R,'solventB','solvent_corr','col.accepted ++ col.pending','col.pending','P03 accepted pledge carrier');
+atom('A06',R,'solventB','solvent_corr','col.accepted ++ col.pending','col.accepted','P03 pending pledge carrier');
+atom('A07',R,'solventB','solvent_corr','decide (0 ≤ p.amount)','true','P03 pledge amount nonnegative');
+atom('A08',R,'solventB','solvent_corr','view.members.map Prod.fst','([] : List KelGroups.Key)','P03 canonical member carrier');
+atom('A09',R,'insolventB','insolvent_corr','decide (bal s.conti u < 0)','true','P04 negative balance condition');
+atom('A10',R,'insolventB','insolvent_corr','view.members.map Prod.fst','([] : List KelGroups.Key)','P04 existential member carrier');
+atom('A11',R,'uniquePledgesB','uniquePledges_corr','decide (p = q)','true','P05 equal-user pledge equality');
+atom('A12',R,'uniquePledgesB','uniquePledges_corr','!decide (p.user = q.user)','true','P05 equal-user antecedent');
+atom('A13',R,'uniquePledgesB','uniquePledges_corr','col.accepted ++ col.pending','col.pending','P05 accepted outer carrier');
+atom('A14',R,'uniquePledgesB','uniquePledges_corr','col.accepted ++ col.pending','col.accepted','P05 pending outer carrier');
+atom('A15',R,'allUniquePledgesB','allUniquePledges_corr','s.collections.all','([] : List Collection).all','P06 every collection');
+atom('A16',R,'escrowHeldB','escrowHeld_corr','decide (amt = v)','true','P08 selected held amount');
+atom('A17',R,'escrowHeldB','escrowHeld_corr','| none => false','| none => true','P08 absent held amount');
+atom('A18',R,'governanceEnactsB','governanceEnacts_corr','decide (c.referente ≠ u)','true','P09 removed referent exclusion');
+atom('A19',R,'doubleEntryB','doubleEntry_corr','decide (bal s\'.conti u = bal s.conti u + v)','true','P10 conto effect');
+atom('A20',R,'doubleEntryB','doubleEntry_corr','decide (bal s\'.casse a = bal s.casse a + v)','true','P10 cassa effect');
+atom('A21',R,'canCloseGroupB','canCloseGroup_corr','decide (bal s.conti u = 0)','true','P12 member balance zero');
+atom('A22',R,'canCloseGroupB','canCloseGroup_corr','decide (s.collections = [])','true','P12 no open collections');
+atom('A23',R,'canCloseGroupB','canCloseGroup_corr','decide (bal s.casse r = 0)','true','P12 all cassa balances zero');
+atom('A24',K,'pendingWellFormedB','pendingWellFormed_corr','decide (pending.approvals.Nodup)','true','K1 approval uniqueness');
+atom('A25',K,'pendingWellFormedB','pendingWellFormed_corr','decide (pending.proposer ∈ pending.approvals)','true','K1 proposer assent');
+atom('A26',K,'membersCoherentB','membersCoherent_corr','decide (e.2.key = e.1)','true','K2 keyed canonical member');
+atom('A27',K,'pendingCoherentB','pendingCoherent_corr','pendingWellFormedB e.2','true','K3 pending coherence');
+atom('A28',K,'wellFormedB','wellFormed_corr','decide ((gs.members.map Prod.fst).Nodup)','true','K4 member key uniqueness');
+atom('A29',K,'wellFormedB','wellFormed_corr','decide ((gs.pendingProposals.map Prod.fst).Nodup)','true','K4 proposal key uniqueness');
+atom('A30',K,'wellFormedB','wellFormed_corr','membersCoherentB gs','true','K4 member coherence');
+atom('A31',K,'wellFormedB','wellFormed_corr','pendingCoherentB gs','true','K4 proposal coherence');
+atom('A32',K,'enactsB','enacts_corr','(tryEnactDetailed gs proposalId).enactment.isSome','true','K5 actual enactment presence');
+atom('A33',K,'enactsB','enacts_corr','decide ((tryEnactDetailed gs proposalId).state = result)','true','K5 exact resulting state');
+atom('A34',K,'questionCleanB','Vote.questionClean_corr','decide (q.assents.Nodup)','true','V1 assent uniqueness');
+atom('A35',K,'questionCleanB','Vote.questionClean_corr','decide (q.dissents.Nodup)','true','V1 dissent uniqueness');
+atom('A36',K,'questionCleanB','Vote.questionClean_corr','decide (k ∉ q.dissents)','true','V1 tally disjointness');
+atom('A37',K,'sweepReadyB','Vote.sweepReady_corr','decide ((gs.openQuestions.map Prod.fst).Nodup)','true','V2 open question key uniqueness');
+atom('A38',K,'sweepReadyB','Vote.sweepReady_corr','decide ((gs.closed.map (·.questionId)).Nodup)','true','V2 closed question key uniqueness');
+atom('A39',K,'sweepReadyB','Vote.sweepReady_corr','decide (qid ∉ gs.closed.map (·.questionId))','true','V2 open closed disjointness');
+atom('A40',K,'sweepReadyB','Vote.sweepReady_corr','| some q => questionCleanB q','| some q => true','V2 lookup-selected open question cleanliness');
+atom('A41',K,'sweepReadyB','Vote.sweepReady_corr','gs.closed.all (fun c => questionCleanB c.question)','true','V2 closed question cleanliness');
+atom('A42',K,'sweepReadyB','Vote.sweepReady_corr','decide (c.verdict ≠ Verdict.open)','true','V2 no open verdict in closed');
+atom('A43',K,'voteWellFormedB','Vote.voteWellFormed_corr','sweepReadyB view gs','true','V3 sweep shape');
+atom('A44',K,'voteWellFormedB','Vote.voteWellFormed_corr','decide (verdictOf θ view q = Verdict.open)','true','V3 callable threshold open verdict');
+save(rt+'/planning/atoms.json',JSON.stringify(atoms,null,2)+'\n');save(rt+'/planning/atom-commands.json',JSON.stringify(rows,null,2)+'\n');
+console.log(JSON.stringify({atoms:atoms.length,rows:rows.length,allStatic:true}));

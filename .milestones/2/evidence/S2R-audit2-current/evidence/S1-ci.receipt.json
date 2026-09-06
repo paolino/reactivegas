@@ -1,0 +1,32 @@
+{
+  "id": "S1",
+  "class": "substantive",
+  "command": [
+    "nix",
+    "develop",
+    "--quiet",
+    "-c",
+    "env",
+    "TMPDIR=/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s2r-sub2-codex/instruments/../tmp",
+    "just",
+    "ci"
+  ],
+  "cwd": "/code/reactivegas-66-s2r-audit2",
+  "start": "2026-09-05T20:53:16.596Z",
+  "end": "2026-09-05T20:56:06.681Z",
+  "durationMs": 170034,
+  "pid": 2339718,
+  "exit": 0,
+  "signal": null,
+  "logSha256": "2400910d2227528756813c7c5d370721ae2d08c4f09b12155542619b06f176f6",
+  "capture": [
+    {
+      "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s2r-sub2-codex/instruments/../tmp/tmp.OiUPLK8JxB/AxiomGate.lean",
+      "sha256": "f04f53e1726d8c784def7c8cd9cb39c7285ef7abe2562dcf83cf4e785309d45f",
+      "time": "2026-09-05T20:55:12.526Z"
+    }
+  ],
+  "postStatus": "",
+  "head": "ab617d88af9d080de71218f3cc553d60ef0b6de0",
+  "freeAfter": "Filesystem               1B-blocks         Used    Available Use% Mounted on\n/dev/mapper/fast-code 844362571776 583306633216 218089488384  73% /code"
+}

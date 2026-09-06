@@ -1,0 +1,1 @@
+Selected terminal audit evidence: 575 inventoried files copied; compiled .olean/.ilean/.ir artifacts omitted from this public copy. The full693-entry inventory was hash-verified locally. Raw sources, mutants, command receipts, stdout/stderr and terminal report retained. No claim of a full build-cache backup.

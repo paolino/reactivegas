@@ -1,0 +1,512 @@
+[
+  {
+    "identity": "sentinel",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P02-nonzero-balanced",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P02-distinguishes-one-unit",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P03-duplicate-first-balance",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P03-negative-first-balance",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P03-accepted-negative",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P03-pending-negative",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P03-absent-balance-default",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P04-negative-present",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P04-first-match-positive",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P04-absent-balance-default",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P05-identical-duplicates-allowed",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P05-conflicting-duplicates-refused",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P06-nonempty-all",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P06-nonempty-counterexample",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P08-first-pending-amount",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P08-later-duplicate-amount",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P08-absent-key",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P09-nonempty-removed-other",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P09-live-referent",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P10-nonzero-both-effects",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P10-conto-alone-wrong",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P10-cassa-alone-wrong",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P10-negative-delta",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P12-first-match-duplicates-absent-defaults",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P12-nonzero-member",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P12-open-collection",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P12-nonzero-cassa",
+    "command": "EconomyWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "K1-valid-proposer-assent",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "K1-duplicate-approval",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "K1-proposer-absent",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "K2-nonempty-coherent",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "K2-key-mismatch",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "K3-nonempty-pending-coherent",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "K3-invalid-pending",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "K4-nonempty-wellformed",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "K4-duplicate-member-key",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "K4-duplicate-proposal-key",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "K4-incoherent-member",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "K4-incoherent-pending",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "K5-enacted-exact-state",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "K5-different-Nat-payload",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "K5-absent-proposal",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "V1-disjoint-nonempty",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "V1-duplicate-assent",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "V1-duplicate-dissent",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "V1-overlapping-ballots",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "V2-nonempty-carriers",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "V2-open-duplicate-key",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "V2-closed-duplicate-key",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "V2-overlapping-key",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "V2-open-unclean",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "V2-closed-unclean",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "V2-closed-open-verdict",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "V3-callable-policy-two",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "V3-callable-policy-one",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "V3-dependent-sweep-shape",
+    "command": "GroupWitnesses",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "sentinel",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "false, all later assertions reached then failure"
+  },
+  {
+    "identity": "P02-nonzero-balanced",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P02-distinguishes-one-unit",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P03-duplicate-first-balance",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P03-negative-first-balance",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P03-accepted-negative",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P03-pending-negative",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P03-absent-balance-default",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P04-negative-present",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P04-first-match-positive",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P04-absent-balance-default",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P05-identical-duplicates-allowed",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P05-conflicting-duplicates-refused",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P06-nonempty-all",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P06-nonempty-counterexample",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P08-first-pending-amount",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P08-later-duplicate-amount",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P08-absent-key",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P09-nonempty-removed-other",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P09-live-referent",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P10-nonzero-both-effects",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P10-conto-alone-wrong",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P10-cassa-alone-wrong",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P10-negative-delta",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P12-first-match-duplicates-absent-defaults",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P12-nonzero-member",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P12-open-collection",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  },
+  {
+    "identity": "P12-nonzero-cassa",
+    "command": "WitnessNegative",
+    "input": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean",
+    "observation": "true"
+  }
+]

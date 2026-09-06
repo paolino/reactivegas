@@ -1,0 +1,8 @@
+/tmp/reactivegas/ms2/e-kelgroups-substrate/t30-contract/scratch/pf1/run.sh: line 91: /tmp/reactivegas/ms2/e-kelgroups-substrate/t30-contract/scratch/pf1/cases/P10c/lean/lean/KelGroups/Vote/Types.lean: No such file or directory
+/tmp/reactivegas/ms2/e-kelgroups-substrate/t30-contract/scratch/pf1/run.sh: line 91: cd: /tmp/reactivegas/ms2/e-kelgroups-substrate/t30-contract/scratch/pf1/cases/P10c/lean: No such file or directory
+cat: /tmp/reactivegas/ms2/e-kelgroups-substrate/t30-contract/scratch/pf1/cases/P10c/frozen/LEAN_HEAD: No such file or directory
+cat: /tmp/reactivegas/ms2/e-kelgroups-substrate/t30-contract/scratch/pf1/cases/P10c/frozen/HS_BASE: No such file or directory
+cat: /tmp/reactivegas/ms2/e-kelgroups-substrate/t30-contract/scratch/pf1/cases/P10c/frozen/LEAN_FILES: No such file or directory
+cat: /tmp/reactivegas/ms2/e-kelgroups-substrate/t30-contract/scratch/pf1/cases/P10c/frozen/LEAN_HASHES: No such file or directory
+cat: /tmp/reactivegas/ms2/e-kelgroups-substrate/t30-contract/scratch/pf1/cases/P10c/frozen/HS_MODULES: No such file or directory
+cat: /tmp/reactivegas/ms2/e-kelgroups-substrate/t30-contract/scratch/pf1/cases/P10c/frozen/FROZEN_ROWS: No such file or directory

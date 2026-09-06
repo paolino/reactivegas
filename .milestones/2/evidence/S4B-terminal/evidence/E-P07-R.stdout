@@ -1,0 +1,2 @@
+true
+permissionToClose_corr (col : Collection) : permissionToClose col ↔ (col.permitted && col.pending.isEmpty) = true

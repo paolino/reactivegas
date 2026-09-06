@@ -1,0 +1,17 @@
+KelGroups.Vote.sweepReadyB (_view : GroupView) (gs : VoteState) : Bool
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A38.lean:201:16: error: Application type mismatch: The argument
+  cN
+has type
+  (List.map (fun x => x.questionId) gs.closed).Nodup
+but is expected to have type
+  True
+in the application
+  And.intro cN
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A38.lean:208:16: error: Application type mismatch: The argument
+  cN
+has type
+  True
+but is expected to have type
+  (List.map (fun x => x.questionId) gs.closed).Nodup
+in the application
+  SweepReady.mk oN cN

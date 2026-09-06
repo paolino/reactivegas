@@ -1,0 +1,8 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A36.lean:144:23: warning: unused variable `k`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+KelGroups.Vote.questionCleanB (q : Question) : Bool
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A36.lean:150:49: error: unsolved goals
+q : Question
+⊢ (q.assents.Nodup ∧ q.dissents.Nodup ∧ ∀ (k : Key), k ∈ q.assents → k ∈ q.dissents → False) ↔
+    q.assents.Nodup ∧ q.dissents.Nodup ∧ ∀ (x : Key), x ∈ q.assents → True

@@ -1,0 +1,2 @@
+meta: GATE_VERSION=G28-1 v7 (r5-Q006-addendum) HEAD=84a2daea1db81b1baf73c73a7874dcd68ce9f4b2 SHORT=84a2dae evidence=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/evidence
+meta: gate_sha256=af55adc1f7364e42908cb8011c7c22edb0132de0247d61dbe140305e75dfe21e

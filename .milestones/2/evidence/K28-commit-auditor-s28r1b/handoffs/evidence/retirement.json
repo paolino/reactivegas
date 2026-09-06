@@ -1,0 +1,16 @@
+{
+  "time": "2026-09-06T00:39:11.726Z",
+  "report_frozen_before_retirement": {
+    "time": "2026-09-06T00:39:11.660Z",
+    "report_sha256": "24252ef1cdc49f2cd368c037604357527a0991262e2a74c70da33b073d07c542",
+    "ledger_sha256": "7731f5b6095764a97816a2efc6bba5f5080a6fbf99e2aade62d6dd05b43f728e",
+    "receipts_sha256": "5152895a6573e9e19811632e1d8575d71d923757c65bcaa5ce97e732587ade8f"
+  },
+  "retired_path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build",
+  "bytes_reclaimed": 205950976,
+  "apparent_bytes": 205809510,
+  "measurement": "du -s -B1 allocated bytes of exclusively owned build directory before removal; path absent afterwards. Not a global df delta.",
+  "worktree_preserved": "/code/kelgroups-audit-3af3d06",
+  "worktree_apparent_bytes": 227437004,
+  "preserved": "All probe sources, raw logs, diffs, receipts, authority snapshots, report and ledger; candidate worktree/build outputs retained."
+}

@@ -1,0 +1,8 @@
+SQL sequential control=True
+SQL exact baseline=True
+SQL seeded failure caller visible=True
+SQL exact conservation=True
+SQL domain exact refusal=True
+SQL refusal unchanged=True
+SQL lock released successful next append=True
+SQL exact final tuple=True

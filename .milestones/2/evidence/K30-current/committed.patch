@@ -1,0 +1,169 @@
+diff --git a/.gitignore b/.gitignore
+index 24ffd3d..78f450d 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -10,3 +10,4 @@ client/.spago/
+ client/output/
+ client/node_modules/
+ client/kelgroups-trivial/dist/index.js
++/gate.sh
+diff --git a/kelgroups.cabal b/kelgroups.cabal
+index 14aa61d..46bd225 100644
+--- a/kelgroups.cabal
++++ b/kelgroups.cabal
+@@ -47,6 +47,8 @@ library
+     KelGroups.Trivial
+     KelGroups.Types
+     KelGroups.Validate
++    KelGroups.Vote.State
++    KelGroups.Vote.Types
+ 
+   build-depends:
+     , aeson          >=2.1  && <2.3
+diff --git a/lib/KelGroups/Vote/State.hs b/lib/KelGroups/Vote/State.hs
+new file mode 100644
+index 0000000..99f3218
+--- /dev/null
++++ b/lib/KelGroups/Vote/State.hs
+@@ -0,0 +1,67 @@
++{- |
++Module      : KelGroups.Vote.State
++Description : Vote payload shapes mirrored from the Lean model
++Copyright   : (c) 2026 Paolo Veronelli
++License     : Apache-2.0
++
++Declarations only: the open-question set and the append-only closure
++log. No membership lives here, no clock, no time-like field. No
++transitions, no verdict logic, no fold wiring: those are later slices
++and are out of scope here.
++-}
++module KelGroups.Vote.State
++    ( Question (..)
++    , ClosureRecord (..)
++    , VoteState (..)
++    ) where
++
++import Data.Text (Text)
++import KelGroups.Vote.Types
++    ( ClosureCause
++    , QuestionId
++    , QuestionKind
++    , Verdict
++    )
++
++{- | A question as it stands while open: kind fixed at opening,
++proposer recorded, and the two tallies. No time-like field exists.
++-}
++data Question = Question
++    { questionKind :: QuestionKind
++    -- ^ Fixed at opening; a permission kind carries its designee
++    , questionProposer :: Text
++    -- ^ Substrate member key of the proposer
++    , questionAssents :: [Text]
++    -- ^ Substrate member keys recorded for assent
++    , questionDissents :: [Text]
++    -- ^ Substrate member keys recorded for dissent
++    }
++    deriving stock (Eq, Ord, Show)
++
++{- | A closure record: the question as it stood when it left the open
++set, the verdict it closed under (never 'Open'), and the observable
++cause. It carries no member snapshot.
++-}
++data ClosureRecord = ClosureRecord
++    { closureQuestionId :: QuestionId
++    -- ^ Which question left the open set
++    , closureQuestion :: Question
++    -- ^ The question as it stood at closure
++    , closureVerdict :: Verdict
++    -- ^ The verdict it closed under (never 'Open')
++    , closureCause :: ClosureCause
++    -- ^ The observable cause
++    }
++    deriving stock (Eq, Ord, Show)
++
++{- | The vote payload. 'closed' is append-only: closing a question is
++removing it from the open set and appending a closure record, as one
++operation, never a silent deletion.
++-}
++data VoteState = VoteState
++    { openQuestions :: [(QuestionId, Question)]
++    -- ^ The open-question set
++    , closed :: [ClosureRecord]
++    -- ^ Append-only closure log
++    }
++    deriving stock (Eq, Ord, Show)
+diff --git a/lib/KelGroups/Vote/Types.hs b/lib/KelGroups/Vote/Types.hs
+new file mode 100644
+index 0000000..93ff575
+--- /dev/null
++++ b/lib/KelGroups/Vote/Types.hs
+@@ -0,0 +1,68 @@
++{- |
++Module      : KelGroups.Vote.Types
++Description : Vote vocabulary mirrored from the Lean model
++Copyright   : (c) 2026 Paolo Veronelli
++License     : Apache-2.0
++
++Declarations only: the type heads and constructors mandated by slice
++S30-1. No transitions, no verdict logic, no fold wiring, no threshold
++default: those are later slices and are out of scope here.
++-}
++module KelGroups.Vote.Types
++    ( QuestionId
++    , Threshold
++    , Verdict (..)
++    , Ballot (..)
++    , QuestionKind (..)
++    , ClosureCause (..)
++    ) where
++
++import Data.Text (Text)
++
++{- | Identifier of a question. The same 'Text' key space as the shared
++substrate ('KelGroups.Types.Member' keys); no parallel key type is
++introduced.
++-}
++type QuestionId = Text
++
++{- | A threshold policy maps the current responsabile count to the
++required count. A parameter everywhere: nothing here hard-codes a
++policy, and no default is shipped.
++-}
++type Threshold = Int -> Int
++
++{- | Exactly three outcomes. 'Open' is a distinct constructor: never
++negative plus a flag, never an 'Option'/'Maybe' of a two-valued type.
++-}
++data Verdict
++    = Positive
++    | Negative
++    | Open
++    deriving stock (Eq, Ord, Show)
++
++{- | The two positions a responsabile can record. -}
++data Ballot
++    = Assent
++    | Dissent
++    deriving stock (Eq, Ord, Show)
++
++{- | A question is either collective (tallied against the threshold) or
++a permission addressed to exactly one designee. The designee is part
++of the kind, so a permission question without a designee is not
++representable. The designee is a substrate member key ('Text', as in
++'KelGroups.Types.Member'); no parallel designee type is introduced.
++-}
++data QuestionKind
++    = Collective
++    | Permission Text
++    deriving stock (Eq, Ord, Show)
++
++{- | Why a question left the open set. All four causes are carried as
++data, never as producers.
++-}
++data ClosureCause
++    = Tally
++    | FranchiseChange
++    | ProposerDeparted
++    | Renounced
++    deriving stock (Eq, Ord, Show)

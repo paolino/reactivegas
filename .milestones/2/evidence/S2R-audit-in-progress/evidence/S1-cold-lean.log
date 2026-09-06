@@ -1,0 +1,2653 @@
+lean dependency direction: OK (control imports=17)
+check-reactivegas-inversion-coverage: sources tracked=27 walked=27
+inversion-sources root=/code/reactivegas-66-s2r-audit/ modules=27
+inversion-coverage constructors=14 covered=14 missing=0 phantom=0
+axioms Reactivegas.step_open_inv = [propext]
+bound Reactivegas.step_open_inv = Event.openPurchase
+tight Reactivegas.step_open_inv = ok
+axioms Reactivegas.step_deposit_inv = [propext]
+bound Reactivegas.step_deposit_inv = Event.deposit
+tight Reactivegas.step_deposit_inv = ok
+axioms Reactivegas.step_withdraw_inv = [propext]
+bound Reactivegas.step_withdraw_inv = Event.withdraw
+tight Reactivegas.step_withdraw_inv = ok
+axioms Reactivegas.step_transferCassa_inv = [propext]
+bound Reactivegas.step_transferCassa_inv = Event.transferCassa
+tight Reactivegas.step_transferCassa_inv = ok
+axioms Reactivegas.step_donate_inv = [propext]
+bound Reactivegas.step_donate_inv = Event.donate
+tight Reactivegas.step_donate_inv = ok
+axioms Reactivegas.step_backdonate_inv = [propext]
+bound Reactivegas.step_backdonate_inv = Event.backdonate
+tight Reactivegas.step_backdonate_inv = ok
+lean-theorems declared=163 elaborated-backed=163
+inversion-audit: ok
+check-reactivegas-inversion-coverage: sources tracked=27 walked=27
+inversion-sources root=/code/reactivegas-66-s2r-audit/ modules=27
+inversion-coverage constructors=14 covered=13 missing=1 phantom=0
+missing: backdonate
+negative-control: withheld=backdonate source=Reactivegas.step_backdonate_inv detected=yes
+inversion-audit: ok
+check-lean-axioms: sources tracked=27 walked=27
+axiom-sources tracked=27 built=27
+axiom-module KelGroups.Types
+axiom-module KelGroups.Event
+axiom-module KelGroups.State
+axiom-module KelGroups.Fold
+axiom-module KelGroups.Validate
+axiom-module KelGroups.Integration
+axiom-module KelGroups.Invariants
+axiom-module KelGroups.Tests
+axiom-module KelGroups.Vote.Types
+axiom-module KelGroups.Vote.State
+axiom-module KelGroups.Vote.Event
+axiom-module KelGroups.Vote.Validate
+axiom-module KelGroups.Vote.Fold
+axiom-module KelGroups.Vote.Invariants
+axiom-module KelGroups.Vote.Tests
+axiom-module KelGroups
+axiom-module Reactivegas.Types
+axiom-module Reactivegas.State
+axiom-module Reactivegas.Step
+axiom-module Reactivegas.Predicates
+axiom-module Reactivegas.Invariants
+axiom-module Reactivegas.Trace
+axiom-module Reactivegas.Composition
+axiom-module Reactivegas
+axiom-module Reactivegas.CorpusExport
+axiom-module Reactivegas.CorpusGate
+axiom-module Reactivegas.TraceTests
+axiom-theorems walkOcc=1214 distinct=1213 fold=1213
+axiom-duplicate-names=1 KelGroups.setInsert.eq_1
+axiom-theorem KelGroups.BaseChange.memberAdmitted.inj
+axiom-theorem KelGroups.BaseChange.memberAdmitted.injEq
+axiom-theorem KelGroups.BaseChange.memberAdmitted.sizeOf_spec
+axiom-theorem KelGroups.BaseChange.memberRemoved.inj
+axiom-theorem KelGroups.BaseChange.memberRemoved.injEq
+axiom-theorem KelGroups.BaseChange.memberRemoved.sizeOf_spec
+axiom-theorem KelGroups.BaseChange.rolesChanged.inj
+axiom-theorem KelGroups.BaseChange.rolesChanged.injEq
+axiom-theorem KelGroups.BaseChange.rolesChanged.sizeOf_spec
+axiom-theorem KelGroups.BaseEvent.approve.inj
+axiom-theorem KelGroups.BaseEvent.approve.injEq
+axiom-theorem KelGroups.BaseEvent.approve.sizeOf_spec
+axiom-theorem KelGroups.BaseEvent.propose.inj
+axiom-theorem KelGroups.BaseEvent.propose.injEq
+axiom-theorem KelGroups.BaseEvent.propose.sizeOf_spec
+axiom-theorem KelGroups.BaseMutation.changeRoles.inj
+axiom-theorem KelGroups.BaseMutation.changeRoles.injEq
+axiom-theorem KelGroups.BaseMutation.changeRoles.sizeOf_spec
+axiom-theorem KelGroups.BaseMutation.removeMember.inj
+axiom-theorem KelGroups.BaseMutation.removeMember.injEq
+axiom-theorem KelGroups.BaseMutation.removeMember.sizeOf_spec
+axiom-theorem KelGroups.DirectCommand.admitMember.inj
+axiom-theorem KelGroups.DirectCommand.admitMember.injEq
+axiom-theorem KelGroups.DirectCommand.admitMember.sizeOf_spec
+axiom-theorem KelGroups.GroupEvent.app.inj
+axiom-theorem KelGroups.GroupEvent.app.injEq
+axiom-theorem KelGroups.GroupEvent.app.sizeOf_spec
+axiom-theorem KelGroups.GroupEvent.base.inj
+axiom-theorem KelGroups.GroupEvent.base.injEq
+axiom-theorem KelGroups.GroupEvent.base.sizeOf_spec
+axiom-theorem KelGroups.Proposal.changeRoles.inj
+axiom-theorem KelGroups.Proposal.changeRoles.injEq
+axiom-theorem KelGroups.Proposal.changeRoles.sizeOf_spec
+axiom-theorem KelGroups.Proposal.introduceMember.inj
+axiom-theorem KelGroups.Proposal.introduceMember.injEq
+axiom-theorem KelGroups.Proposal.introduceMember.sizeOf_spec
+axiom-theorem KelGroups.Proposal.removeMember.inj
+axiom-theorem KelGroups.Proposal.removeMember.injEq
+axiom-theorem KelGroups.Proposal.removeMember.sizeOf_spec
+axiom-theorem KelGroups.instDecidableEqBaseChange.decEq._proof_1
+axiom-theorem KelGroups.instDecidableEqBaseChange.decEq._proof_10
+axiom-theorem KelGroups.instDecidableEqBaseChange.decEq._proof_11
+axiom-theorem KelGroups.instDecidableEqBaseChange.decEq._proof_12
+axiom-theorem KelGroups.instDecidableEqBaseChange.decEq._proof_2
+axiom-theorem KelGroups.instDecidableEqBaseChange.decEq._proof_3
+axiom-theorem KelGroups.instDecidableEqBaseChange.decEq._proof_4
+axiom-theorem KelGroups.instDecidableEqBaseChange.decEq._proof_5
+axiom-theorem KelGroups.instDecidableEqBaseChange.decEq._proof_6
+axiom-theorem KelGroups.instDecidableEqBaseChange.decEq._proof_7
+axiom-theorem KelGroups.instDecidableEqBaseChange.decEq._proof_8
+axiom-theorem KelGroups.instDecidableEqBaseChange.decEq._proof_9
+axiom-theorem KelGroups.instDecidableEqBaseEvent.decEq._proof_1
+axiom-theorem KelGroups.instDecidableEqBaseEvent.decEq._proof_2
+axiom-theorem KelGroups.instDecidableEqBaseEvent.decEq._proof_3
+axiom-theorem KelGroups.instDecidableEqBaseEvent.decEq._proof_4
+axiom-theorem KelGroups.instDecidableEqBaseEvent.decEq._proof_5
+axiom-theorem KelGroups.instDecidableEqBaseEvent.decEq._proof_6
+axiom-theorem KelGroups.instDecidableEqBaseMutation.decEq._proof_1
+axiom-theorem KelGroups.instDecidableEqBaseMutation.decEq._proof_2
+axiom-theorem KelGroups.instDecidableEqBaseMutation.decEq._proof_3
+axiom-theorem KelGroups.instDecidableEqBaseMutation.decEq._proof_4
+axiom-theorem KelGroups.instDecidableEqBaseMutation.decEq._proof_5
+axiom-theorem KelGroups.instDecidableEqBaseMutation.decEq._proof_6
+axiom-theorem KelGroups.instDecidableEqBaseMutation.decEq._proof_7
+axiom-theorem KelGroups.instDecidableEqDirectCommand.decEq._proof_1
+axiom-theorem KelGroups.instDecidableEqDirectCommand.decEq._proof_2
+axiom-theorem KelGroups.instDecidableEqDirectCommand.decEq._proof_3
+axiom-theorem KelGroups.instDecidableEqDirectCommand.decEq._proof_4
+axiom-theorem KelGroups.instDecidableEqGroupEvent.decEq._proof_1
+axiom-theorem KelGroups.instDecidableEqGroupEvent.decEq._proof_2
+axiom-theorem KelGroups.instDecidableEqGroupEvent.decEq._proof_3
+axiom-theorem KelGroups.instDecidableEqGroupEvent.decEq._proof_4
+axiom-theorem KelGroups.instDecidableEqGroupEvent.decEq._proof_5
+axiom-theorem KelGroups.instDecidableEqGroupEvent.decEq._proof_6
+axiom-theorem KelGroups.instDecidableEqProposal.decEq._proof_1
+axiom-theorem KelGroups.instDecidableEqProposal.decEq._proof_10
+axiom-theorem KelGroups.instDecidableEqProposal.decEq._proof_11
+axiom-theorem KelGroups.instDecidableEqProposal.decEq._proof_12
+axiom-theorem KelGroups.instDecidableEqProposal.decEq._proof_13
+axiom-theorem KelGroups.instDecidableEqProposal.decEq._proof_14
+axiom-theorem KelGroups.instDecidableEqProposal.decEq._proof_15
+axiom-theorem KelGroups.instDecidableEqProposal.decEq._proof_2
+axiom-theorem KelGroups.instDecidableEqProposal.decEq._proof_3
+axiom-theorem KelGroups.instDecidableEqProposal.decEq._proof_4
+axiom-theorem KelGroups.instDecidableEqProposal.decEq._proof_5
+axiom-theorem KelGroups.instDecidableEqProposal.decEq._proof_6
+axiom-theorem KelGroups.instDecidableEqProposal.decEq._proof_7
+axiom-theorem KelGroups.instDecidableEqProposal.decEq._proof_8
+axiom-theorem KelGroups.instDecidableEqProposal.decEq._proof_9
+axiom-theorem KelGroups.Enactment.mk.inj
+axiom-theorem KelGroups.Enactment.mk.injEq
+axiom-theorem KelGroups.Enactment.mk.sizeOf_spec
+axiom-theorem KelGroups.StepResult.mk.inj
+axiom-theorem KelGroups.StepResult.mk.injEq
+axiom-theorem KelGroups.StepResult.mk.sizeOf_spec
+axiom-theorem KelGroups.instDecidableEqEnactment.decEq._proof_1
+axiom-theorem KelGroups.instDecidableEqEnactment.decEq._proof_2
+axiom-theorem KelGroups.instDecidableEqEnactment.decEq._proof_3
+axiom-theorem KelGroups.instDecidableEqEnactment.decEq._proof_4
+axiom-theorem KelGroups.instDecidableEqStepResult.decEq._proof_1
+axiom-theorem KelGroups.instDecidableEqStepResult.decEq._proof_2
+axiom-theorem KelGroups.instDecidableEqStepResult.decEq._proof_3
+axiom-theorem KelGroups.IntegratedError.app.inj
+axiom-theorem KelGroups.IntegratedError.app.injEq
+axiom-theorem KelGroups.IntegratedError.app.sizeOf_spec
+axiom-theorem KelGroups.IntegratedError.validation.inj
+axiom-theorem KelGroups.IntegratedError.validation.injEq
+axiom-theorem KelGroups.IntegratedError.validation.sizeOf_spec
+axiom-theorem KelGroups.IntegratedEvent.app.inj
+axiom-theorem KelGroups.IntegratedEvent.app.injEq
+axiom-theorem KelGroups.IntegratedEvent.app.sizeOf_spec
+axiom-theorem KelGroups.IntegratedEvent.approve.inj
+axiom-theorem KelGroups.IntegratedEvent.approve.injEq
+axiom-theorem KelGroups.IntegratedEvent.approve.sizeOf_spec
+axiom-theorem KelGroups.IntegratedEvent.direct.inj
+axiom-theorem KelGroups.IntegratedEvent.direct.injEq
+axiom-theorem KelGroups.IntegratedEvent.direct.sizeOf_spec
+axiom-theorem KelGroups.IntegratedEvent.propose.inj
+axiom-theorem KelGroups.IntegratedEvent.propose.injEq
+axiom-theorem KelGroups.IntegratedEvent.propose.sizeOf_spec
+axiom-theorem KelGroups.IntegratedResult.mk.inj
+axiom-theorem KelGroups.IntegratedResult.mk.injEq
+axiom-theorem KelGroups.IntegratedResult.mk.sizeOf_spec
+axiom-theorem KelGroups.Integration.mk.inj
+axiom-theorem KelGroups.Integration.mk.injEq
+axiom-theorem KelGroups.Integration.mk.sizeOf_spec
+axiom-theorem KelGroups.instDecidableEqIntegratedError.decEq._proof_1
+axiom-theorem KelGroups.instDecidableEqIntegratedError.decEq._proof_2
+axiom-theorem KelGroups.instDecidableEqIntegratedError.decEq._proof_3
+axiom-theorem KelGroups.instDecidableEqIntegratedError.decEq._proof_4
+axiom-theorem KelGroups.instDecidableEqIntegratedError.decEq._proof_5
+axiom-theorem KelGroups.instDecidableEqIntegratedError.decEq._proof_6
+axiom-theorem KelGroups.instDecidableEqIntegratedEvent.decEq._proof_1
+axiom-theorem KelGroups.instDecidableEqIntegratedEvent.decEq._proof_10
+axiom-theorem KelGroups.instDecidableEqIntegratedEvent.decEq._proof_11
+axiom-theorem KelGroups.instDecidableEqIntegratedEvent.decEq._proof_12
+axiom-theorem KelGroups.instDecidableEqIntegratedEvent.decEq._proof_13
+axiom-theorem KelGroups.instDecidableEqIntegratedEvent.decEq._proof_14
+axiom-theorem KelGroups.instDecidableEqIntegratedEvent.decEq._proof_15
+axiom-theorem KelGroups.instDecidableEqIntegratedEvent.decEq._proof_16
+axiom-theorem KelGroups.instDecidableEqIntegratedEvent.decEq._proof_17
+axiom-theorem KelGroups.instDecidableEqIntegratedEvent.decEq._proof_18
+axiom-theorem KelGroups.instDecidableEqIntegratedEvent.decEq._proof_19
+axiom-theorem KelGroups.instDecidableEqIntegratedEvent.decEq._proof_2
+axiom-theorem KelGroups.instDecidableEqIntegratedEvent.decEq._proof_20
+axiom-theorem KelGroups.instDecidableEqIntegratedEvent.decEq._proof_3
+axiom-theorem KelGroups.instDecidableEqIntegratedEvent.decEq._proof_4
+axiom-theorem KelGroups.instDecidableEqIntegratedEvent.decEq._proof_5
+axiom-theorem KelGroups.instDecidableEqIntegratedEvent.decEq._proof_6
+axiom-theorem KelGroups.instDecidableEqIntegratedEvent.decEq._proof_7
+axiom-theorem KelGroups.instDecidableEqIntegratedEvent.decEq._proof_8
+axiom-theorem KelGroups.instDecidableEqIntegratedEvent.decEq._proof_9
+axiom-theorem KelGroups.instDecidableEqIntegratedResult.decEq._proof_1
+axiom-theorem KelGroups.instDecidableEqIntegratedResult.decEq._proof_2
+axiom-theorem KelGroups.instDecidableEqIntegratedResult.decEq._proof_3
+axiom-theorem KelGroups.MembersCoherent.eq_1
+axiom-theorem KelGroups.PendingCoherent.eq_1
+axiom-theorem KelGroups.PendingWellFormed.eq_1
+axiom-theorem KelGroups.WellFormed.memberKeys
+axiom-theorem KelGroups.WellFormed.membersCoherent
+axiom-theorem KelGroups.WellFormed.pendingCoherent
+axiom-theorem KelGroups.WellFormed.pendingKeys
+axiom-theorem KelGroups.app_event_has_no_base_change
+axiom-theorem KelGroups.app_event_preserves_members
+axiom-theorem KelGroups.applyApproveDetailed.eq_1
+axiom-theorem KelGroups.applyApprove_preserves_wellFormed
+axiom-theorem KelGroups.applyEvent.eq_1
+axiom-theorem KelGroups.applyEventDetailed.eq_1
+axiom-theorem KelGroups.applyEventDetailed.eq_2
+axiom-theorem KelGroups.applyEventDetailed.eq_3
+axiom-theorem KelGroups.applyEvent_preserves_wellFormed
+axiom-theorem KelGroups.applyIntegratedEvent.eq_1
+axiom-theorem KelGroups.applyIntegratedEvent.eq_2
+axiom-theorem KelGroups.applyIntegratedEvent.eq_3
+axiom-theorem KelGroups.applyIntegratedEvent.eq_4
+axiom-theorem KelGroups.applyPropose_preserves_wellFormed
+axiom-theorem KelGroups.approvals_nodup
+axiom-theorem KelGroups.base_change_runs_hook
+axiom-theorem KelGroups.commitBaseChange_members
+axiom-theorem KelGroups.commitBaseChange_ok
+axiom-theorem KelGroups.direct_admission_requires_admin
+axiom-theorem KelGroups.emptyState.eq_1
+axiom-theorem KelGroups.emptyState_wellFormed
+axiom-theorem KelGroups.enact.eq_1
+axiom-theorem KelGroups.enact.eq_2
+axiom-theorem KelGroups.enact.eq_3
+axiom-theorem KelGroups.enactMutation_preserves_absence
+axiom-theorem KelGroups.enact_implies_threshold_met
+axiom-theorem KelGroups.enact_preserves_wellFormed
+axiom-theorem KelGroups.finishEnact_preserves_wellFormed
+axiom-theorem KelGroups.foldGroup_wellFormed
+axiom-theorem KelGroups.foldIntegrated.eq_1
+axiom-theorem KelGroups.majority_not_strict_on_even
+axiom-theorem KelGroups.majority_not_strict_on_even._proof_1_1
+axiom-theorem KelGroups.majority_table
+axiom-theorem KelGroups.member_key_coherent
+axiom-theorem KelGroups.members_change_implies_enacted
+axiom-theorem KelGroups.membership_growth_is_direct_admission
+axiom-theorem KelGroups.non_admin_admission_is_noop
+axiom-theorem KelGroups.proposer_mem_approvals
+axiom-theorem KelGroups.setInsert.eq_1
+axiom-theorem KelGroups.tryEnact.eq_1
+axiom-theorem KelGroups.tryEnactBase_preserves_absence
+axiom-theorem KelGroups.tryEnactBase_runs_hook
+axiom-theorem KelGroups.tryEnactDetailed.eq_1
+axiom-theorem KelGroups.tryEnact_eq_of_enacts
+axiom-theorem KelGroups.tryEnact_preserves_wellFormed
+axiom-theorem KelGroups.validateDirectAdmission.eq_1
+axiom-theorem KelGroups.validateDirectAdmission_ok
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.applyEventDetailed.match_1.eq_1
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.applyEventDetailed.match_1.eq_2
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.applyEventDetailed.match_1.eq_3
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_1.eq_1
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_1.eq_2
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_3.eq_1
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_3.eq_2
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_3.eq_3
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_3.eq_4
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.approvePending_wellFormed
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.assocAdjust_keys
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.assocAdjust_property
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.assocAdjust_property._simp_1_1
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.assocErase_key_absent
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.assocErase_key_absent._simp_1_1
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.assocErase_keys_nodup
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.assocErase_property
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.assocErase_sublist
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.assocInsert_keys_nodup
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.assocInsert_keys_nodup._simp_1_1
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.assocInsert_property
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.assocInsert_property._simp_1_1
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.assocLookup_some_mem
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.commitBaseChange.match_1.eq_1
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.commitBaseChange.match_1.eq_2
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.enact.match_1.eq_1
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.enact.match_1.eq_2
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.enact.match_1.eq_3
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.foldEvents_preserves_wellFormed
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.foldIntegrated.match_1.eq_1
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.foldIntegrated.match_1.eq_2
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.setInsert_mem
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.setInsert_nodup
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.tryEnactBase.match_1.eq_1
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.tryEnactBase.match_1.eq_2
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.tryEnactDetailed.match_1.eq_1
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.tryEnactDetailed.match_1.eq_2
+axiom-theorem _private.KelGroups.Invariants.0.KelGroups.tryEnactDetailed_enactment_threshold_met
+axiom-theorem approvals_nodup
+axiom-theorem enact_implies_threshold_met
+axiom-theorem majority_not_strict_on_even
+axiom-theorem majority_table
+axiom-theorem member_key_coherent
+axiom-theorem members_change_implies_enacted
+axiom-theorem proposer_mem_approvals
+axiom-theorem KelGroups.AuthMode.bootstrap.sizeOf_spec
+axiom-theorem KelGroups.AuthMode.normal.sizeOf_spec
+axiom-theorem KelGroups.AuthMode.ofNat_ctorIdx
+axiom-theorem KelGroups.GroupState.mk.inj
+axiom-theorem KelGroups.GroupState.mk.injEq
+axiom-theorem KelGroups.GroupState.mk.sizeOf_spec
+axiom-theorem KelGroups.PendingBase.mk.inj
+axiom-theorem KelGroups.PendingBase.mk.injEq
+axiom-theorem KelGroups.PendingBase.mk.sizeOf_spec
+axiom-theorem KelGroups.PendingProposal.mk.inj
+axiom-theorem KelGroups.PendingProposal.mk.injEq
+axiom-theorem KelGroups.PendingProposal.mk.sizeOf_spec
+axiom-theorem KelGroups.instDecidableEqAuthMode._proof_1
+axiom-theorem KelGroups.instDecidableEqAuthMode._proof_2
+axiom-theorem KelGroups.instDecidableEqGroupState.decEq._proof_1
+axiom-theorem KelGroups.instDecidableEqGroupState.decEq._proof_2
+axiom-theorem KelGroups.instDecidableEqGroupState.decEq._proof_3
+axiom-theorem KelGroups.instDecidableEqGroupState.decEq._proof_4
+axiom-theorem KelGroups.instDecidableEqGroupState.decEq._proof_5
+axiom-theorem KelGroups.instDecidableEqPendingBase.decEq._proof_1
+axiom-theorem KelGroups.instDecidableEqPendingBase.decEq._proof_2
+axiom-theorem KelGroups.instDecidableEqPendingBase.decEq._proof_3
+axiom-theorem KelGroups.instDecidableEqPendingBase.decEq._proof_4
+axiom-theorem KelGroups.instDecidableEqPendingProposal.decEq._proof_1
+axiom-theorem KelGroups.instDecidableEqPendingProposal.decEq._proof_2
+axiom-theorem KelGroups.instDecidableEqPendingProposal.decEq._proof_3
+axiom-theorem KelGroups.instDecidableEqPendingProposal.decEq._proof_4
+axiom-theorem KelGroups.Admin.ofNat_ctorIdx
+axiom-theorem KelGroups.Admin.privateAdmin.sizeOf_spec
+axiom-theorem KelGroups.Admin.publicAdmin.sizeOf_spec
+axiom-theorem KelGroups.GroupConfig.mk.inj
+axiom-theorem KelGroups.GroupConfig.mk.injEq
+axiom-theorem KelGroups.GroupConfig.mk.sizeOf_spec
+axiom-theorem KelGroups.GroupView.mk.inj
+axiom-theorem KelGroups.GroupView.mk.injEq
+axiom-theorem KelGroups.GroupView.mk.sizeOf_spec
+axiom-theorem KelGroups.Member.mk.inj
+axiom-theorem KelGroups.Member.mk.injEq
+axiom-theorem KelGroups.Member.mk.sizeOf_spec
+axiom-theorem KelGroups.Role.adminRole.inj
+axiom-theorem KelGroups.Role.adminRole.injEq
+axiom-theorem KelGroups.Role.adminRole.sizeOf_spec
+axiom-theorem KelGroups.Role.appRole.inj
+axiom-theorem KelGroups.Role.appRole.injEq
+axiom-theorem KelGroups.Role.appRole.sizeOf_spec
+axiom-theorem KelGroups.RoleDef.mk.inj
+axiom-theorem KelGroups.RoleDef.mk.injEq
+axiom-theorem KelGroups.RoleDef.mk.sizeOf_spec
+axiom-theorem KelGroups.assocAdjust.eq_1
+axiom-theorem KelGroups.assocAdjust.eq_2
+axiom-theorem KelGroups.assocAdjust.eq_def
+axiom-theorem KelGroups.assocErase.eq_1
+axiom-theorem KelGroups.assocErase.eq_2
+axiom-theorem KelGroups.assocErase.eq_def
+axiom-theorem KelGroups.assocInsert.eq_1
+axiom-theorem KelGroups.assocLookup.eq_1
+axiom-theorem KelGroups.assocLookup.eq_2
+axiom-theorem KelGroups.assocLookup.eq_def
+axiom-theorem KelGroups.assocLookup_adjust_of_none
+axiom-theorem KelGroups.assocLookup_erase_of_none
+axiom-theorem KelGroups.assocLookup_insert_of_none
+axiom-theorem KelGroups.assocLookup_insert_self
+axiom-theorem KelGroups.instDecidableEqAdmin._proof_1
+axiom-theorem KelGroups.instDecidableEqAdmin._proof_2
+axiom-theorem KelGroups.instDecidableEqGroupView.decEq._proof_1
+axiom-theorem KelGroups.instDecidableEqGroupView.decEq._proof_2
+axiom-theorem KelGroups.instDecidableEqMember.decEq._proof_1
+axiom-theorem KelGroups.instDecidableEqMember.decEq._proof_2
+axiom-theorem KelGroups.instDecidableEqMember.decEq._proof_3
+axiom-theorem KelGroups.instDecidableEqMember.decEq._proof_4
+axiom-theorem KelGroups.instDecidableEqRole.decEq._proof_1
+axiom-theorem KelGroups.instDecidableEqRole.decEq._proof_2
+axiom-theorem KelGroups.instDecidableEqRole.decEq._proof_3
+axiom-theorem KelGroups.instDecidableEqRole.decEq._proof_4
+axiom-theorem KelGroups.instDecidableEqRole.decEq._proof_5
+axiom-theorem KelGroups.instDecidableEqRole.decEq._proof_6
+axiom-theorem _private.KelGroups.Types.0.KelGroups.assocLookup.match_1.eq_1
+axiom-theorem _private.KelGroups.Types.0.KelGroups.assocLookup.match_1.eq_2
+axiom-theorem KelGroups.ValidationError.alreadyApproved.inj
+axiom-theorem KelGroups.ValidationError.alreadyApproved.injEq
+axiom-theorem KelGroups.ValidationError.alreadyApproved.sizeOf_spec
+axiom-theorem KelGroups.ValidationError.bootstrapRequiresAdmin.sizeOf_spec
+axiom-theorem KelGroups.ValidationError.invalidKey.inj
+axiom-theorem KelGroups.ValidationError.invalidKey.injEq
+axiom-theorem KelGroups.ValidationError.invalidKey.sizeOf_spec
+axiom-theorem KelGroups.ValidationError.memberAlreadyExists.inj
+axiom-theorem KelGroups.ValidationError.memberAlreadyExists.injEq
+axiom-theorem KelGroups.ValidationError.memberAlreadyExists.sizeOf_spec
+axiom-theorem KelGroups.ValidationError.memberNotFound.inj
+axiom-theorem KelGroups.ValidationError.memberNotFound.injEq
+axiom-theorem KelGroups.ValidationError.memberNotFound.sizeOf_spec
+axiom-theorem KelGroups.ValidationError.notAMember.inj
+axiom-theorem KelGroups.ValidationError.notAMember.injEq
+axiom-theorem KelGroups.ValidationError.notAMember.sizeOf_spec
+axiom-theorem KelGroups.ValidationError.notAnAdmin.inj
+axiom-theorem KelGroups.ValidationError.notAnAdmin.injEq
+axiom-theorem KelGroups.ValidationError.notAnAdmin.sizeOf_spec
+axiom-theorem KelGroups.ValidationError.proposalNotFound.inj
+axiom-theorem KelGroups.ValidationError.proposalNotFound.injEq
+axiom-theorem KelGroups.ValidationError.proposalNotFound.sizeOf_spec
+axiom-theorem KelGroups.ValidationError.reservedKey.inj
+axiom-theorem KelGroups.ValidationError.reservedKey.injEq
+axiom-theorem KelGroups.ValidationError.reservedKey.sizeOf_spec
+axiom-theorem KelGroups.ValidationError.roleAddPrecondition.inj
+axiom-theorem KelGroups.ValidationError.roleAddPrecondition.injEq
+axiom-theorem KelGroups.ValidationError.roleAddPrecondition.sizeOf_spec
+axiom-theorem KelGroups.ValidationError.roleRemovePrecondition.inj
+axiom-theorem KelGroups.ValidationError.roleRemovePrecondition.injEq
+axiom-theorem KelGroups.ValidationError.roleRemovePrecondition.sizeOf_spec
+axiom-theorem KelGroups.instDecidableEqValidationError.decEq._proof_1
+axiom-theorem KelGroups.instDecidableEqValidationError.decEq._proof_10
+axiom-theorem KelGroups.instDecidableEqValidationError.decEq._proof_11
+axiom-theorem KelGroups.instDecidableEqValidationError.decEq._proof_12
+axiom-theorem KelGroups.instDecidableEqValidationError.decEq._proof_13
+axiom-theorem KelGroups.instDecidableEqValidationError.decEq._proof_14
+axiom-theorem KelGroups.instDecidableEqValidationError.decEq._proof_15
+axiom-theorem KelGroups.instDecidableEqValidationError.decEq._proof_16
+axiom-theorem KelGroups.instDecidableEqValidationError.decEq._proof_17
+axiom-theorem KelGroups.instDecidableEqValidationError.decEq._proof_18
+axiom-theorem KelGroups.instDecidableEqValidationError.decEq._proof_19
+axiom-theorem KelGroups.instDecidableEqValidationError.decEq._proof_2
+axiom-theorem KelGroups.instDecidableEqValidationError.decEq._proof_20
+axiom-theorem KelGroups.instDecidableEqValidationError.decEq._proof_21
+axiom-theorem KelGroups.instDecidableEqValidationError.decEq._proof_22
+axiom-theorem KelGroups.instDecidableEqValidationError.decEq._proof_3
+axiom-theorem KelGroups.instDecidableEqValidationError.decEq._proof_4
+axiom-theorem KelGroups.instDecidableEqValidationError.decEq._proof_5
+axiom-theorem KelGroups.instDecidableEqValidationError.decEq._proof_6
+axiom-theorem KelGroups.instDecidableEqValidationError.decEq._proof_7
+axiom-theorem KelGroups.instDecidableEqValidationError.decEq._proof_8
+axiom-theorem KelGroups.instDecidableEqValidationError.decEq._proof_9
+axiom-theorem KelGroups.Vote.VoteEvent.cast.inj
+axiom-theorem KelGroups.Vote.VoteEvent.cast.injEq
+axiom-theorem KelGroups.Vote.VoteEvent.cast.sizeOf_spec
+axiom-theorem KelGroups.Vote.VoteEvent.openQuestion.inj
+axiom-theorem KelGroups.Vote.VoteEvent.openQuestion.injEq
+axiom-theorem KelGroups.Vote.VoteEvent.openQuestion.sizeOf_spec
+axiom-theorem KelGroups.Vote.VoteEvent.renounce.inj
+axiom-theorem KelGroups.Vote.VoteEvent.renounce.injEq
+axiom-theorem KelGroups.Vote.VoteEvent.renounce.sizeOf_spec
+axiom-theorem KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_1
+axiom-theorem KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_10
+axiom-theorem KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_11
+axiom-theorem KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_12
+axiom-theorem KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_13
+axiom-theorem KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_14
+axiom-theorem KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_2
+axiom-theorem KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_3
+axiom-theorem KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_4
+axiom-theorem KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_5
+axiom-theorem KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_6
+axiom-theorem KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_7
+axiom-theorem KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_8
+axiom-theorem KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_9
+axiom-theorem KelGroups.Vote.SweepReady.closedClean
+axiom-theorem KelGroups.Vote.SweepReady.closedNodup
+axiom-theorem KelGroups.Vote.SweepReady.closedNotOpen
+axiom-theorem KelGroups.Vote.SweepReady.openClean
+axiom-theorem KelGroups.Vote.SweepReady.openClosedDisjoint
+axiom-theorem KelGroups.Vote.SweepReady.openNodup
+axiom-theorem KelGroups.Vote.VoteWellFormed.opensOpen
+axiom-theorem KelGroups.Vote.VoteWellFormed.toSweepReady
+axiom-theorem KelGroups.Vote.applyVoteEvent.eq_1
+axiom-theorem KelGroups.Vote.applyVoteEvent_preserves_wellFormed
+axiom-theorem KelGroups.Vote.ballots_nodup_disjoint
+axiom-theorem KelGroups.Vote.effectedState.eq_1
+axiom-theorem KelGroups.Vote.effectedState.eq_2
+axiom-theorem KelGroups.Vote.effectedState.eq_3
+axiom-theorem KelGroups.Vote.emptyVoteState.eq_1
+axiom-theorem KelGroups.Vote.emptyVoteState_sweepReady
+axiom-theorem KelGroups.Vote.emptyVoteState_wellFormed
+axiom-theorem KelGroups.Vote.filter_open_idem
+axiom-theorem KelGroups.Vote.foldFrom.eq_1
+axiom-theorem KelGroups.Vote.foldVote.eq_1
+axiom-theorem KelGroups.Vote.foldVote_wellFormed
+axiom-theorem KelGroups.Vote.franchise.eq_1
+axiom-theorem KelGroups.Vote.franchiseSize.eq_1
+axiom-theorem KelGroups.Vote.franchise_of_tallies
+axiom-theorem KelGroups.Vote.inadmissible_is_noop
+axiom-theorem KelGroups.Vote.lookupQuestion.eq_1
+axiom-theorem KelGroups.Vote.no_expiry
+axiom-theorem KelGroups.Vote.nonresponsabile_event_noop
+axiom-theorem KelGroups.Vote.open_questions_are_open
+axiom-theorem KelGroups.Vote.placeBallot.eq_1
+axiom-theorem KelGroups.Vote.placeBallot.eq_2
+axiom-theorem KelGroups.Vote.preservesQuestionDecide.eq_1
+axiom-theorem KelGroups.Vote.questions_partition
+axiom-theorem KelGroups.Vote.sweepClosures.eq_1
+axiom-theorem KelGroups.Vote.sweepClosures_idempotent
+axiom-theorem KelGroups.Vote.sweepDuplicating.eq_1
+axiom-theorem KelGroups.Vote.sweepDuplicating_duplicates
+axiom-theorem KelGroups.Vote.sweepDuplicating_duplicates._proof_1_2
+axiom-theorem KelGroups.Vote.sweepStep.eq_1
+axiom-theorem KelGroups.Vote.sweepStep_of_open
+axiom-theorem KelGroups.Vote.sweep_filterMap_of_swept
+axiom-theorem KelGroups.Vote.tallyKeysOfQuestion.eq_1
+axiom-theorem KelGroups.Vote.tallyKeysOfState.eq_1
+axiom-theorem KelGroups.Vote.unfranchised_cast_noop
+axiom-theorem KelGroups.Vote.validateVoteEvent.eq_1
+axiom-theorem KelGroups.Vote.validateVoteEvent.eq_2
+axiom-theorem KelGroups.Vote.validateVoteEvent.eq_3
+axiom-theorem KelGroups.Vote.verdictOf.eq_1
+axiom-theorem KelGroups.Vote.verdictOf_threshold_congr
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.applyVoteEvent.match_1.eq_1
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.applyVoteEvent.match_1.eq_2
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.applyVoteEvent_preserves_qid
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocAdjust_keys'
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocAdjust_keys_nodup'
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_key_absent'
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_key_absent'._simp_1_1
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_keys_nodup'
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_other_lookup
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_sublist'
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_keys_nodup'
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_keys_nodup'._simp_1_1
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_mem_cases
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_mem_cases._simp_1_1
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_other_lookup
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocLookup_some_mem'
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assoc_entries_key_unique
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assoc_entries_key_unique._simp_1_1
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.closed_guard_absent
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState.match_3.eq_1
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState.match_3.eq_2
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState.match_3.eq_3
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState_preserves_qid
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState_sweepReady
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState_tally_growth
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.filterMap_keys_nodup
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.filterMap_keys_nodup._simp_1_2
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.foldFrom_preserves_qid
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.foldFrom_preserves_wellFormed
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.foldVote_append
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_assocLookup_some'
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_assocLookup_some'._simp_1_1
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_erase_inv
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_erase_inv._simp_1_1
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_map_fst_erase_of_ne
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_map_fst_erase_of_ne._simp_1_1
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_map_fst_insert
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.nodup_append_mem
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.nodup_erase
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot.match_1.eq_1
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot.match_1.eq_2
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot_clean
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot_tally
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot_tally._simp_1_5
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.preservesQuestionDecide.match_1.eq_1
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.preservesQuestionDecide.match_1.eq_2
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.setInsert_mem_cases
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.setInsert_nodup'
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_closed_mem
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_closed_mem._simp_1_2
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_closed_mem._simp_1_3
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_open_mem
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_open_mem._simp_1_2
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_preserves_qid
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_sweepReady
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_tallyKeys
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_wellFormed
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepStep_key
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.tallyKeysOfState_erased_le
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.tallyKeysOfState_insert_cases
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.tally_keys_franchised_from
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.validateVoteEvent.match_3.eq_1
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.validateVoteEvent.match_3.eq_2
+axiom-theorem _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.validateVoteEvent.match_3.eq_3
+axiom-theorem _private.KelGroups.Vote.Invariants.0.List.filterMap.match_1.eq_1
+axiom-theorem _private.KelGroups.Vote.Invariants.0.List.filterMap.match_1.eq_2
+axiom-theorem KelGroups.Vote.ClosureRecord.mk.inj
+axiom-theorem KelGroups.Vote.ClosureRecord.mk.injEq
+axiom-theorem KelGroups.Vote.ClosureRecord.mk.sizeOf_spec
+axiom-theorem KelGroups.Vote.Question.mk.inj
+axiom-theorem KelGroups.Vote.Question.mk.injEq
+axiom-theorem KelGroups.Vote.Question.mk.sizeOf_spec
+axiom-theorem KelGroups.Vote.VoteState.mk.inj
+axiom-theorem KelGroups.Vote.VoteState.mk.injEq
+axiom-theorem KelGroups.Vote.VoteState.mk.sizeOf_spec
+axiom-theorem KelGroups.Vote.instDecidableEqClosureRecord.decEq._proof_1
+axiom-theorem KelGroups.Vote.instDecidableEqClosureRecord.decEq._proof_2
+axiom-theorem KelGroups.Vote.instDecidableEqClosureRecord.decEq._proof_3
+axiom-theorem KelGroups.Vote.instDecidableEqClosureRecord.decEq._proof_4
+axiom-theorem KelGroups.Vote.instDecidableEqClosureRecord.decEq._proof_5
+axiom-theorem KelGroups.Vote.instDecidableEqQuestion.decEq._proof_1
+axiom-theorem KelGroups.Vote.instDecidableEqQuestion.decEq._proof_2
+axiom-theorem KelGroups.Vote.instDecidableEqQuestion.decEq._proof_3
+axiom-theorem KelGroups.Vote.instDecidableEqQuestion.decEq._proof_4
+axiom-theorem KelGroups.Vote.instDecidableEqQuestion.decEq._proof_5
+axiom-theorem KelGroups.Vote.instDecidableEqVoteState.decEq._proof_1
+axiom-theorem KelGroups.Vote.instDecidableEqVoteState.decEq._proof_2
+axiom-theorem KelGroups.Vote.instDecidableEqVoteState.decEq._proof_3
+axiom-theorem KelGroups.Vote.Ballot.assent.sizeOf_spec
+axiom-theorem KelGroups.Vote.Ballot.dissent.sizeOf_spec
+axiom-theorem KelGroups.Vote.Ballot.ofNat_ctorIdx
+axiom-theorem KelGroups.Vote.ClosureCause.franchiseChange.sizeOf_spec
+axiom-theorem KelGroups.Vote.ClosureCause.ofNat_ctorIdx
+axiom-theorem KelGroups.Vote.ClosureCause.proposerDeparted.sizeOf_spec
+axiom-theorem KelGroups.Vote.ClosureCause.renounced.sizeOf_spec
+axiom-theorem KelGroups.Vote.ClosureCause.tally.sizeOf_spec
+axiom-theorem KelGroups.Vote.QuestionKind.collective.sizeOf_spec
+axiom-theorem KelGroups.Vote.QuestionKind.permission.inj
+axiom-theorem KelGroups.Vote.QuestionKind.permission.injEq
+axiom-theorem KelGroups.Vote.QuestionKind.permission.sizeOf_spec
+axiom-theorem KelGroups.Vote.Verdict.negative.sizeOf_spec
+axiom-theorem KelGroups.Vote.Verdict.ofNat_ctorIdx
+axiom-theorem KelGroups.Vote.Verdict.open.sizeOf_spec
+axiom-theorem KelGroups.Vote.Verdict.positive.sizeOf_spec
+axiom-theorem KelGroups.Vote.instDecidableEqBallot._proof_1
+axiom-theorem KelGroups.Vote.instDecidableEqBallot._proof_2
+axiom-theorem KelGroups.Vote.instDecidableEqClosureCause._proof_1
+axiom-theorem KelGroups.Vote.instDecidableEqClosureCause._proof_2
+axiom-theorem KelGroups.Vote.instDecidableEqQuestionKind.decEq._proof_1
+axiom-theorem KelGroups.Vote.instDecidableEqQuestionKind.decEq._proof_2
+axiom-theorem KelGroups.Vote.instDecidableEqQuestionKind.decEq._proof_3
+axiom-theorem KelGroups.Vote.instDecidableEqQuestionKind.decEq._proof_4
+axiom-theorem KelGroups.Vote.instDecidableEqVerdict._proof_1
+axiom-theorem KelGroups.Vote.instDecidableEqVerdict._proof_2
+axiom-theorem KelGroups.Vote.VoteError.notDesignee.sizeOf_spec
+axiom-theorem KelGroups.Vote.VoteError.notProposer.sizeOf_spec
+axiom-theorem KelGroups.Vote.VoteError.notResponsabile.sizeOf_spec
+axiom-theorem KelGroups.Vote.VoteError.ofNat_ctorIdx
+axiom-theorem KelGroups.Vote.VoteError.questionNotFound.sizeOf_spec
+axiom-theorem KelGroups.Vote.instDecidableEqVoteError._proof_1
+axiom-theorem KelGroups.Vote.instDecidableEqVoteError._proof_2
+axiom-theorem Reactivegas.Composition.Route.appDecided.sizeOf_spec
+axiom-theorem Reactivegas.Composition.Route.baseEnacted.sizeOf_spec
+axiom-theorem Reactivegas.Composition.Route.direct.sizeOf_spec
+axiom-theorem Reactivegas.Composition.Route.ofNat_ctorIdx
+axiom-theorem Reactivegas.Composition.appDecided_verdict_exhaustive
+axiom-theorem Reactivegas.Composition.appVerdictAllows.eq_1
+axiom-theorem Reactivegas.Composition.baseEnacted_threshold_met
+axiom-theorem Reactivegas.Composition.instDecidableEqRoute._proof_1
+axiom-theorem Reactivegas.Composition.instDecidableEqRoute._proof_2
+axiom-theorem Reactivegas.Composition.route.eq_1
+axiom-theorem Reactivegas.Composition.route.eq_10
+axiom-theorem Reactivegas.Composition.route.eq_11
+axiom-theorem Reactivegas.Composition.route.eq_12
+axiom-theorem Reactivegas.Composition.route.eq_13
+axiom-theorem Reactivegas.Composition.route.eq_14
+axiom-theorem Reactivegas.Composition.route.eq_2
+axiom-theorem Reactivegas.Composition.route.eq_3
+axiom-theorem Reactivegas.Composition.route.eq_4
+axiom-theorem Reactivegas.Composition.route.eq_5
+axiom-theorem Reactivegas.Composition.route.eq_6
+axiom-theorem Reactivegas.Composition.route.eq_7
+axiom-theorem Reactivegas.Composition.route.eq_8
+axiom-theorem Reactivegas.Composition.route.eq_9
+axiom-theorem Reactivegas.Composition.voteDerived.eq_1
+axiom-theorem Reactivegas.Composition.voteDerived.eq_10
+axiom-theorem Reactivegas.Composition.voteDerived.eq_11
+axiom-theorem Reactivegas.Composition.voteDerived.eq_12
+axiom-theorem Reactivegas.Composition.voteDerived.eq_13
+axiom-theorem Reactivegas.Composition.voteDerived.eq_14
+axiom-theorem Reactivegas.Composition.voteDerived.eq_2
+axiom-theorem Reactivegas.Composition.voteDerived.eq_3
+axiom-theorem Reactivegas.Composition.voteDerived.eq_4
+axiom-theorem Reactivegas.Composition.voteDerived.eq_5
+axiom-theorem Reactivegas.Composition.voteDerived.eq_6
+axiom-theorem Reactivegas.Composition.voteDerived.eq_7
+axiom-theorem Reactivegas.Composition.voteDerived.eq_8
+axiom-theorem Reactivegas.Composition.voteDerived.eq_9
+axiom-theorem Reactivegas.Composition.voteDerived_iff_not_direct
+axiom-theorem _private.Reactivegas.Composition.0.Reactivegas.Composition.appVerdictAllows.match_1.eq_1
+axiom-theorem _private.Reactivegas.Composition.0.Reactivegas.Composition.appVerdictAllows.match_1.eq_2
+axiom-theorem _private.Reactivegas.Composition.0.Reactivegas.Composition.appVerdictAllows.match_1.eq_3
+axiom-theorem _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_1
+axiom-theorem _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_10
+axiom-theorem _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_11
+axiom-theorem _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_12
+axiom-theorem _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_13
+axiom-theorem _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_14
+axiom-theorem _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_2
+axiom-theorem _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_3
+axiom-theorem _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_4
+axiom-theorem _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_5
+axiom-theorem _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_6
+axiom-theorem _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_7
+axiom-theorem _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_8
+axiom-theorem _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_9
+axiom-theorem Reactivegas.IntegratedTraceStep.mk.inj
+axiom-theorem Reactivegas.IntegratedTraceStep.mk.injEq
+axiom-theorem Reactivegas.IntegratedTraceStep.mk.sizeOf_spec
+axiom-theorem Reactivegas.admissionPreservation_holds
+axiom-theorem Reactivegas.baseHook_votes
+axiom-theorem Reactivegas.base_change_can_close_without_ballot
+axiom-theorem Reactivegas.base_change_recomputes_votes
+axiom-theorem Reactivegas.base_departure_applies_cleanup
+axiom-theorem Reactivegas.base_recompute_reachable_holds
+axiom-theorem Reactivegas.canonical_economy_holds
+axiom-theorem Reactivegas.comuneThresholdSanity_holds
+axiom-theorem Reactivegas.direct_admission_only_holds
+axiom-theorem Reactivegas.exhaustive_inventories_hold
+axiom-theorem Reactivegas.i57_auth_holds
+axiom-theorem Reactivegas.i57_boundary_holds
+axiom-theorem Reactivegas.i57_disjoint_holds
+axiom-theorem Reactivegas.i57_disjoint_mutant_caught
+axiom-theorem Reactivegas.i57_exhaustive_holds
+axiom-theorem Reactivegas.i57_franchise_holds
+axiom-theorem Reactivegas.i57_franchise_mutant_caught
+axiom-theorem Reactivegas.i57_noexpiry_holds
+axiom-theorem Reactivegas.i57_noop_holds
+axiom-theorem Reactivegas.i57_nostale_holds
+axiom-theorem Reactivegas.i57_partition_holds
+axiom-theorem Reactivegas.i57_policyfree_holds
+axiom-theorem Reactivegas.i57_policyfree_mutant_caught
+axiom-theorem Reactivegas.i57_r45_holds
+axiom-theorem Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_1
+axiom-theorem Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_2
+axiom-theorem Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_3
+axiom-theorem Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_4
+axiom-theorem Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_5
+axiom-theorem Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_6
+axiom-theorem Reactivegas.integrated_theorem_witness_holds
+axiom-theorem Reactivegas.productionWellFormed_holds
+axiom-theorem Reactivegas.step_backdonate_inv
+axiom-theorem Reactivegas.step_deposit_inv
+axiom-theorem Reactivegas.step_donate_inv
+axiom-theorem Reactivegas.step_open_inv
+axiom-theorem Reactivegas.step_transferCassa_inv
+axiom-theorem Reactivegas.step_withdraw_inv
+axiom-theorem Reactivegas.sweep_idempotent_mutant_caught
+axiom-theorem Reactivegas.sweep_idempotent_witness
+axiom-theorem Reactivegas.windUpAdmin.eq_1
+axiom-theorem State.empty.eq_1
+axiom-theorem _private.Reactivegas.Invariants.0.Reactivegas.apply.match_1.eq_1
+axiom-theorem _private.Reactivegas.Invariants.0.Reactivegas.apply.match_1.eq_2
+axiom-theorem _private.Reactivegas.Invariants.0.Reactivegas.baseHook.match_1.eq_1
+axiom-theorem _private.Reactivegas.Invariants.0.Reactivegas.baseHook.match_1.eq_2
+axiom-theorem _private.Reactivegas.Invariants.0.bal_bump_ne_lemma
+axiom-theorem _private.Reactivegas.Invariants.0.bal_foldl_bump_ge
+axiom-theorem _private.Reactivegas.Invariants.0.bal_foldl_bump_ge._proof_1_1
+axiom-theorem _private.Reactivegas.Invariants.0.bal_foldl_bump_ge._proof_1_2
+axiom-theorem _private.Reactivegas.Invariants.0.bool_and_left
+axiom-theorem _private.Reactivegas.Invariants.0.bool_and_right
+axiom-theorem _private.Reactivegas.Invariants.0.bool_not_true
+axiom-theorem _private.Reactivegas.Invariants.0.comune_not_a_member_step
+axiom-theorem _private.Reactivegas.Invariants.0.credit_pledges_of_reach
+axiom-theorem _private.Reactivegas.Invariants.0.credit_pledges_step
+axiom-theorem _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_34
+axiom-theorem _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_35
+axiom-theorem _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_36
+axiom-theorem _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_37
+axiom-theorem _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_38
+axiom-theorem _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_39
+axiom-theorem _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_40
+axiom-theorem _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_41
+axiom-theorem _private.Reactivegas.Invariants.0.eq_nil_of_isEmpty
+axiom-theorem _private.Reactivegas.Invariants.0.pullCollection_det
+axiom-theorem _private.Reactivegas.Invariants.0.pullCollection_mem_lemma
+axiom-theorem _private.Reactivegas.Invariants.0.refundAll_bal_ge_lemma
+axiom-theorem _private.Reactivegas.Invariants.0.refundAll_bal_ge_lemma._proof_1_1
+axiom-theorem _private.Reactivegas.Invariants.0.refundAll_bal_ge_lemma._proof_1_2
+axiom-theorem _private.Reactivegas.Invariants.0.refundAll_bal_ge_lemma._proof_1_3
+axiom-theorem _private.Reactivegas.Invariants.0.splitUser_amount_lemma
+axiom-theorem _private.Reactivegas.Invariants.0.step.match_5.eq_1
+axiom-theorem _private.Reactivegas.Invariants.0.step.match_5.eq_10
+axiom-theorem _private.Reactivegas.Invariants.0.step.match_5.eq_11
+axiom-theorem _private.Reactivegas.Invariants.0.step.match_5.eq_12
+axiom-theorem _private.Reactivegas.Invariants.0.step.match_5.eq_13
+axiom-theorem _private.Reactivegas.Invariants.0.step.match_5.eq_14
+axiom-theorem _private.Reactivegas.Invariants.0.step.match_5.eq_15
+axiom-theorem _private.Reactivegas.Invariants.0.step.match_5.eq_16
+axiom-theorem _private.Reactivegas.Invariants.0.step.match_5.eq_17
+axiom-theorem _private.Reactivegas.Invariants.0.step.match_5.eq_2
+axiom-theorem _private.Reactivegas.Invariants.0.step.match_5.eq_3
+axiom-theorem _private.Reactivegas.Invariants.0.step.match_5.eq_4
+axiom-theorem _private.Reactivegas.Invariants.0.step.match_5.eq_5
+axiom-theorem _private.Reactivegas.Invariants.0.step.match_5.eq_6
+axiom-theorem _private.Reactivegas.Invariants.0.step.match_5.eq_7
+axiom-theorem _private.Reactivegas.Invariants.0.step.match_5.eq_8
+axiom-theorem _private.Reactivegas.Invariants.0.step.match_5.eq_9
+axiom-theorem _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_1
+axiom-theorem _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_10
+axiom-theorem _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_11
+axiom-theorem _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_12
+axiom-theorem _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_13
+axiom-theorem _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_14
+axiom-theorem _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_2
+axiom-theorem _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_3
+axiom-theorem _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_4
+axiom-theorem _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_5
+axiom-theorem _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_6
+axiom-theorem _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_7
+axiom-theorem _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_8
+axiom-theorem _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_9
+axiom-theorem _private.Reactivegas.Invariants.0.stripCollections_amount_lemma
+axiom-theorem _private.Reactivegas.Invariants.0.stripCollections_sublist_lemma
+axiom-theorem _private.Reactivegas.Invariants.0.sumBal_foldl_bump
+axiom-theorem _private.Reactivegas.Invariants.0.sumBal_foldl_bump._proof_1_1
+axiom-theorem _private.Reactivegas.Invariants.0.unique_mem_cons_inv
+axiom-theorem auth_referente_guard_inv
+axiom-theorem bal_bump_ne
+axiom-theorem close_guard_inv
+axiom-theorem close_permission_to_close
+axiom-theorem close_spends_referente
+axiom-theorem close_spends_referente._proof_1_1
+axiom-theorem comune_not_a_member_of_reach
+axiom-theorem conservation.eq_1
+axiom-theorem conservation_preserved
+axiom-theorem conservation_preserved._proof_1_35
+axiom-theorem conservation_preserved._proof_1_36
+axiom-theorem conservation_preserved._proof_1_37
+axiom-theorem conservation_preserved._proof_1_38
+axiom-theorem conservation_preserved._proof_1_39
+axiom-theorem conservation_preserved._proof_1_40
+axiom-theorem conservation_preserved._proof_1_41
+axiom-theorem conservation_preserved._proof_1_42
+axiom-theorem conservation_preserved._proof_1_43
+axiom-theorem conservation_preserved._proof_1_44
+axiom-theorem conservation_preserved._proof_1_45
+axiom-theorem conservation_preserved._proof_1_46
+axiom-theorem demand_eq_true_of_some
+axiom-theorem demand_none_of_ne_true
+axiom-theorem deposit_double_entry
+axiom-theorem fail_guard_inv
+axiom-theorem governance_enacts_windUpAdmin
+axiom-theorem not_insolvent_of_reach
+axiom-theorem not_insolvent_of_reach._proof_1_3
+axiom-theorem option_bind_inv
+axiom-theorem pledge_escrow_debit
+axiom-theorem pledge_escrow_debit._proof_1_1
+axiom-theorem pledge_guard_inv
+axiom-theorem pledge_preserves_allUnique
+axiom-theorem pledge_rejected_when_member
+axiom-theorem pullCollection_mem
+axiom-theorem reach_solvent
+axiom-theorem refundAll_bal_ge
+axiom-theorem solvent_init
+axiom-theorem solvent_preserved
+axiom-theorem splitUser_amount
+axiom-theorem step.eq_1
+axiom-theorem step.eq_10
+axiom-theorem step.eq_11
+axiom-theorem step.eq_12
+axiom-theorem step.eq_13
+axiom-theorem step.eq_14
+axiom-theorem step.eq_15
+axiom-theorem step.eq_16
+axiom-theorem step.eq_17
+axiom-theorem step.eq_2
+axiom-theorem step.eq_3
+axiom-theorem step.eq_4
+axiom-theorem step.eq_5
+axiom-theorem step.eq_6
+axiom-theorem step.eq_7
+axiom-theorem step.eq_8
+axiom-theorem step.eq_9
+axiom-theorem stepEvent.eq_1
+axiom-theorem stepEvent.eq_10
+axiom-theorem stepEvent.eq_11
+axiom-theorem stepEvent.eq_12
+axiom-theorem stepEvent.eq_13
+axiom-theorem stepEvent.eq_14
+axiom-theorem stepEvent.eq_2
+axiom-theorem stepEvent.eq_3
+axiom-theorem stepEvent.eq_4
+axiom-theorem stepEvent.eq_5
+axiom-theorem stepEvent.eq_6
+axiom-theorem stepEvent.eq_7
+axiom-theorem stepEvent.eq_8
+axiom-theorem stepEvent.eq_9
+axiom-theorem step_accept_inv
+axiom-theorem step_authorized
+axiom-theorem step_close_inv
+axiom-theorem step_correct_inv
+axiom-theorem step_deny_inv
+axiom-theorem step_fail_inv
+axiom-theorem step_grant_inv
+axiom-theorem step_pledge_inv
+axiom-theorem step_refuse_inv
+axiom-theorem stripCollections_referente_ne
+axiom-theorem stripCollections_sublist
+axiom-theorem uniquePledges_pend_cons
+axiom-theorem user_absent_of_any_false
+axiom-theorem withdraw_double_entry
+axiom-theorem Reach.brecOn
+axiom-theorem Collection.mk.inj
+axiom-theorem Collection.mk.injEq
+axiom-theorem Collection.mk.sizeOf_spec
+axiom-theorem State.mk.inj
+axiom-theorem State.mk.injEq
+axiom-theorem State.mk.sizeOf_spec
+axiom-theorem _private.Reactivegas.State.0.bal.match_1.eq_1
+axiom-theorem _private.Reactivegas.State.0.bal.match_1.eq_2
+axiom-theorem _private.Reactivegas.State.0.pullCollection.match_1.eq_1
+axiom-theorem _private.Reactivegas.State.0.pullCollection.match_1.eq_2
+axiom-theorem _private.Reactivegas.State.0.pullCollection.match_3.eq_1
+axiom-theorem _private.Reactivegas.State.0.pullCollection.match_3.eq_2
+axiom-theorem _private.Reactivegas.State.0.pullCollection_id_lemma
+axiom-theorem _private.Reactivegas.State.0.pullCollection_sublist_lemma
+axiom-theorem _private.Reactivegas.State.0.pullCollection_sum_lemma
+axiom-theorem _private.Reactivegas.State.0.pullCollection_sum_lemma._proof_1_4
+axiom-theorem _private.Reactivegas.State.0.splitUser.match_1.eq_1
+axiom-theorem _private.Reactivegas.State.0.splitUser.match_1.eq_2
+axiom-theorem _private.Reactivegas.State.0.splitUser_sublist_lemma
+axiom-theorem _private.Reactivegas.State.0.splitUser_sum_lemma
+axiom-theorem _private.Reactivegas.State.0.splitUser_sum_lemma._proof_1_7
+axiom-theorem _private.Reactivegas.State.0.stripCollections.match_1.eq_1
+axiom-theorem _private.Reactivegas.State.0.sumPledges.match_1.eq_1
+axiom-theorem _private.Reactivegas.State.0.sumPledges.match_1.eq_2
+axiom-theorem bal.eq_1
+axiom-theorem bal.eq_2
+axiom-theorem bal.eq_def
+axiom-theorem bal_bump
+axiom-theorem bal_cons
+axiom-theorem bump.eq_1
+axiom-theorem bump.eq_2
+axiom-theorem bump.eq_def
+axiom-theorem bump_sum
+axiom-theorem bump_sum._proof_1_5
+axiom-theorem bump_sum._proof_1_6
+axiom-theorem escrowOf.eq_1
+axiom-theorem escrowSum_cons
+axiom-theorem instDecidableEqCollection.decEq._proof_1
+axiom-theorem instDecidableEqCollection.decEq._proof_2
+axiom-theorem instDecidableEqCollection.decEq._proof_3
+axiom-theorem instDecidableEqCollection.decEq._proof_4
+axiom-theorem instDecidableEqCollection.decEq._proof_5
+axiom-theorem instDecidableEqCollection.decEq._proof_6
+axiom-theorem instDecidableEqState.decEq._proof_1
+axiom-theorem instDecidableEqState.decEq._proof_2
+axiom-theorem instDecidableEqState.decEq._proof_3
+axiom-theorem instDecidableEqState.decEq._proof_4
+axiom-theorem instDecidableEqState.decEq._proof_5
+axiom-theorem not_mem_users_of_splitUser_none
+axiom-theorem pullCollection.eq_1
+axiom-theorem pullCollection.eq_2
+axiom-theorem pullCollection.eq_def
+axiom-theorem pullCollection_id
+axiom-theorem pullCollection_sublist
+axiom-theorem pullCollection_sum
+axiom-theorem refundAll.eq_1
+axiom-theorem refundAll_sum
+axiom-theorem refundAll_sum._proof_1_5
+axiom-theorem splitUser.eq_1
+axiom-theorem splitUser.eq_2
+axiom-theorem splitUser.eq_def
+axiom-theorem splitUser_sublist
+axiom-theorem splitUser_sum
+axiom-theorem stripCollections.eq_1
+axiom-theorem stripCollections.eq_2
+axiom-theorem stripCollections.eq_def
+axiom-theorem stripCollections_referente
+axiom-theorem stripCollections_sum
+axiom-theorem stripCollections_sum._proof_1_5
+axiom-theorem stripCollections_sum._proof_1_6
+axiom-theorem sumBal.eq_1
+axiom-theorem sumBal_cons
+axiom-theorem sumPledges.eq_1
+axiom-theorem sumPledges.eq_2
+axiom-theorem sumPledges.eq_def
+axiom-theorem sumPledges_append
+axiom-theorem sumPledges_append._proof_1_4
+axiom-theorem Reactivegas.ProductionError.comuneReserved.sizeOf_spec
+axiom-theorem Reactivegas.ProductionError.integrated.inj
+axiom-theorem Reactivegas.ProductionError.integrated.injEq
+axiom-theorem Reactivegas.ProductionError.integrated.sizeOf_spec
+axiom-theorem Reactivegas.app_members_preservation_holds
+axiom-theorem Reactivegas.app_members_preservation_mutant_caught
+axiom-theorem Reactivegas.comune_cannot_authorize
+axiom-theorem Reactivegas.instDecidableEqProductionError.decEq._proof_1
+axiom-theorem Reactivegas.instDecidableEqProductionError.decEq._proof_2
+axiom-theorem Reactivegas.instDecidableEqProductionError.decEq._proof_3
+axiom-theorem Reactivegas.instDecidableEqProductionError.decEq._proof_4
+axiom-theorem GuardClaim.mk.inj
+axiom-theorem GuardClaim.mk.injEq
+axiom-theorem GuardClaim.mk.sizeOf_spec
+axiom-theorem GuardId.acceptPledge.sizeOf_spec
+axiom-theorem GuardId.backdonate.sizeOf_spec
+axiom-theorem GuardId.closePurchase.sizeOf_spec
+axiom-theorem GuardId.correctPledge.sizeOf_spec
+axiom-theorem GuardId.denyPermission.sizeOf_spec
+axiom-theorem GuardId.deposit.sizeOf_spec
+axiom-theorem GuardId.donate.sizeOf_spec
+axiom-theorem GuardId.failPurchase.sizeOf_spec
+axiom-theorem GuardId.grantPermission.sizeOf_spec
+axiom-theorem GuardId.ofNat_ctorIdx
+axiom-theorem GuardId.openPurchase.sizeOf_spec
+axiom-theorem GuardId.pledge.sizeOf_spec
+axiom-theorem GuardId.refusePledge.sizeOf_spec
+axiom-theorem GuardId.transferCassa.sizeOf_spec
+axiom-theorem GuardId.withdraw.sizeOf_spec
+axiom-theorem StepDiagnostic.applied.inj
+axiom-theorem StepDiagnostic.applied.injEq
+axiom-theorem StepDiagnostic.applied.sizeOf_spec
+axiom-theorem StepDiagnostic.refused.inj
+axiom-theorem StepDiagnostic.refused.injEq
+axiom-theorem StepDiagnostic.refused.sizeOf_spec
+axiom-theorem Trace.mk.inj
+axiom-theorem Trace.mk.injEq
+axiom-theorem Trace.mk.sizeOf_spec
+axiom-theorem TraceInventory.mk.inj
+axiom-theorem TraceInventory.mk.injEq
+axiom-theorem TraceInventory.mk.sizeOf_spec
+axiom-theorem TraceResult.applied.inj
+axiom-theorem TraceResult.applied.injEq
+axiom-theorem TraceResult.applied.sizeOf_spec
+axiom-theorem TraceResult.refused.inj
+axiom-theorem TraceResult.refused.injEq
+axiom-theorem TraceResult.refused.sizeOf_spec
+axiom-theorem TraceStep.mk.inj
+axiom-theorem TraceStep.mk.injEq
+axiom-theorem TraceStep.mk.sizeOf_spec
+axiom-theorem _private.Reactivegas.Trace.0.eraseDiagnostic.match_1.eq_1
+axiom-theorem _private.Reactivegas.Trace.0.eraseDiagnostic.match_1.eq_2
+axiom-theorem eraseDiagnostic.eq_1
+axiom-theorem eraseDiagnostic.eq_2
+axiom-theorem instDecidableEqGuardClaim.decEq._proof_1
+axiom-theorem instDecidableEqGuardClaim.decEq._proof_2
+axiom-theorem instDecidableEqGuardClaim.decEq._proof_3
+axiom-theorem instDecidableEqGuardId._proof_1
+axiom-theorem instDecidableEqGuardId._proof_2
+axiom-theorem instDecidableEqStepDiagnostic.decEq._proof_1
+axiom-theorem instDecidableEqStepDiagnostic.decEq._proof_2
+axiom-theorem instDecidableEqStepDiagnostic.decEq._proof_3
+axiom-theorem instDecidableEqStepDiagnostic.decEq._proof_4
+axiom-theorem instDecidableEqStepDiagnostic.decEq._proof_5
+axiom-theorem instDecidableEqStepDiagnostic.decEq._proof_6
+axiom-theorem instDecidableEqTrace.decEq._proof_1
+axiom-theorem instDecidableEqTrace.decEq._proof_2
+axiom-theorem instDecidableEqTrace.decEq._proof_3
+axiom-theorem instDecidableEqTrace.decEq._proof_4
+axiom-theorem instDecidableEqTrace.decEq._proof_5
+axiom-theorem instDecidableEqTraceResult.decEq._proof_1
+axiom-theorem instDecidableEqTraceResult.decEq._proof_2
+axiom-theorem instDecidableEqTraceResult.decEq._proof_3
+axiom-theorem instDecidableEqTraceResult.decEq._proof_4
+axiom-theorem instDecidableEqTraceResult.decEq._proof_5
+axiom-theorem instDecidableEqTraceResult.decEq._proof_6
+axiom-theorem instDecidableEqTraceStep.decEq._proof_1
+axiom-theorem instDecidableEqTraceStep.decEq._proof_2
+axiom-theorem instDecidableEqTraceStep.decEq._proof_3
+axiom-theorem instDecidableEqTraceStep.decEq._proof_4
+axiom-theorem stepDetailed_erases
+axiom-theorem TraceTests.all_checks_pass
+axiom-theorem TraceTests.app_members_preservation_holds
+axiom-theorem TraceTests.app_members_preservation_mutant_caught
+axiom-theorem TraceTests.base_change_can_close_without_ballot
+axiom-theorem TraceTests.base_departure_applies_cleanup
+axiom-theorem TraceTests.base_recompute_reachable_holds
+axiom-theorem TraceTests.direct_admission_only_holds
+axiom-theorem TraceTests.frozen_checks_faithful
+axiom-theorem TraceTests.frozen_corpus_faithful
+axiom-theorem TraceTests.frozen_inventory_faithful
+axiom-theorem TraceTests.sweep_idempotent_mutant_caught
+axiom-theorem TraceTests.sweep_idempotent_witness
+axiom-theorem AppEvent.acceptPledge.inj
+axiom-theorem AppEvent.acceptPledge.injEq
+axiom-theorem AppEvent.acceptPledge.sizeOf_spec
+axiom-theorem AppEvent.backdonate.inj
+axiom-theorem AppEvent.backdonate.injEq
+axiom-theorem AppEvent.backdonate.sizeOf_spec
+axiom-theorem AppEvent.cast.inj
+axiom-theorem AppEvent.cast.injEq
+axiom-theorem AppEvent.cast.sizeOf_spec
+axiom-theorem AppEvent.closePurchase.inj
+axiom-theorem AppEvent.closePurchase.injEq
+axiom-theorem AppEvent.closePurchase.sizeOf_spec
+axiom-theorem AppEvent.correctPledge.inj
+axiom-theorem AppEvent.correctPledge.injEq
+axiom-theorem AppEvent.correctPledge.sizeOf_spec
+axiom-theorem AppEvent.denyPermission.inj
+axiom-theorem AppEvent.denyPermission.injEq
+axiom-theorem AppEvent.denyPermission.sizeOf_spec
+axiom-theorem AppEvent.deposit.inj
+axiom-theorem AppEvent.deposit.injEq
+axiom-theorem AppEvent.deposit.sizeOf_spec
+axiom-theorem AppEvent.donate.inj
+axiom-theorem AppEvent.donate.injEq
+axiom-theorem AppEvent.donate.sizeOf_spec
+axiom-theorem AppEvent.failPurchase.inj
+axiom-theorem AppEvent.failPurchase.injEq
+axiom-theorem AppEvent.failPurchase.sizeOf_spec
+axiom-theorem AppEvent.grantPermission.inj
+axiom-theorem AppEvent.grantPermission.injEq
+axiom-theorem AppEvent.grantPermission.sizeOf_spec
+axiom-theorem AppEvent.openPurchase.inj
+axiom-theorem AppEvent.openPurchase.injEq
+axiom-theorem AppEvent.openPurchase.sizeOf_spec
+axiom-theorem AppEvent.openQuestion.inj
+axiom-theorem AppEvent.openQuestion.injEq
+axiom-theorem AppEvent.openQuestion.sizeOf_spec
+axiom-theorem AppEvent.pledge.inj
+axiom-theorem AppEvent.pledge.injEq
+axiom-theorem AppEvent.pledge.sizeOf_spec
+axiom-theorem AppEvent.refusePledge.inj
+axiom-theorem AppEvent.refusePledge.injEq
+axiom-theorem AppEvent.refusePledge.sizeOf_spec
+axiom-theorem AppEvent.renounce.inj
+axiom-theorem AppEvent.renounce.injEq
+axiom-theorem AppEvent.renounce.sizeOf_spec
+axiom-theorem AppEvent.transferCassa.inj
+axiom-theorem AppEvent.transferCassa.injEq
+axiom-theorem AppEvent.transferCassa.sizeOf_spec
+axiom-theorem AppEvent.withdraw.inj
+axiom-theorem AppEvent.withdraw.injEq
+axiom-theorem AppEvent.withdraw.sizeOf_spec
+axiom-theorem Event.acceptPledge.inj
+axiom-theorem Event.acceptPledge.injEq
+axiom-theorem Event.acceptPledge.sizeOf_spec
+axiom-theorem Event.backdonate.inj
+axiom-theorem Event.backdonate.injEq
+axiom-theorem Event.backdonate.sizeOf_spec
+axiom-theorem Event.closePurchase.inj
+axiom-theorem Event.closePurchase.injEq
+axiom-theorem Event.closePurchase.sizeOf_spec
+axiom-theorem Event.correctPledge.inj
+axiom-theorem Event.correctPledge.injEq
+axiom-theorem Event.correctPledge.sizeOf_spec
+axiom-theorem Event.denyPermission.inj
+axiom-theorem Event.denyPermission.injEq
+axiom-theorem Event.denyPermission.sizeOf_spec
+axiom-theorem Event.deposit.inj
+axiom-theorem Event.deposit.injEq
+axiom-theorem Event.deposit.sizeOf_spec
+axiom-theorem Event.donate.inj
+axiom-theorem Event.donate.injEq
+axiom-theorem Event.donate.sizeOf_spec
+axiom-theorem Event.failPurchase.inj
+axiom-theorem Event.failPurchase.injEq
+axiom-theorem Event.failPurchase.sizeOf_spec
+axiom-theorem Event.grantPermission.inj
+axiom-theorem Event.grantPermission.injEq
+axiom-theorem Event.grantPermission.sizeOf_spec
+axiom-theorem Event.openPurchase.inj
+axiom-theorem Event.openPurchase.injEq
+axiom-theorem Event.openPurchase.sizeOf_spec
+axiom-theorem Event.pledge.inj
+axiom-theorem Event.pledge.injEq
+axiom-theorem Event.pledge.sizeOf_spec
+axiom-theorem Event.refusePledge.inj
+axiom-theorem Event.refusePledge.injEq
+axiom-theorem Event.refusePledge.sizeOf_spec
+axiom-theorem Event.transferCassa.inj
+axiom-theorem Event.transferCassa.injEq
+axiom-theorem Event.transferCassa.sizeOf_spec
+axiom-theorem Event.withdraw.inj
+axiom-theorem Event.withdraw.injEq
+axiom-theorem Event.withdraw.sizeOf_spec
+axiom-theorem Pledge.mk.inj
+axiom-theorem Pledge.mk.injEq
+axiom-theorem Pledge.mk.sizeOf_spec
+axiom-theorem Proposal.changeRoles.inj
+axiom-theorem Proposal.changeRoles.injEq
+axiom-theorem Proposal.changeRoles.sizeOf_spec
+axiom-theorem Proposal.departure.inj
+axiom-theorem Proposal.departure.injEq
+axiom-theorem Proposal.departure.sizeOf_spec
+axiom-theorem StepError.ofNat_ctorIdx
+axiom-theorem StepError.rejected.sizeOf_spec
+axiom-theorem instDecidableEqAppEvent.decEq._proof_1
+axiom-theorem instDecidableEqAppEvent.decEq._proof_10
+axiom-theorem instDecidableEqAppEvent.decEq._proof_11
+axiom-theorem instDecidableEqAppEvent.decEq._proof_12
+axiom-theorem instDecidableEqAppEvent.decEq._proof_13
+axiom-theorem instDecidableEqAppEvent.decEq._proof_14
+axiom-theorem instDecidableEqAppEvent.decEq._proof_15
+axiom-theorem instDecidableEqAppEvent.decEq._proof_16
+axiom-theorem instDecidableEqAppEvent.decEq._proof_17
+axiom-theorem instDecidableEqAppEvent.decEq._proof_18
+axiom-theorem instDecidableEqAppEvent.decEq._proof_19
+axiom-theorem instDecidableEqAppEvent.decEq._proof_2
+axiom-theorem instDecidableEqAppEvent.decEq._proof_20
+axiom-theorem instDecidableEqAppEvent.decEq._proof_21
+axiom-theorem instDecidableEqAppEvent.decEq._proof_22
+axiom-theorem instDecidableEqAppEvent.decEq._proof_23
+axiom-theorem instDecidableEqAppEvent.decEq._proof_24
+axiom-theorem instDecidableEqAppEvent.decEq._proof_25
+axiom-theorem instDecidableEqAppEvent.decEq._proof_26
+axiom-theorem instDecidableEqAppEvent.decEq._proof_27
+axiom-theorem instDecidableEqAppEvent.decEq._proof_28
+axiom-theorem instDecidableEqAppEvent.decEq._proof_29
+axiom-theorem instDecidableEqAppEvent.decEq._proof_3
+axiom-theorem instDecidableEqAppEvent.decEq._proof_30
+axiom-theorem instDecidableEqAppEvent.decEq._proof_31
+axiom-theorem instDecidableEqAppEvent.decEq._proof_32
+axiom-theorem instDecidableEqAppEvent.decEq._proof_33
+axiom-theorem instDecidableEqAppEvent.decEq._proof_34
+axiom-theorem instDecidableEqAppEvent.decEq._proof_35
+axiom-theorem instDecidableEqAppEvent.decEq._proof_36
+axiom-theorem instDecidableEqAppEvent.decEq._proof_37
+axiom-theorem instDecidableEqAppEvent.decEq._proof_38
+axiom-theorem instDecidableEqAppEvent.decEq._proof_39
+axiom-theorem instDecidableEqAppEvent.decEq._proof_4
+axiom-theorem instDecidableEqAppEvent.decEq._proof_40
+axiom-theorem instDecidableEqAppEvent.decEq._proof_41
+axiom-theorem instDecidableEqAppEvent.decEq._proof_42
+axiom-theorem instDecidableEqAppEvent.decEq._proof_43
+axiom-theorem instDecidableEqAppEvent.decEq._proof_44
+axiom-theorem instDecidableEqAppEvent.decEq._proof_45
+axiom-theorem instDecidableEqAppEvent.decEq._proof_46
+axiom-theorem instDecidableEqAppEvent.decEq._proof_5
+axiom-theorem instDecidableEqAppEvent.decEq._proof_6
+axiom-theorem instDecidableEqAppEvent.decEq._proof_7
+axiom-theorem instDecidableEqAppEvent.decEq._proof_8
+axiom-theorem instDecidableEqAppEvent.decEq._proof_9
+axiom-theorem instDecidableEqEvent.decEq._proof_1
+axiom-theorem instDecidableEqEvent.decEq._proof_10
+axiom-theorem instDecidableEqEvent.decEq._proof_11
+axiom-theorem instDecidableEqEvent.decEq._proof_12
+axiom-theorem instDecidableEqEvent.decEq._proof_13
+axiom-theorem instDecidableEqEvent.decEq._proof_14
+axiom-theorem instDecidableEqEvent.decEq._proof_15
+axiom-theorem instDecidableEqEvent.decEq._proof_16
+axiom-theorem instDecidableEqEvent.decEq._proof_17
+axiom-theorem instDecidableEqEvent.decEq._proof_18
+axiom-theorem instDecidableEqEvent.decEq._proof_19
+axiom-theorem instDecidableEqEvent.decEq._proof_2
+axiom-theorem instDecidableEqEvent.decEq._proof_20
+axiom-theorem instDecidableEqEvent.decEq._proof_21
+axiom-theorem instDecidableEqEvent.decEq._proof_22
+axiom-theorem instDecidableEqEvent.decEq._proof_23
+axiom-theorem instDecidableEqEvent.decEq._proof_24
+axiom-theorem instDecidableEqEvent.decEq._proof_25
+axiom-theorem instDecidableEqEvent.decEq._proof_26
+axiom-theorem instDecidableEqEvent.decEq._proof_27
+axiom-theorem instDecidableEqEvent.decEq._proof_28
+axiom-theorem instDecidableEqEvent.decEq._proof_29
+axiom-theorem instDecidableEqEvent.decEq._proof_3
+axiom-theorem instDecidableEqEvent.decEq._proof_30
+axiom-theorem instDecidableEqEvent.decEq._proof_31
+axiom-theorem instDecidableEqEvent.decEq._proof_32
+axiom-theorem instDecidableEqEvent.decEq._proof_33
+axiom-theorem instDecidableEqEvent.decEq._proof_34
+axiom-theorem instDecidableEqEvent.decEq._proof_35
+axiom-theorem instDecidableEqEvent.decEq._proof_36
+axiom-theorem instDecidableEqEvent.decEq._proof_37
+axiom-theorem instDecidableEqEvent.decEq._proof_38
+axiom-theorem instDecidableEqEvent.decEq._proof_39
+axiom-theorem instDecidableEqEvent.decEq._proof_4
+axiom-theorem instDecidableEqEvent.decEq._proof_40
+axiom-theorem instDecidableEqEvent.decEq._proof_41
+axiom-theorem instDecidableEqEvent.decEq._proof_42
+axiom-theorem instDecidableEqEvent.decEq._proof_43
+axiom-theorem instDecidableEqEvent.decEq._proof_44
+axiom-theorem instDecidableEqEvent.decEq._proof_45
+axiom-theorem instDecidableEqEvent.decEq._proof_46
+axiom-theorem instDecidableEqEvent.decEq._proof_47
+axiom-theorem instDecidableEqEvent.decEq._proof_48
+axiom-theorem instDecidableEqEvent.decEq._proof_49
+axiom-theorem instDecidableEqEvent.decEq._proof_5
+axiom-theorem instDecidableEqEvent.decEq._proof_50
+axiom-theorem instDecidableEqEvent.decEq._proof_51
+axiom-theorem instDecidableEqEvent.decEq._proof_52
+axiom-theorem instDecidableEqEvent.decEq._proof_6
+axiom-theorem instDecidableEqEvent.decEq._proof_7
+axiom-theorem instDecidableEqEvent.decEq._proof_8
+axiom-theorem instDecidableEqEvent.decEq._proof_9
+axiom-theorem instDecidableEqPledge.decEq._proof_1
+axiom-theorem instDecidableEqPledge.decEq._proof_2
+axiom-theorem instDecidableEqPledge.decEq._proof_3
+axiom-theorem instDecidableEqProposal.decEq._proof_1
+axiom-theorem instDecidableEqProposal.decEq._proof_2
+axiom-theorem instDecidableEqProposal.decEq._proof_3
+axiom-theorem instDecidableEqProposal.decEq._proof_4
+axiom-theorem instDecidableEqProposal.decEq._proof_5
+axiom-theorem instDecidableEqProposal.decEq._proof_6
+axiom-theorem instDecidableEqProposal.decEq._proof_7
+axiom-theorem instDecidableEqStepError._proof_1
+axioms KelGroups.BaseChange.memberAdmitted.inj = []
+axioms KelGroups.BaseChange.memberAdmitted.injEq = [propext]
+axioms KelGroups.BaseChange.memberAdmitted.sizeOf_spec = []
+axioms KelGroups.BaseChange.memberRemoved.inj = []
+axioms KelGroups.BaseChange.memberRemoved.injEq = [propext]
+axioms KelGroups.BaseChange.memberRemoved.sizeOf_spec = []
+axioms KelGroups.BaseChange.rolesChanged.inj = []
+axioms KelGroups.BaseChange.rolesChanged.injEq = [propext]
+axioms KelGroups.BaseChange.rolesChanged.sizeOf_spec = []
+axioms KelGroups.BaseEvent.approve.inj = []
+axioms KelGroups.BaseEvent.approve.injEq = [propext]
+axioms KelGroups.BaseEvent.approve.sizeOf_spec = []
+axioms KelGroups.BaseEvent.propose.inj = []
+axioms KelGroups.BaseEvent.propose.injEq = [propext]
+axioms KelGroups.BaseEvent.propose.sizeOf_spec = []
+axioms KelGroups.BaseMutation.changeRoles.inj = []
+axioms KelGroups.BaseMutation.changeRoles.injEq = [propext]
+axioms KelGroups.BaseMutation.changeRoles.sizeOf_spec = []
+axioms KelGroups.BaseMutation.removeMember.inj = []
+axioms KelGroups.BaseMutation.removeMember.injEq = [propext]
+axioms KelGroups.BaseMutation.removeMember.sizeOf_spec = []
+axioms KelGroups.DirectCommand.admitMember.inj = []
+axioms KelGroups.DirectCommand.admitMember.injEq = [propext]
+axioms KelGroups.DirectCommand.admitMember.sizeOf_spec = []
+axioms KelGroups.GroupEvent.app.inj = []
+axioms KelGroups.GroupEvent.app.injEq = [propext]
+axioms KelGroups.GroupEvent.app.sizeOf_spec = []
+axioms KelGroups.GroupEvent.base.inj = []
+axioms KelGroups.GroupEvent.base.injEq = [propext]
+axioms KelGroups.GroupEvent.base.sizeOf_spec = []
+axioms KelGroups.Proposal.changeRoles.inj = []
+axioms KelGroups.Proposal.changeRoles.injEq = [propext]
+axioms KelGroups.Proposal.changeRoles.sizeOf_spec = []
+axioms KelGroups.Proposal.introduceMember.inj = []
+axioms KelGroups.Proposal.introduceMember.injEq = [propext]
+axioms KelGroups.Proposal.introduceMember.sizeOf_spec = []
+axioms KelGroups.Proposal.removeMember.inj = []
+axioms KelGroups.Proposal.removeMember.injEq = [propext]
+axioms KelGroups.Proposal.removeMember.sizeOf_spec = []
+axioms KelGroups.instDecidableEqBaseChange.decEq._proof_1 = []
+axioms KelGroups.instDecidableEqBaseChange.decEq._proof_10 = []
+axioms KelGroups.instDecidableEqBaseChange.decEq._proof_11 = []
+axioms KelGroups.instDecidableEqBaseChange.decEq._proof_12 = []
+axioms KelGroups.instDecidableEqBaseChange.decEq._proof_2 = []
+axioms KelGroups.instDecidableEqBaseChange.decEq._proof_3 = []
+axioms KelGroups.instDecidableEqBaseChange.decEq._proof_4 = []
+axioms KelGroups.instDecidableEqBaseChange.decEq._proof_5 = []
+axioms KelGroups.instDecidableEqBaseChange.decEq._proof_6 = []
+axioms KelGroups.instDecidableEqBaseChange.decEq._proof_7 = []
+axioms KelGroups.instDecidableEqBaseChange.decEq._proof_8 = []
+axioms KelGroups.instDecidableEqBaseChange.decEq._proof_9 = []
+axioms KelGroups.instDecidableEqBaseEvent.decEq._proof_1 = []
+axioms KelGroups.instDecidableEqBaseEvent.decEq._proof_2 = []
+axioms KelGroups.instDecidableEqBaseEvent.decEq._proof_3 = []
+axioms KelGroups.instDecidableEqBaseEvent.decEq._proof_4 = []
+axioms KelGroups.instDecidableEqBaseEvent.decEq._proof_5 = []
+axioms KelGroups.instDecidableEqBaseEvent.decEq._proof_6 = []
+axioms KelGroups.instDecidableEqBaseMutation.decEq._proof_1 = []
+axioms KelGroups.instDecidableEqBaseMutation.decEq._proof_2 = []
+axioms KelGroups.instDecidableEqBaseMutation.decEq._proof_3 = []
+axioms KelGroups.instDecidableEqBaseMutation.decEq._proof_4 = []
+axioms KelGroups.instDecidableEqBaseMutation.decEq._proof_5 = []
+axioms KelGroups.instDecidableEqBaseMutation.decEq._proof_6 = []
+axioms KelGroups.instDecidableEqBaseMutation.decEq._proof_7 = []
+axioms KelGroups.instDecidableEqDirectCommand.decEq._proof_1 = []
+axioms KelGroups.instDecidableEqDirectCommand.decEq._proof_2 = []
+axioms KelGroups.instDecidableEqDirectCommand.decEq._proof_3 = []
+axioms KelGroups.instDecidableEqDirectCommand.decEq._proof_4 = []
+axioms KelGroups.instDecidableEqGroupEvent.decEq._proof_1 = []
+axioms KelGroups.instDecidableEqGroupEvent.decEq._proof_2 = []
+axioms KelGroups.instDecidableEqGroupEvent.decEq._proof_3 = []
+axioms KelGroups.instDecidableEqGroupEvent.decEq._proof_4 = []
+axioms KelGroups.instDecidableEqGroupEvent.decEq._proof_5 = []
+axioms KelGroups.instDecidableEqGroupEvent.decEq._proof_6 = []
+axioms KelGroups.instDecidableEqProposal.decEq._proof_1 = []
+axioms KelGroups.instDecidableEqProposal.decEq._proof_10 = []
+axioms KelGroups.instDecidableEqProposal.decEq._proof_11 = []
+axioms KelGroups.instDecidableEqProposal.decEq._proof_12 = []
+axioms KelGroups.instDecidableEqProposal.decEq._proof_13 = []
+axioms KelGroups.instDecidableEqProposal.decEq._proof_14 = []
+axioms KelGroups.instDecidableEqProposal.decEq._proof_15 = []
+axioms KelGroups.instDecidableEqProposal.decEq._proof_2 = []
+axioms KelGroups.instDecidableEqProposal.decEq._proof_3 = []
+axioms KelGroups.instDecidableEqProposal.decEq._proof_4 = []
+axioms KelGroups.instDecidableEqProposal.decEq._proof_5 = []
+axioms KelGroups.instDecidableEqProposal.decEq._proof_6 = []
+axioms KelGroups.instDecidableEqProposal.decEq._proof_7 = []
+axioms KelGroups.instDecidableEqProposal.decEq._proof_8 = []
+axioms KelGroups.instDecidableEqProposal.decEq._proof_9 = []
+axioms KelGroups.Enactment.mk.inj = []
+axioms KelGroups.Enactment.mk.injEq = [propext]
+axioms KelGroups.Enactment.mk.sizeOf_spec = []
+axioms KelGroups.StepResult.mk.inj = []
+axioms KelGroups.StepResult.mk.injEq = [propext]
+axioms KelGroups.StepResult.mk.sizeOf_spec = []
+axioms KelGroups.instDecidableEqEnactment.decEq._proof_1 = []
+axioms KelGroups.instDecidableEqEnactment.decEq._proof_2 = []
+axioms KelGroups.instDecidableEqEnactment.decEq._proof_3 = []
+axioms KelGroups.instDecidableEqEnactment.decEq._proof_4 = []
+axioms KelGroups.instDecidableEqStepResult.decEq._proof_1 = []
+axioms KelGroups.instDecidableEqStepResult.decEq._proof_2 = []
+axioms KelGroups.instDecidableEqStepResult.decEq._proof_3 = []
+axioms KelGroups.IntegratedError.app.inj = []
+axioms KelGroups.IntegratedError.app.injEq = [propext]
+axioms KelGroups.IntegratedError.app.sizeOf_spec = []
+axioms KelGroups.IntegratedError.validation.inj = []
+axioms KelGroups.IntegratedError.validation.injEq = [propext]
+axioms KelGroups.IntegratedError.validation.sizeOf_spec = []
+axioms KelGroups.IntegratedEvent.app.inj = []
+axioms KelGroups.IntegratedEvent.app.injEq = [propext]
+axioms KelGroups.IntegratedEvent.app.sizeOf_spec = []
+axioms KelGroups.IntegratedEvent.approve.inj = []
+axioms KelGroups.IntegratedEvent.approve.injEq = [propext]
+axioms KelGroups.IntegratedEvent.approve.sizeOf_spec = []
+axioms KelGroups.IntegratedEvent.direct.inj = []
+axioms KelGroups.IntegratedEvent.direct.injEq = [propext]
+axioms KelGroups.IntegratedEvent.direct.sizeOf_spec = []
+axioms KelGroups.IntegratedEvent.propose.inj = []
+axioms KelGroups.IntegratedEvent.propose.injEq = [propext]
+axioms KelGroups.IntegratedEvent.propose.sizeOf_spec = []
+axioms KelGroups.IntegratedResult.mk.inj = []
+axioms KelGroups.IntegratedResult.mk.injEq = [propext]
+axioms KelGroups.IntegratedResult.mk.sizeOf_spec = []
+axioms KelGroups.Integration.mk.inj = []
+axioms KelGroups.Integration.mk.injEq = [propext]
+axioms KelGroups.Integration.mk.sizeOf_spec = []
+axioms KelGroups.instDecidableEqIntegratedError.decEq._proof_1 = []
+axioms KelGroups.instDecidableEqIntegratedError.decEq._proof_2 = []
+axioms KelGroups.instDecidableEqIntegratedError.decEq._proof_3 = []
+axioms KelGroups.instDecidableEqIntegratedError.decEq._proof_4 = []
+axioms KelGroups.instDecidableEqIntegratedError.decEq._proof_5 = []
+axioms KelGroups.instDecidableEqIntegratedError.decEq._proof_6 = []
+axioms KelGroups.instDecidableEqIntegratedEvent.decEq._proof_1 = []
+axioms KelGroups.instDecidableEqIntegratedEvent.decEq._proof_10 = []
+axioms KelGroups.instDecidableEqIntegratedEvent.decEq._proof_11 = []
+axioms KelGroups.instDecidableEqIntegratedEvent.decEq._proof_12 = []
+axioms KelGroups.instDecidableEqIntegratedEvent.decEq._proof_13 = []
+axioms KelGroups.instDecidableEqIntegratedEvent.decEq._proof_14 = []
+axioms KelGroups.instDecidableEqIntegratedEvent.decEq._proof_15 = []
+axioms KelGroups.instDecidableEqIntegratedEvent.decEq._proof_16 = []
+axioms KelGroups.instDecidableEqIntegratedEvent.decEq._proof_17 = []
+axioms KelGroups.instDecidableEqIntegratedEvent.decEq._proof_18 = []
+axioms KelGroups.instDecidableEqIntegratedEvent.decEq._proof_19 = []
+axioms KelGroups.instDecidableEqIntegratedEvent.decEq._proof_2 = []
+axioms KelGroups.instDecidableEqIntegratedEvent.decEq._proof_20 = []
+axioms KelGroups.instDecidableEqIntegratedEvent.decEq._proof_3 = []
+axioms KelGroups.instDecidableEqIntegratedEvent.decEq._proof_4 = []
+axioms KelGroups.instDecidableEqIntegratedEvent.decEq._proof_5 = []
+axioms KelGroups.instDecidableEqIntegratedEvent.decEq._proof_6 = []
+axioms KelGroups.instDecidableEqIntegratedEvent.decEq._proof_7 = []
+axioms KelGroups.instDecidableEqIntegratedEvent.decEq._proof_8 = []
+axioms KelGroups.instDecidableEqIntegratedEvent.decEq._proof_9 = []
+axioms KelGroups.instDecidableEqIntegratedResult.decEq._proof_1 = []
+axioms KelGroups.instDecidableEqIntegratedResult.decEq._proof_2 = []
+axioms KelGroups.instDecidableEqIntegratedResult.decEq._proof_3 = []
+axioms KelGroups.MembersCoherent.eq_1 = []
+axioms KelGroups.PendingCoherent.eq_1 = []
+axioms KelGroups.PendingWellFormed.eq_1 = []
+axioms KelGroups.WellFormed.memberKeys = []
+axioms KelGroups.WellFormed.membersCoherent = []
+axioms KelGroups.WellFormed.pendingCoherent = []
+axioms KelGroups.WellFormed.pendingKeys = []
+axioms KelGroups.app_event_has_no_base_change = [propext]
+axioms KelGroups.app_event_preserves_members = [propext]
+axioms KelGroups.applyApproveDetailed.eq_1 = []
+axioms KelGroups.applyApprove_preserves_wellFormed = [propext, Quot.sound]
+axioms KelGroups.applyEvent.eq_1 = []
+axioms KelGroups.applyEventDetailed.eq_1 = []
+axioms KelGroups.applyEventDetailed.eq_2 = []
+axioms KelGroups.applyEventDetailed.eq_3 = []
+axioms KelGroups.applyEvent_preserves_wellFormed = [propext, Quot.sound]
+axioms KelGroups.applyIntegratedEvent.eq_1 = []
+axioms KelGroups.applyIntegratedEvent.eq_2 = []
+axioms KelGroups.applyIntegratedEvent.eq_3 = []
+axioms KelGroups.applyIntegratedEvent.eq_4 = []
+axioms KelGroups.applyPropose_preserves_wellFormed = [propext, Quot.sound]
+axioms KelGroups.approvals_nodup = []
+axioms KelGroups.base_change_runs_hook = [propext]
+axioms KelGroups.commitBaseChange_members = [propext]
+axioms KelGroups.commitBaseChange_ok = [propext]
+axioms KelGroups.direct_admission_requires_admin = []
+axioms KelGroups.emptyState.eq_1 = []
+axioms KelGroups.emptyState_wellFormed = [propext, Quot.sound]
+axioms KelGroups.enact.eq_1 = []
+axioms KelGroups.enact.eq_2 = []
+axioms KelGroups.enact.eq_3 = []
+axioms KelGroups.enactMutation_preserves_absence = []
+axioms KelGroups.enact_implies_threshold_met = [propext]
+axioms KelGroups.enact_preserves_wellFormed = [propext, Quot.sound]
+axioms KelGroups.finishEnact_preserves_wellFormed = [propext, Quot.sound]
+axioms KelGroups.foldGroup_wellFormed = [propext, Quot.sound]
+axioms KelGroups.foldIntegrated.eq_1 = []
+axioms KelGroups.majority_not_strict_on_even = [propext, Quot.sound]
+axioms KelGroups.majority_not_strict_on_even._proof_1_1 = [propext, Quot.sound]
+axioms KelGroups.majority_table = [propext]
+axioms KelGroups.member_key_coherent = []
+axioms KelGroups.members_change_implies_enacted = [propext]
+axioms KelGroups.membership_growth_is_direct_admission = [propext]
+axioms KelGroups.non_admin_admission_is_noop = [propext]
+axioms KelGroups.proposer_mem_approvals = []
+axioms KelGroups.setInsert.eq_1 = []
+axioms KelGroups.tryEnact.eq_1 = []
+axioms KelGroups.tryEnactBase_preserves_absence = [propext]
+axioms KelGroups.tryEnactBase_runs_hook = [propext]
+axioms KelGroups.tryEnactDetailed.eq_1 = []
+axioms KelGroups.tryEnact_eq_of_enacts = []
+axioms KelGroups.tryEnact_preserves_wellFormed = [propext, Quot.sound]
+axioms KelGroups.validateDirectAdmission.eq_1 = []
+axioms KelGroups.validateDirectAdmission_ok = []
+axioms _private.KelGroups.Invariants.0.KelGroups.applyEventDetailed.match_1.eq_1 = []
+axioms _private.KelGroups.Invariants.0.KelGroups.applyEventDetailed.match_1.eq_2 = []
+axioms _private.KelGroups.Invariants.0.KelGroups.applyEventDetailed.match_1.eq_3 = []
+axioms _private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_1.eq_1 = []
+axioms _private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_1.eq_2 = []
+axioms _private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_3.eq_1 = []
+axioms _private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_3.eq_2 = []
+axioms _private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_3.eq_3 = []
+axioms _private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_3.eq_4 = []
+axioms _private.KelGroups.Invariants.0.KelGroups.approvePending_wellFormed = [propext]
+axioms _private.KelGroups.Invariants.0.KelGroups.assocAdjust_keys = [propext]
+axioms _private.KelGroups.Invariants.0.KelGroups.assocAdjust_property = [Quot.sound, propext]
+axioms _private.KelGroups.Invariants.0.KelGroups.assocAdjust_property._simp_1_1 = [propext]
+axioms _private.KelGroups.Invariants.0.KelGroups.assocErase_key_absent = [propext]
+axioms _private.KelGroups.Invariants.0.KelGroups.assocErase_key_absent._simp_1_1 = [propext]
+axioms _private.KelGroups.Invariants.0.KelGroups.assocErase_keys_nodup = [propext]
+axioms _private.KelGroups.Invariants.0.KelGroups.assocErase_property = [propext]
+axioms _private.KelGroups.Invariants.0.KelGroups.assocErase_sublist = [propext]
+axioms _private.KelGroups.Invariants.0.KelGroups.assocInsert_keys_nodup = [propext]
+axioms _private.KelGroups.Invariants.0.KelGroups.assocInsert_keys_nodup._simp_1_1 = [propext]
+axioms _private.KelGroups.Invariants.0.KelGroups.assocInsert_property = [propext]
+axioms _private.KelGroups.Invariants.0.KelGroups.assocInsert_property._simp_1_1 = [propext]
+axioms _private.KelGroups.Invariants.0.KelGroups.assocLookup_some_mem = [propext]
+axioms _private.KelGroups.Invariants.0.KelGroups.commitBaseChange.match_1.eq_1 = []
+axioms _private.KelGroups.Invariants.0.KelGroups.commitBaseChange.match_1.eq_2 = []
+axioms _private.KelGroups.Invariants.0.KelGroups.enact.match_1.eq_1 = []
+axioms _private.KelGroups.Invariants.0.KelGroups.enact.match_1.eq_2 = []
+axioms _private.KelGroups.Invariants.0.KelGroups.enact.match_1.eq_3 = []
+axioms _private.KelGroups.Invariants.0.KelGroups.foldEvents_preserves_wellFormed = [propext, Quot.sound]
+axioms _private.KelGroups.Invariants.0.KelGroups.foldIntegrated.match_1.eq_1 = []
+axioms _private.KelGroups.Invariants.0.KelGroups.foldIntegrated.match_1.eq_2 = []
+axioms _private.KelGroups.Invariants.0.KelGroups.setInsert_mem = []
+axioms _private.KelGroups.Invariants.0.KelGroups.setInsert_nodup = [propext]
+axioms _private.KelGroups.Invariants.0.KelGroups.tryEnactBase.match_1.eq_1 = []
+axioms _private.KelGroups.Invariants.0.KelGroups.tryEnactBase.match_1.eq_2 = []
+axioms _private.KelGroups.Invariants.0.KelGroups.tryEnactDetailed.match_1.eq_1 = []
+axioms _private.KelGroups.Invariants.0.KelGroups.tryEnactDetailed.match_1.eq_2 = []
+axioms _private.KelGroups.Invariants.0.KelGroups.tryEnactDetailed_enactment_threshold_met = [propext]
+axioms approvals_nodup = []
+axioms enact_implies_threshold_met = [propext]
+axioms majority_not_strict_on_even = [propext, Quot.sound]
+axioms majority_table = [propext]
+axioms member_key_coherent = []
+axioms members_change_implies_enacted = [propext]
+axioms proposer_mem_approvals = []
+axioms KelGroups.AuthMode.bootstrap.sizeOf_spec = []
+axioms KelGroups.AuthMode.normal.sizeOf_spec = []
+axioms KelGroups.AuthMode.ofNat_ctorIdx = []
+axioms KelGroups.GroupState.mk.inj = []
+axioms KelGroups.GroupState.mk.injEq = [propext]
+axioms KelGroups.GroupState.mk.sizeOf_spec = []
+axioms KelGroups.PendingBase.mk.inj = []
+axioms KelGroups.PendingBase.mk.injEq = [propext]
+axioms KelGroups.PendingBase.mk.sizeOf_spec = []
+axioms KelGroups.PendingProposal.mk.inj = []
+axioms KelGroups.PendingProposal.mk.injEq = [propext]
+axioms KelGroups.PendingProposal.mk.sizeOf_spec = []
+axioms KelGroups.instDecidableEqAuthMode._proof_1 = []
+axioms KelGroups.instDecidableEqAuthMode._proof_2 = []
+axioms KelGroups.instDecidableEqGroupState.decEq._proof_1 = []
+axioms KelGroups.instDecidableEqGroupState.decEq._proof_2 = []
+axioms KelGroups.instDecidableEqGroupState.decEq._proof_3 = []
+axioms KelGroups.instDecidableEqGroupState.decEq._proof_4 = []
+axioms KelGroups.instDecidableEqGroupState.decEq._proof_5 = []
+axioms KelGroups.instDecidableEqPendingBase.decEq._proof_1 = []
+axioms KelGroups.instDecidableEqPendingBase.decEq._proof_2 = []
+axioms KelGroups.instDecidableEqPendingBase.decEq._proof_3 = []
+axioms KelGroups.instDecidableEqPendingBase.decEq._proof_4 = []
+axioms KelGroups.instDecidableEqPendingProposal.decEq._proof_1 = []
+axioms KelGroups.instDecidableEqPendingProposal.decEq._proof_2 = []
+axioms KelGroups.instDecidableEqPendingProposal.decEq._proof_3 = []
+axioms KelGroups.instDecidableEqPendingProposal.decEq._proof_4 = []
+axioms KelGroups.Admin.ofNat_ctorIdx = []
+axioms KelGroups.Admin.privateAdmin.sizeOf_spec = []
+axioms KelGroups.Admin.publicAdmin.sizeOf_spec = []
+axioms KelGroups.GroupConfig.mk.inj = []
+axioms KelGroups.GroupConfig.mk.injEq = [propext]
+axioms KelGroups.GroupConfig.mk.sizeOf_spec = []
+axioms KelGroups.GroupView.mk.inj = []
+axioms KelGroups.GroupView.mk.injEq = [propext]
+axioms KelGroups.GroupView.mk.sizeOf_spec = []
+axioms KelGroups.Member.mk.inj = []
+axioms KelGroups.Member.mk.injEq = [propext]
+axioms KelGroups.Member.mk.sizeOf_spec = []
+axioms KelGroups.Role.adminRole.inj = []
+axioms KelGroups.Role.adminRole.injEq = [propext]
+axioms KelGroups.Role.adminRole.sizeOf_spec = []
+axioms KelGroups.Role.appRole.inj = []
+axioms KelGroups.Role.appRole.injEq = [propext]
+axioms KelGroups.Role.appRole.sizeOf_spec = []
+axioms KelGroups.RoleDef.mk.inj = []
+axioms KelGroups.RoleDef.mk.injEq = [propext]
+axioms KelGroups.RoleDef.mk.sizeOf_spec = []
+axioms KelGroups.assocAdjust.eq_1 = []
+axioms KelGroups.assocAdjust.eq_2 = []
+axioms KelGroups.assocAdjust.eq_def = []
+axioms KelGroups.assocErase.eq_1 = []
+axioms KelGroups.assocErase.eq_2 = []
+axioms KelGroups.assocErase.eq_def = []
+axioms KelGroups.assocInsert.eq_1 = []
+axioms KelGroups.assocLookup.eq_1 = []
+axioms KelGroups.assocLookup.eq_2 = []
+axioms KelGroups.assocLookup.eq_def = []
+axioms KelGroups.assocLookup_adjust_of_none = []
+axioms KelGroups.assocLookup_erase_of_none = []
+axioms KelGroups.assocLookup_insert_of_none = []
+axioms KelGroups.assocLookup_insert_self = [propext]
+axioms KelGroups.instDecidableEqAdmin._proof_1 = []
+axioms KelGroups.instDecidableEqAdmin._proof_2 = []
+axioms KelGroups.instDecidableEqGroupView.decEq._proof_1 = []
+axioms KelGroups.instDecidableEqGroupView.decEq._proof_2 = []
+axioms KelGroups.instDecidableEqMember.decEq._proof_1 = []
+axioms KelGroups.instDecidableEqMember.decEq._proof_2 = []
+axioms KelGroups.instDecidableEqMember.decEq._proof_3 = []
+axioms KelGroups.instDecidableEqMember.decEq._proof_4 = []
+axioms KelGroups.instDecidableEqRole.decEq._proof_1 = []
+axioms KelGroups.instDecidableEqRole.decEq._proof_2 = []
+axioms KelGroups.instDecidableEqRole.decEq._proof_3 = []
+axioms KelGroups.instDecidableEqRole.decEq._proof_4 = []
+axioms KelGroups.instDecidableEqRole.decEq._proof_5 = []
+axioms KelGroups.instDecidableEqRole.decEq._proof_6 = []
+axioms _private.KelGroups.Types.0.KelGroups.assocLookup.match_1.eq_1 = []
+axioms _private.KelGroups.Types.0.KelGroups.assocLookup.match_1.eq_2 = []
+axioms KelGroups.ValidationError.alreadyApproved.inj = []
+axioms KelGroups.ValidationError.alreadyApproved.injEq = [propext]
+axioms KelGroups.ValidationError.alreadyApproved.sizeOf_spec = []
+axioms KelGroups.ValidationError.bootstrapRequiresAdmin.sizeOf_spec = []
+axioms KelGroups.ValidationError.invalidKey.inj = []
+axioms KelGroups.ValidationError.invalidKey.injEq = [propext]
+axioms KelGroups.ValidationError.invalidKey.sizeOf_spec = []
+axioms KelGroups.ValidationError.memberAlreadyExists.inj = []
+axioms KelGroups.ValidationError.memberAlreadyExists.injEq = [propext]
+axioms KelGroups.ValidationError.memberAlreadyExists.sizeOf_spec = []
+axioms KelGroups.ValidationError.memberNotFound.inj = []
+axioms KelGroups.ValidationError.memberNotFound.injEq = [propext]
+axioms KelGroups.ValidationError.memberNotFound.sizeOf_spec = []
+axioms KelGroups.ValidationError.notAMember.inj = []
+axioms KelGroups.ValidationError.notAMember.injEq = [propext]
+axioms KelGroups.ValidationError.notAMember.sizeOf_spec = []
+axioms KelGroups.ValidationError.notAnAdmin.inj = []
+axioms KelGroups.ValidationError.notAnAdmin.injEq = [propext]
+axioms KelGroups.ValidationError.notAnAdmin.sizeOf_spec = []
+axioms KelGroups.ValidationError.proposalNotFound.inj = []
+axioms KelGroups.ValidationError.proposalNotFound.injEq = [propext]
+axioms KelGroups.ValidationError.proposalNotFound.sizeOf_spec = []
+axioms KelGroups.ValidationError.reservedKey.inj = []
+axioms KelGroups.ValidationError.reservedKey.injEq = [propext]
+axioms KelGroups.ValidationError.reservedKey.sizeOf_spec = []
+axioms KelGroups.ValidationError.roleAddPrecondition.inj = []
+axioms KelGroups.ValidationError.roleAddPrecondition.injEq = [propext]
+axioms KelGroups.ValidationError.roleAddPrecondition.sizeOf_spec = []
+axioms KelGroups.ValidationError.roleRemovePrecondition.inj = []
+axioms KelGroups.ValidationError.roleRemovePrecondition.injEq = [propext]
+axioms KelGroups.ValidationError.roleRemovePrecondition.sizeOf_spec = []
+axioms KelGroups.instDecidableEqValidationError.decEq._proof_1 = []
+axioms KelGroups.instDecidableEqValidationError.decEq._proof_10 = []
+axioms KelGroups.instDecidableEqValidationError.decEq._proof_11 = []
+axioms KelGroups.instDecidableEqValidationError.decEq._proof_12 = []
+axioms KelGroups.instDecidableEqValidationError.decEq._proof_13 = []
+axioms KelGroups.instDecidableEqValidationError.decEq._proof_14 = []
+axioms KelGroups.instDecidableEqValidationError.decEq._proof_15 = []
+axioms KelGroups.instDecidableEqValidationError.decEq._proof_16 = []
+axioms KelGroups.instDecidableEqValidationError.decEq._proof_17 = []
+axioms KelGroups.instDecidableEqValidationError.decEq._proof_18 = []
+axioms KelGroups.instDecidableEqValidationError.decEq._proof_19 = []
+axioms KelGroups.instDecidableEqValidationError.decEq._proof_2 = []
+axioms KelGroups.instDecidableEqValidationError.decEq._proof_20 = []
+axioms KelGroups.instDecidableEqValidationError.decEq._proof_21 = []
+axioms KelGroups.instDecidableEqValidationError.decEq._proof_22 = []
+axioms KelGroups.instDecidableEqValidationError.decEq._proof_3 = []
+axioms KelGroups.instDecidableEqValidationError.decEq._proof_4 = []
+axioms KelGroups.instDecidableEqValidationError.decEq._proof_5 = []
+axioms KelGroups.instDecidableEqValidationError.decEq._proof_6 = []
+axioms KelGroups.instDecidableEqValidationError.decEq._proof_7 = []
+axioms KelGroups.instDecidableEqValidationError.decEq._proof_8 = []
+axioms KelGroups.instDecidableEqValidationError.decEq._proof_9 = []
+axioms KelGroups.Vote.VoteEvent.cast.inj = []
+axioms KelGroups.Vote.VoteEvent.cast.injEq = [propext]
+axioms KelGroups.Vote.VoteEvent.cast.sizeOf_spec = []
+axioms KelGroups.Vote.VoteEvent.openQuestion.inj = []
+axioms KelGroups.Vote.VoteEvent.openQuestion.injEq = [propext]
+axioms KelGroups.Vote.VoteEvent.openQuestion.sizeOf_spec = []
+axioms KelGroups.Vote.VoteEvent.renounce.inj = []
+axioms KelGroups.Vote.VoteEvent.renounce.injEq = [propext]
+axioms KelGroups.Vote.VoteEvent.renounce.sizeOf_spec = []
+axioms KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_1 = []
+axioms KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_10 = []
+axioms KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_11 = []
+axioms KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_12 = []
+axioms KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_13 = []
+axioms KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_14 = []
+axioms KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_2 = []
+axioms KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_3 = []
+axioms KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_4 = []
+axioms KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_5 = []
+axioms KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_6 = []
+axioms KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_7 = []
+axioms KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_8 = []
+axioms KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_9 = []
+axioms KelGroups.Vote.SweepReady.closedClean = []
+axioms KelGroups.Vote.SweepReady.closedNodup = []
+axioms KelGroups.Vote.SweepReady.closedNotOpen = []
+axioms KelGroups.Vote.SweepReady.openClean = []
+axioms KelGroups.Vote.SweepReady.openClosedDisjoint = []
+axioms KelGroups.Vote.SweepReady.openNodup = []
+axioms KelGroups.Vote.VoteWellFormed.opensOpen = []
+axioms KelGroups.Vote.VoteWellFormed.toSweepReady = []
+axioms KelGroups.Vote.applyVoteEvent.eq_1 = []
+axioms KelGroups.Vote.applyVoteEvent_preserves_wellFormed = [propext, Quot.sound, Classical.choice]
+axioms KelGroups.Vote.ballots_nodup_disjoint = [propext, Quot.sound, Classical.choice]
+axioms KelGroups.Vote.effectedState.eq_1 = []
+axioms KelGroups.Vote.effectedState.eq_2 = []
+axioms KelGroups.Vote.effectedState.eq_3 = []
+axioms KelGroups.Vote.emptyVoteState.eq_1 = []
+axioms KelGroups.Vote.emptyVoteState_sweepReady = [propext, Quot.sound]
+axioms KelGroups.Vote.emptyVoteState_wellFormed = [propext, Quot.sound]
+axioms KelGroups.Vote.filter_open_idem = [propext]
+axioms KelGroups.Vote.foldFrom.eq_1 = []
+axioms KelGroups.Vote.foldVote.eq_1 = []
+axioms KelGroups.Vote.foldVote_wellFormed = [propext, Quot.sound, Classical.choice]
+axioms KelGroups.Vote.franchise.eq_1 = []
+axioms KelGroups.Vote.franchiseSize.eq_1 = []
+axioms KelGroups.Vote.franchise_of_tallies = [propext, Quot.sound]
+axioms KelGroups.Vote.inadmissible_is_noop = [propext]
+axioms KelGroups.Vote.lookupQuestion.eq_1 = []
+axioms KelGroups.Vote.no_expiry = [propext, Quot.sound, Classical.choice]
+axioms KelGroups.Vote.nonresponsabile_event_noop = [propext, Quot.sound]
+axioms KelGroups.Vote.open_questions_are_open = [propext, Quot.sound, Classical.choice]
+axioms KelGroups.Vote.placeBallot.eq_1 = []
+axioms KelGroups.Vote.placeBallot.eq_2 = []
+axioms KelGroups.Vote.preservesQuestionDecide.eq_1 = []
+axioms KelGroups.Vote.questions_partition = [propext, Quot.sound, Classical.choice]
+axioms KelGroups.Vote.sweepClosures.eq_1 = []
+axioms KelGroups.Vote.sweepClosures_idempotent = [propext]
+axioms KelGroups.Vote.sweepDuplicating.eq_1 = []
+axioms KelGroups.Vote.sweepDuplicating_duplicates = [propext, Quot.sound]
+axioms KelGroups.Vote.sweepDuplicating_duplicates._proof_1_2 = [propext, Quot.sound]
+axioms KelGroups.Vote.sweepStep.eq_1 = []
+axioms KelGroups.Vote.sweepStep_of_open = []
+axioms KelGroups.Vote.sweep_filterMap_of_swept = [propext]
+axioms KelGroups.Vote.tallyKeysOfQuestion.eq_1 = []
+axioms KelGroups.Vote.tallyKeysOfState.eq_1 = []
+axioms KelGroups.Vote.unfranchised_cast_noop = [propext]
+axioms KelGroups.Vote.validateVoteEvent.eq_1 = []
+axioms KelGroups.Vote.validateVoteEvent.eq_2 = []
+axioms KelGroups.Vote.validateVoteEvent.eq_3 = []
+axioms KelGroups.Vote.verdictOf.eq_1 = []
+axioms KelGroups.Vote.verdictOf_threshold_congr = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.applyVoteEvent.match_1.eq_1 = []
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.applyVoteEvent.match_1.eq_2 = []
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.applyVoteEvent_preserves_qid = [propext, Quot.sound]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocAdjust_keys' = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocAdjust_keys_nodup' = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_key_absent' = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_key_absent'._simp_1_1 = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_keys_nodup' = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_other_lookup = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_sublist' = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_keys_nodup' = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_keys_nodup'._simp_1_1 = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_mem_cases = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_mem_cases._simp_1_1 = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_other_lookup = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocLookup_some_mem' = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assoc_entries_key_unique = [propext, Quot.sound]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assoc_entries_key_unique._simp_1_1 = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.closed_guard_absent = [propext, Quot.sound, Classical.choice]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState.match_3.eq_1 = []
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState.match_3.eq_2 = []
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState.match_3.eq_3 = []
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState_preserves_qid = [propext, Quot.sound]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState_sweepReady = [propext, Quot.sound, Classical.choice]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState_tally_growth = [propext, Quot.sound]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.filterMap_keys_nodup = [propext, Quot.sound]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.filterMap_keys_nodup._simp_1_2 = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.foldFrom_preserves_qid = [propext, Quot.sound]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.foldFrom_preserves_wellFormed = [propext, Quot.sound, Classical.choice]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.foldVote_append = [propext, Quot.sound]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_assocLookup_some' = [propext, Quot.sound]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_assocLookup_some'._simp_1_1 = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_erase_inv = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_erase_inv._simp_1_1 = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_map_fst_erase_of_ne = [propext, Quot.sound]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_map_fst_erase_of_ne._simp_1_1 = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_map_fst_insert = [propext, Quot.sound]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.nodup_append_mem = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.nodup_erase = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot.match_1.eq_1 = []
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot.match_1.eq_2 = []
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot_clean = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot_tally = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot_tally._simp_1_5 = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.preservesQuestionDecide.match_1.eq_1 = []
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.preservesQuestionDecide.match_1.eq_2 = []
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.setInsert_mem_cases = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.setInsert_nodup' = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_closed_mem = [propext, Quot.sound]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_closed_mem._simp_1_2 = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_closed_mem._simp_1_3 = [propext, Quot.sound]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_open_mem = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_open_mem._simp_1_2 = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_preserves_qid = [propext, Quot.sound]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_sweepReady = [propext, Quot.sound]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_tallyKeys = [propext, Quot.sound]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_wellFormed = [propext, Quot.sound]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepStep_key = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.tallyKeysOfState_erased_le = [propext, Quot.sound]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.tallyKeysOfState_insert_cases = [propext]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.tally_keys_franchised_from = [propext, Quot.sound]
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.validateVoteEvent.match_3.eq_1 = []
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.validateVoteEvent.match_3.eq_2 = []
+axioms _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.validateVoteEvent.match_3.eq_3 = []
+axioms _private.KelGroups.Vote.Invariants.0.List.filterMap.match_1.eq_1 = []
+axioms _private.KelGroups.Vote.Invariants.0.List.filterMap.match_1.eq_2 = []
+axioms KelGroups.Vote.ClosureRecord.mk.inj = []
+axioms KelGroups.Vote.ClosureRecord.mk.injEq = [propext]
+axioms KelGroups.Vote.ClosureRecord.mk.sizeOf_spec = []
+axioms KelGroups.Vote.Question.mk.inj = []
+axioms KelGroups.Vote.Question.mk.injEq = [propext]
+axioms KelGroups.Vote.Question.mk.sizeOf_spec = []
+axioms KelGroups.Vote.VoteState.mk.inj = []
+axioms KelGroups.Vote.VoteState.mk.injEq = [propext]
+axioms KelGroups.Vote.VoteState.mk.sizeOf_spec = []
+axioms KelGroups.Vote.instDecidableEqClosureRecord.decEq._proof_1 = []
+axioms KelGroups.Vote.instDecidableEqClosureRecord.decEq._proof_2 = []
+axioms KelGroups.Vote.instDecidableEqClosureRecord.decEq._proof_3 = []
+axioms KelGroups.Vote.instDecidableEqClosureRecord.decEq._proof_4 = []
+axioms KelGroups.Vote.instDecidableEqClosureRecord.decEq._proof_5 = []
+axioms KelGroups.Vote.instDecidableEqQuestion.decEq._proof_1 = []
+axioms KelGroups.Vote.instDecidableEqQuestion.decEq._proof_2 = []
+axioms KelGroups.Vote.instDecidableEqQuestion.decEq._proof_3 = []
+axioms KelGroups.Vote.instDecidableEqQuestion.decEq._proof_4 = []
+axioms KelGroups.Vote.instDecidableEqQuestion.decEq._proof_5 = []
+axioms KelGroups.Vote.instDecidableEqVoteState.decEq._proof_1 = []
+axioms KelGroups.Vote.instDecidableEqVoteState.decEq._proof_2 = []
+axioms KelGroups.Vote.instDecidableEqVoteState.decEq._proof_3 = []
+axioms KelGroups.Vote.Ballot.assent.sizeOf_spec = []
+axioms KelGroups.Vote.Ballot.dissent.sizeOf_spec = []
+axioms KelGroups.Vote.Ballot.ofNat_ctorIdx = []
+axioms KelGroups.Vote.ClosureCause.franchiseChange.sizeOf_spec = []
+axioms KelGroups.Vote.ClosureCause.ofNat_ctorIdx = []
+axioms KelGroups.Vote.ClosureCause.proposerDeparted.sizeOf_spec = []
+axioms KelGroups.Vote.ClosureCause.renounced.sizeOf_spec = []
+axioms KelGroups.Vote.ClosureCause.tally.sizeOf_spec = []
+axioms KelGroups.Vote.QuestionKind.collective.sizeOf_spec = []
+axioms KelGroups.Vote.QuestionKind.permission.inj = []
+axioms KelGroups.Vote.QuestionKind.permission.injEq = [propext]
+axioms KelGroups.Vote.QuestionKind.permission.sizeOf_spec = []
+axioms KelGroups.Vote.Verdict.negative.sizeOf_spec = []
+axioms KelGroups.Vote.Verdict.ofNat_ctorIdx = []
+axioms KelGroups.Vote.Verdict.open.sizeOf_spec = []
+axioms KelGroups.Vote.Verdict.positive.sizeOf_spec = []
+axioms KelGroups.Vote.instDecidableEqBallot._proof_1 = []
+axioms KelGroups.Vote.instDecidableEqBallot._proof_2 = []
+axioms KelGroups.Vote.instDecidableEqClosureCause._proof_1 = []
+axioms KelGroups.Vote.instDecidableEqClosureCause._proof_2 = []
+axioms KelGroups.Vote.instDecidableEqQuestionKind.decEq._proof_1 = []
+axioms KelGroups.Vote.instDecidableEqQuestionKind.decEq._proof_2 = []
+axioms KelGroups.Vote.instDecidableEqQuestionKind.decEq._proof_3 = []
+axioms KelGroups.Vote.instDecidableEqQuestionKind.decEq._proof_4 = []
+axioms KelGroups.Vote.instDecidableEqVerdict._proof_1 = []
+axioms KelGroups.Vote.instDecidableEqVerdict._proof_2 = []
+axioms KelGroups.Vote.VoteError.notDesignee.sizeOf_spec = []
+axioms KelGroups.Vote.VoteError.notProposer.sizeOf_spec = []
+axioms KelGroups.Vote.VoteError.notResponsabile.sizeOf_spec = []
+axioms KelGroups.Vote.VoteError.ofNat_ctorIdx = []
+axioms KelGroups.Vote.VoteError.questionNotFound.sizeOf_spec = []
+axioms KelGroups.Vote.instDecidableEqVoteError._proof_1 = []
+axioms KelGroups.Vote.instDecidableEqVoteError._proof_2 = []
+axioms Reactivegas.Composition.Route.appDecided.sizeOf_spec = []
+axioms Reactivegas.Composition.Route.baseEnacted.sizeOf_spec = []
+axioms Reactivegas.Composition.Route.direct.sizeOf_spec = []
+axioms Reactivegas.Composition.Route.ofNat_ctorIdx = []
+axioms Reactivegas.Composition.appDecided_verdict_exhaustive = [propext]
+axioms Reactivegas.Composition.appVerdictAllows.eq_1 = []
+axioms Reactivegas.Composition.baseEnacted_threshold_met = [propext]
+axioms Reactivegas.Composition.instDecidableEqRoute._proof_1 = []
+axioms Reactivegas.Composition.instDecidableEqRoute._proof_2 = []
+axioms Reactivegas.Composition.route.eq_1 = []
+axioms Reactivegas.Composition.route.eq_10 = []
+axioms Reactivegas.Composition.route.eq_11 = []
+axioms Reactivegas.Composition.route.eq_12 = []
+axioms Reactivegas.Composition.route.eq_13 = []
+axioms Reactivegas.Composition.route.eq_14 = []
+axioms Reactivegas.Composition.route.eq_2 = []
+axioms Reactivegas.Composition.route.eq_3 = []
+axioms Reactivegas.Composition.route.eq_4 = []
+axioms Reactivegas.Composition.route.eq_5 = []
+axioms Reactivegas.Composition.route.eq_6 = []
+axioms Reactivegas.Composition.route.eq_7 = []
+axioms Reactivegas.Composition.route.eq_8 = []
+axioms Reactivegas.Composition.route.eq_9 = []
+axioms Reactivegas.Composition.voteDerived.eq_1 = []
+axioms Reactivegas.Composition.voteDerived.eq_10 = []
+axioms Reactivegas.Composition.voteDerived.eq_11 = []
+axioms Reactivegas.Composition.voteDerived.eq_12 = []
+axioms Reactivegas.Composition.voteDerived.eq_13 = []
+axioms Reactivegas.Composition.voteDerived.eq_14 = []
+axioms Reactivegas.Composition.voteDerived.eq_2 = []
+axioms Reactivegas.Composition.voteDerived.eq_3 = []
+axioms Reactivegas.Composition.voteDerived.eq_4 = []
+axioms Reactivegas.Composition.voteDerived.eq_5 = []
+axioms Reactivegas.Composition.voteDerived.eq_6 = []
+axioms Reactivegas.Composition.voteDerived.eq_7 = []
+axioms Reactivegas.Composition.voteDerived.eq_8 = []
+axioms Reactivegas.Composition.voteDerived.eq_9 = []
+axioms Reactivegas.Composition.voteDerived_iff_not_direct = [propext]
+axioms _private.Reactivegas.Composition.0.Reactivegas.Composition.appVerdictAllows.match_1.eq_1 = []
+axioms _private.Reactivegas.Composition.0.Reactivegas.Composition.appVerdictAllows.match_1.eq_2 = []
+axioms _private.Reactivegas.Composition.0.Reactivegas.Composition.appVerdictAllows.match_1.eq_3 = []
+axioms _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_1 = []
+axioms _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_10 = []
+axioms _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_11 = []
+axioms _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_12 = []
+axioms _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_13 = []
+axioms _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_14 = []
+axioms _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_2 = []
+axioms _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_3 = []
+axioms _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_4 = []
+axioms _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_5 = []
+axioms _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_6 = []
+axioms _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_7 = []
+axioms _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_8 = []
+axioms _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_9 = []
+axioms Reactivegas.IntegratedTraceStep.mk.inj = []
+axioms Reactivegas.IntegratedTraceStep.mk.injEq = [propext]
+axioms Reactivegas.IntegratedTraceStep.mk.sizeOf_spec = []
+axioms Reactivegas.admissionPreservation_holds = [propext]
+axioms Reactivegas.baseHook_votes = [propext]
+axioms Reactivegas.base_change_can_close_without_ballot = [propext]
+axioms Reactivegas.base_change_recomputes_votes = [propext]
+axioms Reactivegas.base_departure_applies_cleanup = [propext]
+axioms Reactivegas.base_recompute_reachable_holds = [propext]
+axioms Reactivegas.canonical_economy_holds = [propext]
+axioms Reactivegas.comuneThresholdSanity_holds = []
+axioms Reactivegas.direct_admission_only_holds = [propext]
+axioms Reactivegas.exhaustive_inventories_hold = [propext]
+axioms Reactivegas.i57_auth_holds = [propext]
+axioms Reactivegas.i57_boundary_holds = [propext]
+axioms Reactivegas.i57_disjoint_holds = [propext]
+axioms Reactivegas.i57_disjoint_mutant_caught = [propext]
+axioms Reactivegas.i57_exhaustive_holds = [propext]
+axioms Reactivegas.i57_franchise_holds = [propext]
+axioms Reactivegas.i57_franchise_mutant_caught = [propext]
+axioms Reactivegas.i57_noexpiry_holds = [propext]
+axioms Reactivegas.i57_noop_holds = [propext]
+axioms Reactivegas.i57_nostale_holds = [propext]
+axioms Reactivegas.i57_partition_holds = [propext]
+axioms Reactivegas.i57_policyfree_holds = [propext]
+axioms Reactivegas.i57_policyfree_mutant_caught = [propext]
+axioms Reactivegas.i57_r45_holds = [propext]
+axioms Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_1 = []
+axioms Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_2 = []
+axioms Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_3 = []
+axioms Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_4 = []
+axioms Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_5 = []
+axioms Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_6 = []
+axioms Reactivegas.integrated_theorem_witness_holds = [propext]
+axioms Reactivegas.productionWellFormed_holds = [propext]
+axioms Reactivegas.step_backdonate_inv = [propext]
+axioms Reactivegas.step_deposit_inv = [propext]
+axioms Reactivegas.step_donate_inv = [propext]
+axioms Reactivegas.step_open_inv = [propext]
+axioms Reactivegas.step_transferCassa_inv = [propext]
+axioms Reactivegas.step_withdraw_inv = [propext]
+axioms Reactivegas.sweep_idempotent_mutant_caught = [propext]
+axioms Reactivegas.sweep_idempotent_witness = [propext]
+axioms Reactivegas.windUpAdmin.eq_1 = []
+axioms State.empty.eq_1 = []
+axioms _private.Reactivegas.Invariants.0.Reactivegas.apply.match_1.eq_1 = []
+axioms _private.Reactivegas.Invariants.0.Reactivegas.apply.match_1.eq_2 = []
+axioms _private.Reactivegas.Invariants.0.Reactivegas.baseHook.match_1.eq_1 = []
+axioms _private.Reactivegas.Invariants.0.Reactivegas.baseHook.match_1.eq_2 = []
+axioms _private.Reactivegas.Invariants.0.bal_bump_ne_lemma = [propext]
+axioms _private.Reactivegas.Invariants.0.bal_foldl_bump_ge = [propext, Quot.sound]
+axioms _private.Reactivegas.Invariants.0.bal_foldl_bump_ge._proof_1_1 = [propext, Quot.sound]
+axioms _private.Reactivegas.Invariants.0.bal_foldl_bump_ge._proof_1_2 = [propext, Quot.sound]
+axioms _private.Reactivegas.Invariants.0.bool_and_left = []
+axioms _private.Reactivegas.Invariants.0.bool_and_right = []
+axioms _private.Reactivegas.Invariants.0.bool_not_true = []
+axioms _private.Reactivegas.Invariants.0.comune_not_a_member_step = []
+axioms _private.Reactivegas.Invariants.0.credit_pledges_of_reach = [propext, Quot.sound]
+axioms _private.Reactivegas.Invariants.0.credit_pledges_step = [propext, Quot.sound]
+axioms _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_34 = [propext, Quot.sound]
+axioms _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_35 = [propext, Quot.sound]
+axioms _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_36 = [propext, Quot.sound]
+axioms _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_37 = [propext, Quot.sound]
+axioms _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_38 = [propext, Quot.sound]
+axioms _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_39 = [propext, Quot.sound]
+axioms _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_40 = [propext, Quot.sound]
+axioms _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_41 = [propext, Quot.sound]
+axioms _private.Reactivegas.Invariants.0.eq_nil_of_isEmpty = []
+axioms _private.Reactivegas.Invariants.0.pullCollection_det = [propext]
+axioms _private.Reactivegas.Invariants.0.pullCollection_mem_lemma = [propext]
+axioms _private.Reactivegas.Invariants.0.refundAll_bal_ge_lemma = [propext, Quot.sound]
+axioms _private.Reactivegas.Invariants.0.refundAll_bal_ge_lemma._proof_1_1 = [propext, Quot.sound]
+axioms _private.Reactivegas.Invariants.0.refundAll_bal_ge_lemma._proof_1_2 = [propext, Quot.sound]
+axioms _private.Reactivegas.Invariants.0.refundAll_bal_ge_lemma._proof_1_3 = [propext, Quot.sound]
+axioms _private.Reactivegas.Invariants.0.splitUser_amount_lemma = [propext]
+axioms _private.Reactivegas.Invariants.0.step.match_5.eq_1 = []
+axioms _private.Reactivegas.Invariants.0.step.match_5.eq_10 = []
+axioms _private.Reactivegas.Invariants.0.step.match_5.eq_11 = []
+axioms _private.Reactivegas.Invariants.0.step.match_5.eq_12 = []
+axioms _private.Reactivegas.Invariants.0.step.match_5.eq_13 = []
+axioms _private.Reactivegas.Invariants.0.step.match_5.eq_14 = []
+axioms _private.Reactivegas.Invariants.0.step.match_5.eq_15 = []
+axioms _private.Reactivegas.Invariants.0.step.match_5.eq_16 = []
+axioms _private.Reactivegas.Invariants.0.step.match_5.eq_17 = []
+axioms _private.Reactivegas.Invariants.0.step.match_5.eq_2 = []
+axioms _private.Reactivegas.Invariants.0.step.match_5.eq_3 = []
+axioms _private.Reactivegas.Invariants.0.step.match_5.eq_4 = []
+axioms _private.Reactivegas.Invariants.0.step.match_5.eq_5 = []
+axioms _private.Reactivegas.Invariants.0.step.match_5.eq_6 = []
+axioms _private.Reactivegas.Invariants.0.step.match_5.eq_7 = []
+axioms _private.Reactivegas.Invariants.0.step.match_5.eq_8 = []
+axioms _private.Reactivegas.Invariants.0.step.match_5.eq_9 = []
+axioms _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_1 = []
+axioms _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_10 = []
+axioms _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_11 = []
+axioms _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_12 = []
+axioms _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_13 = []
+axioms _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_14 = []
+axioms _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_2 = []
+axioms _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_3 = []
+axioms _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_4 = []
+axioms _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_5 = []
+axioms _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_6 = []
+axioms _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_7 = []
+axioms _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_8 = []
+axioms _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_9 = []
+axioms _private.Reactivegas.Invariants.0.stripCollections_amount_lemma = [propext]
+axioms _private.Reactivegas.Invariants.0.stripCollections_sublist_lemma = [propext]
+axioms _private.Reactivegas.Invariants.0.sumBal_foldl_bump = [propext, Quot.sound]
+axioms _private.Reactivegas.Invariants.0.sumBal_foldl_bump._proof_1_1 = [propext, Quot.sound]
+axioms _private.Reactivegas.Invariants.0.unique_mem_cons_inv = [propext]
+axioms auth_referente_guard_inv = []
+axioms bal_bump_ne = [propext]
+axioms close_guard_inv = []
+axioms close_permission_to_close = [propext]
+axioms close_spends_referente = [propext, Quot.sound]
+axioms close_spends_referente._proof_1_1 = [propext, Quot.sound]
+axioms comune_not_a_member_of_reach = []
+axioms conservation.eq_1 = []
+axioms conservation_preserved = [propext, Quot.sound]
+axioms conservation_preserved._proof_1_35 = [propext, Quot.sound]
+axioms conservation_preserved._proof_1_36 = [propext, Quot.sound]
+axioms conservation_preserved._proof_1_37 = [propext, Quot.sound]
+axioms conservation_preserved._proof_1_38 = [propext, Quot.sound]
+axioms conservation_preserved._proof_1_39 = [propext, Quot.sound]
+axioms conservation_preserved._proof_1_40 = [propext, Quot.sound]
+axioms conservation_preserved._proof_1_41 = [propext, Quot.sound]
+axioms conservation_preserved._proof_1_42 = [propext, Quot.sound]
+axioms conservation_preserved._proof_1_43 = [propext, Quot.sound]
+axioms conservation_preserved._proof_1_44 = [propext, Quot.sound]
+axioms conservation_preserved._proof_1_45 = [propext, Quot.sound]
+axioms conservation_preserved._proof_1_46 = [propext, Quot.sound]
+axioms demand_eq_true_of_some = []
+axioms demand_none_of_ne_true = []
+axioms deposit_double_entry = [propext]
+axioms fail_guard_inv = []
+axioms governance_enacts_windUpAdmin = [propext]
+axioms not_insolvent_of_reach = [propext, Quot.sound]
+axioms not_insolvent_of_reach._proof_1_3 = [propext, Quot.sound]
+axioms option_bind_inv = []
+axioms pledge_escrow_debit = [propext, Quot.sound]
+axioms pledge_escrow_debit._proof_1_1 = [propext, Quot.sound]
+axioms pledge_guard_inv = [propext]
+axioms pledge_preserves_allUnique = [propext, Quot.sound, Classical.choice]
+axioms pledge_rejected_when_member = [propext, Quot.sound, Classical.choice]
+axioms pullCollection_mem = [propext]
+axioms reach_solvent = [propext, Quot.sound]
+axioms refundAll_bal_ge = [propext, Quot.sound]
+axioms solvent_init = [propext]
+axioms solvent_preserved = [propext, Quot.sound]
+axioms splitUser_amount = [propext]
+axioms step.eq_1 = []
+axioms step.eq_10 = []
+axioms step.eq_11 = []
+axioms step.eq_12 = []
+axioms step.eq_13 = []
+axioms step.eq_14 = []
+axioms step.eq_15 = []
+axioms step.eq_16 = []
+axioms step.eq_17 = []
+axioms step.eq_2 = []
+axioms step.eq_3 = []
+axioms step.eq_4 = []
+axioms step.eq_5 = []
+axioms step.eq_6 = []
+axioms step.eq_7 = []
+axioms step.eq_8 = []
+axioms step.eq_9 = []
+axioms stepEvent.eq_1 = []
+axioms stepEvent.eq_10 = []
+axioms stepEvent.eq_11 = []
+axioms stepEvent.eq_12 = []
+axioms stepEvent.eq_13 = []
+axioms stepEvent.eq_14 = []
+axioms stepEvent.eq_2 = []
+axioms stepEvent.eq_3 = []
+axioms stepEvent.eq_4 = []
+axioms stepEvent.eq_5 = []
+axioms stepEvent.eq_6 = []
+axioms stepEvent.eq_7 = []
+axioms stepEvent.eq_8 = []
+axioms stepEvent.eq_9 = []
+axioms step_accept_inv = [propext]
+axioms step_authorized = [propext]
+axioms step_close_inv = [propext]
+axioms step_correct_inv = [propext]
+axioms step_deny_inv = [propext]
+axioms step_fail_inv = [propext]
+axioms step_grant_inv = [propext]
+axioms step_pledge_inv = [propext]
+axioms step_refuse_inv = [propext]
+axioms stripCollections_referente_ne = [Quot.sound, propext]
+axioms stripCollections_sublist = [propext]
+axioms uniquePledges_pend_cons = [propext]
+axioms user_absent_of_any_false = [Quot.sound, propext, Classical.choice]
+axioms withdraw_double_entry = [propext]
+axioms Reach.brecOn = []
+axioms Collection.mk.inj = []
+axioms Collection.mk.injEq = [propext]
+axioms Collection.mk.sizeOf_spec = []
+axioms State.mk.inj = []
+axioms State.mk.injEq = [propext]
+axioms State.mk.sizeOf_spec = []
+axioms _private.Reactivegas.State.0.bal.match_1.eq_1 = []
+axioms _private.Reactivegas.State.0.bal.match_1.eq_2 = []
+axioms _private.Reactivegas.State.0.pullCollection.match_1.eq_1 = []
+axioms _private.Reactivegas.State.0.pullCollection.match_1.eq_2 = []
+axioms _private.Reactivegas.State.0.pullCollection.match_3.eq_1 = []
+axioms _private.Reactivegas.State.0.pullCollection.match_3.eq_2 = []
+axioms _private.Reactivegas.State.0.pullCollection_id_lemma = [propext]
+axioms _private.Reactivegas.State.0.pullCollection_sublist_lemma = [propext]
+axioms _private.Reactivegas.State.0.pullCollection_sum_lemma = [propext, Quot.sound]
+axioms _private.Reactivegas.State.0.pullCollection_sum_lemma._proof_1_4 = [propext, Quot.sound]
+axioms _private.Reactivegas.State.0.splitUser.match_1.eq_1 = []
+axioms _private.Reactivegas.State.0.splitUser.match_1.eq_2 = []
+axioms _private.Reactivegas.State.0.splitUser_sublist_lemma = [propext]
+axioms _private.Reactivegas.State.0.splitUser_sum_lemma = [propext, Quot.sound]
+axioms _private.Reactivegas.State.0.splitUser_sum_lemma._proof_1_7 = [propext, Quot.sound]
+axioms _private.Reactivegas.State.0.stripCollections.match_1.eq_1 = []
+axioms _private.Reactivegas.State.0.sumPledges.match_1.eq_1 = []
+axioms _private.Reactivegas.State.0.sumPledges.match_1.eq_2 = []
+axioms bal.eq_1 = []
+axioms bal.eq_2 = []
+axioms bal.eq_def = []
+axioms bal_bump = [propext]
+axioms bal_cons = []
+axioms bump.eq_1 = []
+axioms bump.eq_2 = []
+axioms bump.eq_def = []
+axioms bump_sum = [propext, Quot.sound]
+axioms bump_sum._proof_1_5 = [propext, Quot.sound]
+axioms bump_sum._proof_1_6 = [propext, Quot.sound]
+axioms escrowOf.eq_1 = []
+axioms escrowSum_cons = []
+axioms instDecidableEqCollection.decEq._proof_1 = []
+axioms instDecidableEqCollection.decEq._proof_2 = []
+axioms instDecidableEqCollection.decEq._proof_3 = []
+axioms instDecidableEqCollection.decEq._proof_4 = []
+axioms instDecidableEqCollection.decEq._proof_5 = []
+axioms instDecidableEqCollection.decEq._proof_6 = []
+axioms instDecidableEqState.decEq._proof_1 = []
+axioms instDecidableEqState.decEq._proof_2 = []
+axioms instDecidableEqState.decEq._proof_3 = []
+axioms instDecidableEqState.decEq._proof_4 = []
+axioms instDecidableEqState.decEq._proof_5 = []
+axioms not_mem_users_of_splitUser_none = [propext]
+axioms pullCollection.eq_1 = []
+axioms pullCollection.eq_2 = []
+axioms pullCollection.eq_def = []
+axioms pullCollection_id = [propext]
+axioms pullCollection_sublist = [propext]
+axioms pullCollection_sum = [propext, Quot.sound]
+axioms refundAll.eq_1 = []
+axioms refundAll_sum = [propext, Quot.sound]
+axioms refundAll_sum._proof_1_5 = [propext, Quot.sound]
+axioms splitUser.eq_1 = []
+axioms splitUser.eq_2 = []
+axioms splitUser.eq_def = []
+axioms splitUser_sublist = [propext]
+axioms splitUser_sum = [propext, Quot.sound]
+axioms stripCollections.eq_1 = []
+axioms stripCollections.eq_2 = []
+axioms stripCollections.eq_def = []
+axioms stripCollections_referente = [propext]
+axioms stripCollections_sum = [propext, Quot.sound]
+axioms stripCollections_sum._proof_1_5 = [propext, Quot.sound]
+axioms stripCollections_sum._proof_1_6 = [propext, Quot.sound]
+axioms sumBal.eq_1 = []
+axioms sumBal_cons = []
+axioms sumPledges.eq_1 = []
+axioms sumPledges.eq_2 = []
+axioms sumPledges.eq_def = []
+axioms sumPledges_append = [propext, Quot.sound]
+axioms sumPledges_append._proof_1_4 = [propext, Quot.sound]
+axioms Reactivegas.ProductionError.comuneReserved.sizeOf_spec = []
+axioms Reactivegas.ProductionError.integrated.inj = []
+axioms Reactivegas.ProductionError.integrated.injEq = [propext]
+axioms Reactivegas.ProductionError.integrated.sizeOf_spec = []
+axioms Reactivegas.app_members_preservation_holds = [propext]
+axioms Reactivegas.app_members_preservation_mutant_caught = [propext]
+axioms Reactivegas.comune_cannot_authorize = [propext]
+axioms Reactivegas.instDecidableEqProductionError.decEq._proof_1 = []
+axioms Reactivegas.instDecidableEqProductionError.decEq._proof_2 = []
+axioms Reactivegas.instDecidableEqProductionError.decEq._proof_3 = []
+axioms Reactivegas.instDecidableEqProductionError.decEq._proof_4 = []
+axioms GuardClaim.mk.inj = []
+axioms GuardClaim.mk.injEq = [propext]
+axioms GuardClaim.mk.sizeOf_spec = []
+axioms GuardId.acceptPledge.sizeOf_spec = []
+axioms GuardId.backdonate.sizeOf_spec = []
+axioms GuardId.closePurchase.sizeOf_spec = []
+axioms GuardId.correctPledge.sizeOf_spec = []
+axioms GuardId.denyPermission.sizeOf_spec = []
+axioms GuardId.deposit.sizeOf_spec = []
+axioms GuardId.donate.sizeOf_spec = []
+axioms GuardId.failPurchase.sizeOf_spec = []
+axioms GuardId.grantPermission.sizeOf_spec = []
+axioms GuardId.ofNat_ctorIdx = []
+axioms GuardId.openPurchase.sizeOf_spec = []
+axioms GuardId.pledge.sizeOf_spec = []
+axioms GuardId.refusePledge.sizeOf_spec = []
+axioms GuardId.transferCassa.sizeOf_spec = []
+axioms GuardId.withdraw.sizeOf_spec = []
+axioms StepDiagnostic.applied.inj = []
+axioms StepDiagnostic.applied.injEq = [propext]
+axioms StepDiagnostic.applied.sizeOf_spec = []
+axioms StepDiagnostic.refused.inj = []
+axioms StepDiagnostic.refused.injEq = [propext]
+axioms StepDiagnostic.refused.sizeOf_spec = []
+axioms Trace.mk.inj = []
+axioms Trace.mk.injEq = [propext]
+axioms Trace.mk.sizeOf_spec = []
+axioms TraceInventory.mk.inj = []
+axioms TraceInventory.mk.injEq = [propext]
+axioms TraceInventory.mk.sizeOf_spec = []
+axioms TraceResult.applied.inj = []
+axioms TraceResult.applied.injEq = [propext]
+axioms TraceResult.applied.sizeOf_spec = []
+axioms TraceResult.refused.inj = []
+axioms TraceResult.refused.injEq = [propext]
+axioms TraceResult.refused.sizeOf_spec = []
+axioms TraceStep.mk.inj = []
+axioms TraceStep.mk.injEq = [propext]
+axioms TraceStep.mk.sizeOf_spec = []
+axioms _private.Reactivegas.Trace.0.eraseDiagnostic.match_1.eq_1 = []
+axioms _private.Reactivegas.Trace.0.eraseDiagnostic.match_1.eq_2 = []
+axioms eraseDiagnostic.eq_1 = []
+axioms eraseDiagnostic.eq_2 = []
+axioms instDecidableEqGuardClaim.decEq._proof_1 = []
+axioms instDecidableEqGuardClaim.decEq._proof_2 = []
+axioms instDecidableEqGuardClaim.decEq._proof_3 = []
+axioms instDecidableEqGuardId._proof_1 = []
+axioms instDecidableEqGuardId._proof_2 = []
+axioms instDecidableEqStepDiagnostic.decEq._proof_1 = []
+axioms instDecidableEqStepDiagnostic.decEq._proof_2 = []
+axioms instDecidableEqStepDiagnostic.decEq._proof_3 = []
+axioms instDecidableEqStepDiagnostic.decEq._proof_4 = []
+axioms instDecidableEqStepDiagnostic.decEq._proof_5 = []
+axioms instDecidableEqStepDiagnostic.decEq._proof_6 = []
+axioms instDecidableEqTrace.decEq._proof_1 = []
+axioms instDecidableEqTrace.decEq._proof_2 = []
+axioms instDecidableEqTrace.decEq._proof_3 = []
+axioms instDecidableEqTrace.decEq._proof_4 = []
+axioms instDecidableEqTrace.decEq._proof_5 = []
+axioms instDecidableEqTraceResult.decEq._proof_1 = []
+axioms instDecidableEqTraceResult.decEq._proof_2 = []
+axioms instDecidableEqTraceResult.decEq._proof_3 = []
+axioms instDecidableEqTraceResult.decEq._proof_4 = []
+axioms instDecidableEqTraceResult.decEq._proof_5 = []
+axioms instDecidableEqTraceResult.decEq._proof_6 = []
+axioms instDecidableEqTraceStep.decEq._proof_1 = []
+axioms instDecidableEqTraceStep.decEq._proof_2 = []
+axioms instDecidableEqTraceStep.decEq._proof_3 = []
+axioms instDecidableEqTraceStep.decEq._proof_4 = []
+axioms stepDetailed_erases = [propext]
+axioms TraceTests.all_checks_pass = [propext, Quot.sound, Classical.choice]
+axioms TraceTests.app_members_preservation_holds = [propext]
+axioms TraceTests.app_members_preservation_mutant_caught = [propext]
+axioms TraceTests.base_change_can_close_without_ballot = [propext]
+axioms TraceTests.base_departure_applies_cleanup = [propext]
+axioms TraceTests.base_recompute_reachable_holds = [propext]
+axioms TraceTests.direct_admission_only_holds = [propext]
+axioms TraceTests.frozen_checks_faithful = [propext, Quot.sound, Classical.choice]
+axioms TraceTests.frozen_corpus_faithful = [propext, Quot.sound, Classical.choice]
+axioms TraceTests.frozen_inventory_faithful = []
+axioms TraceTests.sweep_idempotent_mutant_caught = [propext]
+axioms TraceTests.sweep_idempotent_witness = [propext]
+axioms AppEvent.acceptPledge.inj = []
+axioms AppEvent.acceptPledge.injEq = [propext]
+axioms AppEvent.acceptPledge.sizeOf_spec = []
+axioms AppEvent.backdonate.inj = []
+axioms AppEvent.backdonate.injEq = [propext]
+axioms AppEvent.backdonate.sizeOf_spec = []
+axioms AppEvent.cast.inj = []
+axioms AppEvent.cast.injEq = [propext]
+axioms AppEvent.cast.sizeOf_spec = []
+axioms AppEvent.closePurchase.inj = []
+axioms AppEvent.closePurchase.injEq = [propext]
+axioms AppEvent.closePurchase.sizeOf_spec = []
+axioms AppEvent.correctPledge.inj = []
+axioms AppEvent.correctPledge.injEq = [propext]
+axioms AppEvent.correctPledge.sizeOf_spec = []
+axioms AppEvent.denyPermission.inj = []
+axioms AppEvent.denyPermission.injEq = [propext]
+axioms AppEvent.denyPermission.sizeOf_spec = []
+axioms AppEvent.deposit.inj = []
+axioms AppEvent.deposit.injEq = [propext]
+axioms AppEvent.deposit.sizeOf_spec = []
+axioms AppEvent.donate.inj = []
+axioms AppEvent.donate.injEq = [propext]
+axioms AppEvent.donate.sizeOf_spec = []
+axioms AppEvent.failPurchase.inj = []
+axioms AppEvent.failPurchase.injEq = [propext]
+axioms AppEvent.failPurchase.sizeOf_spec = []
+axioms AppEvent.grantPermission.inj = []
+axioms AppEvent.grantPermission.injEq = [propext]
+axioms AppEvent.grantPermission.sizeOf_spec = []
+axioms AppEvent.openPurchase.inj = []
+axioms AppEvent.openPurchase.injEq = [propext]
+axioms AppEvent.openPurchase.sizeOf_spec = []
+axioms AppEvent.openQuestion.inj = []
+axioms AppEvent.openQuestion.injEq = [propext]
+axioms AppEvent.openQuestion.sizeOf_spec = []
+axioms AppEvent.pledge.inj = []
+axioms AppEvent.pledge.injEq = [propext]
+axioms AppEvent.pledge.sizeOf_spec = []
+axioms AppEvent.refusePledge.inj = []
+axioms AppEvent.refusePledge.injEq = [propext]
+axioms AppEvent.refusePledge.sizeOf_spec = []
+axioms AppEvent.renounce.inj = []
+axioms AppEvent.renounce.injEq = [propext]
+axioms AppEvent.renounce.sizeOf_spec = []
+axioms AppEvent.transferCassa.inj = []
+axioms AppEvent.transferCassa.injEq = [propext]
+axioms AppEvent.transferCassa.sizeOf_spec = []
+axioms AppEvent.withdraw.inj = []
+axioms AppEvent.withdraw.injEq = [propext]
+axioms AppEvent.withdraw.sizeOf_spec = []
+axioms Event.acceptPledge.inj = []
+axioms Event.acceptPledge.injEq = [propext]
+axioms Event.acceptPledge.sizeOf_spec = []
+axioms Event.backdonate.inj = []
+axioms Event.backdonate.injEq = [propext]
+axioms Event.backdonate.sizeOf_spec = []
+axioms Event.closePurchase.inj = []
+axioms Event.closePurchase.injEq = [propext]
+axioms Event.closePurchase.sizeOf_spec = []
+axioms Event.correctPledge.inj = []
+axioms Event.correctPledge.injEq = [propext]
+axioms Event.correctPledge.sizeOf_spec = []
+axioms Event.denyPermission.inj = []
+axioms Event.denyPermission.injEq = [propext]
+axioms Event.denyPermission.sizeOf_spec = []
+axioms Event.deposit.inj = []
+axioms Event.deposit.injEq = [propext]
+axioms Event.deposit.sizeOf_spec = []
+axioms Event.donate.inj = []
+axioms Event.donate.injEq = [propext]
+axioms Event.donate.sizeOf_spec = []
+axioms Event.failPurchase.inj = []
+axioms Event.failPurchase.injEq = [propext]
+axioms Event.failPurchase.sizeOf_spec = []
+axioms Event.grantPermission.inj = []
+axioms Event.grantPermission.injEq = [propext]
+axioms Event.grantPermission.sizeOf_spec = []
+axioms Event.openPurchase.inj = []
+axioms Event.openPurchase.injEq = [propext]
+axioms Event.openPurchase.sizeOf_spec = []
+axioms Event.pledge.inj = []
+axioms Event.pledge.injEq = [propext]
+axioms Event.pledge.sizeOf_spec = []
+axioms Event.refusePledge.inj = []
+axioms Event.refusePledge.injEq = [propext]
+axioms Event.refusePledge.sizeOf_spec = []
+axioms Event.transferCassa.inj = []
+axioms Event.transferCassa.injEq = [propext]
+axioms Event.transferCassa.sizeOf_spec = []
+axioms Event.withdraw.inj = []
+axioms Event.withdraw.injEq = [propext]
+axioms Event.withdraw.sizeOf_spec = []
+axioms Pledge.mk.inj = []
+axioms Pledge.mk.injEq = [propext]
+axioms Pledge.mk.sizeOf_spec = []
+axioms Proposal.changeRoles.inj = []
+axioms Proposal.changeRoles.injEq = [propext]
+axioms Proposal.changeRoles.sizeOf_spec = []
+axioms Proposal.departure.inj = []
+axioms Proposal.departure.injEq = [propext]
+axioms Proposal.departure.sizeOf_spec = []
+axioms StepError.ofNat_ctorIdx = []
+axioms StepError.rejected.sizeOf_spec = []
+axioms instDecidableEqAppEvent.decEq._proof_1 = []
+axioms instDecidableEqAppEvent.decEq._proof_10 = []
+axioms instDecidableEqAppEvent.decEq._proof_11 = []
+axioms instDecidableEqAppEvent.decEq._proof_12 = []
+axioms instDecidableEqAppEvent.decEq._proof_13 = []
+axioms instDecidableEqAppEvent.decEq._proof_14 = []
+axioms instDecidableEqAppEvent.decEq._proof_15 = []
+axioms instDecidableEqAppEvent.decEq._proof_16 = []
+axioms instDecidableEqAppEvent.decEq._proof_17 = []
+axioms instDecidableEqAppEvent.decEq._proof_18 = []
+axioms instDecidableEqAppEvent.decEq._proof_19 = []
+axioms instDecidableEqAppEvent.decEq._proof_2 = []
+axioms instDecidableEqAppEvent.decEq._proof_20 = []
+axioms instDecidableEqAppEvent.decEq._proof_21 = []
+axioms instDecidableEqAppEvent.decEq._proof_22 = []
+axioms instDecidableEqAppEvent.decEq._proof_23 = []
+axioms instDecidableEqAppEvent.decEq._proof_24 = []
+axioms instDecidableEqAppEvent.decEq._proof_25 = []
+axioms instDecidableEqAppEvent.decEq._proof_26 = []
+axioms instDecidableEqAppEvent.decEq._proof_27 = []
+axioms instDecidableEqAppEvent.decEq._proof_28 = []
+axioms instDecidableEqAppEvent.decEq._proof_29 = []
+axioms instDecidableEqAppEvent.decEq._proof_3 = []
+axioms instDecidableEqAppEvent.decEq._proof_30 = []
+axioms instDecidableEqAppEvent.decEq._proof_31 = []
+axioms instDecidableEqAppEvent.decEq._proof_32 = []
+axioms instDecidableEqAppEvent.decEq._proof_33 = []
+axioms instDecidableEqAppEvent.decEq._proof_34 = []
+axioms instDecidableEqAppEvent.decEq._proof_35 = []
+axioms instDecidableEqAppEvent.decEq._proof_36 = []
+axioms instDecidableEqAppEvent.decEq._proof_37 = []
+axioms instDecidableEqAppEvent.decEq._proof_38 = []
+axioms instDecidableEqAppEvent.decEq._proof_39 = []
+axioms instDecidableEqAppEvent.decEq._proof_4 = []
+axioms instDecidableEqAppEvent.decEq._proof_40 = []
+axioms instDecidableEqAppEvent.decEq._proof_41 = []
+axioms instDecidableEqAppEvent.decEq._proof_42 = []
+axioms instDecidableEqAppEvent.decEq._proof_43 = []
+axioms instDecidableEqAppEvent.decEq._proof_44 = []
+axioms instDecidableEqAppEvent.decEq._proof_45 = []
+axioms instDecidableEqAppEvent.decEq._proof_46 = []
+axioms instDecidableEqAppEvent.decEq._proof_5 = []
+axioms instDecidableEqAppEvent.decEq._proof_6 = []
+axioms instDecidableEqAppEvent.decEq._proof_7 = []
+axioms instDecidableEqAppEvent.decEq._proof_8 = []
+axioms instDecidableEqAppEvent.decEq._proof_9 = []
+axioms instDecidableEqEvent.decEq._proof_1 = []
+axioms instDecidableEqEvent.decEq._proof_10 = []
+axioms instDecidableEqEvent.decEq._proof_11 = []
+axioms instDecidableEqEvent.decEq._proof_12 = []
+axioms instDecidableEqEvent.decEq._proof_13 = []
+axioms instDecidableEqEvent.decEq._proof_14 = []
+axioms instDecidableEqEvent.decEq._proof_15 = []
+axioms instDecidableEqEvent.decEq._proof_16 = []
+axioms instDecidableEqEvent.decEq._proof_17 = []
+axioms instDecidableEqEvent.decEq._proof_18 = []
+axioms instDecidableEqEvent.decEq._proof_19 = []
+axioms instDecidableEqEvent.decEq._proof_2 = []
+axioms instDecidableEqEvent.decEq._proof_20 = []
+axioms instDecidableEqEvent.decEq._proof_21 = []
+axioms instDecidableEqEvent.decEq._proof_22 = []
+axioms instDecidableEqEvent.decEq._proof_23 = []
+axioms instDecidableEqEvent.decEq._proof_24 = []
+axioms instDecidableEqEvent.decEq._proof_25 = []
+axioms instDecidableEqEvent.decEq._proof_26 = []
+axioms instDecidableEqEvent.decEq._proof_27 = []
+axioms instDecidableEqEvent.decEq._proof_28 = []
+axioms instDecidableEqEvent.decEq._proof_29 = []
+axioms instDecidableEqEvent.decEq._proof_3 = []
+axioms instDecidableEqEvent.decEq._proof_30 = []
+axioms instDecidableEqEvent.decEq._proof_31 = []
+axioms instDecidableEqEvent.decEq._proof_32 = []
+axioms instDecidableEqEvent.decEq._proof_33 = []
+axioms instDecidableEqEvent.decEq._proof_34 = []
+axioms instDecidableEqEvent.decEq._proof_35 = []
+axioms instDecidableEqEvent.decEq._proof_36 = []
+axioms instDecidableEqEvent.decEq._proof_37 = []
+axioms instDecidableEqEvent.decEq._proof_38 = []
+axioms instDecidableEqEvent.decEq._proof_39 = []
+axioms instDecidableEqEvent.decEq._proof_4 = []
+axioms instDecidableEqEvent.decEq._proof_40 = []
+axioms instDecidableEqEvent.decEq._proof_41 = []
+axioms instDecidableEqEvent.decEq._proof_42 = []
+axioms instDecidableEqEvent.decEq._proof_43 = []
+axioms instDecidableEqEvent.decEq._proof_44 = []
+axioms instDecidableEqEvent.decEq._proof_45 = []
+axioms instDecidableEqEvent.decEq._proof_46 = []
+axioms instDecidableEqEvent.decEq._proof_47 = []
+axioms instDecidableEqEvent.decEq._proof_48 = []
+axioms instDecidableEqEvent.decEq._proof_49 = []
+axioms instDecidableEqEvent.decEq._proof_5 = []
+axioms instDecidableEqEvent.decEq._proof_50 = []
+axioms instDecidableEqEvent.decEq._proof_51 = []
+axioms instDecidableEqEvent.decEq._proof_52 = []
+axioms instDecidableEqEvent.decEq._proof_6 = []
+axioms instDecidableEqEvent.decEq._proof_7 = []
+axioms instDecidableEqEvent.decEq._proof_8 = []
+axioms instDecidableEqEvent.decEq._proof_9 = []
+axioms instDecidableEqPledge.decEq._proof_1 = []
+axioms instDecidableEqPledge.decEq._proof_2 = []
+axioms instDecidableEqPledge.decEq._proof_3 = []
+axioms instDecidableEqProposal.decEq._proof_1 = []
+axioms instDecidableEqProposal.decEq._proof_2 = []
+axioms instDecidableEqProposal.decEq._proof_3 = []
+axioms instDecidableEqProposal.decEq._proof_4 = []
+axioms instDecidableEqProposal.decEq._proof_5 = []
+axioms instDecidableEqProposal.decEq._proof_6 = []
+axioms instDecidableEqProposal.decEq._proof_7 = []
+axioms instDecidableEqStepError._proof_1 = []
+axiom-theorems count=1213
+axiom-gate: ok
+trace-coverage-agreement: ok (constructors=14 covered=14 missing=0)
+⚠ [12/27] Replayed KelGroups.Vote.Validate
+warning: KelGroups/Vote/Validate.lean:54:23: unused variable `threshold`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+ℹ [14/27] Replayed Reactivegas.Step
+info: Reactivegas/Step.lean:473:0: 'Reactivegas.appFold' does not depend on any axioms
+info: Reactivegas/Step.lean:474:0: 'Reactivegas.apply' depends on axioms: [propext]
+info: Reactivegas/Step.lean:475:0: 'Reactivegas.app_members_preservation_holds' depends on axioms: [propext]
+info: Reactivegas/Step.lean:476:0: 'Reactivegas.comune_cannot_authorize' depends on axioms: [propext]
+ℹ [17/27] Replayed KelGroups.Invariants
+info: KelGroups/Invariants.lean:870:0: 'KelGroups.base_change_runs_hook' depends on axioms: [propext]
+⚠ [18/27] Replayed KelGroups.Vote.Invariants
+warning: KelGroups/Vote/Invariants.lean:59:104: The syntax is now `structure S : Type extends P` rather than `structure S extends P : Type`
+
+Note: The purpose of this change is to accommodate `structure S extends toP : P` syntax for naming parent projections.
+warning: KelGroups/Vote/Invariants.lean:77:8: automatically included section variable(s) unused in theorem `_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_sublist'`:
+  [LawfulBEq κ]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [LawfulBEq κ] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: KelGroups/Vote/Invariants.lean:175:51: unused variable `v`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: KelGroups/Vote/Invariants.lean:187:16: This simp argument is unused:
+  assocErase
+
+Hint: Omit it from the simp argument list.
+  simp [assocE̵r̵a̵s̵e̵,̵ ̵a̵s̵s̵o̵c̵Lookup, hc, hck, ih]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: KelGroups/Vote/Invariants.lean:187:28: This simp argument is unused:
+  assocLookup
+
+Hint: Omit it from the simp argument list.
+  simp [assocErase, a̵s̵s̵o̵c̵L̵o̵o̵k̵u̵p̵,̵ ̵hc, hck, ih]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: KelGroups/Vote/Invariants.lean:187:50: This simp argument is unused:
+  ih
+
+Hint: Omit it from the simp argument list.
+  simp [assocErase, assocLookup, hc, hck,̵ ̵i̵h̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: KelGroups/Vote/Invariants.lean:189:16: This simp argument is unused:
+  assocErase
+
+Hint: Omit it from the simp argument list.
+  simp [assocE̵r̵a̵s̵e̵,̵ ̵a̵s̵s̵o̵c̵Lookup, hc, hck]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: KelGroups/Vote/Invariants.lean:190:16: This simp argument is unused:
+  assocErase
+
+Hint: Omit it from the simp argument list.
+  simp [assocE̵r̵a̵s̵e̵,̵ ̵a̵s̵s̵o̵c̵Lookup, hc, hck, ih]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: KelGroups/Vote/Invariants.lean:203:8: automatically included section variable(s) unused in theorem `_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_mem_cases`:
+  [LawfulBEq κ]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [LawfulBEq κ] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: KelGroups/Vote/Invariants.lean:235:8: automatically included section variable(s) unused in theorem `_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_map_fst_insert`:
+  [LawfulBEq κ]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [LawfulBEq κ] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: KelGroups/Vote/Invariants.lean:389:54: unused variable `gs`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: KelGroups/Vote/Invariants.lean:396:45: This simp argument is unused:
+  List.length_map
+
+Hint: Omit it from the simp argument list.
+  simp only [franchiseSize, franchise,̵ ̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵m̵a̵p̵] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: KelGroups/Vote/Invariants.lean:401:47: unused variable `gs`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: KelGroups/Vote/Invariants.lean:463:6: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: KelGroups/Vote/Invariants.lean:880:5: unused variable `hevents`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: KelGroups/Vote/Invariants.lean:974:22: This simp argument is unused:
+  hsz
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵h̵s̵z̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: KelGroups/Vote/Invariants.lean:1161:34: This simp argument is unused:
+  if_false
+
+Hint: Omit it from the simp argument list.
+  simp only [h, decide_false,̵ ̵i̵f̵_̵f̵a̵l̵s̵e̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: KelGroups/Vote/Invariants.lean:1176:34: This simp argument is unused:
+  if_false
+
+Hint: Omit it from the simp argument list.
+  simp only [h, decide_false,̵ ̵i̵f̵_̵f̵a̵l̵s̵e̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+info: KelGroups/Vote/Invariants.lean:1220:0: 'KelGroups.Vote.foldVote_wellFormed' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: KelGroups/Vote/Invariants.lean:1221:0: 'KelGroups.Vote.ballots_nodup_disjoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: KelGroups/Vote/Invariants.lean:1222:0: 'KelGroups.Vote.open_questions_are_open' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: KelGroups/Vote/Invariants.lean:1223:0: 'KelGroups.Vote.questions_partition' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: KelGroups/Vote/Invariants.lean:1224:0: 'KelGroups.Vote.no_expiry' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: KelGroups/Vote/Invariants.lean:1225:0: 'KelGroups.Vote.franchise_of_tallies' depends on axioms: [propext, Quot.sound]
+info: KelGroups/Vote/Invariants.lean:1226:0: 'KelGroups.Vote.verdictOf_threshold_congr' depends on axioms: [propext]
+info: KelGroups/Vote/Invariants.lean:1227:0: 'KelGroups.Vote.inadmissible_is_noop' depends on axioms: [propext]
+info: KelGroups/Vote/Invariants.lean:1228:0: 'KelGroups.Vote.nonresponsabile_event_noop' depends on axioms: [propext, Quot.sound]
+ℹ [19/27] Replayed Reactivegas.Invariants
+info: Reactivegas/Invariants.lean:1639:0: 'Reactivegas.base_change_recomputes_votes' depends on axioms: [propext]
+info: Reactivegas/Invariants.lean:1640:0: 'Reactivegas.base_departure_applies_cleanup' depends on axioms: [propext]
+info: Reactivegas/Invariants.lean:1641:0: 'Reactivegas.base_change_can_close_without_ballot' depends on axioms: [propext]
+info: Reactivegas/Invariants.lean:2351:0: 'Reactivegas.checkIntegratedTheoremWitness' depends on axioms: [propext]
+info: Reactivegas/Invariants.lean:2352:0: 'Reactivegas.checkCanonicalEconomy' depends on axioms: [propext]
+info: Reactivegas/Invariants.lean:2353:0: 'Reactivegas.checkI57Boundary' depends on axioms: [propext]
+⚠ [21/27] Replayed Reactivegas.Composition
+warning: Reactivegas/Composition.lean:114:5: unused variable `hroute`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: Reactivegas/Composition.lean:141:5: unused variable `hroute`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+info: Reactivegas/Composition.lean:194:0: 'Reactivegas.Composition.voteDerived_iff_not_direct' depends on axioms: [propext]
+info: Reactivegas/Composition.lean:195:0: 'Reactivegas.Composition.baseEnacted_threshold_met' depends on axioms: [propext]
+info: Reactivegas/Composition.lean:196:0: 'Reactivegas.Composition.appDecided_verdict_exhaustive' depends on axioms: [propext]
+ℹ [24/27] Replayed KelGroups.Tests
+info: KelGroups/Tests.lean:336:0: @approvals_nodup : ∀ {α : Type} {gs : GroupState α},
+  WellFormed gs → ∀ (entry : ProposalId × PendingProposal), entry ∈ gs.pendingProposals → entry.snd.approvals.Nodup
+info: KelGroups/Tests.lean:337:0: @proposer_mem_approvals : ∀ {α : Type} {gs : GroupState α},
+  WellFormed gs →
+    ∀ (entry : ProposalId × PendingProposal), entry ∈ gs.pendingProposals → entry.snd.proposer ∈ entry.snd.approvals
+info: KelGroups/Tests.lean:338:0: @enact_implies_threshold_met : ∀ {α : Type} (digest : Proposal → ProposalId) (appFoldFn : AppFold α) (gs : GroupState α)
+  (signer : Key) (event : GroupEvent α) (enacted : Enactment α),
+  (applyEventDetailed digest appFoldFn gs signer event).enactment = some enacted →
+    enacted.pending.approvals.length ≥ majority enacted.preState
+info: KelGroups/Tests.lean:339:0: @members_change_implies_enacted : ∀ {α : Type} (digest : Proposal → ProposalId) (appFoldFn : AppFold α)
+  (gs : GroupState α) (signer : Key) (event : GroupEvent α),
+  (applyEvent digest appFoldFn gs signer event).members ≠ gs.members →
+    ∃ before proposalId, Enacts before proposalId (applyEvent digest appFoldFn gs signer event)
+info: KelGroups/Tests.lean:340:0: @member_key_coherent : ∀ {α : Type} {gs : GroupState α},
+  WellFormed gs → ∀ (key : Key) (member : Member), (key, member) ∈ gs.members → member.key = key
+info: KelGroups/Tests.lean:341:0: KelGroups.majority_table :
+  majority (majorityAdminState []) = 0 ∧
+    majority (majorityAdminState ["a"]) = 1 ∧
+      majority (majorityAdminState ["a", "b"]) = 1 ∧
+        majority (majorityAdminState ["a", "b", "c"]) = 2 ∧
+          majority (majorityAdminState ["a", "b", "c", "d"]) = 2 ∧
+            majority (majorityAdminState ["a", "b", "c", "d", "e"]) = 3
+info: KelGroups/Tests.lean:342:0: @majority_not_strict_on_even : ∀ {α : Type} (gs : GroupState α),
+  0 < adminCount gs → adminCount gs % 2 = 0 → 2 * majority gs ≤ adminCount gs
+Build completed successfully (27 jobs).

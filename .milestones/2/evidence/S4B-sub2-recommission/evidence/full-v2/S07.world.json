@@ -1,0 +1,18 @@
+{
+  "world": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S07",
+  "candidate": "94bb7bb64324a48f7361252556b4d15e45b3923f",
+  "cache": "M1-S clean copied",
+  "spec": {
+    "id": "S07",
+    "type": "P01-body",
+    "obligation": "P01 body original whole mandatory path, separate from selected helpers",
+    "cmd": "just lean",
+    "edits": [
+      {
+        "path": "lean/KelGroups/Types.lean",
+        "old": "  (lookupMember key view).isSome",
+        "replacement": "  false"
+      }
+    ]
+  }
+}

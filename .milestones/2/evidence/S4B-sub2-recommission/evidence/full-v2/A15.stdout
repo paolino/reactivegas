@@ -1,0 +1,8 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A15.lean:178:23: warning: unused variable `s`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+allUniquePledgesB (s : State) : Bool
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A15.lean:185:55: error: unsolved goals
+s : State
+⊢ (∀ (col : Collection), col ∈ s.collections → uniquePledgesB col = true) ↔
+    ∀ (x : Collection), x ∈ [] → uniquePledgesB x = true

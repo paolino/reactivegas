@@ -1,0 +1,120 @@
+cabal-version:   3.0
+name:            kelgroups
+version:         0.1.0.0
+synopsis:        KERI hash-chained group management library
+description:
+  A polymorphic Haskell library for managing groups via
+  a KERI hash-chained Key Event Log (KEL). Group events
+  are anchored in KERI inception/interaction events with
+  Ed25519 signatures, digest chaining, and canonical JSON
+  serialization via keri-hs. Provides admin majority
+  voting, bootstrap mode, and stale-tip conflict detection.
+
+license:         Apache-2.0
+license-file:    LICENSE
+copyright:       (c) 2026 Paolo Veronelli
+author:          Paolo Veronelli
+maintainer:      paolo.veronelli@gmail.com
+category:        Cryptography
+build-type:      Simple
+extra-doc-files: README.md
+
+common language
+  default-language:   GHC2021
+  default-extensions:
+    DerivingStrategies
+    LambdaCase
+    OverloadedStrings
+    StrictData
+
+common opts-lib
+  ghc-options:
+    -Wall -Werror -Wunused-imports -Wunused-packages
+    -Wmissing-export-lists -Wname-shadowing -Wredundant-constraints
+
+library
+  import:          language, opts-lib
+  hs-source-dirs:  lib
+  exposed-modules:
+    KelGroups.Bootstrap
+    KelGroups.Event
+    KelGroups.Fold
+    KelGroups.Jwk
+    KelGroups.Server
+    KelGroups.Server.JSON
+    KelGroups.State
+    KelGroups.Store
+    KelGroups.Trivial
+    KelGroups.Types
+    KelGroups.Validate
+
+  build-depends:
+    , aeson          >=2.1  && <2.3
+    , base           >=4.18 && <5
+    , bytestring     >=0.11 && <0.13
+    , containers     >=0.6  && <0.8
+    , crypton        >=0.34 && <2
+    , http-types     >=0.12 && <0.13
+    , keri-hs
+    , sqlite-simple  >=0.4  && <0.5
+    , stm            >=2.5  && <2.7
+    , text           >=2.0  && <2.2
+    , wai            >=3.2  && <3.3
+
+executable kelgroups-server
+  import:         language, opts-lib
+  hs-source-dirs: app
+  main-is:        Main.hs
+  ghc-options:    -threaded
+  build-depends:
+    , base            >=4.18 && <5
+    , bytestring      >=0.11 && <0.13
+    , kelgroups
+    , stm             >=2.5  && <2.7
+    , text            >=2.0  && <2.2
+    , wai-app-static  >=3.1  && <3.2
+    , warp            >=3.3  && <3.5
+
+common opts-test
+  ghc-options: -Wall -Werror -Wunused-imports -Wunused-packages -threaded
+
+test-suite invariants
+  import:         language, opts-test
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is:        Main.hs
+  other-modules:
+    E2ESpec
+    FoldSpec
+    Generators
+    InvariantsSpec
+    JwkSpec
+    MultiClientSpec
+    S28AppApiSpec
+    S28DemoApp
+    ServerSpec
+    StoreInvariantsSpec
+    StoreSpec
+    StoreTestDSL
+    TestHelpers
+    TransitionInvariantsSpec
+    ValidateSpec
+
+  build-depends:
+    , aeson        >=2.1  && <2.3
+    , async        >=2.2  && <2.3
+    , base         >=4.18 && <5
+    , bytestring   >=0.11 && <0.13
+    , containers   >=0.6  && <0.8
+    , crypton      >=0.34 && <2
+    , directory    >=1.3  && <1.4
+    , hspec        >=2.11 && <2.12
+    , http-client  >=0.7  && <0.8
+    , http-types   >=0.12 && <0.13
+    , kelgroups
+    , keri-hs
+    , QuickCheck   >=2.14 && <2.16
+    , stm          >=2.5  && <2.7
+    , temporary    >=1.3  && <1.4
+    , text         >=2.0  && <2.2
+    , warp         >=3.3  && <3.5

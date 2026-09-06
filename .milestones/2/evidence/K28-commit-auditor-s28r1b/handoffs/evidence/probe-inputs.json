@@ -1,0 +1,22 @@
+[
+  {
+    "path": "TraceProbe.hs",
+    "sha256": "dbe1eb095714e9eaeb621bf5478f28a89988f9ea5e62b81ceb47fee9aa59833a"
+  },
+  {
+    "path": "StoreProbe.hs",
+    "sha256": "a0e60dd1ed780c3ddb00476afa47b9bdd6313424393f33d84b5d5335c6a1b5e2"
+  },
+  {
+    "path": "Row4Probe.hs",
+    "sha256": "97e017e2e0c43bd108e826ad0fa7ccd54c246da92858acb3c77008ce3089571d"
+  },
+  {
+    "path": "row4-shadow/KelGroups/Fold.hs",
+    "sha256": "71c2dbebdbb5cda2cc08dcc4d31ebf9a1026e3a60a615fa7cc43adc26f405b28"
+  },
+  {
+    "path": "probe-commands.json",
+    "sha256": "f597eb23ff389863936e964c36951b778542b650cbc615077cb2beff8daec3b7"
+  }
+]

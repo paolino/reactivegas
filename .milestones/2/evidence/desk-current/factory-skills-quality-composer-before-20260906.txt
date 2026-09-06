@@ -1,0 +1,25 @@
+
+  The independent static audit is commissioned and running. New worktree at 3590c001, clean,
+  zero oleans; window rg-s3-audit-final, pane %575, argv-pinned gpt-6-astra/high; admitted/
+  binds 49 files verifying 49/49 — all three submission sets, the original mandate and
+  amendments, the original audit with its 323-entry manifest and receipt inventory, the desk's
+  challenges, this release with both corrections to me, and my own assessments. I verified the
+  submission-3 manifest myself.
+
+  I carried the model lesson into the brief as a hard requirement: verify both the launch
+  identity from /proc and the active session model, because /proc cannot detect a mid-session
+  switch — and I told it plainly that happened in the sibling lane and I caused it. The four
+  established defects go in as inputs to challenge, not inherit, and my "five CLOSED" is bound
+  as my assessment, not an exclusion list.
+
+  S4 approved its P01/P07 shadow-isolation block — materially the work whose absence left the
+  author's P07 single-variable claim unestablished. Substantive holds at 10/12 with the last two
+  reserved; targeted at 49/80.
+
+✻ Crunched for 4m 20s · done 6:28
+
+────────────────────────────────────────────────────────────────────────────────────────────────
+❯ Read /tmp/reactivegas/ms2/artifacts/ and act on the latest note.
+────────────────────────────────────────────────────────────────────────────────────────────────
+  ⏵⏵ bypass permissions on (shift+tab to cycle) · ← 2 agents                               /rc
+  ⧉  debrief

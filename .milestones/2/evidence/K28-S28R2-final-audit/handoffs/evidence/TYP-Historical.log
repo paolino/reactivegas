@@ -1,0 +1,14 @@
+Loaded package environment from /code/kelgroups-audit-ab25cd1/dist-newstyle/tmp/environment.-3065199/.ghc.environment.x86_64-linux-9.8.4
+[1 of 2] Compiling S28DemoApp       ( test/S28DemoApp.hs, nothing )
+[2 of 2] Compiling TypeNegative     ( /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/TypeHistorical.hs, nothing )
+
+/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/TypeHistorical.hs:6:90: error: [GHC-83865]
+    • Couldn't match expected type ‘DemoState’
+                  with actual type ‘DemoEvent’
+    • In the first argument of ‘E.App’, namely ‘(DemoAdd 1)’
+      In the expression: E.App (DemoAdd 1)
+      In the third argument of ‘F.applyEvent’, namely
+        ‘("admin-key-1", E.App (DemoAdd 1))’
+  |
+6 | historicalEventMismatch = F.applyEvent (\st _ -> st) foundingDemo ("admin-key-1", E.App (DemoAdd 1))
+  |                                                                                          ^^^^^^^^^

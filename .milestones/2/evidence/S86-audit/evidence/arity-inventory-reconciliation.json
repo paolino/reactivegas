@@ -1,0 +1,7 @@
+{
+  "known_defect_detector_result": "FAIL",
+  "candidate_P07_detector_result": "PASS",
+  "candidate_P08_detector_result": "PASS",
+  "candidate_P09_detector_result": "PASS",
+  "classification": "read-only reconciliation of already captured directory/hash inventories; no binary invocation"
+}

@@ -1,0 +1,72 @@
+# Reactivegas milestone 2 — current desk ledger
+
+Updated 2026-09-06T10:59:53Z. Current snapshot; history remains in STATUS and retained evidence.
+
+## Objective and authority
+
+Finish M2 in full: Lean quality and simulation TO LANDED, then the implemented and released product outcome; preserve all prepared requirements and tickets. Product target remains the released Haskell-on-kelgroups coordinator plus browser and CLI: stranger election → collection → pledge → assenso → purchase → refund without source. Product outcome is not delivered. Goal ACTIVE.
+
+Desk %510, gpt-6-astra/high, cwd /code/reactivegas-issue-47. Immediate owners only: quality503, kelgroups532, simulator313, Haskell504, proposer512, design516, composition597. No direct grandchild control. Four requested owner substitutions are COMPLETE with exact Opus5[1m]/high launch and own START verified in artifacts/ROLE-SUBSTITUTION-VERIFIED-20260906.json. Old Muse owner roots remain preserved; Muse implementers remain assigned. Independent auditors Codex/Grok only, exact admitted identity and scope. Desk authorizes exact-SHA merges; owning lane executes guard. The PR35 authorization has been executed and no other merge authorization is outstanding. No issue comments; #71 alone writes docs/en/design. Wiki and selected recovery publication authorized.
+
+## Accepted state and landing order
+
+Reactivegas master verified at efef604de87b2a1efae51e84d1a9150e585c1db0 (S4/PR89), tree caaa0488f39a6afb2553680a11fd6bfd86d1c90b equal to accepted candidate. S1/PR79, S2R/PR88 and exporter/PR87 already landed. Kelgroups #28/PR32 remains accepted at 933e385df2f2a251bb54a08bb7663f0d41fafb64; internal S30-1 landed through PR35 as 9762ad4db50f370348ea71abd44f7e969349d4b4 with tree 50f1cda424c044910878eac333913c8bba267310 byte-identical to accepted candidate 785435b. #29/#30/#73 remain open. Next Reactivegas order: #92 integration repair acceptance and landing, C1 acceptance and landing, then #68, then commission #69. Core #90 and isolated #76 proceed in parallel on accepted primitives/bases.
+
+## Current lanes and next actions
+
+| Lane | Actual state and next action |
+|---|---|
+| Quality S4, owner503 | LANDED PR89 at efef604d on 2026-09-06T08:37:18Z. Desk verified exact accepted tree, both parents, master identity and #66 OPEN. S3/S5 and recorded limitations remain; this is bounded S4 completion. |
+| Quality S3, owner503 | Submission 2 failed its delta audit after the single repair batch: restore receipts cite nonexistent patches, the constant-yes comparator remains unchanged and prior evidence was omitted. The Muse campaign is terminal at two failed submissions; owner590 and inspector606 are retired with evidence preserved. Desk authorized one fresh Codex successor submission as an explicit amendment inside the unchanged cumulative ten-unit ceiling, historical spend five retained. Parent must first prove the complete owner plus Grok full-auditor schedule fits the five remaining units; otherwise return the exact shortfall. One terminal successor verdict ends the campaign. |
+| Quality integration #92 | The replacement inspection completed; one adjudication confirmed the namespaced-root defect and missing exact receipt binding. Static submission 2 has the declared-roots selector and receipt-harness repair but no invalidated checker demonstration has rerun. Desk granted the measured three-unit shortfall, cumulative ceiling ten to thirteen: five repaired-checker reruns, one actually built namespaced-root control and one fresh delta inspection consume the seven remaining units. No substitutions or retries beyond thirteen; #92 remains unaccepted. |
+| Quality S5 | Required finite-history correspondence remains OPEN under RG-S4-REACH-20260906 with #75/#71 dependencies, plus statement completeness/retention and exact-premises assessment. No arbitrary-state Reach decision requirement, no bridge implementation in S4 comment repair. No S5 completion. |
+| Kelgroups epic532 | S30-1 vote vocabulary/state-types landed through PR35 at 9762ad4db50f370348ea71abd44f7e969349d4b4 on 2026-09-06T10:42:07Z. Desk independently verified merged state, empty closing references, origin/main identity, merge/candidate tree equality and #29/#30/#73 OPEN. The next behaviour-slice instruction was again found unsent in ticket owner572's composer; epic owner532 recorded the repeated transport defect and is redispatching durably from a fresh worktree/base rather than reviving the pruned S30-1 branch. |
+| Simulator313 | Full v17 GREEN on 48f76d96eb0975ec6c21cc5ba490af196d4882fa; final CI RED at mirror import reach. Temporary preview is serving the exact self-contained candidate at http://127.0.0.1:8791/; served SHA256 c3bf4b3adc76354e2351da7bbf117508be7bf87817dea9c8fc50c9904b801eec equals the git blob, with no rebuild. The older public route is stale and not advertised as current. Owner 37/37, parent 5/5 substantive and 7/10 targeted preserved. Wait accepted #92 repair, actual combined-candidate CI and authorized fresh full Codex audit; preview is not acceptance or release. |
+| Runtime composition #76 owner597 | Standalone owner Codex gpt-6-astra/high standard context START09:50:24Z. Initial GLM owner produced no semantic candidate and was retired with historical spend retained. Fresh Grok owner603 START10:26:09Z in the same campaign; A02 exited 1 through the intended unbacked-refusal/distinguishing guard failures, while target-interface rows could not yet evaluate. Shared2/20, author2/12. Continue implementation from this actual RED; landing remains after #92/C1/#68/#69 with final-base validation. No merge grant. |
+| #68 owner512 | Opus root t68-proposer-assent-opus-20260906, PR80READY d68a783f06b464dc869b27f6494214be1102c347; waits acceptedC1 and exactdeskgrant. Muse implementer519 preserved. #69 intake prepared, not commissioned. |
+| #71 owner516 | PR77 remains draft at 77f8be6, waiting on the final accepted model/quality base. Desk resolved the new delta-default conflict: this existing S71-B campaign retains its explicit full-candidate final audit as a recorded exception. No launch, budget reset or new execution grant. Sole docs/en/design writer. |
+| Haskell504 | Four-arm pure production core #90 is released on accepted substrate primitives. Baseline full CI exit0; two unplanned readiness invocations consumed author allocation without semantic RED/GREEN. Ticket owner592 stopped and preserved the ledger. Parent504 delivered the desk's author sub-allocation 4 to 5 inside the unchanged shared ten: spent3, remaining author3, inspectors2, possible repair1 and delta1 fit exactly with zero slack. No resumed author START or accepted code is yet reported; full scope and final mandatory CI remain. |
+
+## Decisions and contracts
+
+Simulator layout settled by operator "expand" on2026-09-06: both rings grow on a pannable/scrollable canvas, with stable member angles, readable controls and all purchases accessible together. Repair released through owner313; see artifacts/SIMULATOR-EXPANDING-RINGS-RULING-20260906.md. Voci is explicitly OUT of M2 and assigned to M3 by the operator on 2026-09-06; filed as https://github.com/paolino/reactivegas/issues/91 in milestone 3. Shipped theta is now pending an asynchronous operator question in questions/Q-DEPLOYED-COLLECTIVE-THRESHOLD.md: explicit setup policy without default (recommended), legacy rule, or strict majority. No answer or model change inferred. Non-proposer-renounce and non-designee-ballot refusal remain operator matters. Already-ruled vote-derived grant/deny/backdonate is NOT reopened. Lifecycle negative closure/refund must coexist with V3 sweep. R3.1 replay context is #75, separate from provisional exporter wrappers. Existing kelgroups client package, no thirdrepo; one pure economic core native/wasm and coordinator/browser/CLI outcome retained.
+
+## Publication and recovery
+
+Wiki https://github.com/paolino/reactivegas/wiki/Milestone-2; published 2a32248bc9029ea2eb8f2b6a0aed73c1587b09a5, register sha256 2eb84d15889ca3a977faf47c4b34e93407e7e13e7a633759c358e3b3bd759d49; rendered page sha256 111bec78e5909ed2bbeaf780a3e35ebce7785bb696fab087d4253531bdc4712d. Renderer/drift check, normal push and remote commit/page-byte readback succeeded. Current projection records the exact simulator preview, landed S30-1, failed S3 submission and stronger-successor decision, #92 measured raise, #76 RED and #90 allocation recovery. All 18 open Reactivegas M2 issues are mapped.
+Selected recovery published 34a172a6d8da77c51359b7cc7bae0ac6148c28b7, tree 024186937b3224d9637d28d70285c125ff5781f3, at 2026-09-06T11:04:31.549Z: 10243 selected files. Exact-lease root push succeeded; current RESUME and owner journals, simulator preview, landed PR35 receipt, S3/#92 recovery decisions and wiki2a32248 are included. No full-host or fresh remote-archive verification claim; last full remote-archive verification remains 6597a1c at07:54:38Z. This local receipt update postdates the captured ledger, by design; do not create a recursive checkpoint loop. Never reset the snapshot checkout to its historical HEAD.
+
+## Supervision
+
+Supervisor skill reload acknowledged by all six immediate owners at revision a55a25a2; audit-process revision af60ac2 is likewise acknowledged and carried into new campaigns. New audits use parallel blind inspectors, one adjudicated batch, one delta re-check and one campaign execution budget. Existing campaign authority and budgets remain unchanged until explicitly reconciled. Canonical approval-bypass flags do not answer Codex's startup directory-trust gate; the current inspectors required explicit Enter recovery. A read-only symlink was also proven not to be a packet fence; replacements use copied mode-a-w packets with empirical write-refusal checks. Factory repair e5017ee still governs aggregate CI invocation units and ANSI dim detection. Use immediate-child event-driven supervision, preserve terminal evidence, and never send worker messages to the human composer.
+
+## Contract registry
+
+
+| Parties / contract | Enforcement or explicit remaining gap |
+|---|---|
+| Lean integration → kelgroups → coordinator | No ACCEPTED cross-repository integration check yet. Kelgroups#28 integrated API is accepted and landed in PR32 at933e385, with finite audited refusal/persistence guarantees. 19/26 historical interface names present; seven vote-machine names outstanding in#30. No accepted cross-repository economic replay test yet. Wider #29/#30 substrate and coordinator integration remain undelivered. No vendoring. |
+| Trace inversion metadata → exporter | S1 repair landed at4a6cd87; #74 regeneration zeroUNPROVED verified, acceptance failed and moved to successor#86. Envelope unchanged, unqualified public spelling. Current C1 does not consume this metadata. |
+| Frozen corpora → Haskell replay | #86 is landed with CI/tooling/whole-wrapper value binding and arity checks; corpora remain provisional. Explicit theta test-input replay context R3.1 planned under #75; current #74 wrapper frozen. Product theta default is separately unruled. |
+| Vote closure → economic effect | Classification exists; runtime target/polarity/provenance/consumption connection missing. Requirement already ruled by NOTE-016/A-Q001/NOTE-031. It is not an open option to keep unilateral grant or substitute base membership assent. Standalone #76 filed. |
+| Vote events → conformance corpus | Simulator VOTE_TRACES_V1 covers signed votes; #86's two provisional files do not. Integrated .app corpus tracked as #75 remains a separate gap. Dormant notProposer/notDesignee are not simply missing corpus cases. |
+| V-5 / no-expiry → actual statements and transitions | Renounce currently admitted/no-op; retention reassurance was false. #66 S5 assesses current statement completeness; desk owns needed semantic tickets. No new product ruling required to rediscover already ruled intent. |
+| Lean → simulator fidelity | C1 full audit returned partial findings: actor substitution, layout overlap, handler discovery omission. Focused repairs remain unaccepted; expanding-ring ruling settled, repair and full final audit pending. |
+| Lean trust / mutation adequacy | Fresh current compiled theorem axiom sweep independently confirmed; old historical provenance NOT adjudicated. 6/224 mutant percentage and 19-Prop/no-mirror claim WITHDRAWN. S2 total gate+honest checks, S3 real theorem/mutant ledger+clarity void, S4 actual correspondence classification, S5 statement assessment. No implied waiver. |
+| Design record → model/rulings | #71 owns rewrite, false group-closure claim removal and fail-closed cold citation checker, law/witness distinction, dated authority content, Voci non-goal. Other lanes route handoffs through desk. |
+| Pure core → native/wasm → coordinator/browser/CLI | #82/#83/#84 planned. Existing kelgroups client package is real, Reactivegas integration is not established; #73 limited upstream ownership authorized; interface still undelivered. |
+| Published coordinator + browser + CLI → milestone | NONE. Legacy artifact availability is not a new coordinator or end-to-end outcome audit. |
+
+Accepted divergences: filenames Goals.lean/decisions.md not required; content
+and current statement/trust obligations are. All modules may be built through
+mandatory discovery-driven CI, provided executable omission controls exist.
+No arbitrary reachability-decision or fixed mirror-count requirement.
+
+#68 A-001: zero approvals at proposal creation; above one admin proposer
+self-approval refused, counted assents from others; exactly one admin may
+separately explicitly approve. Majority formula unchanged. At n=3 two OTHER
+assents, not proposer+one-other. Independent candidate audit checks the ruling.
+
+
+
+Desk transport wait11947 is live for parent503 acknowledgement of NOTE087: bounded report-only overlay detection on its two existing S3 inspectors, to cover subsequent approval prompts until they terminate. Poll this same handle first; a timeout is observation only, then check its own new STATUS before any resend. Old observer75022 and waits27582/34660 are terminal; the latter timed out but NOTE086 ACK verified at10:04:11.

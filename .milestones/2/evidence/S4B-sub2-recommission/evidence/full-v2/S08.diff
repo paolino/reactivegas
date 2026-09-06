@@ -1,0 +1,13 @@
+diff --git a/lean/Reactivegas/Step.lean b/lean/Reactivegas/Step.lean
+index 06b2d12..c376fed 100644
+--- a/lean/Reactivegas/Step.lean
++++ b/lean/Reactivegas/Step.lean
+@@ -126,7 +126,7 @@ def step (view : KelGroups.GroupView) (s : State) (signer : KelGroups.Key)
+   | .closePurchase c => do
+     let (col, rest) ← pullCollection c s.collections
+     demand (isResponsabile view signer && col.referente == signer
+-      && col.permitted && col.pending.isEmpty && !(decide (stalled s)))
++      && true && col.pending.isEmpty && !(decide (stalled s)))
+     pure { s with
+       casse := bump s.casse col.referente (-(sumPledges col.accepted)),
+       collections := rest }

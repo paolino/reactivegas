@@ -1,0 +1,29 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["27d10b693f008f8e.olean"],
+  "i": "d83aac860c073ed1.ilean",
+  "c": "18b6e800db752422.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/code/reactivegas-66-s4b-audit3/lean/.lake/build/lib/lean /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean /code/reactivegas-66-s4b-audit3/lean/KelGroups/Fold.lean -o /code/reactivegas-66-s4b-audit3/lean/.lake/build/lib/lean/KelGroups/Fold.olean -i /code/reactivegas-66-s4b-audit3/lean/.lake/build/lib/lean/KelGroups/Fold.ilean -c /code/reactivegas-66-s4b-audit3/lean/.lake/build/ir/KelGroups/Fold.c --setup /code/reactivegas-66-s4b-audit3/lean/.lake/build/ir/KelGroups/Fold.setup.json --json",
+   "level": "trace"}],
+ "inputs":
+ [["KelGroups.Fold:deps",
+   [["deps",
+     [["reactivegas/KelGroups:extraDep",
+       [["@reactivegas:extraDep", "00000000000006bb"]]],
+      ["imports",
+       [["KelGroups.State transitive imports (legacy)", "dc43dd6ac27232bd"],
+        ["KelGroups.State:importAllArts", "1dbaa0e0f758e8a6"]]]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.25.0, commit v4.25.0", "9c3a3ade3a41d5d0"],
+  ["/code/reactivegas-66-s4b-audit3/lean/KelGroups/Fold.lean",
+   "a3602f95eab44fd4"],
+  ["options", [["-DautoImplicit=false", "4a85acb881fd49d0"]]],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "fc097bf35975c159"}

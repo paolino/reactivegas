@@ -1,0 +1,11 @@
+--- a/scripts/check-lean-mirrors
++++ b/scripts/check-lean-mirrors
+@@ -201,7 +201,7 @@ run_cmd do
+       nonowned := nonowned + 1
+       continue
+     match ci with
+-    | .defnInfo _ | .inductInfo _ | .opaqueInfo _ =>
++    | .defnInfo _ | .opaqueInfo _ =>
+         let kindTag : String :=
+           match ci with
+           | .defnInfo _ => "defn"

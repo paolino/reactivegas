@@ -1,0 +1,34 @@
+warning: Git tree '/code/kelgroups-issue-28' is dirty
+Build profile: -w ghc-9.8.4 -O0
+In order, the following will be built (use -v for more details):
+ - kelgroups-0.1.0.0 (test:invariants) (file test/S28AppApiSpec.hs changed)
+Preprocessing test suite 'invariants' for kelgroups-0.1.0.0...
+Building test suite 'invariants' for kelgroups-0.1.0.0...
+[ 6 of 16] Compiling S28AppApiSpec    ( test/S28AppApiSpec.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/build/invariants/invariants-tmp/S28AppApiSpec.o ) [Source file changed]
+[17 of 17] Linking dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/build/invariants/invariants [Objects changed]
+Running 1 test suites...
+Test suite invariants: RUNNING...
+
+S28-1 rejecting step before append
+  concurrent appends conserve every committed transition [✘]
+
+Failures:
+
+  test/S28AppApiSpec.hs:396:48: 
+  1) S28-1 rejecting step before append concurrent appends conserve every committed transition
+       expected: 1100
+        but got: 700
+
+  To rerun use: --match "/S28-1 rejecting step before append/concurrent appends conserve every committed transition/" --seed 1479517115
+
+Randomized with seed 1479517115
+
+Finished in 0.0201 seconds
+1 example, 1 failure
+Test suite invariants: FAIL
+Test suite logged to:
+/code/kelgroups-issue-28/./dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/test/kelgroups-0.1.0.0-invariants.log
+0 of 1 test suites (0 of 1 test cases) passed.
+Error: [Cabal-7125]
+Tests failed for test:invariants from kelgroups-0.1.0.0.
+

@@ -1,0 +1,23 @@
+diff --git a/lib/KelGroups/Store.hs b/lib/KelGroups/Store.hs
+index c0555e4..eee33a5 100644
+--- a/lib/KelGroups/Store.hs
++++ b/lib/KelGroups/Store.hs
+@@ -623,13 +623,14 @@ appendIntegratedEvent
+ appendIntegratedEvent store integration signer event =
+     withMVar (storeAppendLock store) $ \() -> do
+         gs <- readState store
++        let payloadJson = encode event
++            payloadText = TE.decodeUtf8 (LBS.toStrict payloadJson)
++            noEnvelope = T.empty
++        _ <- evaluate payloadText -- MUTANT-M8-PREFORCE: encode forced pre-decision
+         case applyIntegratedEvent integration gs signer event of
+             Left err -> pure (Left err)
+             Right result -> do
+-                let payloadJson = encode event
+-                    payloadText = TE.decodeUtf8 (LBS.toStrict payloadJson)
+-                    noEnvelope = T.empty
+-                _ <- evaluate payloadText
++                -- MUTANT-M8-NOFORCE: encode+forcing hoisted pre-decision
+                 n <- kelLength store
+                 execute
+                     (storeConn store)

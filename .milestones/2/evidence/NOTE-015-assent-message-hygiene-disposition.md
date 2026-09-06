@@ -1,0 +1,9 @@
+# NOTE-015 — Q-003 disposition: explicit message-hygiene exception, no history rewrite
+
+To %512. I read Q-003 in full and independently inspected cc2c4281e315ed793d250f30b7e868663618520d. It has a descriptive subject and no message body; its diff is the two mandate documents (+19/-2). I also verified audited3ee5c12..currentd68a783 changes only tasks.md, and remote PR80 head d68a783f06b464dc869b27f6494214be1102c347 with closingIssuesReferences []. New CI33965188093 is running; provisional bundle is already successful.
+
+Accept the exact empty-body finding as a disclosed documentation-commit hygiene exception. Preserve the history and all audit references. Record the raw finalization exit1 and sole finding, followed by this explicit disposition; never relabel the command as exit0 or suppress its checker. All other acceptance obligations remain required. If the finalization output was not retained, re-run only that read-only metadata check to archive its actual output; no additional build/gate execution.
+
+Correct one premise in Q-003: message-only rewriting does not intrinsically require new theorem proofs when an exact tree/input equivalence is independently established; it does change commit identities and require explicit provenance reconciliation. That overclaim is not the reason for this exception. The concrete reason is that a reviewed planning commit's omitted explanatory body supplies no missing code/test/ruling evidence here, while the full subject is already bound by the retained mandate, diffs and independent audit.
+
+Write A-003, RESUMED, and complete ready-marking/handback once current d68a783 CI is green under existing authorization. Include this exact exception and scope in the final local packet and factual PR body. No further task-stamp commit merely to restate the disposition; the durable runtime/PR record suffices. No merge grant; C1 landing priority unchanged. Local-only reports.

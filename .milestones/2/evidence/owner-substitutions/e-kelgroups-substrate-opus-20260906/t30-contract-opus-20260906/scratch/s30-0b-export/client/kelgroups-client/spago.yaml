@@ -1,0 +1,28 @@
+package:
+  name: kelgroups-client
+  dependencies:
+    - prelude
+    - effect
+    - aff
+    - argonaut
+    - argonaut-codecs
+    - arrays
+    - maybe
+    - either
+    - foldable-traversable
+    - tuples
+    - strings
+    - integers
+    - foreign-object
+    - ordered-collections
+    - arraybuffer-types
+    - nullable
+    - newtype
+    - control
+    - exceptions
+    - keri-purs
+  test:
+    main: Test.Main
+    dependencies:
+      - quickcheck
+      - console

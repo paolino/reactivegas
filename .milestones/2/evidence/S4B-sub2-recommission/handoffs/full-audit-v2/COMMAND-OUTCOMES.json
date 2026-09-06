@@ -1,0 +1,2373 @@
+[
+  {
+    "id": "S01",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=30s",
+      "1800s",
+      "nix",
+      "develop",
+      "--quiet",
+      "-c",
+      "just",
+      "lean"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S01",
+    "charge": "substantive",
+    "launched": true,
+    "start": "2026-09-06T05:05:29.987Z",
+    "spend": {
+      "substantive": 2,
+      "targeted": 2
+    },
+    "obligation": "C1 clean mandatory just lean",
+    "finish": "2026-09-06T05:06:38.507Z",
+    "exit": 0,
+    "signal": null,
+    "stdoutSha256": "000b692bcf0b3a879d4c46f638cb3bbcf4fa7594fccc06567a91cbd1cd698bcc",
+    "stderrSha256": "83165b5edc2127ddecfaf8bcb9b90efa7d7b79b8390155d8afeb53782160c2c1",
+    "receipt": "evidence/full-v2/S01.json"
+  },
+  {
+    "id": "census-controls",
+    "argv": [
+      "timeout",
+      "300s",
+      "node",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/data-checks.mjs",
+      "census-controls"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:09:13.648Z",
+    "spend": {
+      "substantive": 2,
+      "targeted": 3
+    },
+    "obligation": "R7 own census completeness failure controls",
+    "finish": "2026-09-06T05:09:15.615Z",
+    "exit": 0,
+    "signal": null,
+    "stdoutSha256": "b56bac301732d234543d0edfc62f8ad22aade7d06c6f006fe90a4dd2f9fb086a",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/census-controls.json"
+  },
+  {
+    "id": "expr-controls",
+    "argv": [
+      "timeout",
+      "300s",
+      "node",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/data-checks.mjs",
+      "expr-controls"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:09:15.667Z",
+    "spend": {
+      "substantive": 2,
+      "targeted": 4
+    },
+    "obligation": "R1/R5 own Expr comparison failure controls",
+    "finish": "2026-09-06T05:09:17.635Z",
+    "exit": 0,
+    "signal": null,
+    "stdoutSha256": "61d433bef3722f96fb63016011a1860627555222a6386785c35eb6a3a83524a1",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/expr-controls.json"
+  },
+  {
+    "id": "panic-controls",
+    "argv": [
+      "timeout",
+      "60s",
+      "node",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/panic-check.mjs",
+      "controls"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:09:17.704Z",
+    "spend": {
+      "substantive": 2,
+      "targeted": 5
+    },
+    "obligation": "C25 both-stream PANIC at absence controls",
+    "finish": "2026-09-06T05:09:17.751Z",
+    "exit": 0,
+    "signal": null,
+    "stdoutSha256": "4c13fff798e4ed9a289e8e56d72c62666824752f48eabf9075bf26ef0806ee94",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/panic-controls.json"
+  },
+  {
+    "id": "S02",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=30s",
+      "1800s",
+      "nix",
+      "develop",
+      "--quiet",
+      "-c",
+      "just",
+      "lean"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S02",
+    "charge": "substantive",
+    "launched": true,
+    "start": "2026-09-06T05:11:02.488Z",
+    "spend": {
+      "substantive": 3,
+      "targeted": 5
+    },
+    "obligation": "C2 introduced owned predicate missing counterpart; opaque predicate classification, separately observed",
+    "finish": "2026-09-06T05:11:23.742Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "0f0ba40d1ef71f98de6e0f23a41eb2f2ae31d932bbaf85cc6146be85f5dfbab4",
+    "stderrSha256": "fa13c407d3462fc779501a53e31a9b421f684e718e87fc10a428747f1bf763dc",
+    "receipt": "evidence/full-v2/S02.json"
+  },
+  {
+    "id": "S03",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=30s",
+      "1800s",
+      "nix",
+      "develop",
+      "--quiet",
+      "-c",
+      "just",
+      "lean"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S03",
+    "charge": "substantive",
+    "launched": true,
+    "start": "2026-09-06T05:11:23.969Z",
+    "spend": {
+      "substantive": 4,
+      "targeted": 5
+    },
+    "obligation": "C3 introduced owned predicate with counterpart present and theorem absent",
+    "finish": "2026-09-06T05:13:02.159Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "3478634af44eb63bf8bcb029ba0fbda38122576852519587ffb7a6a3bbf63c8e",
+    "stderrSha256": "9e67581d885673bd5fc95eb9e455661fc12b18e514ffdb49a4a4c16e020496d3",
+    "receipt": "evidence/full-v2/S03.json"
+  },
+  {
+    "id": "S04",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=30s",
+      "1800s",
+      "nix",
+      "develop",
+      "--quiet",
+      "-c",
+      "just",
+      "lean"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S04",
+    "charge": "substantive",
+    "launched": true,
+    "start": "2026-09-06T05:13:02.398Z",
+    "spend": {
+      "substantive": 5,
+      "targeted": 5
+    },
+    "obligation": "tracked future owned module omitted from checker import closure",
+    "finish": "2026-09-06T05:14:18.889Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "4362e343ab2da77f8b5749b237e592861eb2fa5dc93923909fd196283e9481d2",
+    "stderrSha256": "99875534baf3fd988bc8b8aa06bd9d7fb7822d0163b55d5a62b0f7dc9f9ddd48",
+    "receipt": "evidence/full-v2/S04.json"
+  },
+  {
+    "id": "S05",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=30s",
+      "1800s",
+      "nix",
+      "develop",
+      "--quiet",
+      "-c",
+      "just",
+      "lean"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S05",
+    "charge": "substantive",
+    "launched": true,
+    "start": "2026-09-06T05:14:19.110Z",
+    "spend": {
+      "substantive": 6,
+      "targeted": 5
+    },
+    "obligation": "explicit theorem-kind arm omitted: permanent classifier must name actual unclassified declarations",
+    "finish": "2026-09-06T05:15:34.916Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "4a15cd9ff05c75aaa1a5abba584f995f1a8f8f2c6f7959c39c492061c6314284",
+    "stderrSha256": "1be963c8906455aa7317f4c0d17bb81eb41971ae3c0dc06b8fd3c26404d70174",
+    "receipt": "evidence/full-v2/S05.json"
+  },
+  {
+    "id": "S06",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=30s",
+      "1800s",
+      "nix",
+      "develop",
+      "--quiet",
+      "-c",
+      "just",
+      "lean"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S06",
+    "charge": "substantive",
+    "launched": true,
+    "start": "2026-09-06T05:15:35.122Z",
+    "spend": {
+      "substantive": 7,
+      "targeted": 5
+    },
+    "obligation": "C4 present executable checker unconditional success; mandatory receipt must reject",
+    "finish": "2026-09-06T05:16:27.677Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "3074861b47d2505ab5d1305c7d9b936dc53024a4565c1a12f42257d8daba908f",
+    "stderrSha256": "4018a5dbcc8c8fc34b39388b22ae1a2a8543b2099947157046321de613606a34",
+    "receipt": "evidence/full-v2/S06.json"
+  },
+  {
+    "id": "S07",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=30s",
+      "1800s",
+      "nix",
+      "develop",
+      "--quiet",
+      "-c",
+      "just",
+      "lean"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S07",
+    "charge": "substantive",
+    "launched": true,
+    "start": "2026-09-06T05:16:27.893Z",
+    "spend": {
+      "substantive": 8,
+      "targeted": 5
+    },
+    "obligation": "P01 body original whole mandatory path, separate from selected helpers",
+    "finish": "2026-09-06T05:16:44.540Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "6bdc41758806f3442a99d0c9d16e298a68630a572c6a64e654dfdf39b8856c08",
+    "stderrSha256": "df76501a10dd165366039b4e9a16589f02c1566848f9a908187e5d46ddac25a1",
+    "receipt": "evidence/full-v2/S07.json"
+  },
+  {
+    "id": "S08",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=30s",
+      "1800s",
+      "nix",
+      "develop",
+      "--quiet",
+      "-c",
+      "just",
+      "lean"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S08",
+    "charge": "substantive",
+    "launched": true,
+    "start": "2026-09-06T05:16:44.750Z",
+    "spend": {
+      "substantive": 9,
+      "targeted": 5
+    },
+    "obligation": "P07 close permission body original whole mandatory path",
+    "finish": "2026-09-06T05:17:03.736Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "6bdc41758806f3442a99d0c9d16e298a68630a572c6a64e654dfdf39b8856c08",
+    "stderrSha256": "0af63d64cf704f7f53df6e0e00354919d3712fb0d94734f7ef6aca50338ddc45",
+    "receipt": "evidence/full-v2/S08.json"
+  },
+  {
+    "id": "S11",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=30s",
+      "1800s",
+      "nix",
+      "develop",
+      "--quiet",
+      "-c",
+      "just",
+      "lean"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S11",
+    "charge": "substantive",
+    "launched": true,
+    "start": "2026-09-06T05:18:27.302Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 5
+    },
+    "obligation": "C2 missing counterpart for introduced owned definition and opaque predicate; recover actual observation after S02 import-graph setup failure",
+    "finish": "2026-09-06T05:20:06.613Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "03e0a224394e36caa91497f1b56adfe1814223756d9686b46eac50543a842074",
+    "stderrSha256": "372bda8c5a9d92dd14db0d43fc553aef55305cbbbac3168a04ade84a706ccb56",
+    "receipt": "evidence/full-v2/S11.json"
+  },
+  {
+    "id": "A01",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A01.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:20:06.693Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 6
+    },
+    "obligation": "R11/R12 C5-C23 P02 cassa contribution; conservationB -> conservation_corr",
+    "finish": "2026-09-06T05:20:07.135Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "d61a1922415407bcb4f0a2c61d5ef8ea7c2207c8b48cba0643cd0e59530973cd",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A01.json"
+  },
+  {
+    "id": "A24",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A24.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:20:07.220Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 7
+    },
+    "obligation": "R11/R12 C5-C23 K1 approval uniqueness; pendingWellFormedB -> KelGroups.pendingWellFormed_corr",
+    "finish": "2026-09-06T05:20:07.668Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "6a93e1f97a311a41efee72aa8559fc72e97f269f12ad10a770bccff257bbaf93",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A24.json"
+  },
+  {
+    "id": "A34",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A34.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:20:07.755Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 8
+    },
+    "obligation": "R11/R12 C5-C23 V1 assent uniqueness; questionCleanB -> KelGroups.Vote.questionClean_corr",
+    "finish": "2026-09-06T05:20:08.197Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "4af968d542fa3ade23c98a5163917b5b7b6e5c60e832af3c61a89af3111d6e7e",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A34.json"
+  },
+  {
+    "id": "EconomyWitnesses",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EconomyWitnesses.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:20:08.279Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 9
+    },
+    "obligation": "R14/P02-P06/P08-P10/P12 nondegenerate finite decisions",
+    "finish": "2026-09-06T05:20:08.777Z",
+    "exit": 0,
+    "signal": null,
+    "stdoutSha256": "88123bd211b1e17df2277a6bf29e42e912ecb8b016ca822ff740ff8d20893330",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/EconomyWitnesses.json"
+  },
+  {
+    "id": "GroupWitnesses",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/GroupWitnesses.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:20:08.862Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 10
+    },
+    "obligation": "K1-K5 V1-V3 callable policy/generic payload witnesses",
+    "finish": "2026-09-06T05:20:09.385Z",
+    "exit": 0,
+    "signal": null,
+    "stdoutSha256": "5c9965b1e0e244f2fba7b08c4a1264f6307999a689fe1c3e5ddf6dc4e57da089",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/GroupWitnesses.json"
+  },
+  {
+    "id": "Exceptions",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:20:09.473Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 11
+    },
+    "obligation": "P11 V4 R0 exception logical and executable evidence; Reach/Reach.below exact inductive scope",
+    "finish": "2026-09-06T05:20:10.190Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "f81a38993cd59298ea1b8075a679e996893004b3a30ee91ad685cb7147a3c178",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/Exceptions.json"
+  },
+  {
+    "id": "A02",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A02.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:27:47.594Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 12
+    },
+    "obligation": "R11/R12 C5-C23 P02 conto contribution; conservationB -> conservation_corr",
+    "finish": "2026-09-06T05:27:48.052Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "2535eace3880ae6723583a995db9321e40bd0b05ef349baf2b21fff78ebe2f9b",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A02.json"
+  },
+  {
+    "id": "A03",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A03.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:27:48.141Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 13
+    },
+    "obligation": "R11/R12 C5-C23 P02 escrow contribution; conservationB -> conservation_corr",
+    "finish": "2026-09-06T05:27:48.628Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "33de0bfa50b13bdf3aec6acfbb948df62607688ed3952e9f23b7920bf9a1f512",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A03.json"
+  },
+  {
+    "id": "A04",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A04.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:27:48.714Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 14
+    },
+    "obligation": "R11/R12 C5-C23 P03 member balance nonnegative; solventB -> solvent_corr",
+    "finish": "2026-09-06T05:27:49.175Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "f1ec2fd07abc5b000b207d682288bd242f4ed914ee4b663a96005dcb46300308",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A04.json"
+  },
+  {
+    "id": "A05",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A05.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:27:49.262Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 15
+    },
+    "obligation": "R11/R12 C5-C23 P03 accepted pledge carrier; solventB -> solvent_corr",
+    "finish": "2026-09-06T05:27:49.729Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "6c479c1cbc88e642c5d597824a7da096c6cd1e5888cc093a8e5b109c3a1a7422",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A05.json"
+  },
+  {
+    "id": "A06",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A06.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:27:49.814Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 16
+    },
+    "obligation": "R11/R12 C5-C23 P03 pending pledge carrier; solventB -> solvent_corr",
+    "finish": "2026-09-06T05:27:50.278Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "3a34086904326924bea190b49e27a63e8030e44d9bfb15b24441c17fa940976a",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A06.json"
+  },
+  {
+    "id": "A07",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A07.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:27:50.364Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 17
+    },
+    "obligation": "R11/R12 C5-C23 P03 pledge amount nonnegative; solventB -> solvent_corr",
+    "finish": "2026-09-06T05:27:50.811Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "3f34a9945c03fc46c42b57d8e52f9ad1881bebadb0ca1b187ff38cee3a12d601",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A07.json"
+  },
+  {
+    "id": "A08",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A08.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:27:50.900Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 18
+    },
+    "obligation": "R11/R12 C5-C23 P03 canonical member carrier; solventB -> solvent_corr",
+    "finish": "2026-09-06T05:27:51.353Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "255d8a934b84c5ab73eac4cea0afe95b3ad0a44492f152b82c6e9febfffb89d5",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A08.json"
+  },
+  {
+    "id": "A09",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A09.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:27:51.437Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 19
+    },
+    "obligation": "R11/R12 C5-C23 P04 negative balance condition; insolventB -> insolvent_corr",
+    "finish": "2026-09-06T05:27:51.895Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "3484a6131f1b7897c1562edc5d47bdbc0ef36ab21fb5b75899bd4388e81e1936",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A09.json"
+  },
+  {
+    "id": "A10",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A10.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:27:51.984Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 20
+    },
+    "obligation": "R11/R12 C5-C23 P04 existential member carrier; insolventB -> insolvent_corr",
+    "finish": "2026-09-06T05:27:52.422Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "67d3c88f8be013cdd6ca9bfabb451f358825d3e7aa826e9c5e0c1552d4282751",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A10.json"
+  },
+  {
+    "id": "A11",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A11.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:27:52.510Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 21
+    },
+    "obligation": "R11/R12 C5-C23 P05 equal-user pledge equality; uniquePledgesB -> uniquePledges_corr",
+    "finish": "2026-09-06T05:27:52.992Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "dcdf011cedb71ff5fd543214db86f68de4da24c1216872a943710c57b0e2d12e",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A11.json"
+  },
+  {
+    "id": "A12",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A12.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:27:53.079Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 22
+    },
+    "obligation": "R11/R12 C5-C23 P05 equal-user antecedent; uniquePledgesB -> uniquePledges_corr",
+    "finish": "2026-09-06T05:27:53.542Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "a2cffe53864f251f08fb9ca3c88fccc1140ee5a439b5130bf86c006310078474",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A12.json"
+  },
+  {
+    "id": "A13",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A13.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:27:53.628Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 23
+    },
+    "obligation": "R11/R12 C5-C23 P05 accepted outer carrier; uniquePledgesB -> uniquePledges_corr",
+    "finish": "2026-09-06T05:27:54.099Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "4b96e0467388c7d941a83fcc4808f8a5a349b8653ccac392a401905faeec7d30",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A13.json"
+  },
+  {
+    "id": "A14",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A14.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:27:54.188Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 24
+    },
+    "obligation": "R11/R12 C5-C23 P05 pending outer carrier; uniquePledgesB -> uniquePledges_corr",
+    "finish": "2026-09-06T05:27:54.644Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "35082cf6665a1bc5b9b0e36b77c71d76a70fae4c72c73190fca573e5f5ef6513",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A14.json"
+  },
+  {
+    "id": "A15",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A15.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:27:54.730Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 25
+    },
+    "obligation": "R11/R12 C5-C23 P06 every collection; allUniquePledgesB -> allUniquePledges_corr",
+    "finish": "2026-09-06T05:27:55.210Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "21dba4f31496d3c21b23ec333c931df03881429fe836cd907dceb790a9089dba",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A15.json"
+  },
+  {
+    "id": "A16",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A16.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:27:55.297Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 26
+    },
+    "obligation": "R11/R12 C5-C23 P08 selected held amount; escrowHeldB -> escrowHeld_corr",
+    "finish": "2026-09-06T05:27:55.753Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "1258d5e146723e6eae22d982beef1c343109b2fead350277f662307419c5e664",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A16.json"
+  },
+  {
+    "id": "A17",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A17.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:27:55.852Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 27
+    },
+    "obligation": "R11/R12 C5-C23 P08 absent held amount; escrowHeldB -> escrowHeld_corr",
+    "finish": "2026-09-06T05:27:56.289Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "9415be000a0438feabfa2d54a0581165225684db8dfe5cce7e48d22a6656a349",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A17.json"
+  },
+  {
+    "id": "A18",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A18.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:27:56.376Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 28
+    },
+    "obligation": "R11/R12 C5-C23 P09 removed referent exclusion; governanceEnactsB -> governanceEnacts_corr",
+    "finish": "2026-09-06T05:27:56.839Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "3e771258e1aac45e86a8c40dea2a6b6395cc7453489e13028d64d52ee62b72a2",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A18.json"
+  },
+  {
+    "id": "A19",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A19.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:27:56.928Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 29
+    },
+    "obligation": "R11/R12 C5-C23 P10 conto effect; doubleEntryB -> doubleEntry_corr",
+    "finish": "2026-09-06T05:27:57.401Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "b93e8d667f984dfb91361f672c67bcaed9cd70a9f88302882a6a8c747e5c6a03",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A19.json"
+  },
+  {
+    "id": "A20",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A20.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:27:57.490Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 30
+    },
+    "obligation": "R11/R12 C5-C23 P10 cassa effect; doubleEntryB -> doubleEntry_corr",
+    "finish": "2026-09-06T05:27:57.970Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "75ad192a699ec77918a8cfe49df575a363a6e7f32d3bbfba7dd1238a29b15fb1",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A20.json"
+  },
+  {
+    "id": "A21",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A21.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:27:58.061Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 31
+    },
+    "obligation": "R11/R12 C5-C23 P12 member balance zero; canCloseGroupB -> canCloseGroup_corr",
+    "finish": "2026-09-06T05:27:58.521Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "d3f08023c1e044398961ac8db7467e4dda45d17486d04741b7a4aeeb3c8404a3",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A21.json"
+  },
+  {
+    "id": "A22",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A22.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:27:58.616Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 32
+    },
+    "obligation": "R11/R12 C5-C23 P12 no open collections; canCloseGroupB -> canCloseGroup_corr",
+    "finish": "2026-09-06T05:27:59.103Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "0d2f85d80e0d2f10363a6e059936eba637f327fb0eccc11832961e057665550d",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A22.json"
+  },
+  {
+    "id": "A23",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A23.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:27:59.194Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 33
+    },
+    "obligation": "R11/R12 C5-C23 P12 all cassa balances zero; canCloseGroupB -> canCloseGroup_corr",
+    "finish": "2026-09-06T05:27:59.678Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "12b74fa7a626067e8535ce6584f47aef0d7efec562e480bc01f869edbcbfe001",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A23.json"
+  },
+  {
+    "id": "A25",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A25.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:27:59.768Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 34
+    },
+    "obligation": "R11/R12 C5-C23 K1 proposer assent; pendingWellFormedB -> KelGroups.pendingWellFormed_corr",
+    "finish": "2026-09-06T05:28:00.209Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "707ef31fd8b9698e4c33aeab52f49481ef4636a12a179edc1ce328b8db439e9d",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A25.json"
+  },
+  {
+    "id": "A26",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A26.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:00.306Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 35
+    },
+    "obligation": "R11/R12 C5-C23 K2 keyed canonical member; membersCoherentB -> KelGroups.membersCoherent_corr",
+    "finish": "2026-09-06T05:28:00.765Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "0743295e8fba848cc64a4ffc998812cba014cca3f90d0f3923202763f077b4ba",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A26.json"
+  },
+  {
+    "id": "A27",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A27.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:00.856Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 36
+    },
+    "obligation": "R11/R12 C5-C23 K3 pending coherence; pendingCoherentB -> KelGroups.pendingCoherent_corr",
+    "finish": "2026-09-06T05:28:01.336Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "05f5bf4246c05b4aed5e23e196db6ee5b4f8e18eac2616e6193b9d3a37a34b90",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A27.json"
+  },
+  {
+    "id": "A28",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A28.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:01.424Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 37
+    },
+    "obligation": "R11/R12 C5-C23 K4 member key uniqueness; wellFormedB -> KelGroups.wellFormed_corr",
+    "finish": "2026-09-06T05:28:01.861Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "5d9ca6df286f1d27a1ae9983ebca0eac9efee1661b207e2aab1ccf1cfbbf3b6c",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A28.json"
+  },
+  {
+    "id": "A29",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A29.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:01.944Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 38
+    },
+    "obligation": "R11/R12 C5-C23 K4 proposal key uniqueness; wellFormedB -> KelGroups.wellFormed_corr",
+    "finish": "2026-09-06T05:28:02.411Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "2074ce2d4c3cc4597b3b8678f41f12ad025f527275eb029e71bdb86a29243f19",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A29.json"
+  },
+  {
+    "id": "A30",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A30.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:02.496Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 39
+    },
+    "obligation": "R11/R12 C5-C23 K4 member coherence; wellFormedB -> KelGroups.wellFormed_corr",
+    "finish": "2026-09-06T05:28:02.943Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "bf002450ca99565a088ceeb369b4792d6089459ec958eb20fee19d6ceed961f8",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A30.json"
+  },
+  {
+    "id": "A31",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A31.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:03.030Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 40
+    },
+    "obligation": "R11/R12 C5-C23 K4 proposal coherence; wellFormedB -> KelGroups.wellFormed_corr",
+    "finish": "2026-09-06T05:28:03.471Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "0419dde2bd40b5bd6cd4a438487c4578dda99e17ac5556fc6f46c98986bcf1c1",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A31.json"
+  },
+  {
+    "id": "A32",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A32.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:03.561Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 41
+    },
+    "obligation": "R11/R12 C5-C23 K5 actual enactment presence; enactsB -> KelGroups.enacts_corr",
+    "finish": "2026-09-06T05:28:04.013Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "a0410afacb9ccb1f2cb931469a6b191eec1067526a42b66b9eeeb6cf8b02a51a",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A32.json"
+  },
+  {
+    "id": "A33",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A33.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:04.113Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 42
+    },
+    "obligation": "R11/R12 C5-C23 K5 exact resulting state; enactsB -> KelGroups.enacts_corr",
+    "finish": "2026-09-06T05:28:04.585Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "8693a998167c807d6e2cf547f930e2b58019b4984a660ef2ee542cba3425ebc7",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A33.json"
+  },
+  {
+    "id": "A35",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A35.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:04.670Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 43
+    },
+    "obligation": "R11/R12 C5-C23 V1 dissent uniqueness; questionCleanB -> KelGroups.Vote.questionClean_corr",
+    "finish": "2026-09-06T05:28:05.128Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "4fb80e61c44d8df491c440d029853db66f23d42534874fb47045308b7c539f75",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A35.json"
+  },
+  {
+    "id": "A36",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A36.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:05.217Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 44
+    },
+    "obligation": "R11/R12 C5-C23 V1 tally disjointness; questionCleanB -> KelGroups.Vote.questionClean_corr",
+    "finish": "2026-09-06T05:28:05.691Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "ab12f323914270bbd0f10a2b9d84b2c42e44552f1fad404702dc422cabad0d0b",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A36.json"
+  },
+  {
+    "id": "A37",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A37.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:05.778Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 45
+    },
+    "obligation": "R11/R12 C5-C23 V2 open question key uniqueness; sweepReadyB -> KelGroups.Vote.sweepReady_corr",
+    "finish": "2026-09-06T05:28:06.215Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "f22c344a3b07f15393fce6bcd9d8c7ea7ed9664e8cece13fd132198c117e55e4",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A37.json"
+  },
+  {
+    "id": "A38",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A38.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:06.300Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 46
+    },
+    "obligation": "R11/R12 C5-C23 V2 closed question key uniqueness; sweepReadyB -> KelGroups.Vote.sweepReady_corr",
+    "finish": "2026-09-06T05:28:06.751Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "4b517bf03247f5fd3af311145bfafda5b32752249524f40b68c7510415d04bfd",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A38.json"
+  },
+  {
+    "id": "A39",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A39.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:06.838Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 47
+    },
+    "obligation": "R11/R12 C5-C23 V2 open closed disjointness; sweepReadyB -> KelGroups.Vote.sweepReady_corr",
+    "finish": "2026-09-06T05:28:07.313Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "e708b5bea9c9172505720824b24464644f21d1e227b66da0c8cea3a30a7dd099",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A39.json"
+  },
+  {
+    "id": "A40",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A40.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:07.407Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 48
+    },
+    "obligation": "R11/R12 C5-C23 V2 lookup-selected open question cleanliness; sweepReadyB -> KelGroups.Vote.sweepReady_corr",
+    "finish": "2026-09-06T05:28:07.882Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "2eff52cd2b2e1ad7a3d7d257b271b99c8612a97a6b1f08126f04c8ddd15ce743",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A40.json"
+  },
+  {
+    "id": "A41",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A41.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:07.970Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 49
+    },
+    "obligation": "R11/R12 C5-C23 V2 closed question cleanliness; sweepReadyB -> KelGroups.Vote.sweepReady_corr",
+    "finish": "2026-09-06T05:28:08.435Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "46720778bdc68f2abfe4be143b37dc5004b45f99618551258a24cacd82ed0b3b",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A41.json"
+  },
+  {
+    "id": "A42",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A42.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:08.528Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 50
+    },
+    "obligation": "R11/R12 C5-C23 V2 no open verdict in closed; sweepReadyB -> KelGroups.Vote.sweepReady_corr",
+    "finish": "2026-09-06T05:28:08.977Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "6375b8f7ba6dd7b9c545a18477d92513befbecdd0737f2d0c19c0c6052f6f116",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A42.json"
+  },
+  {
+    "id": "A43",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A43.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:09.071Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 51
+    },
+    "obligation": "R11/R12 C5-C23 V3 sweep shape; voteWellFormedB -> KelGroups.Vote.voteWellFormed_corr",
+    "finish": "2026-09-06T05:28:09.561Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "b212e4be8ddc377c4e7598a5af91d5b676542c9c562a42da8af655a93e2312f1",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A43.json"
+  },
+  {
+    "id": "A44",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A44.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:09.654Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 52
+    },
+    "obligation": "R11/R12 C5-C23 V3 callable threshold open verdict; voteWellFormedB -> KelGroups.Vote.voteWellFormed_corr",
+    "finish": "2026-09-06T05:28:10.162Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "b30062d8638030d00594c00d48bc01d94d05a8696540bab7946d8e7606703edd",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/A44.json"
+  },
+  {
+    "id": "P01-compile",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "--root=/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/shadows/P01",
+      "-o",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/shadow-P01/KelGroups/Types.olean",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/shadows/P01/KelGroups/Types.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:10.288Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 53
+    },
+    "obligation": "P01 isolated single-module shadow compilation",
+    "finish": "2026-09-06T05:28:11.190Z",
+    "exit": 0,
+    "signal": null,
+    "stdoutSha256": "99bc965f9eabac8f3c9123ac5bdc4f90c0de5277ddb5849226b43d31aaaf304e",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/P01-compile.json"
+  },
+  {
+    "id": "P01-neg",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/shadow-P01",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/P01-chain.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:11.252Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 54
+    },
+    "obligation": "P01 amended body/consumer sensitivity and distinguishing witness",
+    "finish": "2026-09-06T05:28:11.616Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "0cc9f34867d729d1c48d9b4cceea4c605b95dbcaef97576989667440d9a2a8ec",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/P01-neg.json"
+  },
+  {
+    "id": "P01-pos",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/P01-chain.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:11.700Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 55
+    },
+    "obligation": "P01 otherwise-identical positive selected chain and nondegenerate witness",
+    "finish": "2026-09-06T05:28:12.054Z",
+    "exit": 0,
+    "signal": null,
+    "stdoutSha256": "ee2c98ef209b7362750a40bdec3a689312e432645b8e773befba32b335279291",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/P01-pos.json"
+  },
+  {
+    "id": "P01-relatum",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/P01-relatum.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:12.146Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 56
+    },
+    "obligation": "P01 original inline/value-parametric relation accurately scoped",
+    "finish": "2026-09-06T05:28:12.457Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "219e555d9bb3d902af17a49089664df9a90311442d772e5c38aeaad48deab8d1",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/P01-relatum.json"
+  },
+  {
+    "id": "P07-compile",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "--root=/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/shadows/P07",
+      "-o",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/shadow-P07/Reactivegas/Step.olean",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/shadows/P07/Reactivegas/Step.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:12.585Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 57
+    },
+    "obligation": "P07 isolated single-module shadow compilation",
+    "finish": "2026-09-06T05:28:13.724Z",
+    "exit": 0,
+    "signal": null,
+    "stdoutSha256": "932c49fa56ade4b690f0384fe1e7fe760396f27b332c245230d9c7d561042450",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/P07-compile.json"
+  },
+  {
+    "id": "P07-neg",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/shadow-P07:/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/P07-chain.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:13.815Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 58
+    },
+    "obligation": "P07 amended body/consumer sensitivity and distinguishing witness",
+    "finish": "2026-09-06T05:28:13.962Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "ac78871b2c138691679456dc13d0fec318961e942e8af8d179d29bab90e07ee2",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/P07-neg.json"
+  },
+  {
+    "id": "P07-pos",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/P07-chain.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:14.052Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 59
+    },
+    "obligation": "P07 otherwise-identical positive selected chain and nondegenerate witness",
+    "finish": "2026-09-06T05:28:14.473Z",
+    "exit": 0,
+    "signal": null,
+    "stdoutSha256": "cccb5c3bbcda9b4507f3e04264d876439debed68ed567c20c17103d8877310f7",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/P07-pos.json"
+  },
+  {
+    "id": "P07-relatum",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/P07-relatum.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:14.562Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 60
+    },
+    "obligation": "P07 original inline/value-parametric relation accurately scoped",
+    "finish": "2026-09-06T05:28:14.879Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "1eb5e5030d739d3eee8c08091613d4a6c3cbe8aa84910db6174de6ab107b6720",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/P07-relatum.json"
+  },
+  {
+    "id": "WitnessNegative",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/WitnessNegative.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:14.973Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 61
+    },
+    "obligation": "witness assertion can-fail instrument",
+    "finish": "2026-09-06T05:28:15.486Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "1c0dcf77a300b873215f3e47037b724ac0caea240d5a418f3d117c1ac26223ac",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/WitnessNegative.json"
+  },
+  {
+    "id": "ReachDecision",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/ReachDecision.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:15.577Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 62
+    },
+    "obligation": "Reach bounded Decidable availability query",
+    "finish": "2026-09-06T05:28:15.863Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "c9e7d3aa1f50aa9e647223a0a94f91be30f3454ef5c3fec5f4dadc4a2fc532b7",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/ReachDecision.json"
+  },
+  {
+    "id": "EmptyInventory",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/EmptyInventory.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:15.954Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 63
+    },
+    "obligation": "independent census nonempty self-control",
+    "finish": "2026-09-06T05:28:18.033Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "1565b4beb782162b45b43461696fb5abdcda6560b06402f9228c7b34ae6c8720",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/EmptyInventory.json"
+  },
+  {
+    "id": "UnknownInventory",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/UnknownInventory.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:18.130Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 64
+    },
+    "obligation": "independent census unresolved-sort self-control",
+    "finish": "2026-09-06T05:28:34.261Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "cd464d9e34298103e016246feb43f18c3b80e10fb7f9e55e221b1c461ebed141",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/UnknownInventory.json"
+  },
+  {
+    "id": "AxiomsNegative",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v3/AxiomsNegative.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:28:34.358Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 65
+    },
+    "obligation": "axiom allowed-list self-control",
+    "finish": "2026-09-06T05:28:52.252Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "d941dd3983ef4e0f3950d34ef8c1c4457969c7dd4486d28784379d63012eae9b",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/AxiomsNegative.json"
+  },
+  {
+    "id": "P07-negR",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/shadow-P07-v5",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/P07-chain.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:48:08.572Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 66
+    },
+    "obligation": "P07 selected original inversion chain and mutant forbidden-close witness, repaired complete isolated package overlay",
+    "finish": "2026-09-06T05:48:09.025Z",
+    "exit": 1,
+    "signal": null,
+    "stdoutSha256": "4189953e72f200fcceba14ac35434234b8561a1470c65038025770ae8a416f28",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/P07-negR.json"
+  },
+  {
+    "id": "ExceptionsR",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v4/ExceptionsR.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:48:09.123Z",
+    "spend": {
+      "substantive": 10,
+      "targeted": 67
+    },
+    "obligation": "Recover Exceptions P11 runtime projection evidence after counted auditor Decidable-instance setup failure; same statements and all R0/V4/Reach observations",
+    "finish": "2026-09-06T05:48:09.959Z",
+    "exit": 0,
+    "signal": null,
+    "stdoutSha256": "a85eb16477a71dc9b981d26570bd8f99b1b85fde8d97cf26d14d0b7da5c99832",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/ExceptionsR.json"
+  },
+  {
+    "id": "S09",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=30s",
+      "1800s",
+      "nix",
+      "develop",
+      "--quiet",
+      "-c",
+      "bash",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/base-build.sh"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S09",
+    "charge": "substantive",
+    "launched": true,
+    "start": "2026-09-06T05:48:10.144Z",
+    "spend": {
+      "substantive": 11,
+      "targeted": 67
+    },
+    "obligation": "cold accepted-base build for compiled expression preservation comparison",
+    "finish": "2026-09-06T05:48:48.097Z",
+    "exit": 0,
+    "signal": null,
+    "stdoutSha256": "c410523bf7a42aee9f16ea4ff0d7d840095f504e905afe6b132bc5cbf9bd46de",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/S09.json"
+  },
+  {
+    "id": "BaseInventory",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S09/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/BaseInventory.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:48:48.185Z",
+    "spend": {
+      "substantive": 11,
+      "targeted": 68
+    },
+    "obligation": "R1/R5/R15 source->compiled accepted-base universe for original Expr preservation",
+    "finish": "2026-09-06T05:49:03.951Z",
+    "exit": 0,
+    "signal": null,
+    "stdoutSha256": "53380895016bc378ba646b292ea5338691998abccbfae29a861365f57d912c7b",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/BaseInventory.json"
+  },
+  {
+    "id": "expr-compare",
+    "argv": [
+      "timeout",
+      "300s",
+      "node",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/data-checks.mjs",
+      "expr-compare"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:49:04.036Z",
+    "spend": {
+      "substantive": 11,
+      "targeted": 69
+    },
+    "obligation": "R1/R5/R15 every original compiled declaration statement/proof/definition preservation",
+    "finish": "2026-09-06T05:49:07.755Z",
+    "exit": 0,
+    "signal": null,
+    "stdoutSha256": "b62f466d83f38c1088ed19a249885140d15536c630e4b94e59fd1ac2ff8a4f23",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/expr-compare.json"
+  },
+  {
+    "id": "S10",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=30s",
+      "1800s",
+      "nix",
+      "develop",
+      "--quiet",
+      "-c",
+      "just",
+      "ci"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S10",
+    "charge": "substantive",
+    "launched": true,
+    "start": "2026-09-06T05:50:26.431Z",
+    "spend": {
+      "substantive": 12,
+      "targeted": 69
+    },
+    "obligation": "C26 restored final candidate cold full CI; prerequisite to final inventory/axiom trust",
+    "finish": "2026-09-06T05:53:21.856Z",
+    "exit": 0,
+    "signal": null,
+    "stdoutSha256": "c0d10f287764f222b46f804aba22ffd62ab6e08bb478cbb40b687a6e02ee54fa",
+    "stderrSha256": "b52f164044a7f30051a39b242933fca8827238913d17d2123a2d3054b4df00f0",
+    "receipt": "evidence/full-v2/S10.json"
+  },
+  {
+    "id": "FinalInventory",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S10/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/FinalInventory.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:53:21.941Z",
+    "spend": {
+      "substantive": 12,
+      "targeted": 70
+    },
+    "obligation": "R7/R13 final compiled owned extent and sort classification, every declaration",
+    "finish": "2026-09-06T05:53:37.956Z",
+    "exit": 0,
+    "signal": null,
+    "stdoutSha256": "a7be5a77e0a168b5387596153f105b7849145ad1a3b3495ac1261d6b94415893",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/FinalInventory.json"
+  },
+  {
+    "id": "Axioms",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=10s",
+      "300s",
+      "env",
+      "LEAN_PATH=/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S10/lean/.lake/build/lib/lean",
+      "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+      "-DautoImplicit=false",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v3/Axioms.lean"
+    ],
+    "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:53:38.050Z",
+    "spend": {
+      "substantive": 12,
+      "targeted": 71
+    },
+    "obligation": "C24/R13 final every owned theorem #print axioms",
+    "finish": "2026-09-06T05:53:55.637Z",
+    "exit": 0,
+    "signal": null,
+    "stdoutSha256": "592f8c83bf93bcf8598b8b4fd49e5fb99aa2cc7db44659575d44a4634fefbdcb",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/Axioms.json"
+  },
+  {
+    "id": "final-reconcile",
+    "argv": [
+      "timeout",
+      "300s",
+      "node",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v3/data-checks.mjs",
+      "final-reconcile"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:53:55.703Z",
+    "spend": {
+      "substantive": 12,
+      "targeted": 72
+    },
+    "obligation": "R7 final mandatory receipt versus independent discovery, restoration",
+    "finish": "2026-09-06T05:53:59.462Z",
+    "exit": 0,
+    "signal": null,
+    "stdoutSha256": "0e14267729f4032064c7f357d21e51d1423090db023fb49fe9fe49464d33044f",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/final-reconcile.json"
+  },
+  {
+    "id": "panic-final",
+    "argv": [
+      "timeout",
+      "60s",
+      "node",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v4/panic-check.mjs",
+      "final"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2",
+    "charge": "targeted",
+    "launched": true,
+    "start": "2026-09-06T05:53:59.551Z",
+    "spend": {
+      "substantive": 12,
+      "targeted": 73
+    },
+    "obligation": "C25 both-stream PANIC at absence final",
+    "finish": "2026-09-06T05:53:59.603Z",
+    "exit": 0,
+    "signal": null,
+    "stdoutSha256": "3556e83e1767c7869c0db90fa74cdfdcbccc9a4387b994b9a20b6a5c672b166a",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "receipt": "evidence/full-v2/panic-final.json"
+  }
+]

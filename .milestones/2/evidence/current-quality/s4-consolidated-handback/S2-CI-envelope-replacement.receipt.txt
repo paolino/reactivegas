@@ -1,0 +1,28 @@
+=== S2 FINAL-CI ENVELOPE REPLACEMENT (NOTE-037, one artifact) ===
+cwd: /code/reactivegas-66-s4b
+command: nix develop --quiet -c just ci
+accepted-base: 3590c0015b84fd58004bf6fb44dd18b107304c48
+--- OBSERVED BEFORE ---
+head-before: 04eb6c7d9aeb2a3602fca5ece14cbc033221cb43
+tree-before: caaa0488f39a6afb2553680a11fd6bfd86d1c90b
+--- porcelain BEFORE (--untracked-files=all) ---
+(end-before)
+start-utc: 2026-09-06T07:55:16.234187728Z
+exit-code-captured-from-ci-process: 0
+capture-method: direct $? of the nix develop process; output redirected with > ; NO tee in the pipeline
+end-utc: 2026-09-06T07:56:33.983919053Z
+--- OBSERVED AFTER ---
+head-after: 04eb6c7d9aeb2a3602fca5ece14cbc033221cb43
+tree-after: caaa0488f39a6afb2553680a11fd6bfd86d1c90b
+--- porcelain AFTER (--untracked-files=all) ---
+(end-after)
+--- ASSERTIONS ---
+ASSERT head-after==candidate: PASS
+ASSERT tree-after==tree: PASS
+ASSERT worktree-after clean: PASS
+--- FULL-STREAM DIGEST ---
+6077f29c1426d372d01b910cfda9b12951642c9580522c98bb2fffd7e571c91f  /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/S2-CI-envelope-replacement.log
+--- PRIOR ARTIFACTS UNCHANGED (expect the recorded values) ---
+fbc50e0d75d365f3d0a60d5641d24c58d65f3270dd70f81b7051072164818564  /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/S2-CI-final-clean.log
+4ae61290e9c7b1038127546b3652f3a23adbe09a3e05d7aba82a2f23fb451a48  /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/S2-CI-final-clean.receipt.txt
+b6a16cfe60e6e07204b4191fd0c93dbdb2c8def107715144cc16ebfef946e34d  /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/S2-CI-comment-only.log

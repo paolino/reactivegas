@@ -1,0 +1,1699 @@
+===== LEG 1: tracked hygiene (before) =====
+LEG-PASS: 1-before: no tracked drift
+===== LEG 2: identity + self-hash =====
+HEAD=368b596fef0b6d393c2ac7afc631d236c55d86d1
+GATE_SHA256(header)=e358cc3884c2c60174a79afca6dd1a903aac639fc2ca867a97ec53984a5836d8
+GATE_SHA256(normalized-bytes)=e358cc3884c2c60174a79afca6dd1a903aac639fc2ca867a97ec53984a5836d8
+LEG-PASS: 2: header hash equals executable bytes (normalized)
+NOTE leg2: HEAD equals frozen base (pre-change RED expected)
+evidence dir: /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/evidence (override via G28_EVIDENCE_DIR)
+===== LEG 2b: instruments pinned exact, fail closed =====
+nix: [nix (Nix) 2.31.3+2] exit=0
+ghc: [The Glorious Glasgow Haskell Compilation System, version 9.8.4] (batch exit=0)
+cabal: [cabal-install version 3.16.1.0 ] (batch exit=0)
+lake: [Lake version 5.0.0-src+v4.25.0 (Lean version 4.25.0)] (batch exit=0)
+node: [v20.19.6] (batch exit=0)
+spago: [1.0.3] (batch exit=0)
+just: [just 1.43.1] (batch exit=0)
+LEG-PASS: 2b: nix exact pin
+LEG-PASS: 2b: ghc exact pin
+LEG-PASS: 2b: cabal exact pin
+LEG-PASS: 2b: lake+lean exact pin
+LEG-PASS: 2b: node exact pin
+LEG-PASS: 2b: spago exact pin
+LEG-PASS: 2b: just exact pin
+===== LEG 3: build (measured cold/warm) =====
+tree state: COLD (no dist-newstyle objects)
+cabal build all -O0
+Resolving dependencies...
+Build profile: -w ghc-9.8.4 -O0
+In order, the following will be built (use -v for more details):
+ - keri-hs-0.1.0.0 (lib) (first run)
+ - keri-hs-0.1.0.0 (exe:keri-demo) (first run)
+ - keri-hs-0.1.0.0 (exe:keri-cli) (first run)
+ - kelgroups-0.1.0.0 (lib) (first run)
+ - kelgroups-0.1.0.0 (exe:kelgroups-server) (first run)
+Configuring library for keri-hs-0.1.0.0...
+Preprocessing library for keri-hs-0.1.0.0...
+Building library for keri-hs-0.1.0.0...
+[ 1 of 23] Compiling Keri.Cesr.DerivationCode ( lib/Keri/Cesr/DerivationCode.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Cesr/DerivationCode.o, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Cesr/DerivationCode.dyn_o )
+[ 2 of 23] Compiling Keri.Cesr.Primitive ( lib/Keri/Cesr/Primitive.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Cesr/Primitive.o, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Cesr/Primitive.dyn_o )
+[ 3 of 23] Compiling Keri.Cesr.Encode ( lib/Keri/Cesr/Encode.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Cesr/Encode.o, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Cesr/Encode.dyn_o )
+[ 4 of 23] Compiling Keri.Cesr.Decode ( lib/Keri/Cesr/Decode.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Cesr/Decode.o, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Cesr/Decode.dyn_o )
+[ 5 of 23] Compiling Keri.Cesr        ( lib/Keri/Cesr.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Cesr.o, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Cesr.dyn_o )
+[ 6 of 23] Compiling Keri.Crypto.Blake3 ( lib/Keri/Crypto/Blake3.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Crypto/Blake3.o, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Crypto/Blake3.dyn_o )
+[ 7 of 23] Compiling Keri.Crypto.Digest ( lib/Keri/Crypto/Digest.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Crypto/Digest.o, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Crypto/Digest.dyn_o )
+[ 8 of 23] Compiling Keri.Crypto.Ed25519 ( lib/Keri/Crypto/Ed25519.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Crypto/Ed25519.o, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Crypto/Ed25519.dyn_o )
+[ 9 of 23] Compiling Keri.Crypto      ( lib/Keri/Crypto.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Crypto.o, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Crypto.dyn_o )
+[10 of 23] Compiling Keri.Event       ( lib/Keri/Event.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event.o, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event.dyn_o )
+[11 of 23] Compiling Keri.Event.Serialize ( lib/Keri/Event/Serialize.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Serialize.o, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Serialize.dyn_o )
+[12 of 23] Compiling Keri.Event.Version ( lib/Keri/Event/Version.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Version.o, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Version.dyn_o )
+[13 of 23] Compiling Keri.Event.Rotation ( lib/Keri/Event/Rotation.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Rotation.o, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Rotation.dyn_o )
+[14 of 23] Compiling Keri.Event.Receipt ( lib/Keri/Event/Receipt.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Receipt.o, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Receipt.dyn_o )
+[15 of 23] Compiling Keri.Event.Interaction ( lib/Keri/Event/Interaction.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Interaction.o, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Interaction.dyn_o )
+[16 of 23] Compiling Keri.Event.Inception ( lib/Keri/Event/Inception.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Inception.o, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Inception.dyn_o )
+[17 of 23] Compiling Keri.Kel         ( lib/Keri/Kel.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Kel.o, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Kel.dyn_o )
+[18 of 23] Compiling Keri.KeyState.PreRotation ( lib/Keri/KeyState/PreRotation.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/KeyState/PreRotation.o, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/KeyState/PreRotation.dyn_o )
+[19 of 23] Compiling Keri.KeyState    ( lib/Keri/KeyState.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/KeyState.o, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/KeyState.dyn_o )
+[20 of 23] Compiling Keri.Kel.Replay  ( lib/Keri/Kel/Replay.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Kel/Replay.o, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Kel/Replay.dyn_o )
+[21 of 23] Compiling Keri.KeyState.Verify ( lib/Keri/KeyState/Verify.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/KeyState/Verify.o, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/KeyState/Verify.dyn_o )
+[22 of 23] Compiling Keri.Kel.Append  ( lib/Keri/Kel/Append.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Kel/Append.o, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Kel/Append.dyn_o )
+[23 of 23] Compiling Keri.Prelude     ( lib/Keri/Prelude.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Prelude.o, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Prelude.dyn_o )
+Configuring executable 'keri-demo' for keri-hs-0.1.0.0...
+Configuring executable 'keri-cli' for keri-hs-0.1.0.0...
+Configuring library for kelgroups-0.1.0.0...
+Preprocessing executable 'keri-demo' for keri-hs-0.1.0.0...
+Building executable 'keri-demo' for keri-hs-0.1.0.0...
+Preprocessing executable 'keri-cli' for keri-hs-0.1.0.0...
+Building executable 'keri-cli' for keri-hs-0.1.0.0...
+Preprocessing library for kelgroups-0.1.0.0...
+Building library for kelgroups-0.1.0.0...
+[1 of 1] Compiling Main             ( app/demo/Main.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/x/keri-demo/noopt/build/keri-demo/keri-demo-tmp/Main.o )
+[1 of 1] Compiling Main             ( app/cli/Main.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/x/keri-cli/noopt/build/keri-cli/keri-cli-tmp/Main.o )
+[ 1 of 11] Compiling KelGroups.Jwk    ( lib/KelGroups/Jwk.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Jwk.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Jwk.dyn_o )
+[2 of 2] Linking /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/x/keri-demo/noopt/build/keri-demo/keri-demo
+[ 2 of 11] Compiling KelGroups.Types  ( lib/KelGroups/Types.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Types.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Types.dyn_o )
+[2 of 2] Linking /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/x/keri-cli/noopt/build/keri-cli/keri-cli
+[ 3 of 11] Compiling KelGroups.Event  ( lib/KelGroups/Event.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Event.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Event.dyn_o )
+[ 4 of 11] Compiling KelGroups.State  ( lib/KelGroups/State.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/State.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/State.dyn_o )
+[ 5 of 11] Compiling KelGroups.Bootstrap ( lib/KelGroups/Bootstrap.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Bootstrap.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Bootstrap.dyn_o )
+[ 6 of 11] Compiling KelGroups.Fold   ( lib/KelGroups/Fold.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Fold.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Fold.dyn_o )
+[ 7 of 11] Compiling KelGroups.Trivial ( lib/KelGroups/Trivial.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Trivial.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Trivial.dyn_o )
+[ 8 of 11] Compiling KelGroups.Validate ( lib/KelGroups/Validate.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Validate.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Validate.dyn_o )
+[ 9 of 11] Compiling KelGroups.Server.JSON ( lib/KelGroups/Server/JSON.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Server/JSON.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Server/JSON.dyn_o )
+[10 of 11] Compiling KelGroups.Store  ( lib/KelGroups/Store.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Store.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Store.dyn_o )
+[11 of 11] Compiling KelGroups.Server ( lib/KelGroups/Server.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Server.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Server.dyn_o )
+Configuring executable 'kelgroups-server' for kelgroups-0.1.0.0...
+Preprocessing executable 'kelgroups-server' for kelgroups-0.1.0.0...
+Building executable 'kelgroups-server' for kelgroups-0.1.0.0...
+[1 of 1] Compiling Main             ( app/Main.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/x/kelgroups-server/noopt/build/kelgroups-server/kelgroups-server-tmp/Main.o )
+[2 of 2] Linking dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/x/kelgroups-server/noopt/build/kelgroups-server/kelgroups-server
+build exit=0 sha256=1ea7c18a67b9b45a267ba96d3aed9ec1c7ae88937c5921459bacdb1f5f50b971
+[1 of 1] Compiling Main             ( app/demo/Main.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/x/keri-demo/noopt/build/keri-demo/keri-demo-tmp/Main.o )
+[1 of 1] Compiling Main             ( app/cli/Main.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/x/keri-cli/noopt/build/keri-cli/keri-cli-tmp/Main.o )
+[ 1 of 11] Compiling KelGroups.Jwk    ( lib/KelGroups/Jwk.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Jwk.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Jwk.dyn_o )
+[2 of 2] Linking /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/x/keri-demo/noopt/build/keri-demo/keri-demo
+[ 2 of 11] Compiling KelGroups.Types  ( lib/KelGroups/Types.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Types.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Types.dyn_o )
+[2 of 2] Linking /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/x/keri-cli/noopt/build/keri-cli/keri-cli
+[ 3 of 11] Compiling KelGroups.Event  ( lib/KelGroups/Event.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Event.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Event.dyn_o )
+[ 4 of 11] Compiling KelGroups.State  ( lib/KelGroups/State.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/State.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/State.dyn_o )
+[ 5 of 11] Compiling KelGroups.Bootstrap ( lib/KelGroups/Bootstrap.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Bootstrap.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Bootstrap.dyn_o )
+[ 6 of 11] Compiling KelGroups.Fold   ( lib/KelGroups/Fold.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Fold.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Fold.dyn_o )
+[ 7 of 11] Compiling KelGroups.Trivial ( lib/KelGroups/Trivial.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Trivial.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Trivial.dyn_o )
+[ 8 of 11] Compiling KelGroups.Validate ( lib/KelGroups/Validate.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Validate.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Validate.dyn_o )
+[ 9 of 11] Compiling KelGroups.Server.JSON ( lib/KelGroups/Server/JSON.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Server/JSON.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Server/JSON.dyn_o )
+[10 of 11] Compiling KelGroups.Store  ( lib/KelGroups/Store.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Store.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Store.dyn_o )
+[11 of 11] Compiling KelGroups.Server ( lib/KelGroups/Server.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Server.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Server.dyn_o )
+Configuring executable 'kelgroups-server' for kelgroups-0.1.0.0...
+Preprocessing executable 'kelgroups-server' for kelgroups-0.1.0.0...
+Building executable 'kelgroups-server' for kelgroups-0.1.0.0...
+[1 of 1] Compiling Main             ( app/Main.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/x/kelgroups-server/noopt/build/kelgroups-server/kelgroups-server-tmp/Main.o )
+[2 of 2] Linking dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/x/kelgroups-server/noopt/build/kelgroups-server/kelgroups-server
+LEG-PASS: 3: just build exit 0
+===== LEG 4: tests: inventory + registered + execution proof =====
+test/E2ESpec.hs
+test/FoldSpec.hs
+test/Generators.hs
+test/InvariantsSpec.hs
+test/JwkSpec.hs
+test/Main.hs
+test/MultiClientSpec.hs
+test/ServerSpec.hs
+test/StoreInvariantsSpec.hs
+test/StoreSpec.hs
+test/StoreTestDSL.hs
+test/TestHelpers.hs
+test/TransitionInvariantsSpec.hs
+test/ValidateSpec.hs
+NOTE leg4: test/S28AppApiSpec.hs absent (expected on pre-implementation base)
+group_count=0
+LEG-FAIL: 4a-INVENTORY: only 0 S28-1 groups (need >=6; base RED for absence)
+Build profile: -w ghc-9.8.4 -O0
+In order, the following will be built (use -v for more details):
+ - kelgroups-0.1.0.0 (test:invariants) (first run)
+ - keri-hs-0.1.0.0 (test:unit-tests) (first run)
+Configuring test suite 'unit-tests' for keri-hs-0.1.0.0...
+Configuring test suite 'invariants' for kelgroups-0.1.0.0...
+Preprocessing test suite 'unit-tests' for keri-hs-0.1.0.0...
+Preprocessing test suite 'invariants' for kelgroups-0.1.0.0...
+Building test suite 'unit-tests' for keri-hs-0.1.0.0...
+Building test suite 'invariants' for kelgroups-0.1.0.0...
+[ 1 of 14] Compiling Generators       ( test/Generators.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/build/invariants/invariants-tmp/Generators.o )
+[ 1 of 15] Compiling Keri.Cesr.DecodeSpec ( test/spec/Keri/Cesr/DecodeSpec.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/t/unit-tests/noopt/build/unit-tests/unit-tests-tmp/Keri/Cesr/DecodeSpec.o )
+[ 2 of 14] Compiling FoldSpec         ( test/FoldSpec.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/build/invariants/invariants-tmp/FoldSpec.o )
+[ 2 of 15] Compiling Keri.Cesr.DerivationCodeSpec ( test/spec/Keri/Cesr/DerivationCodeSpec.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/t/unit-tests/noopt/build/unit-tests/unit-tests-tmp/Keri/Cesr/DerivationCodeSpec.o )
+[ 3 of 14] Compiling InvariantsSpec   ( test/InvariantsSpec.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/build/invariants/invariants-tmp/InvariantsSpec.o )
+[ 3 of 15] Compiling Keri.Cesr.EncodeSpec ( test/spec/Keri/Cesr/EncodeSpec.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/t/unit-tests/noopt/build/unit-tests/unit-tests-tmp/Keri/Cesr/EncodeSpec.o )
+[ 4 of 14] Compiling JwkSpec          ( test/JwkSpec.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/build/invariants/invariants-tmp/JwkSpec.o )
+[ 4 of 15] Compiling Keri.CesrSpec    ( test/spec/Keri/CesrSpec.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/t/unit-tests/noopt/build/unit-tests/unit-tests-tmp/Keri/CesrSpec.o )
+[ 5 of 15] Compiling Keri.Crypto.Blake3Spec ( test/spec/Keri/Crypto/Blake3Spec.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/t/unit-tests/noopt/build/unit-tests/unit-tests-tmp/Keri/Crypto/Blake3Spec.o )
+[ 6 of 15] Compiling Keri.Crypto.DigestSpec ( test/spec/Keri/Crypto/DigestSpec.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/t/unit-tests/noopt/build/unit-tests/unit-tests-tmp/Keri/Crypto/DigestSpec.o )
+[ 7 of 15] Compiling Keri.Crypto.Ed25519Spec ( test/spec/Keri/Crypto/Ed25519Spec.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/t/unit-tests/noopt/build/unit-tests/unit-tests-tmp/Keri/Crypto/Ed25519Spec.o )
+[ 8 of 15] Compiling Keri.Event.InceptionSpec ( test/spec/Keri/Event/InceptionSpec.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/t/unit-tests/noopt/build/unit-tests/unit-tests-tmp/Keri/Event/InceptionSpec.o )
+[ 5 of 14] Compiling ServerSpec       ( test/ServerSpec.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/build/invariants/invariants-tmp/ServerSpec.o )
+[ 9 of 15] Compiling Keri.Event.InteractionSpec ( test/spec/Keri/Event/InteractionSpec.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/t/unit-tests/noopt/build/unit-tests/unit-tests-tmp/Keri/Event/InteractionSpec.o )
+[10 of 15] Compiling Keri.Event.RotationSpec ( test/spec/Keri/Event/RotationSpec.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/t/unit-tests/noopt/build/unit-tests/unit-tests-tmp/Keri/Event/RotationSpec.o )
+[11 of 15] Compiling Keri.Event.SerializeSpec ( test/spec/Keri/Event/SerializeSpec.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/t/unit-tests/noopt/build/unit-tests/unit-tests-tmp/Keri/Event/SerializeSpec.o )
+[ 6 of 14] Compiling StoreSpec        ( test/StoreSpec.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/build/invariants/invariants-tmp/StoreSpec.o )
+[12 of 15] Compiling Keri.KelSpec     ( test/spec/Keri/KelSpec.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/t/unit-tests/noopt/build/unit-tests/unit-tests-tmp/Keri/KelSpec.o )
+[13 of 15] Compiling Keri.KeyState.PreRotationSpec ( test/spec/Keri/KeyState/PreRotationSpec.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/t/unit-tests/noopt/build/unit-tests/unit-tests-tmp/Keri/KeyState/PreRotationSpec.o )
+[14 of 15] Compiling Keri.KeyStateSpec ( test/spec/Keri/KeyStateSpec.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/t/unit-tests/noopt/build/unit-tests/unit-tests-tmp/Keri/KeyStateSpec.o )
+[ 7 of 14] Compiling StoreTestDSL     ( test/StoreTestDSL.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/build/invariants/invariants-tmp/StoreTestDSL.o )
+[15 of 15] Compiling Main             ( test/spec/Main.hs, /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/t/unit-tests/noopt/build/unit-tests/unit-tests-tmp/Main.o )
+[ 8 of 14] Compiling StoreInvariantsSpec ( test/StoreInvariantsSpec.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/build/invariants/invariants-tmp/StoreInvariantsSpec.o )
+[ 9 of 14] Compiling TestHelpers      ( test/TestHelpers.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/build/invariants/invariants-tmp/TestHelpers.o )
+[10 of 14] Compiling MultiClientSpec  ( test/MultiClientSpec.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/build/invariants/invariants-tmp/MultiClientSpec.o )
+[16 of 16] Linking /code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/t/unit-tests/noopt/build/unit-tests/unit-tests
+[11 of 14] Compiling E2ESpec          ( test/E2ESpec.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/build/invariants/invariants-tmp/E2ESpec.o )
+[12 of 14] Compiling TransitionInvariantsSpec ( test/TransitionInvariantsSpec.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/build/invariants/invariants-tmp/TransitionInvariantsSpec.o )
+[13 of 14] Compiling ValidateSpec     ( test/ValidateSpec.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/build/invariants/invariants-tmp/ValidateSpec.o )
+[14 of 14] Compiling Main             ( test/Main.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/build/invariants/invariants-tmp/Main.o )
+[15 of 15] Linking dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/build/invariants/invariants
+Running 1 test suites...
+Test suite unit-tests: RUNNING...
+
+Keri.Cesr
+  CESR roundtrip
+    roundtrips arbitrary 32-byte Ed25519 keys [✔]
+      +++ OK, passed 100 tests.
+    roundtrips arbitrary 32-byte digests [✔]
+      +++ OK, passed 100 tests.
+    roundtrips arbitrary 64-byte signatures [✔]
+      +++ OK, passed 100 tests.
+  mkPrimitive
+    rejects wrong size [✔]
+    accepts correct size [✔]
+Keri.Cesr.Decode
+  decode
+    roundtrips Ed25519PubKey [✔]
+    roundtrips Ed25519Sig [✔]
+    roundtrips Blake2bDigest [✔]
+    decodes keripy test vector [✔]
+    rejects too-short input [✔]
+    rejects unknown codes [✔]
+  cesr-test-vectors
+    decodes code D [✔]
+    decodes code F [✔]
+    decodes code 0B [✔]
+Keri.Cesr.DerivationCode
+  codeText
+    Ed25519PubKey is D [✔]
+    Blake2bDigest is F [✔]
+    Ed25519Sig is 0B [✔]
+  rawSize
+    Ed25519PubKey is 32 bytes [✔]
+    Blake2bDigest is 32 bytes [✔]
+    Ed25519Sig is 64 bytes [✔]
+  codeLength
+    Ed25519PubKey is 1 char [✔]
+    Blake2bDigest is 1 char [✔]
+    Ed25519Sig is 2 chars [✔]
+  totalLength
+    Ed25519PubKey is 44 chars [✔]
+    Blake2bDigest is 44 chars [✔]
+    Ed25519Sig is 88 chars [✔]
+  identifyCode
+    identifies D as Ed25519PubKey [✔]
+    identifies F as Blake2bDigest [✔]
+    identifies 0B as Ed25519Sig [✔]
+    rejects unknown codes [✔]
+Keri.Cesr.Encode
+  encode
+    encodes a 32-byte key to 44 chars [✔]
+    starts with code prefix D [✔]
+    encodes a 64-byte sig to 88 chars [✔]
+    starts with code prefix 0B [✔]
+    encodes a digest with code F [✔]
+    matches keripy test vector for Ed25519 [✔]
+  cesr-test-vectors
+    code D (Ed25519 transferable) [✔]
+    code F (Blake2b-256 digest) [✔]
+    code 0B (Ed25519 signature) [✔]
+Keri.Crypto.Blake3
+  hash
+    produces 32 bytes [✔]
+    is deterministic [✔]
+    differs for different inputs [✔]
+    hash size is 32 [✔]
+Keri.Crypto.Digest
+  saidPlaceholder
+    is 44 characters [✔]
+    is all # characters [✔]
+  computeSaid
+    returns 44-char CESR text [✔]
+    starts with F (digest code) [✔]
+    is deterministic [✔]
+    differs for different inputs [✔]
+Keri.Crypto.Ed25519
+  generateKeyPair
+    generates a key pair [✔]
+    generates distinct key pairs [✔]
+  sign and verify
+    verifies a valid signature [✔]
+    rejects wrong message [✔]
+    rejects wrong key [✔]
+  publicKeyFromBytes
+    roundtrips [✔]
+    rejects wrong size [✔]
+Keri.Event.Inception
+  mkInception
+    creates an inception event [✔]
+    sets prefix equal to digest [✔]
+    sets sequence number to 0 [✔]
+    SAID is not placeholder [✔]
+    SAID starts with F (digest code) [✔]
+    version has correct size [✔]
+Keri.Event.Interaction
+  mkInteraction
+    creates an interaction event [✔]
+    preserves prefix [✔]
+    SAID starts with F [✔]
+Keri.Event.Rotation
+  mkRotation
+    creates a rotation event [✔]
+    preserves prefix [✔]
+    SAID differs from prefix [✔]
+    SAID starts with F [✔]
+Keri.Event.Serialize
+  serializeEvent
+    produces valid JSON for inception [✔]
+    has deterministic field order [✔]
+    serializes interaction [✔]
+    serializes receipt [✔]
+Keri.Kel
+  append
+    appends inception to empty KEL [✔]
+    rejects non-inception as first event [✔]
+  replay
+    replays single inception [✔]
+    replays inception + interaction [✔]
+    rejects empty KEL [✔]
+Keri.KeyState
+  initialState
+    sets prefix from inception [✔]
+    sets sequence number to 0 [✔]
+  applyEvent
+    rejects inception on existing state [✔]
+    applies rotation with valid pre-rotation [✔]
+    rejects wrong sequence number [✔]
+    rejects wrong prefix [✔]
+    receipt does not change state [✔]
+    rotation with empty pre-rotation [✔]
+  verifySignatures
+    threshold zero is always met [✔]
+Keri.KeyState.PreRotation
+  commitKey
+    produces a digest commitment [✔]
+    is deterministic [✔]
+  verifyCommitment
+    verifies matching key and commitment [✔]
+    rejects wrong key [✔]
+
+Finished in 0.0394 seconds
+91 examples, 0 failures
+Test suite unit-tests: PASS
+Test suite logged to:
+/code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/t/unit-tests/noopt/test/keri-hs-0.1.0.0-unit-tests.log
+1 of 1 test suites (1 of 1 test cases) passed.
+Running 1 test suites...
+Test suite invariants: RUNNING...
+
+Invariant 1: bootstrap ↔ zero admins
+  bootstrap mode implies zero admins [✔]
+    +++ OK, passed 100 tests.
+  normal mode implies positive admins [✔]
+    +++ OK, passed 100 tests.
+Invariant 2: empty state
+  empty state is in bootstrap mode [✔]
+Invariant 3: majority properties
+  majority of 0 admins is 0 [✔]
+  majority of 1 admin is 1 [✔]
+  majority of 2 admins is 1 [✔]
+  majority of 3 admins is 2 [✔]
+  majority n ≤ n [✔]
+    +++ OK, passed 100 tests.
+  majority of positive admin count is positive [✔]
+    +++ OK, passed 100 tests.
+Invariant 4: remove all → bootstrap
+  removing all members triggers bootstrap [✔]
+Invariant 5: admin member → normal
+  state with at least one admin is in normal mode [✔]
+    +++ OK, passed 100 tests.
+Tier 1: enact_introduce_admin_exits_bootstrap
+  introducing admin makes adminCount > 0 [✔]
+    +++ OK, passed 100 tests.
+Tier 1: enact_introduce_admin_count
+  introducing admin increases adminCount by 1 [✔]
+    +++ OK, passed 100 tests.
+Tier 1: enact_introduce_nonadmin_count
+  introducing non-admin preserves adminCount [✔]
+    +++ OK, passed 100 tests.
+Tier 1: enact_preserves_pendingProposals
+  enact only touches members [✔]
+    +++ OK, passed 100 tests.
+Tier 1: foldGroup_nil
+  folding empty list yields emptyState [✔]
+Tier 2: bootstrap_proposal_immediately_enacted
+  bootstrap proposal has no pending after apply [✔]
+    +++ OK, passed 100 tests.
+Tier 2: single_admin_proposal_enacted
+  single admin proposal is enacted immediately [✔]
+    +++ OK, passed 100 tests.
+Tier 3: enact_remove_preserves_normal
+  adminCount >= 2 and remove keeps adminCount >= 1 [✔]
+    +++ OK, passed 100 tests.
+App/base separation
+  app event preserves members [✔]
+    +++ OK, passed 100 tests.
+  app event preserves pendingProposals [✔]
+    +++ OK, passed 100 tests.
+Approve identity
+  approve nonexistent is identity [✔]
+    +++ OK, passed 100 tests.
+Enact member count effects
+  changeRoles preserves member count [✔]
+    +++ OK, passed 100 tests.
+  introduce increases member count [✔]
+    +++ OK, passed 100 tests.
+Bootstrap validation
+  bootstrap accepts admin intro [✔]
+    +++ OK, passed 100 tests.
+  bootstrap rejects non-admin intro [✔]
+    +++ OK, passed 100 tests.
+  bootstrap rejects remove [✔]
+    +++ OK, passed 100 tests.
+  bootstrap rejects changeRoles [✔]
+    +++ OK, passed 100 tests.
+Normal mode: auth
+  non-member proposal rejected [✔]
+    +++ OK, passed 100 tests.
+  non-admin proposal rejected [✔]
+    +++ OK, passed 100 tests.
+  non-member app event rejected [✔]
+    +++ OK, passed 100 tests.
+  member app event accepted [✔]
+    +++ OK, passed 100 tests.
+Normal mode: proposal constraints
+  introduce existing rejected [✔]
+    +++ OK, passed 100 tests.
+  remove nonmember rejected [✔]
+    +++ OK, passed 100 tests.
+  valid admin proposal accepted [✔]
+    +++ OK, passed 100 tests.
+Normal mode: approval constraints
+  approve missing rejected [✔]
+    +++ OK, passed 100 tests.
+  double approve rejected [✔]
+    +++ OK, passed 100 tests.
+  valid approval accepted [✔]
+    +++ OK, passed 100 tests.
+KelGroups.Jwk
+  RFC 8037 appendix vectors
+    imports the A.1 Ed25519 private key [✔]
+    reproduces the A.4 signature [✔]
+  round trip
+    preserves generated key pairs [✔]
+      +++ OK, passed 100 tests.
+    signatures verify across export/import [✔]
+      +++ OK, passed 100 tests.
+  JSON shape
+    emits exactly kty/crv/x/d [✔]
+    never shows key material via Show [✔]
+  malformed input rejection
+    rejects wrong kty [✔]
+    rejects unsupported curve [✔]
+    rejects bad base64url characters [✔]
+    rejects padded base64url [✔]
+    rejects truncated d [✔]
+    rejects short x [✔]
+    rejects empty members [✔]
+    rejects non-canonical padding bits [✔]
+    rejects mismatched public/private key [✔]
+  store integration
+    imports into a fresh store and reloads [✔]
+    refuses to replace an existing identity [✔]
+KelGroups.Store (SQLite)
+  empty KEL
+    opening empty DB gives emptyState [✔]
+  roundtrip
+    signers match after append+read [✔]
+      +++ OK, passed 100 tests.
+  fold consistency
+    incremental TVar matches reopened replay [✔]
+      +++ OK, passed 100 tests.
+  readEventsFrom
+    returns tail from index N [✔]
+    returns empty for index beyond length [✔]
+  kelLength
+    length matches number of appends + 1 [✔]
+      +++ OK, passed 100 tests.
+Store-through invariants (Lean mirrors)
+  bootstrap_iff_zero_admins [✔]
+    +++ OK, passed 100 tests.
+  normal_iff_positive_admins [✔]
+    +++ OK, passed 100 tests.
+  empty_is_bootstrap [✔]
+  majority_le [✔]
+    +++ OK, passed 100 tests.
+  majority_pos [✔]
+    +++ OK, passed 100 tests.
+  admin_member_means_normal [✔]
+    +++ OK, passed 100 tests.
+  enact_introduce_admin_exits_bootstrap [✔]
+    +++ OK, passed 100 tests.
+  enact_introduce_admin_count [✔]
+    +++ OK, passed 100 tests.
+  enact_introduce_nonadmin_count [✔]
+    +++ OK, passed 100 tests.
+  enact_preserves_pendingProposals [✔]
+    +++ OK, passed 100 tests.
+  enact_remove_preserves_normal [✔]
+    +++ OK, passed 100 tests.
+  bootstrap_proposal_immediately_enacted [✔]
+    +++ OK, passed 100 tests.
+  single_admin_proposal_enacted [✔]
+    +++ OK, passed 100 tests.
+KelGroups.Server (HTTP)
+  GET /condition
+    empty KEL: non-member gets 403 [✔]
+    empty KEL: missing key gets 401 [✔]
+  POST /events
+    bootstrap with correct passphrase succeeds [✔]
+    wrong passphrase returns 401 [✔]
+    missing passphrase in bootstrap returns 401 [✔]
+  GET /events
+    after submit returns event [✔]
+    non-member gets 403 [✔]
+  POST + GET roundtrip
+    submitted event matches retrieved [✔]
+  GET /condition reflects changes
+    after bootstrap, mode is normal [✔]
+  validation errors
+    invalid event in normal mode returns 422 [✔]
+  unknown route
+    returns 404 [✔]
+  GET /info
+    returns public admin emails [✔]
+  SSE /stream
+    receives notification after POST [✔]
+E2E scenarios
+  Group bootstrap and single-admin lifecycle
+    bootstrap → add member → verify state [✔]
+  Multi-admin approval flow
+thread blocked indefinitely in an STM transaction
+    3 admins, proposal requires 2 approvals [✔]
+    duplicate approval is rejected [✔]
+  Member removal
+    admin removes a member via proposal [✔]
+    removing last admin returns to bootstrap [✔]
+  Role changes
+    promote member to admin [✔]
+    demote admin to regular member [✔]
+  KEL replay via GET /events
+    reads back all events in order [✔]
+  Authorization edge cases
+    non-member cannot propose [✔]
+    non-admin member cannot propose [✔]
+    bootstrap rejects missing passphrase [✔]
+    duplicate member introduction is rejected [✔]
+  Re-bootstrap after total admin removal
+    new admin can bootstrap after wipe [✔]
+  SSE receives all events in sequence
+    2 POSTs yield 2 SSE notifications [✔]
+Multi-client scenarios
+  Two clients: admin bootstraps, outsider joins
+    Bob sees empty group, Alice bootstraps, Bob joins [✔]
+  Three clients: multi-admin majority approval
+    3 admins require 2 approvals for Dave [✔]
+  Three clients: full lifecycle
+    introduce, remove, wipe, re-bootstrap [✔]
+
+Finished in 21.9532 seconds
+104 examples, 0 failures
+Test suite invariants: PASS
+Test suite logged to:
+/code/kelgroups-issue-28/./dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/test/kelgroups-0.1.0.0-invariants.log
+1 of 1 test suites (1 of 1 test cases) passed.
+test exit=0 sha256=5db0347f9bd2b8d236a714aed80526f0a0f3104a045bfc6a1ed010bd45dedfaf
+91 examples, 0 failures
+104 examples, 0 failures
+NOTE leg4b: no registered examples (expected on base)
+LEG-PASS: 4b-EXIT: cabal test exit 0
+NOTE leg4: absence-RED is clean (historical suites green; failure is absence, not breakage). RED-commit Not-in-scope log is owner-verified separately (r4 §7).
+===== LEG 5: mutants M1-M6 (refuse-closed entry; hash-verified restore; example-quoted kills) =====
+leg5 entry REFUSED: not tracked: test/S28DemoApp.hs
+NOTE leg5: entry refusal EXPECTED on pre-implementation base (RED for absence)
+LEG-FAIL: 5-entry: refused (see above)
+LEG-FAIL: 5: one or more mutant rows did not pass (see above)
+===== LEG 6: full just ci (ACTUAL CI: nix develop .#ci --quiet -c just ci) =====
+fourmolu -i lib/**/*.hs test/*.hs app/*.hs
+Loaded config from: /code/kelgroups-issue-28/fourmolu.yaml
+cabal-fmt -i kelgroups.cabal
+hlint lib/
+No hints
+cabal build all -O0
+Up to date
+cabal test all -O0 --test-show-details=direct
+Build profile: -w ghc-9.8.4 -O0
+In order, the following will be built (use -v for more details):
+ - kelgroups-0.1.0.0 (test:invariants) (first run)
+ - keri-hs-0.1.0.0 (test:unit-tests) (first run)
+Preprocessing test suite 'unit-tests' for keri-hs-0.1.0.0...
+Building test suite 'unit-tests' for keri-hs-0.1.0.0...
+Preprocessing test suite 'invariants' for kelgroups-0.1.0.0...
+Building test suite 'invariants' for kelgroups-0.1.0.0...
+Running 1 test suites...
+Test suite unit-tests: RUNNING...
+
+Keri.Cesr
+  CESR roundtrip
+    roundtrips arbitrary 32-byte Ed25519 keys [✔]
+      +++ OK, passed 100 tests.
+    roundtrips arbitrary 32-byte digests [✔]
+      +++ OK, passed 100 tests.
+    roundtrips arbitrary 64-byte signatures [✔]
+      +++ OK, passed 100 tests.
+  mkPrimitive
+    rejects wrong size [✔]
+    accepts correct size [✔]
+Keri.Cesr.Decode
+  decode
+    roundtrips Ed25519PubKey [✔]
+    roundtrips Ed25519Sig [✔]
+    roundtrips Blake2bDigest [✔]
+    decodes keripy test vector [✔]
+    rejects too-short input [✔]
+    rejects unknown codes [✔]
+  cesr-test-vectors
+    decodes code D [✔]
+    decodes code F [✔]
+    decodes code 0B [✔]
+Keri.Cesr.DerivationCode
+  codeText
+    Ed25519PubKey is D [✔]
+    Blake2bDigest is F [✔]
+    Ed25519Sig is 0B [✔]
+  rawSize
+    Ed25519PubKey is 32 bytes [✔]
+    Blake2bDigest is 32 bytes [✔]
+    Ed25519Sig is 64 bytes [✔]
+  codeLength
+    Ed25519PubKey is 1 char [✔]
+    Blake2bDigest is 1 char [✔]
+    Ed25519Sig is 2 chars [✔]
+  totalLength
+    Ed25519PubKey is 44 chars [✔]
+    Blake2bDigest is 44 chars [✔]
+    Ed25519Sig is 88 chars [✔]
+  identifyCode
+    identifies D as Ed25519PubKey [✔]
+    identifies F as Blake2bDigest [✔]
+    identifies 0B as Ed25519Sig [✔]
+    rejects unknown codes [✔]
+Keri.Cesr.Encode
+  encode
+    encodes a 32-byte key to 44 chars [✔]
+    starts with code prefix D [✔]
+    encodes a 64-byte sig to 88 chars [✔]
+    starts with code prefix 0B [✔]
+    encodes a digest with code F [✔]
+    matches keripy test vector for Ed25519 [✔]
+  cesr-test-vectors
+    code D (Ed25519 transferable) [✔]
+    code F (Blake2b-256 digest) [✔]
+    code 0B (Ed25519 signature) [✔]
+Keri.Crypto.Blake3
+  hash
+    produces 32 bytes [✔]
+    is deterministic [✔]
+    differs for different inputs [✔]
+    hash size is 32 [✔]
+Keri.Crypto.Digest
+  saidPlaceholder
+    is 44 characters [✔]
+    is all # characters [✔]
+  computeSaid
+    returns 44-char CESR text [✔]
+    starts with F (digest code) [✔]
+    is deterministic [✔]
+    differs for different inputs [✔]
+Keri.Crypto.Ed25519
+  generateKeyPair
+    generates a key pair [✔]
+    generates distinct key pairs [✔]
+  sign and verify
+    verifies a valid signature [✔]
+    rejects wrong message [✔]
+    rejects wrong key [✔]
+  publicKeyFromBytes
+    roundtrips [✔]
+    rejects wrong size [✔]
+Keri.Event.Inception
+  mkInception
+    creates an inception event [✔]
+    sets prefix equal to digest [✔]
+    sets sequence number to 0 [✔]
+    SAID is not placeholder [✔]
+    SAID starts with F (digest code) [✔]
+    version has correct size [✔]
+Keri.Event.Interaction
+  mkInteraction
+    creates an interaction event [✔]
+    preserves prefix [✔]
+    SAID starts with F [✔]
+Keri.Event.Rotation
+  mkRotation
+    creates a rotation event [✔]
+    preserves prefix [✔]
+    SAID differs from prefix [✔]
+    SAID starts with F [✔]
+Keri.Event.Serialize
+  serializeEvent
+    produces valid JSON for inception [✔]
+    has deterministic field order [✔]
+    serializes interaction [✔]
+    serializes receipt [✔]
+Keri.Kel
+  append
+    appends inception to empty KEL [✔]
+    rejects non-inception as first event [✔]
+  replay
+    replays single inception [✔]
+    replays inception + interaction [✔]
+    rejects empty KEL [✔]
+Keri.KeyState
+  initialState
+    sets prefix from inception [✔]
+    sets sequence number to 0 [✔]
+  applyEvent
+    rejects inception on existing state [✔]
+    applies rotation with valid pre-rotation [✔]
+    rejects wrong sequence number [✔]
+    rejects wrong prefix [✔]
+    receipt does not change state [✔]
+    rotation with empty pre-rotation [✔]
+  verifySignatures
+    threshold zero is always met [✔]
+Keri.KeyState.PreRotation
+  commitKey
+    produces a digest commitment [✔]
+    is deterministic [✔]
+  verifyCommitment
+    verifies matching key and commitment [✔]
+    rejects wrong key [✔]
+
+Finished in 0.0351 seconds
+91 examples, 0 failures
+Test suite unit-tests: PASS
+Test suite logged to:
+/code/kelgroups-issue-28/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/t/unit-tests/noopt/test/keri-hs-0.1.0.0-unit-tests.log
+1 of 1 test suites (1 of 1 test cases) passed.
+Running 1 test suites...
+Test suite invariants: RUNNING...
+
+Invariant 1: bootstrap ↔ zero admins
+  bootstrap mode implies zero admins [✔]
+    +++ OK, passed 100 tests.
+  normal mode implies positive admins [✔]
+    +++ OK, passed 100 tests.
+Invariant 2: empty state
+  empty state is in bootstrap mode [✔]
+Invariant 3: majority properties
+  majority of 0 admins is 0 [✔]
+  majority of 1 admin is 1 [✔]
+  majority of 2 admins is 1 [✔]
+  majority of 3 admins is 2 [✔]
+  majority n ≤ n [✔]
+    +++ OK, passed 100 tests.
+  majority of positive admin count is positive [✔]
+    +++ OK, passed 100 tests.
+Invariant 4: remove all → bootstrap
+  removing all members triggers bootstrap [✔]
+Invariant 5: admin member → normal
+  state with at least one admin is in normal mode [✔]
+    +++ OK, passed 100 tests.
+Tier 1: enact_introduce_admin_exits_bootstrap
+  introducing admin makes adminCount > 0 [✔]
+    +++ OK, passed 100 tests.
+Tier 1: enact_introduce_admin_count
+  introducing admin increases adminCount by 1 [✔]
+    +++ OK, passed 100 tests.
+Tier 1: enact_introduce_nonadmin_count
+  introducing non-admin preserves adminCount [✔]
+    +++ OK, passed 100 tests.
+Tier 1: enact_preserves_pendingProposals
+  enact only touches members [✔]
+    +++ OK, passed 100 tests.
+Tier 1: foldGroup_nil
+  folding empty list yields emptyState [✔]
+Tier 2: bootstrap_proposal_immediately_enacted
+  bootstrap proposal has no pending after apply [✔]
+    +++ OK, passed 100 tests.
+Tier 2: single_admin_proposal_enacted
+  single admin proposal is enacted immediately [✔]
+    +++ OK, passed 100 tests.
+Tier 3: enact_remove_preserves_normal
+  adminCount >= 2 and remove keeps adminCount >= 1 [✔]
+    +++ OK, passed 100 tests.
+App/base separation
+  app event preserves members [✔]
+    +++ OK, passed 100 tests.
+  app event preserves pendingProposals [✔]
+    +++ OK, passed 100 tests.
+Approve identity
+  approve nonexistent is identity [✔]
+    +++ OK, passed 100 tests.
+Enact member count effects
+  changeRoles preserves member count [✔]
+    +++ OK, passed 100 tests.
+  introduce increases member count [✔]
+    +++ OK, passed 100 tests.
+Bootstrap validation
+  bootstrap accepts admin intro [✔]
+    +++ OK, passed 100 tests.
+  bootstrap rejects non-admin intro [✔]
+    +++ OK, passed 100 tests.
+  bootstrap rejects remove [✔]
+    +++ OK, passed 100 tests.
+  bootstrap rejects changeRoles [✔]
+    +++ OK, passed 100 tests.
+Normal mode: auth
+  non-member proposal rejected [✔]
+    +++ OK, passed 100 tests.
+  non-admin proposal rejected [✔]
+    +++ OK, passed 100 tests.
+  non-member app event rejected [✔]
+    +++ OK, passed 100 tests.
+  member app event accepted [✔]
+    +++ OK, passed 100 tests.
+Normal mode: proposal constraints
+  introduce existing rejected [✔]
+    +++ OK, passed 100 tests.
+  remove nonmember rejected [✔]
+    +++ OK, passed 100 tests.
+  valid admin proposal accepted [✔]
+    +++ OK, passed 100 tests.
+Normal mode: approval constraints
+  approve missing rejected [✔]
+    +++ OK, passed 100 tests.
+  double approve rejected [✔]
+    +++ OK, passed 100 tests.
+  valid approval accepted [✔]
+    +++ OK, passed 100 tests.
+KelGroups.Jwk
+  RFC 8037 appendix vectors
+    imports the A.1 Ed25519 private key [✔]
+    reproduces the A.4 signature [✔]
+  round trip
+    preserves generated key pairs [✔]
+      +++ OK, passed 100 tests.
+    signatures verify across export/import [✔]
+      +++ OK, passed 100 tests.
+  JSON shape
+    emits exactly kty/crv/x/d [✔]
+    never shows key material via Show [✔]
+  malformed input rejection
+    rejects wrong kty [✔]
+    rejects unsupported curve [✔]
+    rejects bad base64url characters [✔]
+    rejects padded base64url [✔]
+    rejects truncated d [✔]
+    rejects short x [✔]
+    rejects empty members [✔]
+    rejects non-canonical padding bits [✔]
+    rejects mismatched public/private key [✔]
+  store integration
+    imports into a fresh store and reloads [✔]
+    refuses to replace an existing identity [✔]
+KelGroups.Store (SQLite)
+  empty KEL
+    opening empty DB gives emptyState [✔]
+  roundtrip
+    signers match after append+read [✔]
+      +++ OK, passed 100 tests.
+  fold consistency
+    incremental TVar matches reopened replay [✔]
+      +++ OK, passed 100 tests.
+  readEventsFrom
+    returns tail from index N [✔]
+    returns empty for index beyond length [✔]
+  kelLength
+    length matches number of appends + 1 [✔]
+      +++ OK, passed 100 tests.
+Store-through invariants (Lean mirrors)
+  bootstrap_iff_zero_admins [✔]
+    +++ OK, passed 100 tests.
+  normal_iff_positive_admins [✔]
+    +++ OK, passed 100 tests.
+  empty_is_bootstrap [✔]
+  majority_le [✔]
+    +++ OK, passed 100 tests.
+  majority_pos [✔]
+    +++ OK, passed 100 tests.
+  admin_member_means_normal [✔]
+    +++ OK, passed 100 tests.
+  enact_introduce_admin_exits_bootstrap [✔]
+    +++ OK, passed 100 tests.
+  enact_introduce_admin_count [✔]
+    +++ OK, passed 100 tests.
+  enact_introduce_nonadmin_count [✔]
+    +++ OK, passed 100 tests.
+  enact_preserves_pendingProposals [✔]
+    +++ OK, passed 100 tests.
+  enact_remove_preserves_normal [✔]
+    +++ OK, passed 100 tests.
+  bootstrap_proposal_immediately_enacted [✔]
+    +++ OK, passed 100 tests.
+  single_admin_proposal_enacted [✔]
+    +++ OK, passed 100 tests.
+KelGroups.Server (HTTP)
+  GET /condition
+    empty KEL: non-member gets 403 [✔]
+    empty KEL: missing key gets 401 [✔]
+  POST /events
+    bootstrap with correct passphrase succeeds [✔]
+    wrong passphrase returns 401 [✔]
+    missing passphrase in bootstrap returns 401 [✔]
+  GET /events
+    after submit returns event [✔]
+    non-member gets 403 [✔]
+  POST + GET roundtrip
+    submitted event matches retrieved [✔]
+  GET /condition reflects changes
+    after bootstrap, mode is normal [✔]
+  validation errors
+    invalid event in normal mode returns 422 [✔]
+  unknown route
+    returns 404 [✔]
+  GET /info
+    returns public admin emails [✔]
+  SSE /stream
+    receives notification after POST [✔]
+E2E scenarios
+  Group bootstrap and single-admin lifecycle
+    bootstrap → add member → verify state [✔]
+  Multi-admin approval flow
+thread blocked indefinitely in an STM transaction
+    3 admins, proposal requires 2 approvals [✔]
+    duplicate approval is rejected [✔]
+  Member removal
+    admin removes a member via proposal [✔]
+    removing last admin returns to bootstrap [✔]
+  Role changes
+    promote member to admin [✔]
+    demote admin to regular member [✔]
+  KEL replay via GET /events
+    reads back all events in order [✔]
+  Authorization edge cases
+    non-member cannot propose [✔]
+    non-admin member cannot propose [✔]
+    bootstrap rejects missing passphrase [✔]
+    duplicate member introduction is rejected [✔]
+  Re-bootstrap after total admin removal
+    new admin can bootstrap after wipe [✔]
+  SSE receives all events in sequence
+    2 POSTs yield 2 SSE notifications [✔]
+Multi-client scenarios
+  Two clients: admin bootstraps, outsider joins
+    Bob sees empty group, Alice bootstraps, Bob joins [✔]
+  Three clients: multi-admin majority approval
+    3 admins require 2 approvals for Dave [✔]
+  Three clients: full lifecycle
+    introduce, remove, wipe, re-bootstrap [✔]
+
+Finished in 22.5499 seconds
+104 examples, 0 failures
+Test suite invariants: PASS
+Test suite logged to:
+/code/kelgroups-issue-28/./dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/test/kelgroups-0.1.0.0-invariants.log
+1 of 1 test suites (1 of 1 test cases) passed.
+cd lean && lake build
+info: keri: cloning https://github.com/paolino/keri-lean
+info: keri: checking out revision 'e37386c7e04cb39aafcb61b808e16d8222c6cc66'
+✔ [3/17] Built KERI.Crypto (369ms)
+✔ [4/17] Built KelGroups.Basic (922ms)
+✔ [5/17] Built KERI.Event (751ms)
+✔ [6/17] Built KelGroups.Invariants (462ms)
+✔ [7/17] Built KelGroups.Transitions (428ms)
+✔ [8/17] Built KelGroups.Validate (621ms)
+✔ [9/17] Built KelGroups.FoldInvariants (371ms)
+✔ [10/17] Built KERI.KeyState (750ms)
+✔ [11/17] Built KelGroups.TransitionInvariants (546ms)
+✔ [12/17] Built KelGroups.ValidateInvariants (418ms)
+✔ [13/17] Built KERI.KEL (464ms)
+✔ [14/17] Built KelGroups.KEL (654ms)
+✔ [15/17] Built KelGroups.KELInvariants (588ms)
+✔ [16/17] Built KelGroups (335ms)
+Build completed successfully (17 jobs).
+cd client && npm install && spago build
+
+added 2 packages, and audited 3 packages in 595ms
+
+found 0 vulnerabilities
+(node:1367883) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+Reading Spago workspace configuration...
+
+✓ Selecting 2 packages to build:
+    kelgroups-client
+    kelgroups-trivial
+
+Downloading dependencies...
+Refreshing the Registry Index...
+Cloning https://github.com/paolino/keri-purs.git
+Building...
+[  1 of 614] Compiling Type.Proxy
+[  2 of 614] Compiling Spago.Generated.BuildInfo
+[  4 of 614] Compiling Type.Function
+[  3 of 614] Compiling Web.DOM.Internal.Types
+[  7 of 614] Compiling Web.Event.Internal.Types
+[  5 of 614] Compiling Type.Row
+[  6 of 614] Compiling Unsafe.Coerce
+[  8 of 614] Compiling Type.Equality
+[  9 of 614] Compiling Record.Unsafe
+[ 10 of 614] Compiling Partial
+[ 11 of 614] Compiling Data.Void
+[ 12 of 614] Compiling Data.Traversable.Accum
+[ 13 of 614] Compiling Data.String.Unsafe
+[ 14 of 614] Compiling Data.Unit
+[ 15 of 614] Compiling Data.Int.Bits
+[ 16 of 614] Compiling Data.NaturalTransformation
+[ 17 of 614] Compiling Data.Boolean
+[ 18 of 614] Compiling Data.ArrayBuffer.Types
+[ 19 of 614] Compiling Control.Semigroupoid
+[ 20 of 614] Compiling Data.Exists
+[ 21 of 614] Compiling Control.Lazy
+[ 22 of 614] Compiling Safe.Coerce
+[ 23 of 614] Compiling Data.Function.Uncurried
+[ 24 of 614] Compiling Partial.Unsafe
+[ 25 of 614] Compiling Data.Symbol
+[ 27 of 614] Compiling FFI.Blake3
+[ 28 of 614] Compiling FFI.Base64Url
+[ 26 of 614] Compiling Type.Data.Boolean
+[ 29 of 614] Compiling FFI.Uint8Array
+[ 30 of 614] Compiling Control.Category
+[ 31 of 614] Compiling FFI.TextEncoder
+[ 32 of 614] Compiling Keri.Crypto.Blake3
+[ 33 of 614] Compiling Data.HeytingAlgebra
+[ 34 of 614] Compiling Data.Semiring
+[ 35 of 614] Compiling Data.Semigroup
+[ 36 of 614] Compiling Record.Unsafe.Union
+[ 37 of 614] Compiling Data.Show
+[ 38 of 614] Compiling Data.Ring
+[ 39 of 614] Compiling Data.Generic.Rep
+[ 40 of 614] Compiling Data.BooleanAlgebra
+[ 41 of 614] Compiling Data.Eq
+[ 42 of 614] Compiling Data.CommutativeRing
+[ 43 of 614] Compiling Data.Ordering
+[ 44 of 614] Compiling Data.EuclideanRing
+[ 46 of 614] Compiling Type.Data.Ordering
+[ 45 of 614] Compiling Data.Ord
+[ 47 of 614] Compiling Data.DivisionRing
+[ 48 of 614] Compiling Data.Field
+[ 49 of 614] Compiling Type.Data.Symbol
+[ 50 of 614] Compiling Type.RowList
+[ 51 of 614] Compiling Type.Prelude
+[ 52 of 614] Compiling Type.Row.Homogeneous
+[ 53 of 614] Compiling Data.Function
+[ 54 of 614] Compiling Data.Bounded
+[ 55 of 614] Compiling Data.Monoid
+[ 56 of 614] Compiling Data.Reflectable
+[ 57 of 614] Compiling Data.Functor
+[ 58 of 614] Compiling Control.Alt
+[ 59 of 614] Compiling Control.Extend
+[ 60 of 614] Compiling Control.Apply
+[ 61 of 614] Compiling Control.Plus
+[ 62 of 614] Compiling Data.Bounded.Generic
+[ 63 of 614] Compiling Data.Monoid.Generic
+[ 64 of 614] Compiling Control.Comonad
+[ 65 of 614] Compiling Control.Applicative
+[ 66 of 614] Compiling Control.Alternative
+[ 67 of 614] Compiling Control.Bind
+[ 68 of 614] Compiling Control.Monad
+[ 69 of 614] Compiling Prelude
+[ 70 of 614] Compiling Control.MonadPlus
+[ 71 of 614] Compiling Data.Show.Generic
+[ 72 of 614] Compiling Data.Monoid.Conj
+[ 73 of 614] Compiling Unsafe.Reference
+[ 74 of 614] Compiling Data.Traversable.Accum.Internal
+[ 75 of 614] Compiling DOM.HTML.Indexed.MenuType
+[ 76 of 614] Compiling Data.Semiring.Generic
+[ 77 of 614] Compiling Data.Monoid.Endo
+[ 78 of 614] Compiling DOM.HTML.Indexed.KindValue
+[ 79 of 614] Compiling Data.Ring.Generic
+[ 80 of 614] Compiling Data.Number.Format
+[ 81 of 614] Compiling Control.Monad.Cont.Class
+[ 83 of 614] Compiling Control.Monad.Gen.Class
+[ 82 of 614] Compiling Record.Builder
+[ 84 of 614] Compiling Data.Monoid.Multiplicative
+[ 86 of 614] Compiling DOM.HTML.Indexed.StepValue
+[ 85 of 614] Compiling Web.UIEvent.InputEvent.InputType
+[ 87 of 614] Compiling Data.Semigroup.Last
+[ 88 of 614] Compiling Data.HeytingAlgebra.Generic
+[ 90 of 614] Compiling Data.Monoid.Disj
+[ 89 of 614] Compiling Record
+[ 91 of 614] Compiling Control.Monad.Trans.Class
+[ 92 of 614] Compiling DOM.HTML.Indexed.MenuitemType
+[ 93 of 614] Compiling Control.Monad.Reader.Class
+[ 94 of 614] Compiling Data.Eq.Generic
+[ 95 of 614] Compiling Data.Ord.Generic
+[ 96 of 614] Compiling Data.Semigroup.Generic
+[ 97 of 614] Compiling Data.Monoid.Dual
+[ 98 of 614] Compiling DOM.HTML.Indexed.CrossOriginValue
+[ 99 of 614] Compiling Data.Monoid.Additive
+[100 of 614] Compiling DOM.HTML.Indexed.FormMethod
+[102 of 614] Compiling Effect
+[101 of 614] Compiling DOM.HTML.Indexed.WrapValue
+[103 of 614] Compiling DOM.HTML.Indexed.AutocompleteType
+[104 of 614] Compiling Data.Semigroup.First
+[105 of 614] Compiling DOM.HTML.Indexed.OrderedListType
+[106 of 614] Compiling DOM.HTML.Indexed.DirValue
+[108 of 614] Compiling DOM.HTML.Indexed.PreloadValue
+[109 of 614] Compiling Halogen.Data.OrdBox
+[110 of 614] Compiling DOM.HTML.Indexed.ButtonType
+[107 of 614] Compiling DOM.HTML.Indexed.InputType
+[111 of 614] Compiling Data.Yoneda
+[112 of 614] Compiling DOM.HTML.Indexed.ScopeValue
+[113 of 614] Compiling Web.HTML.Location
+[114 of 614] Compiling Effect.Unsafe
+[115 of 614] Compiling Effect.Uncurried
+[116 of 614] Compiling FFI.TweetNaCl
+[117 of 614] Compiling Web.HTML.HTMLHyperlinkElementUtils
+[118 of 614] Compiling Web.DOM.ChildNode
+[119 of 614] Compiling Effect.Class
+[120 of 614] Compiling Web.HTML.Navigator
+[121 of 614] Compiling Effect.Ref
+[122 of 614] Compiling FFI.SSE
+[123 of 614] Compiling Effect.Console
+[124 of 614] Compiling Keri.Crypto.Ed25519
+[125 of 614] Compiling Web.PointerEvent.Navigator
+[126 of 614] Compiling FFI.KeyBytes
+[127 of 614] Compiling Data.Newtype
+[128 of 614] Compiling Effect.Class.Console
+[129 of 614] Compiling Data.Ord.Down
+[130 of 614] Compiling Data.Ord.Max
+[131 of 614] Compiling Data.String.Pattern
+[132 of 614] Compiling Data.Time.Duration
+[133 of 614] Compiling Data.Ord.Min
+[134 of 614] Compiling Data.Functor.App
+[135 of 614] Compiling Data.MediaType
+[137 of 614] Compiling Data.Monoid.Alternate
+[136 of 614] Compiling Data.Profunctor
+[138 of 614] Compiling Web.HTML.Common
+[139 of 614] Compiling Data.MediaType.Common
+[140 of 614] Compiling Data.String.Common
+[141 of 614] Compiling Data.Profunctor.Closed
+[142 of 614] Compiling Data.Lens.Internal.Exchange
+[143 of 614] Compiling Data.Functor.Invariant
+[144 of 614] Compiling Data.Lens.Internal.Grating
+[145 of 614] Compiling Data.Lens.Internal.Zipping
+[146 of 614] Compiling Data.Functor.Compose
+[147 of 614] Compiling Data.Identity
+[148 of 614] Compiling Data.Profunctor.Join
+[149 of 614] Compiling Data.Profunctor.Split
+[150 of 614] Compiling Data.Const
+[151 of 614] Compiling Data.Maybe
+[152 of 614] Compiling Data.Tuple
+[153 of 614] Compiling Halogen.VDom.Machine
+[154 of 614] Compiling Web.HTML.ValidityState
+[155 of 614] Compiling Data.Functor.Contravariant
+[156 of 614] Compiling Data.Op
+[158 of 614] Compiling Data.Predicate
+[157 of 614] Compiling Data.Comparison
+[159 of 614] Compiling Data.Nullable
+[160 of 614] Compiling Web.DOM.ShadowRoot
+[161 of 614] Compiling Data.Maybe.Last
+[163 of 614] Compiling Web.HTML.SelectionMode
+[162 of 614] Compiling Data.Either
+[164 of 614] Compiling Web.HTML.HTMLImageElement.CORSMode
+[165 of 614] Compiling Web.HTML.HTMLImageElement.Laziness
+[166 of 614] Compiling Web.Internal.FFI
+[167 of 614] Compiling Data.Maybe.First
+[168 of 614] Compiling Web.HTML.HTMLMediaElement.CanPlayType
+[169 of 614] Compiling Web.HTML.HTMLImageElement.DecodingHint
+[170 of 614] Compiling Web.HTML.HTMLDocument.VisibilityState
+[171 of 614] Compiling Data.Number
+[172 of 614] Compiling Web.HTML.HTMLDocument.ReadyState
+[173 of 614] Compiling Data.Equivalence
+[174 of 614] Compiling Data.String.CodeUnits
+[175 of 614] Compiling Data.Number.Approximate
+[176 of 614] Compiling Data.Int
+[177 of 614] Compiling Web.DOM.NonDocumentTypeChildNode
+[178 of 614] Compiling FFI.Storage
+[180 of 614] Compiling Web.DOM.NodeList
+[179 of 614] Compiling Web.HTML.Event.DataTransfer.DataTransferItem
+[181 of 614] Compiling Web.DOM.DOMTokenList
+[182 of 614] Compiling Web.Storage.Storage
+[183 of 614] Compiling Web.DOM.HTMLCollection
+[184 of 614] Compiling Web.DOM.ParentNode
+[185 of 614] Compiling Data.Divide
+[186 of 614] Compiling Control.Monad.State.Class
+[187 of 614] Compiling Data.Lens.Internal.Focusing
+[188 of 614] Compiling Data.Distributive
+[189 of 614] Compiling Control.Monad.Writer.Class
+[190 of 614] Compiling Data.Profunctor.Costrong
+[192 of 614] Compiling Data.Profunctor.Strong
+[191 of 614] Compiling Data.Tuple.Nested
+[194 of 614] Compiling Effect.Random
+[193 of 614] Compiling Web.File.Blob
+[195 of 614] Compiling Data.Lens.Internal.Shop
+[196 of 614] Compiling Web.File.Url
+[198 of 614] Compiling Data.Divisible
+[197 of 614] Compiling Random.LCG
+[199 of 614] Compiling Data.Decide
+[200 of 614] Compiling Effect.Exception
+[201 of 614] Compiling Data.Bifunctor
+[202 of 614] Compiling Data.Profunctor.Choice
+[203 of 614] Compiling Data.Profunctor.Cochoice
+[205 of 614] Compiling Data.Either.Inject
+[204 of 614] Compiling Data.Either.Nested
+[206 of 614] Compiling Promise.Rejection
+[208 of 614] Compiling Effect.Exception.Unsafe
+[207 of 614] Compiling Control.Monad.Error.Class
+[209 of 614] Compiling Promise.Internal
+[210 of 614] Compiling Control.Biapply
+[211 of 614] Compiling Data.Functor.Coproduct
+[212 of 614] Compiling Data.Functor.Costar
+[213 of 614] Compiling Halogen.VDom.Types
+[214 of 614] Compiling Data.Functor.Product
+[215 of 614] Compiling Control.Monad.Rec.Class
+[216 of 614] Compiling Promise
+[217 of 614] Compiling Data.Lens.Internal.Stall
+[219 of 614] Compiling Data.Lens.Internal.Market
+[218 of 614] Compiling Data.Profunctor.Star
+[220 of 614] Compiling Data.Lens.Internal.Re
+[221 of 614] Compiling Data.Decidable
+[222 of 614] Compiling Control.Biapplicative
+[223 of 614] Compiling Data.Functor.Joker
+[224 of 614] Compiling Data.Bifunctor.Join
+[225 of 614] Compiling Data.Functor.Flip
+[226 of 614] Compiling Data.Functor.Product2
+[227 of 614] Compiling Data.Functor.Clown
+[229 of 614] Compiling Data.Functor.Coproduct.Inject
+[228 of 614] Compiling Data.Functor.Coproduct.Nested
+[230 of 614] Compiling Data.FunctorWithIndex
+[232 of 614] Compiling Data.Functor.Product.Nested
+[231 of 614] Compiling Data.Foldable
+[233 of 614] Compiling Control.Monad.ST.Internal
+[234 of 614] Compiling Data.Lens.Internal.Wander
+[235 of 614] Compiling Data.Lens.Internal.Indexed
+[236 of 614] Compiling Data.Lens.Internal.Forget
+[238 of 614] Compiling Control.Monad.ST
+[237 of 614] Compiling Control.Monad.ST.Uncurried
+[239 of 614] Compiling Control.Monad.ST.Ref
+[240 of 614] Compiling Foreign.Object.ST
+[241 of 614] Compiling Control.Monad.ST.Global
+[242 of 614] Compiling Control.Monad.ST.Class
+[243 of 614] Compiling Control.Monad.Writer.Trans
+[244 of 614] Compiling Control.Monad.Except.Trans
+[245 of 614] Compiling Control.Monad.Reader.Trans
+[247 of 614] Compiling Control.Monad.RWS.Trans
+[246 of 614] Compiling Control.Monad.State.Trans
+[248 of 614] Compiling Control.Monad.Maybe.Trans
+[249 of 614] Compiling Control.Monad.Cont.Trans
+[250 of 614] Compiling Data.Array.ST
+[251 of 614] Compiling Data.Array.ST.Partial
+[252 of 614] Compiling Control.Monad.Cont
+[253 of 614] Compiling Data.Array.ST.Iterator
+[254 of 614] Compiling Control.Monad.Writer
+[255 of 614] Compiling Control.Monad.Reader
+[256 of 614] Compiling Control.Parallel.Class
+[257 of 614] Compiling Control.Monad.Except
+[258 of 614] Compiling Control.Monad.State
+[259 of 614] Compiling Control.Monad.RWS
+[260 of 614] Compiling Data.Semigroup.Foldable
+[261 of 614] Compiling Data.Bifoldable
+[262 of 614] Compiling Data.Traversable
+[263 of 614] Compiling Data.FoldableWithIndex
+[264 of 614] Compiling Data.Bitraversable
+[265 of 614] Compiling Promise.Lazy
+[266 of 614] Compiling Data.Lens.Internal.Tagged
+[267 of 614] Compiling Control.Parallel
+[269 of 614] Compiling Control.Monad.Identity.Trans
+[268 of 614] Compiling Data.Semigroup.Traversable
+[270 of 614] Compiling Data.TraversableWithIndex
+[272 of 614] Compiling Data.Coyoneda
+[271 of 614] Compiling Data.Unfoldable1
+[273 of 614] Compiling Effect.Aff
+[274 of 614] Compiling Control.Comonad.Trans.Class
+[276 of 614] Compiling Control.Comonad.Traced.Trans
+[275 of 614] Compiling Control.Comonad.Store.Trans
+[277 of 614] Compiling Data.Unfoldable
+[278 of 614] Compiling Control.Monad.Gen
+[279 of 614] Compiling Data.Enum
+[280 of 614] Compiling Data.Lens.Internal.Bazaar
+[281 of 614] Compiling Data.Lens.Types
+[282 of 614] Compiling Halogen.Query.HalogenQ
+[283 of 614] Compiling Data.Array.NonEmpty.Internal
+[284 of 614] Compiling Data.NonEmpty
+[285 of 614] Compiling Data.Lazy
+[286 of 614] Compiling Control.Comonad.Env.Trans
+[287 of 614] Compiling Data.Time.Duration.Gen
+[288 of 614] Compiling Data.Lens.Iso
+[289 of 614] Compiling Data.Lens.Getter
+[290 of 614] Compiling Data.Lens.Grate
+[291 of 614] Compiling Data.Lens.Setter
+[292 of 614] Compiling Data.Lens.AffineTraversal
+[293 of 614] Compiling Data.Lens.Zoom
+[295 of 614] Compiling Data.Lens.Prism
+[294 of 614] Compiling Data.Lens.Lens
+[296 of 614] Compiling Data.Array
+[297 of 614] Compiling FFI.Fetch
+[298 of 614] Compiling Control.Monad.Fork.Class
+[299 of 614] Compiling Effect.Aff.Compat
+[300 of 614] Compiling Data.Lens.Prism.Either
+[301 of 614] Compiling Data.Lens.Prism.Maybe
+[302 of 614] Compiling Data.Lens.Lens.Unit
+[303 of 614] Compiling Data.Lens.Lens.Void
+[304 of 614] Compiling Data.Lens.Lens.Tuple
+[305 of 614] Compiling Data.Lens.Common
+[306 of 614] Compiling Control.Comonad.Store.Class
+[307 of 614] Compiling Data.Lens.Iso.Newtype
+[308 of 614] Compiling Data.Lens.Lens.Product
+[310 of 614] Compiling Data.Lens.Prism.Coproduct
+[309 of 614] Compiling Data.Lens.Indexed
+[311 of 614] Compiling Control.Monad.List.Trans
+[312 of 614] Compiling Control.Monad.Gen.Common
+[314 of 614] Compiling Data.List.Lazy.Types
+[313 of 614] Compiling Data.List.Types
+[315 of 614] Compiling Data.Char.Gen
+[316 of 614] Compiling Data.Enum.Gen
+[317 of 614] Compiling Web.Event.EventPhase
+[318 of 614] Compiling Data.Char
+[319 of 614] Compiling Data.Date.Component
+[320 of 614] Compiling Web.File.FileReader.ReadyState
+[321 of 614] Compiling Web.HTML.HTMLMediaElement.NetworkState
+[322 of 614] Compiling Web.HTML.HTMLMediaElement.ReadyState
+[323 of 614] Compiling Web.DOM.NodeType
+[324 of 614] Compiling Data.Enum.Generic
+[325 of 614] Compiling Web.HTML.HTMLTrackElement.ReadyState
+[326 of 614] Compiling Data.Time.Component
+[327 of 614] Compiling Control.Comonad.Store
+[328 of 614] Compiling Control.Comonad.Env.Class
+[329 of 614] Compiling Data.Lens.Traversal
+[330 of 614] Compiling Data.String.Gen
+[331 of 614] Compiling Control.Comonad.Env
+[332 of 614] Compiling Data.Time.Component.Gen
+[333 of 614] Compiling Data.Time
+[334 of 614] Compiling Control.Comonad.Traced.Class
+[335 of 614] Compiling Control.Comonad.Traced
+[336 of 614] Compiling Data.Date.Component.Gen
+[337 of 614] Compiling Data.Date
+[338 of 614] Compiling Data.Time.Gen
+[339 of 614] Compiling Data.String.CodePoints
+[340 of 614] Compiling Json.Canonical
+[341 of 614] Compiling Halogen.Subscription
+[344 of 614] Compiling Data.Array.Partial
+[342 of 614] Compiling Data.Array.NonEmpty
+[343 of 614] Compiling Foreign.Object
+[345 of 614] Compiling Data.List.Internal
+[346 of 614] Compiling Data.Date.Gen
+[347 of 614] Compiling Data.DateTime
+[348 of 614] Compiling Effect.Aff.Class
+[349 of 614] Compiling Data.DateTime.Instant
+[350 of 614] Compiling Data.DateTime.Gen
+[351 of 614] Compiling Data.List
+[352 of 614] Compiling Data.List.Lazy
+[353 of 614] Compiling Data.String
+[354 of 614] Compiling Keri.Event.Version
+[355 of 614] Compiling Data.String.NonEmpty.Internal
+[356 of 614] Compiling Data.String.Regex.Flags
+[357 of 614] Compiling Keri.Cesr.DerivationCode
+[358 of 614] Compiling DOM.HTML.Indexed.InputAcceptType
+[359 of 614] Compiling Data.String.CaseInsensitive
+[360 of 614] Compiling Web.File.File
+[361 of 614] Compiling Web.Event.Event
+[362 of 614] Compiling Web.File.FileList
+[363 of 614] Compiling Foreign.Object.Unsafe
+[365 of 614] Compiling Foreign.Object.ST.Unsafe
+[364 of 614] Compiling Data.Argonaut.Core
+[366 of 614] Compiling Web.UIEvent.MouseEvent.EventTypes
+[367 of 614] Compiling Web.HTML.Event.PageTransitionEvent
+[368 of 614] Compiling Web.UIEvent.KeyboardEvent.EventTypes
+[369 of 614] Compiling Web.HTML.Event.BeforeUnloadEvent
+[370 of 614] Compiling Web.Clipboard.ClipboardEvent.EventTypes
+[371 of 614] Compiling Web.PointerEvent.EventTypes
+[372 of 614] Compiling Web.HTML.Event.EventTypes
+[373 of 614] Compiling Web.TouchEvent.EventTypes
+[374 of 614] Compiling Web.HTML.Event.HashChangeEvent
+[375 of 614] Compiling Web.HTML.Event.PageTransitionEvent.EventTypes
+[376 of 614] Compiling Web.HTML.Event.HashChangeEvent.EventTypes
+[377 of 614] Compiling Web.HTML.Event.BeforeUnloadEvent.EventTypes
+[378 of 614] Compiling Web.HTML.Event.ErrorEvent
+[379 of 614] Compiling Web.UIEvent.EventTypes
+[380 of 614] Compiling Web.HTML.Event.PopStateEvent.EventTypes
+[381 of 614] Compiling Web.Event.EventTarget
+[382 of 614] Compiling Web.HTML.Event.DragEvent.EventTypes
+[383 of 614] Compiling Web.UIEvent.WheelEvent.EventTypes
+[384 of 614] Compiling Web.HTML.Event.TrackEvent.EventTypes
+[385 of 614] Compiling Web.UIEvent.FocusEvent.EventTypes
+[386 of 614] Compiling Web.Storage.Event.StorageEvent
+[387 of 614] Compiling Web.UIEvent.InputEvent.EventTypes
+[388 of 614] Compiling Web.UIEvent.CompositionEvent.EventTypes
+[389 of 614] Compiling Web.HTML.Event.TrackEvent
+[390 of 614] Compiling Keri.Cesr.Primitive
+[391 of 614] Compiling Web.TouchEvent.Touch
+[392 of 614] Compiling Web.DOM.Element
+[393 of 614] Compiling Halogen.Query.Event
+[395 of 614] Compiling Web.DOM.DocumentType
+[394 of 614] Compiling Web.DOM.CharacterData
+[396 of 614] Compiling Web.TouchEvent.TouchList
+[397 of 614] Compiling Web.DOM.Text
+[398 of 614] Compiling Web.DOM.Comment
+[399 of 614] Compiling Web.DOM.ProcessingInstruction
+[400 of 614] Compiling Keri.Cesr.Encode
+[401 of 614] Compiling Keri.Cesr.Decode
+[402 of 614] Compiling Keri.Crypto.Digest
+[403 of 614] Compiling Keri.Cesr
+[404 of 614] Compiling Keri.KeyState.PreRotation
+[405 of 614] Compiling Keri.Crypto
+[406 of 614] Compiling Keri.KeyState.Verify
+[408 of 614] Compiling Web.DOM.NonElementParentNode
+[407 of 614] Compiling Web.HTML.Event.DataTransfer
+[409 of 614] Compiling Web.DOM.DocumentFragment
+[410 of 614] Compiling Web.DOM.Document
+[411 of 614] Compiling Keri.Event
+[412 of 614] Compiling Data.Argonaut.Gen
+[414 of 614] Compiling Data.Argonaut.Decode.Error
+[413 of 614] Compiling Data.Argonaut.Parser
+[415 of 614] Compiling Web.HTML.Event.DragEvent
+[416 of 614] Compiling Web.Clipboard.ClipboardEvent
+[417 of 614] Compiling Data.String.NonEmpty.CodePoints
+[419 of 614] Compiling Data.String.Regex
+[418 of 614] Compiling Data.String.NonEmpty.CodeUnits
+[420 of 614] Compiling Web.DOM.Node
+[421 of 614] Compiling Keri.Event.Serialize
+[423 of 614] Compiling Keri.Kel
+[422 of 614] Compiling Keri.KeyState
+[424 of 614] Compiling Data.String.Regex.Unsafe
+[425 of 614] Compiling Web.DOM.MutationRecord
+[426 of 614] Compiling Web.DOM
+[427 of 614] Compiling Halogen.VDom.Util
+[429 of 614] Compiling Halogen.Query.Input
+[428 of 614] Compiling Web.HTML.HTMLElement
+[430 of 614] Compiling Web.DOM.MutationObserver
+[432 of 614] Compiling Data.String.NonEmpty
+[431 of 614] Compiling Halogen.VDom.DOM
+[433 of 614] Compiling Data.String.NonEmpty.CaseInsensitive
+[434 of 614] Compiling Data.Argonaut.Decode.Parser
+[435 of 614] Compiling Keri.Event.Inception
+[436 of 614] Compiling Keri.Event.Rotation
+[437 of 614] Compiling Keri.Event.Interaction
+[438 of 614] Compiling Keri.Event.Receipt
+[439 of 614] Compiling Web.HTML.HTMLDListElement
+[440 of 614] Compiling Web.HTML.HTMLDataElement
+[441 of 614] Compiling Web.HTML.HTMLBRElement
+[442 of 614] Compiling Web.HTML.HTMLParagraphElement
+[443 of 614] Compiling Web.HTML.HTMLMapElement
+[444 of 614] Compiling Web.HTML.HTMLDataListElement
+[445 of 614] Compiling Web.HTML.HTMLBodyElement
+[446 of 614] Compiling Web.HTML.HTMLAnchorElement
+[447 of 614] Compiling Web.HTML.HTMLTableCellElement
+[448 of 614] Compiling Web.HTML.HTMLParamElement
+[449 of 614] Compiling Web.HTML.HTMLProgressElement
+[450 of 614] Compiling Web.HTML.HTMLQuoteElement
+[451 of 614] Compiling Web.HTML.HTMLMetaElement
+[452 of 614] Compiling Web.HTML.HTMLModElement
+[453 of 614] Compiling Web.HTML.HTMLHeadingElement
+[454 of 614] Compiling Web.HTML.HTMLLIElement
+[455 of 614] Compiling Web.HTML.HTMLMeterElement
+[456 of 614] Compiling Web.HTML.HTMLImageElement
+[457 of 614] Compiling Web.HTML.HTMLTrackElement
+[458 of 614] Compiling Web.HTML.HTMLDivElement
+[459 of 614] Compiling Web.HTML.HTMLBaseElement
+[460 of 614] Compiling Web.HTML.HTMLTableRowElement
+[461 of 614] Compiling Web.HTML.HTMLLinkElement
+[462 of 614] Compiling Web.HTML.HTMLOListElement
+[463 of 614] Compiling Web.HTML.HTMLHeadElement
+[464 of 614] Compiling Web.HTML.HTMLScriptElement
+[465 of 614] Compiling Web.HTML.HTMLAreaElement
+[466 of 614] Compiling Web.HTML.HTMLDialogElement
+[467 of 614] Compiling Web.HTML.HTMLHRElement
+[468 of 614] Compiling Web.HTML.HTMLFormElement
+[469 of 614] Compiling Web.HTML.HTMLStyleElement
+[470 of 614] Compiling Web.HTML.HTMLEmbedElement
+[471 of 614] Compiling Web.HTML.HTMLSpanElement
+[472 of 614] Compiling Web.HTML.HTMLTableSectionElement
+[473 of 614] Compiling Web.HTML.HTMLCanvasElement
+[474 of 614] Compiling Web.HTML.HTMLTableColElement
+[476 of 614] Compiling Web.HTML.HTMLSourceElement
+[475 of 614] Compiling Web.HTML.HTMLHtmlElement
+[477 of 614] Compiling Web.HTML.HTMLTitleElement
+[478 of 614] Compiling Web.HTML.HTMLPreElement
+[479 of 614] Compiling Web.HTML.HTMLTableCaptionElement
+[480 of 614] Compiling Web.HTML.HTMLTemplateElement
+[481 of 614] Compiling Web.HTML.HTMLUListElement
+[482 of 614] Compiling Web.HTML.HTMLOptGroupElement
+[483 of 614] Compiling Web.HTML.HTMLTimeElement
+[484 of 614] Compiling Keri.Kel.Replay
+[485 of 614] Compiling Web.HTML.HTMLTableHeaderCellElement
+[486 of 614] Compiling Web.HTML.HTMLTableDataCellElement
+[487 of 614] Compiling Web.HTML.HTMLDocument
+[488 of 614] Compiling Web.HTML.HTMLTableElement
+[489 of 614] Compiling Web.HTML.HTMLOutputElement
+[490 of 614] Compiling Web.HTML.HTMLOptionElement
+[491 of 614] Compiling Web.HTML.HTMLTextAreaElement
+[492 of 614] Compiling Web.HTML.HTMLLabelElement
+[493 of 614] Compiling Web.HTML.HTMLSelectElement
+[494 of 614] Compiling Web.HTML.HTMLKeygenElement
+[495 of 614] Compiling Web.HTML.HTMLObjectElement
+[496 of 614] Compiling Web.HTML.HTMLFieldSetElement
+[497 of 614] Compiling Web.HTML.HTMLLegendElement
+[498 of 614] Compiling Web.HTML.HTMLButtonElement
+[499 of 614] Compiling Keri.Kel.Append
+[500 of 614] Compiling Foreign.Object.Gen
+[501 of 614] Compiling Data.List.Partial
+[502 of 614] Compiling Data.List.NonEmpty
+[503 of 614] Compiling Test.QuickCheck.Gen
+[504 of 614] Compiling Data.Map.Internal
+[505 of 614] Compiling Data.Lens.Fold
+[506 of 614] Compiling Data.CatQueue
+[507 of 614] Compiling Data.List.ZipList
+[508 of 614] Compiling Data.List.Lazy.NonEmpty
+[509 of 614] Compiling Halogen.VDom
+[510 of 614] Compiling Halogen.VDom.Thunk
+[511 of 614] Compiling Data.CatList
+[512 of 614] Compiling Data.Lens
+[513 of 614] Compiling Data.Lens.Fold.Partial
+[514 of 614] Compiling Control.Monad.Free
+[515 of 614] Compiling Data.Argonaut.Traversals
+[517 of 614] Compiling Data.Lens.Record
+[516 of 614] Compiling Data.Argonaut.Prisms
+[518 of 614] Compiling Control.Applicative.Free
+[520 of 614] Compiling Test.QuickCheck.Arbitrary
+[519 of 614] Compiling Foreign
+[521 of 614] Compiling Control.Applicative.Free.Gen
+[522 of 614] Compiling Foreign.Keys
+[523 of 614] Compiling Web.HTML.History
+[524 of 614] Compiling Web.File.FileReader
+[525 of 614] Compiling Data.JSDate
+[526 of 614] Compiling Web.Event.CustomEvent
+[527 of 614] Compiling Halogen.VDom.DOM.Prop
+[529 of 614] Compiling Web.HTML.Event.PopStateEvent
+[528 of 614] Compiling Foreign.Index
+[530 of 614] Compiling Web.HTML.Window
+[531 of 614] Compiling Control.Monad.Free.Class
+[532 of 614] Compiling Control.Monad.Trampoline
+[533 of 614] Compiling Control.Comonad.Cofree
+[534 of 614] Compiling Web.HTML.HTMLIFrameElement
+[536 of 614] Compiling Web.HTML.HTMLMediaElement
+[535 of 614] Compiling Web.HTML.HTMLInputElement
+[538 of 614] Compiling Web.HTML.HTMLAudioElement
+[537 of 614] Compiling Web.HTML.HTMLVideoElement
+[539 of 614] Compiling Test.QuickCheck
+[540 of 614] Compiling Web.HTML
+[541 of 614] Compiling Web.UIEvent.UIEvent
+[542 of 614] Compiling Halogen.Aff.Util
+[543 of 614] Compiling Web.Clipboard
+[544 of 614] Compiling Halogen.HTML.Core
+[545 of 614] Compiling Web.UIEvent.FocusEvent
+[546 of 614] Compiling Web.UIEvent.MouseEvent
+[547 of 614] Compiling Web.UIEvent.CompositionEvent
+[548 of 614] Compiling Web.UIEvent.KeyboardEvent
+[549 of 614] Compiling Web.TouchEvent.TouchEvent
+[550 of 614] Compiling Web.UIEvent.InputEvent
+[551 of 614] Compiling Web.TouchEvent
+[552 of 614] Compiling Web.PointerEvent.PointerEvent
+[553 of 614] Compiling Web.UIEvent.WheelEvent
+[554 of 614] Compiling Web.PointerEvent.Element
+[555 of 614] Compiling Web.PointerEvent
+[556 of 614] Compiling DOM.HTML.Indexed
+[557 of 614] Compiling Control.Comonad.Cofree.Class
+[558 of 614] Compiling Halogen.HTML.Properties
+[559 of 614] Compiling Data.Set
+[560 of 614] Compiling Halogen.HTML.Elements
+[562 of 614] Compiling Halogen.HTML.Properties.ARIA
+[561 of 614] Compiling Halogen.HTML.Events
+[563 of 614] Compiling Data.Map
+[564 of 614] Compiling KelGroups.Client.Types
+[565 of 614] Compiling Data.Set.NonEmpty
+[566 of 614] Compiling KelGroups.Client.Event
+[567 of 614] Compiling Data.Map.Gen
+[568 of 614] Compiling Halogen.Data.Slot
+[569 of 614] Compiling Data.Argonaut.Encode.Encoders
+[570 of 614] Compiling Data.Interval.Duration
+[571 of 614] Compiling Data.Lens.Index
+[572 of 614] Compiling Data.Argonaut.Decode.Decoders
+[573 of 614] Compiling KelGroups.Client.State
+[574 of 614] Compiling Test.Generators
+[575 of 614] Compiling KelGroups.Client.Fold
+[577 of 614] Compiling Data.Interval
+[576 of 614] Compiling Data.Interval.Duration.Iso
+[578 of 614] Compiling Halogen.Query.ChildQuery
+[579 of 614] Compiling Data.Argonaut.Encode.Class
+[580 of 614] Compiling Data.Lens.At
+[581 of 614] Compiling Halogen.Query.HalogenM
+[582 of 614] Compiling Test.TransitionInvariantsSpec
+[584 of 614] Compiling Test.FoldSpec
+[583 of 614] Compiling Test.InvariantsSpec
+[585 of 614] Compiling Data.Argonaut.Encode.Combinators
+[586 of 614] Compiling Data.Argonaut.Encode
+[587 of 614] Compiling Data.Argonaut.Decode.Class
+[588 of 614] Compiling Data.Argonaut.Decode.Combinators
+[589 of 614] Compiling Data.Argonaut.Decode
+[590 of 614] Compiling KelGroups.Client.Codec
+[591 of 614] Compiling Data.Argonaut.JCursor
+[592 of 614] Compiling KelGroups.Client.Jwk
+[593 of 614] Compiling KelGroups.Client.Message
+[594 of 614] Compiling Halogen.HTML.Elements.Keyed
+[596 of 614] Compiling Halogen.Query
+[595 of 614] Compiling Halogen.Component
+[597 of 614] Compiling Test.JwkSpec
+[598 of 614] Compiling KelGroups.Client.Api
+[600 of 614] Compiling Data.Argonaut
+[599 of 614] Compiling Data.Argonaut.JCursor.Gen
+[601 of 614] Compiling Halogen.Aff.Driver.State
+[603 of 614] Compiling Halogen.Component.Profunctor
+[602 of 614] Compiling Halogen.HTML
+[604 of 614] Compiling Test.Main
+[605 of 614] Compiling Halogen
+[606 of 614] Compiling Halogen.Aff.Driver.Eval
+[607 of 614] Compiling View.Proposals
+[608 of 614] Compiling View.Bootstrap
+[609 of 614] Compiling View.Members
+[610 of 614] Compiling View.App
+[611 of 614] Compiling Halogen.Aff.Driver
+[612 of 614] Compiling Halogen.Aff
+[613 of 614] Compiling Halogen.VDom.Driver
+[614 of 614] Compiling Main
+           Src   Lib   All
+Warnings     0     0     0
+Errors       0     0     0
+
+✓ Build succeeded.
+
+cd client && spago test -p kelgroups-client
+(node:1368917) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+Reading Spago workspace configuration...
+
+✓ Selecting package to build: kelgroups-client
+
+Downloading dependencies...
+Building...
+           Src   Lib   All
+Warnings     0     0     0
+Errors       0     0     0
+
+✓ Build succeeded.
+
+Running tests for package: kelgroups-client
+=== Static Invariants ===
+  S1: bootstrap iff zero admins
+100/100 test(s) passed.
+  S2: empty state is bootstrap
+100/100 test(s) passed.
+  S3: majority(0) = 0
+100/100 test(s) passed.
+  S4: majority(1) = 1
+100/100 test(s) passed.
+  S5: majority(n) <= n
+100/100 test(s) passed.
+  S6: majority(n) > 0 when n > 0
+100/100 test(s) passed.
+  S7: admin member implies member
+100/100 test(s) passed.
+  B1: zero admins means bootstrap
+100/100 test(s) passed.
+
+=== Transition Invariants ===
+  T1: enact introduce admin exits bootstrap
+100/100 test(s) passed.
+  T2: enact introduce admin increments count
+100/100 test(s) passed.
+  T3: enact introduce non-admin preserves count
+100/100 test(s) passed.
+  T4: enact preserves pendingProposals
+100/100 test(s) passed.
+  T5: foldGroup [] = emptyState
+100/100 test(s) passed.
+  T6: bootstrap proposal immediately enacted
+100/100 test(s) passed.
+  T7: single admin proposal enacted immediately
+100/100 test(s) passed.
+  T8: remove with >=2 admins keeps >=1
+100/100 test(s) passed.
+  B2: proposal in bootstrap auto-enacted
+100/100 test(s) passed.
+  B3: single admin proposal auto-enacted
+100/100 test(s) passed.
+  B4: bootstrap intro creates admin member
+100/100 test(s) passed.
+
+=== Fold Invariants ===
+  F1: app event preserves members
+100/100 test(s) passed.
+  F2: app event preserves pendingProposals
+100/100 test(s) passed.
+  F3: approve nonexistent is identity
+100/100 test(s) passed.
+  F4: changeRoles preserves member count
+100/100 test(s) passed.
+  F5: introduce increases member count
+100/100 test(s) passed.
+
+=== JWK Key Export/Import ===
+  J1: RFC 8037 A.1 key imports with A.1 members
+  J2: RFC 8037 A.4 signature reproduces
+  J3: export then import preserves the pair
+100/100 test(s) passed.
+  J4: JSON round trip preserves the members
+100/100 test(s) passed.
+  J5: rejects wrong kty
+  J6: rejects unsupported curve
+  J7: rejects bad base64url characters
+  J8: rejects padded base64url
+  J9: rejects truncated d
+  J10: rejects short x
+  J11: rejects empty members
+  J12: rejects non-canonical padding bits
+  J13: rejects mismatched public/private key
+
+=== All properties passed ===
+
+✓ Test succeeded for package "kelgroups-client".
+
+ci exit=0 sha256=9325e326f44b5660572464bbbae4270ce3484f50bffc753ae174e6d32ab349c4
+100/100 test(s) passed.
+  J5: rejects wrong kty
+  J6: rejects unsupported curve
+  J7: rejects bad base64url characters
+  J8: rejects padded base64url
+  J9: rejects truncated d
+  J10: rejects short x
+  J11: rejects empty members
+  J12: rejects non-canonical padding bits
+  J13: rejects mismatched public/private key
+
+=== All properties passed ===
+
+✓ Test succeeded for package "kelgroups-client".
+
+LEG-PASS: 6: just ci exit 0
+===== LEG 7: Trivial degenerate presence (not counted) =====
+LEG-PASS: 7a: Trivial exports present
+LEG-PASS: 7b: Trivial.hs contains no S28-1 (not counted)
+===== LEG 1: tracked hygiene (after) =====
+LEG-PASS: 1-after: no tracked drift
+evidence: /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/evidence/20260905T120507Z-368b596-*.log (full log: /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/evidence/20260905T120507Z-368b596-gate-full.log)
+===== GATE G28-1 v3 (r4) COMPLETE: OVERALL_FAIL=1 =====

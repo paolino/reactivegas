@@ -1,0 +1,13 @@
+cabal build all -O0
+Build profile: -w ghc-9.8.4 -O0
+In order, the following will be built (use -v for more details):
+ - kelgroups-0.1.0.0 (lib) (file lib/KelGroups/Store.hs changed)
+ - kelgroups-0.1.0.0 (exe:kelgroups-server) (dependency rebuilt)
+Preprocessing library for kelgroups-0.1.0.0...
+Building library for kelgroups-0.1.0.0...
+[10 of 11] Compiling KelGroups.Store  ( lib/KelGroups/Store.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Store.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Store.dyn_o ) [Source file changed]
+[11 of 11] Compiling KelGroups.Server ( lib/KelGroups/Server.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Server.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Server.dyn_o ) [KelGroups.Store changed]
+Preprocessing executable 'kelgroups-server' for kelgroups-0.1.0.0...
+Building executable 'kelgroups-server' for kelgroups-0.1.0.0...
+[1 of 1] Compiling Main             ( app/Main.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/x/kelgroups-server/noopt/build/kelgroups-server/kelgroups-server-tmp/Main.o ) [KelGroups.Server changed]
+[2 of 2] Linking dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/x/kelgroups-server/noopt/build/kelgroups-server/kelgroups-server [Objects changed]

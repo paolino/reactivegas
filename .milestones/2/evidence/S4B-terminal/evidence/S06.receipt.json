@@ -1,0 +1,37 @@
+{
+  "start": "2026-09-05T22:40:28.665Z",
+  "end": "2026-09-05T22:41:46.848Z",
+  "kind": "substantive",
+  "argv": [
+    "nix",
+    "develop",
+    "--quiet",
+    "-c",
+    "just",
+    "lean"
+  ],
+  "code": 0,
+  "signal": null,
+  "counts": {
+    "substantive": 5,
+    "targeted": 56
+  },
+  "before": {
+    "git": " M lean/Reactivegas/Predicates.lean\n",
+    "head": "189e1ed306f8f8e8bcdd11eeab4fc5657a518fc8",
+    "df": "Filesystem               1B-blocks         Used    Available Use% Mounted on\n/dev/mapper/fast-code 844362571776 584155611136 217240510464  73% /code\n"
+  },
+  "after": {
+    "git": " M lean/Reactivegas/Predicates.lean\n",
+    "head": "189e1ed306f8f8e8bcdd11eeab4fc5657a518fc8",
+    "df": "Filesystem               1B-blocks         Used    Available Use% Mounted on\n/dev/mapper/fast-code 844362571776 584155619328 217240502272  73% /code\n"
+  },
+  "stdout": {
+    "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/evidence/S06.stdout",
+    "sha256": "58a3b330c6456a6c18f34c79434e52358d3b5bf7023263b661f8627ec20c0234"
+  },
+  "stderr": {
+    "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/evidence/S06.stderr",
+    "sha256": "692fb803c3cdbea6797fa0cefd0a8a2de66915e3535e65ba6342442a3f5d9bad"
+  }
+}

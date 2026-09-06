@@ -1,0 +1,21 @@
+PASS present  [GroupEvent] in s30-0a-Event.dump
+PASS present  [App] in s30-0a-Event.dump
+PASS present  [Base] in s30-0a-Event.dump
+PASS present  [BaseMutation] in s30-0a-Event.dump
+PASS present  [ChangeRolesVoted] in s30-0a-Event.dump
+PASS present  [ServerError] in s30-0a-JSON.dump
+PASS present  [StaleTip] in s30-0a-JSON.dump
+PASS present  [subSigner] in s30-0a-JSON.dump
+PASS absent   [GroupEven] correctly refused in s30-0a-Event.dump
+PASS absent   [Group] correctly refused in s30-0a-Event.dump
+PASS absent   [Ap] correctly refused in s30-0a-Event.dump
+PASS absent   [StaleTi] correctly refused in s30-0a-JSON.dump
+PASS absent   [subSigne] correctly refused in s30-0a-JSON.dump
+PASS absent   [roupEvent] correctly refused in s30-0a-Event.dump
+PASS absent   [ubSigner] correctly refused in s30-0a-JSON.dump
+PASS absent   [GroupEvent{App Base}] correctly refused in s30-0a-Event.dump
+PASS absent   [  GroupEvent{App Base}] correctly refused in s30-0a-Event.dump
+PASS absent   [ServerError] correctly refused in s30-0a-Event.dump
+PASS absent   [GroupEvent] correctly refused in s30-0a-JSON.dump
+PASS oldrule  raw-dump grep -qxF -e GroupEvent is ABSENT — the F-A defect, on real bytes
+===== D4-IDENTITY-CONTROL: PASS =====

@@ -1,0 +1,34 @@
+[
+  {
+    "path": "StoreProbe.hs",
+    "sha256": "6775a8cc0caf0ac26cf5a16e39a303ea1961928d4da0953b22de6bfe046de3be"
+  },
+  {
+    "path": "TraceProbe.hs",
+    "sha256": "dbe1eb095714e9eaeb621bf5478f28a89988f9ea5e62b81ceb47fee9aa59833a"
+  },
+  {
+    "path": "Row4Probe.hs",
+    "sha256": "97e017e2e0c43bd108e826ad0fa7ccd54c246da92858acb3c77008ce3089571d"
+  },
+  {
+    "path": "TypeNegative.hs",
+    "sha256": "0bf010f44d4f4497281d516f60f9d1affe4e317f8a74ff3e06b1d816e4808249"
+  },
+  {
+    "path": "row4-shadow/KelGroups/Fold.hs",
+    "sha256": "71c2dbebdbb5cda2cc08dcc4d31ebf9a1026e3a60a615fa7cc43adc26f405b28"
+  },
+  {
+    "path": "probe-commands.json",
+    "sha256": "f597eb23ff389863936e964c36951b778542b650cbc615077cb2beff8daec3b7"
+  },
+  {
+    "path": "probe-commands-extra.json",
+    "sha256": "4776ed92dbc678837d6004330a498d76d20c1ca37f153239df2c249c98984000"
+  },
+  {
+    "path": "run-audit.cjs",
+    "sha256": "ec619f5f9f3e88920e1c91eb7352114752edac31f2217ad4aa320b44409bd15d"
+  }
+]

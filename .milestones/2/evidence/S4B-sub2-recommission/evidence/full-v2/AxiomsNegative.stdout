@@ -1,0 +1,2587 @@
+AUDIT-AXIOM-NAME auditForbiddenTheorem
+'auditForbiddenTheorem' depends on axioms: [auditForbidden]
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v3/AxiomsNegative.lean:35:0: error: AUDIT-FORBIDDEN-AXIOM auditForbiddenTheorem auditForbidden
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_30
+'instDecidableEqAppEvent.decEq._proof_30' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqProposal.decEq._proof_12
+'KelGroups.instDecidableEqProposal.decEq._proof_12' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.majority_not_strict_on_even._proof_1_1
+'KelGroups.majority_not_strict_on_even._proof_1_1' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME StepDiagnostic.applied.inj
+'StepDiagnostic.applied.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME step.eq_14
+'step.eq_14' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.acceptPledge.injEq
+'Event.acceptPledge.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Proposal.changeRoles.inj
+'Proposal.changeRoles.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_keys_nodup'
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_keys_nodup'' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqProposal.decEq._proof_9
+'KelGroups.instDecidableEqProposal.decEq._proof_9' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.GroupConfig.mk.inj
+'KelGroups.GroupConfig.mk.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_38
+'_private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_38' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_21
+'instDecidableEqAppEvent.decEq._proof_21' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_45
+'instDecidableEqAppEvent.decEq._proof_45' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.IntegratedEvent.approve.injEq
+'KelGroups.IntegratedEvent.approve.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_7
+'instDecidableEqEvent.decEq._proof_7' does not depend on any axioms
+AUDIT-AXIOM-NAME State.empty.eq_1
+'State.empty.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.Ballot.dissent.sizeOf_spec
+'KelGroups.Vote.Ballot.dissent.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Member.mk.inj
+'KelGroups.Member.mk.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME solvent_init
+'solvent_init' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Reactivegas.step_withdraw_inv
+'Reactivegas.step_withdraw_inv' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.SweepReady.closedClean
+'KelGroups.Vote.SweepReady.closedClean' does not depend on any axioms
+AUDIT-AXIOM-NAME canCloseGroupB.eq_1
+'canCloseGroupB.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.bool_and_left
+'_private.Reactivegas.Invariants.0.bool_and_left' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.ClosureCause.proposerDeparted.sizeOf_spec
+'KelGroups.Vote.ClosureCause.proposerDeparted.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_7
+'_private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_7' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.GroupView.mk.sizeOf_spec
+'KelGroups.GroupView.mk.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.assocLookup.eq_2
+'KelGroups.assocLookup.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.i57_boundary_holds
+'Reactivegas.i57_boundary_holds' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.VoteError.ofNat_ctorIdx
+'KelGroups.Vote.VoteError.ofNat_ctorIdx' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.WellFormed.membersCoherent
+'KelGroups.WellFormed.membersCoherent' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_24
+'instDecidableEqAppEvent.decEq._proof_24' does not depend on any axioms
+AUDIT-AXIOM-NAME TraceInventory.mk.inj
+'TraceInventory.mk.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_17
+'instDecidableEqEvent.decEq._proof_17' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.ValidationError.reservedKey.inj
+'KelGroups.ValidationError.reservedKey.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedResult.decEq._proof_1
+'KelGroups.instDecidableEqIntegratedResult.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqValidationError.decEq._proof_13
+'KelGroups.instDecidableEqValidationError.decEq._proof_13' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.assocLookup_insert_self
+'KelGroups.assocLookup_insert_self' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_14
+'instDecidableEqEvent.decEq._proof_14' does not depend on any axioms
+AUDIT-AXIOM-NAME TraceTests.base_recompute_reachable_holds
+'TraceTests.base_recompute_reachable_holds' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_27
+'instDecidableEqAppEvent.decEq._proof_27' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.commitBaseChange_members
+'KelGroups.commitBaseChange_members' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_10
+'instDecidableEqAppEvent.decEq._proof_10' does not depend on any axioms
+AUDIT-AXIOM-NAME StepDiagnostic.refused.inj
+'StepDiagnostic.refused.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_35
+'instDecidableEqEvent.decEq._proof_35' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqQuestion.decEq._proof_2
+'KelGroups.Vote.instDecidableEqQuestion.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.route.eq_3
+'Reactivegas.Composition.route.eq_3' does not depend on any axioms
+AUDIT-AXIOM-NAME StepDiagnostic.refused.injEq
+'StepDiagnostic.refused.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.ValidationError.alreadyApproved.inj
+'KelGroups.ValidationError.alreadyApproved.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME allUniquePledgesB.eq_1
+'allUniquePledgesB.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.sweepClosures.eq_1
+'KelGroups.Vote.sweepClosures.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME splitUser_sublist
+'splitUser_sublist' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_32
+'instDecidableEqEvent.decEq._proof_32' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.failPurchase.inj
+'AppEvent.failPurchase.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_48
+'instDecidableEqEvent.decEq._proof_48' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_sweepReady
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_sweepReady' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME TraceTests.frozen_inventory_faithful
+'TraceTests.frozen_inventory_faithful' does not depend on any axioms
+AUDIT-AXIOM-NAME step.eq_6
+'step.eq_6' does not depend on any axioms
+AUDIT-AXIOM-NAME step.eq_12
+'step.eq_12' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedEvent.decEq._proof_17
+'KelGroups.instDecidableEqIntegratedEvent.decEq._proof_17' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.refusePledge.injEq
+'AppEvent.refusePledge.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqGroupState.decEq._proof_4
+'KelGroups.instDecidableEqGroupState.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot_tally
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot_tally' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.pendingCoherent_corr._simp_1_2
+'KelGroups.pendingCoherent_corr._simp_1_2' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME instDecidableEqTraceResult.decEq._proof_4
+'instDecidableEqTraceResult.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.backdonate.sizeOf_spec
+'Event.backdonate.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.direct_admission_only_holds
+'Reactivegas.direct_admission_only_holds' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Reactivegas.Composition.route.eq_9
+'Reactivegas.Composition.route.eq_9' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.voteDerived.eq_6
+'Reactivegas.Composition.voteDerived.eq_6' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.applyVoteEvent.match_1.eq_2
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.applyVoteEvent.match_1.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME solvent.eq_1
+'solvent.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseMutation.decEq._proof_6
+'KelGroups.instDecidableEqBaseMutation.decEq._proof_6' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.effectedState.eq_2
+'KelGroups.Vote.effectedState.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.BaseEvent.approve.inj
+'KelGroups.BaseEvent.approve.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME conservation_preserved._proof_1_39
+'conservation_preserved._proof_1_39' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME Event.denyPermission.sizeOf_spec
+'Event.denyPermission.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.Ballot.ofNat_ctorIdx
+'KelGroups.Vote.Ballot.ofNat_ctorIdx' does not depend on any axioms
+AUDIT-AXIOM-NAME TraceStep.mk.sizeOf_spec
+'TraceStep.mk.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.ClosureCause.tally.sizeOf_spec
+'KelGroups.Vote.ClosureCause.tally.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_10
+'KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_10' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.ValidationError.invalidKey.sizeOf_spec
+'KelGroups.ValidationError.invalidKey.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME sumPledges.eq_1
+'sumPledges.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.ValidationError.roleAddPrecondition.sizeOf_spec
+'KelGroups.ValidationError.roleAddPrecondition.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqPendingBase.decEq._proof_4
+'KelGroups.instDecidableEqPendingBase.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot.match_1.eq_2
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot.match_1.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_3
+'instDecidableEqEvent.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqTrace.decEq._proof_2
+'instDecidableEqTrace.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.donate.injEq
+'AppEvent.donate.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.pendingWellFormed_corr
+'KelGroups.pendingWellFormed_corr' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.DirectCommand.admitMember.sizeOf_spec
+'KelGroups.DirectCommand.admitMember.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.pledge.inj
+'Event.pledge.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.enact_preserves_wellFormed
+'KelGroups.enact_preserves_wellFormed' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME bump.eq_def
+'bump.eq_def' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_13
+'instDecidableEqAppEvent.decEq._proof_13' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.refundAll_bal_ge_lemma._proof_1_2
+'_private.Reactivegas.Invariants.0.refundAll_bal_ge_lemma._proof_1_2' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME Reactivegas.Composition.voteDerived.eq_7
+'Reactivegas.Composition.voteDerived.eq_7' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Proposal.removeMember.injEq
+'KelGroups.Proposal.removeMember.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqValidationError.decEq._proof_3
+'KelGroups.instDecidableEqValidationError.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME step_accept_inv
+'step_accept_inv' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.ClosureCause.ofNat_ctorIdx
+'KelGroups.Vote.ClosureCause.ofNat_ctorIdx' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.route.eq_11
+'Reactivegas.Composition.route.eq_11' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_11
+'instDecidableEqAppEvent.decEq._proof_11' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.stripCollections_amount_lemma
+'_private.Reactivegas.Invariants.0.stripCollections_amount_lemma' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqValidationError.decEq._proof_1
+'KelGroups.instDecidableEqValidationError.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.State.0.stripCollections.match_1.eq_1
+'_private.Reactivegas.State.0.stripCollections.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.GroupView.mk.inj
+'KelGroups.GroupView.mk.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Proposal.introduceMember.inj
+'KelGroups.Proposal.introduceMember.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.acceptPledge.sizeOf_spec
+'AppEvent.acceptPledge.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME pullCollection_mem
+'pullCollection_mem' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.ValidationError.alreadyApproved.sizeOf_spec
+'KelGroups.ValidationError.alreadyApproved.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.GroupState.mk.injEq
+'KelGroups.GroupState.mk.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME conservation_preserved._proof_1_44
+'conservation_preserved._proof_1_44' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME Event.withdraw.injEq
+'Event.withdraw.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.GroupEvent.base.injEq
+'KelGroups.GroupEvent.base.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_41
+'instDecidableEqEvent.decEq._proof_41' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.deposit.inj
+'Event.deposit.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqValidationError.decEq._proof_9
+'KelGroups.instDecidableEqValidationError.decEq._proof_9' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.GroupEvent.base.inj
+'KelGroups.GroupEvent.base.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.donate.inj
+'AppEvent.donate.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME step.eq_10
+'step.eq_10' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqStepError._proof_1
+'instDecidableEqStepError._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.VoteError.notProposer.sizeOf_spec
+'KelGroups.Vote.VoteError.notProposer.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME GuardId.donate.sizeOf_spec
+'GuardId.donate.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.refundAll_bal_ge_lemma._proof_1_3
+'_private.Reactivegas.Invariants.0.refundAll_bal_ge_lemma._proof_1_3' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME instDecidableEqStepDiagnostic.decEq._proof_5
+'instDecidableEqStepDiagnostic.decEq._proof_5' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_14
+'_private.Reactivegas.Invariants.0.stepEvent.match_1.eq_14' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.grantPermission.inj
+'Event.grantPermission.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.enact.eq_1
+'KelGroups.enact.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.failPurchase.inj
+'Event.failPurchase.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.voteDerived.eq_4
+'Reactivegas.Composition.voteDerived.eq_4' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqVoteState.decEq._proof_3
+'KelGroups.Vote.instDecidableEqVoteState.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.QuestionKind.permission.sizeOf_spec
+'KelGroups.Vote.QuestionKind.permission.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.deposit.sizeOf_spec
+'AppEvent.deposit.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.nodup_append_mem
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.nodup_append_mem' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Reactivegas.Composition.route.eq_2
+'Reactivegas.Composition.route.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME escrowSum_cons
+'escrowSum_cons' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Role.adminRole.inj
+'KelGroups.Role.adminRole.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_10
+'_private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_10' does not depend on any axioms
+AUDIT-AXIOM-NAME pullCollection_id
+'pullCollection_id' depends on axioms: [propext]
+AUDIT-AXIOM-NAME insolvent.eq_1
+'insolvent.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_5
+'Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_5' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.route.eq_4
+'Reactivegas.Composition.route.eq_4' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.Reactivegas.apply.match_1.eq_2
+'_private.Reactivegas.Invariants.0.Reactivegas.apply.match_1.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.tryEnact_eq_of_enacts
+'KelGroups.tryEnact_eq_of_enacts' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseEvent.decEq._proof_1
+'KelGroups.instDecidableEqBaseEvent.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqCollection.decEq._proof_4
+'instDecidableEqCollection.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.openQuestion.injEq
+'AppEvent.openQuestion.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Reactivegas.i57_franchise_holds
+'Reactivegas.i57_franchise_holds' depends on axioms: [propext]
+AUDIT-AXIOM-NAME StepDiagnostic.refused.sizeOf_spec
+'StepDiagnostic.refused.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.route.eq_6
+'Reactivegas.Composition.route.eq_6' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.State.0.splitUser.match_1.eq_2
+'_private.Reactivegas.State.0.splitUser.match_1.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.ValidationError.memberAlreadyExists.inj
+'KelGroups.ValidationError.memberAlreadyExists.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.eq_nil_of_isEmpty
+'_private.Reactivegas.Invariants.0.eq_nil_of_isEmpty' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_14
+'instDecidableEqAppEvent.decEq._proof_14' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.stripCollections_sublist_lemma
+'_private.Reactivegas.Invariants.0.stripCollections_sublist_lemma' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqTraceResult.decEq._proof_3
+'instDecidableEqTraceResult.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.filterMap_keys_nodup
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.filterMap_keys_nodup' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME Reactivegas.Composition.route.eq_10
+'Reactivegas.Composition.route.eq_10' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_1
+'_private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_erase_inv
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_erase_inv' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.foldFrom_preserves_wellFormed
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.foldFrom_preserves_wellFormed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqRole.decEq._proof_4
+'KelGroups.instDecidableEqRole.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.nodup_erase
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.nodup_erase' depends on axioms: [propext]
+AUDIT-AXIOM-NAME step.eq_4
+'step.eq_4' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.sweep_idempotent_mutant_caught
+'Reactivegas.sweep_idempotent_mutant_caught' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqProposal.decEq._proof_8
+'KelGroups.instDecidableEqProposal.decEq._proof_8' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.BaseEvent.approve.sizeOf_spec
+'KelGroups.BaseEvent.approve.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_10
+'_private.Reactivegas.Invariants.0.stepEvent.match_1.eq_10' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.BaseMutation.changeRoles.inj
+'KelGroups.BaseMutation.changeRoles.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.VoteState.mk.sizeOf_spec
+'KelGroups.Vote.VoteState.mk.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqAdmin._proof_2
+'KelGroups.instDecidableEqAdmin._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.transferCassa.inj
+'Event.transferCassa.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.closePurchase.inj
+'AppEvent.closePurchase.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.tryEnactBase.match_1.eq_1
+'_private.KelGroups.Invariants.0.KelGroups.tryEnactBase.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqTrace.decEq._proof_5
+'instDecidableEqTrace.decEq._proof_5' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.ClosureRecord.mk.sizeOf_spec
+'KelGroups.Vote.ClosureRecord.mk.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME step.eq_11
+'step.eq_11' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.voteWellFormed_corr._simp_1_1
+'KelGroups.Vote.voteWellFormed_corr._simp_1_1' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME Reactivegas.Composition.route.eq_1
+'Reactivegas.Composition.route.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.approvePending_wellFormed
+'_private.KelGroups.Invariants.0.KelGroups.approvePending_wellFormed' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.GroupState.mk.sizeOf_spec
+'KelGroups.GroupState.mk.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.donate.sizeOf_spec
+'AppEvent.donate.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_12
+'instDecidableEqAppEvent.decEq._proof_12' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.i57_nostale_holds
+'Reactivegas.i57_nostale_holds' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.membersCoherent_corr._simp_1_2
+'KelGroups.membersCoherent_corr._simp_1_2' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME _private.Reactivegas.Mirrors.0.keys_mem_coe
+'_private.Reactivegas.Mirrors.0.keys_mem_coe' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.Vote.emptyVoteState.eq_1
+'KelGroups.Vote.emptyVoteState.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqClosureRecord.decEq._proof_3
+'KelGroups.Vote.instDecidableEqClosureRecord.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.step.match_5.eq_6
+'_private.Reactivegas.Invariants.0.step.match_5.eq_6' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.State.0.pullCollection_sublist_lemma
+'_private.Reactivegas.State.0.pullCollection_sublist_lemma' depends on axioms: [propext]
+AUDIT-AXIOM-NAME pullCollection.eq_def
+'pullCollection.eq_def' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.grantPermission.injEq
+'AppEvent.grantPermission.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_36
+'_private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_36' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME Reactivegas.Composition.voteDerived.eq_9
+'Reactivegas.Composition.voteDerived.eq_9' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.step.match_5.eq_5
+'_private.Reactivegas.Invariants.0.step.match_5.eq_5' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqValidationError.decEq._proof_16
+'KelGroups.instDecidableEqValidationError.decEq._proof_16' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqTrace.decEq._proof_3
+'instDecidableEqTrace.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.State.0.pullCollection.match_1.eq_1
+'_private.Reactivegas.State.0.pullCollection.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.GroupEvent.base.sizeOf_spec
+'KelGroups.GroupEvent.base.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.PendingProposal.mk.sizeOf_spec
+'KelGroups.PendingProposal.mk.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME solvent_preserved
+'solvent_preserved' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqPendingBase.decEq._proof_1
+'KelGroups.instDecidableEqPendingBase.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_34
+'instDecidableEqAppEvent.decEq._proof_34' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Composition.0.Reactivegas.Composition.appVerdictAllows.match_1.eq_1
+'_private.Reactivegas.Composition.0.Reactivegas.Composition.appVerdictAllows.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME TraceTests.frozen_corpus_faithful
+'TraceTests.frozen_corpus_faithful' depends on axioms: [propext, Classical.choice, Quot.sound]
+AUDIT-AXIOM-NAME Reactivegas.step_backdonate_inv
+'Reactivegas.step_backdonate_inv' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqCollection.decEq._proof_1
+'instDecidableEqCollection.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_13
+'KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_13' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseChange.decEq._proof_5
+'KelGroups.instDecidableEqBaseChange.decEq._proof_5' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.Route.ofNat_ctorIdx
+'Reactivegas.Composition.Route.ofNat_ctorIdx' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqVerdict._proof_1
+'KelGroups.Vote.instDecidableEqVerdict._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.foldEvents_preserves_wellFormed
+'_private.KelGroups.Invariants.0.KelGroups.foldEvents_preserves_wellFormed' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME splitUser.eq_1
+'splitUser.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME step_deny_inv
+'step_deny_inv' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqProposal.decEq._proof_10
+'KelGroups.instDecidableEqProposal.decEq._proof_10' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqGroupEvent.decEq._proof_1
+'KelGroups.instDecidableEqGroupEvent.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqState.decEq._proof_3
+'instDecidableEqState.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME solvent_corr._simp_1_3
+'solvent_corr._simp_1_3' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.RoleDef.mk.sizeOf_spec
+'KelGroups.RoleDef.mk.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_8
+'instDecidableEqAppEvent.decEq._proof_8' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqValidationError.decEq._proof_17
+'KelGroups.instDecidableEqValidationError.decEq._proof_17' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqAuthMode._proof_2
+'KelGroups.instDecidableEqAuthMode._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_4
+'_private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_4' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_6
+'Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_6' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.IntegratedResult.mk.sizeOf_spec
+'KelGroups.IntegratedResult.mk.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME GuardId.denyPermission.sizeOf_spec
+'GuardId.denyPermission.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME State.mk.inj
+'State.mk.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME conservation_preserved._proof_1_35
+'conservation_preserved._proof_1_35' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME splitUser.eq_def
+'splitUser.eq_def' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.assocAdjust_keys
+'_private.KelGroups.Invariants.0.KelGroups.assocAdjust_keys' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqQuestionKind.decEq._proof_4
+'KelGroups.Vote.instDecidableEqQuestionKind.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqValidationError.decEq._proof_5
+'KelGroups.instDecidableEqValidationError.decEq._proof_5' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Enactment.mk.inj
+'KelGroups.Enactment.mk.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_8
+'instDecidableEqEvent.decEq._proof_8' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseChange.decEq._proof_9
+'KelGroups.instDecidableEqBaseChange.decEq._proof_9' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.IntegratedEvent.approve.sizeOf_spec
+'KelGroups.IntegratedEvent.approve.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.closePurchase.sizeOf_spec
+'AppEvent.closePurchase.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.instDecidableEqProductionError.decEq._proof_2
+'Reactivegas.instDecidableEqProductionError.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.route.eq_7
+'Reactivegas.Composition.route.eq_7' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.donate.injEq
+'Event.donate.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME conservation_preserved._proof_1_42
+'conservation_preserved._proof_1_42' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.Integration.mk.sizeOf_spec
+'KelGroups.Integration.mk.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_35
+'_private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_35' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME Reactivegas.base_departure_applies_cleanup
+'Reactivegas.base_departure_applies_cleanup' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.assocInsert_property._simp_1_1
+'_private.KelGroups.Invariants.0.KelGroups.assocInsert_property._simp_1_1' depends on axioms: [propext]
+AUDIT-AXIOM-NAME StepError.rejected.sizeOf_spec
+'StepError.rejected.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseChange.decEq._proof_8
+'KelGroups.instDecidableEqBaseChange.decEq._proof_8' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.pullCollection_mem_lemma
+'_private.Reactivegas.Invariants.0.pullCollection_mem_lemma' depends on axioms: [propext]
+AUDIT-AXIOM-NAME TraceTests.base_departure_applies_cleanup
+'TraceTests.base_departure_applies_cleanup' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseChange.decEq._proof_10
+'KelGroups.instDecidableEqBaseChange.decEq._proof_10' does not depend on any axioms
+AUDIT-AXIOM-NAME TraceResult.refused.sizeOf_spec
+'TraceResult.refused.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.closePurchase.injEq
+'AppEvent.closePurchase.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.QuestionKind.permission.injEq
+'KelGroups.Vote.QuestionKind.permission.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Reactivegas.IntegratedTraceStep.mk.inj
+'Reactivegas.IntegratedTraceStep.mk.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.MembersCoherent.eq_1
+'KelGroups.MembersCoherent.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.appVerdictAllows.eq_1
+'Reactivegas.Composition.appVerdictAllows.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.route.eq_5
+'Reactivegas.Composition.route.eq_5' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqQuestion.decEq._proof_4
+'KelGroups.Vote.instDecidableEqQuestion.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_12
+'_private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_12' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.Verdict.positive.sizeOf_spec
+'KelGroups.Vote.Verdict.positive.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.sweepDuplicating.eq_1
+'KelGroups.Vote.sweepDuplicating.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.ValidationError.bootstrapRequiresAdmin.sizeOf_spec
+'KelGroups.ValidationError.bootstrapRequiresAdmin.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.app_members_preservation_mutant_caught
+'Reactivegas.app_members_preservation_mutant_caught' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqRole.decEq._proof_3
+'KelGroups.instDecidableEqRole.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqGuardId._proof_2
+'instDecidableEqGuardId._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqValidationError.decEq._proof_12
+'KelGroups.instDecidableEqValidationError.decEq._proof_12' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.bool_and_right
+'_private.Reactivegas.Invariants.0.bool_and_right' does not depend on any axioms
+AUDIT-AXIOM-NAME TraceTests.direct_admission_only_holds
+'TraceTests.direct_admission_only_holds' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Event.correctPledge.injEq
+'Event.correctPledge.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Event.transferCassa.sizeOf_spec
+'Event.transferCassa.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.withdraw.sizeOf_spec
+'Event.withdraw.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.pledge.injEq
+'AppEvent.pledge.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_2
+'Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.applyEventDetailed.eq_1
+'KelGroups.applyEventDetailed.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.ValidationError.alreadyApproved.injEq
+'KelGroups.ValidationError.alreadyApproved.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqGroupState.decEq._proof_3
+'KelGroups.instDecidableEqGroupState.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.ValidationError.memberAlreadyExists.sizeOf_spec
+'KelGroups.ValidationError.memberAlreadyExists.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME TraceTests.sweep_idempotent_witness
+'TraceTests.sweep_idempotent_witness' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_29
+'instDecidableEqEvent.decEq._proof_29' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.app_event_has_no_base_change
+'KelGroups.app_event_has_no_base_change' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_12
+'KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_12' does not depend on any axioms
+AUDIT-AXIOM-NAME permissionToClose.eq_1
+'permissionToClose.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_28
+'instDecidableEqAppEvent.decEq._proof_28' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqTraceResult.decEq._proof_5
+'instDecidableEqTraceResult.decEq._proof_5' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_35
+'instDecidableEqAppEvent.decEq._proof_35' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.franchise.eq_1
+'KelGroups.Vote.franchise.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseEvent.decEq._proof_2
+'KelGroups.instDecidableEqBaseEvent.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqProposal.decEq._proof_7
+'instDecidableEqProposal.decEq._proof_7' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.VoteEvent.cast.inj
+'KelGroups.Vote.VoteEvent.cast.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.no_expiry
+'KelGroups.Vote.no_expiry' depends on axioms: [propext, Classical.choice, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.Role.appRole.inj
+'KelGroups.Role.appRole.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME Proposal.departure.inj
+'Proposal.departure.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState_tally_growth
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState_tally_growth' depends on axioms: [propext,
+ Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.foldGroup_wellFormed
+'KelGroups.foldGroup_wellFormed' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqValidationError.decEq._proof_11
+'KelGroups.instDecidableEqValidationError.decEq._proof_11' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedEvent.decEq._proof_2
+'KelGroups.instDecidableEqIntegratedEvent.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.foldIntegrated.match_1.eq_1
+'_private.KelGroups.Invariants.0.KelGroups.foldIntegrated.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.VoteEvent.renounce.inj
+'KelGroups.Vote.VoteEvent.renounce.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqCollection.decEq._proof_3
+'instDecidableEqCollection.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqValidationError.decEq._proof_6
+'KelGroups.instDecidableEqValidationError.decEq._proof_6' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.List.filterMap.match_1.eq_1
+'_private.KelGroups.Vote.Invariants.0.List.filterMap.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.assocLookup_erase_of_none
+'KelGroups.assocLookup_erase_of_none' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.step.match_5.eq_15
+'_private.Reactivegas.Invariants.0.step.match_5.eq_15' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.comuneThresholdSanity_holds
+'Reactivegas.comuneThresholdSanity_holds' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.assocAdjust.eq_def
+'KelGroups.assocAdjust.eq_def' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqStepDiagnostic.decEq._proof_4
+'instDecidableEqStepDiagnostic.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqTraceResult.decEq._proof_6
+'instDecidableEqTraceResult.decEq._proof_6' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.verdictOf_threshold_congr
+'KelGroups.Vote.verdictOf_threshold_congr' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.pendingCoherentB.eq_1
+'KelGroups.pendingCoherentB.eq_1' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.majority_not_strict_on_even
+'KelGroups.majority_not_strict_on_even' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME Reactivegas.i57_exhaustive_holds
+'Reactivegas.i57_exhaustive_holds' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.ValidationError.roleRemovePrecondition.sizeOf_spec
+'KelGroups.ValidationError.roleRemovePrecondition.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME bump_sum
+'bump_sum' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState.match_3.eq_1
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState.match_3.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseChange.decEq._proof_1
+'KelGroups.instDecidableEqBaseChange.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqPendingProposal.decEq._proof_2
+'KelGroups.instDecidableEqPendingProposal.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState_preserves_qid
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState_preserves_qid' depends on axioms: [propext,
+ Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.Vote.lookupQuestion.eq_1
+'KelGroups.Vote.lookupQuestion.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.ValidationError.proposalNotFound.injEq
+'KelGroups.ValidationError.proposalNotFound.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedError.decEq._proof_4
+'KelGroups.instDecidableEqIntegratedError.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.exhaustive_inventories_hold
+'Reactivegas.exhaustive_inventories_hold' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqValidationError.decEq._proof_20
+'KelGroups.instDecidableEqValidationError.decEq._proof_20' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqPendingBase.decEq._proof_2
+'KelGroups.instDecidableEqPendingBase.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME GuardId.transferCassa.sizeOf_spec
+'GuardId.transferCassa.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME uniquePledges_pend_cons
+'uniquePledges_pend_cons' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.applyEventDetailed.eq_2
+'KelGroups.applyEventDetailed.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME TraceTests.frozen_checks_faithful
+'TraceTests.frozen_checks_faithful' depends on axioms: [propext, Classical.choice, Quot.sound]
+AUDIT-AXIOM-NAME conservation_preserved._proof_1_37
+'conservation_preserved._proof_1_37' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_closed_mem._simp_1_2
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_closed_mem._simp_1_2' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqProposal.decEq._proof_3
+'instDecidableEqProposal.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME pledge_rejected_when_member
+'pledge_rejected_when_member' depends on axioms: [propext, Classical.choice, Quot.sound]
+AUDIT-AXIOM-NAME step_close_inv
+'step_close_inv' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_42
+'instDecidableEqAppEvent.decEq._proof_42' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqStepDiagnostic.decEq._proof_2
+'instDecidableEqStepDiagnostic.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.unique_mem_cons_inv
+'_private.Reactivegas.Invariants.0.unique_mem_cons_inv' depends on axioms: [propext]
+AUDIT-AXIOM-NAME AppEvent.correctPledge.sizeOf_spec
+'AppEvent.correctPledge.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.tryEnact.eq_1
+'KelGroups.tryEnact.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.cast.inj
+'AppEvent.cast.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_51
+'instDecidableEqEvent.decEq._proof_51' does not depend on any axioms
+AUDIT-AXIOM-NAME TraceTests.all_checks_pass
+'TraceTests.all_checks_pass' depends on axioms: [propext, Classical.choice, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqProposal.decEq._proof_4
+'KelGroups.instDecidableEqProposal.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.placeBallot.eq_2
+'KelGroups.Vote.placeBallot.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.IntegratedEvent.direct.sizeOf_spec
+'KelGroups.IntegratedEvent.direct.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Proposal.removeMember.sizeOf_spec
+'KelGroups.Proposal.removeMember.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME GuardClaim.mk.inj
+'GuardClaim.mk.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_5
+'_private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_5' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.comune_cannot_authorize
+'Reactivegas.comune_cannot_authorize' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Proposal.changeRoles.sizeOf_spec
+'KelGroups.Proposal.changeRoles.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME StepDiagnostic.applied.sizeOf_spec
+'StepDiagnostic.applied.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.voteDerived.eq_11
+'Reactivegas.Composition.voteDerived.eq_11' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_3
+'Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_18
+'instDecidableEqEvent.decEq._proof_18' does not depend on any axioms
+AUDIT-AXIOM-NAME step.eq_2
+'step.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.members_change_implies_enacted
+'KelGroups.members_change_implies_enacted' depends on axioms: [propext]
+AUDIT-AXIOM-NAME bal_cons
+'bal_cons' does not depend on any axioms
+AUDIT-AXIOM-NAME reach_solvent
+'reach_solvent' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.applyIntegratedEvent.eq_3
+'KelGroups.applyIntegratedEvent.eq_3' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.refundAll_bal_ge_lemma._proof_1_1
+'_private.Reactivegas.Invariants.0.refundAll_bal_ge_lemma._proof_1_1' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME Reactivegas.canonical_economy_holds
+'Reactivegas.canonical_economy_holds' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.Reactivegas.State.0.pullCollection_id_lemma
+'_private.Reactivegas.State.0.pullCollection_id_lemma' depends on axioms: [propext]
+AUDIT-AXIOM-NAME sumBal.eq_1
+'sumBal.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.setInsert.eq_1
+'KelGroups.setInsert.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.i57_policyfree_holds
+'Reactivegas.i57_policyfree_holds' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqGroupView.decEq._proof_1
+'KelGroups.instDecidableEqGroupView.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_42
+'instDecidableEqEvent.decEq._proof_42' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqRole.decEq._proof_2
+'KelGroups.instDecidableEqRole.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.foldIntegrated.match_1.eq_2
+'_private.KelGroups.Invariants.0.KelGroups.foldIntegrated.match_1.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.applyApprove_preserves_wellFormed
+'KelGroups.applyApprove_preserves_wellFormed' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.AuthMode.bootstrap.sizeOf_spec
+'KelGroups.AuthMode.bootstrap.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_43
+'instDecidableEqAppEvent.decEq._proof_43' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqTrace.decEq._proof_4
+'instDecidableEqTrace.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.step.match_5.eq_16
+'_private.Reactivegas.Invariants.0.step.match_5.eq_16' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.validateVoteEvent.eq_1
+'KelGroups.Vote.validateVoteEvent.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.i57_franchise_mutant_caught
+'Reactivegas.i57_franchise_mutant_caught' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.assocErase_sublist
+'_private.KelGroups.Invariants.0.KelGroups.assocErase_sublist' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.assocAdjust_property._simp_1_1
+'_private.KelGroups.Invariants.0.KelGroups.assocAdjust_property._simp_1_1' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot_clean
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot_clean' depends on axioms: [propext]
+AUDIT-AXIOM-NAME canCloseGroup_corr._simp_1_4
+'canCloseGroup_corr._simp_1_4' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_26
+'instDecidableEqEvent.decEq._proof_26' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepStep_key
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepStep_key' depends on axioms: [propext]
+AUDIT-AXIOM-NAME uniquePledges.eq_1
+'uniquePledges.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_4
+'KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqRole.decEq._proof_1
+'KelGroups.instDecidableEqRole.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.tryEnactDetailed.match_1.eq_1
+'_private.KelGroups.Invariants.0.KelGroups.tryEnactDetailed.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.RoleDef.mk.injEq
+'KelGroups.RoleDef.mk.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_3.eq_4
+'_private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_3.eq_4' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.StepResult.mk.inj
+'KelGroups.StepResult.mk.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_33
+'instDecidableEqAppEvent.decEq._proof_33' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.base_recompute_reachable_holds
+'Reactivegas.base_recompute_reachable_holds' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqGroupEvent.decEq._proof_5
+'KelGroups.instDecidableEqGroupEvent.decEq._proof_5' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.applyVoteEvent.match_1.eq_1
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.applyVoteEvent.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.commitBaseChange_ok
+'KelGroups.commitBaseChange_ok' depends on axioms: [propext]
+AUDIT-AXIOM-NAME splitUser_sum
+'splitUser_sum' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_5
+'instDecidableEqEvent.decEq._proof_5' does not depend on any axioms
+AUDIT-AXIOM-NAME pledge_escrow_debit._proof_1_1
+'pledge_escrow_debit._proof_1_1' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.base_change_runs_hook
+'KelGroups.base_change_runs_hook' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.applyVoteEvent_preserves_qid
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.applyVoteEvent_preserves_qid' depends on axioms: [propext,
+ Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.ValidationError.invalidKey.inj
+'KelGroups.ValidationError.invalidKey.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_19
+'instDecidableEqAppEvent.decEq._proof_19' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.BaseChange.memberAdmitted.injEq
+'KelGroups.BaseChange.memberAdmitted.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME TraceResult.refused.inj
+'TraceResult.refused.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqQuestion.decEq._proof_1
+'KelGroups.Vote.instDecidableEqQuestion.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assoc_entries_key_unique
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assoc_entries_key_unique' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_1.eq_2
+'_private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_1.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_mem_cases._simp_1_1
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_mem_cases._simp_1_1' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedEvent.decEq._proof_5
+'KelGroups.instDecidableEqIntegratedEvent.decEq._proof_5' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_14
+'_private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_14' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.foldVote_wellFormed
+'KelGroups.Vote.foldVote_wellFormed' depends on axioms: [propext, Classical.choice, Quot.sound]
+AUDIT-AXIOM-NAME Event.withdraw.inj
+'Event.withdraw.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqPendingProposal.decEq._proof_1
+'KelGroups.instDecidableEqPendingProposal.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseMutation.decEq._proof_4
+'KelGroups.instDecidableEqBaseMutation.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME StepDiagnostic.applied.injEq
+'StepDiagnostic.applied.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Role.appRole.sizeOf_spec
+'KelGroups.Role.appRole.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME insolvent_corr
+'insolvent_corr' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.IntegratedEvent.direct.injEq
+'KelGroups.IntegratedEvent.direct.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.setInsert_mem_cases
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.setInsert_mem_cases' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.VoteWellFormed.toSweepReady
+'KelGroups.Vote.VoteWellFormed.toSweepReady' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.BaseChange.rolesChanged.sizeOf_spec
+'KelGroups.BaseChange.rolesChanged.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.app_members_preservation_holds
+'Reactivegas.app_members_preservation_holds' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Event.closePurchase.injEq
+'Event.closePurchase.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_6
+'instDecidableEqEvent.decEq._proof_6' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqValidationError.decEq._proof_14
+'KelGroups.instDecidableEqValidationError.decEq._proof_14' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Mirrors.0.assocLookup_some_mem_nodupfree
+'_private.Reactivegas.Mirrors.0.assocLookup_some_mem_nodupfree' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqStepDiagnostic.decEq._proof_1
+'instDecidableEqStepDiagnostic.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME conservation_corr
+'conservation_corr' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Reactivegas.instDecidableEqProductionError.decEq._proof_4
+'Reactivegas.instDecidableEqProductionError.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.verdictOf.eq_1
+'KelGroups.Vote.verdictOf.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME TraceStep.mk.inj
+'TraceStep.mk.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME conservation_preserved._proof_1_40
+'conservation_preserved._proof_1_40' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.Vote.VoteEvent.renounce.injEq
+'KelGroups.Vote.VoteEvent.renounce.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_37
+'instDecidableEqAppEvent.decEq._proof_37' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqQuestion.decEq._proof_3
+'KelGroups.Vote.instDecidableEqQuestion.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME TraceStep.mk.injEq
+'TraceStep.mk.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqGroupEvent.decEq._proof_6
+'KelGroups.instDecidableEqGroupEvent.decEq._proof_6' does not depend on any axioms
+AUDIT-AXIOM-NAME governanceEnactsB.eq_1
+'governanceEnactsB.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.route.eq_8
+'Reactivegas.Composition.route.eq_8' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.franchiseSize.eq_1
+'KelGroups.Vote.franchiseSize.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot.match_1.eq_1
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_assocLookup_some'
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_assocLookup_some'' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME AppEvent.cast.sizeOf_spec
+'AppEvent.cast.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.RoleDef.mk.inj
+'KelGroups.RoleDef.mk.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.voteDerived.eq_13
+'Reactivegas.Composition.voteDerived.eq_13' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.instDecidableEqRoute._proof_2
+'Reactivegas.Composition.instDecidableEqRoute._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedError.decEq._proof_3
+'KelGroups.instDecidableEqIntegratedError.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Proposal.changeRoles.injEq
+'KelGroups.Proposal.changeRoles.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState.match_3.eq_2
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState.match_3.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_46
+'instDecidableEqEvent.decEq._proof_46' does not depend on any axioms
+AUDIT-AXIOM-NAME bal.eq_def
+'bal.eq_def' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.openPurchase.injEq
+'Event.openPurchase.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME AppEvent.refusePledge.sizeOf_spec
+'AppEvent.refusePledge.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.step_donate_inv
+'Reactivegas.step_donate_inv' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.Reactivegas.State.0.pullCollection.match_1.eq_2
+'_private.Reactivegas.State.0.pullCollection.match_1.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_6
+'_private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_6' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.assocErase_key_absent
+'_private.KelGroups.Invariants.0.KelGroups.assocErase_key_absent' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.placeBallot.eq_1
+'KelGroups.Vote.placeBallot.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_3
+'_private.Reactivegas.Invariants.0.stepEvent.match_1.eq_3' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.instDecidableEqProductionError.decEq._proof_1
+'Reactivegas.instDecidableEqProductionError.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.VoteEvent.cast.sizeOf_spec
+'KelGroups.Vote.VoteEvent.cast.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedError.decEq._proof_1
+'KelGroups.instDecidableEqIntegratedError.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_3.eq_1
+'_private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_3.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_2
+'KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME governanceEnacts_corr
+'governanceEnacts_corr' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME demand_eq_true_of_some
+'demand_eq_true_of_some' does not depend on any axioms
+AUDIT-AXIOM-NAME GuardClaim.mk.injEq
+'GuardClaim.mk.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME escrowOf.eq_1
+'escrowOf.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqVoteState.decEq._proof_1
+'KelGroups.Vote.instDecidableEqVoteState.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.PendingBase.mk.inj
+'KelGroups.PendingBase.mk.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_2
+'instDecidableEqEvent.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME step.eq_1
+'step.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.State.0.sumPledges.match_1.eq_1
+'_private.Reactivegas.State.0.sumPledges.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.WellFormed.pendingCoherent
+'KelGroups.WellFormed.pendingCoherent' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_other_lookup
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_other_lookup' depends on axioms: [propext]
+AUDIT-AXIOM-NAME bump.eq_1
+'bump.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.ClosureRecord.mk.injEq
+'KelGroups.Vote.ClosureRecord.mk.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqValidationError.decEq._proof_8
+'KelGroups.instDecidableEqValidationError.decEq._proof_8' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedEvent.decEq._proof_12
+'KelGroups.instDecidableEqIntegratedEvent.decEq._proof_12' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocLookup_some_mem'
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocLookup_some_mem'' depends on axioms: [propext]
+AUDIT-AXIOM-NAME governanceEnacts.eq_1
+'governanceEnacts.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqQuestionKind.decEq._proof_1
+'KelGroups.Vote.instDecidableEqQuestionKind.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.applyIntegratedEvent.eq_1
+'KelGroups.applyIntegratedEvent.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_mem_cases
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_mem_cases' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.PendingCoherent.eq_1
+'KelGroups.PendingCoherent.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_assocLookup_some'._simp_1_1
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_assocLookup_some'._simp_1_1' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqMember.decEq._proof_1
+'KelGroups.instDecidableEqMember.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME comune_not_a_member_corr
+'comune_not_a_member_corr' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.applyVoteEvent_preserves_wellFormed
+'KelGroups.Vote.applyVoteEvent_preserves_wellFormed' depends on axioms: [propext, Classical.choice, Quot.sound]
+AUDIT-AXIOM-NAME GuardId.correctPledge.sizeOf_spec
+'GuardId.correctPledge.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqQuestion.decEq._proof_5
+'KelGroups.Vote.instDecidableEqQuestion.decEq._proof_5' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.assocInsert_keys_nodup._simp_1_1
+'_private.KelGroups.Invariants.0.KelGroups.assocInsert_keys_nodup._simp_1_1' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_16
+'instDecidableEqEvent.decEq._proof_16' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Mirrors.0.KelGroups.assocLookup_some_mem_nodupfree
+'_private.KelGroups.Mirrors.0.KelGroups.assocLookup_some_mem_nodupfree' depends on axioms: [propext]
+AUDIT-AXIOM-NAME AppEvent.renounce.inj
+'AppEvent.renounce.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_25
+'instDecidableEqAppEvent.decEq._proof_25' does not depend on any axioms
+AUDIT-AXIOM-NAME step_pledge_inv
+'step_pledge_inv' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_34
+'instDecidableEqEvent.decEq._proof_34' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqState.decEq._proof_4
+'instDecidableEqState.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqClosureRecord.decEq._proof_1
+'KelGroups.Vote.instDecidableEqClosureRecord.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqDirectCommand.decEq._proof_3
+'KelGroups.instDecidableEqDirectCommand.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_40
+'_private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_40' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME _private.KelGroups.Mirrors.0.KelGroups.Vote.openCleanIff.match_1.eq_2
+'_private.KelGroups.Mirrors.0.KelGroups.Vote.openCleanIff.match_1.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.questionClean_corr
+'KelGroups.Vote.questionClean_corr' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME Event.transferCassa.injEq
+'Event.transferCassa.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_27
+'instDecidableEqEvent.decEq._proof_27' does not depend on any axioms
+AUDIT-AXIOM-NAME stripCollections_sum._proof_1_5
+'stripCollections_sum._proof_1_5' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.finishEnact_preserves_wellFormed
+'KelGroups.finishEnact_preserves_wellFormed' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqStepResult.decEq._proof_2
+'KelGroups.instDecidableEqStepResult.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME doubleEntryB.eq_1
+'doubleEntryB.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqTrace.decEq._proof_1
+'instDecidableEqTrace.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_11
+'KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_11' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.sweepDuplicating_duplicates
+'KelGroups.Vote.sweepDuplicating_duplicates' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_22
+'instDecidableEqAppEvent.decEq._proof_22' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.step.match_5.eq_2
+'_private.Reactivegas.Invariants.0.step.match_5.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.assocLookup.eq_1
+'KelGroups.assocLookup.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME stepEvent.eq_7
+'stepEvent.eq_7' does not depend on any axioms
+AUDIT-AXIOM-NAME conservation.eq_1
+'conservation.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME StepError.ofNat_ctorIdx
+'StepError.ofNat_ctorIdx' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.BaseMutation.removeMember.sizeOf_spec
+'KelGroups.BaseMutation.removeMember.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.assocErase.eq_2
+'KelGroups.assocErase.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME withdraw_double_entry
+'withdraw_double_entry' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseChange.decEq._proof_4
+'KelGroups.instDecidableEqBaseChange.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.non_admin_admission_is_noop
+'KelGroups.non_admin_admission_is_noop' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_44
+'instDecidableEqEvent.decEq._proof_44' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.Verdict.open.sizeOf_spec
+'KelGroups.Vote.Verdict.open.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME TraceResult.applied.sizeOf_spec
+'TraceResult.applied.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqProposal.decEq._proof_3
+'KelGroups.instDecidableEqProposal.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.ClosureCause.renounced.sizeOf_spec
+'KelGroups.Vote.ClosureCause.renounced.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseChange.decEq._proof_6
+'KelGroups.instDecidableEqBaseChange.decEq._proof_6' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqEnactment.decEq._proof_1
+'KelGroups.instDecidableEqEnactment.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME step.eq_7
+'step.eq_7' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Enactment.mk.sizeOf_spec
+'KelGroups.Enactment.mk.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME productionWellFormed_proj
+'productionWellFormed_proj' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Mirrors.0.KelGroups.Vote.openCleanIff
+'_private.KelGroups.Mirrors.0.KelGroups.Vote.openCleanIff' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.ValidationError.memberAlreadyExists.injEq
+'KelGroups.ValidationError.memberAlreadyExists.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.PendingWellFormed.eq_1
+'KelGroups.PendingWellFormed.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_20
+'instDecidableEqEvent.decEq._proof_20' does not depend on any axioms
+AUDIT-AXIOM-NAME stepEvent.eq_9
+'stepEvent.eq_9' does not depend on any axioms
+AUDIT-AXIOM-NAME approvals_nodup
+'approvals_nodup' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.bal_foldl_bump_ge._proof_1_2
+'_private.Reactivegas.Invariants.0.bal_foldl_bump_ge._proof_1_2' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME Reactivegas.Composition.voteDerived.eq_14
+'Reactivegas.Composition.voteDerived.eq_14' does not depend on any axioms
+AUDIT-AXIOM-NAME stepEvent.eq_2
+'stepEvent.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.route.eq_14
+'Reactivegas.Composition.route.eq_14' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.step.match_5.eq_11
+'_private.Reactivegas.Invariants.0.step.match_5.eq_11' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_15
+'instDecidableEqAppEvent.decEq._proof_15' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_39
+'instDecidableEqEvent.decEq._proof_39' does not depend on any axioms
+AUDIT-AXIOM-NAME GuardId.ofNat_ctorIdx
+'GuardId.ofNat_ctorIdx' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_map_fst_erase_of_ne._simp_1_1
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_map_fst_erase_of_ne._simp_1_1' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_40
+'instDecidableEqEvent.decEq._proof_40' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.direct_admission_requires_admin
+'KelGroups.direct_admission_requires_admin' does not depend on any axioms
+AUDIT-AXIOM-NAME Trace.mk.sizeOf_spec
+'Trace.mk.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.commitBaseChange.match_1.eq_1
+'_private.KelGroups.Invariants.0.KelGroups.commitBaseChange.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.grantPermission.injEq
+'Event.grantPermission.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME sumBal_cons
+'sumBal_cons' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.transferCassa.injEq
+'AppEvent.transferCassa.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME step_correct_inv
+'step_correct_inv' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.StepResult.mk.sizeOf_spec
+'KelGroups.StepResult.mk.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME view_mem_of_isMember
+'view_mem_of_isMember' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqProposal.decEq._proof_15
+'KelGroups.instDecidableEqProposal.decEq._proof_15' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.instDecidableEqRoute._proof_1
+'Reactivegas.Composition.instDecidableEqRoute._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.backdonate.injEq
+'AppEvent.backdonate.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqProposal.decEq._proof_5
+'KelGroups.instDecidableEqProposal.decEq._proof_5' does not depend on any axioms
+AUDIT-AXIOM-NAME stepEvent.eq_8
+'stepEvent.eq_8' does not depend on any axioms
+AUDIT-AXIOM-NAME fail_guard_inv
+'fail_guard_inv' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.ValidationError.memberNotFound.injEq
+'KelGroups.ValidationError.memberNotFound.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Proposal.introduceMember.injEq
+'KelGroups.Proposal.introduceMember.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqRole.decEq._proof_6
+'KelGroups.instDecidableEqRole.decEq._proof_6' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.openPurchase.sizeOf_spec
+'Event.openPurchase.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME stepEvent.eq_3
+'stepEvent.eq_3' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.GroupEvent.app.sizeOf_spec
+'KelGroups.GroupEvent.app.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqProposal.decEq._proof_2
+'instDecidableEqProposal.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqQuestionKind.decEq._proof_3
+'KelGroups.Vote.instDecidableEqQuestionKind.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Integration.mk.injEq
+'KelGroups.Integration.mk.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.Reactivegas.State.0.sumPledges.match_1.eq_2
+'_private.Reactivegas.State.0.sumPledges.match_1.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.State.0.pullCollection.match_3.eq_2
+'_private.Reactivegas.State.0.pullCollection.match_3.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_9
+'instDecidableEqEvent.decEq._proof_9' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.IntegratedTraceStep.mk.injEq
+'Reactivegas.IntegratedTraceStep.mk.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.tally_keys_franchised_from
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.tally_keys_franchised_from' depends on axioms: [propext,
+ Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.applyEvent_preserves_wellFormed
+'KelGroups.applyEvent_preserves_wellFormed' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_13
+'_private.Reactivegas.Invariants.0.stepEvent.match_1.eq_13' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_21
+'instDecidableEqEvent.decEq._proof_21' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_36
+'instDecidableEqEvent.decEq._proof_36' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_6
+'instDecidableEqAppEvent.decEq._proof_6' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.VoteState.mk.injEq
+'KelGroups.Vote.VoteState.mk.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.step.match_5.eq_7
+'_private.Reactivegas.Invariants.0.step.match_5.eq_7' does not depend on any axioms
+AUDIT-AXIOM-NAME doubleEntry_corr
+'doubleEntry_corr' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.member_key_coherent
+'KelGroups.member_key_coherent' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.i57_policyfree_mutant_caught
+'Reactivegas.i57_policyfree_mutant_caught' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Event.pledge.injEq
+'Event.pledge.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME GuardId.refusePledge.sizeOf_spec
+'GuardId.refusePledge.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME Proposal.changeRoles.injEq
+'Proposal.changeRoles.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME members_change_implies_enacted
+'members_change_implies_enacted' depends on axioms: [propext]
+AUDIT-AXIOM-NAME GuardClaim.mk.sizeOf_spec
+'GuardClaim.mk.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.bal_foldl_bump_ge._proof_1_1
+'_private.Reactivegas.Invariants.0.bal_foldl_bump_ge._proof_1_1' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME step.eq_9
+'step.eq_9' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.State.0.splitUser_sublist_lemma
+'_private.Reactivegas.State.0.splitUser_sublist_lemma' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Admin.ofNat_ctorIdx
+'KelGroups.Admin.ofNat_ctorIdx' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseEvent.decEq._proof_5
+'KelGroups.instDecidableEqBaseEvent.decEq._proof_5' does not depend on any axioms
+AUDIT-AXIOM-NAME bal_bump_ne
+'bal_bump_ne' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Event.refusePledge.injEq
+'Event.refusePledge.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_33
+'instDecidableEqEvent.decEq._proof_33' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.correctPledge.inj
+'Event.correctPledge.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.openPurchase.inj
+'Event.openPurchase.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.PendingBase.mk.sizeOf_spec
+'KelGroups.PendingBase.mk.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.cast.injEq
+'AppEvent.cast.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Reactivegas.base_change_can_close_without_ballot
+'Reactivegas.base_change_can_close_without_ballot' depends on axioms: [propext]
+AUDIT-AXIOM-NAME conservation_preserved._proof_1_46
+'conservation_preserved._proof_1_46' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.IntegratedEvent.approve.inj
+'KelGroups.IntegratedEvent.approve.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.openPurchase.sizeOf_spec
+'AppEvent.openPurchase.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.emptyState.eq_1
+'KelGroups.emptyState.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.applyEventDetailed.match_1.eq_3
+'_private.KelGroups.Invariants.0.KelGroups.applyEventDetailed.match_1.eq_3' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.pullCollection_det
+'_private.Reactivegas.Invariants.0.pullCollection_det' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqVerdict._proof_2
+'KelGroups.Vote.instDecidableEqVerdict._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.applyEvent.eq_1
+'KelGroups.applyEvent.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_22
+'instDecidableEqEvent.decEq._proof_22' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.VoteError.questionNotFound.sizeOf_spec
+'KelGroups.Vote.VoteError.questionNotFound.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.tryEnactDetailed_enactment_threshold_met
+'_private.KelGroups.Invariants.0.KelGroups.tryEnactDetailed_enactment_threshold_met' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Role.appRole.injEq
+'KelGroups.Role.appRole.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqTraceStep.decEq._proof_1
+'instDecidableEqTraceStep.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_wellFormed
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_wellFormed' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.Vote.VoteError.notDesignee.sizeOf_spec
+'KelGroups.Vote.VoteError.notDesignee.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_18
+'instDecidableEqAppEvent.decEq._proof_18' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_3.eq_3
+'_private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_3.eq_3' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqGuardId._proof_1
+'instDecidableEqGuardId._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqValidationError.decEq._proof_2
+'KelGroups.instDecidableEqValidationError.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.BaseEvent.propose.injEq
+'KelGroups.BaseEvent.propose.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.sweep_filterMap_of_swept
+'KelGroups.Vote.sweep_filterMap_of_swept' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_13
+'_private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_13' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.applyIntegratedEvent.eq_2
+'KelGroups.applyIntegratedEvent.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.correctPledge.sizeOf_spec
+'Event.correctPledge.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME conservation_preserved
+'conservation_preserved' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqVoteState.decEq._proof_2
+'KelGroups.Vote.instDecidableEqVoteState.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.admissionPreservation_holds
+'Reactivegas.admissionPreservation_holds' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Reactivegas.Composition.appDecided_verdict_exhaustive
+'Reactivegas.Composition.appDecided_verdict_exhaustive' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Proposal.departure.sizeOf_spec
+'Proposal.departure.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME stepEvent.eq_10
+'stepEvent.eq_10' does not depend on any axioms
+AUDIT-AXIOM-NAME Proposal.departure.injEq
+'Proposal.departure.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Pledge.mk.sizeOf_spec
+'Pledge.mk.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME governance_enacts_windUpAdmin
+'governance_enacts_windUpAdmin' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Event.failPurchase.injEq
+'Event.failPurchase.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_1
+'instDecidableEqEvent.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.validateVoteEvent.eq_3
+'KelGroups.Vote.validateVoteEvent.eq_3' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.VoteState.mk.inj
+'KelGroups.Vote.VoteState.mk.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.denyPermission.sizeOf_spec
+'AppEvent.denyPermission.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME step.eq_8
+'step.eq_8' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.baseEnacted_threshold_met
+'Reactivegas.Composition.baseEnacted_threshold_met' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqPledge.decEq._proof_1
+'instDecidableEqPledge.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.BaseChange.memberRemoved.inj
+'KelGroups.BaseChange.memberRemoved.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.ValidationError.invalidKey.injEq
+'KelGroups.ValidationError.invalidKey.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Reactivegas.Composition.route.eq_13
+'Reactivegas.Composition.route.eq_13' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Trace.0.eraseDiagnostic.match_1.eq_2
+'_private.Reactivegas.Trace.0.eraseDiagnostic.match_1.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.State.0.splitUser.match_1.eq_1
+'_private.Reactivegas.State.0.splitUser.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.backdonate.inj
+'Event.backdonate.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqStepResult.decEq._proof_3
+'KelGroups.instDecidableEqStepResult.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.ProductionError.integrated.injEq
+'Reactivegas.ProductionError.integrated.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqBallot._proof_1
+'KelGroups.Vote.instDecidableEqBallot._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_12
+'_private.Reactivegas.Invariants.0.stepEvent.match_1.eq_12' does not depend on any axioms
+AUDIT-AXIOM-NAME canCloseGroup_corr
+'canCloseGroup_corr' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.Integration.mk.inj
+'KelGroups.Integration.mk.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_4
+'instDecidableEqAppEvent.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_39
+'_private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_39' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedEvent.decEq._proof_11
+'KelGroups.instDecidableEqIntegratedEvent.decEq._proof_11' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_17
+'instDecidableEqAppEvent.decEq._proof_17' does not depend on any axioms
+AUDIT-AXIOM-NAME State.mk.sizeOf_spec
+'State.mk.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.step_transferCassa_inv
+'Reactivegas.step_transferCassa_inv' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.ValidationError.proposalNotFound.inj
+'KelGroups.ValidationError.proposalNotFound.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME uniquePledges_corr._simp_1_4
+'uniquePledges_corr._simp_1_4' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_tallyKeys
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_tallyKeys' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.Vote.QuestionKind.collective.sizeOf_spec
+'KelGroups.Vote.QuestionKind.collective.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqDirectCommand.decEq._proof_2
+'KelGroups.instDecidableEqDirectCommand.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqState.decEq._proof_2
+'instDecidableEqState.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.SweepReady.openNodup
+'KelGroups.Vote.SweepReady.openNodup' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.assocErase.eq_def
+'KelGroups.assocErase.eq_def' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.ValidationError.proposalNotFound.sizeOf_spec
+'KelGroups.ValidationError.proposalNotFound.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME Proposal.changeRoles.sizeOf_spec
+'Proposal.changeRoles.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME governanceEnacts_corr._simp_1_3
+'governanceEnacts_corr._simp_1_3' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.step.match_5.eq_17
+'_private.Reactivegas.Invariants.0.step.match_5.eq_17' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.filterMap_keys_nodup._simp_1_2
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.filterMap_keys_nodup._simp_1_2' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.applyEventDetailed.match_1.eq_2
+'_private.KelGroups.Invariants.0.KelGroups.applyEventDetailed.match_1.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME GuardId.failPurchase.sizeOf_spec
+'GuardId.failPurchase.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME allUniquePledges.eq_1
+'allUniquePledges.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.GroupConfig.mk.injEq
+'KelGroups.GroupConfig.mk.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqEnactment.decEq._proof_2
+'KelGroups.instDecidableEqEnactment.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.voteDerived.eq_1
+'Reactivegas.Composition.voteDerived.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_3
+'KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME pledge_guard_inv
+'pledge_guard_inv' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseMutation.decEq._proof_3
+'KelGroups.instDecidableEqBaseMutation.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.applyVoteEvent.eq_1
+'KelGroups.Vote.applyVoteEvent.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_8
+'_private.Reactivegas.Invariants.0.stepEvent.match_1.eq_8' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Proposal.changeRoles.inj
+'KelGroups.Proposal.changeRoles.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME TraceResult.applied.inj
+'TraceResult.applied.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.membership_growth_is_direct_admission
+'KelGroups.membership_growth_is_direct_admission' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.assocAdjust.eq_2
+'KelGroups.assocAdjust.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.sweepStep.eq_1
+'KelGroups.Vote.sweepStep.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME not_insolvent_of_reach
+'not_insolvent_of_reach' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_9
+'_private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_9' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.ProductionError.integrated.sizeOf_spec
+'Reactivegas.ProductionError.integrated.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_13
+'instDecidableEqEvent.decEq._proof_13' does not depend on any axioms
+AUDIT-AXIOM-NAME pledge_preserves_allUnique
+'pledge_preserves_allUnique' depends on axioms: [propext, Classical.choice, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedEvent.decEq._proof_7
+'KelGroups.instDecidableEqIntegratedEvent.decEq._proof_7' does not depend on any axioms
+AUDIT-AXIOM-NAME pullCollection_sum
+'pullCollection_sum' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.BaseChange.memberRemoved.injEq
+'KelGroups.BaseChange.memberRemoved.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.IntegratedError.validation.injEq
+'KelGroups.IntegratedError.validation.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME sumPledges_append
+'sumPledges_append' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_31
+'instDecidableEqEvent.decEq._proof_31' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.BaseMutation.changeRoles.injEq
+'KelGroups.BaseMutation.changeRoles.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Event.backdonate.injEq
+'Event.backdonate.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Reactivegas.productionWellFormed_holds
+'Reactivegas.productionWellFormed_holds' depends on axioms: [propext]
+AUDIT-AXIOM-NAME TraceTests.app_members_preservation_mutant_caught
+'TraceTests.app_members_preservation_mutant_caught' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_map_fst_erase_of_ne
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_map_fst_erase_of_ne' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqGroupState.decEq._proof_5
+'KelGroups.instDecidableEqGroupState.decEq._proof_5' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.WellFormed.pendingKeys
+'KelGroups.WellFormed.pendingKeys' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.IntegratedResult.mk.injEq
+'KelGroups.IntegratedResult.mk.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.assocLookup.eq_def
+'KelGroups.assocLookup.eq_def' does not depend on any axioms
+AUDIT-AXIOM-NAME sumPledges.eq_2
+'sumPledges.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME insolvent_corr._simp_1_3
+'insolvent_corr._simp_1_3' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_keys_nodup'
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_keys_nodup'' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqGroupView.decEq._proof_2
+'KelGroups.instDecidableEqGroupView.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Composition.0.Reactivegas.Composition.appVerdictAllows.match_1.eq_2
+'_private.Reactivegas.Composition.0.Reactivegas.Composition.appVerdictAllows.match_1.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.IntegratedError.app.sizeOf_spec
+'KelGroups.IntegratedError.app.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.deposit.inj
+'AppEvent.deposit.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_37
+'instDecidableEqEvent.decEq._proof_37' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedEvent.decEq._proof_9
+'KelGroups.instDecidableEqIntegratedEvent.decEq._proof_9' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqValidationError.decEq._proof_7
+'KelGroups.instDecidableEqValidationError.decEq._proof_7' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqProposal.decEq._proof_4
+'instDecidableEqProposal.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedEvent.decEq._proof_13
+'KelGroups.instDecidableEqIntegratedEvent.decEq._proof_13' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.ValidationError.roleAddPrecondition.injEq
+'KelGroups.ValidationError.roleAddPrecondition.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_23
+'instDecidableEqEvent.decEq._proof_23' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.denyPermission.injEq
+'AppEvent.denyPermission.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.validateDirectAdmission_ok
+'KelGroups.validateDirectAdmission_ok' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseEvent.decEq._proof_4
+'KelGroups.instDecidableEqBaseEvent.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_34
+'_private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_34' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME Event.grantPermission.sizeOf_spec
+'Event.grantPermission.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.GroupEvent.app.injEq
+'KelGroups.GroupEvent.app.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME user_absent_of_any_false
+'user_absent_of_any_false' depends on axioms: [propext, Classical.choice, Quot.sound]
+AUDIT-AXIOM-NAME Event.denyPermission.injEq
+'Event.denyPermission.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.franchise_of_tallies
+'KelGroups.Vote.franchise_of_tallies' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.Vote.effectedState.eq_3
+'KelGroups.Vote.effectedState.eq_3' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Mirrors.0.bal_absent
+'_private.Reactivegas.Mirrors.0.bal_absent' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME _private.Reactivegas.State.0.pullCollection_sum_lemma
+'_private.Reactivegas.State.0.pullCollection_sum_lemma' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME allUniquePledges_corr._simp_1_3
+'allUniquePledges_corr._simp_1_3' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME doubleEntry.eq_1
+'doubleEntry.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_39
+'instDecidableEqAppEvent.decEq._proof_39' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.splitUser_amount_lemma
+'_private.Reactivegas.Invariants.0.splitUser_amount_lemma' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.BaseChange.memberAdmitted.sizeOf_spec
+'KelGroups.BaseChange.memberAdmitted.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.questionClean_corr._simp_1_3
+'KelGroups.Vote.questionClean_corr._simp_1_3' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.foldVote_append
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.foldVote_append' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME instDecidableEqTraceStep.decEq._proof_2
+'instDecidableEqTraceStep.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.transferCassa.sizeOf_spec
+'AppEvent.transferCassa.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.sumBal_foldl_bump._proof_1_1
+'_private.Reactivegas.Invariants.0.sumBal_foldl_bump._proof_1_1' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME instDecidableEqGuardClaim.decEq._proof_2
+'instDecidableEqGuardClaim.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.closed_guard_absent
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.closed_guard_absent' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+AUDIT-AXIOM-NAME AppEvent.failPurchase.injEq
+'AppEvent.failPurchase.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Reactivegas.Composition.Route.appDecided.sizeOf_spec
+'Reactivegas.Composition.Route.appDecided.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME refundAll_bal_ge
+'refundAll_bal_ge' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.setInsert_mem
+'_private.KelGroups.Invariants.0.KelGroups.setInsert_mem' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseChange.decEq._proof_7
+'KelGroups.instDecidableEqBaseChange.decEq._proof_7' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.pledge.sizeOf_spec
+'AppEvent.pledge.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.tryEnactBase_runs_hook
+'KelGroups.tryEnactBase_runs_hook' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Event.failPurchase.sizeOf_spec
+'Event.failPurchase.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME step.eq_17
+'step.eq_17' does not depend on any axioms
+AUDIT-AXIOM-NAME deposit_double_entry
+'deposit_double_entry' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqProposal.decEq._proof_1
+'instDecidableEqProposal.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.tryEnactBase.match_1.eq_2
+'_private.KelGroups.Invariants.0.KelGroups.tryEnactBase.match_1.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.backdonate.inj
+'AppEvent.backdonate.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.Route.baseEnacted.sizeOf_spec
+'Reactivegas.Composition.Route.baseEnacted.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedEvent.decEq._proof_1
+'KelGroups.instDecidableEqIntegratedEvent.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_1
+'KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.assocLookup_some_mem
+'_private.KelGroups.Invariants.0.KelGroups.assocLookup_some_mem' depends on axioms: [propext]
+AUDIT-AXIOM-NAME pullCollection.eq_2
+'pullCollection.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_41
+'instDecidableEqAppEvent.decEq._proof_41' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.preservesQuestionDecide.match_1.eq_1
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.preservesQuestionDecide.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.assocLookup_insert_of_none
+'KelGroups.assocLookup_insert_of_none' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqDirectCommand.decEq._proof_4
+'KelGroups.instDecidableEqDirectCommand.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.assocErase_keys_nodup
+'_private.KelGroups.Invariants.0.KelGroups.assocErase_keys_nodup' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.KelGroups.Mirrors.0.KelGroups.Vote.opensOpenIff
+'_private.KelGroups.Mirrors.0.KelGroups.Vote.opensOpenIff' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqProposal.decEq._proof_11
+'KelGroups.instDecidableEqProposal.decEq._proof_11' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqValidationError.decEq._proof_22
+'KelGroups.instDecidableEqValidationError.decEq._proof_22' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.IntegratedEvent.app.injEq
+'KelGroups.IntegratedEvent.app.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.PendingBase.mk.injEq
+'KelGroups.PendingBase.mk.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.QuestionKind.permission.inj
+'KelGroups.Vote.QuestionKind.permission.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.Reactivegas.apply.match_1.eq_1
+'_private.Reactivegas.Invariants.0.Reactivegas.apply.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME demand_none_of_ne_true
+'demand_none_of_ne_true' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.validateVoteEvent.match_3.eq_1
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.validateVoteEvent.match_3.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.DirectCommand.admitMember.injEq
+'KelGroups.DirectCommand.admitMember.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME stripCollections_referente
+'stripCollections_referente' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Reactivegas.instDecidableEqProductionError.decEq._proof_3
+'Reactivegas.instDecidableEqProductionError.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.membersCoherentB.eq_1
+'KelGroups.membersCoherentB.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Proposal.removeMember.inj
+'KelGroups.Proposal.removeMember.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.BaseEvent.propose.inj
+'KelGroups.BaseEvent.propose.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqValidationError.decEq._proof_10
+'KelGroups.instDecidableEqValidationError.decEq._proof_10' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_11
+'instDecidableEqEvent.decEq._proof_11' does not depend on any axioms
+AUDIT-AXIOM-NAME allUniquePledges_corr
+'allUniquePledges_corr' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME stepEvent.eq_11
+'stepEvent.eq_11' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedEvent.decEq._proof_15
+'KelGroups.instDecidableEqIntegratedEvent.decEq._proof_15' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqGroupState.decEq._proof_2
+'KelGroups.instDecidableEqGroupState.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.i57_disjoint_holds
+'Reactivegas.i57_disjoint_holds' depends on axioms: [propext]
+AUDIT-AXIOM-NAME AppEvent.renounce.sizeOf_spec
+'AppEvent.renounce.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.validateVoteEvent.match_3.eq_2
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.validateVoteEvent.match_3.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseChange.decEq._proof_11
+'KelGroups.instDecidableEqBaseChange.decEq._proof_11' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.VoteEvent.openQuestion.sizeOf_spec
+'KelGroups.Vote.VoteEvent.openQuestion.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqMember.decEq._proof_3
+'KelGroups.instDecidableEqMember.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.i57_noop_holds
+'Reactivegas.i57_noop_holds' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqRole.decEq._proof_5
+'KelGroups.instDecidableEqRole.decEq._proof_5' does not depend on any axioms
+AUDIT-AXIOM-NAME step_authorized
+'step_authorized' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.assocErase_property
+'_private.KelGroups.Invariants.0.KelGroups.assocErase_property' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.tryEnactBase_preserves_absence
+'KelGroups.tryEnactBase_preserves_absence' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.Reactivegas.baseHook.match_1.eq_1
+'_private.Reactivegas.Invariants.0.Reactivegas.baseHook.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.backdonate.sizeOf_spec
+'AppEvent.backdonate.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedEvent.decEq._proof_20
+'KelGroups.instDecidableEqIntegratedEvent.decEq._proof_20' does not depend on any axioms
+AUDIT-AXIOM-NAME stepEvent.eq_13
+'stepEvent.eq_13' does not depend on any axioms
+AUDIT-AXIOM-NAME step.eq_13
+'step.eq_13' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_47
+'instDecidableEqEvent.decEq._proof_47' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedEvent.decEq._proof_19
+'KelGroups.instDecidableEqIntegratedEvent.decEq._proof_19' does not depend on any axioms
+AUDIT-AXIOM-NAME conservation_preserved._proof_1_38
+'conservation_preserved._proof_1_38' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.ValidationError.notAnAdmin.inj
+'KelGroups.ValidationError.notAnAdmin.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.pledge.sizeOf_spec
+'Event.pledge.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.IntegratedResult.mk.inj
+'KelGroups.IntegratedResult.mk.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.withdraw.inj
+'AppEvent.withdraw.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME GuardId.withdraw.sizeOf_spec
+'GuardId.withdraw.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedResult.decEq._proof_3
+'KelGroups.instDecidableEqIntegratedResult.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.ClosureRecord.mk.inj
+'KelGroups.Vote.ClosureRecord.mk.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.BaseMutation.changeRoles.sizeOf_spec
+'KelGroups.BaseMutation.changeRoles.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_15
+'instDecidableEqEvent.decEq._proof_15' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.State.0.splitUser_sum_lemma._proof_1_7
+'_private.Reactivegas.State.0.splitUser_sum_lemma._proof_1_7' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME AppEvent.acceptPledge.injEq
+'AppEvent.acceptPledge.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME stripCollections.eq_def
+'stripCollections.eq_def' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseChange.decEq._proof_3
+'KelGroups.instDecidableEqBaseChange.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME Collection.mk.inj
+'Collection.mk.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.denyPermission.inj
+'AppEvent.denyPermission.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME solventB.eq_1
+'solventB.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_8
+'KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_8' does not depend on any axioms
+AUDIT-AXIOM-NAME stripCollections.eq_1
+'stripCollections.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.grantPermission.sizeOf_spec
+'AppEvent.grantPermission.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqProposal.decEq._proof_5
+'instDecidableEqProposal.decEq._proof_5' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqMember.decEq._proof_2
+'KelGroups.instDecidableEqMember.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.credit_pledges_step
+'_private.Reactivegas.Invariants.0.credit_pledges_step' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_38
+'instDecidableEqAppEvent.decEq._proof_38' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.withdraw.sizeOf_spec
+'AppEvent.withdraw.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.validateVoteEvent.eq_2
+'KelGroups.Vote.validateVoteEvent.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.PendingProposal.mk.injEq
+'KelGroups.PendingProposal.mk.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.applyEventDetailed.eq_3
+'KelGroups.applyEventDetailed.eq_3' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.ValidationError.memberNotFound.sizeOf_spec
+'KelGroups.ValidationError.memberNotFound.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME GuardId.pledge.sizeOf_spec
+'GuardId.pledge.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.ClosureCause.franchiseChange.sizeOf_spec
+'KelGroups.Vote.ClosureCause.franchiseChange.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.withdraw.injEq
+'AppEvent.withdraw.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.app_event_preserves_members
+'KelGroups.app_event_preserves_members' depends on axioms: [propext]
+AUDIT-AXIOM-NAME bal.eq_2
+'bal.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME step_refuse_inv
+'step_refuse_inv' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Reactivegas.i57_r45_holds
+'Reactivegas.i57_r45_holds' depends on axioms: [propext]
+AUDIT-AXIOM-NAME TraceTests.sweep_idempotent_mutant_caught
+'TraceTests.sweep_idempotent_mutant_caught' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.validateVoteEvent.match_3.eq_3
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.validateVoteEvent.match_3.eq_3' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_37
+'_private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_37' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.IntegratedEvent.app.sizeOf_spec
+'KelGroups.IntegratedEvent.app.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME GuardId.openPurchase.sizeOf_spec
+'GuardId.openPurchase.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME allUniquePledges_corr._simp_1_4
+'allUniquePledges_corr._simp_1_4' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.Vote.VoteWellFormed.opensOpen
+'KelGroups.Vote.VoteWellFormed.opensOpen' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqProposal.decEq._proof_7
+'KelGroups.instDecidableEqProposal.decEq._proof_7' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqValidationError.decEq._proof_18
+'KelGroups.instDecidableEqValidationError.decEq._proof_18' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqVoteError._proof_1
+'KelGroups.Vote.instDecidableEqVoteError._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.IntegratedError.validation.sizeOf_spec
+'KelGroups.IntegratedError.validation.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqProposal.decEq._proof_13
+'KelGroups.instDecidableEqProposal.decEq._proof_13' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqVoteError._proof_2
+'KelGroups.Vote.instDecidableEqVoteError._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_3.eq_2
+'_private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_3.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqStepDiagnostic.decEq._proof_6
+'instDecidableEqStepDiagnostic.decEq._proof_6' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_4
+'_private.Reactivegas.Invariants.0.stepEvent.match_1.eq_4' does not depend on any axioms
+AUDIT-AXIOM-NAME canCloseGroup_corr._simp_1_5
+'canCloseGroup_corr._simp_1_5' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME refundAll_sum._proof_1_5
+'refundAll_sum._proof_1_5' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedError.decEq._proof_6
+'KelGroups.instDecidableEqIntegratedError.decEq._proof_6' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.tryEnactDetailed.match_1.eq_2
+'_private.KelGroups.Invariants.0.KelGroups.tryEnactDetailed.match_1.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.denyPermission.inj
+'Event.denyPermission.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.QuestionClean.eq_1
+'KelGroups.Vote.QuestionClean.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME TraceInventory.mk.sizeOf_spec
+'TraceInventory.mk.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseChange.decEq._proof_2
+'KelGroups.instDecidableEqBaseChange.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.enact.match_1.eq_1
+'_private.KelGroups.Invariants.0.KelGroups.enact.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME splitUser.eq_2
+'splitUser.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.integrated_theorem_witness_holds
+'Reactivegas.integrated_theorem_witness_holds' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqQuestionKind.decEq._proof_2
+'KelGroups.Vote.instDecidableEqQuestionKind.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Member.mk.sizeOf_spec
+'KelGroups.Member.mk.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Admin.publicAdmin.sizeOf_spec
+'KelGroups.Admin.publicAdmin.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.SweepReady.closedNotOpen
+'KelGroups.Vote.SweepReady.closedNotOpen' does not depend on any axioms
+AUDIT-AXIOM-NAME stripCollections_sum
+'stripCollections_sum' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot_tally._simp_1_5
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot_tally._simp_1_5' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqCollection.decEq._proof_6
+'instDecidableEqCollection.decEq._proof_6' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.VoteEvent.cast.injEq
+'KelGroups.Vote.VoteEvent.cast.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_4
+'instDecidableEqEvent.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqClosureRecord.decEq._proof_4
+'KelGroups.Vote.instDecidableEqClosureRecord.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.setInsert_nodup'
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.setInsert_nodup'' depends on axioms: [propext]
+AUDIT-AXIOM-NAME stripCollections_sum._proof_1_6
+'stripCollections_sum._proof_1_6' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME close_spends_referente._proof_1_1
+'close_spends_referente._proof_1_1' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.BaseEvent.propose.sizeOf_spec
+'KelGroups.BaseEvent.propose.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME conservation_preserved._proof_1_41
+'conservation_preserved._proof_1_41' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.Vote.filter_open_idem
+'KelGroups.Vote.filter_open_idem' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_29
+'instDecidableEqAppEvent.decEq._proof_29' does not depend on any axioms
+AUDIT-AXIOM-NAME member_key_coherent
+'member_key_coherent' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqProposal.decEq._proof_6
+'instDecidableEqProposal.decEq._proof_6' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Mirrors.0.KelGroups.Vote.openCleanIff.match_1.eq_1
+'_private.KelGroups.Mirrors.0.KelGroups.Vote.openCleanIff.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME permissionToClose_corr
+'permissionToClose_corr' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqPledge.decEq._proof_2
+'instDecidableEqPledge.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.validateDirectAdmission.eq_1
+'KelGroups.validateDirectAdmission.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.step.match_5.eq_4
+'_private.Reactivegas.Invariants.0.step.match_5.eq_4' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseChange.decEq._proof_12
+'KelGroups.instDecidableEqBaseChange.decEq._proof_12' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.step_open_inv
+'Reactivegas.step_open_inv' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Event.closePurchase.inj
+'Event.closePurchase.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedEvent.decEq._proof_14
+'KelGroups.instDecidableEqIntegratedEvent.decEq._proof_14' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Mirrors.0.canClose_third
+'_private.Reactivegas.Mirrors.0.canClose_third' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedEvent.decEq._proof_8
+'KelGroups.instDecidableEqIntegratedEvent.decEq._proof_8' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.effectedState.eq_1
+'KelGroups.Vote.effectedState.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqState.decEq._proof_1
+'instDecidableEqState.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.pendingCoherent_corr
+'KelGroups.pendingCoherent_corr' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.proposer_mem_approvals
+'KelGroups.proposer_mem_approvals' does not depend on any axioms
+AUDIT-AXIOM-NAME majority_table
+'majority_table' depends on axioms: [propext]
+AUDIT-AXIOM-NAME AppEvent.correctPledge.injEq
+'AppEvent.correctPledge.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_4
+'Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_40
+'instDecidableEqAppEvent.decEq._proof_40' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.renounce.injEq
+'AppEvent.renounce.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_8
+'_private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_8' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.Ballot.assent.sizeOf_spec
+'KelGroups.Vote.Ballot.assent.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_7
+'instDecidableEqAppEvent.decEq._proof_7' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.assocErase_key_absent._simp_1_1
+'_private.KelGroups.Invariants.0.KelGroups.assocErase_key_absent._simp_1_1' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_9
+'KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_9' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_31
+'instDecidableEqAppEvent.decEq._proof_31' does not depend on any axioms
+AUDIT-AXIOM-NAME TraceResult.applied.injEq
+'TraceResult.applied.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.assocInsert_property
+'_private.KelGroups.Invariants.0.KelGroups.assocInsert_property' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Reactivegas.Composition.voteDerived.eq_2
+'Reactivegas.Composition.voteDerived.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.closePurchase.sizeOf_spec
+'Event.closePurchase.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.BaseMutation.removeMember.injEq
+'KelGroups.BaseMutation.removeMember.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_46
+'instDecidableEqAppEvent.decEq._proof_46' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqProposal.decEq._proof_2
+'KelGroups.instDecidableEqProposal.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.i57_noexpiry_holds
+'Reactivegas.i57_noexpiry_holds' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqClosureRecord.decEq._proof_2
+'KelGroups.Vote.instDecidableEqClosureRecord.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME uniquePledgesB.eq_1
+'uniquePledgesB.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.assocLookup_adjust_of_none
+'KelGroups.assocLookup_adjust_of_none' does not depend on any axioms
+AUDIT-AXIOM-NAME conservation_preserved._proof_1_45
+'conservation_preserved._proof_1_45' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME AppEvent.openPurchase.injEq
+'AppEvent.openPurchase.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_1.eq_1
+'_private.KelGroups.Invariants.0.KelGroups.applyIntegratedEvent.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Mirrors.0.assocLookup_some_of_mem_nodupfree
+'_private.Reactivegas.Mirrors.0.assocLookup_some_of_mem_nodupfree' depends on axioms: [propext]
+AUDIT-AXIOM-NAME step_grant_inv
+'step_grant_inv' depends on axioms: [propext]
+AUDIT-AXIOM-NAME sumPledges.eq_def
+'sumPledges.eq_def' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_6
+'_private.Reactivegas.Invariants.0.stepEvent.match_1.eq_6' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_key_absent'
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_key_absent'' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.Question.mk.inj
+'KelGroups.Vote.Question.mk.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.step.match_5.eq_3
+'_private.Reactivegas.Invariants.0.step.match_5.eq_3' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedError.decEq._proof_2
+'KelGroups.instDecidableEqIntegratedError.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.BaseChange.memberAdmitted.inj
+'KelGroups.BaseChange.memberAdmitted.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.wellFormed_corr
+'KelGroups.wellFormed_corr' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME stepEvent.eq_6
+'stepEvent.eq_6' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Admin.privateAdmin.sizeOf_spec
+'KelGroups.Admin.privateAdmin.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.Question.mk.injEq
+'KelGroups.Vote.Question.mk.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.ValidationError.notAMember.injEq
+'KelGroups.ValidationError.notAMember.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqTraceStep.decEq._proof_4
+'instDecidableEqTraceStep.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_preserves_qid
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_preserves_qid' depends on axioms: [propext,
+ Quot.sound]
+AUDIT-AXIOM-NAME Reactivegas.Composition.Route.direct.sizeOf_spec
+'Reactivegas.Composition.Route.direct.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.assocInsert.eq_1
+'KelGroups.assocInsert.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME close_spends_referente
+'close_spends_referente' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqValidationError.decEq._proof_15
+'KelGroups.instDecidableEqValidationError.decEq._proof_15' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqClosureCause._proof_2
+'KelGroups.Vote.instDecidableEqClosureCause._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME stepDetailed_erases
+'stepDetailed_erases' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.Verdict.ofNat_ctorIdx
+'KelGroups.Vote.Verdict.ofNat_ctorIdx' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_5
+'_private.Reactivegas.Invariants.0.stepEvent.match_1.eq_5' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.enacts_corr
+'KelGroups.enacts_corr' depends on axioms: [propext]
+AUDIT-AXIOM-NAME bal_bump
+'bal_bump' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.tallyKeysOfState_insert_cases
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.tallyKeysOfState_insert_cases' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.IntegratedError.validation.inj
+'KelGroups.IntegratedError.validation.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_2
+'instDecidableEqAppEvent.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqGroupEvent.decEq._proof_2
+'KelGroups.instDecidableEqGroupEvent.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME Pledge.mk.injEq
+'Pledge.mk.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME TraceTests.app_members_preservation_holds
+'TraceTests.app_members_preservation_holds' depends on axioms: [propext]
+AUDIT-AXIOM-NAME uniquePledges_corr._simp_1_3
+'uniquePledges_corr._simp_1_3' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.setInsert_nodup
+'_private.KelGroups.Invariants.0.KelGroups.setInsert_nodup' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Event.refusePledge.inj
+'Event.refusePledge.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.IntegratedEvent.propose.injEq
+'KelGroups.IntegratedEvent.propose.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Enactment.mk.injEq
+'KelGroups.Enactment.mk.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Reactivegas.Composition.voteDerived.eq_5
+'Reactivegas.Composition.voteDerived.eq_5' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_map_fst_insert
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_map_fst_insert' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_key_absent'._simp_1_1
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_key_absent'._simp_1_1' depends on axioms: [propext]
+AUDIT-AXIOM-NAME AppEvent.openQuestion.sizeOf_spec
+'AppEvent.openQuestion.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseEvent.decEq._proof_6
+'KelGroups.instDecidableEqBaseEvent.decEq._proof_6' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.Reactivegas.baseHook.match_1.eq_2
+'_private.Reactivegas.Invariants.0.Reactivegas.baseHook.match_1.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME option_bind_inv
+'option_bind_inv' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_open_mem
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_open_mem' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqEnactment.decEq._proof_4
+'KelGroups.instDecidableEqEnactment.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME solvent_corr
+'solvent_corr' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_other_lookup
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_other_lookup' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.step.match_5.eq_8
+'_private.Reactivegas.Invariants.0.step.match_5.eq_8' does not depend on any axioms
+AUDIT-AXIOM-NAME TraceResult.refused.injEq
+'TraceResult.refused.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqValidationError.decEq._proof_19
+'KelGroups.instDecidableEqValidationError.decEq._proof_19' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.acceptPledge.sizeOf_spec
+'Event.acceptPledge.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME Collection.mk.sizeOf_spec
+'Collection.mk.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.State.0.pullCollection_sum_lemma._proof_1_4
+'_private.Reactivegas.State.0.pullCollection_sum_lemma._proof_1_4' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_closed_mem
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_closed_mem' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqProposal.decEq._proof_1
+'KelGroups.instDecidableEqProposal.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.enact.match_1.eq_2
+'_private.KelGroups.Invariants.0.KelGroups.enact.match_1.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME step.eq_3
+'step.eq_3' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState.match_3.eq_3
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState.match_3.eq_3' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.i57_partition_holds
+'Reactivegas.i57_partition_holds' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedEvent.decEq._proof_10
+'KelGroups.instDecidableEqIntegratedEvent.decEq._proof_10' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_2
+'_private.Reactivegas.Invariants.0.stepEvent.match_1.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.sweepReady_corr._simp_1_1
+'KelGroups.Vote.sweepReady_corr._simp_1_1' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME canCloseGroup_corr._simp_1_3
+'canCloseGroup_corr._simp_1_3' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.step.match_5.eq_14
+'_private.Reactivegas.Invariants.0.step.match_5.eq_14' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_38
+'instDecidableEqEvent.decEq._proof_38' does not depend on any axioms
+AUDIT-AXIOM-NAME splitUser_amount
+'splitUser_amount' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.bal_foldl_bump_ge
+'_private.Reactivegas.Invariants.0.bal_foldl_bump_ge' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_9
+'_private.Reactivegas.Invariants.0.stepEvent.match_1.eq_9' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.sweep_idempotent_witness
+'Reactivegas.sweep_idempotent_witness' depends on axioms: [propext]
+AUDIT-AXIOM-NAME AppEvent.acceptPledge.inj
+'AppEvent.acceptPledge.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.step.match_5.eq_12
+'_private.Reactivegas.Invariants.0.step.match_5.eq_12' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.sweepClosures_idempotent
+'KelGroups.Vote.sweepClosures_idempotent' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.Reactivegas.Mirrors.0.assocLookup_some_of_mem_nodupfree._simp_1_1
+'_private.Reactivegas.Mirrors.0.assocLookup_some_of_mem_nodupfree._simp_1_1' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Role.adminRole.injEq
+'KelGroups.Role.adminRole.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.StepResult.mk.injEq
+'KelGroups.StepResult.mk.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME comune_not_a_member_of_reach
+'comune_not_a_member_of_reach' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.questions_partition
+'KelGroups.Vote.questions_partition' depends on axioms: [propext, Classical.choice, Quot.sound]
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_25
+'instDecidableEqEvent.decEq._proof_25' does not depend on any axioms
+AUDIT-AXIOM-NAME stripCollections_referente_ne
+'stripCollections_referente_ne' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME stepEvent.eq_4
+'stepEvent.eq_4' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.enact.match_1.eq_3
+'_private.KelGroups.Invariants.0.KelGroups.enact.match_1.eq_3' does not depend on any axioms
+AUDIT-AXIOM-NAME step.eq_5
+'step.eq_5' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_32
+'instDecidableEqAppEvent.decEq._proof_32' does not depend on any axioms
+AUDIT-AXIOM-NAME stepEvent.eq_1
+'stepEvent.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Composition.0.Reactivegas.Composition.appVerdictAllows.match_1.eq_3
+'_private.Reactivegas.Composition.0.Reactivegas.Composition.appVerdictAllows.match_1.eq_3' does not depend on any axioms
+AUDIT-AXIOM-NAME stepEvent.eq_12
+'stepEvent.eq_12' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.Question.mk.sizeOf_spec
+'KelGroups.Vote.Question.mk.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocAdjust_keys_nodup'
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocAdjust_keys_nodup'' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Collection.mk.injEq
+'Collection.mk.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.membersCoherent_corr
+'KelGroups.membersCoherent_corr' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME AppEvent.openPurchase.inj
+'AppEvent.openPurchase.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedEvent.decEq._proof_4
+'KelGroups.instDecidableEqIntegratedEvent.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME Trace.mk.injEq
+'Trace.mk.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.ValidationError.roleRemovePrecondition.injEq
+'KelGroups.ValidationError.roleRemovePrecondition.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.ballots_nodup_disjoint
+'KelGroups.Vote.ballots_nodup_disjoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.BaseChange.rolesChanged.inj
+'KelGroups.BaseChange.rolesChanged.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_9
+'instDecidableEqAppEvent.decEq._proof_9' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState_sweepReady
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState_sweepReady' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+AUDIT-AXIOM-NAME AppEvent.failPurchase.sizeOf_spec
+'AppEvent.failPurchase.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.voteWellFormed_corr
+'KelGroups.Vote.voteWellFormed_corr' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqProposal.decEq._proof_14
+'KelGroups.instDecidableEqProposal.decEq._proof_14' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.i57_disjoint_mutant_caught
+'Reactivegas.i57_disjoint_mutant_caught' depends on axioms: [propext]
+AUDIT-AXIOM-NAME sumPledges_append._proof_1_4
+'sumPledges_append._proof_1_4' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedEvent.decEq._proof_16
+'KelGroups.instDecidableEqIntegratedEvent.decEq._proof_16' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.SweepReady.closedNodup
+'KelGroups.Vote.SweepReady.closedNodup' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.bool_not_true
+'_private.Reactivegas.Invariants.0.bool_not_true' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.foldFrom.eq_1
+'KelGroups.Vote.foldFrom.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.Verdict.negative.sizeOf_spec
+'KelGroups.Vote.Verdict.negative.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.BaseChange.rolesChanged.injEq
+'KelGroups.BaseChange.rolesChanged.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.credit_pledges_of_reach
+'_private.Reactivegas.Invariants.0.credit_pledges_of_reach' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME enact_implies_threshold_met
+'enact_implies_threshold_met' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Reactivegas.ProductionError.integrated.inj
+'Reactivegas.ProductionError.integrated.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_sublist'
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_sublist'' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.VoteEvent.renounce.sizeOf_spec
+'KelGroups.Vote.VoteEvent.renounce.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.assocErase.eq_1
+'KelGroups.assocErase.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_12
+'instDecidableEqEvent.decEq._proof_12' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.State.0.pullCollection.match_3.eq_1
+'_private.Reactivegas.State.0.pullCollection.match_3.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.comune_not_a_member_step
+'_private.Reactivegas.Invariants.0.comune_not_a_member_step' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.donate.inj
+'Event.donate.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.ValidationError.reservedKey.injEq
+'KelGroups.ValidationError.reservedKey.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME eraseDiagnostic.eq_2
+'eraseDiagnostic.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.voteDerived.eq_10
+'Reactivegas.Composition.voteDerived.eq_10' does not depend on any axioms
+AUDIT-AXIOM-NAME State.mk.injEq
+'State.mk.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocAdjust_keys'
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocAdjust_keys'' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.tallyKeysOfState.eq_1
+'KelGroups.Vote.tallyKeysOfState.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME insolventB.eq_1
+'insolventB.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_1
+'Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqTraceResult.decEq._proof_2
+'instDecidableEqTraceResult.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedResult.decEq._proof_2
+'KelGroups.instDecidableEqIntegratedResult.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseMutation.decEq._proof_5
+'KelGroups.instDecidableEqBaseMutation.decEq._proof_5' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.enactMutation_preserves_absence
+'KelGroups.enactMutation_preserves_absence' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.foldIntegrated.eq_1
+'KelGroups.foldIntegrated.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME auth_referente_guard_inv
+'auth_referente_guard_inv' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqClosureRecord.decEq._proof_5
+'KelGroups.Vote.instDecidableEqClosureRecord.decEq._proof_5' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.unfranchised_cast_noop
+'KelGroups.Vote.unfranchised_cast_noop' depends on axioms: [propext]
+AUDIT-AXIOM-NAME stripCollections.eq_2
+'stripCollections.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME canCloseGroup.eq_1
+'canCloseGroup.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.foldFrom_preserves_qid
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.foldFrom_preserves_qid' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.Vote.inadmissible_is_noop
+'KelGroups.Vote.inadmissible_is_noop' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_6
+'KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_6' does not depend on any axioms
+AUDIT-AXIOM-NAME GuardId.deposit.sizeOf_spec
+'GuardId.deposit.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.State.0.bal.match_1.eq_1
+'_private.Reactivegas.State.0.bal.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqAdmin._proof_1
+'KelGroups.instDecidableEqAdmin._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.refundAll_bal_ge_lemma
+'_private.Reactivegas.Invariants.0.refundAll_bal_ge_lemma' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.Vote.questionCleanB.eq_1
+'KelGroups.Vote.questionCleanB.eq_1' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_23
+'instDecidableEqAppEvent.decEq._proof_23' does not depend on any axioms
+AUDIT-AXIOM-NAME majority_not_strict_on_even
+'majority_not_strict_on_even' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_43
+'instDecidableEqEvent.decEq._proof_43' does not depend on any axioms
+AUDIT-AXIOM-NAME close_guard_inv
+'close_guard_inv' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_30
+'instDecidableEqEvent.decEq._proof_30' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.voteDerived.eq_12
+'Reactivegas.Composition.voteDerived.eq_12' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.applyEventDetailed.match_1.eq_1
+'_private.KelGroups.Invariants.0.KelGroups.applyEventDetailed.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.IntegratedEvent.direct.inj
+'KelGroups.IntegratedEvent.direct.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.VoteEvent.openQuestion.inj
+'KelGroups.Vote.VoteEvent.openQuestion.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.IntegratedTraceStep.mk.sizeOf_spec
+'Reactivegas.IntegratedTraceStep.mk.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_keys_nodup'._simp_1_1
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_keys_nodup'._simp_1_1' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqCollection.decEq._proof_2
+'instDecidableEqCollection.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME not_insolvent_of_reach._proof_1_3
+'not_insolvent_of_reach._proof_1_3' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_open_mem._simp_1_2
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_open_mem._simp_1_2' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_7
+'KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_7' does not depend on any axioms
+AUDIT-AXIOM-NAME solvent_corr._simp_1_4
+'solvent_corr._simp_1_4' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.Member.mk.injEq
+'KelGroups.Member.mk.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.BaseEvent.approve.injEq
+'KelGroups.BaseEvent.approve.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assoc_entries_key_unique._simp_1_1
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assoc_entries_key_unique._simp_1_1' depends on axioms: [propext]
+AUDIT-AXIOM-NAME step_fail_inv
+'step_fail_inv' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseEvent.decEq._proof_3
+'KelGroups.instDecidableEqBaseEvent.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_45
+'instDecidableEqEvent.decEq._proof_45' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.open_questions_are_open
+'KelGroups.Vote.open_questions_are_open' depends on axioms: [propext, Classical.choice, Quot.sound]
+AUDIT-AXIOM-NAME _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_11
+'_private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_11' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.ValidationError.notAnAdmin.injEq
+'KelGroups.ValidationError.notAnAdmin.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqGuardClaim.decEq._proof_3
+'instDecidableEqGuardClaim.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqPendingProposal.decEq._proof_4
+'KelGroups.instDecidableEqPendingProposal.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.State.0.splitUser_sum_lemma
+'_private.Reactivegas.State.0.splitUser_sum_lemma' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.step.match_5.eq_10
+'_private.Reactivegas.Invariants.0.step.match_5.eq_10' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.emptyState_wellFormed
+'KelGroups.emptyState_wellFormed' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqDirectCommand.decEq._proof_1
+'KelGroups.instDecidableEqDirectCommand.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.AuthMode.ofNat_ctorIdx
+'KelGroups.AuthMode.ofNat_ctorIdx' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.sumBal_foldl_bump
+'_private.Reactivegas.Invariants.0.sumBal_foldl_bump' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_19
+'instDecidableEqEvent.decEq._proof_19' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_26
+'instDecidableEqAppEvent.decEq._proof_26' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.windUpAdmin.eq_1
+'Reactivegas.windUpAdmin.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME isMember_of_view_mem
+'isMember_of_view_mem' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.ValidationError.memberNotFound.inj
+'KelGroups.ValidationError.memberNotFound.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.VoteEvent.openQuestion.injEq
+'KelGroups.Vote.VoteEvent.openQuestion.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.GroupView.mk.injEq
+'KelGroups.GroupView.mk.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqGroupEvent.decEq._proof_4
+'KelGroups.instDecidableEqGroupEvent.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqGroupState.decEq._proof_1
+'KelGroups.instDecidableEqGroupState.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqBallot._proof_2
+'KelGroups.Vote.instDecidableEqBallot._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.deposit.injEq
+'Event.deposit.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.foldVote.eq_1
+'KelGroups.Vote.foldVote.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME stepEvent.eq_14
+'stepEvent.eq_14' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqValidationError.decEq._proof_21
+'KelGroups.instDecidableEqValidationError.decEq._proof_21' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseMutation.decEq._proof_2
+'KelGroups.instDecidableEqBaseMutation.decEq._proof_2' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.step_deposit_inv
+'Reactivegas.step_deposit_inv' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.BaseMutation.removeMember.inj
+'KelGroups.BaseMutation.removeMember.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.approvals_nodup
+'KelGroups.approvals_nodup' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseMutation.decEq._proof_1
+'KelGroups.instDecidableEqBaseMutation.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.sweepDuplicating_duplicates._proof_1_2
+'KelGroups.Vote.sweepDuplicating_duplicates._proof_1_2' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.applyPropose_preserves_wellFormed
+'KelGroups.applyPropose_preserves_wellFormed' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME conservation_preserved._proof_1_36
+'conservation_preserved._proof_1_36' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME Event.acceptPledge.inj
+'Event.acceptPledge.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.deposit.injEq
+'AppEvent.deposit.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_44
+'instDecidableEqAppEvent.decEq._proof_44' does not depend on any axioms
+AUDIT-AXIOM-NAME escrowHeld_corr
+'escrowHeld_corr' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME Reactivegas.baseHook_votes
+'Reactivegas.baseHook_votes' depends on axioms: [propext]
+AUDIT-AXIOM-NAME pullCollection.eq_1
+'pullCollection.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME GuardId.backdonate.sizeOf_spec
+'GuardId.backdonate.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedEvent.decEq._proof_3
+'KelGroups.instDecidableEqIntegratedEvent.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_2
+'_private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME refundAll.eq_1
+'refundAll.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_1
+'_private.Reactivegas.Invariants.0.stepEvent.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME stepEvent.eq_5
+'stepEvent.eq_5' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_49
+'instDecidableEqEvent.decEq._proof_49' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.SweepReady.openClosedDisjoint
+'KelGroups.Vote.SweepReady.openClosedDisjoint' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_7
+'_private.Reactivegas.Invariants.0.stepEvent.match_1.eq_7' does not depend on any axioms
+AUDIT-AXIOM-NAME stripCollections_sublist
+'stripCollections_sublist' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqPledge.decEq._proof_3
+'instDecidableEqPledge.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.route.eq_12
+'Reactivegas.Composition.route.eq_12' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqMember.decEq._proof_4
+'KelGroups.instDecidableEqMember.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.IntegratedEvent.app.inj
+'KelGroups.IntegratedEvent.app.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.PendingProposal.mk.inj
+'KelGroups.PendingProposal.mk.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME GuardId.closePurchase.sizeOf_spec
+'GuardId.closePurchase.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqStepResult.decEq._proof_1
+'KelGroups.instDecidableEqStepResult.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqPendingBase.decEq._proof_3
+'KelGroups.instDecidableEqPendingBase.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.ValidationError.roleRemovePrecondition.inj
+'KelGroups.ValidationError.roleRemovePrecondition.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.enact_implies_threshold_met
+'KelGroups.enact_implies_threshold_met' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Reactivegas.Composition.voteDerived.eq_3
+'Reactivegas.Composition.voteDerived.eq_3' does not depend on any axioms
+AUDIT-AXIOM-NAME close_permission_to_close
+'close_permission_to_close' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.GroupConfig.mk.sizeOf_spec
+'KelGroups.GroupConfig.mk.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_14
+'KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_14' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.WellFormed.memberKeys
+'KelGroups.WellFormed.memberKeys' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqAuthMode._proof_1
+'KelGroups.instDecidableEqAuthMode._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME step.eq_16
+'step.eq_16' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.assocAdjust_property
+'_private.KelGroups.Invariants.0.KelGroups.assocAdjust_property' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqBaseMutation.decEq._proof_7
+'KelGroups.instDecidableEqBaseMutation.decEq._proof_7' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedError.decEq._proof_5
+'KelGroups.instDecidableEqIntegratedError.decEq._proof_5' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.pledge.inj
+'AppEvent.pledge.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Proposal.introduceMember.sizeOf_spec
+'KelGroups.Proposal.introduceMember.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME Reach.brecOn
+'Reach.brecOn' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.donate.sizeOf_spec
+'Event.donate.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_16
+'instDecidableEqAppEvent.decEq._proof_16' does not depend on any axioms
+AUDIT-AXIOM-NAME bump.eq_2
+'bump.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.IntegratedError.app.inj
+'KelGroups.IntegratedError.app.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.IntegratedEvent.propose.sizeOf_spec
+'KelGroups.IntegratedEvent.propose.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.nonresponsabile_event_noop
+'KelGroups.Vote.nonresponsabile_event_noop' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME _private.KelGroups.Types.0.KelGroups.assocLookup.match_1.eq_2
+'_private.KelGroups.Types.0.KelGroups.assocLookup.match_1.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.IntegratedEvent.propose.inj
+'KelGroups.IntegratedEvent.propose.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.pendingWellFormedB.eq_1
+'KelGroups.pendingWellFormedB.eq_1' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Role.adminRole.sizeOf_spec
+'KelGroups.Role.adminRole.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqValidationError.decEq._proof_4
+'KelGroups.instDecidableEqValidationError.decEq._proof_4' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.IntegratedError.app.injEq
+'KelGroups.IntegratedError.app.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME bump_sum._proof_1_6
+'bump_sum._proof_1_6' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_5
+'instDecidableEqAppEvent.decEq._proof_5' does not depend on any axioms
+AUDIT-AXIOM-NAME TraceTests.base_change_can_close_without_ballot
+'TraceTests.base_change_can_close_without_ballot' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.Reactivegas.Mirrors.0.uniquePledges_pt
+'_private.Reactivegas.Mirrors.0.uniquePledges_pt' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_50
+'instDecidableEqEvent.decEq._proof_50' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_10
+'instDecidableEqEvent.decEq._proof_10' does not depend on any axioms
+AUDIT-AXIOM-NAME TraceInventory.mk.injEq
+'TraceInventory.mk.injEq' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.Vote.emptyVoteState_sweepReady
+'KelGroups.Vote.emptyVoteState_sweepReady' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.Vote.emptyVoteState_wellFormed
+'KelGroups.Vote.emptyVoteState_wellFormed' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME bal.eq_1
+'bal.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME pullCollection_sublist
+'pullCollection_sublist' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Reactivegas.base_change_recomputes_votes
+'Reactivegas.base_change_recomputes_votes' depends on axioms: [propext]
+AUDIT-AXIOM-NAME conservation_preserved._proof_1_43
+'conservation_preserved._proof_1_43' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.applyIntegratedEvent.eq_4
+'KelGroups.applyIntegratedEvent.eq_4' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqStepDiagnostic.decEq._proof_3
+'instDecidableEqStepDiagnostic.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqEnactment.decEq._proof_3
+'KelGroups.instDecidableEqEnactment.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.transferCassa.inj
+'AppEvent.transferCassa.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqPendingProposal.decEq._proof_3
+'KelGroups.instDecidableEqPendingProposal.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_28
+'instDecidableEqEvent.decEq._proof_28' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.applyApproveDetailed.eq_1
+'KelGroups.applyApproveDetailed.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.correctPledge.inj
+'AppEvent.correctPledge.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.VoteError.notResponsabile.sizeOf_spec
+'KelGroups.Vote.VoteError.notResponsabile.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.sweepStep_of_open
+'KelGroups.Vote.sweepStep_of_open' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_41
+'_private.Reactivegas.Invariants.0.credit_pledges_step._proof_1_41' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.tryEnact_preserves_wellFormed
+'KelGroups.tryEnact_preserves_wellFormed' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.GroupEvent.app.inj
+'KelGroups.GroupEvent.app.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.preservesQuestionDecide.match_1.eq_2
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.preservesQuestionDecide.match_1.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.voteDerived.eq_8
+'Reactivegas.Composition.voteDerived.eq_8' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.assocInsert_keys_nodup
+'_private.KelGroups.Invariants.0.KelGroups.assocInsert_keys_nodup' depends on axioms: [propext]
+AUDIT-AXIOM-NAME Event.refusePledge.sizeOf_spec
+'Event.refusePledge.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.preservesQuestionDecide.eq_1
+'KelGroups.Vote.preservesQuestionDecide.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.openQuestion.inj
+'AppEvent.openQuestion.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME pledge_escrow_debit
+'pledge_escrow_debit' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.ValidationError.notAnAdmin.sizeOf_spec
+'KelGroups.ValidationError.notAnAdmin.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME Trace.mk.inj
+'Trace.mk.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.tallyKeysOfQuestion.eq_1
+'KelGroups.Vote.tallyKeysOfQuestion.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME step.eq_15
+'step.eq_15' does not depend on any axioms
+AUDIT-AXIOM-NAME insolvent_corr._simp_1_4
+'insolvent_corr._simp_1_4' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqGroupEvent.decEq._proof_3
+'KelGroups.instDecidableEqGroupEvent.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_closed_mem._simp_1_3
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_closed_mem._simp_1_3' depends on axioms: [propext,
+ Quot.sound]
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.tallyKeysOfState_erased_le
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.tallyKeysOfState_erased_le' depends on axioms: [propext,
+ Quot.sound]
+AUDIT-AXIOM-NAME _private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_3
+'_private.Reactivegas.Composition.0.Reactivegas.Composition.route.match_1.eq_3' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.GroupState.mk.inj
+'KelGroups.GroupState.mk.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.step.match_5.eq_1
+'_private.Reactivegas.Invariants.0.step.match_5.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_3
+'instDecidableEqAppEvent.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME Pledge.mk.inj
+'Pledge.mk.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.DirectCommand.admitMember.inj
+'KelGroups.DirectCommand.admitMember.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqClosureCause._proof_1
+'KelGroups.Vote.instDecidableEqClosureCause._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Trace.0.eraseDiagnostic.match_1.eq_1
+'_private.Reactivegas.Trace.0.eraseDiagnostic.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME eraseDiagnostic.eq_1
+'eraseDiagnostic.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME not_mem_users_of_splitUser_none
+'not_mem_users_of_splitUser_none' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedEvent.decEq._proof_18
+'KelGroups.instDecidableEqIntegratedEvent.decEq._proof_18' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.State.0.bal.match_1.eq_2
+'_private.Reactivegas.State.0.bal.match_1.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.assocAdjust.eq_1
+'KelGroups.assocAdjust.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Types.0.KelGroups.assocLookup.match_1.eq_1
+'_private.KelGroups.Types.0.KelGroups.assocLookup.match_1.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.tryEnactDetailed.eq_1
+'KelGroups.tryEnactDetailed.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqTraceResult.decEq._proof_1
+'instDecidableEqTraceResult.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.ProductionError.comuneReserved.sizeOf_spec
+'Reactivegas.ProductionError.comuneReserved.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.stepEvent.match_1.eq_11
+'_private.Reactivegas.Invariants.0.stepEvent.match_1.eq_11' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_24
+'instDecidableEqEvent.decEq._proof_24' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_5
+'KelGroups.Vote.instDecidableEqVoteEvent.decEq._proof_5' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.BaseChange.memberRemoved.sizeOf_spec
+'KelGroups.BaseChange.memberRemoved.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.List.filterMap.match_1.eq_2
+'_private.KelGroups.Vote.Invariants.0.List.filterMap.match_1.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.ValidationError.reservedKey.sizeOf_spec
+'KelGroups.ValidationError.reservedKey.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.enact.eq_3
+'KelGroups.enact.eq_3' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_erase_inv._simp_1_1
+'_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_erase_inv._simp_1_1' depends on axioms: [propext]
+AUDIT-AXIOM-NAME KelGroups.AuthMode.normal.sizeOf_spec
+'KelGroups.AuthMode.normal.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.ValidationError.notAMember.sizeOf_spec
+'KelGroups.ValidationError.notAMember.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.ValidationError.roleAddPrecondition.inj
+'KelGroups.ValidationError.roleAddPrecondition.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.bal_bump_ne_lemma
+'_private.Reactivegas.Invariants.0.bal_bump_ne_lemma' depends on axioms: [propext]
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.step.match_5.eq_13
+'_private.Reactivegas.Invariants.0.step.match_5.eq_13' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.grantPermission.inj
+'AppEvent.grantPermission.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.enact.eq_2
+'KelGroups.enact.eq_2' does not depend on any axioms
+AUDIT-AXIOM-NAME GuardId.acceptPledge.sizeOf_spec
+'GuardId.acceptPledge.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.sweepReady_corr
+'KelGroups.Vote.sweepReady_corr' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME instDecidableEqEvent.decEq._proof_52
+'instDecidableEqEvent.decEq._proof_52' does not depend on any axioms
+AUDIT-AXIOM-NAME AppEvent.refusePledge.inj
+'AppEvent.refusePledge.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_36
+'instDecidableEqAppEvent.decEq._proof_36' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.Reactivegas.Invariants.0.step.match_5.eq_9
+'_private.Reactivegas.Invariants.0.step.match_5.eq_9' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqTraceStep.decEq._proof_3
+'instDecidableEqTraceStep.decEq._proof_3' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqGuardClaim.decEq._proof_1
+'instDecidableEqGuardClaim.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME conservationB.eq_1
+'conservationB.eq_1' does not depend on any axioms
+AUDIT-AXIOM-NAME refundAll_sum
+'refundAll_sum' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME proposer_mem_approvals
+'proposer_mem_approvals' does not depend on any axioms
+AUDIT-AXIOM-NAME uniquePledges_corr
+'uniquePledges_corr' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME KelGroups.ValidationError.notAMember.inj
+'KelGroups.ValidationError.notAMember.inj' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_1
+'instDecidableEqAppEvent.decEq._proof_1' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.Vote.SweepReady.openClean
+'KelGroups.Vote.SweepReady.openClean' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqIntegratedEvent.decEq._proof_6
+'KelGroups.instDecidableEqIntegratedEvent.decEq._proof_6' does not depend on any axioms
+AUDIT-AXIOM-NAME instDecidableEqState.decEq._proof_5
+'instDecidableEqState.decEq._proof_5' does not depend on any axioms
+AUDIT-AXIOM-NAME Event.deposit.sizeOf_spec
+'Event.deposit.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME Reactivegas.Composition.voteDerived_iff_not_direct
+'Reactivegas.Composition.voteDerived_iff_not_direct' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqCollection.decEq._proof_5
+'instDecidableEqCollection.decEq._proof_5' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.majority_table
+'KelGroups.majority_table' depends on axioms: [propext]
+AUDIT-AXIOM-NAME bump_sum._proof_1_5
+'bump_sum._proof_1_5' depends on axioms: [propext, Quot.sound]
+AUDIT-AXIOM-NAME Reactivegas.i57_auth_holds
+'Reactivegas.i57_auth_holds' depends on axioms: [propext]
+AUDIT-AXIOM-NAME instDecidableEqAppEvent.decEq._proof_20
+'instDecidableEqAppEvent.decEq._proof_20' does not depend on any axioms
+AUDIT-AXIOM-NAME KelGroups.instDecidableEqProposal.decEq._proof_6
+'KelGroups.instDecidableEqProposal.decEq._proof_6' does not depend on any axioms
+AUDIT-AXIOM-NAME GuardId.grantPermission.sizeOf_spec
+'GuardId.grantPermission.sizeOf_spec' does not depend on any axioms
+AUDIT-AXIOM-NAME _private.KelGroups.Invariants.0.KelGroups.commitBaseChange.match_1.eq_2
+'_private.KelGroups.Invariants.0.KelGroups.commitBaseChange.match_1.eq_2' does not depend on any axioms
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v3/AxiomsNegative.lean:35:0: error: AUDIT-AXIOM-FAILED

@@ -1,0 +1,68 @@
+12:theorems stand on; it holds at the empty state and is preserved by every
+32:def QuestionClean 
+37:def tallyKeysOfQuestion 
+39:def tallyKeysOfState 
+46:structure SweepReady 
+59:structure VoteWellFormed 
+77:private theorem assocErase_sublist' 
+88:private theorem assocErase_keys_nodup' 
+93:private theorem assocErase_key_absent' 
+114:private theorem assocInsert_keys_nodup' 
+120:private theorem assocAdjust_keys' 
+129:private theorem assocAdjust_keys_nodup' 
+135:private theorem assocLookup_some_mem' 
+151:private theorem mem_assocLookup_some' 
+175:private theorem assocErase_other_lookup 
+192:private theorem assocInsert_other_lookup 
+203:private theorem assocInsert_mem_cases 
+213:private theorem mem_map_fst_erase_of_ne 
+235:private theorem mem_map_fst_insert 
+246:private theorem setInsert_mem_cases 
+255:private theorem nodup_append_mem {α : Type} [BEq α] [LawfulBEq α]
+268:private theorem setInsert_nodup' 
+276:private theorem mem_erase_inv 
+303:private theorem nodup_erase 
+317:private theorem closed_guard_absent 
+326:private theorem assoc_entries_key_unique 
+346:private theorem filterMap_keys_nodup 
+374:theorem emptyVoteState_sweepReady : SweepReady view emptyVoteState := by
+382:theorem emptyVoteState_wellFormed 
+389:theorem verdictOf_threshold_congr 
+401:private theorem sweepStep_key 
+418:private theorem sweepClosures_open_mem 
+424:private theorem sweepClosures_closed_mem 
+440:private theorem sweepClosures_sweepReady 
+517:private theorem sweepClosures_wellFormed 
+527:private theorem placeBallot_clean 
+550:private theorem placeBallot_tally 
+571:private theorem effectedState_sweepReady 
+665:theorem applyVoteEvent_preserves_wellFormed 
+676:private theorem foldFrom_preserves_wellFormed 
+688:theorem foldVote_wellFormed 
+692:private theorem foldVote_append 
+696:private theorem sweepClosures_preserves_qid 
+722:private theorem effectedState_preserves_qid 
+772:private theorem applyVoteEvent_preserves_qid 
+786:private theorem foldFrom_preserves_qid 
+802:theorem ballots_nodup_disjoint 
+810:theorem open_questions_are_open 
+818:theorem questions_partition 
+853:def preservesQuestionDecide 
+865:def PreservesQuestionSemantics 
+869:instance preservesQuestionSemanticsDecidable 
+877:theorem no_expiry 
+900:private theorem sweepClosures_tallyKeys 
+957:theorem inadmissible_is_noop 
+967:theorem nonresponsabile_event_noop 
+980:theorem unfranchised_cast_noop 
+989:private theorem tallyKeysOfState_erased_le 
+1004:private theorem tallyKeysOfState_insert_cases 
+1017:private theorem effectedState_tally_growth 
+1071:private theorem tally_keys_franchised_from 
+1115:theorem franchise_of_tallies 
+1141:theorem sweepStep_of_open 
+1150:theorem sweep_filterMap_of_swept 
+1165:theorem filter_open_idem 
+1182:theorem sweepClosures_idempotent 
+1192:def sweepDuplicating 
+1200:theorem sweepDuplicating_duplicates 

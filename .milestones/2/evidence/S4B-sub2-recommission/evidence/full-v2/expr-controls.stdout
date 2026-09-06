@@ -1,0 +1,7 @@
+EXPR baseline exact self-identity
+CONTROL changed-type rejected: changed original type conservation
+CONTROL changed-value rejected: changed original value conservation
+CONTROL changed-levels rejected: changed original levels conservation
+CONTROL changed-kind rejected: changed original kind conservation
+CONTROL missing-original rejected: missing original declaration conservation
+EXPR-CONTROLS-OK

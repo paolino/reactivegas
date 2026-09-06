@@ -1,0 +1,10 @@
+KelGroups.enactsB {α : Type} [DecidableEq α] (gs : GroupState α) (proposalId : ProposalId) (result : GroupState α) :
+  Bool
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A32.lean:138:14: error: `simp` made no progress
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A32.lean:132:12: warning: This simp argument is unused:
+  h1
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵h̵1̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

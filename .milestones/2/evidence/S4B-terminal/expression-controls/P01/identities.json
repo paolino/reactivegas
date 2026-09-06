@@ -1,0 +1,11 @@
+{
+  "id": "P01",
+  "file": "KelGroups/Types.lean",
+  "original": "971a2a2ee774c3af63270e8f0bb8f1d5346f1da5c97f5faea1856dbe460acd07",
+  "mutant": "6032217c88ed1e09e73650e9ad12abd61e724bccb724cee63ceb9af11f0bf693",
+  "originalMirrors": "89684a7d35aaa4aca1139a4ac90577df1e79524be7a1bb8597750668e5163603",
+  "probe": "1cb31b58485e2ef94ded2f81a20a034d730c89c6297efe992e6ba6c3d8dc1fb4",
+  "statementProofPrefixPreserved": true,
+  "originalTheoremBytes": "1e3158b1e9438a5f6f2ab3458ddcd40fc11dbff00cdcf4f89baf03858f92a4f6",
+  "probeScope": "original target theorem only, excluding unrelated helper proofs to avoid first-error masking"
+}

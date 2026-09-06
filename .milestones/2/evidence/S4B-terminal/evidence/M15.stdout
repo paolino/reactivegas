@@ -1,0 +1,4 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M15.lean:219:61: error: unsolved goals
+u : KelGroups.Key
+s' : State
+⊢ (∀ (c : Collection), c ∈ s'.collections → c.referente ≠ u) ↔ ∀ (x : Collection), x ∈ s'.collections → x.referente = u

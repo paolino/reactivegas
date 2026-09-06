@@ -1,0 +1,6 @@
+{
+  "at": "2026-09-06T07:46:26.455Z",
+  "entries": 102,
+  "manifestSha256": "9f6a6bc5be903a79d668c6e0d07b5306579a113af438b56a23dfc2a69c38eeca",
+  "challengeHashes": "instruments/batch-plan.sh 0e95e35df63409b39976c5b374f0b7fbd2f929f561b67a2ae55949b5680a09f1\ninstruments/compare-batch.sh 4cd26f4654ee07a27e78866b0d323c703d0905d6bdfff633891ed95e13d00eac\ninstruments/replay-run-green.sh 8f30ebeef1134e641832f97a4e3f52b0b55fdd4a9ab0b58c90d2811ca552e76b\nmeasurement-operations.json de6c437b3e4a741f15e216bbcd8dab67a4da5baa2a319706d726bc91a544240c"
+}

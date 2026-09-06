@@ -1,0 +1,228 @@
+[
+  {
+    "id": "seat",
+    "command": [
+      "tmux",
+      "display-message",
+      "-p",
+      "-t",
+      "%567",
+      "#{session_name}:#{window_index} #{pane_id} #{pane_pid}"
+    ],
+    "cwd": "/code/kelgroups-audit-3af3d06",
+    "start": "2026-09-06T00:09:41.839Z",
+    "duration_ms": 8,
+    "exit": 0,
+    "log": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/preflight-seat.log",
+    "sha256": "e2bd3b785a617f34ac8e3f8f34d13e968dc7a80cc08f9bb1ae8832021041d18f",
+    "charge": {
+      "builds": 0,
+      "targeted": 0
+    },
+    "purpose": "read-only admission or contract identity; no semantic test"
+  },
+  {
+    "id": "ambient-seat",
+    "command": [
+      "tmux",
+      "display-message",
+      "-p",
+      "#S:#I"
+    ],
+    "cwd": "/code/kelgroups-audit-3af3d06",
+    "start": "2026-09-06T00:09:41.849Z",
+    "duration_ms": 7,
+    "exit": 0,
+    "log": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/preflight-ambient-seat.log",
+    "sha256": "b52c1ca6c1e3a18438e74c1592e15969f2888159642a78990ca0e6b261930d83",
+    "charge": {
+      "builds": 0,
+      "targeted": 0
+    },
+    "purpose": "read-only admission or contract identity; no semantic test"
+  },
+  {
+    "id": "ticket-panes",
+    "command": [
+      "tmux",
+      "list-panes",
+      "-t",
+      "%567",
+      "-F",
+      "#{pane_id} #{session_name}:#{window_index} #{pane_pid} #{pane_current_command}"
+    ],
+    "cwd": "/code/kelgroups-audit-3af3d06",
+    "start": "2026-09-06T00:09:41.856Z",
+    "duration_ms": 7,
+    "exit": 0,
+    "log": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/preflight-ticket-panes.log",
+    "sha256": "471c44655ebee9864785fb0bb7746e79f6056a719c83248805a843d7ec5ff981",
+    "charge": {
+      "builds": 0,
+      "targeted": 0
+    },
+    "purpose": "read-only admission or contract identity; no semantic test"
+  },
+  {
+    "id": "argv",
+    "command": [
+      "ps",
+      "-p",
+      "1113460,2583152,2708047",
+      "-o",
+      "pid,ppid,lstart,args"
+    ],
+    "cwd": "/code/kelgroups-audit-3af3d06",
+    "start": "2026-09-06T00:09:41.863Z",
+    "duration_ms": 13,
+    "exit": 0,
+    "log": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/preflight-argv.log",
+    "sha256": "5c5e7d62d5f1be64d215cd7d24408088c01d10c67593b34bf024b4d77d0e31b1",
+    "charge": {
+      "builds": 0,
+      "targeted": 0
+    },
+    "purpose": "read-only admission or contract identity; no semantic test"
+  },
+  {
+    "id": "family",
+    "command": [
+      "/code/llm-settings/shared/skills/tmux-orchestrator/scripts/alternate-authoritative-cli",
+      "--seat",
+      "commit-auditor",
+      "muse",
+      "grok",
+      "claude"
+    ],
+    "cwd": "/code/kelgroups-audit-3af3d06",
+    "start": "2026-09-06T00:09:41.876Z",
+    "duration_ms": 10,
+    "exit": 0,
+    "log": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/preflight-family.log",
+    "sha256": "7bfed09f2a6ada167291c8652cbc11937b6e0f3cb75968a8753168342c562474",
+    "charge": {
+      "builds": 0,
+      "targeted": 0
+    },
+    "purpose": "read-only admission or contract identity; no semantic test"
+  },
+  {
+    "id": "candidate",
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD",
+      "HEAD^{tree}",
+      "HEAD^"
+    ],
+    "cwd": "/code/kelgroups-audit-3af3d06",
+    "start": "2026-09-06T00:09:41.887Z",
+    "duration_ms": 6,
+    "exit": 0,
+    "log": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/preflight-candidate.log",
+    "sha256": "1499a71563d1eb74f3efe6b754573ad62a0b05f36e7d520e579e2714d5984ef5",
+    "charge": {
+      "builds": 0,
+      "targeted": 0
+    },
+    "purpose": "read-only admission or contract identity; no semantic test"
+  },
+  {
+    "id": "detached",
+    "command": [
+      "git",
+      "symbolic-ref",
+      "-q",
+      "HEAD"
+    ],
+    "cwd": "/code/kelgroups-audit-3af3d06",
+    "start": "2026-09-06T00:09:41.893Z",
+    "duration_ms": 5,
+    "exit": 1,
+    "log": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/preflight-detached.log",
+    "sha256": "3cadabec897fd961a14ae0f164fbcc2d872da835fd7c259079ac6fab44594c72",
+    "charge": {
+      "builds": 0,
+      "targeted": 0
+    },
+    "purpose": "read-only admission or contract identity; no semantic test"
+  },
+  {
+    "id": "hygiene",
+    "command": [
+      "git",
+      "status",
+      "--porcelain"
+    ],
+    "cwd": "/code/kelgroups-audit-3af3d06",
+    "start": "2026-09-06T00:09:41.898Z",
+    "duration_ms": 8,
+    "exit": 0,
+    "log": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/preflight-hygiene.log",
+    "sha256": "3cadabec897fd961a14ae0f164fbcc2d872da835fd7c259079ac6fab44594c72",
+    "charge": {
+      "builds": 0,
+      "targeted": 0
+    },
+    "purpose": "read-only admission or contract identity; no semantic test"
+  },
+  {
+    "id": "base-ancestry",
+    "command": [
+      "git",
+      "merge-base",
+      "--is-ancestor",
+      "368b596fef0b6d393c2ac7afc631d236c55d86d1",
+      "HEAD"
+    ],
+    "cwd": "/code/kelgroups-audit-3af3d06",
+    "start": "2026-09-06T00:09:41.906Z",
+    "duration_ms": 5,
+    "exit": 0,
+    "log": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/preflight-base-ancestry.log",
+    "sha256": "3cadabec897fd961a14ae0f164fbcc2d872da835fd7c259079ac6fab44594c72",
+    "charge": {
+      "builds": 0,
+      "targeted": 0
+    },
+    "purpose": "read-only admission or contract identity; no semantic test"
+  },
+  {
+    "id": "disk",
+    "command": [
+      "du",
+      "-sb",
+      "/code/kelgroups-audit-3af3d06"
+    ],
+    "cwd": "/code/kelgroups-audit-3af3d06",
+    "start": "2026-09-06T00:09:41.911Z",
+    "duration_ms": 5,
+    "exit": 0,
+    "log": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/preflight-disk.log",
+    "sha256": "d5e9ccfef26e04c0ec109750ac43cf2d7ed7cc59f26a71918a17d159fe0bddf2",
+    "charge": {
+      "builds": 0,
+      "targeted": 0
+    },
+    "purpose": "read-only admission or contract identity; no semantic test"
+  },
+  {
+    "id": "free-space",
+    "command": [
+      "df",
+      "-B1",
+      "/code/kelgroups-audit-3af3d06"
+    ],
+    "cwd": "/code/kelgroups-audit-3af3d06",
+    "start": "2026-09-06T00:09:41.917Z",
+    "duration_ms": 6,
+    "exit": 0,
+    "log": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/preflight-free-space.log",
+    "sha256": "717a148fac7a26095a0797823d0ea54de15d29d193594745b3cb6315ca408daa",
+    "charge": {
+      "builds": 0,
+      "targeted": 0
+    },
+    "purpose": "read-only admission or contract identity; no semantic test"
+  }
+]

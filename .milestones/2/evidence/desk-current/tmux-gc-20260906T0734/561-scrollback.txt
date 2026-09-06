@@ -1,0 +1,522 @@
+
+    Reconciled **separately before the auditor's START**, unchanged from v1.
+
+• Ran sed -n '330,560p' /home/paolino/.codex/skills/commit-auditor/SKILL.md
+  │ wc -l /home/paolino/.codex/skills/{tmux-orchestrator,lean4,nix,gate-script,orchestrator-contract,verification,invariants}/SKILL.md
+  └ - **where an instrument lives and where it runs are two different questions.**
+      Its source lives under your runtime root, which is where it is frozen, hashed,
+    … +235 lines (ctrl + t to view transcript)
+       199 /home/paolino/.codex/skills/invariants/SKILL.md
+      2398 total
+
+• Ran sha256sum -c MANIFEST.sha256
+  └ OWNER-BRIEF.md: OK
+    OWNER-EVIDENCE.sha256: OK
+    QUALITY-S4B-TWO-COMMAND-GAP-GRANTED-20260905.md: OK
+    SUBMISSION-ADMITTED.md: OK
+
+• Explored
+  └ Read SKILL.md
+
+• Ran cat /tmp/reactivegas/ms2/e-lean-compliance/handoffs/S4B-ACCEPTANCE-INSTRUMENT-v1.md
+  │ rg -n 'pane|window|submission|ledger|raise|family|exclusion|gate|2214ff8a' /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex/brief.md /tmp/reactivegas/ms2/
+  │ e-lean-compliance/candidate-auditor-s4b-codex/admitted/*.md
+  │ … +1 lines
+  └ # S4-B acceptance instrument — v1, parent-owned
+
+    … +101 lines (ctrl + t to view transcript)
+    /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex/brief.md:94:**Local files only.** No typing into any other pane or human composer. No push,
+    reactivegas @165 rg-s4b-audit %561 2474474 /code/reactivegas-66-s4b-audit
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• The admitted hashes match, and my live process is pinned to gpt-6-astra/high. Preflight found missing dispatch bindings: the packet does not name the implementation-owner pane, required
+  ticket window, or carried audit campaign ledger.
+
+  The required commit-auditor skill (/home/paolino/.codex/skills/commit-auditor/SKILL.md) says “Before inspecting the candidate” to require those seat bindings and “Refuse the audit unless”
+  the campaign ledger is bound. I’m recording a contract block and the exact missing information locally; no build budget has been spent.
+
+• Ran ls -l /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-c26.log
+  │ sha256sum /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-c26.log
+  │ wc -l /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-c26.log
+  │ … +1 lines
+  └ -rw-r--r-- 1 paolino users 799164 Sep  5 22:47 /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-c26.log
+    699792e4efa56b354bb3c3173751e538bc1739adbe91893199ec93b688978841  /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-c26.log
+    17987 /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-c26.log
+    44c48239d9b62ef7ec896d7fe4964159c4b23f117865c8f9dd4bd3ebeae29501  /tmp/reactivegas/ms2/e-lean-compliance/handoffs/S4B-ACCEPTANCE-INSTRUMENT-v1.md
+    2214ff8a0d25f47afded7b7215e9873b5a237d97caea55eb72b1d8f884c5ca4f  /tmp/reactivegas/ms2/e-lean-compliance/handoffs/S4B-ACCEPTANCE-INSTRUMENT-v2.md
+
+• Ran git rev-parse HEAD
+  │ git symbolic-ref -q HEAD
+  │ git status --porcelain=v1
+  │ … +5 lines
+  └ 189e1ed306f8f8e8bcdd11eeab4fc5657a518fc8
+    0
+    … +4 lines (ctrl + t to view transcript)
+    --dangerously-bypass-approvals-and-sandbox
+    /code/reactivegas-66-s4b-audit
+
+• Edited 2 files (+240 -0)
+  └ /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex/handoffs/AUDIT-REPORT.md (+195 -0)
+      1 +# S4-B independent audit report
+      2 +
+      3 +Terminal verdict: **AUDIT-CONTRACT-BLOCKED**
+      4 +
+      5 +Candidate: `189e1ed306f8f8e8bcdd11eeab4fc5657a518fc8`
+      6 +Base named by commission: `3590c0015b84fd58004bf6fb44dd18b107304c48`
+      7 +Runtime: `/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex`
+      8 +Worktree: `/code/reactivegas-66-s4b-audit`
+      9 +Pointer: `POINTER-1788644987-2475968`
+     10 +Requested scope: full S4-B candidate; Lean correspondence/proofs and commit
+     11 +provenance. Severity defaults to BLOCKING where undeclared.
+     12 +
+     13 +This is a preflight disposition, not a semantic finding against the candidate.
+     14 +Candidate soundness remains unjudged. No owner assertion closes an audit row.
+     15 +
+     16 +## Preflight result and stopping reason
+     17 +
+     18 +The four admitted files pass their supplied MANIFEST.sha256. The brief,
+     19 +submission, owner brief, grant, and referenced v1/v2 requirements and command
+     20 +reconciliation were read. The v2 instrument is explicitly requirements prose,
+     21 +not an executable gate.
+     22 +
+     23 +The required commit-auditor skill says, before inspecting the candidate,
+     24 +"require concrete, distinct `ticket_owner_pane` and `owner_pane` values plus
+     25 +the named ticket window in the brief". It also says "Refuse the audit unless"
+     26 +the packet binds the campaign ledger path and remaining build budget, alongside
+     27 +the other listed authority fields.
+     28 +
+     29 +The referenced requirements document names parent %503, but the packet does
+     30 +not bind the implementation-owner pane, ticket window, family-selection
+     31 +exclusions, current audit submission number, campaign ledger path/carried
+     32 +auditor spend, or complete ticket-wide ceiling-raise count. The actual audit
+     33 +pane resolves to its own named audit window; that does not establish the
+     34 +required relationship to the two owner seats. No other seat was contacted.
+     35 +Live discovery of an apparent owner elsewhere would not itself supply missing
+     36 +commissioning authority.
+     37 +
+     38 +The packet also needs to settle the authoritative executable gate binding:
+     39 +the owner brief names v1 requirements, the admitted submission refers to v2,
+     40 +and v2 explicitly distinguishes prose from executable just lean / just ci.
+     41 +No auditor-created substitute gate is licensed by this report. Q-001 asks for
+     42 +the exact binding or express designation of that candidate-bound mechanism.
+     43 +
+     44 +Question and wake condition: `questions/Q-001-dispatch-campaign-bindings.md`.
+     45 +No START was appended because the required pre-START checks are not satisfied.
+     46 +ACK and PREFLIGHT evidence are retained instead, with timestamps later than
+     47 +brief mtime. No audit command plan is represented as finalized: the carried
+     48 +campaign state and executable binding must be established before reconciliation.
+     49 +
+     50 +## Live identity — inspection
+     51 +
+     52 +At 2026-09-05T21:51:38Z:
+     53 +
+     54 +- Auditor PID = 2474577; PPID = 2474474; PGID = 2474577.
+     55 +- Full live argv:
+     56 +  `/nix/store/nqhk0522q8ncygwwx054iq76ckcjll82-codex-0.153.2/libexec/codex -m gpt-6-astra -c model_reasoning_effort=high --dangerously-bypass-approvals-and-sandbox`.
+     57 +- Process start: 2026-09-05 22:49:16 +0100.
+     58 +- Process cwd = supplied audit worktree.
+     59 +- tmux = session reactivegas, window @165 / rg-s4b-audit, pane %561;
+     60 +  pane PID 2474474.
+     61 +- HEAD matches the full candidate SHA; `git symbolic-ref -q HEAD` exits 1
+     62 +  (detached); `git status --porcelain=v1` is empty.
+     63 +- `find . -type f -name '*.olean' -print | wc -l` = 0.
+     64 +- Brief mtime = 2026-09-05 22:48:44.305517979 +0100.
+     65 +
+     66 +These are current identity facts only. They do not certify historical probe
+     67 +restoration, candidate diff semantics, or independence from unidentified seats.
+     68 +
+     69 +## Established input checks
+     70 +
+     71 +| Row | Verdict | Command | Observation | Method |
+     72 +|---|---|---|---|---|
+     73 +| Admitted packet manifest | CLOSED | `cd admitted && sha256sum -c MANIFEST.sha256` | Four files OK against all supplied full hashes | inspection |
+     74 +| v1 requirements identity | CLOSED | `sha256sum /tmp/reactivegas/ms2/e-lean-compliance/handoffs/S4B-ACCEPTANCE-INSTRUMENT-v1.md` | 44c48239d9b62ef7ec896d7fe4964159c4b23f117865c8f9dd4
+         bd3ebeae29501, matches owner-brief prefix | unchanged-input with explicit byte identity |
+     75 +| v2 requirements identity | CLOSED | `sha256sum /tmp/reactivegas/ms2/e-lean-compliance/handoffs/S4B-ACCEPTANCE-INSTRUMENT-v2.md` | 2214ff8a0d25f47afded7b7215e9873b5a237d97caea55eb72b
+         1d8f884c5ca4f, matches submission prefix | unchanged-input with explicit byte identity |
+     76 +| C26 archived log identity | CLOSED | `sha256sum /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-c26.log`; `wc -l` on the same path | 699792e4efa56
+         b354bb3c3173751e538bc1739adbe91893199ec93b688978841; 17,987 lines | unchanged-input with explicit byte identity |
+     77 +| Current worktree identity/hygiene | CLOSED | `git rev-parse HEAD`; `git symbolic-ref -q HEAD`; `git status --porcelain=v1`; olean count above | Exact candidate, detached, clean, zer
+         o oleans | inspection |
+     78 +| Historical restoration after every control | OPEN | No historical verification command executed | Current cleanliness does not establish prior restoration events | inspection |
+     79 +
+     80 +The archived C26 copy is the evidence artifact used. Its hash agrees with the
+     81 +brief; no divergence was observed for that file. The other 185 archived files
+     82 +were not verified, and no full-archive identity conclusion is made.
+     83 +Hashing retained output is not new execution, nor does it independently
+     84 +establish that the historical command ran cold at the claimed committed tree.
+     85 +
+     86 +## Nineteen correspondence rows
+     87 +
+     88 +For each row below the required separate control was not run. The observation
+     89 +is a preflight block, not a falsification result; no new-execution row exists.
+     90 +
+     91 +| Row | Named control | Verdict | Establishing command / observation | Method |
+     92 +|---|---|---|---|---|
+     93 +| P01 comune | C5R | OPEN | None executed; Q-001 blocks dependent execution | inspection |
+     94 +| P02 conservation | C6 | OPEN | None executed; Q-001 blocks dependent execution | inspection |
+     95 +| P03 solvent | C7 | OPEN | None executed; Q-001 blocks dependent execution | inspection |
+     96 +| P04 insolvent | C8 | OPEN | None executed; Q-001 blocks dependent execution | inspection |
+     97 +| P05 uniquePledges | C9 | OPEN | None executed; Q-001 blocks dependent execution | inspection |
+     98 +| P06 allUniquePledges | C10 | OPEN | None executed; Q-001 blocks dependent execution | inspection |
+     99 +| P07 permissionToClose | C11R | OPEN | None executed; Q-001 blocks dependent execution | inspection |
+    100 +| P08 escrowHeld | C12 | OPEN | None executed; Q-001 blocks dependent execution | inspection |
+    101 +| P09 governanceEnacts | C13 | OPEN | None executed; Q-001 blocks dependent execution | inspection |
+    102 +| P10 doubleEntry | C14 | OPEN | None executed; Q-001 blocks dependent execution | inspection |
+    103 +| P12 canCloseGroup | C15 | OPEN | None executed; Q-001 blocks dependent execution | inspection |
+    104 +| K1 PendingWellFormed | C16 | OPEN | None executed; Q-001 blocks dependent execution | inspection |
+    105 +| K2 MembersCoherent | C17 | OPEN | None executed; Q-001 blocks dependent execution | inspection |
+    106 +| K3 PendingCoherent | C18 | OPEN | None executed; Q-001 blocks dependent execution | inspection |
+    107 +| K4 WellFormed | C19 | OPEN | None executed; Q-001 blocks dependent execution | inspection |
+    108 +| K5 Enacts | C20 | OPEN | None executed; Q-001 blocks dependent execution | inspection |
+    109 +| V1 QuestionClean | C21 | OPEN | None executed; Q-001 blocks dependent execution | inspection |
+    110 +| V2 SweepReady | C22 | OPEN | None executed; Q-001 blocks dependent execution | inspection |
+    111 +| V3 VoteWellFormed | C23 | OPEN | None executed; Q-001 blocks dependent execution | inspection |
+    112 +
+    113 +P01/P07's claimed relatum-defect sensitivity and the corresponding limitation
+    114 +on expression-body sensitivity remain unaudited. No aggregate result or grant
+    115 +is credited to any correspondence row.
+    116 +
+    117 +## Mandatory path and assurance controls
+    118 +
+    119 +| Row | Verdict | Required command; observation | Method |
+    120 +|---|---|---|---|
+    121 +| C1 clean baseline | OPEN | `nix develop --quiet -c just lean` not run | inspection |
+    122 +| C2 counterpart absent | OPEN | Separate mandatory `just lean` control not run | inspection |
+    123 +| C3 theorem absent | OPEN | Separate mandatory `just lean` control not run | inspection |
+    124 +| C4 ineffective checker while present | OPEN | Separate mandatory `just lean` control not run; receipt enforcement untested | inspection |
+    125 +| C24 final-tree proof axioms | OPEN | Final-tree `lake env lean` axiom driver not run | inspection |
+    126 +| C25 final-tree totality/panic observations | OPEN | Final-tree driver and stream checks not run | inspection |
+    127 +| C26 cold final CI | PARTLY | Archived hash/line count verified above; `nix develop --quiet -c just ci` not run | unchanged-input with explicit byte identity |
+    128 +
+    129 +C4's requested interpretation is clear in the admitted grant: execution
+    130 +enforcement only. C2/C3/C5-C23 must establish semantic sensitivity independently.
+    131 +Whether candidate behavior implements that division, and whether any historical
+    132 +exit-127 shortcut contributed evidence, remain OPEN. No exit-127 result is
+    133 +credited here.
+    134 +
+    135 +## Requirements ledger
+    136 +
+    137 +Each row remains open for actual candidate audit; reading requirements only
+    138 +establishes what must be checked.
+    139 +
+    140 +| Row | Obligation | Verdict | Command / observation | Method |
+    141 +|---|---|---|---|---|
+    142 +| R1 | finite scope and original definitions preserved | OPEN | No candidate verification executed; Q-001 preflight block | inspection |
+    143 +| R2 | no new runtime monitor or coordinator behavior | OPEN | No candidate verification executed; Q-001 preflight block | inspection |
+    144 +| R3 | new-module placement | OPEN | No candidate verification executed; Q-001 preflight block | inspection |
+    145 +| R4 | P01/P07 relate existing expressions | OPEN | No candidate verification executed; Q-001 preflight block | inspection |
+    146 +| R5 | generic equality assumptions and original theorem preservation | OPEN | No candidate verification executed; Q-001 preflight block | inspection |
+    147 +| R6 | callable threshold policy | OPEN | No candidate verification executed; Q-001 preflight block | inspection |
+    148 +| R7 | compiled inventory and per-identity reconciliation | OPEN | No candidate verification executed; Q-001 preflight block | inspection |
+    149 +| R8 | mandatory counterpart-absent detection | OPEN | No candidate verification executed; Q-001 preflight block | inspection |
+    150 +| R9 | mandatory theorem-absent detection | OPEN | No candidate verification executed; Q-001 preflight block | inspection |
+    151 +| R10 | effective-disable detection | OPEN | No candidate verification executed; Q-001 preflight block | inspection |
+    152 +| R11 | well-typed per-identity falsification | OPEN | No candidate verification executed; Q-001 preflight block | inspection |
+    153 +| R12 | distinct failures without masking | OPEN | No candidate verification executed; Q-001 preflight block | inspection |
+    154 +| R13 | final-tree axioms and totality | OPEN | No candidate verification executed; Q-001 preflight block | inspection |
+    155 +| R14 | arbitrary lookup semantics including duplicate and absent keys | OPEN | No candidate verification executed; Q-001 preflight block | inspection |
+    156 +| R15 | no unruled well-formedness premises | OPEN | No candidate verification executed; Q-001 preflight block | inspection |
+    157 +| R16 | exact path fence | OPEN | No candidate verification executed; Q-001 preflight block | inspection |
+    158 +| R17 | additive own-recipe justfile edits | OPEN | No candidate verification executed; Q-001 preflight block | inspection |
+    159 +| R18 | complete spend ledger and classification | OPEN | No candidate verification executed; Q-001 preflight block | inspection |
+    160 +
+    161 +## Budget and coverage receipt
+    162 +
+    163 +Auditor actual spend: **0/8 substantive; 0/60 targeted** this context.
+    164 +No build, failed build, warm repeat, single-file elaboration, or driver probe
+    165 +was run. This is a measured local spend, not an assertion about an unbound
+    166 +carried campaign ledger.
+    167 +
+    168 +The admitted grant explicitly leaves the auditor's original 8/60 total across
+    169 +both submissions unchanged and raises the separate owner substantive ceiling
+    170 +6 -> 8. The owner's claimed S1, C1, C1r, C1g, C2, C3, C4, C26 and 42 targeted
+    171 +calls have not been independently reconciled. No failed owner call is refunded
+    172 +or relabelled by this report. No budget overrun is alleged.
+    173 +
+    174 +The mandatory execution floor visibly includes five separate substantive rows:
+    175 +C1, C2, C3, C4, C26. The nineteen named falsification rows require nineteen
+    176 +distinct targeted observations, plus positive/typing, compiled inventory,
+    177 +statement, final axiom and totality work as determined by the actual instrument.
+    178 +This is a lower-bound inventory, not a reconciled runnable command plan or
+    179 +permission to spend. No distinct row was compressed into another.
+    180 +
+    181 +Coverage: 0/19 correspondence controls reproduced; 0/5 mandatory-path commands
+    182 +run; 0 final-tree proof drivers run; 18/18 requirements remain OPEN.
+    183 +Stopping reason: authority preflight, before START. No semantic coverage,
+    184 +proof cleanliness, mutation adequacy, base ancestry, or acceptance claim.
+    185 +
+    186 +## Boundaries and return
+    187 +
+    188 +Only local runtime artifacts were written. The candidate was not edited,
+    189 +staged, committed, pushed, merged, or repaired. No PR, issue, comment, gist,
+    190 +deployment, browser composer, pane input, or communication to another seat
+    191 +was used. No build tree was created or retired.
+    192 +
+    193 +The commissioning owner receives this report and Q-001 through local files.
+    194 +Candidate acceptance remains outside this seat's authority.
+    195 +
+
+  └ /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex/questions/Q-001-dispatch-campaign-bindings.md (+45 -0)
+     1 +# Q-001 — bind dispatch and campaign before audit START
+     2 +
+     3 +Pointer: POINTER-1788644987-2475968
+     4 +Candidate: 189e1ed306f8f8e8bcdd11eeab4fc5657a518fc8
+     5 +
+     6 +The brief and admitted documents were read in full. No build, Lean elaboration,
+     7 +driver probe, candidate mutation, external write, or contact with another seat
+     8 +has occurred. Auditor spend is 0 substantive / 0 targeted.
+     9 +
+    10 +The required commit-auditor skill explicitly requires concrete ticket-owner and
+    11 +implementation-owner pane IDs and the named ticket window before START; it
+    12 +also requires a campaign ledger path, carried remaining budget, submission
+    13 +number, family selection/exclusions, and ticket-wide ceiling-raise record.
+    14 +
+    15 +The referenced acceptance instrument identifies commissioning owner %503.
+    16 +The admitted packet does not bind the implementation-owner pane or ticket
+    17 +window, campaign ledger path/carried auditor spend, current submission number,
+    18 +family-selection exclusions, or complete ticket-wide ceiling-raise count.
+    19 +The grant establishes separate auditor 8/60 and owner 6 -> 8; the owner's
+    20 +8/8, 42/60 is not auditor spend and is not being substituted for it.
+    21 +
+    22 +Live auditor identity is independently established:
+    23 +pane %561, session reactivegas, window @165 rg-s4b-audit;
+    24 +PID/PGID 2474577; codex -m gpt-6-astra -c model_reasoning_effort=high
+    25 +--dangerously-bypass-approvals-and-sandbox.
+    26 +Candidate worktree is clean, detached at the named SHA, with zero oleans.
+    27 +
+    28 +Decision needed: provide one durable authority amendment binding the missing
+    29 +dispatch/campaign fields, including whether this explicitly separate audit
+    30 +window is the intended authorized placement under the same-window skill rule.
+    31 +Bind the authoritative gate path/version/hash (or explicitly designate the
+    32 +candidate-bound just lean / just ci mechanism in place of the standard
+    33 +gate.sh contract) and the parent-owned v2 acceptance instrument's full hash.
+    34 +
+    35 +Recommended resolution: complete these bindings without changing candidate
+    36 +bytes or resetting any counters. Do not re-run owner work to answer this.
+    37 +Alternative: explicitly re-cut or withdraw this audit commission.
+    38 +
+    39 +Wake condition: a durable amendment/answer resolving these fields, delivered
+    40 +by a file pointer. The next execution phase must first enumerate the actual
+    41 +full command set against carried remaining 8/60 before START. This is an
+    42 +authority gap, not a measured command-budget overrun.
+    43 +
+    44 +Report: ../handoffs/AUDIT-REPORT.md
+    45 +
+
+
+› Read /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex/inbox-NOTE-001-commissioning-amendment.md in full and act on it. Acknowledge in /tmp/reactivegas/ms2/e-lean-
+  compliance/candidate-auditor-s4b-codex/STATUS.md. [POINTER-1788645204-2481808]
+
+
+• Explored
+  └ Read inbox-NOTE-001-commissioning-amendment.md
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• I’ll read and acknowledge the amendment, verify the expanded authority packet, and reassess the remaining gaps without restarting or resetting counters.
+
+• Ran date -u '+%Y-%m-%dT%H:%M:%SZ  NOTE  inbox-NOTE-001-commissioning-amendment read-in-full POINTER-1788645204-2481808 phase=preflight spend=0-substantive,0-targeted no-restart; validating
+  │ expanded authority before START' >> /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex/STATUS.md
+  │ cat /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex/admitted/AMENDMENT-NOTE-002.md /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex/admitted/
+  │ … +2 lines
+  └ # NOTE-002 — instrument amended to v2. Two of your controls tested the wrong thing.
+
+    … +335 lines (ctrl + t to view transcript)
+    requires a decision function that **actually compiles and evaluates**. Classical
+    proof evidence is preserved and is never counted as runtime capability.
+
+• Ran sha256sum -c MANIFEST.sha256
+  │ sha256sum INSTRUMENT-v2-OPERATIVE.md
+  └ AMENDMENT-NOTE-001-reconciliation-v2.md: OK
+    AMENDMENT-NOTE-002.md: OK
+    … +8 lines (ctrl + t to view transcript)
+    SUBMISSION-ADMITTED.md: OK
+    2214ff8a0d25f47afded7b7215e9873b5a237d97caea55eb72b1d8f884c5ca4f  INSTRUMENT-v2-OPERATIVE.md
+
+• Ran cat INSTRUMENT-v2-OPERATIVE.md COMMAND-RECONCILIATION.md
+  │ cat MANIFEST.sha256
+  └ # S4-B acceptance instrument — v2, parent-owned
+
+    … +205 lines (ctrl + t to view transcript)
+    f872255f8fffe24f5b7ab360dbac50dda692b3887ab846703637fe2c696e4d87  S4-CONTRACT-ORIGINAL-REQUIREMENTS.md
+    363999bddcface9dbc856b9d060340ec689eb5840f734569facdcce618747b61  SUBMISSION-ADMITTED.md
+
+• Explored
+  └ List answers
+    List candidate-auditor-s4b-codex
+
+• Ran sed -n '1,105p' /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex/handoffs/AUDIT-REPORT.md
+  │ command -v python3
+  └ # S4-B independent audit report
+
+    … +101 lines (ctrl + t to view transcript)
+    | K1 PendingWellFormed | C16 | OPEN | None executed; Q-001 blocks dependent execution | inspection |
+    | K2 MembersCoherent | C17 | OPEN | None executed; Q-001 blocks dependent execution | inspection |
+
+• Edited 2 files (+61 -16)
+  └ /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex/handoffs/AUDIT-REPORT.md (+41 -16)
+      4
+      5 +Updated after commissioning NOTE-001, POINTER-1788645204-2481808.
+      6 +The amendment was read in full and acknowledged without restart. It resolves
+      7 +the operative-instrument and mutation-permission gaps. All eleven entries in
+      8 +the expanded admitted manifest verify OK; the operative v2 full hash matches.
+      9 +The remaining block is dispatch/campaign binding.
+     10 +
+     11  Candidate: `189e1ed306f8f8e8bcdd11eeab4fc5657a518fc8`
+        ⋮
+     15  Pointer: `POINTER-1788644987-2475968`
+     10 -Requested scope: full S4-B candidate; Lean correspondence/proofs and commit
+     11 -provenance. Severity defaults to BLOCKING where undeclared.
+     16 +Requested scope: the complete original S4 requirements, including both axes of
+     17 +classification, required-consumer authority, correspondence/proofs, and commit
+     18 +provenance. The five emphasis areas and nineteen correspondence rows are not
+     19 +the full denominator. Severity defaults to BLOCKING where undeclared.
+     20
+        ⋮
+     25
+     18 -The four admitted files pass their supplied MANIFEST.sha256. The brief,
+     19 -submission, owner brief, grant, and referenced v1/v2 requirements and command
+     20 -reconciliation were read. The v2 instrument is explicitly requirements prose,
+     21 -not an executable gate.
+     26 +All eleven current admitted files pass their supplied MANIFEST.sha256. The
+     27 +brief, commissioning amendment, submission, owner brief, grant, original S4
+     28 +contract, v1/v2 requirements, three normative amendments and command
+     29 +reconciliation were read. NOTE-001 now binds v2 as operative authority, with
+     30 +its amendments and the original S4 contract. v1 is history; only requirements
+     31 +explicitly incorporated by v2 carry forward.
+     32
+        ⋮
+     39  The referenced requirements document names parent %503, but the packet does
+     30 -not bind the implementation-owner pane, ticket window, family-selection
+     31 -exclusions, current audit submission number, campaign ledger path/carried
+     40 +not bind the implementation-owner pane, ticket window,
+     41 +current audit submission number, campaign ledger path/carried
+     42  auditor spend, or complete ticket-wide ceiling-raise count. The actual audit
+        ⋮
+     47
+     38 -The packet also needs to settle the authoritative executable gate binding:
+     39 -the owner brief names v1 requirements, the admitted submission refers to v2,
+     40 -and v2 explicitly distinguishes prose from executable just lean / just ci.
+     41 -No auditor-created substitute gate is licensed by this report. Q-001 asks for
+     42 -the exact binding or express designation of that candidate-bound mechanism.
+     48 +The original S4 contract now establishes the restricted auditor family set:
+     49 +codex or grok, excluding muse and claude; the selected live Codex process fits.
+     50 +The gate-binding question in initial Q-001 is resolved by NOTE-001's operative
+     51 +v2 designation: just lean / just ci plus the checker at the frozen candidate
+     52 +are the named executable mechanism. No additional gate.sh checkpoint is sought.
+     53 +
+     54 +NOTE-001 expressly permits temporary mutations in this detached audit tree,
+     55 +with retained raw mutants and restoration evidence. This supersedes the prior
+     56 +unqualified no-edit sentence for this tree. Owner/reference candidate and
+     57 +admitted instruments remain unwritable. No mutation has occurred.
+     58
+        ⋮
+     62  brief mtime. No audit command plan is represented as finalized: the carried
+     48 -campaign state and executable binding must be established before reconciliation.
+     63 +campaign state and dispatch binding must be established before reconciliation.
+     64
+        ⋮
+     87  |---|---|---|---|---|
+     73 -| Admitted packet manifest | CLOSED | `cd admitted && sha256sum -c MANIFEST.sha256` | Four files OK against all supplied full hashes | inspection |
+     88 +| Admitted packet manifest | CLOSED | `cd admitted && sha256sum -c MANIFEST.sha256` | Eleven files OK against all supplied full hashes after NOTE-001 | inspection |
+     89  | v1 requirements identity | CLOSED | `sha256sum /tmp/reactivegas/ms2/e-lean-compliance/handoffs/S4B-ACCEPTANCE-INSTRUMENT-v1.md` | 44c48239d9b62ef7ec896d7fe4964159c4b23f117865c8f9dd4
+         bd3ebeae29501, matches owner-brief prefix | unchanged-input with explicit byte identity |
+        ⋮
+    177
+    178 +Additional original-S4 obligations remain OPEN: the full live Prop denominator
+    179 +and both classification axes per identity; definitional identity versus proved
+    180 +equivalence; logical Decidable evidence versus evaluated executable decision;
+    181 +bounded Reach classification without unsupported undecidability; authority for
+    182 +required/unimplemented/not-required consumers; exact paths and #68/#69
+    183 +dependencies; no duplicate mirror where a consumer already exists; and owned
+    184 +completion-map entries for unresolved required consumers/correspondences.
+    185 +Method: inspection of the admitted original S4 contract. No compiled
+    186 +classification command was executed. The selected nineteen rows cannot close
+    187 +these obligations by implication.
+    188 +
+    189  Auditor actual spend: **0/8 substantive; 0/60 targeted** this context.
+        ⋮
+    220  Candidate acceptance remains outside this seat's authority.
+    195 -
+
+  └ /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex/questions/Q-001-dispatch-campaign-bindings.md (+20 -0)
+    45
+    46 +## Post-NOTE-001 correction
+    47 +
+    48 +Commissioning NOTE-001 was read and acknowledged in the same context. All
+    49 +eleven manifest entries and the operative v2 full hash verify. The original
+    50 +S4 contract supplies the restricted family set, so that part is resolved.
+    51 +The operative-instrument/gate-mechanism binding and mutation permission are
+    52 +also resolved. No separate gate.sh checkpoint is requested.
+    53 +
+    54 +Remaining requested fields: implementation-owner pane and required window
+    55 +relationship/express authorization for this dedicated audit window, current
+    56 +audit submission number, campaign ledger path and carried auditor counters,
+    57 +and complete ticket-wide ceiling-raise count/history. The landed-base note
+    58 +supplies an owner PID/PGID/tty, but no owner pane or commissioned window binding.
+    59 +Do not substitute the owner's 8/8 and 42/60 for the auditor counters.
+    60 +
+    61 +The complete original-S4 scope includes both axes of classification and
+    62 +required-consumer authority. The report's selected R/C tables are not the full
+    63 +denominator. Final command enumeration remains pre-START work once the
+    64 +remaining bindings are complete. No measured budget overrun is alleged;
+    65 +actual auditor spend remains 0/0.
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• The amendment resolves the operative-instrument and mutation-permission gaps; all eleven admitted hashes verify. The remaining gaps are the owner-pane/window binding, submission number,
+  carried audit ledger/counters, and ceiling-raise history. I’ve updated the local report and question. Spend remains 0/8 substantive and 0/60 targeted.
+
+  The commit-auditor skill (/home/paolino/.codex/skills/commit-auditor/SKILL.md) explicitly requires these bindings before START, so the audit remains contract-blocked.
+
+• Ran {
+  │ date -u '+observed_at=%Y-%m-%dT%H:%M:%SZ'
+  │ ps -ww -o pid,ppid,pgid,lstart,args -p 2474577
+  │ … +11 lines
+  └ fatal: not a git repository (or any of the parent directories): .git
+    fatal: not a git repository (or any of the parent directories): .git
+    fatal: not a git repository (or any of the parent directories): .git
+
+• Ran mv /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex/evidence/preflight-identity.txt /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex/evidence/
+  │ preflight-identity-wrong-cwd.txt
+  │ {
+  │ … +13 lines
+  └ observed_at=2026-09-05T21:57:22Z
+        PID    PPID    PGID                  STARTED COMMAND
+    … +6 lines (ctrl + t to view transcript)
+    olean_count=0
+    brief_mtime=2026-09-05 22:48:44.305517979 +0100
+
+• Ran sha256sum /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-c26.log > /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex/evidence/
+  │ c26-archive-identity.txt
+  │ wc -l /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-c26.log >> /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex/evidence/
+  │ … +1 lines
+  └ (no output)
+
+• Ran cat >> handoffs/AUDIT-REPORT.md <<'EOF'
+  │
+  │ ## Retained preflight receipts
+  │ … +25 lines
+  └ handoffs/AUDIT-REPORT.md: OK
+    questions/Q-001-dispatch-campaign-bindings.md: OK
+    … +11 lines (ctrl + t to view transcript)
+    2026-09-05T21:57:54Z  COMPLETE  contract-blocked pre-START report=handoffs/AUDIT-REPORT.md sha256=f151d6f4cc4cca337c2c826ed1e436a687c900caf6f3cb613a7cd25cac4175a0 wake=durable-Q-001-answer
+    spend=0-substantive,0-targeted
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• Read and acknowledged both files in STATUS.md. All 11 admitted hashes verify.
+
+  Report (/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex/handoffs/AUDIT-REPORT.md): AUDIT-CONTRACT-BLOCKED. Remaining gaps: owner-pane/window binding, submission number,
+  carried campaign ledger/counters, and ceiling history. Spend: 0/8 substantive, 0/60 targeted.
+
+  The required commit-auditor skill (/home/paolino/.codex/skills/commit-auditor/SKILL.md) says “Refuse the audit unless” these bindings exist. Candidate soundness remains unjudged.
+
+─ Worked for 8m 20s ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+› Ask Codex to do anything
+
+  gpt-6-astra high · /code/reactivegas-66-s4b-audit

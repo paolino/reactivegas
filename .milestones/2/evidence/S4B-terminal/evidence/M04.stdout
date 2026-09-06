@@ -1,0 +1,18 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M04.lean:138:14: warning: unused variable `view`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M04.lean:145:47: error: unsolved goals
+view : KelGroups.GroupView
+s : State
+⊢ ((∀ (u : KelGroups.Key), KelGroups.GroupView.isMember u view = true → bal s.conti u ≥ 0) ∧
+      ∀ (col : Collection), col ∈ s.collections → ∀ (p : Pledge), p ∈ col.accepted ++ col.pending → 0 ≤ p.amount) ↔
+    (∀ (x : KelGroups.Key), x ∈ [] → bal s.conti x ≥ 0) ∧
+      ∀ (col : Collection), col ∈ s.collections → ∀ (p : Pledge), p ∈ col.accepted ++ col.pending → 0 ≤ p.amount
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M04.lean:147:4: warning: This simp argument is unused:
+  keys_mem_coe
+
+Hint: Omit it from the simp argument list.
+  simp only [solvent, solventB, Bool.and_eq_true, List.all_eq_true, decide_eq_true_eq,̵
+  ̵ ̵ ̵ ̵ ̵k̵e̵y̵s̵_̵m̵e̵m̵_̵c̵o̵e̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

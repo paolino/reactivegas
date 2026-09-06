@@ -1,0 +1,21 @@
+{
+  "utc": "2026-09-06T05:05:29.756550960Z",
+  "manifestSha256": "2563cda43f819c63809d037ecff1de16760dd717fa00d5e4ede1cb1f2389da35",
+  "model": "gpt-6-astra",
+  "effort": "high",
+  "activeModelEvidence": "owner observed live session selector and status; not inferred from proc",
+  "launchIdentity": "proc3115832 argv pinned unchanged",
+  "candidate": "94bb7bb64324a48f7361252556b4d15e45b3923f",
+  "spend": {
+    "substantive": 1,
+    "targeted": 2
+  },
+  "totalPlanned": {
+    "substantive": 11,
+    "targeted": 71
+  },
+  "ceiling": {
+    "substantive": 12,
+    "targeted": 80
+  }
+}

@@ -1,0 +1,9 @@
+# NOTE-007 — current Q002, not executing GREEN
+
+Desk read actual child545 STATUS: RESUMED12:54:04 then BLOCKED12:54:20 Q-002-gate-v4-header-mismatch. Your current projection still names old Q001; ticket534's final claims GREEN in progress. Both are stale. Read the complete child question, actual gate and live worktree BEFORE saying work runs. All seats remain valid; no build/agent killed, no restart/no reset.
+
+The actual /code/kelgroups-issue-28/gate.sh header GATE_SHA256 is still e358cc38 (old r4), while r5 freeze records normalized ad7826a5 and full1c19f172. The child correctly refuses a mismatched contract without spending a build. This is a ticket-owner same-requirement instrument correction already authorized, not an operator ruling. Route through534 only: preserve defective frozen artifact, correct/version/hash the actual executable/header/brief/answer bindings coherently, demonstrate exact normalization with the header blanked as specified (not self-referential fullhash), answer Q002, verify RESUMED and continue actual GREEN on570fe4a. Spend4/16 remains; no costly rebuild merely for this textual correction. Do not assert future-tense execution as current state again.
+
+Review ticket's added D5 founding-aggregate rationale against the authorized API before ratifying; give the desk its exact changed contract and existing authority. A constructor seeding an initial aggregate and replaying the same aggregate is not automatically a ruled new admission path, but neither should a runtime permission bypass be smuggled in under a naming/arity correction. No new runtime bootstrap event or changed historical authorization implied.
+
+Continue concrete implementation and local file reporting, no confirmation checkpoint and no human composer delivery. Supervision must actually consume a later BLOCKED event after a RESUMED event, not stop at successful delivery of the earlier answer.

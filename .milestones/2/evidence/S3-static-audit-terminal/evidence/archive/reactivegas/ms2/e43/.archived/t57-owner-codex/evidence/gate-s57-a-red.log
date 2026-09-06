@@ -1,0 +1,3 @@
+Lean (version 4.25.0, commit v4.25.0, Release)
+gate: ok   toolchain Lean 4.25.0
+/tmp/reactivegas/ms2/e43/t57-owner-codex/gate/gate-s57-a.sh.v1: line 23: syntax error near unexpected token `newline'

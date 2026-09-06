@@ -1,0 +1,37 @@
+{
+  "at": "2026-09-06T01:22:50.909Z",
+  "candidate": "e1f34a2d652e15362ab863b3cacfd2e7b260b67b",
+  "scope": "Desk file read/hash receipt only. Logs show one semantic RED then one positive matched test; exact transient mutant provenance remains for parent binding. Not an independent re-execution or whole-candidate acceptance.",
+  "files": [
+    {
+      "path": "S1-skew.log",
+      "bytes": 2892,
+      "sha256": "296b83226e613101c1893fab282968d05e499b11ac68db0e5bb9a5400fb489ca"
+    },
+    {
+      "path": "S1-skew-retry.log",
+      "bytes": 986,
+      "sha256": "d9a9ea3a0971207360bca6ecd34075eb300083a98d1198d9b54de22a01ad74d4"
+    },
+    {
+      "path": "S1-skew-retry2.log",
+      "bytes": 1588,
+      "sha256": "c223e4431982f32caf12e9bc6d23517472905531977d7b6cfa5308acc2f2c1f4"
+    },
+    {
+      "path": "S2-fixed.log",
+      "bytes": 1302,
+      "sha256": "40236738c022c57398da9775dd7547de2785d4c09f5a8ce6b4f520971fbc40e1"
+    },
+    {
+      "path": "SUBMISSION.md",
+      "bytes": 9615,
+      "sha256": "72a45aaa69011715abdec14807cebf7a5f1afacd7fdafa1509388e5fd68c6069"
+    },
+    {
+      "path": "STATUS.md",
+      "bytes": 10508,
+      "sha256": "e674300e8cc2bf3c168b835662dd76a0bff63a1239f62b798a503bf950848bce"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "name": "cost-omission",
+    "changedFiles": [
+      "measurement-operations.json"
+    ]
+  },
+  {
+    "name": "count-drift",
+    "changedFiles": [
+      "identities.json"
+    ]
+  },
+  {
+    "name": "duplicate-multi-atom",
+    "changedFiles": [
+      "operations.json"
+    ]
+  },
+  {
+    "name": "mismatched-cost",
+    "changedFiles": [
+      "operations.json"
+    ]
+  },
+  {
+    "name": "missing-cost-kind",
+    "changedFiles": [
+      "measurement-operations.json"
+    ]
+  },
+  {
+    "name": "missing-duplicate-identity",
+    "changedFiles": [
+      "row-outcomes.json"
+    ]
+  },
+  {
+    "name": "unresolved-reference",
+    "changedFiles": [
+      "row-outcomes.json"
+    ]
+  },
+  {
+    "name": "unsupported-observed",
+    "changedFiles": [
+      "row-outcomes.json"
+    ]
+  }
+]

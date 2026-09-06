@@ -1,0 +1,27 @@
+diff --git a/lib/KelGroups/Fold.hs b/lib/KelGroups/Fold.hs
+index d76219e..009f0fb 100644
+--- a/lib/KelGroups/Fold.hs
++++ b/lib/KelGroups/Fold.hs
+@@ -325,20 +325,8 @@ commitBaseChange
+     -> GroupState s
+     -> BaseChange
+     -> Either (IntegratedError err) (IntegratedResult s)
+-commitBaseChange integration pre post change =
+-    case intBaseHook
+-        integration
+-        change
+-        (groupView pre)
+-        (groupView post)
+-        (appFold pre) of
+-        Right appState ->
+-            Right
+-                IntegratedResult
+-                    { irState = post{appFold = appState}
+-                    , irChange = Just change
+-                    }
+-        Left err -> Left (IEApp err)
++-- MUTANT-M3: hook ignored, post-base kept
++commitBaseChange _ _ post change = Right (IntegratedResult post (Just change))
+ 
+ {- | Enact a pending base mutation once its approvals reach the majority
+ of the current franchise; otherwise leave it pending and report no

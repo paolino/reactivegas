@@ -1,0 +1,515 @@
+#!/usr/bin/env bash
+set -euo pipefail
+#
+# Reconcile the Reactivegas.Event surface with the successful-step inversion
+# theorems that invert it.
+#
+# Every signal is read from the *elaborated* Lean environment or from a real
+# Lean *parse* of the sources: the Event constructors come from the inductive
+# declaration, coverage comes from active theorem declarations and their own
+# successful-`stepEvent` hypotheses, and the regression count is the set of
+# theorem commands the Lean parser finds, each required to be backed by an
+# elaborated theorem at that source position. Comments, string literals,
+# indentation, nesting and non-theorem commands are resolved by the parser and
+# the environment, never by a textual convention of this file.
+#
+# Each inversion is bound to the one constructor its own public name claims,
+# and to exactly one successful-`stepEvent` hypothesis observing it: a repeated
+# hypothesis or a name/constructor permutation is a finding. The association is
+# nominal only; guards and successors are never written here.
+#
+# Each required inversion is additionally held to its live branch: the audit
+# builds the converse of the theorem's *own* conclusion and requires it to be
+# provable. A conclusion weaker than the branch guard, or naming a successor
+# other than the branch's, makes that converse false and the audit fails. The
+# expected guard is never written down here, so this file holds no copy of the
+# transition policy.
+#
+# --negative-control withholds one constructor that really contributes coverage
+# and requires the identical comparison to reject the gap it opens.
+
+TOOL=check-reactivegas-inversion-coverage
+
+usage() {
+    printf 'usage: %s [--negative-control] [REPO_ROOT]\n' "$TOOL" >&2
+    exit 64
+}
+
+negative=0
+while [ $# -gt 0 ]; do
+    case $1 in
+        --negative-control) negative=1 ;;
+        -h|--help) usage ;;
+        --) shift; break ;;
+        -*) usage ;;
+        *) break ;;
+    esac
+    shift
+done
+[ $# -le 1 ] || usage
+
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+root=$(cd -- "${1:-$script_dir/..}" && pwd)
+lean_dir="$root/lean"
+
+[ -d "$lean_dir" ] || {
+    printf '%s: missing Lean sources: %s\n' "$TOOL" "$lean_dir" >&2
+    exit 1
+}
+
+tmp=$(mktemp -d)
+trap 'rm -rf -- "$tmp"' EXIT
+
+# S — tracked source modules: git-tracked `.lean` under `lean/` except the Lake
+# package configuration. Walked sources on disk are derived independently and
+# must agree as sets; a tracked-but-missing or untracked-but-present source is
+# a finding. Nothing about a module's *text* selects it.
+mapfile -t tracked < <(
+    git -C "$root" ls-files -- 'lean' \
+        | grep -E '\.lean$' \
+        | sort \
+        | while IFS= read -r f; do
+            rel=${f#lean/}
+            [ "$rel" = lakefile.lean ] && continue
+            printf '%s\n' "${rel%.lean}" | tr '/' '.'
+        done
+)
+mapfile -t walked < <(
+    find "$lean_dir" -name '.lake' -prune -o -name '*.lean' -type f -print \
+        | sort \
+        | while IFS= read -r file; do
+            rel=${file#"$lean_dir"/}
+            [ "$rel" = lakefile.lean ] && continue
+            printf '%s\n' "${rel%.lean}" | tr '/' '.'
+        done
+)
+if [ "${#tracked[@]}" -eq 0 ]; then
+    printf '%s: derived zero tracked source modules from %s\n' \
+        "$TOOL" "$lean_dir" >&2
+    exit 1
+fi
+if [ "${#walked[@]}" -eq 0 ]; then
+    printf '%s: derived zero walked source modules from %s\n' \
+        "$TOOL" "$lean_dir" >&2
+    exit 1
+fi
+if ! diff <(printf '%s\n' "${tracked[@]}") <(printf '%s\n' "${walked[@]}") >"$tmp/swalk.diff" 2>&1; then
+    printf '%s: tracked/walked source discovery disagrees\n' "$TOOL" >&2
+    cat "$tmp/swalk.diff" >&2
+    exit 1
+fi
+modules=("${tracked[@]}")
+printf '%s: sources tracked=%s walked=%s\n' "$TOOL" "${#tracked[@]}" "${#walked[@]}" >&2
+
+# The environment must be the current source, not whatever was compiled last.
+(cd "$lean_dir" && lake build "${modules[@]}" >"$tmp/build.log" 2>&1) || {
+    printf '%s: lake build failed\n' "$TOOL" >&2
+    cat "$tmp/build.log" >&2
+    exit 1
+}
+
+{
+    printf 'import Lean\n'
+    printf 'import %s\n' "${modules[@]}"
+    cat <<'LEANEOF'
+
+open Lean Meta Elab Term
+
+namespace InversionAudit
+
+def permittedAxioms : List Name := [`propext, `Classical.choice, `Quot.sound]
+
+/-- Ownership authority (canonicalized resolved-olean provenance). The loader's own
+search path (`searchPathRef`: `LEAN_PATH` order plus the toolchain builtin)
+resolves each environment module to the olean artifact it actually loaded
+(`findModuleWithExt`, existence-checked, first-package-root rule). Both the
+repo root and each resolved artifact are canonicalized with `IO.FS.realPath`
+(relative entries, `.`/`..`, symlinked vendor dirs) before a
+trailing-separator prefix comparison. No name list, no import closure. -/
+def canonRoot (root : String) : TermElabM (Except String String) := do
+  try
+    let p ← IO.FS.realPath root
+    let mut s := p.toString
+    if !s.endsWith "/" then s := s ++ "/"
+    return .ok s
+  catch _ => return .error s!"cannot canonicalize project root {root}"
+
+def artifactInsideRoot (rootCanon : String) (art : System.FilePath) :
+    TermElabM Bool := do
+  try
+    let r ← IO.FS.realPath art
+    return rootCanon.isPrefixOf r.toString
+  catch _ => return false
+
+def resolveProjectModules (env : Environment) (rootCanon : String) :
+    TermElabM (Except String (Array Name)) := do
+  let sp ← Lean.searchPathRef.get
+  let mut acc := #[]
+  let mut noArtifact : Array String := #[]
+  for m in env.header.moduleNames do
+    let found ← sp.findModuleWithExt "olean" m
+    match found with
+    | none => noArtifact := noArtifact.push m.toString
+    | some p =>
+      if ← artifactInsideRoot rootCanon p then acc := acc.push m
+  if !noArtifact.isEmpty then
+    return .error
+      s!"modules with no loadable olean artifact: {", ".intercalate noArtifact.toList}"
+  return .ok acc
+def requiredInversions : List Name :=
+  [`Reactivegas.step_open_inv, `Reactivegas.step_deposit_inv,
+   `Reactivegas.step_withdraw_inv, `Reactivegas.step_transferCassa_inv,
+   `Reactivegas.step_donate_inv, `Reactivegas.step_backdonate_inv]
+
+/-- The Lake package description is not a library module: nothing declared in
+it can reach the project environment, and it is elaborated by Lake, not here. -/
+def lakeConfig : String := "lakefile.lean"
+
+/-- Every constant this project itself declares, with its module. The project set
+comes from resolved-olean provenance, never from a name list or import closure. -/
+def projectConstants (env : Environment) (proj : Array Name) :
+    Array (Name × Name × ConstantInfo) := Id.run do
+  let mut acc := #[]
+  for i in [0 : env.header.moduleNames.size] do
+    let some m := env.header.moduleNames[i]? | continue
+    if !proj.contains m then continue
+    let some data := env.header.moduleData[i]? | continue
+    for n in data.constNames do
+      if n.isInternalDetail then continue
+      if let some ci := env.find? n then acc := acc.push (m, n, ci)
+  return acc
+
+/-- `lean/A/B.lean` for module `A.B`, total: non-string components yield an
+unmatchable sentinel rather than panicking. Callers compare canonical realpaths,
+so a sentinel is a finding, never a crash. -/
+def modulePath (root : String) (m : Name) : String :=
+  let parts := m.components.filterMap (fun c => match c with | .str _ s => some s | _ => none)
+  if parts.length != m.components.length then root ++ "/lean/__nonstring__.lean"
+  else root ++ "/lean/" ++ "/".intercalate parts ++ ".lean"
+
+partial def leanSources (dir : System.FilePath) : IO (Array System.FilePath) := do
+  let mut acc := #[]
+  for e in (← dir.readDir) do
+    if e.fileName == ".lake" then continue
+    if e.fileName == lakeConfig then continue
+    if (← e.path.isDir) then acc := acc ++ (← leanSources e.path)
+    else if e.fileName.endsWith ".lean" then acc := acc.push e.path
+  return acc
+
+/-- Does this declaration carry the `private` visibility modifier? A private
+theorem is not part of the project's theorem surface: it is elaborated under an
+internal name and never enters the constant sweep, so it must not enter the
+declaration count either. -/
+partial def isPrivateDecl (stx : Syntax) : Bool :=
+  match stx with
+  | .node _ k args => k == ``Lean.Parser.Command.«private» || args.any isPrivateDecl
+  | _ => false
+
+/-- Every active `theorem` command inside one parsed command, wherever it sits
+in the syntax tree, as `(line, identifier)`. The parser decides what is a
+declaration: text in a comment or a string literal never produces one, leading
+whitespace is irrelevant, and `def`/`example`/`axiom`/`abbrev` carry other
+kinds. -/
+partial def theoremDeclsOf (fm : FileMap) (stx : Syntax) : Array (Nat × String) :=
+  let here : Array (Nat × String) :=
+    if stx.isOfKind ``Lean.Parser.Command.declaration then
+      let body := stx[1]
+      if body.isOfKind ``Lean.Parser.Command.«theorem» && !isPrivateDecl stx[0] then
+        let ident := body[1][0]
+        match ident.getPos? with
+        | some pos => #[((fm.toPosition pos).line, ident.getId.toString)]
+        | none => #[]
+      else #[]
+    else #[]
+  match stx with
+  | .node _ _ args => args.foldl (fun acc s => acc ++ theoremDeclsOf fm s) here
+  | _ => here
+
+/-- Parse one source file with the real Lean parser, in this audit's own
+environment, and return every theorem command it contains. A file the parser
+cannot read is a finding, not an empty file: unparsed text could hide a
+declaration. -/
+def parsedTheoremDecls (env : Environment) (path : System.FilePath) :
+    IO (Except String (Array (Nat × String))) := do
+  let txt ← IO.FS.readFile path
+  let inputCtx := Parser.mkInputContext txt path.toString
+  let (_, headerState, headerMsgs) ← Parser.parseHeader inputCtx
+  let pmctx : Parser.ParserModuleContext := { env := env, options := {} }
+  let mut state := headerState
+  let mut msgs := headerMsgs
+  let mut acc : Array (Nat × String) := #[]
+  repeat
+    let (stx, state', msgs') := Parser.parseCommand inputCtx pmctx state msgs
+    state := state'
+    msgs := msgs'
+    acc := acc ++ theoremDeclsOf inputCtx.fileMap stx
+    if Parser.isTerminalCommand stx then break
+  if msgs.hasErrors then
+    return .error s!"{path}: Lean could not parse this file; a declaration could be hidden"
+  return .ok acc
+
+/-- Elaborated theorems of this project, at the source position they occupy. -/
+def elaboratedTheorems (env : Environment) (proj : Array Name) :
+    CoreM (Array (Name × Nat × Name)) := do
+  let mut acc := #[]
+  for (m, n, ci) in projectConstants env proj do
+    if let .thmInfo _ := ci then
+      if let some r ← findDeclarationRanges? n then
+        acc := acc.push (m, r.selectionRange.pos.line, n)
+  return acc
+
+def eventCtors (env : Environment) : Except String (List Name) :=
+  match env.find? `Event with
+  | some (.inductInfo i) => .ok i.ctors
+  | some _ => .error "`Event` is not an inductive type"
+  | none => .error "`Event` is absent from the elaborated environment"
+
+def isInversionName (n : Name) : Bool :=
+  let s := n.getString!
+  "step_".isPrefixOf s && s.endsWith "_inv"
+
+/-- The `Event` constructor an inversion theorem claims by its own public name:
+`step_<stem>_inv` claims the constructor the stem names, and the audit refuses
+an ambiguous or absent claim. This associates *identifiers* only — the elaborated
+constructor list is the authority on which constructors exist, and no guard or
+successor is restated here. -/
+def claimedCtor (ctors : List Name) (n : Name) : Except String Name :=
+  let stem := ((n.getString!).drop "step_".length).dropRight "_inv".length
+  if stem.isEmpty then
+    .error s!"{n}: names no `Event` constructor stem"
+  else
+    match ctors.filter (fun c => c.getString! == stem) with
+    | [c] => .ok c
+    | _ =>
+      match ctors.filter (fun c => stem.isPrefixOf c.getString!) with
+      | [c] => .ok c
+      | [] => .error s!"{n}: no `Event` constructor is named by the stem `{stem}`"
+      | cs =>
+        .error s!"{n}: the stem `{stem}` names {cs.length} `Event` constructors: {" ".intercalate (cs.map (·.getString!))}"
+
+/-- The event constructor of a successful-`stepEvent` proposition, if this is
+one. -/
+def successOf (t : Expr) : MetaM (Option Name) := do
+  let some (_, lhs, rhs) := t.eq? | return none
+  unless lhs.isAppOf ``stepEvent && rhs.isAppOf ``Option.some do return none
+  let args := lhs.getAppArgs
+  if args.size < 3 then return none
+  let .const c _ := args[2]!.getAppFn | return none
+  return some c
+
+/-- Every successful-`stepEvent` hypothesis of this theorem, in order and
+without collapsing repeats: two hypotheses observing the same step are two
+observations, and an inversion that carries a spare one is not the theorem the
+audit requires. -/
+def coveredBy (ti : TheoremVal) : MetaM (Array Name) :=
+  forallTelescope ti.type fun xs _ => do
+    let mut acc : Array Name := #[]
+    for x in xs do
+      if let some c ← successOf (← inferType x) then
+        acc := acc.push c
+    return acc
+
+/-- Build the converse of an inversion theorem from the theorem itself and
+require it to hold: its own conclusion must be sufficient for the successful
+step it inverts. The hypothesis direction already makes the conclusion
+necessary, so together they pin the branch's complete guard and exact
+successor. Nothing here restates either. -/
+def tightnessProved (n : Name) (ti : TheoremVal) : TermElabM (Except String Unit) := do
+  let stx ← `(term| by
+    intros
+    rename_i hconclusion
+    have hguard := hconclusion.1
+    have hstate := hconclusion.2
+    subst hstate
+    simp only [stepEvent, step]
+    split
+    · rfl
+    · next hrefuted => exact absurd hguard hrefuted)
+  forallTelescope ti.type fun xs body => do
+    if xs.isEmpty then return .error s!"{n}: has no binders"
+    let hty ← inferType xs.back!
+    if (← successOf hty).isNone then
+      return .error s!"{n}: its last hypothesis is not a successful `stepEvent`"
+    try
+      let goal ← mkForallFVars xs.pop (← mkArrow body hty)
+      let pf ← withoutErrToSorry (elabTermEnsuringType stx goal)
+      synthesizeSyntheticMVarsNoPostponing
+      let pf ← instantiateMVars pf
+      if pf.hasSorry then return .error s!"{n}: converse proof used sorry"
+      if pf.hasExprMVar then return .error s!"{n}: converse proof left metavariables"
+      check pf
+      return .ok ()
+    catch e =>
+      let msg := (← e.toMessageData.toString).replace "\n" " "
+      return .error
+        s!"{n}: its conclusion does not entail the live branch: {msg.take 220}"
+
+/-- The one comparison. The negative control runs it against a deliberately
+withheld coverage set, so the passing and failing paths are the same code. -/
+def compareCoverage (ctors : List Name) (covered : List (Name × Name)) :
+    Except String String := do
+  let coveredCtors := covered.map (·.2)
+  let missing := ctors.filter (fun c => !coveredCtors.contains c)
+  let phantom := coveredCtors.filter (fun c => !ctors.contains c)
+  let dups := coveredCtors.filter (fun c => (coveredCtors.filter (· == c)).length > 1)
+  let line := s!"inversion-coverage constructors={ctors.length} covered={coveredCtors.eraseDups.length} missing={missing.length} phantom={phantom.length}"
+  unless missing.isEmpty do
+    throw s!"{line}\nmissing: {" ".intercalate (missing.map (·.getString!))}"
+  unless phantom.isEmpty do
+    throw s!"{line}\nphantom: {" ".intercalate (phantom.map (·.getString!))}"
+  unless dups.isEmpty do
+    throw s!"{line}\nduplicate: {" ".intercalate (dups.eraseDups.map (·.getString!))}"
+  return line
+
+abbrev Report := StateT (Array String) TermElabM
+
+def fail (m : String) : Report Unit := modify (·.push m)
+
+def audit (root : String) (negative : Bool) : Report Unit := do
+  let env ← getEnv
+  let rootCanon ← match ← canonRoot root with
+    | .ok r => pure r
+    | .error e => fail e; pure (root ++ "/")
+  let proj ← match ← resolveProjectModules env rootCanon with
+    | .ok p => pure p
+    | .error e => fail e; pure #[]
+  let constants := projectConstants env proj
+  IO.println s!"inversion-sources root={rootCanon} modules={proj.size}"
+  if proj.isEmpty then fail "derived zero built project modules"
+
+  let ctors ←
+    match eventCtors env with
+    | .error e => fail e; pure []
+    | .ok cs => pure cs
+
+  let mut covered : Array (Name × Name) := #[]
+  for (_, n, ci) in constants do
+    if let .thmInfo ti := ci then
+      if isInversionName n then
+        let observed ← coveredBy ti
+        match claimedCtor ctors n with
+        | .error e => fail e
+        | .ok claimed =>
+          if observed.size != 1 then
+            fail s!"{n}: observes {observed.size} successful `stepEvent` hypotheses; expected exactly one"
+          else if observed[0]! != claimed then
+            fail s!"{n}: its name claims `{claimed}` but its hypothesis observes `{observed[0]!}`"
+          else
+            covered := covered.push (n, claimed)
+  let coveredList := covered.toList.mergeSort (fun a b => a.1.toString ≤ b.1.toString)
+
+  if negative then
+    match coveredList.find? (fun p => ctors.contains p.2) with
+    | none => fail "negative control inconclusive: no derived coverage to withhold"
+    | some withheld =>
+      let kept := coveredList.filter (fun p => p != withheld)
+      match compareCoverage ctors kept with
+      | .ok line =>
+        IO.println line
+        fail s!"negative control failed to fail: withheld {withheld.2} still covered"
+      | .error e =>
+        IO.println e
+        unless (e.splitOn withheld.2.getString!).length > 1 do
+          fail s!"negative control missed the withheld constructor {withheld.2}"
+        IO.println s!"negative-control: withheld={withheld.2.getString!} source={withheld.1} detected=yes"
+    return ()
+
+  match compareCoverage ctors coveredList with
+  | .ok line => IO.println line
+  | .error e => IO.println e; fail "derived inversion coverage is not exact"
+
+  for n in requiredInversions do
+    match env.find? n with
+    | none => fail s!"{n}: absent from the elaborated environment"
+    | some (.thmInfo ti) =>
+      let axs ← collectAxioms n
+      IO.println s!"axioms {n} = [{", ".intercalate (axs.toList.map (·.toString))}]"
+      let extra := axs.toList.filter (fun a => !permittedAxioms.contains a)
+      unless extra.isEmpty do
+        fail s!"{n}: depends on axioms outside the permitted standard set: {" ".intercalate (extra.map (·.toString))}"
+      match claimedCtor ctors n with
+      | .error e => fail e
+      | .ok claimed =>
+        match coveredList.find? (fun p => p.1 == n) with
+        | none =>
+          fail s!"{n}: is not bound to a single successful `stepEvent` hypothesis for `{claimed}`"
+        | some (_, bound) =>
+          if bound != claimed then
+            fail s!"{n}: is bound to `{bound}` but its name claims `{claimed}`"
+          else
+            IO.println s!"bound {n} = {claimed}"
+      match ← tightnessProved n ti with
+      | .ok _ => IO.println s!"tight {n} = ok"
+      | .error e => fail e
+    | some _ =>
+      fail s!"{n}: exists but is not a theorem declaration"
+
+  let elaborated ← elaboratedTheorems env proj
+  let rootNoSlash := rootCanon.dropRight 1
+  let files ← leanSources (rootNoSlash ++ "/lean")
+  let mut declaredTotal := 0
+  let mut backedTotal := 0
+  for f in files do
+    match ← parsedTheoremDecls env f with
+    | .error e => fail e
+    | .ok declared =>
+      if declared.isEmpty then continue
+      declaredTotal := declaredTotal + declared.size
+      let fCanonOpt ← try pure (some (← IO.FS.realPath f).toString) catch _ => pure none
+      match fCanonOpt with
+      | none => fail s!"{f}: cannot canonicalize source path"
+      | some fCanon =>
+        match proj.find? (fun m => modulePath rootNoSlash m == fCanon) with
+        | none =>
+          fail s!"{f} declares theorems but is not in the audited environment"
+        | some m =>
+          for (line, name) in declared do
+            match elaborated.find? (fun p => p.1 == m && p.2.1 == line) with
+            | none =>
+              fail s!"{f}:{line}: `{name}` is declared in source but no theorem elaborated there"
+            | some (_, _, actual) =>
+              if actual.toString.endsWith name then backedTotal := backedTotal + 1
+              else fail s!"{f}:{line}: source declares `{name}` but `{actual}` elaborated"
+  IO.println s!"lean-theorems declared={declaredTotal} elaborated-backed={backedTotal}"
+  if declaredTotal == 0 then fail "census found zero source-declared theorems"
+  if backedTotal == 0 then fail "census found zero elaborated-backed theorems"
+  unless declaredTotal == backedTotal do
+    fail s!"source/elaborated census disagrees: declared={declaredTotal} backed={backedTotal}"
+
+def main : TermElabM Unit := do
+  let root := (← IO.getEnv "REACTIVEGAS_ROOT").getD "."
+  let negative := (← IO.getEnv "REACTIVEGAS_INVERSION_NEGATIVE_CONTROL").isSome
+  let (_, failures) ← (audit root negative).run #[]
+  if failures.isEmpty then
+    IO.println "inversion-audit: ok"
+  else
+    for f in failures do IO.eprintln s!"inversion-audit: {f}"
+    throwError s!"inversion-audit failed with {failures.size} finding(s)"
+
+end InversionAudit
+
+#eval InversionAudit.main
+LEANEOF
+} >"$tmp/InversionAudit.lean"
+
+if [ "$negative" -eq 1 ]; then
+    export REACTIVEGAS_INVERSION_NEGATIVE_CONTROL=1
+else
+    unset REACTIVEGAS_INVERSION_NEGATIVE_CONTROL
+fi
+export REACTIVEGAS_ROOT="$root"
+set +e
+(cd "$lean_dir" && lake env lean "$tmp/InversionAudit.lean" >"$tmp/audit.out" 2>"$tmp/audit.err")
+code=$?
+set -e
+cat "$tmp/audit.out" 2>/dev/null || true
+cat "$tmp/audit.err" >&2 2>/dev/null || true
+if grep -q 'PANIC at' "$tmp/audit.out" "$tmp/audit.err" 2>/dev/null; then
+    printf '%s: gate output contains a panic string\n' "$TOOL" >&2
+    exit 1
+fi
+if [ $code -ne 0 ]; then exit $code; fi
+if ! grep -q '^inversion-audit: ok' "$tmp/audit.out" 2>/dev/null; then
+    printf '%s: missing inversion-audit: ok marker\n' "$TOOL" >&2
+    exit 1
+fi

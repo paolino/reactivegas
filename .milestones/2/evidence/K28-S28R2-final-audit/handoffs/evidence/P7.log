@@ -1,0 +1,32 @@
+
+S28-1 direct-only admission
+  direct admit by admin inserts the member [✔]
+  reserved key refused apart from members [✔]
+  voted mutations never insert members [✘]
+  voted change-roles never inserts absent members [✘]
+  voted change-roles keeps present member keys [✔]
+  voted remove never inserts absent members [✔]
+  nonempty pendingBase roundtrips through JSON [✔]
+  old rows decode with empty pendingBase [✔]
+  malformed pendingBase fails decode [✔]
+
+Failures:
+
+  test/S28AppApiSpec.hs:645:9: 
+  1) S28-1 direct-only admission voted mutations never insert members
+       Falsified (after 3 tests):
+         DemoChangeRoles "member-key-2" (fromList [])
+
+  To rerun use: --match "/S28-1 direct-only admission/voted mutations never insert members/" --seed 404252084
+
+  test/S28AppApiSpec.hs:660:17: 
+  2) S28-1 direct-only admission voted change-roles never inserts absent members
+       expected: fromList ["admin-key-1"]
+        but got: fromList ["absent-witness-9","admin-key-1"]
+
+  To rerun use: --match "/S28-1 direct-only admission/voted change-roles never inserts absent members/" --seed 404252084
+
+Randomized with seed 404252084
+
+Finished in 0.0021 seconds
+9 examples, 2 failures

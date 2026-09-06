@@ -1,0 +1,16 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A42.lean:189:21: warning: unused variable `c`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+KelGroups.Vote.sweepReadyB (_view : GroupView) (gs : VoteState) : Bool
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A42.lean:205:6: error: Type mismatch
+  cO c hc
+has type
+  c.verdict ≠ Verdict.open
+but is expected to have type
+  True
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A42.lean:212:6: error: Type mismatch
+  cO c hc
+has type
+  True
+but is expected to have type
+  c.verdict ≠ Verdict.open

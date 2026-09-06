@@ -1,0 +1,12 @@
+diff --git a/lean/KelGroups/Validate.lean b/lean/KelGroups/Validate.lean
+index 0000000..4444444 100644
+--- a/lean/KelGroups/Validate.lean
++++ b/lean/KelGroups/Validate.lean
+@@ -143,7 +143,7 @@ def validateDirectAdmission (reserved : Key) (gs : GroupState α)
+     (signer target : Key) (_email : Email) (_roles : List Role) :
+     Except ValidationError Unit :=
+-  if isAdmin signer gs then
++  if True then
+     if target = reserved then .error (.reservedKey target)
+     else if isMember target gs then .error (.memberAlreadyExists target)
+     else .ok ()

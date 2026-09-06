@@ -1,0 +1,7 @@
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+Reactivegas/Mirrors.lean:229:63: error: unsolved goals
+s s' : State
+a u : KelGroups.Key
+v : Int
+⊢ bal s'.conti u = bal s.conti u + v ∧ bal s'.casse a = bal s.casse a + v ↔
+    bal s'.conti u = bal s.conti u + v ∧ bal s'.casse a = bal s.casse a + (v + 1)

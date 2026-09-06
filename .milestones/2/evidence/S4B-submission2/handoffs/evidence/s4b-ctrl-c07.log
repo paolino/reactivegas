@@ -1,0 +1,8 @@
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+Reactivegas/Mirrors.lean:145:47: error: unsolved goals
+view : KelGroups.GroupView
+s : State
+⊢ ((∀ (u : KelGroups.Key), KelGroups.GroupView.isMember u view = true → bal s.conti u ≥ 0) ∧
+      ∀ (col : Collection), col ∈ s.collections → ∀ (p : Pledge), p ∈ col.accepted ++ col.pending → 0 ≤ p.amount) ↔
+    (∀ (u : KelGroups.Key), KelGroups.GroupView.isMember u view = true → bal s.conti u ≥ 0) ∧
+      (s.collections.any fun col => (col.accepted ++ col.pending).all fun p => decide (0 ≤ p.amount)) = true

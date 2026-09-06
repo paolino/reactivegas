@@ -1,0 +1,6 @@
+direct admit by admin inserts the member
+reserved key refused apart from members
+voted mutations never insert members
+nonempty pendingBase roundtrips through JSON
+old rows decode with empty pendingBase
+malformed pendingBase fails decode

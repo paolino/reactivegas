@@ -1,0 +1,211 @@
+diff --git a/lean/KelGroups/Vote/Fold.lean b/lean/KelGroups/Vote/Fold.lean
+index c1c6603..0022d99 100644
+--- a/lean/KelGroups/Vote/Fold.lean
++++ b/lean/KelGroups/Vote/Fold.lean
+@@ -18,10 +18,10 @@ Three load-bearing shapes:
+   escape; this placement cannot.
+ * `sweepClosures` re-evaluates every open question against the current
+   franchise and threshold and closes, in the same step, every question that
+-  has reached a verdict. `applyVoteEvent` calls it unconditionally on every
+-  branch (R-51): after a ballot, after a member event, after an opening —
+-  because the verdict depends on the *current* franchise, not only on
+-  ballots.
++  has reached a verdict. `applyVoteEvent` sweeps after every *admitted*
++  event's effect (R-51): after a ballot, after a member event, after an
++  opening — because the verdict depends on the *current* franchise, not only
++  on ballots. A rejected event reaches neither its effect nor the sweep.
+ * Closure is removal from the open set *plus* an appended closure record, as
+   one operation. No branch ever erases a question without writing its record
+   (R-61): a purchase-approval question holds members' money in escrow, and a
+@@ -101,22 +101,18 @@ def effectedState (gs : VoteState) (signer : Key) (event : VoteEvent) : VoteStat
+   | .setRoles key roles =>
+       { gs with members := assocAdjust key (fun member => { member with roles }) gs.members }
+ 
+-/-- One fold step: the event's own effect, then the unconditional
+-recompute-and-close sweep. The sweep call is outside the match, so every
+-branch recomputes (R-51); a branch that skips it is exactly the mutation the
+-R-70 controls must redden.
+-
+-An inadmissible signer/event pair (R-44, R-45) is a no-op of the effect:
+-`validateVoteEvent` gates `effectedState`, and the sweep still runs on the
+-unchanged state. On a well-formed state the sweep is the identity, so the
+-whole step is a complete no-op — including a non-responsabile `openQuestion`.
+--/
++/-- One fold step. The validation result is the sole production boundary
++(R57-01): it dominates both the event effect and the recompute-and-close
++sweep. On `.ok`, the effect runs and the sweep recomputes on the effected
++state; on any error the input state is returned exactly — no membership,
++franchise, question, tally, closure, or verdict computation is reached
++(R57-03). A branch that reaches an effect or the sweep without this decision
++is exactly the mutation the R-70/BYPASS controls redden. -/
+ def applyVoteEvent (threshold : Threshold) (gs : VoteState) (signer : Key)
+     (event : VoteEvent) : VoteState :=
+-  sweepClosures threshold
+-    (match validateVoteEvent threshold gs signer event with
+-      | .ok () => effectedState gs signer event
+-      | .error _ => gs)
++  match validateVoteEvent threshold gs signer event with
++  | .ok () => sweepClosures threshold (effectedState gs signer event)
++  | .error _ => gs
+ 
+ /-- The production fold: every signed event, in order, from the empty state.
+ This is the fold every theorem and witness of the run is stated over. -/
+diff --git a/lean/KelGroups/Vote/Invariants.lean b/lean/KelGroups/Vote/Invariants.lean
+index 87743d1..7afaf09 100644
+--- a/lean/KelGroups/Vote/Invariants.lean
++++ b/lean/KelGroups/Vote/Invariants.lean
+@@ -695,24 +695,16 @@ private theorem effectedState_sweepReady (gs : VoteState) (signer : Key) (event
+         gs.members h.membersNodup, h.openNodup, h.closedNodup, h.openClosedDisjoint,
+         h.openClean, h.closedClean, h.closedNotOpen⟩
+ 
+-private theorem gatedEffect_sweepReady (θ : Threshold) (gs : VoteState)
+-    (signer : Key) (event : VoteEvent) (h : SweepReady gs) :
+-    SweepReady
+-      (match validateVoteEvent θ gs signer event with
+-        | .ok () => effectedState gs signer event
+-        | .error _ => gs) := by
+-  cases validateVoteEvent θ gs signer event with
+-  | error _ => exact h
+-  | ok u =>
+-      cases u
+-      exact effectedState_sweepReady gs signer event h
+-
+ theorem applyVoteEvent_preserves_wellFormed (θ : Threshold) (gs : VoteState)
+     (signer : Key) (event : VoteEvent) (h : VoteWellFormed θ gs) :
+     VoteWellFormed θ (applyVoteEvent θ gs signer event) := by
+   simp only [applyVoteEvent]
+-  exact sweepClosures_wellFormed θ _
+-    (gatedEffect_sweepReady θ gs signer event h.toSweepReady)
++  cases hval : validateVoteEvent θ gs signer event with
++  | error _ => exact h
++  | ok u =>
++      cases u
++      exact sweepClosures_wellFormed θ (effectedState gs signer event)
++        (effectedState_sweepReady gs signer event h.toSweepReady)
+ 
+ private theorem foldFrom_preserves_wellFormed (θ : Threshold) :
+     ∀ (events : List (Key × VoteEvent)) (initial : VoteState),
+@@ -838,7 +830,7 @@ private theorem applyVoteEvent_preserves_qid (θ : Threshold) (gs : VoteState)
+       qid ∈ (applyVoteEvent θ gs signer event).closed.map (·.questionId) := by
+   simp only [applyVoteEvent]
+   cases validateVoteEvent θ gs signer event with
+-  | error _ => exact sweepClosures_preserves_qid θ gs qid h
++  | error _ => exact h
+   | ok u =>
+       cases u
+       exact sweepClosures_preserves_qid θ (effectedState gs signer event) qid
+@@ -1147,17 +1139,10 @@ private theorem tally_keys_franchised_from (θ : Threshold) :
+       rw [hmid] at hk
+       rcases ih (applyVoteEvent θ initial signed.1 signed.2) k hk with
+         hmem | ⟨pre, qid, ballot, suffix, hev, hfr⟩
+-      · have hmid' : applyVoteEvent θ initial signed.1 signed.2 =
+-            sweepClosures θ
+-              (match validateVoteEvent θ initial signed.1 signed.2 with
+-                | .ok () => effectedState initial signed.1 signed.2
+-                | .error _ => initial) := rfl
+-        have hgate : k ∈ tallyKeysOfState
++      · have hgate : k ∈ tallyKeysOfState
+             (match validateVoteEvent θ initial signed.1 signed.2 with
+-              | .ok () => effectedState initial signed.1 signed.2
+-              | .error _ => initial) := by
+-          rw [hmid'] at hmem
+-          exact (sweepClosures_tallyKeys θ _ k).mp hmem
++              | .ok () => sweepClosures θ (effectedState initial signed.1 signed.2)
++              | .error _ => initial) := hmem
+         cases hval : validateVoteEvent θ initial signed.1 signed.2 with
+         | error _ =>
+             simp [hval] at hgate
+@@ -1165,7 +1150,8 @@ private theorem tally_keys_franchised_from (θ : Threshold) :
+         | ok u =>
+             cases u
+             simp [hval] at hgate
+-            rcases effectedState_tally_growth initial signed.1 signed.2 k hgate with
++            rcases effectedState_tally_growth initial signed.1 signed.2 k
++              ((sweepClosures_tallyKeys θ _ k).mp hgate) with
+               hold | ⟨hsk, qid, ballot, hevc, hfr2⟩
+             · exact Or.inl hold
+             · have hsigned : signed = (k, VoteEvent.cast qid ballot) :=
+diff --git a/lean/KelGroups/Vote/Tests.lean b/lean/KelGroups/Vote/Tests.lean
+index e013354..3122121 100644
+--- a/lean/KelGroups/Vote/Tests.lean
++++ b/lean/KelGroups/Vote/Tests.lean
+@@ -1,5 +1,6 @@
+ import KelGroups.Vote.Fold
+ import KelGroups.Vote.Validate
++import KelGroups.Vote.Invariants
+ 
+ /-!
+ # Required vote machine — executed witnesses
+@@ -337,7 +338,7 @@ example : PreservesQuestionSemantics legacyThreshold r45Before "a"
+     nonAdminAdmission "q" := by decide
+ 
+ -- The premise discriminates: a franchise-changing admission, a
+-target-ballot cast, and a standing-changing role change do not satisfy it.
++-- target-ballot cast, and a standing-changing role change do not satisfy it.
+ example : ¬ PreservesQuestionSemantics legacyThreshold r45Before "a"
+     (.admitMember "x" "x@vote.test" [.adminRole .publicAdmin]) "q" := by decide
+ 
+diff --git a/lean/KelGroups/Vote/Validate.lean b/lean/KelGroups/Vote/Validate.lean
+index 35a4b35..9477691 100644
+--- a/lean/KelGroups/Vote/Validate.lean
++++ b/lean/KelGroups/Vote/Validate.lean
+@@ -4,10 +4,19 @@ import KelGroups.Vote.Event
+ /-!
+ # Required vote machine — admissibility
+ 
+-Distinct admissibility errors and the one validation entry point. Slice A
+-enforces the franchise rules (R-44, R-45): a cast — or a question opening —
+-by anyone who is not a current responsabile is rejected with a distinct
+-error, and the fold makes such casts no-ops besides.
++Distinct admissibility errors and the one validation entry point. The
++authorization decision is total and explicit over the complete `VoteEvent`
++surface (R57-02): every constructor is enumerated, there is no wildcard
++fallback, and no constructor list or boolean side registry exists, so a newly
++added constructor cannot acquire an authorization default — the match stops
++compiling (R57-02, INV-57-EXHAUSTIVE).
++
++The universal signer rule (R57-04, R-45): once a franchise exists, every
++signed event — including `admitMember`, `removeMember`, and `setRoles` —
++requires the signer to be a current responsabile. Before a franchise exists,
++only the `admitMember` bootstrap capability is retained: it is what lets a
++production trace from `emptyVoteState` seed the first responsabile. This
++adds no Slice-B R-66/R-67 admission-shape semantics.
+ 
+ `notDesignee` and `notProposer` are declared here from Slice A so Slice B
+ (designee-only casting on permission questions, proposer-only renunciation)
+@@ -33,7 +42,10 @@ instance : BEq (Except VoteError Unit) where
+     | .error left, .error right => left == right
+     | _, _ => false
+ 
+-/-- Validate one signed event against the current state. -/
++/-- Validate one signed event against the current state. The authorization
++boundary is exhaustive: success on a nonempty franchise implies
++`isResponsabile signer gs = true` for every constructor; the empty-franchise
++`admitMember` branch is the retained bootstrap capability only. -/
+ def validateVoteEvent (threshold : Threshold) (gs : VoteState) (signer : Key)
+     (event : VoteEvent) : Except VoteError Unit :=
+   match event with
+@@ -46,11 +58,17 @@ def validateVoteEvent (threshold : Threshold) (gs : VoteState) (signer : Key)
+         | some _ => .ok ()
+         | none => .error VoteError.questionNotFound
+   | .renounce questionId =>
+-      match lookupQuestion questionId gs with
+-      | some _ => .ok ()
+-      | none => .error VoteError.questionNotFound
+-  | .admitMember _ _ _ => .ok ()
+-  | .removeMember _ => .ok ()
+-  | .setRoles _ _ => .ok ()
++      if !(isResponsabile signer gs) then .error VoteError.notResponsabile
++      else
++        match lookupQuestion questionId gs with
++        | some _ => .ok ()
++        | none => .error VoteError.questionNotFound
++  | .admitMember _ _ _ =>
++      if isResponsabile signer gs || franchiseSize gs == 0 then .ok ()
++      else .error VoteError.notResponsabile
++  | .removeMember _ =>
++      if isResponsabile signer gs then .ok () else .error VoteError.notResponsabile
++  | .setRoles _ _ =>
++      if isResponsabile signer gs then .ok () else .error VoteError.notResponsabile
+ 
+ end KelGroups.Vote

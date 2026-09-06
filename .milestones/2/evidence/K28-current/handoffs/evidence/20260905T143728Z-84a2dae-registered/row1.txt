@@ -1,0 +1,3 @@
+member add authorizes through the sole view
+nonmember app refused before any fold
+nonadmin reset never advances the counter

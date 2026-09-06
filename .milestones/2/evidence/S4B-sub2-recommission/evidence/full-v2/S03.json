@@ -1,0 +1,29 @@
+{
+  "id": "S03",
+  "argv": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=30s",
+    "1800s",
+    "nix",
+    "develop",
+    "--quiet",
+    "-c",
+    "just",
+    "lean"
+  ],
+  "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S03",
+  "charge": "substantive",
+  "launched": true,
+  "start": "2026-09-06T05:11:23.969Z",
+  "spend": {
+    "substantive": 4,
+    "targeted": 5
+  },
+  "obligation": "C3 introduced owned predicate with counterpart present and theorem absent",
+  "finish": "2026-09-06T05:13:02.159Z",
+  "exit": 1,
+  "signal": null,
+  "stdoutSha256": "3478634af44eb63bf8bcb029ba0fbda38122576852519587ffb7a6a3bbf63c8e",
+  "stderrSha256": "9e67581d885673bd5fc95eb9e455661fc12b18e514ffdb49a4a4c16e020496d3"
+}

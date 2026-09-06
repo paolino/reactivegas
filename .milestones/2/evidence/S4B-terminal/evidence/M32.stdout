@@ -1,0 +1,4 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M32.lean:148:49: error: unsolved goals
+q : Question
+⊢ (q.assents.Nodup ∧ q.dissents.Nodup ∧ ∀ (k : Key), k ∈ q.assents → k ∈ q.dissents → False) ↔
+    (!decide q.assents.Nodup) = true ∧ q.dissents.Nodup ∧ ∀ (x : Key), x ∈ q.assents → ¬x ∈ q.dissents

@@ -1,0 +1,4 @@
+diff -r /tmp/reactivegas/ms2/e-kelgroups-substrate-opus-20260906/t30-contract-opus-20260906/scratch/pf8r2/cases/A22/ovl-hs-base/lib/KelGroups/Vote/Types.hs /tmp/reactivegas/ms2/e-kelgroups-substrate-opus-20260906/t30-contract-opus-20260906/scratch/pf8r2/cases/A22/ovl-hs/lib/KelGroups/Vote/Types.hs
+5a6,7
+> helperNew :: Int
+> helperNew = 2

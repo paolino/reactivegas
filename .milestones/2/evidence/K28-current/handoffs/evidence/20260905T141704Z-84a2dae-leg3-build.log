@@ -1,0 +1,9 @@
+cabal build all -O0
+Build profile: -w ghc-9.8.4 -O0
+In order, the following will be built (use -v for more details):
+ - kelgroups-0.1.0.0 (exe:kelgroups-server) (configuration changed)
+Configuring executable 'kelgroups-server' for kelgroups-0.1.0.0...
+Preprocessing executable 'kelgroups-server' for kelgroups-0.1.0.0...
+Building executable 'kelgroups-server' for kelgroups-0.1.0.0...
+[1 of 1] Compiling Main             ( app/Main.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/x/kelgroups-server/noopt/build/kelgroups-server/kelgroups-server-tmp/Main.o ) [KelGroups.Server changed]
+[2 of 2] Linking dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/x/kelgroups-server/noopt/build/kelgroups-server/kelgroups-server [Objects changed]

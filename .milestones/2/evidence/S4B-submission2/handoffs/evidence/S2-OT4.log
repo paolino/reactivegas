@@ -1,0 +1,1 @@
+/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/instruments/S2-census.lean:30:4: error: `failed` cannot be mutated, only variables declared using `let mut` can be mutated. If you did not intend to mutate but define `failed`, consider using `let failed` instead

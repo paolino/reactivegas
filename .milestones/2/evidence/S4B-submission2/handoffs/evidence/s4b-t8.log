@@ -1,0 +1,2 @@
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+/tmp/s4b-driver-dev.lean:6:0: error: object file '/tmp/s4b-stage/KelGroups.olean' of module KelGroups does not exist

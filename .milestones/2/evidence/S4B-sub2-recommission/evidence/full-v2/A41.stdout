@@ -1,0 +1,20 @@
+KelGroups.Vote.sweepReadyB (_view : GroupView) (gs : VoteState) : Bool
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A41.lean:202:12: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case mp.refine_1
+view : GroupView
+gs : VoteState
+oN : (List.map Prod.fst gs.openQuestions).Nodup
+cN : (List.map (fun x => x.questionId) gs.closed).Nodup
+dj : ∀ (qid : QuestionId), qid ∈ List.map Prod.fst gs.openQuestions → ¬qid ∈ List.map (fun x => x.questionId) gs.closed
+oC : ∀ (qid : QuestionId) (q : Question), assocLookup qid gs.openQuestions = some q → QuestionClean q
+cC : ∀ (c : ClosureRecord), c ∈ gs.closed → QuestionClean c.question
+cO : ∀ (c : ClosureRecord), c ∈ gs.closed → c.verdict ≠ Verdict.open
+⊢ True
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A41.lean:210:49: error: Function expected at
+  cC
+but this term has type
+  True
+
+Note: Expected a function because this term is being applied to the argument
+  c

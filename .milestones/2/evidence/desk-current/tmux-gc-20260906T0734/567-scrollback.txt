@@ -1,0 +1,512 @@
+  └ {"id":"P3","class":"targeted","argv":
+    ["nix","develop",".#ci","--quiet","-c","cabal","exec","-O0","--","ghc","--make","-O0","-threaded","-XGHC2021","-XOverloadedStrings","-XDerivingStrategies","-XLambdaCase","-XStrictData","-p
+    … +4 lines (ctrl + t to view transcript)
+    e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/P3.log","bytes":847,"free_before":216718630912,"free_after":216718630912,"cache":"warm","charge":
+    {"builds":0,"targeted":1}}
+
+• Ran /code/llm-settings/shared/skills/worker-protocol/scripts/status-event /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/STATUS.md NOTE 'P2 RESULTS: all 8
+  │ controlled concurrent pairs conserve both returned successes, exact ordered decoded events, seq_no1/2, live/replay full state and event count; SQL-error/refusal controls pass and next
+  │ successful append proves lock release. New failure-mode witness F3: pure integrated boundary returns NotAMember, but appendIntegratedEvent evaluates deliberately faulting ToJSON first
+  │ … +2 lines
+  └ (no output)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• The concurrency probe passed all eight value pairs, including ordered persisted events, event counts, and complete live/replay equality. It also found a refusal regression: with an
+  intentionally faulting application serializer, the pure boundary returns NotAMember, but the store throws the serialization error first. No state or rows changed. I’m completing the
+  remaining probes and recording that finding with its limits.
+
+• Explored
+  └ Read 20260906T001909Z-3af3d06-leg6-ci.log, P3.log
+
+• Ran node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/run-audit.cjs P4
+  └ {"id":"P4","class":"targeted","argv":
+    ["nix","develop",".#ci","--quiet","-c","cabal","exec","-O0","--","ghc","--make","-O0","-threaded","-XGHC2021","-XOverloadedStrings","-XDerivingStrategies","-XLambdaCase","-XStrictData","-p
+    … +4 lines (ctrl + t to view transcript)
+    reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/P4.log","bytes":2515,"free_before":216718630912,"free_after":216718630912,"cache":"warm","charge":
+    {"builds":0,"targeted":1}}
+
+• Ran cat /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/P4.log
+  │ node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/run-audit.cjs P5
+  └ Loaded package environment from /code/kelgroups-audit-3af3d06/dist-newstyle/tmp/environment.-2754669/.ghc.environment.x86_64-linux-9.8.4
+    [ 1 of 12] Compiling KelGroups.Types  ( lib/KelGroups/Types.hs, /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/row4-mutant/KelGroups/Types.o )
+    … +15 lines (ctrl + t to view transcript)
+    e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/P5.log","bytes":72,"free_before":216718630912,"free_after":216718630912,"cache":"warm","charge":
+    {"builds":0,"targeted":1}}
+
+• Ran node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/run-audit.cjs P6
+  └ {"id":"P6","class":"targeted","argv":["/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/row4/
+    probe","witness"],"begin":1788654388147,"duration_ms":17,"exit":0,"signal":null,"sha256":"4011917b4c980039eb1ee92cd6e3048aa1ca771d1fbb5181a1f7fd60ceacdf3d","log":"/tmp/reactivegas/ms2/
+    e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/P6.log","bytes":71,"free_before":216718630912,"free_after":216718630912,"cache":"warm","charge":
+    {"builds":0,"targeted":1}}
+
+• Ran node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/run-audit.cjs P7
+  └ {"id":"P7","class":"targeted","argv":["/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/row4-mutant/probe","--match","S28-1 direct-only
+    admission"],"begin":1788654388295,"duration_ms":22,"exit":1,"signal":null,"sha256":"bd122075c81af7dcaa92aa74ade4c1a21bb5d5a23e895ca80c44dba8f2a15229","log":"/tmp/reactivegas/ms2/
+    e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/P7.log","bytes":1212,"free_before":216718630912,"free_after":216718630912,"cache":"warm","charge":
+    {"builds":0,"targeted":1}}
+
+• Ran cat /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/P{5,6,7}.log
+  │ node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/run-audit.cjs R1-compile
+  └ {"id":"R1-compile","class":"targeted","argv":
+    ["nix","develop",".#ci","--quiet","-c","cabal","exec","-O0","--","ghc","--make","-O0","-threaded","-XGHC2021","-XOverloadedStrings","-XDerivingStrategies","-XLambdaCase","-XStrictData","-p
+    … +4 lines (ctrl + t to view transcript)
+    e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/R1-compile.log","bytes":666,"free_before":216718630912,"free_after":216718630912,"cache":"warm","charge":
+    {"builds":0,"targeted":1}}
+
+• Ran cat /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/R1-compile.log
+  │ node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/run-audit.cjs R1-run
+  └ Loaded package environment from /code/kelgroups-audit-3af3d06/dist-newstyle/tmp/environment.-2755563/.ghc.environment.x86_64-linux-9.8.4
+    [1 of 3] Compiling S28DemoApp       ( test/S28DemoApp.hs, /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/R1/S28DemoApp.o )
+    … +5 lines (ctrl + t to view transcript)
+    e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/R1-run.log","bytes":351,"free_before":216718630912,"free_after":216718630912,"cache":"warm","charge":
+    {"builds":0,"targeted":1}}
+
+• Ran cat /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/R1-run.log
+  │ node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/run-audit.cjs R3-compile
+  └ {"id":"R3-compile","class":"targeted","argv":
+    ["nix","develop",".#ci","--quiet","-c","cabal","exec","-O0","--","ghc","--make","-O0","-threaded","-XGHC2021","-XOverloadedStrings","-XDerivingStrategies","-XLambdaCase","-XStrictData","-p
+    … +4 lines (ctrl + t to view transcript)
+    e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/R3-compile.log","bytes":666,"free_before":216718630912,"free_after":216718630912,"cache":"warm","charge":
+    {"builds":0,"targeted":1}}
+
+• Ran node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/run-audit.cjs R3-run
+  └ {"id":"R3-run","class":"targeted","argv":["/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/R3/
+    probe","R3"],"begin":1788654436190,"duration_ms":36,"exit":0,"signal":null,"sha256":"189d618e9d57d5666010d6a975b75f432d39e858e63e3fa420046d3627087e31","log":"/tmp/reactivegas/ms2/
+    e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/R3-run.log","bytes":240,"free_before":216718630912,"free_after":216718630912,"cache":"warm","charge":
+    {"builds":0,"targeted":1}}
+
+• Ran cat /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/R3-run.log
+  │ node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/run-audit.cjs R5-compile
+  └ {"id":"R5-compile","class":"targeted","argv":
+    ["nix","develop",".#ci","--quiet","-c","cabal","exec","-O0","--","ghc","--make","-O0","-threaded","-XGHC2021","-XOverloadedStrings","-XDerivingStrategies","-XLambdaCase","-XStrictData","-p
+    … +4 lines (ctrl + t to view transcript)
+    e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/R5-compile.log","bytes":666,"free_before":216718630912,"free_after":216718630912,"cache":"warm","charge":
+    {"builds":0,"targeted":1}}
+
+• Ran node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/run-audit.cjs R5-run
+  └ {"id":"R5-run","class":"targeted","argv":["/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/R5/
+    probe","R5"],"begin":1788654481385,"duration_ms":29,"exit":0,"signal":null,"sha256":"23f08058fd47d9069732a623b532bb9ff38f4848617fb934e7da2fb508ce37e6","log":"/tmp/reactivegas/ms2/
+    e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/R5-run.log","bytes":774,"free_before":216718630912,"free_after":216718630912,"cache":"warm","charge":
+    {"builds":0,"targeted":1}}
+
+• Ran cat /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/R5-run.log
+  │ node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/run-audit.cjs MAJ-compile
+  └ {"id":"MAJ-compile","class":"targeted","argv":
+    ["nix","develop",".#ci","--quiet","-c","cabal","exec","-O0","--","ghc","--make","-O0","-threaded","-XGHC2021","-XOverloadedStrings","-XDerivingStrategies","-XLambdaCase","-XStrictData","-p
+    … +4 lines (ctrl + t to view transcript)
+    e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/MAJ-compile.log","bytes":669,"free_before":216718630912,"free_after":216718630912,"cache":"warm","charge":
+    {"builds":0,"targeted":1}}
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• The repaired non-insertion tests catch the shadow defect that previously survived. Exact view checks, hook success/refusal checks, and the independently calculated proposal/approval trace
+  all passed, including real reopen/replay. The majority and isolated type checks are the final executions before I freeze the report.
+
+• Ran node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/run-audit.cjs MAJ-run
+  └ {"id":"MAJ-run","class":"targeted","argv":["/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/MAJ/
+    probe","MAJ"],"begin":1788654496782,"duration_ms":23,"exit":0,"signal":null,"sha256":"e47f3b4c579ed75e687e15412425b0bfc6b6e938df5e445005ff506daebf030b","log":"/tmp/reactivegas/ms2/
+    e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/MAJ-run.log","bytes":292,"free_before":216718630912,"free_after":216718630912,"cache":"warm","charge":
+    {"builds":0,"targeted":1}}
+
+• Ran cat /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/MAJ-run.log
+  │ node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/run-audit.cjs TypeNegative
+  └ {"id":"TypeNegative","class":"targeted","argv":
+    ["nix","develop",".#ci","--quiet","-c","cabal","exec","-O0","--","ghc","--make","-O0","-threaded","-XGHC2021","-XOverloadedStrings","-XDerivingStrategies","-XLambdaCase","-XStrictData","-p
+    … +3 lines (ctrl + t to view transcript)
+    reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/
+    TypeNegative.log","bytes":1535,"free_before":216718630912,"free_after":216718630912,"cache":"warm","charge":{"builds":0,"targeted":1}}
+
+• Ran cat /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/TypeNegative.log
+  │ rg --files -uu dist-newstyle/packagedb | head -n 10
+  │ git status --porcelain
+  │ … +4 lines
+  └ Loaded package environment from /code/kelgroups-audit-3af3d06/dist-newstyle/tmp/environment.-2758760/.ghc.environment.x86_64-linux-9.8.4
+    [1 of 2] Compiling S28DemoApp       ( test/S28DemoApp.hs, nothing )
+    … +32 lines (ctrl + t to view transcript)
+    dcbc8c2b8eefa111b5b71873be8d87fa95de2369642e6224417f9544e5a8e815  gate.sh
+    /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/inbox/NOTE-001-mandate-amendment-A01.md
+
+• Ran /code/llm-settings/shared/skills/worker-protocol/scripts/status-event /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/STATUS.md NOTE 'EXECUTION-FLOOR
+  │ COMPLETE: gate v9 GREEN 10B, all seven intended kills; 15 mandatory targeted calls executed plus one narrow TypeNegative (16/24 total, <=16 subcap). R1/R3/R5/MAJ programs all compile/run
+  │ exit0; exact hand states and persisted reopen passed. TypeNegative exit1 gives BOTH isolated event-only mismatch and historical applyEvent mismatch (no setup errors). P5/P7 intended
+  │ … +4 lines
+  └ name:                 kelgroups
+    version:              0.1.0.0
+    … +57 lines (ctrl + t to view transcript)
+      "gate": "dcbc8c2b8eefa111b5b71873be8d87fa95de2369642e6224417f9544e5a8e815"
+    }
+
+• Edited 2 files (+271 -0)
+  └ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/AUDIT-REPORT.md (+221 -0)
+      1 +# Commit audit — AUDIT-FINDINGS
+      2 +
+      3 +- Submission: S28-R1, one commissioned submission; worker commit-auditor-s28r1b.
+      4 +- Scope: FULL accepted base → candidate, including inherited S28-1 changes.
+      5 +- Base: `368b596fef0b6d393c2ac7afc631d236c55d86d1`.
+      6 +- Candidate: `3af3d065b7d0c54f03d89b8c05d8b8acd4a53db4`.
+      7 +- Tree: `b4eb37f2187c39db4950072e309c0d125d5c27af`.
+      8 +- Mandate: plan v2 `eff38e3bca5022a0bcacdbc37deec44766917c755d2ac68fc96c7fdcfdc3c9e0`,
+      9 +  with NOTE-024/025/026/028/029 and A-01/NOTE-030. Amended brief:
+     10 +  `6f4fcd08370b81a57e4856cda6b6775c7b133608e05efc6ad1cdc0dbe6806c07`.
+     11 +- Gate: G28-1 v9 (S28R1-plan), full
+     12 +  `dcbc8c2b8eefa111b5b71873be8d87fa95de2369642e6224417f9544e5a8e815`, normalized
+     13 +  `3c433effb967052aa91aef2302268c05ab27b3d0f3e54c979504d6978611d340`.
+     14 +- Verdict: **AUDIT-FINDINGS — one BLOCKING finding, F3.** The observed F1
+     15 +  concurrency and F2 vacuous-effect-test defects are resolved for the tested
+     16 +  classes. No acceptance or merge authority is conferred.
+     17 +- Execution: **10/12 builds and 16/24 targeted calls**; every mandatory
+     18 +  command executed, plus one isolated type-negative compilation. No failed
+     19 +  setup call, discretionary build, extra stress run or overrun.
+     20 +- Campaign: row set-point reached with five KILLED rows and one BLOCKED row;
+     21 +  zero OPEN requirement rows and zero residual waivers. R2 remains blocked by F3.
+     22 +
+     23 +## F3 — eager serialization replaces a required nonmember refusal with an exception
+     24 +
+     25 +**BLOCKING: R2 / preservation of refusal and failure behavior.**
+     26 +Candidate `lib/KelGroups/Store.hs:618–627`; specifically the forced payload
+     27 +at line 623 before the shared validator at line 626.
+     28 +
+     29 +The repair moves encoding and strict Text evaluation ahead of the member
+     30 +decision. In the previous implementation, a refused event returned directly
+     31 +without demanding its JSON encoding. The current pure integrated boundary
+     32 +still returns `Left (IEValidation (NotAMember "outsider"))` independently of
+     33 +the application payload's codec; the durable wrapper can instead throw from
+     34 +that codec before reaching the refusal. This contradicts preserved refusal
+     35 +behavior and the wrapper's own documented validate-first ordering.
+     36 +
+     37 +The compiled StoreProbe injects a deliberately faulting ToJSON instance.
+     38 +An accepted-member call confirms an injected exception is observable. The
+     39 +same event from a nonmember has the expected pure-boundary refusal, but
+     40 +`appendIntegratedEvent` produces a **caught** `AUDIT-SEED-SERIALIZATION`
+     41 +exception. The probe prints `preserves-refusal=False` and exits 1 from its
+     42 +final assertion. It does not crash during setup. The measured state/count
+     43 +tuple is `(0,0,0,0,0)`: this finding is changed refusal behavior, not an
+     44 +observed unauthorized append or lost state.
+     45 +
+     46 +**Property class:** a validation refusal independent of the application
+     47 +payload must remain the same caller-visible refusal when processing that
+     48 +payload would fail. Moving work ahead of validation must not let its
+     49 +exception replace a decision that previously short-circuited that work.
+     50 +
+     51 +**Limits:** this is controlled fault injection into the generic application's
+     52 +serializer. It does not claim that the demo's ordinary JSON codec fails,
+     53 +that every application exposes this condition, or that an external exploit
+     54 +was demonstrated. No production codec or candidate file was altered by P2.
+     55 +The generic boundary and the explicit failure-preservation duty supply the
+     56 +scope; no new product invariant is being proposed as an acceptance rule.
+     57 +
+     58 +Evidence: `evidence/P2.log`, SHA256
+     59 +`7e9bdb49092e3d9147765ce16d7e35ea50f2ffef0e520ead2943c7d39dfc73a3`;
+     60 +frozen `StoreProbe.hs`, SHA256
+     61 +`6775a8cc0caf0ac26cf5a16e39a303ea1961928d4da0953b22de6bfe046de3be`.
+     62 +The full repair diff is retained as `evidence/repair.diff`. No repair is
+     63 +prescribed or authored by this audit.
+     64 +
+     65 +## Repaired findings and requirement coverage
+     66 +
+     67 +F1: all eight controlled concurrent pairs passed: inherited (1,2), (3,7),
+     68 +(11,19), (101,307), plus (5,11), (42,43), (1000,7), (0,999). Each pair
+     69 +returned two successes, persisted exactly the two submitted events in one
+     70 +observed serial order with sequence numbers 1/2, maintained length=2, and
+     71 +gave identical complete live/replay states. The probe also passed its
+     72 +seeded lost-update control, sequential control, real SQLite trigger abort,
+     73 +domain refusal and subsequent successful append proving lock release.
+     74 +P2's overall RED comes solely from F3 after those checks, not a recurrence
+     75 +of F1. This is an eight-pair single-store schedule result, not exhaustive
+     76 +concurrency, optimized-code or crash-recovery assurance.
+     77 +
+     78 +F2: the exact one-expression shadow `Map.adjust`→`Map.insert` compiled
+     79 +against the repaired source. P5 observed absent-target insertion by the
+     80 +shadow; P6 observed non-insertion by the candidate. P7 now fails the real
+     81 +subset property and deterministic absent-target check: **9 examples,
+     82 +2 failures**, whereas the prior six-example group survived this class.
+     83 +The full gate's new M7 also kills both checks. Present/absent target values
+     84 +and both mutation arms occur in the permanent strengthened property.
+     85 +
+     86 +R1: explicit founding aggregate, direct admission, pending role proposal,
+     87 +approval/enactment and nonmember refusal match independently specified
+     88 +states/views/payloads. The extra TypeNegative command isolates the event
+     89 +parameter (correct proposal type) and rejects a DemoState where DemoEvent
+     90 +is required; the same invocation separately rejects DemoEvent at the
+     91 +historical `applyEvent`/DemoState boundary. This closes the concrete type
+     92 +coverage gap left by M1's coupled proposal/event mismatch.
+     93 +
+     94 +R3: a recording hook exposes exact pre/post views and a distinguishable
+     95 +counter/log payload. Success survives reopening; refusal returns its exact
+     96 +hook-argument record and preserves the initial state, zero count, zero
+     97 +rows and reopened state. Data-level wrong-output controls precede the
+     98 +candidate checks; they are not counted as extra production mutants.
+     99 +
+    100 +R5: the hand-computed lifecycle checks the integrated validators directly,
+    101 +then exact returned results and stored states at every prefix: admission,
+    102 +proposal, duplicate approval refusal, approval/enactment and application
+    103 +addition. The founding replay matches each expected prefix; exactly four
+    104 +accepted events persist and reopening reproduces the expected final state.
+    105 +The oracle's states do not come from another call to the shared wrapper.
+    106 +
+    107 +MAJORITY: increasing the admin population from three to five during a
+    108 +pending vote raises the required count; two votes remain pending and the
+    109 +third enacts the expected removal and exact resulting state. Existing
+    110 +pending-entry reopen and historical majority suites also execute.
+    111 +
+    112 +The per-row PASS/FINDINGS states, mutant bindings, reliance judgments and
+    113 +honest limits are in [REQUIREMENT-LEDGER.md](REQUIREMENT-LEDGER.md). Named
+    114 +limits are not acceptance of OPEN rows as residuals. In particular,
+    115 +historical semantics beyond suites, CESR decoder-domain completeness,
+    116 +arbitrary vote histories and all possible schedules remain unproved.
+    117 +
+    118 +## Gate and verification
+    119 +
+    120 +The independent gate returned **OVERALL_FAIL=0**. Leg 4 executed all
+    121 +27 registered S28 examples (3/4/3/9/3/5), with no missing or pending
+    122 +examples; kelgroups reports **131 examples, 0 failures**, keri-hs **91,
+    123 +0 failures**. The gate's eight source-string inventory hits are not eight
+    124 +requirement groups. Full local CI passed formatting, cabal formatting,
+    125 +HLint, build/tests, Lean build and client build/tests. The actual
+    126 +`.github/workflows/ci.yml` invokes exactly
+    127 +`nix develop .#ci --quiet -c just ci`, matching leg 6. No remote CI result
+    128 +or release-readiness claim is made.
+    129 +
+    130 +Every gate kill was independently observed and its exact diff captured:
+    131 +
+    132 +| Mutant | Actual failure attribution |
+    133 +|---|---|
+    134 +| M1 | Compiler: expected `IntegratedEvent DemoProposal DemoEvent`, actual `IntegratedEvent DemoState DemoState`, at `applyIntegratedEvent`. Coupled; isolated event proof is TypeNegat
+         ive. |
+    135 +| M2 | `nonmember append persists nothing byte-identical` returns Right after membership bypass. |
+    136 +| M3 | `hook refusal rejects the whole transition` and `failing hook restores prestate plus prelog` return Right with the hook ignored. |
+    137 +| M4 | Production `validateBaseMutation`: non-exhaustive match, missing `AdmitMemberVoted _ _ _`. |
+    138 +| M5 | `prefix folds match steps over mixed traces` raises the intended `MUTANT-M5` from the refusal arm. This is the empty-start check, not independent founding-lifecycle evidence. |
+    139 +| M6 | `replayed log reproduces live state exactly` mismatches live counter 0 against replay 3; four other witnesses also fail. This proves state staleness detection, not every author
+         ity property. |
+    140 +| M7 | `voted mutations never insert members` is falsified by an absent target; deterministic absent-target check also fails with an added key. |
+    141 +
+    142 +All seven mutants were restored byte-exactly, and the final candidate was
+    143 +tracked-clean with unchanged HEAD/tree/gate. Build receipts measure observed
+    144 +phase intervals rather than exact child CPU time. Targeted receipts record
+    145 +exact argv, real exit, duration, hashes and before/after free-space samples.
+    146 +P5/P7 and TypeNegative are intended negative results; P2 is the new finding.
+    147 +No import, parse, linker or unrelated failure is counted as a kill.
+    148 +
+    149 +See [VERIFICATION-RECEIPTS.md](VERIFICATION-RECEIPTS.md) and
+    150 +`evidence/verification-receipts.json` for every execution. The package
+    151 +configuration snapshot binds probe imports/library directories to this
+    152 +audit worktree's built candidate; P4's log names the shadow Fold source.
+    153 +
+    154 +## Provenance, failure modes and limits
+    155 +
+    156 +The complete base→candidate diff is 15 files, +1589/−13; the repair delta
+    157 +from 84a2dae is exactly Store.hs plus S28AppApiSpec.hs, +111/−29. All three
+    158 +local commits in the range were inspected. E1 is limited to the declared
+    159 +empty pendingBase field completions; E2 is JSON-only. Historical Fold and
+    160 +Validate bodies, Trivial behavior, client/Lean source and automation wiring
+    161 +are unchanged. This establishes the local provenance/fence, not commit
+    162 +publication or signature verification.
+    163 +
+    164 +- Synchronization: a per-store MVar now spans fresh state/length reads,
+    165 +  SQL insertion and the TVar writes. P2 demonstrates the repaired overlap
+    166 +  and post-SQL-failure lock release. Historical append logic is unchanged.
+    167 +- Serialization: evaluation moves ahead of validation; F3 demonstrates
+    168 +  the resulting caller-visible exception/refusal change.
+    169 +- SQL failure: an actual aborting trigger reaches the caller, does not
+    170 +  advance state/count and does not prevent a subsequent successful append.
+    171 +- Hook refusal/replay: actual persisted and reopened checks pass, including
+    172 +  the hand-computed pending/enacted lifecycle. The store's existing choice
+    173 +  to filter undecodable rows was reviewed, not exhaustively fault-tested.
+    174 +- Resource acquisition: opening/initializing SQLite and generating the
+    175 +  filler key remain synchronous; explicit founding-corruption/mismatch
+    176 +  branches are visible in source. Failure cleanup/resource-leak coverage
+    177 +  was not independently established. No new background worker was added.
+    178 +- Crash/interruption after a committed SQL insert but before TVar update,
+    179 +  concurrent independently opened handles and arbitrary faulty application
+    180 +  hooks are not adjudicated by these probes.
+    181 +- JSON compatibility: the suite executes nonempty pendingBase roundtrip,
+    182 +  missing-field compatibility and malformed-field refusal; R5 additionally
+    183 +  checks exact integrated accepted-row decoding and real reopening. Full
+    184 +  backward/forward codec-domain equivalence is not claimed.
+    185 +
+    186 +Raw historical test output includes `thread blocked indefinitely in an STM
+    187 +transaction` alongside passing suites. This was also recorded in previous
+    188 +base evidence; this audit does not assign it to the repair or silently
+    189 +interpret passing exit status as proof no such background exception occurred.
+    190 +No unrelated issue is opened and no new product invariant is ratified.
+    191 +
+    192 +## Authority, accounting and evidence disposition
+    193 +
+    194 +Live verification admitted fresh Codex gpt-6-astra/high PID 2708047 in pane
+    195 +%567, reactivegas:11, distinct from ticket owner %534 and Muse author %545.
+    196 +The untargeted tmux query follows client focus and reported :15; the
+    197 +process-bound `$TMUX_PANE` query and pane list establish co-location in :11.
+    198 +The old %566 context/root was not reused. Both prior terminal reports were
+    199 +read as historical evidence, never inherited as verdicts.
+    200 +
+    201 +A-01 arrived post-launch/pre-START and explicitly corrected founding and
+    202 +replay witness wording. It resolved the locally drafted Q-001 before any
+    203 +terminal event. The pre-amendment draft report/ledger are retained with
+    204 +`DRAFT-PRE-A01` names and are **not terminal reports**. The current report
+    205 +is the single terminal verdict. START acknowledges A-01 and the exact
+    206 +command-fit plan before gate execution. No provider issue occurred.
+    207 +
+    208 +History remains separate: S28-1 owner 34/34, audit 9/12+7/24; S28-R1
+    209 +owner 13/16 (including its separately recorded premature SLIM timing),
+    210 +prior failed-admission auditor 0/0, replacement audit **10/12+16/24**.
+    211 +Cumulative actually spent independent-audit calls across these records:
+    212 +19 substantive and 23 targeted. No ledger was zeroed/refunded; no ceiling
+    213 +raise or further submission is authorized by this report.
+    214 +
+    215 +Runtime source, receipts, raw logs, mutant diffs, snapshots, ledger and report
+    216 +are retained and hash-bound. Only this audit's reproducible build outputs
+    217 +under handoffs/build are retired after report freeze; measured receipts
+    218 +record the reclamation. The detached worktree and its build outputs remain
+    219 +for ticket-owner disposition. No candidate repair, author contact, external
+    220 +message, push, PR, merge, remote write or memory update was performed.
+    221 +The ticket owner owns disposition of F3 and acceptance; this auditor stops.
+
+  └ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/REQUIREMENT-LEDGER.md (+50 -0)
+     1 +# Requirement ledger — S28-R1 / A-01
+     2 +
+     3 +Base `368b596fef0b6d393c2ac7afc631d236c55d86d1` → candidate
+     4 +`3af3d065b7d0c54f03d89b8c05d8b8acd4a53db4`.
+     5 +Six requirement rows; default severity BLOCKING. This run spent 10/12 builds
+     6 +and 16/24 targeted calls (the complete ≤16 probe allocation). Every result
+     7 +below is based on fresh execution against this candidate, not owner acceptance.
+     8 +
+     9 +`L4`, `L6`, and `M1`–`M7` name the corresponding logs with prefix
+    10 +`evidence/20260906T001909Z-3af3d06-`. Probe IDs name `evidence/<ID>.log`.
+    11 +Full hashes and exact commands are in VERIFICATION-RECEIPTS.md and
+    12 +evidence/verification-receipts.json. Scope limits below remain part of each
+    13 +judgment; a KILLED row is not exhaustive mutation or universal verification.
+    14 +
+    15 +| Row | Severity | Carried state | Current verdict / state | Fresh evidence and limit |
+    16 +|---|---|---|---|---|
+    17 +| R1 distinct state/event, signer, sole canonical GroupView | BLOCKING | OPEN | PASS / KILLED | L4's three examples; M2 rejects bypassed signer guard; TypeNegative isolates DemoState-a
+        s-DemoEvent with correct proposal type (both valid types compile in P1/R1); R1-run checks hand-built founding, direct admission, pending proposal, role enactment, exact hook view/paylo
+        ad tuples and nonmember state/bytes. M1 remains coupled and is not used alone for event separation. Finite trace, not a proof over every value. |
+    18 +| R2 refusal before append; accepted events durable | BLOCKING | BLOCKED, F1 | FINDINGS / BLOCKED, F3 | L4's four examples and M2 kill; P2 closes the observed eight-pair lost-update cl
+        ass, plus sequential, real SQL-error and domain-refusal controls. F3 observes a serializer exception replacing the exact nonmember refusal. No state/log change in that failure, but ref
+        usal semantics are not preserved. |
+    19 +| R3 sealed atomic base hook | BLOCKING | OPEN | PASS / KILLED | M3 fails both hook-refusal examples. R3-run records exact success-side pre/post views and changed counter/log output, r
+        eopens it, records exact refusal-side hook arguments in the error, and checks unchanged aggregate/zero rows/zero count/reopen. R1 also covers role-change hook arguments. No assertion o
+        f total correctness for arbitrary application hooks or process crashes. |
+    20 +| R4 direct-only admission; voted effects cannot insert | BLOCKING | BLOCKED, F2 | PASS / KILLED | M4 fails production exhaustiveness. M7 and P7 now fail the real subset property and d
+        eterministic absent-target effect check; P4 proves the exact shadow Fold loaded; P5 catches its insertion, P6 passes the original effect. Present and absent keys occur in the strengthe
+        ned permanent property. This settles F2's observed vacuity, not complete mutation of all effects. |
+    21 +| R5 integrated validation/fold/lifecycle agreement | BLOCKING | OPEN | PASS / KILLED | M5 kills the existing empty-start refusal regression check; its limit is explicit. R5-run separa
+        tely compares each real integrated-validator decision, returned result, stored state and founding replay against hand-built expected states for admission/proposal/duplicate refusal/app
+        roval-enactment/app addition. Four exact accepted rows persist and real reopen equals the expected final aggregate. This is independent finite-case lifecycle assurance, not the shipped
+         same-wrapper comparison relabeled as independent. |
+    22 +| R6 one integrated authority and complete-log replay | BLOCKING | BLOCKED, F1 | PASS / KILLED | M6's stale-state rewire fails the named live/replay check and other witnesses. P2 check
+        s complete ordered decoded events, sequence numbers, event count and entire live/replay state for eight overlapping pairs. R5 adds pending/voted/app persisted replay; L4 pending-entry
+        reopen passes. TypeNegative separately rejects DemoEvent at historical applyEvent's DemoState boundary. No claim of an OS/capability sandbox or protection against arbitrary direct SQL
+        writes through the pre-existing exported connection. |
+    23 +
+    24 +Current requirement totals: KILLED 5, BLOCKED 1, OPEN 0, RESIDUAL 0.
+    25 +Assigned gate mutants: seven intended failures, seven byte-exact restorations.
+    26 +The bounded audit campaign terminates at its row set-point with R2 blocked by
+    27 +F3; this is a findings result, not ticket closure or acceptance. Prior OPEN
+    28 +rows were investigated and given bounded evidence, never converted to residuals.
+    29 +
+    30 +## Reliances and explicit limits
+    31 +
+    32 +| Reliance | Severity | Current evidence | Remaining limit |
+    33 +|---|---|---|---|
+    34 +| HISTORICAL-FOLD | ADVISORY | Full accepted-base diff reviewed; historical Fold/Validate bodies preserved, new state-field completions and JSON changes within E1/E2; L4 and L6 histori
+        cal suites pass. | Semantic equivalence beyond those suites is UNJUDGED. No residual acceptance inferred. |
+    35 +| CESR-KEY-VALIDITY | BLOCKING, corrected declaration | L4/L6 execute key-code/type/roundtrip/refusal suites. Integrated direct validation keeps the declared admin/reserved/existing-me
+        mber guards; no claim it calls the historical CESR validator. | Decoder domain beyond the suites is UNJUDGED; arbitrary integrated member-key text is outside a new cryptographic assura
+        nce claim. |
+    36 +| STORE-STM-DISCIPLINE | BLOCKING | P2's eight controlled overlaps conserve full state, committed rows and lengths; real SQL abort leaves values unchanged and a subsequent append demon
+        strates lock release. M6 remains a state-staleness witness only. | F3 separately blocks refusal preservation. Crash/interruption between committed SQL insert and TVar update, multiple
+        independently opened handles, and exhaustive schedules are UNJUDGED. |
+    37 +| MAJORITY-FRANCHISE | BLOCKING | MAJ-run changes current admin count 3→5 mid-vote; two votes stay pending, third commits removal and exact resulting state. L4 pending-entry persistenc
+        e/reopen passes; existing count/majority suites execute. | The ratified claim concerns current majority denominator and pending map. No added rule discarding former-admin approvals is
+        inferred; all vote-history/payload possibilities are not proved. |
+    38 +| HISTORICAL-APPFOLD-SHAPE | ADVISORY | Alias/role-predicate definitions unchanged in diff; actual historical caller graph compiles in L3/L4/L6. TypeNegative additionally establishes t
+        he specific demo event/state incompatibility. | Historical semantics beyond compile shape and executed suites remain UNJUDGED. |
+    39 +
+    40 +Instrument controls: P2 begins with a seeded inconsistent tuple and sequential
+    41 +positive control; codec failure is caught and is deliberately activated with
+    42 +an accepted member before comparing a nonmember to the pure boundary. P5/P6
+    43 +are executable negative/positive effect controls. R1/R3/R5/MAJ include
+    44 +data-level wrong-output/threshold controls before evaluating the candidate;
+    45 +these are not claimed as additional production mutations. Mandatory gate
+    46 +mutants remain the named production/type-level can-fail evidence.
+    47 +
+    48 +No unrelated discovery or new product invariant is ratified. F1/F2 are
+    49 +resolved for their observed classes; F3 remains BLOCKING. There is no
+    50 +second implementation submission or repair automatically authorized here.
+
+• Context compacted
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• All executions are complete. The F1 and F2 repair checks passed, but the audit found a blocking refusal regression under a controlled serialization fault. I’m freezing the report and
+  evidence at 10 build-class invocations and 16 targeted probes.
+
+• Ran pwd; tail -n 45 /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/STATUS.md; cat /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/
+  │ handoffs/AUDIT-REPORT.md
+  └ /code/kelgroups-audit-3af3d06
+    2026-09-06T00:21:36Z  NOTE  BUILD-BEGIN id=M5 builds=7/12 targeted=0/24 cache=warm AUDIT-S28R1
+    … +263 lines (ctrl + t to view transcript)
+    message, push, PR, merge, remote write or memory update was performed.
+    The ticket owner owns disposition of F3 and acceptance; this auditor stops.
+
+• Explored
+  └ Read execution-receipts.jsonl
+    Read probe-inputs-final.json
+    Read REQUIREMENT-LEDGER.md
+    Read Store.hs
+    List evidence
+    Read brief.md
+    Search nix develop|retir|AUDIT-RESULT|COMPLETE|EVIDENCE-INVENTORY in gate.sh
+    Read Q-001-r5-lifecycle-fold-entrypoint.md
+    Read command-receipts.json
+    Read gate.sh, input-commit-auditor-SKILL.md, P2.log, input-manifest.json
+    Read input-commit-auditor-SKILL.md
+    Search leg3-build|leg6-ci|checksum|sha in gate.sh
+    Read Store.hs
+
+• Ran cat > /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/finalize-evidence.cjs <<'NODE'
+  │ const fs=require('fs'),p=require('path'),c=require('crypto'),cp=require('child_process'),assert=require('assert');
+  │ const R='/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b',H=p.join(R,'handoffs'),E=p.join(H,'evidence'),W='/code/kelgroups-audit-3af3d06';
+  │ … +69 lines
+  └ {
+      "frozen": {
+    … +24 lines (ctrl + t to view transcript)
+      }
+    }
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• The report and ledger are frozen, and all 123 retained evidence files passed hash verification. F3 records a serialization exception replacing the required nonmember refusal, with no
+  observed state or log change. I’m recording the terminal AUDIT-FINDINGS result in STATUS.md.
+
+• Ran node <<'NODE'
+  │ const fs=require('fs'),cp=require('child_process'),crypto=require('crypto'),assert=require('assert');
+  │ const R='/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b',H=R+'/handoffs',S=R+'/STATUS.md';
+  │ … +24 lines
+  └ 2026-09-06T00:39:44Z  EVIDENCE-RETAINED  root=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs bytes=1229025 files=123 all-hashes-verified=true
+    inventory_sha256=6fe3d6ae331169fa6cfccd338e4cb17a0b35c40f7846628b2b0fe657cf57de92 inventory_json_sha256=c622d31d270b545e3aa3b746ecffdaaf8e55631ffd1532c19f63ea1ce79d7b66
+    … +13 lines (ctrl + t to view transcript)
+    sha256=24252ef1cdc49f2cd368c037604357527a0991262e2a74c70da33b073d07c542 builds=10/12 targeted=16/24 worktree=/code/kelgroups-audit-3af3d06 worktree_bytes=227437004
+    no-further-work-authorized AUDIT-S28R1
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• Read fully, acknowledged in /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/STATUS.md, and completed the audit.
+
+  AUDIT-FINDINGS: F1/F2 repair checks passed. One blocking regression remains: a controlled serialization fault replaces the required nonmember refusal.
+
+  Report and evidence (/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/AUDIT-REPORT.md). Spend: 10/12 builds, 16/24 probes.
+
+─ Worked for 37m 14s ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+› Ask Codex to do anything
+
+  gpt-6-astra high · /code/kelgroups-audit-3af3d06
+
+
+
+

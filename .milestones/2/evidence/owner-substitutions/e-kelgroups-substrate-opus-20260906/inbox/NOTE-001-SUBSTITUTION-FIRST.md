@@ -1,0 +1,5 @@
+# Complete the authorized role substitution first
+
+Your own START is verified. The operator ordered substitutions ASAP. Complete the %572 ticket-owner substitution now from its HANDOFF-READY, existing frozen contract, actual counters and preserved unaccepted evidence. Do not make diagnosing or repairing its 17 preflight mismatches a prerequisite to admitting its successor; that ticket-level diagnosis is the incoming ticket owner's work. You have enough evidence to bind the next action as diagnosis within the existing fence with one synthetic repair invocation remaining, without endorsing the proposed diagnosis.
+
+No further desk approval or new audit is needed for this already-authorized staffing replacement. Preserve all source artifacts and incoming child's independent judgement. Verify safe boundary, compile the concise successor, launch exact Opus5[1m]/high and require its own START. Then continue immediate-child supervision and return the identity receipt. This note adds no product execution or budget.

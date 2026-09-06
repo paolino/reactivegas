@@ -1,0 +1,28 @@
+# S30-1 frozen identity oracle. One row per line: MODULE<TAB>KIND<TAB>IDENTITY
+# KIND: MUST = must appear in the derived identity view (exact whole line)
+#       MUSTNOT = must NOT appear (exhibit exclusions, never defaults)
+# Ground: T30-IDENTITY-MAP-r5.md rows 42-49 (MIRROR / EXCLUDED) over the frozen
+# Lean extent at reactivegas 3590c001. Type heads and constructors only —
+# record-selector spelling is the commit owner's and is NOT mandated here.
+KelGroups.Vote.Types	MUST	QuestionId
+KelGroups.Vote.Types	MUST	Threshold
+KelGroups.Vote.Types	MUST	Verdict
+KelGroups.Vote.Types	MUST	Positive
+KelGroups.Vote.Types	MUST	Negative
+KelGroups.Vote.Types	MUST	Open
+KelGroups.Vote.Types	MUST	Ballot
+KelGroups.Vote.Types	MUST	Assent
+KelGroups.Vote.Types	MUST	Dissent
+KelGroups.Vote.Types	MUST	QuestionKind
+KelGroups.Vote.Types	MUST	Collective
+KelGroups.Vote.Types	MUST	Permission
+KelGroups.Vote.Types	MUST	ClosureCause
+KelGroups.Vote.Types	MUST	Tally
+KelGroups.Vote.Types	MUST	FranchiseChange
+KelGroups.Vote.Types	MUST	ProposerDeparted
+KelGroups.Vote.Types	MUST	Renounced
+KelGroups.Vote.Types	MUSTNOT	legacyThreshold
+KelGroups.Vote.Types	MUSTNOT	zeroThreshold
+KelGroups.Vote.State	MUST	Question
+KelGroups.Vote.State	MUST	ClosureRecord
+KelGroups.Vote.State	MUST	VoteState

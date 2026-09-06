@@ -1,0 +1,28 @@
+{
+  "axiomRows": 1291,
+  "badAxiomRows": [],
+  "panicOrError": [],
+  "warnings": [
+    "warning: KelGroups/Vote/Validate.lean:54:23: unused variable `threshold`",
+    "warning: KelGroups/Vote/Invariants.lean:59:104: The syntax is now `structure S : Type extends P` rather than `structure S extends P : Type`",
+    "warning: KelGroups/Vote/Invariants.lean:77:8: automatically included section variable(s) unused in theorem `_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_sublist'`:",
+    "warning: KelGroups/Vote/Invariants.lean:175:51: unused variable `v`",
+    "warning: KelGroups/Vote/Invariants.lean:187:16: This simp argument is unused:",
+    "warning: KelGroups/Vote/Invariants.lean:187:28: This simp argument is unused:",
+    "warning: KelGroups/Vote/Invariants.lean:187:50: This simp argument is unused:",
+    "warning: KelGroups/Vote/Invariants.lean:189:16: This simp argument is unused:",
+    "warning: KelGroups/Vote/Invariants.lean:190:16: This simp argument is unused:",
+    "warning: KelGroups/Vote/Invariants.lean:203:8: automatically included section variable(s) unused in theorem `_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_mem_cases`:",
+    "warning: KelGroups/Vote/Invariants.lean:235:8: automatically included section variable(s) unused in theorem `_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_map_fst_insert`:",
+    "warning: KelGroups/Vote/Invariants.lean:389:54: unused variable `gs`",
+    "warning: KelGroups/Vote/Invariants.lean:396:45: This simp argument is unused:",
+    "warning: KelGroups/Vote/Invariants.lean:401:47: unused variable `gs`",
+    "warning: KelGroups/Vote/Invariants.lean:463:6: try 'simp' instead of 'simpa'",
+    "warning: KelGroups/Vote/Invariants.lean:880:5: unused variable `hevents`",
+    "warning: KelGroups/Vote/Invariants.lean:974:22: This simp argument is unused:",
+    "warning: KelGroups/Vote/Invariants.lean:1161:34: This simp argument is unused:",
+    "warning: KelGroups/Vote/Invariants.lean:1176:34: This simp argument is unused:",
+    "warning: Reactivegas/Composition.lean:114:5: unused variable `hroute`",
+    "warning: Reactivegas/Composition.lean:141:5: unused variable `hroute`"
+  ]
+}

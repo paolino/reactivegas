@@ -1,0 +1,13 @@
+diff --git a/lib/KelGroups/Event.hs b/lib/KelGroups/Event.hs
+index 7fef155..4f088b2 100644
+--- a/lib/KelGroups/Event.hs
++++ b/lib/KelGroups/Event.hs
+@@ -92,6 +92,8 @@ compiling.
+ data BaseMutation
+     = RemoveMemberVoted Text
+     | ChangeRolesVoted Text (Set Role)
++    -- MUTANT-M4: voted admission re-added (must not compile)
++    | AdmitMemberVoted Text Text (Set Role)
+     deriving stock (Show, Eq)
+ 
+ {- | The observable base-change vocabulary. A committed substrate

@@ -1,0 +1,7 @@
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+'Reactivegas.appFold' does not depend on any axioms
+'Reactivegas.apply' depends on axioms: [propext]
+'Reactivegas.app_members_preservation_holds' depends on axioms: [propext]
+'Reactivegas.comune_cannot_authorize' depends on axioms: [propext]
+true
+1cdee02762a50796d8c1a5c36d02aa413bef7679bbc188e8be30783594017ade  /tmp/s2shadow-P07/Reactivegas/Step.olean

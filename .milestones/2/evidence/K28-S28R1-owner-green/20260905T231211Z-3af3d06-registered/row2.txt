@@ -1,0 +1,4 @@
+accepted events persist with readable rows
+two appends conserve state, rows, length and replay
+domain-invalid add never appends a byte
+nonmember append persists nothing byte-identical

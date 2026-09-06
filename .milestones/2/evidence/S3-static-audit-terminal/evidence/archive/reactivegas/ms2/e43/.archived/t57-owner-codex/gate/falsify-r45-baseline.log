@@ -1,0 +1,6 @@
+/tmp/reactivegas/ms2/e43/t57-owner-codex/gate/instruments/r45-production-noop.lean:26:0: error: Expression
+  validateVoteEvent legacyThreshold before "stranger" removal == Except.error VoteError.notResponsabile
+did not evaluate to `true`
+/tmp/reactivegas/ms2/e43/t57-owner-codex/gate/instruments/r45-production-noop.lean:30:0: error: Expression
+  after == before
+did not evaluate to `true`

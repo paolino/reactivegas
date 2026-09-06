@@ -1,0 +1,11 @@
+diff --git a/lean/KelGroups/Vote/Validate.lean b/lean/KelGroups/Vote/Validate.lean
+index 0000000..2222222 100644
+--- a/lean/KelGroups/Vote/Validate.lean
++++ b/lean/KelGroups/Vote/Validate.lean
+@@ -55,7 +55,7 @@
+   match event with
+   | .openQuestion _ _ =>
+-      if isResponsabile signer view then .ok () else .error VoteError.notResponsabile
++      .ok ()
+   | .cast questionId _ =>
+       if !(isResponsabile signer view) then .error VoteError.notResponsabile

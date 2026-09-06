@@ -1,0 +1,6 @@
+/tmp/reactivegas/ms2/e43/t62-owner-codex/commit-auditor-s62-a-s2-codex/instruments/false-preservation.lean:9:39: error: Tactic `decide` proved that the proposition
+  (match Reactivegas.memberWritingApply with
+    | Except.ok result => result.state.members == Reactivegas.preservationGroup.members
+    | Except.error a => true) =
+    true
+is false

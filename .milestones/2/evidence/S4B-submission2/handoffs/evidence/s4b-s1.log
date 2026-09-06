@@ -1,0 +1,25 @@
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+lean dependency direction: OK (control imports=18)
+inversion-coverage constructors=14 covered=14 missing=0 phantom=0
+axioms Reactivegas.step_open_inv = [propext]
+bound Reactivegas.step_open_inv = Event.openPurchase
+tight Reactivegas.step_open_inv = ok
+axioms Reactivegas.step_deposit_inv = [propext]
+bound Reactivegas.step_deposit_inv = Event.deposit
+tight Reactivegas.step_deposit_inv = ok
+axioms Reactivegas.step_withdraw_inv = [propext]
+bound Reactivegas.step_withdraw_inv = Event.withdraw
+tight Reactivegas.step_withdraw_inv = ok
+axioms Reactivegas.step_transferCassa_inv = [propext]
+bound Reactivegas.step_transferCassa_inv = Event.transferCassa
+tight Reactivegas.step_transferCassa_inv = ok
+axioms Reactivegas.step_donate_inv = [propext]
+bound Reactivegas.step_donate_inv = Event.donate
+tight Reactivegas.step_donate_inv = ok
+axioms Reactivegas.step_backdonate_inv = [propext]
+bound Reactivegas.step_backdonate_inv = Event.backdonate
+tight Reactivegas.step_backdonate_inv = ok
+lean-theorems declared=183 elaborated-backed=183 expected=163
+inversion-audit: elaborated theorem declarations 183 (source-declared 183) is not the expected 163
+/tmp/nix-shell.0RBfra/tmp.MwuOpCiMtE/InversionAudit.lean:353:0: error: inversion-audit failed with 1 finding(s)
+error: Recipe `lean` failed with exit code 1

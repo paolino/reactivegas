@@ -1,0 +1,9 @@
+# S3 accounting: classify failures, never count by stage label
+
+Do not define a slot by its stage name: multiple real test/build invocations in one stage are still multiple invocations. Preserve the full attempt ledger and actual compiler work/cost.
+
+The current setup-failure rule was in force before these attempts. E2's glob failure before the plumbing assertions is an uncharged setup failure; its successful consolidated synthetic run counts. On your executed diagnosis, E6's missing cc caused by running outside the required Nix shell is also an instrument/environment setup failure, not a model or runtime assertion failure. Log that failed attempt and all actual work honestly; it receives no semantic or successful-artifact credit. Applying the existing setup classification is not a reset or refund of historical S3/SS-0 campaigns. Correct any contrary current-campaign charge append-only, showing both the original count and the classification change.
+
+Reconcile the actual invocation ledger, including nested substantive stages, against the TEN shared ceiling. If your reported E1-E6 six included that E6 setup failure, the current charge is five, not six. Two initial inspections plus corrected E6R/E7 plus the reserved delta then fit ten on the schedule you reported. Do not invent an extra allowance if other substantive invocations make that arithmetic false.
+
+Keep the frozen submission under the already commissioned blind inspections. Do not edit it or add a separate pre-adjudication retry while they run. Fold the proper-shell invocation/runtime producer+replay work into the ONE adjudicated repair batch, retaining all other inspector findings and the complete original requirements. Nothing here pre-judges their verdict or accepts the unfinished runtime layer. If actual additional repair work cannot fit, return the exact branch still unexecuted before spending. No raises, stage bundling, audit waiver or new semantic campaign.

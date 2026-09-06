@@ -1,0 +1,7 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M14.lean:202:9: error: unsolved goals
+case none
+col : Collection
+u : KelGroups.Key
+v : Int
+h : splitUser u col.pending = none
+⊢ False

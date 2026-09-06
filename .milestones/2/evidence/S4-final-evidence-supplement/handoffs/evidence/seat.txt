@@ -1,0 +1,2 @@
+Read-only tmux identity; initial sandbox socket read failed with Operation not permitted; approved escalation returned:
+%578 reactivegas:rg-s4b-supplement.1 /tmp/reactivegas/ms2/e-lean-compliance/supplement-auditor-s4b
