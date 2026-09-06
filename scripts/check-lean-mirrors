@@ -410,7 +410,7 @@ LEAN_EOF
 # work — default `lake build` skips non-default exe targets, verified against
 # the lakefile and the S2R worktree's missing exe oleans).
 driver_text=$(cat "$DRIVER")
-driver_text=${driver_text//#__TRACKED_MODULES__/$TRACKED_LIT}
+driver_text=${driver_text//__TRACKED_MODULES__/$TRACKED_LIT}
 printf '%s' "$driver_text" > "$DRIVER"
 cd "$HERE/../lean" && lake build corpusExport
 cd "$HERE/../lean" && S4B_MIRROR_NONCE="$NONCE" lake env lean "$DRIVER"
