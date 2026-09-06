@@ -22,7 +22,12 @@ concurrency:
 jobs:
   preview:
     name: Build and publish simulator preview
-    if: github.event.action != 'closed'
+    # The repository is public. A fork PR must never acquire a self-hosted
+    # job merely by selecting the nixos label, so require same-repository
+    # at JOB level, where GitHub decides before assigning a runner.
+    if: >-
+      github.event.action != 'closed'
+      && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: nixos
     steps:
       # bind to the PR HEAD, not the default merge commit: the preview must
@@ -96,7 +101,10 @@ jobs:
 
   cleanup:
     name: Remove simulator preview
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    if: >-
+      github.event_name == 'pull_request'
+      && github.event.action == 'closed'
+      && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: nixos
     steps:
       - uses: paolino/dev-assets/static-preview@main
