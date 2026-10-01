@@ -7,7 +7,7 @@
 # existing `.lake` build directories), each copy carrying exactly one mutation.
 # Every leg must make the checker exit non-zero for the named reason:
 #
-#   reach            a newly registered `lean_lib` and `lean_exe` root plus two
+#   reach            two newly registered `lean_lib` roots plus two
 #                    undeclared, unimported tracked modules: the checker must name
 #                    exactly the two undeclared modules as reach gaps and neither
 #                    registered root. A checker that imports every tracked module,
@@ -32,7 +32,7 @@ mkdir -p "$BASE/scripts"
 cp -a "$HERE/check-lean-mirrors" "$BASE/scripts/"
 (cd "$ROOT" && git ls-files -z -- lean scripts/lake-roots | xargs -0 cp -a --parents -t "$BASE")
 for build in lean/.lake scripts/lake-roots/.lake; do
-  if [ -d "$ROOT/$build" ]; then cp -a --reflink=auto "$ROOT/$build" "$BASE/$build"; fi
+  if [ -d "$ROOT/$build" ]; then mkdir -p "$(dirname "$BASE/$build")" && cp -a --reflink=auto "$ROOT/$build" "$BASE/$build"; fi
 done
 printf '.lake/\n' > "$BASE/.gitignore"
 git -C "$BASE" init -q
@@ -99,11 +99,13 @@ cat >> "$LEG_DIR/lean/lakefile.lean" <<'LAKE_EOF'
 lean_lib ReachControlLib where
   srcDir := "."
 
-lean_exe reachControlExe where
-  root := `ReachControlExe
+lean_lib ReachControlNested where
+  srcDir := "."
+  roots := #[`ReachControl.Nested]
 LAKE_EOF
+mkdir -p "$LEG_DIR/lean/ReachControl"
 printf 'def reachControlLib : Nat := 0\n' > "$LEG_DIR/lean/ReachControlLib.lean"
-printf 'def main : IO Unit := pure ()\n' > "$LEG_DIR/lean/ReachControlExe.lean"
+printf 'def reachControlNested : Nat := 0\n' > "$LEG_DIR/lean/ReachControl/Nested.lean"
 strays=(lean/ReachControlStray.lean lean/Reactivegas/ReachControlStray.lean)
 for f in "${strays[@]}"; do printf 'def reachControlStray : Nat := 0\n' > "$LEG_DIR/$f"; done
 expected=$(for f in "${strays[@]}"; do module_of "$f"; done | sort)
