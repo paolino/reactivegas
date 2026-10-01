@@ -498,6 +498,29 @@ theorem applyIntegrated_payload_cases {AppState AppEvent BaseProposal AppError :
         · exact Except.noConfusion h
         · exact Or.inl (by rw [tryEnactBase_unchanged h hc])
 
+/-- The production root changes the app payload only through the app fold or,
+on a committed base change, the sealed hook. -/
+theorem apply_payload_cases {θ : KelGroups.Vote.Threshold} {auth : BackdonateAuth}
+    {gs : KelGroups.GroupState State} {signer : KelGroups.Key}
+    {event : KelGroups.IntegratedEvent Proposal AppEvent}
+    {res : KelGroups.IntegratedResult State}
+    (h : apply θ auth gs signer event = .ok res) :
+    res.state.appFold = gs.appFold
+      ∨ (∃ e, appFold θ auth signer (KelGroups.groupView gs) (KelGroups.groupView gs)
+          gs.appFold e = .ok res.state.appFold)
+      ∨ (∃ change pre post, baseHook θ change pre post gs.appFold = .ok res.state.appFold) := by
+  unfold apply at h
+  split at h
+  · split at h
+    · next inner hinner =>
+      split at h
+      · simp only [Except.ok.injEq] at h
+        subst h
+        exact applyIntegrated_payload_cases _ gs signer event inner hinner
+      · exact Except.noConfusion h
+    · exact Except.noConfusion h
+  · exact Except.noConfusion h
+
 theorem authStep_apply {θ : KelGroups.Vote.Threshold} {auth : BackdonateAuth}
     {gs : KelGroups.GroupState State} {signer : KelGroups.Key}
     {event : KelGroups.IntegratedEvent Proposal AppEvent}
@@ -506,27 +529,17 @@ theorem authStep_apply {θ : KelGroups.Vote.Threshold} {auth : BackdonateAuth}
     ((∀ r ∈ gs.appFold.votes.closed, r ∈ res.state.appFold.votes.closed)
       ∧ ∀ a ∈ res.state.appFold.live, a ∈ gs.appFold.live ∨
         ∃ r ∈ res.state.appFold.votes.closed, r.questionId = a.questionId ∧ r.verdict = a.verdict) := by
-  unfold apply at h
-  split at h
-  · split at h
-    · next inner hinner =>
-      split at h
-      · simp only [Except.ok.injEq] at h
-        subst h
-        rcases applyIntegrated_payload_cases _ gs signer event inner hinner with
-          heq | ⟨e, hfold⟩ | ⟨change, pre, post, hhook⟩
-        · rw [heq]; exact authStep_refl _
-        · simp only [integration, appFold] at hfold
-          split at hfold
-          · next s' hcore =>
-            simp only [Except.ok.injEq] at hfold
-            rw [← hfold]
-            exact authStep_trans (authStep_appFoldCore hcore) (authStep_prune s')
-          · exact Except.noConfusion hfold
-        · exact authStep_baseHook hhook
-      · exact Except.noConfusion h
-    · exact Except.noConfusion h
-  · exact Except.noConfusion h
+  rcases apply_payload_cases h with heq | ⟨e, hfold⟩ | ⟨change, pre, post, hhook⟩
+  · rw [heq]
+    exact authStep_refl _
+  · simp only [appFold] at hfold
+    split at hfold
+    · next s' hcore =>
+      simp only [Except.ok.injEq] at hfold
+      rw [← hfold]
+      exact authStep_trans (authStep_appFoldCore hcore) (authStep_prune s')
+    · exact Except.noConfusion hfold
+  · exact authStep_baseHook hhook
 
 /-- **Provenance.** In every production history — a guarded boot followed by
 successful calls of the production root — each unspent authorization is backed
@@ -549,6 +562,70 @@ theorem liveBacked_of_history {θ : KelGroups.Vote.Threshold} {auth : Backdonate
   | apply _ signer event happly ih =>
     exact liveBacked_of_authStep (authStep_apply happly) ih
 
+
+
+/-! ### Authority follows its collection -/
+
+/-- After `pruneAuth` every unspent authorization and every binding names a
+target that is there. -/
+theorem pruneAuth_present (s : State) :
+    (∀ a ∈ (pruneAuth s).live, targetPresent (pruneAuth s) a.target = true)
+      ∧ ∀ b ∈ (pruneAuth s).bindings, targetPresent (pruneAuth s) b.2 = true := by
+  have hsame : targetPresent (pruneAuth s) = targetPresent s := rfl
+  rw [hsame]
+  exact ⟨fun _ ha => (List.mem_filter.mp ha).2, fun _ hb => (List.mem_filter.mp hb).2⟩
+
+theorem appFold_pruned {θ : KelGroups.Vote.Threshold} {auth : BackdonateAuth}
+    {signer : KelGroups.Key} {pre post : KelGroups.GroupView} {s s' : State}
+    {e : AppEvent} (h : appFold θ auth signer pre post s e = .ok s') :
+    ∃ x, s' = pruneAuth x := by
+  simp only [appFold] at h
+  split at h
+  · next x _ =>
+    simp only [Except.ok.injEq] at h
+    exact ⟨x, h.symm⟩
+  · exact Except.noConfusion h
+
+theorem baseHook_pruned {θ : KelGroups.Vote.Threshold} {change : KelGroups.BaseChange}
+    {pre post : KelGroups.GroupView} {s s' : State}
+    (h : baseHook θ change pre post s = .ok s') : ∃ x, s' = pruneAuth x := by
+  unfold baseHook at h
+  split at h
+  · exact Except.noConfusion h
+  · simp only [Except.ok.injEq] at h
+    exact ⟨_, h.symm⟩
+
+/-- **A collection takes its authority with it.** In every production history,
+every unspent authorization and every binding of a permission names a
+collection that is present. Every route that removes a collection —
+`closePurchase`, `failPurchase`, `denyPermission`, and the admin wind-up of a
+departure or role loss — ends in `pruneAuth`, so a collection id reused later
+names a new collection that inherits nothing. -/
+theorem authTargetsPresent_of_history {θ : KelGroups.Vote.Threshold}
+    {auth : BackdonateAuth} {gs : KelGroups.GroupState State}
+    (h : ProductionHistory θ auth gs) :
+    (∀ a ∈ gs.appFold.live, targetPresent gs.appFold a.target = true)
+      ∧ ∀ b ∈ gs.appFold.bindings, targetPresent gs.appFold b.2 = true := by
+  induction h with
+  | boot members payload hboot =>
+    simp only [Reactivegas.boot] at hboot
+    split at hboot
+    · next hclean =>
+      simp only [Option.some.injEq] at hboot
+      subst hboot
+      simp only [Bool.and_eq_true, cleanOrigin, List.isEmpty_iff] at hclean
+      simp [hclean.2.1.2, hclean.2.2]
+    · exact Option.noConfusion hboot
+  | apply _ signer event happly ih =>
+    rcases apply_payload_cases happly with heq | ⟨e, hfold⟩ | ⟨change, pre, post, hhook⟩
+    · rw [heq]
+      exact ih
+    · obtain ⟨x, hx⟩ := appFold_pruned hfold
+      rw [hx]
+      exact pruneAuth_present x
+    · obtain ⟨x, hx⟩ := baseHook_pruned hhook
+      rw [hx]
+      exact pruneAuth_present x
 
 /-! ### The provenance antecedent is reachable -/
 
@@ -592,6 +669,7 @@ theorem boundHistory_holds_backed_authorization :
 #print axioms apply_backdonate_spends
 #print axioms denyByClosure_spec
 #print axioms liveBacked_of_history
+#print axioms authTargetsPresent_of_history
 #print axioms boundHistory_holds_backed_authorization
 
 end Reactivegas.Composition
