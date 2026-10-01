@@ -95,15 +95,15 @@ function rmQuiet(p) {
 const HTML = join(REPO, 'economics-simulator.html');
 const sha256 = b => createHash('sha256').update(b).digest('hex');
 
-/* The ACCEPTED composition pin (NOTE-025/028, re-pinned to the MERGED
-   commit by NOTE-029): an immutable commit, never a branch. Acceptance
-   data, mirrored by the parent-owned ./gate.sh (v3); the embedded receipt
+/* The ACCEPTED composition pin: an immutable commit, never a branch — the
+   master merge base of the simulator branch (2bd9a20, #81 + #92), where
+   every source the receipt pins is pinned too. The embedded receipt
    must agree, the commit must resolve to exactly this tree, it must be
    REACHABLE FROM origin/master (an orphaned pin is RED even if locally
    resolvable), and the pinned module is re-elaborated fresh on every run. */
 const ACCEPTED_COMPOSITION = {
-  commit: '934de7a8df136d86a8ad2caadbda99af60e58b59',
-  tree: 'b306b0ce6fc57b2b7fb880a5930f9740699cc637',
+  commit: '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
+  tree: '1ca66428464b2897f1f1a41b9b347b9ca0da5eee',
   module: 'lean/Reactivegas/Composition.lean',
 };
 
@@ -114,8 +114,8 @@ const ACCEPTED_COMPOSITION = {
    repointed files list is RED. */
 const MANIFEST_EVENT_FILE = 'lean/Reactivegas/Types.lean';
 const ACCEPTED_CORE = {
-  commit: '934de7a8df136d86a8ad2caadbda99af60e58b59',
-  tree: 'b306b0ce6fc57b2b7fb880a5930f9740699cc637',
+  commit: '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
+  tree: '1ca66428464b2897f1f1a41b9b347b9ca0da5eee',
   files: [MANIFEST_EVENT_FILE],
 };
 const DRIVER_IMPORTS = Object.freeze([
