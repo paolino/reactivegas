@@ -107,7 +107,7 @@ mkdir -p "$LEG_DIR/lean/ReachControl"
 printf 'def reachControlLib : Nat := 0\n' > "$LEG_DIR/lean/ReachControlLib.lean"
 printf 'def reachControlNested : Nat := 0\n' > "$LEG_DIR/lean/ReachControl/Nested.lean"
 strays=(lean/ReachControlStray.lean lean/Reactivegas/ReachControlStray.lean)
-for f in "${strays[@]}"; do printf 'def reachControlStray : Nat := 0\n' > "$LEG_DIR/$f"; done
+for f in "${strays[@]}"; do printf 'def %s.marker : Nat := 0\n' "$(module_of "$f")" > "$LEG_DIR/$f"; done
 expected=$(for f in "${strays[@]}"; do module_of "$f"; done | sort)
 run_leg reach 'MIRROR-IMPORT-REACH-GAP'
 
