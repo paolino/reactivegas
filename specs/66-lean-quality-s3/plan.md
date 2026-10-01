@@ -40,3 +40,12 @@ KILLED counts) and passing.
 | slice | content | tasks |
 |---|---|---|
 | S3 | runner, catalogue, ledger, renderings, recipe, CI step, controls, LEAN-CLARITY.md, OD74 comment | T301–T308 |
+
+## Re-derivation (T309)
+
+The accepted slice was derived on `890a74f`. Master gained the V-5/S-12
+lifecycle model (#81) and the lake-root reach checker (#92) before the push.
+History already pushed is not rewritten: master is merged into the branch and
+the ledger is re-derived in one further commit under the same requirements.
+`VoteError.notProposer` and `notDesignee` are now emitted, so R-9 requires guard
+mutants for them.
