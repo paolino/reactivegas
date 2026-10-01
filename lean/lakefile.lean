@@ -16,3 +16,11 @@ lean_lib KelGroups where
 
 lean_exe corpusExport where
   root := `Reactivegas.CorpusExport
+
+/-- Vote-derived economic effects at the production root: the theorems and
+the executable oracle. Outside the `Reactivegas` umbrella; `lake build`
+elaborates both. -/
+@[default_target]
+lean_lib ReactivegasComposition where
+  srcDir := "."
+  roots := #[`Reactivegas.CompositionRoot, `Reactivegas.CompositionTests]

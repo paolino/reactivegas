@@ -112,6 +112,16 @@ def pullCollection (c : CollId) : List Collection → Option (Collection × List
       | some (y, rest) => some (y, x :: rest)
       | none => none
 
+/-- Pull one unspent authorization for exactly this target and verdict. -/
+def pullLive (target : EconomicTarget) (verdict : KelGroups.Vote.Verdict) :
+    List LiveAuth → Option (LiveAuth × List LiveAuth)
+  | [] => none
+  | a :: t =>
+    if a.target = target ∧ a.verdict = verdict then some (a, t)
+    else match pullLive target verdict t with
+      | some (hit, rest) => some (hit, a :: rest)
+      | none => none
+
 /-
 Detach the collections whose referente is `r`: what remains, together
 with all their pledges (to be refunded). Legacy: revoking a responsabile
