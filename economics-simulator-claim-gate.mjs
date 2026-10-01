@@ -45,13 +45,15 @@
  *      subtracts the exact dated #62 retirement manifest, and executes a
  *      valid witness through the exported real `attempt` for every remaining
  *      constructor — returning/refusing is not coverage; ok:true is required
- *      and `unknown event tag` is RED. It derives the VoteEvent constructor
- *      inventory (the #81 set: openQuestion, cast, renounce) from the same
- *      pin's lean/KelGroups/Vote/Event.lean and requires, for each, a live
- *      witness through the integrated `applyIntegrated` that is applied AND
- *      shows the Lean effect (renounce: closed .negative/.renounced); a
- *      constructor without a core handler is RED. A printed GREEN contains
- *      `machine=14/14 pinned=14 retired=0 vote=3/3`;
+ *      and `unknown event tag` is RED. It then DISCOVERS every event
+ *      vocabulary at the pin (each inductive under lean/Reactivegas and
+ *      lean/KelGroups named …Event, …Command, …Proposal or …Mutation): a
+ *      routed one (AppEvent with the #81 vote set, VoteEvent,
+ *      IntegratedEvent, DirectCommand, Reactivegas.Proposal) needs, per
+ *      parsed constructor, a live witness through `applyIntegrated` that is
+ *      applied AND shows the Lean effect; the rest carry a named
+ *      non-presented reason; anything else, an empty extent or a stale
+ *      table entry is RED. No count is written anywhere;
  *  12. exits nonzero with a precise reason on any mismatch, zero on GREEN.
  *
  * Together with the page's rendering (which draws the three user-facing
@@ -329,72 +331,184 @@ function pinnedConstructors() {
   if (!block) throw new Error('pinned Lean Event declaration not found');
   const ctors = [...block[1].matchAll(/^\s*\|\s+([A-Za-z][A-Za-z0-9_]*)\b/gm)]
     .map(m => m[1]);
-  if (ctors.length !== 14 || new Set(ctors).size !== 14)
-    throw new Error("pinned Lean Event inventory is not exactly 14: " + ctors.join(','));
-  return ctors;
-}
-
-/* #81: the vote constructors ride the integrated app route exactly as
-   Reactivegas.appFold routes them (AppEvent carries VoteEvent's three). Their
-   inventory is derived from the pinned vote vocabulary — never from
-   VOTE_TAGS, VOTE_TAG_CLAIMS or a list here — and every derived constructor
-   must reach a core handler that produces the Lean effect; a constructor
-   without one is RED. */
-const MANIFEST_VOTE_EVENT_FILE = 'lean/KelGroups/Vote/Event.lean';
-
-function pinnedVoteConstructors(srcOverride) {
-  let src = srcOverride;
-  if (src === undefined) {
-    assertCitedFilesFresh(ACCEPTED_CORE.commit, [MANIFEST_VOTE_EVENT_FILE]);
-    src = execFileSync('git', ['-C', REPO, 'show',
-      ACCEPTED_CORE.commit + ':' + MANIFEST_VOTE_EVENT_FILE], { encoding: 'utf8' });
-  }
-  const block = src.match(/inductive VoteEvent where([\s\S]*?)deriving /);
-  if (!block) throw new Error('pinned Lean VoteEvent declaration not found');
-  const ctors = [...block[1].matchAll(/^\s*\|\s+([A-Za-z][A-Za-z0-9_]*)\b/gm)].map(m => m[1]);
-  if (!ctors.length) throw new Error('pinned Lean VoteEvent inventory is empty');
+  if (!ctors.length) throw new Error('pinned Lean Event inventory is empty');
   if (new Set(ctors).size !== ctors.length)
-    throw new Error('pinned Lean VoteEvent inventory has duplicates: ' + ctors.join(','));
+    throw new Error('pinned Lean Event inventory has duplicates: ' + ctors.join(','));
   return ctors;
 }
 
-/* one live witness per vote constructor, on a three-responsabile aggregate
-   (legacyThreshold 3 = 2, so one ballot decides nothing): the event is
-   applied by the integrated root and the Lean effect is observable */
+/* Every pinned Lean event vocabulary the simulator could route, DISCOVERED
+   at the accepted pin: each inductive under lean/Reactivegas and
+   lean/KelGroups whose name ends in Event, Command, Proposal or Mutation —
+   never a list of names here. Each discovered inductive is either ROUTED,
+   and then every constructor parsed from its declaration needs a live
+   witness through the integrated root (`applyIntegrated`) that produces the
+   Lean effect, or NOT PRESENTED with a named reason. A discovered inductive
+   in neither table, a table entry no longer discovered, an empty extent, a
+   constructor without a witness or a witness for no constructor is RED.
+   The legacy Event inventory keeps its own `attempt` witnesses above. */
+const VOCAB_ROOTS = ['lean/Reactivegas', 'lean/KelGroups'];
+const VOCAB_RE = /^inductive ([A-Za-z]*(?:Event|Command|Proposal|Mutation))\b[^\n]*\bwhere\b/gm;
+
+function parseVocabularies(file, src) {
+  const out = [];
+  for (const m of src.matchAll(VOCAB_RE)) {
+    const rest = src.slice(m.index + m[0].length);
+    const end = rest.search(/^(deriving|\S)/m);
+    const body = end < 0 ? rest : rest.slice(0, end);
+    const ctors = [...body.matchAll(/^\s*\|\s+([A-Za-z][A-Za-z0-9_]*)\b/gm)].map(c => c[1]);
+    out.push({ key: `${file}#${m[1]}`, name: m[1], file, ctors });
+  }
+  return out;
+}
+
+function pinnedVocabularies(extra) {
+  const files = execFileSync('git', ['-C', REPO, 'ls-tree', '-r', '--name-only',
+    ACCEPTED_CORE.commit, '--', ...VOCAB_ROOTS], { encoding: 'utf8' })
+    .split('\n').filter(f => f.endsWith('.lean')).sort();
+  if (!files.length) throw new Error('vocabulary discovery: no Lean source at the pin');
+  const vocab = [];
+  for (const file of files) {
+    const src = execFileSync('git', ['-C', REPO, 'show', ACCEPTED_CORE.commit + ':' + file],
+      { encoding: 'utf8' });
+    const found = parseVocabularies(file, src);
+    if (found.length) assertCitedFilesFresh(ACCEPTED_CORE.commit, [file]);
+    vocab.push(...found);
+  }
+  for (const [file, src] of Object.entries(extra || {})) vocab.push(...parseVocabularies(file, src));
+  if (!vocab.length) throw new Error('vocabulary discovery: empty extent');
+  return vocab;
+}
+
 const voteOpen = (v, qid) => (v.openQuestions.find(([k]) => k === qid) || [])[1] || null;
+const covAdmin = k => covMember(k, true);
+const memberKeysOf = gs => gs.members.map(([k]) => k);
+
+/* one live witness per routed constructor: { gs, signer, ev, holds(det) },
+   applied by the integrated root, its Lean effect observable on the result */
 function voteWitness(mod, tag) {
-  const agg = votes => ({ members: [covMember('anna', true), covMember('bruno', true),
-    covMember('carla', true)], pendingBase: [], appFold: { ...mod.emptyState(), votes } });
+  const agg = votes => ({ members: [covAdmin('anna'), covAdmin('bruno'), covAdmin('carla')],
+    pendingBase: [], appFold: { ...mod.emptyState(), votes } });
   const q = { kind: 'collective', proposer: 'anna', assents: [], dissents: [] };
   const withQ = () => agg({ openQuestions: [['q:w', clone(q)]], closed: [] });
   switch (tag) {
     case 'openQuestion': return { gs: agg({ openQuestions: [], closed: [] }), signer: 'anna',
-      ev: { openQuestion: { questionId: 'q:w', kind: 'collective' } },
-      holds: v => JSON.stringify(voteOpen(v, 'q:w')) === JSON.stringify(q) };
+      ev: { app: { openQuestion: { questionId: 'q:w', kind: 'collective' } } },
+      holds: det => JSON.stringify(voteOpen(det.gs.appFold.votes, 'q:w')) === JSON.stringify(q) };
     case 'cast': return { gs: withQ(), signer: 'bruno',
-      ev: { cast: { questionId: 'q:w', ballot: 'assent' } },
-      holds: v => { const w = voteOpen(v, 'q:w'); return !!w && w.assents.includes('bruno'); } };
+      ev: { app: { cast: { questionId: 'q:w', ballot: 'assent' } } },
+      holds: det => { const w = voteOpen(det.gs.appFold.votes, 'q:w');
+        return !!w && w.assents.includes('bruno'); } };
     case 'renounce': return { gs: withQ(), signer: 'anna',
-      ev: { renounce: { questionId: 'q:w' } },
-      holds: v => !voteOpen(v, 'q:w') && JSON.stringify(v.closed) === JSON.stringify(
-        [{ questionId: 'q:w', question: q, verdict: 'negative', cause: 'renounced' }]) };
+      ev: { app: { renounce: { questionId: 'q:w' } } },
+      holds: det => !voteOpen(det.gs.appFold.votes, 'q:w') &&
+        JSON.stringify(det.gs.appFold.votes.closed) === JSON.stringify(
+          [{ questionId: 'q:w', question: q, verdict: 'negative', cause: 'renounced' }]) };
     default: return null;
   }
 }
 
-function checkVoteCoverage(mod, ctors) {
-  const reasons = [];
-  for (const tag of ctors) {
-    const w = voteWitness(mod, tag);
-    if (!w) { reasons.push(`vote ${tag}: no core handler witness`); continue; }
-    try {
-      const det = mod.applyIntegrated(clone(w.gs), w.signer, { app: w.ev });
-      if (!det || det.refused) reasons.push(`vote ${tag}: live witness refused (${det && det.refused})`);
-      else if (!w.holds(det.gs.appFold.votes))
-        reasons.push(`vote ${tag}: core handler does not produce the Lean effect`);
-    } catch (e) { reasons.push(`vote ${tag}: live witness threw: ${e.message}`); }
+/* an economic AppEvent through the integrated app route lands exactly where
+   the legacy transition `attempt` lands on the same signed event */
+function economicAppWitness(mod, tag) {
+  let w = validWitness(tag);
+  if (!w && tag === 'backdonate') {
+    const donated = mod.attempt(coverageView(), { conti: [], casse: [], collections: [],
+      votes: { openQuestions: [], closed: [] } }, { tag: 'donate', author: 'anna', v: 90 });
+    if (!donated || !donated.ok) return null;
+    w = [coverageView(), donated.state, { tag, author: 'anna', w: 10 }];
   }
-  return reasons;
+  if (!w) return null;
+  const [view, state, event] = w;
+  const { tag: _t, author, ...args } = event;
+  return { gs: { members: view.members, pendingBase: [], appFold: clone(state) }, signer: author,
+    ev: { app: { [tag]: args } },
+    holds: det => {
+      const direct = mod.attempt(view, clone(state), event);
+      return !!direct && direct.ok === true &&
+        mod.canonState(det.gs.appFold) === mod.canonState(direct.state);
+    } };
+}
+
+function baseWitness(mod, tag) {
+  const boot = () => mod.bootAggregate();
+  const two = () => ({ ...boot(), members: [...boot().members, covMember('bruno', false)] });
+  const four = () => ({ ...boot(), members: [covAdmin('anna'), covAdmin('bruno'), covAdmin('carla'),
+    covMember('dora', false)], pendingBase: [['depart:dora',
+      { proposal: { departure: 'dora' }, proposer: 'anna', approvals: ['anna'] }]] });
+  switch (tag) {
+    case 'admitMember': case 'direct': return { gs: boot(), signer: 'anna',
+      ev: { direct: { admitMember: { key: 'bruno', email: 'bruno@toy.example', roles: [] } } },
+      holds: det => memberKeysOf(det.gs).includes('bruno') &&
+        JSON.stringify(det.change) === JSON.stringify({ memberAdmitted: 'bruno' }) };
+    case 'departure': case 'propose': return { gs: two(), signer: 'anna',
+      ev: { propose: { proposal: { departure: 'bruno' } } },
+      holds: det => !memberKeysOf(det.gs).includes('bruno') &&
+        JSON.stringify(det.change) === JSON.stringify({ memberRemoved: 'bruno' }) };
+    case 'changeRoles': return { gs: two(), signer: 'anna',
+      ev: { propose: { proposal: { changeRoles: { key: 'bruno',
+        roles: [{ adminRole: { admin: 'publicAdmin' } }] } } } },
+      holds: det => mod.isAdminView('bruno', { members: det.gs.members }) &&
+        JSON.stringify(det.change) === JSON.stringify({ rolesChanged: 'bruno' }) };
+    case 'approve': return { gs: four(), signer: 'bruno',
+      ev: { approve: { proposalId: 'depart:dora' } },
+      holds: det => !memberKeysOf(det.gs).includes('dora') && det.gs.pendingBase.length === 0 &&
+        JSON.stringify(det.change) === JSON.stringify({ memberRemoved: 'dora' }) };
+    case 'app': return { gs: boot(), signer: 'anna', ev: { app: { donate: { v: 10 } } },
+      holds: det => mod.canonState(det.gs.appFold) !== mod.canonState(boot().appFold) &&
+        !det.change };
+    default: return null;
+  }
+}
+
+const ROUTED_VOCABULARIES = {
+  'lean/Reactivegas/Types.lean#AppEvent': (mod, c) => voteWitness(mod, c) || economicAppWitness(mod, c),
+  'lean/KelGroups/Vote/Event.lean#VoteEvent': voteWitness,
+  'lean/KelGroups/Integration.lean#IntegratedEvent': baseWitness,
+  'lean/KelGroups/Event.lean#DirectCommand': baseWitness,
+  'lean/Reactivegas/Types.lean#Proposal': baseWitness,
+  // the legacy economic Event: covered by the attempt witnesses above
+  'lean/Reactivegas/Types.lean#Event': null,
+};
+const NOT_PRESENTED_VOCABULARIES = {
+  'lean/KelGroups/Event.lean#Proposal':
+    'historical substrate proposal (introduceMember) kept as #54 evidence; Reactivegas.apply takes Reactivegas.Proposal, so it cannot reach the simulator',
+  'lean/KelGroups/Event.lean#BaseEvent':
+    'pre-integration substrate fold vocabulary over KelGroups.Proposal; the production root carries propose/approve inside IntegratedEvent',
+  'lean/KelGroups/Event.lean#GroupEvent':
+    'generic pre-integration group fold event; superseded on the production root by IntegratedEvent',
+  'lean/KelGroups/Event.lean#BaseMutation':
+    'substrate effect computed from Reactivegas.Proposal by proposalMutation; never a signed event',
+};
+
+function checkVocabularyCoverage(mod, vocab, routed = ROUTED_VOCABULARIES,
+    notPresented = NOT_PRESENTED_VOCABULARIES) {
+  const reasons = [];
+  let witnessed = 0;
+  const keys = new Set(vocab.map(v => v.key));
+  for (const k of [...Object.keys(routed), ...Object.keys(notPresented)])
+    if (!keys.has(k)) reasons.push(`vocabulary ${k}: listed but not discovered at the pin`);
+  for (const v of vocab) {
+    if (!v.ctors.length) { reasons.push(`vocabulary ${v.key}: no constructor parsed`); continue; }
+    if (v.key in notPresented) continue;
+    if (!(v.key in routed)) {
+      reasons.push(`vocabulary ${v.key}: neither routed nor named non-presented`);
+      continue;
+    }
+    const witnessOf = routed[v.key];
+    if (witnessOf === null) continue;
+    for (const c of v.ctors) {
+      const w = witnessOf(mod, c);
+      if (!w) { reasons.push(`${v.name} ${c}: no core handler witness`); continue; }
+      try {
+        const det = mod.applyIntegrated(clone(w.gs), w.signer, w.ev);
+        if (!det || det.refused) reasons.push(`${v.name} ${c}: live witness refused (${det && det.refused})`);
+        else if (!w.holds(det)) reasons.push(`${v.name} ${c}: core handler does not produce the Lean effect`);
+        else witnessed++;
+      } catch (e) { reasons.push(`${v.name} ${c}: live witness threw: ${e.message}`); }
+    }
+  }
+  return { reasons, witnessed, vocabularies: vocab.length };
 }
 
 function validWitness(tag) {
@@ -510,15 +624,15 @@ async function checkMachineCoverage(corePath) {
     ]) if (failure) reasons.push(failure);
   }
 
-  let voteCtors = [];
-  try { voteCtors = pinnedVoteConstructors(); }
+  let vc = { reasons: [], witnessed: 0, vocabularies: 0 };
+  try { vc = checkVocabularyCoverage(mod, pinnedVocabularies()); }
   catch (e) { reasons.push(e.message); }
-  reasons.push(...checkVoteCoverage(mod, voteCtors));
+  reasons.push(...vc.reasons);
 
-  if (reasons.length) return { ok: false, reasons, pinned: ctors.length,
-    retired: 0, executable: active.length, vote: voteCtors.length };
-  return { ok: true, reasons: [], pinned: ctors.length, retired: 0,
-    executable: active.length, vote: voteCtors.length };
+  const tally = { pinned: ctors.length, retired: 0, executable: active.length,
+    vocabularies: vc.vocabularies, witnessed: vc.witnessed };
+  if (reasons.length) return { ok: false, reasons, ...tally };
+  return { ok: true, reasons: [], ...tally };
 }
 
 function stalePinSelftest() {
@@ -564,7 +678,7 @@ function staleCompositionPinSelftest() {
     throw new Error('stale-composition control did not RED with pin and master blobs: ' + message);
 }
 
-const MACHINE_CONTROLS = 'removed-attempt-case,removed-vote-handler,unhandled-vote-constructor,stale-event-pin,stale-composition-pin,manifest-removed,manifest-ambiguous,manifest-repointed';
+const MACHINE_CONTROLS = 'removed-attempt-case,removed-vote-handler,unhandled-vote-constructor,unlisted-vocabulary,stale-event-pin,stale-composition-pin,manifest-removed,manifest-ambiguous,manifest-repointed';
 
 function requireUniqueManifestNeedle() {
   const src = readFileSync(fileURLToPath(import.meta.url), 'utf8');
@@ -631,25 +745,33 @@ async function removedVoteHandlerControl() {
     writeFileSync(mutant, source.replace(needle, needle.replace('if (q)', 'if (false)')));
     const r = await checkMachineCoverage(mutant);
     const message = (r.reasons || []).join('\n');
-    if (r.ok || !/vote renounce: core handler does not produce the Lean effect/.test(message))
+    if (r.ok || !/VoteEvent renounce: core handler does not produce the Lean effect/.test(message))
       throw new Error(`removed-vote-handler control did not RED: ${message}`);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
 }
 
-/* a vote constructor the core does not handle (an inventory grown in the
-   pinned source) must RED, whatever its spelling */
-async function unhandledVoteCtorControl() {
-  const src = execFileSync('git', ['-C', REPO, 'show',
-    ACCEPTED_CORE.commit + ':' + MANIFEST_VOTE_EVENT_FILE], { encoding: 'utf8' });
+/* a vocabulary grown in the pinned source must RED whatever its spelling:
+   a constructor the core does not handle, and an event inductive neither
+   routed nor named non-presented */
+async function unhandledVocabularyControl() {
+  const mod = await loadCore(CORE);
+  const voteFile = 'lean/KelGroups/Vote/Event.lean';
+  const src = execFileSync('git', ['-C', REPO, 'show', ACCEPTED_CORE.commit + ':' + voteFile],
+    { encoding: 'utf8' });
   const grown = src.replace(/inductive VoteEvent where\n/, 'inductive VoteEvent where\n  | zzUnhandled\n');
   if (grown === src) throw new Error('selftest mutation did not grow the VoteEvent inventory');
-  const ctors = pinnedVoteConstructors(grown);
-  const mod = await loadCore(CORE);
-  const message = checkVoteCoverage(mod, ctors).join('\n');
-  if (!/vote zzUnhandled: no core handler witness/.test(message))
-    throw new Error(`unhandled-vote-constructor control did not RED: ${message}`);
+  const vocab = pinnedVocabularies().filter(v => v.key !== voteFile + '#VoteEvent')
+    .concat(parseVocabularies(voteFile, grown));
+  const m1 = checkVocabularyCoverage(mod, vocab).reasons.join('\n');
+  if (!/VoteEvent zzUnhandled: no core handler witness/.test(m1))
+    throw new Error(`unhandled-vote-constructor control did not RED: ${m1}`);
+  const stray = pinnedVocabularies({ 'lean/KelGroups/ZzStray.lean':
+    'inductive ZzEvent where\n  | zz\nderiving Repr\n' });
+  const m2 = checkVocabularyCoverage(mod, stray).reasons.join('\n');
+  if (!/vocabulary lean\/KelGroups\/ZzStray.lean#ZzEvent: neither routed nor named non-presented/.test(m2))
+    throw new Error(`unlisted-vocabulary control did not RED: ${m2}`);
 }
 
 /*
@@ -960,7 +1082,7 @@ async function selftest(work) {
   try {
     await removedAttemptCaseControl();
     await removedVoteHandlerControl();
-    await unhandledVoteCtorControl();
+    await unhandledVocabularyControl();
     stalePinSelftest();
     staleCompositionPinSelftest();
     await expectManifestRed([],
@@ -1311,7 +1433,8 @@ try {
           `${ACCEPTED_COMPOSITION.commit.slice(0, 10)}… verificato (albero esatto, righe al pin, ` +
           `instradamento derivato, copertura dei costruttori, stati elaborati freschi); ` +
           `ricevuta legata (sha ${r.sha.slice(0, 12)}…); ` +
-          `machine=${mc.executable}/${mc.executable} pinned=${mc.pinned} retired=0 vote=${mc.vote}/${mc.vote}`);
+          `machine=${mc.executable}/${mc.executable} pinned=${mc.pinned} retired=0 ` +
+          `vocabularies=${mc.vocabularies} witnessed=${mc.witnessed}`);
         code = 0;
     }
   }
