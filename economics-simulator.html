@@ -2297,7 +2297,11 @@ function verifyIntegratedV1(env, opts) {
     if (canonAggregate(stIn) !== canonAggregate(gs))
       fail(`passo ${i}: input discontinuo — derivato=${short(canonAggregate(gs))} memorizzato=${short(canonAggregate(st.input))}`);
     if (st.result.tag === 'refused' && opts.withRefusals) {
+      // the same choke point as an applied step: a payload author ≠ signer is
+      // not a Lean event at all, so no recorded refusal can excuse it
       const det = applyIntegrated(gs, st.signer, st.event);
+      if (det.refused === 'author-mismatch')
+        fail(`passo ${i}: author-mismatch — autore incorporato diverso dal firmatario`);
       if (!det.refused)
         fail(`passo ${i}: registrato rifiutato, la transizione applica`);
       const want = leanRefusalClassOf(st.result.error), got = refusalClassOf(det.refused);
@@ -5548,6 +5552,20 @@ async function selftest() {
     expect(restoreSession() === null, 'log con permessi senza verdetto accettato');
     lsSet(logKey(), rawLog);
     expect(restoreSession() === applied, 'ripristino post-sonda governo fallito');
+  }
+  // caller identity on the page's own restore: a log whose app step carries
+  // a payload author different from its signer is quarantined, never adopted
+  {
+    const smug = JSON.parse(rawLog);
+    const si = smug.integrated.steps.findIndex(st => 'app' in st.event);
+    expect(si >= 0, 'sonda autore mal costruita: nessun passo app nel log');
+    const sst = smug.integrated.steps[si];
+    const stag = Object.keys(sst.event.app)[0];
+    sst.event.app[stag] = { ...sst.event.app[stag], author: sst.signer === 'anna' ? 'bruno' : 'anna' };
+    lsSet(logKey(), JSON.stringify(smug));
+    expect(restoreSession() === null, 'log con autore incorporato diverso dal firmatario adottato');
+    lsSet(logKey(), rawLog);
+    expect(restoreSession() === applied, 'ripristino post-sonda autore fallito');
   }
 
   // frozen-contract rejection matrix, on the real consumer

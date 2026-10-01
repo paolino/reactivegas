@@ -1753,7 +1753,11 @@ function verifyIntegratedV1(env, opts) {
     if (canonAggregate(stIn) !== canonAggregate(gs))
       fail(`passo ${i}: input discontinuo — derivato=${short(canonAggregate(gs))} memorizzato=${short(canonAggregate(st.input))}`);
     if (st.result.tag === 'refused' && opts.withRefusals) {
+      // the same choke point as an applied step: a payload author ≠ signer is
+      // not a Lean event at all, so no recorded refusal can excuse it
       const det = applyIntegrated(gs, st.signer, st.event);
+      if (det.refused === 'author-mismatch')
+        fail(`passo ${i}: author-mismatch — autore incorporato diverso dal firmatario`);
       if (!det.refused)
         fail(`passo ${i}: registrato rifiutato, la transizione applica`);
       const want = leanRefusalClassOf(st.result.error), got = refusalClassOf(det.refused);

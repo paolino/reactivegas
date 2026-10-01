@@ -40,7 +40,16 @@
  *   6. proves both surfaces consume the SAME core: runs
  *      economics-simulator-build.mjs --check (stale or forked inlined copy
  *      is RED) and executes the page's actual script in a vm, comparing its
- *      probe behavior against the imported module.
+ *      probe behavior against the imported module;
+ *   7. binds caller identity (F-01 class) on both surfaces: for every
+ *      AppEvent constructor derived from lean/Reactivegas/Types.lean a
+ *      payload author ≠ signer is refused author-mismatch by
+ *      applyIntegrated, a recorded step carrying one is refused by
+ *      verifyIntegratedV1 on its applied AND its refused branch and by the
+ *      governance walk (the same step without it replays), and an equal
+ *      author yields exactly the signer's step; --selftest imports a core
+ *      with the refusal removed, and one whose refused branch bypasses
+ *      applyIntegrated, and requires this check RED on each.
  *
  * Usage:
  *   node economics-simulator-scenario-gate.mjs             # production
@@ -199,6 +208,73 @@ function assertBackdonateGovernanceBoundary(mod) {
   throw new Error('backdonate senza evidenza accettato dal governo');
 }
 
+/* --- caller identity (F-01 class): decode, validate, replay ---------------
+   An integrated app event never carries its actor: Lean's AppEvent declares
+   no author, and the signer travels apart from the event. For EVERY AppEvent
+   constructor derived from lean/Reactivegas/Types.lean (never a list here):
+   a payload author different from the signer is refused author-mismatch by
+   the integrated step (validate); a recorded step carrying one is refused by
+   the envelope verifier that the page's import and restore run first (decode,
+   replay), while the same step without it replays (control); an author equal
+   to the signer is stripped, so the step is exactly the signer's own — never
+   substituted. Judged on the imported core module and on the page's own
+   production script. */
+function appEventConstructors() {
+  const src = readFileSync(join(REPO, 'lean', 'Reactivegas', 'Types.lean'), 'utf8');
+  const block = src.match(/inductive AppEvent where([\s\S]*?)deriving /);
+  if (!block) throw new Error('F-01: AppEvent non trovato in lean/Reactivegas/Types.lean');
+  const ctors = [...block[1].matchAll(/^\s*\|\s+([A-Za-z][A-Za-z0-9_]*)\b/gm)].map(m => m[1]);
+  if (!ctors.length) throw new Error('F-01: inventario AppEvent vuoto');
+  return ctors;
+}
+
+function assertCallerIdentity(mod, where) {
+  const tags = appEventConstructors();
+  const agg = () => ({ members: [covMember('anna', true), covMember('bruno', true)],
+    pendingBase: [], appFold: mod.emptyState() });
+  const bad = [];
+  for (const tag of tags) {
+    let det;
+    try { det = mod.applyIntegrated(agg(), 'anna', { app: { [tag]: { author: 'bruno' } } }); }
+    catch (e) { bad.push(`${tag}: eccezione ${e.message}`); continue; }
+    if (!det || det.refused !== 'author-mismatch')
+      bad.push(`${tag}: ${det && det.refused ? 'rifiutato ' + det.refused : 'applicato'}`);
+  }
+  if (bad.length)
+    throw new Error(`F-01 ${where}: autore incorporato ≠ firmatario non rifiutato author-mismatch — ${bad.join('; ')}`);
+  const honest = mod.applyIntegrated(agg(), 'anna', { app: { donate: { v: 10 } } });
+  const equal = mod.applyIntegrated(agg(), 'anna', { app: { donate: { author: 'anna', v: 10 } } });
+  if (honest.refused || equal.refused ||
+      mod.canonAggregate(honest.gs) !== mod.canonAggregate(equal.gs))
+    throw new Error(`F-01 ${where}: un autore uguale al firmatario non dà il passo del firmatario`);
+  const boot = mod.bootAggregate();
+  const applied = mod.applyIntegrated(boot, 'anna', { app: { donate: { v: 10 } } });
+  const step = ev => ({ input: boot, signer: 'anna', event: { app: { donate: ev } },
+    result: { tag: 'applied', aggregate: applied.gs } });
+  const env = ev => ({ schema: 'reactivegas-integrated.trace', version: 1, initial: boot,
+    steps: [step(ev)] });
+  try { mod.verifyIntegratedV1(env({ v: 10 })); }
+  catch (e) { throw new Error(`F-01 ${where}: controllo senza autore incorporato non replaya: ${e.message}`); }
+  // every replay/verify path: the applied branch, the refused branch of the
+  // conformance corpus (a recorded refusal cannot excuse a smuggled author),
+  // and the governance walk the page's restore and import also run
+  const refusedEnv = ev => ({ ...env(ev), steps: [{ ...step(ev),
+    result: { tag: 'refused', error: { integrated: { app: { error: 'rejected' } } } } }] });
+  const paths = [
+    ['replay di un passo applicato', () => mod.verifyIntegratedV1(env({ author: 'bruno', v: 10 }))],
+    ['replay di un passo rifiutato', () => mod.verifyIntegratedV1(refusedEnv({ author: 'bruno', v: 10 }),
+      { withRefusals: true })],
+    ['cammino di governo', () => mod.verifyGovernedIntegrated(env({ author: 'bruno', v: 10 }))],
+  ];
+  for (const [path, run] of paths) {
+    let msg = null;
+    try { run(); } catch (e) { msg = e.message; }
+    if (!msg || !/author-mismatch/.test(msg))
+      throw new Error(`F-01 ${where}: ${path} con autore incorporato ≠ firmatario ${msg ? 'rifiutato per altro: ' + msg : 'accettato'}`);
+  }
+  return tags.length;
+}
+
 /* --- one scenario --------------------------------------------------------- */
 
 function runScenario(sc) {
@@ -295,6 +371,9 @@ function runSuite(opts) {
   } catch (e) {
     reasons.push(e.message);
   }
+  let callerTags = 0;
+  try { callerTags = assertCallerIdentity(core, 'modulo'); }
+  catch (e) { reasons.push(e.message); }
 
   // shared-core drift: the generated page must be byte-identical to the core
   try {
@@ -342,18 +421,19 @@ function runSuite(opts) {
         throw new Error('la pagina e il modulo divergono sullo stesso evento');
       if (JSON.stringify(RG.EVENT_ROUTES) !== JSON.stringify(core.EVENT_ROUTES))
         throw new Error('instradamento divergente fra pagina e modulo');
+      assertCallerIdentity(RG, 'pagina');
     } catch (e) {
       reasons.push('interfaccia condivisa non dimostrata: ' + e.message);
     }
   }
 
   if (reasons.length) return { ok: false, reasons };
-  return { ok: true, scenarios: ran, totalSteps, covered: [...covered].sort(), lines };
+  return { ok: true, scenarios: ran, totalSteps, covered: [...covered].sort(), lines, callerTags };
 }
 
 /* --- selftest -------------------------------------------------------------- */
 
-function selftest(work) {
+function selftest(work, mutantCore, bypassCore) {
   const sabDir = tag => {
     const d = join(work, tag);
     mkdirSync(d, { recursive: true });
@@ -445,6 +525,22 @@ function selftest(work) {
       },
     },
     {
+      name: 'core senza il rifiuto author-mismatch (F-01)',
+      expect: /F-01 modulo: autore incorporato ≠ firmatario non rifiutato/,
+      run: () => {
+        try { assertCallerIdentity(mutantCore, 'modulo'); return { ok: true, reasons: [] }; }
+        catch (e) { return { ok: false, reasons: [e.message] }; }
+      },
+    },
+    {
+      name: 'ramo dei passi rifiutati che salta il punto di strozzatura (F-01)',
+      expect: /F-01 modulo: replay di un passo rifiutato con autore incorporato ≠ firmatario accettato/,
+      run: () => {
+        try { assertCallerIdentity(bypassCore, 'modulo'); return { ok: true, reasons: [] }; }
+        catch (e) { return { ok: false, reasons: [e.message] }; }
+      },
+    },
+    {
       name: 'backdonate senza evidenza accettato dal governo',
       expect: /backdonate senza evidenza accettato dal governo/,
       run: () => {
@@ -486,13 +582,26 @@ const work = mkdtempSync(join(tmpdir(), 'rg-scenario-gate-'));
 let code = 1;
 try {
   if (process.argv.includes('--selftest')) {
-    code = selftest(work);
+    const source = readFileSync(join(REPO, 'economics-simulator-core.mjs'), 'utf8');
+    const needle = "    if (smuggled !== undefined && smuggled !== signer)\n      return { refused: 'author-mismatch' };\n";
+    if (source.split(needle).length !== 2)
+      throw new Error('selftest: il mutante F-01 non si applica esattamente una volta');
+    const mutantPath = join(work, 'economics-simulator-core-f01-mutant.mjs');
+    writeFileSync(mutantPath, source.replace(needle, ''));
+    const bypassNeedle = "      const det = applyIntegrated(gs, st.signer, st.event);\n      if (det.refused === 'author-mismatch')";
+    if (source.split(bypassNeedle).length !== 2)
+      throw new Error('selftest: il mutante di aggiramento F-01 non si applica esattamente una volta');
+    const bypassPath = join(work, 'economics-simulator-core-f01-bypass.mjs');
+    writeFileSync(bypassPath, source.replace(bypassNeedle,
+      "      const det = { refused: 'rejected' };\n      if (det.refused === 'author-mismatch')"));
+    code = selftest(work, await import(mutantPath), await import(bypassPath));
   } else {
     const r = runSuite({});
     if (r.ok) {
       console.log(`GREEN: ${r.scenarios} scenari, ${r.totalSteps} passi replayati sul core ` +
         `condiviso; asserzioni coperte: ${r.covered.join(', ')}; pagina generata identica al ` +
-        `core e stessa interfaccia dimostrata`);
+        `core e stessa interfaccia dimostrata; F-01 identità del chiamante su ${r.callerTags} ` +
+        `costruttori AppEvent derivati (modulo e pagina)`);
       r.lines.forEach(l => console.log(l));
       code = 0;
     } else {
