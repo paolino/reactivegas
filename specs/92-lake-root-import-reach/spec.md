@@ -10,11 +10,16 @@ reaches still fails, naming that module.
 
 ## Requirements
 
-- **R92-1** Every root declared by the `lean/` workspace's own Lake package
-  (lib roots and exe roots, as Lake evaluates them) is in the generated
-  driver's import closure. Source of truth is Lake's evaluated configuration:
-  no name list, no name-shape predicate, no lakefile text parsing, no
-  exclusion of tracked sources.
+- **R92-1** Every lib root declared by the `lean/` workspace's own Lake
+  package, as Lake evaluates it, plus the one existing exe root
+  (`corpusExport`), is in the generated driver's import closure. Source of
+  truth is Lake's evaluated configuration: no name list, no name-shape
+  predicate, no lakefile text parsing, no exclusion of tracked sources.
+- **R92-1x** (desk ruling A-001, option 1a) A second `lean_exe` root fails the
+  check non-zero through Lean's own duplicate-declaration import error (every
+  exe root defines `main`), naming the clashing module; it is not reported as
+  `MIRROR-IMPORT-REACH-GAP`. The negative control asserts this. No
+  checker-specific tag, no header-evaluation reach for exe roots.
 - **R92-2** A tracked `lean/**/*.lean` module outside the closure of declared
   roots and the checker's direct imports fails the check with
   `MIRROR-IMPORT-REACH-GAP <module>` naming that module. Importing every
@@ -34,6 +39,10 @@ reaches still fails, naming that module.
   `just lean` unchanged. No count quota, no weakened upstream check.
 
 ## Non-goals
+
+- Registering a second `lean_exe` root is a known limit (R92-1x): it needs a
+  checker change, because two modules defining `main` cannot share the
+  driver's environment.
 
 - No change to Lean model semantics, to `docs/en/design`, or to PR94's files.
 - No new CI workflow job: the existing `Build lean specification` job
