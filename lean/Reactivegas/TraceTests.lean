@@ -173,10 +173,12 @@ def additiveUmbrellaExports : List String :=
   umbrellaImports.filter (fun m => !baseUmbrellaImports.contains m)
 
 /-- The umbrella's additive export is `Reactivegas.Trace` plus the #54
-`Reactivegas.Composition` module, it still carries every base module, and
-nothing production-facing imports the test module. -/
+`Reactivegas.Composition` module and the #81 `Reactivegas.Lifecycle` witnesses,
+it still carries every base module, and nothing production-facing imports the
+test module. -/
 def checkImportGraph : Bool :=
-  additiveUmbrellaExports == ["Reactivegas.Trace", "Reactivegas.Composition"] &&
+  additiveUmbrellaExports ==
+      ["Reactivegas.Trace", "Reactivegas.Composition", "Reactivegas.Lifecycle"] &&
     baseUmbrellaImports.all (fun m => umbrellaImports.contains m) &&
     !umbrellaImports.contains "Reactivegas.TraceTests" &&
     traceTestsImporters.isEmpty
