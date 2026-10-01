@@ -2,6 +2,6 @@
 
 - [ ] T7601 — freeze complete production-root RED and reliance evidence.
 - [ ] T7602 — implement two consumers with explicit provenance, target, polarity, consumption, proofs and negative refund interface.
-- [ ] T7603 — preserve/register tests and CI; close the declared finite mutation rows under the shared cap.
-- [ ] T7604 — independent inspection, adjudication, optional repair/delta, exact final tree and local/remote CI.
-- [ ] T7605 — design/downstream handoff, draft PR and explicit landing-reservation wake condition.
+- [ ] T7603 — preserve/register tests and CI; one single-fault control per row.
+- [ ] T7604 — checkpoint verdicts approved, frozen gate green on head, remote CI green.
+- [ ] T7605 — PR refresh and desk merge request on the exact SHA.
