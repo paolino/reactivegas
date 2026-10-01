@@ -852,6 +852,22 @@ async function selftest() {
       check('added control detected (unclassified read RED)', ar.code !== 0 && /non classificata/.test(ar.out + ar.err),
         'exit=' + ar.code + ' ' + (ar.out + ar.err).slice(-1500));
     }
+    /* F-03 class: the same added control spelled as a quoted-bracket read is
+       detected exactly like its dot-spelled twin (spelling-independent) */
+    const addb = join(scratch, 'added-control-bracket.html');
+    copyFileSync(HTML, addb);
+    let abt = readFileSync(addb, 'utf8');
+    if (!abt.includes(aanchor)) {
+      check('bracket-spelled control planted', false, 'ancora di innesto assente');
+    } else {
+      abt = abt.replace(aanchor, `${aanchor}\n  const vx = t.closest('[data-goto-vip]');\n  if (vx) { go({ view: 'person', u: vx.dataset['vip'], hat: 'member' }); return; }`);
+      const { writeFileSync: w5 } = await import('node:fs');
+      w5(addb, abt);
+      const abr = await runChild(['--derive-only', addb]);
+      check('bracket-spelled added control detected (unclassified read RED)',
+        abr.code !== 0 && /non classificata/.test(abr.out + abr.err),
+        'exit=' + abr.code + ' ' + (abr.out + abr.err).slice(-1500));
+    }
     /* F-02 class: production geometry mutants on the real layout — a pack
        ring capped at its base radius must break separation at the pack
        transition, member angles that move with the purchase count must
@@ -884,7 +900,7 @@ async function selftest() {
     rmQuiet(scratch);
   }
   if (bad) { console.error(`SELFTEST-RED: ${bad} controlli`); process.exitCode = 1; return; }
-  console.log('SELFTEST-GREEN: full, omission both ways, mutant, both proof states, vocab path, derivation, geometry mutants');
+  console.log('SELFTEST-GREEN: full, omission both ways, mutant, both proof states, vocab path, derivation (dot and bracket), geometry mutants');
 }
 
 const deriveOnlyOn = hasFlag('--derive-only');
