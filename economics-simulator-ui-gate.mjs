@@ -612,6 +612,51 @@ async function run() {
         return { k, minC: k > 1 ? minC : null, ok: true };
       };
       const rows = [1, 2, 3, 8, 9, 10, 40, 103].map(sweep);
+      /* members × purchases: every drawn member footprint (avatar plus conto
+         and cassa chips, recomputed here from MEMBER_FOOT and memberPos, not
+         through the layout's own helper) stays apart from every other one
+         and from every purchase glyph, inside the canvas; an existing
+         member's angle does not move as the purchase count grows */
+      const MF = MEMBER_FOOT;
+      const foot = (p) => { const dir = p.y - 350 >= 0 ? 1 : -1;
+        const far = p.y + dir * (MF.cassaDy + MF.chipHalfH), near = p.y - dir * MF.rr;
+        return { x0: p.x - MF.chipHalfW, x1: p.x + MF.chipHalfW,
+          y0: Math.min(far, near), y1: Math.max(far, near) }; };
+      const apart = (a, b) => a.x1 <= b.x0 || b.x1 <= a.x0 || a.y1 <= b.y0 || b.y1 <= a.y0;
+      const boxCircle = (b, c, r) => { const dx = Math.max(b.x0 - c.x, 0, c.x - b.x1),
+        dy = Math.max(b.y0 - c.y, 0, c.y - b.y1); return Math.hypot(dx, dy) >= r; };
+      // the drawn shapes against a purchase glyph: the avatar circle and the
+      // two chip rectangles (the bounding box corner beside the avatar is empty)
+      const shapesClear = (p, c) => { const dir = p.y - 350 >= 0 ? 1 : -1;
+        const chip = dy => ({ x0: p.x - MF.chipHalfW, x1: p.x + MF.chipHalfW,
+          y0: p.y + dir * dy - MF.chipHalfH, y1: p.y + dir * dy + MF.chipHalfH });
+        return Math.hypot(p.x - c.x, p.y - c.y) >= MF.rr + 42 &&
+          boxCircle(chip(MF.contoDy), c, 42) && boxCircle(chip(MF.cassaDy), c, 42); };
+      const MS = [1, 2, 3, 8, 9, 10, 19, 40, 103], KS = [0, 1, 3, 9, 10, 40, 103];
+      const grid = [];
+      for (const m of MS) {
+        const us = Array.from({ length: m }, (_, i) => 'm' + i);
+        let ang0 = null;
+        for (const k of KS) {
+          const cols = Array.from({ length: k }, (_, i) => ({ id: i + 1, referente: us[i % m] }));
+          const g = purchaseRingLayout(us, cols, null);
+          const boxes = us.map(u => foot(g.memberPos[u]));
+          let fail = null;
+          for (let a = 0; a < m && !fail; a++) for (let b = a + 1; b < m && !fail; b++)
+            if (!apart(boxes[a], boxes[b])) fail = 'member-overlap ' + us[a] + '/' + us[b];
+          for (let a = 0; a < m && !fail; a++) for (const p of g.placements)
+            if (!shapesClear(g.memberPos[us[a]], p)) { fail = 'member-purchase-overlap ' + us[a]; break; }
+          for (let a = 0; a < k && !fail; a++) for (let b = a + 1; b < k && !fail; b++)
+            if (Math.hypot(g.placements[a].x - g.placements[b].x,
+              g.placements[a].y - g.placements[b].y) < 92 - 0.5) fail = 'purchase-overlap';
+          for (const b of boxes) if (!fail && !(b.x0 >= 380 - g.extent.halfW && b.x1 <= 380 + g.extent.halfW &&
+              b.y0 >= 350 - g.extent.halfH && b.y1 <= 350 + g.extent.halfH)) fail = 'member-outside-canvas';
+          const ang = us.map(u => Math.atan2(g.memberPos[u].y - 350, g.memberPos[u].x - 380));
+          if (ang0 === null) ang0 = ang;
+          else if (!fail && ang.some((x, i) => Math.abs(x - ang0[i]) > 1e-9)) fail = 'member-angle-moves-with-purchases';
+          grid.push({ m, k, fail, ring: Math.round(g.rings.member) });
+        }
+      }
       const angOf = cols => {
         const g = purchaseRingLayout(gusers, cols, null);
         const o = {};
@@ -630,13 +675,19 @@ async function run() {
             g.placements[a].y - g.placements[b].y));
         return m;
       })();
-      return { rows, stable, planted };
+      return { rows, stable, planted, grid };
     }`;
     const geo = await ev(geoEval);
     for (const r of geo.rows) {
       if (!r.ok) red(`geometry k=${r.k}: ${r.fail}${r.minC !== undefined ? ' minC=' + r.minC : ''}`);
       else console.log(`geometry k=${r.k}: minC=${r.minC === null ? 'none' : r.minC.toFixed(2)} separated+contained+outside`);
     }
+    for (const c of geo.grid) {
+      if (c.fail) red(`geometry members=${c.m} purchases=${c.k}: ${c.fail}`);
+    }
+    console.log(`geometry members×purchases: ${geo.grid.length} layouts, ${geo.grid.filter(c => !c.fail).length} clean (member ring at 103 members: ${geo.grid.filter(c => c.m === 103).map(c => c.ring).join('/')})`);
+    t(geo.grid.length > 0 && geo.grid.some(c => c.m === 103) && geo.grid.some(c => c.k === 103),
+      'geometry: member × purchase sweep empty or truncated');
     t(geo.stable, 'geometry: member angles unstable across counts');
     console.log('geometry angles stable 3-vs-103');
     t(geo.planted < 91.5, 'geometry omission calibration blind: planted overlap unreported');
@@ -653,6 +704,19 @@ async function run() {
         `geometry: pile ${i} outside pannable reach`);
     }
     console.log(`geometry ambient: ${amb.piles.length}/${amb.n} piles together, r==42, in reach`);
+    /* the rendered scene itself: no two member, conto, cassa or pile groups
+       overlap, measured on the SVG the browser drew (not on the layout) */
+    const drawn = await ev(`() => [...document.querySelectorAll('#scene [data-key^="member:"], #scene [data-key^="conto:"], #scene [data-key^="cassa:"], #scene [data-key^="pile:"]')]
+      .map(el => { const r = el.getBoundingClientRect(); return { k: el.dataset.key, x0: r.left, x1: r.right, y0: r.top, y1: r.bottom }; })`);
+    t(drawn.length > 0, 'geometry: no scene control rendered');
+    const hit = [];
+    for (let a = 0; a < drawn.length; a++) for (let b = a + 1; b < drawn.length; b++) {
+      const p = drawn[a], q = drawn[b];
+      if (p.x1 > q.x0 + 0.5 && q.x1 > p.x0 + 0.5 && p.y1 > q.y0 + 0.5 && q.y1 > p.y0 + 0.5)
+        hit.push(p.k + '/' + q.k);
+    }
+    t(!hit.length, `geometry: rendered controls overlap: ${hit.slice(0, 6).join(', ')}`);
+    console.log(`geometry rendered: ${drawn.length} scene controls, pairwise apart`);
     geoRan = true;
 
     /* ---- reconcile: ONE ordinary check over the derived extent (D2) ---- */
@@ -876,9 +940,11 @@ async function selftest() {
       { name: 'capped pack ring', expect: /geometry k=\d+: separation/,
         from: ': Math.max(RING_BASE, MIN_DIST / (2 * Math.sin(Math.PI / ncols)));',
         to: ': RING_BASE;' },
+      { name: 'member ring blind to the member count', expect: /geometry members=\d+ purchases=\d+: member-overlap/,
+        from: 'while (!footsApart(R_MEM)) R_MEM *= 1.02;', to: '' },
       { name: 'member angles drift with the purchase count', expect: /member angles unstable/,
-        from: 'const ang = -Math.PI / 2 + i * 2 * Math.PI / n;',
-        to: 'const ang = -Math.PI / 2 + i * 2 * Math.PI / n + ncols * 1e-3;' },
+        from: 'const ang = angleOf(i);',
+        to: 'const ang = angleOf(i) + ncols * 1e-3;' },
     ];
     for (const gm of geoMutants) {
       const gp = join(scratch, 'geo-mutant.html');

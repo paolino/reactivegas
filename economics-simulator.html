@@ -3604,6 +3604,22 @@ function loadPiles(raw) {
    pagination were rejected; shrinking glyphs are forbidden, so the render
    radius is the constant 42 and user-dragged poses stay excluded by
    statement (authored positions, not layout output). */
+/* a member's drawn footprint: the avatar (r 38) and its conto and cassa
+   chips (88×22) stacked outward from the ring centre at 55 and 81 — drawScene
+   draws from these numbers and the layout separates what they span. The
+   cassa chip is counted for every member (worst case), so electing someone
+   never moves the rings. */
+const MEMBER_FOOT = { rr: 38, chipHalfW: 44, chipHalfH: 11, contoDy: 55, cassaDy: 81, gap: 8 };
+const footBox = (x, y, cy) => {
+  const dir = y - cy >= 0 ? 1 : -1;
+  const far = y + dir * (MEMBER_FOOT.cassaDy + MEMBER_FOOT.chipHalfH);
+  const near = y - dir * MEMBER_FOOT.rr;
+  return { x0: x - MEMBER_FOOT.chipHalfW, x1: x + MEMBER_FOOT.chipHalfW,
+    y0: Math.min(far, near), y1: Math.max(far, near) };
+};
+const boxesApart = (a, b, gap) =>
+  a.x1 + gap <= b.x0 || b.x1 + gap <= a.x0 || a.y1 + gap <= b.y0 || b.y1 + gap <= a.y0;
+
 function purchaseRingLayout(users, collections, poses) {
   const CX = 380, CY = 350;
   const MEMBER_RR = 38, PURCHASE_RR = 42, GAP = 8;
@@ -3616,18 +3632,33 @@ function purchaseRingLayout(users, collections, poses) {
   // purchase glyphs (member edge clears purchase edge by 16).
   const R_PACK = ncols < 2 ? RING_BASE
     : Math.max(RING_BASE, MIN_DIST / (2 * Math.sin(Math.PI / ncols)));
-  const R_MEM = Math.max(220, R_PACK + PURCHASE_RR + MEMBER_RR + 16);
+  // member angles depend on the member index and count only, never on the
+  // purchases; the member ring then grows (never shrinks below the legacy
+  // 220 or the purchase ring) until no two member footprints come closer
+  // than the gap — any member count, no cap, no paging
+  const angleOf = i => -Math.PI / 2 + i * 2 * Math.PI / n;
+  const footsApart = r => {
+    const boxes = users.map((u, i) =>
+      footBox(CX + r * Math.cos(angleOf(i)), CY + r * Math.sin(angleOf(i)), CY));
+    for (let a = 0; a < boxes.length; a++)
+      for (let b = a + 1; b < boxes.length; b++)
+        if (!boxesApart(boxes[a], boxes[b], MEMBER_FOOT.gap)) return false;
+    return true;
+  };
+  let R_MEM = Math.max(220, R_PACK + PURCHASE_RR + MEMBER_RR + 16);
+  while (!footsApart(R_MEM)) R_MEM *= 1.02;
   const CLUSTER_R = R_PACK, PACK_R = R_PACK;
   const memberAngle = {};
   const memberPos = {};
   users.forEach((u, i) => {
-    const ang = -Math.PI / 2 + i * 2 * Math.PI / n;
+    const ang = angleOf(i);
     memberAngle[u] = ang;
     memberPos[u] = { x: CX + R_MEM * Math.cos(ang), y: CY + R_MEM * Math.sin(ang) };
   });
-  // canvas extent floored at the legacy 760x680 so small-n output keeps it
+  // canvas extent floored at the legacy 760x680 so small-n output keeps it;
+  // vertically it holds the outermost cassa chip of the top and bottom members
   const halfW = Math.max(380, R_MEM + MEMBER_RR + 24);
-  const halfH = Math.max(340, R_MEM + MEMBER_RR + 24);
+  const halfH = Math.max(340, R_MEM + MEMBER_FOOT.cassaDy + MEMBER_FOOT.chipHalfH + 16);
   const extent = { cx: CX, cy: CY, halfW, halfH, w: 2 * halfW, h: 2 * halfH };
   const rings = { member: R_MEM, pack: R_PACK };
   if (!collections.length) return { memberPos, placements: [], extent, rings };
@@ -3745,8 +3776,8 @@ function drawScene() {
     const uy = (y - CY) / R;
     const dir = uy >= 0 ? 1 : -1;
     layout['member:' + u] = { x, y };
-    layout['conto:' + u] = { x, y: y + dir * 55 };
-    if (resp(u)) layout['cassa:' + u] = { x, y: y + dir * 81 };
+    layout['conto:' + u] = { x, y: y + dir * MEMBER_FOOT.contoDy };
+    if (resp(u)) layout['cassa:' + u] = { x, y: y + dir * MEMBER_FOOT.cassaDy };
   });
 
   for (const p of geo.placements) {
@@ -3783,7 +3814,7 @@ function drawScene() {
     parts.push(`<g class="${resp(u) ? 'noderesp' : ''}" data-obj="member" data-id="${u}"
       data-key="member:${u}" role="button" tabindex="0"
       aria-label="${esc(nm(u))}${resp(u) ? ' responsabile' : ''}" transform="translate(${x},${y})">
-      <circle class="avatar" r="38"/>
+      <circle class="avatar" r="${MEMBER_FOOT.rr}"/>
       ${resp(u) ? '<text class="star" x="15" y="-16">★</text>' : ''}
       <text class="nm" y="5" style="font-size:${nm(u).length > 8 ? 10 : 13}px">${esc(nm(u))}</text>
     </g>`);
@@ -3792,7 +3823,7 @@ function drawScene() {
     parts.push(`<g class="chipg" data-obj="conto" data-id="${u}" data-key="conto:${u}"
       role="button" tabindex="0" aria-label="conto di ${esc(nm(u))}: ${esc(eur(cv))}"
       transform="translate(${cp.x},${cp.y})">
-      <rect x="-44" y="-11" width="88" height="22" rx="6"/>
+      <rect x="${-MEMBER_FOOT.chipHalfW}" y="${-MEMBER_FOOT.chipHalfH}" width="${2 * MEMBER_FOOT.chipHalfW}" height="${2 * MEMBER_FOOT.chipHalfH}" rx="6"/>
       <text y="4">conto ${esc(eur(cv))}</text>
     </g>`);
     if (resp(u)) {
@@ -3801,7 +3832,7 @@ function drawScene() {
       parts.push(`<g class="cassag" data-obj="cassa" data-id="${u}" data-key="cassa:${u}"
         role="button" tabindex="0" aria-label="cassa di ${esc(nm(u))}: ${esc(eur(kv))}"
         transform="translate(${kp.x},${kp.y})">
-        <rect x="-44" y="-11" width="88" height="22" rx="6"/>
+        <rect x="${-MEMBER_FOOT.chipHalfW}" y="${-MEMBER_FOOT.chipHalfH}" width="${2 * MEMBER_FOOT.chipHalfW}" height="${2 * MEMBER_FOOT.chipHalfH}" rx="6"/>
         <text y="4">cassa ${esc(eur(kv))}</text>
       </g>`);
     }
@@ -5389,6 +5420,58 @@ async function selftest() {
     const a40 = angOf(gusers, mkCols(40));
     for (const u of gusers)
       expect(Math.abs(a3[u] - a40[u]) < 1e-9, `anello: angolo membro instabile con le numerosità`);
+    // members × purchases: every drawn member footprint (avatar, conto and
+    // cassa chips, recomputed from MEMBER_FOOT) apart from the others and
+    // inside the canvas, the avatar and chips clear of every purchase glyph,
+    // and a member's angle unmoved as purchases grow — 103 members included
+    {
+      const MF = MEMBER_FOOT;
+      const chipAt = (p, dy) => { const dir = p.y - 350 >= 0 ? 1 : -1;
+        return { x0: p.x - MF.chipHalfW, x1: p.x + MF.chipHalfW,
+          y0: p.y + dir * dy - MF.chipHalfH, y1: p.y + dir * dy + MF.chipHalfH }; };
+      const footOf = p => { const a = chipAt(p, MF.cassaDy), dir = p.y - 350 >= 0 ? 1 : -1;
+        return { x0: a.x0, x1: a.x1, y0: Math.min(a.y0, p.y - dir * MF.rr),
+          y1: Math.max(a.y1, p.y - dir * MF.rr) }; };
+      const apart = (a, b) => a.x1 <= b.x0 || b.x1 <= a.x0 || a.y1 <= b.y0 || b.y1 <= a.y0;
+      const clearOf = (b, c) => Math.hypot(Math.max(b.x0 - c.x, 0, c.x - b.x1),
+        Math.max(b.y0 - c.y, 0, c.y - b.y1)) >= 42;
+      for (const m of [2, 9, 10, 19, 103]) {
+        const us = Array.from({ length: m }, (_, i) => 'm' + i);
+        let ang0 = null;
+        for (const k of [0, 9, 103]) {
+          const g = purchaseRingLayout(us,
+            Array.from({ length: k }, (_, i) => ({ id: i + 1, referente: us[i % m] })), null);
+          const boxes = us.map(u => footOf(g.memberPos[u]));
+          for (let a = 0; a < m; a++) {
+            for (let b = a + 1; b < m; b++)
+              expect(apart(boxes[a], boxes[b]), `anello m=${m} k=${k}: membri sovrapposti`);
+            const p = g.memberPos[us[a]];
+            expect(Math.abs(p.x - 380) + MF.chipHalfW <= g.extent.halfW &&
+              boxes[a].y0 >= 350 - g.extent.halfH && boxes[a].y1 <= 350 + g.extent.halfH,
+              `anello m=${m} k=${k}: membro fuori dalla tavola`);
+            for (const c of g.placements)
+              expect(Math.hypot(p.x - c.x, p.y - c.y) >= MF.rr + 42 &&
+                clearOf(chipAt(p, MF.contoDy), c) && clearOf(chipAt(p, MF.cassaDy), c),
+                `anello m=${m} k=${k}: membro sopra un acquisto`);
+          }
+          const ang = us.map(u => Math.atan2(g.memberPos[u].y - 350, g.memberPos[u].x - 380));
+          if (ang0 === null) ang0 = ang;
+          else expect(ang.every((x, i) => Math.abs(x - ang0[i]) < 1e-9),
+            `anello m=${m}: angolo membro mosso dagli acquisti`);
+        }
+      }
+    }
+    // the rendered scene: no two member, conto, cassa or pile groups overlap
+    {
+      const drawn = [...document.querySelectorAll('#scene [data-key^="member:"], #scene [data-key^="conto:"], ' +
+        '#scene [data-key^="cassa:"], #scene [data-key^="pile:"]')].map(el => el.getBoundingClientRect());
+      expect(drawn.length > 0, 'anello: nessun controllo disegnato');
+      for (let a = 0; a < drawn.length; a++) for (let b = a + 1; b < drawn.length; b++) {
+        const p = drawn[a], q = drawn[b];
+        expect(!(p.right > q.left + 0.5 && q.right > p.left + 0.5 &&
+          p.bottom > q.top + 0.5 && q.bottom > p.top + 0.5), 'anello: controlli disegnati sovrapposti');
+      }
+    }
     // ambient DOM: every open purchase rendered together, readable, reachable
     const exNow = purchaseRingLayout(members(), state.collections, null).extent;
     const piles = [...document.querySelectorAll('#scene [data-key^="pile:"]')];
