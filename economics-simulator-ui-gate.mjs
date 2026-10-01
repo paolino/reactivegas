@@ -852,6 +852,31 @@ async function selftest() {
       check('added control detected (unclassified read RED)', ar.code !== 0 && /non classificata/.test(ar.out + ar.err),
         'exit=' + ar.code + ' ' + (ar.out + ar.err).slice(-1500));
     }
+    /* F-02 class: production geometry mutants on the real layout — a pack
+       ring capped at its base radius must break separation at the pack
+       transition, member angles that move with the purchase count must
+       break stability; each through the ordinary full run */
+    const geoMutants = [
+      { name: 'capped pack ring', expect: /geometry k=\d+: separation/,
+        from: ': Math.max(RING_BASE, MIN_DIST / (2 * Math.sin(Math.PI / ncols)));',
+        to: ': RING_BASE;' },
+      { name: 'member angles drift with the purchase count', expect: /member angles unstable/,
+        from: 'const ang = -Math.PI / 2 + i * 2 * Math.PI / n;',
+        to: 'const ang = -Math.PI / 2 + i * 2 * Math.PI / n + ncols * 1e-3;' },
+    ];
+    for (const gm of geoMutants) {
+      const gp = join(scratch, 'geo-mutant.html');
+      const src = readFileSync(HTML, 'utf8');
+      if (src.split(gm.from).length !== 2) {
+        check(`geometry mutant planted (${gm.name})`, false, 'ancora di mutazione assente o ambigua');
+        continue;
+      }
+      const { writeFileSync: w6 } = await import('node:fs');
+      w6(gp, src.replace(gm.from, gm.to));
+      const gr = await runChild(['--html', gp]);
+      check(`geometry mutant RED (${gm.name})`, gr.code !== 0 && gm.expect.test(gr.out + gr.err),
+        'exit=' + gr.code + ' ' + (gr.out + gr.err).slice(-1500));
+    }
     const dg = await runChild(['--derive-only']);
     check('derive-only GREEN on production page', dg.code === 0,
       'exit=' + dg.code + ' ' + (dg.out + dg.err).slice(-1500));
@@ -859,7 +884,7 @@ async function selftest() {
     rmQuiet(scratch);
   }
   if (bad) { console.error(`SELFTEST-RED: ${bad} controlli`); process.exitCode = 1; return; }
-  console.log('SELFTEST-GREEN: full, omission both ways, mutant, both proof states, vocab path, derivation');
+  console.log('SELFTEST-GREEN: full, omission both ways, mutant, both proof states, vocab path, derivation, geometry mutants');
 }
 
 const deriveOnlyOn = hasFlag('--derive-only');
