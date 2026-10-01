@@ -18,8 +18,12 @@
 #   toolchain        `lean/lean-toolchain` names a Lean other than the running one
 #   roots-empty      the workspace package declares no library or executable
 #   root-build       a registered root imports a module that does not exist
+#   second-exe       a second `lean_exe` root defining `main`: a known limit. It
+#                    must fail through Lean's duplicate-declaration import error
+#                    naming the new root module (every exe root declares `main`,
+#                    and the driver shares one environment with corpusExport's).
 #
-# Setup legs must not be reported as a reach gap. A checker disabled to exit 0
+# Legs other than reach must not report a reach gap. A checker disabled to exit 0
 # fails every leg. Exit 0 with MIRROR-CONTROL-OK iff every leg holds.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -142,6 +146,12 @@ new_leg root-build
 printf '\nlean_lib ReachControlBadImport where\n  srcDir := "."\n' >> "$LEG_DIR/lean/lakefile.lean"
 printf 'import ReachControlNoSuchModule\n' > "$LEG_DIR/lean/ReachControlBadImport.lean"
 run_leg root-build 'MIRROR-LAKE-ROOT-BUILD-FAILED' 'ReachControlNoSuchModule'
+
+# second-exe
+new_leg second-exe
+printf '\nlean_exe reachControlExe where\n  root := `ReachControlExe\n' >> "$LEG_DIR/lean/lakefile.lean"
+printf 'def main : IO Unit := pure ()\n' > "$LEG_DIR/lean/ReachControlExe.lean"
+run_leg second-exe "import $(module_of lean/ReachControlExe.lean) failed, environment already contains 'main'"
 
 if [ "$failed" -ne 0 ]; then
   echo 'MIRROR-CONTROL-FAILED' >&2
