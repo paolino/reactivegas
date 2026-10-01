@@ -19,8 +19,14 @@
  *      corpus); never a copied transition implementation;
  *   6. fails on any discontinuity, outcome mismatch, post-state difference,
  *      threshold-name mismatch, or missing/empty envelope;
- *   7. prints counts, the fresh sha, and GREEN only after BOTH Lean
- *      regeneration equivalence and production-JS replay succeed.
+ *   7. recognises every #81 row the vote fold can exhibit (L-1, L-3, L-4,
+ *      L-5, L-6, L-6b, R-1, R-2 of specs/81-v5-lifecycle/spec.md) in the FRESH
+ *      corpus by what the fold did on a step, and judges each by replaying the
+ *      fresh envelope through the production verifier up to its first witness
+ *      step; a row without a witness, or one the page does not reach, is RED;
+ *   8. prints counts, the fresh sha, the row witnesses, and GREEN only after
+ *      Lean regeneration equivalence, production-JS replay and every row
+ *      succeed.
  *
  * Usage from any working directory:
  *   node /path/to/repo/economics-simulator-vote-trace-gate.mjs
@@ -29,8 +35,12 @@
  * --selftest proves the gate can fail: a mutated vote post-state in a scratch
  * copy of the embedded envelope, an emptied embedded vote corpus, and a
  * mutated stated sha — each RED for its intended reason — then production
- * GREEN. Temporary artifacts live in a fresh mkdtemp directory; the repo
- * stays clean.
+ * GREEN — plus one production mutant per #81 row (the page's own Vote
+ * transcription edited in a scratch copy: renounce left open, closed positive,
+ * recorded .tally, record discarded, every question closed, unrelated
+ * questions touched, non-proposer renounce and non-designee ballot accepted),
+ * each RED on its row. A mutant whose edit does not apply exactly once is RED.
+ * Temporary artifacts live in a fresh mkdtemp directory; the repo stays clean.
  */
 
 import { readFileSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
@@ -98,6 +108,86 @@ function loadProduction(doc) {
   if (!ctx.window.RG || typeof ctx.window.RG.kelTraceConformance !== 'function')
     throw new Error('il codice di produzione non espone kelTraceConformance: esecuzione non provata');
   return { RG: ctx.window.RG, scriptSha: sha256(src) };
+}
+
+/* --- #81 rows (V-5 renounce, S-12 refusals) in the fresh Lean corpus -------
+   Each row of specs/81-v5-lifecycle/spec.md this vote fold can exhibit is
+   recognised in the FRESH producer output by what the authoritative fold did
+   on that step — never by a seed name or a step index. A row with no witness
+   step is RED (the corpus stopped exhibiting it). A witnessed row is judged by
+   replaying the fresh envelope through the page's production verifier up to
+   and including its first witness step: the page must reach the outcome the
+   Lean fold recorded there. The departure rows (L-2, L-6a) need a base
+   transition and are judged by the integrated trace gate. */
+
+const vjson = x => JSON.stringify(x);
+const vOpen = (gs, qid) => (gs.openQuestions.find(([k]) => k === qid) || [])[1] || null;
+const vIsResp = (view, k) =>
+  view.some(([key, m]) => key === k && m.roles.some(r => 'adminRole' in r));
+const vPerm = q => (q && q.kind && typeof q.kind === 'object' && q.kind.permission) || null;
+
+/* the proposer's own renounce, applied: the step V-5 rows are read on */
+function renounceClosure(st) {
+  if (!st.event.renounce || st.result.tag !== 'applied') return null;
+  const qid = st.event.renounce.questionId;
+  const q = vOpen(st.input, qid);
+  if (!q || q.proposer !== st.signer) return null;
+  const post = st.result.state;
+  const added = post.closed.slice(st.input.closed.length);
+  const others = st.input.openQuestions.filter(([k]) => k !== qid);
+  return { qid, q, post, added, others };
+}
+
+const ROWS81_VOTE = {
+  'L-1': st => { const r = renounceClosure(st); return !!r && !vOpen(r.post, r.qid); },
+  'L-3': st => { const r = renounceClosure(st);
+    return !!r && r.added.some(c => c.questionId === r.qid && c.verdict === 'negative'); },
+  'L-4': st => { const r = renounceClosure(st);
+    return !!r && r.added.some(c => c.questionId === r.qid && c.cause === 'renounced'); },
+  'L-5': st => { const r = renounceClosure(st);
+    return !!r && vjson(r.post.closed.slice(0, st.input.closed.length)) === vjson(st.input.closed) &&
+      r.added.some(c => c.questionId === r.qid && vjson(c.question) === vjson(r.q)); },
+  'L-6': st => { const r = renounceClosure(st);
+    return !!r && r.others.length > 0 && r.added.length === 1 && r.added[0].questionId === r.qid; },
+  'L-6b': st => { const r = renounceClosure(st);
+    return !!r && r.others.length > 0 &&
+      r.others.every(([k, q]) => vjson(vOpen(r.post, k)) === vjson(q)); },
+  'R-1': st => {
+    if (!st.event.renounce || st.result.tag !== 'refused') return false;
+    const q = vOpen(st.input, st.event.renounce.questionId);
+    return !!q && vIsResp(st.view, st.signer) && q.proposer !== st.signer &&
+      st.result.error === 'notProposer';
+  },
+  'R-2': st => {
+    if (!st.event.cast || st.result.tag !== 'refused') return false;
+    const q = vOpen(st.input, st.event.cast.questionId);
+    const perm = vPerm(q);
+    return !!perm && vIsResp(st.view, st.signer) && perm.designee !== st.signer &&
+      st.result.error === 'notDesignee';
+  },
+};
+
+/* rows → first witness (envelope, step) in the fresh corpus, then the
+   production judgment on the prefix ending at that step */
+function judgeRows81(fresh, RG, rows) {
+  const out = [];
+  for (const [row, isWitness] of Object.entries(rows)) {
+    let hit = null;
+    for (const n of Object.keys(fresh)) {
+      const i = fresh[n].steps.findIndex(st => { try { return isWitness(st); } catch { return false; } });
+      if (i >= 0) { hit = { n, i }; break; }
+    }
+    if (!hit) { out.push({ row, ok: false, why: 'nessun passo testimone nel corpus Lean fresco' }); continue; }
+    const env = fresh[hit.n];
+    try {
+      RG.verifyKelTraceV1({ ...env, steps: env.steps.slice(0, hit.i + 1) });
+      out.push({ row, ok: true, at: `${hit.n}#${hit.i}` });
+    } catch (e) {
+      out.push({ row, ok: false, at: `${hit.n}#${hit.i}`,
+        why: 'la pagina non raggiunge l’esito Lean: ' + e.message.slice(0, 200) });
+    }
+  }
+  return out;
 }
 
 /* --- one full gate evaluation --------------------------------------------- */
@@ -198,9 +288,13 @@ function runGate(opts) {
     reasons.push('replay JS di produzione sul corpus voto fresco ROSSO: ' + e.message);
   }
 
-  if (reasons.length) return { ok: false, reasons };
+  const rows81 = judgeRows81(fresh, prod.RG, ROWS81_VOTE);
+  for (const r of rows81)
+    if (!r.ok) reasons.push(`riga #81 ${r.row}${r.at ? ' @' + r.at : ''} ROSSA: ${r.why}`);
+
+  if (reasons.length) return { ok: false, reasons, rows81 };
   return { ok: true, envelopes: freshNames.length, embSteps, freshSteps,
-    freshSha, scriptSha: prod.scriptSha };
+    freshSha, scriptSha: prod.scriptSha, rows81 };
 }
 
 /* --- selftest: three negative axes, then production GREEN ------------------ */
@@ -234,9 +328,54 @@ function selftest(work) {
         (emb.statedSha[0] === '0' ? '1' : '0') + emb.statedSha.slice(1)),
     },
   ];
+  // production mutants: the page's own Vote transcription mutated in a
+  // scratch copy, one #81 behaviour at a time; each must turn its row RED
+  // through the same judgment that accepts production. A mutant whose edit
+  // does not apply exactly once is itself RED (it would test nothing).
+  const mutant = (from, to) => () => {
+    const pairs = Array.isArray(from) ? from.map((f, k) => [f, to[k]]) : [[from, to]];
+    let out = doc;
+    for (const [f, t] of pairs) {
+      const n = out.split(f).length - 1;
+      if (n !== 1) throw new Error(`mutante non applicato: «${f.slice(0, 60)}» trovato ${n} volte`);
+      out = out.replace(f, t);
+    }
+    return out;
+  };
+  const RENOUNCE_CLOSE =
+    "closed: gs.closed.concat([{ questionId, question: q, verdict: 'negative', cause: 'renounced' }]) };";
+  controls.push(
+    { name: 'renounce del proponente resta aperto (L-1)', expect: /riga #81 L-1 /,
+      make: mutant("if (q) effected = { openQuestions: vtErase(questionId, gs.openQuestions),",
+        "if (false) effected = { openQuestions: vtErase(questionId, gs.openQuestions),") },
+    { name: 'renounce chiude positivo (L-3)', expect: /riga #81 L-3 /,
+      make: mutant("verdict: 'negative', cause: 'renounced'", "verdict: 'positive', cause: 'renounced'") },
+    { name: 'renounce registra .tally (L-4)', expect: /riga #81 L-4 /,
+      make: mutant("verdict: 'negative', cause: 'renounced'", "verdict: 'negative', cause: 'tally'") },
+    { name: 'renounce chiude e scarta il record (L-5)', expect: /riga #81 L-5 /,
+      make: mutant(RENOUNCE_CLOSE, 'closed: gs.closed.slice() };') },
+    { name: 'renounce chiude ogni domanda aperta (L-6)', expect: /riga #81 L-6 /,
+      make: mutant(["if (q) effected = { openQuestions: vtErase(questionId, gs.openQuestions),", RENOUNCE_CLOSE],
+        ["if (q) effected = { openQuestions: [],",
+         "closed: gs.closed.concat(gs.openQuestions.map(([questionId, question]) => " +
+         "({ questionId, question, verdict: 'negative', cause: 'renounced' }))) };"]) },
+    { name: 'renounce tocca le domande estranee (L-6b)', expect: /riga #81 L-6b /,
+      make: mutant("if (q) effected = { openQuestions: vtErase(questionId, gs.openQuestions),",
+        "if (q) effected = { openQuestions: [],") },
+    { name: 'renounce di un non proponente accettato (R-1)', expect: /riga #81 R-1 /,
+      make: mutant("return signer === q.proposer ? null : 'notProposer';", 'return null;') },
+    { name: 'voto di un non designato registrato (R-2)', expect: /riga #81 R-2 /,
+      make: mutant("return perm && signer !== perm.designee ? 'notDesignee' : null;", 'return null;') },
+  );
   for (const c of controls) {
     const p = join(work, 'sab.html');
-    writeFileSync(p, c.make());
+    let sab;
+    try { sab = c.make(); }
+    catch (e) {
+      console.error(`SELFTEST RED: controllo «${c.name}»: ${e.message}`);
+      return 1;
+    }
+    writeFileSync(p, sab);
     const r = runGate({ html: p, freshRaw });
     if (r.ok) {
       console.error(`SELFTEST RED: controllo «${c.name}» ACCETTATO dal gate`);
@@ -254,7 +393,7 @@ function selftest(work) {
     console.error('SELFTEST RED: il gate di produzione non torna GREEN:\n' + green.reasons.join('\n'));
     return 1;
   }
-  report(green, 'selftest GREEN: 3 controlli negativi RED per il motivo atteso; ');
+  report(green, `selftest GREEN: ${controls.length} controlli negativi RED per il motivo atteso; `);
   return 0;
 }
 
@@ -262,7 +401,8 @@ function report(r, prefix) {
   console.log((prefix || '') +
     `GREEN: ${r.envelopes} envelope voto; rigenerazione Lean identica (sha ${r.freshSha.slice(0, 12)}…); ` +
     `replay di produzione: ${r.embSteps} passi sul corpus incorporato + ${r.freshSteps} sul corpus fresco ` +
-    `(script eseguito, sha ${r.scriptSha.slice(0, 12)}…)`);
+    `(script eseguito, sha ${r.scriptSha.slice(0, 12)}…); ` +
+    `righe #81: ${r.rows81.map(x => x.row + "@" + x.at).join(" ")}`);
 }
 
 /* --- CLI ------------------------------------------------------------------- */

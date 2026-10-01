@@ -5535,6 +5535,39 @@ async function selftest() {
   expect(document.querySelector('[data-teach="benvenuto"]'), 'spiegazioni non ripristinate');
   await click('#view [data-teachx="benvenuto"]');
   expect(!document.querySelector('[data-teach="benvenuto"]'), 'spiegazione non congedabile');
+
+  // V-5 on the real controls: Bruno opens the permesso question of Anna's
+  // «Farina», then leaves the group. In the transition of the departure his
+  // question closes NEGATIVA with cause proposerDeparted, and the journal
+  // entry of that same step says so — never another cause, never later.
+  await click('#crumbs [data-crumb="0"]');
+  await click('[data-key="cassa:anna"]');
+  await click('#hat-cassiere [data-task="openPurchase"]');
+  await click('#pop [data-l="Farina"]');
+  const farina = state.collections.find(c => lbl(c.id) === 'Farina');
+  expect(farina && farina.referente === 'anna', 'acquisto «Farina» di Anna non aperto');
+  const fq = permQid(farina.id);
+  await click('#crumbs [data-crumb="0"]');
+  await click(`[data-key="pile:${farina.id}"]`);
+  await click('#view [data-kgpropose]');
+  await click('#pop .chip[data-id="bruno"]');
+  const fOpen = vtLookup(fq, state.votes.openQuestions);
+  expect(fOpen && fOpen.proposer === 'bruno', 'domanda di Bruno non aperta');
+  const closedBefore = state.votes.closed.length;
+  await click('#crumbs [data-crumb="0"]');
+  await click('#gtasks [data-task="departure"]');
+  await click('#pop .chip[data-id="bruno"]');
+  await click('#pop .chip[data-id="anna"]');
+  for (const k of RG.bg.members.map(([k]) => k))
+    if (RG.bg.pendingBase.length && document.querySelector(`#govcard [data-bgapprove][data-bgsigner="${k}"]`))
+      await click(`#govcard [data-bgapprove][data-bgsigner="${k}"]`);
+  expect(!RG.bg.members.some(([k]) => k === 'bruno'), 'uscita di Bruno non applicata');
+  expect(!vtLookup(fq, state.votes.openQuestions), 'la domanda di chi esce è rimasta aperta');
+  const fRec = state.votes.closed.slice(closedBefore).find(r => r.questionId === fq);
+  expect(fRec && fRec.verdict === 'negative' && fRec.cause === 'proposerDeparted',
+    'la domanda di chi esce non è chiusa NEGATIVA per la sua uscita');
+  expect(lastEntry().innerText.includes('uscita di chi l’ha proposta'),
+    'la storia non mostra la chiusura per uscita nello stesso passo');
 }
 
 if (IS_SELFTEST) {

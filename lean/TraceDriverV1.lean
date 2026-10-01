@@ -25,12 +25,16 @@ cd lean && lake env lean TraceDriverV1.lean
 that, compares the fresh output against the embedded fixture, and replays it
 through the page's production JavaScript.)
 
-If any seeded step is refused, the driver throws instead of emitting a
-usable-looking corpus. The seed contains applied steps only.
+Traces A and B contain applied steps only: if any of their seeded steps is
+refused, the driver throws instead of emitting a usable-looking corpus. Trace C
+(the #81 V-5 closures and S-12 refusals) seeds each step with its expected
+outcome and records a refused step with the production error and an unchanged
+aggregate; an outcome other than the seeded one throws in the same way.
 -/
 
 open Lean (ToJson toJson Json)
 open KelGroups (GroupState Key Key IntegratedEvent BaseChange BaseMutation Member Role Admin)
+open Reactivegas (ProductionError)
 
 namespace TraceDriverV1
 
@@ -49,6 +53,9 @@ deriving instance Lean.ToJson for KelGroups.Vote.VoteState
 deriving instance Lean.ToJson for Pledge
 deriving instance Lean.ToJson for Collection
 deriving instance Lean.ToJson for State
+deriving instance Lean.ToJson for StepError
+deriving instance Lean.ToJson for KelGroups.ValidationError
+deriving instance Lean.ToJson for KelGroups.IntegratedError
 
 /-- The restricted Reactivegas proposal in the consumer's shape. -/
 def jsonProposal : Proposal → Json
@@ -195,6 +202,100 @@ def traceB : List Seed := [
   ("anna", propose (.changeRoles "bruno" socioRoles))
 ]
 
+/-- One seeded signed integrated event with its expected outcome (trace C):
+`true` = the production root applies it, `false` = it refuses it. -/
+abbrev CheckedSeed := Key × KelGroups.IntegratedEvent Proposal AppEvent × Bool
+
+/-- The production refusal in the consumer's shape (derived `ToJson`). -/
+def errorJson : ProductionError → Json
+  | .comuneReserved => Json.str "comuneReserved"
+  | .integrated err => Json.mkObj [("integrated", toJson err)]
+
+/-- Fold checked seeds through the production root. An applied step records
+the post-aggregate exactly as `runSeeds?`; a refused step records the
+production error and leaves the aggregate as it was (the next step's input
+is this step's input). An outcome other than the seeded one aborts with its
+index, so a broken seed never emits a partial corpus. -/
+def runChecked? (gs : GroupState State) (i : Nat) (seeds : List CheckedSeed) :
+    Except String (List Json) :=
+  match seeds with
+  | [] => .ok []
+  | (signer, ev, expectApplied) :: rest =>
+      match Reactivegas.apply KelGroups.Vote.legacyThreshold
+          Reactivegas.probeAuth gs signer ev with
+      | .ok res =>
+          if !expectApplied then
+            .error s!"passo {i} ({signer}): applicato dove era atteso un rifiuto"
+          else
+            match runChecked? res.state (i + 1) rest with
+            | .ok tail =>
+                .ok (Json.mkObj
+                  [("input", aggJson gs), ("signer", Json.str signer),
+                   ("event", jsonIntegratedEvent ev),
+                   ("result", Json.mkObj [("tag", "applied"),
+                     ("aggregate", aggJson res.state),
+                     ("change", match res.change with
+                       | some (.memberAdmitted k) => Json.mkObj [("memberAdmitted", toJson k)]
+                       | some (.memberRemoved k) => Json.mkObj [("memberRemoved", toJson k)]
+                       | some (.rolesChanged k) => Json.mkObj [("rolesChanged", toJson k)]
+                       | none => Json.null)])] :: tail)
+            | .error e => .error e
+      | .error err =>
+          if expectApplied then
+            .error s!"passo {i} ({signer}): il production root ha rifiutato — {repr err}"
+          else
+            match runChecked? gs (i + 1) rest with
+            | .ok tail =>
+                .ok (Json.mkObj
+                  [("input", aggJson gs), ("signer", Json.str signer),
+                   ("event", jsonIntegratedEvent ev),
+                   ("result", Json.mkObj [("tag", "refused"),
+                     ("error", errorJson err)])] :: tail)
+            | .error e => .error e
+termination_by seeds.length
+
+/-- Trace C: the V-5 lifecycle and S-12 refusals (#81) through the production
+root, on the departure fixture of `Reactivegas.Lifecycle` (five
+responsabili, `legacyThreshold 5 = 3`, `legacyThreshold 4 = 2`) reached from
+the founded aggregate by signed admissions and elections. `qc` closes by
+tally in the setup, so the closure log is non-empty before any V-5 closure.
+`carlo`'s ballot on `dora`'s permission question addressed to `bruno` is
+refused (`notDesignee`), `anna`'s renounce of `dora`'s `qd1` is refused
+(`notProposer`); both leave the aggregate unchanged. `carlo` renounces his own
+`qz`: it closes `.negative`/`.renounced` and every other open question stays
+as it stood. Then `dora` leaves: in the transition of the enacting approval
+her `qd1` and `qd2` close `.negative`/`.proposerDeparted`, and `anna`'s `qx`,
+whose stale tally (`anna`, `dora`) crosses the four-responsabile threshold,
+closes `.positive`/`.franchiseChange`; `bruno`'s `qy` stays open. -/
+def traceC : List CheckedSeed := [
+  ("anna", admit "bruno", true), ("anna", elect "bruno", true),
+  ("anna", admit "carlo", true), ("anna", elect "carlo", true),
+  ("anna", admit "dora", true), ("anna", elect "dora", true),
+  ("bruno", approve "roles:dora", true),
+  ("anna", admit "elena", true), ("anna", elect "elena", true),
+  ("bruno", approve "roles:elena", true),
+  ("elena", appE (.openQuestion "qc" .collective), true),
+  ("bruno", appE (.cast "qc" .dissent), true),
+  ("carlo", appE (.cast "qc" .dissent), true),
+  ("elena", appE (.cast "qc" .dissent), true),
+  ("dora", appE (.openQuestion "qd1" .collective), true),
+  ("dora", appE (.cast "qd1" .assent), true),
+  ("anna", appE (.cast "qd1" .assent), true),
+  ("dora", appE (.openQuestion "qd2" (.permission "bruno")), true),
+  ("anna", appE (.openQuestion "qx" .collective), true),
+  ("anna", appE (.cast "qx" .assent), true),
+  ("dora", appE (.cast "qx" .assent), true),
+  ("bruno", appE (.openQuestion "qy" .collective), true),
+  ("carlo", appE (.cast "qy" .dissent), true),
+  ("carlo", appE (.cast "qd2" .assent), false),
+  ("anna", appE (.renounce "qd1"), false),
+  ("carlo", appE (.openQuestion "qz" .collective), true),
+  ("carlo", appE (.renounce "qz"), true),
+  ("anna", propose (.departure "dora"), true),
+  ("bruno", approve "depart:dora", true),
+  ("carlo", approve "depart:dora", true)
+]
+
 /-- The guarded founding aggregate: the founding admin arrives through the
 initial aggregate, never by a self-admitting event. -/
 def foundedAggregate : GroupState State :=
@@ -204,15 +305,18 @@ def foundedAggregate : GroupState State :=
     appFold := State.empty }
 
 #eval do
-  match runSeeds? foundedAggregate 0 traceA, runSeeds? foundedAggregate 0 traceB with
-  | .ok a, .ok b =>
+  match runSeeds? foundedAggregate 0 traceA, runSeeds? foundedAggregate 0 traceB,
+      runChecked? foundedAggregate 0 traceC with
+  | .ok a, .ok b, .ok c =>
       let env (steps : List Json) :=
         Json.mkObj [("schema", "reactivegas-integrated.trace"), ("version", (1 : Nat)),
           ("initial", aggJson foundedAggregate), ("steps", Json.arr steps.toArray)]
-      IO.println (Json.mkObj [("A", env a), ("B", env b)]).compress
-  | .error dbg, _ =>
+      IO.println (Json.mkObj [("A", env a), ("B", env b), ("C", env c)]).compress
+  | .error dbg, _, _ =>
     throw (IO.userError s!"SEED-TRACE-EVENT-REFUSED (traceA): {dbg}")
-  | _, .error dbg =>
+  | _, .error dbg, _ =>
     throw (IO.userError s!"SEED-TRACE-EVENT-REFUSED (traceB): {dbg}")
+  | _, _, .error dbg =>
+    throw (IO.userError s!"SEED-TRACE-OUTCOME-MISMATCH (traceC): {dbg}")
 
 end TraceDriverV1

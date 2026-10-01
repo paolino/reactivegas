@@ -203,3 +203,28 @@ lean-mirrors:
     #!/usr/bin/env bash
     set -euo pipefail
     scripts/check-lean-mirrors
+
+# Run the simulator gates: the build --check, then every
+# economics-simulator-*-gate.mjs gate and its --selftest, failing on the first
+# error. The gate set is discovered, never listed; an empty set is red. The
+# trace gates replay the two committed Lean drivers, built first.
+simulator:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    shopt -s nullglob
+    gates=(economics-simulator-*-gate.mjs)
+    if [ "${#gates[@]}" -eq 0 ]; then
+        echo 'simulator: no economics-simulator-*-gate.mjs discovered' >&2
+        exit 1
+    fi
+    echo "[simulator] lake build TraceDriverV1 KelTraceDriverV1"
+    (cd lean && lake build TraceDriverV1 KelTraceDriverV1)
+    echo "[simulator] economics-simulator-build.mjs --check"
+    node economics-simulator-build.mjs --check
+    for gate in "${gates[@]}"; do
+        echo "[simulator] ${gate}"
+        node "${gate}"
+        echo "[simulator] ${gate} --selftest"
+        node "${gate}" --selftest
+    done
+    echo "[simulator] OK gates=${#gates[@]}"

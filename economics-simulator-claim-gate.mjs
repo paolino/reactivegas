@@ -45,8 +45,13 @@
  *      subtracts the exact dated #62 retirement manifest, and executes a
  *      valid witness through the exported real `attempt` for every remaining
  *      constructor — returning/refusing is not coverage; ok:true is required
- *      and `unknown event tag` is RED. A printed GREEN contains
- *      `machine=14/14 pinned=14 retired=0`;
+ *      and `unknown event tag` is RED. It derives the VoteEvent constructor
+ *      inventory (the #81 set: openQuestion, cast, renounce) from the same
+ *      pin's lean/KelGroups/Vote/Event.lean and requires, for each, a live
+ *      witness through the integrated `applyIntegrated` that is applied AND
+ *      shows the Lean effect (renounce: closed .negative/.renounced); a
+ *      constructor without a core handler is RED. A printed GREEN contains
+ *      `machine=14/14 pinned=14 retired=0 vote=3/3`;
  *  12. exits nonzero with a precise reason on any mismatch, zero on GREEN.
  *
  * Together with the page's rendering (which draws the three user-facing
@@ -329,6 +334,69 @@ function pinnedConstructors() {
   return ctors;
 }
 
+/* #81: the vote constructors ride the integrated app route exactly as
+   Reactivegas.appFold routes them (AppEvent carries VoteEvent's three). Their
+   inventory is derived from the pinned vote vocabulary — never from
+   VOTE_TAGS, VOTE_TAG_CLAIMS or a list here — and every derived constructor
+   must reach a core handler that produces the Lean effect; a constructor
+   without one is RED. */
+const MANIFEST_VOTE_EVENT_FILE = 'lean/KelGroups/Vote/Event.lean';
+
+function pinnedVoteConstructors(srcOverride) {
+  let src = srcOverride;
+  if (src === undefined) {
+    assertCitedFilesFresh(ACCEPTED_CORE.commit, [MANIFEST_VOTE_EVENT_FILE]);
+    src = execFileSync('git', ['-C', REPO, 'show',
+      ACCEPTED_CORE.commit + ':' + MANIFEST_VOTE_EVENT_FILE], { encoding: 'utf8' });
+  }
+  const block = src.match(/inductive VoteEvent where([\s\S]*?)deriving /);
+  if (!block) throw new Error('pinned Lean VoteEvent declaration not found');
+  const ctors = [...block[1].matchAll(/^\s*\|\s+([A-Za-z][A-Za-z0-9_]*)\b/gm)].map(m => m[1]);
+  if (!ctors.length) throw new Error('pinned Lean VoteEvent inventory is empty');
+  if (new Set(ctors).size !== ctors.length)
+    throw new Error('pinned Lean VoteEvent inventory has duplicates: ' + ctors.join(','));
+  return ctors;
+}
+
+/* one live witness per vote constructor, on a three-responsabile aggregate
+   (legacyThreshold 3 = 2, so one ballot decides nothing): the event is
+   applied by the integrated root and the Lean effect is observable */
+const voteOpen = (v, qid) => (v.openQuestions.find(([k]) => k === qid) || [])[1] || null;
+function voteWitness(mod, tag) {
+  const agg = votes => ({ members: [covMember('anna', true), covMember('bruno', true),
+    covMember('carla', true)], pendingBase: [], appFold: { ...mod.emptyState(), votes } });
+  const q = { kind: 'collective', proposer: 'anna', assents: [], dissents: [] };
+  const withQ = () => agg({ openQuestions: [['q:w', clone(q)]], closed: [] });
+  switch (tag) {
+    case 'openQuestion': return { gs: agg({ openQuestions: [], closed: [] }), signer: 'anna',
+      ev: { openQuestion: { questionId: 'q:w', kind: 'collective' } },
+      holds: v => JSON.stringify(voteOpen(v, 'q:w')) === JSON.stringify(q) };
+    case 'cast': return { gs: withQ(), signer: 'bruno',
+      ev: { cast: { questionId: 'q:w', ballot: 'assent' } },
+      holds: v => { const w = voteOpen(v, 'q:w'); return !!w && w.assents.includes('bruno'); } };
+    case 'renounce': return { gs: withQ(), signer: 'anna',
+      ev: { renounce: { questionId: 'q:w' } },
+      holds: v => !voteOpen(v, 'q:w') && JSON.stringify(v.closed) === JSON.stringify(
+        [{ questionId: 'q:w', question: q, verdict: 'negative', cause: 'renounced' }]) };
+    default: return null;
+  }
+}
+
+function checkVoteCoverage(mod, ctors) {
+  const reasons = [];
+  for (const tag of ctors) {
+    const w = voteWitness(mod, tag);
+    if (!w) { reasons.push(`vote ${tag}: no core handler witness`); continue; }
+    try {
+      const det = mod.applyIntegrated(clone(w.gs), w.signer, { app: w.ev });
+      if (!det || det.refused) reasons.push(`vote ${tag}: live witness refused (${det && det.refused})`);
+      else if (!w.holds(det.gs.appFold.votes))
+        reasons.push(`vote ${tag}: core handler does not produce the Lean effect`);
+    } catch (e) { reasons.push(`vote ${tag}: live witness threw: ${e.message}`); }
+  }
+  return reasons;
+}
+
 function validWitness(tag) {
   const base = () => [coverageView(), { conti: [['carla', 100]], casse: [], collections: [],
     votes: { openQuestions: [], closed: [] } }];
@@ -442,10 +510,15 @@ async function checkMachineCoverage(corePath) {
     ]) if (failure) reasons.push(failure);
   }
 
+  let voteCtors = [];
+  try { voteCtors = pinnedVoteConstructors(); }
+  catch (e) { reasons.push(e.message); }
+  reasons.push(...checkVoteCoverage(mod, voteCtors));
+
   if (reasons.length) return { ok: false, reasons, pinned: ctors.length,
-    retired: 0, executable: active.length };
+    retired: 0, executable: active.length, vote: voteCtors.length };
   return { ok: true, reasons: [], pinned: ctors.length, retired: 0,
-    executable: active.length };
+    executable: active.length, vote: voteCtors.length };
 }
 
 function stalePinSelftest() {
@@ -491,7 +564,7 @@ function staleCompositionPinSelftest() {
     throw new Error('stale-composition control did not RED with pin and master blobs: ' + message);
 }
 
-const MACHINE_CONTROLS = 'removed-attempt-case,stale-event-pin,stale-composition-pin,manifest-removed,manifest-ambiguous,manifest-repointed';
+const MACHINE_CONTROLS = 'removed-attempt-case,removed-vote-handler,unhandled-vote-constructor,stale-event-pin,stale-composition-pin,manifest-removed,manifest-ambiguous,manifest-repointed';
 
 function requireUniqueManifestNeedle() {
   const src = readFileSync(fileURLToPath(import.meta.url), 'utf8');
@@ -543,6 +616,40 @@ async function removedAttemptCaseControl() {
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
+}
+
+/* a removed vote handler (the renounce effect no longer closes) must RED the
+   derived vote coverage through the same live-witness path */
+async function removedVoteHandlerControl() {
+  const dir = mkdtempSync(join(tmpdir(), 'rg-claim-vote-'));
+  try {
+    const source = readFileSync(CORE, 'utf8');
+    const needle = 'if (q) effected = { openQuestions: vtErase(questionId, gs.openQuestions),';
+    if (source.split(needle).length !== 2)
+      throw new Error('selftest mutation did not match exactly one live renounce handler');
+    const mutant = join(dir, 'economics-simulator-core-mutant.mjs');
+    writeFileSync(mutant, source.replace(needle, needle.replace('if (q)', 'if (false)')));
+    const r = await checkMachineCoverage(mutant);
+    const message = (r.reasons || []).join('\n');
+    if (r.ok || !/vote renounce: core handler does not produce the Lean effect/.test(message))
+      throw new Error(`removed-vote-handler control did not RED: ${message}`);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+/* a vote constructor the core does not handle (an inventory grown in the
+   pinned source) must RED, whatever its spelling */
+async function unhandledVoteCtorControl() {
+  const src = execFileSync('git', ['-C', REPO, 'show',
+    ACCEPTED_CORE.commit + ':' + MANIFEST_VOTE_EVENT_FILE], { encoding: 'utf8' });
+  const grown = src.replace(/inductive VoteEvent where\n/, 'inductive VoteEvent where\n  | zzUnhandled\n');
+  if (grown === src) throw new Error('selftest mutation did not grow the VoteEvent inventory');
+  const ctors = pinnedVoteConstructors(grown);
+  const mod = await loadCore(CORE);
+  const message = checkVoteCoverage(mod, ctors).join('\n');
+  if (!/vote zzUnhandled: no core handler witness/.test(message))
+    throw new Error(`unhandled-vote-constructor control did not RED: ${message}`);
 }
 
 /*
@@ -852,6 +959,8 @@ async function selftest(work) {
   }
   try {
     await removedAttemptCaseControl();
+    await removedVoteHandlerControl();
+    await unhandledVoteCtorControl();
     stalePinSelftest();
     staleCompositionPinSelftest();
     await expectManifestRed([],
@@ -1188,13 +1297,13 @@ try {
     }
   } else {
     const mc = await checkMachineCoverage(CORE);
-    if (!mc.ok) {
-      console.error(`RED: ${mc.reasons.length} problemi`);
-      mc.reasons.forEach(x => console.error(' - ' + x));
+    const r = runGate({ work });
+    if (!mc.ok || !r.ok) {
+      const all = [...(mc.ok ? [] : mc.reasons), ...(r.ok ? [] : r.reasons)];
+      console.error(`RED: ${all.length} problemi`);
+      all.forEach(x => console.error(' - ' + x));
       code = 1;
     } else {
-      const r = runGate({ work });
-      if (r.ok) {
         console.log(`GREEN: ${r.rows} righe di manifesto, ${r.cited} citazioni verificate nel ` +
           `lake env; stati derivati (${r.enun} enunciate, ${r.cited - r.enun} provate); ` +
           `file:line risolti; hash sorgenti confermati; copertura KelGroups esaustiva ` +
@@ -1202,13 +1311,8 @@ try {
           `${ACCEPTED_COMPOSITION.commit.slice(0, 10)}… verificato (albero esatto, righe al pin, ` +
           `instradamento derivato, copertura dei costruttori, stati elaborati freschi); ` +
           `ricevuta legata (sha ${r.sha.slice(0, 12)}…); ` +
-          `machine=${mc.executable}/${mc.executable} pinned=${mc.pinned} retired=0`);
+          `machine=${mc.executable}/${mc.executable} pinned=${mc.pinned} retired=0 vote=${mc.vote}/${mc.vote}`);
         code = 0;
-      } else {
-        console.error(`RED: ${r.reasons.length} problemi`);
-        r.reasons.forEach(x => console.error(' - ' + x));
-        code = 1;
-      }
     }
   }
 } finally {

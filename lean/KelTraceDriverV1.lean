@@ -35,10 +35,13 @@ Seed coverage: a collective question opened with EMPTY tallies (deliberate
 divergence from legacy: no proposer auto-assent), a refused cast by a
 non-responsabile and on a missing question, position switching that closes at
 threshold (R-56 + R-51), an idempotent re-cast, a dissent-driven NEGATIVE
-verdict, a per-person permission question where only the designee's ballot
-decides (R-64) while another admin's ballot leaves it open, a no-op
-renounce, and a question left OPEN (undecided) in the final state. If any
-seeded expectation is violated the driver throws instead of emitting a
+verdict, a per-person permission question where another responsabile's ballot
+is refused `notDesignee` and the designee's ballot decides (S-12, R-64), a
+renounce refused in first-error order (`notResponsabile`, `questionNotFound`,
+`notProposer`), the proposer's renounce closing their question `.negative`
+with cause `.renounced` while an unrelated open question is left as it stood
+(V-5), and that unrelated question left OPEN (undecided) in the final state.
+If any seeded expectation is violated the driver throws instead of emitting a
 usable-looking corpus.
 -/
 
@@ -92,10 +95,15 @@ def seeds : List Seed := [
   ⟨"elena", .cast "q:sconto" .dissent, true⟩,                    -- idempotent re-cast
   ⟨"carlo", .cast "q:sconto" .dissent, true⟩,                    -- 2 dissents → NEGATIVE
   ⟨"anna", .openQuestion "q:incarico" (.permission "bruno"), true⟩,
-  ⟨"elena", .cast "q:incarico" .assent, true⟩,                   -- non-designee: still open
+  ⟨"elena", .cast "q:incarico" .assent, false⟩,                  -- notDesignee
   ⟨"bruno", .cast "q:incarico" .assent, true⟩,                   -- designee → POSITIVE
-  ⟨"anna", .openQuestion "q:aperta" .collective, true⟩,          -- stays OPEN (undecided)
-  ⟨"anna", .renounce "q:aperta", true⟩                           -- slice-A no-op
+  ⟨"anna", .openQuestion "q:aperta" .collective, true⟩,
+  ⟨"bruno", .openQuestion "q:altra" .collective, true⟩,
+  ⟨"bruno", .cast "q:altra" .assent, true⟩,                      -- 1/2, open
+  ⟨"dora", .renounce "q:aperta", false⟩,                         -- notResponsabile
+  ⟨"elena", .renounce "q:nessuna", false⟩,                       -- questionNotFound
+  ⟨"elena", .renounce "q:aperta", false⟩,                        -- notProposer
+  ⟨"anna", .renounce "q:aperta", true⟩                           -- renounced; q:altra stays OPEN
 ]
 
 def θ : Threshold := legacyThreshold
