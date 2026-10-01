@@ -1,0 +1,148 @@
+#!/usr/bin/env bash
+# scripts/check-lean-mirrors-control — negative controls for
+# scripts/check-lean-mirrors, run by `just lean`.
+#
+# The working-tree checker is executed as a black box inside scratch copies of
+# the repository (tracked `lean/` and `scripts/lake-roots/` sources plus their
+# existing `.lake` build directories), each copy carrying exactly one mutation.
+# Every leg must make the checker exit non-zero for the named reason:
+#
+#   reach            a newly registered `lean_lib` and `lean_exe` root plus two
+#                    undeclared, unimported tracked modules: the checker must name
+#                    exactly the two undeclared modules as reach gaps and neither
+#                    registered root. A checker that imports every tracked module,
+#                    or that ignores evaluated roots, fails this leg.
+#   tool-input       the root-evaluation tool's source is missing
+#   tool-build       the root-evaluation tool does not compile
+#   roots-eval       the workspace lakefile does not elaborate
+#   toolchain        `lean/lean-toolchain` names a Lean other than the running one
+#   roots-empty      the workspace package declares no library or executable
+#   root-build       a registered root imports a module that does not exist
+#
+# Setup legs must not be reported as a reach gap. A checker disabled to exit 0
+# fails every leg. Exit 0 with MIRROR-CONTROL-OK iff every leg holds.
+set -euo pipefail
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd "$HERE/.." && pwd)"
+SCRATCH="$(mktemp -d "${TMPDIR:-/tmp}/lean-mirrors-control.XXXXXX")"
+trap 'rm -rf "$SCRATCH"' EXIT
+
+BASE="$SCRATCH/base"
+mkdir -p "$BASE/scripts"
+cp -a "$HERE/check-lean-mirrors" "$BASE/scripts/"
+(cd "$ROOT" && git ls-files -z -- lean scripts/lake-roots | xargs -0 cp -a --parents -t "$BASE")
+for build in lean/.lake scripts/lake-roots/.lake; do
+  if [ -d "$ROOT/$build" ]; then cp -a --reflink=auto "$ROOT/$build" "$BASE/$build"; fi
+done
+printf '.lake/\n' > "$BASE/.gitignore"
+git -C "$BASE" init -q
+git -C "$BASE" add -A
+want=$(git -C "$ROOT" ls-files -- lean | grep -c '\.lean$' || true)
+got=$(git -C "$BASE" ls-files -- lean | grep -c '\.lean$' || true)
+if [ "$want" -eq 0 ] || [ "$want" -ne "$got" ]; then
+  printf 'MIRROR-CONTROL-SETUP-FAILED scratch tracked lean sources=%s, repository=%s\n' "$got" "$want" >&2
+  exit 1
+fi
+
+failed=0
+legs=0
+LEG_DIR=
+LEG_OUT=
+new_leg() {
+  LEG_DIR="$SCRATCH/$1"
+  LEG_OUT="$SCRATCH/$1.log"
+  cp -a --reflink=auto "$BASE" "$LEG_DIR"
+}
+module_of() {
+  local rel=${1#lean/}
+  printf '%s\n' "${rel%.lean}" | tr '/' '.'
+}
+words() { printf '%s' "$1" | paste -sd' ' -; }
+# run_leg <leg> <required ERE>... — the checker must exit non-zero, print every
+# required pattern and never report success. The reach leg must report exactly
+# the expected reach gaps; every other leg must report none.
+run_leg() {
+  local leg=$1 rc pattern reported reason=
+  shift
+  legs=$((legs + 1))
+  git -C "$LEG_DIR" add -A
+  set +e
+  "$LEG_DIR/scripts/check-lean-mirrors" > "$LEG_OUT" 2>&1
+  rc=$?
+  set -e
+  if [ "$rc" -eq 0 ]; then reason="checker exited 0"; fi
+  if grep -q 'MIRROR-CHECK-OK' "$LEG_OUT"; then reason="${reason:+$reason; }checker reported MIRROR-CHECK-OK"; fi
+  for pattern in "$@"; do
+    grep -Eq -- "$pattern" "$LEG_OUT" || reason="${reason:+$reason; }missing /$pattern/"
+  done
+  reported=$(sed -n 's/.*MIRROR-IMPORT-REACH-GAP \([^ ]*\).*/\1/p' "$LEG_OUT" | sort -u)
+  if [ "$leg" = reach ]; then
+    if [ "$reported" != "$expected" ]; then
+      reason="${reason:+$reason; }reach gaps reported [$(words "$reported")], expected exactly [$(words "$expected")]"
+    fi
+  elif [ -n "$reported" ]; then
+    reason="${reason:+$reason; }setup failure reported as reach gap [$(words "$reported")]"
+  fi
+  if [ -n "$reason" ]; then
+    printf 'MIRROR-CONTROL-FAILED %s exit=%s: %s\n' "$leg" "$rc" "$reason" >&2
+    tail -n 40 "$LEG_OUT" | sed "s/^/  $leg| /" >&2
+    failed=1
+    return 0
+  fi
+  printf 'MIRROR-CONTROL %s OK exit=%s\n' "$leg" "$rc"
+}
+
+# reach
+new_leg reach
+cat >> "$LEG_DIR/lean/lakefile.lean" <<'LAKE_EOF'
+
+lean_lib ReachControlLib where
+  srcDir := "."
+
+lean_exe reachControlExe where
+  root := `ReachControlExe
+LAKE_EOF
+printf 'def reachControlLib : Nat := 0\n' > "$LEG_DIR/lean/ReachControlLib.lean"
+printf 'def main : IO Unit := pure ()\n' > "$LEG_DIR/lean/ReachControlExe.lean"
+strays=(lean/ReachControlStray.lean lean/Reactivegas/ReachControlStray.lean)
+for f in "${strays[@]}"; do printf 'def reachControlStray : Nat := 0\n' > "$LEG_DIR/$f"; done
+expected=$(for f in "${strays[@]}"; do module_of "$f"; done | sort)
+run_leg reach 'MIRROR-IMPORT-REACH-GAP'
+
+# tool-input
+new_leg tool-input
+rm -f "$LEG_DIR/scripts/lake-roots/Main.lean"
+run_leg tool-input 'MIRROR-LAKE-TOOL-INPUT-MISSING .*scripts/lake-roots/Main\.lean'
+
+# tool-build
+new_leg tool-build
+mkdir -p "$LEG_DIR/scripts/lake-roots"
+printf 'def main : IO Unit := (\n' > "$LEG_DIR/scripts/lake-roots/Main.lean"
+run_leg tool-build 'MIRROR-LAKE-TOOL-BUILD-FAILED'
+
+# roots-eval
+new_leg roots-eval
+printf '\nthis is not a lakefile command\n' >> "$LEG_DIR/lean/lakefile.lean"
+run_leg roots-eval 'LAKE-ROOTS-WORKSPACE-FAILED' 'MIRROR-LAKE-ROOTS-EVAL-FAILED'
+
+# toolchain
+new_leg toolchain
+printf 'leanprover/lean4:v0.0.0-control\n' > "$LEG_DIR/lean/lean-toolchain"
+run_leg toolchain 'LAKE-ROOTS-TOOLCHAIN-MISMATCH .*v0\.0\.0-control' 'MIRROR-LAKE-ROOTS-EVAL-FAILED'
+
+# roots-empty
+new_leg roots-empty
+printf 'import Lake\nopen Lake DSL\n\npackage reactivegas\n' > "$LEG_DIR/lean/lakefile.lean"
+run_leg roots-empty 'MIRROR-LAKE-ROOTS-EMPTY'
+
+# root-build
+new_leg root-build
+printf '\nlean_lib ReachControlBadImport where\n  srcDir := "."\n' >> "$LEG_DIR/lean/lakefile.lean"
+printf 'import ReachControlNoSuchModule\n' > "$LEG_DIR/lean/ReachControlBadImport.lean"
+run_leg root-build 'MIRROR-LAKE-ROOT-BUILD-FAILED' 'ReachControlNoSuchModule'
+
+if [ "$failed" -ne 0 ]; then
+  echo 'MIRROR-CONTROL-FAILED' >&2
+  exit 1
+fi
+echo "MIRROR-CONTROL-OK legs=$legs reach-gaps=$(words "$expected")"
