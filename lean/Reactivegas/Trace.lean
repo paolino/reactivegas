@@ -355,8 +355,8 @@ private def seedClosePurchaseNegative : List Event :=
   , .closePurchase "2" 9 ]
 
 /-- A denial refunding both an accepted and a pending pledge. The refused
-withdrawal carries an identity with no accepted inversion, so the corpus also
-exercises an `UNPROVED` claim row. -/
+overdrawing withdrawal is bound to its accepted inversion `step_withdraw_inv`;
+no seed currently emits an `UNPROVED` claim row. -/
 private def seedDenyPermissionRefunds : List Event :=
   [ .deposit "1" "2" 100
   , .deposit "1" "3" 80

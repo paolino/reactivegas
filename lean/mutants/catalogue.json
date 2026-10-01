@@ -1,0 +1,1744 @@
+{
+  "schema": "lean-mutants-catalogue/1",
+  "mutants": [
+    {
+      "id": "decoy-findCollection-alpha",
+      "target": "findCollection",
+      "guard": null,
+      "decoy": true,
+      "patch": {
+        "line": 28,
+        "before": "  s.collections.find? (fun x => x.id == c)",
+        "after": "  s.collections.find? (fun y => y.id == c)"
+      },
+      "claimedKills": [],
+      "note": "alpha-renames a binder: the same kernel term"
+    },
+    {
+      "id": "guard-openPurchase-fresh-id",
+      "target": "step",
+      "guard": "GuardId.openPurchase",
+      "patch": {
+        "line": 49,
+        "before": "        && !(s.collections.any (fun x => x.id == c)) then",
+        "after": "        && true then"
+      },
+      "claimedKills": [
+        "Reactivegas.step_open_inv"
+      ],
+      "note": "openPurchase stops refusing an id already open"
+    },
+    {
+      "id": "guard-grantPermission-auth",
+      "target": "step",
+      "guard": "GuardId.grantPermission",
+      "patch": {
+        "line": 54,
+        "before": "    demand (isResponsabile view signer)",
+        "after": "    demand true"
+      },
+      "claimedKills": [
+        "step_grant_inv"
+      ],
+      "note": "grantPermission stops requiring a responsabile signer"
+    },
+    {
+      "id": "guard-denyPermission-auth",
+      "target": "step",
+      "guard": "GuardId.denyPermission",
+      "patch": {
+        "line": 58,
+        "before": "    demand (isResponsabile view signer)",
+        "after": "    demand true"
+      },
+      "claimedKills": [
+        "step_deny_inv"
+      ],
+      "note": "denyPermission stops requiring a responsabile signer"
+    },
+    {
+      "id": "guard-deposit-nonnegative",
+      "target": "step",
+      "guard": "GuardId.deposit",
+      "patch": {
+        "line": 64,
+        "before": "        && signer != u && decide (0 ≤ v) then",
+        "after": "        && signer != u && true then"
+      },
+      "claimedKills": [
+        "Reactivegas.step_deposit_inv",
+        "credit_pledges_step@Reactivegas.Invariants"
+      ],
+      "note": "deposit accepts a negative amount"
+    },
+    {
+      "id": "guard-withdraw-funded",
+      "target": "step",
+      "guard": "GuardId.withdraw",
+      "patch": {
+        "line": 69,
+        "before": "        && signer != u && decide (bal s.conti u ≥ v)",
+        "after": "        && signer != u && true"
+      },
+      "claimedKills": [
+        "Reactivegas.step_withdraw_inv",
+        "TraceTests.all_checks_pass",
+        "credit_pledges_step@Reactivegas.Invariants"
+      ],
+      "note": "withdraw accepts an overdraft"
+    },
+    {
+      "id": "guard-transferCassa-positive",
+      "target": "step",
+      "guard": "GuardId.transferCassa",
+      "patch": {
+        "line": 76,
+        "before": "        && signer != f && v > 0 then",
+        "after": "        && signer != f && true then"
+      },
+      "claimedKills": [
+        "Reactivegas.step_transferCassa_inv"
+      ],
+      "note": "transferCassa accepts a non-positive amount"
+    },
+    {
+      "id": "guard-donate-positive",
+      "target": "step",
+      "guard": "GuardId.donate",
+      "patch": {
+        "line": 80,
+        "before": "    if isResponsabile view signer && decide (0 < v) then",
+        "after": "    if isResponsabile view signer && true then"
+      },
+      "claimedKills": [
+        "Reactivegas.step_donate_inv"
+      ],
+      "note": "donate accepts a non-positive amount"
+    },
+    {
+      "id": "guard-backdonate-affordable",
+      "target": "step",
+      "guard": "GuardId.backdonate",
+      "patch": {
+        "line": 89,
+        "before": "        && decide (comuneBal s ≥ n * w) && auth s w then",
+        "after": "        && true && auth s w then"
+      },
+      "claimedKills": [
+        "Reactivegas.step_backdonate_inv"
+      ],
+      "note": "backdonate stops checking the comune can afford it"
+    },
+    {
+      "id": "guard-pledge-funded",
+      "target": "step",
+      "guard": "GuardId.pledge",
+      "patch": {
+        "line": 99,
+        "before": "      && decide (0 < v) && decide (bal s.conti u ≥ v)",
+        "after": "      && decide (0 < v) && true"
+      },
+      "claimedKills": [
+        "step_pledge_inv"
+      ],
+      "note": "pledge accepts an unfunded amount"
+    },
+    {
+      "id": "guard-acceptPledge-referente",
+      "target": "step",
+      "guard": "GuardId.acceptPledge",
+      "patch": {
+        "line": 107,
+        "before": "    demand (isResponsabile view signer && col.referente == signer",
+        "after": "    demand (isResponsabile view signer && true"
+      },
+      "claimedKills": [
+        "step_accept_inv"
+      ],
+      "note": "acceptPledge stops requiring the referente"
+    },
+    {
+      "id": "guard-refusePledge-referente",
+      "target": "step",
+      "guard": "GuardId.refusePledge",
+      "patch": {
+        "line": 114,
+        "before": "    demand (isResponsabile view signer && col.referente == signer)",
+        "after": "    demand (isResponsabile view signer && true)"
+      },
+      "claimedKills": [
+        "step_refuse_inv"
+      ],
+      "note": "refusePledge stops requiring the referente"
+    },
+    {
+      "id": "guard-correctPledge-solvent",
+      "target": "step",
+      "guard": "GuardId.correctPledge",
+      "patch": {
+        "line": 122,
+        "before": "      && decide (0 ≤ v') && decide (bal s.conti u + (v - v') ≥ 0))",
+        "after": "      && decide (0 ≤ v') && true)"
+      },
+      "claimedKills": [
+        "step_correct_inv"
+      ],
+      "note": "correctPledge accepts a correction the pledger cannot cover"
+    },
+    {
+      "id": "guard-closePurchase-permitted",
+      "target": "step",
+      "guard": "GuardId.closePurchase",
+      "patch": {
+        "line": 129,
+        "before": "      && col.permitted && col.pending.isEmpty && !(decide (stalled s)))",
+        "after": "      && true && col.pending.isEmpty && !(decide (stalled s)))"
+      },
+      "claimedKills": [
+        "TraceTests.all_checks_pass",
+        "step_close_inv"
+      ],
+      "note": "closePurchase no longer needs the group's permission"
+    },
+    {
+      "id": "guard-failPurchase-no-pending",
+      "target": "step",
+      "guard": "GuardId.failPurchase",
+      "patch": {
+        "line": 136,
+        "before": "      && col.pending.isEmpty)",
+        "after": "      && true)"
+      },
+      "claimedKills": [
+        "step_fail_inv"
+      ],
+      "note": "failPurchase accepted with pledges still pending"
+    },
+    {
+      "id": "guard-vote-responsabile",
+      "target": "KelGroups.Vote.validateVoteEvent",
+      "guard": "KelGroups.Vote.VoteError.notResponsabile",
+      "patch": {
+        "line": 58,
+        "before": "      if isResponsabile signer view then .ok () else .error VoteError.notResponsabile",
+        "after": "      if true then .ok () else .error VoteError.notResponsabile"
+      },
+      "claimedKills": [
+        "KelGroups.Vote.nonresponsabile_event_noop",
+        "Reactivegas.i57_auth_holds",
+        "Reactivegas.i57_boundary_holds",
+        "Reactivegas.i57_noop_holds"
+      ],
+      "note": "opening a question no longer needs a responsabile"
+    },
+    {
+      "id": "guard-vote-question-exists",
+      "target": "KelGroups.Vote.validateVoteEvent",
+      "guard": "KelGroups.Vote.VoteError.questionNotFound",
+      "patch": {
+        "line": 64,
+        "before": "        | none => .error VoteError.questionNotFound",
+        "after": "        | none => .ok ()"
+      },
+      "claimedKills": [],
+      "note": "a ballot on an unknown question is admitted"
+    },
+    {
+      "id": "guard-app-signer-member",
+      "target": "KelGroups.applyIntegratedEvent",
+      "guard": "KelGroups.ValidationError.notAMember",
+      "patch": {
+        "line": 208,
+        "before": "      if GroupView.isMember signer view then",
+        "after": "      if true then"
+      },
+      "claimedKills": [
+        "Reactivegas.i57_boundary_holds",
+        "Reactivegas.i57_noop_holds"
+      ],
+      "note": "an app event from a non-member reaches the fold"
+    },
+    {
+      "id": "guard-require-admin",
+      "target": "KelGroups.requireAdmin@KelGroups.Validate",
+      "guard": "KelGroups.ValidationError.notAnAdmin",
+      "patch": {
+        "line": 29,
+        "before": "  if isAdmin signer gs then .ok () else .error (.notAnAdmin signer)",
+        "after": "  if true then .ok () else .error (.notAnAdmin signer)"
+      },
+      "claimedKills": [],
+      "note": "base validators stop requiring an admin signer"
+    },
+    {
+      "id": "guard-bootstrap-admin",
+      "target": "KelGroups.validateBootstrapProposal@KelGroups.Validate",
+      "guard": "KelGroups.ValidationError.bootstrapRequiresAdmin",
+      "patch": {
+        "line": 92,
+        "before": "      if hasAdmin roles then .ok () else .error .bootstrapRequiresAdmin",
+        "after": "      if true then .ok () else .error .bootstrapRequiresAdmin"
+      },
+      "claimedKills": [],
+      "note": "a bootstrap admission without an admin role is admitted"
+    },
+    {
+      "id": "guard-admission-duplicate",
+      "target": "KelGroups.validateDirectAdmission",
+      "guard": "KelGroups.ValidationError.memberAlreadyExists",
+      "patch": {
+        "line": 147,
+        "before": "    else if isMember target gs then .error (.memberAlreadyExists target)",
+        "after": "    else if false then .error (.memberAlreadyExists target)"
+      },
+      "claimedKills": [
+        "KelGroups.validateDirectAdmission_ok",
+        "Reactivegas.direct_admission_only_holds",
+        "Reactivegas.exhaustive_inventories_hold",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "direct admission re-admits an existing member"
+    },
+    {
+      "id": "guard-require-member",
+      "target": "KelGroups.requireMember@KelGroups.Validate",
+      "guard": "KelGroups.ValidationError.memberNotFound",
+      "patch": {
+        "line": 33,
+        "before": "  if isMember key gs then .ok () else .error (.memberNotFound key)",
+        "after": "  if true then .ok () else .error (.memberNotFound key)"
+      },
+      "claimedKills": [],
+      "note": "a base mutation may target a non-member"
+    },
+    {
+      "id": "guard-base-approval-pending",
+      "target": "KelGroups.validateBaseApproval",
+      "guard": "KelGroups.ValidationError.proposalNotFound",
+      "patch": {
+        "line": 167,
+        "before": "  | none => .error (.proposalNotFound proposalId)",
+        "after": "  | none => .ok ()"
+      },
+      "claimedKills": [],
+      "note": "approving an unknown base proposal is admitted"
+    },
+    {
+      "id": "guard-base-approval-twice",
+      "target": "KelGroups.validateBaseApproval",
+      "guard": "KelGroups.ValidationError.alreadyApproved",
+      "patch": {
+        "line": 169,
+        "before": "      if pending.approvals.contains signer then",
+        "after": "      if false then"
+      },
+      "claimedKills": [],
+      "note": "the same signer may approve twice"
+    },
+    {
+      "id": "guard-role-add-precondition",
+      "target": "KelGroups.checkRoleAddition@KelGroups.Validate",
+      "guard": "KelGroups.ValidationError.roleAddPrecondition",
+      "patch": {
+        "line": 50,
+        "before": "          if roleDef.canAdd gs.appFold then .ok () else .error (.roleAddPrecondition name)",
+        "after": "          if true then .ok () else .error (.roleAddPrecondition name)"
+      },
+      "claimedKills": [],
+      "note": "an app role is added without its precondition"
+    },
+    {
+      "id": "guard-role-remove-precondition",
+      "target": "KelGroups.checkRoleRemoval@KelGroups.Validate",
+      "guard": "KelGroups.ValidationError.roleRemovePrecondition",
+      "patch": {
+        "line": 59,
+        "before": "          if roleDef.canRemove gs.appFold then .ok ()",
+        "after": "          if true then .ok ()"
+      },
+      "claimedKills": [],
+      "note": "an app role is removed without its precondition"
+    },
+    {
+      "id": "guard-valid-key",
+      "target": "KelGroups.requireValidKey@KelGroups.Validate",
+      "guard": "KelGroups.ValidationError.invalidKey",
+      "patch": {
+        "line": 41,
+        "before": "  if validKey key then .ok () else .error (.invalidKey key)",
+        "after": "  if true then .ok () else .error (.invalidKey key)"
+      },
+      "claimedKills": [],
+      "note": "an invalid key is admitted"
+    },
+    {
+      "id": "guard-admission-reserved",
+      "target": "KelGroups.validateDirectAdmission",
+      "guard": "KelGroups.ValidationError.reservedKey",
+      "patch": {
+        "line": 146,
+        "before": "    if target = reserved then .error (.reservedKey target)",
+        "after": "    if false then .error (.reservedKey target)"
+      },
+      "claimedKills": [
+        "KelGroups.validateDirectAdmission_ok",
+        "Reactivegas.direct_admission_only_holds",
+        "Reactivegas.exhaustive_inventories_hold",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "the reserved key can be admitted"
+    },
+    {
+      "id": "guard-propose-validation",
+      "target": "KelGroups.applyIntegratedEvent",
+      "guard": "KelGroups.IntegratedError.validation",
+      "patch": {
+        "line": 187,
+        "before": "      | .error err => .error (.validation err)",
+        "after": "      | .error err => .ok { state := gs, change := none }"
+      },
+      "claimedKills": [
+        "KelGroups.base_change_runs_hook",
+        "KelGroups.membership_growth_is_direct_admission"
+      ],
+      "note": "a refused base proposal is reported as a no-op success"
+    },
+    {
+      "id": "guard-app-fold-refusal",
+      "target": "KelGroups.applyIntegratedEvent",
+      "guard": "KelGroups.IntegratedError.app",
+      "patch": {
+        "line": 211,
+        "before": "        | .error err => .error (.app err)",
+        "after": "        | .error err => .ok { state := gs, change := none }"
+      },
+      "claimedKills": [
+        "KelGroups.app_event_has_no_base_change",
+        "KelGroups.app_event_preserves_members",
+        "Reactivegas.i57_auth_holds",
+        "Reactivegas.i57_boundary_holds",
+        "Reactivegas.i57_noop_holds"
+      ],
+      "note": "a refused app event is reported as a no-op success"
+    },
+    {
+      "id": "guard-production-wellformed",
+      "target": "Reactivegas.apply",
+      "guard": "Reactivegas.ProductionError.comuneReserved",
+      "patch": {
+        "line": 381,
+        "before": "  if productionWellFormed gs then",
+        "after": "  if true then"
+      },
+      "claimedKills": [],
+      "note": "the production root stops refusing an aggregate listing the comune"
+    },
+    {
+      "id": "guard-production-integrated",
+      "target": "Reactivegas.apply",
+      "guard": "Reactivegas.ProductionError.integrated",
+      "patch": {
+        "line": 386,
+        "before": "    | .error err => .error (ProductionError.integrated err)",
+        "after": "    | .error err => .ok { state := gs, change := none }"
+      },
+      "claimedKills": [
+        "Reactivegas.base_change_recomputes_votes",
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.direct_admission_only_holds",
+        "Reactivegas.exhaustive_inventories_hold",
+        "Reactivegas.i57_auth_holds",
+        "Reactivegas.i57_boundary_holds",
+        "Reactivegas.i57_noop_holds",
+        "Reactivegas.i57_r45_holds",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "an integrated refusal becomes a no-op success"
+    },
+    {
+      "id": "guard-vote-apply-refusal",
+      "target": "Reactivegas.voteApply",
+      "guard": "StepError.rejected",
+      "patch": {
+        "line": 176,
+        "before": "  | .error _ => .error StepError.rejected",
+        "after": "  | .error _ => .ok s"
+      },
+      "claimedKills": [
+        "Reactivegas.i57_auth_holds",
+        "Reactivegas.i57_boundary_holds",
+        "Reactivegas.i57_noop_holds"
+      ],
+      "note": "a refused vote event leaves the payload and reports success"
+    },
+    {
+      "id": "bal-reads-plus-one",
+      "target": "bal",
+      "guard": null,
+      "patch": {
+        "line": 42,
+        "before": "  | (k, v) :: t => if k = u then v else bal t u",
+        "after": "  | (k, v) :: t => if k = u then v + 1 else bal t u"
+      },
+      "claimedKills": [
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.canonical_economy_holds",
+        "Reactivegas.exhaustive_inventories_hold",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "TraceTests.all_checks_pass",
+        "bal_bump",
+        "bal_cons"
+      ],
+      "note": "a balance reads one more than stored"
+    },
+    {
+      "id": "bump-subtracts",
+      "target": "bump",
+      "guard": null,
+      "patch": {
+        "line": 65,
+        "before": "  | (k, v) :: t => if k = u then (k, v + d) :: t else (k, v) :: bump t u d",
+        "after": "  | (k, v) :: t => if k = u then (k, v - d) :: t else (k, v) :: bump t u d"
+      },
+      "claimedKills": [
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.canonical_economy_holds",
+        "Reactivegas.exhaustive_inventories_hold",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "TraceTests.all_checks_pass",
+        "bal_bump",
+        "bal_bump_ne_lemma@Reactivegas.Invariants",
+        "bump_sum"
+      ],
+      "note": "bumping an existing entry subtracts"
+    },
+    {
+      "id": "sumPledges-drops-head",
+      "target": "sumPledges",
+      "guard": null,
+      "patch": {
+        "line": 73,
+        "before": "  | p :: t => p.amount + sumPledges t",
+        "after": "  | p :: t => sumPledges t"
+      },
+      "claimedKills": [
+        "TraceTests.all_checks_pass",
+        "conservation_preserved",
+        "refundAll_sum",
+        "splitUser_sum_lemma@Reactivegas.State",
+        "sumPledges_append"
+      ],
+      "note": "a pledge total ignores each amount"
+    },
+    {
+      "id": "splitUser-keeps-pledge",
+      "target": "splitUser",
+      "guard": null,
+      "patch": {
+        "line": 88,
+        "before": "    if p.user = u then some (p.amount, t)",
+        "after": "    if p.user = u then some (p.amount, p :: t)"
+      },
+      "claimedKills": [
+        "TraceTests.all_checks_pass",
+        "pledge_escrow_debit",
+        "splitUser_sublist_lemma@Reactivegas.State",
+        "splitUser_sum_lemma@Reactivegas.State"
+      ],
+      "note": "splitting a user's pledge leaves it in the list"
+    },
+    {
+      "id": "refundAll-refunds-nothing",
+      "target": "refundAll",
+      "guard": null,
+      "patch": {
+        "line": 95,
+        "before": "  l.foldl (fun acc p => bump acc p.user p.amount) m",
+        "after": "  l.foldl (fun acc p => bump acc p.user 0) m"
+      },
+      "claimedKills": [
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.exhaustive_inventories_hold",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "TraceTests.all_checks_pass",
+        "refundAll_bal_ge_lemma@Reactivegas.Invariants",
+        "refundAll_sum"
+      ],
+      "note": "a refund credits nothing"
+    },
+    {
+      "id": "pullCollection-keeps-collection",
+      "target": "pullCollection",
+      "guard": null,
+      "patch": {
+        "line": 106,
+        "before": "    if x.id = c then some (x, t)",
+        "after": "    if x.id = c then some (x, x :: t)"
+      },
+      "claimedKills": [
+        "TraceTests.all_checks_pass",
+        "pullCollection_sublist_lemma@Reactivegas.State",
+        "pullCollection_sum_lemma@Reactivegas.State"
+      ],
+      "note": "pulling a collection leaves it in the rest"
+    },
+    {
+      "id": "stripCollections-drops-pending",
+      "target": "stripCollections",
+      "guard": null,
+      "patch": {
+        "line": 120,
+        "before": "    if c.referente = r then (rest, c.accepted ++ c.pending ++ ps)",
+        "after": "    if c.referente = r then (rest, c.accepted ++ ps)"
+      },
+      "claimedKills": [
+        "stripCollections_amount_lemma@Reactivegas.Invariants",
+        "stripCollections_sum"
+      ],
+      "note": "winding up a referente forgets pending pledges"
+    },
+    {
+      "id": "comuneBal-offset",
+      "target": "comuneBal",
+      "guard": null,
+      "patch": {
+        "line": 47,
+        "before": "def comuneBal (s : State) : Int := bal s.conti comuneId",
+        "after": "def comuneBal (s : State) : Int := bal s.conti comuneId + 1"
+      },
+      "claimedKills": [
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.canonical_economy_holds",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "the comune balance reads one more"
+    },
+    {
+      "id": "escrowOf-accepted-only",
+      "target": "escrowOf",
+      "guard": null,
+      "patch": {
+        "line": 76,
+        "before": "def escrowOf (c : Collection) : Int := sumPledges c.accepted + sumPledges c.pending",
+        "after": "def escrowOf (c : Collection) : Int := sumPledges c.accepted"
+      },
+      "claimedKills": [
+        "conservation_preserved",
+        "stripCollections_sum"
+      ],
+      "note": "escrow ignores pending pledges"
+    },
+    {
+      "id": "setInsert-duplicates",
+      "target": "KelGroups.setInsert",
+      "guard": null,
+      "patch": {
+        "line": 47,
+        "before": "  if values.contains value then values else value :: values",
+        "after": "  if values.contains value then value :: values else value :: values"
+      },
+      "claimedKills": [
+        "KelGroups.Vote.setInsert_mem_cases@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.setInsert_nodup'@KelGroups.Vote.Invariants",
+        "KelGroups.setInsert_mem@KelGroups.Invariants",
+        "KelGroups.setInsert_nodup@KelGroups.Invariants"
+      ],
+      "note": "inserting a present element duplicates it"
+    },
+    {
+      "id": "assocLookup-misses",
+      "target": "KelGroups.assocLookup",
+      "guard": null,
+      "patch": {
+        "line": 52,
+        "before": "      if candidate == key then some value else assocLookup key rest",
+        "after": "      if candidate == key then none else assocLookup key rest"
+      },
+      "claimedKills": [
+        "KelGroups.Vote.assocLookup_some_mem'@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.mem_assocLookup_some'@KelGroups.Vote.Invariants",
+        "KelGroups.assocLookup_adjust_of_none",
+        "KelGroups.assocLookup_erase_of_none",
+        "KelGroups.assocLookup_insert_self",
+        "KelGroups.assocLookup_some_mem@KelGroups.Invariants",
+        "KelGroups.assocLookup_some_mem_nodupfree@KelGroups.Mirrors",
+        "Reactivegas.admissionPreservation_holds",
+        "Reactivegas.app_members_preservation_holds",
+        "Reactivegas.app_members_preservation_mutant_caught",
+        "Reactivegas.base_change_can_close_without_ballot",
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.base_recompute_reachable_holds",
+        "Reactivegas.canonical_economy_holds",
+        "Reactivegas.comune_cannot_authorize",
+        "Reactivegas.direct_admission_only_holds",
+        "Reactivegas.exhaustive_inventories_hold",
+        "Reactivegas.i57_boundary_holds",
+        "Reactivegas.i57_disjoint_holds",
+        "Reactivegas.i57_disjoint_mutant_caught",
+        "Reactivegas.i57_exhaustive_holds",
+        "Reactivegas.i57_franchise_holds",
+        "Reactivegas.i57_franchise_mutant_caught",
+        "Reactivegas.i57_noexpiry_holds",
+        "Reactivegas.i57_noop_holds",
+        "Reactivegas.i57_nostale_holds",
+        "Reactivegas.i57_partition_holds",
+        "Reactivegas.i57_policyfree_holds",
+        "Reactivegas.i57_policyfree_mutant_caught",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "Reactivegas.sweep_idempotent_mutant_caught",
+        "TraceTests.all_checks_pass",
+        "assocLookup_some_mem_nodupfree@Reactivegas.Mirrors",
+        "assocLookup_some_of_mem_nodupfree@Reactivegas.Mirrors"
+      ],
+      "note": "lookup never finds a key"
+    },
+    {
+      "id": "assocErase-keeps",
+      "target": "KelGroups.assocErase",
+      "guard": null,
+      "patch": {
+        "line": 57,
+        "before": "      if candidate == key then rest else (candidate, value) :: assocErase key rest",
+        "after": "      if candidate == key then (candidate, value) :: rest else (candidate, value) :: assocErase key rest"
+      },
+      "claimedKills": [
+        "KelGroups.Vote.assocErase_key_absent'@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.assocErase_sublist'@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.mem_map_fst_erase_of_ne@KelGroups.Vote.Invariants",
+        "KelGroups.assocErase_key_absent@KelGroups.Invariants",
+        "KelGroups.assocErase_sublist@KelGroups.Invariants",
+        "KelGroups.assocLookup_erase_of_none",
+        "Reactivegas.base_change_can_close_without_ballot",
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.base_recompute_reachable_holds",
+        "Reactivegas.i57_nostale_holds",
+        "Reactivegas.i57_partition_holds",
+        "Reactivegas.i57_policyfree_holds",
+        "Reactivegas.i57_policyfree_mutant_caught",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "Reactivegas.sweep_idempotent_mutant_caught",
+        "Reactivegas.sweep_idempotent_witness",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "erase keeps the erased entry"
+    },
+    {
+      "id": "assocAdjust-ignores-f",
+      "target": "KelGroups.assocAdjust",
+      "guard": null,
+      "patch": {
+        "line": 66,
+        "before": "      if candidate == key then (candidate, f value) :: rest",
+        "after": "      if candidate == key then (candidate, value) :: rest"
+      },
+      "claimedKills": [
+        "KelGroups.assocAdjust_property@KelGroups.Invariants",
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.exhaustive_inventories_hold",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "adjust does not apply its function"
+    },
+    {
+      "id": "hasAdmin-all",
+      "target": "KelGroups.hasAdmin",
+      "guard": null,
+      "patch": {
+        "line": 35,
+        "before": "def hasAdmin (roles : List Role) : Bool := roles.any isAdminRole",
+        "after": "def hasAdmin (roles : List Role) : Bool := roles.all isAdminRole"
+      },
+      "claimedKills": [
+        "Reactivegas.admissionPreservation_holds",
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.direct_admission_only_holds",
+        "Reactivegas.exhaustive_inventories_hold",
+        "Reactivegas.i57_auth_holds",
+        "Reactivegas.i57_boundary_holds",
+        "Reactivegas.i57_franchise_holds",
+        "Reactivegas.i57_franchise_mutant_caught",
+        "Reactivegas.i57_noop_holds",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "admin status needs every role to be admin"
+    },
+    {
+      "id": "isMember-negated",
+      "target": "KelGroups.GroupView.isMember",
+      "guard": null,
+      "patch": {
+        "line": 146,
+        "before": "  (lookupMember key view).isSome",
+        "after": "  (lookupMember key view).isNone"
+      },
+      "claimedKills": [
+        "Reactivegas.admissionPreservation_holds",
+        "Reactivegas.app_members_preservation_holds",
+        "Reactivegas.app_members_preservation_mutant_caught",
+        "Reactivegas.base_change_can_close_without_ballot",
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.base_recompute_reachable_holds",
+        "Reactivegas.comune_cannot_authorize",
+        "Reactivegas.direct_admission_only_holds",
+        "Reactivegas.exhaustive_inventories_hold",
+        "Reactivegas.i57_boundary_holds",
+        "Reactivegas.i57_disjoint_holds",
+        "Reactivegas.i57_disjoint_mutant_caught",
+        "Reactivegas.i57_exhaustive_holds",
+        "Reactivegas.i57_franchise_holds",
+        "Reactivegas.i57_franchise_mutant_caught",
+        "Reactivegas.i57_noexpiry_holds",
+        "Reactivegas.i57_noop_holds",
+        "Reactivegas.i57_nostale_holds",
+        "Reactivegas.i57_partition_holds",
+        "Reactivegas.i57_policyfree_holds",
+        "Reactivegas.i57_policyfree_mutant_caught",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "Reactivegas.productionWellFormed_holds",
+        "Reactivegas.sweep_idempotent_mutant_caught",
+        "TraceTests.all_checks_pass",
+        "isMember_of_view_mem",
+        "view_mem_of_isMember"
+      ],
+      "note": "membership is negated"
+    },
+    {
+      "id": "isAdmin-absent-true",
+      "target": "KelGroups.GroupView.isAdmin",
+      "guard": null,
+      "patch": {
+        "line": 154,
+        "before": "  | none => false",
+        "after": "  | none => true"
+      },
+      "claimedKills": [],
+      "note": "an absent key is an admin"
+    },
+    {
+      "id": "admins-non-admins",
+      "target": "KelGroups.GroupView.admins",
+      "guard": null,
+      "patch": {
+        "line": 159,
+        "before": "  (view.members.filter (fun entry => hasAdmin entry.2.roles)).map Prod.fst",
+        "after": "  (view.members.filter (fun entry => !hasAdmin entry.2.roles)).map Prod.fst"
+      },
+      "claimedKills": [
+        "Reactivegas.base_change_can_close_without_ballot",
+        "Reactivegas.i57_disjoint_holds",
+        "Reactivegas.i57_disjoint_mutant_caught",
+        "Reactivegas.i57_franchise_holds",
+        "Reactivegas.i57_franchise_mutant_caught",
+        "Reactivegas.i57_noexpiry_holds",
+        "Reactivegas.i57_nostale_holds",
+        "Reactivegas.i57_policyfree_holds",
+        "Reactivegas.i57_policyfree_mutant_caught",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "the franchise lists the non-admins"
+    },
+    {
+      "id": "assocInsert-appends",
+      "target": "KelGroups.assocInsert",
+      "guard": null,
+      "patch": {
+        "line": 61,
+        "before": "  (key, value) :: assocErase key entries",
+        "after": "  (key, value) :: entries"
+      },
+      "claimedKills": [
+        "KelGroups.Vote.assocInsert_keys_nodup'@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.assocInsert_mem_cases@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.assocInsert_other_lookup@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.effectedState_sweepReady@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.mem_map_fst_insert@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.tallyKeysOfState_insert_cases@KelGroups.Vote.Invariants",
+        "KelGroups.assocInsert_keys_nodup@KelGroups.Invariants",
+        "KelGroups.assocInsert_property@KelGroups.Invariants",
+        "KelGroups.assocLookup_insert_of_none",
+        "Reactivegas.i57_policyfree_holds",
+        "Reactivegas.i57_policyfree_mutant_caught"
+      ],
+      "note": "insert no longer removes the previous entry"
+    },
+    {
+      "id": "view-lookupMember-misses",
+      "target": "KelGroups.GroupView.lookupMember",
+      "guard": null,
+      "patch": {
+        "line": 142,
+        "before": "  assocLookup key view.members",
+        "after": "  none"
+      },
+      "claimedKills": [
+        "Reactivegas.admissionPreservation_holds",
+        "Reactivegas.app_members_preservation_holds",
+        "Reactivegas.app_members_preservation_mutant_caught",
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.canonical_economy_holds",
+        "Reactivegas.comune_cannot_authorize",
+        "Reactivegas.direct_admission_only_holds",
+        "Reactivegas.exhaustive_inventories_hold",
+        "Reactivegas.i57_boundary_holds",
+        "Reactivegas.i57_disjoint_holds",
+        "Reactivegas.i57_disjoint_mutant_caught",
+        "Reactivegas.i57_exhaustive_holds",
+        "Reactivegas.i57_franchise_holds",
+        "Reactivegas.i57_franchise_mutant_caught",
+        "Reactivegas.i57_noexpiry_holds",
+        "Reactivegas.i57_noop_holds",
+        "Reactivegas.i57_policyfree_holds",
+        "Reactivegas.i57_policyfree_mutant_caught",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "TraceTests.all_checks_pass",
+        "isMember_of_view_mem",
+        "view_mem_of_isMember"
+      ],
+      "note": "the canonical view never finds a member"
+    },
+    {
+      "id": "state-lookupMember-misses",
+      "target": "KelGroups.lookupMember",
+      "guard": null,
+      "patch": {
+        "line": 38,
+        "before": "  assocLookup key gs.members",
+        "after": "  none"
+      },
+      "claimedKills": [
+        "KelGroups.enactMutation_preserves_absence",
+        "KelGroups.membership_growth_is_direct_admission",
+        "KelGroups.tryEnactBase_preserves_absence",
+        "Reactivegas.admissionPreservation_holds",
+        "Reactivegas.base_change_can_close_without_ballot",
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.base_recompute_reachable_holds",
+        "Reactivegas.direct_admission_only_holds",
+        "Reactivegas.exhaustive_inventories_hold",
+        "Reactivegas.i57_noop_holds",
+        "Reactivegas.i57_nostale_holds",
+        "Reactivegas.i57_partition_holds",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "Reactivegas.sweep_idempotent_mutant_caught",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "the aggregate never finds a member"
+    },
+    {
+      "id": "lookupPendingBase-misses",
+      "target": "KelGroups.lookupPendingBase",
+      "guard": null,
+      "patch": {
+        "line": 45,
+        "before": "  assocLookup proposalId gs.pendingBase",
+        "after": "  none"
+      },
+      "claimedKills": [
+        "Reactivegas.base_change_can_close_without_ballot",
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.base_recompute_reachable_holds",
+        "Reactivegas.exhaustive_inventories_hold",
+        "Reactivegas.i57_noop_holds",
+        "Reactivegas.i57_nostale_holds",
+        "Reactivegas.i57_partition_holds",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "Reactivegas.sweep_idempotent_mutant_caught",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "a pending base mutation is never found"
+    },
+    {
+      "id": "adminCount-counts-all",
+      "target": "KelGroups.adminCount",
+      "guard": null,
+      "patch": {
+        "line": 48,
+        "before": "    (fun count entry => if hasAdmin entry.2.roles then count + 1 else count) 0",
+        "after": "    (fun count entry => if hasAdmin entry.2.roles then count + 1 else count + 1) 0"
+      },
+      "claimedKills": [
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.exhaustive_inventories_hold",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "every member counts as an admin"
+    },
+    {
+      "id": "majority-floor",
+      "target": "KelGroups.majority",
+      "guard": null,
+      "patch": {
+        "line": 50,
+        "before": "def majority (gs : GroupState α) : Nat := (adminCount gs + 1) / 2",
+        "after": "def majority (gs : GroupState α) : Nat := adminCount gs / 2"
+      },
+      "claimedKills": [
+        "KelGroups.majority_table",
+        "Reactivegas.base_change_can_close_without_ballot",
+        "Reactivegas.base_recompute_reachable_holds",
+        "Reactivegas.i57_nostale_holds",
+        "Reactivegas.i57_partition_holds",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "Reactivegas.sweep_idempotent_mutant_caught",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "the majority rounds down"
+    },
+    {
+      "id": "state-isAdmin-absent-true",
+      "target": "KelGroups.isAdmin",
+      "guard": null,
+      "patch": {
+        "line": 55,
+        "before": "  | none => false",
+        "after": "  | none => true"
+      },
+      "claimedKills": [],
+      "note": "an absent key is an admin of the aggregate"
+    },
+    {
+      "id": "franchise-empty",
+      "target": "KelGroups.Vote.franchise",
+      "guard": null,
+      "patch": {
+        "line": 68,
+        "before": "def franchise (view : GroupView) : List Key := GroupView.admins view",
+        "after": "def franchise (view : GroupView) : List Key := []"
+      },
+      "claimedKills": [
+        "KelGroups.Vote.verdictOf_threshold_congr",
+        "Reactivegas.base_change_can_close_without_ballot",
+        "Reactivegas.i57_boundary_holds",
+        "Reactivegas.i57_disjoint_holds",
+        "Reactivegas.i57_disjoint_mutant_caught",
+        "Reactivegas.i57_exhaustive_holds",
+        "Reactivegas.i57_franchise_holds",
+        "Reactivegas.i57_franchise_mutant_caught",
+        "Reactivegas.i57_noexpiry_holds",
+        "Reactivegas.i57_noop_holds",
+        "Reactivegas.i57_nostale_holds",
+        "Reactivegas.i57_policyfree_holds",
+        "Reactivegas.i57_policyfree_mutant_caught",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "the franchise is empty"
+    },
+    {
+      "id": "vote-isResponsabile-true",
+      "target": "KelGroups.Vote.isResponsabile",
+      "guard": null,
+      "patch": {
+        "line": 75,
+        "before": "def isResponsabile (key : Key) (view : GroupView) : Bool := GroupView.isAdmin key view",
+        "after": "def isResponsabile (key : Key) (view : GroupView) : Bool := true"
+      },
+      "claimedKills": [
+        "Reactivegas.i57_auth_holds",
+        "Reactivegas.i57_boundary_holds",
+        "Reactivegas.i57_franchise_holds",
+        "Reactivegas.i57_franchise_mutant_caught",
+        "Reactivegas.i57_noop_holds"
+      ],
+      "note": "everyone is a responsabile to the vote machine"
+    },
+    {
+      "id": "verdict-collective-strict",
+      "target": "KelGroups.Vote.verdictOf",
+      "guard": null,
+      "patch": {
+        "line": 89,
+        "before": "      if question.assents.length ≥ required then .positive",
+        "after": "      if question.assents.length > required then .positive"
+      },
+      "claimedKills": [
+        "Reactivegas.base_change_can_close_without_ballot",
+        "Reactivegas.base_recompute_reachable_holds",
+        "Reactivegas.i57_nostale_holds",
+        "Reactivegas.i57_partition_holds",
+        "Reactivegas.i57_policyfree_holds",
+        "Reactivegas.i57_policyfree_mutant_caught",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "Reactivegas.sweep_idempotent_mutant_caught",
+        "Reactivegas.sweep_idempotent_witness",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "a collective question needs more than the threshold"
+    },
+    {
+      "id": "verdict-permission-ignores-dissent",
+      "target": "KelGroups.Vote.verdictOf",
+      "guard": null,
+      "patch": {
+        "line": 94,
+        "before": "      else if question.dissents.contains designee then .negative",
+        "after": "      else if false then .negative"
+      },
+      "claimedKills": [],
+      "note": "the designee's dissent never closes a permission question"
+    },
+    {
+      "id": "lookupQuestion-misses",
+      "target": "KelGroups.Vote.lookupQuestion",
+      "guard": null,
+      "patch": {
+        "line": 99,
+        "before": "  assocLookup questionId gs.openQuestions",
+        "after": "  none"
+      },
+      "claimedKills": [
+        "KelGroups.Vote.effectedState_sweepReady@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.effectedState_tally_growth@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.no_expiry",
+        "Reactivegas.i57_disjoint_holds",
+        "Reactivegas.i57_disjoint_mutant_caught",
+        "Reactivegas.i57_franchise_holds",
+        "Reactivegas.i57_franchise_mutant_caught",
+        "Reactivegas.i57_policyfree_holds",
+        "Reactivegas.i57_policyfree_mutant_caught"
+      ],
+      "note": "an open question is never found"
+    },
+    {
+      "id": "closureCause-always-tally",
+      "target": "KelGroups.Vote.closureCause",
+      "guard": null,
+      "patch": {
+        "line": 111,
+        "before": "  | .positive => if question.assents.all (isResponsabile · view) then .tally else .franchiseChange",
+        "after": "  | .positive => if question.assents.all (isResponsabile · view) then .tally else .tally"
+      },
+      "claimedKills": [],
+      "note": "a positive closure never reports a franchise change"
+    },
+    {
+      "id": "placeBallot-keeps-dissent",
+      "target": "KelGroups.Vote.placeBallot",
+      "guard": null,
+      "patch": {
+        "line": 55,
+        "before": "                      dissents := question.dissents.erase voter }",
+        "after": "                      dissents := question.dissents }"
+      },
+      "claimedKills": [
+        "KelGroups.Vote.placeBallot_clean@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.placeBallot_tally@KelGroups.Vote.Invariants"
+      ],
+      "note": "an assent leaves the voter's dissent standing"
+    },
+    {
+      "id": "sweepStep-cause-tally",
+      "target": "KelGroups.Vote.sweepStep",
+      "guard": null,
+      "patch": {
+        "line": 68,
+        "before": "             cause := closureCause view entry.2 verdict }",
+        "after": "             cause := .tally }"
+      },
+      "claimedKills": [
+        "KelGroups.Vote.sweepClosures_preserves_qid@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.sweepClosures_tallyKeys@KelGroups.Vote.Invariants"
+      ],
+      "note": "a closure record always reports a plain tally"
+    },
+    {
+      "id": "sweepClosures-keeps-open",
+      "target": "KelGroups.Vote.sweepClosures",
+      "guard": null,
+      "patch": {
+        "line": 77,
+        "before": "      gs.openQuestions.filter (fun entry => verdictOf threshold view entry.2 = .open),",
+        "after": "      gs.openQuestions.filter (fun entry => true),"
+      },
+      "claimedKills": [
+        "KelGroups.Vote.sweepClosures_idempotent",
+        "KelGroups.Vote.sweepClosures_open_mem@KelGroups.Vote.Invariants",
+        "Reactivegas.base_change_can_close_without_ballot",
+        "Reactivegas.i57_nostale_holds",
+        "Reactivegas.i57_partition_holds",
+        "Reactivegas.i57_policyfree_holds",
+        "Reactivegas.i57_policyfree_mutant_caught",
+        "Reactivegas.sweep_idempotent_witness",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "the sweep keeps decided questions open"
+    },
+    {
+      "id": "effectedState-reopens",
+      "target": "KelGroups.Vote.effectedState",
+      "guard": null,
+      "patch": {
+        "line": 92,
+        "before": "          && !(gs.closed.any (fun record => record.questionId == questionId)) then",
+        "after": "          && true then"
+      },
+      "claimedKills": [
+        "KelGroups.Vote.effectedState_preserves_qid@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.effectedState_sweepReady@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.effectedState_tally_growth@KelGroups.Vote.Invariants"
+      ],
+      "note": "a closed question id can be reopened"
+    },
+    {
+      "id": "admitMemberInto-drops",
+      "target": "KelGroups.admitMemberInto",
+      "guard": null,
+      "patch": {
+        "line": 120,
+        "before": "  { gs with members := assocInsert key { key, email, roles } gs.members }",
+        "after": "  { gs with members := gs.members }"
+      },
+      "claimedKills": [
+        "KelGroups.membership_growth_is_direct_admission",
+        "Reactivegas.admissionPreservation_holds",
+        "Reactivegas.direct_admission_only_holds",
+        "Reactivegas.exhaustive_inventories_hold",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "direct admission admits nobody"
+    },
+    {
+      "id": "enactMutation-remove-noop",
+      "target": "KelGroups.enactMutation",
+      "guard": null,
+      "patch": {
+        "line": 126,
+        "before": "  | .removeMember key => { gs with members := assocErase key gs.members }",
+        "after": "  | .removeMember key => { gs with members := gs.members }"
+      },
+      "claimedKills": [
+        "KelGroups.enactMutation_preserves_absence",
+        "Reactivegas.base_change_can_close_without_ballot",
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.base_recompute_reachable_holds",
+        "Reactivegas.i57_nostale_holds",
+        "Reactivegas.i57_partition_holds",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "Reactivegas.sweep_idempotent_mutant_caught",
+        "Reactivegas.sweep_idempotent_witness",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "a voted removal removes nobody"
+    },
+    {
+      "id": "mutationChange-swapped",
+      "target": "KelGroups.mutationChange",
+      "guard": null,
+      "patch": {
+        "line": 133,
+        "before": "  | .removeMember key => .memberRemoved key",
+        "after": "  | .removeMember key => .rolesChanged key"
+      },
+      "claimedKills": [
+        "Reactivegas.base_change_can_close_without_ballot",
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.i57_noop_holds",
+        "Reactivegas.i57_nostale_holds",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "a removal is reported as a role change"
+    },
+    {
+      "id": "tryEnactBase-strict",
+      "target": "KelGroups.tryEnactBase",
+      "guard": null,
+      "patch": {
+        "line": 154,
+        "before": "      if pending.approvals.length ≥ majority gs then",
+        "after": "      if pending.approvals.length > majority gs then"
+      },
+      "claimedKills": [
+        "Reactivegas.base_change_can_close_without_ballot",
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.base_recompute_reachable_holds",
+        "Reactivegas.exhaustive_inventories_hold",
+        "Reactivegas.i57_noop_holds",
+        "Reactivegas.i57_nostale_holds",
+        "Reactivegas.i57_partition_holds",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "Reactivegas.sweep_idempotent_mutant_caught",
+        "Reactivegas.sweep_idempotent_witness",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "a base mutation needs more than the majority"
+    },
+    {
+      "id": "enact-remove-noop",
+      "target": "KelGroups.enact",
+      "guard": null,
+      "patch": {
+        "line": 14,
+        "before": "      { gs with members := assocErase key gs.members }",
+        "after": "      { gs with members := gs.members }"
+      },
+      "claimedKills": [
+        "KelGroups.enact_preserves_wellFormed"
+      ],
+      "note": "the historical fold removes nobody"
+    },
+    {
+      "id": "finishEnact-keeps-pending",
+      "target": "KelGroups.finishEnact",
+      "guard": null,
+      "patch": {
+        "line": 21,
+        "before": "  { enacted with pendingProposals := assocErase proposalId enacted.pendingProposals }",
+        "after": "  { enacted with pendingProposals := enacted.pendingProposals }"
+      },
+      "claimedKills": [
+        "KelGroups.finishEnact_preserves_wellFormed"
+      ],
+      "note": "an enacted proposal stays pending"
+    },
+    {
+      "id": "tryEnactDetailed-strict",
+      "target": "KelGroups.tryEnactDetailed",
+      "guard": null,
+      "patch": {
+        "line": 38,
+        "before": "      if pending.approvals.length ≥ majority gs then",
+        "after": "      if pending.approvals.length > majority gs then"
+      },
+      "claimedKills": [
+        "KelGroups.members_change_implies_enacted",
+        "KelGroups.tryEnactDetailed_enactment_threshold_met@KelGroups.Invariants",
+        "KelGroups.tryEnact_preserves_wellFormed"
+      ],
+      "note": "the historical fold needs more than the majority"
+    },
+    {
+      "id": "demand-always",
+      "target": "demand",
+      "guard": null,
+      "patch": {
+        "line": 24,
+        "before": "def demand (b : Bool) : Option Unit := if b then some () else none",
+        "after": "def demand (b : Bool) : Option Unit := if b then some () else some ()"
+      },
+      "claimedKills": [
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.i57_noop_holds",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "TraceTests.all_checks_pass",
+        "demand_eq_true_of_some",
+        "demand_none_of_ne_true"
+      ],
+      "note": "every demanded guard passes"
+    },
+    {
+      "id": "memberKeys-empty",
+      "target": "memberKeys",
+      "guard": null,
+      "patch": {
+        "line": 36,
+        "before": "  view.members.map Prod.fst",
+        "after": "  []"
+      },
+      "claimedKills": [
+        "Reactivegas.canonical_economy_holds"
+      ],
+      "note": "backdonation sees no members"
+    },
+    {
+      "id": "stepEvent-withdraw-as-deposit",
+      "target": "stepEvent",
+      "guard": null,
+      "patch": {
+        "line": 156,
+        "before": "  | .withdraw a u v => go a (.withdraw u v)",
+        "after": "  | .withdraw a u v => go a (.deposit u v)"
+      },
+      "claimedKills": [
+        "Reactivegas.step_withdraw_inv",
+        "TraceTests.all_checks_pass",
+        "credit_pledges_step@Reactivegas.Invariants",
+        "step_authorized",
+        "withdraw_double_entry"
+      ],
+      "note": "a withdrawal event runs as a deposit"
+    },
+    {
+      "id": "cleanup-departure-ignores-stall",
+      "target": "Reactivegas.economicCleanup",
+      "guard": null,
+      "patch": {
+        "line": 279,
+        "before": "      demand (!(decide (stalled s)))",
+        "after": "      demand true"
+      },
+      "claimedKills": [
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.i57_noop_holds",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "a departure is accepted while the comune is stalled"
+    },
+    {
+      "id": "cleanup-departure-no-windup",
+      "target": "Reactivegas.economicCleanup",
+      "guard": null,
+      "patch": {
+        "line": 281,
+        "before": "        (if KelGroups.GroupView.isAdmin key pre then windUpAdmin s key else s) key)",
+        "after": "        (s) key)"
+      },
+      "claimedKills": [
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "a departing admin is not wound up"
+    },
+    {
+      "id": "absorbConto-keeps",
+      "target": "Reactivegas.absorbConto",
+      "guard": null,
+      "patch": {
+        "line": 247,
+        "before": "    conti := bump (bump s.conti key (-(bal s.conti key))) comuneId (bal s.conti key) }",
+        "after": "    conti := bump s.conti comuneId (bal s.conti key) }"
+      },
+      "claimedKills": [
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "absorption credits the comune without debiting the leaver"
+    },
+    {
+      "id": "windUpAdmin-keeps-cassa",
+      "target": "Reactivegas.windUpAdmin",
+      "guard": null,
+      "patch": {
+        "line": 258,
+        "before": "    casse := bump s.casse key (-(bal s.casse key)),",
+        "after": "    casse := s.casse,"
+      },
+      "claimedKills": [
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.exhaustive_inventories_hold",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "wind-up leaves the cassa claim in place"
+    },
+    {
+      "id": "baseHook-no-sweep",
+      "target": "Reactivegas.baseHook",
+      "guard": null,
+      "patch": {
+        "line": 303,
+        "before": "        .ok { cleaned with votes := KelGroups.Vote.sweepClosures θ post s.votes }",
+        "after": "        .ok { cleaned with votes := s.votes }"
+      },
+      "claimedKills": [
+        "Reactivegas.baseHook_votes",
+        "Reactivegas.base_change_can_close_without_ballot",
+        "Reactivegas.base_recompute_reachable_holds",
+        "Reactivegas.i57_nostale_holds",
+        "Reactivegas.i57_partition_holds",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "Reactivegas.sweep_idempotent_witness",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "a base change does not re-sweep the questions"
+    },
+    {
+      "id": "productionWellFormed-true",
+      "target": "Reactivegas.productionWellFormed",
+      "guard": null,
+      "patch": {
+        "line": 358,
+        "before": "  !KelGroups.GroupView.isMember comuneId (KelGroups.groupView gs)",
+        "after": "  true"
+      },
+      "claimedKills": [
+        "Reactivegas.comune_cannot_authorize",
+        "productionWellFormed_proj"
+      ],
+      "note": "every aggregate is well formed"
+    },
+    {
+      "id": "guardOf-donate-as-deposit",
+      "target": "guardOf",
+      "guard": null,
+      "patch": {
+        "line": 66,
+        "before": "  | .donate _ _ => .donate",
+        "after": "  | .donate _ _ => .deposit"
+      },
+      "claimedKills": [
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "a refused donate is reported under the deposit identity"
+    },
+    {
+      "id": "route-grant-direct",
+      "target": "Reactivegas.Composition.route",
+      "guard": null,
+      "patch": {
+        "line": 49,
+        "before": "  | .grantPermission _ _ => .appDecided",
+        "after": "  | .grantPermission _ _ => .direct"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.voteDerived_iff_not_direct"
+      ],
+      "note": "grantPermission is routed as a direct event"
+    },
+    {
+      "id": "emptyState-has-member",
+      "target": "KelGroups.emptyState",
+      "guard": null,
+      "patch": {
+        "line": 35,
+        "before": "  { members := [], pendingProposals := [], pendingBase := [], appFold := initial }",
+        "after": "  { members := [(\"x\", { key := \"y\", email := \"\", roles := [] })], pendingProposals := [], pendingBase := [], appFold := initial }"
+      },
+      "claimedKills": [
+        "KelGroups.emptyState_wellFormed"
+      ],
+      "note": "the empty aggregate starts with an incoherent member"
+    },
+    {
+      "id": "legacyThreshold-floor",
+      "target": "KelGroups.Vote.legacyThreshold",
+      "guard": null,
+      "patch": {
+        "line": 44,
+        "before": "def legacyThreshold (responsabili : Nat) : Nat := (responsabili + 1) / 2",
+        "after": "def legacyThreshold (responsabili : Nat) : Nat := responsabili / 2"
+      },
+      "claimedKills": [
+        "Reactivegas.base_change_can_close_without_ballot",
+        "Reactivegas.comuneThresholdSanity_holds",
+        "Reactivegas.i57_boundary_holds",
+        "Reactivegas.i57_disjoint_holds",
+        "Reactivegas.i57_disjoint_mutant_caught",
+        "Reactivegas.i57_exhaustive_holds",
+        "Reactivegas.i57_franchise_holds",
+        "Reactivegas.i57_franchise_mutant_caught",
+        "Reactivegas.i57_noexpiry_holds",
+        "Reactivegas.i57_noop_holds",
+        "Reactivegas.i57_nostale_holds",
+        "Reactivegas.i57_policyfree_holds",
+        "Reactivegas.i57_policyfree_mutant_caught",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "the legacy threshold rounds down"
+    },
+    {
+      "id": "sumBal-drops-first",
+      "target": "sumBal",
+      "guard": null,
+      "patch": {
+        "line": 68,
+        "before": "def sumBal (m : List (KelGroups.Key × Int)) : Int := (m.map Prod.snd).sum",
+        "after": "def sumBal (m : List (KelGroups.Key × Int)) : Int := ((m.map Prod.snd).drop 1).sum"
+      },
+      "claimedKills": [
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "TraceTests.all_checks_pass",
+        "bump_sum",
+        "sumBal_cons"
+      ],
+      "note": "an account total ignores its first entry"
+    },
+    {
+      "id": "comuneId-renamed",
+      "target": "comuneId",
+      "guard": null,
+      "patch": {
+        "line": 22,
+        "before": "abbrev comuneId : KelGroups.Key := \"comune\"",
+        "after": "abbrev comuneId : KelGroups.Key := \"comune0\""
+      },
+      "claimedKills": [
+        "Reactivegas.comuneThresholdSanity_holds"
+      ],
+      "note": "the reserved comune key changes"
+    },
+    {
+      "id": "traceInventory-covered-negated",
+      "target": "traceInventory",
+      "guard": null,
+      "patch": {
+        "line": 235,
+        "before": "  , covered := (guardManifest.filter (fun r => r.2.isSome)).map Prod.fst",
+        "after": "  , covered := (guardManifest.filter (fun r => r.2.isNone)).map Prod.fst"
+      },
+      "claimedKills": [
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "the trace inventory reports uncovered constructors as covered"
+    },
+    {
+      "id": "guard-admission-admin",
+      "target": "KelGroups.validateDirectAdmission",
+      "guard": "KelGroups.ValidationError.notAnAdmin",
+      "patch": {
+        "line": 145,
+        "before": "  if isAdmin signer gs then",
+        "after": "  if true then"
+      },
+      "claimedKills": [
+        "KelGroups.non_admin_admission_is_noop",
+        "KelGroups.validateDirectAdmission_ok",
+        "Reactivegas.direct_admission_only_holds",
+        "Reactivegas.exhaustive_inventories_hold",
+        "Reactivegas.i57_noop_holds",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "direct admission stops requiring an admin signer"
+    },
+    {
+      "id": "guard-approve-route-pending",
+      "target": "KelGroups.applyIntegratedEvent",
+      "guard": "KelGroups.ValidationError.proposalNotFound",
+      "patch": {
+        "line": 200,
+        "before": "          | none => .error (.validation (.proposalNotFound proposalId))",
+        "after": "          | none => .ok { state := gs, change := none }"
+      },
+      "claimedKills": [
+        "KelGroups.base_change_runs_hook",
+        "KelGroups.membership_growth_is_direct_admission"
+      ],
+      "note": "approving a vanished base proposal is a no-op success"
+    },
+    {
+      "id": "guard-approval-twice-historical",
+      "target": "KelGroups.validateApproval",
+      "guard": "KelGroups.ValidationError.alreadyApproved",
+      "patch": {
+        "line": 122,
+        "before": "      if pending.approvals.contains signer then",
+        "after": "      if false then"
+      },
+      "claimedKills": [],
+      "note": "the historical approval admits a second approval by the same signer"
+    },
+    {
+      "id": "guard-renounce-question-exists",
+      "target": "KelGroups.Vote.validateVoteEvent",
+      "guard": "KelGroups.Vote.VoteError.questionNotFound",
+      "patch": {
+        "line": 70,
+        "before": "        | none => .error VoteError.questionNotFound",
+        "after": "        | none => .ok ()"
+      },
+      "claimedKills": [],
+      "note": "a renounce of an unknown question is admitted"
+    },
+    {
+      "id": "guard-production-result-wellformed",
+      "target": "Reactivegas.apply",
+      "guard": "Reactivegas.ProductionError.comuneReserved",
+      "patch": {
+        "line": 384,
+        "before": "        if productionWellFormed result.state then .ok result",
+        "after": "        if true then .ok result"
+      },
+      "claimedKills": [],
+      "note": "the production root stops refusing a result that lists the comune"
+    },
+    {
+      "id": "guard-commit-hook-refusal",
+      "target": "KelGroups.commitBaseChange",
+      "guard": "KelGroups.IntegratedError.app",
+      "patch": {
+        "line": 144,
+        "before": "  | .error err => .error (.app err)",
+        "after": "  | .error err => .ok { state := post, change := some change }"
+      },
+      "claimedKills": [
+        "KelGroups.commitBaseChange_members",
+        "KelGroups.commitBaseChange_ok",
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.i57_noop_holds",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "a refused base hook still commits the base change"
+    },
+    {
+      "id": "emptyVoteState-has-question",
+      "target": "KelGroups.Vote.emptyVoteState",
+      "guard": null,
+      "patch": {
+        "line": 58,
+        "before": "  { openQuestions := [], closed := [] }",
+        "after": "  { openQuestions := [(\"q\", { kind := .collective, proposer := \"p\", assents := [\"a\"], dissents := [\"a\"] })], closed := [] }"
+      },
+      "claimedKills": [
+        "KelGroups.Vote.emptyVoteState_sweepReady",
+        "KelGroups.Vote.emptyVoteState_wellFormed",
+        "KelGroups.Vote.franchise_of_tallies",
+        "Reactivegas.admissionPreservation_holds",
+        "Reactivegas.direct_admission_only_holds",
+        "Reactivegas.exhaustive_inventories_hold",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "the empty vote payload starts with an inconsistent open question"
+    },
+    {
+      "id": "groupView-empty",
+      "target": "KelGroups.groupView",
+      "guard": null,
+      "patch": {
+        "line": 72,
+        "before": "def groupView (gs : GroupState α) : GroupView := { members := gs.members }",
+        "after": "def groupView (gs : GroupState α) : GroupView := { members := [] }"
+      },
+      "claimedKills": [
+        "Reactivegas.admissionPreservation_holds",
+        "Reactivegas.app_members_preservation_holds",
+        "Reactivegas.app_members_preservation_mutant_caught",
+        "Reactivegas.base_change_can_close_without_ballot",
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.canonical_economy_holds",
+        "Reactivegas.comune_cannot_authorize",
+        "Reactivegas.direct_admission_only_holds",
+        "Reactivegas.exhaustive_inventories_hold",
+        "Reactivegas.i57_boundary_holds",
+        "Reactivegas.i57_disjoint_holds",
+        "Reactivegas.i57_disjoint_mutant_caught",
+        "Reactivegas.i57_exhaustive_holds",
+        "Reactivegas.i57_franchise_holds",
+        "Reactivegas.i57_franchise_mutant_caught",
+        "Reactivegas.i57_noexpiry_holds",
+        "Reactivegas.i57_noop_holds",
+        "Reactivegas.i57_nostale_holds",
+        "Reactivegas.i57_policyfree_holds",
+        "Reactivegas.i57_policyfree_mutant_caught",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "the canonical view of any aggregate has no members"
+    },
+    {
+      "id": "pledge-no-decidable-eq",
+      "target": "instDecidableEqPledge",
+      "guard": null,
+      "patch": {
+        "line": 29,
+        "before": "deriving DecidableEq, BEq, Repr",
+        "after": "deriving Hashable, BEq, Repr"
+      },
+      "claimedKills": [
+        "TraceTests.all_checks_pass",
+        "TraceTests.frozen_checks_faithful",
+        "uniquePledges_corr",
+        "uniquePledges_pt@Reactivegas.Mirrors"
+      ],
+      "note": "Pledge equality is no longer decidable (the derived instance is replaced)"
+    }
+  ]
+}

@@ -59,3 +59,18 @@ rows do not fail CI; they are published findings.
 The pushed head's CI is green with the mutant step executing; every
 REQUIRED theorem is `KILLED` or `OPEN` with R-5 evidence; the `OPEN` and
 `SURVIVED` sets are handed to the desk for per-identity disposition.
+
+## Clarifications during implementation
+
+- **R-9** applies to refusal constructors with a non-empty emitter set computed
+  from the elaborated environment. A constructor no production definition emits
+  is published as `UNEMITTED` by identity and counted in the summary; it does not
+  fail CI. A control shows that an emitted constructor without a guard mutant does
+  fail.
+- **R-5** — a mutant of a type declaration (structure, inductive, abbreviation)
+  is an admissible production mutant under R-6/R-7. An `OPEN` row with no
+  attempted mutant is valid only when its computed statement closure contains no
+  production definition with a computational body; the validator computes this
+  and rejects any other such row.
+- **D-3** — the statement closure includes the constructor types (structure
+  fields included) of every project inductive it reaches.

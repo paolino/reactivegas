@@ -1,0 +1,852 @@
+#!/usr/bin/env bash
+set -euo pipefail
+#
+# Theorem-keyed Lean mutant ledger (#66 S3).
+#
+#   scripts/lean-mutants/run [REPO_ROOT]                     normal mode
+#   scripts/lean-mutants/run --negative-control [REPO_ROOT]  every runner check, shown failing
+#   scripts/lean-mutants/run --census [REPO_ROOT]            build and run the compiled census only
+#   scripts/lean-mutants/run --write [REPO_ROOT]             maintainer: rewrite claims, ledger
+#                                                            skeleton and renderings from what
+#                                                            Lean reports (never run by CI)
+#
+# Normal mode, on a copy of `lean/` under a temporary directory:
+#   1. builds every tracked Lean module (`lake build`) and runs the compiled
+#      census (Census.lean): theorem extent and exclusion rule, declaration
+#      spans, statement closures, production rule, refusal vocabularies;
+#   2. elaborates every module of the unmutated head with the driver
+#      (Elab.lean) — the baseline;
+#   3. for each mutant of lean/mutants/catalogue.json, in its own copy:
+#      replaces the one patch line (only if it reads exactly as `before`) and
+#      elaborates the mutated module and every module importing it, in import
+#      order, with the driver;
+#   4. validates catalogue and ledger against census facts and observed
+#      diagnostics (validate.jq), re-renders the two ledger documents and
+#      compares them with the committed ones, and checks that the working
+#      tree is byte-identical to what it was before the run.
+# It prints one summary line and exits 0 only when no rule is violated.
+# Every violation is printed as `VIOLATION <rule> <identity> <detail>`.
+#
+# Negative-control mode re-uses the bundle of the last normal run of the same
+# head and inputs and, per control, perturbs one input (or runs a real
+# elaboration that must fail) and requires the named rule to fire. It exits 0
+# only when every control failed for its own reason.
+#
+# Writes: only under a temporary directory and lean/.lake/lean-mutants
+# (results of the last normal run). Tracked files are never touched, except by
+# --write.
+
+TOOL=lean-mutants
+mode=normal
+allow_dirty=0
+while [ $# -gt 0 ]; do
+    case $1 in
+        --negative-control) mode=negative-control ;;
+        --write) mode="write" ;;
+        --census) mode="census" ;;
+        --allow-dirty) allow_dirty=1 ;;
+        -h|--help) sed -n '3,8p' "$0"; exit 0 ;;
+        --) shift; break ;;
+        -*) printf '%s: unknown option %s\n' "$TOOL" "$1" >&2; exit 64 ;;
+        *) break ;;
+    esac
+    shift
+done
+[ $# -le 1 ] || { printf 'usage: %s [--negative-control|--write] [REPO_ROOT]\n' "$TOOL" >&2; exit 64; }
+
+here=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+root=$(cd -- "${1:-$here/../..}" && pwd)
+lean_dir=$root/lean
+work=$lean_dir/.lake/lean-mutants
+catalogue=$lean_dir/mutants/catalogue.json
+ledger=$lean_dir/mutants/ledger.json
+renders=(REACTIVEGAS-MUTANTS.md:Reactivegas KELGROUPS-MUTANTS.md:KelGroups)
+
+die() { printf '%s: %s\n' "$TOOL" "$*" >&2; exit 1; }
+log() { printf '[%s] %s\n' "$TOOL" "$*" >&2; }
+
+for tool in git jq lake lean; do
+    command -v "$tool" >/dev/null || die "missing tool: $tool"
+done
+
+# Jobs: one mutant per job. One driver process peaks near 3.5 GB, so the
+# default is bounded by available memory, by the memory limit of the cgroup
+# the run is confined to (when there is one), by CPUs over the Lean thread
+# count, and never exceeds 4.
+export LEAN_NUM_THREADS=${LEAN_NUM_THREADS:-4}
+jobs_default() {
+    local mem_kb limit cg n
+    mem_kb=$(awk '/^MemAvailable:/ { print $2 }' /proc/meminfo)
+    cg=$(awk -F: '$1 == "0" { print $3 }' /proc/self/cgroup 2>/dev/null || true)
+    if [ -n "$cg" ] && [ -r "/sys/fs/cgroup$cg/memory.max" ]; then
+        limit=$(cat "/sys/fs/cgroup$cg/memory.max")
+        if [ "$limit" != max ] && [ $((limit / 1024)) -lt "$mem_kb" ]; then
+            mem_kb=$((limit / 1024))
+        fi
+    fi
+    n=$(( mem_kb / (4 * 1024 * 1024) ))
+    [ "$n" -le $(( $(nproc) / LEAN_NUM_THREADS )) ] || n=$(( $(nproc) / LEAN_NUM_THREADS ))
+    [ "$n" -le 4 ] || n=4
+    [ "$n" -ge 1 ] || n=1
+    printf '%s\n' "$n"
+}
+JOBS=${LEAN_MUTANTS_JOBS:-$(jobs_default)}
+
+# ---- tracked extent: the rule every Lean gate of this repository uses ------
+tracked_modules() {
+    git -C "$root" ls-files -- 'lean' \
+        | grep -E '\.lean$' \
+        | sort \
+        | while IFS= read -r f; do
+            rel=${f#lean/}
+            [ "$rel" = lakefile.lean ] && continue
+            printf '%s\n' "${rel%.lean}" | tr '/' '.'
+        done
+}
+
+# ---- R-11: the working tree before and after ------------------------------
+tree_snapshot() {
+    # tracked content plus untracked, non-ignored paths; ignored build output
+    # (lean/.lake) is excluded by git's own rules
+    local dir=$1
+    {
+        git -C "$dir" status --porcelain=v1 --untracked-files=all
+        git -C "$dir" ls-files -z | (cd "$dir" && xargs -0 sha256sum)
+    } | sha256sum | cut -d' ' -f1
+}
+
+# ---- elaboration -----------------------------------------------------------
+# elab_chain <lean-dir> <raw-out> <olean-root|-> <module>...
+#   olean-root "-" writes each olean to a scratch path (baseline: lake's
+#   oleans stay authoritative); otherwise it overwrites the tree's own.
+elab_chain() {
+    local dir=$1 out=$2 oroot=$3
+    shift 3
+    local m rel olean lean_path
+    : >"$out"; : >"$out.err"
+    lean_path=$(cd "$dir" && lake env printenv LEAN_PATH) || return 1
+    for m in "$@"; do
+        rel=$(printf '%s' "$m" | tr '.' '/')
+        if [ "$oroot" = - ]; then
+            olean=$(mktemp -u "$tmp/scratch-olean.XXXXXX")
+        else
+            olean=$dir/.lake/build/lib/lean/$rel.olean
+            mkdir -p "$(dirname "$olean")"
+        fi
+        # Lake's own setup record for the module carries its options. One
+        # process per module: a process keeps every environment it imported,
+        # so a whole chain in one process grows past the memory budget.
+        (cd "$dir" && LEAN_PATH=$lean_path "$tmp/elab" \
+            "$m" "$rel.lean" "$olean" "$dir/.lake/build/ir/$rel.setup.json") >>"$out" 2>>"$out.err" \
+            || return 1
+    done
+}
+
+# build_driver: compile Elab.lean once per run (interpreting it costs a
+# second and a half of start-up per module)
+build_driver() {
+    (cd "$here" && lean -R "$here" -c "$tmp/elab.c" "$here/Elab.lean" \
+        && leanc -o "$tmp/elab" "$tmp/elab.c" -rdynamic) >"$tmp/elab-build.log" 2>&1 \
+        || { cat "$tmp/elab-build.log" >&2; die "could not compile the elaboration driver"; }
+}
+
+# lake_invocations <lean-dir> <module>... : the driver reproduces a module's
+# options only through Lake's setup file, so the command Lake recorded for
+# each module (its `.trace` log) may hold nothing else: the source, output
+# paths, `--setup <file>` and `--json`. Anything more (e.g. `moreLeanArgs`)
+# is refused.
+lake_invocations() {
+    local dir=$1 m rel trace bad=0
+    shift
+    for m in "$@"; do
+        rel=$(printf '%s' "$m" | tr '.' '/')
+        trace=$dir/.lake/build/lib/lean/$rel.trace
+        if [ ! -f "$trace" ] || [ ! -f "$dir/.lake/build/ir/$rel.setup.json" ]; then
+            printf 'VIOLATION LAKE-OPTION-UNREPRODUCED %s no Lake trace or setup record\n' "$m"
+            bad=1
+            continue
+        fi
+        jq -r --arg m "$m" '
+          [ .log[]? | select(.message | startswith(".> ")) | .message ] as $cmds
+          | if ($cmds | length) != 1 then "VIOLATION LAKE-OPTION-UNREPRODUCED \($m) \($cmds | length) recorded lean commands"
+            else ($cmds[0] | split(" ") | map(select(length > 0))) as $t
+            | ([ $t | to_entries[] | select((.value | test("^[^=]*(^|/)lean$"))) | .key ][0]) as $i
+            | if $i == null then "VIOLATION LAKE-OPTION-UNREPRODUCED \($m) no lean executable in the recorded command"
+              else ($t[($i + 2):]) as $rest
+              | def scan: if length == 0 then []
+                  elif .[0] | IN("-o", "-i", "-c", "-b", "--setup") then .[2:] | scan
+                  elif .[0] == "--json" then .[1:] | scan
+                  else [.[0]] + (.[1:] | scan) end;
+                ($rest | scan) as $extra
+                | if ($extra | length) > 0
+                  then "VIOLATION LAKE-OPTION-UNREPRODUCED \($m) Lake passes \($extra | join(" "))"
+                  elif ($rest | index("--setup")) == null
+                  then "VIOLATION LAKE-OPTION-UNREPRODUCED \($m) no --setup in the recorded command"
+                  else empty end
+              end
+            end' "$trace" >"$tmp/lake-inv.$$" || { printf 'VIOLATION LAKE-OPTION-UNREPRODUCED %s unreadable trace\n' "$m"; bad=1; continue; }
+        if [ -s "$tmp/lake-inv.$$" ]; then cat "$tmp/lake-inv.$$"; bad=1; fi
+    done
+    rm -f "$tmp/lake-inv.$$"
+    return "$bad"
+}
+
+# affected_modules <module> <target>: the modules to re-elaborate under a
+# mutant of <target> (defined in <module>), in import order. Those are the
+# modules that import <module> (transitively) and either hold <module>
+# itself, hold an authored theorem whose statement closure contains
+# <target>, or are imported by such a module. Every theorem a kill can be
+# credited to lives in one of them; the others are skipped.
+affected_modules() {
+    jq -r --arg m "$1" --arg t "$2" '
+      .modules as $ms
+      | def users($x): [ $ms[] | select(.imports | index($x)) | .name ];
+        def imps($x): [ $ms[] | select(.name == $x) | .imports[] ];
+        def up($set): ([ $set[] as $x | users($x)[] ] + $set | unique) as $n
+          | if ($n | length) == ($set | length) then $set else up($n) end;
+        def down($set): ([ $set[] as $x | imps($x)[] ] + $set | unique) as $n
+          | if ($n | length) == ($set | length) then $set else down($n) end;
+        def depth($x): ([ imps($x)[] | depth(.) + 1 ] | max // 0);
+      up([$m]) as $affected
+      | ([ $m ] + [ .theorems[] | select(.class == "AUTHORED") | select(.closure | index($t)) | .module ]
+         | unique) as $holders
+      | down($holders) as $needed
+      | [ $affected[] | select(. as $x | $needed | index($x)) ]
+      | map({m: ., d: depth(.)}) | sort_by(.d, .m) | .[].m
+    ' "$census"
+}
+
+prepare_base() {
+    base=$tmp/base/lean
+    mkdir -p "$tmp/base"
+    cp -a "$lean_dir" "$tmp/base/"
+    rm -rf "$base/.lake/lean-mutants"
+    build_driver
+    mapfile -t modules < <(tracked_modules)
+    [ "${#modules[@]}" -gt 0 ] || die "derived zero tracked Lean modules"
+    log "building ${#modules[@]} tracked modules"
+    (cd "$base" && lake build "${modules[@]}" >"$tmp/build.log" 2>&1) \
+        || { cat "$tmp/build.log" >&2; die "lake build failed"; }
+}
+
+# run_census <lean-dir> <out> <module-list-file>
+run_census() {
+    local dir=$1 out=$2 list=$3
+    {
+        printf 'import Lean\n'
+        sed 's/^/import /' "$list"
+        cat "$here/Census.lean"
+    } >"$out.lean"
+    CENSUS_MODULES=$(cat "$list") CENSUS_ROOT=$dir CENSUS_OUT=$out \
+        bash -c 'cd "$1" && lake env lean "$2"' _ "$dir" "$out.lean" >"$out.log" 2>&1
+}
+
+# census_check <lean-dir> <out> <module-list-file> : R-1/R-2 extent checks.
+# Every census refusal is printed as a violation with its own rule; the
+# census must also have announced success. Returns 1 on any violation.
+census_check() {
+    local rc=0
+    run_census "$@" || rc=$?
+    if grep -qE 'CENSUS-FAIL ' "$2.log"; then
+        grep -oE 'CENSUS-FAIL [A-Z-]+ [^"]*' "$2.log" | head -n 20 \
+            | sed -E 's/^CENSUS-FAIL ([A-Z-]+) /VIOLATION \1 census /'
+        return 1
+    fi
+    if [ "$rc" -ne 0 ] || ! grep -qE '^CENSUS-OK ' "$2.log"; then
+        printf 'VIOLATION CENSUS-FAILED census exit %s without a CENSUS-OK line\n' "$rc"
+        tail -n 20 "$2.log" >&2
+        return 1
+    fi
+}
+
+# restore_check <dir> <snapshot-before> : R-11
+restore_check() {
+    if [ "$(tree_snapshot "$1")" != "$2" ]; then
+        printf 'VIOLATION RESTORE-DIFFERS worktree the working tree changed during the run\n'
+        return 1
+    fi
+}
+
+observe_baseline() {
+    local i
+    mkdir -p "$tmp/obs/baseline"
+    # independent modules: lake's oleans are the imports
+    for ((i = 0; i < ${#modules[@]}; i++)); do
+        printf '%s\n' "${modules[$i]}"
+    done | xargs -P "$JOBS" -I{} bash -c '
+        set -euo pipefail
+        '"$(declare -f elab_chain)"'
+        here=$1 tmp=$2 dir=$3 m=$4
+        elab_chain "$dir" "$tmp/obs/baseline/$m.raw" - "$m"
+    ' _ "$here" "$tmp" "$base" {} \
+        || die "driver failed on the baseline (see $tmp/obs/baseline)"
+    cat "$tmp"/obs/baseline/*.raw >"$tmp/obs/baseline.raw"
+    jq -R -s --argjson chain "$(printf '%s\n' "${modules[@]}" | jq -R . | jq -s .)" \
+        --argjson applied true -f "$here/parse.jq" "$tmp/obs/baseline.raw" >"$tmp/obs/baseline.json"
+}
+
+# observe_mutant <index>: copy, patch one line, elaborate the affected chain
+observe_mutant() {
+    local id target module file line before after mdir chain
+    id=$(jq -r --argjson i "$1" '.mutants[$i].id' "$catalogue")
+    target=$(jq -r --argjson i "$1" '.mutants[$i].target' "$catalogue")
+    line=$(jq -r --argjson i "$1" '.mutants[$i].patch.line' "$catalogue")
+    before=$(jq -r --argjson i "$1" '.mutants[$i].patch.before' "$catalogue")
+    after=$(jq -r --argjson i "$1" '.mutants[$i].patch.after' "$catalogue")
+    module=$(jq -r --arg t "$target" '[.declarations[] | select(.id == $t) | .module][0] // ""' "$census")
+    local res=$tmp/obs/m/$id
+    mkdir -p "$res"
+    if [ -z "$module" ]; then
+        jq -n '{applied: false, chain: [], status: {}, unparseable: [], diags: {}}' >"$res/run.json"
+        return 0
+    fi
+    file=$(printf '%s' "$module" | tr '.' '/').lean
+    # applies only when the line reads exactly as `before` (fail-closed)
+    if [ "$(sed -n "${line}p" "$base/$file")" != "$before" ] || [ "$before" = "$after" ]; then
+        jq -n '{applied: false, chain: [], status: {}, unparseable: [], diags: {}}' >"$res/run.json"
+        return 0
+    fi
+    mdir=$tmp/m-$id
+    mkdir -p "$mdir"
+    cp -a "$base" "$mdir/"
+    LINE=$line AFTER=$after awk 'NR == ENVIRON["LINE"] { print ENVIRON["AFTER"]; next } { print }' \
+        "$base/$file" >"$mdir/lean/$file"
+    # the copy differs from the head in exactly that one line
+    local changed
+    changed=$(diff "$base/$file" "$mdir/lean/$file" | grep -cE '^[<>]' || true)
+    [ "$changed" -eq 2 ] || die "mutant $id: applying the patch changed $changed diff lines, not one line"
+    mapfile -t chain < <(affected_modules "$module" "$target")
+    local start=$SECONDS
+    if ! elab_chain "$mdir/lean" "$res/raw" "$mdir/lean" "${chain[@]}"; then
+        cat "$res/raw.err" >&2
+        die "mutant $id: the elaboration driver failed (not an observation)"
+    fi
+    jq -R -s --argjson chain "$(printf '%s\n' "${chain[@]}" | jq -R . | jq -s .)" \
+        --argjson applied true -f "$here/parse.jq" "$res/raw" >"$res/run.json"
+    rm -rf "$mdir"
+    log "mutant $id: ${#chain[@]} module(s), $((SECONDS - start))s"
+}
+
+build_bundle() {
+    local out=$1 i n id
+    n=$(jq '.mutants | length' "$catalogue")
+    {
+        printf '{}'
+        for ((i = 0; i < n; i++)); do
+            id=$(jq -r --argjson i "$i" '.mutants[$i].id' "$catalogue")
+            jq -c --arg id "$id" '{($id): .}' "$tmp/obs/m/$id/run.json" 2>/dev/null || printf '{}'
+        done
+    } | jq -s 'add' >"$tmp/obs/mutants.json"
+    # the head's text of every patch line (null when the target is unknown)
+    {
+        printf '{}'
+        for ((i = 0; i < n; i++)); do
+            local target line module
+            id=$(jq -r --argjson i "$i" '.mutants[$i].id' "$catalogue")
+            target=$(jq -r --argjson i "$i" '.mutants[$i].target' "$catalogue")
+            line=$(jq -r --argjson i "$i" '.mutants[$i].patch.line' "$catalogue")
+            module=$(jq -r --arg t "$target" '[.declarations[] | select(.id == $t) | .module][0] // ""' "$census")
+            if [ -n "$module" ]; then
+                sed -n "${line}p" "$base/$(printf '%s' "$module" | tr '.' '/').lean" \
+                    | jq -R -c --arg id "$id" '{($id): .}'
+            fi
+        done
+    } | jq -s 'add' >"$tmp/obs/lines.json"
+    jq -n \
+        --slurpfile census "$census" \
+        --slurpfile catalogue "$catalogue" \
+        --slurpfile ledger "$ledger" \
+        --slurpfile lines "$tmp/obs/lines.json" \
+        --slurpfile baseline "$tmp/obs/baseline.json" \
+        --slurpfile mutants "$tmp/obs/mutants.json" \
+        '{census: $census[0], catalogue: $catalogue[0], ledger: $ledger[0],
+          sourceLines: $lines[0],
+          observations: {baseline: $baseline[0], mutants: $mutants[0]}}' >"$out"
+}
+
+# validate <bundle> <result> : prints violations; returns 1 when any
+validate() {
+    jq -f "$here/validate.jq" "$1" >"$2" || die "validator failed to run"
+    jq -r '.violations[] | "VIOLATION \(.rule) \(.id) \(.detail)"' "$2"
+    [ "$(jq '.violations | length' "$2")" -eq 0 ]
+}
+
+# render <bundle> <dir> : both documents
+render() {
+    local pair file half
+    mkdir -p "$2"
+    for pair in "${renders[@]}"; do
+        file=${pair%%:*}; half=${pair#*:}
+        jq -r --arg half "$half" -f "$here/render.jq" "$1" >"$2/$file" \
+            || die "renderer failed for $file"
+    done
+}
+
+# compare_renders <dir> <committed-dir> : R-12
+compare_renders() {
+    local pair file bad=0
+    for pair in "${renders[@]}"; do
+        file=${pair%%:*}
+        if ! cmp -s "$1/$file" "$2/$file"; then
+            printf 'VIOLATION RENDER-STALE %s committed rendering differs from the ledger\n' "lean/$file"
+            bad=1
+        fi
+    done
+    return "$bad"
+}
+
+summary_line() {
+    jq -r '.counts | "LEAN-MUTANTS discovered=\(.discovered) excluded=\(.excluded) helper=\(.helper) required=\(.required) executed=\(.executed) killed=\(.killed) open=\(.open) survived=\(.survived) unemitted=\(.unemitted)"' "$1"
+}
+
+inputs_digest() {
+    cat "$catalogue" "$ledger" "$here"/Census.lean "$here"/Elab.lean "$here"/*.jq "$here/run" \
+        | sha256sum | cut -d' ' -f1
+}
+
+# build, check Lake's recorded commands, run the census and print its rules,
+# module roles, excluded identities and refusal vocabularies (R-1, R-2, R-9)
+census_stage() {
+    local status=0
+    prepare_base
+    lake_invocations "$base" "${modules[@]}" || status=1
+    census=$tmp/census.json
+    printf '%s\n' "${modules[@]}" >"$tmp/modules.txt"
+    census_check "$base" "$census" "$tmp/modules.txt" || die "census refused the extent"
+    grep -E '^CENSUS-OK ' "$census.log" >&2
+    jq -r '"EXCLUSION-RULE \(.exclusionRule)", "PRODUCTION-RULE \(.productionRule)",
+           (.modules[] | "MODULE \(.name) role=\(.role)"),
+           (.theorems[] | select(.class == "EXCLUDED") | "EXCLUDED \(.id)"),
+           (.vocabularies[] | .type as $v | .origin as $o | .constructors[]
+            | "REFUSAL \($v) [\($o)] \(.id) emitters=\(.emitters | join(","))")' "$census"
+    return "$status"
+}
+
+census_mode() {
+    census_stage
+    jq -r '"CENSUS modules=\(.modules | length) discovered=\(.theorems | length) excluded=\([.theorems[] | select(.class == "EXCLUDED")] | length) authored=\([.theorems[] | select(.class == "AUTHORED")] | length) helper=\([.theorems[] | select(.class == "AUTHORED" and (.closure | length) == 0)] | length) vocabularies=\(.vocabularies | length)"' "$census"
+}
+
+normal_mode() {
+    local before after status=0
+    [ -f "$catalogue" ] || die "missing $catalogue"
+    [ -f "$ledger" ] || die "missing $ledger"
+    before=$(tree_snapshot "$root")
+    if [ "$allow_dirty" -eq 0 ] && [ -n "$(git -C "$root" status --porcelain=v1 --untracked-files=all)" ]; then
+        die "TREE-DIRTY-AT-START: commit or stash first (the run must leave the head byte-identical)"
+    fi
+    census_stage || status=1
+    log "baseline: ${#modules[@]} modules, $JOBS job(s)"
+    observe_baseline
+    local n
+    n=$(jq '.mutants | length' "$catalogue")
+    log "mutants: $n, $JOBS job(s)"
+    export -f observe_mutant elab_chain affected_modules die log
+    export here tmp base census catalogue TOOL
+    seq 0 $((n - 1)) | xargs -P "$JOBS" -I{} bash -c 'observe_mutant "$1"' _ {} \
+        || die "a mutant run failed"
+    build_bundle "$tmp/bundle.json"
+    validate "$tmp/bundle.json" "$tmp/result.json" || status=1
+    render "$tmp/bundle.json" "$tmp/render"
+    compare_renders "$tmp/render" "$lean_dir" || status=1
+    jq -r '.guards[] | select(.outcome == "SURVIVED" or .outcome == "UNEMITTED") | "\(.outcome) \(.id)"' "$tmp/result.json"
+    jq -r '.theorems[] | select(.class == "OPEN") | "OPEN \(.id)"' "$tmp/result.json"
+    # results of this run, for the negative controls and for inspection
+    rm -rf "$work"
+    mkdir -p "$work"
+    cp "$tmp/bundle.json" "$tmp/result.json" "$census" "$work/"
+    cp -r "$tmp/render" "$work/render"
+    mkdir -p "$work/raw"
+    for d in "$tmp"/obs/m/*/; do
+        [ -f "$d/raw" ] && cp "$d/raw" "$work/raw/$(basename "$d").raw"
+    done
+    printf '%s %s\n' "$(git -C "$root" rev-parse HEAD)" "$(inputs_digest)" >"$work/stamp"
+    restore_check "$root" "$before" || status=1
+    summary_line "$tmp/result.json"
+    return "$status"
+}
+
+write_mode() {
+    allow_dirty=1
+    normal_mode || true
+    local res=$work/result.json
+    [ -f "$res" ] || die "no result to write from"
+    # claims := observed kills; ledger rows := computed class, kept reasons
+    jq --slurpfile r "$res" '
+      ($r[0].mutants | map({key: .id, value: .kills}) | from_entries) as $k
+      | .mutants |= map(if .decoy == true then .claimedKills = []
+                        else .claimedKills = ($k[.id] // []) end)' "$catalogue" >"$tmp/cat.json"
+    jq --slurpfile r "$res" '
+      (.rows | map({key: .theorem, value: .}) | from_entries) as $old
+      | {schema: "lean-mutants-ledger/1",
+         rows: [ $r[0].theorems[] | . as $t | ($old[$t.id].reason // "") as $why
+           | {theorem: $t.id, class: $t.class}
+             + (if $t.class == "KILLED" then {killedBy: $t.killedBy}
+                elif $t.class == "HELPER" then {reason: $t.helperFact}
+                else {attempted: $t.attempted, reason: ($t.openFact // $why)} end) ]}' "$ledger" >"$tmp/led.json"
+    cp "$tmp/cat.json" "$catalogue"
+    cp "$tmp/led.json" "$ledger"
+    jq --slurpfile c "$catalogue" --slurpfile l "$ledger" '.catalogue = $c[0] | .ledger = $l[0]' \
+        "$work/bundle.json" >"$tmp/bundle2.json"
+    render "$tmp/bundle2.json" "$lean_dir"
+    log "wrote $catalogue, $ledger and the renderings; OPEN rows without a reason need one"
+}
+
+# ---- negative controls (F-3) ------------------------------------------------
+# One row per runner check: the control's name and the rule it must make fire.
+# A control passes only when that rule fires; every other outcome fails it.
+NC_TABLE=(
+    fabricated-kill-claim:CLAIM-NOT-OBSERVED
+    claim-outside-closure:CLAIM-OUTSIDE-CLOSURE
+    claim-unknown-theorem:CLAIM-UNKNOWN-THEOREM
+    unclaimed-kill:KILL-UNCLAIMED
+    theorem-without-row:THEOREM-WITHOUT-ROW
+    row-naming-absent-theorem:ROW-ABSENT-THEOREM
+    duplicate-row:DUPLICATE-ROW
+    class-invalid:CLASS-INVALID
+    helper-asserted:HELPER-MISMATCH
+    helper-denied:HELPER-MISMATCH
+    helper-reason-hand-written:HELPER-REASON
+    killed-claimed-open:CLASS-MISMATCH
+    killedby-mismatch:KILLEDBY-MISMATCH
+    open-without-reason:OPEN-NO-REASON
+    open-attempted-mismatch:OPEN-ATTEMPTED-MISMATCH
+    open-without-attempt:OPEN-NO-ATTEMPT
+    open-reason-hand-edited:OPEN-REASON-STALE
+    inexpressible-with-body:INEXPRESSIBLE-REJECTED
+    decoy-observed-erroring:DECOY-NOT-NEUTRAL
+    decoy-missing:DECOY-MISSING
+    decoy-with-claims:DECOY-HAS-CLAIMS
+    baseline-error-in-span:BASELINE-ERROR
+    baseline-module-missing:OBSERVATION-MISSING
+    patch-not-applying:PATCH-NOT-APPLIED
+    patch-outside-target:PATCH-OUTSIDE-TARGET
+    patch-noop:PATCH-NOOP
+    target-not-production:TARGET-NOT-PRODUCTION
+    target-unknown:TARGET-UNKNOWN
+    duplicate-mutant:DUPLICATE-MUTANT
+    mutant-not-elaborated:MUTANT-NOT-ELABORATED
+    diag-unparseable:DIAG-UNPARSEABLE
+    module-observation-missing:OBSERVATION-MISSING
+    empty-extent:EMPTY-EXTENT
+    empty-catalogue:EMPTY-CATALOGUE
+    guard-missing:GUARD-MISSING
+    guard-out-of-scope:GUARD-OUT-OF-SCOPE
+    guard-unknown:GUARD-UNKNOWN
+    parser-rejects-non-json:DIAG-UNPARSEABLE
+    mutated-definition-fails-to-elaborate:MUTANT-TARGET-ERROR
+    census-module-withheld:CENSUS-MODULE-GAP
+    constructor-closure:HELPER-MISMATCH
+    working-tree-changed:RESTORE-DIFFERS
+    lake-option-not-reproduced:LAKE-OPTION-UNREPRODUCED
+    stale-rendered-ledger:RENDER-STALE
+)
+
+nc_failed=0
+# A control passes only when its rule is absent from the production check's
+# output on the clean input and present on the perturbed one: the check, not
+# the control, decides.
+nc_report() { # <name> <expected-rule> <clean-violations-file> <perturbed-violations-file>
+    if grep -qE "^VIOLATION $2 " "$3"; then
+        nc_failed=$((nc_failed + 1))
+        printf 'NC-FAIL %s: %s already fires on the clean input\n' "$1" "$2"
+    elif grep -qE "^VIOLATION $2 " "$4"; then
+        printf 'NC-OK %s: clean passes, perturbed fires %s\n' "$1" "$2"
+    else
+        nc_failed=$((nc_failed + 1))
+        printf 'NC-FAIL %s expected %s; observed: %s\n' "$1" "$2" \
+            "$(cut -d' ' -f2 "$4" | sort -u | paste -sd, -)"
+    fi
+}
+
+# the validator, exactly as normal mode runs it, on a bundle
+nc_validate() { # <bundle> <violations-out>
+    validate "$1" "$1.result" >"$2" || true
+}
+
+# perturb the stored bundle with a jq program and re-validate it
+nc_bundle() { # <name> <expected-rule> <jq-perturbation>
+    local f=$tmp/nc-$1
+    if ! jq "$3" "$work/bundle.json" >"$f.bundle.json" 2>"$f.err"; then
+        nc_failed=$((nc_failed + 1))
+        printf 'NC-FAIL %s perturbation did not apply: %s\n' "$1" "$(head -c 200 "$f.err")"
+        return
+    fi
+    nc_validate "$f.bundle.json" "$f.out"
+    nc_report "$1" "$2" "$tmp/nc-clean.out" "$f.out"
+}
+
+# splice one parsed observation into a copy of the stored bundle
+nc_splice() { # <run.json> <mutant-id> <bundle-out>
+    jq --slurpfile run "$1" --arg m "$2" '.observations.mutants[$m] = $run[0]' \
+        "$work/bundle.json" >"$3"
+}
+
+# the real-execution controls, by name; each runs the production function twice
+nc_exec() { # <name> <rule>
+    local f=$tmp/nc-$1
+    mkdir -p "$f.d"
+    case $1 in
+    parser-rejects-non-json)
+        # the killer's real driver output, as recorded by the normal run, and
+        # the same output with one non-JSON line after its first line
+        local chain
+        chain=$(jq -c --arg m "$nc_killer" '.observations.mutants[$m].chain' "$work/bundle.json")
+        cp "$work/raw/$nc_killer.raw" "$f.d/clean.raw"
+        { head -n 1 "$f.d/clean.raw"; printf 'this is not json\n'; tail -n +2 "$f.d/clean.raw"; } >"$f.d/bad.raw"
+        for leg in clean bad; do
+            jq -R -s --argjson chain "$chain" --argjson applied true -f "$here/parse.jq" \
+                "$f.d/$leg.raw" >"$f.d/$leg.json"
+            nc_splice "$f.d/$leg.json" "$nc_killer" "$f.d/$leg.bundle.json"
+            nc_validate "$f.d/$leg.bundle.json" "$f.d/$leg.out"
+        done
+        nc_report "$1" "$2" "$f.d/clean.out" "$f.d/bad.out"
+        ;;
+    mutated-definition-fails-to-elaborate)
+        # the killer's own patch elaborated for real (clean), and the same
+        # patch line additionally naming an unknown identifier (perturbed)
+        local tgt tmod tline after tfile leg
+        tgt=$(jq -r --arg m "$nc_killer" '.catalogue.mutants[] | select(.id == $m) | .target' "$work/bundle.json")
+        tmod=$(jq -r --arg t "$tgt" '.census.declarations[] | select(.id == $t) | .module' "$work/bundle.json")
+        tline=$(jq -r --arg m "$nc_killer" '.catalogue.mutants[] | select(.id == $m) | .patch.line' "$work/bundle.json")
+        after=$(jq -r --arg m "$nc_killer" '.catalogue.mutants[] | select(.id == $m) | .patch.after' "$work/bundle.json")
+        tfile=$(printf '%s' "$tmod" | tr '.' '/').lean
+        for leg in clean bad; do
+            mkdir -p "$f.d/$leg"
+            cp -a "$base" "$f.d/$leg/"
+            if [ "$leg" = bad ]; then
+                after=$(printf '%s' "$after" | awk '{ match($0, /^[ \t]*/); print substr($0, 1, RLENGTH) "nc_unknown_identifier_ " substr($0, RLENGTH + 1) }')
+            fi
+            LINE=$tline AFTER=$after awk 'NR == ENVIRON["LINE"] { print ENVIRON["AFTER"]; next } { print }' \
+                "$base/$tfile" >"$f.d/$leg/lean/$tfile"
+            elab_chain "$f.d/$leg/lean" "$f.d/$leg.raw" - "$tmod" || die "driver failed in control $1"
+            jq -R -s --argjson chain "[\"$tmod\"]" --argjson applied true -f "$here/parse.jq" \
+                "$f.d/$leg.raw" >"$f.d/$leg.json"
+            nc_splice "$f.d/$leg.json" "$nc_killer" "$f.d/$leg.bundle.json"
+            nc_validate "$f.d/$leg.bundle.json" "$f.d/$leg.out"
+            rm -rf "$f.d/$leg"
+        done
+        nc_report "$1" "$2" "$f.d/clean.out" "$f.d/bad.out"
+        ;;
+    constructor-closure)
+        # a theorem whose only production link is the constructor of the
+        # inductive it names: the census must put that definition in its
+        # statement closure, so a HELPER row for it is refused. Clean leg: the
+        # same probe whose constructor names nothing from production.
+        local leg ctor
+        for leg in clean bad; do
+            mkdir -p "$f.d/$leg"
+            cp -a "$base" "$f.d/$leg/"
+            if [ "$leg" = bad ]; then
+                ctor='(∀ v s e a, stepEvent v s e a = stepEvent v s e a) → NcCtorProbe'
+            else
+                ctor='True → NcCtorProbe'
+            fi
+            printf 'import Reactivegas.Step\n\ninductive NcCtorProbe : Prop where\n  | mk : %s\n\ntheorem nc_ctor_probe (h : NcCtorProbe) : NcCtorProbe := h\n' \
+                "$ctor" >"$f.d/$leg/lean/Reactivegas/NcCtorProbeTests.lean"
+            (cd "$f.d/$leg/lean" && lake build Reactivegas.NcCtorProbeTests >"$f.d/$leg.build" 2>&1) \
+                || { cat "$f.d/$leg.build" >&2; die "control $1 could not build its probe"; }
+            { cat "$tmp/modules.txt"; printf 'Reactivegas.NcCtorProbeTests\n'; } >"$f.d/$leg.list"
+            census_check "$f.d/$leg/lean" "$f.d/$leg/census.json" "$f.d/$leg.list" >"$f.d/$leg.census.out" \
+                || { cat "$f.d/$leg.census.out" >&2; die "census failed in control $1"; }
+            jq --slurpfile c "$f.d/$leg/census.json" \
+                '.census = $c[0] | .ledger.rows += [{theorem: "nc_ctor_probe", class: "HELPER", reason: "probe"}]' \
+                "$work/bundle.json" >"$f.d/$leg.bundle.json"
+            nc_validate "$f.d/$leg.bundle.json" "$f.d/$leg.out"
+            rm -rf "$f.d/$leg/lean"
+        done
+        nc_report "$1" "$2" "$f.d/clean.out" "$f.d/bad.out"
+        ;;
+    census-module-withheld)
+        # a built module the tracked extent does not list, reached through an
+        # import of a tracked module: the census must refuse the extent
+        local leg
+        mkdir -p "$f.d/clean" "$f.d/bad"
+        cp -a "$base" "$f.d/bad/"
+        printf 'def ncUntracked : Nat := 0\n' >"$f.d/bad/lean/KelGroups/NcUntracked.lean"
+        printf 'import KelGroups.NcUntracked\n' >>"$f.d/bad/lean/KelGroups.lean"
+        (cd "$f.d/bad/lean" && lake build KelGroups.NcUntracked KelGroups >"$f.d/build.log" 2>&1) \
+            || { cat "$f.d/build.log" >&2; die "control $1 could not build its perturbed copy"; }
+        census_check "$base" "$f.d/clean/census.json" "$tmp/modules.txt" >"$f.d/clean.out" || true
+        census_check "$f.d/bad/lean" "$f.d/bad/census.json" "$tmp/modules.txt" >"$f.d/bad.out" || true
+        rm -rf "$f.d/bad/lean"
+        nc_report "$1" "$2" "$f.d/clean.out" "$f.d/bad.out"
+        ;;
+    working-tree-changed)
+        # the restore check on a clone: unchanged, then with a tracked file changed
+        local clone=$f.d/clone s1
+        git clone --quiet --shared "$root" "$clone"
+        s1=$(tree_snapshot "$clone")
+        restore_check "$clone" "$s1" >"$f.d/clean.out" || true
+        printf '\n' >>"$clone/$(git -C "$clone" ls-files | head -n 1)"
+        restore_check "$clone" "$s1" >"$f.d/bad.out" || true
+        nc_report "$1" "$2" "$f.d/clean.out" "$f.d/bad.out"
+        ;;
+    lake-option-not-reproduced)
+        # the Lake command check on the base, then on a copy whose lakefile
+        # gains a Lean argument the driver does not reproduce (Lake rebuilds
+        # one module with it and records the command)
+        local leaf
+        leaf=$(jq -r '[.modules[] | select(.imports == [])][0].name' "$census")
+        lake_invocations "$base" "$leaf" >"$f.d/clean.out" || true
+        cp -a "$base" "$f.d/"
+        sed -i '/^package /a\  moreLeanArgs := #["-DmaxRecDepth=4096"]' "$f.d/lean/lakefile.lean"
+        (cd "$f.d/lean" && lake build "$leaf" >"$f.d/build.log" 2>&1) || true
+        lake_invocations "$f.d/lean" "$leaf" >"$f.d/bad.out" || true
+        rm -rf "$f.d/lean"
+        nc_report "$1" "$2" "$f.d/clean.out" "$f.d/bad.out"
+        ;;
+    stale-rendered-ledger)
+        # the committed-rendering comparison against an exact copy, then
+        # against a copy with one extra line
+        mkdir -p "$f.d/clean" "$f.d/bad"
+        cp "$work/render/REACTIVEGAS-MUTANTS.md" "$work/render/KELGROUPS-MUTANTS.md" "$f.d/clean/"
+        cp "$work/render/REACTIVEGAS-MUTANTS.md" "$work/render/KELGROUPS-MUTANTS.md" "$f.d/bad/"
+        printf 'stale\n' >>"$f.d/bad/KELGROUPS-MUTANTS.md"
+        compare_renders "$work/render" "$f.d/clean" >"$f.d/clean.out" || true
+        compare_renders "$work/render" "$f.d/bad" >"$f.d/bad.out" || true
+        nc_report "$1" "$2" "$f.d/clean.out" "$f.d/bad.out"
+        ;;
+    *) return 1 ;;
+    esac
+}
+
+
+negative_control_mode() {
+    local pair name rule
+    if [ ! -f "$work/stamp" ] \
+        || [ "$(cat "$work/stamp")" != "$(git -C "$root" rev-parse HEAD) $(inputs_digest)" ]; then
+        # nothing to perturb: every control is recorded, none is passed
+        for pair in "${NC_TABLE[@]}"; do
+            printf 'NC-COULD-NOT-EVALUATE %s %s: no normal-mode run of this head and these inputs\n' \
+                "${pair%%:*}" "${pair#*:}"
+        done
+        printf 'LEAN-MUTANTS-NC controls=%s failed-as-required=0\n' "${#NC_TABLE[@]}"
+        return 1
+    fi
+    census=$work/census.json
+    local b=$work/bundle.json
+    # every subject is read from the real run, never typed in
+    local killed_t killer helper_t unkilled outside guard_m guard_k decoy open_t body_def
+    killed_t=$(jq -r '[.ledger.rows[] | select(.class == "KILLED")][0].theorem // ""' "$b")
+    killer=$(jq -r --arg t "$killed_t" '[.catalogue.mutants[] | select((.claimedKills // []) | index($t)) | .id][0] // ""' "$b")
+    helper_t=$(jq -r '[.ledger.rows[] | select(.class == "HELPER")][0].theorem // ""' "$b")
+    unkilled=$(jq -r --arg m "$killer" '
+        (.catalogue.mutants[] | select(.id == $m)) as $mu
+        | [.census.theorems[] | select(.class == "AUTHORED") | select(.closure | index($mu.target))
+           | select(.id as $i | ($mu.claimedKills | index($i)) | not) | .id][0] // ""' "$b")
+    outside=$(jq -r --arg m "$killer" '
+        (.catalogue.mutants[] | select(.id == $m)) as $mu
+        | [.census.theorems[] | select(.class == "AUTHORED") | select((.closure | index($mu.target)) | not) | .id][0] // ""' "$b")
+    guard_m=$(jq -r '[.catalogue.mutants[] | select(.guard != null and .decoy != true)][0].id // ""' "$b")
+    guard_k=$(jq -r --arg m "$guard_m" '[.catalogue.mutants[] | select(.id == $m) | .guard][0] // ""' "$b")
+    decoy=$(jq -r '[.catalogue.mutants[] | select(.decoy == true) | .id][0] // ""' "$b")
+    open_t=$(jq -r '[.ledger.rows[] | select(.class == "OPEN" and ((.attempted // []) | length) > 0)][0].theorem // ""' "$b")
+    # a production definition with a body that no mutant targets
+    body_def=$(jq -r '([.census.declarations[] | select(.production and (.typeDecl | not) and .kind == "def") | .id] - [.catalogue.mutants[].target])[0] // ""' "$b")
+    for v in killed_t killer helper_t unkilled outside guard_m guard_k decoy open_t body_def; do
+        [ -n "${!v}" ] || die "control subject $v not found in the last run; controls cannot be exercised"
+    done
+    nc_killer=$killer
+    # a theorem made OPEN with no catalogue target in its closure
+    local as_open="(.census.theorems[] | select(.id == \"$killed_t\") | .closure) = [\"nc-no-target\"]"
+    prepare_base
+    printf '%s\n' "${modules[@]}" >"$tmp/modules.txt"
+    # the clean side of every bundle control: the stored run, re-validated
+    cp "$work/bundle.json" "$tmp/nc-clean.bundle.json"
+    nc_validate "$tmp/nc-clean.bundle.json" "$tmp/nc-clean.out"
+    for pair in "${NC_TABLE[@]}"; do
+        name=${pair%%:*}; rule=${pair#*:}
+        case $name in
+        fabricated-kill-claim) nc_bundle "$name" "$rule" \
+            "(.catalogue.mutants[] | select(.id == \"$killer\") | .claimedKills) += [\"$unkilled\"]" ;;
+        claim-outside-closure) nc_bundle "$name" "$rule" \
+            "(.catalogue.mutants[] | select(.id == \"$killer\") | .claimedKills) += [\"$outside\"]" ;;
+        claim-unknown-theorem) nc_bundle "$name" "$rule" \
+            "(.catalogue.mutants[] | select(.id == \"$killer\") | .claimedKills) += [\"nc_no_such_theorem\"]" ;;
+        unclaimed-kill) nc_bundle "$name" "$rule" \
+            "(.catalogue.mutants[] | select(.id == \"$killer\") | .claimedKills) -= [\"$killed_t\"]" ;;
+        theorem-without-row) nc_bundle "$name" "$rule" \
+            ".ledger.rows |= map(select(.theorem != \"$killed_t\"))" ;;
+        row-naming-absent-theorem) nc_bundle "$name" "$rule" \
+            ".ledger.rows += [{theorem: \"nc_no_such_theorem\", class: \"OPEN\", attempted: [], reason: \"control\"}]" ;;
+        duplicate-row) nc_bundle "$name" "$rule" \
+            ".ledger.rows += [.ledger.rows[] | select(.theorem == \"$killed_t\")]" ;;
+        class-invalid) nc_bundle "$name" "$rule" \
+            "(.ledger.rows[] | select(.theorem == \"$killed_t\") | .class) = \"COVERED\"" ;;
+        helper-asserted) nc_bundle "$name" "$rule" \
+            "(.ledger.rows[] | select(.theorem == \"$killed_t\")) |= {theorem: .theorem, class: \"HELPER\", reason: \"asserted\"}" ;;
+        helper-denied) nc_bundle "$name" "$rule" \
+            "(.ledger.rows[] | select(.theorem == \"$helper_t\")) |= {theorem: .theorem, class: \"OPEN\", attempted: [], reason: \"inexpressible: denied\"}" ;;
+        helper-reason-hand-written) nc_bundle "$name" "$rule" \
+            "(.ledger.rows[] | select(.theorem == \"$helper_t\") | .reason) = \"a pure lemma\"" ;;
+        killed-claimed-open) nc_bundle "$name" "$rule" \
+            "(.ledger.rows[] | select(.theorem == \"$killed_t\")) |= {theorem: .theorem, class: \"OPEN\", attempted: [], reason: \"inexpressible: x\"}" ;;
+        killedby-mismatch) nc_bundle "$name" "$rule" \
+            "(.ledger.rows[] | select(.theorem == \"$killed_t\") | .killedBy) += [\"nc-no-such-mutant\"]" ;;
+        open-without-reason) nc_bundle "$name" "$rule" \
+            "$as_open | (.ledger.rows[] | select(.theorem == \"$killed_t\")) |= {theorem: .theorem, class: \"OPEN\", attempted: [], reason: \"\"}" ;;
+        open-attempted-mismatch) nc_bundle "$name" "$rule" \
+            "$as_open | (.ledger.rows[] | select(.theorem == \"$killed_t\")) |= {theorem: .theorem, class: \"OPEN\", attempted: [\"$killer\"], reason: \"inexpressible: x\"}" ;;
+        open-without-attempt) nc_bundle "$name" "$rule" \
+            "$as_open | (.ledger.rows[] | select(.theorem == \"$killed_t\")) |= {theorem: .theorem, class: \"OPEN\", attempted: [], reason: \"no mutant fits\"}" ;;
+        open-reason-hand-edited) nc_bundle "$name" "$rule" \
+            "(.ledger.rows[] | select(.theorem == \"$open_t\") | .reason) = \"edited by hand\"" ;;
+        inexpressible-with-body) nc_bundle "$name" "$rule" \
+            "(.census.theorems[] | select(.id == \"$killed_t\") | .closure) = [\"$body_def\"] | (.ledger.rows[] | select(.theorem == \"$killed_t\")) |= {theorem: .theorem, class: \"OPEN\", attempted: [], reason: \"inexpressible: only types\"}" ;;
+        decoy-observed-erroring) nc_bundle "$name" "$rule" \
+            "(.census.theorems[] | select(.id == \"$killed_t\")) as \$t
+             | .observations.mutants[\"$decoy\"].diags[\$t.module] += [{severity: \"error\", l: \$t.span[0], c: \$t.span[1], text: \"nc\"}]" ;;
+        decoy-missing) nc_bundle "$name" "$rule" \
+            ".catalogue.mutants |= map(select(.decoy != true))" ;;
+        decoy-with-claims) nc_bundle "$name" "$rule" \
+            "(.catalogue.mutants[] | select(.id == \"$decoy\") | .claimedKills) = [\"$killed_t\"]" ;;
+        baseline-error-in-span) nc_bundle "$name" "$rule" \
+            "(.census.theorems[] | select(.id == \"$killed_t\")) as \$t
+             | .observations.baseline.diags[\$t.module] += [{severity: \"error\", l: \$t.span[0], c: \$t.span[1], text: \"nc\"}]" ;;
+        baseline-module-missing) nc_bundle "$name" "$rule" \
+            "(.observations.baseline.status | keys[0]) as \$k | .observations.baseline.status[\$k] = \"missing\"" ;;
+        patch-not-applying) nc_bundle "$name" "$rule" \
+            "(.catalogue.mutants[] | select(.id == \"$killer\") | .patch.before) += \" \"" ;;
+        patch-outside-target) nc_bundle "$name" "$rule" \
+            "(.catalogue.mutants[] | select(.id == \"$killer\") | .patch.line) = 1" ;;
+        patch-noop) nc_bundle "$name" "$rule" \
+            "(.catalogue.mutants[] | select(.id == \"$killer\") | .patch) |= (.after = .before)" ;;
+        target-not-production) nc_bundle "$name" "$rule" \
+            "(.catalogue.mutants[] | select(.id == \"$killer\") | .target) = \"$killed_t\"" ;;
+        target-unknown) nc_bundle "$name" "$rule" \
+            "(.catalogue.mutants[] | select(.id == \"$killer\") | .target) = \"nc_no_such_definition\"" ;;
+        duplicate-mutant) nc_bundle "$name" "$rule" \
+            ".catalogue.mutants += [.catalogue.mutants[] | select(.id == \"$killer\")]" ;;
+        mutant-not-elaborated) nc_bundle "$name" "$rule" \
+            "del(.observations.mutants[\"$killer\"])" ;;
+        diag-unparseable) nc_bundle "$name" "$rule" \
+            ".observations.mutants[\"$killer\"].unparseable += [{module: \"-\", text: \"not json\"}]" ;;
+        module-observation-missing) nc_bundle "$name" "$rule" \
+            "(.observations.mutants[\"$killer\"].status | keys[0]) as \$k | .observations.mutants[\"$killer\"].status[\$k] = \"missing\"" ;;
+        empty-extent) nc_bundle "$name" "$rule" \
+            ".census.theorems |= map(select(.class != \"AUTHORED\"))" ;;
+        empty-catalogue) nc_bundle "$name" "$rule" \
+            ".catalogue.mutants |= map(select(.decoy == true))" ;;
+        guard-missing) nc_bundle "$name" "$rule" \
+            ".catalogue.mutants |= map(select(.guard != \"$guard_k\"))" ;;
+        guard-out-of-scope) nc_bundle "$name" "$rule" \
+            "(.census.vocabularies[].constructors[] | select(.id == \"$guard_k\") | .scope) = []" ;;
+        guard-unknown) nc_bundle "$name" "$rule" \
+            "(.catalogue.mutants[] | select(.id == \"$guard_m\") | .guard) = \"NoSuch.constructor\"" ;;
+        *) nc_exec "$name" "$rule" || die "control $name has no implementation" ;;
+        esac
+    done
+    printf 'LEAN-MUTANTS-NC controls=%s failed-as-required=%s\n' "${#NC_TABLE[@]}" "$((${#NC_TABLE[@]} - nc_failed))"
+    [ "$nc_failed" -eq 0 ]
+}
+
+tmp=$(mktemp -d)
+if [ -n "${LEAN_MUTANTS_KEEP:-}" ]; then log "keeping $tmp"; else trap 'rm -rf -- "$tmp"' EXIT; fi
+
+case $mode in
+    normal) normal_mode ;;
+    negative-control) negative_control_mode ;;
+    write) write_mode ;;
+    census) census_mode ;;
+esac

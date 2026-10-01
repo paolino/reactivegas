@@ -150,6 +150,15 @@ ci:
     stage lean-corpus-gate just lean-corpus-gate
     stage lean-corpus-verify just lean-corpus-verify
 
+# Theorem-keyed Lean mutant ledger (#66 S3): re-run every mutant, check every
+# kill claim, ledger row and rendering against what Lean reports, then show
+# every runner check failing on its own negative control
+lean-mutants:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    scripts/lean-mutants/run
+    scripts/lean-mutants/run --negative-control
+
 # Assert the declared Lean pin matches the toolchain that actually runs
 lean-toolchain-contract:
     #!/usr/bin/env bash

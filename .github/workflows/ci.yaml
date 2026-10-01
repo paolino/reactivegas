@@ -91,3 +91,35 @@ jobs:
       # coverage ± negative control, trace agreement, `lake build`).
       - name: Verify corpus emission
         run: nix --quiet develop --command just lean-corpus-verify
+
+  # S3 (#66): the theorem-keyed mutant ledger. Its own job so it runs beside
+  # "Build and check"; the timeout holds the plan's 60-minute ceiling.
+  lean-mutants:
+    name: Lean mutant ledger
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            trusted-public-keys = hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+            substituters = https://cache.iog.io https://cache.nixos.org/
+            accept-flake-config = true
+
+      - uses: cachix/cachix-action@v15
+        with:
+          name: paolino
+          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+
+      - name: Check the Lean mutant ledger
+        # ubuntu-latest: 4 vCPU, 16 GB. Three single-threaded Lean processes (each
+        # peaks near 3.3 GB) leave room for the Nix shell.
+        env:
+          LEAN_NUM_THREADS: "1"
+          LEAN_MUTANTS_JOBS: "3"
+        run: nix --quiet develop --command just lean-mutants
+
+      # R-11: the run leaves the checkout byte-identical to the head
+      - name: Check the working tree is unchanged
+        run: git diff --exit-code && test -z "$(git status --porcelain --untracked-files=all)"
