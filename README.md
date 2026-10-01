@@ -23,6 +23,9 @@ Un sistema open-source per la gestione delle attività economiche dei gruppi di 
 
 **Italiano**: https://paolino.github.io/reactivegas/it/
 
+The first production KelGroups-based component is the
+[money custody economic core](docs/money-custody.md).
+
 ## Quick Start / Avvio Rapido
 
 ```bash

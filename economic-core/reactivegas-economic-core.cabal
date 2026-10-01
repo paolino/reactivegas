@@ -1,0 +1,25 @@
+cabal-version: 3.0
+name:          reactivegas-economic-core
+version:       0.1.0.0
+synopsis:      Pure money custody economic core for reactivegas
+description:
+  The four Lean-pinned money custody arms (deposit, withdraw,
+  transferCassa, donate) as one pure, frame-carrying transition with a
+  closed event surface and a read-only query boundary. Depends only on
+  base and text so a future wasm port stays possible.
+
+license:       BSD-3-Clause
+author:        Paolo Veronelli
+maintainer:    Paolo Veronelli <paolo.veronelli@gmail.com>
+category:      Economics
+build-type:    Simple
+
+library
+  exposed-modules:    Reactivegas.Economic.Core
+  hs-source-dirs:     src
+  default-language:   GHC2021
+  default-extensions: OverloadedStrings
+  ghc-options:        -Wall
+  build-depends:
+    , base  >=4.18 && <5
+    , text  >=2.0  && <2.2

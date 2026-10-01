@@ -300,7 +300,12 @@ def baseHook (θ : KelGroups.Vote.Threshold) : KelGroups.BaseHook State StepErro
     match economicCleanup change pre post s with
     | none => .error StepError.rejected
     | some cleaned =>
-        .ok { cleaned with votes := KelGroups.Vote.sweepClosures θ post s.votes }
+        let departed :=
+          match change with
+          | .memberAdmitted _ => s.votes
+          | .memberRemoved key => KelGroups.Vote.closeProposerQuestions key s.votes
+          | .rolesChanged _ => s.votes
+        .ok { cleaned with votes := KelGroups.Vote.sweepClosures θ post departed }
 
 /-! ## The restricted Reactivegas base proposal (T6221) -/
 
