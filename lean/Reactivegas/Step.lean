@@ -140,6 +140,7 @@ def step (view : KelGroups.GroupView) (s : State) (signer : KelGroups.Key)
   | .openQuestion _ _ => none
   | .cast _ _ => none
   | .renounce _ => none
+  | .openBound _ _ _ => none
 
 /-- Event-shaped wrapper used by inherited #45/#48 theorems. The fourteen
 surviving economic constructors delegate to `step`. Authorization is an
@@ -166,6 +167,14 @@ def stepEvent (view : KelGroups.GroupView) (s : State) (e : Event)
 
 namespace Reactivegas
 
+/-- Negative permission continuation: dissolve collection `c`, refunding
+every accepted and pending pledge to its owner. -/
+def denyByClosure (s : State) (c : CollId) : Option State := do
+  let (col, rest) ← pullCollection c s.collections
+  pure { s with
+    conti := refundAll s.conti (col.accepted ++ col.pending),
+    collections := rest }
+
 /-- Apply a vote event to an integrated payload under the canonical view.
 Exactly one validation decision: `applyVoteEventChecked`. Refusal is
 `Except.error`, not payload identity. -/
@@ -188,6 +197,8 @@ def appFold (θ : KelGroups.Vote.Threshold) (auth : BackdonateAuth) :
         voteApply θ pre s signer (.cast qid ballot)
     | .renounce qid =>
         voteApply θ pre s signer (.renounce qid)
+    | .openBound qid kind _ =>
+        voteApply θ pre s signer (.openQuestion qid kind)
     | .openPurchase c =>
         match step pre s signer (.openPurchase c) auth with
         | some s' => .ok s' | none => .error StepError.rejected

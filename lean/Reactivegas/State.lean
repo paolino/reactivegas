@@ -28,6 +28,10 @@ structure State where
   collections : List Collection
   /-- Membership-free vote payload: open questions and closures. -/
   votes : KelGroups.Vote.VoteState
+  /-- Targets of open bound questions, written only by `openBound`. -/
+  bindings : List (KelGroups.Vote.QuestionId × EconomicTarget) := []
+  /-- Unspent closure-derived authorizations. -/
+  live : List LiveAuth := []
 deriving DecidableEq, BEq, Repr
 
 /-- Empty app payload: no accounts, no collections, no questions. -/

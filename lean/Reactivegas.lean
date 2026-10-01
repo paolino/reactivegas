@@ -7,3 +7,4 @@ import Reactivegas.Trace
 
 import Reactivegas.Composition
 import Reactivegas.Lifecycle
+import Reactivegas.CompositionTests
