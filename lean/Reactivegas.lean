@@ -6,3 +6,4 @@ import Reactivegas.Invariants
 import Reactivegas.Trace
 
 import Reactivegas.Composition
+import Reactivegas.Lifecycle

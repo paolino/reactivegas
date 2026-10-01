@@ -1594,25 +1594,38 @@ theorem sweep_idempotent_witness : checkSweepIdempotent = true := by decide
 
 theorem sweep_idempotent_mutant_caught : checkSweepIdempotentMutant = true := by decide
 
+/-- Proof-side vocabulary: the vote payload a committed base change hands the
+sweep — the V-5 closure of the leaver's own questions on `memberRemoved` (#81),
+the payload unchanged on every other change. -/
+def departedVotes (change : KelGroups.BaseChange)
+    (votes : KelGroups.Vote.VoteState) : KelGroups.Vote.VoteState :=
+  match change with
+  | .memberAdmitted _ => votes
+  | .memberRemoved key => KelGroups.Vote.closeProposerQuestions key votes
+  | .rolesChanged _ => votes
+
 /-- The sealed hook's vote half, isolated: whatever the economic cleanup did,
 a payload the hook returns carries the post-view recomputation of the payload
-it was given. -/
+it was given, taken after the V-5 closure of the leaver's own questions when
+the change is `memberRemoved` (#81). Every base change is swept. -/
 theorem baseHook_votes {threshold : KelGroups.Vote.Threshold}
     {change : KelGroups.BaseChange} {pre post : KelGroups.GroupView}
     {s s' : State} (h : baseHook threshold change pre post s = .ok s') :
-    s'.votes = KelGroups.Vote.sweepClosures threshold post s.votes := by
+    s'.votes = KelGroups.Vote.sweepClosures threshold post
+      (departedVotes change s.votes) := by
   unfold baseHook at h
   split at h
   · exact Except.noConfusion h
   · simp only [Except.ok.injEq] at h
     subst h
-    rfl
+    cases change <;> rfl
 
 /-- **`base_change_recomputes_votes`** — general, not a witness: every
 successful production transition that reports a base change has vote payload
 equal to the recomputation of the *pre*-transition payload under the *post*
-canonical view. Omitting the sweep, or sweeping against the pre view, breaks
-it. -/
+canonical view, taken after the V-5 closure of the leaver's own questions when
+the change is `memberRemoved` (#81). Omitting the sweep, sweeping against the
+pre view, or skipping the departure closure breaks it. -/
 theorem base_change_recomputes_votes (threshold : KelGroups.Vote.Threshold)
     (auth : BackdonateAuth) (gs : KelGroups.GroupState State)
     (signer : KelGroups.Key)
@@ -1622,7 +1635,7 @@ theorem base_change_recomputes_votes (threshold : KelGroups.Vote.Threshold)
     (hchange : result.change = some change) :
     result.state.appFold.votes
       = KelGroups.Vote.sweepClosures threshold (KelGroups.groupView result.state)
-          gs.appFold.votes := by
+          (departedVotes change gs.appFold.votes) := by
   unfold Reactivegas.apply at h
   split at h
   · split at h

@@ -1,5 +1,17 @@
-packages: ./*.cabal
+packages: ./*.cabal economic-core economic-kelgroups
 
 index-state: 2025-01-01T00:00:00Z
 
 with-compiler: ghc-9.8.4
+
+source-repository-package
+    type: git
+    location: https://github.com/paolino/kelgroups.git
+    tag: 933e385df2f2a251bb54a08bb7663f0d41fafb64
+    --sha256: 1c6whr0czsj4xyafm53dnshsg2baqqrd9fgm0245sybcvpxprx6v
+
+source-repository-package
+    type: git
+    location: https://github.com/paolino/keri-hs.git
+    tag: f2a388e9deda33237ee58d358e9ab88c18bafc81
+    --sha256: 1cmpjhxniji36zgc94akfhx0c4f02ykn5l7dqs08av94dwb9v4qi

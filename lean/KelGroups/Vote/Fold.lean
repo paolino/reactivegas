@@ -33,11 +33,10 @@ Three load-bearing shapes:
 
 The retired member events are gone from `VoteEvent` entirely (T6222); this
 payload never had anywhere to write them.
-`renounce` is carried in the vocabulary and is a no-op in
-this slice; its closing behaviour and the
-`closeProposerQuestions`/`proposerDeparted` route arrive with Slice B, as does
-the recomputation obligation that a *base* membership transition owes this
-machine (R62-11, T6223).
+V-5 (#81): a proposer's `renounce` closes their question negatively with cause
+`renounced`, and `closeProposerQuestions` closes a departing proposer's open
+questions negatively with cause `proposerDeparted`; the sealed base hook runs
+the latter on `memberRemoved` before its post-view sweep (R62-11, T6223).
 
 No time-like field or transition exists here (R-54); the sweep closes nothing
 by the passage of anything, because it reads no clock — there is none to read.
@@ -82,7 +81,9 @@ sweep. Effects are authorization-free by architecture (F-001 property class):
 they assume an already-admitted event — all signer authorization happens only
 in the total exhaustive `validateVoteEvent` boundary — and contain no
 independent standing decision. An `openQuestion` never overwrites or revives
-an existing id — decided questions stay decided. There is no membership
+an existing id — decided questions stay decided. A `renounce` (admitted only
+for the proposer) closes the named question negatively with cause `renounced`,
+the record carrying the question as it stood (V-5). There is no membership
 event in the sum for this payload to have to ignore. -/
 def effectedState (gs : VoteState) (signer : Key) (event : VoteEvent) : VoteState :=
   match event with
@@ -98,7 +99,26 @@ def effectedState (gs : VoteState) (signer : Key) (event : VoteEvent) : VoteStat
           let placed := placeBallot signer ballot question
           { gs with openQuestions := assocInsert questionId placed gs.openQuestions }
       | none => gs
-  | .renounce _ => gs
+  | .renounce questionId =>
+      match lookupQuestion questionId gs with
+      | some question =>
+          { openQuestions := assocErase questionId gs.openQuestions,
+            closed := gs.closed ++
+              [{ questionId, question, verdict := .negative, cause := .renounced }] }
+      | none => gs
+
+/-- **V-5 proposer departure** (F81-CLOSE-PROPOSER). Every open question whose
+proposer is `proposer` closes negatively with cause `proposerDeparted`, in
+open-set order, the record carrying the question as it stood; no other question
+is touched. Not a tally: it reads no view and no threshold. Closure is removal
+plus an appended record, one operation (R-61). The sealed base hook runs it on
+`memberRemoved`, before the V-3 sweep over the post view. -/
+def closeProposerQuestions (proposer : Key) (gs : VoteState) : VoteState :=
+  { openQuestions := gs.openQuestions.filter (fun entry => entry.2.proposer != proposer),
+    closed := gs.closed ++
+      (gs.openQuestions.filter (fun entry => entry.2.proposer == proposer)).map
+        (fun entry => { questionId := entry.1, question := entry.2,
+                        verdict := .negative, cause := .proposerDeparted }) }
 
 /-- Checked vote step: exactly one `validateVoteEvent` decision. On `.ok`
 that decision dominates `effectedState` and `sweepClosures`; on `.error`

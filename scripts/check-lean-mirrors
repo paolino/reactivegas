@@ -49,19 +49,56 @@ TRACKED_LEAN=$(git -C "$HERE/.." ls-files -- 'lean' | grep -E '\.lean$' | sort |
   printf '%s\n' "${rel%.lean}" | tr '/' '.'
 done)
 TRACKED_LIT=$(printf '%s\n' "$TRACKED_LEAN" | sed 's/.*/"&"/' | paste -sd, -)
+# Import roots: every lib and exe root Lake evaluates for the `lean/` root
+# package, printed by scripts/lake-roots (Lake API, same toolchain). A root
+# registered in the lakefile is imported without editing this script; a tracked
+# module no root reaches still fails MIRROR-IMPORT-REACH-GAP below. Each setup
+# failure is named and exits before the driver, so none reads as a reach gap
+# (scripts/check-lean-mirrors-control asserts both).
+TOOL_DIR="$HERE/lake-roots"
+WORKSPACE="$(cd "$HERE/../lean" && pwd -P)"
+for required in "$TOOL_DIR/Main.lean" "$TOOL_DIR/lakefile.lean" "$WORKSPACE/lakefile.lean" "$WORKSPACE/lean-toolchain"; do
+  if [ ! -r "$required" ]; then
+    printf 'MIRROR-LAKE-TOOL-INPUT-MISSING %s\n' "$required" >&2
+    exit 1
+  fi
+done
+set +e
+(cd "$TOOL_DIR" && lake build lakeRoots)
+status=$?
+set -e
+if [ "$status" -ne 0 ]; then
+  printf 'MIRROR-LAKE-TOOL-BUILD-FAILED status=%s tool=%s\n' "$status" "$TOOL_DIR" >&2
+  exit 1
+fi
+set +e
+ROOT_OUTPUT=$(cd "$TOOL_DIR" && lake exe lakeRoots "$WORKSPACE")
+status=$?
+set -e
+if [ "$status" -ne 0 ]; then
+  printf 'MIRROR-LAKE-ROOTS-EVAL-FAILED status=%s workspace=%s\n' "$status" "$WORKSPACE" >&2
+  exit 1
+fi
+ROOTS=$(printf '%s\n' "$ROOT_OUTPUT" | sed -n 's/^LAKE-EVALUATED-ROOT //p' | sort -u)
+if [ -z "$ROOTS" ]; then
+  printf 'MIRROR-LAKE-ROOTS-EMPTY workspace=%s declares no lean_lib or lean_exe\n' "$WORKSPACE" >&2
+  exit 1
+fi
+echo "MIRROR-LAKE-ROOTS count=$(printf '%s\n' "$ROOTS" | wc -l) $(printf '%s' "$ROOTS" | paste -sd' ' -)"
+ROOT_IMPORTS=$(printf '%s\n' "$ROOTS" | sed 's/^/import /')
 cat > "$DRIVER" <<'LEAN_EOF'
 -- S4-B mandatory mirror checker driver (heredoc-embedded, not a repo file).
 -- Contract: scripts/check-lean-mirrors header comment. This driver defines no
 -- Prop-valued def: all evidence below is `example`s (theorem info, excluded
 -- from discovery) plus Bool-typed table data.
 
-import KelGroups
-import Reactivegas
+-- Modules this checker needs that no root reaches, then the evaluated roots.
 import Reactivegas.Mirrors
 import KelGroups.Mirrors
 import Reactivegas.CorpusExport
 import Reactivegas.CorpusGate
 import Reactivegas.TraceTests
+__LAKE_ROOT_IMPORTS__
 
 -- V4 exception evidence: definitional identity (EQ form, closes by rfl).
 example (theta : KelGroups.Vote.Threshold) (view : KelGroups.GroupView)
@@ -407,13 +444,22 @@ run_cmd do
     IO.FS.writeFile ".lake/s4b-mirror-receipt" receipt
     logInfo m!"MIRROR-RECEIPT-WROTE nonce={nonce}"
 LEAN_EOF
-# Bake the per-run tracked inventory into the driver (pure bash: the heredoc
-# stays quoted so Lean backticks never expand). Then build the exe target the
-# driver imports (incremental; same substantive run, log-visible, never hidden
-# work — default `lake build` skips non-default exe targets, verified against
-# the lakefile and the S2R worktree's missing exe oleans).
+# Bake the per-run tracked inventory and root imports into the driver (pure
+# bash: the heredoc stays quoted so Lean backticks never expand). Then build
+# every module the driver imports (incremental, log-visible): default `lake
+# build` skips non-default targets, so a registered exe or non-default lib root
+# would otherwise have no olean.
 driver_text=$(cat "$DRIVER")
 driver_text=${driver_text//__TRACKED_MODULES__/$TRACKED_LIT}
+driver_text=${driver_text//__LAKE_ROOT_IMPORTS__/$ROOT_IMPORTS}
 printf '%s' "$driver_text" > "$DRIVER"
-cd "$HERE/../lean" && lake build corpusExport
-cd "$HERE/../lean" && S4B_MIRROR_NONCE="$NONCE" lake env lean "$DRIVER"
+mapfile -t import_targets < <(sed -n 's/^import /+/p' "$DRIVER")
+set +e
+(cd "$WORKSPACE" && lake build "${import_targets[@]}")
+status=$?
+set -e
+if [ "$status" -ne 0 ]; then
+  printf 'MIRROR-LAKE-ROOT-BUILD-FAILED status=%s targets=%s\n' "$status" "${import_targets[*]}" >&2
+  exit 1
+fi
+cd "$WORKSPACE" && S4B_MIRROR_NONCE="$NONCE" lake env lean "$DRIVER"

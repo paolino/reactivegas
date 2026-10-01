@@ -658,9 +658,138 @@ private theorem effectedState_sweepReady (gs : VoteState) (signer : Key) (event 
                   (mem_assocLookup_some' qid q gs.openQuestions h.openNodup
                     ((assocErase_sublist' questionId gs.openQuestions).mem herased))
   | renounce questionId =>
-      have heff : effectedState gs signer (.renounce questionId) = gs := rfl
-      rw [heff]
-      exact h
+      cases hlook : lookupQuestion questionId gs with
+      | none =>
+          have heff : effectedState gs signer (.renounce questionId) = gs := by
+            simp [effectedState, hlook]
+          rw [heff]
+          exact h
+      | some question =>
+          have heff : effectedState gs signer (.renounce questionId) =
+              { openQuestions := assocErase questionId gs.openQuestions,
+                closed := gs.closed ++
+                  [{ questionId, question, verdict := .negative, cause := .renounced }] } := by
+            simp [effectedState, hlook]
+          rw [heff]
+          have hqmem : (questionId, question) ∈ gs.openQuestions :=
+            assocLookup_some_mem' questionId question gs.openQuestions hlook
+          have hqopen : questionId ∈ gs.openQuestions.map Prod.fst :=
+            List.mem_map.mpr ⟨(questionId, question), hqmem, rfl⟩
+          refine ⟨assocErase_keys_nodup' questionId gs.openQuestions h.openNodup,
+            ?_, ?_, ?_, ?_, ?_⟩
+          · show (List.map (·.questionId) (gs.closed ++
+              [{ questionId, question, verdict := .negative, cause := .renounced }])).Nodup
+            rw [List.map_append]
+            refine nodup_append_mem _ _ h.closedNodup (by simp) ?_
+            intro qid hqid hnew
+            have heq : qid = questionId := by simpa using hnew
+            subst heq
+            exact h.openClosedDisjoint qid hqopen hqid
+          · intro qid hopen hclosed
+            have hclosed' : qid ∈ gs.closed.map (·.questionId) ∨ qid = questionId := by
+              simpa using hclosed
+            rcases hclosed' with hold | heq
+            · exact h.openClosedDisjoint qid
+                ((assocErase_sublist' questionId gs.openQuestions).map Prod.fst |>.mem hopen)
+                hold
+            · subst heq
+              exact assocErase_key_absent' qid gs.openQuestions h.openNodup hopen
+          · intro qid q hl
+            exact h.openClean qid q
+              (mem_assocLookup_some' qid q gs.openQuestions h.openNodup
+                ((assocErase_sublist' questionId gs.openQuestions).mem
+                  (assocLookup_some_mem' qid q _ hl)))
+          · intro c hc
+            rcases List.mem_append.mp hc with hold | hnew
+            · exact h.closedClean c hold
+            · have heq := List.mem_singleton.mp hnew
+              subst heq
+              exact h.openClean questionId question hlook
+          · intro c hc
+            rcases List.mem_append.mp hc with hold | hnew
+            · exact h.closedNotOpen c hold
+            · have heq := List.mem_singleton.mp hnew
+              subst heq
+              simp
+
+/-- The V-5 departure closure keeps the payload partitioned and clean (#81):
+the leaver's questions move from the open set to the log, each id still in
+exactly one place, and every record closes `negative`. With
+`sweepClosures_idempotent` this is what the sealed hook's departure arm rests
+on. -/
+theorem closeProposerQuestions_sweepReady (proposer : Key) (gs : VoteState)
+    (h : SweepReady view gs) : SweepReady view (closeProposerQuestions proposer gs) := by
+  have hsubKeep : (gs.openQuestions.filter
+      (fun entry : QuestionId × Question => entry.2.proposer != proposer)).Sublist
+        gs.openQuestions := List.filter_sublist
+  have hsubGone : (gs.openQuestions.filter
+      (fun entry : QuestionId × Question => entry.2.proposer == proposer)).Sublist
+        gs.openQuestions := List.filter_sublist
+  have hgoneIds :
+      ((gs.openQuestions.filter
+          (fun entry : QuestionId × Question => entry.2.proposer == proposer)).map
+        (fun entry : QuestionId × Question =>
+          ({ questionId := entry.1, question := entry.2, verdict := .negative,
+             cause := .proposerDeparted } : ClosureRecord))).map (·.questionId)
+        = (gs.openQuestions.filter
+            (fun entry : QuestionId × Question => entry.2.proposer == proposer)).map
+              Prod.fst := by
+    simp [List.map_map, Function.comp_def]
+  have hnew : ∀ c : ClosureRecord, c ∈ (closeProposerQuestions proposer gs).closed →
+      c ∈ gs.closed ∨ ∃ entry, entry ∈ gs.openQuestions ∧
+        entry.2.proposer = proposer ∧ c.questionId = entry.1 ∧ c.question = entry.2 ∧
+          c.verdict = .negative := by
+    intro c hc
+    simp only [closeProposerQuestions, List.mem_append, List.mem_map,
+      List.mem_filter] at hc
+    rcases hc with hold | ⟨entry, ⟨hentry, hprop⟩, hrec⟩
+    · exact Or.inl hold
+    · subst hrec
+      exact Or.inr ⟨entry, hentry, by simpa using hprop, rfl, rfl, rfl⟩
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · exact (hsubKeep.map Prod.fst).nodup h.openNodup
+  · show (List.map (·.questionId) (gs.closed ++ _)).Nodup
+    rw [List.map_append, hgoneIds]
+    refine nodup_append_mem _ _ h.closedNodup ((hsubGone.map Prod.fst).nodup h.openNodup) ?_
+    intro qid hold hgone
+    exact h.openClosedDisjoint qid ((hsubGone.map Prod.fst).mem hgone) hold
+  · intro qid hopen hclosed
+    obtain ⟨kept, hkept, hkid⟩ := List.mem_map.mp hopen
+    obtain ⟨hkeptMem, hkeptProp⟩ := List.mem_filter.mp hkept
+    obtain ⟨c, hc, hcid⟩ := List.mem_map.mp hclosed
+    rcases hnew c hc with hold | ⟨entry, hentry, hprop, hid, _, _⟩
+    · exact h.openClosedDisjoint qid
+        (List.mem_map.mpr ⟨kept, hkeptMem, hkid⟩) (List.mem_map.mpr ⟨c, hold, hcid⟩)
+    · have hsame : entry.2 = kept.2 :=
+        assoc_entries_key_unique gs.openQuestions h.openNodup kept entry hkeptMem hentry
+          (by rw [← hid, hcid, hkid])
+      rw [← hsame, hprop] at hkeptProp
+      simp at hkeptProp
+  · intro qid q hl
+    have hmem := assocLookup_some_mem' qid q _ hl
+    exact h.openClean qid q
+      (mem_assocLookup_some' qid q gs.openQuestions h.openNodup (hsubKeep.mem hmem))
+  · intro c hc
+    rcases hnew c hc with hold | ⟨entry, hentry, _, _, hq, _⟩
+    · exact h.closedClean c hold
+    · rw [hq]
+      exact h.openClean entry.1 entry.2
+        (mem_assocLookup_some' entry.1 entry.2 gs.openQuestions h.openNodup hentry)
+  · intro c hc
+    rcases hnew c hc with hold | ⟨_, _, _, _, _, hv⟩
+    · exact h.closedNotOpen c hold
+    · rw [hv]
+      simp
+
+/-- The sealed hook's departure arm yields a well-formed payload under the post
+view: the V-5 closure, then the V-3 sweep. -/
+theorem departure_wellFormed (θ : Threshold) (post : GroupView) (proposer : Key)
+    (gs : VoteState) (h : SweepReady view gs) :
+    VoteWellFormed θ post (sweepClosures θ post (closeProposerQuestions proposer gs)) :=
+  let ready := closeProposerQuestions_sweepReady view proposer gs h
+  sweepClosures_wellFormed post θ _
+    ⟨ready.openNodup, ready.closedNodup, ready.openClosedDisjoint, ready.openClean,
+      ready.closedClean, ready.closedNotOpen⟩
 
 theorem applyVoteEvent_preserves_wellFormed (θ : Threshold) (gs : VoteState)
     (signer : Key) (event : VoteEvent) (h : VoteWellFormed θ view gs) :
@@ -765,9 +894,26 @@ private theorem effectedState_preserves_qid (gs : VoteState) (signer : Key)
                   ((mem_map_fst_erase_of_ne questionId qid gs.openQuestions heq).mpr hopen)
             · exact Or.inr hclosed
   | renounce questionId =>
-      have heff : effectedState gs signer (.renounce questionId) = gs := rfl
-      rw [heff]
-      exact h
+      cases hlook : lookupQuestion questionId gs with
+      | none =>
+          have heff : effectedState gs signer (.renounce questionId) = gs := by
+            simp [effectedState, hlook]
+          rw [heff]
+          exact h
+      | some question =>
+          have heff : effectedState gs signer (.renounce questionId) =
+              { openQuestions := assocErase questionId gs.openQuestions,
+                closed := gs.closed ++
+                  [{ questionId, question, verdict := .negative, cause := .renounced }] } := by
+            simp [effectedState, hlook]
+          rw [heff]
+          rcases h with hopen | hclosed
+          · by_cases heq : qid = questionId
+            · subst heq
+              exact Or.inr (by simp)
+            · exact Or.inl
+                ((mem_map_fst_erase_of_ne questionId qid gs.openQuestions heq).mpr hopen)
+          · exact Or.inr (by simp [hclosed])
 
 private theorem applyVoteEvent_preserves_qid (θ : Threshold) (gs : VoteState)
     (signer : Key) (event : VoteEvent) (qid : QuestionId)
@@ -1064,9 +1210,32 @@ private theorem effectedState_tally_growth (θ : Threshold) (gs : VoteState)
                     List.mem_map.mpr ⟨(questionId, question), hqmem, rfl⟩, hinq⟩
               · exact Or.inl (tallyKeysOfState_erased_le gs questionId k her)
   | renounce questionId =>
-      have heff : effectedState gs signer (.renounce questionId) = gs := rfl
-      rw [heff] at hk
-      exact Or.inl hk
+      cases hlook : lookupQuestion questionId gs with
+      | none =>
+          have heff : effectedState gs signer (.renounce questionId) = gs := by
+            simp [effectedState, hlook]
+          rw [heff] at hk
+          exact Or.inl hk
+      | some question =>
+          have heff : effectedState gs signer (.renounce questionId) =
+              { openQuestions := assocErase questionId gs.openQuestions,
+                closed := gs.closed ++
+                  [{ questionId, question, verdict := .negative, cause := .renounced }] } := by
+            simp [effectedState, hlook]
+          rw [heff] at hk
+          refine Or.inl ?_
+          have hqmem := assocLookup_some_mem' questionId question gs.openQuestions hlook
+          unfold tallyKeysOfState at hk ⊢
+          simp only [List.map_append, List.flatten_append, List.mem_append] at hk
+          rcases hk with hopen | hold | hrec
+          · obtain ⟨keys, hkeys, hkin⟩ := List.mem_flatten.mp hopen
+            refine List.mem_append.mpr (Or.inl (List.mem_flatten.mpr ⟨keys, ?_, hkin⟩))
+            exact List.Sublist.mem hkeys ((assocErase_sublist' questionId gs.openQuestions).map _)
+          · exact List.mem_append.mpr (Or.inr hold)
+          · have hq : k ∈ tallyKeysOfQuestion question := by simpa using hrec
+            exact List.mem_append.mpr (Or.inl (List.mem_flatten.mpr
+              ⟨tallyKeysOfQuestion question,
+                List.mem_map.mpr ⟨(questionId, question), hqmem, rfl⟩, hq⟩))
 
 private theorem tally_keys_franchised_from (θ : Threshold) :
     ∀ (events : List (Key × VoteEvent)) (initial : VoteState) (k : Key),
