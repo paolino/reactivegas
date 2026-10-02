@@ -92,6 +92,11 @@ jobs:
       - name: Verify corpus emission
         run: nix --quiet develop --command just lean-corpus-verify
 
+      # #70: the simulator gates (build --check, every gate and its selftest)
+      # replay the Lean built above, on every push.
+      - name: Run the simulator gates
+        run: nix --quiet develop --command just simulator
+
   # S3 (#66): the theorem-keyed mutant ledger. Its own job so it runs beside
   # "Build and check"; the timeout holds the plan's 60-minute ceiling.
   lean-mutants:

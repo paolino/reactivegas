@@ -212,3 +212,46 @@ lean-mirrors:
     #!/usr/bin/env bash
     set -euo pipefail
     scripts/check-lean-mirrors
+
+# Give the checkout what the claim gate resolves: its pins are commits that
+# must be reachable from origin/master, and its selftest walks the history
+# before them. A shallow or single-ref checkout (CI) is unshallowed and gets
+# origin/master; a full checkout that has both is left untouched. The gate's
+# own pin and reachability checks are unchanged and still decide.
+simulator-history:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ "$(git rev-parse --is-shallow-repository)" = true ]; then
+        echo "[simulator] shallow checkout: git fetch --unshallow origin"
+        git fetch --quiet --no-tags --unshallow origin
+    fi
+    if ! git rev-parse --verify --quiet refs/remotes/origin/master > /dev/null; then
+        echo "[simulator] no origin/master: fetching it"
+        git fetch --quiet --no-tags origin +refs/heads/master:refs/remotes/origin/master
+    fi
+    echo "[simulator] history: shallow=$(git rev-parse --is-shallow-repository) origin/master=$(git rev-parse --short refs/remotes/origin/master)"
+
+# Run the simulator gates: the build --check, then every
+# economics-simulator-*-gate.mjs gate and its --selftest, failing on the first
+# error. The gate set is discovered, never listed; an empty set is red. The
+# trace gates replay the two committed Lean drivers, built first.
+simulator: simulator-history
+    #!/usr/bin/env bash
+    set -euo pipefail
+    shopt -s nullglob
+    gates=(economics-simulator-*-gate.mjs)
+    if [ "${#gates[@]}" -eq 0 ]; then
+        echo 'simulator: no economics-simulator-*-gate.mjs discovered' >&2
+        exit 1
+    fi
+    echo "[simulator] lake build TraceDriverV1 KelTraceDriverV1"
+    (cd lean && lake build TraceDriverV1 KelTraceDriverV1)
+    echo "[simulator] economics-simulator-build.mjs --check"
+    node economics-simulator-build.mjs --check
+    for gate in "${gates[@]}"; do
+        echo "[simulator] ${gate}"
+        node "${gate}"
+        echo "[simulator] ${gate} --selftest"
+        node "${gate}" --selftest
+    done
+    echo "[simulator] OK gates=${#gates[@]}"
