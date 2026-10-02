@@ -1188,8 +1188,8 @@ const CLAIMS = {
   'ev-donate':         { c: 'donate è direct: alza insieme la cassa dell\'autore e il conto comune riservato (non-membro in conti) di +v; rifiuta autore non responsabile e v non positivo. Nessun teorema di donazione è ancora proved (sorry #48)', k: 'NON PROVATO', d: null, f: null, l: null },
   'ev-backdonate':     { c: 'backdonate è appDecided: quota uguale w a ogni membro e −n*w dal comune, alla radice solo spendendo una chiusura positiva legata a w (riga auth-backdonate); il cammino di governo del toy rifiuta comunque un backdonate importato — limite del toy', k: 'NON PROVATO', d: null, f: null, l: null },
   'kg-setinsert':      { c: 'L’inserimento di posizione è idempotente per costruzione (substrato condiviso)', k: 'definizione', d: 'KelGroups.setInsert', f: 'lean/KelGroups/Types.lean', l: 46 },
-  'kg-majority':       { c: 'Aritmetica della formula (n+1)/2: 0,1,1,2,2,3 per 0–5 — provata nella macchina fusa sullo stesso calcolo scelto qui come esibizione', k: 'teorema', d: 'majority_table', f: 'lean/KelGroups/Invariants.lean', l: 450 },
-  'kg-tie':            { c: 'Con un numero pari la formula (n+1)/2 non è stretta: 2·soglia ≤ n — provato nella macchina fusa sullo stesso calcolo', k: 'teorema', d: 'majority_not_strict_on_even', f: 'lean/KelGroups/Invariants.lean', l: 459 },
+  'kg-majority':       { c: 'Aritmetica della formula (n+1)/2: 0,1,1,2,2,3 per 0–5 — provata nella macchina fusa sullo stesso calcolo scelto qui come esibizione', k: 'teorema', d: 'majority_table', f: 'lean/KelGroups/Invariants.lean', l: 1433 },
+  'kg-tie':            { c: 'Con un numero pari la formula (n+1)/2 non è stretta: 2·soglia ≤ n — provato nella macchina fusa sullo stesso calcolo', k: 'teorema', d: 'majority_not_strict_on_even', f: 'lean/KelGroups/Invariants.lean', l: 1442 },
   'join-vote-econ':    { c: "PONTE voto → economia alla radice (#76): se la radice di produzione applica grantPermission c, nello stato di partenza c'era un'autorizzazione viva positiva legata all'acquisto c, e le autorizzazioni vive dopo il passo sono tratte dalle restanti; senza, non lo applica. Il browser ne esegue la trascrizione (riga js-transcription)", k: 'teorema', d: 'Reactivegas.Composition.apply_grant_spends', f: 'lean/Reactivegas/CompositionRoot.lean', l: 136 },
   'auth-deny':         { c: "Se la radice applica denyPermission c, nello stato di partenza c'era un'autorizzazione viva negativa legata all'acquisto c, e le autorizzazioni vive dopo il passo sono tratte dalle restanti; senza, non lo applica (#76)", k: 'teorema', d: 'Reactivegas.Composition.apply_deny_spends', f: 'lean/Reactivegas/CompositionRoot.lean', l: 193 },
   'auth-backdonate':   { c: "Se la radice applica backdonate w, nello stato di partenza c'era un'autorizzazione viva positiva legata alla quota w stessa, e le autorizzazioni vive dopo il passo sono tratte dalle restanti; senza, non lo applica (#76)", k: 'teorema', d: 'Reactivegas.Composition.apply_backdonate_spends', f: 'lean/Reactivegas/CompositionRoot.lean', l: 154 },
@@ -1209,7 +1209,7 @@ const CLAIMS = {
    extraction and runs fresh in the repository lake environment. The gate
    exits nonzero on any dangling citation, hash drift, or binding mismatch. */
 const CHECK_RECEIPT = {
-  sha: '301775d7010ddda7d4706c98c0a1887008385d1824aa59987c8a98e7ab5b974c',
+  sha: 'f10fea57999dfbebd7f83820f5a75aafe8d00c1edf1604a9674d2d228743b888',
   decls: ['auth_referente_guard_inv', 'close_guard_inv', 'close_permission_to_close',
     'close_spends_referente', 'conservation_preserved', 'deposit_double_entry',
     'fail_guard_inv', 'not_insolvent_of_reach',
@@ -1328,7 +1328,7 @@ const CHECK_RECEIPT = {
     'lean/Reactivegas/State.lean': 'ad7f6ffb096c26faee85d4af0aeb77a206bd191d896f3c1811d9596a36c6b792',
     'lean/Reactivegas/Step.lean': '9eaecd9159d0a626f62b63dd013b088f23c9fedd3a9ddf60778ca936e1cbf28b',
     'lean/Reactivegas/Predicates.lean': '6ae3a61dea55f9c81b45de2e2898d416b17f441605561a4b96e93ed5324e9729',
-    'lean/Reactivegas/Invariants.lean': '832ac4ad66cb1e7066107efd17c34addca833676de6489ab9e45200fcc2df9e6',
+    'lean/Reactivegas/Invariants.lean': '2785e8feee8a6e64fd4ca65fb3268491f4214a58f174ed8229d448c506f4e11a',
     'lean/Reactivegas/Composition.lean': '43b52f8b30bd4d96383bfd676660e78780a4d43436be76e74bd2ee5d6eee0743',
     'lean/Reactivegas/Mirrors.lean': '7fefa8cd8e034c1e2f5a353d28270d7a68e940c7be5d0f52eabaca0d6193e1fb',
     'lean/Reactivegas/CompositionRoot.lean': '9c40b1e21be55700d1fd0e230301da1bdd78b747f1debf5012041e99c7b7c927',
@@ -1359,7 +1359,7 @@ const CHECK_RECEIPT = {
     'lean/Reactivegas/State.lean': '8232d4fed808ad30a9817a9bae9e832a73ce5f15',
     'lean/Reactivegas/Step.lean': '8232d4fed808ad30a9817a9bae9e832a73ce5f15',
     'lean/Reactivegas/Predicates.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
-    'lean/Reactivegas/Invariants.lean': '8232d4fed808ad30a9817a9bae9e832a73ce5f15',
+    'lean/Reactivegas/Invariants.lean': '89c78a7b767de31cf9c2f1461a2784d1a4498edc',
     'lean/Reactivegas/Composition.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
     'lean/Reactivegas/Mirrors.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
     'lean/Reactivegas/CompositionRoot.lean': '8232d4fed808ad30a9817a9bae9e832a73ce5f15',

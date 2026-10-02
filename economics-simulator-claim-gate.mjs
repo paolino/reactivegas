@@ -124,13 +124,14 @@ const ACCEPTED_COMPOSITION = {
    file in this freshness manifest — never from a parallel path constant,
    EVENT_ROUTES, TAG_CLAIMS, or EV. Pin-freshness compares each declared
    file's blob at the pin with its blob at HEAD. An empty, ambiguous, or
-   repointed files list is RED. The pin is the last commit of #76's Lean
-   (8232d4f, closure-derived economic effects), whose vocabularies the
+   repointed files list is RED. The pin is the merge of master (#68,
+   proposer is not an assent) into #76's Lean (89c78a7), the last commit
+   changing lean/Reactivegas or lean/KelGroups, whose vocabularies the
    simulator follows. */
 const MANIFEST_EVENT_FILE = 'lean/Reactivegas/Types.lean';
 const ACCEPTED_CORE = {
-  commit: '8232d4fed808ad30a9817a9bae9e832a73ce5f15',
-  tree: 'b10e5bdc6b24a64e2f57802cece3f3ad50eb94c2',
+  commit: '89c78a7b767de31cf9c2f1461a2784d1a4498edc',
+  tree: 'f51175d69ac72a32a698bd836560a1496d93f6e7',
   files: [MANIFEST_EVENT_FILE],
 };
 const DRIVER_IMPORTS = Object.freeze([
