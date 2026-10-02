@@ -248,7 +248,8 @@ termination_by seeds.length
 
 /-- Trace B: the economic journey with #76's closure-derived permissions,
 through the production root, with two responsabili (`legacyThreshold 2 = 1`,
-so one ballot closes). Every economic effect a vote decides is backed by a
+so one ballot closes). Elections follow the proposer-is-not-an-assent rule:
+`anna`, the sole admin, approves her own proposal to elect `bruno`. Every economic effect a vote decides is backed by a
 closure of a question bound to its target in this history: `anna` opens
 `q:permesso:7` bound to collection 7 and `q:permesso:8` bound to collection 8
 (`openBound`, the signer is the proposer, the target is fixed before any
@@ -272,11 +273,14 @@ affordable from the comune); and `grantPermission 9` after the unbound
 closure bound to 9 and a positive one bound to 10 both live, `grantPermission
 9` and `denyPermission 10` are refused — each closure authorizes its own
 target under its own verdict only — and then `grantPermission 10` and
-`denyPermission 9` spend them. Then `bruno` loses the admin role: his open
-collection 10 is wound up. -/
+`denyPermission 9` spend them. Then `bruno` loses the admin role: `anna`'s
+proposal enters pending with no assent, and `bruno`'s approval, the one
+non-proposer assent the majority of two needs, enacts it; his open collection
+10 is wound up. -/
 def traceB : List CheckedSeed := [
   ("anna", admit "bruno", true),
   ("anna", elect "bruno", true),
+  ("anna", approve "roles:bruno", true),
   ("anna", appE (.deposit "bruno" 50), true),
   ("bruno", appE (.deposit "anna" 25), true),
   ("bruno", appE (.openPurchase 7), true),
@@ -323,7 +327,8 @@ def traceB : List CheckedSeed := [
   ("anna", appE (.denyPermission 10), false),
   ("anna", appE (.grantPermission 10), true),
   ("anna", appE (.denyPermission 9), true),
-  ("anna", propose (.changeRoles "bruno" socioRoles), true)
+  ("anna", propose (.changeRoles "bruno" socioRoles), true),
+  ("bruno", approve "roles:bruno", true)
 ]
 
 /-- Trace C: the V-5 lifecycle and S-12 refusals (#81) through the production
@@ -335,7 +340,10 @@ tally in the setup, so the closure log is non-empty before any V-5 closure.
 target is fixed before any ballot). `carlo`'s ballot on `dora`'s permission
 question addressed to `bruno` is refused (`notDesignee`), `anna`'s renounce of
 `dora`'s `qd1` is refused (`notProposer`); all three leave the aggregate
-unchanged. `carlo` renounces his own `qz`: it closes `.negative`/`.renounced`
+unchanged. Elections follow the proposer-is-not-an-assent rule: the founder
+alone approves her own first proposal; above one admin the assents come from
+the others, and `anna`'s approval of her own proposal for `dora`'s departure
+is refused (`proposerSelfApproval`) with the aggregate unchanged. `carlo` renounces his own `qz`: it closes `.negative`/`.renounced`
 and every other open question stays as it stood. Then `dora` leaves: in the
 transition of the enacting approval her `qd1` and `qd2` close
 `.negative`/`.proposerDeparted`, and `anna`'s `qx`, whose stale tally (`anna`,
