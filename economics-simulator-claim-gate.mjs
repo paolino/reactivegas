@@ -79,6 +79,7 @@
  * directory; the repository stays clean. Last, in a throwaway worktree of
  * HEAD it commits an edit to a cited Lean file and judges that worktree as
  * the checkout under test: RED naming the file without re-made receipts,
+ * RED on the pinned core Event source and composition module edited there,
  * GREEN with the receipt re-pinned to the edit commit, RED for a source pin
  * moved to a parentless commit of the same tree.
  */
@@ -1444,6 +1445,8 @@ async function gateAt(dir, work) {
  * In a throwaway worktree of HEAD (shared objects and refs, the tracked tree
  * never written): commit an edit to a cited Lean file and
  *   - without re-made receipts the gate must RED, naming that file;
+ *   - with the core Event source and the composition module also edited,
+ *     the gate must RED on both pin blobs differing from the blobs at HEAD;
  *   - with the receipt's sources/sourcePins re-made against the edit commit
  *     the gate must pass — the pin is reachable from the commit under test;
  *   - a source pin repointed at a parentless commit carrying the very same
@@ -1479,6 +1482,26 @@ async function leanBranchControls(work) {
     if (!staleText.includes('hash sorgente divergente: ' + victim))
       return `ramo Lean senza ricevute rifatte RED senza nominare ${victim}: ${staleText.slice(0, 300)}`;
     console.log(`controllo negativo «ramo Lean senza ricevute rifatte»: RED come atteso — ${staleText.split('\n')[0].slice(0, 110)}`);
+
+    // the core Event source and the composition module edited on the branch:
+    // their blobs at the accepted pins no longer equal the blobs at HEAD
+    const coreFile = eventSourceFromManifest(ACCEPTED_CORE.files);
+    const compFile = ACCEPTED_COMPOSITION.module;
+    for (const f of [coreFile, compFile])
+      writeFileSync(join(dir, f), readFileSync(join(dir, f), 'utf8') +
+        '\n-- claim-gate selftest: a pinned module edited on the branch\n');
+    scratchCommit(dir, [coreFile, compFile], 'claim-gate selftest: edit the pinned modules');
+    const blobAt = rev => execFileSync('git', ['-C', dir, 'rev-parse', rev],
+      { encoding: 'utf8' }).trim();
+    const wantCore = `stale cited file ${coreFile}: pin blob=${blobAt(ACCEPTED_CORE.commit + ':' + coreFile)} HEAD blob=${blobAt('HEAD:' + coreFile)}`;
+    const wantComp = `modulo composizione obsoleto al pin: pin=${blobAt(ex.composition.commit + ':' + compFile)} HEAD=${blobAt('HEAD:' + compFile)}`;
+    const drifted = await gateAt(dir, work);
+    const driftText = drifted.reasons.join('\n');
+    if (drifted.ok || !driftText.includes(wantCore) || !driftText.includes(wantComp))
+      return `moduli al pin modificati sul ramo non RED contro HEAD — atteso «${wantCore}» e «${wantComp}»: ${driftText.slice(0, 400)}`;
+    console.log(`controllo negativo «moduli al pin modificati sul ramo»: RED come atteso — ${wantCore.slice(0, 110)}`);
+    execFileSync('git', ['-C', dir, 'checkout', '--quiet', '--detach', edit],
+      { stdio: ['ignore', 'pipe', 'pipe'] });
 
     const srcNeedle = `'${victim}': '${ex.sources[victim]}',`;
     const pinNeedle = `'${victim}': '${ex.sourcePins[victim]}',`;
