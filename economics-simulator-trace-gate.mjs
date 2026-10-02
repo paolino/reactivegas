@@ -36,7 +36,7 @@
  *   8b. recognises, the same way, the #68 rows (ROWS68: above one admin a
  *      proposal enters pending with no assent, the proposer's own approval is
  *      refused, an enactment is reached by non-proposer approvals only) and
- *      judges each at its own witness step;
+ *      judges each by the same replay as the #81 rows;
  *   9. prints counts, the fresh sha, the row witnesses, and GREEN only after
  *      Lean regeneration equivalence, production-JS replay and every row
  *      succeed.
@@ -57,7 +57,7 @@
  * positive verdict, unbound grant applied, bind of an open or a closed
  * question accepted), each RED on its row, and one per #68 row (proposer
  * counted at creation, proposer self-approval accepted, threshold counting
- * the proposer), each RED on its row — every one but the spent-closure
+ * the proposer), each RED on its row — every #76 one but the spent-closure
  * rows at its own witness step, judged alone on Lean's recorded input — then
  * production GREEN.
  * Temporary artifacts live in a fresh mkdtemp directory; the repo stays clean.
@@ -372,7 +372,10 @@ const ROWS76_INTEGRATED = {
    approves her own first proposal): a proposal enters pending with no
    assent, the proposer's own approval is refused (single fault: an admin
    signer, a pending proposal, no prior assent of the signer), and an
-   enactment is reached by approvals none of which is the proposer's. */
+   enactment is reached by approvals none of which is the proposer's. Each
+   is judged as the #81 rows, by the replay of its envelope up to its witness
+   step: Lean's recorded pending entries carry its `mutation` encoding, which
+   the page never reads, so a base step alone is not replayable here. */
 const iAdmins = agg => agg.members.filter(([, m]) => m.roles.some(r => 'adminRole' in r)).length;
 const iPending = (agg, pid) => ((agg.pendingBase || []).find(([k]) => k === pid) || [])[1] || null;
 const iDigest = p => 'departure' in p ? 'depart:' + p.departure : 'roles:' + p.changeRoles.key;
@@ -539,7 +542,7 @@ function runGate(opts) {
   for (const r of rows76)
     if (!r.ok) reasons.push(`riga #76 ${r.row}${r.at ? ' @' + r.at : ''} ROSSA: ${r.why}`);
 
-  const rows68 = judgeRows(ROWS68_INTEGRATED, fresh, prod.RG, { local: true });
+  const rows68 = judgeRows(ROWS68_INTEGRATED, fresh, prod.RG);
   for (const r of rows68)
     if (!r.ok) reasons.push(`riga #68 ${r.row}${r.at ? ' @' + r.at : ''} ROSSA: ${r.why}`);
 
@@ -671,17 +674,17 @@ function selftest(work) {
       expect: /riga #76 refuse-backdonate-spent /, make: mutant(SPEND, 'return effect(s);') },
   );
   // #68: the page's base channel mutated, one behaviour at a time; each
-  // must turn its row RED at its own witness step
+  // must turn its row RED through the replay up to its witness step
   controls.push(
     { name: 'la proposta entra con l’assenso del proponente (propose-no-assent)',
-      expect: /riga #68 propose-no-assent @[A-C]#\d+ ROSSA: il passo da solo/,
+      expect: /riga #68 propose-no-assent @[A-C]#\d+ ROSSA/,
       make: mutant('{ proposal: p, proposer: signer, approvals: [] }',
         '{ proposal: p, proposer: signer, approvals: [signer] }') },
     { name: 'il proponente approva la propria proposta (refuse-proposer-self-approval)',
-      expect: /riga #68 refuse-proposer-self-approval @[A-C]#\d+ ROSSA: il passo da solo/,
+      expect: /riga #68 refuse-proposer-self-approval @[A-C]#\d+ ROSSA/,
       make: mutant("if (signer === pend.proposer && bgAdminCount(gs) > 1) return 'proposerSelfApproval';", '') },
     { name: 'la soglia conta il proponente (enact-non-proposer)',
-      expect: /riga #68 enact-non-proposer @[A-C]#\d+ ROSSA: il passo da solo/,
+      expect: /riga #68 enact-non-proposer @[A-C]#\d+ ROSSA/,
       make: mutant('if (pend.approvals.length >= bgMajority(gs)) {',
         'if (pend.approvals.length + 1 >= bgMajority(gs)) {') },
   );
