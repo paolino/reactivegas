@@ -1700,7 +1700,36 @@ deriving instance Lean.ToJson, Lean.FromJson for KelGroups.Vote.Question
 deriving instance Lean.ToJson, Lean.FromJson for KelGroups.Vote.ClosureRecord
 deriving instance Lean.ToJson, Lean.FromJson for KelGroups.Vote.VoteState
 deriving instance Lean.ToJson, Lean.FromJson for KelGroups.Vote.VoteEvent
-deriving instance Lean.ToJson, Lean.FromJson for State
+deriving instance Lean.ToJson, Lean.FromJson for EconomicTarget
+deriving instance Lean.ToJson, Lean.FromJson for LiveAuth
+
+/-- `State` JSON: the four payload fields always; `bindings` and `live` only
+when non-empty, so a payload that holds no closure-derived authorization
+encodes exactly as it did before those fields existed (the frozen corpora hold
+none). Decoding treats an absent field as empty. -/
+instance : Lean.ToJson State where
+  toJson s :=
+    Lean.Json.mkObj
+      ([ ("casse", Lean.toJson s.casse)
+       , ("collections", Lean.toJson s.collections)
+       , ("conti", Lean.toJson s.conti)
+       , ("votes", Lean.toJson s.votes) ]
+      ++ (if s.bindings.isEmpty then [] else [("bindings", Lean.toJson s.bindings)])
+      ++ (if s.live.isEmpty then [] else [("live", Lean.toJson s.live)]))
+
+instance : Lean.FromJson State where
+  fromJson? j := do
+    let conti ← j.getObjValAs? (List (KelGroups.Key × Int)) "conti"
+    let casse ← j.getObjValAs? (List (KelGroups.Key × Int)) "casse"
+    let collections ← j.getObjValAs? (List Collection) "collections"
+    let votes ← j.getObjValAs? KelGroups.Vote.VoteState "votes"
+    let bindings ← match j.getObjVal? "bindings" with
+      | .ok v => Lean.fromJson? v
+      | .error _ => pure []
+    let live ← match j.getObjVal? "live" with
+      | .ok v => Lean.fromJson? v
+      | .error _ => pure []
+    pure { conti, casse, collections, votes, bindings, live }
 deriving instance Lean.ToJson, Lean.FromJson for Event
 deriving instance Lean.ToJson, Lean.FromJson for AppEvent
 deriving instance Lean.ToJson, Lean.FromJson for Proposal

@@ -69,6 +69,24 @@ inductive Event where
   | failPurchase (author : KelGroups.Key) (c : CollId)
 deriving DecidableEq, Repr
 
+/-- What one closed economic authorization may be spent on, fixed when its
+question opens. Permission binds the collection identity; voted backdonation
+binds the per-member share `w` itself, never a label for a caller-supplied
+amount. -/
+inductive EconomicTarget where
+  | permission (c : CollId)
+  | backdonation (w : Int)
+deriving DecidableEq, BEq, Repr
+
+/-- An unspent authorization: the closure of a bound question, as the vote
+fold emitted it. Minted only by the production root when its vote step closes
+a bound question; spent by exactly one economic effect. -/
+structure LiveAuth where
+  questionId : KelGroups.Vote.QuestionId
+  target : EconomicTarget
+  verdict : KelGroups.Vote.Verdict
+deriving DecidableEq, BEq, Repr
+
 /-- Transitional integrated app-event surface (NOTE-002): the fourteen
 surviving economic actions, with no author field — the signer arrives
 from the fold — and no membership/role constructor. -/
@@ -92,6 +110,11 @@ inductive AppEvent where
   | cast (questionId : KelGroups.Vote.QuestionId)
       (ballot : KelGroups.Vote.Ballot)
   | renounce (questionId : KelGroups.Vote.QuestionId)
+  /-- Open a question whose closure authorizes exactly `target`. The signer
+  becomes its proposer, so the target is fixed by the proposer before any
+  ballot exists. -/
+  | openBound (questionId : KelGroups.Vote.QuestionId)
+      (kind : KelGroups.Vote.QuestionKind) (target : EconomicTarget)
 deriving DecidableEq, BEq, Repr
 
 /-- Rejection identity of the integrated economic step. A single

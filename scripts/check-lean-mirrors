@@ -188,9 +188,14 @@ def s4bCorrTable : Array (String × Option String × String) := #[
 
 /-- Separately named legitimate exceptions (V4, P11, R0 definitional or
 executable evidence above; P13 bounded per ruling RG-S4-REACH-20260906, which
-holds arbitrary-state decision NOT-REQUIRED — not undecidability). -/
+holds arbitrary-state decision NOT-REQUIRED — not undecidability).
+`Reactivegas.ProductionHistory` is the history premise of the #76 provenance
+theorem (`liveBacked_of_history`): a boot followed by successful production
+calls, with no Bool counterpart here; deciding a finite supplied history is
+#66 S5 / #75 work. Deleting this entry fails the checker (mirror control). -/
 def s4bExceptions : Array String :=
-  #["KelGroups.Vote.PreservesQuestionSemantics", "authorizedStep", "stalled", "Reach"]
+  #["KelGroups.Vote.PreservesQuestionSemantics", "authorizedStep", "stalled", "Reach",
+    "Reactivegas.ProductionHistory"]
 
 /-- Promoted body/consumer obligations (v3.1 Obligation 2): the two P01 helper
 theorems whose proofs read `isMember`'s definition body. Checked for existence

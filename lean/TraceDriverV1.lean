@@ -1,5 +1,6 @@
 import Lean
 import Reactivegas.Step
+import Reactivegas.Invariants
 import KelGroups.Integration
 
 /-!
@@ -52,7 +53,8 @@ deriving instance Lean.ToJson for KelGroups.Vote.ClosureRecord
 deriving instance Lean.ToJson for KelGroups.Vote.VoteState
 deriving instance Lean.ToJson for Pledge
 deriving instance Lean.ToJson for Collection
-deriving instance Lean.ToJson for State
+-- `State` uses the corpus-stable encoder of `Reactivegas.Invariants`, which
+-- omits the authorization fields while they are empty.
 deriving instance Lean.ToJson for StepError
 deriving instance Lean.ToJson for KelGroups.ValidationError
 deriving instance Lean.ToJson for KelGroups.IntegratedError
@@ -85,6 +87,9 @@ def jsonAppEvent : AppEvent → Json
   | .cast qid ballot =>
       Json.mkObj [("cast", Json.mkObj [("questionId", toJson qid), ("ballot", toJson ballot)])]
   | .renounce qid => Json.mkObj [("renounce", Json.mkObj [("questionId", toJson qid)])]
+  | .openBound qid kind target =>
+      Json.mkObj [("openBound", Json.mkObj
+        [("questionId", toJson qid), ("kind", toJson kind), ("target", toJson target)])]
 
 /-- The integrated event in the consumer's shape. -/
 def jsonIntegratedEvent : KelGroups.IntegratedEvent Proposal AppEvent → Json
