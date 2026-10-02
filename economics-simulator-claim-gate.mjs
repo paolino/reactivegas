@@ -76,7 +76,11 @@
  * tripwire), and a freshly-DISCOVERED KelGroups pin removed from a scratch
  * receipt (the victim is derived from the tree, never hardcoded) — each for
  * its intended reason, then runs the unmodified production gate GREEN. Temporary artifacts live in a fresh mkdtemp
- * directory; the repository stays clean.
+ * directory; the repository stays clean. Last, in a throwaway worktree of
+ * HEAD it commits an edit to a cited Lean file and judges that worktree as
+ * the checkout under test: RED naming the file without re-made receipts,
+ * GREEN with the receipt re-pinned to the edit commit, RED for a source pin
+ * moved to a parentless commit of the same tree.
  */
 
 import { readFileSync, writeFileSync, mkdtempSync, mkdirSync, rmSync, cpSync,
@@ -1394,11 +1398,121 @@ async function selftest(work) {
     }
     console.log(`controllo negativo «${c.name}»: RED come atteso — ${text.split('\n')[0].slice(0, 110)}`);
   }
+  const branch = await leanBranchControls(work);
+  if (branch) {
+    console.error('SELFTEST RED: controllo del ramo Lean: ' + branch);
+    return 1;
+  }
   console.log(`selftest GREEN: ${controls.length} controlli negativi RED per il motivo atteso; ` +
     `produzione GREEN (${green.rows} righe, ${green.cited} citazioni, ` +
     `${green.enun} enunciate, sha ${green.sha.slice(0, 12)}…); ` +
     `machine-controls=${MACHINE_CONTROLS}`);
   return 0;
+}
+
+/* --- a Lean-changing branch, judged as the checkout under test ------------ */
+
+/* The cited source the branch controls edit: cited by a manifest row at the
+   checkout (not at the composition pin), outside the core manifest, the
+   composition module and every event vocabulary — so the receipt's own
+   sources/sourcePins are all a branch has to re-make for it. */
+const BRANCH_VICTIM = 'lean/Reactivegas/Invariants.lean';
+const SELFTEST_IDENT = {
+  GIT_AUTHOR_NAME: 'claim-gate', GIT_AUTHOR_EMAIL: 'claim-gate@invalid',
+  GIT_COMMITTER_NAME: 'claim-gate', GIT_COMMITTER_EMAIL: 'claim-gate@invalid',
+  GIT_AUTHOR_DATE: '2000-01-01T00:00:00Z', GIT_COMMITTER_DATE: '2000-01-01T00:00:00Z',
+};
+
+function scratchCommit(dir, paths, message) {
+  const git = args => execFileSync('git', ['-C', dir, ...args], { encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, ...SELFTEST_IDENT } }).trim();
+  git(['add', '--', ...paths]);
+  git(['commit', '--quiet', '--no-verify', '-m', message]);
+  return git(['rev-parse', 'HEAD']);
+}
+
+/* The full claim gate (machine coverage + runGate) with `dir` as the
+   checkout under test: its HEAD, its working tree, its lake environment. */
+async function gateAt(dir, work) {
+  const mc = await checkMachineCoverage(join(dir, 'economics-simulator-core.mjs'), dir);
+  const r = runGate({ html: join(dir, 'economics-simulator.html'), sourcesRoot: dir,
+    lakeRepo: dir, work });
+  return { ok: mc.ok && r.ok, reasons: [...(mc.ok ? [] : mc.reasons), ...(r.ok ? [] : r.reasons)] };
+}
+
+/*
+ * In a throwaway worktree of HEAD (shared objects and refs, the tracked tree
+ * never written): commit an edit to a cited Lean file and
+ *   - without re-made receipts the gate must RED, naming that file;
+ *   - with the receipt's sources/sourcePins re-made against the edit commit
+ *     the gate must pass — the pin is reachable from the commit under test;
+ *   - a source pin repointed at a parentless commit carrying the very same
+ *     blob must RED on reachability alone.
+ * Returns null when all three hold, else the failure.
+ */
+async function leanBranchControls(work) {
+  const dir = join(work, 'lean-branch');
+  execFileSync('git', ['-C', REPO, 'worktree', 'add', '--quiet', '--detach', dir, 'HEAD'],
+    { stdio: ['ignore', 'pipe', 'pipe'] });
+  try {
+    try { cpSync(join(REPO, 'lean', '.lake'), join(dir, 'lean', '.lake'),
+      { recursive: true }); } catch { /* cold cache: lake rebuilds */ }
+    const htmlPath = join(dir, 'economics-simulator.html');
+    const doc = readFileSync(htmlPath, 'utf8');
+    const ex = extract(doc);
+    const victim = BRANCH_VICTIM;
+    const victimPath = join(dir, victim);
+    const src = readFileSync(victimPath, 'utf8');
+    if (!ex.sources[victim] || !ex.sourcePins[victim] ||
+        !ex.rows.some(r => r.f === victim && !r.g) ||
+        ACCEPTED_CORE.files.includes(victim) || victim === ACCEPTED_COMPOSITION.module ||
+        parseVocabularies(victim, src).length)
+      return `controllo mal costruito: ${victim} non è una sorgente citata fuori da core, composizione e vocabolari`;
+
+    writeFileSync(victimPath, src + '\n-- claim-gate selftest: a Lean-changing branch\n');
+    const edit = scratchCommit(dir, [victim], 'claim-gate selftest: edit a cited Lean file');
+
+    const stale = await gateAt(dir, work);
+    const staleText = stale.reasons.join('\n');
+    if (stale.ok)
+      return `ramo Lean senza ricevute rifatte ACCETTATO (${victim})`;
+    if (!staleText.includes('hash sorgente divergente: ' + victim))
+      return `ramo Lean senza ricevute rifatte RED senza nominare ${victim}: ${staleText.slice(0, 300)}`;
+    console.log(`controllo negativo «ramo Lean senza ricevute rifatte»: RED come atteso — ${staleText.split('\n')[0].slice(0, 110)}`);
+
+    const srcNeedle = `'${victim}': '${ex.sources[victim]}',`;
+    const pinNeedle = `'${victim}': '${ex.sourcePins[victim]}',`;
+    if (doc.split(srcNeedle).length !== 2 || doc.split(pinNeedle).length !== 2)
+      return `controllo mal costruito: voce di ricevuta per ${victim} non unica`;
+    const edited = readFileSync(victimPath);
+    writeFileSync(htmlPath, doc.replace(srcNeedle, `'${victim}': '${sha256(edited)}',`)
+      .replace(pinNeedle, `'${victim}': '${edit}',`));
+    scratchCommit(dir, ['economics-simulator.html'], 'claim-gate selftest: re-make the receipt');
+
+    const remade = await gateAt(dir, work);
+    if (!remade.ok)
+      return `ramo Lean con ricevute rifatte RESPINTO: ${remade.reasons.join('\n').slice(0, 400)}`;
+    console.log(`controllo positivo «ramo Lean con ricevute rifatte»: GREEN — ${victim} pinnato a ${edit.slice(0, 10)}…`);
+
+    const headTree = execFileSync('git', ['-C', dir, 'rev-parse', 'HEAD^{tree}'],
+      { encoding: 'utf8' }).trim();
+    const orphan = execFileSync('git', ['-C', dir, 'commit-tree', headTree,
+      '-m', 'claim-gate selftest: orphan source pin'],
+      { encoding: 'utf8', env: { ...process.env, ...SELFTEST_IDENT } }).trim();
+    const remadeDoc = readFileSync(htmlPath, 'utf8');
+    const orphanHtml = join(work, 'sab-source-orphan.html');
+    writeFileSync(orphanHtml, remadeDoc.replace(`'${victim}': '${edit}',`, `'${victim}': '${orphan}',`));
+    const orphaned = runGate({ html: orphanHtml, sourcesRoot: dir, lakeRepo: dir, work });
+    const orphanText = (orphaned.reasons || []).join('\n');
+    if (orphaned.ok || !orphanText.includes('pin non raggiungibile da HEAD: ' + victim))
+      return `pin sorgente orfano non RED per raggiungibilità: ${orphanText.slice(0, 300)}`;
+    console.log(`controllo negativo «pin sorgente orfano»: RED come atteso — ${orphanText.split('\n')[0].slice(0, 110)}`);
+    return null;
+  } finally {
+    try { execFileSync('git', ['-C', REPO, 'worktree', 'remove', '--force', dir],
+      { stdio: ['ignore', 'pipe', 'pipe'] }); } catch { /* best effort */ }
+    rmQuiet(dir);
+  }
 }
 
 /* scratch copy of the pinned sources only; the SAME production hash-check
