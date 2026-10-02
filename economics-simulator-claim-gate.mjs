@@ -127,8 +127,8 @@ const ACCEPTED_COMPOSITION = {
    repointed files list is RED. */
 const MANIFEST_EVENT_FILE = 'lean/Reactivegas/Types.lean';
 const ACCEPTED_CORE = {
-  commit: '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
-  tree: '1ca66428464b2897f1f1a41b9b347b9ca0da5eee',
+  commit: '1ff0d9fea040d8ca52590ba9bb24c4c24674a551',
+  tree: 'acea2b79cc17bf57e423e76817e7adf08828d359',
   files: [MANIFEST_EVENT_FILE],
 };
 const DRIVER_IMPORTS = Object.freeze([
