@@ -24,3 +24,9 @@ elaborates both. -/
 lean_lib ReactivegasComposition where
   srcDir := "."
   roots := #[`Reactivegas.CompositionRoot, `Reactivegas.CompositionTests]
+
+lean_lib TraceDriverV1 where
+  srcDir := "."
+
+lean_lib KelTraceDriverV1 where
+  srcDir := "."

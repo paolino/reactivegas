@@ -91,3 +91,8 @@ jobs:
       # coverage ± negative control, trace agreement, `lake build`).
       - name: Verify corpus emission
         run: nix --quiet develop --command just lean-corpus-verify
+
+      # #70: the simulator gates (build --check, every gate and its selftest)
+      # replay the Lean built above, on every push.
+      - name: Run the simulator gates
+        run: nix --quiet develop --command just simulator
