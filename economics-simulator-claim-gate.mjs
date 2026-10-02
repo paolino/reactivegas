@@ -41,7 +41,7 @@
  *      axioms; its #guard witnesses fail the build if false);
  *  11. derives the Event constructor inventory from the accepted core pin's
  *      lean/Reactivegas/Types.lean (never EVENT_ROUTES/TAG_CLAIMS/EV),
- *      requires each cited source blob at the pin to equal origin/master,
+ *      requires each cited source blob at the pin to equal HEAD's,
  *      subtracts the exact dated #62 retirement manifest, and executes a
  *      valid witness through the exported real `attempt` for every remaining
  *      constructor — returning/refusing is not coverage; ok:true is required
@@ -106,8 +106,14 @@ const sha256 = b => createHash('sha256').update(b).digest('hex');
    master merge base of the simulator branch (2bd9a20, #81 + #92), where
    every source the receipt pins is pinned too. The embedded receipt
    must agree, the commit must resolve to exactly this tree, it must be
-   REACHABLE FROM origin/master (an orphaned pin is RED even if locally
-   resolvable), and the pinned module is re-elaborated fresh on every run. */
+   an ancestor of HEAD (an orphaned pin is RED even if locally
+   resolvable), and the pinned module is re-elaborated fresh on every run.
+
+   Every pin rule here is judged against HEAD of the checkout under test —
+   the branch commit locally, the PR merge commit in CI, the master tip on
+   master — never against origin/master: a branch that changes a cited Lean
+   file and re-makes its receipts against its own Lean must be able to pass,
+   and one that changes it without re-making them must not. */
 const ACCEPTED_COMPOSITION = {
   commit: '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
   tree: '1ca66428464b2897f1f1a41b9b347b9ca0da5eee',
@@ -117,7 +123,7 @@ const ACCEPTED_COMPOSITION = {
 /* Accepted #48 core pin: Event inventory is derived from the unique
    file in this freshness manifest — never from a parallel path constant,
    EVENT_ROUTES, TAG_CLAIMS, or EV. Pin-freshness compares each declared
-   file's blob at the pin with origin/master. An empty, ambiguous, or
+   file's blob at the pin with its blob at HEAD. An empty, ambiguous, or
    repointed files list is RED. */
 const MANIFEST_EVENT_FILE = 'lean/Reactivegas/Types.lean';
 const ACCEPTED_CORE = {
@@ -290,29 +296,29 @@ function deriveAxioms(cited, out) {
   return { derived, rawLine };
 }
 
-function gitShow(revPath) {
-  return execFileSync('git', ['-C', REPO, 'rev-parse', revPath],
+function gitShow(revPath, repo = REPO) {
+  return execFileSync('git', ['-C', repo, 'rev-parse', revPath],
     { encoding: 'utf8' }).trim();
 }
 
-function assertCitedFilesFresh(pin, files) {
+function assertCitedFilesFresh(pin, files, repo = REPO) {
   for (const file of files) {
-    const pinnedBlob = gitShow(`${pin}:${file}`);
-    const masterBlob = gitShow(`origin/master:${file}`);
-    if (pinnedBlob !== masterBlob)
-      throw new Error(`stale cited file ${file}: pin blob=${pinnedBlob} origin/master blob=${masterBlob}`);
+    const pinnedBlob = gitShow(`${pin}:${file}`, repo);
+    const headBlob = gitShow(`HEAD:${file}`, repo);
+    if (pinnedBlob !== headBlob)
+      throw new Error(`stale cited file ${file}: pin blob=${pinnedBlob} HEAD blob=${headBlob}`);
   }
 }
 
 /* INV-8: the cited composition module joins the freshness manifest — its
-   blob at the pin must equal its blob at origin/master, so the silent drift
-   that slipped through #62 REDs from now on. */
-function assertCompositionModuleFresh(pin, module) {
-  const pinnedBlob = gitShow(pin + ':' + module);
-  const masterBlob = gitShow('origin/master:' + module);
-  if (pinnedBlob !== masterBlob)
+   blob at the pin must equal its blob at HEAD, so the silent drift that
+   slipped through #62 REDs from now on. */
+function assertCompositionModuleFresh(pin, module, repo = REPO) {
+  const pinnedBlob = gitShow(pin + ':' + module, repo);
+  const headBlob = gitShow('HEAD:' + module, repo);
+  if (pinnedBlob !== headBlob)
     throw new Error('modulo composizione obsoleto al pin: pin=' + pinnedBlob +
-      ' origin/master=' + masterBlob);
+      ' HEAD=' + headBlob);
 }
 
 function eventSourceFromManifest(files = ACCEPTED_CORE.files) {
@@ -322,15 +328,19 @@ function eventSourceFromManifest(files = ACCEPTED_CORE.files) {
   return files[0];
 }
 
-function pinnedConstructors() {
-  const gotTree = gitShow(ACCEPTED_CORE.commit + "^{tree}");
+function pinnedConstructors(repo = REPO) {
+  const gotTree = gitShow(ACCEPTED_CORE.commit + "^{tree}", repo);
   if (gotTree !== ACCEPTED_CORE.tree)
     throw new Error("accepted core tree mismatch: " + gotTree);
-  execFileSync('git', ['-C', REPO, 'merge-base', '--is-ancestor',
-    ACCEPTED_CORE.commit, 'origin/master']);
-  assertCitedFilesFresh(ACCEPTED_CORE.commit, ACCEPTED_CORE.files);
+  try {
+    execFileSync('git', ['-C', repo, 'merge-base', '--is-ancestor',
+      ACCEPTED_CORE.commit, 'HEAD'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  } catch (e) {
+    throw new Error('pin core non raggiungibile da HEAD (commit orfano): ' + ACCEPTED_CORE.commit);
+  }
+  assertCitedFilesFresh(ACCEPTED_CORE.commit, ACCEPTED_CORE.files, repo);
   const eventSource = eventSourceFromManifest(ACCEPTED_CORE.files);
-  const src = execFileSync('git', ['-C', REPO, 'show',
+  const src = execFileSync('git', ['-C', repo, 'show',
     ACCEPTED_CORE.commit + ':' + eventSource], { encoding: 'utf8' });
   const block = src.match(/inductive Event where([\s\S]*?)deriving DecidableEq, Repr/);
   if (!block) throw new Error('pinned Lean Event declaration not found');
@@ -367,17 +377,17 @@ function parseVocabularies(file, src) {
   return out;
 }
 
-function pinnedVocabularies(extra) {
-  const files = execFileSync('git', ['-C', REPO, 'ls-tree', '-r', '--name-only',
+function pinnedVocabularies(extra, repo = REPO) {
+  const files = execFileSync('git', ['-C', repo, 'ls-tree', '-r', '--name-only',
     ACCEPTED_CORE.commit, '--', ...VOCAB_ROOTS], { encoding: 'utf8' })
     .split('\n').filter(f => f.endsWith('.lean')).sort();
   if (!files.length) throw new Error('vocabulary discovery: no Lean source at the pin');
   const vocab = [];
   for (const file of files) {
-    const src = execFileSync('git', ['-C', REPO, 'show', ACCEPTED_CORE.commit + ':' + file],
+    const src = execFileSync('git', ['-C', repo, 'show', ACCEPTED_CORE.commit + ':' + file],
       { encoding: 'utf8' });
     const found = parseVocabularies(file, src);
-    if (found.length) assertCitedFilesFresh(ACCEPTED_CORE.commit, [file]);
+    if (found.length) assertCitedFilesFresh(ACCEPTED_CORE.commit, [file], repo);
     vocab.push(...found);
   }
   for (const [file, src] of Object.entries(extra || {})) vocab.push(...parseVocabularies(file, src));
@@ -558,10 +568,10 @@ async function loadCore(corePath) {
   return import(`${pathToFileURL(corePath).href}?audit=${Date.now()}-${Math.random()}`);
 }
 
-async function checkMachineCoverage(corePath) {
+async function checkMachineCoverage(corePath, repo = REPO) {
   const reasons = [];
   let ctors;
-  try { ctors = pinnedConstructors(); }
+  try { ctors = pinnedConstructors(repo); }
   catch (e) { return { ok: false, reasons: [e.message] }; }
   const active = ctors;   // no dated subtraction: the pin itself is post-#62
   let mod;
@@ -630,7 +640,7 @@ async function checkMachineCoverage(corePath) {
   }
 
   let vc = { reasons: [], witnessed: 0, vocabularies: 0 };
-  try { vc = checkVocabularyCoverage(mod, pinnedVocabularies()); }
+  try { vc = checkVocabularyCoverage(mod, pinnedVocabularies(undefined, repo)); }
   catch (e) { reasons.push(e.message); }
   reasons.push(...vc.reasons);
 
@@ -642,7 +652,7 @@ async function checkMachineCoverage(corePath) {
 
 function stalePinSelftest() {
   const eventSource = eventSourceFromManifest(ACCEPTED_CORE.files);
-  const masterBlob = gitShow(`origin/master:${eventSource}`);
+  const headBlob = gitShow(`HEAD:${eventSource}`);
   const history = execFileSync('git', ['-C', REPO, 'rev-list', `${ACCEPTED_CORE.commit}^`],
     { encoding: 'utf8' }).trim().split('\n');
   let stalePin = null;
@@ -651,14 +661,14 @@ function stalePinSelftest() {
       const blob = execFileSync('git', ['-C', REPO, 'rev-parse',
         `${candidate}:${eventSource}`],
         { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
-      if (blob !== masterBlob) { stalePin = candidate; break; }
+      if (blob !== headBlob) { stalePin = candidate; break; }
     } catch { /* file did not yet exist */ }
   }
   if (!stalePin) throw new Error(`no historical stale pin found for ${eventSource}`);
   let staleMessage = '';
   try { assertCitedFilesFresh(stalePin, [eventSource]); }
   catch (e) { staleMessage = e.message; }
-  if (!new RegExp(`stale cited file ${eventSource}: pin blob=[0-9a-f]{40} origin/master blob=[0-9a-f]{40}`)
+  if (!new RegExp(`stale cited file ${eventSource}: pin blob=[0-9a-f]{40} HEAD blob=[0-9a-f]{40}`)
     .test(staleMessage))
     throw new Error(`stale-pin control did not RED with file and both blobs: ${staleMessage}`);
 }
@@ -672,15 +682,15 @@ function staleCompositionPinSelftest() {
   const driftPin = 'c8c4dd8903cca817c814e9f84e9ff21ceba2de0c';
   const module = ACCEPTED_COMPOSITION.module;
   const pinnedBlob = gitShow(driftPin + ':' + module);
-  const masterBlob = gitShow('origin/master:' + module);
-  if (pinnedBlob === masterBlob)
-    throw new Error('drift witness is stale itself: c8c4dd89 blob equals master');
+  const headBlob = gitShow('HEAD:' + module);
+  if (pinnedBlob === headBlob)
+    throw new Error('drift witness is stale itself: c8c4dd89 blob equals HEAD');
   let message = '';
   try { assertCompositionModuleFresh(driftPin, module); }
   catch (e) { message = e.message; }
   if (message !== 'modulo composizione obsoleto al pin: pin=' + pinnedBlob +
-      ' origin/master=' + masterBlob)
-    throw new Error('stale-composition control did not RED with pin and master blobs: ' + message);
+      ' HEAD=' + headBlob)
+    throw new Error('stale-composition control did not RED with pin and HEAD blobs: ' + message);
 }
 
 const MACHINE_CONTROLS = 'removed-attempt-case,removed-vote-handler,unhandled-vote-constructor,unlisted-vocabulary,stale-event-pin,stale-composition-pin,manifest-removed,manifest-ambiguous,manifest-repointed';
@@ -828,9 +838,9 @@ function runGate(opts) {
     }
     try {
       execFileSync('git', ['-C', lakeRepo, 'merge-base', '--is-ancestor',
-        pin, 'origin/master'], { stdio: ['ignore', 'pipe', 'pipe'] });
+        pin, 'HEAD'], { stdio: ['ignore', 'pipe', 'pipe'] });
     } catch (e) {
-      reasons.push(`pin non raggiungibile da origin/master: ${f}`);
+      reasons.push(`pin non raggiungibile da HEAD: ${f}`);
       continue;
     }
     try {
@@ -873,36 +883,27 @@ function runGate(opts) {
   }
   if (resolvedTree !== null) {
     // stable reachability (NOTE-029 / gate v3): the pin must be an ancestor
-    // of origin/master — an orphaned commit is rejected even when locally
+    // of HEAD — an orphaned commit is rejected even when locally
     // resolvable, BEFORE any equality masking can hide the reason
     let reachable = false;
     try {
       execFileSync('git', ['-C', lakeRepo, 'merge-base', '--is-ancestor',
-        ex.composition.commit, 'origin/master'], { stdio: ['ignore', 'pipe', 'pipe'] });
+        ex.composition.commit, 'HEAD'], { stdio: ['ignore', 'pipe', 'pipe'] });
       reachable = true;
     } catch (e) { /* exit 1: not an ancestor */ }
     if (!reachable)
-      reasons.push('pin composizione non raggiungibile da origin/master (commit orfano): ' +
+      reasons.push('pin composizione non raggiungibile da HEAD (commit orfano): ' +
         ex.composition.commit);
     if (resolvedTree !== ex.composition.tree)
       reasons.push(`albero del pin divergente dal dichiarato — dichiarato=${ex.composition.tree.slice(0, 12)}… risolto=${resolvedTree.slice(0, 12)}…`);
-    // INV-8: the cited module joins the freshness manifest — its blob at the
-    // pin must equal its blob at origin/master, so the same silent staleness
-    // that let the composition pin drift through #62 REDs from now on
-    try {
-      const pinnedBlob = gitShow(ex.composition.commit + ':' + ACCEPTED_COMPOSITION.module);
-      const masterBlob = gitShow('origin/master:' + ACCEPTED_COMPOSITION.module);
-      if (pinnedBlob !== masterBlob)
-        reasons.push('modulo composizione obsoleto al pin: pin=' + pinnedBlob + ' origin/master=' + masterBlob);
-    } catch (e) {
-      reasons.push('freshness del modulo composizione non verificabile: ' + e.message);
-    }
     if (ex.composition.commit !== ACCEPTED_COMPOSITION.commit ||
         ex.composition.tree !== ACCEPTED_COMPOSITION.tree)
       reasons.push('pin composizione ≠ composizione accettata');
-    // INV-8: the cited module joins the freshness manifest
+    // INV-8: the cited module joins the freshness manifest — its blob at the
+    // pin must equal its blob at HEAD, so the same silent staleness that let
+    // the composition pin drift through #62 REDs from now on
     try {
-      assertCompositionModuleFresh(ex.composition.commit, ACCEPTED_COMPOSITION.module);
+      assertCompositionModuleFresh(ex.composition.commit, ACCEPTED_COMPOSITION.module, lakeRepo);
     } catch (e) {
       reasons.push(e.message);
     }
@@ -1077,7 +1078,7 @@ function runGate(opts) {
 /* --- selftest: the mandatory negative axes, then production GREEN ---------- */
 
 /* a parentless commit of the accepted composition tree, referenced by
-   nothing: resolvable, tree-consistent, never an ancestor of origin/master */
+   nothing: resolvable, tree-consistent, never an ancestor of HEAD */
 let orphanMemo = null;
 function orphanPin() {
   if (orphanMemo) return orphanMemo;
@@ -1312,12 +1313,12 @@ async function selftest(work) {
       },
     },
     {
-      name: 'pin orfano risolvibile ma non raggiungibile da origin/master',
+      name: 'pin orfano risolvibile ma non raggiungibile da HEAD',
       // an orphan made here (git commit-tree of the accepted tree, no parent,
       // no ref): resolvable with a CONSISTENT declared tree in any checkout,
       // so only stable reachability can reject it — no commit that exists in
       // one clone and not another
-      expect: () => new RegExp('non raggiungibile da origin/master \\(commit orfano\\): ' +
+      expect: () => new RegExp('non raggiungibile da HEAD \\(commit orfano\\): ' +
         orphanPin().slice(0, 10)),
       run: () => {
         const p = join(work, 'sab-comp-orphan.html');
