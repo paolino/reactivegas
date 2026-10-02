@@ -625,12 +625,12 @@ try {
     const bypassPath = join(work, 'economics-simulator-core-f01-bypass.mjs');
     writeFileSync(bypassPath, source.replace(bypassNeedle,
       "      const det = { refused: 'rejected' };\n      if (det.refused === 'author-mismatch')"));
-    const unspentNeedle = '    if (pulled === null) return { ok: false, failed: [NOLIVE(target, verdict)] };\n';
+    const unspentNeedle = '  if (pulled === null) return { ok: false, failed: [NOLIVE(target, verdict)] };\n';
     if (source.split(unspentNeedle).length !== 2)
       throw new Error('selftest: il mutante pre-#76 non si applica esattamente una volta');
     const unspentPath = join(work, 'economics-simulator-core-unspent.mjs');
     writeFileSync(unspentPath, source.replace(unspentNeedle,
-      '    if (pulled === null) return effect(s);\n'));
+      '  if (pulled === null) return effect(s);\n'));
     code = selftest(work, await import(mutantPath), await import(bypassPath),
       await import(unspentPath));
   } else {

@@ -59,7 +59,9 @@
       "votes": {
        "openQuestions": [],
        "closed": []
-      }
+      },
+      "bindings": [],
+      "live": []
      }
     },
     "signer": "anna",
@@ -119,7 +121,9 @@
        "votes": {
         "openQuestions": [],
         "closed": []
-       }
+       },
+       "bindings": [],
+       "live": []
       }
      }
     }
@@ -164,7 +168,9 @@
       "votes": {
        "openQuestions": [],
        "closed": []
-      }
+      },
+      "bindings": [],
+      "live": []
      }
     },
     "signer": "anna",
@@ -225,7 +231,9 @@
        "votes": {
         "openQuestions": [],
         "closed": []
-       }
+       },
+       "bindings": [],
+       "live": []
       }
      }
     }
@@ -270,7 +278,9 @@
       "votes": {
        "openQuestions": [],
        "closed": []
-      }
+      },
+      "bindings": [],
+      "live": []
      }
     },
     "signer": "anna",
@@ -333,7 +343,9 @@
        "votes": {
         "openQuestions": [],
         "closed": []
-       }
+       },
+       "bindings": [],
+       "live": []
       }
      }
     }
@@ -388,7 +400,9 @@
       "votes": {
        "openQuestions": [],
        "closed": []
-      }
+      },
+      "bindings": [],
+      "live": []
      }
     },
     "signer": "bruno",
@@ -458,7 +472,9 @@
        "votes": {
         "openQuestions": [],
         "closed": []
-       }
+       },
+       "bindings": [],
+       "live": []
       }
      }
     }
@@ -521,15 +537,22 @@
       "votes": {
        "openQuestions": [],
        "closed": []
-      }
+      },
+      "bindings": [],
+      "live": []
      }
     },
     "signer": "anna",
     "event": {
      "app": {
-      "openQuestion": {
+      "openBound": {
        "questionId": "permesso:1",
-       "kind": "collective"
+       "kind": "collective",
+       "target": {
+        "permission": {
+         "c": 1
+        }
+       }
       }
      }
     },
@@ -602,7 +625,18 @@
          ]
         ],
         "closed": []
-       }
+       },
+       "bindings": [
+        [
+         "permesso:1",
+         {
+          "permission": {
+           "c": 1
+          }
+         }
+        ]
+       ],
+       "live": []
       }
      }
     }
@@ -675,7 +709,18 @@
         ]
        ],
        "closed": []
-      }
+      },
+      "bindings": [
+       [
+        "permesso:1",
+        {
+         "permission": {
+          "c": 1
+         }
+        }
+       ]
+      ],
+      "live": []
      }
     },
     "signer": "anna",
@@ -760,7 +805,19 @@
           "cause": "tally"
          }
         ]
-       }
+       },
+       "bindings": [],
+       "live": [
+        {
+         "questionId": "permesso:1",
+         "target": {
+          "permission": {
+           "c": 1
+          }
+         },
+         "verdict": "positive"
+        }
+       ]
       }
      }
     }
@@ -837,7 +894,19 @@
          "cause": "tally"
         }
        ]
-      }
+      },
+      "bindings": [],
+      "live": [
+       {
+        "questionId": "permesso:1",
+        "target": {
+         "permission": {
+          "c": 1
+         }
+        },
+        "verdict": "positive"
+       }
+      ]
      }
     },
     "signer": "anna",
@@ -921,7 +990,9 @@
           "cause": "tally"
          }
         ]
-       }
+       },
+       "bindings": [],
+       "live": []
       }
      }
     }
@@ -998,7 +1069,9 @@
          "cause": "tally"
         }
        ]
-      }
+      },
+      "bindings": [],
+      "live": []
      }
     },
     "signer": "anna",
@@ -1089,7 +1162,9 @@
           "cause": "tally"
          }
         ]
-       }
+       },
+       "bindings": [],
+       "live": []
       }
      }
     }
@@ -1171,7 +1246,9 @@
          "cause": "tally"
         }
        ]
-      }
+      },
+      "bindings": [],
+      "live": []
      }
     },
     "signer": "bruno",
@@ -1261,7 +1338,9 @@
           "cause": "tally"
          }
         ]
-       }
+       },
+       "bindings": [],
+       "live": []
       }
      }
     }
@@ -1343,7 +1422,9 @@
          "cause": "tally"
         }
        ]
-      }
+      },
+      "bindings": [],
+      "live": []
      }
     },
     "signer": "bruno",
@@ -1423,7 +1504,9 @@
           "cause": "tally"
          }
         ]
-       }
+       },
+       "bindings": [],
+       "live": []
       }
      }
     }
