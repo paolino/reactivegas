@@ -14,3 +14,4 @@
 ## Slice S3 — re-derivation on current master
 
 - [x] T309 Merge origin/master (2bd9a20: #81 V-5 lifecycle and S-12 refusals, #92 lake-root reach) and re-derive census, catalogue, ledger and renderings so R-1…R-15 hold on the merged tree
+- [ ] T310 Merge origin/master (48a2f95: #70 simulator, `TraceDriverV1`/`KelTraceDriverV1` Lean libraries, `just simulator` CI step) and re-derive the ledger so R-1…R-15 hold on the merged tree
