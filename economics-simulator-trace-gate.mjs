@@ -33,6 +33,10 @@
  *      closure of the opposite verdict for their collection and one of
  *      their verdict for another target are live) and judges each by the
  *      same replay;
+ *   8b. recognises, the same way, the #68 rows (ROWS68: above one admin a
+ *      proposal enters pending with no assent, the proposer's own approval is
+ *      refused, an enactment is reached by non-proposer approvals only) and
+ *      judges each at its own witness step;
  *   9. prints counts, the fresh sha, the row witnesses, and GREEN only after
  *      Lean regeneration equivalence, production-JS replay and every row
  *      succeed.
@@ -51,7 +55,9 @@
  * non-designee ballot accepted), each RED on its row, and one per #76 row
  * (binding dropped, nothing minted, closure not spent, deny reading the
  * positive verdict, unbound grant applied, bind of an open or a closed
- * question accepted), each RED on its row — every one but the spent-closure
+ * question accepted), each RED on its row, and one per #68 row (proposer
+ * counted at creation, proposer self-approval accepted, threshold counting
+ * the proposer), each RED on its row — every one but the spent-closure
  * rows at its own witness step, judged alone on Lean's recorded input — then
  * production GREEN.
  * Temporary artifacts live in a fresh mkdtemp directory; the repo stays clean.
@@ -361,6 +367,39 @@ const ROWS76_INTEGRATED = {
   },
 };
 
+/* #68 proposer is not an assent, recognised the same way in the fresh Lean
+   corpus by what the base step did, above one admin (the sole founder still
+   approves her own first proposal): a proposal enters pending with no
+   assent, the proposer's own approval is refused (single fault: an admin
+   signer, a pending proposal, no prior assent of the signer), and an
+   enactment is reached by approvals none of which is the proposer's. */
+const iAdmins = agg => agg.members.filter(([, m]) => m.roles.some(r => 'adminRole' in r)).length;
+const iPending = (agg, pid) => ((agg.pendingBase || []).find(([k]) => k === pid) || [])[1] || null;
+const iDigest = p => 'departure' in p ? 'depart:' + p.departure : 'roles:' + p.changeRoles.key;
+
+const ROWS68_INTEGRATED = {
+  'propose-no-assent': st => {
+    const ev = st.event.propose;
+    if (!ev || !iApplied(st) || iAdmins(st.input) < 2) return false;
+    const pend = iPending(st.result.aggregate, iDigest(ev.proposal));
+    return !!pend && pend.proposer === st.signer && pend.approvals.length === 0;
+  },
+  'refuse-proposer-self-approval': st => {
+    const ev = st.event.approve;
+    if (!ev || st.result.tag !== 'refused' || iAdmins(st.input) < 2 || !iIsResp(st.input, st.signer))
+      return false;
+    const pend = iPending(st.input, ev.proposalId);
+    return !!pend && pend.proposer === st.signer && !pend.approvals.includes(st.signer);
+  },
+  'enact-non-proposer': st => {
+    const ev = st.event.approve;
+    if (!ev || !iApplied(st) || !st.result.change || iAdmins(st.input) < 2) return false;
+    const pend = iPending(st.input, ev.proposalId);
+    return !!pend && !iPending(st.result.aggregate, ev.proposalId) &&
+      ![...pend.approvals, st.signer].includes(pend.proposer);
+  },
+};
+
 /* the witness step alone: the page's transition, applied to the input Lean
    recorded for it, must reach the recorded outcome — refused, or applied
    with exactly the recorded aggregate. A behaviour broken at that step is
@@ -500,9 +539,13 @@ function runGate(opts) {
   for (const r of rows76)
     if (!r.ok) reasons.push(`riga #76 ${r.row}${r.at ? ' @' + r.at : ''} ROSSA: ${r.why}`);
 
-  if (reasons.length) return { ok: false, reasons, rows81, rows76 };
+  const rows68 = judgeRows(ROWS68_INTEGRATED, fresh, prod.RG, { local: true });
+  for (const r of rows68)
+    if (!r.ok) reasons.push(`riga #68 ${r.row}${r.at ? ' @' + r.at : ''} ROSSA: ${r.why}`);
+
+  if (reasons.length) return { ok: false, reasons, rows81, rows76, rows68 };
   return { ok: true, envelopes: freshNames.length, embSteps, freshSteps,
-    freshSha, scriptSha: prod.scriptSha, rows81, rows76 };
+    freshSha, scriptSha: prod.scriptSha, rows81, rows76, rows68 };
 }
 
 /* --- selftest: three negative axes, then production GREEN ------------------ */
@@ -627,6 +670,21 @@ function selftest(work) {
     { name: 'redistribuzione spesa due volte (refuse-backdonate-spent)',
       expect: /riga #76 refuse-backdonate-spent /, make: mutant(SPEND, 'return effect(s);') },
   );
+  // #68: the page's base channel mutated, one behaviour at a time; each
+  // must turn its row RED at its own witness step
+  controls.push(
+    { name: 'la proposta entra con l’assenso del proponente (propose-no-assent)',
+      expect: /riga #68 propose-no-assent @[A-C]#\d+ ROSSA: il passo da solo/,
+      make: mutant('{ proposal: p, proposer: signer, approvals: [] }',
+        '{ proposal: p, proposer: signer, approvals: [signer] }') },
+    { name: 'il proponente approva la propria proposta (refuse-proposer-self-approval)',
+      expect: /riga #68 refuse-proposer-self-approval @[A-C]#\d+ ROSSA: il passo da solo/,
+      make: mutant("if (signer === pend.proposer && bgAdminCount(gs) > 1) return 'proposerSelfApproval';", '') },
+    { name: 'la soglia conta il proponente (enact-non-proposer)',
+      expect: /riga #68 enact-non-proposer @[A-C]#\d+ ROSSA: il passo da solo/,
+      make: mutant('if (pend.approvals.length >= bgMajority(gs)) {',
+        'if (pend.approvals.length + 1 >= bgMajority(gs)) {') },
+  );
   for (const c of controls) {
     const p = join(work, 'sab.html');
     let sab;
@@ -663,7 +721,8 @@ function report(r, prefix) {
     `replay di produzione: ${r.embSteps} passi sul corpus incorporato + ${r.freshSteps} sul corpus fresco ` +
     `(script eseguito, sha ${r.scriptSha.slice(0, 12)}…); ` +
     `righe #81: ${r.rows81.map(x => x.row + '@' + x.at).join(' ')}; ` +
-    `righe #76: ${r.rows76.map(x => x.row + '@' + x.at).join(' ')}`);
+    `righe #76: ${r.rows76.map(x => x.row + '@' + x.at).join(' ')}; ` +
+    `righe #68: ${r.rows68.map(x => x.row + '@' + x.at).join(' ')}`);
 }
 
 /* --- CLI ------------------------------------------------------------------- */
