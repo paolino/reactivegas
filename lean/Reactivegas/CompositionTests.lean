@@ -452,19 +452,37 @@ def checkR7_renouncedContinues : Bool :=
   | some gs => negativeContinues gs .renounced
   | none => false
 
+/-- Base-channel steps under the production fold's rule: a refused step leaves
+the aggregate as it was. A base change is enacted by whichever approval reaches
+the majority, so an approval scripted after it may find no pending proposal. -/
+def runBase : Option Root → List (KelGroups.Key × Ev) → Option Root
+  | none, _ => none
+  | some gs, [] => some gs
+  | some gs, (signer, e) :: rest =>
+      match rootAs acceptAuth gs signer e with
+      | .ok r => runBase (some r.state) rest
+      | .error _ => runBase (some gs) rest
+
+/-- Two non-proposer approvals among three responsabili: a majority whether or
+not the proposer's own signature counts as an approval. -/
 def checkR7_proposerDepartedContinues : Bool :=
-  match run founded3
-      [A (.openPurchase 1), (bob, .app (.openBound "q" .collective (.permission 1))),
-       (alice, .propose (.departure bob)), (dave, .approve (proposalDigest (.departure bob)))] with
+  match runBase
+      (run founded3
+        [A (.openPurchase 1), (bob, .app (.openBound "q" .collective (.permission 1)))])
+      [(alice, .propose (.departure bob)),
+       (dave, .approve (proposalDigest (.departure bob))),
+       (bob, .approve (proposalDigest (.departure bob)))] with
   | some gs => negativeContinues gs .proposerDeparted
   | none => false
 
 def checkR7_franchiseChangeContinues : Bool :=
-  match run founded3
-      [A (.openPurchase 1), A (.openBound "q" .collective (.permission 1)),
-       (bob, .app (.cast "q" .dissent)),
-       (alice, .propose (.changeRoles bob [])),
-       (dave, .approve (proposalDigest (.changeRoles bob [])))] with
+  match runBase
+      (run founded3
+        [A (.openPurchase 1), A (.openBound "q" .collective (.permission 1)),
+         (bob, .app (.cast "q" .dissent))])
+      [(alice, .propose (.changeRoles bob [])),
+       (dave, .approve (proposalDigest (.changeRoles bob []))),
+       (bob, .approve (proposalDigest (.changeRoles bob [])))] with
   | some gs => negativeContinues gs .franchiseChange
   | none => false
 
