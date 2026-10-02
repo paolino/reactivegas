@@ -25,9 +25,11 @@
  *      does not reach, is RED;
  *   8. recognises, the same way, every #76 row of closure-derived economic
  *      authorization (ROWS76: a bound opening, a minted authorization, a
- *      grant and a deny each spending one, and the refused unbound grant,
- *      spent closure, bind by a non-proposer, bind after a ballot and bind
- *      of a closed question) and judges each by the same replay;
+ *      grant, a deny and a voted backdonation each spending one, and the
+ *      refused unbound grant, spent closure, bind by a non-proposer, bind
+ *      after a ballot, bind of a closed question, and backdonations with no
+ *      closure, a negative closure, a closure bound to another share and a
+ *      spent closure) and judges each by the same replay;
  *   9. prints counts, the fresh sha, the row witnesses, and GREEN only after
  *      Lean regeneration equivalence, production-JS replay and every row
  *      succeed.
@@ -213,6 +215,8 @@ const iBindings = agg => iPay(agg).bindings || [];
 const iLive = agg => iPay(agg).live || [];
 const iCol = (agg, c) => iPay(agg).collections.find(x => x.id === c) || null;
 const permT = c => ({ permission: { c } });
+const backT = w => ({ backdonation: { w } });
+const comuneOf = agg => (iPay(agg).conti.find(([k]) => k === 'comune') || [null, 0])[1];
 const liveCount = (agg, target, verdict) =>
   iLive(agg).filter(a => ijson(a.target) === ijson(target) && a.verdict === verdict).length;
 const targetValid = (agg, t) => 'permission' in t ? !!iCol(agg, t.permission.c) : t.backdonation.w > 0;
@@ -225,6 +229,18 @@ function iBindRefused(st) {
     return null;
   return { ev, q: iOpen(iVotes(st.input), ev.questionId),
     closed: iVotes(st.input).closed.some(r => r.questionId === ev.questionId) };
+}
+const earlierBackdonate = (steps, i, w) => steps.slice(0, i).some(p => iApplied(p) &&
+  (iApp(p, 'backdonate') || {}).w === w);
+/* a refused backdonate whose economic guards all hold — responsabile signer,
+   positive share, a comune covering every member — and no positive closure
+   bound to its share is live */
+function iBackdonateRefused(st) {
+  const ev = iApp(st, 'backdonate');
+  if (!ev || !iAppRefused(st) || !iIsResp(st.input, st.signer) || !(ev.w > 0) ||
+      comuneOf(st.input) < st.input.members.length * ev.w ||
+      liveCount(st.input, backT(ev.w), 'positive') !== 0) return null;
+  return ev;
 }
 function iGrantRefused(st) {
   const ev = iApp(st, 'grantPermission');
@@ -262,6 +278,12 @@ const ROWS76_INTEGRATED = {
       liveCount(st.input, permT(ev.c), 'negative') === 1 &&
       liveCount(st.result.aggregate, permT(ev.c), 'negative') === 0;
   },
+  'spend-backdonate': st => {
+    const ev = iApp(st, 'backdonate');
+    return !!ev && iApplied(st) && liveCount(st.input, backT(ev.w), 'positive') ===
+      liveCount(st.result.aggregate, backT(ev.w), 'positive') + 1 &&
+      comuneOf(st.input) - comuneOf(st.result.aggregate) === st.input.members.length * ev.w;
+  },
   'refuse-unbound': (st, i, steps) => {
     const ev = iGrantRefused(st);
     return !!ev && !earlierGrant(steps, i, ev.c) &&
@@ -283,6 +305,24 @@ const ROWS76_INTEGRATED = {
   'refuse-bind-closed': st => {
     const r = iBindRefused(st);
     return !!r && !r.q && r.closed;
+  },
+  'refuse-backdonate-unclosed': (st, i, steps) => {
+    const ev = iBackdonateRefused(st);
+    return !!ev && !earlierBackdonate(steps, i, ev.w) &&
+      !iLive(st.input).some(a => ijson(a.target) === ijson(backT(ev.w)));
+  },
+  'refuse-backdonate-negative': st => {
+    const ev = iBackdonateRefused(st);
+    return !!ev && liveCount(st.input, backT(ev.w), 'negative') > 0;
+  },
+  'refuse-backdonate-other-w': st => {
+    const ev = iBackdonateRefused(st);
+    return !!ev && iLive(st.input).some(a => 'backdonation' in a.target &&
+      a.target.backdonation.w !== ev.w && a.verdict === 'positive');
+  },
+  'refuse-backdonate-spent': (st, i, steps) => {
+    const ev = iBackdonateRefused(st);
+    return !!ev && earlierBackdonate(steps, i, ev.w);
   },
 };
 
@@ -483,6 +523,9 @@ function selftest(work) {
   const BIND = '{ ...s, bindings: [[questionId, target], ...s.bindings] }';
   const SPEND = 'return effect({ ...s, live: pulled[1] });';
   const NOAUTH = 'if (pulled === null) return { ok: false, failed: [NOLIVE(target, verdict)] };';
+  const BACKDONATE = "return spendThen(backT(args.w), 'positive', s, s1 => attempt(view, s1, { tag, author: signer, ...args }));";
+  const TOY_ONLY = 'return attempt(view, s, { tag, author: signer, ...args });';
+  const PULL_MATCH = 'sameTarget(a.target, target) && a.verdict === verdict';
   controls.push(
     { name: 'openBound non lega il bersaglio (bind)', expect: /riga #76 bind /,
       make: mutant(BIND, 's') },
@@ -503,6 +546,18 @@ function selftest(work) {
       make: mutant('vtLookup(qid, s.votes.openQuestions) === null', 'true') },
     { name: 'legame di una domanda chiusa (refuse-bind-closed)', expect: /riga #76 refuse-bind-closed /,
       make: mutant('!s.votes.closed.some(r => r.questionId === qid)', 'true') },
+    { name: 'redistribuzione sul solo TOY_AUTH (spend-backdonate)', expect: /riga #76 spend-backdonate /,
+      make: mutant(BACKDONATE, TOY_ONLY) },
+    { name: 'redistribuzione senza chiusura (refuse-backdonate-unclosed)',
+      expect: /riga #76 refuse-backdonate-unclosed /, make: mutant(BACKDONATE, TOY_ONLY) },
+    { name: 'redistribuzione su chiusura negativa (refuse-backdonate-negative)',
+      expect: /riga #76 refuse-backdonate-negative /,
+      make: mutant(PULL_MATCH, 'sameTarget(a.target, target)') },
+    { name: 'redistribuzione di un’altra quota (refuse-backdonate-other-w)',
+      expect: /riga #76 refuse-backdonate-other-w /,
+      make: mutant(PULL_MATCH, "('backdonation' in a.target) === ('backdonation' in target) && a.verdict === verdict") },
+    { name: 'redistribuzione spesa due volte (refuse-backdonate-spent)',
+      expect: /riga #76 refuse-backdonate-spent /, make: mutant(SPEND, 'return effect(s);') },
   );
   for (const c of controls) {
     const p = join(work, 'sab.html');

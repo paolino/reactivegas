@@ -113,6 +113,12 @@ def aggJson (gs : GroupState State) : Json :=
             ("approvals", toJson e.2.approvals)]]).toArray)
     , ("payload", toJson gs.appFold) ]
 
+/-- The page's backdonation veto (`TOY_AUTH` in economics-simulator-core.mjs):
+it refuses nothing. It supplies no provenance either — the production root
+applies a backdonate only by spending a positive closure bound to its exact
+share `w` — so the corpus and the page agree on every backdonate. -/
+def toyAuth : BackdonateAuth := fun _ _ => true
+
 /-- One seeded signed integrated event. -/
 abbrev Seed := Key × KelGroups.IntegratedEvent Proposal AppEvent
 
@@ -125,7 +131,7 @@ def runSeeds? (gs : GroupState State) (i : Nat) (seeds : List Seed) :
   | [] => .ok []
   | (signer, ev) :: rest =>
       match Reactivegas.apply KelGroups.Vote.legacyThreshold
-          Reactivegas.probeAuth gs signer ev with
+          toyAuth gs signer ev with
       | .ok res =>
           match runSeeds? res.state (i + 1) rest with
           | .ok tail =>
@@ -203,7 +209,7 @@ def runChecked? (gs : GroupState State) (i : Nat) (seeds : List CheckedSeed) :
   | [] => .ok []
   | (signer, ev, expectApplied) :: rest =>
       match Reactivegas.apply KelGroups.Vote.legacyThreshold
-          Reactivegas.probeAuth gs signer ev with
+          toyAuth gs signer ev with
       | .ok res =>
           if !expectApplied then
             .error s!"passo {i} ({signer}): applicato dove era atteso un rifiuto"
@@ -243,14 +249,20 @@ closure of a question bound to its target in this history: `anna` opens
 (`openBound`, the signer is the proposer, the target is fixed before any
 ballot); the positive closure of the first mints the authorization
 `grantPermission 7` spends, the negative closure of the second the one
-`denyPermission 8` spends, refunding every pledge of 8.
+`denyPermission 8` spends, refunding every pledge of 8. After a donation funds
+the comune, `anna` opens `q:quota:5` bound to the per-member share 5: its
+positive closure pays 5 to each member through the one `backdonate 5` it
+authorizes.
 
 Refused, each leaving the aggregate unchanged: `bruno`'s bind of `anna`'s open
 `q:permesso:7` (a non-proposer bind); `anna`'s bind of the closed
 `q:permesso:7` again (a bind after its ballot, which cannot revive the id);
 the second `grantPermission 7` (the closure is spent, though the permission
-is still economically grantable); and `grantPermission 9` after the
-unbound `q:permesso:9` closed positive (a label is not a binding). Then
+is still economically grantable); `backdonate 5` while `q:quota:5` is still
+open, `backdonate 7` against the closure bound to 5, the second
+`backdonate 5`, and `backdonate 3` after `q:quota:3` closed negative (each
+affordable from the comune); and `grantPermission 9` after the unbound
+`q:permesso:9` closed positive (a label is not a binding). Then
 `bruno` loses the admin role: his open collection 9 is wound up. -/
 def traceB : List CheckedSeed := [
   ("anna", admit "bruno", true),
@@ -276,6 +288,16 @@ def traceB : List CheckedSeed := [
   ("anna", appE (.openBound "q:permesso:8" .collective (.permission 8)), true),
   ("bruno", appE (.cast "q:permesso:8" .dissent), true),
   ("anna", appE (.denyPermission 8), true),
+  ("anna", appE (.donate 40), true),
+  ("anna", appE (.openBound "q:quota:5" .collective (.backdonation 5)), true),
+  ("anna", appE (.backdonate 5), false),
+  ("bruno", appE (.cast "q:quota:5" .assent), true),
+  ("anna", appE (.backdonate 7), false),
+  ("anna", appE (.backdonate 5), true),
+  ("anna", appE (.backdonate 5), false),
+  ("anna", appE (.openBound "q:quota:3" .collective (.backdonation 3)), true),
+  ("bruno", appE (.cast "q:quota:3" .dissent), true),
+  ("anna", appE (.backdonate 3), false),
   ("bruno", appE (.openPurchase 9), true),
   ("anna", appE (.pledge "bruno" 9 10), true),
   ("anna", appE (.openQuestion "q:permesso:9" .collective), true),
