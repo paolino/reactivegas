@@ -435,15 +435,23 @@ function voteWitness(mod, tag) {
 }
 
 /* #76: the app-decided constructors spend one closure-derived authorization
-   naming their exact target under the verdict they need. Their witness state
-   holds that authorization — a component witness, the connected journey that
-   mints it is the Lean trace corpus — and the same state without it must be
-   refused. */
+   naming their exact target under the verdict they need. Their witness first
+   mints it through the integrated root — anna opens a question bound to the
+   target, bruno's ballot closes it (two responsabili, θ = 1) — and the same
+   event on the state without that closure must be refused. */
 const APP_DECIDED_AUTH = {
   grantPermission: a => ({ target: { permission: { c: a.c } }, verdict: 'positive' }),
   denyPermission: a => ({ target: { permission: { c: a.c } }, verdict: 'negative' }),
   backdonate: a => ({ target: { backdonation: { w: a.w } }, verdict: 'positive' }),
 };
+function mintedFor(mod, gs, { target, verdict }) {
+  const open = mod.applyIntegrated(clone(gs), 'anna',
+    { app: { openBound: { questionId: 'q:auth', kind: 'collective', target } } });
+  if (!open || open.refused) return null;
+  const shut = mod.applyIntegrated(open.gs, 'bruno', { app: { cast: { questionId: 'q:auth',
+    ballot: verdict === 'positive' ? 'assent' : 'dissent' } } });
+  return shut && !shut.refused ? shut.gs : null;
+}
 
 /* an economic AppEvent through the integrated app route lands exactly where
    the legacy transition `attempt` lands on the same signed event (an
@@ -459,19 +467,20 @@ function economicAppWitness(mod, tag) {
   if (!w) return null;
   const [view, state, event] = w;
   const { tag: _t, author, ...args } = event;
-  const gsOf = appFold => ({ members: view.members, pendingBase: [], appFold });
-  const auth = APP_DECIDED_AUTH[tag]
-    ? { questionId: 'q:auth', ...APP_DECIDED_AUTH[tag](args) } : null;
-  return { gs: gsOf(auth ? { ...clone(state), bindings: [], live: [auth] } : clone(state)),
-    signer: author, ev: { app: { [tag]: args } },
+  const plain = { members: view.members, pendingBase: [],
+    appFold: { ...clone(state), bindings: [], live: [] } };
+  const auth = APP_DECIDED_AUTH[tag] ? APP_DECIDED_AUTH[tag](args) : null;
+  const gs = auth ? mintedFor(mod, plain, auth) : plain;
+  if (!gs) return null;
+  return { gs, signer: author, ev: { app: { [tag]: args } },
     holds: det => {
       const direct = mod.attempt(view, clone(state), event);
       return !!direct && direct.ok === true &&
         mod.canonState(det.gs.appFold) === mod.canonState(direct.state) &&
-        (!auth || (det.gs.appFold.live || []).length === 0);
+        (!auth || !(det.gs.appFold.live || []).some(a =>
+          JSON.stringify(a.target) === JSON.stringify(auth.target)));
     },
-    without: auth ? { gs: gsOf({ ...clone(state), bindings: [], live: [] }), signer: author,
-      ev: { app: { [tag]: args } } } : null };
+    without: auth ? { gs: plain, signer: author, ev: { app: { [tag]: args } } } : null };
 }
 
 function baseWitness(mod, tag) {
@@ -641,17 +650,29 @@ async function checkMachineCoverage(corePath, repo = REPO) {
       reasons.push('donate: changed a member conto');
     if (common.length !== 1 || common[0][0] !== COMUNE || common[0][1] !== 90)
       reasons.push('donate: no unique reserved non-member comune conto at +90');
+    // #76: a backdonate pays only by spending the positive closure bound to
+    // its share, minted through the integrated root from the funded comune;
+    // the same backdonate with no such closure is refused
     try {
-      const back = mod.attempt(coverageView(), clone(after), { tag: 'backdonate', author: 'anna', w: 10 });
-      if (!back || back.ok !== true) reasons.push('backdonate: live witness refused');
+      const funded = { members: coverageView().members, pendingBase: [],
+        appFold: { ...clone(after), bindings: [], live: [] } };
+      const unclosed = mod.applyIntegrated(clone(funded), 'anna', { app: { backdonate: { w: 10 } } });
+      if (!unclosed || !unclosed.refused)
+        reasons.push('backdonate: applied with no closure bound to its share');
+      const minted = mintedFor(mod, funded, APP_DECIDED_AUTH.backdonate({ w: 10 }));
+      const back = minted && mod.applyIntegrated(clone(minted), 'anna', { app: { backdonate: { w: 10 } } });
+      if (!back || back.refused) reasons.push('backdonate: live witness refused');
       else {
+        const pre = minted.appFold, post = back.gs.appFold;
         for (const u of memberKeys0)
-          if (balOf(back.state.conti, u) - balOf(after.conti, u) !== 10)
+          if (balOf(post.conti, u) - balOf(pre.conti, u) !== 10)
             reasons.push(`backdonate: member ${u} did not receive exactly +10`);
-        if (balOf(back.state.conti, COMUNE) - balOf(after.conti, COMUNE) !== -30)
+        if (balOf(post.conti, COMUNE) - balOf(pre.conti, COMUNE) !== -30)
           reasons.push('backdonate: comune delta is not -(member-count * share)');
-        if (JSON.stringify(back.state.casse) !== JSON.stringify(after.casse))
+        if (JSON.stringify(post.casse) !== JSON.stringify(pre.casse))
           reasons.push('backdonate: changed casse');
+        if ((post.live || []).some(a => 'backdonation' in a.target))
+          reasons.push('backdonate: its closure was not spent');
       }
     } catch (e) { reasons.push(`backdonate: live witness threw: ${e.message}`); }
   } else if (donated && donated.ok !== true) {

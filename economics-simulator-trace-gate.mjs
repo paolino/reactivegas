@@ -27,9 +27,12 @@
  *      authorization (ROWS76: a bound opening, a minted authorization, a
  *      grant, a deny and a voted backdonation each spending one, and the
  *      refused unbound grant, spent closure, bind by a non-proposer, bind
- *      after a ballot, bind of a closed question, and backdonations with no
+ *      after a ballot, bind of a closed question, backdonations with no
  *      closure, a negative closure, a closure bound to another share and a
- *      spent closure) and judges each by the same replay;
+ *      spent closure, and a grant and a deny each refused while only a
+ *      closure of the opposite verdict for their collection and one of
+ *      their verdict for another target are live) and judges each by the
+ *      same replay;
  *   9. prints counts, the fresh sha, the row witnesses, and GREEN only after
  *      Lean regeneration equivalence, production-JS replay and every row
  *      succeed.
@@ -242,6 +245,15 @@ function iBackdonateRefused(st) {
       liveCount(st.input, backT(ev.w), 'positive') !== 0) return null;
   return ev;
 }
+function iDenyRefused(st) {
+  const ev = iApp(st, 'denyPermission');
+  if (!ev || !iAppRefused(st) || !iCol(st.input, ev.c) || !iIsResp(st.input, st.signer) ||
+      liveCount(st.input, permT(ev.c), 'negative') !== 0) return null;
+  return ev;
+}
+/* a live closure under `verdict` for a target other than `target` */
+const liveElsewhere = (agg, target, verdict) =>
+  iLive(agg).some(a => a.verdict === verdict && ijson(a.target) !== ijson(target));
 function iGrantRefused(st) {
   const ev = iApp(st, 'grantPermission');
   if (!ev || !iAppRefused(st) || !iCol(st.input, ev.c) || !iIsResp(st.input, st.signer) ||
@@ -292,6 +304,22 @@ const ROWS76_INTEGRATED = {
   'refuse-spent': (st, i, steps) => {
     const ev = iGrantRefused(st);
     return !!ev && earlierGrant(steps, i, ev.c);
+  },
+  'refuse-grant-opposite': st => {
+    const ev = iGrantRefused(st);
+    return !!ev && liveCount(st.input, permT(ev.c), 'negative') > 0;
+  },
+  'refuse-grant-other-target': st => {
+    const ev = iGrantRefused(st);
+    return !!ev && liveElsewhere(st.input, permT(ev.c), 'positive');
+  },
+  'refuse-deny-opposite': st => {
+    const ev = iDenyRefused(st);
+    return !!ev && liveCount(st.input, permT(ev.c), 'positive') > 0;
+  },
+  'refuse-deny-other-target': st => {
+    const ev = iDenyRefused(st);
+    return !!ev && liveElsewhere(st.input, permT(ev.c), 'negative');
   },
   'refuse-bind-other': st => {
     const r = iBindRefused(st);
@@ -526,6 +554,8 @@ function selftest(work) {
   const BACKDONATE = "return spendThen(backT(args.w), 'positive', s, s1 => attempt(view, s1, { tag, author: signer, ...args }));";
   const TOY_ONLY = 'return attempt(view, s, { tag, author: signer, ...args });';
   const PULL_MATCH = 'sameTarget(a.target, target) && a.verdict === verdict';
+  const TARGET_BLIND = 'a.verdict === verdict';
+  const VERDICT_BLIND = 'sameTarget(a.target, target)';
   controls.push(
     { name: 'openBound non lega il bersaglio (bind)', expect: /riga #76 bind /,
       make: mutant(BIND, 's') },
@@ -550,12 +580,18 @@ function selftest(work) {
       make: mutant(BACKDONATE, TOY_ONLY) },
     { name: 'redistribuzione senza chiusura (refuse-backdonate-unclosed)',
       expect: /riga #76 refuse-backdonate-unclosed /, make: mutant(BACKDONATE, TOY_ONLY) },
-    { name: 'redistribuzione su chiusura negativa (refuse-backdonate-negative)',
-      expect: /riga #76 refuse-backdonate-negative /,
-      make: mutant(PULL_MATCH, 'sameTarget(a.target, target)') },
-    { name: 'redistribuzione di un’altra quota (refuse-backdonate-other-w)',
-      expect: /riga #76 refuse-backdonate-other-w /,
-      make: mutant(PULL_MATCH, "('backdonation' in a.target) === ('backdonation' in target) && a.verdict === verdict") },
+    { name: 'spesa cieca al verdetto: redistribuzione (refuse-backdonate-negative)',
+      expect: /riga #76 refuse-backdonate-negative /, make: mutant(PULL_MATCH, VERDICT_BLIND) },
+    { name: 'spesa cieca al bersaglio: redistribuzione (refuse-backdonate-other-w)',
+      expect: /riga #76 refuse-backdonate-other-w /, make: mutant(PULL_MATCH, TARGET_BLIND) },
+    { name: 'spesa cieca al verdetto: permesso (refuse-grant-opposite)',
+      expect: /riga #76 refuse-grant-opposite /, make: mutant(PULL_MATCH, VERDICT_BLIND) },
+    { name: 'spesa cieca al bersaglio: permesso (refuse-grant-other-target)',
+      expect: /riga #76 refuse-grant-other-target /, make: mutant(PULL_MATCH, TARGET_BLIND) },
+    { name: 'spesa cieca al verdetto: diniego (refuse-deny-opposite)',
+      expect: /riga #76 refuse-deny-opposite /, make: mutant(PULL_MATCH, VERDICT_BLIND) },
+    { name: 'spesa cieca al bersaglio: diniego (refuse-deny-other-target)',
+      expect: /riga #76 refuse-deny-other-target /, make: mutant(PULL_MATCH, TARGET_BLIND) },
     { name: 'redistribuzione spesa due volte (refuse-backdonate-spent)',
       expect: /riga #76 refuse-backdonate-spent /, make: mutant(SPEND, 'return effect(s);') },
   );

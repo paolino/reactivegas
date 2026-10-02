@@ -262,8 +262,12 @@ is still economically grantable); `backdonate 5` while `q:quota:5` is still
 open, `backdonate 7` against the closure bound to 5, the second
 `backdonate 5`, and `backdonate 3` after `q:quota:3` closed negative (each
 affordable from the comune); and `grantPermission 9` after the unbound
-`q:permesso:9` closed positive (a label is not a binding). Then
-`bruno` loses the admin role: his open collection 9 is wound up. -/
+`q:permesso:9` closed positive (a label is not a binding). With a negative
+closure bound to 9 and a positive one bound to 10 both live, `grantPermission
+9` and `denyPermission 10` are refused — each closure authorizes its own
+target under its own verdict only — and then `grantPermission 10` and
+`denyPermission 9` spend them. Then `bruno` loses the admin role: his open
+collection 10 is wound up. -/
 def traceB : List CheckedSeed := [
   ("anna", admit "bruno", true),
   ("anna", elect "bruno", true),
@@ -303,6 +307,15 @@ def traceB : List CheckedSeed := [
   ("anna", appE (.openQuestion "q:permesso:9" .collective), true),
   ("anna", appE (.cast "q:permesso:9" .assent), true),
   ("anna", appE (.grantPermission 9), false),
+  ("bruno", appE (.openPurchase 10), true),
+  ("anna", appE (.openBound "q:negato:9" .collective (.permission 9)), true),
+  ("bruno", appE (.cast "q:negato:9" .dissent), true),
+  ("anna", appE (.openBound "q:permesso:10" .collective (.permission 10)), true),
+  ("anna", appE (.cast "q:permesso:10" .assent), true),
+  ("anna", appE (.grantPermission 9), false),
+  ("anna", appE (.denyPermission 10), false),
+  ("anna", appE (.grantPermission 10), true),
+  ("anna", appE (.denyPermission 9), true),
   ("anna", propose (.changeRoles "bruno" socioRoles), true)
 ]
 

@@ -35,9 +35,12 @@
  *                                          cassa +v and unique reserved
  *                                          non-member comune +v; member
  *                                          conti unchanged
- *        comune-backdonation               live backdonate witness after a
- *                                          funded comune: every member +w,
- *                                          comune −n*w, casse unchanged
+ *        comune-backdonation               through the integrated root from
+ *                                          a funded comune: refused with no
+ *                                          closure bound to w; after a bound
+ *                                          positive closure every member +w,
+ *                                          comune −n*w, casse unchanged,
+ *                                          closure spent
  *        backdonate without closed-app     verifyGovernedIntegrated refuses a
  *        evidence                          backdonate step with empty vote
  *                                          evidence (honest NON PROVATO
@@ -165,33 +168,51 @@ function assertComuneDonation(mod) {
   return 'donate +90 su cassa autore e conto comune riservato, conti membri invariati';
 }
 
+/* #76: a backdonation pays only by spending the positive closure of a
+   question bound to its share. Driven through the integrated root from a
+   funded comune — never the economic step on TOY_AUTH alone: the same
+   backdonate with no such closure must be refused, and with it, it pays. */
 function assertComuneBackdonation(mod) {
   const view = donationView();
   const memberKeys = view.members.map(([k]) => k);
-  const funded = (() => {
-    let setup;
-    try { setup = mod.attempt(view, clone(donationBase()), { tag: 'donate', author: 'anna', v: 90 }); }
-    catch (e) { throw new Error(`backdonate: donate setup threw: ${e.message}`); }
-    if (!setup || setup.ok !== true) throw new Error('backdonate: donate setup refused');
-    return setup.state;
-  })();
-  let r;
-  try { r = mod.attempt(view, clone(funded), { tag: 'backdonate', author: 'anna', w: 10 }); }
-  catch (e) { throw new Error(`backdonate: ${e.message}`); }
-  if (!r || r.ok !== true) throw new Error('backdonate: live witness refused');
-  const common = funded.conti.filter(([k]) => !memberKeys.includes(k));
+  const run = (gs, signer, ae, what) => {
+    let det;
+    try { det = mod.applyIntegrated(clone(gs), signer, { app: ae }); }
+    catch (e) { throw new Error(`backdonate: ${what} threw: ${e.message}`); }
+    if (!det) throw new Error(`backdonate: ${what} returned nothing`);
+    return det;
+  };
+  const start = { members: view.members, pendingBase: [],
+    appFold: { ...mod.emptyState(), ...donationBase() } };
+  const funded = run(start, 'anna', { donate: { v: 90 } }, 'donate setup');
+  if (funded.refused) throw new Error('backdonate: donate setup refused');
+  if (!run(funded.gs, 'anna', { backdonate: { w: 10 } }, 'backdonate without closure').refused)
+    throw new Error('backdonate: applied with no closure bound to its share (TOY_AUTH alone)');
+  const target = { backdonation: { w: 10 } };
+  const bound = run(funded.gs, 'anna',
+    { openBound: { questionId: 'q:quota', kind: 'collective', target } }, 'openBound');
+  if (bound.refused) throw new Error('backdonate: bound question refused');
+  const closed = run(bound.gs, 'bruno', { cast: { questionId: 'q:quota', ballot: 'assent' } }, 'cast');
+  if (closed.refused) throw new Error('backdonate: closing ballot refused');
+  const r = run(closed.gs, 'anna', { backdonate: { w: 10 } }, 'backdonate');
+  if (r.refused) throw new Error('backdonate: refused with its positive bound closure live');
+  const before = closed.gs.appFold, after = r.gs.appFold;
+  const common = before.conti.filter(([k]) => !memberKeys.includes(k));
   if (common.length !== 1)
     throw new Error('backdonate: funded comune is not a unique non-member conto');
   for (const u of memberKeys)
-    if (balOf(r.state.conti, u) - balOf(funded.conti, u) !== 10)
+    if (balOf(after.conti, u) - balOf(before.conti, u) !== 10)
       throw new Error(`backdonate: member ${u} did not receive exactly +10`);
-  if (balOf(r.state.conti, common[0][0]) - balOf(funded.conti, common[0][0]) !== -30)
+  if (balOf(after.conti, common[0][0]) - balOf(before.conti, common[0][0]) !== -30)
     throw new Error('backdonate: comune delta is not -(member-count * share)');
-  if (JSON.stringify(r.state.casse) !== JSON.stringify(funded.casse))
+  if (JSON.stringify(after.casse) !== JSON.stringify(before.casse))
     throw new Error('backdonate: changed casse');
-  if (JSON.stringify(r.state.collections) !== JSON.stringify(funded.collections))
+  if (JSON.stringify(after.collections) !== JSON.stringify(before.collections))
     throw new Error('backdonate: changed collections');
-  return 'backdonate +10 a ogni membro, comune −30, casse invariate';
+  if ((after.live || []).some(a => 'backdonation' in a.target))
+    throw new Error('backdonate: its closure was not spent');
+  return 'backdonate +10 a ogni membro, comune −30, casse invariate, spendendo la chiusura ' +
+    'legata alla quota (senza: rifiutato)';
 }
 
 function assertBackdonateGovernanceBoundary(mod) {
@@ -539,6 +560,14 @@ function selftest(work, mutantCore, bypassCore, unspentCore) {
       expect: /F-01 modulo: replay di un passo rifiutato con autore incorporato ≠ firmatario accettato/,
       run: () => {
         try { assertCallerIdentity(bypassCore, 'modulo'); return { ok: true, reasons: [] }; }
+        catch (e) { return { ok: false, reasons: [e.message] }; }
+      },
+    },
+    {
+      name: 'redistribuzione applicata sul solo TOY_AUTH (core senza la spesa)',
+      expect: /backdonate: applied with no closure bound to its share/,
+      run: () => {
+        try { assertComuneBackdonation(unspentCore); return { ok: true, reasons: [] }; }
         catch (e) { return { ok: false, reasons: [e.message] }; }
       },
     },
