@@ -1,4 +1,5 @@
 import Reactivegas.Trace
+import KelGroups.Mirrors
 
 /-!
 # Corpus exporter (`reactivegas#74`, slice S74)
@@ -7,7 +8,8 @@ The additive Lean end of the frozen corpus oracle: a `lean_exe` entry point
 that calls the two existing corpus definitions and writes both wrapper files.
 
 Dependency direction is one-way, mirroring the `Trace.lean` header rule: this
-module imports `Reactivegas.Trace` (hence `Invariants`, hence the machine),
+module imports `Reactivegas.Trace` (hence `Invariants`, hence the machine) and
+`KelGroups.Mirrors` (to decide the integrated seed well formed),
 and no existing module imports it back.
 
 Call, do not restate: the wrappers reference `seedCorpus` and
@@ -78,6 +80,15 @@ def intWrapperJson : Lean.Json :=
     [ ("initial", Lean.toJson Reactivegas.corpusInitial)
     , ("auth", Lean.Json.str intAuthIdentity)
     , ("steps", Lean.toJson Reactivegas.emitIntegratedCorpus) ]
+
+/- The frozen integrated corpus starts from a state the current base-channel
+regime can reach: well formed at its admin count (no proposer among the
+approvals above one admin) and free of proposer credit at any count, in both
+pending stores. The economic traces start from `State.empty`, which carries no
+group state. Evaluated on the very value `intWrapperJson` exports. -/
+#guard KelGroups.wellFormedB Reactivegas.corpusInitial
+  && KelGroups.strongCoherentB Reactivegas.corpusInitial
+  && KelGroups.strongBaseCoherentB Reactivegas.corpusInitial
 
 /-- Repair 1 core: bind one file array to its live value, element for
 element. The extent is derived from the data: zero elements fail, and

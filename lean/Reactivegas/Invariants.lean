@@ -1853,7 +1853,7 @@ def corpusInitial : KelGroups.GroupState State :=
       [("hist-p",
         { proposal := KelGroups.Proposal.removeMember "ghost"
           proposer := "alice"
-          approvals := ["alice"] })] }
+          approvals := ["dora"] })] }
 
 def corpusEvents :
     List (KelGroups.Key × KelGroups.IntegratedEvent Proposal AppEvent) :=
