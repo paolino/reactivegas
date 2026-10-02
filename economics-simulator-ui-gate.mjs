@@ -363,11 +363,14 @@ async function run() {
     t(labels['01'] === '01' && labels['zoë'] === 'Zoë',
       `etichette non preservate: ${JSON.stringify(labels)}`);
 
-    /* ---- elect 01 and 07 through real target/author chips ---- */
-    for (const who of ['01', '07']) {
+    /* ---- elect 01 and 07 through real target/author chips ----
+       proposing is not assenting: anna's proposal is enacted by a separate
+       approval — her own while she is the sole admin, 01's afterwards */
+    for (const [who, approver] of [['01', 'anna'], ['07', '01']]) {
       await click('#gtasks [data-task="elect"]');
       await click(`#pop .chip[data-id="${who}"]`);
       await click('#pop .chip[data-id="anna"]');
+      await click(`[data-bgapprove][data-bgsigner="${approver}"]`);
       const m = await snap();
       t(m.admins.includes(who), `K-3: elezione di ${who} non applicata (${JSON.stringify(m.admins)})`);
       witness('K-3', `chip bersaglio+autore per elezione ${who}`);
@@ -493,9 +496,13 @@ async function run() {
     t(apprBtn, 'K-10: pulsante di assenso per 01 assente (soglia? franchise?)');
     await click('[data-bgapprove][data-bgsigner="01"]');
     m = await snap();
+    t(m.members.includes('zoë') && m.pendingBase.length === 1,
+      `K-10: un solo assenso ha deliberato l'uscita a tre admin (${JSON.stringify(m.members)})`);
+    await click('[data-bgapprove][data-bgsigner="07"]');
+    m = await snap();
     t(!m.members.includes('zoë') && m.pendingBase.length === 0,
       `K-10: assenso di 01 non ha deliberato l'uscita (${JSON.stringify(m.members)})`);
-    witness('K-10', 'data-bgapprove signer 01 stringa -> uscita deliberata');
+    witness('K-10', 'data-bgapprove signer 01 stringa (poi 07) -> uscita deliberata');
 
     /* ---- K-4 + K-11: vote question + string-signer casts ---- */
     await click('[data-key="pile:1"]');

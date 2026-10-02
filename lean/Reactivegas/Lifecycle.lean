@@ -250,9 +250,10 @@ the sweep over the post view. -/
 def departVoteSwept (m : Machine) : VoteState :=
   sweepClosures θ v5PostView (departVote m)
 
-/-- The integrated departure: `a` proposes, `b` approves (two of three
-required), `c` approves and the base change is enacted. Returns the vote
-payload just before the enacting transition and the enacting result. -/
+/-- The integrated departure: `a` proposes (not an assent), `b` and `c`
+approve (two of the three required at five responsabili), `e` approves and
+the base change is enacted. Returns the vote payload just before the enacting
+transition and the enacting result. -/
 def departRoot (m : Machine) :
     Option (VoteState × KelGroups.IntegratedResult State) :=
   match m.root v5DepartPre "a" departD with
@@ -260,12 +261,15 @@ def departRoot (m : Machine) :
   | .ok proposed =>
       match m.root proposed.state "b" approveD with
       | .error _ => none
-      | .ok approved =>
-          if approved.change == none then
-            match m.root approved.state "c" approveD with
-            | .error _ => none
-            | .ok enacted => some (approved.state.appFold.votes, enacted)
-          else none
+      | .ok first =>
+          match m.root first.state "c" approveD with
+          | .error _ => none
+          | .ok approved =>
+              if first.change == none && approved.change == none then
+                match m.root approved.state "e" approveD with
+                | .error _ => none
+                | .ok enacted => some (approved.state.appFold.votes, enacted)
+              else none
 
 /-- The enacting transition's vote payload, when it really is `d`'s departure
 committed against the post view. -/
@@ -509,20 +513,28 @@ def checkOrder (m : Machine) : Bool :=
     && rootRefuses m "m" (.cast "q2" .assent)
 
 /-- **INV81-V3**: the post-base sweep still runs on a departure — the S62-B
-franchise-only closure, where the leaver proposed nothing, still closes. -/
+franchise-only closure, where the leaver proposed nothing, still closes.
+With three responsabili the proposer's signature is not an assent: `dora`'s
+approval pends and `eve`'s second assent enacts. -/
 def checkV3 (m : Machine) : Bool :=
+  let approveEve : KelGroups.IntegratedEvent Proposal AppEvent :=
+    .approve (proposalDigest (Proposal.departure "eve"))
   match m.root v3Group "alice" removeEve with
   | .error _ => false
   | .ok proposed =>
-      match m.root proposed.state "dora"
-          (.approve (proposalDigest (Proposal.departure "eve"))) with
+      match m.root proposed.state "dora" approveEve with
       | .error _ => false
-      | .ok enacted =>
-          enacted.change == some (KelGroups.BaseChange.memberRemoved "eve")
-            && enacted.state.appFold.votes.openQuestions == []
-            && recordOf enacted.state.appFold.votes "q"
-                == sweepStep θ (KelGroups.groupView enacted.state) ("q", v3Question)
-            && (recordOf enacted.state.appFold.votes "q").isSome
+      | .ok approved =>
+          approved.change == none
+            && (match m.root approved.state "eve" approveEve with
+                | .error _ => false
+                | .ok enacted =>
+                    enacted.change == some (KelGroups.BaseChange.memberRemoved "eve")
+                      && enacted.state.appFold.votes.openQuestions == []
+                      && recordOf enacted.state.appFold.votes "q"
+                          == sweepStep θ (KelGroups.groupView enacted.state)
+                              ("q", v3Question)
+                      && (recordOf enacted.state.appFold.votes "q").isSome)
 
 /-! ## Fixture and path agreement (production) -/
 
