@@ -1629,25 +1629,38 @@ theorem sweep_idempotent_witness : checkSweepIdempotent = true := by decide
 
 theorem sweep_idempotent_mutant_caught : checkSweepIdempotentMutant = true := by decide
 
+/-- Proof-side vocabulary: the vote payload a committed base change hands the
+sweep — the V-5 closure of the leaver's own questions on `memberRemoved` (#81),
+the payload unchanged on every other change. -/
+def departedVotes (change : KelGroups.BaseChange)
+    (votes : KelGroups.Vote.VoteState) : KelGroups.Vote.VoteState :=
+  match change with
+  | .memberAdmitted _ => votes
+  | .memberRemoved key => KelGroups.Vote.closeProposerQuestions key votes
+  | .rolesChanged _ => votes
+
 /-- The sealed hook's vote half, isolated: whatever the economic cleanup did,
 a payload the hook returns carries the post-view recomputation of the payload
-it was given. -/
+it was given, taken after the V-5 closure of the leaver's own questions when
+the change is `memberRemoved` (#81). Every base change is swept. -/
 theorem baseHook_votes {threshold : KelGroups.Vote.Threshold}
     {change : KelGroups.BaseChange} {pre post : KelGroups.GroupView}
     {s s' : State} (h : baseHook threshold change pre post s = .ok s') :
-    s'.votes = KelGroups.Vote.sweepClosures threshold post s.votes := by
+    s'.votes = KelGroups.Vote.sweepClosures threshold post
+      (departedVotes change s.votes) := by
   unfold baseHook at h
   split at h
   · exact Except.noConfusion h
   · simp only [Except.ok.injEq] at h
     subst h
-    rfl
+    cases change <;> rfl
 
 /-- **`base_change_recomputes_votes`** — general, not a witness: every
 successful production transition that reports a base change has vote payload
 equal to the recomputation of the *pre*-transition payload under the *post*
-canonical view. Omitting the sweep, or sweeping against the pre view, breaks
-it. -/
+canonical view, taken after the V-5 closure of the leaver's own questions when
+the change is `memberRemoved` (#81). Omitting the sweep, sweeping against the
+pre view, or skipping the departure closure breaks it. -/
 theorem base_change_recomputes_votes (threshold : KelGroups.Vote.Threshold)
     (auth : BackdonateAuth) (gs : KelGroups.GroupState State)
     (signer : KelGroups.Key)
@@ -1657,7 +1670,7 @@ theorem base_change_recomputes_votes (threshold : KelGroups.Vote.Threshold)
     (hchange : result.change = some change) :
     result.state.appFold.votes
       = KelGroups.Vote.sweepClosures threshold (KelGroups.groupView result.state)
-          gs.appFold.votes := by
+          (departedVotes change gs.appFold.votes) := by
   unfold Reactivegas.apply at h
   split at h
   · split at h
@@ -1973,14 +1986,14 @@ def corpusCorruptCleanup (steps : List IntegratedTraceStep) :
                   conti := [("bob", 999), (comuneId, 0)] } } } :: rest
   | other => other
 
-def i57TrustNoSorry : Bool :=
+def admissionPreservationReachable : Bool :=
   checkAdminAdmissionReachable && checkAppMembersPreservation
 
-def kelGroupsHasNoReactivegasImport : Bool :=
+def productionWellFormedAndComuneExcluded : Bool :=
   productionWellFormed mixedGroup
     && !KelGroups.GroupView.isMember comuneId (s62bView mixedGroup)
 
-def leanToolchainMatchesPin : Bool :=
+def comuneIdentityAndThresholdSanity : Bool :=
   comuneId == "comune" && s62bThreshold 3 == 2
 
 /-- Joined concrete base-to-hook witness: member removal, admin-loss role
@@ -2339,20 +2352,28 @@ def checkI57NoExpiry : Bool :=
         == some v3Question
   | .error _ => false
 
-/-- I57-08 TRUST: contractual statements print allowed axioms only. Bound
-to the missing zero-sorry receipt, not to an unrelated admission Bool. -/
-def checkI57Trust : Bool :=
-  i57TrustNoSorry
+/-- Admission-preservation reachability probe: admin admission is reachable and
+app-member preservation holds. This Bool computes exactly that conjunction.
+Trust / zero-`sorry` / allowed-axioms is enforced by `scripts/check-lean-axioms`
+over the discovered extent in `just lean`, not by this Bool. -/
+def checkAdmissionPreservation : Bool :=
+  admissionPreservationReachable
 
-/-- I57-09 DIRECTION: KelGroups has no Reactivegas import. Bound to the
-missing source-receipt control (the shell scanner is the mutant target). -/
-def checkI57Direction : Bool :=
-  kelGroupsHasNoReactivegasImport
+/-- Production well-formedness plus comune exclusion probe: the mixed group is
+well formed and `comuneId` is not a member of its view. This Bool computes
+exactly that conjunction. Import direction is enforced by
+`nix/lean-dependency-direction.sh` in `just lean`, not by this Bool; no claim is
+made that import-direction checks are impossible in Lean. -/
+def checkProductionWellFormed : Bool :=
+  productionWellFormedAndComuneExcluded
 
-/-- I57-10 TOOLCHAIN: executing Lean and pinned source revision match the
-expected identity. -/
-def checkI57Toolchain : Bool :=
-  leanToolchainMatchesPin
+/-- Comune-identity plus threshold sanity probe: `comuneId` spells `"comune"`
+and the sample threshold evaluates as expected. This Bool computes exactly that
+conjunction. The toolchain pin is enforced by `scripts/check-lean-toolchain`
+via `just lean-toolchain-contract`, not by this Bool; no claim is made that
+toolchain checks are impossible in Lean. -/
+def checkComuneThresholdSanity : Bool :=
+  comuneIdentityAndThresholdSanity
 
 theorem integrated_theorem_witness_holds :
     checkIntegratedTheoremWitness = true := by decide
@@ -2379,9 +2400,9 @@ theorem i57_policyfree_holds : checkI57PolicyFree = true := by decide
 theorem i57_policyfree_mutant_caught :
     checkI57PolicyFreeMutant = true := by decide
 theorem i57_noexpiry_holds : checkI57NoExpiry = true := by decide
-theorem i57_trust_holds : checkI57Trust = true := by decide
-theorem i57_direction_holds : checkI57Direction = true := by decide
-theorem i57_toolchain_holds : checkI57Toolchain = true := by decide
+theorem admissionPreservation_holds : checkAdmissionPreservation = true := by decide
+theorem productionWellFormed_holds : checkProductionWellFormed = true := by decide
+theorem comuneThresholdSanity_holds : checkComuneThresholdSanity = true := by decide
 
 #print axioms checkIntegratedTheoremWitness
 #print axioms checkCanonicalEconomy

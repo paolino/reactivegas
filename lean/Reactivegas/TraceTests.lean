@@ -173,10 +173,12 @@ def additiveUmbrellaExports : List String :=
   umbrellaImports.filter (fun m => !baseUmbrellaImports.contains m)
 
 /-- The umbrella's additive export is `Reactivegas.Trace` plus the #54
-`Reactivegas.Composition` module, it still carries every base module, and
-nothing production-facing imports the test module. -/
+`Reactivegas.Composition` module and the #81 `Reactivegas.Lifecycle` witnesses,
+it still carries every base module, and nothing production-facing imports the
+test module. -/
 def checkImportGraph : Bool :=
-  additiveUmbrellaExports == ["Reactivegas.Trace", "Reactivegas.Composition"] &&
+  additiveUmbrellaExports ==
+      ["Reactivegas.Trace", "Reactivegas.Composition", "Reactivegas.Lifecycle"] &&
     baseUmbrellaImports.all (fun m => umbrellaImports.contains m) &&
     !umbrellaImports.contains "Reactivegas.TraceTests" &&
     traceTestsImporters.isEmpty
@@ -924,9 +926,6 @@ def checkI57NoStale : Bool := Reactivegas.checkI57NoStale
 def checkI57Franchise : Bool := Reactivegas.checkI57Franchise
 def checkI57PolicyFree : Bool := Reactivegas.checkI57PolicyFree
 def checkI57NoExpiry : Bool := Reactivegas.checkI57NoExpiry
-def checkI57Trust : Bool := Reactivegas.checkI57Trust
-def checkI57Direction : Bool := Reactivegas.checkI57Direction
-def checkI57Toolchain : Bool := Reactivegas.checkI57Toolchain
 
 theorem base_departure_applies_cleanup : checkBaseCleanupReachable = true :=
   Reactivegas.base_departure_applies_cleanup
