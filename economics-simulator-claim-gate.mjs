@@ -1071,6 +1071,19 @@ function runGate(opts) {
 
 /* --- selftest: the mandatory negative axes, then production GREEN ---------- */
 
+/* a parentless commit of the accepted composition tree, referenced by
+   nothing: resolvable, tree-consistent, never an ancestor of origin/master */
+let orphanMemo = null;
+function orphanPin() {
+  if (orphanMemo) return orphanMemo;
+  orphanMemo = execFileSync('git', ['-C', REPO, 'commit-tree', ACCEPTED_COMPOSITION.tree,
+    '-m', 'claim-gate selftest: orphan composition pin'], { encoding: 'utf8',
+    env: { ...process.env, GIT_AUTHOR_NAME: 'claim-gate', GIT_AUTHOR_EMAIL: 'claim-gate@invalid',
+      GIT_COMMITTER_NAME: 'claim-gate', GIT_COMMITTER_EMAIL: 'claim-gate@invalid',
+      GIT_AUTHOR_DATE: '2000-01-01T00:00:00Z', GIT_COMMITTER_DATE: '2000-01-01T00:00:00Z' } }).trim();
+  return orphanMemo;
+}
+
 async function selftest(work) {
   const doc = readFileSync(HTML, 'utf8');
 
@@ -1295,16 +1308,16 @@ async function selftest(work) {
     },
     {
       name: 'pin orfano risolvibile ma non raggiungibile da origin/master',
-      // the OLD pre-merge pin: locally resolvable with a CONSISTENT declared
-      // tree, rejected specifically for stable reachability (NOTE-029)
-      expect: /non raggiungibile da origin\/master \(commit orfano\): fcd4dc3037/,
+      // an orphan made here (git commit-tree of the accepted tree, no parent,
+      // no ref): resolvable with a CONSISTENT declared tree in any checkout,
+      // so only stable reachability can reject it — no commit that exists in
+      // one clone and not another
+      expect: () => new RegExp('non raggiungibile da origin/master \\(commit orfano\\): ' +
+        orphanPin().slice(0, 10)),
       run: () => {
         const p = join(work, 'sab-comp-orphan.html');
         writeFileSync(p, doc
-          .replace(`commit: '${ACCEPTED_COMPOSITION.commit}',`,
-            "commit: 'fcd4dc3037c3621f2a8d5c452fe21c7a53443037',")
-          .replace(`tree: '${ACCEPTED_COMPOSITION.tree}',`,
-            "tree: 'dee9dfde87bff8e5c5e1b0e37655c19ee5d9b917',"));
+          .replace(`commit: '${ACCEPTED_COMPOSITION.commit}',`, `commit: '${orphanPin()}',`));
         return runGate({ html: p, work });
       },
     },
@@ -1374,7 +1387,8 @@ async function selftest(work) {
       return 1;
     }
     const text = r.reasons.join('\n');
-    if (!c.expect.test(text)) {
+    const want = typeof c.expect === 'function' ? c.expect() : c.expect;
+    if (!want.test(text)) {
       console.error(`SELFTEST RED: «${c.name}» fallito per il motivo sbagliato:\n${text.slice(0, 300)}`);
       return 1;
     }
