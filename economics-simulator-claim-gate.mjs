@@ -127,8 +127,8 @@ const ACCEPTED_COMPOSITION = {
    repointed files list is RED. */
 const MANIFEST_EVENT_FILE = 'lean/Reactivegas/Types.lean';
 const ACCEPTED_CORE = {
-  commit: '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
-  tree: '1ca66428464b2897f1f1a41b9b347b9ca0da5eee',
+  commit: '1ff0d9fea040d8ca52590ba9bb24c4c24674a551',
+  tree: 'acea2b79cc17bf57e423e76817e7adf08828d359',
   files: [MANIFEST_EVENT_FILE],
 };
 const DRIVER_IMPORTS = Object.freeze([
@@ -448,24 +448,40 @@ function economicAppWitness(mod, tag) {
 function baseWitness(mod, tag) {
   const boot = () => mod.bootAggregate();
   const two = () => ({ ...boot(), members: [...boot().members, covMember('bruno', false)] });
-  const four = () => ({ ...boot(), members: [covAdmin('anna'), covAdmin('bruno'), covAdmin('carla'),
-    covMember('dora', false)], pendingBase: [['depart:dora',
-      { proposal: { departure: 'dora' }, proposer: 'anna', approvals: ['anna'] }]] });
+  const three = () => ({ ...boot(), members: [covAdmin('anna'), covAdmin('bruno'), covAdmin('carla'),
+    covMember('dora', false)] });
+  // pre-states are produced by the core under test, never typed: a refused
+  // preparatory step leaves the state as it was
+  const after = (gs, steps) => steps.reduce((cur, [signer, ev]) => {
+    const det = mod.applyIntegrated(clone(cur), signer, ev);
+    return det && !det.refused ? det.gs : cur;
+  }, gs);
+  const propose = proposal => ({ propose: { proposal } });
+  const electBruno = { changeRoles: { key: 'bruno', roles: [{ adminRole: { admin: 'publicAdmin' } }] } };
   switch (tag) {
     case 'admitMember': case 'direct': return { gs: boot(), signer: 'anna',
       ev: { direct: { admitMember: { key: 'bruno', email: 'bruno@toy.example', roles: [] } } },
       holds: det => memberKeysOf(det.gs).includes('bruno') &&
         JSON.stringify(det.change) === JSON.stringify({ memberAdmitted: 'bruno' }) };
-    case 'departure': case 'propose': return { gs: two(), signer: 'anna',
-      ev: { propose: { proposal: { departure: 'bruno' } } },
-      holds: det => !memberKeysOf(det.gs).includes('bruno') &&
+    // proposing is not assenting: the proposal pends with no approval
+    case 'propose': return { gs: two(), signer: 'anna', ev: propose({ departure: 'bruno' }),
+      holds: det => memberKeysOf(det.gs).includes('bruno') && !det.change &&
+        JSON.stringify(det.gs.pendingBase) === JSON.stringify([['depart:bruno',
+          { proposal: { departure: 'bruno' }, proposer: 'anna', approvals: [] }]]) };
+    // the sole admin's separate approval of her pending proposal enacts it
+    case 'departure': return { gs: after(two(), [['anna', propose({ departure: 'bruno' })]]),
+      signer: 'anna', ev: { approve: { proposalId: 'depart:bruno' } },
+      holds: det => !memberKeysOf(det.gs).includes('bruno') && det.gs.pendingBase.length === 0 &&
         JSON.stringify(det.change) === JSON.stringify({ memberRemoved: 'bruno' }) };
-    case 'changeRoles': return { gs: two(), signer: 'anna',
-      ev: { propose: { proposal: { changeRoles: { key: 'bruno',
-        roles: [{ adminRole: { admin: 'publicAdmin' } }] } } } },
+    case 'changeRoles': return { gs: after(two(), [['anna', propose(electBruno)]]),
+      signer: 'anna', ev: { approve: { proposalId: 'roles:bruno' } },
       holds: det => mod.isAdminView('bruno', { members: det.gs.members }) &&
+        det.gs.pendingBase.length === 0 &&
         JSON.stringify(det.change) === JSON.stringify({ rolesChanged: 'bruno' }) };
-    case 'approve': return { gs: four(), signer: 'bruno',
+    // three admins, majority two: anna proposes, carla's assent pends, bruno's
+    // second assent enacts
+    case 'approve': return { gs: after(three(), [['anna', propose({ departure: 'dora' })],
+        ['carla', { approve: { proposalId: 'depart:dora' } }]]), signer: 'bruno',
       ev: { approve: { proposalId: 'depart:dora' } },
       holds: det => !memberKeysOf(det.gs).includes('dora') && det.gs.pendingBase.length === 0 &&
         JSON.stringify(det.change) === JSON.stringify({ memberRemoved: 'dora' }) };
