@@ -214,10 +214,11 @@ lean-mirrors:
     scripts/check-lean-mirrors
 
 # Give the checkout what the claim gate resolves: its pins are commits that
-# must be reachable from origin/master, and its selftest walks the history
-# before them. A shallow or single-ref checkout (CI) is unshallowed and gets
-# origin/master; a full checkout that has both is left untouched. The gate's
-# own pin and reachability checks are unchanged and still decide.
+# must be ancestors of HEAD (in CI the PR merge commit), and its selftest
+# walks the history before them. A shallow checkout (CI) is unshallowed; a
+# history still truncated afterwards fails here, since no pin could then be
+# judged. A full checkout is left untouched. The gate's own pin and
+# reachability checks still decide.
 simulator-history:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -225,11 +226,11 @@ simulator-history:
         echo "[simulator] shallow checkout: git fetch --unshallow origin"
         git fetch --quiet --no-tags --unshallow origin
     fi
-    if ! git rev-parse --verify --quiet refs/remotes/origin/master > /dev/null; then
-        echo "[simulator] no origin/master: fetching it"
-        git fetch --quiet --no-tags origin +refs/heads/master:refs/remotes/origin/master
+    if [ "$(git rev-parse --is-shallow-repository)" = true ]; then
+        echo "simulator: history of HEAD is still truncated after unshallowing" >&2
+        exit 1
     fi
-    echo "[simulator] history: shallow=$(git rev-parse --is-shallow-repository) origin/master=$(git rev-parse --short refs/remotes/origin/master)"
+    echo "[simulator] history: shallow=false HEAD=$(git rev-parse --short HEAD)"
 
 # Run the simulator gates: the build --check, then every
 # economics-simulator-*-gate.mjs gate and its --selftest, failing on the first
