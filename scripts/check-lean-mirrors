@@ -154,7 +154,7 @@ example : escrowHeldB { id := 0, referente := "r", permitted := false, accepted 
 example : governanceEnactsB "u" State.empty = true := by decide
 example : doubleEntryB State.empty State.empty "a" "u" 0 = true := by decide
 example : canCloseGroupB { members := [] } State.empty = true := by decide
-example : KelGroups.pendingWellFormedB { proposal := .removeMember "k", proposer := "p", approvals := [] } = false := by decide
+example : KelGroups.pendingWellFormedB 2 { proposal := .removeMember "k", proposer := "p", approvals := ["p"] } = false := by decide
 example : KelGroups.membersCoherentB (KelGroups.emptyState ()) = true := by decide
 example : KelGroups.pendingCoherentB (KelGroups.emptyState ()) = true := by decide
 example : KelGroups.wellFormedB (KelGroups.emptyState ()) = true := by decide
@@ -163,7 +163,7 @@ example : KelGroups.Vote.questionCleanB { kind := .collective, proposer := "a", 
 example : KelGroups.Vote.sweepReadyB { members := [] } KelGroups.Vote.emptyVoteState = true := by decide
 example : KelGroups.Vote.voteWellFormedB (fun _ => 0) { members := [] } KelGroups.Vote.emptyVoteState = true := by decide
 
-/-- The 19 claimed correspondence rows: discovered Prop, optional existing or
+/-- The 27 claimed correspondence rows: discovered Prop, optional existing or
 new mirror const, correctness theorem const. -/
 def s4bCorrTable : Array (String × Option String × String) := #[
   ("comune_not_a_member", some "KelGroups.GroupView.isMember", "comune_not_a_member_corr"),
@@ -178,6 +178,14 @@ def s4bCorrTable : Array (String × Option String × String) := #[
   ("doubleEntry", some "doubleEntryB", "doubleEntry_corr"),
   ("canCloseGroup", some "canCloseGroupB", "canCloseGroup_corr"),
   ("KelGroups.PendingWellFormed", some "KelGroups.pendingWellFormedB", "KelGroups.pendingWellFormed_corr"),
+  ("KelGroups.PendingStrong", some "KelGroups.pendingStrongB", "KelGroups.pendingStrong_corr"),
+  ("KelGroups.StrongCoherent", some "KelGroups.strongCoherentB", "KelGroups.strongCoherent_corr"),
+  ("KelGroups.PendingBaseWellFormed", some "KelGroups.pendingBaseWellFormedB", "KelGroups.pendingBaseWellFormed_corr"),
+  ("KelGroups.PendingBaseStrong", some "KelGroups.pendingBaseStrongB", "KelGroups.pendingBaseStrong_corr"),
+  ("KelGroups.StrongBaseCoherent", some "KelGroups.strongBaseCoherentB", "KelGroups.strongBaseCoherent_corr"),
+  ("KelGroups.BasePendingCoherent", some "KelGroups.basePendingCoherentB", "KelGroups.basePendingCoherent_corr"),
+  ("KelGroups.RawStructural", some "KelGroups.rawStructuralB", "KelGroups.rawStructural_corr"),
+  ("KelGroups.TraceAdmissible", some "KelGroups.traceAdmissibleB", "KelGroups.traceAdmissible_corr"),
   ("KelGroups.MembersCoherent", some "KelGroups.membersCoherentB", "KelGroups.membersCoherent_corr"),
   ("KelGroups.PendingCoherent", some "KelGroups.pendingCoherentB", "KelGroups.pendingCoherent_corr"),
   ("KelGroups.WellFormed", some "KelGroups.wellFormedB", "KelGroups.wellFormed_corr"),
@@ -322,7 +330,7 @@ run_cmd do
           covered := covered.push s
           belowCount := belowCount + 1
       | _ => pure ()
-  -- 3. Per-identity reconciliation of the 19 claimed rows.
+  -- 3. Per-identity reconciliation of the 27 claimed rows.
   let mut rowCount := 0
   for (prop, mirrorOpt, thm) in s4bCorrTable do
     if !found.any (fun (_, s) => s == prop) then

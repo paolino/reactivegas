@@ -431,12 +431,17 @@ route, so integrated preservation takes no `TraceAdmissible` —
 refused integrated events leave the state unchanged instead. -/
 def TraceAdmissible (digest : Proposal → ProposalId) (appFoldFn : AppFold α)
     (validKey : Key → Bool) (config : GroupConfig α)
-    (gs : GroupState α) : List (Key × GroupEvent α) → Prop
-  | [] => True
-  | (signer, event) :: rest =>
-      validateEvent validKey config gs signer event = .ok () ∧
-        TraceAdmissible digest appFoldFn validKey config
-          (applyEvent digest appFoldFn gs signer event) rest
+    (gs : GroupState α) (events : List (Key × GroupEvent α)) : Prop :=
+  -- A right fold over a state continuation rather than structural recursion:
+  -- recursion would add `_sunfold`/`_unsafe_rec` Prop constants that the S4-B
+  -- mirror checker discovers as unmirrored predicates. On `[]` this is `True`;
+  -- on `(signer, event) :: rest` it unfolds to the validation in `gs` and the
+  -- admissibility of `rest` from the raw successor state.
+  events.foldr
+    (fun step admissibleFrom current =>
+      validateEvent validKey config current step.1 step.2 = .ok () ∧
+        admissibleFrom (applyEvent digest appFoldFn current step.1 step.2))
+    (fun _ => True) gs
 
 theorem emptyState_wellFormed (initial : α) : WellFormed (emptyState initial) := by
   exact ⟨by simp [emptyState], by simp [emptyState], by simp [MembersCoherent, emptyState],
@@ -1033,14 +1038,15 @@ uniqueness, member coherence, and approval-list hygiene do not depend on
 approvals CONTENT, so proposer credit cannot break them. Governance
 (proposer-nonmembership) is the only conditional part (see
 `TraceAdmissible` and the retained 7-event witness cited on
-`foldGroup_wellFormed`). All results here are private auxiliaries;
-the 163-theorem pin is untouched (correction 4).
+`foldGroup_wellFormed`). The theorems here are private auxiliaries;
+the 163-theorem pin is untouched (correction 4). `RawStructural` itself is
+public so `KelGroups.Mirrors` can give it its Bool mirror.
 -/
 
 /-- Count-free structural bundle: everything about the stores that raw
 execution preserves unconditionally. Deliberately excludes any
 proposer-credit property (governance lives in `WellFormed`). -/
-private def RawStructural (gs : GroupState α) : Prop :=
+def RawStructural (gs : GroupState α) : Prop :=
   (gs.members.map Prod.fst).Nodup
   ∧ (gs.pendingProposals.map Prod.fst).Nodup
   ∧ MembersCoherent gs
