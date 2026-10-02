@@ -1,6 +1,6 @@
 {
  "name": "giro-governato-completo",
- "description": "Ingresso, elezione in una sola deliberazione, permesso via verdetto positivo, impegno, chiusura: ogni evento vote-derived porta la sua evidenza.",
+ "description": "Ingresso, elezione proposta e poi approvata a parte dalla fondatrice (proporre non è assentire), permesso via verdetto positivo, impegno, chiusura: ogni evento vote-derived porta la sua evidenza.",
  "wrap": {
   "schema": "reactivegas-integrated.trace",
   "version": 1,
@@ -195,6 +195,140 @@
          "email": "bruno@toy.example",
          "roles": [
           {
+           "appRole": {
+            "name": "socio"
+           }
+          }
+         ]
+        }
+       ],
+       [
+        "anna",
+        {
+         "key": "anna",
+         "email": "anna@toy.example",
+         "roles": [
+          {
+           "adminRole": {
+            "admin": "publicAdmin"
+           }
+          }
+         ]
+        }
+       ]
+      ],
+      "pendingBase": [
+       [
+        "roles:bruno",
+        {
+         "approvals": [],
+         "mutation": {
+          "changeRoles": {
+           "key": "bruno",
+           "roles": [
+            {
+             "adminRole": {
+              "admin": "publicAdmin"
+             }
+            }
+           ]
+          }
+         },
+         "proposer": "anna"
+        }
+       ]
+      ],
+      "payload": {
+       "conti": [],
+       "casse": [],
+       "collections": [],
+       "votes": {
+        "openQuestions": [],
+        "closed": []
+       }
+      }
+     }
+    }
+   },
+   {
+    "event": {
+     "approve": {
+      "proposalId": "roles:bruno"
+     }
+    },
+    "input": {
+     "members": [
+      [
+       "bruno",
+       {
+        "key": "bruno",
+        "email": "bruno@toy.example",
+        "roles": [
+         {
+          "appRole": {
+           "name": "socio"
+          }
+         }
+        ]
+       }
+      ],
+      [
+       "anna",
+       {
+        "key": "anna",
+        "email": "anna@toy.example",
+        "roles": [
+         {
+          "adminRole": {
+           "admin": "publicAdmin"
+          }
+         }
+        ]
+       }
+      ]
+     ],
+     "pendingBase": [
+      [
+       "roles:bruno",
+       {
+        "approvals": [],
+        "mutation": {
+         "changeRoles": {
+          "key": "bruno",
+          "roles": [
+           {
+            "adminRole": {
+             "admin": "publicAdmin"
+            }
+           }
+          ]
+         }
+        },
+        "proposer": "anna"
+       }
+      ]
+     ],
+     "payload": {
+      "conti": [],
+      "casse": [],
+      "collections": [],
+      "votes": {
+       "openQuestions": [],
+       "closed": []
+      }
+     }
+    },
+    "result": {
+     "tag": "applied",
+     "aggregate": {
+      "members": [
+       [
+        "bruno",
+        {
+         "key": "bruno",
+         "email": "bruno@toy.example",
+         "roles": [
+          {
            "adminRole": {
             "admin": "publicAdmin"
            }
@@ -228,7 +362,8 @@
        }
       }
      }
-    }
+    },
+    "signer": "anna"
    },
    {
     "input": {
