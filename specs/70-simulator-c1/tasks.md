@@ -7,4 +7,4 @@
 - [x] T3 #81 rows in traces and core (C1-81)
 - [x] T4 simulator gates in CI (C1-SIMCI)
 - [x] T5 F-01/F-02/F-03 hold on the merged candidate (C1-F01..F03)
-- [ ] T6 CI and preview green on the pushed head (C1-CI, C1-PREVIEW)
+- [x] T6 CI and preview green on the pushed head (C1-CI, C1-PREVIEW)
