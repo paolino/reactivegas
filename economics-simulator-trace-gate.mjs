@@ -51,7 +51,9 @@
  * non-designee ballot accepted), each RED on its row, and one per #76 row
  * (binding dropped, nothing minted, closure not spent, deny reading the
  * positive verdict, unbound grant applied, bind of an open or a closed
- * question accepted), each RED on its row — then production GREEN.
+ * question accepted), each RED on its row — every one but the spent-closure
+ * rows at its own witness step, judged alone on Lean's recorded input — then
+ * production GREEN.
  * Temporary artifacts live in a fresh mkdtemp directory; the repo stays clean.
  */
 
@@ -354,7 +356,21 @@ const ROWS76_INTEGRATED = {
   },
 };
 
-function judgeRows(rows, fresh, RG) {
+/* the witness step alone: the page's transition, applied to the input Lean
+   recorded for it, must reach the recorded outcome — refused, or applied
+   with exactly the recorded aggregate. A behaviour broken at that step is
+   RED there even when an earlier step would already diverge. */
+function localOutcome(st, RG) {
+  const asGs = agg => ({ ...agg, appFold: agg.payload });
+  const det = RG.applyIntegrated(JSON.parse(ijson(asGs(st.input))), st.signer, st.event);
+  if (st.result.tag === 'refused')
+    return det.refused ? null : 'applicato dove Lean rifiuta';
+  if (det.refused) return 'rifiutato (' + det.refused + ') dove Lean applica';
+  return RG.canonAggregate(det.gs) === RG.canonAggregate(asGs(st.result.aggregate))
+    ? null : 'post-aggregato diverso da Lean';
+}
+
+function judgeRows(rows, fresh, RG, opts = {}) {
   const out = [];
   for (const [row, isWitness] of Object.entries(rows)) {
     let hit = null;
@@ -365,6 +381,14 @@ function judgeRows(rows, fresh, RG) {
     }
     if (!hit) { out.push({ row, ok: false, why: 'nessun passo testimone nel corpus Lean fresco' }); continue; }
     const env = fresh[hit.n];
+    if (opts.local) {
+      let why;
+      try { why = localOutcome(env.steps[hit.i], RG); } catch (e) { why = 'eccezione: ' + e.message; }
+      if (why) {
+        out.push({ row, ok: false, at: `${hit.n}#${hit.i}`, why: 'il passo da solo: ' + why });
+        continue;
+      }
+    }
     try {
       RG.verifyTraceV1({ ...env, steps: env.steps.slice(0, hit.i + 1) }, { withRefusals: true });
       out.push({ row, ok: true, at: `${hit.n}#${hit.i}` });
@@ -467,7 +491,7 @@ function runGate(opts) {
   const rows81 = judgeRows(ROWS81_INTEGRATED, fresh, prod.RG);
   for (const r of rows81)
     if (!r.ok) reasons.push(`riga #81 ${r.row}${r.at ? ' @' + r.at : ''} ROSSA: ${r.why}`);
-  const rows76 = judgeRows(ROWS76_INTEGRATED, fresh, prod.RG);
+  const rows76 = judgeRows(ROWS76_INTEGRATED, fresh, prod.RG, { local: true });
   for (const r of rows76)
     if (!r.ok) reasons.push(`riga #76 ${r.row}${r.at ? ' @' + r.at : ''} ROSSA: ${r.why}`);
 
@@ -557,41 +581,41 @@ function selftest(work) {
   const TARGET_BLIND = 'a.verdict === verdict';
   const VERDICT_BLIND = 'sameTarget(a.target, target)';
   controls.push(
-    { name: 'openBound non lega il bersaglio (bind)', expect: /riga #76 bind /,
+    { name: 'openBound non lega il bersaglio (bind)', expect: /riga #76 bind @[BC]#\d+ ROSSA: il passo da solo/,
       make: mutant(BIND, 's') },
-    { name: 'la chiusura legata non conia l’autorizzazione (mint)', expect: /riga #76 mint /,
+    { name: 'la chiusura legata non conia l’autorizzazione (mint)', expect: /riga #76 mint @[BC]#\d+ ROSSA: il passo da solo/,
       make: mutant('if (target !== null) minted.push(', 'if (false) minted.push(') },
-    { name: 'il permesso non spende la chiusura (spend-grant)', expect: /riga #76 spend-grant /,
+    { name: 'il permesso non spende la chiusura (spend-grant)', expect: /riga #76 spend-grant @[BC]#\d+ ROSSA: il passo da solo/,
       make: mutant(SPEND, 'return effect(s);') },
-    { name: 'il diniego legge il verdetto positivo (spend-deny)', expect: /riga #76 spend-deny /,
+    { name: 'il diniego legge il verdetto positivo (spend-deny)', expect: /riga #76 spend-deny @[BC]#\d+ ROSSA: il passo da solo/,
       make: mutant("const pulled = pullLive(permT(c), 'negative', s.live);",
         "const pulled = pullLive(permT(c), 'positive', s.live);") },
-    { name: 'permesso senza chiusura legata applicato (refuse-unbound)', expect: /riga #76 refuse-unbound /,
+    { name: 'permesso senza chiusura legata applicato (refuse-unbound)', expect: /riga #76 refuse-unbound @[BC]#\d+ ROSSA: il passo da solo/,
       make: mutant(NOAUTH, 'if (pulled === null) return effect(s);') },
     { name: 'chiusura spesa due volte (refuse-spent)', expect: /riga #76 refuse-spent /,
       make: mutant(SPEND, 'return effect(s);') },
-    { name: 'legame di una domanda aperta altrui (refuse-bind-other)', expect: /riga #76 refuse-bind-other /,
+    { name: 'legame di una domanda aperta altrui (refuse-bind-other)', expect: /riga #76 refuse-bind-other @[BC]#\d+ ROSSA: il passo da solo/,
       make: mutant('vtLookup(qid, s.votes.openQuestions) === null', 'true') },
-    { name: 'legame dopo un voto (refuse-bind-balloted)', expect: /riga #76 refuse-bind-balloted /,
+    { name: 'legame dopo un voto (refuse-bind-balloted)', expect: /riga #76 refuse-bind-balloted @[BC]#\d+ ROSSA: il passo da solo/,
       make: mutant('vtLookup(qid, s.votes.openQuestions) === null', 'true') },
-    { name: 'legame di una domanda chiusa (refuse-bind-closed)', expect: /riga #76 refuse-bind-closed /,
+    { name: 'legame di una domanda chiusa (refuse-bind-closed)', expect: /riga #76 refuse-bind-closed @[BC]#\d+ ROSSA: il passo da solo/,
       make: mutant('!s.votes.closed.some(r => r.questionId === qid)', 'true') },
-    { name: 'redistribuzione sul solo TOY_AUTH (spend-backdonate)', expect: /riga #76 spend-backdonate /,
+    { name: 'redistribuzione sul solo TOY_AUTH (spend-backdonate)', expect: /riga #76 spend-backdonate @[BC]#\d+ ROSSA: il passo da solo/,
       make: mutant(BACKDONATE, TOY_ONLY) },
     { name: 'redistribuzione senza chiusura (refuse-backdonate-unclosed)',
-      expect: /riga #76 refuse-backdonate-unclosed /, make: mutant(BACKDONATE, TOY_ONLY) },
+      expect: /riga #76 refuse-backdonate-unclosed @[BC]#\d+ ROSSA: il passo da solo/, make: mutant(BACKDONATE, TOY_ONLY) },
     { name: 'spesa cieca al verdetto: redistribuzione (refuse-backdonate-negative)',
-      expect: /riga #76 refuse-backdonate-negative /, make: mutant(PULL_MATCH, VERDICT_BLIND) },
+      expect: /riga #76 refuse-backdonate-negative @[BC]#\d+ ROSSA: il passo da solo/, make: mutant(PULL_MATCH, VERDICT_BLIND) },
     { name: 'spesa cieca al bersaglio: redistribuzione (refuse-backdonate-other-w)',
-      expect: /riga #76 refuse-backdonate-other-w /, make: mutant(PULL_MATCH, TARGET_BLIND) },
+      expect: /riga #76 refuse-backdonate-other-w @[BC]#\d+ ROSSA: il passo da solo/, make: mutant(PULL_MATCH, TARGET_BLIND) },
     { name: 'spesa cieca al verdetto: permesso (refuse-grant-opposite)',
-      expect: /riga #76 refuse-grant-opposite /, make: mutant(PULL_MATCH, VERDICT_BLIND) },
+      expect: /riga #76 refuse-grant-opposite @[BC]#\d+ ROSSA: il passo da solo/, make: mutant(PULL_MATCH, VERDICT_BLIND) },
     { name: 'spesa cieca al bersaglio: permesso (refuse-grant-other-target)',
-      expect: /riga #76 refuse-grant-other-target /, make: mutant(PULL_MATCH, TARGET_BLIND) },
+      expect: /riga #76 refuse-grant-other-target @[BC]#\d+ ROSSA: il passo da solo/, make: mutant(PULL_MATCH, TARGET_BLIND) },
     { name: 'spesa cieca al verdetto: diniego (refuse-deny-opposite)',
-      expect: /riga #76 refuse-deny-opposite /, make: mutant(PULL_MATCH, VERDICT_BLIND) },
+      expect: /riga #76 refuse-deny-opposite @[BC]#\d+ ROSSA: il passo da solo/, make: mutant(PULL_MATCH, VERDICT_BLIND) },
     { name: 'spesa cieca al bersaglio: diniego (refuse-deny-other-target)',
-      expect: /riga #76 refuse-deny-other-target /, make: mutant(PULL_MATCH, TARGET_BLIND) },
+      expect: /riga #76 refuse-deny-other-target @[BC]#\d+ ROSSA: il passo da solo/, make: mutant(PULL_MATCH, TARGET_BLIND) },
     { name: 'redistribuzione spesa due volte (refuse-backdonate-spent)',
       expect: /riga #76 refuse-backdonate-spent /, make: mutant(SPEND, 'return effect(s);') },
   );
