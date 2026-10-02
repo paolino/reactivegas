@@ -56,3 +56,15 @@ Slice S1 (OWNER, single slice). Task IDs stable; stamp only after acceptance.
   full gate GREEN + just-ci on final bytes, re-freeze, PROOF-COMPLETE
   submission 2. Budgets: full-gate ceiling 14 cumulative; targeted ≤24
   with individual receipts.
+
+## Slice S2 — integration onto master 48a2f95 (v2, 2026-10-02)
+
+- [ ] T68-30 Merge origin/master into the branch; conflicts and build breaks
+  reconciled (R68-11).
+- [ ] T68-31 R68-01..R68-10 re-derived on the merged tree; witnesses run in
+  `just lean` (R68-09) and RED shown on master semantics.
+- [ ] T68-32 Simulator fidelity restored, `just simulator` GREEN (R68-12).
+- [ ] T68-33 Corpora and Haskell replay GREEN (R68-13); vote machine
+  unchanged (R68-14).
+- [ ] T68-34 Full CI-job gate GREEN on head; checkpoints approved; push;
+  remote CI GREEN.

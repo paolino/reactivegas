@@ -51,3 +51,13 @@ submission. Never merge on stale base; re-verify base at acceptance.
 - #66 S1 inversion repair shifting shared files → rebase via git skill, never
   force; reconcile, never revert others' edits.
 - Corpus freeze (#74) waiting on this slice → keep handoff cited and exact.
+
+## v2 plan (2026-10-02, base origin/master 48a2f95)
+
+Single OWNER slice S2 in worktree /code/reactivegas-t68-20261002, local
+branch t68-20261002 from d68a783, pushed fast-forward to
+feat/68-proposer-assent. Team: three Opus seats (ticket owner, commit owner,
+persistent auditor); gate-authors=NONE (operator team: 3 Opus); draft=NONE.
+Gate = the CI "Build and check" job commands, verbatim. Steps: merge
+origin/master; reconcile Lean; restore simulator fidelity and corpora;
+checkpoint reviews; frozen gate on head; push; CI green; merge request to desk.
