@@ -108,3 +108,6 @@ Haskell packages. R68-01..R68-10 are re-derived on the integrated tree.
 - R68-14 — Vote machine (#81, V-1..V-7, S-12) unchanged in meaning. Any
   conflict between A-001 and those rulings is a BLOCKED Q, never resolved
   in code.
+- R68-15 — Every frozen corpus initial state satisfies the current-regime
+  well-formedness (no proposer-credit pending entry), checked permanently in
+  `just lean`.

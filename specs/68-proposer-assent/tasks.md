@@ -59,12 +59,14 @@ Slice S1 (OWNER, single slice). Task IDs stable; stamp only after acceptance.
 
 ## Slice S2 — integration onto master 48a2f95 (v2, 2026-10-02)
 
-- [ ] T68-30 Merge origin/master into the branch; conflicts and build breaks
+- [x] T68-30 Merge origin/master into the branch; conflicts and build breaks
   reconciled (R68-11).
-- [ ] T68-31 R68-01..R68-10 re-derived on the merged tree; witnesses run in
+- [x] T68-31 R68-01..R68-10 re-derived on the merged tree; witnesses run in
   `just lean` (R68-09) and RED shown on master semantics.
-- [ ] T68-32 Simulator fidelity restored, `just simulator` GREEN (R68-12).
-- [ ] T68-33 Corpora and Haskell replay GREEN (R68-13); vote machine
+- [x] T68-32 Simulator fidelity restored, `just simulator` GREEN (R68-12).
+- [x] T68-33 Corpora and Haskell replay GREEN (R68-13); vote machine
   unchanged (R68-14).
-- [ ] T68-34 Full CI-job gate GREEN on head; checkpoints approved; push;
-  remote CI GREEN.
+- [x] T68-34 Full CI-job gate GREEN on head (gate v1 rows 1-10); checkpoints
+  review 001-010 approved; remote CI verified before the merge request.
+- [x] T68-35 Frozen corpus seed restated to an A-001-reachable shape, with a
+  permanent well-formedness check run by `just lean` (R68-15).
