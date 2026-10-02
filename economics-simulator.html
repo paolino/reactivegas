@@ -1190,10 +1190,10 @@ const CLAIMS = {
   'kg-setinsert':      { c: 'L’inserimento di posizione è idempotente per costruzione (substrato condiviso)', k: 'definizione', d: 'KelGroups.setInsert', f: 'lean/KelGroups/Types.lean', l: 46 },
   'kg-majority':       { c: 'Aritmetica della formula (n+1)/2: 0,1,1,2,2,3 per 0–5 — provata nella macchina fusa sullo stesso calcolo scelto qui come esibizione', k: 'teorema', d: 'majority_table', f: 'lean/KelGroups/Invariants.lean', l: 450 },
   'kg-tie':            { c: 'Con un numero pari la formula (n+1)/2 non è stretta: 2·soglia ≤ n — provato nella macchina fusa sullo stesso calcolo', k: 'teorema', d: 'majority_not_strict_on_even', f: 'lean/KelGroups/Invariants.lean', l: 459 },
-  'join-vote-econ':    { c: "Il PONTE voto → economia è provato nel modello (#76): la radice di produzione applica un permesso solo spendendo un'autorizzazione positiva viva legata a quell'acquisto, e senza la rifiuta; il browser ne esegue la trascrizione (riga js-transcription)", k: 'teorema', d: 'Reactivegas.Composition.apply_grant_spends', f: 'lean/Reactivegas/CompositionRoot.lean', l: 136 },
-  'auth-deny':         { c: "Un diniego alla radice spende un'autorizzazione negativa viva legata all'acquisto, poi lo scioglie rimborsando ogni impegno (#76)", k: 'teorema', d: 'Reactivegas.Composition.apply_deny_spends', f: 'lean/Reactivegas/CompositionRoot.lean', l: 193 },
-  'auth-backdonate':   { c: "Una redistribuzione alla radice spende un'autorizzazione positiva viva legata alla quota w stessa (#76)", k: 'teorema', d: 'Reactivegas.Composition.apply_backdonate_spends', f: 'lean/Reactivegas/CompositionRoot.lean', l: 154 },
-  'auth-provenance':   { c: "In ogni storia di produzione ogni autorizzazione viva è sostenuta da un record di chiusura con lo stesso id e verdetto, aggiunto dal fold di voto della storia stessa: nessuna nasce altrove (#76)", k: 'teorema', d: 'Reactivegas.Composition.liveBacked_of_history', f: 'lean/Reactivegas/CompositionRoot.lean', l: 543 },
+  'join-vote-econ':    { c: "PONTE voto → economia alla radice (#76): se la radice di produzione applica grantPermission c, nello stato di partenza c'era un'autorizzazione viva positiva legata all'acquisto c, e le autorizzazioni vive dopo il passo sono tratte dalle restanti; senza, non lo applica. Il browser ne esegue la trascrizione (riga js-transcription)", k: 'teorema', d: 'Reactivegas.Composition.apply_grant_spends', f: 'lean/Reactivegas/CompositionRoot.lean', l: 136 },
+  'auth-deny':         { c: "Se la radice applica denyPermission c, nello stato di partenza c'era un'autorizzazione viva negativa legata all'acquisto c, e le autorizzazioni vive dopo il passo sono tratte dalle restanti; senza, non lo applica (#76)", k: 'teorema', d: 'Reactivegas.Composition.apply_deny_spends', f: 'lean/Reactivegas/CompositionRoot.lean', l: 193 },
+  'auth-backdonate':   { c: "Se la radice applica backdonate w, nello stato di partenza c'era un'autorizzazione viva positiva legata alla quota w stessa, e le autorizzazioni vive dopo il passo sono tratte dalle restanti; senza, non lo applica (#76)", k: 'teorema', d: 'Reactivegas.Composition.apply_backdonate_spends', f: 'lean/Reactivegas/CompositionRoot.lean', l: 154 },
+  'auth-provenance':   { c: "In ogni storia di produzione (avvio protetto seguito da passi riusciti della radice), ogni autorizzazione viva ha fra le chiusure registrate (votes.closed) un record con lo stesso id di domanda e lo stesso verdetto (#76)", k: 'teorema', d: 'Reactivegas.Composition.liveBacked_of_history', f: 'lean/Reactivegas/CompositionRoot.lean', l: 543 },
   'vote-model-status': { c: 'Il modello di voto richiesto (#54, con rinuncia e uscita del proponente #81) è dimostrato sulla macchina produttiva: verdetti sì/no/aperta, dissenso e permessi per-persona sono modellati e le loro proposizioni portano prova senza sorry (scarico #48/#65)', k: 'teorema', d: 'KelGroups.Vote.foldVote_wellFormed', f: 'lean/KelGroups/Vote/Invariants.lean', l: 817 },
   'done-list':         { c: "L'elenco «acquisti completati» è ricostruzione del toy: la macchina non conserva gli acquisti chiusi", k: 'NON PROVATO', d: null, f: null, l: null },
   'toy-cap':           { c: 'Il limite 500 su accrediti e giri è del toy: la macchina Lean non ha limite superiore', k: 'NON PROVATO', d: null, f: null, l: null },
@@ -3581,8 +3581,8 @@ function openExternalConfirm() {
     <div class="tiny">La domanda è stata DELIBERATA nel gruppo di voto: verdetto
       ${isGrant ? 'POSITIVO' : 'NEGATIVO'} deciso da
       <span class="mono">KelGroups.Vote.verdictOf</span> ${pkGlyph(['vote-verdict'])}.
-      L'applicazione al ${isGrant ? 'permesso' : 'diniego'} economico spende la chiusura
-      legata a questo acquisto: la radice non applica altrimenti (#76, provato nel modello).</div>
+      L'applicazione al ${isGrant ? 'permesso' : 'diniego'} economico spende un’autorizzazione
+      viva legata a questo acquisto: senza, la radice non lo applica (#76, provato nel modello).</div>
     <div class="ar2"><button type="button" class="primary" id="ext-apply">applica esito</button></div>`;
   popAt(flow.xy[0], flow.xy[1], html);
   $('ext-apply').addEventListener('click', () => {
@@ -3633,7 +3633,7 @@ function commitFlow() {
     if (nav().view === 'group') playFx(tag, args, preState, preLayout);
     if (taskShape(tag).external)
       toast(`<b>⇣ esito esterno applicato</b>
-        <span class="tiny">chiusura legata spesa alla radice; ponte provato nel modello (#76)</span>`, xy[0], xy[1], 'ext');
+        <span class="tiny">autorizzazione legata spesa alla radice (#76, provato nel modello)</span>`, xy[0], xy[1], 'ext');
   } else {
     toast(`<b>✗ ${esc(taskShape(tag).it)}</b> ` +
       res.failed.map(guardChip).join(' ') +
@@ -4145,13 +4145,15 @@ function collGovHtml(col) {
   if (v === 'positive')
     return `<div class="vq"><div class="qh">🗳 «${esc(qid)}» — CHIUSA POSITIVA
       ${pkGlyph(['vote-nostale', 'vote-partition'])}</div>
-      <div class="tiny">la delibera è della macchina di voto; la sua chiusura è l’autorizzazione
-        che il permesso qui sotto spende ${bridgeBadge('PROVATO NEL MODELLO')}</div></div>`;
+      <div class="tiny">la chiusura di questa domanda legata ha coniato un’autorizzazione viva
+        (Step.lean, syncAuth); il permesso qui sotto si applica solo spendendone una
+        ${bridgeBadge('PROVATO NEL MODELLO')}</div></div>`;
   if (v === 'negative')
     return `<div class="vq"><div class="qh">🗳 «${esc(qid)}» — CHIUSA NEGATIVA
       ${pkGlyph(['vote-verdict', 'vote-partition'])}</div>
-      <div class="tiny">il dissenso ha raggiunto la soglia; la sua chiusura è l’autorizzazione
-        che il diniego qui sotto spende ${bridgeBadge('PROVATO NEL MODELLO')}</div></div>`;
+      <div class="tiny">il dissenso ha raggiunto la soglia: la chiusura ha coniato un’autorizzazione
+        viva negativa (Step.lean, syncAuth); il diniego qui sotto si applica solo spendendone una
+        ${bridgeBadge('PROVATO NEL MODELLO')}</div></div>`;
   if (v === 'pending') {
     const q = vtLookup(qid, state.votes.openQuestions);
     return questionHtml(qid, q, `domanda in votazione: «permesso per ${esc(label)}»`);
@@ -4163,8 +4165,7 @@ function collGovHtml(col) {
           <button type="button" class="linkchip" data-kgpropose="${col.id}" title=".openBound">
             apri la domanda: permesso per «${esc(label)}»</button></div>
          <div class="tiny">domanda legata: <span class="mono">.openBound ${esc(qid)} .collective (.permission ${col.id})</span>
-           — il bersaglio è fissato all’apertura: la chiusura autorizza solo questo acquisto
-           ${bridgeBadge('PROVATO NEL MODELLO')}</div>`
+           — il bersaglio è fissato all’apertura, prima di ogni voto (Step.lean, bindable)</div>`
       : `<div class="tiny">ammetti prima dei responsabili al gruppo di voto (vista Gruppo)</div>`}
   </div>`;
 }
@@ -4261,8 +4262,8 @@ function govCardHtml() {
       <span class="npvbadge" data-claims="vote-model-status">stato</span> ·
       composizione accettata al pin: instradamento totale dei 14 costruttori
       ${pkGlyph(['comp-routing', 'comp-app-verdict', 'comp-witness'])} ·
-      il ponte con l'economia: la radice spende chiusure legate
-      ${bridgeBadge('provato nel modello')}</div>
+      il ponte con l'economia: permesso, diniego e redistribuzione si applicano solo
+      spendendo un’autorizzazione viva legata ${bridgeBadge('provato nel modello')}</div>
   </div>`;
 }
 
@@ -4334,7 +4335,7 @@ function renderLog() {
       </div>`;
     }
     const prov = en.ext
-      ? '<div class="eprov">⇣ esito applicato spendendo la chiusura legata — ponte voto → economia provato nel modello (#76)</div>'
+      ? '<div class="eprov">⇣ esito applicato spendendo un’autorizzazione viva legata — provato nel modello (#76)</div>'
       : '';
     if (en.kind === 'acc') {
       return `<div class="entry acc${en.ext || en.route ? ' ext' : ''}">
