@@ -1,5 +1,5 @@
 import Reactivegas.Step
-import KelGroups.Invariants
+import Reactivegas.Invariants
 
 /-!
 # What the production root requires of the app-decided events (issue #76)
@@ -21,12 +21,6 @@ Status (R-35): enforced: PROVED-IN-MODEL, as for the classifier.
 namespace Reactivegas.Composition
 
 open Reactivegas
-
-private theorem bind_some_inv {α β : Type} {o : Option α} {f : α → Option β} {b : β}
-    (h : o.bind f = some b) : ∃ x, o = some x ∧ f x = some b := by
-  cases o with
-  | none => exact Option.noConfusion h
-  | some x => exact ⟨x, rfl, h⟩
 
 /-- One spend: the authorization removed is the one the event names. -/
 theorem pullLive_spec {target : EconomicTarget} {verdict : KelGroups.Vote.Verdict} :
@@ -62,14 +56,14 @@ theorem step_auth_frame {view : KelGroups.GroupView} {s s' : State}
       exact ⟨rfl, rfl, rfl⟩
     · exact Option.noConfusion h
   case grantPermission | denyPermission | pledge | closePurchase | failPurchase =>
-    obtain ⟨⟨_, _⟩, _, h⟩ := bind_some_inv h
-    obtain ⟨_, _, h⟩ := bind_some_inv h
+    obtain ⟨⟨_, _⟩, _, h⟩ := option_bind_inv h
+    obtain ⟨_, _, h⟩ := option_bind_inv h
     obtain rfl := Option.some.inj h
     exact ⟨rfl, rfl, rfl⟩
   case acceptPledge | refusePledge | correctPledge =>
-    obtain ⟨⟨_, _⟩, _, h⟩ := bind_some_inv h
-    obtain ⟨⟨_, _⟩, _, h⟩ := bind_some_inv h
-    obtain ⟨_, _, h⟩ := bind_some_inv h
+    obtain ⟨⟨_, _⟩, _, h⟩ := option_bind_inv h
+    obtain ⟨⟨_, _⟩, _, h⟩ := option_bind_inv h
+    obtain ⟨_, _, h⟩ := option_bind_inv h
     obtain rfl := Option.some.inj h
     exact ⟨rfl, rfl, rfl⟩
 
@@ -416,12 +410,12 @@ theorem economicCleanup_frame {change : KelGroups.BaseChange}
     obtain rfl := Option.some.inj h
     exact ⟨rfl, rfl⟩
   case memberRemoved =>
-    obtain ⟨_, _, h⟩ := bind_some_inv h
+    obtain ⟨_, _, h⟩ := option_bind_inv h
     obtain rfl := Option.some.inj h
     split <;> exact ⟨rfl, rfl⟩
   case rolesChanged =>
     split at h
-    · obtain ⟨_, _, h⟩ := bind_some_inv h
+    · obtain ⟨_, _, h⟩ := option_bind_inv h
       obtain rfl := Option.some.inj h
       exact ⟨rfl, rfl⟩
     · obtain rfl := Option.some.inj h
