@@ -5417,8 +5417,10 @@ async function selftest() {
     'correctPledge', 'closePurchase', 'failPurchase'];
   expect(Object.keys(EV).length === 12 && TAGS.every(t => EV[t]),
     'vocabolario eventi alterato');
+  // Reactivegas.State: conti, casse, collections, votes, and #76's bindings
+  // and live — nothing more
   expect(JSON.stringify(Object.keys(state).sort()) ===
-    JSON.stringify(['casse', 'collections', 'conti', 'votes']),
+    JSON.stringify(['bindings', 'casse', 'collections', 'conti', 'live', 'votes']),
     'stato macchina esteso oltre Lean');
 
   // presentation vocabulary over the text a reader actually sees: nothing
@@ -5700,9 +5702,10 @@ async function selftest() {
   expect(restoreSession() === null, 'log base corrotto accettato');
   lsSet(logKey(), rawLog);
   expect(restoreSession() === applied, 'ripristino post-corruzione base fallito');
-  // GOVERNANCE on import: an integrated log whose grantPermission carries no
-  // closed verdict replays clean but is REFUSED by the governance walk — the
-  // join stays NON PROVATO and the walk enforces its honest limit
+  // #76 on import: a log recording a grantPermission that no closure of a
+  // question bound to its collection authorizes is REFUSED — the production
+  // transition itself refuses the step. The log is forged the way a page
+  // without the spend recorded it: the economic step's own result.
   {
     const founded = bootAggregate();
     const gst = [];
@@ -5719,12 +5722,20 @@ async function selftest() {
     gpush('anna', { direct: { admitMember: { key: 'bruno', email: 'bruno@toy.example',
       roles: [{ appRole: { name: 'socio' } }] } } });
     gpush('anna', { app: { openPurchase: { c: 900 } } });
-    gpush('anna', { app: { grantPermission: { c: 900 } } });
+    const gpre = JSON.parse(JSON.stringify(ggs));
+    const forged = attempt({ members: gpre.members }, gpre.appFold,
+      { tag: 'grantPermission', author: 'anna', c: 900 });
+    expect(forged.ok, 'sonda governo mal costruita: il passo economico rifiuta');
+    gst.push({ input: gpre, signer: 'anna', event: { app: { grantPermission: { c: 900 } } },
+      result: { tag: 'applied', aggregate: { ...gpre, appFold: forged.state }, change: null } });
     const govEnv = { schema: 'reactivegas-integrated.trace', version: 1,
       initial: founded, steps: gst };
-    // positive half: the verdict-less log replays — the refusal below comes
-    // from governance, never from shape or continuity
-    verifyIntegratedV1(govEnv);
+    // positive half: the log without the forged step replays — the refusal
+    // below comes from the missing closure, never from shape or continuity
+    verifyIntegratedV1({ ...govEnv, steps: gst.slice(0, -1) });
+    let gwhy = null;
+    try { verifyIntegratedV1(govEnv); } catch (e) { gwhy = e.message; }
+    expect(gwhy && gwhy.includes('pullLive'), 'permesso senza chiusura legata replayato: ' + gwhy);
     const govWrap = { format: 'reactivegas-sim-session', v: 3,
       labels: {}, names: {}, piles: {}, integrated: govEnv };
     lsSet(logKey(), JSON.stringify(govWrap));
@@ -5795,7 +5806,8 @@ async function selftest() {
   // step onto the first VOTE event and check the vote state follows
   const firstK = pres.n.env.steps.findIndex(st => 'app' in st.event &&
     Object.keys(st.event.app).length === 1 &&
-    (st.event.app.openQuestion || st.event.app.cast || st.event.app.renounce));
+    (st.event.app.openQuestion || st.event.app.openBound || st.event.app.cast ||
+     st.event.app.renounce));
   expect(firstK >= 0, 'nessun passo di voto nella presentazione');
   presSet(firstK + 1);
   expect(RG.state.votes.openQuestions.length === 1, 'presentazione non mostra lo stato del voto al passo');
