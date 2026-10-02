@@ -419,12 +419,35 @@ function voteWitness(mod, tag) {
       holds: det => !voteOpen(det.gs.appFold.votes, 'q:w') &&
         JSON.stringify(det.gs.appFold.votes.closed) === JSON.stringify(
           [{ questionId: 'q:w', question: q, verdict: 'negative', cause: 'renounced' }]) };
+    // #76: the question opens with its signer as proposer and its target
+    // bound before any ballot; the same bind of an open question is refused
+    case 'openBound': {
+      const target = { backdonation: { w: 5 } };
+      return { gs: agg({ openQuestions: [], closed: [] }), signer: 'anna',
+        ev: { app: { openBound: { questionId: 'q:w', kind: 'collective', target } } },
+        holds: det => JSON.stringify(voteOpen(det.gs.appFold.votes, 'q:w')) === JSON.stringify(q) &&
+          JSON.stringify(det.gs.appFold.bindings) === JSON.stringify([['q:w', target]]),
+        without: { gs: withQ(), signer: 'anna',
+          ev: { app: { openBound: { questionId: 'q:w', kind: 'collective', target } } } } };
+    }
     default: return null;
   }
 }
 
+/* #76: the app-decided constructors spend one closure-derived authorization
+   naming their exact target under the verdict they need. Their witness state
+   holds that authorization — a component witness, the connected journey that
+   mints it is the Lean trace corpus — and the same state without it must be
+   refused. */
+const APP_DECIDED_AUTH = {
+  grantPermission: a => ({ target: { permission: { c: a.c } }, verdict: 'positive' }),
+  denyPermission: a => ({ target: { permission: { c: a.c } }, verdict: 'negative' }),
+  backdonate: a => ({ target: { backdonation: { w: a.w } }, verdict: 'positive' }),
+};
+
 /* an economic AppEvent through the integrated app route lands exactly where
-   the legacy transition `attempt` lands on the same signed event */
+   the legacy transition `attempt` lands on the same signed event (an
+   app-decided one also spends its authorization, and only with it applies) */
 function economicAppWitness(mod, tag) {
   let w = validWitness(tag);
   if (!w && tag === 'backdonate') {
@@ -436,13 +459,19 @@ function economicAppWitness(mod, tag) {
   if (!w) return null;
   const [view, state, event] = w;
   const { tag: _t, author, ...args } = event;
-  return { gs: { members: view.members, pendingBase: [], appFold: clone(state) }, signer: author,
-    ev: { app: { [tag]: args } },
+  const gsOf = appFold => ({ members: view.members, pendingBase: [], appFold });
+  const auth = APP_DECIDED_AUTH[tag]
+    ? { questionId: 'q:auth', ...APP_DECIDED_AUTH[tag](args) } : null;
+  return { gs: gsOf(auth ? { ...clone(state), bindings: [], live: [auth] } : clone(state)),
+    signer: author, ev: { app: { [tag]: args } },
     holds: det => {
       const direct = mod.attempt(view, clone(state), event);
       return !!direct && direct.ok === true &&
-        mod.canonState(det.gs.appFold) === mod.canonState(direct.state);
-    } };
+        mod.canonState(det.gs.appFold) === mod.canonState(direct.state) &&
+        (!auth || (det.gs.appFold.live || []).length === 0);
+    },
+    without: auth ? { gs: gsOf({ ...clone(state), bindings: [], live: [] }), signer: author,
+      ev: { app: { [tag]: args } } } : null };
 }
 
 function baseWitness(mod, tag) {
@@ -519,7 +548,12 @@ function checkVocabularyCoverage(mod, vocab, routed = ROUTED_VOCABULARIES,
         const det = mod.applyIntegrated(clone(w.gs), w.signer, w.ev);
         if (!det || det.refused) reasons.push(`${v.name} ${c}: live witness refused (${det && det.refused})`);
         else if (!w.holds(det)) reasons.push(`${v.name} ${c}: core handler does not produce the Lean effect`);
-        else witnessed++;
+        else if (w.without) {
+          const off = mod.applyIntegrated(clone(w.without.gs), w.without.signer, w.without.ev);
+          if (!off || !off.refused)
+            reasons.push(`${v.name} ${c}: applied without the closure-derived authorization Lean requires`);
+          else witnessed++;
+        } else witnessed++;
       } catch (e) { reasons.push(`${v.name} ${c}: live witness threw: ${e.message}`); }
     }
   }

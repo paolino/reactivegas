@@ -1,6 +1,6 @@
 {
  "name": "permesso-senza-delibera",
- "description": "Il permesso economico senza verdetto chiuso: il governo lo RIFIUTA.",
+ "description": "Il permesso economico senza la chiusura di una domanda legata al suo acquisto: la transizione lo RIFIUTA, non c’è autorizzazione da spendere.",
  "wrap": {
   "schema": "reactivegas-integrated.trace",
   "version": 1,
@@ -735,6 +735,6 @@
  ],
  "expect": {
   "governed": "refused",
-  "refusalMatch": "senza verdetto"
+  "refusalMatch": "pullLive"
  }
 }

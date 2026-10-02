@@ -26,11 +26,12 @@ cd lean && lake env lean TraceDriverV1.lean
 that, compares the fresh output against the embedded fixture, and replays it
 through the page's production JavaScript.)
 
-Traces A and B contain applied steps only: if any of their seeded steps is
-refused, the driver throws instead of emitting a usable-looking corpus. Trace C
-(the #81 V-5 closures and S-12 refusals) seeds each step with its expected
-outcome and records a refused step with the production error and an unchanged
-aggregate; an outcome other than the seeded one throws in the same way.
+Trace A contains applied steps only: if any of its seeded steps is refused,
+the driver throws instead of emitting a usable-looking corpus. Traces B (the
+#76 closure-derived permissions) and C (the #81 V-5 closures and S-12
+refusals) seed each step with its expected outcome and record a refused step
+with the production error and an unchanged aggregate; an outcome other than
+the seeded one throws in the same way.
 -/
 
 open Lean (ToJson toJson Json)
@@ -182,31 +183,6 @@ def traceA : List Seed := [
   ("elena", approve "depart:bruno")
 ]
 
-/-- Trace B ... -/
-def traceB : List Seed := [
-  ("anna", admit "bruno"),
-  ("anna", elect "bruno"),
-  ("anna", appE (.deposit "bruno" 50)),
-  ("bruno", appE (.deposit "anna" 25)),
-  ("bruno", appE (.openPurchase 7)),
-  ("anna", appE (.pledge "bruno" 7 20)),
-  ("bruno", appE (.acceptPledge "bruno" 7)),
-  ("bruno", appE (.correctPledge "bruno" 7 35)),
-  ("bruno", appE (.correctPledge "bruno" 7 5)),
-  ("anna", appE (.openQuestion "q:permesso:7" .collective)),
-  ("anna", appE (.cast "q:permesso:7" .assent)),
-  ("anna", appE (.grantPermission 7)),
-  ("bruno", appE (.closePurchase 7)),
-  ("bruno", appE (.openPurchase 8)),
-  ("bruno", appE (.pledge "bruno" 8 10)),
-  ("bruno", appE (.acceptPledge "bruno" 8)),
-  ("anna", appE (.pledge "anna" 8 15)),
-  ("anna", appE (.denyPermission 8)),
-  ("bruno", appE (.openPurchase 9)),
-  ("anna", appE (.pledge "bruno" 9 10)),
-  ("anna", propose (.changeRoles "bruno" socioRoles))
-]
-
 /-- One seeded signed integrated event with its expected outcome (trace C):
 `true` = the production root applies it, `false` = it refuses it. -/
 abbrev CheckedSeed := Key × KelGroups.IntegratedEvent Proposal AppEvent × Bool
@@ -259,19 +235,70 @@ def runChecked? (gs : GroupState State) (i : Nat) (seeds : List CheckedSeed) :
             | .error e => .error e
 termination_by seeds.length
 
+/-- Trace B: the economic journey with #76's closure-derived permissions,
+through the production root, with two responsabili (`legacyThreshold 2 = 1`,
+so one ballot closes). Every economic effect a vote decides is backed by a
+closure of a question bound to its target in this history: `anna` opens
+`q:permesso:7` bound to collection 7 and `q:permesso:8` bound to collection 8
+(`openBound`, the signer is the proposer, the target is fixed before any
+ballot); the positive closure of the first mints the authorization
+`grantPermission 7` spends, the negative closure of the second the one
+`denyPermission 8` spends, refunding every pledge of 8.
+
+Refused, each leaving the aggregate unchanged: `bruno`'s bind of `anna`'s open
+`q:permesso:7` (a non-proposer bind); `anna`'s bind of the closed
+`q:permesso:7` again (a bind after its ballot, which cannot revive the id);
+the second `grantPermission 7` (the closure is spent, though the permission
+is still economically grantable); and `grantPermission 9` after the
+unbound `q:permesso:9` closed positive (a label is not a binding). Then
+`bruno` loses the admin role: his open collection 9 is wound up. -/
+def traceB : List CheckedSeed := [
+  ("anna", admit "bruno", true),
+  ("anna", elect "bruno", true),
+  ("anna", appE (.deposit "bruno" 50), true),
+  ("bruno", appE (.deposit "anna" 25), true),
+  ("bruno", appE (.openPurchase 7), true),
+  ("anna", appE (.pledge "bruno" 7 20), true),
+  ("bruno", appE (.acceptPledge "bruno" 7), true),
+  ("bruno", appE (.correctPledge "bruno" 7 35), true),
+  ("bruno", appE (.correctPledge "bruno" 7 5), true),
+  ("anna", appE (.openBound "q:permesso:7" .collective (.permission 7)), true),
+  ("bruno", appE (.openBound "q:permesso:7" .collective (.permission 7)), false),
+  ("anna", appE (.cast "q:permesso:7" .assent), true),
+  ("anna", appE (.openBound "q:permesso:7" .collective (.permission 7)), false),
+  ("anna", appE (.grantPermission 7), true),
+  ("anna", appE (.grantPermission 7), false),
+  ("bruno", appE (.closePurchase 7), true),
+  ("bruno", appE (.openPurchase 8), true),
+  ("bruno", appE (.pledge "bruno" 8 10), true),
+  ("bruno", appE (.acceptPledge "bruno" 8), true),
+  ("anna", appE (.pledge "anna" 8 15), true),
+  ("anna", appE (.openBound "q:permesso:8" .collective (.permission 8)), true),
+  ("bruno", appE (.cast "q:permesso:8" .dissent), true),
+  ("anna", appE (.denyPermission 8), true),
+  ("bruno", appE (.openPurchase 9), true),
+  ("anna", appE (.pledge "bruno" 9 10), true),
+  ("anna", appE (.openQuestion "q:permesso:9" .collective), true),
+  ("anna", appE (.cast "q:permesso:9" .assent), true),
+  ("anna", appE (.grantPermission 9), false),
+  ("anna", propose (.changeRoles "bruno" socioRoles), true)
+]
+
 /-- Trace C: the V-5 lifecycle and S-12 refusals (#81) through the production
 root, on the departure fixture of `Reactivegas.Lifecycle` (five
 responsabili, `legacyThreshold 5 = 3`, `legacyThreshold 4 = 2`) reached from
 the founded aggregate by signed admissions and elections. `qc` closes by
 tally in the setup, so the closure log is non-empty before any V-5 closure.
-`carlo`'s ballot on `dora`'s permission question addressed to `bruno` is
-refused (`notDesignee`), `anna`'s renounce of `dora`'s `qd1` is refused
-(`notProposer`); both leave the aggregate unchanged. `carlo` renounces his own
-`qz`: it closes `.negative`/`.renounced` and every other open question stays
-as it stood. Then `dora` leaves: in the transition of the enacting approval
-her `qd1` and `qd2` close `.negative`/`.proposerDeparted`, and `anna`'s `qx`,
-whose stale tally (`anna`, `dora`) crosses the four-responsabile threshold,
-closes `.positive`/`.franchiseChange`; `bruno`'s `qy` stays open. -/
+`bruno` cannot bind his own `qy` once `carlo`'s ballot is on it (#76: the
+target is fixed before any ballot). `carlo`'s ballot on `dora`'s permission
+question addressed to `bruno` is refused (`notDesignee`), `anna`'s renounce of
+`dora`'s `qd1` is refused (`notProposer`); all three leave the aggregate
+unchanged. `carlo` renounces his own `qz`: it closes `.negative`/`.renounced`
+and every other open question stays as it stood. Then `dora` leaves: in the
+transition of the enacting approval her `qd1` and `qd2` close
+`.negative`/`.proposerDeparted`, and `anna`'s `qx`, whose stale tally (`anna`,
+`dora`) crosses the four-responsabile threshold, closes
+`.positive`/`.franchiseChange`; `bruno`'s `qy` stays open. -/
 def traceC : List CheckedSeed := [
   ("anna", admit "bruno", true), ("anna", elect "bruno", true),
   ("anna", admit "carlo", true), ("anna", elect "carlo", true),
@@ -292,6 +319,7 @@ def traceC : List CheckedSeed := [
   ("dora", appE (.cast "qx" .assent), true),
   ("bruno", appE (.openQuestion "qy" .collective), true),
   ("carlo", appE (.cast "qy" .dissent), true),
+  ("bruno", appE (.openBound "qy" .collective (.backdonation 1)), false),
   ("carlo", appE (.cast "qd2" .assent), false),
   ("anna", appE (.renounce "qd1"), false),
   ("carlo", appE (.openQuestion "qz" .collective), true),
@@ -310,7 +338,7 @@ def foundedAggregate : GroupState State :=
     appFold := State.empty }
 
 #eval do
-  match runSeeds? foundedAggregate 0 traceA, runSeeds? foundedAggregate 0 traceB,
+  match runSeeds? foundedAggregate 0 traceA, runChecked? foundedAggregate 0 traceB,
       runChecked? foundedAggregate 0 traceC with
   | .ok a, .ok b, .ok c =>
       let env (steps : List Json) :=
@@ -320,7 +348,7 @@ def foundedAggregate : GroupState State :=
   | .error dbg, _, _ =>
     throw (IO.userError s!"SEED-TRACE-EVENT-REFUSED (traceA): {dbg}")
   | _, .error dbg, _ =>
-    throw (IO.userError s!"SEED-TRACE-EVENT-REFUSED (traceB): {dbg}")
+    throw (IO.userError s!"SEED-TRACE-OUTCOME-MISMATCH (traceB): {dbg}")
   | _, _, .error dbg =>
     throw (IO.userError s!"SEED-TRACE-OUTCOME-MISMATCH (traceC): {dbg}")
 

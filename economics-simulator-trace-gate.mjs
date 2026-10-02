@@ -23,7 +23,12 @@
  *      fresh envelope (refused steps admitted) through the production verifier
  *      up to its first witness step; a row without a witness, or one the page
  *      does not reach, is RED;
- *   8. prints counts, the fresh sha, the row witnesses, and GREEN only after
+ *   8. recognises, the same way, every #76 row of closure-derived economic
+ *      authorization (ROWS76: a bound opening, a minted authorization, a
+ *      grant and a deny each spending one, and the refused unbound grant,
+ *      spent closure, bind by a non-proposer, bind after a ballot and bind
+ *      of a closed question) and judges each by the same replay;
+ *   9. prints counts, the fresh sha, the row witnesses, and GREEN only after
  *      Lean regeneration equivalence, production-JS replay and every row
  *      succeed.
  *
@@ -38,7 +43,10 @@
  * renounce left open, departure closure dropped, closed positive, recorded
  * .tally, records discarded, every question closed, post-departure sweep
  * dropped, unrelated questions touched, non-proposer renounce and
- * non-designee ballot accepted), each RED on its row — then production GREEN.
+ * non-designee ballot accepted), each RED on its row, and one per #76 row
+ * (binding dropped, nothing minted, closure not spent, deny reading the
+ * positive verdict, unbound grant applied, bind of an open or a closed
+ * question accepted), each RED on its row — then production GREEN.
  * Temporary artifacts live in a fresh mkdtemp directory; the repo stays clean.
  */
 
@@ -195,12 +203,96 @@ const ROWS81_INTEGRATED = {
   },
 };
 
-function judgeRows81(fresh, RG) {
+/* #76 closure-derived economic authorization in the fresh Lean corpus, by
+   the same method: a row is recognised by what the integrated step did to
+   the payload's `bindings` and `live` (absent = empty, as Lean's encoder
+   omits them), never by a seed name or an index; a refusal row is single
+   fault — every economic guard but the authorization holds at its input. */
+const iPay = agg => agg.payload;
+const iBindings = agg => iPay(agg).bindings || [];
+const iLive = agg => iPay(agg).live || [];
+const iCol = (agg, c) => iPay(agg).collections.find(x => x.id === c) || null;
+const permT = c => ({ permission: { c } });
+const liveCount = (agg, target, verdict) =>
+  iLive(agg).filter(a => ijson(a.target) === ijson(target) && a.verdict === verdict).length;
+const targetValid = (agg, t) => 'permission' in t ? !!iCol(agg, t.permission.c) : t.backdonation.w > 0;
+const iApplied = st => st.result.tag === 'applied';
+const earlierGrant = (steps, i, c) => steps.slice(0, i).some(p => iApplied(p) &&
+  (iApp(p, 'grantPermission') || {}).c === c);
+function iBindRefused(st) {
+  const ev = iApp(st, 'openBound');
+  if (!ev || !iAppRefused(st) || !iIsResp(st.input, st.signer) || !targetValid(st.input, ev.target))
+    return null;
+  return { ev, q: iOpen(iVotes(st.input), ev.questionId),
+    closed: iVotes(st.input).closed.some(r => r.questionId === ev.questionId) };
+}
+function iGrantRefused(st) {
+  const ev = iApp(st, 'grantPermission');
+  if (!ev || !iAppRefused(st) || !iCol(st.input, ev.c) || !iIsResp(st.input, st.signer) ||
+      liveCount(st.input, permT(ev.c), 'positive') !== 0) return null;
+  return ev;
+}
+
+const ROWS76_INTEGRATED = {
+  'bind': st => {
+    const ev = iApp(st, 'openBound');
+    if (!ev || !iApplied(st)) return false;
+    const has = agg => iBindings(agg).some(([q, t]) => q === ev.questionId && ijson(t) === ijson(ev.target));
+    return !has(st.input) && has(st.result.aggregate) &&
+      iOpen(iVotes(st.result.aggregate), ev.questionId).proposer === st.signer;
+  },
+  'mint': st => {
+    if (!iApplied(st)) return false;
+    const pre = iVotes(st.input), post = iVotes(st.result.aggregate);
+    const added = post.closed.slice(pre.closed.length);
+    const was = new Set(iLive(st.input).map(ijson));
+    return iLive(st.result.aggregate).some(a => !was.has(ijson(a)) &&
+      added.some(r => r.questionId === a.questionId && r.verdict === a.verdict) &&
+      iBindings(st.input).some(([q, t]) => q === a.questionId && ijson(t) === ijson(a.target)));
+  },
+  'spend-grant': st => {
+    const ev = iApp(st, 'grantPermission');
+    return !!ev && iApplied(st) && iCol(st.result.aggregate, ev.c).permitted &&
+      liveCount(st.input, permT(ev.c), 'positive') ===
+        liveCount(st.result.aggregate, permT(ev.c), 'positive') + 1;
+  },
+  'spend-deny': st => {
+    const ev = iApp(st, 'denyPermission');
+    return !!ev && iApplied(st) && !!iCol(st.input, ev.c) && !iCol(st.result.aggregate, ev.c) &&
+      liveCount(st.input, permT(ev.c), 'negative') === 1 &&
+      liveCount(st.result.aggregate, permT(ev.c), 'negative') === 0;
+  },
+  'refuse-unbound': (st, i, steps) => {
+    const ev = iGrantRefused(st);
+    return !!ev && !earlierGrant(steps, i, ev.c) &&
+      iVotes(st.input).closed.some(r => r.verdict === 'positive');
+  },
+  'refuse-spent': (st, i, steps) => {
+    const ev = iGrantRefused(st);
+    return !!ev && earlierGrant(steps, i, ev.c);
+  },
+  'refuse-bind-other': st => {
+    const r = iBindRefused(st);
+    return !!r && !!r.q && r.q.proposer !== st.signer;
+  },
+  'refuse-bind-balloted': st => {
+    const r = iBindRefused(st);
+    return !!r && !!r.q && r.q.proposer === st.signer &&
+      r.q.assents.length + r.q.dissents.length > 0;
+  },
+  'refuse-bind-closed': st => {
+    const r = iBindRefused(st);
+    return !!r && !r.q && r.closed;
+  },
+};
+
+function judgeRows(rows, fresh, RG) {
   const out = [];
-  for (const [row, isWitness] of Object.entries(ROWS81_INTEGRATED)) {
+  for (const [row, isWitness] of Object.entries(rows)) {
     let hit = null;
     for (const n of Object.keys(fresh)) {
-      const i = fresh[n].steps.findIndex(st => { try { return isWitness(st); } catch { return false; } });
+      const steps = fresh[n].steps;
+      const i = steps.findIndex((st, k) => { try { return isWitness(st, k, steps); } catch { return false; } });
       if (i >= 0) { hit = { n, i }; break; }
     }
     if (!hit) { out.push({ row, ok: false, why: 'nessun passo testimone nel corpus Lean fresco' }); continue; }
@@ -304,13 +396,16 @@ function runGate(opts) {
     reasons.push('replay JS di produzione sul corpus fresco ROSSO: ' + e.message);
   }
 
-  const rows81 = judgeRows81(fresh, prod.RG);
+  const rows81 = judgeRows(ROWS81_INTEGRATED, fresh, prod.RG);
   for (const r of rows81)
     if (!r.ok) reasons.push(`riga #81 ${r.row}${r.at ? ' @' + r.at : ''} ROSSA: ${r.why}`);
+  const rows76 = judgeRows(ROWS76_INTEGRATED, fresh, prod.RG);
+  for (const r of rows76)
+    if (!r.ok) reasons.push(`riga #76 ${r.row}${r.at ? ' @' + r.at : ''} ROSSA: ${r.why}`);
 
-  if (reasons.length) return { ok: false, reasons, rows81 };
+  if (reasons.length) return { ok: false, reasons, rows81, rows76 };
   return { ok: true, envelopes: freshNames.length, embSteps, freshSteps,
-    freshSha, scriptSha: prod.scriptSha, rows81 };
+    freshSha, scriptSha: prod.scriptSha, rows81, rows76 };
 }
 
 /* --- selftest: three negative axes, then production GREEN ------------------ */
@@ -374,8 +469,7 @@ function selftest(work) {
                     'openQuestions: gs.openQuestions.filter(([, q]) => q.proposer !== proposer),'],
         ['const mine = gs.openQuestions.slice();', 'openQuestions: [],']) },
     { name: 'nessuna ricomputazione dopo l’uscita (L-6a)', expect: /riga #81 L-6a /,
-      make: mutant('return { ...cleaned, votes: vtSweep(vtTheta, post, departed) };',
-        'return { ...cleaned, votes: departed };') },
+      make: mutant('const swept = vtSweep(vtTheta, post, departed);', 'const swept = departed;') },
     { name: 'renounce tocca le domande estranee (L-6b)', expect: /riga #81 L-6b /,
       make: mutant("if (q) effected = { openQuestions: vtErase(questionId, gs.openQuestions),",
         "if (q) effected = { openQuestions: [],") },
@@ -383,6 +477,32 @@ function selftest(work) {
       make: mutant("return signer === q.proposer ? null : 'notProposer';", 'return null;') },
     { name: 'voto di un non designato registrato (R-2)', expect: /riga #81 R-2 /,
       make: mutant("return perm && signer !== perm.designee ? 'notDesignee' : null;", 'return null;') },
+  );
+  // #76: the page's closure-derived authorization mutated, one behaviour at
+  // a time; each must turn its row RED through the same judgment
+  const BIND = '{ ...s, bindings: [[questionId, target], ...s.bindings] }';
+  const SPEND = 'return effect({ ...s, live: pulled[1] });';
+  const NOAUTH = 'if (pulled === null) return { ok: false, failed: [NOLIVE(target, verdict)] };';
+  controls.push(
+    { name: 'openBound non lega il bersaglio (bind)', expect: /riga #76 bind /,
+      make: mutant(BIND, 's') },
+    { name: 'la chiusura legata non conia l’autorizzazione (mint)', expect: /riga #76 mint /,
+      make: mutant('if (target !== null) minted.push(', 'if (false) minted.push(') },
+    { name: 'il permesso non spende la chiusura (spend-grant)', expect: /riga #76 spend-grant /,
+      make: mutant(SPEND, 'return effect(s);') },
+    { name: 'il diniego legge il verdetto positivo (spend-deny)', expect: /riga #76 spend-deny /,
+      make: mutant("const pulled = pullLive(permT(c), 'negative', s.live);",
+        "const pulled = pullLive(permT(c), 'positive', s.live);") },
+    { name: 'permesso senza chiusura legata applicato (refuse-unbound)', expect: /riga #76 refuse-unbound /,
+      make: mutant(NOAUTH, 'if (pulled === null) return effect(s);') },
+    { name: 'chiusura spesa due volte (refuse-spent)', expect: /riga #76 refuse-spent /,
+      make: mutant(SPEND, 'return effect(s);') },
+    { name: 'legame di una domanda aperta altrui (refuse-bind-other)', expect: /riga #76 refuse-bind-other /,
+      make: mutant('vtLookup(qid, s.votes.openQuestions) === null', 'true') },
+    { name: 'legame dopo un voto (refuse-bind-balloted)', expect: /riga #76 refuse-bind-balloted /,
+      make: mutant('vtLookup(qid, s.votes.openQuestions) === null', 'true') },
+    { name: 'legame di una domanda chiusa (refuse-bind-closed)', expect: /riga #76 refuse-bind-closed /,
+      make: mutant('!s.votes.closed.some(r => r.questionId === qid)', 'true') },
   );
   for (const c of controls) {
     const p = join(work, 'sab.html');
@@ -419,7 +539,8 @@ function report(r, prefix) {
     `GREEN: ${r.envelopes} envelope; rigenerazione Lean identica (sha ${r.freshSha.slice(0, 12)}…); ` +
     `replay di produzione: ${r.embSteps} passi sul corpus incorporato + ${r.freshSteps} sul corpus fresco ` +
     `(script eseguito, sha ${r.scriptSha.slice(0, 12)}…); ` +
-    `righe #81: ${r.rows81.map(x => x.row + '@' + x.at).join(' ')}`);
+    `righe #81: ${r.rows81.map(x => x.row + '@' + x.at).join(' ')}; ` +
+    `righe #76: ${r.rows76.map(x => x.row + '@' + x.at).join(' ')}`);
 }
 
 /* --- CLI ------------------------------------------------------------------- */
