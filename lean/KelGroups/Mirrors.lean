@@ -51,14 +51,17 @@ private theorem assocLookup_some_mem_nodupfree {κ ν : Type} [BEq κ] [LawfulBE
           exact List.mem_cons_self
       · exact List.mem_cons_of_mem _ (ih h)
 
-/-- K1 mirror: duplicate-free approvals containing the proposer. -/
-def pendingWellFormedB (pending : PendingProposal) : Bool :=
-  decide (pending.approvals.Nodup) && decide (pending.proposer ∈ pending.approvals)
+/-- K1 mirror: duplicate-free approvals, and the proposer absent from them
+whenever more than one admin is counted. -/
+def pendingWellFormedB (admins : Nat) (pending : PendingProposal) : Bool :=
+  decide (pending.approvals.Nodup) &&
+    (!decide (1 < admins) || decide (pending.proposer ∉ pending.approvals))
 
 /-- K1 correspondence. -/
-theorem pendingWellFormed_corr (pending : PendingProposal) :
-    PendingWellFormed pending ↔ pendingWellFormedB pending = true := by
-  simp only [PendingWellFormed, pendingWellFormedB, Bool.and_eq_true, decide_eq_true_eq]
+theorem pendingWellFormed_corr (admins : Nat) (pending : PendingProposal) :
+    PendingWellFormed admins pending ↔ pendingWellFormedB admins pending = true := by
+  unfold PendingWellFormed pendingWellFormedB
+  by_cases h : 1 < admins <;> simp [h]
 
 /-- K2 mirror: every member entry is keyed by its own key. -/
 def membersCoherentB (gs : GroupState α) : Bool :=
@@ -75,9 +78,10 @@ theorem membersCoherent_corr (gs : GroupState α) :
   · intro h k m hm
     exact h (k, m) hm
 
-/-- K3 mirror: every pending proposal is well formed. -/
+/-- K3 mirror: every pending proposal is well formed at the current admin
+count. -/
 def pendingCoherentB (gs : GroupState α) : Bool :=
-  gs.pendingProposals.all fun e => pendingWellFormedB e.2
+  gs.pendingProposals.all fun e => pendingWellFormedB (adminCount gs) e.2
 
 /-- K3 correspondence (no `α` equality needed). -/
 theorem pendingCoherent_corr (gs : GroupState α) :
@@ -86,16 +90,42 @@ theorem pendingCoherent_corr (gs : GroupState α) :
   constructor
   · intro h e he
     obtain ⟨pid, p⟩ := e
-    exact (pendingWellFormed_corr p).mp (h pid p he)
+    exact (pendingWellFormed_corr _ p).mp (h pid p he)
   · intro h pid p hp
     have he := h (pid, p) hp
-    exact (pendingWellFormed_corr p).mpr he
+    exact (pendingWellFormed_corr _ p).mpr he
 
-/-- K4 mirror: key uniqueness plus both coherence checks. -/
+/-- Integrated-store twin of K1. -/
+def pendingBaseWellFormedB (admins : Nat) (pending : PendingBase) : Bool :=
+  decide (pending.approvals.Nodup) &&
+    (!decide (1 < admins) || decide (pending.proposer ∉ pending.approvals))
+
+/-- Integrated K1 correspondence. -/
+theorem pendingBaseWellFormed_corr (admins : Nat) (pending : PendingBase) :
+    PendingBaseWellFormed admins pending ↔
+      pendingBaseWellFormedB admins pending = true := by
+  unfold PendingBaseWellFormed pendingBaseWellFormedB
+  by_cases h : 1 < admins <;> simp [h]
+
+/-- Integrated-store twin of K3. -/
+def basePendingCoherentB (gs : GroupState α) : Bool :=
+  gs.pendingBase.all fun e => pendingBaseWellFormedB (adminCount gs) e.2
+
+/-- Integrated K3 correspondence. -/
+theorem basePendingCoherent_corr (gs : GroupState α) :
+    BasePendingCoherent gs ↔ basePendingCoherentB gs = true := by
+  simp only [BasePendingCoherent, basePendingCoherentB, List.all_eq_true]
+  constructor
+  · intro h e he
+    exact (pendingBaseWellFormed_corr _ e.2).mp (h e.1 e.2 he)
+  · intro h pid p hp
+    exact (pendingBaseWellFormed_corr _ p).mpr (h (pid, p) hp)
+
+/-- K4 mirror: key uniqueness plus the three coherence checks. -/
 def wellFormedB (gs : GroupState α) : Bool :=
   decide ((gs.members.map Prod.fst).Nodup) &&
   (decide ((gs.pendingProposals.map Prod.fst).Nodup) &&
-  (membersCoherentB gs && pendingCoherentB gs))
+  (membersCoherentB gs && (pendingCoherentB gs && basePendingCoherentB gs)))
 
 /-- K4 correspondence (no `α` equality needed). -/
 theorem wellFormed_corr (gs : GroupState α) :
@@ -104,11 +134,118 @@ theorem wellFormed_corr (gs : GroupState α) :
   simp only [Bool.and_eq_true, decide_eq_true_eq]
   constructor
   · intro h
-    obtain ⟨mK, pK, mC, pC⟩ := h
-    exact ⟨mK, pK, (membersCoherent_corr gs).mp mC, (pendingCoherent_corr gs).mp pC⟩
+    obtain ⟨mK, pK, mC, pC, bC⟩ := h
+    exact ⟨mK, pK, (membersCoherent_corr gs).mp mC, (pendingCoherent_corr gs).mp pC,
+      (basePendingCoherent_corr gs).mp bC⟩
   · intro h
-    obtain ⟨mK, pK, mC, pC⟩ := h
-    exact ⟨mK, pK, (membersCoherent_corr gs).mpr mC, (pendingCoherent_corr gs).mpr pC⟩
+    obtain ⟨mK, pK, mC, pC, bC⟩ := h
+    exact ⟨mK, pK, (membersCoherent_corr gs).mpr mC, (pendingCoherent_corr gs).mpr pC,
+      (basePendingCoherent_corr gs).mpr bC⟩
+
+/-- Count-free strong mirror: duplicate-free approvals without the proposer. -/
+def pendingStrongB (pending : PendingProposal) : Bool :=
+  decide (pending.approvals.Nodup) && decide (pending.proposer ∉ pending.approvals)
+
+/-- Strong correspondence. -/
+theorem pendingStrong_corr (pending : PendingProposal) :
+    PendingStrong pending ↔ pendingStrongB pending = true := by
+  simp only [PendingStrong, pendingStrongB, Bool.and_eq_true, decide_eq_true_eq]
+
+/-- Every historical pending entry is strong. -/
+def strongCoherentB (gs : GroupState α) : Bool :=
+  gs.pendingProposals.all fun e => pendingStrongB e.2
+
+/-- Strong-coherence correspondence. -/
+theorem strongCoherent_corr (gs : GroupState α) :
+    StrongCoherent gs ↔ strongCoherentB gs = true := by
+  simp only [StrongCoherent, strongCoherentB, List.all_eq_true]
+  constructor
+  · intro h e he
+    exact (pendingStrong_corr e.2).mp (h e.1 e.2 he)
+  · intro h pid p hp
+    exact (pendingStrong_corr p).mpr (h (pid, p) hp)
+
+/-- Integrated-store twin of the strong mirror. -/
+def pendingBaseStrongB (pending : PendingBase) : Bool :=
+  decide (pending.approvals.Nodup) && decide (pending.proposer ∉ pending.approvals)
+
+/-- Integrated strong correspondence. -/
+theorem pendingBaseStrong_corr (pending : PendingBase) :
+    PendingBaseStrong pending ↔ pendingBaseStrongB pending = true := by
+  simp only [PendingBaseStrong, pendingBaseStrongB, Bool.and_eq_true, decide_eq_true_eq]
+
+/-- Every integrated pending entry is strong. -/
+def strongBaseCoherentB (gs : GroupState α) : Bool :=
+  gs.pendingBase.all fun e => pendingBaseStrongB e.2
+
+/-- Integrated strong-coherence correspondence. -/
+theorem strongBaseCoherent_corr (gs : GroupState α) :
+    StrongBaseCoherent gs ↔ strongBaseCoherentB gs = true := by
+  simp only [StrongBaseCoherent, strongBaseCoherentB, List.all_eq_true]
+  constructor
+  · intro h e he
+    exact (pendingBaseStrong_corr e.2).mp (h e.1 e.2 he)
+  · intro h pid p hp
+    exact (pendingBaseStrong_corr p).mpr (h (pid, p) hp)
+
+/-- Raw-fold structural mirror: key uniqueness on members and both pending
+stores, member-key coherence, duplicate-free approvals in both stores. -/
+def rawStructuralB (gs : GroupState α) : Bool :=
+  decide ((gs.members.map Prod.fst).Nodup) &&
+  (decide ((gs.pendingProposals.map Prod.fst).Nodup) &&
+  (membersCoherentB gs &&
+  (gs.pendingProposals.all (fun e => decide (e.2.approvals.Nodup)) &&
+  (decide ((gs.pendingBase.map Prod.fst).Nodup) &&
+  gs.pendingBase.all (fun e => decide (e.2.approvals.Nodup))))))
+
+/-- Raw-structural correspondence. -/
+theorem rawStructural_corr (gs : GroupState α) :
+    RawStructural gs ↔ rawStructuralB gs = true := by
+  unfold RawStructural rawStructuralB
+  simp only [Bool.and_eq_true, decide_eq_true_eq, List.all_eq_true]
+  constructor
+  · intro ⟨mK, pK, mC, pN, bK, bN⟩
+    exact ⟨mK, pK, (membersCoherent_corr gs).mp mC, fun e he => pN e.1 e.2 he, bK,
+      fun e he => bN e.1 e.2 he⟩
+  · intro ⟨mK, pK, mC, pN, bK, bN⟩
+    exact ⟨mK, pK, (membersCoherent_corr gs).mpr mC, fun pid p hp => pN (pid, p) hp, bK,
+      fun pid p hp => bN (pid, p) hp⟩
+
+/-- Admissibility mirror: every event of the trace passes the boundary
+validator on the state the raw fold has reached. The validator's verdict is
+read with `Except.isOk`, never compared; like `TraceAdmissible` it is a right
+fold over a state continuation, so no recursive auxiliary is generated. -/
+def traceAdmissibleB (digest : Proposal → ProposalId) (appFoldFn : AppFold α)
+    (validKey : Key → Bool) (config : GroupConfig α) (gs : GroupState α)
+    (trace : List (Key × GroupEvent α)) : Bool :=
+  trace.foldr
+    (fun step admissibleFrom current =>
+      (validateEvent validKey config current step.1 step.2).isOk &&
+        admissibleFrom (applyEvent digest appFoldFn current step.1 step.2))
+    (fun _ => true) gs
+
+/-- Admissibility correspondence, by induction on the trace. -/
+theorem traceAdmissible_corr (digest : Proposal → ProposalId) (appFoldFn : AppFold α)
+    (validKey : Key → Bool) (config : GroupConfig α) (gs : GroupState α)
+    (trace : List (Key × GroupEvent α)) :
+    TraceAdmissible digest appFoldFn validKey config gs trace ↔
+      traceAdmissibleB digest appFoldFn validKey config gs trace = true := by
+  induction trace generalizing gs with
+  | nil => simp [TraceAdmissible, traceAdmissibleB]
+  | cons step rest ih =>
+      obtain ⟨signer, event⟩ := step
+      show (validateEvent validKey config gs signer event = .ok () ∧
+          TraceAdmissible digest appFoldFn validKey config
+            (applyEvent digest appFoldFn gs signer event) rest) ↔
+        ((validateEvent validKey config gs signer event).isOk &&
+          traceAdmissibleB digest appFoldFn validKey config
+            (applyEvent digest appFoldFn gs signer event) rest) = true
+      cases validateEvent validKey config gs signer event with
+      | error e => simp [Except.isOk, Except.toBool]
+      | ok u =>
+          cases u
+          simp only [Except.isOk, Except.toBool, true_and, Bool.true_and]
+          exact ih _
 
 /-- K5 mirror: an enactment is reported and the resulting state matches.
 The generic `[DecidableEq α]` assumption lives ONLY in this new counterpart

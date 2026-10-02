@@ -717,14 +717,14 @@ const CLAIMS = {
   'comp-base-threshold': { c: 'Canale base: per un Enactment REALE di applyEventDetailed la cui proposta è nel vocabolario FEDELE (changeRoles, removeMember; introduceMember escluso per costruzione), gli assensi registrati raggiunsero la maggioranza dello stato precedente — CONDIZIONATO alla proposta fedele; l’evento economico e l’enactment restano parametri separati: NESSUN join, nessuna equivalenza di macchine', k: 'teorema', d: 'Reactivegas.Composition.baseEnacted_threshold_met', f: 'lean/Reactivegas/Composition.lean', l: 108, g: '2bd9a2080a692f8a832968e76ecbd270898f2aa2' },
   'comp-app-verdict':  { c: 'Canale app: l’eliminazione del verdetto è ESAUSTIVA — un ClosureRecord permette un evento esattamente quando chiuse positive o negative; open non permette nulla', k: 'teorema', d: 'Reactivegas.Composition.appDecided_verdict_exhaustive', f: 'lean/Reactivegas/Composition.lean', l: 139, g: '2bd9a2080a692f8a832968e76ecbd270898f2aa2' },
   'comp-witness':      { c: 'Testimone di raggiungibilità (anti-vacuità) del canale app: usa zeroThreshold, quindi NON è MAI evidenza della forza reale della soglia', k: 'definizione', d: 'Reactivegas.Composition.productionVerdictWitness', f: 'lean/Reactivegas/Composition.lean', l: 160, g: '2bd9a2080a692f8a832968e76ecbd270898f2aa2' },
-  'kg-threshold':      { c: 'Canale base (trascritto qui): una delibera avviene solo al raggiungimento della maggioranza di assensi', k: 'teorema', d: 'enact_implies_threshold_met', f: 'lean/KelGroups/Invariants.lean', l: 342 },
-  'kg-nodup':          { c: 'Canale base: gli assensi non contano mai doppio — la lista è senza duplicati', k: 'teorema', d: 'approvals_nodup', f: 'lean/KelGroups/Invariants.lean', l: 312 },
-  'kg-proposer':       { c: 'Canale base: chi propone è già nel conteggio degli assensi', k: 'teorema', d: 'proposer_mem_approvals', f: 'lean/KelGroups/Invariants.lean', l: 317 },
+  'kg-threshold':      { c: 'Canale base (trascritto qui): una delibera avviene solo al raggiungimento della maggioranza di assensi', k: 'teorema', d: 'enact_implies_threshold_met', f: 'lean/KelGroups/Invariants.lean', l: 1325 },
+  'kg-nodup':          { c: 'Canale base: gli assensi non contano mai doppio — la lista è senza duplicati', k: 'teorema', d: 'approvals_nodup', f: 'lean/KelGroups/Invariants.lean', l: 1245 },
+  'kg-proposer':       { c: 'Canale base: chi propone non è un assenso — con più di un admin il proponente non è mai fra gli assensi contati', k: 'teorema', d: 'KelGroups.proposer_absent_above_one', f: 'lean/KelGroups/Invariants.lean', l: 1253 },
   'kg-majority-def':   { c: 'Canale base: la maggioranza è definita come (admin+1)/2', k: 'definizione', d: 'KelGroups.majority', f: 'lean/KelGroups/State.lean', l: 50 },
-  'kg-validate':       { c: 'Canale base: ogni rifiuto è un errore di validazione della macchina (notAnAdmin, alreadyApproved, …)', k: 'definizione', d: 'KelGroups.validateEvent', f: 'lean/KelGroups/Validate.lean', l: 180 },
-  'kg-approve-guard':  { c: 'Canale base: approvare richiede un admin, una proposta esistente e nessun assenso precedente dello stesso firmatario', k: 'definizione', d: 'KelGroups.validateApproval', f: 'lean/KelGroups/Validate.lean', l: 116 },
+  'kg-validate':       { c: 'Canale base: ogni rifiuto è un errore di validazione della macchina (notAnAdmin, alreadyApproved, …)', k: 'definizione', d: 'KelGroups.validateEvent', f: 'lean/KelGroups/Validate.lean', l: 193 },
+  'kg-approve-guard':  { c: 'Canale base: approvare richiede un admin e una proposta esistente; con più di un admin chi propone non può approvare la propria proposta (proposerSelfApproval); nessun assenso precedente dello stesso firmatario', k: 'definizione', d: 'KelGroups.validateApproval', f: 'lean/KelGroups/Validate.lean', l: 120 },
   'kg-enact-effect':   { c: 'Canale base: la delibera applica la proposta ai membri e rimuove la pendente, in un passo', k: 'definizione', d: 'KelGroups.finishEnact', f: 'lean/KelGroups/Fold.lean', l: 18 },
-  'kg-apply':          { c: 'Canale base: proporre inserisce la pendente con il proponente già assenziente e tenta subito la delibera', k: 'definizione', d: 'KelGroups.applyEventDetailed', f: 'lean/KelGroups/Fold.lean', l: 75 },
+  'kg-apply':          { c: 'Canale base: proporre inserisce la pendente senza alcun assenso e tenta subito la delibera', k: 'definizione', d: 'KelGroups.applyEventDetailed', f: 'lean/KelGroups/Fold.lean', l: 75 },
   'ev-donate':         { c: 'donate è direct: alza insieme la cassa dell\'autore e il conto comune riservato (non-membro in conti) di +v; rifiuta autore non responsabile e v non positivo. Nessun teorema di donazione è ancora proved (sorry #48)', k: 'NON PROVATO', d: null, f: null, l: null },
   'ev-backdonate':     { c: 'backdonate è appDecided: quota uguale w a ogni membro e −n*w dal comune, alla radice solo spendendo una chiusura positiva legata a w (riga auth-backdonate); il cammino di governo del toy rifiuta comunque un backdonate importato — limite del toy', k: 'NON PROVATO', d: null, f: null, l: null },
   'kg-setinsert':      { c: 'L’inserimento di posizione è idempotente per costruzione (substrato condiviso)', k: 'definizione', d: 'KelGroups.setInsert', f: 'lean/KelGroups/Types.lean', l: 46 },
@@ -769,7 +769,7 @@ const CHECK_RECEIPT = {
     'KelGroups.Vote.validateVoteEvent', 'KelGroups.Vote.VoteEvent',
     'KelGroups.Vote.QuestionKind', 'KelGroups.Vote.closureCause',
     'KelGroups.Vote.effectedState', 'KelGroups.Vote.closeProposerQuestions',
-    'enact_implies_threshold_met', 'approvals_nodup', 'proposer_mem_approvals',
+    'enact_implies_threshold_met', 'approvals_nodup', 'KelGroups.proposer_absent_above_one',
     'KelGroups.majority', 'KelGroups.validateEvent', 'KelGroups.validateApproval',
     'KelGroups.finishEnact', 'KelGroups.applyEventDetailed',
     'Reactivegas.Composition.apply_grant_spends', 'Reactivegas.Composition.apply_deny_spends',
@@ -804,9 +804,9 @@ const CHECK_RECEIPT = {
     'KelGroups.Vote.VoteEvent': 'provato',
     'KelGroups.Vote.applyVoteEvent': 'provato',
     'KelGroups.Vote.ballots_nodup_disjoint': 'provato',
+    'KelGroups.Vote.closeProposerQuestions': 'provato',
     'KelGroups.Vote.closureCause': 'provato',
     'KelGroups.Vote.effectedState': 'provato',
-    'KelGroups.Vote.closeProposerQuestions': 'provato',
     'KelGroups.Vote.foldVote_wellFormed': 'provato',
     'KelGroups.Vote.franchise_of_tallies': 'provato',
     'KelGroups.Vote.legacyThreshold': 'provato',
@@ -821,6 +821,7 @@ const CHECK_RECEIPT = {
     'KelGroups.applyEventDetailed': 'provato',
     'KelGroups.finishEnact': 'provato',
     'KelGroups.majority': 'provato',
+    'KelGroups.proposer_absent_above_one': 'provato',
     'KelGroups.setInsert': 'provato',
     'KelGroups.validateApproval': 'provato',
     'KelGroups.validateEvent': 'provato',
@@ -844,7 +845,6 @@ const CHECK_RECEIPT = {
     'pledge_guard_inv': 'provato',
     'pledge_preserves_allUnique': 'provato',
     'pledge_rejected_when_member': 'provato',
-    'proposer_mem_approvals': 'provato',
     'pullCollection': 'provato',
     'reach_solvent': 'provato',
     'solvent': 'provato',
@@ -874,13 +874,13 @@ const CHECK_RECEIPT = {
     'lean/Reactivegas/CompositionRoot.lean': '9c40b1e21be55700d1fd0e230301da1bdd78b747f1debf5012041e99c7b7c927',
     'lean/KelGroups/Types.lean': '971a2a2ee774c3af63270e8f0bb8f1d5346f1da5c97f5faea1856dbe460acd07',
     'lean/KelGroups/State.lean': '25c2109e304fa9cdb084daabb267deb4a4a8a15749c9f66bae878d190fea49a6',
-    'lean/KelGroups/Fold.lean': 'c6cbb818705db481b5f6fd8469e7a7b279fe2e6f9a9675f4cb262df570d679cf',
-    'lean/KelGroups/Validate.lean': '109a0c5ac27cfbed634fde0abc82667b6246b5276a74a8c0091cafcce79ea36f',
-    'lean/KelGroups/Invariants.lean': '86f200cb8dccd63d5d14a362e46286b7781040e2df1b214baedfb23e065a88e2',
+    'lean/KelGroups/Fold.lean': '448170ee0b6f89052eabe92557052c564bfe23ab18e0e6238167ec9cdc471b37',
+    'lean/KelGroups/Validate.lean': '59a7005a8bf7b8c6356156b9dd17cb34ef213fe5f2c7c9959777874e7ae6668f',
+    'lean/KelGroups/Invariants.lean': '8ce1bf9f074bb3d3bdf70b9c02fec7b6beae7cd3b8c36b8b137a0bf4de3c3d13',
     'lean/KelGroups/Event.lean': 'c89e135ba8ed919865eacdf7ed6c1c33953450997cbcbddbf3daf4510c61a449',
-    'lean/KelGroups/Integration.lean': 'a23b27e8265024368e7b39399d4111548f9ce56ce18782550799d76199c706e2',
-    'lean/KelGroups/Mirrors.lean': '1be677dc942ec8a65be77b80c9c8c2ba694934a9ba238fbc681da240c99aefaf',
-    'lean/KelGroups/Tests.lean': 'b9d8aa9f3d25292114f8ba5019bd55c99969ef9aecbaa2c646d1732a886f04c9',
+    'lean/KelGroups/Integration.lean': '4aea07d892d4c97c355720bec21a6ce8dd19de8fccf81ce2e36a7d9b78b282b3',
+    'lean/KelGroups/Mirrors.lean': '9ee1f685195cba0109a656b6419f827d38182dee35229be46cd9e8edf46b8e2b',
+    'lean/KelGroups/Tests.lean': '59474896fdd612c0cf683a5821084a4754383a37ac8031ab8ed5780850d61355',
     'lean/KelGroups.lean': 'fa7ca68cd42e9630deaa8ed0ce8943c6d0146f0ea716ea719514583f4c0a8ffc',
     'lean/KelGroups/Vote/Types.lean': 'dc6227f8c785b566aa08c3baab35deae5bc58d6ae420d1cf4e8df923b97fedc8',
     'lean/KelGroups/Vote/Event.lean': '84a186d5977f61c047d728f279ada07ad5908f77b0090942876132021e72b596',
@@ -905,13 +905,13 @@ const CHECK_RECEIPT = {
     'lean/Reactivegas/CompositionRoot.lean': '8232d4fed808ad30a9817a9bae9e832a73ce5f15',
     'lean/KelGroups/Types.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
     'lean/KelGroups/State.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
-    'lean/KelGroups/Fold.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
-    'lean/KelGroups/Validate.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
-    'lean/KelGroups/Invariants.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
+    'lean/KelGroups/Fold.lean': '1ff0d9fea040d8ca52590ba9bb24c4c24674a551',
+    'lean/KelGroups/Validate.lean': '1ff0d9fea040d8ca52590ba9bb24c4c24674a551',
+    'lean/KelGroups/Invariants.lean': '1ff0d9fea040d8ca52590ba9bb24c4c24674a551',
     'lean/KelGroups/Event.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
-    'lean/KelGroups/Integration.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
-    'lean/KelGroups/Mirrors.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
-    'lean/KelGroups/Tests.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
+    'lean/KelGroups/Integration.lean': '1ff0d9fea040d8ca52590ba9bb24c4c24674a551',
+    'lean/KelGroups/Mirrors.lean': '1ff0d9fea040d8ca52590ba9bb24c4c24674a551',
+    'lean/KelGroups/Tests.lean': '1ff0d9fea040d8ca52590ba9bb24c4c24674a551',
     'lean/KelGroups.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
     'lean/KelGroups/Vote/Types.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
     'lean/KelGroups/Vote/Event.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
@@ -1512,11 +1512,14 @@ function bgValidateMutation(gs, signer, p) {
   const key = 'departure' in p ? p.departure : p.changeRoles.key;
   return bgIsMember(key, gs) ? null : 'memberNotFound';
 }
-/* validateBaseApproval: an admin, a pending proposal, no prior assent */
+/* validateBaseApproval: an admin, a pending proposal; above one admin the
+   proposer's own approval is refused under its own name (checked before the
+   duplicate, as in Lean); no prior assent of the same signer */
 function bgValidateApproval(gs, signer, pid) {
   if (!bgIsAdmin(signer, gs)) return 'notAnAdmin';
   const pend = vtLookup(pid, gs.pendingBase);
   if (!pend) return 'proposalNotFound';
+  if (signer === pend.proposer && bgAdminCount(gs) > 1) return 'proposerSelfApproval';
   return pend.approvals.includes(signer) ? 'alreadyApproved' : null;
 }
 
@@ -1576,7 +1579,7 @@ function bgApply(gs, signer, ev, payload) {
     if (verr) return { gs, payload, refused: verr };
     const pid = bgDigest(p);
     const proposed = { ...gs, pendingBase: vtInsert(pid,
-      { proposal: p, proposer: signer, approvals: [signer] }, gs.pendingBase) };
+      { proposal: p, proposer: signer, approvals: [] }, gs.pendingBase) };
     return bgTryEnact(proposed, pid, payload);
   }
   const pid = ev.approve.proposalId;
@@ -1599,7 +1602,7 @@ const canonBaseState = gs => JSON.stringify({
       approvals: pp.approvals.slice() }]) });
 
 /* Crude-drift net for the base channel: approvals_nodup and
-   proposer_mem_approvals, transcribed and asserted after every applied
+   proposer_absent_above_one, transcribed and asserted after every applied
    event. A violation means this transcription diverged from the substrate. */
 /* @@CORE:base-b:END@@ */
 
@@ -1609,8 +1612,8 @@ function bgLawViolations(gs) {
   for (const [pid, pp] of gs.pendingBase) {
     if (new Set(pp.approvals).size !== pp.approvals.length)
       out.push(`approvals_nodup: «${pid}»`);
-    if (!pp.approvals.includes(pp.proposer))
-      out.push(`proposer_mem_approvals: «${pid}»`);
+    if (bgAdminCount(gs) > 1 && pp.approvals.includes(pp.proposer))
+      out.push(`proposer_absent_above_one: «${pid}»`);
   }
   return out;
 }
@@ -1800,7 +1803,8 @@ const bootAggregate = () => {
    error to .app). The vote identity (notProposer, notDesignee, …) is erased
    on this path; the vote stream keeps it. */
 const BG_VALIDATION_ERRORS = { notAMember: 1, notAnAdmin: 1, reservedKey: 1,
-  memberAlreadyExists: 1, memberNotFound: 1, proposalNotFound: 1, alreadyApproved: 1 };
+  memberAlreadyExists: 1, memberNotFound: 1, proposalNotFound: 1, alreadyApproved: 1,
+  proposerSelfApproval: 1 };
 const refusalClassOf = refused => BG_VALIDATION_ERRORS[refused] ? 'validation:' + refused : 'app';
 const leanRefusalClassOf = err => {
   if (err === 'comuneReserved') return 'comuneReserved';

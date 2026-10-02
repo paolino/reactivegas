@@ -247,13 +247,14 @@ async function runJourney(b, url, nonce) {
   await step(b, s, snaps, 'benvenuto.reloadPersist', ``);
 
   // ------ shared setup: elect Bruno, fund him, open Olio -------------------
-  // one membership: admission is direct, election is ONE restricted proposal
-  // that enacts at once (single admin, majority 1) — cassa bruno appears read
-  // at zero, nothing is stored
+  // one membership: admission is direct, election is ONE restricted proposal;
+  // proposing is not assenting, so the single admin approves it as a separate
+  // act (majority 1) — cassa bruno appears read at zero, nothing is stored
   await b.eval(s, `(async () => {
     await __rgClick('#gtasks [data-task="elect"]');
     await __rgClick('#pop .chip[data-id="bruno"]');
     await __rgClick('#pop .chip[data-id="anna"]');
+    await __rgClick('#govcard [data-bgapprove][data-bgsigner="anna"]');
     await __rgClick('[data-key="member:anna"]');
     await __rgClick('[data-hat="cassiere"]');
     await __rgClick('#hat-cassiere [data-task="deposit"]');
@@ -379,6 +380,7 @@ async function runJourney(b, url, nonce) {
     await __rgClick('#gtasks [data-task="elect"]');
     await __rgClick('#pop .chip[data-id="elena"]');
     await __rgClick('#pop .chip[data-id="anna"]');
+    await __rgClick('#govcard [data-bgapprove][data-bgsigner="bruno"]');
     await __rgClick('[data-key="member:elena"]');
     await __rgClick('[data-hat="cassiere"]');
     await __rgClick('#hat-cassiere [data-task="transferCassa"]');

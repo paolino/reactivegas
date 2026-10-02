@@ -165,16 +165,19 @@ def propose (p : Proposal) : KelGroups.IntegratedEvent Proposal AppEvent := .pro
 def approve (pid : KelGroups.ProposalId) : KelGroups.IntegratedEvent Proposal AppEvent := .approve pid
 
 /-- Trace A: the full one-membership journey through the production root —
-direct admission, ONE-deliberation election, double-entry deposit, a
-purchase with pledges in flight, a third admin so the threshold is 2, an
-open question at 1/2, and the departure of the admin referente PENDING at
-1/2 until the approving vote: wind-up of his open collections, refund of
-every pledge, absorption of his conto into the comune, and the hook's vote
-sweep closing the open question at the new threshold WITHOUT any further
-ballot — all inside the transition of the approving vote. -/
+direct admission, an election the founder proposes and then approves (a
+proposal opens with no assent, the sole admin's separate approval enacts),
+double-entry deposit, a purchase with pledges in flight, a third admin so the
+threshold is 2, an open question at 1/2, and the departure of the admin
+referente PENDING at 1/2 after the first assent until the approving vote:
+wind-up of his open collections, refund of every pledge, absorption of his
+conto into the comune, and the hook's vote sweep closing the open question at
+the new threshold WITHOUT any further ballot — all inside the transition of
+the approving vote. -/
 def traceA : List Seed := [
   ("anna", admit "bruno"),
   ("anna", elect "bruno"),
+  ("anna", approve "roles:bruno"),
   ("anna", appE (.deposit "bruno" 100)),
   ("bruno", appE (.openPurchase 10)),
   ("anna", appE (.pledge "bruno" 10 30)),
@@ -183,9 +186,11 @@ def traceA : List Seed := [
   ("anna", appE (.pledge "bruno" 11 20)),
   ("anna", admit "elena"),
   ("anna", elect "elena"),
+  ("bruno", approve "roles:elena"),
   ("anna", appE (.openQuestion "q:sconto" .collective)),
   ("anna", appE (.cast "q:sconto" .assent)),
   ("anna", propose (.departure "bruno")),
+  ("bruno", approve "depart:bruno"),
   ("elena", approve "depart:bruno")
 ]
 
@@ -338,11 +343,13 @@ transition of the enacting approval her `qd1` and `qd2` close
 `.positive`/`.franchiseChange`; `bruno`'s `qy` stays open. -/
 def traceC : List CheckedSeed := [
   ("anna", admit "bruno", true), ("anna", elect "bruno", true),
+  ("anna", approve "roles:bruno", true),
   ("anna", admit "carlo", true), ("anna", elect "carlo", true),
+  ("bruno", approve "roles:carlo", true),
   ("anna", admit "dora", true), ("anna", elect "dora", true),
-  ("bruno", approve "roles:dora", true),
+  ("bruno", approve "roles:dora", true), ("carlo", approve "roles:dora", true),
   ("anna", admit "elena", true), ("anna", elect "elena", true),
-  ("bruno", approve "roles:elena", true),
+  ("bruno", approve "roles:elena", true), ("carlo", approve "roles:elena", true),
   ("elena", appE (.openQuestion "qc" .collective), true),
   ("bruno", appE (.cast "qc" .dissent), true),
   ("carlo", appE (.cast "qc" .dissent), true),
@@ -362,8 +369,10 @@ def traceC : List CheckedSeed := [
   ("carlo", appE (.openQuestion "qz" .collective), true),
   ("carlo", appE (.renounce "qz"), true),
   ("anna", propose (.departure "dora"), true),
+  ("anna", approve "depart:dora", false),
   ("bruno", approve "depart:dora", true),
-  ("carlo", approve "depart:dora", true)
+  ("carlo", approve "depart:dora", true),
+  ("elena", approve "depart:dora", true)
 ]
 
 /-- The guarded founding aggregate: the founding admin arrives through the
