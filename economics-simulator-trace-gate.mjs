@@ -26,8 +26,8 @@
  *   8. recognises, the same way, every #76 row of closure-derived economic
  *      authorization (ROWS76: a bound opening, a minted authorization, a
  *      grant, a deny and a voted backdonation each spending one, and the
- *      refused unbound grant, spent closure, bind by a non-proposer, bind
- *      after a ballot, bind of a closed question, backdonations with no
+ *      refused unbound grant, spent closure, bind by a non-proposer, second
+ *      bind by the proposer before any ballot, bind after a ballot, bind of a closed question, backdonations with no
  *      closure, a negative closure, a closure bound to another share and a
  *      spent closure, and a grant and a deny each refused while only a
  *      closure of the opposite verdict for their collection and one of
@@ -327,6 +327,11 @@ const ROWS76_INTEGRATED = {
     const r = iBindRefused(st);
     return !!r && !!r.q && r.q.proposer !== st.signer;
   },
+  'refuse-bind-second': st => {
+    const r = iBindRefused(st);
+    return !!r && !!r.q && r.q.proposer === st.signer &&
+      r.q.assents.length + r.q.dissents.length === 0;
+  },
   'refuse-bind-balloted': st => {
     const r = iBindRefused(st);
     return !!r && !!r.q && r.q.proposer === st.signer &&
@@ -595,6 +600,9 @@ function selftest(work) {
     { name: 'chiusura spesa due volte (refuse-spent)', expect: /riga #76 refuse-spent /,
       make: mutant(SPEND, 'return effect(s);') },
     { name: 'legame di una domanda aperta altrui (refuse-bind-other)', expect: /riga #76 refuse-bind-other @[BC]#\d+ ROSSA: il passo da solo/,
+      make: mutant('vtLookup(qid, s.votes.openQuestions) === null', 'true') },
+    { name: 'secondo legame del proponente prima di ogni voto (refuse-bind-second)',
+      expect: /riga #76 refuse-bind-second @[BC]#\d+ ROSSA: il passo da solo/,
       make: mutant('vtLookup(qid, s.votes.openQuestions) === null', 'true') },
     { name: 'legame dopo un voto (refuse-bind-balloted)', expect: /riga #76 refuse-bind-balloted @[BC]#\d+ ROSSA: il passo da solo/,
       make: mutant('vtLookup(qid, s.votes.openQuestions) === null', 'true') },

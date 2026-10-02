@@ -255,7 +255,8 @@ positive closure pays 5 to each member through the one `backdonate 5` it
 authorizes.
 
 Refused, each leaving the aggregate unchanged: `bruno`'s bind of `anna`'s open
-`q:permesso:7` (a non-proposer bind); `anna`'s bind of the closed
+`q:permesso:7` (a non-proposer bind); `anna`'s second bind of it before any
+ballot (the target is fixed once); `anna`'s bind of the closed
 `q:permesso:7` again (a bind after its ballot, which cannot revive the id);
 the second `grantPermission 7` (the closure is spent, though the permission
 is still economically grantable); `backdonate 5` while `q:quota:5` is still
@@ -280,6 +281,7 @@ def traceB : List CheckedSeed := [
   ("bruno", appE (.correctPledge "bruno" 7 5), true),
   ("anna", appE (.openBound "q:permesso:7" .collective (.permission 7)), true),
   ("bruno", appE (.openBound "q:permesso:7" .collective (.permission 7)), false),
+  ("anna", appE (.openBound "q:permesso:7" .collective (.permission 7)), false),
   ("anna", appE (.cast "q:permesso:7" .assent), true),
   ("anna", appE (.openBound "q:permesso:7" .collective (.permission 7)), false),
   ("anna", appE (.grantPermission 7), true),
