@@ -21,8 +21,8 @@ change and fails when a claim here is not what Lean reports.
 
 | | KelGroups modules | whole ledger |
 |---|---|---|
-| DISCOVERED theorem constants | 608 | 1346 |
-| EXCLUDED (generated) | 484 | 1029 |
+| DISCOVERED theorem constants | 608 | 1373 |
+| EXCLUDED (generated) | 484 | 1056 |
 | HELPER | 1 | 6 |
 | REQUIRED (authored − HELPER) | 123 | 311 |
 | KILLED | 58 | 157 |
@@ -296,14 +296,20 @@ What a row here does not establish.
   constructor or is reached from a definition that does.
 - The extent is the git-tracked Lean modules under `lean/`. CI also builds Lean
   tooling packages outside it (`scripts/lake-roots/`, the Lake-roots exe the
-  mirror checker runs, and this runner's census and driver); a theorem authored
-  there would get no row and nothing would object.
+  mirror checker runs, and this runner's census and elaboration driver) and
+  the scratch module the simulator claim gate generates, which holds only
+  imports, `#check` and `#print axioms`; a theorem authored there would get no
+  row and nothing would object. The same gate also builds
+  `Reactivegas.Composition` at a pinned past commit; that is not the head's
+  code and has no rows here.
 - Production is decided by the last component of a module's name (the rule is
   printed by `scripts/lean-mutants/run --census`). A further proof-only module
-  whose name the rule does not list would be read as production: its
-  definitions would be admitted as mutant targets and refusal emitters.
-- The driver reproduces only the options Lake records in each module's setup;
-  a run where Lake passes any other Lean argument fails instead.
+  or trace producer whose name the rule does not list would be read as
+  production: its definitions would be admitted as mutant targets and refusal
+  emitters.
+- The elaboration driver reproduces only the options Lake records in each
+  module's setup; a run where Lake passes any other Lean argument fails
+  instead.
 
 ## Excluded theorem constants
 

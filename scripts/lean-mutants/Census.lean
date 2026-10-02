@@ -32,15 +32,17 @@ def moduleRole (m : Name) : String :=
   else if last == "Mirrors" then "checker"
   else if last == "Invariants" || last == "Lifecycle" then "fixture"
   else if last == "Predicates" then "oracle"
+  else if (last.splitOn "TraceDriver").length > 1 then "driver"
   else "production"
 
 def productionRuleText : String :=
   "a module is production unless the last component of its name ends with " ++
   "`Tests` (test), starts with `Corpus` (corpus), is `Mirrors` (checker), " ++
   "is `Invariants` or `Lifecycle` (proof helpers, fixtures, witnesses and " ++
-  "mutation-only inversions) or is `Predicates` (law " ++
-  "oracle); a production definition is a non-theorem constant with a source " ++
-  "declaration range in a production module"
+  "mutation-only inversions), is `Predicates` (law oracle) or contains " ++
+  "`TraceDriver` (trace producer: it runs production definitions and " ++
+  "serializes their results for the simulator); a production definition is " ++
+  "a non-theorem constant with a source declaration range in a production module"
 
 def exclusionRuleText : String :=
   "a theorem constant is EXCLUDED exactly when the elaborator, not a " ++

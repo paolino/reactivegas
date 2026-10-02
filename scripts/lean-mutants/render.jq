@@ -1,7 +1,11 @@
 # Lean mutant ledger — renderer of lean/REACTIVEGAS-MUTANTS.md and
 # lean/KELGROUPS-MUTANTS.md (M-5).
 #
-#   jq -r --arg half Reactivegas|KelGroups -f render.jq <bundle>
+#   jq -r --arg half Reactivegas|KelGroups --argjson halves '["Reactivegas","KelGroups"]' \
+#     -f render.jq <bundle>
+#
+# A module whose first name component is no half's is rendered in the first
+# half's document, so every census identity is in exactly one document.
 #
 # Renders only from the tracked ledger and catalogue plus census facts (module
 # of each identity, excluded identities, emitters). Kill evidence is the
@@ -10,7 +14,8 @@
 
 def cell: tostring | gsub("\\|"; "\\|") | gsub("\n"; " ");
 def code: "`" + . + "`";
-def inHalf($m): ($m | split(".")[0]) == $half;
+def homeHalf($m): ($m | split(".")[0]) as $c | if ($halves | index($c)) != null then $c else $halves[0] end;
+def inHalf($m): homeHalf($m) == $half;
 def edit:
   (.before | explode) as $a | (.after | explode) as $b
   | ([range(0; [($a | length), ($b | length)] | min)] | map(select($a[.] != $b[.])) | .[0]
@@ -66,6 +71,11 @@ def edit:
   "definition bodies, never through proofs). CI re-runs every mutant on every",
   "change and fails when a claim here is not what Lean reports.",
   "",
+  ( [ $b.census.modules[] | select(inHalf(.name)) | select(.name | split(".")[0] != $half) ] as $extra
+    | if ($extra | length) == 0 then empty
+      else "Modules outside every half's namespace are counted and listed here: "
+           + ($extra | sort_by(.name) | map((.name | code) + " (" + .role + ")") | join(", ")) + ".", ""
+      end ),
   "- **KILLED** — the listed mutants each kill it.",
   "- **HELPER** — its statement names no production definition (computed).",
   "- **OPEN** — no admitted mutant killed it; the reason says why, and the",
@@ -139,14 +149,20 @@ def edit:
   "  constructor or is reached from a definition that does.",
   "- The extent is the git-tracked Lean modules under `lean/`. CI also builds Lean",
   "  tooling packages outside it (`scripts/lake-roots/`, the Lake-roots exe the",
-  "  mirror checker runs, and this runner's census and driver); a theorem authored",
-  "  there would get no row and nothing would object.",
+  "  mirror checker runs, and this runner's census and elaboration driver) and",
+  "  the scratch module the simulator claim gate generates, which holds only",
+  "  imports, `#check` and `#print axioms`; a theorem authored there would get no",
+  "  row and nothing would object. The same gate also builds",
+  "  `Reactivegas.Composition` at a pinned past commit; that is not the head's",
+  "  code and has no rows here.",
   "- Production is decided by the last component of a module's name (the rule is",
   "  printed by `scripts/lean-mutants/run --census`). A further proof-only module",
-  "  whose name the rule does not list would be read as production: its",
-  "  definitions would be admitted as mutant targets and refusal emitters.",
-  "- The driver reproduces only the options Lake records in each module's setup;",
-  "  a run where Lake passes any other Lean argument fails instead.",
+  "  or trace producer whose name the rule does not list would be read as",
+  "  production: its definitions would be admitted as mutant targets and refusal",
+  "  emitters.",
+  "- The elaboration driver reproduces only the options Lake records in each",
+  "  module's setup; a run where Lake passes any other Lean argument fails",
+  "  instead.",
   "",
   "## Excluded theorem constants",
   "",

@@ -371,13 +371,15 @@ validate() {
     [ "$(jq '.violations | length' "$2")" -eq 0 ]
 }
 
-# render <bundle> <dir> : both documents
+# render <bundle> <dir> : both documents. A module outside every half's
+# namespace is rendered in the first one, so every identity is in a document.
 render() {
-    local pair file half
+    local pair file half halves
     mkdir -p "$2"
+    halves=$(for pair in "${renders[@]}"; do printf '%s\n' "${pair#*:}"; done | jq -R . | jq -s -c .)
     for pair in "${renders[@]}"; do
         file=${pair%%:*}; half=${pair#*:}
-        jq -r --arg half "$half" -f "$here/render.jq" "$1" >"$2/$file" \
+        jq -r --arg half "$half" --argjson halves "$halves" -f "$here/render.jq" "$1" >"$2/$file" \
             || die "renderer failed for $file"
     done
 }

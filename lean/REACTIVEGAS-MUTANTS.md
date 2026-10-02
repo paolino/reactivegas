@@ -12,6 +12,8 @@ in the theorem's statement closure (the constants its type reaches through
 definition bodies, never through proofs). CI re-runs every mutant on every
 change and fails when a claim here is not what Lean reports.
 
+Modules outside every half's namespace are counted and listed here: `KelTraceDriverV1` (driver), `TraceDriverV1` (driver).
+
 - **KILLED** — the listed mutants each kill it.
 - **HELPER** — its statement names no production definition (computed).
 - **OPEN** — no admitted mutant killed it; the reason says why, and the
@@ -21,8 +23,8 @@ change and fails when a claim here is not what Lean reports.
 
 | | Reactivegas modules | whole ledger |
 |---|---|---|
-| DISCOVERED theorem constants | 738 | 1346 |
-| EXCLUDED (generated) | 545 | 1029 |
+| DISCOVERED theorem constants | 765 | 1373 |
+| EXCLUDED (generated) | 572 | 1056 |
 | HELPER | 5 | 6 |
 | REQUIRED (authored − HELPER) | 188 | 311 |
 | KILLED | 99 | 157 |
@@ -363,20 +365,26 @@ What a row here does not establish.
   constructor or is reached from a definition that does.
 - The extent is the git-tracked Lean modules under `lean/`. CI also builds Lean
   tooling packages outside it (`scripts/lake-roots/`, the Lake-roots exe the
-  mirror checker runs, and this runner's census and driver); a theorem authored
-  there would get no row and nothing would object.
+  mirror checker runs, and this runner's census and elaboration driver) and
+  the scratch module the simulator claim gate generates, which holds only
+  imports, `#check` and `#print axioms`; a theorem authored there would get no
+  row and nothing would object. The same gate also builds
+  `Reactivegas.Composition` at a pinned past commit; that is not the head's
+  code and has no rows here.
 - Production is decided by the last component of a module's name (the rule is
   printed by `scripts/lean-mutants/run --census`). A further proof-only module
-  whose name the rule does not list would be read as production: its
-  definitions would be admitted as mutant targets and refusal emitters.
-- The driver reproduces only the options Lake records in each module's setup;
-  a run where Lake passes any other Lean argument fails instead.
+  or trace producer whose name the rule does not list would be read as
+  production: its definitions would be admitted as mutant targets and refusal
+  emitters.
+- The elaboration driver reproduces only the options Lake records in each
+  module's setup; a run where Lake passes any other Lean argument fails
+  instead.
 
 ## Excluded theorem constants
 
 Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem` command, produced it: the environment records no source declaration range of its own for it (equation, injectivity, sizeOf, auxiliary-proof and simp lemmas), or it is a structure projection (a `Prop` field of a structure); every other theorem constant is AUTHORED.
 
-<details><summary>545 identities</summary>
+<details><summary>572 identities</summary>
 
 - `AppEvent.acceptPledge.inj`
 - `AppEvent.acceptPledge.injEq`
@@ -492,6 +500,10 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `GuardId.refusePledge.sizeOf_spec`
 - `GuardId.transferCassa.sizeOf_spec`
 - `GuardId.withdraw.sizeOf_spec`
+- `KelTraceDriverV1.Seed.mk.inj`
+- `KelTraceDriverV1.Seed.mk.injEq`
+- `KelTraceDriverV1.Seed.mk.sizeOf_spec`
+- `PSigma.casesOn._arg_pusher@TraceDriverV1`
 - `Pledge.mk.inj`
 - `Pledge.mk.injEq`
 - `Pledge.mk.sizeOf_spec`
@@ -600,6 +612,29 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `Trace.mk.inj`
 - `Trace.mk.injEq`
 - `Trace.mk.sizeOf_spec`
+- `TraceDriverV1.runChecked?._unary._proof_1`
+- `TraceDriverV1.runChecked?._unary._proof_2`
+- `TraceDriverV1.runChecked?._unary._proof_3`
+- `TraceDriverV1.runChecked?._unary.eq_def`
+- `TraceDriverV1.runChecked?.eq_def`
+- `TraceDriverV1.runChecked?.match_1._arg_pusher@TraceDriverV1`
+- `TraceDriverV1.runChecked?.match_1.eq_1@TraceDriverV1`
+- `TraceDriverV1.runChecked?.match_1.eq_2@TraceDriverV1`
+- `TraceDriverV1.runSeeds?._unary._proof_1`
+- `TraceDriverV1.runSeeds?._unary._proof_2`
+- `TraceDriverV1.runSeeds?._unary.eq_def`
+- `TraceDriverV1.runSeeds?.eq_def`
+- `TraceDriverV1.runSeeds?.match_1.eq_1@TraceDriverV1`
+- `TraceDriverV1.runSeeds?.match_1.eq_2@TraceDriverV1`
+- `TraceDriverV1.runSeeds?.match_1.eq_3@TraceDriverV1`
+- `TraceDriverV1.runSeeds?.match_1.eq_4@TraceDriverV1`
+- `TraceDriverV1.runSeeds?.match_3.eq_1@TraceDriverV1`
+- `TraceDriverV1.runSeeds?.match_3.eq_2@TraceDriverV1`
+- `TraceDriverV1.runSeeds?.match_5.eq_1@TraceDriverV1`
+- `TraceDriverV1.runSeeds?.match_5.eq_2@TraceDriverV1`
+- `TraceDriverV1.runSeeds?.match_7._arg_pusher@TraceDriverV1`
+- `TraceDriverV1.runSeeds?.match_7.eq_1@TraceDriverV1`
+- `TraceDriverV1.runSeeds?.match_7.eq_2@TraceDriverV1`
 - `TraceInventory.mk.inj`
 - `TraceInventory.mk.injEq`
 - `TraceInventory.mk.sizeOf_spec`
