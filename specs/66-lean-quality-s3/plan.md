@@ -49,3 +49,14 @@ History already pushed is not rewritten: master is merged into the branch and
 the ledger is re-derived in one further commit under the same requirements.
 `VoteError.notProposer` and `notDesignee` are now emitted, so R-9 requires guard
 mutants for them.
+
+## CI wall time (measured, T311)
+
+The `Lean mutant ledger` job on `7a844dc` (CI run 36964267517) was cancelled at
+its 60-minute timeout: about 23 min provisioning the Nix dev shell, 1 min
+census, 34 min mutants, negative controls unfinished. The ceiling stands: every
+job that carries the ledger finishes green within 60 minutes on GitHub, with
+the measurement taken from the pushed head's CI run. The mechanism is the
+implementer's. If the mutants are split across several jobs, a final check
+proves the union of executed mutants equals the catalogue and that every
+control ran, with a negative control showing a dropped shard fails.
