@@ -60,3 +60,8 @@ the measurement taken from the pushed head's CI run. The mechanism is the
 implementer's. If the mutants are split across several jobs, a final check
 proves the union of executed mutants equals the catalogue and that every
 control ran, with a negative control showing a dropped shard fails.
+
+Superseded (desk ruling, T311): the ledger stays one CI job with
+`timeout-minutes: 120`, because a split pays the dev-shell provisioning per
+job and adds transport and aggregation failure modes. Splitting is reconsidered
+only if a measured full run on GitHub exceeds about 100 minutes.
