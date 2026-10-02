@@ -255,6 +255,7 @@
         "after": "      if true then"
       },
       "claimedKills": [
+        "KelGroups.integratedApp_both@KelGroups.Invariants",
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.fixtures_hold",
@@ -266,14 +267,17 @@
     },
     {
       "id": "guard-require-admin",
-      "target": "KelGroups.requireAdmin@KelGroups.Validate",
+      "target": "KelGroups.requireAdmin",
       "guard": "KelGroups.ValidationError.notAnAdmin",
       "patch": {
-        "line": 29,
+        "line": 33,
         "before": "  if isAdmin signer gs then .ok () else .error (.notAnAdmin signer)",
         "after": "  if true then .ok () else .error (.notAnAdmin signer)"
       },
-      "claimedKills": [],
+      "claimedKills": [
+        "KelGroups.validateApproval_ok@KelGroups.Invariants",
+        "KelGroups.validateBaseApproval_ok@KelGroups.Invariants"
+      ],
       "note": "base validators stop requiring an admin signer"
     },
     {
@@ -281,7 +285,7 @@
       "target": "KelGroups.validateBootstrapProposal@KelGroups.Validate",
       "guard": "KelGroups.ValidationError.bootstrapRequiresAdmin",
       "patch": {
-        "line": 92,
+        "line": 96,
         "before": "      if hasAdmin roles then .ok () else .error .bootstrapRequiresAdmin",
         "after": "      if true then .ok () else .error .bootstrapRequiresAdmin"
       },
@@ -293,7 +297,7 @@
       "target": "KelGroups.validateDirectAdmission",
       "guard": "KelGroups.ValidationError.memberAlreadyExists",
       "patch": {
-        "line": 147,
+        "line": 157,
         "before": "    else if isMember target gs then .error (.memberAlreadyExists target)",
         "after": "    else if false then .error (.memberAlreadyExists target)"
       },
@@ -310,7 +314,7 @@
       "target": "KelGroups.requireMember@KelGroups.Validate",
       "guard": "KelGroups.ValidationError.memberNotFound",
       "patch": {
-        "line": 33,
+        "line": 37,
         "before": "  if isMember key gs then .ok () else .error (.memberNotFound key)",
         "after": "  if true then .ok () else .error (.memberNotFound key)"
       },
@@ -322,11 +326,13 @@
       "target": "KelGroups.validateBaseApproval",
       "guard": "KelGroups.ValidationError.proposalNotFound",
       "patch": {
-        "line": 167,
+        "line": 177,
         "before": "  | none => .error (.proposalNotFound proposalId)",
         "after": "  | none => .ok ()"
       },
-      "claimedKills": [],
+      "claimedKills": [
+        "KelGroups.validateBaseApproval_ok@KelGroups.Invariants"
+      ],
       "note": "approving an unknown base proposal is admitted"
     },
     {
@@ -334,11 +340,13 @@
       "target": "KelGroups.validateBaseApproval",
       "guard": "KelGroups.ValidationError.alreadyApproved",
       "patch": {
-        "line": 169,
-        "before": "      if pending.approvals.contains signer then",
-        "after": "      if false then"
+        "line": 182,
+        "before": "      else if pending.approvals.contains signer then",
+        "after": "      else if false then"
       },
-      "claimedKills": [],
+      "claimedKills": [
+        "KelGroups.validateBaseApproval_ok@KelGroups.Invariants"
+      ],
       "note": "the same signer may approve twice"
     },
     {
@@ -346,7 +354,7 @@
       "target": "KelGroups.checkRoleAddition@KelGroups.Validate",
       "guard": "KelGroups.ValidationError.roleAddPrecondition",
       "patch": {
-        "line": 50,
+        "line": 54,
         "before": "          if roleDef.canAdd gs.appFold then .ok () else .error (.roleAddPrecondition name)",
         "after": "          if true then .ok () else .error (.roleAddPrecondition name)"
       },
@@ -358,7 +366,7 @@
       "target": "KelGroups.checkRoleRemoval@KelGroups.Validate",
       "guard": "KelGroups.ValidationError.roleRemovePrecondition",
       "patch": {
-        "line": 59,
+        "line": 63,
         "before": "          if roleDef.canRemove gs.appFold then .ok ()",
         "after": "          if true then .ok ()"
       },
@@ -370,7 +378,7 @@
       "target": "KelGroups.requireValidKey@KelGroups.Validate",
       "guard": "KelGroups.ValidationError.invalidKey",
       "patch": {
-        "line": 41,
+        "line": 45,
         "before": "  if validKey key then .ok () else .error (.invalidKey key)",
         "after": "  if true then .ok () else .error (.invalidKey key)"
       },
@@ -382,7 +390,7 @@
       "target": "KelGroups.validateDirectAdmission",
       "guard": "KelGroups.ValidationError.reservedKey",
       "patch": {
-        "line": 146,
+        "line": 156,
         "before": "    if target = reserved then .error (.reservedKey target)",
         "after": "    if false then .error (.reservedKey target)"
       },
@@ -405,6 +413,7 @@
       },
       "claimedKills": [
         "KelGroups.base_change_runs_hook",
+        "KelGroups.integratedPropose_both@KelGroups.Invariants",
         "KelGroups.membership_growth_is_direct_admission"
       ],
       "note": "a refused base proposal is reported as a no-op success"
@@ -421,6 +430,7 @@
       "claimedKills": [
         "KelGroups.app_event_has_no_base_change",
         "KelGroups.app_event_preserves_members",
+        "KelGroups.integratedApp_both@KelGroups.Invariants",
         "Reactivegas.Lifecycle.order_holds",
         "Reactivegas.Lifecycle.r1_holds",
         "Reactivegas.Lifecycle.r2_holds",
@@ -659,8 +669,13 @@
       "claimedKills": [
         "KelGroups.Vote.setInsert_mem_cases@KelGroups.Vote.Invariants",
         "KelGroups.Vote.setInsert_nodup'@KelGroups.Vote.Invariants",
+        "KelGroups.approveBasePending_wellFormed@KelGroups.Invariants",
+        "KelGroups.approvePending_wellFormed@KelGroups.Invariants",
+        "KelGroups.length_setInsert_pos@KelGroups.Invariants",
+        "KelGroups.setInsert_idempotent@KelGroups.Invariants",
         "KelGroups.setInsert_mem@KelGroups.Invariants",
-        "KelGroups.setInsert_nodup@KelGroups.Invariants"
+        "KelGroups.setInsert_nodup@KelGroups.Invariants",
+        "KelGroups.setInsert_not_mem@KelGroups.Invariants"
       ],
       "note": "inserting a present element duplicates it"
     },
@@ -745,6 +760,7 @@
         "KelGroups.Vote.assocErase_key_absent'@KelGroups.Vote.Invariants",
         "KelGroups.Vote.assocErase_sublist'@KelGroups.Vote.Invariants",
         "KelGroups.Vote.mem_map_fst_erase_of_ne@KelGroups.Vote.Invariants",
+        "KelGroups.assocErase_cons_self@KelGroups.Invariants",
         "KelGroups.assocErase_key_absent@KelGroups.Invariants",
         "KelGroups.assocErase_sublist@KelGroups.Invariants",
         "KelGroups.assocLookup_erase_of_none",
@@ -955,9 +971,14 @@
         "KelGroups.Vote.effectedState_sweepReady@KelGroups.Vote.Invariants",
         "KelGroups.Vote.mem_map_fst_insert@KelGroups.Vote.Invariants",
         "KelGroups.Vote.tallyKeysOfState_insert_cases@KelGroups.Vote.Invariants",
+        "KelGroups.applyApprove_preserves_wellFormed",
+        "KelGroups.applyApprove_strong_entry@KelGroups.Invariants",
+        "KelGroups.applyPropose_preserves_strong@KelGroups.Invariants",
         "KelGroups.assocInsert_keys_nodup@KelGroups.Invariants",
         "KelGroups.assocInsert_property@KelGroups.Invariants",
         "KelGroups.assocLookup_insert_of_none",
+        "KelGroups.integratedApprove_both@KelGroups.Invariants",
+        "KelGroups.integratedPropose_both@KelGroups.Invariants",
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.fixtures_hold",
         "Reactivegas.Lifecycle.l1_holds",
@@ -1043,6 +1064,7 @@
         "after": "  none"
       },
       "claimedKills": [
+        "KelGroups.adminCount_pos_of_isAdmin@KelGroups.Invariants",
         "KelGroups.enactMutation_preserves_absence",
         "KelGroups.membership_growth_is_direct_admission",
         "KelGroups.tryEnactBase_preserves_absence",
@@ -1080,6 +1102,7 @@
         "after": "  none"
       },
       "claimedKills": [
+        "KelGroups.integratedApprove_both@KelGroups.Invariants",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.l2_holds",
         "Reactivegas.Lifecycle.l3_holds",
@@ -1112,8 +1135,10 @@
         "after": "    (fun count entry => if hasAdmin entry.2.roles then count + 1 else count + 1) 0"
       },
       "claimedKills": [
+        "KelGroups.adminCount_pos_of_isAdmin@KelGroups.Invariants",
         "Reactivegas.base_departure_applies_cleanup",
         "Reactivegas.exhaustive_inventories_hold",
+        "Reactivegas.i57_noop_holds",
         "Reactivegas.integrated_theorem_witness_holds",
         "TraceTests.all_checks_pass"
       ],
@@ -1129,6 +1154,8 @@
         "after": "def majority (gs : GroupState α) : Nat := adminCount gs / 2"
       },
       "claimedKills": [
+        "KelGroups.applyApprove_strong_entry@KelGroups.Invariants",
+        "KelGroups.integratedApprove_both@KelGroups.Invariants",
         "KelGroups.majority_table",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.l2_holds",
@@ -1140,7 +1167,9 @@
         "Reactivegas.Lifecycle.paths_agree",
         "Reactivegas.Lifecycle.v3_holds",
         "Reactivegas.base_change_can_close_without_ballot",
+        "Reactivegas.base_departure_applies_cleanup",
         "Reactivegas.base_recompute_reachable_holds",
+        "Reactivegas.i57_noop_holds",
         "Reactivegas.i57_nostale_holds",
         "Reactivegas.i57_partition_holds",
         "Reactivegas.integrated_theorem_witness_holds",
@@ -1158,7 +1187,9 @@
         "before": "  | none => false",
         "after": "  | none => true"
       },
-      "claimedKills": [],
+      "claimedKills": [
+        "KelGroups.adminCount_pos_of_isAdmin@KelGroups.Invariants"
+      ],
       "note": "an absent key is an admin of the aggregate"
     },
     {
@@ -1427,6 +1458,7 @@
         "after": "  { gs with members := gs.members }"
       },
       "claimedKills": [
+        "KelGroups.integratedDirect_both@KelGroups.Invariants",
         "KelGroups.membership_growth_is_direct_admission",
         "Reactivegas.admissionPreservation_holds",
         "Reactivegas.direct_admission_only_holds",
@@ -1446,6 +1478,8 @@
       },
       "claimedKills": [
         "KelGroups.enactMutation_preserves_absence",
+        "KelGroups.integratedApprove_both@KelGroups.Invariants",
+        "KelGroups.integratedPropose_both@KelGroups.Invariants",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.l2_holds",
         "Reactivegas.Lifecycle.l3_holds",
@@ -1504,6 +1538,8 @@
         "after": "      if pending.approvals.length > majority gs then"
       },
       "claimedKills": [
+        "KelGroups.integratedApprove_both@KelGroups.Invariants",
+        "KelGroups.integratedPropose_both@KelGroups.Invariants",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.l2_holds",
         "Reactivegas.Lifecycle.l3_holds",
@@ -1537,7 +1573,8 @@
         "after": "      { gs with members := gs.members }"
       },
       "claimedKills": [
-        "KelGroups.enact_preserves_wellFormed"
+        "KelGroups.enact_memberKeys_nodup@KelGroups.Invariants",
+        "KelGroups.enact_members_coherent@KelGroups.Invariants"
       ],
       "note": "the historical fold removes nobody"
     },
@@ -1551,6 +1588,9 @@
         "after": "  { enacted with pendingProposals := enacted.pendingProposals }"
       },
       "claimedKills": [
+        "KelGroups.applyApprove_preserves_wellFormed",
+        "KelGroups.approveErase_post_mem_old@KelGroups.Invariants",
+        "KelGroups.finishEnact_preserves_structural@KelGroups.Invariants",
         "KelGroups.finishEnact_preserves_wellFormed"
       ],
       "note": "an enacted proposal stays pending"
@@ -1565,8 +1605,13 @@
         "after": "      if pending.approvals.length > majority gs then"
       },
       "claimedKills": [
+        "KelGroups.applyApprove_preserves_wellFormed",
+        "KelGroups.applyApprove_strong_entry@KelGroups.Invariants",
+        "KelGroups.applyPropose_preserves_strong@KelGroups.Invariants",
         "KelGroups.members_change_implies_enacted",
         "KelGroups.tryEnactDetailed_enactment_threshold_met@KelGroups.Invariants",
+        "KelGroups.tryEnact_preserves_strongBase@KelGroups.Invariants",
+        "KelGroups.tryEnact_preserves_structural@KelGroups.Invariants",
         "KelGroups.tryEnact_preserves_wellFormed"
       ],
       "note": "the historical fold needs more than the majority"
@@ -1766,6 +1811,7 @@
         "after": "  { members := [(\"x\", { key := \"y\", email := \"\", roles := [] })], pendingProposals := [], pendingBase := [], appFold := initial }"
       },
       "claimedKills": [
+        "KelGroups.emptyState_structural@KelGroups.Invariants",
         "KelGroups.emptyState_wellFormed"
       ],
       "note": "the empty aggregate starts with an incoherent member"
@@ -1867,7 +1913,7 @@
       "target": "KelGroups.validateDirectAdmission",
       "guard": "KelGroups.ValidationError.notAnAdmin",
       "patch": {
-        "line": 145,
+        "line": 155,
         "before": "  if isAdmin signer gs then",
         "after": "  if true then"
       },
@@ -1892,6 +1938,7 @@
       },
       "claimedKills": [
         "KelGroups.base_change_runs_hook",
+        "KelGroups.integratedApprove_both@KelGroups.Invariants",
         "KelGroups.membership_growth_is_direct_admission"
       ],
       "note": "approving a vanished base proposal is a no-op success"
@@ -1901,11 +1948,14 @@
       "target": "KelGroups.validateApproval",
       "guard": "KelGroups.ValidationError.alreadyApproved",
       "patch": {
-        "line": 122,
-        "before": "      if pending.approvals.contains signer then",
-        "after": "      if false then"
+        "line": 132,
+        "before": "      else if pending.approvals.contains signer then",
+        "after": "      else if false then"
       },
-      "claimedKills": [],
+      "claimedKills": [
+        "KelGroups.sole_admin_self_approval_ok",
+        "KelGroups.validateApproval_ok@KelGroups.Invariants"
+      ],
       "note": "the historical approval admits a second approval by the same signer"
     },
     {
@@ -1946,6 +1996,7 @@
       "claimedKills": [
         "KelGroups.commitBaseChange_members",
         "KelGroups.commitBaseChange_ok",
+        "KelGroups.commitBaseChange_state_eq@KelGroups.Invariants",
         "Reactivegas.base_departure_applies_cleanup",
         "Reactivegas.i57_noop_holds",
         "Reactivegas.integrated_theorem_witness_holds",
@@ -2278,6 +2329,119 @@
         "Reactivegas.baseHook_votes"
       ],
       "note": "removing a proposer from the group leaves their questions open"
+    },
+    {
+      "id": "guard-approval-proposer-self",
+      "target": "KelGroups.validateApproval",
+      "guard": "KelGroups.ValidationError.proposerSelfApproval",
+      "patch": {
+        "line": 130,
+        "before": "      if signer == pending.proposer && decide (1 < adminCount gs) then",
+        "after": "      if false then"
+      },
+      "claimedKills": [
+        "KelGroups.sole_admin_self_approval_ok",
+        "KelGroups.validateApproval_ok@KelGroups.Invariants"
+      ],
+      "note": "the historical approval admits the proposer's own approval above one admin"
+    },
+    {
+      "id": "guard-approval-sole-admin-barred",
+      "target": "KelGroups.validateApproval",
+      "guard": "KelGroups.ValidationError.proposerSelfApproval",
+      "patch": {
+        "line": 130,
+        "before": "      if signer == pending.proposer && decide (1 < adminCount gs) then",
+        "after": "      if signer == pending.proposer && decide (0 < adminCount gs) then"
+      },
+      "claimedKills": [
+        "KelGroups.sole_admin_self_approval_ok",
+        "KelGroups.validateApproval_ok@KelGroups.Invariants"
+      ],
+      "note": "a sole admin may no longer approve their own proposal"
+    },
+    {
+      "id": "guard-base-approval-proposer-self",
+      "target": "KelGroups.validateBaseApproval",
+      "guard": "KelGroups.ValidationError.proposerSelfApproval",
+      "patch": {
+        "line": 180,
+        "before": "      if signer == pending.proposer && decide (1 < adminCount gs) then",
+        "after": "      if false then"
+      },
+      "claimedKills": [
+        "KelGroups.validateBaseApproval_ok@KelGroups.Invariants"
+      ],
+      "note": "the integrated approval admits the proposer's own approval above one admin"
+    },
+    {
+      "id": "guard-base-approval-sole-admin-barred",
+      "target": "KelGroups.validateBaseApproval",
+      "guard": "KelGroups.ValidationError.proposerSelfApproval",
+      "patch": {
+        "line": 180,
+        "before": "      if signer == pending.proposer && decide (1 < adminCount gs) then",
+        "after": "      if signer == pending.proposer && decide (0 < adminCount gs) then"
+      },
+      "claimedKills": [
+        "KelGroups.validateBaseApproval_ok@KelGroups.Invariants",
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.i57_noop_holds",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "a sole admin may no longer approve their own integrated proposal"
+    },
+    {
+      "id": "propose-auto-assent",
+      "target": "KelGroups.applyProposeDetailed",
+      "guard": null,
+      "patch": {
+        "line": 49,
+        "before": "  let pending : PendingProposal := { proposal, proposer := signer, approvals := [] }",
+        "after": "  let pending : PendingProposal := { proposal, proposer := signer, approvals := [signer] }"
+      },
+      "claimedKills": [
+        "KelGroups.applyPropose_preserves_strong@KelGroups.Invariants",
+        "KelGroups.applyPropose_preserves_strongBase@KelGroups.Invariants",
+        "KelGroups.applyPropose_preserves_wellFormed",
+        "KelGroups.applyPropose_structural@KelGroups.Invariants",
+        "KelGroups.members_change_implies_enacted"
+      ],
+      "note": "proposing counts the proposer's approval again"
+    },
+    {
+      "id": "base-propose-auto-assent",
+      "target": "KelGroups.applyIntegratedEvent",
+      "guard": null,
+      "patch": {
+        "line": 191,
+        "before": "            { mutation, proposer := signer, approvals := [] }",
+        "after": "            { mutation, proposer := signer, approvals := [signer] }"
+      },
+      "claimedKills": [
+        "KelGroups.integratedPropose_both@KelGroups.Invariants",
+        "Reactivegas.Lifecycle.deferred_mutant_closes_later",
+        "Reactivegas.Lifecycle.l2_holds",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.paths_agree",
+        "Reactivegas.Lifecycle.v3_holds",
+        "Reactivegas.base_change_can_close_without_ballot",
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.base_recompute_reachable_holds",
+        "Reactivegas.exhaustive_inventories_hold",
+        "Reactivegas.i57_noop_holds",
+        "Reactivegas.i57_nostale_holds",
+        "Reactivegas.i57_partition_holds",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "Reactivegas.sweep_idempotent_mutant_caught",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "an integrated proposal counts the proposer's approval again"
     }
   ]
 }

@@ -98,11 +98,12 @@ jobs:
         run: nix --quiet develop --command just simulator
 
   # S3 (#66): the theorem-keyed mutant ledger. Its own job so it runs beside
-  # "Build and check"; the timeout holds the plan's 60-minute ceiling.
+  # "Build and check". Entering the dev shell alone costs a fresh runner about
+  # 23 minutes, so the run does not fit 60; 120 leaves room for it.
   lean-mutants:
     name: Lean mutant ledger
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v6
       - uses: cachix/install-nix-action@v31

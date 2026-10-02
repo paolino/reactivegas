@@ -21,16 +21,16 @@ change and fails when a claim here is not what Lean reports.
 
 | | KelGroups modules | whole ledger |
 |---|---|---|
-| DISCOVERED theorem constants | 608 | 1373 |
-| EXCLUDED (generated) | 484 | 1056 |
+| DISCOVERED theorem constants | 716 | 1481 |
+| EXCLUDED (generated) | 532 | 1104 |
 | HELPER | 1 | 6 |
-| REQUIRED (authored − HELPER) | 123 | 311 |
-| KILLED | 58 | 157 |
-| OPEN | 65 | 154 |
-| refusal constructors SURVIVED | 6 | |
+| REQUIRED (authored − HELPER) | 183 | 371 |
+| KILLED | 85 | 184 |
+| OPEN | 98 | 187 |
+| refusal constructors SURVIVED | 5 | |
 | refusal constructors UNEMITTED | 0 | |
 
-KILLED / REQUIRED: 58 / 123 here, 157 / 311 over the whole ledger.
+KILLED / REQUIRED: 85 / 183 here, 184 / 371 over the whole ledger.
 
 ## Theorems
 
@@ -38,15 +38,34 @@ KILLED / REQUIRED: 58 / 123 here, 157 / 311 over the whole ledger.
 
 | theorem | class | evidence |
 |---|---|---|
+| `KelGroups.adminCount_pos_of_isAdmin@KelGroups.Invariants` | KILLED | killed by `adminCount-counts-all`, `state-isAdmin-absent-true`, `state-lookupMember-misses` |
 | `KelGroups.app_event_has_no_base_change` | KILLED | killed by `guard-app-fold-refusal` |
 | `KelGroups.app_event_preserves_members` | KILLED | killed by `guard-app-fold-refusal` |
-| `KelGroups.applyApprove_preserves_wellFormed` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `hasAdmin-all`, `majority-floor`, `setInsert-duplicates`, `tryEnactDetailed-strict`. masked: its proof uses `KelGroups.assocAdjust_property@KelGroups.Invariants` (killed by `assocAdjust-ignores-f`), `KelGroups.assocErase_key_absent@KelGroups.Invariants` (killed by `assocErase-keeps`), `KelGroups.assocErase_sublist@KelGroups.Invariants` (killed by `assocErase-keeps`), `KelGroups.assocInsert_keys_nodup@KelGroups.Invariants` (killed by `assocInsert-appends`) and 7 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration |
-| `KelGroups.applyEvent_preserves_wellFormed` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `hasAdmin-all`, `majority-floor`, `setInsert-duplicates`, `tryEnactDetailed-strict`. masked: its proof uses `KelGroups.assocAdjust_property@KelGroups.Invariants` (killed by `assocAdjust-ignores-f`), `KelGroups.assocErase_key_absent@KelGroups.Invariants` (killed by `assocErase-keeps`), `KelGroups.assocErase_sublist@KelGroups.Invariants` (killed by `assocErase-keeps`), `KelGroups.assocInsert_keys_nodup@KelGroups.Invariants` (killed by `assocInsert-appends`) and 7 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration |
-| `KelGroups.applyPropose_preserves_wellFormed` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `hasAdmin-all`, `majority-floor`, `tryEnactDetailed-strict`. masked: its proof uses `KelGroups.assocAdjust_property@KelGroups.Invariants` (killed by `assocAdjust-ignores-f`), `KelGroups.assocErase_key_absent@KelGroups.Invariants` (killed by `assocErase-keeps`), `KelGroups.assocErase_sublist@KelGroups.Invariants` (killed by `assocErase-keeps`), `KelGroups.assocInsert_keys_nodup@KelGroups.Invariants` (killed by `assocInsert-appends`) and 4 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration |
-| `KelGroups.approvals_nodup` | OPEN | inexpressible: its computed statement closure holds only type declarations (`KelGroups.Admin`, `KelGroups.BaseMutation`, `KelGroups.Email`, `KelGroups.GroupState`, `KelGroups.Key`, `KelGroups.Member`, `KelGroups.PendingBase`, `KelGroups.PendingProposal`, `KelGroups.Proposal`, `KelGroups.ProposalId`, `KelGroups.Role`, `KelGroups.RoleName`) and no production definition with a computational body |
-| `KelGroups.approvePending_wellFormed@KelGroups.Invariants` | OPEN | attempted `setInsert-duplicates`. masked: its proof uses `KelGroups.setInsert_mem@KelGroups.Invariants` (killed by `setInsert-duplicates`), `KelGroups.setInsert_nodup@KelGroups.Invariants` (killed by `setInsert-duplicates`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.applyApprove_preserves_strong@KelGroups.Invariants` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `guard-approval-proposer-self`, `guard-approval-sole-admin-barred`, `guard-approval-twice-historical`, `guard-require-admin`, `hasAdmin-all`, `majority-floor`, `setInsert-duplicates`, `state-isAdmin-absent-true`, `state-lookupMember-misses`, `tryEnactDetailed-strict`. masked: its proof uses `KelGroups.adminCount_pos_of_isAdmin@KelGroups.Invariants` (killed by `adminCount-counts-all`), `KelGroups.applyApprove_strong_entry@KelGroups.Invariants` (killed by `assocInsert-appends`), `KelGroups.approveErase_post_mem_old@KelGroups.Invariants` (killed by `finishEnact-keeps-pending`), `KelGroups.assocErase_cons_self@KelGroups.Invariants` (killed by `assocErase-keeps`) and 7 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.applyApprove_preserves_strongBase@KelGroups.Invariants` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `hasAdmin-all`, `majority-floor`, `setInsert-duplicates`, `tryEnactDetailed-strict`. masked: its proof uses `KelGroups.tryEnact_preserves_strongBase@KelGroups.Invariants` (killed by `tryEnactDetailed-strict`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.applyApprove_preserves_wellFormed` | KILLED | killed by `assocInsert-appends`, `finishEnact-keeps-pending`, `tryEnactDetailed-strict` |
+| `KelGroups.applyApprove_strong_entry@KelGroups.Invariants` | KILLED | killed by `assocInsert-appends`, `majority-floor`, `tryEnactDetailed-strict` |
+| `KelGroups.applyApprove_structural@KelGroups.Invariants` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `hasAdmin-all`, `majority-floor`, `setInsert-duplicates`, `tryEnactDetailed-strict`. masked: its proof uses `KelGroups.assocAdjust_property@KelGroups.Invariants` (killed by `assocAdjust-ignores-f`), `KelGroups.assocErase_key_absent@KelGroups.Invariants` (killed by `assocErase-keeps`), `KelGroups.assocErase_sublist@KelGroups.Invariants` (killed by `assocErase-keeps`), `KelGroups.assocInsert_keys_nodup@KelGroups.Invariants` (killed by `assocInsert-appends`) and 7 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.applyEvent_app_lists@KelGroups.Invariants` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `hasAdmin-all`, `majority-floor`, `propose-auto-assent`, `setInsert-duplicates`, `tryEnactDetailed-strict`. unconstrained: under none of its 12 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
+| `KelGroups.applyEvent_preserves_strong@KelGroups.Invariants` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `guard-approval-proposer-self`, `guard-approval-sole-admin-barred`, `guard-approval-twice-historical`, `guard-bootstrap-admin`, `guard-require-admin`, `guard-require-member`, `guard-role-add-precondition`, `guard-role-remove-precondition`, `guard-valid-key`, `hasAdmin-all`, `majority-floor`, `propose-auto-assent`, `setInsert-duplicates`, `state-isAdmin-absent-true`, `state-lookupMember-misses`, `tryEnactDetailed-strict`. masked: its proof uses `KelGroups.adminCount_pos_of_isAdmin@KelGroups.Invariants` (killed by `adminCount-counts-all`), `KelGroups.applyApprove_strong_entry@KelGroups.Invariants` (killed by `assocInsert-appends`), `KelGroups.applyPropose_preserves_strong@KelGroups.Invariants` (killed by `assocInsert-appends`), `KelGroups.approveErase_post_mem_old@KelGroups.Invariants` (killed by `finishEnact-keeps-pending`) and 9 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.applyEvent_preserves_strongBase@KelGroups.Invariants` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `hasAdmin-all`, `majority-floor`, `propose-auto-assent`, `setInsert-duplicates`, `tryEnactDetailed-strict`. masked: its proof uses `KelGroups.applyPropose_preserves_strongBase@KelGroups.Invariants` (killed by `propose-auto-assent`), `KelGroups.tryEnact_preserves_strongBase@KelGroups.Invariants` (killed by `tryEnactDetailed-strict`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.applyEvent_preserves_wellFormed` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `guard-approval-proposer-self`, `guard-approval-sole-admin-barred`, `guard-approval-twice-historical`, `guard-require-admin`, `hasAdmin-all`, `majority-floor`, `propose-auto-assent`, `setInsert-duplicates`, `state-isAdmin-absent-true`, `state-lookupMember-misses`, `tryEnactDetailed-strict`. masked: its proof uses `KelGroups.applyApprove_preserves_wellFormed` (killed by `assocInsert-appends`), `KelGroups.applyPropose_preserves_wellFormed` (killed by `propose-auto-assent`), `KelGroups.approveErase_post_mem_old@KelGroups.Invariants` (killed by `finishEnact-keeps-pending`), `KelGroups.approvePending_wellFormed@KelGroups.Invariants` (killed by `setInsert-duplicates`) and 14 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.applyEvent_structural@KelGroups.Invariants` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `hasAdmin-all`, `majority-floor`, `propose-auto-assent`, `setInsert-duplicates`, `tryEnactDetailed-strict`. masked: its proof uses `KelGroups.applyPropose_structural@KelGroups.Invariants` (killed by `propose-auto-assent`), `KelGroups.assocAdjust_property@KelGroups.Invariants` (killed by `assocAdjust-ignores-f`), `KelGroups.assocErase_key_absent@KelGroups.Invariants` (killed by `assocErase-keeps`), `KelGroups.assocErase_sublist@KelGroups.Invariants` (killed by `assocErase-keeps`) and 8 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.applyIntegratedEvent_both@KelGroups.Invariants` | OPEN | attempted `adminCount-counts-all`, `admitMemberInto-drops`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `base-propose-auto-assent`, `enactMutation-remove-noop`, `groupView-empty`, `guard-admission-admin`, `guard-admission-duplicate`, `guard-admission-reserved`, `guard-app-fold-refusal`, `guard-app-signer-member`, `guard-approve-route-pending`, `guard-base-approval-pending`, `guard-base-approval-proposer-self`, `guard-base-approval-sole-admin-barred`, `guard-base-approval-twice`, `guard-commit-hook-refusal`, `guard-propose-validation`, `guard-require-admin`, `guard-require-member`, `hasAdmin-all`, `isMember-negated`, `lookupPendingBase-misses`, `majority-floor`, `mutationChange-swapped`, `setInsert-duplicates`, `state-isAdmin-absent-true`, `state-lookupMember-misses`, `tryEnactBase-strict`, `view-lookupMember-misses`. masked: its proof uses `KelGroups.adminCount_pos_of_isAdmin@KelGroups.Invariants` (killed by `adminCount-counts-all`), `KelGroups.approveBasePending_wellFormed@KelGroups.Invariants` (killed by `setInsert-duplicates`), `KelGroups.assocAdjust_property@KelGroups.Invariants` (killed by `assocAdjust-ignores-f`), `KelGroups.assocErase_cons_self@KelGroups.Invariants` (killed by `assocErase-keeps`) and 15 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.applyPropose_preserves_strong@KelGroups.Invariants` | KILLED | killed by `assocInsert-appends`, `propose-auto-assent`, `tryEnactDetailed-strict` |
+| `KelGroups.applyPropose_preserves_strongBase@KelGroups.Invariants` | KILLED | killed by `propose-auto-assent` |
+| `KelGroups.applyPropose_preserves_wellFormed` | KILLED | killed by `propose-auto-assent` |
+| `KelGroups.applyPropose_structural@KelGroups.Invariants` | KILLED | killed by `propose-auto-assent` |
+| `KelGroups.approvals_nodup` | OPEN | attempted `adminCount-counts-all`, `hasAdmin-all`. unconstrained: under none of its 2 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
+| `KelGroups.approveBasePending_wellFormed@KelGroups.Invariants` | KILLED | killed by `setInsert-duplicates` |
+| `KelGroups.approveErase_post_mem_old@KelGroups.Invariants` | KILLED | killed by `finishEnact-keeps-pending` |
+| `KelGroups.approvePending_appr@KelGroups.Invariants` | OPEN | attempted `setInsert-duplicates`. unconstrained: under none of its 1 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
+| `KelGroups.approvePending_idempotent@KelGroups.Invariants` | OPEN | attempted `setInsert-duplicates`. masked: its proof uses `KelGroups.setInsert_idempotent@KelGroups.Invariants` (killed by `setInsert-duplicates`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.approvePending_strong@KelGroups.Invariants` | OPEN | attempted `setInsert-duplicates`. masked: its proof uses `KelGroups.setInsert_nodup@KelGroups.Invariants` (killed by `setInsert-duplicates`), `KelGroups.setInsert_not_mem@KelGroups.Invariants` (killed by `setInsert-duplicates`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.approvePending_wellFormed@KelGroups.Invariants` | KILLED | killed by `setInsert-duplicates` |
 | `KelGroups.assocAdjust_keys@KelGroups.Invariants` | OPEN | attempted `assocAdjust-ignores-f`, `assocLookup-misses`. unconstrained: under none of its 2 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
 | `KelGroups.assocAdjust_property@KelGroups.Invariants` | KILLED | killed by `assocAdjust-ignores-f` |
+| `KelGroups.assocErase_cons_self@KelGroups.Invariants` | KILLED | killed by `assocErase-keeps` |
 | `KelGroups.assocErase_key_absent@KelGroups.Invariants` | KILLED | killed by `assocErase-keeps` |
 | `KelGroups.assocErase_keys_nodup@KelGroups.Invariants` | OPEN | attempted `assocErase-keeps`, `assocLookup-misses`. masked: its proof uses `KelGroups.assocErase_sublist@KelGroups.Invariants` (killed by `assocErase-keeps`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
 | `KelGroups.assocErase_property@KelGroups.Invariants` | OPEN | attempted `assocErase-keeps`, `assocLookup-misses`. masked: its proof uses `KelGroups.assocErase_sublist@KelGroups.Invariants` (killed by `assocErase-keeps`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
@@ -54,39 +73,72 @@ KILLED / REQUIRED: 58 / 123 here, 157 / 311 over the whole ledger.
 | `KelGroups.assocInsert_keys_nodup@KelGroups.Invariants` | KILLED | killed by `assocInsert-appends` |
 | `KelGroups.assocInsert_property@KelGroups.Invariants` | KILLED | killed by `assocInsert-appends` |
 | `KelGroups.assocLookup_some_mem@KelGroups.Invariants` | KILLED | killed by `assocLookup-misses` |
+| `KelGroups.baseEmptyStrong@KelGroups.Invariants` | OPEN | inexpressible: its computed statement closure holds only type declarations (`KelGroups.Admin`, `KelGroups.BaseMutation`, `KelGroups.Key`, `KelGroups.PendingBase`, `KelGroups.Role`, `KelGroups.RoleName`) and no production definition with a computational body |
+| `KelGroups.baseEmptyWellFormed@KelGroups.Invariants` | OPEN | inexpressible: its computed statement closure holds only type declarations (`KelGroups.Admin`, `KelGroups.BaseMutation`, `KelGroups.Key`, `KelGroups.PendingBase`, `KelGroups.Role`, `KelGroups.RoleName`) and no production definition with a computational body |
+| `KelGroups.baseStrong_to_indexed@KelGroups.Invariants` | OPEN | inexpressible: its computed statement closure holds only type declarations (`KelGroups.Admin`, `KelGroups.BaseMutation`, `KelGroups.Key`, `KelGroups.PendingBase`, `KelGroups.Role`, `KelGroups.RoleName`) and no production definition with a computational body |
+| `KelGroups.baseUpdate_appr@KelGroups.Invariants` | OPEN | attempted `setInsert-duplicates`. unconstrained: under none of its 1 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
 | `KelGroups.base_change_runs_hook` | KILLED | killed by `guard-approve-route-pending`, `guard-propose-validation` |
 | `KelGroups.commitBaseChange_members` | KILLED | killed by `guard-commit-hook-refusal` |
 | `KelGroups.commitBaseChange_ok` | KILLED | killed by `guard-commit-hook-refusal` |
-| `KelGroups.direct_admission_requires_admin` | OPEN | attempted `adminCount-counts-all`, `admitMemberInto-drops`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enactMutation-remove-noop`, `groupView-empty`, `guard-admission-admin`, `guard-admission-duplicate`, `guard-admission-reserved`, `guard-app-fold-refusal`, `guard-app-signer-member`, `guard-approve-route-pending`, `guard-base-approval-pending`, `guard-base-approval-twice`, `guard-commit-hook-refusal`, `guard-propose-validation`, `guard-require-admin`, `guard-require-member`, `hasAdmin-all`, `isMember-negated`, `lookupPendingBase-misses`, `majority-floor`, `mutationChange-swapped`, `setInsert-duplicates`, `state-isAdmin-absent-true`, `state-lookupMember-misses`, `tryEnactBase-strict`, `view-lookupMember-misses`. masked: its proof uses `KelGroups.validateDirectAdmission_ok` (killed by `guard-admission-admin`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.commitBaseChange_state_eq@KelGroups.Invariants` | KILLED | killed by `guard-commit-hook-refusal` |
+| `KelGroups.contains_eq_false_of_not_mem@KelGroups.Invariants` | OPEN | inexpressible: its computed statement closure holds only type declarations (`KelGroups.Key`) and no production definition with a computational body |
+| `KelGroups.direct_admission_requires_admin` | OPEN | attempted `adminCount-counts-all`, `admitMemberInto-drops`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `base-propose-auto-assent`, `enactMutation-remove-noop`, `groupView-empty`, `guard-admission-admin`, `guard-admission-duplicate`, `guard-admission-reserved`, `guard-app-fold-refusal`, `guard-app-signer-member`, `guard-approve-route-pending`, `guard-base-approval-pending`, `guard-base-approval-proposer-self`, `guard-base-approval-sole-admin-barred`, `guard-base-approval-twice`, `guard-commit-hook-refusal`, `guard-propose-validation`, `guard-require-admin`, `guard-require-member`, `hasAdmin-all`, `isMember-negated`, `lookupPendingBase-misses`, `majority-floor`, `mutationChange-swapped`, `setInsert-duplicates`, `state-isAdmin-absent-true`, `state-lookupMember-misses`, `tryEnactBase-strict`, `view-lookupMember-misses`. masked: its proof uses `KelGroups.validateDirectAdmission_ok` (killed by `guard-admission-admin`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.emptyState_strong@KelGroups.Invariants` | OPEN | attempted `emptyState-has-member`. unconstrained: under none of its 1 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
+| `KelGroups.emptyState_strongBase@KelGroups.Invariants` | OPEN | attempted `emptyState-has-member`. unconstrained: under none of its 1 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
+| `KelGroups.emptyState_structural@KelGroups.Invariants` | KILLED | killed by `emptyState-has-member` |
 | `KelGroups.emptyState_wellFormed` | KILLED | killed by `emptyState-has-member` |
 | `KelGroups.enactMutation_preserves_absence` | KILLED | killed by `enactMutation-remove-noop`, `state-lookupMember-misses` |
-| `KelGroups.enact_implies_threshold_met` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `hasAdmin-all`, `majority-floor`, `setInsert-duplicates`, `tryEnactDetailed-strict`. masked: its proof uses `KelGroups.tryEnactDetailed_enactment_threshold_met@KelGroups.Invariants` (killed by `tryEnactDetailed-strict`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
-| `KelGroups.enact_preserves_wellFormed` | KILLED | killed by `enact-remove-noop` |
+| `KelGroups.enact_implies_threshold_met` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `hasAdmin-all`, `majority-floor`, `propose-auto-assent`, `setInsert-duplicates`, `tryEnactDetailed-strict`. masked: its proof uses `KelGroups.tryEnactDetailed_enactment_threshold_met@KelGroups.Invariants` (killed by `tryEnactDetailed-strict`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.enact_memberKeys_nodup@KelGroups.Invariants` | KILLED | killed by `enact-remove-noop` |
+| `KelGroups.enact_members_coherent@KelGroups.Invariants` | KILLED | killed by `enact-remove-noop` |
+| `KelGroups.enact_pendingBase@KelGroups.Invariants` | OPEN | attempted `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`. unconstrained: under none of its 5 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
+| `KelGroups.enact_pendingProposals@KelGroups.Invariants` | OPEN | attempted `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`. unconstrained: under none of its 5 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
+| `KelGroups.enact_preserves_structural@KelGroups.Invariants` | OPEN | attempted `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`. masked: its proof uses `KelGroups.assocAdjust_property@KelGroups.Invariants` (killed by `assocAdjust-ignores-f`), `KelGroups.assocErase_key_absent@KelGroups.Invariants` (killed by `assocErase-keeps`), `KelGroups.assocErase_sublist@KelGroups.Invariants` (killed by `assocErase-keeps`), `KelGroups.assocInsert_keys_nodup@KelGroups.Invariants` (killed by `assocInsert-appends`) and 3 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.enact_preserves_wellFormed` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `hasAdmin-all`. masked: its proof uses `KelGroups.assocAdjust_property@KelGroups.Invariants` (killed by `assocAdjust-ignores-f`), `KelGroups.assocErase_key_absent@KelGroups.Invariants` (killed by `assocErase-keeps`), `KelGroups.assocErase_sublist@KelGroups.Invariants` (killed by `assocErase-keeps`), `KelGroups.assocInsert_keys_nodup@KelGroups.Invariants` (killed by `assocInsert-appends`) and 3 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.finishEnact_post_mem_old@KelGroups.Invariants` | OPEN | attempted `assocErase-keeps`, `assocLookup-misses`. masked: its proof uses `KelGroups.assocErase_cons_self@KelGroups.Invariants` (killed by `assocErase-keeps`), `KelGroups.assocErase_sublist@KelGroups.Invariants` (killed by `assocErase-keeps`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.finishEnact_preserves_structural@KelGroups.Invariants` | KILLED | killed by `finishEnact-keeps-pending` |
 | `KelGroups.finishEnact_preserves_wellFormed` | KILLED | killed by `finishEnact-keeps-pending` |
-| `KelGroups.foldEvents_preserves_wellFormed@KelGroups.Invariants` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `hasAdmin-all`, `majority-floor`, `setInsert-duplicates`, `tryEnactDetailed-strict`. masked: its proof uses `KelGroups.assocAdjust_property@KelGroups.Invariants` (killed by `assocAdjust-ignores-f`), `KelGroups.assocErase_key_absent@KelGroups.Invariants` (killed by `assocErase-keeps`), `KelGroups.assocErase_sublist@KelGroups.Invariants` (killed by `assocErase-keeps`), `KelGroups.assocInsert_keys_nodup@KelGroups.Invariants` (killed by `assocInsert-appends`) and 7 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration |
-| `KelGroups.foldGroup_wellFormed` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `emptyState-has-member`, `enact-remove-noop`, `finishEnact-keeps-pending`, `hasAdmin-all`, `majority-floor`, `setInsert-duplicates`, `tryEnactDetailed-strict`. masked: its proof uses `KelGroups.assocAdjust_property@KelGroups.Invariants` (killed by `assocAdjust-ignores-f`), `KelGroups.assocErase_key_absent@KelGroups.Invariants` (killed by `assocErase-keeps`), `KelGroups.assocErase_sublist@KelGroups.Invariants` (killed by `assocErase-keeps`), `KelGroups.assocInsert_keys_nodup@KelGroups.Invariants` (killed by `assocInsert-appends`) and 8 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.foldEvents_preserves_all@KelGroups.Invariants` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `guard-approval-proposer-self`, `guard-approval-sole-admin-barred`, `guard-approval-twice-historical`, `guard-bootstrap-admin`, `guard-require-admin`, `guard-require-member`, `guard-role-add-precondition`, `guard-role-remove-precondition`, `guard-valid-key`, `hasAdmin-all`, `majority-floor`, `propose-auto-assent`, `setInsert-duplicates`, `state-isAdmin-absent-true`, `state-lookupMember-misses`, `tryEnactDetailed-strict`. masked: its proof uses `KelGroups.adminCount_pos_of_isAdmin@KelGroups.Invariants` (killed by `adminCount-counts-all`), `KelGroups.applyApprove_preserves_wellFormed` (killed by `assocInsert-appends`), `KelGroups.applyApprove_strong_entry@KelGroups.Invariants` (killed by `assocInsert-appends`), `KelGroups.applyPropose_preserves_strong@KelGroups.Invariants` (killed by `assocInsert-appends`) and 21 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.foldEvents_structural@KelGroups.Invariants` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `hasAdmin-all`, `majority-floor`, `propose-auto-assent`, `setInsert-duplicates`, `tryEnactDetailed-strict`. masked: its proof uses `KelGroups.applyPropose_structural@KelGroups.Invariants` (killed by `propose-auto-assent`), `KelGroups.assocAdjust_property@KelGroups.Invariants` (killed by `assocAdjust-ignores-f`), `KelGroups.assocErase_key_absent@KelGroups.Invariants` (killed by `assocErase-keeps`), `KelGroups.assocErase_sublist@KelGroups.Invariants` (killed by `assocErase-keeps`) and 8 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.foldGroup_structural@KelGroups.Invariants` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `emptyState-has-member`, `enact-remove-noop`, `finishEnact-keeps-pending`, `hasAdmin-all`, `majority-floor`, `propose-auto-assent`, `setInsert-duplicates`, `tryEnactDetailed-strict`. masked: its proof uses `KelGroups.applyPropose_structural@KelGroups.Invariants` (killed by `propose-auto-assent`), `KelGroups.assocAdjust_property@KelGroups.Invariants` (killed by `assocAdjust-ignores-f`), `KelGroups.assocErase_key_absent@KelGroups.Invariants` (killed by `assocErase-keeps`), `KelGroups.assocErase_sublist@KelGroups.Invariants` (killed by `assocErase-keeps`) and 8 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.foldGroup_wellFormed` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `emptyState-has-member`, `enact-remove-noop`, `finishEnact-keeps-pending`, `guard-approval-proposer-self`, `guard-approval-sole-admin-barred`, `guard-approval-twice-historical`, `guard-bootstrap-admin`, `guard-require-admin`, `guard-require-member`, `guard-role-add-precondition`, `guard-role-remove-precondition`, `guard-valid-key`, `hasAdmin-all`, `majority-floor`, `propose-auto-assent`, `setInsert-duplicates`, `state-isAdmin-absent-true`, `state-lookupMember-misses`, `tryEnactDetailed-strict`. masked: its proof uses `KelGroups.adminCount_pos_of_isAdmin@KelGroups.Invariants` (killed by `adminCount-counts-all`), `KelGroups.applyApprove_preserves_wellFormed` (killed by `assocInsert-appends`), `KelGroups.applyApprove_strong_entry@KelGroups.Invariants` (killed by `assocInsert-appends`), `KelGroups.applyPropose_preserves_strong@KelGroups.Invariants` (killed by `assocInsert-appends`) and 22 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.foldIntegrated_all@KelGroups.Invariants` | OPEN | attempted `adminCount-counts-all`, `admitMemberInto-drops`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `base-propose-auto-assent`, `enactMutation-remove-noop`, `groupView-empty`, `guard-admission-admin`, `guard-admission-duplicate`, `guard-admission-reserved`, `guard-app-fold-refusal`, `guard-app-signer-member`, `guard-approve-route-pending`, `guard-base-approval-pending`, `guard-base-approval-proposer-self`, `guard-base-approval-sole-admin-barred`, `guard-base-approval-twice`, `guard-commit-hook-refusal`, `guard-propose-validation`, `guard-require-admin`, `guard-require-member`, `hasAdmin-all`, `isMember-negated`, `lookupPendingBase-misses`, `majority-floor`, `mutationChange-swapped`, `setInsert-duplicates`, `state-isAdmin-absent-true`, `state-lookupMember-misses`, `tryEnactBase-strict`, `view-lookupMember-misses`. masked: its proof uses `KelGroups.adminCount_pos_of_isAdmin@KelGroups.Invariants` (killed by `adminCount-counts-all`), `KelGroups.approveBasePending_wellFormed@KelGroups.Invariants` (killed by `setInsert-duplicates`), `KelGroups.assocAdjust_property@KelGroups.Invariants` (killed by `assocAdjust-ignores-f`), `KelGroups.assocErase_cons_self@KelGroups.Invariants` (killed by `assocErase-keeps`) and 15 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.integratedApp_both@KelGroups.Invariants` | KILLED | killed by `guard-app-fold-refusal`, `guard-app-signer-member` |
+| `KelGroups.integratedApprove_both@KelGroups.Invariants` | KILLED | killed by `assocInsert-appends`, `enactMutation-remove-noop`, `guard-approve-route-pending`, `lookupPendingBase-misses`, `majority-floor`, `tryEnactBase-strict` |
+| `KelGroups.integratedDirect_both@KelGroups.Invariants` | KILLED | killed by `admitMemberInto-drops` |
+| `KelGroups.integratedPropose_both@KelGroups.Invariants` | KILLED | killed by `assocInsert-appends`, `base-propose-auto-assent`, `enactMutation-remove-noop`, `guard-propose-validation`, `tryEnactBase-strict` |
+| `KelGroups.length_setInsert_pos@KelGroups.Invariants` | KILLED | killed by `setInsert-duplicates` |
 | `KelGroups.majority_not_strict_on_even` | OPEN | attempted `adminCount-counts-all`, `hasAdmin-all`, `majority-floor`. unconstrained: under none of its 3 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
 | `KelGroups.majority_table` | KILLED | killed by `majority-floor` |
-| `KelGroups.member_key_coherent` | OPEN | inexpressible: its computed statement closure holds only type declarations (`KelGroups.Admin`, `KelGroups.BaseMutation`, `KelGroups.Email`, `KelGroups.GroupState`, `KelGroups.Key`, `KelGroups.Member`, `KelGroups.PendingBase`, `KelGroups.PendingProposal`, `KelGroups.Proposal`, `KelGroups.ProposalId`, `KelGroups.Role`, `KelGroups.RoleName`) and no production definition with a computational body |
-| `KelGroups.members_change_implies_enacted` | KILLED | killed by `tryEnactDetailed-strict` |
+| `KelGroups.mem_of_contains_eq_true@KelGroups.Invariants` | OPEN | inexpressible: its computed statement closure holds only type declarations (`KelGroups.Key`) and no production definition with a computational body |
+| `KelGroups.member_key_coherent` | OPEN | attempted `adminCount-counts-all`, `hasAdmin-all`. unconstrained: under none of its 2 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
+| `KelGroups.members_change_implies_enacted` | KILLED | killed by `propose-auto-assent`, `tryEnactDetailed-strict` |
 | `KelGroups.membership_growth_is_direct_admission` | KILLED | killed by `admitMemberInto-drops`, `guard-approve-route-pending`, `guard-propose-validation`, `state-lookupMember-misses` |
 | `KelGroups.non_admin_admission_is_noop` | KILLED | killed by `guard-admission-admin` |
-| `KelGroups.proposer_mem_approvals` | OPEN | inexpressible: its computed statement closure holds only type declarations (`KelGroups.Admin`, `KelGroups.BaseMutation`, `KelGroups.Email`, `KelGroups.GroupState`, `KelGroups.Key`, `KelGroups.Member`, `KelGroups.PendingBase`, `KelGroups.PendingProposal`, `KelGroups.Proposal`, `KelGroups.ProposalId`, `KelGroups.Role`, `KelGroups.RoleName`) and no production definition with a computational body |
+| `KelGroups.not_mem_of_contains_eq_false@KelGroups.Invariants` | OPEN | inexpressible: its computed statement closure holds only type declarations (`KelGroups.Key`) and no production definition with a computational body |
+| `KelGroups.proposer_absent_above_one` | OPEN | attempted `adminCount-counts-all`, `hasAdmin-all`. unconstrained: under none of its 2 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
+| `KelGroups.setInsert_idempotent@KelGroups.Invariants` | KILLED | killed by `setInsert-duplicates` |
 | `KelGroups.setInsert_mem@KelGroups.Invariants` | KILLED | killed by `setInsert-duplicates` |
 | `KelGroups.setInsert_nodup@KelGroups.Invariants` | KILLED | killed by `setInsert-duplicates` |
+| `KelGroups.setInsert_not_mem@KelGroups.Invariants` | KILLED | killed by `setInsert-duplicates` |
+| `KelGroups.sole_admin_self_approval_ok` | KILLED | killed by `guard-approval-proposer-self`, `guard-approval-sole-admin-barred`, `guard-approval-twice-historical` |
+| `KelGroups.strong_to_indexed@KelGroups.Invariants` | OPEN | inexpressible: its computed statement closure holds only type declarations (`KelGroups.Admin`, `KelGroups.Email`, `KelGroups.Key`, `KelGroups.PendingProposal`, `KelGroups.Proposal`, `KelGroups.Role`, `KelGroups.RoleName`) and no production definition with a computational body |
 | `KelGroups.tryEnactBase_preserves_absence` | KILLED | killed by `state-lookupMember-misses` |
 | `KelGroups.tryEnactBase_runs_hook` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocLookup-misses`, `enactMutation-remove-noop`, `groupView-empty`, `guard-commit-hook-refusal`, `hasAdmin-all`, `lookupPendingBase-misses`, `majority-floor`, `mutationChange-swapped`, `tryEnactBase-strict`. masked: its proof uses `KelGroups.commitBaseChange_ok` (killed by `guard-commit-hook-refusal`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
 | `KelGroups.tryEnactDetailed_enactment_threshold_met@KelGroups.Invariants` | KILLED | killed by `tryEnactDetailed-strict` |
 | `KelGroups.tryEnact_eq_of_enacts` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `hasAdmin-all`, `majority-floor`, `tryEnactDetailed-strict`. unconstrained: under none of its 10 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
+| `KelGroups.tryEnact_preserves_strongBase@KelGroups.Invariants` | KILLED | killed by `tryEnactDetailed-strict` |
+| `KelGroups.tryEnact_preserves_structural@KelGroups.Invariants` | KILLED | killed by `tryEnactDetailed-strict` |
 | `KelGroups.tryEnact_preserves_wellFormed` | KILLED | killed by `tryEnactDetailed-strict` |
+| `KelGroups.validateApproval_ok@KelGroups.Invariants` | KILLED | killed by `guard-approval-proposer-self`, `guard-approval-sole-admin-barred`, `guard-approval-twice-historical`, `guard-require-admin` |
+| `KelGroups.validateBaseApproval_ok@KelGroups.Invariants` | KILLED | killed by `guard-base-approval-pending`, `guard-base-approval-proposer-self`, `guard-base-approval-sole-admin-barred`, `guard-base-approval-twice`, `guard-require-admin` |
 | `KelGroups.validateDirectAdmission_ok` | KILLED | killed by `guard-admission-admin`, `guard-admission-duplicate`, `guard-admission-reserved` |
-| `approvals_nodup` | OPEN | inexpressible: its computed statement closure holds only type declarations (`KelGroups.Admin`, `KelGroups.BaseMutation`, `KelGroups.Email`, `KelGroups.GroupState`, `KelGroups.Key`, `KelGroups.Member`, `KelGroups.PendingBase`, `KelGroups.PendingProposal`, `KelGroups.Proposal`, `KelGroups.ProposalId`, `KelGroups.Role`, `KelGroups.RoleName`) and no production definition with a computational body |
-| `enact_implies_threshold_met` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `hasAdmin-all`, `majority-floor`, `setInsert-duplicates`, `tryEnactDetailed-strict`. masked: its proof uses `KelGroups.tryEnactDetailed_enactment_threshold_met@KelGroups.Invariants` (killed by `tryEnactDetailed-strict`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `approvals_nodup` | OPEN | attempted `adminCount-counts-all`, `hasAdmin-all`. unconstrained: under none of its 2 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
+| `enact_implies_threshold_met` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `hasAdmin-all`, `majority-floor`, `propose-auto-assent`, `setInsert-duplicates`, `tryEnactDetailed-strict`. masked: its proof uses `KelGroups.tryEnactDetailed_enactment_threshold_met@KelGroups.Invariants` (killed by `tryEnactDetailed-strict`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
 | `majority_not_strict_on_even` | OPEN | attempted `adminCount-counts-all`, `hasAdmin-all`, `majority-floor`. unconstrained: under none of its 3 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
 | `majority_table` | OPEN | attempted `adminCount-counts-all`, `hasAdmin-all`, `majority-floor`. masked: its proof uses `KelGroups.majority_table` (killed by `majority-floor`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
-| `member_key_coherent` | OPEN | inexpressible: its computed statement closure holds only type declarations (`KelGroups.Admin`, `KelGroups.BaseMutation`, `KelGroups.Email`, `KelGroups.GroupState`, `KelGroups.Key`, `KelGroups.Member`, `KelGroups.PendingBase`, `KelGroups.PendingProposal`, `KelGroups.Proposal`, `KelGroups.ProposalId`, `KelGroups.Role`, `KelGroups.RoleName`) and no production definition with a computational body |
-| `members_change_implies_enacted` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `hasAdmin-all`, `majority-floor`, `setInsert-duplicates`, `tryEnactDetailed-strict`. masked: its proof uses `KelGroups.assocLookup_insert_self` (killed by `assocLookup-misses`), `KelGroups.members_change_implies_enacted` (killed by `tryEnactDetailed-strict`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
-| `proposer_mem_approvals` | OPEN | inexpressible: its computed statement closure holds only type declarations (`KelGroups.Admin`, `KelGroups.BaseMutation`, `KelGroups.Email`, `KelGroups.GroupState`, `KelGroups.Key`, `KelGroups.Member`, `KelGroups.PendingBase`, `KelGroups.PendingProposal`, `KelGroups.Proposal`, `KelGroups.ProposalId`, `KelGroups.Role`, `KelGroups.RoleName`) and no production definition with a computational body |
+| `member_key_coherent` | OPEN | attempted `adminCount-counts-all`, `hasAdmin-all`. unconstrained: under none of its 2 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
+| `members_change_implies_enacted` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `hasAdmin-all`, `majority-floor`, `propose-auto-assent`, `setInsert-duplicates`, `tryEnactDetailed-strict`. masked: its proof uses `KelGroups.assocLookup_insert_self` (killed by `assocLookup-misses`), `KelGroups.members_change_implies_enacted` (killed by `propose-auto-assent`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
 
 ### `KelGroups.Mirrors`
 
@@ -98,11 +150,19 @@ KILLED / REQUIRED: 58 / 123 here, 157 / 311 over the whole ledger.
 | `KelGroups.Vote.sweepReady_corr` | OPEN | attempted `assocLookup-misses`. masked: its proof uses `KelGroups.assocLookup_some_mem_nodupfree@KelGroups.Mirrors` (killed by `assocLookup-misses`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
 | `KelGroups.Vote.voteWellFormed_corr` | OPEN | attempted `admins-non-admins`, `assocLookup-misses`, `franchise-empty`, `hasAdmin-all`, `verdict-collective-strict`, `verdict-permission-ignores-dissent`. masked: its proof uses `KelGroups.assocLookup_some_mem_nodupfree@KelGroups.Mirrors` (killed by `assocLookup-misses`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
 | `KelGroups.assocLookup_some_mem_nodupfree@KelGroups.Mirrors` | KILLED | killed by `assocLookup-misses` |
+| `KelGroups.basePendingCoherent_corr` | OPEN | attempted `adminCount-counts-all`, `hasAdmin-all`. unconstrained: under none of its 2 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
 | `KelGroups.enacts_corr` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `hasAdmin-all`, `majority-floor`, `tryEnactDetailed-strict`. unconstrained: under none of its 10 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
 | `KelGroups.membersCoherent_corr` | OPEN | inexpressible: its computed statement closure holds only type declarations (`KelGroups.Admin`, `KelGroups.BaseMutation`, `KelGroups.Email`, `KelGroups.GroupState`, `KelGroups.Key`, `KelGroups.Member`, `KelGroups.PendingBase`, `KelGroups.PendingProposal`, `KelGroups.Proposal`, `KelGroups.ProposalId`, `KelGroups.Role`, `KelGroups.RoleName`) and no production definition with a computational body |
-| `KelGroups.pendingCoherent_corr` | OPEN | inexpressible: its computed statement closure holds only type declarations (`KelGroups.Admin`, `KelGroups.BaseMutation`, `KelGroups.Email`, `KelGroups.GroupState`, `KelGroups.Key`, `KelGroups.Member`, `KelGroups.PendingBase`, `KelGroups.PendingProposal`, `KelGroups.Proposal`, `KelGroups.ProposalId`, `KelGroups.Role`, `KelGroups.RoleName`) and no production definition with a computational body |
+| `KelGroups.pendingBaseStrong_corr` | OPEN | inexpressible: its computed statement closure holds only type declarations (`KelGroups.Admin`, `KelGroups.BaseMutation`, `KelGroups.Key`, `KelGroups.PendingBase`, `KelGroups.Role`, `KelGroups.RoleName`) and no production definition with a computational body |
+| `KelGroups.pendingBaseWellFormed_corr` | OPEN | inexpressible: its computed statement closure holds only type declarations (`KelGroups.Admin`, `KelGroups.BaseMutation`, `KelGroups.Key`, `KelGroups.PendingBase`, `KelGroups.Role`, `KelGroups.RoleName`) and no production definition with a computational body |
+| `KelGroups.pendingCoherent_corr` | OPEN | attempted `adminCount-counts-all`, `hasAdmin-all`. unconstrained: under none of its 2 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
+| `KelGroups.pendingStrong_corr` | OPEN | inexpressible: its computed statement closure holds only type declarations (`KelGroups.Admin`, `KelGroups.Email`, `KelGroups.Key`, `KelGroups.PendingProposal`, `KelGroups.Proposal`, `KelGroups.Role`, `KelGroups.RoleName`) and no production definition with a computational body |
 | `KelGroups.pendingWellFormed_corr` | OPEN | inexpressible: its computed statement closure holds only type declarations (`KelGroups.Admin`, `KelGroups.Email`, `KelGroups.Key`, `KelGroups.PendingProposal`, `KelGroups.Proposal`, `KelGroups.Role`, `KelGroups.RoleName`) and no production definition with a computational body |
-| `KelGroups.wellFormed_corr` | OPEN | inexpressible: its computed statement closure holds only type declarations (`KelGroups.Admin`, `KelGroups.BaseMutation`, `KelGroups.Email`, `KelGroups.GroupState`, `KelGroups.Key`, `KelGroups.Member`, `KelGroups.PendingBase`, `KelGroups.PendingProposal`, `KelGroups.Proposal`, `KelGroups.ProposalId`, `KelGroups.Role`, `KelGroups.RoleName`) and no production definition with a computational body |
+| `KelGroups.rawStructural_corr` | OPEN | inexpressible: its computed statement closure holds only type declarations (`KelGroups.Admin`, `KelGroups.BaseMutation`, `KelGroups.Email`, `KelGroups.GroupState`, `KelGroups.Key`, `KelGroups.Member`, `KelGroups.PendingBase`, `KelGroups.PendingProposal`, `KelGroups.Proposal`, `KelGroups.ProposalId`, `KelGroups.Role`, `KelGroups.RoleName`) and no production definition with a computational body |
+| `KelGroups.strongBaseCoherent_corr` | OPEN | inexpressible: its computed statement closure holds only type declarations (`KelGroups.Admin`, `KelGroups.BaseMutation`, `KelGroups.Email`, `KelGroups.GroupState`, `KelGroups.Key`, `KelGroups.Member`, `KelGroups.PendingBase`, `KelGroups.PendingProposal`, `KelGroups.Proposal`, `KelGroups.ProposalId`, `KelGroups.Role`, `KelGroups.RoleName`) and no production definition with a computational body |
+| `KelGroups.strongCoherent_corr` | OPEN | inexpressible: its computed statement closure holds only type declarations (`KelGroups.Admin`, `KelGroups.BaseMutation`, `KelGroups.Email`, `KelGroups.GroupState`, `KelGroups.Key`, `KelGroups.Member`, `KelGroups.PendingBase`, `KelGroups.PendingProposal`, `KelGroups.Proposal`, `KelGroups.ProposalId`, `KelGroups.Role`, `KelGroups.RoleName`) and no production definition with a computational body |
+| `KelGroups.traceAdmissible_corr` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `guard-approval-proposer-self`, `guard-approval-sole-admin-barred`, `guard-approval-twice-historical`, `guard-bootstrap-admin`, `guard-require-admin`, `guard-require-member`, `guard-role-add-precondition`, `guard-role-remove-precondition`, `guard-valid-key`, `hasAdmin-all`, `majority-floor`, `propose-auto-assent`, `setInsert-duplicates`, `state-isAdmin-absent-true`, `state-lookupMember-misses`, `tryEnactDetailed-strict`. unconstrained: under none of its 23 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
+| `KelGroups.wellFormed_corr` | OPEN | attempted `adminCount-counts-all`, `hasAdmin-all`. unconstrained: under none of its 2 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
 
 ### `KelGroups.Types`
 
@@ -192,19 +252,20 @@ emits it, so there is no guard to mutate.
 | `KelGroups.Vote.VoteError.questionNotFound` | `KelGroups.Vote.validateVoteEvent` | `guard-vote-question-exists`, `guard-renounce-question-exists` | 1 | KILLS |
 | `KelGroups.Vote.VoteError.notDesignee` | `KelGroups.Vote.validateVoteEvent` | `guard-cast-designee` | 3 | KILLS |
 | `KelGroups.Vote.VoteError.notProposer` | `KelGroups.Vote.validateVoteEvent` | `guard-renounce-proposer` | 3 | KILLS |
-| `KelGroups.ValidationError.notAMember` | `KelGroups.applyIntegratedEvent`, `KelGroups.validateEvent` | `guard-app-signer-member` | 6 | KILLS |
-| `KelGroups.ValidationError.notAnAdmin` | `KelGroups.requireAdmin@KelGroups.Validate`, `KelGroups.validateDirectAdmission` | `guard-require-admin`, `guard-admission-admin` | 6 | KILLS |
+| `KelGroups.ValidationError.notAMember` | `KelGroups.applyIntegratedEvent`, `KelGroups.validateEvent` | `guard-app-signer-member` | 7 | KILLS |
+| `KelGroups.ValidationError.notAnAdmin` | `KelGroups.requireAdmin`, `KelGroups.validateDirectAdmission` | `guard-require-admin`, `guard-admission-admin` | 8 | KILLS |
 | `KelGroups.ValidationError.bootstrapRequiresAdmin` | `KelGroups.validateBootstrapProposal@KelGroups.Validate` | `guard-bootstrap-admin` | 0 | SURVIVED |
 | `KelGroups.ValidationError.memberAlreadyExists` | `KelGroups.requireNotMember@KelGroups.Validate`, `KelGroups.validateDirectAdmission` | `guard-admission-duplicate` | 4 | KILLS |
 | `KelGroups.ValidationError.memberNotFound` | `KelGroups.requireMember@KelGroups.Validate`, `KelGroups.validateRoleChanges@KelGroups.Validate` | `guard-require-member` | 0 | SURVIVED |
-| `KelGroups.ValidationError.proposalNotFound` | `KelGroups.applyIntegratedEvent`, `KelGroups.validateApproval`, `KelGroups.validateBaseApproval` | `guard-base-approval-pending`, `guard-approve-route-pending` | 2 | KILLS |
-| `KelGroups.ValidationError.alreadyApproved` | `KelGroups.validateApproval`, `KelGroups.validateBaseApproval` | `guard-base-approval-twice`, `guard-approval-twice-historical` | 0 | SURVIVED |
+| `KelGroups.ValidationError.proposalNotFound` | `KelGroups.applyIntegratedEvent`, `KelGroups.validateApproval`, `KelGroups.validateBaseApproval` | `guard-base-approval-pending`, `guard-approve-route-pending` | 4 | KILLS |
+| `KelGroups.ValidationError.alreadyApproved` | `KelGroups.validateApproval`, `KelGroups.validateBaseApproval` | `guard-base-approval-twice`, `guard-approval-twice-historical` | 3 | KILLS |
+| `KelGroups.ValidationError.proposerSelfApproval` | `KelGroups.validateApproval`, `KelGroups.validateBaseApproval` | `guard-approval-proposer-self`, `guard-approval-sole-admin-barred`, `guard-base-approval-proposer-self`, `guard-base-approval-sole-admin-barred` | 7 | KILLS |
 | `KelGroups.ValidationError.roleAddPrecondition` | `KelGroups.checkRoleAddition@KelGroups.Validate` | `guard-role-add-precondition` | 0 | SURVIVED |
 | `KelGroups.ValidationError.roleRemovePrecondition` | `KelGroups.checkRoleRemoval@KelGroups.Validate` | `guard-role-remove-precondition` | 0 | SURVIVED |
 | `KelGroups.ValidationError.invalidKey` | `KelGroups.requireValidKey@KelGroups.Validate` | `guard-valid-key` | 0 | SURVIVED |
 | `KelGroups.ValidationError.reservedKey` | `KelGroups.validateDirectAdmission` | `guard-admission-reserved` | 4 | KILLS |
-| `KelGroups.IntegratedError.validation` | `KelGroups.applyIntegratedEvent` | `guard-propose-validation` | 2 | KILLS |
-| `KelGroups.IntegratedError.app` | `KelGroups.applyIntegratedEvent`, `KelGroups.commitBaseChange` | `guard-app-fold-refusal`, `guard-commit-hook-refusal` | 13 | KILLS |
+| `KelGroups.IntegratedError.validation` | `KelGroups.applyIntegratedEvent` | `guard-propose-validation` | 3 | KILLS |
+| `KelGroups.IntegratedError.app` | `KelGroups.applyIntegratedEvent`, `KelGroups.commitBaseChange` | `guard-app-fold-refusal`, `guard-commit-hook-refusal` | 15 | KILLS |
 
 ## Mutants
 
@@ -212,34 +273,34 @@ emits it, so there is no guard to mutate.
 |---|---|---|---|---|---|
 | `guard-vote-responsabile` | `KelGroups.Vote.validateVoteEvent` | `KelGroups.Vote.VoteError.notResponsabile` | `isResponsabile signer view` → `true` | KelGroups.Vote.Validate:60 | 4 |
 | `guard-vote-question-exists` | `KelGroups.Vote.validateVoteEvent` | `KelGroups.Vote.VoteError.questionNotFound` | `.error VoteError.questionNotFound` → `.ok ()` | KelGroups.Vote.Validate:70 | 1 |
-| `guard-app-signer-member` | `KelGroups.applyIntegratedEvent` | `KelGroups.ValidationError.notAMember` | `GroupView.isMember signer view` → `true` | KelGroups.Integration:208 | 6 |
-| `guard-require-admin` | `KelGroups.requireAdmin@KelGroups.Validate` | `KelGroups.ValidationError.notAnAdmin` | `isAdmin signer gs` → `true` | KelGroups.Validate:29 | 0 |
-| `guard-bootstrap-admin` | `KelGroups.validateBootstrapProposal@KelGroups.Validate` | `KelGroups.ValidationError.bootstrapRequiresAdmin` | `hasAdmin roles` → `true` | KelGroups.Validate:92 | 0 |
-| `guard-admission-duplicate` | `KelGroups.validateDirectAdmission` | `KelGroups.ValidationError.memberAlreadyExists` | `isMember target gs` → `false` | KelGroups.Validate:147 | 4 |
-| `guard-require-member` | `KelGroups.requireMember@KelGroups.Validate` | `KelGroups.ValidationError.memberNotFound` | `isMember key gs` → `true` | KelGroups.Validate:33 | 0 |
-| `guard-base-approval-pending` | `KelGroups.validateBaseApproval` | `KelGroups.ValidationError.proposalNotFound` | `.error (.proposalNotFound proposalId` → `.ok (` | KelGroups.Validate:167 | 0 |
-| `guard-base-approval-twice` | `KelGroups.validateBaseApproval` | `KelGroups.ValidationError.alreadyApproved` | `pending.approvals.contains signer` → `false` | KelGroups.Validate:169 | 0 |
-| `guard-role-add-precondition` | `KelGroups.checkRoleAddition@KelGroups.Validate` | `KelGroups.ValidationError.roleAddPrecondition` | `roleDef.canAdd gs.appFold` → `true` | KelGroups.Validate:50 | 0 |
-| `guard-role-remove-precondition` | `KelGroups.checkRoleRemoval@KelGroups.Validate` | `KelGroups.ValidationError.roleRemovePrecondition` | `roleDef.canRemove gs.appFold` → `true` | KelGroups.Validate:59 | 0 |
-| `guard-valid-key` | `KelGroups.requireValidKey@KelGroups.Validate` | `KelGroups.ValidationError.invalidKey` | `validKey key` → `true` | KelGroups.Validate:41 | 0 |
-| `guard-admission-reserved` | `KelGroups.validateDirectAdmission` | `KelGroups.ValidationError.reservedKey` | `target = reserved` → `false` | KelGroups.Validate:146 | 4 |
-| `guard-propose-validation` | `KelGroups.applyIntegratedEvent` | `KelGroups.IntegratedError.validation` | `.error (.validation err)` → `.ok { state := gs, change := none }` | KelGroups.Integration:187 | 2 |
-| `guard-app-fold-refusal` | `KelGroups.applyIntegratedEvent` | `KelGroups.IntegratedError.app` | `.error (.app err)` → `.ok { state := gs, change := none }` | KelGroups.Integration:211 | 8 |
-| `setInsert-duplicates` | `KelGroups.setInsert` |  | `values` → `value :: values` | KelGroups.Types:47 | 4 |
+| `guard-app-signer-member` | `KelGroups.applyIntegratedEvent` | `KelGroups.ValidationError.notAMember` | `GroupView.isMember signer view` → `true` | KelGroups.Integration:208 | 7 |
+| `guard-require-admin` | `KelGroups.requireAdmin` | `KelGroups.ValidationError.notAnAdmin` | `isAdmin signer gs` → `true` | KelGroups.Validate:33 | 2 |
+| `guard-bootstrap-admin` | `KelGroups.validateBootstrapProposal@KelGroups.Validate` | `KelGroups.ValidationError.bootstrapRequiresAdmin` | `hasAdmin roles` → `true` | KelGroups.Validate:96 | 0 |
+| `guard-admission-duplicate` | `KelGroups.validateDirectAdmission` | `KelGroups.ValidationError.memberAlreadyExists` | `isMember target gs` → `false` | KelGroups.Validate:157 | 4 |
+| `guard-require-member` | `KelGroups.requireMember@KelGroups.Validate` | `KelGroups.ValidationError.memberNotFound` | `isMember key gs` → `true` | KelGroups.Validate:37 | 0 |
+| `guard-base-approval-pending` | `KelGroups.validateBaseApproval` | `KelGroups.ValidationError.proposalNotFound` | `.error (.proposalNotFound proposalId` → `.ok (` | KelGroups.Validate:177 | 1 |
+| `guard-base-approval-twice` | `KelGroups.validateBaseApproval` | `KelGroups.ValidationError.alreadyApproved` | `pending.approvals.contains signer` → `false` | KelGroups.Validate:182 | 1 |
+| `guard-role-add-precondition` | `KelGroups.checkRoleAddition@KelGroups.Validate` | `KelGroups.ValidationError.roleAddPrecondition` | `roleDef.canAdd gs.appFold` → `true` | KelGroups.Validate:54 | 0 |
+| `guard-role-remove-precondition` | `KelGroups.checkRoleRemoval@KelGroups.Validate` | `KelGroups.ValidationError.roleRemovePrecondition` | `roleDef.canRemove gs.appFold` → `true` | KelGroups.Validate:63 | 0 |
+| `guard-valid-key` | `KelGroups.requireValidKey@KelGroups.Validate` | `KelGroups.ValidationError.invalidKey` | `validKey key` → `true` | KelGroups.Validate:45 | 0 |
+| `guard-admission-reserved` | `KelGroups.validateDirectAdmission` | `KelGroups.ValidationError.reservedKey` | `target = reserved` → `false` | KelGroups.Validate:156 | 4 |
+| `guard-propose-validation` | `KelGroups.applyIntegratedEvent` | `KelGroups.IntegratedError.validation` | `.error (.validation err)` → `.ok { state := gs, change := none }` | KelGroups.Integration:187 | 3 |
+| `guard-app-fold-refusal` | `KelGroups.applyIntegratedEvent` | `KelGroups.IntegratedError.app` | `.error (.app err)` → `.ok { state := gs, change := none }` | KelGroups.Integration:211 | 9 |
+| `setInsert-duplicates` | `KelGroups.setInsert` |  | `values` → `value :: values` | KelGroups.Types:47 | 9 |
 | `assocLookup-misses` | `KelGroups.assocLookup` |  | `some value` → `none` | KelGroups.Types:52 | 55 |
-| `assocErase-keeps` | `KelGroups.assocErase` |  | `` → `(candidate, value) :: ` | KelGroups.Types:57 | 35 |
+| `assocErase-keeps` | `KelGroups.assocErase` |  | `` → `(candidate, value) :: ` | KelGroups.Types:57 | 36 |
 | `assocAdjust-ignores-f` | `KelGroups.assocAdjust` |  | `f ` → `` | KelGroups.Types:66 | 5 |
 | `hasAdmin-all` | `KelGroups.hasAdmin` |  | `roles.any` → `roles.all` | KelGroups.Types:35 | 12 |
 | `isMember-negated` | `KelGroups.GroupView.isMember` |  | `.isSome` → `.isNone` | KelGroups.Types:146 | 42 |
 | `isAdmin-absent-true` | `KelGroups.GroupView.isAdmin` |  | `false` → `true` | KelGroups.Types:154 | 6 |
 | `admins-non-admins` | `KelGroups.GroupView.admins` |  | `` → `!` | KelGroups.Types:159 | 29 |
-| `assocInsert-appends` | `KelGroups.assocInsert` |  | `assocErase key ` → `` | KelGroups.Types:61 | 26 |
+| `assocInsert-appends` | `KelGroups.assocInsert` |  | `assocErase key ` → `` | KelGroups.Types:61 | 31 |
 | `view-lookupMember-misses` | `KelGroups.GroupView.lookupMember` |  | `assocLookup key view.members` → `none` | KelGroups.Types:142 | 42 |
-| `state-lookupMember-misses` | `KelGroups.lookupMember` |  | `assocLookup key gs.members` → `none` | KelGroups.State:38 | 24 |
-| `lookupPendingBase-misses` | `KelGroups.lookupPendingBase` |  | `assocLookup proposalId gs.pendingBase` → `none` | KelGroups.State:45 | 19 |
-| `adminCount-counts-all` | `KelGroups.adminCount` |  | `` → ` + 1` | KelGroups.State:48 | 4 |
-| `majority-floor` | `KelGroups.majority` |  | `(adminCount gs + 1)` → `adminCount gs` | KelGroups.State:50 | 17 |
-| `state-isAdmin-absent-true` | `KelGroups.isAdmin` |  | `false` → `true` | KelGroups.State:55 | 0 |
+| `state-lookupMember-misses` | `KelGroups.lookupMember` |  | `assocLookup key gs.members` → `none` | KelGroups.State:38 | 25 |
+| `lookupPendingBase-misses` | `KelGroups.lookupPendingBase` |  | `assocLookup proposalId gs.pendingBase` → `none` | KelGroups.State:45 | 20 |
+| `adminCount-counts-all` | `KelGroups.adminCount` |  | `` → ` + 1` | KelGroups.State:48 | 6 |
+| `majority-floor` | `KelGroups.majority` |  | `(adminCount gs + 1)` → `adminCount gs` | KelGroups.State:50 | 21 |
+| `state-isAdmin-absent-true` | `KelGroups.isAdmin` |  | `false` → `true` | KelGroups.State:55 | 1 |
 | `franchise-empty` | `KelGroups.Vote.franchise` |  | `GroupView.admins view` → `[]` | KelGroups.Vote.State:68 | 33 |
 | `vote-isResponsabile-true` | `KelGroups.Vote.isResponsabile` |  | `GroupView.isAdmin key view` → `true` | KelGroups.Vote.State:75 | 11 |
 | `verdict-collective-strict` | `KelGroups.Vote.verdictOf` |  | `≥` → `>` | KelGroups.Vote.State:89 | 16 |
@@ -250,20 +311,20 @@ emits it, so there is no guard to mutate.
 | `sweepStep-cause-tally` | `KelGroups.Vote.sweepStep` |  | `closureCause view entry.2 verdict` → `.tally` | KelGroups.Vote.Fold:67 | 7 |
 | `sweepClosures-keeps-open` | `KelGroups.Vote.sweepClosures` |  | `verdictOf threshold view entry.2 = .open` → `true` | KelGroups.Vote.Fold:76 | 18 |
 | `effectedState-reopens` | `KelGroups.Vote.effectedState` |  | `!(gs.closed.any (fun record => record.questionId == questionId))` → `true` | KelGroups.Vote.Fold:93 | 5 |
-| `admitMemberInto-drops` | `KelGroups.admitMemberInto` |  | `assocInsert key { key, email, roles } ` → `` | KelGroups.Integration:120 | 5 |
-| `enactMutation-remove-noop` | `KelGroups.enactMutation` |  | `assocErase key ` → `` | KelGroups.Integration:126 | 19 |
+| `admitMemberInto-drops` | `KelGroups.admitMemberInto` |  | `assocInsert key { key, email, roles } ` → `` | KelGroups.Integration:120 | 6 |
+| `enactMutation-remove-noop` | `KelGroups.enactMutation` |  | `assocErase key ` → `` | KelGroups.Integration:126 | 21 |
 | `mutationChange-swapped` | `KelGroups.mutationChange` |  | `.memberRemoved` → `.rolesChanged` | KelGroups.Integration:133 | 14 |
-| `tryEnactBase-strict` | `KelGroups.tryEnactBase` |  | `≥` → `>` | KelGroups.Integration:154 | 20 |
-| `enact-remove-noop` | `KelGroups.enact` |  | `assocErase key ` → `` | KelGroups.Fold:14 | 1 |
-| `finishEnact-keeps-pending` | `KelGroups.finishEnact` |  | `assocErase proposalId ` → `` | KelGroups.Fold:21 | 1 |
-| `tryEnactDetailed-strict` | `KelGroups.tryEnactDetailed` |  | `≥` → `>` | KelGroups.Fold:38 | 3 |
-| `emptyState-has-member` | `KelGroups.emptyState` |  | `` → `("x", { key := "y", email := "", roles := [] })` | KelGroups.State:35 | 1 |
+| `tryEnactBase-strict` | `KelGroups.tryEnactBase` |  | `≥` → `>` | KelGroups.Integration:154 | 22 |
+| `enact-remove-noop` | `KelGroups.enact` |  | `assocErase key ` → `` | KelGroups.Fold:14 | 2 |
+| `finishEnact-keeps-pending` | `KelGroups.finishEnact` |  | `assocErase proposalId ` → `` | KelGroups.Fold:21 | 4 |
+| `tryEnactDetailed-strict` | `KelGroups.tryEnactDetailed` |  | `≥` → `>` | KelGroups.Fold:38 | 8 |
+| `emptyState-has-member` | `KelGroups.emptyState` |  | `` → `("x", { key := "y", email := "", roles := [] })` | KelGroups.State:35 | 2 |
 | `legacyThreshold-floor` | `KelGroups.Vote.legacyThreshold` |  | `(responsabili + 1)` → `responsabili` | KelGroups.Vote.Types:44 | 33 |
-| `guard-admission-admin` | `KelGroups.validateDirectAdmission` | `KelGroups.ValidationError.notAnAdmin` | `isAdmin signer gs` → `true` | KelGroups.Validate:145 | 6 |
-| `guard-approve-route-pending` | `KelGroups.applyIntegratedEvent` | `KelGroups.ValidationError.proposalNotFound` | `.error (.validation (.proposalNotFound proposalId))` → `.ok { state := gs, change := none }` | KelGroups.Integration:200 | 2 |
-| `guard-approval-twice-historical` | `KelGroups.validateApproval` | `KelGroups.ValidationError.alreadyApproved` | `pending.approvals.contains signer` → `false` | KelGroups.Validate:122 | 0 |
+| `guard-admission-admin` | `KelGroups.validateDirectAdmission` | `KelGroups.ValidationError.notAnAdmin` | `isAdmin signer gs` → `true` | KelGroups.Validate:155 | 6 |
+| `guard-approve-route-pending` | `KelGroups.applyIntegratedEvent` | `KelGroups.ValidationError.proposalNotFound` | `.error (.validation (.proposalNotFound proposalId))` → `.ok { state := gs, change := none }` | KelGroups.Integration:200 | 3 |
+| `guard-approval-twice-historical` | `KelGroups.validateApproval` | `KelGroups.ValidationError.alreadyApproved` | `pending.approvals.contains signer` → `false` | KelGroups.Validate:132 | 2 |
 | `guard-renounce-question-exists` | `KelGroups.Vote.validateVoteEvent` | `KelGroups.Vote.VoteError.questionNotFound` | `.error VoteError.questionNotFound` → `.ok ()` | KelGroups.Vote.Validate:77 | 1 |
-| `guard-commit-hook-refusal` | `KelGroups.commitBaseChange` | `KelGroups.IntegratedError.app` | `.error (.app err)` → `.ok { state := post, change := some change }` | KelGroups.Integration:144 | 6 |
+| `guard-commit-hook-refusal` | `KelGroups.commitBaseChange` | `KelGroups.IntegratedError.app` | `.error (.app err)` → `.ok { state := post, change := some change }` | KelGroups.Integration:144 | 7 |
 | `emptyVoteState-has-question` | `KelGroups.Vote.emptyVoteState` |  | `` → `("q", { kind := .collective, proposer := "p", assents := ["a"], dissents := ["a"] })` | KelGroups.Vote.State:58 | 9 |
 | `groupView-empty` | `KelGroups.groupView` |  | `gs.members` → `[]` | KelGroups.State:72 | 42 |
 | `guard-cast-designee` | `KelGroups.Vote.validateVoteEvent` | `KelGroups.Vote.VoteError.notDesignee` | `signer == designee` → `true` | KelGroups.Vote.Validate:69 | 3 |
@@ -276,6 +337,12 @@ emits it, so there is no guard to mutate.
 | `closeProposer-records-all` | `KelGroups.Vote.closeProposerQuestions` |  | `entry.2.proposer == proposer` → `true` | KelGroups.Vote.Fold:119 | 15 |
 | `closeProposer-closes-positive` | `KelGroups.Vote.closeProposerQuestions` |  | `.negative` → `.positive` | KelGroups.Vote.Fold:121 | 10 |
 | `closeProposer-cause-tally` | `KelGroups.Vote.closeProposerQuestions` |  | `.proposerDeparted` → `.tally` | KelGroups.Vote.Fold:121 | 10 |
+| `guard-approval-proposer-self` | `KelGroups.validateApproval` | `KelGroups.ValidationError.proposerSelfApproval` | `signer == pending.proposer && decide (1 < adminCount gs)` → `false` | KelGroups.Validate:130 | 2 |
+| `guard-approval-sole-admin-barred` | `KelGroups.validateApproval` | `KelGroups.ValidationError.proposerSelfApproval` | `1` → `0` | KelGroups.Validate:130 | 2 |
+| `guard-base-approval-proposer-self` | `KelGroups.validateBaseApproval` | `KelGroups.ValidationError.proposerSelfApproval` | `signer == pending.proposer && decide (1 < adminCount gs)` → `false` | KelGroups.Validate:180 | 1 |
+| `guard-base-approval-sole-admin-barred` | `KelGroups.validateBaseApproval` | `KelGroups.ValidationError.proposerSelfApproval` | `1` → `0` | KelGroups.Validate:180 | 5 |
+| `propose-auto-assent` | `KelGroups.applyProposeDetailed` |  | `` → `signer` | KelGroups.Fold:49 | 5 |
+| `base-propose-auto-assent` | `KelGroups.applyIntegratedEvent` |  | `` → `signer` | KelGroups.Integration:191 | 20 |
 
 ## Limits
 
@@ -315,8 +382,12 @@ What a row here does not establish.
 
 Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem` command, produced it: the environment records no source declaration range of its own for it (equation, injectivity, sizeOf, auxiliary-proof and simp lemmas), or it is a structure projection (a `Prop` field of a structure); every other theorem constant is AUTHORED.
 
-<details><summary>484 identities</summary>
+<details><summary>532 identities</summary>
 
+- `Except.toBool.eq_1`
+- `Except.toBool.eq_2`
+- `Except.toBool.match_1.eq_1@KelGroups.Mirrors`
+- `Except.toBool.match_1.eq_2@KelGroups.Mirrors`
 - `KelGroups.Admin.ofNat_ctorIdx`
 - `KelGroups.Admin.privateAdmin.sizeOf_spec`
 - `KelGroups.Admin.publicAdmin.sizeOf_spec`
@@ -344,6 +415,7 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `KelGroups.BaseMutation.removeMember.inj`
 - `KelGroups.BaseMutation.removeMember.injEq`
 - `KelGroups.BaseMutation.removeMember.sizeOf_spec`
+- `KelGroups.BasePendingCoherent.eq_1`
 - `KelGroups.DirectCommand.admitMember.inj`
 - `KelGroups.DirectCommand.admitMember.injEq`
 - `KelGroups.DirectCommand.admitMember.sizeOf_spec`
@@ -396,10 +468,13 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `KelGroups.PendingBase.mk.inj`
 - `KelGroups.PendingBase.mk.injEq`
 - `KelGroups.PendingBase.mk.sizeOf_spec`
+- `KelGroups.PendingBaseStrong.eq_1`
+- `KelGroups.PendingBaseWellFormed.eq_1`
 - `KelGroups.PendingCoherent.eq_1`
 - `KelGroups.PendingProposal.mk.inj`
 - `KelGroups.PendingProposal.mk.injEq`
 - `KelGroups.PendingProposal.mk.sizeOf_spec`
+- `KelGroups.PendingStrong.eq_1`
 - `KelGroups.PendingWellFormed.eq_1`
 - `KelGroups.Proposal.changeRoles.inj`
 - `KelGroups.Proposal.changeRoles.injEq`
@@ -422,6 +497,9 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `KelGroups.StepResult.mk.inj`
 - `KelGroups.StepResult.mk.injEq`
 - `KelGroups.StepResult.mk.sizeOf_spec`
+- `KelGroups.StrongBaseCoherent.eq_1`
+- `KelGroups.StrongCoherent.eq_1`
+- `KelGroups.TraceAdmissible.eq_1`
 - `KelGroups.ValidationError.alreadyApproved.inj`
 - `KelGroups.ValidationError.alreadyApproved.injEq`
 - `KelGroups.ValidationError.alreadyApproved.sizeOf_spec`
@@ -444,6 +522,9 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `KelGroups.ValidationError.proposalNotFound.inj`
 - `KelGroups.ValidationError.proposalNotFound.injEq`
 - `KelGroups.ValidationError.proposalNotFound.sizeOf_spec`
+- `KelGroups.ValidationError.proposerSelfApproval.inj`
+- `KelGroups.ValidationError.proposerSelfApproval.injEq`
+- `KelGroups.ValidationError.proposerSelfApproval.sizeOf_spec`
 - `KelGroups.ValidationError.reservedKey.inj`
 - `KelGroups.ValidationError.reservedKey.injEq`
 - `KelGroups.ValidationError.reservedKey.sizeOf_spec`
@@ -598,11 +679,17 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `KelGroups.Vote.validateVoteEvent.match_5.eq_3@KelGroups.Vote.Invariants`
 - `KelGroups.Vote.verdictOf.eq_1`
 - `KelGroups.Vote.voteWellFormed_corr._simp_1_1`
+- `KelGroups.WellFormed.basePendingCoherent`
 - `KelGroups.WellFormed.memberKeys`
 - `KelGroups.WellFormed.membersCoherent`
 - `KelGroups.WellFormed.pendingCoherent`
 - `KelGroups.WellFormed.pendingKeys`
+- `KelGroups.adminCount_pos_of_isAdmin._simp_1_1@KelGroups.Invariants`
 - `KelGroups.applyApproveDetailed.eq_1`
+- `KelGroups.applyApprove_strong_entry._proof_1_4@KelGroups.Invariants`
+- `KelGroups.applyApprove_strong_entry._proof_1_5@KelGroups.Invariants`
+- `KelGroups.applyApprove_strong_entry._proof_1_7@KelGroups.Invariants`
+- `KelGroups.applyApprove_strong_entry._simp_1_3@KelGroups.Invariants`
 - `KelGroups.applyEvent.eq_1`
 - `KelGroups.applyEventDetailed.eq_1`
 - `KelGroups.applyEventDetailed.eq_2`
@@ -620,6 +707,8 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `KelGroups.applyIntegratedEvent.match_3.eq_2@KelGroups.Invariants`
 - `KelGroups.applyIntegratedEvent.match_3.eq_3@KelGroups.Invariants`
 - `KelGroups.applyIntegratedEvent.match_3.eq_4@KelGroups.Invariants`
+- `KelGroups.approveBasePending_wellFormed._simp_1_2@KelGroups.Invariants`
+- `KelGroups.approvePending_wellFormed._simp_1_2@KelGroups.Invariants`
 - `KelGroups.assocAdjust.eq_1`
 - `KelGroups.assocAdjust.eq_2`
 - `KelGroups.assocAdjust.eq_def`
@@ -636,6 +725,8 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `KelGroups.assocLookup.eq_def`
 - `KelGroups.assocLookup.match_1.eq_1@KelGroups.Types`
 - `KelGroups.assocLookup.match_1.eq_2@KelGroups.Types`
+- `KelGroups.basePendingCoherentB.eq_1`
+- `KelGroups.basePendingCoherent_corr._simp_1_2`
 - `KelGroups.commitBaseChange.match_1.eq_1@KelGroups.Invariants`
 - `KelGroups.commitBaseChange.match_1.eq_2@KelGroups.Invariants`
 - `KelGroups.emptyState.eq_1`
@@ -645,6 +736,10 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `KelGroups.enact.match_1.eq_1@KelGroups.Invariants`
 - `KelGroups.enact.match_1.eq_2@KelGroups.Invariants`
 - `KelGroups.enact.match_1.eq_3@KelGroups.Invariants`
+- `KelGroups.enactMutation.eq_1`
+- `KelGroups.enactMutation.eq_2`
+- `KelGroups.enactMutation.match_1.eq_1@KelGroups.Invariants`
+- `KelGroups.enactMutation.match_1.eq_2@KelGroups.Invariants`
 - `KelGroups.foldIntegrated.eq_1`
 - `KelGroups.foldIntegrated.match_1.eq_1@KelGroups.Invariants`
 - `KelGroups.foldIntegrated.match_1.eq_2@KelGroups.Invariants`
@@ -778,6 +873,9 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `KelGroups.instDecidableEqValidationError.decEq._proof_20`
 - `KelGroups.instDecidableEqValidationError.decEq._proof_21`
 - `KelGroups.instDecidableEqValidationError.decEq._proof_22`
+- `KelGroups.instDecidableEqValidationError.decEq._proof_23`
+- `KelGroups.instDecidableEqValidationError.decEq._proof_24`
+- `KelGroups.instDecidableEqValidationError.decEq._proof_25`
 - `KelGroups.instDecidableEqValidationError.decEq._proof_3`
 - `KelGroups.instDecidableEqValidationError.decEq._proof_4`
 - `KelGroups.instDecidableEqValidationError.decEq._proof_5`
@@ -785,14 +883,31 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `KelGroups.instDecidableEqValidationError.decEq._proof_7`
 - `KelGroups.instDecidableEqValidationError.decEq._proof_8`
 - `KelGroups.instDecidableEqValidationError.decEq._proof_9`
+- `KelGroups.integratedApprove_both._proof_1_11@KelGroups.Invariants`
+- `KelGroups.integratedApprove_both._proof_1_12@KelGroups.Invariants`
+- `KelGroups.integratedApprove_both._proof_1_14@KelGroups.Invariants`
+- `KelGroups.integratedApprove_both._simp_1_10@KelGroups.Invariants`
+- `KelGroups.majority.eq_1`
 - `KelGroups.majority_not_strict_on_even._proof_1_1`
 - `KelGroups.membersCoherentB.eq_1`
 - `KelGroups.membersCoherent_corr._simp_1_2`
+- `KelGroups.pendingBaseStrongB.eq_1`
 - `KelGroups.pendingCoherentB.eq_1`
 - `KelGroups.pendingCoherent_corr._simp_1_2`
-- `KelGroups.pendingWellFormedB.eq_1`
+- `KelGroups.pendingStrongB.eq_1`
+- `KelGroups.rawStructural_corr._simp_1_1`
+- `KelGroups.requireAdmin.eq_1`
 - `KelGroups.setInsert.eq_1`
+- `KelGroups.setInsert_not_mem._simp_1_2@KelGroups.Invariants`
+- `KelGroups.setInsert_not_mem._simp_1_3@KelGroups.Invariants`
+- `KelGroups.sole_admin_self_approval_ok._proof_1_1`
+- `KelGroups.strongBaseCoherentB.eq_1`
+- `KelGroups.strongBaseCoherent_corr._simp_1_3`
+- `KelGroups.strongCoherentB.eq_1`
+- `KelGroups.strongCoherent_corr._simp_1_3`
+- `KelGroups.traceAdmissibleB.eq_1`
 - `KelGroups.tryEnact.eq_1`
+- `KelGroups.tryEnactBase.eq_1`
 - `KelGroups.tryEnactBase.match_1.eq_1@KelGroups.Invariants`
 - `KelGroups.tryEnactBase.match_1.eq_2@KelGroups.Invariants`
 - `KelGroups.tryEnactDetailed.eq_1`
