@@ -219,7 +219,7 @@
       "target": "KelGroups.Vote.validateVoteEvent",
       "guard": "KelGroups.Vote.VoteError.notResponsabile",
       "patch": {
-        "line": 58,
+        "line": 60,
         "before": "      if isResponsabile signer view then .ok () else .error VoteError.notResponsabile",
         "after": "      if true then .ok () else .error VoteError.notResponsabile"
       },
@@ -236,11 +236,13 @@
       "target": "KelGroups.Vote.validateVoteEvent",
       "guard": "KelGroups.Vote.VoteError.questionNotFound",
       "patch": {
-        "line": 64,
+        "line": 70,
         "before": "        | none => .error VoteError.questionNotFound",
         "after": "        | none => .ok ()"
       },
-      "claimedKills": [],
+      "claimedKills": [
+        "Reactivegas.Lifecycle.order_holds"
+      ],
       "note": "a ballot on an unknown question is admitted"
     },
     {
@@ -253,6 +255,10 @@
         "after": "      if true then"
       },
       "claimedKills": [
+        "Reactivegas.Lifecycle.assembly_faithful",
+        "Reactivegas.Lifecycle.deferred_mutant_closes_later",
+        "Reactivegas.Lifecycle.fixtures_hold",
+        "Reactivegas.Lifecycle.paths_agree",
         "Reactivegas.i57_boundary_holds",
         "Reactivegas.i57_noop_holds"
       ],
@@ -415,6 +421,9 @@
       "claimedKills": [
         "KelGroups.app_event_has_no_base_change",
         "KelGroups.app_event_preserves_members",
+        "Reactivegas.Lifecycle.order_holds",
+        "Reactivegas.Lifecycle.r1_holds",
+        "Reactivegas.Lifecycle.r2_holds",
         "Reactivegas.i57_auth_holds",
         "Reactivegas.i57_boundary_holds",
         "Reactivegas.i57_noop_holds"
@@ -426,7 +435,7 @@
       "target": "Reactivegas.apply",
       "guard": "Reactivegas.ProductionError.comuneReserved",
       "patch": {
-        "line": 381,
+        "line": 386,
         "before": "  if productionWellFormed gs then",
         "after": "  if true then"
       },
@@ -438,11 +447,15 @@
       "target": "Reactivegas.apply",
       "guard": "Reactivegas.ProductionError.integrated",
       "patch": {
-        "line": 386,
+        "line": 391,
         "before": "    | .error err => .error (ProductionError.integrated err)",
         "after": "    | .error err => .ok { state := gs, change := none }"
       },
       "claimedKills": [
+        "Reactivegas.Lifecycle.assembly_faithful",
+        "Reactivegas.Lifecycle.order_holds",
+        "Reactivegas.Lifecycle.r1_holds",
+        "Reactivegas.Lifecycle.r2_holds",
         "Reactivegas.base_change_recomputes_votes",
         "Reactivegas.base_departure_applies_cleanup",
         "Reactivegas.direct_admission_only_holds",
@@ -466,6 +479,10 @@
         "after": "  | .error _ => .ok s"
       },
       "claimedKills": [
+        "Reactivegas.Lifecycle.assembly_faithful",
+        "Reactivegas.Lifecycle.order_holds",
+        "Reactivegas.Lifecycle.r1_holds",
+        "Reactivegas.Lifecycle.r2_holds",
         "Reactivegas.i57_auth_holds",
         "Reactivegas.i57_boundary_holds",
         "Reactivegas.i57_noop_holds"
@@ -664,6 +681,27 @@
         "KelGroups.assocLookup_insert_self",
         "KelGroups.assocLookup_some_mem@KelGroups.Invariants",
         "KelGroups.assocLookup_some_mem_nodupfree@KelGroups.Mirrors",
+        "Reactivegas.Lifecycle.deferred_mutant_closes_later",
+        "Reactivegas.Lifecycle.fixtures_hold",
+        "Reactivegas.Lifecycle.l1_holds",
+        "Reactivegas.Lifecycle.l2_holds",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_later_step",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_no_closure",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_franchise",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_sweep_first",
+        "Reactivegas.Lifecycle.l6b_holds",
+        "Reactivegas.Lifecycle.order_holds",
+        "Reactivegas.Lifecycle.paths_agree",
+        "Reactivegas.Lifecycle.r1_holds",
+        "Reactivegas.Lifecycle.r2_holds",
+        "Reactivegas.Lifecycle.v3_holds",
         "Reactivegas.admissionPreservation_holds",
         "Reactivegas.app_members_preservation_holds",
         "Reactivegas.app_members_preservation_mutant_caught",
@@ -710,6 +748,24 @@
         "KelGroups.assocErase_key_absent@KelGroups.Invariants",
         "KelGroups.assocErase_sublist@KelGroups.Invariants",
         "KelGroups.assocLookup_erase_of_none",
+        "Reactivegas.Lifecycle.assembly_faithful",
+        "Reactivegas.Lifecycle.deferred_mutant_closes_later",
+        "Reactivegas.Lifecycle.fixtures_hold",
+        "Reactivegas.Lifecycle.l1_holds",
+        "Reactivegas.Lifecycle.l2_holds",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_later_step",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_no_closure",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_franchise",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_sweep_first",
+        "Reactivegas.Lifecycle.l6b_holds",
+        "Reactivegas.Lifecycle.v3_holds",
         "Reactivegas.base_change_can_close_without_ballot",
         "Reactivegas.base_departure_applies_cleanup",
         "Reactivegas.base_recompute_reachable_holds",
@@ -752,6 +808,7 @@
         "after": "def hasAdmin (roles : List Role) : Bool := roles.all isAdminRole"
       },
       "claimedKills": [
+        "Reactivegas.Lifecycle.order_holds",
         "Reactivegas.admissionPreservation_holds",
         "Reactivegas.base_departure_applies_cleanup",
         "Reactivegas.direct_admission_only_holds",
@@ -776,6 +833,21 @@
         "after": "  (lookupMember key view).isNone"
       },
       "claimedKills": [
+        "Reactivegas.Lifecycle.deferred_mutant_closes_later",
+        "Reactivegas.Lifecycle.fixtures_hold",
+        "Reactivegas.Lifecycle.l1_holds",
+        "Reactivegas.Lifecycle.l2_holds",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6b_holds",
+        "Reactivegas.Lifecycle.order_holds",
+        "Reactivegas.Lifecycle.paths_agree",
+        "Reactivegas.Lifecycle.r1_holds",
+        "Reactivegas.Lifecycle.r2_holds",
+        "Reactivegas.Lifecycle.v3_holds",
         "Reactivegas.admissionPreservation_holds",
         "Reactivegas.app_members_preservation_holds",
         "Reactivegas.app_members_preservation_mutant_caught",
@@ -815,7 +887,14 @@
         "before": "  | none => false",
         "after": "  | none => true"
       },
-      "claimedKills": [],
+      "claimedKills": [
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_franchise",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_sweep_first",
+        "Reactivegas.Lifecycle.order_holds"
+      ],
       "note": "an absent key is an admin"
     },
     {
@@ -828,6 +907,25 @@
         "after": "  (view.members.filter (fun entry => !hasAdmin entry.2.roles)).map Prod.fst"
       },
       "claimedKills": [
+        "Reactivegas.Lifecycle.fixtures_hold",
+        "Reactivegas.Lifecycle.l1_holds",
+        "Reactivegas.Lifecycle.l2_holds",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_later_step",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_no_closure",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_franchise",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_sweep_first",
+        "Reactivegas.Lifecycle.l6b_holds",
+        "Reactivegas.Lifecycle.order_holds",
+        "Reactivegas.Lifecycle.paths_agree",
+        "Reactivegas.Lifecycle.r1_holds",
+        "Reactivegas.Lifecycle.r2_holds",
         "Reactivegas.base_change_can_close_without_ballot",
         "Reactivegas.i57_disjoint_holds",
         "Reactivegas.i57_disjoint_mutant_caught",
@@ -860,6 +958,21 @@
         "KelGroups.assocInsert_keys_nodup@KelGroups.Invariants",
         "KelGroups.assocInsert_property@KelGroups.Invariants",
         "KelGroups.assocLookup_insert_of_none",
+        "Reactivegas.Lifecycle.assembly_faithful",
+        "Reactivegas.Lifecycle.fixtures_hold",
+        "Reactivegas.Lifecycle.l1_holds",
+        "Reactivegas.Lifecycle.l2_holds",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_later_step",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_no_closure",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_franchise",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_sweep_first",
         "Reactivegas.i57_policyfree_holds",
         "Reactivegas.i57_policyfree_mutant_caught"
       ],
@@ -875,6 +988,26 @@
         "after": "  none"
       },
       "claimedKills": [
+        "Reactivegas.Lifecycle.deferred_mutant_closes_later",
+        "Reactivegas.Lifecycle.fixtures_hold",
+        "Reactivegas.Lifecycle.l1_holds",
+        "Reactivegas.Lifecycle.l2_holds",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_later_step",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_no_closure",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_franchise",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_sweep_first",
+        "Reactivegas.Lifecycle.l6b_holds",
+        "Reactivegas.Lifecycle.order_holds",
+        "Reactivegas.Lifecycle.paths_agree",
+        "Reactivegas.Lifecycle.r1_holds",
+        "Reactivegas.Lifecycle.r2_holds",
         "Reactivegas.admissionPreservation_holds",
         "Reactivegas.app_members_preservation_holds",
         "Reactivegas.app_members_preservation_mutant_caught",
@@ -913,6 +1046,15 @@
         "KelGroups.enactMutation_preserves_absence",
         "KelGroups.membership_growth_is_direct_admission",
         "KelGroups.tryEnactBase_preserves_absence",
+        "Reactivegas.Lifecycle.deferred_mutant_closes_later",
+        "Reactivegas.Lifecycle.l2_holds",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.paths_agree",
+        "Reactivegas.Lifecycle.v3_holds",
         "Reactivegas.admissionPreservation_holds",
         "Reactivegas.base_change_can_close_without_ballot",
         "Reactivegas.base_departure_applies_cleanup",
@@ -938,6 +1080,15 @@
         "after": "  none"
       },
       "claimedKills": [
+        "Reactivegas.Lifecycle.deferred_mutant_closes_later",
+        "Reactivegas.Lifecycle.l2_holds",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.paths_agree",
+        "Reactivegas.Lifecycle.v3_holds",
         "Reactivegas.base_change_can_close_without_ballot",
         "Reactivegas.base_departure_applies_cleanup",
         "Reactivegas.base_recompute_reachable_holds",
@@ -979,6 +1130,15 @@
       },
       "claimedKills": [
         "KelGroups.majority_table",
+        "Reactivegas.Lifecycle.deferred_mutant_closes_later",
+        "Reactivegas.Lifecycle.l2_holds",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.paths_agree",
+        "Reactivegas.Lifecycle.v3_holds",
         "Reactivegas.base_change_can_close_without_ballot",
         "Reactivegas.base_recompute_reachable_holds",
         "Reactivegas.i57_nostale_holds",
@@ -1012,6 +1172,25 @@
       },
       "claimedKills": [
         "KelGroups.Vote.verdictOf_threshold_congr",
+        "Reactivegas.Lifecycle.fixtures_hold",
+        "Reactivegas.Lifecycle.l1_holds",
+        "Reactivegas.Lifecycle.l2_holds",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_later_step",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_no_closure",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_franchise",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_sweep_first",
+        "Reactivegas.Lifecycle.l6b_holds",
+        "Reactivegas.Lifecycle.order_holds",
+        "Reactivegas.Lifecycle.paths_agree",
+        "Reactivegas.Lifecycle.r1_holds",
+        "Reactivegas.Lifecycle.r2_holds",
         "Reactivegas.base_change_can_close_without_ballot",
         "Reactivegas.i57_boundary_holds",
         "Reactivegas.i57_disjoint_holds",
@@ -1038,6 +1217,12 @@
         "after": "def isResponsabile (key : Key) (view : GroupView) : Bool := true"
       },
       "claimedKills": [
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_franchise",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_sweep_first",
+        "Reactivegas.Lifecycle.order_holds",
         "Reactivegas.i57_auth_holds",
         "Reactivegas.i57_boundary_holds",
         "Reactivegas.i57_franchise_holds",
@@ -1056,6 +1241,12 @@
         "after": "      if question.assents.length > required then .positive"
       },
       "claimedKills": [
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_franchise",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_sweep_first",
+        "Reactivegas.Lifecycle.v3_holds",
         "Reactivegas.base_change_can_close_without_ballot",
         "Reactivegas.base_recompute_reachable_holds",
         "Reactivegas.i57_nostale_holds",
@@ -1094,6 +1285,27 @@
         "KelGroups.Vote.effectedState_sweepReady@KelGroups.Vote.Invariants",
         "KelGroups.Vote.effectedState_tally_growth@KelGroups.Vote.Invariants",
         "KelGroups.Vote.no_expiry",
+        "Reactivegas.Lifecycle.assembly_faithful",
+        "Reactivegas.Lifecycle.deferred_mutant_closes_later",
+        "Reactivegas.Lifecycle.fixtures_hold",
+        "Reactivegas.Lifecycle.l1_holds",
+        "Reactivegas.Lifecycle.l2_holds",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_later_step",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_no_closure",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_franchise",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_sweep_first",
+        "Reactivegas.Lifecycle.l6b_holds",
+        "Reactivegas.Lifecycle.order_holds",
+        "Reactivegas.Lifecycle.paths_agree",
+        "Reactivegas.Lifecycle.r1_holds",
+        "Reactivegas.Lifecycle.r2_holds",
         "Reactivegas.i57_disjoint_holds",
         "Reactivegas.i57_disjoint_mutant_caught",
         "Reactivegas.i57_franchise_holds",
@@ -1112,7 +1324,13 @@
         "before": "  | .positive => if question.assents.all (isResponsabile · view) then .tally else .franchiseChange",
         "after": "  | .positive => if question.assents.all (isResponsabile · view) then .tally else .tally"
       },
-      "claimedKills": [],
+      "claimedKills": [
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_franchise",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_sweep_first"
+      ],
       "note": "a positive closure never reports a franchise change"
     },
     {
@@ -1120,7 +1338,7 @@
       "target": "KelGroups.Vote.placeBallot",
       "guard": null,
       "patch": {
-        "line": 55,
+        "line": 54,
         "before": "                      dissents := question.dissents.erase voter }",
         "after": "                      dissents := question.dissents }"
       },
@@ -1135,13 +1353,18 @@
       "target": "KelGroups.Vote.sweepStep",
       "guard": null,
       "patch": {
-        "line": 68,
+        "line": 67,
         "before": "             cause := closureCause view entry.2 verdict }",
         "after": "             cause := .tally }"
       },
       "claimedKills": [
         "KelGroups.Vote.sweepClosures_preserves_qid@KelGroups.Vote.Invariants",
-        "KelGroups.Vote.sweepClosures_tallyKeys@KelGroups.Vote.Invariants"
+        "KelGroups.Vote.sweepClosures_tallyKeys@KelGroups.Vote.Invariants",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_franchise",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_sweep_first"
       ],
       "note": "a closure record always reports a plain tally"
     },
@@ -1150,13 +1373,22 @@
       "target": "KelGroups.Vote.sweepClosures",
       "guard": null,
       "patch": {
-        "line": 77,
+        "line": 76,
         "before": "      gs.openQuestions.filter (fun entry => verdictOf threshold view entry.2 = .open),",
         "after": "      gs.openQuestions.filter (fun entry => true),"
       },
       "claimedKills": [
         "KelGroups.Vote.sweepClosures_idempotent",
         "KelGroups.Vote.sweepClosures_open_mem@KelGroups.Vote.Invariants",
+        "Reactivegas.Lifecycle.fixtures_hold",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_franchise",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_sweep_first",
+        "Reactivegas.Lifecycle.v3_holds",
         "Reactivegas.base_change_can_close_without_ballot",
         "Reactivegas.i57_nostale_holds",
         "Reactivegas.i57_partition_holds",
@@ -1172,14 +1404,16 @@
       "target": "KelGroups.Vote.effectedState",
       "guard": null,
       "patch": {
-        "line": 92,
+        "line": 93,
         "before": "          && !(gs.closed.any (fun record => record.questionId == questionId)) then",
         "after": "          && true then"
       },
       "claimedKills": [
         "KelGroups.Vote.effectedState_preserves_qid@KelGroups.Vote.Invariants",
         "KelGroups.Vote.effectedState_sweepReady@KelGroups.Vote.Invariants",
-        "KelGroups.Vote.effectedState_tally_growth@KelGroups.Vote.Invariants"
+        "KelGroups.Vote.effectedState_tally_growth@KelGroups.Vote.Invariants",
+        "Reactivegas.Lifecycle.l1_holds",
+        "Reactivegas.Lifecycle.l5_holds"
       ],
       "note": "a closed question id can be reopened"
     },
@@ -1212,6 +1446,15 @@
       },
       "claimedKills": [
         "KelGroups.enactMutation_preserves_absence",
+        "Reactivegas.Lifecycle.deferred_mutant_closes_later",
+        "Reactivegas.Lifecycle.l2_holds",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.paths_agree",
+        "Reactivegas.Lifecycle.v3_holds",
         "Reactivegas.base_change_can_close_without_ballot",
         "Reactivegas.base_departure_applies_cleanup",
         "Reactivegas.base_recompute_reachable_holds",
@@ -1234,6 +1477,14 @@
         "after": "  | .removeMember key => .rolesChanged key"
       },
       "claimedKills": [
+        "Reactivegas.Lifecycle.l2_holds",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.paths_agree",
+        "Reactivegas.Lifecycle.v3_holds",
         "Reactivegas.base_change_can_close_without_ballot",
         "Reactivegas.base_departure_applies_cleanup",
         "Reactivegas.i57_noop_holds",
@@ -1253,6 +1504,15 @@
         "after": "      if pending.approvals.length > majority gs then"
       },
       "claimedKills": [
+        "Reactivegas.Lifecycle.deferred_mutant_closes_later",
+        "Reactivegas.Lifecycle.l2_holds",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.paths_agree",
+        "Reactivegas.Lifecycle.v3_holds",
         "Reactivegas.base_change_can_close_without_ballot",
         "Reactivegas.base_departure_applies_cleanup",
         "Reactivegas.base_recompute_reachable_holds",
@@ -1433,11 +1693,15 @@
       "target": "Reactivegas.baseHook",
       "guard": null,
       "patch": {
-        "line": 303,
-        "before": "        .ok { cleaned with votes := KelGroups.Vote.sweepClosures θ post s.votes }",
-        "after": "        .ok { cleaned with votes := s.votes }"
+        "line": 308,
+        "before": "        .ok { cleaned with votes := KelGroups.Vote.sweepClosures θ post departed }",
+        "after": "        .ok { cleaned with votes := departed }"
       },
       "claimedKills": [
+        "Reactivegas.Lifecycle.assembly_faithful",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.paths_agree",
+        "Reactivegas.Lifecycle.v3_holds",
         "Reactivegas.baseHook_votes",
         "Reactivegas.base_change_can_close_without_ballot",
         "Reactivegas.base_recompute_reachable_holds",
@@ -1454,7 +1718,7 @@
       "target": "Reactivegas.productionWellFormed",
       "guard": null,
       "patch": {
-        "line": 358,
+        "line": 363,
         "before": "  !KelGroups.GroupView.isMember comuneId (KelGroups.groupView gs)",
         "after": "  true"
       },
@@ -1516,6 +1780,25 @@
         "after": "def legacyThreshold (responsabili : Nat) : Nat := responsabili / 2"
       },
       "claimedKills": [
+        "Reactivegas.Lifecycle.fixtures_hold",
+        "Reactivegas.Lifecycle.l1_holds",
+        "Reactivegas.Lifecycle.l2_holds",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_later_step",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_no_closure",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_franchise",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_sweep_first",
+        "Reactivegas.Lifecycle.l6b_holds",
+        "Reactivegas.Lifecycle.order_holds",
+        "Reactivegas.Lifecycle.paths_agree",
+        "Reactivegas.Lifecycle.r1_holds",
+        "Reactivegas.Lifecycle.r2_holds",
         "Reactivegas.base_change_can_close_without_ballot",
         "Reactivegas.comuneThresholdSanity_holds",
         "Reactivegas.i57_boundary_holds",
@@ -1630,11 +1913,13 @@
       "target": "KelGroups.Vote.validateVoteEvent",
       "guard": "KelGroups.Vote.VoteError.questionNotFound",
       "patch": {
-        "line": 70,
+        "line": 77,
         "before": "        | none => .error VoteError.questionNotFound",
         "after": "        | none => .ok ()"
       },
-      "claimedKills": [],
+      "claimedKills": [
+        "Reactivegas.Lifecycle.order_holds"
+      ],
       "note": "a renounce of an unknown question is admitted"
     },
     {
@@ -1642,7 +1927,7 @@
       "target": "Reactivegas.apply",
       "guard": "Reactivegas.ProductionError.comuneReserved",
       "patch": {
-        "line": 384,
+        "line": 389,
         "before": "        if productionWellFormed result.state then .ok result",
         "after": "        if true then .ok result"
       },
@@ -1681,6 +1966,8 @@
         "KelGroups.Vote.emptyVoteState_sweepReady",
         "KelGroups.Vote.emptyVoteState_wellFormed",
         "KelGroups.Vote.franchise_of_tallies",
+        "Reactivegas.Lifecycle.fixtures_hold",
+        "Reactivegas.Lifecycle.l6a_holds",
         "Reactivegas.admissionPreservation_holds",
         "Reactivegas.direct_admission_only_holds",
         "Reactivegas.exhaustive_inventories_hold",
@@ -1698,6 +1985,26 @@
         "after": "def groupView (gs : GroupState α) : GroupView := { members := [] }"
       },
       "claimedKills": [
+        "Reactivegas.Lifecycle.deferred_mutant_closes_later",
+        "Reactivegas.Lifecycle.fixtures_hold",
+        "Reactivegas.Lifecycle.l1_holds",
+        "Reactivegas.Lifecycle.l2_holds",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_later_step",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_no_closure",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_franchise",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_sweep_first",
+        "Reactivegas.Lifecycle.l6b_holds",
+        "Reactivegas.Lifecycle.order_holds",
+        "Reactivegas.Lifecycle.paths_agree",
+        "Reactivegas.Lifecycle.r1_holds",
+        "Reactivegas.Lifecycle.r2_holds",
         "Reactivegas.admissionPreservation_holds",
         "Reactivegas.app_members_preservation_holds",
         "Reactivegas.app_members_preservation_mutant_caught",
@@ -1739,6 +2046,238 @@
         "uniquePledges_pt@Reactivegas.Mirrors"
       ],
       "note": "Pledge equality is no longer decidable (the derived instance is replaced)"
+    },
+    {
+      "id": "guard-cast-designee",
+      "target": "KelGroups.Vote.validateVoteEvent",
+      "guard": "KelGroups.Vote.VoteError.notDesignee",
+      "patch": {
+        "line": 69,
+        "before": "                if signer == designee then .ok () else .error VoteError.notDesignee",
+        "after": "                if true then .ok () else .error VoteError.notDesignee"
+      },
+      "claimedKills": [
+        "Reactivegas.Lifecycle.order_holds",
+        "Reactivegas.Lifecycle.r2_holds",
+        "Reactivegas.Lifecycle.refusal_fold_inert"
+      ],
+      "note": "a ballot on a permission question by anyone but its designee is admitted"
+    },
+    {
+      "id": "guard-renounce-proposer",
+      "target": "KelGroups.Vote.validateVoteEvent",
+      "guard": "KelGroups.Vote.VoteError.notProposer",
+      "patch": {
+        "line": 76,
+        "before": "            if signer == question.proposer then .ok () else .error VoteError.notProposer",
+        "after": "            if true then .ok () else .error VoteError.notProposer"
+      },
+      "claimedKills": [
+        "Reactivegas.Lifecycle.order_holds",
+        "Reactivegas.Lifecycle.r1_holds",
+        "Reactivegas.Lifecycle.refusal_fold_inert"
+      ],
+      "note": "a renounce by anyone but the proposer is admitted"
+    },
+    {
+      "id": "renounce-keeps-open",
+      "target": "KelGroups.Vote.effectedState",
+      "guard": null,
+      "patch": {
+        "line": 105,
+        "before": "          { openQuestions := assocErase questionId gs.openQuestions,",
+        "after": "          { openQuestions := gs.openQuestions,"
+      },
+      "claimedKills": [
+        "KelGroups.Vote.effectedState_preserves_qid@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.effectedState_sweepReady@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.effectedState_tally_growth@KelGroups.Vote.Invariants",
+        "Reactivegas.Lifecycle.assembly_faithful",
+        "Reactivegas.Lifecycle.l1_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6b_holds"
+      ],
+      "note": "a renounced question stays open"
+    },
+    {
+      "id": "renounce-discards-record",
+      "target": "KelGroups.Vote.effectedState",
+      "guard": null,
+      "patch": {
+        "line": 107,
+        "before": "              [{ questionId, question, verdict := .negative, cause := .renounced }] }",
+        "after": "              [] }"
+      },
+      "claimedKills": [
+        "KelGroups.Vote.effectedState_preserves_qid@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.effectedState_sweepReady@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.effectedState_tally_growth@KelGroups.Vote.Invariants",
+        "Reactivegas.Lifecycle.assembly_faithful",
+        "Reactivegas.Lifecycle.l1_holds",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds"
+      ],
+      "note": "a renounce closes the question without keeping a record"
+    },
+    {
+      "id": "renounce-closes-positive",
+      "target": "KelGroups.Vote.effectedState",
+      "guard": null,
+      "patch": {
+        "line": 107,
+        "before": "              [{ questionId, question, verdict := .negative, cause := .renounced }] }",
+        "after": "              [{ questionId, question, verdict := .positive, cause := .renounced }] }"
+      },
+      "claimedKills": [
+        "KelGroups.Vote.effectedState_preserves_qid@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.effectedState_sweepReady@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.effectedState_tally_growth@KelGroups.Vote.Invariants",
+        "Reactivegas.Lifecycle.assembly_faithful",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l5_holds"
+      ],
+      "note": "a renounced question closes positively"
+    },
+    {
+      "id": "renounce-cause-tally",
+      "target": "KelGroups.Vote.effectedState",
+      "guard": null,
+      "patch": {
+        "line": 107,
+        "before": "              [{ questionId, question, verdict := .negative, cause := .renounced }] }",
+        "after": "              [{ questionId, question, verdict := .negative, cause := .tally }] }"
+      },
+      "claimedKills": [
+        "KelGroups.Vote.effectedState_preserves_qid@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.effectedState_sweepReady@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.effectedState_tally_growth@KelGroups.Vote.Invariants",
+        "Reactivegas.Lifecycle.assembly_faithful",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds"
+      ],
+      "note": "a renounce is recorded as a tally closure"
+    },
+    {
+      "id": "closeProposer-keeps-open",
+      "target": "KelGroups.Vote.closeProposerQuestions",
+      "guard": null,
+      "patch": {
+        "line": 117,
+        "before": "  { openQuestions := gs.openQuestions.filter (fun entry => entry.2.proposer != proposer),",
+        "after": "  { openQuestions := gs.openQuestions,"
+      },
+      "claimedKills": [
+        "KelGroups.Vote.closeProposerQuestions_sweepReady",
+        "Reactivegas.Lifecycle.assembly_faithful",
+        "Reactivegas.Lifecycle.deferred_mutant_closes_later",
+        "Reactivegas.Lifecycle.l2_holds",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_later_step",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_no_closure",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_franchise",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_sweep_first"
+      ],
+      "note": "a departing proposer's questions stay open"
+    },
+    {
+      "id": "closeProposer-records-all",
+      "target": "KelGroups.Vote.closeProposerQuestions",
+      "guard": null,
+      "patch": {
+        "line": 119,
+        "before": "      (gs.openQuestions.filter (fun entry => entry.2.proposer == proposer)).map",
+        "after": "      (gs.openQuestions.filter (fun entry => true)).map"
+      },
+      "claimedKills": [
+        "KelGroups.Vote.closeProposerQuestions_sweepReady",
+        "Reactivegas.Lifecycle.assembly_faithful",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_franchise",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_sweep_first",
+        "Reactivegas.Lifecycle.v3_holds",
+        "Reactivegas.base_change_can_close_without_ballot",
+        "Reactivegas.base_recompute_reachable_holds",
+        "Reactivegas.i57_nostale_holds",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "a departure records every open question as closed, not only the proposer's"
+    },
+    {
+      "id": "closeProposer-closes-positive",
+      "target": "KelGroups.Vote.closeProposerQuestions",
+      "guard": null,
+      "patch": {
+        "line": 121,
+        "before": "                        verdict := .negative, cause := .proposerDeparted }) }",
+        "after": "                        verdict := .positive, cause := .proposerDeparted }) }"
+      },
+      "claimedKills": [
+        "KelGroups.Vote.closeProposerQuestions_sweepReady",
+        "Reactivegas.Lifecycle.assembly_faithful",
+        "Reactivegas.Lifecycle.deferred_mutant_closes_later",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_franchise",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_sweep_first"
+      ],
+      "note": "a departed proposer's questions close positively"
+    },
+    {
+      "id": "closeProposer-cause-tally",
+      "target": "KelGroups.Vote.closeProposerQuestions",
+      "guard": null,
+      "patch": {
+        "line": 121,
+        "before": "                        verdict := .negative, cause := .proposerDeparted }) }",
+        "after": "                        verdict := .negative, cause := .tally }) }"
+      },
+      "claimedKills": [
+        "KelGroups.Vote.closeProposerQuestions_sweepReady",
+        "Reactivegas.Lifecycle.assembly_faithful",
+        "Reactivegas.Lifecycle.deferred_mutant_closes_later",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_franchise",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_sweep_first"
+      ],
+      "note": "a departure closure is recorded as a tally closure"
+    },
+    {
+      "id": "baseHook-no-departure-closure",
+      "target": "Reactivegas.baseHook",
+      "guard": null,
+      "patch": {
+        "line": 306,
+        "before": "          | .memberRemoved key => KelGroups.Vote.closeProposerQuestions key s.votes",
+        "after": "          | .memberRemoved _ => s.votes"
+      },
+      "claimedKills": [
+        "Reactivegas.Lifecycle.assembly_faithful",
+        "Reactivegas.Lifecycle.l2_holds",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.paths_agree",
+        "Reactivegas.baseHook_votes"
+      ],
+      "note": "removing a proposer from the group leaves their questions open"
     }
   ]
 }

@@ -30,14 +30,15 @@ def moduleRole (m : Name) : String :=
   if last.endsWith "Tests" then "test"
   else if last.startsWith "Corpus" then "corpus"
   else if last == "Mirrors" then "checker"
-  else if last == "Invariants" then "fixture"
+  else if last == "Invariants" || last == "Lifecycle" then "fixture"
   else if last == "Predicates" then "oracle"
   else "production"
 
 def productionRuleText : String :=
   "a module is production unless the last component of its name ends with " ++
   "`Tests` (test), starts with `Corpus` (corpus), is `Mirrors` (checker), " ++
-  "is `Invariants` (proof helpers and fixtures) or is `Predicates` (law " ++
+  "is `Invariants` or `Lifecycle` (proof helpers, fixtures, witnesses and " ++
+  "mutation-only inversions) or is `Predicates` (law " ++
   "oracle); a production definition is a non-theorem constant with a source " ++
   "declaration range in a production module"
 

@@ -14,10 +14,19 @@ def inHalf($m): ($m | split(".")[0]) == $half;
 def edit:
   (.before | explode) as $a | (.after | explode) as $b
   | ([range(0; [($a | length), ($b | length)] | min)] | map(select($a[.] != $b[.])) | .[0]
-     // ([($a | length), ($b | length)] | min)) as $p
-  | ([range(0; ([($a | length), ($b | length)] | min) - $p)]
+     // ([($a | length), ($b | length)] | min)) as $p0
+  | ([range(0; ([($a | length), ($b | length)] | min) - $p0)]
      | map(select($a[($a | length) - 1 - .] != $b[($b | length) - 1 - .])) | .[0]
-     // (([($a | length), ($b | length)] | min) - $p)) as $s
+     // (([($a | length), ($b | length)] | min) - $p0)) as $s0
+  # widen the changed span to whole identifiers, so a shared letter at either
+  # end is not cut off (`designee` → `true` is not `designe` → `tru`)
+  | def ident: . != null and ((. >= 48 and . <= 57) or (. >= 65 and . <= 90)
+      or (. >= 97 and . <= 122) or . == 95 or . == 46 or . == 39 or . > 127);
+    def at($xs; $i): if $i < 0 then null else $xs[$i] end;
+    ($p0 | until(. == 0 or (at($a; . - 1) | ident | not)
+                 or (($a[.] | ident) or ($b[.] | ident) | not); . - 1)) as $p
+  | ($s0 | until(. == 0 or ($a[($a | length) - .] | ident | not)
+                 or ((at($a; ($a | length) - . - 1) | ident) or (at($b; ($b | length) - . - 1) | ident) | not); . - 1)) as $s
   | ($a[$p:(($a | length) - $s)] | implode) as $x
   | ($b[$p:(($b | length) - $s)] | implode) as $y
   | "`" + ($x | gsub("`"; "'")) + "` → `" + ($y | gsub("`"; "'")) + "`";
@@ -128,8 +137,14 @@ def edit:
   "- Which arm of a guard a refusal-constructor mutant hits is the catalogue's",
   "  label; the runner only checks that the mutated definition emits the",
   "  constructor or is reached from a definition that does.",
-  "- The extent is the git-tracked Lean modules under `lean/`; a module some other",
-  "  CI step elaborates from elsewhere is not seen.",
+  "- The extent is the git-tracked Lean modules under `lean/`. CI also builds Lean",
+  "  tooling packages outside it (`scripts/lake-roots/`, the Lake-roots exe the",
+  "  mirror checker runs, and this runner's census and driver); a theorem authored",
+  "  there would get no row and nothing would object.",
+  "- Production is decided by the last component of a module's name (the rule is",
+  "  printed by `scripts/lean-mutants/run --census`). A further proof-only module",
+  "  whose name the rule does not list would be read as production: its",
+  "  definitions would be admitted as mutant targets and refusal emitters.",
   "- The driver reproduces only the options Lake records in each module's setup;",
   "  a run where Lake passes any other Lean argument fails instead.",
   "",
