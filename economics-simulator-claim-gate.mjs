@@ -77,11 +77,11 @@
  * receipt (the victim is derived from the tree, never hardcoded) — each for
  * its intended reason, then runs the unmodified production gate GREEN. Temporary artifacts live in a fresh mkdtemp
  * directory; the repository stays clean. Last, in a throwaway worktree of
- * HEAD it commits an edit to a cited Lean file and judges that worktree as
- * the checkout under test: RED naming the file without re-made receipts,
- * RED on the pinned core Event source and composition module edited there,
- * GREEN with the receipt re-pinned to the edit commit, RED for a source pin
- * moved to a parentless commit of the same tree.
+ * HEAD it commits Lean edits and judges that worktree as the checkout under
+ * test, one control per rule judged against HEAD (see leanBranchControls):
+ * a cited Lean file edited with re-made receipts passes, without them REDs
+ * naming the file; edited pinned modules and vocabularies RED against HEAD;
+ * orphaned source and core pins RED on reachability.
  */
 
 import { readFileSync, writeFileSync, mkdtempSync, mkdirSync, rmSync, cpSync,
@@ -1400,8 +1400,8 @@ async function selftest(work) {
     console.log(`controllo negativo «${c.name}»: RED come atteso — ${text.split('\n')[0].slice(0, 110)}`);
   }
   const branch = await leanBranchControls(work);
-  if (branch) {
-    console.error('SELFTEST RED: controllo del ramo Lean: ' + branch);
+  if (branch.length) {
+    console.error('SELFTEST RED: controlli del ramo Lean:\n' + branch.join('\n'));
     return 1;
   }
   console.log(`selftest GREEN: ${controls.length} controlli negativi RED per il motivo atteso; ` +
@@ -1443,23 +1443,41 @@ async function gateAt(dir, work) {
 
 /*
  * In a throwaway worktree of HEAD (shared objects and refs, the tracked tree
- * never written): commit an edit to a cited Lean file and
- *   - without re-made receipts the gate must RED, naming that file;
- *   - with the core Event source and the composition module also edited,
- *     the gate must RED on both pin blobs differing from the blobs at HEAD;
- *   - with the receipt's sources/sourcePins re-made against the edit commit
- *     the gate must pass — the pin is reachable from the commit under test;
- *   - a source pin repointed at a parentless commit carrying the very same
- *     blob must RED on reachability alone.
- * Returns null when all three hold, else the failure.
+ * never written) the controls commit Lean edits and judge that worktree as
+ * the checkout under test. Each rule the gate applies against HEAD gets a
+ * commit only the worktree's HEAD reaches, so a rule still reading
+ * origin/master, or this repository's own HEAD, fails here:
+ *   - a cited Lean file edited without re-made receipts: RED naming it;
+ *   - the core Event source and the composition module edited: RED on both
+ *     pin blobs differing from the blobs at HEAD;
+ *   - an event vocabulary source edited: RED on its pin blob vs HEAD;
+ *   - the receipt's sources/sourcePins re-made against the edit commit: the
+ *     whole gate passes, the pin being an ancestor of the worktree's HEAD;
+ *   - a source pin moved to a parentless commit of the same tree: RED on
+ *     reachability alone;
+ *   - the receipt's composition commit moved to the worktree's HEAD: only the
+ *     tree mismatch REDs, never reachability;
+ *   - the accepted core pin moved to the worktree's HEAD: the core inventory
+ *     derives; moved to a parentless commit of that tree: RED on reachability.
+ * Returns the list of failed controls (empty when all hold).
  */
 async function leanBranchControls(work) {
   const dir = join(work, 'lean-branch');
+  const failures = [];
+  const red = (name, text) =>
+    console.log(`controllo negativo «${name}»: RED come atteso — ${text.split('\n')[0].slice(0, 110)}`);
   execFileSync('git', ['-C', REPO, 'worktree', 'add', '--quiet', '--detach', dir, 'HEAD'],
     { stdio: ['ignore', 'pipe', 'pipe'] });
   try {
     try { cpSync(join(REPO, 'lean', '.lake'), join(dir, 'lean', '.lake'),
       { recursive: true }); } catch { /* cold cache: lake rebuilds */ }
+    const git = args => execFileSync('git', ['-C', dir, ...args],
+      { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+    const appendTo = (f, line) =>
+      writeFileSync(join(dir, f), readFileSync(join(dir, f), 'utf8') + '\n' + line + '\n');
+    const orphanOf = rev => execFileSync('git', ['-C', dir, 'commit-tree', git(['rev-parse', rev + '^{tree}']),
+      '-m', 'claim-gate selftest: orphan pin'],
+      { encoding: 'utf8', env: { ...process.env, ...SELFTEST_IDENT } }).trim();
     const htmlPath = join(dir, 'economics-simulator.html');
     const doc = readFileSync(htmlPath, 'utf8');
     const ex = extract(doc);
@@ -1470,67 +1488,107 @@ async function leanBranchControls(work) {
         !ex.rows.some(r => r.f === victim && !r.g) ||
         ACCEPTED_CORE.files.includes(victim) || victim === ACCEPTED_COMPOSITION.module ||
         parseVocabularies(victim, src).length)
-      return `controllo mal costruito: ${victim} non è una sorgente citata fuori da core, composizione e vocabolari`;
+      return [`controllo mal costruito: ${victim} non è una sorgente citata fuori da core, composizione e vocabolari`];
+    const coreFile = eventSourceFromManifest(ACCEPTED_CORE.files);
+    const compFile = ACCEPTED_COMPOSITION.module;
+    const vocabFile = pinnedVocabularies(undefined, REPO).map(v => v.file)
+      .find(f => !ACCEPTED_CORE.files.includes(f));
+    if (!vocabFile) return ['controllo mal costruito: nessun vocabolario scoperto fuori dal manifesto core'];
 
-    writeFileSync(victimPath, src + '\n-- claim-gate selftest: a Lean-changing branch\n');
+    appendTo(victim, '-- claim-gate selftest: a Lean-changing branch');
     const edit = scratchCommit(dir, [victim], 'claim-gate selftest: edit a cited Lean file');
 
     const stale = await gateAt(dir, work);
     const staleText = stale.reasons.join('\n');
-    if (stale.ok)
-      return `ramo Lean senza ricevute rifatte ACCETTATO (${victim})`;
-    if (!staleText.includes('hash sorgente divergente: ' + victim))
-      return `ramo Lean senza ricevute rifatte RED senza nominare ${victim}: ${staleText.slice(0, 300)}`;
-    console.log(`controllo negativo «ramo Lean senza ricevute rifatte»: RED come atteso — ${staleText.split('\n')[0].slice(0, 110)}`);
+    if (stale.ok || !staleText.includes('hash sorgente divergente: ' + victim))
+      failures.push(`ramo Lean senza ricevute rifatte non RED sul file ${victim}: ${staleText.slice(0, 300)}`);
+    else red('ramo Lean senza ricevute rifatte', staleText);
 
     // the core Event source and the composition module edited on the branch:
     // their blobs at the accepted pins no longer equal the blobs at HEAD
-    const coreFile = eventSourceFromManifest(ACCEPTED_CORE.files);
-    const compFile = ACCEPTED_COMPOSITION.module;
-    for (const f of [coreFile, compFile])
-      writeFileSync(join(dir, f), readFileSync(join(dir, f), 'utf8') +
-        '\n-- claim-gate selftest: a pinned module edited on the branch\n');
+    for (const f of [coreFile, compFile]) appendTo(f, '-- claim-gate selftest: a pinned module edited on the branch');
     scratchCommit(dir, [coreFile, compFile], 'claim-gate selftest: edit the pinned modules');
-    const blobAt = rev => execFileSync('git', ['-C', dir, 'rev-parse', rev],
-      { encoding: 'utf8' }).trim();
-    const wantCore = `stale cited file ${coreFile}: pin blob=${blobAt(ACCEPTED_CORE.commit + ':' + coreFile)} HEAD blob=${blobAt('HEAD:' + coreFile)}`;
-    const wantComp = `modulo composizione obsoleto al pin: pin=${blobAt(ex.composition.commit + ':' + compFile)} HEAD=${blobAt('HEAD:' + compFile)}`;
+    const wantCore = `stale cited file ${coreFile}: pin blob=${git(['rev-parse', ACCEPTED_CORE.commit + ':' + coreFile])} HEAD blob=${git(['rev-parse', 'HEAD:' + coreFile])}`;
+    const wantComp = `modulo composizione obsoleto al pin: pin=${git(['rev-parse', ex.composition.commit + ':' + compFile])} HEAD=${git(['rev-parse', 'HEAD:' + compFile])}`;
     const drifted = await gateAt(dir, work);
     const driftText = drifted.reasons.join('\n');
     if (drifted.ok || !driftText.includes(wantCore) || !driftText.includes(wantComp))
-      return `moduli al pin modificati sul ramo non RED contro HEAD — atteso «${wantCore}» e «${wantComp}»: ${driftText.slice(0, 400)}`;
-    console.log(`controllo negativo «moduli al pin modificati sul ramo»: RED come atteso — ${wantCore.slice(0, 110)}`);
-    execFileSync('git', ['-C', dir, 'checkout', '--quiet', '--detach', edit],
-      { stdio: ['ignore', 'pipe', 'pipe'] });
+      failures.push(`moduli al pin modificati sul ramo non RED contro HEAD — atteso «${wantCore}» e «${wantComp}»: ${driftText.slice(0, 400)}`);
+    else red('moduli al pin modificati sul ramo', wantCore);
+    git(['checkout', '--quiet', '--detach', edit]);
+
+    // an event vocabulary source edited on the branch: the vocabulary
+    // discovery's freshness check judges its pin blob against HEAD
+    appendTo(vocabFile, '-- claim-gate selftest: a vocabulary edited on the branch');
+    scratchCommit(dir, [vocabFile], 'claim-gate selftest: edit a vocabulary source');
+    const wantVocab = `stale cited file ${vocabFile}: pin blob=${git(['rev-parse', ACCEPTED_CORE.commit + ':' + vocabFile])} HEAD blob=${git(['rev-parse', 'HEAD:' + vocabFile])}`;
+    const vmc = await checkMachineCoverage(join(dir, 'economics-simulator-core.mjs'), dir);
+    const vocabText = (vmc.reasons || []).join('\n');
+    if (vmc.ok || !vocabText.includes(wantVocab))
+      failures.push(`vocabolario modificato sul ramo non RED contro HEAD — atteso «${wantVocab}»: ${vocabText.slice(0, 300)}`);
+    else red('vocabolario modificato sul ramo', wantVocab);
+    git(['checkout', '--quiet', '--detach', edit]);
 
     const srcNeedle = `'${victim}': '${ex.sources[victim]}',`;
     const pinNeedle = `'${victim}': '${ex.sourcePins[victim]}',`;
     if (doc.split(srcNeedle).length !== 2 || doc.split(pinNeedle).length !== 2)
-      return `controllo mal costruito: voce di ricevuta per ${victim} non unica`;
-    const edited = readFileSync(victimPath);
-    writeFileSync(htmlPath, doc.replace(srcNeedle, `'${victim}': '${sha256(edited)}',`)
+      return [...failures, `controllo mal costruito: voce di ricevuta per ${victim} non unica`];
+    writeFileSync(htmlPath, doc.replace(srcNeedle, `'${victim}': '${sha256(readFileSync(victimPath))}',`)
       .replace(pinNeedle, `'${victim}': '${edit}',`));
-    scratchCommit(dir, ['economics-simulator.html'], 'claim-gate selftest: re-make the receipt');
+    const remadeHead = scratchCommit(dir, ['economics-simulator.html'], 'claim-gate selftest: re-make the receipt');
+    const remadeDoc = readFileSync(htmlPath, 'utf8');
 
     const remade = await gateAt(dir, work);
     if (!remade.ok)
-      return `ramo Lean con ricevute rifatte RESPINTO: ${remade.reasons.join('\n').slice(0, 400)}`;
-    console.log(`controllo positivo «ramo Lean con ricevute rifatte»: GREEN — ${victim} pinnato a ${edit.slice(0, 10)}…`);
+      failures.push(`ramo Lean con ricevute rifatte RESPINTO: ${remade.reasons.join('\n').slice(0, 400)}`);
+    else console.log(`controllo positivo «ramo Lean con ricevute rifatte»: GREEN — ${victim} pinnato a ${edit.slice(0, 10)}…`);
 
-    const headTree = execFileSync('git', ['-C', dir, 'rev-parse', 'HEAD^{tree}'],
-      { encoding: 'utf8' }).trim();
-    const orphan = execFileSync('git', ['-C', dir, 'commit-tree', headTree,
-      '-m', 'claim-gate selftest: orphan source pin'],
-      { encoding: 'utf8', env: { ...process.env, ...SELFTEST_IDENT } }).trim();
-    const remadeDoc = readFileSync(htmlPath, 'utf8');
+    const sourceOrphan = orphanOf('HEAD');
     const orphanHtml = join(work, 'sab-source-orphan.html');
-    writeFileSync(orphanHtml, remadeDoc.replace(`'${victim}': '${edit}',`, `'${victim}': '${orphan}',`));
+    writeFileSync(orphanHtml, remadeDoc.replace(`'${victim}': '${edit}',`, `'${victim}': '${sourceOrphan}',`));
     const orphaned = runGate({ html: orphanHtml, sourcesRoot: dir, lakeRepo: dir, work });
     const orphanText = (orphaned.reasons || []).join('\n');
     if (orphaned.ok || !orphanText.includes('pin non raggiungibile da HEAD: ' + victim))
-      return `pin sorgente orfano non RED per raggiungibilità: ${orphanText.slice(0, 300)}`;
-    console.log(`controllo negativo «pin sorgente orfano»: RED come atteso — ${orphanText.split('\n')[0].slice(0, 110)}`);
-    return null;
+      failures.push(`pin sorgente orfano non RED per raggiungibilità: ${orphanText.slice(0, 300)}`);
+    else red('pin sorgente orfano', orphanText);
+
+    // the receipt's composition commit moved to the worktree's HEAD: an
+    // ancestor of the checkout under test, so only its tree may RED
+    const compNeedle = `commit: '${ACCEPTED_COMPOSITION.commit}',`;
+    if (remadeDoc.split(compNeedle).length !== 2)
+      return [...failures, 'controllo mal costruito: commit composizione non unico nella ricevuta'];
+    const compHtml = join(work, 'sab-comp-branch.html');
+    writeFileSync(compHtml, remadeDoc.replace(compNeedle, `commit: '${remadeHead}',`));
+    const moved = runGate({ html: compHtml, sourcesRoot: dir, lakeRepo: dir, work });
+    const movedText = (moved.reasons || []).join('\n');
+    if (moved.ok || !movedText.includes('albero del pin divergente dal dichiarato') ||
+        movedText.includes('pin composizione non raggiungibile'))
+      failures.push(`pin composizione sul ramo giudicato fuori da HEAD: ${movedText.slice(0, 300)}`);
+    else red('pin composizione sul ramo (solo albero)', movedText);
+
+    // the accepted core pin moved to the worktree's HEAD derives the
+    // inventory; moved to a parentless commit of that tree it REDs
+    const savedCore = { commit: ACCEPTED_CORE.commit, tree: ACCEPTED_CORE.tree };
+    const coreOrphan = orphanOf('HEAD');
+    try {
+      ACCEPTED_CORE.commit = remadeHead;
+      ACCEPTED_CORE.tree = git(['rev-parse', 'HEAD^{tree}']);
+      try {
+        const ctors = pinnedConstructors(dir);
+        if (!ctors.length) failures.push('pin core sul ramo: inventario vuoto');
+        else console.log(`controllo positivo «pin core sul ramo»: GREEN — ${ctors.length} costruttori derivati`);
+      } catch (e) { failures.push(`pin core sul ramo RESPINTO: ${e.message.slice(0, 300)}`); }
+      ACCEPTED_CORE.commit = coreOrphan;
+      let coreText = '';
+      try { pinnedConstructors(dir); } catch (e) { coreText = e.message; }
+      if (!coreText.includes('pin core non raggiungibile da HEAD (commit orfano): ' + coreOrphan))
+        failures.push(`pin core orfano non RED per raggiungibilità: ${coreText.slice(0, 300)}`);
+      else red('pin core orfano', coreText);
+    } finally {
+      ACCEPTED_CORE.commit = savedCore.commit;
+      ACCEPTED_CORE.tree = savedCore.tree;
+    }
+    return failures;
   } finally {
     try { execFileSync('git', ['-C', REPO, 'worktree', 'remove', '--force', dir],
       { stdio: ['ignore', 'pipe', 'pipe'] }); } catch { /* best effort */ }
