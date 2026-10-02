@@ -135,6 +135,7 @@ const ACCEPTED_CORE = {
 };
 const DRIVER_IMPORTS = Object.freeze([
   'Reactivegas.Invariants',
+  'Reactivegas.CompositionRoot',
   'KelGroups.Invariants',
   'KelGroups.Validate',
   'KelGroups.Vote.Invariants',

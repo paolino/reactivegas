@@ -726,11 +726,14 @@ const CLAIMS = {
   'kg-enact-effect':   { c: 'Canale base: la delibera applica la proposta ai membri e rimuove la pendente, in un passo', k: 'definizione', d: 'KelGroups.finishEnact', f: 'lean/KelGroups/Fold.lean', l: 18 },
   'kg-apply':          { c: 'Canale base: proporre inserisce la pendente con il proponente già assenziente e tenta subito la delibera', k: 'definizione', d: 'KelGroups.applyEventDetailed', f: 'lean/KelGroups/Fold.lean', l: 75 },
   'ev-donate':         { c: 'donate è direct: alza insieme la cassa dell\'autore e il conto comune riservato (non-membro in conti) di +v; rifiuta autore non responsabile e v non positivo. Nessun teorema di donazione è ancora proved (sorry #48)', k: 'NON PROVATO', d: null, f: null, l: null },
-  'ev-backdonate':     { c: 'backdonate è appDecided: quota uguale w a ogni membro e −n*w dal comune; attempt non inventa backdonateAuthorized (sorry); il governo rifiuta senza ponte evento-voto (NON PROVATO)', k: 'NON PROVATO', d: null, f: null, l: null },
+  'ev-backdonate':     { c: 'backdonate è appDecided: quota uguale w a ogni membro e −n*w dal comune, alla radice solo spendendo una chiusura positiva legata a w (riga auth-backdonate); il cammino di governo del toy rifiuta comunque un backdonate importato — limite del toy', k: 'NON PROVATO', d: null, f: null, l: null },
   'kg-setinsert':      { c: 'L’inserimento di posizione è idempotente per costruzione (substrato condiviso)', k: 'definizione', d: 'KelGroups.setInsert', f: 'lean/KelGroups/Types.lean', l: 46 },
   'kg-majority':       { c: 'Aritmetica della formula (n+1)/2: 0,1,1,2,2,3 per 0–5 — provata nella macchina fusa sullo stesso calcolo scelto qui come esibizione', k: 'teorema', d: 'majority_table', f: 'lean/KelGroups/Invariants.lean', l: 450 },
   'kg-tie':            { c: 'Con un numero pari la formula (n+1)/2 non è stretta: 2·soglia ≤ n — provato nella macchina fusa sullo stesso calcolo', k: 'teorema', d: 'majority_not_strict_on_even', f: 'lean/KelGroups/Invariants.lean', l: 459 },
-  'join-vote-econ':    { c: 'Il PONTE fra verdetto di voto e permesso economico NON è provato: nessun teorema garantisce che Reactivegas consumi solo grantPermission derivati da un verdetto KelGroups.Vote (in attesa di #54 slice 2 / #48 backdonation)', k: 'NON PROVATO', d: null, f: null, l: null },
+  'join-vote-econ':    { c: "Il PONTE voto → economia è provato nel modello (#76): la radice di produzione applica un permesso solo spendendo un'autorizzazione positiva viva legata a quell'acquisto, e senza la rifiuta; il browser ne esegue la trascrizione (riga js-transcription)", k: 'teorema', d: 'Reactivegas.Composition.apply_grant_spends', f: 'lean/Reactivegas/CompositionRoot.lean', l: 136 },
+  'auth-deny':         { c: "Un diniego alla radice spende un'autorizzazione negativa viva legata all'acquisto, poi lo scioglie rimborsando ogni impegno (#76)", k: 'teorema', d: 'Reactivegas.Composition.apply_deny_spends', f: 'lean/Reactivegas/CompositionRoot.lean', l: 193 },
+  'auth-backdonate':   { c: "Una redistribuzione alla radice spende un'autorizzazione positiva viva legata alla quota w stessa (#76)", k: 'teorema', d: 'Reactivegas.Composition.apply_backdonate_spends', f: 'lean/Reactivegas/CompositionRoot.lean', l: 154 },
+  'auth-provenance':   { c: "In ogni storia di produzione ogni autorizzazione viva è sostenuta da un record di chiusura con lo stesso id e verdetto, aggiunto dal fold di voto della storia stessa: nessuna nasce altrove (#76)", k: 'teorema', d: 'Reactivegas.Composition.liveBacked_of_history', f: 'lean/Reactivegas/CompositionRoot.lean', l: 543 },
   'vote-model-status': { c: 'Il modello di voto richiesto (#54, con rinuncia e uscita del proponente #81) è dimostrato sulla macchina produttiva: verdetti sì/no/aperta, dissenso e permessi per-persona sono modellati e le loro proposizioni portano prova senza sorry (scarico #48/#65)', k: 'teorema', d: 'KelGroups.Vote.foldVote_wellFormed', f: 'lean/KelGroups/Vote/Invariants.lean', l: 817 },
   'done-list':         { c: "L'elenco «acquisti completati» è ricostruzione del toy: la macchina non conserva gli acquisti chiusi", k: 'NON PROVATO', d: null, f: null, l: null },
   'toy-cap':           { c: 'Il limite 500 su accrediti e giri è del toy: la macchina Lean non ha limite superiore', k: 'NON PROVATO', d: null, f: null, l: null },
@@ -746,7 +749,7 @@ const CLAIMS = {
    extraction and runs fresh in the repository lake environment. The gate
    exits nonzero on any dangling citation, hash drift, or binding mismatch. */
 const CHECK_RECEIPT = {
-  sha: '48b3c825eda207f793e5adb266fb7150fba3d43b640cb1625366440ff1412306',
+  sha: '301775d7010ddda7d4706c98c0a1887008385d1824aa59987c8a98e7ab5b974c',
   decls: ['auth_referente_guard_inv', 'close_guard_inv', 'close_permission_to_close',
     'close_spends_referente', 'conservation_preserved', 'deposit_double_entry',
     'fail_guard_inv', 'not_insolvent_of_reach',
@@ -768,7 +771,10 @@ const CHECK_RECEIPT = {
     'KelGroups.Vote.effectedState', 'KelGroups.Vote.closeProposerQuestions',
     'enact_implies_threshold_met', 'approvals_nodup', 'proposer_mem_approvals',
     'KelGroups.majority', 'KelGroups.validateEvent', 'KelGroups.validateApproval',
-    'KelGroups.finishEnact', 'KelGroups.applyEventDetailed'],
+    'KelGroups.finishEnact', 'KelGroups.applyEventDetailed',
+    'Reactivegas.Composition.apply_grant_spends', 'Reactivegas.Composition.apply_deny_spends',
+    'Reactivegas.Composition.apply_backdonate_spends',
+    'Reactivegas.Composition.liveBacked_of_history'],
   /* The accepted composition pin: an immutable COMMIT, never a branch. The
      gate resolves it fresh, requires exactly this tree, verifies the cited
      declarations' file:line inside the pinned source, and re-derives each
@@ -818,6 +824,10 @@ const CHECK_RECEIPT = {
     'KelGroups.setInsert': 'provato',
     'KelGroups.validateApproval': 'provato',
     'KelGroups.validateEvent': 'provato',
+    'Reactivegas.Composition.apply_backdonate_spends': 'provato',
+    'Reactivegas.Composition.apply_deny_spends': 'provato',
+    'Reactivegas.Composition.apply_grant_spends': 'provato',
+    'Reactivegas.Composition.liveBacked_of_history': 'provato',
     'approvals_nodup': 'provato',
     'auth_referente_guard_inv': 'provato',
     'close_guard_inv': 'provato',
@@ -861,6 +871,7 @@ const CHECK_RECEIPT = {
     'lean/Reactivegas/Invariants.lean': '832ac4ad66cb1e7066107efd17c34addca833676de6489ab9e45200fcc2df9e6',
     'lean/Reactivegas/Composition.lean': '43b52f8b30bd4d96383bfd676660e78780a4d43436be76e74bd2ee5d6eee0743',
     'lean/Reactivegas/Mirrors.lean': '7fefa8cd8e034c1e2f5a353d28270d7a68e940c7be5d0f52eabaca0d6193e1fb',
+    'lean/Reactivegas/CompositionRoot.lean': '9c40b1e21be55700d1fd0e230301da1bdd78b747f1debf5012041e99c7b7c927',
     'lean/KelGroups/Types.lean': '971a2a2ee774c3af63270e8f0bb8f1d5346f1da5c97f5faea1856dbe460acd07',
     'lean/KelGroups/State.lean': '25c2109e304fa9cdb084daabb267deb4a4a8a15749c9f66bae878d190fea49a6',
     'lean/KelGroups/Fold.lean': 'c6cbb818705db481b5f6fd8469e7a7b279fe2e6f9a9675f4cb262df570d679cf',
@@ -891,6 +902,7 @@ const CHECK_RECEIPT = {
     'lean/Reactivegas/Invariants.lean': '8232d4fed808ad30a9817a9bae9e832a73ce5f15',
     'lean/Reactivegas/Composition.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
     'lean/Reactivegas/Mirrors.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
+    'lean/Reactivegas/CompositionRoot.lean': '8232d4fed808ad30a9817a9bae9e832a73ce5f15',
     'lean/KelGroups/Types.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
     'lean/KelGroups/State.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
     'lean/KelGroups/Fold.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
@@ -923,11 +935,11 @@ const GUARD_CLAIMS = {
 // ones (an omitted constructor or a hand-trimmed route is RED).
 const TAG_CLAIMS = {
   openPurchase: ['open-referente'],
-  grantPermission: ['join-vote-econ', 'comp-routing', 'comp-app-verdict'],
-  denyPermission: ['join-vote-econ', 'comp-routing', 'comp-app-verdict', 'close-gone'],
+  grantPermission: ['join-vote-econ', 'auth-provenance', 'comp-routing', 'comp-app-verdict'],
+  denyPermission: ['join-vote-econ', 'auth-deny', 'auth-provenance', 'comp-routing', 'comp-app-verdict', 'close-gone'],
   deposit: ['accredito'], withdraw: ['prelievo'], transferCassa: ['giro', 'conservation'],
   donate: ['ev-donate'],
-  backdonate: ['ev-backdonate', 'comp-routing', 'comp-app-verdict', 'join-vote-econ'],
+  backdonate: ['ev-backdonate', 'comp-routing', 'comp-app-verdict', 'join-vote-econ', 'auth-backdonate', 'auth-provenance'],
   pledge: ['impegno-escrow'], acceptPledge: ['accept-effect'],
   refusePledge: ['refuse-refund'], correctPledge: ['correct-conguaglio'],
   closePurchase: ['close-payout', 'cassa-negativa', 'close-gone'],
@@ -985,8 +997,8 @@ function claimAudit() {
       bad.push('assiomi per dichiarazione non citata: ' + d);
   // exhaustive constructor coverage over the ACCEPTED pin's route table:
   // every constructor carries claim rows; every non-direct constructor
-  // carries the routing theorem, its route-form theorem, and the honest
-  // unproved-join row; the witness row must keep its zeroThreshold caveat
+  // carries the routing theorem, its route-form theorem, and the vote → economy
+  // join row (#76's root spend); the witness row must keep its zeroThreshold caveat
   for (const [tag2, route] of Object.entries(EVENT_ROUTES)) {
     const ids2 = TAG_CLAIMS[tag2] || [];
     if (!ids2.length) { bad.push('costruttore senza righe di manifesto: ' + tag2); continue; }
@@ -1182,8 +1194,8 @@ function traceConformance() {
    «enunciato, non dimostrato», never «provato» — the three-state
    classification is derived from `#print axioms` by the committed claim
    gate, not asserted here. Toy decoration (names, question phrasing) stays
-   outside. The economic↔vote JOIN remains first-class NON PROVATO
-   ('join-vote-econ'). */
+   outside. The economic↔vote JOIN is #76's root: an app-decided event spends
+   a closure-derived authorization ('join-vote-econ', 'auth-*'). */
 
 /* the threshold is a machine PARAMETER (R-46); the toy's explicit choice is
    the named legacy exhibit (n+1)/2 — declared, never a hidden default */

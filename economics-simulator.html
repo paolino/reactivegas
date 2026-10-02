@@ -311,6 +311,11 @@
     border-radius: 5px; font-size: .62rem; font-weight: 700; padding: 1px 5px;
     white-space: nowrap; cursor: pointer;
   }
+  .thmbadge {
+    border: 1px solid #b9cbe2; background: #eef4fb; color: #23538f;
+    border-radius: 5px; font-size: .62rem; font-weight: 700; padding: 1px 5px;
+    white-space: nowrap; cursor: pointer;
+  }
 
   /* teaching that recedes */
   .teach {
@@ -1181,11 +1186,14 @@ const CLAIMS = {
   'kg-enact-effect':   { c: 'Canale base: la delibera applica la proposta ai membri e rimuove la pendente, in un passo', k: 'definizione', d: 'KelGroups.finishEnact', f: 'lean/KelGroups/Fold.lean', l: 18 },
   'kg-apply':          { c: 'Canale base: proporre inserisce la pendente con il proponente già assenziente e tenta subito la delibera', k: 'definizione', d: 'KelGroups.applyEventDetailed', f: 'lean/KelGroups/Fold.lean', l: 75 },
   'ev-donate':         { c: 'donate è direct: alza insieme la cassa dell\'autore e il conto comune riservato (non-membro in conti) di +v; rifiuta autore non responsabile e v non positivo. Nessun teorema di donazione è ancora proved (sorry #48)', k: 'NON PROVATO', d: null, f: null, l: null },
-  'ev-backdonate':     { c: 'backdonate è appDecided: quota uguale w a ogni membro e −n*w dal comune; attempt non inventa backdonateAuthorized (sorry); il governo rifiuta senza ponte evento-voto (NON PROVATO)', k: 'NON PROVATO', d: null, f: null, l: null },
+  'ev-backdonate':     { c: 'backdonate è appDecided: quota uguale w a ogni membro e −n*w dal comune, alla radice solo spendendo una chiusura positiva legata a w (riga auth-backdonate); il cammino di governo del toy rifiuta comunque un backdonate importato — limite del toy', k: 'NON PROVATO', d: null, f: null, l: null },
   'kg-setinsert':      { c: 'L’inserimento di posizione è idempotente per costruzione (substrato condiviso)', k: 'definizione', d: 'KelGroups.setInsert', f: 'lean/KelGroups/Types.lean', l: 46 },
   'kg-majority':       { c: 'Aritmetica della formula (n+1)/2: 0,1,1,2,2,3 per 0–5 — provata nella macchina fusa sullo stesso calcolo scelto qui come esibizione', k: 'teorema', d: 'majority_table', f: 'lean/KelGroups/Invariants.lean', l: 450 },
   'kg-tie':            { c: 'Con un numero pari la formula (n+1)/2 non è stretta: 2·soglia ≤ n — provato nella macchina fusa sullo stesso calcolo', k: 'teorema', d: 'majority_not_strict_on_even', f: 'lean/KelGroups/Invariants.lean', l: 459 },
-  'join-vote-econ':    { c: 'Il PONTE fra verdetto di voto e permesso economico NON è provato: nessun teorema garantisce che Reactivegas consumi solo grantPermission derivati da un verdetto KelGroups.Vote (in attesa di #54 slice 2 / #48 backdonation)', k: 'NON PROVATO', d: null, f: null, l: null },
+  'join-vote-econ':    { c: "Il PONTE voto → economia è provato nel modello (#76): la radice di produzione applica un permesso solo spendendo un'autorizzazione positiva viva legata a quell'acquisto, e senza la rifiuta; il browser ne esegue la trascrizione (riga js-transcription)", k: 'teorema', d: 'Reactivegas.Composition.apply_grant_spends', f: 'lean/Reactivegas/CompositionRoot.lean', l: 136 },
+  'auth-deny':         { c: "Un diniego alla radice spende un'autorizzazione negativa viva legata all'acquisto, poi lo scioglie rimborsando ogni impegno (#76)", k: 'teorema', d: 'Reactivegas.Composition.apply_deny_spends', f: 'lean/Reactivegas/CompositionRoot.lean', l: 193 },
+  'auth-backdonate':   { c: "Una redistribuzione alla radice spende un'autorizzazione positiva viva legata alla quota w stessa (#76)", k: 'teorema', d: 'Reactivegas.Composition.apply_backdonate_spends', f: 'lean/Reactivegas/CompositionRoot.lean', l: 154 },
+  'auth-provenance':   { c: "In ogni storia di produzione ogni autorizzazione viva è sostenuta da un record di chiusura con lo stesso id e verdetto, aggiunto dal fold di voto della storia stessa: nessuna nasce altrove (#76)", k: 'teorema', d: 'Reactivegas.Composition.liveBacked_of_history', f: 'lean/Reactivegas/CompositionRoot.lean', l: 543 },
   'vote-model-status': { c: 'Il modello di voto richiesto (#54, con rinuncia e uscita del proponente #81) è dimostrato sulla macchina produttiva: verdetti sì/no/aperta, dissenso e permessi per-persona sono modellati e le loro proposizioni portano prova senza sorry (scarico #48/#65)', k: 'teorema', d: 'KelGroups.Vote.foldVote_wellFormed', f: 'lean/KelGroups/Vote/Invariants.lean', l: 817 },
   'done-list':         { c: "L'elenco «acquisti completati» è ricostruzione del toy: la macchina non conserva gli acquisti chiusi", k: 'NON PROVATO', d: null, f: null, l: null },
   'toy-cap':           { c: 'Il limite 500 su accrediti e giri è del toy: la macchina Lean non ha limite superiore', k: 'NON PROVATO', d: null, f: null, l: null },
@@ -1201,7 +1209,7 @@ const CLAIMS = {
    extraction and runs fresh in the repository lake environment. The gate
    exits nonzero on any dangling citation, hash drift, or binding mismatch. */
 const CHECK_RECEIPT = {
-  sha: '48b3c825eda207f793e5adb266fb7150fba3d43b640cb1625366440ff1412306',
+  sha: '301775d7010ddda7d4706c98c0a1887008385d1824aa59987c8a98e7ab5b974c',
   decls: ['auth_referente_guard_inv', 'close_guard_inv', 'close_permission_to_close',
     'close_spends_referente', 'conservation_preserved', 'deposit_double_entry',
     'fail_guard_inv', 'not_insolvent_of_reach',
@@ -1223,7 +1231,10 @@ const CHECK_RECEIPT = {
     'KelGroups.Vote.effectedState', 'KelGroups.Vote.closeProposerQuestions',
     'enact_implies_threshold_met', 'approvals_nodup', 'proposer_mem_approvals',
     'KelGroups.majority', 'KelGroups.validateEvent', 'KelGroups.validateApproval',
-    'KelGroups.finishEnact', 'KelGroups.applyEventDetailed'],
+    'KelGroups.finishEnact', 'KelGroups.applyEventDetailed',
+    'Reactivegas.Composition.apply_grant_spends', 'Reactivegas.Composition.apply_deny_spends',
+    'Reactivegas.Composition.apply_backdonate_spends',
+    'Reactivegas.Composition.liveBacked_of_history'],
   /* The accepted composition pin: an immutable COMMIT, never a branch. The
      gate resolves it fresh, requires exactly this tree, verifies the cited
      declarations' file:line inside the pinned source, and re-derives each
@@ -1273,6 +1284,10 @@ const CHECK_RECEIPT = {
     'KelGroups.setInsert': 'provato',
     'KelGroups.validateApproval': 'provato',
     'KelGroups.validateEvent': 'provato',
+    'Reactivegas.Composition.apply_backdonate_spends': 'provato',
+    'Reactivegas.Composition.apply_deny_spends': 'provato',
+    'Reactivegas.Composition.apply_grant_spends': 'provato',
+    'Reactivegas.Composition.liveBacked_of_history': 'provato',
     'approvals_nodup': 'provato',
     'auth_referente_guard_inv': 'provato',
     'close_guard_inv': 'provato',
@@ -1316,6 +1331,7 @@ const CHECK_RECEIPT = {
     'lean/Reactivegas/Invariants.lean': '832ac4ad66cb1e7066107efd17c34addca833676de6489ab9e45200fcc2df9e6',
     'lean/Reactivegas/Composition.lean': '43b52f8b30bd4d96383bfd676660e78780a4d43436be76e74bd2ee5d6eee0743',
     'lean/Reactivegas/Mirrors.lean': '7fefa8cd8e034c1e2f5a353d28270d7a68e940c7be5d0f52eabaca0d6193e1fb',
+    'lean/Reactivegas/CompositionRoot.lean': '9c40b1e21be55700d1fd0e230301da1bdd78b747f1debf5012041e99c7b7c927',
     'lean/KelGroups/Types.lean': '971a2a2ee774c3af63270e8f0bb8f1d5346f1da5c97f5faea1856dbe460acd07',
     'lean/KelGroups/State.lean': '25c2109e304fa9cdb084daabb267deb4a4a8a15749c9f66bae878d190fea49a6',
     'lean/KelGroups/Fold.lean': 'c6cbb818705db481b5f6fd8469e7a7b279fe2e6f9a9675f4cb262df570d679cf',
@@ -1346,6 +1362,7 @@ const CHECK_RECEIPT = {
     'lean/Reactivegas/Invariants.lean': '8232d4fed808ad30a9817a9bae9e832a73ce5f15',
     'lean/Reactivegas/Composition.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
     'lean/Reactivegas/Mirrors.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
+    'lean/Reactivegas/CompositionRoot.lean': '8232d4fed808ad30a9817a9bae9e832a73ce5f15',
     'lean/KelGroups/Types.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
     'lean/KelGroups/State.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
     'lean/KelGroups/Fold.lean': '2bd9a2080a692f8a832968e76ecbd270898f2aa2',
@@ -1378,11 +1395,11 @@ const GUARD_CLAIMS = {
 // ones (an omitted constructor or a hand-trimmed route is RED).
 const TAG_CLAIMS = {
   openPurchase: ['open-referente'],
-  grantPermission: ['join-vote-econ', 'comp-routing', 'comp-app-verdict'],
-  denyPermission: ['join-vote-econ', 'comp-routing', 'comp-app-verdict', 'close-gone'],
+  grantPermission: ['join-vote-econ', 'auth-provenance', 'comp-routing', 'comp-app-verdict'],
+  denyPermission: ['join-vote-econ', 'auth-deny', 'auth-provenance', 'comp-routing', 'comp-app-verdict', 'close-gone'],
   deposit: ['accredito'], withdraw: ['prelievo'], transferCassa: ['giro', 'conservation'],
   donate: ['ev-donate'],
-  backdonate: ['ev-backdonate', 'comp-routing', 'comp-app-verdict', 'join-vote-econ'],
+  backdonate: ['ev-backdonate', 'comp-routing', 'comp-app-verdict', 'join-vote-econ', 'auth-backdonate', 'auth-provenance'],
   pledge: ['impegno-escrow'], acceptPledge: ['accept-effect'],
   refusePledge: ['refuse-refund'], correctPledge: ['correct-conguaglio'],
   closePurchase: ['close-payout', 'cassa-negativa', 'close-gone'],
@@ -1497,8 +1514,8 @@ function claimAudit() {
       bad.push('assiomi per dichiarazione non citata: ' + d);
   // exhaustive constructor coverage over the ACCEPTED pin's route table:
   // every constructor carries claim rows; every non-direct constructor
-  // carries the routing theorem, its route-form theorem, and the honest
-  // unproved-join row; the witness row must keep its zeroThreshold caveat
+  // carries the routing theorem, its route-form theorem, and the vote → economy
+  // join row (#76's root spend); the witness row must keep its zeroThreshold caveat
   for (const [tag2, route] of Object.entries(EVENT_ROUTES)) {
     const ids2 = TAG_CLAIMS[tag2] || [];
     if (!ids2.length) { bad.push('costruttore senza righe di manifesto: ' + tag2); continue; }
@@ -1710,8 +1727,8 @@ function traceConformance() {
    «enunciato, non dimostrato», never «provato» — the three-state
    classification is derived from `#print axioms` by the committed claim
    gate, not asserted here. Toy decoration (names, question phrasing) stays
-   outside. The economic↔vote JOIN remains first-class NON PROVATO
-   ('join-vote-econ'). */
+   outside. The economic↔vote JOIN is #76's root: an app-decided event spends
+   a closure-derived authorization ('join-vote-econ', 'auth-*'). */
 
 /* the threshold is a machine PARAMETER (R-46); the toy's explicit choice is
    the named legacy exhibit (n+1)/2 — declared, never a hidden default */
@@ -2452,8 +2469,14 @@ function integratedTraceConformance() {
 /* --- Vote journey (toy-side wiring of the required Vote machine) ----------
    Names/keys and question phrasing are decoration; the machine sees keys,
    question ids, kinds and ballots. The permesso question for an acquisto is
-   the collective question id 'permesso:<CollId>'. The economic↔vote JOIN is
-   NOT proved: every bridge point carries claim 'join-vote-econ'. */
+   the collective question id 'permesso:<CollId>', opened bound to it. The
+   economic↔vote JOIN is #76's root, proved in the model: a grant or deny
+   spends a closure of a question bound to its collection; every bridge point
+   carries claim 'join-vote-econ' beside the transcription row. */
+
+/* the bridge badge: proved in the Lean model, run here as a transcription */
+const bridgeBadge = label => `<span class="thmbadge"
+  data-claims="join-vote-econ,auth-provenance,js-transcription">${label}</span>`;
 
 const vtVerdictFor = c => {
   const rec = state.votes.closed.find(r => r.questionId === permQid(c));
@@ -3104,12 +3127,12 @@ function spentEvid(tag, args, payload) {
 }
 
 function runAttempt(tag, args, toyLabel) {
-  // Composition gate (accepted pin c8c4dd89…): a vote-derived economic
-  // event is applied ONLY against its route-appropriate evidence — a
-  // faithful base Enactment or a closed vote verdict. The refusal happens
-  // BEFORE the economic machine is consulted: the machine itself has no
-  // such guard (that absence is exactly the unproved join), so the model
-  // boundary enforces it and says so honestly.
+  // #76: a vote-derived economic event applies only by spending a live
+  // authorization the closure of a question bound to its target minted —
+  // the root's own guard (apply_grant_spends, apply_deny_spends,
+  // apply_backdonate_spends; liveBacked_of_history for where it comes from).
+  // appFold below runs that root; the check here only names the missing
+  // closure in the history before the step is attempted.
   let evid = null;
   if (voteDerivedTag(tag)) {
     const want = tag === 'denyPermission' ? 'negative' : 'positive';
@@ -3545,21 +3568,21 @@ function openAmountPop() {
   n.focus();
 }
 
-// Interface outcome: the vote happened in the OTHER proved machine
-// (KelGroups.Vote). No economic member is asked to authorize it here; the
-// Step.lean responsabile carrier stays internal, and the machine-to-machine
-// bridge is the unproved local join the badge names.
+// Interface outcome: the vote happened in the vote machine (KelGroups.Vote)
+// on a question bound to this collection; applying it spends that closure at
+// the root (#76, proved in the model). The Step.lean responsabile carrier
+// stays internal.
 function openExternalConfirm() {
   const isGrant = flow.tag === 'grantPermission';
   const html = `<div class="pt">ponte voto → economia
-      <span class="npvbadge" data-claims="join-vote-econ">NON PROVATO</span>
+      ${bridgeBadge('PROVATO NEL MODELLO')}
       <button type="button" class="xbtn2" data-x="1">✕</button></div>
     <div class="tiny">${esc(EV[flow.tag].it)} per «${esc(lbl(flow.params.c))}»</div>
     <div class="tiny">La domanda è stata DELIBERATA nel gruppo di voto: verdetto
       ${isGrant ? 'POSITIVO' : 'NEGATIVO'} deciso da
       <span class="mono">KelGroups.Vote.verdictOf</span> ${pkGlyph(['vote-verdict'])}.
-      L'applicazione al ${isGrant ? 'permesso' : 'diniego'} economico è un ponte
-      locale NON PROVATO fra le due macchine (#54 slice 2 / #48).</div>
+      L'applicazione al ${isGrant ? 'permesso' : 'diniego'} economico spende la chiusura
+      legata a questo acquisto: la radice non applica altrimenti (#76, provato nel modello).</div>
     <div class="ar2"><button type="button" class="primary" id="ext-apply">applica esito</button></div>`;
   popAt(flow.xy[0], flow.xy[1], html);
   $('ext-apply').addEventListener('click', () => {
@@ -3610,7 +3633,7 @@ function commitFlow() {
     if (nav().view === 'group') playFx(tag, args, preState, preLayout);
     if (taskShape(tag).external)
       toast(`<b>⇣ esito esterno applicato</b>
-        <span class="tiny">verdetto modellato nel voto; ponte verso l'economia NON PROVATO</span>`, xy[0], xy[1], 'ext');
+        <span class="tiny">chiusura legata spesa alla radice; ponte provato nel modello (#76)</span>`, xy[0], xy[1], 'ext');
   } else {
     toast(`<b>✗ ${esc(taskShape(tag).it)}</b> ` +
       res.failed.map(guardChip).join(' ') +
@@ -3644,7 +3667,7 @@ function taskBtn(tag, ctx, extra) {
       data-task="${tag}" data-off-claims="${claims.join(',')}" title="${esc(dis.note)}">${esc(it)}
       <span class="${ext ? 'gbx' : (dis.badge === '—' ? 'gb dim' : 'gb')}">${esc(dis.badge === '—' ? dis.note || '—' : dis.badge)}</span></button>`;
   }
-  const extBadge = ' <span class="npvbadge" data-claims="join-vote-econ">PONTE NON PROVATO</span>';
+  const extBadge = ' ' + bridgeBadge('PONTE PROVATO NEL MODELLO');
   return `<button type="button" class="task${ext ? ' ext' : ''}" data-task="${tag}"
     title=".${tag}">${esc(it)}${ext ? extBadge : ''}</button>`;
 }
@@ -4073,7 +4096,7 @@ function renderCollection() {
 
   const external = `<div class="card">
     <div class="msec">assenso del gruppo — via il gruppo di voto (KelGroups.Vote)
-      <span class="npvbadge" data-claims="join-vote-econ">PONTE NON PROVATO</span></div>
+      ${bridgeBadge('PONTE PROVATO NEL MODELLO')}</div>
     ${collGovHtml(col)}
     <div class="tasks" style="margin-top:6px">
       ${taskBtn('grantPermission', { c })}
@@ -4122,13 +4145,13 @@ function collGovHtml(col) {
   if (v === 'positive')
     return `<div class="vq"><div class="qh">🗳 «${esc(qid)}» — CHIUSA POSITIVA
       ${pkGlyph(['vote-nostale', 'vote-partition'])}</div>
-      <div class="tiny">la delibera è della macchina di voto; il ponte economico qui sotto resta
-        <span class="npvbadge" data-claims="join-vote-econ">NON PROVATO</span></div></div>`;
+      <div class="tiny">la delibera è della macchina di voto; la sua chiusura è l’autorizzazione
+        che il permesso qui sotto spende ${bridgeBadge('PROVATO NEL MODELLO')}</div></div>`;
   if (v === 'negative')
     return `<div class="vq"><div class="qh">🗳 «${esc(qid)}» — CHIUSA NEGATIVA
       ${pkGlyph(['vote-verdict', 'vote-partition'])}</div>
-      <div class="tiny">il dissenso ha raggiunto la soglia; l'esito economico negativo qui sotto è un ponte
-        <span class="npvbadge" data-claims="join-vote-econ">NON PROVATO</span></div></div>`;
+      <div class="tiny">il dissenso ha raggiunto la soglia; la sua chiusura è l’autorizzazione
+        che il diniego qui sotto spende ${bridgeBadge('PROVATO NEL MODELLO')}</div></div>`;
   if (v === 'pending') {
     const q = vtLookup(qid, state.votes.openQuestions);
     return questionHtml(qid, q, `domanda in votazione: «permesso per ${esc(label)}»`);
@@ -4141,7 +4164,7 @@ function collGovHtml(col) {
             apri la domanda: permesso per «${esc(label)}»</button></div>
          <div class="tiny">domanda legata: <span class="mono">.openBound ${esc(qid)} .collective (.permission ${col.id})</span>
            — il bersaglio è fissato all’apertura: la chiusura autorizza solo questo acquisto
-           <span class="npvbadge" data-claims="join-vote-econ">NON PROVATO</span></div>`
+           ${bridgeBadge('PROVATO NEL MODELLO')}</div>`
       : `<div class="tiny">ammetti prima dei responsabili al gruppo di voto (vista Gruppo)</div>`}
   </div>`;
 }
@@ -4238,8 +4261,8 @@ function govCardHtml() {
       <span class="npvbadge" data-claims="vote-model-status">stato</span> ·
       composizione accettata al pin: instradamento totale dei 14 costruttori
       ${pkGlyph(['comp-routing', 'comp-app-verdict', 'comp-witness'])} ·
-      il ponte con l'economia resta
-      <span class="npvbadge" data-claims="join-vote-econ">NON PROVATO</span></div>
+      il ponte con l'economia: la radice spende chiusure legate
+      ${bridgeBadge('provato nel modello')}</div>
   </div>`;
 }
 
@@ -4311,7 +4334,7 @@ function renderLog() {
       </div>`;
     }
     const prov = en.ext
-      ? '<div class="eprov">⇣ esito applicato al permesso economico — ponte NON PROVATO fra voto ed economia</div>'
+      ? '<div class="eprov">⇣ esito applicato spendendo la chiusura legata — ponte voto → economia provato nel modello (#76)</div>'
       : '';
     if (en.kind === 'acc') {
       return `<div class="entry acc${en.ext || en.route ? ' ext' : ''}">
@@ -5203,8 +5226,8 @@ async function selftest() {
   // NO direct-permission bypass: the grant task is spent until a delibera,
   // and clicking it opens the unproved-join disclosure
   expect(document.querySelector('#view .msec'), 'sezione assenso assente');
-  expect(document.querySelector('#view .msec [data-claims="join-vote-econ"]'),
-    'sezione assenso senza marcatura PONTE NON PROVATO');
+  expect(document.querySelector('#view .msec [data-claims^="join-vote-econ"]'),
+    'sezione assenso senza marcatura del ponte provato nel modello');
   let grantBtn = document.querySelector('#view [data-task="grantPermission"]');
   expect(grantBtn && grantBtn.classList.contains('off') &&
     grantBtn.innerText.includes('SENZA DELIBERA'),
@@ -5221,7 +5244,7 @@ async function selftest() {
   await addNamed('Carlo');                                    // 4º membro
   expect(document.getElementById('govcard'), 'scheda del gruppo assente');
   expect(document.querySelector('#gov-status [data-claims="vote-model-status"]') &&
-    document.querySelector('#gov-status [data-claims="join-vote-econ"]'),
+    document.querySelector('#gov-status [data-claims^="join-vote-econ"]'),
     'stato del modello di voto non dichiarato nella scheda');
   // NOTE-033: no question is open yet, so the voto strip must NOT show —
   // the gov card being on screen is a view, not the condition
@@ -5295,16 +5318,16 @@ async function selftest() {
   // only now the bridge exists — and it is marked unproved at the point of use
   grantBtn = document.querySelector('#view [data-task="grantPermission"]');
   expect(grantBtn && !grantBtn.classList.contains('off') &&
-    grantBtn.innerText.includes('PONTE NON PROVATO'),
-    'ponte senza marcatura NON PROVATO al punto d’uso');
+    grantBtn.innerText.includes('PONTE PROVATO NEL MODELLO'),
+    'ponte senza marcatura di prova al punto d’uso');
   await click('#view [data-task="grantPermission"]');
   const conf = document.querySelector('#pop .pbox');
-  expect(conf && conf.innerText.includes('DELIBERATA') && conf.innerText.includes('NON PROVATO'),
-    'conferma del ponte senza delibera o senza limite di prova');
+  expect(conf && conf.innerText.includes('DELIBERATA') && conf.innerText.includes('PROVATO NEL MODELLO'),
+    'conferma del ponte senza delibera o senza stato di prova');
   await click('#ext-apply');
   const ge = lastEntry();
-  expect(ge.className.includes('ext') && ge.innerText.includes('NON PROVATO'),
-    'ponte applicato senza marcatura nel risultato');
+  expect(ge.className.includes('ext') && ge.innerText.includes('provato nel modello'),
+    'ponte applicato senza il suo stato di prova nel risultato');
   expect(!/Anna|Bruno|Elena|Carlo/.test(ge.querySelector('.eh').innerText),
     'esito attribuito a un officer');
   invOk();
@@ -5631,7 +5654,7 @@ async function selftest() {
     'glifo dello stato provato assente dopo lo scarico');
   expect(pkGlyph(['conservation']).includes('⊢') && !pkGlyph(['conservation']).includes('enun'),
     'glifo provato contaminato dallo stato intermedio');
-  expect(pkGlyph(['vote-clean', 'join-vote-econ']).includes('npv'),
+  expect(pkGlyph(['vote-clean', 'js-transcription']).includes('npv'),
     'NON PROVATO non prevale sugli altri stati nel glifo composto');
 
   // composition citations: pinned-commit rows render their pin and derived
