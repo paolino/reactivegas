@@ -28,11 +28,19 @@
           mkdocs = mkdocs.packages.${system};
         };
         flake = project.flake { };
+        # The simulator gates (`just simulator`) run node and, on Linux, a
+        # headless chromium inside the dev shell.
+        devShells = flake.devShells // {
+          default = flake.devShells.default.overrideAttrs (old: {
+            nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.nodejs ]
+              ++ pkgs.lib.optional pkgs.stdenv.isLinux pkgs.chromium;
+          });
+        };
       in {
         packages = flake.packages // {
           default = flake.packages."reactivegas:exe:server";
         };
-        inherit (flake) devShells;
-        devShell = flake.devShells.default;
+        inherit devShells;
+        devShell = devShells.default;
       });
 }

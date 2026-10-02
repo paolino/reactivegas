@@ -16,3 +16,9 @@ lean_lib KelGroups where
 
 lean_exe corpusExport where
   root := `Reactivegas.CorpusExport
+
+lean_lib TraceDriverV1 where
+  srcDir := "."
+
+lean_lib KelTraceDriverV1 where
+  srcDir := "."
