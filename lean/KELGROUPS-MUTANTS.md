@@ -21,16 +21,16 @@ change and fails when a claim here is not what Lean reports.
 
 | | KelGroups modules | whole ledger |
 |---|---|---|
-| DISCOVERED theorem constants | 716 | 1633 |
-| EXCLUDED (generated) | 532 | 1221 |
+| DISCOVERED theorem constants | 716 | 1700 |
+| EXCLUDED (generated) | 532 | 1252 |
 | HELPER | 1 | 6 |
-| REQUIRED (authored − HELPER) | 183 | 406 |
-| KILLED | 85 | 216 |
-| OPEN | 98 | 190 |
+| REQUIRED (authored − HELPER) | 183 | 442 |
+| KILLED | 85 | 244 |
+| OPEN | 98 | 198 |
 | refusal constructors SURVIVED | 5 | |
 | refusal constructors UNEMITTED | 0 | |
 
-KILLED / REQUIRED: 85 / 183 here, 216 / 406 over the whole ledger.
+KILLED / REQUIRED: 85 / 183 here, 244 / 442 over the whole ledger.
 
 ## Theorems
 
@@ -257,15 +257,15 @@ emits it, so there is no guard to mutate.
 | `KelGroups.ValidationError.bootstrapRequiresAdmin` | `KelGroups.validateBootstrapProposal@KelGroups.Validate` | `guard-bootstrap-admin` | 0 | SURVIVED |
 | `KelGroups.ValidationError.memberAlreadyExists` | `KelGroups.requireNotMember@KelGroups.Validate`, `KelGroups.validateDirectAdmission` | `guard-admission-duplicate` | 4 | KILLS |
 | `KelGroups.ValidationError.memberNotFound` | `KelGroups.requireMember@KelGroups.Validate`, `KelGroups.validateRoleChanges@KelGroups.Validate` | `guard-require-member` | 0 | SURVIVED |
-| `KelGroups.ValidationError.proposalNotFound` | `KelGroups.applyIntegratedEvent`, `KelGroups.validateApproval`, `KelGroups.validateBaseApproval` | `guard-base-approval-pending`, `guard-approve-route-pending` | 5 | KILLS |
+| `KelGroups.ValidationError.proposalNotFound` | `KelGroups.applyIntegratedEvent`, `KelGroups.validateApproval`, `KelGroups.validateBaseApproval` | `guard-base-approval-pending`, `guard-approve-route-pending` | 6 | KILLS |
 | `KelGroups.ValidationError.alreadyApproved` | `KelGroups.validateApproval`, `KelGroups.validateBaseApproval` | `guard-base-approval-twice`, `guard-approval-twice-historical` | 3 | KILLS |
 | `KelGroups.ValidationError.proposerSelfApproval` | `KelGroups.validateApproval`, `KelGroups.validateBaseApproval` | `guard-approval-proposer-self`, `guard-approval-sole-admin-barred`, `guard-base-approval-proposer-self`, `guard-base-approval-sole-admin-barred` | 7 | KILLS |
 | `KelGroups.ValidationError.roleAddPrecondition` | `KelGroups.checkRoleAddition@KelGroups.Validate` | `guard-role-add-precondition` | 0 | SURVIVED |
 | `KelGroups.ValidationError.roleRemovePrecondition` | `KelGroups.checkRoleRemoval@KelGroups.Validate` | `guard-role-remove-precondition` | 0 | SURVIVED |
 | `KelGroups.ValidationError.invalidKey` | `KelGroups.requireValidKey@KelGroups.Validate` | `guard-valid-key` | 0 | SURVIVED |
 | `KelGroups.ValidationError.reservedKey` | `KelGroups.validateDirectAdmission` | `guard-admission-reserved` | 4 | KILLS |
-| `KelGroups.IntegratedError.validation` | `KelGroups.applyIntegratedEvent` | `guard-propose-validation` | 4 | KILLS |
-| `KelGroups.IntegratedError.app` | `KelGroups.applyIntegratedEvent`, `KelGroups.commitBaseChange` | `guard-app-fold-refusal`, `guard-commit-hook-refusal` | 17 | KILLS |
+| `KelGroups.IntegratedError.validation` | `KelGroups.applyIntegratedEvent` | `guard-propose-validation` | 5 | KILLS |
+| `KelGroups.IntegratedError.app` | `KelGroups.applyIntegratedEvent`, `KelGroups.commitBaseChange` | `guard-app-fold-refusal`, `guard-commit-hook-refusal` | 18 | KILLS |
 
 ## Mutants
 
@@ -284,28 +284,28 @@ emits it, so there is no guard to mutate.
 | `guard-role-remove-precondition` | `KelGroups.checkRoleRemoval@KelGroups.Validate` | `KelGroups.ValidationError.roleRemovePrecondition` | `roleDef.canRemove gs.appFold` → `true` | KelGroups.Validate:63 | 0 |
 | `guard-valid-key` | `KelGroups.requireValidKey@KelGroups.Validate` | `KelGroups.ValidationError.invalidKey` | `validKey key` → `true` | KelGroups.Validate:45 | 0 |
 | `guard-admission-reserved` | `KelGroups.validateDirectAdmission` | `KelGroups.ValidationError.reservedKey` | `target = reserved` → `false` | KelGroups.Validate:156 | 4 |
-| `guard-propose-validation` | `KelGroups.applyIntegratedEvent` | `KelGroups.IntegratedError.validation` | `.error (.validation err)` → `.ok { state := gs, change := none }` | KelGroups.Integration:187 | 4 |
-| `guard-app-fold-refusal` | `KelGroups.applyIntegratedEvent` | `KelGroups.IntegratedError.app` | `.error (.app err)` → `.ok { state := gs, change := none }` | KelGroups.Integration:211 | 11 |
+| `guard-propose-validation` | `KelGroups.applyIntegratedEvent` | `KelGroups.IntegratedError.validation` | `.error (.validation err)` → `.ok { state := gs, change := none }` | KelGroups.Integration:187 | 5 |
+| `guard-app-fold-refusal` | `KelGroups.applyIntegratedEvent` | `KelGroups.IntegratedError.app` | `.error (.app err)` → `.ok { state := gs, change := none }` | KelGroups.Integration:211 | 12 |
 | `setInsert-duplicates` | `KelGroups.setInsert` |  | `values` → `value :: values` | KelGroups.Types:47 | 9 |
-| `assocLookup-misses` | `KelGroups.assocLookup` |  | `some value` → `none` | KelGroups.Types:52 | 56 |
+| `assocLookup-misses` | `KelGroups.assocLookup` |  | `some value` → `none` | KelGroups.Types:52 | 61 |
 | `assocErase-keeps` | `KelGroups.assocErase` |  | `` → `(candidate, value) :: ` | KelGroups.Types:57 | 36 |
 | `assocAdjust-ignores-f` | `KelGroups.assocAdjust` |  | `f ` → `` | KelGroups.Types:66 | 5 |
 | `hasAdmin-all` | `KelGroups.hasAdmin` |  | `roles.any` → `roles.all` | KelGroups.Types:35 | 12 |
-| `isMember-negated` | `KelGroups.GroupView.isMember` |  | `.isSome` → `.isNone` | KelGroups.Types:146 | 43 |
+| `isMember-negated` | `KelGroups.GroupView.isMember` |  | `.isSome` → `.isNone` | KelGroups.Types:146 | 48 |
 | `isAdmin-absent-true` | `KelGroups.GroupView.isAdmin` |  | `false` → `true` | KelGroups.Types:154 | 6 |
 | `admins-non-admins` | `KelGroups.GroupView.admins` |  | `` → `!` | KelGroups.Types:159 | 29 |
 | `assocInsert-appends` | `KelGroups.assocInsert` |  | `assocErase key ` → `` | KelGroups.Types:61 | 31 |
-| `view-lookupMember-misses` | `KelGroups.GroupView.lookupMember` |  | `assocLookup key view.members` → `none` | KelGroups.Types:142 | 44 |
-| `state-lookupMember-misses` | `KelGroups.lookupMember` |  | `assocLookup key gs.members` → `none` | KelGroups.State:38 | 25 |
-| `lookupPendingBase-misses` | `KelGroups.lookupPendingBase` |  | `assocLookup proposalId gs.pendingBase` → `none` | KelGroups.State:45 | 20 |
+| `view-lookupMember-misses` | `KelGroups.GroupView.lookupMember` |  | `assocLookup key view.members` → `none` | KelGroups.Types:142 | 49 |
+| `state-lookupMember-misses` | `KelGroups.lookupMember` |  | `assocLookup key gs.members` → `none` | KelGroups.State:38 | 29 |
+| `lookupPendingBase-misses` | `KelGroups.lookupPendingBase` |  | `assocLookup proposalId gs.pendingBase` → `none` | KelGroups.State:45 | 24 |
 | `adminCount-counts-all` | `KelGroups.adminCount` |  | `` → ` + 1` | KelGroups.State:48 | 6 |
-| `majority-floor` | `KelGroups.majority` |  | `(adminCount gs + 1)` → `adminCount gs` | KelGroups.State:50 | 21 |
+| `majority-floor` | `KelGroups.majority` |  | `(adminCount gs + 1)` → `adminCount gs` | KelGroups.State:50 | 25 |
 | `state-isAdmin-absent-true` | `KelGroups.isAdmin` |  | `false` → `true` | KelGroups.State:55 | 1 |
-| `franchise-empty` | `KelGroups.Vote.franchise` |  | `GroupView.admins view` → `[]` | KelGroups.Vote.State:68 | 34 |
+| `franchise-empty` | `KelGroups.Vote.franchise` |  | `GroupView.admins view` → `[]` | KelGroups.Vote.State:68 | 39 |
 | `vote-isResponsabile-true` | `KelGroups.Vote.isResponsabile` |  | `GroupView.isAdmin key view` → `true` | KelGroups.Vote.State:75 | 12 |
 | `verdict-collective-strict` | `KelGroups.Vote.verdictOf` |  | `≥` → `>` | KelGroups.Vote.State:89 | 17 |
 | `verdict-permission-ignores-dissent` | `KelGroups.Vote.verdictOf` |  | `question.dissents.contains designee` → `false` | KelGroups.Vote.State:94 | 0 |
-| `lookupQuestion-misses` | `KelGroups.Vote.lookupQuestion` |  | `assocLookup questionId gs.openQuestions` → `none` | KelGroups.Vote.State:99 | 31 |
+| `lookupQuestion-misses` | `KelGroups.Vote.lookupQuestion` |  | `assocLookup questionId gs.openQuestions` → `none` | KelGroups.Vote.State:99 | 36 |
 | `closureCause-always-tally` | `KelGroups.Vote.closureCause` |  | `.franchiseChange` → `.tally` | KelGroups.Vote.State:111 | 5 |
 | `placeBallot-keeps-dissent` | `KelGroups.Vote.placeBallot` |  | `question.dissents.erase voter` → `question.dissents` | KelGroups.Vote.Fold:54 | 2 |
 | `sweepStep-cause-tally` | `KelGroups.Vote.sweepStep` |  | `closureCause view entry.2 verdict` → `.tally` | KelGroups.Vote.Fold:67 | 7 |
@@ -313,36 +313,36 @@ emits it, so there is no guard to mutate.
 | `effectedState-reopens` | `KelGroups.Vote.effectedState` |  | `!(gs.closed.any (fun record => record.questionId == questionId))` → `true` | KelGroups.Vote.Fold:93 | 5 |
 | `admitMemberInto-drops` | `KelGroups.admitMemberInto` |  | `assocInsert key { key, email, roles } ` → `` | KelGroups.Integration:120 | 6 |
 | `enactMutation-remove-noop` | `KelGroups.enactMutation` |  | `assocErase key ` → `` | KelGroups.Integration:126 | 21 |
-| `mutationChange-swapped` | `KelGroups.mutationChange` |  | `.memberRemoved` → `.rolesChanged` | KelGroups.Integration:133 | 14 |
-| `tryEnactBase-strict` | `KelGroups.tryEnactBase` |  | `≥` → `>` | KelGroups.Integration:154 | 22 |
+| `mutationChange-swapped` | `KelGroups.mutationChange` |  | `.memberRemoved` → `.rolesChanged` | KelGroups.Integration:133 | 18 |
+| `tryEnactBase-strict` | `KelGroups.tryEnactBase` |  | `≥` → `>` | KelGroups.Integration:154 | 26 |
 | `enact-remove-noop` | `KelGroups.enact` |  | `assocErase key ` → `` | KelGroups.Fold:14 | 2 |
 | `finishEnact-keeps-pending` | `KelGroups.finishEnact` |  | `assocErase proposalId ` → `` | KelGroups.Fold:21 | 4 |
 | `tryEnactDetailed-strict` | `KelGroups.tryEnactDetailed` |  | `≥` → `>` | KelGroups.Fold:38 | 8 |
 | `emptyState-has-member` | `KelGroups.emptyState` |  | `` → `("x", { key := "y", email := "", roles := [] })` | KelGroups.State:35 | 2 |
 | `legacyThreshold-floor` | `KelGroups.Vote.legacyThreshold` |  | `(responsabili + 1)` → `responsabili` | KelGroups.Vote.Types:44 | 34 |
 | `guard-admission-admin` | `KelGroups.validateDirectAdmission` | `KelGroups.ValidationError.notAnAdmin` | `isAdmin signer gs` → `true` | KelGroups.Validate:155 | 6 |
-| `guard-approve-route-pending` | `KelGroups.applyIntegratedEvent` | `KelGroups.ValidationError.proposalNotFound` | `.error (.validation (.proposalNotFound proposalId))` → `.ok { state := gs, change := none }` | KelGroups.Integration:200 | 4 |
+| `guard-approve-route-pending` | `KelGroups.applyIntegratedEvent` | `KelGroups.ValidationError.proposalNotFound` | `.error (.validation (.proposalNotFound proposalId))` → `.ok { state := gs, change := none }` | KelGroups.Integration:200 | 5 |
 | `guard-approval-twice-historical` | `KelGroups.validateApproval` | `KelGroups.ValidationError.alreadyApproved` | `pending.approvals.contains signer` → `false` | KelGroups.Validate:132 | 2 |
 | `guard-renounce-question-exists` | `KelGroups.Vote.validateVoteEvent` | `KelGroups.Vote.VoteError.questionNotFound` | `.error VoteError.questionNotFound` → `.ok ()` | KelGroups.Vote.Validate:77 | 1 |
 | `guard-commit-hook-refusal` | `KelGroups.commitBaseChange` | `KelGroups.IntegratedError.app` | `.error (.app err)` → `.ok { state := post, change := some change }` | KelGroups.Integration:144 | 7 |
-| `emptyVoteState-has-question` | `KelGroups.Vote.emptyVoteState` |  | `` → `("q", { kind := .collective, proposer := "p", assents := ["a"], dissents := ["a"] })` | KelGroups.Vote.State:58 | 10 |
-| `groupView-empty` | `KelGroups.groupView` |  | `gs.members` → `[]` | KelGroups.State:72 | 43 |
+| `emptyVoteState-has-question` | `KelGroups.Vote.emptyVoteState` |  | `` → `("q", { kind := .collective, proposer := "p", assents := ["a"], dissents := ["a"] })` | KelGroups.Vote.State:58 | 15 |
+| `groupView-empty` | `KelGroups.groupView` |  | `gs.members` → `[]` | KelGroups.State:72 | 48 |
 | `guard-cast-designee` | `KelGroups.Vote.validateVoteEvent` | `KelGroups.Vote.VoteError.notDesignee` | `signer == designee` → `true` | KelGroups.Vote.Validate:69 | 3 |
 | `guard-renounce-proposer` | `KelGroups.Vote.validateVoteEvent` | `KelGroups.Vote.VoteError.notProposer` | `signer == question.proposer` → `true` | KelGroups.Vote.Validate:76 | 3 |
 | `renounce-keeps-open` | `KelGroups.Vote.effectedState` |  | `assocErase questionId ` → `` | KelGroups.Vote.Fold:105 | 7 |
-| `renounce-discards-record` | `KelGroups.Vote.effectedState` |  | `{ questionId, question, verdict := .negative, cause := .renounced }` → `` | KelGroups.Vote.Fold:107 | 9 |
-| `renounce-closes-positive` | `KelGroups.Vote.effectedState` |  | `.negative` → `.positive` | KelGroups.Vote.Fold:107 | 6 |
-| `renounce-cause-tally` | `KelGroups.Vote.effectedState` |  | `.renounced` → `.tally` | KelGroups.Vote.Fold:107 | 6 |
+| `renounce-discards-record` | `KelGroups.Vote.effectedState` |  | `{ questionId, question, verdict := .negative, cause := .renounced }` → `` | KelGroups.Vote.Fold:107 | 13 |
+| `renounce-closes-positive` | `KelGroups.Vote.effectedState` |  | `.negative` → `.positive` | KelGroups.Vote.Fold:107 | 10 |
+| `renounce-cause-tally` | `KelGroups.Vote.effectedState` |  | `.renounced` → `.tally` | KelGroups.Vote.Fold:107 | 9 |
 | `closeProposer-keeps-open` | `KelGroups.Vote.closeProposerQuestions` |  | `gs.openQuestions.filter (fun entry => entry.2.proposer != proposer)` → `gs.openQuestions` | KelGroups.Vote.Fold:117 | 11 |
 | `closeProposer-records-all` | `KelGroups.Vote.closeProposerQuestions` |  | `entry.2.proposer == proposer` → `true` | KelGroups.Vote.Fold:119 | 15 |
-| `closeProposer-closes-positive` | `KelGroups.Vote.closeProposerQuestions` |  | `.negative` → `.positive` | KelGroups.Vote.Fold:121 | 10 |
-| `closeProposer-cause-tally` | `KelGroups.Vote.closeProposerQuestions` |  | `.proposerDeparted` → `.tally` | KelGroups.Vote.Fold:121 | 10 |
+| `closeProposer-closes-positive` | `KelGroups.Vote.closeProposerQuestions` |  | `.negative` → `.positive` | KelGroups.Vote.Fold:121 | 13 |
+| `closeProposer-cause-tally` | `KelGroups.Vote.closeProposerQuestions` |  | `.proposerDeparted` → `.tally` | KelGroups.Vote.Fold:121 | 13 |
 | `guard-approval-proposer-self` | `KelGroups.validateApproval` | `KelGroups.ValidationError.proposerSelfApproval` | `signer == pending.proposer && decide (1 < adminCount gs)` → `false` | KelGroups.Validate:130 | 2 |
 | `guard-approval-sole-admin-barred` | `KelGroups.validateApproval` | `KelGroups.ValidationError.proposerSelfApproval` | `1` → `0` | KelGroups.Validate:130 | 2 |
 | `guard-base-approval-proposer-self` | `KelGroups.validateBaseApproval` | `KelGroups.ValidationError.proposerSelfApproval` | `signer == pending.proposer && decide (1 < adminCount gs)` → `false` | KelGroups.Validate:180 | 1 |
 | `guard-base-approval-sole-admin-barred` | `KelGroups.validateBaseApproval` | `KelGroups.ValidationError.proposerSelfApproval` | `1` → `0` | KelGroups.Validate:180 | 5 |
 | `propose-auto-assent` | `KelGroups.applyProposeDetailed` |  | `` → `signer` | KelGroups.Fold:49 | 5 |
-| `base-propose-auto-assent` | `KelGroups.applyIntegratedEvent` |  | `` → `signer` | KelGroups.Integration:191 | 20 |
+| `base-propose-auto-assent` | `KelGroups.applyIntegratedEvent` |  | `` → `signer` | KelGroups.Integration:191 | 24 |
 
 ## Limits
 
