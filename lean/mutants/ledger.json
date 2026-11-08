@@ -854,6 +854,7 @@
         "emptyVoteState-has-question",
         "franchise-empty",
         "groupView-empty",
+        "holdsNegativeAuth-every-authorization",
         "isMember-negated",
         "lookupPendingBase-misses",
         "lookupQuestion-misses",
@@ -2151,9 +2152,10 @@
     },
     {
       "theorem": "Reactivegas.Composition.holdsNegativeAuth_iff",
-      "class": "OPEN",
-      "attempted": [],
-      "reason": ""
+      "class": "KILLED",
+      "killedBy": [
+        "holdsNegativeAuth-every-authorization"
+      ]
     },
     {
       "theorem": "Reactivegas.Composition.liveBacked_iff",

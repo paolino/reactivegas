@@ -25,12 +25,12 @@ change and fails when a claim here is not what Lean reports.
 | EXCLUDED (generated) | 532 | 1252 |
 | HELPER | 1 | 6 |
 | REQUIRED (authored − HELPER) | 183 | 442 |
-| KILLED | 85 | 244 |
-| OPEN | 98 | 198 |
+| KILLED | 85 | 245 |
+| OPEN | 98 | 197 |
 | refusal constructors SURVIVED | 5 | |
 | refusal constructors UNEMITTED | 0 | |
 
-KILLED / REQUIRED: 85 / 183 here, 244 / 442 over the whole ledger.
+KILLED / REQUIRED: 85 / 183 here, 245 / 442 over the whole ledger.
 
 ## Theorems
 

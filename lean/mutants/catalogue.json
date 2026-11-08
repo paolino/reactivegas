@@ -3265,6 +3265,21 @@
         "Reactivegas.Composition.runHolding_keeps_negative"
       ],
       "note": "the continuation no longer stops at a denyPermission for the collection"
+    },
+    {
+      "id": "holdsNegativeAuth-every-authorization",
+      "target": "Reactivegas.Composition.holdsNegativeAuth",
+      "guard": null,
+      "patch": {
+        "line": 519,
+        "before": "  s.live.any (fun a => decide (a.questionId = qid ∧ a.target = .permission c",
+        "after": "  s.live.all (fun a => decide (a.questionId = qid ∧ a.target = .permission c"
+      },
+      "claimedKills": [
+        "CompositionTests.l7c_predicate_on_mint_mutant",
+        "Reactivegas.Composition.holdsNegativeAuth_iff"
+      ],
+      "note": "the predicate asks that every unspent authorization, not some, be the negative one for the collection"
     }
   ]
 }
