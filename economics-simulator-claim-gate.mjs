@@ -120,19 +120,23 @@ const ACCEPTED_COMPOSITION = {
   module: 'lean/Reactivegas/Composition.lean',
 };
 
-/* Accepted #48 core pin: Event inventory is derived from the unique
+/* Accepted core pin: Event inventory is derived from the unique
    file in this freshness manifest — never from a parallel path constant,
    EVENT_ROUTES, TAG_CLAIMS, or EV. Pin-freshness compares each declared
    file's blob at the pin with its blob at HEAD. An empty, ambiguous, or
-   repointed files list is RED. */
+   repointed files list is RED. The pin is the merge of master (#68,
+   proposer is not an assent) into #76's Lean (89c78a7), the last commit
+   changing lean/Reactivegas or lean/KelGroups, whose vocabularies the
+   simulator follows. */
 const MANIFEST_EVENT_FILE = 'lean/Reactivegas/Types.lean';
 const ACCEPTED_CORE = {
-  commit: '1ff0d9fea040d8ca52590ba9bb24c4c24674a551',
-  tree: 'acea2b79cc17bf57e423e76817e7adf08828d359',
+  commit: '89c78a7b767de31cf9c2f1461a2784d1a4498edc',
+  tree: 'f51175d69ac72a32a698bd836560a1496d93f6e7',
   files: [MANIFEST_EVENT_FILE],
 };
 const DRIVER_IMPORTS = Object.freeze([
   'Reactivegas.Invariants',
+  'Reactivegas.CompositionRoot',
   'KelGroups.Invariants',
   'KelGroups.Validate',
   'KelGroups.Vote.Invariants',
@@ -419,12 +423,43 @@ function voteWitness(mod, tag) {
       holds: det => !voteOpen(det.gs.appFold.votes, 'q:w') &&
         JSON.stringify(det.gs.appFold.votes.closed) === JSON.stringify(
           [{ questionId: 'q:w', question: q, verdict: 'negative', cause: 'renounced' }]) };
+    // #76: the question opens with its signer as proposer and its target
+    // bound before any ballot; the same bind of an open question is refused
+    case 'openBound': {
+      const target = { backdonation: { w: 5 } };
+      return { gs: agg({ openQuestions: [], closed: [] }), signer: 'anna',
+        ev: { app: { openBound: { questionId: 'q:w', kind: 'collective', target } } },
+        holds: det => JSON.stringify(voteOpen(det.gs.appFold.votes, 'q:w')) === JSON.stringify(q) &&
+          JSON.stringify(det.gs.appFold.bindings) === JSON.stringify([['q:w', target]]),
+        without: { gs: withQ(), signer: 'anna',
+          ev: { app: { openBound: { questionId: 'q:w', kind: 'collective', target } } } } };
+    }
     default: return null;
   }
 }
 
+/* #76: the app-decided constructors spend one closure-derived authorization
+   naming their exact target under the verdict they need. Their witness first
+   mints it through the integrated root — anna opens a question bound to the
+   target, bruno's ballot closes it (two responsabili, θ = 1) — and the same
+   event on the state without that closure must be refused. */
+const APP_DECIDED_AUTH = {
+  grantPermission: a => ({ target: { permission: { c: a.c } }, verdict: 'positive' }),
+  denyPermission: a => ({ target: { permission: { c: a.c } }, verdict: 'negative' }),
+  backdonate: a => ({ target: { backdonation: { w: a.w } }, verdict: 'positive' }),
+};
+function mintedFor(mod, gs, { target, verdict }) {
+  const open = mod.applyIntegrated(clone(gs), 'anna',
+    { app: { openBound: { questionId: 'q:auth', kind: 'collective', target } } });
+  if (!open || open.refused) return null;
+  const shut = mod.applyIntegrated(open.gs, 'bruno', { app: { cast: { questionId: 'q:auth',
+    ballot: verdict === 'positive' ? 'assent' : 'dissent' } } });
+  return shut && !shut.refused ? shut.gs : null;
+}
+
 /* an economic AppEvent through the integrated app route lands exactly where
-   the legacy transition `attempt` lands on the same signed event */
+   the legacy transition `attempt` lands on the same signed event (an
+   app-decided one also spends its authorization, and only with it applies) */
 function economicAppWitness(mod, tag) {
   let w = validWitness(tag);
   if (!w && tag === 'backdonate') {
@@ -436,13 +471,20 @@ function economicAppWitness(mod, tag) {
   if (!w) return null;
   const [view, state, event] = w;
   const { tag: _t, author, ...args } = event;
-  return { gs: { members: view.members, pendingBase: [], appFold: clone(state) }, signer: author,
-    ev: { app: { [tag]: args } },
+  const plain = { members: view.members, pendingBase: [],
+    appFold: { ...clone(state), bindings: [], live: [] } };
+  const auth = APP_DECIDED_AUTH[tag] ? APP_DECIDED_AUTH[tag](args) : null;
+  const gs = auth ? mintedFor(mod, plain, auth) : plain;
+  if (!gs) return null;
+  return { gs, signer: author, ev: { app: { [tag]: args } },
     holds: det => {
       const direct = mod.attempt(view, clone(state), event);
       return !!direct && direct.ok === true &&
-        mod.canonState(det.gs.appFold) === mod.canonState(direct.state);
-    } };
+        mod.canonState(det.gs.appFold) === mod.canonState(direct.state) &&
+        (!auth || !(det.gs.appFold.live || []).some(a =>
+          JSON.stringify(a.target) === JSON.stringify(auth.target)));
+    },
+    without: auth ? { gs: plain, signer: author, ev: { app: { [tag]: args } } } : null };
 }
 
 function baseWitness(mod, tag) {
@@ -535,7 +577,12 @@ function checkVocabularyCoverage(mod, vocab, routed = ROUTED_VOCABULARIES,
         const det = mod.applyIntegrated(clone(w.gs), w.signer, w.ev);
         if (!det || det.refused) reasons.push(`${v.name} ${c}: live witness refused (${det && det.refused})`);
         else if (!w.holds(det)) reasons.push(`${v.name} ${c}: core handler does not produce the Lean effect`);
-        else witnessed++;
+        else if (w.without) {
+          const off = mod.applyIntegrated(clone(w.without.gs), w.without.signer, w.without.ev);
+          if (!off || !off.refused)
+            reasons.push(`${v.name} ${c}: applied without the closure-derived authorization Lean requires`);
+          else witnessed++;
+        } else witnessed++;
       } catch (e) { reasons.push(`${v.name} ${c}: live witness threw: ${e.message}`); }
     }
   }
@@ -623,17 +670,29 @@ async function checkMachineCoverage(corePath, repo = REPO) {
       reasons.push('donate: changed a member conto');
     if (common.length !== 1 || common[0][0] !== COMUNE || common[0][1] !== 90)
       reasons.push('donate: no unique reserved non-member comune conto at +90');
+    // #76: a backdonate pays only by spending the positive closure bound to
+    // its share, minted through the integrated root from the funded comune;
+    // the same backdonate with no such closure is refused
     try {
-      const back = mod.attempt(coverageView(), clone(after), { tag: 'backdonate', author: 'anna', w: 10 });
-      if (!back || back.ok !== true) reasons.push('backdonate: live witness refused');
+      const funded = { members: coverageView().members, pendingBase: [],
+        appFold: { ...clone(after), bindings: [], live: [] } };
+      const unclosed = mod.applyIntegrated(clone(funded), 'anna', { app: { backdonate: { w: 10 } } });
+      if (!unclosed || !unclosed.refused)
+        reasons.push('backdonate: applied with no closure bound to its share');
+      const minted = mintedFor(mod, funded, APP_DECIDED_AUTH.backdonate({ w: 10 }));
+      const back = minted && mod.applyIntegrated(clone(minted), 'anna', { app: { backdonate: { w: 10 } } });
+      if (!back || back.refused) reasons.push('backdonate: live witness refused');
       else {
+        const pre = minted.appFold, post = back.gs.appFold;
         for (const u of memberKeys0)
-          if (balOf(back.state.conti, u) - balOf(after.conti, u) !== 10)
+          if (balOf(post.conti, u) - balOf(pre.conti, u) !== 10)
             reasons.push(`backdonate: member ${u} did not receive exactly +10`);
-        if (balOf(back.state.conti, COMUNE) - balOf(after.conti, COMUNE) !== -30)
+        if (balOf(post.conti, COMUNE) - balOf(pre.conti, COMUNE) !== -30)
           reasons.push('backdonate: comune delta is not -(member-count * share)');
-        if (JSON.stringify(back.state.casse) !== JSON.stringify(after.casse))
+        if (JSON.stringify(post.casse) !== JSON.stringify(pre.casse))
           reasons.push('backdonate: changed casse');
+        if ((post.live || []).some(a => 'backdonation' in a.target))
+          reasons.push('backdonate: its closure was not spent');
       }
     } catch (e) { reasons.push(`backdonate: live witness threw: ${e.message}`); }
   } else if (donated && donated.ok !== true) {

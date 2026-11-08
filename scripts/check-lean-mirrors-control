@@ -22,6 +22,8 @@
 #                    must fail through Lean's duplicate-declaration import error
 #                    naming the new root module (every exe root declares `main`,
 #                    and the driver shares one environment with corpusExport's).
+#   exception-deleted the `Reactivegas.ProductionHistory` exception is removed
+#                    from the checker: it must report that predicate uncovered.
 #
 # Legs other than reach must not report a reach gap. A checker disabled to exit 0
 # fails every leg. Exit 0 with MIRROR-CONTROL-OK iff every leg holds.
@@ -152,6 +154,17 @@ new_leg second-exe
 printf '\nlean_exe reachControlExe where\n  root := `ReachControlExe\n' >> "$LEG_DIR/lean/lakefile.lean"
 printf 'def main : IO Unit := pure ()\n' > "$LEG_DIR/lean/ReachControlExe.lean"
 run_leg second-exe "import $(module_of lean/ReachControlExe.lean) failed, environment already contains 'main'"
+
+# exception-deleted
+new_leg exception-deleted
+sed -i -e 's/"Reach",$/"Reach"]/' -e '/^    "Reactivegas\.ProductionHistory"\]$/d' "$LEG_DIR/scripts/check-lean-mirrors"
+if grep -q '"Reactivegas\.ProductionHistory"' "$LEG_DIR/scripts/check-lean-mirrors" \
+    || cmp -s "$BASE/scripts/check-lean-mirrors" "$LEG_DIR/scripts/check-lean-mirrors"; then
+  printf 'MIRROR-CONTROL-FAILED exception-deleted: mutation did not apply\n' >&2
+  failed=1
+else
+  run_leg exception-deleted 'MIRROR-UNCOVERED .*Reactivegas\.ProductionHistory'
+fi
 
 if [ "$failed" -ne 0 ]; then
   echo 'MIRROR-CONTROL-FAILED' >&2
