@@ -16,4 +16,4 @@
 - [x] T309 Merge origin/master (2bd9a20: #81 V-5 lifecycle and S-12 refusals, #92 lake-root reach) and re-derive census, catalogue, ledger and renderings so R-1…R-15 hold on the merged tree
 - [x] T310 Merge origin/master (48a2f95: #70 simulator, `TraceDriverV1`/`KelTraceDriverV1` Lean libraries, `just simulator` CI step) and re-derive the ledger so R-1…R-15 hold on the merged tree
 - [x] T311 Merge origin/master (f0ef076: #68 proposer assent) and re-derive the ledger so R-1…R-15 hold on the merged tree
-- [ ] T312 Merge origin/master (17d6a7a: #76 vote closures bind economic effects, `CompositionRoot`/`CompositionTests`; #100 CI runner first step) and re-derive the ledger so R-1…R-15 hold on the merged tree, with the Lean mutant ledger job green inside its 120-minute timeout
+- [x] T312 Merge origin/master (17d6a7a: #76 vote closures bind economic effects, `CompositionRoot`/`CompositionTests`; #100 CI runner first step) and re-derive the ledger so R-1…R-15 hold on the merged tree, with the Lean mutant ledger job green inside its 120-minute timeout
