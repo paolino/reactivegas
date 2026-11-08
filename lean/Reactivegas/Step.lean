@@ -35,9 +35,11 @@ def isResponsabile (view : KelGroups.GroupView) (u : KelGroups.Key) : Bool :=
 def memberKeys (view : KelGroups.GroupView) : List KelGroups.Key :=
   view.members.map Prod.fst
 
-/-- Caller-supplied backdonation authorization. The #47 true/false policy
-is not chosen here; production `appFold` and `stepEvent` take this as an
-explicit argument so neither definition chooses the product policy. -/
+/-- Caller-supplied backdonation veto: a guard of the economic core's
+`backdonate`, alongside the signer, share and funds guards. It authorizes
+nothing. In the production root a backdonation is authorized only by spending a
+closure-derived authorization bound to that exact share `w`; this callback is
+consulted after it, can only refuse, and supplies neither provenance nor `w`. -/
 abbrev BackdonateAuth := State → Int → Bool
 
 /-- The rejecting transition of the integrated economic machine. -/
@@ -140,10 +142,12 @@ def step (view : KelGroups.GroupView) (s : State) (signer : KelGroups.Key)
   | .openQuestion _ _ => none
   | .cast _ _ => none
   | .renounce _ => none
+  | .openBound _ _ _ => none
 
 /-- Event-shaped wrapper used by inherited #45/#48 theorems. The fourteen
-surviving economic constructors delegate to `step`. Authorization is an
-explicit caller-supplied argument. -/
+surviving economic constructors delegate to `step`, the economic core: it
+carries no closure-derived authorization, which only the production root
+`Reactivegas.apply` adds. -/
 def stepEvent (view : KelGroups.GroupView) (s : State) (e : Event)
     (auth : BackdonateAuth) : Option State :=
   let go (signer : KelGroups.Key) (app : AppEvent) : Option State :=
@@ -166,70 +170,138 @@ def stepEvent (view : KelGroups.GroupView) (s : State) (e : Event)
 
 namespace Reactivegas
 
+/-! ## Closure-derived economic authorization (#76)
+
+`grantPermission`, `denyPermission` and `backdonate` are app-decided. In the
+production root each one spends an unspent `LiveAuth` naming its exact target
+under the verdict it needs, atomically with its economic effect, and is refused
+without one. A `LiveAuth` exists only because this root's vote step closed a
+question opened with `openBound`, whose target the proposer fixed at opening,
+before any ballot. The economic core `step` holds no authorization of its own
+beyond the signer guards: it is the effect layer, and the frozen economic corpus
+replays it unchanged.
+-/
+
+/-- Map the economic core's refusal onto the integrated rejection. -/
+def ofOption : Option State → Except StepError State
+  | some s => .ok s
+  | none => .error StepError.rejected
+
+/-- Spend one unspent authorization for `target` under `verdict`, then run
+`effect` on the remainder; refuse, changing nothing, unless both succeed. -/
+def spendThen (target : EconomicTarget) (verdict : KelGroups.Vote.Verdict)
+    (s : State) (effect : State → Option State) : Except StepError State :=
+  match pullLive target verdict s.live with
+  | none => .error StepError.rejected
+  | some (_, rest) =>
+      match effect { s with live := rest } with
+      | some s' => .ok s'
+      | none => .error StepError.rejected
+
+/-- **Negative permission continuation.** Spend a negative authorization for
+collection `c` and dissolve `c`, refunding every accepted and pending pledge to
+its owner. Every negative closure of a question bound to `c` mints that
+authorization, whatever its cause — tally, franchise change, renounce, or the
+proposer's departure — so this is the one interface for all of them. It reads
+no signer: the production root adds the responsabile guard, and a signer-free
+caller can use it as it is. -/
+def denyByClosure (s : State) (c : CollId) : Option State :=
+  match pullLive (.permission c) .negative s.live with
+  | none => none
+  | some (_, rest) =>
+      match pullCollection c s.collections with
+      | none => none
+      | some (col, cs) =>
+          some { s with
+            live := rest
+            conti := refundAll s.conti (col.accepted ++ col.pending)
+            collections := cs }
+
+/-- Can `qid` be opened bound to `target`? A fresh id — neither open nor ever
+closed — and, for permission, a present collection. -/
+def bindable (s : State) (qid : KelGroups.Vote.QuestionId)
+    (target : EconomicTarget) : Bool :=
+  (KelGroups.Vote.lookupQuestion qid s.votes).isNone
+    && !(s.votes.closed.any (fun r => r.questionId == qid))
+    && match target with
+      | .permission c => s.collections.any (fun col => col.id == c)
+      | .backdonation w => decide (0 < w)
+
+/-- Install a vote step's payload, minting one authorization for every question
+it closed that was opened bound — carrying the record's own id and verdict and
+the bound target — and dropping the bindings of questions no longer open. -/
+def syncAuth (s : State) (votes : KelGroups.Vote.VoteState) : State :=
+  let fresh := votes.closed.filter
+    (fun r => !(s.votes.closed.any (fun p => p.questionId == r.questionId)))
+  let minted := fresh.filterMap (fun r =>
+    (List.lookup r.questionId s.bindings).map
+      (fun target => { questionId := r.questionId, target, verdict := r.verdict }))
+  { s with
+    votes
+    bindings := s.bindings.filter
+      (fun b => (KelGroups.Vote.lookupQuestion b.1 votes).isSome)
+    live := s.live ++ minted }
+
+/-- A permission target stands while its collection is present; a share
+always stands. -/
+def targetPresent (s : State) : EconomicTarget → Bool
+  | .permission c => s.collections.any (fun col => col.id == c)
+  | .backdonation _ => true
+
+/-- Drop bindings and authorizations whose collection has left, so a reused
+collection id never inherits them. -/
+def pruneAuth (s : State) : State :=
+  { s with
+    bindings := s.bindings.filter (fun b => targetPresent s b.2)
+    live := s.live.filter (fun a => targetPresent s a.target) }
+
 /-- Apply a vote event to an integrated payload under the canonical view.
 Exactly one validation decision: `applyVoteEventChecked`. Refusal is
-`Except.error`, not payload identity. -/
+`Except.error`, not payload identity. Closures of bound questions mint their
+authorizations here. -/
 def voteApply (θ : KelGroups.Vote.Threshold) (view : KelGroups.GroupView)
     (s : State) (signer : KelGroups.Key) (ev : KelGroups.Vote.VoteEvent) :
     Except StepError State :=
   match KelGroups.Vote.applyVoteEventChecked θ view s.votes signer ev with
   | .error _ => .error StepError.rejected
-  | .ok votes => .ok { s with votes }
+  | .ok votes => .ok (syncAuth s votes)
 
-/-- The integrated app fold: payload or rejection, never a group.
-Vote constructors run `voteApply`; economic constructors run `step`. -/
-def appFold (θ : KelGroups.Vote.Threshold) (auth : BackdonateAuth) :
+/-- The app fold before authorization pruning. Vote constructors run
+`voteApply`; the three app-decided constructors spend a closure-derived
+authorization; every other economic constructor runs `step`. -/
+def appFoldCore (θ : KelGroups.Vote.Threshold) (auth : BackdonateAuth) :
     KelGroups.IntegratedAppFold State AppEvent StepError :=
   fun signer pre _post s e =>
     match e with
-    | .openQuestion qid kind =>
-        voteApply θ pre s signer (.openQuestion qid kind)
-    | .cast qid ballot =>
-        voteApply θ pre s signer (.cast qid ballot)
-    | .renounce qid =>
-        voteApply θ pre s signer (.renounce qid)
-    | .openPurchase c =>
-        match step pre s signer (.openPurchase c) auth with
-        | some s' => .ok s' | none => .error StepError.rejected
+    | .openQuestion qid kind => voteApply θ pre s signer (.openQuestion qid kind)
+    | .cast qid ballot => voteApply θ pre s signer (.cast qid ballot)
+    | .renounce qid => voteApply θ pre s signer (.renounce qid)
+    | .openBound qid kind target =>
+        if bindable s qid target then
+          voteApply θ pre { s with bindings := (qid, target) :: s.bindings } signer
+            (.openQuestion qid kind)
+        else .error StepError.rejected
     | .grantPermission c =>
-        match step pre s signer (.grantPermission c) auth with
-        | some s' => .ok s' | none => .error StepError.rejected
+        spendThen (.permission c) .positive s
+          (fun s₁ => step pre s₁ signer (.grantPermission c) auth)
     | .denyPermission c =>
-        match step pre s signer (.denyPermission c) auth with
-        | some s' => .ok s' | none => .error StepError.rejected
-    | .deposit u v =>
-        match step pre s signer (.deposit u v) auth with
-        | some s' => .ok s' | none => .error StepError.rejected
-    | .withdraw u v =>
-        match step pre s signer (.withdraw u v) auth with
-        | some s' => .ok s' | none => .error StepError.rejected
-    | .transferCassa f v =>
-        match step pre s signer (.transferCassa f v) auth with
-        | some s' => .ok s' | none => .error StepError.rejected
-    | .donate v =>
-        match step pre s signer (.donate v) auth with
-        | some s' => .ok s' | none => .error StepError.rejected
+        if isResponsabile pre signer then ofOption (denyByClosure s c)
+        else .error StepError.rejected
     | .backdonate w =>
-        match step pre s signer (.backdonate w) auth with
-        | some s' => .ok s' | none => .error StepError.rejected
-    | .pledge u c v =>
-        match step pre s signer (.pledge u c v) auth with
-        | some s' => .ok s' | none => .error StepError.rejected
-    | .acceptPledge u c =>
-        match step pre s signer (.acceptPledge u c) auth with
-        | some s' => .ok s' | none => .error StepError.rejected
-    | .refusePledge u c =>
-        match step pre s signer (.refusePledge u c) auth with
-        | some s' => .ok s' | none => .error StepError.rejected
-    | .correctPledge u c v' =>
-        match step pre s signer (.correctPledge u c v') auth with
-        | some s' => .ok s' | none => .error StepError.rejected
-    | .closePurchase c =>
-        match step pre s signer (.closePurchase c) auth with
-        | some s' => .ok s' | none => .error StepError.rejected
-    | .failPurchase c =>
-        match step pre s signer (.failPurchase c) auth with
-        | some s' => .ok s' | none => .error StepError.rejected
+        spendThen (.backdonation w) .positive s
+          (fun s₁ => step pre s₁ signer (.backdonate w) auth)
+    | .openPurchase _ | .deposit _ _ | .withdraw _ _ | .transferCassa _ _
+    | .donate _ | .pledge _ _ _ | .acceptPledge _ _ | .refusePledge _ _
+    | .correctPledge _ _ _ | .closePurchase _ | .failPurchase _ =>
+        ofOption (step pre s signer e auth)
+
+/-- The integrated app fold: payload or rejection, never a group. -/
+def appFold (θ : KelGroups.Vote.Threshold) (auth : BackdonateAuth) :
+    KelGroups.IntegratedAppFold State AppEvent StepError :=
+  fun signer pre post s e =>
+    match appFoldCore θ auth signer pre post s e with
+    | .ok s' => .ok (pruneAuth s')
+    | .error err => .error err
 
 /-! ## The sealed base hook (T6223, R62-09, R62-10)
 
@@ -294,7 +366,11 @@ because the electorate changed and no ballot was cast (V-3, R62-11).
 The recomputation reads `s.votes`, the pre-transition payload, because
 `economicCleanup` never touches the vote payload — writing it this way makes
 that independence visible rather than incidental. Sweeping twice at one view
-cannot duplicate a closure: `KelGroups.Vote.sweepClosures_idempotent`. -/
+cannot duplicate a closure: `KelGroups.Vote.sweepClosures_idempotent`.
+
+Closures of bound questions — by the departing proposer's own closure or by
+the sweep — mint their authorizations here, exactly as in `voteApply`, and a
+collection the cleanup dissolved takes its authorizations with it. -/
 def baseHook (θ : KelGroups.Vote.Threshold) : KelGroups.BaseHook State StepError :=
   fun change pre post s =>
     match economicCleanup change pre post s with
@@ -305,7 +381,7 @@ def baseHook (θ : KelGroups.Vote.Threshold) : KelGroups.BaseHook State StepErro
           | .memberAdmitted _ => s.votes
           | .memberRemoved key => KelGroups.Vote.closeProposerQuestions key s.votes
           | .rolesChanged _ => s.votes
-        .ok { cleaned with votes := KelGroups.Vote.sweepClosures θ post departed }
+        .ok (pruneAuth (syncAuth cleaned (KelGroups.Vote.sweepClosures θ post departed)))
 
 /-! ## The restricted Reactivegas base proposal (T6221) -/
 
@@ -362,13 +438,19 @@ boundary of the S62-A production root. -/
 def productionWellFormed (gs : KelGroups.GroupState State) : Bool :=
   !KelGroups.GroupView.isMember comuneId (KelGroups.groupView gs)
 
+/-- A founding payload holds no closure record, no binding and no
+authorization: every one a production history holds, its own vote fold
+produced. -/
+def cleanOrigin (payload : State) : Bool :=
+  payload.votes.closed.isEmpty && payload.bindings.isEmpty && payload.live.isEmpty
+
 /-- Guarded founding aggregate. `none` when `comuneId` appears in the
-supplied member list. -/
+supplied member list, or when the payload is not a clean origin. -/
 def boot (members : List (KelGroups.Key × KelGroups.Member))
     (payload : State) : Option (KelGroups.GroupState State) :=
   let gs : KelGroups.GroupState State :=
     { members, pendingProposals := [], pendingBase := [], appFold := payload }
-  if productionWellFormed gs then some gs else none
+  if productionWellFormed gs && cleanOrigin payload then some gs else none
 
 inductive ProductionError where
   | comuneReserved
@@ -390,6 +472,21 @@ def apply (θ : KelGroups.Vote.Threshold) (auth : BackdonateAuth)
         else .error ProductionError.comuneReserved
     | .error err => .error (ProductionError.integrated err)
   else .error ProductionError.comuneReserved
+
+/-- A production history: a guarded boot, then successful calls of the
+production root. Provenance is a property of these aggregates; one built any
+other way — say, carrying a planted authorization — is not one. -/
+inductive ProductionHistory (θ : KelGroups.Vote.Threshold) (auth : BackdonateAuth) :
+    KelGroups.GroupState State → Prop where
+  | boot (members : List (KelGroups.Key × KelGroups.Member)) (payload : State)
+      {gs : KelGroups.GroupState State}
+      (hboot : Reactivegas.boot members payload = some gs) :
+      ProductionHistory θ auth gs
+  | apply {gs : KelGroups.GroupState State} (prior : ProductionHistory θ auth gs)
+      (signer : KelGroups.Key) (event : KelGroups.IntegratedEvent Proposal AppEvent)
+      {result : KelGroups.IntegratedResult State}
+      (happly : Reactivegas.apply θ auth gs signer event = .ok result) :
+      ProductionHistory θ auth result.state
 
 /-! ## Rooted S62-A production witnesses (lake-built; full CI elaborates them) -/
 

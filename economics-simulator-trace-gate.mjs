@@ -23,7 +23,22 @@
  *      fresh envelope (refused steps admitted) through the production verifier
  *      up to its first witness step; a row without a witness, or one the page
  *      does not reach, is RED;
- *   8. prints counts, the fresh sha, the row witnesses, and GREEN only after
+ *   8. recognises, the same way, every #76 row of closure-derived economic
+ *      authorization (ROWS76: a bound opening, a minted authorization, a
+ *      grant, a deny and a voted backdonation each spending one, and the
+ *      refused unbound grant, spent closure, bind by a non-proposer, second
+ *      bind by the proposer before any ballot, bind after a ballot, bind of a closed question, backdonations with no
+ *      closure, a negative closure, a closure bound to another share and a
+ *      spent closure, and a grant and a deny each refused while only a
+ *      closure of the opposite verdict for their collection and one of
+ *      their verdict for another target are live) and judges each by the
+ *      same replay;
+ *   8b. recognises, the same way, the #68 rows (ROWS68: above one admin a
+ *      proposal enters pending with no assent, the proposer's own approval is
+ *      refused, a non-proposer approval short of the majority stays pending,
+ *      an enactment is reached by non-proposer approvals only) and judges
+ *      each at its own witness step, as the #76 rows;
+ *   9. prints counts, the fresh sha, the row witnesses, and GREEN only after
  *      Lean regeneration equivalence, production-JS replay and every row
  *      succeed.
  *
@@ -38,7 +53,14 @@
  * renounce left open, departure closure dropped, closed positive, recorded
  * .tally, records discarded, every question closed, post-departure sweep
  * dropped, unrelated questions touched, non-proposer renounce and
- * non-designee ballot accepted), each RED on its row — then production GREEN.
+ * non-designee ballot accepted), each RED on its row, and one per #76 row
+ * (binding dropped, nothing minted, closure not spent, deny reading the
+ * positive verdict, unbound grant applied, bind of an open or a closed
+ * question accepted), each RED on its row, and one per #68 row (proposer
+ * counted at creation, proposer self-approval accepted, threshold counting
+ * the proposer, majority not enough to enact), each RED on its row — every
+ * #76 and #68 one but the spent-closure rows at its own witness step, judged alone on Lean's recorded input — then
+ * production GREEN.
  * Temporary artifacts live in a fresh mkdtemp directory; the repo stays clean.
  */
 
@@ -195,16 +217,245 @@ const ROWS81_INTEGRATED = {
   },
 };
 
-function judgeRows81(fresh, RG) {
+/* #76 closure-derived economic authorization in the fresh Lean corpus, by
+   the same method: a row is recognised by what the integrated step did to
+   the payload's `bindings` and `live` (absent = empty, as Lean's encoder
+   omits them), never by a seed name or an index; a refusal row is single
+   fault — every economic guard but the authorization holds at its input. */
+const iPay = agg => agg.payload;
+const iBindings = agg => iPay(agg).bindings || [];
+const iLive = agg => iPay(agg).live || [];
+const iCol = (agg, c) => iPay(agg).collections.find(x => x.id === c) || null;
+const permT = c => ({ permission: { c } });
+const backT = w => ({ backdonation: { w } });
+const comuneOf = agg => (iPay(agg).conti.find(([k]) => k === 'comune') || [null, 0])[1];
+const liveCount = (agg, target, verdict) =>
+  iLive(agg).filter(a => ijson(a.target) === ijson(target) && a.verdict === verdict).length;
+const targetValid = (agg, t) => 'permission' in t ? !!iCol(agg, t.permission.c) : t.backdonation.w > 0;
+const iApplied = st => st.result.tag === 'applied';
+const earlierGrant = (steps, i, c) => steps.slice(0, i).some(p => iApplied(p) &&
+  (iApp(p, 'grantPermission') || {}).c === c);
+function iBindRefused(st) {
+  const ev = iApp(st, 'openBound');
+  if (!ev || !iAppRefused(st) || !iIsResp(st.input, st.signer) || !targetValid(st.input, ev.target))
+    return null;
+  return { ev, q: iOpen(iVotes(st.input), ev.questionId),
+    closed: iVotes(st.input).closed.some(r => r.questionId === ev.questionId) };
+}
+const earlierBackdonate = (steps, i, w) => steps.slice(0, i).some(p => iApplied(p) &&
+  (iApp(p, 'backdonate') || {}).w === w);
+/* a refused backdonate whose economic guards all hold — responsabile signer,
+   positive share, a comune covering every member — and no positive closure
+   bound to its share is live */
+function iBackdonateRefused(st) {
+  const ev = iApp(st, 'backdonate');
+  if (!ev || !iAppRefused(st) || !iIsResp(st.input, st.signer) || !(ev.w > 0) ||
+      comuneOf(st.input) < st.input.members.length * ev.w ||
+      liveCount(st.input, backT(ev.w), 'positive') !== 0) return null;
+  return ev;
+}
+function iDenyRefused(st) {
+  const ev = iApp(st, 'denyPermission');
+  if (!ev || !iAppRefused(st) || !iCol(st.input, ev.c) || !iIsResp(st.input, st.signer) ||
+      liveCount(st.input, permT(ev.c), 'negative') !== 0) return null;
+  return ev;
+}
+/* a live closure under `verdict` for a target other than `target` */
+const liveElsewhere = (agg, target, verdict) =>
+  iLive(agg).some(a => a.verdict === verdict && ijson(a.target) !== ijson(target));
+function iGrantRefused(st) {
+  const ev = iApp(st, 'grantPermission');
+  if (!ev || !iAppRefused(st) || !iCol(st.input, ev.c) || !iIsResp(st.input, st.signer) ||
+      liveCount(st.input, permT(ev.c), 'positive') !== 0) return null;
+  return ev;
+}
+
+const ROWS76_INTEGRATED = {
+  'bind': st => {
+    const ev = iApp(st, 'openBound');
+    if (!ev || !iApplied(st)) return false;
+    const has = agg => iBindings(agg).some(([q, t]) => q === ev.questionId && ijson(t) === ijson(ev.target));
+    return !has(st.input) && has(st.result.aggregate) &&
+      iOpen(iVotes(st.result.aggregate), ev.questionId).proposer === st.signer;
+  },
+  'mint': st => {
+    if (!iApplied(st)) return false;
+    const pre = iVotes(st.input), post = iVotes(st.result.aggregate);
+    const added = post.closed.slice(pre.closed.length);
+    const was = new Set(iLive(st.input).map(ijson));
+    return iLive(st.result.aggregate).some(a => !was.has(ijson(a)) &&
+      added.some(r => r.questionId === a.questionId && r.verdict === a.verdict) &&
+      iBindings(st.input).some(([q, t]) => q === a.questionId && ijson(t) === ijson(a.target)));
+  },
+  'spend-grant': st => {
+    const ev = iApp(st, 'grantPermission');
+    return !!ev && iApplied(st) && iCol(st.result.aggregate, ev.c).permitted &&
+      liveCount(st.input, permT(ev.c), 'positive') ===
+        liveCount(st.result.aggregate, permT(ev.c), 'positive') + 1;
+  },
+  'spend-deny': st => {
+    const ev = iApp(st, 'denyPermission');
+    return !!ev && iApplied(st) && !!iCol(st.input, ev.c) && !iCol(st.result.aggregate, ev.c) &&
+      liveCount(st.input, permT(ev.c), 'negative') === 1 &&
+      liveCount(st.result.aggregate, permT(ev.c), 'negative') === 0;
+  },
+  'spend-backdonate': st => {
+    const ev = iApp(st, 'backdonate');
+    return !!ev && iApplied(st) && liveCount(st.input, backT(ev.w), 'positive') ===
+      liveCount(st.result.aggregate, backT(ev.w), 'positive') + 1 &&
+      comuneOf(st.input) - comuneOf(st.result.aggregate) === st.input.members.length * ev.w;
+  },
+  'refuse-unbound': (st, i, steps) => {
+    const ev = iGrantRefused(st);
+    return !!ev && !earlierGrant(steps, i, ev.c) &&
+      iVotes(st.input).closed.some(r => r.verdict === 'positive');
+  },
+  'refuse-spent': (st, i, steps) => {
+    const ev = iGrantRefused(st);
+    return !!ev && earlierGrant(steps, i, ev.c);
+  },
+  'refuse-grant-opposite': st => {
+    const ev = iGrantRefused(st);
+    return !!ev && liveCount(st.input, permT(ev.c), 'negative') > 0;
+  },
+  'refuse-grant-other-target': st => {
+    const ev = iGrantRefused(st);
+    return !!ev && liveElsewhere(st.input, permT(ev.c), 'positive');
+  },
+  'refuse-deny-opposite': st => {
+    const ev = iDenyRefused(st);
+    return !!ev && liveCount(st.input, permT(ev.c), 'positive') > 0;
+  },
+  'refuse-deny-other-target': st => {
+    const ev = iDenyRefused(st);
+    return !!ev && liveElsewhere(st.input, permT(ev.c), 'negative');
+  },
+  'refuse-bind-other': st => {
+    const r = iBindRefused(st);
+    return !!r && !!r.q && r.q.proposer !== st.signer;
+  },
+  'refuse-bind-second': st => {
+    const r = iBindRefused(st);
+    return !!r && !!r.q && r.q.proposer === st.signer &&
+      r.q.assents.length + r.q.dissents.length === 0;
+  },
+  'refuse-bind-balloted': st => {
+    const r = iBindRefused(st);
+    return !!r && !!r.q && r.q.proposer === st.signer &&
+      r.q.assents.length + r.q.dissents.length > 0;
+  },
+  'refuse-bind-closed': st => {
+    const r = iBindRefused(st);
+    return !!r && !r.q && r.closed;
+  },
+  'refuse-backdonate-unclosed': (st, i, steps) => {
+    const ev = iBackdonateRefused(st);
+    return !!ev && !earlierBackdonate(steps, i, ev.w) &&
+      !iLive(st.input).some(a => ijson(a.target) === ijson(backT(ev.w)));
+  },
+  'refuse-backdonate-negative': st => {
+    const ev = iBackdonateRefused(st);
+    return !!ev && liveCount(st.input, backT(ev.w), 'negative') > 0;
+  },
+  'refuse-backdonate-other-w': st => {
+    const ev = iBackdonateRefused(st);
+    return !!ev && iLive(st.input).some(a => 'backdonation' in a.target &&
+      a.target.backdonation.w !== ev.w && a.verdict === 'positive');
+  },
+  'refuse-backdonate-spent': (st, i, steps) => {
+    const ev = iBackdonateRefused(st);
+    return !!ev && earlierBackdonate(steps, i, ev.w);
+  },
+};
+
+/* #68 proposer is not an assent, recognised the same way in the fresh Lean
+   corpus by what the base step did, above one admin (the sole founder still
+   approves her own first proposal): a proposal enters pending with no
+   assent, the proposer's own approval is refused (single fault: an admin
+   signer, a pending proposal, no prior assent of the signer), a
+   non-proposer's approval short of the majority leaves the proposal pending
+   (the only step where a fault that enacts too early is observable), and an
+   enactment is reached by approvals none of which is the proposer's. Each
+   is judged at its own witness step, as the #76 rows. */
+const iAdmins = agg => agg.members.filter(([, m]) => m.roles.some(r => 'adminRole' in r)).length;
+const iPending = (agg, pid) => ((agg.pendingBase || []).find(([k]) => k === pid) || [])[1] || null;
+const iDigest = p => 'departure' in p ? 'depart:' + p.departure : 'roles:' + p.changeRoles.key;
+
+const ROWS68_INTEGRATED = {
+  'propose-no-assent': st => {
+    const ev = st.event.propose;
+    if (!ev || !iApplied(st) || iAdmins(st.input) < 2) return false;
+    const pend = iPending(st.result.aggregate, iDigest(ev.proposal));
+    return !!pend && pend.proposer === st.signer && pend.approvals.length === 0;
+  },
+  'refuse-proposer-self-approval': st => {
+    const ev = st.event.approve;
+    if (!ev || st.result.tag !== 'refused' || iAdmins(st.input) < 2 || !iIsResp(st.input, st.signer))
+      return false;
+    const pend = iPending(st.input, ev.proposalId);
+    return !!pend && pend.proposer === st.signer && !pend.approvals.includes(st.signer);
+  },
+  'pending-non-proposer': st => {
+    const ev = st.event.approve;
+    if (!ev || !iApplied(st) || st.result.change || iAdmins(st.input) < 2) return false;
+    const pend = iPending(st.result.aggregate, ev.proposalId);
+    return !!pend && pend.approvals.includes(st.signer) && !pend.approvals.includes(pend.proposer);
+  },
+  'enact-non-proposer': st => {
+    const ev = st.event.approve;
+    if (!ev || !iApplied(st) || !st.result.change || iAdmins(st.input) < 2) return false;
+    const pend = iPending(st.input, ev.proposalId);
+    return !!pend && !iPending(st.result.aggregate, ev.proposalId) &&
+      ![...pend.approvals, st.signer].includes(pend.proposer);
+  },
+};
+
+/* the witness step alone: the page's transition, applied to the input Lean
+   recorded for it, must reach the recorded outcome — refused, or applied
+   with exactly the recorded aggregate. A behaviour broken at that step is
+   RED there even when an earlier step would already diverge. */
+/* Lean records a pending base entry as { mutation, proposer, approvals },
+   the BaseMutation constructor in its encoder's shape; the page keeps
+   { proposal, proposer, approvals } with the proposal in its event shape.
+   Any other constructor is refused here rather than guessed. */
+function leanPendingAsPage([pid, pp]) {
+  const m = pp.mutation;
+  const proposal = m && 'removeMember' in m ? { departure: m.removeMember.key }
+    : m && 'changeRoles' in m ? { changeRoles: m.changeRoles }
+    : null;
+  if (!proposal) throw new Error('mutazione pendente non riconosciuta: ' + ijson(m));
+  return [pid, { proposal, proposer: pp.proposer, approvals: pp.approvals }];
+}
+function localOutcome(st, RG) {
+  const asGs = agg => ({ ...agg, appFold: agg.payload,
+    pendingBase: (agg.pendingBase || []).map(leanPendingAsPage) });
+  const det = RG.applyIntegrated(JSON.parse(ijson(asGs(st.input))), st.signer, st.event);
+  if (st.result.tag === 'refused')
+    return det.refused ? null : 'applicato dove Lean rifiuta';
+  if (det.refused) return 'rifiutato (' + det.refused + ') dove Lean applica';
+  return RG.canonAggregate(det.gs) === RG.canonAggregate(asGs(st.result.aggregate))
+    ? null : 'post-aggregato diverso da Lean';
+}
+
+function judgeRows(rows, fresh, RG, opts = {}) {
   const out = [];
-  for (const [row, isWitness] of Object.entries(ROWS81_INTEGRATED)) {
+  for (const [row, isWitness] of Object.entries(rows)) {
     let hit = null;
     for (const n of Object.keys(fresh)) {
-      const i = fresh[n].steps.findIndex(st => { try { return isWitness(st); } catch { return false; } });
+      const steps = fresh[n].steps;
+      const i = steps.findIndex((st, k) => { try { return isWitness(st, k, steps); } catch { return false; } });
       if (i >= 0) { hit = { n, i }; break; }
     }
     if (!hit) { out.push({ row, ok: false, why: 'nessun passo testimone nel corpus Lean fresco' }); continue; }
     const env = fresh[hit.n];
+    if (opts.local) {
+      let why;
+      try { why = localOutcome(env.steps[hit.i], RG); } catch (e) { why = 'eccezione: ' + e.message; }
+      if (why) {
+        out.push({ row, ok: false, at: `${hit.n}#${hit.i}`, why: 'il passo da solo: ' + why });
+        continue;
+      }
+    }
     try {
       RG.verifyTraceV1({ ...env, steps: env.steps.slice(0, hit.i + 1) }, { withRefusals: true });
       out.push({ row, ok: true, at: `${hit.n}#${hit.i}` });
@@ -304,13 +555,20 @@ function runGate(opts) {
     reasons.push('replay JS di produzione sul corpus fresco ROSSO: ' + e.message);
   }
 
-  const rows81 = judgeRows81(fresh, prod.RG);
+  const rows81 = judgeRows(ROWS81_INTEGRATED, fresh, prod.RG);
   for (const r of rows81)
     if (!r.ok) reasons.push(`riga #81 ${r.row}${r.at ? ' @' + r.at : ''} ROSSA: ${r.why}`);
+  const rows76 = judgeRows(ROWS76_INTEGRATED, fresh, prod.RG, { local: true });
+  for (const r of rows76)
+    if (!r.ok) reasons.push(`riga #76 ${r.row}${r.at ? ' @' + r.at : ''} ROSSA: ${r.why}`);
 
-  if (reasons.length) return { ok: false, reasons, rows81 };
+  const rows68 = judgeRows(ROWS68_INTEGRATED, fresh, prod.RG, { local: true });
+  for (const r of rows68)
+    if (!r.ok) reasons.push(`riga #68 ${r.row}${r.at ? ' @' + r.at : ''} ROSSA: ${r.why}`);
+
+  if (reasons.length) return { ok: false, reasons, rows81, rows76, rows68 };
   return { ok: true, envelopes: freshNames.length, embSteps, freshSteps,
-    freshSha, scriptSha: prod.scriptSha, rows81 };
+    freshSha, scriptSha: prod.scriptSha, rows81, rows76, rows68 };
 }
 
 /* --- selftest: three negative axes, then production GREEN ------------------ */
@@ -374,8 +632,7 @@ function selftest(work) {
                     'openQuestions: gs.openQuestions.filter(([, q]) => q.proposer !== proposer),'],
         ['const mine = gs.openQuestions.slice();', 'openQuestions: [],']) },
     { name: 'nessuna ricomputazione dopo l’uscita (L-6a)', expect: /riga #81 L-6a /,
-      make: mutant('return { ...cleaned, votes: vtSweep(vtTheta, post, departed) };',
-        'return { ...cleaned, votes: departed };') },
+      make: mutant('const swept = vtSweep(vtTheta, post, departed);', 'const swept = departed;') },
     { name: 'renounce tocca le domande estranee (L-6b)', expect: /riga #81 L-6b /,
       make: mutant("if (q) effected = { openQuestions: vtErase(questionId, gs.openQuestions),",
         "if (q) effected = { openQuestions: [],") },
@@ -383,6 +640,77 @@ function selftest(work) {
       make: mutant("return signer === q.proposer ? null : 'notProposer';", 'return null;') },
     { name: 'voto di un non designato registrato (R-2)', expect: /riga #81 R-2 /,
       make: mutant("return perm && signer !== perm.designee ? 'notDesignee' : null;", 'return null;') },
+  );
+  // #76: the page's closure-derived authorization mutated, one behaviour at
+  // a time; each must turn its row RED through the same judgment
+  const BIND = '{ ...s, bindings: [[questionId, target], ...s.bindings] }';
+  const SPEND = 'return effect({ ...s, live: pulled[1] });';
+  const NOAUTH = 'if (pulled === null) return { ok: false, failed: [NOLIVE(target, verdict)] };';
+  const BACKDONATE = "return spendThen(backT(args.w), 'positive', s, s1 => attempt(view, s1, { tag, author: signer, ...args }));";
+  const TOY_ONLY = 'return attempt(view, s, { tag, author: signer, ...args });';
+  const PULL_MATCH = 'sameTarget(a.target, target) && a.verdict === verdict';
+  const TARGET_BLIND = 'a.verdict === verdict';
+  const VERDICT_BLIND = 'sameTarget(a.target, target)';
+  controls.push(
+    { name: 'openBound non lega il bersaglio (bind)', expect: /riga #76 bind @[BC]#\d+ ROSSA: il passo da solo/,
+      make: mutant(BIND, 's') },
+    { name: 'la chiusura legata non conia l’autorizzazione (mint)', expect: /riga #76 mint @[BC]#\d+ ROSSA: il passo da solo/,
+      make: mutant('if (target !== null) minted.push(', 'if (false) minted.push(') },
+    { name: 'il permesso non spende la chiusura (spend-grant)', expect: /riga #76 spend-grant @[BC]#\d+ ROSSA: il passo da solo/,
+      make: mutant(SPEND, 'return effect(s);') },
+    { name: 'il diniego legge il verdetto positivo (spend-deny)', expect: /riga #76 spend-deny @[BC]#\d+ ROSSA: il passo da solo/,
+      make: mutant("const pulled = pullLive(permT(c), 'negative', s.live);",
+        "const pulled = pullLive(permT(c), 'positive', s.live);") },
+    { name: 'permesso senza chiusura legata applicato (refuse-unbound)', expect: /riga #76 refuse-unbound @[BC]#\d+ ROSSA: il passo da solo/,
+      make: mutant(NOAUTH, 'if (pulled === null) return effect(s);') },
+    { name: 'chiusura spesa due volte (refuse-spent)', expect: /riga #76 refuse-spent /,
+      make: mutant(SPEND, 'return effect(s);') },
+    { name: 'legame di una domanda aperta altrui (refuse-bind-other)', expect: /riga #76 refuse-bind-other @[BC]#\d+ ROSSA: il passo da solo/,
+      make: mutant('vtLookup(qid, s.votes.openQuestions) === null', 'true') },
+    { name: 'secondo legame del proponente prima di ogni voto (refuse-bind-second)',
+      expect: /riga #76 refuse-bind-second @[BC]#\d+ ROSSA: il passo da solo/,
+      make: mutant('vtLookup(qid, s.votes.openQuestions) === null', 'true') },
+    { name: 'legame dopo un voto (refuse-bind-balloted)', expect: /riga #76 refuse-bind-balloted @[BC]#\d+ ROSSA: il passo da solo/,
+      make: mutant('vtLookup(qid, s.votes.openQuestions) === null', 'true') },
+    { name: 'legame di una domanda chiusa (refuse-bind-closed)', expect: /riga #76 refuse-bind-closed @[BC]#\d+ ROSSA: il passo da solo/,
+      make: mutant('!s.votes.closed.some(r => r.questionId === qid)', 'true') },
+    { name: 'redistribuzione sul solo TOY_AUTH (spend-backdonate)', expect: /riga #76 spend-backdonate @[BC]#\d+ ROSSA: il passo da solo/,
+      make: mutant(BACKDONATE, TOY_ONLY) },
+    { name: 'redistribuzione senza chiusura (refuse-backdonate-unclosed)',
+      expect: /riga #76 refuse-backdonate-unclosed @[BC]#\d+ ROSSA: il passo da solo/, make: mutant(BACKDONATE, TOY_ONLY) },
+    { name: 'spesa cieca al verdetto: redistribuzione (refuse-backdonate-negative)',
+      expect: /riga #76 refuse-backdonate-negative @[BC]#\d+ ROSSA: il passo da solo/, make: mutant(PULL_MATCH, VERDICT_BLIND) },
+    { name: 'spesa cieca al bersaglio: redistribuzione (refuse-backdonate-other-w)',
+      expect: /riga #76 refuse-backdonate-other-w @[BC]#\d+ ROSSA: il passo da solo/, make: mutant(PULL_MATCH, TARGET_BLIND) },
+    { name: 'spesa cieca al verdetto: permesso (refuse-grant-opposite)',
+      expect: /riga #76 refuse-grant-opposite @[BC]#\d+ ROSSA: il passo da solo/, make: mutant(PULL_MATCH, VERDICT_BLIND) },
+    { name: 'spesa cieca al bersaglio: permesso (refuse-grant-other-target)',
+      expect: /riga #76 refuse-grant-other-target @[BC]#\d+ ROSSA: il passo da solo/, make: mutant(PULL_MATCH, TARGET_BLIND) },
+    { name: 'spesa cieca al verdetto: diniego (refuse-deny-opposite)',
+      expect: /riga #76 refuse-deny-opposite @[BC]#\d+ ROSSA: il passo da solo/, make: mutant(PULL_MATCH, VERDICT_BLIND) },
+    { name: 'spesa cieca al bersaglio: diniego (refuse-deny-other-target)',
+      expect: /riga #76 refuse-deny-other-target @[BC]#\d+ ROSSA: il passo da solo/, make: mutant(PULL_MATCH, TARGET_BLIND) },
+    { name: 'redistribuzione spesa due volte (refuse-backdonate-spent)',
+      expect: /riga #76 refuse-backdonate-spent /, make: mutant(SPEND, 'return effect(s);') },
+  );
+  // #68: the page's base channel mutated, one behaviour at a time; each
+  // must turn its row RED at its own witness step
+  controls.push(
+    { name: 'la proposta entra con l’assenso del proponente (propose-no-assent)',
+      expect: /riga #68 propose-no-assent @[A-C]#\d+ ROSSA: il passo da solo/,
+      make: mutant('{ proposal: p, proposer: signer, approvals: [] }',
+        '{ proposal: p, proposer: signer, approvals: [signer] }') },
+    { name: 'il proponente approva la propria proposta (refuse-proposer-self-approval)',
+      expect: /riga #68 refuse-proposer-self-approval @[A-C]#\d+ ROSSA: il passo da solo/,
+      make: mutant("if (signer === pend.proposer && bgAdminCount(gs) > 1) return 'proposerSelfApproval';", '') },
+    { name: 'la soglia conta il proponente (pending-non-proposer)',
+      expect: /riga #68 pending-non-proposer @[A-C]#\d+ ROSSA: il passo da solo/,
+      make: mutant('if (pend.approvals.length >= bgMajority(gs)) {',
+        'if (pend.approvals.length + 1 >= bgMajority(gs)) {') },
+    { name: 'la maggioranza non basta a deliberare (enact-non-proposer)',
+      expect: /riga #68 enact-non-proposer @[A-C]#\d+ ROSSA: il passo da solo/,
+      make: mutant('if (pend.approvals.length >= bgMajority(gs)) {',
+        'if (pend.approvals.length > bgMajority(gs)) {') },
   );
   for (const c of controls) {
     const p = join(work, 'sab.html');
@@ -419,7 +747,9 @@ function report(r, prefix) {
     `GREEN: ${r.envelopes} envelope; rigenerazione Lean identica (sha ${r.freshSha.slice(0, 12)}…); ` +
     `replay di produzione: ${r.embSteps} passi sul corpus incorporato + ${r.freshSteps} sul corpus fresco ` +
     `(script eseguito, sha ${r.scriptSha.slice(0, 12)}…); ` +
-    `righe #81: ${r.rows81.map(x => x.row + '@' + x.at).join(' ')}`);
+    `righe #81: ${r.rows81.map(x => x.row + '@' + x.at).join(' ')}; ` +
+    `righe #76: ${r.rows76.map(x => x.row + '@' + x.at).join(' ')}; ` +
+    `righe #68: ${r.rows68.map(x => x.row + '@' + x.at).join(' ')}`);
 }
 
 /* --- CLI ------------------------------------------------------------------- */

@@ -28,6 +28,10 @@ structure State where
   collections : List Collection
   /-- Membership-free vote payload: open questions and closures. -/
   votes : KelGroups.Vote.VoteState
+  /-- Targets of open bound questions, written only by `openBound`. -/
+  bindings : List (KelGroups.Vote.QuestionId × EconomicTarget) := []
+  /-- Unspent closure-derived authorizations. -/
+  live : List LiveAuth := []
 deriving DecidableEq, BEq, Repr
 
 /-- Empty app payload: no accounts, no collections, no questions. -/
@@ -106,6 +110,16 @@ def pullCollection (c : CollId) : List Collection → Option (Collection × List
     if x.id = c then some (x, t)
     else match pullCollection c t with
       | some (y, rest) => some (y, x :: rest)
+      | none => none
+
+/-- Pull one unspent authorization for exactly this target and verdict. -/
+def pullLive (target : EconomicTarget) (verdict : KelGroups.Vote.Verdict) :
+    List LiveAuth → Option (LiveAuth × List LiveAuth)
+  | [] => none
+  | a :: t =>
+    if a.target = target ∧ a.verdict = verdict then some (a, t)
+    else match pullLive target verdict t with
+      | some (hit, rest) => some (hit, a :: rest)
       | none => none
 
 /-

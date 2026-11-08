@@ -13,27 +13,35 @@
  *   2. loads every scenario in economics-simulator-scenarios/ — an empty or
  *      all-skipped suite is RED;
  *   3. replays every envelope through the core verifiers: a malformed or
- *      non-v1 envelope, an ignored event (seq/steps mismatch), a refused
- *      step in an applied-only stream, or a poststate mismatch is RED;
- *   4. walks combined-seq governance (verifyGovernedSeq) and compares the
- *      outcome with the scenario's declared expectation — scenario
- *      01-elezioni-senza-delibera is the operator's exact unmarked-election
- *      sequence and must be REFUSED; the RG_SCENARIO_GOVERNANCE=off hook
- *      reintroduces the pre-fix model exactly, and --selftest proves the
- *      suite then goes RED (the assertion detects the pre-fix behavior);
+ *      non-v1 envelope, an ignored event (seq/steps mismatch), or a
+ *      poststate mismatch is RED; a recorded step the production
+ *      transition refuses is the sequence's refusal;
+ *   4. walks the integrated governance (verifyGovernedIntegrated) and
+ *      compares the outcome with the scenario's declared expectation —
+ *      scenario 01-permesso-senza-delibera records a permission no bound
+ *      closure authorizes and must be REFUSED by the transition, naming the
+ *      missing authorization; --selftest imports a core whose grant does not
+ *      spend a closure-derived authorization (the pre-#76 model) and proves
+ *      the suite then goes RED;
  *   5. executes every declared assertion (an unknown kind, an empty
  *      assertion list, or an uncovered required kind is RED):
  *        no-vote-derived-without-evidence  governed walk ran and matched
  *        no-close-without-positive-permission
+ *                                          every close preceded by a grant
+ *                                          that spent a positive bound
+ *                                          closure (#76) for its collection
  *        no-negative-conto                 every prefix state, L7
  *        comune-donation                   live donate witness: author
  *                                          cassa +v and unique reserved
  *                                          non-member comune +v; member
  *                                          conti unchanged
- *        comune-backdonation               live backdonate witness after a
- *                                          funded comune: every member +w,
- *                                          comune −n*w, casse unchanged
- *        backdonate without closed-app     verifyGovernedSeq refuses a
+ *        comune-backdonation               through the integrated root from
+ *                                          a funded comune: refused with no
+ *                                          closure bound to w; after a bound
+ *                                          positive closure every member +w,
+ *                                          comune −n*w, casse unchanged,
+ *                                          closure spent
+ *        backdonate without closed-app     verifyGovernedIntegrated refuses a
  *        evidence                          backdonate step with empty vote
  *                                          evidence (honest NON PROVATO
  *                                          join; no invented vote id);
@@ -107,25 +115,23 @@ function assertNoNegativeConto(sc, ver) {
   return `${ver.states.length} stati, tutti i conti ≥ 0`;
 }
 
-function assertNoCloseWithoutPositive(sc, mod) {
+/* #76: the permission a close needs is granted only by spending a positive
+   closure of a question bound to that collection — read from the verified
+   states the replay produced (state i is the input of step i) */
+function assertNoCloseWithoutPositive(sc, ver) {
   const wrap = sc.wrap;
-  let votes = mod.vtEmpty();
+  const positiveFor = (agg, c) => (agg.payload.live || []).filter(a =>
+    a.target.permission && a.target.permission.c === c && a.verdict === 'positive').length;
   const granted = new Set();
   let closes = 0;
-  for (const st of wrap.steps) {
+  for (const [i, st] of wrap.steps.entries()) {
     if (st.event.app === undefined) continue;
     const ae = st.event.app;
-    if ('openQuestion' in ae) {
-      votes = mod.vtApply({ members: st.input.members || [] }, votes, st.signer,
-        { openQuestion: ae.openQuestion }).state;
-    } else if ('cast' in ae) {
-      votes = mod.vtApply({ members: st.input.members || [] }, votes, st.signer,
-        { cast: ae.cast }).state;
-    } else if ('grantPermission' in ae) {
-      const rec = votes.closed.find(r => r.questionId === mod.permQid(ae.grantPermission.c));
-      if (!rec || rec.verdict !== 'positive')
-        throw new Error('grantPermission senza verdetto positivo chiuso');
-      granted.add(ae.grantPermission.c);
+    if ('grantPermission' in ae) {
+      const c = ae.grantPermission.c;
+      if (positiveFor(ver.states[i], c) !== positiveFor(ver.states[i + 1], c) + 1)
+        throw new Error('grantPermission senza la chiusura positiva legata spesa');
+      granted.add(c);
     }
     if ('closePurchase' in ae) {
       closes += 1;
@@ -162,33 +168,51 @@ function assertComuneDonation(mod) {
   return 'donate +90 su cassa autore e conto comune riservato, conti membri invariati';
 }
 
+/* #76: a backdonation pays only by spending the positive closure of a
+   question bound to its share. Driven through the integrated root from a
+   funded comune — never the economic step on TOY_AUTH alone: the same
+   backdonate with no such closure must be refused, and with it, it pays. */
 function assertComuneBackdonation(mod) {
   const view = donationView();
   const memberKeys = view.members.map(([k]) => k);
-  const funded = (() => {
-    let setup;
-    try { setup = mod.attempt(view, clone(donationBase()), { tag: 'donate', author: 'anna', v: 90 }); }
-    catch (e) { throw new Error(`backdonate: donate setup threw: ${e.message}`); }
-    if (!setup || setup.ok !== true) throw new Error('backdonate: donate setup refused');
-    return setup.state;
-  })();
-  let r;
-  try { r = mod.attempt(view, clone(funded), { tag: 'backdonate', author: 'anna', w: 10 }); }
-  catch (e) { throw new Error(`backdonate: ${e.message}`); }
-  if (!r || r.ok !== true) throw new Error('backdonate: live witness refused');
-  const common = funded.conti.filter(([k]) => !memberKeys.includes(k));
+  const run = (gs, signer, ae, what) => {
+    let det;
+    try { det = mod.applyIntegrated(clone(gs), signer, { app: ae }); }
+    catch (e) { throw new Error(`backdonate: ${what} threw: ${e.message}`); }
+    if (!det) throw new Error(`backdonate: ${what} returned nothing`);
+    return det;
+  };
+  const start = { members: view.members, pendingBase: [],
+    appFold: { ...mod.emptyState(), ...donationBase() } };
+  const funded = run(start, 'anna', { donate: { v: 90 } }, 'donate setup');
+  if (funded.refused) throw new Error('backdonate: donate setup refused');
+  if (!run(funded.gs, 'anna', { backdonate: { w: 10 } }, 'backdonate without closure').refused)
+    throw new Error('backdonate: applied with no closure bound to its share (TOY_AUTH alone)');
+  const target = { backdonation: { w: 10 } };
+  const bound = run(funded.gs, 'anna',
+    { openBound: { questionId: 'q:quota', kind: 'collective', target } }, 'openBound');
+  if (bound.refused) throw new Error('backdonate: bound question refused');
+  const closed = run(bound.gs, 'bruno', { cast: { questionId: 'q:quota', ballot: 'assent' } }, 'cast');
+  if (closed.refused) throw new Error('backdonate: closing ballot refused');
+  const r = run(closed.gs, 'anna', { backdonate: { w: 10 } }, 'backdonate');
+  if (r.refused) throw new Error('backdonate: refused with its positive bound closure live');
+  const before = closed.gs.appFold, after = r.gs.appFold;
+  const common = before.conti.filter(([k]) => !memberKeys.includes(k));
   if (common.length !== 1)
     throw new Error('backdonate: funded comune is not a unique non-member conto');
   for (const u of memberKeys)
-    if (balOf(r.state.conti, u) - balOf(funded.conti, u) !== 10)
+    if (balOf(after.conti, u) - balOf(before.conti, u) !== 10)
       throw new Error(`backdonate: member ${u} did not receive exactly +10`);
-  if (balOf(r.state.conti, common[0][0]) - balOf(funded.conti, common[0][0]) !== -30)
+  if (balOf(after.conti, common[0][0]) - balOf(before.conti, common[0][0]) !== -30)
     throw new Error('backdonate: comune delta is not -(member-count * share)');
-  if (JSON.stringify(r.state.casse) !== JSON.stringify(funded.casse))
+  if (JSON.stringify(after.casse) !== JSON.stringify(before.casse))
     throw new Error('backdonate: changed casse');
-  if (JSON.stringify(r.state.collections) !== JSON.stringify(funded.collections))
+  if (JSON.stringify(after.collections) !== JSON.stringify(before.collections))
     throw new Error('backdonate: changed collections');
-  return 'backdonate +10 a ogni membro, comune −30, casse invariate';
+  if ((after.live || []).some(a => 'backdonation' in a.target))
+    throw new Error('backdonate: its closure was not spent');
+  return 'backdonate +10 a ogni membro, comune −30, casse invariate, spendendo la chiusura ' +
+    'legata alla quota (senza: rifiutato)';
 }
 
 function assertBackdonateGovernanceBoundary(mod) {
@@ -277,7 +301,7 @@ function assertCallerIdentity(mod, where) {
 
 /* --- one scenario --------------------------------------------------------- */
 
-function runScenario(sc) {
+function runScenario(sc, mod = core) {
   const notes = [];
   if (!sc || typeof sc !== 'object' || !sc.name || !sc.wrap || !sc.expect)
     throw new Error('forma dello scenario non valida');
@@ -287,25 +311,30 @@ function runScenario(sc) {
   if (!wrap.schema || !Array.isArray(wrap.steps))
     throw new Error('wrap senza lo stream integrato');
 
-  // envelope verification: malformed/non-v1/poststate mismatch/refused → throw
-  const ver = core.verifyIntegratedV1(wrap, { appliedOnly: true });
+  // envelope verification: malformed/non-v1/poststate mismatch → throw. A
+  // recorded step the production transition refuses is the refusal of the
+  // sequence (#76: an unbacked permission is refused by the root itself);
+  // the states before it are the replayed prefix.
+  let ver, outcome = 'accepted', reason = null;
+  try {
+    ver = mod.verifyIntegratedV1(wrap, { appliedOnly: true });
+  } catch (e) {
+    const m = /^integrato: passo (\d+): registrato applicato, la transizione rifiuta/.exec(e.message);
+    if (!m) throw e;
+    outcome = 'refused'; reason = e.message;
+    ver = mod.verifyIntegratedV1({ ...wrap, steps: wrap.steps.slice(0, Number(m[1])) },
+      { appliedOnly: true });
+  }
 
-  // single integrated stream
-
-  // governance walk vs declared expectation. RG_SCENARIO_GOVERNANCE=off is
-  // the controlled reintroduction of the pre-fix model (no governance):
-  // under it, a scenario expecting refusal MUST fail — see --selftest.
-  const governanceOff = process.env.RG_SCENARIO_GOVERNANCE === 'off';
-  let outcome = 'accepted', reason = null;
-  if (!governanceOff) {
+  // governance walk vs declared expectation
+  if (outcome === 'accepted') {
     try {
-      core.verifyGovernedIntegrated(wrap);
+      mod.verifyGovernedIntegrated(wrap);
     } catch (e) { outcome = 'refused'; reason = e.message; }
   }
   if (sc.expect.governed === 'refused') {
     if (outcome !== 'refused')
-      throw new Error('atteso rifiuto del governo, ma la sequenza è stata accettata' +
-        (governanceOff ? ' (governo disattivato: comportamento pre-fix reintrodotto)' : ''));
+      throw new Error('atteso rifiuto, ma la sequenza è stata accettata');
     if (sc.expect.refusalMatch && !reason.includes(sc.expect.refusalMatch))
       throw new Error(`rifiuto per il motivo sbagliato: ${reason}`);
     notes.push(`governo: rifiutata come atteso — ${reason}`);
@@ -318,14 +347,11 @@ function runScenario(sc) {
   for (const kind of sc.assertions) {
     let note;
     if (kind === 'no-negative-conto') note = assertNoNegativeConto(sc, ver);
-    else if (kind === 'no-close-without-positive-permission') note = assertNoCloseWithoutPositive(sc, core);
+    else if (kind === 'no-close-without-positive-permission') note = assertNoCloseWithoutPositive(sc, ver);
     else if (kind === 'comune-donation') note = assertComuneDonation(core);
     else if (kind === 'comune-backdonation') note = assertComuneBackdonation(core);
-    else if (kind === 'no-vote-derived-without-evidence') {
-      if (governanceOff)
-        throw new Error('asserzione di governo richiesta ma il governo è disattivato');
-      note = 'coperta dal cammino di governo qui sopra';
-    } else throw new Error('asserzione sconosciuta: ' + kind);
+    else if (kind === 'no-vote-derived-without-evidence')
+      note = 'coperta dalla transizione e dal cammino di governo qui sopra'; else throw new Error('asserzione sconosciuta: ' + kind);
     notes.push(`${kind}: ${note}`);
   }
   return { steps: wrap.steps.length, notes };
@@ -342,6 +368,7 @@ function runSuite(opts) {
   catch (e) { return { ok: false, reasons: ['cartella scenari illeggibile: ' + dir] }; }
   if (!files.length) return { ok: false, reasons: ['suite vuota: nessuno scenario in ' + dir] };
 
+  const mod = opts.core || core;
   const covered = new Set();
   let ran = 0, totalSteps = 0;
   const lines = [];
@@ -350,7 +377,7 @@ function runSuite(opts) {
     try { sc = JSON.parse(readFileSync(join(dir, f), 'utf8')); }
     catch (e) { reasons.push(`${f}: JSON illeggibile`); continue; }
     try {
-      const r = runScenario(sc);
+      const r = runScenario(sc, mod);
       ran += 1; totalSteps += r.steps;
       (sc.assertions || []).forEach(k => covered.add(k));
       lines.push(`  ${f}: ${r.steps} passi — ${r.notes.join(' · ')}`);
@@ -433,7 +460,7 @@ function runSuite(opts) {
 
 /* --- selftest -------------------------------------------------------------- */
 
-function selftest(work, mutantCore, bypassCore) {
+function selftest(work, mutantCore, bypassCore, unspentCore) {
   const sabDir = tag => {
     const d = join(work, tag);
     mkdirSync(d, { recursive: true });
@@ -444,13 +471,9 @@ function selftest(work, mutantCore, bypassCore) {
   const first = readdirSync(SCENARIOS).filter(f => f.endsWith('.json')).sort()[0];
   const controls = [
     {
-      name: 'governo disattivato — reintroduzione esatta del comportamento pre-fix',
-      expect: /atteso rifiuto del governo.*pre-fix/,
-      run: () => {
-        process.env.RG_SCENARIO_GOVERNANCE = 'off';
-        try { return runSuite({}); }
-        finally { delete process.env.RG_SCENARIO_GOVERNANCE; }
-      },
+      name: 'core il cui permesso non spende una chiusura legata — il modello pre-#76',
+      expect: /permesso-senza-delibera\.json: atteso rifiuto, ma la sequenza è stata accettata/,
+      run: () => runSuite({ core: unspentCore, skipVm: true }),
     },
     {
       name: 'post-stato mutato in uno scenario',
@@ -541,6 +564,14 @@ function selftest(work, mutantCore, bypassCore) {
       },
     },
     {
+      name: 'redistribuzione applicata sul solo TOY_AUTH (core senza la spesa)',
+      expect: /backdonate: applied with no closure bound to its share/,
+      run: () => {
+        try { assertComuneBackdonation(unspentCore); return { ok: true, reasons: [] }; }
+        catch (e) { return { ok: false, reasons: [e.message] }; }
+      },
+    },
+    {
       name: 'backdonate senza evidenza accettato dal governo',
       expect: /backdonate senza evidenza accettato dal governo/,
       run: () => {
@@ -594,7 +625,14 @@ try {
     const bypassPath = join(work, 'economics-simulator-core-f01-bypass.mjs');
     writeFileSync(bypassPath, source.replace(bypassNeedle,
       "      const det = { refused: 'rejected' };\n      if (det.refused === 'author-mismatch')"));
-    code = selftest(work, await import(mutantPath), await import(bypassPath));
+    const unspentNeedle = '  if (pulled === null) return { ok: false, failed: [NOLIVE(target, verdict)] };\n';
+    if (source.split(unspentNeedle).length !== 2)
+      throw new Error('selftest: il mutante pre-#76 non si applica esattamente una volta');
+    const unspentPath = join(work, 'economics-simulator-core-unspent.mjs');
+    writeFileSync(unspentPath, source.replace(unspentNeedle,
+      '  if (pulled === null) return effect(s);\n'));
+    code = selftest(work, await import(mutantPath), await import(bypassPath),
+      await import(unspentPath));
   } else {
     const r = runSuite({});
     if (r.ok) {
