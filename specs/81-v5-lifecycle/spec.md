@@ -59,6 +59,7 @@ reaches money.
 
 ## Slice S81-B — L-7 refund (2026-11-08)
 
+Model position: Inside (Lean model theorems and witnesses only).
 Base origin/master `17d6a7a` (#76 PR 93 merged). Desk ruling A-002 (2026-11-08):
 the refund is #76's negative permission continuation as built. Every negative
 closure of a permission-bound question mints a negative authorization
