@@ -19,7 +19,7 @@
       "target": "step",
       "guard": "GuardId.openPurchase",
       "patch": {
-        "line": 49,
+        "line": 51,
         "before": "        && !(s.collections.any (fun x => x.id == c)) then",
         "after": "        && true then"
       },
@@ -33,7 +33,7 @@
       "target": "step",
       "guard": "GuardId.grantPermission",
       "patch": {
-        "line": 54,
+        "line": 56,
         "before": "    demand (isResponsabile view signer)",
         "after": "    demand true"
       },
@@ -47,7 +47,7 @@
       "target": "step",
       "guard": "GuardId.denyPermission",
       "patch": {
-        "line": 58,
+        "line": 60,
         "before": "    demand (isResponsabile view signer)",
         "after": "    demand true"
       },
@@ -61,7 +61,7 @@
       "target": "step",
       "guard": "GuardId.deposit",
       "patch": {
-        "line": 64,
+        "line": 66,
         "before": "        && signer != u && decide (0 ≤ v) then",
         "after": "        && signer != u && true then"
       },
@@ -76,7 +76,7 @@
       "target": "step",
       "guard": "GuardId.withdraw",
       "patch": {
-        "line": 69,
+        "line": 71,
         "before": "        && signer != u && decide (bal s.conti u ≥ v)",
         "after": "        && signer != u && true"
       },
@@ -92,7 +92,7 @@
       "target": "step",
       "guard": "GuardId.transferCassa",
       "patch": {
-        "line": 76,
+        "line": 78,
         "before": "        && signer != f && v > 0 then",
         "after": "        && signer != f && true then"
       },
@@ -106,7 +106,7 @@
       "target": "step",
       "guard": "GuardId.donate",
       "patch": {
-        "line": 80,
+        "line": 82,
         "before": "    if isResponsabile view signer && decide (0 < v) then",
         "after": "    if isResponsabile view signer && true then"
       },
@@ -120,7 +120,7 @@
       "target": "step",
       "guard": "GuardId.backdonate",
       "patch": {
-        "line": 89,
+        "line": 91,
         "before": "        && decide (comuneBal s ≥ n * w) && auth s w then",
         "after": "        && true && auth s w then"
       },
@@ -134,7 +134,7 @@
       "target": "step",
       "guard": "GuardId.pledge",
       "patch": {
-        "line": 99,
+        "line": 101,
         "before": "      && decide (0 < v) && decide (bal s.conti u ≥ v)",
         "after": "      && decide (0 < v) && true"
       },
@@ -148,7 +148,7 @@
       "target": "step",
       "guard": "GuardId.acceptPledge",
       "patch": {
-        "line": 107,
+        "line": 109,
         "before": "    demand (isResponsabile view signer && col.referente == signer",
         "after": "    demand (isResponsabile view signer && true"
       },
@@ -162,7 +162,7 @@
       "target": "step",
       "guard": "GuardId.refusePledge",
       "patch": {
-        "line": 114,
+        "line": 116,
         "before": "    demand (isResponsabile view signer && col.referente == signer)",
         "after": "    demand (isResponsabile view signer && true)"
       },
@@ -176,7 +176,7 @@
       "target": "step",
       "guard": "GuardId.correctPledge",
       "patch": {
-        "line": 122,
+        "line": 124,
         "before": "      && decide (0 ≤ v') && decide (bal s.conti u + (v - v') ≥ 0))",
         "after": "      && decide (0 ≤ v') && true)"
       },
@@ -190,7 +190,7 @@
       "target": "step",
       "guard": "GuardId.closePurchase",
       "patch": {
-        "line": 129,
+        "line": 131,
         "before": "      && col.permitted && col.pending.isEmpty && !(decide (stalled s)))",
         "after": "      && true && col.pending.isEmpty && !(decide (stalled s)))"
       },
@@ -205,7 +205,7 @@
       "target": "step",
       "guard": "GuardId.failPurchase",
       "patch": {
-        "line": 136,
+        "line": 138,
         "before": "      && col.pending.isEmpty)",
         "after": "      && true)"
       },
@@ -225,6 +225,7 @@
       },
       "claimedKills": [
         "KelGroups.Vote.nonresponsabile_event_noop",
+        "Reactivegas.Composition.authStep_appFoldCore",
         "Reactivegas.i57_auth_holds",
         "Reactivegas.i57_boundary_holds",
         "Reactivegas.i57_noop_holds"
@@ -259,6 +260,24 @@
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.fixtures_hold",
+        "Reactivegas.Lifecycle.l2_holds",
+        "Reactivegas.Lifecycle.l2_hook_no_closure_caught",
+        "Reactivegas.Lifecycle.l2_later_step_caught",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_later_step",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_no_closure",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_collapsed_caught",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6a_no_sweep_caught",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_franchise",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_sweep_first",
+        "Reactivegas.Lifecycle.l6a_suppress_departed_caught",
+        "Reactivegas.Lifecycle.l6a_sweep_first_caught",
         "Reactivegas.Lifecycle.paths_agree",
         "Reactivegas.i57_boundary_holds",
         "Reactivegas.i57_noop_holds"
@@ -414,7 +433,8 @@
       "claimedKills": [
         "KelGroups.base_change_runs_hook",
         "KelGroups.integratedPropose_both@KelGroups.Invariants",
-        "KelGroups.membership_growth_is_direct_admission"
+        "KelGroups.membership_growth_is_direct_admission",
+        "Reactivegas.Composition.applyIntegrated_payload_cases"
       ],
       "note": "a refused base proposal is reported as a no-op success"
     },
@@ -431,6 +451,8 @@
         "KelGroups.app_event_has_no_base_change",
         "KelGroups.app_event_preserves_members",
         "KelGroups.integratedApp_both@KelGroups.Invariants",
+        "Reactivegas.Composition.applyIntegrated_payload_cases",
+        "Reactivegas.Composition.apply_app_ok",
         "Reactivegas.Lifecycle.order_holds",
         "Reactivegas.Lifecycle.r1_holds",
         "Reactivegas.Lifecycle.r2_holds",
@@ -445,7 +467,7 @@
       "target": "Reactivegas.apply",
       "guard": "Reactivegas.ProductionError.comuneReserved",
       "patch": {
-        "line": 386,
+        "line": 468,
         "before": "  if productionWellFormed gs then",
         "after": "  if true then"
       },
@@ -457,11 +479,13 @@
       "target": "Reactivegas.apply",
       "guard": "Reactivegas.ProductionError.integrated",
       "patch": {
-        "line": 391,
+        "line": 473,
         "before": "    | .error err => .error (ProductionError.integrated err)",
         "after": "    | .error err => .ok { state := gs, change := none }"
       },
       "claimedKills": [
+        "Reactivegas.Composition.apply_app_ok",
+        "Reactivegas.Composition.apply_payload_cases",
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.order_holds",
         "Reactivegas.Lifecycle.r1_holds",
@@ -484,11 +508,12 @@
       "target": "Reactivegas.voteApply",
       "guard": "StepError.rejected",
       "patch": {
-        "line": 176,
+        "line": 266,
         "before": "  | .error _ => .error StepError.rejected",
         "after": "  | .error _ => .ok s"
       },
       "claimedKills": [
+        "Reactivegas.Composition.authStep_voteApply",
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.order_holds",
         "Reactivegas.Lifecycle.r1_holds",
@@ -504,7 +529,7 @@
       "target": "bal",
       "guard": null,
       "patch": {
-        "line": 42,
+        "line": 46,
         "before": "  | (k, v) :: t => if k = u then v else bal t u",
         "after": "  | (k, v) :: t => if k = u then v + 1 else bal t u"
       },
@@ -524,7 +549,7 @@
       "target": "bump",
       "guard": null,
       "patch": {
-        "line": 65,
+        "line": 69,
         "before": "  | (k, v) :: t => if k = u then (k, v + d) :: t else (k, v) :: bump t u d",
         "after": "  | (k, v) :: t => if k = u then (k, v - d) :: t else (k, v) :: bump t u d"
       },
@@ -545,7 +570,7 @@
       "target": "sumPledges",
       "guard": null,
       "patch": {
-        "line": 73,
+        "line": 77,
         "before": "  | p :: t => p.amount + sumPledges t",
         "after": "  | p :: t => sumPledges t"
       },
@@ -563,7 +588,7 @@
       "target": "splitUser",
       "guard": null,
       "patch": {
-        "line": 88,
+        "line": 92,
         "before": "    if p.user = u then some (p.amount, t)",
         "after": "    if p.user = u then some (p.amount, p :: t)"
       },
@@ -580,7 +605,7 @@
       "target": "refundAll",
       "guard": null,
       "patch": {
-        "line": 95,
+        "line": 99,
         "before": "  l.foldl (fun acc p => bump acc p.user p.amount) m",
         "after": "  l.foldl (fun acc p => bump acc p.user 0) m"
       },
@@ -599,7 +624,7 @@
       "target": "pullCollection",
       "guard": null,
       "patch": {
-        "line": 106,
+        "line": 110,
         "before": "    if x.id = c then some (x, t)",
         "after": "    if x.id = c then some (x, x :: t)"
       },
@@ -615,7 +640,7 @@
       "target": "stripCollections",
       "guard": null,
       "patch": {
-        "line": 120,
+        "line": 134,
         "before": "    if c.referente = r then (rest, c.accepted ++ c.pending ++ ps)",
         "after": "    if c.referente = r then (rest, c.accepted ++ ps)"
       },
@@ -630,7 +655,7 @@
       "target": "comuneBal",
       "guard": null,
       "patch": {
-        "line": 47,
+        "line": 51,
         "before": "def comuneBal (s : State) : Int := bal s.conti comuneId",
         "after": "def comuneBal (s : State) : Int := bal s.conti comuneId + 1"
       },
@@ -647,7 +672,7 @@
       "target": "escrowOf",
       "guard": null,
       "patch": {
-        "line": 76,
+        "line": 80,
         "before": "def escrowOf (c : Collection) : Int := sumPledges c.accepted + sumPledges c.pending",
         "after": "def escrowOf (c : Collection) : Int := sumPledges c.accepted"
       },
@@ -696,6 +721,7 @@
         "KelGroups.assocLookup_insert_self",
         "KelGroups.assocLookup_some_mem@KelGroups.Invariants",
         "KelGroups.assocLookup_some_mem_nodupfree@KelGroups.Mirrors",
+        "Reactivegas.Composition.boundHistory_holds_backed_authorization",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.fixtures_hold",
         "Reactivegas.Lifecycle.l1_holds",
@@ -849,6 +875,7 @@
         "after": "  (lookupMember key view).isNone"
       },
       "claimedKills": [
+        "Reactivegas.Composition.boundHistory_holds_backed_authorization",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.fixtures_hold",
         "Reactivegas.Lifecycle.l1_holds",
@@ -1009,6 +1036,8 @@
         "after": "  none"
       },
       "claimedKills": [
+        "Reactivegas.Composition.authStep_appFoldCore",
+        "Reactivegas.Composition.boundHistory_holds_backed_authorization",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.fixtures_hold",
         "Reactivegas.Lifecycle.l1_holds",
@@ -1203,6 +1232,7 @@
       },
       "claimedKills": [
         "KelGroups.Vote.verdictOf_threshold_congr",
+        "Reactivegas.Composition.boundHistory_holds_backed_authorization",
         "Reactivegas.Lifecycle.fixtures_hold",
         "Reactivegas.Lifecycle.l1_holds",
         "Reactivegas.Lifecycle.l2_holds",
@@ -1248,6 +1278,7 @@
         "after": "def isResponsabile (key : Key) (view : GroupView) : Bool := true"
       },
       "claimedKills": [
+        "Reactivegas.Composition.authStep_appFoldCore",
         "Reactivegas.Lifecycle.l6a_holds",
         "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
         "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
@@ -1272,6 +1303,7 @@
         "after": "      if question.assents.length > required then .positive"
       },
       "claimedKills": [
+        "Reactivegas.Composition.boundHistory_holds_backed_authorization",
         "Reactivegas.Lifecycle.l6a_holds",
         "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
         "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
@@ -1316,6 +1348,7 @@
         "KelGroups.Vote.effectedState_sweepReady@KelGroups.Vote.Invariants",
         "KelGroups.Vote.effectedState_tally_growth@KelGroups.Vote.Invariants",
         "KelGroups.Vote.no_expiry",
+        "Reactivegas.Composition.boundHistory_holds_backed_authorization",
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.fixtures_hold",
@@ -1654,7 +1687,7 @@
       "target": "stepEvent",
       "guard": null,
       "patch": {
-        "line": 156,
+        "line": 160,
         "before": "  | .withdraw a u v => go a (.withdraw u v)",
         "after": "  | .withdraw a u v => go a (.deposit u v)"
       },
@@ -1672,7 +1705,7 @@
       "target": "Reactivegas.economicCleanup",
       "guard": null,
       "patch": {
-        "line": 279,
+        "line": 351,
         "before": "      demand (!(decide (stalled s)))",
         "after": "      demand true"
       },
@@ -1689,11 +1722,12 @@
       "target": "Reactivegas.economicCleanup",
       "guard": null,
       "patch": {
-        "line": 281,
+        "line": 353,
         "before": "        (if KelGroups.GroupView.isAdmin key pre then windUpAdmin s key else s) key)",
         "after": "        (s) key)"
       },
       "claimedKills": [
+        "Reactivegas.Composition.economicCleanup_frame",
         "Reactivegas.base_departure_applies_cleanup",
         "Reactivegas.integrated_theorem_witness_holds",
         "TraceTests.all_checks_pass"
@@ -1705,7 +1739,7 @@
       "target": "Reactivegas.absorbConto",
       "guard": null,
       "patch": {
-        "line": 247,
+        "line": 319,
         "before": "    conti := bump (bump s.conti key (-(bal s.conti key))) comuneId (bal s.conti key) }",
         "after": "    conti := bump s.conti comuneId (bal s.conti key) }"
       },
@@ -1721,7 +1755,7 @@
       "target": "Reactivegas.windUpAdmin",
       "guard": null,
       "patch": {
-        "line": 258,
+        "line": 330,
         "before": "    casse := bump s.casse key (-(bal s.casse key)),",
         "after": "    casse := s.casse,"
       },
@@ -1738,11 +1772,12 @@
       "target": "Reactivegas.baseHook",
       "guard": null,
       "patch": {
-        "line": 308,
-        "before": "        .ok { cleaned with votes := KelGroups.Vote.sweepClosures θ post departed }",
-        "after": "        .ok { cleaned with votes := departed }"
+        "line": 384,
+        "before": "        .ok (pruneAuth (syncAuth cleaned (KelGroups.Vote.sweepClosures θ post departed)))",
+        "after": "        .ok (pruneAuth (syncAuth cleaned departed))"
       },
       "claimedKills": [
+        "Reactivegas.Composition.authStep_baseHook",
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.l6a_holds",
         "Reactivegas.Lifecycle.paths_agree",
@@ -1763,7 +1798,7 @@
       "target": "Reactivegas.productionWellFormed",
       "guard": null,
       "patch": {
-        "line": 363,
+        "line": 439,
         "before": "  !KelGroups.GroupView.isMember comuneId (KelGroups.groupView gs)",
         "after": "  true"
       },
@@ -1826,6 +1861,7 @@
         "after": "def legacyThreshold (responsabili : Nat) : Nat := responsabili / 2"
       },
       "claimedKills": [
+        "Reactivegas.Composition.boundHistory_holds_backed_authorization",
         "Reactivegas.Lifecycle.fixtures_hold",
         "Reactivegas.Lifecycle.l1_holds",
         "Reactivegas.Lifecycle.l2_holds",
@@ -1867,7 +1903,7 @@
       "target": "sumBal",
       "guard": null,
       "patch": {
-        "line": 68,
+        "line": 72,
         "before": "def sumBal (m : List (KelGroups.Key × Int)) : Int := (m.map Prod.snd).sum",
         "after": "def sumBal (m : List (KelGroups.Key × Int)) : Int := ((m.map Prod.snd).drop 1).sum"
       },
@@ -1939,7 +1975,8 @@
       "claimedKills": [
         "KelGroups.base_change_runs_hook",
         "KelGroups.integratedApprove_both@KelGroups.Invariants",
-        "KelGroups.membership_growth_is_direct_admission"
+        "KelGroups.membership_growth_is_direct_admission",
+        "Reactivegas.Composition.applyIntegrated_payload_cases"
       ],
       "note": "approving a vanished base proposal is a no-op success"
     },
@@ -1977,7 +2014,7 @@
       "target": "Reactivegas.apply",
       "guard": "Reactivegas.ProductionError.comuneReserved",
       "patch": {
-        "line": 389,
+        "line": 471,
         "before": "        if productionWellFormed result.state then .ok result",
         "after": "        if true then .ok result"
       },
@@ -2017,6 +2054,7 @@
         "KelGroups.Vote.emptyVoteState_sweepReady",
         "KelGroups.Vote.emptyVoteState_wellFormed",
         "KelGroups.Vote.franchise_of_tallies",
+        "Reactivegas.Composition.boundHistory_holds_backed_authorization",
         "Reactivegas.Lifecycle.fixtures_hold",
         "Reactivegas.Lifecycle.l6a_holds",
         "Reactivegas.admissionPreservation_holds",
@@ -2036,6 +2074,7 @@
         "after": "def groupView (gs : GroupState α) : GroupView := { members := [] }"
       },
       "claimedKills": [
+        "Reactivegas.Composition.boundHistory_holds_backed_authorization",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.fixtures_hold",
         "Reactivegas.Lifecycle.l1_holds",
@@ -2313,11 +2352,12 @@
       "target": "Reactivegas.baseHook",
       "guard": null,
       "patch": {
-        "line": 306,
+        "line": 382,
         "before": "          | .memberRemoved key => KelGroups.Vote.closeProposerQuestions key s.votes",
         "after": "          | .memberRemoved _ => s.votes"
       },
       "claimedKills": [
+        "Reactivegas.Composition.authStep_baseHook",
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.l2_holds",
         "Reactivegas.Lifecycle.l3_holds",
@@ -2442,6 +2482,599 @@
         "TraceTests.all_checks_pass"
       ],
       "note": "an integrated proposal counts the proposer's approval again"
+    },
+    {
+      "id": "spendThen-keeps-authorization",
+      "target": "Reactivegas.spendThen",
+      "guard": null,
+      "patch": {
+        "line": 197,
+        "before": "      match effect { s with live := rest } with",
+        "after": "      match effect s with"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.spendThen_ok"
+      ],
+      "note": "the effect runs on a payload that still holds the authorization just spent"
+    },
+    {
+      "id": "spendThen-effect-failure-passes",
+      "target": "Reactivegas.spendThen",
+      "guard": null,
+      "patch": {
+        "line": 199,
+        "before": "      | none => .error StepError.rejected",
+        "after": "      | none => .ok s"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.spendThen_ok"
+      ],
+      "note": "a failed effect after a successful spend yields success"
+    },
+    {
+      "id": "guard-spend-no-authorization",
+      "target": "Reactivegas.spendThen",
+      "guard": "StepError.rejected",
+      "patch": {
+        "line": 195,
+        "before": "  | none => .error StepError.rejected",
+        "after": "  | none => .ok s"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.spendThen_ok"
+      ],
+      "note": "an app-decided economic event without an unspent authorization succeeds"
+    },
+    {
+      "id": "denyByClosure-positive-verdict",
+      "target": "Reactivegas.denyByClosure",
+      "guard": null,
+      "patch": {
+        "line": 209,
+        "before": "  match pullLive (.permission c) .negative s.live with",
+        "after": "  match pullLive (.permission c) .positive s.live with"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.denyByClosure_spec"
+      ],
+      "note": "the negative continuation spends a positive authorization"
+    },
+    {
+      "id": "denyByClosure-skips-refund",
+      "target": "Reactivegas.denyByClosure",
+      "guard": null,
+      "patch": {
+        "line": 217,
+        "before": "            conti := refundAll s.conti (col.accepted ++ col.pending)",
+        "after": "            conti := s.conti"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.denyByClosure_spec"
+      ],
+      "note": "dissolving the collection refunds no pledge"
+    },
+    {
+      "id": "denyByClosure-keeps-authorization",
+      "target": "Reactivegas.denyByClosure",
+      "guard": null,
+      "patch": {
+        "line": 216,
+        "before": "            live := rest",
+        "after": "            live := s.live"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.denyByClosure_spec"
+      ],
+      "note": "the negative continuation does not consume the authorization"
+    },
+    {
+      "id": "denyByClosure-keeps-collection",
+      "target": "Reactivegas.denyByClosure",
+      "guard": null,
+      "patch": {
+        "line": 218,
+        "before": "            collections := cs }",
+        "after": "            collections := s.collections }"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.denyByClosure_spec"
+      ],
+      "note": "the negative continuation does not dissolve the collection"
+    },
+    {
+      "id": "bindable-reuses-open-id",
+      "target": "Reactivegas.bindable",
+      "guard": null,
+      "patch": {
+        "line": 224,
+        "before": "  (KelGroups.Vote.lookupQuestion qid s.votes).isNone",
+        "after": "  true"
+      },
+      "claimedKills": [],
+      "note": "a bound question can reuse the id of an open question"
+    },
+    {
+      "id": "bindable-reuses-closed-id",
+      "target": "Reactivegas.bindable",
+      "guard": null,
+      "patch": {
+        "line": 225,
+        "before": "    && !(s.votes.closed.any (fun r => r.questionId == qid))",
+        "after": "    && true"
+      },
+      "claimedKills": [],
+      "note": "a bound question can reuse the id of a closed question"
+    },
+    {
+      "id": "bindable-any-collection",
+      "target": "Reactivegas.bindable",
+      "guard": null,
+      "patch": {
+        "line": 227,
+        "before": "      | .permission c => s.collections.any (fun col => col.id == c)",
+        "after": "      | .permission c => true"
+      },
+      "claimedKills": [],
+      "note": "a permission question can bind a collection that is absent"
+    },
+    {
+      "id": "bindable-nonpositive-share",
+      "target": "Reactivegas.bindable",
+      "guard": null,
+      "patch": {
+        "line": 228,
+        "before": "      | .backdonation w => decide (0 < w)",
+        "after": "      | .backdonation w => decide (w < 0)"
+      },
+      "claimedKills": [],
+      "note": "a backdonation question binds only a non-positive share"
+    },
+    {
+      "id": "syncAuth-mints-nothing",
+      "target": "Reactivegas.syncAuth",
+      "guard": null,
+      "patch": {
+        "line": 243,
+        "before": "    live := s.live ++ minted }",
+        "after": "    live := s.live ++ minted.take 0 }"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.authStep_syncAuth",
+        "Reactivegas.Composition.boundHistory_holds_backed_authorization"
+      ],
+      "note": "closing a bound question mints no authorization"
+    },
+    {
+      "id": "syncAuth-mints-assent",
+      "target": "Reactivegas.syncAuth",
+      "guard": null,
+      "patch": {
+        "line": 238,
+        "before": "      (fun target => { questionId := r.questionId, target, verdict := r.verdict }))",
+        "after": "      (fun target => { questionId := r.questionId, target, verdict := .positive }))"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.authStep_syncAuth"
+      ],
+      "note": "every closure mints a positive authorization whatever its verdict"
+    },
+    {
+      "id": "syncAuth-reminting",
+      "target": "Reactivegas.syncAuth",
+      "guard": null,
+      "patch": {
+        "line": 235,
+        "before": "    (fun r => !(s.votes.closed.any (fun p => p.questionId == r.questionId)))",
+        "after": "    (fun r => true)"
+      },
+      "claimedKills": [],
+      "note": "every closure record mints again at every vote step, not only the new ones"
+    },
+    {
+      "id": "syncAuth-keeps-closed-bindings",
+      "target": "Reactivegas.syncAuth",
+      "guard": null,
+      "patch": {
+        "line": 242,
+        "before": "      (fun b => (KelGroups.Vote.lookupQuestion b.1 votes).isSome)",
+        "after": "      (fun b => true)"
+      },
+      "claimedKills": [],
+      "note": "bindings of questions no longer open are kept"
+    },
+    {
+      "id": "targetPresent-permission-always",
+      "target": "Reactivegas.targetPresent",
+      "guard": null,
+      "patch": {
+        "line": 248,
+        "before": "  | .permission c => s.collections.any (fun col => col.id == c)",
+        "after": "  | .permission _ => true"
+      },
+      "claimedKills": [],
+      "note": "a permission target stands although its collection has left"
+    },
+    {
+      "id": "targetPresent-share-never",
+      "target": "Reactivegas.targetPresent",
+      "guard": null,
+      "patch": {
+        "line": 249,
+        "before": "  | .backdonation _ => true",
+        "after": "  | .backdonation _ => false"
+      },
+      "claimedKills": [],
+      "note": "a share target never stands"
+    },
+    {
+      "id": "pruneAuth-keeps-bindings",
+      "target": "Reactivegas.pruneAuth",
+      "guard": null,
+      "patch": {
+        "line": 255,
+        "before": "    bindings := s.bindings.filter (fun b => targetPresent s b.2)",
+        "after": "    bindings := s.bindings"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.pruneAuth_present"
+      ],
+      "note": "bindings of departed collections are not dropped"
+    },
+    {
+      "id": "pruneAuth-keeps-authorizations",
+      "target": "Reactivegas.pruneAuth",
+      "guard": null,
+      "patch": {
+        "line": 256,
+        "before": "    live := s.live.filter (fun a => targetPresent s a.target) }",
+        "after": "    live := s.live }"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.authStep_prune",
+        "Reactivegas.Composition.pruneAuth_live_sublist",
+        "Reactivegas.Composition.pruneAuth_present"
+      ],
+      "note": "authorizations of departed collections are not dropped"
+    },
+    {
+      "id": "ofOption-ok-refuses",
+      "target": "Reactivegas.ofOption",
+      "guard": null,
+      "patch": {
+        "line": 187,
+        "before": "  | some s => .ok s",
+        "after": "  | some _ => .error StepError.rejected"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.boundHistory_holds_backed_authorization",
+        "Reactivegas.Composition.ofOption_ok",
+        "Reactivegas.admissionPreservation_holds",
+        "Reactivegas.app_members_preservation_holds",
+        "Reactivegas.app_members_preservation_mutant_caught",
+        "Reactivegas.direct_admission_only_holds",
+        "Reactivegas.exhaustive_inventories_hold",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "the lifted economic result is a refusal when it succeeded"
+    },
+    {
+      "id": "guard-ofoption-refusal",
+      "target": "Reactivegas.ofOption",
+      "guard": "StepError.rejected",
+      "patch": {
+        "line": 188,
+        "before": "  | none => .error StepError.rejected",
+        "after": "  | none => .ok State.empty"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.ofOption_ok"
+      ],
+      "note": "the lifted economic refusal succeeds with the empty payload"
+    },
+    {
+      "id": "voteApply-skips-minting",
+      "target": "Reactivegas.voteApply",
+      "guard": null,
+      "patch": {
+        "line": 267,
+        "before": "  | .ok votes => .ok (syncAuth s votes)",
+        "after": "  | .ok votes => .ok { s with votes }"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.authStep_voteApply",
+        "Reactivegas.Composition.boundHistory_holds_backed_authorization"
+      ],
+      "note": "a vote step installs its payload and mints no authorization"
+    },
+    {
+      "id": "appFoldCore-grant-spends-negative",
+      "target": "Reactivegas.appFoldCore",
+      "guard": null,
+      "patch": {
+        "line": 285,
+        "before": "        spendThen (.permission c) .positive s",
+        "after": "        spendThen (.permission c) .negative s"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.apply_grant_spends"
+      ],
+      "note": "granting permission spends a negative authorization"
+    },
+    {
+      "id": "appFoldCore-backdonate-spends-negative",
+      "target": "Reactivegas.appFoldCore",
+      "guard": null,
+      "patch": {
+        "line": 291,
+        "before": "        spendThen (.backdonation w) .positive s",
+        "after": "        spendThen (.backdonation w) .negative s"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.apply_backdonate_spends"
+      ],
+      "note": "a backdonation spends a negative authorization"
+    },
+    {
+      "id": "appFoldCore-backdonate-other-share",
+      "target": "Reactivegas.appFoldCore",
+      "guard": null,
+      "patch": {
+        "line": 291,
+        "before": "        spendThen (.backdonation w) .positive s",
+        "after": "        spendThen (.backdonation 1) .positive s"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.apply_backdonate_spends"
+      ],
+      "note": "a backdonation spends the authorization of share 1, not of its own share"
+    },
+    {
+      "id": "guard-deny-responsabile",
+      "target": "Reactivegas.appFoldCore",
+      "guard": "StepError.rejected",
+      "patch": {
+        "line": 288,
+        "before": "        if isResponsabile pre signer then ofOption (denyByClosure s c)",
+        "after": "        if true then ofOption (denyByClosure s c)"
+      },
+      "claimedKills": [],
+      "note": "denying a permission needs no responsabile signer"
+    },
+    {
+      "id": "guard-open-bound-bindable",
+      "target": "Reactivegas.appFoldCore",
+      "guard": "StepError.rejected",
+      "patch": {
+        "line": 280,
+        "before": "        if bindable s qid target then",
+        "after": "        if true then"
+      },
+      "claimedKills": [],
+      "note": "a bound question opens whatever its id and target"
+    },
+    {
+      "id": "appFoldCore-open-bound-unbound",
+      "target": "Reactivegas.appFoldCore",
+      "guard": null,
+      "patch": {
+        "line": 281,
+        "before": "          voteApply θ pre { s with bindings := (qid, target) :: s.bindings } signer",
+        "after": "          voteApply θ pre { s with bindings := s.bindings } signer"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.boundHistory_holds_backed_authorization"
+      ],
+      "note": "opening a bound question records no binding"
+    },
+    {
+      "id": "appFold-skips-prune",
+      "target": "Reactivegas.appFold",
+      "guard": null,
+      "patch": {
+        "line": 303,
+        "before": "    | .ok s' => .ok (pruneAuth s')",
+        "after": "    | .ok s' => .ok s'"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.appFold_pruned",
+        "Reactivegas.Composition.apply_app_ok",
+        "Reactivegas.Composition.authStep_apply"
+      ],
+      "note": "the app fold keeps authorizations whose collection has left"
+    },
+    {
+      "id": "baseHook-no-minting",
+      "target": "Reactivegas.baseHook",
+      "guard": null,
+      "patch": {
+        "line": 384,
+        "before": "        .ok (pruneAuth (syncAuth cleaned (KelGroups.Vote.sweepClosures θ post departed)))",
+        "after": "        .ok (pruneAuth { cleaned with votes := KelGroups.Vote.sweepClosures θ post departed })"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.authStep_baseHook"
+      ],
+      "note": "a base change closes questions and mints no authorization"
+    },
+    {
+      "id": "baseHook-no-prune",
+      "target": "Reactivegas.baseHook",
+      "guard": null,
+      "patch": {
+        "line": 384,
+        "before": "        .ok (pruneAuth (syncAuth cleaned (KelGroups.Vote.sweepClosures θ post departed)))",
+        "after": "        .ok (syncAuth cleaned (KelGroups.Vote.sweepClosures θ post departed))"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.authStep_baseHook",
+        "Reactivegas.Composition.baseHook_pruned"
+      ],
+      "note": "a base change leaves authorizations whose collection the cleanup dissolved"
+    },
+    {
+      "id": "guard-base-hook-cleanup",
+      "target": "Reactivegas.baseHook",
+      "guard": "StepError.rejected",
+      "patch": {
+        "line": 377,
+        "before": "    | none => .error StepError.rejected",
+        "after": "    | none => .ok s"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.authStep_baseHook",
+        "Reactivegas.Composition.baseHook_pruned",
+        "Reactivegas.baseHook_votes",
+        "Reactivegas.base_departure_applies_cleanup",
+        "Reactivegas.i57_noop_holds",
+        "Reactivegas.integrated_theorem_witness_holds",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "a refused economic cleanup lets the base change through unchanged"
+    },
+    {
+      "id": "cleanOrigin-ignores-authorizations",
+      "target": "Reactivegas.cleanOrigin",
+      "guard": null,
+      "patch": {
+        "line": 445,
+        "before": "  payload.votes.closed.isEmpty && payload.bindings.isEmpty && payload.live.isEmpty",
+        "after": "  payload.votes.closed.isEmpty && payload.bindings.isEmpty"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.authTargetsPresent_of_history",
+        "Reactivegas.Composition.liveBacked_of_history"
+      ],
+      "note": "a founding payload may carry an unspent authorization"
+    },
+    {
+      "id": "cleanOrigin-ignores-closures",
+      "target": "Reactivegas.cleanOrigin",
+      "guard": null,
+      "patch": {
+        "line": 445,
+        "before": "  payload.votes.closed.isEmpty && payload.bindings.isEmpty && payload.live.isEmpty",
+        "after": "  payload.bindings.isEmpty && payload.live.isEmpty"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.authTargetsPresent_of_history"
+      ],
+      "note": "a founding payload may carry closure records"
+    },
+    {
+      "id": "boot-skips-clean-origin",
+      "target": "Reactivegas.boot",
+      "guard": null,
+      "patch": {
+        "line": 453,
+        "before": "  if productionWellFormed gs && cleanOrigin payload then some gs else none",
+        "after": "  if productionWellFormed gs then some gs else none"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.authTargetsPresent_of_history",
+        "Reactivegas.Composition.liveBacked_of_history"
+      ],
+      "note": "a guarded founding accepts a payload that is not a clean origin"
+    },
+    {
+      "id": "pullLive-ignores-verdict",
+      "target": "pullLive",
+      "guard": null,
+      "patch": {
+        "line": 120,
+        "before": "    if a.target = target ∧ a.verdict = verdict then some (a, t)",
+        "after": "    if a.target = target then some (a, t)"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.pullLive_spec"
+      ],
+      "note": "an authorization is pulled whatever its verdict"
+    },
+    {
+      "id": "pullLive-ignores-target",
+      "target": "pullLive",
+      "guard": null,
+      "patch": {
+        "line": 120,
+        "before": "    if a.target = target ∧ a.verdict = verdict then some (a, t)",
+        "after": "    if a.verdict = verdict then some (a, t)"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.pullLive_spec"
+      ],
+      "note": "an authorization is pulled whatever its target"
+    },
+    {
+      "id": "pullLive-drops-skipped",
+      "target": "pullLive",
+      "guard": null,
+      "patch": {
+        "line": 122,
+        "before": "      | some (hit, rest) => some (hit, a :: rest)",
+        "after": "      | some (hit, rest) => some (hit, rest)"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.pullLive_spec"
+      ],
+      "note": "pulling a later authorization drops those it skipped"
+    },
+    {
+      "id": "liveBacked-ignores-verdict",
+      "target": "Reactivegas.Composition.liveBacked",
+      "guard": null,
+      "patch": {
+        "line": 214,
+        "before": "    (fun r => decide (r.questionId = a.questionId ∧ r.verdict = a.verdict)))",
+        "after": "    (fun r => decide (r.questionId = a.questionId)))"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.liveBacked_iff"
+      ],
+      "note": "an authorization counts as backed by a closure of another verdict"
+    },
+    {
+      "id": "liveBacked-some-backed",
+      "target": "Reactivegas.Composition.liveBacked",
+      "guard": null,
+      "patch": {
+        "line": 213,
+        "before": "  s.live.all (fun a => s.votes.closed.any",
+        "after": "  s.live.any (fun a => s.votes.closed.any"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.liveBacked_iff",
+        "Reactivegas.Composition.liveBacked_of_history"
+      ],
+      "note": "a state is backed when some, not every, authorization is"
+    },
+    {
+      "id": "appFoldCore-deny-bypasses-closure",
+      "target": "Reactivegas.appFoldCore",
+      "guard": null,
+      "patch": {
+        "line": 288,
+        "before": "        if isResponsabile pre signer then ofOption (denyByClosure s c)",
+        "after": "        if isResponsabile pre signer then ofOption (step pre s signer (.denyPermission c) auth)"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.apply_deny_spends",
+        "Reactivegas.Composition.authStep_appFoldCore"
+      ],
+      "note": "denying a permission runs the economic core and spends no closure-derived authorization"
+    },
+    {
+      "id": "step-grant-writes-authorization",
+      "target": "step",
+      "guard": null,
+      "patch": {
+        "line": 57,
+        "before": "    pure { s with collections := { col with permitted := true } :: rest }",
+        "after": "    pure { s with live := [], collections := { col with permitted := true } :: rest }"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.step_auth_frame",
+        "step_grant_inv"
+      ],
+      "note": "the economic core's permission grant also rewrites the authorization list"
     }
   ]
 }
