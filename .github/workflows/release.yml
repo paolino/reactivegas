@@ -40,7 +40,12 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       TAG: ${{ needs.release-please.outputs.tag_name }}
     steps:
-      - run: sudo rm -rf /opt&
+      - name: Free disk space in the foreground
+        run: |
+          df -h /
+          readlink -f /home/runner/actions-runner/cached/*/externals/node24 || true
+          sudo rm -rf /opt/hostedtoolcache
+          df -h /
 
       # The tag Release Please just created is the provenance of the published
       # asset. Building from a branch would publish bytes nobody can point at.
