@@ -17,4 +17,4 @@ machine; the hook only routes the departing key (D-1 in data-model).
 
 | ID | Module | Responsibility change |
 |---|---|---|
-| M81-L7-PROOF | `Reactivegas.CompositionRoot` (theorem), `Reactivegas.CompositionTests` or `Reactivegas.Lifecycle` (witnesses, inversions), `lean/mutants/*` (ledger rows, after PR 98) | L-7a..L-7c witnesses, M-MINT/M-REFUND inversions, the no-stranding theorem and its reachability exhibit. No production module changes. |
+| M81-L7-PROOF | new module `Reactivegas.CompositionRefund` (L-7c definitions and theorems; imports `Reactivegas.CompositionRoot`; registered as a root of the existing `ReactivegasComposition` library in `lean/lakefile.lean`), `Reactivegas.CompositionTests` or `Reactivegas.Lifecycle` (witnesses, inversions), `lean/mutants/*` (ledger rows, after PR 98) | L-7a..L-7c witnesses, M-MINT/M-REFUND inversions, the no-stranding theorem and its reachability exhibit. No production module changes. `lean/Reactivegas/CompositionRoot.lean` stays byte-identical to `a436417`: the simulator claim gate pins its sha256 and cites its theorems by line (#70; v3, Q-001 2026-11-08). |
