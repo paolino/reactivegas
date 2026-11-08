@@ -10,3 +10,10 @@ Ceiling 40 lines / 2500 bytes. No type changes (INV81-TYPES); new produced value
 | D-4 | Renounce closes exactly the named question; the subsequent sweep runs under the unchanged view. |
 | D-5 | A refused event leaves `VoteState` (and the integrated `State`) unchanged and is reported as an error. |
 | D-6 | Questions already in `closed` are never re-closed or revived. |
+
+## S81-B
+
+| ID | Rule |
+|---|---|
+| D-7 | No-stranding: for every present collection `c` and every negative closure record of a question whose binding to `.permission c` was in force when the record was appended, `live` holds a `.negative` authorization for `.permission c` with that question id, until `denyByClosure` spends it. |
+| D-8 | A refund is exact per owner: each pledger's conto rises by the sum of their accepted and pending pledges on `c`; total money (conti + escrow) is unchanged. |

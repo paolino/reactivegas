@@ -43,3 +43,19 @@ mutation-only definitions judged by the same oracle (INV81-CANFAIL).
 then the verbatim CI steps `just lean-toolchain-contract`, `just lean`,
 `just lean-corpus-verify` under `nix --quiet develop --command`.
 gate-authors=NONE (operator team: 3 Opus); synthesized by the ticket owner.
+
+## S81-B — L-7 (2026-11-08)
+
+Ceiling 25 lines / 1800 bytes. Proof-and-witness slice, topology OWNER (it
+makes a conformance claim over money): no production definition changes
+(INV81-L7-CONTRACT). The quantified no-stranding statement rides on #76's
+provenance machinery (`liveBacked_of_history`, `authStep_*`,
+`authTargetsPresent_of_history`); the commit owner chooses its exact form.
+Order on master: #66 S3 (PR 98, mutant ledger) lands before S81-B merges;
+when it does, master is merged into this branch and the ledger rows for the
+new theorems are part of S81-B (gate row G4 is appended then as gate v3).
+Team (operator, 2026-11-08): ticket owner Opus; commit owner and persistent
+auditor `claude-sonnet-5-5 --effort high`; gate-authors=NONE; draft=NONE.
+Every Lean run: `flock /tmp/reactivegas/ms2/lean.lock` (ordinary) or
+`lean-long.lock` (mutant campaign), `systemd-run --user --scope -q
+-p MemoryMax=24G -p MemorySwapMax=0`, `LEAN_NUM_THREADS=4`; no Lean LSP.

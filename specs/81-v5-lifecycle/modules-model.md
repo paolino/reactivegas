@@ -12,3 +12,9 @@ Ceiling 40 lines / 2500 bytes. Changed responsibilities only.
 Dependency direction unchanged: `KelGroups` imports no `Reactivegas` module
 (`nix/lean-dependency-direction.sh`). Departure semantics stay in the vote
 machine; the hook only routes the departing key (D-1 in data-model).
+
+## S81-B
+
+| ID | Module | Responsibility change |
+|---|---|---|
+| M81-L7-PROOF | `Reactivegas.CompositionRoot` (theorem), `Reactivegas.CompositionTests` or `Reactivegas.Lifecycle` (witnesses, inversions), `lean/mutants/*` (ledger rows, after PR 98) | L-7a..L-7c witnesses, M-MINT/M-REFUND inversions, the no-stranding theorem and its reachability exhibit. No production module changes. |
