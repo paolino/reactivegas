@@ -12,7 +12,7 @@
 - [x] T8105: Executable RED for L-7a, L-7b (referente and non-referente proposer) and L-7c through the production root.
 - [x] T8106: No-stranding predicate and its theorem over production histories, with a reachable antecedent.
 - [x] T8107: Permanent M-MINT and M-REFUND inversions judged by the accepting oracle.
-- [ ] T8108: Mutant-ledger rows for every new theorem; rendered ledgers regenerated (after #66 S3 is on master).
+- [x] T8108: Mutant-ledger rows for every new theorem; rendered ledgers regenerated (after #66 S3 is on master).
 
 Tasks are stamped by the ticket owner after acceptance. Authoritative remote issue:
 https://github.com/paolino/reactivegas/issues/81
