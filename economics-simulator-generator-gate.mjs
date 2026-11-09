@@ -44,7 +44,7 @@
  * copy of the production core — then the unmodified gate GREEN.
  */
 
-import { readFileSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdtempSync, mkdirSync, rmSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { dirname, join, resolve } from 'node:path';
@@ -571,6 +571,136 @@ async function greenBaseline(config) {
 
 const SMALL = { ...CONFIG, seeds: [1, 2], tracesPerSeed: 2, stepsPerTrace: 40 };
 
+/* --- shrinking: the counterexample a violation leaves is cut down to the
+   shortest history that still violates the same law, and emitted as a scenario
+   the scenario gate replays. Every control runs the production generator on a
+   one-edit copy of the production core. */
+const SHRUNK_MAX_STEPS = 8;     // refund short by one needs: open, deposit, pledge, accept, fail
+const stepsOf = rep => rep.envelope.steps.map(s => ({ signer: s.signer, ev: s.event }));
+const planted = new Map();
+async function plantedRun(work, m) {
+  if (!planted.has(m.name)) {
+    const mod = await loadCore(mutantCore(work, m.name, m.edits));
+    planted.set(m.name, { mod, res: runGenerator({ mod, surface: buildSurface() }) });
+  }
+  return planted.get(m.name);
+}
+const REFUND = MUTANTS[0];
+/* a core with two planted defects, played one trace at a time: seed 1 ends in
+   conservation, seed 8 ends in a non-proposer's renounce accepted */
+async function twoDefects(work) {
+  const mod = await loadCore(mutantCore(work, 'refund-and-renounce',
+    [...REFUND.edits, ...MUTANTS.find(m => m.name === 'renounce-by-non-proposer-accepted').edits]));
+  const on = (seed, extra) => runGenerator({ mod, surface: buildSurface(),
+    config: { ...CONFIG, seeds: [seed], tracesPerSeed: 1 }, ...extra });
+  return { mod, on };
+}
+const redFor = (res, pattern, what) => {
+  const hit = res.reasons.find(x => pattern.test(x));
+  if (!hit) throw new Error(`${what} was not RED: ${res.reasons.join('; ') || 'green'}`);
+  return 'RED: ' + hit;
+};
+
+const SHRINK_CONTROLS = [
+  { name: 'shrink-planted-mutant', run: async work => {
+    const { mod, res } = await plantedRun(work, REFUND);
+    const rep = res.report;
+    if (!rep) throw new Error('the planted refund mutant was not found');
+    if (!rep.shrunk) throw new Error('the violation was reported unshrunk: the report carries no shrunk history');
+    const bad = res.reasons.filter(x => /^(shrink|scenario gate)/.test(x));
+    if (bad.length) throw new Error('the shrunk history was rejected: ' + bad.join('; '));
+    if (rep.shrunk.length > SHRUNK_MAX_STEPS)
+      throw new Error(`shrunk to ${rep.shrunk.length} steps, more than the stated ${SHRUNK_MAX_STEPS}`);
+    const dir = join(work, 'shrunk-scenarios');
+    mkdirSync(dir, { recursive: true });
+    const file = join(dir, `${rep.shrunk.scenario.name}.json`);
+    writeFileSync(file, JSON.stringify(rep.shrunk.scenario));
+    const sc = JSON.parse(readFileSync(file, 'utf8'));
+    const { runScenario } = await import('./economics-simulator-scenario-gate.mjs');
+    runScenario(sc, mod);
+    const hit = lawFindings(mod, mod.verifyIntegratedV1(sc.wrap).final).asserted.find(f => f.law === rep.law);
+    if (!hit) throw new Error(`the shrunk envelope replays without the law violation ${rep.law}`);
+    return `${rep.originalLength} -> ${rep.shrunk.length} steps; the emitted scenario replays to ${rep.law}`;
+  } },
+  { name: 'shrink-keeps-another-law', run: async work => {
+    const { on } = await twoDefects(work);
+    const other = on(1).report;
+    if (!other || other.law !== 'conservation (L6)') throw new Error('control mal costruito: seed 1 does not end in conservation');
+    const res = on(8, { shrink: (steps, violation) => ({ steps: stepsOf(other), violation }) });
+    if (!res.report || res.report.kind !== 'renounceByNonProposer')
+      throw new Error('control mal costruito: seed 8 does not end in the renounce defect');
+    return redFor(res, /^shrink: violates conservation \(L6\) instead of invalid step refused/, 'a candidate violating another law');
+  } },
+  { name: 'shrink-keeps-no-violation', run: async work => {
+    const { mod } = await plantedRun(work, REFUND);
+    const res = runGenerator({ mod, surface: buildSurface(), config: { ...CONFIG, seeds: [1], tracesPerSeed: 1 },
+      shrink: (steps, violation) => ({ steps: steps.slice(0, -1), violation }) });
+    return redFor(res, /^shrink: violates no law/, 'a candidate that violates no law');
+  } },
+  { name: 'shrink-keeps-refused-step', run: async work => {
+    const { mod } = await plantedRun(work, REFUND);
+    const refusedAt = (steps, skip) => {
+      let gs = mod.bootAggregate();
+      for (const [i, s] of steps.entries()) {
+        if (i === skip) continue;
+        const det = mod.applyIntegrated(gs, s.signer, JSON.parse(JSON.stringify(s.ev)));
+        if (det.refused) return true;
+        gs = det.gs;
+      }
+      return false;
+    };
+    const cut = (steps, violation) => {
+      const i = steps.slice(0, -1).findIndex((_, k) => refusedAt(steps, k));
+      if (i < 0) throw new Error('control mal costruito: no single removal makes the history refused');
+      return { steps: steps.filter((_, k) => k !== i), violation };
+    };
+    const res = runGenerator({ mod, surface: buildSurface(), config: { ...CONFIG, seeds: [1], tracesPerSeed: 1 },
+      shrink: cut });
+    return redFor(res, /^shrink: refused at step \d+/, 'a candidate refused at a step the original applied');
+  } },
+  { name: 'shrink-returns-input-unshrunk', run: async work => {
+    const { mod } = await plantedRun(work, REFUND);
+    const res = runGenerator({ mod, surface: buildSurface(), config: { ...CONFIG, seeds: [1], tracesPerSeed: 1 },
+      shrink: (steps, violation) => ({ steps, violation }) });
+    return redFor(res, /^shrink: not a local minimum/, 'a shrinker returning its input unshrunk');
+  } },
+  { name: 'shrink-emits-envelope-the-scenario-gate-rejects', run: async work => {
+    const { mod, res: first } = await plantedRun(work, REFUND);
+    const corrupt = () => {
+      const wrap = JSON.parse(JSON.stringify(first.report.envelope));
+      wrap.steps[0].result.aggregate.appFold.conti.push(['zz', 99]);
+      return { name: 'corrupted-emission', description: 'poststate mutated', wrap,
+        assertions: ['no-vote-derived-without-evidence'], expect: { governed: 'accepted' } };
+    };
+    const res = runGenerator({ mod, surface: buildSurface(), config: { ...CONFIG, seeds: [1], tracesPerSeed: 1 },
+      emit: corrupt });
+    return redFor(res, /^scenario gate rejects the emitted history: .*(divergente|discontinuo)/, 'an emitted envelope the scenario gate rejects');
+  } },
+  { name: 'shrink-deterministic', run: async work => {
+    const { mod, res: a } = await plantedRun(work, REFUND);
+    const b = runGenerator({ mod, surface: buildSurface() });
+    if (!a.report || !a.report.shrunk || !b.report || !b.report.shrunk)
+      throw new Error('the violation was reported unshrunk: the report carries no shrunk history');
+    if (JSON.stringify(a.report.shrunk.scenario) !== JSON.stringify(b.report.shrunk.scenario))
+      throw new Error('two shrinks of the same seed and violation differ');
+    return `two shrinks identical (${sha256(JSON.stringify(a.report.shrunk.scenario)).slice(0, 12)})`;
+  } },
+  { name: 'shrunk-scenario-is-mutant-only', run: async work => {
+    const { res } = await plantedRun(work, REFUND);
+    if (!res.report || !res.report.shrunk)
+      throw new Error('the violation was reported unshrunk: the report carries no shrunk history');
+    const { runScenario } = await import('./economics-simulator-scenario-gate.mjs');
+    try { runScenario(JSON.parse(JSON.stringify(res.report.shrunk.scenario)), await loadCore(CORE)); }
+    catch (e) { return 'the unmutated core refuses the mutant counterexample: ' + e.message.slice(0, 100); }
+    throw new Error('the unmutated core accepts a counterexample found only on the mutant');
+  } },
+  { name: 'shrink-controls-within-budget', run: async () => {
+    const code = await selftest(['budget'], { budgetMs: 0, quiet: true });
+    if (code !== 1) throw new Error('a selftest that exceeds its wall budget was not RED');
+    return 'RED: the selftest wall budget is enforced';
+  } },
+];
+
 const CONTROLS = [
   { name: 'surface-shared', run: async () => {
     const extra = JSON.stringify({ 'lean/KelGroups/ZzSurface.lean':
@@ -701,6 +831,7 @@ const CONTROLS = [
       throw new Error(`an exceeded budget was not RED: ${res.reasons.join('; ')}`);
     return 'RED: ' + res.reasons.find(x => /^budget exceeded/.test(x));
   } },
+  ...SHRINK_CONTROLS,
 ];
 
 async function selftest(only) {
