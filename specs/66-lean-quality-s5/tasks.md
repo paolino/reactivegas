@@ -2,10 +2,10 @@
 
 ## Exact inversions
 
-- [ ] T501 Hold every bound event inversion to its converse, selected from the discovered extent (tightness-over-discovered-extent, every-inversion-exact)
-- [ ] T502 State every live guard conjunct in the inversion conclusions, including `stalled` for pledge, accept-pledge and close-purchase; grant and deny held to the same converse (live-guard-conjuncts-stated)
-- [ ] T503 Extend the negative control to a non-exact conclusion on a constructor outside the former hand list (tightness-negative-control)
-- [ ] T504 Re-derive the mutant ledger on the changed statements (ledger-current)
+- [x] T501 Hold every bound event inversion to its converse, selected from the discovered extent (tightness-over-discovered-extent, every-inversion-exact)
+- [x] T502 State every live guard conjunct in the inversion conclusions, including `stalled` for pledge, accept-pledge and close-purchase; grant and deny held to the same converse (live-guard-conjuncts-stated)
+- [x] T503 Extend the negative control to a non-exact conclusion on a constructor outside the former hand list (tightness-negative-control)
+- [x] T504 Re-derive the mutant ledger on the changed statements (ledger-current)
 
 ## Observed refusals
 
