@@ -80,8 +80,10 @@
  * HEAD it commits Lean edits and judges that worktree as the checkout under
  * test, one control per rule judged against HEAD (see leanBranchControls):
  * a cited Lean file edited with re-made receipts passes, without them REDs
- * naming the file; edited pinned modules and vocabularies RED against HEAD;
- * orphaned source and core pins RED on reachability.
+ * naming the file; an edited composition module REDs against HEAD; orphaned
+ * source and core pins RED on reachability. Before that, controls prove the
+ * core pin is derived from the history of HEAD: no derivable pin REDs naming
+ * its cause, and a branch that changes Lean follows its own pin.
  */
 
 import { readFileSync, writeFileSync, mkdtempSync, mkdirSync, rmSync, cpSync,
@@ -120,18 +122,14 @@ const ACCEPTED_COMPOSITION = {
   module: 'lean/Reactivegas/Composition.lean',
 };
 
-/* Accepted core pin: Event inventory is derived from the unique
-   file in this freshness manifest — never from a parallel path constant,
-   EVENT_ROUTES, TAG_CLAIMS, or EV. Pin-freshness compares each declared
-   file's blob at the pin with its blob at HEAD. An empty, ambiguous, or
-   repointed files list is RED. The pin is the merge of master (#68,
-   proposer is not an assent) into #76's Lean (89c78a7), the last commit
-   changing lean/Reactivegas or lean/KelGroups, whose vocabularies the
-   simulator follows. */
+/* Accepted core: Event inventory is derived from the unique file in this
+   freshness manifest — never from a parallel path constant, EVENT_ROUTES,
+   TAG_CLAIMS, or EV. Pin-freshness compares each declared file's blob at the
+   core pin with its blob at HEAD. An empty, ambiguous, or repointed files
+   list is RED. The core pin itself is never written here: deriveCorePin takes
+   it from the history of HEAD. */
 const MANIFEST_EVENT_FILE = 'lean/Reactivegas/Types.lean';
 const ACCEPTED_CORE = {
-  commit: '89c78a7b767de31cf9c2f1461a2784d1a4498edc',
-  tree: 'f51175d69ac72a32a698bd836560a1496d93f6e7',
   files: [MANIFEST_EVENT_FILE],
 };
 const DRIVER_IMPORTS = Object.freeze([
@@ -332,20 +330,47 @@ function eventSourceFromManifest(files = ACCEPTED_CORE.files) {
   return files[0];
 }
 
-function pinnedConstructors(repo = REPO) {
-  const gotTree = gitShow(ACCEPTED_CORE.commit + "^{tree}", repo);
-  if (gotTree !== ACCEPTED_CORE.tree)
-    throw new Error("accepted core tree mismatch: " + gotTree);
+/* The one source of the core pin: the last commit reachable from `head` that
+   changes a path under the vocabulary roots, so the simulator is judged
+   against the Lean of the checkout under test and a branch that changes Lean
+   needs no edit here. A truncated history would name its boundary commit as
+   that change, so it is refused. Reads git history only. */
+const VOCAB_ROOTS = ['lean/Reactivegas', 'lean/KelGroups'];
+
+function deriveCorePin(repo, head) {
+  const git = args => execFileSync('git', ['-C', repo, ...args],
+    { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+  const refuse = cause => new Error(`core pin: cannot derive from the history of ${head}: ${cause}`);
+  try { git(['rev-parse', '--verify', '--quiet', head + '^{commit}']); }
+  catch { throw refuse('unresolvable revision'); }
+  if (git(['rev-parse', '--is-shallow-repository']) === 'true')
+    throw refuse('truncated history (shallow checkout)');
+  const commit = git(['log', '-1', '--format=%H', head, '--', ...VOCAB_ROOTS]);
+  if (!commit) throw refuse('no commit changes ' + VOCAB_ROOTS.join(', '));
+  return { commit, tree: git(['rev-parse', commit + '^{tree}']) };
+}
+
+function assertCorePinReachable(commit, repo = REPO) {
   try {
     execFileSync('git', ['-C', repo, 'merge-base', '--is-ancestor',
-      ACCEPTED_CORE.commit, 'HEAD'], { stdio: ['ignore', 'pipe', 'pipe'] });
+      commit, 'HEAD'], { stdio: ['ignore', 'pipe', 'pipe'] });
   } catch (e) {
-    throw new Error('pin core non raggiungibile da HEAD (commit orfano): ' + ACCEPTED_CORE.commit);
+    throw new Error('pin core non raggiungibile da HEAD (commit orfano): ' + commit);
   }
-  assertCitedFilesFresh(ACCEPTED_CORE.commit, ACCEPTED_CORE.files, repo);
+}
+
+/* the derived pin, checked reachable and fresh for the files the core reads */
+function acceptedCorePin(files, repo = REPO) {
+  const pin = deriveCorePin(repo, 'HEAD');
+  assertCorePinReachable(pin.commit, repo);
+  assertCitedFilesFresh(pin.commit, files, repo);
+  return pin;
+}
+
+function pinnedConstructors(pin, repo = REPO) {
   const eventSource = eventSourceFromManifest(ACCEPTED_CORE.files);
   const src = execFileSync('git', ['-C', repo, 'show',
-    ACCEPTED_CORE.commit + ':' + eventSource], { encoding: 'utf8' });
+    pin + ':' + eventSource], { encoding: 'utf8' });
   const block = src.match(/inductive Event where([\s\S]*?)deriving DecidableEq, Repr/);
   if (!block) throw new Error('pinned Lean Event declaration not found');
   const ctors = [...block[1].matchAll(/^\s*\|\s+([A-Za-z][A-Za-z0-9_]*)\b/gm)]
@@ -357,7 +382,7 @@ function pinnedConstructors(repo = REPO) {
 }
 
 /* Every pinned Lean event vocabulary the simulator could route, DISCOVERED
-   at the accepted pin: each inductive under lean/Reactivegas and
+   at the core pin: each inductive under lean/Reactivegas and
    lean/KelGroups whose name ends in Event, Command, Proposal or Mutation —
    never a list of names here. Each discovered inductive is either ROUTED,
    and then every constructor parsed from its declaration needs a live
@@ -366,7 +391,6 @@ function pinnedConstructors(repo = REPO) {
    in neither table, a table entry no longer discovered, an empty extent, a
    constructor without a witness or a witness for no constructor is RED.
    The legacy Event inventory keeps its own `attempt` witnesses above. */
-const VOCAB_ROOTS = ['lean/Reactivegas', 'lean/KelGroups'];
 const VOCAB_RE = /^inductive ([A-Za-z]*(?:Event|Command|Proposal|Mutation))\b[^\n]*\bwhere\b/gm;
 
 function parseVocabularies(file, src) {
@@ -382,16 +406,17 @@ function parseVocabularies(file, src) {
 }
 
 function pinnedVocabularies(extra, repo = REPO) {
+  const pin = deriveCorePin(repo, 'HEAD').commit;
   const files = execFileSync('git', ['-C', repo, 'ls-tree', '-r', '--name-only',
-    ACCEPTED_CORE.commit, '--', ...VOCAB_ROOTS], { encoding: 'utf8' })
+    pin, '--', ...VOCAB_ROOTS], { encoding: 'utf8' })
     .split('\n').filter(f => f.endsWith('.lean')).sort();
   if (!files.length) throw new Error('vocabulary discovery: no Lean source at the pin');
   const vocab = [];
   for (const file of files) {
-    const src = execFileSync('git', ['-C', repo, 'show', ACCEPTED_CORE.commit + ':' + file],
+    const src = execFileSync('git', ['-C', repo, 'show', pin + ':' + file],
       { encoding: 'utf8' });
     const found = parseVocabularies(file, src);
-    if (found.length) assertCitedFilesFresh(ACCEPTED_CORE.commit, [file], repo);
+    if (found.length) assertCitedFilesFresh(pin, [file], repo);
     vocab.push(...found);
   }
   for (const [file, src] of Object.entries(extra || {})) vocab.push(...parseVocabularies(file, src));
@@ -634,7 +659,11 @@ async function loadCore(corePath) {
 async function checkMachineCoverage(corePath, repo = REPO) {
   const reasons = [];
   let ctors;
-  try { ctors = pinnedConstructors(repo); }
+  let corePin;
+  try {
+    corePin = acceptedCorePin(ACCEPTED_CORE.files, repo);
+    ctors = pinnedConstructors(corePin.commit, repo);
+  }
   catch (e) { return { ok: false, reasons: [e.message] }; }
   const active = ctors;   // no dated subtraction: the pin itself is post-#62
   let mod;
@@ -719,7 +748,7 @@ async function checkMachineCoverage(corePath, repo = REPO) {
   catch (e) { reasons.push(e.message); }
   reasons.push(...vc.reasons);
 
-  const tally = { pinned: ctors.length, retired: 0, executable: active.length,
+  const tally = { corePin: corePin.commit, pinned: ctors.length, retired: 0, executable: active.length,
     vocabularies: vc.vocabularies, witnessed: vc.witnessed };
   if (reasons.length) return { ok: false, reasons, ...tally };
   return { ok: true, reasons: [], ...tally };
@@ -728,7 +757,7 @@ async function checkMachineCoverage(corePath, repo = REPO) {
 function stalePinSelftest() {
   const eventSource = eventSourceFromManifest(ACCEPTED_CORE.files);
   const headBlob = gitShow(`HEAD:${eventSource}`);
-  const history = execFileSync('git', ['-C', REPO, 'rev-list', `${ACCEPTED_CORE.commit}^`],
+  const history = execFileSync('git', ['-C', REPO, 'rev-list', `${deriveCorePin(REPO, 'HEAD').commit}^`],
     { encoding: 'utf8' }).trim().split('\n');
   let stalePin = null;
   for (const candidate of history) {
@@ -848,7 +877,7 @@ async function removedVoteHandlerControl() {
 async function unhandledVocabularyControl() {
   const mod = await loadCore(CORE);
   const voteFile = 'lean/KelGroups/Vote/Event.lean';
-  const src = execFileSync('git', ['-C', REPO, 'show', ACCEPTED_CORE.commit + ':' + voteFile],
+  const src = execFileSync('git', ['-C', REPO, 'show', deriveCorePin(REPO, 'HEAD').commit + ':' + voteFile],
     { encoding: 'utf8' });
   const grown = src.replace(/inductive VoteEvent where\n/, 'inductive VoteEvent where\n  | zzUnhandled\n');
   if (grown === src) throw new Error('selftest mutation did not grow the VoteEvent inventory');
@@ -1628,17 +1657,17 @@ async function gateAt(dir, work) {
  * commit only the worktree's HEAD reaches, so a rule still reading
  * origin/master, or this repository's own HEAD, fails here:
  *   - a cited Lean file edited without re-made receipts: RED naming it;
- *   - the core Event source and the composition module edited: RED on both
- *     pin blobs differing from the blobs at HEAD;
- *   - an event vocabulary source edited: RED on its pin blob vs HEAD;
+ *   - the composition module edited: RED on its pin blob differing from the
+ *     blob at HEAD;
  *   - the receipt's sources/sourcePins re-made against the edit commit: the
  *     whole gate passes, the pin being an ancestor of the worktree's HEAD;
  *   - a source pin moved to a parentless commit of the same tree: RED on
  *     reachability alone;
  *   - the receipt's composition commit moved to the worktree's HEAD: only the
  *     tree mismatch REDs, never reachability;
- *   - the accepted core pin moved to the worktree's HEAD: the core inventory
- *     derives; moved to a parentless commit of that tree: RED on reachability.
+ *   - the core pin derived from the worktree's history is its last Lean
+ *     commit and the core inventory derives from it; a parentless commit of
+ *     that tree as core pin: RED on reachability.
  * Returns the list of failed controls (empty when all hold).
  */
 async function leanBranchControls(work) {
@@ -1669,11 +1698,7 @@ async function leanBranchControls(work) {
         ACCEPTED_CORE.files.includes(victim) || victim === ACCEPTED_COMPOSITION.module ||
         parseVocabularies(victim, src).length)
       return [`controllo mal costruito: ${victim} non è una sorgente citata fuori da core, composizione e vocabolari`];
-    const coreFile = eventSourceFromManifest(ACCEPTED_CORE.files);
     const compFile = ACCEPTED_COMPOSITION.module;
-    const vocabFile = pinnedVocabularies(undefined, REPO).map(v => v.file)
-      .find(f => !ACCEPTED_CORE.files.includes(f));
-    if (!vocabFile) return ['controllo mal costruito: nessun vocabolario scoperto fuori dal manifesto core'];
 
     appendTo(victim, '-- claim-gate selftest: a Lean-changing branch');
     const edit = scratchCommit(dir, [victim], 'claim-gate selftest: edit a cited Lean file');
@@ -1684,29 +1709,16 @@ async function leanBranchControls(work) {
       failures.push(`ramo Lean senza ricevute rifatte non RED sul file ${victim}: ${staleText.slice(0, 300)}`);
     else red('ramo Lean senza ricevute rifatte', staleText);
 
-    // the core Event source and the composition module edited on the branch:
-    // their blobs at the accepted pins no longer equal the blobs at HEAD
-    for (const f of [coreFile, compFile]) appendTo(f, '-- claim-gate selftest: a pinned module edited on the branch');
-    scratchCommit(dir, [coreFile, compFile], 'claim-gate selftest: edit the pinned modules');
-    const wantCore = `stale cited file ${coreFile}: pin blob=${git(['rev-parse', ACCEPTED_CORE.commit + ':' + coreFile])} HEAD blob=${git(['rev-parse', 'HEAD:' + coreFile])}`;
+    // the composition module edited on the branch: its blob at the accepted
+    // composition pin no longer equals the blob at HEAD
+    appendTo(compFile, '-- claim-gate selftest: the composition module edited on the branch');
+    scratchCommit(dir, [compFile], 'claim-gate selftest: edit the composition module');
     const wantComp = `modulo composizione obsoleto al pin: pin=${git(['rev-parse', ex.composition.commit + ':' + compFile])} HEAD=${git(['rev-parse', 'HEAD:' + compFile])}`;
     const drifted = await gateAt(dir, work);
     const driftText = drifted.reasons.join('\n');
-    if (drifted.ok || !driftText.includes(wantCore) || !driftText.includes(wantComp))
-      failures.push(`moduli al pin modificati sul ramo non RED contro HEAD — atteso «${wantCore}» e «${wantComp}»: ${driftText.slice(0, 400)}`);
-    else red('moduli al pin modificati sul ramo', wantCore);
-    git(['checkout', '--quiet', '--detach', edit]);
-
-    // an event vocabulary source edited on the branch: the vocabulary
-    // discovery's freshness check judges its pin blob against HEAD
-    appendTo(vocabFile, '-- claim-gate selftest: a vocabulary edited on the branch');
-    scratchCommit(dir, [vocabFile], 'claim-gate selftest: edit a vocabulary source');
-    const wantVocab = `stale cited file ${vocabFile}: pin blob=${git(['rev-parse', ACCEPTED_CORE.commit + ':' + vocabFile])} HEAD blob=${git(['rev-parse', 'HEAD:' + vocabFile])}`;
-    const vmc = await checkMachineCoverage(join(dir, 'economics-simulator-core.mjs'), dir);
-    const vocabText = (vmc.reasons || []).join('\n');
-    if (vmc.ok || !vocabText.includes(wantVocab))
-      failures.push(`vocabolario modificato sul ramo non RED contro HEAD — atteso «${wantVocab}»: ${vocabText.slice(0, 300)}`);
-    else red('vocabolario modificato sul ramo', wantVocab);
+    if (drifted.ok || !driftText.includes(wantComp))
+      failures.push(`modulo di composizione modificato sul ramo non RED contro HEAD — atteso «${wantComp}»: ${driftText.slice(0, 400)}`);
+    else red('modulo di composizione modificato sul ramo', wantComp);
     git(['checkout', '--quiet', '--detach', edit]);
 
     const srcNeedle = `'${victim}': '${ex.sources[victim]}',`;
@@ -1746,28 +1758,25 @@ async function leanBranchControls(work) {
       failures.push(`pin composizione sul ramo giudicato fuori da HEAD: ${movedText.slice(0, 300)}`);
     else red('pin composizione sul ramo (solo albero)', movedText);
 
-    // the accepted core pin moved to the worktree's HEAD derives the
-    // inventory; moved to a parentless commit of that tree it REDs
-    const savedCore = { commit: ACCEPTED_CORE.commit, tree: ACCEPTED_CORE.tree };
-    const coreOrphan = orphanOf('HEAD');
-    try {
-      ACCEPTED_CORE.commit = remadeHead;
-      ACCEPTED_CORE.tree = git(['rev-parse', 'HEAD^{tree}']);
-      try {
-        const ctors = pinnedConstructors(dir);
-        if (!ctors.length) failures.push('pin core sul ramo: inventario vuoto');
-        else console.log(`controllo positivo «pin core sul ramo»: GREEN — ${ctors.length} costruttori derivati`);
-      } catch (e) { failures.push(`pin core sul ramo RESPINTO: ${e.message.slice(0, 300)}`); }
-      ACCEPTED_CORE.commit = coreOrphan;
-      let coreText = '';
-      try { pinnedConstructors(dir); } catch (e) { coreText = e.message; }
-      if (!coreText.includes('pin core non raggiungibile da HEAD (commit orfano): ' + coreOrphan))
-        failures.push(`pin core orfano non RED per raggiungibilità: ${coreText.slice(0, 300)}`);
-      else red('pin core orfano', coreText);
-    } finally {
-      ACCEPTED_CORE.commit = savedCore.commit;
-      ACCEPTED_CORE.tree = savedCore.tree;
+    // the core pin of the branch is derived from its own history: the last
+    // Lean-changing commit, not the receipt re-make above it
+    const branchPin = deriveCorePin(dir, 'HEAD');
+    if (branchPin.commit !== edit)
+      failures.push(`pin core del ramo non derivato dall'ultimo commit Lean: atteso ${edit}, trovato ${branchPin.commit}`);
+    else {
+      const ctors = pinnedConstructors(branchPin.commit, dir);
+      if (!ctors.length) failures.push('pin core sul ramo: inventario vuoto');
+      else console.log(`controllo positivo «pin core sul ramo»: GREEN — ${ctors.length} costruttori derivati da ${edit.slice(0, 10)}…`);
     }
+
+    // a core pin that is not an ancestor of HEAD: the reachability check
+    // REDs with the orphan message
+    const coreOrphan = orphanOf('HEAD');
+    let coreText = '';
+    try { assertCorePinReachable(coreOrphan, dir); } catch (e) { coreText = e.message; }
+    if (!coreText.includes('pin core non raggiungibile da HEAD (commit orfano): ' + coreOrphan))
+      failures.push(`pin core orfano non RED per raggiungibilità: ${coreText.slice(0, 300)}`);
+    else red('pin core orfano', coreText);
     return failures;
   } finally {
     try { execFileSync('git', ['-C', REPO, 'worktree', 'remove', '--force', dir],
