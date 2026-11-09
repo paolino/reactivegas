@@ -124,14 +124,14 @@ const ACCEPTED_COMPOSITION = {
    file in this freshness manifest — never from a parallel path constant,
    EVENT_ROUTES, TAG_CLAIMS, or EV. Pin-freshness compares each declared
    file's blob at the pin with its blob at HEAD. An empty, ambiguous, or
-   repointed files list is RED. The pin is the merge of master (#68,
-   proposer is not an assent) into #76's Lean (89c78a7), the last commit
-   changing lean/Reactivegas or lean/KelGroups, whose vocabularies the
-   simulator follows. */
+   repointed files list is RED. The pin is the commit strengthening the
+   pledge, accept and close inversions (1966a1e), the last commit changing
+   lean/Reactivegas or lean/KelGroups, whose vocabularies the simulator
+   follows. */
 const MANIFEST_EVENT_FILE = 'lean/Reactivegas/Types.lean';
 const ACCEPTED_CORE = {
-  commit: '89c78a7b767de31cf9c2f1461a2784d1a4498edc',
-  tree: 'f51175d69ac72a32a698bd836560a1496d93f6e7',
+  commit: '1966a1e68b141f87d6171faa58130e94a9fabaac',
+  tree: '0b935e76f3be36404a4923c160d516c1bff2545d',
   files: [MANIFEST_EVENT_FILE],
 };
 const DRIVER_IMPORTS = Object.freeze([
@@ -1256,12 +1256,12 @@ async function selftest(work) {
       name: 'collegamento citazione senza file',
       expect: /collegamento citazione senza file/,
       run: () => {
-        const needle = "d: 'step_authorized', f: 'lean/Reactivegas/Invariants.lean', l: 561";
+        const needle = "d: 'step_authorized', f: 'lean/Reactivegas/Invariants.lean', l: 567";
         if (!doc.includes(needle) || doc.split(needle).length !== 2)
           return { ok: false, reasons: ['controllo mal costruito: riga auth non unica'] };
         const p = join(work, 'sab-link-file.html');
         writeFileSync(p, doc.replace(needle,
-          "d: 'step_authorized', f: null, l: 561"));
+          "d: 'step_authorized', f: null, l: 567"));
         return runGate({ html: p, work });
       },
     },
@@ -1269,7 +1269,7 @@ async function selftest(work) {
       name: 'collegamento citazione senza riga',
       expect: /collegamento citazione senza riga/,
       run: () => {
-        const needle = "d: 'step_authorized', f: 'lean/Reactivegas/Invariants.lean', l: 561";
+        const needle = "d: 'step_authorized', f: 'lean/Reactivegas/Invariants.lean', l: 567";
         if (!doc.includes(needle) || doc.split(needle).length !== 2)
           return { ok: false, reasons: ['controllo mal costruito: riga auth non unica'] };
         const p = join(work, 'sab-link-line.html');
