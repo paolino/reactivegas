@@ -369,17 +369,27 @@ function generateTrace(seed, config, surface) {
     const t = tally[name] || (tally[name] = { attempted: 0, applied: 0 });
     t[field]++;
   };
+  /* coverage by construction: a production the core has not yet applied in this
+     trace is drawn ahead of those it has, an invalid step ahead of the kinds
+     already refused */
+  const appliedOf = name => (tally[name] || { applied: 0 }).applied;
+  const refusedOf = name => (tally[name] || { attempted: 0, applied: 0 }).attempted - appliedOf(name);
+  const weigh = (name, counts) => 1 / ((1 + counts(name)) ** 2 * (1 + (counts.refused ? counts.refused(name) : 0)));
   for (let index = 0; index < config.stepsPerTrace; index++) {
     const c = stateContext(mod, gs, r, extra);
     const wantInvalid = r() * config.invalidShare[1] < config.invalidShare[0];
-    const choose = table => {
+    const choose = (table, counts) => {
       const cands = Object.entries(table).map(([name, p]) => [name, (p.draw || p)(c)])
         .filter(([, step]) => step);
       if (!cands.length) return null;
-      return cands[Math.floor(r() * cands.length)];
+      let total = 0;
+      const ws = cands.map(([name]) => (total += weigh(name, counts), total));
+      const x = r() * total;
+      const i = ws.findIndex(w => x < w);
+      return cands[i < 0 ? cands.length - 1 : i];
     };
-    const invalid = wantInvalid ? choose(surface.invalids) : null;
-    const drawn = invalid || choose(surface.productions);
+    const invalid = wantInvalid ? choose(surface.invalids, name => kinds[name] || 0) : null;
+    const drawn = invalid || choose(surface.productions, Object.assign(appliedOf, { refused: refusedOf }));
     if (!drawn) break;
     const [name, step] = drawn;
     const isInvalid = !!invalid;
