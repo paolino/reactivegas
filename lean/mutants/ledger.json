@@ -21,6 +21,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -48,6 +49,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -130,6 +133,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -146,7 +150,7 @@
         "voteApply-skips-minting",
         "windUpAdmin-keeps-cassa"
       ],
-      "reason": "unconstrained: under none of its 140 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "reason": "unconstrained: under none of its 144 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
     },
     {
       "theorem": "CompositionTests.l7_departure_no_stranding",
@@ -168,6 +172,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -194,6 +199,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "enactMutation-remove-noop",
         "franchise-empty",
@@ -275,6 +282,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -300,6 +308,7 @@
         "appFoldCore-open-bound-unbound",
         "assocLookup-misses",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "closeProposer-closes-positive",
         "emptyVoteState-has-question",
@@ -336,6 +345,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -362,6 +372,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -446,6 +458,7 @@
         "stripCollections-drops-pending",
         "sumBal-drops-first",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -462,7 +475,7 @@
         "voteApply-skips-minting",
         "windUpAdmin-keeps-cassa"
       ],
-      "reason": "unconstrained: under none of its 141 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "reason": "unconstrained: under none of its 145 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
     },
     {
       "theorem": "CompositionTests.l7_mutants_execute",
@@ -471,6 +484,7 @@
         "appFoldCore-open-bound-unbound",
         "assocLookup-misses",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "bump-subtracts",
@@ -505,6 +519,7 @@
         "appFoldCore-open-bound-unbound",
         "assocLookup-misses",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -565,6 +580,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -591,6 +607,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -675,6 +693,7 @@
         "stripCollections-drops-pending",
         "sumBal-drops-first",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -691,7 +710,7 @@
         "voteApply-skips-minting",
         "windUpAdmin-keeps-cassa"
       ],
-      "reason": "unconstrained: under none of its 141 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "reason": "unconstrained: under none of its 145 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
     },
     {
       "theorem": "CompositionTests.l7_renounce_no_stranding",
@@ -713,6 +732,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -739,6 +759,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "enactMutation-remove-noop",
         "franchise-empty",
@@ -820,6 +842,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -862,6 +885,7 @@
         "appFoldCore-open-bound-unbound",
         "assocLookup-misses",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "closeProposer-cause-tally",
@@ -896,6 +920,8 @@
         "assocInsert-appends",
         "assocLookup-misses",
         "closureCause-always-tally",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "franchise-empty",
         "guard-cast-designee",
@@ -912,6 +938,7 @@
         "renounce-discards-record",
         "renounce-keeps-open",
         "setInsert-duplicates",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "verdict-collective-strict",
@@ -919,7 +946,7 @@
         "view-lookupMember-misses",
         "vote-isResponsabile-true"
       ],
-      "reason": "masked: its proof uses `KelGroups.Vote.assocErase_key_absent'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocErase_sublist'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocInsert_keys_nodup'@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`), `KelGroups.Vote.assocInsert_mem_cases@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`) and 7 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration"
+      "reason": "masked: its proof uses `KelGroups.Vote.assocErase_key_absent'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocErase_sublist'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocInsert_keys_nodup'@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`), `KelGroups.Vote.assocInsert_mem_cases@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`) and 9 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration"
     },
     {
       "theorem": "KelGroups.Vote.ballots_nodup_disjoint",
@@ -930,6 +957,8 @@
         "assocInsert-appends",
         "assocLookup-misses",
         "closureCause-always-tally",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "franchise-empty",
@@ -947,6 +976,7 @@
         "renounce-discards-record",
         "renounce-keeps-open",
         "setInsert-duplicates",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "verdict-collective-strict",
@@ -954,7 +984,7 @@
         "view-lookupMember-misses",
         "vote-isResponsabile-true"
       ],
-      "reason": "masked: its proof uses `KelGroups.Vote.assocErase_key_absent'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocErase_sublist'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocInsert_keys_nodup'@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`), `KelGroups.Vote.assocInsert_mem_cases@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`) and 9 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration"
+      "reason": "masked: its proof uses `KelGroups.Vote.assocErase_key_absent'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocErase_sublist'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocInsert_keys_nodup'@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`), `KelGroups.Vote.assocInsert_mem_cases@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`) and 11 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration"
     },
     {
       "theorem": "KelGroups.Vote.closeProposerQuestions_sweepReady",
@@ -980,6 +1010,7 @@
         "franchise-empty",
         "hasAdmin-all",
         "isAdmin-absent-true",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "verdict-collective-strict",
@@ -987,7 +1018,7 @@
         "view-lookupMember-misses",
         "vote-isResponsabile-true"
       ],
-      "reason": "masked: its proof uses `KelGroups.Vote.assocLookup_some_mem'@KelGroups.Vote.Invariants` (killed by `assocLookup-misses`), `KelGroups.Vote.closeProposerQuestions_sweepReady` (killed by `closeProposer-cause-tally`), `KelGroups.Vote.mem_assocLookup_some'@KelGroups.Vote.Invariants` (killed by `assocLookup-misses`), `KelGroups.Vote.sweepClosures_open_mem@KelGroups.Vote.Invariants` (killed by `sweepClosures-keeps-open`); Lean admits a killed theorem, so the error stays in that theorem's own declaration"
+      "reason": "masked: its proof uses `KelGroups.Vote.assocLookup_some_mem'@KelGroups.Vote.Invariants` (killed by `assocLookup-misses`), `KelGroups.Vote.closeProposerQuestions_sweepReady` (killed by `closeProposer-cause-tally`), `KelGroups.Vote.mem_assocLookup_some'@KelGroups.Vote.Invariants` (killed by `assocLookup-misses`), `KelGroups.Vote.sweepClosures_closed_mem@KelGroups.Vote.Invariants` (killed by `sweepClosures-discards-records`) and 2 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration"
     },
     {
       "theorem": "KelGroups.Vote.emptyVoteState_sweepReady",
@@ -1024,6 +1055,8 @@
         "assocInsert-appends",
         "assocLookup-misses",
         "closureCause-always-tally",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "franchise-empty",
@@ -1041,6 +1074,7 @@
         "renounce-discards-record",
         "renounce-keeps-open",
         "setInsert-duplicates",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "verdict-collective-strict",
@@ -1048,7 +1082,7 @@
         "view-lookupMember-misses",
         "vote-isResponsabile-true"
       ],
-      "reason": "masked: its proof uses `KelGroups.Vote.assocErase_key_absent'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocErase_sublist'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocInsert_keys_nodup'@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`), `KelGroups.Vote.assocInsert_mem_cases@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`) and 9 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration"
+      "reason": "masked: its proof uses `KelGroups.Vote.assocErase_key_absent'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocErase_sublist'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocInsert_keys_nodup'@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`), `KelGroups.Vote.assocInsert_mem_cases@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`) and 11 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration"
     },
     {
       "theorem": "KelGroups.Vote.franchise_of_tallies",
@@ -1066,6 +1100,8 @@
         "assocInsert-appends",
         "assocLookup-misses",
         "closureCause-always-tally",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "franchise-empty",
         "guard-cast-designee",
@@ -1082,6 +1118,7 @@
         "renounce-discards-record",
         "renounce-keeps-open",
         "setInsert-duplicates",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "verdict-collective-strict",
@@ -1089,7 +1126,7 @@
         "view-lookupMember-misses",
         "vote-isResponsabile-true"
       ],
-      "reason": "unconstrained: under none of its 27 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "reason": "unconstrained: under none of its 30 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
     },
     {
       "theorem": "KelGroups.Vote.no_expiry",
@@ -1114,6 +1151,8 @@
         "assocInsert-appends",
         "assocLookup-misses",
         "closureCause-always-tally",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "franchise-empty",
@@ -1131,6 +1170,7 @@
         "renounce-discards-record",
         "renounce-keeps-open",
         "setInsert-duplicates",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "verdict-collective-strict",
@@ -1138,7 +1178,7 @@
         "view-lookupMember-misses",
         "vote-isResponsabile-true"
       ],
-      "reason": "masked: its proof uses `KelGroups.Vote.assocErase_key_absent'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocErase_sublist'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocInsert_keys_nodup'@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`), `KelGroups.Vote.assocInsert_mem_cases@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`) and 9 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration"
+      "reason": "masked: its proof uses `KelGroups.Vote.assocErase_key_absent'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocErase_sublist'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocInsert_keys_nodup'@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`), `KelGroups.Vote.assocInsert_mem_cases@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`) and 11 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration"
     },
     {
       "theorem": "KelGroups.Vote.questionClean_corr",
@@ -1155,6 +1195,8 @@
         "assocInsert-appends",
         "assocLookup-misses",
         "closureCause-always-tally",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "franchise-empty",
@@ -1172,6 +1214,7 @@
         "renounce-discards-record",
         "renounce-keeps-open",
         "setInsert-duplicates",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "verdict-collective-strict",
@@ -1179,7 +1222,7 @@
         "view-lookupMember-misses",
         "vote-isResponsabile-true"
       ],
-      "reason": "masked: its proof uses `KelGroups.Vote.assocErase_key_absent'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocErase_sublist'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocInsert_keys_nodup'@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`), `KelGroups.Vote.assocInsert_mem_cases@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`) and 13 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration"
+      "reason": "masked: its proof uses `KelGroups.Vote.assocErase_key_absent'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocErase_sublist'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocInsert_keys_nodup'@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`), `KelGroups.Vote.assocInsert_mem_cases@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`) and 15 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration"
     },
     {
       "theorem": "KelGroups.Vote.sweepClosures_idempotent",
@@ -1259,6 +1302,8 @@
         "assocInsert-appends",
         "assocLookup-misses",
         "closureCause-always-tally",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "franchise-empty",
         "guard-cast-designee",
@@ -1275,6 +1320,7 @@
         "renounce-discards-record",
         "renounce-keeps-open",
         "setInsert-duplicates",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "verdict-collective-strict",
@@ -1282,7 +1328,7 @@
         "view-lookupMember-misses",
         "vote-isResponsabile-true"
       ],
-      "reason": "unconstrained: under none of its 27 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "reason": "unconstrained: under none of its 30 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
     },
     {
       "theorem": "KelGroups.Vote.verdictOf_threshold_congr",
@@ -1991,6 +2037,31 @@
       ]
     },
     {
+      "theorem": "Reactivegas.Composition.apply_retains_open_questions",
+      "class": "KILLED",
+      "killedBy": [
+        "appFoldCore-deny-bypasses-closure",
+        "baseHook-departure-drops-silently",
+        "baseHook-no-departure-closure",
+        "baseHook-no-sweep",
+        "closeProposer-cause-tally",
+        "closeProposer-closes-positive",
+        "closeProposer-keeps-open",
+        "closeProposer-records-all",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
+        "guard-base-hook-cleanup",
+        "guard-vote-apply-refusal",
+        "guard-vote-responsabile",
+        "renounce-discards-record",
+        "renounce-keeps-open",
+        "sweepClosures-discards-records",
+        "sweepClosures-keeps-open",
+        "view-lookupMember-misses",
+        "vote-isResponsabile-true"
+      ]
+    },
+    {
       "theorem": "Reactivegas.Composition.authStep_appFoldCore",
       "class": "KILLED",
       "killedBy": [
@@ -2011,6 +2082,7 @@
       "theorem": "Reactivegas.Composition.authStep_baseHook",
       "class": "KILLED",
       "killedBy": [
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -2175,6 +2247,7 @@
         "legacyThreshold-floor",
         "lookupQuestion-misses",
         "ofOption-ok-refuses",
+        "sweepClosures-discards-records",
         "syncAuth-mints-nothing",
         "verdict-collective-strict",
         "view-lookupMember-misses",
@@ -2230,6 +2303,8 @@
         "assocErase-keeps",
         "assocInsert-appends",
         "assocLookup-misses",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "lookupQuestion-misses",
         "placeBallot-keeps-dissent",
@@ -2239,13 +2314,20 @@
         "renounce-keeps-open",
         "setInsert-duplicates"
       ],
-      "reason": "unconstrained: under none of its 11 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "reason": "unconstrained: under none of its 13 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
     },
     {
       "theorem": "Reactivegas.Composition.holdsNegativeAuth_iff",
       "class": "KILLED",
       "killedBy": [
         "holdsNegativeAuth-every-authorization"
+      ]
+    },
+    {
+      "theorem": "Reactivegas.Composition.key_of_assocInsert",
+      "class": "KILLED",
+      "killedBy": [
+        "assocInsert-appends"
       ]
     },
     {
@@ -2272,6 +2354,13 @@
         "boot-skips-clean-origin",
         "cleanOrigin-ignores-authorizations",
         "liveBacked-some-backed"
+      ]
+    },
+    {
+      "theorem": "Reactivegas.Composition.mem_assocErase_of_ne",
+      "class": "KILLED",
+      "killedBy": [
+        "assocErase-keeps"
       ]
     },
     {
@@ -2354,6 +2443,23 @@
       ]
     },
     {
+      "theorem": "Reactivegas.Composition.retention_arms_reachable",
+      "class": "KILLED",
+      "killedBy": [
+        "assocErase-keeps",
+        "assocLookup-misses",
+        "emptyVoteState-has-question",
+        "franchise-empty",
+        "groupView-empty",
+        "isMember-negated",
+        "legacyThreshold-floor",
+        "lookupQuestion-misses",
+        "renounce-discards-record",
+        "renounce-keeps-open",
+        "view-lookupMember-misses"
+      ]
+    },
+    {
       "theorem": "Reactivegas.Composition.runHolding_keeps_negative",
       "class": "KILLED",
       "killedBy": [
@@ -2389,22 +2495,10 @@
     },
     {
       "theorem": "Reactivegas.Composition.sweepClosures_keeps_closed",
-      "class": "OPEN",
-      "attempted": [
-        "admins-non-admins",
-        "assocLookup-misses",
-        "closureCause-always-tally",
-        "franchise-empty",
-        "hasAdmin-all",
-        "isAdmin-absent-true",
-        "sweepClosures-keeps-open",
-        "sweepStep-cause-tally",
-        "verdict-collective-strict",
-        "verdict-permission-ignores-dissent",
-        "view-lookupMember-misses",
-        "vote-isResponsabile-true"
-      ],
-      "reason": "unconstrained: under none of its 12 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "class": "KILLED",
+      "killedBy": [
+        "sweepClosures-discards-records"
+      ]
     },
     {
       "theorem": "Reactivegas.Composition.syncAuth_mints",
@@ -2477,6 +2571,7 @@
       "killedBy": [
         "assocErase-keeps",
         "assocInsert-appends",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-sweep",
         "closeProposer-cause-tally",
@@ -2503,6 +2598,8 @@
         "closeProposer-cause-tally",
         "closeProposer-closes-positive",
         "closeProposer-keeps-open",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "enactMutation-remove-noop",
         "groupView-empty",
         "guard-app-signer-member",
@@ -2523,6 +2620,8 @@
         "assocErase-keeps",
         "assocInsert-appends",
         "assocLookup-misses",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "emptyVoteState-has-question",
         "franchise-empty",
         "groupView-empty",
@@ -2530,6 +2629,7 @@
         "isMember-negated",
         "legacyThreshold-floor",
         "lookupQuestion-misses",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "view-lookupMember-misses"
       ]
@@ -2543,6 +2643,8 @@
         "assocInsert-appends",
         "assocLookup-misses",
         "closureCause-always-tally",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "franchise-empty",
@@ -2560,6 +2662,7 @@
         "renounce-discards-record",
         "renounce-keeps-open",
         "setInsert-duplicates",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "verdict-collective-strict",
@@ -2567,7 +2670,7 @@
         "view-lookupMember-misses",
         "vote-isResponsabile-true"
       ],
-      "reason": "unconstrained: under none of its 28 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "reason": "unconstrained: under none of its 31 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
     },
     {
       "theorem": "Reactivegas.Lifecycle.l1_holds",
@@ -2577,6 +2680,8 @@
         "assocErase-keeps",
         "assocInsert-appends",
         "assocLookup-misses",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "franchise-empty",
         "groupView-empty",
@@ -2608,6 +2713,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -2631,6 +2737,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -2710,6 +2818,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -2726,7 +2835,7 @@
         "voteApply-skips-minting",
         "windUpAdmin-keeps-cassa"
       ],
-      "reason": "unconstrained: under none of its 133 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "reason": "unconstrained: under none of its 137 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
     },
     {
       "theorem": "Reactivegas.Lifecycle.l2_depart_none_caught",
@@ -2748,6 +2857,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -2771,6 +2881,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -2850,6 +2962,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -2866,7 +2979,7 @@
         "voteApply-skips-minting",
         "windUpAdmin-keeps-cassa"
       ],
-      "reason": "unconstrained: under none of its 133 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "reason": "unconstrained: under none of its 137 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
     },
     {
       "theorem": "Reactivegas.Lifecycle.l2_holds",
@@ -2877,8 +2990,11 @@
         "assocInsert-appends",
         "assocLookup-misses",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "closeProposer-keeps-open",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "enactMutation-remove-noop",
         "franchise-empty",
         "groupView-empty",
@@ -2917,6 +3033,8 @@
         "assocInsert-appends",
         "assocLookup-misses",
         "closeProposer-keeps-open",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "franchise-empty",
         "groupView-empty",
         "guard-app-signer-member",
@@ -2934,6 +3052,8 @@
         "assocInsert-appends",
         "assocLookup-misses",
         "closeProposer-keeps-open",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "franchise-empty",
         "groupView-empty",
         "guard-app-signer-member",
@@ -2962,6 +3082,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -2985,6 +3106,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -3064,6 +3187,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -3080,7 +3204,7 @@
         "voteApply-skips-minting",
         "windUpAdmin-keeps-cassa"
       ],
-      "reason": "unconstrained: under none of its 133 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "reason": "unconstrained: under none of its 137 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
     },
     {
       "theorem": "Reactivegas.Lifecycle.l3_holds",
@@ -3091,8 +3215,11 @@
         "assocInsert-appends",
         "assocLookup-misses",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "closeProposer-closes-positive",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "enactMutation-remove-noop",
         "franchise-empty",
         "groupView-empty",
@@ -3130,6 +3257,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -3153,6 +3281,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -3232,6 +3362,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -3248,7 +3379,7 @@
         "voteApply-skips-minting",
         "windUpAdmin-keeps-cassa"
       ],
-      "reason": "unconstrained: under none of its 133 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "reason": "unconstrained: under none of its 137 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
     },
     {
       "theorem": "Reactivegas.Lifecycle.l4_depart_tally_caught",
@@ -3270,6 +3401,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -3293,6 +3425,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -3372,6 +3506,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -3388,7 +3523,7 @@
         "voteApply-skips-minting",
         "windUpAdmin-keeps-cassa"
       ],
-      "reason": "unconstrained: under none of its 133 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "reason": "unconstrained: under none of its 137 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
     },
     {
       "theorem": "Reactivegas.Lifecycle.l4_holds",
@@ -3399,8 +3534,11 @@
         "assocInsert-appends",
         "assocLookup-misses",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "closeProposer-cause-tally",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "enactMutation-remove-noop",
         "franchise-empty",
         "groupView-empty",
@@ -3438,6 +3576,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -3461,6 +3600,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -3540,6 +3681,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -3556,7 +3698,7 @@
         "voteApply-skips-minting",
         "windUpAdmin-keeps-cassa"
       ],
-      "reason": "unconstrained: under none of its 133 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "reason": "unconstrained: under none of its 137 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
     },
     {
       "theorem": "Reactivegas.Lifecycle.l5_depart_discard_caught",
@@ -3578,6 +3720,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -3601,6 +3744,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -3680,6 +3825,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -3696,7 +3842,7 @@
         "voteApply-skips-minting",
         "windUpAdmin-keeps-cassa"
       ],
-      "reason": "unconstrained: under none of its 133 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "reason": "unconstrained: under none of its 137 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
     },
     {
       "theorem": "Reactivegas.Lifecycle.l5_holds",
@@ -3707,10 +3853,13 @@
         "assocInsert-appends",
         "assocLookup-misses",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "closeProposer-cause-tally",
         "closeProposer-closes-positive",
         "closeProposer-records-all",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "enactMutation-remove-noop",
         "franchise-empty",
@@ -3752,6 +3901,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -3775,6 +3925,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -3854,6 +4006,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -3870,7 +4023,7 @@
         "voteApply-skips-minting",
         "windUpAdmin-keeps-cassa"
       ],
-      "reason": "unconstrained: under none of its 133 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "reason": "unconstrained: under none of its 137 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
     },
     {
       "theorem": "Reactivegas.Lifecycle.l6_depart_all_caught",
@@ -3892,6 +4045,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -3915,6 +4069,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -3994,6 +4150,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -4010,7 +4167,7 @@
         "voteApply-skips-minting",
         "windUpAdmin-keeps-cassa"
       ],
-      "reason": "unconstrained: under none of its 133 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "reason": "unconstrained: under none of its 137 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
     },
     {
       "theorem": "Reactivegas.Lifecycle.l6_holds",
@@ -4021,8 +4178,11 @@
         "assocInsert-appends",
         "assocLookup-misses",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "closeProposer-records-all",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "enactMutation-remove-noop",
         "franchise-empty",
         "groupView-empty",
@@ -4060,6 +4220,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -4083,6 +4244,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -4162,6 +4325,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -4178,7 +4342,7 @@
         "voteApply-skips-minting",
         "windUpAdmin-keeps-cassa"
       ],
-      "reason": "unconstrained: under none of its 133 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "reason": "unconstrained: under none of its 137 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
     },
     {
       "theorem": "Reactivegas.Lifecycle.l6a_collapsed_caught",
@@ -4196,6 +4360,7 @@
         "assocInsert-appends",
         "assocLookup-misses",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-sweep",
         "closeProposer-cause-tally",
@@ -4203,6 +4368,8 @@
         "closeProposer-keeps-open",
         "closeProposer-records-all",
         "closureCause-always-tally",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
         "franchise-empty",
@@ -4216,6 +4383,7 @@
         "majority-floor",
         "mutationChange-swapped",
         "state-lookupMember-misses",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "tryEnactBase-strict",
@@ -4244,12 +4412,15 @@
         "closeProposer-keeps-open",
         "closeProposer-records-all",
         "closureCause-always-tally",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "franchise-empty",
         "groupView-empty",
         "guard-app-signer-member",
         "isAdmin-absent-true",
         "legacyThreshold-floor",
         "lookupQuestion-misses",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "verdict-collective-strict",
@@ -4270,12 +4441,15 @@
         "closeProposer-keeps-open",
         "closeProposer-records-all",
         "closureCause-always-tally",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "franchise-empty",
         "groupView-empty",
         "guard-app-signer-member",
         "isAdmin-absent-true",
         "legacyThreshold-floor",
         "lookupQuestion-misses",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "verdict-collective-strict",
@@ -4296,12 +4470,15 @@
         "closeProposer-keeps-open",
         "closeProposer-records-all",
         "closureCause-always-tally",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "franchise-empty",
         "groupView-empty",
         "guard-app-signer-member",
         "isAdmin-absent-true",
         "legacyThreshold-floor",
         "lookupQuestion-misses",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "verdict-collective-strict",
@@ -4322,12 +4499,15 @@
         "closeProposer-keeps-open",
         "closeProposer-records-all",
         "closureCause-always-tally",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "franchise-empty",
         "groupView-empty",
         "guard-app-signer-member",
         "isAdmin-absent-true",
         "legacyThreshold-floor",
         "lookupQuestion-misses",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "verdict-collective-strict",
@@ -4369,6 +4549,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -4392,6 +4573,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -4471,6 +4654,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -4487,7 +4671,7 @@
         "voteApply-skips-minting",
         "windUpAdmin-keeps-cassa"
       ],
-      "reason": "unconstrained: under none of its 133 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "reason": "unconstrained: under none of its 137 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
     },
     {
       "theorem": "Reactivegas.Lifecycle.l6b_holds",
@@ -4496,6 +4680,8 @@
         "admins-non-admins",
         "assocErase-keeps",
         "assocLookup-misses",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "franchise-empty",
         "groupView-empty",
         "isMember-negated",
@@ -4511,6 +4697,8 @@
       "killedBy": [
         "admins-non-admins",
         "assocLookup-misses",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "franchise-empty",
         "groupView-empty",
         "guard-app-fold-refusal",
@@ -4549,6 +4737,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -4572,6 +4761,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -4651,6 +4842,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -4667,7 +4859,7 @@
         "voteApply-skips-minting",
         "windUpAdmin-keeps-cassa"
       ],
-      "reason": "unconstrained: under none of its 133 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "reason": "unconstrained: under none of its 137 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
     },
     {
       "theorem": "Reactivegas.Lifecycle.paths_agree",
@@ -4676,8 +4868,11 @@
         "admins-non-admins",
         "assocLookup-misses",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-sweep",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "enactMutation-remove-noop",
         "franchise-empty",
         "groupView-empty",
@@ -4713,6 +4908,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -4736,6 +4932,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -4815,6 +5013,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -4831,7 +5030,7 @@
         "voteApply-skips-minting",
         "windUpAdmin-keeps-cassa"
       ],
-      "reason": "unconstrained: under none of its 133 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "reason": "unconstrained: under none of its 137 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
     },
     {
       "theorem": "Reactivegas.Lifecycle.r1_holds",
@@ -4839,6 +5038,8 @@
       "killedBy": [
         "admins-non-admins",
         "assocLookup-misses",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "franchise-empty",
         "groupView-empty",
         "guard-app-fold-refusal",
@@ -4871,6 +5072,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -4894,6 +5096,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -4973,6 +5177,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -4989,7 +5194,7 @@
         "voteApply-skips-minting",
         "windUpAdmin-keeps-cassa"
       ],
-      "reason": "unconstrained: under none of its 133 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "reason": "unconstrained: under none of its 137 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
     },
     {
       "theorem": "Reactivegas.Lifecycle.r2_holds",
@@ -4997,6 +5202,8 @@
       "killedBy": [
         "admins-non-admins",
         "assocLookup-misses",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "franchise-empty",
         "groupView-empty",
         "guard-app-fold-refusal",
@@ -5006,6 +5213,7 @@
         "isMember-negated",
         "legacyThreshold-floor",
         "lookupQuestion-misses",
+        "sweepClosures-discards-records",
         "view-lookupMember-misses"
       ]
     },
@@ -5032,6 +5240,7 @@
         "majority-floor",
         "mutationChange-swapped",
         "state-lookupMember-misses",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "tryEnactBase-strict",
         "verdict-collective-strict"
@@ -5057,6 +5266,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -5080,6 +5290,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -5159,6 +5371,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -5175,7 +5388,7 @@
         "voteApply-skips-minting",
         "windUpAdmin-keeps-cassa"
       ],
-      "reason": "unconstrained: under none of its 133 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "reason": "unconstrained: under none of its 137 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
     },
     {
       "theorem": "Reactivegas.admissionPreservation_holds",
@@ -5226,6 +5439,7 @@
       "theorem": "Reactivegas.baseHook_votes",
       "class": "KILLED",
       "killedBy": [
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-sweep",
         "guard-base-hook-cleanup"
@@ -5250,6 +5464,7 @@
         "majority-floor",
         "mutationChange-swapped",
         "state-lookupMember-misses",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "tryEnactBase-strict",
         "verdict-collective-strict"
@@ -5503,6 +5718,7 @@
       "killedBy": [
         "admins-non-admins",
         "assocLookup-misses",
+        "effectedState-open-drops-others",
         "franchise-empty",
         "groupView-empty",
         "isMember-negated",
@@ -5561,6 +5777,7 @@
         "majority-floor",
         "mutationChange-swapped",
         "state-lookupMember-misses",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "tryEnactBase-strict",
         "verdict-collective-strict"
@@ -5579,6 +5796,7 @@
         "lookupPendingBase-misses",
         "majority-floor",
         "state-lookupMember-misses",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "tryEnactBase-strict",
         "verdict-collective-strict"
@@ -5597,6 +5815,7 @@
         "isMember-negated",
         "legacyThreshold-floor",
         "lookupQuestion-misses",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "verdict-collective-strict",
         "view-lookupMember-misses"
@@ -5615,6 +5834,7 @@
         "isMember-negated",
         "legacyThreshold-floor",
         "lookupQuestion-misses",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "verdict-collective-strict",
         "view-lookupMember-misses"
@@ -5792,6 +6012,7 @@
         "stepEvent-withdraw-as-deposit",
         "sumBal-drops-first",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "traceInventory-covered-negated",
         "tryEnactBase-strict",
@@ -5820,6 +6041,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -5843,6 +6065,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -5925,6 +6149,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -5963,6 +6188,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -5986,6 +6212,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -6068,6 +6296,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -6106,6 +6335,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -6129,6 +6359,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -6211,6 +6443,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -6249,6 +6482,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -6272,6 +6506,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -6356,6 +6592,7 @@
         "stripCollections-drops-pending",
         "sumBal-drops-first",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -6394,6 +6631,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -6417,6 +6655,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -6499,6 +6739,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -6537,6 +6778,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -6560,6 +6802,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -6642,6 +6886,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -6738,6 +6983,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -6761,6 +7007,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -6843,6 +7091,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -6881,6 +7130,7 @@
         "assocLookup-misses",
         "bal-reads-plus-one",
         "base-propose-auto-assent",
+        "baseHook-departure-drops-silently",
         "baseHook-no-departure-closure",
         "baseHook-no-minting",
         "baseHook-no-prune",
@@ -6904,6 +7154,8 @@
         "denyByClosure-keeps-collection",
         "denyByClosure-positive-verdict",
         "denyByClosure-skips-refund",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "enactMutation-remove-noop",
@@ -6986,6 +7238,7 @@
         "step-grant-writes-authorization",
         "stripCollections-drops-pending",
         "sumPledges-drops-head",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "syncAuth-keeps-closed-bindings",
@@ -7785,6 +8038,8 @@
         "assocInsert-appends",
         "assocLookup-misses",
         "closureCause-always-tally",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "franchise-empty",
         "guard-cast-designee",
@@ -7801,6 +8056,7 @@
         "renounce-discards-record",
         "renounce-keeps-open",
         "setInsert-duplicates",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "verdict-collective-strict",
@@ -7808,7 +8064,7 @@
         "view-lookupMember-misses",
         "vote-isResponsabile-true"
       ],
-      "reason": "masked: its proof uses `KelGroups.Vote.effectedState_preserves_qid@KelGroups.Vote.Invariants` (killed by `effectedState-reopens`), `KelGroups.Vote.mem_map_fst_erase_of_ne@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.mem_map_fst_insert@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`), `KelGroups.Vote.sweepClosures_open_mem@KelGroups.Vote.Invariants` (killed by `sweepClosures-keeps-open`) and 1 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration"
+      "reason": "masked: its proof uses `KelGroups.Vote.effectedState_preserves_qid@KelGroups.Vote.Invariants` (killed by `effectedState-cast-drops-others`), `KelGroups.Vote.mem_map_fst_erase_of_ne@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.mem_map_fst_insert@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`), `KelGroups.Vote.sweepClosures_closed_mem@KelGroups.Vote.Invariants` (killed by `sweepClosures-discards-records`) and 2 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration"
     },
     {
       "theorem": "KelGroups.Vote.assocAdjust_keys'@KelGroups.Vote.Invariants",
@@ -7904,6 +8160,8 @@
       "theorem": "KelGroups.Vote.effectedState_preserves_qid@KelGroups.Vote.Invariants",
       "class": "KILLED",
       "killedBy": [
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "renounce-cause-tally",
         "renounce-closes-positive",
@@ -7916,6 +8174,8 @@
       "class": "KILLED",
       "killedBy": [
         "assocInsert-appends",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "lookupQuestion-misses",
         "renounce-cause-tally",
@@ -7928,6 +8188,8 @@
       "theorem": "KelGroups.Vote.effectedState_tally_growth@KelGroups.Vote.Invariants",
       "class": "KILLED",
       "killedBy": [
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "lookupQuestion-misses",
         "renounce-cause-tally",
@@ -7951,6 +8213,8 @@
         "assocInsert-appends",
         "assocLookup-misses",
         "closureCause-always-tally",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "franchise-empty",
         "guard-cast-designee",
@@ -7967,6 +8231,7 @@
         "renounce-discards-record",
         "renounce-keeps-open",
         "setInsert-duplicates",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "verdict-collective-strict",
@@ -7974,7 +8239,7 @@
         "view-lookupMember-misses",
         "vote-isResponsabile-true"
       ],
-      "reason": "masked: its proof uses `KelGroups.Vote.effectedState_preserves_qid@KelGroups.Vote.Invariants` (killed by `effectedState-reopens`), `KelGroups.Vote.mem_map_fst_erase_of_ne@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.mem_map_fst_insert@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`), `KelGroups.Vote.sweepClosures_open_mem@KelGroups.Vote.Invariants` (killed by `sweepClosures-keeps-open`) and 1 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration"
+      "reason": "masked: its proof uses `KelGroups.Vote.effectedState_preserves_qid@KelGroups.Vote.Invariants` (killed by `effectedState-cast-drops-others`), `KelGroups.Vote.mem_map_fst_erase_of_ne@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.mem_map_fst_insert@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`), `KelGroups.Vote.sweepClosures_closed_mem@KelGroups.Vote.Invariants` (killed by `sweepClosures-discards-records`) and 2 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration"
     },
     {
       "theorem": "KelGroups.Vote.foldFrom_preserves_wellFormed@KelGroups.Vote.Invariants",
@@ -7985,6 +8250,8 @@
         "assocInsert-appends",
         "assocLookup-misses",
         "closureCause-always-tally",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "franchise-empty",
         "guard-cast-designee",
@@ -8001,6 +8268,7 @@
         "renounce-discards-record",
         "renounce-keeps-open",
         "setInsert-duplicates",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "verdict-collective-strict",
@@ -8008,7 +8276,7 @@
         "view-lookupMember-misses",
         "vote-isResponsabile-true"
       ],
-      "reason": "masked: its proof uses `KelGroups.Vote.assocErase_key_absent'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocErase_sublist'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocInsert_keys_nodup'@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`), `KelGroups.Vote.assocInsert_mem_cases@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`) and 7 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration"
+      "reason": "masked: its proof uses `KelGroups.Vote.assocErase_key_absent'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocErase_sublist'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocInsert_keys_nodup'@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`), `KelGroups.Vote.assocInsert_mem_cases@KelGroups.Vote.Invariants` (killed by `assocInsert-appends`) and 9 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration"
     },
     {
       "theorem": "KelGroups.Vote.foldVote_append@KelGroups.Vote.Invariants",
@@ -8019,6 +8287,8 @@
         "assocInsert-appends",
         "assocLookup-misses",
         "closureCause-always-tally",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "emptyVoteState-has-question",
         "franchise-empty",
@@ -8036,6 +8306,7 @@
         "renounce-discards-record",
         "renounce-keeps-open",
         "setInsert-duplicates",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "verdict-collective-strict",
@@ -8043,7 +8314,7 @@
         "view-lookupMember-misses",
         "vote-isResponsabile-true"
       ],
-      "reason": "unconstrained: under none of its 28 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "reason": "unconstrained: under none of its 31 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
     },
     {
       "theorem": "KelGroups.Vote.mem_assocLookup_some'@KelGroups.Vote.Invariants",
@@ -8113,22 +8384,10 @@
     },
     {
       "theorem": "KelGroups.Vote.sweepClosures_closed_mem@KelGroups.Vote.Invariants",
-      "class": "OPEN",
-      "attempted": [
-        "admins-non-admins",
-        "assocLookup-misses",
-        "closureCause-always-tally",
-        "franchise-empty",
-        "hasAdmin-all",
-        "isAdmin-absent-true",
-        "sweepClosures-keeps-open",
-        "sweepStep-cause-tally",
-        "verdict-collective-strict",
-        "verdict-permission-ignores-dissent",
-        "view-lookupMember-misses",
-        "vote-isResponsabile-true"
-      ],
-      "reason": "unconstrained: under none of its 12 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses"
+      "class": "KILLED",
+      "killedBy": [
+        "sweepClosures-discards-records"
+      ]
     },
     {
       "theorem": "KelGroups.Vote.sweepClosures_open_mem@KelGroups.Vote.Invariants",
@@ -8146,22 +8405,10 @@
     },
     {
       "theorem": "KelGroups.Vote.sweepClosures_sweepReady@KelGroups.Vote.Invariants",
-      "class": "OPEN",
-      "attempted": [
-        "admins-non-admins",
-        "assocLookup-misses",
-        "closureCause-always-tally",
-        "franchise-empty",
-        "hasAdmin-all",
-        "isAdmin-absent-true",
-        "sweepClosures-keeps-open",
-        "sweepStep-cause-tally",
-        "verdict-collective-strict",
-        "verdict-permission-ignores-dissent",
-        "view-lookupMember-misses",
-        "vote-isResponsabile-true"
-      ],
-      "reason": "masked: its proof uses `KelGroups.Vote.assocLookup_some_mem'@KelGroups.Vote.Invariants` (killed by `assocLookup-misses`), `KelGroups.Vote.mem_assocLookup_some'@KelGroups.Vote.Invariants` (killed by `assocLookup-misses`), `KelGroups.Vote.sweepClosures_open_mem@KelGroups.Vote.Invariants` (killed by `sweepClosures-keeps-open`); Lean admits a killed theorem, so the error stays in that theorem's own declaration"
+      "class": "KILLED",
+      "killedBy": [
+        "sweepClosures-discards-records"
+      ]
     },
     {
       "theorem": "KelGroups.Vote.sweepClosures_tallyKeys@KelGroups.Vote.Invariants",
@@ -8180,6 +8427,7 @@
         "franchise-empty",
         "hasAdmin-all",
         "isAdmin-absent-true",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "verdict-collective-strict",
@@ -8187,7 +8435,7 @@
         "view-lookupMember-misses",
         "vote-isResponsabile-true"
       ],
-      "reason": "masked: its proof uses `KelGroups.Vote.assocLookup_some_mem'@KelGroups.Vote.Invariants` (killed by `assocLookup-misses`), `KelGroups.Vote.mem_assocLookup_some'@KelGroups.Vote.Invariants` (killed by `assocLookup-misses`), `KelGroups.Vote.sweepClosures_open_mem@KelGroups.Vote.Invariants` (killed by `sweepClosures-keeps-open`); Lean admits a killed theorem, so the error stays in that theorem's own declaration"
+      "reason": "masked: its proof uses `KelGroups.Vote.assocLookup_some_mem'@KelGroups.Vote.Invariants` (killed by `assocLookup-misses`), `KelGroups.Vote.mem_assocLookup_some'@KelGroups.Vote.Invariants` (killed by `assocLookup-misses`), `KelGroups.Vote.sweepClosures_closed_mem@KelGroups.Vote.Invariants` (killed by `sweepClosures-discards-records`), `KelGroups.Vote.sweepClosures_open_mem@KelGroups.Vote.Invariants` (killed by `sweepClosures-keeps-open`) and 1 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration"
     },
     {
       "theorem": "KelGroups.Vote.sweepStep_key@KelGroups.Vote.Invariants",
@@ -8232,6 +8480,8 @@
         "assocInsert-appends",
         "assocLookup-misses",
         "closureCause-always-tally",
+        "effectedState-cast-drops-others",
+        "effectedState-open-drops-others",
         "effectedState-reopens",
         "franchise-empty",
         "guard-cast-designee",
@@ -8248,6 +8498,7 @@
         "renounce-discards-record",
         "renounce-keeps-open",
         "setInsert-duplicates",
+        "sweepClosures-discards-records",
         "sweepClosures-keeps-open",
         "sweepStep-cause-tally",
         "verdict-collective-strict",
@@ -8255,7 +8506,7 @@
         "view-lookupMember-misses",
         "vote-isResponsabile-true"
       ],
-      "reason": "masked: its proof uses `KelGroups.Vote.assocErase_sublist'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocLookup_some_mem'@KelGroups.Vote.Invariants` (killed by `assocLookup-misses`), `KelGroups.Vote.effectedState_tally_growth@KelGroups.Vote.Invariants` (killed by `effectedState-reopens`), `KelGroups.Vote.placeBallot_tally@KelGroups.Vote.Invariants` (killed by `placeBallot-keeps-dissent`) and 4 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration"
+      "reason": "masked: its proof uses `KelGroups.Vote.assocErase_sublist'@KelGroups.Vote.Invariants` (killed by `assocErase-keeps`), `KelGroups.Vote.assocLookup_some_mem'@KelGroups.Vote.Invariants` (killed by `assocLookup-misses`), `KelGroups.Vote.effectedState_tally_growth@KelGroups.Vote.Invariants` (killed by `effectedState-cast-drops-others`), `KelGroups.Vote.placeBallot_tally@KelGroups.Vote.Invariants` (killed by `placeBallot-keeps-dissent`) and 5 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration"
     },
     {
       "theorem": "bal_bump_ne_lemma@Reactivegas.Invariants",
