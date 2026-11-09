@@ -29,7 +29,12 @@ set -euo pipefail
 # --negative-control withholds one constructor that really contributes coverage
 # and requires the identical comparison to reject the gap it opens. It then
 # weakens every bound inversion's conclusion by one guard conjunct and requires
-# the identical converse check to reject each weakened conclusion.
+# the identical converse check to reject each weakened conclusion. A rejection
+# counts only when the weakened statement type-checks, is the original with a
+# conjunct omitted and nothing else, and its converse stops on an unsolved goal;
+# anything else is a malformed control and fails the run. Last, it weakens every
+# bound inversion into a statement that does not type-check and requires each one
+# to be reported as malformed, never as a rejection.
 
 TOOL=check-reactivegas-inversion-coverage
 
@@ -318,8 +323,9 @@ partial def weakenLastGuard (e : Expr) : Option Expr :=
   if e.isAppOfArity ``Exists 2 then
     match e.getAppArgs[1]! with
     | .lam n t b bi =>
+      -- the original `Exists` keeps its own universe level
       (weakenLastGuard b).map fun b' =>
-        mkApp2 (mkConst ``Exists [Level.zero.succ]) e.getAppArgs[0]! (.lam n t b' bi)
+        mkApp2 e.getAppFn e.getAppArgs[0]! (.lam n t b' bi)
     | _ => none
   else if e.isAppOfArity ``And 2 then
     let a := e.getAppArgs[0]!
@@ -330,66 +336,137 @@ partial def weakenLastGuard (e : Expr) : Option Expr :=
         && a.getAppArgs[1]!.isAppOfArity ``and 2 then
       let x := a.getAppArgs[1]!.getAppArgs[0]!
       some (mkApp2 (mkConst ``And)
-        (mkApp3 (mkConst ``Eq [Level.zero.succ]) (mkConst ``Bool) x (mkConst ``Bool.true)) b)
+        (mkApp3 a.getAppFn a.getAppArgs[0]! x (mkConst ``Bool.true)) b)
     else some b
   else none
 
+/-- The conjuncts of a conclusion `∃ …, a ∧ b ∧ …`, in order, existential binders
+skipped. Bound variables stay loose, so two conclusions with the same binders
+compare structurally. -/
+partial def atoms (e : Expr) : List Expr :=
+  if e.isAppOfArity ``Exists 2 then
+    match e.getAppArgs[1]! with
+    | .lam _ _ b _ => atoms b
+    | _ => [e]
+  else if e.isAppOfArity ``And 2 then atoms e.getAppArgs[0]! ++ atoms e.getAppArgs[1]!
+  else [e]
+
+def isSubsequence : List Expr → List Expr → Bool
+  | [], _ => true
+  | _ :: _, [] => false
+  | a :: as, b :: bs => if a.eqv b then isSubsequence as bs else isSubsequence (a :: as) bs
+
+/-- `weakened` is `original` with conjuncts removed, or with the last operand of
+one Boolean conjunction guard removed, and nothing else changed. -/
+def omitsOnlyAConjunct (original weakened : Expr) : Bool :=
+  let c := atoms original
+  let w := atoms weakened
+  (w.length < c.length && isSubsequence w c) ||
+    (w.length == c.length &&
+      let diff := (c.zip w).filter fun p => !p.1.eqv p.2
+      diff.length == 1 && diff.all fun p =>
+        p.1.isAppOfArity ``Eq 3 && p.2.isAppOfArity ``Eq 3
+          && p.1.getAppArgs[1]!.isAppOfArity ``and 2
+          && p.1.getAppArgs[1]!.getAppArgs[0]!.eqv p.2.getAppArgs[1]!)
+
+/-- A deliberately malformed weakening, for the control of the control: the
+statement is conjoined with a non-proposition, so it does not type-check. -/
+def illTyped (e : Expr) : Expr :=
+  mkApp2 (mkConst ``And) e (mkConst ``Nat)
+
+/-- `proved`: the converse holds. `insufficient`: it fails, the statement is
+well-typed, and the proof stops on an unsolved goal — the conclusion does not
+entail the step. `malformed`: anything else (an ill-typed statement, a failure
+that is not an unsolved goal, `sorry`, metavariables). -/
 inductive Tight where
   | proved
   | insufficient (msg : String)
   | malformed (msg : String)
+
+/-- A failed converse proof is the conclusion's insufficiency only when the tactic
+block stops on a goal it could not close. Any other failure — an elaboration
+error, a type mismatch, an unknown constant, a tactic that finds nothing to rewrite
+in an ill-typed goal — says nothing about the conclusion. -/
+def stopsOnOpenGoal (msg : String) : Bool :=
+  "unsolved goals".isPrefixOf msg
+
+inductive Run where
+  | proved
+  | failed (msg : String)
+  | broken (msg : String)
+
+/-- Run `by <tactic>` against `goal`. A failing tactic block logs its error
+instead of throwing it; the log is taken over here so a failure is attributed to
+the theorem under audit and does not surface as an anonymous message. -/
+def runProof (stx : Syntax) (goal : Expr) : TermElabM Run := do
+  let saved ← Core.getMessageLog
+  Core.resetMessageLog
+  let outcome ← try
+      let pf ← withLCtx {} #[] <| withoutErrToSorry (elabTermEnsuringType stx goal)
+      synthesizeSyntheticMVarsNoPostponing
+      let pf ← instantiateMVars pf
+      if pf.hasSorry then pure (Run.broken "converse proof used sorry")
+      else if pf.hasExprMVar then pure (Run.broken "converse proof left metavariables")
+      else
+        check pf
+        pure Run.proved
+    catch e =>
+      pure (Run.failed (← e.toMessageData.toString))
+  let logged ← Core.getMessageLog
+  (modify fun (st : Core.State) => { st with messages := saved } : CoreM Unit)
+  for m in logged.toList do
+    if m.severity == .error then
+      return .failed (← m.data.toString)
+  return outcome
 
 /-- Build the converse of an inversion theorem from the theorem itself and
 require it to hold: its own conclusion must be sufficient for the successful
 step it inverts. The hypothesis direction already makes the conclusion
 necessary, so together they pin the branch's complete guard and exact
 successor. Nothing here restates either. With `weaken`, the same check is run
-on the conclusion with one guard conjunct omitted. -/
-def tightnessProved (n : Name) (ti : TheoremVal) (weaken : Bool := false) :
-    TermElabM Tight := do
+on the conclusion with one guard conjunct omitted, and it is judged as a
+control: the weakened statement must type-check and be a consequence of the
+original conclusion, and the converse must then fail on an unsolved goal; any
+other outcome is `malformed`, never a rejection. `corrupt` makes the weakened
+statement ill-typed on purpose, to show the control refuses it. -/
+def tightnessProved (n : Name) (ti : TheoremVal) (weaken : Bool := false)
+    (corrupt : Bool := false) : TermElabM Tight := do
   let stx ← `(term| by
     simp only [exists_imp, and_imp]
     intros
     subst_vars
     simp_all [stepEvent, step, demand])
+  let flat (m : String) := (m.replace "\n" " ").take 220
   forallTelescope ti.type fun xs body => do
     if xs.isEmpty then return .malformed s!"{n}: has no binders"
     let hty ← inferType xs.back!
     if (← successOf hty).isNone then
       return .malformed s!"{n}: its last hypothesis is not a successful `stepEvent`"
-    let concl ← instantiateMVars body
-    let some concl := if weaken then weakenLastGuard concl else some concl
+    let original ← instantiateMVars body
+    let some concl := if weaken then weakenLastGuard original else some original
       | return .malformed s!"{n}: its conclusion has no guard conjunct to weaken"
+    let concl := if corrupt then illTyped concl else concl
     let goal ← mkForallFVars xs.pop (← mkArrow concl hty)
-    -- A failing tactic block logs its error instead of throwing it; the log is
-    -- taken over here so a failure is attributed to this theorem and does not
-    -- surface as an anonymous message.
-    let saved ← Core.getMessageLog
-    Core.resetMessageLog
-    let outcome ← try
-        let pf ← withLCtx {} #[] <| withoutErrToSorry (elabTermEnsuringType stx goal)
-        synthesizeSyntheticMVarsNoPostponing
-        let pf ← instantiateMVars pf
-        if pf.hasSorry then pure (some (Tight.malformed s!"{n}: converse proof used sorry"))
-        else if pf.hasExprMVar then pure (some (Tight.malformed s!"{n}: converse proof left metavariables"))
-        else
-          check pf
-          pure none
-      catch e =>
-        pure (some (Tight.insufficient (← e.toMessageData.toString)))
-    let logged ← Core.getMessageLog
-    (modify fun (st : Core.State) => { st with messages := saved } : CoreM Unit)
-    let mut firstError : Option String := none
-    for m in logged.toList do
-      if m.severity == .error && firstError.isNone then
-        firstError := some (← m.data.toString)
-    let flat (m : String) := (m.replace "\n" " ").take 220
-    match firstError, outcome with
-    | some e, _ | none, some (.insufficient e) =>
-      return .insufficient
-        s!"{n}: its conclusion does not entail the live branch: {flat e}"
-    | none, some (.malformed e) => return .malformed e
-    | none, _ => return .proved
+    -- A statement that does not type-check is not a conclusion that fails to
+    -- entail the step: it is a malformed control.
+    try
+      check goal
+      unless (← isProp goal) do throwError "it is not a proposition"
+    catch e =>
+      return .malformed
+        s!"{n}: the {if weaken then "weakened" else "unweakened"} statement is ill-typed: {flat (← e.toMessageData.toString)}"
+    -- what separates the weakened statement from the original must be the
+    -- omitted conjunct and nothing else
+    if weaken && !omitsOnlyAConjunct original concl then
+      return .malformed s!"{n}: the weakened statement differs from the original by more than an omitted conjunct"
+    match ← runProof stx goal with
+    | .proved => return .proved
+    | .broken e => return .malformed s!"{n}: {e}"
+    | .failed e =>
+      if stopsOnOpenGoal e then
+        return .insufficient s!"{n}: its conclusion does not entail the live branch: {flat e}"
+      else
+        return .malformed s!"{n}: the converse failed, but not on an unsolved goal: {flat e}"
 
 /-- The one comparison. The negative control runs it against a deliberately
 withheld coverage set, so the passing and failing paths are the same code. -/
@@ -482,6 +559,16 @@ def audit (root : String) (negative : Bool) : Report Unit := do
         fail s!"negative control failed to fail: {n} still sufficient with a guard conjunct omitted"
       | .malformed e => fail s!"negative control inconclusive: {e}"
     IO.println s!"negative-control: weakened-conclusions={coveredList.length} detected={rejected}"
+    -- The control of the control: a weakening that does not type-check must be
+    -- reported as a malformed control, never counted as a rejection.
+    let mut refused := 0
+    for (n, _) in coveredList do
+      let some ti ← theoremOf n | continue
+      match ← tightnessProved n ti (weaken := true) (corrupt := true) with
+      | .malformed _ => refused := refused + 1
+      | .insufficient _ => fail s!"negative control failed to fail: an ill-typed weakening of {n} was counted as a rejection"
+      | .proved => fail s!"negative control failed to fail: an ill-typed weakening of {n} was accepted"
+    IO.println s!"negative-control: ill-typed-weakenings={coveredList.length} refused-as-malformed={refused}"
     return ()
 
   match compareCoverage ctors coveredList with
