@@ -502,6 +502,17 @@ const MUTANTS = [
     edit: h => once(h, '${liveAuthHtml(withAuth(state).live)}', '${liveAuthHtml(window.__seen = (withAuth(state).live.length ? withAuth(state).live : (window.__seen || [])))}') },
   { id: 'live-verdict-swapped', journeys: ['scenario'], rows: ['S5B-LIVE-SHOWN', 'S5B-FIDELITY'],
     edit: h => once(h, "`autorizzazione viva ${a.verdict === 'positive' ? 'positiva' : 'negativa'}:", "`autorizzazione viva ${a.verdict === 'positive' ? 'negativa' : 'positiva'}:") },
+  { id: 'proposer-approval-not-offered', journeys: ['assent'], rows: ['S5B-68'],
+    edit: h => once(h, 'const open = bgAdmins.filter(k => !pp.approvals.includes(k));',
+      'const open = bgAdmins.filter(k => !pp.approvals.includes(k) && !(k === pp.proposer && bgAdmins.length > 1));') },
+  { id: 'zero-approvals-not-shown', journeys: ['assent'], rows: ['S5B-68'],
+    edit: h => once(h, 'assensi ${pp.approvals.length} / soglia', 'assensi / soglia') },
+  { id: 'proposer-approval-accepted', journeys: ['assent'], rows: ['S5B-68'],
+    edit: h => once(h, "  if (signer === pend.proposer && bgAdminCount(gs) > 1) return 'proposerSelfApproval';\n", '') },
+  { id: 'refusal-reads-already-approved', journeys: ['assent'], rows: ['S5B-68'],
+    edit: h => once(h, "why: 'la proposta non è andata a buon fine: ' + verr,", "why: 'la proposta non è andata a buon fine: alreadyApproved',") },
+  { id: 'sole-admin-cannot-approve', journeys: ['assent'], rows: ['S5B-68'],
+    edit: h => once(h, "signer === pend.proposer && bgAdminCount(gs) > 1", "signer === pend.proposer && bgAdminCount(gs) > 0") },
 ];
 
 async function selftest() {
