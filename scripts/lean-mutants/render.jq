@@ -80,6 +80,8 @@ def edit:
   "- **HELPER** — its statement names no production definition (computed).",
   "- **OPEN** — no admitted mutant killed it; the reason says why, and the",
   "  attempted mutants are the ones whose target is in its statement closure.",
+  "  An `unconstrained` row also carries **Intended:** why its weak statement is",
+  "  the one wanted; the runner refuses such a row when that text is empty.",
   "",
   "## Counts, by identity",
   "",
@@ -107,6 +109,7 @@ def edit:
              elif .class == "OPEN" then
                (if (.attempted | length) > 0 then "attempted " + (.attempted | map(code) | join(", ")) + ". " else "" end)
                + (.reason | cell)
+               + (if (.intended // "") != "" then " **Intended:** " + (.intended | cell) else "" end)
              else (.reason | cell) end)
           + " |" ),
       "" ),
