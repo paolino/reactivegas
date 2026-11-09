@@ -16,7 +16,7 @@
 
 ## Question retention
 
-- [ ] T521 Open questions retained outside the proposer-departure closures (question-retained, ledger-current)
+- [x] T521 Open questions retained outside the proposer-departure closures (question-retained, ledger-current)
 
 ## Statement triage
 
