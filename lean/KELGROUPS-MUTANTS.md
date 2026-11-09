@@ -21,16 +21,16 @@ change and fails when a claim here is not what Lean reports.
 
 | | KelGroups modules | whole ledger |
 |---|---|---|
-| DISCOVERED theorem constants | 716 | 1700 |
-| EXCLUDED (generated) | 532 | 1252 |
+| DISCOVERED theorem constants | 768 | 1753 |
+| EXCLUDED (generated) | 572 | 1292 |
 | HELPER | 1 | 6 |
-| REQUIRED (authored − HELPER) | 183 | 442 |
-| KILLED | 85 | 245 |
-| OPEN | 98 | 197 |
-| refusal constructors SURVIVED | 5 | |
+| REQUIRED (authored − HELPER) | 195 | 455 |
+| KILLED | 96 | 257 |
+| OPEN | 99 | 198 |
+| refusal constructors SURVIVED | 0 | |
 | refusal constructors UNEMITTED | 0 | |
 
-KILLED / REQUIRED: 85 / 183 here, 245 / 442 over the whole ledger.
+KILLED / REQUIRED: 96 / 195 here, 257 / 455 over the whole ledger.
 
 ## Theorems
 
@@ -173,6 +173,23 @@ KILLED / REQUIRED: 85 / 183 here, 245 / 442 over the whole ledger.
 | `KelGroups.assocLookup_insert_of_none` | KILLED | killed by `assocInsert-appends` |
 | `KelGroups.assocLookup_insert_self` | KILLED | killed by `assocLookup-misses` |
 
+### `KelGroups.Validate`
+
+| theorem | class | evidence |
+|---|---|---|
+| `KelGroups.validateBaseMutation_memberNotFound_changeRoles` | KILLED | killed by `guard-require-admin`, `guard-require-member` |
+| `KelGroups.validateBaseMutation_memberNotFound_remove` | KILLED | killed by `guard-require-admin`, `guard-require-member` |
+| `KelGroups.validateProposal_bootstrapRequiresAdmin_introduce` | KILLED | killed by `guard-bootstrap-admin`, `guard-valid-key` |
+| `KelGroups.validateProposal_invalidKey_bootstrap` | KILLED | killed by `guard-bootstrap-admin`, `guard-valid-key` |
+| `KelGroups.validateProposal_invalidKey_normal` | KILLED | killed by `guard-require-admin`, `guard-valid-key` |
+| `KelGroups.validateProposal_memberNotFound_changeRoles` | KILLED | killed by `guard-require-admin`, `guard-require-member` |
+| `KelGroups.validateProposal_memberNotFound_remove` | KILLED | killed by `guard-require-admin`, `guard-require-member` |
+| `KelGroups.validateProposal_roleAddPrecondition_introduce` | KILLED | killed by `guard-require-admin`, `guard-role-add-precondition`, `guard-valid-key` |
+| `KelGroups.validateProposal_roleRemovePrecondition_changeRoles` | KILLED | killed by `guard-require-admin`, `guard-role-remove-precondition` |
+| `KelGroups.validateRoleAdditions_error_shape@KelGroups.Validate` | KILLED | killed by `guard-role-add-precondition` |
+| `KelGroups.validateRoleChanges_error_shape@KelGroups.Validate` | OPEN | attempted `assocLookup-misses`, `guard-role-add-precondition`, `guard-role-remove-precondition`, `state-lookupMember-misses`. masked: its proof uses `KelGroups.validateRoleAdditions_error_shape@KelGroups.Validate` (killed by `guard-role-add-precondition`), `KelGroups.validateRoleRemovals_error_shape@KelGroups.Validate` (killed by `guard-role-remove-precondition`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `KelGroups.validateRoleRemovals_error_shape@KelGroups.Validate` | KILLED | killed by `guard-role-remove-precondition` |
+
 ### `KelGroups.Vote.Invariants`
 
 | theorem | class | evidence |
@@ -253,16 +270,16 @@ emits it, so there is no guard to mutate.
 | `KelGroups.Vote.VoteError.notDesignee` | `KelGroups.Vote.validateVoteEvent` | `guard-cast-designee` | 3 | KILLS |
 | `KelGroups.Vote.VoteError.notProposer` | `KelGroups.Vote.validateVoteEvent` | `guard-renounce-proposer` | 3 | KILLS |
 | `KelGroups.ValidationError.notAMember` | `KelGroups.applyIntegratedEvent`, `KelGroups.validateEvent` | `guard-app-signer-member` | 25 | KILLS |
-| `KelGroups.ValidationError.notAnAdmin` | `KelGroups.requireAdmin`, `KelGroups.validateDirectAdmission` | `guard-require-admin`, `guard-admission-admin` | 8 | KILLS |
-| `KelGroups.ValidationError.bootstrapRequiresAdmin` | `KelGroups.validateBootstrapProposal@KelGroups.Validate` | `guard-bootstrap-admin` | 0 | SURVIVED |
+| `KelGroups.ValidationError.notAnAdmin` | `KelGroups.requireAdmin`, `KelGroups.validateDirectAdmission` | `guard-require-admin`, `guard-admission-admin` | 15 | KILLS |
+| `KelGroups.ValidationError.bootstrapRequiresAdmin` | `KelGroups.validateBootstrapProposal@KelGroups.Validate` | `guard-bootstrap-admin` | 2 | KILLS |
 | `KelGroups.ValidationError.memberAlreadyExists` | `KelGroups.requireNotMember@KelGroups.Validate`, `KelGroups.validateDirectAdmission` | `guard-admission-duplicate` | 4 | KILLS |
-| `KelGroups.ValidationError.memberNotFound` | `KelGroups.requireMember@KelGroups.Validate`, `KelGroups.validateRoleChanges@KelGroups.Validate` | `guard-require-member` | 0 | SURVIVED |
+| `KelGroups.ValidationError.memberNotFound` | `KelGroups.requireMember@KelGroups.Validate`, `KelGroups.validateRoleChanges@KelGroups.Validate` | `guard-require-member` | 4 | KILLS |
 | `KelGroups.ValidationError.proposalNotFound` | `KelGroups.applyIntegratedEvent`, `KelGroups.validateApproval`, `KelGroups.validateBaseApproval` | `guard-base-approval-pending`, `guard-approve-route-pending` | 6 | KILLS |
 | `KelGroups.ValidationError.alreadyApproved` | `KelGroups.validateApproval`, `KelGroups.validateBaseApproval` | `guard-base-approval-twice`, `guard-approval-twice-historical` | 3 | KILLS |
 | `KelGroups.ValidationError.proposerSelfApproval` | `KelGroups.validateApproval`, `KelGroups.validateBaseApproval` | `guard-approval-proposer-self`, `guard-approval-sole-admin-barred`, `guard-base-approval-proposer-self`, `guard-base-approval-sole-admin-barred` | 7 | KILLS |
-| `KelGroups.ValidationError.roleAddPrecondition` | `KelGroups.checkRoleAddition@KelGroups.Validate` | `guard-role-add-precondition` | 0 | SURVIVED |
-| `KelGroups.ValidationError.roleRemovePrecondition` | `KelGroups.checkRoleRemoval@KelGroups.Validate` | `guard-role-remove-precondition` | 0 | SURVIVED |
-| `KelGroups.ValidationError.invalidKey` | `KelGroups.requireValidKey@KelGroups.Validate` | `guard-valid-key` | 0 | SURVIVED |
+| `KelGroups.ValidationError.roleAddPrecondition` | `KelGroups.checkRoleAddition@KelGroups.Validate` | `guard-role-add-precondition` | 2 | KILLS |
+| `KelGroups.ValidationError.roleRemovePrecondition` | `KelGroups.checkRoleRemoval@KelGroups.Validate` | `guard-role-remove-precondition` | 2 | KILLS |
+| `KelGroups.ValidationError.invalidKey` | `KelGroups.requireValidKey@KelGroups.Validate` | `guard-valid-key` | 4 | KILLS |
 | `KelGroups.ValidationError.reservedKey` | `KelGroups.validateDirectAdmission` | `guard-admission-reserved` | 4 | KILLS |
 | `KelGroups.IntegratedError.validation` | `KelGroups.applyIntegratedEvent` | `guard-propose-validation` | 5 | KILLS |
 | `KelGroups.IntegratedError.app` | `KelGroups.applyIntegratedEvent`, `KelGroups.commitBaseChange` | `guard-app-fold-refusal`, `guard-commit-hook-refusal` | 18 | KILLS |
@@ -274,15 +291,15 @@ emits it, so there is no guard to mutate.
 | `guard-vote-responsabile` | `KelGroups.Vote.validateVoteEvent` | `KelGroups.Vote.VoteError.notResponsabile` | `isResponsabile signer view` → `true` | KelGroups.Vote.Validate:60 | 5 |
 | `guard-vote-question-exists` | `KelGroups.Vote.validateVoteEvent` | `KelGroups.Vote.VoteError.questionNotFound` | `.error VoteError.questionNotFound` → `.ok ()` | KelGroups.Vote.Validate:70 | 1 |
 | `guard-app-signer-member` | `KelGroups.applyIntegratedEvent` | `KelGroups.ValidationError.notAMember` | `GroupView.isMember signer view` → `true` | KelGroups.Integration:208 | 25 |
-| `guard-require-admin` | `KelGroups.requireAdmin` | `KelGroups.ValidationError.notAnAdmin` | `isAdmin signer gs` → `true` | KelGroups.Validate:33 | 2 |
-| `guard-bootstrap-admin` | `KelGroups.validateBootstrapProposal@KelGroups.Validate` | `KelGroups.ValidationError.bootstrapRequiresAdmin` | `hasAdmin roles` → `true` | KelGroups.Validate:96 | 0 |
+| `guard-require-admin` | `KelGroups.requireAdmin` | `KelGroups.ValidationError.notAnAdmin` | `isAdmin signer gs` → `true` | KelGroups.Validate:33 | 9 |
+| `guard-bootstrap-admin` | `KelGroups.validateBootstrapProposal@KelGroups.Validate` | `KelGroups.ValidationError.bootstrapRequiresAdmin` | `hasAdmin roles` → `true` | KelGroups.Validate:96 | 2 |
 | `guard-admission-duplicate` | `KelGroups.validateDirectAdmission` | `KelGroups.ValidationError.memberAlreadyExists` | `isMember target gs` → `false` | KelGroups.Validate:157 | 4 |
-| `guard-require-member` | `KelGroups.requireMember@KelGroups.Validate` | `KelGroups.ValidationError.memberNotFound` | `isMember key gs` → `true` | KelGroups.Validate:37 | 0 |
+| `guard-require-member` | `KelGroups.requireMember@KelGroups.Validate` | `KelGroups.ValidationError.memberNotFound` | `isMember key gs` → `true` | KelGroups.Validate:37 | 4 |
 | `guard-base-approval-pending` | `KelGroups.validateBaseApproval` | `KelGroups.ValidationError.proposalNotFound` | `.error (.proposalNotFound proposalId` → `.ok (` | KelGroups.Validate:177 | 1 |
 | `guard-base-approval-twice` | `KelGroups.validateBaseApproval` | `KelGroups.ValidationError.alreadyApproved` | `pending.approvals.contains signer` → `false` | KelGroups.Validate:182 | 1 |
-| `guard-role-add-precondition` | `KelGroups.checkRoleAddition@KelGroups.Validate` | `KelGroups.ValidationError.roleAddPrecondition` | `roleDef.canAdd gs.appFold` → `true` | KelGroups.Validate:54 | 0 |
-| `guard-role-remove-precondition` | `KelGroups.checkRoleRemoval@KelGroups.Validate` | `KelGroups.ValidationError.roleRemovePrecondition` | `roleDef.canRemove gs.appFold` → `true` | KelGroups.Validate:63 | 0 |
-| `guard-valid-key` | `KelGroups.requireValidKey@KelGroups.Validate` | `KelGroups.ValidationError.invalidKey` | `validKey key` → `true` | KelGroups.Validate:45 | 0 |
+| `guard-role-add-precondition` | `KelGroups.checkRoleAddition@KelGroups.Validate` | `KelGroups.ValidationError.roleAddPrecondition` | `roleDef.canAdd gs.appFold` → `true` | KelGroups.Validate:54 | 2 |
+| `guard-role-remove-precondition` | `KelGroups.checkRoleRemoval@KelGroups.Validate` | `KelGroups.ValidationError.roleRemovePrecondition` | `roleDef.canRemove gs.appFold` → `true` | KelGroups.Validate:63 | 2 |
+| `guard-valid-key` | `KelGroups.requireValidKey@KelGroups.Validate` | `KelGroups.ValidationError.invalidKey` | `validKey key` → `true` | KelGroups.Validate:45 | 4 |
 | `guard-admission-reserved` | `KelGroups.validateDirectAdmission` | `KelGroups.ValidationError.reservedKey` | `target = reserved` → `false` | KelGroups.Validate:156 | 4 |
 | `guard-propose-validation` | `KelGroups.applyIntegratedEvent` | `KelGroups.IntegratedError.validation` | `.error (.validation err)` → `.ok { state := gs, change := none }` | KelGroups.Integration:187 | 5 |
 | `guard-app-fold-refusal` | `KelGroups.applyIntegratedEvent` | `KelGroups.IntegratedError.app` | `.error (.app err)` → `.ok { state := gs, change := none }` | KelGroups.Integration:211 | 12 |
@@ -382,8 +399,10 @@ What a row here does not establish.
 
 Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem` command, produced it: the environment records no source declaration range of its own for it (equation, injectivity, sizeOf, auxiliary-proof and simp lemmas), or it is a structure projection (a `Prop` field of a structure); every other theorem constant is AUTHORED.
 
-<details><summary>532 identities</summary>
+<details><summary>572 identities</summary>
 
+- `Except.map.match_1.eq_1@KelGroups.Validate`
+- `Except.map.match_1.eq_2@KelGroups.Validate`
 - `Except.toBool.eq_1`
 - `Except.toBool.eq_2`
 - `Except.toBool.match_1.eq_1@KelGroups.Mirrors`
@@ -727,6 +746,14 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `KelGroups.assocLookup.match_1.eq_2@KelGroups.Types`
 - `KelGroups.basePendingCoherentB.eq_1`
 - `KelGroups.basePendingCoherent_corr._simp_1_2`
+- `KelGroups.checkRoleAddition.eq_1@KelGroups.Validate`
+- `KelGroups.checkRoleAddition.eq_2@KelGroups.Validate`
+- `KelGroups.checkRoleAddition.match_1.eq_1@KelGroups.Validate`
+- `KelGroups.checkRoleAddition.match_1.eq_2@KelGroups.Validate`
+- `KelGroups.checkRoleAddition.match_3.eq_1@KelGroups.Validate`
+- `KelGroups.checkRoleAddition.match_3.eq_2@KelGroups.Validate`
+- `KelGroups.checkRoleRemoval.eq_1@KelGroups.Validate`
+- `KelGroups.checkRoleRemoval.eq_2@KelGroups.Validate`
 - `KelGroups.commitBaseChange.match_1.eq_1@KelGroups.Invariants`
 - `KelGroups.commitBaseChange.match_1.eq_2@KelGroups.Invariants`
 - `KelGroups.emptyState.eq_1`
@@ -887,6 +914,7 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `KelGroups.integratedApprove_both._proof_1_12@KelGroups.Invariants`
 - `KelGroups.integratedApprove_both._proof_1_14@KelGroups.Invariants`
 - `KelGroups.integratedApprove_both._simp_1_10@KelGroups.Invariants`
+- `KelGroups.isMember.eq_1`
 - `KelGroups.majority.eq_1`
 - `KelGroups.majority_not_strict_on_even._proof_1_1`
 - `KelGroups.membersCoherentB.eq_1`
@@ -897,6 +925,10 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `KelGroups.pendingStrongB.eq_1`
 - `KelGroups.rawStructural_corr._simp_1_1`
 - `KelGroups.requireAdmin.eq_1`
+- `KelGroups.requireMember.eq_1@KelGroups.Validate`
+- `KelGroups.requireNotMember.eq_1@KelGroups.Validate`
+- `KelGroups.requireValidKey.eq_1@KelGroups.Validate`
+- `KelGroups.roleDifference.eq_1@KelGroups.Validate`
 - `KelGroups.setInsert.eq_1`
 - `KelGroups.setInsert_not_mem._simp_1_2@KelGroups.Invariants`
 - `KelGroups.setInsert_not_mem._simp_1_3@KelGroups.Invariants`
@@ -913,7 +945,32 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `KelGroups.tryEnactDetailed.eq_1`
 - `KelGroups.tryEnactDetailed.match_1.eq_1@KelGroups.Invariants`
 - `KelGroups.tryEnactDetailed.match_1.eq_2@KelGroups.Invariants`
+- `KelGroups.validateBaseMutation.eq_1`
+- `KelGroups.validateBaseMutation.eq_2`
+- `KelGroups.validateBaseMutation.match_1.eq_1@KelGroups.Validate`
+- `KelGroups.validateBaseMutation.match_1.eq_2@KelGroups.Validate`
+- `KelGroups.validateBootstrapProposal.eq_1@KelGroups.Validate`
+- `KelGroups.validateBootstrapProposal.eq_2@KelGroups.Validate`
+- `KelGroups.validateBootstrapProposal.eq_3@KelGroups.Validate`
+- `KelGroups.validateBootstrapProposal.match_1.eq_1@KelGroups.Validate`
+- `KelGroups.validateBootstrapProposal.match_1.eq_2@KelGroups.Validate`
+- `KelGroups.validateBootstrapProposal.match_1.eq_3@KelGroups.Validate`
 - `KelGroups.validateDirectAdmission.eq_1`
+- `KelGroups.validateNormalProposal.eq_1@KelGroups.Validate`
+- `KelGroups.validateNormalProposal.eq_2@KelGroups.Validate`
+- `KelGroups.validateNormalProposal.eq_3@KelGroups.Validate`
+- `KelGroups.validateProposal.eq_1`
+- `KelGroups.validateProposal_roleAddPrecondition_introduce._simp_1_8`
+- `KelGroups.validateProposal_roleRemovePrecondition_changeRoles._simp_1_8`
+- `KelGroups.validateRoleAdditions.eq_1@KelGroups.Validate`
+- `KelGroups.validateRoleAdditions.eq_2@KelGroups.Validate`
+- `KelGroups.validateRoleAdditions.eq_def@KelGroups.Validate`
+- `KelGroups.validateRoleAdditions.match_1.eq_1@KelGroups.Validate`
+- `KelGroups.validateRoleAdditions.match_1.eq_2@KelGroups.Validate`
+- `KelGroups.validateRoleChanges.eq_1@KelGroups.Validate`
+- `KelGroups.validateRoleRemovals.eq_1@KelGroups.Validate`
+- `KelGroups.validateRoleRemovals.eq_2@KelGroups.Validate`
+- `KelGroups.validateRoleRemovals.eq_def@KelGroups.Validate`
 - `List.filterMap.match_1.eq_1@KelGroups.Vote.Invariants`
 - `List.filterMap.match_1.eq_2@KelGroups.Vote.Invariants`
 

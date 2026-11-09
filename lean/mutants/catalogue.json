@@ -337,7 +337,14 @@
       },
       "claimedKills": [
         "KelGroups.validateApproval_ok@KelGroups.Invariants",
-        "KelGroups.validateBaseApproval_ok@KelGroups.Invariants"
+        "KelGroups.validateBaseApproval_ok@KelGroups.Invariants",
+        "KelGroups.validateBaseMutation_memberNotFound_changeRoles",
+        "KelGroups.validateBaseMutation_memberNotFound_remove",
+        "KelGroups.validateProposal_invalidKey_normal",
+        "KelGroups.validateProposal_memberNotFound_changeRoles",
+        "KelGroups.validateProposal_memberNotFound_remove",
+        "KelGroups.validateProposal_roleAddPrecondition_introduce",
+        "KelGroups.validateProposal_roleRemovePrecondition_changeRoles"
       ],
       "note": "base validators stop requiring an admin signer"
     },
@@ -350,7 +357,10 @@
         "before": "      if hasAdmin roles then .ok () else .error .bootstrapRequiresAdmin",
         "after": "      if true then .ok () else .error .bootstrapRequiresAdmin"
       },
-      "claimedKills": [],
+      "claimedKills": [
+        "KelGroups.validateProposal_bootstrapRequiresAdmin_introduce",
+        "KelGroups.validateProposal_invalidKey_bootstrap"
+      ],
       "note": "a bootstrap admission without an admin role is admitted"
     },
     {
@@ -379,7 +389,12 @@
         "before": "  if isMember key gs then .ok () else .error (.memberNotFound key)",
         "after": "  if true then .ok () else .error (.memberNotFound key)"
       },
-      "claimedKills": [],
+      "claimedKills": [
+        "KelGroups.validateBaseMutation_memberNotFound_changeRoles",
+        "KelGroups.validateBaseMutation_memberNotFound_remove",
+        "KelGroups.validateProposal_memberNotFound_changeRoles",
+        "KelGroups.validateProposal_memberNotFound_remove"
+      ],
       "note": "a base mutation may target a non-member"
     },
     {
@@ -419,7 +434,10 @@
         "before": "          if roleDef.canAdd gs.appFold then .ok () else .error (.roleAddPrecondition name)",
         "after": "          if true then .ok () else .error (.roleAddPrecondition name)"
       },
-      "claimedKills": [],
+      "claimedKills": [
+        "KelGroups.validateProposal_roleAddPrecondition_introduce",
+        "KelGroups.validateRoleAdditions_error_shape@KelGroups.Validate"
+      ],
       "note": "an app role is added without its precondition"
     },
     {
@@ -431,7 +449,10 @@
         "before": "          if roleDef.canRemove gs.appFold then .ok ()",
         "after": "          if true then .ok ()"
       },
-      "claimedKills": [],
+      "claimedKills": [
+        "KelGroups.validateProposal_roleRemovePrecondition_changeRoles",
+        "KelGroups.validateRoleRemovals_error_shape@KelGroups.Validate"
+      ],
       "note": "an app role is removed without its precondition"
     },
     {
@@ -443,7 +464,12 @@
         "before": "  if validKey key then .ok () else .error (.invalidKey key)",
         "after": "  if true then .ok () else .error (.invalidKey key)"
       },
-      "claimedKills": [],
+      "claimedKills": [
+        "KelGroups.validateProposal_bootstrapRequiresAdmin_introduce",
+        "KelGroups.validateProposal_invalidKey_bootstrap",
+        "KelGroups.validateProposal_invalidKey_normal",
+        "KelGroups.validateProposal_roleAddPrecondition_introduce"
+      ],
       "note": "an invalid key is admitted"
     },
     {
@@ -515,7 +541,9 @@
         "before": "  if productionWellFormed gs then",
         "after": "  if true then"
       },
-      "claimedKills": [],
+      "claimedKills": [
+        "Reactivegas.apply_comuneReserved_iff"
+      ],
       "note": "the production root stops refusing an aggregate listing the comune"
     },
     {
@@ -2126,7 +2154,9 @@
         "before": "        if productionWellFormed result.state then .ok result",
         "after": "        if true then .ok result"
       },
-      "claimedKills": [],
+      "claimedKills": [
+        "Reactivegas.apply_comuneReserved_iff"
+      ],
       "note": "the production root stops refusing a result that lists the comune"
     },
     {
