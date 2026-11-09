@@ -20,11 +20,11 @@
 
 ## Statement triage
 
-- [ ] T531 Census of `unconstrained` rows at slice start, one row per theorem
-- [ ] T532 Each row killed or its reason recorded, the reason stored and rendered by the ledger (unconstrained-triaged, ledger-current)
-- [ ] T533 The simulation machine builder's `comuneReserved` site observed or reasoned (comune-reserved-second-site)
-- [ ] T534 The unconditional bootstrap refusal stated or reasoned (bootstrap-refusal-stated)
-- [ ] T535 Hosted ledger wall time projected from a timed local run (ledger-wall-time-projected)
+- [x] T531 Census of `unconstrained` rows at slice start, one row per theorem
+- [x] T532 Each row killed or its reason recorded, the reason stored and rendered by the ledger (unconstrained-triaged, ledger-current)
+- [x] T533 The simulation machine builder's `comuneReserved` site observed or reasoned (comune-reserved-second-site)
+- [x] T534 The unconditional bootstrap refusal stated or reasoned (bootstrap-refusal-stated)
+- [x] T535 Hosted ledger wall time projected from a timed local run (ledger-wall-time-projected)
 
 ## Mirror auxiliaries
 
