@@ -1019,21 +1019,27 @@ async function selftest(only, { budgetMs = CONFIG.budgetMs, quiet = false } = {}
 }
 
 /* --- CLI --------------------------------------------------------------------- */
-let code = 1;
-if (process.argv.includes('--selftest')) {
-  const i = process.argv.indexOf('--only');
-  code = await selftest(i < 0 ? null : process.argv[i + 1].split(','));
-} else {
-  const p = await production();
-  p.lines.forEach(l => console.log(l));
-  if (p.result.ok) {
-    console.error(`generator wall ${Math.round(p.result.elapsedMs)} ms of ${CONFIG.budgetMs} ms`);
-    console.log('GREEN');
-    code = 0;
+/* what the page gate plays: the histories this gate generates, through the one
+   production core */
+export { CONFIG, buildSurface, generateTrace, envelopeOf, loadCore, clone };
+
+if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {
+  let code = 1;
+  if (process.argv.includes('--selftest')) {
+    const i = process.argv.indexOf('--only');
+    code = await selftest(i < 0 ? null : process.argv[i + 1].split(','));
   } else {
-    if (p.result.report) printReport(p.result.report);
-    console.error(`RED: ${p.result.reasons.length} problemi`);
-    p.result.reasons.forEach(x => console.error(' - ' + x));
+    const p = await production();
+    p.lines.forEach(l => console.log(l));
+    if (p.result.ok) {
+      console.error(`generator wall ${Math.round(p.result.elapsedMs)} ms of ${CONFIG.budgetMs} ms`);
+      console.log('GREEN');
+      code = 0;
+    } else {
+      if (p.result.report) printReport(p.result.report);
+      console.error(`RED: ${p.result.reasons.length} problemi`);
+      p.result.reasons.forEach(x => console.error(' - ' + x));
+    }
   }
+  process.exit(code);
 }
-process.exit(code);
