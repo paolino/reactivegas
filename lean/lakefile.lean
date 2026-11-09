@@ -23,7 +23,8 @@ the executable oracle, and the refusals the root returns. Outside the
 @[default_target]
 lean_lib ReactivegasComposition where
   srcDir := "."
-  roots := #[`Reactivegas.CompositionRoot, `Reactivegas.CompositionRefund, `Reactivegas.CompositionTests,
+  roots := #[`Reactivegas.CompositionRoot, `Reactivegas.CompositionRefund, `Reactivegas.CompositionRetention,
+    `Reactivegas.CompositionTests,
     `Reactivegas.Refusals.Invariants]
 
 lean_lib TraceDriverV1 where
