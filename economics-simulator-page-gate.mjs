@@ -280,11 +280,18 @@ async function runPage(html, histories, browser, { firstRed = false } = {}) {
   return L;
 }
 
-/* the run and its wall time; the budget is judged by the caller's row */
+/* the one judgement of a wall time, for the run and for the selftest */
+const overBudget = (what, elapsedMs, budgetMs) =>
+  elapsedMs > budgetMs ? `${what} budget exceeded: ${Math.round(elapsedMs)} ms > ${budgetMs} ms` : null;
+
+/* the run, held to its wall budget */
 async function timedRun(html, histories, browser, budgetMs = CONFIG.budgetMs) {
   const t0 = performance.now();
   const L = await runPage(html, histories, browser);
-  return { L, elapsedMs: performance.now() - t0, budgetMs };
+  const elapsedMs = performance.now() - t0;
+  const over = overBudget('page', elapsedMs, budgetMs);
+  L.ok('G3-BUDGET', over === null, over);
+  return { L, elapsedMs, budgetMs };
 }
 
 /* the stated set must reach every shape it claims to judge */
@@ -318,11 +325,12 @@ function report(L, required) {
 async function main() {
   const before = sha256(readFileSync(HTML));
   const histories = await statedHistories();
-  const { L } = await timedRun(HTML, histories);
+  const { L, elapsedMs, budgetMs } = await timedRun(HTML, histories);
   judgeReach(L);
   L.ok('G3-READ-ONLY', sha256(readFileSync(HTML)) === before, 'the tracked page changed during the run');
-  const bad = report(L, ['G3-PAGE-STATES', 'G3-READ-ONLY']);
+  const bad = report(L, ['G3-PAGE-STATES', 'G3-READ-ONLY', 'G3-BUDGET']);
   if (bad) { console.error(`RED: ${bad} rows`); process.exit(1); }
+  console.error(`page wall ${Math.round(elapsedMs)} ms of ${budgetMs} ms`);
   console.log(`GREEN: ${histories.length} generated histories, display = core state`);
 }
 
@@ -415,8 +423,11 @@ async function selftest() {
     if (tight.reds.get('G3-BUDGET').length) console.log('control budget: G3-BUDGET red with a budget of 0 ms');
     else bad.push('budget: G3-BUDGET stayed green with a budget of 0 ms');
   } finally { b.close(); rmQuiet(profile); rmQuiet(work); }
+  const elapsedMs = performance.now() - t0;
+  const over = overBudget('selftest wall', elapsedMs, CONFIG.budgetMs);
+  if (over) bad.push(over);
   if (bad.length) { console.error(`RED: selftest, ${bad.length} problems`); bad.forEach(x => console.error(' - ' + x)); return 1; }
-  console.log(`GREEN: selftest, ${MUTANTS.length} mutants, each went red; ${Math.round(performance.now() - t0)} ms`);
+  console.log(`GREEN: selftest, ${MUTANTS.length} mutants, each went red; ${Math.round(elapsedMs)} ms of ${CONFIG.budgetMs} ms`);
   return 0;
 }
 
