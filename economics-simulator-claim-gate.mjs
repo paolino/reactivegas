@@ -1194,6 +1194,11 @@ async function selftest(work) {
     return 1;
   }
   console.log('machine-controls=' + MACHINE_CONTROLS);
+  const derivedPin = await derivedCorePinControls(work);
+  if (derivedPin.length) {
+    console.error('SELFTEST RED: controlli del pin core derivato:\n' + derivedPin.join('\n'));
+    return 1;
+  }
 
   // production GREEN is required, and its fresh derivation is the
   // material for the derived-flip control (nothing hardcoded)
@@ -1500,12 +1505,111 @@ const SELFTEST_IDENT = {
   GIT_AUTHOR_DATE: '2000-01-01T00:00:00Z', GIT_COMMITTER_DATE: '2000-01-01T00:00:00Z',
 };
 
-function scratchCommit(dir, paths, message) {
-  const git = args => execFileSync('git', ['-C', dir, ...args], { encoding: 'utf8',
+function scratchGit(dir, args) {
+  return execFileSync('git', ['-C', dir, ...args], { encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, ...SELFTEST_IDENT } }).trim();
-  git(['add', '--', ...paths]);
-  git(['commit', '--quiet', '--no-verify', '-m', message]);
-  return git(['rev-parse', 'HEAD']);
+}
+
+function scratchCommit(dir, paths, message) {
+  scratchGit(dir, ['add', '--', ...paths]);
+  scratchGit(dir, ['commit', '--quiet', '--no-verify', '-m', message]);
+  return scratchGit(dir, ['rev-parse', 'HEAD']);
+}
+
+/*
+ * The core pin is derived from the history of the checkout under test, so the
+ * production machine coverage must refuse to judge when no pin can be derived
+ * (an unresolvable revision, a history holding no commit under the vocabulary
+ * roots, a truncated history that would otherwise name its boundary commit),
+ * and must follow a branch that changes Lean without changing any vocabulary
+ * — on a linear HEAD and on a merge HEAD, the shape of the CI pull_request
+ * checkout — with the claim gate file untouched.
+ * Returns the list of failed controls (empty when all hold).
+ */
+async function derivedCorePinControls(work) {
+  const failures = [];
+  const initRepo = name => {
+    const dir = join(work, name);
+    mkdirSync(dir, { recursive: true });
+    scratchGit(dir, ['init', '--quiet']);
+    return dir;
+  };
+  const underivable = async (name, dir, cause) => {
+    const r = await checkMachineCoverage(CORE, dir);
+    const text = (r.reasons || []).join('\n');
+    if (r.ok || !/core pin/.test(text) || !cause.test(text))
+      failures.push(`pin core non derivabile (${name}) non RED con «core pin» e ${cause}: ${text.slice(0, 300)}`);
+    else console.log(`controllo negativo «pin core non derivabile: ${name}»: RED come atteso — ${text.split('\n')[0].slice(0, 110)}`);
+  };
+
+  await underivable('revisione non risolvibile', initRepo('cp-unborn'), /unresolvable revision/);
+
+  const noRoots = initRepo('cp-no-roots');
+  writeFileSync(join(noRoots, 'README'), 'no Lean here\n');
+  scratchCommit(noRoots, ['README'], 'claim-gate selftest: a history without vocabulary roots');
+  await underivable('nessun commit sotto le radici', noRoots, /no commit changes/);
+
+  const full = initRepo('cp-full');
+  mkdirSync(join(full, VOCAB_ROOTS[0]), { recursive: true });
+  writeFileSync(join(full, VOCAB_ROOTS[0], 'Scratch.lean'), '-- a root source\n');
+  scratchCommit(full, [VOCAB_ROOTS[0] + '/Scratch.lean'], 'claim-gate selftest: a root source');
+  writeFileSync(join(full, 'README'), 'later\n');
+  scratchCommit(full, ['README'], 'claim-gate selftest: a later commit');
+  const shallow = join(work, 'cp-shallow');
+  execFileSync('git', ['clone', '--quiet', '--depth', '1', 'file://' + full, shallow],
+    { stdio: ['ignore', 'pipe', 'pipe'] });
+  if (scratchGit(shallow, ['rev-parse', '--is-shallow-repository']) !== 'true')
+    failures.push('controllo mal costruito: il clone a profondità 1 non è superficiale');
+  await underivable('storia troncata', shallow, /truncated history/);
+
+  const dir = join(work, 'cp-branch');
+  execFileSync('git', ['-C', REPO, 'worktree', 'add', '--quiet', '--detach', dir, 'HEAD'],
+    { stdio: ['ignore', 'pipe', 'pipe'] });
+  try {
+    const git = args => scratchGit(dir, args);
+    const base = git(['rev-parse', 'HEAD']);
+    const coreFile = eventSourceFromManifest(ACCEPTED_CORE.files);
+    const vocabFile = git(['ls-files', '--', ...VOCAB_ROOTS]).split('\n')
+      .filter(f => f.endsWith('.lean') && f !== coreFile)
+      .find(f => parseVocabularies(f, readFileSync(join(dir, f), 'utf8')).length);
+    if (!vocabFile) return [...failures, 'controllo mal costruito: nessun vocabolario fuori dal file core'];
+    const vocabsOf = () => JSON.stringify([coreFile, vocabFile].map(f =>
+      parseVocabularies(f, readFileSync(join(dir, f), 'utf8'))));
+    const vocabsBefore = vocabsOf();
+    const editRoots = tag => {
+      for (const f of [coreFile, vocabFile])
+        writeFileSync(join(dir, f), readFileSync(join(dir, f), 'utf8') + `\n-- claim-gate selftest: ${tag}\n`);
+      return scratchCommit(dir, [coreFile, vocabFile], `claim-gate selftest: ${tag}`);
+    };
+    const judge = async (name, wantPin, parents) => {
+      const nParents = git(['rev-list', '--parents', '-n', '1', 'HEAD']).split(' ').length - 1;
+      if (nParents !== parents || vocabsOf() !== vocabsBefore ||
+          git(['diff', '--name-only', base, 'HEAD']).split('\n').includes('economics-simulator-claim-gate.mjs'))
+        return failures.push(`controllo mal costruito: ramo Lean ${name}`);
+      const r = await checkMachineCoverage(join(dir, 'economics-simulator-core.mjs'), dir);
+      const roots = rev => VOCAB_ROOTS.map(d => git(['rev-parse', `${rev}:${d}`])).join();
+      if (!r.ok || r.corePin !== wantPin)
+        failures.push(`ramo Lean ${name} senza cambio di vocabolario non GREEN sul proprio pin — atteso ${wantPin}, trovato ${r.corePin}: ${(r.reasons || []).join('\n').slice(0, 300)}`);
+      else if (roots(r.corePin) !== roots('HEAD'))
+        failures.push(`ramo Lean ${name}: il pin derivato non ha le radici di HEAD`);
+      else console.log(`controllo positivo «ramo Lean ${name}»: GREEN — pin derivato ${r.corePin.slice(0, 10)}…`);
+    };
+
+    await judge('lineare', editRoots('a Lean-changing branch'), 1);
+
+    git(['checkout', '--quiet', '--detach', base]);
+    const side = editRoots('a Lean-changing side branch');
+    git(['checkout', '--quiet', '--detach', base]);
+    writeFileSync(join(dir, 'zz-selftest-unrelated.txt'), 'unrelated\n');
+    scratchCommit(dir, ['zz-selftest-unrelated.txt'], 'claim-gate selftest: an unrelated commit');
+    git(['merge', '--quiet', '--no-ff', '--no-edit', '-m', 'claim-gate selftest: merge the side branch', side]);
+    await judge('merge', side, 2);
+    return failures;
+  } finally {
+    try { execFileSync('git', ['-C', REPO, 'worktree', 'remove', '--force', dir],
+      { stdio: ['ignore', 'pipe', 'pipe'] }); } catch { /* best effort */ }
+    rmQuiet(dir);
+  }
 }
 
 /* The full claim gate (machine coverage + runGate) with `dir` as the
