@@ -69,7 +69,7 @@ import { readFileSync, writeFileSync, readdirSync, mkdtempSync, mkdirSync,
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { tmpdir } from 'node:os';
 import vm from 'node:vm';
 
@@ -301,7 +301,7 @@ function assertCallerIdentity(mod, where) {
 
 /* --- one scenario --------------------------------------------------------- */
 
-function runScenario(sc, mod = core) {
+export function runScenario(sc, mod = core) {
   const notes = [];
   if (!sc || typeof sc !== 'object' || !sc.name || !sc.wrap || !sc.expect)
     throw new Error('forma dello scenario non valida');
@@ -609,46 +609,50 @@ function selftest(work, mutantCore, bypassCore, unspentCore) {
 
 /* --- CLI ------------------------------------------------------------------- */
 
-const work = mkdtempSync(join(tmpdir(), 'rg-scenario-gate-'));
-let code = 1;
-try {
-  if (process.argv.includes('--selftest')) {
-    const source = readFileSync(join(REPO, 'economics-simulator-core.mjs'), 'utf8');
-    const needle = "    if (smuggled !== undefined && smuggled !== signer)\n      return { refused: 'author-mismatch' };\n";
-    if (source.split(needle).length !== 2)
-      throw new Error('selftest: il mutante F-01 non si applica esattamente una volta');
-    const mutantPath = join(work, 'economics-simulator-core-f01-mutant.mjs');
-    writeFileSync(mutantPath, source.replace(needle, ''));
-    const bypassNeedle = "      const det = applyIntegrated(gs, st.signer, st.event);\n      if (det.refused === 'author-mismatch')";
-    if (source.split(bypassNeedle).length !== 2)
-      throw new Error('selftest: il mutante di aggiramento F-01 non si applica esattamente una volta');
-    const bypassPath = join(work, 'economics-simulator-core-f01-bypass.mjs');
-    writeFileSync(bypassPath, source.replace(bypassNeedle,
-      "      const det = { refused: 'rejected' };\n      if (det.refused === 'author-mismatch')"));
-    const unspentNeedle = '  if (pulled === null) return { ok: false, failed: [NOLIVE(target, verdict)] };\n';
-    if (source.split(unspentNeedle).length !== 2)
-      throw new Error('selftest: il mutante pre-#76 non si applica esattamente una volta');
-    const unspentPath = join(work, 'economics-simulator-core-unspent.mjs');
-    writeFileSync(unspentPath, source.replace(unspentNeedle,
-      '  if (pulled === null) return effect(s);\n'));
-    code = selftest(work, await import(mutantPath), await import(bypassPath),
-      await import(unspentPath));
-  } else {
-    const r = runSuite({});
-    if (r.ok) {
-      console.log(`GREEN: ${r.scenarios} scenari, ${r.totalSteps} passi replayati sul core ` +
-        `condiviso; asserzioni coperte: ${r.covered.join(', ')}; pagina generata identica al ` +
-        `core e stessa interfaccia dimostrata; F-01 identità del chiamante su ${r.callerTags} ` +
-        `costruttori AppEvent derivati (modulo e pagina)`);
-      r.lines.forEach(l => console.log(l));
-      code = 0;
+/* the generator gate loads an emitted scenario through runScenario; the CLI
+   runs only when this file is the entry point */
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const work = mkdtempSync(join(tmpdir(), 'rg-scenario-gate-'));
+  let code = 1;
+  try {
+    if (process.argv.includes('--selftest')) {
+      const source = readFileSync(join(REPO, 'economics-simulator-core.mjs'), 'utf8');
+      const needle = "    if (smuggled !== undefined && smuggled !== signer)\n      return { refused: 'author-mismatch' };\n";
+      if (source.split(needle).length !== 2)
+        throw new Error('selftest: il mutante F-01 non si applica esattamente una volta');
+      const mutantPath = join(work, 'economics-simulator-core-f01-mutant.mjs');
+      writeFileSync(mutantPath, source.replace(needle, ''));
+      const bypassNeedle = "      const det = applyIntegrated(gs, st.signer, st.event);\n      if (det.refused === 'author-mismatch')";
+      if (source.split(bypassNeedle).length !== 2)
+        throw new Error('selftest: il mutante di aggiramento F-01 non si applica esattamente una volta');
+      const bypassPath = join(work, 'economics-simulator-core-f01-bypass.mjs');
+      writeFileSync(bypassPath, source.replace(bypassNeedle,
+        "      const det = { refused: 'rejected' };\n      if (det.refused === 'author-mismatch')"));
+      const unspentNeedle = '  if (pulled === null) return { ok: false, failed: [NOLIVE(target, verdict)] };\n';
+      if (source.split(unspentNeedle).length !== 2)
+        throw new Error('selftest: il mutante pre-#76 non si applica esattamente una volta');
+      const unspentPath = join(work, 'economics-simulator-core-unspent.mjs');
+      writeFileSync(unspentPath, source.replace(unspentNeedle,
+        '  if (pulled === null) return effect(s);\n'));
+      code = selftest(work, await import(mutantPath), await import(bypassPath),
+        await import(unspentPath));
     } else {
-      console.error(`RED: ${r.reasons.length} problemi`);
-      r.reasons.forEach(x => console.error(' - ' + x));
-      code = 1;
+      const r = runSuite({});
+      if (r.ok) {
+        console.log(`GREEN: ${r.scenarios} scenari, ${r.totalSteps} passi replayati sul core ` +
+          `condiviso; asserzioni coperte: ${r.covered.join(', ')}; pagina generata identica al ` +
+          `core e stessa interfaccia dimostrata; F-01 identità del chiamante su ${r.callerTags} ` +
+          `costruttori AppEvent derivati (modulo e pagina)`);
+        r.lines.forEach(l => console.log(l));
+        code = 0;
+      } else {
+        console.error(`RED: ${r.reasons.length} problemi`);
+        r.reasons.forEach(x => console.error(' - ' + x));
+        code = 1;
+      }
     }
+  } finally {
+    rmQuiet(work);
   }
-} finally {
-  rmQuiet(work);
+  process.exit(code);
 }
-process.exit(code);

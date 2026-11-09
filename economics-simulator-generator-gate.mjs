@@ -64,6 +64,7 @@ import { tmpdir } from 'node:os';
 import { deriveCorePin, assertCorePinReachable, discoverVocabularies,
   NOT_PRESENTED_VOCABULARIES } from './economics-simulator-lean-surface.mjs';
 import { shrinkSteps, firstImprovement } from './economics-simulator-generator-shrink.mjs';
+import { runScenario } from './economics-simulator-scenario-gate.mjs';
 
 const REPO = dirname(fileURLToPath(import.meta.url));
 const CORE = resolve(REPO, 'economics-simulator-core.mjs');
@@ -544,9 +545,24 @@ function shrinkTrace(steps, violation, core) {
   return { steps: shrunk, violation: { ...violation, text: violationOf(core, shrunk, violation).finding.text } };
 }
 
+/* what a scenario for the scenario gate says about a history: the replay is
+   the envelope itself, the governance verdict is whatever the core's walk gives.
+   A violating step the core refuses or throws on cannot be an applied step of
+   an envelope; the report names it and the envelope ends before it. */
+function emitScenario({ mod, steps, violation, seed, originalLength }) {
+  const envelope = envelopeOf(mod, violation.applied ? steps : steps.slice(0, -1));
+  let expect = { governed: 'accepted' };
+  try { mod.verifyGovernedIntegrated(envelope); }
+  catch (e) { expect = { governed: 'refused', refusalMatch: e.message }; }
+  const slug = violation.law.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  return { name: `generated-${slug}-seed-${seed}`,
+    description: `${violation.law}${violation.theorem ? ' — theorem ' + violation.theorem : ''}. Shrunk from ${originalLength} to ${steps.length} steps.`,
+    wrap: envelope, assertions: ['no-vote-derived-without-evidence'], expect };
+}
+
 /* the shrunk history is judged here, not trusted: same law at its last step and
    not before, a local minimum, and a scenario the scenario gate accepts */
-function shrinkReport(rep, mod, { shrink }) {
+function shrinkReport(rep, mod, { shrink, emit }) {
   let shrunk;
   try { shrunk = shrink(rep.steps, rep.violation, mod); }
   catch (e) { return { reasons: [`shrink: ${e.message}`] }; }
@@ -557,7 +573,12 @@ function shrinkReport(rep, mod, { shrink }) {
     const better = firstImprovement(shrunk.steps, cand => violationOf(mod, cand, rep.violation).ok);
     if (better) reasons.push(`shrink: not a local minimum: ${better}`);
   }
-  return { reasons, shrunk: { steps: shrunk.steps, length: shrunk.steps.length, violation: shrunk.violation } };
+  let scenario = null;
+  try {
+    scenario = emit({ mod, steps: shrunk.steps, violation: shrunk.violation, seed: rep.seed, originalLength: rep.steps.length });
+    runScenario(JSON.parse(JSON.stringify(scenario)), mod);
+  } catch (e) { reasons.push(`scenario gate rejects the emitted history: ${e.message}`); }
+  return { reasons, shrunk: { steps: shrunk.steps, length: shrunk.steps.length, violation: shrunk.violation, scenario } };
 }
 
 /* --- the gate: all traces, coverage, budget ---------------------------------- */
@@ -566,7 +587,7 @@ async function loadCore(corePath) {
 }
 
 function runGenerator({ mod, surface, config = CONFIG, now = () => performance.now(),
-  shrink = shrinkTrace }) {
+  shrink = shrinkTrace, emit = emitScenario }) {
   const t0 = now();
   const total = { steps: 0, applied: 0, refused: 0, invalidRefused: 0, tally: {}, kinds: {}, notAsserted: new Set() };
   let report = null;
@@ -586,7 +607,7 @@ function runGenerator({ mod, surface, config = CONFIG, now = () => performance.n
   const reasons = [];
   if (report) {
     reasons.push(`violation: ${report.law} at seed ${report.seed} step ${report.step}`);
-    const s = shrinkReport(report, mod, { shrink });
+    const s = shrinkReport(report, mod, { shrink, emit });
     reasons.push(...s.reasons);
     report.shrunk = s.shrunk;
     report.originalLength = report.steps.length;
@@ -632,6 +653,8 @@ function printReport(rep) {
   console.error(`  law: ${rep.law}${rep.theorem ? ' — theorem ' + rep.theorem : ''}`);
   console.error(`  ${rep.shrunk ? rep.shrunk.violation.text : rep.text}`);
   console.error(`  original length ${rep.originalLength} steps, shrunk ${rep.shrunk ? rep.shrunk.length : 'n/a'}`);
+  if (rep.shrunk && rep.shrunk.scenario)
+    console.error(`  scenario (the scenario gate loads it as a .json file): ${JSON.stringify(rep.shrunk.scenario)}`);
 }
 
 async function production(corePath = CORE) {
@@ -885,7 +908,9 @@ const CONTROLS = [
     if (m.kind && rep.kind !== m.kind) throw new Error(`mutant ${m.name} found as the wrong step kind: ${rep.kind}`);
     if (res.elapsedMs > CONFIG.budgetMs) throw new Error(`mutant ${m.name} found after the CI budget`);
     if (!rep.replays) throw new Error(`mutant ${m.name}: the reported envelope does not replay through the core verifier`);
-    return `found: ${rep.law} at seed ${rep.seed} step ${rep.step}`;
+    const bad = res.reasons.filter(x => /^(shrink|scenario gate)/.test(x));
+    if (bad.length) throw new Error(`mutant ${m.name}: the counterexample did not shrink to an accepted scenario: ${bad.join('; ')}`);
+    return `found: ${rep.law} at seed ${rep.seed} step ${rep.step}; shrunk ${rep.originalLength} -> ${rep.shrunk.length} steps`;
   } })),
   { name: 'law-without-proved-theorem', run: async work => {
     const real = await loadCore(mutantCore(work, 'refund-short-by-one', MUTANTS[0].edits));
