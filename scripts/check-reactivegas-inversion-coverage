@@ -334,6 +334,11 @@ partial def weakenLastGuard (e : Expr) : Option Expr :=
     else some b
   else none
 
+/-- A deliberately malformed weakening, for the control of the control: the
+statement is conjoined with a non-proposition, so it does not type-check. -/
+def illTyped (e : Expr) : Expr :=
+  mkApp2 (mkConst ``And) e (mkConst ``Nat)
+
 inductive Tight where
   | proved
   | insufficient (msg : String)
@@ -345,8 +350,8 @@ step it inverts. The hypothesis direction already makes the conclusion
 necessary, so together they pin the branch's complete guard and exact
 successor. Nothing here restates either. With `weaken`, the same check is run
 on the conclusion with one guard conjunct omitted. -/
-def tightnessProved (n : Name) (ti : TheoremVal) (weaken : Bool := false) :
-    TermElabM Tight := do
+def tightnessProved (n : Name) (ti : TheoremVal) (weaken : Bool := false)
+    (corrupt : Bool := false) : TermElabM Tight := do
   let stx ← `(term| by
     simp only [exists_imp, and_imp]
     intros
@@ -360,6 +365,7 @@ def tightnessProved (n : Name) (ti : TheoremVal) (weaken : Bool := false) :
     let concl ← instantiateMVars body
     let some concl := if weaken then weakenLastGuard concl else some concl
       | return .malformed s!"{n}: its conclusion has no guard conjunct to weaken"
+    let concl := if corrupt then illTyped concl else concl
     let goal ← mkForallFVars xs.pop (← mkArrow concl hty)
     -- A failing tactic block logs its error instead of throwing it; the log is
     -- taken over here so a failure is attributed to this theorem and does not
@@ -482,6 +488,16 @@ def audit (root : String) (negative : Bool) : Report Unit := do
         fail s!"negative control failed to fail: {n} still sufficient with a guard conjunct omitted"
       | .malformed e => fail s!"negative control inconclusive: {e}"
     IO.println s!"negative-control: weakened-conclusions={coveredList.length} detected={rejected}"
+    -- The control of the control: a weakening that does not type-check must be
+    -- reported as a malformed control, never counted as a rejection.
+    let mut refused := 0
+    for (n, _) in coveredList do
+      let some ti ← theoremOf n | continue
+      match ← tightnessProved n ti (weaken := true) (corrupt := true) with
+      | .malformed _ => refused := refused + 1
+      | .insufficient _ => fail s!"negative control failed to fail: an ill-typed weakening of {n} was counted as a rejection"
+      | .proved => fail s!"negative control failed to fail: an ill-typed weakening of {n} was accepted"
+    IO.println s!"negative-control: ill-typed-weakenings={coveredList.length} refused-as-malformed={refused}"
     return ()
 
   match compareCoverage ctors coveredList with
