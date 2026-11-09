@@ -9,10 +9,10 @@
 
 ## Observed refusals
 
-- [ ] T511 A statement observing each of the six surviving refusal constructors, or a recorded reason it is unobservable (refusal-observed, ledger-current)
-- [ ] T512 The converse negative control rejects only for the omitted conjunct; a malformed weakening fails the run (converse-control-rejects-for-its-reason)
-- [ ] T513 Mutants on the `stalled` guard of pledge, accept-pledge and close-purchase, each killing its inversion (stall-guard-mutants, ledger-current)
-- [ ] T514 Correct the comment in `scripts/check-lean-axioms` that still names the removed hand list
+- [x] T511 A statement observing each of the six surviving refusal constructors, or a recorded reason it is unobservable (refusal-observed, ledger-current)
+- [x] T512 The converse negative control rejects only for the omitted conjunct; a malformed weakening fails the run (converse-control-rejects-for-its-reason)
+- [x] T513 Mutants on the `stalled` guard of pledge, accept-pledge and close-purchase, each killing its inversion (stall-guard-mutants, ledger-current)
+- [x] T514 Correct the comment in `scripts/check-lean-axioms` that still names the removed hand list
 
 ## Question retention
 
