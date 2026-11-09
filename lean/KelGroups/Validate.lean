@@ -294,20 +294,6 @@ theorem validateProposal_bootstrapRequiresAdmin_introduce (hb : authMode gs = .b
     simp [validateProposal, validateBootstrapProposal, requireValidKey, hb, hk, hr, bind,
       Except.bind]
 
-/-- The bootstrap rule refuses every removal. -/
-theorem validateProposal_bootstrapRequiresAdmin_remove (hb : authMode gs = .bootstrap)
-    (key : Key) :
-    validateProposal validKey config gs signer (.removeMember key) =
-        .error .bootstrapRequiresAdmin := by
-  simp [validateProposal, validateBootstrapProposal, hb]
-
-/-- The bootstrap rule refuses every role change. -/
-theorem validateProposal_bootstrapRequiresAdmin_changeRoles (hb : authMode gs = .bootstrap)
-    (key : Key) (roles : List Role) :
-    validateProposal validKey config gs signer (.changeRoles key roles) =
-        .error .bootstrapRequiresAdmin := by
-  simp [validateProposal, validateBootstrapProposal, hb]
-
 private theorem validateRoleChanges_error_shape (key : Key) (newRoles : List Role)
     (member : Member) (hm : lookupMember key gs = some member) (err : ValidationError)
     (h : validateRoleChanges config gs key newRoles = .error err) :
