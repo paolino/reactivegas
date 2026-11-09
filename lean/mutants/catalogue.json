@@ -3515,6 +3515,342 @@
         "Reactivegas.baseHook_votes"
       ],
       "note": "a departure removes the leaver's open questions and appends no closure record"
+    },
+    {
+      "id": "applyVoteEvent-rejected-resets",
+      "target": "KelGroups.Vote.applyVoteEvent",
+      "guard": null,
+      "patch": {
+        "line": 142,
+        "before": "  | .error _ => gs",
+        "after": "  | .error _ => emptyVoteState"
+      },
+      "claimedKills": [],
+      "note": "a rejected event resets the payload instead of leaving it"
+    },
+    {
+      "id": "foldFrom-ignores-initial",
+      "target": "KelGroups.Vote.foldFrom",
+      "guard": null,
+      "patch": {
+        "line": 158,
+        "before": "    initial",
+        "after": "    emptyVoteState"
+      },
+      "claimedKills": [],
+      "note": "a fold continued from a payload restarts from the empty one"
+    },
+    {
+      "id": "sweepStep-open-arm-closes",
+      "target": "KelGroups.Vote.sweepStep",
+      "guard": null,
+      "patch": {
+        "line": 64,
+        "before": "  | .open => none",
+        "after": "  | .open => some { questionId := entry.1, question := entry.2, verdict := .open, cause := closureCause view entry.2 .open }"
+      },
+      "claimedKills": [],
+      "note": "the sweep closes a question whose verdict is still open"
+    },
+    {
+      "id": "closeProposer-forgets-closed",
+      "target": "KelGroups.Vote.closeProposerQuestions",
+      "guard": null,
+      "patch": {
+        "line": 118,
+        "before": "    closed := gs.closed ++",
+        "after": "    closed := ([] : List ClosureRecord) ++"
+      },
+      "claimedKills": [],
+      "note": "a proposer departure forgets the closure records already logged"
+    },
+    {
+      "id": "renounce-forgets-closed",
+      "target": "KelGroups.Vote.effectedState",
+      "guard": null,
+      "patch": {
+        "line": 106,
+        "before": "            closed := gs.closed ++",
+        "after": "            closed := ([] : List ClosureRecord) ++"
+      },
+      "claimedKills": [],
+      "note": "a renounce forgets the closure records already logged"
+    },
+    {
+      "id": "assocErase-erases-others",
+      "target": "KelGroups.assocErase",
+      "guard": null,
+      "patch": {
+        "line": 57,
+        "before": "      if candidate == key then rest else (candidate, value) :: assocErase key rest",
+        "after": "      if candidate != key then rest else (candidate, value) :: assocErase key rest"
+      },
+      "claimedKills": [],
+      "note": "erasing a key drops the first other entry and keeps the key"
+    },
+    {
+      "id": "assocAdjust-deletes",
+      "target": "KelGroups.assocAdjust",
+      "guard": null,
+      "patch": {
+        "line": 66,
+        "before": "      if candidate == key then (candidate, f value) :: rest",
+        "after": "      if candidate == key then rest"
+      },
+      "claimedKills": [],
+      "note": "adjusting a key deletes its entry"
+    },
+    {
+      "id": "tryEnact-returns-input",
+      "target": "KelGroups.tryEnact",
+      "guard": null,
+      "patch": {
+        "line": 44,
+        "before": "  (tryEnactDetailed gs proposalId).state",
+        "after": "  gs"
+      },
+      "claimedKills": [],
+      "note": "the enactment attempt returns the state it was given"
+    },
+    {
+      "id": "applyEvent-app-clears-members",
+      "target": "KelGroups.applyEventDetailed",
+      "guard": null,
+      "patch": {
+        "line": 81,
+        "before": "      { state := { gs with appFold := appFoldFn gs.appFold appEvent }",
+        "after": "      { state := { gs with members := [], appFold := appFoldFn gs.appFold appEvent }"
+      },
+      "claimedKills": [],
+      "note": "an application event empties the member list"
+    },
+    {
+      "id": "approvePending-ignores-signer",
+      "target": "KelGroups.approvePending",
+      "guard": null,
+      "patch": {
+        "line": 59,
+        "before": "  { pending with approvals := setInsert signer pending.approvals }",
+        "after": "  { pending with approvals := pending.approvals }"
+      },
+      "claimedKills": [],
+      "note": "an approval does not record its signer"
+    },
+    {
+      "id": "enact-remove-clears-pending-proposals",
+      "target": "KelGroups.enact",
+      "guard": null,
+      "patch": {
+        "line": 14,
+        "before": "      { gs with members := assocErase key gs.members }",
+        "after": "      { gs with members := assocErase key gs.members, pendingProposals := [] }"
+      },
+      "claimedKills": [],
+      "note": "enacting a removal also empties the pending proposals"
+    },
+    {
+      "id": "enact-remove-clears-pending-base",
+      "target": "KelGroups.enact",
+      "guard": null,
+      "patch": {
+        "line": 14,
+        "before": "      { gs with members := assocErase key gs.members }",
+        "after": "      { gs with members := assocErase key gs.members, pendingBase := [] }"
+      },
+      "claimedKills": [],
+      "note": "enacting a removal also empties the pending base mutations"
+    },
+    {
+      "id": "majority-strict",
+      "target": "KelGroups.majority",
+      "guard": null,
+      "patch": {
+        "line": 50,
+        "before": "def majority (gs : GroupState α) : Nat := (adminCount gs + 1) / 2",
+        "after": "def majority (gs : GroupState α) : Nat := adminCount gs / 2 + 1"
+      },
+      "claimedKills": [],
+      "note": "the majority is a strict majority on an even count"
+    },
+    {
+      "id": "emptyState-has-pending-proposal",
+      "target": "KelGroups.emptyState",
+      "guard": null,
+      "patch": {
+        "line": 35,
+        "before": "  { members := [], pendingProposals := [], pendingBase := [], appFold := initial }",
+        "after": "  { members := [], pendingProposals := [(\"p\", { proposal := .removeMember \"k\", proposer := \"k\", approvals := [\"k\"] })], pendingBase := [], appFold := initial }"
+      },
+      "claimedKills": [],
+      "note": "the initial state holds a pending proposal credited to its proposer"
+    },
+    {
+      "id": "emptyState-has-pending-base",
+      "target": "KelGroups.emptyState",
+      "guard": null,
+      "patch": {
+        "line": 35,
+        "before": "  { members := [], pendingProposals := [], pendingBase := [], appFold := initial }",
+        "after": "  { members := [], pendingProposals := [], pendingBase := [(\"p\", { mutation := .removeMember \"k\", proposer := \"k\", approvals := [\"k\"] })], appFold := initial }"
+      },
+      "claimedKills": [],
+      "note": "the initial state holds a pending base mutation credited to its proposer"
+    },
+    {
+      "id": "bal-absent-negative",
+      "target": "bal",
+      "guard": null,
+      "patch": {
+        "line": 45,
+        "before": "  | [] => 0",
+        "after": "  | [] => -1"
+      },
+      "claimedKills": [],
+      "note": "an absent account reads as a debt"
+    },
+    {
+      "id": "escrowSum-drops-head",
+      "target": "escrowSum",
+      "guard": null,
+      "patch": {
+        "line": 83,
+        "before": "def escrowSum (cols : List Collection) : Int := (cols.map escrowOf).sum",
+        "after": "def escrowSum (cols : List Collection) : Int := (cols.map escrowOf).tail.sum"
+      },
+      "claimedKills": [],
+      "note": "the escrow total skips the first collection"
+    },
+    {
+      "id": "splitUser-matches-other-users",
+      "target": "splitUser",
+      "guard": null,
+      "patch": {
+        "line": 92,
+        "before": "    if p.user = u then some (p.amount, t)",
+        "after": "    if p.user ≠ u then some (p.amount, t)"
+      },
+      "claimedKills": [],
+      "note": "splitting a pledge takes the first other user"
+    },
+    {
+      "id": "pullCollection-ignores-id",
+      "target": "pullCollection",
+      "guard": null,
+      "patch": {
+        "line": 110,
+        "before": "    if x.id = c then some (x, t)",
+        "after": "    if x.id = x.id then some (x, t)"
+      },
+      "claimedKills": [],
+      "note": "pulling a collection takes the first one whatever its id"
+    },
+    {
+      "id": "pullCollection-returns-modified",
+      "target": "pullCollection",
+      "guard": null,
+      "patch": {
+        "line": 110,
+        "before": "    if x.id = c then some (x, t)",
+        "after": "    if x.id = c then some ({ x with pending := [] }, t)"
+      },
+      "claimedKills": [],
+      "note": "pulling a collection returns it with its pending pledges emptied"
+    },
+    {
+      "id": "stripCollections-keeps-referente",
+      "target": "stripCollections",
+      "guard": null,
+      "patch": {
+        "line": 134,
+        "before": "    if c.referente = r then (rest, c.accepted ++ c.pending ++ ps)",
+        "after": "    if c.referente ≠ r then (rest, c.accepted ++ c.pending ++ ps)"
+      },
+      "claimedKills": [],
+      "note": "winding up a referente strips everyone else and keeps theirs"
+    },
+    {
+      "id": "stripCollections-keeps-modified",
+      "target": "stripCollections",
+      "guard": null,
+      "patch": {
+        "line": 135,
+        "before": "    else (c :: rest, ps)",
+        "after": "    else ({ c with pending := [] } :: rest, ps)"
+      },
+      "claimedKills": [],
+      "note": "winding up a referente keeps the other collections with their pending pledges emptied"
+    },
+    {
+      "id": "windUpAdmin-keeps-collections",
+      "target": "Reactivegas.windUpAdmin",
+      "guard": null,
+      "patch": {
+        "line": 331,
+        "before": "    collections := rest }",
+        "after": "    collections := s.collections }"
+      },
+      "claimedKills": [],
+      "note": "winding up an admin keeps their collections"
+    },
+    {
+      "id": "pruneAuth-drops-collections",
+      "target": "Reactivegas.pruneAuth",
+      "guard": null,
+      "patch": {
+        "line": 256,
+        "before": "    live := s.live.filter (fun a => targetPresent s a.target) }",
+        "after": "    live := s.live.filter (fun a => targetPresent s a.target), collections := [] }"
+      },
+      "claimedKills": [],
+      "note": "pruning authorizations also drops every collection"
+    },
+    {
+      "id": "appVerdictAllows-open-allowed",
+      "target": "Reactivegas.Composition.appVerdictAllows",
+      "guard": null,
+      "patch": {
+        "line": 134,
+        "before": "  | .open => false",
+        "after": "  | .open => true"
+      },
+      "claimedKills": [],
+      "note": "an open verdict is allowed to carry an event"
+    },
+    {
+      "id": "stepDetailed-applies-old-state",
+      "target": "stepDetailed",
+      "guard": null,
+      "patch": {
+        "line": 103,
+        "before": "  | some s' => .applied s'",
+        "after": "  | some _ => .applied s"
+      },
+      "claimedKills": [],
+      "note": "the diagnostic reports the pre-state as applied"
+    },
+    {
+      "id": "guard-bootstrap-remove",
+      "target": "KelGroups.validateBootstrapProposal@KelGroups.Validate",
+      "guard": "KelGroups.ValidationError.bootstrapRequiresAdmin",
+      "patch": {
+        "line": 97,
+        "before": "  | .removeMember _ => .error .bootstrapRequiresAdmin",
+        "after": "  | .removeMember _ => .ok ()"
+      },
+      "claimedKills": [],
+      "note": "a member removal is admitted in bootstrap mode"
+    },
+    {
+      "id": "guard-bootstrap-change-roles",
+      "target": "KelGroups.validateBootstrapProposal@KelGroups.Validate",
+      "guard": "KelGroups.ValidationError.bootstrapRequiresAdmin",
+      "patch": {
+        "line": 98,
+        "before": "  | .changeRoles _ _ => .error .bootstrapRequiresAdmin",
+        "after": "  | .changeRoles _ _ => .ok ()"
+      },
+      "claimedKills": [],
+      "note": "a role change is admitted in bootstrap mode"
     }
   ]
 }
