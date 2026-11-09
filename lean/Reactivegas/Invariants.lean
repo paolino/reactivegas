@@ -233,14 +233,16 @@ theorem step_pledge_inv {s s' : State} {a u : KelGroups.Key} {c : CollId} {v : I
           !(col.pending.any (fun p => p.user == u)) &&
           decide (0 < v) && decide (bal s.conti u ≥ v)) =
         true ∧
+      ¬ stalled s ∧
       s' = { s with
         conti := bump s.conti u (-v),
         collections := { col with pending := ⟨u, v⟩ :: col.pending } :: rest } := by
   obtain ⟨w1, hw1, hw2⟩ := option_bind_inv hstep
   obtain ⟨col, rest⟩ := w1
   obtain ⟨_, hdem, hx⟩ := option_bind_inv hw2
-  refine ⟨col, rest, hw1, ?_, ?_⟩
+  refine ⟨col, rest, hw1, ?_, ?_, ?_⟩
   · exact bool_and_left (demand_eq_true_of_some hdem)
+  · simpa using bool_and_right (demand_eq_true_of_some hdem)
   · simp only [pure, Option.some.injEq] at hx
     exact hx.symm
 
@@ -250,6 +252,7 @@ theorem step_accept_inv {s s' : State} {a u : KelGroups.Key} {c : CollId}
       pullCollection c s.collections = some (col, rest) ∧
       splitUser u col.pending = some (v, pend') ∧
       (isResponsabile view a && col.referente == a) = true ∧
+      ¬ stalled s ∧
       s' = { s with collections :=
         { col with pending := pend', accepted := ⟨u, v⟩ :: col.accepted } :: rest } := by
   obtain ⟨w1, hw1, hw2⟩ := option_bind_inv hstep
@@ -257,8 +260,9 @@ theorem step_accept_inv {s s' : State} {a u : KelGroups.Key} {c : CollId}
   obtain ⟨w2, hw3, hw4⟩ := option_bind_inv hw2
   obtain ⟨v, pend'⟩ := w2
   obtain ⟨_, hdem, hx⟩ := option_bind_inv hw4
-  refine ⟨col, rest, v, pend', hw1, hw3, ?_, ?_⟩
+  refine ⟨col, rest, v, pend', hw1, hw3, ?_, ?_, ?_⟩
   · exact bool_and_left (demand_eq_true_of_some hdem)
+  · simpa using bool_and_right (demand_eq_true_of_some hdem)
   · simp only [pure, Option.some.injEq] at hx
     exact hx.symm
 
@@ -308,14 +312,16 @@ theorem step_close_inv {s s' : State} {a : KelGroups.Key} {c : CollId}
       pullCollection c s.collections = some (col, rest) ∧
       (isResponsabile view a && col.referente == a && col.permitted &&
         col.pending.isEmpty) = true ∧
+      ¬ stalled s ∧
       s' = { s with
         casse := bump s.casse col.referente (-(sumPledges col.accepted)),
         collections := rest } := by
   obtain ⟨w1, hw1, hw2⟩ := option_bind_inv hstep
   obtain ⟨col, rest⟩ := w1
   obtain ⟨_, hdem, hx⟩ := option_bind_inv hw2
-  refine ⟨col, rest, hw1, ?_, ?_⟩
+  refine ⟨col, rest, hw1, ?_, ?_, ?_⟩
   · exact bool_and_left (demand_eq_true_of_some hdem)
+  · simpa using bool_and_right (demand_eq_true_of_some hdem)
   · simp only [pure, Option.some.injEq] at hx
     exact hx.symm
 
@@ -484,7 +490,7 @@ theorem conservation_preserved {s s' : State} {e : Event}
       omega
     · exact Option.noConfusion hstep
   | pledge a u c v =>
-    obtain ⟨col, rest, hpull, _, hs'⟩ := step_pledge_inv hstep
+    obtain ⟨col, rest, hpull, _, _, hs'⟩ := step_pledge_inv hstep
     subst hs'
     simp only [conservation] at hcon ⊢
     rw [bump_sum, escrowSum_cons]
@@ -492,7 +498,7 @@ theorem conservation_preserved {s s' : State} {e : Event}
     simp only [escrowOf, sumPledges] at hps ⊢
     omega
   | acceptPledge a u c =>
-    obtain ⟨col, rest, v, pend', hpull, hspl, _, hs'⟩ := step_accept_inv hstep
+    obtain ⟨col, rest, v, pend', hpull, hspl, _, _, hs'⟩ := step_accept_inv hstep
     subst hs'
     simp only [conservation] at hcon ⊢
     rw [escrowSum_cons]
@@ -519,7 +525,7 @@ theorem conservation_preserved {s s' : State} {e : Event}
     simp only [escrowOf, sumPledges] at hps ⊢
     omega
   | closePurchase a c =>
-    obtain ⟨col, rest, hpull, hg, hs'⟩ := step_close_inv hstep
+    obtain ⟨col, rest, hpull, hg, _, hs'⟩ := step_close_inv hstep
     obtain ⟨_, _, _, hempty⟩ := close_guard_inv hg
     subst hs'
     simp only [conservation] at hcon ⊢
@@ -593,10 +599,10 @@ theorem step_authorized {s s' : State} {e : Event} (h : stepEvent view s e auth 
         exact bool_and_left (bool_and_left (bool_and_left g))
     · exact Option.noConfusion h
   | pledge a u c v =>
-    obtain ⟨_, _, _, hg, _⟩ := step_pledge_inv h
+    obtain ⟨_, _, _, hg, _, _⟩ := step_pledge_inv h
     exact (pledge_guard_inv hg).1
   | acceptPledge a u c =>
-    obtain ⟨_, _, _, _, _, _, hg, _⟩ := step_accept_inv h
+    obtain ⟨_, _, _, _, _, _, hg, _, _⟩ := step_accept_inv h
     exact (auth_referente_guard_inv hg).1
   | refusePledge a u c =>
     obtain ⟨_, _, _, _, _, _, hg, _⟩ := step_refuse_inv h
@@ -606,7 +612,7 @@ theorem step_authorized {s s' : State} {e : Event} (h : stepEvent view s e auth 
     exact bool_and_left
       (bool_and_left (bool_and_left hg))
   | closePurchase a c =>
-    obtain ⟨_, _, _, hg, _⟩ := step_close_inv h
+    obtain ⟨_, _, _, hg, _, _⟩ := step_close_inv h
     exact (close_guard_inv hg).1
   | failPurchase a c =>
     obtain ⟨_, _, _, hg, _⟩ := step_fail_inv h
@@ -648,7 +654,7 @@ theorem close_permission_to_close {s s' : State} {a : KelGroups.Key} {c : CollId
     (h : stepEvent view s (.closePurchase a c) auth = some s') :
     ∃ col rest,
       pullCollection c s.collections = some (col, rest) ∧ permissionToClose col := by
-  obtain ⟨col, rest, hpull, hg, _⟩ := step_close_inv h
+  obtain ⟨col, rest, hpull, hg, _, _⟩ := step_close_inv h
   obtain ⟨_, _, hperm, hempty⟩ := close_guard_inv hg
   exact ⟨col, rest, hpull, hperm, hempty⟩
 
@@ -660,7 +666,7 @@ theorem pledge_escrow_debit {s s' : State} {a u : KelGroups.Key} {c : CollId} {v
     (h : stepEvent view s (.pledge a u c v) auth = some s') :
     bal s'.conti u = bal s.conti u - v ∧
       ∃ col ∈ s'.collections, col.id = c ∧ escrowHeld col u v := by
-  obtain ⟨col, rest, hpull, _, hs'⟩ := step_pledge_inv h
+  obtain ⟨col, rest, hpull, _, _, hs'⟩ := step_pledge_inv h
   have hid : col.id = c := pullCollection_id hpull
   subst hs'
   refine ⟨?_, { col with pending := ⟨u, v⟩ :: col.pending },
@@ -682,7 +688,7 @@ theorem close_spends_referente {s s' : State} {a : KelGroups.Key} {c : CollId}
       pullCollection c s.collections = some (col, rest) ∧
       bal s'.casse col.referente
         = bal s.casse col.referente - sumPledges col.accepted := by
-  obtain ⟨col, rest, hpull, _, hs'⟩ := step_close_inv h
+  obtain ⟨col, rest, hpull, _, _, hs'⟩ := step_close_inv h
   subst hs'
   refine ⟨col, rest, hpull, ?_⟩
   show bal (bump s.casse col.referente (-(sumPledges col.accepted))) col.referente
@@ -973,7 +979,7 @@ private theorem credit_pledges_step {s s' : State} {e : Event}
       exact ⟨hcred, hamt⟩
     · exact Option.noConfusion hstep
   | pledge a u c v =>
-    obtain ⟨col, rest, hpull, hg, hs'⟩ := step_pledge_inv hstep
+    obtain ⟨col, rest, hpull, hg, _, hs'⟩ := step_pledge_inv hstep
     obtain ⟨_, _, _, _, hvpos, hfunds⟩ := pledge_guard_inv hg
     subst hs'
     refine ⟨fun w hwne => ?_, ?_⟩
@@ -1000,7 +1006,7 @@ private theorem credit_pledges_step {s s' : State} {e : Event}
               (List.mem_append.mpr (Or.inr hinP))
       · exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
   | acceptPledge a u c =>
-    obtain ⟨col, rest, v, pend', hpull, hspl, _, hs'⟩ := step_accept_inv hstep
+    obtain ⟨col, rest, v, pend', hpull, hspl, _, _, hs'⟩ := step_accept_inv hstep
     obtain ⟨q, hq, -, hqa⟩ := splitUser_amount hspl
     have hv : 0 ≤ v := by
       have h0 := hamt col (pullCollection_mem hpull) q
@@ -1080,7 +1086,7 @@ private theorem credit_pledges_step {s s' : State} {e : Event}
             (List.mem_append.mpr (Or.inr hm))
       · exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
   | closePurchase a c =>
-    obtain ⟨col, rest, hpull, _, hs'⟩ := step_close_inv hstep
+    obtain ⟨col, rest, hpull, _, _, hs'⟩ := step_close_inv hstep
     subst hs'
     refine ⟨hcred, ?_⟩
     intro c0 hc0 p hp
@@ -1248,7 +1254,7 @@ theorem pledge_rejected_when_member {s : State} {a u : KelGroups.Key} {c : CollI
   · cases hstep : stepEvent view s (.pledge a u c v) auth with
     | none => exact absurd hstep hnone
     | some s' =>
-      obtain ⟨col₀, rest₀, hpull₀, hg, _⟩ := step_pledge_inv hstep
+      obtain ⟨col₀, rest₀, hpull₀, hg, _, _⟩ := step_pledge_inv hstep
       obtain ⟨hdet, -⟩ : col₀ = col ∧ rest₀ = rest := by
         have hpair := pullCollection_det hpull₀ hpull
         simpa using hpair
@@ -1269,7 +1275,7 @@ theorem pledge_rejected_when_member {s : State} {a u : KelGroups.Key} {c : CollI
 theorem pledge_preserves_allUnique {s s' : State} {a u : KelGroups.Key} {c : CollId}
     {v : Int} (hun : allUniquePledges s)
     (h : stepEvent view s (.pledge a u c v) auth = some s') : allUniquePledges s' := by
-  obtain ⟨col, rest, hpull, hg, hs'⟩ := step_pledge_inv h
+  obtain ⟨col, rest, hpull, hg, _, hs'⟩ := step_pledge_inv h
   obtain ⟨_, _, hna1, hna2, _, _⟩ := pledge_guard_inv hg
   subst hs'
   have ha1 := user_absent_of_any_false hna1

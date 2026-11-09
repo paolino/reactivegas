@@ -1211,12 +1211,12 @@ async function selftest(work) {
       name: 'collegamento citazione senza file',
       expect: /collegamento citazione senza file/,
       run: () => {
-        const needle = "d: 'step_authorized', f: 'lean/Reactivegas/Invariants.lean', l: 561";
+        const needle = "d: 'step_authorized', f: 'lean/Reactivegas/Invariants.lean', l: 567";
         if (!doc.includes(needle) || doc.split(needle).length !== 2)
           return { ok: false, reasons: ['controllo mal costruito: riga auth non unica'] };
         const p = join(work, 'sab-link-file.html');
         writeFileSync(p, doc.replace(needle,
-          "d: 'step_authorized', f: null, l: 561"));
+          "d: 'step_authorized', f: null, l: 567"));
         return runGate({ html: p, work });
       },
     },
@@ -1224,7 +1224,7 @@ async function selftest(work) {
       name: 'collegamento citazione senza riga',
       expect: /collegamento citazione senza riga/,
       run: () => {
-        const needle = "d: 'step_authorized', f: 'lean/Reactivegas/Invariants.lean', l: 561";
+        const needle = "d: 'step_authorized', f: 'lean/Reactivegas/Invariants.lean', l: 567";
         if (!doc.includes(needle) || doc.split(needle).length !== 2)
           return { ok: false, reasons: ['controllo mal costruito: riga auth non unica'] };
         const p = join(work, 'sab-link-line.html');

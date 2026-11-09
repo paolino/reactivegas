@@ -18,15 +18,18 @@ set -euo pipefail
 # hypothesis or a name/constructor permutation is a finding. The association is
 # nominal only; guards and successors are never written here.
 #
-# Each required inversion is additionally held to its live branch: the audit
-# builds the converse of the theorem's *own* conclusion and requires it to be
-# provable. A conclusion weaker than the branch guard, or naming a successor
-# other than the branch's, makes that converse false and the audit fails. The
-# expected guard is never written down here, so this file holds no copy of the
-# transition policy.
+# Every inversion the audit binds to a constructor is additionally held to its
+# live branch: the audit builds the converse of the theorem's *own* conclusion
+# and requires it to be provable. A conclusion weaker than the branch guard, or
+# naming a successor other than the branch's, makes that converse false and the
+# audit fails naming the theorem. The held set is the discovered binding, one
+# inversion per constructor; no name list selects it. The expected guard is
+# never written down here, so this file holds no copy of the transition policy.
 #
 # --negative-control withholds one constructor that really contributes coverage
-# and requires the identical comparison to reject the gap it opens.
+# and requires the identical comparison to reject the gap it opens. It then
+# weakens every bound inversion's conclusion by one guard conjunct and requires
+# the identical converse check to reject each weakened conclusion.
 
 TOOL=check-reactivegas-inversion-coverage
 
@@ -156,11 +159,6 @@ def resolveProjectModules (env : Environment) (rootCanon : String) :
     return .error
       s!"modules with no loadable olean artifact: {", ".intercalate noArtifact.toList}"
   return .ok acc
-def requiredInversions : List Name :=
-  [`Reactivegas.step_open_inv, `Reactivegas.step_deposit_inv,
-   `Reactivegas.step_withdraw_inv, `Reactivegas.step_transferCassa_inv,
-   `Reactivegas.step_donate_inv, `Reactivegas.step_backdonate_inv]
-
 /-- The Lake package description is not a library module: nothing declared in
 it can reach the project environment, and it is elaborated by Lake, not here. -/
 def lakeConfig : String := "lakefile.lean"
@@ -309,40 +307,89 @@ def coveredBy (ti : TheoremVal) : MetaM (Array Name) :=
         acc := acc.push c
     return acc
 
+/-- The last guard conjunct of an inversion conclusion, weakened: the conclusion
+has the shape `∃ …, binding ∧ … ∧ guard ∧ successor`, the successor being its
+last conjunct. A guard stated as a Boolean conjunction `(x && y) = true` loses
+its last operand `y`; any other guard conjunct is removed whole. The result is a
+conclusion that omits one live guard conjunct, built from the theorem's own
+conclusion. `none` when the conclusion has no guard conjunct to weaken. -/
+partial def weakenLastGuard (e : Expr) : Option Expr :=
+  let isTrue (x : Expr) := x.isConstOf ``Bool.true
+  if e.isAppOfArity ``Exists 2 then
+    match e.getAppArgs[1]! with
+    | .lam n t b bi =>
+      (weakenLastGuard b).map fun b' =>
+        mkApp2 (mkConst ``Exists [Level.zero.succ]) e.getAppArgs[0]! (.lam n t b' bi)
+    | _ => none
+  else if e.isAppOfArity ``And 2 then
+    let a := e.getAppArgs[0]!
+    let b := e.getAppArgs[1]!
+    if b.isAppOfArity ``And 2 || b.isAppOfArity ``Exists 2 then
+      (weakenLastGuard b).map fun b' => mkApp2 (mkConst ``And) a b'
+    else if a.isAppOfArity ``Eq 3 && isTrue a.getAppArgs[2]!
+        && a.getAppArgs[1]!.isAppOfArity ``and 2 then
+      let x := a.getAppArgs[1]!.getAppArgs[0]!
+      some (mkApp2 (mkConst ``And)
+        (mkApp3 (mkConst ``Eq [Level.zero.succ]) (mkConst ``Bool) x (mkConst ``Bool.true)) b)
+    else some b
+  else none
+
+inductive Tight where
+  | proved
+  | insufficient (msg : String)
+  | malformed (msg : String)
+
 /-- Build the converse of an inversion theorem from the theorem itself and
 require it to hold: its own conclusion must be sufficient for the successful
 step it inverts. The hypothesis direction already makes the conclusion
 necessary, so together they pin the branch's complete guard and exact
-successor. Nothing here restates either. -/
-def tightnessProved (n : Name) (ti : TheoremVal) : TermElabM (Except String Unit) := do
+successor. Nothing here restates either. With `weaken`, the same check is run
+on the conclusion with one guard conjunct omitted. -/
+def tightnessProved (n : Name) (ti : TheoremVal) (weaken : Bool := false) :
+    TermElabM Tight := do
   let stx ← `(term| by
+    simp only [exists_imp, and_imp]
     intros
-    rename_i hconclusion
-    have hguard := hconclusion.1
-    have hstate := hconclusion.2
-    subst hstate
-    simp only [stepEvent, step]
-    split
-    · rfl
-    · next hrefuted => exact absurd hguard hrefuted)
+    subst_vars
+    simp_all [stepEvent, step, demand])
   forallTelescope ti.type fun xs body => do
-    if xs.isEmpty then return .error s!"{n}: has no binders"
+    if xs.isEmpty then return .malformed s!"{n}: has no binders"
     let hty ← inferType xs.back!
     if (← successOf hty).isNone then
-      return .error s!"{n}: its last hypothesis is not a successful `stepEvent`"
-    try
-      let goal ← mkForallFVars xs.pop (← mkArrow body hty)
-      let pf ← withoutErrToSorry (elabTermEnsuringType stx goal)
-      synthesizeSyntheticMVarsNoPostponing
-      let pf ← instantiateMVars pf
-      if pf.hasSorry then return .error s!"{n}: converse proof used sorry"
-      if pf.hasExprMVar then return .error s!"{n}: converse proof left metavariables"
-      check pf
-      return .ok ()
-    catch e =>
-      let msg := (← e.toMessageData.toString).replace "\n" " "
-      return .error
-        s!"{n}: its conclusion does not entail the live branch: {msg.take 220}"
+      return .malformed s!"{n}: its last hypothesis is not a successful `stepEvent`"
+    let concl ← instantiateMVars body
+    let some concl := if weaken then weakenLastGuard concl else some concl
+      | return .malformed s!"{n}: its conclusion has no guard conjunct to weaken"
+    let goal ← mkForallFVars xs.pop (← mkArrow concl hty)
+    -- A failing tactic block logs its error instead of throwing it; the log is
+    -- taken over here so a failure is attributed to this theorem and does not
+    -- surface as an anonymous message.
+    let saved ← Core.getMessageLog
+    Core.resetMessageLog
+    let outcome ← try
+        let pf ← withLCtx {} #[] <| withoutErrToSorry (elabTermEnsuringType stx goal)
+        synthesizeSyntheticMVarsNoPostponing
+        let pf ← instantiateMVars pf
+        if pf.hasSorry then pure (some (Tight.malformed s!"{n}: converse proof used sorry"))
+        else if pf.hasExprMVar then pure (some (Tight.malformed s!"{n}: converse proof left metavariables"))
+        else
+          check pf
+          pure none
+      catch e =>
+        pure (some (Tight.insufficient (← e.toMessageData.toString)))
+    let logged ← Core.getMessageLog
+    (modify fun (st : Core.State) => { st with messages := saved } : CoreM Unit)
+    let mut firstError : Option String := none
+    for m in logged.toList do
+      if m.severity == .error && firstError.isNone then
+        firstError := some (← m.data.toString)
+    let flat (m : String) := (m.replace "\n" " ").take 220
+    match firstError, outcome with
+    | some e, _ | none, some (.insufficient e) =>
+      return .insufficient
+        s!"{n}: its conclusion does not entail the live branch: {flat e}"
+    | none, some (.malformed e) => return .malformed e
+    | none, _ => return .proved
 
 /-- The one comparison. The negative control runs it against a deliberately
 withheld coverage set, so the passing and failing paths are the same code. -/
@@ -398,6 +445,12 @@ def audit (root : String) (negative : Bool) : Report Unit := do
             covered := covered.push (n, claimed)
   let coveredList := covered.toList.mergeSort (fun a b => a.1.toString ≤ b.1.toString)
 
+  let theoremOf (n : Name) : Report (Option TheoremVal) := do
+    match env.find? n with
+    | none => fail s!"{n}: absent from the elaborated environment"; pure none
+    | some (.thmInfo ti) => pure (some ti)
+    | some _ => fail s!"{n}: exists but is not a theorem declaration"; pure none
+
   if negative then
     match coveredList.find? (fun p => ctors.contains p.2) with
     | none => fail "negative control inconclusive: no derived coverage to withhold"
@@ -412,37 +465,40 @@ def audit (root : String) (negative : Bool) : Report Unit := do
         unless (e.splitOn withheld.2.getString!).length > 1 do
           fail s!"negative control missed the withheld constructor {withheld.2}"
         IO.println s!"negative-control: withheld={withheld.2.getString!} source={withheld.1} detected=yes"
+    -- The converse check, run on every bound inversion with one guard conjunct
+    -- omitted from its conclusion. The unweakened conclusion must pass the same
+    -- check first, so a rejection is the omitted conjunct's, not an unrelated one.
+    let mut rejected := 0
+    for (n, ctor) in coveredList do
+      let some ti ← theoremOf n | continue
+      match ← tightnessProved n ti with
+      | .proved => pure ()
+      | _ => fail s!"negative control inconclusive: {n} is not exact before weakening"; continue
+      match ← tightnessProved n ti (weaken := true) with
+      | .insufficient _ =>
+        rejected := rejected + 1
+        IO.println s!"negative-control: weakened={n} constructor={ctor.getString!} detected=yes"
+      | .proved =>
+        fail s!"negative control failed to fail: {n} still sufficient with a guard conjunct omitted"
+      | .malformed e => fail s!"negative control inconclusive: {e}"
+    IO.println s!"negative-control: weakened-conclusions={coveredList.length} detected={rejected}"
     return ()
 
   match compareCoverage ctors coveredList with
   | .ok line => IO.println line
   | .error e => IO.println e; fail "derived inversion coverage is not exact"
 
-  for n in requiredInversions do
-    match env.find? n with
-    | none => fail s!"{n}: absent from the elaborated environment"
-    | some (.thmInfo ti) =>
-      let axs ← collectAxioms n
-      IO.println s!"axioms {n} = [{", ".intercalate (axs.toList.map (·.toString))}]"
-      let extra := axs.toList.filter (fun a => !permittedAxioms.contains a)
-      unless extra.isEmpty do
-        fail s!"{n}: depends on axioms outside the permitted standard set: {" ".intercalate (extra.map (·.toString))}"
-      match claimedCtor ctors n with
-      | .error e => fail e
-      | .ok claimed =>
-        match coveredList.find? (fun p => p.1 == n) with
-        | none =>
-          fail s!"{n}: is not bound to a single successful `stepEvent` hypothesis for `{claimed}`"
-        | some (_, bound) =>
-          if bound != claimed then
-            fail s!"{n}: is bound to `{bound}` but its name claims `{claimed}`"
-          else
-            IO.println s!"bound {n} = {claimed}"
-      match ← tightnessProved n ti with
-      | .ok _ => IO.println s!"tight {n} = ok"
-      | .error e => fail e
-    | some _ =>
-      fail s!"{n}: exists but is not a theorem declaration"
+  for (n, claimed) in coveredList do
+    let some ti ← theoremOf n | continue
+    let axs ← collectAxioms n
+    IO.println s!"axioms {n} = [{", ".intercalate (axs.toList.map (·.toString))}]"
+    let extra := axs.toList.filter (fun a => !permittedAxioms.contains a)
+    unless extra.isEmpty do
+      fail s!"{n}: depends on axioms outside the permitted standard set: {" ".intercalate (extra.map (·.toString))}"
+    IO.println s!"bound {n} = {claimed}"
+    match ← tightnessProved n ti with
+    | .proved => IO.println s!"tight {n} = ok"
+    | .insufficient e | .malformed e => fail e
 
   let elaborated ← elaboratedTheorems env proj
   let rootNoSlash := rootCanon.dropRight 1
