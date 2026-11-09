@@ -434,6 +434,7 @@
         "KelGroups.base_change_runs_hook",
         "KelGroups.integratedPropose_both@KelGroups.Invariants",
         "KelGroups.membership_growth_is_direct_admission",
+        "Reactivegas.Composition.applyIntegrated_nonapp_cases",
         "Reactivegas.Composition.applyIntegrated_payload_cases"
       ],
       "note": "a refused base proposal is reported as a no-op success"
@@ -448,6 +449,7 @@
         "after": "        | .error err => .ok { state := gs, change := none }"
       },
       "claimedKills": [
+        "CompositionTests.l7_production_strands_nothing",
         "KelGroups.app_event_has_no_base_change",
         "KelGroups.app_event_preserves_members",
         "KelGroups.integratedApp_both@KelGroups.Invariants",
@@ -484,7 +486,9 @@
         "after": "    | .error err => .ok { state := gs, change := none }"
       },
       "claimedKills": [
+        "CompositionTests.l7_production_strands_nothing",
         "Reactivegas.Composition.apply_app_ok",
+        "Reactivegas.Composition.apply_nonapp_cases",
         "Reactivegas.Composition.apply_payload_cases",
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.order_holds",
@@ -514,6 +518,8 @@
       },
       "claimedKills": [
         "Reactivegas.Composition.authStep_voteApply",
+        "Reactivegas.Composition.voteApply_keeps_live",
+        "Reactivegas.Composition.voteApply_mints",
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.order_holds",
         "Reactivegas.Lifecycle.r1_holds",
@@ -554,6 +560,8 @@
         "after": "  | (k, v) :: t => if k = u then (k, v - d) :: t else (k, v) :: bump t u d"
       },
       "claimedKills": [
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
         "Reactivegas.base_departure_applies_cleanup",
         "Reactivegas.canonical_economy_holds",
         "Reactivegas.exhaustive_inventories_hold",
@@ -575,6 +583,8 @@
         "after": "  | p :: t => sumPledges t"
       },
       "claimedKills": [
+        "CompositionTests.l7_production_strands_nothing",
+        "Reactivegas.Composition.bal_refundAll",
         "TraceTests.all_checks_pass",
         "conservation_preserved",
         "refundAll_sum",
@@ -610,6 +620,8 @@
         "after": "  l.foldl (fun acc p => bump acc p.user 0) m"
       },
       "claimedKills": [
+        "CompositionTests.l7_production_strands_nothing",
+        "Reactivegas.Composition.bal_refundAll",
         "Reactivegas.base_departure_applies_cleanup",
         "Reactivegas.exhaustive_inventories_hold",
         "Reactivegas.integrated_theorem_witness_holds",
@@ -629,6 +641,9 @@
         "after": "    if x.id = c then some (x, x :: t)"
       },
       "claimedKills": [
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "Reactivegas.Composition.pullCollection_of_present",
         "TraceTests.all_checks_pass",
         "pullCollection_sublist_lemma@Reactivegas.State",
         "pullCollection_sum_lemma@Reactivegas.State"
@@ -645,6 +660,7 @@
         "after": "    if c.referente = r then (rest, c.accepted ++ ps)"
       },
       "claimedKills": [
+        "CompositionTests.l7_production_strands_nothing",
         "stripCollections_amount_lemma@Reactivegas.Invariants",
         "stripCollections_sum"
       ],
@@ -677,6 +693,8 @@
         "after": "def escrowOf (c : Collection) : Int := sumPledges c.accepted"
       },
       "claimedKills": [
+        "CompositionTests.l7_production_strands_nothing",
+        "Reactivegas.Composition.denyByClosure_refunds",
         "conservation_preserved",
         "stripCollections_sum"
       ],
@@ -714,6 +732,11 @@
         "after": "      if candidate == key then none else assocLookup key rest"
       },
       "claimedKills": [
+        "CompositionTests.l7_departure_reachable",
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7_renounce_reachable",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
         "KelGroups.Vote.assocLookup_some_mem'@KelGroups.Vote.Invariants",
         "KelGroups.Vote.mem_assocLookup_some'@KelGroups.Vote.Invariants",
         "KelGroups.assocLookup_adjust_of_none",
@@ -875,6 +898,11 @@
         "after": "  (lookupMember key view).isNone"
       },
       "claimedKills": [
+        "CompositionTests.l7_departure_reachable",
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7_renounce_reachable",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
         "Reactivegas.Composition.boundHistory_holds_backed_authorization",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.fixtures_hold",
@@ -1036,6 +1064,11 @@
         "after": "  none"
       },
       "claimedKills": [
+        "CompositionTests.l7_departure_reachable",
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7_renounce_reachable",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
         "Reactivegas.Composition.authStep_appFoldCore",
         "Reactivegas.Composition.boundHistory_holds_backed_authorization",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
@@ -1093,6 +1126,10 @@
         "after": "  none"
       },
       "claimedKills": [
+        "CompositionTests.l7_departure_reachable",
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
         "KelGroups.adminCount_pos_of_isAdmin@KelGroups.Invariants",
         "KelGroups.enactMutation_preserves_absence",
         "KelGroups.membership_growth_is_direct_admission",
@@ -1131,6 +1168,10 @@
         "after": "  none"
       },
       "claimedKills": [
+        "CompositionTests.l7_departure_reachable",
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
         "KelGroups.integratedApprove_both@KelGroups.Invariants",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.l2_holds",
@@ -1183,6 +1224,10 @@
         "after": "def majority (gs : GroupState α) : Nat := adminCount gs / 2"
       },
       "claimedKills": [
+        "CompositionTests.l7_departure_reachable",
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
         "KelGroups.applyApprove_strong_entry@KelGroups.Invariants",
         "KelGroups.integratedApprove_both@KelGroups.Invariants",
         "KelGroups.majority_table",
@@ -1231,6 +1276,11 @@
         "after": "def franchise (view : GroupView) : List Key := []"
       },
       "claimedKills": [
+        "CompositionTests.l7_departure_reachable",
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7_renounce_reachable",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
         "KelGroups.Vote.verdictOf_threshold_congr",
         "Reactivegas.Composition.boundHistory_holds_backed_authorization",
         "Reactivegas.Lifecycle.fixtures_hold",
@@ -1345,6 +1395,11 @@
         "after": "  none"
       },
       "claimedKills": [
+        "CompositionTests.l7_departure_reachable",
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7_renounce_reachable",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
         "KelGroups.Vote.effectedState_sweepReady@KelGroups.Vote.Invariants",
         "KelGroups.Vote.effectedState_tally_growth@KelGroups.Vote.Invariants",
         "KelGroups.Vote.no_expiry",
@@ -1544,6 +1599,10 @@
         "after": "  | .removeMember key => .rolesChanged key"
       },
       "claimedKills": [
+        "CompositionTests.l7_departure_reachable",
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
         "Reactivegas.Lifecycle.l2_holds",
         "Reactivegas.Lifecycle.l3_holds",
         "Reactivegas.Lifecycle.l4_holds",
@@ -1571,6 +1630,10 @@
         "after": "      if pending.approvals.length > majority gs then"
       },
       "claimedKills": [
+        "CompositionTests.l7_departure_reachable",
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
         "KelGroups.integratedApprove_both@KelGroups.Invariants",
         "KelGroups.integratedPropose_both@KelGroups.Invariants",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
@@ -1727,6 +1790,8 @@
         "after": "        (s) key)"
       },
       "claimedKills": [
+        "CompositionTests.l7_production_strands_nothing",
+        "Reactivegas.Composition.economicCleanup_bindings",
         "Reactivegas.Composition.economicCleanup_frame",
         "Reactivegas.base_departure_applies_cleanup",
         "Reactivegas.integrated_theorem_witness_holds",
@@ -1976,6 +2041,7 @@
         "KelGroups.base_change_runs_hook",
         "KelGroups.integratedApprove_both@KelGroups.Invariants",
         "KelGroups.membership_growth_is_direct_admission",
+        "Reactivegas.Composition.applyIntegrated_nonapp_cases",
         "Reactivegas.Composition.applyIntegrated_payload_cases"
       ],
       "note": "approving a vanished base proposal is a no-op success"
@@ -2051,6 +2117,11 @@
         "after": "  { openQuestions := [(\"q\", { kind := .collective, proposer := \"p\", assents := [\"a\"], dissents := [\"a\"] })], closed := [] }"
       },
       "claimedKills": [
+        "CompositionTests.l7_departure_reachable",
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7_renounce_reachable",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
         "KelGroups.Vote.emptyVoteState_sweepReady",
         "KelGroups.Vote.emptyVoteState_wellFormed",
         "KelGroups.Vote.franchise_of_tallies",
@@ -2074,6 +2145,11 @@
         "after": "def groupView (gs : GroupState α) : GroupView := { members := [] }"
       },
       "claimedKills": [
+        "CompositionTests.l7_departure_reachable",
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7_renounce_reachable",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
         "Reactivegas.Composition.boundHistory_holds_backed_authorization",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.fixtures_hold",
@@ -2199,6 +2275,10 @@
         "after": "              [] }"
       },
       "claimedKills": [
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7_renounce_reachable",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
         "KelGroups.Vote.effectedState_preserves_qid@KelGroups.Vote.Invariants",
         "KelGroups.Vote.effectedState_sweepReady@KelGroups.Vote.Invariants",
         "KelGroups.Vote.effectedState_tally_growth@KelGroups.Vote.Invariants",
@@ -2221,6 +2301,10 @@
         "after": "              [{ questionId, question, verdict := .positive, cause := .renounced }] }"
       },
       "claimedKills": [
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7_renounce_reachable",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
         "KelGroups.Vote.effectedState_preserves_qid@KelGroups.Vote.Invariants",
         "KelGroups.Vote.effectedState_sweepReady@KelGroups.Vote.Invariants",
         "KelGroups.Vote.effectedState_tally_growth@KelGroups.Vote.Invariants",
@@ -2240,6 +2324,9 @@
         "after": "              [{ questionId, question, verdict := .negative, cause := .tally }] }"
       },
       "claimedKills": [
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
         "KelGroups.Vote.effectedState_preserves_qid@KelGroups.Vote.Invariants",
         "KelGroups.Vote.effectedState_sweepReady@KelGroups.Vote.Invariants",
         "KelGroups.Vote.effectedState_tally_growth@KelGroups.Vote.Invariants",
@@ -2311,6 +2398,9 @@
         "after": "                        verdict := .positive, cause := .proposerDeparted }) }"
       },
       "claimedKills": [
+        "CompositionTests.l7_departure_reachable",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
         "KelGroups.Vote.closeProposerQuestions_sweepReady",
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
@@ -2334,6 +2424,9 @@
         "after": "                        verdict := .negative, cause := .tally }) }"
       },
       "claimedKills": [
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
         "KelGroups.Vote.closeProposerQuestions_sweepReady",
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
@@ -2357,6 +2450,10 @@
         "after": "          | .memberRemoved _ => s.votes"
       },
       "claimedKills": [
+        "CompositionTests.l7_departure_reachable",
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
         "Reactivegas.Composition.authStep_baseHook",
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.l2_holds",
@@ -2460,6 +2557,10 @@
         "after": "            { mutation, proposer := signer, approvals := [signer] }"
       },
       "claimedKills": [
+        "CompositionTests.l7_departure_reachable",
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
         "KelGroups.integratedPropose_both@KelGroups.Invariants",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.l2_holds",
@@ -2535,7 +2636,10 @@
         "after": "  match pullLive (.permission c) .positive s.live with"
       },
       "claimedKills": [
-        "Reactivegas.Composition.denyByClosure_spec"
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "Reactivegas.Composition.denyByClosure_spec",
+        "Reactivegas.Composition.spend_refunds"
       ],
       "note": "the negative continuation spends a positive authorization"
     },
@@ -2549,7 +2653,9 @@
         "after": "            conti := s.conti"
       },
       "claimedKills": [
-        "Reactivegas.Composition.denyByClosure_spec"
+        "CompositionTests.l7_production_strands_nothing",
+        "Reactivegas.Composition.denyByClosure_spec",
+        "Reactivegas.Composition.spend_refunds"
       ],
       "note": "dissolving the collection refunds no pledge"
     },
@@ -2563,7 +2669,8 @@
         "after": "            live := s.live"
       },
       "claimedKills": [
-        "Reactivegas.Composition.denyByClosure_spec"
+        "Reactivegas.Composition.denyByClosure_spec",
+        "Reactivegas.Composition.spend_refunds"
       ],
       "note": "the negative continuation does not consume the authorization"
     },
@@ -2577,7 +2684,10 @@
         "after": "            collections := s.collections }"
       },
       "claimedKills": [
-        "Reactivegas.Composition.denyByClosure_spec"
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "Reactivegas.Composition.denyByClosure_spec",
+        "Reactivegas.Composition.spend_refunds"
       ],
       "note": "the negative continuation does not dissolve the collection"
     },
@@ -2639,8 +2749,12 @@
         "after": "    live := s.live ++ minted.take 0 }"
       },
       "claimedKills": [
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
         "Reactivegas.Composition.authStep_syncAuth",
-        "Reactivegas.Composition.boundHistory_holds_backed_authorization"
+        "Reactivegas.Composition.boundHistory_holds_backed_authorization",
+        "Reactivegas.Composition.syncAuth_mints"
       ],
       "note": "closing a bound question mints no authorization"
     },
@@ -2654,7 +2768,11 @@
         "after": "      (fun target => { questionId := r.questionId, target, verdict := .positive }))"
       },
       "claimedKills": [
-        "Reactivegas.Composition.authStep_syncAuth"
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
+        "Reactivegas.Composition.authStep_syncAuth",
+        "Reactivegas.Composition.syncAuth_mints"
       ],
       "note": "every closure mints a positive authorization whatever its verdict"
     },
@@ -2691,7 +2809,10 @@
         "before": "  | .permission c => s.collections.any (fun col => col.id == c)",
         "after": "  | .permission _ => true"
       },
-      "claimedKills": [],
+      "claimedKills": [
+        "CompositionTests.l7_production_strands_nothing",
+        "Reactivegas.Composition.spend_refunds"
+      ],
       "note": "a permission target stands although its collection has left"
     },
     {
@@ -2730,9 +2851,14 @@
         "after": "    live := s.live }"
       },
       "claimedKills": [
+        "CompositionTests.l7_production_strands_nothing",
+        "Reactivegas.Composition.apply_keeps_negative",
+        "Reactivegas.Composition.apply_mints_negative",
         "Reactivegas.Composition.authStep_prune",
         "Reactivegas.Composition.pruneAuth_live_sublist",
-        "Reactivegas.Composition.pruneAuth_present"
+        "Reactivegas.Composition.pruneAuth_present",
+        "Reactivegas.Composition.pruneSync_keeps",
+        "Reactivegas.Composition.pruneSync_mints"
       ],
       "note": "authorizations of departed collections are not dropped"
     },
@@ -2746,6 +2872,11 @@
         "after": "  | some _ => .error StepError.rejected"
       },
       "claimedKills": [
+        "CompositionTests.l7_departure_reachable",
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7_renounce_reachable",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
         "Reactivegas.Composition.boundHistory_holds_backed_authorization",
         "Reactivegas.Composition.ofOption_ok",
         "Reactivegas.admissionPreservation_holds",
@@ -2767,6 +2898,7 @@
         "after": "  | none => .ok State.empty"
       },
       "claimedKills": [
+        "CompositionTests.l7_production_strands_nothing",
         "Reactivegas.Composition.ofOption_ok"
       ],
       "note": "the lifted economic refusal succeeds with the empty payload"
@@ -2781,8 +2913,13 @@
         "after": "  | .ok votes => .ok { s with votes }"
       },
       "claimedKills": [
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
         "Reactivegas.Composition.authStep_voteApply",
-        "Reactivegas.Composition.boundHistory_holds_backed_authorization"
+        "Reactivegas.Composition.boundHistory_holds_backed_authorization",
+        "Reactivegas.Composition.voteApply_keeps_live",
+        "Reactivegas.Composition.voteApply_mints"
       ],
       "note": "a vote step installs its payload and mints no authorization"
     },
@@ -2796,6 +2933,7 @@
         "after": "        spendThen (.permission c) .negative s"
       },
       "claimedKills": [
+        "Reactivegas.Composition.appFoldCore_keeps_negative",
         "Reactivegas.Composition.apply_grant_spends"
       ],
       "note": "granting permission spends a negative authorization"
@@ -2810,6 +2948,7 @@
         "after": "        spendThen (.backdonation w) .negative s"
       },
       "claimedKills": [
+        "Reactivegas.Composition.appFoldCore_keeps_negative",
         "Reactivegas.Composition.apply_backdonate_spends"
       ],
       "note": "a backdonation spends a negative authorization"
@@ -2862,6 +3001,12 @@
         "after": "          voteApply θ pre { s with bindings := s.bindings } signer"
       },
       "claimedKills": [
+        "CompositionTests.l7_departure_reachable",
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7_renounce_reachable",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
+        "Reactivegas.Composition.appFoldCore_mints",
         "Reactivegas.Composition.boundHistory_holds_backed_authorization"
       ],
       "note": "opening a bound question records no binding"
@@ -2892,7 +3037,12 @@
         "after": "        .ok (pruneAuth { cleaned with votes := KelGroups.Vote.sweepClosures θ post departed })"
       },
       "claimedKills": [
-        "Reactivegas.Composition.authStep_baseHook"
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
+        "Reactivegas.Composition.authStep_baseHook",
+        "Reactivegas.Composition.baseHook_keeps_live",
+        "Reactivegas.Composition.baseHook_mints"
       ],
       "note": "a base change closes questions and mints no authorization"
     },
@@ -2906,7 +3056,10 @@
         "after": "        .ok (syncAuth cleaned (KelGroups.Vote.sweepClosures θ post departed))"
       },
       "claimedKills": [
+        "CompositionTests.l7_production_strands_nothing",
         "Reactivegas.Composition.authStep_baseHook",
+        "Reactivegas.Composition.baseHook_keeps_live",
+        "Reactivegas.Composition.baseHook_mints",
         "Reactivegas.Composition.baseHook_pruned"
       ],
       "note": "a base change leaves authorizations whose collection the cleanup dissolved"
@@ -2922,6 +3075,8 @@
       },
       "claimedKills": [
         "Reactivegas.Composition.authStep_baseHook",
+        "Reactivegas.Composition.baseHook_keeps_live",
+        "Reactivegas.Composition.baseHook_mints",
         "Reactivegas.Composition.baseHook_pruned",
         "Reactivegas.baseHook_votes",
         "Reactivegas.base_departure_applies_cleanup",
@@ -2985,6 +3140,7 @@
         "after": "    if a.target = target then some (a, t)"
       },
       "claimedKills": [
+        "Reactivegas.Composition.pullLive_of_mem",
         "Reactivegas.Composition.pullLive_spec"
       ],
       "note": "an authorization is pulled whatever its verdict"
@@ -2999,6 +3155,7 @@
         "after": "    if a.verdict = verdict then some (a, t)"
       },
       "claimedKills": [
+        "Reactivegas.Composition.pullLive_of_mem",
         "Reactivegas.Composition.pullLive_spec"
       ],
       "note": "an authorization is pulled whatever its target"
@@ -3013,6 +3170,7 @@
         "after": "      | some (hit, rest) => some (hit, rest)"
       },
       "claimedKills": [
+        "Reactivegas.Composition.pullLive_of_mem",
         "Reactivegas.Composition.pullLive_spec"
       ],
       "note": "pulling a later authorization drops those it skipped"
@@ -3056,6 +3214,9 @@
         "after": "        if isResponsabile pre signer then ofOption (step pre s signer (.denyPermission c) auth)"
       },
       "claimedKills": [
+        "Reactivegas.Composition.appFoldCore_keeps_negative",
+        "Reactivegas.Composition.appFoldCore_nonvote_votes",
+        "Reactivegas.Composition.apply_deny_refunds",
         "Reactivegas.Composition.apply_deny_spends",
         "Reactivegas.Composition.authStep_appFoldCore"
       ],
@@ -3075,6 +3236,50 @@
         "step_grant_inv"
       ],
       "note": "the economic core's permission grant also rewrites the authorization list"
+    },
+    {
+      "id": "closesNegativeBound-drops-presence",
+      "target": "Reactivegas.Composition.closesNegativeBound",
+      "guard": null,
+      "patch": {
+        "line": 49,
+        "before": "    && targetPresent post (.permission c)",
+        "after": "    && true"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.apply_mints_negative",
+        "Reactivegas.Composition.noStranding_of_history"
+      ],
+      "note": "the closing-step predicate stops requiring the collection to be present afterwards"
+    },
+    {
+      "id": "runHolding-continues-through-spend",
+      "target": "Reactivegas.Composition.runHolding",
+      "guard": null,
+      "patch": {
+        "line": 62,
+        "before": "          if e = .app (.denyPermission c) then none",
+        "after": "          if false then none"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.runHolding_keeps_negative"
+      ],
+      "note": "the continuation no longer stops at a denyPermission for the collection"
+    },
+    {
+      "id": "holdsNegativeAuth-every-authorization",
+      "target": "Reactivegas.Composition.holdsNegativeAuth",
+      "guard": null,
+      "patch": {
+        "line": 519,
+        "before": "  s.live.any (fun a => decide (a.questionId = qid ∧ a.target = .permission c",
+        "after": "  s.live.all (fun a => decide (a.questionId = qid ∧ a.target = .permission c"
+      },
+      "claimedKills": [
+        "CompositionTests.l7c_predicate_on_mint_mutant",
+        "Reactivegas.Composition.holdsNegativeAuth_iff"
+      ],
+      "note": "the predicate asks that every unspent authorization, not some, be the negative one for the collection"
     }
   ]
 }

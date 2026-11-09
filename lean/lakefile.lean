@@ -23,7 +23,7 @@ elaborates both. -/
 @[default_target]
 lean_lib ReactivegasComposition where
   srcDir := "."
-  roots := #[`Reactivegas.CompositionRoot, `Reactivegas.CompositionTests]
+  roots := #[`Reactivegas.CompositionRoot, `Reactivegas.CompositionRefund, `Reactivegas.CompositionTests]
 
 lean_lib TraceDriverV1 where
   srcDir := "."

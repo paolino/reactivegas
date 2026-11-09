@@ -8,3 +8,9 @@ Ceiling 30 lines / 2000 bytes. New or changed signatures only.
 | F81-VALIDATE | `KelGroups.Vote.validateVoteEvent` — signature unchanged | gains the INV81-ORDER refusals. |
 | F81-EFFECT | `KelGroups.Vote.effectedState` — signature unchanged | renounce arm implements D-1/D-4. |
 | F81-HOOK | `Reactivegas.baseHook` — signature unchanged | M81-HOOK. |
+
+## S81-B
+
+| ID | Signature | Constraint |
+|---|---|---|
+| F81-NOSTRAND | a decidable predicate over `Reactivegas.State` stating D-7, and a theorem that it holds in every production history | name and exact antecedent chosen by the commit owner; no existing signature changes. |

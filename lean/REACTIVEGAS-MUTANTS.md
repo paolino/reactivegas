@@ -23,16 +23,16 @@ Modules outside every half's namespace are counted and listed here: `KelTraceDri
 
 | | Reactivegas modules | whole ledger |
 |---|---|---|
-| DISCOVERED theorem constants | 917 | 1633 |
-| EXCLUDED (generated) | 689 | 1221 |
+| DISCOVERED theorem constants | 984 | 1700 |
+| EXCLUDED (generated) | 720 | 1252 |
 | HELPER | 5 | 6 |
-| REQUIRED (authored − HELPER) | 223 | 406 |
-| KILLED | 131 | 216 |
-| OPEN | 92 | 190 |
+| REQUIRED (authored − HELPER) | 259 | 442 |
+| KILLED | 160 | 245 |
+| OPEN | 99 | 197 |
 | refusal constructors SURVIVED | 1 | |
 | refusal constructors UNEMITTED | 0 | |
 
-KILLED / REQUIRED: 131 / 223 here, 216 / 406 over the whole ledger.
+KILLED / REQUIRED: 160 / 259 here, 245 / 442 over the whole ledger.
 
 ## Theorems
 
@@ -43,6 +43,37 @@ KILLED / REQUIRED: 131 / 223 here, 216 / 406 over the whole ledger.
 | `Reactivegas.Composition.appDecided_verdict_exhaustive` | OPEN | attempted `route-grant-direct`. unconstrained: under none of its 1 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
 | `Reactivegas.Composition.baseEnacted_threshold_met` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `enact-remove-noop`, `finishEnact-keeps-pending`, `hasAdmin-all`, `majority-floor`, `propose-auto-assent`, `route-grant-direct`, `setInsert-duplicates`, `tryEnactDetailed-strict`. masked: its proof uses `KelGroups.tryEnactDetailed_enactment_threshold_met@KelGroups.Invariants` (killed by `tryEnactDetailed-strict`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
 | `Reactivegas.Composition.voteDerived_iff_not_direct` | KILLED | killed by `route-grant-direct` |
+
+### `Reactivegas.CompositionRefund`
+
+| theorem | class | evidence |
+|---|---|---|
+| `Reactivegas.Composition.appFoldCore_keeps_negative` | KILLED | killed by `appFoldCore-backdonate-spends-negative`, `appFoldCore-deny-bypasses-closure`, `appFoldCore-grant-spends-negative` |
+| `Reactivegas.Composition.appFoldCore_mints` | KILLED | killed by `appFoldCore-open-bound-unbound` |
+| `Reactivegas.Composition.appFoldCore_nonvote_votes` | KILLED | killed by `appFoldCore-deny-bypasses-closure` |
+| `Reactivegas.Composition.applyIntegrated_nonapp_cases` | KILLED | killed by `guard-approve-route-pending`, `guard-propose-validation` |
+| `Reactivegas.Composition.apply_deny_refunds` | KILLED | killed by `appFoldCore-deny-bypasses-closure` |
+| `Reactivegas.Composition.apply_keeps_negative` | KILLED | killed by `pruneAuth-keeps-authorizations` |
+| `Reactivegas.Composition.apply_mints_negative` | KILLED | killed by `closesNegativeBound-drops-presence`, `pruneAuth-keeps-authorizations` |
+| `Reactivegas.Composition.apply_nonapp_cases` | KILLED | killed by `guard-production-integrated` |
+| `Reactivegas.Composition.bal_refundAll` | KILLED | killed by `refundAll-refunds-nothing`, `sumPledges-drops-head` |
+| `Reactivegas.Composition.baseHook_keeps_live` | KILLED | killed by `baseHook-no-minting`, `baseHook-no-prune`, `guard-base-hook-cleanup` |
+| `Reactivegas.Composition.baseHook_mints` | KILLED | killed by `baseHook-no-minting`, `baseHook-no-prune`, `guard-base-hook-cleanup` |
+| `Reactivegas.Composition.denyByClosure_refunds` | KILLED | killed by `escrowOf-accepted-only` |
+| `Reactivegas.Composition.economicCleanup_bindings` | KILLED | killed by `cleanup-departure-no-windup` |
+| `Reactivegas.Composition.holdsNegativeAuth_iff` | KILLED | killed by `holdsNegativeAuth-every-authorization` |
+| `Reactivegas.Composition.mem_rest_of_pullLive` | OPEN | attempted `pullLive-drops-skipped`, `pullLive-ignores-target`, `pullLive-ignores-verdict`. masked: its proof uses `Reactivegas.Composition.pullLive_spec` (killed by `pullLive-drops-skipped`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `Reactivegas.Composition.noStranding_of_history` | KILLED | killed by `closesNegativeBound-drops-presence` |
+| `Reactivegas.Composition.pruneSync_keeps` | KILLED | killed by `pruneAuth-keeps-authorizations` |
+| `Reactivegas.Composition.pruneSync_mints` | KILLED | killed by `pruneAuth-keeps-authorizations` |
+| `Reactivegas.Composition.pullCollection_of_present` | KILLED | killed by `pullCollection-keeps-collection` |
+| `Reactivegas.Composition.pullLive_of_mem` | KILLED | killed by `pullLive-drops-skipped`, `pullLive-ignores-target`, `pullLive-ignores-verdict` |
+| `Reactivegas.Composition.runHolding_keeps_negative` | KILLED | killed by `runHolding-continues-through-spend` |
+| `Reactivegas.Composition.spend_refunds` | KILLED | killed by `denyByClosure-keeps-authorization`, `denyByClosure-keeps-collection`, `denyByClosure-positive-verdict`, `denyByClosure-skips-refund`, `targetPresent-permission-always` |
+| `Reactivegas.Composition.syncAuth_mints` | KILLED | killed by `syncAuth-mints-assent`, `syncAuth-mints-nothing` |
+| `Reactivegas.Composition.targetPresent_pruneAuth` | OPEN | attempted `bindable-any-collection`, `bindable-nonpositive-share`, `bindable-reuses-closed-id`, `bindable-reuses-open-id`, `pruneAuth-keeps-authorizations`, `pruneAuth-keeps-bindings`, `targetPresent-permission-always`, `targetPresent-share-never`. unconstrained: under none of its 8 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
+| `Reactivegas.Composition.voteApply_keeps_live` | KILLED | killed by `guard-vote-apply-refusal`, `voteApply-skips-minting` |
+| `Reactivegas.Composition.voteApply_mints` | KILLED | killed by `guard-vote-apply-refusal`, `voteApply-skips-minting` |
 
 ### `Reactivegas.CompositionRoot`
 
@@ -83,6 +114,21 @@ KILLED / REQUIRED: 131 / 223 here, 216 / 406 over the whole ledger.
 | `Reactivegas.Composition.step_auth_frame` | KILLED | killed by `step-grant-writes-authorization` |
 | `Reactivegas.Composition.sweepClosures_keeps_closed` | OPEN | attempted `admins-non-admins`, `assocLookup-misses`, `closureCause-always-tally`, `franchise-empty`, `hasAdmin-all`, `isAdmin-absent-true`, `sweepClosures-keeps-open`, `sweepStep-cause-tally`, `verdict-collective-strict`, `verdict-permission-ignores-dissent`, `view-lookupMember-misses`, `vote-isResponsabile-true`. unconstrained: under none of its 12 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
 | `Reactivegas.Composition.tryEnactBase_unchanged` | OPEN | attempted `adminCount-counts-all`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocLookup-misses`, `enactMutation-remove-noop`, `groupView-empty`, `guard-commit-hook-refusal`, `hasAdmin-all`, `lookupPendingBase-misses`, `majority-floor`, `mutationChange-swapped`, `tryEnactBase-strict`. masked: its proof uses `KelGroups.commitBaseChange_ok` (killed by `guard-commit-hook-refusal`); Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+
+### `Reactivegas.CompositionTests`
+
+| theorem | class | evidence |
+|---|---|---|
+| `CompositionTests.l7_antecedent_of_check` | OPEN | attempted `absorbConto-keeps`, `adminCount-counts-all`, `admins-non-admins`, `admitMemberInto-drops`, `appFold-skips-prune`, `appFoldCore-backdonate-other-share`, `appFoldCore-backdonate-spends-negative`, `appFoldCore-deny-bypasses-closure`, `appFoldCore-grant-spends-negative`, `appFoldCore-open-bound-unbound`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `bal-reads-plus-one`, `base-propose-auto-assent`, `baseHook-no-departure-closure`, `baseHook-no-minting`, `baseHook-no-prune`, `baseHook-no-sweep`, `bindable-any-collection`, `bindable-nonpositive-share`, `bindable-reuses-closed-id`, `bindable-reuses-open-id`, `boot-skips-clean-origin`, `bump-subtracts`, `cleanOrigin-ignores-authorizations`, `cleanOrigin-ignores-closures`, `cleanup-departure-ignores-stall`, `cleanup-departure-no-windup`, `closeProposer-cause-tally`, `closeProposer-closes-positive`, `closeProposer-keeps-open`, `closeProposer-records-all`, `closesNegativeBound-drops-presence`, `closureCause-always-tally`, `comuneBal-offset`, `comuneId-renamed`, `demand-always`, `denyByClosure-keeps-authorization`, `denyByClosure-keeps-collection`, `denyByClosure-positive-verdict`, `denyByClosure-skips-refund`, `effectedState-reopens`, `emptyVoteState-has-question`, `enactMutation-remove-noop`, `franchise-empty`, `groupView-empty`, `guard-acceptPledge-referente`, `guard-admission-admin`, `guard-admission-duplicate`, `guard-admission-reserved`, `guard-app-fold-refusal`, `guard-app-signer-member`, `guard-approve-route-pending`, `guard-backdonate-affordable`, `guard-base-approval-pending`, `guard-base-approval-proposer-self`, `guard-base-approval-sole-admin-barred`, `guard-base-approval-twice`, `guard-base-hook-cleanup`, `guard-cast-designee`, `guard-closePurchase-permitted`, `guard-commit-hook-refusal`, `guard-correctPledge-solvent`, `guard-deny-responsabile`, `guard-denyPermission-auth`, `guard-deposit-nonnegative`, `guard-donate-positive`, `guard-failPurchase-no-pending`, `guard-grantPermission-auth`, `guard-ofoption-refusal`, `guard-open-bound-bindable`, `guard-openPurchase-fresh-id`, `guard-pledge-funded`, `guard-production-integrated`, `guard-production-result-wellformed`, `guard-production-wellformed`, `guard-propose-validation`, `guard-refusePledge-referente`, `guard-renounce-proposer`, `guard-renounce-question-exists`, `guard-require-admin`, `guard-require-member`, `guard-spend-no-authorization`, `guard-transferCassa-positive`, `guard-vote-apply-refusal`, `guard-vote-question-exists`, `guard-vote-responsabile`, `guard-withdraw-funded`, `hasAdmin-all`, `isAdmin-absent-true`, `isMember-negated`, `legacyThreshold-floor`, `lookupPendingBase-misses`, `lookupQuestion-misses`, `majority-floor`, `memberKeys-empty`, `mutationChange-swapped`, `ofOption-ok-refuses`, `placeBallot-keeps-dissent`, `productionWellFormed-true`, `pruneAuth-keeps-authorizations`, `pruneAuth-keeps-bindings`, `pullCollection-keeps-collection`, `pullLive-drops-skipped`, `pullLive-ignores-target`, `pullLive-ignores-verdict`, `refundAll-refunds-nothing`, `renounce-cause-tally`, `renounce-closes-positive`, `renounce-discards-record`, `renounce-keeps-open`, `setInsert-duplicates`, `spendThen-effect-failure-passes`, `spendThen-keeps-authorization`, `splitUser-keeps-pledge`, `state-isAdmin-absent-true`, `state-lookupMember-misses`, `step-grant-writes-authorization`, `stripCollections-drops-pending`, `sumPledges-drops-head`, `sweepClosures-keeps-open`, `sweepStep-cause-tally`, `syncAuth-keeps-closed-bindings`, `syncAuth-mints-assent`, `syncAuth-mints-nothing`, `syncAuth-reminting`, `targetPresent-permission-always`, `targetPresent-share-never`, `tryEnactBase-strict`, `verdict-collective-strict`, `verdict-permission-ignores-dissent`, `view-lookupMember-misses`, `vote-isResponsabile-true`, `voteApply-skips-minting`, `windUpAdmin-keeps-cassa`. unconstrained: under none of its 137 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
+| `CompositionTests.l7_departure_no_stranding` | OPEN | attempted `absorbConto-keeps`, `adminCount-counts-all`, `admins-non-admins`, `admitMemberInto-drops`, `appFold-skips-prune`, `appFoldCore-backdonate-other-share`, `appFoldCore-backdonate-spends-negative`, `appFoldCore-deny-bypasses-closure`, `appFoldCore-grant-spends-negative`, `appFoldCore-open-bound-unbound`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `bal-reads-plus-one`, `base-propose-auto-assent`, `baseHook-no-departure-closure`, `baseHook-no-minting`, `baseHook-no-prune`, `baseHook-no-sweep`, `bindable-any-collection`, `bindable-nonpositive-share`, `bindable-reuses-closed-id`, `bindable-reuses-open-id`, `boot-skips-clean-origin`, `bump-subtracts`, `cleanOrigin-ignores-authorizations`, `cleanOrigin-ignores-closures`, `cleanup-departure-ignores-stall`, `cleanup-departure-no-windup`, `closeProposer-cause-tally`, `closeProposer-closes-positive`, `closeProposer-keeps-open`, `closeProposer-records-all`, `closureCause-always-tally`, `comuneBal-offset`, `comuneId-renamed`, `demand-always`, `denyByClosure-keeps-authorization`, `denyByClosure-keeps-collection`, `denyByClosure-positive-verdict`, `denyByClosure-skips-refund`, `effectedState-reopens`, `enactMutation-remove-noop`, `franchise-empty`, `groupView-empty`, `guard-acceptPledge-referente`, `guard-admission-admin`, `guard-admission-duplicate`, `guard-admission-reserved`, `guard-app-fold-refusal`, `guard-app-signer-member`, `guard-approve-route-pending`, `guard-backdonate-affordable`, `guard-base-approval-pending`, `guard-base-approval-proposer-self`, `guard-base-approval-sole-admin-barred`, `guard-base-approval-twice`, `guard-base-hook-cleanup`, `guard-cast-designee`, `guard-closePurchase-permitted`, `guard-commit-hook-refusal`, `guard-correctPledge-solvent`, `guard-deny-responsabile`, `guard-denyPermission-auth`, `guard-deposit-nonnegative`, `guard-donate-positive`, `guard-failPurchase-no-pending`, `guard-grantPermission-auth`, `guard-ofoption-refusal`, `guard-open-bound-bindable`, `guard-openPurchase-fresh-id`, `guard-pledge-funded`, `guard-production-integrated`, `guard-production-result-wellformed`, `guard-production-wellformed`, `guard-propose-validation`, `guard-refusePledge-referente`, `guard-renounce-proposer`, `guard-renounce-question-exists`, `guard-require-admin`, `guard-require-member`, `guard-spend-no-authorization`, `guard-transferCassa-positive`, `guard-vote-apply-refusal`, `guard-vote-question-exists`, `guard-vote-responsabile`, `guard-withdraw-funded`, `hasAdmin-all`, `isAdmin-absent-true`, `isMember-negated`, `legacyThreshold-floor`, `lookupPendingBase-misses`, `lookupQuestion-misses`, `majority-floor`, `memberKeys-empty`, `mutationChange-swapped`, `ofOption-ok-refuses`, `placeBallot-keeps-dissent`, `productionWellFormed-true`, `pruneAuth-keeps-authorizations`, `pruneAuth-keeps-bindings`, `pullCollection-keeps-collection`, `pullLive-drops-skipped`, `pullLive-ignores-target`, `pullLive-ignores-verdict`, `refundAll-refunds-nothing`, `renounce-cause-tally`, `renounce-closes-positive`, `renounce-discards-record`, `renounce-keeps-open`, `setInsert-duplicates`, `spendThen-effect-failure-passes`, `spendThen-keeps-authorization`, `splitUser-keeps-pledge`, `state-isAdmin-absent-true`, `state-lookupMember-misses`, `step-grant-writes-authorization`, `stripCollections-drops-pending`, `sumPledges-drops-head`, `sweepClosures-keeps-open`, `sweepStep-cause-tally`, `syncAuth-keeps-closed-bindings`, `syncAuth-mints-assent`, `syncAuth-mints-nothing`, `syncAuth-reminting`, `targetPresent-permission-always`, `targetPresent-share-never`, `tryEnactBase-strict`, `verdict-collective-strict`, `verdict-permission-ignores-dissent`, `view-lookupMember-misses`, `vote-isResponsabile-true`, `voteApply-skips-minting`, `windUpAdmin-keeps-cassa`. masked: its proof uses `CompositionTests.l7_departure_reachable` (killed by `appFoldCore-open-bound-unbound`), `KelGroups.app_event_has_no_base_change` (killed by `guard-app-fold-refusal`), `KelGroups.base_change_runs_hook` (killed by `guard-approve-route-pending`), `KelGroups.commitBaseChange_ok` (killed by `guard-commit-hook-refusal`) and 22 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `CompositionTests.l7_departure_reachable` | KILLED | killed by `appFoldCore-open-bound-unbound`, `assocLookup-misses`, `base-propose-auto-assent`, `baseHook-no-departure-closure`, `closeProposer-closes-positive`, `emptyVoteState-has-question`, `franchise-empty`, `groupView-empty`, `isMember-negated`, `lookupPendingBase-misses`, `lookupQuestion-misses`, `majority-floor`, `mutationChange-swapped`, `ofOption-ok-refuses`, `state-lookupMember-misses`, `tryEnactBase-strict`, `view-lookupMember-misses` |
+| `CompositionTests.l7_mint_mutant_rejected` | OPEN | attempted `absorbConto-keeps`, `adminCount-counts-all`, `admins-non-admins`, `admitMemberInto-drops`, `appFold-skips-prune`, `appFoldCore-backdonate-other-share`, `appFoldCore-backdonate-spends-negative`, `appFoldCore-deny-bypasses-closure`, `appFoldCore-grant-spends-negative`, `appFoldCore-open-bound-unbound`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `bal-reads-plus-one`, `base-propose-auto-assent`, `baseHook-no-departure-closure`, `baseHook-no-minting`, `baseHook-no-prune`, `baseHook-no-sweep`, `bindable-any-collection`, `bindable-nonpositive-share`, `bindable-reuses-closed-id`, `bindable-reuses-open-id`, `boot-skips-clean-origin`, `bump-subtracts`, `cleanOrigin-ignores-authorizations`, `cleanOrigin-ignores-closures`, `cleanup-departure-ignores-stall`, `cleanup-departure-no-windup`, `closeProposer-cause-tally`, `closeProposer-closes-positive`, `closeProposer-keeps-open`, `closeProposer-records-all`, `closureCause-always-tally`, `comuneBal-offset`, `comuneId-renamed`, `demand-always`, `denyByClosure-keeps-authorization`, `denyByClosure-keeps-collection`, `denyByClosure-positive-verdict`, `denyByClosure-skips-refund`, `effectedState-reopens`, `emptyVoteState-has-question`, `enactMutation-remove-noop`, `escrowOf-accepted-only`, `franchise-empty`, `groupView-empty`, `guard-acceptPledge-referente`, `guard-admission-admin`, `guard-admission-duplicate`, `guard-admission-reserved`, `guard-app-fold-refusal`, `guard-app-signer-member`, `guard-approve-route-pending`, `guard-backdonate-affordable`, `guard-base-approval-pending`, `guard-base-approval-proposer-self`, `guard-base-approval-sole-admin-barred`, `guard-base-approval-twice`, `guard-base-hook-cleanup`, `guard-cast-designee`, `guard-closePurchase-permitted`, `guard-commit-hook-refusal`, `guard-correctPledge-solvent`, `guard-deny-responsabile`, `guard-denyPermission-auth`, `guard-deposit-nonnegative`, `guard-donate-positive`, `guard-failPurchase-no-pending`, `guard-grantPermission-auth`, `guard-ofoption-refusal`, `guard-open-bound-bindable`, `guard-openPurchase-fresh-id`, `guard-pledge-funded`, `guard-production-integrated`, `guard-production-result-wellformed`, `guard-production-wellformed`, `guard-propose-validation`, `guard-refusePledge-referente`, `guard-renounce-proposer`, `guard-renounce-question-exists`, `guard-require-admin`, `guard-require-member`, `guard-spend-no-authorization`, `guard-transferCassa-positive`, `guard-vote-apply-refusal`, `guard-vote-question-exists`, `guard-vote-responsabile`, `guard-withdraw-funded`, `hasAdmin-all`, `isAdmin-absent-true`, `isMember-negated`, `legacyThreshold-floor`, `lookupPendingBase-misses`, `lookupQuestion-misses`, `majority-floor`, `memberKeys-empty`, `mutationChange-swapped`, `ofOption-ok-refuses`, `placeBallot-keeps-dissent`, `productionWellFormed-true`, `pruneAuth-keeps-authorizations`, `pruneAuth-keeps-bindings`, `pullCollection-keeps-collection`, `pullLive-drops-skipped`, `pullLive-ignores-target`, `pullLive-ignores-verdict`, `refundAll-refunds-nothing`, `renounce-cause-tally`, `renounce-closes-positive`, `renounce-discards-record`, `renounce-keeps-open`, `setInsert-duplicates`, `spendThen-effect-failure-passes`, `spendThen-keeps-authorization`, `splitUser-keeps-pledge`, `state-isAdmin-absent-true`, `state-lookupMember-misses`, `step-grant-writes-authorization`, `stripCollections-drops-pending`, `sumBal-drops-first`, `sumPledges-drops-head`, `sweepClosures-keeps-open`, `sweepStep-cause-tally`, `syncAuth-keeps-closed-bindings`, `syncAuth-mints-assent`, `syncAuth-mints-nothing`, `syncAuth-reminting`, `targetPresent-permission-always`, `targetPresent-share-never`, `tryEnactBase-strict`, `verdict-collective-strict`, `verdict-permission-ignores-dissent`, `view-lookupMember-misses`, `vote-isResponsabile-true`, `voteApply-skips-minting`, `windUpAdmin-keeps-cassa`. unconstrained: under none of its 138 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
+| `CompositionTests.l7_mutants_execute` | KILLED | killed by `appFoldCore-open-bound-unbound`, `assocLookup-misses`, `base-propose-auto-assent`, `baseHook-no-departure-closure`, `baseHook-no-minting`, `bump-subtracts`, `closeProposer-cause-tally`, `denyByClosure-keeps-collection`, `denyByClosure-positive-verdict`, `emptyVoteState-has-question`, `franchise-empty`, `groupView-empty`, `isMember-negated`, `lookupPendingBase-misses`, `lookupQuestion-misses`, `majority-floor`, `mutationChange-swapped`, `ofOption-ok-refuses`, `pullCollection-keeps-collection`, `renounce-cause-tally`, `renounce-closes-positive`, `renounce-discards-record`, `state-lookupMember-misses`, `syncAuth-mints-assent`, `syncAuth-mints-nothing`, `tryEnactBase-strict`, `view-lookupMember-misses`, `voteApply-skips-minting` |
+| `CompositionTests.l7_production_strands_nothing` | KILLED | killed by `appFoldCore-open-bound-unbound`, `assocLookup-misses`, `base-propose-auto-assent`, `baseHook-no-departure-closure`, `baseHook-no-minting`, `baseHook-no-prune`, `bump-subtracts`, `cleanup-departure-no-windup`, `closeProposer-cause-tally`, `closeProposer-closes-positive`, `denyByClosure-keeps-collection`, `denyByClosure-positive-verdict`, `denyByClosure-skips-refund`, `emptyVoteState-has-question`, `escrowOf-accepted-only`, `franchise-empty`, `groupView-empty`, `guard-app-fold-refusal`, `guard-ofoption-refusal`, `guard-production-integrated`, `isMember-negated`, `lookupPendingBase-misses`, `lookupQuestion-misses`, `majority-floor`, `mutationChange-swapped`, `ofOption-ok-refuses`, `pruneAuth-keeps-authorizations`, `pullCollection-keeps-collection`, `refundAll-refunds-nothing`, `renounce-cause-tally`, `renounce-closes-positive`, `renounce-discards-record`, `state-lookupMember-misses`, `stripCollections-drops-pending`, `sumPledges-drops-head`, `syncAuth-mints-assent`, `syncAuth-mints-nothing`, `targetPresent-permission-always`, `tryEnactBase-strict`, `view-lookupMember-misses`, `voteApply-skips-minting` |
+| `CompositionTests.l7_refund_mutant_rejected` | OPEN | attempted `absorbConto-keeps`, `adminCount-counts-all`, `admins-non-admins`, `admitMemberInto-drops`, `appFold-skips-prune`, `appFoldCore-backdonate-other-share`, `appFoldCore-backdonate-spends-negative`, `appFoldCore-deny-bypasses-closure`, `appFoldCore-grant-spends-negative`, `appFoldCore-open-bound-unbound`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `bal-reads-plus-one`, `base-propose-auto-assent`, `baseHook-no-departure-closure`, `baseHook-no-minting`, `baseHook-no-prune`, `baseHook-no-sweep`, `bindable-any-collection`, `bindable-nonpositive-share`, `bindable-reuses-closed-id`, `bindable-reuses-open-id`, `boot-skips-clean-origin`, `bump-subtracts`, `cleanOrigin-ignores-authorizations`, `cleanOrigin-ignores-closures`, `cleanup-departure-ignores-stall`, `cleanup-departure-no-windup`, `closeProposer-cause-tally`, `closeProposer-closes-positive`, `closeProposer-keeps-open`, `closeProposer-records-all`, `closureCause-always-tally`, `comuneBal-offset`, `comuneId-renamed`, `demand-always`, `denyByClosure-keeps-authorization`, `denyByClosure-keeps-collection`, `denyByClosure-positive-verdict`, `denyByClosure-skips-refund`, `effectedState-reopens`, `emptyVoteState-has-question`, `enactMutation-remove-noop`, `escrowOf-accepted-only`, `franchise-empty`, `groupView-empty`, `guard-acceptPledge-referente`, `guard-admission-admin`, `guard-admission-duplicate`, `guard-admission-reserved`, `guard-app-fold-refusal`, `guard-app-signer-member`, `guard-approve-route-pending`, `guard-backdonate-affordable`, `guard-base-approval-pending`, `guard-base-approval-proposer-self`, `guard-base-approval-sole-admin-barred`, `guard-base-approval-twice`, `guard-base-hook-cleanup`, `guard-cast-designee`, `guard-closePurchase-permitted`, `guard-commit-hook-refusal`, `guard-correctPledge-solvent`, `guard-deny-responsabile`, `guard-denyPermission-auth`, `guard-deposit-nonnegative`, `guard-donate-positive`, `guard-failPurchase-no-pending`, `guard-grantPermission-auth`, `guard-ofoption-refusal`, `guard-open-bound-bindable`, `guard-openPurchase-fresh-id`, `guard-pledge-funded`, `guard-production-integrated`, `guard-production-result-wellformed`, `guard-production-wellformed`, `guard-propose-validation`, `guard-refusePledge-referente`, `guard-renounce-proposer`, `guard-renounce-question-exists`, `guard-require-admin`, `guard-require-member`, `guard-spend-no-authorization`, `guard-transferCassa-positive`, `guard-vote-apply-refusal`, `guard-vote-question-exists`, `guard-vote-responsabile`, `guard-withdraw-funded`, `hasAdmin-all`, `isAdmin-absent-true`, `isMember-negated`, `legacyThreshold-floor`, `lookupPendingBase-misses`, `lookupQuestion-misses`, `majority-floor`, `memberKeys-empty`, `mutationChange-swapped`, `ofOption-ok-refuses`, `placeBallot-keeps-dissent`, `productionWellFormed-true`, `pruneAuth-keeps-authorizations`, `pruneAuth-keeps-bindings`, `pullCollection-keeps-collection`, `pullLive-drops-skipped`, `pullLive-ignores-target`, `pullLive-ignores-verdict`, `refundAll-refunds-nothing`, `renounce-cause-tally`, `renounce-closes-positive`, `renounce-discards-record`, `renounce-keeps-open`, `setInsert-duplicates`, `spendThen-effect-failure-passes`, `spendThen-keeps-authorization`, `splitUser-keeps-pledge`, `state-isAdmin-absent-true`, `state-lookupMember-misses`, `step-grant-writes-authorization`, `stripCollections-drops-pending`, `sumBal-drops-first`, `sumPledges-drops-head`, `sweepClosures-keeps-open`, `sweepStep-cause-tally`, `syncAuth-keeps-closed-bindings`, `syncAuth-mints-assent`, `syncAuth-mints-nothing`, `syncAuth-reminting`, `targetPresent-permission-always`, `targetPresent-share-never`, `tryEnactBase-strict`, `verdict-collective-strict`, `verdict-permission-ignores-dissent`, `view-lookupMember-misses`, `vote-isResponsabile-true`, `voteApply-skips-minting`, `windUpAdmin-keeps-cassa`. unconstrained: under none of its 138 attempted mutants does Lean report an error in this theorem or in a theorem its proof uses |
+| `CompositionTests.l7_renounce_no_stranding` | OPEN | attempted `absorbConto-keeps`, `adminCount-counts-all`, `admins-non-admins`, `admitMemberInto-drops`, `appFold-skips-prune`, `appFoldCore-backdonate-other-share`, `appFoldCore-backdonate-spends-negative`, `appFoldCore-deny-bypasses-closure`, `appFoldCore-grant-spends-negative`, `appFoldCore-open-bound-unbound`, `assocAdjust-ignores-f`, `assocErase-keeps`, `assocInsert-appends`, `assocLookup-misses`, `bal-reads-plus-one`, `base-propose-auto-assent`, `baseHook-no-departure-closure`, `baseHook-no-minting`, `baseHook-no-prune`, `baseHook-no-sweep`, `bindable-any-collection`, `bindable-nonpositive-share`, `bindable-reuses-closed-id`, `bindable-reuses-open-id`, `boot-skips-clean-origin`, `bump-subtracts`, `cleanOrigin-ignores-authorizations`, `cleanOrigin-ignores-closures`, `cleanup-departure-ignores-stall`, `cleanup-departure-no-windup`, `closeProposer-cause-tally`, `closeProposer-closes-positive`, `closeProposer-keeps-open`, `closeProposer-records-all`, `closureCause-always-tally`, `comuneBal-offset`, `comuneId-renamed`, `demand-always`, `denyByClosure-keeps-authorization`, `denyByClosure-keeps-collection`, `denyByClosure-positive-verdict`, `denyByClosure-skips-refund`, `effectedState-reopens`, `enactMutation-remove-noop`, `franchise-empty`, `groupView-empty`, `guard-acceptPledge-referente`, `guard-admission-admin`, `guard-admission-duplicate`, `guard-admission-reserved`, `guard-app-fold-refusal`, `guard-app-signer-member`, `guard-approve-route-pending`, `guard-backdonate-affordable`, `guard-base-approval-pending`, `guard-base-approval-proposer-self`, `guard-base-approval-sole-admin-barred`, `guard-base-approval-twice`, `guard-base-hook-cleanup`, `guard-cast-designee`, `guard-closePurchase-permitted`, `guard-commit-hook-refusal`, `guard-correctPledge-solvent`, `guard-deny-responsabile`, `guard-denyPermission-auth`, `guard-deposit-nonnegative`, `guard-donate-positive`, `guard-failPurchase-no-pending`, `guard-grantPermission-auth`, `guard-ofoption-refusal`, `guard-open-bound-bindable`, `guard-openPurchase-fresh-id`, `guard-pledge-funded`, `guard-production-integrated`, `guard-production-result-wellformed`, `guard-production-wellformed`, `guard-propose-validation`, `guard-refusePledge-referente`, `guard-renounce-proposer`, `guard-renounce-question-exists`, `guard-require-admin`, `guard-require-member`, `guard-spend-no-authorization`, `guard-transferCassa-positive`, `guard-vote-apply-refusal`, `guard-vote-question-exists`, `guard-vote-responsabile`, `guard-withdraw-funded`, `hasAdmin-all`, `isAdmin-absent-true`, `isMember-negated`, `legacyThreshold-floor`, `lookupPendingBase-misses`, `lookupQuestion-misses`, `majority-floor`, `memberKeys-empty`, `mutationChange-swapped`, `ofOption-ok-refuses`, `placeBallot-keeps-dissent`, `productionWellFormed-true`, `pruneAuth-keeps-authorizations`, `pruneAuth-keeps-bindings`, `pullCollection-keeps-collection`, `pullLive-drops-skipped`, `pullLive-ignores-target`, `pullLive-ignores-verdict`, `refundAll-refunds-nothing`, `renounce-cause-tally`, `renounce-closes-positive`, `renounce-discards-record`, `renounce-keeps-open`, `setInsert-duplicates`, `spendThen-effect-failure-passes`, `spendThen-keeps-authorization`, `splitUser-keeps-pledge`, `state-isAdmin-absent-true`, `state-lookupMember-misses`, `step-grant-writes-authorization`, `stripCollections-drops-pending`, `sumPledges-drops-head`, `sweepClosures-keeps-open`, `sweepStep-cause-tally`, `syncAuth-keeps-closed-bindings`, `syncAuth-mints-assent`, `syncAuth-mints-nothing`, `syncAuth-reminting`, `targetPresent-permission-always`, `targetPresent-share-never`, `tryEnactBase-strict`, `verdict-collective-strict`, `verdict-permission-ignores-dissent`, `view-lookupMember-misses`, `vote-isResponsabile-true`, `voteApply-skips-minting`, `windUpAdmin-keeps-cassa`. masked: its proof uses `CompositionTests.l7_renounce_reachable` (killed by `appFoldCore-open-bound-unbound`), `KelGroups.app_event_has_no_base_change` (killed by `guard-app-fold-refusal`), `KelGroups.base_change_runs_hook` (killed by `guard-approve-route-pending`), `KelGroups.commitBaseChange_ok` (killed by `guard-commit-hook-refusal`) and 22 more; Lean admits a killed theorem, so the error stays in that theorem's own declaration |
+| `CompositionTests.l7_renounce_reachable` | KILLED | killed by `appFoldCore-open-bound-unbound`, `assocLookup-misses`, `emptyVoteState-has-question`, `franchise-empty`, `groupView-empty`, `isMember-negated`, `lookupQuestion-misses`, `ofOption-ok-refuses`, `renounce-closes-positive`, `renounce-discards-record`, `view-lookupMember-misses` |
+| `CompositionTests.l7c_predicate_on_mint_mutant` | KILLED | killed by `appFoldCore-open-bound-unbound`, `assocLookup-misses`, `base-propose-auto-assent`, `baseHook-no-departure-closure`, `baseHook-no-minting`, `closeProposer-cause-tally`, `closeProposer-closes-positive`, `emptyVoteState-has-question`, `franchise-empty`, `groupView-empty`, `holdsNegativeAuth-every-authorization`, `isMember-negated`, `lookupPendingBase-misses`, `lookupQuestion-misses`, `majority-floor`, `mutationChange-swapped`, `ofOption-ok-refuses`, `renounce-cause-tally`, `renounce-closes-positive`, `renounce-discards-record`, `state-lookupMember-misses`, `syncAuth-mints-assent`, `syncAuth-mints-nothing`, `tryEnactBase-strict`, `view-lookupMember-misses`, `voteApply-skips-minting` |
 
 ### `Reactivegas.Invariants`
 
@@ -334,8 +380,8 @@ emits it, so there is no guard to mutate.
 | `GuardId.closePurchase` | `guardOf`, `stepDetailed` | `guard-closePurchase-permitted` | 2 | KILLS |
 | `GuardId.failPurchase` | `guardOf`, `stepDetailed` | `guard-failPurchase-no-pending` | 1 | KILLS |
 | `Reactivegas.ProductionError.comuneReserved` | `Reactivegas.apply`, `Reactivegas.checkComuneCannotAuthorize` | `guard-production-wellformed`, `guard-production-result-wellformed` | 0 | SURVIVED |
-| `Reactivegas.ProductionError.integrated` | `Reactivegas.apply`, `Reactivegas.checkComuneCannotAuthorize` | `guard-production-integrated` | 16 | KILLS |
-| `StepError.rejected` | `Reactivegas.appFoldCore`, `Reactivegas.baseHook`, `Reactivegas.ofOption`, `Reactivegas.spendThen`, `Reactivegas.validateProposal`, `Reactivegas.voteApply` | `guard-vote-apply-refusal`, `guard-spend-no-authorization`, `guard-ofoption-refusal`, `guard-deny-responsabile`, `guard-open-bound-bindable`, `guard-base-hook-cleanup` | 16 | KILLS |
+| `Reactivegas.ProductionError.integrated` | `Reactivegas.apply`, `Reactivegas.checkComuneCannotAuthorize` | `guard-production-integrated` | 18 | KILLS |
+| `StepError.rejected` | `Reactivegas.appFoldCore`, `Reactivegas.baseHook`, `Reactivegas.ofOption`, `Reactivegas.spendThen`, `Reactivegas.validateProposal`, `Reactivegas.voteApply` | `guard-vote-apply-refusal`, `guard-spend-no-authorization`, `guard-ofoption-refusal`, `guard-deny-responsabile`, `guard-open-bound-bindable`, `guard-base-hook-cleanup` | 21 | KILLS |
 
 ## Mutants
 
@@ -357,22 +403,22 @@ emits it, so there is no guard to mutate.
 | `guard-closePurchase-permitted` | `step` | `GuardId.closePurchase` | `col.permitted` → `true` | Reactivegas.Step:131 | 2 |
 | `guard-failPurchase-no-pending` | `step` | `GuardId.failPurchase` | `col.pending.isEmpty` → `true` | Reactivegas.Step:138 | 1 |
 | `guard-production-wellformed` | `Reactivegas.apply` | `Reactivegas.ProductionError.comuneReserved` | `productionWellFormed gs` → `true` | Reactivegas.Step:468 | 0 |
-| `guard-production-integrated` | `Reactivegas.apply` | `Reactivegas.ProductionError.integrated` | `.error (ProductionError.integrated err)` → `.ok { state := gs, change := none }` | Reactivegas.Step:473 | 16 |
-| `guard-vote-apply-refusal` | `Reactivegas.voteApply` | `StepError.rejected` | `.error StepError.rejected` → `.ok s` | Reactivegas.Step:266 | 8 |
+| `guard-production-integrated` | `Reactivegas.apply` | `Reactivegas.ProductionError.integrated` | `.error (ProductionError.integrated err)` → `.ok { state := gs, change := none }` | Reactivegas.Step:473 | 18 |
+| `guard-vote-apply-refusal` | `Reactivegas.voteApply` | `StepError.rejected` | `.error StepError.rejected` → `.ok s` | Reactivegas.Step:266 | 10 |
 | `bal-reads-plus-one` | `bal` |  | `` → `+ 1 ` | Reactivegas.State:46 | 7 |
-| `bump-subtracts` | `bump` |  | `+` → `-` | Reactivegas.State:69 | 8 |
-| `sumPledges-drops-head` | `sumPledges` |  | `p.amount + ` → `` | Reactivegas.State:77 | 5 |
+| `bump-subtracts` | `bump` |  | `+` → `-` | Reactivegas.State:69 | 10 |
+| `sumPledges-drops-head` | `sumPledges` |  | `p.amount + ` → `` | Reactivegas.State:77 | 7 |
 | `splitUser-keeps-pledge` | `splitUser` |  | `` → `p :: ` | Reactivegas.State:92 | 4 |
-| `refundAll-refunds-nothing` | `refundAll` |  | `p.amount` → `0` | Reactivegas.State:99 | 6 |
-| `pullCollection-keeps-collection` | `pullCollection` |  | `` → `x :: ` | Reactivegas.State:110 | 3 |
-| `stripCollections-drops-pending` | `stripCollections` |  | `c.pending ++ ` → `` | Reactivegas.State:134 | 2 |
+| `refundAll-refunds-nothing` | `refundAll` |  | `p.amount` → `0` | Reactivegas.State:99 | 8 |
+| `pullCollection-keeps-collection` | `pullCollection` |  | `` → `x :: ` | Reactivegas.State:110 | 6 |
+| `stripCollections-drops-pending` | `stripCollections` |  | `c.pending ++ ` → `` | Reactivegas.State:134 | 3 |
 | `comuneBal-offset` | `comuneBal` |  | `` → ` + 1` | Reactivegas.State:51 | 4 |
-| `escrowOf-accepted-only` | `escrowOf` |  | ` + sumPledges c.pending` → `` | Reactivegas.State:80 | 2 |
+| `escrowOf-accepted-only` | `escrowOf` |  | ` + sumPledges c.pending` → `` | Reactivegas.State:80 | 4 |
 | `demand-always` | `demand` |  | `none` → `some ()` | Reactivegas.Step:24 | 6 |
 | `memberKeys-empty` | `memberKeys` |  | `view.members.map Prod.fst` → `[]` | Reactivegas.Step:36 | 1 |
 | `stepEvent-withdraw-as-deposit` | `stepEvent` |  | `.withdraw` → `.deposit` | Reactivegas.Step:160 | 5 |
 | `cleanup-departure-ignores-stall` | `Reactivegas.economicCleanup` |  | `(!(decide (stalled s)))` → `true` | Reactivegas.Step:351 | 4 |
-| `cleanup-departure-no-windup` | `Reactivegas.economicCleanup` |  | `if KelGroups.GroupView.isAdmin key pre then windUpAdmin s key else ` → `` | Reactivegas.Step:353 | 4 |
+| `cleanup-departure-no-windup` | `Reactivegas.economicCleanup` |  | `if KelGroups.GroupView.isAdmin key pre then windUpAdmin s key else ` → `` | Reactivegas.Step:353 | 6 |
 | `absorbConto-keeps` | `Reactivegas.absorbConto` |  | `(bump s.conti key (-(bal s.conti key)))` → `s.conti` | Reactivegas.Step:319 | 3 |
 | `windUpAdmin-keeps-cassa` | `Reactivegas.windUpAdmin` |  | `bump s.casse key (-(bal s.casse key))` → `s.casse` | Reactivegas.Step:330 | 4 |
 | `baseHook-no-sweep` | `Reactivegas.baseHook` |  | `(KelGroups.Vote.sweepClosures θ post departed)` → `departed` | Reactivegas.Step:384 | 13 |
@@ -384,49 +430,52 @@ emits it, so there is no guard to mutate.
 | `traceInventory-covered-negated` | `traceInventory` |  | `r.2.isSome` → `r.2.isNone` | Reactivegas.Trace:235 | 1 |
 | `guard-production-result-wellformed` | `Reactivegas.apply` | `Reactivegas.ProductionError.comuneReserved` | `productionWellFormed result.state` → `true` | Reactivegas.Step:471 | 0 |
 | `pledge-no-decidable-eq` | `instDecidableEqPledge` |  | `DecidableEq` → `Hashable` | Reactivegas.Types:29 | 4 |
-| `baseHook-no-departure-closure` | `Reactivegas.baseHook` |  | `key => KelGroups.Vote.closeProposerQuestions key` → `_ =>` | Reactivegas.Step:382 | 10 |
+| `baseHook-no-departure-closure` | `Reactivegas.baseHook` |  | `key => KelGroups.Vote.closeProposerQuestions key` → `_ =>` | Reactivegas.Step:382 | 14 |
 | `spendThen-keeps-authorization` | `Reactivegas.spendThen` |  | `{ s with live := rest }` → `s` | Reactivegas.Step:197 | 1 |
 | `spendThen-effect-failure-passes` | `Reactivegas.spendThen` |  | `.error StepError.rejected` → `.ok s` | Reactivegas.Step:199 | 1 |
 | `guard-spend-no-authorization` | `Reactivegas.spendThen` | `StepError.rejected` | `.error StepError.rejected` → `.ok s` | Reactivegas.Step:195 | 1 |
-| `denyByClosure-positive-verdict` | `Reactivegas.denyByClosure` |  | `.negative` → `.positive` | Reactivegas.Step:209 | 1 |
-| `denyByClosure-skips-refund` | `Reactivegas.denyByClosure` |  | `refundAll s.conti (col.accepted ++ col.pending)` → `s.conti` | Reactivegas.Step:217 | 1 |
-| `denyByClosure-keeps-authorization` | `Reactivegas.denyByClosure` |  | `rest` → `s.live` | Reactivegas.Step:216 | 1 |
-| `denyByClosure-keeps-collection` | `Reactivegas.denyByClosure` |  | `cs` → `s.collections` | Reactivegas.Step:218 | 1 |
+| `denyByClosure-positive-verdict` | `Reactivegas.denyByClosure` |  | `.negative` → `.positive` | Reactivegas.Step:209 | 4 |
+| `denyByClosure-skips-refund` | `Reactivegas.denyByClosure` |  | `refundAll s.conti (col.accepted ++ col.pending)` → `s.conti` | Reactivegas.Step:217 | 3 |
+| `denyByClosure-keeps-authorization` | `Reactivegas.denyByClosure` |  | `rest` → `s.live` | Reactivegas.Step:216 | 2 |
+| `denyByClosure-keeps-collection` | `Reactivegas.denyByClosure` |  | `cs` → `s.collections` | Reactivegas.Step:218 | 4 |
 | `bindable-reuses-open-id` | `Reactivegas.bindable` |  | `(KelGroups.Vote.lookupQuestion qid s.votes).isNone` → `true` | Reactivegas.Step:224 | 0 |
 | `bindable-reuses-closed-id` | `Reactivegas.bindable` |  | `!(s.votes.closed.any (fun r => r.questionId == qid))` → `true` | Reactivegas.Step:225 | 0 |
 | `bindable-any-collection` | `Reactivegas.bindable` |  | `s.collections.any (fun col => col.id == c)` → `true` | Reactivegas.Step:227 | 0 |
 | `bindable-nonpositive-share` | `Reactivegas.bindable` |  | `0 < w` → `w < 0` | Reactivegas.Step:228 | 0 |
-| `syncAuth-mints-nothing` | `Reactivegas.syncAuth` |  | `minted` → `minted.take 0` | Reactivegas.Step:243 | 2 |
-| `syncAuth-mints-assent` | `Reactivegas.syncAuth` |  | `r.verdict` → `.positive` | Reactivegas.Step:238 | 1 |
+| `syncAuth-mints-nothing` | `Reactivegas.syncAuth` |  | `minted` → `minted.take 0` | Reactivegas.Step:243 | 6 |
+| `syncAuth-mints-assent` | `Reactivegas.syncAuth` |  | `r.verdict` → `.positive` | Reactivegas.Step:238 | 5 |
 | `syncAuth-reminting` | `Reactivegas.syncAuth` |  | `!(s.votes.closed.any (fun p => p.questionId == r.questionId))` → `true` | Reactivegas.Step:235 | 0 |
 | `syncAuth-keeps-closed-bindings` | `Reactivegas.syncAuth` |  | `(KelGroups.Vote.lookupQuestion b.1 votes).isSome` → `true` | Reactivegas.Step:242 | 0 |
-| `targetPresent-permission-always` | `Reactivegas.targetPresent` |  | `c => s.collections.any (fun col => col.id == c)` → `_ => true` | Reactivegas.Step:248 | 0 |
+| `targetPresent-permission-always` | `Reactivegas.targetPresent` |  | `c => s.collections.any (fun col => col.id == c)` → `_ => true` | Reactivegas.Step:248 | 2 |
 | `targetPresent-share-never` | `Reactivegas.targetPresent` |  | `true` → `false` | Reactivegas.Step:249 | 0 |
 | `pruneAuth-keeps-bindings` | `Reactivegas.pruneAuth` |  | `s.bindings.filter (fun b => targetPresent s b.2)` → `s.bindings` | Reactivegas.Step:255 | 1 |
-| `pruneAuth-keeps-authorizations` | `Reactivegas.pruneAuth` |  | `s.live.filter (fun a => targetPresent s a.target)` → `s.live` | Reactivegas.Step:256 | 3 |
-| `ofOption-ok-refuses` | `Reactivegas.ofOption` |  | `s => .ok s` → `_ => .error StepError.rejected` | Reactivegas.Step:187 | 8 |
-| `guard-ofoption-refusal` | `Reactivegas.ofOption` | `StepError.rejected` | `.error StepError.rejected` → `.ok State.empty` | Reactivegas.Step:188 | 1 |
-| `voteApply-skips-minting` | `Reactivegas.voteApply` |  | `(syncAuth s votes)` → `{ s with votes }` | Reactivegas.Step:267 | 2 |
-| `appFoldCore-grant-spends-negative` | `Reactivegas.appFoldCore` |  | `.positive` → `.negative` | Reactivegas.Step:285 | 1 |
-| `appFoldCore-backdonate-spends-negative` | `Reactivegas.appFoldCore` |  | `.positive` → `.negative` | Reactivegas.Step:291 | 1 |
+| `pruneAuth-keeps-authorizations` | `Reactivegas.pruneAuth` |  | `s.live.filter (fun a => targetPresent s a.target)` → `s.live` | Reactivegas.Step:256 | 8 |
+| `ofOption-ok-refuses` | `Reactivegas.ofOption` |  | `s => .ok s` → `_ => .error StepError.rejected` | Reactivegas.Step:187 | 13 |
+| `guard-ofoption-refusal` | `Reactivegas.ofOption` | `StepError.rejected` | `.error StepError.rejected` → `.ok State.empty` | Reactivegas.Step:188 | 2 |
+| `voteApply-skips-minting` | `Reactivegas.voteApply` |  | `(syncAuth s votes)` → `{ s with votes }` | Reactivegas.Step:267 | 7 |
+| `appFoldCore-grant-spends-negative` | `Reactivegas.appFoldCore` |  | `.positive` → `.negative` | Reactivegas.Step:285 | 2 |
+| `appFoldCore-backdonate-spends-negative` | `Reactivegas.appFoldCore` |  | `.positive` → `.negative` | Reactivegas.Step:291 | 2 |
 | `appFoldCore-backdonate-other-share` | `Reactivegas.appFoldCore` |  | `w` → `1` | Reactivegas.Step:291 | 1 |
 | `guard-deny-responsabile` | `Reactivegas.appFoldCore` | `StepError.rejected` | `isResponsabile pre signer` → `true` | Reactivegas.Step:288 | 0 |
 | `guard-open-bound-bindable` | `Reactivegas.appFoldCore` | `StepError.rejected` | `bindable s qid target` → `true` | Reactivegas.Step:280 | 0 |
-| `appFoldCore-open-bound-unbound` | `Reactivegas.appFoldCore` |  | `(qid, target) :: ` → `` | Reactivegas.Step:281 | 1 |
+| `appFoldCore-open-bound-unbound` | `Reactivegas.appFoldCore` |  | `(qid, target) :: ` → `` | Reactivegas.Step:281 | 7 |
 | `appFold-skips-prune` | `Reactivegas.appFold` |  | `(pruneAuth s')` → `s'` | Reactivegas.Step:303 | 3 |
-| `baseHook-no-minting` | `Reactivegas.baseHook` |  | `(syncAuth cleaned (KelGroups.Vote.sweepClosures θ post departed))` → `{ cleaned with votes := KelGroups.Vote.sweepClosures θ post departed }` | Reactivegas.Step:384 | 1 |
-| `baseHook-no-prune` | `Reactivegas.baseHook` |  | `pruneAuth (syncAuth cleaned (KelGroups.Vote.sweepClosures θ post departed)` → `syncAuth cleaned (KelGroups.Vote.sweepClosures θ post departed` | Reactivegas.Step:384 | 2 |
-| `guard-base-hook-cleanup` | `Reactivegas.baseHook` | `StepError.rejected` | `.error StepError.rejected` → `.ok s` | Reactivegas.Step:377 | 7 |
+| `baseHook-no-minting` | `Reactivegas.baseHook` |  | `(syncAuth cleaned (KelGroups.Vote.sweepClosures θ post departed))` → `{ cleaned with votes := KelGroups.Vote.sweepClosures θ post departed }` | Reactivegas.Step:384 | 6 |
+| `baseHook-no-prune` | `Reactivegas.baseHook` |  | `pruneAuth (syncAuth cleaned (KelGroups.Vote.sweepClosures θ post departed)` → `syncAuth cleaned (KelGroups.Vote.sweepClosures θ post departed` | Reactivegas.Step:384 | 5 |
+| `guard-base-hook-cleanup` | `Reactivegas.baseHook` | `StepError.rejected` | `.error StepError.rejected` → `.ok s` | Reactivegas.Step:377 | 9 |
 | `cleanOrigin-ignores-authorizations` | `Reactivegas.cleanOrigin` |  | ` && payload.live.isEmpty` → `` | Reactivegas.Step:445 | 2 |
 | `cleanOrigin-ignores-closures` | `Reactivegas.cleanOrigin` |  | `payload.votes.closed.isEmpty && payload.bindings.isEmpty` → `payload.bindings.isEmpty` | Reactivegas.Step:445 | 1 |
 | `boot-skips-clean-origin` | `Reactivegas.boot` |  | `&& cleanOrigin payload ` → `` | Reactivegas.Step:453 | 2 |
-| `pullLive-ignores-verdict` | `pullLive` |  | `∧ a.verdict = verdict ` → `` | Reactivegas.State:120 | 1 |
-| `pullLive-ignores-target` | `pullLive` |  | `a.target = target ∧ a.verdict` → `a.verdict` | Reactivegas.State:120 | 1 |
-| `pullLive-drops-skipped` | `pullLive` |  | `a :: ` → `` | Reactivegas.State:122 | 1 |
+| `pullLive-ignores-verdict` | `pullLive` |  | `∧ a.verdict = verdict ` → `` | Reactivegas.State:120 | 2 |
+| `pullLive-ignores-target` | `pullLive` |  | `a.target = target ∧ a.verdict` → `a.verdict` | Reactivegas.State:120 | 2 |
+| `pullLive-drops-skipped` | `pullLive` |  | `a :: ` → `` | Reactivegas.State:122 | 2 |
 | `liveBacked-ignores-verdict` | `Reactivegas.Composition.liveBacked` |  | ` ∧ r.verdict = a.verdict` → `` | Reactivegas.CompositionRoot:214 | 1 |
 | `liveBacked-some-backed` | `Reactivegas.Composition.liveBacked` |  | `s.live.all` → `s.live.any` | Reactivegas.CompositionRoot:213 | 2 |
-| `appFoldCore-deny-bypasses-closure` | `Reactivegas.appFoldCore` |  | `denyByClosure s c` → `step pre s signer (.denyPermission c) auth` | Reactivegas.Step:288 | 2 |
+| `appFoldCore-deny-bypasses-closure` | `Reactivegas.appFoldCore` |  | `denyByClosure s c` → `step pre s signer (.denyPermission c) auth` | Reactivegas.Step:288 | 5 |
 | `step-grant-writes-authorization` | `step` |  | `` → `live := [], ` | Reactivegas.Step:57 | 2 |
+| `closesNegativeBound-drops-presence` | `Reactivegas.Composition.closesNegativeBound` |  | `targetPresent post (.permission c)` → `true` | Reactivegas.CompositionRefund:49 | 2 |
+| `runHolding-continues-through-spend` | `Reactivegas.Composition.runHolding` |  | `e = .app (.denyPermission c)` → `false` | Reactivegas.CompositionRefund:62 | 1 |
+| `holdsNegativeAuth-every-authorization` | `Reactivegas.Composition.holdsNegativeAuth` |  | `s.live.any` → `s.live.all` | Reactivegas.CompositionRefund:519 | 2 |
 
 ## Limits
 
@@ -466,7 +515,7 @@ What a row here does not establish.
 
 Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem` command, produced it: the environment records no source declaration range of its own for it (equation, injectivity, sizeOf, auxiliary-proof and simp lemmas), or it is a structure projection (a `Prop` field of a structure); every other theorem constant is AUTHORED.
 
-<details><summary>689 identities</summary>
+<details><summary>720 identities</summary>
 
 - `AppEvent.acceptPledge.inj`
 - `AppEvent.acceptPledge.injEq`
@@ -525,6 +574,8 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `Collection.mk.inj`
 - `Collection.mk.injEq`
 - `Collection.mk.sizeOf_spec`
+- `CompositionTests.l7Closes.match_1.eq_1@Reactivegas.CompositionTests`
+- `CompositionTests.l7Closes.match_1.eq_2@Reactivegas.CompositionTests`
 - `EconomicTarget.backdonation.inj`
 - `EconomicTarget.backdonation.injEq`
 - `EconomicTarget.backdonation.sizeOf_spec`
@@ -595,11 +646,15 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `KelGroups.Vote.applyVoteEventChecked.match_1.eq_2@Reactivegas.CompositionRoot`
 - `KelGroups.Vote.effectedState.match_1.eq_1@Reactivegas.CompositionRoot`
 - `KelGroups.Vote.effectedState.match_1.eq_2@Reactivegas.CompositionRoot`
+- `KelGroups.applyIntegratedEvent.match_1.eq_1@Reactivegas.CompositionRefund`
 - `KelGroups.applyIntegratedEvent.match_1.eq_1@Reactivegas.CompositionRoot`
+- `KelGroups.applyIntegratedEvent.match_1.eq_2@Reactivegas.CompositionRefund`
 - `KelGroups.applyIntegratedEvent.match_1.eq_2@Reactivegas.CompositionRoot`
 - `KelGroups.commitBaseChange.match_1.eq_1@Reactivegas.CompositionRoot`
 - `KelGroups.commitBaseChange.match_1.eq_2@Reactivegas.CompositionRoot`
+- `KelGroups.tryEnactBase.match_1.eq_1@Reactivegas.CompositionRefund`
 - `KelGroups.tryEnactBase.match_1.eq_1@Reactivegas.CompositionRoot`
+- `KelGroups.tryEnactBase.match_1.eq_2@Reactivegas.CompositionRefund`
 - `KelGroups.tryEnactBase.match_1.eq_2@Reactivegas.CompositionRoot`
 - `KelTraceDriverV1.Seed.mk.inj`
 - `KelTraceDriverV1.Seed.mk.injEq`
@@ -622,12 +677,19 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `Reactivegas.Composition.Route.baseEnacted.sizeOf_spec`
 - `Reactivegas.Composition.Route.direct.sizeOf_spec`
 - `Reactivegas.Composition.Route.ofNat_ctorIdx`
+- `Reactivegas.Composition.appFoldCore_mints._simp_1_1`
+- `Reactivegas.Composition.appFoldCore_mints._simp_1_2`
 - `Reactivegas.Composition.appVerdictAllows.eq_1`
 - `Reactivegas.Composition.appVerdictAllows.match_1.eq_1@Reactivegas.Composition`
 - `Reactivegas.Composition.appVerdictAllows.match_1.eq_2@Reactivegas.Composition`
 - `Reactivegas.Composition.appVerdictAllows.match_1.eq_3@Reactivegas.Composition`
 - `Reactivegas.Composition.authStep_syncAuth._simp_1_2`
 - `Reactivegas.Composition.authTargetsPresent_of_history._simp_1_3`
+- `Reactivegas.Composition.bal_refundAll._proof_1_1`
+- `Reactivegas.Composition.closesNegativeBound.eq_1`
+- `Reactivegas.Composition.denyByClosure_refunds._proof_1_1`
+- `Reactivegas.Composition.holdsNegativeAuth.eq_1`
+- `Reactivegas.Composition.holdsNegativeAuth_iff._simp_1_2`
 - `Reactivegas.Composition.instDecidableEqRoute._proof_1`
 - `Reactivegas.Composition.instDecidableEqRoute._proof_2`
 - `Reactivegas.Composition.liveBacked.eq_1`
@@ -662,6 +724,14 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `Reactivegas.Composition.route.match_1.eq_7@Reactivegas.Composition`
 - `Reactivegas.Composition.route.match_1.eq_8@Reactivegas.Composition`
 - `Reactivegas.Composition.route.match_1.eq_9@Reactivegas.Composition`
+- `Reactivegas.Composition.runHolding.eq_1`
+- `Reactivegas.Composition.runHolding.eq_2`
+- `Reactivegas.Composition.runHolding.eq_def`
+- `Reactivegas.Composition.runHolding.match_1.eq_1@Reactivegas.CompositionRefund`
+- `Reactivegas.Composition.runHolding.match_1.eq_2@Reactivegas.CompositionRefund`
+- `Reactivegas.Composition.runHolding.match_3.eq_1@Reactivegas.CompositionRefund`
+- `Reactivegas.Composition.runHolding.match_3.eq_2@Reactivegas.CompositionRefund`
+- `Reactivegas.Composition.syncAuth_mints._simp_1_1`
 - `Reactivegas.Composition.voteDerived.eq_1`
 - `Reactivegas.Composition.voteDerived.eq_10`
 - `Reactivegas.Composition.voteDerived.eq_11`
@@ -729,25 +799,33 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `Reactivegas.appFoldCore.match_1.eq_7@Reactivegas.CompositionRoot`
 - `Reactivegas.appFoldCore.match_1.eq_8@Reactivegas.CompositionRoot`
 - `Reactivegas.appFoldCore.match_1.eq_9@Reactivegas.CompositionRoot`
+- `Reactivegas.apply.match_1.eq_1@Reactivegas.CompositionRefund`
 - `Reactivegas.apply.match_1.eq_1@Reactivegas.CompositionRoot`
 - `Reactivegas.apply.match_1.eq_1@Reactivegas.Invariants`
+- `Reactivegas.apply.match_1.eq_2@Reactivegas.CompositionRefund`
 - `Reactivegas.apply.match_1.eq_2@Reactivegas.CompositionRoot`
 - `Reactivegas.apply.match_1.eq_2@Reactivegas.Invariants`
+- `Reactivegas.baseHook.match_1.eq_1@Reactivegas.CompositionRefund`
 - `Reactivegas.baseHook.match_1.eq_1@Reactivegas.CompositionRoot`
 - `Reactivegas.baseHook.match_1.eq_1@Reactivegas.Invariants`
+- `Reactivegas.baseHook.match_1.eq_2@Reactivegas.CompositionRefund`
 - `Reactivegas.baseHook.match_1.eq_2@Reactivegas.CompositionRoot`
 - `Reactivegas.baseHook.match_1.eq_2@Reactivegas.Invariants`
 - `Reactivegas.boot.eq_1`
 - `Reactivegas.cleanOrigin.eq_1`
+- `Reactivegas.denyByClosure.eq_1`
 - `Reactivegas.denyByClosure.match_1.eq_1@Reactivegas.CompositionRoot`
 - `Reactivegas.denyByClosure.match_1.eq_2@Reactivegas.CompositionRoot`
 - `Reactivegas.economicCleanup.eq_1`
 - `Reactivegas.economicCleanup.eq_2`
 - `Reactivegas.economicCleanup.eq_3`
+- `Reactivegas.economicCleanup.match_1.eq_1@Reactivegas.CompositionRefund`
 - `Reactivegas.economicCleanup.match_1.eq_1@Reactivegas.CompositionRoot`
 - `Reactivegas.economicCleanup.match_1.eq_1@Reactivegas.Invariants`
+- `Reactivegas.economicCleanup.match_1.eq_2@Reactivegas.CompositionRefund`
 - `Reactivegas.economicCleanup.match_1.eq_2@Reactivegas.CompositionRoot`
 - `Reactivegas.economicCleanup.match_1.eq_2@Reactivegas.Invariants`
+- `Reactivegas.economicCleanup.match_1.eq_3@Reactivegas.CompositionRefund`
 - `Reactivegas.economicCleanup.match_1.eq_3@Reactivegas.CompositionRoot`
 - `Reactivegas.economicCleanup.match_1.eq_3@Reactivegas.Invariants`
 - `Reactivegas.instDecidableEqIntegratedTraceStep.decEq._proof_1`
@@ -768,7 +846,9 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `Reactivegas.spendThen.match_1.eq_1@Reactivegas.CompositionRoot`
 - `Reactivegas.spendThen.match_1.eq_2@Reactivegas.CompositionRoot`
 - `Reactivegas.syncAuth.eq_1`
+- `Reactivegas.voteApply.match_1.eq_1@Reactivegas.CompositionRefund`
 - `Reactivegas.voteApply.match_1.eq_1@Reactivegas.CompositionRoot`
+- `Reactivegas.voteApply.match_1.eq_2@Reactivegas.CompositionRefund`
 - `Reactivegas.voteApply.match_1.eq_2@Reactivegas.CompositionRoot`
 - `Reactivegas.windUpAdmin.eq_1`
 - `State.empty.eq_1`
