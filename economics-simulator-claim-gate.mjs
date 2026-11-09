@@ -1806,6 +1806,9 @@ let code = 1;
 try {
   if (process.argv.includes('--selftest')) {
     code = await selftest(work);
+  } else if (process.argv.includes('--vocabularies')) {
+    console.log(JSON.stringify(pinnedVocabularies().map(v => ({ vocabulary: v.name, constructors: v.ctors }))));
+    code = 0;
   } else if (process.argv.includes('--emit-receipt')) {
     const r = runGate({ work, emit: true });
     if (r.ok) {
