@@ -92,6 +92,73 @@ async function statedHistories() {
   return CONFIG.seeds.map(seed => generatedHistory(core, surface, seed));
 }
 
+/* --- the core's view of a state (F-CORE-VIEW) --------------------------------- */
+
+/* what the core state holds of open questions, live authorizations and
+   closures; a read of its fields and nothing more */
+function coreView(agg) {
+  const a = agg.appFold;
+  const bound = new Map(a.bindings);
+  return {
+    bound: a.votes.openQuestions.map(([qid, q]) =>
+      ({ qid, target: bound.get(qid) || null, proposer: q.proposer })),
+    live: (a.live || []).map(l => ({ verdict: l.verdict, target: l.target })),
+    closed: a.votes.closed.map(r => ({ qid: r.questionId, verdict: r.verdict, cause: r.cause })),
+  };
+}
+
+/* --- the page's view of its display (F-PAGE-VIEW) ------------------------------ */
+
+/* the group card as text: open questions with their target and proposer lines,
+   live authorization lines, closed-question lines; null without the card */
+const PAGE_VIEW = `(() => {
+  const txt = el => el.textContent.replace(/\\s+/g, ' ').trim();
+  const gov = document.getElementById('govcard');
+  if (!gov) return null;
+  return {
+    questions: [...gov.querySelectorAll('[data-qid]')].map(el => ({ qid: el.dataset.qid,
+      bind: el.querySelector('.qbind') ? txt(el.querySelector('.qbind')) : null,
+      prop: el.querySelector('.qprop') ? txt(el.querySelector('.qprop')) : null })),
+    live: [...gov.querySelectorAll('.liveauth')].map(txt),
+    closed: [...gov.querySelectorAll('.tiny')].map(txt).filter(t => t.startsWith('🗳')),
+  };
+})()`;
+
+/* the page's words, read back into the shape the core state has */
+function shownTarget(text) {
+  let m = /^permesso per l’acquisto «(.*)»$/.exec(text);
+  if (m) return { kind: 'permission', label: m[1] };
+  m = /^quota (\d+)$/.exec(text);
+  return m ? { kind: 'backdonation', w: Number(m[1]) } : { unread: text };
+}
+function pageView(raw) {
+  if (!raw) return null;
+  return {
+    bound: raw.questions.map(q => ({ qid: q.qid,
+      target: q.bind === null ? null : shownTarget(q.bind.replace(/^decide: /, '')),
+      proposer: q.prop === null ? null : q.prop.replace(/^aperta da /, '') })),
+    live: raw.live.map(t => {
+      const m = /^autorizzazione viva (positiva|negativa): (.*)$/.exec(t);
+      return m ? { verdict: m[1], target: shownTarget(m[2]) } : { unread: t };
+    }),
+    closed: raw.closed.map(t => {
+      const m = /^🗳 «(.*)» — (POSITIVA|NEGATIVA) \((.*)\) · sì \d+ \/ no \d+$/.exec(t);
+      return m ? { qid: m[1], verdict: m[2], cause: m[3] } : { unread: t };
+    }),
+  };
+}
+
+/* the display's words for what the core holds: the vocabulary the page
+   promises, and the page's own names for members and purchases */
+const VERDICT_WORD = { positive: 'positiva', negative: 'negativa' };
+const CLOSURE_WORD = { positive: 'POSITIVA', negative: 'NEGATIVA' };
+const CAUSE_WORD = { tally: 'soglia', franchiseChange: 'elettorato', renounced: 'rinuncia', proposerDeparted: 'uscita' };
+const targetKind = t => 'permission' in t ? 'permission' : 'backdonation';
+const targetShown = (t, names) => 'permission' in t
+  ? { kind: 'permission', label: names.lbl[t.permission.c] }
+  : { kind: 'backdonation', w: t.backdonation.w };
+const showTarget = t => t === null ? 'no target' : JSON.stringify(t);
+
 /* --- ledger ------------------------------------------------------------------ */
 
 function newLedger() {
@@ -103,25 +170,95 @@ function newLedger() {
   } };
 }
 
+/* --- the judgement of one loaded step ---------------------------------------- */
+
+/* the shapes the stated histories claim to judge; each must be reached */
+const SHAPES = ['question bound to a purchase', 'question bound to a quota', 'question bound to nothing',
+  'positive authorization', 'negative authorization', 'authorization spent',
+  'closed by tally', 'closed by renunciation', 'closed by the proposer leaving',
+  'closed list longer than the page tail'];
+
+function reached(core, prev, shapes) {
+  for (const q of core.bound)
+    shapes.add(q.target === null ? 'question bound to nothing'
+      : 'permission' in q.target ? 'question bound to a purchase' : 'question bound to a quota');
+  for (const l of core.live) shapes.add(`${l.verdict} authorization`);
+  if (prev && core.live.length < prev.live.length) shapes.add('authorization spent');
+  for (const r of core.closed)
+    shapes.add(r.cause === 'tally' ? 'closed by tally' : r.cause === 'renounced' ? 'closed by renunciation'
+      : r.cause === 'proposerDeparted' ? 'closed by the proposer leaving' : `closed by ${r.cause}`);
+  if (core.closed.length > 3) shapes.add('closed list longer than the page tail');
+}
+
+function judgeStep(L, where, core, shown, names) {
+  const row = 'G3-PAGE-STATES';
+  L.compared++;
+  if (!shown) return L.ok(row, false, `${where}: the page shows no group card`);
+  const bound = (c, s) => {
+    L.ok(row, s.qid === c.qid, `${where}: open question «${c.qid}» shown as «${s.qid}»`);
+    const want = c.target === null ? null : targetShown(c.target, names);
+    L.ok(row, JSON.stringify(s.target) === JSON.stringify(want),
+      `${where}: bound target of «${c.qid}»: core ${showTarget(c.target && targetShown(c.target, names))}, page ${showTarget(s.target)}`);
+    L.ok(row, s.proposer === names.nm[c.proposer],
+      `${where}: proposer of «${c.qid}»: core ${names.nm[c.proposer]}, page ${s.proposer}`);
+  };
+  L.ok(row, shown.bound.length === core.bound.length,
+    `${where}: open questions: core ${core.bound.length}, page ${shown.bound.length}`);
+  core.bound.forEach((c, i) => shown.bound[i] && bound(c, shown.bound[i]));
+  L.ok(row, shown.live.length === core.live.length,
+    `${where}: live authorizations: core ${core.live.length}, page ${shown.live.length}`);
+  core.live.forEach((c, i) => {
+    const s = shown.live[i] || {};
+    L.ok(row, s.verdict === VERDICT_WORD[c.verdict] && JSON.stringify(s.target) === JSON.stringify(targetShown(c.target, names)),
+      `${where}: live authorization ${i + 1}: core ${c.verdict} ${targetKind(c.target)}, page ${JSON.stringify(s)}`);
+  });
+  const tail = shown.closed.length;
+  L.ok(row, (tail > 0) === (core.closed.length > 0) && tail <= core.closed.length,
+    `${where}: closed questions: core ${core.closed.length}, page shows ${tail}`);
+  const suffix = core.closed.slice(core.closed.length - tail);
+  suffix.forEach((c, i) => {
+    const s = shown.closed[i] || {};
+    L.ok(row, s.qid === c.qid && s.verdict === CLOSURE_WORD[c.verdict] && typeof s.cause === 'string' &&
+      s.cause.includes(CAUSE_WORD[c.cause] || `?${c.cause}`),
+      `${where}: closed «${c.qid}»: core ${c.verdict} by ${c.cause}, page ${JSON.stringify(s)}`);
+  });
+}
+
 /* --- the page ---------------------------------------------------------------- */
 
 /* the page loads the history through its own path, then is stepped to each
    state; a history the page does not take is RED, never skipped */
-const LOAD = (hist, text) => `(() => {
+const LOAD = text => `(() => {
   if (pres) exitPresentation();
   window.__rgSeen = undefined;
   importText(${JSON.stringify(text)});
   return pres ? pres.n.env.steps.length : -1;
 })()`;
-const STEP_ALL = 'JSON.stringify(Array.from({ length: pres.n.env.steps.length + 1 }, (_, i) => { presSet(i); return i; }))';
+const STEP_ALL = `JSON.stringify(Array.from({ length: pres.n.env.steps.length + 1 },
+  (_, i) => { presSet(i); return ${PAGE_VIEW}; }))`;
+const NAMES = (keys, ids) => `JSON.stringify({
+  nm: Object.fromEntries(${JSON.stringify(keys)}.map(k => [k, nm(k)])),
+  lbl: Object.fromEntries(${JSON.stringify(ids)}.map(c => [c, lbl(c)])) })`;
 
 async function playHistory(L, b, s, hist) {
   const n = hist.env.steps.length;
-  const loaded = await b.eval(s, LOAD(hist, JSON.stringify(hist.env)));
+  const loaded = await b.eval(s, LOAD(JSON.stringify(hist.env)));
   L.ok('G3-PAGE-STATES', loaded === n,
     `seed ${hist.seed}: the page loaded ${loaded} steps of ${n}`);
   if (loaded !== n) return;
-  await b.eval(s, STEP_ALL);
+  const cores = hist.states.map(coreView);
+  const keys = [...new Set(cores.flatMap(c => c.bound.map(q => q.proposer)))];
+  const ids = [...new Set(cores.flatMap(c => [...c.bound.map(q => q.target), ...c.live.map(l => l.target)])
+    .filter(t => t && 'permission' in t).map(t => t.permission.c))];
+  const names = JSON.parse(await b.eval(s, NAMES(keys, ids)));
+  L.ok('G3-PAGE-STATES', new Set(Object.values(names.nm)).size === keys.length &&
+    new Set(Object.values(names.lbl)).size === ids.length,
+    `seed ${hist.seed}: the page gives two members or two purchases the same name, so a swap would pass`);
+  const views = JSON.parse(await b.eval(s, STEP_ALL));
+  cores.forEach((core, i) => {
+    judgeStep(L, `seed ${hist.seed} step ${i}`, core, pageView(views[i]), names);
+    reached(core, cores[i - 1], L.shapes);
+  });
 }
 
 /* `firstRed` stops at the first history that goes red: a mutant is caught once */
@@ -143,22 +280,17 @@ async function runPage(html, histories, browser, { firstRed = false } = {}) {
   return L;
 }
 
-/* the shapes the stated histories claim to judge; each must be reached */
-const SHAPES = ['question bound to a purchase', 'question bound to a quota', 'question bound to nothing',
-  'positive authorization', 'negative authorization', 'authorization spent',
-  'closed by tally', 'closed by renunciation', 'closed by the proposer leaving',
-  'closed list longer than the page tail'];
-
-function judgeReach(L) {
-  for (const shape of SHAPES)
-    L.ok('G3-PAGE-STATES', L.shapes.has(shape), `the stated histories never reach: ${shape}`);
-}
-
 /* the run and its wall time; the budget is judged by the caller's row */
 async function timedRun(html, histories, browser, budgetMs = CONFIG.budgetMs) {
   const t0 = performance.now();
   const L = await runPage(html, histories, browser);
   return { L, elapsedMs: performance.now() - t0, budgetMs };
+}
+
+/* the stated set must reach every shape it claims to judge */
+function judgeReach(L) {
+  for (const shape of SHAPES)
+    L.ok('G3-PAGE-STATES', L.shapes.has(shape), `the stated histories never reach: ${shape}`);
 }
 
 /* --- report ------------------------------------------------------------------ */
@@ -177,7 +309,7 @@ function report(L, required) {
       reds.slice(0, 8).forEach(r => console.error(`  - ${r}`));
       if (reds.length > 8) console.error(`  - … and ${reds.length - 8} more`);
     } else if (required.includes(row)) {
-      console.log(`ROW-OK ${row} (${n} checks)`);
+      console.log(`ROW-OK ${row} (${n} checks${row === 'G3-PAGE-STATES' ? `, ${L.compared} steps compared` : ''})`);
     }
   }
   return bad;
