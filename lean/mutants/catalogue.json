@@ -144,6 +144,20 @@
       "note": "pledge accepts an unfunded amount"
     },
     {
+      "id": "guard-pledge-stalled",
+      "target": "step",
+      "guard": "GuardId.pledge",
+      "patch": {
+        "line": 102,
+        "before": "      && !(decide (stalled s)))",
+        "after": "      && true)"
+      },
+      "claimedKills": [
+        "step_pledge_inv"
+      ],
+      "note": "pledge is accepted while the comune is stalled"
+    },
+    {
       "id": "guard-acceptPledge-referente",
       "target": "step",
       "guard": "GuardId.acceptPledge",
@@ -156,6 +170,20 @@
         "step_accept_inv"
       ],
       "note": "acceptPledge stops requiring the referente"
+    },
+    {
+      "id": "guard-acceptPledge-stalled",
+      "target": "step",
+      "guard": "GuardId.acceptPledge",
+      "patch": {
+        "line": 110,
+        "before": "      && !(decide (stalled s)))",
+        "after": "      && true)"
+      },
+      "claimedKills": [
+        "step_accept_inv"
+      ],
+      "note": "acceptPledge is accepted while the comune is stalled"
     },
     {
       "id": "guard-refusePledge-referente",
@@ -199,6 +227,20 @@
         "step_close_inv"
       ],
       "note": "closePurchase no longer needs the group's permission"
+    },
+    {
+      "id": "guard-closePurchase-stalled",
+      "target": "step",
+      "guard": "GuardId.closePurchase",
+      "patch": {
+        "line": 131,
+        "before": "      && col.permitted && col.pending.isEmpty && !(decide (stalled s)))",
+        "after": "      && col.permitted && col.pending.isEmpty && true)"
+      },
+      "claimedKills": [
+        "step_close_inv"
+      ],
+      "note": "closePurchase is accepted while the comune is stalled"
     },
     {
       "id": "guard-failPurchase-no-pending",
