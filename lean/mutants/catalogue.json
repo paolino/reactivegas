@@ -267,6 +267,7 @@
       },
       "claimedKills": [
         "KelGroups.Vote.nonresponsabile_event_noop",
+        "Reactivegas.Composition.apply_retains_open_questions",
         "Reactivegas.Composition.authStep_appFoldCore",
         "Reactivegas.i57_auth_holds",
         "Reactivegas.i57_boundary_holds",
@@ -587,6 +588,7 @@
         "after": "  | .error _ => .ok s"
       },
       "claimedKills": [
+        "Reactivegas.Composition.apply_retains_open_questions",
         "Reactivegas.Composition.authStep_voteApply",
         "Reactivegas.Composition.voteApply_keeps_live",
         "Reactivegas.Composition.voteApply_mints",
@@ -815,6 +817,7 @@
         "KelGroups.assocLookup_some_mem@KelGroups.Invariants",
         "KelGroups.assocLookup_some_mem_nodupfree@KelGroups.Mirrors",
         "Reactivegas.Composition.boundHistory_holds_backed_authorization",
+        "Reactivegas.Composition.retention_arms_reachable",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.fixtures_hold",
         "Reactivegas.Lifecycle.l1_holds",
@@ -883,6 +886,8 @@
         "KelGroups.assocErase_key_absent@KelGroups.Invariants",
         "KelGroups.assocErase_sublist@KelGroups.Invariants",
         "KelGroups.assocLookup_erase_of_none",
+        "Reactivegas.Composition.mem_assocErase_of_ne",
+        "Reactivegas.Composition.retention_arms_reachable",
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.fixtures_hold",
@@ -974,6 +979,7 @@
         "CompositionTests.l7_renounce_reachable",
         "CompositionTests.l7c_predicate_on_mint_mutant",
         "Reactivegas.Composition.boundHistory_holds_backed_authorization",
+        "Reactivegas.Composition.retention_arms_reachable",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.fixtures_hold",
         "Reactivegas.Lifecycle.l1_holds",
@@ -1104,6 +1110,7 @@
         "KelGroups.assocLookup_insert_of_none",
         "KelGroups.integratedApprove_both@KelGroups.Invariants",
         "KelGroups.integratedPropose_both@KelGroups.Invariants",
+        "Reactivegas.Composition.key_of_assocInsert",
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.fixtures_hold",
         "Reactivegas.Lifecycle.l1_holds",
@@ -1139,8 +1146,10 @@
         "CompositionTests.l7_production_strands_nothing",
         "CompositionTests.l7_renounce_reachable",
         "CompositionTests.l7c_predicate_on_mint_mutant",
+        "Reactivegas.Composition.apply_retains_open_questions",
         "Reactivegas.Composition.authStep_appFoldCore",
         "Reactivegas.Composition.boundHistory_holds_backed_authorization",
+        "Reactivegas.Composition.retention_arms_reachable",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.fixtures_hold",
         "Reactivegas.Lifecycle.l1_holds",
@@ -1353,6 +1362,7 @@
         "CompositionTests.l7c_predicate_on_mint_mutant",
         "KelGroups.Vote.verdictOf_threshold_congr",
         "Reactivegas.Composition.boundHistory_holds_backed_authorization",
+        "Reactivegas.Composition.retention_arms_reachable",
         "Reactivegas.Lifecycle.fixtures_hold",
         "Reactivegas.Lifecycle.l1_holds",
         "Reactivegas.Lifecycle.l2_holds",
@@ -1398,6 +1408,7 @@
         "after": "def isResponsabile (key : Key) (view : GroupView) : Bool := true"
       },
       "claimedKills": [
+        "Reactivegas.Composition.apply_retains_open_questions",
         "Reactivegas.Composition.authStep_appFoldCore",
         "Reactivegas.Lifecycle.l6a_holds",
         "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
@@ -1474,6 +1485,7 @@
         "KelGroups.Vote.effectedState_tally_growth@KelGroups.Vote.Invariants",
         "KelGroups.Vote.no_expiry",
         "Reactivegas.Composition.boundHistory_holds_backed_authorization",
+        "Reactivegas.Composition.retention_arms_reachable",
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.fixtures_hold",
@@ -1569,6 +1581,7 @@
       "claimedKills": [
         "KelGroups.Vote.sweepClosures_idempotent",
         "KelGroups.Vote.sweepClosures_open_mem@KelGroups.Vote.Invariants",
+        "Reactivegas.Composition.apply_retains_open_questions",
         "Reactivegas.Lifecycle.fixtures_hold",
         "Reactivegas.Lifecycle.l5_holds",
         "Reactivegas.Lifecycle.l6_holds",
@@ -1912,6 +1925,7 @@
         "after": "        .ok (pruneAuth (syncAuth cleaned departed))"
       },
       "claimedKills": [
+        "Reactivegas.Composition.apply_retains_open_questions",
         "Reactivegas.Composition.authStep_baseHook",
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.l6a_holds",
@@ -1997,6 +2011,7 @@
       },
       "claimedKills": [
         "Reactivegas.Composition.boundHistory_holds_backed_authorization",
+        "Reactivegas.Composition.retention_arms_reachable",
         "Reactivegas.Lifecycle.fixtures_hold",
         "Reactivegas.Lifecycle.l1_holds",
         "Reactivegas.Lifecycle.l2_holds",
@@ -2198,6 +2213,7 @@
         "KelGroups.Vote.emptyVoteState_wellFormed",
         "KelGroups.Vote.franchise_of_tallies",
         "Reactivegas.Composition.boundHistory_holds_backed_authorization",
+        "Reactivegas.Composition.retention_arms_reachable",
         "Reactivegas.Lifecycle.fixtures_hold",
         "Reactivegas.Lifecycle.l6a_holds",
         "Reactivegas.admissionPreservation_holds",
@@ -2223,6 +2239,7 @@
         "CompositionTests.l7_renounce_reachable",
         "CompositionTests.l7c_predicate_on_mint_mutant",
         "Reactivegas.Composition.boundHistory_holds_backed_authorization",
+        "Reactivegas.Composition.retention_arms_reachable",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.fixtures_hold",
         "Reactivegas.Lifecycle.l1_holds",
@@ -2330,6 +2347,8 @@
         "KelGroups.Vote.effectedState_preserves_qid@KelGroups.Vote.Invariants",
         "KelGroups.Vote.effectedState_sweepReady@KelGroups.Vote.Invariants",
         "KelGroups.Vote.effectedState_tally_growth@KelGroups.Vote.Invariants",
+        "Reactivegas.Composition.apply_retains_open_questions",
+        "Reactivegas.Composition.retention_arms_reachable",
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.l1_holds",
         "Reactivegas.Lifecycle.l5_holds",
@@ -2354,6 +2373,8 @@
         "KelGroups.Vote.effectedState_preserves_qid@KelGroups.Vote.Invariants",
         "KelGroups.Vote.effectedState_sweepReady@KelGroups.Vote.Invariants",
         "KelGroups.Vote.effectedState_tally_growth@KelGroups.Vote.Invariants",
+        "Reactivegas.Composition.apply_retains_open_questions",
+        "Reactivegas.Composition.retention_arms_reachable",
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.l1_holds",
         "Reactivegas.Lifecycle.l3_holds",
@@ -2419,6 +2440,7 @@
       },
       "claimedKills": [
         "KelGroups.Vote.closeProposerQuestions_sweepReady",
+        "Reactivegas.Composition.apply_retains_open_questions",
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.l2_holds",
@@ -2443,6 +2465,7 @@
       },
       "claimedKills": [
         "KelGroups.Vote.closeProposerQuestions_sweepReady",
+        "Reactivegas.Composition.apply_retains_open_questions",
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.l5_holds",
         "Reactivegas.Lifecycle.l6_holds",
@@ -2474,6 +2497,7 @@
         "CompositionTests.l7_production_strands_nothing",
         "CompositionTests.l7c_predicate_on_mint_mutant",
         "KelGroups.Vote.closeProposerQuestions_sweepReady",
+        "Reactivegas.Composition.apply_retains_open_questions",
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.l3_holds",
@@ -2500,6 +2524,7 @@
         "CompositionTests.l7_production_strands_nothing",
         "CompositionTests.l7c_predicate_on_mint_mutant",
         "KelGroups.Vote.closeProposerQuestions_sweepReady",
+        "Reactivegas.Composition.apply_retains_open_questions",
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.deferred_mutant_closes_later",
         "Reactivegas.Lifecycle.l4_holds",
@@ -2526,6 +2551,7 @@
         "CompositionTests.l7_mutants_execute",
         "CompositionTests.l7_production_strands_nothing",
         "CompositionTests.l7c_predicate_on_mint_mutant",
+        "Reactivegas.Composition.apply_retains_open_questions",
         "Reactivegas.Composition.authStep_baseHook",
         "Reactivegas.Lifecycle.assembly_faithful",
         "Reactivegas.Lifecycle.l2_holds",
@@ -3146,6 +3172,7 @@
         "after": "    | none => .ok s"
       },
       "claimedKills": [
+        "Reactivegas.Composition.apply_retains_open_questions",
         "Reactivegas.Composition.authStep_baseHook",
         "Reactivegas.Composition.baseHook_keeps_live",
         "Reactivegas.Composition.baseHook_mints",
@@ -3290,6 +3317,7 @@
         "Reactivegas.Composition.appFoldCore_nonvote_votes",
         "Reactivegas.Composition.apply_deny_refunds",
         "Reactivegas.Composition.apply_deny_spends",
+        "Reactivegas.Composition.apply_retains_open_questions",
         "Reactivegas.Composition.authStep_appFoldCore"
       ],
       "note": "denying a permission runs the economic core and spends no closure-derived authorization"
@@ -3352,6 +3380,141 @@
         "Reactivegas.Composition.holdsNegativeAuth_iff"
       ],
       "note": "the predicate asks that every unspent authorization, not some, be the negative one for the collection"
+    },
+    {
+      "id": "sweepClosures-discards-records",
+      "target": "KelGroups.Vote.sweepClosures",
+      "guard": null,
+      "patch": {
+        "line": 77,
+        "before": "    closed := gs.closed ++ gs.openQuestions.filterMap (sweepStep threshold view) }",
+        "after": "    closed := gs.closed }"
+      },
+      "claimedKills": [
+        "KelGroups.Vote.sweepClosures_closed_mem@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.sweepClosures_sweepReady@KelGroups.Vote.Invariants",
+        "Reactivegas.Composition.apply_retains_open_questions",
+        "Reactivegas.Composition.boundHistory_holds_backed_authorization",
+        "Reactivegas.Composition.sweepClosures_keeps_closed",
+        "Reactivegas.Lifecycle.fixtures_hold",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_franchise",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_sweep_first",
+        "Reactivegas.Lifecycle.r2_holds",
+        "Reactivegas.Lifecycle.v3_holds",
+        "Reactivegas.base_change_can_close_without_ballot",
+        "Reactivegas.i57_nostale_holds",
+        "Reactivegas.i57_partition_holds",
+        "Reactivegas.i57_policyfree_holds",
+        "Reactivegas.i57_policyfree_mutant_caught",
+        "TraceTests.all_checks_pass"
+      ],
+      "note": "the sweep removes every decided question and appends no closure record"
+    },
+    {
+      "id": "effectedState-open-drops-others",
+      "target": "KelGroups.Vote.effectedState",
+      "guard": null,
+      "patch": {
+        "line": 94,
+        "before": "        { gs with openQuestions := assocInsert questionId fresh gs.openQuestions }",
+        "after": "        { gs with openQuestions := assocInsert questionId fresh [] }"
+      },
+      "claimedKills": [
+        "KelGroups.Vote.effectedState_preserves_qid@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.effectedState_sweepReady@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.effectedState_tally_growth@KelGroups.Vote.Invariants",
+        "Reactivegas.Composition.apply_retains_open_questions",
+        "Reactivegas.Lifecycle.deferred_mutant_closes_later",
+        "Reactivegas.Lifecycle.fixtures_hold",
+        "Reactivegas.Lifecycle.l1_holds",
+        "Reactivegas.Lifecycle.l2_holds",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_later_step",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_no_closure",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_franchise",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_sweep_first",
+        "Reactivegas.Lifecycle.l6b_holds",
+        "Reactivegas.Lifecycle.order_holds",
+        "Reactivegas.Lifecycle.paths_agree",
+        "Reactivegas.Lifecycle.r1_holds",
+        "Reactivegas.Lifecycle.r2_holds",
+        "Reactivegas.i57_noexpiry_holds"
+      ],
+      "note": "opening a question discards every other open question without a record"
+    },
+    {
+      "id": "effectedState-cast-drops-others",
+      "target": "KelGroups.Vote.effectedState",
+      "guard": null,
+      "patch": {
+        "line": 100,
+        "before": "          { gs with openQuestions := assocInsert questionId placed gs.openQuestions }",
+        "after": "          { gs with openQuestions := assocInsert questionId placed [] }"
+      },
+      "claimedKills": [
+        "KelGroups.Vote.effectedState_preserves_qid@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.effectedState_sweepReady@KelGroups.Vote.Invariants",
+        "KelGroups.Vote.effectedState_tally_growth@KelGroups.Vote.Invariants",
+        "Reactivegas.Composition.apply_retains_open_questions",
+        "Reactivegas.Lifecycle.deferred_mutant_closes_later",
+        "Reactivegas.Lifecycle.fixtures_hold",
+        "Reactivegas.Lifecycle.l1_holds",
+        "Reactivegas.Lifecycle.l2_holds",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_later_step",
+        "Reactivegas.Lifecycle.l2_root_leg_alone_no_closure",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_collapsed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_departed",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_suppress_franchise",
+        "Reactivegas.Lifecycle.l6a_root_leg_alone_sweep_first",
+        "Reactivegas.Lifecycle.l6b_holds",
+        "Reactivegas.Lifecycle.order_holds",
+        "Reactivegas.Lifecycle.paths_agree",
+        "Reactivegas.Lifecycle.r1_holds",
+        "Reactivegas.Lifecycle.r2_holds"
+      ],
+      "note": "a ballot discards every other open question without a record"
+    },
+    {
+      "id": "baseHook-departure-drops-silently",
+      "target": "Reactivegas.baseHook",
+      "guard": null,
+      "patch": {
+        "line": 382,
+        "before": "          | .memberRemoved key => KelGroups.Vote.closeProposerQuestions key s.votes",
+        "after": "          | .memberRemoved key => { s.votes with openQuestions := s.votes.openQuestions.filter (fun e => e.2.proposer != key) }"
+      },
+      "claimedKills": [
+        "CompositionTests.l7_departure_reachable",
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
+        "Reactivegas.Composition.apply_retains_open_questions",
+        "Reactivegas.Composition.authStep_baseHook",
+        "Reactivegas.Lifecycle.assembly_faithful",
+        "Reactivegas.Lifecycle.l2_holds",
+        "Reactivegas.Lifecycle.l3_holds",
+        "Reactivegas.Lifecycle.l4_holds",
+        "Reactivegas.Lifecycle.l5_holds",
+        "Reactivegas.Lifecycle.l6_holds",
+        "Reactivegas.Lifecycle.l6a_holds",
+        "Reactivegas.Lifecycle.paths_agree",
+        "Reactivegas.baseHook_votes"
+      ],
+      "note": "a departure removes the leaver's open questions and appends no closure record"
     }
   ]
 }
