@@ -32,10 +32,10 @@ set -euo pipefail
 # the environment's module resolves to an artifact inside the canonical root.
 #
 # Allowed axioms: `propext`, `Classical.choice`, `Quot.sound` — exactly
-# `permittedAxioms` already enforced by the mandatory path on the six
-# `requiredInversions` in `scripts/check-reactivegas-inversion-coverage`.
-# This gate extends the policy the repo already enforces from six theorems to
-# the whole discovered extent; it chooses no new policy.
+# `permittedAxioms` already enforced by the mandatory path on every inversion
+# that `scripts/check-reactivegas-inversion-coverage` binds to an `Event`
+# constructor. This gate extends the policy the repo already enforces from
+# those inversions to the whole discovered extent; it chooses no new policy.
 #
 # Fail-closed: unresolvable `REACTIVEGAS_ROOT` (`canonRoot` returns `.error` —
 # established by driver inspection, not by an executed control; see below);
