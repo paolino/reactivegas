@@ -474,9 +474,67 @@ async function main() {
   console.log(`GREEN: ${ROWS.length} righe giudicate sulla pagina, mostrato = stato del core`);
 }
 
+/* --- selftest: each displayed row can fail --------------------------------
+   A mutant is an edit of the built page that removes or falsifies one
+   display or effect. It must apply exactly once (an edit that matched
+   nothing would report "caught" while testing nothing), and the journeys
+   that judge its rows must go red on exactly those rows; the unmutated page
+   is the control and must be green on the same journeys. */
+
+const once = (text, from, to) => {
+  const n = text.split(from).length - 1;
+  if (n !== 1) throw new Error(`mutante non applicato: ${n} occorrenze di «${from.slice(0, 70)}»`);
+  return text.replace(from, () => to);
+};
+
+const MUTANTS = [
+  { id: 'binding-not-shown', journeys: ['renounce', 'scenario'], rows: ['S5B-BOUND-SHOWN'],
+    edit: h => once(h, '${bindingHtml(qid)}', '') },
+  { id: 'binding-shown-without-target', journeys: ['scenario'], rows: ['S5B-BOUND-SHOWN'],
+    edit: h => once(h, "return t === null ? '' : `<div class=\"tiny qbind\">", "return t === null ? '<div class=\"tiny qbind\">decide: nulla</div>' : `<div class=\"tiny qbind\">") },
+  { id: 'quota-shown-wrong', journeys: ['scenario'], rows: ['S5B-BOUND-SHOWN', 'S5B-FIDELITY'],
+    edit: h => once(h, ': `quota ${t.backdonation.w}`;\n\n/* the question', ': `quota ${t.backdonation.w + 1}`;\n\n/* the question') },
+  { id: 'proposer-not-shown', journeys: ['scenario'], rows: ['S5B-BOUND-SHOWN'],
+    edit: h => once(h, '<div class="tiny qprop">aperta da ${esc(nm(q.proposer))}</div>', '') },
+  { id: 'live-not-shown', journeys: ['scenario', 'grant'], rows: ['S5B-LIVE-SHOWN', 'S5B-FIDELITY'],
+    edit: h => once(h, 'function liveAuthHtml(list) {\n  return list.length', 'function liveAuthHtml(list) {\n  return false') },
+  { id: 'live-stays-after-spend', journeys: ['grant'], rows: ['S5B-LIVE-SHOWN'],
+    edit: h => once(h, '${liveAuthHtml(withAuth(state).live)}', '${liveAuthHtml(window.__seen = (withAuth(state).live.length ? withAuth(state).live : (window.__seen || [])))}') },
+  { id: 'live-verdict-swapped', journeys: ['scenario'], rows: ['S5B-LIVE-SHOWN', 'S5B-FIDELITY'],
+    edit: h => once(h, "`autorizzazione viva ${a.verdict === 'positive' ? 'positiva' : 'negativa'}:", "`autorizzazione viva ${a.verdict === 'positive' ? 'negativa' : 'positiva'}:") },
+];
+
+async function selftest() {
+  const doc = readFileSync(HTML, 'utf8');
+  const work = mkdtempSync(join(tmpdir(), 'rg-bound-selftest-'));
+  const bad = [];
+  try {
+    const journeys = [...new Set(MUTANTS.flatMap(m => m.journeys))];
+    const base = await runRows(HTML, journeys);
+    const judged = [...new Set(MUTANTS.flatMap(m => m.rows))];
+    const baseReds = judged.filter(r => base.reds.get(r).length);
+    if (baseReds.length) bad.push(`controllo: la pagina non mutata è rossa su ${baseReds.join(', ')}`);
+    else console.log(`controllo: pagina non mutata verde su ${journeys.join(', ')}`);
+    for (const m of MUTANTS) {
+      let html;
+      try { html = m.edit(doc); } catch (e) { bad.push(`${m.id}: ${e.message}`); continue; }
+      if (html === doc) { bad.push(`${m.id}: la modifica non ha cambiato la pagina`); continue; }
+      const path = join(work, m.id + '.html');
+      writeFileSync(path, html);
+      const L = await runRows(path, m.journeys);
+      for (const row of m.rows) {
+        if (L.reds.get(row).length) console.log(`mutante ${m.id}: ${row} rossa come atteso — ${L.reds.get(row)[0].slice(0, 110)}`);
+        else bad.push(`${m.id}: ${row} è rimasta verde sulla pagina mutata`);
+      }
+    }
+  } finally { rmQuiet(work); }
+  if (bad.length) { console.error(`RED: selftest, ${bad.length} problemi`); bad.forEach(x => console.error(' - ' + x)); return 1; }
+  console.log(`GREEN: selftest, ${MUTANTS.length} mutanti, ogni riga giudicata è diventata rossa`);
+  return 0;
+}
+
 if (process.argv.includes('--selftest')) {
-  console.error('RED: selftest assente');
-  process.exit(1);
+  process.exit(await selftest());
 } else {
   await main();
 }

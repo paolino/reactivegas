@@ -4126,17 +4126,40 @@ function castButtonsHtml(qid, q) {
   }).join('');
 }
 
+/* what a target decides, in words: read from the core's bindings and live
+   authorizations, never derived here */
+const targetTx = t => 'permission' in t
+  ? `permesso per l’acquisto «${esc(lbl(t.permission.c))}»`
+  : `quota ${t.backdonation.w}`;
+
+/* the question's binding, if the core holds one: a question opened without a
+   target has none and shows none */
+function bindingHtml(qid) {
+  const t = vtLookup(qid, withAuth(state).bindings);
+  return t === null ? '' : `<div class="tiny qbind">decide: ${targetTx(t)}</div>`;
+}
+
 function questionHtml(qid, q, titleTx) {
   const th = vtTheta(vtFranchiseSize(curView()));
   const kindTx = vtPermKind(q.kind)
     ? `per-persona: decide solo ${esc(nm(vtPermKind(q.kind).designee))} ${pkGlyph(['vote-permission-kind'])}`
     : `collettiva · soglia ${th} su ${vtFranchiseSize(curView())} ${pkGlyph(['vote-threshold-exhibit', 'kg-majority', 'kg-tie'])}`;
-  return `<div class="vq"><div class="qh">🗳 ${titleTx}
+  return `<div class="vq" data-qid="${esc(qid)}"><div class="qh">🗳 ${titleTx}
       <span class="qs">sì ${q.assents.length} · no ${q.dissents.length}</span></div>
+    ${bindingHtml(qid)}
+    <div class="tiny qprop">aperta da ${esc(nm(q.proposer))}</div>
     <div class="tiny">${kindTx} · aperta con conteggi vuoti ${pkGlyph(['vote-open-empty'])}
       · il primo lato a soglia chiude ${pkGlyph(['vote-verdict', 'vote-sweep'])}</div>
     <div class="tasks" style="margin-top:4px">${castButtonsHtml(qid, q)}</div>
   </div>`;
+}
+
+/* the unspent closure-derived authorizations, as the core holds them */
+const liveTx = a => `autorizzazione viva ${a.verdict === 'positive' ? 'positiva' : 'negativa'}: ${targetTx(a.target)}`;
+function liveAuthHtml(list) {
+  return list.length
+    ? list.map(a => `<div class="tiny liveauth">${liveTx(a)}</div>`).join('')
+    : '<p class="empty">nessuna autorizzazione viva</p>';
 }
 
 /* the per-acquisto vote question: open → cast → verdict → unproved bridge */
@@ -4222,7 +4245,7 @@ function govCardHtml() {
   const fr = vtFranchise(view);
   const th = vtTheta(fr.length);
   const qs = state.votes.openQuestions.map(([qid, q]) =>
-    questionHtml(qid, q, `«${esc(qid)}» (aperta da ${esc(nm(q.proposer))})`)).join('');
+    questionHtml(qid, q, `«${esc(qid)}»`)).join('');
   const closedTail = state.votes.closed.slice(-3).map(r =>
     `<div class="tiny">🗳 «${esc(r.questionId)}» — ${r.verdict === 'positive' ? 'POSITIVA' : 'NEGATIVA'}
       (${esc(causeTx(r.cause))})
@@ -4232,7 +4255,9 @@ function govCardHtml() {
       · soglia (n+1)/2 = <b>${th}</b> ${pkGlyph(['vote-threshold-exhibit', 'kg-majority', 'kg-tie'])}
       — parametro esplicito, esibizione legacy ${pkGlyph(['vote-policyfree'])}</div>
     ${qs || '<p class="empty">nessuna domanda in votazione</p>'}
-    ${closedTail}`;
+    ${closedTail}
+    <div class="sect" style="margin-top:8px">autorizzazioni vive</div>
+    ${liveAuthHtml(withAuth(state).live)}`;
   // base channel: the ONE membership store — members with roles, pending
   // restricted proposals with their approvals
   const bgAdmins = bg.members.filter(([, m]) => hasAdmin(m.roles)).map(([k]) => k);
