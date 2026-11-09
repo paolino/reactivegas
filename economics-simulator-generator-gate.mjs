@@ -985,7 +985,11 @@ const CONTROLS = [
   ...SHRINK_CONTROLS,
 ];
 
-async function selftest(only) {
+/* the controls share the CI budget: shrinking included, the whole selftest is
+   held to budgetMs, so a shrinker that slows down fails here, not in review */
+async function selftest(only, { budgetMs = CONFIG.budgetMs, quiet = false } = {}) {
+  const say = quiet ? () => {} : console.log, warn = quiet ? () => {} : console.error;
+  const t0 = performance.now();
   const work = mkdtempSync(join(tmpdir(), 'rg-generator-gate-'));
   const failures = [];
   try {
@@ -993,19 +997,24 @@ async function selftest(only) {
     if (only && controls.length !== only.length)
       throw new Error('unknown control in --only: ' + only.join(','));
     for (const ctl of controls) {
-      try { console.log(`control ${ctl.name}: ${await ctl.run(work)}`); }
-      catch (e) { failures.push(`${ctl.name}: ${e.message}`); console.error(`control ${ctl.name}: FAIL ${e.message}`); }
+      try { say(`control ${ctl.name}: ${await ctl.run(work)}`); }
+      catch (e) { failures.push(`${ctl.name}: ${e.message}`); warn(`control ${ctl.name}: FAIL ${e.message}`); }
     }
     if (!only) {
       const p = await production();
       if (!p.result.ok) failures.push('unmodified production gate is not GREEN: ' + p.result.reasons.join('; '));
-      else console.log(`control production-green: ${p.result.total.steps} steps, ${p.surface.routed.length} vocabularies`);
+      else say(`control production-green: ${p.result.total.steps} steps, ${p.surface.routed.length} vocabularies`);
     }
   } finally {
     try { rmSync(work, { recursive: true, force: true }); } catch { /* housekeeping */ }
   }
-  if (failures.length) { console.error(`RED: ${failures.length} controls failed`); return 1; }
-  console.log('SELFTEST OK');
+  const elapsedMs = performance.now() - t0;
+  if (elapsedMs > budgetMs) {
+    failures.push(`selftest wall budget exceeded: ${Math.round(elapsedMs)} ms > ${budgetMs} ms`);
+    warn(`selftest wall budget exceeded: ${Math.round(elapsedMs)} ms > ${budgetMs} ms`);
+  }
+  if (failures.length) { warn(`RED: ${failures.length} controls failed`); return 1; }
+  say(`SELFTEST OK (${Math.round(elapsedMs)} ms of ${budgetMs} ms)`);
   return 0;
 }
 
