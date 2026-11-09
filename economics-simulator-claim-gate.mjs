@@ -93,6 +93,8 @@ import { execFileSync } from 'node:child_process';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { tmpdir } from 'node:os';
+import { VOCAB_ROOTS, gitShow, deriveCorePin, assertCorePinReachable, assertCitedFilesFresh,
+  discoverVocabularies, parseVocabularies, NOT_PRESENTED_VOCABULARIES } from './economics-simulator-lean-surface.mjs';
 
 const REPO = dirname(fileURLToPath(import.meta.url));
 
@@ -298,20 +300,6 @@ function deriveAxioms(cited, out) {
   return { derived, rawLine };
 }
 
-function gitShow(revPath, repo = REPO) {
-  return execFileSync('git', ['-C', repo, 'rev-parse', revPath],
-    { encoding: 'utf8' }).trim();
-}
-
-function assertCitedFilesFresh(pin, files, repo = REPO) {
-  for (const file of files) {
-    const pinnedBlob = gitShow(`${pin}:${file}`, repo);
-    const headBlob = gitShow(`HEAD:${file}`, repo);
-    if (pinnedBlob !== headBlob)
-      throw new Error(`stale cited file ${file}: pin blob=${pinnedBlob} HEAD blob=${headBlob}`);
-  }
-}
-
 /* INV-8: the cited composition module joins the freshness manifest — its
    blob at the pin must equal its blob at HEAD, so the silent drift that
    slipped through #62 REDs from now on. */
@@ -328,35 +316,6 @@ function eventSourceFromManifest(files = ACCEPTED_CORE.files) {
     throw new Error('Event source manifest is not a unique derivation file: [' +
       (Array.isArray(files) ? files.join(',') : String(files)) + ']');
   return files[0];
-}
-
-/* The one source of the core pin: the last commit reachable from `head` that
-   changes a path under the vocabulary roots, so the simulator is judged
-   against the Lean of the checkout under test and a branch that changes Lean
-   needs no edit here. A truncated history would name its boundary commit as
-   that change, so it is refused. Reads git history only. */
-const VOCAB_ROOTS = ['lean/Reactivegas', 'lean/KelGroups'];
-
-function deriveCorePin(repo, head) {
-  const git = args => execFileSync('git', ['-C', repo, ...args],
-    { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
-  const refuse = cause => new Error(`core pin: cannot derive from the history of ${head}: ${cause}`);
-  try { git(['rev-parse', '--verify', '--quiet', head + '^{commit}']); }
-  catch { throw refuse('unresolvable revision'); }
-  if (git(['rev-parse', '--is-shallow-repository']) === 'true')
-    throw refuse('truncated history (shallow checkout)');
-  const commit = git(['log', '-1', '--format=%H', head, '--', ...VOCAB_ROOTS]);
-  if (!commit) throw refuse('no commit changes ' + VOCAB_ROOTS.join(', '));
-  return { commit, tree: git(['rev-parse', commit + '^{tree}']) };
-}
-
-function assertCorePinReachable(commit, repo = REPO) {
-  try {
-    execFileSync('git', ['-C', repo, 'merge-base', '--is-ancestor',
-      commit, 'HEAD'], { stdio: ['ignore', 'pipe', 'pipe'] });
-  } catch (e) {
-    throw new Error('pin core non raggiungibile da HEAD (commit orfano): ' + commit);
-  }
 }
 
 /* the derived pin, checked reachable and fresh for the files the core reads */
@@ -391,36 +350,9 @@ function pinnedConstructors(pin, repo = REPO) {
    in neither table, a table entry no longer discovered, an empty extent, a
    constructor without a witness or a witness for no constructor is RED.
    The legacy Event inventory keeps its own `attempt` witnesses above. */
-const VOCAB_RE = /^inductive ([A-Za-z]*(?:Event|Command|Proposal|Mutation))\b[^\n]*\bwhere\b/gm;
-
-function parseVocabularies(file, src) {
-  const out = [];
-  for (const m of src.matchAll(VOCAB_RE)) {
-    const rest = src.slice(m.index + m[0].length);
-    const end = rest.search(/^(deriving|\S)/m);
-    const body = end < 0 ? rest : rest.slice(0, end);
-    const ctors = [...body.matchAll(/^\s*\|\s+([A-Za-z][A-Za-z0-9_]*)\b/gm)].map(c => c[1]);
-    out.push({ key: `${file}#${m[1]}`, name: m[1], file, ctors });
-  }
-  return out;
-}
-
 function pinnedVocabularies(extra, repo = REPO) {
-  const pin = deriveCorePin(repo, 'HEAD').commit;
-  const files = execFileSync('git', ['-C', repo, 'ls-tree', '-r', '--name-only',
-    pin, '--', ...VOCAB_ROOTS], { encoding: 'utf8' })
-    .split('\n').filter(f => f.endsWith('.lean')).sort();
-  if (!files.length) throw new Error('vocabulary discovery: no Lean source at the pin');
-  const vocab = [];
-  for (const file of files) {
-    const src = execFileSync('git', ['-C', repo, 'show', pin + ':' + file],
-      { encoding: 'utf8' });
-    const found = parseVocabularies(file, src);
-    if (found.length) assertCitedFilesFresh(pin, [file], repo);
-    vocab.push(...found);
-  }
+  const vocab = discoverVocabularies(repo, deriveCorePin(repo, 'HEAD').commit);
   for (const [file, src] of Object.entries(extra || {})) vocab.push(...parseVocabularies(file, src));
-  if (!vocab.length) throw new Error('vocabulary discovery: empty extent');
   return vocab;
 }
 
@@ -568,17 +500,6 @@ const ROUTED_VOCABULARIES = {
   // the legacy economic Event: covered by the attempt witnesses above
   'lean/Reactivegas/Types.lean#Event': null,
 };
-const NOT_PRESENTED_VOCABULARIES = {
-  'lean/KelGroups/Event.lean#Proposal':
-    'historical substrate proposal (introduceMember) kept as #54 evidence; Reactivegas.apply takes Reactivegas.Proposal, so it cannot reach the simulator',
-  'lean/KelGroups/Event.lean#BaseEvent':
-    'pre-integration substrate fold vocabulary over KelGroups.Proposal; the production root carries propose/approve inside IntegratedEvent',
-  'lean/KelGroups/Event.lean#GroupEvent':
-    'generic pre-integration group fold event; superseded on the production root by IntegratedEvent',
-  'lean/KelGroups/Event.lean#BaseMutation':
-    'substrate effect computed from Reactivegas.Proposal by proposalMutation; never a signed event',
-};
-
 function checkVocabularyCoverage(mod, vocab, routed = ROUTED_VOCABULARIES,
     notPresented = NOT_PRESENTED_VOCABULARIES) {
   const reasons = [];
@@ -587,7 +508,7 @@ function checkVocabularyCoverage(mod, vocab, routed = ROUTED_VOCABULARIES,
   for (const k of [...Object.keys(routed), ...Object.keys(notPresented)])
     if (!keys.has(k)) reasons.push(`vocabulary ${k}: listed but not discovered at the pin`);
   for (const v of vocab) {
-    if (!v.ctors.length) { reasons.push(`vocabulary ${v.key}: no constructor parsed`); continue; }
+    if (!v.constructors.length) { reasons.push(`vocabulary ${v.key}: no constructor parsed`); continue; }
     if (v.key in notPresented) continue;
     if (!(v.key in routed)) {
       reasons.push(`vocabulary ${v.key}: neither routed nor named non-presented`);
@@ -595,20 +516,20 @@ function checkVocabularyCoverage(mod, vocab, routed = ROUTED_VOCABULARIES,
     }
     const witnessOf = routed[v.key];
     if (witnessOf === null) continue;
-    for (const c of v.ctors) {
+    for (const c of v.constructors) {
       const w = witnessOf(mod, c);
-      if (!w) { reasons.push(`${v.name} ${c}: no core handler witness`); continue; }
+      if (!w) { reasons.push(`${v.vocabulary} ${c}: no core handler witness`); continue; }
       try {
         const det = mod.applyIntegrated(clone(w.gs), w.signer, w.ev);
-        if (!det || det.refused) reasons.push(`${v.name} ${c}: live witness refused (${det && det.refused})`);
-        else if (!w.holds(det)) reasons.push(`${v.name} ${c}: core handler does not produce the Lean effect`);
+        if (!det || det.refused) reasons.push(`${v.vocabulary} ${c}: live witness refused (${det && det.refused})`);
+        else if (!w.holds(det)) reasons.push(`${v.vocabulary} ${c}: core handler does not produce the Lean effect`);
         else if (w.without) {
           const off = mod.applyIntegrated(clone(w.without.gs), w.without.signer, w.without.ev);
           if (!off || !off.refused)
-            reasons.push(`${v.name} ${c}: applied without the closure-derived authorization Lean requires`);
+            reasons.push(`${v.vocabulary} ${c}: applied without the closure-derived authorization Lean requires`);
           else witnessed++;
         } else witnessed++;
-      } catch (e) { reasons.push(`${v.name} ${c}: live witness threw: ${e.message}`); }
+      } catch (e) { reasons.push(`${v.vocabulary} ${c}: live witness threw: ${e.message}`); }
     }
   }
   return { reasons, witnessed, vocabularies: vocab.length };
@@ -1807,7 +1728,7 @@ try {
   if (process.argv.includes('--selftest')) {
     code = await selftest(work);
   } else if (process.argv.includes('--vocabularies')) {
-    console.log(JSON.stringify(pinnedVocabularies().map(v => ({ vocabulary: v.name, constructors: v.ctors }))));
+    console.log(JSON.stringify(pinnedVocabularies().map(v => ({ vocabulary: v.vocabulary, constructors: v.constructors }))));
     code = 0;
   } else if (process.argv.includes('--emit-receipt')) {
     const r = runGate({ work, emit: true });
