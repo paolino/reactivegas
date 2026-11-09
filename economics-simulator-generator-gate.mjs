@@ -69,12 +69,247 @@ const CONFIG = Object.freeze({
   budgetMs: 60000,            // wall budget of this gate inside `just simulator`
 });
 
-/* --- the generator and its oracle: not yet written -------------------------- */
+/* --- seeded PRNG: mulberry32 ------------------------------------------------- */
+function prng(seed) {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const pick = (r, xs) => xs[Math.floor(r() * xs.length)];
+const upto = (r, lo, hi) => lo + Math.floor(r() * (hi - lo + 1));
+
+/* --- the laws the generator asserts, each tied to its Lean theorem ----------- */
+/* a message the core's checkers print begins with `prefix`; `claim` is the
+   CLAIMS row whose Lean declaration states the law */
+const LAWS = [
+  ['conservation (L6)', 'conservation'],
+  ['solvent (L7)', 'solvency'],
+  ['uniquePledges (L8)', 'l8-preserved'],
+  ['QuestionClean', 'vote-clean'],
+  ['domanda aperta con verdetto deciso', 'vote-nostale'],
+  ['id aperti duplicati', 'vote-partition'],
+  ['id chiusi duplicati', 'vote-partition'],
+  ['partizione aperte/chiuse violata', 'vote-partition'],
+  ['record di chiusura con verdetto open', 'vote-partition'],
+  ['approvals_nodup', 'kg-nodup'],
+  ['proposer_absent_above_one', 'kg-proposer'],
+];
+const REFUSAL_LAW = { law: 'refusal leaves the aggregate unchanged (S-12)', claim: 'atomic' };
+
+function anchorOf(mod, claim) {
+  const row = mod.CLAIMS[claim];
+  return row ? `${row.d} (${row.f}:${row.l}, ${row.k}, ${mod.proofState(claim)})` : `${claim} (no claim row)`;
+}
+
+/* every violation the core's own checkers report on an aggregate, classified
+   by law; a message no law claims is itself a violation (unmapped) */
+function lawFindings(mod, gs) {
+  const raw = [
+    ...mod.lawViolations(gs.appFold),
+    ...mod.kgLawViolations({ members: gs.members }, gs.appFold.votes),
+    ...mod.bgLawViolations(gs),
+  ];
+  const asserted = [], notAsserted = [];
+  for (const text of raw) {
+    const law = LAWS.find(([prefix]) => text.startsWith(prefix));
+    if (!law) { asserted.push({ law: 'unmapped law message', claim: null, text }); continue; }
+    (mod.proofState(law[1]) === 'ok' ? asserted : notAsserted).push({ law: law[0], claim: law[1], text });
+  }
+  return { asserted, notAsserted };
+}
+
+/* --- constructor names an integrated event exercises ------------------------- */
+const namesOf = ev => {
+  const top = Object.keys(ev)[0];
+  const inner = ev[top];
+  if (top === 'propose') return [top, Object.keys(inner.proposal)[0]];
+  if (top === 'direct' || top === 'app') return [top, Object.keys(inner)[0]];
+  return [top];
+};
+
+/* --- productions: what the current state enables ------------------------------ */
+/* each returns { signer, ev } drawn from the state, or null when nothing in the
+   state enables it; whether the core accepts the step is the core's decision */
+const KEYS = ['anna', 'bruno', 'carla', 'dora', 'elena', 'fabio', 'gaia', 'hugo'];
+const ROLE_SETS = [
+  [{ appRole: { name: 'socio' } }],
+  [{ adminRole: { admin: 'publicAdmin' } }],
+  [],
+];
 const ADMIN_ROLES = [{ adminRole: { admin: 'publicAdmin' } }];
-const LAWS = [];
-const lawFindings = () => ({ asserted: [], notAsserted: [] });
-const PRODUCTIONS = {};
-const INVALIDS = {};
+const app = (signer, ctor, args) => ({ signer, ev: { app: { [ctor]: args } } });
+const live = (c, verdict, kind) => c.live.filter(a => a.verdict === verdict && kind in a.target);
+
+const PRODUCTIONS = {
+  admitMember: c => {
+    const fresh = KEYS.filter(k => !c.keys.includes(k));
+    if (!fresh.length || !c.admins.length) return null;
+    const key = pick(c.r, fresh);
+    return { signer: pick(c.r, c.admins),
+      ev: { direct: { admitMember: { key, email: key + '@toy.example', roles: pick(c.r, ROLE_SETS) } } } };
+  },
+  /* the walk keeps a group that can still act: the sole admin neither leaves
+     nor loses the role through a draw */
+  departure: c => {
+    const keys = c.keys.filter(k => k !== c.sole);
+    return c.admins.length && keys.length
+      ? { signer: pick(c.r, c.admins), ev: { propose: { proposal: { departure: pick(c.r, keys) } } } } : null;
+  },
+  changeRoles: c => {
+    if (!c.admins.length || !c.keys.length) return null;
+    const key = pick(c.r, c.keys);
+    const roles = key === c.sole ? ADMIN_ROLES : pick(c.r, ROLE_SETS);
+    return { signer: pick(c.r, c.admins), ev: { propose: { proposal: { changeRoles: { key, roles: clone(roles) } } } } };
+  },
+  approve: c => {
+    const open = c.pending.filter(([, p]) => c.admins.some(a => !p.approvals.includes(a)));
+    if (!open.length) return null;
+    const [pid, p] = pick(c.r, open);
+    const pool = c.admins.filter(a => !p.approvals.includes(a));
+    const others = pool.filter(a => a !== p.proposer);
+    return { signer: pick(c.r, others.length ? others : pool), ev: { approve: { proposalId: pid } } };
+  },
+  openPurchase: c => {
+    const free = [1, 2, 3, 4, 5].filter(id => !c.cols.some(col => col.id === id));
+    return free.length && c.admins.length ? app(pick(c.r, c.admins), 'openPurchase', { c: pick(c.r, free) }) : null;
+  },
+  grantPermission: c => {
+    const a = live(c, 'positive', 'permission');
+    return a.length && c.admins.length ? app(pick(c.r, c.admins), 'grantPermission', { c: pick(c.r, a).target.permission.c }) : null;
+  },
+  denyPermission: c => {
+    const a = live(c, 'negative', 'permission');
+    return a.length && c.admins.length ? app(pick(c.r, c.admins), 'denyPermission', { c: pick(c.r, a).target.permission.c }) : null;
+  },
+  deposit: c => {
+    const user = pick(c.r, c.keys);
+    const signers = c.admins.filter(a => a !== user);
+    return signers.length ? app(pick(c.r, signers), 'deposit', { user, v: upto(c.r, 1, 20) }) : null;
+  },
+  withdraw: c => {
+    const funded = c.keys.filter(k => c.bal(k) > 0);
+    if (!funded.length) return null;
+    const user = pick(c.r, funded);
+    const signers = c.admins.filter(a => a !== user);
+    return signers.length ? app(pick(c.r, signers), 'withdraw', { user, v: upto(c.r, 1, c.bal(user)) }) : null;
+  },
+  transferCassa: c => {
+    if (c.admins.length < 2) return null;
+    const signer = pick(c.r, c.admins);
+    return app(signer, 'transferCassa', { from_: pick(c.r, c.admins.filter(a => a !== signer)), v: upto(c.r, 1, 10) });
+  },
+  donate: c => c.admins.length ? app(pick(c.r, c.admins), 'donate', { v: upto(c.r, 1, 30) }) : null,
+  backdonate: c => {
+    const a = live(c, 'positive', 'backdonation');
+    return a.length && c.admins.length ? app(pick(c.r, c.admins), 'backdonate', { w: pick(c.r, a).target.backdonation.w }) : null;
+  },
+  pledge: c => {
+    const funded = c.keys.filter(k => c.bal(k) > 0);
+    if (!funded.length || !c.cols.length || !c.admins.length) return null;
+    const user = pick(c.r, funded);
+    return app(pick(c.r, c.admins), 'pledge',
+      { user, c: pick(c.r, c.cols).id, v: upto(c.r, 1, c.bal(user)) });
+  },
+  acceptPledge: c => pledgeOf(c, 'pending', 'acceptPledge'),
+  refusePledge: c => pledgeOf(c, 'pending', 'refusePledge'),
+  correctPledge: c => {
+    const col = pick(c.r, c.cols.filter(x => x.accepted.length));
+    if (!col) return null;
+    const p = pick(c.r, col.accepted);
+    return app(col.referente, 'correctPledge', { user: p.user, c: col.id, v: upto(c.r, 0, p.amount + c.bal(p.user)) });
+  },
+  closePurchase: c => {
+    const col = pick(c.r, c.cols.filter(x => x.permitted && !x.pending.length));
+    return col ? app(col.referente, 'closePurchase', { c: col.id }) : null;
+  },
+  failPurchase: c => {
+    const col = pick(c.r, c.cols.filter(x => !x.pending.length));
+    return col ? app(col.referente, 'failPurchase', { c: col.id }) : null;
+  },
+  openQuestion: c => c.admins.length
+    ? app(pick(c.r, c.admins), 'openQuestion', { questionId: c.freshQ(), kind: questionKind(c) }) : null,
+  cast: c => {
+    const open = c.open.filter(([, q]) => typeof q.kind === 'object' && q.kind.permission
+      ? c.admins.includes(q.kind.permission.designee) : c.admins.length);
+    if (!open.length) return null;
+    const [qid, q] = pick(c.r, open);
+    const designee = typeof q.kind === 'object' && q.kind.permission ? q.kind.permission.designee : null;
+    const signer = designee || (c.admins.length ? pick(c.r, c.admins) : null);
+    return signer ? app(signer, 'cast', { questionId: qid, ballot: ballotOf(c.r) }) : null;
+  },
+  renounce: c => {
+    const open = c.open.filter(([, q]) => c.admins.includes(q.proposer));
+    if (!open.length) return null;
+    const [qid, q] = pick(c.r, open);
+    return app(q.proposer, 'renounce', { questionId: qid });
+  },
+  openBound: c => {
+    if (!c.admins.length) return null;
+    const target = c.cols.length && c.r() < 0.7
+      ? { permission: { c: pick(c.r, c.cols).id } } : { backdonation: { w: upto(c.r, 1, 2) } };
+    return app(pick(c.r, c.admins), 'openBound',
+      { questionId: c.freshQ(), kind: questionKind(c), target });
+  },
+};
+const ballotOf = r => r() < 0.7 ? 'assent' : 'dissent';
+function pledgeOf(c, side, ctor) {
+  const col = pick(c.r, c.cols.filter(x => x[side].length));
+  if (!col) return null;
+  const p = pick(c.r, col[side]);
+  return app(col.referente, ctor, { user: p.user, c: col.id });
+}
+function questionKind(c) {
+  return c.admins.length && c.r() < 0.5 ? { permission: { designee: pick(c.r, c.admins) } } : 'collective';
+}
+
+/* deliberately invalid steps: each states the Lean anchor of the refusal it
+   needs and is drawn only when the state offers the occasion */
+const INVALIDS = {
+  renounceByNonProposer: { claim: 'vote-validate', draw: c => {
+    const open = c.open.filter(([, q]) => c.keys.some(k => k !== q.proposer));
+    if (!open.length) return null;
+    const [qid, q] = pick(c.r, open);
+    return app(pick(c.r, c.keys.filter(k => k !== q.proposer)), 'renounce', { questionId: qid });
+  } },
+  ballotByNonDesignee: { claim: 'vote-validate', draw: c => {
+    const open = c.open.filter(([, q]) => typeof q.kind === 'object' && q.kind.permission &&
+      c.admins.some(a => a !== q.kind.permission.designee));
+    if (!open.length) return null;
+    const [qid, q] = pick(c.r, open);
+    return app(pick(c.r, c.admins.filter(a => a !== q.kind.permission.designee)), 'cast',
+      { questionId: qid, ballot: pick(c.r, ['assent', 'dissent']) });
+  } },
+  unboundGrant: { claim: 'inv-grant', draw: c => {
+    if (!c.admins.length) return null;
+    const bound = live(c, 'positive', 'permission').map(a => a.target.permission.c);
+    const free = [1, 2, 3, 4, 5].filter(id => !bound.includes(id));
+    return free.length ? app(pick(c.r, c.admins), 'grantPermission', { c: pick(c.r, free) }) : null;
+  } },
+  spentAuthorization: { claim: 'inv-grant', draw: c => {
+    const again = c.spent.filter(s => !c.live.some(a => JSON.stringify([a.target, a.verdict]) === s.key));
+    return again.length ? pick(c.r, again).step : null;
+  } },
+  approveOwnProposal: { claim: 'kg-approve-guard', draw: c => {
+    if (c.admins.length < 2) return null;
+    const own = c.pending.filter(([, p]) => c.admins.includes(p.proposer));
+    if (!own.length) return null;
+    const [pid, p] = pick(c.r, own);
+    return { signer: p.proposer, ev: { approve: { proposalId: pid } } };
+  } },
+  approveTwice: { claim: 'kg-approve-guard', draw: c => {
+    const done = c.pending.filter(([, p]) => p.approvals.length);
+    if (!done.length) return null;
+    const [pid, p] = pick(c.r, done);
+    return { signer: pick(c.r, p.approvals), ev: { approve: { proposalId: pid } } };
+  } },
+  strangerSigner: { claim: 'auth', draw: c =>
+    app('zz-' + upto(c.r, 1, 9), 'donate', { v: upto(c.r, 1, 30) }) },
+};
 
 /* --- the surface: discovered extent plus the productions that cover it ------- */
 function buildSurface({ repo = REPO, productions = PRODUCTIONS, invalids = INVALIDS } = {}) {
@@ -87,9 +322,128 @@ function buildSurface({ repo = REPO, productions = PRODUCTIONS, invalids = INVAL
   return { pin, routed, notPresented, productions, invalids };
 }
 
-/* --- one seeded trace: not yet written ------------------------------------- */
-const generateTrace = () => ({ steps: 0, applied: 0, refused: 0, invalidRefused: 0,
-  tally: {}, kinds: {}, notAsserted: new Set(), report: null });
+/* --- one seeded trace through the production core ---------------------------- */
+function stateContext(mod, gs, r, extra) {
+  const keys = mod.memberKeys({ members: gs.members });
+  const votes = gs.appFold.votes;
+  const admins = keys.filter(k => mod.isAdminView(k, { members: gs.members }));
+  return { r, keys, admins, sole: admins.length === 1 ? admins[0] : null,
+    cols: gs.appFold.collections, live: gs.appFold.live || [], open: votes.openQuestions,
+    pending: gs.pendingBase,
+    bal: k => mod.bal(gs.appFold.conti, k),
+    freshQ: () => `q${extra.questions++}`, spent: extra.spent };
+}
+
+function envelopeOf(mod, steps) {
+  let gs = mod.bootAggregate();
+  const out = [];
+  for (const { signer, ev } of steps) {
+    const input = clone(gs);
+    const det = mod.applyIntegrated(gs, signer, clone(ev));
+    if (det.refused) break;
+    out.push({ input, signer, event: clone(ev), result: { tag: 'applied', aggregate: clone(det.gs), change: det.change } });
+    gs = det.gs;
+  }
+  return { schema: 'reactivegas-integrated.trace', version: 1, initial: mod.bootAggregate(), steps: out };
+}
+
+function divergence(mod, base, found) {
+  const prefix = base.prefix.concat(found.applied ? [found.step] : []);
+  const envelope = envelopeOf(mod, prefix);
+  let replays = true;
+  try { mod.verifyIntegratedV1(envelope); } catch { replays = false; }
+  return { label: 'TRANSCRIPTION DIVERGENCE', seed: base.seed, step: base.index, signer: found.step.signer,
+    event: found.step.ev, law: found.law, claim: found.claim, theorem: found.theorem, kind: found.kind || null,
+    text: found.text, envelope, replays };
+}
+
+function generateTrace(seed, config, surface) {
+  const mod = config.core;
+  const r = prng(seed);
+  const extra = { questions: 0, spent: [] };
+  const tally = {}, kinds = {}, notAsserted = new Set();
+  const prefix = [];
+  let gs = mod.bootAggregate();
+  const out = { steps: 0, applied: 0, refused: 0, invalidRefused: 0, tally, kinds, notAsserted, report: null };
+  const bump = (name, field) => {
+    const t = tally[name] || (tally[name] = { attempted: 0, applied: 0 });
+    t[field]++;
+  };
+  for (let index = 0; index < config.stepsPerTrace; index++) {
+    const c = stateContext(mod, gs, r, extra);
+    const wantInvalid = r() * config.invalidShare[1] < config.invalidShare[0];
+    const choose = table => {
+      const cands = Object.entries(table).map(([name, p]) => [name, (p.draw || p)(c)])
+        .filter(([, step]) => step);
+      if (!cands.length) return null;
+      return cands[Math.floor(r() * cands.length)];
+    };
+    const invalid = wantInvalid ? choose(surface.invalids) : null;
+    const drawn = invalid || choose(surface.productions);
+    if (!drawn) break;
+    const [name, step] = drawn;
+    const isInvalid = !!invalid;
+    const before = mod.canonAggregate(gs);
+    const liveBefore = (gs.appFold.live || []).length;
+    for (const n of namesOf(step.ev)) bump(n, 'attempted');
+    out.steps++;
+    let det;
+    const base = { seed, index, prefix };
+    try { det = mod.applyIntegrated(gs, step.signer, clone(step.ev)); }
+    catch (e) {
+      out.report = divergence(mod, base, { step, applied: false, law: 'applyIntegrated is total on generated events',
+        claim: null, theorem: null, kind: isInvalid ? name : null, text: `threw: ${e.message}` });
+      return out;
+    }
+    if (det.refused) {
+      out.refused++;
+      if (mod.canonAggregate(gs) !== before || (det.gs && mod.canonAggregate(det.gs) !== before)) {
+        out.report = divergence(mod, base, { step, applied: false, law: REFUSAL_LAW.law, claim: REFUSAL_LAW.claim,
+          theorem: anchorOf(mod, REFUSAL_LAW.claim), kind: isInvalid ? name : null,
+          text: `refused (${det.refused}) but the aggregate changed` });
+        return out;
+      }
+      if (isInvalid) { out.invalidRefused++; kinds[name] = (kinds[name] || 0) + 1; }
+      continue;
+    }
+    for (const n of namesOf(step.ev)) bump(n, 'applied');
+    const found = lawFindings(mod, det.gs);
+    found.notAsserted.forEach(f => notAsserted.add(`${f.law} -> ${f.claim}`));
+    if (found.asserted.length) {
+      const f = found.asserted[0];
+      out.report = divergence(mod, base, { step, applied: true, law: f.law, claim: f.claim,
+        theorem: f.claim ? anchorOf(mod, f.claim) : null, kind: isInvalid ? name : null, text: f.text });
+      return out;
+    }
+    if (isInvalid) {
+      out.report = divergence(mod, base, { step, applied: true, law: 'invalid step refused', claim: surface.invalids[name].claim,
+        theorem: anchorOf(mod, surface.invalids[name].claim), kind: name,
+        text: `the core accepted ${name}` });
+      return out;
+    }
+    out.applied++;
+    prefix.push(step);
+    const key = (det.gs.appFold.live || []).length < liveBefore ? spentKey(gs, det.gs) : '';
+    if (key) extra.spent.push({ key, step });
+    gs = det.gs;
+  }
+  return out;
+}
+
+/* the authorization a step spent: live before, gone after, its target still
+   present — an authorization whose collection left was pruned, not spent */
+function spentKey(pre, post) {
+  const key = a => JSON.stringify([a.target, a.verdict]);
+  const left = (post.appFold.live || []).map(key);
+  const present = t => !('permission' in t) || post.appFold.collections.some(col => col.id === t.permission.c);
+  const gone = (pre.appFold.live || []).find(a => {
+    const i = left.indexOf(key(a));
+    if (i < 0) return present(a.target);
+    left.splice(i, 1);
+    return false;
+  });
+  return gone ? key(gone) : '';
+}
 
 /* --- the gate: all traces, coverage, budget ---------------------------------- */
 async function loadCore(corePath) {
