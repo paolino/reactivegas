@@ -91,4 +91,3 @@ Base: master `d51d473`. Derived from `lean/mutants/ledger.json` at that commit: 
 | `stripCollections_referente_ne` | 2 | KILLED by `stripCollections-keeps-referente` |
 | `stripCollections_sublist` | 2 | MASKED, its proof uses `stripCollections_sublist_lemma@Reactivegas.Invariants` (killed by `stripCollections-keeps-modified`) |
 | `stripCollections_sublist_lemma@Reactivegas.Invariants` | 2 | KILLED by `stripCollections-keeps-modified` |
-
