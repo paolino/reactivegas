@@ -4139,6 +4139,14 @@ function bindingHtml(qid) {
   return t === null ? '' : `<div class="tiny qbind">decide: ${targetTx(t)}</div>`;
 }
 
+/* the proposer alone may renounce (notProposer refuses anyone else) */
+function renounceHtml(qid, q) {
+  return vtFranchise(curView()).includes(q.proposer)
+    ? `<button type="button" class="mini no" data-kgrenounce="${esc(qid)}"
+        data-kgsigner="${esc(q.proposer)}" title=".renounce">rinuncia: ${esc(nm(q.proposer))}</button>`
+    : '';
+}
+
 function questionHtml(qid, q, titleTx) {
   const th = vtTheta(vtFranchiseSize(curView()));
   const kindTx = vtPermKind(q.kind)
@@ -4150,7 +4158,7 @@ function questionHtml(qid, q, titleTx) {
     <div class="tiny qprop">aperta da ${esc(nm(q.proposer))}</div>
     <div class="tiny">${kindTx} · aperta con conteggi vuoti ${pkGlyph(['vote-open-empty'])}
       · il primo lato a soglia chiude ${pkGlyph(['vote-verdict', 'vote-sweep'])}</div>
-    <div class="tasks" style="margin-top:4px">${castButtonsHtml(qid, q)}</div>
+    <div class="tasks" style="margin-top:4px">${castButtonsHtml(qid, q)}${renounceHtml(qid, q)}</div>
   </div>`;
 }
 
@@ -4823,7 +4831,7 @@ $('view').addEventListener('click', ev => {
     renderAll();
     return;
   }
-  const kgEl = t.closest('[data-kgadmit],[data-kgremove],[data-kgpropose],[data-kgcast]');
+  const kgEl = t.closest('[data-kgadmit],[data-kgremove],[data-kgpropose],[data-kgcast],[data-kgrenounce]');
   if (kgEl) {
     if (pres) {
       toast('<b>presentazione</b> <span class="tiny">sola lettura — esci per agire</span>',
@@ -4841,6 +4849,9 @@ $('view').addEventListener('click', ev => {
             renderAll();
           });
       }
+    } else if (kgEl.dataset.kgrenounce) {
+      runVoteEvent(kgEl.dataset.kgsigner, { renounce: { questionId: kgEl.dataset.kgrenounce } });
+      renderAll();
     } else {
       runVoteEvent(kgEl.dataset.kgsigner, { cast:
         { questionId: kgEl.dataset.kgcast, ballot: kgEl.dataset.kgballot } });

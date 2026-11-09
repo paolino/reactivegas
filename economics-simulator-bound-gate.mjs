@@ -332,6 +332,9 @@ async function renounceJourney(L, b, url) {
     `dopo la rinuncia manca l'autorizzazione negativa per l'acquisto 1: ${JSON.stringify(closed.live)}`);
   checkLive(L, closed, 'dopo la rinuncia', ['S5B-L7-RENOUNCE']);
   await denyAndCheck(L, ev, 'S5B-L7-RENOUNCE', 'diniego dopo la rinuncia', true);
+  const end = parse(await ev(OBSERVE));
+  L.ok('S5B-REACH', end.closed.some(r => r.cause === 'renounced') && end.collections.length === 0,
+    'la storia della rinuncia non è arrivata fino al rimborso con i controlli della pagina');
 }
 
 async function departJourney(L, b, url, proposer, row, label) {
@@ -363,6 +366,9 @@ async function departJourney(L, b, url, proposer, row, label) {
       `${label}: manca l'autorizzazione negativa per l'acquisto 1: ${JSON.stringify(after.live)}`);
     await denyAndCheck(L, ev, row, `${label}: diniego dopo l'uscita`, true);
   }
+  const end = parse(await ev(OBSERVE));
+  L.ok('S5B-REACH', end.closed.some(r => r.cause === 'proposerDeparted') && end.collections.length === 0,
+    `${label}: la storia dell'uscita non è arrivata fino al rimborso con i controlli della pagina`);
 }
 
 /* a spent positive authorization leaves the display in the same step */
@@ -418,6 +424,8 @@ async function assentJourney(L, b, url) {
     'il rifiuto mostrato è "già approvato", non quello del #68');
   L.ok('S5B-68', refused.approvals.length === 1 && refused.approvals[0].approvals.length === 0,
     `l'assenso rifiutato ha cambiato lo stato: ${JSON.stringify(refused.approvals)}`);
+  L.ok('S5B-REACH', refused.last && refused.last.rej,
+    'la storia dell\'assenso non è arrivata fino al rifiuto con i controlli della pagina');
 }
 
 /* --- run ------------------------------------------------------------------- */
@@ -513,6 +521,18 @@ const MUTANTS = [
     edit: h => once(h, "why: 'la proposta non è andata a buon fine: ' + verr,", "why: 'la proposta non è andata a buon fine: alreadyApproved',") },
   { id: 'sole-admin-cannot-approve', journeys: ['assent'], rows: ['S5B-68'],
     edit: h => once(h, "signer === pend.proposer && bgAdminCount(gs) > 1", "signer === pend.proposer && bgAdminCount(gs) > 0") },
+  { id: 'renounce-control-removed', journeys: ['renounce'], rows: ['S5B-L7-RENOUNCE', 'S5B-REACH'],
+    edit: h => once(h, '${castButtonsHtml(qid, q)}${renounceHtml(qid, q)}', '${castButtonsHtml(qid, q)}') },
+  { id: 'renounce-offered-to-another', journeys: ['renounce'], rows: ['S5B-L7-RENOUNCE'],
+    edit: h => once(h, 'data-kgsigner="${esc(q.proposer)}" title=".renounce"', 'data-kgsigner="${esc(vtFranchise(curView()).find(k => k !== q.proposer) || q.proposer)}" title=".renounce"') },
+  { id: 'renounce-cause-not-named', journeys: ['renounce'], rows: ['S5B-L7-RENOUNCE', 'S5B-FIDELITY'],
+    edit: h => once(h, "renounced: 'rinuncia di chi l’ha proposta'", "renounced: 'soglia'") },
+  { id: 'departure-cause-not-named', journeys: ['depart-other'], rows: ['S5B-L7-DEPART', 'S5B-FIDELITY'],
+    edit: h => once(h, "proposerDeparted: 'uscita di chi l’ha proposta'", "proposerDeparted: 'soglia'") },
+  { id: 'deny-refunds-nobody', journeys: ['renounce', 'depart-other'], rows: ['S5B-L7-RENOUNCE', 'S5B-L7-DEPART'],
+    edit: h => once(h, 'live: pulled[1], conti: refundAll(s.conti, ps), collections: rest', 'live: pulled[1], conti: s.conti, collections: rest') },
+  { id: 'authorization-outlives-purchase', journeys: ['depart-referente'], rows: ['S5B-L7-DEPART'],
+    edit: h => once(h, 'live: s.live.filter(a => targetPresent(s, a.target)) });', 'live: s.live });') },
 ];
 
 async function selftest() {
