@@ -4126,17 +4126,48 @@ function castButtonsHtml(qid, q) {
   }).join('');
 }
 
+/* what a target decides, in words: read from the core's bindings and live
+   authorizations, never derived here */
+const targetTx = t => 'permission' in t
+  ? `permesso per l’acquisto «${esc(lbl(t.permission.c))}»`
+  : `quota ${t.backdonation.w}`;
+
+/* the question's binding, if the core holds one: a question opened without a
+   target has none and shows none */
+function bindingHtml(qid) {
+  const t = vtLookup(qid, withAuth(state).bindings);
+  return t === null ? '' : `<div class="tiny qbind">decide: ${targetTx(t)}</div>`;
+}
+
+/* the proposer alone may renounce (notProposer refuses anyone else) */
+function renounceHtml(qid, q) {
+  return vtFranchise(curView()).includes(q.proposer)
+    ? `<button type="button" class="mini no" data-kgrenounce="${esc(qid)}"
+        data-kgsigner="${esc(q.proposer)}" title=".renounce">rinuncia: ${esc(nm(q.proposer))}</button>`
+    : '';
+}
+
 function questionHtml(qid, q, titleTx) {
   const th = vtTheta(vtFranchiseSize(curView()));
   const kindTx = vtPermKind(q.kind)
     ? `per-persona: decide solo ${esc(nm(vtPermKind(q.kind).designee))} ${pkGlyph(['vote-permission-kind'])}`
     : `collettiva · soglia ${th} su ${vtFranchiseSize(curView())} ${pkGlyph(['vote-threshold-exhibit', 'kg-majority', 'kg-tie'])}`;
-  return `<div class="vq"><div class="qh">🗳 ${titleTx}
+  return `<div class="vq" data-qid="${esc(qid)}"><div class="qh">🗳 ${titleTx}
       <span class="qs">sì ${q.assents.length} · no ${q.dissents.length}</span></div>
+    ${bindingHtml(qid)}
+    <div class="tiny qprop">aperta da ${esc(nm(q.proposer))}</div>
     <div class="tiny">${kindTx} · aperta con conteggi vuoti ${pkGlyph(['vote-open-empty'])}
       · il primo lato a soglia chiude ${pkGlyph(['vote-verdict', 'vote-sweep'])}</div>
-    <div class="tasks" style="margin-top:4px">${castButtonsHtml(qid, q)}</div>
+    <div class="tasks" style="margin-top:4px">${castButtonsHtml(qid, q)}${renounceHtml(qid, q)}</div>
   </div>`;
+}
+
+/* the unspent closure-derived authorizations, as the core holds them */
+const liveTx = a => `autorizzazione viva ${a.verdict === 'positive' ? 'positiva' : 'negativa'}: ${targetTx(a.target)}`;
+function liveAuthHtml(list) {
+  return list.length
+    ? list.map(a => `<div class="tiny liveauth">${liveTx(a)}</div>`).join('')
+    : '<p class="empty">nessuna autorizzazione viva</p>';
 }
 
 /* the per-acquisto vote question: open → cast → verdict → unproved bridge */
@@ -4222,7 +4253,7 @@ function govCardHtml() {
   const fr = vtFranchise(view);
   const th = vtTheta(fr.length);
   const qs = state.votes.openQuestions.map(([qid, q]) =>
-    questionHtml(qid, q, `«${esc(qid)}» (aperta da ${esc(nm(q.proposer))})`)).join('');
+    questionHtml(qid, q, `«${esc(qid)}»`)).join('');
   const closedTail = state.votes.closed.slice(-3).map(r =>
     `<div class="tiny">🗳 «${esc(r.questionId)}» — ${r.verdict === 'positive' ? 'POSITIVA' : 'NEGATIVA'}
       (${esc(causeTx(r.cause))})
@@ -4232,24 +4263,27 @@ function govCardHtml() {
       · soglia (n+1)/2 = <b>${th}</b> ${pkGlyph(['vote-threshold-exhibit', 'kg-majority', 'kg-tie'])}
       — parametro esplicito, esibizione legacy ${pkGlyph(['vote-policyfree'])}</div>
     ${qs || '<p class="empty">nessuna domanda in votazione</p>'}
-    ${closedTail}`;
+    ${closedTail}
+    <div class="sect" style="margin-top:8px">autorizzazioni vive</div>
+    ${liveAuthHtml(withAuth(state).live)}`;
   // base channel: the ONE membership store — members with roles, pending
   // restricted proposals with their approvals
   const bgAdmins = bg.members.filter(([, m]) => hasAdmin(m.roles)).map(([k]) => k);
   const bgPend = bg.pendingBase.map(([pid, pp]) => {
-    // proposing is not assenting: above one admin the proposer cannot
-    // approve her own proposal (proposerSelfApproval); a sole admin approves
-    // it as a separate act
-    const missing = bgAdmins.filter(k => !pp.approvals.includes(k) &&
-      !(k === pp.proposer && bgAdmins.length > 1));
+    // proposing is not assenting: every admin who has not approved is offered
+    // the approval, and the ones the validator refuses (above one admin the
+    // proposer's own, proposerSelfApproval) are marked refused; a sole admin
+    // approves it as a separate act
+    const open = bgAdmins.filter(k => !pp.approvals.includes(k));
     return `<div class="vq"><div class="qh">⚖ ${esc(descrProposal(pp.proposal))}
         <span class="qs">assensi ${pp.approvals.length} / soglia ${bgMajority(bg)}</span></div>
       <div class="tiny">proposta di ${esc(nm(pp.proposer))} (proporre non è un sì)
         ${pkGlyph(['kg-proposer', 'kg-nodup'])}</div>
-      <div class="tasks" style="margin-top:4px">${missing.map(k =>
-        `<button type="button" class="mini" data-bgapprove="${esc(pid)}"
-          data-bgsigner="${esc(k)}" title=".approve">approva: ${esc(nm(k))}</button>`).join('')
-        || '<span class="tiny">nessun altro responsabile può approvare</span>'}</div>
+      <div class="tasks" style="margin-top:4px">${open.map(k => {
+        const verr = bgValidateApproval(bg, k, pid);
+        return `<button type="button" class="mini${verr ? ' no' : ''}" data-bgapprove="${esc(pid)}"
+          data-bgsigner="${esc(k)}" title="${verr ? '.approve = .error .' + esc(verr) : '.approve'}">approva: ${esc(nm(k))}${verr ? ' (rifiutato)' : ''}</button>`;
+      }).join('')}</div>
     </div>`;
   }).join('');
   const baseBody = `<div class="sect" style="margin-top:8px">Il gruppo e le sue decisioni</div>
@@ -4797,7 +4831,7 @@ $('view').addEventListener('click', ev => {
     renderAll();
     return;
   }
-  const kgEl = t.closest('[data-kgadmit],[data-kgremove],[data-kgpropose],[data-kgcast]');
+  const kgEl = t.closest('[data-kgadmit],[data-kgremove],[data-kgpropose],[data-kgcast],[data-kgrenounce]');
   if (kgEl) {
     if (pres) {
       toast('<b>presentazione</b> <span class="tiny">sola lettura — esci per agire</span>',
@@ -4815,6 +4849,9 @@ $('view').addEventListener('click', ev => {
             renderAll();
           });
       }
+    } else if (kgEl.dataset.kgrenounce) {
+      runVoteEvent(kgEl.dataset.kgsigner, { renounce: { questionId: kgEl.dataset.kgrenounce } });
+      renderAll();
     } else {
       runVoteEvent(kgEl.dataset.kgsigner, { cast:
         { questionId: kgEl.dataset.kgcast, ballot: kgEl.dataset.kgballot } });
@@ -5274,7 +5311,10 @@ async function selftest() {
     await click('#gtasks [data-task="elect"]');
     await click(`#pop .chip[data-id="${who}"]`);
     await click('#pop .chip[data-id="anna"]');
-    expect(!document.querySelector('#govcard [data-bgapprove][data-bgsigner="anna"]'),
+    await click('#govcard [data-bgapprove][data-bgsigner="anna"]');
+    expect(RG.bg.pendingBase.length === 1 && RG.bg.pendingBase[0][1].approvals.length === 0 &&
+      document.querySelector('#log .entry.rej') &&
+      document.querySelector('#log .entry').innerText.includes('proposerSelfApproval'),
       'chi propone può approvare la propria proposta con più di un admin');
     await click('#govcard [data-bgapprove][data-bgsigner="bruno"]');
   };

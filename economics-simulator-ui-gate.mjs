@@ -177,7 +177,8 @@ const KNOWN_READS = {
   bgapprove:  [1, ['K-10']],
   bgsigner:   [1, ['K-10']],
   kgcast:     [1, ['K-11']],
-  kgsigner:   [1, ['K-11']],
+  kgsigner:   [2, ['K-11', 'K-16']],
+  kgrenounce: [2, ['K-16']],
   kgpropose:  [2, ['K-4']],
   cf:         [1, ['K-13']],
   gotoColl:   [1, ['K-8']],
@@ -211,6 +212,7 @@ const CONTROL_DESC = {
   'K-12': 'name input -> event target key',
   'K-13': 'data-cf conto/cassa -> display id (adjacent hardening)',
   'K-15': 'data-crumb -> nav index (numeric)',
+  'K-16': 'data-kgrenounce -> vote signer + question id',
 };
 
 function deriveExtent(src) {
@@ -550,6 +552,24 @@ async function run() {
     t(!/conto di 1[^0-9]/.test(cfTx), 'K-13: chiave coartata a numero nel contro-fattuale');
     witness('K-13', 'data-cf conto:01 -> display id "01"');
     await click('#pop .xbtn2');
+
+    /* ---- K-16: the proposer's renounce, signer a numeric-looking string ---- */
+    await click('[data-obj="member"][data-id="anna"]');
+    await click('[data-hat="cassiere"]');
+    await click('#hat-cassiere [data-task="openPurchase"]');
+    await click('#pop [data-l="Vino"]');
+    await click('[data-crumb="0"]');
+    await click('[data-key="pile:2"]');
+    await click('#view [data-kgpropose]');
+    await click('#pop .chip[data-id="01"]');
+    const rq = await ev(`() => state.votes.openQuestions.map(([q, o]) => [q, o.proposer])`);
+    t(rq.length === 1 && rq[0][1] === '01', `K-16: domanda del secondo acquisto non aperta da 01 (${JSON.stringify(rq)})`);
+    await click(`#view [data-kgrenounce="${rq[0][0]}"][data-kgsigner="01"]`);
+    const rr = await ev(`() => state.votes.closed[state.votes.closed.length - 1]`);
+    t(rr.questionId === rq[0][0] && rr.verdict === 'negative' && rr.cause === 'renounced',
+      `K-16: rinuncia di 01 non ha chiuso NEGATIVA per rinuncia (${JSON.stringify(rr)})`);
+    witness('K-16', 'data-kgrenounce firmatario 01 -> chiusa negativa per rinuncia');
+    await click('[data-crumb="0"]');
 
     /* ---- K-15: crumb navigation by numeric index (re-descend first: ----
     /* ---- the close pruned collection views off the stack) ---- */

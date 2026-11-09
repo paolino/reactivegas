@@ -1,0 +1,1466 @@
+{
+  "name": "domande-aperte-legate-e-libere",
+  "description": "Domande aperte e chiuse con e senza bersaglio: una aperta legata alla quota 5, una chiusa positiva legata alla quota 6 (lascia un’autorizzazione viva), una libera chiusa (non ne lascia) e una libera ancora aperta.",
+  "wrap": {
+    "schema": "reactivegas-integrated.trace",
+    "version": 1,
+    "initial": {
+      "members": [
+        [
+          "anna",
+          {
+            "key": "anna",
+            "email": "anna@toy.example",
+            "roles": [
+              {
+                "adminRole": {
+                  "admin": "publicAdmin"
+                }
+              }
+            ]
+          }
+        ]
+      ],
+      "pendingBase": [],
+      "payload": {
+        "conti": [],
+        "casse": [],
+        "collections": [],
+        "votes": {
+          "openQuestions": [],
+          "closed": []
+        },
+        "bindings": [],
+        "live": []
+      }
+    },
+    "steps": [
+      {
+        "input": {
+          "members": [
+            [
+              "anna",
+              {
+                "key": "anna",
+                "email": "anna@toy.example",
+                "roles": [
+                  {
+                    "adminRole": {
+                      "admin": "publicAdmin"
+                    }
+                  }
+                ]
+              }
+            ]
+          ],
+          "pendingBase": [],
+          "payload": {
+            "conti": [],
+            "casse": [],
+            "collections": [],
+            "votes": {
+              "openQuestions": [],
+              "closed": []
+            },
+            "bindings": [],
+            "live": []
+          }
+        },
+        "signer": "anna",
+        "event": {
+          "direct": {
+            "admitMember": {
+              "key": "bruno",
+              "email": "bruno@toy.example",
+              "roles": [
+                {
+                  "appRole": {
+                    "name": "socio"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "result": {
+          "tag": "applied",
+          "aggregate": {
+            "members": [
+              [
+                "bruno",
+                {
+                  "key": "bruno",
+                  "email": "bruno@toy.example",
+                  "roles": [
+                    {
+                      "appRole": {
+                        "name": "socio"
+                      }
+                    }
+                  ]
+                }
+              ],
+              [
+                "anna",
+                {
+                  "key": "anna",
+                  "email": "anna@toy.example",
+                  "roles": [
+                    {
+                      "adminRole": {
+                        "admin": "publicAdmin"
+                      }
+                    }
+                  ]
+                }
+              ]
+            ],
+            "pendingBase": [],
+            "payload": {
+              "conti": [],
+              "casse": [],
+              "collections": [],
+              "votes": {
+                "openQuestions": [],
+                "closed": []
+              },
+              "bindings": [],
+              "live": []
+            }
+          }
+        }
+      },
+      {
+        "input": {
+          "members": [
+            [
+              "bruno",
+              {
+                "key": "bruno",
+                "email": "bruno@toy.example",
+                "roles": [
+                  {
+                    "appRole": {
+                      "name": "socio"
+                    }
+                  }
+                ]
+              }
+            ],
+            [
+              "anna",
+              {
+                "key": "anna",
+                "email": "anna@toy.example",
+                "roles": [
+                  {
+                    "adminRole": {
+                      "admin": "publicAdmin"
+                    }
+                  }
+                ]
+              }
+            ]
+          ],
+          "pendingBase": [],
+          "payload": {
+            "conti": [],
+            "casse": [],
+            "collections": [],
+            "votes": {
+              "openQuestions": [],
+              "closed": []
+            },
+            "bindings": [],
+            "live": []
+          }
+        },
+        "signer": "anna",
+        "event": {
+          "propose": {
+            "proposal": {
+              "changeRoles": {
+                "key": "bruno",
+                "roles": [
+                  {
+                    "adminRole": {
+                      "admin": "publicAdmin"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "result": {
+          "tag": "applied",
+          "aggregate": {
+            "members": [
+              [
+                "bruno",
+                {
+                  "key": "bruno",
+                  "email": "bruno@toy.example",
+                  "roles": [
+                    {
+                      "appRole": {
+                        "name": "socio"
+                      }
+                    }
+                  ]
+                }
+              ],
+              [
+                "anna",
+                {
+                  "key": "anna",
+                  "email": "anna@toy.example",
+                  "roles": [
+                    {
+                      "adminRole": {
+                        "admin": "publicAdmin"
+                      }
+                    }
+                  ]
+                }
+              ]
+            ],
+            "pendingBase": [
+              [
+                "roles:bruno",
+                {
+                  "proposer": "anna",
+                  "approvals": []
+                }
+              ]
+            ],
+            "payload": {
+              "conti": [],
+              "casse": [],
+              "collections": [],
+              "votes": {
+                "openQuestions": [],
+                "closed": []
+              },
+              "bindings": [],
+              "live": []
+            }
+          }
+        }
+      },
+      {
+        "input": {
+          "members": [
+            [
+              "bruno",
+              {
+                "key": "bruno",
+                "email": "bruno@toy.example",
+                "roles": [
+                  {
+                    "appRole": {
+                      "name": "socio"
+                    }
+                  }
+                ]
+              }
+            ],
+            [
+              "anna",
+              {
+                "key": "anna",
+                "email": "anna@toy.example",
+                "roles": [
+                  {
+                    "adminRole": {
+                      "admin": "publicAdmin"
+                    }
+                  }
+                ]
+              }
+            ]
+          ],
+          "pendingBase": [
+            [
+              "roles:bruno",
+              {
+                "proposer": "anna",
+                "approvals": []
+              }
+            ]
+          ],
+          "payload": {
+            "conti": [],
+            "casse": [],
+            "collections": [],
+            "votes": {
+              "openQuestions": [],
+              "closed": []
+            },
+            "bindings": [],
+            "live": []
+          }
+        },
+        "signer": "anna",
+        "event": {
+          "approve": {
+            "proposalId": "roles:bruno"
+          }
+        },
+        "result": {
+          "tag": "applied",
+          "aggregate": {
+            "members": [
+              [
+                "bruno",
+                {
+                  "key": "bruno",
+                  "email": "bruno@toy.example",
+                  "roles": [
+                    {
+                      "adminRole": {
+                        "admin": "publicAdmin"
+                      }
+                    }
+                  ]
+                }
+              ],
+              [
+                "anna",
+                {
+                  "key": "anna",
+                  "email": "anna@toy.example",
+                  "roles": [
+                    {
+                      "adminRole": {
+                        "admin": "publicAdmin"
+                      }
+                    }
+                  ]
+                }
+              ]
+            ],
+            "pendingBase": [],
+            "payload": {
+              "conti": [],
+              "casse": [],
+              "collections": [],
+              "votes": {
+                "openQuestions": [],
+                "closed": []
+              },
+              "bindings": [],
+              "live": []
+            }
+          }
+        }
+      },
+      {
+        "input": {
+          "members": [
+            [
+              "bruno",
+              {
+                "key": "bruno",
+                "email": "bruno@toy.example",
+                "roles": [
+                  {
+                    "adminRole": {
+                      "admin": "publicAdmin"
+                    }
+                  }
+                ]
+              }
+            ],
+            [
+              "anna",
+              {
+                "key": "anna",
+                "email": "anna@toy.example",
+                "roles": [
+                  {
+                    "adminRole": {
+                      "admin": "publicAdmin"
+                    }
+                  }
+                ]
+              }
+            ]
+          ],
+          "pendingBase": [],
+          "payload": {
+            "conti": [],
+            "casse": [],
+            "collections": [],
+            "votes": {
+              "openQuestions": [],
+              "closed": []
+            },
+            "bindings": [],
+            "live": []
+          }
+        },
+        "signer": "anna",
+        "event": {
+          "app": {
+            "openBound": {
+              "questionId": "quota:5",
+              "kind": "collective",
+              "target": {
+                "backdonation": {
+                  "w": 5
+                }
+              }
+            }
+          }
+        },
+        "result": {
+          "tag": "applied",
+          "aggregate": {
+            "members": [
+              [
+                "bruno",
+                {
+                  "key": "bruno",
+                  "email": "bruno@toy.example",
+                  "roles": [
+                    {
+                      "adminRole": {
+                        "admin": "publicAdmin"
+                      }
+                    }
+                  ]
+                }
+              ],
+              [
+                "anna",
+                {
+                  "key": "anna",
+                  "email": "anna@toy.example",
+                  "roles": [
+                    {
+                      "adminRole": {
+                        "admin": "publicAdmin"
+                      }
+                    }
+                  ]
+                }
+              ]
+            ],
+            "pendingBase": [],
+            "payload": {
+              "conti": [],
+              "casse": [],
+              "collections": [],
+              "votes": {
+                "openQuestions": [
+                  [
+                    "quota:5",
+                    {
+                      "kind": "collective",
+                      "proposer": "anna",
+                      "assents": [],
+                      "dissents": []
+                    }
+                  ]
+                ],
+                "closed": []
+              },
+              "bindings": [
+                [
+                  "quota:5",
+                  {
+                    "backdonation": {
+                      "w": 5
+                    }
+                  }
+                ]
+              ],
+              "live": []
+            }
+          }
+        }
+      },
+      {
+        "input": {
+          "members": [
+            [
+              "bruno",
+              {
+                "key": "bruno",
+                "email": "bruno@toy.example",
+                "roles": [
+                  {
+                    "adminRole": {
+                      "admin": "publicAdmin"
+                    }
+                  }
+                ]
+              }
+            ],
+            [
+              "anna",
+              {
+                "key": "anna",
+                "email": "anna@toy.example",
+                "roles": [
+                  {
+                    "adminRole": {
+                      "admin": "publicAdmin"
+                    }
+                  }
+                ]
+              }
+            ]
+          ],
+          "pendingBase": [],
+          "payload": {
+            "conti": [],
+            "casse": [],
+            "collections": [],
+            "votes": {
+              "openQuestions": [
+                [
+                  "quota:5",
+                  {
+                    "kind": "collective",
+                    "proposer": "anna",
+                    "assents": [],
+                    "dissents": []
+                  }
+                ]
+              ],
+              "closed": []
+            },
+            "bindings": [
+              [
+                "quota:5",
+                {
+                  "backdonation": {
+                    "w": 5
+                  }
+                }
+              ]
+            ],
+            "live": []
+          }
+        },
+        "signer": "anna",
+        "event": {
+          "app": {
+            "openBound": {
+              "questionId": "quota:6",
+              "kind": "collective",
+              "target": {
+                "backdonation": {
+                  "w": 6
+                }
+              }
+            }
+          }
+        },
+        "result": {
+          "tag": "applied",
+          "aggregate": {
+            "members": [
+              [
+                "bruno",
+                {
+                  "key": "bruno",
+                  "email": "bruno@toy.example",
+                  "roles": [
+                    {
+                      "adminRole": {
+                        "admin": "publicAdmin"
+                      }
+                    }
+                  ]
+                }
+              ],
+              [
+                "anna",
+                {
+                  "key": "anna",
+                  "email": "anna@toy.example",
+                  "roles": [
+                    {
+                      "adminRole": {
+                        "admin": "publicAdmin"
+                      }
+                    }
+                  ]
+                }
+              ]
+            ],
+            "pendingBase": [],
+            "payload": {
+              "conti": [],
+              "casse": [],
+              "collections": [],
+              "votes": {
+                "openQuestions": [
+                  [
+                    "quota:6",
+                    {
+                      "kind": "collective",
+                      "proposer": "anna",
+                      "assents": [],
+                      "dissents": []
+                    }
+                  ],
+                  [
+                    "quota:5",
+                    {
+                      "kind": "collective",
+                      "proposer": "anna",
+                      "assents": [],
+                      "dissents": []
+                    }
+                  ]
+                ],
+                "closed": []
+              },
+              "bindings": [
+                [
+                  "quota:6",
+                  {
+                    "backdonation": {
+                      "w": 6
+                    }
+                  }
+                ],
+                [
+                  "quota:5",
+                  {
+                    "backdonation": {
+                      "w": 5
+                    }
+                  }
+                ]
+              ],
+              "live": []
+            }
+          }
+        }
+      },
+      {
+        "input": {
+          "members": [
+            [
+              "bruno",
+              {
+                "key": "bruno",
+                "email": "bruno@toy.example",
+                "roles": [
+                  {
+                    "adminRole": {
+                      "admin": "publicAdmin"
+                    }
+                  }
+                ]
+              }
+            ],
+            [
+              "anna",
+              {
+                "key": "anna",
+                "email": "anna@toy.example",
+                "roles": [
+                  {
+                    "adminRole": {
+                      "admin": "publicAdmin"
+                    }
+                  }
+                ]
+              }
+            ]
+          ],
+          "pendingBase": [],
+          "payload": {
+            "conti": [],
+            "casse": [],
+            "collections": [],
+            "votes": {
+              "openQuestions": [
+                [
+                  "quota:6",
+                  {
+                    "kind": "collective",
+                    "proposer": "anna",
+                    "assents": [],
+                    "dissents": []
+                  }
+                ],
+                [
+                  "quota:5",
+                  {
+                    "kind": "collective",
+                    "proposer": "anna",
+                    "assents": [],
+                    "dissents": []
+                  }
+                ]
+              ],
+              "closed": []
+            },
+            "bindings": [
+              [
+                "quota:6",
+                {
+                  "backdonation": {
+                    "w": 6
+                  }
+                }
+              ],
+              [
+                "quota:5",
+                {
+                  "backdonation": {
+                    "w": 5
+                  }
+                }
+              ]
+            ],
+            "live": []
+          }
+        },
+        "signer": "anna",
+        "event": {
+          "app": {
+            "cast": {
+              "questionId": "quota:6",
+              "ballot": "assent"
+            }
+          }
+        },
+        "result": {
+          "tag": "applied",
+          "aggregate": {
+            "members": [
+              [
+                "bruno",
+                {
+                  "key": "bruno",
+                  "email": "bruno@toy.example",
+                  "roles": [
+                    {
+                      "adminRole": {
+                        "admin": "publicAdmin"
+                      }
+                    }
+                  ]
+                }
+              ],
+              [
+                "anna",
+                {
+                  "key": "anna",
+                  "email": "anna@toy.example",
+                  "roles": [
+                    {
+                      "adminRole": {
+                        "admin": "publicAdmin"
+                      }
+                    }
+                  ]
+                }
+              ]
+            ],
+            "pendingBase": [],
+            "payload": {
+              "conti": [],
+              "casse": [],
+              "collections": [],
+              "votes": {
+                "openQuestions": [
+                  [
+                    "quota:5",
+                    {
+                      "kind": "collective",
+                      "proposer": "anna",
+                      "assents": [],
+                      "dissents": []
+                    }
+                  ]
+                ],
+                "closed": [
+                  {
+                    "questionId": "quota:6",
+                    "question": {
+                      "kind": "collective",
+                      "proposer": "anna",
+                      "assents": [
+                        "anna"
+                      ],
+                      "dissents": []
+                    },
+                    "verdict": "positive",
+                    "cause": "tally"
+                  }
+                ]
+              },
+              "bindings": [
+                [
+                  "quota:5",
+                  {
+                    "backdonation": {
+                      "w": 5
+                    }
+                  }
+                ]
+              ],
+              "live": [
+                {
+                  "questionId": "quota:6",
+                  "target": {
+                    "backdonation": {
+                      "w": 6
+                    }
+                  },
+                  "verdict": "positive"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "input": {
+          "members": [
+            [
+              "bruno",
+              {
+                "key": "bruno",
+                "email": "bruno@toy.example",
+                "roles": [
+                  {
+                    "adminRole": {
+                      "admin": "publicAdmin"
+                    }
+                  }
+                ]
+              }
+            ],
+            [
+              "anna",
+              {
+                "key": "anna",
+                "email": "anna@toy.example",
+                "roles": [
+                  {
+                    "adminRole": {
+                      "admin": "publicAdmin"
+                    }
+                  }
+                ]
+              }
+            ]
+          ],
+          "pendingBase": [],
+          "payload": {
+            "conti": [],
+            "casse": [],
+            "collections": [],
+            "votes": {
+              "openQuestions": [
+                [
+                  "quota:5",
+                  {
+                    "kind": "collective",
+                    "proposer": "anna",
+                    "assents": [],
+                    "dissents": []
+                  }
+                ]
+              ],
+              "closed": [
+                {
+                  "questionId": "quota:6",
+                  "question": {
+                    "kind": "collective",
+                    "proposer": "anna",
+                    "assents": [
+                      "anna"
+                    ],
+                    "dissents": []
+                  },
+                  "verdict": "positive",
+                  "cause": "tally"
+                }
+              ]
+            },
+            "bindings": [
+              [
+                "quota:5",
+                {
+                  "backdonation": {
+                    "w": 5
+                  }
+                }
+              ]
+            ],
+            "live": [
+              {
+                "questionId": "quota:6",
+                "target": {
+                  "backdonation": {
+                    "w": 6
+                  }
+                },
+                "verdict": "positive"
+              }
+            ]
+          }
+        },
+        "signer": "bruno",
+        "event": {
+          "app": {
+            "openQuestion": {
+              "questionId": "libera:1",
+              "kind": "collective"
+            }
+          }
+        },
+        "result": {
+          "tag": "applied",
+          "aggregate": {
+            "members": [
+              [
+                "bruno",
+                {
+                  "key": "bruno",
+                  "email": "bruno@toy.example",
+                  "roles": [
+                    {
+                      "adminRole": {
+                        "admin": "publicAdmin"
+                      }
+                    }
+                  ]
+                }
+              ],
+              [
+                "anna",
+                {
+                  "key": "anna",
+                  "email": "anna@toy.example",
+                  "roles": [
+                    {
+                      "adminRole": {
+                        "admin": "publicAdmin"
+                      }
+                    }
+                  ]
+                }
+              ]
+            ],
+            "pendingBase": [],
+            "payload": {
+              "conti": [],
+              "casse": [],
+              "collections": [],
+              "votes": {
+                "openQuestions": [
+                  [
+                    "libera:1",
+                    {
+                      "kind": "collective",
+                      "proposer": "bruno",
+                      "assents": [],
+                      "dissents": []
+                    }
+                  ],
+                  [
+                    "quota:5",
+                    {
+                      "kind": "collective",
+                      "proposer": "anna",
+                      "assents": [],
+                      "dissents": []
+                    }
+                  ]
+                ],
+                "closed": [
+                  {
+                    "questionId": "quota:6",
+                    "question": {
+                      "kind": "collective",
+                      "proposer": "anna",
+                      "assents": [
+                        "anna"
+                      ],
+                      "dissents": []
+                    },
+                    "verdict": "positive",
+                    "cause": "tally"
+                  }
+                ]
+              },
+              "bindings": [
+                [
+                  "quota:5",
+                  {
+                    "backdonation": {
+                      "w": 5
+                    }
+                  }
+                ]
+              ],
+              "live": [
+                {
+                  "questionId": "quota:6",
+                  "target": {
+                    "backdonation": {
+                      "w": 6
+                    }
+                  },
+                  "verdict": "positive"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "input": {
+          "members": [
+            [
+              "bruno",
+              {
+                "key": "bruno",
+                "email": "bruno@toy.example",
+                "roles": [
+                  {
+                    "adminRole": {
+                      "admin": "publicAdmin"
+                    }
+                  }
+                ]
+              }
+            ],
+            [
+              "anna",
+              {
+                "key": "anna",
+                "email": "anna@toy.example",
+                "roles": [
+                  {
+                    "adminRole": {
+                      "admin": "publicAdmin"
+                    }
+                  }
+                ]
+              }
+            ]
+          ],
+          "pendingBase": [],
+          "payload": {
+            "conti": [],
+            "casse": [],
+            "collections": [],
+            "votes": {
+              "openQuestions": [
+                [
+                  "libera:1",
+                  {
+                    "kind": "collective",
+                    "proposer": "bruno",
+                    "assents": [],
+                    "dissents": []
+                  }
+                ],
+                [
+                  "quota:5",
+                  {
+                    "kind": "collective",
+                    "proposer": "anna",
+                    "assents": [],
+                    "dissents": []
+                  }
+                ]
+              ],
+              "closed": [
+                {
+                  "questionId": "quota:6",
+                  "question": {
+                    "kind": "collective",
+                    "proposer": "anna",
+                    "assents": [
+                      "anna"
+                    ],
+                    "dissents": []
+                  },
+                  "verdict": "positive",
+                  "cause": "tally"
+                }
+              ]
+            },
+            "bindings": [
+              [
+                "quota:5",
+                {
+                  "backdonation": {
+                    "w": 5
+                  }
+                }
+              ]
+            ],
+            "live": [
+              {
+                "questionId": "quota:6",
+                "target": {
+                  "backdonation": {
+                    "w": 6
+                  }
+                },
+                "verdict": "positive"
+              }
+            ]
+          }
+        },
+        "signer": "bruno",
+        "event": {
+          "app": {
+            "cast": {
+              "questionId": "libera:1",
+              "ballot": "assent"
+            }
+          }
+        },
+        "result": {
+          "tag": "applied",
+          "aggregate": {
+            "members": [
+              [
+                "bruno",
+                {
+                  "key": "bruno",
+                  "email": "bruno@toy.example",
+                  "roles": [
+                    {
+                      "adminRole": {
+                        "admin": "publicAdmin"
+                      }
+                    }
+                  ]
+                }
+              ],
+              [
+                "anna",
+                {
+                  "key": "anna",
+                  "email": "anna@toy.example",
+                  "roles": [
+                    {
+                      "adminRole": {
+                        "admin": "publicAdmin"
+                      }
+                    }
+                  ]
+                }
+              ]
+            ],
+            "pendingBase": [],
+            "payload": {
+              "conti": [],
+              "casse": [],
+              "collections": [],
+              "votes": {
+                "openQuestions": [
+                  [
+                    "quota:5",
+                    {
+                      "kind": "collective",
+                      "proposer": "anna",
+                      "assents": [],
+                      "dissents": []
+                    }
+                  ]
+                ],
+                "closed": [
+                  {
+                    "questionId": "quota:6",
+                    "question": {
+                      "kind": "collective",
+                      "proposer": "anna",
+                      "assents": [
+                        "anna"
+                      ],
+                      "dissents": []
+                    },
+                    "verdict": "positive",
+                    "cause": "tally"
+                  },
+                  {
+                    "questionId": "libera:1",
+                    "question": {
+                      "kind": "collective",
+                      "proposer": "bruno",
+                      "assents": [
+                        "bruno"
+                      ],
+                      "dissents": []
+                    },
+                    "verdict": "positive",
+                    "cause": "tally"
+                  }
+                ]
+              },
+              "bindings": [
+                [
+                  "quota:5",
+                  {
+                    "backdonation": {
+                      "w": 5
+                    }
+                  }
+                ]
+              ],
+              "live": [
+                {
+                  "questionId": "quota:6",
+                  "target": {
+                    "backdonation": {
+                      "w": 6
+                    }
+                  },
+                  "verdict": "positive"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "input": {
+          "members": [
+            [
+              "bruno",
+              {
+                "key": "bruno",
+                "email": "bruno@toy.example",
+                "roles": [
+                  {
+                    "adminRole": {
+                      "admin": "publicAdmin"
+                    }
+                  }
+                ]
+              }
+            ],
+            [
+              "anna",
+              {
+                "key": "anna",
+                "email": "anna@toy.example",
+                "roles": [
+                  {
+                    "adminRole": {
+                      "admin": "publicAdmin"
+                    }
+                  }
+                ]
+              }
+            ]
+          ],
+          "pendingBase": [],
+          "payload": {
+            "conti": [],
+            "casse": [],
+            "collections": [],
+            "votes": {
+              "openQuestions": [
+                [
+                  "quota:5",
+                  {
+                    "kind": "collective",
+                    "proposer": "anna",
+                    "assents": [],
+                    "dissents": []
+                  }
+                ]
+              ],
+              "closed": [
+                {
+                  "questionId": "quota:6",
+                  "question": {
+                    "kind": "collective",
+                    "proposer": "anna",
+                    "assents": [
+                      "anna"
+                    ],
+                    "dissents": []
+                  },
+                  "verdict": "positive",
+                  "cause": "tally"
+                },
+                {
+                  "questionId": "libera:1",
+                  "question": {
+                    "kind": "collective",
+                    "proposer": "bruno",
+                    "assents": [
+                      "bruno"
+                    ],
+                    "dissents": []
+                  },
+                  "verdict": "positive",
+                  "cause": "tally"
+                }
+              ]
+            },
+            "bindings": [
+              [
+                "quota:5",
+                {
+                  "backdonation": {
+                    "w": 5
+                  }
+                }
+              ]
+            ],
+            "live": [
+              {
+                "questionId": "quota:6",
+                "target": {
+                  "backdonation": {
+                    "w": 6
+                  }
+                },
+                "verdict": "positive"
+              }
+            ]
+          }
+        },
+        "signer": "bruno",
+        "event": {
+          "app": {
+            "openQuestion": {
+              "questionId": "libera:2",
+              "kind": "collective"
+            }
+          }
+        },
+        "result": {
+          "tag": "applied",
+          "aggregate": {
+            "members": [
+              [
+                "bruno",
+                {
+                  "key": "bruno",
+                  "email": "bruno@toy.example",
+                  "roles": [
+                    {
+                      "adminRole": {
+                        "admin": "publicAdmin"
+                      }
+                    }
+                  ]
+                }
+              ],
+              [
+                "anna",
+                {
+                  "key": "anna",
+                  "email": "anna@toy.example",
+                  "roles": [
+                    {
+                      "adminRole": {
+                        "admin": "publicAdmin"
+                      }
+                    }
+                  ]
+                }
+              ]
+            ],
+            "pendingBase": [],
+            "payload": {
+              "conti": [],
+              "casse": [],
+              "collections": [],
+              "votes": {
+                "openQuestions": [
+                  [
+                    "libera:2",
+                    {
+                      "kind": "collective",
+                      "proposer": "bruno",
+                      "assents": [],
+                      "dissents": []
+                    }
+                  ],
+                  [
+                    "quota:5",
+                    {
+                      "kind": "collective",
+                      "proposer": "anna",
+                      "assents": [],
+                      "dissents": []
+                    }
+                  ]
+                ],
+                "closed": [
+                  {
+                    "questionId": "quota:6",
+                    "question": {
+                      "kind": "collective",
+                      "proposer": "anna",
+                      "assents": [
+                        "anna"
+                      ],
+                      "dissents": []
+                    },
+                    "verdict": "positive",
+                    "cause": "tally"
+                  },
+                  {
+                    "questionId": "libera:1",
+                    "question": {
+                      "kind": "collective",
+                      "proposer": "bruno",
+                      "assents": [
+                        "bruno"
+                      ],
+                      "dissents": []
+                    },
+                    "verdict": "positive",
+                    "cause": "tally"
+                  }
+                ]
+              },
+              "bindings": [
+                [
+                  "quota:5",
+                  {
+                    "backdonation": {
+                      "w": 5
+                    }
+                  }
+                ]
+              ],
+              "live": [
+                {
+                  "questionId": "quota:6",
+                  "target": {
+                    "backdonation": {
+                      "w": 6
+                    }
+                  },
+                  "verdict": "positive"
+                }
+              ]
+            }
+          }
+        }
+      }
+    ]
+  },
+  "assertions": [
+    "no-vote-derived-without-evidence",
+    "no-negative-conto"
+  ],
+  "expect": {
+    "governed": "accepted"
+  }
+}

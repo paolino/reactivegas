@@ -57,7 +57,7 @@ const REPO = dirname(fileURLToPath(import.meta.url));
    forgives a MISSING path, never a BUSY one — a Chromium profile can still be
    held for a beat after the child dies, and an ENOTEMPTY throw there would
    turn housekeeping into a veto. Best effort, errors swallowed on purpose. */
-function rmQuiet(p) {
+export function rmQuiet(p) {
   try { rmSync(p, { recursive: true, force: true }); } catch { /* housekeeping */ }
 }
 const HTML = join(REPO, 'economics-simulator.html');
@@ -65,7 +65,7 @@ const STRIPS = ['benvenuto', 'impegno', 'guardie', 'cassa', 'chiusa', 'voto'];
 
 /* --- chromium discovery ---------------------------------------------------- */
 
-function findChromium() {
+export function findChromium() {
   if (process.env.RG_CHROMIUM && existsSync(process.env.RG_CHROMIUM))
     return process.env.RG_CHROMIUM;
   for (const name of ['chromium', 'chromium-browser', 'google-chrome']) {
@@ -90,7 +90,7 @@ function findChromium() {
 
 /* --- minimal CDP-over-pipe client ------------------------------------------ */
 
-class Browser {
+export class Browser {
   constructor(bin, profile) {
     this.child = spawn(bin, ['--headless', '--no-sandbox', '--disable-gpu',
       '--remote-debugging-pipe', '--user-data-dir=' + profile, 'about:blank'],
@@ -160,7 +160,7 @@ class Browser {
   close() { try { this.child.kill(); } catch (e) { /* gone */ } }
 }
 
-const sleep = ms => new Promise(r => setTimeout(r, ms));
+export const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 /* --- injected journey helpers ---------------------------------------------- */
 
