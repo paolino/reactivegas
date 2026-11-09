@@ -21,11 +21,16 @@
  *     collections, pledges, open and bound questions, live authorizations).
  *     A fixed minority (INVALID_SHARE) is deliberately invalid; the core must
  *     refuse each, and every refusal must leave the aggregate unchanged.
- *   - A violation prints seed, trace, step, the event, the law and its
- *     theorem and the event prefix as a reactivegas-integrated.trace v1
- *     envelope, labelled a transcription divergence between the JS core and
- *     the Lean: a divergence is investigated, never made green by weakening
- *     a law.
+ *   - A violation is shrunk: steps are removed (chunks, then single steps) and
+ *     integer arguments simplified, a candidate kept only when the production
+ *     core still applies every step, no law is violated before the last step
+ *     and the last step violates the same law. The report prints seed, original
+ *     and shrunk length, the law and its theorem, and the shrunk history as a
+ *     scenario (a reactivegas-integrated.trace v1 envelope plus its
+ *     assertions) the scenario gate loads unchanged, labelled a transcription
+ *     divergence between the JS core and the Lean: a divergence is investigated,
+ *     never made green by weakening a law, and a counterexample the unmutated
+ *     core produces is raised before anything is committed as a scenario.
  *   - The run is deterministic (seeded PRNG, the fixed configuration below),
  *     its output is the same text twice, and its wall time must stay inside
  *     BUDGET_MS.
@@ -41,10 +46,16 @@
  * that changes state), invalid steps the core wrongly accepts, a law whose
  * theorem is not proved, a nondeterministic comparison and an exceeded budget
  * — each RED for its stated reason on the production generator and a one-edit
- * copy of the production core — then the unmodified gate GREEN.
+ * copy of the production core — then the unmodified gate GREEN. The shrink
+ * controls plant a defect and require its counterexample to shrink to a few
+ * steps that replay to the same law through the scenario gate's loader, and
+ * require the checks to fail on a shrinker that keeps another law, no law, a
+ * refused step or a violation before the last step, returns its input
+ * unshrunk, or emits what the scenario gate rejects. The whole selftest is held
+ * to the same wall budget.
  */
 
-import { readFileSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdtempSync, mkdirSync, rmSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { dirname, join, resolve } from 'node:path';
@@ -52,6 +63,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { tmpdir } from 'node:os';
 import { deriveCorePin, assertCorePinReachable, discoverVocabularies,
   NOT_PRESENTED_VOCABULARIES } from './economics-simulator-lean-surface.mjs';
+import { shrinkSteps, firstImprovement } from './economics-simulator-generator-shrink.mjs';
+import { runScenario } from './economics-simulator-scenario-gate.mjs';
 
 const REPO = dirname(fileURLToPath(import.meta.url));
 const CORE = resolve(REPO, 'economics-simulator-core.mjs');
@@ -270,46 +283,73 @@ function questionKind(c) {
 /* deliberately invalid steps: each states the Lean anchor of the refusal it
    needs and is drawn only when the state offers the occasion */
 const INVALIDS = {
-  renounceByNonProposer: { claim: 'vote-validate', draw: c => {
-    const open = c.open.filter(([, q]) => c.keys.some(k => k !== q.proposer));
-    if (!open.length) return null;
-    const [qid, q] = pick(c.r, open);
-    return app(pick(c.r, c.keys.filter(k => k !== q.proposer)), 'renounce', { questionId: qid });
-  } },
-  ballotByNonDesignee: { claim: 'vote-validate', draw: c => {
-    const open = c.open.filter(([, q]) => typeof q.kind === 'object' && q.kind.permission &&
-      c.admins.some(a => a !== q.kind.permission.designee));
-    if (!open.length) return null;
-    const [qid, q] = pick(c.r, open);
-    return app(pick(c.r, c.admins.filter(a => a !== q.kind.permission.designee)), 'cast',
-      { questionId: qid, ballot: pick(c.r, ['assent', 'dissent']) });
-  } },
-  unboundGrant: { claim: 'inv-grant', draw: c => {
-    if (!c.admins.length) return null;
-    const bound = live(c, 'positive', 'permission').map(a => a.target.permission.c);
-    const free = [1, 2, 3, 4, 5].filter(id => !bound.includes(id));
-    return free.length ? app(pick(c.r, c.admins), 'grantPermission', { c: pick(c.r, free) }) : null;
-  } },
-  spentAuthorization: { claim: 'inv-grant', draw: c => {
-    const again = c.spent.filter(s => !c.live.some(a => JSON.stringify([a.target, a.verdict]) === s.key));
-    return again.length ? pick(c.r, again).step : null;
-  } },
-  approveOwnProposal: { claim: 'kg-approve-guard', draw: c => {
-    if (c.admins.length < 2) return null;
-    const own = c.pending.filter(([, p]) => c.admins.includes(p.proposer));
-    if (!own.length) return null;
-    const [pid, p] = pick(c.r, own);
-    return { signer: p.proposer, ev: { approve: { proposalId: pid } } };
-  } },
-  approveTwice: { claim: 'kg-approve-guard', draw: c => {
-    const done = c.pending.filter(([, p]) => p.approvals.length);
-    if (!done.length) return null;
-    const [pid, p] = pick(c.r, done);
-    return { signer: pick(c.r, p.approvals), ev: { approve: { proposalId: pid } } };
-  } },
-  strangerSigner: { claim: 'auth', draw: c =>
-    app('zz-' + upto(c.r, 1, 9), 'donate', { v: upto(c.r, 1, 30) }) },
+  renounceByNonProposer: { claim: 'vote-validate',
+    holds: (c, { signer, ev }) => {
+      const q = openQuestion(c, ev.app && ev.app.renounce);
+      return !!q && c.keys.includes(signer) && signer !== q.proposer;
+    },
+    draw: c => {
+      const open = c.open.filter(([, q]) => c.keys.some(k => k !== q.proposer));
+      if (!open.length) return null;
+      const [qid, q] = pick(c.r, open);
+      return app(pick(c.r, c.keys.filter(k => k !== q.proposer)), 'renounce', { questionId: qid });
+    } },
+  ballotByNonDesignee: { claim: 'vote-validate',
+    holds: (c, { signer, ev }) => {
+      const q = openQuestion(c, ev.app && ev.app.cast);
+      return !!q && typeof q.kind === 'object' && !!q.kind.permission &&
+        c.admins.includes(signer) && signer !== q.kind.permission.designee;
+    },
+    draw: c => {
+      const open = c.open.filter(([, q]) => typeof q.kind === 'object' && q.kind.permission &&
+        c.admins.some(a => a !== q.kind.permission.designee));
+      if (!open.length) return null;
+      const [qid, q] = pick(c.r, open);
+      return app(pick(c.r, c.admins.filter(a => a !== q.kind.permission.designee)), 'cast',
+        { questionId: qid, ballot: pick(c.r, ['assent', 'dissent']) });
+    } },
+  unboundGrant: { claim: 'inv-grant',
+    holds: (c, { signer, ev }) => !!(ev.app && ev.app.grantPermission) && c.admins.includes(signer) &&
+      !live(c, 'positive', 'permission').some(a => a.target.permission.c === ev.app.grantPermission.c),
+    draw: c => {
+      if (!c.admins.length) return null;
+      const bound = live(c, 'positive', 'permission').map(a => a.target.permission.c);
+      const free = [1, 2, 3, 4, 5].filter(id => !bound.includes(id));
+      return free.length ? app(pick(c.r, c.admins), 'grantPermission', { c: pick(c.r, free) }) : null;
+    } },
+  spentAuthorization: { claim: 'inv-grant',
+    holds: (c, step) => c.spent.some(s => JSON.stringify(s.step) === JSON.stringify(step) &&
+      !c.live.some(a => JSON.stringify([a.target, a.verdict]) === s.key)),
+    draw: c => {
+      const again = c.spent.filter(s => !c.live.some(a => JSON.stringify([a.target, a.verdict]) === s.key));
+      return again.length ? pick(c.r, again).step : null;
+    } },
+  approveOwnProposal: { claim: 'kg-approve-guard',
+    holds: (c, { signer, ev }) => {
+      const p = pendingOf(c, ev.approve);
+      return !!p && c.admins.length >= 2 && c.admins.includes(p.proposer) && signer === p.proposer;
+    },
+    draw: c => {
+      if (c.admins.length < 2) return null;
+      const own = c.pending.filter(([, p]) => c.admins.includes(p.proposer));
+      if (!own.length) return null;
+      const [pid, p] = pick(c.r, own);
+      return { signer: p.proposer, ev: { approve: { proposalId: pid } } };
+    } },
+  approveTwice: { claim: 'kg-approve-guard',
+    holds: (c, { signer, ev }) => { const p = pendingOf(c, ev.approve); return !!p && p.approvals.includes(signer); },
+    draw: c => {
+      const done = c.pending.filter(([, p]) => p.approvals.length);
+      if (!done.length) return null;
+      const [pid, p] = pick(c.r, done);
+      return { signer: pick(c.r, p.approvals), ev: { approve: { proposalId: pid } } };
+    } },
+  strangerSigner: { claim: 'auth',
+    holds: (c, { signer, ev }) => !!(ev.app && ev.app.donate) && !c.keys.includes(signer),
+    draw: c => app('zz-' + upto(c.r, 1, 9), 'donate', { v: upto(c.r, 1, 30) }) },
 };
+const openQuestion = (c, args) => args && (c.open.find(([id]) => id === args.questionId) || [])[1];
+const pendingOf = (c, args) => args && (c.pending.find(([id]) => id === args.proposalId) || [])[1];
 
 /* --- the surface: discovered extent plus the productions that cover it ------- */
 function buildSurface({ repo = REPO, productions = PRODUCTIONS, invalids = INVALIDS } = {}) {
@@ -347,23 +387,65 @@ function envelopeOf(mod, steps) {
   return { schema: 'reactivegas-integrated.trace', version: 1, initial: mod.bootAggregate(), steps: out };
 }
 
+/* the one judgement: plays steps on an aggregate through the core and says
+   which law, if any, a step violates. The generator draws against it and the
+   shrinker replays candidates through it, so a shrunk history is judged exactly
+   as the original was. `kind` names the invalid step a step is meant to be: the
+   core must refuse it, and a step that has stopped being one is not played. */
+function walker(mod, invalids = INVALIDS) {
+  const extra = { questions: 0, spent: [] };
+  let gs = mod.bootAggregate();
+  const noDraw = () => { throw new Error('an instance predicate does not draw'); };
+  return {
+    context: r => stateContext(mod, gs, r, extra),
+    play(step, kind) {
+      if (kind && !invalids[kind].holds(stateContext(mod, gs, noDraw, extra), step)) return { notInstance: true };
+      const before = mod.canonAggregate(gs);
+      const liveBefore = (gs.appFold.live || []).length;
+      const finding = f => ({ kind, ...f });
+      let det;
+      try { det = mod.applyIntegrated(gs, step.signer, clone(step.ev)); }
+      catch (e) {
+        return { finding: finding({ applied: false, law: 'applyIntegrated is total on generated events',
+          claim: null, theorem: null, text: `threw: ${e.message}` }) };
+      }
+      if (det.refused) {
+        const changed = mod.canonAggregate(gs) !== before || (det.gs && mod.canonAggregate(det.gs) !== before);
+        return { det, finding: changed ? finding({ applied: false, law: REFUSAL_LAW.law, claim: REFUSAL_LAW.claim,
+          theorem: anchorOf(mod, REFUSAL_LAW.claim), text: `refused (${det.refused}) but the aggregate changed` }) : null };
+      }
+      const found = lawFindings(mod, det.gs);
+      const [f] = found.asserted;
+      const violated = f ? finding({ applied: true, law: f.law, claim: f.claim,
+          theorem: f.claim ? anchorOf(mod, f.claim) : null, text: f.text })
+        : kind ? finding({ applied: true, law: 'invalid step refused', claim: invalids[kind].claim,
+          theorem: anchorOf(mod, invalids[kind].claim), text: `the core accepted ${kind}` }) : null;
+      if (violated) return { det, finding: violated, notAsserted: found.notAsserted };
+      const key = (det.gs.appFold.live || []).length < liveBefore ? spentKey(gs, det.gs) : '';
+      if (key) extra.spent.push({ key, step });
+      gs = det.gs;
+      return { det, notAsserted: found.notAsserted };
+    },
+  };
+}
+
 function divergence(mod, base, found) {
-  const prefix = base.prefix.concat(found.applied ? [found.step] : []);
-  const envelope = envelopeOf(mod, prefix);
+  const history = base.prefix.concat([found.step]);
+  const envelope = envelopeOf(mod, found.applied ? history : base.prefix);
   let replays = true;
   try { mod.verifyIntegratedV1(envelope); } catch { replays = false; }
-  return { label: 'TRANSCRIPTION DIVERGENCE', seed: base.seed, step: base.index, signer: found.step.signer,
-    event: found.step.ev, law: found.law, claim: found.claim, theorem: found.theorem, kind: found.kind || null,
-    text: found.text, envelope, replays };
+  const { step, ...violation } = found;
+  return { label: 'TRANSCRIPTION DIVERGENCE', seed: base.seed, step: base.index, signer: step.signer,
+    event: step.ev, law: found.law, claim: found.claim, theorem: found.theorem, kind: found.kind || null,
+    text: found.text, envelope, replays, steps: history, violation };
 }
 
 function generateTrace(seed, config, surface) {
   const mod = config.core;
   const r = prng(seed);
-  const extra = { questions: 0, spent: [] };
+  const w = walker(mod, surface.invalids);
   const tally = {}, kinds = {}, notAsserted = new Set();
   const prefix = [];
-  let gs = mod.bootAggregate();
   const out = { steps: 0, applied: 0, refused: 0, invalidRefused: 0, tally, kinds, notAsserted, report: null };
   const bump = (name, field) => {
     const t = tally[name] || (tally[name] = { attempted: 0, applied: 0 });
@@ -376,7 +458,7 @@ function generateTrace(seed, config, surface) {
   const refusedOf = name => (tally[name] || { attempted: 0, applied: 0 }).attempted - appliedOf(name);
   const weigh = (name, counts) => 1 / ((1 + counts(name)) ** 2 * (1 + (counts.refused ? counts.refused(name) : 0)));
   for (let index = 0; index < config.stepsPerTrace; index++) {
-    const c = stateContext(mod, gs, r, extra);
+    const c = w.context(r);
     const wantInvalid = r() * config.invalidShare[1] < config.invalidShare[0];
     const choose = (table, counts) => {
       const cands = Object.entries(table).map(([name, p]) => [name, (p.draw || p)(c)])
@@ -392,50 +474,25 @@ function generateTrace(seed, config, surface) {
     const drawn = invalid || choose(surface.productions, Object.assign(appliedOf, { refused: refusedOf }));
     if (!drawn) break;
     const [name, step] = drawn;
-    const isInvalid = !!invalid;
-    const before = mod.canonAggregate(gs);
-    const liveBefore = (gs.appFold.live || []).length;
+    const kind = invalid ? name : null;
     for (const n of namesOf(step.ev)) bump(n, 'attempted');
     out.steps++;
-    let det;
-    const base = { seed, index, prefix };
-    try { det = mod.applyIntegrated(gs, step.signer, clone(step.ev)); }
-    catch (e) {
-      out.report = divergence(mod, base, { step, applied: false, law: 'applyIntegrated is total on generated events',
-        claim: null, theorem: null, kind: isInvalid ? name : null, text: `threw: ${e.message}` });
+    const played = w.play(step, kind);
+    if (played.notInstance) throw new Error(`invalid step ${kind} was drawn but is not an instance of its kind`);
+    (played.notAsserted || []).forEach(f => notAsserted.add(`${f.law} -> ${f.claim}`));
+    const refused = played.det && played.det.refused;
+    if (refused) out.refused++;
+    else if (played.det) for (const n of namesOf(step.ev)) bump(n, 'applied');
+    if (played.finding) {
+      out.report = divergence(mod, { seed, index, prefix }, { step, ...played.finding });
       return out;
     }
-    if (det.refused) {
-      out.refused++;
-      if (mod.canonAggregate(gs) !== before || (det.gs && mod.canonAggregate(det.gs) !== before)) {
-        out.report = divergence(mod, base, { step, applied: false, law: REFUSAL_LAW.law, claim: REFUSAL_LAW.claim,
-          theorem: anchorOf(mod, REFUSAL_LAW.claim), kind: isInvalid ? name : null,
-          text: `refused (${det.refused}) but the aggregate changed` });
-        return out;
-      }
-      if (isInvalid) { out.invalidRefused++; kinds[name] = (kinds[name] || 0) + 1; }
+    if (refused) {
+      if (kind) { out.invalidRefused++; kinds[name] = (kinds[name] || 0) + 1; }
       continue;
-    }
-    for (const n of namesOf(step.ev)) bump(n, 'applied');
-    const found = lawFindings(mod, det.gs);
-    found.notAsserted.forEach(f => notAsserted.add(`${f.law} -> ${f.claim}`));
-    if (found.asserted.length) {
-      const f = found.asserted[0];
-      out.report = divergence(mod, base, { step, applied: true, law: f.law, claim: f.claim,
-        theorem: f.claim ? anchorOf(mod, f.claim) : null, kind: isInvalid ? name : null, text: f.text });
-      return out;
-    }
-    if (isInvalid) {
-      out.report = divergence(mod, base, { step, applied: true, law: 'invalid step refused', claim: surface.invalids[name].claim,
-        theorem: anchorOf(mod, surface.invalids[name].claim), kind: name,
-        text: `the core accepted ${name}` });
-      return out;
     }
     out.applied++;
     prefix.push(step);
-    const key = (det.gs.appFold.live || []).length < liveBefore ? spentKey(gs, det.gs) : '';
-    if (key) extra.spent.push({ key, step });
-    gs = det.gs;
   }
   return out;
 }
@@ -455,12 +512,82 @@ function spentKey(pre, post) {
   return gone ? key(gone) : '';
 }
 
+/* --- shrinking and emission --------------------------------------------------- */
+/* a candidate history is a counterexample when every step but the last is
+   applied by the core without violating any law, and the last violates the same
+   law the original did; otherwise `why` says which of those fails */
+function violationOf(core, steps, violation) {
+  const w = walker(core);
+  for (const [i, step] of steps.entries()) {
+    const last = i === steps.length - 1;
+    const played = w.play(step, last ? violation.kind : null);
+    if (played.notInstance) return { ok: false, why: `step ${i} is no longer an instance of ${violation.kind}` };
+    if (!last) {
+      if (played.finding) return { ok: false, why: `violates ${played.finding.law} before the last step` };
+      if (played.det.refused) return { ok: false, why: `refused at step ${i} (${played.det.refused})` };
+      continue;
+    }
+    if (!played.finding) return { ok: false, why: played.det.refused ? 'refused at the last step' : 'violates no law' };
+    if (played.finding.law !== violation.law)
+      return { ok: false, why: `violates ${played.finding.law} instead of ${violation.law}` };
+    return { ok: true, finding: played.finding };
+  }
+  return { ok: false, why: 'empty history' };
+}
+
+/* F-SHRINK: the shortest history the moves can reach that still violates the
+   same law at its last step, every candidate replayed through `core` */
+function shrinkTrace(steps, violation, core) {
+  const accepts = cand => violationOf(core, cand, violation).ok;
+  const first = violationOf(core, steps, violation);
+  if (!first.ok) throw new Error(`the original history does not reproduce its violation: ${first.why}`);
+  const shrunk = shrinkSteps(steps, accepts);
+  return { steps: shrunk, violation: { ...violation, text: violationOf(core, shrunk, violation).finding.text } };
+}
+
+/* what a scenario for the scenario gate says about a history: the replay is
+   the envelope itself, the governance verdict is whatever the core's walk gives.
+   A violating step the core refuses or throws on cannot be an applied step of
+   an envelope; the report names it and the envelope ends before it. */
+function emitScenario({ mod, steps, violation, seed, originalLength }) {
+  const envelope = envelopeOf(mod, violation.applied ? steps : steps.slice(0, -1));
+  let expect = { governed: 'accepted' };
+  try { mod.verifyGovernedIntegrated(envelope); }
+  catch (e) { expect = { governed: 'refused', refusalMatch: e.message }; }
+  const slug = violation.law.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  return { name: `generated-${slug}-seed-${seed}`,
+    description: `${violation.law}${violation.theorem ? ' — theorem ' + violation.theorem : ''}. Shrunk from ${originalLength} to ${steps.length} steps.`,
+    wrap: envelope, assertions: ['no-vote-derived-without-evidence'], expect };
+}
+
+/* the shrunk history is judged here, not trusted: same law at its last step and
+   not before, a local minimum, and a scenario the scenario gate accepts */
+function shrinkReport(rep, mod, { shrink, emit }) {
+  let shrunk;
+  try { shrunk = shrink(rep.steps, rep.violation, mod); }
+  catch (e) { return { reasons: [`shrink: ${e.message}`] }; }
+  const reasons = [];
+  const judged = violationOf(mod, shrunk.steps, rep.violation);
+  if (!judged.ok) reasons.push(`shrink: ${judged.why}`);
+  else {
+    const better = firstImprovement(shrunk.steps, cand => violationOf(mod, cand, rep.violation).ok);
+    if (better) reasons.push(`shrink: not a local minimum: ${better}`);
+  }
+  let scenario = null;
+  try {
+    scenario = emit({ mod, steps: shrunk.steps, violation: shrunk.violation, seed: rep.seed, originalLength: rep.steps.length });
+    runScenario(JSON.parse(JSON.stringify(scenario)), mod);
+  } catch (e) { reasons.push(`scenario gate rejects the emitted history: ${e.message}`); }
+  return { reasons, shrunk: { steps: shrunk.steps, length: shrunk.steps.length, violation: shrunk.violation, scenario } };
+}
+
 /* --- the gate: all traces, coverage, budget ---------------------------------- */
 async function loadCore(corePath) {
   return import(`${pathToFileURL(corePath).href}?audit=${Date.now()}-${Math.random()}`);
 }
 
-function runGenerator({ mod, surface, config = CONFIG, now = () => performance.now() }) {
+function runGenerator({ mod, surface, config = CONFIG, now = () => performance.now(),
+  shrink = shrinkTrace, emit = emitScenario }) {
   const t0 = now();
   const total = { steps: 0, applied: 0, refused: 0, invalidRefused: 0, tally: {}, kinds: {}, notAsserted: new Set() };
   let report = null;
@@ -477,9 +604,15 @@ function runGenerator({ mod, surface, config = CONFIG, now = () => performance.n
       res.notAsserted.forEach(x => total.notAsserted.add(x));
       if (res.report) { report = { ...res.report, trace: k }; break traces; }
     }
-  const elapsedMs = now() - t0;
   const reasons = [];
-  if (report) reasons.push(`violation: ${report.law} at seed ${report.seed} step ${report.step}`);
+  if (report) {
+    reasons.push(`violation: ${report.law} at seed ${report.seed} step ${report.step}`);
+    const s = shrinkReport(report, mod, { shrink, emit });
+    reasons.push(...s.reasons);
+    report.shrunk = s.shrunk;
+    report.originalLength = report.steps.length;
+  }
+  const elapsedMs = now() - t0;
   if (elapsedMs > config.budgetMs)
     reasons.push(`budget exceeded: ${Math.round(elapsedMs)} ms > ${config.budgetMs} ms`);
   if (!report) {
@@ -516,10 +649,12 @@ function describe(surface, result) {
 function printReport(rep) {
   console.error(`${rep.label}: ${rep.law}`);
   console.error(`  seed=${rep.seed} step=${rep.step} signer=${rep.signer} kind=${rep.kind}`);
-  console.error(`  event: ${JSON.stringify(rep.event)}`);
+  console.error(`  event: ${JSON.stringify(rep.shrunk ? rep.shrunk.steps[rep.shrunk.length - 1].ev : rep.event)}`);
   console.error(`  law: ${rep.law}${rep.theorem ? ' — theorem ' + rep.theorem : ''}`);
-  console.error(`  ${rep.text}`);
-  console.error(`  envelope (replays through the core verifier: ${rep.replays}): ${JSON.stringify(rep.envelope)}`);
+  console.error(`  ${rep.shrunk ? rep.shrunk.violation.text : rep.text}`);
+  console.error(`  original length ${rep.originalLength} steps, shrunk ${rep.shrunk ? rep.shrunk.length : 'n/a'}`);
+  if (rep.shrunk && rep.shrunk.scenario)
+    console.error(`  scenario (the scenario gate loads it as a .json file): ${JSON.stringify(rep.shrunk.scenario)}`);
 }
 
 async function production(corePath = CORE) {
@@ -570,6 +705,150 @@ async function greenBaseline(config) {
 }
 
 const SMALL = { ...CONFIG, seeds: [1, 2], tracesPerSeed: 2, stepsPerTrace: 40 };
+
+/* --- shrinking: the counterexample a violation leaves is cut down to the
+   shortest history that still violates the same law, and emitted as a scenario
+   the scenario gate replays. Every control runs the production generator on a
+   one-edit copy of the production core. */
+const SHRUNK_MAX_STEPS = 8;     // refund short by one needs: open, deposit, pledge, accept, fail
+const stepsOf = rep => rep.envelope.steps.map(s => ({ signer: s.signer, ev: s.event }));
+const planted = new Map();
+async function plantedRun(work, m) {
+  if (!planted.has(m.name)) {
+    const mod = await loadCore(mutantCore(work, m.name, m.edits));
+    planted.set(m.name, { mod, res: runGenerator({ mod, surface: buildSurface() }) });
+  }
+  return planted.get(m.name);
+}
+const REFUND = MUTANTS[0];
+/* a core with two planted defects, played one trace at a time: seed 1 ends in
+   conservation, seed 8 ends in a non-proposer's renounce accepted */
+async function twoDefects(work) {
+  const mod = await loadCore(mutantCore(work, 'refund-and-renounce',
+    [...REFUND.edits, ...MUTANTS.find(m => m.name === 'renounce-by-non-proposer-accepted').edits]));
+  const on = (seed, extra) => runGenerator({ mod, surface: buildSurface(),
+    config: { ...CONFIG, seeds: [seed], tracesPerSeed: 1 }, ...extra });
+  return { mod, on };
+}
+const redFor = (res, pattern, what) => {
+  const hit = res.reasons.find(x => pattern.test(x));
+  if (!hit) throw new Error(`${what} was not RED: ${res.reasons.join('; ') || 'green'}`);
+  return 'RED: ' + hit;
+};
+
+const SHRINK_CONTROLS = [
+  { name: 'shrink-planted-mutant', run: async work => {
+    const { mod, res } = await plantedRun(work, REFUND);
+    const rep = res.report;
+    if (!rep) throw new Error('the planted refund mutant was not found');
+    if (!rep.shrunk) throw new Error('the violation was reported unshrunk: the report carries no shrunk history');
+    const bad = res.reasons.filter(x => /^(shrink|scenario gate)/.test(x));
+    if (bad.length) throw new Error('the shrunk history was rejected: ' + bad.join('; '));
+    if (rep.shrunk.length > SHRUNK_MAX_STEPS)
+      throw new Error(`shrunk to ${rep.shrunk.length} steps, more than the stated ${SHRUNK_MAX_STEPS}`);
+    if (!rep.shrunk.scenario) throw new Error('the shrunk history was emitted as no scenario');
+    const dir = join(work, 'shrunk-scenarios');
+    mkdirSync(dir, { recursive: true });
+    const file = join(dir, `${rep.shrunk.scenario.name}.json`);
+    writeFileSync(file, JSON.stringify(rep.shrunk.scenario));
+    const sc = JSON.parse(readFileSync(file, 'utf8'));
+    runScenario(sc, mod);
+    const hit = lawFindings(mod, mod.verifyIntegratedV1(sc.wrap).final).asserted.find(f => f.law === rep.law);
+    if (!hit) throw new Error(`the shrunk envelope replays without the law violation ${rep.law}`);
+    return `${rep.originalLength} -> ${rep.shrunk.length} steps; the emitted scenario replays to ${rep.law}`;
+  } },
+  { name: 'shrink-keeps-another-law', run: async work => {
+    const { mod, on } = await twoDefects(work);
+    const other = on(1).report;
+    if (!other || other.law !== 'conservation (L6)') throw new Error('control mal costruito: seed 1 does not end in conservation');
+    const res = on(8, { shrink: (steps, violation) => ({ steps: stepsOf(other), violation }) });
+    if (!res.report || res.report.kind !== 'renounceByNonProposer')
+      throw new Error('control mal costruito: seed 8 does not end in the renounce defect');
+    const asKind = redFor(res, /^shrink: step \d+ is no longer an instance of renounceByNonProposer/, 'a history that ends in another violation');
+    // the law comparison itself: the same history judged against a law it does not violate
+    const wrong = violationOf(mod, stepsOf(other), { law: 'solvent (L7)', kind: null });
+    if (wrong.ok || !/^violates conservation \(L6\) instead of solvent \(L7\)/.test(wrong.why))
+      throw new Error(`a history violating another law was not rejected for it: ${JSON.stringify(wrong)}`);
+    return `${asKind}; ${wrong.why}`;
+  } },
+  { name: 'shrink-keeps-no-violation', run: async work => {
+    const { mod } = await plantedRun(work, REFUND);
+    const res = runGenerator({ mod, surface: buildSurface(), config: { ...CONFIG, seeds: [1], tracesPerSeed: 1 },
+      shrink: (steps, violation) => ({ steps: steps.slice(0, -1), violation }) });
+    return redFor(res, /^shrink: violates no law/, 'a candidate that violates no law');
+  } },
+  { name: 'shrink-keeps-refused-step', run: async work => {
+    const { mod } = await plantedRun(work, REFUND);
+    const refusedAt = (steps, skip) => {
+      let gs = mod.bootAggregate();
+      for (const [i, s] of steps.entries()) {
+        if (i === skip) continue;
+        const det = mod.applyIntegrated(gs, s.signer, JSON.parse(JSON.stringify(s.ev)));
+        if (det.refused) return true;
+        gs = det.gs;
+      }
+      return false;
+    };
+    const cut = (steps, violation) => {
+      const i = steps.slice(0, -1).findIndex((_, k) => refusedAt(steps, k));
+      if (i < 0) throw new Error('control mal costruito: no single removal makes the history refused');
+      return { steps: steps.filter((_, k) => k !== i), violation };
+    };
+    const res = runGenerator({ mod, surface: buildSurface(), config: { ...CONFIG, seeds: [1], tracesPerSeed: 1 },
+      shrink: cut });
+    return redFor(res, /^shrink: refused at step \d+/, 'a candidate refused at a step the original applied');
+  } },
+  { name: 'shrink-keeps-violation-before-last-step', run: async work => {
+    const { mod } = await plantedRun(work, REFUND);
+    const after = { signer: 'anna', ev: { app: { donate: { v: 1 } } } };
+    const res = runGenerator({ mod, surface: buildSurface(), config: { ...CONFIG, seeds: [1], tracesPerSeed: 1 },
+      shrink: (steps, violation) => ({ steps: [...steps, after], violation }) });
+    return redFor(res, /^shrink: violates conservation \(L6\) before the last step/, 'a history whose violation comes before its last step');
+  } },
+  { name: 'shrink-returns-input-unshrunk', run: async work => {
+    const { mod } = await plantedRun(work, REFUND);
+    const res = runGenerator({ mod, surface: buildSurface(), config: { ...CONFIG, seeds: [1], tracesPerSeed: 1 },
+      shrink: (steps, violation) => ({ steps, violation }) });
+    return redFor(res, /^shrink: not a local minimum/, 'a shrinker returning its input unshrunk');
+  } },
+  { name: 'shrink-emits-envelope-the-scenario-gate-rejects', run: async work => {
+    const { mod, res: first } = await plantedRun(work, REFUND);
+    const corrupt = () => {
+      const wrap = JSON.parse(JSON.stringify(first.report.envelope));
+      wrap.steps[0].result.aggregate.appFold.conti.push(['zz', 99]);
+      return { name: 'corrupted-emission', description: 'poststate mutated', wrap,
+        assertions: ['no-vote-derived-without-evidence'], expect: { governed: 'accepted' } };
+    };
+    const res = runGenerator({ mod, surface: buildSurface(), config: { ...CONFIG, seeds: [1], tracesPerSeed: 1 },
+      emit: corrupt });
+    return redFor(res, /^scenario gate rejects the emitted history: .*(divergente|discontinuo)/, 'an emitted envelope the scenario gate rejects');
+  } },
+  { name: 'shrink-deterministic', run: async work => {
+    const { mod, res: a } = await plantedRun(work, REFUND);
+    const b = runGenerator({ mod, surface: buildSurface() });
+    if (!a.report || !a.report.shrunk || !b.report || !b.report.shrunk)
+      throw new Error('the violation was reported unshrunk: the report carries no shrunk history');
+    const text = r => JSON.stringify([r.report.shrunk.steps, r.report.shrunk.violation]);
+    if (text(a) !== text(b)) throw new Error('two shrinks of the same seed and violation differ');
+    return `two shrinks identical (${sha256(text(a)).slice(0, 12)})`;
+  } },
+  { name: 'shrunk-scenario-is-mutant-only', run: async work => {
+    const { res } = await plantedRun(work, REFUND);
+    const scenario = res.report && res.report.shrunk && res.report.shrunk.scenario;
+    if (!scenario) throw new Error('the violation was reported unshrunk: the report carries no emitted scenario');
+    try { runScenario(JSON.parse(JSON.stringify(scenario)), await loadCore(CORE)); }
+    catch (e) {
+      if (!/^integrato: /.test(e.message)) throw e;
+      return 'the unmutated core refuses the mutant counterexample: ' + e.message.slice(0, 100);
+    }
+    throw new Error('the unmutated core accepts a counterexample found only on the mutant');
+  } },
+  { name: 'shrink-controls-within-budget', run: async () => {
+    const code = await selftest(['budget'], { budgetMs: 0, quiet: true });
+    if (code !== 1) throw new Error('a selftest that exceeds its wall budget was not RED');
+    return 'RED: the selftest wall budget is enforced';
+  } },
+];
 
 const CONTROLS = [
   { name: 'surface-shared', run: async () => {
@@ -629,7 +908,9 @@ const CONTROLS = [
     if (m.kind && rep.kind !== m.kind) throw new Error(`mutant ${m.name} found as the wrong step kind: ${rep.kind}`);
     if (res.elapsedMs > CONFIG.budgetMs) throw new Error(`mutant ${m.name} found after the CI budget`);
     if (!rep.replays) throw new Error(`mutant ${m.name}: the reported envelope does not replay through the core verifier`);
-    return `found: ${rep.law} at seed ${rep.seed} step ${rep.step}`;
+    const bad = res.reasons.filter(x => /^(shrink|scenario gate)/.test(x));
+    if (bad.length) throw new Error(`mutant ${m.name}: the counterexample did not shrink to an accepted scenario: ${bad.join('; ')}`);
+    return `found: ${rep.law} at seed ${rep.seed} step ${rep.step}; shrunk ${rep.originalLength} -> ${rep.shrunk.length} steps`;
   } })),
   { name: 'law-without-proved-theorem', run: async work => {
     const real = await loadCore(mutantCore(work, 'refund-short-by-one', MUTANTS[0].edits));
@@ -701,9 +982,14 @@ const CONTROLS = [
       throw new Error(`an exceeded budget was not RED: ${res.reasons.join('; ')}`);
     return 'RED: ' + res.reasons.find(x => /^budget exceeded/.test(x));
   } },
+  ...SHRINK_CONTROLS,
 ];
 
-async function selftest(only) {
+/* the controls share the CI budget: shrinking included, the whole selftest is
+   held to budgetMs, so a shrinker that slows down fails here, not in review */
+async function selftest(only, { budgetMs = CONFIG.budgetMs, quiet = false } = {}) {
+  const say = quiet ? () => {} : console.log, warn = quiet ? () => {} : console.error;
+  const t0 = performance.now();
   const work = mkdtempSync(join(tmpdir(), 'rg-generator-gate-'));
   const failures = [];
   try {
@@ -711,38 +997,49 @@ async function selftest(only) {
     if (only && controls.length !== only.length)
       throw new Error('unknown control in --only: ' + only.join(','));
     for (const ctl of controls) {
-      try { console.log(`control ${ctl.name}: ${await ctl.run(work)}`); }
-      catch (e) { failures.push(`${ctl.name}: ${e.message}`); console.error(`control ${ctl.name}: FAIL ${e.message}`); }
+      try { say(`control ${ctl.name}: ${await ctl.run(work)}`); }
+      catch (e) { failures.push(`${ctl.name}: ${e.message}`); warn(`control ${ctl.name}: FAIL ${e.message}`); }
     }
     if (!only) {
       const p = await production();
       if (!p.result.ok) failures.push('unmodified production gate is not GREEN: ' + p.result.reasons.join('; '));
-      else console.log(`control production-green: ${p.result.total.steps} steps, ${p.surface.routed.length} vocabularies`);
+      else say(`control production-green: ${p.result.total.steps} steps, ${p.surface.routed.length} vocabularies`);
     }
   } finally {
     try { rmSync(work, { recursive: true, force: true }); } catch { /* housekeeping */ }
   }
-  if (failures.length) { console.error(`RED: ${failures.length} controls failed`); return 1; }
-  console.log('SELFTEST OK');
+  const elapsedMs = performance.now() - t0;
+  if (elapsedMs > budgetMs) {
+    failures.push(`selftest wall budget exceeded: ${Math.round(elapsedMs)} ms > ${budgetMs} ms`);
+    warn(`selftest wall budget exceeded: ${Math.round(elapsedMs)} ms > ${budgetMs} ms`);
+  }
+  if (failures.length) { warn(`RED: ${failures.length} controls failed`); return 1; }
+  say(`SELFTEST OK (${Math.round(elapsedMs)} ms of ${budgetMs} ms)`);
   return 0;
 }
 
 /* --- CLI --------------------------------------------------------------------- */
-let code = 1;
-if (process.argv.includes('--selftest')) {
-  const i = process.argv.indexOf('--only');
-  code = await selftest(i < 0 ? null : process.argv[i + 1].split(','));
-} else {
-  const p = await production();
-  p.lines.forEach(l => console.log(l));
-  if (p.result.ok) {
-    console.error(`generator wall ${Math.round(p.result.elapsedMs)} ms of ${CONFIG.budgetMs} ms`);
-    console.log('GREEN');
-    code = 0;
+/* what the page gate plays: the histories this gate generates, through the one
+   production core */
+export { CONFIG, buildSurface, generateTrace, envelopeOf, loadCore, clone };
+
+if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {
+  let code = 1;
+  if (process.argv.includes('--selftest')) {
+    const i = process.argv.indexOf('--only');
+    code = await selftest(i < 0 ? null : process.argv[i + 1].split(','));
   } else {
-    if (p.result.report) printReport(p.result.report);
-    console.error(`RED: ${p.result.reasons.length} problemi`);
-    p.result.reasons.forEach(x => console.error(' - ' + x));
+    const p = await production();
+    p.lines.forEach(l => console.log(l));
+    if (p.result.ok) {
+      console.error(`generator wall ${Math.round(p.result.elapsedMs)} ms of ${CONFIG.budgetMs} ms`);
+      console.log('GREEN');
+      code = 0;
+    } else {
+      if (p.result.report) printReport(p.result.report);
+      console.error(`RED: ${p.result.reasons.length} problemi`);
+      p.result.reasons.forEach(x => console.error(' - ' + x));
+    }
   }
+  process.exit(code);
 }
-process.exit(code);
