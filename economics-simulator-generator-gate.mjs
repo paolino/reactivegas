@@ -225,7 +225,8 @@ const PRODUCTIONS = {
     const funded = c.keys.filter(k => c.bal(k) > 0);
     if (!funded.length || !c.cols.length || !c.admins.length) return null;
     const user = pick(c.r, funded);
-    return app(pick(c.r, c.admins), 'pledge',
+    pick(c.r, c.admins); // draw kept so the random stream is unchanged
+    return app(user, 'pledge',
       { user, c: pick(c.r, c.cols).id, v: upto(c.r, 1, c.bal(user)) });
   },
   acceptPledge: c => pledgeOf(c, 'pending', 'acceptPledge'),

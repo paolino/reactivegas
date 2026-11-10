@@ -442,7 +442,7 @@ async function run() {
     await click('#hat-member [data-task="pledge"]');
     witness('K-9', 'preset.user dalla vista persona-membro');
     await click('#pop .chip[data-id="1"]');
-    await click('#pop .chip[data-id="anna"]');
+    await click('#pop .chip[data-id="01"]');
     await ev(`() => {
       const n = document.getElementById('am-n');
       n.value = '10'; n.dispatchEvent(new Event('input', { bubbles: true }));

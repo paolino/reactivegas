@@ -2,13 +2,13 @@
 
 ## S69-A pledge sovereignty in the Lean model
 
-- [ ] owner-signed-pledge
-- [ ] pending-correction-by-owner
-- [ ] pending-withdrawal-removes-row
-- [ ] accepted-correction-unchanged
-- [ ] invariant-proofs-absorb-new-arms
-- [ ] root-journeys-and-controls
-- [ ] mutant-ledger-rows
-- [ ] superseded-fixtures-resigned
-- [ ] economic-corpus-reexported
-- [ ] simulator-follows-pledge-regimes
+- [x] owner-signed-pledge
+- [x] pending-correction-by-owner
+- [x] pending-withdrawal-removes-row
+- [x] accepted-correction-unchanged
+- [x] invariant-proofs-absorb-new-arms
+- [x] root-journeys-and-controls
+- [x] mutant-ledger-rows
+- [x] superseded-fixtures-resigned
+- [x] economic-corpus-reexported
+- [x] simulator-follows-pledge-regimes
