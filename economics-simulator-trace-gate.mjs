@@ -632,7 +632,7 @@ function selftest(work) {
                     'openQuestions: gs.openQuestions.filter(([, q]) => q.proposer !== proposer),'],
         ['const mine = gs.openQuestions.slice();', 'openQuestions: [],']) },
     { name: 'nessuna ricomputazione dopo l’uscita (L-6a)', expect: /riga #81 L-6a /,
-      make: mutant('const swept = vtSweep(vtTheta, post, departed);', 'const swept = departed;') },
+      make: mutant('const swept = vtSweep(theta, post, departed);', 'const swept = departed;') },
     { name: 'renounce tocca le domande estranee (L-6b)', expect: /riga #81 L-6b /,
       make: mutant("if (q) effected = { openQuestions: vtErase(questionId, gs.openQuestions),",
         "if (q) effected = { openQuestions: [],") },

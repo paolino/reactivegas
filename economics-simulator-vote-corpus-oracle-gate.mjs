@@ -113,7 +113,7 @@ async function runAll(core, source, work) {
     return { outcome: oracle.verifyCorpus(c, x, k.core), calls: k.calls() }; };
   const describe = o => o.tag + (o.rules ? ' ' + o.rules.join(',') : '') +
     (o.step !== undefined ? ` step=${o.step}` : '') + (o.field ? ` field=${o.field}` : '') +
-    (o.n !== undefined ? ` n=${o.n} domain={0..${o.domain}}` : '');
+    (o.n !== undefined ? ` n=${o.n} domain={0..${o.domain}} checked-prefix=${o.checkedPrefix}` : '');
   let witnessInfo = null;
 
   await row('O-REPLAY', () => {
@@ -174,66 +174,132 @@ async function runAll(core, source, work) {
     const at = l.queries.filter(q => q.step === z.step && q.n >= 1);
     if (!at.length)
       return { ok: false, text: `corpus inadeguato: nessuna query collettiva a n >= 1 al passo ${z.step}` };
-    const first = l.queries.find(q => q.n >= 1);
-    witnessInfo = { step: z.step, field: z.field, n: first.n, queriedAtStep: at.map(q => q.n) };
+    const n = at[0].n;
+    const firstAbove = l.queries.find(q => q.n >= n);
+    if (firstAbove.n !== n)
+      return { ok: false, text: `corpus inadeguato per il controllo 4: prima del passo ${z.step} una query a n=${firstAbove.n} supera n=${n}` };
+    const deepN = Math.max(...l.queries.map(q => q.n));
+    const deep = l.queries.find(q => q.n === deepN);
+    witnessInfo = { step: z.step, field: z.field, n, firstAbortStep: firstAbove.step, deepN, deepStep: deep.step };
     return { ok: true, text: `primo passo che differisce: ${z.step} (campo ${z.field}), query a n=${at.map(q => q.n)}; ` +
-      `prima query a n>=1 del replay: ${first.n}` };
+      `prima query a n>=${n} al passo ${firstAbove.step}; n massimo ${deepN} al passo ${deep.step}` };
   });
 
-  const control = (n, name, bytes, expect) => row(`O-CONTROLS.${n}`, () => {
-    const { outcome, calls } = verify(corpusBytes, bytes.ctx || contextBytes);
+  /* inputs a control reads: the corpus and the sidecar, either of them a mutated in-memory copy;
+     a mutated corpus carries a sidecar re-bound to its digest, so the digest check stays out of
+     the way of the mismatch being judged */
+  const mutateCorpus = mut => {
+    const c = JSON.parse(corpusBytes.toString('utf8'));
+    mut(c);
+    const corpus = Buffer.from(JSON.stringify(c));
+    if (corpus.equals(corpusBytes)) throw new Error('mutazione non applicata: i byte sono invariati');
+    return { corpus, context: mutateContext(contextBytes, x => { x.corpus.contentSha256 = sha256(corpus); }) };
+  };
+  const outcomes = {};
+  const control = (id, name, inputs, expect) => row(id, () => {
+    const i = typeof inputs === 'function' ? inputs() : inputs;
+    const { outcome, calls } = verify(i.corpus || corpusBytes, i.context || contextBytes);
+    outcomes[id] = outcome;
     const r = expect(outcome, calls);
     return { ok: r.ok, text: `${name}: ${describe(outcome)}${r.note ? ' — ' + r.note : ''}` };
   });
   const needWitness = () => { if (!witnessInfo) throw new Error('nessun testimone della politica: controllo non valutabile'); return witnessInfo; };
+  const ctxWith = f => ({ context: mutateContext(contextBytes, f) });
   const refusedBefore = rule => (o, calls) => ({ ok: o.tag === TAGS.refusal && calls === 0 &&
     o.rules.includes(rule), note: `steps-run=${calls}` });
+  const abortAt = (n, step) => (o, calls) => ({ ok: o.tag === TAGS.abort && o.n === n && o.domain === n - 1 &&
+    o.step === step && o.checkedPrefix === step && o.steps === undefined && calls === step + 1,
+  note: `queried n=${n} at step ${step}: checked prefix of ${step} steps (diagnostic, no pass), root-calls=${calls}` });
 
-  await control(1, 'none', {}, o => ({ ok: o.tag === TAGS.pass }));
-  await control(2, 'zero table', { get ctx() { return mutateContext(contextBytes,
-    c => { c.policies.threshold.table = c.policies.threshold.table.map(([k]) => [k, 0]); }); } },
+  await control('O-CONTROLS.1', 'none', {}, o => ({ ok: o.tag === TAGS.pass }));
+  await control('O-CONTROLS.2', 'zero table', () => ctxWith(
+    c => { c.policies.threshold.table = c.policies.threshold.table.map(([k]) => [k, 0]); }),
   o => { const w = needWitness(); return { ok: o.tag === TAGS.mismatch && o.step === w.step,
     note: `witnessed step ${w.step}` }; });
-  await control(3, 'digest corrupted', { get ctx() { return mutateContext(contextBytes, c => {
-    const d = c.corpus.contentSha256; c.corpus.contentSha256 = (d[0] === '0' ? '1' : '0') + d.slice(1); }); } },
+  await control('O-CONTROLS.3', 'digest corrupted', () => ctxWith(c => {
+    const d = c.corpus.contentSha256; c.corpus.contentSha256 = (d[0] === '0' ? '1' : '0') + d.slice(1); }),
   refusedBefore('digest'));
-  await control(4, 'table truncated below the witnessed n', { get ctx() { const w = needWitness();
-    return mutateContext(contextBytes, c => { c.policies.threshold.table =
-      c.policies.threshold.table.slice(0, w.n); }); } },
-  (o, calls) => { const w = needWitness(); return { ok: o.tag === TAGS.abort && o.n === w.n &&
-    o.domain === w.n - 1 && calls === o.step + 1,
-  note: `witnessed n=${w.n}, root-calls=${calls}` }; });
-  await control(5, 'duplicate key', { get ctx() { return mutateContext(contextBytes,
-    c => { const t = c.policies.threshold.table; t.splice(2, 0, t[1].slice()); }); } },
+  await control('O-CONTROLS.4', 'table truncated below the n queried at the witnessed step',
+    () => ctxWith(c => { c.policies.threshold.table = c.policies.threshold.table.slice(0, needWitness().n); }),
+    (o, calls) => { const w = needWitness(); return abortAt(w.n, w.firstAbortStep)(o, calls); });
+  await control('O-CONTROLS.4b', 'table truncated below the largest queried n',
+    () => ctxWith(c => { c.policies.threshold.table = c.policies.threshold.table.slice(0, needWitness().deepN); }),
+    (o, calls) => { const w = needWitness(); return abortAt(w.deepN, w.deepStep)(o, calls); });
+  await control('O-CONTROLS.5', 'duplicate key', () => ctxWith(
+    c => { const t = c.policies.threshold.table; t.splice(2, 0, t[1].slice()); }),
   refusedBefore('table-rule-4'));
-  await control(6, 'float value', { get ctx() { return mutateContext(contextBytes,
-    c => { c.policies.threshold.table[2][1] = 1.5; }); } },
+  await control('O-CONTROLS.6', 'float value', () => ctxWith(
+    c => { c.policies.threshold.table[2][1] = 1.5; }),
   refusedBefore('table-rule-1'));
-  await control(7, 'unknown semantics', { get ctx() { return mutateContext(contextBytes,
-    c => { c.policies.backdonateAuth.semantics = 'always-allow'; }); } },
+  await control('O-CONTROLS.6b', 'integer value spelled as a float', () => {
+    const [k, v] = JSON.parse(contextBytes.toString('utf8')).policies.threshold.table[2];
+    const raw = contextBytes.toString('utf8'), needle = `[${k},${v}]`;
+    if (raw.split(needle).length !== 2) throw new Error('mutazione non applicabile esattamente una volta: ' + needle);
+    return { context: Buffer.from(raw.replace(needle, `[${k},${v}.0]`)) };
+  }, refusedBefore('table-rule-1'));
+  await control('O-CONTROLS.7', 'unknown semantics', () => ctxWith(
+    c => { c.policies.backdonateAuth.semantics = 'always-allow'; }),
   refusedBefore('semantics'));
-  await control(8, 'labels, source and provenance changed', { get ctx() { return mutateContext(contextBytes, c => {
+  await control('O-CONTROLS.8', 'labels, source and provenance changed', () => ctxWith(c => {
     c.policies.threshold.label = 'zeroThreshold'; c.policies.threshold.source.gitBlobOid = '0'.repeat(40);
     c.policies.backdonateAuth.label = 'renamed'; c.generatedFrom.sourceInputDigest = '0'.repeat(64);
-    c.generatedFrom.exporter = 'elsewhere'; }); } },
+    c.generatedFrom.exporter = 'elsewhere'; }),
   o => ({ ok: o.tag === TAGS.pass }));
-  await control(9, 'restored', {}, o => {
+  await control('O-CONTROLS.9', 'restored', {}, o => {
     const same = sha256(readFileSync(CORPUS_PATH)) + sha256(readFileSync(CONTEXT_PATH)) === onDisk &&
       Buffer.from(contextBytes).equals(readFileSync(CONTEXT_PATH));
     return { ok: o.tag === TAGS.pass && same, note: `tracked bytes unchanged=${same}` };
   });
 
-  const ctl = n => rows.find(r => r.id === `O-CONTROLS.${n}`);
-  const grouped = (id, ns, what) => add(id, ns.every(n => ctl(n) && ctl(n).ok),
-    `${what}: ` + ns.map(n => `control ${n} ${ctl(n) && ctl(n).ok ? 'ok' : 'FAILED'}`).join(', '));
+  /* the remaining refusal classes of O-PRE-REPLAY, one control each */
+  await control('O-PRE-REPLAY.schema', 'unrecognised schema', () => ctxWith(c => { c.schema = 'other.schema'; }),
+    refusedBefore('schema'));
+  await control('O-PRE-REPLAY.version', 'unrecognised version', () => ctxWith(c => { c.version = 2; }),
+    refusedBefore('version'));
+  await control('O-PRE-REPLAY.rule2', 'keys not increasing', () => ctxWith(
+    c => { const t = c.policies.threshold.table; [t[1], t[2]] = [t[2], t[1]]; }),
+  refusedBefore('table-rule-2'));
+  await control('O-PRE-REPLAY.rule3', 'keys not contiguous from 0', () => ctxWith(
+    c => { c.policies.threshold.table.splice(3, 1); }),
+  refusedBefore('table-rule-3'));
+  await control('O-PRE-REPLAY.rule5', 'empty table', () => ctxWith(
+    c => { c.policies.threshold.table = []; }),
+  refusedBefore('table-rule-5'));
+
+  /* the field a mismatch names: one step of the corpus changed in one field, at a step and field
+     chosen from the corpus itself */
+  const steps = JSON.parse(corpusBytes.toString('utf8')).steps;
+  const at = pred => { const i = steps.findIndex(pred); if (i < 0) throw new Error('nessun passo adatto nel corpus'); return i; };
+  const mismatchAt = (id, field, pick, mut) => control(id, `step ${field} changed`, () => {
+    const k = pick();
+    return mutateCorpus(c => mut(c.steps[k]));
+  }, o => { const k = pick(); return { ok: o.tag === TAGS.mismatch && o.step === k && o.field === field,
+    note: `expected step ${k} field ${field}` }; });
+  await mismatchAt('O-MISMATCH.accepted', 'accepted', () => steps.length - 1, s => { s.accepted = !s.accepted; });
+  await mismatchAt('O-MISMATCH.state', 'state', () => Math.floor(steps.length / 2),
+    s => { s.state.appFold.conti[0][1] += 1; });
+  await mismatchAt('O-MISMATCH.pending', 'state', () => at(s => s.state.pendingBase.length > 0),
+    s => { s.state.pendingBase[0][1].mutation = { removeMember: { key: 'nobody' } }; });
+  await mismatchAt('O-MISMATCH.pendingProposals', 'state', () => at(s => s.state.pendingBase.length > 0),
+    s => { s.state.pendingProposals = [['depart:nobody', {}]]; });
+  await mismatchAt('O-MISMATCH.change', 'change', () => at(s => s.change !== null), s => { s.change = null; });
+  await mismatchAt('O-MISMATCH.voteError', 'voteError', () => at(s => s.voteError !== null),
+    s => { s.voteError = s.voteError === 'notProposer' ? 'notDesignee' : 'notProposer'; });
+
+  const ctl = id => rows.find(r => r.id === id);
+  const grouped = (id, ids, what) => add(id, ids.every(x => ctl(x) && ctl(x).ok),
+    `${what}: ` + ids.map(x => `${x.replace(/^O-/, '')} ${ctl(x) && ctl(x).ok ? 'ok' : 'FAILED'}`).join(', '));
   if (oracle) {
-    grouped('O-PRE-REPLAY', [3, 5, 6, 7], 'refused before any step, naming the rule');
-    grouped('O-ABORT', [4], 'abort at the point of query');
-    grouped('O-MISMATCH', [2], 'mismatch names step and field');
-    const tags = [2, 3, 4].map(n => ctl(n).text.split(': ')[1].split(' ').slice(0, 2).join(' '));
+    grouped('O-PRE-REPLAY', ['O-CONTROLS.3', 'O-CONTROLS.5', 'O-CONTROLS.6', 'O-CONTROLS.6b', 'O-CONTROLS.7',
+      'O-PRE-REPLAY.schema', 'O-PRE-REPLAY.version', 'O-PRE-REPLAY.rule2', 'O-PRE-REPLAY.rule3', 'O-PRE-REPLAY.rule5'],
+    'refused before any step, naming the rule');
+    grouped('O-ABORT', ['O-CONTROLS.4', 'O-CONTROLS.4b'], 'abort at the point of query, with the checked prefix');
+    grouped('O-MISMATCH', ['O-CONTROLS.2', 'O-MISMATCH.accepted', 'O-MISMATCH.state', 'O-MISMATCH.pending',
+      'O-MISMATCH.pendingProposals', 'O-MISMATCH.change',
+      'O-MISMATCH.voteError'], 'mismatch names step and field');
+    const tags = ['O-CONTROLS.2', 'O-CONTROLS.3', 'O-CONTROLS.4'].map(id => outcomes[id] && outcomes[id].tag);
     const found = [TAGS.mismatch, TAGS.refusal, TAGS.abort];
-    add('O-DISTINCT', found.every((t, i) => tags[i].startsWith(t)) && new Set(found).size === 3,
-      'tags: ' + tags.join(' | '));
+    add('O-DISTINCT', found.every((t, i) => tags[i] === t) && new Set(tags).size === 3, 'tags: ' + tags.join(' | '));
   } else for (const id of ['O-PRE-REPLAY', 'O-ABORT', 'O-MISMATCH', 'O-DISTINCT']) add(id, false, absent());
   return rows;
 }
@@ -259,11 +325,11 @@ async function selftest(work, source) {
     { name: 'verdict ignores the threshold value',
       needle: 'const required = theta(vtFranchiseSize(view));',
       to: 'const required = Math.floor((vtFranchiseSize(view) + 1) / 2);',
-      expect: [['O-WITNESS', 'inadeguato'], ['O-CONTROLS.2', 'PASS']] },
+      expect: [['O-WITNESS', 'inadeguato'], ['O-CONTROLS.2', 'non valutabile']] },
     { name: 'verdict swallows a domain abort',
       needle: 'const required = theta(vtFranchiseSize(view));',
       to: 'const required = (() => { try { return theta(vtFranchiseSize(view)); } catch { return 0; } })();',
-      expect: [['O-CONTROLS.4', 'PASS']] },
+      expect: [['O-CONTROLS.4', 'CONFORMANCE MISMATCH']] },
   ];
   let bad = 0;
   const t0 = performance.now();

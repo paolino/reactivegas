@@ -564,12 +564,12 @@ function economicCleanup(change, pre, post, s) {
    changed and no ballot was cast). Closures of bound questions mint their
    authorizations here, and a collection the cleanup dissolved takes its
    authorizations with it (#76). null is a rejection. */
-function baseHook(change, pre, post, s) {
+function baseHook(change, pre, post, s, theta = vtTheta) {
   const cleaned = economicCleanup(change, pre, post, withAuth(s));
   if (cleaned === null) return null;
   const departed = 'memberRemoved' in change
     ? vtCloseProposerQuestions(change.memberRemoved, cleaned.votes) : cleaned.votes;
-  const swept = vtSweep(vtTheta, post, departed);
+  const swept = vtSweep(theta, post, departed);
   return pruneAuth(syncAuth(cleaned, swept));
 }
 
@@ -984,11 +984,11 @@ function denyByClosure(s, c) {
 
 /* voteApply: the vote fold's single validation decision, then its effect
    and sweep; the closures of bound questions mint their authorizations */
-function voteApply(view, s, signer, ev) {
+function voteApply(view, s, signer, ev, theta) {
   const verr = vtValidate(view, s.votes, signer, ev);
   if (verr) return { ok: false, verr, failed: [g('KelGroups.Vote.validateVoteEvent = .error .' + verr,
     'validazione del voto: ' + verr)] };
-  const det = vtApply(view, s.votes, signer, ev);
+  const det = vtApply(view, s.votes, signer, ev, theta);
   return { ok: true, state: syncAuth(s, det.state), closedDelta: det.closedDelta };
 }
 
@@ -996,15 +996,15 @@ function voteApply(view, s, signer, ev) {
    binds then opens, the three app-decided constructors spend, every other
    economic constructor runs the core step. ae is the Lean app event
    {ctor: args}; the signer arrives apart from it. */
-function appFoldCore(view, s, signer, ae) {
+function appFoldCore(view, s, signer, ae, theta) {
   const tag = Object.keys(ae)[0], args = ae[tag];
   if (tag === 'openQuestion' || tag === 'cast' || tag === 'renounce')
-    return voteApply(view, s, signer, ae);
+    return voteApply(view, s, signer, ae, theta);
   if (tag === 'openBound') {
     const { questionId, kind, target } = args;
     if (!bindable(s, questionId, target)) return { ok: false, failed: [UNBINDABLE(questionId)] };
     return voteApply(view, { ...s, bindings: [[questionId, target], ...s.bindings] }, signer,
-      { openQuestion: { questionId, kind } });
+      { openQuestion: { questionId, kind } }, theta);
   }
   if (tag === 'grantPermission')
     return spendThen(permT(args.c), 'positive', s, s1 => attempt(view, s1, { tag, author: signer, ...args }));
@@ -1018,8 +1018,8 @@ function appFoldCore(view, s, signer, ae) {
 }
 
 /* Reactivegas.appFold: the payload or a refusal, authorizations pruned */
-function appFold(view, s, signer, ae) {
-  const res = appFoldCore(view, withAuth(s), signer, ae);
+function appFold(view, s, signer, ae, theta = vtTheta) {
+  const res = appFoldCore(view, withAuth(s), signer, ae, theta);
   return res.ok ? { ...res, state: pruneAuth(res.state) } : res;
 }
 
@@ -1784,7 +1784,7 @@ const vtPermKind = k =>
 /* verdictOf — the single verdict site (State.lean): collective tallies are
    compared to θ(franchise(view)), assents first; a permission verdict is
    decided ONLY by the designee's own recorded ballot */
-function vtVerdictOf(view, q) {
+function vtVerdictOf(view, q, theta = vtTheta) {
   const perm = vtPermKind(q.kind);
   if (perm) {
     const d = perm.designee;
@@ -1792,7 +1792,7 @@ function vtVerdictOf(view, q) {
     if (q.dissents.includes(d)) return 'negative';
     return 'open';
   }
-  const required = vtTheta(vtFranchiseSize(view));
+  const required = theta(vtFranchiseSize(view));
   if (q.assents.length >= required) return 'positive';
   if (q.dissents.length >= required) return 'negative';
   return 'open';
@@ -1822,7 +1822,7 @@ function vtPlaceBallot(voter, ballot, q) {
 function vtSweep(theta, view, gs) {
   const resolved = [], remaining = [];
   for (const [qid, q] of gs.openQuestions) {
-    const v = vtVerdictOf(view, q);
+    const v = vtVerdictOf(view, q, theta);
     if (v === 'open') remaining.push([qid, q]);
     else resolved.push({ questionId: qid, question: q, verdict: v,
       cause: vtClosureCause(view, q, v) });
@@ -1844,7 +1844,7 @@ function vtCloseProposerQuestions(proposer, gs) {
 /* applyVoteEventChecked: validate, effect, then the unconditional sweep —
    the view is a per-step parameter (the integrated caller hands the
    post-transition canonical view) */
-function vtApply(view, gs, signer, ev) {
+function vtApply(view, gs, signer, ev, theta = vtTheta) {
   let effected = gs;
   if ('openQuestion' in ev) {
     const { questionId, kind } = ev.openQuestion;
@@ -1867,7 +1867,7 @@ function vtApply(view, gs, signer, ev) {
     if (q) effected = { openQuestions: vtErase(questionId, gs.openQuestions),
       closed: gs.closed.concat([{ questionId, question: q, verdict: 'negative', cause: 'renounced' }]) };
   }
-  const swept = vtSweep(vtTheta, view, effected);
+  const swept = vtSweep(theta, view, effected);
   return { state: swept, closedDelta: swept.closed.length - gs.closed.length };
 }
 
@@ -2109,8 +2109,8 @@ function bgMutationChange(p) {
 /* commitBaseChange: the sealed hook sees the exact pre/post canonical views
    and the pre-transition payload; its output IS the payload the caller
    observes. A hook refusal rejects the whole transition with it. */
-function bgCommitBaseChange(pre, post, change, payload) {
-  const hooked = baseHook(change, { members: pre.members }, { members: post.members }, payload);
+function bgCommitBaseChange(pre, post, change, payload, theta) {
+  const hooked = baseHook(change, { members: pre.members }, { members: post.members }, payload, theta);
   if (hooked === null) return { refused: 'rejected' };
   return { gs: post, payload: hooked, change };
 }
@@ -2118,13 +2118,13 @@ function bgCommitBaseChange(pre, post, change, payload) {
 /* tryEnactBase: enact a pending mutation once its approvals reach the
    majority of the current franchise (read on the state that already holds
    the pending entry); otherwise leave it pending, no change */
-function bgTryEnact(gs, pid, payload) {
+function bgTryEnact(gs, pid, payload, theta) {
   const pend = vtLookup(pid, gs.pendingBase);
   if (!pend) return { gs, payload, change: null };
   if (pend.approvals.length >= bgMajority(gs)) {
     const proposal = pend.proposal;
     const mutated = bgEnactMutation({ ...gs, pendingBase: vtErase(pid, gs.pendingBase) }, proposal);
-    return bgCommitBaseChange(gs, mutated, bgMutationChange(proposal), payload);
+    return bgCommitBaseChange(gs, mutated, bgMutationChange(proposal), payload, theta);
   }
   return { gs, payload, change: null };
 }
@@ -2132,14 +2132,14 @@ function bgTryEnact(gs, pid, payload) {
 /* applyIntegratedEvent, base routes (direct admission + propose + approve):
    validation dominates the effect on every route. `payload` is the app
    payload the sealed hook runs over. */
-function bgApply(gs, signer, ev, payload) {
+function bgApply(gs, signer, ev, payload, theta = vtTheta) {
   if ('direct' in ev) {
     const adm = ev.direct.admitMember;
     const verr = bgValidateAdmission(gs, signer, adm.key);
     if (verr) return { gs, payload, refused: verr };
     const post = { ...gs,
       members: vtInsert(adm.key, { key: adm.key, email: adm.email, roles: adm.roles }, gs.members) };
-    const done = bgCommitBaseChange(gs, post, { memberAdmitted: adm.key }, payload);
+    const done = bgCommitBaseChange(gs, post, { memberAdmitted: adm.key }, payload, theta);
     if (done.refused) return { gs, payload, refused: done.refused };
     return { ...done, enacted: true };
   }
@@ -2150,14 +2150,14 @@ function bgApply(gs, signer, ev, payload) {
     const pid = bgDigest(p);
     const proposed = { ...gs, pendingBase: vtInsert(pid,
       { proposal: p, proposer: signer, approvals: [] }, gs.pendingBase) };
-    return bgTryEnact(proposed, pid, payload);
+    return bgTryEnact(proposed, pid, payload, theta);
   }
   const pid = ev.approve.proposalId;
   const verr = bgValidateApproval(gs, signer, pid);
   if (verr) return { gs, payload, refused: verr };
   const pend = vtLookup(pid, gs.pendingBase);
   const approved = { ...pend, approvals: vtSetInsert(signer, pend.approvals) };
-  return bgTryEnact({ ...gs, pendingBase: vtInsert(pid, approved, gs.pendingBase) }, pid, payload);
+  return bgTryEnact({ ...gs, pendingBase: vtInsert(pid, approved, gs.pendingBase) }, pid, payload, theta);
 }
 
 const bgCanonProposal = p => 'departure' in p
@@ -2318,12 +2318,12 @@ const stripAuthor = a => {
    | {app:{<AppEvent ctor>}} — the app route is Reactivegas.appFold: the vote
    constructors and openBound, the closure-spending app-decided ones, and
    the economic core step. */
-function applyIntegrated(gs, signer, ev) {
+function applyIntegrated(gs, signer, ev, theta = vtTheta) {
   if ('direct' in ev) {
     const adm = ev.direct.admitMember;
     const verr = bgValidateAdmission(gs, signer, adm.key);
     if (verr) return { refused: verr };
-    const det = bgApply(gs, signer, ev, gs.appFold);
+    const det = bgApply(gs, signer, ev, gs.appFold, theta);
     if (det.refused) return { refused: det.refused };
     return { gs: { ...det.gs, appFold: det.payload }, payload: det.payload,
       change: det.change || null };
@@ -2333,7 +2333,7 @@ function applyIntegrated(gs, signer, ev) {
       ? bgValidateMutation(gs, signer, ev.propose.proposal)
       : bgValidateApproval(gs, signer, ev.approve.proposalId);
     if (verr) return { refused: verr };
-    const det = bgApply(gs, signer, ev, gs.appFold);
+    const det = bgApply(gs, signer, ev, gs.appFold, theta);
     if (det.refused) return { refused: det.refused };
     return { gs: { ...det.gs, appFold: det.payload }, payload: det.payload,
       change: det.change || null };
@@ -2350,7 +2350,7 @@ function applyIntegrated(gs, signer, ev) {
     const args = stripAuthor(ae[tag]);
     const pre = { members: gs.members };
     if (!isMemberView(signer, pre)) return { refused: 'notAMember' };
-    const res = appFold(pre, gs.appFold, signer, { [tag]: args });
+    const res = appFold(pre, gs.appFold, signer, { [tag]: args }, theta);
     if (!res.ok) return { refused: res.verr || 'rejected', failed: res.failed };
     return { gs: { ...gs, appFold: res.state }, payload: res.state, change: null };
   }
