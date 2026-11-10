@@ -28,4 +28,4 @@
 
 ## Mirror auxiliaries
 
-- [ ] T541 Mirror checker excludes compiler auxiliaries by kind, with its negative control (mirror-auxiliaries-by-kind)
+- [x] T541 Mirror checker excludes compiler auxiliaries by kind, with its negative control (mirror-auxiliaries-by-kind)
