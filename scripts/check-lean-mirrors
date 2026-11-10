@@ -10,7 +10,12 @@
 #     counted in the receipt, and any unclassified kind fails closed with the
 #     classifier's own diagnostic. Prop-parameter/non-Prop-result shapes
 #     excluded; `<I>.below` eliminator machinery of a discovered inductive `I`
-#     excluded by structural rule and logged);
+#     excluded by structural rule and logged; a compiler-generated auxiliary
+#     of a recursive definition (the `_sunfold` and `_unsafe_rec` definitions)
+#     excluded by what Lean recorded about the declaration, never by its name:
+#     safety `partial`, or the smart-unfolding mark in its body. Each exclusion
+#     is logged with its rule and counted as `aux-excluded` in the summary and
+#     the receipt line);
 #   * requires each discovered identity to be either a tabled correspondence
 #     row (mirror const and theorem const both exist; the theorem is an `Iff`
 #     off the discovered Prop; the right-hand side mentions the mirror) or a
@@ -226,6 +231,38 @@ partial def s4bHarvestConsts (e : Lean.Expr) (acc : Array Lean.Name) : Array Lea
   | .proj _ _ b => s4bHarvestConsts b acc
   | _ => acc
 
+/-- True iff `e` carries Lean's smart-unfolding annotation (`sunfoldMatch` /
+`sunfoldMatchAlt`): the mark the structural-recursion elaborator puts on the
+body of the `_sunfold` definition it generates. -/
+partial def s4bHasSmartUnfolding (e : Lean.Expr) : Bool :=
+  match e with
+  | .mdata _ b =>
+      (Lean.Meta.smartUnfoldingMatch? e).isSome || (Lean.Meta.smartUnfoldingMatchAlt? e).isSome
+        || s4bHasSmartUnfolding b
+  | .app f a => s4bHasSmartUnfolding f || s4bHasSmartUnfolding a
+  | .lam _ t b _ => s4bHasSmartUnfolding t || s4bHasSmartUnfolding b
+  | .forallE _ t b _ => s4bHasSmartUnfolding t || s4bHasSmartUnfolding b
+  | .letE _ t v b _ => s4bHasSmartUnfolding t || s4bHasSmartUnfolding v || s4bHasSmartUnfolding b
+  | .proj _ _ b => s4bHasSmartUnfolding b
+  | _ => false
+
+/-- The rule, if any, by which a compiled definition is a compiler-generated
+auxiliary of a recursive definition rather than a predicate someone wrote. The
+rule reads what Lean recorded about the declaration, never its name:
+ * `partial-safety`: its safety is `partial`, which Lean assigns only to the
+   `_unsafe_rec` implementation it generates for a structural, well-founded or
+   `partial` definition (a written `def` is `safe`, a written `unsafe def`
+   `unsafe`);
+ * `smart-unfolding-annotation`: its body carries the smart-unfolding mark of
+   the `_sunfold` definition generated for a structural definition. -/
+def s4bAuxRule (n : Lean.Name) (ci : Lean.ConstantInfo) : Option String :=
+  match ci with
+  | .defnInfo d =>
+      if d.safety == .partial then some "partial-safety"
+      else if s4bHasSmartUnfolding d.value then some "smart-unfolding-annotation"
+      else none
+  | _ => none
+
 /-- Tracked owned modules, baked per-run from `git ls-files` by the wrapper
 script (see TRACKED_LIT). Authority for provenance-based ownership and the
 import-reach completeness check. This is derived live, never a frozen list:
@@ -253,6 +290,7 @@ run_cmd do
   -- fail-closed arm instead of silently dropping them.
   let mut found : Array (String × String) := #[]
   let mut skipped : Array String := #[]
+  let mut auxExcluded : Array (String × String) := #[]
   let mut predDefnCount := 0
   let mut predInductCount := 0
   let mut predOpaqueCount := 0
@@ -295,10 +333,15 @@ run_cmd do
           catch _ => pure none)
         match verdict with
         | some true =>
-            found := found.push (home, toString n)
-            if kindTag == "defn" then predDefnCount := predDefnCount + 1
-            else if kindTag == "induct" then predInductCount := predInductCount + 1
-            else predOpaqueCount := predOpaqueCount + 1
+            match s4bAuxRule n ci with
+            | some rule =>
+                auxExcluded := auxExcluded.push (toString n, rule)
+                logInfo m!"MIRROR-AUX-EXCLUDED {toString n} rule={rule}"
+            | none =>
+                found := found.push (home, toString n)
+                if kindTag == "defn" then predDefnCount := predDefnCount + 1
+                else if kindTag == "induct" then predInductCount := predInductCount + 1
+                else predOpaqueCount := predOpaqueCount + 1
         | some false =>
             if kindTag == "defn" then nonpredDefn := nonpredDefn + 1
             else if kindTag == "induct" then nonpredInduct := nonpredInduct + 1
@@ -312,7 +355,7 @@ run_cmd do
         continue
   if found.size == 0 then fail m!"MIRROR-EMPTY-DISCOVERY"
   for sk in skipped do logInfo m!"MIRROR-SKIP {sk}"
-  logInfo m!"MIRROR-KIND-CENSUS pred(defn/induct/opaque)={predDefnCount}/{predInductCount}/{predOpaqueCount} nonpred(defn/induct/opaque)={nonpredDefn}/{nonpredInduct}/{nonpredOpaque} nonowned={nonowned} excluded(thm/axiom/ctor-rec)={exclThm}/{exclAxiom}/{exclCtorRec} sort-undecided={skipped.size}"
+  logInfo m!"MIRROR-KIND-CENSUS pred(defn/induct/opaque)={predDefnCount}/{predInductCount}/{predOpaqueCount} nonpred(defn/induct/opaque)={nonpredDefn}/{nonpredInduct}/{nonpredOpaque} nonowned={nonowned} excluded(thm/axiom/ctor-rec)={exclThm}/{exclAxiom}/{exclCtorRec} excluded-aux={auxExcluded.size} sort-undecided={skipped.size}"
   -- 1b. Import-reach completeness (Boundary 1): every tracked owned module
   -- must be present in the imported closure. A tracked-but-unimported module
   -- fails closed NAMING it plus remediation (module-level refusal); predicate
@@ -439,21 +482,23 @@ run_cmd do
       if !claimedMirrors.contains s then
         fail m!"MIRROR-ORPHAN {s} (Bool mirror in {home} claimed by no row)"
       else orphanCount := orphanCount + 1
-  logInfo m!"MIRROR-SUMMARY rows={rowCount} exceptions={s4bExceptions.size} below={belowCount} orphans-checked={orphanCount} discovered={found.size} promoted={promotedCount}"
+  logInfo m!"MIRROR-SUMMARY rows={rowCount} exceptions={s4bExceptions.size} below={belowCount} orphans-checked={orphanCount} discovered={found.size} promoted={promotedCount} aux-excluded={auxExcluded.size}"
   logInfo m!"MIRROR-KIND-CENSUS-OK pred={predDefnCount + predInductCount + predOpaqueCount} excluded-thm={exclThm} unclassified=0"
   let failed ← failedRef.get
   if failed then fail m!"MIRROR-CHECK-FAILED"
   else do
-    logInfo m!"MIRROR-CHECK-OK rows={rowCount} exceptions={s4bExceptions.size} discovered={found.size} promoted={promotedCount} tracked={s4bTrackedModules.size}"
+    logInfo m!"MIRROR-CHECK-OK rows={rowCount} exceptions={s4bExceptions.size} discovered={found.size} promoted={promotedCount} tracked={s4bTrackedModules.size} aux-excluded={auxExcluded.size}"
     let names := (found.map (·.2)).qsort (· < ·)
     let receipt := "MIRROR-CHECK-OK rows=" ++ toString rowCount ++
       " exceptions=" ++ toString s4bExceptions.size ++
       " discovered=" ++ toString found.size ++
       " promoted=" ++ toString promotedCount ++
-      " tracked=" ++ toString s4bTrackedModules.size ++ "\n" ++
+      " tracked=" ++ toString s4bTrackedModules.size ++
+      " aux-excluded=" ++ toString auxExcluded.size ++ "\n" ++
       "nonce=" ++ nonce ++ "\n" ++
       "\n".intercalate (names.toList.map (fun s => "extent " ++ s)) ++ "\n" ++
-      "\n".intercalate (s4bTrackedModules.toList.map (fun s => "tracked " ++ s)) ++ "\n"
+      "\n".intercalate (s4bTrackedModules.toList.map (fun s => "tracked " ++ s)) ++ "\n" ++
+      "\n".intercalate (auxExcluded.toList.map (fun (a, r) => "aux " ++ a ++ " " ++ r)) ++ "\n"
     IO.FS.writeFile ".lake/s4b-mirror-receipt" receipt
     logInfo m!"MIRROR-RECEIPT-WROTE nonce={nonce}"
 LEAN_EOF
