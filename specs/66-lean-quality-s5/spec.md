@@ -6,8 +6,11 @@ S5 acts on what that ledger and the inversion audit found: theorems whose
 statements are weaker than the behaviour they describe.
 
 Each slice below is its own pull request, in this order: exact inversions,
-observed refusals, question retention, statement triage, mirror auxiliaries.
-Finite-history correspondence is not part of S5: it waits for #75 and #71.
+observed refusals, question retention, statement triage, mirror auxiliaries,
+finite history.
+The sixth slice, finite-history correspondence, was released on 2026-11-10 after
+#75 landed the vote corpus (master `72bde8a`); it discharges ruling
+RG-S4-REACH-20260906 recorded on #66.
 
 ## User stories
 
@@ -29,6 +32,13 @@ Finite-history correspondence is not part of S5: it waits for #75 and #71.
 - **mirror-auxiliaries-story** As a maintainer, the mirror checker ignores
   compiler-generated auxiliary declarations by their kind, not by name
   patterns, and a negative control shows it still fails on a real gap.
+- **finite-history-story** As a maintainer, a supplied finite history — an
+  initial aggregate and its stored steps, such as `lean/corpus/vote.json` — is
+  validated by a function whose acceptance is proved to mean that every stored
+  state is reachable by the production root from a guarded genesis, under the
+  threshold and authorization the history names, with refused steps leaving the
+  state unchanged; and the same holds for the fixed-view `Reach` predicate. No
+  function claims to decide reachability of a state given without its history.
 
 ## Requirements
 
@@ -66,3 +76,34 @@ Finite-history correspondence is not part of S5: it waits for #75 and #71.
   `just lean` with the theorem's name.
 - A ledger rendering that differs from the re-derived ledger fails
   `just lean-mutants`.
+
+## Finite-history correspondence (slice 6, ruling RG-S4-REACH-20260906)
+
+Base: `72bde8a` (#75 vote corpus, #69 pledge control). The history validated is
+supplied, never searched for: validation of one history must never stand for
+deciding reachability of a state.
+
+| name | requirement |
+|---|---|
+| genesis-checked | The integrated validator accepts a history only when its initial aggregate is exactly the output of `Reactivegas.boot` on that aggregate's members and payload. Genesis is checked by the validator, never assumed by the theorem. Each of: `comuneId` among the members, a non-empty `live`, a non-empty `bindings`, a non-empty closed-vote record, a pending proposal, is rejected by a named negative control. |
+| validated-history-is-production-history | For every threshold `θ` and authorization `auth`, a history the validator accepts under `θ` and `auth` has every stored state (the initial one included) satisfying `ProductionHistory θ auth`. Proved over arbitrary `θ`, `auth`, initial aggregate and steps. |
+| refusal-preserves-state | In an accepted history, a step stored as refused has the stored state of its predecessor and `Reactivegas.apply θ auth` returns an error on that predecessor, signer and event; a step stored as accepted has exactly the state and base change `apply` returns. Both are conclusions of a theorem. |
+| production-history-has-validated-witness | Every aggregate satisfying `ProductionHistory θ auth` is the final state of some finite history (initial aggregate and signed events) that the validator accepts under `θ` and `auth`. |
+| fixed-view-history-reaches | For every view and authorization: a supplied history of `stepEvent` steps under that fixed view, whose initial state the validator checks is `State.empty` and whose view it checks does not contain `comuneId`, when accepted, has every applied post-state satisfying `Reach view auth`, and every refused step leaves the state unchanged with `stepEvent` returning `none`. Conversely every state satisfying `Reach view auth` is the final state of an accepted such history. A history with a non-empty initial state is rejected (negative control): `Trace.initial` may be arbitrary, `Reach.boot` may not. |
+| vote-corpus-validated | The bytes of `lean/corpus/vote.json` are accepted by the integrated validator under the threshold the table in `lean/corpus/vote.context.json` defines and the always-refuse authorization the sidecar names, in a hosted CI step. A planted post-state, a flipped `accepted`, and a non-genesis initial aggregate, each applied to those bytes, are rejected in the same step. |
+| validation-not-decision | No new definition takes a state without its history and returns whether it is reachable. Every new docstring calls the validator a validation of a supplied history. |
+| finite-history-ledger | Each new theorem is a row of the mutant ledger, KILLED or OPEN with its reason; `ledger-current` and `ledger-wall-time-projected` apply to this slice. |
+
+Fences for this slice, in addition to the S5 fences:
+
+- The bytes of `lean/corpus/*` do not change, and the vote corpus source-input
+  digest does not change: no file in the transitive import closure of
+  `Reactivegas.CorpusExport`, and none of `lean/lakefile.lean`,
+  `lean/lean-toolchain`, `lean/lake-manifest.json`, is edited.
+- No Lean file the simulator pins (`Types`, `State`, `Step`, `Predicates`,
+  `Invariants`, `Mirrors`, `Composition`, `CompositionRoot`) is edited, and no
+  simulator file is edited (#70 runs in parallel on the simulator).
+- Not in this slice: a bridge from integrated histories to the fixed-view
+  `Reach` (an integrated history can change the view); a decision procedure
+  for reachability; sidecars for the economic or integrated corpora;
+  `docs/en/design` (#71).

@@ -10,8 +10,9 @@ master it starts from, because the earlier slices move the ledger.
 | 3 | question-retention | one new theorem; ledger renderings | `just lean`, `just lean-mutants` |
 | 4 | statement-triage | one disposition per row of the census taken at slice start (83 unconstrained rows on `d51d473`); the two refusal sites the observed-refusals audit found uncovered; a recorded-reason field in the ledger; ledger renderings; a measured projection of the hosted ledger job (64, 72, 92 minutes on the last three slices, timeout 120) | `just lean-mutants` |
 | 5 | mirror-auxiliaries | `scripts/check-lean-mirrors` and its control | `just lean` |
+| 6 | finite-history | a new Lean module outside the corpus exporter's import closure (validators, soundness and witness theorems, negative controls); a hosted step validating `lean/corpus/vote.json`; ledger renderings | `just lean`, the hosted step, `just lean-mutants` |
 
-Not in S5: finite-history correspondence (waits for #75 and #71).
+Slice 6 starts on `72bde8a`, after #75 landed the vote corpus.
 
 ## Constraints
 

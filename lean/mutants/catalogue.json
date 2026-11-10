@@ -4053,6 +4053,8 @@
         "after": "  | some _ => .applied s"
       },
       "claimedKills": [
+        "Reactivegas.reach_has_fixedView_witness",
+        "Reactivegas.traceStepRefusal_none_outcome",
         "TraceTests.all_checks_pass",
         "stepDetailed_erases"
       ],
@@ -4198,6 +4200,234 @@
         "step_correct_cases"
       ],
       "note": "correcting a pledge the collection does not hold succeeds"
+    },
+    {
+      "id": "finitehistory-genesis-accepts-any-output",
+      "target": "Reactivegas.genesisRefusal",
+      "guard": null,
+      "patch": {
+        "line": 68,
+        "before": "  | some g => if g = gs then none else some .notBootOutput",
+        "after": "  | some g => none"
+      },
+      "claimedKills": [
+        "Reactivegas.genesisRefusal_none_iff"
+      ],
+      "note": "genesis check accepts an aggregate that differs from boot's output"
+    },
+    {
+      "id": "finitehistory-genesis-accepts-refused-boot",
+      "target": "Reactivegas.genesisRefusal",
+      "guard": null,
+      "patch": {
+        "line": 67,
+        "before": "  | none => if productionWellFormed gs then some .payloadNotClean else some .comuneReserved",
+        "after": "  | none => none"
+      },
+      "claimedKills": [
+        "Reactivegas.genesisRefusal_none_iff"
+      ],
+      "note": "genesis check accepts an aggregate boot refuses"
+    },
+    {
+      "id": "finitehistory-step-ignores-accepted-flag",
+      "target": "Reactivegas.stepRefusal",
+      "guard": null,
+      "patch": {
+        "line": 76,
+        "before": "      if st.accepted = false then some (.appliedButStoredRefused i)",
+        "after": "      if false then some (.appliedButStoredRefused i)"
+      },
+      "claimedKills": [
+        "Reactivegas.stepRefusal_none_outcome"
+      ],
+      "note": "an applied step stored as refused is not refused"
+    },
+    {
+      "id": "finitehistory-step-ignores-post-state",
+      "target": "Reactivegas.stepRefusal",
+      "guard": null,
+      "patch": {
+        "line": 77,
+        "before": "      else if st.state ≠ r.state then some (.postStateDiffers i)",
+        "after": "      else if false then some (.postStateDiffers i)"
+      },
+      "claimedKills": [
+        "Reactivegas.stepRefusal_none_outcome"
+      ],
+      "note": "an applied step's stored post-state is not compared"
+    },
+    {
+      "id": "finitehistory-step-accepts-stored-accepted-refusal",
+      "target": "Reactivegas.stepRefusal",
+      "guard": null,
+      "patch": {
+        "line": 81,
+        "before": "      if st.accepted = true then some (.refusedButStoredAccepted i)",
+        "after": "      if false then some (.refusedButStoredAccepted i)"
+      },
+      "claimedKills": [
+        "Reactivegas.stepRefusal_none_outcome"
+      ],
+      "note": "a refused step stored as accepted is not refused"
+    },
+    {
+      "id": "finitehistory-refused-step-may-move",
+      "target": "Reactivegas.stepRefusal",
+      "guard": null,
+      "patch": {
+        "line": 82,
+        "before": "      else if st.state ≠ gs then some (.refusedStepMoved i)",
+        "after": "      else if false then some (.refusedStepMoved i)"
+      },
+      "claimedKills": [
+        "Reactivegas.stepRefusal_none_outcome"
+      ],
+      "note": "a refused step may store a state other than its predecessor"
+    },
+    {
+      "id": "finitehistory-steps-stop-after-first",
+      "target": "Reactivegas.stepsRefusal",
+      "guard": null,
+      "patch": {
+        "line": 94,
+        "before": "      | none => stepsRefusal θ auth (i + 1) st.state rest",
+        "after": "      | none => none"
+      },
+      "claimedKills": [
+        "Reactivegas.stepsRefusal_append",
+        "Reactivegas.stepsRefusal_outcome",
+        "Reactivegas.stepsRefusal_production"
+      ],
+      "note": "only the first step is recomputed"
+    },
+    {
+      "id": "finitehistory-skips-steps",
+      "target": "Reactivegas.historyRefusal",
+      "guard": null,
+      "patch": {
+        "line": 103,
+        "before": "  | none => stepsRefusal θ auth 0 h.initial h.steps",
+        "after": "  | none => none"
+      },
+      "claimedKills": [
+        "Reactivegas.historyRefusal_none",
+        "Reactivegas.production_has_validated_witness"
+      ],
+      "note": "the steps are not recomputed after the genesis check"
+    },
+    {
+      "id": "finitehistory-stored-states-omit-initial",
+      "target": "Reactivegas.storedStates",
+      "guard": null,
+      "patch": {
+        "line": 108,
+        "before": "  h.initial :: h.steps.map (·.state)",
+        "after": "  h.steps.map (·.state)"
+      },
+      "claimedKills": [
+        "Reactivegas.validated_is_production"
+      ],
+      "note": "the initial aggregate is not among the stored states"
+    },
+    {
+      "id": "finitehistory-final-state-skips-steps",
+      "target": "Reactivegas.finalFrom",
+      "guard": null,
+      "patch": {
+        "line": 120,
+        "before": "  | _, st :: rest => finalFrom st.state rest",
+        "after": "  | gs, st :: rest => finalFrom gs rest"
+      },
+      "claimedKills": [
+        "Reactivegas.finalFrom_append_singleton",
+        "Reactivegas.stepsRefusal_append"
+      ],
+      "note": "the final state ignores the steps"
+    },
+    {
+      "id": "finitehistory-trace-refused-resets",
+      "target": "Reactivegas.traceNext",
+      "guard": null,
+      "patch": {
+        "line": 348,
+        "before": "  | .refused _ => cur",
+        "after": "  | .refused _ => State.empty"
+      },
+      "claimedKills": [
+        "Reactivegas.traceStepsRefusal_reaches"
+      ],
+      "note": "a refused step does not keep the predecessor state"
+    },
+    {
+      "id": "finitehistory-trace-continuity-unchecked",
+      "target": "Reactivegas.traceStepRefusal",
+      "guard": null,
+      "patch": {
+        "line": 354,
+        "before": "  if st.input ≠ cur then some (.inputDiffers i)",
+        "after": "  if false then some (.inputDiffers i)"
+      },
+      "claimedKills": [
+        "Reactivegas.traceStepRefusal_none_outcome"
+      ],
+      "note": "a stored input differing from the predecessor is accepted"
+    },
+    {
+      "id": "finitehistory-trace-post-state-unchecked",
+      "target": "Reactivegas.traceStepRefusal",
+      "guard": null,
+      "patch": {
+        "line": 358,
+        "before": "        if stored = actual then none else some (.postStateDiffers i)",
+        "after": "        if stored = actual then none else none"
+      },
+      "claimedKills": [
+        "Reactivegas.traceStepRefusal_none_outcome"
+      ],
+      "note": "a stored post-state differing from stepEvent is accepted"
+    },
+    {
+      "id": "finitehistory-trace-comune-view-accepted",
+      "target": "Reactivegas.traceRefusal",
+      "guard": null,
+      "patch": {
+        "line": 379,
+        "before": "  if KelGroups.GroupView.isMember comuneId view then some .comuneInView",
+        "after": "  if false then some .comuneInView"
+      },
+      "claimedKills": [
+        "Reactivegas.traceRefusal_none"
+      ],
+      "note": "a view containing comuneId is accepted"
+    },
+    {
+      "id": "finitehistory-trace-initial-unchecked",
+      "target": "Reactivegas.traceRefusal",
+      "guard": null,
+      "patch": {
+        "line": 380,
+        "before": "  else if t.initial ≠ State.empty then some .initialNotEmpty",
+        "after": "  else if false then some .initialNotEmpty"
+      },
+      "claimedKills": [
+        "Reactivegas.traceRefusal_none"
+      ],
+      "note": "a non-empty initial state is accepted"
+    },
+    {
+      "id": "probeAuth-refuses-nothing",
+      "target": "Reactivegas.probeAuth",
+      "guard": null,
+      "patch": {
+        "line": 502,
+        "before": "def probeAuth : BackdonateAuth := fun _ _ => false",
+        "after": "def probeAuth : BackdonateAuth := fun _ _ => true"
+      },
+      "claimedKills": [
+        "Reactivegas.probeAuth_refuses"
+      ],
+      "note": "the probe authorization stops refusing every backdonate"
     }
   ]
 }

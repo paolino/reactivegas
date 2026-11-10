@@ -528,6 +528,34 @@ else
     bad added-input-control "control tree stage '$ctl_stage' did not complete: $(first_line <"$ctl/full.log" 2>/dev/null || first_line <"$ctl/build.log" 2>/dev/null)"
 fi
 
+# ---- F. history-validated (#66 S5-C: vote-corpus-validated) ------------------
+# The integrated validator `historyRefusal` (Reactivegas.FiniteHistory) on the
+# committed bytes of vote.json: threshold from the sidecar's table, the
+# always-refuse authorization the sidecar names, then a planted post-state, a
+# flipped `accepted` (both directions) and three non-genesis initial aggregates,
+# each of which must be refused for its own reason. Validation of one supplied
+# history; it decides nothing about reachability.
+history_names="validated-vote-corpus control-planted-post-state control-flipped-accepted-true
+    control-flipped-accepted-false control-non-genesis-pending-proposal
+    control-non-genesis-live control-non-genesis-comune-member"
+if (cd "$lean" && lake build Reactivegas.FiniteHistory) >"$tmp/history-build.log" 2>&1; then
+    (cd "$lean" && REACTIVEGAS_VOTE_CORPUS="$vote" REACTIVEGAS_VOTE_CONTEXT="$ctx" \
+        lake env lean Reactivegas/CorpusHistory.lean) >"$tmp/history.log" 2>&1
+    history_rc=$?
+    for n in $history_names; do
+        if grep -q "^HISTORY-VERIFY $n PASS" "$tmp/history.log"; then
+            ok "history-$n" "$(grep "^HISTORY-VERIFY $n PASS" "$tmp/history.log" | first_line)"
+        else
+            bad "history-$n" "no passing line from the history validation (rc=$history_rc): $(grep "^HISTORY-VERIFY $n" "$tmp/history.log" | first_line) $(grep -m1 -E 'error|Error' "$tmp/history.log" | cut -c1-160)"
+        fi
+    done
+    [ "$history_rc" -eq 0 ] || bad history-exit "the history validation exited $history_rc"
+else
+    for n in $history_names; do
+        bad "history-$n" "FiniteHistory did not build: $(first_line <"$tmp/history-build.log")"
+    done
+fi
+
 # ---- tree unchanged ----------------------------------------------------------
 tree_after=$(snapshot)
 if [ "$tree_before" = "$tree_after" ]; then

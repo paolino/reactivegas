@@ -23,16 +23,16 @@ change and fails when a claim here is not what Lean reports.
 
 | | KelGroups modules | whole ledger |
 |---|---|---|
-| DISCOVERED theorem constants | 768 | 1831 |
-| EXCLUDED (generated) | 572 | 1352 |
+| DISCOVERED theorem constants | 768 | 2095 |
+| EXCLUDED (generated) | 572 | 1593 |
 | HELPER | 1 | 6 |
-| REQUIRED (authored − HELPER) | 195 | 473 |
-| KILLED | 124 | 316 |
-| OPEN | 71 | 157 |
+| REQUIRED (authored − HELPER) | 195 | 496 |
+| KILLED | 124 | 330 |
+| OPEN | 71 | 166 |
 | refusal constructors SURVIVED | 0 | |
 | refusal constructors UNEMITTED | 0 | |
 
-KILLED / REQUIRED: 124 / 195 here, 316 / 473 over the whole ledger.
+KILLED / REQUIRED: 124 / 195 here, 330 / 496 over the whole ledger.
 
 ## Theorems
 

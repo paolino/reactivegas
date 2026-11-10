@@ -1,4 +1,6 @@
 import Reactivegas.CompositionRoot
+import Reactivegas.FiniteHistoryTests
+import Reactivegas.CorpusHistory
 
 /-!
 # No open question is dropped without a record (issue #66, S5)
