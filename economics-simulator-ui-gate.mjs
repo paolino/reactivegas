@@ -184,7 +184,7 @@ const KNOWN_READS = {
   gotoColl:   [1, ['K-8']],
   pledgeC:    [1, ['K-5']],
   crumb:      [1, ['K-15']],
-  act:        [2, []],
+  act:        [3, []],
   hat:        [1, []],
   kgballot:   [1, []],
   l:          [1, []],

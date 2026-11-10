@@ -3211,11 +3211,19 @@ const candidates = () => {
   }
   return out;
 };
+/* a pledge is pending (its owner corrects or withdraws it) or accepted (only the
+   referente corrects it); the page says which wherever it lists one */
+const REGIME = {
+  pending: { cls: 'pend', text: 'pendente · lo corregge o ritira chi l’ha preso' },
+  accepted: { cls: 'acc', text: 'accettato · lo corregge solo il referente' },
+};
+const regimeTag = regime =>
+  `<span class="stag ${REGIME[regime].cls}">${esc(REGIME[regime].text)}</span>`;
 const pledgesOf = u => {
   const out = [];
   for (const c of state.collections) {
-    for (const p of c.pending) if (p.user === u) out.push({ c: c.id, amount: p.amount, st: 'pendente' });
-    for (const p of c.accepted) if (p.user === u) out.push({ c: c.id, amount: p.amount, st: 'accettato' });
+    for (const p of c.pending) if (p.user === u) out.push({ c: c.id, amount: p.amount, regime: 'pending' });
+    for (const p of c.accepted) if (p.user === u) out.push({ c: c.id, amount: p.amount, regime: 'accepted' });
   }
   return out;
 };
@@ -3312,6 +3320,18 @@ function chipsFor(role) {
   const person = k => ({ id: k, label: `${resp(k) ? '★ ' : ''}${nm(k)}` });
   switch (role) {
     case 'author': {
+      if (tag === 'correctPledge' && col && p.user !== undefined) {
+        // who may sign this correction is the embedded core's answer to it
+        const cur = [...col.accepted, ...col.pending].find(q => q.user === p.user);
+        return mem.map(k => {
+          const ch = person(k);
+          const res = cur && appFold(curView(), state, k,
+            leanEventJson({ tag, author: k, user: p.user, c: col.id, v: p.v !== undefined ? p.v : cur.amount }));
+          if (!cur) ch.dis = 'nessun impegno';
+          else if (!res.ok) { ch.dis = res.failed[0].law || res.failed[0].code; ch.why = res.failed[0].why; }
+          return ch;
+        });
+      }
       const refOps = ['acceptPledge', 'refusePledge', 'correctPledge', 'closePurchase', 'failPurchase'];
       return mem.map(k => {
         const ch = person(k);
@@ -3376,9 +3396,11 @@ function amountSpec(tag, p) {
     }
     case 'correctPledge': {
       const col = state.collections.find(x => x.id === p.c);
-      const cur = (col.accepted.find(q => q.user === p.user) || { amount: 0 }).amount;
+      const accepted = col.accepted.find(q => q.user === p.user);
+      const cur = (accepted || col.pending.find(q => q.user === p.user) || { amount: 0 }).amount;
       const mx = cur + Math.max(0, bal(state.conti, p.user));
-      return { min: 0, max: mx, val: cur, what: `impegno di ${nm(p.user)}: ora ${eur(cur)}` };
+      // a pending pledge is withdrawn by its own control, not by a zero correction
+      return { min: accepted ? 0 : 1, max: mx, val: cur, what: `impegno di ${nm(p.user)}: ora ${eur(cur)}` };
     }
   }
   return null;
@@ -3452,7 +3474,7 @@ function nextStep() {
   if (role === 'name' && flow.tag === 'admitMember') { openUserNamePop(); return; }
   if (role) { openChipPop(role); return; }
   if (taskShape(flow.tag).external) { openExternalConfirm(); return; }
-  if (taskShape(flow.tag).amount) { openAmountPop(); return; }
+  if (taskShape(flow.tag).amount && flow.params.v === undefined) { openAmountPop(); return; }
   commitFlow();
 }
 
@@ -3469,7 +3491,7 @@ function openChipPop(role) {
     <div class="tiny">${esc(ask)}</div>
     <div class="chips">` +
     (chips.length ? chips.map(ch => ch.dis
-      ? `<button type="button" class="chip" disabled title="${esc(ch.dis)}">${esc(ch.label)}
+      ? `<button type="button" class="chip" disabled title="${esc(ch.why || ch.dis)}">${esc(ch.label)}
            <span class="gb">${esc(ch.dis)}</span></button>`
       : `<button type="button" class="chip" data-id="${ch.id}">${esc(ch.label)}</button>`).join('')
       : '<span class="empty">niente da scegliere</span>') +
@@ -4048,7 +4070,7 @@ function renderPerson() {
       <div class="sect">i suoi impegni</div>
       ${pls.length ? `<div class="rows">${pls.map(p =>
         `<button type="button" class="row" data-pledge-c="${p.c}" data-pledge-u="${u}">
-          «${esc(lbl(p.c))}» <span class="stag ${p.st === 'pendente' ? 'pend' : 'acc'}">${p.st}</span>
+          «${esc(lbl(p.c))}» ${regimeTag(p.regime)}
           <span class="amt">${esc(eur(p.amount))}</span></button>`).join('')}</div>`
         : '<p class="empty">nessun impegno aperto</p>'}
       <div class="sect">movimenti recenti</div>
@@ -4073,9 +4095,9 @@ function renderCollection() {
   const c = nav().c;
   const col = state.collections.find(x => x.id === c);
   const ref = col.referente;
-  const rows = (list, st) => list.map(p =>
+  const rows = (list, regime) => list.map(p =>
     `<button type="button" class="row" data-pledge-c="${c}" data-pledge-u="${p.user}">
-      ${esc(nm(p.user))} <span class="stag ${st === 'pendente' ? 'pend' : 'acc'}">${st}</span>
+      ${esc(nm(p.user))} ${regimeTag(regime)}
       <span class="amt">${esc(eur(p.amount))}</span></button>`).join('');
 
   const head = `<div class="card"><div class="vhead">
@@ -4092,7 +4114,7 @@ function renderCollection() {
     <div class="tasks">${taskBtn('pledge', { c }, { label: 'Impegnati su questo acquisto' })}</div>
     <div class="sect">impegni</div>
     ${col.pending.length || col.accepted.length
-      ? `<div class="rows">${rows(col.pending, 'pendente')}${rows(col.accepted, 'accettato')}</div>`
+      ? `<div class="rows">${rows(col.pending, 'pending')}${rows(col.accepted, 'accepted')}</div>`
       : '<p class="empty">nessun impegno — impegnati per primo</p>'}
   </div>`;
 
@@ -4101,7 +4123,7 @@ function renderCollection() {
       <span class="tiny" style="margin-left:auto">esiste solo dentro questo acquisto</span></h3>
     ${col.pending.length ? `<div class="rows">${col.pending.map(p =>
       `<div class="row" style="cursor:default">${esc(nm(p.user))}
-        <span class="stag pend">pendente</span><span class="amt">${esc(eur(p.amount))}</span>
+        ${regimeTag('pending')}<span class="amt">${esc(eur(p.amount))}</span>
         <span class="inline-acts">
           <button type="button" class="mini" data-act="accept" data-u="${p.user}" title=".acceptPledge">accetta</button>
           <button type="button" class="mini no" data-act="refuse" data-u="${p.user}" title=".refusePledge">rifiuta</button>
@@ -4109,7 +4131,7 @@ function renderCollection() {
       : '<p class="empty">nessun impegno pendente da decidere</p>'}
     ${col.accepted.length ? `<div class="rows">${col.accepted.map(p =>
       `<div class="row" style="cursor:default">${esc(nm(p.user))}
-        <span class="stag acc">accettato</span><span class="amt">${esc(eur(p.amount))}</span>
+        ${regimeTag('accepted')}<span class="amt">${esc(eur(p.amount))}</span>
         <span class="inline-acts">
           <button type="button" class="mini" data-act="correct" data-u="${p.user}" title=".correctPledge">correggi</button>
         </span></div>`).join('')}</div>` : ''}
@@ -4233,19 +4255,23 @@ function renderPledge() {
   const pend = col.pending.find(p => p.user === pu);
   const acc = col.accepted.find(p => p.user === pu);
   const p = pend || acc;
-  const st = pend ? 'pendente' : 'accettato';
   $('view').innerHTML = `<div class="card">
     <div class="vhead">
       <div class="bigav${resp(pu) ? ' resp' : ''}"></div>
       <div><div class="who">impegno di ${esc(nm(pu))}</div>
         <div class="sub">su «${esc(lbl(c))}» · <span class="mono">.pledge</span></div></div>
-      <span class="stag ${pend ? 'pend' : 'acc'}">${st}</span>
+      ${regimeTag(pend ? 'pending' : 'accepted')}
       <span class="money" style="padding:3px 10px"><span class="k">importo</span>
         <span class="v" style="font-size:1rem">${esc(eur(p.amount))}</span></span>
     </div>
     <div class="tasks" style="margin-top:8px">
       <button type="button" class="linkchip" data-goto-person="${pu}">vai a ${esc(nm(pu))}</button>
     </div>
+    ${pend ? `<div class="sect">chi l'ha preso (${esc(nm(pu))}) può correggerlo o ritirarlo</div>
+    <div class="tasks">
+      <button type="button" class="task" data-act="correct" data-u="${pu}" title=".correctPledge">Correggi importo</button>
+      <button type="button" class="task" data-act="withdraw" data-u="${pu}" title=".correctPledge">Ritira l'impegno</button>
+    </div>` : ''}
     <div class="sect">decisioni del referente (${esc(nm(col.referente))} ★)</div>
     <div class="tasks">
       ${pend ? `<button type="button" class="task" data-act="accept" data-u="${pu}" title=".acceptPledge">Accetta</button>
@@ -4699,7 +4725,7 @@ function playFx(tag, a, preState, pre) {
       break;
     }
     case 'correctPledge': {
-      const sp = splitUser(a.user, preCol(a.c).accepted);
+      const sp = splitUser(a.user, preCol(a.c).accepted) || splitUser(a.user, preCol(a.c).pending);
       const d = (sp ? sp[0] : 0) - a.v;
       if (d > 0) fly(`pile:${a.c}`, `conto:${a.user}`, signedEur(d), 0, pre);
       else if (d < 0) fly(`conto:${a.user}`, `pile:${a.c}`, eur(-d), 0, pre);
@@ -4926,7 +4952,8 @@ $('view').addEventListener('click', ev => {
     const author = col.referente;             // the hat is the context
     if (act.dataset.act === 'accept') directAct('acceptPledge', { author, user: u, c }, ev.clientX, ev.clientY);
     else if (act.dataset.act === 'refuse') directAct('refusePledge', { author, user: u, c }, ev.clientX, ev.clientY);
-    else directAct('correctPledge', { author, user: u, c }, ev.clientX, ev.clientY);
+    else if (act.dataset.act === 'withdraw') startTask('correctPledge', { user: u, c, v: 0 }, ev.clientX, ev.clientY);
+    else startTask('correctPledge', { user: u, c }, ev.clientX, ev.clientY);
     return;
   }
   const hat = t.closest('[data-hat]');
