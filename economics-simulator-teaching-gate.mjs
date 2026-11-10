@@ -304,14 +304,14 @@ async function runJourney(b, url, nonce) {
     await __rgClick('[data-key="pile:1"]');
     await __rgClick('#view [data-task="pledge"]');
     await __rgClick('#pop .chip[data-id="bruno"]');
-    await __rgClick('#pop .chip[data-id="anna"]');
+    await __rgClick('#pop .chip[data-id="bruno"]');
     await __rgAmount(40);`);
   await step(b, s, snaps, 'impegno.leave', `
     await __rgClick('#refpanel [data-act="refuse"][data-u="bruno"]');`);
   await step(b, s, snaps, 'impegno.recreate', `
     await __rgClick('#view [data-task="pledge"]');
     await __rgClick('#pop .chip[data-id="bruno"]');
-    await __rgClick('#pop .chip[data-id="anna"]');
+    await __rgClick('#pop .chip[data-id="bruno"]');
     await __rgAmount(40);`);
   const impegnoDis = await b.eval(s, `__rgDismiss('impegno')`);
   await step(b, s, snaps, 'impegno.dismiss', ``);
@@ -319,7 +319,7 @@ async function runJourney(b, url, nonce) {
     await __rgClick('#refpanel [data-act="refuse"][data-u="bruno"]');
     await __rgClick('#view [data-task="pledge"]');
     await __rgClick('#pop .chip[data-id="bruno"]');
-    await __rgClick('#pop .chip[data-id="anna"]');
+    await __rgClick('#pop .chip[data-id="bruno"]');
     await __rgAmount(40);
     await __rgClick('#refpanel [data-act="accept"][data-u="bruno"]');`);
 
@@ -395,7 +395,7 @@ async function runJourney(b, url, nonce) {
     await __rgClick('[data-key="pile:4"]');
     await __rgClick('#view [data-task="pledge"]');
     await __rgClick('#pop .chip[data-id="bruno"]');
-    await __rgClick('#pop .chip[data-id="anna"]');
+    await __rgClick('#pop .chip[data-id="bruno"]');
     await __rgAmount(15);
     await __rgClick('#refpanel [data-act="accept"][data-u="bruno"]');
     await __rgClick('#view [data-kgpropose]');
@@ -462,7 +462,7 @@ async function runJourney(b, url, nonce) {
     await __rgClick('[data-key="pile:2"]');
     await __rgClick('#view [data-task="pledge"]');
     await __rgClick('#pop .chip[data-id="bruno"]');
-    await __rgClick('#pop .chip[data-id="anna"]');
+    await __rgClick('#pop .chip[data-id="bruno"]');
     await __rgAmount(10);
     await __rgClick('#crumbs [data-crumb="0"]');
     await __rgClick('[data-key="cassa:bruno"]');

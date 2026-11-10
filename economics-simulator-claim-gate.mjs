@@ -550,7 +550,7 @@ function validWitness(tag) {
     case 'withdraw': return [coverageView(), base()[1], { tag, author: 'anna', user: 'carla', v: 10 }];
     case 'transferCassa': return [coverageView(), base()[1], { tag, author: 'anna', from_: 'bruno', v: 10 }];
     case 'donate': return [coverageView(), base()[1], { tag, author: 'anna', v: 90 }];
-    case 'pledge': return [coverageView(), col(), { tag, author: 'anna', user: 'carla', c: 7, v: 10 }];
+    case 'pledge': return [coverageView(), col(), { tag, author: 'carla', user: 'carla', c: 7, v: 10 }];
     case 'acceptPledge': return [coverageView(), col({ pending: [{ user: 'carla', amount: 10 }] }),
       { tag, author: 'bruno', user: 'carla', c: 7 }];
     case 'refusePledge': return [coverageView(), col({ pending: [{ user: 'carla', amount: 10 }] }),
@@ -1211,12 +1211,12 @@ async function selftest(work) {
       name: 'collegamento citazione senza file',
       expect: /collegamento citazione senza file/,
       run: () => {
-        const needle = "d: 'step_authorized', f: 'lean/Reactivegas/Invariants.lean', l: 567";
+        const needle = "d: 'step_authorized', f: 'lean/Reactivegas/Invariants.lean', l: 652";
         if (!doc.includes(needle) || doc.split(needle).length !== 2)
           return { ok: false, reasons: ['controllo mal costruito: riga auth non unica'] };
         const p = join(work, 'sab-link-file.html');
         writeFileSync(p, doc.replace(needle,
-          "d: 'step_authorized', f: null, l: 567"));
+          "d: 'step_authorized', f: null, l: 652"));
         return runGate({ html: p, work });
       },
     },
@@ -1224,7 +1224,7 @@ async function selftest(work) {
       name: 'collegamento citazione senza riga',
       expect: /collegamento citazione senza riga/,
       run: () => {
-        const needle = "d: 'step_authorized', f: 'lean/Reactivegas/Invariants.lean', l: 567";
+        const needle = "d: 'step_authorized', f: 'lean/Reactivegas/Invariants.lean', l: 652";
         if (!doc.includes(needle) || doc.split(needle).length !== 2)
           return { ok: false, reasons: ['controllo mal costruito: riga auth non unica'] };
         const p = join(work, 'sab-link-line.html');

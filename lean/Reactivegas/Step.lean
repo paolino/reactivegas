@@ -95,7 +95,7 @@ def step (view : KelGroups.GroupView) (s : State) (signer : KelGroups.Key)
     else none
   | .pledge u c v => do
     let (col, rest) ← pullCollection c s.collections
-    demand (isResponsabile view signer && KelGroups.GroupView.isMember u view
+    demand (signer == u && KelGroups.GroupView.isMember u view
       && !(col.accepted.any (fun p => p.user == u))
       && !(col.pending.any (fun p => p.user == u))
       && decide (0 < v) && decide (bal s.conti u ≥ v)
@@ -119,12 +119,20 @@ def step (view : KelGroups.GroupView) (s : State) (signer : KelGroups.Key)
       collections := { col with pending := pend' } :: rest }
   | .correctPledge u c v' => do
     let (col, rest) ← pullCollection c s.collections
-    let (v, acc') ← splitUser u col.accepted
-    demand (isResponsabile view signer && col.referente == signer
-      && decide (0 ≤ v') && decide (bal s.conti u + (v - v') ≥ 0))
-    pure { s with
-      conti := bump s.conti u (v - v'),
-      collections := { col with accepted := ⟨u, v'⟩ :: acc' } :: rest }
+    match splitUser u col.accepted with
+    | some (v, acc') => do
+      demand (isResponsabile view signer && col.referente == signer
+        && decide (0 ≤ v') && decide (bal s.conti u + (v - v') ≥ 0))
+      pure { s with
+        conti := bump s.conti u (v - v'),
+        collections := { col with accepted := ⟨u, v'⟩ :: acc' } :: rest }
+    | none => do
+      let (v, pend') ← splitUser u col.pending
+      demand (signer == u && decide (0 ≤ v') && decide (bal s.conti u + (v - v') ≥ 0))
+      pure { s with
+        conti := bump s.conti u (v - v'),
+        collections :=
+          { col with pending := if v' = 0 then pend' else ⟨u, v'⟩ :: pend' } :: rest }
   | .closePurchase c => do
     let (col, rest) ← pullCollection c s.collections
     demand (isResponsabile view signer && col.referente == signer

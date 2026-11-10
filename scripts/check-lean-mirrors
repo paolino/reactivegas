@@ -113,7 +113,8 @@ example (theta : KelGroups.Vote.Threshold) (view : KelGroups.GroupView)
       (KelGroups.Vote.preservesQuestionDecide theta view gs s ev qid = true) := rfl
 
 -- P11 exception evidence: per-constructor definitional projection (14x rfl).
--- Each arm of `authorizedStep` IS the existing `isResponsabile` application.
+-- Each arm of `authorizedStep` IS the existing `isResponsabile` application, except the
+-- pledge (its owner signs) and the correction (its owner or a responsabile signs).
 example (view : KelGroups.GroupView) (s s' : State) (a : KelGroups.Key) (c : CollId) :
     authorizedStep view s (.openPurchase a c) s' = (isResponsabile view a = true) := rfl
 example (view : KelGroups.GroupView) (s s' : State) (a : KelGroups.Key) (c : CollId) :
@@ -131,13 +132,13 @@ example (view : KelGroups.GroupView) (s s' : State) (a : KelGroups.Key) (v : Int
 example (view : KelGroups.GroupView) (s s' : State) (a : KelGroups.Key) (w : Int) :
     authorizedStep view s (.backdonate a w) s' = (isResponsabile view a = true) := rfl
 example (view : KelGroups.GroupView) (s s' : State) (a u : KelGroups.Key) (c : CollId) (v : Int) :
-    authorizedStep view s (.pledge a u c v) s' = (isResponsabile view a = true) := rfl
+    authorizedStep view s (.pledge a u c v) s' = (a = u) := rfl
 example (view : KelGroups.GroupView) (s s' : State) (a u : KelGroups.Key) (c : CollId) :
     authorizedStep view s (.acceptPledge a u c) s' = (isResponsabile view a = true) := rfl
 example (view : KelGroups.GroupView) (s s' : State) (a u : KelGroups.Key) (c : CollId) :
     authorizedStep view s (.refusePledge a u c) s' = (isResponsabile view a = true) := rfl
 example (view : KelGroups.GroupView) (s s' : State) (a u : KelGroups.Key) (c : CollId) (v : Int) :
-    authorizedStep view s (.correctPledge a u c v) s' = (isResponsabile view a = true) := rfl
+    authorizedStep view s (.correctPledge a u c v) s' = (isResponsabile view a = true ∨ a = u) := rfl
 example (view : KelGroups.GroupView) (s s' : State) (a : KelGroups.Key) (c : CollId) :
     authorizedStep view s (.closePurchase a c) s' = (isResponsabile view a = true) := rfl
 example (view : KelGroups.GroupView) (s s' : State) (a : KelGroups.Key) (c : CollId) :
