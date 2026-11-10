@@ -32,9 +32,9 @@
 
 ## Finite history
 
-- [ ] T551 Integrated validator with checked genesis and its negative controls (genesis-checked, validation-not-decision)
-- [ ] T552 Acceptance implies production history, refused steps preserve state (validated-history-is-production-history, refusal-preserves-state)
-- [ ] T553 Every production-history aggregate has an accepted history (production-history-has-validated-witness)
-- [ ] T554 Fixed-view validator and its `Reach` correspondence both ways, with the non-empty-initial control (fixed-view-history-reaches)
-- [ ] T555 The vote corpus bytes validated in a hosted step, with planted controls (vote-corpus-validated)
-- [ ] T556 Ledger rows for the new theorems, re-derived ledger, hosted wall time projected (finite-history-ledger, ledger-current, ledger-wall-time-projected)
+- [x] T551 Integrated validator with checked genesis and its negative controls (genesis-checked, validation-not-decision)
+- [x] T552 Acceptance implies production history, refused steps preserve state (validated-history-is-production-history, refusal-preserves-state)
+- [x] T553 Every production-history aggregate has an accepted history (production-history-has-validated-witness)
+- [x] T554 Fixed-view validator and its `Reach` correspondence both ways, with the non-empty-initial control (fixed-view-history-reaches)
+- [x] T555 The vote corpus bytes validated in a hosted step, with planted controls (vote-corpus-validated)
+- [x] T556 Ledger rows for the new theorems, re-derived ledger, hosted wall time projected (finite-history-ledger, ledger-current, ledger-wall-time-projected)
