@@ -25,8 +25,8 @@ Modules outside every half's namespace are counted and listed here: `KelTraceDri
 
 | | Reactivegas modules | whole ledger |
 |---|---|---|
-| DISCOVERED theorem constants | 1019 | 1787 |
-| EXCLUDED (generated) | 746 | 1318 |
+| DISCOVERED theorem constants | 1046 | 1814 |
+| EXCLUDED (generated) | 773 | 1345 |
 | HELPER | 5 | 6 |
 | REQUIRED (authored − HELPER) | 268 | 463 |
 | KILLED | 186 | 310 |
@@ -551,7 +551,7 @@ What a row here does not establish.
 
 Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem` command, produced it: the environment records no source declaration range of its own for it (equation, injectivity, sizeOf, auxiliary-proof and simp lemmas), or it is a structure projection (a `Prop` field of a structure); every other theorem constant is AUTHORED.
 
-<details><summary>746 identities</summary>
+<details><summary>773 identities</summary>
 
 - `AppEvent.acceptPledge.inj`
 - `AppEvent.acceptPledge.injEq`
@@ -788,6 +788,11 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `Reactivegas.Composition.voteDerived.eq_7`
 - `Reactivegas.Composition.voteDerived.eq_8`
 - `Reactivegas.Composition.voteDerived.eq_9`
+- `Reactivegas.CtorFixture.one.sizeOf_spec@Reactivegas.VoteCorpus`
+- `Reactivegas.CtorFixture.three.sizeOf_spec@Reactivegas.VoteCorpus`
+- `Reactivegas.CtorFixture.two.inj@Reactivegas.VoteCorpus`
+- `Reactivegas.CtorFixture.two.injEq@Reactivegas.VoteCorpus`
+- `Reactivegas.CtorFixture.two.sizeOf_spec@Reactivegas.VoteCorpus`
 - `Reactivegas.IntegratedTraceStep.mk.inj`
 - `Reactivegas.IntegratedTraceStep.mk.injEq`
 - `Reactivegas.IntegratedTraceStep.mk.sizeOf_spec`
@@ -813,6 +818,21 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `Reactivegas.ProductionError.integrated.injEq`
 - `Reactivegas.ProductionError.integrated.sizeOf_spec`
 - `Reactivegas.ProductionHistory.brecOn`
+- `Reactivegas.ReplayOutcome.abort.inj`
+- `Reactivegas.ReplayOutcome.abort.injEq`
+- `Reactivegas.ReplayOutcome.abort.sizeOf_spec`
+- `Reactivegas.ReplayOutcome.mismatch.inj`
+- `Reactivegas.ReplayOutcome.mismatch.injEq`
+- `Reactivegas.ReplayOutcome.mismatch.sizeOf_spec`
+- `Reactivegas.ReplayOutcome.ok.inj`
+- `Reactivegas.ReplayOutcome.ok.injEq`
+- `Reactivegas.ReplayOutcome.ok.sizeOf_spec`
+- `Reactivegas.ReplayOutcome.refusal.inj`
+- `Reactivegas.ReplayOutcome.refusal.injEq`
+- `Reactivegas.ReplayOutcome.refusal.sizeOf_spec`
+- `Reactivegas.VoteTraceStep.mk.inj`
+- `Reactivegas.VoteTraceStep.mk.injEq`
+- `Reactivegas.VoteTraceStep.mk.sizeOf_spec`
 - `Reactivegas.appFold.eq_1`
 - `Reactivegas.appFold.match_1.eq_1@Reactivegas.CompositionRetention`
 - `Reactivegas.appFold.match_1.eq_1@Reactivegas.CompositionRoot`
@@ -898,6 +918,13 @@ Rule: a theorem constant is EXCLUDED exactly when the elaborator, not a `theorem
 - `Reactivegas.instDecidableEqProductionError.decEq._proof_2`
 - `Reactivegas.instDecidableEqProductionError.decEq._proof_3`
 - `Reactivegas.instDecidableEqProductionError.decEq._proof_4`
+- `Reactivegas.instDecidableEqVoteTraceStep.decEq._proof_1`
+- `Reactivegas.instDecidableEqVoteTraceStep.decEq._proof_2`
+- `Reactivegas.instDecidableEqVoteTraceStep.decEq._proof_3`
+- `Reactivegas.instDecidableEqVoteTraceStep.decEq._proof_4`
+- `Reactivegas.instDecidableEqVoteTraceStep.decEq._proof_5`
+- `Reactivegas.instDecidableEqVoteTraceStep.decEq._proof_6`
+- `Reactivegas.instDecidableEqVoteTraceStep.decEq._proof_7`
 - `Reactivegas.integration.eq_1`
 - `Reactivegas.ofOption.eq_1`
 - `Reactivegas.ofOption.eq_2`
