@@ -564,12 +564,12 @@ function economicCleanup(change, pre, post, s) {
    changed and no ballot was cast). Closures of bound questions mint their
    authorizations here, and a collection the cleanup dissolved takes its
    authorizations with it (#76). null is a rejection. */
-function baseHook(change, pre, post, s) {
+function baseHook(change, pre, post, s, theta = vtTheta) {
   const cleaned = economicCleanup(change, pre, post, withAuth(s));
   if (cleaned === null) return null;
   const departed = 'memberRemoved' in change
     ? vtCloseProposerQuestions(change.memberRemoved, cleaned.votes) : cleaned.votes;
-  const swept = vtSweep(vtTheta, post, departed);
+  const swept = vtSweep(theta, post, departed);
   return pruneAuth(syncAuth(cleaned, swept));
 }
 
@@ -984,11 +984,11 @@ function denyByClosure(s, c) {
 
 /* voteApply: the vote fold's single validation decision, then its effect
    and sweep; the closures of bound questions mint their authorizations */
-function voteApply(view, s, signer, ev) {
+function voteApply(view, s, signer, ev, theta) {
   const verr = vtValidate(view, s.votes, signer, ev);
   if (verr) return { ok: false, verr, failed: [g('KelGroups.Vote.validateVoteEvent = .error .' + verr,
     'validazione del voto: ' + verr)] };
-  const det = vtApply(view, s.votes, signer, ev);
+  const det = vtApply(view, s.votes, signer, ev, theta);
   return { ok: true, state: syncAuth(s, det.state), closedDelta: det.closedDelta };
 }
 
@@ -996,15 +996,15 @@ function voteApply(view, s, signer, ev) {
    binds then opens, the three app-decided constructors spend, every other
    economic constructor runs the core step. ae is the Lean app event
    {ctor: args}; the signer arrives apart from it. */
-function appFoldCore(view, s, signer, ae) {
+function appFoldCore(view, s, signer, ae, theta) {
   const tag = Object.keys(ae)[0], args = ae[tag];
   if (tag === 'openQuestion' || tag === 'cast' || tag === 'renounce')
-    return voteApply(view, s, signer, ae);
+    return voteApply(view, s, signer, ae, theta);
   if (tag === 'openBound') {
     const { questionId, kind, target } = args;
     if (!bindable(s, questionId, target)) return { ok: false, failed: [UNBINDABLE(questionId)] };
     return voteApply(view, { ...s, bindings: [[questionId, target], ...s.bindings] }, signer,
-      { openQuestion: { questionId, kind } });
+      { openQuestion: { questionId, kind } }, theta);
   }
   if (tag === 'grantPermission')
     return spendThen(permT(args.c), 'positive', s, s1 => attempt(view, s1, { tag, author: signer, ...args }));
@@ -1018,8 +1018,8 @@ function appFoldCore(view, s, signer, ae) {
 }
 
 /* Reactivegas.appFold: the payload or a refusal, authorizations pruned */
-function appFold(view, s, signer, ae) {
-  const res = appFoldCore(view, withAuth(s), signer, ae);
+function appFold(view, s, signer, ae, theta = vtTheta) {
+  const res = appFoldCore(view, withAuth(s), signer, ae, theta);
   return res.ok ? { ...res, state: pruneAuth(res.state) } : res;
 }
 
@@ -1784,7 +1784,7 @@ const vtPermKind = k =>
 /* verdictOf — the single verdict site (State.lean): collective tallies are
    compared to θ(franchise(view)), assents first; a permission verdict is
    decided ONLY by the designee's own recorded ballot */
-function vtVerdictOf(view, q) {
+function vtVerdictOf(view, q, theta = vtTheta) {
   const perm = vtPermKind(q.kind);
   if (perm) {
     const d = perm.designee;
@@ -1792,7 +1792,7 @@ function vtVerdictOf(view, q) {
     if (q.dissents.includes(d)) return 'negative';
     return 'open';
   }
-  const required = vtTheta(vtFranchiseSize(view));
+  const required = theta(vtFranchiseSize(view));
   if (q.assents.length >= required) return 'positive';
   if (q.dissents.length >= required) return 'negative';
   return 'open';
@@ -1822,7 +1822,7 @@ function vtPlaceBallot(voter, ballot, q) {
 function vtSweep(theta, view, gs) {
   const resolved = [], remaining = [];
   for (const [qid, q] of gs.openQuestions) {
-    const v = vtVerdictOf(view, q);
+    const v = vtVerdictOf(view, q, theta);
     if (v === 'open') remaining.push([qid, q]);
     else resolved.push({ questionId: qid, question: q, verdict: v,
       cause: vtClosureCause(view, q, v) });
@@ -1844,7 +1844,7 @@ function vtCloseProposerQuestions(proposer, gs) {
 /* applyVoteEventChecked: validate, effect, then the unconditional sweep —
    the view is a per-step parameter (the integrated caller hands the
    post-transition canonical view) */
-function vtApply(view, gs, signer, ev) {
+function vtApply(view, gs, signer, ev, theta = vtTheta) {
   let effected = gs;
   if ('openQuestion' in ev) {
     const { questionId, kind } = ev.openQuestion;
@@ -1867,7 +1867,7 @@ function vtApply(view, gs, signer, ev) {
     if (q) effected = { openQuestions: vtErase(questionId, gs.openQuestions),
       closed: gs.closed.concat([{ questionId, question: q, verdict: 'negative', cause: 'renounced' }]) };
   }
-  const swept = vtSweep(vtTheta, view, effected);
+  const swept = vtSweep(theta, view, effected);
   return { state: swept, closedDelta: swept.closed.length - gs.closed.length };
 }
 
@@ -2109,8 +2109,8 @@ function bgMutationChange(p) {
 /* commitBaseChange: the sealed hook sees the exact pre/post canonical views
    and the pre-transition payload; its output IS the payload the caller
    observes. A hook refusal rejects the whole transition with it. */
-function bgCommitBaseChange(pre, post, change, payload) {
-  const hooked = baseHook(change, { members: pre.members }, { members: post.members }, payload);
+function bgCommitBaseChange(pre, post, change, payload, theta) {
+  const hooked = baseHook(change, { members: pre.members }, { members: post.members }, payload, theta);
   if (hooked === null) return { refused: 'rejected' };
   return { gs: post, payload: hooked, change };
 }
@@ -2118,13 +2118,13 @@ function bgCommitBaseChange(pre, post, change, payload) {
 /* tryEnactBase: enact a pending mutation once its approvals reach the
    majority of the current franchise (read on the state that already holds
    the pending entry); otherwise leave it pending, no change */
-function bgTryEnact(gs, pid, payload) {
+function bgTryEnact(gs, pid, payload, theta) {
   const pend = vtLookup(pid, gs.pendingBase);
   if (!pend) return { gs, payload, change: null };
   if (pend.approvals.length >= bgMajority(gs)) {
     const proposal = pend.proposal;
     const mutated = bgEnactMutation({ ...gs, pendingBase: vtErase(pid, gs.pendingBase) }, proposal);
-    return bgCommitBaseChange(gs, mutated, bgMutationChange(proposal), payload);
+    return bgCommitBaseChange(gs, mutated, bgMutationChange(proposal), payload, theta);
   }
   return { gs, payload, change: null };
 }
@@ -2132,14 +2132,14 @@ function bgTryEnact(gs, pid, payload) {
 /* applyIntegratedEvent, base routes (direct admission + propose + approve):
    validation dominates the effect on every route. `payload` is the app
    payload the sealed hook runs over. */
-function bgApply(gs, signer, ev, payload) {
+function bgApply(gs, signer, ev, payload, theta = vtTheta) {
   if ('direct' in ev) {
     const adm = ev.direct.admitMember;
     const verr = bgValidateAdmission(gs, signer, adm.key);
     if (verr) return { gs, payload, refused: verr };
     const post = { ...gs,
       members: vtInsert(adm.key, { key: adm.key, email: adm.email, roles: adm.roles }, gs.members) };
-    const done = bgCommitBaseChange(gs, post, { memberAdmitted: adm.key }, payload);
+    const done = bgCommitBaseChange(gs, post, { memberAdmitted: adm.key }, payload, theta);
     if (done.refused) return { gs, payload, refused: done.refused };
     return { ...done, enacted: true };
   }
@@ -2150,14 +2150,14 @@ function bgApply(gs, signer, ev, payload) {
     const pid = bgDigest(p);
     const proposed = { ...gs, pendingBase: vtInsert(pid,
       { proposal: p, proposer: signer, approvals: [] }, gs.pendingBase) };
-    return bgTryEnact(proposed, pid, payload);
+    return bgTryEnact(proposed, pid, payload, theta);
   }
   const pid = ev.approve.proposalId;
   const verr = bgValidateApproval(gs, signer, pid);
   if (verr) return { gs, payload, refused: verr };
   const pend = vtLookup(pid, gs.pendingBase);
   const approved = { ...pend, approvals: vtSetInsert(signer, pend.approvals) };
-  return bgTryEnact({ ...gs, pendingBase: vtInsert(pid, approved, gs.pendingBase) }, pid, payload);
+  return bgTryEnact({ ...gs, pendingBase: vtInsert(pid, approved, gs.pendingBase) }, pid, payload, theta);
 }
 
 const bgCanonProposal = p => 'departure' in p
@@ -2318,12 +2318,12 @@ const stripAuthor = a => {
    | {app:{<AppEvent ctor>}} — the app route is Reactivegas.appFold: the vote
    constructors and openBound, the closure-spending app-decided ones, and
    the economic core step. */
-function applyIntegrated(gs, signer, ev) {
+function applyIntegrated(gs, signer, ev, theta = vtTheta) {
   if ('direct' in ev) {
     const adm = ev.direct.admitMember;
     const verr = bgValidateAdmission(gs, signer, adm.key);
     if (verr) return { refused: verr };
-    const det = bgApply(gs, signer, ev, gs.appFold);
+    const det = bgApply(gs, signer, ev, gs.appFold, theta);
     if (det.refused) return { refused: det.refused };
     return { gs: { ...det.gs, appFold: det.payload }, payload: det.payload,
       change: det.change || null };
@@ -2333,7 +2333,7 @@ function applyIntegrated(gs, signer, ev) {
       ? bgValidateMutation(gs, signer, ev.propose.proposal)
       : bgValidateApproval(gs, signer, ev.approve.proposalId);
     if (verr) return { refused: verr };
-    const det = bgApply(gs, signer, ev, gs.appFold);
+    const det = bgApply(gs, signer, ev, gs.appFold, theta);
     if (det.refused) return { refused: det.refused };
     return { gs: { ...det.gs, appFold: det.payload }, payload: det.payload,
       change: det.change || null };
@@ -2350,7 +2350,7 @@ function applyIntegrated(gs, signer, ev) {
     const args = stripAuthor(ae[tag]);
     const pre = { members: gs.members };
     if (!isMemberView(signer, pre)) return { refused: 'notAMember' };
-    const res = appFold(pre, gs.appFold, signer, { [tag]: args });
+    const res = appFold(pre, gs.appFold, signer, { [tag]: args }, theta);
     if (!res.ok) return { refused: res.verr || 'rejected', failed: res.failed };
     return { gs: { ...gs, appFold: res.state }, payload: res.state, change: null };
   }
@@ -3211,11 +3211,19 @@ const candidates = () => {
   }
   return out;
 };
+/* a pledge is pending (its owner corrects or withdraws it) or accepted (only the
+   referente corrects it); the page says which wherever it lists one */
+const REGIME = {
+  pending: { cls: 'pend', text: 'pendente · lo corregge o ritira chi l’ha preso' },
+  accepted: { cls: 'acc', text: 'accettato · lo corregge solo il referente' },
+};
+const regimeTag = regime =>
+  `<span class="stag ${REGIME[regime].cls}">${esc(REGIME[regime].text)}</span>`;
 const pledgesOf = u => {
   const out = [];
   for (const c of state.collections) {
-    for (const p of c.pending) if (p.user === u) out.push({ c: c.id, amount: p.amount, st: 'pendente' });
-    for (const p of c.accepted) if (p.user === u) out.push({ c: c.id, amount: p.amount, st: 'accettato' });
+    for (const p of c.pending) if (p.user === u) out.push({ c: c.id, amount: p.amount, regime: 'pending' });
+    for (const p of c.accepted) if (p.user === u) out.push({ c: c.id, amount: p.amount, regime: 'accepted' });
   }
   return out;
 };
@@ -3312,6 +3320,18 @@ function chipsFor(role) {
   const person = k => ({ id: k, label: `${resp(k) ? '★ ' : ''}${nm(k)}` });
   switch (role) {
     case 'author': {
+      if (tag === 'correctPledge' && col && p.user !== undefined) {
+        // who may sign this correction is the embedded core's answer to it
+        const cur = [...col.accepted, ...col.pending].find(q => q.user === p.user);
+        return mem.map(k => {
+          const ch = person(k);
+          const res = cur && appFold(curView(), state, k,
+            leanEventJson({ tag, author: k, user: p.user, c: col.id, v: p.v !== undefined ? p.v : cur.amount }));
+          if (!cur) ch.dis = 'nessun impegno';
+          else if (!res.ok) { ch.dis = res.failed[0].law || res.failed[0].code; ch.why = res.failed[0].why; }
+          return ch;
+        });
+      }
       const refOps = ['acceptPledge', 'refusePledge', 'correctPledge', 'closePurchase', 'failPurchase'];
       return mem.map(k => {
         const ch = person(k);
@@ -3376,9 +3396,11 @@ function amountSpec(tag, p) {
     }
     case 'correctPledge': {
       const col = state.collections.find(x => x.id === p.c);
-      const cur = (col.accepted.find(q => q.user === p.user) || { amount: 0 }).amount;
+      const accepted = col.accepted.find(q => q.user === p.user);
+      const cur = (accepted || col.pending.find(q => q.user === p.user) || { amount: 0 }).amount;
       const mx = cur + Math.max(0, bal(state.conti, p.user));
-      return { min: 0, max: mx, val: cur, what: `impegno di ${nm(p.user)}: ora ${eur(cur)}` };
+      // a pending pledge is withdrawn by its own control, not by a zero correction
+      return { min: accepted ? 0 : 1, max: mx, val: cur, what: `impegno di ${nm(p.user)}: ora ${eur(cur)}` };
     }
   }
   return null;
@@ -3452,7 +3474,7 @@ function nextStep() {
   if (role === 'name' && flow.tag === 'admitMember') { openUserNamePop(); return; }
   if (role) { openChipPop(role); return; }
   if (taskShape(flow.tag).external) { openExternalConfirm(); return; }
-  if (taskShape(flow.tag).amount) { openAmountPop(); return; }
+  if (taskShape(flow.tag).amount && flow.params.v === undefined) { openAmountPop(); return; }
   commitFlow();
 }
 
@@ -3469,7 +3491,7 @@ function openChipPop(role) {
     <div class="tiny">${esc(ask)}</div>
     <div class="chips">` +
     (chips.length ? chips.map(ch => ch.dis
-      ? `<button type="button" class="chip" disabled title="${esc(ch.dis)}">${esc(ch.label)}
+      ? `<button type="button" class="chip" disabled title="${esc(ch.why || ch.dis)}">${esc(ch.label)}
            <span class="gb">${esc(ch.dis)}</span></button>`
       : `<button type="button" class="chip" data-id="${ch.id}">${esc(ch.label)}</button>`).join('')
       : '<span class="empty">niente da scegliere</span>') +
@@ -4048,7 +4070,7 @@ function renderPerson() {
       <div class="sect">i suoi impegni</div>
       ${pls.length ? `<div class="rows">${pls.map(p =>
         `<button type="button" class="row" data-pledge-c="${p.c}" data-pledge-u="${u}">
-          «${esc(lbl(p.c))}» <span class="stag ${p.st === 'pendente' ? 'pend' : 'acc'}">${p.st}</span>
+          «${esc(lbl(p.c))}» ${regimeTag(p.regime)}
           <span class="amt">${esc(eur(p.amount))}</span></button>`).join('')}</div>`
         : '<p class="empty">nessun impegno aperto</p>'}
       <div class="sect">movimenti recenti</div>
@@ -4073,9 +4095,9 @@ function renderCollection() {
   const c = nav().c;
   const col = state.collections.find(x => x.id === c);
   const ref = col.referente;
-  const rows = (list, st) => list.map(p =>
+  const rows = (list, regime) => list.map(p =>
     `<button type="button" class="row" data-pledge-c="${c}" data-pledge-u="${p.user}">
-      ${esc(nm(p.user))} <span class="stag ${st === 'pendente' ? 'pend' : 'acc'}">${st}</span>
+      ${esc(nm(p.user))} ${regimeTag(regime)}
       <span class="amt">${esc(eur(p.amount))}</span></button>`).join('');
 
   const head = `<div class="card"><div class="vhead">
@@ -4092,7 +4114,7 @@ function renderCollection() {
     <div class="tasks">${taskBtn('pledge', { c }, { label: 'Impegnati su questo acquisto' })}</div>
     <div class="sect">impegni</div>
     ${col.pending.length || col.accepted.length
-      ? `<div class="rows">${rows(col.pending, 'pendente')}${rows(col.accepted, 'accettato')}</div>`
+      ? `<div class="rows">${rows(col.pending, 'pending')}${rows(col.accepted, 'accepted')}</div>`
       : '<p class="empty">nessun impegno — impegnati per primo</p>'}
   </div>`;
 
@@ -4101,7 +4123,7 @@ function renderCollection() {
       <span class="tiny" style="margin-left:auto">esiste solo dentro questo acquisto</span></h3>
     ${col.pending.length ? `<div class="rows">${col.pending.map(p =>
       `<div class="row" style="cursor:default">${esc(nm(p.user))}
-        <span class="stag pend">pendente</span><span class="amt">${esc(eur(p.amount))}</span>
+        ${regimeTag('pending')}<span class="amt">${esc(eur(p.amount))}</span>
         <span class="inline-acts">
           <button type="button" class="mini" data-act="accept" data-u="${p.user}" title=".acceptPledge">accetta</button>
           <button type="button" class="mini no" data-act="refuse" data-u="${p.user}" title=".refusePledge">rifiuta</button>
@@ -4109,7 +4131,7 @@ function renderCollection() {
       : '<p class="empty">nessun impegno pendente da decidere</p>'}
     ${col.accepted.length ? `<div class="rows">${col.accepted.map(p =>
       `<div class="row" style="cursor:default">${esc(nm(p.user))}
-        <span class="stag acc">accettato</span><span class="amt">${esc(eur(p.amount))}</span>
+        ${regimeTag('accepted')}<span class="amt">${esc(eur(p.amount))}</span>
         <span class="inline-acts">
           <button type="button" class="mini" data-act="correct" data-u="${p.user}" title=".correctPledge">correggi</button>
         </span></div>`).join('')}</div>` : ''}
@@ -4233,19 +4255,23 @@ function renderPledge() {
   const pend = col.pending.find(p => p.user === pu);
   const acc = col.accepted.find(p => p.user === pu);
   const p = pend || acc;
-  const st = pend ? 'pendente' : 'accettato';
   $('view').innerHTML = `<div class="card">
     <div class="vhead">
       <div class="bigav${resp(pu) ? ' resp' : ''}"></div>
       <div><div class="who">impegno di ${esc(nm(pu))}</div>
         <div class="sub">su «${esc(lbl(c))}» · <span class="mono">.pledge</span></div></div>
-      <span class="stag ${pend ? 'pend' : 'acc'}">${st}</span>
+      ${regimeTag(pend ? 'pending' : 'accepted')}
       <span class="money" style="padding:3px 10px"><span class="k">importo</span>
         <span class="v" style="font-size:1rem">${esc(eur(p.amount))}</span></span>
     </div>
     <div class="tasks" style="margin-top:8px">
       <button type="button" class="linkchip" data-goto-person="${pu}">vai a ${esc(nm(pu))}</button>
     </div>
+    ${pend ? `<div class="sect">chi l'ha preso (${esc(nm(pu))}) può correggerlo o ritirarlo</div>
+    <div class="tasks">
+      <button type="button" class="task" data-act="correct" data-u="${pu}" title=".correctPledge">Correggi importo</button>
+      <button type="button" class="task" data-act="withdraw" data-u="${pu}" title=".correctPledge">Ritira l'impegno</button>
+    </div>` : ''}
     <div class="sect">decisioni del referente (${esc(nm(col.referente))} ★)</div>
     <div class="tasks">
       ${pend ? `<button type="button" class="task" data-act="accept" data-u="${pu}" title=".acceptPledge">Accetta</button>
@@ -4699,7 +4725,7 @@ function playFx(tag, a, preState, pre) {
       break;
     }
     case 'correctPledge': {
-      const sp = splitUser(a.user, preCol(a.c).accepted);
+      const sp = splitUser(a.user, preCol(a.c).accepted) || splitUser(a.user, preCol(a.c).pending);
       const d = (sp ? sp[0] : 0) - a.v;
       if (d > 0) fly(`pile:${a.c}`, `conto:${a.user}`, signedEur(d), 0, pre);
       else if (d < 0) fly(`conto:${a.user}`, `pile:${a.c}`, eur(-d), 0, pre);
@@ -4926,7 +4952,8 @@ $('view').addEventListener('click', ev => {
     const author = col.referente;             // the hat is the context
     if (act.dataset.act === 'accept') directAct('acceptPledge', { author, user: u, c }, ev.clientX, ev.clientY);
     else if (act.dataset.act === 'refuse') directAct('refusePledge', { author, user: u, c }, ev.clientX, ev.clientY);
-    else directAct('correctPledge', { author, user: u, c }, ev.clientX, ev.clientY);
+    else if (act.dataset.act === 'withdraw') startTask('correctPledge', { user: u, c, v: 0 }, ev.clientX, ev.clientY);
+    else startTask('correctPledge', { user: u, c }, ev.clientX, ev.clientY);
     return;
   }
   const hat = t.closest('[data-hat]');
