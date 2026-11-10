@@ -8,7 +8,7 @@ master it starts from, because the earlier slices move the ledger.
 | 1 | exact-inversions | `scripts/check-reactivegas-inversion-coverage` (converse over the discovered extent, extended negative control); conclusions in `lean/Reactivegas/Invariants.lean`; ledger renderings | `just lean`, `just lean-mutants` |
 | 2 | observed-refusals | new theorems; the converse negative control's rejection reason; mutants on the stall guard; a stale comment in `scripts/check-lean-axioms`; ledger renderings | `just lean`, `just lean-mutants` |
 | 3 | question-retention | one new theorem; ledger renderings | `just lean`, `just lean-mutants` |
-| 4 | statement-triage | strengthened conclusions or recorded reasons, one row per theorem from the census taken at slice start; ledger renderings | `just lean-mutants` |
+| 4 | statement-triage | one disposition per row of the census taken at slice start (83 unconstrained rows on `d51d473`); the two refusal sites the observed-refusals audit found uncovered; a recorded-reason field in the ledger; ledger renderings; a measured projection of the hosted ledger job (64, 72, 92 minutes on the last three slices, timeout 120) | `just lean-mutants` |
 | 5 | mirror-auxiliaries | `scripts/check-lean-mirrors` and its control | `just lean` |
 
 Not in S5: finite-history correspondence (waits for #75 and #71).

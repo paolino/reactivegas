@@ -224,6 +224,20 @@ def errorsOf($run; $module): ($run.diags[$module] // []) | map(select(.severity 
               else empty end )
           else empty end ]
 
+    # an unconstrained theorem (no attempted mutant breaks its statement) stays
+    # in the ledger only with the reason its weak statement is intended: the
+    # ledger's `intended` field, judged on the computed fact and never on the
+    # stored class, so a hand-edited row cannot dodge it
+    + [ $authored[] | . as $t | $tby[$t.id] as $c
+        | select($c.class == "OPEN" and (($c.openFact // "") | startswith("unconstrained:")))
+        | ([ $rows[] | select(.theorem == $t.id) ][0] // null) as $r
+        | select($r != null and ((($r.intended // "") | type) != "string" or (($r.intended // "") | test("\\S") | not)))
+        | v("UNCONSTRAINED-NO-REASON"; $t.id; "an unconstrained theorem needs the reason its weak statement is intended in `intended`") ]
+    + [ $rows[] | select($thm[.theorem] != null) | . as $r | $tby[$r.theorem] as $c
+        | select($r.intended != null)
+        | select(($c.class == "OPEN" and (($c.openFact // "") | startswith("unconstrained:"))) | not)
+        | v("INTENDED-MISPLACED"; $r.theorem; "`intended` belongs only to a row that is computed OPEN and unconstrained") ]
+
     # R-9 guards
     + [ $real[] | select(.guard != null) | . as $m
         | if $ctor[$m.guard] == null then v("GUARD-UNKNOWN"; $m.id; $m.guard)

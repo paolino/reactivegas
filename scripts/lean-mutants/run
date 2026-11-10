@@ -485,7 +485,8 @@ write_mode() {
            | {theorem: $t.id, class: $t.class}
              + (if $t.class == "KILLED" then {killedBy: $t.killedBy}
                 elif $t.class == "HELPER" then {reason: $t.helperFact}
-                else {attempted: $t.attempted, reason: ($t.openFact // $why)} end) ]}' "$ledger" >"$tmp/led.json"
+                else {attempted: $t.attempted, reason: ($t.openFact // $why)}
+                     + (if ($t.openFact // "") | startswith("unconstrained:") then (if ($old[$t.id].intended // "") != "" then {intended: $old[$t.id].intended} else {} end) else {} end) end) ]}' "$ledger" >"$tmp/led.json"
     cp "$tmp/cat.json" "$catalogue"
     cp "$tmp/led.json" "$ledger"
     jq --slurpfile c "$catalogue" --slurpfile l "$ledger" '.catalogue = $c[0] | .ledger = $l[0]' \
@@ -542,6 +543,9 @@ NC_TABLE=(
     working-tree-changed:RESTORE-DIFFERS
     lake-option-not-reproduced:LAKE-OPTION-UNREPRODUCED
     stale-rendered-ledger:RENDER-STALE
+    unconstrained-without-reason:UNCONSTRAINED-NO-REASON
+    unconstrained-reason-absent:UNCONSTRAINED-NO-REASON
+    intended-on-killed:INTENDED-MISPLACED
 )
 
 nc_failed=0
@@ -744,9 +748,11 @@ negative_control_mode() {
     guard_k=$(jq -r --arg m "$guard_m" '[.catalogue.mutants[] | select(.id == $m) | .guard][0] // ""' "$b")
     decoy=$(jq -r '[.catalogue.mutants[] | select(.decoy == true) | .id][0] // ""' "$b")
     open_t=$(jq -r '[.ledger.rows[] | select(.class == "OPEN" and ((.attempted // []) | length) > 0)][0].theorem // ""' "$b")
+    # an unconstrained row (its intended reason is what the controls remove)
+    unc_t=$(jq -r '[.ledger.rows[] | select(.class == "OPEN" and (.reason | startswith("unconstrained:")))][0].theorem // ""' "$b")
     # a production definition with a body that no mutant targets
     body_def=$(jq -r '([.census.declarations[] | select(.production and (.typeDecl | not) and .kind == "def") | .id] - [.catalogue.mutants[].target])[0] // ""' "$b")
-    for v in killed_t killer helper_t unkilled outside guard_m guard_k decoy open_t body_def; do
+    for v in killed_t killer helper_t unkilled outside guard_m guard_k decoy open_t unc_t body_def; do
         [ -n "${!v}" ] || die "control subject $v not found in the last run; controls cannot be exercised"
     done
     nc_killer=$killer
@@ -836,6 +842,12 @@ negative_control_mode() {
             "(.census.vocabularies[].constructors[] | select(.id == \"$guard_k\") | .scope) = []" ;;
         guard-unknown) nc_bundle "$name" "$rule" \
             "(.catalogue.mutants[] | select(.id == \"$guard_m\") | .guard) = \"NoSuch.constructor\"" ;;
+        unconstrained-without-reason) nc_bundle "$name" "$rule" \
+            "(.ledger.rows[] | select(.theorem == \"$unc_t\") | .intended) = \"  \"" ;;
+        unconstrained-reason-absent) nc_bundle "$name" "$rule" \
+            "(.ledger.rows[] | select(.theorem == \"$unc_t\")) |= del(.intended)" ;;
+        intended-on-killed) nc_bundle "$name" "$rule" \
+            "(.ledger.rows[] | select(.theorem == \"$killed_t\") | .intended) = \"a reason on a killed row\"" ;;
         *) nc_exec "$name" "$rule" || die "control $name has no implementation" ;;
         esac
     done
