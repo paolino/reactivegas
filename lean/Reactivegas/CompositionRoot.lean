@@ -60,12 +60,22 @@ theorem step_auth_frame {view : KelGroups.GroupView} {s s' : State}
     obtain ⟨_, _, h⟩ := option_bind_inv h
     obtain rfl := Option.some.inj h
     exact ⟨rfl, rfl, rfl⟩
-  case acceptPledge | refusePledge | correctPledge =>
+  case acceptPledge | refusePledge =>
     obtain ⟨⟨_, _⟩, _, h⟩ := option_bind_inv h
     obtain ⟨⟨_, _⟩, _, h⟩ := option_bind_inv h
     obtain ⟨_, _, h⟩ := option_bind_inv h
     obtain rfl := Option.some.inj h
     exact ⟨rfl, rfl, rfl⟩
+  case correctPledge =>
+    obtain ⟨⟨_, _⟩, _, h⟩ := option_bind_inv h
+    split at h
+    · obtain ⟨_, _, h⟩ := option_bind_inv h
+      obtain rfl := Option.some.inj h
+      exact ⟨rfl, rfl, rfl⟩
+    · obtain ⟨⟨_, _⟩, _, h⟩ := option_bind_inv h
+      obtain ⟨_, _, h⟩ := option_bind_inv h
+      obtain rfl := Option.some.inj h
+      exact ⟨rfl, rfl, rfl⟩
 
 /-- A root success on an app event is the pruned result of the app fold. -/
 theorem apply_app_ok {θ : KelGroups.Vote.Threshold} {auth : BackdonateAuth}

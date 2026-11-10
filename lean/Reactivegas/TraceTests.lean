@@ -563,9 +563,9 @@ def acceptedOnlyDonation : Trace :=
     [ .deposit "2" "1" 40
     , .deposit "1" "3" 100
     , .openPurchase "2" 7
-    , .pledge "2" "3" 7 50
+    , .pledge "3" "3" 7 50
     , .acceptPledge "2" "3" 7
-    , .pledge "2" "1" 7 20
+    , .pledge "1" "1" 7 20
     , .acceptPledge "2" "1" 7
     , .donate "1" 10 ] seedAuth
 
@@ -574,9 +574,9 @@ def acceptedOnlyDeny : Trace :=
     [ .deposit "1" "2" 100
     , .deposit "1" "3" 80
     , .openPurchase "1" 4
-    , .pledge "1" "2" 4 60
+    , .pledge "2" "2" 4 60
     , .acceptPledge "1" "2" 4
-    , .pledge "1" "3" 4 30
+    , .pledge "3" "3" 4 30
     , .acceptPledge "1" "3" 4
     , .withdraw "1" "2" 999
     , .denyPermission "1" 4 ] seedAuth

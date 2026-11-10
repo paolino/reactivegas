@@ -242,7 +242,7 @@ def checkB5_negativeRefundsAllEscrow : Bool :=
   match run founded2
       [ (alice, .app (.deposit bob 20)), (bob, .app (.deposit alice 30))
       , A (.openPurchase 1), A (.pledge alice 1 7), A (.acceptPledge alice 1)
-      , A (.pledge bob 1 11)
+      , (bob, .app (.pledge bob 1 11))
       , A (.openBound "q" .collective (.permission 1)), A (.cast "q" .dissent) ] with
   | none => false
   | some gs =>
@@ -580,10 +580,10 @@ accepted pledge of `dave` and a pending one of `carol`. -/
 def l7Escrow (referente : KelGroups.Key) : List (KelGroups.Key × Ev) :=
   [ AS referente (.openPurchase 1), AS alice (.openPurchase 2),
     AS alice (.pledge alice 1 7), AS referente (.acceptPledge alice 1),
-    AS alice (.pledge carol 1 5), AS referente (.acceptPledge carol 1),
-    AS alice (.pledge dave 1 11),
-    AS alice (.pledge dave 2 4), AS alice (.acceptPledge dave 2),
-    AS alice (.pledge carol 2 3) ]
+    AS carol (.pledge carol 1 5), AS referente (.acceptPledge carol 1),
+    AS dave (.pledge dave 1 11),
+    AS dave (.pledge dave 2 4), AS alice (.acceptPledge dave 2),
+    AS carol (.pledge carol 2 3) ]
 
 /-- `bob` opens the question whose closure authorizes collection 1's permission. -/
 def l7Bind : List (KelGroups.Key × Ev) :=
@@ -884,5 +884,426 @@ def checkL7c_predicateOnMintMutant : Bool :=
     && !(strandsNothing mintsNothingForV5 l7DepartSteps 1 "q")
 
 theorem l7c_predicate_on_mint_mutant : checkL7c_predicateOnMintMutant = true := by decide
+
+/-! ## Pledge sovereignty (issue #69)
+
+A member pledges for themselves; while the pledge is pending its owner raises,
+lowers or withdraws it (a zero correction removes the row); once the referente
+has accepted it only the referente corrects it. Every witness runs the root
+transition under test `T`: production, or a mutant of it. Each row is one Bool
+oracle taking `T`; production is accepted by it and the mutants named in the
+rows are rejected by the same function. Every set-up step is itself run through
+`T`, every refusal is the root's `Except.error` with the aggregate unchanged,
+and every expected balance is read off the pre-state the fold produced.
+-/
+
+/-- `alice` is the only responsabile and the referente of collection 1; `bob`
+and `carol` are plain members. -/
+def p69Boot : Option Root :=
+  boot [mem alice adminRoles, mem bob [], mem carol []] State.empty
+
+/-- Funding through legitimate deposits: `bob` and `carol` hold credit. -/
+def p69Fund : List (KelGroups.Key × Ev) :=
+  [ AS alice (.donate 10000), AS alice (.deposit bob 50), AS alice (.deposit carol 50) ]
+
+/-- Collection 1 is open. -/
+def p69Open : List (KelGroups.Key × Ev) := p69Fund ++ [AS alice (.openPurchase 1)]
+
+/-- Two members hold pending pledges of their own in collection 1. -/
+def p69Pending2 : List (KelGroups.Key × Ev) :=
+  p69Open ++ [AS bob (.pledge bob 1 20), AS carol (.pledge carol 1 7)]
+
+/-- Collection 1 is permitted, through the vote, and two members hold pending
+pledges in it. -/
+def p69PermittedPending2 : List (KelGroups.Key × Ev) :=
+  p69Open
+    ++ [ AS alice (.openBound "q" .collective (.permission 1)), AS alice (.cast "q" .assent)
+       , AS alice (.grantPermission 1) ]
+    ++ [AS bob (.pledge bob 1 20), AS carol (.pledge carol 1 7)]
+
+def p69Col (g : Root) (c : CollId) : Option Collection := findCollection g.appFold c
+
+def p69Pending (g : Root) (c : CollId) (u : KelGroups.Key) : Option Int :=
+  (p69Col g c).bind fun col => (col.pending.find? (·.user == u)).map (·.amount)
+
+def p69Accepted (g : Root) (c : CollId) (u : KelGroups.Key) : Option Int :=
+  (p69Col g c).bind fun col => (col.accepted.find? (·.user == u)).map (·.amount)
+
+def p69Conti (g : Root) (u : KelGroups.Key) : Int := bal g.appFold.conti u
+
+/-- Credit plus escrow: a pledge moves money between the two and mints none. -/
+def p69Money (g : Root) : Int :=
+  sumBal g.appFold.conti + escrowSum g.appFold.collections
+
+/-- One signed application event through `T`; `none` on a refusal. -/
+def p69Step (T : Transition) (g : Root) (signer : KelGroups.Key) (e : AppEvent) :
+    Option Root :=
+  match T g signer (.app e) with
+  | .ok r => some r.state
+  | .error _ => none
+
+/-- The root refuses, and the aggregate a refusing fold keeps is the one it had. -/
+def p69Refused (T : Transition) (g : Root) (signer : KelGroups.Key) (e : AppEvent) : Bool :=
+  refused (T g signer (.app e))
+    && (match T g signer (.app e) with
+        | .ok r => r.state
+        | .error _ => g) == g
+
+/-- The pre-state of a row: its history run through `T`. -/
+def p69At (T : Transition) (steps : List (KelGroups.Key × Ev)) : Option Root :=
+  runWith T p69Boot steps
+
+/-- J-CREATE: a plain member pledges for themselves; the pledge is pending, the
+credit becomes escrow, and nobody else's row or balance moves. -/
+def jCreate (T : Transition) : Bool :=
+  match p69At T p69Open with
+  | none => false
+  | some pre =>
+      match p69Step T pre bob (.pledge bob 1 20) with
+      | none => false
+      | some post =>
+          p69Pending pre 1 bob == none && 20 ≤ p69Conti pre bob
+            && p69Pending post 1 bob == some 20 && p69Accepted post 1 bob == none
+            && p69Conti post bob == p69Conti pre bob - 20
+            && p69Conti post carol == p69Conti pre carol
+            && p69Money post == p69Money pre
+
+/-- A correction of a pending pledge by its owner, from two pending pledges:
+accepted, the owner's row is `expect`, the difference settles in their credit,
+no accepted row appears, the other member's row is untouched. -/
+def p69OwnCorrection (T : Transition) (v' : Int) (expect : Option Int) : Bool :=
+  match p69At T p69Pending2 with
+  | none => false
+  | some pre =>
+      match p69Pending pre 1 bob with
+      | none => false
+      | some v =>
+          match p69Step T pre bob (.correctPledge bob 1 v') with
+          | none => false
+          | some post =>
+              p69Accepted pre 1 bob == none
+                && p69Pending post 1 bob == expect && p69Accepted post 1 bob == none
+                && (p69Col post 1).map (·.accepted) == (p69Col pre 1).map (·.accepted)
+                && p69Conti post bob == p69Conti pre bob + (v - v')
+                && p69Pending post 1 carol == p69Pending pre 1 carol
+                && p69Money post == p69Money pre
+
+/-- J-RAISE. -/
+def jRaise (T : Transition) : Bool := p69OwnCorrection T 35 (some 35)
+
+/-- J-LOWER. -/
+def jLower (T : Transition) : Bool := p69OwnCorrection T 5 (some 5)
+
+/-- J-WITHDRAW: the owner has no row left in the collection, pending or accepted,
+and the whole pledge is back in their credit. -/
+def jWithdraw (T : Transition) : Bool :=
+  p69OwnCorrection T 0 none
+    && match p69At T p69Pending2 with
+      | none => false
+      | some pre =>
+          match p69Step T pre bob (.correctPledge bob 1 0) with
+          | none => false
+          | some post =>
+              match p69Col post 1 with
+              | some col =>
+                  !(col.pending.any (·.user == bob)) && !(col.accepted.any (·.user == bob))
+                    && p69Conti post bob == p69Conti pre bob + (p69Pending pre 1 bob).getD 0
+              | none => false
+
+/-- J-UNBLOCK, both legs: from a permitted collection, the referente's close is
+refused while a pending pledge stands; once the last one is withdrawn it
+succeeds; with another pending pledge left it is still refused. -/
+def jUnblock (T : Transition) : Bool :=
+  match p69At T p69PermittedPending2 with
+  | none => false
+  | some pre =>
+      (p69Col pre 1).map (·.permitted) == some true
+        && p69Refused T pre alice (.closePurchase 1)
+        && match p69Step T pre carol (.correctPledge carol 1 0) with
+          | none => false
+          | some g1 =>
+              -- bob's pledge is the last one pending
+              p69Pending g1 1 bob == some 20 && p69Pending g1 1 carol == none
+                && p69Refused T g1 alice (.closePurchase 1)
+                && match p69Step T g1 bob (.correctPledge bob 1 0) with
+                  | none => false
+                  | some g2 =>
+                      (p69Col g2 1).map (·.pending.isEmpty) == some true
+                        && match p69Step T g2 alice (.closePurchase 1) with
+                          | some g3 => (p69Col g3 1).isNone
+                          | none => false
+
+/-- J-SWITCH: once the referente has accepted the pledge its owner can no longer
+touch it, by raising, lowering or withdrawing; the referente's correction has
+the base effect, a zero correction keeping an accepted row. -/
+def jSwitch (T : Transition) : Bool :=
+  match p69At T p69Pending2 with
+  | none => false
+  | some pre =>
+      match p69Step T pre alice (.acceptPledge bob 1) with
+      | none => false
+      | some g1 =>
+          match p69Accepted g1 1 bob with
+          | none => false
+          | some v =>
+              p69Pending g1 1 bob == none
+                && p69Refused T g1 bob (.correctPledge bob 1 (v + 1))
+                && p69Refused T g1 bob (.correctPledge bob 1 (v - 1))
+                && p69Refused T g1 bob (.correctPledge bob 1 0)
+                && (match p69Step T g1 alice (.correctPledge bob 1 (v + 3)) with
+                    | some post =>
+                        p69Accepted post 1 bob == some (v + 3) && p69Pending post 1 bob == none
+                          && p69Conti post bob == p69Conti g1 bob + (v - (v + 3))
+                          && p69Money post == p69Money g1
+                    | none => false)
+                && (match p69Step T g1 alice (.correctPledge bob 1 0) with
+                    | some post =>
+                        p69Accepted post 1 bob == some 0
+                          && p69Conti post bob == p69Conti g1 bob + v
+                    | none => false)
+
+/-- R-IMPERSONATE, three legs, each beside the control that the same event signed
+by the owner is accepted from the same state. -/
+def rImpersonate (T : Transition) : Bool :=
+  match p69At T p69Open, p69At T p69Pending2 with
+  | some opened, some pre =>
+      -- a responsabile pledges for another member
+      p69Refused T opened alice (.pledge bob 1 20)
+        && (p69Step T opened bob (.pledge bob 1 20)).isSome
+        -- another member corrects
+        && p69Refused T pre carol (.correctPledge bob 1 5)
+        && p69Refused T pre carol (.correctPledge bob 1 0)
+        -- the referente corrects a pending pledge
+        && p69Refused T pre alice (.correctPledge bob 1 5)
+        && p69Refused T pre alice (.correctPledge bob 1 0)
+        && (p69Step T pre bob (.correctPledge bob 1 5)).isSome
+        && (p69Step T pre bob (.correctPledge bob 1 0)).isSome
+  | _, _ => false
+
+/-- R-UNAFFORD: the owner raises a pending pledge by their whole credit and is
+accepted, by one more and is refused; likewise a first pledge. -/
+def rUnafford (T : Transition) : Bool :=
+  match p69At T p69Open, p69At T p69Pending2 with
+  | some opened, some pre =>
+      match p69Pending pre 1 bob with
+      | none => false
+      | some v =>
+          let c := p69Conti pre bob
+          decide (0 < c)
+            && p69Refused T pre bob (.correctPledge bob 1 (v + c + 1))
+            && (match p69Step T pre bob (.correctPledge bob 1 (v + c)) with
+                | some post => p69Conti post bob == 0
+                | none => false)
+            && p69Refused T opened bob (.pledge bob 1 (p69Conti opened bob + 1))
+            && (p69Step T opened bob (.pledge bob 1 (p69Conti opened bob))).isSome
+  | _, _ => false
+
+/-- R-NEGATIVE: a first pledge of zero or less, and a pending correction below
+zero, are refused; the neighbouring positive pledge and the zero correction are
+accepted from the same states. -/
+def rNegative (T : Transition) : Bool :=
+  match p69At T p69Open, p69At T p69Pending2 with
+  | some opened, some pre =>
+      p69Refused T opened bob (.pledge bob 1 0)
+        && p69Refused T opened bob (.pledge bob 1 (-5))
+        && (p69Step T opened bob (.pledge bob 1 1)).isSome
+        && p69Refused T pre bob (.correctPledge bob 1 (-1))
+        && (p69Step T pre bob (.correctPledge bob 1 0)).isSome
+  | _, _ => false
+
+/-- Every row. -/
+def p69Sovereign (T : Transition) : Bool :=
+  jCreate T && jRaise T && jLower T && jWithdraw T && jUnblock T && jSwitch T
+    && rImpersonate T && rUnafford T && rNegative T
+
+#guard jCreate productionStep
+#guard jRaise productionStep
+#guard jLower productionStep
+#guard jWithdraw productionStep
+#guard jUnblock productionStep
+#guard jSwitch productionStep
+#guard rImpersonate productionStep
+#guard rUnafford productionStep
+#guard rNegative productionStep
+
+/-! ### Mutants of the pledge guards
+
+Mutation-only definitions: no production definition uses them. Each is the
+production root with one guard of the ruled change undone, run through the same
+oracle that accepts production, and each is rejected by it. -/
+
+def p69Rejected : Res := .error (.integrated (.app .rejected))
+
+def p69IsResponsabile (g : Root) (k : KelGroups.Key) : Bool :=
+  isResponsabile { members := g.members } k
+
+/-- Edit one collection of a successful result. -/
+def p69Edit (c : CollId) (f : Collection → Collection) : Res → Res
+  | .ok r => .ok { r with state := { r.state with appFold :=
+      { r.state.appFold with collections :=
+          r.state.appFold.collections.map (fun col => if col.id == c then f col else col) } } }
+  | .error err => .error err
+
+/-- Add `d` to a member's credit in a root. -/
+def p69Credit (g : Root) (u : KelGroups.Key) (d : Int) : Root :=
+  { g with appFold := { g.appFold with conti := bump g.appFold.conti u d } }
+
+/-- The pending-regime correction of `u`: no accepted row, a pending one. -/
+def p69PendingRegime (g : Root) (c : CollId) (u : KelGroups.Key) : Option Int :=
+  if (p69Accepted g c u).isSome then none else p69Pending g c u
+
+/-- Mutation-only (M-RESP): `pledge` keeps the responsabile guard: a responsabile
+pledges in anyone's name, and a plain member cannot pledge. -/
+def mResp : Transition := fun g signer e =>
+  match e with
+  | .app (.pledge u _ _) =>
+      if p69IsResponsabile g signer then productionStep g u e else p69Rejected
+  | _ => productionStep g signer e
+
+/-- Mutation-only (M-PEND-OFF): a correction still reads only the accepted row. -/
+def mPendOff : Transition := fun g signer e =>
+  match e with
+  | .app (.correctPledge u c _) =>
+      if (p69Accepted g c u).isSome then productionStep g signer e else p69Rejected
+  | _ => productionStep g signer e
+
+/-- Mutation-only (M-ZERO-ROW): withdrawing a pending pledge keeps a zero row. -/
+def mZeroRow : Transition := fun g signer e =>
+  match e with
+  | .app (.correctPledge u c v') =>
+      if v' == 0 && (p69PendingRegime g c u).isSome then
+        p69Edit c (fun col => { col with pending := ⟨u, 0⟩ :: col.pending })
+          (productionStep g signer e)
+      else productionStep g signer e
+  | _ => productionStep g signer e
+
+/-- Mutation-only (M-PROMOTE): withdrawing a pending pledge writes an accepted row. -/
+def mPromote : Transition := fun g signer e =>
+  match e with
+  | .app (.correctPledge u c v') =>
+      if v' == 0 && (p69PendingRegime g c u).isSome then
+        p69Edit c (fun col => { col with accepted := ⟨u, 0⟩ :: col.accepted })
+          (productionStep g signer e)
+      else productionStep g signer e
+  | _ => productionStep g signer e
+
+/-- Mutation-only (M-ACC-SELF): the accepted regime admits the pledge's owner,
+who corrects as the referente would. -/
+def mAccSelf : Transition := fun g signer e =>
+  match e, productionStep g signer e with
+  | .app (.correctPledge u c _), .error err =>
+      if signer == u && (p69Accepted g c u).isSome then
+        match p69Col g c with
+        | some col => productionStep g col.referente e
+        | none => .error err
+      else .error err
+  | _, res => res
+
+/-- Mutation-only (M-PEND-ANY): the pending regime ignores the signer. -/
+def mPendAny : Transition := fun g signer e =>
+  match e, productionStep g signer e with
+  | .app (.correctPledge u c _), .error err =>
+      if (p69PendingRegime g c u).isSome then productionStep g u e else .error err
+  | _, res => res
+
+/-- Mutation-only (M-SOLV): the solvency guard is dropped from the pending
+regime: the owner's credit may go negative. -/
+def mSolv : Transition := fun g signer e =>
+  match e, productionStep g signer e with
+  | .app (.correctPledge u c v'), .error err =>
+      match p69PendingRegime g c u with
+      | some v =>
+          if signer == u && decide (0 ≤ v') then
+            match productionStep (p69Credit g u (v' - v)) signer e with
+            | .ok r => .ok { r with state := p69Credit r.state u (v - v') }
+            | .error err' => .error err'
+          else .error err
+      | none => .error err
+  | _, res => res
+
+/-- Mutation-only (M-NEG): `0 ≤ v'` is dropped from the pending regime: the
+owner's pending row becomes negative. -/
+def mNeg : Transition := fun g signer e =>
+  match e, productionStep g signer e with
+  | .app (.correctPledge u c v'), .error err =>
+      if signer == u && decide (v' < 0) && (p69PendingRegime g c u).isSome then
+        match productionStep g signer (.app (.correctPledge u c 0)) with
+        | .ok r =>
+            p69Edit c (fun col => { col with pending := ⟨u, v'⟩ :: col.pending })
+              (.ok { r with state := p69Credit r.state u (-v') })
+        | .error err' => .error err'
+      else .error err
+  | _, res => res
+
+/-- Each mutant executes: from the state of its row it admits what production
+refuses, or edits what production writes. -/
+def checkP69_mutantsExecute : Bool :=
+  match p69At productionStep p69Open, p69At productionStep p69Pending2 with
+  | some opened, some pre =>
+      match p69Step productionStep pre alice (.acceptPledge bob 1) with
+      | none => false
+      | some acc =>
+          -- M-RESP
+          p69Refused productionStep opened alice (.pledge bob 1 20)
+            && (match p69Step mResp opened alice (.pledge bob 1 20) with
+                | some post => p69Pending post 1 bob == some 20
+                | none => false)
+            && (p69Step mResp opened bob (.pledge bob 1 20)).isNone
+            -- M-PEND-OFF
+            && (p69Step productionStep pre bob (.correctPledge bob 1 5)).isSome
+            && (p69Step mPendOff pre bob (.correctPledge bob 1 5)).isNone
+            -- M-ZERO-ROW
+            && (match p69Step mZeroRow pre bob (.correctPledge bob 1 0) with
+                | some post => p69Pending post 1 bob == some 0
+                | none => false)
+            -- M-PROMOTE
+            && (match p69Step mPromote pre bob (.correctPledge bob 1 0) with
+                | some post => p69Accepted post 1 bob == some 0 && p69Pending post 1 bob == none
+                | none => false)
+            -- M-ACC-SELF
+            && p69Refused productionStep acc bob (.correctPledge bob 1 1)
+            && (match p69Step mAccSelf acc bob (.correctPledge bob 1 1) with
+                | some post => p69Accepted post 1 bob == some 1
+                | none => false)
+            -- M-PEND-ANY
+            && p69Refused productionStep pre carol (.correctPledge bob 1 5)
+            && (match p69Step mPendAny pre carol (.correctPledge bob 1 5) with
+                | some post => p69Pending post 1 bob == some 5
+                | none => false)
+            -- M-SOLV
+            && p69Refused productionStep pre bob (.correctPledge bob 1 (20 + p69Conti pre bob + 1))
+            && (match p69Step mSolv pre bob (.correctPledge bob 1 (20 + p69Conti pre bob + 1)) with
+                | some post => p69Conti post bob == -1
+                | none => false)
+            -- M-NEG
+            && p69Refused productionStep pre bob (.correctPledge bob 1 (-3))
+            && (match p69Step mNeg pre bob (.correctPledge bob 1 (-3)) with
+                | some post => p69Pending post 1 bob == some (-3)
+                    && p69Conti post bob == p69Conti pre bob + (20 - (-3))
+                | none => false)
+            -- a mutant leaves an unrelated refusal a refusal
+            && p69Refused mResp opened carol (.pledge bob 1 20)
+  | _, _ => false
+
+/-- Each mutant is rejected by the oracle of the row that names it, and by the
+conjunction of every row. -/
+def checkP69_mutantsRejected : Bool :=
+  !(jCreate mResp) && !(rImpersonate mResp)
+    && !(jRaise mPendOff) && !(jLower mPendOff)
+    && !(jWithdraw mZeroRow) && !(jUnblock mZeroRow)
+    && !(jWithdraw mPromote)
+    && !(jSwitch mAccSelf)
+    && !(rImpersonate mPendAny)
+    && !(rUnafford mSolv)
+    && !(rNegative mNeg)
+    && !(p69Sovereign mResp) && !(p69Sovereign mPendOff) && !(p69Sovereign mZeroRow)
+    && !(p69Sovereign mPromote) && !(p69Sovereign mAccSelf) && !(p69Sovereign mPendAny)
+    && !(p69Sovereign mSolv) && !(p69Sovereign mNeg)
+
+/-- The mutants are caught: each executes, and each is rejected. -/
+def checkP69_mutantsCaught : Bool := checkP69_mutantsExecute && checkP69_mutantsRejected
+
+#guard p69Sovereign productionStep
+#guard checkP69_mutantsCaught
 
 end CompositionTests

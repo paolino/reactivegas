@@ -55,13 +55,13 @@ inductive Event where
   | donate (author : KelGroups.Key) (v : Int)
   /-- **Voted equal-share backdonation** (issue #48). -/
   | backdonate (author : KelGroups.Key) (w : Int)
-  /-- Pledge: debits the pledger's credit immediately into escrow. -/
+  /-- Pledge, signed by its owner: debits the owner's credit immediately into escrow. -/
   | pledge (author user : KelGroups.Key) (c : CollId) (v : Int)
   /-- Referente consent: move the pledge from pending to accepted. -/
   | acceptPledge (author user : KelGroups.Key) (c : CollId)
   /-- Referente refusal: refund the pending pledge. -/
   | refusePledge (author user : KelGroups.Key) (c : CollId)
-  /-- Referente-only correction of an accepted pledge: settle the difference. -/
+  /-- Correction: the owner of a pending pledge (zero withdraws it), the referente of an accepted one. -/
   | correctPledge (author user : KelGroups.Key) (c : CollId) (v : Int)
   /-- Positive closure: spends the referente's cassa by the collected total. -/
   | closePurchase (author : KelGroups.Key) (c : CollId)

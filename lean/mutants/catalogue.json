@@ -204,21 +204,22 @@
       "target": "step",
       "guard": "GuardId.correctPledge",
       "patch": {
-        "line": 124,
-        "before": "      && decide (0 ≤ v') && decide (bal s.conti u + (v - v') ≥ 0))",
-        "after": "      && decide (0 ≤ v') && true)"
+        "line": 125,
+        "before": "        && decide (0 ≤ v') && decide (bal s.conti u + (v - v') ≥ 0))",
+        "after": "        && decide (0 ≤ v') && true)"
       },
       "claimedKills": [
+        "step_correct_cases",
         "step_correct_inv"
       ],
-      "note": "correctPledge accepts a correction the pledger cannot cover"
+      "note": "correctPledge of an accepted pledge accepts a correction the pledger cannot cover"
     },
     {
       "id": "guard-closePurchase-permitted",
       "target": "step",
       "guard": "GuardId.closePurchase",
       "patch": {
-        "line": 131,
+        "line": 139,
         "before": "      && col.permitted && col.pending.isEmpty && !(decide (stalled s)))",
         "after": "      && true && col.pending.isEmpty && !(decide (stalled s)))"
       },
@@ -233,7 +234,7 @@
       "target": "step",
       "guard": "GuardId.closePurchase",
       "patch": {
-        "line": 131,
+        "line": 139,
         "before": "      && col.permitted && col.pending.isEmpty && !(decide (stalled s)))",
         "after": "      && col.permitted && col.pending.isEmpty && true)"
       },
@@ -247,7 +248,7 @@
       "target": "step",
       "guard": "GuardId.failPurchase",
       "patch": {
-        "line": 138,
+        "line": 146,
         "before": "      && col.pending.isEmpty)",
         "after": "      && true)"
       },
@@ -538,7 +539,7 @@
       "target": "Reactivegas.apply",
       "guard": "Reactivegas.ProductionError.comuneReserved",
       "patch": {
-        "line": 468,
+        "line": 476,
         "before": "  if productionWellFormed gs then",
         "after": "  if true then"
       },
@@ -552,7 +553,7 @@
       "target": "Reactivegas.apply",
       "guard": "Reactivegas.ProductionError.integrated",
       "patch": {
-        "line": 473,
+        "line": 481,
         "before": "    | .error err => .error (ProductionError.integrated err)",
         "after": "    | .error err => .ok { state := gs, change := none }"
       },
@@ -583,7 +584,7 @@
       "target": "Reactivegas.voteApply",
       "guard": "StepError.rejected",
       "patch": {
-        "line": 266,
+        "line": 274,
         "before": "  | .error _ => .error StepError.rejected",
         "after": "  | .error _ => .ok s"
       },
@@ -677,6 +678,7 @@
       "claimedKills": [
         "TraceTests.all_checks_pass",
         "pledge_escrow_debit",
+        "splitUser_removes_user_lemma@Reactivegas.Invariants",
         "splitUser_sublist_lemma@Reactivegas.State",
         "splitUser_sum_lemma@Reactivegas.State"
       ],
@@ -1833,7 +1835,7 @@
       "target": "stepEvent",
       "guard": null,
       "patch": {
-        "line": 160,
+        "line": 168,
         "before": "  | .withdraw a u v => go a (.withdraw u v)",
         "after": "  | .withdraw a u v => go a (.deposit u v)"
       },
@@ -1851,7 +1853,7 @@
       "target": "Reactivegas.economicCleanup",
       "guard": null,
       "patch": {
-        "line": 351,
+        "line": 359,
         "before": "      demand (!(decide (stalled s)))",
         "after": "      demand true"
       },
@@ -1868,7 +1870,7 @@
       "target": "Reactivegas.economicCleanup",
       "guard": null,
       "patch": {
-        "line": 353,
+        "line": 361,
         "before": "        (if KelGroups.GroupView.isAdmin key pre then windUpAdmin s key else s) key)",
         "after": "        (s) key)"
       },
@@ -1887,7 +1889,7 @@
       "target": "Reactivegas.absorbConto",
       "guard": null,
       "patch": {
-        "line": 319,
+        "line": 327,
         "before": "    conti := bump (bump s.conti key (-(bal s.conti key))) comuneId (bal s.conti key) }",
         "after": "    conti := bump s.conti comuneId (bal s.conti key) }"
       },
@@ -1903,7 +1905,7 @@
       "target": "Reactivegas.windUpAdmin",
       "guard": null,
       "patch": {
-        "line": 330,
+        "line": 338,
         "before": "    casse := bump s.casse key (-(bal s.casse key)),",
         "after": "    casse := s.casse,"
       },
@@ -1920,7 +1922,7 @@
       "target": "Reactivegas.baseHook",
       "guard": null,
       "patch": {
-        "line": 384,
+        "line": 392,
         "before": "        .ok (pruneAuth (syncAuth cleaned (KelGroups.Vote.sweepClosures θ post departed)))",
         "after": "        .ok (pruneAuth (syncAuth cleaned departed))"
       },
@@ -1947,7 +1949,7 @@
       "target": "Reactivegas.productionWellFormed",
       "guard": null,
       "patch": {
-        "line": 439,
+        "line": 447,
         "before": "  !KelGroups.GroupView.isMember comuneId (KelGroups.groupView gs)",
         "after": "  true"
       },
@@ -2165,7 +2167,7 @@
       "target": "Reactivegas.apply",
       "guard": "Reactivegas.ProductionError.comuneReserved",
       "patch": {
-        "line": 471,
+        "line": 479,
         "before": "        if productionWellFormed result.state then .ok result",
         "after": "        if true then .ok result"
       },
@@ -2542,7 +2544,7 @@
       "target": "Reactivegas.baseHook",
       "guard": null,
       "patch": {
-        "line": 382,
+        "line": 390,
         "before": "          | .memberRemoved key => KelGroups.Vote.closeProposerQuestions key s.votes",
         "after": "          | .memberRemoved _ => s.votes"
       },
@@ -2687,7 +2689,7 @@
       "target": "Reactivegas.spendThen",
       "guard": null,
       "patch": {
-        "line": 197,
+        "line": 205,
         "before": "      match effect { s with live := rest } with",
         "after": "      match effect s with"
       },
@@ -2701,7 +2703,7 @@
       "target": "Reactivegas.spendThen",
       "guard": null,
       "patch": {
-        "line": 199,
+        "line": 207,
         "before": "      | none => .error StepError.rejected",
         "after": "      | none => .ok s"
       },
@@ -2715,7 +2717,7 @@
       "target": "Reactivegas.spendThen",
       "guard": "StepError.rejected",
       "patch": {
-        "line": 195,
+        "line": 203,
         "before": "  | none => .error StepError.rejected",
         "after": "  | none => .ok s"
       },
@@ -2729,7 +2731,7 @@
       "target": "Reactivegas.denyByClosure",
       "guard": null,
       "patch": {
-        "line": 209,
+        "line": 217,
         "before": "  match pullLive (.permission c) .negative s.live with",
         "after": "  match pullLive (.permission c) .positive s.live with"
       },
@@ -2746,7 +2748,7 @@
       "target": "Reactivegas.denyByClosure",
       "guard": null,
       "patch": {
-        "line": 217,
+        "line": 225,
         "before": "            conti := refundAll s.conti (col.accepted ++ col.pending)",
         "after": "            conti := s.conti"
       },
@@ -2762,7 +2764,7 @@
       "target": "Reactivegas.denyByClosure",
       "guard": null,
       "patch": {
-        "line": 216,
+        "line": 224,
         "before": "            live := rest",
         "after": "            live := s.live"
       },
@@ -2777,7 +2779,7 @@
       "target": "Reactivegas.denyByClosure",
       "guard": null,
       "patch": {
-        "line": 218,
+        "line": 226,
         "before": "            collections := cs }",
         "after": "            collections := s.collections }"
       },
@@ -2794,7 +2796,7 @@
       "target": "Reactivegas.bindable",
       "guard": null,
       "patch": {
-        "line": 224,
+        "line": 232,
         "before": "  (KelGroups.Vote.lookupQuestion qid s.votes).isNone",
         "after": "  true"
       },
@@ -2806,7 +2808,7 @@
       "target": "Reactivegas.bindable",
       "guard": null,
       "patch": {
-        "line": 225,
+        "line": 233,
         "before": "    && !(s.votes.closed.any (fun r => r.questionId == qid))",
         "after": "    && true"
       },
@@ -2818,7 +2820,7 @@
       "target": "Reactivegas.bindable",
       "guard": null,
       "patch": {
-        "line": 227,
+        "line": 235,
         "before": "      | .permission c => s.collections.any (fun col => col.id == c)",
         "after": "      | .permission c => true"
       },
@@ -2830,7 +2832,7 @@
       "target": "Reactivegas.bindable",
       "guard": null,
       "patch": {
-        "line": 228,
+        "line": 236,
         "before": "      | .backdonation w => decide (0 < w)",
         "after": "      | .backdonation w => decide (w < 0)"
       },
@@ -2842,7 +2844,7 @@
       "target": "Reactivegas.syncAuth",
       "guard": null,
       "patch": {
-        "line": 243,
+        "line": 251,
         "before": "    live := s.live ++ minted }",
         "after": "    live := s.live ++ minted.take 0 }"
       },
@@ -2861,7 +2863,7 @@
       "target": "Reactivegas.syncAuth",
       "guard": null,
       "patch": {
-        "line": 238,
+        "line": 246,
         "before": "      (fun target => { questionId := r.questionId, target, verdict := r.verdict }))",
         "after": "      (fun target => { questionId := r.questionId, target, verdict := .positive }))"
       },
@@ -2879,7 +2881,7 @@
       "target": "Reactivegas.syncAuth",
       "guard": null,
       "patch": {
-        "line": 235,
+        "line": 243,
         "before": "    (fun r => !(s.votes.closed.any (fun p => p.questionId == r.questionId)))",
         "after": "    (fun r => true)"
       },
@@ -2891,7 +2893,7 @@
       "target": "Reactivegas.syncAuth",
       "guard": null,
       "patch": {
-        "line": 242,
+        "line": 250,
         "before": "      (fun b => (KelGroups.Vote.lookupQuestion b.1 votes).isSome)",
         "after": "      (fun b => true)"
       },
@@ -2903,7 +2905,7 @@
       "target": "Reactivegas.targetPresent",
       "guard": null,
       "patch": {
-        "line": 248,
+        "line": 256,
         "before": "  | .permission c => s.collections.any (fun col => col.id == c)",
         "after": "  | .permission _ => true"
       },
@@ -2918,7 +2920,7 @@
       "target": "Reactivegas.targetPresent",
       "guard": null,
       "patch": {
-        "line": 249,
+        "line": 257,
         "before": "  | .backdonation _ => true",
         "after": "  | .backdonation _ => false"
       },
@@ -2930,7 +2932,7 @@
       "target": "Reactivegas.pruneAuth",
       "guard": null,
       "patch": {
-        "line": 255,
+        "line": 263,
         "before": "    bindings := s.bindings.filter (fun b => targetPresent s b.2)",
         "after": "    bindings := s.bindings"
       },
@@ -2944,7 +2946,7 @@
       "target": "Reactivegas.pruneAuth",
       "guard": null,
       "patch": {
-        "line": 256,
+        "line": 264,
         "before": "    live := s.live.filter (fun a => targetPresent s a.target) }",
         "after": "    live := s.live }"
       },
@@ -2965,7 +2967,7 @@
       "target": "Reactivegas.ofOption",
       "guard": null,
       "patch": {
-        "line": 187,
+        "line": 195,
         "before": "  | some s => .ok s",
         "after": "  | some _ => .error StepError.rejected"
       },
@@ -2991,7 +2993,7 @@
       "target": "Reactivegas.ofOption",
       "guard": "StepError.rejected",
       "patch": {
-        "line": 188,
+        "line": 196,
         "before": "  | none => .error StepError.rejected",
         "after": "  | none => .ok State.empty"
       },
@@ -3006,7 +3008,7 @@
       "target": "Reactivegas.voteApply",
       "guard": null,
       "patch": {
-        "line": 267,
+        "line": 275,
         "before": "  | .ok votes => .ok (syncAuth s votes)",
         "after": "  | .ok votes => .ok { s with votes }"
       },
@@ -3026,7 +3028,7 @@
       "target": "Reactivegas.appFoldCore",
       "guard": null,
       "patch": {
-        "line": 285,
+        "line": 293,
         "before": "        spendThen (.permission c) .positive s",
         "after": "        spendThen (.permission c) .negative s"
       },
@@ -3041,7 +3043,7 @@
       "target": "Reactivegas.appFoldCore",
       "guard": null,
       "patch": {
-        "line": 291,
+        "line": 299,
         "before": "        spendThen (.backdonation w) .positive s",
         "after": "        spendThen (.backdonation w) .negative s"
       },
@@ -3056,7 +3058,7 @@
       "target": "Reactivegas.appFoldCore",
       "guard": null,
       "patch": {
-        "line": 291,
+        "line": 299,
         "before": "        spendThen (.backdonation w) .positive s",
         "after": "        spendThen (.backdonation 1) .positive s"
       },
@@ -3070,7 +3072,7 @@
       "target": "Reactivegas.appFoldCore",
       "guard": "StepError.rejected",
       "patch": {
-        "line": 288,
+        "line": 296,
         "before": "        if isResponsabile pre signer then ofOption (denyByClosure s c)",
         "after": "        if true then ofOption (denyByClosure s c)"
       },
@@ -3082,7 +3084,7 @@
       "target": "Reactivegas.appFoldCore",
       "guard": "StepError.rejected",
       "patch": {
-        "line": 280,
+        "line": 288,
         "before": "        if bindable s qid target then",
         "after": "        if true then"
       },
@@ -3094,7 +3096,7 @@
       "target": "Reactivegas.appFoldCore",
       "guard": null,
       "patch": {
-        "line": 281,
+        "line": 289,
         "before": "          voteApply θ pre { s with bindings := (qid, target) :: s.bindings } signer",
         "after": "          voteApply θ pre { s with bindings := s.bindings } signer"
       },
@@ -3114,7 +3116,7 @@
       "target": "Reactivegas.appFold",
       "guard": null,
       "patch": {
-        "line": 303,
+        "line": 311,
         "before": "    | .ok s' => .ok (pruneAuth s')",
         "after": "    | .ok s' => .ok s'"
       },
@@ -3130,7 +3132,7 @@
       "target": "Reactivegas.baseHook",
       "guard": null,
       "patch": {
-        "line": 384,
+        "line": 392,
         "before": "        .ok (pruneAuth (syncAuth cleaned (KelGroups.Vote.sweepClosures θ post departed)))",
         "after": "        .ok (pruneAuth { cleaned with votes := KelGroups.Vote.sweepClosures θ post departed })"
       },
@@ -3149,7 +3151,7 @@
       "target": "Reactivegas.baseHook",
       "guard": null,
       "patch": {
-        "line": 384,
+        "line": 392,
         "before": "        .ok (pruneAuth (syncAuth cleaned (KelGroups.Vote.sweepClosures θ post departed)))",
         "after": "        .ok (syncAuth cleaned (KelGroups.Vote.sweepClosures θ post departed))"
       },
@@ -3167,7 +3169,7 @@
       "target": "Reactivegas.baseHook",
       "guard": "StepError.rejected",
       "patch": {
-        "line": 377,
+        "line": 385,
         "before": "    | none => .error StepError.rejected",
         "after": "    | none => .ok s"
       },
@@ -3190,7 +3192,7 @@
       "target": "Reactivegas.cleanOrigin",
       "guard": null,
       "patch": {
-        "line": 445,
+        "line": 453,
         "before": "  payload.votes.closed.isEmpty && payload.bindings.isEmpty && payload.live.isEmpty",
         "after": "  payload.votes.closed.isEmpty && payload.bindings.isEmpty"
       },
@@ -3205,7 +3207,7 @@
       "target": "Reactivegas.cleanOrigin",
       "guard": null,
       "patch": {
-        "line": 445,
+        "line": 453,
         "before": "  payload.votes.closed.isEmpty && payload.bindings.isEmpty && payload.live.isEmpty",
         "after": "  payload.bindings.isEmpty && payload.live.isEmpty"
       },
@@ -3219,7 +3221,7 @@
       "target": "Reactivegas.boot",
       "guard": null,
       "patch": {
-        "line": 453,
+        "line": 461,
         "before": "  if productionWellFormed gs && cleanOrigin payload then some gs else none",
         "after": "  if productionWellFormed gs then some gs else none"
       },
@@ -3279,7 +3281,7 @@
       "target": "Reactivegas.Composition.liveBacked",
       "guard": null,
       "patch": {
-        "line": 214,
+        "line": 224,
         "before": "    (fun r => decide (r.questionId = a.questionId ∧ r.verdict = a.verdict)))",
         "after": "    (fun r => decide (r.questionId = a.questionId)))"
       },
@@ -3293,7 +3295,7 @@
       "target": "Reactivegas.Composition.liveBacked",
       "guard": null,
       "patch": {
-        "line": 213,
+        "line": 223,
         "before": "  s.live.all (fun a => s.votes.closed.any",
         "after": "  s.live.any (fun a => s.votes.closed.any"
       },
@@ -3308,7 +3310,7 @@
       "target": "Reactivegas.appFoldCore",
       "guard": null,
       "patch": {
-        "line": 288,
+        "line": 296,
         "before": "        if isResponsabile pre signer then ofOption (denyByClosure s c)",
         "after": "        if isResponsabile pre signer then ofOption (step pre s signer (.denyPermission c) auth)"
       },
@@ -3493,7 +3495,7 @@
       "target": "Reactivegas.baseHook",
       "guard": null,
       "patch": {
-        "line": 382,
+        "line": 390,
         "before": "          | .memberRemoved key => KelGroups.Vote.closeProposerQuestions key s.votes",
         "after": "          | .memberRemoved key => { s.votes with openQuestions := s.votes.openQuestions.filter (fun e => e.2.proposer != key) }"
       },
@@ -3899,7 +3901,8 @@
         "TraceTests.all_checks_pass",
         "not_mem_users_of_splitUser_none",
         "pledge_escrow_debit",
-        "splitUser_amount_lemma@Reactivegas.Invariants"
+        "splitUser_amount_lemma@Reactivegas.Invariants",
+        "splitUser_removes_user_lemma@Reactivegas.Invariants"
       ],
       "note": "splitting a pledge takes the first other user"
     },
@@ -3990,7 +3993,7 @@
       "target": "Reactivegas.windUpAdmin",
       "guard": null,
       "patch": {
-        "line": 331,
+        "line": 339,
         "before": "    collections := rest }",
         "after": "    collections := s.collections }"
       },
@@ -4009,7 +4012,7 @@
       "target": "Reactivegas.pruneAuth",
       "guard": null,
       "patch": {
-        "line": 256,
+        "line": 264,
         "before": "    live := s.live.filter (fun a => targetPresent s a.target) }",
         "after": "    live := s.live.filter (fun a => targetPresent s a.target), collections := [] }"
       },
@@ -4082,6 +4085,119 @@
         "KelGroups.validateProposal_bootstrapRequiresAdmin_changeRoles"
       ],
       "note": "a role change is admitted in bootstrap mode"
+    },
+    {
+      "id": "guard-pledge-owner",
+      "target": "step",
+      "guard": "GuardId.pledge",
+      "patch": {
+        "line": 98,
+        "before": "    demand (signer == u && KelGroups.GroupView.isMember u view",
+        "after": "    demand (isResponsabile view signer && KelGroups.GroupView.isMember u view"
+      },
+      "claimedKills": [
+        "CompositionTests.l7_departure_reachable",
+        "CompositionTests.l7_mutants_execute",
+        "CompositionTests.l7_production_strands_nothing",
+        "CompositionTests.l7_renounce_reachable",
+        "CompositionTests.l7c_predicate_on_mint_mutant",
+        "TraceTests.all_checks_pass",
+        "pledge_signed_by_owner",
+        "step_pledge_inv"
+      ],
+      "note": "pledge is signed by a responsabile again, not by its owner"
+    },
+    {
+      "id": "guard-correctPledge-referente",
+      "target": "step",
+      "guard": "GuardId.correctPledge",
+      "patch": {
+        "line": 124,
+        "before": "      demand (isResponsabile view signer && col.referente == signer",
+        "after": "      demand (isResponsabile view signer && true"
+      },
+      "claimedKills": [
+        "step_correct_cases",
+        "step_correct_inv"
+      ],
+      "note": "an accepted pledge is corrected by any responsabile, not only its referente"
+    },
+    {
+      "id": "guard-correctPledge-pending-owner",
+      "target": "step",
+      "guard": "GuardId.correctPledge",
+      "patch": {
+        "line": 131,
+        "before": "      demand (signer == u && decide (0 ≤ v') && decide (bal s.conti u + (v - v') ≥ 0))",
+        "after": "      demand (true && decide (0 ≤ v') && decide (bal s.conti u + (v - v') ≥ 0))"
+      },
+      "claimedKills": [
+        "pending_correction_by_owner",
+        "step_correct_cases"
+      ],
+      "note": "a pending pledge is corrected by anyone, not only its owner"
+    },
+    {
+      "id": "guard-correctPledge-pending-solvent",
+      "target": "step",
+      "guard": "GuardId.correctPledge",
+      "patch": {
+        "line": 131,
+        "before": "      demand (signer == u && decide (0 ≤ v') && decide (bal s.conti u + (v - v') ≥ 0))",
+        "after": "      demand (signer == u && decide (0 ≤ v') && true)"
+      },
+      "claimedKills": [
+        "step_correct_cases"
+      ],
+      "note": "the owner raises a pending pledge beyond their credit"
+    },
+    {
+      "id": "guard-correctPledge-pending-nonnegative",
+      "target": "step",
+      "guard": "GuardId.correctPledge",
+      "patch": {
+        "line": 131,
+        "before": "      demand (signer == u && decide (0 ≤ v') && decide (bal s.conti u + (v - v') ≥ 0))",
+        "after": "      demand (signer == u && true && decide (bal s.conti u + (v - v') ≥ 0))"
+      },
+      "claimedKills": [
+        "step_correct_cases"
+      ],
+      "note": "the owner corrects a pending pledge below zero"
+    },
+    {
+      "id": "correctPledge-pending-zero-keeps-row",
+      "target": "step",
+      "guard": null,
+      "patch": {
+        "line": 135,
+        "before": "          { col with pending := if v' = 0 then pend' else ⟨u, v'⟩ :: pend' } :: rest }",
+        "after": "          { col with pending := ⟨u, v'⟩ :: pend' } :: rest }"
+      },
+      "claimedKills": [
+        "pending_correction_by_owner",
+        "pending_withdrawal_removes_row",
+        "step_correct_cases"
+      ],
+      "note": "withdrawing a pending pledge keeps a zero row"
+    },
+    {
+      "id": "correctPledge-without-row-succeeds",
+      "target": "step",
+      "guard": null,
+      "patch": {
+        "line": 130,
+        "before": "      let (v, pend') ← splitUser u col.pending",
+        "after": "      let (v, pend') := (splitUser u col.pending).getD (0, [])"
+      },
+      "claimedKills": [
+        "Reactivegas.Composition.step_auth_frame",
+        "correction_without_row_refused",
+        "pending_correction_by_owner",
+        "pending_withdrawal_removes_row",
+        "step_correct_cases"
+      ],
+      "note": "correcting a pledge the collection does not hold succeeds"
     }
   ]
 }
