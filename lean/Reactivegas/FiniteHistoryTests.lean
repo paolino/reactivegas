@@ -107,13 +107,13 @@ def fhHistory : History :=
     steps := fhRecord KelGroups.Vote.legacyThreshold probeAuth fhGenesis fhEvents }
 
 /-- Replace the element at index `i`. -/
-def setAt {α : Type} (i : Nat) (f : α → α) : List α → List α
+def fhSetAt {α : Type} (i : Nat) (f : α → α) : List α → List α
   | [] => []
-  | x :: xs => if i = 0 then f x :: xs else x :: setAt (i - 1) f xs
+  | x :: xs => if i = 0 then f x :: xs else x :: fhSetAt (i - 1) f xs
 
 /-- Plant `f` in step `i` of the recorded history. -/
 def fhPlant (i : Nat) (f : HistoryStep → HistoryStep) : History :=
-  { fhHistory with steps := setAt i f fhHistory.steps }
+  { fhHistory with steps := fhSetAt i f fhHistory.steps }
 
 def fhValidated : Option HistoryRefusal :=
   historyRefusal KelGroups.Vote.legacyThreshold probeAuth fhHistory
@@ -174,7 +174,7 @@ def fhRefusedIdx : Option Nat :=
   fhTrace.steps.findIdx? (fun st => match st.result with | .refused _ => true | .applied _ => false)
 
 def fhTracePlant (i : Nat) (f : TraceStep → TraceStep) : Trace :=
-  { fhTrace with steps := setAt i f fhTrace.steps }
+  { fhTrace with steps := fhSetAt i f fhTrace.steps }
 
 -- Non-empty initial state: `Trace.initial` may be arbitrary, `Reach.boot` may not.
 #guard fhTraceRefusalOf
