@@ -152,11 +152,11 @@ private theorem sumBal_foldl_bump :
 
 /-- Decompose the pledge guard into its conjuncts. -/
 theorem pledge_guard_inv {s : State} {a u : KelGroups.Key} {col : Collection} {v : Int}
-    (h : (isResponsabile view a && KelGroups.GroupView.isMember u view &&
+    (h : (a == u && KelGroups.GroupView.isMember u view &&
       !(col.accepted.any (fun p => p.user == u)) &&
       !(col.pending.any (fun p => p.user == u)) &&
       decide (0 < v) && decide (bal s.conti u ≥ v)) = true) :
-    isResponsabile view a = true ∧ KelGroups.GroupView.isMember u view = true ∧
+    a = u ∧ KelGroups.GroupView.isMember u view = true ∧
       col.accepted.any (fun p => p.user == u) = false ∧
       col.pending.any (fun p => p.user == u) = false ∧
       0 < v ∧ bal s.conti u ≥ v := by
@@ -165,7 +165,7 @@ theorem pledge_guard_inv {s : State} {a u : KelGroups.Key} {col : Collection} {v
   have hn2 := bool_and_right (bool_and_left (bool_and_left h))
   have hn1 := bool_and_right (bool_and_left (bool_and_left (bool_and_left h)))
   have hAB := bool_and_left (bool_and_left (bool_and_left (bool_and_left h)))
-  exact ⟨bool_and_left hAB, bool_and_right hAB, bool_not_true hn1, bool_not_true hn2,
+  exact ⟨beq_iff_eq.mp (bool_and_left hAB), bool_and_right hAB, bool_not_true hn1, bool_not_true hn2,
     decide_eq_true_iff.mp hv1, decide_eq_true_iff.mp hv2⟩
 
 /-- Decompose the accept/refuse/correct guard. -/
@@ -228,7 +228,7 @@ theorem step_pledge_inv {s s' : State} {a u : KelGroups.Key} {c : CollId} {v : I
     (hstep : stepEvent view s (.pledge a u c v) auth = some s') :
     ∃ col rest,
       pullCollection c s.collections = some (col, rest) ∧
-      (isResponsabile view a && KelGroups.GroupView.isMember u view &&
+      (a == u && KelGroups.GroupView.isMember u view &&
           !(col.accepted.any (fun p => p.user == u)) &&
           !(col.pending.any (fun p => p.user == u)) &&
           decide (0 < v) && decide (bal s.conti u ≥ v)) =
@@ -285,7 +285,59 @@ theorem step_refuse_inv {s s' : State} {a u : KelGroups.Key} {c : CollId}
   · simp only [pure, Option.some.injEq] at hx
     exact hx.symm
 
+/-- A successful correction is in exactly one of two regimes, decided by the
+accepted list first: the pledge of `u` is accepted (the referente corrects it),
+or `u` has no accepted row and the pending pledge of `u` is corrected by its
+owner, a zero correction removing the row. -/
+theorem step_correct_cases {s s' : State} {a u : KelGroups.Key} {c : CollId} {v' : Int}
+    (hstep : stepEvent view s (.correctPledge a u c v') auth = some s') :
+    (∃ col rest v acc',
+      pullCollection c s.collections = some (col, rest) ∧
+      splitUser u col.accepted = some (v, acc') ∧
+      (isResponsabile view a && col.referente == a &&
+          decide (0 ≤ v') && decide (bal s.conti u + (v - v') ≥ 0)) =
+        true ∧
+      s' = { s with
+        conti := bump s.conti u (v - v'),
+        collections := { col with accepted := ⟨u, v'⟩ :: acc' } :: rest }) ∨
+    (∃ col rest v pend',
+      pullCollection c s.collections = some (col, rest) ∧
+      splitUser u col.accepted = none ∧
+      splitUser u col.pending = some (v, pend') ∧
+      (a == u && decide (0 ≤ v') && decide (bal s.conti u + (v - v') ≥ 0)) = true ∧
+      s' = { s with
+        conti := bump s.conti u (v - v'),
+        collections :=
+          { col with pending := if v' = 0 then pend' else ⟨u, v'⟩ :: pend' } :: rest }) := by
+  obtain ⟨w1, hw1, hw2⟩ := option_bind_inv hstep
+  obtain ⟨col, rest⟩ := w1
+  cases hsp : splitUser u col.accepted with
+  | some w =>
+    obtain ⟨v, acc'⟩ := w
+    simp only [hsp] at hw2
+    obtain ⟨_, hdem, hx⟩ := option_bind_inv hw2
+    left
+    refine ⟨col, rest, v, acc', hw1, hsp, ?_, ?_⟩
+    · exact demand_eq_true_of_some hdem
+    · simp only [pure, Option.some.injEq] at hx
+      exact hx.symm
+  | none =>
+    simp only [hsp] at hw2
+    obtain ⟨w2, hw3, hw4⟩ := option_bind_inv hw2
+    obtain ⟨v, pend'⟩ := w2
+    obtain ⟨_, hdem, hx⟩ := option_bind_inv hw4
+    right
+    refine ⟨col, rest, v, pend', hw1, hsp, hw3, ?_, ?_⟩
+    · exact demand_eq_true_of_some hdem
+    · simp only [pure, Option.some.injEq] at hx
+      exact hx.symm
+
+/-- Inversion of a successful correction of an accepted pledge (the regime the
+hypothesis `hacc` names): the referente's correction, exactly the effect of
+the base arm. -/
 theorem step_correct_inv {s s' : State} {a u : KelGroups.Key} {c : CollId} {v' : Int}
+    (hacc : ∀ col rest, pullCollection c s.collections = some (col, rest) →
+      ∃ w, splitUser u col.accepted = some w)
     (hstep : stepEvent view s (.correctPledge a u c v') auth = some s') :
     ∃ col rest v acc',
       pullCollection c s.collections = some (col, rest) ∧
@@ -298,13 +350,35 @@ theorem step_correct_inv {s s' : State} {a u : KelGroups.Key} {c : CollId} {v' :
         collections := { col with accepted := ⟨u, v'⟩ :: acc' } :: rest } := by
   obtain ⟨w1, hw1, hw2⟩ := option_bind_inv hstep
   obtain ⟨col, rest⟩ := w1
-  obtain ⟨w2, hw3, hw4⟩ := option_bind_inv hw2
-  obtain ⟨v, acc'⟩ := w2
-  obtain ⟨_, hdem, hx⟩ := option_bind_inv hw4
-  refine ⟨col, rest, v, acc', hw1, hw3, ?_, ?_⟩
+  obtain ⟨⟨v, acc'⟩, hsp⟩ := hacc col rest hw1
+  simp only [hsp] at hw2
+  obtain ⟨_, hdem, hx⟩ := option_bind_inv hw2
+  refine ⟨col, rest, v, acc', hw1, hsp, ?_, ?_⟩
   · exact demand_eq_true_of_some hdem
   · simp only [pure, Option.some.injEq] at hx
     exact hx.symm
+
+/-- Inversion of a successful correction of a pledge that is not accepted (the
+regime the hypothesis `hno` names): the pledge is pending, its owner signs, and
+the pending row is replaced, or removed by a zero correction; the accepted list
+is untouched. -/
+theorem pending_correction_effect {s s' : State} {a u : KelGroups.Key} {c : CollId}
+    {v' : Int}
+    (hno : ∀ col rest, pullCollection c s.collections = some (col, rest) →
+      splitUser u col.accepted = none)
+    (hstep : stepEvent view s (.correctPledge a u c v') auth = some s') :
+    ∃ col rest v pend',
+      pullCollection c s.collections = some (col, rest) ∧
+      splitUser u col.pending = some (v, pend') ∧
+      (a == u && decide (0 ≤ v') && decide (bal s.conti u + (v - v') ≥ 0)) = true ∧
+      s' = { s with
+        conti := bump s.conti u (v - v'),
+        collections :=
+          { col with pending := if v' = 0 then pend' else ⟨u, v'⟩ :: pend' } :: rest } := by
+  rcases step_correct_cases hstep with ⟨col, rest, v, acc', hpull, hsp, _⟩ | ⟨col, rest, v, pend', hpull, _, hsp, hg, hs'⟩
+  · rw [hno col rest hpull] at hsp
+    exact Option.noConfusion hsp
+  · exact ⟨col, rest, v, pend', hpull, hsp, hg, hs'⟩
 
 theorem step_close_inv {s s' : State} {a : KelGroups.Key} {c : CollId}
     (hstep : stepEvent view s (.closePurchase a c) auth = some s') :
@@ -516,14 +590,25 @@ theorem conservation_preserved {s s' : State} {e : Event}
     simp only [escrowOf] at hps ⊢
     omega
   | correctPledge a u c v' =>
-    obtain ⟨col, rest, v, acc', hpull, hspl, _, hs'⟩ := step_correct_inv hstep
-    subst hs'
-    simp only [conservation] at hcon ⊢
-    rw [bump_sum, escrowSum_cons]
-    have hps := pullCollection_sum hpull
-    have hsm := splitUser_sum hspl
-    simp only [escrowOf, sumPledges] at hps ⊢
-    omega
+    rcases step_correct_cases hstep with
+      ⟨col, rest, v, acc', hpull, hspl, _, hs'⟩ | ⟨col, rest, v, pend', hpull, _, hspl, _, hs'⟩
+    · subst hs'
+      simp only [conservation] at hcon ⊢
+      rw [bump_sum, escrowSum_cons]
+      have hps := pullCollection_sum hpull
+      have hsm := splitUser_sum hspl
+      simp only [escrowOf, sumPledges] at hps ⊢
+      omega
+    · subst hs'
+      simp only [conservation] at hcon ⊢
+      rw [bump_sum, escrowSum_cons]
+      have hps := pullCollection_sum hpull
+      have hsm := splitUser_sum hspl
+      simp only [escrowOf, sumPledges] at hps ⊢
+      split
+      · omega
+      · simp only [sumPledges]
+        omega
   | closePurchase a c =>
     obtain ⟨col, rest, hpull, hg, _, hs'⟩ := step_close_inv hstep
     obtain ⟨_, _, _, hempty⟩ := close_guard_inv hg
@@ -608,9 +693,10 @@ theorem step_authorized {s s' : State} {e : Event} (h : stepEvent view s e auth 
     obtain ⟨_, _, _, _, _, _, hg, _⟩ := step_refuse_inv h
     exact (auth_referente_guard_inv hg).1
   | correctPledge a u c v =>
-    obtain ⟨_, _, _, _, _, _, hg, _⟩ := step_correct_inv h
-    exact bool_and_left
-      (bool_and_left (bool_and_left hg))
+    show isResponsabile view a = true ∨ a = u
+    rcases step_correct_cases h with ⟨_, _, _, _, _, _, hg, _⟩ | ⟨_, _, _, _, _, _, _, hg, _⟩
+    · exact Or.inl (bool_and_left (bool_and_left (bool_and_left hg)))
+    · exact Or.inr (beq_iff_eq.mp (bool_and_left (bool_and_left hg)))
   | closePurchase a c =>
     obtain ⟨_, _, _, hg, _, _⟩ := step_close_inv h
     exact (close_guard_inv hg).1
@@ -1056,35 +1142,67 @@ private theorem credit_pledges_step {s s' : State} {e : Event}
             (List.mem_append.mpr (Or.inr (splitUser_sublist hspl p hm)))
       · exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
   | correctPledge a u c v' =>
-    obtain ⟨col, rest, v, acc', hpull, hspl, hg, hs'⟩ := step_correct_inv hstep
-    have hv' : 0 ≤ v' :=
-      decide_eq_true_iff.mp (bool_and_right (bool_and_left hg))
-    have hfunds : bal s.conti u + (v - v') ≥ 0 :=
-      decide_eq_true_iff.mp (bool_and_right hg)
-    subst hs'
-    refine ⟨fun w hwne => ?_, ?_⟩
-    · by_cases hc : w = u
-      · rw [hc]
-        show bal (bump s.conti u (v - v')) u ≥ 0
-        have hb := bal_bump s.conti u (v - v')
-        omega
-      · show bal (bump s.conti u (v - v')) w ≥ 0
-        rw [bal_bump_ne hc]
-        exact hcred w hwne
-    · intro c0 hc0 p hp
-      rcases List.mem_cons.mp hc0 with hc0 | hc0
-      · subst hc0
-        dsimp only at hp
-        rcases List.mem_append.mp hp with hm | hm
-        · rcases List.mem_cons.mp hm with heq | hinA
-          · subst heq
-            show 0 ≤ v'
-            omega
+    rcases step_correct_cases hstep with
+      ⟨col, rest, v, acc', hpull, hspl, hg, hs'⟩ | ⟨col, rest, v, pend', hpull, _, hspl, hg, hs'⟩
+    · have hv' : 0 ≤ v' :=
+        decide_eq_true_iff.mp (bool_and_right (bool_and_left hg))
+      have hfunds : bal s.conti u + (v - v') ≥ 0 :=
+        decide_eq_true_iff.mp (bool_and_right hg)
+      subst hs'
+      refine ⟨fun w hwne => ?_, ?_⟩
+      · by_cases hc : w = u
+        · rw [hc]
+          show bal (bump s.conti u (v - v')) u ≥ 0
+          have hb := bal_bump s.conti u (v - v')
+          omega
+        · show bal (bump s.conti u (v - v')) w ≥ 0
+          rw [bal_bump_ne hc]
+          exact hcred w hwne
+      · intro c0 hc0 p hp
+        rcases List.mem_cons.mp hc0 with hc0 | hc0
+        · subst hc0
+          dsimp only at hp
+          rcases List.mem_append.mp hp with hm | hm
+          · rcases List.mem_cons.mp hm with heq | hinA
+            · subst heq
+              show 0 ≤ v'
+              omega
+            · exact hamt col (pullCollection_mem hpull) p
+                (List.mem_append.mpr (Or.inl (splitUser_sublist hspl p hinA)))
           · exact hamt col (pullCollection_mem hpull) p
-              (List.mem_append.mpr (Or.inl (splitUser_sublist hspl p hinA)))
-        · exact hamt col (pullCollection_mem hpull) p
-            (List.mem_append.mpr (Or.inr hm))
-      · exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
+              (List.mem_append.mpr (Or.inr hm))
+        · exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
+    · have hv' : 0 ≤ v' :=
+        decide_eq_true_iff.mp (bool_and_right (bool_and_left hg))
+      have hfunds : bal s.conti u + (v - v') ≥ 0 :=
+        decide_eq_true_iff.mp (bool_and_right hg)
+      subst hs'
+      refine ⟨fun w hwne => ?_, ?_⟩
+      · by_cases hc : w = u
+        · rw [hc]
+          show bal (bump s.conti u (v - v')) u ≥ 0
+          have hb := bal_bump s.conti u (v - v')
+          omega
+        · show bal (bump s.conti u (v - v')) w ≥ 0
+          rw [bal_bump_ne hc]
+          exact hcred w hwne
+      · intro c0 hc0 p hp
+        rcases List.mem_cons.mp hc0 with hc0 | hc0
+        · subst hc0
+          dsimp only at hp
+          rcases List.mem_append.mp hp with hm | hm
+          · exact hamt col (pullCollection_mem hpull) p
+              (List.mem_append.mpr (Or.inl hm))
+          · split at hm
+            · exact hamt col (pullCollection_mem hpull) p
+                (List.mem_append.mpr (Or.inr (splitUser_sublist hspl p hm)))
+            · rcases List.mem_cons.mp hm with heq | hinP
+              · subst heq
+                show 0 ≤ v'
+                omega
+              · exact hamt col (pullCollection_mem hpull) p
+                  (List.mem_append.mpr (Or.inr (splitUser_sublist hspl p hinP)))
+        · exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
   | closePurchase a c =>
     obtain ⟨col, rest, hpull, _, _, hs'⟩ := step_close_inv hstep
     subst hs'
@@ -1290,6 +1408,156 @@ theorem pledge_preserves_allUnique {s s' : State} {a u : KelGroups.Key} {c : Col
   · subst hc0
     exact uniquePledges_pend_cons habs (hun col (pullCollection_mem hpull))
   · exact hun c0 (pullCollection_sublist hpull c0 hc0)
+
+
+private theorem splitUser_removes_user_lemma {u : KelGroups.Key} :
+    ∀ (l : List Pledge) (v : Int) (r : List Pledge),
+      splitUser u l = some (v, r) → (l.map (·.user)).Nodup → ∀ p ∈ r, p.user ≠ u := by
+  intro l
+  induction l with
+  | nil => intro v r h; exact Option.noConfusion h
+  | cons q t ih =>
+    intro v r h hnd p hp
+    have hnd' : (q.user :: t.map (·.user)).Nodup := hnd
+    rw [splitUser] at h
+    split at h
+    · next hq =>
+      simp only [Option.some.injEq, Prod.mk.injEq] at h
+      obtain ⟨-, rfl⟩ := h
+      intro hpu
+      exact (List.nodup_cons.mp hnd').1 (List.mem_map.mpr ⟨p, hp, hpu.trans hq.symm⟩)
+    · next hq =>
+      cases hx : splitUser u t with
+      | none => rw [hx] at h; exact Option.noConfusion h
+      | some w =>
+        obtain ⟨wv, wr⟩ := w
+        rw [hx] at h
+        simp only [Option.some.injEq, Prod.mk.injEq] at h
+        obtain ⟨-, rfl⟩ := h
+        rcases List.mem_cons.mp hp with hc | hc
+        · subst hc; exact hq
+        · exact ih wv wr hx (List.nodup_cons.mp hnd').2 p hc
+
+/-- With distinct owners, removing the first row of `u` leaves no row of `u`. -/
+theorem splitUser_removes_user {u : KelGroups.Key} {l : List Pledge} {v : Int}
+    {r : List Pledge} (h : splitUser u l = some (v, r)) (hnd : (l.map (·.user)).Nodup) :
+    ∀ p ∈ r, p.user ≠ u :=
+  splitUser_removes_user_lemma l v r h hnd
+
+/-! ### Pledge sovereignty (issue #69)
+
+The ruled guards of the pledge and its correction, as facts about the step.
+A pledge is signed by its owner; a correction is in the accepted regime (the
+referente, as before) or in the pending regime (the owner, who may withdraw
+the pledge with a zero correction). -/
+
+/-- A successful pledge is signed by its owner. -/
+theorem pledge_signed_by_owner {s s' : State} {a u : KelGroups.Key} {c : CollId} {v : Int}
+    (h : stepEvent view s (.pledge a u c v) auth = some s') : a = u := by
+  obtain ⟨w1, _, hw2⟩ := option_bind_inv h
+  obtain ⟨_, hdem, _⟩ := option_bind_inv hw2
+  exact beq_iff_eq.mp (bool_and_left (bool_and_left (bool_and_left (bool_and_left
+    (bool_and_left (bool_and_left (demand_eq_true_of_some hdem)))))))
+
+/-- A successful correction of a pledge that is not accepted is signed by its
+owner, and leaves the accepted list of the collection as it was. -/
+theorem pending_correction_by_owner {s s' : State} {a u : KelGroups.Key} {c : CollId}
+    {v' : Int}
+    (hno : ∀ col rest, pullCollection c s.collections = some (col, rest) →
+      splitUser u col.accepted = none)
+    (h : stepEvent view s (.correctPledge a u c v') auth = some s') :
+    a = u ∧ ∃ col rest col',
+      pullCollection c s.collections = some (col, rest) ∧
+      s'.collections = col' :: rest ∧ col'.accepted = col.accepted := by
+  obtain ⟨w1, hw1, hw2⟩ := option_bind_inv h
+  obtain ⟨col, rest⟩ := w1
+  have hsp := hno col rest hw1
+  simp only [hsp] at hw2
+  obtain ⟨w2, _, hw4⟩ := option_bind_inv hw2
+  obtain ⟨v, pend'⟩ := w2
+  obtain ⟨_, hdem, hx⟩ := option_bind_inv hw4
+  simp only [pure, Option.some.injEq] at hx
+  subst hx
+  exact ⟨beq_iff_eq.mp (bool_and_left (bool_and_left (demand_eq_true_of_some hdem))), col, rest,
+    { col with pending := if v' = 0 then pend' else ⟨u, v'⟩ :: pend' }, hw1, rfl, rfl⟩
+
+/-- A successful correction of an accepted pledge is the referente's, with the
+effect of the base arm: the difference settles in the owner's credit and the
+accepted row is replaced. -/
+theorem accepted_correction_by_referente {s s' : State} {a u : KelGroups.Key} {c : CollId}
+    {v' : Int}
+    (hacc : ∀ col rest, pullCollection c s.collections = some (col, rest) →
+      ∃ w, splitUser u col.accepted = some w)
+    (h : stepEvent view s (.correctPledge a u c v') auth = some s') :
+    ∃ col rest v acc',
+      pullCollection c s.collections = some (col, rest) ∧
+      splitUser u col.accepted = some (v, acc') ∧
+      isResponsabile view a = true ∧ col.referente = a ∧
+      s' = { s with
+        conti := bump s.conti u (v - v'),
+        collections := { col with accepted := ⟨u, v'⟩ :: acc' } :: rest } := by
+  obtain ⟨col, rest, v, acc', hpull, hspl, hg, hs'⟩ := step_correct_inv hacc h
+  obtain ⟨hresp, href⟩ := auth_referente_guard_inv (bool_and_left (bool_and_left hg))
+  exact ⟨col, rest, v, acc', hpull, hspl, hresp, href, hs'⟩
+
+/-- A zero correction of a pending pledge removes the owner's row and returns
+the whole pledge to their credit; the accepted list is untouched. -/
+theorem pending_withdrawal_removes_row {s s' : State} {a u : KelGroups.Key} {c : CollId}
+    (hno : ∀ col rest, pullCollection c s.collections = some (col, rest) →
+      splitUser u col.accepted = none)
+    (h : stepEvent view s (.correctPledge a u c 0) auth = some s') :
+    ∃ col rest v col',
+      pullCollection c s.collections = some (col, rest) ∧
+      splitUser u col.pending = some (v, col'.pending) ∧
+      col'.accepted = col.accepted ∧ s'.collections = col' :: rest ∧
+      bal s'.conti u = bal s.conti u + v := by
+  obtain ⟨w1, hpull, hw2⟩ := option_bind_inv h
+  obtain ⟨col, rest⟩ := w1
+  have hsp := hno col rest hpull
+  simp only [hsp] at hw2
+  obtain ⟨w2, hspl, hw4⟩ := option_bind_inv hw2
+  obtain ⟨v, pend'⟩ := w2
+  obtain ⟨_, _, hx⟩ := option_bind_inv hw4
+  simp only [pure, Option.some.injEq] at hx
+  subst hx
+  refine ⟨col, rest, v, { col with pending := if (0 : Int) = 0 then pend' else ⟨u, 0⟩ :: pend' },
+    hpull, ?_, rfl, rfl, ?_⟩
+  · simpa using hspl
+  · show bal (bump s.conti u (v - 0)) u = bal s.conti u + v
+    have hb := bal_bump s.conti u (v - 0)
+    omega
+
+/-- The row a zero correction removes is the only row of its owner when the
+owners of a collection's pending pledges are distinct (L8 keeps them so): the
+owner has no pledge left in the collection. -/
+theorem pending_withdrawal_leaves_no_row {s s' : State} {a u : KelGroups.Key} {c : CollId}
+    (hno : ∀ col rest, pullCollection c s.collections = some (col, rest) →
+      splitUser u col.accepted = none)
+    (hnd : ∀ col rest, pullCollection c s.collections = some (col, rest) →
+      (col.pending.map (·.user)).Nodup)
+    (h : stepEvent view s (.correctPledge a u c 0) auth = some s') :
+    ∃ col', col' ∈ s'.collections ∧ col'.id = c ∧
+      ∀ p ∈ col'.accepted ++ col'.pending, p.user ≠ u := by
+  obtain ⟨col, rest, v, pend', hpull, hspl, _, hs'⟩ := pending_correction_effect hno h
+  have hnone := hno col rest hpull
+  have hnodup := hnd col rest hpull
+  have hid : col.id = c := pullCollection_id hpull
+  subst hs'
+  refine ⟨_, List.mem_cons.mpr (Or.inl rfl), hid, ?_⟩
+  intro p hp
+  dsimp only at hp
+  rcases List.mem_append.mp hp with hm | hm
+  · exact not_mem_users_of_splitUser_none hnone p hm
+  · have hm' : p ∈ pend' := by simpa using hm
+    exact splitUser_removes_user hspl hnodup p hm'
+
+/-- A correction of a pledge the collection does not hold is refused. -/
+theorem correction_without_row_refused {s : State} {a u : KelGroups.Key} {c : CollId}
+    {v' : Int} {col : Collection} {rest : List Collection}
+    (hpull : pullCollection c s.collections = some (col, rest))
+    (hacc : splitUser u col.accepted = none) (hpend : splitUser u col.pending = none) :
+    stepEvent view s (.correctPledge a u c v') auth = none := by
+  simp [stepEvent, step, hpull, hacc, hpend]
 
 /-! ## S62-B — the one transition system, executed against production
 

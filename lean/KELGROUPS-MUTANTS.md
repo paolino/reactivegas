@@ -23,16 +23,16 @@ change and fails when a claim here is not what Lean reports.
 
 | | KelGroups modules | whole ledger |
 |---|---|---|
-| DISCOVERED theorem constants | 768 | 1814 |
-| EXCLUDED (generated) | 572 | 1345 |
+| DISCOVERED theorem constants | 768 | 1804 |
+| EXCLUDED (generated) | 572 | 1325 |
 | HELPER | 1 | 6 |
-| REQUIRED (authored − HELPER) | 195 | 463 |
-| KILLED | 124 | 310 |
-| OPEN | 71 | 153 |
+| REQUIRED (authored − HELPER) | 195 | 473 |
+| KILLED | 124 | 316 |
+| OPEN | 71 | 157 |
 | refusal constructors SURVIVED | 0 | |
 | refusal constructors UNEMITTED | 0 | |
 
-KILLED / REQUIRED: 124 / 195 here, 310 / 463 over the whole ledger.
+KILLED / REQUIRED: 124 / 195 here, 316 / 473 over the whole ledger.
 
 ## Theorems
 
@@ -267,10 +267,10 @@ emits it, so there is no guard to mutate.
 
 | constructor | emitted by | guard mutants | kills | outcome |
 |---|---|---|---|---|
-| `KelGroups.Vote.VoteError.notResponsabile` | `KelGroups.Vote.validateVoteEvent`, `Reactivegas.journeyItems` | `guard-vote-responsabile` | 6 | KILLS |
-| `KelGroups.Vote.VoteError.questionNotFound` | `KelGroups.Vote.validateVoteEvent`, `Reactivegas.journeyItems` | `guard-vote-question-exists`, `guard-renounce-question-exists` | 1 | KILLS |
-| `KelGroups.Vote.VoteError.notDesignee` | `KelGroups.Vote.validateVoteEvent`, `Reactivegas.journeyItems` | `guard-cast-designee` | 3 | KILLS |
-| `KelGroups.Vote.VoteError.notProposer` | `KelGroups.Vote.validateVoteEvent`, `Reactivegas.journeyItems` | `guard-renounce-proposer` | 3 | KILLS |
+| `KelGroups.Vote.VoteError.notResponsabile` | `KelGroups.Vote.validateVoteEvent` | `guard-vote-responsabile` | 6 | KILLS |
+| `KelGroups.Vote.VoteError.questionNotFound` | `KelGroups.Vote.validateVoteEvent` | `guard-vote-question-exists`, `guard-renounce-question-exists` | 1 | KILLS |
+| `KelGroups.Vote.VoteError.notDesignee` | `KelGroups.Vote.validateVoteEvent` | `guard-cast-designee` | 3 | KILLS |
+| `KelGroups.Vote.VoteError.notProposer` | `KelGroups.Vote.validateVoteEvent` | `guard-renounce-proposer` | 3 | KILLS |
 | `KelGroups.ValidationError.notAMember` | `KelGroups.applyIntegratedEvent`, `KelGroups.validateEvent` | `guard-app-signer-member` | 25 | KILLS |
 | `KelGroups.ValidationError.notAnAdmin` | `KelGroups.requireAdmin`, `KelGroups.validateDirectAdmission` | `guard-require-admin`, `guard-admission-admin` | 15 | KILLS |
 | `KelGroups.ValidationError.bootstrapRequiresAdmin` | `KelGroups.validateBootstrapProposal@KelGroups.Validate` | `guard-bootstrap-admin`, `guard-bootstrap-remove`, `guard-bootstrap-change-roles` | 4 | KILLS |

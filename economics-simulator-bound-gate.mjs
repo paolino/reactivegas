@@ -93,7 +93,7 @@ const ELECT = (target, proposer, approver) =>
   C('#gtasks [data-task="elect"]') + CHIP(target) + CHIP(proposer) +
   C(`#govcard [data-bgapprove][data-bgsigner="${approver}"]`);
 const PLEDGE = (c, user, v) =>
-  C(`[data-key="pile:${c}"]`) + C('#view [data-task="pledge"]') + CHIP(user) + CHIP('bruno') +
+  C(`[data-key="pile:${c}"]`) + C('#view [data-task="pledge"]') + CHIP(user) + CHIP(user) +
   `await __rgAmount(${v});` + HOME;
 
 /* the shared fixture: two responsabili (anna, bruno), two other members with
