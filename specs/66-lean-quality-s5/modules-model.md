@@ -12,3 +12,8 @@ Changed responsibilities only.
 
 Dependency direction is unchanged: the audit and the runner read the
 elaborated environment; theorems never read the audit.
+| finite-history validators and theorems (new module under `lean/Reactivegas/`, imported by the `Reactivegas` umbrella or a composition root, never by `Reactivegas.CorpusExport`'s closure) | validate a supplied history (integrated over `GroupState State`; fixed-view over `State`), and prove acceptance means production reachability / `Reach`, with witnesses for the converse | finite-history |
+
+The finite-history module depends on `Step` (`apply`, `boot`, `ProductionHistory`),
+`Predicates` (`Reach`), `Mirrors` and `VoteCorpus` (the stored step shape); none
+of them depends on it.
