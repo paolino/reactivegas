@@ -42,7 +42,7 @@
  *                                                            rows can fail
  */
 
-import { mkdtempSync, readFileSync, readdirSync } from 'node:fs';
+import { mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -630,11 +630,59 @@ async function main() {
 
 /* --- selftest: each row can fail ----------------------------------------------------- */
 
+const once = (text, from, to) => {
+  const n = text.split(from).length - 1;
+  if (n !== 1) throw new Error(`mutant not applied: ${n} occurrences of «${from.slice(0, 70)}»`);
+  return text.replace(from, () => to);
+};
+
+/* an edit of the built page that falsifies one offer or label; `row` is the
+   row that must go RED and `why` what its message must say. An edit that does
+   not apply exactly once is a broken control, not a caught mutant. */
+const MUTANTS = [
+  { id: 'owner-offered-on-an-accepted-pledge', row: 'D-SIGNER-SOUND', why: /enabled offer correctPledge .* is refused by the core/,
+    edit: h => once(h, 'else if (!res.ok) { ch.dis',
+      'else if (!res.ok && !(col.accepted.some(q => q.user === p.user) && k === p.user)) { ch.dis') },
+  { id: 'referente-offered-on-a-pending-pledge', row: 'D-SIGNER-SOUND', why: /enabled offer correctPledge .* is refused by the core/,
+    edit: h => once(h, 'else if (!res.ok) { ch.dis',
+      'else if (!res.ok && !(!col.accepted.some(q => q.user === p.user) && k === col.referente)) { ch.dis') },
+  { id: 'withdrawal-hidden', row: 'D-OWNER-WITHDRAW', why: /offered no withdrawal/,
+    edit: h => once(h, '<button type="button" class="task" data-act="withdraw" data-u="${pu}" title=".correctPledge">Ritira l\'impegno</button>', '') },
+  { id: 'owner-correction-hidden', row: 'D-OWNER-CORRECT', why: /offered no correction/,
+    edit: h => once(h, '<button type="button" class="task" data-act="correct" data-u="${pu}" title=".correctPledge">Correggi importo</button>\n      <button type="button" class="task" data-act="withdraw"',
+      '<button type="button" class="task" data-act="withdraw"') },
+  { id: 'accepted-signers-other-than-the-referente-not-shown', row: 'D-ACCEPTED-REFERENTE', why: /is not shown disabled with a guard/,
+    edit: h => once(h, '        return mem.map(k => {\n          const ch = person(k);\n          const res = cur',
+      '        return mem.filter(k => !col.accepted.some(q => q.user === p.user) || k === col.referente).map(k => {\n          const ch = person(k);\n          const res = cur') },
+  { id: 'disabled-signer-names-no-core-guard', row: 'D-SIGNER-SOUND', why: /disabled with guard «nessuna/,
+    edit: h => once(h, 'ch.dis = res.failed[0].law || res.failed[0].code;', "ch.dis = 'nessuna guardia';") },
+  { id: 'regime-label-swapped', row: 'D-REGIME-SHOWN', why: /the core state, the page states/,
+    edit: h => once(h, 'class="stag ${REGIME[regime].cls}">${esc(REGIME[regime].text)}</span>',
+      'class="stag ${REGIME[regime].cls}">${esc(REGIME[regime === \'pending\' ? \'accepted\' : \'pending\'].text)}</span>') },
+  { id: 'responsabile-enabled-as-author-of-anothers-pledge', row: 'D-SIGNER-SOUND', why: /enabled offer pledge .* is refused by the core/,
+    edit: h => once(h, "tag === 'pledge' && p.user !== undefined && p.user !== k) ch.dis",
+      "tag === 'pledge' && p.user !== undefined && p.user !== k && !resp(k)) ch.dis") },
+  { id: 'correction-range-above-the-balance', row: 'D-SIGNER-SOUND', why: /enabled offer correctPledge .* is refused by the core/,
+    edit: h => once(h, 'return { min: accepted ? 0 : 1, max: mx,', 'return { min: accepted ? 0 : 1, max: mx + 1,') },
+];
+
+/* the core states the check expects, altered in a copy (the page still loads
+   the true envelope): every purchase's pending and accepted pledges exchanged */
+const withStates = (histories, alter) => histories.map(h => ({ ...h, states: h.states.map(alter) }));
+const swapRegimes = agg => {
+  const c = JSON.parse(JSON.stringify(agg));
+  const a = payloadOf(c);
+  for (const col of a.collections) [col.pending, col.accepted] = [col.accepted, col.pending];
+  return c;
+};
+
 async function selftest() {
   const t0 = performance.now();
-  const bad = [];
+  const doc = readFileSync(HTML, 'utf8');
+  const work = mkdtempSync(join(tmpdir(), 'rg-pledge-selftest-'));
   const profile = mkdtempSync(join(tmpdir(), 'rg-pledge-profile-'));
   const b = new Browser(findChromium(), profile);
+  const bad = [];
   try {
     await sleep(400);
     const histories = await statedHistories();
@@ -644,15 +692,35 @@ async function selftest() {
     if (baseReds.length || base.states === 0)
       bad.push(`control: the unmutated page is not green with states compared: ${baseReds.join(', ') || 'no state was compared'}`);
     else console.log(`control: the unmutated page is green (${base.states} states compared)`);
+    for (const m of MUTANTS) {
+      let html;
+      try { html = m.edit(doc); } catch (e) { bad.push(`${m.id}: ${e.message}`); continue; }
+      if (html === doc) { bad.push(`${m.id}: the edit did not change the page`); continue; }
+      const path = join(work, m.id + '.html');
+      writeFileSync(path, html);
+      const L = await runPage(path, histories, b, { firstRed: true });
+      const reds = L.reds.get(m.row);
+      const hit = reds.find(r => m.why.test(r));
+      if (hit) console.log(`mutant ${m.id}: ${m.row} red as expected — ${hit.slice(0, 110)}`);
+      else bad.push(`${m.id}: ${m.row} did not go red for the stated reason (${L.checks.get(m.row)} checks, ${reds.length} reds)`);
+    }
+    const flipped = await runPage(HTML, withStates(histories, swapRegimes), b, { firstRed: true });
+    if (flipped.reds.get('D-REGIME-SHOWN').length) console.log('control altered-state: D-REGIME-SHOWN red against a core state with the regimes exchanged');
+    else bad.push('altered-state: D-REGIME-SHOWN stayed green against an altered core state: the expected regimes are not read from it');
+    const few = await runPage(HTML, histories.slice(0, 1), b);
+    judgeReach(few);
+    const missing = few.reds.get('D-SIGNER-SOUND').filter(r => /never reach/.test(r));
+    if (missing.length) console.log(`control reach: a one-history set is red — ${missing[0]}`);
+    else bad.push('reach: a one-history set reaches every claimed shape, so the reach check cannot fail');
     const { L: tight } = await timedRun(HTML, histories.slice(0, 1), b, 0);
     if (tight.reds.get('D-BUDGET').length) console.log('control budget: D-BUDGET red with a budget of 0 ms');
     else bad.push('budget: D-BUDGET stayed green with a budget of 0 ms');
-  } finally { b.close(); rmQuiet(profile); }
+  } finally { b.close(); rmQuiet(profile); rmQuiet(work); }
   const elapsedMs = performance.now() - t0;
   const over = overBudget('selftest wall', elapsedMs, CONFIG.budgetMs);
   if (over) bad.push(over);
   if (bad.length) { console.error(`RED: selftest, ${bad.length} problems`); bad.forEach(x => console.error(' - ' + x)); return 1; }
-  console.log(`GREEN: selftest, ${Math.round(elapsedMs)} ms of ${CONFIG.budgetMs} ms`);
+  console.log(`GREEN: selftest, ${MUTANTS.length} mutants, each went red; ${Math.round(elapsedMs)} ms of ${CONFIG.budgetMs} ms`);
   return 0;
 }
 
