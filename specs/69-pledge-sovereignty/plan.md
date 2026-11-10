@@ -17,7 +17,7 @@ Lean is the only production subject; proofs move with the step.
    repository's own commands.
 5. Superseded fixtures (INV69-SUPERSEDED): seed traces and witnesses in which a responsabile
    pledges for another member are re-signed by the pledge's owner; the economic corpus is
-   re-exported (Q-001).
+   re-exported (desk A-001).
 
 ## Constraints
 
@@ -27,17 +27,17 @@ Lean is the only production subject; proofs move with the step.
 - CI "Lean mutant ledger" was 81 min on master `222ad9a` (run 42744084095); the slice keeps
   it ≤ 110 min projected, else the ticket owner files BLOCKED before more rows are pushed.
 - Simulator (`economics-simulator*`, `lean/TraceDriverV1.lean`, `lean/KelTraceDriverV1.lean`):
-  untouched until the desk answers Q-001.
+  follow in this PR per desk A-001 (INV69-SIM), mechanically, no UI change.
 
 ## Live boundaries
 
 Frozen economic corpus → Haskell replay (`economic-kelgroups/test/CorpusSpec.hs`): only
 custody constructors replay; re-export keeps the pinned extent. Lean → simulator fidelity:
-`just simulator` judges the Lean traces; Q-001 decides who follows.
+`just simulator` judges the Lean traces; this lane follows (A-001).
 
 ## Slices
 
 | Slice | Content | Topology |
 |---|---|---|
 | S69-A | spec rows J-*, R-*, INV69-* | OWNER: commit owner + persistent auditor (operator team 2026-11-08) |
-| S69-SIM | simulator follow, if Q-001 assigns it here | decided by Q-001 |
+| (in S69-A) | simulator follow INV69-SIM | same commit owner and auditor |

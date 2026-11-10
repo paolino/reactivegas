@@ -57,13 +57,14 @@ driven through the #76 helpers (`run`/`runBase` in `CompositionTests.lean`) from
 | INV69-THEOREMS | new theorems state the ruled guards: a successful `pledge` has signer = `u`; a successful pending correction has signer = `u` and leaves `accepted` unchanged; a successful correction of an accepted row is the base arm's effect; a zero pending correction leaves no row of `u` |
 | INV69-LEDGER | every new theorem has a row in `lean/mutants/ledger.json` (`KILLED`/`HELPER`, or `OPEN` with reason and attempted mutants); renderings do not drift; CI "Lean mutant ledger" projected ≤ 110 min, else BLOCKED before adding rows |
 | INV69-SUPERSEDED | only statements, witnesses and fixtures that encode the superseded behaviour (responsabile pledges for another, member cannot correct pending) are replaced, each by its ruled counterpart; seed traces keep their intent with the pledge re-signed by its owner |
-| INV69-CORPUS | `lean/corpus/economic.json` and `corpus.sha256` are re-exported only by `just lean-corpus-export` from re-signed seeds; `integrated.json` byte-unchanged; Haskell replay extent (`CorpusSpec`, deposit=7) unchanged — subject to Q-001 |
+| INV69-CORPUS | `lean/corpus/economic.json` and `corpus.sha256` are re-exported only by `just lean-corpus-export` from re-signed seeds; `integrated.json` byte-unchanged; Haskell replay extent (`CorpusSpec`, deposit=7) unchanged; the PR carries the CorpusSpec run showing the same custody counts (desk A-001) |
+| INV69-SIM | desk A-001 option B, bounded: `lean/TraceDriverV1.lean` seeds re-signed by the pledger; `economics-simulator-core.mjs` `pledge`/`correctPledge` guards equal G-PLEDGE/G-ACC/G-PEND/G-NONE row by row with the same refusal reasons; trace fixture re-emitted and claim-gate pins re-derived by the repository commands; existing simulator gates green and unchanged in what they check; no page/UI change, no generator or page-check change |
 | INV69-MIRRORS | every new Prop-valued definition reconciles under `scripts/check-lean-mirrors`; inversion coverage stays green |
 | INV69-CONTRACT | no type change: `Event`, `AppEvent`, `State`, `Collection`, `Pledge`, `StepError`, `LiveAuth` unchanged; #76/#81 witnesses unchanged except INV69-SUPERSEDED |
 
 ## Non-goals
 
 - NG-1 #48's departure design (superseded by the issue).
-- NG-2 UI legibility of pending vs accepted (#70); this lane hands off event shapes and refusals.
+- NG-2 UI legibility of pending vs accepted, page changes, new simulator features (#70); this lane hands off event shapes, refusal reasons and where pending vs accepted is observable.
 - NG-3 Haskell production (Haskell follows Lean, later ticket); `docs/en/design` (#71).
 - NG-4 Stall semantics of corrections (D-STALL).

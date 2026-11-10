@@ -10,3 +10,5 @@
 - [ ] root-journeys-and-controls
 - [ ] mutant-ledger-rows
 - [ ] superseded-fixtures-resigned
+- [ ] economic-corpus-reexported
+- [ ] simulator-follows-pledge-regimes
