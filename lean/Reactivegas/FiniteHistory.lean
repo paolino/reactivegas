@@ -67,8 +67,8 @@ def genesisRefusal (gs : KelGroups.GroupState State) : Option HistoryRefusal :=
   | none => if productionWellFormed gs then some .payloadNotClean else some .comuneReserved
   | some g => if g = gs then none else some .notBootOutput
 
-/-- Why one stored step disagrees with `Reactivegas.apply` from the stored state
-before it; `none` when it agrees. -/
+/-- Validation of one stored step of a supplied history: why it disagrees with
+`Reactivegas.apply` from the stored state before it; `none` when it agrees. -/
 def stepRefusal (θ : KelGroups.Vote.Threshold) (auth : BackdonateAuth) (i : Nat)
     (gs : KelGroups.GroupState State) (st : HistoryStep) : Option HistoryRefusal :=
   match Reactivegas.apply θ auth gs st.signer st.event with
@@ -83,8 +83,8 @@ def stepRefusal (θ : KelGroups.Vote.Threshold) (auth : BackdonateAuth) (i : Nat
       else if st.change ≠ none then some (.refusedStepChange i)
       else none
 
-/-- The first step, in order, that disagrees with `Reactivegas.apply` when each
-step is recomputed from the state the previous step stored. -/
+/-- Validation of the steps of a supplied history: the first step that disagrees
+with `Reactivegas.apply` when each is recomputed from the state before it. -/
 def stepsRefusal (θ : KelGroups.Vote.Threshold) (auth : BackdonateAuth) :
     Nat → KelGroups.GroupState State → List HistoryStep → Option HistoryRefusal
   | _, _, [] => none
@@ -347,8 +347,8 @@ def traceNext (cur : State) (st : TraceStep) : State :=
   | .applied s => s
   | .refused _ => cur
 
-/-- Why one stored step disagrees with `stepDetailed` under the view from the
-state before it; `none` when it agrees. -/
+/-- Validation of one stored step of a supplied trace: why it disagrees with
+`stepDetailed` under the view from the state before it; `none` when it agrees. -/
 def traceStepRefusal (view : KelGroups.GroupView) (auth : BackdonateAuth) (i : Nat)
     (cur : State) (st : TraceStep) : Option TraceRefusal :=
   if st.input ≠ cur then some (.inputDiffers i)
@@ -361,8 +361,8 @@ def traceStepRefusal (view : KelGroups.GroupView) (auth : BackdonateAuth) (i : N
     | .applied _, .refused _ => some (.storedAppliedButRefused i)
     | .refused _, .applied _ => some (.storedRefusedButApplied i)
 
-/-- The first step, in order, that disagrees with `stepDetailed` when each step
-is recomputed from the state the previous step left. -/
+/-- Validation of the steps of a supplied trace: the first step that disagrees
+with `stepDetailed` when each is recomputed from the state before it. -/
 def traceStepsRefusal (view : KelGroups.GroupView) (auth : BackdonateAuth) :
     Nat → State → List TraceStep → Option TraceRefusal
   | _, _, [] => none

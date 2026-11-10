@@ -546,7 +546,7 @@ if (cd "$lean" && lake build Reactivegas.FiniteHistory) >"$tmp/history-build.log
         if grep -q "^HISTORY-VERIFY $n PASS" "$tmp/history.log"; then
             ok "history-$n" "$(grep "^HISTORY-VERIFY $n PASS" "$tmp/history.log" | first_line)"
         else
-            bad "history-$n" "no passing line from the history validation (rc=$history_rc): $(grep "^HISTORY-VERIFY $n" "$tmp/history.log" | first_line)${history_rc:+ $(grep -m1 -E 'error|Error' "$tmp/history.log" | cut -c1-160)}"
+            bad "history-$n" "no passing line from the history validation (rc=$history_rc): $(grep "^HISTORY-VERIFY $n" "$tmp/history.log" | first_line) $(grep -m1 -E 'error|Error' "$tmp/history.log" | cut -c1-160)"
         fi
     done
     [ "$history_rc" -eq 0 ] || bad history-exit "the history validation exited $history_rc"
