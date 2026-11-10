@@ -89,7 +89,7 @@ lean-corpus-gate:
     result=$(cd lean && lake env lean Reactivegas/CorpusGate.lean)
     [[ "$result" == "true" ]]
 
-# Emit both frozen corpus files via the CorpusExport exe (sole writer of the JSON)
+# Emit the frozen corpus files via the CorpusExport exe (sole writer of the JSON)
 lean-corpus-export:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -97,7 +97,9 @@ lean-corpus-export:
     mkdir -p corpus
     lake build corpusExport
     ./.lake/build/bin/corpusExport corpus/economic.json corpus/integrated.json
-    sha256sum corpus/economic.json corpus/integrated.json > corpus/corpus.sha256
+    ./.lake/build/bin/corpusExport vote emit corpus/vote.json
+    ./.lake/build/bin/corpusExport vote emit-context corpus/vote.json corpus/vote.context.json ..
+    sha256sum corpus/economic.json corpus/integrated.json corpus/vote.json corpus/vote.context.json > corpus/corpus.sha256
 
 # Re-emit to temp and byte-compare against checked-in files + manifest; fail closed
 lean-corpus-verify:
@@ -124,6 +126,10 @@ lean-corpus-verify:
       ((.steps | length) > 0) and
       ([.steps[] | keys] | all(. == ["accepted","change","event","signer","state"]))
     ' corpus/integrated.json > /dev/null
+    # #75: the vote corpus, its replay context, the policy re-derivation, the
+    # source-input digest and every control (one tagged line per sub-check)
+    cd "{{ justfile_directory() }}"
+    scripts/verify-vote-corpus
 
 # Full CI pipeline
 # Every stage reports its invocation, exit and elapsed cost; nothing is

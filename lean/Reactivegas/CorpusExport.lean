@@ -1,5 +1,8 @@
 import Reactivegas.Trace
 import KelGroups.Mirrors
+import Reactivegas.VoteCorpus
+import Reactivegas.ReplayContext
+import Reactivegas.PolicyCheck
 
 /-!
 # Corpus exporter (`reactivegas#74`, slice S74)
@@ -158,12 +161,208 @@ def checkIntFile (j : Lean.Json) : Except String Nat := do
   let steps ← (j.getObjVal? "steps").mapError (fun e => s!"integrated: no steps key: {e}")
   checkLiveArray "integrated.steps" (Lean.toJson Reactivegas.emitIntegratedCorpus) steps
 
+/-! ## The vote corpus (`reactivegas#75`)
+
+The third wrapper. Same discipline as the integrated one — `initial`, `auth`,
+`steps` and nothing else — with the replay threshold deliberately absent: it
+lives in the sidecar. Generation binds `legacyThreshold` as test input; it is
+not a shipped default. -/
+
+/-- Authorization identity the vote corpus was evaluated under: the same
+refusing probe as the integrated corpus. -/
+def voteAuthIdentity : String := intAuthIdentity
+
+def voteWrapperJson : Lean.Json :=
+  Lean.Json.mkObj
+    [ ("initial", Lean.toJson Reactivegas.voteCorpusInitial)
+    , ("auth", Lean.Json.str voteAuthIdentity)
+    , ("steps",
+        Lean.toJson (Reactivegas.emitVoteCorpus KelGroups.Vote.legacyThreshold)) ]
+
+/-- The exact bytes of `lean/corpus/vote.json`. -/
+def voteFileBytes : String := voteWrapperJson.compress ++ "\n"
+
+/-- One tagged line per check; a check that raised prints its reason. -/
+def voteTag (name : String) (r : Except String String) : IO Bool :=
+  match r with
+  | .ok detail => do IO.println s!"VOTE-CHECK {name} PASS {detail}"; return true
+  | .error e => do IO.println s!"VOTE-CHECK {name} FAIL {e}"; return false
+
+def boolCheck (what : String) (b : Bool) (detail : String) : Except String String :=
+  if b then .ok detail else .error what
+
+/-- Wrapper context of the vote file, bound to the live definitions. -/
+def checkVoteContext (bytes : String) : Except String String := do
+  let j ← Lean.Json.parse bytes
+  let initial ← j.getObjVal? "initial"
+  if initial != Lean.toJson Reactivegas.voteCorpusInitial then
+    throw "initial differs from live voteCorpusInitial"
+  let members ← initial.getObjVal? "members"
+  if (← members.getArr?).size == 0 then throw "zero initial members"
+  let auth ← j.getObjVal? "auth"
+  if auth != Lean.Json.str voteAuthIdentity then
+    throw "auth differs from live voteAuthIdentity"
+  return s!"initial members and auth identity equal the live values"
+
+/-- Steps equal the live emission element for element, nonzero extent. -/
+def checkVoteLive (bytes : String) : Except String Nat := do
+  let j ← Lean.Json.parse bytes
+  let steps ← j.getObjVal? "steps"
+  checkLiveArray "vote.steps"
+    (Lean.toJson (Reactivegas.emitVoteCorpus KelGroups.Vote.legacyThreshold)) steps
+
+def extentSummary (steps : List Reactivegas.VoteTraceStep) : String :=
+  ", ".intercalate (Reactivegas.discoveredExtents.map (fun (ty, names) =>
+    let seen := Reactivegas.seenNames steps ty
+    s!"{ty} {(names.filter seen.contains).length}/{names.length}"))
+
+/-- `vote check <vote.json>`: every live check of the vote corpus, one tagged
+line each. Exit 0 only when all pass. -/
+def voteCheck (path : String) : IO UInt32 := do
+  let bytes ← IO.FS.readFile path
+  match Reactivegas.decodeVoteFile bytes with
+  | .error e => do
+    IO.println s!"VOTE-CHECK decode FAIL {e}"
+    return 1
+  | .ok (initial, steps) => do
+    let θ := KelGroups.Vote.legacyThreshold
+    let okRef ← IO.mkRef true
+    let record := fun (b : Bool) => okRef.modify (· && b)
+    record (← voteTag "live-binding"
+      ((checkVoteLive bytes).map (fun n => s!"{n} steps equal the live emission")))
+    record (← voteTag "wrapper-context" (checkVoteContext bytes))
+    record (← voteTag "nonzero-extent"
+      (boolCheck "zero steps or zero events" (steps.length > 0 && initial.members.length > 0)
+        s!"{steps.length} steps, {initial.members.length} initial members"))
+    record (← voteTag "V1-vote-route-observable"
+      (boolCheck "no accepted vote-routed .app step" (Reactivegas.voteRouteObservable steps)
+        s!"{(steps.filter (fun st => st.accepted && (match Reactivegas.appOf st.event with
+            | some e => Reactivegas.isVoteRouted e | none => false))).length} accepted vote-routed .app steps"))
+    record (← voteTag "V2-closure-with-economics"
+      (boolCheck "no closure with an economic effect in the file"
+        (Reactivegas.closureWithEconomics steps initial)
+        s!"minted-and-spent={Reactivegas.mintedAndSpent (Reactivegas.withPre initial steps)} refund-on-negative={Reactivegas.refundOnNegative (Reactivegas.withPre initial steps)}"))
+    record (← voteTag "V3-franchise-closure-while-active"
+      (boolCheck "no franchiseChange closure at an economically active payload"
+        (Reactivegas.franchiseClosureWhileActive steps initial) "franchiseChange closure with active payload present"))
+    record (← voteTag "journey-lifted"
+      (let items := Reactivegas.journeyItems steps initial
+       let missing := items.filter (fun it => !it.2) |>.map (·.1)
+       if missing.isEmpty then .ok s!"{items.length}/{items.length} journey items present"
+       else .error s!"journey items missing: {missing}"))
+    record (← voteTag "lifecycle-rows"
+      (boolCheck "renounced / proposerDeparted closure records missing"
+        (Reactivegas.lifecycleRows steps initial) "renounced and proposerDeparted closures, both negative, present in the stored state"))
+    record (← voteTag "vote-error-identity-observed"
+      (boolCheck "a stored voteError differs from the vote machine's refusal on the stored predecessor"
+        (Reactivegas.voteErrorIdentityObserved θ steps initial)
+        s!"{(steps.filter (fun st => st.voteError.isSome)).length} refused steps carry their VoteError, {(steps.filter (fun st => !st.accepted && st.voteError.isNone)).length} refusals never reach the vote machine"))
+    record (← voteTag "coverage-discovered"
+      ((Reactivegas.voteCorpusCoversDiscovered steps).map (fun _ => extentSummary steps)))
+    return (if (← okRef.get) then 0 else 1)
+
+/-- `vote coverage-control <vote.json>`: the coverage check rejects an extent that
+gained a constructor the corpus does not show, for every discovered type, and
+still accepts the unextended extents. -/
+def voteCoverageControl (path : String) : IO UInt32 := do
+  match Reactivegas.decodeVoteFile (← IO.FS.readFile path) with
+  | .error e => do
+    IO.println s!"VOTE-CHECK coverage-added-constructor-control FAIL decode: {e}"
+    return 1
+  | .ok (_, steps) => do
+    let baseline := Reactivegas.voteCorpusCoversDiscovered steps
+    let mut rejected := 0
+    let mut failures : List String := []
+    for (ty, _) in Reactivegas.discoveredExtents do
+      let fresh := s!"AddedConstructor{ty}"
+      let extended := Reactivegas.discoveredExtents.map (fun (t, ns) =>
+        if t == ty then (t, ns ++ [fresh]) else (t, ns))
+      match Reactivegas.coverageAgainst extended steps with
+      | .error msg =>
+        if (msg.splitOn fresh).length > 1 then rejected := rejected + 1
+        else failures := s!"{ty}: rejected without naming {fresh}" :: failures
+      | .ok _ => failures := s!"{ty}: accepted an uncovered constructor" :: failures
+    let rejects := fun (extents : List (String × List String)) =>
+      match Reactivegas.coverageAgainst extents steps with
+      | .error _ => true
+      | .ok _ => false
+    let emptyRefused := rejects [] && rejects [("VoteError", [])]
+    let n := Reactivegas.discoveredExtents.length
+    match baseline with
+    | .ok _ =>
+      if rejected == n && failures.isEmpty && emptyRefused then
+        IO.println s!"VOTE-CHECK coverage-added-constructor-control PASS {rejected}/{n} extended extents rejected naming the added constructor; the discovered extents accepted; an empty extent list and an empty extent refused"
+        return 0
+      else
+        IO.println s!"VOTE-CHECK coverage-added-constructor-control FAIL {failures} emptyRefused={emptyRefused}"
+        return 1
+    | .error e =>
+      IO.println s!"VOTE-CHECK coverage-added-constructor-control FAIL the discovered extents are not covered: {e}"
+      return 1
+
+/-- The replayer's three failure outcomes and its success are distinct in both the
+exit code and the tagged first word of the report. -/
+def replayExit : Reactivegas.ReplayOutcome → IO UInt32
+  | .ok steps domain => do
+      IO.println s!"REPLAY OK steps={steps} domain=0..{domain}"
+      return 0
+  | .refusal rules detail => do
+      IO.println s!"PRE-REPLAY REFUSAL rule={",".intercalate rules} {detail}"
+      return 10
+  | .abort n domain step => do
+      IO.println s!"RUNTIME ABORT threshold queried at n={n}, outside the table's domain 0..{domain}, at step {step}; the {step} steps before it are a diagnostic prefix only and no full-conformance claim is made"
+      return 11
+  | .mismatch step field => do
+      IO.println s!"CONFORMANCE MISMATCH step={step} field={field}"
+      return 12
+
+def voteUsage : IO UInt32 := do
+  IO.eprintln "usage: corpusExport vote emit <vote.json> | emit-context <vote.json> <sidecar> <root> | check <vote.json> | coverage-control <vote.json> | witness <vote.json> | replay <vote.json> <sidecar> | policy <sidecar> | digest <root>"
+  return 1
+
+def voteMain : List String → IO UInt32
+  | ["emit", votePath] => do
+    IO.FS.writeFile votePath voteFileBytes
+    return 0
+  | ["emit-context", votePath, ctxPath, root] => do
+    IO.FS.writeFile ctxPath (← Reactivegas.contextBytes root (← IO.FS.readFile votePath))
+    return 0
+  | ["check", votePath] => voteCheck votePath
+  | ["coverage-control", votePath] => voteCoverageControl votePath
+  | ["witness", votePath] => do
+    match ← Reactivegas.policyWitness (← IO.FS.readFile votePath) with
+    | .ok (step, n, legacy, zero, late) => do
+      IO.println s!"POLICY-WITNESS step={step} n={n} legacy={legacy} zero={zero}"
+      match late with
+      | some (lstep, ln) =>
+        IO.println s!"POLICY-LATE-QUERY step={lstep} n={ln} larger than every size queried at the {lstep} earlier steps"
+      | none => IO.println "POLICY-LATE-QUERY-ABSENT no query size first reached after step 0"
+      return 0
+    | .error e => do
+      IO.println s!"POLICY-WITNESS-INADEQUATE {e}"
+      return 1
+  | ["replay", votePath, ctxPath] => do
+    replayExit (← Reactivegas.replayVoteCorpus (← IO.FS.readFile votePath) (← IO.FS.readFile ctxPath))
+  | ["policy", ctxPath] => do
+    match Reactivegas.PolicyCheck.checkPolicyAgainstDeclaration (← IO.FS.readFile ctxPath) with
+    | .ok points => do
+      IO.println s!"POLICY-REDERIVED declaration=KelGroups.Vote.legacyThreshold domain=0..{points - 1} points={points}"
+      return 0
+    | .error e => do
+      IO.println (if e.startsWith "POLICY-" then e else s!"POLICY-REFUSED {e}")
+      return 1
+  | ["digest", root] => do
+    IO.println (← Reactivegas.sourceInputDigest root)
+    return 0
+  | _ => voteUsage
+
 /-- F74-MAIN: `lean_exe` entry point. The sole writer of the frozen files:
 writes the economic wrapper to the first path argument and the integrated
 wrapper to the second, as exact bytes the verify target compares. Exits
 non-zero on wrong arity or any write failure. -/
 def main (args : List String) : IO UInt32 := do
   match args with
+  | "vote" :: rest => voteMain rest
   | ["check", econPath, intPath] => do
     let econBytes ← IO.FS.readFile econPath
     let intBytes ← IO.FS.readFile intPath
