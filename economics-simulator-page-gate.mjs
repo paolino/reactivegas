@@ -38,7 +38,7 @@
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { tmpdir } from 'node:os';
 import { CONFIG as GENERATOR, buildSurface, generateTrace, envelopeOf, loadCore, clone }
   from './economics-simulator-generator-gate.mjs';
@@ -86,7 +86,7 @@ function generatedHistory(core, surface, seed) {
     states: [env.initial, ...env.steps.map(s => s.result.aggregate)] };
 }
 
-async function statedHistories() {
+export async function statedHistories() {
   const core = await loadCore(CORE);
   const surface = buildSurface();
   return CONFIG.seeds.map(seed => generatedHistory(core, surface, seed));
@@ -431,5 +431,8 @@ async function selftest() {
   return 0;
 }
 
-if (process.argv.includes('--selftest')) process.exit(await selftest());
-else await main();
+/* importing the histories for another gate does not run this one */
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  if (process.argv.includes('--selftest')) process.exit(await selftest());
+  else await main();
+}
