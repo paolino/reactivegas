@@ -23,5 +23,5 @@ Only the ticket owner checks boxes, after the auditor approves the line.
       `n >= 1` before the policy controls.
 - [x] **source-inputs-honest** Digest encoding, reproducibility from committed
       inputs, hermetic regeneration, added-input omission control.
-- [ ] **final-acceptance** `just ci` once on the final candidate; hosted CI
+- [x] **final-acceptance** `just ci` once on the final candidate; hosted CI
       green at the pushed SHA; every checkpoint approved; draft PR body factual.
