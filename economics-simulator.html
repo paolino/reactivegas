@@ -3211,11 +3211,19 @@ const candidates = () => {
   }
   return out;
 };
+/* a pledge is pending (its owner corrects or withdraws it) or accepted (only the
+   referente corrects it); the page says which wherever it lists one */
+const REGIME = {
+  pending: { cls: 'pend', text: 'pendente · lo corregge o ritira chi l’ha preso' },
+  accepted: { cls: 'acc', text: 'accettato · lo corregge solo il referente' },
+};
+const regimeTag = regime =>
+  `<span class="stag ${REGIME[regime].cls}">${esc(REGIME[regime].text)}</span>`;
 const pledgesOf = u => {
   const out = [];
   for (const c of state.collections) {
-    for (const p of c.pending) if (p.user === u) out.push({ c: c.id, amount: p.amount, st: 'pendente' });
-    for (const p of c.accepted) if (p.user === u) out.push({ c: c.id, amount: p.amount, st: 'accettato' });
+    for (const p of c.pending) if (p.user === u) out.push({ c: c.id, amount: p.amount, regime: 'pending' });
+    for (const p of c.accepted) if (p.user === u) out.push({ c: c.id, amount: p.amount, regime: 'accepted' });
   }
   return out;
 };
@@ -4048,7 +4056,7 @@ function renderPerson() {
       <div class="sect">i suoi impegni</div>
       ${pls.length ? `<div class="rows">${pls.map(p =>
         `<button type="button" class="row" data-pledge-c="${p.c}" data-pledge-u="${u}">
-          «${esc(lbl(p.c))}» <span class="stag ${p.st === 'pendente' ? 'pend' : 'acc'}">${p.st}</span>
+          «${esc(lbl(p.c))}» ${regimeTag(p.regime)}
           <span class="amt">${esc(eur(p.amount))}</span></button>`).join('')}</div>`
         : '<p class="empty">nessun impegno aperto</p>'}
       <div class="sect">movimenti recenti</div>
@@ -4073,9 +4081,9 @@ function renderCollection() {
   const c = nav().c;
   const col = state.collections.find(x => x.id === c);
   const ref = col.referente;
-  const rows = (list, st) => list.map(p =>
+  const rows = (list, regime) => list.map(p =>
     `<button type="button" class="row" data-pledge-c="${c}" data-pledge-u="${p.user}">
-      ${esc(nm(p.user))} <span class="stag ${st === 'pendente' ? 'pend' : 'acc'}">${st}</span>
+      ${esc(nm(p.user))} ${regimeTag(regime)}
       <span class="amt">${esc(eur(p.amount))}</span></button>`).join('');
 
   const head = `<div class="card"><div class="vhead">
@@ -4092,7 +4100,7 @@ function renderCollection() {
     <div class="tasks">${taskBtn('pledge', { c }, { label: 'Impegnati su questo acquisto' })}</div>
     <div class="sect">impegni</div>
     ${col.pending.length || col.accepted.length
-      ? `<div class="rows">${rows(col.pending, 'pendente')}${rows(col.accepted, 'accettato')}</div>`
+      ? `<div class="rows">${rows(col.pending, 'pending')}${rows(col.accepted, 'accepted')}</div>`
       : '<p class="empty">nessun impegno — impegnati per primo</p>'}
   </div>`;
 
@@ -4101,7 +4109,7 @@ function renderCollection() {
       <span class="tiny" style="margin-left:auto">esiste solo dentro questo acquisto</span></h3>
     ${col.pending.length ? `<div class="rows">${col.pending.map(p =>
       `<div class="row" style="cursor:default">${esc(nm(p.user))}
-        <span class="stag pend">pendente</span><span class="amt">${esc(eur(p.amount))}</span>
+        ${regimeTag('pending')}<span class="amt">${esc(eur(p.amount))}</span>
         <span class="inline-acts">
           <button type="button" class="mini" data-act="accept" data-u="${p.user}" title=".acceptPledge">accetta</button>
           <button type="button" class="mini no" data-act="refuse" data-u="${p.user}" title=".refusePledge">rifiuta</button>
@@ -4109,7 +4117,7 @@ function renderCollection() {
       : '<p class="empty">nessun impegno pendente da decidere</p>'}
     ${col.accepted.length ? `<div class="rows">${col.accepted.map(p =>
       `<div class="row" style="cursor:default">${esc(nm(p.user))}
-        <span class="stag acc">accettato</span><span class="amt">${esc(eur(p.amount))}</span>
+        ${regimeTag('accepted')}<span class="amt">${esc(eur(p.amount))}</span>
         <span class="inline-acts">
           <button type="button" class="mini" data-act="correct" data-u="${p.user}" title=".correctPledge">correggi</button>
         </span></div>`).join('')}</div>` : ''}
@@ -4233,13 +4241,12 @@ function renderPledge() {
   const pend = col.pending.find(p => p.user === pu);
   const acc = col.accepted.find(p => p.user === pu);
   const p = pend || acc;
-  const st = pend ? 'pendente' : 'accettato';
   $('view').innerHTML = `<div class="card">
     <div class="vhead">
       <div class="bigav${resp(pu) ? ' resp' : ''}"></div>
       <div><div class="who">impegno di ${esc(nm(pu))}</div>
         <div class="sub">su «${esc(lbl(c))}» · <span class="mono">.pledge</span></div></div>
-      <span class="stag ${pend ? 'pend' : 'acc'}">${st}</span>
+      ${regimeTag(pend ? 'pending' : 'accepted')}
       <span class="money" style="padding:3px 10px"><span class="k">importo</span>
         <span class="v" style="font-size:1rem">${esc(eur(p.amount))}</span></span>
     </div>
