@@ -9,7 +9,8 @@
 #   stale      the first citation of the record renamed to a declaration that
 #              does not exist
 #   uncited    the first citation of the record named once more without the
-#              marker
+#              marker; its last component inside an expression; and the same
+#              component after a variable and a dot (three spans, three findings)
 #   empty      a record that carries no citation
 #   no-files   a record directory with no Markdown file
 #   real       the record as it stands, required green
@@ -78,17 +79,28 @@ else
         fail "stale: rc=$rc, new findings: $(cat "$tmp/stale.new") (wanted: $want)"
     fi
 
-    # uncited: the same declaration named without the marker, on a line of its own
-    printf 'The declaration `%s` is named here without the marker.\n' "$cname" >"$tmp/uncited/uncited-control.md"
+    # uncited: the same declaration named without the marker on a line of its own,
+    # its last component inside an expression, and after a variable and a dot
+    last=${cname##*.}
+    {
+        printf 'The declaration `%s` is named here without the marker.\n' "$cname"
+        printf 'The expression `%s s e` applies it.\n' "$last"
+        printf 'The field access `col.%s` reads it.\n' "$last"
+    } >"$tmp/uncited/uncited-control.md"
     "$check" --record "$tmp/uncited" >"$tmp/uncited.out" 2>"$tmp/uncited.err"
     rc=$?
     findings "$tmp/uncited" "$tmp/uncited.err" >"$tmp/uncited.findings"
     comm -13 "$tmp/real.findings" "$tmp/uncited.findings" >"$tmp/uncited.new"
-    want="uncited-control.md:1: UNCITED-DECLARATION \`$cname\`"
-    if [ "$rc" -ne 0 ] && [ "$(wc -l <"$tmp/uncited.new")" -eq 1 ] && grep -qF "$want" "$tmp/uncited.new"; then
-        pass uncited "red with $(cat "$tmp/uncited.new")"
+    want1="uncited-control.md:1: UNCITED-DECLARATION \`$cname\`"
+    want2="uncited-control.md:2: UNCITED-DECLARATION \`$last s e\`"
+    want3="uncited-control.md:3: UNCITED-DECLARATION \`col.$last\`"
+    if [ "$rc" -ne 0 ] && [ "$(wc -l <"$tmp/uncited.new")" -eq 3 ] \
+        && grep -qF "$want1" "$tmp/uncited.new" && grep -qF "$want2" "$tmp/uncited.new" \
+        && grep -qF "$want3" "$tmp/uncited.new"; then
+        pass uncited "red with exactly the whole-name, expression and field-access findings"
+        pass compound "red on $(grep -F "$want2" "$tmp/uncited.new" | cut -c1-120)"
     else
-        fail "uncited: rc=$rc, new findings: $(cat "$tmp/uncited.new") (wanted: $want)"
+        fail "uncited/compound: rc=$rc, new findings: $(cat "$tmp/uncited.new") (wanted: $want1 / $want2 / $want3)"
     fi
 fi
 
@@ -126,7 +138,7 @@ else
 fi
 
 if [ "$failed" -eq 0 ]; then
-    printf '%s: ok legs=6\n' "$TOOL"
+    printf '%s: ok legs=7\n' "$TOOL"
 else
     printf '%s: FAILED\n' "$TOOL" >&2
     exit 1

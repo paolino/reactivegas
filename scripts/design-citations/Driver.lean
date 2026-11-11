@@ -17,9 +17,10 @@ one of those modules, minus private and compiler-internal ones.
 The code-span rule (stated in the record, section "How to cite this page"):
 
 * a code span `lean:Name` is a citation; `Name` must be a declaration;
-* any other code span names a declaration when its whole text is one dotted
-  identifier equal to a trailing run of a declaration's name components, or when
-  it contains a maximal identifier that equals a full declaration name;
+* any other code span names a declaration when one of its identifier tokens
+  does. A token is a maximal dotted run of identifier characters, or one of the
+  dot-separated components of such a run; it names a declaration when it equals a
+  trailing run of the components of some declaration's name;
 * fenced blocks are not scanned, except that a block tagged `lean` is refused;
 * `lean:` followed by an identifier outside a code span is refused.
 -/
@@ -65,6 +66,16 @@ def identRuns (s : String) : List String := Id.run do
       cur := []
   if !cur.isEmpty then runs := String.mk cur.reverse :: runs
   return (runs.map fun r => (r.dropWhile (· == '.')).dropRightWhile (· == '.')).reverse
+
+/-- The identifier tokens of a span: every maximal dotted run, and every
+dot-separated component of a run. A token is a candidate name; whether it names
+a declaration is for the environment to say. -/
+def spanTokens (s : String) : List String := Id.run do
+  let mut out : List String := []
+  for r in identRuns s do
+    for t in r :: r.splitOn "." do
+      if isDottedIdent t && !out.contains t then out := out ++ [t]
+  return out
 
 /-! ## Scanning -/
 
@@ -237,12 +248,10 @@ def checkFile (env : Environment) (ext : Extent) (display abs : String) :
             else s!"no declaration {nm} in the built Lean library"
           findings := findings.push ⟨where_, "UNRESOLVED-CITATION", s!"lean:{nm} — {why}"⟩
       else
-        let named :=
-          if isDottedIdent text && ext.trailing.contains text then [text]
-          else (identRuns text).filter fun r => isDottedIdent r && ext.full.contains r
-        for r in named do
+        let named := (spanTokens text).filter ext.trailing.contains
+        unless named.isEmpty do
           findings := findings.push
-            ⟨where_, "UNCITED-DECLARATION", s!"`{text}` names {r} of the Lean library without the citation marker (write `lean:<full name>`)"⟩
+            ⟨where_, "UNCITED-DECLARATION", s!"`{text}` names {", ".intercalate named} of the Lean library without the citation marker (write `lean:<full name>`)"⟩
   return (findings, citations, spans)
 
 def main : CoreM Unit := do
