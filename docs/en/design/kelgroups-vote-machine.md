@@ -10,10 +10,11 @@ hosted build, and a code span naming a declaration without the prefix is refused
 Two machines live in the substrate, and they have different standing.
 
 - The **base machine** keeps the group's members and the proposals that change
-  them. Its historical fold (`lean:KelGroups.foldGroup`) reproduces the original
-  propose-and-approve machine; the production path is the integrated transition
-  (`lean:KelGroups.applyIntegratedEvent`). This page describes the Lean model only: it
-  does not re-derive the Lean's correspondence with the Haskell implementation.
+  them. Its historical fold (`lean:KelGroups.foldGroup`) is kept for an accepted theorem
+  and has no production responsibility; the production path is the integrated
+  transition (`lean:KelGroups.applyIntegratedEvent`). This page describes the Lean
+  model only and makes no claim about its correspondence with any Haskell
+  implementation.
 - The **vote machine** (`lean:KelGroups.Vote.applyVoteEventChecked`) is, by its own
   module documentation, required of the substrate rather than a reproduction of
   existing code. No claim of fidelity is made about it.

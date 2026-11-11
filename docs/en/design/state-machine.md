@@ -237,8 +237,10 @@ compilation. For each:
   else `lean:Reactivegas.windUpAdmin` on admin loss and nothing on admin gain.
 
 `lean:Reactivegas.windUpAdmin` cancels the key's open collections, refunds every pledge
-they held (`lean:stripCollections` and `lean:refundAll`) and moves the key's cash box to
-the common fund. After it no open collection has that key as referente
+they held (`lean:stripCollections` and `lean:refundAll`), and sets the key's cash box to zero
+while debiting the common fund's account by the amount the box held (the common
+fund falls by a positive box and rises by a negative one). After it no open
+collection has that key as referente
 (`lean:governance_enacts_windUpAdmin`, law). After any base change, every open
 question is re-evaluated against the post-change franchise, so a question can
 close because the electorate changed and no ballot was cast

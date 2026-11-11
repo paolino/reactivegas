@@ -21,6 +21,7 @@
 # meaningful while the record is still red.
 #
 # usage: controls            (no arguments; exit zero only when every leg holds)
+# shellcheck disable=SC2016
 set -uo pipefail
 
 TOOL=design-citations-controls
@@ -30,7 +31,7 @@ check=$here/check
 record=docs/en/design
 tmp=$(mktemp -d)
 trap 'rm -rf -- "$tmp"' EXIT
-cd "$root"
+cd "$root" || exit 1
 failed=0
 bt='`'
 
@@ -59,7 +60,7 @@ first=$(grep -rnoE --include='*.md' '`lean:[A-Za-z_][A-Za-z0-9_.'"'"']*`' "$reco
 if [ -z "$first" ]; then
     fail "the record carries no citation to derive the stale and uncited controls from"
 else
-    cfile=${first%%:*}; rest=${first#*:}; cline=${rest%%:*}; cname=${rest#*:${bt}lean:}; cname=${cname%${bt}}
+    cfile=${first%%:*}; rest=${first#*:}; cline=${rest%%:*}; cname=${rest#*:"${bt}"lean:}; cname=${cname%"${bt}"}
     mkdir -p "$tmp/stale" "$tmp/uncited"
     cp -r "$record/." "$tmp/stale/"
     cp -r "$record/." "$tmp/uncited/"
