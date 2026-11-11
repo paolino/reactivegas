@@ -1,107 +1,106 @@
-# Spec — #71 rewrite the design record to the merged model, with a citation checker that fails closed
+# Spec — #71 design record rewritten to the merged model, with a citation checker that fails closed
 
-Base: origin/master e6c59242ccf9b388053626c24446faaa2d7417fd.
-Issue: paolino/reactivegas#71 (re-cut of #47/#59, which are closed because bases/subjects no longer exist).
-Parent: milestone desk %510. Lane: sole writer of `docs/en/design/` for this rewrite.
+Version 2 (2026-11-11). Supersedes version 1 (base e6c5924), whose model facts
+predate #68, #76, #81, #66, #69, #70 and #75. Version 1 stays in git history as
+evidence only.
 
-## Requirements
+Base: origin/master ddb1703, merged into `docs/71-design-record` at 63e686c.
+Class: documentation plus a new hosted check. No Lean model, proof, simulator or
+Haskell change.
 
-- R71-01 — Current State mapping: `Reactivegas.State` is exactly
-  conti/casse/collections/votes (`State.lean:23`); membership and roles live only
-  in `KelGroups.GroupState.members`, read through immutable `GroupView`; no
-  payload-local member/admin copy; three lists plus a vote state, not four
-  association lists. Stale `users`/`responsabili` rows removed.
-- R71-02 — Current Event mapping: `Reactivegas.Event` 14 constructors
-  (openPurchase, grantPermission, denyPermission, deposit, withdraw,
-  transferCassa, donate, backdonate, pledge, acceptPledge, refusePledge,
-  correctPledge, closePurchase, failPurchase); `AppEvent` 17 (same 14 authorless
-  + openQuestion/cast/renounce); retired `addUser/electResponsabile/
-  removeResponsabile/Reactivegas.Event.removeMember` named with namespace
-  (KelGroups Proposal.removeMember and BaseMutation.removeMember remain live);
-  counts fixed everywhere including inside conservation/solvency claims.
-- R71-03 — Current Route mapping: `Composition.route` 11 `direct` + 0
-  `baseEnacted` + 3 `appDecided` (grantPermission, denyPermission, backdonate);
-  `Route.baseEnacted` constructor survives for the accepted historical theorem
-  but no event routes to it; sealed `baseHook` with memberAdmitted (no economic
-  consequence) / memberRemoved (stall-refused else windUpAdmin+absorbConto) /
-  rolesChanged (stall-refused on admin loss else windUpAdmin), exhaustive over
-  three BaseChange constructors; step signatures with GroupView/signer/Auth
-  (`step`, `stepEvent`).
-- R71-04 — Current Authority mapping: per-event authorized signer + guard at
-  current source; sovereign-members vs isResponsabile tension stated honestly;
-  pledge currently demands isResponsabile (member cannot pledge for self);
-  correctPledge currently referente-only over accepted; V-2 and pledge-agency
-  rulings recorded as ruled-not-yet-implemented (see R71-10).
-- R71-05 — Law-versus-finite-witness distinction in every claim people read:
-  universally quantified laws vs finite oracles whose statement is `check…=true`;
-  29 short names are a syntactic category, NOT a total census (`majority_table`
-  and others use different syntax); no unproved model-completeness claims;
-  root `State`/`Event` are not automatically `Reactivegas.State`/`Reactivegas.Event`.
-- R71-06 — Explicit unimplemented runtime composition: Composition.lean is a leaf
-  (imports Types/Fold/Invariants/Vote.Fold, not Step; only importer is library
-  aggregator); production root cannot reach route/voteDerived/appVerdictAllows
-  (delete-file control builds clean); `appDecided_verdict_exhaustive`
-  reachability/target/polarity links unbound (standalone theorem over unrelated
-  parameters); status `enforced: PROVED-IN-MODEL` until substrate mirrors it.
-- R71-07 — Explicit vote-lifecycle limits: bare `step` returns none for
-  openQuestion/cast/renounce (run inside appFold via voteApply); integrated
-  renounce by responsabile succeeds and changes nothing (Fold identity, three
-  rfl inversions); notDesignee/notProposer declared but zero usages (Slice B
-  placeholders, not corpus gaps); VOTE_TRACES_V1 drives VoteState standalone
-  (15 signed events, reusable not substitute); #74 economic/integrated corpora
-  carry zero signed vote events (integrated V-3 franchise closure credited);
-  threshold θ open (legacyThreshold vs zeroThreshold exhibits, not defaults;
-  #68 must not be read across as vote default).
-- R71-08 — Voci non-goal with fact/ruling/reason/cost-curve/open-question:
-  21 Voci/ modules + ImpegnoVincolato/CorrezioneImpegnoVincolato; Lean models
-  none (pledge carries bare (user,c,v)); out of scope for milestone 2 outcome
-  test; recorded not omitted (unmodelled subsystem = unenforced contract);
-  cheapest now, corpus re-freeze + fold rewrite after D3; operator question
-  whether GAS reaches outcome test without catalogue.
-- R71-09 — Precise dated operator authority in-repo: Q-001 chronology appended,
-  later rulings supersede earlier assertions; V-1..V-7 (2026-08-27), Q-6/cassa
-  comune/stall/total-stall/committed-vs-available (2026-08-26), V-2 + pledge
-  two-regimes (2026-09-05), NOTE-016/A-Q001/NOTE-031 composition chain;
-  issue title alone never supplies a missing ruling.
-- R71-10 — Current-vs-ruled behavior written explicitly for every pending merge:
-  #66 S1 (six UNPROVED bytes → resolved pins; corpus re-freeze before D3),
-  #68 (proposer opens at zero; arithmetic unchanged; n=2 needs other assent),
-  #69 (pledge signer==u while pending with v'=0 withdrawal; referente after
-  acceptance; solvency guard + closePurchase unchanged; UI legibility);
-  exact source pins refreshed after each merge; honest current record may land
-  before semantics, but implemented-new-behavior claims wait for their merge.
-- R71-11 — Immediate citations verified against resolvable pinned Lean
-  declarations: every declaration-like claim carries its marker block; gate
-  discovers actual cited extent (never a hand list); malformed/unknown/missing
-  citations RED through an executable negative control; fails closed when Lean
-  prerequisite fails on a cold tree; freshness quantifies over discovered set.
-  Claim-syntax definition (successor binding): a declaration-like claim is any
-  claim block (a list item, a table row, or a paragraph) containing a backticked
-  span whose inner text equals a Lean declaration basename (or qualified name)
-  from the discovered extent at PIN, plus the explicit required semantic claim
-  blocks named in this spec (AUTH table rows, pending-table rows, law/witness
-  caveat, composition limits, vote-lifecycle limits, Voci fact, closure
-  classification). Every such claim needs a co-located `lean:` marker in the
-  same block resolving to that declaration; an added claim using a real Lean
-  name with no marker REDs as added-uncited. The parser enforces
-  claim↔marker association only — never natural-language truth, which stays
-  human/auditor row-level duty. No required claim may be deleted or rephrased
-  to evade detection.
-- R71-12 — canCloseGroup classification: `Predicates.lean:85` orphan (zero
-  usages), three conjuncts stated; record classifies against product intent as
-  missing guarantee or justified non-goal; no deletion/implementation by this
-  lane; no invented theorem.
+## Outcome
 
-## Rejection behavior
+`docs/en/design/` describes the model on master as it is, every claim that names
+a Lean declaration is a citation the hosted CI resolves against the built Lean
+library, and that check goes red when a citation is stale, when a declaration is
+named without a citation, or when the Lean library cannot be imported.
 
-Stale counts/names/signatures refused by the gate; unresolvable citations
-refused; claims of implemented pending behavior refused until their merge;
-second membership store / second constructor list / second manifest refused
-as scope violations.
+## Requirements — the record
+
+Each requirement is satisfied by prose that cites the declarations it rests on.
+Where master and an issue text disagree, master wins; the record never reports an
+issue's wording as the model.
+
+- **record-describes-state**: the economic state and where membership lives —
+  a single writable membership store in the KelGroups group state, read by the
+  application only through the read-only group view; no second membership copy.
+- **record-describes-events**: the economic event constructors and the
+  application event constructors exactly as on master, counted from the source;
+  the retired constructors (`addUser`, `electResponsabile`, `removeResponsabile`,
+  the economic `removeMember`) named as retired, distinguished from the KelGroups
+  membership mutations that remain.
+- **record-describes-routes**: the route classifier inventory and the sealed base
+  transition hook with each base change it handles.
+- **record-describes-authority**: who may sign each event and under which guard,
+  as on master, including that a pledge is signed by its owner, that the owner of
+  a pending pledge corrects or withdraws it, and that the referente corrects an
+  accepted one.
+- **record-describes-proposer-not-assent**: a question opens with zero approvals;
+  the proposer's opening is not an assent.
+- **record-describes-vote-closure-effects**: grant, deny and backdonate take their
+  economic effect only from a closed vote, and what each closure binds
+  (collection identity for permission, the per-member share for backdonation).
+- **record-describes-vote-lifecycle**: renounce or departure of the proposer
+  closes the question negatively and the escrow refunds on that negative closure;
+  a renounce by anyone other than the proposer and a ballot on a permission
+  question by anyone other than the named designee are refused and change no
+  state.
+- **record-describes-threshold**: the threshold is a parameter of the model; the
+  group sets an explicit policy at setup; there is no shipped default.
+- **record-describes-corpora**: the frozen corpora on master (economic,
+  integrated, vote) and the finite-history validation, what each checks and how
+  CI re-verifies them.
+- **record-separates-law-from-witness**: every claim people read says whether it
+  rests on a universally quantified theorem or on a finite check evaluated to
+  `true`; no claim of model completeness the source does not prove.
+- **record-drops-false-closure-claim**: the claim that zero member balances plus
+  no open collections make the cash boxes sum to zero is absent; group closure is
+  described only by what master defines and proves about it.
+- **record-carries-voci-non-goal**: a section stating the `Voci/` catalogue as an
+  explicit non-goal: the fact (21 modules under `Voci/` plus
+  `ImpegnoVincolato` / `CorrezioneImpegnoVincolato`, order-bound pledges; the
+  Lean models none of it), the ruling (out of scope for milestone 2, deferred to
+  milestone 3, issue #91), the reason it is written down rather than omitted,
+  the cost curve (cheapest now; after the conformance corpus freezes it costs a
+  corpus re-freeze plus an application-fold rewrite), and the open question
+  carried open, not resolved: does a group reach the outcome test (election →
+  collection → pledge → assent → purchase → refund) without a catalogue, or is
+  the catalogue absent from the Lean because nobody asked?
+- **record-states-no-pending-as-pending**: nothing that has landed on master is
+  described as pending or ruled-but-unimplemented; anything still unimplemented
+  is named as such with the declaration or its absence.
+- **record-is-plain-published-prose**: no internal process vocabulary (desk,
+  lane, owner, ruling identifiers such as Q-NNN or NOTE-NNN), no `.lean:<line>`
+  pins; declarations are cited by name.
+
+## Requirements — the citation checker
+
+- **citations-resolve**: every citation in every Markdown file under
+  `docs/en/design/` resolves to a declaration of the built Lean library on the
+  checked-out tree. An unresolved citation exits non-zero and names file, line
+  and citation.
+- **uncited-declaration-is-red**: a code span in the record whose text names a
+  declaration of the built Lean library without the citation marker exits
+  non-zero and names it. The rule deciding when a code span names a declaration
+  is stated in the record itself and decided by Lean, not by a list.
+- **discovered-extent-only**: the checker discovers the record files and the
+  citations by scanning; the set of known declarations comes from the Lean
+  environment. No hand-kept list of files, citations or declarations exists.
+- **fails-closed-on-cold-tree**: when the Lean import prerequisite fails (library
+  not built, module missing), the checker exits non-zero with a message naming
+  the import failure. It never exits zero without having resolved every
+  discovered citation, and it exits non-zero when it discovers zero citations.
+- **controls-are-hosted**: a hosted CI step shows the checker red on (a) a cold
+  tree, through the real import failure path, and (b) a stale citation and (c) an
+  uncited declaration, each through the real checker on a fixture copy of the
+  record; and green on the real record.
+- **ci-placement**: the checker runs in the "Build and check" job (after the Lean
+  build) or in a job of its own; never in the "Lean mutant ledger" job; no mutant
+  ledger rows are added. The PR body states its measured hosted cost.
 
 ## Non-goals
 
-No Lean model/proof/semantic changes; no simulator/Haskell changes; no
-Goals.lean/decisions.md filename obligation (substance only); no threshold θ
-default; no composition implementation (T-B belongs elsewhere); no corpus
-emulation beyond citing #74 wrapper discipline.
+No Lean model, proof or mutant change. No simulator or Haskell change. No
+threshold default. No `Voci/` modelling. No change outside `docs/en/design/`,
+the checker and its fixtures, the justfile recipe, the CI workflow and this
+spec directory.

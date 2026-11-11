@@ -1,14 +1,16 @@
-# Modules model — #71
+# Modules model — #71, version 2
 
-- `docs/en/design/state-machine.md` (owned, rewritten): State/Event/Route/
-  Authority mapping, law-vs-witness marking, composition/vote limits,
-  Voci non-goal, dated authority, current-vs-ruled pending table, marker blocks.
-- `docs/en/design/kelgroups-vote-machine.md` (owned, verify-and-carry):
-  re-derive 30/30 citation resolution; rewrite only on measured drift.
-- Citation checker companion (owned, documented alongside the record):
-  discovers cited extent from markers, resolves against pinned Lean blobs,
-  fails closed on missing prerequisite. Invoked by the untracked gate; not
-  committed as production code beyond docs scope.
-- `specs/71-design-record/` (owned, planning only): spec/plan/models/tasks.
+- **design record** (`docs/en/design/*.md`): published description of the model
+  on master. Depends on the Lean library by citation only.
+- **citation checker** (new, outside `lean/`): reads the record, asks the built
+  Lean library which citations resolve and which code spans name declarations,
+  exits non-zero on any failure. Depends on the Lean library build; nothing
+  depends on it except the CI step and the justfile recipe.
+- **checker fixtures** (new, next to the checker): copies of record fragments
+  carrying one known defect each, used only by the hosted controls.
+- **CI wiring** (`.github/workflows/ci.yaml`, `justfile`): one recipe for the
+  check, one for its controls; invoked from the "Build and check" job or a job
+  of its own.
 
-No new upstream module promotion. No Lean/Haskell/simulator modules touched.
+Dependency direction: record → (cites) Lean library; checker → Lean library and
+record; CI → justfile → checker. Nothing in `lean/` depends on the checker.

@@ -1,14 +1,9 @@
-# Functions model — #71
+# Functions model — #71, version 2
 
-No production function changes. Named checker operations (docs-companion scope only):
-
-- `discover_citations(docs_dir) -> markers[]`: parse marker blocks, fail on
-  malformed marker (negative control).
-- `discover_lean_extent(lean_dir, pin) -> symbols[]`: enumerate elaborated or
-  declared symbols from source (no hand list); prerequisite failure → hard RED
-  (fail-closed, never silent pass).
-- `resolve_all(markers, extent) -> unresolved[]`: unknown symbol → RED.
-- `freshness_pins(markers, pin) -> stale[]`: blob/line mismatch → RED.
-
-Signatures are checker documentation; implementation lives in the gate/script
-companion, not in shipped Lean/Haskell. No Lean `def` added or changed.
+- justfile recipe `design-citations` — no arguments; exit status is the checker
+  verdict on the record.
+- justfile recipe `design-citations-controls` — no arguments; exits zero only
+  when every control turned the checker red for its stated reason and the real
+  record turned it green.
+- The checker's own command line is the commit owner's choice; it is documented
+  in the record's section on citations.

@@ -1,17 +1,11 @@
-# Data model — #71
+# Data model — #71, version 2
 
-- Citation marker: `{file, line, commit, symbol, kind}` where kind ∈
-  {law (universally quantified theorem), witness (finite `check…=true` oracle
-  or exhibit), definition, route-classification, gap (explicitly unimplemented)}.
-  Every declaration-like prose claim carries one; missing marker is a gate failure.
-- Operator authority entry: `{date, source-note, ruling, scope, supersedes}`.
-  Later dates supersede earlier assertions on the same scope.
-- Pending row: `{id (#66-S1/#68/#69), current-behavior pin, ruled-behavior,
-  source-ruling, re-pin-condition}`. Implemented-behavior claims require merged pin.
-- canCloseGroup classification: `{symbol, location, usages-count, conjuncts,
-  product-intent refs, verdict: missing-guarantee|justified-non-goal}`.
-  No new theorem, no Lean edit.
-
-Validation: marker symbols must resolve in the discovered Lean extent at the
-pinned commit; authority dates must be present and ordered; pending rows must
-name their merge condition.
+- **citation**: a Markdown code span with the marker prefix `lean:` followed by a
+  Lean name. Valid when the name resolves to a constant in the built library.
+- **declaration-like claim**: a code span without the marker whose text Lean
+  resolves to a constant of the library under the resolution rule the record
+  states. Invariant: none exists in the record.
+- **discovered extent**: the set of citations and claims found by scanning every
+  Markdown file under `docs/en/design/`. Invariant: non-empty.
+- **checker verdict**: zero exit only when the Lean import succeeded, the extent
+  is non-empty, every citation resolved and no declaration-like claim exists.
