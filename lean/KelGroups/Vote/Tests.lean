@@ -317,10 +317,11 @@ def lostStandingOpen : VoteState :=
       | some question => question.assents == ["a"] && question.dissents == []
       | none => false)
 
--- Renunciation's proposer-only restriction is Slice B (R-58); in this
--- slice an existing-question renounce by a responsabile validates and
--- folds to no effect. A non-responsabile renounce is inside the
--- universal rejection class (see the R-45 section below).
+-- A renounce by the question's proposer validates (V-5); a renounce by any
+-- other responsabile is refused with `notProposer` (S-12), and a
+-- non-responsabile renounce is inside the universal rejection class (see
+-- the R-45 section below). The closure itself is witnessed in
+-- `Reactivegas.Lifecycle`.
 #guard
   validateVoteEvent legacyThreshold oneAdminView votePointState "a"
     (.renounce "q") == Except.ok ()
@@ -385,7 +386,9 @@ another question satisfies the premise; a target-ballot cast fails it.
 example : PreservesQuestionSemantics legacyThreshold threeAdminView
     r45Before "a" (.openQuestion "other" .collective) "q" := by decide
 
-example : PreservesQuestionSemantics legacyThreshold threeAdminView
+-- V-5: the proposer's renounce closes the target, so it does not preserve
+-- it. Replaces the superseded "renounce preserves the target" statement.
+example : ¬ PreservesQuestionSemantics legacyThreshold threeAdminView
     r45Before "a" (.renounce "q") "q" := by decide
 
 example : ¬ PreservesQuestionSemantics legacyThreshold threeAdminView

@@ -16,10 +16,12 @@ to be a current responsabile *in the canonical view* (R62-11). The franchise is
 read from `KelGroups.GroupState.members` through that view; this machine has no
 membership of its own to consult.
 
-`notDesignee` and `notProposer` are declared here from Slice A so Slice B
-(designee-only casting on permission questions, proposer-only renunciation)
-extends rather than redesigns the vocabulary; nothing in Slice A produces
-them yet.
+S-12 (#81): a `renounce` by a responsabile who is not the question's proposer
+is refused with `notProposer`, and a `cast` on a permission question by a
+responsabile who is not its designee is refused with `notDesignee`. The first
+error is the standing check, then the lookup, then the identity check
+(`notResponsabile`, `questionNotFound`, `notProposer`/`notDesignee`). This
+function is their sole producer.
 
 ## No membership event to authorize
 
@@ -60,13 +62,18 @@ def validateVoteEvent (threshold : Threshold) (view : GroupView) (gs : VoteState
       if !(isResponsabile signer view) then .error VoteError.notResponsabile
       else
         match lookupQuestion questionId gs with
-        | some _ => .ok ()
+        | some question =>
+            match question.kind with
+            | .collective => .ok ()
+            | .permission designee =>
+                if signer == designee then .ok () else .error VoteError.notDesignee
         | none => .error VoteError.questionNotFound
   | .renounce questionId =>
       if !(isResponsabile signer view) then .error VoteError.notResponsabile
       else
         match lookupQuestion questionId gs with
-        | some _ => .ok ()
+        | some question =>
+            if signer == question.proposer then .ok () else .error VoteError.notProposer
         | none => .error VoteError.questionNotFound
 
 end KelGroups.Vote

@@ -1,0 +1,7 @@
+# Changed data contracts
+
+D76-TARGET: closed economic authorization has exactly one consumer target: purchase collection c : CollId, or per-member backdonation share w : Int. It is bound while the underlying question is open, and immutable across closure/consumption; a caller cannot supply a new amount alongside an untyped question label.
+D76-ORIGIN: closure identity is linked to the actual vote-fold result in a production history, including actual question identity and verdict. Arbitrary pre-seeded State.votes.closed is not authoritative. Public theorem assumptions identify which initial payload/history is admitted and establish the origin invariant inductively or with equally explicit production evidence.
+D76-SPENT: each closure's spent status is part of authoritative state. A successful economic effect and its consumption agree; refusal leaves both unchanged. Fresh same-name questions cannot alias old authorizations.
+D76-ECON: balances, accepted/pending escrow, collection permission and comune equal-share arithmetic retain their existing rules. Negative permission refunds both escrow sets. Backdonation spends n*w, credits each member w, and keeps existing affordability/authorization guards subject to replacing the obsolete callback's vote authority.
+D76-BOUNDARY: productionWellFormed/boot/application input conditions expose any additional trusted-state restriction. Never present a theorem over arbitrary unrelated state and closure as provenance. Remaining abstract assumptions are named explicitly in downstream handoff.

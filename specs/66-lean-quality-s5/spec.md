@@ -1,0 +1,109 @@
+# #66 S5 — statement completeness of the Lean specification
+
+Issue: #66. Base: `d9a479c` (master after #81 refund on negative closure).
+S3 (merged in #98) published, per theorem, which production mutant breaks it.
+S5 acts on what that ledger and the inversion audit found: theorems whose
+statements are weaker than the behaviour they describe.
+
+Each slice below is its own pull request, in this order: exact inversions,
+observed refusals, question retention, statement triage, mirror auxiliaries,
+finite history.
+The sixth slice, finite-history correspondence, was released on 2026-11-10 after
+#75 landed the vote corpus (master `72bde8a`); it discharges ruling
+RG-S4-REACH-20260906 recorded on #66.
+
+## User stories
+
+- **exact-inversions-story** As a maintainer, every successful-step inversion
+  theorem states the complete guard and the exact successor of its event, and
+  the audit proves this for every event constructor the model has, not for a
+  hand-picked list, so adding an event or dropping a guard from a conclusion
+  fails CI.
+- **observed-refusals-story** As a maintainer, every refusal the model can
+  return is observed by some public statement, so weakening the guard that
+  emits it breaks a theorem.
+- **question-retention-story** As a maintainer, a vote question open before a
+  successful event is still open, or closed and kept in the closed record,
+  after it — on every route other than the proposer-departure closures #81
+  owns.
+- **statement-triage-story** As a maintainer, each theorem that no mutant of
+  its own statement closure can break is either strengthened until one can, or
+  carries a recorded reason why its weak statement is the intended one.
+- **mirror-auxiliaries-story** As a maintainer, the mirror checker ignores
+  compiler-generated auxiliary declarations by their kind, not by name
+  patterns, and a negative control shows it still fails on a real gap.
+- **finite-history-story** As a maintainer, a supplied finite history — an
+  initial aggregate and its stored steps, such as `lean/corpus/vote.json` — is
+  validated by a function whose acceptance is proved to mean that every stored
+  state is reachable by the production root from a guarded genesis, under the
+  threshold and authorization the history names, with refused steps leaving the
+  state unchanged; and the same holds for the fixed-view `Reach` predicate. No
+  function claims to decide reachability of a state given without its history.
+
+## Requirements
+
+| name | requirement |
+|---|---|
+| every-inversion-exact | For every `Reactivegas.Event` constructor, the inversion theorem the coverage audit binds to it has a conclusion that is sufficient for the successful step: the audit builds and proves the converse for each one. |
+| tightness-over-discovered-extent | The set of inversions held to the converse is the set the audit discovers from the elaborated environment (one per constructor). No hand list of names selects it. |
+| live-guard-conjuncts-stated | Every guard conjunct of a step branch appears in its inversion's conclusion; in particular `stalled s` being false for pledge, accept-pledge and close-purchase. Grant and deny, rewritten by #76, are held to the same converse. |
+| tightness-negative-control | `--negative-control` additionally shows the converse check fails when a conclusion omits a live guard conjunct, on a constructor the former hand list did not name. |
+| refusal-observed | Each of the six refusal constructors published as SURVIVED (`ProductionError.comuneReserved`; `ValidationError.bootstrapRequiresAdmin`, `memberNotFound`, `roleAddPrecondition`, `roleRemovePrecondition`, `invalidKey`) is the result of its entry point exactly when its guard fails, by a new theorem, so its guard mutant is KILLED; or the ledger records why no public statement can observe it. |
+| converse-control-rejects-for-its-reason | The converse negative control counts a weakened conclusion as rejected only when the converse proof fails because the omitted conjunct is missing. A weakened term that does not elaborate, or a proof that fails for another reason, is reported as a malformed control and fails the run. |
+| stall-guard-mutants | The mutant catalogue holds a mutant on the `stalled` guard of each of pledge, accept-pledge and close-purchase in `Step.lean`, and each kills that event's inversion in the ledger. |
+| question-retained | A new theorem: for every successful event at the production root (`Reactivegas.apply`, and the composition root's entry if it is a separate production path), every question id open in the state before is, in the state after, still open or named by a record in `VoteState.closed`. The theorem may cover the proposer-departure closures too; the theorems #81 owns for them are not changed. A route that drops a question is reported as a counterexample (event and state), not fixed. A mutant that drops a question on some route kills the theorem in the ledger. |
+| unconstrained-triaged | Every OPEN ledger row whose reason is `unconstrained` in the census taken at slice start (83 rows on `d51d473`) has exactly one disposition: KILLED by a single-atom mutant of its statement closure (a strengthened conclusion, or a mutant the catalogue lacked), or a recorded reason the weak statement is intended, stored in the ledger, rendered beside the row, and refused by the runner when empty. `masked` and `inexpressible` rows are published as they are. |
+| comune-reserved-second-site | `ProductionError.comuneReserved` emitted in the simulation machine builder of `Lifecycle.lean` is observed by a statement that a mutant of that site breaks, or its row records why no statement can observe it. |
+| bootstrap-refusal-stated | The unconditional `bootstrapRequiresAdmin` refusal of member removal and role changes in bootstrap mode is stated by a theorem that a mutant of that branch breaks, or its row records why not. |
+| ledger-wall-time-projected | Before the push, a timed local run of `just lean-mutants` at the hosted settings (`LEAN_NUM_THREADS=1`, `LEAN_MUTANTS_JOBS=3`) gives a per-mutant time and a projection of the hosted job. Over 110 minutes, the slice stops and asks before pushing. |
+| mirror-auxiliaries-by-kind | `scripts/check-lean-mirrors` excludes compiler-generated auxiliaries (`_sunfold`, `_unsafe_rec` and any declaration of their kind) by a property of the compiled declaration, never by a name pattern, and counts each exclusion in its receipt. A structurally recursive Prop-valued definition shows the gap before the change (its auxiliary is reported as an unmirrored predicate) and passes after; the checker's controls still fail on a real mirror gap, and a new control fails when the exclusion is widened to a user-written predicate. |
+| ledger-current | After each slice, `lean/REACTIVEGAS-MUTANTS.md` and `lean/KELGROUPS-MUTANTS.md` are re-derived and `just lean-mutants` passes on the pushed head. |
+
+## Fences
+
+- No change to the Lean model (`Types`, `State`, `Step`, `Predicates`,
+  `Lifecycle`, `Composition*` definitions, KelGroups definitions) or to
+  production Haskell.
+- No new antecedent on an existing theorem. A conclusion may be strengthened;
+  a hypothesis may not change. Every consumer of a strengthened theorem still
+  elaborates.
+- `docs/en/design` is written only by #71.
+- No existing statement is weakened.
+
+## Rejection behaviour
+
+- A conclusion missing a guard conjunct, or naming the wrong successor, fails
+  `just lean` with the theorem's name.
+- A ledger rendering that differs from the re-derived ledger fails
+  `just lean-mutants`.
+
+## Finite-history correspondence (slice 6, ruling RG-S4-REACH-20260906)
+
+Base: `72bde8a` (#75 vote corpus, #69 pledge control). The history validated is
+supplied, never searched for: validation of one history must never stand for
+deciding reachability of a state.
+
+| name | requirement |
+|---|---|
+| genesis-checked | The integrated validator accepts a history only when its initial aggregate is exactly the output of `Reactivegas.boot` on that aggregate's members and payload. Genesis is checked by the validator, never assumed by the theorem. Each of: `comuneId` among the members, a non-empty `live`, a non-empty `bindings`, a non-empty closed-vote record, a pending proposal, is rejected by a named negative control. |
+| validated-history-is-production-history | For every threshold `θ` and authorization `auth`, a history the validator accepts under `θ` and `auth` has every stored state (the initial one included) satisfying `ProductionHistory θ auth`. Proved over arbitrary `θ`, `auth`, initial aggregate and steps. |
+| refusal-preserves-state | In an accepted history, a step stored as refused has the stored state of its predecessor and `Reactivegas.apply θ auth` returns an error on that predecessor, signer and event; a step stored as accepted has exactly the state and base change `apply` returns. Both are conclusions of a theorem. |
+| production-history-has-validated-witness | Every aggregate satisfying `ProductionHistory θ auth` is the final state of some finite history (initial aggregate and signed events) that the validator accepts under `θ` and `auth`. |
+| fixed-view-history-reaches | For every view and authorization: a supplied history of `stepEvent` steps under that fixed view, whose initial state the validator checks is `State.empty` and whose view it checks does not contain `comuneId`, when accepted, has every applied post-state satisfying `Reach view auth`, and every refused step leaves the state unchanged with `stepEvent` returning `none`. Conversely every state satisfying `Reach view auth` is the final state of an accepted such history. A history with a non-empty initial state is rejected (negative control): `Trace.initial` may be arbitrary, `Reach.boot` may not. |
+| vote-corpus-validated | The bytes of `lean/corpus/vote.json` are accepted by the integrated validator under the threshold the table in `lean/corpus/vote.context.json` defines and the always-refuse authorization the sidecar names, in a hosted CI step. A planted post-state, a flipped `accepted`, and a non-genesis initial aggregate, each applied to those bytes, are rejected in the same step. |
+| validation-not-decision | No new definition takes a state without its history and returns whether it is reachable. Every new docstring calls the validator a validation of a supplied history. |
+| finite-history-ledger | Each new theorem is a row of the mutant ledger, KILLED or OPEN with its reason; `ledger-current` and `ledger-wall-time-projected` apply to this slice. |
+
+Fences for this slice, in addition to the S5 fences:
+
+- The bytes of `lean/corpus/*` do not change, and the vote corpus source-input
+  digest does not change: no file in the transitive import closure of
+  `Reactivegas.CorpusExport`, and none of `lean/lakefile.lean`,
+  `lean/lean-toolchain`, `lean/lake-manifest.json`, is edited.
+- No Lean file the simulator pins (`Types`, `State`, `Step`, `Predicates`,
+  `Invariants`, `Mirrors`, `Composition`, `CompositionRoot`) is edited, and no
+  simulator file is edited (#70 runs in parallel on the simulator).
+- Not in this slice: a bridge from integrated histories to the fixed-view
+  `Reach` (an integrated history can change the view); a decision procedure
+  for reachability; sidecars for the economic or integrated corpora;
+  `docs/en/design` (#71).

@@ -173,10 +173,12 @@ def additiveUmbrellaExports : List String :=
   umbrellaImports.filter (fun m => !baseUmbrellaImports.contains m)
 
 /-- The umbrella's additive export is `Reactivegas.Trace` plus the #54
-`Reactivegas.Composition` module, it still carries every base module, and
-nothing production-facing imports the test module. -/
+`Reactivegas.Composition` module and the #81 `Reactivegas.Lifecycle` witnesses,
+it still carries every base module, and nothing production-facing imports the
+test module. -/
 def checkImportGraph : Bool :=
-  additiveUmbrellaExports == ["Reactivegas.Trace", "Reactivegas.Composition"] &&
+  additiveUmbrellaExports ==
+      ["Reactivegas.Trace", "Reactivegas.Composition", "Reactivegas.Lifecycle"] &&
     baseUmbrellaImports.all (fun m => umbrellaImports.contains m) &&
     !umbrellaImports.contains "Reactivegas.TraceTests" &&
     traceTestsImporters.isEmpty
@@ -561,9 +563,9 @@ def acceptedOnlyDonation : Trace :=
     [ .deposit "2" "1" 40
     , .deposit "1" "3" 100
     , .openPurchase "2" 7
-    , .pledge "2" "3" 7 50
+    , .pledge "3" "3" 7 50
     , .acceptPledge "2" "3" 7
-    , .pledge "2" "1" 7 20
+    , .pledge "1" "1" 7 20
     , .acceptPledge "2" "1" 7
     , .donate "1" 10 ] seedAuth
 
@@ -572,9 +574,9 @@ def acceptedOnlyDeny : Trace :=
     [ .deposit "1" "2" 100
     , .deposit "1" "3" 80
     , .openPurchase "1" 4
-    , .pledge "1" "2" 4 60
+    , .pledge "2" "2" 4 60
     , .acceptPledge "1" "2" 4
-    , .pledge "1" "3" 4 30
+    , .pledge "3" "3" 4 30
     , .acceptPledge "1" "3" 4
     , .withdraw "1" "2" 999
     , .denyPermission "1" 4 ] seedAuth
@@ -924,9 +926,6 @@ def checkI57NoStale : Bool := Reactivegas.checkI57NoStale
 def checkI57Franchise : Bool := Reactivegas.checkI57Franchise
 def checkI57PolicyFree : Bool := Reactivegas.checkI57PolicyFree
 def checkI57NoExpiry : Bool := Reactivegas.checkI57NoExpiry
-def checkI57Trust : Bool := Reactivegas.checkI57Trust
-def checkI57Direction : Bool := Reactivegas.checkI57Direction
-def checkI57Toolchain : Bool := Reactivegas.checkI57Toolchain
 
 theorem base_departure_applies_cleanup : checkBaseCleanupReachable = true :=
   Reactivegas.base_departure_applies_cleanup

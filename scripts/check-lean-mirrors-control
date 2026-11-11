@@ -1,0 +1,317 @@
+#!/usr/bin/env bash
+# scripts/check-lean-mirrors-control — negative controls for
+# scripts/check-lean-mirrors, run by `just lean`.
+#
+# The working-tree checker is executed as a black box inside scratch copies of
+# the repository (tracked `lean/` and `scripts/lake-roots/` sources plus their
+# existing `.lake` build directories), each copy carrying exactly one mutation.
+# Every leg must make the checker exit non-zero for the named reason:
+#
+#   reach            two newly registered `lean_lib` roots plus two
+#                    undeclared, unimported tracked modules: the checker must name
+#                    exactly the two undeclared modules as reach gaps and neither
+#                    registered root. A checker that imports every tracked module,
+#                    or that ignores evaluated roots, fails this leg.
+#   tool-input       the root-evaluation tool's source is missing
+#   tool-build       the root-evaluation tool does not compile
+#   roots-eval       the workspace lakefile does not elaborate
+#   toolchain        `lean/lean-toolchain` names a Lean other than the running one
+#   roots-empty      the workspace package declares no library or executable
+#   root-build       a registered root imports a module that does not exist
+#   second-exe       a second `lean_exe` root defining `main`: a known limit. It
+#                    must fail through Lean's duplicate-declaration import error
+#                    naming the new root module (every exe root declares `main`,
+#                    and the driver shares one environment with corpusExport's).
+#   exception-deleted the `Reactivegas.ProductionHistory` exception is removed
+#                    from the checker: it must report that predicate uncovered.
+#   aux-excluded     a structurally recursive and a well-founded Prop-valued
+#                    definition with no mirror: the checker must report both
+#                    definitions uncovered, report none of the `_sunfold` /
+#                    `_unsafe_rec` auxiliaries Lean generates for them, name each
+#                    exclusion with its rule in the log and count them in the
+#                    summary line.
+#   aux-user-written user-written, unmirrored predicates that only look like
+#                    auxiliaries (a plain `def X._sunfold`, a plain
+#                    `def X._unsafe_rec`, an `unsafe def`): the checker must
+#                    report every one uncovered and exclude none.
+#   aux-widened-*    the exclusion rule in a copy of the checker is widened until
+#                    it swallows one of those user-written predicates (any safety
+#                    but safe; the smart-unfolding test replaced by a name suffix;
+#                    the partial-safety test replaced by a name suffix): the
+#                    assertions of aux-user-written must then fail on exactly the
+#                    missing report of that predicate, and the log must show the
+#                    rule that fired.
+#
+# Legs other than reach must not report a reach gap. A checker disabled to exit 0
+# fails every leg. Exit 0 with MIRROR-CONTROL-OK iff every leg holds.
+set -euo pipefail
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd "$HERE/.." && pwd)"
+SCRATCH="$(mktemp -d "${TMPDIR:-/tmp}/lean-mirrors-control.XXXXXX")"
+trap 'rm -rf "$SCRATCH"' EXIT
+
+BASE="$SCRATCH/base"
+mkdir -p "$BASE/scripts"
+cp -a "$HERE/check-lean-mirrors" "$BASE/scripts/"
+(cd "$ROOT" && git ls-files -z -- lean scripts/lake-roots | xargs -0 cp -a --parents -t "$BASE")
+for build in lean/.lake scripts/lake-roots/.lake; do
+  if [ -d "$ROOT/$build" ]; then mkdir -p "$(dirname "$BASE/$build")" && cp -a --reflink=auto "$ROOT/$build" "$BASE/$build"; fi
+done
+printf '.lake/\n' > "$BASE/.gitignore"
+git -C "$BASE" init -q
+git -C "$BASE" add -A
+want=$(git -C "$ROOT" ls-files -- lean | grep -c '\.lean$' || true)
+got=$(git -C "$BASE" ls-files -- lean | grep -c '\.lean$' || true)
+if [ "$want" -eq 0 ] || [ "$want" -ne "$got" ]; then
+  printf 'MIRROR-CONTROL-SETUP-FAILED scratch tracked lean sources=%s, repository=%s\n' "$got" "$want" >&2
+  exit 1
+fi
+
+failed=0
+legs=0
+LEG_DIR=
+LEG_OUT=
+new_leg() {
+  LEG_DIR="$SCRATCH/$1"
+  LEG_OUT="$SCRATCH/$1.log"
+  cp -a --reflink=auto "$BASE" "$LEG_DIR"
+}
+module_of() {
+  local rel=${1#lean/}
+  printf '%s\n' "${rel%.lean}" | tr '/' '.'
+}
+words() { printf '%s' "$1" | paste -sd' ' -; }
+# leg_reason <leg> <pattern>... — runs the leg's checker and sets LEG_RC and
+# REASON (empty when the leg holds). The checker must exit non-zero and never
+# report success. A pattern must appear in its output; a pattern written !ERE
+# must not. The reach leg must report exactly the expected reach gaps; every
+# other leg must report none.
+leg_reason() {
+  local leg=$1 pattern reported
+  shift
+  git -C "$LEG_DIR" add -A
+  set +e
+  "$LEG_DIR/scripts/check-lean-mirrors" > "$LEG_OUT" 2>&1
+  LEG_RC=$?
+  set -e
+  REASON=
+  UNEXPECTED=
+  if [ "$LEG_RC" -eq 0 ]; then REASON="checker exited 0"; fi
+  if grep -q 'MIRROR-CHECK-OK' "$LEG_OUT"; then REASON="${REASON:+$REASON; }checker reported MIRROR-CHECK-OK"; fi
+  for pattern in "$@"; do
+    case $pattern in
+      '!'*) if grep -Eq -- "${pattern#!}" "$LEG_OUT"; then REASON="${REASON:+$REASON; }unexpected /${pattern#!}/"; UNEXPECTED="${UNEXPECTED}$(grep -E -- "${pattern#!}" "$LEG_OUT" | head -n 5)"$'\n'; fi ;;
+      *) grep -Eq -- "$pattern" "$LEG_OUT" || REASON="${REASON:+$REASON; }missing /$pattern/" ;;
+    esac
+  done
+  reported=$(sed -n 's/.*MIRROR-IMPORT-REACH-GAP \([^ ]*\).*/\1/p' "$LEG_OUT" | sort -u)
+  if [ "$leg" = reach ]; then
+    if [ "$reported" != "$expected" ]; then
+      REASON="${REASON:+$REASON; }reach gaps reported [$(words "$reported")], expected exactly [$(words "$expected")]"
+    fi
+  elif [ -n "$reported" ]; then
+    REASON="${REASON:+$REASON; }setup failure reported as reach gap [$(words "$reported")]"
+  fi
+}
+leg_failed() {
+  printf 'MIRROR-CONTROL-FAILED %s exit=%s: %s\n' "$1" "$LEG_RC" "$2" >&2
+  if [ -n "${UNEXPECTED:-}" ]; then printf "%s" "$UNEXPECTED" | sed "s/^/  $1| UNEXPECTED: /" >&2; fi
+  tail -n 40 "$LEG_OUT" | sed "s/^/  $1| /" >&2
+  failed=1
+}
+# run_leg <leg> <pattern>... — the checker must fail the leg's way (leg_reason).
+run_leg() {
+  local leg=$1
+  legs=$((legs + 1))
+  leg_reason "$@"
+  if [ -n "$REASON" ]; then leg_failed "$leg" "$REASON"; return 0; fi
+  printf 'MIRROR-CONTROL %s OK exit=%s\n' "$leg" "$LEG_RC"
+}
+# run_leg_swallowed <leg> <fired ERE> <pattern>... — the widened checker must
+# fail the assertions of the unwidened leg by missing exactly each predicate in
+# SWALLOWED (a name in AuxLookalike), and its log must show the rule that fired.
+run_leg_swallowed() {
+  local leg=$1 fired=$2 gap
+  shift 2
+  legs=$((legs + 1))
+  leg_reason "$leg" "$@"
+  for gap in "${SWALLOWED[@]}"; do
+    case $REASON in
+      *"missing /MIRROR-UNCOVERED AuxLookalike :: $gap/"*) ;;
+      *) leg_failed "$leg" "widened checker was not rejected for $gap: [$REASON]"; return 0 ;;
+    esac
+  done
+  if ! grep -Eq -- "$fired" "$LEG_OUT"; then
+    leg_failed "$leg" "the log does not show the rule that fired /$fired/"
+    return 0
+  fi
+  printf 'MIRROR-CONTROL %s OK swallowed=%s\n' "$leg" "${SWALLOWED[*]}"
+}
+
+# reach
+new_leg reach
+cat >> "$LEG_DIR/lean/lakefile.lean" <<'LAKE_EOF'
+
+lean_lib ReachControlLib where
+  srcDir := "."
+
+lean_lib ReachControlNested where
+  srcDir := "."
+  roots := #[`ReachControl.Nested]
+LAKE_EOF
+mkdir -p "$LEG_DIR/lean/ReachControl"
+printf 'def reachControlLib : Nat := 0\n' > "$LEG_DIR/lean/ReachControlLib.lean"
+printf 'def reachControlNested : Nat := 0\n' > "$LEG_DIR/lean/ReachControl/Nested.lean"
+strays=(lean/ReachControlStray.lean lean/Reactivegas/ReachControlStray.lean)
+for f in "${strays[@]}"; do printf 'def %s.marker : Nat := 0\n' "$(module_of "$f")" > "$LEG_DIR/$f"; done
+expected=$(for f in "${strays[@]}"; do module_of "$f"; done | sort)
+run_leg reach 'MIRROR-IMPORT-REACH-GAP'
+
+# tool-input
+new_leg tool-input
+rm -f "$LEG_DIR/scripts/lake-roots/Main.lean"
+run_leg tool-input 'MIRROR-LAKE-TOOL-INPUT-MISSING .*scripts/lake-roots/Main\.lean'
+
+# tool-build
+new_leg tool-build
+mkdir -p "$LEG_DIR/scripts/lake-roots"
+printf 'def main : IO Unit := (\n' > "$LEG_DIR/scripts/lake-roots/Main.lean"
+run_leg tool-build 'MIRROR-LAKE-TOOL-BUILD-FAILED'
+
+# roots-eval
+new_leg roots-eval
+printf '\nthis is not a lakefile command\n' >> "$LEG_DIR/lean/lakefile.lean"
+run_leg roots-eval 'LAKE-ROOTS-WORKSPACE-FAILED' 'MIRROR-LAKE-ROOTS-EVAL-FAILED'
+
+# toolchain
+new_leg toolchain
+printf 'leanprover/lean4:v0.0.0-control\n' > "$LEG_DIR/lean/lean-toolchain"
+run_leg toolchain 'LAKE-ROOTS-TOOLCHAIN-MISMATCH .*v0\.0\.0-control' 'MIRROR-LAKE-ROOTS-EVAL-FAILED'
+
+# roots-empty
+new_leg roots-empty
+printf 'import Lake\nopen Lake DSL\n\npackage reactivegas\n' > "$LEG_DIR/lean/lakefile.lean"
+run_leg roots-empty 'MIRROR-LAKE-ROOTS-EMPTY'
+
+# root-build
+new_leg root-build
+printf '\nlean_lib ReachControlBadImport where\n  srcDir := "."\n' >> "$LEG_DIR/lean/lakefile.lean"
+printf 'import ReachControlNoSuchModule\n' > "$LEG_DIR/lean/ReachControlBadImport.lean"
+run_leg root-build 'MIRROR-LAKE-ROOT-BUILD-FAILED' 'ReachControlNoSuchModule'
+
+# second-exe
+new_leg second-exe
+printf '\nlean_exe reachControlExe where\n  root := `ReachControlExe\n' >> "$LEG_DIR/lean/lakefile.lean"
+printf 'def main : IO Unit := pure ()\n' > "$LEG_DIR/lean/ReachControlExe.lean"
+run_leg second-exe "import $(module_of lean/ReachControlExe.lean) failed, environment already contains 'main'"
+
+# exception-deleted
+new_leg exception-deleted
+sed -i -e 's/"Reach",$/"Reach"]/' -e '/^    "Reactivegas\.ProductionHistory"\]$/d' "$LEG_DIR/scripts/check-lean-mirrors"
+if grep -q '"Reactivegas\.ProductionHistory"' "$LEG_DIR/scripts/check-lean-mirrors" \
+    || cmp -s "$BASE/scripts/check-lean-mirrors" "$LEG_DIR/scripts/check-lean-mirrors"; then
+  printf 'MIRROR-CONTROL-FAILED exception-deleted: mutation did not apply\n' >&2
+  failed=1
+else
+  run_leg exception-deleted 'MIRROR-UNCOVERED .*Reactivegas\.ProductionHistory'
+fi
+
+# Compiler auxiliaries. Both fixtures are registered as their own library in
+# the scratch lakefile, like the reach legs: the repository carries no fixture.
+add_fixture_lib() { # <module>
+  printf '\nlean_lib %s where\n  srcDir := "."\n' "$1" >> "$LEG_DIR/lean/lakefile.lean"
+}
+# aux-excluded: Lean generates `recStruct._sunfold` (smart-unfolding body of a
+# structural definition) and `_unsafe_rec` (partial-safety implementation of a
+# structural or well-founded one) as further Prop-valued definitions. The
+# definitions themselves stay uncovered; their auxiliaries are excluded by what
+# Lean recorded about them, each named with its rule.
+new_leg aux-excluded
+add_fixture_lib AuxControl
+cat > "$LEG_DIR/lean/AuxControl.lean" <<'LEAN_EOF'
+namespace AuxControl
+
+def recStruct : Nat → Prop
+  | 0 => True
+  | n + 1 => ¬ recStruct n
+
+def recWf (n : Nat) : Prop :=
+  if h : n = 0 then True else recWf (n / 2)
+termination_by n
+decreasing_by omega
+
+end AuxControl
+LEAN_EOF
+run_leg aux-excluded \
+  'MIRROR-UNCOVERED AuxControl :: AuxControl\.recStruct$' \
+  'MIRROR-UNCOVERED AuxControl :: AuxControl\.recWf$' \
+  '!MIRROR-UNCOVERED .*(_sunfold|_unsafe_rec)' \
+  'MIRROR-AUX-EXCLUDED AuxControl\.recStruct\._sunfold rule=smart-unfolding-annotation$' \
+  'MIRROR-AUX-EXCLUDED AuxControl\.recStruct\._unsafe_rec rule=partial-safety$' \
+  'MIRROR-AUX-EXCLUDED AuxControl\.recWf\._unsafe_rec rule=partial-safety$' \
+  'MIRROR-SUMMARY .*aux-excluded=[1-9][0-9]*'
+
+# aux-user-written: predicates a person wrote that merely look like compiler
+# auxiliaries. None may be excluded: the rule reads the compiled declaration,
+# not its name.
+LOOKALIKE_PATTERNS=(
+  'MIRROR-UNCOVERED AuxLookalike :: AuxLookalike\.userMatch$'
+  'MIRROR-UNCOVERED AuxLookalike :: AuxLookalike\.userMatch\._sunfold$'
+  'MIRROR-UNCOVERED AuxLookalike :: AuxLookalike\.userMatch\._unsafe_rec$'
+  'MIRROR-UNCOVERED AuxLookalike :: AuxLookalike\.userUnsafe$'
+  '!MIRROR-AUX-EXCLUDED AuxLookalike')
+add_lookalike() {
+  add_fixture_lib AuxLookalike
+  cat > "$LEG_DIR/lean/AuxLookalike.lean" <<'LEAN_EOF'
+namespace AuxLookalike
+
+def userMatch : Nat → Prop
+  | 0 => True
+  | _ => False
+
+def userMatch._sunfold : Prop := True
+
+def userMatch._unsafe_rec : Prop := True
+
+unsafe def userUnsafe : Prop := True
+
+end AuxLookalike
+LEAN_EOF
+}
+new_leg aux-user-written
+add_lookalike
+run_leg aux-user-written "${LOOKALIKE_PATTERNS[@]}"
+
+# aux-widened-*: the exclusion widened in a copy of the checker. Each mutation
+# must apply, and the unwidened assertions must then fail on exactly the
+# predicate it swallows, with the log naming the rule that fired.
+widened_leg() { # <leg> <sed expression> <fired ERE> <swallowed ERE>...
+  local leg=$1 expr=$2 fired=$3
+  shift 3
+  new_leg "$leg"
+  add_lookalike
+  sed -i -e "$expr" "$LEG_DIR/scripts/check-lean-mirrors"
+  if cmp -s "$BASE/scripts/check-lean-mirrors" "$LEG_DIR/scripts/check-lean-mirrors"; then
+    printf 'MIRROR-CONTROL-FAILED %s: mutation did not apply\n' "$leg" >&2
+    failed=1
+    legs=$((legs + 1))
+    return 0
+  fi
+  SWALLOWED=("$@")
+  run_leg_swallowed "$leg" "$fired" "${LOOKALIKE_PATTERNS[@]}"
+}
+widened_leg aux-widened-safety 's/d\.safety == \.partial/d.safety != .safe/' \
+  'MIRROR-AUX-EXCLUDED AuxLookalike\.userUnsafe rule=partial-safety$' \
+  'AuxLookalike\.userUnsafe$'
+widened_leg aux-widened-sunfold-name 's/s4bHasSmartUnfolding d\.value/(toString n).endsWith "_sunfold"/' \
+  'MIRROR-AUX-EXCLUDED AuxLookalike\.userMatch\._sunfold rule=smart-unfolding-annotation$' \
+  'AuxLookalike\.userMatch\._sunfold$'
+widened_leg aux-widened-unsafe-rec-name 's/d\.safety == \.partial/(toString n).endsWith "_unsafe_rec"/' \
+  'MIRROR-AUX-EXCLUDED AuxLookalike\.userMatch\._unsafe_rec rule=partial-safety$' \
+  'AuxLookalike\.userMatch\._unsafe_rec$'
+
+if [ "$failed" -ne 0 ]; then
+  echo 'MIRROR-CONTROL-FAILED' >&2
+  exit 1
+fi
+echo "MIRROR-CONTROL-OK legs=$legs reach-gaps=$(words "$expected")"

@@ -4,7 +4,7 @@ import Reactivegas.Step
 # The law predicates
 
 One predicate per documented law (issue #45); the prose record in
-`docs/design/state-machine.md` references these names. The issue #48
+`docs/en/design/state-machine.md` references these names. The issue #48
 economic amendment adds the comune-membership law, the stall, and the
 group-closure guard facts.
 
@@ -68,18 +68,22 @@ def doubleEntry (s s' : State) (a u : KelGroups.Key) (v : Int) : Prop :=
   bal s'.conti u = bal s.conti u + v ∧ bal s'.casse a = bal s.casse a + v
 
 /-- **AUTH**: every declaration is signed by a current responsabile of
-the canonical view. Exhaustive over the fourteen-constructor `Event`
-vocabulary, which no longer contains a membership or role constructor
-to name an author for. -/
+the canonical view, except the two a member signs for their own pledge:
+a pledge is signed by its owner, and a correction by its owner or a
+responsabile (the referente, once the pledge is accepted). Exhaustive over
+the fourteen-constructor `Event` vocabulary, which no longer contains a
+membership or role constructor to name an author for. -/
 def authorizedStep (view : KelGroups.GroupView) (_s : State) (e : Event)
     (_s' : State) : Prop :=
   match e with
   | .openPurchase a _ | .grantPermission a _
   | .denyPermission a _ | .donate a _ | .backdonate a _
   | .deposit a _ _ | .withdraw a _ _ | .transferCassa a _ _
-  | .pledge a _ _ _ | .acceptPledge a _ _ | .refusePledge a _ _
-  | .correctPledge a _ _ _ | .closePurchase a _ | .failPurchase a _ =>
+  | .acceptPledge a _ _ | .refusePledge a _ _
+  | .closePurchase a _ | .failPurchase a _ =>
     isResponsabile view a
+  | .pledge a u _ _ => a = u
+  | .correctPledge a u _ _ => isResponsabile view a = true ∨ a = u
 
 /-- **Group closure — ruled guard facts only** (issue #48). -/
 def canCloseGroup (view : KelGroups.GroupView) (s : State) : Prop :=

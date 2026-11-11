@@ -152,11 +152,11 @@ private theorem sumBal_foldl_bump :
 
 /-- Decompose the pledge guard into its conjuncts. -/
 theorem pledge_guard_inv {s : State} {a u : KelGroups.Key} {col : Collection} {v : Int}
-    (h : (isResponsabile view a && KelGroups.GroupView.isMember u view &&
+    (h : (a == u && KelGroups.GroupView.isMember u view &&
       !(col.accepted.any (fun p => p.user == u)) &&
       !(col.pending.any (fun p => p.user == u)) &&
       decide (0 < v) && decide (bal s.conti u ≥ v)) = true) :
-    isResponsabile view a = true ∧ KelGroups.GroupView.isMember u view = true ∧
+    a = u ∧ KelGroups.GroupView.isMember u view = true ∧
       col.accepted.any (fun p => p.user == u) = false ∧
       col.pending.any (fun p => p.user == u) = false ∧
       0 < v ∧ bal s.conti u ≥ v := by
@@ -165,7 +165,7 @@ theorem pledge_guard_inv {s : State} {a u : KelGroups.Key} {col : Collection} {v
   have hn2 := bool_and_right (bool_and_left (bool_and_left h))
   have hn1 := bool_and_right (bool_and_left (bool_and_left (bool_and_left h)))
   have hAB := bool_and_left (bool_and_left (bool_and_left (bool_and_left h)))
-  exact ⟨bool_and_left hAB, bool_and_right hAB, bool_not_true hn1, bool_not_true hn2,
+  exact ⟨beq_iff_eq.mp (bool_and_left hAB), bool_and_right hAB, bool_not_true hn1, bool_not_true hn2,
     decide_eq_true_iff.mp hv1, decide_eq_true_iff.mp hv2⟩
 
 /-- Decompose the accept/refuse/correct guard. -/
@@ -228,19 +228,21 @@ theorem step_pledge_inv {s s' : State} {a u : KelGroups.Key} {c : CollId} {v : I
     (hstep : stepEvent view s (.pledge a u c v) auth = some s') :
     ∃ col rest,
       pullCollection c s.collections = some (col, rest) ∧
-      (isResponsabile view a && KelGroups.GroupView.isMember u view &&
+      (a == u && KelGroups.GroupView.isMember u view &&
           !(col.accepted.any (fun p => p.user == u)) &&
           !(col.pending.any (fun p => p.user == u)) &&
           decide (0 < v) && decide (bal s.conti u ≥ v)) =
         true ∧
+      ¬ stalled s ∧
       s' = { s with
         conti := bump s.conti u (-v),
         collections := { col with pending := ⟨u, v⟩ :: col.pending } :: rest } := by
   obtain ⟨w1, hw1, hw2⟩ := option_bind_inv hstep
   obtain ⟨col, rest⟩ := w1
   obtain ⟨_, hdem, hx⟩ := option_bind_inv hw2
-  refine ⟨col, rest, hw1, ?_, ?_⟩
+  refine ⟨col, rest, hw1, ?_, ?_, ?_⟩
   · exact bool_and_left (demand_eq_true_of_some hdem)
+  · simpa using bool_and_right (demand_eq_true_of_some hdem)
   · simp only [pure, Option.some.injEq] at hx
     exact hx.symm
 
@@ -250,6 +252,7 @@ theorem step_accept_inv {s s' : State} {a u : KelGroups.Key} {c : CollId}
       pullCollection c s.collections = some (col, rest) ∧
       splitUser u col.pending = some (v, pend') ∧
       (isResponsabile view a && col.referente == a) = true ∧
+      ¬ stalled s ∧
       s' = { s with collections :=
         { col with pending := pend', accepted := ⟨u, v⟩ :: col.accepted } :: rest } := by
   obtain ⟨w1, hw1, hw2⟩ := option_bind_inv hstep
@@ -257,8 +260,9 @@ theorem step_accept_inv {s s' : State} {a u : KelGroups.Key} {c : CollId}
   obtain ⟨w2, hw3, hw4⟩ := option_bind_inv hw2
   obtain ⟨v, pend'⟩ := w2
   obtain ⟨_, hdem, hx⟩ := option_bind_inv hw4
-  refine ⟨col, rest, v, pend', hw1, hw3, ?_, ?_⟩
+  refine ⟨col, rest, v, pend', hw1, hw3, ?_, ?_, ?_⟩
   · exact bool_and_left (demand_eq_true_of_some hdem)
+  · simpa using bool_and_right (demand_eq_true_of_some hdem)
   · simp only [pure, Option.some.injEq] at hx
     exact hx.symm
 
@@ -281,7 +285,59 @@ theorem step_refuse_inv {s s' : State} {a u : KelGroups.Key} {c : CollId}
   · simp only [pure, Option.some.injEq] at hx
     exact hx.symm
 
+/-- A successful correction is in exactly one of two regimes, decided by the
+accepted list first: the pledge of `u` is accepted (the referente corrects it),
+or `u` has no accepted row and the pending pledge of `u` is corrected by its
+owner, a zero correction removing the row. -/
+theorem step_correct_cases {s s' : State} {a u : KelGroups.Key} {c : CollId} {v' : Int}
+    (hstep : stepEvent view s (.correctPledge a u c v') auth = some s') :
+    (∃ col rest v acc',
+      pullCollection c s.collections = some (col, rest) ∧
+      splitUser u col.accepted = some (v, acc') ∧
+      (isResponsabile view a && col.referente == a &&
+          decide (0 ≤ v') && decide (bal s.conti u + (v - v') ≥ 0)) =
+        true ∧
+      s' = { s with
+        conti := bump s.conti u (v - v'),
+        collections := { col with accepted := ⟨u, v'⟩ :: acc' } :: rest }) ∨
+    (∃ col rest v pend',
+      pullCollection c s.collections = some (col, rest) ∧
+      splitUser u col.accepted = none ∧
+      splitUser u col.pending = some (v, pend') ∧
+      (a == u && decide (0 ≤ v') && decide (bal s.conti u + (v - v') ≥ 0)) = true ∧
+      s' = { s with
+        conti := bump s.conti u (v - v'),
+        collections :=
+          { col with pending := if v' = 0 then pend' else ⟨u, v'⟩ :: pend' } :: rest }) := by
+  obtain ⟨w1, hw1, hw2⟩ := option_bind_inv hstep
+  obtain ⟨col, rest⟩ := w1
+  cases hsp : splitUser u col.accepted with
+  | some w =>
+    obtain ⟨v, acc'⟩ := w
+    simp only [hsp] at hw2
+    obtain ⟨_, hdem, hx⟩ := option_bind_inv hw2
+    left
+    refine ⟨col, rest, v, acc', hw1, hsp, ?_, ?_⟩
+    · exact demand_eq_true_of_some hdem
+    · simp only [pure, Option.some.injEq] at hx
+      exact hx.symm
+  | none =>
+    simp only [hsp] at hw2
+    obtain ⟨w2, hw3, hw4⟩ := option_bind_inv hw2
+    obtain ⟨v, pend'⟩ := w2
+    obtain ⟨_, hdem, hx⟩ := option_bind_inv hw4
+    right
+    refine ⟨col, rest, v, pend', hw1, hsp, hw3, ?_, ?_⟩
+    · exact demand_eq_true_of_some hdem
+    · simp only [pure, Option.some.injEq] at hx
+      exact hx.symm
+
+/-- Inversion of a successful correction of an accepted pledge (the regime the
+hypothesis `hacc` names): the referente's correction, exactly the effect of
+the base arm. -/
 theorem step_correct_inv {s s' : State} {a u : KelGroups.Key} {c : CollId} {v' : Int}
+    (hacc : ∀ col rest, pullCollection c s.collections = some (col, rest) →
+      ∃ w, splitUser u col.accepted = some w)
     (hstep : stepEvent view s (.correctPledge a u c v') auth = some s') :
     ∃ col rest v acc',
       pullCollection c s.collections = some (col, rest) ∧
@@ -294,13 +350,35 @@ theorem step_correct_inv {s s' : State} {a u : KelGroups.Key} {c : CollId} {v' :
         collections := { col with accepted := ⟨u, v'⟩ :: acc' } :: rest } := by
   obtain ⟨w1, hw1, hw2⟩ := option_bind_inv hstep
   obtain ⟨col, rest⟩ := w1
-  obtain ⟨w2, hw3, hw4⟩ := option_bind_inv hw2
-  obtain ⟨v, acc'⟩ := w2
-  obtain ⟨_, hdem, hx⟩ := option_bind_inv hw4
-  refine ⟨col, rest, v, acc', hw1, hw3, ?_, ?_⟩
+  obtain ⟨⟨v, acc'⟩, hsp⟩ := hacc col rest hw1
+  simp only [hsp] at hw2
+  obtain ⟨_, hdem, hx⟩ := option_bind_inv hw2
+  refine ⟨col, rest, v, acc', hw1, hsp, ?_, ?_⟩
   · exact demand_eq_true_of_some hdem
   · simp only [pure, Option.some.injEq] at hx
     exact hx.symm
+
+/-- Inversion of a successful correction of a pledge that is not accepted (the
+regime the hypothesis `hno` names): the pledge is pending, its owner signs, and
+the pending row is replaced, or removed by a zero correction; the accepted list
+is untouched. -/
+theorem pending_correction_effect {s s' : State} {a u : KelGroups.Key} {c : CollId}
+    {v' : Int}
+    (hno : ∀ col rest, pullCollection c s.collections = some (col, rest) →
+      splitUser u col.accepted = none)
+    (hstep : stepEvent view s (.correctPledge a u c v') auth = some s') :
+    ∃ col rest v pend',
+      pullCollection c s.collections = some (col, rest) ∧
+      splitUser u col.pending = some (v, pend') ∧
+      (a == u && decide (0 ≤ v') && decide (bal s.conti u + (v - v') ≥ 0)) = true ∧
+      s' = { s with
+        conti := bump s.conti u (v - v'),
+        collections :=
+          { col with pending := if v' = 0 then pend' else ⟨u, v'⟩ :: pend' } :: rest } := by
+  rcases step_correct_cases hstep with ⟨col, rest, v, acc', hpull, hsp, _⟩ | ⟨col, rest, v, pend', hpull, _, hsp, hg, hs'⟩
+  · rw [hno col rest hpull] at hsp
+    exact Option.noConfusion hsp
+  · exact ⟨col, rest, v, pend', hpull, hsp, hg, hs'⟩
 
 theorem step_close_inv {s s' : State} {a : KelGroups.Key} {c : CollId}
     (hstep : stepEvent view s (.closePurchase a c) auth = some s') :
@@ -308,14 +386,16 @@ theorem step_close_inv {s s' : State} {a : KelGroups.Key} {c : CollId}
       pullCollection c s.collections = some (col, rest) ∧
       (isResponsabile view a && col.referente == a && col.permitted &&
         col.pending.isEmpty) = true ∧
+      ¬ stalled s ∧
       s' = { s with
         casse := bump s.casse col.referente (-(sumPledges col.accepted)),
         collections := rest } := by
   obtain ⟨w1, hw1, hw2⟩ := option_bind_inv hstep
   obtain ⟨col, rest⟩ := w1
   obtain ⟨_, hdem, hx⟩ := option_bind_inv hw2
-  refine ⟨col, rest, hw1, ?_, ?_⟩
+  refine ⟨col, rest, hw1, ?_, ?_, ?_⟩
   · exact bool_and_left (demand_eq_true_of_some hdem)
+  · simpa using bool_and_right (demand_eq_true_of_some hdem)
   · simp only [pure, Option.some.injEq] at hx
     exact hx.symm
 
@@ -484,7 +564,7 @@ theorem conservation_preserved {s s' : State} {e : Event}
       omega
     · exact Option.noConfusion hstep
   | pledge a u c v =>
-    obtain ⟨col, rest, hpull, _, hs'⟩ := step_pledge_inv hstep
+    obtain ⟨col, rest, hpull, _, _, hs'⟩ := step_pledge_inv hstep
     subst hs'
     simp only [conservation] at hcon ⊢
     rw [bump_sum, escrowSum_cons]
@@ -492,7 +572,7 @@ theorem conservation_preserved {s s' : State} {e : Event}
     simp only [escrowOf, sumPledges] at hps ⊢
     omega
   | acceptPledge a u c =>
-    obtain ⟨col, rest, v, pend', hpull, hspl, _, hs'⟩ := step_accept_inv hstep
+    obtain ⟨col, rest, v, pend', hpull, hspl, _, _, hs'⟩ := step_accept_inv hstep
     subst hs'
     simp only [conservation] at hcon ⊢
     rw [escrowSum_cons]
@@ -510,16 +590,27 @@ theorem conservation_preserved {s s' : State} {e : Event}
     simp only [escrowOf] at hps ⊢
     omega
   | correctPledge a u c v' =>
-    obtain ⟨col, rest, v, acc', hpull, hspl, _, hs'⟩ := step_correct_inv hstep
-    subst hs'
-    simp only [conservation] at hcon ⊢
-    rw [bump_sum, escrowSum_cons]
-    have hps := pullCollection_sum hpull
-    have hsm := splitUser_sum hspl
-    simp only [escrowOf, sumPledges] at hps ⊢
-    omega
+    rcases step_correct_cases hstep with
+      ⟨col, rest, v, acc', hpull, hspl, _, hs'⟩ | ⟨col, rest, v, pend', hpull, _, hspl, _, hs'⟩
+    · subst hs'
+      simp only [conservation] at hcon ⊢
+      rw [bump_sum, escrowSum_cons]
+      have hps := pullCollection_sum hpull
+      have hsm := splitUser_sum hspl
+      simp only [escrowOf, sumPledges] at hps ⊢
+      omega
+    · subst hs'
+      simp only [conservation] at hcon ⊢
+      rw [bump_sum, escrowSum_cons]
+      have hps := pullCollection_sum hpull
+      have hsm := splitUser_sum hspl
+      simp only [escrowOf, sumPledges] at hps ⊢
+      split
+      · omega
+      · simp only [sumPledges]
+        omega
   | closePurchase a c =>
-    obtain ⟨col, rest, hpull, hg, hs'⟩ := step_close_inv hstep
+    obtain ⟨col, rest, hpull, hg, _, hs'⟩ := step_close_inv hstep
     obtain ⟨_, _, _, hempty⟩ := close_guard_inv hg
     subst hs'
     simp only [conservation] at hcon ⊢
@@ -593,20 +684,21 @@ theorem step_authorized {s s' : State} {e : Event} (h : stepEvent view s e auth 
         exact bool_and_left (bool_and_left (bool_and_left g))
     · exact Option.noConfusion h
   | pledge a u c v =>
-    obtain ⟨_, _, _, hg, _⟩ := step_pledge_inv h
+    obtain ⟨_, _, _, hg, _, _⟩ := step_pledge_inv h
     exact (pledge_guard_inv hg).1
   | acceptPledge a u c =>
-    obtain ⟨_, _, _, _, _, _, hg, _⟩ := step_accept_inv h
+    obtain ⟨_, _, _, _, _, _, hg, _, _⟩ := step_accept_inv h
     exact (auth_referente_guard_inv hg).1
   | refusePledge a u c =>
     obtain ⟨_, _, _, _, _, _, hg, _⟩ := step_refuse_inv h
     exact (auth_referente_guard_inv hg).1
   | correctPledge a u c v =>
-    obtain ⟨_, _, _, _, _, _, hg, _⟩ := step_correct_inv h
-    exact bool_and_left
-      (bool_and_left (bool_and_left hg))
+    show isResponsabile view a = true ∨ a = u
+    rcases step_correct_cases h with ⟨_, _, _, _, _, _, hg, _⟩ | ⟨_, _, _, _, _, _, _, hg, _⟩
+    · exact Or.inl (bool_and_left (bool_and_left (bool_and_left hg)))
+    · exact Or.inr (beq_iff_eq.mp (bool_and_left (bool_and_left hg)))
   | closePurchase a c =>
-    obtain ⟨_, _, _, hg, _⟩ := step_close_inv h
+    obtain ⟨_, _, _, hg, _, _⟩ := step_close_inv h
     exact (close_guard_inv hg).1
   | failPurchase a c =>
     obtain ⟨_, _, _, hg, _⟩ := step_fail_inv h
@@ -648,7 +740,7 @@ theorem close_permission_to_close {s s' : State} {a : KelGroups.Key} {c : CollId
     (h : stepEvent view s (.closePurchase a c) auth = some s') :
     ∃ col rest,
       pullCollection c s.collections = some (col, rest) ∧ permissionToClose col := by
-  obtain ⟨col, rest, hpull, hg, _⟩ := step_close_inv h
+  obtain ⟨col, rest, hpull, hg, _, _⟩ := step_close_inv h
   obtain ⟨_, _, hperm, hempty⟩ := close_guard_inv hg
   exact ⟨col, rest, hpull, hperm, hempty⟩
 
@@ -660,7 +752,7 @@ theorem pledge_escrow_debit {s s' : State} {a u : KelGroups.Key} {c : CollId} {v
     (h : stepEvent view s (.pledge a u c v) auth = some s') :
     bal s'.conti u = bal s.conti u - v ∧
       ∃ col ∈ s'.collections, col.id = c ∧ escrowHeld col u v := by
-  obtain ⟨col, rest, hpull, _, hs'⟩ := step_pledge_inv h
+  obtain ⟨col, rest, hpull, _, _, hs'⟩ := step_pledge_inv h
   have hid : col.id = c := pullCollection_id hpull
   subst hs'
   refine ⟨?_, { col with pending := ⟨u, v⟩ :: col.pending },
@@ -682,7 +774,7 @@ theorem close_spends_referente {s s' : State} {a : KelGroups.Key} {c : CollId}
       pullCollection c s.collections = some (col, rest) ∧
       bal s'.casse col.referente
         = bal s.casse col.referente - sumPledges col.accepted := by
-  obtain ⟨col, rest, hpull, _, hs'⟩ := step_close_inv h
+  obtain ⟨col, rest, hpull, _, _, hs'⟩ := step_close_inv h
   subst hs'
   refine ⟨col, rest, hpull, ?_⟩
   show bal (bump s.casse col.referente (-(sumPledges col.accepted))) col.referente
@@ -973,7 +1065,7 @@ private theorem credit_pledges_step {s s' : State} {e : Event}
       exact ⟨hcred, hamt⟩
     · exact Option.noConfusion hstep
   | pledge a u c v =>
-    obtain ⟨col, rest, hpull, hg, hs'⟩ := step_pledge_inv hstep
+    obtain ⟨col, rest, hpull, hg, _, hs'⟩ := step_pledge_inv hstep
     obtain ⟨_, _, _, _, hvpos, hfunds⟩ := pledge_guard_inv hg
     subst hs'
     refine ⟨fun w hwne => ?_, ?_⟩
@@ -1000,7 +1092,7 @@ private theorem credit_pledges_step {s s' : State} {e : Event}
               (List.mem_append.mpr (Or.inr hinP))
       · exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
   | acceptPledge a u c =>
-    obtain ⟨col, rest, v, pend', hpull, hspl, _, hs'⟩ := step_accept_inv hstep
+    obtain ⟨col, rest, v, pend', hpull, hspl, _, _, hs'⟩ := step_accept_inv hstep
     obtain ⟨q, hq, -, hqa⟩ := splitUser_amount hspl
     have hv : 0 ≤ v := by
       have h0 := hamt col (pullCollection_mem hpull) q
@@ -1050,37 +1142,69 @@ private theorem credit_pledges_step {s s' : State} {e : Event}
             (List.mem_append.mpr (Or.inr (splitUser_sublist hspl p hm)))
       · exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
   | correctPledge a u c v' =>
-    obtain ⟨col, rest, v, acc', hpull, hspl, hg, hs'⟩ := step_correct_inv hstep
-    have hv' : 0 ≤ v' :=
-      decide_eq_true_iff.mp (bool_and_right (bool_and_left hg))
-    have hfunds : bal s.conti u + (v - v') ≥ 0 :=
-      decide_eq_true_iff.mp (bool_and_right hg)
-    subst hs'
-    refine ⟨fun w hwne => ?_, ?_⟩
-    · by_cases hc : w = u
-      · rw [hc]
-        show bal (bump s.conti u (v - v')) u ≥ 0
-        have hb := bal_bump s.conti u (v - v')
-        omega
-      · show bal (bump s.conti u (v - v')) w ≥ 0
-        rw [bal_bump_ne hc]
-        exact hcred w hwne
-    · intro c0 hc0 p hp
-      rcases List.mem_cons.mp hc0 with hc0 | hc0
-      · subst hc0
-        dsimp only at hp
-        rcases List.mem_append.mp hp with hm | hm
-        · rcases List.mem_cons.mp hm with heq | hinA
-          · subst heq
-            show 0 ≤ v'
-            omega
+    rcases step_correct_cases hstep with
+      ⟨col, rest, v, acc', hpull, hspl, hg, hs'⟩ | ⟨col, rest, v, pend', hpull, _, hspl, hg, hs'⟩
+    · have hv' : 0 ≤ v' :=
+        decide_eq_true_iff.mp (bool_and_right (bool_and_left hg))
+      have hfunds : bal s.conti u + (v - v') ≥ 0 :=
+        decide_eq_true_iff.mp (bool_and_right hg)
+      subst hs'
+      refine ⟨fun w hwne => ?_, ?_⟩
+      · by_cases hc : w = u
+        · rw [hc]
+          show bal (bump s.conti u (v - v')) u ≥ 0
+          have hb := bal_bump s.conti u (v - v')
+          omega
+        · show bal (bump s.conti u (v - v')) w ≥ 0
+          rw [bal_bump_ne hc]
+          exact hcred w hwne
+      · intro c0 hc0 p hp
+        rcases List.mem_cons.mp hc0 with hc0 | hc0
+        · subst hc0
+          dsimp only at hp
+          rcases List.mem_append.mp hp with hm | hm
+          · rcases List.mem_cons.mp hm with heq | hinA
+            · subst heq
+              show 0 ≤ v'
+              omega
+            · exact hamt col (pullCollection_mem hpull) p
+                (List.mem_append.mpr (Or.inl (splitUser_sublist hspl p hinA)))
           · exact hamt col (pullCollection_mem hpull) p
-              (List.mem_append.mpr (Or.inl (splitUser_sublist hspl p hinA)))
-        · exact hamt col (pullCollection_mem hpull) p
-            (List.mem_append.mpr (Or.inr hm))
-      · exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
+              (List.mem_append.mpr (Or.inr hm))
+        · exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
+    · have hv' : 0 ≤ v' :=
+        decide_eq_true_iff.mp (bool_and_right (bool_and_left hg))
+      have hfunds : bal s.conti u + (v - v') ≥ 0 :=
+        decide_eq_true_iff.mp (bool_and_right hg)
+      subst hs'
+      refine ⟨fun w hwne => ?_, ?_⟩
+      · by_cases hc : w = u
+        · rw [hc]
+          show bal (bump s.conti u (v - v')) u ≥ 0
+          have hb := bal_bump s.conti u (v - v')
+          omega
+        · show bal (bump s.conti u (v - v')) w ≥ 0
+          rw [bal_bump_ne hc]
+          exact hcred w hwne
+      · intro c0 hc0 p hp
+        rcases List.mem_cons.mp hc0 with hc0 | hc0
+        · subst hc0
+          dsimp only at hp
+          rcases List.mem_append.mp hp with hm | hm
+          · exact hamt col (pullCollection_mem hpull) p
+              (List.mem_append.mpr (Or.inl hm))
+          · split at hm
+            · exact hamt col (pullCollection_mem hpull) p
+                (List.mem_append.mpr (Or.inr (splitUser_sublist hspl p hm)))
+            · rcases List.mem_cons.mp hm with heq | hinP
+              · subst heq
+                show 0 ≤ v'
+                omega
+              · exact hamt col (pullCollection_mem hpull) p
+                  (List.mem_append.mpr (Or.inr (splitUser_sublist hspl p hinP)))
+        · exact hamt c0 (pullCollection_sublist hpull c0 hc0) p hp
   | closePurchase a c =>
-    obtain ⟨col, rest, hpull, _, hs'⟩ := step_close_inv hstep
+    obtain ⟨col, rest, hpull, _, _, hs'⟩ := step_close_inv hstep
     subst hs'
     refine ⟨hcred, ?_⟩
     intro c0 hc0 p hp
@@ -1248,7 +1372,7 @@ theorem pledge_rejected_when_member {s : State} {a u : KelGroups.Key} {c : CollI
   · cases hstep : stepEvent view s (.pledge a u c v) auth with
     | none => exact absurd hstep hnone
     | some s' =>
-      obtain ⟨col₀, rest₀, hpull₀, hg, _⟩ := step_pledge_inv hstep
+      obtain ⟨col₀, rest₀, hpull₀, hg, _, _⟩ := step_pledge_inv hstep
       obtain ⟨hdet, -⟩ : col₀ = col ∧ rest₀ = rest := by
         have hpair := pullCollection_det hpull₀ hpull
         simpa using hpair
@@ -1269,7 +1393,7 @@ theorem pledge_rejected_when_member {s : State} {a u : KelGroups.Key} {c : CollI
 theorem pledge_preserves_allUnique {s s' : State} {a u : KelGroups.Key} {c : CollId}
     {v : Int} (hun : allUniquePledges s)
     (h : stepEvent view s (.pledge a u c v) auth = some s') : allUniquePledges s' := by
-  obtain ⟨col, rest, hpull, hg, hs'⟩ := step_pledge_inv h
+  obtain ⟨col, rest, hpull, hg, _, hs'⟩ := step_pledge_inv h
   obtain ⟨_, _, hna1, hna2, _, _⟩ := pledge_guard_inv hg
   subst hs'
   have ha1 := user_absent_of_any_false hna1
@@ -1284,6 +1408,156 @@ theorem pledge_preserves_allUnique {s s' : State} {a u : KelGroups.Key} {c : Col
   · subst hc0
     exact uniquePledges_pend_cons habs (hun col (pullCollection_mem hpull))
   · exact hun c0 (pullCollection_sublist hpull c0 hc0)
+
+
+private theorem splitUser_removes_user_lemma {u : KelGroups.Key} :
+    ∀ (l : List Pledge) (v : Int) (r : List Pledge),
+      splitUser u l = some (v, r) → (l.map (·.user)).Nodup → ∀ p ∈ r, p.user ≠ u := by
+  intro l
+  induction l with
+  | nil => intro v r h; exact Option.noConfusion h
+  | cons q t ih =>
+    intro v r h hnd p hp
+    have hnd' : (q.user :: t.map (·.user)).Nodup := hnd
+    rw [splitUser] at h
+    split at h
+    · next hq =>
+      simp only [Option.some.injEq, Prod.mk.injEq] at h
+      obtain ⟨-, rfl⟩ := h
+      intro hpu
+      exact (List.nodup_cons.mp hnd').1 (List.mem_map.mpr ⟨p, hp, hpu.trans hq.symm⟩)
+    · next hq =>
+      cases hx : splitUser u t with
+      | none => rw [hx] at h; exact Option.noConfusion h
+      | some w =>
+        obtain ⟨wv, wr⟩ := w
+        rw [hx] at h
+        simp only [Option.some.injEq, Prod.mk.injEq] at h
+        obtain ⟨-, rfl⟩ := h
+        rcases List.mem_cons.mp hp with hc | hc
+        · subst hc; exact hq
+        · exact ih wv wr hx (List.nodup_cons.mp hnd').2 p hc
+
+/-- With distinct owners, removing the first row of `u` leaves no row of `u`. -/
+theorem splitUser_removes_user {u : KelGroups.Key} {l : List Pledge} {v : Int}
+    {r : List Pledge} (h : splitUser u l = some (v, r)) (hnd : (l.map (·.user)).Nodup) :
+    ∀ p ∈ r, p.user ≠ u :=
+  splitUser_removes_user_lemma l v r h hnd
+
+/-! ### Pledge sovereignty (issue #69)
+
+The ruled guards of the pledge and its correction, as facts about the step.
+A pledge is signed by its owner; a correction is in the accepted regime (the
+referente, as before) or in the pending regime (the owner, who may withdraw
+the pledge with a zero correction). -/
+
+/-- A successful pledge is signed by its owner. -/
+theorem pledge_signed_by_owner {s s' : State} {a u : KelGroups.Key} {c : CollId} {v : Int}
+    (h : stepEvent view s (.pledge a u c v) auth = some s') : a = u := by
+  obtain ⟨w1, _, hw2⟩ := option_bind_inv h
+  obtain ⟨_, hdem, _⟩ := option_bind_inv hw2
+  exact beq_iff_eq.mp (bool_and_left (bool_and_left (bool_and_left (bool_and_left
+    (bool_and_left (bool_and_left (demand_eq_true_of_some hdem)))))))
+
+/-- A successful correction of a pledge that is not accepted is signed by its
+owner, and leaves the accepted list of the collection as it was. -/
+theorem pending_correction_by_owner {s s' : State} {a u : KelGroups.Key} {c : CollId}
+    {v' : Int}
+    (hno : ∀ col rest, pullCollection c s.collections = some (col, rest) →
+      splitUser u col.accepted = none)
+    (h : stepEvent view s (.correctPledge a u c v') auth = some s') :
+    a = u ∧ ∃ col rest col',
+      pullCollection c s.collections = some (col, rest) ∧
+      s'.collections = col' :: rest ∧ col'.accepted = col.accepted := by
+  obtain ⟨w1, hw1, hw2⟩ := option_bind_inv h
+  obtain ⟨col, rest⟩ := w1
+  have hsp := hno col rest hw1
+  simp only [hsp] at hw2
+  obtain ⟨w2, _, hw4⟩ := option_bind_inv hw2
+  obtain ⟨v, pend'⟩ := w2
+  obtain ⟨_, hdem, hx⟩ := option_bind_inv hw4
+  simp only [pure, Option.some.injEq] at hx
+  subst hx
+  exact ⟨beq_iff_eq.mp (bool_and_left (bool_and_left (demand_eq_true_of_some hdem))), col, rest,
+    { col with pending := if v' = 0 then pend' else ⟨u, v'⟩ :: pend' }, hw1, rfl, rfl⟩
+
+/-- A successful correction of an accepted pledge is the referente's, with the
+effect of the base arm: the difference settles in the owner's credit and the
+accepted row is replaced. -/
+theorem accepted_correction_by_referente {s s' : State} {a u : KelGroups.Key} {c : CollId}
+    {v' : Int}
+    (hacc : ∀ col rest, pullCollection c s.collections = some (col, rest) →
+      ∃ w, splitUser u col.accepted = some w)
+    (h : stepEvent view s (.correctPledge a u c v') auth = some s') :
+    ∃ col rest v acc',
+      pullCollection c s.collections = some (col, rest) ∧
+      splitUser u col.accepted = some (v, acc') ∧
+      isResponsabile view a = true ∧ col.referente = a ∧
+      s' = { s with
+        conti := bump s.conti u (v - v'),
+        collections := { col with accepted := ⟨u, v'⟩ :: acc' } :: rest } := by
+  obtain ⟨col, rest, v, acc', hpull, hspl, hg, hs'⟩ := step_correct_inv hacc h
+  obtain ⟨hresp, href⟩ := auth_referente_guard_inv (bool_and_left (bool_and_left hg))
+  exact ⟨col, rest, v, acc', hpull, hspl, hresp, href, hs'⟩
+
+/-- A zero correction of a pending pledge removes the owner's row and returns
+the whole pledge to their credit; the accepted list is untouched. -/
+theorem pending_withdrawal_removes_row {s s' : State} {a u : KelGroups.Key} {c : CollId}
+    (hno : ∀ col rest, pullCollection c s.collections = some (col, rest) →
+      splitUser u col.accepted = none)
+    (h : stepEvent view s (.correctPledge a u c 0) auth = some s') :
+    ∃ col rest v col',
+      pullCollection c s.collections = some (col, rest) ∧
+      splitUser u col.pending = some (v, col'.pending) ∧
+      col'.accepted = col.accepted ∧ s'.collections = col' :: rest ∧
+      bal s'.conti u = bal s.conti u + v := by
+  obtain ⟨w1, hpull, hw2⟩ := option_bind_inv h
+  obtain ⟨col, rest⟩ := w1
+  have hsp := hno col rest hpull
+  simp only [hsp] at hw2
+  obtain ⟨w2, hspl, hw4⟩ := option_bind_inv hw2
+  obtain ⟨v, pend'⟩ := w2
+  obtain ⟨_, _, hx⟩ := option_bind_inv hw4
+  simp only [pure, Option.some.injEq] at hx
+  subst hx
+  refine ⟨col, rest, v, { col with pending := if (0 : Int) = 0 then pend' else ⟨u, 0⟩ :: pend' },
+    hpull, ?_, rfl, rfl, ?_⟩
+  · simpa using hspl
+  · show bal (bump s.conti u (v - 0)) u = bal s.conti u + v
+    have hb := bal_bump s.conti u (v - 0)
+    omega
+
+/-- The row a zero correction removes is the only row of its owner when the
+owners of a collection's pending pledges are distinct (L8 keeps them so): the
+owner has no pledge left in the collection. -/
+theorem pending_withdrawal_leaves_no_row {s s' : State} {a u : KelGroups.Key} {c : CollId}
+    (hno : ∀ col rest, pullCollection c s.collections = some (col, rest) →
+      splitUser u col.accepted = none)
+    (hnd : ∀ col rest, pullCollection c s.collections = some (col, rest) →
+      (col.pending.map (·.user)).Nodup)
+    (h : stepEvent view s (.correctPledge a u c 0) auth = some s') :
+    ∃ col', col' ∈ s'.collections ∧ col'.id = c ∧
+      ∀ p ∈ col'.accepted ++ col'.pending, p.user ≠ u := by
+  obtain ⟨col, rest, v, pend', hpull, hspl, _, hs'⟩ := pending_correction_effect hno h
+  have hnone := hno col rest hpull
+  have hnodup := hnd col rest hpull
+  have hid : col.id = c := pullCollection_id hpull
+  subst hs'
+  refine ⟨_, List.mem_cons.mpr (Or.inl rfl), hid, ?_⟩
+  intro p hp
+  dsimp only at hp
+  rcases List.mem_append.mp hp with hm | hm
+  · exact not_mem_users_of_splitUser_none hnone p hm
+  · have hm' : p ∈ pend' := by simpa using hm
+    exact splitUser_removes_user hspl hnodup p hm'
+
+/-- A correction of a pledge the collection does not hold is refused. -/
+theorem correction_without_row_refused {s : State} {a u : KelGroups.Key} {c : CollId}
+    {v' : Int} {col : Collection} {rest : List Collection}
+    (hpull : pullCollection c s.collections = some (col, rest))
+    (hacc : splitUser u col.accepted = none) (hpend : splitUser u col.pending = none) :
+    stepEvent view s (.correctPledge a u c v') auth = none := by
+  simp [stepEvent, step, hpull, hacc, hpend]
 
 /-! ## S62-B — the one transition system, executed against production
 
@@ -1405,16 +1679,22 @@ def removeBob : KelGroups.IntegratedEvent Proposal AppEvent :=
   .propose (Proposal.departure "bob")
 
 /-- Departure absorbs the departing member's conto into the reserved comune
-account, and moves no other money. -/
+account, and moves no other money. V-2: at n=1 the sole admin proposes
+(pending, no change) and enacts with a separate self-approval. -/
 def checkMemberDepartureCleanup : Bool :=
   match s62bRun departureGroup "alice" removeBob with
-  | .ok result =>
-      let s := result.state.appFold
-      (result.change == some (KelGroups.BaseChange.memberRemoved "bob"))
-        && !(KelGroups.GroupView.isMember "bob" (s62bView result.state))
-        && (bal s.conti "bob" == 0)
-        && (comuneBal s == 40)
-        && (sumBal s.conti == sumBal departureGroup.appFold.conti)
+  | .ok proposed =>
+      (proposed.change == none)
+        && (match s62bRun proposed.state "alice"
+              (.approve (proposalDigest (Proposal.departure "bob"))) with
+            | .ok result =>
+                let s := result.state.appFold
+                (result.change == some (KelGroups.BaseChange.memberRemoved "bob"))
+                  && !(KelGroups.GroupView.isMember "bob" (s62bView result.state))
+                  && (bal s.conti "bob" == 0)
+                  && (comuneBal s == 40)
+                  && (sumBal s.conti == sumBal departureGroup.appFold.conti)
+            | .error _ => false)
   | .error _ => false
 
 /-- An admin holding a cassa and an open collection. Conservation holds on the
@@ -1433,33 +1713,44 @@ def adminDepartureGroup : KelGroups.GroupState State :=
 /-- Losing admin status through departure applies the accepted cassa /
 collection / refund cleanup: the departing admin's collections are cancelled,
 every held pledge is refunded, their cassa claim moves to the comune, and
-conservation still holds. -/
+conservation still holds. V-2: at n=2 the proposer pends and a fellow
+admin's assent enacts. -/
 def checkAdminDepartureCleanup : Bool :=
   match s62bRun adminDepartureGroup "alice" (.propose (Proposal.departure "dora")) with
-  | .ok result =>
-      let s := result.state.appFold
-      (result.change == some (KelGroups.BaseChange.memberRemoved "dora"))
-        && !(KelGroups.GroupView.isMember "dora" (s62bView result.state))
-        && (s.collections == [])
-        && (bal s.conti "bob" == 30)
-        && (bal s.casse "dora" == 0)
-        && (comuneBal s == -30)
-        && (sumBal s.casse - sumBal s.conti - escrowSum s.collections == 0)
+  | .ok proposed =>
+      (proposed.change == none)
+        && (match s62bRun proposed.state "dora"
+              (.approve (proposalDigest (Proposal.departure "dora"))) with
+            | .ok result =>
+                let s := result.state.appFold
+                (result.change == some (KelGroups.BaseChange.memberRemoved "dora"))
+                  && !(KelGroups.GroupView.isMember "dora" (s62bView result.state))
+                  && (s.collections == [])
+                  && (bal s.conti "bob" == 30)
+                  && (bal s.casse "dora" == 0)
+                  && (comuneBal s == -30)
+                  && (sumBal s.casse - sumBal s.conti - escrowSum s.collections == 0)
+            | .error _ => false)
   | .error _ => false
 
 /-- The same cleanup is owed to a *role change* that removes admin status: the
 key stays a member and keeps its conto, but its cassa and collections are wound
-up exactly as on departure. -/
+up exactly as on departure. V-2: fellow-admin assent enacts. -/
 def checkRoleChangeReachable : Bool :=
   match s62bRun adminDepartureGroup "alice" (.propose (Proposal.changeRoles "dora" [])) with
-  | .ok result =>
-      let s := result.state.appFold
-      (result.change == some (KelGroups.BaseChange.rolesChanged "dora"))
-        && KelGroups.GroupView.isMember "dora" (s62bView result.state)
-        && !(KelGroups.GroupView.isAdmin "dora" (s62bView result.state))
-        && (s.collections == [])
-        && (bal s.conti "bob" == 30)
-        && (bal s.casse "dora" == 0)
+  | .ok proposed =>
+      (proposed.change == none)
+        && (match s62bRun proposed.state "dora"
+              (.approve (proposalDigest (Proposal.changeRoles "dora" []))) with
+            | .ok result =>
+                let s := result.state.appFold
+                (result.change == some (KelGroups.BaseChange.rolesChanged "dora"))
+                  && KelGroups.GroupView.isMember "dora" (s62bView result.state)
+                  && !(KelGroups.GroupView.isAdmin "dora" (s62bView result.state))
+                  && (s.collections == [])
+                  && (bal s.conti "bob" == 30)
+                  && (bal s.casse "dora" == 0)
+            | .error _ => false)
   | .error _ => false
 
 /-- A stalled comune refuses departures, and the refusal is atomic: the group
@@ -1470,10 +1761,19 @@ def stalledDepartureGroup : KelGroups.GroupState State :=
 
 def checkHookRejectionIsAtomic : Bool :=
   (match s62bRun stalledDepartureGroup "alice" removeBob with
-   | .error (.integrated (.app StepError.rejected)) => true
-   | _ => false)
+   | .ok proposed =>
+       (proposed.change == none)
+         && (match s62bRun proposed.state "alice"
+               (.approve (proposalDigest (Proposal.departure "bob"))) with
+             | .error (.integrated (.app StepError.rejected)) => true
+             | _ => false)
+   | .error _ => false)
     && (KelGroups.foldIntegrated (integration s62bThreshold probeAuth)
-          stalledDepartureGroup [("alice", removeBob)] == stalledDepartureGroup)
+          stalledDepartureGroup
+          [("alice", removeBob),
+           ("alice", .approve (proposalDigest (Proposal.departure "bob")))] ==
+        KelGroups.foldIntegrated (integration s62bThreshold probeAuth)
+          stalledDepartureGroup [("alice", removeBob)])
 
 /-- `INV-62-ATOMIC-HOOK` as one executed row. -/
 def checkBaseCleanupReachable : Bool :=
@@ -1504,13 +1804,22 @@ def v3Proposed : Option (KelGroups.GroupState State) :=
   | .ok result => some result.state
   | .error _ => none
 
-def v3Enacted : Option (KelGroups.IntegratedResult State) :=
+def v3ApprovedOnce : Option (KelGroups.GroupState State) :=
   match v3Proposed with
-  | some gs => (s62bRun gs "dora" (.approve (proposalDigest (Proposal.departure "eve")))).toOption
+  | some gs =>
+      match s62bRun gs "dora" (.approve (proposalDigest (Proposal.departure "eve"))) with
+      | .ok result => some result.state
+      | .error _ => none
+  | none => none
+
+def v3Enacted : Option (KelGroups.IntegratedResult State) :=
+  match v3ApprovedOnce with
+  | some gs => (s62bRun gs "eve" (.approve (proposalDigest (Proposal.departure "eve")))).toOption
   | none => none
 
 /-- **V-3.** No ballot is cast anywhere in this trace and no vote event occurs:
-the two signed events are a base proposal and a base approval. The recorded
+the three signed events are a base proposal and two base approvals (V-2:
+one fellow assent still pends at n=3). The recorded
 tallies are byte-identical to the ones the question opened with, and the
 franchise change alone moves the verdict from `open` to `positive` and writes
 the closure. -/
@@ -1594,25 +1903,38 @@ theorem sweep_idempotent_witness : checkSweepIdempotent = true := by decide
 
 theorem sweep_idempotent_mutant_caught : checkSweepIdempotentMutant = true := by decide
 
+/-- Proof-side vocabulary: the vote payload a committed base change hands the
+sweep — the V-5 closure of the leaver's own questions on `memberRemoved` (#81),
+the payload unchanged on every other change. -/
+def departedVotes (change : KelGroups.BaseChange)
+    (votes : KelGroups.Vote.VoteState) : KelGroups.Vote.VoteState :=
+  match change with
+  | .memberAdmitted _ => votes
+  | .memberRemoved key => KelGroups.Vote.closeProposerQuestions key votes
+  | .rolesChanged _ => votes
+
 /-- The sealed hook's vote half, isolated: whatever the economic cleanup did,
 a payload the hook returns carries the post-view recomputation of the payload
-it was given. -/
+it was given, taken after the V-5 closure of the leaver's own questions when
+the change is `memberRemoved` (#81). Every base change is swept. -/
 theorem baseHook_votes {threshold : KelGroups.Vote.Threshold}
     {change : KelGroups.BaseChange} {pre post : KelGroups.GroupView}
     {s s' : State} (h : baseHook threshold change pre post s = .ok s') :
-    s'.votes = KelGroups.Vote.sweepClosures threshold post s.votes := by
+    s'.votes = KelGroups.Vote.sweepClosures threshold post
+      (departedVotes change s.votes) := by
   unfold baseHook at h
   split at h
   · exact Except.noConfusion h
   · simp only [Except.ok.injEq] at h
     subst h
-    rfl
+    cases change <;> rfl
 
 /-- **`base_change_recomputes_votes`** — general, not a witness: every
 successful production transition that reports a base change has vote payload
 equal to the recomputation of the *pre*-transition payload under the *post*
-canonical view. Omitting the sweep, or sweeping against the pre view, breaks
-it. -/
+canonical view, taken after the V-5 closure of the leaver's own questions when
+the change is `memberRemoved` (#81). Omitting the sweep, sweeping against the
+pre view, or skipping the departure closure breaks it. -/
 theorem base_change_recomputes_votes (threshold : KelGroups.Vote.Threshold)
     (auth : BackdonateAuth) (gs : KelGroups.GroupState State)
     (signer : KelGroups.Key)
@@ -1622,7 +1944,7 @@ theorem base_change_recomputes_votes (threshold : KelGroups.Vote.Threshold)
     (hchange : result.change = some change) :
     result.state.appFold.votes
       = KelGroups.Vote.sweepClosures threshold (KelGroups.groupView result.state)
-          gs.appFold.votes := by
+          (departedVotes change gs.appFold.votes) := by
   unfold Reactivegas.apply at h
   split at h
   · split at h
@@ -1687,7 +2009,36 @@ deriving instance Lean.ToJson, Lean.FromJson for KelGroups.Vote.Question
 deriving instance Lean.ToJson, Lean.FromJson for KelGroups.Vote.ClosureRecord
 deriving instance Lean.ToJson, Lean.FromJson for KelGroups.Vote.VoteState
 deriving instance Lean.ToJson, Lean.FromJson for KelGroups.Vote.VoteEvent
-deriving instance Lean.ToJson, Lean.FromJson for State
+deriving instance Lean.ToJson, Lean.FromJson for EconomicTarget
+deriving instance Lean.ToJson, Lean.FromJson for LiveAuth
+
+/-- `State` JSON: the four payload fields always; `bindings` and `live` only
+when non-empty, so a payload that holds no closure-derived authorization
+encodes exactly as it did before those fields existed (the frozen corpora hold
+none). Decoding treats an absent field as empty. -/
+instance : Lean.ToJson State where
+  toJson s :=
+    Lean.Json.mkObj
+      ([ ("casse", Lean.toJson s.casse)
+       , ("collections", Lean.toJson s.collections)
+       , ("conti", Lean.toJson s.conti)
+       , ("votes", Lean.toJson s.votes) ]
+      ++ (if s.bindings.isEmpty then [] else [("bindings", Lean.toJson s.bindings)])
+      ++ (if s.live.isEmpty then [] else [("live", Lean.toJson s.live)]))
+
+instance : Lean.FromJson State where
+  fromJson? j := do
+    let conti ← j.getObjValAs? (List (KelGroups.Key × Int)) "conti"
+    let casse ← j.getObjValAs? (List (KelGroups.Key × Int)) "casse"
+    let collections ← j.getObjValAs? (List Collection) "collections"
+    let votes ← j.getObjValAs? KelGroups.Vote.VoteState "votes"
+    let bindings ← match j.getObjVal? "bindings" with
+      | .ok v => Lean.fromJson? v
+      | .error _ => pure []
+    let live ← match j.getObjVal? "live" with
+      | .ok v => Lean.fromJson? v
+      | .error _ => pure []
+    pure { conti, casse, collections, votes, bindings, live }
 deriving instance Lean.ToJson, Lean.FromJson for Event
 deriving instance Lean.ToJson, Lean.FromJson for AppEvent
 deriving instance Lean.ToJson, Lean.FromJson for Proposal
@@ -1805,7 +2156,7 @@ def corpusInitial : KelGroups.GroupState State :=
       [("hist-p",
         { proposal := KelGroups.Proposal.removeMember "ghost"
           proposer := "alice"
-          approvals := ["alice"] })] }
+          approvals := ["dora"] })] }
 
 def corpusEvents :
     List (KelGroups.Key × KelGroups.IntegratedEvent Proposal AppEvent) :=
@@ -1813,9 +2164,13 @@ def corpusEvents :
   , ("bob", .direct (.admitMember "zed" "zed@s62b" []))
   , ("alice", .propose (Proposal.departure "bob"))
   , ("dora", .approve (proposalDigest (Proposal.departure "bob")))
+  , ("eve", .approve (proposalDigest (Proposal.departure "bob")))
   , ("alice", .propose (Proposal.changeRoles "eve" []))
   , ("dora", .approve (proposalDigest (Proposal.changeRoles "eve" [])))
-  , ("alice", .propose (Proposal.departure "dora")) ]
+  , ("eve", .approve (proposalDigest (Proposal.changeRoles "eve" [])))
+  , ("alice", .propose (Proposal.departure "dora"))
+  , ("dora", .approve (proposalDigest (Proposal.departure "dora")))
+  ]
 
 def emitIntegratedCorpus : List IntegratedTraceStep :=
   emitIntegratedSteps corpusInitial corpusEvents
@@ -1861,23 +2216,27 @@ def memberKeysOf (gs : KelGroups.GroupState State) : List KelGroups.Key :=
 
 def integratedCorpusCoversRequired (steps : List IntegratedTraceStep) : Bool :=
   match steps with
-  | s0 :: s1 :: s2 :: s3 :: _s4 :: s5 :: s6 :: [] =>
+  | s0 :: s1 :: s2 :: s3 :: s4 :: s5 :: s6 :: s7 :: s8 :: s9 :: [] =>
       s0.accepted && (memberKeysOf s0.state).contains "carol"
         && !s0.state.appFold.conti.isEmpty
         && !s1.accepted && !((memberKeysOf s1.state).contains "zed")
         && !s2.state.pendingBase.isEmpty
         && !s2.state.pendingProposals.isEmpty
-        && s3.accepted && !((memberKeysOf s3.state).contains "bob")
-          && s3.change == some (.memberRemoved "bob")
-          && !(s3.state.appFold.collections.any (fun c => c.referente == "bob"))
-          && bal s3.state.appFold.conti "bob" == 0
-          && comuneBal s3.state.appFold != 0
-        && s5.accepted
-          && s5.state.appFold.votes.closed.any (fun r => r.questionId == "q")
-          && s5.change == some (.rolesChanged "eve")
-        && s6.accepted && !((memberKeysOf s6.state).contains "dora")
-          && s6.change == some (.memberRemoved "dora")
-          && !(s6.state.appFold.casse.any (fun kv => kv.1 == "dora" && kv.2 != 0))
+        && s3.accepted && (s3.change == none) && !s3.state.pendingBase.isEmpty
+        && s4.accepted && !((memberKeysOf s4.state).contains "bob")
+          && s4.change == some (.memberRemoved "bob")
+          && !(s4.state.appFold.collections.any (fun c => c.referente == "bob"))
+          && bal s4.state.appFold.conti "bob" == 0
+          && comuneBal s4.state.appFold != 0
+        && s5.accepted && !s5.state.pendingBase.isEmpty
+        && s6.accepted && (s6.change == none) && !s6.state.pendingBase.isEmpty
+        && s7.accepted
+          && s7.state.appFold.votes.closed.any (fun r => r.questionId == "q")
+          && s7.change == some (.rolesChanged "eve")
+        && s8.accepted && !s8.state.pendingBase.isEmpty
+        && s9.accepted && !((memberKeysOf s9.state).contains "dora")
+          && s9.change == some (.memberRemoved "dora")
+          && !(s9.state.appFold.casse.any (fun kv => kv.1 == "dora" && kv.2 != 0))
   | _ => false
 
 def corpusAllError (steps : List IntegratedTraceStep) :
@@ -1920,24 +2279,24 @@ def corpusOmitSigner (steps : List IntegratedTraceStep) :
 def corpusCorruptCleanup (steps : List IntegratedTraceStep) :
     List IntegratedTraceStep :=
   match steps with
-  | s0 :: s1 :: s2 :: s3 :: rest =>
-      s0 :: s1 :: s2 ::
-        { s3 with
+  | s0 :: s1 :: s2 :: s3 :: s4 :: rest =>
+      s0 :: s1 :: s2 :: s3 ::
+        { s4 with
           state :=
-            { s3.state with
+            { s4.state with
               appFold :=
-                { s3.state.appFold with
+                { s4.state.appFold with
                   conti := [("bob", 999), (comuneId, 0)] } } } :: rest
   | other => other
 
-def i57TrustNoSorry : Bool :=
+def admissionPreservationReachable : Bool :=
   checkAdminAdmissionReachable && checkAppMembersPreservation
 
-def kelGroupsHasNoReactivegasImport : Bool :=
+def productionWellFormedAndComuneExcluded : Bool :=
   productionWellFormed mixedGroup
     && !KelGroups.GroupView.isMember comuneId (s62bView mixedGroup)
 
-def leanToolchainMatchesPin : Bool :=
+def comuneIdentityAndThresholdSanity : Bool :=
   comuneId == "comune" && s62bThreshold 3 == 2
 
 /-- Joined concrete base-to-hook witness: member removal, admin-loss role
@@ -2008,7 +2367,7 @@ def checkIntegratedCorpus : Bool :=
     && !replayIntegratedCorpus omittedStateCorpusJson
     && !replayIntegratedCorpus (Lean.toJson (corpusCorruptCleanup emitIntegratedCorpus))
     && !integratedCorpusCoversRequired (corpusCorruptCleanup emitIntegratedCorpus)
-    && emitIntegratedCorpus.length == 7
+    && emitIntegratedCorpus.length == 10
     && emitIntegratedCorpus.any (fun st => !st.state.pendingProposals.isEmpty)
     -- Frozen A011 gate greps these exact call shapes; the executable
     -- path above serializes the same mutants through Lean.toJson.
@@ -2296,20 +2655,28 @@ def checkI57NoExpiry : Bool :=
         == some v3Question
   | .error _ => false
 
-/-- I57-08 TRUST: contractual statements print allowed axioms only. Bound
-to the missing zero-sorry receipt, not to an unrelated admission Bool. -/
-def checkI57Trust : Bool :=
-  i57TrustNoSorry
+/-- Admission-preservation reachability probe: admin admission is reachable and
+app-member preservation holds. This Bool computes exactly that conjunction.
+Trust / zero-`sorry` / allowed-axioms is enforced by `scripts/check-lean-axioms`
+over the discovered extent in `just lean`, not by this Bool. -/
+def checkAdmissionPreservation : Bool :=
+  admissionPreservationReachable
 
-/-- I57-09 DIRECTION: KelGroups has no Reactivegas import. Bound to the
-missing source-receipt control (the shell scanner is the mutant target). -/
-def checkI57Direction : Bool :=
-  kelGroupsHasNoReactivegasImport
+/-- Production well-formedness plus comune exclusion probe: the mixed group is
+well formed and `comuneId` is not a member of its view. This Bool computes
+exactly that conjunction. Import direction is enforced by
+`nix/lean-dependency-direction.sh` in `just lean`, not by this Bool; no claim is
+made that import-direction checks are impossible in Lean. -/
+def checkProductionWellFormed : Bool :=
+  productionWellFormedAndComuneExcluded
 
-/-- I57-10 TOOLCHAIN: executing Lean and pinned source revision match the
-expected identity. -/
-def checkI57Toolchain : Bool :=
-  leanToolchainMatchesPin
+/-- Comune-identity plus threshold sanity probe: `comuneId` spells `"comune"`
+and the sample threshold evaluates as expected. This Bool computes exactly that
+conjunction. The toolchain pin is enforced by `scripts/check-lean-toolchain`
+via `just lean-toolchain-contract`, not by this Bool; no claim is made that
+toolchain checks are impossible in Lean. -/
+def checkComuneThresholdSanity : Bool :=
+  comuneIdentityAndThresholdSanity
 
 theorem integrated_theorem_witness_holds :
     checkIntegratedTheoremWitness = true := by decide
@@ -2336,9 +2703,9 @@ theorem i57_policyfree_holds : checkI57PolicyFree = true := by decide
 theorem i57_policyfree_mutant_caught :
     checkI57PolicyFreeMutant = true := by decide
 theorem i57_noexpiry_holds : checkI57NoExpiry = true := by decide
-theorem i57_trust_holds : checkI57Trust = true := by decide
-theorem i57_direction_holds : checkI57Direction = true := by decide
-theorem i57_toolchain_holds : checkI57Toolchain = true := by decide
+theorem admissionPreservation_holds : checkAdmissionPreservation = true := by decide
+theorem productionWellFormed_holds : checkProductionWellFormed = true := by decide
+theorem comuneThresholdSanity_holds : checkComuneThresholdSanity = true := by decide
 
 #print axioms checkIntegratedTheoremWitness
 #print axioms checkCanonicalEconomy

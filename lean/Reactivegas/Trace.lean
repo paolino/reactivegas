@@ -321,16 +321,16 @@ private def seedDonationPrefix : List Event :=
   [ .deposit "2" "1" 40
   , .deposit "1" "3" 100
   , .openPurchase "2" 7
-  , .pledge "2" "3" 7 50
+  , .pledge "3" "3" 7 50
   , .acceptPledge "2" "3" 7
-  , .pledge "2" "1" 7 20
+  , .pledge "1" "1" 7 20
   , .donate "1" 10 ]
 
 /-- An accepted pledge corrected downward. -/
 private def seedCorrectPledgeDown : List Event :=
   [ .deposit "1" "2" 100
   , .openPurchase "1" 5
-  , .pledge "1" "2" 5 60
+  , .pledge "2" "2" 5 60
   , .acceptPledge "1" "2" 5
   , .correctPledge "1" "2" 5 40 ]
 
@@ -338,7 +338,7 @@ private def seedCorrectPledgeDown : List Event :=
 private def seedCorrectPledgeUp : List Event :=
   [ .deposit "1" "2" 100
   , .openPurchase "1" 5
-  , .pledge "1" "2" 5 60
+  , .pledge "2" "2" 5 60
   , .acceptPledge "1" "2" 5
   , .correctPledge "1" "2" 5 90 ]
 
@@ -348,22 +348,22 @@ step whose identity has an accepted inversion. -/
 private def seedClosePurchaseNegative : List Event :=
   [ .deposit "1" "3" 200
   , .openPurchase "2" 9
-  , .pledge "2" "3" 9 150
+  , .pledge "3" "3" 9 150
   , .acceptPledge "2" "3" 9
   , .closePurchase "2" 9
   , .grantPermission "2" 9
   , .closePurchase "2" 9 ]
 
 /-- A denial refunding both an accepted and a pending pledge. The refused
-withdrawal carries an identity with no accepted inversion, so the corpus also
-exercises an `UNPROVED` claim row. -/
+overdrawing withdrawal is bound to its accepted inversion `step_withdraw_inv`;
+no seed currently emits an `UNPROVED` claim row. -/
 private def seedDenyPermissionRefunds : List Event :=
   [ .deposit "1" "2" 100
   , .deposit "1" "3" 80
   , .openPurchase "1" 4
-  , .pledge "1" "2" 4 60
+  , .pledge "2" "2" 4 60
   , .acceptPledge "1" "2" 4
-  , .pledge "1" "3" 4 30
+  , .pledge "3" "3" 4 30
   , .withdraw "1" "2" 999
   , .denyPermission "1" 4 ]
 

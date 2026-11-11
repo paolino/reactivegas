@@ -12,6 +12,7 @@ inductive ValidationError where
   | memberNotFound (key : Key)
   | proposalNotFound (proposalId : ProposalId)
   | alreadyApproved (key : Key) (proposalId : ProposalId)
+  | proposerSelfApproval (key : Key) (proposalId : ProposalId)
   | roleAddPrecondition (name : RoleName)
   | roleRemovePrecondition (name : RoleName)
   | invalidKey (key : Key)
@@ -24,7 +25,10 @@ instance : BEq (Except ValidationError Unit) where
     | .error left, .error right => left == right
     | _, _ => false
 
-private def requireAdmin (signer : Key) (gs : GroupState α) :
+/-- Admin gate shared by the approval validators. Public (not
+`private`) so the V-2 preservation proofs can invert successful
+validations; behavior unchanged. -/
+def requireAdmin (signer : Key) (gs : GroupState α) :
     Except ValidationError Unit :=
   if isAdmin signer gs then .ok () else .error (.notAnAdmin signer)
 
@@ -119,7 +123,13 @@ def validateApproval (gs : GroupState α) (signer : Key)
   match lookupPending proposalId gs with
   | none => .error (.proposalNotFound proposalId)
   | some pending =>
-      if pending.approvals.contains signer then
+      -- V-2/A-001: above one current admin the proposer's own approval is
+      -- refused at the boundary under its own identity, never `alreadyApproved`
+      -- (different meaning: barred by proposer identity, not duplication).
+      -- The sole admin's separate approval passes (no threshold special case).
+      if signer == pending.proposer && decide (1 < adminCount gs) then
+        .error (.proposerSelfApproval signer proposalId)
+      else if pending.approvals.contains signer then
         .error (.alreadyApproved signer proposalId)
       else .ok ()
 
@@ -166,7 +176,10 @@ def validateBaseApproval (gs : GroupState α) (signer : Key)
   match lookupPendingBase proposalId gs with
   | none => .error (.proposalNotFound proposalId)
   | some pending =>
-      if pending.approvals.contains signer then
+      -- V-2/A-001 integrated bar: same identity rule as `validateApproval`.
+      if signer == pending.proposer && decide (1 < adminCount gs) then
+        .error (.proposerSelfApproval signer proposalId)
+      else if pending.approvals.contains signer then
         .error (.alreadyApproved signer proposalId)
       else .ok ()
 
@@ -183,5 +196,261 @@ def validateEvent (validKey : Key → Bool) (config : GroupConfig α)
   match event with
   | .base baseEvent => validateBase validKey config gs signer baseEvent
   | .app _ => if isMember signer gs then .ok () else .error (.notAMember signer)
+
+/-! ## Refusal observations (#66 S5)
+
+Each theorem below says that a public entry point returns one refusal exactly
+when the guard that emits it fails, in the precedence the definitions fix:
+administrator, then key, then membership, then role preconditions. Weakening a
+guard therefore falsifies a theorem. The guards are `private`, so these
+statements sit beside them and name only the public entry points. -/
+
+section RefusalObservations
+
+variable (validKey : Key → Bool) (config : GroupConfig α) (gs : GroupState α)
+  (signer : Key)
+
+private theorem validateRoleAdditions_error_shape (roles : List Role) (err : ValidationError)
+    (h : validateRoleAdditions config gs roles = .error err) :
+    ∃ name, err = .roleAddPrecondition name := by
+  induction roles with
+  | nil => simp [validateRoleAdditions] at h
+  | cons role rest ih =>
+    cases hc : checkRoleAddition config gs role with
+    | error e =>
+      simp [validateRoleAdditions, hc, bind, Except.bind] at h
+      cases role with
+      | adminRole admin => simp [checkRoleAddition] at hc
+      | appRole n =>
+        cases hl : assocLookup n config.roleDefs with
+        | none => simp [checkRoleAddition, hl] at hc
+        | some roleDef =>
+          cases hd : roleDef.canAdd gs.appFold <;> simp [checkRoleAddition, hl, hd] at hc
+          exact ⟨n, by rw [← h, ← hc]⟩
+    | ok v =>
+      simp [validateRoleAdditions, hc, bind, Except.bind] at h
+      exact ih h
+
+private theorem validateRoleRemovals_error_shape (roles : List Role) (err : ValidationError)
+    (h : validateRoleRemovals config gs roles = .error err) :
+    ∃ name, err = .roleRemovePrecondition name := by
+  induction roles with
+  | nil => simp [validateRoleRemovals] at h
+  | cons role rest ih =>
+    cases hc : checkRoleRemoval config gs role with
+    | error e =>
+      simp [validateRoleRemovals, hc, bind, Except.bind] at h
+      cases role with
+      | adminRole admin => simp [checkRoleRemoval] at hc
+      | appRole n =>
+        cases hl : assocLookup n config.roleDefs with
+        | none => simp [checkRoleRemoval, hl] at hc
+        | some roleDef =>
+          cases hd : roleDef.canRemove gs.appFold <;> simp [checkRoleRemoval, hl, hd] at hc
+          exact ⟨n, by rw [← h, ← hc]⟩
+    | ok v =>
+      simp [validateRoleRemovals, hc, bind, Except.bind] at h
+      exact ih h
+
+/-- In a group with no admin, an admission whose key `validKey` rejects is refused
+as `invalidKey`, and only then. -/
+theorem validateProposal_invalidKey_bootstrap (hb : authMode gs = .bootstrap)
+    (key : Key) (email : Email) (roles : List Role) :
+    validateProposal validKey config gs signer (.introduceMember key email roles) =
+        .error (.invalidKey key) ↔ validKey key = false := by
+  cases hk : validKey key <;>
+    simp [validateProposal, validateBootstrapProposal, requireValidKey, hb, hk, bind,
+      Except.bind]
+  split <;> simp
+
+/-- Under the normal rule the same refusal needs an admin signer first. -/
+theorem validateProposal_invalidKey_normal (hn : authMode gs = .normal)
+    (key : Key) (email : Email) (roles : List Role) :
+    validateProposal validKey config gs signer (.introduceMember key email roles) =
+        .error (.invalidKey key) ↔ isAdmin signer gs = true ∧ validKey key = false := by
+  cases ha : isAdmin signer gs
+  · simp [validateProposal, requireAdmin, hn, ha, bind, Except.bind]
+  · cases hk : validKey key
+    · simp [validateProposal, validateNormalProposal, requireAdmin, requireValidKey, hn, ha, hk,
+        bind, Except.bind]
+    · cases hm : isMember key gs
+      · cases h : validateRoleAdditions config gs roles with
+        | error err =>
+          obtain ⟨n, rfl⟩ := validateRoleAdditions_error_shape config gs roles err h
+          simp [validateProposal, validateNormalProposal, requireAdmin, requireValidKey,
+            requireNotMember, hn, ha, hk, hm, h, bind, Except.bind]
+        | ok v =>
+          simp [validateProposal, validateNormalProposal, requireAdmin, requireValidKey,
+            requireNotMember, hn, ha, hk, hm, h, bind, Except.bind]
+      · simp [validateProposal, validateNormalProposal, requireAdmin, requireValidKey,
+          requireNotMember, hn, ha, hk, hm, bind, Except.bind]
+
+/-- The bootstrap rule refuses an admission with no admin role. -/
+theorem validateProposal_bootstrapRequiresAdmin_introduce (hb : authMode gs = .bootstrap)
+    (key : Key) (email : Email) (roles : List Role) :
+    validateProposal validKey config gs signer (.introduceMember key email roles) =
+        .error .bootstrapRequiresAdmin ↔ validKey key = true ∧ hasAdmin roles = false := by
+  cases hk : validKey key <;> cases hr : hasAdmin roles <;>
+    simp [validateProposal, validateBootstrapProposal, requireValidKey, hb, hk, hr, bind,
+      Except.bind]
+
+private theorem validateRoleChanges_error_shape (key : Key) (newRoles : List Role)
+    (member : Member) (hm : lookupMember key gs = some member) (err : ValidationError)
+    (h : validateRoleChanges config gs key newRoles = .error err) :
+    (∃ name, err = .roleRemovePrecondition name) ∨ ∃ name, err = .roleAddPrecondition name := by
+  simp only [validateRoleChanges, hm, bind, Except.bind] at h
+  cases hr : validateRoleRemovals config gs (roleDifference member.roles newRoles) with
+  | error e =>
+    rw [hr] at h
+    obtain ⟨n, hn⟩ := validateRoleRemovals_error_shape config gs _ e hr
+    cases h; exact .inl ⟨n, hn⟩
+  | ok v =>
+    rw [hr] at h
+    exact .inr (validateRoleAdditions_error_shape config gs _ err h)
+
+/-- A voted removal of a key that is not a member is refused as `memberNotFound`
+for an admin signer, and only then. -/
+theorem validateBaseMutation_memberNotFound_remove (key : Key) :
+    validateBaseMutation gs signer (.removeMember key) = .error (.memberNotFound key) ↔
+      isAdmin signer gs = true ∧ isMember key gs = false := by
+  cases ha : isAdmin signer gs <;> cases hm : isMember key gs <;>
+    simp [validateBaseMutation, requireAdmin, requireMember, ha, hm, bind, Except.bind]
+
+/-- A voted role change of a key that is not a member is refused likewise. -/
+theorem validateBaseMutation_memberNotFound_changeRoles (key : Key) (roles : List Role) :
+    validateBaseMutation gs signer (.changeRoles key roles) = .error (.memberNotFound key) ↔
+      isAdmin signer gs = true ∧ isMember key gs = false := by
+  cases ha : isAdmin signer gs <;> cases hm : isMember key gs <;>
+    simp [validateBaseMutation, requireAdmin, requireMember, ha, hm, bind, Except.bind]
+
+/-- The historical removal proposal, under the normal rule. -/
+theorem validateProposal_memberNotFound_remove (hn : authMode gs = .normal) (key : Key) :
+    validateProposal validKey config gs signer (.removeMember key) =
+        .error (.memberNotFound key) ↔ isAdmin signer gs = true ∧ isMember key gs = false := by
+  cases ha : isAdmin signer gs <;> cases hm : isMember key gs <;>
+    simp [validateProposal, validateNormalProposal, requireAdmin, requireMember, hn, ha, hm,
+      bind, Except.bind]
+
+/-- The historical role-change proposal, under the normal rule. -/
+theorem validateProposal_memberNotFound_changeRoles (hn : authMode gs = .normal)
+    (key : Key) (roles : List Role) :
+    validateProposal validKey config gs signer (.changeRoles key roles) =
+        .error (.memberNotFound key) ↔ isAdmin signer gs = true ∧ isMember key gs = false := by
+  cases ha : isAdmin signer gs
+  · simp [validateProposal, requireAdmin, hn, ha, bind, Except.bind]
+  · cases hm : isMember key gs
+    · simp [validateProposal, validateNormalProposal, requireAdmin, requireMember, hn, ha, hm,
+        bind, Except.bind]
+    · have hl : lookupMember key gs ≠ none := by
+        intro h; simp [isMember, h] at hm
+      obtain ⟨member, hmem⟩ := Option.ne_none_iff_exists'.mp hl
+      cases h : validateRoleChanges config gs key roles with
+      | error err =>
+        rcases validateRoleChanges_error_shape config gs key roles member hmem err h with
+          ⟨n, rfl⟩ | ⟨n, rfl⟩ <;>
+        simp [validateProposal, validateNormalProposal, requireAdmin, requireMember, hn, ha, hm,
+          h, bind, Except.bind]
+      | ok v =>
+        simp [validateProposal, validateNormalProposal, requireAdmin, requireMember, hn, ha, hm,
+          h, bind, Except.bind]
+
+
+/-- Under the normal rule an admission is refused as `roleAddPrecondition name`
+exactly when the signer is an admin, the key is valid and new, and `name` is the
+first role whose application definition does not allow adding it. -/
+theorem validateProposal_roleAddPrecondition_introduce (hn : authMode gs = .normal)
+    (key : Key) (email : Email) (roles : List Role) (name : RoleName) :
+    validateProposal validKey config gs signer (.introduceMember key email roles) =
+        .error (.roleAddPrecondition name) ↔
+      isAdmin signer gs = true ∧ validKey key = true ∧ isMember key gs = false ∧
+        roles.find? (fun role => match role with
+          | .adminRole _ => false
+          | .appRole n => match assocLookup n config.roleDefs with
+            | none => false
+            | some roleDef => !roleDef.canAdd gs.appFold) = some (.appRole name) := by
+  have additions : ∀ rs : List Role,
+      validateRoleAdditions config gs rs = .error (.roleAddPrecondition name) ↔
+        rs.find? (fun role => match role with
+          | .adminRole _ => false
+          | .appRole n => match assocLookup n config.roleDefs with
+            | none => false
+            | some roleDef => !roleDef.canAdd gs.appFold) = some (.appRole name) := by
+    intro rs
+    induction rs with
+    | nil => simp [validateRoleAdditions]
+    | cons role rest ih =>
+      cases role with
+      | adminRole admin =>
+        simp [validateRoleAdditions, checkRoleAddition, bind, Except.bind, ih]
+      | appRole n =>
+        cases hl : assocLookup n config.roleDefs with
+        | none => simp [validateRoleAdditions, checkRoleAddition, bind, Except.bind, hl, ih]
+        | some roleDef =>
+          cases hc : roleDef.canAdd gs.appFold <;>
+            simp [validateRoleAdditions, checkRoleAddition, bind, Except.bind, hl, hc, ih,
+              eq_comm]
+  cases ha : isAdmin signer gs <;> cases hk : validKey key <;> cases hm : isMember key gs <;>
+    simp [validateProposal, validateNormalProposal, requireAdmin, requireValidKey,
+      requireNotMember, hn, ha, hk, hm, additions, bind, Except.bind]
+
+/-- Under the normal rule a role change is refused as `roleRemovePrecondition name`
+exactly when the signer is an admin and `name` is the first removed role whose
+application definition does not allow removing it. -/
+theorem validateProposal_roleRemovePrecondition_changeRoles (hn : authMode gs = .normal)
+    (key : Key) (newRoles : List Role) (member : Member)
+    (hm : lookupMember key gs = some member) (name : RoleName) :
+    validateProposal validKey config gs signer (.changeRoles key newRoles) =
+        .error (.roleRemovePrecondition name) ↔
+      isAdmin signer gs = true ∧
+        (member.roles.filter (fun role => !newRoles.contains role)).find?
+          (fun role => match role with
+            | .adminRole _ => false
+            | .appRole n => match assocLookup n config.roleDefs with
+              | none => false
+              | some roleDef => !roleDef.canRemove gs.appFold) = some (.appRole name) := by
+  have removals : ∀ (name : RoleName) (rs : List Role),
+      validateRoleRemovals config gs rs = .error (.roleRemovePrecondition name) ↔
+        rs.find? (fun role => match role with
+          | .adminRole _ => false
+          | .appRole n => match assocLookup n config.roleDefs with
+            | none => false
+            | some roleDef => !roleDef.canRemove gs.appFold) = some (.appRole name) := by
+    intro name rs
+    induction rs with
+    | nil => simp [validateRoleRemovals]
+    | cons role rest ih =>
+      cases role with
+      | adminRole admin =>
+        simp [validateRoleRemovals, checkRoleRemoval, bind, Except.bind, ih]
+      | appRole n =>
+        cases hl : assocLookup n config.roleDefs with
+        | none => simp [validateRoleRemovals, checkRoleRemoval, bind, Except.bind, hl, ih]
+        | some roleDef =>
+          cases hc : roleDef.canRemove gs.appFold <;>
+            simp [validateRoleRemovals, checkRoleRemoval, bind, Except.bind, hl, hc, ih,
+              eq_comm]
+  have hmem : isMember key gs = true := by simp [isMember, hm]
+  cases ha : isAdmin signer gs
+  · simp [validateProposal, requireAdmin, hn, ha, bind, Except.bind]
+  · simp only [validateProposal, validateNormalProposal, requireAdmin, requireMember, hn, ha,
+      hmem, validateRoleChanges, hm, roleDifference, bind, Except.bind, if_true]
+    cases hr : validateRoleRemovals config gs
+        (member.roles.filter (fun role => !newRoles.contains role)) with
+    | error e =>
+      obtain ⟨n, rfl⟩ := validateRoleRemovals_error_shape config gs _ e hr
+      have hf := (removals n _).mp hr
+      simp [hf, eq_comm]
+    | ok v =>
+      simp only [true_and]
+      constructor
+      · intro h
+        obtain ⟨n, hn'⟩ := validateRoleAdditions_error_shape config gs _ _ h
+        cases hn'
+      · intro h
+        have := (removals name _).mpr h
+        rw [hr] at this
+        cases this
+
+end RefusalObservations
 
 end KelGroups

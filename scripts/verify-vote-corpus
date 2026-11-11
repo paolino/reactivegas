@@ -1,0 +1,568 @@
+#!/usr/bin/env bash
+#
+# Verify the frozen vote corpus (#75), its replay context and every control.
+# Run by `just lean-corpus-verify` after the exporter is built; that recipe is
+# the hosted step "Verify corpus emission", so every check here is an
+# obligation.
+#
+# Each sub-check prints exactly one line
+#
+#     VOTE-VERIFY <name> PASS|FAIL <detail>
+#
+# and the script exits non-zero when any sub-check failed. Sub-checks never
+# stop the run: a red base shows every acceptance line red for its own reason.
+#
+# Acceptance line -> sub-checks
+#   vote-corpus-emitted    emit-and-compare, manifest-lists-vote-files,
+#                          vote-check-*, key-sets, byte-control-*
+#   coverage-discovered    vote-check-coverage-discovered,
+#                          coverage-added-constructor-control
+#   replay-context-sidecar emit-and-compare-sidecar, manifest-lists-sidecar,
+#                          sidecar-shape, provenance-consistent, replay-row-1 .. replay-row-11 (incl. 4b)
+#   policy-rederived-and-witnessed
+#                          policy-witness, policy-rederived,
+#                          policy-rederived-control
+#   source-inputs-honest   digest-recomputed, projection-committed,
+#                          hermetic-regeneration, added-input-control,
+#                          tree-unchanged
+#
+# The writer of the committed files is the exporter executable alone. This
+# script writes only below a temporary directory and never to the tree.
+
+set -uo pipefail
+
+root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+lean=$root/lean
+corpus=$lean/corpus
+exe=$lean/.lake/build/bin/corpusExport
+vote=$corpus/vote.json
+ctx=$corpus/vote.context.json
+
+tmp=$(mktemp -d "${TMPDIR:-/tmp}/vote-verify.XXXXXX")
+trap 'rm -rf -- "$tmp"' EXIT
+
+pass_n=0
+fail_n=0
+ok() { printf 'VOTE-VERIFY %s PASS %s\n' "$1" "$2"; pass_n=$((pass_n + 1)); }
+bad() { printf 'VOTE-VERIFY %s FAIL %s\n' "$1" "$2"; fail_n=$((fail_n + 1)); }
+first_line() { head -n 1 | cut -c1-200; }
+
+for tool in git jq sha256sum cmp sed awk dd; do
+    command -v "$tool" >/dev/null || { echo "verify-vote-corpus: missing tool $tool" >&2; exit 2; }
+done
+[ -x "$exe" ] || { echo "verify-vote-corpus: exporter not built: $exe" >&2; exit 2; }
+
+snapshot() {
+    {
+        git -C "$root" status --porcelain=v1 --untracked-files=all
+        git -C "$root" ls-files -z | (cd "$root" && xargs -0 sha256sum)
+    } | sha256sum | cut -d' ' -f1
+}
+tree_before=$(snapshot)
+
+# ---- source-input projection (independent of the exporter's own walker) -----
+# Module A.B.C -> lean/A/B/C.lean, discovered from the import lines starting at
+# the exporter module; Init, Lean and Std are toolchain-pinned and excluded.
+projection() {
+    local r=$1 m f imp
+    local -a todo=(Reactivegas.CorpusExport) out=()
+    local -A seen=()
+    while [ ${#todo[@]} -gt 0 ]; do
+        m=${todo[0]}
+        todo=("${todo[@]:1}")
+        [ -n "${seen[$m]:-}" ] && continue
+        seen[$m]=1
+        case ${m%%.*} in Init | Lean | Std) continue ;; esac
+        f=lean/${m//.//}.lean
+        [ -f "$r/$f" ] || { echo "projection: module $m has no file $f" >&2; return 1; }
+        out+=("$f")
+        while IFS= read -r imp; do todo+=("$imp"); done \
+            < <(sed -nE 's/^import[[:space:]]+([A-Za-z0-9_.]+).*$/\1/p' "$r/$f")
+    done
+    printf '%s\n' "${out[@]}" lean/lakefile.lean lean/lean-toolchain lean/lake-manifest.json \
+        | LC_ALL=C sort -u
+}
+
+# Record: <path> 0x00 <lowercase hex sha256 of the file> 0x0a; digest: sha256 of
+# the concatenated records.
+digest_of() {
+    local r=$1 p
+    while IFS= read -r p; do
+        printf '%s\0%s\n' "$p" "$(sha256sum "$r/$p" | cut -d' ' -f1)"
+    done < <(projection "$r") | sha256sum | cut -d' ' -f1
+}
+
+# ---- A. vote-corpus-emitted --------------------------------------------------
+mkdir -p "$tmp/emit"
+"$exe" vote emit "$tmp/emit/vote.json" >"$tmp/emit.log" 2>&1
+emit_rc=$?
+if [ $emit_rc -ne 0 ] || [ ! -s "$tmp/emit/vote.json" ]; then
+    bad emit-and-compare "exporter 'vote emit' rc=$emit_rc, files written: $(ls "$tmp/emit" | wc -l): $(first_line <"$tmp/emit.log")"
+elif ! cmp -s "$tmp/emit/vote.json" "$vote"; then
+    bad emit-and-compare "re-emitted vote.json differs from the committed lean/corpus/vote.json"
+else
+    ok emit-and-compare "vote.json re-emitted byte-identical to the committed file"
+fi
+
+if [ -f "$corpus/corpus.sha256" ] \
+    && [ "$(grep -c -E '  corpus/vote\.json$' "$corpus/corpus.sha256")" -eq 1 ] \
+    && (cd "$lean" && sha256sum -c corpus/corpus.sha256 >"$tmp/manifest.log" 2>&1); then
+    ok manifest-lists-vote-files "$(wc -l <"$corpus/corpus.sha256") manifest lines verified, corpus/vote.json listed"
+else
+    bad manifest-lists-vote-files "manifest does not list and verify corpus/vote.json"
+fi
+
+# The exporter's own live checks, one tagged line each. A mode that prints
+# nothing passes nothing: every required tag must be present and PASS.
+required_checks=(
+    live-binding wrapper-context nonzero-extent
+    V1-vote-route-observable V2-closure-with-economics V3-franchise-closure-while-active
+    journey-lifted lifecycle-rows vote-error-identity-observed coverage-discovered
+)
+"$exe" vote check "$vote" >"$tmp/vote-check.log" 2>&1
+check_rc=$?
+for t in "${required_checks[@]}"; do
+    if grep -q "^VOTE-CHECK $t PASS" "$tmp/vote-check.log"; then
+        ok "vote-check-$t" "$(grep "^VOTE-CHECK $t PASS" "$tmp/vote-check.log" | first_line)"
+    else
+        bad "vote-check-$t" "no passing line from 'vote check' (rc=$check_rc): $(first_line <"$tmp/vote-check.log")"
+    fi
+done
+[ $check_rc -eq 0 ] || bad vote-check-exit "'vote check' exited $check_rc"
+
+if [ -f "$vote" ] && jq -e '
+      (keys == ["auth","initial","steps"]) and
+      ((.steps | length) > 0) and
+      ([.steps[] | keys] | all(. == ["accepted","change","event","signer","state","voteError"])) and
+      ([.steps[] | select(.accepted == true) | .voteError] | all(. == null))
+    ' "$vote" >/dev/null 2>&1; then
+    ok key-sets "exact key sets on the bytes: wrapper and $(jq '.steps | length' "$vote") steps"
+else
+    bad key-sets "lean/corpus/vote.json missing or its exact key sets differ"
+fi
+
+# Byte control: one mutated byte must be rejected by each of the three
+# comparisons the verification makes, the restored copy must pass all three.
+vote_legs() { # file -> sets leg_cmp leg_sha leg_check to 0 (accepts) or 1 (rejects)
+    local f=$1 want
+    cmp -s "$f" "$tmp/emit/vote.json" && leg_cmp=0 || leg_cmp=1
+    want=$(awk '$2 == "corpus/vote.json" { print $1 }' "$corpus/corpus.sha256" 2>/dev/null)
+    [ -n "$want" ] && [ "$(sha256sum "$f" | cut -d' ' -f1)" = "$want" ] && leg_sha=0 || leg_sha=1
+    "$exe" vote check "$f" >/dev/null 2>&1 && leg_check=0 || leg_check=1
+}
+if [ -s "$vote" ]; then
+    mkdir -p "$tmp/bc"
+    cp "$vote" "$tmp/bc/vote.json"
+    orig=$(dd if="$vote" bs=1 skip=100 count=1 2>/dev/null)
+    new=Z
+    [ "$orig" = Z ] && new=Y
+    printf '%s' "$new" | dd of="$tmp/bc/vote.json" bs=1 seek=100 conv=notrunc 2>/dev/null
+    if cmp -s "$vote" "$tmp/bc/vote.json"; then
+        bad byte-control-mutation "mutation did not change the copy"
+    else
+        vote_legs "$tmp/bc/vote.json"
+        mutated="cmp=$leg_cmp manifest=$leg_sha check=$leg_check"
+        if [ $leg_cmp -eq 1 ] && [ $leg_sha -eq 1 ] && [ $leg_check -eq 1 ]; then
+            ok byte-control-mutation "one mutated byte rejected by all three comparisons ($mutated)"
+        else
+            bad byte-control-mutation "a comparison accepted the mutated byte ($mutated)"
+        fi
+        cp "$vote" "$tmp/bc/vote.json"
+        vote_legs "$tmp/bc/vote.json"
+        if [ $leg_cmp -eq 0 ] && [ $leg_sha -eq 0 ] && [ $leg_check -eq 0 ] && cmp -s "$vote" "$tmp/bc/vote.json"; then
+            ok byte-control-restore "restored copy byte-identical and accepted by all three comparisons"
+        else
+            bad byte-control-restore "restored copy rejected (cmp=$leg_cmp manifest=$leg_sha check=$leg_check)"
+        fi
+    fi
+else
+    bad byte-control-mutation "lean/corpus/vote.json missing"
+    bad byte-control-restore "lean/corpus/vote.json missing"
+fi
+
+# ---- B. coverage-discovered --------------------------------------------------
+"$exe" vote coverage-control "$vote" >"$tmp/cov-control.log" 2>&1
+cov_rc=$?
+if [ $cov_rc -eq 0 ] && grep -q '^VOTE-CHECK coverage-added-constructor-control PASS' "$tmp/cov-control.log"; then
+    ok coverage-added-constructor-control "$(grep '^VOTE-CHECK coverage-added-constructor-control PASS' "$tmp/cov-control.log" | first_line)"
+else
+    bad coverage-added-constructor-control "rc=$cov_rc: $(first_line <"$tmp/cov-control.log")"
+fi
+
+# ---- D1. policy witness (precondition of every policy control) --------------
+witness_ok=0
+nw=
+sw=
+"$exe" vote witness "$vote" >"$tmp/witness.log" 2>&1
+wit_rc=$?
+if [ $wit_rc -eq 0 ] && line=$(grep '^POLICY-WITNESS step=' "$tmp/witness.log" | head -n 1) \
+    && sw=$(sed -nE 's/.*step=([0-9]+).*/\1/p' <<<"$line") \
+    && nw=$(sed -nE 's/.* n=([0-9]+).*/\1/p' <<<"$line") \
+    && [ -n "$sw" ] && [ -n "${nw:-}" ] && [ "$nw" -ge 1 ]; then
+    witness_ok=1
+    ok policy-witness "$line"
+else
+    bad policy-witness "no collective query at n >= 1 where legacyThreshold and zeroThreshold differ (rc=$wit_rc): $(first_line <"$tmp/witness.log")"
+fi
+
+# ---- C. replay-context-sidecar ----------------------------------------------
+"$exe" vote emit-context "$vote" "$tmp/emit/vote.context.json" "$root" >"$tmp/emit-ctx.log" 2>&1
+emit_ctx_rc=$?
+if [ $emit_ctx_rc -ne 0 ] || [ ! -s "$tmp/emit/vote.context.json" ]; then
+    bad emit-and-compare-sidecar "exporter 'vote emit-context' rc=$emit_ctx_rc: $(first_line <"$tmp/emit-ctx.log")"
+elif ! cmp -s "$tmp/emit/vote.context.json" "$ctx"; then
+    bad emit-and-compare-sidecar "re-emitted sidecar differs from the committed lean/corpus/vote.context.json"
+else
+    ok emit-and-compare-sidecar "vote.context.json re-emitted byte-identical to the committed file"
+fi
+if [ -f "$corpus/corpus.sha256" ] \
+    && [ "$(grep -c -E '  corpus/vote\.context\.json$' "$corpus/corpus.sha256")" -eq 1 ] \
+    && (cd "$lean" && sha256sum -c corpus/corpus.sha256 >/dev/null 2>&1); then
+    ok manifest-lists-sidecar "corpus/vote.context.json listed and verified"
+else
+    bad manifest-lists-sidecar "manifest does not list and verify corpus/vote.context.json"
+fi
+
+if [ -f "$ctx" ] && jq -e --arg h "$(sha256sum "$vote" 2>/dev/null | cut -d' ' -f1)" '
+      (keys == ["corpus","generatedFrom","policies","schema","version"]) and
+      (.schema == "reactivegas.replay-context") and (.version == 1) and
+      (.corpus | keys == ["contentSha256","path"]) and
+      (.corpus.path == "corpus/vote.json") and (.corpus.contentSha256 == $h) and
+      (.policies | keys == ["backdonateAuth","threshold"]) and
+      (.policies.threshold | keys == ["label","source","table"]) and
+      (.policies.threshold.label == "legacyThreshold") and
+      (.policies.threshold.source.declaration == "KelGroups.Vote.legacyThreshold") and
+      (.policies.threshold.table as $t
+        | ($t | length) > 0
+        and ([$t[] | length == 2 and (.[0] | type == "number") and (.[1] | type == "number")
+                     and (.[0] >= 0) and (.[1] >= 0) and (.[0] == (.[0] | floor)) and (.[1] == (.[1] | floor))] | all)
+        and ([$t[] | .[0]] == [range(0; $t | length)])) and
+      (.policies.backdonateAuth.semantics == "always-refuse") and
+      (.policies.backdonateAuth.label == "probeAuth") and
+      (.policies.backdonateAuth.source.declaration == "Reactivegas.probeAuth") and
+      (.generatedFrom | keys == ["exporter","sourceInputDigest"]) and
+      (.generatedFrom.exporter == "Reactivegas.CorpusExport") and
+      (.generatedFrom.sourceInputDigest | test("^[0-9a-f]{64}$"))
+    ' "$ctx" >/dev/null 2>&1; then
+    ok sidecar-shape "schema, keys, contentSha256 binding and canonical table per the replay-context contract"
+else
+    bad sidecar-shape "lean/corpus/vote.context.json missing or not the contract's sidecar"
+fi
+
+# Provenance is never evidence, but a stale one misleads: each recorded Git blob
+# id must be what git computes for the recorded path in the working tree.
+prov_bad=
+for decl in threshold backdonateAuth; do
+    p=$(jq -r ".policies.$decl.source.path // empty" "$ctx" 2>/dev/null)
+    oid=$(jq -r ".policies.$decl.source.gitBlobOid // empty" "$ctx" 2>/dev/null)
+    [ -n "$p" ] && [ -n "$oid" ] && [ "$(git -C "$root" hash-object -- "$p" 2>/dev/null)" = "$oid" ] \
+        || prov_bad="$prov_bad $decl"
+done
+if [ -z "$prov_bad" ]; then
+    ok provenance-consistent "recorded Git blob ids equal git hash-object of the recorded paths (provenance only, not evidence)"
+else
+    bad provenance-consistent "recorded Git blob id differs from the file for:$prov_bad"
+fi
+
+# replay_row <n> <sidecar> <expected rc> <required tag> [required text]
+replay_row() {
+    local n=$1 file=$2 want_rc=$3 tag=$4 text=${5:-} out rc
+    if [ ! -s "$file" ]; then
+        bad "replay-row-$n" "no context file to replay with"
+        return
+    fi
+    out=$("$exe" vote replay "$vote" "$file" 2>&1)
+    rc=$?
+    printf '%s\n' "$out" >"$tmp/replay-$n.log"
+    if [ $rc -eq "$want_rc" ] && grep -q "$tag" "$tmp/replay-$n.log" \
+        && { [ -z "$text" ] || grep -q -- "$text" "$tmp/replay-$n.log"; }; then
+        ok "replay-row-$n" "exit $rc, $(grep "$tag" "$tmp/replay-$n.log" | first_line)"
+    else
+        bad "replay-row-$n" "expected exit $want_rc with '$tag'${text:+ and '$text'}; got exit $rc: $(first_line <"$tmp/replay-$n.log")"
+    fi
+}
+# mutate <name> <jq filter | sed expression> -> $tmp/ctx/<name>.json, refusing a no-op
+mutate() {
+    local name=$1 mode=$2 expr=$3
+    mkdir -p "$tmp/ctx"
+    if [ ! -s "$ctx" ]; then : >"$tmp/ctx/$name.json"; return; fi
+    if [ "$mode" = jq ]; then
+        jq -c "$expr" "$ctx" >"$tmp/ctx/$name.json" 2>/dev/null || : >"$tmp/ctx/$name.json"
+    else
+        sed -E "$expr" "$ctx" >"$tmp/ctx/$name.json"
+    fi
+    if cmp -s "$ctx" "$tmp/ctx/$name.json"; then
+        : >"$tmp/ctx/$name.json"
+        echo "mutation $name did not apply" >&2
+    fi
+}
+
+# Row 1: no mutation.
+replay_row 1 "$ctx" 0 '^REPLAY OK'
+
+# Row 2: the table becomes zeroThreshold over the same domain.
+mutate row2 jq '.policies.threshold.table |= map([.[0], 0])'
+if [ $witness_ok -eq 1 ]; then
+    replay_row 2 "$tmp/ctx/row2.json" 12 '^CONFORMANCE MISMATCH' "step=$sw"
+else
+    bad replay-row-2 "blocked: corpus inadequate as a policy witness"
+fi
+
+# Row 3: one character of contentSha256 corrupted.
+mutate row3 jq '.corpus.contentSha256 |= ((if .[0:1] == "0" then "1" else "0" end) + .[1:])'
+replay_row 3 "$tmp/ctx/row3.json" 10 '^PRE-REPLAY REFUSAL' 'digest'
+
+# Row 4: truncate to a valid prefix {0..n-1} strictly below the witnessed n.
+if [ $witness_ok -eq 1 ]; then
+    mutate row4 jq ".policies.threshold.table |= .[0:$nw]"
+    out=$("$exe" vote replay "$vote" "$tmp/ctx/row4.json" 2>&1)
+    rc=$?
+    printf '%s\n' "$out" >"$tmp/replay-4.log"
+    valid_line=$(grep -n '^CONTEXT VALID' "$tmp/replay-4.log" | head -n 1 | cut -d: -f1)
+    abort_line=$(grep -n '^RUNTIME ABORT' "$tmp/replay-4.log" | head -n 1 | cut -d: -f1)
+    if [ $rc -eq 11 ] && [ -n "$valid_line" ] && [ -n "$abort_line" ] && [ "$valid_line" -lt "$abort_line" ] \
+        && grep -q "^RUNTIME ABORT.* n=$nw[ ,]" "$tmp/replay-4.log" \
+        && grep -q 'no full-conformance claim' "$tmp/replay-4.log" \
+        && ! grep -q -e '^PRE-REPLAY REFUSAL' -e '^REPLAY OK' "$tmp/replay-4.log"; then
+        ok replay-row-4 "context valid, then abort at the point of query n=$nw (witness step $sw), exit 11: $(grep '^RUNTIME ABORT' "$tmp/replay-4.log" | first_line)"
+    else
+        bad replay-row-4 "expected CONTEXT VALID then RUNTIME ABORT at n=$nw, exit 11; got exit $rc: $(first_line <"$tmp/replay-4.log")"
+    fi
+else
+    bad replay-row-4 "blocked: corpus inadequate as a policy witness"
+fi
+
+
+# Row 4b: the same truncation at a size first reached after step 0 (the franchise
+# grew by an admission). Every earlier step stays inside the domain, so the abort
+# must report that later step and a non-empty checked prefix; a check made on the
+# initial state alone would abort at step 0 instead.
+late_line=$(grep '^POLICY-LATE-QUERY step=' "$tmp/witness.log" | head -n 1)
+ls_=$(sed -nE 's/.*step=([0-9]+).*/\1/p' <<<"$late_line")
+ln_=$(sed -nE 's/.* n=([0-9]+).*/\1/p' <<<"$late_line")
+if [ $witness_ok -eq 1 ] && [ -n "$ls_" ] && [ -n "$ln_" ] && [ "$ls_" -ge 1 ] && [ "$ln_" -ge 1 ]; then
+    mutate row4b jq ".policies.threshold.table |= .[0:$ln_]"
+    out=$("$exe" vote replay "$vote" "$tmp/ctx/row4b.json" 2>&1)
+    rc=$?
+    printf '%s\n' "$out" >"$tmp/replay-4b.log"
+    if [ $rc -eq 11 ] && grep -q '^CONTEXT VALID' "$tmp/replay-4b.log" \
+        && grep -q "^RUNTIME ABORT.* n=$ln_[ ,].* at step $ls_;" "$tmp/replay-4b.log" \
+        && grep -q "the $ls_ steps before it" "$tmp/replay-4b.log" \
+        && grep -q 'no full-conformance claim' "$tmp/replay-4b.log" \
+        && ! grep -q -e '^PRE-REPLAY REFUSAL' -e '^REPLAY OK' "$tmp/replay-4b.log"; then
+        ok replay-row-4b "abort at the later query n=$ln_ at step $ls_ with a checked prefix of $ls_ steps, exit 11"
+    else
+        bad replay-row-4b "expected RUNTIME ABORT at n=$ln_ at step $ls_ (prefix $ls_ steps), exit 11; got exit $rc: $(grep '^RUNTIME ABORT' "$tmp/replay-4b.log" | first_line)"
+    fi
+else
+    bad replay-row-4b "corpus exhibits no collective query first reached after step 0: inadequate for the point-of-query control (${late_line:-no POLICY-LATE-QUERY line})"
+fi
+# Row 5: a duplicated key.
+mutate row5 jq '.policies.threshold.table |= (.[0:2] + [.[1]] + .[2:])'
+replay_row 5 "$tmp/ctx/row5.json" 10 '^PRE-REPLAY REFUSAL' 'duplicate-key'
+
+# Row 6: one table value written as a float.
+mutate row6 sed 's/\[3,2\]/[3,2.0]/'
+replay_row 6 "$tmp/ctx/row6.json" 10 '^PRE-REPLAY REFUSAL' 'non-integer'
+
+# Row 7: an auth semantics token the replayer does not implement.
+mutate row7 jq '.policies.backdonateAuth.semantics = "sometimes-refuse"'
+replay_row 7 "$tmp/ctx/row7.json" 10 '^PRE-REPLAY REFUSAL' 'semantics'
+
+# Row 8: label only: it has no operative force.
+mutate row8 jq '.policies.threshold.label = "zeroThreshold"'
+replay_row 8 "$tmp/ctx/row8.json" 0 '^REPLAY OK'
+
+# Row 9: restore byte-identical.
+if [ -s "$ctx" ]; then
+    cp "$ctx" "$tmp/ctx/row9.json"
+    if cmp -s "$ctx" "$tmp/ctx/row9.json"; then
+        replay_row 9 "$tmp/ctx/row9.json" 0 '^REPLAY OK'
+    else
+        bad replay-row-9 "restored copy is not byte-identical"
+    fi
+else
+    bad replay-row-9 "no context file to restore"
+fi
+
+# Rows 10 and 11 (taxonomy, not contract rows): unrecognised schema and version.
+mutate row10 jq '.schema = "reactivegas.other"'
+replay_row 10 "$tmp/ctx/row10.json" 10 '^PRE-REPLAY REFUSAL' 'schema'
+mutate row11 jq '.version = 2'
+replay_row 11 "$tmp/ctx/row11.json" 10 '^PRE-REPLAY REFUSAL' 'version'
+
+# ---- D2. policy re-derived from the live declaration ------------------------
+"$exe" vote policy "$ctx" >"$tmp/policy.log" 2>&1
+pol_rc=$?
+if [ $pol_rc -eq 0 ] && grep -q '^POLICY-REDERIVED' "$tmp/policy.log"; then
+    ok policy-rederived "$(grep '^POLICY-REDERIVED' "$tmp/policy.log" | first_line)"
+else
+    bad policy-rederived "rc=$pol_rc: $(first_line <"$tmp/policy.log")"
+fi
+# Every domain point read from the sidecar bytes, mutated in turn (value + 1, the
+# table staying canonical, label and provenance as written), must be rejected by
+# the re-derivation alone and the rejection must name that point. The quantifier
+# refuses an empty extent, and that refusal is itself shown on a sidecar whose
+# table is empty.
+policy_points_control() { # sidecar -> 0 only when every point was rejected at its own index
+    local file=$1 k i out rc
+    k=$(jq -r '.policies.threshold.table | length' "$file" 2>/dev/null) || return 1
+    [ -n "$k" ] && [ "$k" -ge 1 ] 2>/dev/null || { echo "extent=0"; return 1; }
+    mkdir -p "$tmp/pts"
+    for ((i = 0; i < k; i++)); do
+        jq -c ".policies.threshold.table[$i][1] += 1" "$file" >"$tmp/pts/p$i.json" 2>/dev/null || { echo "point $i: mutation failed"; return 1; }
+        cmp -s "$file" "$tmp/pts/p$i.json" && { echo "point $i: mutation did not apply"; return 1; }
+        out=$("$exe" vote policy "$tmp/pts/p$i.json" 2>&1)
+        rc=$?
+        if [ $rc -eq 0 ] || ! grep -q "^POLICY-MISMATCH n=$i " <<<"$out"; then
+            echo "point $i not rejected at n=$i (rc=$rc): $(first_line <<<"$out")"
+            return 1
+        fi
+    done
+    echo "points=$k"
+}
+if [ -s "$ctx" ]; then
+    ctl_out=$(policy_points_control "$ctx"); ctl_rc=$?
+    jq -c '.policies.threshold.table = []' "$ctx" >"$tmp/ctx/policy-empty.json" 2>/dev/null
+    empty_out=$(policy_points_control "$tmp/ctx/policy-empty.json"); empty_rc=$?
+    if [ $ctl_rc -eq 0 ] && [ $empty_rc -ne 0 ] && [ $pol_rc -eq 0 ]; then
+        ok policy-rederived-control "each of the ${ctl_out#points=} domain points mutated in turn is rejected at its own index; the unchanged table is accepted; an empty extent is refused ($empty_out)"
+    else
+        bad policy-rederived-control "real sidecar: rc=$ctl_rc ${ctl_out}; emptied table: rc=$empty_rc ${empty_out}; unchanged table rc=$pol_rc"
+    fi
+else
+    bad policy-rederived-control "no sidecar to mutate"
+fi
+# ---- E. source-inputs-honest -------------------------------------------------
+shell_digest=$(digest_of "$root" 2>"$tmp/digest.err") || shell_digest=
+lean_digest=$("$exe" vote digest "$root" 2>"$tmp/digest-lean.err") || lean_digest=
+side_digest=$(jq -r '.generatedFrom.sourceInputDigest // empty' "$ctx" 2>/dev/null)
+if [ -n "$shell_digest" ] && [ "$shell_digest" = "$lean_digest" ] && [ "$shell_digest" = "$side_digest" ]; then
+    ok digest-recomputed "$shell_digest over $(projection "$root" | wc -l) projected paths (shell, exporter and sidecar agree)"
+else
+    bad digest-recomputed "shell=${shell_digest:-none} exporter=${lean_digest:-none} sidecar=${side_digest:-none}"
+fi
+
+dirty=
+while IFS= read -r p; do
+    git -C "$root" ls-files --error-unmatch -- "$p" >/dev/null 2>&1 || dirty="$dirty untracked:$p"
+    git -C "$root" diff --quiet HEAD -- "$p" 2>/dev/null || dirty="$dirty modified:$p"
+done < <(projection "$root")
+if [ -z "$dirty" ] && [ -n "$shell_digest" ]; then
+    ok projection-committed "every projected path is tracked and equals its HEAD bytes"
+else
+    bad projection-committed "projected paths not reproducible from committed inputs:${dirty:- projection unreadable}"
+fi
+
+# hermetic <tree> <expected dir>: copy only the projection of <tree> into an empty
+# directory, build there in an empty environment, emit, and compare with the
+# bytes in <expected dir>. Returns 0 when they are identical.
+hermetic() {
+    local tree=$1 expected=$2 h p
+    h=$(mktemp -d "$tmp/hermetic.XXXXXX")
+    while IFS= read -r p; do
+        mkdir -p "$h/$(dirname "$p")"
+        cp "$tree/$p" "$h/$p"
+    done < <(projection "$tree")
+    mkdir -p "$h/home" "$h/out"
+    (cd "$h/lean" && env -i PATH="$PATH" HOME="$h/home" LEAN_NUM_THREADS="${LEAN_NUM_THREADS:-4}" \
+        lake build corpusExport >"$h/build.log" 2>&1) || { echo "hermetic: build failed: $(tail -n 3 "$h/build.log" | tr '\n' ' ')" >&2; return 2; }
+    (cd "$h/lean" \
+        && env -i PATH="$PATH" HOME="$h/home" \
+            ./.lake/build/bin/corpusExport vote emit "$h/out/vote.json" >"$h/emit.log" 2>&1 \
+        && env -i PATH="$PATH" HOME="$h/home" \
+            ./.lake/build/bin/corpusExport vote emit-context "$h/out/vote.json" "$h/out/vote.context.json" "$h" \
+            >>"$h/emit.log" 2>&1) \
+        || { echo "hermetic: emit failed: $(first_line <"$h/emit.log")" >&2; return 2; }
+    cmp -s "$h/out/vote.json" "$expected/vote.json" && cmp -s "$h/out/vote.context.json" "$expected/vote.context.json"
+}
+
+mkdir -p "$tmp/committed"
+cp "$vote" "$tmp/committed/vote.json" 2>/dev/null
+cp "$ctx" "$tmp/committed/vote.context.json" 2>/dev/null
+hermetic_real_ok=0
+if hermetic "$root" "$tmp/committed" 2>"$tmp/hermetic.err"; then
+    hermetic_real_ok=1
+    ok hermetic-regeneration "a tree holding only the projection, built in an empty environment, reproduces the committed bytes"
+else
+    bad hermetic-regeneration "projection-only generation does not reproduce the committed bytes: $(first_line <"$tmp/hermetic.err")"
+fi
+
+# Added-input control: a copy of the tree whose exporter also reads a file
+# outside the projection (the projection's path set is unchanged). Generation
+# from the whole copy and from its projection must then differ, and the same
+# check must reject it.
+ctl=$tmp/added-input
+mkdir -p "$ctl"
+cp -a "$lean" "$ctl/lean"
+rm -rf "$ctl/lean/corpus"
+printf 'an input the projection does not name\n' >"$ctl/lean/extra-input.txt"
+patched=$ctl/lean/Reactivegas/CorpusExport.lean
+sed -i 's@^\(    IO.FS.writeFile votePath \)\(.*\)$@\1(\2 ++ (← (try IO.FS.readFile "extra-input.txt" catch _ => pure "")))@' "$patched" 2>/dev/null
+ctl_stage=patch
+if grep -q 'extra-input.txt' "$patched" 2>/dev/null; then
+    ctl_stage=build
+    if (cd "$ctl/lean" && lake build corpusExport >"$ctl/build.log" 2>&1); then
+        ctl_stage=emit
+        mkdir -p "$ctl/full"
+        if (cd "$ctl/lean" \
+            && ./.lake/build/bin/corpusExport vote emit "$ctl/full/vote.json" >"$ctl/full.log" 2>&1 \
+            && ./.lake/build/bin/corpusExport vote emit-context "$ctl/full/vote.json" "$ctl/full/vote.context.json" "$ctl" \
+                >>"$ctl/full.log" 2>&1) \
+            && grep -q 'an input the projection does not name' "$ctl/full/vote.json"; then
+            ctl_stage=hermetic
+        fi
+    fi
+fi
+if [ "$ctl_stage" = hermetic ]; then
+    hermetic "$ctl" "$ctl/full" 2>"$tmp/added.err"
+    herm_rc=$?
+    if [ $herm_rc -eq 1 ] && [ "$hermetic_real_ok" = 1 ]; then
+        ok added-input-control "added input outside the projection rejected: hermetic generation (built and run) differs from whole-tree generation; the unmodified tree reproduced its bytes"
+    elif [ $herm_rc -eq 0 ]; then
+        bad added-input-control "projection-only generation reproduced bytes that depend on an input outside the projection"
+    else
+        bad added-input-control "hermetic generation of the control tree failed to run (rc=$herm_rc), which is not a rejection of the added input: $(first_line <"$tmp/added.err")"
+    fi
+else
+    bad added-input-control "control tree stage '$ctl_stage' did not complete: $(first_line <"$ctl/full.log" 2>/dev/null || first_line <"$ctl/build.log" 2>/dev/null)"
+fi
+
+# ---- F. history-validated (#66 S5-C: vote-corpus-validated) ------------------
+# The integrated validator `historyRefusal` (Reactivegas.FiniteHistory) on the
+# committed bytes of vote.json: threshold from the sidecar's table, the
+# always-refuse authorization the sidecar names, then a planted post-state, a
+# flipped `accepted` (both directions) and three non-genesis initial aggregates,
+# each of which must be refused for its own reason. Validation of one supplied
+# history; it decides nothing about reachability.
+history_names="validated-vote-corpus control-planted-post-state control-flipped-accepted-true
+    control-flipped-accepted-false control-non-genesis-pending-proposal
+    control-non-genesis-live control-non-genesis-comune-member"
+if (cd "$lean" && lake build Reactivegas.FiniteHistory) >"$tmp/history-build.log" 2>&1; then
+    (cd "$lean" && REACTIVEGAS_VOTE_CORPUS="$vote" REACTIVEGAS_VOTE_CONTEXT="$ctx" \
+        lake env lean Reactivegas/CorpusHistory.lean) >"$tmp/history.log" 2>&1
+    history_rc=$?
+    for n in $history_names; do
+        if grep -q "^HISTORY-VERIFY $n PASS" "$tmp/history.log"; then
+            ok "history-$n" "$(grep "^HISTORY-VERIFY $n PASS" "$tmp/history.log" | first_line)"
+        else
+            bad "history-$n" "no passing line from the history validation (rc=$history_rc): $(grep "^HISTORY-VERIFY $n" "$tmp/history.log" | first_line) $(grep -m1 -E 'error|Error' "$tmp/history.log" | cut -c1-160)"
+        fi
+    done
+    [ "$history_rc" -eq 0 ] || bad history-exit "the history validation exited $history_rc"
+else
+    for n in $history_names; do
+        bad "history-$n" "FiniteHistory did not build: $(first_line <"$tmp/history-build.log")"
+    done
+fi
+
+# ---- tree unchanged ----------------------------------------------------------
+tree_after=$(snapshot)
+if [ "$tree_before" = "$tree_after" ]; then
+    ok tree-unchanged "working tree and index byte-identical before and after verification"
+else
+    bad tree-unchanged "verification changed the working tree"
+fi
+
+printf 'VOTE-VERIFY summary pass=%d fail=%d\n' "$pass_n" "$fail_n"
+[ "$fail_n" -eq 0 ]

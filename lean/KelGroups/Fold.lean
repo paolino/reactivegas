@@ -46,7 +46,7 @@ def tryEnact (gs : GroupState α) (proposalId : ProposalId) : GroupState α :=
 def applyProposeDetailed (digest : Proposal → ProposalId) (gs : GroupState α)
     (signer : Key) (proposal : Proposal) : StepResult α :=
   let proposalId := digest proposal
-  let pending : PendingProposal := { proposal, proposer := signer, approvals := [signer] }
+  let pending : PendingProposal := { proposal, proposer := signer, approvals := [] }
   let proposed := { gs with
     pendingProposals := assocInsert proposalId pending gs.pendingProposals }
   tryEnactDetailed proposed proposalId
