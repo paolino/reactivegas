@@ -1,537 +1,451 @@
 # The reactivegas state machine
 
-Current record for the merged model. Pin:
-`4a6cd87fcbc3e4a536bbc9f240f5efe5704022af` (S1 #79 landed, 2026-09-05,
-lane #71; re-pinned from `e6c59242`, whose Lean content this page
-re-derives except where S1 is noted).
-It supersedes the pre-merge record, which described fifteen events, a
-`users`/`responsabili` State table, and a two-argument step — none of which
-match the merged Lean. Where this page states a ruled-but-unmerged change,
-it says so in the current-vs-ruled table at the end; implemented-behavior
-claims wait for their merge.
+This page describes the Lean model on `master`: the economic machine that
+manages a group's money, its purchases and its votes, and the way it sits on the
+group substrate. It is derived from the Lean sources under
+[`lean/`](https://github.com/paolino/reactivegas/tree/master/lean) and rewritten
+when they change. Every statement that names a Lean declaration is a citation,
+and the hosted build resolves each one against the built library (next section).
 
-The sources live under
-[`lean/Reactivegas/`](https://github.com/paolino/reactivegas/tree/main/lean/Reactivegas)
-and build with `lake build` (see `just lean`).
+The substrate (group state, base proposals, the vote machine) has its own page,
+[the group substrate and vote machine](kelgroups-vote-machine.md). This page
+covers what the economic machine adds to it.
 
 ## How to cite this page
 
-Every declaration-like claim carries a marker naming the Lean declaration at the pin above (for example, the marker for the State structure). The slice
-gate discovers every such marker and requires it to resolve against the
-pinned Lean; an unknown marker fails the build. Marker names use the
-module path for readability (`lean:KelGroups.GroupView`), but the compiled
-constants for the app payload are root `State` (`lean:State`) and `Event` (`lean:Event`) — there is no
-`Reactivegas.State` or `Reactivegas.Event` constant (CLOSURE-MAP C7). Where
-a name below is root, the marker says the root name.
+**Citation.** A citation is a code span made of the prefix lean: and the full
+name of a declaration of the Lean library, for example `lean:KelGroups.GroupView`.
+Some names have no namespace: the economic payload is `lean:State`, its event
+vocabulary is `lean:Event`, and the transition is `lean:step`. The sealed production
+root is `lean:Reactivegas.apply`. Cite by name; a line number is never a citation.
 
-Claims on this page are marked **law** (universally quantified theorem:
-states that for every execution, some property holds) or **finite witness**
-(an executable oracle whose whole statement is `check… = true` over a fixed
-corpus or exhibit). The two read nothing alike in Lean and must not be
-confused in prose; see “Laws versus finite witnesses”.
+**What resolves.** `scripts/design-citations/check` imports every Lean module it
+finds under `lean/` and asks the resulting Lean environment. A name resolves when
+it is a declaration those modules define and an author wrote: private
+declarations, compiler-internal names, recursors and the eliminators Lean
+derives for every inductive type do not count. Run it with `just design-citations`
+after `just lean`; the hosted build runs it right after the Lean build.
+
+**When a code span names a declaration.** Every code span that does not start
+with the prefix is read as code, and a declaration it names must be cited instead.
+The rule: take the identifier tokens of the span (each maximal run of identifier
+characters and dots, and each dot-separated component of such a run); a token
+names a declaration when it equals a trailing run of the components of some
+declaration's name. The span is then refused, wherever the token sits: alone,
+inside an expression, or after a variable and a dot. A bare field name or a bare
+function name in code font is therefore refused, and is cited with its full name
+instead, for example `lean:State.conti`. Lean decides, from the environment; no list is
+kept. A word that happens to be a declaration name is written in plain text when
+it is meant as a word.
+
+**What the check refuses.** An unresolved citation; a code span that names a
+declaration without the prefix; the prefix followed by a name outside a code
+span; a fenced block tagged lean; a record that carries no citation; and a Lean
+library that cannot be imported (not built, or a module missing). Each refusal
+names the file, the line and the span, and the exit status is non-zero. Fenced
+blocks of other kinds are not scanned and hold no declaration names.
+
+**Controls.** `just design-citations-controls` builds each refusal from the record
+itself in a throwaway copy (an unbuilt Lean tree, a renamed citation, a citation
+written once more without the prefix, a record with no citation, a directory
+with no page) and requires the checker to be red for that reason and green on
+the real pages. The hosted build runs it beside the check.
+
+**Law and finite witness.** A claim here rests on one of two kinds of Lean
+statement and says which. A **law** is a theorem quantified over every state and
+event it names. A **finite witness** is a definition evaluated to `true` on a
+fixed exhibit, or an elaboration-time check; it shows that one case behaves as
+described and says nothing about any other. The tables below mark each row.
+Nothing on this page claims the model complete: what a theorem does not state is
+not claimed.
 
 ## State
 
-The whole economic payload (root `lean:State`) is three association lists
-plus the vote payload — not four association lists, and there is no
-payload-local member or admin copy:
+The economic payload `lean:State` has six fields:
 
 | field | contents |
 | --- | --- |
-| `conti` | per-key credit balances (`lean:bal` reads them; absent key reads zero) |
-| `casse` | cash boxes, one entry per key (`lean:bump` appends/adjusts entries) |
-| `collections` | open purchase collections holding escrow |
-| `votes` | membership-free vote payload (`lean:KelGroups.Vote.VoteState`) |
+| `lean:State.conti` | credit accounts, one entry per key, read by `lean:bal` (an absent key reads zero) |
+| `lean:State.casse` | cash boxes, one entry per key |
+| `lean:State.collections` | open purchase collections (`lean:Collection`) holding escrow |
+| `lean:State.votes` | the vote payload (`lean:KelGroups.Vote.VoteState`): open questions and an append-only closure log |
+| `lean:State.bindings` | the target each open bound question will authorize |
+| `lean:State.live` | unspent authorizations (`lean:LiveAuth`) minted by closed bound questions |
 
-Membership and roles live only in `KelGroups.GroupState.members` and are
-read through the immutable `lean:KelGroups.GroupView`: a fold handed a view
-can read membership and roles and can produce nothing but app payload. The
-`lean:GroupView` argument on the transition is the whole point of #62 —
-membership is read, never carried.
+**Where membership lives.** The payload holds no membership. The group state
+`lean:KelGroups.GroupState` has one writable membership store, `lean:KelGroups.GroupState.members`.
+The application sees it only through `lean:KelGroups.GroupView`, obtained by
+`lean:KelGroups.groupView`: a read-only projection with no path back to a group
+state. An application fold (`lean:KelGroups.IntegratedAppFold`) and the hook that
+follows a base change (`lean:KelGroups.BaseHook`) take views and return payload or a
+refusal, so neither can return a member list. Law: a successful application
+event leaves the members relation as it was (`lean:KelGroups.app_event_preserves_members`)
+and commits no base change (`lean:KelGroups.app_event_has_no_base_change`). Finite
+witness: `lean:Reactivegas.app_members_preservation_holds`, with a member-writing
+mutant that the same check rejects (`lean:Reactivegas.app_members_preservation_mutant_caught`).
 
-A collection (`lean:Collection`) carries its id, a referente (responsible
-key), a closure-permission flag, and two pledge lists: `accepted` (money
-already moved) and `pending` (offers not yet accepted). A pledge
-(`lean:Pledge`) is a bare `(user, amount)` pair — no product, no order, no
-quantity (see “Voci non-goal”). Balances are plain `Int`; money held in
-escrow by a collection is the sum of *both* pledge lists (`lean:escrowOf`),
-and across all collections (`lean:escrowSum`). Every collection-modifying
-event touches the state through `lean:pullCollection`; refunds run through
-`lean:refundAll`, one bump per pledge.
+A collection `lean:Collection` carries its id, its referente (the responsible key),
+a flag `lean:Collection.permitted` that closure permission was granted, and two pledge
+lists: `lean:Collection.accepted` (money already moved to the collection) and
+`lean:Collection.pending` (offers not yet accepted). A pledge `lean:Pledge` is a bare
+pair of a user and an amount; it carries no product (see "Out of scope: the product
+catalogue"). Balances are plain integers. The money a collection holds is the sum
+of both lists (`lean:escrowOf`), and across all collections `lean:escrowSum`.
 
-Three balance facts that are easy to get backwards:
+**Balance facts.**
 
-- A zero balance for an absent key is read via `lean:bal`, but an accepted zero deposit stores it: from empty, a zero deposit stores `(u, 0)` in `conti` and `(a, 0)` in `casse`. `lean:absorbConto` is a bump, not
-  an erase: a departed member's `conti` entry survives at zero. Symmetrically,
-  admission creates no `conti`/`casse` entry at all, and the zero a reader
-  sees is what `lean:bal` returns for an absent key.
-- The common fund is the `conti` balance at the reserved
-  `lean:comuneId` — a reserved non-member account inside `conti`, never a
-  standalone `State` field (`lean:comuneBal`). The boot state (the `lean:State` empty value) carries no accounts, no collections, no questions.
-- **Stall.** `lean:stalled` holds when the comune conto goes negative. While
-  stalled the machine refuses departures, admin loss, `closePurchase`,
-  `withdraw`, `pledge` and `acceptPledge`; `donate` stays reachable because
-  it is the cure, as do `failPurchase` and `refusePledge`. `backdonate` is
-  refused by its own affordability guard, with no separate stall condition.
+- A zero balance for an absent key is what `lean:bal` returns. A deposit of zero
+  that is accepted stores an entry at zero: `lean:bump` appends an entry when the
+  key is absent. `lean:Reactivegas.absorbConto` is a bump, not an erase, so a departed member's
+  entry survives at zero. Admitting a member creates no entry at all.
+- The common fund is the `lean:State.conti` balance at the reserved key `lean:comuneId`
+  (`lean:comuneBal`). It is never a field of `lean:State` and never a member. The empty
+  payload `lean:State.empty` has no accounts, no collections, no questions.
+- **Stall.** `lean:stalled` holds when the common fund is negative. While stalled,
+  `lean:step` refuses `lean:AppEvent.withdraw`, `lean:AppEvent.pledge`, `lean:AppEvent.acceptPledge` and
+  `lean:AppEvent.closePurchase`, and the base hook (`lean:Reactivegas.economicCleanup`) refuses a
+  departure and the loss of admin status. `lean:AppEvent.donate` stays available: it
+  is the cure. `lean:AppEvent.failPurchase`, `lean:AppEvent.refusePledge` and
+  `lean:AppEvent.correctPledge` have no stall condition. `lean:AppEvent.backdonate` has none
+  of its own; its affordability guard refuses it.
+
+**Founding a group.** `lean:Reactivegas.boot` builds the founding aggregate and refuses
+it, with `none`, when the reserved key is listed as a member
+(`lean:Reactivegas.productionWellFormed`) or the payload is not a clean origin: no
+closure record, no binding, no unspent authorization (`lean:Reactivegas.cleanOrigin`).
+`lean:Reactivegas.apply` refuses with `lean:Reactivegas.ProductionError.comuneReserved` an aggregate
+that lists the reserved key, and an event whose result would
+(`lean:Reactivegas.apply_comuneReserved_iff`, law). The reserved key therefore cannot
+sign: finite witness `lean:Reactivegas.comune_cannot_authorize`.
 
 ## Events
 
-Root `lean:Event` has **14 event constructors**: `openPurchase`,
-`grantPermission`, `denyPermission`, `deposit`, `withdraw`, `transferCassa`,
-`donate`, `backdonate`, `pledge`, `acceptPledge`, `refusePledge`,
-`correctPledge`, `closePurchase`, `failPurchase`. Every law below quantifies
-over these fourteen.
+**Economic events.** `lean:Event` has 14 constructors, each carrying its author. The
+application surface `lean:AppEvent` has 18: the same 14 without an author field (the
+signer arrives from the fold) and four vote constructors, `lean:AppEvent.openQuestion`,
+`lean:AppEvent.cast`, `lean:AppEvent.renounce` and `lean:AppEvent.openBound`. The 14 are:
 
-The integrated surface `lean:AppEvent` has seventeen: the same fourteen
-without an author field (the signer arrives from the fold) plus
-`openQuestion`, `cast` and `renounce`. The application's own restricted
-proposal (`lean:Reactivegas/Types.lean:Proposal`) is `departure` / `changeRoles` — there is no
-admission constructor. Do not confuse the retired names with the live
-substrate vocabulary: `KelGroups.Proposal.removeMember` and
-`KelGroups.BaseMutation.removeMember` are live and current; what is gone is
-`Reactivegas.Event.removeMember`, together with `addUser`,
-`electResponsabile` and `removeResponsabile`.
+| economic | application | effect |
+| --- | --- | --- |
+| `lean:Event.openPurchase` | `lean:AppEvent.openPurchase` | open a collection |
+| `lean:Event.grantPermission` | `lean:AppEvent.grantPermission` | set the permission flag |
+| `lean:Event.denyPermission` | `lean:AppEvent.denyPermission` | dissolve a collection, refunding every pledge |
+| `lean:Event.deposit` | `lean:AppEvent.deposit` | credit a member and the signer's cash box |
+| `lean:Event.withdraw` | `lean:AppEvent.withdraw` | debit a member and the signer's cash box |
+| `lean:Event.transferCassa` | `lean:AppEvent.transferCassa` | move cash between two responsabili |
+| `lean:Event.donate` | `lean:AppEvent.donate` | cash arrived for the common fund |
+| `lean:Event.backdonate` | `lean:AppEvent.backdonate` | share the common fund equally among members |
+| `lean:Event.pledge` | `lean:AppEvent.pledge` | escrow a member's money in a collection |
+| `lean:Event.acceptPledge` | `lean:AppEvent.acceptPledge` | move a pledge from pending to accepted |
+| `lean:Event.refusePledge` | `lean:AppEvent.refusePledge` | refund a pending pledge |
+| `lean:Event.correctPledge` | `lean:AppEvent.correctPledge` | change or withdraw a pledge |
+| `lean:Event.closePurchase` | `lean:AppEvent.closePurchase` | spend the referente's cash box, dissolve the collection |
+| `lean:Event.failPurchase` | `lean:AppEvent.failPurchase` | refund every pledge, dissolve the collection |
 
-## Step
+**Retired constructors.** addUser, electResponsabile, removeResponsabile and an
+economic removeMember do not exist in `lean:Event` or `lean:AppEvent`: they are not
+refused, they cannot be written. Membership changes only through the substrate:
+the voted `lean:KelGroups.BaseMutation.removeMember` and `lean:KelGroups.BaseMutation.changeRoles`,
+and the direct `lean:KelGroups.DirectCommand.admitMember`. Those survive and are not
+retired. The application's own proposal vocabulary `lean:Proposal` has two
+constructors, `lean:Proposal.departure` and `lean:Proposal.changeRoles`, and no admission
+constructor; `lean:Reactivegas.proposalMutation` reads it as a substrate mutation, and
+the substrate type `lean:KelGroups.BaseMutation` cannot express admission either.
+The historical `lean:KelGroups.Proposal.introduceMember` survives in the historical
+store only, which the production root does not reach.
 
-The machine is a rejecting step function taking the canonical view, the
-signer, and an explicit authorization callback
-(`lean:BackdonateAuth`, `State → Int → Bool`, so no definition chooses the
-product policy):
+## The transition and who may sign
 
-```lean
-def step      (view : GroupView) (s : State) (signer : Key) (app : AppEvent)
-              (auth : BackdonateAuth) : Option State
-def stepEvent (view : GroupView) (s : State) (e : Event)
-              (auth : BackdonateAuth) : Option State
-```
+There are two layers. The economic core `lean:step` takes the view, the state, the
+signer, an application event and a backdonation veto (`lean:BackdonateAuth`), and
+returns the next state or `none`; `lean:stepEvent` gives the same core the 14-event
+shape. The production root `lean:Reactivegas.apply` wraps the substrate transition
+(`lean:KelGroups.applyIntegratedEvent`) around `lean:Reactivegas.integration`; it adds the
+spending of authorizations described under "Votes" and runs the sealed base hook.
+`lean:Reactivegas.apply` refuses an application event whose signer is not a member
+(`lean:KelGroups.ValidationError.notAMember`) before any fold runs.
 
-`lean:stepEvent` delegates all fourteen economic constructors to `lean:step`.
-The three vote constructors run elsewhere: bare `step` returns none for
-`openQuestion`/`cast`/`renounce`; inside `lean:appFold` they run
-`lean:voteApply` (see “Vote-lifecycle limits”).
+The guards of `lean:step`, per event (a responsabile is a member holding an admin
+role, `lean:isResponsabile`):
 
-Authorization today, per event, at current source (`lean:step`):
-
-| event | authorized signer + guard |
+| event | signer and guard |
 | --- | --- |
-| `openPurchase` | responsabile signer; collection id fresh (`lean:step_open_inv`) |
-| `grantPermission` / `denyPermission` | `lean:pullCollection` must succeed (absent id refused) first, then responsabile signer (single-signer today; provably vote-derived is ruled, unbuilt — see “Composition”) |
-| `deposit` | responsabile signer; `u` a member; signer ≠ `u`; `0 ≤ v` (`lean:step_deposit_inv`) |
-| `withdraw` | responsabile signer; `u` a member; signer ≠ `u`; `bal conti u ≥ v` (`lean:step_withdraw_inv`); not stalled |
-| `transferCassa` | responsabile signer and responsabile `f`; signer ≠ `f`; `v > 0` (`lean:step_transferCassa_inv`) |
-| `donate` | responsabile signer; `0 < v` (`lean:step_donate_inv`); raises the comune conto, creating no member credit |
-| `backdonate` | responsabile signer; `0 < w`; `comuneBal ≥ n * w` over the `lean:memberKeys` count; `auth s w` |
-| `pledge` | **responsabile signer today** (`lean:step_pledge_inv`); `u` a member; no existing pledge by `u` in either list; `0 < v`; `bal conti u ≥ v`; not stalled |
-| `acceptPledge` / `refusePledge` | responsabile signer who is the collection referente; pledge present in `pending` (`lean:step_accept_inv`, `lean:step_refuse_inv`); `acceptPledge` additionally not stalled |
-| `correctPledge` | responsabile signer who is the referente; pledge present in `accepted`; `0 ≤ v'` (`lean:step_correct_inv`); `bal conti u + (v − v') ≥ 0` |
-| `closePurchase` | responsabile signer who is the referente; `permitted` (`lean:step_close_inv`); `pending` empty; not stalled |
-| `failPurchase` | responsabile signer who is the referente; `pending` empty (`lean:step_fail_inv`) |
+| `lean:AppEvent.openPurchase` | a responsabile; the collection id is not in use (`lean:Reactivegas.step_open_inv`) |
+| `lean:AppEvent.grantPermission` | the collection exists; a responsabile (`lean:step_grant_inv`); at the root also an unspent positive authorization for it |
+| `lean:AppEvent.denyPermission` | the collection exists; a responsabile (`lean:step_deny_inv`); at the root a responsabile and an unspent negative authorization for it |
+| `lean:AppEvent.deposit` | a responsabile; the user is a member other than the signer; amount at least zero (`lean:Reactivegas.step_deposit_inv`) |
+| `lean:AppEvent.withdraw` | a responsabile; the user is a member other than the signer; the user's balance covers it; not stalled (`lean:Reactivegas.step_withdraw_inv`) |
+| `lean:AppEvent.transferCassa` | a responsabile; cash comes from a different responsabile; amount above zero (`lean:Reactivegas.step_transferCassa_inv`) |
+| `lean:AppEvent.donate` | a responsabile; amount above zero (`lean:Reactivegas.step_donate_inv`) |
+| `lean:AppEvent.backdonate` | a responsabile; share above zero; the common fund covers share times member count; the veto callback agrees (`lean:Reactivegas.step_backdonate_inv`); at the root also an unspent positive authorization for exactly that share |
+| `lean:AppEvent.pledge` | **the pledging member** (the signer is the user); the user is a member without a pledge in this collection; amount above zero; balance covers it; not stalled (`lean:step_pledge_inv`, `lean:pledge_signed_by_owner`) |
+| `lean:AppEvent.acceptPledge` | a responsabile who is the collection's referente; the pledge is pending; not stalled (`lean:step_accept_inv`) |
+| `lean:AppEvent.refusePledge` | a responsabile who is the referente; the pledge is pending (`lean:step_refuse_inv`) |
+| `lean:AppEvent.correctPledge` | see below (`lean:step_correct_cases`) |
+| `lean:AppEvent.closePurchase` | a responsabile who is the referente; permission granted; no pending pledge; not stalled (`lean:step_close_inv`) |
+| `lean:AppEvent.failPurchase` | a responsabile who is the referente; no pending pledge (`lean:step_fail_inv`) |
 
-Two honest tensions the reader must not miss. First, the 2026-08-25
-sovereign-members ruling says pledges are self-service, while `pledge`'s
-guard still opens with `isResponsabile` (`lean:Reactivegas/Step.lean:isResponsabile`) — a member cannot pledge for
-themselves at all, and `correctPledge` over accepted pledges is
-referente-only. That contradiction is ruled to change (#69: signer == `u`
-while pending, referente after acceptance) and has not landed; see the
-current-vs-ruled table. Second, `grantPermission`/`denyPermission` each
-succeed on one responsabile's signature alone today, while their user story
-says “the group”. That wire is the unbuilt composition, and the page states
-its status as `PROVED-IN-MODEL` until the substrate mirrors it.
+**Correcting a pledge.** A pledge is signed by the member it belongs to, and
+that member alone corrects a pending one: with a new amount, or with zero to
+withdraw it, which removes the row and returns the money
+(`lean:pending_correction_by_owner`, `lean:pending_withdrawal_removes_row`,
+`lean:pending_withdrawal_leaves_no_row`). After the referente accepts it, only the
+referente may correct it (`lean:accepted_correction_by_referente`). In both cases the
+new amount is at least zero and the user's balance must cover the difference. A
+correction with no row to correct is refused (`lean:correction_without_row_refused`).
+All of these are laws.
 
-## Route and the sealed base hook
+**Authorization as a statement.** `lean:authorizedStep` says what the role check of
+every event is, and `lean:step_authorized` proves that every successful
+`lean:stepEvent` satisfies it (law). The predicate checks the author's role alone:
+membership and argument guards are in `lean:step` and its inversion theorems above.
 
-`lean:Route` classifies each of the fourteen economic constructors by the
-producer that actually decides it (`lean:route`, independently
-`lean:voteDerived`): 11 `direct`, 0 `baseEnacted` (unpopulated — no event
-routes to it), 3 `appDecided` (`grantPermission`, `denyPermission`,
-`backdonate`). The `baseEnacted` constructor survives for the accepted historical
-theorem, but no event routes to it since the three base-enacted membership
-events retired with `addUser`. A record that lists the route vocabulary
-without saying the middle arm is empty will mislead every reader who counts
-arms. The faithful base vocabulary (`lean:baseProposalFaithful`) admits only
-`changeRoles` and `removeMember`; voted admission is excluded by
-construction.
+## Routes and the sealed base hook
 
-Membership consequences now run inside `lean:baseHook`, in the same
-transition as the base change that caused them, derived from the real
-pre/post views. `lean:economicCleanup` is exhaustive over the three
-`lean:BaseChange` constructors, so a fourth substrate membership effect
-stops compilation rather than acquiring a silent default:
+**Route classifier.** `lean:Reactivegas.Composition.route` classifies each of the 14
+economic events by the producer that decides it: 11 are `lean:Reactivegas.Composition.Route.direct` (the economic machine
+alone), 3 are `lean:Reactivegas.Composition.Route.appDecided` (`lean:Event.grantPermission`,
+`lean:Event.denyPermission`, `lean:Event.backdonate`), and none is
+`lean:Reactivegas.Composition.Route.baseEnacted`. That third constructor stays
+because an accepted historical theorem quantifies over it
+(`lean:Reactivegas.Composition.baseEnacted_threshold_met`); no event routes to it. A
+reader who counts arms must know the middle one is empty. An independent
+classifier, `lean:Reactivegas.Composition.voteDerived`, is true on exactly the
+app-decided three (`lean:Reactivegas.Composition.voteDerived_iff_not_direct`, law). The
+faithful base vocabulary (`lean:Reactivegas.Composition.baseProposalFaithful`) admits
+only `lean:KelGroups.Proposal.changeRoles` and `lean:KelGroups.Proposal.removeMember`.
+The root does not consult the classifier: it dispatches on the event
+constructor itself. A finite witness evaluates the classifier on the three app-decided
+events and on a donation (`lean:CompositionTests.checkB9_classifier`).
 
-- `memberAdmitted` — no economic consequence; the member arrives with no
-  conto, no cassa, no collection;
-- `memberRemoved` — refused while stalled; otherwise `lean:windUpAdmin`
-  when the leaver held admin, then `lean:absorbConto`;
-- `rolesChanged` — refused while stalled on admin loss, else
-  `lean:windUpAdmin` on admin loss, nothing on admin gain.
+**The sealed hook.** The consequences of a committed base change run inside the
+same transition, from the real pre and post views, in `lean:Reactivegas.baseHook`.
+`lean:KelGroups.commitBaseChange` runs it before any result is returned, and refuses the
+whole transition when it refuses (`lean:KelGroups.base_change_runs_hook`, law). The
+cleanup `lean:Reactivegas.economicCleanup` is exhaustive over the three
+`lean:KelGroups.BaseChange` constructors, so a fourth membership effect stops
+compilation. For each:
 
-`lean:windUpAdmin` cancels the key's open collections, refunds every pledge
-they held (`lean:stripCollections` + `lean:refundAll`), and moves the cassa
-claim to the comune. That sealed path is what the L1 law below is about.
+- `lean:KelGroups.BaseChange.memberAdmitted`: no economic consequence; the member arrives
+  with no account, no cash box and no collection.
+- `lean:KelGroups.BaseChange.memberRemoved`: refused while stalled; otherwise, when the
+  leaver held admin, `lean:Reactivegas.windUpAdmin`, then `lean:Reactivegas.absorbConto`
+  (the leaver's account moves to the common fund). The leaver's own open questions
+  are closed negatively (`lean:KelGroups.Vote.closeProposerQuestions`) before the
+  post-change sweep.
+- `lean:KelGroups.BaseChange.rolesChanged`: refused while stalled when admin status is lost,
+  else `lean:Reactivegas.windUpAdmin` on admin loss and nothing on admin gain.
+
+`lean:Reactivegas.windUpAdmin` cancels the key's open collections, refunds every pledge
+they held (`lean:stripCollections` and `lean:refundAll`) and moves the key's cash box to
+the common fund. After it no open collection has that key as referente
+(`lean:governance_enacts_windUpAdmin`, law). After any base change, every open
+question is re-evaluated against the post-change franchise, so a question can
+close because the electorate changed and no ballot was cast
+(`lean:Reactivegas.base_change_recomputes_votes`, law).
+
+## Votes
+
+The vote machine (`lean:KelGroups.Vote.applyVoteEventChecked`) is described on the
+substrate page. The economic machine uses it at one door: `lean:Reactivegas.appFold`
+sends `lean:AppEvent.openQuestion`, `lean:AppEvent.cast`, `lean:AppEvent.renounce` and
+`lean:AppEvent.openBound` to `lean:Reactivegas.voteApply`; bare `lean:step` refuses all four.
+
+**A question opens with zero approvals.** `lean:KelGroups.Vote.effectedState` opens a
+question with empty tallies: the proposer's opening is not an assent. The same
+holds for base proposals: they open with no approval
+(`lean:KelGroups.applyIntegratedEvent` stores an empty approval list) and the
+proposer cannot approve their own proposal while more than one responsabile
+exists (`lean:KelGroups.ValidationError.proposerSelfApproval`,
+`lean:KelGroups.validateBaseApproval`), so under `lean:KelGroups.majority` such a proposal
+needs an approval from someone other than the proposer.
+
+**Closure effects.** Grant, deny and backdonate take their economic effect only
+from a closed vote.
+
+1. `lean:AppEvent.openBound` opens a question and records, before any ballot exists,
+   the one thing its closure can authorize (`lean:EconomicTarget`):
+   `lean:EconomicTarget.permission` fixes a collection identity;
+   `lean:EconomicTarget.backdonation` fixes the per-member share itself. `lean:Reactivegas.bindable`
+   requires a fresh question id (neither open nor ever closed) and, for permission,
+   a present collection; for backdonation, a share above zero.
+2. When the vote step closes a bound question, `lean:Reactivegas.syncAuth` mints one
+   `lean:LiveAuth` carrying the record's question id, its verdict and the bound target.
+3. `lean:AppEvent.grantPermission`, `lean:AppEvent.denyPermission` and `lean:AppEvent.backdonate`
+   each spend one unspent authorization for their exact target under the verdict
+   they need, atomically with the economic effect (`lean:Reactivegas.spendThen`,
+   `lean:Reactivegas.denyByClosure`), and are refused without one:
+   `lean:Reactivegas.Composition.apply_grant_spends`,
+   `lean:Reactivegas.Composition.apply_deny_spends` and
+   `lean:Reactivegas.Composition.apply_backdonate_spends` (laws). The backdonation
+   veto `lean:BackdonateAuth` is consulted after the spend and can only refuse.
+4. Every unspent authorization of a production history is backed by a closure
+   record its own vote fold appended (`lean:Reactivegas.Composition.liveBacked_of_history`,
+   law), so a planted authorization is not a production history
+   (`lean:Reactivegas.ProductionHistory`). `lean:Reactivegas.pruneAuth` drops bindings and
+   authorizations whose collection left, so a reused collection id inherits none
+   (`lean:Reactivegas.Composition.authTargetsPresent_of_history`, law).
+
+**Lifecycle.** A renounce by the proposer, and the proposer's departure from the
+group, close the question negatively: the closure cause is
+`lean:KelGroups.Vote.ClosureCause.renounced` or
+`lean:KelGroups.Vote.ClosureCause.proposerDeparted`, the record keeps the question as
+it stood, and the verdict is `lean:KelGroups.Vote.Verdict.negative`. The escrow refunds on that negative
+closure: a closed negative bound question mints a negative authorization
+(`lean:Reactivegas.Composition.apply_mints_negative`), nothing but spending it or the
+collection's departure removes it (`lean:Reactivegas.Composition.apply_keeps_negative`),
+spending it refunds every pledge to the member it belongs to
+(`lean:Reactivegas.Composition.spend_refunds`, `lean:Reactivegas.Composition.apply_deny_refunds`),
+and so no negative authorization is stranded
+(`lean:Reactivegas.Composition.noStranding_of_history`), all laws. The two closures
+themselves are finite witnesses (`lean:Reactivegas.Lifecycle.l1_holds` to
+`lean:Reactivegas.Lifecycle.l6b_holds`), each paired with a mutant that the same check rejects (the theorems of
+the same module whose names end in caught).
+
+**Two refusals.** A renounce by a responsabile who is not the proposer
+(`lean:KelGroups.Vote.VoteError.notProposer`) and a ballot on a permission question by a
+responsabile who is not its named designee (`lean:KelGroups.Vote.VoteError.notDesignee`)
+are refused by `lean:KelGroups.Vote.validateVoteEvent`, in the order not-responsabile,
+question-not-found, then identity. A refused vote event is inert: the state-returning vote step gives back the
+payload it was handed (`lean:KelGroups.Vote.inadmissible_is_noop`, law), the checked
+step returns the error, and the integrated fold leaves the aggregate as it was
+(`lean:Reactivegas.Lifecycle.refusal_fold_inert`, finite witness; the refusals
+themselves: `lean:Reactivegas.Lifecycle.r1_holds`, `lean:Reactivegas.Lifecycle.r2_holds`,
+`lean:Reactivegas.Lifecycle.order_holds`).
+
+**No question is dropped.** Every question open before a successful root event
+is, after it, still open or named by a closure record
+(`lean:Reactivegas.Composition.apply_retains_open_questions`, law); the closure log is
+append-only.
+
+**Threshold.** The vote threshold is a parameter of the model, never a constant:
+`lean:KelGroups.Vote.Threshold` is a function from the number of responsabili to the
+required count, and `lean:Reactivegas.apply`, `lean:Reactivegas.baseHook`,
+`lean:KelGroups.Vote.verdictOf` and `lean:KelGroups.Vote.sweepClosures` each take one
+explicitly. The model ships two named exhibits, `lean:KelGroups.Vote.legacyThreshold`
+(`(n+1)/2`) and `lean:KelGroups.Vote.zeroThreshold` (constantly zero), and no default.
+A group therefore sets an explicit policy when it is set up. The exported vote
+corpus states the policy it was generated under as a finite table, and a check
+compares that table with the live declaration at every point of its domain
+(`lean:Reactivegas.PolicyCheck.checkPolicyAgainstDeclaration`). Base proposals use a
+fixed arithmetic, `lean:KelGroups.majority`, not this parameter.
 
 ## Laws
 
-The legacy reactors were the behavioural spec; the laws below are the
-safety spec. Each entry keeps its user story and states exactly what the
-Lean proves — over fourteen events, through the viewed step, against the
-sealed hook.
+Each entry gives the story, then what Lean proves. All of these are laws over the
+14-event vocabulary and `lean:stepEvent` unless marked otherwise.
 
-### AUTH — Only entitled actors can act (law)
+- **Only entitled actors act** (`lean:step_authorized`): every successful event is signed
+  by a responsabile, except a pledge, which is signed by the pledging member
+  (`lean:pledge_signed_by_owner`), and a correction, signed by that member or a
+  responsabile.
+- **Closure needs permission** (`lean:close_permission_to_close`): a successful close
+  finds the permission flag set and no pending pledge (`lean:permissionToClose`).
+  At the root the flag comes from a closed vote, not from one responsabile's
+  signature (see "Votes").
+- **Escrow at pledge** (`lean:pledge_escrow_debit`): the user's balance drops by
+  exactly the amount and the collection holds exactly that much more
+  (`lean:escrowHeld`).
+- **Closure spends the referente's cash box** (`lean:close_spends_referente`): the
+  referente's cash box falls by the accepted pledges' total. A close needs no
+  pending pledge, so that is the collection's whole escrow.
+- **Double entry** (`lean:deposit_double_entry`, `lean:withdraw_double_entry`): a deposit or
+  withdrawal moves the user's account and the signer's cash box by the same
+  amount (`lean:doubleEntry`).
+- **Conservation** (`lean:conservation_preserved`): every one of the 14 events
+  preserves `lean:conservation`, the sum of cash boxes minus the sum of accounts minus
+  the escrow of open collections being zero. This is a statement about
+  `lean:stepEvent`: it is not proved across the base hook.
+- **Solvency** (`lean:solvent_init`, `lean:solvent_preserved`, `lean:reach_solvent`,
+  `lean:not_insolvent_of_reach`): no member's account goes below zero along any
+  execution of `lean:Reach` (a fixed view). The common fund may go negative, which is
+  the stall, and is not insolvency (`lean:solvent`, `lean:insolvent`).
+- **One pledge per member per collection** (`lean:pledge_rejected_when_member`,
+  `lean:pledge_preserves_allUnique`, `lean:uniquePledges`).
 
-**User story.** Bruno is an ordinary member. He tries to close Elena's
-collection and withdraw from someone else's account. Every one of those
-attempts bounces: the machine simply returns `none`.
+## Corpora
 
-**What is proved.** `lean:authorizedStep` states that whenever
-`stepEvent view s e auth = some s'`, the event's author has the required role
-— and only that: the predicate checks author role alone and ignores state and
-args, so an admin authoring for an absent member still satisfies it. That
-absent-member illustration is the scope limit, not a Lean defect: the real step
-refuses it via membership guards. `lean:step_authorized` proves this role-only
-property case by case over the fourteen constructors. Collection lookup comes
-first: `lean:pullCollection` must succeed — an absent id is refused before any
-signer check — for `grantPermission`/`denyPermission`.
+Three frozen corpora under `lean/corpus/` carry the model to other languages. The
+exporter executable `corpusExport` is their sole writer; nothing else produces the
+files.
 
-### L1 — Governance enacts removal (law, restated against the hook)
+| corpus | what it holds | what checks it |
+| --- | --- | --- |
+| economic | the seed traces of `lean:seedCorpus`: signed economic events through `lean:step` with their refusals | emitted again and compared byte for byte; read back and compared element by element with the live traces; key sets checked |
+| integrated | `lean:Reactivegas.emitIntegratedCorpus`: signed events through `lean:Reactivegas.apply`, with base changes and cleanup | the same, plus the finite witness `lean:Reactivegas.checkIntegratedCorpus`, which replays the corpus and requires nine corrupted variants to fail |
+| vote | `lean:Reactivegas.emitVoteCorpus`: vote events through the production root, with the refusal identity of each refused vote event; a sidecar names the threshold table | the same, plus the sidecar rules, the policy re-derivation, the digest of the source inputs and a coverage check over the constructors of the vote vocabulary (`lean:Reactivegas.voteCorpusCoversDiscovered`) |
 
-**User story.** The group votes to expel Carl, a member who owes money on
-an open purchase. Only the governance process may perform the removal. A
-random responsabile cannot delete members to make pledges disappear.
+The hosted build re-verifies them in the step that runs `just lean-corpus-verify`:
+re-emission compared with the committed files, their checksums, the live-binding
+check, the key-set checks and [verify-vote-corpus](https://github.com/paolino/reactivegas/blob/master/scripts/verify-vote-corpus). Each is evidence
+about a fixed exhibit, not a law.
 
-**What is proved.** There is no membership event anymore, so the law
-changed shape: `lean:governance_enacts_windUpAdmin` shows that winding up
-`u` through the sealed hook always satisfies `lean:governanceEnacts` — no
-open collection is left with `u` as referente. The story is still exactly
-right; only the mechanism moved from a signable event to the hook. The
-finite companion `lean:Reactivegas/Invariants.lean:checkAdminDepartureCleanup` executes the same
-departure-and-cleanup journey (the proved check; the same name in TraceTests is an alias).
+**Finite-history validation.** `lean:Reactivegas.historyRefusal` validates one supplied
+history of `lean:Reactivegas.apply` steps: its initial aggregate must be exactly the
+output of `lean:Reactivegas.boot`, and every stored step must be what the root
+recomputes. `lean:Reactivegas.traceRefusal` does the same for a supplied trace of
+`lean:stepEvent` steps under one view. Each validates one history and decides nothing
+about reachability: no bridge from a validated history to `lean:Reach` is claimed, and
+a state without a validated history is not thereby unreachable. The committed vote
+corpus is validated this way inside [verify-vote-corpus](https://github.com/paolino/reactivegas/blob/master/scripts/verify-vote-corpus), under the
+sidecar's threshold table, and planted defects (a changed post-state, a flipped
+acceptance, a non-genesis start) must each be refused for their own reason. The elaboration-time fixtures are `lean:Reactivegas.fhHistory` and its
+neighbours in the library build.
 
-### L2 — Closure needs permission (law, with a stated limit)
+## Group closure
 
-**User story.** Elena opened a collection for a bulk olive-oil order.
-Before she closes it, the group must grant closure permission, typically
-once the goods arrive and the price is confirmed. Without that click,
-closing is impossible.
+`lean:canCloseGroup` states three conjuncts: every member's account is zero, there is
+no open collection, every cash box is zero. It is a definition whose only other mention is
+its equivalence with a Boolean mirror (`lean:canCloseGroup_corr`). No theorem or event
+consumes it, and the model proves nothing about a group closing. What the model
+states about cash boxes is `lean:conservation`; closing a group is not modelled.
 
-**What is proved.** Whenever a close event succeeds, the collection
-satisfies `lean:permissionToClose`: the permission flag was set *before*
-the close and no pledge is still pending
-(`lean:close_permission_to_close`). **Limit:** the flag today reflects one
-responsabile's signature, not a counted vote. Permission-gated closure is
-proved; vote-derived permission is the unbuilt composition below.
+## Out of scope: the product catalogue
 
-### L3 — Escrow at pledge (law)
+**Fact.** The legacy product catalogue is not modelled. It is 21 Haskell modules
+under `Voci/` (quantities, units, volumes, weights, packaging, currency, plus
+`Voci/UI`), the order type with them, and the order-bound pledges
+`ImpegnoVincolato` and `CorrezioneImpegnoVincolato` of `Eventi/Impegno.hs`, which
+carry a list of orders. The Lean models none of it: a `lean:Pledge` is a bare
+pair of a user and an amount, with no product, no order and no quantity.
 
-**User story.** Anna pledges €30 towards the olive oil. Her account shows
-€30 less immediately, her offer is listed in the collection, and the
-group's total wealth does not change. With only €20, the machine refuses
-outright.
+**Decision.** Out of scope for milestone 2, deferred to milestone 3
+([#91](https://github.com/paolino/reactivegas/issues/91)).
 
-**What is proved.** After a successful pledge, three things hold together
-(`lean:pledge_escrow_debit`): Anna's balance dropped by exactly `v`, the
-collection holds exactly `v` more escrow, witnessed by `lean:escrowHeld`
-via `lean:splitUser`, and the global books still balance. The funds check
-is part of the guard that `lean:pledge_guard_inv` decomposes (with
-`lean:step_correct_inv` for corrections).
+**Why it is written down instead of omitted.** The outcome test of milestone 2
+(election, collection, pledge, assent, purchase, refund) names no catalogue, so
+leaving the catalogue out does not break it. But the absence is a decision, and a
+silent gap reads as an oversight to anyone who counts the legacy modules.
 
-### L4 — Closure spends the referente's cassa (law)
+**Cost curve.** Cheapest now: `lean:Event.pledge` would gain a payload and
+`lean:Event.correctPledge` a difference, landing in the Lean before the application
+fold is written. After the conformance corpus freezes, the same change costs a
+corpus re-freeze plus an application-fold rewrite.
 
-**User story.** The oil arrives, permission is granted, Elena closes the
-collection. The pooled money moves out of Elena's cash box as referente — the
-full escrow decreases her `cassa` by the collected total — who then pays the
-supplier with the goods received.
+**Open question, carried open.** Does a group reach the outcome test (election
+→ collection → pledge → assent → purchase → refund) without a catalogue, or is the
+catalogue absent from the Lean because nobody asked? This page does not pick a
+side.
 
-**What is proved.** `lean:close_spends_referente` shows that the closed
-collection's full escrow decreases `col.referente`'s `cassa` — a debit of the
-collected total from her cash box — when the close event succeeds.
+## What is not implemented
 
-Committed versus available (Q-001 Correction-2, 2026-09-05). Closing discharges already-committed escrow and its paired cassa obligation: the accepted pledges leave the referente's cash box together, which is why close needs the referente's own signature plus permission — no other signer can spend her committed box. Withdrawal consumes only uncommitted backing: it draws on a plain account balance, never on escrow held by an open purchase, and the guard refuses whatever the balance cannot cover. Fairness outside the sealed purchase belongs to the stall, not the close: while the comune is short, no member may improve their position relative to another.
+Nothing that has landed on `master` is described above as pending. What is
+absent:
 
-### L5 — Double entry for cash movements (law)
-
-**User story.** Marco deposits €50 into his account via Daniela, a
-responsabile: Marco's account rises by €50 *and* Daniela's cash box rises
-by €50 — both sides rise together, because the cash box records custody
-taken, not cash spent. Withdrawal is the mirror image: both sides fall
-together. Boundary: `-1` refused, `0` accepted, `+1` accepted — zero deposits
-are permitted.
-
-**What is proved.** Both movements produce the witness required by the
-`lean:doubleEntry` predicate: `lean:deposit_double_entry` and
-`lean:withdraw_double_entry` construct it directly from each side of the
-ledger. (Earlier prose had the cassa direction backwards; the predicate is
-authoritative: `bal conti u` and `bal casse a` move by the same `v`.)
-
-### L6 — Conservation (flagship law)
-
-**User story.** Months pass. Dozens of purchases open and close; money
-moves between accounts, cash boxes and escrow. The treasurer's invariant
-stays true: the machine never minted or burned a cent.
-
-**What is proved.** `lean:conservation` states the source equation
-`Σ casse − Σ conti − Σ open escrow = 0`, and
-`lean:conservation_preserved` proves that **every one of the 14 event
-constructors** preserves it. Each case reduces to arithmetic facts about
-the list helpers discharged by `omega`. Any code change that leaks or
-duplicates money breaks the build.
-
-### L7 — Solvency is enforced, insolvency unreachable (law, scoped)
-
-**User story.** Bruno has €12 and tries to pledge €30. The machine
-refuses: `step` (`lean:step`) returns `none`, no money moves. There is no “recorded with
-warning” middle ground for the machine's own acts — an overdrawing debit
-never happens.
-
-**What is proved.** The guards reject every debit that would push a member
-balance below zero and require non-negative pledge amounts, so refunds can
-never push anyone under either. `lean:solvent` captures both halves — and
-**only** member conti: the reserved comune conto may legitimately go
-negative (the stall) without making the group insolvent, and
-`lean:insolvent` names exactly a member balance below zero. Then
-`lean:solvent_init` boots it, `lean:solvent_preserved` shows every one of
-the 14 event constructors preserves it, `lean:reach_solvent` chains these
-along any execution (`lean:Reach`), and `lean:not_insolvent_of_reach`
-finishes the job. Insolvency went from reachable-and-reported to
-impossible — for member accounts. Group-level shortfall is representable
-by design (the negative comune) and is handled by the stall, not by L7.
-
-### L8 — One pledge per user per collection (law)
-
-**User story.** Anna, excited about the olive oil, tries to pledge twice.
-The second attempt is refused outright: within one collection a member
-speaks with one wallet.
-
-**What is proved.** `lean:uniquePledges` states uniqueness inside one
-collection and `lean:allUniquePledges` lifts it to the whole state.
-`lean:pledge_rejected_when_member` shows the duplicate returns `none`;
-`lean:uniquePledges_pend_cons` shows an accepted pledge onto a
-uniqueness-respecting collection preserves uniqueness; and
-`lean:pledge_preserves_allUnique` lifts that to whole-state preservation.
-
-## Laws versus finite witnesses
-
-Universally quantified laws (above) prove something about every execution.
-Finite witnesses prove something about fixed exhibits: an executable oracle
-whose whole statement is `check… = true`. Both are proved, but only the
-first kind is a guarantee, and their names read alike — which is exactly
-the trap.
-
-Twenty-nine short `check… = true` names form one syntactic category of
-finite oracle — and that category is **not a total census** of every finite
-witness in the model: `lean:KelGroups.majority_table` and others use
-different syntax, and the #66 audit upheld the defect call on exactly this
-point while rejecting any corrected percentage offered without a counting
-rule. So: where this page says “law”, the Lean quantifies universally;
-where it says “finite witness”, the Lean checks a fixed exhibit
-(`lean:open_questions_are_open` states only that a question *still present*
-has verdict open — it does not assert retention of previously open
-questions, which is open statement work S5). No unproved
-model-completeness claim appears anywhere on this page.
-
-## Unimplemented runtime composition
-
-The composition module (`Composition.lean`) classifies; it does not run. It imports
-`Reactivegas.Types`, `KelGroups.Fold`, `KelGroups.Invariants` and
-`KelGroups.Vote.Fold` — never the transition — and nothing imports it
-except the library aggregator. Its own header says it plainly: nothing in
-this repository consumes the route at runtime today, and the production
-transition, invariants, integrated corpus and trace emitter carry no
-build-time dependency on it (delete-file control builds clean). Until a
-substrate mirrors the classification, the honest status is
-**enforced: PROVED-IN-MODEL**, not enforced.
-
-`lean:appDecided_verdict_exhaustive` proves the verdict elimination is
-exhaustive and honest — a recorded closure carries an event exactly for
-`positive`/`negative`, never `open` (`lean:appVerdictAllows`). Three links
-are unbound — reachability, target, and polarity — and the page states them rather than hiding them:
-
-1. **Reachability.** The theorem takes its event and its
-   `lean:ClosureRecord` as unrelated inputs. No production transition
-   consumes a closure record.
-2. **Target.** Nothing ties the closed question to the collection id in the
-   event. A closure about one collection satisfies the theorem for an event
-   about another.
-3. **Polarity.** Nothing maps `positive → grantPermission` and
-   `negative → denyPermission` in code.
-
-Because these links are unbuilt, an outcome test run today against a
-coordinator faithful to the Lean as written would let assenso pass by one
-responsabile calling `grantPermission` alone. It would look green. The
-requirement (NOTE-016: grant/deny provably vote-derived; second consumer
-voted comune backdonation; A-Q001 option D classify-don't-join, witnessed
-by `ClosureRecord.verdict`, total and wildcard-free) is ruled; the
-classification is delivered; the wire does not exist. That is follow-up
-composition work, not this record's to build.
-
-## Vote-lifecycle limits
-
-The economic step and the vote fold meet at exactly one door.
-`lean:appFold` sends the three vote constructors to `lean:voteApply` and
-everything else to `step` (`lean:step`); exactly one validation decision
-(`lean:applyVoteEventChecked` over `lean:validateVoteEvent`) dominates the
-effect (`lean:effectedState`) and the recompute-and-close sweep
-(`lean:sweepClosures`). A proposal opens with **empty tallies** — a
-deliberate divergence from legacy — and `openQuestion` never overwrites or
-revives a decided id.
-
-Two limits the reader must hold:
-
-- **Renounce succeeds and changes nothing — unfinished against a ruling.**
-  `effectedState` (`lean:effectedState`) on `renounce`
-  is identity, discharged by `rfl` in three inversion proofs, while
-  `validateVoteEvent` (`lean:validateVoteEvent`) accepts a renounce by any responsabile on an existing
-  question. On the integrated route a renounce is therefore told it worked
-  and moves nothing; the bare economic step refuses it outright. V-5 has
-  ruled (2026-08-27): proposer renounce or departure closes the question
-  with the negative continuation running refunds — and the code does not do
-  it yet. `lean:ClosureCause` already carries the `proposerDeparted` and
-  `renounced` identities from Slice A for Slice B, but `lean:closureCause`
-  returns only tally or franchiseChange. The record states ruled versus
-  unfinished, not an open question.
-- **`notDesignee` and `notProposer` are declared but constructed nowhere —
-  and neither refusal is ruled.**
-  `lean:VoteError` declares four errors; `validateVoteEvent` (`lean:validateVoteEvent`) has three arms
-  and builds only the first two. They are Slice B forward declarations, not
-  corpus gaps — no corpus row can observe them by construction. Current
-  behavior is accepted-recorded-non-deciding (a non-designee ballot on a
-  permission question is recorded and decides nothing) and accepted-no-op
-  (a non-proposer renounce is accepted and moves nothing). The operator open
-  question — refuse the non-designee ballot instead, refuse the non-proposer
-  renounce instead — is carried neutrally with both readings; the dormant
-  constructors evidence an intention, not a requirement, and this page claims
-  neither as delivered nor as required.
-
-Coverage, stated plainly. The simulator's `VOTE_TRACES_V1` drives signed
-vote events through `validateVoteEvent` (`lean:validateVoteEvent`) on a standalone vote state (fifteen
-signed events over the documented journey, handoff pin `af9c1e5`, not in
-this repository). The two #74 corpora (`fed19b3` handoff) carry zero signed
-vote events: the economic corpus cannot reach votes (`step` (`lean:step`) returns none
-for the three constructors), and the integrated corpus exercises
-franchise-change (V-3) closure through `baseHook` (`lean:baseHook`)'s sweep without ever
-emitting an `.app` event. Assenso is named in the milestone outcome and, in
-these two corpora, has no oracle behind it — extending coverage is separate
-filed work: #75 tracks the integrated vote corpus through the production root
-(planned, not delivered — see the pending table), and #76 the runtime
-vote/economic composition wire (planned, not delivered — see “Unimplemented
-runtime composition” and the pending table). A green gate here must not be
-read as implying vote coverage.
-
-The vote threshold policy θ is open. `lean:legacyThreshold` is
-`(n+1)/2` and `lean:zeroThreshold` is constantly zero; the Lean is explicit
-that both are exhibits, not defaults, and the threshold is a parameter
-everywhere (`lean:s62bThreshold` pins `legacyThreshold` only as the #74
-replayer's resolution). #68 must not be read across as a vote default.
-
-## Group closure: classification, not a theorem
-
-`lean:canCloseGroup` (Predicates.lean line 85) is an orphan: the definition
-site is its only reference in the discovered Lean extent — no theorem, no
-gate, no other definition consumes it. It states three conjuncts: every
-member's `conti` balance is zero, there are no open collections, and every
-`casse` balance is zero.
-
-Recorded product intent: Q-2 restricts leaving the group to economically
-settled members (zero conto, no live pledges), and Q-6 guards role
-departure on `cassa == 0` — both settlement rules, neither a group-closure
-transition. No ruling establishes closing the group itself as an event, and
-this lane invents no theorem, deletes nothing, and implements nothing.
-
-**Verdict: missing guarantee.** The record names closable conditions the
-model never establishes or consumes. If the operator rules group closure a
-non-goal, that ruling lands here as dated authority; until then the gap
-stays named rather than silently accepted.
-
-## Voci non-goal
-
-**Fact.** The legacy catalogue subsystem — 21 `Voci/` paths at the pin
-(quantities, units, volumes, weights, packaging, currency, plus the
-`Voci/UI` screens), explicitly counting both `Voci/Quantita.hs` and
-`Voci/Quantità.hs` as distinct blobs — with `Eventi/Ordine.hs`, and order-bound pledges
-(`ImpegnoVincolato` / `CorrezioneImpegnoVincolato` over `[Ordine]`,
-commented-out in `Eventi/Impegno.hs`) — has no Lean counterpart. The
-model's pledge (`lean:Pledge`) carries a bare `(user, amount)`: no product, no order, no
-quantity.
-
-**Inherited scope (not a settled exclusion).** The catalogue is out of the milestone-2 six-step outcome test's scope as inherited: the outcome test is election →
-collection → pledge → assenso → purchase → refund and names no catalogue — an inherited non-goal of that six-step wording, not a settled exclusion. Whether the catalogue belongs in the formal model is an OPEN product ruling, and no operator exclusion exists at this pin.
-
-**Reason and cost.** If the catalogue turns out to be load-bearing,
-`pledge` gains a payload and `correctPledge` a diff, landing in the Lean
-*before* the app fold is written; after D3 that is a conformance-corpus
-re-freeze plus a fold rewrite. Cheapest to answer now, most expensive
-after D3.
-
-**Open operator question.** Whether the group reaches its outcome test
-without a catalogue — inherited, undecided, carried up by the milestone
-owner. This record does not pick a side.
-
-## Dated operator authority
-
-Later rulings supersede earlier assertions on the same scope. An issue
-title alone never supplies a missing ruling.
-
-- **2026-08-26 (Q-001):** Q-1 sovereign-members pledge question; Q-2
-  settled-member departure; Q-3 deposed-admin questions; Q-4 key identity;
-  Q-5 proposer withdrawal; B-1 release-pipeline blocker. Q-6: role
-  departure guarded on `cassa == 0` (rotation, not sanction; sign
-  convention — positive cassa is group money held, negative is group debt).
-  Cassa comune design: settled departure is the normal path, unsettled
-  departure is a separate named act into an anonymous pooled box; a
-  negative comune is representable group shortfall. Total stall while the
-  comune is negative — authorization acts stop, attestation stays open
-  (`donate` cures; `failPurchase`/`refusePledge` stay reachable because
-  refunds move no cash); open orders may fail, never close; the stall
-  principle — while the group is short, no member may improve their
-  position relative to another.
-- **2026-08-27 (V-1…V-7):** V-1 franchise tracks damage capacity
-  (responsabili vote); V-2 threshold arithmetic free but its tie-passes and
-  zero-passes consequences still need answers; V-3 verdict recomputed on
-  every state change (questions can pass because people left); V-4 one
-  list per responsabile; V-5 proposer leaves or renounces → question closes
-  with the negative continuation running refunds; V-6 no vote to admit a
-  member (substrate requirement); V-7 no expiry — either side reaching
-  threshold closes the question. Retention caveat: absence of a timer plus
-  `.open` for still-present questions does not prove undecided questions are
-  retained across every unrelated transition; retention
-  statement-completeness is open under #66 S5, and
-  `lean:open_questions_are_open` constrains still-present questions only
-  (see “Laws versus finite witnesses”).
-- **2026-09-05 (V-2 agency + pledge agency):** proposals open at zero
-  assents — the proposer is not an assent, the `(n+1)/2` arithmetic
-  unchanged, every decision above n=1 needs someone other than the
-  proposer; pledge free while pending (`signer == u`, `v' = 0` is
-  withdrawal) and referente-gated after acceptance, solvency guard and
-  `closePurchase` unchanged, pending-vs-accepted legible in the UI.
-- **Composition chain:** NOTE-016 (grant/deny provably vote-derived, two
-  consumers, `PROVED-IN-MODEL` caveat), A-Q001 option D (classify, don't
-  join: direct / baseEnacted / app-decided, total and wildcard-free),
-  NOTE-031 (vote machine accepted; composition dispatched as its own work).
-- **2026-09-05 (PR87 exporter landed at `d670323`):** the verified Lean trace corpora are accepted as landed provisional oracle input for the outcome test; vote/economic coverage beyond that corpus stays filed work and is not claimed here.
-
-## Current versus ruled (pending merges)
-
-Honest current record; implemented-new-behavior claims wait for their
-merge. Exact source pins refresh after each merge; final closure
-reconciles accepted milestone slice inputs and never marks a stale
-snapshot complete because prose passes a checker.
-
-| id | current behavior at this pin | ruled behavior | source ruling | re-pin condition |
-| --- | --- | --- | --- | --- |
-| #66 S1 (#79, `4a6cd87f`) | `Trace.lean` manifest (`lean:guardManifest`) missed namespaced declarations, so exactly ONE seeded byte is affected — the withdraw-refusal `declaration:UNPROVED` row (CORPUS-COVERAGE measured 1 UNPROVED + 1 step_close_inv); corpus content provisional; PR87 exporter corpus accepted as landed provisional oracle input | manifest resolves accepted inversions by unqualified name; `scripts/check-trace-coverage-agreement` wired into `just lean`; the byte moves only on #74 re-freeze | RECONCILIATION-001 + CLOSURE-MAP §3 | S1 landed at `4a6cd87f`; re-freeze + re-derive after #74 re-freeze |
-| #68 | proposer counts as an assent; at n=2 one carries a proposal alone | proposals open at zero; arithmetic `(n+1)/2` (`lean:legacyThreshold`) unchanged; n=2 needs someone other than the proposer | A-V2-AND-PLEDGE-AGENCY 2026-09-05 | #68 merge, then re-derive assent/authority rows |
-| #69 | `pledge` (`lean:pledge_guard_inv`) demands responsabile signer (member cannot pledge for self); `correctPledge` referente-only over accepted | member free while pending (`signer == u`, `v' = 0` withdraws); referente after acceptance; solvency guard, `closePurchase`, and UI-legibility rule as stated | A-V2-AND-PLEDGE-AGENCY 2026-09-05 | #69 merge, then re-derive pledge/correction rows |
-| V-5 lifecycle (#81) | renounce accept-and-no-op; `closureCause` (`lean:closureCause`) tally/franchiseChange-only (rows 1–4 unfinished as above) | V-5 closure on proposer renounce/departure + negative continuation + refund | #81 | #81 merge, then re-derive vote-lifecycle rows |
-
-## Reconciliation hook
-
-After each of S1, #68, #69 merges: refresh exact source pins, re-derive
-every affected row above against the new tree, re-run the citation gate,
-and amend this page. The hook fires on merges, not on prose passing.
+- **Group closure as an event** and any theorem about it (`lean:canCloseGroup` is an
+  unused definition).
+- **A backdonation policy.** `lean:BackdonateAuth` is a veto only; the model supplies
+  no product policy for it, and the probe `lean:Reactivegas.probeAuth` refuses
+  everything.
+- **A vote threshold default** (see "Threshold").
+- **The product catalogue** (previous section).
+- **A bridge from a validated history to `lean:Reach`** (see "Finite-history
+  validation").
 
 ## Verifying
 
 ```sh
-just lean        # cd lean && lake build
-nix develop -c just ci   # includes the lean build
+just lean                      # lake build, axiom, mirror and coverage checks
+just design-citations          # every citation here resolves, none is missing
+just design-citations-controls # the check is red for each defect it names
 ```
