@@ -1,0 +1,146 @@
+#!/usr/bin/env bash
+# scripts/design-citations/controls — show the citation checker red for each
+# stated reason, through the real checker, and green on the real record.
+#
+# Every defect is made in a throwaway copy at run time from the record itself,
+# so a control cannot go stale against it and keeps no list of citations:
+#
+#   cold       the Lean sources without a build: the real import failure
+#   stale      the first citation of the record renamed to a declaration that
+#              does not exist
+#   uncited    the first citation of the record named once more without the
+#              marker; its last component inside an expression; and the same
+#              component after a variable and a dot (three spans, three findings)
+#   empty      a record that carries no citation
+#   no-files   a record directory with no Markdown file
+#   real       the record as it stands, required green
+#
+# A defect control passes only when the checker exits non-zero AND its findings
+# differ from the findings on the real record by exactly the expected one. The
+# comparison is against the real record's own findings, so a control stays
+# meaningful while the record is still red.
+#
+# usage: controls            (no arguments; exit zero only when every leg holds)
+# shellcheck disable=SC2016
+set -uo pipefail
+
+TOOL=design-citations-controls
+here=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+root=$(cd -- "$here/../.." && pwd)
+check=$here/check
+record=docs/en/design
+tmp=$(mktemp -d)
+trap 'rm -rf -- "$tmp"' EXIT
+cd "$root" || exit 1
+failed=0
+bt='`'
+
+fail() { printf '%s: CONTROL-FAILED %s\n' "$TOOL" "$*" >&2; failed=1; }
+pass() { printf '%s: control %s ok: %s\n' "$TOOL" "$1" "$2"; }
+
+# Findings of a run, one `file:line: TAG detail` line each, directory prefix
+# removed so runs over different copies compare.
+findings() { # dir-shown stderr-file
+    grep -E '^[^ ]+:[0-9]+: [A-Z]+(-[A-Z]+)+ ' "$2" | sed "s#^$1/##" | sort
+}
+
+# --- the real record -------------------------------------------------------
+"$check" >"$tmp/real.out" 2>"$tmp/real.err"
+real_rc=$?
+findings "$record" "$tmp/real.err" >"$tmp/real.findings"
+cat "$tmp/real.out"
+if [ "$real_rc" -eq 0 ]; then
+    pass real "$(tail -n 1 "$tmp/real.out")"
+else
+    fail "real: the checker is red on the record ($(wc -l <"$tmp/real.findings") finding(s))"
+fi
+
+# --- derive the mutations from the record's own first citation --------------
+first=$(grep -rnoE --include='*.md' '`lean:[A-Za-z_][A-Za-z0-9_.'"'"']*`' "$record" | sort -t: -k1,1 -k2,2n | head -n 1 || true)
+if [ -z "$first" ]; then
+    fail "the record carries no citation to derive the stale and uncited controls from"
+else
+    cfile=${first%%:*}; rest=${first#*:}; cline=${rest%%:*}; cname=${rest#*:"${bt}"lean:}; cname=${cname%"${bt}"}
+    mkdir -p "$tmp/stale" "$tmp/uncited"
+    cp -r "$record/." "$tmp/stale/"
+    cp -r "$record/." "$tmp/uncited/"
+
+    # stale: rename the citation at its own line
+    awk -v ln="$cline" -v from="lean:$cname" -v to="lean:${cname}Stale" \
+        'NR==ln { i = index($0, from); $0 = substr($0, 1, i - 1) to substr($0, i + length(from)) } { print }' \
+        "$record/${cfile#"$record"/}" >"$tmp/stale/${cfile#"$record"/}"
+    "$check" --record "$tmp/stale" >"$tmp/stale.out" 2>"$tmp/stale.err"
+    rc=$?
+    findings "$tmp/stale" "$tmp/stale.err" >"$tmp/stale.findings"
+    comm -13 "$tmp/real.findings" "$tmp/stale.findings" >"$tmp/stale.new"
+    want="${cfile#"$record"/}:$cline: UNRESOLVED-CITATION lean:${cname}Stale"
+    if [ "$rc" -ne 0 ] && [ "$(wc -l <"$tmp/stale.new")" -eq 1 ] && grep -qF "$want" "$tmp/stale.new"; then
+        pass stale "red with $(cat "$tmp/stale.new")"
+    else
+        fail "stale: rc=$rc, new findings: $(cat "$tmp/stale.new") (wanted: $want)"
+    fi
+
+    # uncited: the same declaration named without the marker on a line of its own,
+    # its last component inside an expression, and after a variable and a dot
+    last=${cname##*.}
+    {
+        printf 'The declaration `%s` is named here without the marker.\n' "$cname"
+        printf 'The expression `%s s e` applies it.\n' "$last"
+        printf 'The field access `col.%s` reads it.\n' "$last"
+    } >"$tmp/uncited/uncited-control.md"
+    "$check" --record "$tmp/uncited" >"$tmp/uncited.out" 2>"$tmp/uncited.err"
+    rc=$?
+    findings "$tmp/uncited" "$tmp/uncited.err" >"$tmp/uncited.findings"
+    comm -13 "$tmp/real.findings" "$tmp/uncited.findings" >"$tmp/uncited.new"
+    want1="uncited-control.md:1: UNCITED-DECLARATION \`$cname\`"
+    want2="uncited-control.md:2: UNCITED-DECLARATION \`$last s e\`"
+    want3="uncited-control.md:3: UNCITED-DECLARATION \`col.$last\`"
+    if [ "$rc" -ne 0 ] && [ "$(wc -l <"$tmp/uncited.new")" -eq 3 ] \
+        && grep -qF "$want1" "$tmp/uncited.new" && grep -qF "$want2" "$tmp/uncited.new" \
+        && grep -qF "$want3" "$tmp/uncited.new"; then
+        pass uncited "red with exactly the whole-name, expression and field-access findings"
+        pass compound "red on $(grep -F "$want2" "$tmp/uncited.new" | cut -c1-120)"
+    else
+        fail "uncited/compound: rc=$rc, new findings: $(cat "$tmp/uncited.new") (wanted: $want1 / $want2 / $want3)"
+    fi
+fi
+
+# --- a record that cites nothing -------------------------------------------
+"$check" --record "$here/fixtures/no-citations" >"$tmp/empty.out" 2>"$tmp/empty.err"
+rc=$?
+if [ "$rc" -ne 0 ] && grep -q 'NO-CITATIONS' "$tmp/empty.err"; then
+    pass empty "red with NO-CITATIONS"
+else
+    fail "empty: rc=$rc, stderr: $(cat "$tmp/empty.err")"
+fi
+
+mkdir -p "$tmp/no-files"
+"$check" --record "$tmp/no-files" >"$tmp/nofiles.out" 2>"$tmp/nofiles.err"
+rc=$?
+if [ "$rc" -ne 0 ] && grep -q 'NO-RECORD-FILES' "$tmp/nofiles.err"; then
+    pass no-files "red with NO-RECORD-FILES"
+else
+    fail "no-files: rc=$rc, stderr: $(cat "$tmp/nofiles.err")"
+fi
+
+# --- cold tree: sources without a build, through the real import failure ----
+mkdir -p "$tmp/cold"
+git ls-files -z -- lean | xargs -0 cp --parents -t "$tmp/cold"
+if [ -e "$tmp/cold/lean/.lake" ]; then
+    fail "cold: the copy carries a build directory"
+else
+    "$check" --lean "$tmp/cold/lean" >"$tmp/cold.out" 2>"$tmp/cold.err"
+    rc=$?
+    if [ "$rc" -ne 0 ] && grep -q 'LEAN-IMPORT-FAILED' "$tmp/cold.err" && ! grep -q '^design-citations: ok' "$tmp/cold.out"; then
+        pass cold "red with $(grep -m1 'LEAN-IMPORT-FAILED' "$tmp/cold.err" | cut -c1-160)"
+    else
+        fail "cold: rc=$rc, stderr: $(head -c 400 "$tmp/cold.err")"
+    fi
+fi
+
+if [ "$failed" -eq 0 ]; then
+    printf '%s: ok legs=7\n' "$TOOL"
+else
+    printf '%s: FAILED\n' "$TOOL" >&2
+    exit 1
+fi

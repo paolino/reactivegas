@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+# scripts/design-citations/check — resolve the design record against the built
+# Lean library.
+#
+# usage: check [--record DIR] [--lean DIR] [--list]
+#   --record DIR  directory holding the record (default docs/en/design)
+#   --lean DIR    Lean library directory (default lean)
+#   --list        also print every declaration the Lean environment offers
+#
+# Exits zero only when the Lean library imported, at least one citation was
+# discovered, every citation resolved, and no code span names a declaration
+# without the citation marker. The exit status is the verdict; the last line of
+# a green run carries the counts that prove something was scanned.
+#
+# The files and the library modules are found by scanning (`find`); the set of
+# declarations is read from the Lean environment by `Driver.lean`. No file,
+# citation or declaration list is kept here.
+set -euo pipefail
+
+TOOL=design-citations
+here=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+root=$(cd -- "$here/../.." && pwd)
+record=$root/docs/en/design
+lean_dir=$root/lean
+record_shown=docs/en/design
+list=
+
+while [ $# -gt 0 ]; do
+    case $1 in
+        --record) record=$(cd -- "$2" && pwd); record_shown=${2%/}; shift 2 ;;
+        --lean) lean_dir=$(cd -- "$2" && pwd); shift 2 ;;
+        --list) list=1; shift ;;
+        *) printf 'usage: %s [--record DIR] [--lean DIR] [--list]\n' "$TOOL" >&2; exit 64 ;;
+    esac
+done
+
+[ -d "$record" ] || { printf '%s: NO-RECORD-DIR %s\n' "$TOOL" "$record" >&2; exit 1; }
+[ -f "$lean_dir/lakefile.lean" ] || { printf '%s: NO-LIBRARY %s has no lakefile.lean\n' "$TOOL" "$lean_dir" >&2; exit 1; }
+
+tmp=$(mktemp -d)
+trap 'rm -rf -- "$tmp"' EXIT
+
+# Record files, found by scanning.
+: >"$tmp/files"
+while IFS= read -r -d '' f; do
+    printf '%s/%s\t%s\n' "$record_shown" "${f#"$record"/}" "$f" >>"$tmp/files"
+done < <(find "$record" -type f -name '*.md' -print0 | sort -z)
+
+# Library modules, found by scanning: every Lean source under the library
+# directory except the package configuration and build output.
+find "$lean_dir" -name .lake -prune -o -name '*.lean' -type f -print \
+    | while IFS= read -r f; do
+        rel=${f#"$lean_dir"/}
+        [ "$rel" = lakefile.lean ] && continue
+        printf '%s\n' "${rel%.lean}" | tr '/' '.'
+    done | sort >"$tmp/modules"
+
+# The driver imports every discovered module. When one cannot be imported
+# (library not built, module missing) Lean refuses at the import line and this
+# script reports that, never a green.
+{
+    while IFS= read -r line; do
+        if [ "$line" = '-- @IMPORTS@' ]; then
+            sed 's/.*/import &/' "$tmp/modules"
+        else
+            printf '%s\n' "$line"
+        fi
+    done <"$here/Driver.lean"
+} >"$tmp/Driver.lean"
+
+export DESIGN_RECORD_FILES
+DESIGN_RECORD_FILES=$(cat "$tmp/files")
+export DESIGN_PROJECT_MODULES
+DESIGN_PROJECT_MODULES=$(cat "$tmp/modules")
+[ -z "$list" ] || export DESIGN_CITATIONS_LIST=1
+
+set +e
+(cd "$lean_dir" && lake env lean "$tmp/Driver.lean") >"$tmp/out" 2>"$tmp/err"
+code=$?
+set -e
+
+# `#eval` hands what the driver prints on stderr to Lean's message log, so
+# findings arrive on its stdout. A green run keeps stdout for its one-line
+# receipt; a red run puts everything on stderr.
+if [ "$code" -eq 0 ]; then
+    cat "$tmp/out"
+    cat "$tmp/err" >&2
+else
+    cat "$tmp/out" "$tmp/err" >&2
+fi
+
+if [ "$code" -ne 0 ]; then
+    imports='Driver\.lean:[0-9]+:[0-9]+: error: (unknown module prefix|object file|unknown package|invalid import|bad import)'
+    if grep -qE "$imports" "$tmp/err" "$tmp/out"; then
+        printf '%s: LEAN-IMPORT-FAILED the Lean library could not be imported (is it built?): %s\n' \
+            "$TOOL" "$(grep -hE "$imports" "$tmp/err" "$tmp/out" | head -n 1 | sed 's#^[^ ]*Driver\.lean:[0-9]*:[0-9]*: error: ##')" >&2
+    else
+        printf '%s: FAILED exit=%s\n' "$TOOL" "$code" >&2
+    fi
+    exit 1
+fi
+if ! grep -qE '^design-citations: ok files=[1-9][0-9]* citations=[1-9][0-9]* ' "$tmp/out"; then
+    printf '%s: MISSING-OK-MARKER the driver exited zero without resolving a citation\n' "$TOOL" >&2
+    exit 1
+fi

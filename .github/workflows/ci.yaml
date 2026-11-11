@@ -91,6 +91,16 @@ jobs:
       - name: Build lean specification
         run: nix --quiet develop --command just lean
 
+      # #71: the design record cites Lean declarations by name; each citation
+      # must resolve against the library built above, a code span naming a
+      # declaration must carry the marker, and the controls show the checker
+      # red for a cold tree, a stale citation and an uncited declaration.
+      - name: Check the design record citations
+        run: nix --quiet develop --command just design-citations
+
+      - name: Check the design record citation controls
+        run: nix --quiet develop --command just design-citations-controls
+
       # S86: the committed CI path runs corpus verification additively.
       # `just lean` above stays intact (dependency direction, inversion
       # coverage ± negative control, trace agreement, `lake build`).
