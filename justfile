@@ -172,6 +172,21 @@ lean-toolchain-contract:
     set -euo pipefail
     scripts/check-lean-toolchain
 
+# Resolve the design record against the built Lean library: every citation
+# resolves, no code span names a declaration without the marker, and a library
+# that cannot be imported is red (needs `just lean` first)
+design-citations:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    scripts/design-citations/check
+
+# Show the citation checker red on a cold tree, a stale citation, an uncited
+# declaration and an empty record, and green on the real record
+design-citations-controls:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    scripts/design-citations/controls
+
 # Clean build artifacts
 clean:
     #!/usr/bin/env bash
