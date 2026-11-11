@@ -292,8 +292,8 @@ from a closed vote.
 group, close the question negatively: the closure cause is
 `lean:KelGroups.Vote.ClosureCause.renounced` or
 `lean:KelGroups.Vote.ClosureCause.proposerDeparted`, the record keeps the question as
-it stood, and the verdict is `lean:KelGroups.Vote.Verdict.negative`. The escrow refunds on that negative
-closure: a closed negative bound question mints a negative authorization
+it stood, and the verdict is `lean:KelGroups.Vote.Verdict.negative`. The escrow refunds when the negative authorization
+that closure mints is spent by `lean:AppEvent.denyPermission`: a closed negative bound question mints it
 (`lean:Reactivegas.Composition.apply_mints_negative`), nothing but spending it or the
 collection's departure removes it (`lean:Reactivegas.Composition.apply_keeps_negative`),
 spending it refunds every pledge to the member it belongs to

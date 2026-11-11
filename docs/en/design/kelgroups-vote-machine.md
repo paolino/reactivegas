@@ -136,8 +136,9 @@ The vote payload (`lean:KelGroups.Vote.VoteState`) holds the open questions and 
 append-only closure log of `lean:KelGroups.Vote.ClosureRecord`. It holds no membership:
 the franchise (`lean:KelGroups.Vote.franchise`) is read from the canonical view, so a
 tally can never be evaluated against a stale membership. It has no clock and no
-time-like field, which is what makes the no-expiry theorem provable
-(`lean:KelGroups.Vote.no_expiry`, law).
+time-like field. Law, with a hypothesis (`lean:KelGroups.Vote.no_expiry`): when an
+event leaves a question's recorded entry unchanged, the question is still open
+afterwards and its verdict is open.
 
 **Events.** The vote vocabulary (`lean:KelGroups.Vote.VoteEvent`) has three events:
 `lean:KelGroups.Vote.VoteEvent.openQuestion`, `lean:KelGroups.Vote.VoteEvent.cast` and
