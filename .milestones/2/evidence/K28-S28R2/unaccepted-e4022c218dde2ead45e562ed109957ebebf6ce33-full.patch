@@ -1,0 +1,2244 @@
+diff --git a/kelgroups.cabal b/kelgroups.cabal
+index 1082003..14aa61d 100644
+--- a/kelgroups.cabal
++++ b/kelgroups.cabal
+@@ -90,6 +90,8 @@ test-suite invariants
+     InvariantsSpec
+     JwkSpec
+     MultiClientSpec
++    S28AppApiSpec
++    S28DemoApp
+     ServerSpec
+     StoreInvariantsSpec
+     StoreSpec
+diff --git a/lib/KelGroups/Event.hs b/lib/KelGroups/Event.hs
+index c558aef..7fef155 100644
+--- a/lib/KelGroups/Event.hs
++++ b/lib/KelGroups/Event.hs
+@@ -12,6 +12,10 @@ module KelGroups.Event
+     ( GroupEvent (..)
+     , BaseEvent (..)
+     , Proposal (..)
++    , DirectCommand (..)
++    , BaseMutation (..)
++    , BaseChange (..)
++    , IntegratedEvent (..)
+     ) where
+ 
+ import Data.Set (Set)
+@@ -43,6 +47,11 @@ data BaseEvent
+ 
+ {- | A proposal for a group change. Proposals require
+ admin majority to take effect.
++
++HISTORICAL-NON-PRODUCTION: 'Proposal'/'BaseEvent'/'GroupEvent' keep the
++accepted #54 evidence. The integrated production path below
++('DirectCommand'/'BaseMutation'/'IntegratedEvent') never reads these;
++they receive no new production responsibility in this slice.
+ -}
+ data Proposal
+     = -- | Add a new member with initial roles
+@@ -64,3 +73,44 @@ data Proposal
+         (Set Role)
+         -- ^ New role set
+     deriving stock (Show, Eq)
++
++{- | The direct base-command vocabulary: exactly one constructor, member
++admission. The signer is supplied separately by the integrated
++transition, so no command carries a second author identity.
++-}
++data DirectCommand = AdmitMember Text Text (Set Role)
++    deriving stock (Show, Eq)
++
++{- | The voted base vocabulary: removal and role change, and nothing
++else. Admission is not representable here, so no pending approval can
++enact one. Constructor names carry a 'Voted' suffix because Haskell
++shares one constructor namespace per module while Lean namespaces per
++inductive (r5 D1 mapping); shapes match Lean 'BaseMutation' exactly.
++Adding an admission constructor stops the exhaustive enactment matching
++compiling.
++-}
++data BaseMutation
++    = RemoveMemberVoted Text
++    | ChangeRolesVoted Text (Set Role)
++    deriving stock (Show, Eq)
++
++{- | The observable base-change vocabulary. A committed substrate
++membership or role effect is exactly one of these three, each naming the
++affected key.
++-}
++data BaseChange
++    = MemberAdmitted Text
++    | MemberRemoved Text
++    | RolesChanged Text
++    deriving stock (Show, Eq)
++
++{- | The closed integrated event vocabulary. Base proposal and app event
++are distinct type parameters, so an app event cannot be a proposal and no
++membership action can arrive dressed as app payload.
++-}
++data IntegratedEvent bp e
++    = IEDirect DirectCommand
++    | IEPropose bp
++    | IEApprove ProposalId
++    | IEApp e
++    deriving stock (Show, Eq)
+diff --git a/lib/KelGroups/Fold.hs b/lib/KelGroups/Fold.hs
+index 105aa5f..d76219e 100644
+--- a/lib/KelGroups/Fold.hs
++++ b/lib/KelGroups/Fold.hs
+@@ -15,29 +15,69 @@ module KelGroups.Fold
+     , AppFold
+     , enact
+     , applyPropose
++    , IntegratedAppFold
++    , BaseHook
++    , IntegratedError (..)
++    , IntegratedResult (..)
++    , Integration (..)
++    , commitBaseChange
++    , tryEnactBase
++    , applyIntegratedEvent
++    , foldIntegrated
++    , foldIntegratedFrom
++    , enactMutation
++    , mutationChange
++    , admitMemberInto
+     ) where
+ 
+ import Data.Map.Strict qualified as Map
++import Data.Set (Set)
+ import Data.Set qualified as Set
+ import Data.Text (Text, pack)
+ import Data.Text.Encoding qualified as TE
+ import KelGroups.Event
+-    ( BaseEvent (..)
++    ( BaseChange (..)
++    , BaseEvent (..)
++    , BaseMutation (..)
++    , DirectCommand (..)
+     , GroupEvent (..)
++    , IntegratedEvent
+     , Proposal (..)
+     )
++import KelGroups.Event qualified as Evt
+ import KelGroups.State
+     ( GroupState (..)
++    , PendingBase (..)
+     , PendingProposal (..)
+     , emptyState
++    , groupView
++    , lookupPendingBase
+     , majority
+     )
+-import KelGroups.Types (Member (..))
++import KelGroups.Types
++    ( GroupView
++    , Member (..)
++    , ProposalId
++    , Role
++    , isMemberInView
++    )
++import KelGroups.Validate
++    ( ValidationError (..)
++    , validateBaseApproval
++    , validateBaseMutation
++    , validateDirectAdmission
++    )
+ import Keri.Crypto.Digest (computeSaid)
+ 
+ {- | Application fold function. Given the current
+ application fold result and an application event,
+ produce the new fold result.
++
++HISTORICAL-NON-PRODUCTION: 'AppFold'/'foldGroup'/'applyEvent' and the
++base helpers below keep the accepted behavior and the historical
++'pendingProposals' store. The integrated production fold
++('applyIntegratedEvent'/'foldIntegrated') never calls these; they receive
++no new production responsibility in this slice.
+ -}
+ type AppFold a = a -> a -> a
+ 
+@@ -187,3 +227,262 @@ Blake2b-256 digest.
+ proposalDigest :: Proposal -> Text
+ proposalDigest p =
+     computeSaid $ TE.encodeUtf8 $ pack $ show p
++
++-- --------------------------------------------------------
++-- Integrated production fold
++-- --------------------------------------------------------
++
++{- | The application transition. It receives the signer, the canonical
++pre- and post-transition views, the app payload and the app event, and
++returns app payload or a rejection: never a group or a member list.
++-}
++type IntegratedAppFold s e err =
++    Text -> GroupView -> GroupView -> s -> e -> Either err s
++
++{- | The sealed post-base hook. It observes one committed base change
++through its exact pre/post views and returns the corresponding app
++payload or a rejection.
++-}
++type BaseHook s err =
++    BaseChange -> GroupView -> GroupView -> s -> Either err s
++
++{- | Rejection identities of the integrated boundary: a substrate
++admissibility refusal, or the application's own.
++-}
++data IntegratedError err
++    = IEValidation ValidationError
++    | IEApp err
++    deriving stock (Show, Eq)
++
++{- | Success: the new aggregate, and the concrete base change it
++committed if it committed one.
++-}
++data IntegratedResult s = IntegratedResult
++    { irState :: GroupState s
++    , irChange :: Maybe BaseChange
++    }
++    deriving stock (Show, Eq)
++
++{- | The contract bundle an application supplies to the boundary. It
++exposes no function from an unrestricted generic proposal into the voted
++vocabulary: 'intProposalMutation' lands in 'BaseMutation', which cannot
++admit.
++-}
++data Integration s e bp err = Integration
++    { intReserved :: Text
++    , intDigest :: bp -> ProposalId
++    , intProposalMutation :: bp -> BaseMutation
++    , intAppFold :: IntegratedAppFold s e err
++    , intBaseHook :: BaseHook s err
++    }
++
++{- | The sole member insertion. Nothing else in this module writes a new
++key into the members relation.
++-}
++admitMemberInto
++    :: GroupState s -> Text -> Text -> Set Role -> GroupState s
++admitMemberInto gs key email roles =
++    gs
++        { members =
++            Map.insert
++                key
++                Member
++                    { memberKey = key
++                    , memberEmail = email
++                    , memberRoles = roles
++                    }
++                (members gs)
++        }
++
++{- | The voted base effects. Exhaustive over 'BaseMutation'; neither arm
++can introduce a key.
++-}
++enactMutation :: GroupState s -> BaseMutation -> GroupState s
++enactMutation gs = \case
++    RemoveMemberVoted key ->
++        gs{members = Map.delete key (members gs)}
++    ChangeRolesVoted key roles ->
++        gs
++            { members =
++                Map.adjust (\m -> m{memberRoles = roles}) key (members gs)
++            }
++
++{- | The observable evidence a voted mutation commits. Kept separate from
++the effect so a route cannot report one change while performing another.
++-}
++mutationChange :: BaseMutation -> BaseChange
++mutationChange = \case
++    RemoveMemberVoted key -> MemberRemoved key
++    ChangeRolesVoted key _ -> RolesChanged key
++
++{- | Commit a base change together with its consequences, or reject both.
++The hook sees the exact pre and post canonical views and the
++pre-transition payload; its output is the payload the caller observes.
++-}
++commitBaseChange
++    :: Integration s e bp err
++    -> GroupState s
++    -> GroupState s
++    -> BaseChange
++    -> Either (IntegratedError err) (IntegratedResult s)
++commitBaseChange integration pre post change =
++    case intBaseHook
++        integration
++        change
++        (groupView pre)
++        (groupView post)
++        (appFold pre) of
++        Right appState ->
++            Right
++                IntegratedResult
++                    { irState = post{appFold = appState}
++                    , irChange = Just change
++                    }
++        Left err -> Left (IEApp err)
++
++{- | Enact a pending base mutation once its approvals reach the majority
++of the current franchise; otherwise leave it pending and report no
++change.
++-}
++tryEnactBase
++    :: Integration s e bp err
++    -> GroupState s
++    -> ProposalId
++    -> Either (IntegratedError err) (IntegratedResult s)
++tryEnactBase integration gs proposalId =
++    case lookupPendingBase proposalId gs of
++        Nothing ->
++            Right
++                IntegratedResult{irState = gs, irChange = Nothing}
++        Just pending ->
++            if Set.size (pbApprovals pending) >= majority gs
++                then
++                    let cleared =
++                            gs
++                                { pendingBase =
++                                    Map.delete proposalId (pendingBase gs)
++                                }
++                        effected =
++                            enactMutation cleared (pbMutation pending)
++                    in  commitBaseChange
++                            integration
++                            gs
++                            effected
++                            (mutationChange (pbMutation pending))
++                else
++                    Right
++                        IntegratedResult{irState = gs, irChange = Nothing}
++
++{- | The one integrated transition. Validation dominates the effect on
++every route: an app event from a non-member reaches no fold, and no base
++route reaches an effect without its admissibility decision.
++-}
++applyIntegratedEvent
++    :: Integration s e bp err
++    -> GroupState s
++    -> Text
++    -> IntegratedEvent bp e
++    -> Either (IntegratedError err) (IntegratedResult s)
++applyIntegratedEvent integration gs signer event = case event of
++    Evt.IEDirect (AdmitMember key email roles) ->
++        case validateDirectAdmission
++            (intReserved integration)
++            gs
++            signer
++            key
++            email
++            roles of
++            Left err -> Left (IEValidation err)
++            Right () ->
++                commitBaseChange
++                    integration
++                    gs
++                    (admitMemberInto gs key email roles)
++                    (MemberAdmitted key)
++    Evt.IEPropose proposal ->
++        let mutation = intProposalMutation integration proposal
++        in  case validateBaseMutation gs signer mutation of
++                Left err -> Left (IEValidation err)
++                Right () ->
++                    let proposalId = intDigest integration proposal
++                        pending =
++                            PendingBase
++                                { pbMutation = mutation
++                                , pbProposer = signer
++                                , pbApprovals = Set.singleton signer
++                                }
++                    in  tryEnactBase
++                            integration
++                            gs
++                                { pendingBase =
++                                    Map.insert proposalId pending (pendingBase gs)
++                                }
++                            proposalId
++    Evt.IEApprove proposalId ->
++        case validateBaseApproval gs signer proposalId of
++            Left err -> Left (IEValidation err)
++            Right () ->
++                case lookupPendingBase proposalId gs of
++                    Nothing ->
++                        Left (IEValidation (ProposalNotFound proposalId))
++                    Just pending ->
++                        let approved =
++                                pending
++                                    { pbApprovals =
++                                        Set.insert signer (pbApprovals pending)
++                                    }
++                        in  tryEnactBase
++                                integration
++                                gs
++                                    { pendingBase =
++                                        Map.insert proposalId approved (pendingBase gs)
++                                    }
++                                proposalId
++    Evt.IEApp appEvent ->
++        let view = groupView gs
++        in  if isMemberInView signer view
++                then case intAppFold integration signer view view (appFold gs) appEvent of
++                    Right appState ->
++                        Right
++                            IntegratedResult
++                                { irState = gs{appFold = appState}
++                                , irChange = Nothing
++                                }
++                    Left err -> Left (IEApp err)
++                else Left (IEValidation (NotAMember signer))
++
++{- | The integrated fold: every signed integrated event, in order, from
++a starting app payload. A rejected event leaves the aggregate exactly as
++it was, so a refusal cannot advance state.
++-}
++foldIntegrated
++    :: Integration s e bp err
++    -> s
++    -> [(Text, IntegratedEvent bp e)]
++    -> GroupState s
++foldIntegrated integration initial =
++    foldl
++        ( \gs (signer, evt) ->
++            case applyIntegratedEvent integration gs signer evt of
++                Right result -> irState result
++                Left _ -> gs
++        )
++        (emptyState initial)
++
++{- | The replay primitive: the same shared step as 'foldIntegrated',
++starting from a founding aggregate instead of an empty one. Used by the
++integrated store to replay persisted rows over the stored founding. The
++refusal arm matches 'foldIntegrated' by construction.
++-}
++foldIntegratedFrom
++    :: Integration s e bp err
++    -> GroupState s
++    -> [(Text, IntegratedEvent bp e)]
++    -> GroupState s
++foldIntegratedFrom integration =
++    foldl
++        ( \gs (signer, evt) ->
++            case applyIntegratedEvent integration gs signer evt of
++                Right result -> irState result
++                Left _ -> gs
++        )
+diff --git a/lib/KelGroups/Server/JSON.hs b/lib/KelGroups/Server/JSON.hs
+index 87a611a..8ba72dc 100644
+--- a/lib/KelGroups/Server/JSON.hs
++++ b/lib/KelGroups/Server/JSON.hs
+@@ -24,6 +24,7 @@ import Data.Aeson
+     , object
+     , withObject
+     , withText
++    , (.!=)
+     , (.:)
+     , (.:?)
+     , (.=)
+@@ -33,12 +34,17 @@ import Data.Set qualified as Set
+ import Data.Text (Text)
+ import KelGroups.Bootstrap (AuthMode (..))
+ import KelGroups.Event
+-    ( BaseEvent (..)
++    ( BaseChange (..)
++    , BaseEvent (..)
++    , BaseMutation (..)
++    , DirectCommand (..)
+     , GroupEvent (..)
++    , IntegratedEvent (..)
+     , Proposal (..)
+     )
+ import KelGroups.State
+     ( GroupState (..)
++    , PendingBase (..)
+     , PendingProposal (..)
+     )
+ import KelGroups.Types
+@@ -257,6 +263,7 @@ instance (ToJSON a) => ToJSON (GroupState a) where
+             [ "members" .= Map.elems (members gs)
+             , "pendingProposals"
+                 .= Map.toList (pendingProposals gs)
++            , "pendingBase" .= Map.toList (pendingBase gs)
+             , "appFold" .= appFold gs
+             ]
+ 
+@@ -267,11 +274,13 @@ instance (FromJSON a) => FromJSON (GroupState a) where
+                 Map.fromList
+                     [(memberKey m, m) | m <- ms]
+         pps <- o .: "pendingProposals"
++        pbs <- o .:? "pendingBase" .!= []
+         af <- o .: "appFold"
+         pure
+             GroupState
+                 { members = memberMap
+                 , pendingProposals = Map.fromList pps
++                , pendingBase = Map.fromList pbs
+                 , appFold = af
+                 }
+ 
+@@ -343,6 +352,11 @@ instance ToJSON ValidationError where
+             [ "error" .= ("invalidKey" :: Text)
+             , "key" .= k
+             ]
++    toJSON (ReservedKey k) =
++        object
++            [ "error" .= ("reservedKey" :: Text)
++            , "key" .= k
++            ]
+ 
+ instance FromJSON ValidationError where
+     parseJSON = withObject "ValidationError" $ \o -> do
+@@ -370,6 +384,8 @@ instance FromJSON ValidationError where
+                 RoleRemovePrecondition <$> o .: "role"
+             "invalidKey" ->
+                 InvalidKey <$> o .: "key"
++            "reservedKey" ->
++                ReservedKey <$> o .: "key"
+             _ ->
+                 fail $
+                     "unknown ValidationError: "
+@@ -465,3 +481,140 @@ instance FromJSON ServerError where
+             _ ->
+                 fail $
+                     "unknown ServerError: " <> show tag
++
++-- --------------------------------------------------------
++-- Integrated vocabulary (S28-1 production codecs)
++-- --------------------------------------------------------
++-- Orphan instances for the integrated store persist/replay path
++-- ('openIntegratedKEL'/'appendIntegratedEvent'). Tag shapes mirror the
++-- historical codecs above; the integrated tags are distinct so the two
++-- logs can never be confused.
++
++instance ToJSON DirectCommand where
++    toJSON (AdmitMember key email roles) =
++        object
++            [ "tag" .= ("admitMember" :: Text)
++            , "key" .= key
++            , "email" .= email
++            , "roles" .= Set.toList roles
++            ]
++
++instance FromJSON DirectCommand where
++    parseJSON = withObject "DirectCommand" $ \o -> do
++        (tag :: Text) <- o .: "tag"
++        case tag of
++            "admitMember" ->
++                AdmitMember
++                    <$> o .: "key"
++                    <*> o .: "email"
++                    <*> (Set.fromList <$> o .: "roles")
++            _ ->
++                fail $
++                    "unknown DirectCommand tag: " <> show tag
++
++instance ToJSON BaseMutation where
++    toJSON (RemoveMemberVoted key) =
++        object
++            [ "tag" .= ("removeMemberVoted" :: Text)
++            , "key" .= key
++            ]
++    toJSON (ChangeRolesVoted key roles) =
++        object
++            [ "tag" .= ("changeRolesVoted" :: Text)
++            , "key" .= key
++            , "roles" .= Set.toList roles
++            ]
++
++instance FromJSON BaseMutation where
++    parseJSON = withObject "BaseMutation" $ \o -> do
++        (tag :: Text) <- o .: "tag"
++        case tag of
++            "removeMemberVoted" ->
++                RemoveMemberVoted <$> o .: "key"
++            "changeRolesVoted" ->
++                ChangeRolesVoted
++                    <$> o .: "key"
++                    <*> (Set.fromList <$> o .: "roles")
++            _ ->
++                fail $
++                    "unknown BaseMutation tag: " <> show tag
++
++instance ToJSON BaseChange where
++    toJSON (MemberAdmitted key) =
++        object
++            [ "tag" .= ("memberAdmitted" :: Text)
++            , "key" .= key
++            ]
++    toJSON (MemberRemoved key) =
++        object
++            [ "tag" .= ("memberRemoved" :: Text)
++            , "key" .= key
++            ]
++    toJSON (RolesChanged key) =
++        object
++            [ "tag" .= ("rolesChanged" :: Text)
++            , "key" .= key
++            ]
++
++instance FromJSON BaseChange where
++    parseJSON = withObject "BaseChange" $ \o -> do
++        (tag :: Text) <- o .: "tag"
++        case tag of
++            "memberAdmitted" ->
++                MemberAdmitted <$> o .: "key"
++            "memberRemoved" ->
++                MemberRemoved <$> o .: "key"
++            "rolesChanged" ->
++                RolesChanged <$> o .: "key"
++            _ ->
++                fail $
++                    "unknown BaseChange tag: " <> show tag
++
++instance (ToJSON bp, ToJSON e) => ToJSON (IntegratedEvent bp e) where
++    toJSON (IEDirect cmd) =
++        object
++            [ "tag" .= ("direct" :: Text)
++            , "command" .= cmd
++            ]
++    toJSON (IEPropose proposal) =
++        object
++            [ "tag" .= ("propose" :: Text)
++            , "proposal" .= proposal
++            ]
++    toJSON (IEApprove proposalId) =
++        object
++            [ "tag" .= ("approve" :: Text)
++            , "proposalId" .= proposalId
++            ]
++    toJSON (IEApp event) =
++        object
++            [ "tag" .= ("app" :: Text)
++            , "event" .= event
++            ]
++
++instance (FromJSON bp, FromJSON e) => FromJSON (IntegratedEvent bp e) where
++    parseJSON = withObject "IntegratedEvent" $ \o -> do
++        (tag :: Text) <- o .: "tag"
++        case tag of
++            "direct" -> IEDirect <$> o .: "command"
++            "propose" -> IEPropose <$> o .: "proposal"
++            "approve" -> IEApprove <$> o .: "proposalId"
++            "app" -> IEApp <$> o .: "event"
++            _ ->
++                fail $
++                    "unknown IntegratedEvent tag: " <> show tag
++
++instance ToJSON PendingBase where
++    toJSON pp =
++        object
++            [ "mutation" .= pbMutation pp
++            , "proposer" .= pbProposer pp
++            , "approvals" .= Set.toList (pbApprovals pp)
++            ]
++
++instance FromJSON PendingBase where
++    parseJSON = withObject "PendingBase" $ \o ->
++        PendingBase
++            <$> o .: "mutation"
++            <*> o .: "proposer"
++            <*> (Set.fromList <$> o .: "approvals")
+diff --git a/lib/KelGroups/State.hs b/lib/KelGroups/State.hs
+index c466038..35fb07f 100644
+--- a/lib/KelGroups/State.hs
++++ b/lib/KelGroups/State.hs
+@@ -10,34 +10,54 @@ by folding the KEL. There is no mutable external state.
+ module KelGroups.State
+     ( GroupState (..)
+     , PendingProposal (..)
++    , PendingBase (..)
+     , emptyState
+     , adminCount
+     , majority
+     , isAdmin
+     , isMember
++    , groupView
++    , lookupPendingBase
+     ) where
+ 
+ import Data.Map.Strict (Map)
+ import Data.Map.Strict qualified as Map
+ import Data.Set (Set)
+ import Data.Text (Text)
+-import KelGroups.Event (Proposal)
++import KelGroups.Event (BaseMutation, Proposal)
+ import KelGroups.Types
+-    ( Member (..)
++    ( GroupView (..)
++    , Member (..)
+     , ProposalId
+     , hasAdmin
+     )
+ 
++{- | A voted base mutation awaiting its approval threshold. The
++integrated pending store: its payload is 'BaseMutation', which cannot
++express admission, so nothing here can ever insert a member.
++-}
++data PendingBase = PendingBase
++    { pbMutation :: BaseMutation
++    -- ^ The voted mutation (non-admitting-typed)
++    , pbProposer :: Text
++    -- ^ CESR public key of the proposing admin
++    , pbApprovals :: Set Text
++    -- ^ CESR public keys of admins who approved
++    }
++    deriving stock (Show, Eq)
++
+ {- | The group condition, derived from folding the KEL.
+ Parameterized by the application fold result @a@.
+ -}
+-data GroupState a = GroupState
++data GroupState s = GroupState
+     { members :: Map Text Member
+     -- ^ All members, keyed by CESR public key
+     , pendingProposals :: Map ProposalId PendingProposal
+-    -- ^ Proposals awaiting approval
+-    , appFold :: a
+-    -- ^ Application-level fold result
++    -- ^ Proposals awaiting approval (HISTORICAL-NON-PRODUCTION store)
++    , pendingBase :: Map ProposalId PendingBase
++    -- ^ Voted base mutations awaiting approval (PRODUCTION store)
++    , appFold :: s
++    -- ^ Application-level fold result (the AppState)
+     }
+     deriving stock (Show, Eq)
+ 
+@@ -53,8 +73,8 @@ data PendingProposal = PendingProposal
+     deriving stock (Show, Eq)
+ 
+ -- | Empty group condition with no members.
+-emptyState :: a -> GroupState a
+-emptyState = GroupState Map.empty Map.empty
++emptyState :: s -> GroupState s
++emptyState = GroupState Map.empty Map.empty Map.empty
+ 
+ -- | Count current admins.
+ adminCount :: GroupState a -> Int
+@@ -82,3 +102,16 @@ isAdmin pubKey gs =
+ -- | Check if a public key belongs to a member.
+ isMember :: Text -> GroupState a -> Bool
+ isMember pubKey = Map.member pubKey . members
++
++-- | The voted base mutation pending under an id, if any.
++lookupPendingBase
++    :: ProposalId -> GroupState s -> Maybe PendingBase
++lookupPendingBase proposalId gs =
++    Map.lookup proposalId (pendingBase gs)
++
++{- | The canonical projection. The sole route from the writable
++aggregate to the read-only view every app fold, base hook and vote
++observation consumes.
++-}
++groupView :: GroupState s -> GroupView
++groupView gs = GroupView (members gs)
+diff --git a/lib/KelGroups/Store.hs b/lib/KelGroups/Store.hs
+index 1bfc99c..c0555e4 100644
+--- a/lib/KelGroups/Store.hs
++++ b/lib/KelGroups/Store.hs
+@@ -24,13 +24,16 @@ module KelGroups.Store
+     , openKEL
+     , openKELWithIdentity
+     , closeKEL
++    , openIntegratedKEL
+     , appendEvent
++    , appendIntegratedEvent
+     , readState
+     , readEventsFrom
+     , kelLength
+     , chainTip
+     ) where
+ 
++import Control.Concurrent.MVar (MVar, newMVar, withMVar)
+ import Control.Concurrent.STM
+     ( TVar
+     , atomically
+@@ -39,10 +42,12 @@ import Control.Concurrent.STM
+     , readTVarIO
+     , writeTVar
+     )
++import Control.Exception (evaluate)
+ import Data.Aeson (FromJSON, ToJSON, decode, encode)
+ import Data.ByteString (ByteString)
+ import Data.ByteString.Lazy qualified as LBS
+ import Data.Text (Text)
++import Data.Text qualified as T
+ import Data.Text.Encoding qualified as TE
+ import Database.SQLite.Simple
+     ( Connection
+@@ -54,8 +59,15 @@ import Database.SQLite.Simple
+     , query
+     , query_
+     )
+-import KelGroups.Event (GroupEvent)
+-import KelGroups.Fold (AppFold)
++import KelGroups.Event (GroupEvent, IntegratedEvent)
++import KelGroups.Fold
++    ( AppFold
++    , IntegratedError
++    , IntegratedResult (..)
++    , Integration
++    , applyIntegratedEvent
++    , foldIntegratedFrom
++    )
+ import KelGroups.Fold qualified as Fold
+ import KelGroups.Server.JSON ()
+ import KelGroups.State (GroupState, emptyState)
+@@ -122,12 +134,20 @@ data KELStore a = KELStore
+     -- ^ Server Ed25519 identity (for signing)
+     , serverCesrKey :: Text
+     -- ^ CESR-encoded server public key
++    , storeAppendLock :: MVar ()
++    -- ^ Serializes integrated appends (F1 repair)
+     }
+ 
+ {- | Open or create a KEL at the given file path.
+ Creates the server identity and L1 inception on
+ first open. Replays all existing events to rebuild
+ the in-memory state and chain tip.
++
++HISTORICAL-NON-PRODUCTION: 'openKEL'/'openKELWithIdentity'/'appendEvent'
++keep the accepted behavior and the historical group-event log. The
++integrated production path ('openIntegratedKEL'/'appendIntegratedEvent'
++below) never calls these; they receive no new production responsibility
++in this slice.
+ -}
+ openKEL
+     :: (FromJSON a)
+@@ -252,6 +272,7 @@ openKELWith appFoldFn initial path mProvided = do
+             conn
+             "SELECT COUNT(*) FROM events"
+     lVar <- newTVarIO (n :: Int)
++    appendLock <- newMVar ()
+     pure
+         KELStore
+             { storeConn = conn
+@@ -260,6 +281,7 @@ openKELWith appFoldFn initial path mProvided = do
+             , lengthVar = lVar
+             , serverKeyPair = kp
+             , serverCesrKey = cesrKey
++            , storeAppendLock = appendLock
+             }
+ 
+ -- | Close the KEL store.
+@@ -470,3 +492,160 @@ replayRow appFoldFn gs (signer, groupJson) =
+                 gs
+                 (signer, groupEvt)
+         Nothing -> gs
++
++-- --------------------------------------------------------
++-- Integrated production store
++-- --------------------------------------------------------
++
++{- | Open or create an integrated KEL at the given file path. The caller
++supplies the founding aggregate (which holds the founding admin): a fresh
++database persists it in a 'founding' table and starts from it; an existing
++database loads it and REQUIRES the passed founding to equal the stored one
++(else IO failure), then replays stored integrated rows over it. There is
++no bootstrap arm and no server-signed inception on this path: integrated
++rows carry no KERI envelope (envelope columns hold documented
++placeholders; the authoritative payload is the integrated-event JSON),
++and the server identity below is ephemeral record filler.
++-}
++openIntegratedKEL
++    :: (ToJSON s, FromJSON s, FromJSON e, FromJSON bp, Eq s)
++    => Integration s e bp err
++    -> GroupState s
++    -> FilePath
++    -> IO (KELStore s)
++openIntegratedKEL integration founding path = do
++    conn <- open path
++    execute_
++        conn
++        "CREATE TABLE IF NOT EXISTS events \
++        \( id INTEGER PRIMARY KEY AUTOINCREMENT \
++        \, signer TEXT NOT NULL \
++        \, event_bytes TEXT NOT NULL \
++        \, signature TEXT NOT NULL \
++        \, group_event TEXT NOT NULL \
++        \, prefix TEXT NOT NULL \
++        \, seq_no INTEGER NOT NULL \
++        \, digest TEXT NOT NULL \
++        \)"
++    execute_
++        conn
++        "CREATE TABLE IF NOT EXISTS founding \
++        \( id INTEGER PRIMARY KEY CHECK (id = 1) \
++        \, founding_json TEXT NOT NULL \
++        \)"
++    foundingRows <-
++        query_
++            conn
++            "SELECT founding_json FROM founding"
++            :: IO [Only LBS.ByteString]
++    [Only eventCount] <-
++        query_
++            conn
++            "SELECT COUNT(*) FROM events"
++            :: IO [Only Int]
++    base <- case foundingRows of
++        [] ->
++            if eventCount == 0
++                then do
++                    execute
++                        conn
++                        "INSERT INTO founding \
++                        \(id, founding_json) VALUES (1, ?)"
++                        (Only (encode founding))
++                    pure founding
++                else fail "founding absent but events exist"
++        [Only stored] ->
++            case decode stored of
++                Nothing -> fail "stored founding is corrupt"
++                Just loaded ->
++                    if loaded == founding
++                        then pure loaded
++                        else
++                            fail
++                                "founding mismatch: passed founding differs \
++                                \from stored founding"
++        _ -> fail "multiple founding rows"
++    rows <-
++        query_
++            conn
++            "SELECT signer, group_event FROM events ORDER BY id"
++            :: IO [(Text, LBS.ByteString)]
++    let decoded =
++            [ (signer, evt)
++            | (signer, js) <- rows
++            , Just evt <- [decode js]
++            ]
++        gs = foldIntegratedFrom integration base decoded
++    kp <- generateKeyPair
++    let pkBytes = publicKeyBytes (publicKey kp)
++        cesrKey =
++            Cesr.encode
++                Primitive{code = Ed25519PubKey, raw = pkBytes}
++    stVar <- newTVarIO gs
++    tVar <- newTVarIO Nothing
++    lVar <- newTVarIO eventCount
++    appendLock <- newMVar ()
++    pure
++        KELStore
++            { storeConn = conn
++            , stateVar = stVar
++            , tipVar = tVar
++            , lengthVar = lVar
++            , serverKeyPair = kp
++            , serverCesrKey = cesrKey
++            , storeAppendLock = appendLock
++            }
++
++{- | Validate-then-append on the integrated boundary. Runs
++'applyIntegratedEvent' first: on refusal persists NOTHING and touches NO
++in-memory state; on success inserts the SQL row then updates the hot
++state, tip length included.
++
++Concurrency + refusal order (F3 repair): appends hold 'storeAppendLock'
++across one serialized transition — fresh state read, then the decision,
++then payload-encode forcing, then the SQL row, then the TVar commit.
++The decision is authoritative and comes first: a refusal short-circuits
++before the application codec is ever forced, so a faulting codec cannot
++replace a payload-independent refusal with an exception. Encode forcing
++stays post-acceptance and pre-INSERT in the same hold, so an accepted
++faulting codec still throws observably with hot state untouched, and
++overlapping accepted callers still conserve every committed transition
++and event count. A SQL failure still propagates to the caller with hot
++state untouched and the lock released.
++-}
++appendIntegratedEvent
++    :: (ToJSON e, ToJSON bp)
++    => KELStore s
++    -> Integration s e bp err
++    -> Text
++    -> IntegratedEvent bp e
++    -> IO (Either (IntegratedError err) (IntegratedResult s))
++appendIntegratedEvent store integration signer event =
++    withMVar (storeAppendLock store) $ \() -> do
++        gs <- readState store
++        case applyIntegratedEvent integration gs signer event of
++            Left err -> pure (Left err)
++            Right result -> do
++                let payloadJson = encode event
++                    payloadText = TE.decodeUtf8 (LBS.toStrict payloadJson)
++                    noEnvelope = T.empty
++                _ <- evaluate payloadText
++                n <- kelLength store
++                execute
++                    (storeConn store)
++                    "INSERT INTO events \
++                    \(signer, event_bytes, signature, \
++                    \group_event, prefix, seq_no, digest) \
++                    \VALUES (?, ?, ?, ?, ?, ?, ?)"
++                    ( signer
++                    , payloadText
++                    , noEnvelope
++                    , payloadJson
++                    , noEnvelope
++                    , n + 1
++                    , noEnvelope
++                    )
++                atomically $ do
++                    writeTVar (stateVar store) (irState result)
++                    writeTVar (lengthVar store) (n + 1)
++                pure (Right result)
+diff --git a/lib/KelGroups/Types.hs b/lib/KelGroups/Types.hs
+index 7a2ec4e..f96aa60 100644
+--- a/lib/KelGroups/Types.hs
++++ b/lib/KelGroups/Types.hs
+@@ -18,9 +18,14 @@ module KelGroups.Types
+     , ProposalId
+     , isAdminRole
+     , hasAdmin
++    , GroupView (..)
++    , lookupMemberInView
++    , isMemberInView
++    , isAdminInView
+     ) where
+ 
+ import Data.Map.Strict (Map)
++import Data.Map.Strict qualified as Map
+ import Data.Set (Set)
+ import Data.Text (Text)
+ 
+@@ -61,6 +66,32 @@ isAdminRole _ = False
+ hasAdmin :: Set Role -> Bool
+ hasAdmin = any isAdminRole
+ 
++{- | An immutable projection of the one writable member/role relation.
++Carries no app payload and confers no capability to return or replace a
++group aggregate: consumers read membership and roles and produce nothing
++but app payload.
++-}
++newtype GroupView = GroupView
++    { gvMembers :: Map Text Member
++    -- ^ Sole canonical member relation
++    }
++    deriving stock (Eq, Show)
++
++-- | The member registered under a key in the canonical view, if any.
++lookupMemberInView :: Text -> GroupView -> Maybe Member
++lookupMemberInView key view = Map.lookup key (gvMembers view)
++
++-- | Is a key a current member of the canonical relation?
++isMemberInView :: Text -> GroupView -> Bool
++isMemberInView key view = Map.member key (gvMembers view)
++
++{- | Is a key a current member holding an admin role? The one notion of
++responsibility every consumer reads; there is no second list.
++-}
++isAdminInView :: Text -> GroupView -> Bool
++isAdminInView key view =
++    maybe False (hasAdmin . memberRoles) (lookupMemberInView key view)
++
+ -- | A group member with their public key and roles.
+ data Member = Member
+     { memberKey :: Text
+diff --git a/lib/KelGroups/Validate.hs b/lib/KelGroups/Validate.hs
+index b3e5dbb..f182b2b 100644
+--- a/lib/KelGroups/Validate.hs
++++ b/lib/KelGroups/Validate.hs
+@@ -11,6 +11,9 @@ and role preconditions.
+ module KelGroups.Validate
+     ( validateEvent
+     , ValidationError (..)
++    , validateDirectAdmission
++    , validateBaseMutation
++    , validateBaseApproval
+     ) where
+ 
+ import Data.Map.Strict qualified as Map
+@@ -19,18 +22,22 @@ import Data.Text (Text)
+ import KelGroups.Bootstrap (AuthMode (..), authMode)
+ import KelGroups.Event
+     ( BaseEvent (..)
++    , BaseMutation (..)
+     , GroupEvent (..)
+     , Proposal (..)
+     )
+ import KelGroups.State
+     ( GroupState (..)
++    , PendingBase (..)
+     , PendingProposal (..)
+     , isAdmin
+     , isMember
++    , lookupPendingBase
+     )
+ import KelGroups.Types
+     ( GroupConfig (..)
+     , Member (..)
++    , ProposalId
+     , Role (..)
+     , RoleDef (..)
+     , RoleName
+@@ -62,11 +69,19 @@ data ValidationError
+       RoleRemovePrecondition RoleName
+     | -- | Key is not a valid CESR Ed25519 public key
+       InvalidKey Text
++    | -- | Key is reserved and may never become a member
++      ReservedKey Text
+     deriving stock (Show, Eq)
+ 
+ {- | Validate a group event against the current
+ condition. The signer is the CESR-encoded public key
+ of the event author.
++
++HISTORICAL-NON-PRODUCTION: 'validateEvent' and the proposal/approval
++validators below keep the accepted behavior. The integrated production
++routes ('validateDirectAdmission'/'validateBaseMutation'/
++'validateBaseApproval') never call these; they receive no new production
++responsibility in this slice.
+ -}
+ validateEvent
+     :: GroupConfig a
+@@ -236,3 +251,52 @@ requireValidCesrKey key =
+         Right Primitive{code = Ed25519PubKey} ->
+             Right ()
+         _ -> Left (InvalidKey key)
++
++{- | The sole member-insertion validator. Three guards in a fixed order
++so the refusal identity is exact: a non-admin signer is 'NotAnAdmin',
++the reserved key is 'ReservedKey', and an existing key is
++'MemberAlreadyExists'. There is no bootstrap arm: a group with no admin
++admits nobody; the founding admin arrives through the application's
++guarded initial aggregate.
++-}
++validateDirectAdmission
++    :: Text
++    -> GroupState s
++    -> Text
++    -> Text
++    -> Text
++    -> Set.Set Role
++    -> Either ValidationError ()
++validateDirectAdmission reserved gs signer target _email _roles
++    | not (isAdmin signer gs) = Left (NotAnAdmin signer)
++    | target == reserved = Left (ReservedKey target)
++    | isMember target gs = Left (MemberAlreadyExists target)
++    | otherwise = Right ()
++
++{- | Admissibility of a voted base mutation. Exhaustive over
++'BaseMutation': an added constructor stops this compiling rather than
++acquiring a default.
++-}
++validateBaseMutation
++    :: GroupState s -> Text -> BaseMutation -> Either ValidationError ()
++validateBaseMutation gs signer = \case
++    RemoveMemberVoted key -> do
++        requireAdmin signer gs
++        requireMember key gs
++    ChangeRolesVoted key _ -> do
++        requireAdmin signer gs
++        requireMember key gs
++
++{- | Admissibility of an approval of a pending base mutation. Reads the
++integrated 'pendingBase' store (never the historical one).
++-}
++validateBaseApproval
++    :: GroupState s -> Text -> ProposalId -> Either ValidationError ()
++validateBaseApproval gs signer proposalId = do
++    requireAdmin signer gs
++    case lookupPendingBase proposalId gs of
++        Nothing -> Left (ProposalNotFound proposalId)
++        Just pending
++            | Set.member signer (pbApprovals pending) ->
++                Left (AlreadyApproved signer proposalId)
++            | otherwise -> Right ()
+diff --git a/test/Generators.hs b/test/Generators.hs
+index 9d9c64c..785da20 100644
+--- a/test/Generators.hs
++++ b/test/Generators.hs
+@@ -152,6 +152,7 @@ arbitraryGroupState = do
+         GroupState
+             { members = memberMap
+             , pendingProposals = Map.empty
++            , pendingBase = Map.empty
+             , appFold = ()
+             }
+ 
+@@ -196,6 +197,7 @@ gsWithAdminCount n =
+                 | i <- [1 .. n]
+                 ]
+         , pendingProposals = Map.empty
++        , pendingBase = Map.empty
+         , appFold = ()
+         }
+   where
+diff --git a/test/InvariantsSpec.hs b/test/InvariantsSpec.hs
+index 24d7d3d..36cc297 100644
+--- a/test/InvariantsSpec.hs
++++ b/test/InvariantsSpec.hs
+@@ -112,6 +112,7 @@ spec = do
+                 GroupState
+                     { members = Map.empty
+                     , pendingProposals = Map.empty
++                    , pendingBase = Map.empty
+                     , appFold = ()
+                     }
+                 `shouldBe` Bootstrap
+@@ -137,5 +138,6 @@ emptyState' _ =
+     GroupState
+         { members = Map.empty
+         , pendingProposals = Map.empty
++        , pendingBase = Map.empty
+         , appFold = ()
+         }
+diff --git a/test/Main.hs b/test/Main.hs
+index 534ffca..ae48c5b 100644
+--- a/test/Main.hs
++++ b/test/Main.hs
+@@ -11,6 +11,7 @@ import FoldSpec qualified
+ import InvariantsSpec qualified
+ import JwkSpec qualified
+ import MultiClientSpec qualified
++import S28AppApiSpec qualified
+ import ServerSpec qualified
+ import StoreInvariantsSpec qualified
+ import StoreSpec qualified
+@@ -30,3 +31,4 @@ main = hspec $ do
+     ServerSpec.spec
+     E2ESpec.spec
+     MultiClientSpec.spec
++    S28AppApiSpec.spec
+diff --git a/test/S28AppApiSpec.hs b/test/S28AppApiSpec.hs
+new file mode 100644
+index 0000000..e2393d2
+--- /dev/null
++++ b/test/S28AppApiSpec.hs
+@@ -0,0 +1,823 @@
++{- |
++Module      : S28AppApiSpec
++Description : S28-1 integrated app-api properties with six-group witnesses
++Copyright   : (c) 2026 Paolo Veronelli
++License     : Apache-2.0
++
++Six frozen groups proving the integrated boundary. QuickCheck uses
++standalone generators only. Agreement traces include non-member and
++domain-invalid events.
++-}
++module S28AppApiSpec (spec) where
++
++import Control.Concurrent
++    ( forkIO
++    , killThread
++    , newEmptyMVar
++    , putMVar
++    , takeMVar
++    , threadDelay
++    , tryPutMVar
++    , tryReadMVar
++    )
++import Control.Exception (SomeException, bracket, mask, try)
++import Data.Aeson (ToJSON (..), decode, decodeStrict, encode)
++import Data.ByteString qualified as BS
++import Data.Either (isRight)
++import Data.IORef (modifyIORef', newIORef, readIORef, writeIORef)
++import Data.List (sort)
++import Data.Map.Strict qualified as Map
++import Data.Maybe (mapMaybe)
++import Data.Set qualified as Set
++import Data.Text (Text)
++import KelGroups.Event
++    ( BaseChange (..)
++    , BaseMutation (..)
++    , DirectCommand (..)
++    , IntegratedEvent
++    )
++import KelGroups.Event qualified as Evt
++import KelGroups.Fold
++    ( IntegratedError (..)
++    , IntegratedResult (..)
++    , Integration (..)
++    , applyIntegratedEvent
++    , commitBaseChange
++    , enactMutation
++    , foldIntegrated
++    , foldIntegratedFrom
++    , tryEnactBase
++    )
++import KelGroups.Server.JSON ()
++import KelGroups.State
++    ( GroupState (..)
++    , PendingBase (..)
++    , emptyState
++    , groupView
++    , lookupPendingBase
++    )
++import KelGroups.Store
++    ( KELStore
++    , StoredEvent (..)
++    , appendIntegratedEvent
++    , closeKEL
++    , kelLength
++    , openIntegratedKEL
++    , readEventsFrom
++    , readState
++    )
++import KelGroups.Types
++    ( Admin (..)
++    , Member (..)
++    , Role (..)
++    , isAdminInView
++    , isMemberInView
++    , lookupMemberInView
++    )
++import KelGroups.Validate
++    ( ValidationError (..)
++    , validateBaseApproval
++    , validateBaseMutation
++    , validateDirectAdmission
++    )
++import S28DemoApp
++    ( DemoError (..)
++    , DemoEvent (..)
++    , DemoProposal (..)
++    , DemoState (..)
++    , demoBaseHook
++    , demoDigest
++    , demoInitialState
++    , demoIntegration
++    , demoProposalMutation
++    , demoReserved
++    , foundingDemo
++    , protectedKey
++    )
++import System.Directory (removeFile)
++import System.IO.Temp (emptySystemTempFile)
++import System.Timeout (timeout)
++import Test.Hspec
++    ( Spec
++    , describe
++    , expectationFailure
++    , it
++    , shouldBe
++    , shouldSatisfy
++    )
++import Test.Hspec.QuickCheck (prop)
++import Test.QuickCheck (Gen, chooseInt, elements, forAll, listOf)
++
++adminMember :: Text -> Member
++adminMember key =
++    Member
++        { memberKey = key
++        , memberEmail = key <> "@test.example"
++        , memberRoles = Set.singleton (AdminRole PublicAdmin)
++        }
++
++plainMember :: Text -> Member
++plainMember key =
++    Member
++        { memberKey = key
++        , memberEmail = key <> "@test.example"
++        , memberRoles = Set.empty
++        }
++
++gsWithAdmin :: Text -> GroupState DemoState
++gsWithAdmin adminKey =
++    demoInitialState
++        { members = Map.singleton adminKey (adminMember adminKey)
++        }
++
++withTempIntegrated :: (FilePath -> IO a) -> IO a
++withTempIntegrated action = do
++    path <- emptySystemTempFile "s28-test-.db"
++    result <- action path
++    removeFile path
++    pure result
++
++genDemoProposal :: Gen DemoProposal
++genDemoProposal = do
++    key <- elements ["admin-key-1", "member-key-2", "outsider-key-9"]
++    elements [DemoRemove key, DemoChangeRoles key Set.empty]
++
++genTrace :: Gen [(Text, IntegratedEvent DemoProposal DemoEvent)]
++genTrace = listOf genSigned
++  where
++    genSigned = do
++        signer <- elements ["admin-key-1", "outsider-key-9"]
++        evt <- genMixed
++        pure (signer, evt)
++    genMixed = do
++        n <- chooseInt (-5, 10)
++        elements
++            [ Evt.IEApp (DemoAdd n)
++            , Evt.IEApp (DemoAdd (-3))
++            , Evt.IEApp DemoReset
++            , Evt.IEApp DemoNoop
++            , Evt.IEDirect (AdmitMember "fresh-key" "f@x" Set.empty)
++            ]
++
++applyStep
++    :: GroupState DemoState
++    -> (Text, IntegratedEvent DemoProposal DemoEvent)
++    -> GroupState DemoState
++applyStep gs (signer, evt) =
++    case applyIntegratedEvent demoIntegration gs signer evt of
++        Right result -> irState result
++        Left _ -> gs
++
++-- Deliberately faulting application codec: a refused caller must never
++-- need it. Accepted use throws observably before any durable write.
++data FaultingCodec = FaultingCodec
++    deriving stock (Eq, Show)
++
++instance ToJSON FaultingCodec where
++    toJSON _ = error "S28-R2 faulting codec (refusal must short-circuit)"
++
++faultingIntegration
++    :: Integration DemoState FaultingCodec DemoProposal DemoError
++faultingIntegration =
++    Integration
++        { intReserved = demoReserved
++        , intDigest = demoDigest
++        , intProposalMutation = demoProposalMutation
++        , intAppFold = \_ _ _ st _ -> Right st
++        , intBaseHook = demoBaseHook
++        }
++
++tryFaultingAppend
++    :: KELStore DemoState
++    -> Text
++    -> IO
++        ( Either
++            SomeException
++            ( Either
++                (IntegratedError DemoError)
++                (IntegratedResult DemoState)
++            )
++        )
++tryFaultingAppend store signer =
++    try
++        ( appendIntegratedEvent
++            store
++            faultingIntegration
++            signer
++            (Evt.IEApp FaultingCodec)
++        )
++
++spec :: Spec
++spec = do
++    describe "S28-1 distinct types + signer + GroupView" $ do
++        it "member add authorizes through the sole view" $ do
++            let gs = gsWithAdmin "admin-key-1"
++            let view = groupView gs
++            lookupMemberInView "admin-key-1" view `shouldSatisfy` (/= Nothing)
++            isMemberInView "admin-key-1" view `shouldBe` True
++            isAdminInView "admin-key-1" view `shouldBe` True
++            case applyIntegratedEvent
++                demoIntegration
++                gs
++                "admin-key-1"
++                (Evt.IEApp (DemoAdd 3)) of
++                Right result -> demoCounter (appFold (irState result)) `shouldBe` 3
++                Left err -> expectationFailure ("expected DemoAdd ok: " <> show err)
++        it "nonmember app refused before any fold" $ do
++            let gs = gsWithAdmin "admin-key-1"
++            case applyIntegratedEvent
++                demoIntegration
++                gs
++                "outsider-key-9"
++                (Evt.IEApp (DemoAdd 1)) of
++                Left (IEValidation (NotAMember _)) -> pure ()
++                other -> expectationFailure ("expected NotAMember: " <> show other)
++        prop "nonadmin reset never advances the counter" $ do
++            forAll (elements ["member-key-2", "outsider-key-9"]) $ \outsider ->
++                let gs =
++                        (gsWithAdmin "admin-key-1")
++                            { members =
++                                Map.insert
++                                    "member-key-2"
++                                    (plainMember "member-key-2")
++                                    (members (gsWithAdmin "admin-key-1"))
++                            }
++                in  case applyIntegratedEvent demoIntegration gs outsider (Evt.IEApp DemoReset) of
++                        Left (IEValidation (NotAMember _)) -> True
++                        Left (IEApp (DemoNotAdmin _)) -> True
++                        _ -> False
++    describe "S28-1 rejecting step before append" $ do
++        it "accepted events persist with readable rows" $ do
++            store <- openIntegratedKEL demoIntegration foundingDemo ":memory:"
++            n0 <- kelLength store
++            result <-
++                appendIntegratedEvent
++                    store
++                    demoIntegration
++                    "admin-key-1"
++                    (Evt.IEApp (DemoAdd 2))
++            case result of
++                Right _ -> pure ()
++                Left err -> expectationFailure ("expected append ok: " <> show err)
++            n1 <- kelLength store
++            (n1 == n0 + 1) `shouldBe` True
++            live <- readState store
++            demoCounter (appFold live) `shouldBe` 2
++            rows <- readEventsFrom store 1
++            length rows `shouldBe` 1
++            closeKEL store
++        it "two appends conserve state, rows, length and replay" $ do
++            store <- openIntegratedKEL demoIntegration foundingDemo ":memory:"
++            first <-
++                appendIntegratedEvent
++                    store
++                    demoIntegration
++                    "admin-key-1"
++                    (Evt.IEApp (DemoAdd 1))
++            second <-
++                appendIntegratedEvent
++                    store
++                    demoIntegration
++                    "admin-key-1"
++                    (Evt.IEApp (DemoAdd 2))
++            case (first, second) of
++                (Right _, Right _) -> pure ()
++                other ->
++                    expectationFailure
++                        ("expected both appends ok: " <> show other)
++            live <- readState store
++            demoCounter (appFold live) `shouldBe` 3
++            n <- kelLength store
++            n `shouldBe` 2
++            rows <- readEventsFrom store 1
++            length rows `shouldBe` 2
++            let decoded =
++                    mapMaybe
++                        (\se -> (seSigner se,) <$> decodeStrict (seEventBytes se))
++                        rows
++            length decoded `shouldBe` 2
++            foldIntegratedFrom demoIntegration foundingDemo decoded
++                `shouldBe` live
++            closeKEL store
++        -- Assurance scope (NOTE-001/NOTE-002): concurrent execution with
++        -- a co-occurrence receipt (A commits observed while B runs; the
++        -- length-delta does NOT prove a shared vulnerability window) and
++        -- exact conservation; no defect claimed in bdc9895.
++        -- Timeout/poll failures are SETUP, never semantic kills. Cleanup
++        -- is guaranteed on every path (bracket: stop, kill, close)
++        -- without masking the failure signal.
++        -- Order boundary: no sqlite-simple in test deps, so seq_no is not
++        -- read directly; id-order == commit order is pinned by exact
++        -- replay == live over distinguishable log entries.
++        it "concurrent appends conserve every committed transition" $ do
++            bracket
++                ( do
++                    store <- openIntegratedKEL demoIntegration foundingDemo ":memory:"
++                    stopFlag <- newEmptyMVar
++                    doneA <- newEmptyMVar
++                    doneB <- newEmptyMVar
++                    workerRef <- newIORef []
++                    let loopA n = do
++                            stopped <- tryReadMVar stopFlag
++                            case stopped of
++                                Just _ -> putMVar doneA (Right n)
++                                Nothing -> do
++                                    r <-
++                                        appendIntegratedEvent
++                                            store
++                                            demoIntegration
++                                            "admin-key-1"
++                                            (Evt.IEApp (DemoAdd 1))
++                                    case r of
++                                        Right _ -> loopA (n + 1)
++                                        Left err -> putMVar doneA (Left (show err))
++                    tidA <- mask $ \restore -> do
++                        tid <- forkIO (restore (loopA 0))
++                        writeIORef workerRef [tid]
++                        pure tid
++                    pure (store, stopFlag, doneA, doneB, workerRef)
++                )
++                ( \(store, stopFlag, _doneA, _doneB, workerRef) -> do
++                    _ <- tryPutMVar stopFlag ()
++                    tids <- readIORef workerRef
++                    mapM_ killThread tids
++                    closeKEL store
++                )
++                ( \(store, stopFlag, doneA, doneB, workerRef) -> do
++                    let awaitActive k
++                            | k <= (0 :: Int) =
++                                expectationFailure "SETUP: worker A never committed"
++                            | otherwise = do
++                                n0 <- kelLength store
++                                if n0 >= 5
++                                    then pure ()
++                                    else threadDelay 10000 >> awaitActive (k - 1)
++                        loopB k n
++                            | k <= (0 :: Int) = putMVar doneB (Right n)
++                            | otherwise = do
++                                r <-
++                                    appendIntegratedEvent
++                                        store
++                                        demoIntegration
++                                        "admin-key-1"
++                                        (Evt.IEApp (DemoAdd 2))
++                                case r of
++                                    Right _ -> loopB (k - 1) (n + 1)
++                                    Left err -> putMVar doneB (Left (show err))
++                    awaitActive 3000
++                    commitsBeforeB <- kelLength store
++                    tidB <- mask $ \restore -> do
++                        tid <- forkIO (restore (loopB 200 0))
++                        modifyIORef' workerRef (tid :)
++                        pure tid
++                    outcomeB <- timeout 300000000 (takeMVar doneB)
++                    bCount <- case outcomeB of
++                        Just (Right n) -> pure n
++                        Just (Left err) ->
++                            expectationFailure ("worker B refused: " <> err) >> pure 0
++                        Nothing ->
++                            expectationFailure "SETUP: worker B join timed out" >> pure 0
++                    commitsAfterB <- kelLength store
++                    let concurrentCommits = commitsAfterB - commitsBeforeB - bCount
++                    if concurrentCommits >= 1
++                        then pure ()
++                        else
++                            expectationFailure
++                                ( "SETUP: co-occurrence receipt empty (delta="
++                                    <> show (commitsAfterB - commitsBeforeB)
++                                    <> ")"
++                                )
++                    putMVar stopFlag ()
++                    outcomeA <- timeout 300000000 (takeMVar doneA)
++                    aCount <- case outcomeA of
++                        Just (Right n) -> pure n
++                        Just (Left err) ->
++                            expectationFailure ("worker A refused: " <> err) >> pure 0
++                        Nothing ->
++                            expectationFailure "SETUP: worker A join timed out" >> pure 0
++                    bCount `shouldBe` 200
++                    live <- readState store
++                    demoCounter (appFold live) `shouldBe` (aCount + 2 * bCount)
++                    members live `shouldBe` members foundingDemo
++                    pendingBase live `shouldBe` Map.empty
++                    pendingProposals live `shouldBe` Map.empty
++                    sort (demoLog (appFold live))
++                        `shouldBe` sort (replicate aCount "add 1" ++ replicate 200 "add 2")
++                    n <- kelLength store
++                    n `shouldBe` (aCount + bCount)
++                    rows <- readEventsFrom store 1
++                    length rows `shouldBe` (aCount + bCount)
++                    let decoded =
++                            mapMaybe
++                                (\se -> (seSigner se,) <$> decodeStrict (seEventBytes se))
++                                rows
++                    length decoded `shouldBe` (aCount + bCount)
++                    let adds =
++                            mapMaybe
++                                ( \row -> case row of
++                                    (_, Evt.IEApp (DemoAdd d)) -> Just d
++                                    _ -> Nothing
++                                )
++                                decoded
++                    length (filter (== 1) adds) `shouldBe` aCount
++                    length (filter (== 2) adds) `shouldBe` bCount
++                    foldIntegratedFrom demoIntegration foundingDemo decoded
++                        `shouldBe` live
++                )
++        it "faulting codec from member throws observably" $ do
++            store <- openIntegratedKEL demoIntegration foundingDemo ":memory:"
++            memberResult <- tryFaultingAppend store "admin-key-1"
++            case memberResult of
++                Left _ -> pure ()
++                Right other ->
++                    expectationFailure
++                        ("expected codec exception: " <> show other)
++            live <- readState store
++            demoCounter (appFold live) `shouldBe` 0
++            n <- kelLength store
++            n `shouldBe` 0
++            rows <- readEventsFrom store 1
++            length rows `shouldBe` 0
++            closeKEL store
++        it "faulting codec from nonmember keeps exact refusal" $ do
++            let pureDecision =
++                    applyIntegratedEvent
++                        faultingIntegration
++                        foundingDemo
++                        "outsider"
++                        (Evt.IEApp FaultingCodec)
++            pureDecision
++                `shouldBe` Left (IEValidation (NotAMember "outsider"))
++            store <- openIntegratedKEL demoIntegration foundingDemo ":memory:"
++            refused <-
++                appendIntegratedEvent
++                    store
++                    faultingIntegration
++                    "outsider"
++                    (Evt.IEApp FaultingCodec)
++            refused `shouldBe` Left (IEValidation (NotAMember "outsider"))
++            live <- readState store
++            demoCounter (appFold live) `shouldBe` 0
++            n <- kelLength store
++            n `shouldBe` 0
++            rows <- readEventsFrom store 1
++            length rows `shouldBe` 0
++            closeKEL store
++        it "faulting codec leaves zero state, counts and rows" $ do
++            store <- openIntegratedKEL demoIntegration foundingDemo ":memory:"
++            memberResult <- tryFaultingAppend store "admin-key-1"
++            case memberResult of
++                Left _ -> pure ()
++                Right other ->
++                    expectationFailure
++                        ("expected codec exception: " <> show other)
++            refused <-
++                appendIntegratedEvent
++                    store
++                    faultingIntegration
++                    "outsider"
++                    (Evt.IEApp FaultingCodec)
++            refused `shouldBe` Left (IEValidation (NotAMember "outsider"))
++            live <- readState store
++            demoCounter (appFold live) `shouldBe` 0
++            n <- kelLength store
++            n `shouldBe` 0
++            rows <- readEventsFrom store 1
++            length rows `shouldBe` 0
++            let decoded =
++                    mapMaybe
++                        (\se -> (seSigner se,) <$> decodeStrict (seEventBytes se))
++                        rows
++            length decoded `shouldBe` 0
++            foldIntegratedFrom demoIntegration foundingDemo decoded
++                `shouldBe` live
++            closeKEL store
++        it "domain-invalid add never appends a byte" $ do
++            withTempIntegrated $ \path -> do
++                store <- openIntegratedKEL demoIntegration foundingDemo path
++                gs0 <- readState store
++                n0 <- kelLength store
++                bytes0 <- BS.readFile path
++                result <-
++                    appendIntegratedEvent
++                        store
++                        demoIntegration
++                        "admin-key-1"
++                        (Evt.IEApp (DemoAdd (-1)))
++                case result of
++                    Left (IEApp (DemoNegative _)) -> pure ()
++                    other -> expectationFailure ("expected DemoNegative: " <> show other)
++                gs1 <- readState store
++                gs1 `shouldBe` gs0
++                n1 <- kelLength store
++                n1 `shouldBe` n0
++                bytes1 <- BS.readFile path
++                bytes1 `shouldBe` bytes0
++                closeKEL store
++        it "nonmember append persists nothing byte-identical" $ do
++            withTempIntegrated $ \path -> do
++                store <- openIntegratedKEL demoIntegration foundingDemo path
++                gs0 <- readState store
++                n0 <- kelLength store
++                bytes0 <- BS.readFile path
++                result <-
++                    appendIntegratedEvent
++                        store
++                        demoIntegration
++                        "outsider-key-9"
++                        (Evt.IEApp (DemoAdd 1))
++                case result of
++                    Left (IEValidation (NotAMember _)) -> pure ()
++                    other -> expectationFailure ("expected NotAMember: " <> show other)
++                gs1 <- readState store
++                gs1 `shouldBe` gs0
++                n1 <- kelLength store
++                n1 `shouldBe` n0
++                bytes1 <- BS.readFile path
++                bytes1 `shouldBe` bytes0
++                closeKEL store
++    describe "S28-1 atomic hook" $ do
++        it "succeeding hook commits with admitted evidence" $ do
++            let gs = gsWithAdmin "admin-key-1"
++            let pre = gs
++            let post =
++                    gs
++                        { members =
++                            Map.insert "member-key-2" (plainMember "member-key-2") (members gs)
++                        }
++            case commitBaseChange
++                demoIntegration
++                pre
++                post
++                (MemberAdmitted "member-key-2") of
++                Right result -> irChange result `shouldBe` Just (MemberAdmitted "member-key-2")
++                Left err -> expectationFailure ("expected hook ok: " <> show err)
++        it "hook refusal rejects the whole transition" $ do
++            let base = gsWithAdmin "admin-key-1"
++            let gs =
++                    base
++                        { members =
++                            Map.insert protectedKey (plainMember protectedKey) (members base)
++                        }
++            let pre = gs
++            let post = gs{members = Map.delete protectedKey (members gs)}
++            case commitBaseChange demoIntegration pre post (MemberRemoved protectedKey) of
++                Left (IEApp (DemoHookRefused _)) -> pure ()
++                other -> expectationFailure ("expected DemoHookRefused: " <> show other)
++        it "failing hook restores prestate plus prelog" $ do
++            withTempIntegrated $ \path -> do
++                let founding =
++                        foundingDemo
++                            { members =
++                                Map.insert
++                                    protectedKey
++                                    (plainMember protectedKey)
++                                    (members foundingDemo)
++                            }
++                store <- openIntegratedKEL demoIntegration founding path
++                baseline <-
++                    appendIntegratedEvent
++                        store
++                        demoIntegration
++                        "admin-key-1"
++                        (Evt.IEApp (DemoAdd 5))
++                case baseline of
++                    Right _ -> pure ()
++                    Left err -> expectationFailure ("baseline append ok: " <> show err)
++                gs0 <- readState store
++                n0 <- kelLength store
++                bytes0 <- BS.readFile path
++                result <-
++                    appendIntegratedEvent
++                        store
++                        demoIntegration
++                        "admin-key-1"
++                        (Evt.IEPropose (DemoRemove protectedKey))
++                case result of
++                    Left (IEApp (DemoHookRefused _)) -> pure ()
++                    other -> expectationFailure ("expected hook refusal: " <> show other)
++                gs1 <- readState store
++                gs1 `shouldBe` gs0
++                n1 <- kelLength store
++                n1 `shouldBe` n0
++                bytes1 <- BS.readFile path
++                bytes1 `shouldBe` bytes0
++                closeKEL store
++                store2 <- openIntegratedKEL demoIntegration founding path
++                gs2 <- readState store2
++                gs2 `shouldBe` gs0
++                closeKEL store2
++    describe "S28-1 direct-only admission" $ do
++        it "direct admit by admin inserts the member" $ do
++            let gs = gsWithAdmin "admin-key-1"
++            case validateDirectAdmission
++                demoReserved
++                gs
++                "admin-key-1"
++                "member-key-2"
++                "m@x"
++                Set.empty of
++                Right () -> pure ()
++                Left err -> expectationFailure ("expected admit valid: " <> show err)
++            case applyIntegratedEvent
++                demoIntegration
++                gs
++                "admin-key-1"
++                (Evt.IEDirect (AdmitMember "member-key-2" "m@x" Set.empty)) of
++                Right result ->
++                    isMemberInView "member-key-2" (groupView (irState result))
++                        `shouldBe` True
++                Left err -> expectationFailure ("expected admit ok: " <> show err)
++        it "reserved key refused apart from members" $ do
++            let gs = gsWithAdmin "admin-key-1"
++            case validateDirectAdmission
++                demoReserved
++                gs
++                "admin-key-1"
++                demoReserved
++                "r@x"
++                Set.empty of
++                Left (ReservedKey _) -> pure ()
++                other -> expectationFailure ("expected ReservedKey: " <> show other)
++        prop "voted mutations never insert members" $ do
++            forAll genDemoProposal $ \proposal' ->
++                let mutation = demoProposalMutation proposal'
++                    gs = gsWithAdmin "admin-key-1"
++                    post = enactMutation gs mutation
++                    preKeys = Map.keysSet (members gs)
++                    postKeys = Map.keysSet (members post)
++                in  postKeys `Set.isSubsetOf` preKeys
++        it "voted change-roles never inserts absent members" $ do
++            let gs = gsWithAdmin "admin-key-1"
++            let post =
++                    enactMutation
++                        gs
++                        (ChangeRolesVoted "absent-witness-9" Set.empty)
++            Map.keysSet (members post)
++                `shouldBe` Map.keysSet (members gs)
++            lookupMemberInView "absent-witness-9" (groupView post)
++                `shouldBe` Nothing
++        it "voted change-roles keeps present member keys" $ do
++            let gs = gsWithAdmin "admin-key-1"
++            let post =
++                    enactMutation
++                        gs
++                        (ChangeRolesVoted "admin-key-1" Set.empty)
++            Map.keysSet (members post)
++                `shouldBe` Map.keysSet (members gs)
++            isMemberInView "admin-key-1" (groupView post)
++                `shouldBe` True
++        it "voted remove never inserts absent members" $ do
++            let gs = gsWithAdmin "admin-key-1"
++            let post =
++                    enactMutation gs (RemoveMemberVoted "absent-witness-9")
++            Map.keysSet (members post)
++                `shouldBe` Map.keysSet (members gs)
++            lookupMemberInView "absent-witness-9" (groupView post)
++                `shouldBe` Nothing
++        it "nonempty pendingBase roundtrips through JSON" $ do
++            let pending =
++                    PendingBase
++                        (RemoveMemberVoted "member-key-2")
++                        "admin-key-1"
++                        (Set.singleton "admin-key-1")
++            let gs = foundingDemo{pendingBase = Map.singleton "pid-1" pending}
++            decode (encode gs) `shouldBe` Just gs
++        it "old rows decode with empty pendingBase" $ do
++            let oldRow =
++                    "{\"members\": [], \"pendingProposals\": [], \"appFold\": {\"demoCounter\": 0, \"demoLog\": []}}"
++            case decodeStrict oldRow :: Maybe (GroupState DemoState) of
++                Just gs -> pendingBase gs `shouldBe` Map.empty
++                Nothing -> expectationFailure "old row should decode"
++        it "malformed pendingBase fails decode" $ do
++            let badRow =
++                    "{\"members\": [], \"pendingProposals\": [], \"pendingBase\": 42, \"appFold\": {\"demoCounter\": 0, \"demoLog\": []}}"
++            (decodeStrict badRow :: Maybe (GroupState DemoState))
++                `shouldBe` Nothing
++    describe "S28-1 validate/fold agreement" $ do
++        prop "prefix folds match steps over mixed traces" $ do
++            forAll genTrace $ \trace ->
++                let prefixes = [take k trace | k <- [0 .. length trace]]
++                    folded =
++                        [ foldIntegrated demoIntegration (DemoState 0 []) prefix
++                        | prefix <- prefixes
++                        ]
++                    stepped = scanl applyStep (emptyState (DemoState 0 [])) trace
++                in  folded == stepped
++        prop "founding folds match steps over mixed traces" $ do
++            forAll genTrace $ \trace ->
++                let prefixes = [take k trace | k <- [0 .. length trace]]
++                    folded =
++                        [ foldIntegratedFrom demoIntegration (gsWithAdmin "admin-key-1") prefix
++                        | prefix <- prefixes
++                        ]
++                    stepped = scanl applyStep (gsWithAdmin "admin-key-1") trace
++                in  folded == stepped
++        it "accepted traces apply cleanly end to end" $ do
++            let gs = gsWithAdmin "admin-key-1"
++            case tryEnactBase demoIntegration gs "no-such-proposal" of
++                Right result -> do
++                    irChange result `shouldBe` Nothing
++                    irState result `shouldBe` gs
++                Left err -> expectationFailure ("expected no-op enact: " <> show err)
++            let trace =
++                    [ ("admin-key-1", Evt.IEApp (DemoAdd 1))
++                    , ("admin-key-1", Evt.IEApp DemoNoop)
++                    ]
++            let outcomes =
++                    [ applyIntegratedEvent demoIntegration state signer evt
++                    | (state, (signer, evt)) <- zip (scanl applyStep gs trace) trace
++                    ]
++            all isRight outcomes `shouldBe` True
++            foldIntegratedFrom demoIntegration gs trace
++                `shouldBe` last (scanl applyStep gs trace)
++    describe "S28-1 no client-decided authority" $ do
++        it "verdicts flow only through the boundary" $ do
++            let gs = gsWithAdmin "admin-key-1"
++            case applyIntegratedEvent
++                demoIntegration
++                gs
++                "admin-key-1"
++                (Evt.IEApp (DemoAdd 4)) of
++                Right result -> demoCounter (appFold (irState result)) `shouldBe` 4
++                Left err -> expectationFailure ("expected verdict: " <> show err)
++        it "replayed log reproduces live state exactly" $ do
++            store <- openIntegratedKEL demoIntegration foundingDemo ":memory:"
++            first <-
++                appendIntegratedEvent
++                    store
++                    demoIntegration
++                    "admin-key-1"
++                    (Evt.IEApp (DemoAdd 3))
++            case first of
++                Right _ -> pure ()
++                Left err -> expectationFailure ("first append ok: " <> show err)
++            second <-
++                appendIntegratedEvent
++                    store
++                    demoIntegration
++                    "admin-key-1"
++                    (Evt.IEApp DemoNoop)
++            case second of
++                Right _ -> pure ()
++                Left err -> expectationFailure ("second append ok: " <> show err)
++            live <- readState store
++            rows <- readEventsFrom store 1
++            length rows `shouldBe` 2
++            let decoded =
++                    mapMaybe
++                        (\se -> (seSigner se,) <$> decodeStrict (seEventBytes se))
++                        rows
++            foldIntegratedFrom demoIntegration foundingDemo decoded
++                `shouldBe` live
++            closeKEL store
++        it "unknown approval refused over pendingBase" $ do
++            let gs = gsWithAdmin "admin-key-1"
++            lookupPendingBase "missing-proposal" gs `shouldBe` Nothing
++            case validateBaseApproval gs "admin-key-1" "missing-proposal" of
++                Left (ProposalNotFound _) -> pure ()
++                other -> expectationFailure ("expected ProposalNotFound: " <> show other)
++        it "voted validation covers both arms exactly" $ do
++            let gs = gsWithAdmin "admin-key-1"
++            case validateBaseMutation
++                gs
++                "admin-key-1"
++                (RemoveMemberVoted "member-key-2") of
++                Left (MemberNotFound _) -> pure ()
++                other -> expectationFailure ("expected MemberNotFound: " <> show other)
++            case validateBaseMutation
++                gs
++                "admin-key-1"
++                (ChangeRolesVoted "admin-key-1" Set.empty) of
++                Right () -> pure ()
++                Left err -> expectationFailure ("expected ChangeRoles ok: " <> show err)
++        it "pending entries survive close and reopen" $ do
++            withTempIntegrated $ \path -> do
++                let founding =
++                        demoInitialState
++                            { members =
++                                Map.fromList
++                                    [ ("admin-key-1", adminMember "admin-key-1")
++                                    , ("admin-key-2", adminMember "admin-key-2")
++                                    , ("admin-key-3", adminMember "admin-key-3")
++                                    , ("member-key-2", plainMember "member-key-2")
++                                    ]
++                            }
++                store <- openIntegratedKEL demoIntegration founding path
++                result <-
++                    appendIntegratedEvent
++                        store
++                        demoIntegration
++                        "admin-key-1"
++                        (Evt.IEPropose (DemoRemove "member-key-2"))
++                case result of
++                    Right pending -> irChange pending `shouldBe` Nothing
++                    Left err -> expectationFailure ("expected pending ok: " <> show err)
++                live <- readState store
++                lookupPendingBase (demoDigest (DemoRemove "member-key-2")) live
++                    `shouldSatisfy` (/= Nothing)
++                closeKEL store
++                store2 <- openIntegratedKEL demoIntegration founding path
++                live2 <- readState store2
++                live2 `shouldBe` live
++                closeKEL store2
+diff --git a/test/S28DemoApp.hs b/test/S28DemoApp.hs
+new file mode 100644
+index 0000000..49dd76a
+--- /dev/null
++++ b/test/S28DemoApp.hs
+@@ -0,0 +1,187 @@
++{-# LANGUAGE DeriveAnyClass #-}
++{-# LANGUAGE DeriveGeneric #-}
++
++{- |
++Module      : S28DemoApp
++Description : Test-only demo instance for S28-1 integrated app-api
++Copyright   : (c) 2026 Paolo Veronelli
++License     : Apache-2.0
++
++Test-only nondegenerate application built on the integrated substrate.
++Distinct state and event types, signer checked through the sole GroupView,
++domain refusal before durable append, sealed atomic base hook.
++Never shipped as a library or executable.
++-}
++module S28DemoApp
++    ( DemoState (..)
++    , DemoEvent (..)
++    , DemoError (..)
++    , DemoProposal (..)
++    , demoProposalMutation
++    , demoDigest
++    , demoReserved
++    , protectedKey
++    , demoAppFold
++    , demoBaseHook
++    , demoIntegration
++    , demoInitialState
++    , foundingDemo
++    , demoStep
++    ) where
++
++import Data.Aeson (FromJSON, ToJSON)
++import Data.Map.Strict qualified as Map
++import Data.Set (Set)
++import Data.Set qualified as Set
++import Data.Text (Text, pack)
++import GHC.Generics (Generic)
++import KelGroups.Event
++    ( BaseChange (..)
++    , BaseMutation (..)
++    , IntegratedEvent
++    )
++import KelGroups.Fold
++    ( BaseHook
++    , IntegratedAppFold
++    , IntegratedError (..)
++    , IntegratedResult (..)
++    , Integration (..)
++    , applyIntegratedEvent
++    )
++import KelGroups.Server.JSON ()
++import KelGroups.State (GroupState (..), emptyState)
++import KelGroups.Types
++    ( Admin (..)
++    , Member (..)
++    , ProposalId
++    , Role (..)
++    , isAdminInView
++    )
++
++data DemoState = DemoState
++    { demoCounter :: Int
++    , demoLog :: [Text]
++    }
++    deriving stock (Eq, Show, Generic)
++    deriving anyclass (ToJSON, FromJSON)
++
++data DemoEvent
++    = DemoAdd Int
++    | DemoReset
++    | DemoNoop
++    deriving stock (Eq, Show, Generic)
++    deriving anyclass (ToJSON, FromJSON)
++
++data DemoError
++    = DemoNotAdmin Text
++    | DemoNegative Int
++    | DemoHookRefused Text
++    deriving stock (Eq, Show)
++
++data DemoProposal
++    = DemoRemove Text
++    | DemoChangeRoles Text (Set Role)
++    deriving stock (Eq, Show, Generic)
++    deriving anyclass (ToJSON, FromJSON)
++
++demoProposalMutation :: DemoProposal -> BaseMutation
++demoProposalMutation = \case
++    DemoRemove key -> RemoveMemberVoted key
++    DemoChangeRoles key roles -> ChangeRolesVoted key roles
++
++demoDigest :: DemoProposal -> ProposalId
++demoDigest proposal' = pack (show proposal')
++
++demoReserved :: Text
++demoReserved = "reserved-demo-key-do-not-admit"
++
++protectedKey :: Text
++protectedKey = "protected-demo-member-key"
++
++demoAppFold :: IntegratedAppFold DemoState DemoEvent DemoError
++demoAppFold signer preView _postView state event = case event of
++    DemoAdd n ->
++        if n < 0
++            then Left (DemoNegative n)
++            else
++                Right
++                    state
++                        { demoCounter = demoCounter state + n
++                        , demoLog =
++                            demoLog state
++                                <> ["add " <> pack (show n)]
++                        }
++    DemoReset ->
++        if isAdminInView signer preView
++            then
++                Right
++                    state
++                        { demoCounter = 0
++                        , demoLog = demoLog state <> ["reset"]
++                        }
++            else Left (DemoNotAdmin signer)
++    DemoNoop -> Right state
++
++demoBaseHook :: BaseHook DemoState DemoError
++demoBaseHook change _preView _postView state = case change of
++    MemberRemoved key ->
++        if key == protectedKey
++            then Left (DemoHookRefused key)
++            else
++                Right
++                    state
++                        { demoLog =
++                            demoLog state
++                                <> ["hook removed " <> key]
++                        }
++    MemberAdmitted key ->
++        Right
++            state
++                { demoLog =
++                    demoLog state <> ["hook admitted " <> key]
++                }
++    RolesChanged key ->
++        Right
++            state
++                { demoLog =
++                    demoLog state <> ["hook roles " <> key]
++                }
++
++demoIntegration
++    :: Integration DemoState DemoEvent DemoProposal DemoError
++demoIntegration =
++    Integration
++        { intReserved = demoReserved
++        , intDigest = demoDigest
++        , intProposalMutation = demoProposalMutation
++        , intAppFold = demoAppFold
++        , intBaseHook = demoBaseHook
++        }
++
++demoInitialState :: GroupState DemoState
++demoInitialState = emptyState (DemoState 0 [])
++
++foundingDemo :: GroupState DemoState
++foundingDemo =
++    GroupState
++        { members =
++            Map.singleton "admin-key-1" (foundingAdmin "admin-key-1")
++        , pendingProposals = Map.empty
++        , pendingBase = Map.empty
++        , appFold = DemoState 0 []
++        }
++  where
++    foundingAdmin key =
++        Member
++            { memberKey = key
++            , memberEmail = key <> "@test.example"
++            , memberRoles = Set.singleton (AdminRole PublicAdmin)
++            }
++
++demoStep
++    :: GroupState DemoState
++    -> Text
++    -> IntegratedEvent DemoProposal DemoEvent
++    -> Either (IntegratedError DemoError) (IntegratedResult DemoState)
++demoStep gs signer event =
++    applyIntegratedEvent demoIntegration gs signer event
+diff --git a/test/StoreInvariantsSpec.hs b/test/StoreInvariantsSpec.hs
+index f897846..83f1093 100644
+--- a/test/StoreInvariantsSpec.hs
++++ b/test/StoreInvariantsSpec.hs
+@@ -207,5 +207,6 @@ emptyGS a =
+     GroupState
+         { members = Map.empty
+         , pendingProposals = Map.empty
++        , pendingBase = Map.empty
+         , appFold = a
+         }
+diff --git a/test/ValidateSpec.hs b/test/ValidateSpec.hs
+index 400e8ba..1cce042 100644
+--- a/test/ValidateSpec.hs
++++ b/test/ValidateSpec.hs
+@@ -318,5 +318,6 @@ emptyGS =
+     GroupState
+         { members = Map.empty
+         , pendingProposals = Map.empty
++        , pendingBase = Map.empty
+         , appFold = ()
+         }

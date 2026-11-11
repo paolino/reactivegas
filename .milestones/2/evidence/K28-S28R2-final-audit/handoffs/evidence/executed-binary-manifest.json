@@ -1,0 +1,42 @@
+[
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/MAJ/probe",
+    "bytes": 28378456,
+    "sha256": "26e87837543cb2737c6123aeb2198f2e80ba2b47a1c72ff460e448d021525e31"
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/R1/probe",
+    "bytes": 28378456,
+    "sha256": "26e87837543cb2737c6123aeb2198f2e80ba2b47a1c72ff460e448d021525e31"
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/R3/probe",
+    "bytes": 28378456,
+    "sha256": "26e87837543cb2737c6123aeb2198f2e80ba2b47a1c72ff460e448d021525e31"
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/R5/probe",
+    "bytes": 28378456,
+    "sha256": "26e87837543cb2737c6123aeb2198f2e80ba2b47a1c72ff460e448d021525e31"
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/row4/probe",
+    "bytes": 30918160,
+    "sha256": "a0487dcd04e60be02613793805aca1d1fdeaf49db31b83b5da2869bfe470a38e"
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/row4-mutant/probe",
+    "bytes": 30895408,
+    "sha256": "8aa3d4d00b3393319f2d6734dfa82b09cb2a933615f4e4195350e52f9b12c935"
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/store/probe",
+    "bytes": 28381792,
+    "sha256": "1e8def4d3baba29d39ee2ce29a4bd90808662176493a7bb890fdba5a6fff427f"
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/store-mutant/probe",
+    "bytes": 30895312,
+    "sha256": "575f49b8e9d8670c4aa63abce6cbe807b4c34259579f1279dfca0b8667846471"
+  }
+]

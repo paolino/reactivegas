@@ -1,0 +1,19 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M16.lean:219:61: error: unsolved goals
+u : KelGroups.Key
+s' : State
+⊢ (∀ (c : Collection), c ∈ s'.collections → c.referente ≠ u) ↔
+    (s'.collections.any fun c => decide (c.referente ≠ u)) = true
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M16.lean:220:50: warning: This simp argument is unused:
+  List.all_eq_true
+
+Hint: Omit it from the simp argument list.
+  simp only [governanceEnacts, governanceEnactsB, L̵i̵s̵t̵.̵a̵l̵l̵_̵e̵q̵_̵t̵r̵u̵e̵,̵ ̵decide_eq_true_eq]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M16.lean:220:68: warning: This simp argument is unused:
+  decide_eq_true_eq
+
+Hint: Omit it from the simp argument list.
+  simp only [governanceEnacts, governanceEnactsB, List.all_eq_true,̵ ̵d̵e̵c̵i̵d̵e̵_̵e̵q̵_̵t̵r̵u̵e̵_̵e̵q̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

@@ -1,0 +1,24 @@
+[
+  {
+    "path": "skew-seed",
+    "pairs": 160,
+    "accepted": 160,
+    "failedConservation": 160,
+    "passedConservation": 0,
+    "codecObservedTwice": 160,
+    "reopenedAgree": 0,
+    "reopenedDisagree": 160,
+    "setupLines": 0
+  },
+  {
+    "path": "candidate",
+    "pairs": 160,
+    "accepted": 160,
+    "failedConservation": 0,
+    "passedConservation": 160,
+    "codecObservedTwice": 160,
+    "reopenedAgree": 160,
+    "reopenedDisagree": 0,
+    "setupLines": 0
+  }
+]

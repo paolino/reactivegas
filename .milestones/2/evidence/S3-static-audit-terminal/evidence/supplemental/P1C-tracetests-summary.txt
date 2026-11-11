@@ -1,0 +1,4 @@
+TRACE-INVENTORY ctors=14 covered=14 missing=0
+TRACE-SEED-SUMMARY donationPrefix=pass correctPledgeDown=pass correctPledgeUp=pass closePurchaseNegative=pass denyPermissionRefunds=pass
+TRACE-NEGATIVE-CONTROLS wrongGuard=pass divergence=pass omittedInput=pass discontinuousInput=pass mutatedPostState=pass flippedResult=pass unsupportedVersion=pass
+TRACE-TEST-SUMMARY checks=43 failures=0

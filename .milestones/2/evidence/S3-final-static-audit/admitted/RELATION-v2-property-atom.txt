@@ -1,0 +1,561 @@
+step_grant_inv|G02a|STATEMENT
+step_grant_inv|G02b|STATEMENT
+step_grant_inv|E02|STATEMENT
+step_deny_inv|G03a|STATEMENT
+step_deny_inv|G03b|STATEMENT
+step_deny_inv|E03a|STATEMENT
+step_deny_inv|E03b|STATEMENT
+step_pledge_inv|G09a|STATEMENT
+step_pledge_inv|G09b|STATEMENT
+step_pledge_inv|G09c|STATEMENT
+step_pledge_inv|G09d|STATEMENT
+step_pledge_inv|G09e|STATEMENT
+step_pledge_inv|G09f|STATEMENT
+step_pledge_inv|G09g|STATEMENT
+step_pledge_inv|E09a|STATEMENT
+step_pledge_inv|E09b|STATEMENT
+step_accept_inv|G10a|STATEMENT
+step_accept_inv|G10b|STATEMENT
+step_accept_inv|G10c|STATEMENT
+step_accept_inv|G10d|STATEMENT
+step_accept_inv|E10|STATEMENT
+step_refuse_inv|G11a|STATEMENT
+step_refuse_inv|G11b|STATEMENT
+step_refuse_inv|G11c|STATEMENT
+step_refuse_inv|G11d|STATEMENT
+step_refuse_inv|E11|STATEMENT
+step_correct_inv|G12a|STATEMENT
+step_correct_inv|G12b|STATEMENT
+step_correct_inv|G12c|STATEMENT
+step_correct_inv|G12d|STATEMENT
+step_correct_inv|G12e|STATEMENT
+step_correct_inv|G12f|STATEMENT
+step_correct_inv|E12a|STATEMENT
+step_correct_inv|E12b|STATEMENT
+step_close_inv|G13a|STATEMENT
+step_close_inv|G13b|STATEMENT
+step_close_inv|G13c|STATEMENT
+step_close_inv|G13d|STATEMENT
+step_close_inv|G13e|STATEMENT
+step_close_inv|E13a|STATEMENT
+step_close_inv|E13b|STATEMENT
+step_fail_inv|G14a|STATEMENT
+step_fail_inv|G14b|STATEMENT
+step_fail_inv|G14c|STATEMENT
+step_fail_inv|G14d|STATEMENT
+step_fail_inv|E14a|STATEMENT
+step_fail_inv|E14b|STATEMENT
+Reactivegas.step_open_inv|G01a|STATEMENT
+Reactivegas.step_open_inv|G01b|STATEMENT
+Reactivegas.step_open_inv|E01|STATEMENT
+Reactivegas.step_deposit_inv|G04a|STATEMENT
+Reactivegas.step_deposit_inv|G04b|STATEMENT
+Reactivegas.step_deposit_inv|G04c|STATEMENT
+Reactivegas.step_deposit_inv|G04d|STATEMENT
+Reactivegas.step_deposit_inv|E04a|STATEMENT
+Reactivegas.step_deposit_inv|E04b|STATEMENT
+Reactivegas.step_withdraw_inv|G05a|STATEMENT
+Reactivegas.step_withdraw_inv|G05b|STATEMENT
+Reactivegas.step_withdraw_inv|G05c|STATEMENT
+Reactivegas.step_withdraw_inv|G05d|STATEMENT
+Reactivegas.step_withdraw_inv|G05e|STATEMENT
+Reactivegas.step_withdraw_inv|E05a|STATEMENT
+Reactivegas.step_withdraw_inv|E05b|STATEMENT
+Reactivegas.step_transferCassa_inv|G06a|STATEMENT
+Reactivegas.step_transferCassa_inv|G06b|STATEMENT
+Reactivegas.step_transferCassa_inv|G06c|STATEMENT
+Reactivegas.step_transferCassa_inv|G06d|STATEMENT
+Reactivegas.step_transferCassa_inv|E06a|STATEMENT
+Reactivegas.step_transferCassa_inv|E06b|STATEMENT
+Reactivegas.step_donate_inv|G07a|STATEMENT
+Reactivegas.step_donate_inv|G07b|STATEMENT
+Reactivegas.step_donate_inv|E07a|STATEMENT
+Reactivegas.step_donate_inv|E07b|STATEMENT
+Reactivegas.step_backdonate_inv|G08a|STATEMENT
+Reactivegas.step_backdonate_inv|G08b|STATEMENT
+Reactivegas.step_backdonate_inv|G08c|STATEMENT
+Reactivegas.step_backdonate_inv|G08d|STATEMENT
+Reactivegas.step_backdonate_inv|E08|STATEMENT
+conservation_preserved|G01a|PROOF-DEP-ARM
+conservation_preserved|G01b|PROOF-DEP-ARM
+conservation_preserved|E01|PROOF-DEP-ARM
+conservation_preserved|G02a|PROOF-DEP-ARM
+conservation_preserved|G02b|PROOF-DEP-ARM
+conservation_preserved|E02|PROOF-DEP-ARM
+conservation_preserved|G03a|PROOF-DEP-ARM
+conservation_preserved|G03b|PROOF-DEP-ARM
+conservation_preserved|E03a|PROOF-DEP-ARM
+conservation_preserved|E03b|PROOF-DEP-ARM
+conservation_preserved|G04a|PROOF-DEP-ARM
+conservation_preserved|G04b|PROOF-DEP-ARM
+conservation_preserved|G04c|PROOF-DEP-ARM
+conservation_preserved|G04d|PROOF-DEP-ARM
+conservation_preserved|E04a|PROOF-DEP-ARM
+conservation_preserved|E04b|PROOF-DEP-ARM
+conservation_preserved|G05a|PROOF-DEP-ARM
+conservation_preserved|G05b|PROOF-DEP-ARM
+conservation_preserved|G05c|PROOF-DEP-ARM
+conservation_preserved|G05d|PROOF-DEP-ARM
+conservation_preserved|G05e|PROOF-DEP-ARM
+conservation_preserved|E05a|PROOF-DEP-ARM
+conservation_preserved|E05b|PROOF-DEP-ARM
+conservation_preserved|G06a|PROOF-DEP-ARM
+conservation_preserved|G06b|PROOF-DEP-ARM
+conservation_preserved|G06c|PROOF-DEP-ARM
+conservation_preserved|G06d|PROOF-DEP-ARM
+conservation_preserved|E06a|PROOF-DEP-ARM
+conservation_preserved|E06b|PROOF-DEP-ARM
+conservation_preserved|G07a|PROOF-DEP-ARM
+conservation_preserved|G07b|PROOF-DEP-ARM
+conservation_preserved|E07a|PROOF-DEP-ARM
+conservation_preserved|E07b|PROOF-DEP-ARM
+conservation_preserved|G08a|PROOF-DEP-ARM
+conservation_preserved|G08b|PROOF-DEP-ARM
+conservation_preserved|G08c|PROOF-DEP-ARM
+conservation_preserved|G08d|PROOF-DEP-ARM
+conservation_preserved|E08|PROOF-DEP-ARM
+conservation_preserved|G09a|PROOF-DEP-ARM
+conservation_preserved|G09b|PROOF-DEP-ARM
+conservation_preserved|G09c|PROOF-DEP-ARM
+conservation_preserved|G09d|PROOF-DEP-ARM
+conservation_preserved|G09e|PROOF-DEP-ARM
+conservation_preserved|G09f|PROOF-DEP-ARM
+conservation_preserved|G09g|PROOF-DEP-ARM
+conservation_preserved|G09h|PROOF-DEP-ARM
+conservation_preserved|E09a|PROOF-DEP-ARM
+conservation_preserved|E09b|PROOF-DEP-ARM
+conservation_preserved|G10a|PROOF-DEP-ARM
+conservation_preserved|G10b|PROOF-DEP-ARM
+conservation_preserved|G10c|PROOF-DEP-ARM
+conservation_preserved|G10d|PROOF-DEP-ARM
+conservation_preserved|G10e|PROOF-DEP-ARM
+conservation_preserved|E10|PROOF-DEP-ARM
+conservation_preserved|G11a|PROOF-DEP-ARM
+conservation_preserved|G11b|PROOF-DEP-ARM
+conservation_preserved|G11c|PROOF-DEP-ARM
+conservation_preserved|G11d|PROOF-DEP-ARM
+conservation_preserved|E11|PROOF-DEP-ARM
+conservation_preserved|G12a|PROOF-DEP-ARM
+conservation_preserved|G12b|PROOF-DEP-ARM
+conservation_preserved|G12c|PROOF-DEP-ARM
+conservation_preserved|G12d|PROOF-DEP-ARM
+conservation_preserved|G12e|PROOF-DEP-ARM
+conservation_preserved|G12f|PROOF-DEP-ARM
+conservation_preserved|E12a|PROOF-DEP-ARM
+conservation_preserved|E12b|PROOF-DEP-ARM
+conservation_preserved|G13a|PROOF-DEP-ARM
+conservation_preserved|G13b|PROOF-DEP-ARM
+conservation_preserved|G13c|PROOF-DEP-ARM
+conservation_preserved|G13d|PROOF-DEP-ARM
+conservation_preserved|G13e|PROOF-DEP-ARM
+conservation_preserved|G13f|PROOF-DEP-ARM
+conservation_preserved|E13a|PROOF-DEP-ARM
+conservation_preserved|E13b|PROOF-DEP-ARM
+conservation_preserved|G14a|PROOF-DEP-ARM
+conservation_preserved|G14b|PROOF-DEP-ARM
+conservation_preserved|G14c|PROOF-DEP-ARM
+conservation_preserved|G14d|PROOF-DEP-ARM
+conservation_preserved|E14a|PROOF-DEP-ARM
+conservation_preserved|E14b|PROOF-DEP-ARM
+step_authorized|G01a|PROOF-DEP-ARM
+step_authorized|G01b|PROOF-DEP-ARM
+step_authorized|E01|PROOF-DEP-ARM
+step_authorized|G02a|PROOF-DEP-ARM
+step_authorized|G02b|PROOF-DEP-ARM
+step_authorized|E02|PROOF-DEP-ARM
+step_authorized|G03a|PROOF-DEP-ARM
+step_authorized|G03b|PROOF-DEP-ARM
+step_authorized|E03a|PROOF-DEP-ARM
+step_authorized|E03b|PROOF-DEP-ARM
+step_authorized|G04a|PROOF-DEP-ARM
+step_authorized|G04b|PROOF-DEP-ARM
+step_authorized|G04c|PROOF-DEP-ARM
+step_authorized|G04d|PROOF-DEP-ARM
+step_authorized|E04a|PROOF-DEP-ARM
+step_authorized|E04b|PROOF-DEP-ARM
+step_authorized|G05a|PROOF-DEP-ARM
+step_authorized|G05b|PROOF-DEP-ARM
+step_authorized|G05c|PROOF-DEP-ARM
+step_authorized|G05d|PROOF-DEP-ARM
+step_authorized|G05e|PROOF-DEP-ARM
+step_authorized|E05a|PROOF-DEP-ARM
+step_authorized|E05b|PROOF-DEP-ARM
+step_authorized|G06a|PROOF-DEP-ARM
+step_authorized|G06b|PROOF-DEP-ARM
+step_authorized|G06c|PROOF-DEP-ARM
+step_authorized|G06d|PROOF-DEP-ARM
+step_authorized|E06a|PROOF-DEP-ARM
+step_authorized|E06b|PROOF-DEP-ARM
+step_authorized|G07a|PROOF-DEP-ARM
+step_authorized|G07b|PROOF-DEP-ARM
+step_authorized|E07a|PROOF-DEP-ARM
+step_authorized|E07b|PROOF-DEP-ARM
+step_authorized|G08a|PROOF-DEP-ARM
+step_authorized|G08b|PROOF-DEP-ARM
+step_authorized|G08c|PROOF-DEP-ARM
+step_authorized|G08d|PROOF-DEP-ARM
+step_authorized|E08|PROOF-DEP-ARM
+step_authorized|G09a|PROOF-DEP-ARM
+step_authorized|G09b|PROOF-DEP-ARM
+step_authorized|G09c|PROOF-DEP-ARM
+step_authorized|G09d|PROOF-DEP-ARM
+step_authorized|G09e|PROOF-DEP-ARM
+step_authorized|G09f|PROOF-DEP-ARM
+step_authorized|G09g|PROOF-DEP-ARM
+step_authorized|G09h|PROOF-DEP-ARM
+step_authorized|E09a|PROOF-DEP-ARM
+step_authorized|E09b|PROOF-DEP-ARM
+step_authorized|G10a|PROOF-DEP-ARM
+step_authorized|G10b|PROOF-DEP-ARM
+step_authorized|G10c|PROOF-DEP-ARM
+step_authorized|G10d|PROOF-DEP-ARM
+step_authorized|G10e|PROOF-DEP-ARM
+step_authorized|E10|PROOF-DEP-ARM
+step_authorized|G11a|PROOF-DEP-ARM
+step_authorized|G11b|PROOF-DEP-ARM
+step_authorized|G11c|PROOF-DEP-ARM
+step_authorized|G11d|PROOF-DEP-ARM
+step_authorized|E11|PROOF-DEP-ARM
+step_authorized|G12a|PROOF-DEP-ARM
+step_authorized|G12b|PROOF-DEP-ARM
+step_authorized|G12c|PROOF-DEP-ARM
+step_authorized|G12d|PROOF-DEP-ARM
+step_authorized|G12e|PROOF-DEP-ARM
+step_authorized|G12f|PROOF-DEP-ARM
+step_authorized|E12a|PROOF-DEP-ARM
+step_authorized|E12b|PROOF-DEP-ARM
+step_authorized|G13a|PROOF-DEP-ARM
+step_authorized|G13b|PROOF-DEP-ARM
+step_authorized|G13c|PROOF-DEP-ARM
+step_authorized|G13d|PROOF-DEP-ARM
+step_authorized|G13e|PROOF-DEP-ARM
+step_authorized|G13f|PROOF-DEP-ARM
+step_authorized|E13a|PROOF-DEP-ARM
+step_authorized|E13b|PROOF-DEP-ARM
+step_authorized|G14a|PROOF-DEP-ARM
+step_authorized|G14b|PROOF-DEP-ARM
+step_authorized|G14c|PROOF-DEP-ARM
+step_authorized|G14d|PROOF-DEP-ARM
+step_authorized|E14a|PROOF-DEP-ARM
+step_authorized|E14b|PROOF-DEP-ARM
+solvent_preserved|E04a|PROOF-DEP-ARM
+solvent_preserved|E04b|PROOF-DEP-ARM
+solvent_preserved|E05a|PROOF-DEP-ARM
+solvent_preserved|E05b|PROOF-DEP-ARM
+solvent_preserved|E06a|PROOF-DEP-ARM
+solvent_preserved|E06b|PROOF-DEP-ARM
+solvent_preserved|E07a|PROOF-DEP-ARM
+solvent_preserved|E07b|PROOF-DEP-ARM
+solvent_preserved|E08|PROOF-DEP-ARM
+solvent_preserved|E09a|PROOF-DEP-ARM
+solvent_preserved|E11|PROOF-DEP-ARM
+solvent_preserved|E12a|PROOF-DEP-ARM
+solvent_preserved|E13a|PROOF-DEP-ARM
+solvent_preserved|E14a|PROOF-DEP-ARM
+solvent_preserved|G04d|PROOF-DEP-ARM
+solvent_preserved|G05d|PROOF-DEP-ARM
+solvent_preserved|G05e|PROOF-DEP-ARM
+solvent_preserved|G06d|PROOF-DEP-ARM
+solvent_preserved|G07b|PROOF-DEP-ARM
+solvent_preserved|G08b|PROOF-DEP-ARM
+solvent_preserved|G08c|PROOF-DEP-ARM
+solvent_preserved|G09f|PROOF-DEP-ARM
+solvent_preserved|G09g|PROOF-DEP-ARM
+solvent_preserved|G09h|PROOF-DEP-ARM
+solvent_preserved|G12e|PROOF-DEP-ARM
+solvent_preserved|G12f|PROOF-DEP-ARM
+solvent_preserved|OPEN|conjunct-level sensitivity needs kill evidence
+reach_solvent|E04a|PROOF-DEP-ARM
+reach_solvent|E04b|PROOF-DEP-ARM
+reach_solvent|E05a|PROOF-DEP-ARM
+reach_solvent|E05b|PROOF-DEP-ARM
+reach_solvent|E06a|PROOF-DEP-ARM
+reach_solvent|E06b|PROOF-DEP-ARM
+reach_solvent|E07a|PROOF-DEP-ARM
+reach_solvent|E07b|PROOF-DEP-ARM
+reach_solvent|E08|PROOF-DEP-ARM
+reach_solvent|E09a|PROOF-DEP-ARM
+reach_solvent|E11|PROOF-DEP-ARM
+reach_solvent|E12a|PROOF-DEP-ARM
+reach_solvent|E13a|PROOF-DEP-ARM
+reach_solvent|E14a|PROOF-DEP-ARM
+reach_solvent|G04d|PROOF-DEP-ARM
+reach_solvent|G05d|PROOF-DEP-ARM
+reach_solvent|G05e|PROOF-DEP-ARM
+reach_solvent|G06d|PROOF-DEP-ARM
+reach_solvent|G07b|PROOF-DEP-ARM
+reach_solvent|G08b|PROOF-DEP-ARM
+reach_solvent|G08c|PROOF-DEP-ARM
+reach_solvent|G09f|PROOF-DEP-ARM
+reach_solvent|G09g|PROOF-DEP-ARM
+reach_solvent|G09h|PROOF-DEP-ARM
+reach_solvent|G12e|PROOF-DEP-ARM
+reach_solvent|G12f|PROOF-DEP-ARM
+reach_solvent|OPEN|conjunct-level sensitivity needs kill evidence
+not_insolvent_of_reach|E04a|PROOF-DEP-ARM
+not_insolvent_of_reach|E04b|PROOF-DEP-ARM
+not_insolvent_of_reach|E05a|PROOF-DEP-ARM
+not_insolvent_of_reach|E05b|PROOF-DEP-ARM
+not_insolvent_of_reach|E06a|PROOF-DEP-ARM
+not_insolvent_of_reach|E06b|PROOF-DEP-ARM
+not_insolvent_of_reach|E07a|PROOF-DEP-ARM
+not_insolvent_of_reach|E07b|PROOF-DEP-ARM
+not_insolvent_of_reach|E08|PROOF-DEP-ARM
+not_insolvent_of_reach|E09a|PROOF-DEP-ARM
+not_insolvent_of_reach|E11|PROOF-DEP-ARM
+not_insolvent_of_reach|E12a|PROOF-DEP-ARM
+not_insolvent_of_reach|E13a|PROOF-DEP-ARM
+not_insolvent_of_reach|E14a|PROOF-DEP-ARM
+not_insolvent_of_reach|G04d|PROOF-DEP-ARM
+not_insolvent_of_reach|G05d|PROOF-DEP-ARM
+not_insolvent_of_reach|G05e|PROOF-DEP-ARM
+not_insolvent_of_reach|G06d|PROOF-DEP-ARM
+not_insolvent_of_reach|G07b|PROOF-DEP-ARM
+not_insolvent_of_reach|G08b|PROOF-DEP-ARM
+not_insolvent_of_reach|G08c|PROOF-DEP-ARM
+not_insolvent_of_reach|G09f|PROOF-DEP-ARM
+not_insolvent_of_reach|G09g|PROOF-DEP-ARM
+not_insolvent_of_reach|G09h|PROOF-DEP-ARM
+not_insolvent_of_reach|G12e|PROOF-DEP-ARM
+not_insolvent_of_reach|G12f|PROOF-DEP-ARM
+not_insolvent_of_reach|OPEN|conjunct-level sensitivity needs kill evidence
+credit_pledges_of_reach|E04a|PROOF-DEP-ARM
+credit_pledges_of_reach|E04b|PROOF-DEP-ARM
+credit_pledges_of_reach|E05a|PROOF-DEP-ARM
+credit_pledges_of_reach|E05b|PROOF-DEP-ARM
+credit_pledges_of_reach|E06a|PROOF-DEP-ARM
+credit_pledges_of_reach|E06b|PROOF-DEP-ARM
+credit_pledges_of_reach|E07a|PROOF-DEP-ARM
+credit_pledges_of_reach|E07b|PROOF-DEP-ARM
+credit_pledges_of_reach|E08|PROOF-DEP-ARM
+credit_pledges_of_reach|E09a|PROOF-DEP-ARM
+credit_pledges_of_reach|E11|PROOF-DEP-ARM
+credit_pledges_of_reach|E12a|PROOF-DEP-ARM
+credit_pledges_of_reach|E13a|PROOF-DEP-ARM
+credit_pledges_of_reach|E14a|PROOF-DEP-ARM
+credit_pledges_of_reach|G04d|PROOF-DEP-ARM
+credit_pledges_of_reach|G05d|PROOF-DEP-ARM
+credit_pledges_of_reach|G05e|PROOF-DEP-ARM
+credit_pledges_of_reach|G06d|PROOF-DEP-ARM
+credit_pledges_of_reach|G07b|PROOF-DEP-ARM
+credit_pledges_of_reach|G08b|PROOF-DEP-ARM
+credit_pledges_of_reach|G08c|PROOF-DEP-ARM
+credit_pledges_of_reach|G09f|PROOF-DEP-ARM
+credit_pledges_of_reach|G09g|PROOF-DEP-ARM
+credit_pledges_of_reach|G09h|PROOF-DEP-ARM
+credit_pledges_of_reach|G12e|PROOF-DEP-ARM
+credit_pledges_of_reach|G12f|PROOF-DEP-ARM
+credit_pledges_of_reach|OPEN|conjunct-level sensitivity needs kill evidence
+credit_pledges_step|E04a|PROOF-DEP-ARM
+credit_pledges_step|E04b|PROOF-DEP-ARM
+credit_pledges_step|E05a|PROOF-DEP-ARM
+credit_pledges_step|E05b|PROOF-DEP-ARM
+credit_pledges_step|E06a|PROOF-DEP-ARM
+credit_pledges_step|E06b|PROOF-DEP-ARM
+credit_pledges_step|E07a|PROOF-DEP-ARM
+credit_pledges_step|E07b|PROOF-DEP-ARM
+credit_pledges_step|E08|PROOF-DEP-ARM
+credit_pledges_step|E09a|PROOF-DEP-ARM
+credit_pledges_step|E11|PROOF-DEP-ARM
+credit_pledges_step|E12a|PROOF-DEP-ARM
+credit_pledges_step|E13a|PROOF-DEP-ARM
+credit_pledges_step|E14a|PROOF-DEP-ARM
+credit_pledges_step|G04d|PROOF-DEP-ARM
+credit_pledges_step|G05d|PROOF-DEP-ARM
+credit_pledges_step|G05e|PROOF-DEP-ARM
+credit_pledges_step|G06d|PROOF-DEP-ARM
+credit_pledges_step|G07b|PROOF-DEP-ARM
+credit_pledges_step|G08b|PROOF-DEP-ARM
+credit_pledges_step|G08c|PROOF-DEP-ARM
+credit_pledges_step|G09f|PROOF-DEP-ARM
+credit_pledges_step|G09g|PROOF-DEP-ARM
+credit_pledges_step|G09h|PROOF-DEP-ARM
+credit_pledges_step|G12e|PROOF-DEP-ARM
+credit_pledges_step|G12f|PROOF-DEP-ARM
+credit_pledges_step|OPEN|conjunct-level sensitivity needs kill evidence
+comune_not_a_member_of_reach|PREMISE|boot-premise transport, fixed view; no guard atoms; S5 connection question
+comune_not_a_member_step|NONE|vacuous _hstep limb (body returns h)
+auth_referente_guard_inv|G10c|STATEMENT
+auth_referente_guard_inv|G10d|STATEMENT
+close_guard_inv|G13b|STATEMENT
+close_guard_inv|G13c|STATEMENT
+close_guard_inv|G13d|STATEMENT
+close_guard_inv|G13e|STATEMENT
+fail_guard_inv|G14b|STATEMENT
+fail_guard_inv|G14c|STATEMENT
+fail_guard_inv|G14d|STATEMENT
+pledge_escrow_debit|E09a|STATEMENT
+deposit_double_entry|E04a|STATEMENT
+deposit_double_entry|E04b|STATEMENT
+withdraw_double_entry|E05a|STATEMENT
+withdraw_double_entry|E05b|STATEMENT
+close_spends_referente|E13a|STATEMENT
+close_permission_to_close|G13d|STATEMENT
+close_permission_to_close|G13b|STATEMENT
+pledge_rejected_when_member|G09d|STATEMENT
+pledge_rejected_when_member|G09e|STATEMENT
+pledge_preserves_allUnique|E09b|STATEMENT
+governance_enacts_windUpAdmin|E-govern|STATEMENT
+solvent_init|NONE|boot proposition (State.empty); acceptance elaboration
+stepDetailed_erases|NONE|wrapper equation (eraseDiagnostic o stepDetailed = stepEvent)
+KelGroups.Vote.ballots_nodup_disjoint|Vtally|STATEMENT
+KelGroups.Vote.ballots_nodup_disjoint|Vsweep-closures|STATEMENT
+KelGroups.Vote.questions_partition|Vtally|STATEMENT
+KelGroups.Vote.questions_partition|Vsweep-closures|STATEMENT
+KelGroups.Vote.franchise_of_tallies|Vfranchise|STATEMENT
+KelGroups.Vote.unfranchised_cast_noop|Vfranchise|STATEMENT
+KelGroups.Vote.inadmissible_is_noop|Vfranchise|STATEMENT
+KelGroups.Vote.nonresponsabile_event_noop|Vfranchise|STATEMENT
+KelGroups.Vote.no_expiry|V-event-hpres|STATEMENT
+KelGroups.Vote.no_expiry|Vfold|STATEMENT
+KelGroups.Vote.verdictOf_threshold_congr|Vthresh-legacy|STATEMENT
+KelGroups.Vote.verdictOf_threshold_congr|Vthresh-zero|STATEMENT
+KelGroups.Vote.emptyVoteState_sweepReady|Vsweep-closures|PROOF-DEP
+KelGroups.Vote.emptyVoteState_wellFormed|Vsweep-closures|PROOF-DEP
+KelGroups.Vote.sweepClosures_sweepReady|Vsweep-closures|PROOF-DEP
+KelGroups.Vote.sweepClosures_wellFormed|Vsweep-closures|PROOF-DEP
+KelGroups.Vote.effectedState_sweepReady|Vsweep-closures|PROOF-DEP
+KelGroups.Vote.applyVoteEvent_preserves_wellFormed|Vsweep-closures|PROOF-DEP
+KelGroups.Vote.foldFrom_preserves_wellFormed|Vsweep-closures|PROOF-DEP
+KelGroups.Vote.foldVote_wellFormed|Vsweep-closures|PROOF-DEP
+KelGroups.Vote.sweepStep_of_open|Vsweep-closures|PROOF-DEP
+KelGroups.Vote.sweep_filterMap_of_swept|Vsweep-closures|PROOF-DEP
+KelGroups.Vote.filter_open_idem|Vsweep-closures|PROOF-DEP
+KelGroups.Vote.sweepClosures_idempotent|Vsweep-closures|PROOF-DEP
+KelGroups.Vote.sweepDuplicating_duplicates|Vsweep-closures|PROOF-DEP
+KelGroups.Vote.open_questions_are_open|Vsweep-closures|PROOF-DEP
+KelGroups.Vote.foldVote_append|Vsweep-closures|PROOF-DEP
+KelGroups.Vote.sweepClosures_open_mem|Vqid|PROOF-DEP
+KelGroups.Vote.sweepClosures_closed_mem|Vqid|PROOF-DEP
+KelGroups.Vote.sweepClosures_preserves_qid|Vqid|PROOF-DEP
+KelGroups.Vote.effectedState_preserves_qid|Vqid|PROOF-DEP
+KelGroups.Vote.applyVoteEvent_preserves_qid|Vqid|PROOF-DEP
+KelGroups.Vote.foldFrom_preserves_qid|Vqid|PROOF-DEP
+KelGroups.Vote.foldVote_append|Vqid|PROOF-DEP
+KelGroups.Vote.placeBallot_clean|Vtally-place|PROOF-DEP
+KelGroups.Vote.placeBallot_tally|Vtally-place|PROOF-DEP
+KelGroups.Vote.sweepClosures_tallyKeys|Vtally-place|PROOF-DEP
+KelGroups.Vote.tally_keys_franchised_from|Vtally-place|PROOF-DEP
+KelGroups.Vote.tallyKeysOfState_erased_le|Vtally-place|PROOF-DEP
+KelGroups.Vote.tallyKeysOfState_insert_cases|Vtally-place|PROOF-DEP
+KelGroups.Vote.effectedState_tally_growth|Vtally-place|PROOF-DEP
+KelGroups.Vote.sweepStep_key|Vsweep-step|PROOF-DEP
+KelGroups.enact_preserves_wellFormed|Benact-met|PROOF-DEP
+KelGroups.finishEnact_preserves_wellFormed|Benact-met|PROOF-DEP
+KelGroups.tryEnact_preserves_wellFormed|Benact-met|PROOF-DEP
+KelGroups.applyPropose_preserves_wellFormed|Benact-met|PROOF-DEP
+KelGroups.applyApprove_preserves_wellFormed|Benact-met|PROOF-DEP
+KelGroups.applyEvent_preserves_wellFormed|Benact-met|PROOF-DEP
+KelGroups.foldEvents_preserves_wellFormed|Benact-met|PROOF-DEP
+KelGroups.foldGroup_wellFormed|Benact-met|PROOF-DEP
+KelGroups.tryEnact_eq_of_enacts|Benact-met|PROOF-DEP
+KelGroups.tryEnactDetailed_enactment_threshold_met|Benact-met|PROOF-DEP
+KelGroups.enact_implies_threshold_met|Benact-met|PROOF-DEP
+KelGroups.members_change_implies_enacted|Benact-met|PROOF-DEP
+KelGroups.approvals_nodup|W-memkeys|PROOF-DEP
+KelGroups.approvals_nodup|W-pendkeys|PROOF-DEP
+KelGroups.approvals_nodup|W-memcohere|PROOF-DEP
+KelGroups.approvals_nodup|W-pendcohere|PROOF-DEP
+KelGroups.proposer_mem_approvals|W-memkeys|PROOF-DEP
+KelGroups.proposer_mem_approvals|W-pendkeys|PROOF-DEP
+KelGroups.proposer_mem_approvals|W-memcohere|PROOF-DEP
+KelGroups.proposer_mem_approvals|W-pendcohere|PROOF-DEP
+KelGroups.member_key_coherent|W-memkeys|PROOF-DEP
+KelGroups.member_key_coherent|W-pendkeys|PROOF-DEP
+KelGroups.member_key_coherent|W-memcohere|PROOF-DEP
+KelGroups.member_key_coherent|W-pendcohere|PROOF-DEP
+KelGroups.majority_table|Benact-threshold|PROOF-DEP
+KelGroups.majority_not_strict_on_even|Benact-threshold|PROOF-DEP
+KelGroups.emptyState_wellFormed|W-memkeys|STATEMENT
+KelGroups.emptyState_wellFormed|W-pendkeys|STATEMENT
+KelGroups.approvePending_wellFormed|Bappr-dup|PROOF-DEP
+KelGroups.validateDirectAdmission_ok|Badm-admin|STATEMENT
+KelGroups.validateDirectAdmission_ok|Badm-reserved|STATEMENT
+KelGroups.validateDirectAdmission_ok|Badm-dup|STATEMENT
+KelGroups.direct_admission_requires_admin|Badm-admin|STATEMENT
+KelGroups.direct_admission_requires_admin|Badm-reserved|STATEMENT
+KelGroups.direct_admission_requires_admin|Badm-dup|STATEMENT
+KelGroups.non_admin_admission_is_noop|Badm-admin|STATEMENT
+KelGroups.non_admin_admission_is_noop|Badm-reserved|STATEMENT
+KelGroups.non_admin_admission_is_noop|Badm-dup|STATEMENT
+KelGroups.membership_growth_is_direct_admission|Badm-admin|STATEMENT
+KelGroups.membership_growth_is_direct_admission|Badm-reserved|STATEMENT
+KelGroups.membership_growth_is_direct_admission|Badm-dup|STATEMENT
+KelGroups.commitBaseChange_ok|Bhook-admitted|STATEMENT
+KelGroups.commitBaseChange_ok|Bhook-removed|STATEMENT
+KelGroups.commitBaseChange_ok|Bhook-roles|STATEMENT
+KelGroups.commitBaseChange_members|Bhook-admitted|STATEMENT
+KelGroups.commitBaseChange_members|Bhook-removed|STATEMENT
+KelGroups.commitBaseChange_members|Bhook-roles|STATEMENT
+KelGroups.base_change_runs_hook|Bhook-admitted|STATEMENT
+KelGroups.base_change_runs_hook|Bhook-removed|STATEMENT
+KelGroups.base_change_runs_hook|Bhook-roles|STATEMENT
+KelGroups.tryEnactBase_runs_hook|Benact-met|PROOF-DEP
+KelGroups.tryEnactBase_preserves_absence|Benact-met|PROOF-DEP
+KelGroups.enactMutation_preserves_absence|Benact-met|PROOF-DEP
+KelGroups.app_event_preserves_members|Benact-met|PROOF-DEP
+KelGroups.app_event_has_no_base_change|Benact-met|PROOF-DEP
+approvals_nodup|SHARED|counterpart dependence (call body verified); single-count
+proposer_mem_approvals|SHARED|counterpart dependence (call body verified); single-count
+enact_implies_threshold_met|SHARED|counterpart dependence (call body verified); single-count
+members_change_implies_enacted|SHARED|counterpart dependence (call body verified); single-count
+member_key_coherent|SHARED|counterpart dependence (call body verified); single-count
+majority_table|SHARED|counterpart dependence (call body verified); single-count
+majority_not_strict_on_even|SHARED|counterpart dependence (call body verified); single-count
+Reactivegas.base_departure_applies_cleanup|WITNESS|named check subject
+Reactivegas.base_change_can_close_without_ballot|WITNESS|named check subject
+Reactivegas.direct_admission_only_holds|WITNESS|named check subject
+Reactivegas.base_recompute_reachable_holds|WITNESS|named check subject
+Reactivegas.sweep_idempotent_witness|WITNESS|named check subject
+Reactivegas.sweep_idempotent_mutant_caught|WITNESS|named check subject
+Reactivegas.admissionPreservation_holds|WITNESS|named check subject
+Reactivegas.canonical_economy_holds|WITNESS|named check subject
+Reactivegas.exhaustive_inventories_hold|WITNESS|named check subject
+Reactivegas.integrated_theorem_witness_holds|WITNESS|named check subject
+Reactivegas.productionWellFormed_holds|WITNESS|named check subject
+Reactivegas.comuneThresholdSanity_holds|WITNESS|named check subject
+Reactivegas.comune_cannot_authorize|WITNESS|named check subject
+Reactivegas.app_members_preservation_holds|WITNESS|named check subject
+Reactivegas.app_members_preservation_mutant_caught|WITNESS|named check subject
+Reactivegas.i57_boundary_holds|WITNESS|named check subject
+Reactivegas.i57_exhaustive_holds|WITNESS|named check subject
+Reactivegas.i57_noop_holds|WITNESS|named check subject
+Reactivegas.i57_auth_holds|WITNESS|named check subject
+Reactivegas.i57_r45_holds|WITNESS|named check subject
+Reactivegas.i57_partition_holds|WITNESS|named check subject
+Reactivegas.i57_disjoint_holds|WITNESS|named check subject
+Reactivegas.i57_disjoint_mutant_caught|WITNESS|named check subject
+Reactivegas.i57_nostale_holds|WITNESS|named check subject
+Reactivegas.i57_franchise_holds|WITNESS|named check subject
+Reactivegas.i57_franchise_mutant_caught|WITNESS|named check subject
+Reactivegas.i57_noexpiry_holds|WITNESS|named check subject
+Reactivegas.i57_policyfree_holds|WITNESS|named check subject
+Reactivegas.i57_policyfree_mutant_caught|WITNESS|named check subject
+Reactivegas.baseHook_votes|Bhook-admitted|STATEMENT
+Reactivegas.baseHook_votes|Vsweep-closures|STATEMENT
+Reactivegas.base_change_recomputes_votes|Bhook-admitted|STATEMENT
+Reactivegas.base_change_recomputes_votes|Vsweep-closures|STATEMENT
+TraceTests.app_members_preservation_holds|WITNESS|named check subject (mirror namespace)
+TraceTests.app_members_preservation_mutant_caught|WITNESS|named check subject (mirror namespace)
+TraceTests.all_checks_pass|WITNESS|named check subject (mirror namespace)
+TraceTests.frozen_checks_faithful|WITNESS|named check subject (mirror namespace)
+TraceTests.frozen_inventory_faithful|WITNESS|named check subject (mirror namespace)
+TraceTests.frozen_corpus_faithful|WITNESS|named check subject (mirror namespace)
+TraceTests.base_departure_applies_cleanup|WITNESS|named check subject (mirror namespace)
+TraceTests.base_change_can_close_without_ballot|WITNESS|named check subject (mirror namespace)
+TraceTests.direct_admission_only_holds|WITNESS|named check subject (mirror namespace)
+TraceTests.base_recompute_reachable_holds|WITNESS|named check subject (mirror namespace)
+TraceTests.sweep_idempotent_witness|WITNESS|named check subject (mirror namespace)
+TraceTests.sweep_idempotent_mutant_caught|WITNESS|named check subject (mirror namespace)
+Reactivegas.Composition.voteDerived_iff_not_direct|WITNESS|route/verdict equation subject
+Reactivegas.Composition.baseEnacted_threshold_met|WITNESS|route/verdict equation subject
+Reactivegas.Composition.appDecided_verdict_exhaustive|WITNESS|route/verdict equation subject
+OPEN-RcanAdd|RcanAdd|OPEN: no theorem statement names canAdd/canRemove conjuncts; kill-evidence needed
+OPEN-RcanRemove|RcanRemove|OPEN: same as RcanAdd
+pledge_guard_inv|G09b|STATEMENT
+pledge_guard_inv|G09c|STATEMENT
+pledge_guard_inv|G09d|STATEMENT
+pledge_guard_inv|G09e|STATEMENT
+pledge_guard_inv|G09f|STATEMENT
+pledge_guard_inv|G09g|STATEMENT
+close_permission_to_close|E02|STATEMENT-read

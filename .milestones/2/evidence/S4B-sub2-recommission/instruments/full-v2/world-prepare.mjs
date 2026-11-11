@@ -1,0 +1,9 @@
+import fs from 'node:fs';import cp from 'node:child_process';
+if(!fs.existsSync('/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/ADMISSION.json'))throw Error('not admitted');
+const rt='/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2';const source='/code/reactivegas-66-s4b-audit5';const id=process.argv[2];const spec=JSON.parse(fs.readFileSync(rt+'/instruments/full-v2/worlds.json','utf8')).find(w=>w.id===id);if(!spec)throw Error('unknown world');const world=rt+'/worlds/'+id;if(fs.existsSync(world))throw Error('world already exists');fs.mkdirSync(rt+'/worlds',{recursive:true});
+cp.execFileSync('git',['clone','--shared','--no-checkout','--quiet',source,world]);cp.execFileSync('git',['-C',world,'checkout','--quiet','--detach',spec.base||'94bb7bb64324a48f7361252556b4d15e45b3923f']);
+if(!['S09','S10'].includes(id))fs.cpSync(source+'/lean/.lake',world+'/lean/.lake',{recursive:true});
+for(const e of spec.edits||[]){const p=world+'/'+e.path;fs.mkdirSync(p.slice(0,p.lastIndexOf('/')),{recursive:true});if(e.create!==undefined)fs.writeFileSync(p,e.create);else{const s=fs.readFileSync(p,'utf8');if(e.append!==undefined)fs.writeFileSync(p,s+e.append);else{if(s.split(e.old).length!==2)throw Error('edit not unique '+e.path);fs.writeFileSync(p,s.replace(e.old,e.replacement));}}if(e.track)cp.execFileSync('git',['-C',world,'add','--',e.path]);}
+fs.mkdirSync(rt+'/evidence/full-v2',{recursive:true});fs.writeFileSync(rt+'/evidence/full-v2/'+id+'.diff',cp.execFileSync('git',['-C',world,'diff','HEAD','--']));
+fs.writeFileSync(rt+'/evidence/full-v2/'+id+'.world.json',JSON.stringify({world,candidate:spec.base||'94bb7bb64324a48f7361252556b4d15e45b3923f',cache:['S09','S10'].includes(id)?'cold':'M1-S clean copied',spec},null,2)+'\n');
+console.log('WORLD-PREPARED '+id);

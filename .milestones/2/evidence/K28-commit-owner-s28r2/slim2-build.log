@@ -1,0 +1,3 @@
+cabal build all -O0
+Up to date
+SLIM2-BUILD-EXIT=0

@@ -1,0 +1,17 @@
+# Operator ruling: expanding rings with pan/scroll
+
+Recorded 2026-09-06T07:58:16.147Z. In answer to the explicit two-option layout question, the operator replied: "expand". The selected option is expanding BOTH member and purchase rings on a pannable/scrollable canvas, keeping controls readable and all purchases displayed together. The previously pending fixed-rings/pagination alternative was not selected.
+
+This amends the original fixed-geometry constraints explicitly. As purchase count grows, the layout may increase both radii and move members on screen while keeping member angles stable for the same membership. Members remain outside the purchase ring; purchase controls retain the required separation and legibility. The viewport may remain bounded while the scene expands and can be panned/scrolled. Do not silently introduce a semantic purchase cap, hide purchases in pages, shrink controls to illegibility, or satisfy tests by drawing required interactions somewhere unreachable. Preserve all other original layout, identity, domain and interaction requirements.
+
+## Release through simulator owner313
+
+The geometry decision is settled; record its exact authority in your RESUME, mandate, requirement map and gate. The prior pending-choice artifact remains historical. Continue the existing C1 repair through the already adopted commit owner540; do not restart terminal auditors or reset any spend. F-01/F-03 findings and all17 original audit rows remain required under this explicit geometry amendment. The complete #70 C2/C3/C4 obligations also remain.
+
+## Bounded control-gap grant
+
+The desk additionally grants at most12 owner targeted operations for this F-02 repair and its required can-fail controls: targeted ceiling48->60, previous48 spent (including the recorded41/40 overrun) retained. No retry reserve beyond those12; no substantive allowance increase. Owner substantive28/33 remains with5 available, reserved for the complete final gate plus CI on the actual accepted integration base. Record a concrete plan showing all required F-02 controls fit within the12 before spending them. Every actual invocation, failed setup or retry counts at its existing layer; a focused label cannot disguise a whole-suite execution. If the complete required controls cannot fit, return one specific combined gap BEFORE the unfunded work; do not weaken a row or borrow another seat's allowance.
+
+Parent review/falsification stays within your existing4 substantive/10 targeted grant with its actual historical spend unchanged; do not infer a fresh counter from this note. Re-derive and freeze the successor gate using the same operative predicates in focused and full modes, including controls that detect omitted/bypassed wiring. Prepare the fresh FULL submission-2 audit over the whole17-row subject and actual unaccepted prefix. The previous5-substantive/53-targeted audit proposal remains subject to a concrete full-command fit and desk admission; no automatic audit dispatch or cap reset here.
+
+S4 may land first under the recorded reservation. Geometry work can proceed now; the final validation/audit must bind the actual accepted base, never anticipated S4 bytes or old receipts. No merge/push/publication grant follows from the layout choice. Return the coherent amended mandate, control-plan/spend and next state through your own journal/handoff, then continue the authorized repair without an unscheduled self-wake or another design checkpoint.

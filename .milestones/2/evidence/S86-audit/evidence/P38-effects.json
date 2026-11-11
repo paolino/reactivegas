@@ -1,0 +1,13 @@
+{
+  "before": {
+    "check": "706bd138005950ea365927fb1ea82d9aa6fb01be8296c522478c9d09f1ade616",
+    "keep": "1615b7d4e92ca81194889e005de2b6a2f66d7699f29d64cd6038179571df65e2",
+    "a": "57214ba88012e8edbea2b02490b5b02ee53fddbfe31c1dccb2bbd611937f41e4"
+  },
+  "after": {
+    "check": "73a077fc514038e40f84aca4a995fe68623e3af46ed11c0280d5b963137576aa",
+    "keep": "1615b7d4e92ca81194889e005de2b6a2f66d7699f29d64cd6038179571df65e2",
+    "a": "1f173aec9c3afd9cb95265e4be2966b9316e810a969d9fc40f672b17120f3675"
+  },
+  "detector_rejects": true
+}

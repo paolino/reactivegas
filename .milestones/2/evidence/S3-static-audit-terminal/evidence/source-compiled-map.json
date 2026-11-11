@@ -1,0 +1,3109 @@
+[
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.assocAdjust_keys",
+    "site": "KelGroups/Invariants.lean:100",
+    "short": "assocAdjust_keys",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "_private.KelGroups.Invariants.0.KelGroups.assocAdjust_keys"
+    ],
+    "sourceLine": "private theorem assocAdjust_keys (key : Key) (f : ν → ν) (entries : List (Key × ν)) :",
+    "statement": "private theorem assocAdjust_keys (key : Key) (f : ν → ν) (entries : List (Key × ν)) :\n    (assocAdjust key f entries).map Prod.fst = entries.map Prod.fst "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.assocAdjust_property",
+    "site": "KelGroups/Invariants.lean:109",
+    "short": "assocAdjust_property",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "_private.KelGroups.Invariants.0.KelGroups.assocAdjust_property"
+    ],
+    "sourceLine": "private theorem assocAdjust_property (key : Key) (f : ν → ν)",
+    "statement": "private theorem assocAdjust_property (key : Key) (f : ν → ν)\n    (entries : List (Key × ν)) (property : Key → ν → Prop)\n    (hchange : ∀ value, property key value → property key (f value))\n    (hold : ∀ candidate value, (candidate, value) ∈ entries → property candidate value) :\n    ∀ candidate value, (candidate, value) ∈ assocAdjust key f entries →\n      property candidate value "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.setInsert_nodup",
+    "site": "KelGroups/Invariants.lean:141",
+    "short": "setInsert_nodup",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "_private.KelGroups.Invariants.0.KelGroups.setInsert_nodup"
+    ],
+    "sourceLine": "private theorem setInsert_nodup (value : Key) (values : List Key)",
+    "statement": "private theorem setInsert_nodup (value : Key) (values : List Key)\n    (h : values.Nodup) : (setInsert value values).Nodup "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.setInsert_mem",
+    "site": "KelGroups/Invariants.lean:149",
+    "short": "setInsert_mem",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "_private.KelGroups.Invariants.0.KelGroups.setInsert_mem"
+    ],
+    "sourceLine": "private theorem setInsert_mem (value existing : Key) (values : List Key)",
+    "statement": "private theorem setInsert_mem (value existing : Key) (values : List Key)\n    (h : existing ∈ values) : existing ∈ setInsert value values "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "KelGroups.approvePending_wellFormed",
+    "site": "KelGroups/Invariants.lean:156",
+    "short": "approvePending_wellFormed",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "_private.KelGroups.Invariants.0.KelGroups.approvePending_wellFormed"
+    ],
+    "sourceLine": "private theorem approvePending_wellFormed (signer : Key) (pending : PendingProposal)",
+    "statement": "private theorem approvePending_wellFormed (signer : Key) (pending : PendingProposal)\n    (h : PendingWellFormed pending) : PendingWellFormed (approvePending signer pending) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.emptyState_wellFormed",
+    "site": "KelGroups/Invariants.lean:162",
+    "short": "emptyState_wellFormed",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.emptyState_wellFormed"
+    ],
+    "sourceLine": "theorem emptyState_wellFormed (initial : α) : WellFormed (emptyState initial) := by",
+    "statement": "theorem emptyState_wellFormed (initial : α) : WellFormed (emptyState initial) "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.assocLookup_some_mem",
+    "site": "KelGroups/Invariants.lean:166",
+    "short": "assocLookup_some_mem",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "_private.KelGroups.Invariants.0.KelGroups.assocLookup_some_mem"
+    ],
+    "sourceLine": "private theorem assocLookup_some_mem [BEq κ] [LawfulBEq κ]",
+    "statement": "private theorem assocLookup_some_mem [BEq κ] [LawfulBEq κ]\n    (key : κ) (value : ν) (entries : List (κ × ν))\n    (h : assocLookup key entries = some value) : (key, value) ∈ entries "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.enact_preserves_wellFormed",
+    "site": "KelGroups/Invariants.lean:183",
+    "short": "enact_preserves_wellFormed",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.enact_preserves_wellFormed"
+    ],
+    "sourceLine": "theorem enact_preserves_wellFormed (gs : GroupState α) (proposal : Proposal)",
+    "statement": "theorem enact_preserves_wellFormed (gs : GroupState α) (proposal : Proposal)\n    (h : WellFormed gs) : WellFormed (enact gs proposal) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.finishEnact_preserves_wellFormed",
+    "site": "KelGroups/Invariants.lean:215",
+    "short": "finishEnact_preserves_wellFormed",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.finishEnact_preserves_wellFormed"
+    ],
+    "sourceLine": "theorem finishEnact_preserves_wellFormed (gs : GroupState α) (proposalId : ProposalId)",
+    "statement": "theorem finishEnact_preserves_wellFormed (gs : GroupState α) (proposalId : ProposalId)\n    (pending : PendingProposal) (h : WellFormed gs) :\n    WellFormed (finishEnact gs proposalId pending) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.tryEnact_preserves_wellFormed",
+    "site": "KelGroups/Invariants.lean:228",
+    "short": "tryEnact_preserves_wellFormed",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.tryEnact_preserves_wellFormed"
+    ],
+    "sourceLine": "theorem tryEnact_preserves_wellFormed (gs : GroupState α) (proposalId : ProposalId)",
+    "statement": "theorem tryEnact_preserves_wellFormed (gs : GroupState α) (proposalId : ProposalId)\n    (h : WellFormed gs) : WellFormed (tryEnact gs proposalId) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.applyPropose_preserves_wellFormed",
+    "site": "KelGroups/Invariants.lean:238",
+    "short": "applyPropose_preserves_wellFormed",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.applyPropose_preserves_wellFormed"
+    ],
+    "sourceLine": "theorem applyPropose_preserves_wellFormed (digest : Proposal → ProposalId)",
+    "statement": "theorem applyPropose_preserves_wellFormed (digest : Proposal → ProposalId)\n    (gs : GroupState α) (signer : Key) (proposal : Proposal) (h : WellFormed gs) :\n    WellFormed (applyPropose digest gs signer proposal) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.applyApprove_preserves_wellFormed",
+    "site": "KelGroups/Invariants.lean:256",
+    "short": "applyApprove_preserves_wellFormed",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.applyApprove_preserves_wellFormed"
+    ],
+    "sourceLine": "theorem applyApprove_preserves_wellFormed (gs : GroupState α) (signer : Key)",
+    "statement": "theorem applyApprove_preserves_wellFormed (gs : GroupState α) (signer : Key)\n    (proposalId : ProposalId) (h : WellFormed gs) :\n    WellFormed (applyApprove gs signer proposalId) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.applyEvent_preserves_wellFormed",
+    "site": "KelGroups/Invariants.lean:279",
+    "short": "applyEvent_preserves_wellFormed",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.applyEvent_preserves_wellFormed"
+    ],
+    "sourceLine": "theorem applyEvent_preserves_wellFormed (digest : Proposal → ProposalId)",
+    "statement": "theorem applyEvent_preserves_wellFormed (digest : Proposal → ProposalId)\n    (appFoldFn : AppFold α) (gs : GroupState α) (signer : Key)\n    (event : GroupEvent α) (h : WellFormed gs) :\n    WellFormed (applyEvent digest appFoldFn gs signer event) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "KelGroups.foldEvents_preserves_wellFormed",
+    "site": "KelGroups/Invariants.lean:295",
+    "short": "foldEvents_preserves_wellFormed",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "_private.KelGroups.Invariants.0.KelGroups.foldEvents_preserves_wellFormed"
+    ],
+    "sourceLine": "private theorem foldEvents_preserves_wellFormed (digest : Proposal → ProposalId)",
+    "statement": "private theorem foldEvents_preserves_wellFormed (digest : Proposal → ProposalId)\n    (appFoldFn : AppFold α) (events : List (Key × GroupEvent α))\n    (gs : GroupState α) (h : WellFormed gs) :\n    WellFormed (events.foldl\n      (fun current signed => applyEvent digest appFoldFn current signed.1 signed.2) gs) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.foldGroup_wellFormed",
+    "site": "KelGroups/Invariants.lean:306",
+    "short": "foldGroup_wellFormed",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.foldGroup_wellFormed"
+    ],
+    "sourceLine": "theorem foldGroup_wellFormed (digest : Proposal → ProposalId) (appFoldFn : AppFold α)",
+    "statement": "theorem foldGroup_wellFormed (digest : Proposal → ProposalId) (appFoldFn : AppFold α)\n    (initial : α) (events : List (Key × GroupEvent α)) :\n    WellFormed (foldGroup digest appFoldFn initial events) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.approvals_nodup",
+    "site": "KelGroups/Invariants.lean:312",
+    "short": "approvals_nodup",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.approvals_nodup"
+    ],
+    "sourceLine": "theorem approvals_nodup {gs : GroupState α} (h : WellFormed gs)",
+    "statement": "theorem approvals_nodup {gs : GroupState α} (h : WellFormed gs)\n    (entry : ProposalId × PendingProposal)\n    (hentry : entry ∈ gs.pendingProposals) : entry.2.approvals.Nodup "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.proposer_mem_approvals",
+    "site": "KelGroups/Invariants.lean:317",
+    "short": "proposer_mem_approvals",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.proposer_mem_approvals"
+    ],
+    "sourceLine": "theorem proposer_mem_approvals {gs : GroupState α} (h : WellFormed gs)",
+    "statement": "theorem proposer_mem_approvals {gs : GroupState α} (h : WellFormed gs)\n    (entry : ProposalId × PendingProposal) (hentry : entry ∈ gs.pendingProposals) :\n    entry.2.proposer ∈ entry.2.approvals "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "KelGroups.tryEnactDetailed_enactment_threshold_met",
+    "site": "KelGroups/Invariants.lean:327",
+    "short": "tryEnactDetailed_enactment_threshold_met",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "_private.KelGroups.Invariants.0.KelGroups.tryEnactDetailed_enactment_threshold_met"
+    ],
+    "sourceLine": "private theorem tryEnactDetailed_enactment_threshold_met",
+    "statement": "private theorem tryEnactDetailed_enactment_threshold_met\n    (gs : GroupState α) (proposalId : ProposalId) (enacted : Enactment α)\n    (h : (tryEnactDetailed gs proposalId).enactment = some enacted) :\n    enacted.pending.approvals.length ≥ majority enacted.preState "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.enact_implies_threshold_met",
+    "site": "KelGroups/Invariants.lean:342",
+    "short": "enact_implies_threshold_met",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.enact_implies_threshold_met"
+    ],
+    "sourceLine": "theorem enact_implies_threshold_met",
+    "statement": "theorem enact_implies_threshold_met\n    (digest : Proposal → ProposalId) (appFoldFn : AppFold α)\n    (gs : GroupState α) (signer : Key) (event : GroupEvent α)\n    (enacted : Enactment α)\n    (h : (applyEventDetailed digest appFoldFn gs signer event).enactment =\n      some enacted) :\n    enacted.pending.approvals.length ≥ majority enacted.preState "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.assocErase_sublist",
+    "site": "KelGroups/Invariants.lean:34",
+    "short": "assocErase_sublist",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "_private.KelGroups.Invariants.0.KelGroups.assocErase_sublist"
+    ],
+    "sourceLine": "private theorem assocErase_sublist [BEq κ] (key : κ) (entries : List (κ × ν)) :",
+    "statement": "private theorem assocErase_sublist [BEq κ] (key : κ) (entries : List (κ × ν)) :\n    (assocErase key entries).Sublist entries "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.tryEnact_eq_of_enacts",
+    "site": "KelGroups/Invariants.lean:368",
+    "short": "tryEnact_eq_of_enacts",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.tryEnact_eq_of_enacts"
+    ],
+    "sourceLine": "theorem tryEnact_eq_of_enacts {gs result : GroupState α} {proposalId : ProposalId}",
+    "statement": "theorem tryEnact_eq_of_enacts {gs result : GroupState α} {proposalId : ProposalId}\n    (h : Enacts gs proposalId result) :\n    tryEnact gs proposalId = result "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.member_key_coherent",
+    "site": "KelGroups/Invariants.lean:374",
+    "short": "member_key_coherent",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.member_key_coherent"
+    ],
+    "sourceLine": "theorem member_key_coherent {gs : GroupState α} (h : WellFormed gs)",
+    "statement": "theorem member_key_coherent {gs : GroupState α} (h : WellFormed gs)\n    (key : Key) (member : Member)\n    (hmember : (key, member) ∈ gs.members) : member.key = key "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.members_change_implies_enacted",
+    "site": "KelGroups/Invariants.lean:379",
+    "short": "members_change_implies_enacted",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.members_change_implies_enacted"
+    ],
+    "sourceLine": "theorem members_change_implies_enacted",
+    "statement": "theorem members_change_implies_enacted\n    (digest : Proposal → ProposalId) (appFoldFn : AppFold α)\n    (gs : GroupState α) (signer : Key) (event : GroupEvent α)\n    (hchange : (applyEvent digest appFoldFn gs signer event).members ≠ gs.members) :\n    ∃ before proposalId,\n      Enacts before proposalId (applyEvent digest appFoldFn gs signer event) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.majority_table",
+    "site": "KelGroups/Invariants.lean:450",
+    "short": "majority_table",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.majority_table"
+    ],
+    "sourceLine": "theorem majority_table :",
+    "statement": "theorem majority_table :\n    majority (majorityAdminState []) = 0 ∧\n    majority (majorityAdminState [\"a\"]) = 1 ∧\n    majority (majorityAdminState [\"a\", \"b\"]) = 1 ∧\n    majority (majorityAdminState [\"a\", \"b\", \"c\"]) = 2 ∧\n    majority (majorityAdminState [\"a\", \"b\", \"c\", \"d\"]) = 2 ∧\n    majority (majorityAdminState [\"a\", \"b\", \"c\", \"d\", \"e\"]) = 3 "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.majority_not_strict_on_even",
+    "site": "KelGroups/Invariants.lean:459",
+    "short": "majority_not_strict_on_even",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.majority_not_strict_on_even"
+    ],
+    "sourceLine": "theorem majority_not_strict_on_even (gs : GroupState α)",
+    "statement": "theorem majority_not_strict_on_even (gs : GroupState α)\n    (positive : 0 < adminCount gs) (even : adminCount gs % 2 = 0) :\n    2 * majority gs ≤ adminCount gs "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.assocErase_keys_nodup",
+    "site": "KelGroups/Invariants.lean:45",
+    "short": "assocErase_keys_nodup",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "_private.KelGroups.Invariants.0.KelGroups.assocErase_keys_nodup"
+    ],
+    "sourceLine": "private theorem assocErase_keys_nodup [BEq κ] (key : κ) (entries : List (κ × ν))",
+    "statement": "private theorem assocErase_keys_nodup [BEq κ] (key : κ) (entries : List (κ × ν))\n    (h : (entries.map Prod.fst).Nodup) :\n    ((assocErase key entries).map Prod.fst).Nodup "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.assocErase_key_absent",
+    "site": "KelGroups/Invariants.lean:50",
+    "short": "assocErase_key_absent",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "_private.KelGroups.Invariants.0.KelGroups.assocErase_key_absent"
+    ],
+    "sourceLine": "private theorem assocErase_key_absent [BEq κ] [LawfulBEq κ]",
+    "statement": "private theorem assocErase_key_absent [BEq κ] [LawfulBEq κ]\n    (key : κ) (entries : List (κ × ν))\n    (h : (entries.map Prod.fst).Nodup) :\n    key ∉ (assocErase key entries).map Prod.fst "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.app_event_preserves_members",
+    "site": "KelGroups/Invariants.lean:568",
+    "short": "app_event_preserves_members",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.app_event_preserves_members"
+    ],
+    "sourceLine": "theorem app_event_preserves_members",
+    "statement": "theorem app_event_preserves_members\n    {AppState AppEvent BaseProposal AppError : Type}\n    (integration : Integration AppState AppEvent BaseProposal AppError)\n    (gs : GroupState AppState) (signer : Key) (event : AppEvent)\n    (result : IntegratedResult AppState)\n    (h : applyIntegratedEvent integration gs signer (IntegratedEvent.app event)\n      = .ok result) :\n    result.state.members = gs.members "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.app_event_has_no_base_change",
+    "site": "KelGroups/Invariants.lean:590",
+    "short": "app_event_has_no_base_change",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.app_event_has_no_base_change"
+    ],
+    "sourceLine": "theorem app_event_has_no_base_change",
+    "statement": "theorem app_event_has_no_base_change\n    {AppState AppEvent BaseProposal AppError : Type}\n    (integration : Integration AppState AppEvent BaseProposal AppError)\n    (gs : GroupState AppState) (signer : Key) (event : AppEvent)\n    (result : IntegratedResult AppState)\n    (h : applyIntegratedEvent integration gs signer (IntegratedEvent.app event)\n      = .ok result) :\n    result.change = none "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.validateDirectAdmission_ok",
+    "site": "KelGroups/Invariants.lean:628",
+    "short": "validateDirectAdmission_ok",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.validateDirectAdmission_ok"
+    ],
+    "sourceLine": "theorem validateDirectAdmission_ok {α : Type} {reserved : Key} {gs : GroupState α}",
+    "statement": "theorem validateDirectAdmission_ok {α : Type} {reserved : Key} {gs : GroupState α}\n    {signer target : Key} {email : Email} {roles : List Role}\n    (h : validateDirectAdmission reserved gs signer target email roles = .ok ()) :\n    isAdmin signer gs = true ∧ isMember target gs = false ∧ target ≠ reserved "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.commitBaseChange_ok",
+    "site": "KelGroups/Invariants.lean:647",
+    "short": "commitBaseChange_ok",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.commitBaseChange_ok"
+    ],
+    "sourceLine": "theorem commitBaseChange_ok {AppState AppEvent BaseProposal AppError : Type}",
+    "statement": "theorem commitBaseChange_ok {AppState AppEvent BaseProposal AppError : Type}\n    {integration : Integration AppState AppEvent BaseProposal AppError}\n    {pre post : GroupState AppState} {change : BaseChange}\n    {result : IntegratedResult AppState}\n    (h : commitBaseChange integration pre post change = .ok result) :\n    result.change = some change ∧\n      integration.baseHook change (groupView pre) (groupView result.state) pre.appFold\n        = .ok result.state.appFold "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.tryEnactBase_runs_hook",
+    "site": "KelGroups/Invariants.lean:664",
+    "short": "tryEnactBase_runs_hook",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.tryEnactBase_runs_hook"
+    ],
+    "sourceLine": "theorem tryEnactBase_runs_hook {AppState AppEvent BaseProposal AppError : Type}",
+    "statement": "theorem tryEnactBase_runs_hook {AppState AppEvent BaseProposal AppError : Type}\n    {integration : Integration AppState AppEvent BaseProposal AppError}\n    {gs : GroupState AppState} {proposalId : ProposalId}\n    {result : IntegratedResult AppState} {change : BaseChange}\n    (h : tryEnactBase integration gs proposalId = .ok result)\n    (hchange : result.change = some change) :\n    integration.baseHook change (groupView gs) (groupView result.state) gs.appFold\n      = .ok result.state.appFold "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.commitBaseChange_members",
+    "site": "KelGroups/Invariants.lean:696",
+    "short": "commitBaseChange_members",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.commitBaseChange_members"
+    ],
+    "sourceLine": "theorem commitBaseChange_members {AppState AppEvent BaseProposal AppError : Type}",
+    "statement": "theorem commitBaseChange_members {AppState AppEvent BaseProposal AppError : Type}\n    {integration : Integration AppState AppEvent BaseProposal AppError}\n    {pre post : GroupState AppState} {change : BaseChange}\n    {result : IntegratedResult AppState}\n    (h : commitBaseChange integration pre post change = .ok result) :\n    result.state.members = post.members "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.enactMutation_preserves_absence",
+    "site": "KelGroups/Invariants.lean:711",
+    "short": "enactMutation_preserves_absence",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.enactMutation_preserves_absence"
+    ],
+    "sourceLine": "theorem enactMutation_preserves_absence {AppState : Type}",
+    "statement": "theorem enactMutation_preserves_absence {AppState : Type}\n    (gs : GroupState AppState) (mutation : BaseMutation) (key : Key)\n    (h : lookupMember key gs = none) :\n    lookupMember key (enactMutation gs mutation) = none "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.tryEnactBase_preserves_absence",
+    "site": "KelGroups/Invariants.lean:721",
+    "short": "tryEnactBase_preserves_absence",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.tryEnactBase_preserves_absence"
+    ],
+    "sourceLine": "theorem tryEnactBase_preserves_absence {AppState AppEvent BaseProposal AppError : Type}",
+    "statement": "theorem tryEnactBase_preserves_absence {AppState AppEvent BaseProposal AppError : Type}\n    {integration : Integration AppState AppEvent BaseProposal AppError}\n    {gs : GroupState AppState} {proposalId : ProposalId}\n    {result : IntegratedResult AppState} {key : Key}\n    (h : tryEnactBase integration gs proposalId = .ok result)\n    (habsent : lookupMember key gs = none) :\n    lookupMember key result.state = none "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.assocInsert_keys_nodup",
+    "site": "KelGroups/Invariants.lean:72",
+    "short": "assocInsert_keys_nodup",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "_private.KelGroups.Invariants.0.KelGroups.assocInsert_keys_nodup"
+    ],
+    "sourceLine": "private theorem assocInsert_keys_nodup [BEq κ] [LawfulBEq κ]",
+    "statement": "private theorem assocInsert_keys_nodup [BEq κ] [LawfulBEq κ]\n    (key : κ) (value : ν) (entries : List (κ × ν))\n    (h : (entries.map Prod.fst).Nodup) :\n    ((assocInsert key value entries).map Prod.fst).Nodup "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.membership_growth_is_direct_admission",
+    "site": "KelGroups/Invariants.lean:751",
+    "short": "membership_growth_is_direct_admission",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.membership_growth_is_direct_admission"
+    ],
+    "sourceLine": "theorem membership_growth_is_direct_admission",
+    "statement": "theorem membership_growth_is_direct_admission\n    {AppState AppEvent BaseProposal AppError : Type}\n    (integration : Integration AppState AppEvent BaseProposal AppError)\n    (gs : GroupState AppState) (signer : Key)\n    (event : IntegratedEvent BaseProposal AppEvent)\n    (result : IntegratedResult AppState) (key : Key)\n    (h : applyIntegratedEvent integration gs signer event = .ok result)\n    (habsent : lookupMember key gs = none)\n    (hpresent : lookupMember key result.state ≠ none) :\n    isAdmin signer gs = true ∧ key ≠ integration.reserved ∧\n      result.change = some (BaseChange.memberAdmitted key) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.direct_admission_requires_admin",
+    "site": "KelGroups/Invariants.lean:799",
+    "short": "direct_admission_requires_admin",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.direct_admission_requires_admin"
+    ],
+    "sourceLine": "theorem direct_admission_requires_admin",
+    "statement": "theorem direct_admission_requires_admin\n    {AppState AppEvent BaseProposal AppError : Type}\n    (integration : Integration AppState AppEvent BaseProposal AppError)\n    (gs : GroupState AppState) (signer key : Key) (email : Email)\n    (roles : List Role) (result : IntegratedResult AppState)\n    (h : applyIntegratedEvent integration gs signer\n      (IntegratedEvent.direct (DirectCommand.admitMember key email roles))\n      = .ok result) :\n    isAdmin signer gs = true ∧ isMember key gs = false ∧ key ≠ integration.reserved "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.assocErase_property",
+    "site": "KelGroups/Invariants.lean:79",
+    "short": "assocErase_property",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "_private.KelGroups.Invariants.0.KelGroups.assocErase_property"
+    ],
+    "sourceLine": "private theorem assocErase_property [BEq κ] (key : κ) (entries : List (κ × ν))",
+    "statement": "private theorem assocErase_property [BEq κ] (key : κ) (entries : List (κ × ν))\n    (property : κ → ν → Prop)\n    (h : ∀ candidate value, (candidate, value) ∈ entries → property candidate value) :\n    ∀ candidate value, (candidate, value) ∈ assocErase key entries →\n      property candidate value "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.non_admin_admission_is_noop",
+    "site": "KelGroups/Invariants.lean:813",
+    "short": "non_admin_admission_is_noop",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.non_admin_admission_is_noop"
+    ],
+    "sourceLine": "theorem non_admin_admission_is_noop",
+    "statement": "theorem non_admin_admission_is_noop\n    {AppState AppEvent BaseProposal AppError : Type}\n    (integration : Integration AppState AppEvent BaseProposal AppError)\n    (gs : GroupState AppState) (signer key : Key) (email : Email)\n    (roles : List Role) (h : isAdmin signer gs = false) :\n    applyIntegratedEvent integration gs signer\n        (IntegratedEvent.direct (DirectCommand.admitMember key email roles))\n      = .error (IntegratedError.validation (ValidationError.notAnAdmin signer))\n    ∧ foldIntegrated integration gs\n        [(signer, IntegratedEvent.direct (DirectCommand.admitMember key email roles))]\n      = gs "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.base_change_runs_hook",
+    "site": "KelGroups/Invariants.lean:831",
+    "short": "base_change_runs_hook",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "KelGroups.base_change_runs_hook"
+    ],
+    "sourceLine": "theorem base_change_runs_hook",
+    "statement": "theorem base_change_runs_hook\n    {AppState AppEvent BaseProposal AppError : Type}\n    (integration : Integration AppState AppEvent BaseProposal AppError)\n    (gs : GroupState AppState) (signer : Key)\n    (event : IntegratedEvent BaseProposal AppEvent)\n    (result : IntegratedResult AppState) (change : BaseChange)\n    (h : applyIntegratedEvent integration gs signer event = .ok result)\n    (hchange : result.change = some change) :\n    integration.baseHook change (groupView gs) (groupView result.state) gs.appFold\n      = .ok result.state.appFold "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "approvals_nodup",
+    "site": "KelGroups/Invariants.lean:877",
+    "short": "approvals_nodup",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "approvals_nodup"
+    ],
+    "sourceLine": "theorem approvals_nodup {α : Type} {gs : KelGroups.GroupState α}",
+    "statement": "theorem approvals_nodup {α : Type} {gs : KelGroups.GroupState α}\n    (h : KelGroups.WellFormed gs)\n    (entry : KelGroups.ProposalId × KelGroups.PendingProposal)\n    (hentry : entry ∈ gs.pendingProposals) : entry.2.approvals.Nodup "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.assocInsert_property",
+    "site": "KelGroups/Invariants.lean:87",
+    "short": "assocInsert_property",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "_private.KelGroups.Invariants.0.KelGroups.assocInsert_property"
+    ],
+    "sourceLine": "private theorem assocInsert_property [BEq κ] (key : κ) (value : ν)",
+    "statement": "private theorem assocInsert_property [BEq κ] (key : κ) (value : ν)\n    (entries : List (κ × ν)) (property : κ → ν → Prop)\n    (hnew : property key value)\n    (hold : ∀ candidate old, (candidate, old) ∈ entries → property candidate old) :\n    ∀ candidate current, (candidate, current) ∈ assocInsert key value entries →\n      property candidate current "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "proposer_mem_approvals",
+    "site": "KelGroups/Invariants.lean:883",
+    "short": "proposer_mem_approvals",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "proposer_mem_approvals"
+    ],
+    "sourceLine": "theorem proposer_mem_approvals {α : Type} {gs : KelGroups.GroupState α}",
+    "statement": "theorem proposer_mem_approvals {α : Type} {gs : KelGroups.GroupState α}\n    (h : KelGroups.WellFormed gs)\n    (entry : KelGroups.ProposalId × KelGroups.PendingProposal)\n    (hentry : entry ∈ gs.pendingProposals) : entry.2.proposer ∈ entry.2.approvals "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "enact_implies_threshold_met",
+    "site": "KelGroups/Invariants.lean:889",
+    "short": "enact_implies_threshold_met",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "enact_implies_threshold_met"
+    ],
+    "sourceLine": "theorem enact_implies_threshold_met {α : Type}",
+    "statement": "theorem enact_implies_threshold_met {α : Type}\n    (digest : KelGroups.Proposal → KelGroups.ProposalId)\n    (appFoldFn : KelGroups.AppFold α) (gs : KelGroups.GroupState α)\n    (signer : KelGroups.Key) (event : KelGroups.GroupEvent α)\n    (enacted : KelGroups.Enactment α)\n    (h : (KelGroups.applyEventDetailed digest appFoldFn gs signer event).enactment =\n      some enacted) :\n    enacted.pending.approvals.length ≥ KelGroups.majority enacted.preState "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "members_change_implies_enacted",
+    "site": "KelGroups/Invariants.lean:899",
+    "short": "members_change_implies_enacted",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "members_change_implies_enacted"
+    ],
+    "sourceLine": "theorem members_change_implies_enacted {α : Type}",
+    "statement": "theorem members_change_implies_enacted {α : Type}\n    (digest : KelGroups.Proposal → KelGroups.ProposalId)\n    (appFoldFn : KelGroups.AppFold α) (gs : KelGroups.GroupState α)\n    (signer : KelGroups.Key) (event : KelGroups.GroupEvent α)\n    (hchange : (KelGroups.applyEvent digest appFoldFn gs signer event).members ≠ gs.members) :\n    ∃ before proposalId,\n      KelGroups.Enacts before proposalId\n        (KelGroups.applyEvent digest appFoldFn gs signer event) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "member_key_coherent",
+    "site": "KelGroups/Invariants.lean:909",
+    "short": "member_key_coherent",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "member_key_coherent"
+    ],
+    "sourceLine": "theorem member_key_coherent {α : Type} {gs : KelGroups.GroupState α}",
+    "statement": "theorem member_key_coherent {α : Type} {gs : KelGroups.GroupState α}\n    (h : KelGroups.WellFormed gs) (key : KelGroups.Key) (member : KelGroups.Member)\n    (hmember : (key, member) ∈ gs.members) : member.key = key "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "majority_table",
+    "site": "KelGroups/Invariants.lean:914",
+    "short": "majority_table",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "majority_table"
+    ],
+    "sourceLine": "theorem majority_table :",
+    "statement": "theorem majority_table :\n    KelGroups.majority (KelGroups.majorityAdminState []) = 0 ∧\n    KelGroups.majority (KelGroups.majorityAdminState [\"a\"]) = 1 ∧\n    KelGroups.majority (KelGroups.majorityAdminState [\"a\", \"b\"]) = 1 ∧\n    KelGroups.majority (KelGroups.majorityAdminState [\"a\", \"b\", \"c\"]) = 2 ∧\n    KelGroups.majority (KelGroups.majorityAdminState [\"a\", \"b\", \"c\", \"d\"]) = 2 ∧\n    KelGroups.majority (KelGroups.majorityAdminState [\"a\", \"b\", \"c\", \"d\", \"e\"]) = 3 "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "majority_not_strict_on_even",
+    "site": "KelGroups/Invariants.lean:923",
+    "short": "majority_not_strict_on_even",
+    "module": "KelGroups.Invariants",
+    "matches": [
+      "majority_not_strict_on_even"
+    ],
+    "sourceLine": "theorem majority_not_strict_on_even {α : Type} (gs : KelGroups.GroupState α)",
+    "statement": "theorem majority_not_strict_on_even {α : Type} (gs : KelGroups.GroupState α)\n    (positive : 0 < KelGroups.adminCount gs) (even : KelGroups.adminCount gs % 2 = 0) :\n    2 * KelGroups.majority gs ≤ KelGroups.adminCount gs "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "KelGroups.assocLookup_insert_of_none",
+    "site": "KelGroups/Types.lean:112",
+    "short": "assocLookup_insert_of_none",
+    "module": "KelGroups.Types",
+    "matches": [
+      "KelGroups.assocLookup_insert_of_none"
+    ],
+    "sourceLine": "theorem assocLookup_insert_of_none [BEq κ] [LawfulBEq κ] (key other : κ)",
+    "statement": "theorem assocLookup_insert_of_none [BEq κ] [LawfulBEq κ] (key other : κ)\n    (value : ν) (entries : List (κ × ν)) (hne : other ≠ key)\n    (h : assocLookup key entries = none) :\n    assocLookup key (assocInsert other value entries) = none "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "KelGroups.assocLookup_insert_self",
+    "site": "KelGroups/Types.lean:121",
+    "short": "assocLookup_insert_self",
+    "module": "KelGroups.Types",
+    "matches": [
+      "KelGroups.assocLookup_insert_self"
+    ],
+    "sourceLine": "theorem assocLookup_insert_self [BEq κ] [LawfulBEq κ]",
+    "statement": "theorem assocLookup_insert_self [BEq κ] [LawfulBEq κ]\n    (key : κ) (value : ν) (entries : List (κ × ν)) :\n    assocLookup key (assocInsert key value entries) = some value "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "KelGroups.assocLookup_erase_of_none",
+    "site": "KelGroups/Types.lean:71",
+    "short": "assocLookup_erase_of_none",
+    "module": "KelGroups.Types",
+    "matches": [
+      "KelGroups.assocLookup_erase_of_none"
+    ],
+    "sourceLine": "theorem assocLookup_erase_of_none [BEq κ] (key other : κ) :",
+    "statement": "theorem assocLookup_erase_of_none [BEq κ] (key other : κ) :\n    ∀ entries : List (κ × ν), assocLookup key entries = none →\n      assocLookup key (assocErase other entries) = none "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "KelGroups.assocLookup_adjust_of_none",
+    "site": "KelGroups/Types.lean:91",
+    "short": "assocLookup_adjust_of_none",
+    "module": "KelGroups.Types",
+    "matches": [
+      "KelGroups.assocLookup_adjust_of_none"
+    ],
+    "sourceLine": "theorem assocLookup_adjust_of_none [BEq κ] (key other : κ) (f : ν → ν) :",
+    "statement": "theorem assocLookup_adjust_of_none [BEq κ] (key other : κ) (f : ν → ν) :\n    ∀ entries : List (κ × ν), assocLookup key entries = none →\n      assocLookup key (assocAdjust other f entries) = none "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "KelGroups.Vote.tallyKeysOfState_insert_cases",
+    "site": "KelGroups/Vote/Invariants.lean:1004",
+    "short": "tallyKeysOfState_insert_cases",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.tallyKeysOfState_insert_cases"
+    ],
+    "sourceLine": "private theorem tallyKeysOfState_insert_cases (gs : VoteState) (qid : QuestionId)",
+    "statement": "private theorem tallyKeysOfState_insert_cases (gs : VoteState) (qid : QuestionId)\n    (placed : Question) (k : Key)\n    (hk : k ∈ tallyKeysOfState\n      { gs with openQuestions "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "KelGroups.Vote.effectedState_tally_growth",
+    "site": "KelGroups/Vote/Invariants.lean:1017",
+    "short": "effectedState_tally_growth",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState_tally_growth"
+    ],
+    "sourceLine": "private theorem effectedState_tally_growth (θ : Threshold) (gs : VoteState)",
+    "statement": "private theorem effectedState_tally_growth (θ : Threshold) (gs : VoteState)\n    (signer : Key) (event : VoteEvent) (k : Key)\n    (admitted : validateVoteEvent θ view gs signer event = Except.ok ())\n    (hk : k ∈ tallyKeysOfState (effectedState gs signer event)) :\n    k ∈ tallyKeysOfState gs ∨\n      (signer = k ∧ ∃ qid ballot, event = VoteEvent.cast qid ballot ∧\n        isResponsabile k view = true) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "KelGroups.Vote.tally_keys_franchised_from",
+    "site": "KelGroups/Vote/Invariants.lean:1071",
+    "short": "tally_keys_franchised_from",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.tally_keys_franchised_from"
+    ],
+    "sourceLine": "private theorem tally_keys_franchised_from (θ : Threshold) :",
+    "statement": "private theorem tally_keys_franchised_from (θ : Threshold) :\n    ∀ (events : List (Key × VoteEvent)) (initial : VoteState) (k : Key),\n      k ∈ tallyKeysOfState (foldFrom θ view initial events) →\n      k ∈ tallyKeysOfState initial ∨\n        ∃ (pre : List (Key × VoteEvent)) (qid : QuestionId) (ballot : Ballot)\n          (suffix : List (Key × VoteEvent)),\n          events = pre ++ (k, VoteEvent.cast qid ballot) :: suffix ∧\n          isResponsabile k view = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.Vote.franchise_of_tallies",
+    "site": "KelGroups/Vote/Invariants.lean:1115",
+    "short": "franchise_of_tallies",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "KelGroups.Vote.franchise_of_tallies"
+    ],
+    "sourceLine": "theorem franchise_of_tallies (θ : Threshold) (events : List (Key × VoteEvent)) (k : Key)",
+    "statement": "theorem franchise_of_tallies (θ : Threshold) (events : List (Key × VoteEvent)) (k : Key)\n    (hk : k ∈ tallyKeysOfState (foldVote θ view events)) :\n    ∃ (pre : List (Key × VoteEvent)) (qid : QuestionId) (ballot : Ballot)\n      (suffix : List (Key × VoteEvent)),\n      events = pre ++ (k, VoteEvent.cast qid ballot) :: suffix ∧\n      isResponsabile k view = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.Vote.sweepStep_of_open",
+    "site": "KelGroups/Vote/Invariants.lean:1141",
+    "short": "sweepStep_of_open",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "KelGroups.Vote.sweepStep_of_open"
+    ],
+    "sourceLine": "theorem sweepStep_of_open (threshold : Threshold) (view : GroupView)",
+    "statement": "theorem sweepStep_of_open (threshold : Threshold) (view : GroupView)\n    (entry : QuestionId × Question)\n    (h : verdictOf threshold view entry.2 = .open) :\n    sweepStep threshold view entry = none "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.Vote.assocInsert_keys_nodup'",
+    "site": "KelGroups/Vote/Invariants.lean:114",
+    "short": "assocInsert_keys_nodup'",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_keys_nodup'"
+    ],
+    "sourceLine": "private theorem assocInsert_keys_nodup' (key : κ) (value : ν) (entries : List (κ × ν))",
+    "statement": "private theorem assocInsert_keys_nodup' (key : κ) (value : ν) (entries : List (κ × ν))\n    (h : (entries.map Prod.fst).Nodup) :\n    ((assocInsert key value entries).map Prod.fst).Nodup "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.Vote.sweep_filterMap_of_swept",
+    "site": "KelGroups/Vote/Invariants.lean:1150",
+    "short": "sweep_filterMap_of_swept",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "KelGroups.Vote.sweep_filterMap_of_swept"
+    ],
+    "sourceLine": "theorem sweep_filterMap_of_swept (threshold : Threshold) (view : GroupView) :",
+    "statement": "theorem sweep_filterMap_of_swept (threshold : Threshold) (view : GroupView) :\n    ∀ l : List (QuestionId × Question),\n      (l.filter (fun entry => verdictOf threshold view entry.2 = .open)).filterMap\n          (sweepStep threshold view) = []\n  | [] => rfl\n  | entry :: rest => by\n    rw [List.filter_cons]\n    by_cases h : verdictOf threshold view entry.2 = .open\n    · simp only [h, decide_true, if_true, List.filterMap_cons,\n        sweepStep_of_open threshold view entry h]\n      exact sweep_filterMap_of_swept threshold view rest\n    · simp only [h, decide_false, if_false]\n      exact sweep_filterMap_of_swept threshold view rest\n\n/-- The same filter applied twice keeps exactly the same questions. -/"
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.Vote.filter_open_idem",
+    "site": "KelGroups/Vote/Invariants.lean:1165",
+    "short": "filter_open_idem",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "KelGroups.Vote.filter_open_idem"
+    ],
+    "sourceLine": "theorem filter_open_idem (threshold : Threshold) (view : GroupView) :",
+    "statement": "theorem filter_open_idem (threshold : Threshold) (view : GroupView) :\n    ∀ l : List (QuestionId × Question),\n      (l.filter (fun entry => verdictOf threshold view entry.2 = .open)).filter\n          (fun entry => verdictOf threshold view entry.2 = .open)\n        = l.filter (fun entry => verdictOf threshold view entry.2 = .open)\n  | [] => rfl\n  | entry :: rest => by\n    rw [List.filter_cons]\n    by_cases h : verdictOf threshold view entry.2 = .open\n    · simp only [h, decide_true, if_true, List.filter_cons]\n      exact congrArg _ (filter_open_idem threshold view rest)\n    · simp only [h, decide_false, if_false]\n      exact filter_open_idem threshold view rest\n\n/-- **Sealed recomputation is idempotent.** Sweeping a payload that was already\nswept at the same threshold and canonical view returns it unchanged: no\nquestion is re-closed and no closure record is appended twice. -/"
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.Vote.sweepClosures_idempotent",
+    "site": "KelGroups/Vote/Invariants.lean:1182",
+    "short": "sweepClosures_idempotent",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "KelGroups.Vote.sweepClosures_idempotent"
+    ],
+    "sourceLine": "theorem sweepClosures_idempotent (threshold : Threshold) (view : GroupView)",
+    "statement": "theorem sweepClosures_idempotent (threshold : Threshold) (view : GroupView)\n    (gs : VoteState) :\n    sweepClosures threshold view (sweepClosures threshold view gs)\n      = sweepClosures threshold view gs "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.Vote.sweepDuplicating_duplicates",
+    "site": "KelGroups/Vote/Invariants.lean:1200",
+    "short": "sweepDuplicating_duplicates",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "KelGroups.Vote.sweepDuplicating_duplicates"
+    ],
+    "sourceLine": "theorem sweepDuplicating_duplicates (threshold : Threshold) (view : GroupView)",
+    "statement": "theorem sweepDuplicating_duplicates (threshold : Threshold) (view : GroupView)\n    (gs : VoteState)\n    (h : gs.openQuestions.filterMap (sweepStep threshold view) ≠ []) :\n    sweepDuplicating threshold view (sweepDuplicating threshold view gs)\n      ≠ sweepDuplicating threshold view gs "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.Vote.assocAdjust_keys'",
+    "site": "KelGroups/Vote/Invariants.lean:120",
+    "short": "assocAdjust_keys'",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocAdjust_keys'"
+    ],
+    "sourceLine": "private theorem assocAdjust_keys' (key : Key) (f : ν → ν) (entries : List (Key × ν)) :",
+    "statement": "private theorem assocAdjust_keys' (key : Key) (f : ν → ν) (entries : List (Key × ν)) :\n    (assocAdjust key f entries).map Prod.fst = entries.map Prod.fst "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.Vote.assocAdjust_keys_nodup'",
+    "site": "KelGroups/Vote/Invariants.lean:129",
+    "short": "assocAdjust_keys_nodup'",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocAdjust_keys_nodup'"
+    ],
+    "sourceLine": "private theorem assocAdjust_keys_nodup' (key : Key) (f : ν → ν) (entries : List (Key × ν))",
+    "statement": "private theorem assocAdjust_keys_nodup' (key : Key) (f : ν → ν) (entries : List (Key × ν))\n    (h : (entries.map Prod.fst).Nodup) :\n    ((assocAdjust key f entries).map Prod.fst).Nodup "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.Vote.assocLookup_some_mem'",
+    "site": "KelGroups/Vote/Invariants.lean:135",
+    "short": "assocLookup_some_mem'",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocLookup_some_mem'"
+    ],
+    "sourceLine": "private theorem assocLookup_some_mem' (key : κ) (value : ν) (entries : List (κ × ν))",
+    "statement": "private theorem assocLookup_some_mem' (key : κ) (value : ν) (entries : List (κ × ν))\n    (h : assocLookup key entries = some value) : (key, value) ∈ entries "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.Vote.mem_assocLookup_some'",
+    "site": "KelGroups/Vote/Invariants.lean:151",
+    "short": "mem_assocLookup_some'",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_assocLookup_some'"
+    ],
+    "sourceLine": "private theorem mem_assocLookup_some' (key : κ) (value : ν) (entries : List (κ × ν))",
+    "statement": "private theorem mem_assocLookup_some' (key : κ) (value : ν) (entries : List (κ × ν))\n    (hnd : (entries.map Prod.fst).Nodup) (h : (key, value) ∈ entries) :\n    assocLookup key entries = some value "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.Vote.assocErase_other_lookup",
+    "site": "KelGroups/Vote/Invariants.lean:175",
+    "short": "assocErase_other_lookup",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_other_lookup"
+    ],
+    "sourceLine": "private theorem assocErase_other_lookup (k j : κ) (v : ν) (entries : List (κ × ν))",
+    "statement": "private theorem assocErase_other_lookup (k j : κ) (v : ν) (entries : List (κ × ν))\n    (h : k ≠ j) : assocLookup k (assocErase j entries) = assocLookup k entries "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.Vote.assocInsert_other_lookup",
+    "site": "KelGroups/Vote/Invariants.lean:192",
+    "short": "assocInsert_other_lookup",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_other_lookup"
+    ],
+    "sourceLine": "private theorem assocInsert_other_lookup (k j : κ) (v : ν) (entries : List (κ × ν))",
+    "statement": "private theorem assocInsert_other_lookup (k j : κ) (v : ν) (entries : List (κ × ν))\n    (h : k ≠ j) : assocLookup k (assocInsert j v entries) = assocLookup k entries "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.Vote.assocInsert_mem_cases",
+    "site": "KelGroups/Vote/Invariants.lean:203",
+    "short": "assocInsert_mem_cases",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_mem_cases"
+    ],
+    "sourceLine": "private theorem assocInsert_mem_cases (k j : κ) (v w : ν) (entries : List (κ × ν))",
+    "statement": "private theorem assocInsert_mem_cases (k j : κ) (v w : ν) (entries : List (κ × ν))\n    (hmem : (k, v) ∈ assocInsert j w entries) :\n    (k = j ∧ v = w) ∨ (k, v) ∈ assocErase j entries "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.Vote.mem_map_fst_erase_of_ne",
+    "site": "KelGroups/Vote/Invariants.lean:213",
+    "short": "mem_map_fst_erase_of_ne",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_map_fst_erase_of_ne"
+    ],
+    "sourceLine": "private theorem mem_map_fst_erase_of_ne (k j : κ) (entries : List (κ × ν))",
+    "statement": "private theorem mem_map_fst_erase_of_ne (k j : κ) (entries : List (κ × ν))\n    (hne : j ≠ k) :\n    j ∈ (assocErase k entries).map Prod.fst ↔ j ∈ entries.map Prod.fst "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.Vote.mem_map_fst_insert",
+    "site": "KelGroups/Vote/Invariants.lean:235",
+    "short": "mem_map_fst_insert",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_map_fst_insert"
+    ],
+    "sourceLine": "private theorem mem_map_fst_insert (k j : κ) (value : ν) (entries : List (κ × ν)) :",
+    "statement": "private theorem mem_map_fst_insert (k j : κ) (value : ν) (entries : List (κ × ν)) :\n    j ∈ (assocInsert k value entries).map Prod.fst ↔\n      j = k ∨ j ∈ (assocErase k entries).map Prod.fst "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.Vote.setInsert_mem_cases",
+    "site": "KelGroups/Vote/Invariants.lean:246",
+    "short": "setInsert_mem_cases",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.setInsert_mem_cases"
+    ],
+    "sourceLine": "private theorem setInsert_mem_cases (v k : Key) (l : List Key)",
+    "statement": "private theorem setInsert_mem_cases (v k : Key) (l : List Key)\n    (h : k ∈ setInsert v l) : k = v ∨ k ∈ l "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.Vote.nodup_append_mem",
+    "site": "KelGroups/Vote/Invariants.lean:255",
+    "short": "nodup_append_mem",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.nodup_append_mem"
+    ],
+    "sourceLine": "private theorem nodup_append_mem {α : Type} [BEq α] [LawfulBEq α]",
+    "statement": "private theorem nodup_append_mem {α : Type} [BEq α] [LawfulBEq α]\n    (l₁ l₂ : List α) (h₁ : l₁.Nodup) (h₂ : l₂.Nodup)\n    (hdisj : ∀ a ∈ l₁, a ∉ l₂) : (l₁ ++ l₂).Nodup "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.Vote.setInsert_nodup'",
+    "site": "KelGroups/Vote/Invariants.lean:268",
+    "short": "setInsert_nodup'",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.setInsert_nodup'"
+    ],
+    "sourceLine": "private theorem setInsert_nodup' (value : Key) (values : List Key)",
+    "statement": "private theorem setInsert_nodup' (value : Key) (values : List Key)\n    (h : values.Nodup) : (setInsert value values).Nodup "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.Vote.mem_erase_inv",
+    "site": "KelGroups/Vote/Invariants.lean:276",
+    "short": "mem_erase_inv",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_erase_inv"
+    ],
+    "sourceLine": "private theorem mem_erase_inv (a : Key) : ∀ (l : List Key), l.Nodup →",
+    "statement": "private theorem mem_erase_inv (a : Key) : ∀ (l : List Key), l.Nodup →\n    ∀ b, b ∈ l.erase a → b ∈ l ∧ b ≠ a "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.Vote.nodup_erase",
+    "site": "KelGroups/Vote/Invariants.lean:303",
+    "short": "nodup_erase",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.nodup_erase"
+    ],
+    "sourceLine": "private theorem nodup_erase (a : Key) (l : List Key) (h : l.Nodup) : (l.erase a).Nodup := by",
+    "statement": "private theorem nodup_erase (a : Key) (l : List Key) (h : l.Nodup) : (l.erase a).Nodup "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.Vote.closed_guard_absent",
+    "site": "KelGroups/Vote/Invariants.lean:317",
+    "short": "closed_guard_absent",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.closed_guard_absent"
+    ],
+    "sourceLine": "private theorem closed_guard_absent (qid : QuestionId) (records : List ClosureRecord)",
+    "statement": "private theorem closed_guard_absent (qid : QuestionId) (records : List ClosureRecord)\n    (h : records.any (fun record : ClosureRecord => record.questionId == qid) = false) :\n    qid ∉ records.map (·.questionId) "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.Vote.assoc_entries_key_unique",
+    "site": "KelGroups/Vote/Invariants.lean:326",
+    "short": "assoc_entries_key_unique",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assoc_entries_key_unique"
+    ],
+    "sourceLine": "private theorem assoc_entries_key_unique (entries : List (Key × Question))",
+    "statement": "private theorem assoc_entries_key_unique (entries : List (Key × Question))\n    (h : (entries.map Prod.fst).Nodup) :\n    ∀ (qe entry : Key × Question), qe ∈ entries → entry ∈ entries → entry.1 = qe.1 →\n      entry.2 = qe.2 "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.Vote.filterMap_keys_nodup",
+    "site": "KelGroups/Vote/Invariants.lean:346",
+    "short": "filterMap_keys_nodup",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.filterMap_keys_nodup"
+    ],
+    "sourceLine": "private theorem filterMap_keys_nodup (f : QuestionId × Question → Option ClosureRecord)",
+    "statement": "private theorem filterMap_keys_nodup (f : QuestionId × Question → Option ClosureRecord)\n    (hid : ∀ entry c, f entry = some c → c.questionId = entry.1)\n    (entries : List (QuestionId × Question))\n    (h : (entries.map Prod.fst).Nodup) :\n    ((entries.filterMap f).map (·.questionId)).Nodup "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.Vote.emptyVoteState_sweepReady",
+    "site": "KelGroups/Vote/Invariants.lean:374",
+    "short": "emptyVoteState_sweepReady",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "KelGroups.Vote.emptyVoteState_sweepReady"
+    ],
+    "sourceLine": "theorem emptyVoteState_sweepReady : SweepReady view emptyVoteState := by",
+    "statement": "theorem emptyVoteState_sweepReady : SweepReady view emptyVoteState "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.Vote.emptyVoteState_wellFormed",
+    "site": "KelGroups/Vote/Invariants.lean:382",
+    "short": "emptyVoteState_wellFormed",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "KelGroups.Vote.emptyVoteState_wellFormed"
+    ],
+    "sourceLine": "theorem emptyVoteState_wellFormed (θ : Threshold) : VoteWellFormed θ view emptyVoteState := by",
+    "statement": "theorem emptyVoteState_wellFormed (θ : Threshold) : VoteWellFormed θ view emptyVoteState "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.Vote.verdictOf_threshold_congr",
+    "site": "KelGroups/Vote/Invariants.lean:389",
+    "short": "verdictOf_threshold_congr",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "KelGroups.Vote.verdictOf_threshold_congr"
+    ],
+    "sourceLine": "theorem verdictOf_threshold_congr (θ θ' : Threshold) (gs : VoteState) (q : Question)",
+    "statement": "theorem verdictOf_threshold_congr (θ θ' : Threshold) (gs : VoteState) (q : Question)\n    (h : θ (franchiseSize view) = θ' (franchiseSize view)) :\n    verdictOf θ view q = verdictOf θ' view q "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "KelGroups.Vote.sweepStep_key",
+    "site": "KelGroups/Vote/Invariants.lean:401",
+    "short": "sweepStep_key",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepStep_key"
+    ],
+    "sourceLine": "private theorem sweepStep_key (θ : Threshold) (gs : VoteState) (entry : QuestionId × Question)",
+    "statement": "private theorem sweepStep_key (θ : Threshold) (gs : VoteState) (entry : QuestionId × Question)\n    (c : ClosureRecord) (h : sweepStep θ view entry = some c) : c.questionId = entry.1 ∧\n      c.verdict = verdictOf θ view entry.2 ∧ c.verdict ≠ Verdict.open ∧\n        c.question = entry.2 "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "KelGroups.Vote.sweepClosures_open_mem",
+    "site": "KelGroups/Vote/Invariants.lean:418",
+    "short": "sweepClosures_open_mem",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_open_mem"
+    ],
+    "sourceLine": "private theorem sweepClosures_open_mem (θ : Threshold) (gs : VoteState)",
+    "statement": "private theorem sweepClosures_open_mem (θ : Threshold) (gs : VoteState)\n    (entry : QuestionId × Question) :\n    entry ∈ (sweepClosures θ view gs).openQuestions ↔\n      entry ∈ gs.openQuestions ∧ verdictOf θ view entry.2 = Verdict.open "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "KelGroups.Vote.sweepClosures_closed_mem",
+    "site": "KelGroups/Vote/Invariants.lean:424",
+    "short": "sweepClosures_closed_mem",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_closed_mem"
+    ],
+    "sourceLine": "private theorem sweepClosures_closed_mem (θ : Threshold) (gs : VoteState) (c : ClosureRecord) :",
+    "statement": "private theorem sweepClosures_closed_mem (θ : Threshold) (gs : VoteState) (c : ClosureRecord) :\n    c ∈ (sweepClosures θ view gs).closed ↔\n      c ∈ gs.closed ∨\n        ∃ entry : QuestionId × Question, entry ∈ gs.openQuestions ∧\n          sweepStep θ view entry = some c "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "KelGroups.Vote.sweepClosures_sweepReady",
+    "site": "KelGroups/Vote/Invariants.lean:440",
+    "short": "sweepClosures_sweepReady",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_sweepReady"
+    ],
+    "sourceLine": "private theorem sweepClosures_sweepReady (θ : Threshold) (gs : VoteState)",
+    "statement": "private theorem sweepClosures_sweepReady (θ : Threshold) (gs : VoteState)\n    (h : SweepReady view gs) : SweepReady view (sweepClosures θ view gs) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "KelGroups.Vote.sweepClosures_wellFormed",
+    "site": "KelGroups/Vote/Invariants.lean:517",
+    "short": "sweepClosures_wellFormed",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_wellFormed"
+    ],
+    "sourceLine": "private theorem sweepClosures_wellFormed (θ : Threshold) (gs : VoteState)",
+    "statement": "private theorem sweepClosures_wellFormed (θ : Threshold) (gs : VoteState)\n    (h : SweepReady view gs) : VoteWellFormed θ view (sweepClosures θ view gs) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "KelGroups.Vote.placeBallot_clean",
+    "site": "KelGroups/Vote/Invariants.lean:527",
+    "short": "placeBallot_clean",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot_clean"
+    ],
+    "sourceLine": "private theorem placeBallot_clean (voter : Key) (ballot : Ballot) (question : Question)",
+    "statement": "private theorem placeBallot_clean (voter : Key) (ballot : Ballot) (question : Question)\n    (h : QuestionClean question) : QuestionClean (placeBallot voter ballot question) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "KelGroups.Vote.placeBallot_tally",
+    "site": "KelGroups/Vote/Invariants.lean:550",
+    "short": "placeBallot_tally",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot_tally"
+    ],
+    "sourceLine": "private theorem placeBallot_tally (voter : Key) (ballot : Ballot) (question : Question)",
+    "statement": "private theorem placeBallot_tally (voter : Key) (ballot : Ballot) (question : Question)\n    (k : Key) (h : k ∈ tallyKeysOfQuestion (placeBallot voter ballot question)) :\n    k = voter ∨ k ∈ tallyKeysOfQuestion question "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "KelGroups.Vote.effectedState_sweepReady",
+    "site": "KelGroups/Vote/Invariants.lean:571",
+    "short": "effectedState_sweepReady",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState_sweepReady"
+    ],
+    "sourceLine": "private theorem effectedState_sweepReady (gs : VoteState) (signer : Key) (event : VoteEvent)",
+    "statement": "private theorem effectedState_sweepReady (gs : VoteState) (signer : Key) (event : VoteEvent)\n    (h : SweepReady view gs) : SweepReady view (effectedState gs signer event) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.Vote.applyVoteEvent_preserves_wellFormed",
+    "site": "KelGroups/Vote/Invariants.lean:665",
+    "short": "applyVoteEvent_preserves_wellFormed",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "KelGroups.Vote.applyVoteEvent_preserves_wellFormed"
+    ],
+    "sourceLine": "theorem applyVoteEvent_preserves_wellFormed (θ : Threshold) (gs : VoteState)",
+    "statement": "theorem applyVoteEvent_preserves_wellFormed (θ : Threshold) (gs : VoteState)\n    (signer : Key) (event : VoteEvent) (h : VoteWellFormed θ view gs) :\n    VoteWellFormed θ view (applyVoteEvent θ view gs signer event) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "KelGroups.Vote.foldFrom_preserves_wellFormed",
+    "site": "KelGroups/Vote/Invariants.lean:676",
+    "short": "foldFrom_preserves_wellFormed",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.foldFrom_preserves_wellFormed"
+    ],
+    "sourceLine": "private theorem foldFrom_preserves_wellFormed (θ : Threshold) :",
+    "statement": "private theorem foldFrom_preserves_wellFormed (θ : Threshold) :\n    ∀ (events : List (Key × VoteEvent)) (initial : VoteState),\n      VoteWellFormed θ view initial → VoteWellFormed θ view (foldFrom θ view initial events) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.Vote.foldVote_wellFormed",
+    "site": "KelGroups/Vote/Invariants.lean:688",
+    "short": "foldVote_wellFormed",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "KelGroups.Vote.foldVote_wellFormed"
+    ],
+    "sourceLine": "theorem foldVote_wellFormed (θ : Threshold) (events : List (Key × VoteEvent)) :",
+    "statement": "theorem foldVote_wellFormed (θ : Threshold) (events : List (Key × VoteEvent)) :\n    VoteWellFormed θ view (foldVote θ view events) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "KelGroups.Vote.foldVote_append",
+    "site": "KelGroups/Vote/Invariants.lean:692",
+    "short": "foldVote_append",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.foldVote_append"
+    ],
+    "sourceLine": "private theorem foldVote_append (θ : Threshold) (pre suffix : List (Key × VoteEvent)) :",
+    "statement": "private theorem foldVote_append (θ : Threshold) (pre suffix : List (Key × VoteEvent)) :\n    foldVote θ view (pre ++ suffix) = foldFrom θ view (foldVote θ view pre) suffix "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "KelGroups.Vote.sweepClosures_preserves_qid",
+    "site": "KelGroups/Vote/Invariants.lean:696",
+    "short": "sweepClosures_preserves_qid",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_preserves_qid"
+    ],
+    "sourceLine": "private theorem sweepClosures_preserves_qid (θ : Threshold) (gs : VoteState)",
+    "statement": "private theorem sweepClosures_preserves_qid (θ : Threshold) (gs : VoteState)\n    (qid : QuestionId)\n    (h : qid ∈ gs.openQuestions.map Prod.fst ∨\n      qid ∈ gs.closed.map (·.questionId)) :\n    qid ∈ (sweepClosures θ view gs).openQuestions.map Prod.fst ∨\n      qid ∈ (sweepClosures θ view gs).closed.map (·.questionId) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "KelGroups.Vote.effectedState_preserves_qid",
+    "site": "KelGroups/Vote/Invariants.lean:722",
+    "short": "effectedState_preserves_qid",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState_preserves_qid"
+    ],
+    "sourceLine": "private theorem effectedState_preserves_qid (gs : VoteState) (signer : Key)",
+    "statement": "private theorem effectedState_preserves_qid (gs : VoteState) (signer : Key)\n    (event : VoteEvent) (qid : QuestionId)\n    (h : qid ∈ gs.openQuestions.map Prod.fst ∨\n      qid ∈ gs.closed.map (·.questionId)) :\n    qid ∈ (effectedState gs signer event).openQuestions.map Prod.fst ∨\n      qid ∈ (effectedState gs signer event).closed.map (·.questionId) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "KelGroups.Vote.applyVoteEvent_preserves_qid",
+    "site": "KelGroups/Vote/Invariants.lean:772",
+    "short": "applyVoteEvent_preserves_qid",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.applyVoteEvent_preserves_qid"
+    ],
+    "sourceLine": "private theorem applyVoteEvent_preserves_qid (θ : Threshold) (gs : VoteState)",
+    "statement": "private theorem applyVoteEvent_preserves_qid (θ : Threshold) (gs : VoteState)\n    (signer : Key) (event : VoteEvent) (qid : QuestionId)\n    (h : qid ∈ gs.openQuestions.map Prod.fst ∨\n      qid ∈ gs.closed.map (·.questionId)) :\n    qid ∈ (applyVoteEvent θ view gs signer event).openQuestions.map Prod.fst ∨\n      qid ∈ (applyVoteEvent θ view gs signer event).closed.map (·.questionId) "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.Vote.assocErase_sublist'",
+    "site": "KelGroups/Vote/Invariants.lean:77",
+    "short": "assocErase_sublist'",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_sublist'"
+    ],
+    "sourceLine": "private theorem assocErase_sublist' (key : κ) (entries : List (κ × ν)) :",
+    "statement": "private theorem assocErase_sublist' (key : κ) (entries : List (κ × ν)) :\n    (assocErase key entries).Sublist entries "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "KelGroups.Vote.foldFrom_preserves_qid",
+    "site": "KelGroups/Vote/Invariants.lean:786",
+    "short": "foldFrom_preserves_qid",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.foldFrom_preserves_qid"
+    ],
+    "sourceLine": "private theorem foldFrom_preserves_qid (θ : Threshold) :",
+    "statement": "private theorem foldFrom_preserves_qid (θ : Threshold) :\n    ∀ (events : List (Key × VoteEvent)) (initial : VoteState) (qid : QuestionId),\n      (qid ∈ initial.openQuestions.map Prod.fst ∨\n        qid ∈ initial.closed.map (·.questionId)) →\n      qid ∈ (foldFrom θ view initial events).openQuestions.map Prod.fst ∨\n        qid ∈ (foldFrom θ view initial events).closed.map (·.questionId) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.Vote.ballots_nodup_disjoint",
+    "site": "KelGroups/Vote/Invariants.lean:802",
+    "short": "ballots_nodup_disjoint",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "KelGroups.Vote.ballots_nodup_disjoint"
+    ],
+    "sourceLine": "theorem ballots_nodup_disjoint (θ : Threshold) (events : List (Key × VoteEvent)) :",
+    "statement": "theorem ballots_nodup_disjoint (θ : Threshold) (events : List (Key × VoteEvent)) :\n    (∀ qid q, assocLookup qid (foldVote θ view events).openQuestions = some q →\n      QuestionClean q) ∧\n    (∀ c, c ∈ (foldVote θ view events).closed → QuestionClean c.question) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.Vote.open_questions_are_open",
+    "site": "KelGroups/Vote/Invariants.lean:810",
+    "short": "open_questions_are_open",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "KelGroups.Vote.open_questions_are_open"
+    ],
+    "sourceLine": "theorem open_questions_are_open (θ : Threshold) (events : List (Key × VoteEvent))",
+    "statement": "theorem open_questions_are_open (θ : Threshold) (events : List (Key × VoteEvent))\n    (questionId : QuestionId) (q : Question)\n    (h : assocLookup questionId (foldVote θ view events).openQuestions = some q) :\n    verdictOf θ view q = Verdict.open "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.Vote.questions_partition",
+    "site": "KelGroups/Vote/Invariants.lean:818",
+    "short": "questions_partition",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "KelGroups.Vote.questions_partition"
+    ],
+    "sourceLine": "theorem questions_partition (θ : Threshold) (events : List (Key × VoteEvent)) :",
+    "statement": "theorem questions_partition (θ : Threshold) (events : List (Key × VoteEvent)) :\n    ((foldVote θ view events).openQuestions.map Prod.fst).Nodup ∧\n    ((foldVote θ view events).closed.map (·.questionId)).Nodup ∧\n    (∀ qid, qid ∈ (foldVote θ view events).openQuestions.map Prod.fst →\n      qid ∉ (foldVote θ view events).closed.map (·.questionId)) ∧\n    (∀ c, c ∈ (foldVote θ view events).closed → c.verdict ≠ Verdict.open) ∧\n    (∀ pre suffix qid,\n      events = pre ++ suffix →\n      (qid ∈ (foldVote θ view pre).openQuestions.map Prod.fst ∨\n        qid ∈ (foldVote θ view pre).closed.map (·.questionId)) →\n      qid ∈ (foldVote θ view events).openQuestions.map Prod.fst ∨\n        qid ∈ (foldVote θ view events).closed.map (·.questionId)) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.Vote.no_expiry",
+    "site": "KelGroups/Vote/Invariants.lean:877",
+    "short": "no_expiry",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "KelGroups.Vote.no_expiry"
+    ],
+    "sourceLine": "theorem no_expiry (θ : Threshold) (events : List (Key × VoteEvent))",
+    "statement": "theorem no_expiry (θ : Threshold) (events : List (Key × VoteEvent))\n    (pre : List (Key × VoteEvent)) (signer : Key) (event : VoteEvent)\n    (suffix : List (Key × VoteEvent)) (questionId : QuestionId) (q : Question)\n    (hevents : events = pre ++ (signer, event) :: suffix)\n    (hopen : assocLookup questionId (foldVote θ view pre).openQuestions = some q)\n    (hpres : PreservesQuestionSemantics θ view (foldVote θ view pre) signer event\n      questionId) :\n    assocLookup questionId\n        (applyVoteEvent θ view (foldVote θ view pre) signer event).openQuestions = some q ∧\n      verdictOf θ view q = Verdict.open "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.Vote.assocErase_keys_nodup'",
+    "site": "KelGroups/Vote/Invariants.lean:88",
+    "short": "assocErase_keys_nodup'",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_keys_nodup'"
+    ],
+    "sourceLine": "private theorem assocErase_keys_nodup' (key : κ) (entries : List (κ × ν))",
+    "statement": "private theorem assocErase_keys_nodup' (key : κ) (entries : List (κ × ν))\n    (h : (entries.map Prod.fst).Nodup) :\n    ((assocErase key entries).map Prod.fst).Nodup "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "KelGroups.Vote.sweepClosures_tallyKeys",
+    "site": "KelGroups/Vote/Invariants.lean:900",
+    "short": "sweepClosures_tallyKeys",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_tallyKeys"
+    ],
+    "sourceLine": "private theorem sweepClosures_tallyKeys (θ : Threshold) (gs : VoteState) (k : Key) :",
+    "statement": "private theorem sweepClosures_tallyKeys (θ : Threshold) (gs : VoteState) (k : Key) :\n    (k ∈ tallyKeysOfState (sweepClosures θ view gs) ↔ k ∈ tallyKeysOfState gs) "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "KelGroups.Vote.assocErase_key_absent'",
+    "site": "KelGroups/Vote/Invariants.lean:93",
+    "short": "assocErase_key_absent'",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_key_absent'"
+    ],
+    "sourceLine": "private theorem assocErase_key_absent' (key : κ) (entries : List (κ × ν))",
+    "statement": "private theorem assocErase_key_absent' (key : κ) (entries : List (κ × ν))\n    (h : (entries.map Prod.fst).Nodup) :\n    key ∉ (assocErase key entries).map Prod.fst "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.Vote.inadmissible_is_noop",
+    "site": "KelGroups/Vote/Invariants.lean:957",
+    "short": "inadmissible_is_noop",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "KelGroups.Vote.inadmissible_is_noop"
+    ],
+    "sourceLine": "theorem inadmissible_is_noop (θ : Threshold) (gs : VoteState) (signer : Key)",
+    "statement": "theorem inadmissible_is_noop (θ : Threshold) (gs : VoteState) (signer : Key)\n    (event : VoteEvent) (error : VoteError)\n    (rejected : validateVoteEvent θ view gs signer event = .error error) :\n    applyVoteEvent θ view gs signer event = gs "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.Vote.nonresponsabile_event_noop",
+    "site": "KelGroups/Vote/Invariants.lean:967",
+    "short": "nonresponsabile_event_noop",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "KelGroups.Vote.nonresponsabile_event_noop"
+    ],
+    "sourceLine": "theorem nonresponsabile_event_noop (θ : Threshold) (gs : VoteState)",
+    "statement": "theorem nonresponsabile_event_noop (θ : Threshold) (gs : VoteState)\n    (signer : Key) (event : VoteEvent) (bootstrapped : franchiseSize view > 0)\n    (unauthorized : isResponsabile signer view = false) :\n    applyVoteEvent θ view gs signer event = gs "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "KelGroups.Vote.unfranchised_cast_noop",
+    "site": "KelGroups/Vote/Invariants.lean:980",
+    "short": "unfranchised_cast_noop",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "KelGroups.Vote.unfranchised_cast_noop"
+    ],
+    "sourceLine": "theorem unfranchised_cast_noop (θ : Threshold) (gs : VoteState) (signer : Key)",
+    "statement": "theorem unfranchised_cast_noop (θ : Threshold) (gs : VoteState) (signer : Key)\n    (questionId : QuestionId) (ballot : Ballot)\n    (h : isResponsabile signer view = false) :\n    applyVoteEvent θ view gs signer (.cast questionId ballot) = gs "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "KelGroups.Vote.tallyKeysOfState_erased_le",
+    "site": "KelGroups/Vote/Invariants.lean:989",
+    "short": "tallyKeysOfState_erased_le",
+    "module": "KelGroups.Vote.Invariants",
+    "matches": [
+      "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.tallyKeysOfState_erased_le"
+    ],
+    "sourceLine": "private theorem tallyKeysOfState_erased_le (gs : VoteState) (qid : QuestionId) (k : Key)",
+    "statement": "private theorem tallyKeysOfState_erased_le (gs : VoteState) (qid : QuestionId) (k : Key)\n    (hk : k ∈ tallyKeysOfState { gs with openQuestions "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.Composition.baseEnacted_threshold_met",
+    "site": "Reactivegas/Composition.lean:108",
+    "short": "baseEnacted_threshold_met",
+    "module": "Reactivegas.Composition",
+    "matches": [
+      "Reactivegas.Composition.baseEnacted_threshold_met"
+    ],
+    "sourceLine": "theorem baseEnacted_threshold_met {α : Type}",
+    "statement": "theorem baseEnacted_threshold_met {α : Type}\n    (e : Event)\n    (digest : KelGroups.Proposal → KelGroups.ProposalId)\n    (appFoldFn : KelGroups.AppFold α) (gs : KelGroups.GroupState α)\n    (signer : KelGroups.Key) (event : KelGroups.GroupEvent α)\n    (enacted : KelGroups.Enactment α)\n    (hroute : route e = .baseEnacted)\n    (hfaithful : baseProposalFaithful enacted.pending.proposal = true)\n    (h : (KelGroups.applyEventDetailed digest appFoldFn gs signer event).enactment =\n      some enacted) :\n    baseProposalFaithful enacted.pending.proposal = true ∧\n      enacted.pending.approvals.length ≥ KelGroups.majority enacted.preState "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.Composition.appDecided_verdict_exhaustive",
+    "site": "Reactivegas/Composition.lean:139",
+    "short": "appDecided_verdict_exhaustive",
+    "module": "Reactivegas.Composition",
+    "matches": [
+      "Reactivegas.Composition.appDecided_verdict_exhaustive"
+    ],
+    "sourceLine": "theorem appDecided_verdict_exhaustive (e : Event)",
+    "statement": "theorem appDecided_verdict_exhaustive (e : Event)\n    (record : KelGroups.Vote.ClosureRecord)\n    (hroute : route e = .appDecided) :\n    appVerdictAllows record = true ↔\n      record.verdict = .positive ∨ record.verdict = .negative "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.Composition.voteDerived_iff_not_direct",
+    "site": "Reactivegas/Composition.lean:83",
+    "short": "voteDerived_iff_not_direct",
+    "module": "Reactivegas.Composition",
+    "matches": [
+      "Reactivegas.Composition.voteDerived_iff_not_direct"
+    ],
+    "sourceLine": "theorem voteDerived_iff_not_direct (e : Event) :",
+    "statement": "theorem voteDerived_iff_not_direct (e : Event) :\n    voteDerived e = true ↔ route e ≠ .direct "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "pullCollection_mem",
+    "site": "Reactivegas/Invariants.lean:110",
+    "short": "pullCollection_mem",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "pullCollection_mem"
+    ],
+    "sourceLine": "theorem pullCollection_mem {c : CollId} {cols : List Collection} {x : Collection}",
+    "statement": "theorem pullCollection_mem {c : CollId} {cols : List Collection} {x : Collection}\n    {rest : List Collection} (h : pullCollection c cols = some (x, rest)) :\n    x ∈ cols "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "comune_not_a_member_of_reach",
+    "site": "Reactivegas/Invariants.lean:1141",
+    "short": "comune_not_a_member_of_reach",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "comune_not_a_member_of_reach"
+    ],
+    "sourceLine": "theorem comune_not_a_member_of_reach {s : State} (hr : Reach view auth s) :",
+    "statement": "theorem comune_not_a_member_of_reach {s : State} (hr : Reach view auth s) :\n    comune_not_a_member view "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "credit_pledges_of_reach",
+    "site": "Reactivegas/Invariants.lean:1148",
+    "short": "credit_pledges_of_reach",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "_private.Reactivegas.Invariants.0.credit_pledges_of_reach"
+    ],
+    "sourceLine": "private theorem credit_pledges_of_reach {s : State} (hr : Reach view auth s) :",
+    "statement": "private theorem credit_pledges_of_reach {s : State} (hr : Reach view auth s) :\n    (∀ u : KelGroups.Key, u ≠ comuneId → bal s.conti u ≥ 0) ∧\n      (∀ col ∈ s.collections, ∀ p ∈ col.accepted ++ col.pending, 0 ≤ p.amount) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "solvent_preserved",
+    "site": "Reactivegas/Invariants.lean:1164",
+    "short": "solvent_preserved",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "solvent_preserved"
+    ],
+    "sourceLine": "theorem solvent_preserved {s s' : State} {e : Event}",
+    "statement": "theorem solvent_preserved {s s' : State} {e : Event}\n    (hr : Reach view auth s)\n    (hsolv : solvent view s) (hstep : stepEvent view s e auth = some s') : solvent view s' "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "pullCollection_det",
+    "site": "Reactivegas/Invariants.lean:116",
+    "short": "pullCollection_det",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "_private.Reactivegas.Invariants.0.pullCollection_det"
+    ],
+    "sourceLine": "private theorem pullCollection_det {c : CollId} {cols : List Collection}",
+    "statement": "private theorem pullCollection_det {c : CollId} {cols : List Collection}\n    {p₁ p₂ : Collection × List Collection}\n    (h1 : pullCollection c cols = some p₁) (h2 : pullCollection c cols = some p₂) :\n    p₁ = p₂ "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "reach_solvent",
+    "site": "Reactivegas/Invariants.lean:1177",
+    "short": "reach_solvent",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "reach_solvent"
+    ],
+    "sourceLine": "theorem reach_solvent {s : State} (hr : Reach view auth s) : solvent view s := by",
+    "statement": "theorem reach_solvent {s : State} (hr : Reach view auth s) : solvent view s "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "not_insolvent_of_reach",
+    "site": "Reactivegas/Invariants.lean:1184",
+    "short": "not_insolvent_of_reach",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "not_insolvent_of_reach"
+    ],
+    "sourceLine": "theorem not_insolvent_of_reach {s : State} (hr : Reach view auth s) : ¬ insolvent view s := by",
+    "statement": "theorem not_insolvent_of_reach {s : State} (hr : Reach view auth s) : ¬ insolvent view s "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "unique_mem_cons_inv",
+    "site": "Reactivegas/Invariants.lean:1194",
+    "short": "unique_mem_cons_inv",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "_private.Reactivegas.Invariants.0.unique_mem_cons_inv"
+    ],
+    "sourceLine": "private theorem unique_mem_cons_inv {acc pend : List Pledge} {u : KelGroups.Key} {v : Int}",
+    "statement": "private theorem unique_mem_cons_inv {acc pend : List Pledge} {u : KelGroups.Key} {v : Int}\n    {p q : Pledge}\n    (hp : p ∈ acc ++ (⟨u, v⟩ :: pend)) (hq : q ∈ acc ++ (⟨u, v⟩ :: pend))\n    (hus : p.user = q.user)\n    (hu : ∀ w ∈ acc ++ pend, w.user ≠ u)\n    (hun : ∀ a ∈ acc ++ pend, ∀ b ∈ acc ++ pend, a.user = b.user → a = b) :\n    p = q "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "uniquePledges_pend_cons",
+    "site": "Reactivegas/Invariants.lean:1228",
+    "short": "uniquePledges_pend_cons",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "uniquePledges_pend_cons"
+    ],
+    "sourceLine": "theorem uniquePledges_pend_cons {col : Collection} {u : KelGroups.Key} {v : Int}",
+    "statement": "theorem uniquePledges_pend_cons {col : Collection} {u : KelGroups.Key} {v : Int}\n    (hu : ∀ p ∈ col.accepted ++ col.pending, p.user ≠ u)\n    (hun : uniquePledges col) :\n    uniquePledges { col with pending "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "pledge_rejected_when_member",
+    "site": "Reactivegas/Invariants.lean:1241",
+    "short": "pledge_rejected_when_member",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "pledge_rejected_when_member"
+    ],
+    "sourceLine": "theorem pledge_rejected_when_member {s : State} {a u : KelGroups.Key} {c : CollId}",
+    "statement": "theorem pledge_rejected_when_member {s : State} {a u : KelGroups.Key} {c : CollId}\n    {v : Int} {col : Collection} {rest : List Collection}\n    (hpull : pullCollection c s.collections = some (col, rest))\n    (hdup : ∃ q, q ∈ col.accepted ++ col.pending ∧ q.user = u) :\n    stepEvent view s (.pledge a u c v) auth = none "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "user_absent_of_any_false",
+    "site": "Reactivegas/Invariants.lean:124",
+    "short": "user_absent_of_any_false",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "user_absent_of_any_false"
+    ],
+    "sourceLine": "theorem user_absent_of_any_false {u : KelGroups.Key} {l : List Pledge}",
+    "statement": "theorem user_absent_of_any_false {u : KelGroups.Key} {l : List Pledge}\n    (h : l.any (fun p => p.user == u) = false) : ∀ p ∈ l, p.user ≠ u "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "pledge_preserves_allUnique",
+    "site": "Reactivegas/Invariants.lean:1269",
+    "short": "pledge_preserves_allUnique",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "pledge_preserves_allUnique"
+    ],
+    "sourceLine": "theorem pledge_preserves_allUnique {s s' : State} {a u : KelGroups.Key} {c : CollId}",
+    "statement": "theorem pledge_preserves_allUnique {s s' : State} {a u : KelGroups.Key} {c : CollId}\n    {v : Int} (hun : allUniquePledges s)\n    (h : stepEvent view s (.pledge a u c v) auth = some s') : allUniquePledges s' "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "sumBal_foldl_bump",
+    "site": "Reactivegas/Invariants.lean:135",
+    "short": "sumBal_foldl_bump",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "_private.Reactivegas.Invariants.0.sumBal_foldl_bump"
+    ],
+    "sourceLine": "private theorem sumBal_foldl_bump :",
+    "statement": "private theorem sumBal_foldl_bump :\n    ∀ (l : List KelGroups.Key) (m : List (KelGroups.Key × Int)) (w : Int),\n      sumBal (l.foldl (fun acc u => bump acc u w) m) =\n        sumBal m + w * (l.length : Int) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "pledge_guard_inv",
+    "site": "Reactivegas/Invariants.lean:154",
+    "short": "pledge_guard_inv",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "pledge_guard_inv"
+    ],
+    "sourceLine": "theorem pledge_guard_inv {s : State} {a u : KelGroups.Key} {col : Collection} {v : Int}",
+    "statement": "theorem pledge_guard_inv {s : State} {a u : KelGroups.Key} {col : Collection} {v : Int}\n    (h : (isResponsabile view a && KelGroups.GroupView.isMember u view &&\n      !(col.accepted.any (fun p => p.user == u)) &&\n      !(col.pending.any (fun p => p.user == u)) &&\n      decide (0 < v) && decide (bal s.conti u ≥ v)) = true) :\n    isResponsabile view a = true ∧ KelGroups.GroupView.isMember u view = true ∧\n      col.accepted.any (fun p => p.user == u) = false ∧\n      col.pending.any (fun p => p.user == u) = false ∧\n      0 < v ∧ bal s.conti u ≥ v "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.base_departure_applies_cleanup",
+    "site": "Reactivegas/Invariants.lean:1583",
+    "short": "base_departure_applies_cleanup",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.base_departure_applies_cleanup"
+    ],
+    "sourceLine": "theorem base_departure_applies_cleanup : checkBaseCleanupReachable = true := by decide",
+    "statement": "theorem base_departure_applies_cleanup : checkBaseCleanupReachable = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.base_change_can_close_without_ballot",
+    "site": "Reactivegas/Invariants.lean:1587",
+    "short": "base_change_can_close_without_ballot",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.base_change_can_close_without_ballot"
+    ],
+    "sourceLine": "theorem base_change_can_close_without_ballot : checkV3BaseReachable = true := by decide",
+    "statement": "theorem base_change_can_close_without_ballot : checkV3BaseReachable = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.direct_admission_only_holds",
+    "site": "Reactivegas/Invariants.lean:1589",
+    "short": "direct_admission_only_holds",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.direct_admission_only_holds"
+    ],
+    "sourceLine": "theorem direct_admission_only_holds : checkDirectAdmissionOnly = true := by decide",
+    "statement": "theorem direct_admission_only_holds : checkDirectAdmissionOnly = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.base_recompute_reachable_holds",
+    "site": "Reactivegas/Invariants.lean:1591",
+    "short": "base_recompute_reachable_holds",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.base_recompute_reachable_holds"
+    ],
+    "sourceLine": "theorem base_recompute_reachable_holds : checkBaseRecomputeReachable = true := by decide",
+    "statement": "theorem base_recompute_reachable_holds : checkBaseRecomputeReachable = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.sweep_idempotent_witness",
+    "site": "Reactivegas/Invariants.lean:1593",
+    "short": "sweep_idempotent_witness",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.sweep_idempotent_witness"
+    ],
+    "sourceLine": "theorem sweep_idempotent_witness : checkSweepIdempotent = true := by decide",
+    "statement": "theorem sweep_idempotent_witness : checkSweepIdempotent = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.sweep_idempotent_mutant_caught",
+    "site": "Reactivegas/Invariants.lean:1595",
+    "short": "sweep_idempotent_mutant_caught",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.sweep_idempotent_mutant_caught"
+    ],
+    "sourceLine": "theorem sweep_idempotent_mutant_caught : checkSweepIdempotentMutant = true := by decide",
+    "statement": "theorem sweep_idempotent_mutant_caught : checkSweepIdempotentMutant = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.baseHook_votes",
+    "site": "Reactivegas/Invariants.lean:1600",
+    "short": "baseHook_votes",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.baseHook_votes"
+    ],
+    "sourceLine": "theorem baseHook_votes {threshold : KelGroups.Vote.Threshold}",
+    "statement": "theorem baseHook_votes {threshold : KelGroups.Vote.Threshold}\n    {change : KelGroups.BaseChange} {pre post : KelGroups.GroupView}\n    {s s' : State} (h : baseHook threshold change pre post s = .ok s') :\n    s'.votes = KelGroups.Vote.sweepClosures threshold post s.votes "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.base_change_recomputes_votes",
+    "site": "Reactivegas/Invariants.lean:1616",
+    "short": "base_change_recomputes_votes",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.base_change_recomputes_votes"
+    ],
+    "sourceLine": "theorem base_change_recomputes_votes (threshold : KelGroups.Vote.Threshold)",
+    "statement": "theorem base_change_recomputes_votes (threshold : KelGroups.Vote.Threshold)\n    (auth : BackdonateAuth) (gs : KelGroups.GroupState State)\n    (signer : KelGroups.Key)\n    (event : KelGroups.IntegratedEvent Proposal AppEvent)\n    (result : KelGroups.IntegratedResult State) (change : KelGroups.BaseChange)\n    (h : Reactivegas.apply threshold auth gs signer event = .ok result)\n    (hchange : result.change = some change) :\n    result.state.appFold.votes\n      = KelGroups.Vote.sweepClosures threshold (KelGroups.groupView result.state)\n          gs.appFold.votes "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "auth_referente_guard_inv",
+    "site": "Reactivegas/Invariants.lean:172",
+    "short": "auth_referente_guard_inv",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "auth_referente_guard_inv"
+    ],
+    "sourceLine": "theorem auth_referente_guard_inv {a : KelGroups.Key} {col : Collection}",
+    "statement": "theorem auth_referente_guard_inv {a : KelGroups.Key} {col : Collection}\n    (h : (isResponsabile view a && col.referente == a) = true) :\n    isResponsabile view a = true ∧ col.referente = a "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "close_guard_inv",
+    "site": "Reactivegas/Invariants.lean:178",
+    "short": "close_guard_inv",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "close_guard_inv"
+    ],
+    "sourceLine": "theorem close_guard_inv {a : KelGroups.Key} {col : Collection}",
+    "statement": "theorem close_guard_inv {a : KelGroups.Key} {col : Collection}\n    (h : (isResponsabile view a && col.referente == a && col.permitted &&\n      col.pending.isEmpty) = true) :\n    isResponsabile view a = true ∧ col.referente = a ∧ col.permitted ∧ col.pending = [] "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "fail_guard_inv",
+    "site": "Reactivegas/Invariants.lean:188",
+    "short": "fail_guard_inv",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "fail_guard_inv"
+    ],
+    "sourceLine": "theorem fail_guard_inv {a : KelGroups.Key} {col : Collection}",
+    "statement": "theorem fail_guard_inv {a : KelGroups.Key} {col : Collection}\n    (h : (isResponsabile view a && col.referente == a && col.pending.isEmpty) = true) :\n    isResponsabile view a = true ∧ col.referente = a ∧ col.pending = [] "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "step_grant_inv",
+    "site": "Reactivegas/Invariants.lean:197",
+    "short": "step_grant_inv",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "step_grant_inv"
+    ],
+    "sourceLine": "theorem step_grant_inv {s s' : State} {a : KelGroups.Key} {c : CollId}",
+    "statement": "theorem step_grant_inv {s s' : State} {a : KelGroups.Key} {c : CollId}\n    (hstep : stepEvent view s (.grantPermission a c) auth = some s') :\n    ∃ col rest,\n      pullCollection c s.collections = some (col, rest) ∧\n      isResponsabile view a = true ∧\n      s' = { s with collections "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "step_deny_inv",
+    "site": "Reactivegas/Invariants.lean:211",
+    "short": "step_deny_inv",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "step_deny_inv"
+    ],
+    "sourceLine": "theorem step_deny_inv {s s' : State} {a : KelGroups.Key} {c : CollId}",
+    "statement": "theorem step_deny_inv {s s' : State} {a : KelGroups.Key} {c : CollId}\n    (hstep : stepEvent view s (.denyPermission a c) auth = some s') :\n    ∃ col rest,\n      pullCollection c s.collections = some (col, rest) ∧\n      isResponsabile view a = true ∧\n      s' = { s with\n        conti "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "step_pledge_inv",
+    "site": "Reactivegas/Invariants.lean:227",
+    "short": "step_pledge_inv",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "step_pledge_inv"
+    ],
+    "sourceLine": "theorem step_pledge_inv {s s' : State} {a u : KelGroups.Key} {c : CollId} {v : Int}",
+    "statement": "theorem step_pledge_inv {s s' : State} {a u : KelGroups.Key} {c : CollId} {v : Int}\n    (hstep : stepEvent view s (.pledge a u c v) auth = some s') :\n    ∃ col rest,\n      pullCollection c s.collections = some (col, rest) ∧\n      (isResponsabile view a && KelGroups.GroupView.isMember u view &&\n          !(col.accepted.any (fun p => p.user == u)) &&\n          !(col.pending.any (fun p => p.user == u)) &&\n          decide (0 < v) && decide (bal s.conti u ≥ v)) =\n        true ∧\n      s' = { s with\n        conti "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "option_bind_inv",
+    "site": "Reactivegas/Invariants.lean:22",
+    "short": "option_bind_inv",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "option_bind_inv"
+    ],
+    "sourceLine": "theorem option_bind_inv {α β : Type} {o : Option α} {f : α → Option β} {b : β}",
+    "statement": "theorem option_bind_inv {α β : Type} {o : Option α} {f : α → Option β} {b : β}\n    (h : o.bind f = some b) : ∃ x, o = some x ∧ f x = some b "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.integrated_theorem_witness_holds",
+    "site": "Reactivegas/Invariants.lean:2322",
+    "short": "integrated_theorem_witness_holds",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.integrated_theorem_witness_holds"
+    ],
+    "sourceLine": "theorem integrated_theorem_witness_holds :",
+    "statement": "theorem integrated_theorem_witness_holds :\n    checkIntegratedTheoremWitness = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.canonical_economy_holds",
+    "site": "Reactivegas/Invariants.lean:2325",
+    "short": "canonical_economy_holds",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.canonical_economy_holds"
+    ],
+    "sourceLine": "theorem canonical_economy_holds :",
+    "statement": "theorem canonical_economy_holds :\n    checkCanonicalEconomy = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.exhaustive_inventories_hold",
+    "site": "Reactivegas/Invariants.lean:2328",
+    "short": "exhaustive_inventories_hold",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.exhaustive_inventories_hold"
+    ],
+    "sourceLine": "theorem exhaustive_inventories_hold :",
+    "statement": "theorem exhaustive_inventories_hold :\n    checkExhaustiveInventories = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.i57_boundary_holds",
+    "site": "Reactivegas/Invariants.lean:2331",
+    "short": "i57_boundary_holds",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.i57_boundary_holds"
+    ],
+    "sourceLine": "theorem i57_boundary_holds : checkI57Boundary = true := by decide",
+    "statement": "theorem i57_boundary_holds : checkI57Boundary = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.i57_exhaustive_holds",
+    "site": "Reactivegas/Invariants.lean:2332",
+    "short": "i57_exhaustive_holds",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.i57_exhaustive_holds"
+    ],
+    "sourceLine": "theorem i57_exhaustive_holds : checkI57Exhaustive = true := by decide",
+    "statement": "theorem i57_exhaustive_holds : checkI57Exhaustive = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.i57_noop_holds",
+    "site": "Reactivegas/Invariants.lean:2333",
+    "short": "i57_noop_holds",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.i57_noop_holds"
+    ],
+    "sourceLine": "theorem i57_noop_holds : checkI57Noop = true := by decide",
+    "statement": "theorem i57_noop_holds : checkI57Noop = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.i57_auth_holds",
+    "site": "Reactivegas/Invariants.lean:2334",
+    "short": "i57_auth_holds",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.i57_auth_holds"
+    ],
+    "sourceLine": "theorem i57_auth_holds : checkI57Auth = true := by decide",
+    "statement": "theorem i57_auth_holds : checkI57Auth = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.i57_r45_holds",
+    "site": "Reactivegas/Invariants.lean:2335",
+    "short": "i57_r45_holds",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.i57_r45_holds"
+    ],
+    "sourceLine": "theorem i57_r45_holds : checkI57R45 = true := by decide",
+    "statement": "theorem i57_r45_holds : checkI57R45 = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.i57_partition_holds",
+    "site": "Reactivegas/Invariants.lean:2336",
+    "short": "i57_partition_holds",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.i57_partition_holds"
+    ],
+    "sourceLine": "theorem i57_partition_holds : checkI57Partition = true := by decide",
+    "statement": "theorem i57_partition_holds : checkI57Partition = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.i57_disjoint_holds",
+    "site": "Reactivegas/Invariants.lean:2337",
+    "short": "i57_disjoint_holds",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.i57_disjoint_holds"
+    ],
+    "sourceLine": "theorem i57_disjoint_holds : checkI57Disjoint = true := by decide",
+    "statement": "theorem i57_disjoint_holds : checkI57Disjoint = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.i57_disjoint_mutant_caught",
+    "site": "Reactivegas/Invariants.lean:2338",
+    "short": "i57_disjoint_mutant_caught",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.i57_disjoint_mutant_caught"
+    ],
+    "sourceLine": "theorem i57_disjoint_mutant_caught : checkI57DisjointMutant = true := by decide",
+    "statement": "theorem i57_disjoint_mutant_caught : checkI57DisjointMutant = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.i57_nostale_holds",
+    "site": "Reactivegas/Invariants.lean:2339",
+    "short": "i57_nostale_holds",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.i57_nostale_holds"
+    ],
+    "sourceLine": "theorem i57_nostale_holds : checkI57NoStale = true := by decide",
+    "statement": "theorem i57_nostale_holds : checkI57NoStale = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.i57_franchise_holds",
+    "site": "Reactivegas/Invariants.lean:2340",
+    "short": "i57_franchise_holds",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.i57_franchise_holds"
+    ],
+    "sourceLine": "theorem i57_franchise_holds : checkI57Franchise = true := by decide",
+    "statement": "theorem i57_franchise_holds : checkI57Franchise = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.i57_franchise_mutant_caught",
+    "site": "Reactivegas/Invariants.lean:2341",
+    "short": "i57_franchise_mutant_caught",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.i57_franchise_mutant_caught"
+    ],
+    "sourceLine": "theorem i57_franchise_mutant_caught :",
+    "statement": "theorem i57_franchise_mutant_caught :\n    checkI57FranchiseMutant = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.i57_policyfree_holds",
+    "site": "Reactivegas/Invariants.lean:2343",
+    "short": "i57_policyfree_holds",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.i57_policyfree_holds"
+    ],
+    "sourceLine": "theorem i57_policyfree_holds : checkI57PolicyFree = true := by decide",
+    "statement": "theorem i57_policyfree_holds : checkI57PolicyFree = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.i57_policyfree_mutant_caught",
+    "site": "Reactivegas/Invariants.lean:2344",
+    "short": "i57_policyfree_mutant_caught",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.i57_policyfree_mutant_caught"
+    ],
+    "sourceLine": "theorem i57_policyfree_mutant_caught :",
+    "statement": "theorem i57_policyfree_mutant_caught :\n    checkI57PolicyFreeMutant = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.i57_noexpiry_holds",
+    "site": "Reactivegas/Invariants.lean:2346",
+    "short": "i57_noexpiry_holds",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.i57_noexpiry_holds"
+    ],
+    "sourceLine": "theorem i57_noexpiry_holds : checkI57NoExpiry = true := by decide",
+    "statement": "theorem i57_noexpiry_holds : checkI57NoExpiry = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.admissionPreservation_holds",
+    "site": "Reactivegas/Invariants.lean:2347",
+    "short": "admissionPreservation_holds",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.admissionPreservation_holds"
+    ],
+    "sourceLine": "theorem admissionPreservation_holds : checkAdmissionPreservation = true := by decide",
+    "statement": "theorem admissionPreservation_holds : checkAdmissionPreservation = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.productionWellFormed_holds",
+    "site": "Reactivegas/Invariants.lean:2348",
+    "short": "productionWellFormed_holds",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.productionWellFormed_holds"
+    ],
+    "sourceLine": "theorem productionWellFormed_holds : checkProductionWellFormed = true := by decide",
+    "statement": "theorem productionWellFormed_holds : checkProductionWellFormed = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.comuneThresholdSanity_holds",
+    "site": "Reactivegas/Invariants.lean:2349",
+    "short": "comuneThresholdSanity_holds",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.comuneThresholdSanity_holds"
+    ],
+    "sourceLine": "theorem comuneThresholdSanity_holds : checkComuneThresholdSanity = true := by decide",
+    "statement": "theorem comuneThresholdSanity_holds : checkComuneThresholdSanity = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "step_accept_inv",
+    "site": "Reactivegas/Invariants.lean:247",
+    "short": "step_accept_inv",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "step_accept_inv"
+    ],
+    "sourceLine": "theorem step_accept_inv {s s' : State} {a u : KelGroups.Key} {c : CollId}",
+    "statement": "theorem step_accept_inv {s s' : State} {a u : KelGroups.Key} {c : CollId}\n    (hstep : stepEvent view s (.acceptPledge a u c) auth = some s') :\n    ∃ col rest v pend',\n      pullCollection c s.collections = some (col, rest) ∧\n      splitUser u col.pending = some (v, pend') ∧\n      (isResponsabile view a && col.referente == a) = true ∧\n      s' = { s with collections "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "step_refuse_inv",
+    "site": "Reactivegas/Invariants.lean:265",
+    "short": "step_refuse_inv",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "step_refuse_inv"
+    ],
+    "sourceLine": "theorem step_refuse_inv {s s' : State} {a u : KelGroups.Key} {c : CollId}",
+    "statement": "theorem step_refuse_inv {s s' : State} {a u : KelGroups.Key} {c : CollId}\n    (hstep : stepEvent view s (.refusePledge a u c) auth = some s') :\n    ∃ col rest v pend',\n      pullCollection c s.collections = some (col, rest) ∧\n      splitUser u col.pending = some (v, pend') ∧\n      (isResponsabile view a && col.referente == a) = true ∧\n      s' = { s with\n        conti "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "step_correct_inv",
+    "site": "Reactivegas/Invariants.lean:284",
+    "short": "step_correct_inv",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "step_correct_inv"
+    ],
+    "sourceLine": "theorem step_correct_inv {s s' : State} {a u : KelGroups.Key} {c : CollId} {v' : Int}",
+    "statement": "theorem step_correct_inv {s s' : State} {a u : KelGroups.Key} {c : CollId} {v' : Int}\n    (hstep : stepEvent view s (.correctPledge a u c v') auth = some s') :\n    ∃ col rest v acc',\n      pullCollection c s.collections = some (col, rest) ∧\n      splitUser u col.accepted = some (v, acc') ∧\n      (isResponsabile view a && col.referente == a &&\n          decide (0 ≤ v') && decide (bal s.conti u + (v - v') ≥ 0)) =\n        true ∧\n      s' = { s with\n        conti "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "demand_eq_true_of_some",
+    "site": "Reactivegas/Invariants.lean:29",
+    "short": "demand_eq_true_of_some",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "demand_eq_true_of_some"
+    ],
+    "sourceLine": "theorem demand_eq_true_of_some {b : Bool} (h : demand b = some ()) : b = true := by",
+    "statement": "theorem demand_eq_true_of_some {b : Bool} (h : demand b = some ()) : b = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "step_close_inv",
+    "site": "Reactivegas/Invariants.lean:305",
+    "short": "step_close_inv",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "step_close_inv"
+    ],
+    "sourceLine": "theorem step_close_inv {s s' : State} {a : KelGroups.Key} {c : CollId}",
+    "statement": "theorem step_close_inv {s s' : State} {a : KelGroups.Key} {c : CollId}\n    (hstep : stepEvent view s (.closePurchase a c) auth = some s') :\n    ∃ col rest,\n      pullCollection c s.collections = some (col, rest) ∧\n      (isResponsabile view a && col.referente == a && col.permitted &&\n        col.pending.isEmpty) = true ∧\n      s' = { s with\n        casse "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "step_fail_inv",
+    "site": "Reactivegas/Invariants.lean:322",
+    "short": "step_fail_inv",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "step_fail_inv"
+    ],
+    "sourceLine": "theorem step_fail_inv {s s' : State} {a : KelGroups.Key} {c : CollId}",
+    "statement": "theorem step_fail_inv {s s' : State} {a : KelGroups.Key} {c : CollId}\n    (hstep : stepEvent view s (.failPurchase a c) auth = some s') :\n    ∃ col rest,\n      pullCollection c s.collections = some (col, rest) ∧\n      (isResponsabile view a && col.referente == a && col.pending.isEmpty) = true ∧\n      s' = { s with\n        conti "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.step_open_inv",
+    "site": "Reactivegas/Invariants.lean:343",
+    "short": "step_open_inv",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.step_open_inv"
+    ],
+    "sourceLine": "theorem step_open_inv {s s' : State} {a : KelGroups.Key} {c : CollId}",
+    "statement": "theorem step_open_inv {s s' : State} {a : KelGroups.Key} {c : CollId}\n    (hstep : stepEvent view s (.openPurchase a c) auth = some s') :\n    (isResponsabile view a &&\n        !(s.collections.any (fun x => x.id == c))) = true ∧\n      s' = { s with\n        collections "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.step_deposit_inv",
+    "site": "Reactivegas/Invariants.lean:356",
+    "short": "step_deposit_inv",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.step_deposit_inv"
+    ],
+    "sourceLine": "theorem step_deposit_inv {s s' : State} {a u : KelGroups.Key} {v : Int}",
+    "statement": "theorem step_deposit_inv {s s' : State} {a u : KelGroups.Key} {v : Int}\n    (hstep : stepEvent view s (.deposit a u v) auth = some s') :\n    (isResponsabile view a && KelGroups.GroupView.isMember u view\n        && a != u && decide (0 ≤ v)) = true ∧\n      s' = { s with\n        conti "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.step_withdraw_inv",
+    "site": "Reactivegas/Invariants.lean:369",
+    "short": "step_withdraw_inv",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.step_withdraw_inv"
+    ],
+    "sourceLine": "theorem step_withdraw_inv {s s' : State} {a u : KelGroups.Key} {v : Int}",
+    "statement": "theorem step_withdraw_inv {s s' : State} {a u : KelGroups.Key} {v : Int}\n    (hstep : stepEvent view s (.withdraw a u v) auth = some s') :\n    (isResponsabile view a && KelGroups.GroupView.isMember u view\n        && a != u && decide (bal s.conti u ≥ v)\n        && !(decide (stalled s))) = true ∧\n      s' = { s with\n        conti "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "demand_none_of_ne_true",
+    "site": "Reactivegas/Invariants.lean:36",
+    "short": "demand_none_of_ne_true",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "demand_none_of_ne_true"
+    ],
+    "sourceLine": "theorem demand_none_of_ne_true {b : Bool} (h : ¬(b = true)) : demand b = none := by",
+    "statement": "theorem demand_none_of_ne_true {b : Bool} (h : ¬(b = true)) : demand b = none "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.step_transferCassa_inv",
+    "site": "Reactivegas/Invariants.lean:384",
+    "short": "step_transferCassa_inv",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.step_transferCassa_inv"
+    ],
+    "sourceLine": "theorem step_transferCassa_inv {s s' : State} {a f : KelGroups.Key} {v : Int}",
+    "statement": "theorem step_transferCassa_inv {s s' : State} {a f : KelGroups.Key} {v : Int}\n    (hstep : stepEvent view s (.transferCassa a f v) auth = some s') :\n    (isResponsabile view a && isResponsabile view f\n        && a != f && v > 0) = true ∧\n      s' = { s with\n        casse "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.step_donate_inv",
+    "site": "Reactivegas/Invariants.lean:397",
+    "short": "step_donate_inv",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.step_donate_inv"
+    ],
+    "sourceLine": "theorem step_donate_inv {s s' : State} {a : KelGroups.Key} {v : Int}",
+    "statement": "theorem step_donate_inv {s s' : State} {a : KelGroups.Key} {v : Int}\n    (hstep : stepEvent view s (.donate a v) auth = some s') :\n    (isResponsabile view a && decide (0 < v)) = true ∧\n      s' = { s with\n        casse "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.step_backdonate_inv",
+    "site": "Reactivegas/Invariants.lean:410",
+    "short": "step_backdonate_inv",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "Reactivegas.step_backdonate_inv"
+    ],
+    "sourceLine": "theorem step_backdonate_inv {s s' : State} {a : KelGroups.Key} {w : Int}",
+    "statement": "theorem step_backdonate_inv {s s' : State} {a : KelGroups.Key} {w : Int}\n    (hstep : stepEvent view s (.backdonate a w) auth = some s') :\n    (isResponsabile view a && decide (0 < w)\n        && decide (comuneBal s ≥ ((memberKeys view).length : Int) * w)\n        && auth s w) = true ∧\n      s' = { s with\n        conti "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "conservation_preserved",
+    "site": "Reactivegas/Invariants.lean:430",
+    "short": "conservation_preserved",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "conservation_preserved"
+    ],
+    "sourceLine": "theorem conservation_preserved {s s' : State} {e : Event}",
+    "statement": "theorem conservation_preserved {s s' : State} {e : Event}\n    (hcon : conservation s) (hstep : stepEvent view s e auth = some s') : conservation s' "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "bool_not_true",
+    "site": "Reactivegas/Invariants.lean:43",
+    "short": "bool_not_true",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "_private.Reactivegas.Invariants.0.bool_not_true"
+    ],
+    "sourceLine": "private theorem bool_not_true {b : Bool} (h : (!b) = true) : b = false := by",
+    "statement": "private theorem bool_not_true {b : Bool} (h : (!b) = true) : b = false "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "bool_and_left",
+    "site": "Reactivegas/Invariants.lean:49",
+    "short": "bool_and_left",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "_private.Reactivegas.Invariants.0.bool_and_left"
+    ],
+    "sourceLine": "private theorem bool_and_left {b₁ b₂ : Bool} (h : (b₁ && b₂) = true) : b₁ = true := by",
+    "statement": "private theorem bool_and_left {b₁ b₂ : Bool} (h : (b₁ && b₂) = true) : b₁ = true "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "bool_and_right",
+    "site": "Reactivegas/Invariants.lean:55",
+    "short": "bool_and_right",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "_private.Reactivegas.Invariants.0.bool_and_right"
+    ],
+    "sourceLine": "private theorem bool_and_right {b₁ b₂ : Bool} (h : (b₁ && b₂) = true) : b₂ = true := by",
+    "statement": "private theorem bool_and_right {b₁ b₂ : Bool} (h : (b₁ && b₂) = true) : b₂ = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "step_authorized",
+    "site": "Reactivegas/Invariants.lean:561",
+    "short": "step_authorized",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "step_authorized"
+    ],
+    "sourceLine": "theorem step_authorized {s s' : State} {e : Event} (h : stepEvent view s e auth = some s') :",
+    "statement": "theorem step_authorized {s s' : State} {e : Event} (h : stepEvent view s e auth = some s') :\n    authorizedStep view s e s' "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "eq_nil_of_isEmpty",
+    "site": "Reactivegas/Invariants.lean:61",
+    "short": "eq_nil_of_isEmpty",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "_private.Reactivegas.Invariants.0.eq_nil_of_isEmpty"
+    ],
+    "sourceLine": "private theorem eq_nil_of_isEmpty {α : Type} {l : List α} (h : l.isEmpty = true) :",
+    "statement": "private theorem eq_nil_of_isEmpty {α : Type} {l : List α} (h : l.isEmpty = true) :\n    l = [] "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "governance_enacts_windUpAdmin",
+    "site": "Reactivegas/Invariants.lean:637",
+    "short": "governance_enacts_windUpAdmin",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "governance_enacts_windUpAdmin"
+    ],
+    "sourceLine": "theorem governance_enacts_windUpAdmin (s : State) (u : KelGroups.Key) :",
+    "statement": "theorem governance_enacts_windUpAdmin (s : State) (u : KelGroups.Key) :\n    governanceEnacts u (Reactivegas.windUpAdmin s u) "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "close_permission_to_close",
+    "site": "Reactivegas/Invariants.lean:647",
+    "short": "close_permission_to_close",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "close_permission_to_close"
+    ],
+    "sourceLine": "theorem close_permission_to_close {s s' : State} {a : KelGroups.Key} {c : CollId}",
+    "statement": "theorem close_permission_to_close {s s' : State} {a : KelGroups.Key} {c : CollId}\n    (h : stepEvent view s (.closePurchase a c) auth = some s') :\n    ∃ col rest,\n      pullCollection c s.collections = some (col, rest) ∧ permissionToClose col "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "pledge_escrow_debit",
+    "site": "Reactivegas/Invariants.lean:659",
+    "short": "pledge_escrow_debit",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "pledge_escrow_debit"
+    ],
+    "sourceLine": "theorem pledge_escrow_debit {s s' : State} {a u : KelGroups.Key} {c : CollId} {v : Int}",
+    "statement": "theorem pledge_escrow_debit {s s' : State} {a u : KelGroups.Key} {c : CollId} {v : Int}\n    (h : stepEvent view s (.pledge a u c v) auth = some s') :\n    bal s'.conti u = bal s.conti u - v ∧\n      ∃ col ∈ s'.collections, col.id = c ∧ escrowHeld col u v "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "close_spends_referente",
+    "site": "Reactivegas/Invariants.lean:679",
+    "short": "close_spends_referente",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "close_spends_referente"
+    ],
+    "sourceLine": "theorem close_spends_referente {s s' : State} {a : KelGroups.Key} {c : CollId}",
+    "statement": "theorem close_spends_referente {s s' : State} {a : KelGroups.Key} {c : CollId}\n    (h : stepEvent view s (.closePurchase a c) auth = some s') :\n    ∃ col rest,\n      pullCollection c s.collections = some (col, rest) ∧\n      bal s'.casse col.referente\n        = bal s.casse col.referente - sumPledges col.accepted "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "stripCollections_referente_ne",
+    "site": "Reactivegas/Invariants.lean:68",
+    "short": "stripCollections_referente_ne",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "stripCollections_referente_ne"
+    ],
+    "sourceLine": "theorem stripCollections_referente_ne (u : KelGroups.Key) (cols : List Collection) :",
+    "statement": "theorem stripCollections_referente_ne (u : KelGroups.Key) (cols : List Collection) :\n    ∀ c ∈ (stripCollections u cols).1, c.referente ≠ u "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "deposit_double_entry",
+    "site": "Reactivegas/Invariants.lean:697",
+    "short": "deposit_double_entry",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "deposit_double_entry"
+    ],
+    "sourceLine": "theorem deposit_double_entry {s s' : State} {a u : KelGroups.Key} {v : Int}",
+    "statement": "theorem deposit_double_entry {s s' : State} {a u : KelGroups.Key} {v : Int}\n    (h : stepEvent view s (.deposit a u v) auth = some s') : doubleEntry s s' a u v "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "withdraw_double_entry",
+    "site": "Reactivegas/Invariants.lean:707",
+    "short": "withdraw_double_entry",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "withdraw_double_entry"
+    ],
+    "sourceLine": "theorem withdraw_double_entry {s s' : State} {a u : KelGroups.Key} {v : Int}",
+    "statement": "theorem withdraw_double_entry {s s' : State} {a u : KelGroups.Key} {v : Int}\n    (h : stepEvent view s (.withdraw a u v) auth = some s') : doubleEntry s s' a u (-v) "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "bal_bump_ne_lemma",
+    "site": "Reactivegas/Invariants.lean:719",
+    "short": "bal_bump_ne_lemma",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "_private.Reactivegas.Invariants.0.bal_bump_ne_lemma"
+    ],
+    "sourceLine": "private theorem bal_bump_ne_lemma {u : KelGroups.Key} {d : Int} :",
+    "statement": "private theorem bal_bump_ne_lemma {u : KelGroups.Key} {d : Int} :\n    ∀ (m : List (KelGroups.Key × Int)) (k : KelGroups.Key), k ≠ u →\n      bal (bump m u d) k = bal m k "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "bal_bump_ne",
+    "site": "Reactivegas/Invariants.lean:745",
+    "short": "bal_bump_ne",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "bal_bump_ne"
+    ],
+    "sourceLine": "theorem bal_bump_ne {m : List (KelGroups.Key × Int)} {u : KelGroups.Key} {d : Int} {k : KelGroups.Key}",
+    "statement": "theorem bal_bump_ne {m : List (KelGroups.Key × Int)} {u : KelGroups.Key} {d : Int} {k : KelGroups.Key}\n    (hk : k ≠ u) : bal (bump m u d) k = bal m k "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "bal_foldl_bump_ge",
+    "site": "Reactivegas/Invariants.lean:750",
+    "short": "bal_foldl_bump_ge",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "_private.Reactivegas.Invariants.0.bal_foldl_bump_ge"
+    ],
+    "sourceLine": "private theorem bal_foldl_bump_ge :",
+    "statement": "private theorem bal_foldl_bump_ge :\n    ∀ (l : List KelGroups.Key) (m : List (KelGroups.Key × Int)) (w : Int) (k : KelGroups.Key),\n      0 ≤ w →\n        bal (l.foldl (fun acc u => bump acc u w) m) k ≥ bal m k "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "splitUser_amount_lemma",
+    "site": "Reactivegas/Invariants.lean:771",
+    "short": "splitUser_amount_lemma",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "_private.Reactivegas.Invariants.0.splitUser_amount_lemma"
+    ],
+    "sourceLine": "private theorem splitUser_amount_lemma {u : KelGroups.Key} :",
+    "statement": "private theorem splitUser_amount_lemma {u : KelGroups.Key} :\n    ∀ (l : List Pledge) (v : Int) (r : List Pledge),\n      splitUser u l = some (v, r) → ∃ p ∈ l, p.user = u ∧ p.amount = v "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "splitUser_amount",
+    "site": "Reactivegas/Invariants.lean:796",
+    "short": "splitUser_amount",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "splitUser_amount"
+    ],
+    "sourceLine": "theorem splitUser_amount {u : KelGroups.Key} {l : List Pledge} {v : Int} {r : List Pledge}",
+    "statement": "theorem splitUser_amount {u : KelGroups.Key} {l : List Pledge} {v : Int} {r : List Pledge}\n    (h : splitUser u l = some (v, r)) : ∃ p ∈ l, p.user = u ∧ p.amount = v "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "refundAll_bal_ge_lemma",
+    "site": "Reactivegas/Invariants.lean:801",
+    "short": "refundAll_bal_ge_lemma",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "_private.Reactivegas.Invariants.0.refundAll_bal_ge_lemma"
+    ],
+    "sourceLine": "private theorem refundAll_bal_ge_lemma {l : List Pledge} :",
+    "statement": "private theorem refundAll_bal_ge_lemma {l : List Pledge} :\n    ∀ (m : List (KelGroups.Key × Int)) (w : KelGroups.Key),\n      (∀ p ∈ l, 0 ≤ p.amount) → bal (refundAll m l) w ≥ bal m w "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "refundAll_bal_ge",
+    "site": "Reactivegas/Invariants.lean:823",
+    "short": "refundAll_bal_ge",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "refundAll_bal_ge"
+    ],
+    "sourceLine": "theorem refundAll_bal_ge {m : List (KelGroups.Key × Int)} {l : List Pledge} {w : KelGroups.Key}",
+    "statement": "theorem refundAll_bal_ge {m : List (KelGroups.Key × Int)} {l : List Pledge} {w : KelGroups.Key}\n    (hamt : ∀ p ∈ l, 0 ≤ p.amount) : bal (refundAll m l) w ≥ bal m w "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "stripCollections_sublist_lemma",
+    "site": "Reactivegas/Invariants.lean:828",
+    "short": "stripCollections_sublist_lemma",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "_private.Reactivegas.Invariants.0.stripCollections_sublist_lemma"
+    ],
+    "sourceLine": "private theorem stripCollections_sublist_lemma (r : KelGroups.Key) :",
+    "statement": "private theorem stripCollections_sublist_lemma (r : KelGroups.Key) :\n    ∀ (cols : List Collection) (y : Collection), y ∈ (stripCollections r cols).1 →\n      y ∈ cols "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "pullCollection_mem_lemma",
+    "site": "Reactivegas/Invariants.lean:83",
+    "short": "pullCollection_mem_lemma",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "_private.Reactivegas.Invariants.0.pullCollection_mem_lemma"
+    ],
+    "sourceLine": "private theorem pullCollection_mem_lemma {c : CollId} :",
+    "statement": "private theorem pullCollection_mem_lemma {c : CollId} :\n    ∀ (cols : List Collection) (x : Collection) (rest : List Collection),\n      pullCollection c cols = some (x, rest) → x ∈ cols "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "stripCollections_sublist",
+    "site": "Reactivegas/Invariants.lean:847",
+    "short": "stripCollections_sublist",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "stripCollections_sublist"
+    ],
+    "sourceLine": "theorem stripCollections_sublist (r : KelGroups.Key) (cols : List Collection)",
+    "statement": "theorem stripCollections_sublist (r : KelGroups.Key) (cols : List Collection)\n    {y : Collection} (hy : y ∈ (stripCollections r cols).1) : y ∈ cols "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "stripCollections_amount_lemma",
+    "site": "Reactivegas/Invariants.lean:852",
+    "short": "stripCollections_amount_lemma",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "_private.Reactivegas.Invariants.0.stripCollections_amount_lemma"
+    ],
+    "sourceLine": "private theorem stripCollections_amount_lemma (r : KelGroups.Key) :",
+    "statement": "private theorem stripCollections_amount_lemma (r : KelGroups.Key) :\n    ∀ (cols : List Collection) (p : Pledge),\n      p ∈ (stripCollections r cols).2 →\n        ∃ c ∈ cols, p ∈ c.accepted ++ c.pending "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "solvent_init",
+    "site": "Reactivegas/Invariants.lean:877",
+    "short": "solvent_init",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "solvent_init"
+    ],
+    "sourceLine": "theorem solvent_init : solvent view State.empty :=",
+    "statement": "theorem solvent_init : solvent view State.empty "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "comune_not_a_member_step",
+    "site": "Reactivegas/Invariants.lean:883",
+    "short": "comune_not_a_member_step",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "_private.Reactivegas.Invariants.0.comune_not_a_member_step"
+    ],
+    "sourceLine": "private theorem comune_not_a_member_step {s s' : State} {e : Event}",
+    "statement": "private theorem comune_not_a_member_step {s s' : State} {e : Event}\n    (h : comune_not_a_member view) (_hstep : stepEvent view s e auth = some s') :\n    comune_not_a_member view "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": true,
+    "name": "credit_pledges_step",
+    "site": "Reactivegas/Invariants.lean:890",
+    "short": "credit_pledges_step",
+    "module": "Reactivegas.Invariants",
+    "matches": [
+      "_private.Reactivegas.Invariants.0.credit_pledges_step"
+    ],
+    "sourceLine": "private theorem credit_pledges_step {s s' : State} {e : Event}",
+    "statement": "private theorem credit_pledges_step {s s' : State} {e : Event}\n    (hcred : ∀ u : KelGroups.Key, u ≠ comuneId → bal s.conti u ≥ 0)\n    (hamt : ∀ col ∈ s.collections, ∀ p ∈ col.accepted ++ col.pending, 0 ≤ p.amount)\n    (hstep : stepEvent view s e auth = some s') :\n    (∀ u : KelGroups.Key, u ≠ comuneId → bal s'.conti u ≥ 0) ∧\n      (∀ col ∈ s'.collections, ∀ p ∈ col.accepted ++ col.pending, 0 ≤ p.amount) "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "sumBal_cons",
+    "site": "Reactivegas/State.lean:125",
+    "short": "sumBal_cons",
+    "module": "Reactivegas.State",
+    "matches": [
+      "sumBal_cons"
+    ],
+    "sourceLine": "theorem sumBal_cons (k : KelGroups.Key) (v : Int) (t : List (KelGroups.Key × Int)) :",
+    "statement": "theorem sumBal_cons (k : KelGroups.Key) (v : Int) (t : List (KelGroups.Key × Int)) :\n    sumBal ((k, v) :: t) = v + sumBal t "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "bal_cons",
+    "site": "Reactivegas/State.lean:128",
+    "short": "bal_cons",
+    "module": "Reactivegas.State",
+    "matches": [
+      "bal_cons"
+    ],
+    "sourceLine": "theorem bal_cons (k : KelGroups.Key) (v : Int) (t : List (KelGroups.Key × Int)) (u : KelGroups.Key) :",
+    "statement": "theorem bal_cons (k : KelGroups.Key) (v : Int) (t : List (KelGroups.Key × Int)) (u : KelGroups.Key) :\n    bal ((k, v) :: t) u = if k = u then v else bal t u "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "bump_sum",
+    "site": "Reactivegas/State.lean:131",
+    "short": "bump_sum",
+    "module": "Reactivegas.State",
+    "matches": [
+      "bump_sum"
+    ],
+    "sourceLine": "theorem bump_sum (m : List (KelGroups.Key × Int)) (u : KelGroups.Key) (d : Int) :",
+    "statement": "theorem bump_sum (m : List (KelGroups.Key × Int)) (u : KelGroups.Key) (d : Int) :\n    sumBal (bump m u d) = sumBal m + d "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "bal_bump",
+    "site": "Reactivegas/State.lean:142",
+    "short": "bal_bump",
+    "module": "Reactivegas.State",
+    "matches": [
+      "bal_bump"
+    ],
+    "sourceLine": "theorem bal_bump (m : List (KelGroups.Key × Int)) (u : KelGroups.Key) (d : Int) :",
+    "statement": "theorem bal_bump (m : List (KelGroups.Key × Int)) (u : KelGroups.Key) (d : Int) :\n    bal (bump m u d) u = bal m u + d "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "sumPledges_append",
+    "site": "Reactivegas/State.lean:153",
+    "short": "sumPledges_append",
+    "module": "Reactivegas.State",
+    "matches": [
+      "sumPledges_append"
+    ],
+    "sourceLine": "theorem sumPledges_append (l₁ l₂ : List Pledge) :",
+    "statement": "theorem sumPledges_append (l₁ l₂ : List Pledge) :\n    sumPledges (l₁ ++ l₂) = sumPledges l₁ + sumPledges l₂ "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "refundAll_sum",
+    "site": "Reactivegas/State.lean:159",
+    "short": "refundAll_sum",
+    "module": "Reactivegas.State",
+    "matches": [
+      "refundAll_sum"
+    ],
+    "sourceLine": "theorem refundAll_sum (m : List (KelGroups.Key × Int)) (l : List Pledge) :",
+    "statement": "theorem refundAll_sum (m : List (KelGroups.Key × Int)) (l : List Pledge) :\n    sumBal (refundAll m l) = sumBal m + sumPledges l "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "not_mem_users_of_splitUser_none",
+    "site": "Reactivegas/State.lean:172",
+    "short": "not_mem_users_of_splitUser_none",
+    "module": "Reactivegas.State",
+    "matches": [
+      "not_mem_users_of_splitUser_none"
+    ],
+    "sourceLine": "theorem not_mem_users_of_splitUser_none {u : KelGroups.Key} {l : List Pledge}",
+    "statement": "theorem not_mem_users_of_splitUser_none {u : KelGroups.Key} {l : List Pledge}\n    (h : splitUser u l = none) : ∀ p ∈ l, p.user ≠ u "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "splitUser_sum_lemma",
+    "site": "Reactivegas/State.lean:194",
+    "short": "splitUser_sum_lemma",
+    "module": "Reactivegas.State",
+    "matches": [
+      "_private.Reactivegas.State.0.splitUser_sum_lemma"
+    ],
+    "sourceLine": "private theorem splitUser_sum_lemma {u : KelGroups.Key} :",
+    "statement": "private theorem splitUser_sum_lemma {u : KelGroups.Key} :\n    ∀ (l : List Pledge) (v : Int) (r : List Pledge),\n      splitUser u l = some (v, r) → sumPledges l = v + sumPledges r "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "splitUser_sum",
+    "site": "Reactivegas/State.lean:221",
+    "short": "splitUser_sum",
+    "module": "Reactivegas.State",
+    "matches": [
+      "splitUser_sum"
+    ],
+    "sourceLine": "theorem splitUser_sum {u : KelGroups.Key} {l : List Pledge} {v : Int} {r : List Pledge}",
+    "statement": "theorem splitUser_sum {u : KelGroups.Key} {l : List Pledge} {v : Int} {r : List Pledge}\n    (h : splitUser u l = some (v, r)) : sumPledges l = v + sumPledges r "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "splitUser_sublist_lemma",
+    "site": "Reactivegas/State.lean:225",
+    "short": "splitUser_sublist_lemma",
+    "module": "Reactivegas.State",
+    "matches": [
+      "_private.Reactivegas.State.0.splitUser_sublist_lemma"
+    ],
+    "sourceLine": "private theorem splitUser_sublist_lemma {u : KelGroups.Key} :",
+    "statement": "private theorem splitUser_sublist_lemma {u : KelGroups.Key} :\n    ∀ (l : List Pledge) (v : Int) (r : List Pledge),\n      splitUser u l = some (v, r) → ∀ q ∈ r, q ∈ l "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "splitUser_sublist",
+    "site": "Reactivegas/State.lean:253",
+    "short": "splitUser_sublist",
+    "module": "Reactivegas.State",
+    "matches": [
+      "splitUser_sublist"
+    ],
+    "sourceLine": "theorem splitUser_sublist {u : KelGroups.Key} {l : List Pledge} {v : Int} {r : List Pledge}",
+    "statement": "theorem splitUser_sublist {u : KelGroups.Key} {l : List Pledge} {v : Int} {r : List Pledge}\n    (h : splitUser u l = some (v, r)) : ∀ p ∈ r, p ∈ l "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "escrowSum_cons",
+    "site": "Reactivegas/State.lean:257",
+    "short": "escrowSum_cons",
+    "module": "Reactivegas.State",
+    "matches": [
+      "escrowSum_cons"
+    ],
+    "sourceLine": "theorem escrowSum_cons (c : Collection) (t : List Collection) :",
+    "statement": "theorem escrowSum_cons (c : Collection) (t : List Collection) :\n    escrowSum (c :: t) = escrowOf c + escrowSum t "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "pullCollection_id_lemma",
+    "site": "Reactivegas/State.lean:260",
+    "short": "pullCollection_id_lemma",
+    "module": "Reactivegas.State",
+    "matches": [
+      "_private.Reactivegas.State.0.pullCollection_id_lemma"
+    ],
+    "sourceLine": "private theorem pullCollection_id_lemma {c : CollId} :",
+    "statement": "private theorem pullCollection_id_lemma {c : CollId} :\n    ∀ (cols : List Collection) (x : Collection) (rest : List Collection),\n      pullCollection c cols = some (x, rest) → x.id = c "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "pullCollection_id",
+    "site": "Reactivegas/State.lean:283",
+    "short": "pullCollection_id",
+    "module": "Reactivegas.State",
+    "matches": [
+      "pullCollection_id"
+    ],
+    "sourceLine": "theorem pullCollection_id {c : CollId} {cols : List Collection} {x : Collection}",
+    "statement": "theorem pullCollection_id {c : CollId} {cols : List Collection} {x : Collection}\n    {rest : List Collection} (h : pullCollection c cols = some (x, rest)) : x.id = c "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "pullCollection_sum_lemma",
+    "site": "Reactivegas/State.lean:287",
+    "short": "pullCollection_sum_lemma",
+    "module": "Reactivegas.State",
+    "matches": [
+      "_private.Reactivegas.State.0.pullCollection_sum_lemma"
+    ],
+    "sourceLine": "private theorem pullCollection_sum_lemma {c : CollId} :",
+    "statement": "private theorem pullCollection_sum_lemma {c : CollId} :\n    ∀ (cols : List Collection) (x : Collection) (rest : List Collection),\n      pullCollection c cols = some (x, rest) →\n        escrowSum cols = escrowOf x + escrowSum rest "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "pullCollection_sum",
+    "site": "Reactivegas/State.lean:313",
+    "short": "pullCollection_sum",
+    "module": "Reactivegas.State",
+    "matches": [
+      "pullCollection_sum"
+    ],
+    "sourceLine": "theorem pullCollection_sum {c : CollId} {cols : List Collection} {x : Collection}",
+    "statement": "theorem pullCollection_sum {c : CollId} {cols : List Collection} {x : Collection}\n    {rest : List Collection} (h : pullCollection c cols = some (x, rest)) :\n    escrowSum cols = escrowOf x + escrowSum rest "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": true,
+    "name": "pullCollection_sublist_lemma",
+    "site": "Reactivegas/State.lean:318",
+    "short": "pullCollection_sublist_lemma",
+    "module": "Reactivegas.State",
+    "matches": [
+      "_private.Reactivegas.State.0.pullCollection_sublist_lemma"
+    ],
+    "sourceLine": "private theorem pullCollection_sublist_lemma {c : CollId} :",
+    "statement": "private theorem pullCollection_sublist_lemma {c : CollId} :\n    ∀ (cols : List Collection) (x : Collection) (rest : List Collection),\n      pullCollection c cols = some (x, rest) → ∀ y ∈ rest, y ∈ cols "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "pullCollection_sublist",
+    "site": "Reactivegas/State.lean:346",
+    "short": "pullCollection_sublist",
+    "module": "Reactivegas.State",
+    "matches": [
+      "pullCollection_sublist"
+    ],
+    "sourceLine": "theorem pullCollection_sublist {c : CollId} {cols : List Collection} {x : Collection}",
+    "statement": "theorem pullCollection_sublist {c : CollId} {cols : List Collection} {x : Collection}\n    {rest : List Collection} (h : pullCollection c cols = some (x, rest)) :\n    ∀ y ∈ rest, y ∈ cols "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "stripCollections_sum",
+    "site": "Reactivegas/State.lean:351",
+    "short": "stripCollections_sum",
+    "module": "Reactivegas.State",
+    "matches": [
+      "stripCollections_sum"
+    ],
+    "sourceLine": "theorem stripCollections_sum (r : KelGroups.Key) (cols : List Collection) :",
+    "statement": "theorem stripCollections_sum (r : KelGroups.Key) (cols : List Collection) :\n    sumPledges (stripCollections r cols).2 + escrowSum (stripCollections r cols).1\n      = escrowSum cols "
+  },
+  {
+    "classification": "HELPER-FACT",
+    "private": false,
+    "name": "stripCollections_referente",
+    "site": "Reactivegas/State.lean:374",
+    "short": "stripCollections_referente",
+    "module": "Reactivegas.State",
+    "matches": [
+      "stripCollections_referente"
+    ],
+    "sourceLine": "theorem stripCollections_referente (r : KelGroups.Key) :",
+    "statement": "theorem stripCollections_referente (r : KelGroups.Key) :\n    ∀ (cols : List Collection), ∀ c ∈ (stripCollections r cols).1, c.referente ≠ r "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.app_members_preservation_holds",
+    "site": "Reactivegas/Step.lean:445",
+    "short": "app_members_preservation_holds",
+    "module": "Reactivegas.Step",
+    "matches": [
+      "Reactivegas.app_members_preservation_holds"
+    ],
+    "sourceLine": "theorem app_members_preservation_holds :",
+    "statement": "theorem app_members_preservation_holds :\n    checkAppMembersPreservation = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.app_members_preservation_mutant_caught",
+    "site": "Reactivegas/Step.lean:448",
+    "short": "app_members_preservation_mutant_caught",
+    "module": "Reactivegas.Step",
+    "matches": [
+      "Reactivegas.app_members_preservation_mutant_caught"
+    ],
+    "sourceLine": "theorem app_members_preservation_mutant_caught :",
+    "statement": "theorem app_members_preservation_mutant_caught :\n    checkAppMembersPreservationMutant = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "Reactivegas.comune_cannot_authorize",
+    "site": "Reactivegas/Step.lean:470",
+    "short": "comune_cannot_authorize",
+    "module": "Reactivegas.Step",
+    "matches": [
+      "Reactivegas.comune_cannot_authorize"
+    ],
+    "sourceLine": "theorem comune_cannot_authorize :",
+    "statement": "theorem comune_cannot_authorize :\n    checkComuneCannotAuthorize = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "stepDetailed_erases",
+    "site": "Reactivegas/Trace.lean:109",
+    "short": "stepDetailed_erases",
+    "module": "Reactivegas.Trace",
+    "matches": [
+      "stepDetailed_erases"
+    ],
+    "sourceLine": "theorem stepDetailed_erases (view : KelGroups.GroupView) (s : State)",
+    "statement": "theorem stepDetailed_erases (view : KelGroups.GroupView) (s : State)\n    (e : Event) (auth : BackdonateAuth) :\n    eraseDiagnostic (stepDetailed view s e auth) = stepEvent view s e auth "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "TraceTests.frozen_checks_faithful",
+    "site": "Reactivegas/TraceTests.lean:1005",
+    "short": "frozen_checks_faithful",
+    "module": "Reactivegas.TraceTests",
+    "matches": [
+      "TraceTests.frozen_checks_faithful"
+    ],
+    "sourceLine": "theorem frozen_checks_faithful : frozenChecks = checks := by decide",
+    "statement": "theorem frozen_checks_faithful : frozenChecks = checks "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "TraceTests.frozen_inventory_faithful",
+    "site": "Reactivegas/TraceTests.lean:1006",
+    "short": "frozen_inventory_faithful",
+    "module": "Reactivegas.TraceTests",
+    "matches": [
+      "TraceTests.frozen_inventory_faithful"
+    ],
+    "sourceLine": "theorem frozen_inventory_faithful :",
+    "statement": "theorem frozen_inventory_faithful :\n    frozenInventory =\n      [traceInventory.ctors.length, traceInventory.covered.length,\n        traceInventory.missing.length] "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "TraceTests.frozen_corpus_faithful",
+    "site": "Reactivegas/TraceTests.lean:1010",
+    "short": "frozen_corpus_faithful",
+    "module": "Reactivegas.TraceTests",
+    "matches": [
+      "TraceTests.frozen_corpus_faithful"
+    ],
+    "sourceLine": "theorem frozen_corpus_faithful : frozenCorpus = seedCorpus := by decide",
+    "statement": "theorem frozen_corpus_faithful : frozenCorpus = seedCorpus "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "TraceTests.app_members_preservation_holds",
+    "site": "Reactivegas/TraceTests.lean:1087",
+    "short": "app_members_preservation_holds",
+    "module": "Reactivegas.TraceTests",
+    "matches": [
+      "TraceTests.app_members_preservation_holds"
+    ],
+    "sourceLine": "theorem app_members_preservation_holds : checkAppMembersPreservation = true :=",
+    "statement": "theorem app_members_preservation_holds : checkAppMembersPreservation = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "TraceTests.app_members_preservation_mutant_caught",
+    "site": "Reactivegas/TraceTests.lean:1090",
+    "short": "app_members_preservation_mutant_caught",
+    "module": "Reactivegas.TraceTests",
+    "matches": [
+      "TraceTests.app_members_preservation_mutant_caught"
+    ],
+    "sourceLine": "theorem app_members_preservation_mutant_caught :",
+    "statement": "theorem app_members_preservation_mutant_caught :\n    checkAppMembersPreservationMutant = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "TraceTests.base_departure_applies_cleanup",
+    "site": "Reactivegas/TraceTests.lean:928",
+    "short": "base_departure_applies_cleanup",
+    "module": "Reactivegas.TraceTests",
+    "matches": [
+      "TraceTests.base_departure_applies_cleanup"
+    ],
+    "sourceLine": "theorem base_departure_applies_cleanup : checkBaseCleanupReachable = true :=",
+    "statement": "theorem base_departure_applies_cleanup : checkBaseCleanupReachable = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "TraceTests.base_change_can_close_without_ballot",
+    "site": "Reactivegas/TraceTests.lean:931",
+    "short": "base_change_can_close_without_ballot",
+    "module": "Reactivegas.TraceTests",
+    "matches": [
+      "TraceTests.base_change_can_close_without_ballot"
+    ],
+    "sourceLine": "theorem base_change_can_close_without_ballot : checkV3BaseReachable = true :=",
+    "statement": "theorem base_change_can_close_without_ballot : checkV3BaseReachable = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "TraceTests.direct_admission_only_holds",
+    "site": "Reactivegas/TraceTests.lean:934",
+    "short": "direct_admission_only_holds",
+    "module": "Reactivegas.TraceTests",
+    "matches": [
+      "TraceTests.direct_admission_only_holds"
+    ],
+    "sourceLine": "theorem direct_admission_only_holds : checkDirectAdmissionOnly = true :=",
+    "statement": "theorem direct_admission_only_holds : checkDirectAdmissionOnly = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "TraceTests.base_recompute_reachable_holds",
+    "site": "Reactivegas/TraceTests.lean:937",
+    "short": "base_recompute_reachable_holds",
+    "module": "Reactivegas.TraceTests",
+    "matches": [
+      "TraceTests.base_recompute_reachable_holds"
+    ],
+    "sourceLine": "theorem base_recompute_reachable_holds : checkBaseRecomputeReachable = true :=",
+    "statement": "theorem base_recompute_reachable_holds : checkBaseRecomputeReachable = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "TraceTests.sweep_idempotent_witness",
+    "site": "Reactivegas/TraceTests.lean:940",
+    "short": "sweep_idempotent_witness",
+    "module": "Reactivegas.TraceTests",
+    "matches": [
+      "TraceTests.sweep_idempotent_witness"
+    ],
+    "sourceLine": "theorem sweep_idempotent_witness : checkSweepIdempotent = true :=",
+    "statement": "theorem sweep_idempotent_witness : checkSweepIdempotent = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "TraceTests.sweep_idempotent_mutant_caught",
+    "site": "Reactivegas/TraceTests.lean:943",
+    "short": "sweep_idempotent_mutant_caught",
+    "module": "Reactivegas.TraceTests",
+    "matches": [
+      "TraceTests.sweep_idempotent_mutant_caught"
+    ],
+    "sourceLine": "theorem sweep_idempotent_mutant_caught : checkSweepIdempotentMutant = true :=",
+    "statement": "theorem sweep_idempotent_mutant_caught : checkSweepIdempotentMutant = true "
+  },
+  {
+    "classification": "AUTHORED-STATEMENT",
+    "private": false,
+    "name": "TraceTests.all_checks_pass",
+    "site": "Reactivegas/TraceTests.lean:992",
+    "short": "all_checks_pass",
+    "module": "Reactivegas.TraceTests",
+    "matches": [
+      "TraceTests.all_checks_pass"
+    ],
+    "sourceLine": "theorem all_checks_pass : failing = [] := by decide",
+    "statement": "theorem all_checks_pass : failing = [] "
+  }
+]

@@ -1,0 +1,6 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M18.lean:229:63: error: unsolved goals
+s s' : State
+a u : KelGroups.Key
+v : Int
+⊢ bal s'.conti u = bal s.conti u + v ∧ bal s'.casse a = bal s.casse a + v ↔
+    bal s'.conti u = bal s.conti u + v ∧ bal s'.casse a = bal s.casse a + v + 1

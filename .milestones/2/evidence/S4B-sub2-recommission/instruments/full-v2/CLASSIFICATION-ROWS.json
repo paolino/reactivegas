@@ -1,0 +1,462 @@
+[
+  {
+    "identity": "KelGroups.Vote.SweepReady",
+    "id": "V2",
+    "source": "lean/KelGroups/Vote/Invariants.lean",
+    "axis1": "PROVED-EQUIVALENCE with independent Bool and executable evaluations; see named atom theorem",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED claim to test under S4 original phases A/B plus R4 and v3.1 for reused expressions",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A37",
+      "A38",
+      "A39",
+      "A40",
+      "A41",
+      "A42",
+      "GroupWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  },
+  {
+    "identity": "Reach.below",
+    "id": "GENERATED-REACH-BELOW",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "generated inductive recursion support; no independent runtime predicate",
+    "axis2": "NOT-REQUIRED for a NEW oracle under S4-B finite-mirror-only R1/R2 and no new runtime semantics; this does not discharge global reachability questions",
+    "authority": "S4 original prohibition manufacturing decidability; v2 R1 finite obligations/R2 no new monitor. Any broader #66 oracle requirement not supplied stays onward, never inferred closed.",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "Exceptions"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  },
+  {
+    "identity": "conservation",
+    "id": "P02",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "PROVED-EQUIVALENCE with independent Bool and executable evaluations; see named atom theorem",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED claim to test under S4 original phases A/B plus R4 and v3.1 for reused expressions",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A01",
+      "A02",
+      "A03",
+      "EconomyWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  },
+  {
+    "identity": "uniquePledges",
+    "id": "P05",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "PROVED-EQUIVALENCE with independent Bool and executable evaluations; see named atom theorem",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED claim to test under S4 original phases A/B plus R4 and v3.1 for reused expressions",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A11",
+      "A12",
+      "A13",
+      "A14",
+      "EconomyWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  },
+  {
+    "identity": "allUniquePledges",
+    "id": "P06",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "PROVED-EQUIVALENCE with independent Bool and executable evaluations; see named atom theorem",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED claim to test under S4 original phases A/B plus R4 and v3.1 for reused expressions",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A15",
+      "EconomyWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  },
+  {
+    "identity": "KelGroups.WellFormed",
+    "id": "K4",
+    "source": "lean/KelGroups/Invariants.lean",
+    "axis1": "PROVED-EQUIVALENCE with independent Bool and executable evaluations; see named atom theorem",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED claim to test under S4 original phases A/B plus R4 and v3.1 for reused expressions",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A28",
+      "A29",
+      "A30",
+      "A31",
+      "GroupWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  },
+  {
+    "identity": "escrowHeld",
+    "id": "P08",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "PROVED-EQUIVALENCE with independent Bool and executable evaluations; see named atom theorem",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED claim to test under S4 original phases A/B plus R4 and v3.1 for reused expressions",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A16",
+      "A17",
+      "EconomyWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  },
+  {
+    "identity": "KelGroups.Enacts",
+    "id": "K5",
+    "source": "lean/KelGroups/Invariants.lean",
+    "axis1": "PROVED-EQUIVALENCE with independent Bool and executable evaluations; see named atom theorem",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED claim to test under S4 original phases A/B plus R4 and v3.1 for reused expressions",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A32",
+      "A33",
+      "GroupWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  },
+  {
+    "identity": "comune_not_a_member",
+    "id": "P01",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "Proved expression equivalence (value-parametric / inline); no strict definitional identity claimed. v3.1 explicitly permits this scoped outcome; selected production-body sensitivity is a separate obligation.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED claim to test under S4 original phases A/B plus R4 and v3.1 for reused expressions",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "P01-compile",
+      "P01-neg",
+      "P01-pos",
+      "P01-relatum",
+      "S07"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  },
+  {
+    "identity": "KelGroups.MembersCoherent",
+    "id": "K2",
+    "source": "lean/KelGroups/Invariants.lean",
+    "axis1": "PROVED-EQUIVALENCE with independent Bool and executable evaluations; see named atom theorem",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED claim to test under S4 original phases A/B plus R4 and v3.1 for reused expressions",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A26",
+      "GroupWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  },
+  {
+    "identity": "governanceEnacts",
+    "id": "P09",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "PROVED-EQUIVALENCE with independent Bool and executable evaluations; see named atom theorem",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED claim to test under S4 original phases A/B plus R4 and v3.1 for reused expressions",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A18",
+      "EconomyWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  },
+  {
+    "identity": "stalled",
+    "id": "R0",
+    "source": "lean/Reactivegas/State.lean",
+    "axis1": "EXECUTABLE-DECISION; logical instance separately retained",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED claim to test under S4 original phases A/B plus R4 and v3.1 for reused expressions",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "Exceptions"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  },
+  {
+    "identity": "KelGroups.PendingWellFormed",
+    "id": "K1",
+    "source": "lean/KelGroups/Invariants.lean",
+    "axis1": "PROVED-EQUIVALENCE with independent Bool and executable evaluations; see named atom theorem",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED claim to test under S4 original phases A/B plus R4 and v3.1 for reused expressions",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A24",
+      "A25",
+      "GroupWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  },
+  {
+    "identity": "insolvent",
+    "id": "P04",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "PROVED-EQUIVALENCE with independent Bool and executable evaluations; see named atom theorem",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED claim to test under S4 original phases A/B plus R4 and v3.1 for reused expressions",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A09",
+      "A10",
+      "EconomyWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  },
+  {
+    "identity": "KelGroups.Vote.VoteWellFormed",
+    "id": "V3",
+    "source": "lean/KelGroups/Vote/Invariants.lean",
+    "axis1": "PROVED-EQUIVALENCE with independent Bool and executable evaluations; see named atom theorem",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED claim to test under S4 original phases A/B plus R4 and v3.1 for reused expressions",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A43",
+      "A44",
+      "GroupWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  },
+  {
+    "identity": "canCloseGroup",
+    "id": "P12",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "PROVED-EQUIVALENCE with independent Bool and executable evaluations; see named atom theorem",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED claim to test under S4 original phases A/B plus R4 and v3.1 for reused expressions",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A21",
+      "A22",
+      "A23",
+      "EconomyWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  },
+  {
+    "identity": "permissionToClose",
+    "id": "P07",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "Proved expression equivalence (value-parametric / inline); no strict definitional identity claimed. v3.1 explicitly permits this scoped outcome; selected production-body sensitivity is a separate obligation.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED claim to test under S4 original phases A/B plus R4 and v3.1 for reused expressions",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "P07-compile",
+      "P07-neg",
+      "P07-pos",
+      "P07-relatum",
+      "S08"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  },
+  {
+    "identity": "Reach",
+    "id": "P13",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "NOT-ESTABLISHED executable decision, bounded by ReachDecision synthesis attempt; lack of instance is not undecidability.",
+    "axis2": "NOT-REQUIRED is a candidate claim under review, not established by missing Decidable. Test exact authority under original S4 finite-only scope; any missing standing-boundary authority remains a named finding/onward dependency, never a passed exception.",
+    "authority": "S4 original prohibition manufacturing decidability; v2 R1 finite obligations/R2 no new monitor. Any broader #66 oracle requirement not supplied stays onward, never inferred closed.",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "ReachDecision"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  },
+  {
+    "identity": "KelGroups.Vote.QuestionClean",
+    "id": "V1",
+    "source": "lean/KelGroups/Vote/Invariants.lean",
+    "axis1": "PROVED-EQUIVALENCE with independent Bool and executable evaluations; see named atom theorem",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED claim to test under S4 original phases A/B plus R4 and v3.1 for reused expressions",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A34",
+      "A35",
+      "A36",
+      "GroupWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  },
+  {
+    "identity": "KelGroups.PendingCoherent",
+    "id": "K3",
+    "source": "lean/KelGroups/Invariants.lean",
+    "axis1": "PROVED-EQUIVALENCE with independent Bool and executable evaluations; see named atom theorem",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED claim to test under S4 original phases A/B plus R4 and v3.1 for reused expressions",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A27",
+      "GroupWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  },
+  {
+    "identity": "KelGroups.Vote.PreservesQuestionSemantics",
+    "id": "V4",
+    "source": "lean/KelGroups/Vote/Invariants.lean",
+    "axis1": "DEFINITIONAL-IDENTITY plus independent compile/evaluation of existing consumer",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED claim to test under S4 original phases A/B plus R4 and v3.1 for reused expressions",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "Exceptions"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  },
+  {
+    "identity": "doubleEntry",
+    "id": "P10",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "PROVED-EQUIVALENCE with independent Bool and executable evaluations; see named atom theorem",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED claim to test under S4 original phases A/B plus R4 and v3.1 for reused expressions",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A19",
+      "A20",
+      "EconomyWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  },
+  {
+    "identity": "authorizedStep",
+    "id": "P11",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "DEFINITIONAL-IDENTITY plus independent compile/evaluation of existing consumer",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED claim to test under S4 original phases A/B plus R4 and v3.1 for reused expressions",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "Exceptions"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  },
+  {
+    "identity": "solvent",
+    "id": "P03",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "PROVED-EQUIVALENCE with independent Bool and executable evaluations; see named atom theorem",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED claim to test under S4 original phases A/B plus R4 and v3.1 for reused expressions",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A04",
+      "A05",
+      "A06",
+      "A07",
+      "A08",
+      "EconomyWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PLANNED; no execution credited"
+  }
+]

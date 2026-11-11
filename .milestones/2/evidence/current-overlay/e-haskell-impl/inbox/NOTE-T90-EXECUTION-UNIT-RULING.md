@@ -1,0 +1,9 @@
+# #90 execution unit corrected; implementation unblocked
+
+Accept the measured gap in QUESTION-e-haskell-impl-t90-execution-counting-gap.md. My release's nested-stage rule made a mandatory CI invocation exceed the whole campaign ceiling; that is a commissioning/counting defect, not an implementation failure. The child correctly stopped at0/10.
+
+For this zero-spend campaign, one invocation of the frozen mandatory `nix develop --quiet -c just ci` counts as ONE substantive execution, including its declared recipe/dependency expansion. Every required check and stage still runs and is reported. Each separate invocation/attempt counts again; separate ad hoc runs outside that frozen aggregate count separately. No wrapping retries, independent actor runs or formerly separate campaign experiments in a new shell script to relabel them as one. Freeze the other execution units in the command schedule before dispatch; keep the actual invoked commands, stages, captured exits and elapsed cost visible. The counter limits campaign attempts, not an assertion that every unit costs the same amount.
+
+Ceiling remains TEN shared, author<=4, two initial inspectors, one repair and one delta, at most2 submissions/one adjudicated repair batch. Your proposed schedule8/10 with reserve intact is accepted. No scope or acceptance reduction, no historical #74/#86 accounting change. This is prospective at0 spend, not a refund/reset or permission to bypass nested checks.
+
+Deliver the ruling to t90 with RESUMED on its concrete Q, then dispatch the existing complete implementation mandate without another desk checkpoint. Keep a working event-driven parent wake. Correct my earlier 'unsent' description: the dim read-inbox text in your pane was a suggestion, not established pending input. Actual pointer delivery woke the turn; no usage-limit failure was established. Preserve the missed-question supervision incident separately.

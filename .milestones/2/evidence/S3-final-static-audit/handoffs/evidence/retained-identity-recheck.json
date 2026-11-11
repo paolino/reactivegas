@@ -1,0 +1,22 @@
+{
+  "retainedNames": 1213,
+  "distinct": 1213,
+  "classRows": 1213,
+  "counts": {
+    "GEN-INJ": 95,
+    "GEN-INJEQ": 95,
+    "GEN-SIZEOF": 133,
+    "SOURCE": 163,
+    "GEN-EQ": 130,
+    "GEN-EQDEF": 9,
+    "GEN-PROOF": 357,
+    "GEN-CTORIDX": 9,
+    "GEN-PROJECTION": 12,
+    "GEN-PRIVATE": 133,
+    "SOURCE-PRIVATE": 76,
+    "GEN-RECURSOR": 1
+  },
+  "missingNames": [],
+  "extraNames": [],
+  "sourceMatchMismatches": []
+}

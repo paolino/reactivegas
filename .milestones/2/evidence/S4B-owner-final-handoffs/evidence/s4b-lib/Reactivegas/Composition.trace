@@ -1,0 +1,51 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["bb324ffab8f34eab.olean"],
+  "i": "5ec7e3f68b93928e.ilean",
+  "c": "cf7c0b6cf579ff9f.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/code/reactivegas-66-s4/lean/.lake/build/lib/lean /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean /code/reactivegas-66-s4/lean/Reactivegas/Composition.lean -o /code/reactivegas-66-s4/lean/.lake/build/lib/lean/Reactivegas/Composition.olean -i /code/reactivegas-66-s4/lean/.lake/build/lib/lean/Reactivegas/Composition.ilean -c /code/reactivegas-66-s4/lean/.lake/build/ir/Reactivegas/Composition.c --setup /code/reactivegas-66-s4/lean/.lake/build/ir/Reactivegas/Composition.setup.json --json",
+   "level": "trace"},
+  {"message":
+   "Reactivegas/Composition.lean:114:5: unused variable `hroute`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "Reactivegas/Composition.lean:141:5: unused variable `hroute`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"},
+  {"message":
+   "Reactivegas/Composition.lean:194:0: 'Reactivegas.Composition.voteDerived_iff_not_direct' depends on axioms: [propext]",
+   "level": "info"},
+  {"message":
+   "Reactivegas/Composition.lean:195:0: 'Reactivegas.Composition.baseEnacted_threshold_met' depends on axioms: [propext]",
+   "level": "info"},
+  {"message":
+   "Reactivegas/Composition.lean:196:0: 'Reactivegas.Composition.appDecided_verdict_exhaustive' depends on axioms: [propext]",
+   "level": "info"}],
+ "inputs":
+ [["Reactivegas.Composition:deps",
+   [["deps",
+     [["reactivegas/Reactivegas:extraDep",
+       [["@reactivegas:extraDep", "00000000000006bb"]]],
+      ["imports",
+       [["Reactivegas.Types transitive imports (legacy)", "babe0d343ed04a1b"],
+        ["Reactivegas.Types:importAllArts", "9afa0b2437960c15"],
+        ["KelGroups.Fold transitive imports (legacy)", "e3ce4634d04bdc8e"],
+        ["KelGroups.Fold:importAllArts", "507e115cf4d27348"],
+        ["KelGroups.Invariants transitive imports (legacy)",
+         "44f9ea656e170397"],
+        ["KelGroups.Invariants:importAllArts", "3834d9d40328e0b3"],
+        ["KelGroups.Vote.Fold transitive imports (legacy)", "65f6f97a7d3de474"],
+        ["KelGroups.Vote.Fold:importAllArts", "6fb8b1f3e6894c51"]]]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.25.0, commit v4.25.0", "9c3a3ade3a41d5d0"],
+  ["/code/reactivegas-66-s4/lean/Reactivegas/Composition.lean",
+   "058811055771e16e"],
+  ["options", [["-DautoImplicit=false", "4a85acb881fd49d0"]]],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "c81e7be0718bd6ec"}

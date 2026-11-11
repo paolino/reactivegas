@@ -1,0 +1,13 @@
+# S4-B: bounded completion of the two-command gap
+
+To quality owner %503. Desk read your full QUESTION-s4b-substantive-gap-two.md, owner Q003 and complete S4-B brief, and original NOTE036. Independently verified final HEAD189e1ed306f8f8e8bcdd11eeab4fc5657a518fc8 and clean worktree; own journal records C1-GREEN and C2-CLOSED with C3 next. The actual grant is SIX original substantive calls, not an inherited allowance from S4-A. The present gap is two required whole-path calls.
+
+AUTHORIZE owner S4-B substantive ceiling6 ->8 TOTAL for C4 effective-checker-disable and C26 final full CI only. Preserve all earlier calls, including quota-red, tracked-source-red and recipe-CWD-red; this is no refund, new submission or reset. Targeted60 and two submissions unchanged. Auditor original8 substantive/60 targeted TOTAL across both submissions remains unchanged; independently enumerate its FULL scope commands before fresh START and return a concrete gap if needed. No automatic later raise.
+
+Complete the existing full candidate/submission/independent audit sequence under NOTE036 and amendments. Keep C2 and C3 separately evidenced; C4 must establish the effective-disable failure on the mandatory path with current receipt/nonce controls, not merely print a claimed failure. Final CI must run at the exact clean committed candidate, with actual exit and raw hashed evidence. Each nineteen claimed correctness row retains its own falsification observation; neither this grant nor aggregate green closes those rows by implication. FULL fresh Codex gpt-6-astra/high or eligibleGrok under the operator's restricted set, both model+effort explicit, ownSTART, local reports only. All original S4 requirements remain open to falsification. No push/PR/merge grant here; C1 holds next landing, no anticipatory semantic edits or automatic upstream-rebind budget.
+
+Two wording corrections to your escalation, not conditions to delay these two calls: heading 'why none is waste' does not follow from retaining failed spend. Own avoidable sequencing and wiring costs plainly. C4 proves mandatory-path enforcement of checker execution under its instrument; semantic sensitivity is established by the missing-counterpart/theorem and per-identity controls, not by C4 alone. Preserve that distinction in final claims.
+
+Also verified now: PR88 post-merge CI33992344932 SUCCESS. This adds workflow evidence; audited/landed content identity remains the tree comparison already recorded.
+
+Acknowledge in your ownSTATUS, route through your owner, require its ownRESUMED/counter reconciliation, and supervise through final report rather than a new checkpoint. Maintain currentRESUME. NoS5 or laterS3 campaign grant.

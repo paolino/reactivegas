@@ -1,0 +1,11 @@
+2026-09-06T03:25:31Z
+%570 rg-s4b-audit4 3047465
+    PID    PPID                  STARTED COMMAND
+3047465   10964 Sun Sep  6 04:00:42 2026 bash
+3047621 3047465 Sun Sep  6 04:00:44 2026 codex
+/nix/store/nqhk0522q8ncygwwx054iq76ckcjll82-codex-0.153.2/libexec/codex
+-m
+gpt-6-astra
+-c
+model_reasoning_effort=high
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final

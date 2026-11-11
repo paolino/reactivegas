@@ -1,0 +1,26 @@
+MIRROR-CHECK-OK rows=19 exceptions=4 discovered=24
+nonce=1788648103157937801
+extent KelGroups.Enacts
+extent KelGroups.MembersCoherent
+extent KelGroups.PendingCoherent
+extent KelGroups.PendingWellFormed
+extent KelGroups.Vote.PreservesQuestionSemantics
+extent KelGroups.Vote.QuestionClean
+extent KelGroups.Vote.SweepReady
+extent KelGroups.Vote.VoteWellFormed
+extent KelGroups.WellFormed
+extent Reach
+extent Reach.below
+extent allUniquePledges
+extent authorizedStep
+extent canCloseGroup
+extent comune_not_a_member
+extent conservation
+extent doubleEntry
+extent escrowHeld
+extent governanceEnacts
+extent insolvent
+extent permissionToClose
+extent solvent
+extent stalled
+extent uniquePledges

@@ -1,0 +1,15 @@
+{
+  "time": "2026-09-05T22:52:27.823Z",
+  "head": "189e1ed306f8f8e8bcdd11eeab4fc5657a518fc8",
+  "git": "",
+  "counters": {
+    "substantive": 6,
+    "targeted": 59
+  },
+  "obligationRows": 89,
+  "closed": 78,
+  "partly": 11,
+  "open": 0,
+  "trackedControlsRestored": 4,
+  "isolatedExpressionControlsRestored": 2
+}

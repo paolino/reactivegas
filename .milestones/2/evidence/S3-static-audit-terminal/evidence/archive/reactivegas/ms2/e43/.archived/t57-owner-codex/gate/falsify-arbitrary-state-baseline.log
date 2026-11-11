@@ -1,0 +1,8 @@
+/tmp/reactivegas/ms2/e43/t57-owner-codex/gate/instruments/arbitrary-and-surface-noop.lean:22:0: error: Expression
+  applyVoteEvent legacyThreshold arbitraryPreState "stranger" (VoteEvent.cast "q" Ballot.dissent) == arbitraryPreState
+did not evaluate to `true`
+/tmp/reactivegas/ms2/e43/t57-owner-codex/gate/instruments/arbitrary-and-surface-noop.lean:40:0: error: Expression
+  everyCurrentEvent.all fun event =>
+    validateVoteEvent legacyThreshold bootstrapped "stranger" event == Except.error VoteError.notResponsabile &&
+      applyVoteEvent legacyThreshold bootstrapped "stranger" event == bootstrapped
+did not evaluate to `true`

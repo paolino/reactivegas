@@ -1,0 +1,11 @@
+diff --git a/lean/KelGroups/Integration.lean b/lean/KelGroups/Integration.lean
+index 0000000..5555555 100644
+--- a/lean/KelGroups/Integration.lean
++++ b/lean/KelGroups/Integration.lean
+@@ -207,7 +207,7 @@ def applyIntegratedEvent
+       if GroupView.isMember signer view then
+         match integration.appFold signer view view gs.appFold appEvent with
+-        | .ok appState => .ok { state := { gs with appFold := appState }, change := none }
++        | .ok appState => .ok { state := { gs with appFold := appState }, change := some (BaseChange.memberAdmitted "measure") }
+         | .error err => .error (.app err)
+       else .error (.validation (.notAMember signer))

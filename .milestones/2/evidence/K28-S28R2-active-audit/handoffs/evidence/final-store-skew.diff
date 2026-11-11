@@ -1,0 +1,26 @@
+--- /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/candidate/lib_KelGroups_Store.hs	2026-09-06 03:59:50.080334120 +0100
++++ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/store-shadow/KelGroups/Store.hs	2026-09-06 04:08:15.008517562 +0100
+@@ -620,17 +620,16 @@
+     -> Text
+     -> IntegratedEvent bp e
+     -> IO (Either (IntegratedError err) (IntegratedResult s))
+-appendIntegratedEvent store integration signer event =
+-    withMVar (storeAppendLock store) $ \() -> do
+-        gs <- readState store
+-        case applyIntegratedEvent integration gs signer event of
+-            Left err -> pure (Left err)
+-            Right result -> do
++appendIntegratedEvent store integration signer event = do
++    gs <- readState store
++    n <- kelLength store
++    case applyIntegratedEvent integration gs signer event of
++        Left err -> pure (Left err)
++        Right result -> withMVar (storeAppendLock store) $ \() -> do
+                 let payloadJson = encode event
+                     payloadText = TE.decodeUtf8 (LBS.toStrict payloadJson)
+                     noEnvelope = T.empty
+                 _ <- evaluate payloadText
+-                n <- kelLength store
+                 execute
+                     (storeConn store)
+                     "INSERT INTO events \

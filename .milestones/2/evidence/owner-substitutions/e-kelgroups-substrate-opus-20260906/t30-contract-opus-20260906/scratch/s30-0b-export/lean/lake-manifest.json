@@ -1,0 +1,15 @@
+{"version": "1.1.0",
+ "packagesDir": ".lake/packages",
+ "packages":
+ [{"url": "https://github.com/paolino/keri-lean",
+   "type": "git",
+   "subDir": null,
+   "scope": "",
+   "rev": "e37386c7e04cb39aafcb61b808e16d8222c6cc66",
+   "name": "keri",
+   "manifestFile": "lake-manifest.json",
+   "inputRev": "e37386c7e04cb39aafcb61b808e16d8222c6cc66",
+   "inherited": false,
+   "configFile": "lakefile.lean"}],
+ "name": "kelgroups",
+ "lakeDir": ".lake"}

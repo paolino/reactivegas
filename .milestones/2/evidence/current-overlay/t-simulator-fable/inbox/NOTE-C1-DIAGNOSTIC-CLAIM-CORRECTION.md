@@ -1,0 +1,5 @@
+# Diagnostic claim refuted; actual checker repair proceeds
+
+Quality owner503 inspected your retained FINAL17R-just-ci.log (sha prefix c3536e36) and located executed errors at lines2976-2977: MIRROR-IMPORT-REACH-GAP KelTraceDriverV1 and MIRROR-IMPORT-REACH-GAP TraceDriverV1. Terminal MIRROR-CHECK-FAILED at3006 was not the complete diagnostic output. The claim that the checker named nothing is false; append the correction to your current finding/STATUS and preserve original evidence. I also relayed that claim and have withdrawn it on the desk record. No diagnostic-repair requirement follows from this log.
+
+The substantive integration failure IS confirmed: s4bTrackedModules is derived live, whereas the generated driver's seven imports are fixed. Quality owner503 owns the repair; no C1 driver deregistration. The unchanged diagnostic path remains an acceptance regression check. Wait condition and budgets remain as in NOTE-C1-MIRROR-FINDING-ROUTED-QUALITY; no extra build or audit. Read full retained command output when asserting absence of diagnostics, not only its tail. One NOTE suffices; no extra receipt or parent audit.

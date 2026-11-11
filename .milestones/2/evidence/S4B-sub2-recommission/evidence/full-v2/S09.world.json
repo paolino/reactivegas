@@ -1,0 +1,12 @@
+{
+  "world": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S09",
+  "candidate": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+  "cache": "cold",
+  "spec": {
+    "id": "S09",
+    "type": "base",
+    "obligation": "cold accepted-base build for compiled expression preservation comparison",
+    "cmd": "bash /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/base-build.sh",
+    "base": "3590c0015b84fd58004bf6fb44dd18b107304c48"
+  }
+}

@@ -1,0 +1,109 @@
+diff --git a/scripts/check-lean-mirrors b/scripts/check-lean-mirrors
+index 9df0b86..16f5e1a 100755
+--- a/scripts/check-lean-mirrors
++++ b/scripts/check-lean-mirrors
+@@ -39,6 +39,16 @@ rm -f "$RECEIPT"
+ if [ -f "$NONCE_FILE" ]; then NONCE="$(cat "$NONCE_FILE")"; else NONCE="leaf-$(date +%s%N)-$$"; fi
+ DRIVER="$(mktemp /tmp/s4b-mirror-driver.XXXXXX.lean)"
+ trap 'rm -f "$DRIVER"' EXIT
++# Owned-module inventory for provenance-based ownership and import-reach
++# completeness (NOTE-015): mirrors the S2R tracked rule exactly (git-tracked
++# `.lean` under `lean/`, minus `lakefile.lean`, path mapped to module name).
++# S2R's tracked/walked gate already rejects untracked-but-present sources
++# upstream, so `ls-files` is the complete owned set here by layering.
++TRACKED_LEAN=$(git -C "$HERE/.." ls-files -- 'lean' | grep -E '\.lean$' | sort | while IFS= read -r f; do
++  rel=${f#lean/}; [ "$rel" = lakefile.lean ] && continue
++  printf '%s\n' "${rel%.lean}" | tr '/' '.'
++done)
++TRACKED_LIT=$(printf '%s\n' "$TRACKED_LEAN" | sed 's/.*/"&"/' | paste -sd' ' -)
+ cat > "$DRIVER" <<'LEAN_EOF'
+ -- S4-B mandatory mirror checker driver (heredoc-embedded, not a repo file).
+ -- Contract: scripts/check-lean-mirrors header comment. This driver defines no
+@@ -49,6 +59,7 @@ import KelGroups
+ import Reactivegas
+ import Reactivegas.Mirrors
+ import KelGroups.Mirrors
++import Reactivegas.CorpusExport
+ 
+ -- V4 exception evidence: definitional identity (EQ form, closes by rfl).
+ example (theta : KelGroups.Vote.Threshold) (view : KelGroups.GroupView)
+@@ -151,7 +162,8 @@ only: mention is not use, and neither is sensitivity, which is established by
+ O5 (mandatory path) and OT2 (isolation). -/
+ def s4bPromotedTable : Array String := #["view_mem_of_isMember", "isMember_of_view_mem"]
+ 
+-/-- Harvest all referenced constant names from an expression. -/
++open Lean Elab Command Meta in
++run_cmd do
+ partial def s4bHarvestConsts (e : Lean.Expr) (acc : Array Lean.Name) : Array Lean.Name :=
+   match e with
+   | .const n _ => if acc.contains n then acc else acc.push n
+@@ -163,8 +175,12 @@ partial def s4bHarvestConsts (e : Lean.Expr) (acc : Array Lean.Name) : Array Lea
+   | .proj _ _ b => s4bHarvestConsts b acc
+   | _ => acc
+ 
+-open Lean Elab Command Meta in
+-run_cmd do
++/-- Tracked owned modules, baked per-run from `git ls-files` by the wrapper
++script (see TRACKED_LIT). Authority for provenance-based ownership and the
++import-reach completeness check. This is derived live, never a frozen list:
++a future owned module appears here automatically and either resolves (imported)
++or fires the reach gap loudly. -/
++def s4bTrackedModules : Array String := #__TRACKED_MODULES__
+   let env ← getEnv
+   let mods := env.header.moduleNames
+   let nonce ← IO.getEnv "S4B_MIRROR_NONCE"
+@@ -201,7 +217,7 @@ run_cmd do
+           | some m => toString m
+           | none => "<no-mod>"
+       | none => "<current-file>"
+-    if !(home.startsWith "KelGroups" || home.startsWith "Reactivegas") then
++    if !s4bTrackedModules.contains home then
+       nonowned := nonowned + 1
+       continue
+     match ci with
+@@ -243,6 +259,15 @@ run_cmd do
+   if found.size == 0 then fail m!"MIRROR-EMPTY-DISCOVERY"
+   for sk in skipped do logInfo m!"MIRROR-SKIP {sk}"
+   logInfo m!"MIRROR-KIND-CENSUS pred(defn/induct/opaque)={predDefnCount}/{predInductCount}/{predOpaqueCount} nonpred(defn/induct/opaque)={nonpredDefn}/{nonpredInduct}/{nonpredOpaque} nonowned={nonowned} excluded(thm/axiom/ctor-rec)={exclThm}/{exclAxiom}/{exclCtorRec} sort-undecided={skipped.size}"
++  -- 1b. Import-reach completeness (Boundary 1): every tracked owned module
++  -- must be present in the imported closure. A tracked-but-unimported module
++  -- fails closed NAMING it plus remediation (module-level refusal); predicate
++  -- naming inside it follows once imported (O2 demonstrates both directions
++  -- at CorpusExport). Never silent, never narrowing.
++  for t in s4bTrackedModules do
++    let present := mods.any (fun m => toString m == t)
++    if !present then
++      fail m!"MIRROR-IMPORT-REACH-GAP {t} (tracked owned module outside the checker's import closure; import it into an umbrella or the driver)"
+   -- 2. Structural below-rule: `<I>.below` of a discovered induct `I` is
+   -- eliminator machinery, not an owned predicate. Logged, never silent.
+   let mut covered : Array String := #[]
+@@ -365,15 +390,26 @@ run_cmd do
+   let failed ← failedRef.get
+   if failed then fail m!"MIRROR-CHECK-FAILED"
+   else do
+-    logInfo m!"MIRROR-CHECK-OK rows={rowCount} exceptions={s4bExceptions.size} discovered={found.size} promoted={promotedCount}"
++    logInfo m!"MIRROR-CHECK-OK rows={rowCount} exceptions={s4bExceptions.size} discovered={found.size} promoted={promotedCount} tracked={s4bTrackedModules.size}"
+     let names := (found.map (·.2)).qsort (· < ·)
+     let receipt := "MIRROR-CHECK-OK rows=" ++ toString rowCount ++
+       " exceptions=" ++ toString s4bExceptions.size ++
+       " discovered=" ++ toString found.size ++
+-      " promoted=" ++ toString promotedCount ++ "\n" ++
++      " promoted=" ++ toString promotedCount ++
++      " tracked=" ++ toString s4bTrackedModules.size ++ "\n" ++
+       "nonce=" ++ nonce ++ "\n" ++
+-      "\n".intercalate (names.toList.map (fun s => "extent " ++ s)) ++ "\n"
++      "\n".intercalate (names.toList.map (fun s => "extent " ++ s)) ++ "\n" ++
++      "\n".intercalate (s4bTrackedModules.toList.map (fun s => "tracked " ++ s)) ++ "\n"
+     IO.FS.writeFile ".lake/s4b-mirror-receipt" receipt
+     logInfo m!"MIRROR-RECEIPT-WROTE nonce={nonce}"
+ LEAN_EOF
++# Bake the per-run tracked inventory into the driver (pure bash: the heredoc
++# stays quoted so Lean backticks never expand). Then build the exe target the
++# driver imports (incremental; same substantive run, log-visible, never hidden
++# work — default `lake build` skips non-default exe targets, verified against
++# the lakefile and the S2R worktree's missing exe oleans).
++driver_text=$(cat "$DRIVER")
++driver_text=${driver_text//#__TRACKED_MODULES__/$TRACKED_LIT}
++printf '%s' "$driver_text" > "$DRIVER"
++cd "$HERE/../lean" && lake build corpusExport
+ cd "$HERE/../lean" && S4B_MIRROR_NONCE="$NONCE" lake env lean "$DRIVER"

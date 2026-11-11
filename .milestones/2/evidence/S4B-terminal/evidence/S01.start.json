@@ -1,0 +1,21 @@
+{
+  "start": "2026-09-05T22:25:14.313Z",
+  "kind": "substantive",
+  "argv": [
+    "nix",
+    "develop",
+    "--quiet",
+    "-c",
+    "just",
+    "lean"
+  ],
+  "counts": {
+    "substantive": 1,
+    "targeted": 0
+  },
+  "before": {
+    "git": "",
+    "head": "189e1ed306f8f8e8bcdd11eeab4fc5657a518fc8",
+    "df": "Filesystem               1B-blocks         Used    Available Use% Mounted on\n/dev/mapper/fast-code 844362571776 584127938560 217268183040  73% /code\n"
+  }
+}

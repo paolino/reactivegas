@@ -1,0 +1,5 @@
+SUITE-INVOCATION: node economics-simulator-ui-gate.mjs --vocab-only
+SUITE-ENV-PARENT-SHELL: RG_OMIT_NOOP=unset
+SUITE-ENV-NOTE: parent-shell scope only. A child wrapped in "env VAR=.." takes its effective value from the SUITE-INVOCATION line above, not from this.
+VOCAB-GREEN (no banned words): /code/reactivegas-sim-fable-audit-c1r-s1/economics-simulator.html
+SUITE-EXIT: 0

@@ -1,0 +1,7 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/instruments/Witnesses.lean:55:36: error: failed to synthesize
+  Decidable (comune_not_a_member vw)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/instruments/Witnesses.lean:56:2: error: Expected type must not contain metavariables
+  (stepEvent vw State.empty ?m.7 fun x x_1 => false) = some good
+"WITNESS-OK 19 distinct positive/negative correspondence pairs; duplicate/default and nonzero reachable deposit controls"

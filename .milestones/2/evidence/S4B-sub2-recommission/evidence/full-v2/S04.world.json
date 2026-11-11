@@ -1,0 +1,18 @@
+{
+  "world": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S04",
+  "candidate": "94bb7bb64324a48f7361252556b4d15e45b3923f",
+  "cache": "M1-S clean copied",
+  "spec": {
+    "id": "S04",
+    "type": "future-module",
+    "obligation": "tracked future owned module omitted from checker import closure",
+    "cmd": "just lean",
+    "edits": [
+      {
+        "path": "lean/Reactivegas/AuditFuture.lean",
+        "create": "import Reactivegas.Types\ndef auditMissingCounterpart (n : Nat) : Prop := n = 73\nopaque auditOpaquePredicate : Prop := True\n",
+        "track": true
+      }
+    ]
+  }
+}

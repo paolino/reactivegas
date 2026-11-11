@@ -1,0 +1,65 @@
+warning: Git tree '/code/kelgroups-issue-28' is dirty
+Build profile: -w ghc-9.8.4 -O0
+In order, the following will be built (use -v for more details):
+ - kelgroups-0.1.0.0 (lib) (file lib/KelGroups/Store.hs changed)
+ - kelgroups-0.1.0.0 (test:invariants) (dependency rebuilt)
+Preprocessing library for kelgroups-0.1.0.0...
+Building library for kelgroups-0.1.0.0...
+[10 of 11] Compiling KelGroups.Store  ( lib/KelGroups/Store.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Store.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Store.dyn_o ) [Source file changed]
+Preprocessing test suite 'invariants' for kelgroups-0.1.0.0...
+Building test suite 'invariants' for kelgroups-0.1.0.0...
+[ 6 of 16] Compiling S28AppApiSpec    ( test/S28AppApiSpec.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/build/invariants/invariants-tmp/S28AppApiSpec.o ) [Source file changed]
+
+test/S28AppApiSpec.hs:189:5: error: [GHC-76037]
+    Not in scope: data constructor ‘Integration’
+    Suggested fix:
+      Add ‘Integration’ to the import list in the import of
+      ‘KelGroups.Fold’ (at test/S28AppApiSpec.hs:(47,1)-(57,5)).
+    |
+189 |     Integration
+    |     ^^^^^^^^^^^
+
+test/S28AppApiSpec.hs:190:11: error: [GHC-76037]
+    Not in scope: ‘intReserved’
+    Suggested fix:
+      Add ‘intReserved’ to the import list in the import of
+      ‘KelGroups.Fold’ (at test/S28AppApiSpec.hs:(47,1)-(57,5)).
+    |
+190 |         { intReserved = demoReserved
+    |           ^^^^^^^^^^^
+
+test/S28AppApiSpec.hs:191:11: error: [GHC-76037]
+    Not in scope: ‘intDigest’
+    Suggested fix:
+      Add ‘intDigest’ to the import list in the import of
+      ‘KelGroups.Fold’ (at test/S28AppApiSpec.hs:(47,1)-(57,5)).
+    |
+191 |         , intDigest = demoDigest
+    |           ^^^^^^^^^
+
+test/S28AppApiSpec.hs:192:11: error: [GHC-76037]
+    Not in scope: ‘intProposalMutation’
+    Suggested fix:
+      Add ‘intProposalMutation’ to the import list in the import of
+      ‘KelGroups.Fold’ (at test/S28AppApiSpec.hs:(47,1)-(57,5)).
+    |
+192 |         , intProposalMutation = demoProposalMutation
+    |           ^^^^^^^^^^^^^^^^^^^
+
+test/S28AppApiSpec.hs:193:11: error: [GHC-76037]
+    Not in scope: ‘intAppFold’
+    Suggested fix:
+      Add ‘intAppFold’ to the import list in the import of
+      ‘KelGroups.Fold’ (at test/S28AppApiSpec.hs:(47,1)-(57,5)).
+    |
+193 |         , intAppFold = \_ _ _ st _ -> Right st
+    |           ^^^^^^^^^^
+
+test/S28AppApiSpec.hs:194:11: error: [GHC-76037]
+    Not in scope: ‘intBaseHook’
+    Suggested fix:
+      Add ‘intBaseHook’ to the import list in the import of
+      ‘KelGroups.Fold’ (at test/S28AppApiSpec.hs:(47,1)-(57,5)).
+    |
+194 |         , intBaseHook = demoBaseHook
+    |           ^^^^^^^^^^^

@@ -1,0 +1,18 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A27.lean:80:30: warning: unused variable `e`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+KelGroups.pendingCoherentB {α : Type} (gs : GroupState α) : Bool
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A27.lean:91:4: error: Type mismatch
+  (pendingWellFormed_corr p).mp (h pid p he)
+has type
+  pendingWellFormedB p = true
+but is expected to have type
+  True
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A27.lean:94:41: error: Application type mismatch: The argument
+  he
+has type
+  True
+but is expected to have type
+  pendingWellFormedB p = true
+in the application
+  (pendingWellFormed_corr p).mpr he

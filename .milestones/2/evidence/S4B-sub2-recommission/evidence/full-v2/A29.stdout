@@ -1,0 +1,17 @@
+KelGroups.wellFormedB {α : Type} (gs : GroupState α) : Bool
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A29.lean:110:15: error: Application type mismatch: The argument
+  pK
+has type
+  (List.map Prod.fst gs.pendingProposals).Nodup
+but is expected to have type
+  True
+in the application
+  And.intro pK
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A29.lean:113:15: error: Application type mismatch: The argument
+  pK
+has type
+  True
+but is expected to have type
+  (List.map Prod.fst gs.pendingProposals).Nodup
+in the application
+  WellFormed.mk mK pK

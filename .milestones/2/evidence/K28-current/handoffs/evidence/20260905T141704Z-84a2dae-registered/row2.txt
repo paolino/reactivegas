@@ -1,0 +1,3 @@
+accepted events persist with readable rows
+domain-invalid add never appends a byte
+nonmember append persists nothing byte-identical

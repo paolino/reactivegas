@@ -1,0 +1,33 @@
+import fs from 'node:fs';import crypto from 'node:crypto';
+const rt='/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2',v2=rt+'/instruments/full-v2',v3=rt+'/instruments/full-v3';
+const read=p=>fs.readFileSync(p,'utf8'),sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+if(fs.existsSync(v3))throw Error('version exists');fs.mkdirSync(v3);
+const worlds=JSON.parse(read(v2+'/worlds.json'));
+worlds.push({id:'S11',type:'counterpart-opaque-in-imported-module',obligation:'C2 introduced owned definition and opaque predicate, counterpart absent, actual mandatory path',cmd:'just lean',edits:[{path:'lean/Reactivegas/Predicates.lean',append:'\n\ndef auditMissingCounterpart (n : Nat) : Prop := n = 73\nopaque auditOpaquePredicate : Prop := True\n'}]});
+fs.writeFileSync(v3+'/worlds.json',JSON.stringify(worlds,null,2)+'\n');
+fs.writeFileSync(v3+'/world-prepare.mjs',read(v2+'/world-prepare.mjs').replaceAll('/instruments/full-v2/','/instruments/full-v3/'));
+fs.writeFileSync(v3+'/run-one.mjs',read(v2+'/run-one.mjs').replaceAll('/instruments/full-v2/','/instruments/full-v3/'));
+for(const file of ['Axioms.lean','AxiomsNegative.lean'])fs.writeFileSync(v3+'/'+file,read(v2+'/'+file).replace('    elabCommand (←', '    logInfo m!"AUDIT-AXIOM-NAME {n.toString}"\n    elabCommand (←'));
+let data=read(v2+'/data-checks.mjs');
+data=data.replace("const printed=[...ax.matchAll(/^'([^']+)' (?:depends on axioms:|does not depend on any axioms)/gm)].map(m=>m[1]);", "const printed=[...ax.matchAll(/^AUDIT-AXIOM-NAME (.+)$/gm)].map(m=>m[1]);\n const axiomPrintCount=[...ax.matchAll(/^'(.+)' (?:depends on axioms:|does not depend on any axioms)/gm)].length;assert(axiomPrintCount===printed.length,'print axioms output missing');");
+fs.writeFileSync(v3+'/data-checks.mjs',data);
+const rows=JSON.parse(read(v2+'/COMMANDS.json'));
+const c2={...rows.find(r=>r.id==='S02'),id:'S11',cwd:rt+'/worlds/S11',world:rt+'/worlds/S11; pristine candidate plus exactly two predicate declarations appended to existing imported Predicates module; private M1-S cache',obligation:'C2 missing counterpart for introduced owned definition and opaque predicate; recover actual observation after S02 import-graph setup failure',prerequisites:['S01'],inputs:[...rows[0].inputs.slice(0,3),...['worlds.json','world-prepare.mjs'].map(n=>({path:v3+'/'+n,sha256:sha(v3+'/'+n)}))],outputs:['stdout','stderr','json'].map(e=>rt+'/evidence/full-v2/S11.'+e)};
+rows.push(c2);
+rows.find(r=>r.id==='S02').actualDisposition='COUNTED SETUP/CONTROL PLACEMENT FAILURE: imported new umbrella module rejected by existing TraceTests.checkImportGraph before mirror checker; no C2 or named-predicate kill. Receipt retained; C2 stays open pending S11.';
+for(const id of ['Axioms','AxiomsNegative','final-reconcile']){
+ const r=rows.find(r=>r.id===id);const name=id==='final-reconcile'?'data-checks.mjs':id+'.lean';
+ r.argv=r.argv.map(a=>a===v2+'/'+name?v3+'/'+name:a);
+ r.inputs=r.inputs.map(i=>i.path===v2+'/'+name?{path:v3+'/'+name,sha256:sha(v3+'/'+name)}:i);
+}
+rows.find(r=>r.id==='S10').prerequisites.push('S11');
+const totals={substantive:1,targeted:2};for(const r of rows)totals[r.charge]++;
+if(totals.substantive>12||totals.targeted>80)throw Error('unfunded full remaining plan');
+fs.writeFileSync(v3+'/COMMANDS.json',JSON.stringify(rows,null,2)+'\n');
+fs.writeFileSync(v3+'/FIT.json',JSON.stringify({totalPlanned:totals,ceiling:{substantive:12,targeted:80},headroom:{substantive:12-totals.substantive,targeted:80-totals.targeted},historical:{substantive:6,targeted:59},campaignPlanned:{substantive:6+totals.substantive,targeted:59+totals.targeted},fits:true},null,2)+'\n');
+let sheet='# Complete current command-to-obligation sheet v3\n\nAll original contract/amendment rows remain. All measured declaration/classification/witness rows from full-v2 are incorporated unchanged by named command ID. S02 remains a counted failed placement with no intended semantic credit; S11 recovers C2 in an already imported owned module. Future unimported-module control S04 remains separate. The imported-new-umbrella experiment did not reach predicate discovery and is not labelled coverage. No source repair or changed acceptance mechanism. Full cost including measured1/2 and all planned calls is12 substantive/71 targeted, distinct ceilings12/80; cold S09 base and S10 full CI and all final trust queries retained. No substantive headroom remains.\n\nBefore execution S11 setup argv is '+JSON.stringify(['node',v3+'/world-prepare.mjs','S11'])+' cwd='+rt+'. All other setup commands remain full-v2/SETUP-COMMANDS.json. Axioms emit qualified raw names as well as #print axioms; final parser no longer misreads apostrophes in Lean theorem names. These are static auditor-instrument corrections before either affected elaboration, no additional compiler calls.\n\n';
+for(const r of rows)sheet+='## '+r.id+'\n\n'+JSON.stringify(r,null,2)+'\n\n';
+fs.writeFileSync(v3+'/COMMAND-SHEET.md',sheet);
+const files=fs.readdirSync(v3).map(n=>v3+'/'+n).concat([rt+'/instruments/extend-v3.mjs',v2+'/MANIFEST.sha256',v2+'/CLASSIFICATION-ROWS.json',v2+'/DECLARATION-ROWS.jsonl',v2+'/WITNESS-ROWS.json',v2+'/SETUP-COMMANDS.json']);
+fs.writeFileSync(v3+'/MANIFEST.sha256',files.sort().map(p=>sha(p)+'  '+p.slice(rt.length+1)).join('\n')+'\n');
+console.log(JSON.stringify({manifest:sha(v3+'/MANIFEST.sha256'),totals}));

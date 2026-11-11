@@ -1,0 +1,32 @@
+diff --git a/lib/KelGroups/Store.hs b/lib/KelGroups/Store.hs
+index c0555e4..565b375 100644
+--- a/lib/KelGroups/Store.hs
++++ b/lib/KelGroups/Store.hs
+@@ -24,6 +24,8 @@ module KelGroups.Store
+     , openKEL
+     , openKELWithIdentity
+     , closeKEL
++    -- MUTANT-M6-EXPORT: second decision path (must never exist)
++    , unsafeSetAppStateSTM
+     , openIntegratedKEL
+     , appendEvent
+     , appendIntegratedEvent
+@@ -41,6 +43,7 @@ import Control.Concurrent.STM
+     , readTVar
+     , readTVarIO
+     , writeTVar
++    , STM -- MUTANT-M6-IMPORT
+     )
+ import Control.Exception (evaluate)
+ import Data.Aeson (FromJSON, ToJSON, decode, encode)
+@@ -646,6 +649,9 @@ appendIntegratedEvent store integration signer event =
+                     , noEnvelope
+                     )
+                 atomically $ do
+-                    writeTVar (stateVar store) (irState result)
++                    unsafeSetAppStateSTM (stateVar store) gs -- MUTANT-M6-REWIRE
+                     writeTVar (lengthVar store) (n + 1)
+                 pure (Right result)
++-- MUTANT-M6: second decision path, whole-state writer (must never exist on the candidate)
++unsafeSetAppStateSTM :: TVar (GroupState s) -> GroupState s -> STM ()
++unsafeSetAppStateSTM var newGs = writeTVar var newGs

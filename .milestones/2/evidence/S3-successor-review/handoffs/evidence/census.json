@@ -1,0 +1,1156 @@
+{
+  "sourceDeclarationCount": 239,
+  "private": 76,
+  "helperCount": 81,
+  "helperDuplicates": [],
+  "helpersNotInSource": [],
+  "originalRows": 207,
+  "successorRows": 207,
+  "duplicateRowIds": [],
+  "missingOriginalRows": [],
+  "identityDrift": [],
+  "originalAtomCount": 131,
+  "unmappedOldAtoms": [],
+  "successorAtoms": 151,
+  "duplicateSuccessorAtoms": [],
+  "atomStatuses": {
+    "FROZEN": 149,
+    "CONDITIONAL": 1,
+    "OPEN": 1
+  },
+  "frozenTemplateAtoms": [
+    "SS-A-001",
+    "SS-A-002",
+    "SS-A-003",
+    "SS-A-004",
+    "SS-A-005",
+    "SS-A-007",
+    "SS-A-008",
+    "SS-A-009",
+    "SS-A-010",
+    "SS-A-011",
+    "SS-A-012",
+    "SS-A-013",
+    "SS-A-014",
+    "SS-A-015",
+    "SS-A-016",
+    "SS-A-017",
+    "SS-A-018",
+    "SS-A-019",
+    "SS-A-020",
+    "SS-A-021",
+    "SS-A-022",
+    "SS-A-023",
+    "SS-A-024",
+    "SS-A-025",
+    "SS-A-026",
+    "SS-A-027",
+    "SS-A-028",
+    "SS-A-029",
+    "SS-A-030",
+    "SS-A-032",
+    "SS-A-033",
+    "SS-A-034",
+    "SS-A-035",
+    "SS-A-036",
+    "SS-A-037",
+    "SS-A-040",
+    "SS-A-041",
+    "SS-A-042",
+    "SS-A-043",
+    "SS-A-044",
+    "SS-A-045",
+    "SS-A-046",
+    "SS-A-047",
+    "SS-A-048",
+    "SS-A-049",
+    "SS-A-050",
+    "SS-A-051",
+    "SS-A-052",
+    "SS-A-053",
+    "SS-A-054",
+    "SS-A-057",
+    "SS-A-058",
+    "SS-A-059",
+    "SS-A-060",
+    "SS-A-063",
+    "SS-A-064",
+    "SS-A-065",
+    "SS-A-066",
+    "SS-A-067",
+    "SS-A-068",
+    "SS-A-069",
+    "SS-A-070",
+    "SS-A-071",
+    "SS-A-072",
+    "SS-A-073",
+    "SS-A-074",
+    "SS-A-075",
+    "SS-A-076",
+    "SS-A-077",
+    "SS-A-078",
+    "SS-A-079",
+    "SS-A-080",
+    "SS-A-081",
+    "SS-A-082",
+    "SS-A-083",
+    "SS-A-084",
+    "SS-A-085",
+    "SS-A-086",
+    "SS-A-087",
+    "SS-A-088",
+    "SS-A-089",
+    "SS-A-090",
+    "SS-A-091",
+    "SS-A-092",
+    "SS-A-093",
+    "SS-A-094",
+    "SS-A-099",
+    "SS-A-100",
+    "SS-A-104",
+    "SS-A-105",
+    "SS-A-106",
+    "SS-A-107",
+    "SS-A-108",
+    "SS-A-109",
+    "SS-A-110",
+    "SS-A-113",
+    "SS-A-114",
+    "SS-A-115",
+    "SS-A-116",
+    "SS-A-117",
+    "SS-A-118",
+    "SS-A-119",
+    "SS-A-120",
+    "SS-A-121",
+    "SS-A-122",
+    "SS-A-123",
+    "SS-A-124",
+    "SS-A-125",
+    "SS-A-129",
+    "SS-A-131",
+    "SS-A-132",
+    "SS-A-133",
+    "SS-A-134",
+    "SS-A-135",
+    "SS-A-136",
+    "SS-A-137"
+  ],
+  "rowObservationKinds": {
+    "EXECUTED": 1,
+    "PREDICTED": 113,
+    "STATIC": 93
+  },
+  "falseAtWitness": 66,
+  "estimatedSpans": 204,
+  "operations": 236,
+  "operationCostKinds": {
+    "U-CHAIN": 74,
+    "NO-EXECUTION": 156,
+    "U-CHECK": 6
+  },
+  "duplicateOps": [],
+  "ownershipStatuses": {
+    "PRESERVED": 558,
+    "CORRECTED": 3
+  },
+  "unallocatedPreserved": [
+    {
+      "property": "approvals_nodup",
+      "atomId": "SHARED",
+      "tag": "counterpart dependence (call body verified); single-count",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "proposer_mem_approvals",
+      "atomId": "SHARED",
+      "tag": "counterpart dependence (call body verified); single-count",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "enact_implies_threshold_met",
+      "atomId": "SHARED",
+      "tag": "counterpart dependence (call body verified); single-count",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "members_change_implies_enacted",
+      "atomId": "SHARED",
+      "tag": "counterpart dependence (call body verified); single-count",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "member_key_coherent",
+      "atomId": "SHARED",
+      "tag": "counterpart dependence (call body verified); single-count",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "majority_table",
+      "atomId": "SHARED",
+      "tag": "counterpart dependence (call body verified); single-count",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "majority_not_strict_on_even",
+      "atomId": "SHARED",
+      "tag": "counterpart dependence (call body verified); single-count",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.base_departure_applies_cleanup",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.base_change_can_close_without_ballot",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.direct_admission_only_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.base_recompute_reachable_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.sweep_idempotent_witness",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.sweep_idempotent_mutant_caught",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.admissionPreservation_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.canonical_economy_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.exhaustive_inventories_hold",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.integrated_theorem_witness_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.productionWellFormed_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.comuneThresholdSanity_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.comune_cannot_authorize",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.app_members_preservation_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.app_members_preservation_mutant_caught",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_boundary_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_exhaustive_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_noop_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_auth_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_r45_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_partition_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_disjoint_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_disjoint_mutant_caught",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_nostale_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_franchise_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_franchise_mutant_caught",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_noexpiry_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_policyfree_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_policyfree_mutant_caught",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.app_members_preservation_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.app_members_preservation_mutant_caught",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.all_checks_pass",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.frozen_checks_faithful",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.frozen_inventory_faithful",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.frozen_corpus_faithful",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.base_departure_applies_cleanup",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.base_change_can_close_without_ballot",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.direct_admission_only_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.base_recompute_reachable_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.sweep_idempotent_witness",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.sweep_idempotent_mutant_caught",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.Composition.voteDerived_iff_not_direct",
+      "atomId": "WITNESS",
+      "tag": "route/verdict equation subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.Composition.baseEnacted_threshold_met",
+      "atomId": "WITNESS",
+      "tag": "route/verdict equation subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.Composition.appDecided_verdict_exhaustive",
+      "atomId": "WITNESS",
+      "tag": "route/verdict equation subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    }
+  ],
+  "ownershipMissingAtomReferences": [
+    {
+      "property": "solvent_preserved",
+      "atomId": "OPEN",
+      "tag": "conjunct-level sensitivity needs kill evidence",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "OPEN",
+      "tag": "conjunct-level sensitivity needs kill evidence",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "OPEN",
+      "tag": "conjunct-level sensitivity needs kill evidence",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "OPEN",
+      "tag": "conjunct-level sensitivity needs kill evidence",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "OPEN",
+      "tag": "conjunct-level sensitivity needs kill evidence",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "comune_not_a_member_of_reach",
+      "atomId": "PREMISE",
+      "tag": "boot-premise transport, fixed view; no guard atoms; S5 connection question",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "comune_not_a_member_step",
+      "atomId": "NONE",
+      "tag": "vacuous _hstep limb (body returns h)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_init",
+      "atomId": "NONE",
+      "tag": "boot proposition (State.empty); acceptance elaboration",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "stepDetailed_erases",
+      "atomId": "NONE",
+      "tag": "wrapper equation (eraseDiagnostic o stepDetailed = stepEvent)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.ballots_nodup_disjoint",
+      "atomId": "Vtally",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.questions_partition",
+      "atomId": "Vtally",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.no_expiry",
+      "atomId": "V-event-hpres",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "approvals_nodup",
+      "atomId": "SHARED",
+      "tag": "counterpart dependence (call body verified); single-count",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "proposer_mem_approvals",
+      "atomId": "SHARED",
+      "tag": "counterpart dependence (call body verified); single-count",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "enact_implies_threshold_met",
+      "atomId": "SHARED",
+      "tag": "counterpart dependence (call body verified); single-count",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "members_change_implies_enacted",
+      "atomId": "SHARED",
+      "tag": "counterpart dependence (call body verified); single-count",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "member_key_coherent",
+      "atomId": "SHARED",
+      "tag": "counterpart dependence (call body verified); single-count",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "majority_table",
+      "atomId": "SHARED",
+      "tag": "counterpart dependence (call body verified); single-count",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "majority_not_strict_on_even",
+      "atomId": "SHARED",
+      "tag": "counterpart dependence (call body verified); single-count",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.base_departure_applies_cleanup",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.base_change_can_close_without_ballot",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.direct_admission_only_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.base_recompute_reachable_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.sweep_idempotent_witness",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.sweep_idempotent_mutant_caught",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.admissionPreservation_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.canonical_economy_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.exhaustive_inventories_hold",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.integrated_theorem_witness_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.productionWellFormed_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.comuneThresholdSanity_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.comune_cannot_authorize",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.app_members_preservation_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.app_members_preservation_mutant_caught",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_boundary_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_exhaustive_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_noop_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_auth_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_r45_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_partition_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_disjoint_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_disjoint_mutant_caught",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_nostale_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_franchise_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_franchise_mutant_caught",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_noexpiry_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_policyfree_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_policyfree_mutant_caught",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.app_members_preservation_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.app_members_preservation_mutant_caught",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.all_checks_pass",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.frozen_checks_faithful",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.frozen_inventory_faithful",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.frozen_corpus_faithful",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.base_departure_applies_cleanup",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.base_change_can_close_without_ballot",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.direct_admission_only_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.base_recompute_reachable_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.sweep_idempotent_witness",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.sweep_idempotent_mutant_caught",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.Composition.voteDerived_iff_not_direct",
+      "atomId": "WITNESS",
+      "tag": "route/verdict equation subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.Composition.baseEnacted_threshold_met",
+      "atomId": "WITNESS",
+      "tag": "route/verdict equation subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.Composition.appDecided_verdict_exhaustive",
+      "atomId": "WITNESS",
+      "tag": "route/verdict equation subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    }
+  ],
+  "addedValueFlips": [
+    {
+      "property": "admissionPreservation_holds",
+      "atomId": "SS-A-058B (Bhook app members wipe) / SS-A-069 (Step apply wipe)",
+      "relevance": "VALUE-FLIP",
+      "evidence": "S-04 extent1: successful donate30 returns wiped members; checkAppMembersPreservation=false; conjunction false. OP-58B or OP-69."
+    },
+    {
+      "property": "app_members_preservation_mutant_caught",
+      "atomId": "SS-A-069L (PWF-nocomune drop)",
+      "relevance": "VALUE-FLIP",
+      "evidence": "S-04 extent2: OP69L reverses input well-formedness; preservationDonate errors; memberWritingApply propagates; detector=false."
+    },
+    {
+      "property": "i57_disjoint_mutant_caught",
+      "atomId": "SS-A-058B",
+      "relevance": "VALUE-FLIP",
+      "evidence": "S-04 extent12: OP58B wipes membership on first openQuestion; later casts reject; expected dissent absent. OP-39 opposite-direction only is narrower."
+    },
+    {
+      "property": "i57_franchise_mutant_caught",
+      "atomId": "SS-A-050 (cast->gs)",
+      "relevance": "VALUE-FLIP",
+      "evidence": "S-04 extent14: OP50 cast->gs prevents alice and shipped bypass bob ballot placement; contains/equality conjunct false."
+    },
+    {
+      "property": "i57_noexpiry_holds",
+      "atomId": "SS-A-069L",
+      "relevance": "VALUE-FLIP",
+      "evidence": "S-04 extent15: OP69L rejects non-comune v3Group input; checkI57NoExpiry error branch false."
+    },
+    {
+      "property": "sweep_idempotent_mutant_caught",
+      "atomId": "SS-A-058 (threshold >)",
+      "relevance": "VALUE-FLIP",
+      "evidence": "S-04 extent23: OP58 stricter base threshold prevents Eve removal at 2 approvals; v3PostView still 3 admins; q one assent stays open; sweepDuplicating once==input; check=false."
+    },
+    {
+      "property": "TraceTests.app_members_preservation_mutant_caught",
+      "atomId": "SS-A-069L",
+      "relevance": "VALUE-FLIP",
+      "evidence": "S-04 extent25 mirror of extent2; distinct identity/import boundary retained; site 1090 (not 1084)."
+    },
+    {
+      "property": "TraceTests.sweep_idempotent_mutant_caught",
+      "atomId": "SS-A-058",
+      "relevance": "VALUE-FLIP",
+      "evidence": "S-04 extent30 mirror of extent23; site 943 (not 905)."
+    }
+  ],
+  "measurementRows": 26,
+  "measurementLayers": {
+    "U-COLD": 1,
+    "U-CHAIN": 8,
+    "U-RESTORE": 8,
+    "U-CHECK": 1,
+    "U-REPLAY-PROD": 1,
+    "U-REPLAY-EXEC": 3,
+    "U-SHARED-SEPARATE": 2,
+    "U-SHARED-BATCH": 1,
+    "U-COMPARATOR-STATIC": 1
+  },
+  "receiptCount": 66,
+  "rosterCount": 43,
+  "emptyReceiptHashes": [
+    "SS-R-045",
+    "SS-R-046",
+    "SS-R-047",
+    "SS-R-048",
+    "SS-R-049",
+    "SS-R-050",
+    "SS-R-051",
+    "SS-R-052",
+    "SS-R-053",
+    "SS-R-054",
+    "SS-R-056",
+    "SS-R-057",
+    "SS-R-058",
+    "SS-R-059",
+    "SS-R-060",
+    "SS-R-061"
+  ],
+  "staticOnly": "All counts are parsed records. No executions, semantic kills, compiler results, or budget totals inferred."
+}

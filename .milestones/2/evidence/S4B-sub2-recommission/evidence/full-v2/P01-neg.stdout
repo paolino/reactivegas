@@ -1,0 +1,11 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/P01-chain.lean:43:68: error: Type mismatch
+  h
+has type
+  KelGroups.GroupView.isMember u view = true
+but is expected to have type
+  (KelGroups.assocLookup u view.members).isSome = true
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/P01-chain.lean:54:2: error: 'show' tactic failed, pattern
+  (KelGroups.assocLookup u view.members).isSome = true
+is not definitionally equal to target
+  KelGroups.GroupView.isMember u view = true
+P01-WITNESS present=false absent=false duplicates=2

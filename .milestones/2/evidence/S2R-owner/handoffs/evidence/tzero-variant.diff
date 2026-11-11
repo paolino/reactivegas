@@ -1,0 +1,8 @@
+49c49
+<     for n in data.constNames do
+---
+>     for n in data.constNames.filter (fun _ => false) do
+61c61
+<   for (n, ci) in env.constants.toList do
+---
+>   for (n, ci) in env.constants.toList.filter (fun _ => false) do

@@ -1,0 +1,120 @@
+[
+  {
+    "id": "S01",
+    "type": "clean",
+    "obligation": "C1 clean mandatory just lean",
+    "cmd": "just lean"
+  },
+  {
+    "id": "S02",
+    "type": "counterpart-opaque",
+    "obligation": "C2 introduced owned predicate missing counterpart; opaque predicate classification, separately observed",
+    "cmd": "just lean",
+    "edits": [
+      {
+        "path": "lean/Reactivegas/AuditFuture.lean",
+        "create": "import Reactivegas.Types\ndef auditMissingCounterpart (n : Nat) : Prop := n = 73\nopaque auditOpaquePredicate : Prop := True\n",
+        "track": true
+      },
+      {
+        "path": "lean/Reactivegas.lean",
+        "old": "import Reactivegas.Types",
+        "replacement": "import Reactivegas.AuditFuture\nimport Reactivegas.Types"
+      }
+    ]
+  },
+  {
+    "id": "S03",
+    "type": "theorem",
+    "obligation": "C3 introduced owned predicate with counterpart present and theorem absent",
+    "cmd": "just lean",
+    "edits": [
+      {
+        "path": "lean/Reactivegas/Predicates.lean",
+        "append": "\n\ndef auditMissingTheorem (n : Nat) : Prop := n = 73\ndef auditCounterpart (n : Nat) : Bool := decide (n = 73)\n"
+      },
+      {
+        "path": "scripts/check-lean-mirrors",
+        "old": "def s4bCorrTable : Array (String × Option String × String) := #[",
+        "replacement": "def s4bCorrTable : Array (String × Option String × String) := #[\n  (\"auditMissingTheorem\", some \"auditCounterpart\", \"auditMissingTheorem_corr\"),"
+      }
+    ]
+  },
+  {
+    "id": "S04",
+    "type": "future-module",
+    "obligation": "tracked future owned module omitted from checker import closure",
+    "cmd": "just lean",
+    "edits": [
+      {
+        "path": "lean/Reactivegas/AuditFuture.lean",
+        "create": "import Reactivegas.Types\ndef auditMissingCounterpart (n : Nat) : Prop := n = 73\nopaque auditOpaquePredicate : Prop := True\n",
+        "track": true
+      }
+    ]
+  },
+  {
+    "id": "S05",
+    "type": "classifier-omit",
+    "obligation": "explicit theorem-kind arm omitted: permanent classifier must name actual unclassified declarations",
+    "cmd": "just lean",
+    "edits": [
+      {
+        "path": "scripts/check-lean-mirrors",
+        "old": "    | .thmInfo _ => exclThm := exclThm + 1",
+        "replacement": "    -- auditor removes exactly the theorem-info classification arm"
+      }
+    ]
+  },
+  {
+    "id": "S06",
+    "type": "checker-noop",
+    "obligation": "C4 present executable checker unconditional success; mandatory receipt must reject",
+    "cmd": "just lean",
+    "edits": [
+      {
+        "path": "scripts/check-lean-mirrors",
+        "create": "#!/usr/bin/env bash\nexit 0\n"
+      }
+    ]
+  },
+  {
+    "id": "S07",
+    "type": "P01-body",
+    "obligation": "P01 body original whole mandatory path, separate from selected helpers",
+    "cmd": "just lean",
+    "edits": [
+      {
+        "path": "lean/KelGroups/Types.lean",
+        "old": "  (lookupMember key view).isSome",
+        "replacement": "  false"
+      }
+    ]
+  },
+  {
+    "id": "S08",
+    "type": "P07-body",
+    "obligation": "P07 close permission body original whole mandatory path",
+    "cmd": "just lean",
+    "edits": [
+      {
+        "path": "lean/Reactivegas/Step.lean",
+        "old": "&& col.permitted && col.pending.isEmpty",
+        "replacement": "&& true && col.pending.isEmpty"
+      }
+    ]
+  },
+  {
+    "id": "S09",
+    "type": "base",
+    "obligation": "cold accepted-base build for compiled expression preservation comparison",
+    "cmd": "bash /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/base-build.sh",
+    "base": "3590c0015b84fd58004bf6fb44dd18b107304c48"
+  },
+  {
+    "id": "S10",
+    "type": "final",
+    "obligation": "C26 restored final candidate cold full CI; prerequisite to final inventory/axiom trust",
+    "cmd": "just ci"
+  }
+]

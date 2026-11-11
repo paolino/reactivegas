@@ -1,0 +1,14 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M31.lean:132:6: error: Type mismatch
+  Eq.symm h2
+has type
+  (tryEnactDetailed gs proposalId).state = result
+but is expected to have type
+  (tryEnactDetailed gs proposalId).state ≠ result
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M31.lean:134:84: error: Application type mismatch: The argument
+  hd
+has type
+  decide ((tryEnactDetailed gs proposalId).state ≠ result) = true
+but is expected to have type
+  decide ((tryEnactDetailed gs proposalId).state = result) = true
+in the application
+  of_decide_eq_true hd

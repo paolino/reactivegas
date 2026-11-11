@@ -1,0 +1,33 @@
+invariant	severity	verdict	state	mutant_or_limit
+I-FENCE-1	BLOCKING	PASS	KILLED	fence_extra; 5344e360cca867ce7274eaad5060db49f2c20772d3afec25c920393e96a2f44b
+I-FENCE-2	BLOCKING	PASS	KILLED	proof_debt also trips frozen Step blob; 9384769d0b5aa2dba06c5df5b6efc7667f88018bf920e19202cbd325dad276de
+I-FENCE-3	BLOCKING	PASS	OPEN	observed pass; no independent killing mutant this round
+I-FENCE-4	BLOCKING	PASS	OPEN	observed pass; no independent killing mutant this round
+I-FENCE-5	BLOCKING	PASS	OPEN	observed pass; no independent killing mutant this round
+I-R1-1	BLOCKING	PASS	KILLED	r1_displaced; ac0bd476fe707a7149f2b5ee8dd6f86fa55b4cf3fd010f2bf109ae56ba66e250
+I-R1-2	BLOCKING	PASS	OPEN	citing_blocks=70; no independent floor mutant this round
+I-R1-3	BLOCKING	PASS	KILLED	cold-probe control; d6764c29018ebbaec68d5bc4b117ea76c4d35780bf7b4d2ea769fa2e4ced72d6
+I-R1-4	BLOCKING	PASS	OPEN	91 live names and all markers elaborate; no independent retired-name mutant this round
+I-R1-5	BLOCKING	PASS	OPEN	harness names unknown and category retained; no independent killing mutant this round
+I-R2-1	BLOCKING	PASS	KILLED	r2_false; b53ece6f3fa03f4a2c6cf20d1107c9fcf716728038605ab699fdd0c402a713a9
+I-R2-2	BLOCKING	PASS	OPEN	prose matches definitions; no independent killing mutant this round
+I-R2-3	BLOCKING	PASS	OPEN	prose and opposite-balance argument correct; no independent killing mutant this round
+I-R2-4	BLOCKING	PASS	OPEN	prose requires total conti zero including comune; no independent killing mutant this round
+I-R2-5	BLOCKING	PASS	OPEN	kernel counterexample elaborates; no independent definition mutant this round
+I-R2-6	BLOCKING	PASS	KILLED	r2_false rejected on I-R2-1 leg; b53ece6f3fa03f4a2c6cf20d1107c9fcf716728038605ab699fdd0c402a713a9
+I-F2-1	BLOCKING	PASS	OPEN	live Step/State read and gate rows pass; no independent killing mutant this round
+I-F2-2	BLOCKING	PASS	OPEN	reachable/arbitrary scope and non-stalled arms match live Step; no independent killing mutant this round
+I-F2-3	BLOCKING	PASS	KILLED	f2_guard_count; 13381a6788323898f5c37bd751aa16fc76b4deaf9c43cf26237db08e397942c4
+I-F3-1	BLOCKING	PASS	OPEN	live theorem is one referente equation; no independent killing mutant this round
+I-F3-2	BLOCKING	PASS	OPEN	live inversion plus bal_bump_ne supports untouched-key claim; no independent killing mutant this round
+I-F3-3	BLOCKING	PASS	KILLED	f3_solvency_premises; e0216365df3e0f666c2202125bc801aa46f531283fb9d3b252dcbc3c218fd3ce
+I-F3-4	BLOCKING	PASS	KILLED	f3_conservation_premises; d38e272a2323b387df471ab4721f284c9d41c073066f5d706634eb3c9fe840be
+I-F2/F3-CARRY	BLOCKING	PASS	OPEN	all live semantic rows re-read and gate passes; aggregate class not independently killed this round
+I-M-1	BLOCKING	PASS	OPEN	effective Lean 4.25.0 observed; no toolchain mutant this round
+I-M-2	BLOCKING	PASS	OPEN	cold full gate built umbrella before citation; no independent build-order mutant this round
+I-M-3	BLOCKING	PASS	OPEN	35/35 observed; no compiled trace mutant this round
+I-M-4	BLOCKING	PASS	OPEN	18/18/0 observed; no compiled trace mutant this round
+I-M-5	BLOCKING	PASS	OPEN	five envelopes observed; no compiled envelope mutant this round
+I-M-6	BLOCKING	PASS	KILLED	inventory_missing; 4020a506d8ac8a0b7b1fc3f93e99b0dd2e50ba46cda2afa9d9aa485c5c16bad9
+I-M-7	BLOCKING	PASS	OPEN	just ci exit 0; no independent CI mutant this round
+I-M-8	BLOCKING	PASS	KILLED	proof_debt; 9384769d0b5aa2dba06c5df5b6efc7667f88018bf920e19202cbd325dad276de

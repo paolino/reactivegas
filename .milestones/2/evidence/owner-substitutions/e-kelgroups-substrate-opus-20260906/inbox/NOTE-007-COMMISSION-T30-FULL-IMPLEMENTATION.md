@@ -1,0 +1,35 @@
+# NOTE-007 — #30 full implementation AUTHORIZED, real compiler first
+
+Desk read in full the 560-line T30-CONTRACT-r8, 180-line command map, 304-line commissioning packet cbd74951 and your full assessment. The complete #30 implementation is now commissioned through you and your Opus ticket owner. This is not a slice-0-only permission or a request for another proposal. Retain all original R30/S1–S6/REQ/per-identity, client adapt-only, integrated refusal/persistence/replay, closure and review obligations, with ruled-but-unlanded dependencies distinctly recorded. #29/#73 remain open until their full outcomes are met; #33/#34 are still downstream.
+
+## Version the actual contract once, then dispatch without another desk checkpoint
+
+Adopt TAXONOMY-v2 in a versioned mandate and command map, preserving r8 and all old evidence. Name A10's corrected promised exit and A27's newer control; v1 behavior is source-derived, not an executed comparison. Preserve all error identities and diagnostics: accumulated RED must not become a misleading no-verdict label or PASS because a later step refuses. Do not widen product semantics.
+
+The r8 single-slice/no-S30-2 statement, old Muse ticket-owner assignment, r8-leg input and old unexecuted fixture status are superseded explicitly by the approved current decomposition/roles and demonstrated r9 leg. Preserve those texts as history. Replace contradictory current instructions rather than requiring the worker to guess which table governs. The actual final immutable gate is the ticket owner's responsibility, as r8 states; freeze its contract and instruments before the corresponding implementation/audit START. Candidate-specific outputs and emitted pins become evidence on the actual candidate, never assumed facts at initial freeze.
+
+Interpret freeze prerequisites temporally: bind requirements, expected controls and scripts before subject execution; demonstrate the candidate-dependent rows before GREEN/acceptance. A test of missing Vote outputs cannot be a prerequisite for permission to create those outputs. No obligation is waived by this ordering.
+
+## Budgets — explicit and cumulative, no invisible extra early builds
+
+Your 26 owner-build list is accepted as the original candidate envelope. S30-0 as proposed ADDS two accepted-base checks (existing-module build/emission and exported-base GREEN) that do not replace candidate B3/B22a. Therefore authorize OWNER ceiling **28 substantive whole-project operations /22 targeted probes**, from product spend0, with those two extra early operations explicitly named S30-0a/0b. Preserve prior five synthetic invocations5/5 and all S28 history separately; no sixth synthetic run. No automatic raise/reset on branch, model or submission changes.
+
+AUTHOR submissions: maximum2 total, one normal repair submission, sharing the same28/22 cumulative ceiling. No automatic extra build pool for repair. If actual implementation or restoration/build grouping cannot fit, return the exact additional operation and scope before spending beyond the bound. Hash-only source restore is not a fresh verification build; if one is run it must be itemized and charged. Every whole-project build/test/CI invocation counts. Narrow probes that compile more than their declared scope must not hide whole-project operations.
+
+AUDITOR ceiling **25 substantive /24 targeted**, cumulative across its maximum2 fresh per-submission audits, as proposed. Full original mandate, all required independent directions and controls; no inheritance of old synthetic PASS as semantic acceptance. Conditional A-REBIND remains unspent with reason if the dependency is unlanded. A fitting audit/repair is your normal responsibility; if a second full audit cannot fit the remaining cumulative budget, report before dispatch, do not waive rows or borrow an owner result. Named reserves are not permission to replay unexplained failures until green. No parallel heavy builds.
+
+## Sequence and exact boundaries
+
+S30-0a/0b first: accepted kelgroups933e385df2f2a251bb54a08bb7663f0d41fafb64, isolated cold worktree/export, real KelGroups.Event + KelGroups.Server.JSON metadata/selection/freshness evidence. Freeze actual paths, commands, toolchain, input hashes, expected observations, receipt capture and per-command time bounds. A setup or ambiguous-selector failure is charged and returned; no claim of Vote coverage. Do not run the full frozen Vote extent against a base where it is absent and count the predictable refusal as this preflight.
+
+On successful prerequisite observations, proceed directly to extent declarations and the full behavioral implementation through one bounded commit owner; no report-and-park checkpoint between them. Candidate tests and metadata checks must ultimately use the ACTUAL Vote modules and final candidate. Reusing toolchain knowledge is legitimate; transferring uniqueness, mappings or verdict evidence across module sets is not.
+
+Source/metadata-channel independence remains required. An unexported source edit is not guaranteed to leave an entire GHC --show-iface dump unchanged. Bind a concrete can-fail observation or return the design finding honestly; do not fabricate stability or silently normalize away load-bearing data merely to obtain the expected signature. No new Lean edits, threshold default, expiry, dormant refusal producers or #81/#76 implementation by anticipation. Freeze Reactivegas3590c001 for the current accepted semantics. If #68/another accepted relevant base lands, perform explicit overlap/fit assessment before additional rebind work; no automatic extra budget or acceptance inheritance.
+
+## Roles, delivery and supervision
+
+Ticket owner stays Opus5[1m]/high in%572 under you. ONE Muse commit owner on the approved exact provider/model/effort pin; ONE fresh independent Codex gpt-6-astra/high auditor per admitted submission, Grok only if eligible under the existing cap, never Muse/GLM/Claude auditing. Verify launch and active model/effort and own post-cursor START. No provider fallback or model substitution by helper default. Use existing terminal roots as retained inputs, not resumed audit contexts.
+
+Local commits are authorized. After full local acceptance and a qualifying independent audit, push and DRAFT PR are authorized with actual remoteCI at exacthead, factual scope/residuals and no closing keywords for parent#29/#73. No merge or release authority: return the exact candidate/base/tree, full audit/receipt/cost packet and remote CI for desk merge authorization. No issue comments; necessary issue BODY updates stay factual and read back. No deployment, publication or #33/#34 dispatch from this grant.
+
+Keep the existing terminal-aware supervision through your child and prove wake delivery for any new watcher; never wait from a cursor taken after the result. One event per substantive phase and a terminal/park-with-wake/question for any stop. Return frozen mandate/gate hashes, admitted owner identity/START and actual first compiler result in the ordinary next handback; no extra desk approval needed to continue authorized work. ACK in your own STATUS; local reports only.

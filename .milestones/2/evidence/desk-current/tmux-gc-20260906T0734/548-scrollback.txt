@@ -1,0 +1,509 @@
+          authority-replacement or branch-retirement claim is made.',
+     88 + 'S9/S10 whole-build proposals were withdrawn before execution, not spent or refunded.
+         ');
+     89 +row('Integration','Accepted exporter integration at this candidate','CLOSED','Cold inv
+         entory and exact full local CI',['S1','S2','P17','S8'],
+     90 + 'CorpusExport is the 27th discovered project module, registered in the accepted base.
+          The actual full CI command passes its corpus gate and verification as well as the man
+         datory Lean path. The rebuilt-base consumer import inventory also contains CorpusExpor
+         t. Exporter changes in the 4a6-to-candidate aggregate diff are accepted-base integrati
+         on, not unauthorized edits by the S2R submission.',
+     91 + 'This commission does not repeat PR87’s exporter mutation campaign. Parent-reported r
+         emote runs 33970297094/33970297155 are context only; no remote state refreshed during
+         closeout.');
+     92 +row('Provenance-and-fence','Frozen candidate, diff fence, authority and spend','CLOSED
+         ','Retained provenance/authority receipts and invocation accounting',[],
+     93 + 'Candidate 714cb2a8536b24bf735295137e8f907782228380 is detached over d67032313acf3699
+         cc50358a057391b88d002192. Retained final-git-provenance.txt records clean status and s
+         ix changed files: justfile, three licensed Lean files and two scripts. submission.diff
+          is the six-file delta; candidate.diff includes the accepted exporter chain from 4a6.
+         Base source comparison is licensed by identical three Row B blobs across 4a6 and d6703
+         23. Initial START is not renewed by the seat release. Nine substantive and 29 targeted
+          receipts remain charged, including failed setup/ineffective attempts. Read commands:
+         cat evidence/final-git-provenance.txt; cat evidence/submission.diff; cat evidence/base
+         -blob-equality.txt; read STATUS.md invocation records.',
+     94 + 'No candidate re-verification or campaign execution after NOTE-006. Clean-state claim
+         s cite the retained receipts rather than claiming a newly run Git check. Accepted S1 f
+         a01779 was not a rejected S2; rejected S2 candidates are exactly 5745a2c, 561347d, b0c
+         2cdb.');
+     95 +
+     96 +const guards = [
+     97 + ['Source tracked/walked agreement and both shell zero branches','CLOSED','P26','Exact
+          axiom-script prefix on a real git fixture; positive passes, each named omission/zero
+         rejects. Inversion-script matching prefix inspected, not separately executed on fixtur
+         es.'],
+     98 + ['S-minus-B / B-minus-S','CLOSED','P02,P03,P04,P05','One sole finding each, then same
+          defective input passes with only its guard disabled.'],
+     99 + ['S/B/T nonzero inside driver','CLOSED','P06,P09,P10','S and B controls explicitly di
+         sable companion guards; T-zero isolates both producers.'],
+    100 + ['T identity differences, both directions','CLOSED','P15,P16','Each intended missing
+         identity rejected; count diagnostic co-fires.'],
+    101 + ['T count mismatch as a sole finding','CLOSED','Inspection of retained submission.dif
+         f','Construction classification only: differing finite deduplicated set cardinalities
+         entail some identity difference, so count-only isolation is not independent protection
+         . No sole-necessity execution claimed.'],
+    102 + ['Theorem disappears after theoremsByWalk selection','CLOSED','Inspection of retained
+          submission.diff','Construction classification only: walk accepts thmInfo from env.fin
+         d?; the same immutable environment is consulted later without an intervening declarati
+         on change. The fallback is defensive, not observed failing.'],
+    103 + ['Forbidden dependency / sorryAx','CLOSED','S3R,S4,S6','Dependency rejection reached;
+          poisoned gate-disabled mandatory path passes.'],
+    104 + ['LEAN_PATH empty / unset','CLOSED','P07,P08','Two separate direct elaborations, sole
+          guard finding.'],
+    105 + ['REACTIVEGAS_ROOT missing fails closed','OPEN','P22','Counterexample observed: unset
+          variable defaults to cwd and accepts. Advisory documentation mismatch under Element 1
+         .'],
+    106 + ['Root canonicalization exception','OPEN','No execution receipt','Inspected error rec
+         ording only; not independently exercised. No claim it has been observed to reject.'],
+    107 + ['Resolved artifact canonicalization exception','OPEN','No execution receipt','Helper
+          catch returns false; eventual S/B consequence depends on the module. No independent b
+         ranch execution or universal fail-closed claim.'],
+    108 + ['Environment module has no loadable artifact','OPEN','No execution receipt','Recorde
+         d-error branch inspected, not exercised; ordinary import resolution usually occurs bef
+         ore the driver.'],
+    109 + ['Source path canonicalization and non-string module sentinel','OPEN','No execution r
+         eceipt','Inspected total branches; no isolated runtime negative.'],
+    110 + ['Source/compiled theorem missing identity and census mismatch','CLOSED','P24','Named
+          missing source-backed identity and 163/162 disagreement; redundant diagnostics not se
+         parately attributed.'],
+    111 + ['Source/backed zero census guards and wrong-name branch','OPEN','No dedicated negati
+         ve receipt','Present by inspection; positive census and omission tested. Not promoted
+         to separately executed guard coverage.'],
+    112 + ['PANIC stdout/stderr, nonzero status, missing ok marker','CLOSED','P23','Exact suffi
+         x from both production wrappers, positive and eight rejecting fixtures. Synthetic pani
+         c output is intentional.'],
+    113 + ['Comparator value mismatch','CLOSED','P27','Same comparison loop rejects the named a
+         ltered value. Primitive preliminary inequality alone is not sufficient.'],
+    114 + ['Comparator type mismatch independently','OPEN','No dedicated negative receipt','P29
+          compares actual types, but only value-mismatch rejection was directly challenged.'],
+    115 + ['Zero removed-wrapper consumers','CLOSED','P28,P29','Same scan/assertion rejects one
+          injected reference and accepts complete clean extent with zero references.'],
+    116 + ['Inherited six-inversion failure branches','PARTLY','S1,S2,P24; retained diff','Six
+         obligations retained and run, plus withheld-backdonate negative; not a fresh separate
+         mutation of every inherited failure branch.'],
+    117 + ['Usage, missing source directory and build failure wrappers','OPEN','No dedicated co
+         ntrol receipt','Ordinary setup/error propagation inspected; S3 is a harness setup fail
+         ure, not credited as a gate build-error control.'],
+    118 +];
+    119 +write('handoffs/ROW-LEDGER.json',JSON.stringify({candidate:'714cb2a8536b24bf735295137e
+         8f907782228380',terminal_verdict:'AUDIT-FINDINGS',blocking_behavior_findings:0,advisor
+         y_findings:1,rows,guards:guards.map(([claim,verdict,evidence,observation])=>({claim,ve
+         rdict,evidence,observation}))},null,2)+'\n');
+    120 +const rowText=rows.map(r=>`## ${r.id} — ${r.title}\n\n**${r.verdict}.** Severity: ${r.
+         severity}. Method: ${r.method}.\n\n${r.commands.length?commands(r.commands.map(c=>c.id
+         )):'Inspection/read command and retained evidence are specified below; no new executio
+         n.'}\n\nObservation: ${r.observation}\n\n${r.limit?'Boundary: '+r.limit+'\n':''}`).joi
+         n('\n');
+    121 +const guardText='| Existing guard or branch | Verdict | Evidence | Observation / limit
+          |\n|---|---|---|---|\n'+guards.map(g=>'| '+g.join(' | ')+' |').join('\n');
+    122 +write('handoffs/ROW-LEDGER.md',`# S2R integrated row and guard ledger\n\nCandidate: \`
+         714cb2a8536b24bf735295137e8f907782228380\`. Terminal report: [AUDIT-REPORT.md](AUDIT-R
+         EPORT.md).\n\n${rows.length} commissioned/authority rows: ${rows.filter(r=>r.verdict==
+         ='CLOSED').length} CLOSED, ${rows.filter(r=>r.verdict==='PARTLY').length} PARTLY, ${ro
+         ws.filter(r=>r.verdict==='OPEN').length} OPEN. PARTLY retains Element 1's observed mis
+         sing-root documentation discrepancy as OPEN. These are verdicts within explicit row bo
+         undaries; auxiliary untested branches below are not reasoned closed. They are not newl
+         y commissioned campaign rows.\n\n${rowText}\n## Guard attribution and untested branche
+         s\n\nOPEN here means not established by an executed negative, or contradicted as speci
+         fically stated. It is not a new blocking test requirement. The finite mandatory contro
+         l set is the brief as amended by A-003; NOTE-006 authorizes reporting only. No univers
+         al all-branches mutation-coverage claim is made.\n\n${guardText}\n`);
+    123 +const attemptNotes={
+    124 + 'S3-sorry':'SETUP FAILURE, charged; /dev/null inaccessible before Lean; no mutation-k
+         ill credit.',
+    125 + 'P11-walk-skip':'INEFFECTIVE MUTATION, charged; wrong qualified name, no kill credit;
+          corrected by P15.',
+    126 + 'P12-fold-skip':'INEFFECTIVE MUTATION, charged; wrong qualified name, no kill credit;
+          corrected by P16.',
+    127 + 'P19-compare-preflight':'Instrument typecheck only; not base comparison evidence.',
+    128 + 'P22-unset-root':'Observed counterexample to missing-root documentation claim, not ma
+         ndatory-path bypass.',
+    129 + 'P25-compiled-base-comparison':'Original positive comparisons stand; preliminary prim
+         itive inequality did not test loop rejection. P27/P28 and final P29 close the stated i
+         nstrument limits.',
+    130 + 'P23-wrapper-controls':'Shell fixture harness exit 0 means expected accept/reject res
+         ults matched; includes deliberate synthetic panic strings.',
+    131 + 'P26-source-discovery-controls':'Shell fixture harness exit 0 means expected accept/r
+         eject results matched; no Lean/build.',
+    132 +};
+    133 +write('handoffs/EXECUTION-LEDGER.json',JSON.stringify(runs.map(r=>({...r,classificatio
+         n_note:attemptNotes[r.id]||'Completed; attribution and scope in integrated row/guard l
+         edger.'})),null,2)+'\n');
+    134 +write('handoffs/EXECUTION-LEDGER.md','# Preserved execution ledger — no reruns\n\n9 su
+         bstantive / 9; 29 targeted / 30. Failed, warm and ineffective attempts remain charged.
+          All 38 individual receipts are included; the older evidence/receipts.json snapshot pr
+         edates P27–P29 and is preserved unchanged.\n\n'+runs.map(r=>`## ${r.id}\n\nClass: ${r.
+         class}; exit ${r.exit}; duration ${r.duration_ms} ms.\n\nCommand: \`${r.command}\`\n\n
+         Command SHA-256: \`${r.command_sha256}\`\n\nOutput SHA-256: \`${r.output_sha256}\`; [l
+         og](../${r.log}); [receipt](../${r.receipt}).\n\n${attemptNotes[r.id]||'Completed; att
+         ribution and scope are in the integrated row and guard ledger.'}\n`).join('\n'));
+    135 +const report=`# Independent S2R candidate audit — final report
+    136 +
+    137 +**Terminal verdict: AUDIT-FINDINGS.** No blocking functional defect was demonstrated i
+         n the commissioned current-configuration behavior. One **ADVISORY documentation findin
+         g remains OPEN** within Element 1: the shipped missing-REACTIVEGAS_ROOT fail-closed cl
+         aim is contradicted by P22. The mandatory shell supplies that variable; no present man
+         datory-path bypass was demonstrated. The report is complete, not an acceptance or merg
+         e decision.
+    138 +
+    139 +Candidate: \`714cb2a8536b24bf735295137e8f907782228380\`; accepted parent: \`d67032313a
+         cf3699cc50358a057391b88d002192\`; lower accepted S1: \`4a6cd87fcbc3e4a536bbc9f240f5efe
+         5704022af\`. Subject: issue #66 S2R, draft PR88, audited in detached \`/code/reactiveg
+         as-66-s2r-audit\`. No remote status was refreshed for this closeout.
+    140 +
+    141 +## Authority, identity and reporting release
+    142 +
+    143 +This is the same independent Codex seat, model gpt-6-astra, model_reasoning_effort=hig
+         h, PID/PGID 1664317, pane %548; implementation owner Muse uses a distinct worktree and
+          context. The retained process-identity and pause receipts establish identity; no fres
+         h START is claimed. The valid original START was 2026-09-05T14:01:11.657Z. The first s
+         tart-live PID was a Bash wrapper and is explicitly superseded by process-identity.json
+         , not erased.
+    144 +
+    145 +Full original S2R A/B/C mandate and AMENDMENT-1 are bound in evidence/original-mandate
+         -v2.txt, SHA-256 \`7cfb7aec95a37448ac7be3c65d900aa47b34fc70127c6d827fa12337e1cf421b\`.
+          Frozen executable base contract concatenation is \`39d6aa4e2c0c0170ff28832f4794293dca
+         64aa3ab65ec6b89ab0924199ce3433\`. Admitted owner packet is admitted/SUBMISSION-ADMITTE
+         D.md, \`32299d25cae31c9dcd8a6d6737e61bb6fe35b48bd4a8e6f041949cff13319bff\`. Admission
+         and base-contract receipts are retained. The obsolete S2-MANDATE proposal is history,
+         not authority. No owner or earlier auditor PASS closes a row here.
+    146 +
+    147 +NOTE-002 restores mandatory rebuilt-base comparison and supersedes stale brief details
+         . A-002 reinstates the original A-001 layer ruling; A-003 is the operative Q-002 resol
+         ution: S9/S10 withdrawn and never executed, eight required substantive purposes plus o
+         ne expressly authorized replacement setup attempt, total ceiling nine. A-001's categor
+         ical claim that input-injected whole-path tests only test a harness is withdrawn; the
+         actual reason for direct omission/missing-authority controls is the contract's require
+         d layer. The original dispatch and old grants remain history, not new allowances.
+    148 +
+    149 +The operator pause preserved the complete state before report creation. NOTE-006, rele
+         ase token RELEASE-STORIES-20260905, explicitly releases this seat for this report, row
+          ledger and hash handoff only. STATUS.md acknowledges RESUMED. No builds, elaborations
+         , completed controls, candidate checks or campaign rows were rerun/opened during close
+         out. Accounting is unchanged: **9/9 substantive, 29/30 targeted**, 38 receipts. One ta
+         rgeted reserve remains unused. Local-only, no author contact, no pane/composer message
+         s, no candidate edit, push, PR action, publication or merge. All failed attempts and c
+         aches are preserved; no pane or cache retirement is authorized by this reporting-only
+         release.
+    150 +
+    151 +## Scope and outcome
+    152 +
+    153 +The finite denominator is the original A1–A8 (A2 replaced by A2′), B1–B6, C and §5; AM
+         ENDMENT-1; named F-001–F-004/G-001; five successor elements; and accepted-exporter int
+         egration/provenance. This is a full audit of those gates and naming changes, not a new
+          all-theorems semantic, simulator, proof-completeness or exporter mutation audit.
+    154 +
+    155 +The candidate's six-file delta adds mandatory axiom checking; derives source, compiled
+         -module and theorem inventories; replaces a numeric census quota with source/compiled
+         reconciliation; canonicalizes resolved-artifact containment; preserves nine computatio
+         ns under accurate names; removes three unused exports; and corrects one doc-comment pa
+         th. The broader aggregate diff contains already accepted exporter integration. The ret
+         ained six-file diff, not that aggregate, determines this submission's edits.
+    156 +
+    157 +The independent cold just lean and exact full just ci pass. Baseline S=27 tracked/walk
+         ed, B=27, T=1214 occurrences/1213 distinct/1213 fold; source/backed declarations=163/1
+         63. The separate 14-constructor inversion denominator remains 14/14, with withheld-bac
+         kdonate 13/14. These are observed counts, not required quotas. P17 records identical c
+         ompiled identities and 262 Std dependencies excluded. Logs print all identities, not j
+         ust these totals.
+    158 +
+    159 +Omission closure is independent: P02/P03 each reject only their intended project-modul
+         e omission, and P04/P05 pass when only the matching guard is disabled. The owner’s dif
+         ferently numbered P26/P27 stale-olean-contaminated logs remain invalid as unmasked nec
+         essity evidence. They are not retroactively repaired. S3R rejects sorryAx at unchanged
+          census, while S6 preserves the poison and passes without the gate; S4 rejects direct
+         and def-mediated forbidden-axiom uses. These observations establish actual enforcement
+         , not merely a green recipe.
+    160 +
+    161 +## Finding and bounded observations
+    162 +
+    163 +**Element 1 — ADVISORY, OPEN: missing-root documentation exceeds behavior.** The new g
+         ate header says missing/unresolvable REACTIVEGAS_ROOT fails closed. The driver uses ge
+         tD ".". P22 runs the driver with REACTIVEGAS_ROOT unset from the Lean cwd and gets exi
+         t 0 and axiom-gate: ok with the baseline identities. This contradicts the missing-vari
+         able portion of the documentation. The mandatory wrapper exports the root and S1/S2 pa
+         ss, so this is not evidence of a present mandatory-path bypass. Owner of disposition:
+         commissioning owner, to route to the implementation owner if a correction is commissio
+         ned. No remedy is authored by the auditor. G-001/Element 5 concern LEAN_PATH and are s
+         eparately CLOSED by P07/P08. Root canonicalization failures were not independently exe
+         rcised and are not inferred from those controls.
+    164 +
+    165 +**NOTE-004 — not a present implementation finding, with reason.** The resolver establi
+         shes loaded-artifact containment under a canonical root together with S/B identity rec
+         onciliation. It does not establish each artifact's package-specific source origin. Rec
+         orded inspection found no require, packages=[], and no populated .lake/packages; obser
+         ved dependency artifacts resolve outside the root. There is therefore no present mater
+         ialized in-root dependency exhibiting misclassification. The physical-layout assumptio
+         n must stay explicit. A future dependency physically under .lake/packages would satisf
+         y containment and could yield false project classification/extra-module refusal. Alias
+         ed paths into the Nix store do not test that layout. Trailing slash construction close
+         s the distinct lexical sibling-prefix issue by inspection. Neither universal ownership
+          nor shadow-name safety is claimed.
+    166 +
+    167 +**NOTE-005 — comparator limit closed by execution, not qualification alone.** P25's pr
+         eliminary primitive inequality was not a negative of the comparison loop. P27 supplies
+          a changed value through that actual loop and gets the named value mismatch. P28 feeds
+          an in-memory wrapper reference to the actual consumer scan and gets consumers=1 follo
+         wed by its actual assertion failure. P29 repeats all nine expression comparisons and t
+         he complete 27-module/3385-constant scan with opaque bodies included: two positive edg
+         es, zero removed-wrapper consumers, zero opaque bodies present. No candidate source/bu
+         ild was altered for these three targeted controls. The separate type-mismatch branch w
+         as not individually challenged and remains listed as untested.
+    168 +
+    169 +**Scope limits are not silently CLOSED.** CI-T-SHARED-FILTER and shadow-name independe
+         nce remain the predeclared bounded advisories outside expansion. The guard ledger name
+         s unexecuted exception/zero/type branches OPEN and names construction-only arguments a
+         s such. No claim of exhaustive mutation coverage, independent theorem sources, mathema
+         tical totality, universal package ownership or semantic adequacy of all 1213 statement
+         s is made. Those guard entries are not new mandatory campaign rows. No required named
+         control is missing; the Element 1 documentation subclaim remains openly contradicted r
+         ather than reasoned closed.
+    170 +
+    171 +## Rebuilt-base provenance and naming preservation
+    172 +
+    173 +NOTE-002 licenses d670323 rather than 4a6 because the three owned Lean blobs are ident
+         ical at both bases: Invariants d6d05c2e7436c0c4507f747bdddda1f98f7bbe3a; TraceTests 50
+         9d032def0e45996eb57d41b19fafe190c13d6e; Predicates 2b2cf73f238a7b24c1c10436abb76e22ac3
+         a6255. The later base also includes the actual 27-module exporter extent. S8 verifies
+         all 28 relevant .lean/config source hashes against base Git, removes affected compiled
+          outputs in the separate base cache and visibly rebuilds Predicates, Invariants and Tr
+         aceTests. Unaffected dependencies are justified reuse, not represented as freshly reco
+         mpiled. P29 imports the base artifacts from that cache and candidate artifacts from th
+         e clean candidate cache.
+    174 +
+    175 +Nine type/value expression equalities are established under only licensed constant-nam
+         e replacement. The removed wrappers are independently present in base and absent in ca
+         ndidate; compiled consumer scan includes types and values, including opaque bodies (no
+         ne present), over the stated 3385 constants. This establishes value preservation and l
+         ack of base consumers in that extent, not external API compatibility with unknown clie
+         nts. Full nine-pair identities and observed outputs are in P29 and the row ledger.
+    176 +
+    177 +## Integrated row decisions
+    178 +
+    179 +Each row below has one verdict, the command(s) actually executed, the observation, and
+          its limits. Commands are transcribed from the original invocation events; individual
+         receipts carry command and output hashes. Inspection-only closure says so. Full machin
+         e-readable copies are ROW-LEDGER.json and EXECUTION-LEDGER.json.
+    180 +
+    181 +${rowText}
+    182 +## Guard attribution ledger
+    183 +
+    184 +These are classifications of existing guards, not a new execution campaign. OPEN untes
+         ted branches are not credited as measured failures. Construction-only closure means th
+         e stated reachability/redundancy argument, not a passed mutation. Mandatory row closur
+         e is restricted to its commissioned observable scope.
+    185 +
+    186 +${guardText}
+    187 +
+    188 +## Failed attempts, integrity and stopping receipt
+    189 +
+    190 +S3 is a substantive setup failure: the original Bubblewrap launcher omitted /dev/null
+         access, and the dependency scanner failed before Lean. It remains charged and has no k
+         ill credit. A-003 authorized exactly one replacement. The failed launcher/cache were r
+         etained; the corrected v4 launcher and narrow mount preflight preceded S3R. P11/P12 ar
+         e charged ineffective mutations using the wrong qualified theorem name; P15/P16 correc
+         t them. P19 is only an instrument preflight. P25 retains its actual positive observati
+         ons with its inadequate preliminary-negative characterization corrected by P27/P28. Th
+         ese distinctions remain in EXECUTION-LEDGER.md.
+    191 +
+    192 +The admitted manifest originally included itself and failed its self-hash; the documen
+         ts themselves matched. NOTE-003's corrected 17-entry manifest verified, as recorded in
+          evidence/admitted-manifest-recheck.txt. Both historical receipts remain. The frozen o
+         wner packet matched at admission; no moving live packet was substituted. Earlier rejec
+         ted candidate results provide no closure evidence.
+    193 +
+    194 +Mutation builds used private mounted fixture sources and separate output caches. The p
+         reserved clean-oleans recheck records the candidate outputs unchanged; final-git-prove
+         nance.txt and the operator-pause receipt record the candidate detached and clean. Thes
+         e are retained observations, not freshly rerun claims after release. All 38 individual
+          invocation receipts, logs and failed instruments are preserved. The older receipts.js
+         on/observed-output-audit.json snapshots predate P27–P29; the completed execution ledge
+         r incorporates the individual later receipts without rewriting history.
+    195 +
+    196 +Campaign stopped at its completed named control set, with 9/9 substantive and 29/30 ta
+         rgeted spent. Reporting-only release used no execution allowance. No new gap was pursu
+         ed, no scope expansion requested, and no remaining slot spent. Monetary/token counters
+          are not available in these execution receipts and are not inferred.
+    197 +
+    198 +Handoff: this report, ROW-LEDGER.md/json, EXECUTION-LEDGER.md/json, refreshed INSTRUME
+         NTS.sha256, EVIDENCE.sha256, AUTHORITY.sha256, and HASH-HANDOFF.md. FINAL.sha256 binds
+          the terminal documents/manifests; it excludes itself to avoid self-reference. STATUS.
+         md remains append-only and its terminal event carries report and final-manifest hashes
+         . Acceptance and any onward correction belong to the commissioning owner. All artifact
+         s, caches and the pane remain preserved.
+    199 +`;
+    200 +write('handoffs/AUDIT-REPORT.md',report);
+    201 +console.log(JSON.stringify({report:'handoffs/AUDIT-REPORT.md',rows:rows.length,closed:
+         rows.filter(r=>r.verdict==='CLOSED').length,partly:rows.filter(r=>r.verdict==='PARTLY'
+         ).length,receipts:runs.length,verdict:'AUDIT-FINDINGS'}));
+
+• Ran node handoffs/assemble-report.cjs
+  └ {"report":"handoffs/
+    AUDIT-REPORT.md","rows":25,"closed":24,"partly":1,"receipts":38,"verdict":"AUDIT-FINDINGS"}
+
+• Ran node -e 'const fs=require("fs"); const s=fs.readFileSync("handoffs/
+  │ AUDIT-REPORT.md","utf8"); console.log(s.slice(0,1000));
+  │ console.log("report_bytes="+Buffer.byteLength(s));
+  │ … +2 lines
+  └ # Independent S2R candidate audit — final report
+
+    … +27 lines (ctrl + t to view transcript)
+    inbox-NOTE-005-comparator-negative-control-limit.md
+    inbox-NOTE-006-release-finish-the-report.md
+
+───────────────────────────────────────────────────────────────────────────────────────────────
+
+• The report and ledgers are written: 24 rows CLOSED and Element 1 PARTLY because of the
+  advisory documentation finding. They include all 38 execution receipts, with failed setup and
+  ineffective controls identified. I’m now freezing the handoff hashes and checking the
+  generated document links; no audit controls are being rerun.
+
+• Added /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s2r-final-codex/handoffs/
+freeze-handoff.cjs (+58 -0)
+     1 +// Final document/hash packaging only. No subprocesses or audit executions.
+     2 +const fs=require('fs'), path=require('path'), crypto=require('crypto');
+     3 +const root=path.dirname(__dirname);
+     4 +const read=p=>fs.readFileSync(path.join(root,p));
+     5 +const write=(p,b)=>fs.writeFileSync(path.join(root,p),b);
+     6 +const hash=p=>crypto.createHash('sha256').update(read(p)).digest('hex');
+     7 +const files=[], links=[];
+     8 +function walk(d){for(const n of fs.readdirSync(path.join(root,d)).sort()){const p=d+'/'
+        +n,s=fs.lstatSync(path.join(root,p));if(s.isSymbolicLink())links.push({path:p,target:fs
+        .readlinkSync(path.join(root,p))});else if(s.isDirectory())walk(p);else if(s.isFile())f
+        iles.push(p);}}
+     9 +walk('instruments');
+    10 +const old='handoffs/INSTRUMENTS-pre-closeout.sha256';
+    11 +if(!fs.existsSync(path.join(root,old)))fs.copyFileSync(path.join(root,'handoffs/INSTRUM
+        ENTS.sha256'),path.join(root,old));
+    12 +const manifest=ps=>ps.sort().map(p=>hash(p)+'  '+p+'\n').join('');
+    13 +write('handoffs/INSTRUMENTS.sha256',manifest(files));
+    14 +write('handoffs/INSTRUMENT-SYMLINKS.json',JSON.stringify(links,null,2)+'\n');
+    15 +const ev=fs.readdirSync(path.join(root,'evidence')).filter(n=>fs.lstatSync(path.join(ro
+        ot,'evidence',n)).isFile()).map(n=>'evidence/'+n);
+    16 +write('handoffs/EVIDENCE.sha256',manifest(ev));
+    17 +const auth=fs.readdirSync(root).filter(n=>n.endsWith('.md')&&n!=='STATUS.md');
+    18 +for(const d of ['admitted','answers','questions'])for(const n of fs.readdirSync(path.jo
+        in(root,d)))if(fs.lstatSync(path.join(root,d,n)).isFile())auth.push(d+'/'+n);
+    19 +write('handoffs/AUTHORITY.sha256',manifest(auth));
+    20 +write('handoffs/STATUS-PRE-HANDOFF.log',read('STATUS.md'));
+    21 +const reportHash=hash('handoffs/AUDIT-REPORT.md');
+    22 +const doc=`# Final local hash handoff
+    23 +
+    24 +Verdict: **AUDIT-FINDINGS**. Candidate: \`714cb2a8536b24bf735295137e8f907782228380\`.
+    25 +
+    26 +Report: [AUDIT-REPORT.md](AUDIT-REPORT.md), SHA-256 \`${reportHash}\`.
+    27 +
+    28 +25 integrated rows: 24 CLOSED, 1 PARTLY. Element 1 retains one OPEN advisory documentat
+        ion finding: missing REACTIVEGAS_ROOT defaults to cwd despite the header's fail-closed
+        claim. No blocking functional defect demonstrated in the commissioned current-configura
+        tion behavior. NOTE-004 containment is a stated physical-layout assumption, not a prese
+        nt defect. NOTE-005 comparator/assertion limits are closed by P27/P28, with P29 the fin
+        al complete scan. Untested auxiliary guard branches remain explicitly OPEN; no universa
+        l coverage claim.
+    29 +
+    30 +Deliverables:
+    31 +
+    32 +- [ROW-LEDGER.md](ROW-LEDGER.md) and [ROW-LEDGER.json](ROW-LEDGER.json): integrated dec
+        isions, commands, observations and guard limits.
+    33 +- [EXECUTION-LEDGER.md](EXECUTION-LEDGER.md) and [EXECUTION-LEDGER.json](EXECUTION-LEDG
+        ER.json): all 38 preserved command/exit/hash receipts, including charged failures.
+    34 +- [INSTRUMENTS.sha256](INSTRUMENTS.sha256): ${files.length} regular instrument/fixture
+        files, refreshed through P29. The earlier manifest is retained as INSTRUMENTS-pre-close
+        out.sha256.
+    35 +- [INSTRUMENT-SYMLINKS.json](INSTRUMENT-SYMLINKS.json): ${links.length} symbolic-link p
+        ath/target records; symlink targets are not recursively hashed by this instrument manif
+        est.
+    36 +- [EVIDENCE.sha256](EVIDENCE.sha256): ${ev.length} retained evidence files, including e
+        very individual P27–P29 receipt/log.
+    37 +- [AUTHORITY.sha256](AUTHORITY.sha256): ${auth.length} frozen/current authority and Q/A
+         files. Superseded documents remain historical, not simultaneously operative.
+    38 +- [STATUS-PRE-HANDOFF.log](STATUS-PRE-HANDOFF.log): immutable journal snapshot before t
+        erminal events; live STATUS.md stays append-only.
+    39 +- [FINAL.sha256](FINAL.sha256): hashes of final documents, reporting scripts, snapshot
+        and component manifests; excludes itself. Its hash is recorded in the terminal STATUS e
+        vent.
+    40 +
+    41 +Manifest paths are relative to the runtime root:
+    42 +\`/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s2r-final-codex\`.
+    43 +For document/package verification only, use \`sha256sum -c handoffs/FINAL.sha256\` from
+         that root; component manifests bind their listed files. This does not execute or reval
+        idate any candidate control. These commands are instructions for reviewing the package,
+         not an added campaign.
+    44 +
+    45 +Release acknowledged: NOTE-006 / RELEASE-STORIES-20260905. Same seat/context; no fresh
+        START, cap refund or new execution. Spend **9/9 substantive; 29/30 targeted**, unchange
+        d. The unused targeted slot remains unused. Original receipt snapshots predating P27–P2
+        9 are retained unchanged; the final execution ledger uses individual receipts.
+    46 +
+    47 +Candidate, worktree, caches, fixtures, failed attempts and pane preserved. No new build
+        /probe, candidate edit, outward message, publication, push, PR action, merge or cleanup
+        . This handoff completes the auditor's report obligation; acceptance and any follow-up
+        authorization belong to the commissioning owner. No further work is queued by this seat
+        .
+    48 +`;
+    49 +write('handoffs/HASH-HANDOFF.md',doc);
+    50 +const finalFiles=fs.readdirSync(path.join(root,'handoffs')).filter(n=>n!=='FINAL.sha256
+        '&&n!=='PACKAGE-CHECK.json').map(n=>'handoffs/'+n);
+    51 +write('handoffs/FINAL.sha256',manifest(finalFiles));
+    52 +// Verify only the newly produced package and its links, never rerun prior controls.
+    53 +const mismatches=[];
+    54 +for(const m of ['handoffs/FINAL.sha256','handoffs/INSTRUMENTS.sha256','handoffs/EVIDENC
+        E.sha256','handoffs/AUTHORITY.sha256'])for(const line of read(m).toString().trimEnd().s
+        plit('\n')){if(!line)continue;const want=line.slice(0,64),p=line.slice(66);if(hash(p)!=
+        =want)mismatches.push(p);}
+    55 +const missingLinks=[];
+    56 +for(const p of ['handoffs/AUDIT-REPORT.md','handoffs/ROW-LEDGER.md','handoffs/EXECUTION
+        -LEDGER.md','handoffs/HASH-HANDOFF.md'])for(const m of read(p).toString().matchAll(/\]\
+        (([^)]+)\)/g)){const dest=m[1];if(!dest.includes('://')&&!fs.existsSync(path.resolve(ro
+        ot,path.dirname(p),dest)))missingLinks.push([p,dest]);}
+    57 +if(mismatches.length||missingLinks.length)throw Error(JSON.stringify({mismatches,missin
+        gLinks}));
+    58 +console.log(JSON.stringify({report_sha256:reportHash,final_sha256:hash('handoffs/FINAL.
+        sha256'),component_counts:{instruments:files.length,evidence:ev.length,authority:auth.l
+        ength,final:finalFiles.length},package_hashes:'MATCH',document_links:'ALL_PRESENT',subs
+        tantive:9,targeted:29}));
+
+• Ran node handoffs/freeze-handoff.cjs
+  └ {"report_sha256":"d634df52c51d4351699d36927b5b0c662357a4ac08a7d689a6708db2d34def90","final_
+    sha256":"64dbd5ad2300dec49c4ecc71b703ce86031b673782e363fc9f2f115df536892e","component_count
+    s":
+    {"instruments":114,"evidence":103,"authority":31,"final":14},"package_hashes":"MATCH","docu
+    ment_links":"ALL_PRESENT","substantive":9,"targeted":29}
+
+• Ran /code/llm-settings/shared/skills/worker-protocol/scripts/status-event /tmp/reactivegas/
+  │ ms2/e-lean-compliance/candidate-auditor-s2r-final-codex/STATUS.md AUDIT-FINDINGS
+  │ 'NOTE-006 reporting-only closeout finished; report=handoffs/AUDIT-REPORT.md
+  │ … +8 lines
+  └ (no output)
+
+• Ran /code/llm-settings/shared/skills/worker-protocol/scripts/status-event /tmp/reactivegas/
+  │ ms2/e-lean-compliance/candidate-auditor-s2r-final-codex/STATUS.md COMPLETE 'Local
+  │ handoff=handoffs/HASH-HANDOFF.md; terminal verdict AUDIT-FINDINGS; acceptance remains
+  │ … +4 lines
+  └ (no output)
+
+───────────────────────────────────────────────────────────────────────────────────────────────
+
+• Completed and acknowledged in STATUS.md.
+
+  - /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s2r-final-codex/handoffs/AUDIT-
+    REPORT.md
+
+  - Row ledger (/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s2r-final-codex/
+    handoffs/ROW-LEDGER.md)
+
+  - Hash handoff (/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s2r-final-codex/
+    handoffs/HASH-HANDOFF.md)
+
+  AUDIT-FINDINGS: 24 rows CLOSED, one PARTLY—an advisory missing-root documentation mismatch.
+  No blocking functional defect demonstrated within the commissioned scope.
+
+  Package hashes and document links verified. No new builds or probes; spend remains 9/9
+  substantive, 29/30 targeted. Everything preserved.
+
+─ Worked for 12m 14s ──────────────────────────────────────────────────────────────────────────
+
+
+› Ask Codex to do anything
+
+  gpt-6-astra high · /code/reactivegas-66-s2r-audit

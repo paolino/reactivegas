@@ -1,0 +1,36 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["4039daedea8ff465.olean"],
+  "i": "e1af38baa3380363.ilean",
+  "c": "06d8b9f7cf92c649.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/code/reactivegas-66-s4b-audit3/lean/.lake/build/lib/lean /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean /code/reactivegas-66-s4b-audit3/lean/KelGroups/Vote/Validate.lean -o /code/reactivegas-66-s4b-audit3/lean/.lake/build/lib/lean/KelGroups/Vote/Validate.olean -i /code/reactivegas-66-s4b-audit3/lean/.lake/build/lib/lean/KelGroups/Vote/Validate.ilean -c /code/reactivegas-66-s4b-audit3/lean/.lake/build/ir/KelGroups/Vote/Validate.c --setup /code/reactivegas-66-s4b-audit3/lean/.lake/build/ir/KelGroups/Vote/Validate.setup.json --json",
+   "level": "trace"},
+  {"message":
+   "KelGroups/Vote/Validate.lean:54:23: unused variable `threshold`\n\nNote: This linter can be disabled with `set_option linter.unusedVariables false`",
+   "level": "warning"}],
+ "inputs":
+ [["KelGroups.Vote.Validate:deps",
+   [["deps",
+     [["reactivegas/KelGroups:extraDep",
+       [["@reactivegas:extraDep", "00000000000006bb"]]],
+      ["imports",
+       [["KelGroups.Vote.State transitive imports (legacy)",
+         "e2f07ea0053124de"],
+        ["KelGroups.Vote.State:importAllArts", "56fb2e7d6a2c6b2c"],
+        ["KelGroups.Vote.Event transitive imports (legacy)",
+         "e2f07ea0053124de"],
+        ["KelGroups.Vote.Event:importAllArts", "a86dfbce5adbb60b"]]]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.25.0, commit v4.25.0", "9c3a3ade3a41d5d0"],
+  ["/code/reactivegas-66-s4b-audit3/lean/KelGroups/Vote/Validate.lean",
+   "0c44d5febf93b21a"],
+  ["options", [["-DautoImplicit=false", "4a85acb881fd49d0"]]],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "8257f01155a82b5c"}

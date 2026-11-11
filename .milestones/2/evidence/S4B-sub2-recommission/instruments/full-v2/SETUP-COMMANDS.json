@@ -1,0 +1,258 @@
+[
+  {
+    "id": "SETUP-S01",
+    "charge": "static preparation; zero compiler/build calls",
+    "argv": [
+      "node",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/world-prepare.mjs",
+      "S01"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2",
+    "inputs": [
+      {
+        "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/worlds.json",
+        "sha256": "ae608f86979b73501d451ca62641e6b0a5ee38d0a7b19bfc13436da7534ad137"
+      },
+      {
+        "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/world-prepare.mjs",
+        "sha256": "49cc39537f72f88b05b6ce7c29a0d0ed8c740bbf42038278df3baae08df1841d"
+      }
+    ],
+    "prerequisite": "ADMISSION.json and absent destination",
+    "output": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/evidence/full-v2/S01.world.json"
+  },
+  {
+    "id": "SETUP-S02",
+    "charge": "static preparation; zero compiler/build calls",
+    "argv": [
+      "node",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/world-prepare.mjs",
+      "S02"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2",
+    "inputs": [
+      {
+        "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/worlds.json",
+        "sha256": "ae608f86979b73501d451ca62641e6b0a5ee38d0a7b19bfc13436da7534ad137"
+      },
+      {
+        "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/world-prepare.mjs",
+        "sha256": "49cc39537f72f88b05b6ce7c29a0d0ed8c740bbf42038278df3baae08df1841d"
+      }
+    ],
+    "prerequisite": "ADMISSION.json and absent destination",
+    "output": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/evidence/full-v2/S02.world.json"
+  },
+  {
+    "id": "SETUP-S03",
+    "charge": "static preparation; zero compiler/build calls",
+    "argv": [
+      "node",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/world-prepare.mjs",
+      "S03"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2",
+    "inputs": [
+      {
+        "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/worlds.json",
+        "sha256": "ae608f86979b73501d451ca62641e6b0a5ee38d0a7b19bfc13436da7534ad137"
+      },
+      {
+        "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/world-prepare.mjs",
+        "sha256": "49cc39537f72f88b05b6ce7c29a0d0ed8c740bbf42038278df3baae08df1841d"
+      }
+    ],
+    "prerequisite": "ADMISSION.json and absent destination",
+    "output": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/evidence/full-v2/S03.world.json"
+  },
+  {
+    "id": "SETUP-S04",
+    "charge": "static preparation; zero compiler/build calls",
+    "argv": [
+      "node",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/world-prepare.mjs",
+      "S04"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2",
+    "inputs": [
+      {
+        "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/worlds.json",
+        "sha256": "ae608f86979b73501d451ca62641e6b0a5ee38d0a7b19bfc13436da7534ad137"
+      },
+      {
+        "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/world-prepare.mjs",
+        "sha256": "49cc39537f72f88b05b6ce7c29a0d0ed8c740bbf42038278df3baae08df1841d"
+      }
+    ],
+    "prerequisite": "ADMISSION.json and absent destination",
+    "output": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/evidence/full-v2/S04.world.json"
+  },
+  {
+    "id": "SETUP-S05",
+    "charge": "static preparation; zero compiler/build calls",
+    "argv": [
+      "node",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/world-prepare.mjs",
+      "S05"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2",
+    "inputs": [
+      {
+        "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/worlds.json",
+        "sha256": "ae608f86979b73501d451ca62641e6b0a5ee38d0a7b19bfc13436da7534ad137"
+      },
+      {
+        "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/world-prepare.mjs",
+        "sha256": "49cc39537f72f88b05b6ce7c29a0d0ed8c740bbf42038278df3baae08df1841d"
+      }
+    ],
+    "prerequisite": "ADMISSION.json and absent destination",
+    "output": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/evidence/full-v2/S05.world.json"
+  },
+  {
+    "id": "SETUP-S06",
+    "charge": "static preparation; zero compiler/build calls",
+    "argv": [
+      "node",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/world-prepare.mjs",
+      "S06"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2",
+    "inputs": [
+      {
+        "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/worlds.json",
+        "sha256": "ae608f86979b73501d451ca62641e6b0a5ee38d0a7b19bfc13436da7534ad137"
+      },
+      {
+        "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/world-prepare.mjs",
+        "sha256": "49cc39537f72f88b05b6ce7c29a0d0ed8c740bbf42038278df3baae08df1841d"
+      }
+    ],
+    "prerequisite": "ADMISSION.json and absent destination",
+    "output": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/evidence/full-v2/S06.world.json"
+  },
+  {
+    "id": "SETUP-S07",
+    "charge": "static preparation; zero compiler/build calls",
+    "argv": [
+      "node",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/world-prepare.mjs",
+      "S07"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2",
+    "inputs": [
+      {
+        "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/worlds.json",
+        "sha256": "ae608f86979b73501d451ca62641e6b0a5ee38d0a7b19bfc13436da7534ad137"
+      },
+      {
+        "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/world-prepare.mjs",
+        "sha256": "49cc39537f72f88b05b6ce7c29a0d0ed8c740bbf42038278df3baae08df1841d"
+      }
+    ],
+    "prerequisite": "ADMISSION.json and absent destination",
+    "output": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/evidence/full-v2/S07.world.json"
+  },
+  {
+    "id": "SETUP-S08",
+    "charge": "static preparation; zero compiler/build calls",
+    "argv": [
+      "node",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/world-prepare.mjs",
+      "S08"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2",
+    "inputs": [
+      {
+        "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/worlds.json",
+        "sha256": "ae608f86979b73501d451ca62641e6b0a5ee38d0a7b19bfc13436da7534ad137"
+      },
+      {
+        "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/world-prepare.mjs",
+        "sha256": "49cc39537f72f88b05b6ce7c29a0d0ed8c740bbf42038278df3baae08df1841d"
+      }
+    ],
+    "prerequisite": "ADMISSION.json and absent destination",
+    "output": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/evidence/full-v2/S08.world.json"
+  },
+  {
+    "id": "SETUP-S09",
+    "charge": "static preparation; zero compiler/build calls",
+    "argv": [
+      "node",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/world-prepare.mjs",
+      "S09"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2",
+    "inputs": [
+      {
+        "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/worlds.json",
+        "sha256": "ae608f86979b73501d451ca62641e6b0a5ee38d0a7b19bfc13436da7534ad137"
+      },
+      {
+        "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/world-prepare.mjs",
+        "sha256": "49cc39537f72f88b05b6ce7c29a0d0ed8c740bbf42038278df3baae08df1841d"
+      }
+    ],
+    "prerequisite": "ADMISSION.json and absent destination",
+    "output": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/evidence/full-v2/S09.world.json"
+  },
+  {
+    "id": "SETUP-S10",
+    "charge": "static preparation; zero compiler/build calls",
+    "argv": [
+      "node",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/world-prepare.mjs",
+      "S10"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2",
+    "inputs": [
+      {
+        "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/worlds.json",
+        "sha256": "ae608f86979b73501d451ca62641e6b0a5ee38d0a7b19bfc13436da7534ad137"
+      },
+      {
+        "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/world-prepare.mjs",
+        "sha256": "49cc39537f72f88b05b6ce7c29a0d0ed8c740bbf42038278df3baae08df1841d"
+      }
+    ],
+    "prerequisite": "ADMISSION.json and absent destination",
+    "output": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/evidence/full-v2/S10.world.json"
+  },
+  {
+    "id": "SETUP-P01",
+    "charge": "static preparation; zero compiler/build calls",
+    "argv": [
+      "node",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/shadow-prepare.mjs",
+      "P01"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2",
+    "inputs": [
+      {
+        "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/shadow-prepare.mjs",
+        "sha256": "4556b7101150d1afdaadeb53379a3bbf3421b608b33dc404c4dd495598cc796f"
+      }
+    ],
+    "prerequisite": "ADMISSION.json, absent separate shadow path",
+    "output": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/evidence/full-v2/P01.empty-world.json"
+  },
+  {
+    "id": "SETUP-P07",
+    "charge": "static preparation; zero compiler/build calls",
+    "argv": [
+      "node",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/shadow-prepare.mjs",
+      "P07"
+    ],
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2",
+    "inputs": [
+      {
+        "path": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/shadow-prepare.mjs",
+        "sha256": "4556b7101150d1afdaadeb53379a3bbf3421b608b33dc404c4dd495598cc796f"
+      }
+    ],
+    "prerequisite": "ADMISSION.json, absent separate shadow path",
+    "output": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/evidence/full-v2/P07.empty-world.json"
+  }
+]

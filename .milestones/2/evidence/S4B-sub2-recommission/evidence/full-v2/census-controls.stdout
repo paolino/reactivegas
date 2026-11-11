@@ -1,0 +1,6 @@
+CENSUS baseline declarations=3478 predicates=24
+CONTROL empty rejected: empty extent
+CONTROL one-declaration-omitted rejected: truncated extent
+CONTROL unknown-sort-retained rejected: unresolved sort conservation
+CONTROL false-home rejected: declaration without owned home conservation
+CENSUS-CONTROLS-OK

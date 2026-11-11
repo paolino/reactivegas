@@ -1,0 +1,54 @@
+conservation_corr (s : State) : conservation s ↔ conservationB s = true
+'conservation_corr' depends on axioms: [propext]
+solvent_corr (view : KelGroups.GroupView) (s : State) : solvent view s ↔ solventB view s = true
+'solvent_corr' depends on axioms: [propext, Quot.sound]
+insolvent_corr (view : KelGroups.GroupView) (s : State) : insolvent view s ↔ insolventB view s = true
+'insolvent_corr' depends on axioms: [propext, Quot.sound]
+uniquePledges_corr (col : Collection) : uniquePledges col ↔ uniquePledgesB col = true
+'uniquePledges_corr' depends on axioms: [propext, Quot.sound]
+allUniquePledges_corr (s : State) : allUniquePledges s ↔ allUniquePledgesB s = true
+'allUniquePledges_corr' depends on axioms: [propext, Quot.sound]
+escrowHeld_corr (col : Collection) (u : KelGroups.Key) (v : Int) : escrowHeld col u v ↔ escrowHeldB col u v = true
+'escrowHeld_corr' depends on axioms: [propext, Quot.sound]
+governanceEnacts_corr (u : KelGroups.Key) (s' : State) : governanceEnacts u s' ↔ governanceEnactsB u s' = true
+'governanceEnacts_corr' depends on axioms: [propext, Quot.sound]
+doubleEntry_corr (s s' : State) (a u : KelGroups.Key) (v : Int) :
+  doubleEntry s s' a u v ↔ doubleEntryB s s' a u v = true
+'doubleEntry_corr' depends on axioms: [propext]
+canCloseGroup_corr (view : KelGroups.GroupView) (s : State) : canCloseGroup view s ↔ canCloseGroupB view s = true
+'canCloseGroup_corr' depends on axioms: [propext, Quot.sound]
+KelGroups.pendingWellFormed_corr (pending : KelGroups.PendingProposal) :
+  KelGroups.PendingWellFormed pending ↔ KelGroups.pendingWellFormedB pending = true
+'KelGroups.pendingWellFormed_corr' depends on axioms: [propext]
+KelGroups.membersCoherent_corr {α : Type} (gs : KelGroups.GroupState α) :
+  KelGroups.MembersCoherent gs ↔ KelGroups.membersCoherentB gs = true
+'KelGroups.membersCoherent_corr' depends on axioms: [propext, Quot.sound]
+KelGroups.pendingCoherent_corr {α : Type} (gs : KelGroups.GroupState α) :
+  KelGroups.PendingCoherent gs ↔ KelGroups.pendingCoherentB gs = true
+'KelGroups.pendingCoherent_corr' depends on axioms: [propext, Quot.sound]
+KelGroups.wellFormed_corr {α : Type} (gs : KelGroups.GroupState α) :
+  KelGroups.WellFormed gs ↔ KelGroups.wellFormedB gs = true
+'KelGroups.wellFormed_corr' depends on axioms: [propext, Quot.sound]
+KelGroups.enacts_corr {α : Type} [DecidableEq α] (gs : KelGroups.GroupState α) (proposalId : KelGroups.ProposalId)
+  (result : KelGroups.GroupState α) :
+  KelGroups.Enacts gs proposalId result ↔ KelGroups.enactsB gs proposalId result = true
+'KelGroups.enacts_corr' depends on axioms: [propext]
+KelGroups.Vote.questionClean_corr (q : KelGroups.Vote.Question) :
+  KelGroups.Vote.QuestionClean q ↔ KelGroups.Vote.questionCleanB q = true
+'KelGroups.Vote.questionClean_corr' depends on axioms: [propext, Quot.sound]
+KelGroups.Vote.sweepReady_corr (view : KelGroups.GroupView) (gs : KelGroups.Vote.VoteState) :
+  KelGroups.Vote.SweepReady view gs ↔ KelGroups.Vote.sweepReadyB view gs = true
+'KelGroups.Vote.sweepReady_corr' depends on axioms: [propext, Quot.sound]
+KelGroups.Vote.voteWellFormed_corr (θ : KelGroups.Vote.Threshold) (view : KelGroups.GroupView)
+  (gs : KelGroups.Vote.VoteState) :
+  KelGroups.Vote.VoteWellFormed θ view gs ↔ KelGroups.Vote.voteWellFormedB θ view gs = true
+'KelGroups.Vote.voteWellFormed_corr' depends on axioms: [propext, Quot.sound]
+comune_not_a_member_corr (view : KelGroups.GroupView) :
+  comune_not_a_member view ↔ (!KelGroups.GroupView.isMember comuneId view) = true
+'comune_not_a_member_corr' depends on axioms: [propext]
+permissionToClose_corr (col : Collection) : permissionToClose col ↔ (col.permitted && col.pending.isEmpty) = true
+'permissionToClose_corr' depends on axioms: [propext]
+productionWellFormed_proj (gs : KelGroups.GroupState State) :
+  Reactivegas.productionWellFormed gs = !KelGroups.GroupView.isMember comuneId (KelGroups.groupView gs)
+'productionWellFormed_proj' does not depend on any axioms
+"RESTORATION-P01-TRUE-P07-FALSE"

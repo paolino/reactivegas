@@ -1,0 +1,23 @@
+{
+  "totalPlanned": {
+    "substantive": 12,
+    "targeted": 71
+  },
+  "ceiling": {
+    "substantive": 12,
+    "targeted": 80
+  },
+  "headroom": {
+    "substantive": 0,
+    "targeted": 9
+  },
+  "historical": {
+    "substantive": 6,
+    "targeted": 59
+  },
+  "campaignPlanned": {
+    "substantive": 18,
+    "targeted": 130
+  },
+  "fits": true
+}

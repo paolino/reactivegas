@@ -1,0 +1,19 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A09.lean:152:45: warning: unused variable `s`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A09.lean:153:39: warning: unused variable `u`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+insolventB (view : KelGroups.GroupView) (s : State) : Bool
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A09.lean:159:51: error: unsolved goals
+view : KelGroups.GroupView
+s : State
+⊢ (∃ u, KelGroups.GroupView.isMember u view = true ∧ bal s.conti u < 0) ↔
+    ∃ x, KelGroups.GroupView.isMember x view = true ∧ True
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A09.lean:160:54: warning: This simp argument is unused:
+  decide_eq_true_eq
+
+Hint: Omit it from the simp argument list.
+  simp only [insolvent, insolventB, List.any_eq_true, d̵e̵c̵i̵d̵e̵_̵e̵q̵_̵t̵r̵u̵e̵_̵e̵q̵,̵ ̵keys_mem_coe]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

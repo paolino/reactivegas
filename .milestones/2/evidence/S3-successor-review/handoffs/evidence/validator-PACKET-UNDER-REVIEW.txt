@@ -1,0 +1,3 @@
+VALIDATE-PACKET: PASS
+NOTE: This is DATA VALIDATION, not project execution; success establishes data consistency, not semantic correctness.
+Counts: identities 239 (81 helper/158 authored), atoms old 131 -> successor 151, rows 207, helpers 81, receipts 66, measurement ops 26

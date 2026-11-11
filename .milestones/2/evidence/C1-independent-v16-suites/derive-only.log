@@ -1,0 +1,7 @@
+SUITE-INVOCATION: node economics-simulator-ui-gate.mjs --derive-only
+SUITE-ENV-PARENT-SHELL: RG_OMIT_NOOP=unset
+SUITE-ENV-NOTE: parent-shell scope only. A child wrapped in "env VAR=.." takes its effective value from the SUITE-INVOCATION line above, not from this.
+reads: id×5 l×1 cf×1 claims×2 teachx×1 bgsigner×1 bgapprove×1 kgpropose×2 kgsigner×1 kgcast×1 kgballot×1 offClaims×1 task×1 u×1 act×2 hat×1 gotoColl×1 gotoPerson×1 pledgeC×1 pledgeU×1 obj×1 crumb×1
+required: K-1,K-10,K-11,K-12,K-13,K-15,K-2,K-3,K-4,K-5,K-6,K-7,K-8,K-9
+DERIVE-GREEN: /code/reactivegas-sim-fable-audit-c1r-s1/economics-simulator.html — 14 controlli da 22 letture
+SUITE-EXIT: 0

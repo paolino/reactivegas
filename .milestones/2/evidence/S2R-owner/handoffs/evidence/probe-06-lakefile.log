@@ -1,0 +1,6 @@
+path '/code/reactivegas-66-s2r/lean' does not contain a 'flake.nix', searching up
+warning: Git tree '/code/reactivegas-66-s2r' is dirty
+lakefile.lean:4:0: error: elaboration function for `Lake.DSL.packageCommand` has not been implemented
+lakefile.lean:9:0: error: elaboration function for `Lake.DSL.leanLibCommand` has not been implemented
+lakefile.lean:13:0: error: elaboration function for `Lake.DSL.leanLibCommand` has not been implemented
+lakefile.lean:19:0: error: elaboration function for `Lake.DSL.leanLibCommand` has not been implemented

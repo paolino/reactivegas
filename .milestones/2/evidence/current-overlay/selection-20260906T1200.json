@@ -1,0 +1,29 @@
+{
+  "at": "2026-09-06T12:01:12.215Z",
+  "copied": [
+    "e-lean-compliance/inbox/NOTE-LEANS3-SCHEDULE-AND-I92-SUCCESSOR-20260906.md",
+    "e-lean-compliance/handoffs/I92-FINAL-DISPOSITION.md",
+    "e-lean-compliance/handoffs/I92-SUCCESSOR-Q001-SCHEDULE-GAP.md",
+    "e-lean-compliance/handoffs/S3-SUCCESSOR-Q001-SCHEDULE-RETURN.md",
+    "e-haskell-impl/handoffs/RESUME-FRAGMENT-superseded-20260905T0727Z.md",
+    "e-haskell-impl/handoffs/RESUME-FRAGMENT.md",
+    "e-kelgroups-substrate-opus-20260906/inbox/NOTE-S30-2-SEMREC-GATE-ABSENT-20260906.md",
+    "t-simulator-fable/inbox/NOTE-075-preview-runner-boundary-and-public-pr-safety.md",
+    "t-simulator-fable/inbox/NOTE-076-preview-live-and-runner-landed.md",
+    "t-simulator-fable/handoffs/SIMULATOR-PREVIEW.md",
+    "e-lean-compliance/s3-successor-owner/STATUS.md",
+    "e-lean-compliance/s3-successor-owner/brief.md",
+    "e-lean-compliance/i92-successor-owner/STATUS.md",
+    "e-lean-compliance/i92-successor-owner/brief.md",
+    "t76-runtime-composition/owner-sol/STATUS.md",
+    "t76-runtime-composition/owner-sol/brief.md",
+    "e-haskell-impl/t90-money-custody/commit-owner-4/STATUS.md",
+    "e-haskell-impl/t90-money-custody/commit-owner-4/brief.md",
+    "e-kelgroups-substrate-opus-20260906/t30-contract-opus-20260906/s2-insp-semrec2/STATUS.md",
+    "e-kelgroups-substrate-opus-20260906/t30-contract-opus-20260906/s2-insp-semrec2/brief.md",
+    "artifacts/LEDGER-before-20260906T1158.md",
+    "artifacts/RESUME-before-20260906T1158.md",
+    "artifacts/SKILL-RELOAD-PREVIEW-FRESHNESS-8C974D1.md"
+  ],
+  "scope": "Selected control records only; active candidate trees, complete runtime roots and full-host state are not copied."
+}

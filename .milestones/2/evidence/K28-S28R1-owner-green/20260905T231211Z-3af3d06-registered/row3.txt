@@ -1,0 +1,3 @@
+succeeding hook commits with admitted evidence
+hook refusal rejects the whole transition
+failing hook restores prestate plus prelog

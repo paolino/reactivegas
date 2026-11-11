@@ -1,0 +1,13 @@
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+KelGroups/Mirrors.lean:148:49: error: unsolved goals
+q : Question
+⊢ (q.assents.Nodup ∧ q.dissents.Nodup ∧ ∀ (k : Key), k ∈ q.assents → k ∈ q.dissents → False) ↔
+    q.assents.Nodup ∧ q.dissents.Nodup ∧ (q.assents.any fun k => decide ¬k ∈ q.dissents) = true
+KelGroups/Mirrors.lean:149:62: warning: This simp argument is unused:
+  List.all_eq_true
+
+Hint: Omit it from the simp argument list.
+  simp only [QuestionClean, questionCleanB, Bool.and_eq_true, L̵i̵s̵t̵.̵a̵l̵l̵_̵e̵q̵_̵t̵r̵u̵e̵,̵
+  ̵ ̵ ̵ ̵ ̵decide_eq_true_eq]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

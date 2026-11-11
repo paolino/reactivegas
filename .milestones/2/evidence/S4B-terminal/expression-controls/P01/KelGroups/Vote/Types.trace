@@ -1,0 +1,29 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["b47217aca0c945ca.olean"],
+  "i": "292086699f696bfb.ilean",
+  "c": "92ab79cac30a17cf.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/code/reactivegas-66-s4b-audit3/lean/.lake/build/lib/lean /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean /code/reactivegas-66-s4b-audit3/lean/KelGroups/Vote/Types.lean -o /code/reactivegas-66-s4b-audit3/lean/.lake/build/lib/lean/KelGroups/Vote/Types.olean -i /code/reactivegas-66-s4b-audit3/lean/.lake/build/lib/lean/KelGroups/Vote/Types.ilean -c /code/reactivegas-66-s4b-audit3/lean/.lake/build/ir/KelGroups/Vote/Types.c --setup /code/reactivegas-66-s4b-audit3/lean/.lake/build/ir/KelGroups/Vote/Types.setup.json --json",
+   "level": "trace"}],
+ "inputs":
+ [["KelGroups.Vote.Types:deps",
+   [["deps",
+     [["reactivegas/KelGroups:extraDep",
+       [["@reactivegas:extraDep", "00000000000006bb"]]],
+      ["imports",
+       [["KelGroups.Types transitive imports (legacy)", "00000000000006bb"],
+        ["KelGroups.Types:importAllArts", "ed9bff95b47168d7"]]]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.25.0, commit v4.25.0", "9c3a3ade3a41d5d0"],
+  ["/code/reactivegas-66-s4b-audit3/lean/KelGroups/Vote/Types.lean",
+   "007f17d62f2a27df"],
+  ["options", [["-DautoImplicit=false", "4a85acb881fd49d0"]]],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "73b68caede8f3e34"}

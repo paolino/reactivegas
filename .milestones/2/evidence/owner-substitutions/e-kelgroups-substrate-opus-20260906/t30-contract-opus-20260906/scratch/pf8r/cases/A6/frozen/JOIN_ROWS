@@ -1,0 +1,5 @@
+Verdict|KelGroups.Vote.Types|Verdict|REQ-A
+Ballot|KelGroups.Vote.Types|Ballot|REQ-B
+Foo|KelGroups.Vote.Types|Foo|REQ-C
+SideProp|KelGroups.Vote.Types||
+Verdict|KelGroups.Vote.Types|Verdict|REQ-A

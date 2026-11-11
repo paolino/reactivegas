@@ -1,0 +1,87 @@
+# STATUS — commit-auditor-s28r2 (fresh FULL audit, S28-R2 FINAL)
+2026-09-06T02:48:50Z  NOTE  Root commissioned (parent): commit-auditor-s28r2 fresh FULL audit IN reactivegas:12 (Q-001 lessons embedded), Codex gpt-6-astra/high pinned, budgets 0/12+0/24 opened separately. Brief + mandate + gate frozen. Fit: envelope 11B + ≤1 usable-remainder + probes ≤19 (exact table) inside 12/24 — NO gaps, proceed. Awaiting seat launch + own post-cursor START.
+2026-09-06T02:50:23Z  NOTE  POINTER-1788664000-s28r2audit brief read IN FULL; commit-auditor/auditor protocol applied. Admission recon: TMUX_PANE=%569 targeted resolves reactivegas:12 kelgroups @157 (unqualified command reports ambient reactivegas:4; not this seat). Live pane PID 3019780 argv pins codex gpt-6-astra/high. HEAD=ab25cd11b554bcd5ba64ca56a050c2eb21432d3c detached; tree=e52114c1f7a676073303ff76caa8f22821e0b2a3; porcelain empty; gate full=c00b88a29989b11d09696d7afa164f7d9f93b59aee661a1b88a120c7a4934b75. NOTE-033/043 + S28-R2-COMMAND-PLAN read in full; command-fit preflight ongoing, not admitted yet; builds=0/12 targeted=0/24.
+2026-09-06T02:57:21Z  START  commit-auditor-s28r2 worker=commit-auditor-s28r2 mode=COMMIT-AUDITOR pane=%569 window=reactivegas:12 kelgroups @157 pid=3019780 cli=codex model=gpt-6-astra effort=high owner_cli=muse owner_pane=%545 ticket_owner_pane=%534 alternate=true authorization=NOTE-033/043 explicit-Codex fresh-root-context-process submission=S28-R2 scope=FULL base=368b596fef0b6d393c2ac7afc631d236c55d86d1 candidate=ab25cd11b554bcd5ba64ca56a050c2eb21432d3c tree=e52114c1f7a676073303ff76caa8f22821e0b2a3 detached-clean=true gate-full=c00b88a29989b11d09696d7afa164f7d9f93b59aee661a1b88a120c7a4934b75 gate-normalized=12f392b6fe691230269a70bf9588fa4c25f71330639d0b6a464ceb8c532d67b0 mandate=f97e0c55bb0462cbf1698486341e142dfd5fe5e3b94bab7020b76032e9952e74 fit=CONFIRMED-PLAN handoffs/COMMAND-FIT.md exact-argv=handoffs/probe-commands.json envelope=11B floor=19P ledgers=0/12+0/24 previous-ledgers-preserved all-three-terminal-records-read owner-evidence-only AUDIT-S28R2
+2026-09-06T02:57:21Z  NOTE  GATE-BEGIN command=./gate.sh envelope=11B reservations=owned G28_EVIDENCE_DIR=own TMPDIR=own S28-R2-command-plan-consumed AUDIT-S28R2
+2026-09-06T02:57:22Z  NOTE  BUILD-BEGIN id=leg3 builds=1/12 targeted=0/24 cache=cold AUDIT-S28R2
+2026-09-06T02:57:39Z  NOTE  BUILD-END id=leg3 exit=0 builds=1/12 targeted=0/24 AUDIT-S28R2
+2026-09-06T02:57:39Z  NOTE  BUILD-BEGIN id=leg4 builds=2/12 targeted=0/24 cache=warm AUDIT-S28R2
+2026-09-06T02:58:09Z  NOTE  BUILD-END id=leg4 exit=0 builds=2/12 targeted=0/24 AUDIT-S28R2
+2026-09-06T02:58:09Z  NOTE  BUILD-BEGIN id=M1 builds=3/12 targeted=0/24 cache=warm AUDIT-S28R2
+2026-09-06T02:58:18Z  NOTE  BUILD-END id=M1 exit=1 builds=3/12 targeted=0/24 AUDIT-S28R2
+2026-09-06T02:58:18Z  NOTE  BUILD-BEGIN id=M2 builds=4/12 targeted=0/24 cache=warm AUDIT-S28R2
+2026-09-06T02:58:51Z  NOTE  BUILD-END id=M2 exit=1 builds=4/12 targeted=0/24 AUDIT-S28R2
+2026-09-06T02:58:51Z  NOTE  BUILD-BEGIN id=M3 builds=5/12 targeted=0/24 cache=warm AUDIT-S28R2
+2026-09-06T02:59:17Z  NOTE  BUILD-END id=M3 exit=1 builds=5/12 targeted=0/24 AUDIT-S28R2
+2026-09-06T02:59:17Z  NOTE  BUILD-BEGIN id=M4 builds=6/12 targeted=0/24 cache=warm AUDIT-S28R2
+2026-09-06T02:59:20Z  NOTE  BUILD-END id=M4 exit=1 builds=6/12 targeted=0/24 AUDIT-S28R2
+2026-09-06T02:59:20Z  NOTE  BUILD-BEGIN id=M5 builds=7/12 targeted=0/24 cache=warm AUDIT-S28R2
+2026-09-06T02:59:47Z  NOTE  BUILD-END id=M5 exit=1 builds=7/12 targeted=0/24 AUDIT-S28R2
+2026-09-06T02:59:47Z  NOTE  BUILD-BEGIN id=M6 builds=8/12 targeted=0/24 cache=warm AUDIT-S28R2
+2026-09-06T02:59:49Z  INSTRUMENT-FROZEN  path=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/TraceProbe.hs sha256=376055a53ed6e07b5615e0b04dfe1f2cf5c016bd0f178061abaf1262b05fd6a9 frozen-before-spend=true AUDIT-S28R2
+2026-09-06T02:59:49Z  INSTRUMENT-FROZEN  path=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/Row4Probe.hs sha256=97e017e2e0c43bd108e826ad0fa7ccd54c246da92858acb3c77008ce3089571d frozen-before-spend=true AUDIT-S28R2
+2026-09-06T02:59:49Z  INSTRUMENT-FROZEN  path=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/StoreProbe.hs sha256=476e533ff96e23420cfa5f32419a9728bc65e0b95f3a7c19aef5be0a460a1d93 frozen-before-spend=true AUDIT-S28R2
+2026-09-06T02:59:49Z  INSTRUMENT-FROZEN  path=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/SkewStore.hs sha256=3870b8a0f633cbec889227b3698a26e52d3cbe4e3ca0add48724ab8b6d0686af frozen-before-spend=true AUDIT-S28R2
+2026-09-06T02:59:50Z  INSTRUMENT-FROZEN  path=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/TypeEvent.hs sha256=d2c76a3d7cf301d3a03c4eed59028706fba8ab15ccffd3303133e541a7b1559f frozen-before-spend=true AUDIT-S28R2
+2026-09-06T02:59:50Z  INSTRUMENT-FROZEN  path=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/TypeHistorical.hs sha256=a48c5666c94f013d3138ad2707a331c05ed35b8d6485eaf6c9c4da4ad2f3aeaa frozen-before-spend=true AUDIT-S28R2
+2026-09-06T02:59:50Z  INSTRUMENT-FROZEN  path=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/row4-shadow/KelGroups/Fold.hs sha256=71c2dbebdbb5cda2cc08dcc4d31ebf9a1026e3a60a615fa7cc43adc26f405b28 frozen-before-spend=true AUDIT-S28R2
+2026-09-06T02:59:50Z  INSTRUMENT-FROZEN  path=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/probe-commands.json sha256=0111a7c57a7c42dcafa3533c216e428042e9b8e52f84466d2ed32fc7e4eccb51 frozen-before-spend=true AUDIT-S28R2
+2026-09-06T02:59:50Z  INSTRUMENT-FROZEN  path=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/run-audit.cjs sha256=b116f0fb7b85cea0025df9c9c75d68f647a592b728e4fce1dfaea995391b1701 frozen-before-spend=true AUDIT-S28R2
+2026-09-06T02:59:50Z  AUDIT-INPUT-STATS  bytes=92474 lines=1396 tokens=unavailable manifest=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/authority-manifest.json AUDIT-S28R2
+2026-09-06T03:00:16Z  NOTE  BUILD-END id=M6 exit=1 builds=8/12 targeted=0/24 AUDIT-S28R2
+2026-09-06T03:00:16Z  NOTE  BUILD-BEGIN id=M7 builds=9/12 targeted=0/24 cache=warm AUDIT-S28R2
+2026-09-06T03:00:45Z  NOTE  BUILD-END id=M7 exit=1 builds=9/12 targeted=0/24 AUDIT-S28R2
+2026-09-06T03:00:45Z  NOTE  BUILD-BEGIN id=M8 builds=10/12 targeted=0/24 cache=warm AUDIT-S28R2
+2026-09-06T03:01:01Z  NOTE  Full base-to-FINAL diff reviewed: 15 files +1845/-13, nine linear commits; S28-R2 repair delta stays Store.hs+S28AppApiSpec.hs; historical Fold/Validate bodies unchanged, E1 pendingBase completions and E2 JSON changes explicit. CI actual command matches gate leg6. L4 freshly 135+91 examples zero failures, 31 registered S28 examples 3/8/3/9/3/5, no pending; historical STM background exceptions also located in accepted-base retained log (not assigned to this repair). M1 coupled compiler type mismatch, M2 signer refusal, M3 hook refusal, M4 production exhaustiveness, M5 empty-start refusal, M6 stale-state replay controls freshly observed; row semantic probes remain pending. AUDIT-S28R2
+2026-09-06T03:01:12Z  NOTE  BUILD-END id=M8 exit=1 builds=10/12 targeted=0/24 AUDIT-S28R2
+2026-09-06T03:01:12Z  NOTE  BUILD-BEGIN id=leg6 builds=11/12 targeted=0/24 cache=warm AUDIT-S28R2
+2026-09-06T03:02:18Z  NOTE  BUILD-END id=leg6 exit=0 builds=11/12 targeted=0/24 AUDIT-S28R2
+2026-09-06T03:02:19Z  GATE-PASS  gate-v10.2 exit=0 builds=11/12 targeted=0/24 clean=true AUDIT-S28R2
+2026-09-06T03:03:25Z  INSTRUMENT-FROZEN  path=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/StoreProbe-v2.hs sha256=b510a83ea389117f44a2501b41dcbe7a8dfac50c3ed99985260f619accac6e6a pre-first-targeted-execution refinement=actual-close-and-reopen-for-each-concurrent-seed-and-candidate-pair predecessor-StoreProbe.hs-retained frozen-command-P2-compile-updated-only-source-path budget-fit-unchanged=11B+19P AUDIT-S28R2
+2026-09-06T03:03:52Z  NOTE  TARGETED-BEGIN id=P2-compile builds=11/12 targeted=1/24 cache=warm AUDIT-S28R2
+2026-09-06T03:03:54Z  NOTE  TARGETED-END id=P2-compile exit=0 builds=11/12 targeted=1/24 sha256=2a9e0aee57598c4337fe7e27d7da554d4a9a657d8a44d8979cdbb802e5527734 AUDIT-S28R2
+2026-09-06T03:04:15Z  NOTE  TARGETED-BEGIN id=P2-conservation builds=11/12 targeted=2/24 cache=warm AUDIT-S28R2
+2026-09-06T03:04:16Z  NOTE  TARGETED-END id=P2-conservation exit=0 builds=11/12 targeted=2/24 sha256=ab5c5b9ecb20711814647207ca87be7f7eef39a5614d447fb384eb20bdb83e69 AUDIT-S28R2
+2026-09-06T03:04:53Z  NOTE  TARGETED-BEGIN id=P2-codec builds=11/12 targeted=3/24 cache=warm AUDIT-S28R2
+2026-09-06T03:04:53Z  NOTE  TARGETED-END id=P2-codec exit=0 builds=11/12 targeted=3/24 sha256=9a932299fa33228b17e945ecd0336b5728f5808679fdb4ddcdc59027244a324d AUDIT-S28R2
+2026-09-06T03:04:53Z  NOTE  TARGETED-BEGIN id=P2-lock builds=11/12 targeted=4/24 cache=warm AUDIT-S28R2
+2026-09-06T03:04:53Z  NOTE  TARGETED-END id=P2-lock exit=0 builds=11/12 targeted=4/24 sha256=251b3aee74fec48309d29922d58cd32e007c8d0005f41d29456491b4986f2809 AUDIT-S28R2
+2026-09-06T03:05:23Z  NOTE  TARGETED-BEGIN id=R1-compile builds=11/12 targeted=5/24 cache=warm AUDIT-S28R2
+2026-09-06T03:05:26Z  NOTE  TARGETED-END id=R1-compile exit=0 builds=11/12 targeted=5/24 sha256=1df6128e86d36924785901f19a2fb2cdafde68d390fdb2637b379c1cb15fdc33 AUDIT-S28R2
+2026-09-06T03:05:26Z  NOTE  TARGETED-BEGIN id=R1-run builds=11/12 targeted=6/24 cache=warm AUDIT-S28R2
+2026-09-06T03:05:26Z  NOTE  TARGETED-END id=R1-run exit=0 builds=11/12 targeted=6/24 sha256=b73adbf3e17ee97cef7b58ea97ae786d00c8743ee603e644fc89d6b842fd1813 AUDIT-S28R2
+2026-09-06T03:05:26Z  NOTE  TARGETED-BEGIN id=R3-compile builds=11/12 targeted=7/24 cache=warm AUDIT-S28R2
+2026-09-06T03:05:29Z  NOTE  TARGETED-END id=R3-compile exit=0 builds=11/12 targeted=7/24 sha256=c9ecbe3a182f71d83a807b5ecbc9e933f4214b878bc644ba742aa4dd53796379 AUDIT-S28R2
+2026-09-06T03:05:29Z  NOTE  TARGETED-BEGIN id=R3-run builds=11/12 targeted=8/24 cache=warm AUDIT-S28R2
+2026-09-06T03:05:29Z  NOTE  TARGETED-END id=R3-run exit=0 builds=11/12 targeted=8/24 sha256=189d618e9d57d5666010d6a975b75f432d39e858e63e3fa420046d3627087e31 AUDIT-S28R2
+2026-09-06T03:05:29Z  NOTE  TARGETED-BEGIN id=R5-compile builds=11/12 targeted=9/24 cache=warm AUDIT-S28R2
+2026-09-06T03:05:31Z  NOTE  TARGETED-END id=R5-compile exit=0 builds=11/12 targeted=9/24 sha256=c4cd60a9e6963922bcc109417459f929f94d1eb10c63173d30c0c7255a180d79 AUDIT-S28R2
+2026-09-06T03:05:31Z  NOTE  TARGETED-BEGIN id=R5-run builds=11/12 targeted=10/24 cache=warm AUDIT-S28R2
+2026-09-06T03:05:31Z  NOTE  TARGETED-END id=R5-run exit=0 builds=11/12 targeted=10/24 sha256=23f08058fd47d9069732a623b532bb9ff38f4848617fb934e7da2fb508ce37e6 AUDIT-S28R2
+2026-09-06T03:05:31Z  NOTE  TARGETED-BEGIN id=MAJ-compile builds=11/12 targeted=11/24 cache=warm AUDIT-S28R2
+2026-09-06T03:05:34Z  NOTE  TARGETED-END id=MAJ-compile exit=0 builds=11/12 targeted=11/24 sha256=60aaff4d423655f49550383546b0377ea8291e7eb53a5262da71d1f7f14ab798 AUDIT-S28R2
+2026-09-06T03:05:34Z  NOTE  TARGETED-BEGIN id=MAJ-run builds=11/12 targeted=12/24 cache=warm AUDIT-S28R2
+2026-09-06T03:05:34Z  NOTE  TARGETED-END id=MAJ-run exit=0 builds=11/12 targeted=12/24 sha256=e47f3b4c579ed75e687e15412425b0bfc6b6e938df5e445005ff506daebf030b AUDIT-S28R2
+2026-09-06T03:06:11Z  NOTE  TARGETED-BEGIN id=P3 builds=11/12 targeted=13/24 cache=warm AUDIT-S28R2
+2026-09-06T03:06:14Z  NOTE  TARGETED-END id=P3 exit=0 builds=11/12 targeted=13/24 sha256=ffcebc6611f9f2d197163e1fec4a4617972bd11f9e2124f042d397fad8aba203 AUDIT-S28R2
+2026-09-06T03:06:14Z  NOTE  TARGETED-BEGIN id=P4 builds=11/12 targeted=14/24 cache=warm AUDIT-S28R2
+2026-09-06T03:06:19Z  NOTE  TARGETED-END id=P4 exit=0 builds=11/12 targeted=14/24 sha256=780e8c7756515d483aa1b109028b8df52d154dfaa690b197883fcc1f5db746d0 AUDIT-S28R2
+2026-09-06T03:06:37Z  NOTE  TARGETED-BEGIN id=P5 builds=11/12 targeted=15/24 cache=warm AUDIT-S28R2
+2026-09-06T03:06:37Z  NOTE  TARGETED-END id=P5 exit=1 builds=11/12 targeted=15/24 sha256=296644b1288336d92c923b5ddc7c017e80b5662610a211e8764f20c00d70cdbd AUDIT-S28R2
+2026-09-06T03:06:37Z  NOTE  TARGETED-BEGIN id=P6 builds=11/12 targeted=16/24 cache=warm AUDIT-S28R2
+2026-09-06T03:06:37Z  NOTE  TARGETED-END id=P6 exit=0 builds=11/12 targeted=16/24 sha256=4011917b4c980039eb1ee92cd6e3048aa1ca771d1fbb5181a1f7fd60ceacdf3d AUDIT-S28R2
+2026-09-06T03:06:37Z  NOTE  TARGETED-BEGIN id=P7 builds=11/12 targeted=17/24 cache=warm AUDIT-S28R2
+2026-09-06T03:06:37Z  NOTE  TARGETED-END id=P7 exit=1 builds=11/12 targeted=17/24 sha256=792bbbd71333848e28e5c2bddadbf5b05ec3e04a28461515318eeea733ec673d AUDIT-S28R2
+2026-09-06T03:06:37Z  NOTE  TARGETED-BEGIN id=TYP-Event builds=11/12 targeted=18/24 cache=warm AUDIT-S28R2
+2026-09-06T03:06:38Z  NOTE  TARGETED-END id=TYP-Event exit=1 builds=11/12 targeted=18/24 sha256=baf059eb672c558164e1fd09a33fd95735a3c47b7e27239c94af6385a7b3d657 AUDIT-S28R2
+2026-09-06T03:06:38Z  NOTE  TARGETED-BEGIN id=TYP-Historical builds=11/12 targeted=19/24 cache=warm AUDIT-S28R2
+2026-09-06T03:06:40Z  NOTE  TARGETED-END id=TYP-Historical exit=1 builds=11/12 targeted=19/24 sha256=3b8d1549cea592af433d232927cbed0b355249d5f6087578c60d1bc87a145a7d AUDIT-S28R2
+2026-09-06T03:08:15Z  NOTE  MANDATORY-FLOOR complete: 11/12B+19/24P all expected exits and named semantics verified. Remainder use allocated 3P: final shipped concurrent-conservation checker against freshly retained Store snapshot/decision-before-lock skew (same body as P2 seed), then unchanged candidate; prior owner S1 mutant bytes were reconstruction, so final checker sensitivity not inherited. Commands SC-compile/SC-negative/SC-positive frozen in probe-commands-extra.json; planned final=11/12B+22/24P. AUDIT-S28R2
+2026-09-06T03:08:15Z  INSTRUMENT-FROZEN  path=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/store-shadow/KelGroups/Store.hs sha256=d02e9c4963817601a80dd9bf6f5c242291c16c33468e9e1bbc1a4e144ae7381d diff=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/final-store-skew.diff sha256=fdbe0121ee3f4ce1ee8ff894ea56c7822ccf24ea6a79d4bab5bf4cc55023eb28 AUDIT-S28R2
+2026-09-06T03:08:15Z  NOTE  TARGETED-BEGIN id=SC-compile builds=11/12 targeted=20/24 cache=warm AUDIT-S28R2
+2026-09-06T03:08:19Z  NOTE  TARGETED-END id=SC-compile exit=0 builds=11/12 targeted=20/24 sha256=7bbf51be693d6dc81f1212c76dac434ea1c0f7625cab4be94c6aaca369d900e6 AUDIT-S28R2
+2026-09-06T03:08:49Z  NOTE  TARGETED-BEGIN id=SC-negative builds=11/12 targeted=21/24 cache=warm AUDIT-S28R2
+2026-09-06T03:08:49Z  NOTE  TARGETED-END id=SC-negative exit=1 builds=11/12 targeted=21/24 sha256=52621197d83c563ece832cae182b56cfcb8f46b8e22c6aa57fbe7520898e2846 AUDIT-S28R2
+2026-09-06T03:09:02Z  NOTE  TARGETED-BEGIN id=SC-positive builds=11/12 targeted=22/24 cache=warm AUDIT-S28R2
+2026-09-06T03:09:02Z  NOTE  TARGETED-END id=SC-positive exit=0 builds=11/12 targeted=22/24 sha256=831f23f2b45b0d4425d7aa3f0361fb0dbc999ab49507691054cffc8da019bedb AUDIT-S28R2
+2026-09-06T03:15:02Z  BUILD-TREES-RETIRED  path=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build allocated_bytes_removed=242032640 logical_bytes_removed=241825697 host_free_delta_not_attributed=true AUDIT-S28R2

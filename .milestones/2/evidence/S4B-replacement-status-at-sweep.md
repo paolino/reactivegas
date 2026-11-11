@@ -1,0 +1,2 @@
+2026-09-05T22:05:44Z  NOTE  ACK POINTER-1788645900-2505533 full brief read; pre-START authority, seat, and full-command-budget checks in progress; spend=0-substantive,0-targeted
+2026-09-05T22:07:14Z  NOTE  ACK POINTER-1788646000-2509218 inbox-NOTE-001-ledger-and-scope-corrections.md read in full; own ledger=handoffs/CAMPAIGN-LEDGER.md; owner STATUS read-only; raises=1 S4-B-only, ticket-wide history unbound; predecessor terminal contract verdict acknowledged, semantics unjudged; no restart; spend=0-substantive,0-targeted

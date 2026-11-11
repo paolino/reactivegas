@@ -1,0 +1,8 @@
+canCloseGroupB (view : KelGroups.GroupView) (s : State) : Bool
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A22.lean:259:59: error: unsolved goals
+view : KelGroups.GroupView
+s : State
+⊢ ((∀ (u : KelGroups.Key), KelGroups.GroupView.isMember u view = true → bal s.conti u = 0) ∧
+      s.collections = [] ∧ ∀ (r : KelGroups.Key), r ∈ List.map Prod.fst s.casse → bal s.casse r = 0) ↔
+    (∀ (u : KelGroups.Key), KelGroups.GroupView.isMember u view = true → bal s.conti u = 0) ∧
+      True ∧ ∀ (r : KelGroups.Key), r ∈ List.map Prod.fst s.casse → bal s.casse r = 0

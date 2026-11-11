@@ -1,0 +1,10 @@
+KelGroups/Mirrors.lean:108:82: error: Application type mismatch: The argument
+  pC
+has type
+  PendingCoherent gs
+but is expected to have type
+  pendingCoherentB gs = true
+in the application
+  (pendingCoherent_corr gs).mpr pC
+KelGroups/Mirrors.lean:255:61: error: unexpected identifier; expected '}'
+KelGroups/Mirrors.lean:255:10: error: Fields missing: `opensOpen`

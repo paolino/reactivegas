@@ -1,0 +1,20 @@
+warning: Git tree '/code/kelgroups-issue-28' is dirty
+Build profile: -w ghc-9.8.4 -O0
+In order, the following will be built (use -v for more details):
+ - kelgroups-0.1.0.0 (test:invariants) (file test/S28AppApiSpec.hs changed)
+Preprocessing test suite 'invariants' for kelgroups-0.1.0.0...
+Building test suite 'invariants' for kelgroups-0.1.0.0...
+[ 6 of 16] Compiling S28AppApiSpec    ( test/S28AppApiSpec.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/build/invariants/invariants-tmp/S28AppApiSpec.o ) [Source file changed]
+
+test/S28AppApiSpec.hs:14:7: error: [GHC-38856] [-Wunused-imports, Werror=unused-imports]
+    The import of ‘ThreadId’
+    from module ‘Control.Concurrent’ is redundant
+   |
+14 |     ( ThreadId
+   |       ^^^^^^^^
+
+test/S28AppApiSpec.hs:29:7: error: [GHC-38856] [-Wunused-imports, Werror=unused-imports]
+    The import of ‘IORef’ from module ‘Data.IORef’ is redundant
+   |
+29 |     ( IORef
+   |       ^^^^^

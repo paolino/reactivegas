@@ -1,0 +1,4570 @@
+{
+  "schema": "successor-ownership/v1",
+  "sourceSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+  "method": "Derived from statements and reached definitions, not Cartesian product or names; each guard/refusal/effect/hook binding enumerated from actual entry-point bodies (Step.step :44-142, Vote Fold/Validate, Integration commitBaseChange/applyIntegratedEvent, Validate order :145-148). Unsupported ownership reported as OPEN, never silently omitted.",
+  "relationLines": 561,
+  "subjectNames": 160,
+  "preservedCount": 558,
+  "correctedCount": 3,
+  "relations": [
+    {
+      "property": "step_grant_inv",
+      "atomId": "G02a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_grant_inv",
+      "atomId": "G02b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_grant_inv",
+      "atomId": "E02",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_deny_inv",
+      "atomId": "G03a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_deny_inv",
+      "atomId": "G03b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_deny_inv",
+      "atomId": "E03a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_deny_inv",
+      "atomId": "E03b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_pledge_inv",
+      "atomId": "G09a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_pledge_inv",
+      "atomId": "G09b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_pledge_inv",
+      "atomId": "G09c",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_pledge_inv",
+      "atomId": "G09d",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_pledge_inv",
+      "atomId": "G09e",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_pledge_inv",
+      "atomId": "G09f",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_pledge_inv",
+      "atomId": "G09g",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_pledge_inv",
+      "atomId": "E09a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_pledge_inv",
+      "atomId": "E09b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_accept_inv",
+      "atomId": "G10a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_accept_inv",
+      "atomId": "G10b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_accept_inv",
+      "atomId": "G10c",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_accept_inv",
+      "atomId": "G10d",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_accept_inv",
+      "atomId": "E10",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_refuse_inv",
+      "atomId": "G11a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_refuse_inv",
+      "atomId": "G11b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_refuse_inv",
+      "atomId": "G11c",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_refuse_inv",
+      "atomId": "G11d",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_refuse_inv",
+      "atomId": "E11",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_correct_inv",
+      "atomId": "G12a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_correct_inv",
+      "atomId": "G12b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_correct_inv",
+      "atomId": "G12c",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_correct_inv",
+      "atomId": "G12d",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_correct_inv",
+      "atomId": "G12e",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_correct_inv",
+      "atomId": "G12f",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_correct_inv",
+      "atomId": "E12a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_correct_inv",
+      "atomId": "E12b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_close_inv",
+      "atomId": "G13a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_close_inv",
+      "atomId": "G13b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_close_inv",
+      "atomId": "G13c",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_close_inv",
+      "atomId": "G13d",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_close_inv",
+      "atomId": "G13e",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_close_inv",
+      "atomId": "E13a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_close_inv",
+      "atomId": "E13b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_fail_inv",
+      "atomId": "G14a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_fail_inv",
+      "atomId": "G14b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_fail_inv",
+      "atomId": "G14c",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_fail_inv",
+      "atomId": "G14d",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_fail_inv",
+      "atomId": "E14a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_fail_inv",
+      "atomId": "E14b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_open_inv",
+      "atomId": "G01a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_open_inv",
+      "atomId": "G01b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_open_inv",
+      "atomId": "E01",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_deposit_inv",
+      "atomId": "G04a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_deposit_inv",
+      "atomId": "G04b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_deposit_inv",
+      "atomId": "G04c",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_deposit_inv",
+      "atomId": "G04d",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_deposit_inv",
+      "atomId": "E04a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_deposit_inv",
+      "atomId": "E04b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_withdraw_inv",
+      "atomId": "G05a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_withdraw_inv",
+      "atomId": "G05b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_withdraw_inv",
+      "atomId": "G05c",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_withdraw_inv",
+      "atomId": "G05d",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_withdraw_inv",
+      "atomId": "G05e",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_withdraw_inv",
+      "atomId": "E05a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_withdraw_inv",
+      "atomId": "E05b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_transferCassa_inv",
+      "atomId": "G06a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_transferCassa_inv",
+      "atomId": "G06b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_transferCassa_inv",
+      "atomId": "G06c",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_transferCassa_inv",
+      "atomId": "G06d",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_transferCassa_inv",
+      "atomId": "E06a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_transferCassa_inv",
+      "atomId": "E06b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_donate_inv",
+      "atomId": "G07a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_donate_inv",
+      "atomId": "G07b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_donate_inv",
+      "atomId": "E07a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_donate_inv",
+      "atomId": "E07b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_backdonate_inv",
+      "atomId": "G08a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_backdonate_inv",
+      "atomId": "G08b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_backdonate_inv",
+      "atomId": "G08c",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_backdonate_inv",
+      "atomId": "G08d",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.step_backdonate_inv",
+      "atomId": "E08",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G01a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G01b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "E01",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G02a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G02b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "E02",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G03a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G03b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "E03a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "E03b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G04a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G04b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G04c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G04d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "E04a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "E04b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G05a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G05b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G05c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G05d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G05e",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "E05a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "E05b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G06a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G06b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G06c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G06d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "E06a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "E06b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G07a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G07b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "E07a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "E07b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G08a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G08b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G08c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G08d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "E08",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G09a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G09b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G09c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G09d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G09e",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G09f",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G09g",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G09h",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "E09a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "E09b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G10a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G10b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G10c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G10d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G10e",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "E10",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G11a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G11b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G11c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G11d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "E11",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G12a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G12b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G12c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G12d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G12e",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G12f",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "E12a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "E12b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G13a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G13b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G13c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G13d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G13e",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G13f",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "E13a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "E13b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G14a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G14b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G14c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "G14d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "E14a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "conservation_preserved",
+      "atomId": "E14b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G01a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G01b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "E01",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G02a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G02b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "E02",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G03a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G03b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "E03a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "E03b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G04a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G04b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G04c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G04d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "E04a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "E04b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G05a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G05b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G05c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G05d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G05e",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "E05a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "E05b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G06a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G06b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G06c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G06d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "E06a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "E06b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G07a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G07b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "E07a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "E07b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G08a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G08b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G08c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G08d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "E08",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G09a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G09b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G09c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G09d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G09e",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G09f",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G09g",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G09h",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "E09a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "E09b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G10a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G10b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G10c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G10d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G10e",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "E10",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G11a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G11b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G11c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G11d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "E11",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G12a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G12b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G12c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G12d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G12e",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G12f",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "E12a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "E12b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G13a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G13b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G13c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G13d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G13e",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G13f",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "E13a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "E13b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G14a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G14b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G14c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "G14d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "E14a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "step_authorized",
+      "atomId": "E14b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "E04a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "E04b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "E05a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "E05b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "E06a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "E06b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "E07a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "E07b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "E08",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "E09a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "E11",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "E12a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "E13a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "E14a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "G04d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "G05d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "G05e",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "G06d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "G07b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "G08b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "G08c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "G09f",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "G09g",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "G09h",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "G12e",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "G12f",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_preserved",
+      "atomId": "OPEN",
+      "tag": "conjunct-level sensitivity needs kill evidence",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "E04a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "E04b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "E05a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "E05b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "E06a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "E06b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "E07a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "E07b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "E08",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "E09a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "E11",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "E12a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "E13a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "E14a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "G04d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "G05d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "G05e",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "G06d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "G07b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "G08b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "G08c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "G09f",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "G09g",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "G09h",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "G12e",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "G12f",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "reach_solvent",
+      "atomId": "OPEN",
+      "tag": "conjunct-level sensitivity needs kill evidence",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "E04a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "E04b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "E05a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "E05b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "E06a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "E06b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "E07a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "E07b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "E08",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "E09a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "E11",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "E12a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "E13a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "E14a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "G04d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "G05d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "G05e",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "G06d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "G07b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "G08b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "G08c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "G09f",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "G09g",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "G09h",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "G12e",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "G12f",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "not_insolvent_of_reach",
+      "atomId": "OPEN",
+      "tag": "conjunct-level sensitivity needs kill evidence",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "E04a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "E04b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "E05a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "E05b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "E06a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "E06b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "E07a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "E07b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "E08",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "E09a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "E11",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "E12a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "E13a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "E14a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "G04d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "G05d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "G05e",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "G06d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "G07b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "G08b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "G08c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "G09f",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "G09g",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "G09h",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "G12e",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "G12f",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_of_reach",
+      "atomId": "OPEN",
+      "tag": "conjunct-level sensitivity needs kill evidence",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "E04a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "E04b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "E05a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "E05b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "E06a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "E06b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "E07a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "E07b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "E08",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "E09a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "E11",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "E12a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "E13a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "E14a",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "G04d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "G05d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "G05e",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "G06d",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "G07b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "G08b",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "G08c",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "G09f",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "G09g",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "G09h",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "G12e",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "G12f",
+      "tag": "PROOF-DEP-ARM",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "credit_pledges_step",
+      "atomId": "OPEN",
+      "tag": "conjunct-level sensitivity needs kill evidence",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "comune_not_a_member_of_reach",
+      "atomId": "PREMISE",
+      "tag": "boot-premise transport, fixed view; no guard atoms; S5 connection question",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "comune_not_a_member_step",
+      "atomId": "NONE",
+      "tag": "vacuous _hstep limb (body returns h)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "auth_referente_guard_inv",
+      "atomId": "G10c",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "auth_referente_guard_inv",
+      "atomId": "G10d",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "close_guard_inv",
+      "atomId": "G13b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "close_guard_inv",
+      "atomId": "G13c",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "close_guard_inv",
+      "atomId": "G13d",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "close_guard_inv",
+      "atomId": "G13e",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "fail_guard_inv",
+      "atomId": "G14b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "fail_guard_inv",
+      "atomId": "G14c",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "fail_guard_inv",
+      "atomId": "G14d",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "pledge_escrow_debit",
+      "atomId": "E09a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "deposit_double_entry",
+      "atomId": "E04a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "deposit_double_entry",
+      "atomId": "E04b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "withdraw_double_entry",
+      "atomId": "E05a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "withdraw_double_entry",
+      "atomId": "E05b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "close_spends_referente",
+      "atomId": "E13a",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "close_permission_to_close",
+      "atomId": "G13d",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "close_permission_to_close",
+      "atomId": "G13b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "pledge_rejected_when_member",
+      "atomId": "G09d",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "pledge_rejected_when_member",
+      "atomId": "G09e",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "pledge_preserves_allUnique",
+      "atomId": "E09b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "governance_enacts_windUpAdmin",
+      "atomId": "E-govern",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "solvent_init",
+      "atomId": "NONE",
+      "tag": "boot proposition (State.empty); acceptance elaboration",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "stepDetailed_erases",
+      "atomId": "NONE",
+      "tag": "wrapper equation (eraseDiagnostic o stepDetailed = stepEvent)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.ballots_nodup_disjoint",
+      "atomId": "Vtally",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.ballots_nodup_disjoint",
+      "atomId": "Vsweep-closures",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.questions_partition",
+      "atomId": "Vtally",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.questions_partition",
+      "atomId": "Vsweep-closures",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.franchise_of_tallies",
+      "atomId": "Vfranchise",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.unfranchised_cast_noop",
+      "atomId": "Vfranchise",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.inadmissible_is_noop",
+      "atomId": "Vfranchise",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.nonresponsabile_event_noop",
+      "atomId": "Vfranchise",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.no_expiry",
+      "atomId": "V-event-hpres",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.no_expiry",
+      "atomId": "Vfold",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.verdictOf_threshold_congr",
+      "atomId": "Vthresh-legacy",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.verdictOf_threshold_congr",
+      "atomId": "Vthresh-zero",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.emptyVoteState_sweepReady",
+      "atomId": "Vsweep-closures",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.emptyVoteState_wellFormed",
+      "atomId": "Vsweep-closures",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.sweepClosures_sweepReady",
+      "atomId": "Vsweep-closures",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.sweepClosures_wellFormed",
+      "atomId": "Vsweep-closures",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.effectedState_sweepReady",
+      "atomId": "Vsweep-closures",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.applyVoteEvent_preserves_wellFormed",
+      "atomId": "Vsweep-closures",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.foldFrom_preserves_wellFormed",
+      "atomId": "Vsweep-closures",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.foldVote_wellFormed",
+      "atomId": "Vsweep-closures",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.sweepStep_of_open",
+      "atomId": "Vsweep-closures",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.sweep_filterMap_of_swept",
+      "atomId": "Vsweep-closures",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.filter_open_idem",
+      "atomId": "Vsweep-closures",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.sweepClosures_idempotent",
+      "atomId": "Vsweep-closures",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.sweepDuplicating_duplicates",
+      "atomId": "Vsweep-closures",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.open_questions_are_open",
+      "atomId": "Vsweep-closures",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.foldVote_append",
+      "atomId": "Vsweep-closures",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.sweepClosures_open_mem",
+      "atomId": "Vqid",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.sweepClosures_closed_mem",
+      "atomId": "Vqid",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.sweepClosures_preserves_qid",
+      "atomId": "Vqid",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.effectedState_preserves_qid",
+      "atomId": "Vqid",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.applyVoteEvent_preserves_qid",
+      "atomId": "Vqid",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.foldFrom_preserves_qid",
+      "atomId": "Vqid",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.foldVote_append",
+      "atomId": "Vqid",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.placeBallot_clean",
+      "atomId": "Vtally-place",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.placeBallot_tally",
+      "atomId": "Vtally-place",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.sweepClosures_tallyKeys",
+      "atomId": "Vtally-place",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.tally_keys_franchised_from",
+      "atomId": "Vtally-place",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.tallyKeysOfState_erased_le",
+      "atomId": "Vtally-place",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.tallyKeysOfState_insert_cases",
+      "atomId": "Vtally-place",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.effectedState_tally_growth",
+      "atomId": "Vtally-place",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.Vote.sweepStep_key",
+      "atomId": "Vsweep-step",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.enact_preserves_wellFormed",
+      "atomId": "Benact-met",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.finishEnact_preserves_wellFormed",
+      "atomId": "Benact-met",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.tryEnact_preserves_wellFormed",
+      "atomId": "Benact-met",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.applyPropose_preserves_wellFormed",
+      "atomId": "Benact-met",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.applyApprove_preserves_wellFormed",
+      "atomId": "Benact-met",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.applyEvent_preserves_wellFormed",
+      "atomId": "Benact-met",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.foldEvents_preserves_wellFormed",
+      "atomId": "Benact-met",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.foldGroup_wellFormed",
+      "atomId": "Benact-met",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.tryEnact_eq_of_enacts",
+      "atomId": "Benact-met",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.tryEnactDetailed_enactment_threshold_met",
+      "atomId": "Benact-met",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.enact_implies_threshold_met",
+      "atomId": "Benact-met",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.members_change_implies_enacted",
+      "atomId": "Benact-met",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.approvals_nodup",
+      "atomId": "W-memkeys",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.approvals_nodup",
+      "atomId": "W-pendkeys",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.approvals_nodup",
+      "atomId": "W-memcohere",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.approvals_nodup",
+      "atomId": "W-pendcohere",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.proposer_mem_approvals",
+      "atomId": "W-memkeys",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.proposer_mem_approvals",
+      "atomId": "W-pendkeys",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.proposer_mem_approvals",
+      "atomId": "W-memcohere",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.proposer_mem_approvals",
+      "atomId": "W-pendcohere",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.member_key_coherent",
+      "atomId": "W-memkeys",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.member_key_coherent",
+      "atomId": "W-pendkeys",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.member_key_coherent",
+      "atomId": "W-memcohere",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.member_key_coherent",
+      "atomId": "W-pendcohere",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.majority_table",
+      "atomId": "Benact-threshold",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.majority_not_strict_on_even",
+      "atomId": "Benact-threshold",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.emptyState_wellFormed",
+      "atomId": "W-memkeys",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.emptyState_wellFormed",
+      "atomId": "W-pendkeys",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.approvePending_wellFormed",
+      "atomId": "Bappr-dup",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.validateDirectAdmission_ok",
+      "atomId": "Badm-admin",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.validateDirectAdmission_ok",
+      "atomId": "Badm-reserved",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.validateDirectAdmission_ok",
+      "atomId": "Badm-dup",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.direct_admission_requires_admin",
+      "atomId": "Badm-admin",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.direct_admission_requires_admin",
+      "atomId": "Badm-reserved",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.direct_admission_requires_admin",
+      "atomId": "Badm-dup",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.non_admin_admission_is_noop",
+      "atomId": "Badm-admin",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.non_admin_admission_is_noop",
+      "atomId": "Badm-reserved",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.non_admin_admission_is_noop",
+      "atomId": "Badm-dup",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.membership_growth_is_direct_admission",
+      "atomId": "Badm-admin",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.membership_growth_is_direct_admission",
+      "atomId": "Badm-reserved",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.membership_growth_is_direct_admission",
+      "atomId": "Badm-dup",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.commitBaseChange_ok",
+      "atomId": "Bhook-admitted",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.commitBaseChange_ok",
+      "atomId": "Bhook-removed",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.commitBaseChange_ok",
+      "atomId": "Bhook-roles",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.commitBaseChange_members",
+      "atomId": "Bhook-admitted",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.commitBaseChange_members",
+      "atomId": "Bhook-removed",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.commitBaseChange_members",
+      "atomId": "Bhook-roles",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.base_change_runs_hook",
+      "atomId": "Bhook-admitted",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.base_change_runs_hook",
+      "atomId": "Bhook-removed",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.base_change_runs_hook",
+      "atomId": "Bhook-roles",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.tryEnactBase_runs_hook",
+      "atomId": "Benact-met",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.tryEnactBase_preserves_absence",
+      "atomId": "Benact-met",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "KelGroups.enactMutation_preserves_absence",
+      "atomId": "Benact-met",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "CORRECTED",
+      "correction": "S-02: KelGroups.enactMutation_preserves_absence does not depend on enactment threshold (Fold.lean:34-43); reassigned from Benact-met to Bhook/effect atom (see successor). STATEMENT/BODY do not consume >= shape."
+    },
+    {
+      "property": "KelGroups.app_event_preserves_members",
+      "atomId": "Benact-met",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "CORRECTED",
+      "correction": "S-02: KelGroups.app_event_preserves_members does not depend on enactment threshold (Fold.lean:34-43); reassigned from Benact-met to Bhook/effect atom (see successor). STATEMENT/BODY do not consume >= shape."
+    },
+    {
+      "property": "KelGroups.app_event_has_no_base_change",
+      "atomId": "Benact-met",
+      "tag": "PROOF-DEP",
+      "relevance": "STATEMENT",
+      "status": "CORRECTED",
+      "correction": "S-02: KelGroups.app_event_has_no_base_change does not depend on enactment threshold (Fold.lean:34-43); reassigned from Benact-met to Bhook/effect atom (see successor). STATEMENT/BODY do not consume >= shape."
+    },
+    {
+      "property": "approvals_nodup",
+      "atomId": "SHARED",
+      "tag": "counterpart dependence (call body verified); single-count",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "proposer_mem_approvals",
+      "atomId": "SHARED",
+      "tag": "counterpart dependence (call body verified); single-count",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "enact_implies_threshold_met",
+      "atomId": "SHARED",
+      "tag": "counterpart dependence (call body verified); single-count",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "members_change_implies_enacted",
+      "atomId": "SHARED",
+      "tag": "counterpart dependence (call body verified); single-count",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "member_key_coherent",
+      "atomId": "SHARED",
+      "tag": "counterpart dependence (call body verified); single-count",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "majority_table",
+      "atomId": "SHARED",
+      "tag": "counterpart dependence (call body verified); single-count",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "majority_not_strict_on_even",
+      "atomId": "SHARED",
+      "tag": "counterpart dependence (call body verified); single-count",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.base_departure_applies_cleanup",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.base_change_can_close_without_ballot",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.direct_admission_only_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.base_recompute_reachable_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.sweep_idempotent_witness",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.sweep_idempotent_mutant_caught",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.admissionPreservation_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.canonical_economy_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.exhaustive_inventories_hold",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.integrated_theorem_witness_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.productionWellFormed_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.comuneThresholdSanity_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.comune_cannot_authorize",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.app_members_preservation_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.app_members_preservation_mutant_caught",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_boundary_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_exhaustive_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_noop_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_auth_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_r45_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_partition_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_disjoint_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_disjoint_mutant_caught",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_nostale_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_franchise_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_franchise_mutant_caught",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_noexpiry_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_policyfree_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.i57_policyfree_mutant_caught",
+      "atomId": "WITNESS",
+      "tag": "named check subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.baseHook_votes",
+      "atomId": "Bhook-admitted",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.baseHook_votes",
+      "atomId": "Vsweep-closures",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.base_change_recomputes_votes",
+      "atomId": "Bhook-admitted",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.base_change_recomputes_votes",
+      "atomId": "Vsweep-closures",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.app_members_preservation_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.app_members_preservation_mutant_caught",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.all_checks_pass",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.frozen_checks_faithful",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.frozen_inventory_faithful",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.frozen_corpus_faithful",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.base_departure_applies_cleanup",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.base_change_can_close_without_ballot",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.direct_admission_only_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.base_recompute_reachable_holds",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.sweep_idempotent_witness",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "TraceTests.sweep_idempotent_mutant_caught",
+      "atomId": "WITNESS",
+      "tag": "named check subject (mirror namespace)",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.Composition.voteDerived_iff_not_direct",
+      "atomId": "WITNESS",
+      "tag": "route/verdict equation subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.Composition.baseEnacted_threshold_met",
+      "atomId": "WITNESS",
+      "tag": "route/verdict equation subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "Reactivegas.Composition.appDecided_verdict_exhaustive",
+      "atomId": "WITNESS",
+      "tag": "route/verdict equation subject",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "OPEN-RcanAdd",
+      "atomId": "RcanAdd",
+      "tag": "OPEN: no theorem statement names canAdd/canRemove conjuncts; kill-evidence needed",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "OPEN-RcanRemove",
+      "atomId": "RcanRemove",
+      "tag": "OPEN: same as RcanAdd",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "pledge_guard_inv",
+      "atomId": "G09b",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "pledge_guard_inv",
+      "atomId": "G09c",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "pledge_guard_inv",
+      "atomId": "G09d",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "pledge_guard_inv",
+      "atomId": "G09e",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "pledge_guard_inv",
+      "atomId": "G09f",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "pledge_guard_inv",
+      "atomId": "G09g",
+      "tag": "STATEMENT",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    },
+    {
+      "property": "close_permission_to_close",
+      "atomId": "E02",
+      "tag": "STATEMENT-read",
+      "relevance": "STATEMENT",
+      "status": "PRESERVED",
+      "correction": null
+    }
+  ],
+  "addedValueFlips": [
+    {
+      "property": "admissionPreservation_holds",
+      "atomId": "SS-A-058B (Bhook app members wipe) / SS-A-069 (Step apply wipe)",
+      "relevance": "VALUE-FLIP",
+      "evidence": "S-04 extent1: successful donate30 returns wiped members; checkAppMembersPreservation=false; conjunction false. OP-58B or OP-69."
+    },
+    {
+      "property": "app_members_preservation_mutant_caught",
+      "atomId": "SS-A-069L (PWF-nocomune drop)",
+      "relevance": "VALUE-FLIP",
+      "evidence": "S-04 extent2: OP69L reverses input well-formedness; preservationDonate errors; memberWritingApply propagates; detector=false."
+    },
+    {
+      "property": "i57_disjoint_mutant_caught",
+      "atomId": "SS-A-058B",
+      "relevance": "VALUE-FLIP",
+      "evidence": "S-04 extent12: OP58B wipes membership on first openQuestion; later casts reject; expected dissent absent. OP-39 opposite-direction only is narrower."
+    },
+    {
+      "property": "i57_franchise_mutant_caught",
+      "atomId": "SS-A-050 (cast->gs)",
+      "relevance": "VALUE-FLIP",
+      "evidence": "S-04 extent14: OP50 cast->gs prevents alice and shipped bypass bob ballot placement; contains/equality conjunct false."
+    },
+    {
+      "property": "i57_noexpiry_holds",
+      "atomId": "SS-A-069L",
+      "relevance": "VALUE-FLIP",
+      "evidence": "S-04 extent15: OP69L rejects non-comune v3Group input; checkI57NoExpiry error branch false."
+    },
+    {
+      "property": "sweep_idempotent_mutant_caught",
+      "atomId": "SS-A-058 (threshold >)",
+      "relevance": "VALUE-FLIP",
+      "evidence": "S-04 extent23: OP58 stricter base threshold prevents Eve removal at 2 approvals; v3PostView still 3 admins; q one assent stays open; sweepDuplicating once==input; check=false."
+    },
+    {
+      "property": "TraceTests.app_members_preservation_mutant_caught",
+      "atomId": "SS-A-069L",
+      "relevance": "VALUE-FLIP",
+      "evidence": "S-04 extent25 mirror of extent2; distinct identity/import boundary retained; site 1090 (not 1084)."
+    },
+    {
+      "property": "TraceTests.sweep_idempotent_mutant_caught",
+      "atomId": "SS-A-058",
+      "relevance": "VALUE-FLIP",
+      "evidence": "S-04 extent30 mirror of extent23; site 943 (not 905)."
+    }
+  ],
+  "openUnresolved": [
+    {
+      "property": "comuneThresholdSanity_holds",
+      "atomId": null,
+      "status": "OPEN",
+      "owner": "%503",
+      "reason": "S-04 extent7: sanity calls actual threshold policy alias (Vote.legacyThreshold via s62bThreshold), so nothing-production-to-mutate is too strong; no listed current-map atom shown to flip; bounded unresolved relevance, not universal insensitivity or exemption."
+    },
+    {
+      "property": "i57_r45_holds",
+      "atomId": null,
+      "status": "OPEN",
+      "owner": "%503",
+      "reason": "S-04 extent21 (listed as i57_r45_holds OPEN extent21 in ROW-REVIEW row190): current map retains stranger membership rejection/cast responsibility; no listed atom shown to affect refusal/identity assertions; bounded unresolved relevance."
+    }
+  ],
+  "witnessSharedNote": "S-02: WITNESS/SHARED tags preserve names but do not allocate actual check/atom relation; successor binds each to precise check def (e.g., checkSweepIdempotent:1564, checkV3BaseReachable:1517) and single atom; where unallocated, marked OPEN with owner/reason, never Cartesian product.",
+  "vtallyFix": "S-02: Vtally/V-event-hpres references without exact atom IDs are rebound to split successors SS-A-Vtally-place-ASSENT-ERASE / DISSENT-ERASE and Vhpres premise atom; broad tags not used as allocation.",
+  "refusalOrderCorrection": "S-02: Validate.lean:145-148 checks signer-admin first (:145), reserved target next (:146), duplicate member next (:147). Atom prose reserved FIRST is false globally; corrected here and in atoms/operations.",
+  "hookBindingCorrection": "S-02: commitBaseChange separately binds change, pre-view, post-view, input payload, returned payload, returned member state, reported change, rejection propagation (Integration.lean:139-145); economicCleanup has pre/post-admin and stall branches plus separate balance/cassa/collection effects; not interchangeable per-constructor atoms. New precise atoms NEW-COMMIT-* and NEW-CLEANUP-* added.",
+  "roleOwnership": "Two role predicates (canAdd/canRemove via Validate.lean:43-60) named but ownership explicitly unresolved; OPEN with owner %503."
+}

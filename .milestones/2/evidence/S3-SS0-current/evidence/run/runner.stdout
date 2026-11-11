@@ -1,0 +1,6 @@
+2026-09-06T06:54:01.302389886Z  SS-0 START
+2026-09-06T06:54:01.327127689Z  OP1 cold baseline: lake build Reactivegas.Invariants (timeout 420s)
+2026-09-06T06:54:01.399709133Z  OP1 exit=1 ms=63
+2026-09-06T06:54:01.403585546Z  BLOCKER: OP1 cold baseline must be GREEN; exit 1 is an unexpected setup/build failure
+2026-09-06T06:54:01.407661775Z  restoring owned scratch source WITHOUT another verification build
+2026-09-06T06:54:01.428064957Z  restored; porcelain lines: 0

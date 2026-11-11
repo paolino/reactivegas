@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo=${1:?usage: gate-s57-a.sh.v1 REPO}
+gate_root=/tmp/reactivegas/ms2/e43/t57-owner-codex/gate
+base=bb3ac41a1456c50b1bba7dafd522c174461b42ea
+slice1=ccdda83085c027c4142a14250cb7fd96a8f08dba
+
+fail() { printf 'gate: FAIL %s\n' "$*" >&2; exit 1; }
+ok() { printf 'gate: ok   %s\n' "$*"; }
+
+cd "$repo"
+nix develop --quiet --no-write-lock-file -c lean --version | grep -F 'version 4.25.0' \
+  || fail 'toolchain is not Lean 4.25.0'
+ok 'toolchain Lean 4.25.0'
+
+git diff --check
+[[ -z $(git status --porcelain) ]] || fail 'worktree or index is not clean'
+
+mapfile -t changed < <(git diff --name-only "$base" --)
+for path in "${changed[@]}"; do
+  case "$path" in
+    lean/KelGroups/Vote/Validate.lean|lean/KelGroups/Vote/Fold.lean|lean/KelGroups/Vote/Invariants.lean|lean/KelGroups/Vote/Tests.lean|specs/57-structural-vote-validation/tasks.md) ;;
+    *) fail "path outside S57-A fence: $path" ;;
+  esac
+done
+ok "source fence changed_paths=${#changed[@]}"
+
+frozen=(Types Event State Fold Validate Invariants Tests)
+for module in "${frozen[@]}"; do
+  git diff --quiet "$slice1" -- "lean/KelGroups/${module}.lean" \
+    || fail "Slice-1 module modified: lean/KelGroups/${module}.lean"
+done
+ok 'Slice-1 modules blob-identical to ccdda830'
+
+./nix/lean-dependency-direction.sh
+ok 'KelGroups to Reactivegas dependency direction'
+
+if grep -rnE '\bsorry\b|\badmit\b|^[[:space:]]*axiom[[:space:]]|\bnative_decide\b|sorryAx|Lean\.ofReduceBool' \
+    lean/KelGroups/Vote; then
+  fail 'forbidden proof escape under lean/KelGroups/Vote'
+fi
+ok 'proof-source hygiene'
+
+"$gate_root/check-event-boundary.sh" "$repo"
+
+# Keep the defect oracle before theorem-name checks so the frozen gate's RED
+# on the planning base is the retained R-45 behavior, not a missing new name.
+r45_preflight="$gate_root/evidence-r45-preflight.log"
+if ! nix develop --quiet --no-write-lock-file -c bash -c \
+    "cd lean && lake env lean '$gate_root/instruments/r45-production-noop.lean'" \
+    >"$r45_preflight" 2>&1; then
+  tail -20 "$r45_preflight" >&2
+  fail 'R-45 stranger/removeMember rejection and complete-state no-op'
+fi
+ok 'R-45 preflight Lean-4.25.0'
+
+lean_log=$(mktemp)
+trap 'rm -f "$lean_log"' EXIT
+nix develop --quiet --no-write-lock-file -c bash -c \
+  'cd lean && lake build KelGroups.Vote.Invariants KelGroups.Vote.Tests' 2>&1 | tee "$lean_log"
+
+required=(foldVote_wellFormed ballots_nodup_disjoint open_questions_are_open
+  questions_partition no_expiry inadmissible_is_noop nonresponsabile_event_noop
+  franchise_of_tallies verdictOf_threshold_congr)
+for theorem in "${required[@]}"; do
+  line=$(grep -E "'(KelGroups\\.Vote\\.)?${theorem}' (depends on axioms:|does not depend on any axioms)" "$lean_log" || true)
+  [[ -n $line ]] || fail "no #print axioms evidence for $theorem"
+  grep -qE 'sorryAx|Lean\.ofReduceBool' <<<"$line" && fail "$theorem has forbidden axiom"
+done
+ok "axiom evidence contractual_theorems=${#required[@]}"
+
+run_green() {
+  local name=$1 file=$2 log="$gate_root/evidence-${name}.log"
+  if ! nix develop --quiet --no-write-lock-file -c bash -c \
+      "cd lean && lake env lean '$file'" >"$log" 2>&1; then
+    tail -20 "$log" >&2
+    fail "green instrument failed: $name"
+  fi
+  ok "green instrument $name Lean-4.25.0"
+}
+
+run_red() {
+  local name=$1 marker=$2 file=$3 log="$gate_root/evidence-${name}.log" rc=0
+  nix develop --quiet --no-write-lock-file -c bash -c \
+    "cd lean && lake env lean '$file'" >"$log" 2>&1 || rc=$?
+  [[ $rc -ne 0 ]] || fail "mutant stayed green: $name"
+  grep -qF "MUTATION-APPLIED:$marker" "$log" || fail "mutant did not reach applied control: $name"
+  grep -qF 'did not evaluate to `true`' "$log" || fail "mutant red for wrong reason: $name"
+  ok "mutant red $name reason=$marker Lean-4.25.0"
+}
+
+run_green r45-production "$gate_root/instruments/r45-production-noop.lean"
+run_green arbitrary-surface-noop "$gate_root/instruments/arbitrary-and-surface-noop.lean"
+run_green no-expiry-member "$gate_root/instruments/no-expiry-member.lean"
+
+run_red inherited-partition PARTITION "$gate_root/instruments/mutant-partition.lean"
+run_red inherited-disjoint DISJOINT "$gate_root/instruments/mutant-disjoint.lean"
+run_red inherited-nostale NOSTALE "$gate_root/instruments/mutant-nostale.lean"
+run_red inherited-franchise FRANCHISE "$gate_root/instruments/mutant-franchise.lean"
+run_red inherited-policyfree POLICYFREE "$gate_root/instruments/mutant-policyfree.lean"
+run_red structural-bypass BYPASS "$gate_root/instruments/mutant-bypass.lean"
+
+nix develop --quiet --no-write-lock-file -c just ci
+ok 'full repository CI Lean-4.25.0'
+printf 'gate: GREEN issue=57 slice=S57-A Lean-4.25.0\n'

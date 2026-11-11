@@ -1,0 +1,81 @@
+{
+  "utc": "2026-09-06T06:13:33.587Z",
+  "scope": "Static files, git identity/status and receipt hashes only. No process listing or elaboration.",
+  "candidates": [
+    {
+      "cwd": "/code/reactivegas-66-s4b-audit5",
+      "head": "94bb7bb64324a48f7361252556b4d15e45b3923f",
+      "tree": "3ee3dc26deff4fde7b7ed9d3f253dd0fbd5efced",
+      "porcelain": "",
+      "verifiedTrackedInputs": 269
+    },
+    {
+      "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S10",
+      "head": "94bb7bb64324a48f7361252556b4d15e45b3923f",
+      "tree": "3ee3dc26deff4fde7b7ed9d3f253dd0fbd5efced",
+      "porcelain": "",
+      "verifiedTrackedInputs": 269
+    }
+  ],
+  "M1OleansVerified": 30,
+  "frozenManifests": [
+    {
+      "path": "instruments/MEASUREMENT.sha256",
+      "sha256": "29c21062d6f2669d4ba6d2108cb9745df4ffbf7cb810bfdd459902d0e20145d2",
+      "entries": 8
+    },
+    {
+      "path": "evidence/M1.sha256",
+      "sha256": "1e94df240de3ecf4886ccece16c3b3f11abf042ec50d42d761bcb9ed72a3422d",
+      "entries": 14
+    },
+    {
+      "path": "evidence/M1R.sha256",
+      "sha256": "963b608e6f4ccc6d0da65908f25f2e18b0102dc46daba1b17276f1450ea4c661",
+      "entries": 11
+    },
+    {
+      "path": "instruments/full/MANIFEST.sha256",
+      "sha256": "78bfc403d0b93907d466916635bb486360e277d9fa9563e62dcc4d9a9f73bda5",
+      "entries": 88
+    },
+    {
+      "path": "instruments/full-v2/MANIFEST.sha256",
+      "sha256": "2563cda43f819c63809d037ecff1de16760dd717fa00d5e4ede1cb1f2389da35",
+      "entries": 94
+    },
+    {
+      "path": "instruments/full-v3/MANIFEST.sha256",
+      "sha256": "41643ae74f2bedc16f1a5756d15bb2ef2796291362e7636850e66410e20cd81e",
+      "entries": 15
+    },
+    {
+      "path": "instruments/full-v4/MANIFEST.sha256",
+      "sha256": "ebccc953cf9b7b760099a8143db469eac63d78a0dfd3100138831e74bb840af5",
+      "entries": 12
+    },
+    {
+      "path": "instruments/full-v5/MANIFEST.sha256",
+      "sha256": "ccf2a146fdd3d7d0265ff45ba7be4b934380d8a98ef778ecd1790738cfa82f9e",
+      "entries": 10
+    }
+  ],
+  "spend": {
+    "substantive": 12,
+    "targeted": 73,
+    "ceilings": {
+      "substantive": 12,
+      "targeted": 80
+    },
+    "campaign": {
+      "substantive": 18,
+      "targeted": 132
+    },
+    "campaignCeilings": {
+      "substantive": 18,
+      "targeted": 139
+    }
+  },
+  "receiptsVerified": 82,
+  "finalCheckerNonce": "1788673975635087591"
+}

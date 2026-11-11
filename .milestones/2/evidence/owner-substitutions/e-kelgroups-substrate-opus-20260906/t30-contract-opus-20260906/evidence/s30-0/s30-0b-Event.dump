@@ -1,0 +1,257 @@
+Magic: Wanted 33214052,
+       got    33214052
+Version: Wanted 9084,
+         got    9084
+Way: Wanted ,
+     got    
+interface KelGroups.Event 9084
+  interface hash: 026fa5a97401114beca8e491d81cdf96
+  ABI hash: a3294c080ea280ab7428add6cb370582
+  export-list hash: a6f750ff52fae96972d13813955da23c
+  orphan hash: 693e9af84d3dfcc71e640e005bdc5e2e
+  flag hash: 02cc6b225a4b501881ce9bf3a82e8a2b
+  opt_hash: a03ee3c0445ea447025b482e15ed9c52
+  hpc_hash: 93b885adfe0da089cdf634904fd59f71
+  plugin_hash: ad164012d6b1e14942349d58b1132007
+  src_hash: e80c12624d74c5b423e5773400ebae4c
+  sig of: Nothing
+  used TH splices: False
+  where
+exports:
+  BaseChange{MemberAdmitted MemberRemoved RolesChanged}
+  BaseEvent{Approve Propose}
+  BaseMutation{ChangeRolesVoted RemoveMemberVoted}
+  DirectCommand{AdmitMember}
+  GroupEvent{App Base}
+  IntegratedEvent{IEApp IEApprove IEDirect IEPropose}
+  Proposal{ChangeRoles IntroduceMember RemoveMember}
+direct module dependencies: kelgroups-0.1.0.0-inplace:KelGroups.Types
+boot module dependencies:
+direct package dependencies: base-4.19.2.0 containers-0.6.8
+                             text-2.1.1
+plugin package dependencies:
+orphans: GHC.Base GHC.Float Data.Binary.Generic
+         Data.ByteString.Builder GHC.Prim.Ext Data.Text Data.Text.Show
+family instance modules: Control.Applicative Control.Arrow
+                         Data.Array.Byte Data.Complex Data.Functor.Compose
+                         Data.Functor.Const Data.Functor.Identity Data.Functor.Product
+                         Data.Functor.Sum Data.Monoid Data.Semigroup Data.Semigroup.Internal
+                         Data.Type.Ord Data.Version GHC.Generics GHC.IO.Exception GHC.IsList
+                         GHC.RTS.Flags Data.ByteString.Internal.Type
+                         Data.ByteString.Lazy.Internal Data.ByteString.Short.Internal
+                         Data.IntMap.Internal Data.IntSet.Internal Data.Map.Internal
+                         Data.Sequence.Internal Data.Set.Internal Data.Tree Control.DeepSeq
+                         GHC.ForeignSrcLang.Type GHC.LanguageExtensions.Type
+                         Text.PrettyPrint.Annotated.HughesPJ Text.PrettyPrint.HughesPJ
+                         Language.Haskell.TH.Syntax Data.Text
+import  -/  GHC.Base 7005ab33aeb89db631d4bff83b554cb0
+import  -/  GHC.Show 5a2b2726b9bd0a310d2549ac2f2cac99
+import  -/  Prelude cdb3bcad7e4db43703bf928ea9dd689b
+import  -/  Data.Set 769fa055ac7ef7f1f73cbbe6c9c6414f
+import  -/  Data.Set.Internal 55a3a2f19c011e7df252559111fe7755
+import  -/  GHC.Classes edf48f98cea918f56491bf2c2a437e60
+import  -/  kelgroups-0.1.0.0-inplace:KelGroups.Types 09d20917e7e6918a7f78329cc734d1b2
+  exports: e422ff1a3dc8a9a2ea7a222228ec7d0f
+  ProposalId 6f40a4565828a07a57c1f9112d3e3af2
+  Role 71757c692785611edd670343c53829e5
+import  -/  Data.Text ee87c38c9e2f1858cc015e4d53efdf7f
+import  -/  Data.Text.Internal fd901c27c2d420934e5cc451eb1bbad9
+4f198e1d5984306e935048728b224f7a
+  $fEqBaseChange :: GHC.Classes.Eq BaseChange
+  DFunId
+  []
+17efd07b583b2cfb1b29f80e227cb190
+  $fEqBaseEvent :: GHC.Classes.Eq BaseEvent
+  DFunId
+  []
+91d52b9b6446465f7b2c7596b4072742
+  $fEqBaseMutation :: GHC.Classes.Eq BaseMutation
+  DFunId
+  []
+1ccefa88b61783f6c6b5368df8fc7efc
+  $fEqDirectCommand :: GHC.Classes.Eq DirectCommand
+  DFunId
+  []
+52e6d39971955cfc9ba6711697cc5041
+  $fEqGroupEvent :: GHC.Classes.Eq a => GHC.Classes.Eq (GroupEvent a)
+  DFunId
+  []
+f1c8d989286dcff990acd460b0330828
+  $fEqIntegratedEvent ::
+    (GHC.Classes.Eq bp, GHC.Classes.Eq e) =>
+    GHC.Classes.Eq (IntegratedEvent bp e)
+  DFunId
+  []
+947f351d5cae7eb613c3c182f25e01ec
+  $fEqProposal :: GHC.Classes.Eq Proposal
+  DFunId
+  []
+baf11e1e9beaeee3964d7e683e12fd49
+  $fShowBaseChange :: GHC.Show.Show BaseChange
+  DFunId
+  []
+b243ab0d69f6e5616b05b53f80ac5348
+  $fShowBaseEvent :: GHC.Show.Show BaseEvent
+  DFunId
+  []
+95097c8c77a0de56757998f54f028302
+  $fShowBaseMutation :: GHC.Show.Show BaseMutation
+  DFunId
+  []
+d15a8557000cc32bd2b7801c84b48b71
+  $fShowDirectCommand :: GHC.Show.Show DirectCommand
+  DFunId
+  []
+244931034d0c136b9d96f606510ba989
+  $fShowGroupEvent :: GHC.Show.Show a => GHC.Show.Show (GroupEvent a)
+  DFunId
+  []
+febb7beda78b7f4ee32efe0967941337
+  $fShowIntegratedEvent ::
+    (GHC.Show.Show bp, GHC.Show.Show e) =>
+    GHC.Show.Show (IntegratedEvent bp e)
+  DFunId
+  []
+f4e6eed45cfbb7c3391b1b35c0308542
+  $fShowProposal :: GHC.Show.Show Proposal
+  DFunId
+  []
+538044a789bc17c1b348ffce1ed5bc43
+  $tc'AdmitMember :: GHC.Types.TyCon
+  []
+9f7f7d537e12a7082b5dfbb904286345
+  $tc'App :: GHC.Types.TyCon
+  []
+c11c5b3bb89a64c8da4415cb8c8d42a2
+  $tc'Approve :: GHC.Types.TyCon
+  []
+7382edbce700feb9d1312ab29f20d435
+  $tc'Base :: GHC.Types.TyCon
+  []
+cfdbc0f13f688a5b87143d307d74b74e
+  $tc'ChangeRoles :: GHC.Types.TyCon
+  []
+e384c3589199fd698810d15247789c74
+  $tc'ChangeRolesVoted :: GHC.Types.TyCon
+  []
+3a26458821fd981e189dd37abd9c8c20
+  $tc'IEApp :: GHC.Types.TyCon
+  []
+19ec6487b3b2656f026e95ca3a3c4424
+  $tc'IEApprove :: GHC.Types.TyCon
+  []
+ade0c5f01444cb04aaf37110920ce9ff
+  $tc'IEDirect :: GHC.Types.TyCon
+  []
+cba3376d26c9b0c2f71df4f6fd00141e
+  $tc'IEPropose :: GHC.Types.TyCon
+  []
+e8ff2c325fe4ce971c4f2a1388825dc7
+  $tc'IntroduceMember :: GHC.Types.TyCon
+  []
+2925f3ca437058f02ec610a2cf680cd4
+  $tc'MemberAdmitted :: GHC.Types.TyCon
+  []
+59cea9ea5ce892e20921e8fec2b41295
+  $tc'MemberRemoved :: GHC.Types.TyCon
+  []
+41094596c5f2ab2a43aab7f44bad1d68
+  $tc'Propose :: GHC.Types.TyCon
+  []
+d12df7e7f9920848ee7ef41dc664db67
+  $tc'RemoveMember :: GHC.Types.TyCon
+  []
+5b325349f128f56580c7405434e144e6
+  $tc'RemoveMemberVoted :: GHC.Types.TyCon
+  []
+91ba18a10c9d1bcbade65f17658caa54
+  $tc'RolesChanged :: GHC.Types.TyCon
+  []
+6d824388fffe422dcc04aa5b70e614be
+  $tcBaseChange :: GHC.Types.TyCon
+  []
+407d7ce74663c01f88bdeb1bc12eab94
+  $tcBaseEvent :: GHC.Types.TyCon
+  []
+d862e2d54132195ee506bef8a19993ab
+  $tcBaseMutation :: GHC.Types.TyCon
+  []
+01bc52ae37bdfd524d3916b4a0839d06
+  $tcDirectCommand :: GHC.Types.TyCon
+  []
+91163df205bdff881dc424cbbd57d57c
+  $tcGroupEvent :: GHC.Types.TyCon
+  []
+3ee5c6174acee5edc38dcd7810bfb0a3
+  $tcIntegratedEvent :: GHC.Types.TyCon
+  []
+f485d5b6125a68d7f8238d9be1c99c11
+  $tcProposal :: GHC.Types.TyCon
+  []
+5a787d59110c850d2032ff9f9e1331c3
+  $trModule :: GHC.Types.Module
+  []
+b29ef21ca5725d95204470d1d7f21529
+  type BaseChange :: *
+  data BaseChange
+    = MemberAdmitted !Data.Text.Internal.Text
+    | MemberRemoved !Data.Text.Internal.Text
+    | RolesChanged !Data.Text.Internal.Text
+b5c58aec1be5a3e472e85d678d1fef83
+  type BaseEvent :: *
+  data BaseEvent
+    = Propose !Proposal | Approve !KelGroups.Types.ProposalId
+be3168e76ee9a5da62ada24ee8412eca
+  type BaseMutation :: *
+  data BaseMutation
+    = RemoveMemberVoted !Data.Text.Internal.Text
+    | ChangeRolesVoted !Data.Text.Internal.Text
+                       !(Data.Set.Internal.Set KelGroups.Types.Role)
+380ce1d36bc21bc028f7535b3593c083
+  type DirectCommand :: *
+  data DirectCommand
+    = AdmitMember !Data.Text.Internal.Text
+                  !Data.Text.Internal.Text
+                  !(Data.Set.Internal.Set KelGroups.Types.Role)
+5d32fb4a30c0018379001fe54fd4f9dd
+  type GroupEvent :: * -> *
+  data GroupEvent a = Base !BaseEvent | App !a
+ecb1ceb585acc33e84f003d1746b4127
+  type IntegratedEvent :: * -> * -> *
+  data IntegratedEvent bp e
+    = IEDirect !DirectCommand
+    | IEPropose !bp
+    | IEApprove !KelGroups.Types.ProposalId
+    | IEApp !e
+dcb33a617b229e92f73a19599ab6f3b7
+  type Proposal :: *
+  data Proposal
+    = IntroduceMember !Data.Text.Internal.Text
+                      !Data.Text.Internal.Text
+                      !(Data.Set.Internal.Set KelGroups.Types.Role)
+    | RemoveMember !Data.Text.Internal.Text
+    | ChangeRoles !Data.Text.Internal.Text
+                  !(Data.Set.Internal.Set KelGroups.Types.Role)
+instance GHC.Classes.Eq [BaseChange] = $fEqBaseChange
+instance GHC.Classes.Eq [BaseEvent] = $fEqBaseEvent
+instance GHC.Classes.Eq [BaseMutation] = $fEqBaseMutation
+instance GHC.Classes.Eq [DirectCommand] = $fEqDirectCommand
+instance GHC.Classes.Eq [GroupEvent] = $fEqGroupEvent
+instance GHC.Classes.Eq [IntegratedEvent] = $fEqIntegratedEvent
+instance GHC.Classes.Eq [Proposal] = $fEqProposal
+instance GHC.Show.Show [BaseChange] = $fShowBaseChange
+instance GHC.Show.Show [BaseEvent] = $fShowBaseEvent
+instance GHC.Show.Show [BaseMutation] = $fShowBaseMutation
+instance GHC.Show.Show [DirectCommand] = $fShowDirectCommand
+instance GHC.Show.Show [GroupEvent] = $fShowGroupEvent
+instance GHC.Show.Show [IntegratedEvent] = $fShowIntegratedEvent
+instance GHC.Show.Show [Proposal] = $fShowProposal
+Warnings:
+  Deprecated names:
+  Deprecated exports:
+trusted: none
+require own pkg trusted: False
+docs:
+  Nothing
+extensible fields:
+

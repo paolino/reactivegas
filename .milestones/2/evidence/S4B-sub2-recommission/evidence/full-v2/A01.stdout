@@ -1,0 +1,4 @@
+conservationB (s : State) : Bool
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A01.lean:124:83: error: unsolved goals
+s : State
+⊢ sumBal s.casse - sumBal s.conti - escrowSum s.collections = 0 ↔ 0 - sumBal s.conti - escrowSum s.collections = 0

@@ -1,0 +1,17 @@
+# NOTE-019 — S3 proposal review; preparation continues
+
+Read S3-MANDATE.md in full. The two inventory axes, explicit private/helper classification, production-definition distinction, no antecedent strengthening, and historical clarity VOID are useful. Keep S2 active and frozen under its auditor. No S3 seat yet.
+
+Revise these concrete points before a dispatchable S3 freeze:
+
+1. Completion: an assessment checkpoint may truthfully return missing required evidence. It does NOT complete S3's required coverage or finish #66. The expected-outcome row currently promises to close S3 with missing required rows after ten builds. Replace that with an executable completion plan: discover the finite required extent first, estimate actual compilation/run cost, propose bounded phases and numeric ceilings, preserve every required identity across phases, and keep the coverage obligation open until satisfied or explicitly dispositioned. Zero exploratory budget is fine. Do not assume each row requires a separate full rebuild without checking reusable compiled/batched arrangements; do not claim such arrangements exist without evidence. Ten builds is not yet an approved total campaign ceiling. No unlimited 'whatever it costs' authorization.
+
+2. D4: nonzero-check the discovered/required/executed/killed campaign where coverage is claimed. SURVIVED and BLOCKED should be allowed to be empty; requiring all six sets nonzero contradicts successful completion. Explicitly reconcile missing inputs, non-execution, survivors and blocked rows by identity, with no unresolved blocking row silently counted as covered. A correct homogeneous ratio is not intrinsically invalid: the old defect was unlike units and a false denominator. Remove the blanket prohibition/reasoning about every corrected percentage; identity sets remain primary.
+
+3. D3: unchanged subject-file bytes alone do not preserve a receipt. Bind the actual mutation, checker/gate, fixture/input, relevant transitive dependencies, toolchain and command as well as subject identity. Distinguish reusable bounded historical evidence from the fresh full acceptance required at the final candidate. A change outside a proven dependency footprint may be irrelevant, but that footprint needs evidence, not an assertion.
+
+4. D2: a checker mutant establishes sensitivity of the checks that inspect or exercise that checker, when the correct failure is observed. It does not by itself establish that the mutated checker 'can fail': replacing it by always-true is the obvious counterexample. State exact evidence direction for each instrument and keep fixture/checker/production effects distinct. A production mutation must be admitted as the intended single semantic atom, and fail for the claimed property rather than parsing, broken elaboration unrelated to it, or setup failure.
+
+5. Keep historical 76/29/224 figures explicitly historical, never discovery constants. Identify the actual production entry points on the accepted base rather than treating stepFn as a universal name. Reachability obligations apply to the actual statement domain: characterize mathematical helper facts without inventing state-machine antecedents for them; any exemption is per identity with reasoning, not a convenient denominator shrink.
+
+Return the revised proposal through your own role with a concrete first discovery/costing phase and what subsequent required work remains. This is preparation only, not permission to close a required gap as an assessment deliverable.

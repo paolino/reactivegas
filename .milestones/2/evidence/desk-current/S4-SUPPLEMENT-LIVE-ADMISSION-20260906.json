@@ -1,0 +1,28 @@
+{
+  "at": "2026-09-06T07:21:25.466Z",
+  "pane": "%578",
+  "pid": 3670660,
+  "argv": "codex -m gpt-6-astra -c model_reasoning_effort=high",
+  "session": "01a07594-146c-77f0-b1c8-9d6ace46b0ea",
+  "ownStart": "2026-09-06T07:18:19Z",
+  "briefSha256": "effaec1539991073777101b0488f4acd1e4a79362d94a0e69213a78a50c97dc5",
+  "inputManifestSha256": "7600348a0756fdcf054813a186719275c6e7a46c7fbb3740f79fc838322c3833",
+  "inputsVerified": 11,
+  "turnContexts": [
+    {
+      "timestamp": "2026-09-06T07:17:24.035Z",
+      "model": "gpt-6-astra",
+      "effort": "high",
+      "activeModel": "gpt-6-astra",
+      "activeEffort": "high"
+    },
+    {
+      "timestamp": "2026-09-06T07:20:35.446Z",
+      "model": "gpt-6-astra",
+      "effort": "high",
+      "activeModel": "gpt-6-astra",
+      "activeEffort": "high"
+    }
+  ],
+  "scope": "Zero-project-execution static evidence supplement; full original terminal audit preserved, no acceptance."
+}

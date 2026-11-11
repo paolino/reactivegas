@@ -1,0 +1,12 @@
+theorem comune_not_a_member_corr (view : KelGroups.GroupView) :
+    comune_not_a_member view ↔ ((!KelGroups.GroupView.isMember comuneId view) = true) := by
+  unfold comune_not_a_member
+  cases KelGroups.GroupView.isMember comuneId view <;> simp
+
+/-- P01 supporting projection: `productionWellFormed` IS that expression
+theorem permissionToClose_corr (col : Collection) :
+    permissionToClose col ↔ ((col.permitted && col.pending.isEmpty) = true) := by
+  obtain ⟨id, ref, perm, acc, pend⟩ := col
+  cases perm <;> cases pend <;> simp [permissionToClose]
+
+/-- P08 mirror: the `splitUser` outcome determines the held amount. -/

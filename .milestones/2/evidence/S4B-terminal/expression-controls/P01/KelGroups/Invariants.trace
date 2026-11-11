@@ -1,0 +1,37 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["279a41bf8672544c.olean"],
+  "i": "9d3cd930f7e6c981.ilean",
+  "c": "0b68744871236460.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/code/reactivegas-66-s4b-audit3/lean/.lake/build/lib/lean /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean /code/reactivegas-66-s4b-audit3/lean/KelGroups/Invariants.lean -o /code/reactivegas-66-s4b-audit3/lean/.lake/build/lib/lean/KelGroups/Invariants.olean -i /code/reactivegas-66-s4b-audit3/lean/.lake/build/lib/lean/KelGroups/Invariants.ilean -c /code/reactivegas-66-s4b-audit3/lean/.lake/build/ir/KelGroups/Invariants.c --setup /code/reactivegas-66-s4b-audit3/lean/.lake/build/ir/KelGroups/Invariants.setup.json --json",
+   "level": "trace"},
+  {"message":
+   "KelGroups/Invariants.lean:870:0: 'KelGroups.base_change_runs_hook' depends on axioms: [propext]",
+   "level": "info"}],
+ "inputs":
+ [["KelGroups.Invariants:deps",
+   [["deps",
+     [["reactivegas/KelGroups:extraDep",
+       [["@reactivegas:extraDep", "00000000000006bb"]]],
+      ["imports",
+       [["KelGroups.Fold transitive imports (legacy)", "e3ce4634d04bdc8e"],
+        ["KelGroups.Fold:importAllArts", "507e115cf4d27348"],
+        ["KelGroups.Validate transitive imports (legacy)", "e3ce4634d04bdc8e"],
+        ["KelGroups.Validate:importAllArts", "a437e67109c03932"],
+        ["KelGroups.Integration transitive imports (legacy)",
+         "af32b9029c73c41e"],
+        ["KelGroups.Integration:importAllArts", "482bfb067cc04eb8"]]]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.25.0, commit v4.25.0", "9c3a3ade3a41d5d0"],
+  ["/code/reactivegas-66-s4b-audit3/lean/KelGroups/Invariants.lean",
+   "61b215d2517deec1"],
+  ["options", [["-DautoImplicit=false", "4a85acb881fd49d0"]]],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "3920a06937743a56"}

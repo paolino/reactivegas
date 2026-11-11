@@ -1,0 +1,5 @@
+stalledDecidable State.empty
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/ReachDecision.lean:3:0: error: failed to synthesize
+  Decidable (Reach { members := [] } (fun x x_1 => false) State.empty)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.

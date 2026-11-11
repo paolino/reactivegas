@@ -1,0 +1,11 @@
+{
+  "inventoryRoundtrip": true,
+  "verifiedAt": "2026-09-06T05:31:07.196Z",
+  "commit": "bf9dc3f64a35dc07c3affc85fa23b3365bef71e5",
+  "tree": "332029b19ae6b9f29baf53c3dc0cb2908e9672b4",
+  "files": 4625,
+  "parents": 0,
+  "readback": "/tmp/ms-reactivegas-2/readback-1788672665225",
+  "wikiCommit": "0060161e37541e326591849d390b4dcd60a9f963",
+  "registerSha256": "48441bac974086e09a03a733598ce0850345ba290113ee2f6913ae854c177cd0"
+}

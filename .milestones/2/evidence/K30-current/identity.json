@@ -1,0 +1,7 @@
+{
+  "at": "2026-09-06T08:20:50.967Z",
+  "head": "2a900a89fc1f2c3e1ce54d258754afe360d58782",
+  "base": "933e385df2f2a251bb54a08bb7663f0d41fafb64",
+  "patchSha256": "b50058c77bc2e23137aef54ba18a98561970cfa08541b4f57cfff1528292e3de",
+  "scope": "Recovery copy of committed unaccepted candidate; not validation or acceptance."
+}

@@ -1,0 +1,67 @@
+[
+  {
+    "id": "SC-compile",
+    "argv": [
+      "nix",
+      "develop",
+      ".#ci",
+      "--quiet",
+      "-c",
+      "cabal",
+      "exec",
+      "-O0",
+      "--",
+      "ghc",
+      "--make",
+      "-O0",
+      "-threaded",
+      "-XGHC2021",
+      "-XOverloadedStrings",
+      "-XDerivingStrategies",
+      "-XLambdaCase",
+      "-XStrictData",
+      "-package",
+      "kelgroups",
+      "-i/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/store-shadow:lib",
+      "-itest",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/Row4Probe.hs",
+      "-odir",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/store-mutant",
+      "-hidir",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/store-mutant",
+      "-o",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/store-mutant/probe"
+    ],
+    "charge": {
+      "builds": 0,
+      "targeted": 1
+    },
+    "expectedExit": 0
+  },
+  {
+    "id": "SC-negative",
+    "argv": [
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/store-mutant/probe",
+      "--match",
+      "/S28-1 rejecting step before append/concurrent appends conserve every committed transition/"
+    ],
+    "expectedExit": 1,
+    "charge": {
+      "builds": 0,
+      "targeted": 1
+    }
+  },
+  {
+    "id": "SC-positive",
+    "argv": [
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/row4/probe",
+      "--match",
+      "/S28-1 rejecting step before append/concurrent appends conserve every committed transition/"
+    ],
+    "expectedExit": 0,
+    "charge": {
+      "builds": 0,
+      "targeted": 1
+    }
+  }
+]

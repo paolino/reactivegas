@@ -1,0 +1,8 @@
+toolchain=Lean (version 4.25.0, commit v4.25.0, Release)
+path '/code/reactivegas-t54-audit-a2/lean' does not contain a 'flake.nix', searching up
+/tmp/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s2/instruments/r45-seed-unvalidated-member-event.lean:12:0: error: Expression
+  knownBadValidate legacyThreshold emptyVoteState "stranger" (VoteEvent.removeMember "a") ==
+    Except.error VoteError.notResponsabile
+did not evaluate to `true`
+lean_exit=1
+EXPECTED_RED=R45-known-defective-seed

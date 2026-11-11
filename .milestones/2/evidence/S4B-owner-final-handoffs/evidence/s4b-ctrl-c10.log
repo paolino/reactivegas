@@ -1,0 +1,5 @@
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+Reactivegas/Mirrors.lean:181:55: error: unsolved goals
+s : State
+⊢ (∀ (col : Collection), col ∈ s.collections → uniquePledgesB col = true) ↔
+    ∀ (x : Collection), x ∈ s.collections → (!uniquePledgesB x) = true

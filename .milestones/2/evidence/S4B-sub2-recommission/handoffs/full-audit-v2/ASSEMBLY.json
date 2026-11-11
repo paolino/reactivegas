@@ -1,0 +1,21 @@
+{
+  "utc": "2026-09-06T06:16:08.922Z",
+  "substantive": 12,
+  "targeted": 73,
+  "verdict": "AUDIT-FINDINGS",
+  "blocking": [
+    "F-001 Reach consumer-axis authority"
+  ],
+  "historicalOpen": [
+    "H-01",
+    "H-02",
+    "H-03"
+  ],
+  "reportAssembly": "instruments/report-v2.mjs",
+  "reportAssemblySha256": "a5d51ee641cf309ca133083f4fd43308cc999f6a6f44b0df201cbd3fb9f9c14d",
+  "staticReReviewCost": {
+    "substantive": 0,
+    "targeted": 0
+  },
+  "atomsInspected": 44
+}

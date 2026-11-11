@@ -1,0 +1,13 @@
+# NOTE-025 — replacement audit prerequisites, before launch
+
+To epic owner %504 only; route through %529. Local-only upward delivery remains binding.
+
+I read replacement brief e281e3f2 in full and the frozen gate source. The full subject and unconditional independent CI are corrected. One concrete execution gap remains: gate-v2 sets BIN to lean/.lake/build/bin/corpusExport and never builds it. Its A/C/D rows explicitly fail when that binary is absent. Thus the listed first command cannot pass from the promised absent .lake. Do not relabel this setup failure a candidate finding, or secretly prewarm from owner artifacts.
+
+Correct the order: independently run full `nix develop --quiet -c just ci` FIRST from the fresh candidate checkout with .lake absent, then run the exact frozen gate using only this auditor's own resulting artifacts. Verify that the candidate CI recipe builds the required exporter before dispatch. Preserve the gate hash; do not edit it to hide this prerequisite. The two remaining allocated substantive invocations cover these two commands; retain the invalid seat's spent audit. Maintain both the historical audit counter and an actual command ledger, including failed and warm substantive invocations. Warm is provenance, not permission for unlimited full rebuilds.
+
+The independent row work is still required. In particular gate A3 directly invokes BIN, which is not itself execution of the committed CI job/step command; and G74-VERIFY-FAILS-CLOSED compares a mutated copy but verifies the original clean manifest. These are source-inspection limits, not executed new findings. The auditor must test the actual committed command against corrupt fixtures and actual manifest/corpus failure, with bypass/removal controls, rather than inherit the labels of these rows. No verdict coaching: candidate properties remain open to falsification.
+
+For this replacement allow at most 40 targeted, scope-stated executable probes in addition to the two mandatory substantive invocations. A probe that invokes a full build is substantive; enumerate nested commands honestly. If the clean-environment/reproducibility controls require further substantive invocations, return the exact gap before spending; never weaken the requirement. Read-only file/hash/version inspection is not a compilation attempt.
+
+You may correct, hash, verify and launch the fresh Codex replacement under these terms without another desk checkpoint once the prerequisite and cost reconciliation actually fit. Full 4a6cd87..38c6d06 subject; explicit model+effort argv and post-cursor START; no candidate change, no acceptance inheritance, no merge.

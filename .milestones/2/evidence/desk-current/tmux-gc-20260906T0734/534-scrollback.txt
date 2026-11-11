@@ -1,0 +1,488 @@
+ Analyzing narrow per-probe durations and cache state to explain fast build times.
+
+ Reconciling the 11-minute timeline with cached builds and incremental test runs.
+
+ Recomputing durations with cache hits and O0 compile times while noting clock and parallelism gaps.
+
+
+ $ A=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/STATUS.md
+ grep -n '02:5[0-9]\|03:0[0-5]' $A 2>&1 | grep -viE 'TARGETED-(BEGIN|END).*targeted=(1[3-9]|2[0-2])/24' | head -n 30 | cut -c1-130
+
+ ... (25 earlier lines, ctrl+o to expand)
+ 28:2026-09-06T02:59:50Z  INSTRUMENT-FROZEN  path=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/hando
+ 29:2026-09-06T02:59:50Z  INSTRUMENT-FROZEN  path=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/hando
+ 30:2026-09-06T02:59:50Z  AUDIT-INPUT-STATS  bytes=92474 lines=1396 tokens=unavailable manifest=/tmp/reactivegas/ms2/e-kelgroups-su
+ 31:2026-09-06T03:00:16Z  NOTE  BUILD-END id=M6 exit=1 builds=8/12 targeted=0/24 AUDIT-S28R2
+ 32:2026-09-06T03:00:16Z  NOTE  BUILD-BEGIN id=M7 builds=9/12 targeted=0/24 cache=warm AUDIT-S28R2
+
+ Took 0.2s
+
+
+ Analyzing Nix and Cabal build timings and cache behavior for local compilation and test execution.
+
+ Reconciling per-leg timings with warm caches and parallel execution to resolve the tempo anomaly.
+
+
+ $ awk 'NR==4' /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/STATUS.md 2>&1 | cut -c1-400
+ echo "===M7/M8/leg6/GATE-PASS lines (envelope completion) ==="
+ grep -n 'BUILD-END id=M7\|BUILD-END id=M8\|BUILD-BEGIN id=leg6\|BUILD-END id=leg6\|GATE-PASS\|START commit'
+ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/STATUS.md 2>&1 | cut -c1-130 | head -n 8
+
+ ... (4 earlier lines, ctrl+o to expand)
+ 33:2026-09-06T03:00:45Z  NOTE  BUILD-END id=M7 exit=1 builds=9/12 targeted=0/24 AUDIT-S28R2
+ 36:2026-09-06T03:01:12Z  NOTE  BUILD-END id=M8 exit=1 builds=10/12 targeted=0/24 AUDIT-S28R2
+ 37:2026-09-06T03:01:12Z  NOTE  BUILD-BEGIN id=leg6 builds=11/12 targeted=0/24 cache=warm AUDIT-S28R2
+ 38:2026-09-06T03:02:18Z  NOTE  BUILD-END id=leg6 exit=0 builds=11/12 targeted=0/24 AUDIT-S28R2
+ 39:2026-09-06T03:02:19Z  GATE-PASS  gate-v10.2 exit=0 builds=11/12 targeted=0/24 clean=true AUDIT-S28R2
+
+ Took 0.3s
+
+
+ Verifying co-location and envelope completion with process-bound admission and clean gate pass.
+
+
+ $ SE=/code/llm-settings/shared/skills/worker-protocol/scripts/status-event
+ ST=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/STATUS.md
+ $SE "$ST" NOTE "SUPERVISION-STATE (NOTE-044 wake): ADMISSION RECONCILED (START 02:57:21 %569 :12-kelgroups-@157 pid-3019780 codex-gpt-6-astra-high alternate authorization-NOTE-033/043
+ scope-FULL — co-location process-bound (Q-001 absorbed); GATE-BEGIN 11B own-dirs; envelope 02:57:22→03:02:19 (leg3-17s-cold-nix-cached + leg4-30s + M1-9s-buildRED + M2-33s + M3-26s +
+ M4-3s-buildRED + M5-30s + M6-29s + M7-29s + M8-27s-testRED + leg6-66s = 11B GATE-PASS exit-0 clean); floor-19 + extra-SC (MAJ/P3/P4/P5-neg/P6/P7-neg-on-shadow/TYP-negx2/SC-comp-neg-pos)
+ complete 03:09:02 at 11/12+22/24 (1B+2P left); NO terminal yet (report-writing, charge-0). TEMPO RESOLVED (warm global caches + parallel O0 + fast suites make 5-min envelope physical;
+ per-leg timings above; speed≠skimping (kills/quotes verify at terminal)). P7-exit-1 RESOLVED (negative-on-shadow (strengthened tests catch it — F2-fixed, consistent S28-R1); TYP/P5/SC
+ negatives all intended). GAP recorded (02:49:46→03:14 blind: note-driven supervision lagged a 25-min executor; fix (per-turn reads) stands; structural note (high-tempo phases catch-up via
+ notes like this; loop-ban stands (orphan worse)). WAIT through terminal (proven COMPLETE pattern + live auditor/owner paths; presence+content-verified = wake; bounded foreground
+ confirmations where turns allow) for: immutable report+ledger+inventory → MY independent assessment → EPIC assessment → desk handback (accept-or-blocker); no progress-checkpoint, no
+ assumed-pass; all spent ops + failed campaigns kept (no reset/builds/source/push/PR/merge/comments). Lane HEAD ab25cd1 clean (auditor contained); owner parked; seat %569 alive."
+ tail -n 1 "$ST" | cut -c1-60
+
+ 2026-09-06T03:15:07Z  NOTE  SUPERVISION-STATE (NOTE-044 wake
+
+ Took 0.3s
+
+
+ NOTE-044 read in full and acted on. Acknowledged in STATUS (NOTE NOTE-044 read + supervision state).
+
+ Admission reconciled: START 02:57:21 recorded with full facts — %569, reactivegas:12 kelgroups @157 (process-bound co-location, Q-001 fully absorbed), pid 3019780, Codex gpt-6-astra/high,
+ alternate-provider, NOTE-033/043 authorization, FULL scope. Envelope 02:57:22→03:02:19 (11B, GATE-PASS exit 0, clean), floor-19 plus extra shipped concurrency probes complete 03:09:02 at
+ 11/12+22/24 (1B+2P left). No terminal report yet (report-writing phase).
+
+ Tempo anomaly resolved from primary sources: per-leg timings (leg3 17s cold-nix-cached through M8 27s test-RED) make the 5-minute envelope physical — warm global caches, parallel O0, fast
+ suites. Speed≠skimping; kills and quotes verify at terminal, not durations. P7-exit-1 resolved as intended-negative-on-shadow (strengthened tests catching it = F2 fixed, consistent with
+ S28-R1); all other exits classify cleanly.
+
+ Gap recorded and closed: 02:49:46→03:14 blind — note-driven supervision lagged a 25-minute executor. Fix stands (per-turn reads, applied this turn); structural note (high-tempo phases catch
+ up via notes like this one; loop-ban stands).
+
+ Wait owned through terminal: proven COMPLETE pattern plus live auditor/owner paths, presence-and-content-verified as wake, bounded foreground confirmations where turns allow — covering
+ immutable report+ledger+inventory → my independent assessment → epic assessment → desk handback, with no progress-checkpoint and no assumed pass. Lane HEAD clean, auditor contained, owner
+ parked.
+
+
+ Read /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/inbox/NOTE-045-terminal-pass.md in full and act on it. Acknowledge in
+ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/STATUS.md. [POINTER-1788665132-3093755]
+
+
+
+ read /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/inbox/NOTE-045-terminal-pass.md
+
+
+ Processing a terminal audit result and sequencing assessments before push and PR without merging.
+
+ Verifying audit artifacts and ledger state before recording acceptance or a blocker.
+
+
+ $ SE=/code/llm-settings/shared/skills/worker-protocol/scripts/status-event
+ ST=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/STATUS.md
+ $SE "$ST" NOTE "NOTE-045 read (POINTER-1788665132-3093755): consume terminal PASS; my full assessment first (binding). Preamble: terminal AUDIT-RESULT AUDIT-PASS + COMPLETE 03:15:02 (report
+ d1d19060, inventory 3f352562), campaign closed (6 killed, 0 blocked/open, 11/12+22/24). My no-terminal statement SUPERSEDED (consume existing artifact before new cursor). Finite-scope local
+ PASS, never acceptance-by-inheritance. Orders: MY full assessment first (journal + handoff: R1-R6 + 5 reliances + raw witnesses + limits with preservations explicit (P2/SC distinction;
+ finite bounds shown-vs-not; refusal-vs-exception; historical/cleanup/unjudged; separate costs); claim NOTHING beyond (no crash safety, no crypto-authenticated placeholders, no #29/#73
+ completion, no release readiness)). Then: (1) epic assessment from handoff; (2) local concrete acceptance-or-blocker; (3) ONLY if BOTH accept exact candidate with zero blockers: push
+ EXISTING branch at exact ab25cd1-full + issue-backed PR (factual body, no closing refs) + supervise live remote CI through terminal (presence ≠ success); no source
+ change/rebase/builds/submission; no release/deploy; NO MERGE. Acting: consume terminal packet on primary sources (hashes + full reads + spot-proof), then independent assessment + handoff."
+ tail -n 1 "$ST" | cut -c1-60
+
+ 2026-09-06T03:25:50Z  NOTE  NOTE-045 read (POINTER-178866513
+
+ Took 0.3s
+
+
+
+ $ A=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2
+ echo "===terminal lines (COMPLETE + RESULT + campaign) ==="
+ tail -n 5 $A/STATUS.md 2>&1 | cut -c1-130
+ echo "===report + inventory hashes (verify!) ==="
+ sha256sum $A/handoffs/AUDIT-REPORT.md 2>&1 | cut -c1-16
+ ls $A/handoffs/EVIDENCE-INVENTORY* 2>&1; sha256sum $A/handoffs/EVIDENCE-INVENTORY.json 2>&1 | cut -c1-16
+
+ ... (7 earlier lines, ctrl+o to expand)
+ d1d1906081a411e2
+ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/EVIDENCE-INVENTORY
+ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/EVIDENCE-INVENTORY.json
+ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/EVIDENCE-INVENTORY.md
+ 3f352562580c113f
+
+ Took 0.3s
+
+
+
+ read /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/AUDIT-REPORT.md
+
+
+ Recording audit pass for finite scope with resolved codec and attribution fixes and no blocking findings.
+
+ Extending falsification to the shipped checker with seed-negative and candidate-positive runs.
+
+ Recording gate results, limits, and independent verification against primary sources.
+
+
+ $ A=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2
+ ls $A/handoffs/evidence/ 2>&1 | head -n 25
+ echo "===auditor gate-full log (OVERALL_FAIL? v10.2? kills?) ==="
+ GL=$(ls -t $A/handoffs/evidence/*-gate-full.log 2>&1 | head -n 1); echo "GL=$GL"
+ sha256sum "$GL" 2>&1 | cut -c1-16
+ tail -n 1 "$GL" 2>&1 | cut -c1-80
+ grep -c 'KILL-QUOTE' "$GL" 2>&1; grep 'KILL-QUOTE(M8' "$GL" 2>&1 | cut -c1-110 | head -n 2
+
+ ... (26 earlier lines, ctrl+o to expand)
+ GL=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/20260906T025721Z-ab25cd1-gate-full.log
+ 2ad60aa95d7f64ff
+ ===== GATE G28-1 v10.2 (S28R2-M8faithful) COMPLETE: OVERALL_FAIL=0 =====
+ 6
+ KILL-QUOTE(M8): failing example: faulting codec from nonmember keeps exact refusal
+
+ Took 0.2s
+
+
+
+ $ GL=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/20260906T025721Z-ab25cd1-gate-full.log
+ grep -E 'LEG-PASS: 5-M1|LEG-PASS: 5-M4|4a-REGISTERED|4b-EXECUTION|5-reverted|5: all eight|LEG-PASS: 6' "$GL" 2>&1 | cut -c1-105
+ echo "===M8 digest in auditor gate (== 37be8bccc9?) ==="
+ grep -m1 'M8 diff sha256' "$GL" 2>&1 | cut -c1-100
+ echo "===registered counts (auditor run) ==="
+ for i in 1 2 3 4 5 6; do echo -n "row$i=$(grep -c .
+ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/20260906T025721Z-ab25cd1-registered/row$i.txt 2>&1) "; done; echo ""
+
+ ... (6 earlier lines, ctrl+o to expand)
+ LEG-PASS: 6: just ci exit 0
+ ===M8 digest in auditor gate (== 37be8bccc9?) ===
+ M8 diff sha256=37be8bccc9f50e48275cca01be21d9aec686d404a205092b711acc279a8274c1
+ ===registered counts (auditor run) ===
+ row1=3 row2=8 row3=3 row4=9 row5=3 row6=5
+
+ Took 0.2s
+
+
+
+ $ EV=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence
+ ls $EV 2>&1 | tail -n 25
+ echo "===F3 P2-codec (tuple + refusal?) ==="
+ ls $EV/P2* $EV/*codec* 2>&1 | head -n 6
+
+ ... (26 earlier lines, ctrl+o to expand)
+ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/P2-codec.log
+ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/P2-codec.log
+ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/P2-compile.log
+ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/P2-conservation.log
+ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/P2-lock.log
+
+ Took 0.2s
+
+
+
+ $ EV=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence
+ echo "===F3 P2-codec==="; grep -E 'tuple|Left|exception|refusal' $EV/P2-codec.log 2>&1 | head -n 5 | cut -c1-120
+ echo "===F1 SC-negative (958/558?) + SC-positive (1/0?) ==="
+ grep -E 'expected|but got|examples|failure|SETUP' $EV/SC-negative.log 2>&1 | head -n 5 | cut -c1-110
+ tail -n 3 $EV/SC-positive.log 2>&1 | cut -c1-100
+ echo "===F2 P5/P6/P7==="
+ grep -E 'noInsertion|WITNESS|insert' $EV/P5.log $EV/P6.log 2>&1 | head -n 4 | cut -c1-110
+ grep -E 'examples|failures' $EV/P7.log 2>&1 | head -n 3 | cut -c1-100
+
+ ... (12 earlier lines, ctrl+o to expand)
+ 1 example, 0 failures
+ ===F2 P5/P6/P7===
+ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/P5.log:EFFECT-WI
+ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/P6.log:EFFECT-WI
+ 9 examples, 2 failures
+
+ Took 0.2s
+
+
+
+ $ EV=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence
+ echo "===R1/R3/R5 runs (exact values?) ==="
+ tail -n 4 $EV/R1-run.log 2>&1 | cut -c1-110; tail -n 4 $EV/R3-run.log 2>&1 | cut -c1-110; tail -n 4 $EV/R5-run.log 2>&1 | cut -c1-110
+ echo "===MAJ + TYP (enactment? rejections?) ==="
+ ls $EV/MAJ* $EV/Maj* 2>&1 | head -n 3; tail -n 3 $EV/TYP-Event.log 2>&1 | cut -c1-100; tail -n 3 $EV/TYP-Historical.log 2>&1 | cut -c1-100
+
+ ... (18 earlier lines, ctrl+o to expand)
+ 6 | eventOnlyMismatch = F.applyIntegratedEvent demoIntegration foundingDemo "admin-key-1" (E.IEApp (
+   |
+   |
+ 6 | historicalEventMismatch = F.applyEvent (\st _ -> st) foundingDemo ("admin-key-1", E.App (DemoAdd
+   |                                                                                          ^^^^^^^
+
+ Took 0.2s
+
+
+ Verifying test results and conservation claims while checking failure cases and seed sample consistency.
+
+
+ $ EV=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence
+ cat $EV/P5.log $EV/P6.log 2>&1 | cut -c1-110
+ echo "===MAJ-run tail==="; tail -n 4 $EV/MAJ-run.log 2>&1 | cut -c1-110
+ echo "===P2-conservation tail (8-pair + seed?) ==="; tail -n 6 $EV/P2-conservation.log 2>&1 | cut -c1-120
+
+ ... (9 earlier lines, ctrl+o to expand)
+ PERSISTED-REOPEN agrees=True
+ PAIR (0,999) accepted=True tuple=(999,2,2,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactRepl
+ PERSISTED-REOPEN agrees=True
+ FINAL conservation all 160 schedules=True
+ LIMIT: observed finite schedules only; neither overlap completeness nor all interleavings established
+
+ Took 0.2s
+
+
+
+ read /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/REQUIREMENT-LEDGER.md
+
+
+
+ $ cd /code/kelgroups-issue-28
+ git rev-parse HEAD 2>&1; git rev-parse 'HEAD^{tree}' 2>&1; git status --porcelain 2>&1; echo "(empty = clean)"; git branch --show-current 2>&1
+ sha256sum gate.sh 2>&1 | cut -c1-16
+ echo "===owner/auditor books (final) ==="
+ grep -h 'Spend FINAL\|spend.*26/26\|11/12.*22/24' /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-owner-s28r2/STATUS.md
+ /tmp/reactivegas/ms2/e-kelgroups-subordinate/t28-app-api/commit-auditor-s28r2/STATUS.md 2>/dev/null | head -n 3 | cut -c1-110
+ grep -h 'Spend FINAL\|11/12+22/24\|22/24' /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/STATUS.md 2>&1 | tail -n 2 | cut -c1-110
+
+ ... (6 earlier lines, ctrl+o to expand)
+ - Spend FINAL: builds 0/14, targeted 0/24 (narrow compiles 0/4 unspent),
+ - Spend FINAL: builds 0/14, targeted 4/24 (S1 x3 + S2 x1, commands +
+ - Spend FINAL: builds 0/14, targeted 4/24, probes 1/4 (trigger 3
+ 2026-09-06T03:15:02Z  AUDIT-RESULT  verdict=AUDIT-PASS candidate=ab25cd11b554bcd5ba64ca56a050c2eb21432d3c tree
+ 2026-09-06T03:15:02Z  COMPLETE  AUDIT-S28R2 verdict=AUDIT-PASS worker=commit-auditor-s28r2 report=/tmp/reactiv
+
+ Took 0.2s
+
+
+ Verifying build and audit completion status while noting a path typo in the grep.
+
+
+ write /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/S28-R2-ASSESSMENT.md
+
+ # S28-R2 TICKET-OWNER ASSESSMENT (independent; for epic assessment)
+
+ Ticket owner `t28-app-api`. Authority: NOTE-045 (desk final-pass via epic).
+ Method: every load-bearing hash recomputed here; gate log, all eight kills,
+ row exemplar logs, ledger, terminal lines, lane state read on primary
+ sources; auditor's limit-honesty sampled (limits appear inside the evidence
+ logs themselves); nothing inherited as verdict. Candidate
+ `ab25cd11b554bcd5ba64ca56a050c2eb21432d3c`, tree `e52114c1…`, branch
+ `fix/28-r1-conservation-effect`→`fix/28-r2-refusal-order`, HEAD clean.
+ Gate v10.2 (`c00b88a2…`/`12f392b6…`, both files verified). Terminal
+ ... (81 more lines, 91 total, ctrl+o to expand)
+
+
+
+ edit /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/S28-R2-ASSESSMENT.md
+
+ Could not find the exact text in /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/S28-R2-ASSESSMENT.md. The old text must match exactly including all whitespace and newlines.
+
+
+
+ $ grep -n 'Cumulative' /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/S28-R2-ASSESSMENT.md | cut -c1-60
+ sed -n "$(grep -n 'Cumulative' /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/S28-R2-ASSESSMENT.md | cut -d: -f1),+2p"
+ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/S28-R2-ASSESSMENT.md | cut -c1-130
+
+ 73:  11/12+22/24 (floor-19 before remainder-3). Cumulative a
+   11/12+22/24 (floor-19 before remainder-3). Cumulative audit 19+11=30
+   substantive? No — ledgers stay separate per campaign (no mixing):
+   S28-1 9, S28-R1 10, S28-R2 11 builds; targeted 7, 16, 22.
+
+ Took 0.2s
+
+
+
+ edit /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/S28-R2-ASSESSMENT.md
+
+     ...
+  69 - Separate costs (never mixed): S28-1 owner 34/34 + audit 9/12+7/24 (one
+  70   spent submission); S28-R1 owner 13/16 + audit 10/12+16/24 (one spent)
+  71   + invalid admission 0/0; S28-R2 owner 26/26 + 4/24 + 2/4 probes (one
+  72   spent: RED0 + GREEN11 + isolated1 + gate11 + SLIM3 = 26 EXACT) + audit
+ -73   11/12+22/24 (floor-19 before remainder-3). Cumulative audit 19+11=30
+ -74   substantive? No — ledgers stay separate per campaign (no mixing):
+ -75   S28-1 9, S28-R1 10, S28-R2 11 builds; targeted 7, 16, 22.
+ +73   11/12+22/24 (floor-19 before remainder-3).
+  76
+  77 ## Claim NOTHING beyond
+  78
+  79 No arbitrary crash safety; no crypto-authenticated integrated placeholder
+     ...
+
+
+
+ $ AH=$(sha256sum /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/S28-R2-ASSESSMENT.md | cut -d' ' -f1 | cut -c1-16); echo "AH=$AH"
+ SE=/code/llm-settings/shared/skills/worker-protocol/scripts/status-event
+ ST=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/STATUS.md
+ $SE "$ST" NOTE "ASSESSMENT-STATE (NOTE-045 wake): terminal packet consumed on primary sources (COMPLETE/AUDIT-RESULT/campaign lines 03:15:02; report d1d19060 + inventory 3f352562 verified;
+ auditor gate 2ad60aa9 OVERALL_FAIL=0 v10.2 (6 test-quotes + M1/M4 build-REDs = 8; M8 digest 37be8bccc9 EXACT fourth confirmation; leg-4 31/31; leg-5 reverted; leg-6 clean); row exemplars
+ read (F3 codec-tuples; F1 SC-958/558 + 1/0 + P2-160-conserve; F2 P5-insert/P6-hold/P7-9/2; R1 views; R3 hook; R5 lifecycle+reopen; MAJ enactment; TYP rejections); ledger absorbed (6 KILLED +
+ 5 reliances with limits + control-strength); lane ab25cd1/e52114c1 clean, gate v10.2 intact). MY independent assessment filed handoffs/S28-R2-ASSESSMENT.md ($AH): per-row PASS/KILLED
+ verdicts (mine) + reliances + raw witnesses with ALL preservations explicit (P2/SC, finite bounds, refusal/exception, historical/cleanup/unjudged, separate costs) + four claim-exclusions;
+ VERDICT: zero blockers, RECOMMEND ACCEPTANCE of EXACT ab25cd1-full to epic for step-1. NOT acceptance itself (joint ruling per steps 1-3); no push/PR/CI this turn (await both-accept). This
+ turn: 0 builds/probes."
+ tail -n 1 "$ST" | cut -c1-60
+
+ AH=26bdfe4248482f4d
+ 2026-09-06T03:27:26Z  NOTE  ASSESSMENT-STATE (NOTE-045 wake)
+
+ Took 0.2s
+
+
+ NOTE-045 read in full and acted on. Acknowledged in STATUS (NOTE NOTE-045 read + assessment state).
+
+ Terminal packet consumed on primary sources: COMPLETE/AUDIT-RESULT/campaign lines (03:15:02, AUDIT-PASS, 6-killed/0-open, 11/12+22/24); report d1d19060… + inventory 3f352562… verified;
+ auditor gate 2ad60aa9… tail OVERALL_FAIL=0 (v10.2, 6 test-quotes + M1/M4 build-REDs = 8, M8 digest 37be8bccc9… confirmed a fourth independent time, leg-4 31/31, leg-5 reverted, leg-6 clean);
+ row exemplars read across all six rows (F3 codec tuples, F1 SC-958/558 + 1/0 with 160-schedule conservation, F2 P5-insert/P6-hold/P7-9/2, R1 views, R3 hook outputs, R5 lifecycle + reopen,
+ MAJ enactment, TYP rejections); ledger absorbed in full.
+
+ My independent assessment filed (handoffs/S28-R2-ASSESSMENT.md 26bdfe4248482f4d): per-row PASS/KILLED verdicts rendered by me (not parroted), all five reliances with evidence and explicit
+ limits, raw witnesses with every preservation stated (P2/SC distinction, finite scheduling bounds shown-vs-not, refusal-vs-exception three outcomes, historical/cleanup/unjudged domains,
+ fully separate campaign costs), and the four claim-exclusions honored. Verdict: zero blockers remaining — recommend acceptance of exact ab25cd1-full to the epic for step-1.
+
+ No acceptance conferred by me (joint ruling per steps 1–3); no push, PR, or CI this turn — those await both-accept with zero blockers. Spend: 0 builds/probes.
+
+
+ Read /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/inbox/NOTE-046-issue28-lifecycle.md in full and act on it. Acknowledge in
+ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/STATUS.md. [POINTER-1788665861-3113477]
+
+
+
+ read /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/inbox/NOTE-046-issue28-lifecycle.md
+
+
+ Verifying PR32 merge against #28 scope on main and preparing to close or report gaps.
+
+ Validating main HEAD and tree hashes against PR32 and confirming #28 scope items are present.
+
+
+ $ SE=/code/llm-settings/shared/skills/worker-protocol/scripts/status-event
+ ST=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/STATUS.md
+ $SE "$ST" NOTE "NOTE-046 read (POINTER-1788665861-3113477): verify #28 scope, complete its issue lifecycle (binding). Preamble: PR32 MERGED 03:37:07Z as 933e385d (parent exactly 368b596,
+ landed tree e52114c1 == audited tree — epic-verified); #28/#29/#73 all OPEN (no auto-close). Orders: #28 lifecycle CONDITIONAL (mine to verify + execute): IF full #28 scope delivered on main
+ (S28-1: distinct types, signer+GroupView, rejecting step, atomic hook, direct-only admission, pendingBase; S28-R1: F1 conservation, F2 effect tests; S28-R2: overlap control; vote interface
+ EXCLUDED (#30)) → close paolino/kelgroups#28 via gh issue close with NO comment. If ANY row missing → specific gap, no close. #29 OPEN (demo+release+#30 outstanding); #73 OPEN
+ (Reactivegas-side binding). Terms: issue-lifecycle administration ONLY (no edits/builds/merges/releases/comments/deploys). Acting: verify main (HEAD/parent/tree + diff-scope vs assessed)
+ then close-or-gap."
+ tail -n 1 "$ST" | cut -c1-60
+
+ 2026-09-06T03:38:00Z  NOTE  NOTE-046 read (POINTER-178866586
+
+ Took 0.3s
+
+
+
+ $ cd /code/kelgroups-issue-28
+ git fetch origin 2>&1 | head -n 2
+ echo "===main identity (expect 933e385d / parent 368b596 / tree e52114c1) ==="
+ git rev-parse origin/main 2>&1; git rev-parse 'origin/main^' 2>&1; git rev-parse 'origin/main^{tree}' 2>&1
+ echo "===diff scope base..main (expect assessed 15 files + S28-R2 Store/spec) ==="
+ git diff --stat 368b596fef0b6d393c2ac7afc631d236c55d86d1 origin/main 2>&1 | tail -n 6
+
+ ... (8 earlier lines, ctrl+o to expand)
+  test/S28AppApiSpec.hs        | 826 +++++++++++++++++++++++++++++++++++++++++++
+  test/S28DemoApp.hs           | 187 ++++++++++
+  test/StoreInvariantsSpec.hs  |   1 +
+  test/ValidateSpec.hs         |   1 +
+  15 files changed, 1845 insertions(+), 13 deletions(-)
+
+ Took 1.9s
+
+
+ Verifying git commit history and merge structure while checking parent and tree hashes against expected values.
+
+ Confirming second-parent hash matches the PR head and validating merge topology completeness.
+
+
+ $ cd /code/kelgroups-issue-28
+ echo "===second parent (expect ab25cd1-full) ==="
+ git rev-parse 'origin/main^2' 2>&1
+ echo "===full 15-file list (vote-interface files?) ==="
+ git diff --name-only 368b596fef0b6d393c2ac7afc631d236c55d86d1 origin/main 2>&1
+
+ ... (16 earlier lines, ctrl+o to expand)
+ test/Main.hs
+ test/S28AppApiSpec.hs
+ test/S28DemoApp.hs
+ test/StoreInvariantsSpec.hs
+ test/ValidateSpec.hs
+
+ Took 0.4s
+
+
+ Analyzing git history to determine if the commit is a squash merge versus a fast-forward merge.
+
+ Confirming tree equality despite squash merge and matching the file list to the scope.
+
+
+ $ gh auth status 2>&1 | head -n 3
+ gh issue view 28 -R paolino/kelgroups --json number,title,state,url 2>&1 | head -n 8
+
+ github.com
+   ✓ Logged in to github.com account paolino (/home/paolino/.config/gh/hosts.yml)
+   - Active account: true
+ {"number":28,"state":"OPEN","title":"Generalize the application API: separate event/state types, signer-aware rejecting step","url":"https://github.com/paolino/kelgroups/issues/28"}
+
+ Took 1.1s
+
+
+
+ $ gh issue close 28 -R paolino/kelgroups 2>&1
+ echo "---verify---"
+ gh issue view 28 -R paolino/kelgroups --json state,closedAt 2>&1
+ echo "---#29 + #73 untouched (still OPEN?) ---"
+ gh issue view 29 -R paolino/kelgroups --json state 2>&1 | head -n 2
+
+ ✓ Closed issue paolino/kelgroups#28 (Generalize the application API: separate event/state types, signer-aware rejecting step)
+ ---verify---
+ {"closedAt":"2026-09-06T03:38:32Z","state":"CLOSED"}
+ ---#29 + #73 untouched (still OPEN?) ---
+ {"state":"OPEN"}
+
+ Took 1.9s
+
+
+
+ $ SE=/code/llm-settings/shared/skills/worker-protocol/scripts/status-event
+ ST=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/STATUS.md
+ $SE "$ST" NOTE "SCOPE-VERDICT (NOTE-046 wake): #28 FULL scope delivered on main — verified (a) main identity (HEAD 933e385df2f2a251bb54a08bb7663f0d41fafb64 + parent exactly 368b596 + tree
+ e52114c1 == audited tree (FOUR-WAY match: auditor-checkout = lane = main = assessed)); (b) diff base..main 15 files +1845/-13 EXACT (auditor fence match; NO
+ vote-interface/ballot/tally/client/lean paths — exclusion holds); (c) every row evidenced at those bytes (distinct types, signer+GroupView, rejecting step, atomic hook, direct-only
+ admission, pendingBase, F1 conservation, F2 effect tests, overlap control — per assessment+ledger, all KILLED at e52114c1). Merge topology noted (single-parent squash, content-identical tree
+ — no gap). NO gaps → CLOSED paolino/kelgroups#28 via gh issue close with NO comment (verified CLOSED 03:38:32Z). #29 verified OPEN (untouched); #73 untouched per orders (no action there).
+ Issue-lifecycle administration only (no edits/builds/merges/releases/comments/deploys). This turn: 0 builds/probes (reads + gh reads + 1 issue-state write as authorized)."
+ tail -n 1 "$ST" | cut -c1-60
+
+ 2026-09-06T03:38:38Z  NOTE  SCOPE-VERDICT (NOTE-046 wake): #
+
+ Took 0.4s
+
+
+ NOTE-046 read in full and acted on. Acknowledged in STATUS (NOTE NOTE-046 read + scope verdict).
+
+ Scope verification (all primary sources):
+ - Main identity: HEAD 933e385d…, parent exactly 368b596…, tree e52114c1… — a four-way match (auditor checkout = lane = main = assessed bytes).
+ - Diff 368b596..main: 15 files, +1845/−13 — byte-exact match to the auditor's fence; no vote-interface, ballot/tally, client, or Lean paths (exclusion holds).
+ - Every #28 row evidenced at those bytes (distinct types, signer+GroupView, rejecting step, atomic hook, direct-only admission, pendingBase, F1 conservation, F2 effect tests, overlap control
+   — all KILLED per assessment+ledger). Merge topology noted (single-parent squash with content-identical tree — no gap).
+ - No gaps → closed paolino/kelgroups#28 via gh issue close with no comment (verified CLOSED 03:38:32Z). #29 verified OPEN, #73 untouched.
+
+ Issue-lifecycle administration only; the close was the single authorized remote write. Spend: 0 builds/probes.
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+/code/kelgroups-issue-28 (fix/28-r1-conservation-effect)
+↑3.6M ↓1.1M R332M CH99.9% $1.241 48.3%/1.0M (auto)                                                                                              (opencode-go) muse-spark-1.3-contributor • xhigh

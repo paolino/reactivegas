@@ -1,0 +1,366 @@
+{
+  "purpose": "Administrative identity inventory of already-retained artifacts only; no new verification or investigation.",
+  "candidate": "84a2daea1db81b1baf73c73a7874dcd68ce9f4b2",
+  "entries": [
+    {
+      "path": "handoffs/evidence/20260905T213306Z-84a2dae-gate-full.log",
+      "type": "file",
+      "bytes": 177358,
+      "sha256": "12c36103dbc6b8a282ca5b6c9569270690f44e315fb0c1b4e28c9357c38df023"
+    },
+    {
+      "path": "handoffs/evidence/20260905T213306Z-84a2dae-leg3-build.log",
+      "type": "file",
+      "bytes": 15215,
+      "sha256": "9b088e56bb87ed57670966f661cba44f160a8ad22963d2dce47bb0af0a08db5f"
+    },
+    {
+      "path": "handoffs/evidence/20260905T213306Z-84a2dae-leg4-test.log",
+      "type": "file",
+      "bytes": 22088,
+      "sha256": "91a56192aa14aa5959372837c360049c31832ccd1e4774e2c3dae3d6645dbad7"
+    },
+    {
+      "path": "handoffs/evidence/20260905T213306Z-84a2dae-leg5-M1-build.log",
+      "type": "file",
+      "bytes": 3006,
+      "sha256": "8b25dffcf15bb9e02b6e893f6c66c292b81b19362a991d470272fde324bf89d9"
+    },
+    {
+      "path": "handoffs/evidence/20260905T213306Z-84a2dae-leg5-M2-test.log",
+      "type": "file",
+      "bytes": 16401,
+      "sha256": "dd196c8911cc6e852e97bf74a9558b6ae28308418e687435eb5ac7a2f1b8331c"
+    },
+    {
+      "path": "handoffs/evidence/20260905T213306Z-84a2dae-leg5-M3-test.log",
+      "type": "file",
+      "bytes": 16074,
+      "sha256": "f656383baf9719f7fa008935900e8630ce5e0eed2de4747a239d700c27152d66"
+    },
+    {
+      "path": "handoffs/evidence/20260905T213306Z-84a2dae-leg5-M4-build.log",
+      "type": "file",
+      "bytes": 2514,
+      "sha256": "e6dffaaeb0e65117a4795caa0d7dcc27bfc4154315e75bb91556b91e786b630f"
+    },
+    {
+      "path": "handoffs/evidence/20260905T213306Z-84a2dae-leg5-M5-test.log",
+      "type": "file",
+      "bytes": 16125,
+      "sha256": "4c1ef7d7718ed535933f68805f8be52e7fbdc78b3693f5669087de023d67a47b"
+    },
+    {
+      "path": "handoffs/evidence/20260905T213306Z-84a2dae-leg5-M6-test.log",
+      "type": "file",
+      "bytes": 19446,
+      "sha256": "d5f923d58463e7643dbbbef9d3fa7f737e0034b2cd6e933440e268eb120f430a"
+    },
+    {
+      "path": "handoffs/evidence/20260905T213306Z-84a2dae-leg6-ci.log",
+      "type": "file",
+      "bytes": 48588,
+      "sha256": "2b14158b3b3ec66366d1b3ae8de2e773f6ca0541e1783238c4c257254d806e6c"
+    },
+    {
+      "path": "handoffs/evidence/20260905T213306Z-84a2dae-meta.txt",
+      "type": "file",
+      "bytes": 292,
+      "sha256": "c1fc8e4730f4facda018ee87016efe303fcbe612839135100abba08aa284d2a8"
+    },
+    {
+      "path": "handoffs/evidence/20260905T213306Z-84a2dae-registered/row1.txt",
+      "type": "file",
+      "bytes": 124,
+      "sha256": "ab6bbaa7725f8a2ca6a451e90f24f0f6a9ab8d930ca3e1487e4bd46bfb36e366"
+    },
+    {
+      "path": "handoffs/evidence/20260905T213306Z-84a2dae-registered/row2.txt",
+      "type": "file",
+      "bytes": 132,
+      "sha256": "91a74041a75861fcb9f1ceaea85d9b0489d5d13ca92463168a2cfd1d3d464d3f"
+    },
+    {
+      "path": "handoffs/evidence/20260905T213306Z-84a2dae-registered/row3.txt",
+      "type": "file",
+      "bytes": 132,
+      "sha256": "a2b6d10ad362584198ba112e95dd8eec0f592d039f9da1305c6aa123b14bdae3"
+    },
+    {
+      "path": "handoffs/evidence/20260905T213306Z-84a2dae-registered/row4.txt",
+      "type": "file",
+      "bytes": 237,
+      "sha256": "e86edbccd8436c4a9478ddd80c14e1873b812db19e29f46e4615fa92841ec659"
+    },
+    {
+      "path": "handoffs/evidence/20260905T213306Z-84a2dae-registered/row5.txt",
+      "type": "file",
+      "bytes": 129,
+      "sha256": "c37110793a3572d50737c06e2755384921af908b28604a76cf7aa4cdb6da3b2a"
+    },
+    {
+      "path": "handoffs/evidence/20260905T213306Z-84a2dae-registered/row6.txt",
+      "type": "file",
+      "bytes": 208,
+      "sha256": "1e08129930132cfdbeeb136bceb97b0e5e70b5fad64a7f68c34606503d30faed"
+    },
+    {
+      "path": "handoffs/evidence/M1.diff",
+      "type": "file",
+      "bytes": 743,
+      "sha256": "6237105b8f71877fc8af52a9dc50af99458aa3bd88746666e071e5fb31429b38"
+    },
+    {
+      "path": "handoffs/evidence/M2.diff",
+      "type": "file",
+      "bytes": 734,
+      "sha256": "92c85d18b84e54076f1ab0869998988d3664e75937f8e2966e0954ca5b4cf197"
+    },
+    {
+      "path": "handoffs/evidence/M3.diff",
+      "type": "file",
+      "bytes": 978,
+      "sha256": "0dbf686505ca4cf56130f7f4d15c2f6049f10014017855f7551728adc8cc704a"
+    },
+    {
+      "path": "handoffs/evidence/M4.diff",
+      "type": "file",
+      "bytes": 475,
+      "sha256": "a9e6fc0c73c8ba574abcadb74a8967eb4ecca9584b7868bc3352ac60cd94065f"
+    },
+    {
+      "path": "handoffs/evidence/M5.diff",
+      "type": "file",
+      "bytes": 468,
+      "sha256": "7ef76d48e95fde2dc35f9b6f0103e20676e6b58687c459e91c1bbd9dd3795c40"
+    },
+    {
+      "path": "handoffs/evidence/M6.diff",
+      "type": "file",
+      "bytes": 1241,
+      "sha256": "dd1ad9c1e48d22c6d6af2a993bd2863b8b01aa66939a0bbab53eb18f9d016e35"
+    },
+    {
+      "path": "handoffs/evidence/P1-compile.log",
+      "type": "file",
+      "bytes": 530,
+      "sha256": "c06bc3e1eef1cf6142b04bdd51117bc3bdb0659a973076ef79698e7a49fc7002"
+    },
+    {
+      "path": "handoffs/evidence/P2-store-probe.log",
+      "type": "file",
+      "bytes": 590,
+      "sha256": "5b93f9edeefd7028b91ac0207f0d6c02e7bf2ff327e55df894fcc5401a2f0cbe"
+    },
+    {
+      "path": "handoffs/evidence/P3-row4-compile.log",
+      "type": "file",
+      "bytes": 633,
+      "sha256": "71da9f277cc38ed9d45752d7e330cd58890be327b176d9496043323ae7742ead"
+    },
+    {
+      "path": "handoffs/evidence/P4-row4-mutant-compile.log",
+      "type": "file",
+      "bytes": 1729,
+      "sha256": "11b3ee189cfe59a6c8cf67a21420ec65ca6a30c2b63279676b0123f1e21b7a54"
+    },
+    {
+      "path": "handoffs/evidence/P5-mutant-negative.log",
+      "type": "file",
+      "bytes": 72,
+      "sha256": "296644b1288336d92c923b5ddc7c017e80b5662610a211e8764f20c00d70cdbd"
+    },
+    {
+      "path": "handoffs/evidence/P6-candidate-positive.log",
+      "type": "file",
+      "bytes": 71,
+      "sha256": "4011917b4c980039eb1ee92cd6e3048aa1ca771d1fbb5181a1f7fd60ceacdf3d"
+    },
+    {
+      "path": "handoffs/evidence/P7-mutant-shipped-property.log",
+      "type": "file",
+      "bytes": 395,
+      "sha256": "787e766448de4f0fff44b34b6a0dce2399e746acac2de163a7e2ee101a7e9449"
+    },
+    {
+      "path": "handoffs/evidence/Row4Probe.hs",
+      "type": "file",
+      "bytes": 898,
+      "sha256": "97e017e2e0c43bd108e826ad0fa7ccd54c246da92858acb3c77008ce3089571d"
+    },
+    {
+      "path": "handoffs/evidence/StoreProbe.hs",
+      "type": "file",
+      "bytes": 5363,
+      "sha256": "ae6fff29a1aa781e9e6ecbced19235f1545db78737d9d2515de3332d934f30a7"
+    },
+    {
+      "path": "handoffs/evidence/base-candidate.diff",
+      "type": "file",
+      "bytes": 66770,
+      "sha256": "a397450e57066e3c2b4cbcd7a8024681bd389ce48a1b784927718b5d7d3efec8"
+    },
+    {
+      "path": "handoffs/evidence/brief-v1-v2.diff",
+      "type": "file",
+      "bytes": 11687,
+      "sha256": "a0893197e289b87213f8bb4e4ef8d4a4730c5fac5a903cf098cc15958e9bf360"
+    },
+    {
+      "path": "handoffs/evidence/command-receipts.jsonl",
+      "type": "file",
+      "bytes": 2297,
+      "sha256": "4822ebde11eedf0236f91943f447ad304ea341337744c1a29a96fcfd739ff6d3"
+    },
+    {
+      "path": "handoffs/evidence/gate-exit.json",
+      "type": "file",
+      "bytes": 50,
+      "sha256": "0ebd71a58f4d9f91837b64cf6f5b9af2a78140f7d0ab48778482aaa2d9a45fa2"
+    },
+    {
+      "path": "handoffs/evidence/gate-pgid.txt",
+      "type": "file",
+      "bytes": 8,
+      "sha256": "12adae3bbbceb0bd71817b130605d131eb28ff0065bc4b6a9cb9a77a7ef7db6d"
+    },
+    {
+      "path": "handoffs/evidence/observe-envelope.cjs",
+      "type": "file",
+      "bytes": 3691,
+      "sha256": "57279cbabd85cdbed4687b6842cbf512f1f495739cde313110f9cd9f48ee12eb"
+    },
+    {
+      "path": "handoffs/evidence/post-envelope.txt",
+      "type": "file",
+      "bytes": 586,
+      "sha256": "37d6dcde825e64c3b68cb144c0a269b4181cfd2e50ce0c8ea854c582974381b3"
+    },
+    {
+      "path": "handoffs/evidence/pre-build-envelope.txt",
+      "type": "file",
+      "bytes": 12427,
+      "sha256": "ac9bbc0d4ca7f21a99cc327c260e3e257b011b5905c7c6f15b1ab952b65b33f3"
+    },
+    {
+      "path": "handoffs/evidence/preflight-fence.txt",
+      "type": "file",
+      "bytes": 5196,
+      "sha256": "1e7616e2c6b3399950a0c421ab14fd346bc2f5336a31f460b61e3645e4d45348"
+    },
+    {
+      "path": "handoffs/evidence/probe-receipts.txt",
+      "type": "file",
+      "bytes": 1036,
+      "sha256": "cdbc819a4c3b9a94ead5c55b48f7c56e6087259a699390e37ec0ad23bac4cf40"
+    },
+    {
+      "path": "handoffs/evidence/red-candidate.diff",
+      "type": "file",
+      "bytes": 69107,
+      "sha256": "6cb36bbc948d3aa35c36037b4ea4a5ff389622919cee57b1ab7331cd75f59209"
+    },
+    {
+      "path": "handoffs/evidence/reservations.txt",
+      "type": "file",
+      "bytes": 99,
+      "sha256": "513a4a367433ceb811e578cc958da8e30144b86e5aa1595619679132383f67c7"
+    },
+    {
+      "path": "handoffs/evidence/row4-effect.diff",
+      "type": "file",
+      "bytes": 566,
+      "sha256": "93aa23971b6fd72797abbb98c3c40a02d588083284ce734312a866375baf1b82"
+    },
+    {
+      "path": "handoffs/evidence/row4-shadow/KelGroups/Fold.hs",
+      "type": "file",
+      "bytes": 15599,
+      "sha256": "71c2dbebdbb5cda2cc08dcc4d31ebf9a1026e3a60a615fa7cc43adc26f405b28"
+    },
+    {
+      "path": "handoffs/evidence/timeline.jsonl",
+      "type": "file",
+      "bytes": 347387,
+      "sha256": "a05a51a5bc63064db371d7f9a929ef50104d40bbee1ee97a96e4c18c11612001"
+    },
+    {
+      "path": "handoffs/evidence/tmp-after-leg2b.txt",
+      "type": "file",
+      "bytes": 410,
+      "sha256": "2300faef48900daee0a6522134db73a5222465cfc430711fad26e56dd27fd439"
+    },
+    {
+      "path": "handoffs/evidence/tmp-envelope/nix-shell.8BIZel/s28-test-2439923-1536.db",
+      "type": "file",
+      "bytes": 16384,
+      "sha256": "e1942f7d9b60bd63039e3f3be0ea9680c8d456af2eca8e39eb44793d654ba742"
+    },
+    {
+      "path": "handoffs/evidence/tmp-envelope/nix-shell.8BIZel/s28-test-2439923-1537.db",
+      "type": "file",
+      "bytes": 16384,
+      "sha256": "682d7fb6604c0bac171c581e5f67b233f9675bb22b111496270f19f2e9f284db"
+    },
+    {
+      "path": "handoffs/evidence/tmp-envelope/nix-shell.L2vH6C/s28-test-2435621-1536.db",
+      "type": "file",
+      "bytes": 16384,
+      "sha256": "868b721df1e5fa8e4e29f2c93725e32206f67b04be2bea9bb05ee9fdbddf9c55"
+    },
+    {
+      "path": "handoffs/evidence/tmp-envelope/nix-shell.aETT07/s28-test-2434582-1535.db",
+      "type": "file",
+      "bytes": 16384,
+      "sha256": "39ad9a57f87dd11190040279fdbb303faf0ce235bdc1062e23dd04fbadb4df7a"
+    },
+    {
+      "path": "handoffs/evidence/tmp-envelope/tmp.7wBZZDfW3C",
+      "type": "file",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "handoffs/evidence/tmp-envelope/tmp.wOwRhMKYGI",
+      "type": "file",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "brief.md",
+      "type": "file",
+      "bytes": 16526,
+      "sha256": "e86eb45c842ed031b0f935cd3d361d4b678fb302970cc5e7e33436bf0ee10df4"
+    },
+    {
+      "path": "answers/A-002-commissioning-envelope-and-precedence.md",
+      "type": "file",
+      "bytes": 5784,
+      "sha256": "ba1856f07ebe555ef10e91792392f859a2f287b15509af726462fa8540d7c4e6"
+    },
+    {
+      "path": "questions/Q-001-fixed-temporary-path-fence.md",
+      "type": "file",
+      "bytes": 3452,
+      "sha256": "d38ea618811d590c03364aec82063f6de6fec0d8ce43d72195918d62888df4be"
+    },
+    {
+      "path": "inbox/NOTE-011-handback-request.md",
+      "type": "file",
+      "bytes": 1047,
+      "sha256": "4f17f1c73bf556e29e3b160e0e34612e6e4e164de233def5cae89a260c2108cf"
+    },
+    {
+      "path": "inbox/NOTE-012-finalisation-request.md",
+      "type": "file",
+      "bytes": 1629,
+      "sha256": "981cca393077d84a180178ba3fdcb914d25f108cf76f0ad2d745878241b5f123"
+    },
+    {
+      "path": "handoffs/STATUS-before-terminal.txt",
+      "type": "file",
+      "bytes": 13362,
+      "sha256": "9be3e4fa0c0f34cd2440ace0cc4ad74e7f5c021db96080078ebe82e0e5017099"
+    }
+  ]
+}

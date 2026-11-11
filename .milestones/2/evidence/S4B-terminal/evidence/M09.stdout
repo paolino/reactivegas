@@ -1,0 +1,14 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M09.lean:172:53: error: unsolved goals
+col : Collection
+⊢ (∀ (p : Pledge),
+      p ∈ col.accepted ++ col.pending → ∀ (q : Pledge), q ∈ col.accepted ++ col.pending → p.user = q.user → p = q) ↔
+    ∀ (x : Pledge),
+      x ∈ col.accepted ++ col.pending →
+        ∀ (x_1 : Pledge), x_1 ∈ col.accepted ++ col.pending → (!decide (x.user ≠ x_1.user) || decide (x = x_1)) = true
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M09.lean:173:62: warning: This simp argument is unused:
+  uniquePledges_pt
+
+Hint: Omit it from the simp argument list.
+  simp only [uniquePledges, uniquePledgesB, List.all_eq_true,̵ ̵u̵n̵i̵q̵u̵e̵P̵l̵e̵d̵g̵e̵s̵_̵p̵t̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

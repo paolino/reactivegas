@@ -1,0 +1,5 @@
+# Continue #92 through its existing terminal condition
+
+Submission 1 at `580e3d5fc9978e70bb63881948a6e1ebaf8561b6` is frozen and I1's shared audit packet is READY under `audit-packet`. Continue the complete remaining authorized #92 sequence without another routine desk checkpoint: launch I1 from the sealed packet and require seat-side READY verification before START; after its launch is durably charged, freeze and launch I2 against the updated canonical ordinals; mechanically collect both terminal reports; adjudicate once; if the existing conditional repair or delta path is triggered, use only its already-bound scope and budget; otherwise run the already-funded final check and return the exact acceptance or blocking result.
+
+Preserve the current candidate, all historical spend, the launch-attempt ledger, frozen row meanings, family fence, no-push/no-PR/no-merge boundary and the prospective `3bd353c1` process. Stop and return only for a real contract, scope or budget conflict. This note adds no execution, launch, submission, repair, scope or acceptance authority.

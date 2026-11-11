@@ -1,0 +1,3 @@
+EXECUTING COMMITTED STEP: ":" # lean-corpus-verify
+STEP EXIT 0
+DETECTOR FAIL: corrupted fixture was accepted by step

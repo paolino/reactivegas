@@ -1,0 +1,60 @@
+{
+  "sha256": "b6a16cfe60e6e07204b4191fd0c93dbdb2c8def107715144cc16ebfef946e34d",
+  "bytes": 175819,
+  "lines": 3098,
+  "dirtyWarnings": [
+    {
+      "line": 1,
+      "text": "warning: Git tree '/code/reactivegas-66-s4b' is dirty"
+    },
+    {
+      "line": 2,
+      "text": "warning: Git tree '/code/reactivegas-66-s4b' is dirty"
+    }
+  ],
+  "headMentions": [],
+  "exitEnvelope": [],
+  "markers": [
+    {
+      "line": 32,
+      "text": "lean-theorems declared=185 elaborated-backed=185"
+    },
+    {
+      "line": 2643,
+      "text": "axiom-theorems count=1285"
+    },
+    {
+      "line": 2808,
+      "text": "Build completed successfully (27 jobs)."
+    },
+    {
+      "line": 2936,
+      "text": "Build completed successfully (42 jobs)."
+    },
+    {
+      "line": 2966,
+      "text": "MIRROR-CHECK-OK rows=19 exceptions=4 discovered=24 promoted=2 tracked=29"
+    },
+    {
+      "line": 2967,
+      "text": "MIRROR-RECEIPT-WROTE nonce=1788676427576021718"
+    },
+    {
+      "line": 3095,
+      "text": "Build completed successfully (42 jobs)."
+    },
+    {
+      "line": 3096,
+      "text": "corpus/economic.json: OK"
+    },
+    {
+      "line": 3097,
+      "text": "corpus/integrated.json: OK"
+    },
+    {
+      "line": 3098,
+      "text": "corpus-check: ntraces=5 nevents=32 nsteps=7 live-bound"
+    }
+  ],
+  "limit": "Owner reports exit 0. Raw combined log lacks exact SHA, start/finish and exit envelope; first two lines warn dirty source. No execution performed here."
+}

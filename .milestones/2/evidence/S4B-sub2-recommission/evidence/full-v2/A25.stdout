@@ -1,0 +1,4 @@
+KelGroups.pendingWellFormedB (pending : PendingProposal) : Bool
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A25.lean:62:69: error: unsolved goals
+pending : PendingProposal
+⊢ pending.approvals.Nodup ∧ pending.proposer ∈ pending.approvals ↔ pending.approvals.Nodup ∧ True

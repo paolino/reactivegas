@@ -1,0 +1,11 @@
+{
+  "time": "2026-09-06T07:48:04.449Z",
+  "candidate": "04eb6c7d9aeb2a3602fca5ece14cbc033221cb43",
+  "tree": "caaa0488f39a6afb2553680a11fd6bfd86d1c90b",
+  "clean": true,
+  "lakeAbsent": true,
+  "inputsRechecked": 14,
+  "projectExecutions": 0,
+  "citedSnapshotsExist": true,
+  "reportSha256": "0f2af02f3d3376fade0eea7d5363ca0cff9f81b213016ed8ea8a54a3188c02fb"
+}

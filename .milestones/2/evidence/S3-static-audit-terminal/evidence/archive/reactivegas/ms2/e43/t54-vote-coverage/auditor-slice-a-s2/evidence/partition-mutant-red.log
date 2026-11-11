@@ -1,0 +1,8 @@
+toolchain=Lean (version 4.25.0, commit v4.25.0, Release)
+path '/code/reactivegas-t54-audit-a2/lean' does not contain a 'flake.nix', searching up
+/tmp/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s2/instruments/partition-silent-deletion-mutant.lean:40:0: error: Expression
+  (List.map Prod.fst final.openQuestions).contains "q" !=
+    (List.map (fun record => record.questionId) final.closed).contains "q"
+did not evaluate to `true`
+lean_exit=1
+EXPECTED_RED=INV-54-PARTITION-silent-deletion

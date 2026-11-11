@@ -1,0 +1,557 @@
+  │ AxiomsNegative.stdout | tail -6; cat evidence/full-v2/expr-compare.stdout evidence/full-v2/final-reconcile.stdout;
+  │ git -C worlds/S10 diff --stat 3590c0015b84fd58004bf6fb44dd18b107304c48 HEAD; git -C worlds/S10 diff --numstat
+  │ … +2 lines
+  └ ==> instruments/full-v5/MANIFEST.sha256 <==
+    4e3c80cabdb93aed57acf0184fd2789dff0925cb9cd6a81fc2176cc1e74fca8e  instruments/extend-v5.mjs
+    … +137 lines (ctrl + t to view transcript)
+    modules='+final.mods.size);
+    }else throw Error('unknown mode '+mode);
+
+• Ran node - <<'NODE'
+  │ const fs=require('fs');let s=fs.readFileSync('instruments/report-v1.mjs','utf8');s=s.replace("const out='handoffs/
+  │ full-audit-v1';","const out='handoffs/full-audit-v2';").replace("const previous='handoffs/pre-full-v1';","const
+  │ … +19 lines
+  └ Preserved report-v1; created report-v2 for restored-model-reviewed assembly. No execution.
+
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• The restored-model review confirms the scoped execution results: final cold CI, inventory reconciliation and axiom
+  controls succeeded; the 44 body controls reached their intended original proofs; and the repaired P07 overlay isolates
+  the current permission mutation.
+
+  I retain the Reach finding as an unresolved authority question, not a failed proof or a demand to implement an oracle.
+  I’ve preserved the first report script and prepared a versioned replacement that records both deviations and the
+  reconciled 12/73 spend.
+
+• Edited 4 files (+329 -0)
+  └ handoffs/full-audit-v2/AUDIT-REPORT.md (+235 -0)
+      1 +# S4-B submission 2 — independent full audit
+      2 +
+      3 +**Terminal verdict: AUDIT-FINDINGS.** The executed finite correspondence,
+      4 +body-sensitivity, mandatory-path and final trust controls succeeded within their
+      5 +stated scopes. Acceptance remains incomplete on **F-001: Reach consumer-axis
+      6 +authority**, which is OPEN. This is not a failed candidate build or proof, and it
+      7 +does not assert that an arbitrary Reach oracle is required or implementable.
+      8 +
+      9 +Candidate **94bb7bb64324a48f7361252556b4d15e45b3923f**, tree
+     10 +**3ee3dc26deff4fde7b7ed9d3f253dd0fbd5efced**, over accepted base
+     11 +**3590c0015b84fd58004bf6fb44dd18b107304c48**. The entire seven-commit range was
+     12 +audited: 189e1ed, 59309d6, 0f3ad01, 4d0a324, b667648, ba623667, 94bb7bb.
+     13 +No predecessor verdict, command fit or owner execution was counted as independent
+     14 +coverage. This is submission **2 of 2**; no third submission is granted.
+     15 +
+     16 +This seat spent **12 substantive and 73 targeted** against **12 and 80**,
+     17 +separately. Historical auditor 6/59 plus this seat is campaign **18/132** against
+     18 +18/139. Four auditor setup/placement failures remain charged. No candidate source
+     19 +was repaired. All delivery is local; no remote CI execution, acceptance, push,
+     20 +PR, merge, comment or author contact is claimed.
+     21 +
+     22 +## F-001 — Reach consumer classification lacks its asserted authority — OPEN
+     23 +
+     24 +The candidate's `lean/Reactivegas/Mirrors.lean:29` calls Reach bounded
+     25 +NOT-EXECUTABLE and says that no arbitrary-Reach oracle is required “under the
+     26 +standing boundary.” `scripts/check-lean-mirrors:152` calls the named exceptions
+     27 +legitimate and includes Reach with “no oracle required.” The final mandatory run
+     28 +accepts Reach through that exception; it does not settle the authority claim.
+     29 +
+     30 +The admitted original S4 contract's **Axis 2** requires contract authority to
+     31 +distinguish REQUIRED-CONSUMER-UNIMPLEMENTED from NOT-REQUIRED, independently of
+     32 +decidability. Its Audit and Completion paragraphs expressly retain this issue.
+     33 +The admitted R1 finite-mirror fence and R2 ban on new monitors limit implementation
+     34 +scope; neither identifies the specific standing exemption cited for Reach or
+     35 +settles that identity's #66 consumer requirement. The standing-exceptions ruling
+     36 +concerns audit-window placement, ceiling history and onward ownership. The later
+     37 +v3.1 amendment is explicitly confined to P01/P07.
+     38 +
+     39 +My `ReachDecision` query compiled the existing stalled decision instance and
+     40 +failed synthesis for one concrete `Decidable (Reach … State.empty)`. That supports
+     41 +only **NOT-ESTABLISHED executable decision** at this bounded query. It proves
+     42 +neither undecidability nor a NOT-REQUIRED consumer classification. Source absence
+     43 +and the candidate's own exception label cannot supply the missing authority.
+     44 +
+     45 +**Exact outstanding obligation:** establish the consumer-axis disposition of
+     46 +`Reach` in `lean/Reactivegas/Predicates.lean`, with the authoritative #66/S4
+     47 +boundary that governs this identity. Until then the classification row is PARTLY
+     48 +and the consumer axis OPEN. This is an acceptance-blocking classification gap,
+     49 +not a demonstrated false theorem and not a prescription to implement an oracle.
+     50 +The named onward owner is commissioner **%503**, through local commissioning
+     51 +records to desk %510. No additional build can answer this authority question.
+     52 +
+     53 +## Independent evidence and its limits
+     54 +
+     55 +The final fresh `.lake` world S10 ran the literal candidate-bound
+     56 +`timeout --signal=TERM --kill-after=30s 1800s nix develop --quiet -c just ci`.
+     57 +It exited 0. Its complete stdout hash is
+     58 +`c0d10f287764f222b46f804aba22ffd62ab6e08bb478cbb40b687a6e02ee54fa`; stderr hash is
+     59 +`b52f164044a7f30051a39b242933fca8827238913d17d2123a2d3054b4df00f0`.
+     60 +The cold world was a new clone at the candidate without the warm M1 cache.
+     61 +FinalInventory and Axioms resolved only its freshly built owned module artifacts.
+     62 +The local run also completed the corpus/exporter path. CI source wiring was read;
+     63 +no remote workflow run is implied.
+     64 +
+     65 +Final independent discovery retained **3,478 declarations**, **24 predicate
+     66 +candidates**, and **29 owned modules**, with zero unresolved sorts. The mandatory
+     67 +receipt has exactly the same predicate names and tracked module names. Its nonce
+     68 +`1788673975635087591` matches the final nonce file. The complete retained JSON,
+     69 +not a partial prefix or preselected count, establishes this extent. Every
+     70 +declaration has a row in `DECLARATION-DISPOSITIONS.jsonl`; every predicate has both
+     71 +axes in `S4-CLASSIFICATION.md`. Discovery was bounded at 20,000 declarations and
+     72 +256 MiB, with explicit stop on overflow, partial output, identity drift or unknown
+     73 +sort. No denominator was truncated to fit.
+     74 +
+     75 +The independent cold accepted-base inventory contains **3,382 declarations**.
+     76 +`expr-compare` established every original identity's kind, type Expr, value/proof
+     77 +Expr and universe parameters unchanged; final-reconcile then established both
+     78 +directions between the planning and final candidate inventories. The **96** added
+     79 +declarations are listed separately, not treated as a required quota. The entire
+     80 +source diff is 946 additions in four files: two new 259-line mirror modules, the
+     81 +418-line checker, and ten added justfile lines. There are no deletions, changes
+     82 +to old Lean statements/definitions, Invariants edits, docs/design writes or new
+     83 +runtime call sites. Source review and Expr evidence are distinct.
+     84 +
+     85 +All **1,285 owned theorem identities** received final `#print axioms` and
+     86 +`collectAxioms` checks. Only `propext`, `Classical.choice`, and `Quot.sound` were
+     87 +permitted; no forbidden dependency survived. The negative instrument introduced
+     88 +`auditForbidden` and failed with `AUDIT-FORBIDDEN-AXIOM` and
+     89 +`AUDIT-AXIOM-FAILED`. The final theorem-name set reconciles exactly with the final
+     90 +inventory. This does not turn classical logical evidence into executable
+     91 +decision capability. The final both-stream `PANIC at` check passed; injected
+     92 +stdout, stderr and both-stream controls had separately demonstrated failure.
+     93 +This is the required bounded panic check, not a universal runtime-totality proof.
+     94 +
+     95 +## Requirements and controls
+     96 +
+     97 +| Requirement | Disposition | Independent evidence |
+     98 +|---|---|---|
+     99 +| Original Phase A, both axes | PARTLY | All 24 identities retained; F-001 leaves Reach's consumer authority OPEN
+         |
+    100 +| R1 existing definitions/statements; finite scope | CLOSED for preservation and implementation fence | Whole diff
+         ; cold BaseInventory, expr-compare, final-reconcile; F-001 separately limits classification acceptance |
+    101 +| R2 no monitor/coordinator behaviour | CLOSED | Four-file diff adds no production call site or guard |
+    102 +| R3 new modules only | CLOSED | Lean additions confined to the two new Mirrors modules |
+    103 +| R4 reuse P01/P07 expressions | CLOSED | Original expression correspondences preserved; no duplicate Bool; v3.1 b
+         ody obligations separately exercised |
+    104 +| R5 generic equality only in new statements | CLOSED | K5 new counterpart/correctness use DecidableEq; all origin
+         al Exprs unchanged |
+    105 +| R6 callable threshold | CLOSED | Source parameter retained; GroupWitnesses executes n+1 and constant-1 policies;
+          A44 detects bypass |
+    106 +| R7 nonempty per-identity reconciliation, named exceptions | PARTLY | Complete final identity reconciliation succ
+         eeds; Reach exception authority remains F-001 |
+    107 +| R8 missing counterpart mandatory control | CLOSED | S11 names both added def and opaque predicates; S02 is retai
+         ned failed placement, not coverage |
+    108 +| R9 missing theorem mandatory control | CLOSED | S03 names auditMissingTheorem at MIRROR-THEOREM-MISSING |
+    109 +| R10 checker ineffective while present | CLOSED | S06 executable checker becomes no-op success; permanent mandato
+         ry path rejects missing operational receipt |
+    110 +| R11 original proof detects well-typed body fault | CLOSED under v3.1 | A01–A44 plus P01-neg and P07-negR; separa
+         te named statements and proof observations |
+    111 +| R12 no first-failure masking | CLOSED within reported targets | 44 distinct invocations; selected P01 helpers re
+         ached; P07 inversion reached; no outer-chain or earlier-module failure credited independently |
+    112 +| R13 final proof axioms and panic checks | CLOSED | S10 → FinalInventory/Axioms → final-reconcile/panic-final, wi
+         th negative instrument controls |
+    113 +| R14 arbitrary states, duplicates and defaults | CLOSED | Unrestricted correspondence statements; first-lookup/de
+         fault proofs; nonempty duplicate/absent/nonzero witnesses |
+    114 +| R15 no unruled well-formedness strengthening | CLOSED | New proofs inspected; original statements/Exprs preserve
+         d |
+    115 +| R16 exact fence | CLOSED | Four-file candidate diff, scratch worlds separated; candidate remains clean |
+    116 +| R17 own justfile lines only | CLOSED | Ten additions, zero deletion or sibling-line replacement |
+    117 +| R18 actual operation classes and failures | CLOSED under current v2 ceiling | Complete command outcomes and ledg
+         er: 12 substantive/73 targeted; no pooling/refund |
+    118 +
+    119 +| Control | Disposition | Actual observation |
+    120 +|---|---|---|
+    121 +| C1 | CLOSED | S01 actual just lean exit 0; warm build honestly charged |
+    122 +| C2 | CLOSED | S11 actual just lean exits 1 naming auditMissingCounterpart and auditOpaquePredicate |
+    123 +| C3 | CLOSED | S03 actual just lean exits 1 naming auditMissingTheorem |
+    124 +| C4 | CLOSED | S06 exits 1 with MIRROR-RECEIPT-ABSENT while checker remains executable and returns 0; no missing-
+         file 127 |
+    125 +| C5 / P01 | CLOSED for v3.1 replacement only | P01-compile 0; selected original helper proofs fail in P01-neg; cl
+         ean P01-pos 0; membership present/absent witnesses distinguish the constant-false body |
+    126 +| C6 / P02 | CLOSED | A01–A03, conservation_corr |
+    127 +| C7 / P03 | CLOSED | A04–A08, solvent_corr |
+    128 +| C8 / P04 | CLOSED | A09–A10, insolvent_corr |
+    129 +| C9 / P05 | CLOSED | A11–A14, uniquePledges_corr |
+    130 +| C10 / P06 | CLOSED | A15, allUniquePledges_corr |
+    131 +| C11 / P07 | CLOSED for current v3.1 replacement only | P07-negR original step_close_inv failure and successful f
+         orbidden-close witness; clean P07-pos; historical isolation remains OPEN |
+    132 +| C12 / P08 | CLOSED | A16–A17, escrowHeld_corr |
+    133 +| C13 / P09 | CLOSED | A18, governanceEnacts_corr |
+    134 +| C14 / P10 | CLOSED | A19–A20, doubleEntry_corr |
+    135 +| C15 / P12 | CLOSED | A21–A23, canCloseGroup_corr |
+    136 +| C16 / K1 | CLOSED | A24–A25, KelGroups.pendingWellFormed_corr |
+    137 +| C17 / K2 | CLOSED | A26, KelGroups.membersCoherent_corr |
+    138 +| C18 / K3 | CLOSED | A27, KelGroups.pendingCoherent_corr |
+    139 +| C19 / K4 | CLOSED | A28–A31, KelGroups.wellFormed_corr |
+    140 +| C20 / K5 | CLOSED | A32–A33, KelGroups.enacts_corr |
+    141 +| C21 / V1 | CLOSED | A34–A36, KelGroups.Vote.questionClean_corr |
+    142 +| C22 / V2 | CLOSED | A37–A42, KelGroups.Vote.sweepReady_corr |
+    143 +| C23 / V3 | CLOSED | A43–A44, KelGroups.Vote.voteWellFormed_corr |
+    144 +| C24 | CLOSED | Final Axioms exit 0 after cold S10; all measured owned theorem names reconciled |
+    145 +| C25 | CLOSED in required bounded scope | Both-stream panic-final exit 0, detector negative controls passed |
+    146 +| C26 | CLOSED | Cold final actual just ci exit 0 at full candidate over accepted base |
+    147 +
+    148 +`ATOM-DISPOSITIONS.md` and JSON enumerate all 44 atoms with exact substitution,
+    149 +original theorem, proof-error location and receipt. Each definition remained
+    150 +well-typed, and its original proof bytes were retained. Failures such as A32's
+    151 +`simp made no progress` are observed failures of the original proof under the
+    152 +specified body edit, not a claim that every syntactic proof failure establishes
+    153 +a different theorem false. The finite witnesses and inspected body changes give
+    154 +the semantic context. No claim covers every possible implementation fault.
+    155 +
+    156 +The economy witness driver evaluated 28 rows (including its sentinel); the group
+    157 +driver evaluated 29. They include duplicate first-match balances, absent default
+    158 +zero, positive/negative amounts, nonempty pledge and collection carriers, both
+    159 +double-entry effects, real payload 73 versus 74, and independently varied voting
+    160 +conditions. WitnessNegative failed its sentinel while continuing to print the
+    161 +remaining assertions; it is a driver control, not a production mutation kill.
+    162 +ExceptionsR established all 14 Event projections and positive/negative
+    163 +evaluations, the existing stalled decision, and actual V4 question preservation
+    164 +and change. Final metadata reconciles the Event constructor set. Failed
+    165 +Exceptions did not establish those runtime rows merely by printing labels.
+    166 +
+    167 +P01's original correspondence is value-parametric and survives its body fault.
+    168 +P07's correspondence is inline and does not depend on closePurchase. Their
+    169 +relatum controls are only relatum controls. In the P07 body experiment the
+    170 +original `step_close_inv` fails on the permission mismatch; the dependent outer
+    171 +`close_permission_to_close` is not credited as a separate independent failure.
+    172 +The complete P07 overlay retained all clean dependencies and substituted only
+    173 +the previously compiled Step mutant. Its Types digest is clean and distinct from
+    174 +the P01 mutant. The witness selects collection 7, retains unrelated collection 9,
+    175 +closes 23 against cassa 40 to leave 17, and varies only permission for authorized
+    176 +versus forbidden close. This meets the current amended binding without changing
+    177 +the historical result.
+    178 +
+    179 +Additional completeness controls: S04 refused a newly tracked unimported module
+    180 +by name. S05 removed the theorem-kind classification branch and reached actual
+    181 +`MIRROR-UNCLASSIFIED-KIND` errors; Lean's 100-error cap means those diagnostics are
+    182 +not a negative extent of 1,285. EmptyInventory and UnknownInventory test this
+    183 +auditor's independent inventory refusal paths; the latter does not execute or
+    184 +close the historical census path. Artifact validators rejected empty/truncated,
+    185 +wrong-home, unknown-sort and Expr-corruption inputs. These controls are recorded
+    186 +at their actual layer and do not replace mandatory-path executions.
+    187 +
+    188 +## Historical limitations — all remain OPEN
+    189 +
+    190 +| ID | Disposition | Exact retained limit |
+    191 +|---|---|---|
+    192 +| H-01 | OPEN | Historical P07 single-variable isolation is unestablished; the old Step diagnostic cannot prove wh
+         ich Types.olean was loaded. Today's verified overlay does not reconstruct that evidence |
+    193 +| H-02 | OPEN | Historical census sortUndecided→fail path remains source-verified-not-executed. A clean zero-unkno
+         wn census and this auditor's own negative instrument do not close it |
+    194 +| H-03 | OPEN | ba623667 receipt provenance remains recovered-from-snapshot after overwrite, never “never-overwrit
+         ten” |
+    195 +
+    196 +The six owner packet record defects are handled by the admitted commissioning
+    197 +supplement: valid 40-character candidate, seven-commit range, distinct failed and
+    198 +successful P07 receipts, submission 2/2 and owner spend, prior-grant chronology
+    199 +for identified O1 retries, and O6's bound 3,117-line log/hash. Identity/range were
+    200 +independently checked. Historical chronology and owner spend are admitted record
+    201 +authority, not freshly executed coverage. The superseded 9/10 budget line has no
+    202 +operative effect. The historical P07 and O6 limitations are not closed by the
+    203 +supplement's correction or by this report.
+    204 +
+    205 +## Audit provenance and stopping receipt
+    206 +
+    207 +The first model incident occurred before START and launched no audit operation.
+    208 +The second overlapped deterministic execution of the previously frozen final
+    209 +chain. Both launch identity and owner-observed active session model/effort are
+    210 +separately recorded. `SECOND-DEVIATION-REVIEW.md` identifies every interpretation
+    211 +reconsidered after the queued notice and the precise execution chronology. The
+    212 +second review cost **0 substantive / 0 targeted**. No terminal judgment made
+    213 +under a deviated model is inherited. The original report-v1 draft and both failed
+    214 +or declined assembly attempts remain history; this is versioned restored-model
+    215 +output.
+    216 +
+    217 +All 82 full-sheet rows completed, plus the three M1/M1R operations. Complete
+    218 +revised command fit was admitted before each dependent execution: full-v2
+    219 +11/71, v3 12/71, v4 12/72, v5 12/73, all within 12/80. Four counted setup failures
+    220 +are M1-T (reserved identifier), S02 (import-graph placement masks target),
+    221 +Exceptions (Decidable elaboration setup), and P07-neg (incomplete package overlay).
+    222 +They are not candidate findings and were not refunded. No execution remains in
+    223 +the frozen plan. The actual unresolved acceptance obligation is F-001; it is not
+    224 +trimmed, silently passed or converted to an optional row because execution is
+    225 +complete. The three historical limitations also remain open. #66 is not closed.
+    226 +
+    227 +The evidence index is `MANIFEST.sha256` beside this report, with runtime-relative
+    228 +paths and no self-entry. It binds the reports, original and versioned command
+    229 +freezes, complete raw execution streams, inventories and dependency receipts.
+    230 +`COMMAND-OUTCOMES.json` retains every full-run argv/cwd/time/class and stream hash;
+    231 +`CAMPAIGN-LEDGER.md` is the reconciled ledger. The prior M1 return is archived
+    232 +unchanged under `handoffs/pre-full-v2/`. The three canonical handoff paths point
+    233 +to this final version after assembly. Acceptance and onward disposition belong
+    234 +to commissioner %503; no author work or remote action is authorized by this
+    235 +report.
+
+  └ handoffs/full-audit-v2/ONWARD-DISCOVERIES.md (+18 -0)
+     1 +# Onward discoveries — commissioner %503
+     2 +
+     3 +Route only through the local commissioning chain. Commissioner %503 owns the
+     4 +census/backlog and forwards semantic or cross-epic issues to desk %510. No direct
+     5 +author contact, issue filing, human-pane writing or source repair occurred.
+     6 +
+     7 +| ID | Status | Named obligation and evidence | Owner / completion condition |
+     8 +|---|---|---|---|
+     9 +| F-001 | OPEN; acceptance blocking | Reach consumer-axis authority. Candidate Mirrors:29 and checker:152 assert an
+         exemption; original S4 Axis 2 requires authority independent of failed Decidable synthesis. See AUDIT-REPORT.md an
+        d S4-CLASSIFICATION.md | %503 through desk %510: authoritative disposition for this exact consumer identity; no arb
+        itrary-oracle implementation is prescribed |
+    10 +| H-01 | OPEN, retained historical limitation | Historical P07 overlay provenance cannot isolate Types; today's P07
+        -negR does not repair history | %503 retains limitation; no current-state recreation can close it |
+    11 +| H-02 | OPEN, retained historical limitation | Historical census sortUndecided failure path source-verified-not-ex
+        ecuted; independent UnknownInventory is not that path | %503 retains limitation; no clean zero bucket closes it |
+    12 +| H-03 | OPEN, retained historical limitation | ba623667 receipt recovered-from-snapshot after overwrite | %503 ret
+        ains exact provenance permanently |
+    13 +
+    14 +Future changes in #68/#69, exporter/S2R dependencies, module imports, predicate
+    15 +types, payload equality or threshold policy require rebinding the classifications
+    16 +at their new actual source identities. This audit establishes no future or remote
+    17 +CI result and does not finish #66. There are no additional independently observed
+    18 +semantic defects beyond the findings and bounded evidence stated in the report.
+
+  └ handoffs/full-audit-v2/SECOND-DEVIATION-REVIEW.md (+57 -0)
+     1 +# Restored-model interpretation review
+     2 +
+     3 +The owner reported the second deviation and restoration with supplied notice UTC
+     4 +`2026-09-06T05:52:25Z`. The exact switch interval was not independently measured.
+     5 +The journal entry was appended at live UTC `2026-09-06T06:06:11.570Z`; those are
+     6 +different observations, not a backdated event. The owner attributes the switch to
+     7 +an extra Enter after approval selecting the delayed menu's faster-model retry.
+     8 +
+     9 +Launch identity was independently read at host UTC
+    10 +`2026-09-06T06:05:45.279126947Z`, from only `/proc/3115832/cmdline`:
+    11 +`codex -m gpt-6-astra -c model_reasoning_effort=high`.
+    12 +Active model/effort evidence is the owner's direct observation of this session's
+    13 +`/model` selector and status: **gpt-6-astra / high**, restored in the same session.
+    14 +This auditor has no callable selector/status API and does not claim direct UI
+    15 +observation. Unchanged argv cannot detect either mid-session deviation. No broad
+    16 +process list was requested or read during this second rebind.
+    17 +
+    18 +The conservative interpretation window covers everything reasoned after S10
+    19 +launched, through receipt of the queued second-deviation notice. Exact inference
+    20 +model boundaries are not reconstructed from argv or file timestamps. I reread
+    21 +the original S4 axes and completion rule, retained R1–R18, the P01/P07 replacement,
+    22 +the relevant full source, all atom diagnostic identities and proof locations,
+    23 +positive/negative witness inputs and outputs, final-control code and receipts,
+    24 +and the entire report assembly draft. Earlier execution remains evidence with its
+    25 +actual historical identity; it was not made fresher by this review.
+    26 +
+    27 +| What executed | Actual observation |
+    28 +|---|---|
+    29 +| S10, already frozen and approved | 05:50:26.431Z–05:53:21.856Z, exit 0, substantive count 12 |
+    30 +| FinalInventory | 05:53:21.941Z–05:53:37.956Z, exit 0, targeted count 70 |
+    31 +| Axioms | 05:53:38.050Z–05:53:55.637Z, exit 0, targeted count 71 |
+    32 +| final-reconcile | 05:53:55.703Z–05:53:59.462Z, exit 0, targeted count 72 |
+    33 +| panic-final | 05:53:59.551Z–05:53:59.603Z, exit 0, targeted count 73 |
+    34 +| report-v1 sandbox attempt | Git child-process EPERM before report writes; only the empty output directory was cre
+        ated |
+    35 +| report-v1 escalated attempt | Declined before execution; no report assembled |
+    36 +
+    37 +The 12/69 figure in the owner's notice is the S10 launch snapshot. It does not
+    38 +erase four completed targeted calls. Recorded spend is **12/73**, leaving **0/7**.
+    39 +No charge is refunded. Report assembly and this rereview contain no Lean or build
+    40 +invocation: additional substantive **0**, targeted **0**. These are static
+    41 +inspection and interpretation of retained evidence, not reruns of controls.
+    42 +
+    43 +| Interpretation reconsidered | Restored-model disposition |
+    44 +|---|---|
+    45 +| S10 is a final cold build | Confirmed by fresh-clone preparation excluding cache for S10, candidate identities an
+        d successful actual `just ci`; an empty whole-command input-olean list alone would not prove coldness |
+    46 +| Extent and axioms | Complete output and identity reconciliation support 3,478 declarations, 24 predicate candidat
+        es, 29 modules and 1,285 owned theorem axiom checks; counts are observations, never validation quotas |
+    47 +| 44 atom failures | Original proof locations and successful definition markers support the named body-sensitivity
+        claims; setup errors and merely relatum controls are excluded |
+    48 +| P07 repair | Current complete overlay replaces only Step, retains clean Types and all other dependencies; the sel
+        ected inversion failure and forbidden-close witness support current isolation, not historical isolation |
+    49 +| P01/P07 scope | Existing expression correspondences remain valid survivors of body changes; original helper/inver
+        sion sensitivity is a separate v3.1 obligation |
+    50 +| Exceptions | ExceptionsR, not failed Exceptions marker text, supplies P11 evaluations; Reach's failed instance qu
+        ery supplies bounded absence only |
+    51 +| Reach consumer authority | F-001 remains OPEN. The original contract demands authority on the consumer axis indep
+        endently of decidability. R1's finite implementation fence does not identify the asserted standing exemption for th
+        is particular predicate; no new oracle implementation is ordered by this finding |
+    52 +| Historical limitations | All three remain OPEN without qualification or reconstructed historical evidence |
+    53 +| Report draft | `report-v1.mjs` preserved at b3801ee1ddb66d73d92673372181964e764d4e3911f1f84df04e4e5fd5ab78eb; new
+         `report-v2.mjs` corrects the two-incident chronology and emits new versioned output |
+    54 +
+    55 +No terminal verdict from the deviation window is inherited. The terminal report
+    56 +is the restored auditor's judgment based on this review and the retained frozen
+    57 +execution. No candidate source repair or new charged experiment was needed.
+
+  └ handoffs/full-audit-v2/UNCOVERED-OBLIGATIONS.md (+19 -0)
+     1 +# Actual outstanding obligations at full-audit return
+     2 +
+     3 +The executed frozen set is complete. Spend is 12 substantive and 73 targeted;
+     4 +remaining 0 substantive and 7 targeted. No measured identity or command was
+     5 +discarded to fit.
+     6 +
+     7 +**F-001, Reach consumer-axis authority, remains OPEN.** The admitted original S4
+     8 +contract requires authority to decide whether this exact executable consumer is
+     9 +required. The candidate's standing-boundary assertion, missing decision instance,
+    10 +R1 finite implementation fence and R2 no-new-monitor rule do not settle that
+    11 +identity's exemption. A governing authority disposition is the missing input;
+    12 +additional elaboration is not a substitute. No claim of undecidability or required
+    13 +oracle implementation follows.
+    14 +
+    15 +Historical H-01 P07 single-variable isolation, H-02 census sortUndecided path,
+    16 +and H-03 recovered ba623667 receipt all remain OPEN on their original terms.
+    17 +There is no additional execution gap concealed by those labels. The old pre-START
+    18 +M1 failed-setup return is preserved in handoffs/pre-full-v2 and is not this final
+    19 +outstanding-obligation list.
+
+• Ran node - <<'NODE'
+  │ const fs=require('fs'),crypto=require('crypto');const stamp=new Date().toISOString();const
+  │ h=crypto.createHash('sha256').update(fs.readFileSync('instruments/
+  │ … +11 lines
+  └ 2026-09-06T06:12:53.246Z a5d51ee641cf309ca133083f4fd43308cc999f6a6f44b0df201cbd3fb9f9c14d
+
+✔ You approved codex to run node instruments/report-v2.mjs this time
+
+• Ran node instruments/report-v2.mjs
+  └ {"snapshot":{"utc":"2026-09-06T06:13:33.587Z","scope":"Static files, git identity/status and receipt hashes only. No
+    process listing or elaboration.","candidates":[{"cwd":"/code/
+    … +25 lines (ctrl + t to view transcript)
+    {"declarations":3478,"ownedModules":29,"predicateCandidates":24,"record":"summary","scope":"planning measurement only;
+    no acceptance classification","sortUndecided":0}}
+
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• Report assembly verified all 82 full-audit receipts against their command bindings and stream hashes. Both candidate
+  worktrees remain clean at the bound commit, all 269 tracked inputs match, and the original and revised instrument
+  manifests are unchanged.
+
+  The report records AUDIT-FINDINGS for the unresolved Reach authority question, with the three historical limitations
+  still open. I’m sealing the local handoffs now; spend remains 12 substantive and 73 targeted.
+
+• Ran sha256sum -c M1-RETURN.sha256
+  └ handoffs/AUDIT-REPORT.md: OK
+    handoffs/UNCOVERED-OBLIGATIONS.md: OK
+    … +2 lines (ctrl + t to view transcript)
+    handoffs/ONWARD-DISCOVERIES.md: OK
+    evidence/M1.sha256: OK
+
+• Ran sha256sum -c MANIFEST.sha256
+  └ AMENDMENT-NOTE-001-reconciliation-v2.md: OK
+    AMENDMENT-NOTE-002.md: OK
+    … +9 lines (ctrl + t to view transcript)
+    S4B-COMMAND-SHEET-AMENDMENT-2-frozen.md: OK
+    S4-CONTRACT-ORIGINAL-REQUIREMENTS.md: OK
+
+• Explored
+  └ Read S4-CLASSIFICATION.md
+    Read CAMPAIGN-LEDGER.md
+    Read EXTENT.json
+    Search AUDIT-FORBIDDEN-AXIOM in AxiomsNegative.stdout
+    Search MIRROR-UNCOVERED.*audit|MIRROR-THEOREM-MISSING|MIRROR-RECEIPT-ABSENT|MIRROR-IMPORT-REACH-GAP in S11.stdout
+
+• Edited 2 files (+45 -0)
+  └ handoffs/full-audit-v2/AUDIT-REPORT.md (+9 -0)
+    204
+    205 +| Corrected record | Disposition | Binding and limit |
+    206 +|---|---|---|
+    207 +| REC-01 candidate identity | CLOSED | Independent HEAD/tree and 269 tracked input checks use the valid 40-charact
+         er commit |
+    208 +| REC-02 full range | CLOSED | Independent seven-commit range and full four-file diff over 3590c001 |
+    209 +| REC-03 distinct P07 receipts | PARTLY | Admitted hashes distinguish setup failure from intended inversion failur
+         e; historical single-variable isolation H-01 remains OPEN |
+    210 +| REC-04 submissions/spend | CLOSED as authoritative record | Submission 2/2, author 18/52; own spend independentl
+         y reconciled 12/73 under the superseding v2 grant |
+    211 +| REC-05 prior authorization chronology | CLOSED as authoritative correction | Commissioning supplement binds gran
+         ts before the identified O1 retries; no independent replay of historical authorization is claimed |
+    212 +| REC-06 O6 identity/count | PARTLY | Authoritative 3,117-line/hash binding retained; historical sortUndecided exe
+         cution H-02 remains OPEN |
+    213 +
+    214  ## Audit provenance and stopping receipt
+
+  └ instruments/seal-report-v1.mjs (+36 -0)
+     1 +// Local evidence sealing only; no subprocess, Lean invocation, or remote write.
+     2 +import fs from 'node:fs';
+     3 +import crypto from 'node:crypto';
+     4 +const rt='/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2';
+     5 +process.chdir(rt);
+     6 +const dir='handoffs/full-audit-v2';
+     7 +const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+     8 +const hash=p=>sha(fs.readFileSync(p));
+     9 +const read=p=>fs.readFileSync(p,'utf8');
+    10 +const write=(p,s)=>fs.writeFileSync(p,s,{flag:'wx'});
+    11 +const assert=(b,s)=>{if(!b)throw Error(s);};
+    12 +const inv=JSON.parse(read('evidence/full-v2/FinalInventory.input-oleans.json'));
+    13 +const ax=JSON.parse(read('evidence/full-v2/Axioms.input-oleans.json'));
+    14 +assert(JSON.stringify(inv)===JSON.stringify(ax),'final consumer olean sets differ');
+    15 +for(const r of inv)assert(hash(r.path)===r.sha256,'final olean changed '+r.path);
+    16 +write(dir+'/FINAL-OLEAN-VERIFICATION.json',JSON.stringify({utc:new Date().toISOString(),scope:'Retained final inven
+        tory and axiom prerequisites; static on-disk digest inspection, no elaboration',files:inv},null,2)+'\n');
+    17 +const atoms=JSON.parse(read(dir+'/ATOM-DISPOSITIONS.json'));
+    18 +for(const a of atoms){
+    19 + const source=read('evidence/full-v2/'+a.id+'.stdout');
+    20 + assert(a.exit===1&&a.errors.length>0&&a.errors.every(e=>e.line>=a.proofLines[0]&&e.line<=a.proofLines[1]),'proof d
+        iagnostic scope '+a.id);
+    21 + assert(source.split('\n').some(l=>l.startsWith(a.definition+' ')||l.includes('.'+a.definition+' ')),'definition ma
+        rker missing '+a.id);
+    22 +}
+    23 +// Preserve the mutable journal before its terminal line; no circular manifest hash.
+    24 +write(dir+'/STATUS-before-COMPLETE.md',read('STATUS.md'));
+    25 +write(dir+'/ASSEMBLY.json',JSON.stringify({utc:new Date().toISOString(),substantive:12,targeted:73,verdict:'AUDIT-F
+        INDINGS',blocking:['F-001 Reach consumer-axis authority'],historicalOpen:['H-01','H-02','H-03'],reportAssembly:'ins
+        truments/report-v2.mjs',reportAssemblySha256:hash('instruments/report-v2.mjs'),staticReReviewCost:{substantive:0,ta
+        rgeted:0},atomsInspected:atoms.length},null,2)+'\n');
+    26 +// The former current handoffs were verified and archived before replacing these views.
+    27 +for(const n of ['AUDIT-REPORT.md','CAMPAIGN-LEDGER.md','ONWARD-DISCOVERIES.md','UNCOVERED-OBLIGATIONS.md','S4-CLASS
+        IFICATION.md'])fs.copyFileSync(dir+'/'+n,'handoffs/'+n);
+    28 +const files=new Set(['brief.md','instruments/report-v1.mjs','instruments/report-v2.mjs','instruments/seal-report-v1
+        .mjs']);
+    29 +function collect(root){for(const e of fs.readdirSync(root,{withFileTypes:true})){const p=root+'/'+e.name;if(e.isDir
+        ectory())collect(p);else if(e.isFile())files.add(p);}}
+    30 +for(const root of ['admitted','answers','evidence','instruments/full','instruments/full-v2','instruments/full-v3','
+        instruments/full-v4','instruments/full-v5','instruments/m1r',dir,'handoffs/pre-full-v2'])if(fs.existsSync(root))col
+        lect(root);
+    31 +for(const p of ['instruments/MEASUREMENT.sha256','instruments/candidate-inputs.sha256','instruments/modules.txt','p
+        lanning/atoms.json','planning/M1R-expr-hashes.jsonl','planning/M1R-summary.json'])files.add(p);
+    32 +for(const n of ['AUDIT-REPORT.md','CAMPAIGN-LEDGER.md','ONWARD-DISCOVERIES.md','UNCOVERED-OBLIGATIONS.md','S4-CLASS
+        IFICATION.md'])files.add('handoffs/'+n);
+    33 +files.delete(dir+'/MANIFEST.sha256');
+    34 +const entries=[...files].sort();
+    35 +write(dir+'/MANIFEST.sha256',entries.map(p=>hash(p)+'  '+p).join('\n')+'\n');
+    36 +console.log(JSON.stringify({files:entries.length,manifest:hash(dir+'/MANIFEST.sha256'),report:hash(dir+'/AUDIT-REPO
+        RT.md'),finalOleanns:inv.length,spend:{substantive:12,targeted:73}}));
+
+• Edited instruments/seal-report-v1.mjs (+1 -1)
+    29  function collect(root){for(const e of fs.readdirSync(root,{withFileTypes:true})){const p=root+'/'+e.name;if(e.isDir
+        ectory())collect(p);else if(e.isFile())files.add(p);}}
+    30 -for(const root of ['admitted','answers','evidence','instruments/full','instruments/full-v2','instruments/full-v3','
+        instruments/full-v4','instruments/full-v5','instruments/m1r',dir,'handoffs/pre-full-v2'])if(fs.existsSync(root))col
+        lect(root);
+    30 +for(const root of ['admitted','answers','evidence','instruments','planning',dir,'handoffs/pre-full-v2'])if(fs.exist
+        sSync(root))collect(root);
+    31  for(const p of ['instruments/MEASUREMENT.sha256','instruments/candidate-inputs.sha256','instruments/modules.txt','p
+        lanning/atoms.json','planning/M1R-expr-hashes.jsonl','planning/M1R-summary.json'])files.add(p);
+
+• Ran node instruments/seal-report-v1.mjs
+  └ {"files":665,"manifest":"eb05530995bde80878203222a4430b1afce1d05002cb4bd60d59d60e75f40cc0","report":"874727c2e0632d525a
+    c04d8d70f2ad42bbbda5df57a6c4221bba9d582de9ffde","finalOleanns":29,"spend":{"substantive":12,"targeted":73}}
+
+• Ran sha256sum -c handoffs/full-audit-v2/MANIFEST.sha256 > handoffs/FINAL-VERIFY-v2.txt
+  └ (no output)
+
+• Ran node - <<'NODE'
+  │ const fs=require('fs'),crypto=require('crypto');const
+  │ h=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');const path='handoffs/full-audit-v2/
+  │ … +20 lines
+  └ {"utc":"2026-09-06T06:17:01.888Z","verdict":"AUDIT-FINDINGS","report":"874727c2e0632d525ac04d8d70f2ad42bbbda5df57a6c422
+    1bba9d582de9ffde","manifest":"eb05530995bde80878203222a4430b1afce1d05002cb4bd60d59d60e75f40cc0","verified":665,"spend":
+    {"substantive":12,"targeted":73}}
+
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• Completed: AUDIT-FINDINGS. Reach consumer-axis authority remains unresolved; no failed candidate proof or build was
+  found. All three historical limitations remain OPEN.
+
+  Both model deviations are journalled. Restored-model re-review cost 0 additional operations. Final spend: 12/12
+  substantive, 73/80 targeted. Evidence manifest verified 665/665.
+
+  Full audit report (handoffs/AUDIT-REPORT.md)
+
+─ Worked for 12m 43s ──────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+› Ask Codex to do anything
+
+  gpt-6-astra high · /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2

@@ -1,0 +1,555 @@
+
+• Ran cat /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/handoffs/AUDIT-REPORT.md; cat /tmp/
+  │ reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/handoffs/CAMPAIGN-LEDGER.md; command -v node;
+  │ command -v perl; command -v awk; ls -la inbox answers
+  └ # Independent S4-B audit — submission 1
+
+    … +205 lines (ctrl + t to view transcript)
+    drwxr-xr-x  2 paolino users 4096 Sep  6 03:59 .
+    drwxr-xr-x 10 paolino users 4096 Sep  6 04:07 ..
+
+• Explored
+  └ List candidate-auditor-s4b-codex-r3
+    List instruments
+    Read MUTATION-RECEIPTS.md
+    List candidate-auditor-s4b-codex-r3
+    Search (plan|mutat|manifest|M01|WIT|AXIOM)
+
+• Ran cat /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/instruments/materialize-mutants.mjs; sed -n
+  │ '1,180p' /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/instruments/mutations.json; cat /tmp/
+  │ reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/evidence/M01.start.json; sha256sum /tmp/reactivegas/
+  │ … +2 lines
+  └ import fs from 'node:fs';import crypto from 'node:crypto';
+    const root='/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3';
+    … +210 lines (ctrl + t to view transcript)
+    f31ed328401796fd3488eb17c03e0d2b657313b63a7fae2d3c36ac9996e3c2c3  /tmp/reactivegas/ms2/e-lean-compliance/
+    candidate-auditor-s4b-codex-r3/handoffs/CAMPAIGN-LEDGER.md
+
+• Explored
+  └ Read mutations.json, Witnesses.lean, SKILL.md
+
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• The full audit does not fit the bound command plan. The existing mutation operators still apply to the current source:
+  they cover 44 atoms across 17 mirrors. Even one isolated control per mirror would take 17 targeted calls, exceeding the
+  allowance of 10 before the P01/P07 probes and other checks.
+
+  I’ll retain the exact inputs, commands, and shortfall in a local blocker report. No Lean operation has run, and all three
+  stated limitations remain open.
+
+✔ You approved codex to run mkdir -p handoffs/evidence instruments mutants; { date -u +%FT%TZ; tmux displ... this time
+
+• Ran mkdir -p handoffs/evidence instruments mutants; { date -u +%FT%TZ; tmux display-message -p -t %570 '#{pane_id}
+  │ #{window_name} #{pane_pid}'; ps -o pid,ppid,lstart,comm -p 3047621 -p 3047465; tr '\0' '\n' < /proc/3047621/cmdline;
+  │ readlink /proc/3047621/cwd; } | tee handoffs/evidence/live-identity.log
+  └ 2026-09-06T03:25:31Z
+    %570 rg-s4b-audit4 3047465
+    … +7 lines (ctrl + t to view transcript)
+    model_reasoning_effort=high
+    /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final
+
+• Added instruments/bind-command-gap.mjs (+97 -0)
+     1 +import fs from 'node:fs';
+     2 +import crypto from 'node:crypto';
+     3 +import path from 'node:path';
+     4 +
+     5 +// Static preflight only. This program never invokes Lean, Nix, or a build.
+     6 +const root = '/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final';
+     7 +const candidate = '/code/reactivegas-66-s4b-audit4';
+     8 +const prior = '/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3';
+     9 +const sha = x => crypto.createHash('sha256').update(x).digest('hex');
+    10 +const write = (name, body) => fs.writeFileSync(path.join(root, name), body, {flag: 'wx'});
+    11 +const operators = fs.readFileSync(`${prior}/instruments/mutations.json`, 'utf8');
+    12 +const rows = JSON.parse(operators);
+    13 +write('instruments/historical-operators-input.json', operators);
+    14 +const sourceInputs = {};
+    15 +const commands = [];
+    16 +const firstPerTheorem = new Map();
+    17 +for (const row of rows) {
+    18 +  const source = fs.readFileSync(`${candidate}/${row.file}`, 'utf8');
+    19 +  sourceInputs[row.file] = sha(source);
+    20 +  const anchor = `\ndef ${row.def} `;
+    21 +  if (source.split(anchor).length !== 2) throw new Error(`Definition anchor: ${row.id}`);
+    22 +  const start = source.indexOf(anchor) + 1;
+    23 +  const end = source.indexOf('\n/--', start);
+    24 +  if (end < 0) throw new Error(`Definition boundary: ${row.id}`);
+    25 +  const block = source.slice(start, end);
+    26 +  if (block.split(row.from).length !== 2) throw new Error(`Non-single edit: ${row.id}`);
+    27 +  const changed = block.replace(row.from, row.to);
+    28 +  const mutant = source.slice(0, start) + changed + source.slice(end);
+    29 +  const target = `\ntheorem ${row.thm} `;
+    30 +  const theoremStart = source.indexOf(target, end) + 1;
+    31 +  if (!theoremStart) throw new Error(`Missing target: ${row.id}`);
+    32 +  const filename = `${root}/mutants/${row.id}.lean`;
+    33 +  write(`mutants/${row.id}.lean`, mutant);
+    34 +  if (mutant.slice(start + changed.length) !== source.slice(end)) throw new Error(row.id);
+    35 +  const command = {
+    36 +    id: row.id, charge: 'targeted', state: 'NOT-RUN', cwd: `${candidate}/lean`,
+    37 +    argv: ['nix', 'develop', '--quiet', '-c', 'env',
+    38 +      `LEAN_PATH=${candidate}/lean/.lake/build/lib/lean`,
+    39 +      'lean', '-DautoImplicit=false', filename],
+    40 +    input: filename, inputSha256: sha(mutant), productionPath: row.file,
+    41 +    productionSha256: sha(source), definition: row.def, atom: row.atom,
+    42 +    edit: {from: row.from, to: row.to}, theorem: row.thm,
+    43 +    sourceDefinitionLine: source.slice(0, start).split('\n').length,
+    44 +    originalTheoremLine: source.slice(0, theoremStart).split('\n').length,
+    45 +    preservedSuffixSha256: sha(source.slice(end)),
+    46 +    prerequisites: 'Fresh clean candidate build; hash-bound clean dependency manifest; no mutant overlays.',
+    47 +    requiredObservation: 'Definition elaborates; preserved original theorem fails for the named semantic change. Pa
+        rse/import/type/setup errors are not kills.',
+    48 +    receiptIfAuthorized: `${root}/handoffs/evidence/${row.id}.log`
+    49 +  };
+    50 +  commands.push(command);
+    51 +  if (!firstPerTheorem.has(row.thm)) firstPerTheorem.set(row.thm, command);
+    52 +}
+    53 +const checker = fs.readFileSync(`${candidate}/scripts/check-lean-mirrors`, 'utf8');
+    54 +const claimedBlock = checker.split('def s4bCorrTable')[1].split('/-- Separately')[0];
+    55 +const claimedMirrors = [...claimedBlock.matchAll(/some "([^"]+)"/g)]
+    56 +  .map(x => x[1]).filter(x => x !== 'KelGroups.GroupView.isMember').map(x => x.split('.').at(-1));
+    57 +const actualMirrors = [...new Set(commands.map(x => x.definition))].sort();
+    58 +if (JSON.stringify([...claimedMirrors].sort()) !== JSON.stringify(actualMirrors)) {
+    59 +  throw new Error('Source-level table/definition/operator mapping is incomplete');
+    60 +}
+    61 +write('handoffs/COMMANDS.json', JSON.stringify({
+    62 +  status: 'PREFLIGHT-BLOCKED-NOT-ADMITTED',
+    63 +  candidate: '94bb7bb64324a48f7361252556b4d15e45b3923f',
+    64 +  base: '3590c0015b84fd58004bf6fb44dd18b107304c48',
+    65 +  operatorInput: {path: `${prior}/instruments/mutations.json`, sha256: sha(operators),
+    66 +    scope: 'Operator descriptions only; no historical outcomes or compiled artifacts inherited.'},
+    67 +  sourceInputs, checkerSha256: sha(checker),
+    68 +  observationScope: 'Static command binding only; not a compiled census or demonstrated control.',
+    69 +  newAllowance: {substantive: 9, targeted: 10},
+    70 +  spent: {substantive: 0, targeted: 0},
+    71 +  selectedPerTheoremCommands: [...firstPerTheorem.values()].map(x => x.id),
+    72 +  commandSubsetCount: commands.length,
+    73 +  commandSubsetShortfall: commands.length - 10,
+    74 +  perTheoremSubsetCount: firstPerTheorem.size,
+    75 +  perTheoremSubsetShortfall: firstPerTheorem.size - 10,
+    76 +  commands
+    77 +}, null, 2) + '\n');
+    78 +const quote = s => `'${s.replaceAll("'", "'\\''")}'`;
+    79 +let md = '# Pre-admission command fit — NOT EXECUTED\n\n';
+    80 +md += 'Candidate `94bb7bb64324a48f7361252556b4d15e45b3923f`; base `3590c0015b84fd58004bf6fb44dd18b107304c48`; full
+        seven-commit range.\n\n';
+    81 +md += 'The concrete mutation subplan below has ' + commands.length + ' separate single-file Lean invocations agains
+        t current-candidate scratch inputs. Its targeted shortfall alone is ' + (commands.length - 10) + '. No invocation i
+        s authorized or executed by this document.\n\n';
+    82 +md += 'Even the diagnostic one-per-theorem subset (' + [...firstPerTheorem.values()].map(x => x.id).join(', ') + ')
+         contains ' + firstPerTheorem.size + ' calls, exceeding 10 by ' + (firstPerTheorem.size - 10) + '. This comparison
+        is NOT a proposed narrowing of the full atom mandate.\n\n';
+    83 +md += 'All commands have cwd `' + candidate + '/lean`. `LEAN_PATH` names only the future fresh clean candidate libr
+        ary, which does not yet exist. Current source inputs, exact single edits, preserved theorem/proof suffixes, expecte
+        d diagnostics, output receipt paths, and full argv arrays are bound in `COMMANDS.json`. Each mutant source is retai
+        ned. These are preparation artifacts, not executable evidence.\n\n';
+    84 +md += '| ID | Definition / atom | Original theorem | State |\n|---|---|---|---|\n';
+    85 +for (const c of commands) md += `| ${c.id} | ${c.definition} / ${c.atom} | ${c.theorem} | NOT-RUN |\n`;
+    86 +md += '\nExact argv, one separately charged invocation per paragraph:\n\n';
+    87 +for (const c of commands) md += '```sh\n' + c.argv.map(quote).join(' ') + '\n```\n\n';
+    88 +md += '## Fit limits and remaining full mandate\n\n';
+    89 +md += 'The 44 operators were read as descriptions from the prior auditor and rebound to current source bytes, one e
+        xact production-body edit each. No previous KILLED state, raw diagnostic, compiled dependency, or acceptance was tr
+        ansferred. All 17 current source-level new-mirror table entries reconcile with these definitions; this is not the r
+        equired compiled denominator and makes no completeness claim about undiscovered declarations.\n\n';
+    90 +md += 'The blocker does not depend on treating 44 as a global minimum. It is the cost of these concrete independent
+        ly isolated commands. The operator one-per-theorem subset already exceeds the targeted allowance. Process sharing i
+        s permitted only when separate intended outcomes are actually reached and retained. Putting 44 Lean invocations und
+        er one shell does not make them one operation; combining edits into one mutant forfeits single-variable isolation.
+        No compiled, unmasked multi-world batch instrument is bound in this packet. Designing and validating a different in
+        strument is not an established cost saving.\n\n';
+    91 +md += 'Still required beyond this subset: clean mandatory baseline; newly introduced counterpart-absent and theorem
+        -absent controls; repaired opaque/module discovery and classifier-own-diagnostic control; present-but-disabled chec
+        ker/nonce enforcement; P01 and P07 real production-path controls; clean final full CI and final axioms/totality; bo
+        th classification axes with nonempty positive and can-fail negative controls; exact statement/proof bindings and no
+        ndegenerate witnesses; P01/P07 accurate relatum scope plus independent compile/positive/negative body-chain probes
+        and clean/defective close witnesses. No part is waived, downgraded or inherited.\n\n';
+    92 +md += 'A conventional substantive schedule would use nine whole-path invocations (baseline, counterpart absent, the
+        orem absent, opaque/module discovery, classifier omission, P01 body, P07 body, checker-noop, final CI). Its mutatio
+        ns and integration probes are not frozen here: the already concrete targeted subplan fails admission before they ar
+        e needed. P01/P07 shadow compile/negative/positive calls would add six targeted operations under the governing laye
+        r rule. Further census/witness/axiom and instrument controls have not been declared free or bundled into an imagina
+        ry exact total. Thus 34 is a lower bound on the shortfall of this 44-call subplan, not the asserted final full-audi
+        t deficit.\n\n';
+    93 +md += 'Return AUDIT-CONTRACT-BLOCKED before START. Actual new spend: 0 substantive / 0 targeted. Historical 6/59 is
+         preserved separately; cumulative ceilings 15/69 confer only the new 9/10. No 54-operation allowance exists.\n';
+    94 +write('handoffs/COMMAND-FIT.md', md);
+    95 +console.log(JSON.stringify({staticOnly: true, mutations: commands.length, identities: firstPerTheorem.size,
+    96 +  targetedAllowance: 10, subsetGap: commands.length - 10, onePerIdentityGap: firstPerTheorem.size - 10,
+    97 +  newSpend: {substantive: 0, targeted: 0}}));
+
+• Ran node instruments/bind-command-gap.mjs
+  └ (no output)
+
+• Ran { date -u +%FT%TZ; sha256sum brief.md admitted/COMMISSIONING-SUPPLEMENT-AUTHORITATIVE.md /tmp/reactivegas/ms2/
+  │ e-lean-compliance/commit-owner-s4b-muse/handoffs/SUBMISSION-2.md; git -C /code/reactivegas-66-s4b-audit4 rev-parse
+  │ HEAD HEAD^{tree}; if git -C /code/reactivegas-66-s4b-audit4 symbolic-ref -q HEAD; then printf 'HEAD-attached\n'; else
+  │ … +7 lines
+  └ (no output)
+
+• Ran sha256sum -c MANIFEST.sha256
+  └ AMENDMENT-NOTE-001-reconciliation-v2.md: OK
+    AMENDMENT-NOTE-002.md: OK
+    … +8 lines (ctrl + t to view transcript)
+    S4B-COMMAND-SHEET-AMENDMENT-2-frozen.md: OK
+    S4-CONTRACT-ORIGINAL-REQUIREMENTS.md: OK
+
+• Ran sha256sum /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/S2-SH-P07neg.log /tmp/
+  │ reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/S2-SH-P07neg-retry.log /tmp/reactivegas/
+  │ ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/S2-O1retry2-ba623667-RED.log /tmp/reactivegas/ms2/
+  │ … +3 lines
+  └ 4d34269066f801a166f837b971971105a0cbadb3033901ecd26a30263a92f7a1  /tmp/reactivegas/ms2/e-lean-compliance/
+    commit-owner-s4b-muse/handoffs/evidence/S2-SH-P07neg.log
+    … +60 lines (ctrl + t to view transcript)
+    f31ed328401796fd3488eb17c03e0d2b657313b63a7fae2d3c36ac9996e3c2c3  /tmp/reactivegas/ms2/e-lean-compliance/
+    candidate-auditor-s4b-codex-r3/handoffs/CAMPAIGN-LEDGER.md
+
+• Explored
+  └ Read brief.md
+    List inbox
+
+• Ran /code/llm-settings/shared/skills/worker-protocol/scripts/status-event /tmp/reactivegas/ms2/e-lean-compliance/
+  │ candidate-auditor-s4b-sub2-final/STATUS.md NOTE 'Updated brief read in full: current
+  │ sha256=d0f81316bbc896633a9004fe007553397d52d93824be5e2fb34beaf0b3a74653; initial requested
+  │ … +6 lines
+  └ 89adb350e5eb4ed9dab5bdc8ae32fa019242edf62fc1e9d3cf4b25f7d8babe4d  handoffs/COMMAND-FIT.md
+    a8b59b605c9c6ede3249c9aee853c123dfdbfac960140784ea7df741010bc411  handoffs/COMMANDS.json
+    c969f1cda1ea91eb83b9de30c9fac2c5c2cbe4728327dc6de97bc6b116bae24a  handoffs/evidence/live-identity.log
+    2a767ef1ed87d046ffceb0f69395ecc8b318c25f5534599d265aede253b96c48  handoffs/evidence/preflight.log
+
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• The updated brief now explicitly binds the gate recipes and standing exceptions; I’ve read and journalled it. The
+  allowance remains 9 substantive plus 10 targeted.
+
+  I have retained 44 current-source mutant inputs and their exact commands, all marked NOT-RUN. The report will return the
+  command-fit blocker before START, with zero new campaign spend and no semantic verdict on the candidate.
+
+• Edited 4 files (+131 -0)
+  └ handoffs/AUDIT-REPORT.md (+75 -0)
+     1 +# S4-B submission 2 — independent FULL audit preflight
+     2 +
+     3 +**Terminal verdict: AUDIT-CONTRACT-BLOCKED.** The concrete independent command plan does not fit the new **9 substa
+        ntive / 10 targeted** allowance. Admission stopped before START and before any Lean, build, gate, axiom, or mutatio
+        n execution. This is a commissioning shortfall, not a semantic finding against the candidate or an acceptance decis
+        ion.
+     4 +
+     5 +## Frozen subject and authority
+     6 +
+     7 +- Submission **2 of 2**, final; no third submission or automatic continuation.
+     8 +- Candidate `94bb7bb64324a48f7361252556b4d15e45b3923f`.
+     9 +- Candidate tree `3ee3dc26deff4fde7b7ed9d3f253dd0fbd5efced`.
+    10 +- Accepted base `3590c0015b84fd58004bf6fb44dd18b107304c48`.
+    11 +- Scope is the entire **seven-commit** unaccepted span: `189e1ed`, `59309d6`, `0f3ad01`, `4d0a324`, `b667648`, `ba6
+        2366`, `94bb7bb`. No repair-only scope or inherited row closure.
+    12 +- Detached audit worktree `/code/reactivegas-66-s4b-audit4`, clean, no oleans and no `.lake` at preflight. Git repo
+        rts four changed paths and 946 additions over the accepted base. This is provenance inspection, not a completed fen
+        ce or semantic audit.
+    13 +- Runtime is `/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final`.
+    14 +- Commissioner `%503`; terminal implementation owner `%547`, Muse, as bound by the brief. No owner contact.
+    15 +- Auditor live host `/proc/3047621/cmdline`: **gpt-6-astra**, **model_reasoning_effort=high**. PPID `3047465` equal
+        s pane `%570`'s process; named window `rg-s4b-audit4`. Current process cwd equals this runtime. First journal line
+        records verified model/effort. Retained machine receipt: `evidence/live-identity.log`.
+    16 +
+    17 +The initial requested brief hash `4af855c71c07ecb6d66eb03a82168f7d1e5acf727839f31393cca2d553a7e5fc` matched on firs
+        t read. The brief changed during preflight; its updated full contents were reread and retained at `evidence/brief-c
+        urrent-snapshot.md`, hash `d0f81316bbc896633a9004fe007553397d52d93824be5e2fb34beaf0b3a74653`. That version explicit
+        ly binds the separate budget classes, authority, recipes and standing exceptions. It does not increase allowance or
+         narrow scope. The original first-read hash observation is in this conversation's tool record and first journal ent
+        ry; no original-byte snapshot was manufactured afterwards.
+    18 +
+    19 +The governing supplement remains `ba4c073af152353ce58cc778c41e8fa1e688fa92eae6ccdfd7064bbde7478dfc`. All 12 admitte
+        d manifest entries verify. The submitted owner packet hashes `22cb04730a3ea46343f9e806b923ebc2ece4a84128970f78f8a88
+        616d08e5348`; its six corrected record defects do not govern this report. The actual candidate-bound mandatory comm
+        ands are `nix develop --quiet -c just lean` and `nix develop --quiet -c just ci`. There is no required separate `ga
+        te.sh`.
+    20 +
+    21 +Original S4 requirements, R1–R18, operative v2, and v3.1's P01/P07 replacement govern. The dedicated-window and S4-
+        B-only ceiling-history exceptions are retained. Historical owner raises `6→8→14→15→16→17→18`, owner spend `18/18` s
+        ubstantive and `52` targeted, and every failed attempt remain recorded historical inputs. The supplement's advance-
+        authorized O1 retry chronology is retained; this audit does not label those retries unauthorized.
+    22 +
+    23 +## B01 — command-fit blocker
+    24 +
+    25 +**OPEN, BLOCKING; commissioning budget-fit requirement, original R11/R12/R18, v2 C5–C23 and full-scope semantic sen
+        sitivity.**
+    26 +
+    27 +`COMMANDS.json` binds **44 separate targeted invocations**, each to an existing retained scratch file generated fro
+        m the current candidate, with one exact executable-definition edit, untouched subsequent theorem/proof bytes, origi
+        nal source hash, mutant hash, target, cwd, full argv, dependency prerequisite and intended receipt path. `COMMAND-F
+        IT.md` lists every command and its intended observation. The preparation program performs static reads and writes o
+        nly; it never invokes Lean or Nix.
+    28 +
+    29 +The operators were read from the previous auditor as descriptions and rebound against the current source. All edit
+        anchors are unique inside the named current definitions. Their 17 definition identities reconcile with the current
+        source-level new-mirror table. **No old KILLED result, diagnostic, compiled artifact, or acceptance transfers.** Th
+        is source comparison binds a proposed experiment; it is not a compiled census, type-validity result, proof, or sens
+        itivity result.
+    30 +
+    31 +| Command set | New targeted calls in bound plan | New allowance | Shortfall |
+    32 +|---|---:|---:|---:|
+    33 +| Current-source M01–M44 atom controls | 44 | 10 | 34 |
+    34 +| Diagnostic subset: one selected control for each of the 17 distinct original theorem targets | 17 | 10 | 7 |
+    35 +
+    36 +The second line is an arithmetic cross-check, **not permission to replace the full atom set with one control per th
+        eorem**. The exact subset is recorded in `COMMANDS.json`. Both comparisons exclude additional required P01/P07 body
+        -chain compiles, negatives and positives, witnesses, classification controls, and final proof checks. The six separ
+        ate shadow operations alone add six targeted calls under the governing single-module layer rule.
+    37 +
+    38 +This report does **not** claim 44 is a mathematical lower bound for every conceivable Lean batching implementation,
+         nor that 34 is the final complete-audit deficit. It is the precise shortfall of the retained concrete subplan, whi
+        ch already cannot be admitted. A different batch instrument would need to preserve isolated worlds and actually rea
+        ch every original theorem's intended failure without masking. None is bound and demonstrated in the commissioning p
+        acket. A loop over separate Lean calls still spends each call; simultaneous edits are not single-variable controls.
+         No hypothetical batching saving, inherited row closure, or reclassification was used to assert fit.
+    39 +
+    40 +A conventional mandatory-path schedule would consume nine substantive calls: clean baseline; counterpart absent; th
+        eorem absent; opaque/module discovery; classifier omission; P01 production body; P07 production body; present-but-n
+        oop checker; restored final CI. This is a cost outline, not a frozen executable full schedule. The already concrete
+         targeted shortfall stops admission before constructing or running those additional mutations. No claim that the wh
+        ole mandate has otherwise been exhaustively costed is made.
+    41 +
+    42 +Command-fit artifact SHA-256: `89adb350e5eb4ed9dab5bdc8ae32fa019242edf62fc1e9d3cf4b25f7d8babe4d`.
+    43 +Command/input manifest SHA-256: `a8b59b605c9c6ede3249c9aee853c123dfdbfac960140784ea7df741010bc411`.
+    44 +
+    45 +## Prior finding disposition — no new semantic finding asserted
+    46 +
+    47 +| Item | State | Evidence and limit |
+    48 +|---|---|---|
+    49 +| F01, owned opaque/module discovery and classification | OPEN | Current source and correction inputs are bound; no
+         independent mandatory negative control ran. Owner GREEN/RED receipts are not fresh closure here. |
+    50 +| F02, P01/P07 | PARTLY | The governing v3.1 amendment resolves which obligations must be checked and accurately li
+        mits the original parametric/inline theorems. Independent sensitivity of the additional body/consumer obligations r
+        emains OPEN. This is authority clarification, not proof or mutant closure. |
+    51 +| Other original S4 obligations and previously killed rows | OPEN for this candidate | FULL scope remains unchanged
+        . No row is accepted from the previous candidate or this preflight's source observations. |
+    52 +
+    53 +The prior report is preserved at `/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/handoffs/AU
+        DIT-REPORT.md`, SHA-256 `90cd9d9bb9bade9d4e0e08c3fb09334ffa108a685974c199511362192a2cac00`; prior campaign ledger S
+        HA-256 `f31ed328401796fd3488eb17c03e0d2b657313b63a7fae2d3c36ac9996e3c2c3`. These identify historical inputs only.
+    54 +
+    55 +## Three mandatory limitations — all remain OPEN
+    56 +
+    57 +1. **P07 historical single-variable isolation is unestablished.** `S2-SH-P07neg.log` (`4d34269066f801a166f837b97197
+        1105a0cbadb3033901ecd26a30263a92f7a1`) is the counted import/setup failure. `S2-SH-P07neg-retry.log` (`c9442f4aa194
+        0e976e32cc33cac9a2fba7d1c0f6ce1a86d87d40d0ac8a4ddf68`) is the chain-failure receipt identifying mutant Step, but th
+        ere is no retained overlay verification proving every other resolved byte clean. Its diagnostic cannot distinguish
+        clean Types from the P01-mutant Types. Neither overlay was recreated. No new P07 experiment ran.
+    58 +2. **Census `sortUndecided → fail` remains source-verified, not executed.** The source contains the fail path at `S
+        2-census.lean:124–126`; this audit did not seed or execute it. Empty clean-tree output cannot establish enforcement
+        . This limitation is not upgraded by a source match or a newly written probe.
+    59 +3. **The `ba623667` O1retry2 receipt remains recovered-from-published-snapshot.** Its current hash matches the comm
+        issioner's stated `b6e9a62f6836fa2a61e6c0d5e237c62cb6d02e479b5b745b145140452c173f3f`. That current-file check does
+        not turn its provenance into never-overwritten or independently reperform the historical recovery. No receipt was r
+        ecreated.
+    60 +
+    61 +The owner O6 inventory correction also matches on disk: `S2-O6.log`, SHA-256 `3c325a7bbd93cba05778648dddc0701b0f595
+        22a4f3eba5c1bbce3228e384fca`, **3,117 lines**. That is an artifact-identity check, not independent CI execution or
+        proof trust.
+    62 +
+    63 +## Coverage, accounting and terminal return
+    64 +
+    65 +- **Admission:** not granted; no START posted because command fit failed.
+    66 +- **New actual spend:** **0/9 substantive; 0/10 targeted**. Static reads, hashes, Git interrogation and instrument
+        preparation only.
+    67 +- **Historical auditor spend:** 6 substantive / 59 targeted retained separately. Cumulative figures remain 6/15 and
+         59/69, not fresh allowances. No pooled 54 or interchangeable operation classes.
+    68 +- **Compiled denominator:** not established in this audit. The 17 source-level mirror targets and 44 prepared opera
+        tors are a command-binding subset, not the full S4 denominator.
+    69 +- **Theorem/proof/witness/correspondence outcomes:** not executed, not independently established at this candidate.
+         No new PROVED, REFUTED, KILLED or CLOSED semantic row.
+    70 +- **Failure modes altered:** not substantively audited after admission failed; no assertion of none. Discovery/clas
+        sifier and receipt enforcement remain within the unexecuted full mandate.
+    71 +- **Campaign:** not admitted, stopped at preflight budget fit with zero execution; no expenditure overrun and no ex
+        hausted-budget survivor relabelled advisory.
+    72 +- **Onward discoveries:** empty within preflight's examined scope, explicitly recorded in `ONWARD-DISCOVERIES.md`,
+        recipient commissioner `%503` only.
+    73 +- **Local boundary:** candidate, admitted inputs, owner sources and historical receipts untouched. No source repair
+        , staging, commit, push, PR, merge, comment, publication, owner contact, or build-tree cleanup.
+    74 +
+    75 +The commissioner owns disposition of this final permitted submission. This return does not authorize another audit,
+         repair, submission, ceiling raise, or reopening of S4-B. No additional execution will follow in this seat.
+
+  └ handoffs/CAMPAIGN-LEDGER.md (+42 -0)
+     1 +# Auditor-owned campaign ledger — final S4-B submission 2
+     2 +
+     3 +State: **NOT-ADMITTED; preflight command-fit blocker**. Candidate `94bb7bb64324a48f7361252556b4d15e45b3923f`, base
+        `3590c0015b84fd58004bf6fb44dd18b107304c48`, full seven-commit unaccepted span.
+     4 +
+     5 +| Party / class | Historical spend | This seat new spend | New allowance | Cumulative ceiling |
+     6 +|---|---:|---:|---:|---:|
+     7 +| Auditor substantive | 6 | 0 | 9 | 15 |
+     8 +| Auditor targeted | 59 | 0 | 10 | 69 |
+     9 +| Owner substantive | 18 | not this seat | none | 18 |
+    10 +| Owner targeted | 52 | not this seat | none | 60 historical nominal ceiling; no remaining authority |
+    11 +
+    12 +Failed and warm actual calls count; reads, hashing, Git interrogation and static file preparation are free under th
+        e frozen charge rule. No Lean, Nix, build, gate, probe or mutation invocation executed here. Counters do not pool,
+        reset, refund or confer acceptance. Historical raises and failed attempts remain in the original journals and suppl
+        ement. The complete S4-B owner raise sequence is 6→8→14→15→16→17→18; unrelated #66 ceilings are outside the express
+         campaign-level exception.
+    13 +
+    14 +## Admission ledger
+    15 +
+    16 +| Row | State | Receipt / limit |
+    17 +|---|---|---|
+    18 +| Live model, effort, pane | VERIFIED-STATIC | `evidence/live-identity.log`: gpt-6-astra/high; PID3047621, PPID3047
+        465, pane%570, rg-s4b-audit4 |
+    19 +| Candidate/base/seven-commit identity and initial cold state | VERIFIED-STATIC | `evidence/preflight.log`: detache
+        d, clean, no `.lake` or oleans |
+    20 +| Brief, supplement, owner packet and admitted hashes | VERIFIED-STATIC | Initial brief matched; updated brief read
+         and retained; supplement unchanged; admitted12/12 |
+    21 +| B01 exact command fit | OPEN/BLOCKED | `COMMANDS.json` binds 44 targeted calls, all NOT-RUN; allowance10; subplan
+         gap34. One-per-theorem diagnostic subset17 also exceeds allowance by7. |
+    22 +| START / audit admission | NOT-POSTED | Full mandate fit not established; user requires blocker before admission |
+    23 +
+    24 +## Coverage ledger
+    25 +
+    26 +| Original requirement family | Current state | Evidence limit |
+    27 +|---|---|---|
+    28 +| R1–R6, R14–R17: scope, preserved definitions/statements, expression reuse, equality/policy, arbitrary-state seman
+        tics and fence | OPEN | Some source inspected for command binding; no completed FULL audit claim |
+    29 +| R7–R10, C1–C4: compiled discovery, omission and disable controls | OPEN | No current independent mandatory-path e
+        xecution |
+    30 +| R11–R12, C5–C23: per-identity sensitivity and isolation | OPEN | 44 current-source one-edit specimens prepared; a
+        ll NOT-RUN; no valid mutant results |
+    31 +| R13, C24–C26: final clean proofs, totality and full CI | OPEN | No build; no final axiom or CI receipt |
+    32 +| R18 and current separate-class budget | VERIFIED-STATIC; FIT BLOCKED | Actual new0/9 and0/10; no overrun; B01 pre
+        vents admission |
+    33 +| Both original S4 classification axes and authority-bound exceptions | OPEN | No independent compiled denominator;
+         no inherited classification acceptance |
+    34 +| v3.1 P01/P07 accurate original scope | PARTLY | Authority amendment read; no fresh theorem/relatum outcome |
+    35 +| v3.1 promoted P01 obligations and P07 existing chain/close witnesses | OPEN | No body compile, isolated negative/
+        positive, or behavior probe executed |
+    36 +| Historical P07 overlay isolation | OPEN | Missing retained verification cannot be reconstructed today |
+    37 +| Census sortUndecided failure enforcement | OPEN | Source-only, unexecuted |
+    38 +| ba623667 receipt provenance | OPEN LIMITATION | recovered-from-published-snapshot, never described as never-overw
+        ritten |
+    39 +
+    40 +`COMMANDS.json` is the per-atom planned ledger: each of M01–M44 names its claim, original theorem, exact current-ca
+        ndidate edit/input, command and NOT-RUN state. It is not an admitted compiled denominator. No historical KILLED/CLO
+        SED status was copied into this ledger. All previously killed rows remain reopenable within the FULL mandate; none
+        receives fresh closure here.
+    41 +
+    42 +Stopping receipt: **AUDIT-CONTRACT-BLOCKED, preflight fit, 0 substantive / 0 targeted spent, 0 semantic kills, 0 fr
+        esh proofs, no execution overrun**. This is the final permitted audit return; no automatic raise, retry, successor,
+         source repair or slice reopening.
+
+  └ handoffs/ONWARD-DISCOVERIES.md (+7 -0)
+    1 +# Onward discoveries
+    2 +
+    3 +**Empty witnessed set within this preflight's examined scope.** No new semantic or cross-epic observation is being r
+       outed. The FULL semantic audit was not admitted; this is not a claim that the candidate has no other defects.
+    4 +
+    5 +Recipient: e-lean-compliance commissioner `%503`, through the local commissioning chain only. No direct author, desk
+       , sibling, issue, PR or comment contact occurred.
+    6 +
+    7 +The three mandatory historical limitations remain visible in `AUDIT-REPORT.md`; they are not new onward discoveries
+       and have not been closed or reconstructed.
+
+  └ questions/Q-001-command-fit-blocker.md (+7 -0)
+    1 +# B01 — terminal command-fit return to commissioner %503
+    2 +
+    3 +The final FULL submission-2 audit cannot be admitted under the retained concrete command plan. `handoffs/COMMANDS.js
+       on` binds 44 separate targeted current-source controls against an allowance of10; even its diagnostic one-per-theore
+       m subset needs17. Additional required P01/P07, census, witness and final-proof operations are not waived or inherite
+       d.
+    4 +
+    5 +Exact inputs, argv, prerequisites, scope and arithmetic limits: `handoffs/COMMAND-FIT.md`. Actual new spend: **0 sub
+       stantive / 0 targeted**. No START, gate, build or Lean probe ran.
+    6 +
+    7 +Disposition belongs to the commissioner under the user's final-submission/no-reopening rule. This is **not** a reque
+       st for an automatic budget raise, another audit, another repair, or continuation in this terminal seat. Full local r
+       eturn: `handoffs/AUDIT-REPORT.md`; all three mandatory historical limitations remain OPEN.
+
+• Ran { sha256sum /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/S2-SH-P07neg.log /tmp/
+  │ reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/S2-SH-P07neg-retry.log /tmp/reactivegas/
+  │ ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/S2-O1retry2-ba623667-RED.log /tmp/reactivegas/ms2/
+  │ … +40 lines
+  └ {"kind":"STATIC-ARTIFACT-VERIFICATION","commands":44,"inputsHashMatched":44,"theoremTargets":17,"admittedManifest":"12/
+    12","candidateClean":true,"lakeAbsent":true,"spend":{"substantive":0,"targeted":0}}
+    … +5 lines (ctrl + t to view transcript)
+
+    inbox:
+
+• Ran /code/llm-settings/shared/skills/worker-protocol/scripts/status-event /tmp/reactivegas/ms2/e-lean-compliance/
+  │ candidate-auditor-s4b-sub2-final/STATUS.md AUDIT-CONTRACT-BLOCKED 'submission=2/2
+  │ candidate=94bb7bb64324a48f7361252556b4d15e45b3923f scope=FULL-seven-commit reason=B01-command-fit report=handoffs/
+  │ … +14 lines
+  └ 2026-09-06T03:05:08Z  NOTE  PREFLIGHT live model=gpt-6-astra effort=high verified from host /proc/3047621/cmdline;
+    PID=3047621 PPID=3047465 pane=%570 window=rg-s4b-audit4 pane_pid=3047465; brief and supplement hashes match; admission
+    … +18 lines (ctrl + t to view transcript)
+    onward=handoffs/ONWARD-DISCOVERIES.md empty-with-preflight-limit;
+    evidence_manifest=29e7c003c604b7736f4651fc375203a6bb97d86fce1039390d9751f7727d6c23; no build trees created or retired
+
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• AUDIT-CONTRACT-BLOCKED before START. The bound mutation subplan needs 44 targeted calls against 10 available; even its
+  one-per-theorem subset needs 17.
+
+  Verified live gpt-6-astra/high. New spend: 0 substantive / 0 targeted. Candidate unchanged; all three limitations remain
+  OPEN.
+
+  Report (handoffs/AUDIT-REPORT.md) and command-level blocker retained. STATUS journalled COMPLETE; no further execution.
+
+─ Worked for 31m 18s ──────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+› AMENDED BEFORE YOUR START — the brief has been extended and its hash changed. Re-read /tmp/reactivegas/ms2/e-lean-
+  compliance/candidate-auditor-s4b-sub2-final/brief.md, whose sha256 is now
+  d0f81316bbc896633a9004fe007553397d52d93824be5e2fb34beaf0b3a74653; the earlier 4af855c7 value is superseded. Three
+  additions, all pre-START so nothing you have done is affected. FIRST, an Authority and precedence section now binds the
+  ORIGINAL acceptance contract, which the earlier draft omitted: admitted/ carries S4-CONTRACT-ORIGINAL-REQUIREMENTS.md at
+  f872255f, the operative INSTRUMENT-v2-OPERATIVE.md at 2214ff8a, amendments 001 at 72a47113, 002 at 2cd32f05 and 004 at
+  7b57b4e8, the three submission-2 acceptance amendments, the standing-exceptions ruling and the two-command grant, plus
+  INSTRUMENT-v1-SUPERSEDED at 44c48239 which is HISTORY ONLY. Run cd admitted && sha256sum -c MANIFEST.sha256 yourself — I
+  get 12 of 12 with no self-entry. The submission is a CLAIM UNDER REVIEW and does not define its own acceptance; scope
+  follows this contract, not the owner 26 rows nor the nineteen correspondence rows alone. Any base, budget or spend
+  figure inside those admitted files is HISTORICAL and must never be copied forward. SECOND, the gate mechanism is bound
+  so you do not have to infer it: the authoritative gate is the candidate-bound just lean and just ci recipes, there is NO
+  separate gate.sh, and its absence is expected and is not a finding. THIRD, two standing exceptions are expressly
+  retained for this audit — your dedicated sibling audit window rg-s4b-audit4 bound by name, and S4-B CAMPAIGN-LEVEL
+  ceiling history rather than an aggregate over unrelated #66 slices, with every raise and every failed attempt still
+  counted including O1, O1retry, O1retry2 at ba623667, OT4 and SH-P07neg. Neither exception grants a build, resets a
+  counter or inherits an acceptance. Also note I removed a competing number: the allowance is 9 substantive and 10
+  targeted as two DISTINCT CLASSES, never a single pooled figure, and the old draft sentence about 54 operations is gone.
+  Then post your START.
+
+
+• I incorporated this amendment before the terminal report. I’ll recheck the brief and manifest as requested. The command-
+  fit blocker remains: the amendment changes neither scope nor allowance, so the prerequisite for START is still unmet.
+
+• Ran cat brief.md; sha256sum brief.md
+  └ # BRIEF — fresh independent FULL audit, S4-B submission 2 (final)
+
+    … +157 lines (ctrl + t to view transcript)
+    Neither exception grants a build, resets a counter, or inherits an acceptance.
+    d0f81316bbc896633a9004fe007553397d52d93824be5e2fb34beaf0b3a74653  brief.md
+
+• Ran sha256sum -c MANIFEST.sha256
+  └ AMENDMENT-NOTE-001-reconciliation-v2.md: OK
+    AMENDMENT-NOTE-002.md: OK
+    … +8 lines (ctrl + t to view transcript)
+    S4B-COMMAND-SHEET-AMENDMENT-2-frozen.md: OK
+    S4-CONTRACT-ORIGINAL-REQUIREMENTS.md: OK
+
+• Ran /code/llm-settings/shared/skills/worker-protocol/scripts/status-event /tmp/reactivegas/ms2/e-lean-compliance/
+  │ candidate-auditor-s4b-sub2-final/STATUS.md NOTE 'Post-terminal amendment-delivery ACK: requested brief reread in full
+  │ and hash reverified d0f81316bbc896633a9004fe007553397d52d93824be5e2fb34beaf0b3a74653; admitted manifest
+  │ … +4 lines
+  └ (no output)
+
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• Re-read the amended brief: hash matches; admitted manifest 12/12 OK. Acknowledgement appended to STATUS.
+
+  This amendment was already incorporated before the terminal report. START remains unposted because command fit is blocked
+  under the unchanged 9 substantive / 10 targeted allowance. New spend remains 0/0; the audit has not reopened.
+
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+› [Pasted Content 1020 chars]IT-CONTRACT-BLOCKED, the report hash
+  24676d1f7afe2afd4a3f9d1607e6ba5ab1fa3d061262e29bfda7aa2d718bc98c, and new spend 0/9 substantive and 0/10 targeted. Then
+  STOP — nothing further is asked, this seat is not continued, and nothing else is to be run.
+
+
+  gpt-6-astra high · /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final

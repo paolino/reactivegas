@@ -1,0 +1,21 @@
+{
+  "start": "2026-09-05T22:32:11.773Z",
+  "kind": "substantive",
+  "argv": [
+    "nix",
+    "develop",
+    "--quiet",
+    "-c",
+    "just",
+    "lean"
+  ],
+  "counts": {
+    "substantive": 2,
+    "targeted": 50
+  },
+  "before": {
+    "git": " M lean/Reactivegas/Predicates.lean\n",
+    "head": "189e1ed306f8f8e8bcdd11eeab4fc5657a518fc8",
+    "df": "Filesystem               1B-blocks         Used    Available Use% Mounted on\n/dev/mapper/fast-code 844362571776 584155389952 217240731648  73% /code\n"
+  }
+}

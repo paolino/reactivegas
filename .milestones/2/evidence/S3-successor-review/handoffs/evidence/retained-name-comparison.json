@@ -1,0 +1,615 @@
+{
+  "source": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-final-static/admitted/original-audit/source-compiled-map.json",
+  "sha256": "7f2e40e4d09239d3d0d50b797f80fa6db0df4082738ec856e51e950fac83ebe4",
+  "mismatchCount": 76,
+  "mismatches": [
+    {
+      "name": "KelGroups.assocErase_sublist",
+      "site": "KelGroups/Invariants.lean:34",
+      "claimed": "_private.KelGroups.Invariants.assocErase_sublist",
+      "retained": [
+        "_private.KelGroups.Invariants.0.KelGroups.assocErase_sublist"
+      ]
+    },
+    {
+      "name": "KelGroups.assocErase_keys_nodup",
+      "site": "KelGroups/Invariants.lean:45",
+      "claimed": "_private.KelGroups.Invariants.assocErase_keys_nodup",
+      "retained": [
+        "_private.KelGroups.Invariants.0.KelGroups.assocErase_keys_nodup"
+      ]
+    },
+    {
+      "name": "KelGroups.assocErase_key_absent",
+      "site": "KelGroups/Invariants.lean:50",
+      "claimed": "_private.KelGroups.Invariants.assocErase_key_absent",
+      "retained": [
+        "_private.KelGroups.Invariants.0.KelGroups.assocErase_key_absent"
+      ]
+    },
+    {
+      "name": "KelGroups.assocInsert_keys_nodup",
+      "site": "KelGroups/Invariants.lean:72",
+      "claimed": "_private.KelGroups.Invariants.assocInsert_keys_nodup",
+      "retained": [
+        "_private.KelGroups.Invariants.0.KelGroups.assocInsert_keys_nodup"
+      ]
+    },
+    {
+      "name": "KelGroups.assocErase_property",
+      "site": "KelGroups/Invariants.lean:79",
+      "claimed": "_private.KelGroups.Invariants.assocErase_property",
+      "retained": [
+        "_private.KelGroups.Invariants.0.KelGroups.assocErase_property"
+      ]
+    },
+    {
+      "name": "KelGroups.assocInsert_property",
+      "site": "KelGroups/Invariants.lean:87",
+      "claimed": "_private.KelGroups.Invariants.assocInsert_property",
+      "retained": [
+        "_private.KelGroups.Invariants.0.KelGroups.assocInsert_property"
+      ]
+    },
+    {
+      "name": "KelGroups.assocAdjust_keys",
+      "site": "KelGroups/Invariants.lean:100",
+      "claimed": "_private.KelGroups.Invariants.assocAdjust_keys",
+      "retained": [
+        "_private.KelGroups.Invariants.0.KelGroups.assocAdjust_keys"
+      ]
+    },
+    {
+      "name": "KelGroups.assocAdjust_property",
+      "site": "KelGroups/Invariants.lean:109",
+      "claimed": "_private.KelGroups.Invariants.assocAdjust_property",
+      "retained": [
+        "_private.KelGroups.Invariants.0.KelGroups.assocAdjust_property"
+      ]
+    },
+    {
+      "name": "KelGroups.setInsert_nodup",
+      "site": "KelGroups/Invariants.lean:141",
+      "claimed": "_private.KelGroups.Invariants.setInsert_nodup",
+      "retained": [
+        "_private.KelGroups.Invariants.0.KelGroups.setInsert_nodup"
+      ]
+    },
+    {
+      "name": "KelGroups.setInsert_mem",
+      "site": "KelGroups/Invariants.lean:149",
+      "claimed": "_private.KelGroups.Invariants.setInsert_mem",
+      "retained": [
+        "_private.KelGroups.Invariants.0.KelGroups.setInsert_mem"
+      ]
+    },
+    {
+      "name": "KelGroups.approvePending_wellFormed",
+      "site": "KelGroups/Invariants.lean:156",
+      "claimed": "_private.KelGroups.Invariants.approvePending_wellFormed",
+      "retained": [
+        "_private.KelGroups.Invariants.0.KelGroups.approvePending_wellFormed"
+      ]
+    },
+    {
+      "name": "KelGroups.assocLookup_some_mem",
+      "site": "KelGroups/Invariants.lean:166",
+      "claimed": "_private.KelGroups.Invariants.assocLookup_some_mem",
+      "retained": [
+        "_private.KelGroups.Invariants.0.KelGroups.assocLookup_some_mem"
+      ]
+    },
+    {
+      "name": "KelGroups.foldEvents_preserves_wellFormed",
+      "site": "KelGroups/Invariants.lean:295",
+      "claimed": "_private.KelGroups.Invariants.foldEvents_preserves_wellFormed",
+      "retained": [
+        "_private.KelGroups.Invariants.0.KelGroups.foldEvents_preserves_wellFormed"
+      ]
+    },
+    {
+      "name": "KelGroups.tryEnactDetailed_enactment_threshold_met",
+      "site": "KelGroups/Invariants.lean:327",
+      "claimed": "_private.KelGroups.Invariants.tryEnactDetailed_enactment_threshold_met",
+      "retained": [
+        "_private.KelGroups.Invariants.0.KelGroups.tryEnactDetailed_enactment_threshold_met"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.assocErase_sublist'",
+      "site": "KelGroups/Vote/Invariants.lean:77",
+      "claimed": "_private.KelGroups.Vote.Invariants.assocErase_sublist'",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_sublist'"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.assocErase_keys_nodup'",
+      "site": "KelGroups/Vote/Invariants.lean:88",
+      "claimed": "_private.KelGroups.Vote.Invariants.assocErase_keys_nodup'",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_keys_nodup'"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.assocErase_key_absent'",
+      "site": "KelGroups/Vote/Invariants.lean:93",
+      "claimed": "_private.KelGroups.Vote.Invariants.assocErase_key_absent'",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_key_absent'"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.assocInsert_keys_nodup'",
+      "site": "KelGroups/Vote/Invariants.lean:114",
+      "claimed": "_private.KelGroups.Vote.Invariants.assocInsert_keys_nodup'",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_keys_nodup'"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.assocAdjust_keys'",
+      "site": "KelGroups/Vote/Invariants.lean:120",
+      "claimed": "_private.KelGroups.Vote.Invariants.assocAdjust_keys'",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocAdjust_keys'"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.assocAdjust_keys_nodup'",
+      "site": "KelGroups/Vote/Invariants.lean:129",
+      "claimed": "_private.KelGroups.Vote.Invariants.assocAdjust_keys_nodup'",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocAdjust_keys_nodup'"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.assocLookup_some_mem'",
+      "site": "KelGroups/Vote/Invariants.lean:135",
+      "claimed": "_private.KelGroups.Vote.Invariants.assocLookup_some_mem'",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocLookup_some_mem'"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.mem_assocLookup_some'",
+      "site": "KelGroups/Vote/Invariants.lean:151",
+      "claimed": "_private.KelGroups.Vote.Invariants.mem_assocLookup_some'",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_assocLookup_some'"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.assocErase_other_lookup",
+      "site": "KelGroups/Vote/Invariants.lean:175",
+      "claimed": "_private.KelGroups.Vote.Invariants.assocErase_other_lookup",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_other_lookup"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.assocInsert_other_lookup",
+      "site": "KelGroups/Vote/Invariants.lean:192",
+      "claimed": "_private.KelGroups.Vote.Invariants.assocInsert_other_lookup",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_other_lookup"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.assocInsert_mem_cases",
+      "site": "KelGroups/Vote/Invariants.lean:203",
+      "claimed": "_private.KelGroups.Vote.Invariants.assocInsert_mem_cases",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_mem_cases"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.mem_map_fst_erase_of_ne",
+      "site": "KelGroups/Vote/Invariants.lean:213",
+      "claimed": "_private.KelGroups.Vote.Invariants.mem_map_fst_erase_of_ne",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_map_fst_erase_of_ne"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.mem_map_fst_insert",
+      "site": "KelGroups/Vote/Invariants.lean:235",
+      "claimed": "_private.KelGroups.Vote.Invariants.mem_map_fst_insert",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_map_fst_insert"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.setInsert_mem_cases",
+      "site": "KelGroups/Vote/Invariants.lean:246",
+      "claimed": "_private.KelGroups.Vote.Invariants.setInsert_mem_cases",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.setInsert_mem_cases"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.nodup_append_mem",
+      "site": "KelGroups/Vote/Invariants.lean:255",
+      "claimed": "_private.KelGroups.Vote.Invariants.nodup_append_mem",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.nodup_append_mem"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.setInsert_nodup'",
+      "site": "KelGroups/Vote/Invariants.lean:268",
+      "claimed": "_private.KelGroups.Vote.Invariants.setInsert_nodup'",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.setInsert_nodup'"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.mem_erase_inv",
+      "site": "KelGroups/Vote/Invariants.lean:276",
+      "claimed": "_private.KelGroups.Vote.Invariants.mem_erase_inv",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_erase_inv"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.nodup_erase",
+      "site": "KelGroups/Vote/Invariants.lean:303",
+      "claimed": "_private.KelGroups.Vote.Invariants.nodup_erase",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.nodup_erase"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.closed_guard_absent",
+      "site": "KelGroups/Vote/Invariants.lean:317",
+      "claimed": "_private.KelGroups.Vote.Invariants.closed_guard_absent",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.closed_guard_absent"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.assoc_entries_key_unique",
+      "site": "KelGroups/Vote/Invariants.lean:326",
+      "claimed": "_private.KelGroups.Vote.Invariants.assoc_entries_key_unique",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assoc_entries_key_unique"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.filterMap_keys_nodup",
+      "site": "KelGroups/Vote/Invariants.lean:346",
+      "claimed": "_private.KelGroups.Vote.Invariants.filterMap_keys_nodup",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.filterMap_keys_nodup"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.sweepStep_key",
+      "site": "KelGroups/Vote/Invariants.lean:401",
+      "claimed": "_private.KelGroups.Vote.Invariants.sweepStep_key",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepStep_key"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.sweepClosures_open_mem",
+      "site": "KelGroups/Vote/Invariants.lean:418",
+      "claimed": "_private.KelGroups.Vote.Invariants.sweepClosures_open_mem",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_open_mem"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.sweepClosures_closed_mem",
+      "site": "KelGroups/Vote/Invariants.lean:424",
+      "claimed": "_private.KelGroups.Vote.Invariants.sweepClosures_closed_mem",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_closed_mem"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.sweepClosures_sweepReady",
+      "site": "KelGroups/Vote/Invariants.lean:440",
+      "claimed": "_private.KelGroups.Vote.Invariants.sweepClosures_sweepReady",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_sweepReady"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.sweepClosures_wellFormed",
+      "site": "KelGroups/Vote/Invariants.lean:517",
+      "claimed": "_private.KelGroups.Vote.Invariants.sweepClosures_wellFormed",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_wellFormed"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.placeBallot_clean",
+      "site": "KelGroups/Vote/Invariants.lean:527",
+      "claimed": "_private.KelGroups.Vote.Invariants.placeBallot_clean",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot_clean"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.placeBallot_tally",
+      "site": "KelGroups/Vote/Invariants.lean:550",
+      "claimed": "_private.KelGroups.Vote.Invariants.placeBallot_tally",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot_tally"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.effectedState_sweepReady",
+      "site": "KelGroups/Vote/Invariants.lean:571",
+      "claimed": "_private.KelGroups.Vote.Invariants.effectedState_sweepReady",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState_sweepReady"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.foldFrom_preserves_wellFormed",
+      "site": "KelGroups/Vote/Invariants.lean:676",
+      "claimed": "_private.KelGroups.Vote.Invariants.foldFrom_preserves_wellFormed",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.foldFrom_preserves_wellFormed"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.foldVote_append",
+      "site": "KelGroups/Vote/Invariants.lean:692",
+      "claimed": "_private.KelGroups.Vote.Invariants.foldVote_append",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.foldVote_append"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.sweepClosures_preserves_qid",
+      "site": "KelGroups/Vote/Invariants.lean:696",
+      "claimed": "_private.KelGroups.Vote.Invariants.sweepClosures_preserves_qid",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_preserves_qid"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.effectedState_preserves_qid",
+      "site": "KelGroups/Vote/Invariants.lean:722",
+      "claimed": "_private.KelGroups.Vote.Invariants.effectedState_preserves_qid",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState_preserves_qid"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.applyVoteEvent_preserves_qid",
+      "site": "KelGroups/Vote/Invariants.lean:772",
+      "claimed": "_private.KelGroups.Vote.Invariants.applyVoteEvent_preserves_qid",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.applyVoteEvent_preserves_qid"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.foldFrom_preserves_qid",
+      "site": "KelGroups/Vote/Invariants.lean:786",
+      "claimed": "_private.KelGroups.Vote.Invariants.foldFrom_preserves_qid",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.foldFrom_preserves_qid"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.sweepClosures_tallyKeys",
+      "site": "KelGroups/Vote/Invariants.lean:900",
+      "claimed": "_private.KelGroups.Vote.Invariants.sweepClosures_tallyKeys",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_tallyKeys"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.tallyKeysOfState_erased_le",
+      "site": "KelGroups/Vote/Invariants.lean:989",
+      "claimed": "_private.KelGroups.Vote.Invariants.tallyKeysOfState_erased_le",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.tallyKeysOfState_erased_le"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.tallyKeysOfState_insert_cases",
+      "site": "KelGroups/Vote/Invariants.lean:1004",
+      "claimed": "_private.KelGroups.Vote.Invariants.tallyKeysOfState_insert_cases",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.tallyKeysOfState_insert_cases"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.effectedState_tally_growth",
+      "site": "KelGroups/Vote/Invariants.lean:1017",
+      "claimed": "_private.KelGroups.Vote.Invariants.effectedState_tally_growth",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState_tally_growth"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.tally_keys_franchised_from",
+      "site": "KelGroups/Vote/Invariants.lean:1071",
+      "claimed": "_private.KelGroups.Vote.Invariants.tally_keys_franchised_from",
+      "retained": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.tally_keys_franchised_from"
+      ]
+    },
+    {
+      "name": "bool_not_true",
+      "site": "Reactivegas/Invariants.lean:43",
+      "claimed": "_private.Reactivegas.Invariants.bool_not_true",
+      "retained": [
+        "_private.Reactivegas.Invariants.0.bool_not_true"
+      ]
+    },
+    {
+      "name": "bool_and_left",
+      "site": "Reactivegas/Invariants.lean:49",
+      "claimed": "_private.Reactivegas.Invariants.bool_and_left",
+      "retained": [
+        "_private.Reactivegas.Invariants.0.bool_and_left"
+      ]
+    },
+    {
+      "name": "bool_and_right",
+      "site": "Reactivegas/Invariants.lean:55",
+      "claimed": "_private.Reactivegas.Invariants.bool_and_right",
+      "retained": [
+        "_private.Reactivegas.Invariants.0.bool_and_right"
+      ]
+    },
+    {
+      "name": "eq_nil_of_isEmpty",
+      "site": "Reactivegas/Invariants.lean:61",
+      "claimed": "_private.Reactivegas.Invariants.eq_nil_of_isEmpty",
+      "retained": [
+        "_private.Reactivegas.Invariants.0.eq_nil_of_isEmpty"
+      ]
+    },
+    {
+      "name": "pullCollection_mem_lemma",
+      "site": "Reactivegas/Invariants.lean:83",
+      "claimed": "_private.Reactivegas.Invariants.pullCollection_mem_lemma",
+      "retained": [
+        "_private.Reactivegas.Invariants.0.pullCollection_mem_lemma"
+      ]
+    },
+    {
+      "name": "pullCollection_det",
+      "site": "Reactivegas/Invariants.lean:116",
+      "claimed": "_private.Reactivegas.Invariants.pullCollection_det",
+      "retained": [
+        "_private.Reactivegas.Invariants.0.pullCollection_det"
+      ]
+    },
+    {
+      "name": "sumBal_foldl_bump",
+      "site": "Reactivegas/Invariants.lean:135",
+      "claimed": "_private.Reactivegas.Invariants.sumBal_foldl_bump",
+      "retained": [
+        "_private.Reactivegas.Invariants.0.sumBal_foldl_bump"
+      ]
+    },
+    {
+      "name": "bal_bump_ne_lemma",
+      "site": "Reactivegas/Invariants.lean:719",
+      "claimed": "_private.Reactivegas.Invariants.bal_bump_ne_lemma",
+      "retained": [
+        "_private.Reactivegas.Invariants.0.bal_bump_ne_lemma"
+      ]
+    },
+    {
+      "name": "bal_foldl_bump_ge",
+      "site": "Reactivegas/Invariants.lean:750",
+      "claimed": "_private.Reactivegas.Invariants.bal_foldl_bump_ge",
+      "retained": [
+        "_private.Reactivegas.Invariants.0.bal_foldl_bump_ge"
+      ]
+    },
+    {
+      "name": "splitUser_amount_lemma",
+      "site": "Reactivegas/Invariants.lean:771",
+      "claimed": "_private.Reactivegas.Invariants.splitUser_amount_lemma",
+      "retained": [
+        "_private.Reactivegas.Invariants.0.splitUser_amount_lemma"
+      ]
+    },
+    {
+      "name": "refundAll_bal_ge_lemma",
+      "site": "Reactivegas/Invariants.lean:801",
+      "claimed": "_private.Reactivegas.Invariants.refundAll_bal_ge_lemma",
+      "retained": [
+        "_private.Reactivegas.Invariants.0.refundAll_bal_ge_lemma"
+      ]
+    },
+    {
+      "name": "stripCollections_sublist_lemma",
+      "site": "Reactivegas/Invariants.lean:828",
+      "claimed": "_private.Reactivegas.Invariants.stripCollections_sublist_lemma",
+      "retained": [
+        "_private.Reactivegas.Invariants.0.stripCollections_sublist_lemma"
+      ]
+    },
+    {
+      "name": "stripCollections_amount_lemma",
+      "site": "Reactivegas/Invariants.lean:852",
+      "claimed": "_private.Reactivegas.Invariants.stripCollections_amount_lemma",
+      "retained": [
+        "_private.Reactivegas.Invariants.0.stripCollections_amount_lemma"
+      ]
+    },
+    {
+      "name": "comune_not_a_member_step",
+      "site": "Reactivegas/Invariants.lean:883",
+      "claimed": "_private.Reactivegas.Invariants.comune_not_a_member_step",
+      "retained": [
+        "_private.Reactivegas.Invariants.0.comune_not_a_member_step"
+      ]
+    },
+    {
+      "name": "credit_pledges_step",
+      "site": "Reactivegas/Invariants.lean:890",
+      "claimed": "_private.Reactivegas.Invariants.credit_pledges_step",
+      "retained": [
+        "_private.Reactivegas.Invariants.0.credit_pledges_step"
+      ]
+    },
+    {
+      "name": "credit_pledges_of_reach",
+      "site": "Reactivegas/Invariants.lean:1148",
+      "claimed": "_private.Reactivegas.Invariants.credit_pledges_of_reach",
+      "retained": [
+        "_private.Reactivegas.Invariants.0.credit_pledges_of_reach"
+      ]
+    },
+    {
+      "name": "unique_mem_cons_inv",
+      "site": "Reactivegas/Invariants.lean:1194",
+      "claimed": "_private.Reactivegas.Invariants.unique_mem_cons_inv",
+      "retained": [
+        "_private.Reactivegas.Invariants.0.unique_mem_cons_inv"
+      ]
+    },
+    {
+      "name": "splitUser_sum_lemma",
+      "site": "Reactivegas/State.lean:194",
+      "claimed": "_private.Reactivegas.State.splitUser_sum_lemma",
+      "retained": [
+        "_private.Reactivegas.State.0.splitUser_sum_lemma"
+      ]
+    },
+    {
+      "name": "splitUser_sublist_lemma",
+      "site": "Reactivegas/State.lean:225",
+      "claimed": "_private.Reactivegas.State.splitUser_sublist_lemma",
+      "retained": [
+        "_private.Reactivegas.State.0.splitUser_sublist_lemma"
+      ]
+    },
+    {
+      "name": "pullCollection_id_lemma",
+      "site": "Reactivegas/State.lean:260",
+      "claimed": "_private.Reactivegas.State.pullCollection_id_lemma",
+      "retained": [
+        "_private.Reactivegas.State.0.pullCollection_id_lemma"
+      ]
+    },
+    {
+      "name": "pullCollection_sum_lemma",
+      "site": "Reactivegas/State.lean:287",
+      "claimed": "_private.Reactivegas.State.pullCollection_sum_lemma",
+      "retained": [
+        "_private.Reactivegas.State.0.pullCollection_sum_lemma"
+      ]
+    },
+    {
+      "name": "pullCollection_sublist_lemma",
+      "site": "Reactivegas/State.lean:318",
+      "claimed": "_private.Reactivegas.State.pullCollection_sublist_lemma",
+      "retained": [
+        "_private.Reactivegas.State.0.pullCollection_sublist_lemma"
+      ]
+    }
+  ]
+}

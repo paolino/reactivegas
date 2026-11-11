@@ -1,0 +1,242 @@
+[
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/supplement-auditor-s4b/inputs/CLOSURE-MAP.after-fs02.md",
+    "snapshot": "inputs/CLOSURE-MAP.after-fs02.md",
+    "sha256": "3faf09c287ed848590245b466ffa7b0fe3b0fade098c0e038a39084b60ab0afe"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/supplement-auditor-s4b/inputs/CLOSURE-MAP.pre-fs02-preserved.md",
+    "snapshot": "inputs/CLOSURE-MAP.pre-fs02-preserved.md",
+    "sha256": "b5f304bca000d24354d8ebd642f14a078b31c17a25c9a0207b478f762c8e0427"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/supplement-auditor-s4b/inputs/NOTE-072-S4-TERMINAL-DISPOSITION-AND-FINAL-SUPPLEMENT.md",
+    "snapshot": "inputs/NOTE-072-S4-TERMINAL-DISPOSITION-AND-FINAL-SUPPLEMENT.md",
+    "sha256": "f6ad9945b382ee4b317638a7f85bb0a4acad791eb76cc0f13d44a0456a840630"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/supplement-auditor-s4b/inputs/PRIOR-FULL-AUDIT-MANIFEST-CHECK.txt",
+    "snapshot": "inputs/PRIOR-FULL-AUDIT-MANIFEST-CHECK.txt",
+    "sha256": "95ddf97ed2b64e7d4b58b135d423d686ed4cea3693423a8db308bbe29c54b953"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/supplement-auditor-s4b/inputs/PRIOR-FULL-AUDIT-MANIFEST.sha256",
+    "snapshot": "inputs/PRIOR-FULL-AUDIT-MANIFEST.sha256",
+    "sha256": "93fa7d84095ab0a0086d92650f45d4e1ea0ecd66aeb2fe7dd21f53d4ac0e65bc"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/supplement-auditor-s4b/inputs/PRIOR-FULL-AUDIT-ONWARD.md",
+    "snapshot": "inputs/PRIOR-FULL-AUDIT-ONWARD.md",
+    "sha256": "38ad66fc71458f2caa23ce602fb78c201281e128f5244b9a243724b5ff6460c2"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/supplement-auditor-s4b/inputs/PRIOR-FULL-AUDIT-REPORT.md",
+    "snapshot": "inputs/PRIOR-FULL-AUDIT-REPORT.md",
+    "sha256": "43db90494fbad83282092d388382651d9f2d56e7aefe30da7b2c66e08443fe9c"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/supplement-auditor-s4b/inputs/S2-CI-final-clean.log",
+    "snapshot": "inputs/S2-CI-final-clean.log",
+    "sha256": "fbc50e0d75d365f3d0a60d5641d24c58d65f3270dd70f81b7051072164818564"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/supplement-auditor-s4b/inputs/S2-CI-final-clean.receipt.txt",
+    "snapshot": "inputs/S2-CI-final-clean.receipt.txt",
+    "sha256": "4ae61290e9c7b1038127546b3652f3a23adbe09a3e05d7aba82a2f23fb451a48"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/supplement-auditor-s4b/inputs/S4-FS01-FS02-CONSOLIDATED-DISPOSITION.md",
+    "snapshot": "inputs/S4-FS01-FS02-CONSOLIDATED-DISPOSITION.md",
+    "sha256": "8c5809c40bc9e124dc9e348702a3d97e60fd5da8415a07d8a028fcb81ae2da6e"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/supplement-auditor-s4b/inputs/SUPERSEDED-S2-CI-comment-only.log",
+    "snapshot": "inputs/SUPERSEDED-S2-CI-comment-only.log",
+    "sha256": "b6a16cfe60e6e07204b4191fd0c93dbdb2c8def107715144cc16ebfef946e34d"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/supplement-auditor-s4b/INPUTS-MANIFEST.sha256",
+    "snapshot": "INPUTS-MANIFEST.sha256",
+    "sha256": "7600348a0756fdcf054813a186719275c6e7a46c7fbb3740f79fc838322c3833"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/supplement-auditor-s4b/inputs-amendment-1/CLOSURE-MAP.v1-fs02-only-preserved.md",
+    "snapshot": "inputs-amendment-1/CLOSURE-MAP.v1-fs02-only-preserved.md",
+    "sha256": "3faf09c287ed848590245b466ffa7b0fe3b0fade098c0e038a39084b60ab0afe"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/supplement-auditor-s4b/inputs-amendment-1/CLOSURE-MAP.v2-CURRENT.md",
+    "snapshot": "inputs-amendment-1/CLOSURE-MAP.v2-CURRENT.md",
+    "sha256": "e5216dd5c6aa4ae3b8936aadd578d199ef5365815afd8432260bf64b9c8023a9"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/supplement-auditor-s4b/inputs-amendment-1/NOTE-073-CLOSURE-MAP-CURRENT-STATE-CONSISTENCY.md",
+    "snapshot": "inputs-amendment-1/NOTE-073-CLOSURE-MAP-CURRENT-STATE-CONSISTENCY.md",
+    "sha256": "a8cd77e3acc7da6a0075dbfcbe649be852b0656530db55f2391fa62a2e87e13e"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/supplement-auditor-s4b/INPUTS-AMENDMENT-1-MANIFEST.sha256",
+    "snapshot": "INPUTS-AMENDMENT-1-MANIFEST.sha256",
+    "sha256": "3f0122bc15a010b4db82dc39c760f8d4acefb9dd3ae58a173866e467e2a541e6"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/supplement-auditor-s4b/brief.md",
+    "snapshot": "brief.md",
+    "sha256": "effaec1539991073777101b0488f4acd1e4a79362d94a0e69213a78a50c97dc5"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/supplement-auditor-s4b/inbox/AMENDMENT-1-CURRENT-STATE-AND-ADDITIVITY.md",
+    "snapshot": "AMENDMENT-1-CURRENT-STATE-AND-ADDITIVITY.md",
+    "sha256": "8da0a4b6dfc9a7502b0d18731a203e8e8e9f8e08ef6da83e7361b1e4f0f12089"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/supplement-auditor-s4b/inbox/NOTE-USAGE-LIMIT-NUDGE-20260906.md",
+    "snapshot": "NOTE-USAGE-LIMIT-NUDGE-20260906.md",
+    "sha256": "33ec7c8382769b4654cf999cf29fd2bcf5e21cbb617c576a63cf1b80a6012dd4"
+  },
+  {
+    "source": "/code/reactivegas-66-s4b-final-audit/justfile",
+    "snapshot": "source-justfile.txt",
+    "sha256": "340b35fecc91783cb71ef2026970117c7de3993f7ad58906c0e5e7e8f89b0585"
+  },
+  {
+    "source": "/code/reactivegas-66-s4b-final-audit/lean/lakefile.lean",
+    "snapshot": "source-lean_lakefile.lean.txt",
+    "sha256": "4373a87fde74c6ba406b7f363abab5c1630b515179574019289f9a67d59cd19f"
+  },
+  {
+    "source": "/code/reactivegas-66-s4b-final-audit/lean/lean-toolchain",
+    "snapshot": "source-lean_lean-toolchain.txt",
+    "sha256": "dbbf063fc415c8e718172605f23a8f86679a3c320eff6d3890cc009534452925"
+  },
+  {
+    "source": "/code/reactivegas-66-s4b-final-audit/scripts/check-lean-mirrors",
+    "snapshot": "source-scripts_check-lean-mirrors.txt",
+    "sha256": "f17ecfb0c4d89436261ad202a3b83956fa89392e92d085d309880ae2d31745e6"
+  },
+  {
+    "source": "/code/reactivegas-66-s4b-final-audit/scripts/check-lean-axioms",
+    "snapshot": "source-scripts_check-lean-axioms.txt",
+    "sha256": "4fb40d5089e908d16f91ae35cfb479d9d454b2a6fd6f337627789a40851bc01b"
+  },
+  {
+    "source": "/code/reactivegas-66-s4b-final-audit/scripts/check-reactivegas-inversion-coverage",
+    "snapshot": "source-scripts_check-reactivegas-inversion-coverage.txt",
+    "sha256": "57e5745602b75a003f31854f672cbb216d25c84b0619a822b30c6cf349107de0"
+  },
+  {
+    "source": "/code/reactivegas-66-s4b-final-audit/scripts/check-lean-toolchain",
+    "snapshot": "source-scripts_check-lean-toolchain.txt",
+    "sha256": "fcfa3f08ee9dc8e85b2b6d68121fa3475e48381e4636918ff4302beff6c445ac"
+  },
+  {
+    "source": "/code/reactivegas-66-s4b-final-audit/scripts/check-trace-coverage-agreement",
+    "snapshot": "source-scripts_check-trace-coverage-agreement.txt",
+    "sha256": "115381833e50096fff7211ee57258936955671dd3ce99fdb27dcc9d75eb3f39c"
+  },
+  {
+    "source": "/code/reactivegas-66-s4b-final-audit/nix/lean-dependency-direction.sh",
+    "snapshot": "source-nix_lean-dependency-direction.sh.txt",
+    "sha256": "773678aacad0a3e009b6d8a22436896d9a0b7fcda979b4a98e2a33d34b0a471c"
+  },
+  {
+    "source": "/code/reactivegas-66-s4b-final-audit/lean/Reactivegas/Mirrors.lean",
+    "snapshot": "source-lean_Reactivegas_Mirrors.lean.txt",
+    "sha256": "7fefa8cd8e034c1e2f5a353d28270d7a68e940c7be5d0f52eabaca0d6193e1fb"
+  },
+  {
+    "source": "/code/reactivegas-66-s4b-final-audit/lean/Reactivegas/Predicates.lean",
+    "snapshot": "source-lean_Reactivegas_Predicates.lean.txt",
+    "sha256": "6ae3a61dea55f9c81b45de2e2898d416b17f441605561a4b96e93ed5324e9729"
+  },
+  {
+    "source": "/code/reactivegas-66-s4b-final-audit/lean/Reactivegas/Trace.lean",
+    "snapshot": "source-lean_Reactivegas_Trace.lean.txt",
+    "sha256": "254b126ee7a9e072d5f397c4f982841b7f1f87e43992d501c6a23443e49c0979"
+  },
+  {
+    "source": "/code/reactivegas-66-s4b-final-audit/lean/Reactivegas/Step.lean",
+    "snapshot": "source-lean_Reactivegas_Step.lean.txt",
+    "sha256": "f498490c0a3eca78692d51119d6298115c456f79ce3526bf9210892a658f46fb"
+  },
+  {
+    "source": "/code/reactivegas-66-s4b-final-audit/.github/workflows/ci.yaml",
+    "snapshot": "source-.github_workflows_ci.yaml.txt",
+    "sha256": "e5e156622f63be1e95306cf72e15aba0eabdba98e849b6c7cbe1e87ad0572247"
+  },
+  {
+    "source": "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/src/lean/lake/Lake/Build/Module.lean",
+    "snapshot": "toolchain-lake_Lake_Build_Module.lean.txt",
+    "sha256": "2120401516134ac0cc26a42d4e33f1f961b46f46dcda18ef9447072516045f33"
+  },
+  {
+    "source": "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/src/lean/lake/Lake/Build/Common.lean",
+    "snapshot": "toolchain-lake_Lake_Build_Common.lean.txt",
+    "sha256": "8fd0e86ada058a9413b079aab8e69828891378d5133f5508b0e7b3b15dd8176e"
+  },
+  {
+    "source": "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/src/lean/lake/Lake/Build/Run.lean",
+    "snapshot": "toolchain-lake_Lake_Build_Run.lean.txt",
+    "sha256": "ef2dabf18141c63c94e8ffc6c4f53d62a799bfb0261a15ef56c833b8a2f6cf5b"
+  },
+  {
+    "source": "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/src/lean/lake/Lake/Build/Context.lean",
+    "snapshot": "toolchain-lake_Lake_Build_Context.lean.txt",
+    "sha256": "418382fe4c2c83a692505a3c34369455164cb5a22202ba213424ff35e4e0bb80"
+  },
+  {
+    "source": "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/src/lean/lake/Lake/CLI/Main.lean",
+    "snapshot": "toolchain-lake_Lake_CLI_Main.lean.txt",
+    "sha256": "e80dced7eee67b14141e2f486cbf34ae313a34055d7838a84a31a7d5740db13f"
+  },
+  {
+    "source": "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/src/lean/Lean/Elab/BuiltinCommand.lean",
+    "snapshot": "toolchain-Lean_Elab_BuiltinCommand.lean.txt",
+    "sha256": "bb1bf0a2b5baa897ac08552048490391a66a6ba077739c52587e6b302e033331"
+  },
+  {
+    "source": "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/src/lean/Lean/DocString/Add.lean",
+    "snapshot": "toolchain-Lean_DocString_Add.lean.txt",
+    "sha256": "f8c65aeac394dae6c7ad2e48cfc86e7cb7ba6268416bbbe7a1d9fa8013a8642b"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-final/admitted/RULING-RG-S4-REACH-20260906.md",
+    "snapshot": "prior-RULING-RG-S4-REACH-20260906.md",
+    "sha256": "a2e5d8a361816b6b3764804f54068634f46981082889c61502f203835bed3c1f"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-final/admitted/ISSUE-66-BODY-READBACK.md",
+    "snapshot": "prior-ISSUE-66-BODY-READBACK.md",
+    "sha256": "ccefcd92395e087ae342a44d2774e3f7a42e6039b0bcabf04059d2bdf9bb2c8d"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-final/evidence/owner-d1-fit.md",
+    "snapshot": "prior-owner-d1-fit.md",
+    "sha256": "6824f937075395948a4ba801573d3498d4999ff4f4617d872c55f512c4507086"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-final/evidence/comment-boundary.json",
+    "snapshot": "prior-comment-boundary.json",
+    "sha256": "6a955d2f8a573ec006a612c127e7b86d9582eb3907f44de43ce9df02ae11bf8a"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-final/evidence/driver.after.txt",
+    "snapshot": "prior-driver.after.txt",
+    "sha256": "083485a67ca7f71cbd69180638ad4c3e7033e50674f6f003a6839ae2b77dd16b"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-final/evidence/driver.before.txt",
+    "snapshot": "prior-driver.before.txt",
+    "sha256": "2c9e36260e56d959de7d7acaec0dae5d23e4cf711a2ba81f4dda20192defbd8d"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-final/evidence/lean_Reactivegas_Mirrors.lean.before.txt",
+    "snapshot": "prior-lean_Reactivegas_Mirrors.lean.before.txt",
+    "sha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-final/evidence/scripts_check-lean-mirrors.before.txt",
+    "snapshot": "prior-scripts_check-lean-mirrors.before.txt",
+    "sha256": "6b45bcd4a6593282298f59595ee5e70ac903074508a7412c7367a56d78dee8de"
+  }
+]

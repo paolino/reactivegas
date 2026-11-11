@@ -1,0 +1,15 @@
+2026-09-05T22:25:14+00:00
+    PID    PPID    PGID                  STARTED COMMAND
+2523581 2523444 2523581 Sat Sep  5 23:15:35 2026 /nix/store/nqhk0522q8ncygwwx054iq76ckcjll82-codex-0.153.2/libexec/codex -m gpt-6-astra -c model_reasoning_effort=high --dangerously-bypass-approvals-and-sandbox
+1493708 1493607 1493708 Sat Sep  5 13:40:16 2026 /nix/store/iwgllsbcsalpqms30i4xn56dcpg99zdl-pi-0.84.4/libexec/pi/pi --provider opencode-go --model muse-spark-1.3-contributor --thinking xhigh --approve
+/code/reactivegas-66-s4b-audit3
+/nix/store/nqhk0522q8ncygwwx054iq76ckcjll82-codex-0.153.2/libexec/codex -m gpt-6-astra -c model_reasoning_effort=high --dangerously-bypass-approvals-and-sandbox 
+TMUX_PANE=%564
+reactivegas rg-s4b-audit3 %564 pid=2523444
+reactivegas lean-quality %503 pid=365560
+reactivegas lean-quality %547 pid=1493607
+189e1ed306f8f8e8bcdd11eeab4fc5657a518fc8
+detached
+0
+Filesystem               1B-blocks         Used    Available Use% Mounted on
+/dev/mapper/fast-code 844362571776 584127938560 217268183040  73% /code

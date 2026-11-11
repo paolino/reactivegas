@@ -1,0 +1,30 @@
+{
+  "at": "2026-09-06T12:43:40.392Z",
+  "copied": [
+    "e-lean-compliance/inbox/A-I92-SUCCESSOR-Q002-LOADER-IMPORT-20260906.md",
+    "e-lean-compliance/inbox/A-I92-SUCCESSOR-Q003-LAKE-DYNLIB-20260906.md",
+    "e-lean-compliance/handoffs/AUDIT-DISPATCH-PREFLIGHT-AMENDMENT.md",
+    "e-kelgroups-substrate-opus-20260906/inbox/NOTICE-S30-2-SEMREC3-TERMINAL-20260906.md",
+    "t-simulator-fable/handoffs/C1R-LAUNCH-ATTEMPT-AMENDMENT.md",
+    "e-lean-compliance/auditor-s3-grok/STATUS.md",
+    "e-lean-compliance/auditor-s3-grok/brief.md",
+    "e-lean-compliance/s3-successor-owner/STATUS.md",
+    "e-lean-compliance/s3-successor-owner/brief.md",
+    "e-lean-compliance/i92-successor-owner/STATUS.md",
+    "e-lean-compliance/i92-successor-owner/brief.md",
+    "t76-runtime-composition/owner-sol/STATUS.md",
+    "t76-runtime-composition/owner-sol/brief.md",
+    "e-haskell-impl/t90-money-custody/commit-owner-4/STATUS.md",
+    "e-haskell-impl/t90-money-custody/commit-owner-4/brief.md",
+    "e-haskell-impl/t90-money-custody/inspector-1/STATUS.md",
+    "e-haskell-impl/t90-money-custody/inspector-1/brief.md",
+    "e-haskell-impl/t90-money-custody/inspector-2/STATUS.md",
+    "e-haskell-impl/t90-money-custody/inspector-2/brief.md",
+    "e-kelgroups-substrate-opus-20260906/t30-contract-opus-20260906/STATUS.md",
+    "e-kelgroups-substrate-opus-20260906/t30-contract-opus-20260906/brief.md",
+    "e-kelgroups-substrate-opus-20260906/t30-contract-opus-20260906/s2-insp-semrec3/STATUS.md",
+    "e-kelgroups-substrate-opus-20260906/t30-contract-opus-20260906/s2-insp-semrec3/brief.md",
+    "artifacts/SKILL-RELOAD-AUDIT-PREFLIGHT-4981CD8.md"
+  ],
+  "scope": "Selected control records only; active candidate trees, complete runtime roots and full-host state are not copied."
+}

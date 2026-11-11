@@ -1,0 +1,82 @@
+[
+  {
+    "id": "M1-S",
+    "cwd": "/code/reactivegas-66-s4b-audit5",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=30s",
+      "1800s",
+      "nix",
+      "develop",
+      "--quiet",
+      "--no-write-lock-file",
+      "-c",
+      "bash",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/build-command.sh"
+    ],
+    "innerArgv": [
+      "lake",
+      "build",
+      "KelGroups",
+      "KelGroups.Event",
+      "KelGroups.Fold",
+      "KelGroups.Integration",
+      "KelGroups.Invariants",
+      "KelGroups.Mirrors",
+      "KelGroups.State",
+      "KelGroups.Tests",
+      "KelGroups.Types",
+      "KelGroups.Validate",
+      "KelGroups.Vote.Event",
+      "KelGroups.Vote.Fold",
+      "KelGroups.Vote.Invariants",
+      "KelGroups.Vote.State",
+      "KelGroups.Vote.Tests",
+      "KelGroups.Vote.Types",
+      "KelGroups.Vote.Validate",
+      "Reactivegas",
+      "Reactivegas.Composition",
+      "Reactivegas.CorpusExport",
+      "Reactivegas.CorpusGate",
+      "Reactivegas.Invariants",
+      "Reactivegas.Mirrors",
+      "Reactivegas.Predicates",
+      "Reactivegas.State",
+      "Reactivegas.Step",
+      "Reactivegas.Trace",
+      "Reactivegas.TraceTests",
+      "Reactivegas.Types"
+    ],
+    "layer": "whole tracked Lean module build",
+    "charge": "substantive",
+    "cost": 1
+  },
+  {
+    "id": "M1-T",
+    "cwd": "/code/reactivegas-66-s4b-audit5",
+    "argv": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=30s",
+      "300s",
+      "nix",
+      "develop",
+      "--quiet",
+      "--no-write-lock-file",
+      "-c",
+      "bash",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/census-command.sh"
+    ],
+    "innerArgv": [
+      "lake",
+      "env",
+      "lean",
+      "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/Inventory.lean"
+    ],
+    "layer": "single inventory elaboration, no rebuild",
+    "charge": "targeted",
+    "cost": 1,
+    "prerequisite": "M1-S exit 0"
+  }
+]

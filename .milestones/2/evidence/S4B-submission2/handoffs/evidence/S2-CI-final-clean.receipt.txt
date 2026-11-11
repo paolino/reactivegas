@@ -1,0 +1,23 @@
+=== S2 FINAL-CI RECEIPT (NOTE-036, one artifact) ===
+HEAD: 04eb6c7d9aeb2a3602fca5ece14cbc033221cb43
+HEAD-tree: caaa0488f39a6afb2553680a11fd6bfd86d1c90b
+--- porcelain BEFORE (with --untracked-files=all) ---
+(end-before: empty above = clean)
+command: nix develop --quiet -c just ci
+cwd: /code/reactivegas-66-s4b
+accepted base: 3590c0015b84fd58004bf6fb44dd18b107304c48
+start-utc: 2026-09-06T07:05:25Z
+exit-code: 0
+end-utc: 2026-09-06T07:07:14Z
+--- porcelain AFTER (with --untracked-files=all) ---
+(end-after: empty above = clean)
+--- failure sweep (expect empty) ---
+--- milestones ---
+2806:Build completed successfully (27 jobs).
+2934:Build completed successfully (42 jobs).
+2964:MIRROR-CHECK-OK rows=19 exceptions=4 discovered=24 promoted=2 tracked=29
+3093:Build completed successfully (42 jobs).
+3094:corpus/economic.json: OK
+3095:corpus/integrated.json: OK
+--- digest of complete stdout+stderr ---
+fbc50e0d75d365f3d0a60d5641d24c58d65f3270dd70f81b7051072164818564  /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/S2-CI-final-clean.log

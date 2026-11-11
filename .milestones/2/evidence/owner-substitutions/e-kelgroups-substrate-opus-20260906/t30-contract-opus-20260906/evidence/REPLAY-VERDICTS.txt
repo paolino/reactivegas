@@ -1,0 +1,36 @@
+CASE A1    MISPREDICT  (exit=3)exit(3!=0) missing[FINAL: PASS] missing[traversed=4 frozen=4] missing[3-pinned KelGroups.Vote.Types] missing[4-type Foo exact]
+CASE A1    MISPREDICT  (forbidden present: DRIFT-FAIL)
+CASE A1    MISPREDICT  (forbidden present: DRIFT-REFUSE)
+CASE A2    MISPREDICT  (exit=3)exit(3!=1) missing[4-count] missing[traversed=3 frozen=4]
+CASE A3    AS-PREDICTED (exit=3)
+CASE A4    AS-PREDICTED (exit=3)
+CASE A5    MISPREDICT  (exit=3)exit(3!=1) missing[duplicate mapping rows] missing[traversed=4 frozen=4]
+CASE A6    MISPREDICT  (exit=3)exit(3!=1) missing[traversed=5 frozen=4]
+CASE A7    AS-PREDICTED (exit=1)
+CASE A8    AS-PREDICTED (exit=3)
+CASE A9    AS-PREDICTED (exit=3)
+CASE A10   MISPREDICT  (exit=3)exit(3!=1)
+CASE A11   MISPREDICT  (exit=1)exit(1!=0) missing[FINAL: PASS]
+CASE A11   MISPREDICT  (forbidden present: FINAL: RED)
+CASE A11   MISPREDICT  (forbidden present: DRIFT-FAIL)
+CASE A12   AS-PREDICTED (exit=3)
+CASE A13   AS-PREDICTED (exit=3)
+CASE A14   AS-PREDICTED (exit=3)
+CASE A15   MISPREDICT  (exit=3)exit(3!=1) missing[REQ-B has NO successful] missing[REQ-C has NO successful]
+CASE A16   MISPREDICT  (exit=3)exit(3!=1)
+CASE A17   MISPREDICT  (exit=3)exit(3!=1)
+CASE A18   MISPREDICT  (exit=3)exit(3!=1)
+CASE A19   MISPREDICT  (exit=3)exit(3!=1)
+CASE A20   MISPREDICT  (exit=1) missing[1-hash lean/KelGroups/Vote/Types.lean]
+CASE A21   MISPREDICT  (exit=1)exit(1!=0) missing[FINAL: PASS]
+CASE A21   MISPREDICT  (forbidden present: FINAL: RED)
+CASE A21   MISPREDICT  (forbidden present: DRIFT-FAIL)
+CASE A22   AS-PREDICTED (exit=1)
+CASE A23a  AS-PREDICTED (exit=3)
+CASE A23b  AS-PREDICTED (exit=3)
+CASE A23c  AS-PREDICTED (exit=3)
+CASE A23d  AS-PREDICTED (exit=3)
+CASE A23e  AS-PREDICTED (no setup failure prints PASS)
+CASE A24   MISPREDICT  (exit=3)exit(3!=1) missing[expected exact line [Fo] ABSENT]
+CASE A25   AS-PREDICTED (exit=3)
+===== REPLAY: mispredicts=17 =====

@@ -1,0 +1,7 @@
+cwd=/code/reactivegas-66-s3-ss0-scratch
+3590c0015b84fd58004bf6fb44dd18b107304c48
+0
+LEAN_PATH=<unset>
+/run/current-system/sw/bin/nix
+--- any reference to a candidate/repair worktree in env? ---
+none

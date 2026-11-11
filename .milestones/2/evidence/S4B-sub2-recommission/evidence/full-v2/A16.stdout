@@ -1,0 +1,28 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A16.lean:194:56: warning: unused variable `v`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A16.lean:196:10: warning: unused variable `amt`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+escrowHeldB (col : Collection) (u : KelGroups.Key) (v : Int) : Bool
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A16.lean:213:8: error: Type mismatch
+  heq
+has type
+  v' = v
+but is expected to have type
+  True
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A16.lean:215:18: error: Application type mismatch: The argument
+  heq
+has type
+  True
+but is expected to have type
+  v' = v
+in the application
+  And.intro heq
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A16.lean:210:51: warning: This simp argument is unused:
+  decide_eq_true_eq
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.some.injEq, Prod.mk.injEq,̵ ̵d̵e̵c̵i̵d̵e̵_̵e̵q̵_̵t̵r̵u̵e̵_̵e̵q̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

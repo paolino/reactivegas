@@ -1,0 +1,62 @@
+[
+  {
+    "source": "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/src/lean/Lean/Elab/BuiltinCommand.lean",
+    "snapshot": "evidence/toolchain-BuiltinCommand.lean.txt",
+    "sha256": "bb1bf0a2b5baa897ac08552048490391a66a6ba077739c52587e6b302e033331"
+  },
+  {
+    "source": "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/src/lean/Lean/DocString/Add.lean",
+    "snapshot": "evidence/toolchain-DocString-Add.lean.txt",
+    "sha256": "f8c65aeac394dae6c7ad2e48cfc86e7cb7ba6268416bbbe7a1d9fa8013a8642b"
+  },
+  {
+    "source": "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/src/lean/Lean/DocString/Extension.lean",
+    "snapshot": "evidence/toolchain-DocString-Extension.lean.txt",
+    "sha256": "cf6d034f650fbef77e79271d5d2edb4b62120d8dcbcafc321089ddf4fc67298b"
+  },
+  {
+    "source": "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/src/lean/Lean/Parser/Command.lean",
+    "snapshot": "evidence/toolchain-Parser-Command.lean.txt",
+    "sha256": "f7d07955824c9193c3118e6a9a078504ca747239f6c7ce1a0390e2135d632e51"
+  },
+  {
+    "source": "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/src/lean/lake/Lake/Build/Module.lean",
+    "snapshot": "evidence/toolchain-Lake-Module.lean.txt",
+    "sha256": "2120401516134ac0cc26a42d4e33f1f961b46f46dcda18ef9447072516045f33"
+  },
+  {
+    "source": "/code/reactivegas-66-s4b-final-audit/scripts/check-reactivegas-inversion-coverage",
+    "snapshot": "evidence/context-scripts_check-reactivegas-inversion-coverage.txt",
+    "sha256": "57e5745602b75a003f31854f672cbb216d25c84b0619a822b30c6cf349107de0"
+  },
+  {
+    "source": "/code/reactivegas-66-s4b-final-audit/scripts/check-lean-axioms",
+    "snapshot": "evidence/context-scripts_check-lean-axioms.txt",
+    "sha256": "4fb40d5089e908d16f91ae35cfb479d9d454b2a6fd6f337627789a40851bc01b"
+  },
+  {
+    "source": "/code/reactivegas-66-s4b-final-audit/scripts/check-trace-coverage-agreement",
+    "snapshot": "evidence/context-scripts_check-trace-coverage-agreement.txt",
+    "sha256": "115381833e50096fff7211ee57258936955671dd3ce99fdb27dcc9d75eb3f39c"
+  },
+  {
+    "source": "/code/reactivegas-66-s4b-final-audit/nix/lean-dependency-direction.sh",
+    "snapshot": "evidence/context-nix_lean-dependency-direction.sh.txt",
+    "sha256": "773678aacad0a3e009b6d8a22436896d9a0b7fcda979b4a98e2a33d34b0a471c"
+  },
+  {
+    "source": "/code/reactivegas-66-s4b-final-audit/justfile",
+    "snapshot": "evidence/context-justfile.txt",
+    "sha256": "340b35fecc91783cb71ef2026970117c7de3993f7ad58906c0e5e7e8f89b0585"
+  },
+  {
+    "source": "/code/reactivegas-66-s4b-final-audit/.github/workflows/ci.yaml",
+    "snapshot": "evidence/context-.github_workflows_ci.yaml.txt",
+    "sha256": "e5e156622f63be1e95306cf72e15aba0eabdba98e849b6c7cbe1e87ad0572247"
+  },
+  {
+    "source": "/code/reactivegas-66-s4b-final-audit/lean/lakefile.lean",
+    "snapshot": "evidence/context-lean_lakefile.lean.txt",
+    "sha256": "4373a87fde74c6ba406b7f363abab5c1630b515179574019289f9a67d59cd19f"
+  }
+]

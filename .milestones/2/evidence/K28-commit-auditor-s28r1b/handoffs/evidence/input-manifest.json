@@ -1,0 +1,176 @@
+[
+  {
+    "source": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/brief.md",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-brief.md",
+    "bytes": 5087,
+    "sha256": "5a54750a256649b7855476c430e325444d71fc4739d1512903ab64bc1315fa1c"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/launch.sh",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-launch.sh",
+    "bytes": 530,
+    "sha256": "18cb0d00740c8d14ce0eeec8da1f466b753f963a14d36ca918790c3e3a3fefcb"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/S28-R1-COMMAND-PLAN-v2.md",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-mandate-v2.md",
+    "bytes": 8586,
+    "sha256": "eff38e3bca5022a0bcacdbc37deec44766917c755d2ac68fc96c7fdcfdc3c9e0"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/S28-1-CONTRACT-r5.md",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-founding-contract-r5.md",
+    "bytes": 12166,
+    "sha256": "918181678908d6ad888665d65ce818d4da1019e771f2d41e794231a5b844e8d7"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-owner-s28r1/SUBMISSION.md",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-owner-submission.md",
+    "bytes": 7650,
+    "sha256": "4cafa1be71fd94a20bedf3af113d20164076c0c2b7cae65441cdf8a53e12b8dc"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28b/handoffs/AUDIT-REPORT.md",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-prior-s28-report.md",
+    "bytes": 11639,
+    "sha256": "b7b793a378b9395a598eb9a5c74cca03d9bb3f5ccb5f95a420b032a457075b2a"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28b/handoffs/REQUIREMENT-LEDGER.md",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-prior-s28-ledger.md",
+    "bytes": 7861,
+    "sha256": "b2860a4f0b6869c28b01fff86f2fa9a8c1efc4fb105fb5d6a3ac9c24931fbdd8"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/AUDIT-REPORT.md",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-prior-s28r1-report.md",
+    "bytes": 3421,
+    "sha256": "22c79c048bfc5a63eff7013d80da5a8afd6f18f3a436b9d988a23e1cb9a3656f"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/questions/Q-001-auditor-seat-placement.md",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-prior-s28r1-question.md",
+    "bytes": 700,
+    "sha256": "86c6e044e16c7183d420fcd99e7dbbef6a3c90a6f97225fc21bd5f41ee73c3b7"
+  },
+  {
+    "source": "/code/kelgroups-audit-3af3d06/gate.sh",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-gate.sh",
+    "bytes": 28601,
+    "sha256": "dcbc8c2b8eefa111b5b71873be8d87fa95de2369642e6224417f9544e5a8e815"
+  },
+  {
+    "source": "/code/kelgroups-audit-3af3d06/lib/KelGroups/Fold.hs",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-Fold.hs",
+    "bytes": 15594,
+    "sha256": "35e4bc9d31f561de79157b4de0f04b266a6a3171d991c61d84a9667750c292ad"
+  },
+  {
+    "source": "/code/kelgroups-audit-3af3d06/lib/KelGroups/Validate.hs",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-Validate.hs",
+    "bytes": 9101,
+    "sha256": "9c875307ab709f290fcd07a5c2aa5ffa7f4a66d695a394eb616c36942e69284a"
+  },
+  {
+    "source": "/code/kelgroups-audit-3af3d06/lib/KelGroups/State.hs",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-State.hs",
+    "bytes": 3470,
+    "sha256": "6394a4f01b7ac33e2a05af82f71cdd60d713ceeade310d5653f87a0900c56d4e"
+  },
+  {
+    "source": "/code/kelgroups-audit-3af3d06/lib/KelGroups/Event.hs",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-Event.hs",
+    "bytes": 3526,
+    "sha256": "9ccaa9ecdc8f965d1bac773dae026fbfda85020f933c4cb0cc11e5614b77c305"
+  },
+  {
+    "source": "/code/kelgroups-audit-3af3d06/test/S28DemoApp.hs",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-S28DemoApp.hs",
+    "bytes": 5182,
+    "sha256": "5e07a071e6b1ba472f2423dcc9a20305c6d4da334b706cb69eed0132c52f8677"
+  },
+  {
+    "source": "/code/kelgroups-audit-3af3d06/test/S28AppApiSpec.hs",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-S28AppApiSpec.hs",
+    "bytes": 23757,
+    "sha256": "a5d87ba017d9ca8aa276cd9643c9c580235e782b4c75be917a0a1ae87407d35a"
+  },
+  {
+    "source": "/home/paolino/.codex/skills/auditor/SKILL.md",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-auditor-SKILL.md",
+    "bytes": 7040,
+    "sha256": "3e48ace7b54d3dcb3ba7260f544f9702fc560ff04ca417d0362fa7c9d4385149"
+  },
+  {
+    "source": "/home/paolino/.codex/skills/commit-auditor/SKILL.md",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-commit-auditor-SKILL.md",
+    "bytes": 41562,
+    "sha256": "e34f272f45204d4e5bb2d72653fc4909b4401050f31dca85dbed275cfd309639"
+  },
+  {
+    "source": "/home/paolino/.codex/skills/tmux-orchestrator/SKILL.md",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-tmux-SKILL.md",
+    "bytes": 24187,
+    "sha256": "45b74f1e71d2d4dbc508c1c3f4ec2691eddb6b06674c896e0e518964ed1f3b63"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/inbox/NOTE-024-s28r1-commission.md",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-NOTE-024-s28r1-commission.md",
+    "bytes": 4184,
+    "sha256": "d431cdd3ffe14037dcc2fd981336caf1a3151a73bac19ebacbfb5ea9a3bdc591"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/inbox/NOTE-025-plan-correction.md",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-NOTE-025-plan-correction.md",
+    "bytes": 2576,
+    "sha256": "4f6df4d1dbba4d640a2ba4f7659164a11afa649bfdbf8e2b0574614ef477eec2"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/inbox/NOTE-026-s28r1-validation.md",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-NOTE-026-s28r1-validation.md",
+    "bytes": 2727,
+    "sha256": "4451e0330352ea3a333307c639fa83a26ab9da0d4675708442564ddb1a205cfb"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/inbox/NOTE-028-frozen-handback.md",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-NOTE-028-frozen-handback.md",
+    "bytes": 2340,
+    "sha256": "981c30166afb176d576d65c93049acf36071c3527160bfb684ad51810788e25b"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/inbox/NOTE-029-fit-first-replacement.md",
+    "snapshot": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/evidence/input-NOTE-029-fit-first-replacement.md",
+    "bytes": 2404,
+    "sha256": "6ae55d87986a79096339e0bfe4c3789c5d7f307df98b6abba8d186d28b641408"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/evidence/20260905T231211Z-3af3d06-gate-full.log",
+    "bytes": 143915,
+    "sha256": "1331e4b23baea52d5a94b3aea34e4bbe5b8a711620daa46703481096374a39be",
+    "treatment": "owner evidence identity only; no inherited verdict"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-owner-s28r1/slim-build.log",
+    "bytes": 31,
+    "sha256": "b974db4f018309d85ab4a3a5346777ab7d105bbf86d5de3f658df0c0adc88ab7",
+    "treatment": "owner evidence identity only; no inherited verdict"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-owner-s28r1/slim-test.log",
+    "bytes": 14098,
+    "sha256": "97d7c0d3eb14531289da3cf44a771c230b161a614e73cdfdb159316af8e0799d",
+    "treatment": "owner evidence identity only; no inherited verdict"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-owner-s28r1/slim-ci.log",
+    "bytes": 17554,
+    "sha256": "7fa7e96ec7cf06c3fde22473c1677cbc2c006864e435ceac33dd6ff5b5380e00",
+    "treatment": "owner evidence identity only; no inherited verdict"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/STATUS.md",
+    "bytes": 63057,
+    "sha256": "24a37886d76d6b4996f2f6d1ce737650a4c56981eb617787b163f9c0c807d93f",
+    "treatment": "owner evidence identity only; no inherited verdict"
+  }
+]

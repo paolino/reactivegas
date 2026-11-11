@@ -1,0 +1,28 @@
+{
+  "maps": [
+    {
+      "file": "inputs/CLOSURE-MAP.pre-fs02-preserved.md",
+      "sha256": "b5f304bca000d24354d8ebd642f14a078b31c17a25c9a0207b478f762c8e0427",
+      "lines": 404,
+      "historicalSha256": "d6f343cd47c8a79a5f7816a80372d6e4ea0ffdc0e94664133b60c2dde50fdf77"
+    },
+    {
+      "file": "inputs/CLOSURE-MAP.after-fs02.md",
+      "sha256": "3faf09c287ed848590245b466ffa7b0fe3b0fade098c0e038a39084b60ab0afe",
+      "lines": 454,
+      "historicalSha256": "d6f343cd47c8a79a5f7816a80372d6e4ea0ffdc0e94664133b60c2dde50fdf77"
+    },
+    {
+      "file": "inputs-amendment-1/CLOSURE-MAP.v2-CURRENT.md",
+      "sha256": "e5216dd5c6aa4ae3b8936aadd578d199ef5365815afd8432260bf64b9c8023a9",
+      "lines": 459,
+      "historicalSha256": "d6f343cd47c8a79a5f7816a80372d6e4ea0ffdc0e94664133b60c2dde50fdf77"
+    }
+  ],
+  "historicalTailIdentical": true,
+  "v1Preserved": true,
+  "priorS2CurrentRow": "| **S2** | **IN FLIGHT — submission 3.** Branch `chore/66-s2-axiom-gate`, worktree `/code/reactivegas-66-s2`, PR #85 draft. **Mandate v3 `a8e18e478ca8d063`** (brief ∥ AMENDMENT-1 ∥ AMENDMENT-2); v1 `0a1db9887ccc9d8f` and v2 `7cfb7aec95a37448` preserved as evidence. Gate at `561347d` = `cd67ade9bc137f87`. **Submissions 2/2 exhausted, then explicit desk extension 2→3 (NOTE-024); no fourth.** Owner ceiling **11→14, second and final raise**; 10 spent, **4 attempts remain including failures**, plus ≤16 separately counted probes. **Campaign EXHAUSTED and preserved.** Three submissions incl. the exceptional third; owner **14/14**; final audit **6/6 builds + 24/24 probes**. `b0c2cdb` **NOT ACCEPTED**, terminal verdict **AUDIT-FINDINGS** (report sha256 `8e27e455…`). **TWO binding items.** **F-004**: equivalent relative project path yields B=0/T=0; the completed Std-alias probe finished exit 1 in 712 s at **S=26/26, B=288, T=15707**, misclassifying **all 262 dependency `Std` modules as project-built**, no panic, no import error. **G-001**: the empty/unset `LEAN_PATH` entry guard was **never fired** — an unexecuted required control under AMENDMENT-2 row 6, instrument prepared and hashed, cost **one elaboration, zero builds**; an **assurance gap, not proof the guard is broken**. Supported statements only: the audited default inventory agrees and CI passes, and the adverse-path controls are **loud false refusals**, which is **not** evidence of current silent poison acceptance. **No \"fails safe\" generalization.** **Desk NOTE-030: re-cut** — no fourth submission, no narrowed acceptance. Successor campaign proposed: `handoffs/S2-SUCCESSOR-CAMPAIGN-PROPOSAL.md`, **awaiting desk disposition; nothing dispatched**. Rejected: `5745a2c` (F-001, F-002) and `561347d` (F-003) — both preserved with their audits |",
+  "priorS2CurrentRowInV2History": false,
+  "priorS2MarkerInV2History": false,
+  "successorCampaignMarkerInV2History": false
+}

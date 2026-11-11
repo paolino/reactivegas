@@ -1,0 +1,12 @@
+diff --git a/lean/KelGroups/Fold.lean b/lean/KelGroups/Fold.lean
+index 0000000..6666666 100644
+--- a/lean/KelGroups/Fold.lean
++++ b/lean/KelGroups/Fold.lean
+@@ -34,7 +34,7 @@ def tryEnactDetailed (gs : GroupState α) (proposalId : ProposalId) : StepResult
+   match lookupPending proposalId gs with
+   | none => { state := gs, enactment := none }
+   | some pending =>
+-      if pending.approvals.length ≥ majority gs then
++      if pending.approvals.length > majority gs then
+         { state := finishEnact gs proposalId pending
+           enactment := some { proposalId, pending, preState := gs } }

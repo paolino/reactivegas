@@ -1,0 +1,51 @@
+# ELAB-GREEN-43 — per-row verification of the 43 GREEN-justified ELAB-STATIC rows
+Base 3590c001, read-only. Method: declaration body-shape read at source.
+EVIDENCE-CLASS: STATIC-CONFIRMED (proof-text shape read; elaboration itself
+rests on accepted S2 base, not on repair execution). No execution.
+
+## A. decide-checks in Reactivegas/Invariants.lean (checkX = true := by decide) — 22 rows
+All read at stated sites; each names its check def (def sites verified):
+admissionPreservation_holds :2347 (check := admissionPreservationReachable :2303 = checkAdminAdmissionReachable && checkAppMembersPreservation) |
+base_change_can_close_without_ballot :1587 (checkV3BaseReachable :1517) |
+base_departure_applies_cleanup :1583 (checkBaseCleanupReachable :1479) |
+base_recompute_reachable_holds :1591 (checkBaseRecomputeReachable :1541) |
+canonical_economy_holds :2325 (checkCanonicalEconomy :1959, calls stepEvent backdonate directly + checkCanonicalEconomyMutant) |
+comuneThresholdSanity_holds :2349 (check := comuneIdentityAndThresholdSanity :2319, pure sanity conjunct, no production call) |
+direct_admission_only_holds :1589 (checkDirectAdmissionOnly :1383) |
+exhaustive_inventories_hold :2328 (checkExhaustiveInventories :1980, refs validateProposal) |
+i57_auth_holds :2334 | i57_boundary_holds :2331 | i57_disjoint_holds :2337 |
+i57_disjoint_mutant_caught :2338 (checkI57DisjointMutant :2185, refs placeBallot via checkI57Disjoint) |
+i57_exhaustive_holds :2332 | i57_franchise_holds :2340 |
+i57_franchise_mutant_caught :2341 (checkI57FranchiseMutant :2233, refs voteApply+foldIntegrated) |
+i57_noexpiry_holds :2346 | i57_noop_holds :2333 | i57_nostale_holds :2339 |
+i57_partition_holds :2336 | i57_policyfree_holds :2343 |
+i57_policyfree_mutant_caught :2344 (checkI57PolicyFreeMutant :2273, refs voteApply+foldIntegrated) |
+i57_r45_holds :2335 | integrated_theorem_witness_holds :2322 (conjunction of 5 sub-checks) |
+productionWellFormed_holds :2348 (also KILL(c) under OP-69L; per-operation map, no contradiction) |
+sweep_idempotent_mutant_caught :1595 (checkSweepIdempotentMutant :1572, applies shipped sweepDuplicating mutant) |
+sweep_idempotent_witness :1593 (checkSweepIdempotent :1564, refs sweepClosures directly).
+JUSTIFICATION HOLDS for all 22: genuine witness/check decide declarations.
+KILL-REQUIREMENT: none is killed by any current map mutant (their checks are not downstream of the mutated atoms); each needs its own production mutant in Phase 2 (see OPEN-EXTENTS-31 for the 24 with OPEN rows).
+
+## B. TraceTests mirrors (proof term := Reactivegas.foo) — 11 rows
+all_checks_pass :992 (failing = [] := by decide) |
+app_members_preservation_mutant_caught :1090 (mirror of Step.lean:437 check via memberWritingApply shipped mutant) |
+base_change_can_close_without_ballot :931 | base_departure_applies_cleanup :928 |
+base_recompute_reachable_holds :937 | direct_admission_only_holds :934 |
+frozen_checks_faithful :1005 (frozenChecks = checks := by decide) |
+frozen_corpus_faithful :1010 (frozenCorpus = seedCorpus := by decide) |
+frozen_inventory_faithful :1006 (... := by decide) |
+sweep_idempotent_mutant_caught :943 | sweep_idempotent_witness :940.
+JUSTIFICATION HOLDS: mirror rows are proof-term applications of the counterpart (genuine cascade dependence, Addendum-3 wrapper logic); frozen/all_checks rows are decide checks.
+
+## C. routing/wrapper equations — 4 rows
+Reactivegas.Composition.voteDerived_iff_not_direct (Composition.lean:83, cases e <;> simp over route/voteDerived) |
+Reactivegas.Composition.appDecided_verdict_exhaustive (Composition.lean:139, simp over appVerdictAllows) |
+stepDetailed_erases (Trace.lean:109, unfold stepDetailed + cases on stepEvent result) — JUSTIFICATIONS HOLD.
+Reactivegas.Composition.baseEnacted_threshold_met (Composition.lean:108) — JUSTIFICATION REPAIRED: proof term is <hfaithful, KelGroups.enact_implies_threshold_met .. h>, a direct CONSUMER of the KelGroups upstream lemma, not a routing equation; downstream of OP-62 mutant (cascade). Still ELAB-STATIC (no current mutant reaches it except via that upstream), but labelled honestly.
+
+## D. site/justification repairs — 3 rows
+comune_cannot_authorize (OP-68 GREEN): declaration lives at Step.lean:470 (checkComuneCannotAuthorize = true := by decide), NOT Reactivegas/Invariants.lean; ELAB site corrected. |
+solvent_init (OP-68 GREEN (witness/check)): proof is constructive boot elimination (Invariants.lean:877: simp [State.empty, bal] + empty-collection cases), NOT a decide witness/check; justification corrected to structural (boot elimination). Still ELAB-STATIC. |
+Reactivegas.app_members_preservation_mutant_caught (OP-69 ELAB-STATIC structural self-contained shipped-mutant check): HOLDS — Step.lean:437 check asserts detection of shipped memberWritingApply mutant; structural claim verified.
+# End: 43 rows. 40 justifications hold as written, 3 repaired (C-baseEnacted, D-comune-site, D-solvent-label). No row challenged as killable by a current mutant.

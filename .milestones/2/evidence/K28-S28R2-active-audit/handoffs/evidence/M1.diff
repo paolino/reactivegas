@@ -1,0 +1,11 @@
+diff --git a/test/S28DemoApp.hs b/test/S28DemoApp.hs
+index 49dd76a..4e1348c 100644
+--- a/test/S28DemoApp.hs
++++ b/test/S28DemoApp.hs
+@@ -185,3 +185,6 @@ demoStep
+     -> Either (IntegratedError DemoError) (IntegratedResult DemoState)
+ demoStep gs signer event =
+     applyIntegratedEvent demoIntegration gs signer event
++-- MUTANT-M1: DemoEvent and DemoState must stay distinct where the production boundary consumes them
++_m1_boundarySeparates :: Integration DemoState DemoEvent DemoProposal DemoError -> IntegratedEvent DemoState DemoState -> Text -> Either (IntegratedError DemoError) (IntegratedResult DemoState)
++_m1_boundarySeparates integration event signer = applyIntegratedEvent integration (emptyState (DemoState 0 [])) signer event

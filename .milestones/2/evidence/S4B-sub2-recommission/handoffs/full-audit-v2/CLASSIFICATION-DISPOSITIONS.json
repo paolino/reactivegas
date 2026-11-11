@@ -1,0 +1,486 @@
+[
+  {
+    "identity": "Reach.below",
+    "id": "GENERATED-REACH-BELOW",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "Generated inductive recursion support, not a separately designed predicate consumer.",
+    "axis2": "NOT-REQUIRED as a distinct NEW consumer: generated recursion machinery under R1 finite mirror-only scope and R2 no new semantics. This does not exempt parent Reach or close F-001.",
+    "authority": "S4 original prohibition manufacturing decidability; v2 R1 finite obligations/R2 no new monitor. Any broader #66 oracle requirement not supplied stays onward, never inferred closed.",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "ExceptionsR"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "CLOSED",
+    "evidence": "ExceptionsR prints Reach.below; final metadata gives its generated identity."
+  },
+  {
+    "identity": "KelGroups.PendingWellFormed",
+    "id": "K1",
+    "source": "lean/KelGroups/Invariants.lean",
+    "axis1": "PROVED-EQUIVALENCE to independently implemented Bool; compilation and nondegenerate evaluation also established.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED under original Phase B and retained finite obligations; S01/S10 compile the counterpart and theorem.",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A24",
+      "A25",
+      "GroupWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "CLOSED",
+    "evidence": "A24 KelGroups.pendingWellFormed_corr; A25 KelGroups.pendingWellFormed_corr; GroupWitnesses"
+  },
+  {
+    "identity": "KelGroups.MembersCoherent",
+    "id": "K2",
+    "source": "lean/KelGroups/Invariants.lean",
+    "axis1": "PROVED-EQUIVALENCE to independently implemented Bool; compilation and nondegenerate evaluation also established.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED under original Phase B and retained finite obligations; S01/S10 compile the counterpart and theorem.",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A26",
+      "GroupWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "CLOSED",
+    "evidence": "A26 KelGroups.membersCoherent_corr; GroupWitnesses"
+  },
+  {
+    "identity": "KelGroups.PendingCoherent",
+    "id": "K3",
+    "source": "lean/KelGroups/Invariants.lean",
+    "axis1": "PROVED-EQUIVALENCE to independently implemented Bool; compilation and nondegenerate evaluation also established.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED under original Phase B and retained finite obligations; S01/S10 compile the counterpart and theorem.",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A27",
+      "GroupWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "CLOSED",
+    "evidence": "A27 KelGroups.pendingCoherent_corr; GroupWitnesses"
+  },
+  {
+    "identity": "KelGroups.WellFormed",
+    "id": "K4",
+    "source": "lean/KelGroups/Invariants.lean",
+    "axis1": "PROVED-EQUIVALENCE to independently implemented Bool; compilation and nondegenerate evaluation also established.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED under original Phase B and retained finite obligations; S01/S10 compile the counterpart and theorem.",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A28",
+      "A29",
+      "A30",
+      "A31",
+      "GroupWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "CLOSED",
+    "evidence": "A28 KelGroups.wellFormed_corr; A29 KelGroups.wellFormed_corr; A30 KelGroups.wellFormed_corr; A31 KelGroups.wellFormed_corr; GroupWitnesses"
+  },
+  {
+    "identity": "KelGroups.Enacts",
+    "id": "K5",
+    "source": "lean/KelGroups/Invariants.lean",
+    "axis1": "PROVED-EQUIVALENCE to independently implemented Bool; compilation and nondegenerate evaluation also established.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED under original Phase B and retained finite obligations; S01/S10 compile the counterpart and theorem.",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A32",
+      "A33",
+      "GroupWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "CLOSED",
+    "evidence": "A32 KelGroups.enacts_corr; A33 KelGroups.enacts_corr; GroupWitnesses"
+  },
+  {
+    "identity": "comune_not_a_member",
+    "id": "P01",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "Proved expression equivalence, value-parametric; not strict definitional identity or a body-sensitive original correspondence.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED under original Phase B and retained finite obligations; S01/S10 compile the counterpart and theorem.",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "P01-compile",
+      "P01-neg",
+      "P01-pos",
+      "P01-relatum",
+      "S07"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "CLOSED",
+    "evidence": "P01-pos/neg, P01-relatum, S07; selected original membership helpers fail under constant-false isMember."
+  },
+  {
+    "identity": "conservation",
+    "id": "P02",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "PROVED-EQUIVALENCE to independently implemented Bool; compilation and nondegenerate evaluation also established.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED under original Phase B and retained finite obligations; S01/S10 compile the counterpart and theorem.",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A01",
+      "A02",
+      "A03",
+      "EconomyWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "CLOSED",
+    "evidence": "A01 conservation_corr; A02 conservation_corr; A03 conservation_corr; EconomyWitnesses"
+  },
+  {
+    "identity": "solvent",
+    "id": "P03",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "PROVED-EQUIVALENCE to independently implemented Bool; compilation and nondegenerate evaluation also established.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED under original Phase B and retained finite obligations; S01/S10 compile the counterpart and theorem.",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A04",
+      "A05",
+      "A06",
+      "A07",
+      "A08",
+      "EconomyWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "CLOSED",
+    "evidence": "A04 solvent_corr; A05 solvent_corr; A06 solvent_corr; A07 solvent_corr; A08 solvent_corr; EconomyWitnesses"
+  },
+  {
+    "identity": "insolvent",
+    "id": "P04",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "PROVED-EQUIVALENCE to independently implemented Bool; compilation and nondegenerate evaluation also established.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED under original Phase B and retained finite obligations; S01/S10 compile the counterpart and theorem.",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A09",
+      "A10",
+      "EconomyWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "CLOSED",
+    "evidence": "A09 insolvent_corr; A10 insolvent_corr; EconomyWitnesses"
+  },
+  {
+    "identity": "uniquePledges",
+    "id": "P05",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "PROVED-EQUIVALENCE to independently implemented Bool; compilation and nondegenerate evaluation also established.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED under original Phase B and retained finite obligations; S01/S10 compile the counterpart and theorem.",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A11",
+      "A12",
+      "A13",
+      "A14",
+      "EconomyWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "CLOSED",
+    "evidence": "A11 uniquePledges_corr; A12 uniquePledges_corr; A13 uniquePledges_corr; A14 uniquePledges_corr; EconomyWitnesses"
+  },
+  {
+    "identity": "allUniquePledges",
+    "id": "P06",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "PROVED-EQUIVALENCE to independently implemented Bool; compilation and nondegenerate evaluation also established.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED under original Phase B and retained finite obligations; S01/S10 compile the counterpart and theorem.",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A15",
+      "EconomyWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "CLOSED",
+    "evidence": "A15 allUniquePledges_corr; EconomyWitnesses"
+  },
+  {
+    "identity": "permissionToClose",
+    "id": "P07",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "Proved expression equivalence, inline; not a body-sensitive original correspondence.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED under original Phase B and retained finite obligations; S01/S10 compile the counterpart and theorem.",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "P07-compile",
+      "P07-negR",
+      "P07-pos",
+      "P07-relatum",
+      "S08"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "CLOSED",
+    "evidence": "P07-pos, P07-negR, P07-relatum, S08; selected step_close_inv fails and forbidden close succeeds in the single-module mutant overlay."
+  },
+  {
+    "identity": "escrowHeld",
+    "id": "P08",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "PROVED-EQUIVALENCE to independently implemented Bool; compilation and nondegenerate evaluation also established.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED under original Phase B and retained finite obligations; S01/S10 compile the counterpart and theorem.",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A16",
+      "A17",
+      "EconomyWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "CLOSED",
+    "evidence": "A16 escrowHeld_corr; A17 escrowHeld_corr; EconomyWitnesses"
+  },
+  {
+    "identity": "governanceEnacts",
+    "id": "P09",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "PROVED-EQUIVALENCE to independently implemented Bool; compilation and nondegenerate evaluation also established.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED under original Phase B and retained finite obligations; S01/S10 compile the counterpart and theorem.",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A18",
+      "EconomyWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "CLOSED",
+    "evidence": "A18 governanceEnacts_corr; EconomyWitnesses"
+  },
+  {
+    "identity": "doubleEntry",
+    "id": "P10",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "PROVED-EQUIVALENCE to independently implemented Bool; compilation and nondegenerate evaluation also established.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED under original Phase B and retained finite obligations; S01/S10 compile the counterpart and theorem.",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A19",
+      "A20",
+      "EconomyWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "CLOSED",
+    "evidence": "A19 doubleEntry_corr; A20 doubleEntry_corr; EconomyWitnesses"
+  },
+  {
+    "identity": "authorizedStep",
+    "id": "P11",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "DEFINITIONAL-IDENTITY per constructor; existing consumer also evaluated.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED under original Phase B and retained finite obligations; S01/S10 compile the counterpart and theorem.",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "ExceptionsR"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "CLOSED",
+    "evidence": "ExceptionsR: 14 rfl projections, each positive and negative; final-reconcile establishes exact Event constructor coverage."
+  },
+  {
+    "identity": "canCloseGroup",
+    "id": "P12",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "PROVED-EQUIVALENCE to independently implemented Bool; compilation and nondegenerate evaluation also established.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED under original Phase B and retained finite obligations; S01/S10 compile the counterpart and theorem.",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A21",
+      "A22",
+      "A23",
+      "EconomyWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "CLOSED",
+    "evidence": "A21 canCloseGroup_corr; A22 canCloseGroup_corr; A23 canCloseGroup_corr; EconomyWitnesses"
+  },
+  {
+    "identity": "Reach",
+    "id": "P13",
+    "source": "lean/Reactivegas/Predicates.lean",
+    "axis1": "NOT-ESTABLISHED runtime decision. No undecidability claim.",
+    "axis2": "NOT ESTABLISHED: candidate claims NOT-REQUIRED, but no admitted Reach-specific consumer authority settles that claim. Original Axis 2 remains binding; F-001 OPEN.",
+    "authority": "S4 original prohibition manufacturing decidability; v2 R1 finite obligations/R2 no new monitor. Any broader #66 oracle requirement not supplied stays onward, never inferred closed.",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "ReachDecision"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "PARTLY (axis 1 bounded; axis 2 OPEN)",
+    "evidence": "ReachDecision fails synthesis for one concrete Reach instance; complete source and Expr remain unchanged."
+  },
+  {
+    "identity": "stalled",
+    "id": "R0",
+    "source": "lean/Reactivegas/State.lean",
+    "axis1": "LOGICAL-DECISION-EVIDENCE and EXECUTABLE-DECISION separately established; no independent Bool correspondence inferred.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED under original Phase B and retained finite obligations; S01/S10 compile the counterpart and theorem.",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "ExceptionsR"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "CLOSED",
+    "evidence": "Existing stalledDecidable; ExceptionsR positive/negative nonzero ±7 states."
+  },
+  {
+    "identity": "KelGroups.Vote.QuestionClean",
+    "id": "V1",
+    "source": "lean/KelGroups/Vote/Invariants.lean",
+    "axis1": "PROVED-EQUIVALENCE to independently implemented Bool; compilation and nondegenerate evaluation also established.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED under original Phase B and retained finite obligations; S01/S10 compile the counterpart and theorem.",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A34",
+      "A35",
+      "A36",
+      "GroupWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "CLOSED",
+    "evidence": "A34 KelGroups.Vote.questionClean_corr; A35 KelGroups.Vote.questionClean_corr; A36 KelGroups.Vote.questionClean_corr; GroupWitnesses"
+  },
+  {
+    "identity": "KelGroups.Vote.SweepReady",
+    "id": "V2",
+    "source": "lean/KelGroups/Vote/Invariants.lean",
+    "axis1": "PROVED-EQUIVALENCE to independently implemented Bool; compilation and nondegenerate evaluation also established.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED under original Phase B and retained finite obligations; S01/S10 compile the counterpart and theorem.",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A37",
+      "A38",
+      "A39",
+      "A40",
+      "A41",
+      "A42",
+      "GroupWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "CLOSED",
+    "evidence": "A37 KelGroups.Vote.sweepReady_corr; A38 KelGroups.Vote.sweepReady_corr; A39 KelGroups.Vote.sweepReady_corr; A40 KelGroups.Vote.sweepReady_corr; A41 KelGroups.Vote.sweepReady_corr; A42 KelGroups.Vote.sweepReady_corr; GroupWitnesses"
+  },
+  {
+    "identity": "KelGroups.Vote.VoteWellFormed",
+    "id": "V3",
+    "source": "lean/KelGroups/Vote/Invariants.lean",
+    "axis1": "PROVED-EQUIVALENCE to independently implemented Bool; compilation and nondegenerate evaluation also established.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED under original Phase B and retained finite obligations; S01/S10 compile the counterpart and theorem.",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "A43",
+      "A44",
+      "GroupWitnesses"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "CLOSED",
+    "evidence": "A43 KelGroups.Vote.voteWellFormed_corr; A44 KelGroups.Vote.voteWellFormed_corr; GroupWitnesses"
+  },
+  {
+    "identity": "KelGroups.Vote.PreservesQuestionSemantics",
+    "id": "V4",
+    "source": "lean/KelGroups/Vote/Invariants.lean",
+    "axis1": "DEFINITIONAL-IDENTITY; existing preservesQuestionDecide also evaluated.",
+    "axis2": "REQUIRED-CONSUMER-IMPLEMENTED under original Phase B and retained finite obligations; S01/S10 compile the counterpart and theorem.",
+    "authority": "S4 original Phase B required correspondence; v2 R7/R11; v3.1 only P01/P07 replacement",
+    "commands": [
+      "FinalInventory",
+      "final-reconcile",
+      "Axioms",
+      "expr-compare",
+      "ExceptionsR"
+    ],
+    "dependency": "#68/#69 and exporter/S2R incoming base bytes bound by3590c001; any source/import/type drift requires rebind; no inherited acceptance",
+    "status": "CLOSED",
+    "evidence": "ExceptionsR: preservation and actual changed nonempty question."
+  }
+]

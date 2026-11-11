@@ -1,0 +1,11 @@
+"{\"members\":[{\"key\":\"1\",\"member\":{\"email\":\"1@trace\",\"key\":\"1\",\"roles\":[{\"adminRole\":{\"admin\":\"publicAdmin\"}}]}},{\"key\":\"2\",\"member\":{\"email\":\"2@trace\",\"key\":\"2\",\"roles\":[{\"adminRole\":{\"admin\":\"publicAdmin\"}}]}},{\"key\":\"3\",\"member\":{\"email\":\"3@trace\",\"key\":\"3\",\"roles\":[]}}]}"
+"{\"appFold\":{\"casse\":[[\"dora\",30]],\"collections\":[{\"accepted\":[{\"amount\":20,\"user\":\"bob\"}],\"id\":1,\"pending\":[],\"permitted\":false,\"referente\":\"dora\"}],\"conti\":[[\"bob\",40],[\"comune\",0]],\"votes\":{\"closed\":[],\"openQuestions\":[[\"q\",{\"assents\":[\"alice\"],\"dissents\":[],\"kind\":\"collective\",\"proposer\":\"alice\"}]]}},\"members\":[[\"alice\",{\"email\":\"alice@s62b\",\"key\":\"alice\",\"roles\":[{\"adminRole\":{\"admin\":\"publicAdmin\"}}]}],[\"bob\",{\"email\":\"bob@s62b\",\"key\":\"bob\",\"roles\":[]}],[\"dora\",{\"email\":\"dora@s62b\",\"key\":\"dora\",\"roles\":[{\"adminRole\":{\"admin\":\"publicAdmin\"}}]}],[\"eve\",{\"email\":\"eve@s62b\",\"key\":\"eve\",\"roles\":[{\"adminRole\":{\"admin\":\"publicAdmin\"}}]}]],\"pendingBase\":[],\"pendingProposals\":[[\"hist-p\",{\"approvals\":[\"alice\"],\"proposal\":{\"removeMember\":{\"key\":\"ghost\"}},\"proposer\":\"alice\"}]]}"
+"seedAuth:refusing-probe(fun _ _ => false);corpus-contains-no-backdonate-event"
+"probeAuth:refusing-probe(fun _ _ => false);corpus-contains-no-backdonate-event"
+false
+false
+5
+32
+7
+'step_close_inv' depends on axioms: [propext]
+/tmp/reactivegas/ms2/e-haskell-impl/t86-exporter-successor/s86-audit-2/LiveContext.lean:15:14: error(lean.unknownIdentifier): Unknown constant `step_withdraw_inv`

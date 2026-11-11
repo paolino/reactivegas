@@ -1,0 +1,28 @@
+{
+  "files": {
+    "lean/corpus/corpus.sha256": {
+      "bytes": 176,
+      "sha256": "c76836ac5ee3f1d672418d7b0580bbecf695d5f54d468030b125843974c180c7",
+      "frozen_input_equal": true
+    },
+    "lean/corpus/integrated.json": {
+      "bytes": 7673,
+      "sha256": "1f173aec9c3afd9cb95265e4be2966b9316e810a969d9fc40f672b17120f3675",
+      "frozen_input_equal": true
+    },
+    "lean/corpus/economic.json": {
+      "bytes": 14494,
+      "sha256": "73a077fc514038e40f84aca4a995fe68623e3af46ed11c0280d5b963137576aa",
+      "frozen_input_equal": true
+    }
+  },
+  "declarations": [
+    "step_close_inv",
+    "step_withdraw_inv"
+  ],
+  "UNPROVED_count": 0,
+  "ntraces": 5,
+  "nevents": 32,
+  "nsteps": 7,
+  "handoff_sha256": "f6dd0df4f4cf2a9e13d42d838c7e95bf2039f313d3e42ace10d4a1920df6d659"
+}

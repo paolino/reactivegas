@@ -1,0 +1,1358 @@
+[
+  {
+    "id": "A01",
+    "obligation": "P02 cassa contribution",
+    "source": "Reactivegas/Mirrors.lean",
+    "definition": "conservationB",
+    "theorem": "conservation_corr",
+    "old": "sumBal s.casse",
+    "replacement": "0",
+    "occurrence": 0,
+    "sourceSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "instrumentSha256": "f06f7db4975c0e8478b6a56531c49cf6386d625912470f6132f5718a88fa6d23",
+    "proofLines": [
+      124,
+      126
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 124,
+        "column": 83,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A01.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A02",
+    "obligation": "P02 conto contribution",
+    "source": "Reactivegas/Mirrors.lean",
+    "definition": "conservationB",
+    "theorem": "conservation_corr",
+    "old": "sumBal s.conti",
+    "replacement": "0",
+    "occurrence": 0,
+    "sourceSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "instrumentSha256": "ee3779bee4ca25c9e3e2fbc787e588107a43e9b384694e723af262a5cc8b582d",
+    "proofLines": [
+      124,
+      126
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 124,
+        "column": 83,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A02.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A03",
+    "obligation": "P02 escrow contribution",
+    "source": "Reactivegas/Mirrors.lean",
+    "definition": "conservationB",
+    "theorem": "conservation_corr",
+    "old": "escrowSum s.collections",
+    "replacement": "0",
+    "occurrence": 0,
+    "sourceSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "instrumentSha256": "0b0d914503bf41d79ff957dcadf320b9e434c37e80698f69bd7a05699f85f996",
+    "proofLines": [
+      124,
+      126
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 124,
+        "column": 83,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A03.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A04",
+    "obligation": "P03 member balance nonnegative",
+    "source": "Reactivegas/Mirrors.lean",
+    "definition": "solventB",
+    "theorem": "solvent_corr",
+    "old": "decide (bal s.conti u ≥ 0)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "instrumentSha256": "8cf032d5de0fe9f7c9ba57e412e8f4cf8206d3d91cfdc2cbbffb6222970a60f4",
+    "proofLines": [
+      148,
+      152
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 149,
+        "column": 47,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A04.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A05",
+    "obligation": "P03 accepted pledge carrier",
+    "source": "Reactivegas/Mirrors.lean",
+    "definition": "solventB",
+    "theorem": "solvent_corr",
+    "old": "col.accepted ++ col.pending",
+    "replacement": "col.pending",
+    "occurrence": 0,
+    "sourceSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "instrumentSha256": "df82f3bf36cf695f4440a0af63b82c77f8a027e1043fadf6eab97c3d9d655537",
+    "proofLines": [
+      148,
+      152
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 149,
+        "column": 47,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A05.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A06",
+    "obligation": "P03 pending pledge carrier",
+    "source": "Reactivegas/Mirrors.lean",
+    "definition": "solventB",
+    "theorem": "solvent_corr",
+    "old": "col.accepted ++ col.pending",
+    "replacement": "col.accepted",
+    "occurrence": 0,
+    "sourceSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "instrumentSha256": "5e90c77570961abd5e138dbb8ee7404ae99bad8370f881632b6b14c8f91eda3f",
+    "proofLines": [
+      148,
+      152
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 149,
+        "column": 47,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A06.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A07",
+    "obligation": "P03 pledge amount nonnegative",
+    "source": "Reactivegas/Mirrors.lean",
+    "definition": "solventB",
+    "theorem": "solvent_corr",
+    "old": "decide (0 ≤ p.amount)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "instrumentSha256": "14f2c1840662275d682024c4b90864f0bb4843b3aef4188150283e69cb48ae50",
+    "proofLines": [
+      148,
+      152
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 149,
+        "column": 47,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A07.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A08",
+    "obligation": "P03 canonical member carrier",
+    "source": "Reactivegas/Mirrors.lean",
+    "definition": "solventB",
+    "theorem": "solvent_corr",
+    "old": "view.members.map Prod.fst",
+    "replacement": "([] : List KelGroups.Key)",
+    "occurrence": 0,
+    "sourceSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "instrumentSha256": "f1ad78a57cde1c4a0cec9b5975bf11c7a352b9f0c24ff0d5ac1c46edaad5e310",
+    "proofLines": [
+      148,
+      152
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 149,
+        "column": 47,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A08.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A09",
+    "obligation": "P04 negative balance condition",
+    "source": "Reactivegas/Mirrors.lean",
+    "definition": "insolventB",
+    "theorem": "insolvent_corr",
+    "old": "decide (bal s.conti u < 0)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "instrumentSha256": "056de265258e34d4433c19f46ed2432e9e18790bc10c4f73ca7b3885746e6450",
+    "proofLines": [
+      158,
+      161
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 159,
+        "column": 51,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A09.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A10",
+    "obligation": "P04 existential member carrier",
+    "source": "Reactivegas/Mirrors.lean",
+    "definition": "insolventB",
+    "theorem": "insolvent_corr",
+    "old": "view.members.map Prod.fst",
+    "replacement": "([] : List KelGroups.Key)",
+    "occurrence": 0,
+    "sourceSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "instrumentSha256": "ae9a9fd2bcac50c7fcc2880d1de8882aa016abdc4e0cb39a439a805dcfbc4ce3",
+    "proofLines": [
+      158,
+      161
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 159,
+        "column": 51,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A10.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A11",
+    "obligation": "P05 equal-user pledge equality",
+    "source": "Reactivegas/Mirrors.lean",
+    "definition": "uniquePledgesB",
+    "theorem": "uniquePledges_corr",
+    "old": "decide (p = q)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "instrumentSha256": "49e02db8267e45869af3dcbe4fb50a3e570eb2df44036d1e42fd2843ac78cb8d",
+    "proofLines": [
+      175,
+      178
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 176,
+        "column": 53,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A11.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A12",
+    "obligation": "P05 equal-user antecedent",
+    "source": "Reactivegas/Mirrors.lean",
+    "definition": "uniquePledgesB",
+    "theorem": "uniquePledges_corr",
+    "old": "!decide (p.user = q.user)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "instrumentSha256": "ca78c797155c39a9b606bdadbbdf055d5dbb2090342b919db1d61ff9a58faab1",
+    "proofLines": [
+      175,
+      178
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 176,
+        "column": 53,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A12.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A13",
+    "obligation": "P05 accepted outer carrier",
+    "source": "Reactivegas/Mirrors.lean",
+    "definition": "uniquePledgesB",
+    "theorem": "uniquePledges_corr",
+    "old": "col.accepted ++ col.pending",
+    "replacement": "col.pending",
+    "occurrence": 0,
+    "sourceSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "instrumentSha256": "f7af0e03f41fa02565b72890223645e92bf4b0aa0ac1168eebca5446a5165e88",
+    "proofLines": [
+      175,
+      178
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 176,
+        "column": 53,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A13.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A14",
+    "obligation": "P05 pending outer carrier",
+    "source": "Reactivegas/Mirrors.lean",
+    "definition": "uniquePledgesB",
+    "theorem": "uniquePledges_corr",
+    "old": "col.accepted ++ col.pending",
+    "replacement": "col.accepted",
+    "occurrence": 0,
+    "sourceSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "instrumentSha256": "09b946243061a78448e3ecec8794972b153a86eb6d218c873442b9262785b141",
+    "proofLines": [
+      175,
+      178
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 176,
+        "column": 53,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A14.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A15",
+    "obligation": "P06 every collection",
+    "source": "Reactivegas/Mirrors.lean",
+    "definition": "allUniquePledgesB",
+    "theorem": "allUniquePledges_corr",
+    "old": "s.collections.all",
+    "replacement": "([] : List Collection).all",
+    "occurrence": 0,
+    "sourceSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "instrumentSha256": "abba999f73c54e740a4407d63664d88e7d44ecf44d2a57980c1aae152fbf7144",
+    "proofLines": [
+      184,
+      187
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 185,
+        "column": 55,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A15.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A16",
+    "obligation": "P08 selected held amount",
+    "source": "Reactivegas/Mirrors.lean",
+    "definition": "escrowHeldB",
+    "theorem": "escrowHeld_corr",
+    "old": "decide (amt = v)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "instrumentSha256": "b755a487b15dbcb7e82b8594e07c600b7103396af7e86ba13d8d33b50c549fc0",
+    "proofLines": [
+      202,
+      216
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 213,
+        "column": 8,
+        "message": "Type mismatch"
+      },
+      {
+        "line": 215,
+        "column": 18,
+        "message": "Application type mismatch: The argument"
+      }
+    ],
+    "receipt": "evidence/full-v2/A16.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A17",
+    "obligation": "P08 absent held amount",
+    "source": "Reactivegas/Mirrors.lean",
+    "definition": "escrowHeldB",
+    "theorem": "escrowHeld_corr",
+    "old": "| none => false",
+    "replacement": "| none => true",
+    "occurrence": 0,
+    "sourceSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "instrumentSha256": "0e99678d6c0b4dd8bf4545bd76a5b248a54de0bfaa9e5848aa65ff64c1a7fa20",
+    "proofLines": [
+      202,
+      216
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 206,
+        "column": 9,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A17.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A18",
+    "obligation": "P09 removed referent exclusion",
+    "source": "Reactivegas/Mirrors.lean",
+    "definition": "governanceEnactsB",
+    "theorem": "governanceEnacts_corr",
+    "old": "decide (c.referente ≠ u)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "instrumentSha256": "2b820c260a6bcbd5b1cd81b58cd1ec4383d2b9e959ca2b6e8fd409b4d77108a3",
+    "proofLines": [
+      222,
+      225
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 223,
+        "column": 61,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A18.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A19",
+    "obligation": "P10 conto effect",
+    "source": "Reactivegas/Mirrors.lean",
+    "definition": "doubleEntryB",
+    "theorem": "doubleEntry_corr",
+    "old": "decide (bal s'.conti u = bal s.conti u + v)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "instrumentSha256": "658ce0fff685245d9a60a7d824e012a9c4aef0f82876928c4101e9788297c485",
+    "proofLines": [
+      232,
+      235
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 233,
+        "column": 63,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A19.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A20",
+    "obligation": "P10 cassa effect",
+    "source": "Reactivegas/Mirrors.lean",
+    "definition": "doubleEntryB",
+    "theorem": "doubleEntry_corr",
+    "old": "decide (bal s'.casse a = bal s.casse a + v)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "instrumentSha256": "ea6af0e9a437cce67c5d7d9269637f66f031d76bb5e0ae639577970ba2c9555e",
+    "proofLines": [
+      232,
+      235
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 233,
+        "column": 63,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A20.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A21",
+    "obligation": "P12 member balance zero",
+    "source": "Reactivegas/Mirrors.lean",
+    "definition": "canCloseGroupB",
+    "theorem": "canCloseGroup_corr",
+    "old": "decide (bal s.conti u = 0)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "instrumentSha256": "667f01dc14a2509796d190ca258f1932573be0147743a6f917df0093459344e0",
+    "proofLines": [
+      258,
+      262
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 259,
+        "column": 59,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A21.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A22",
+    "obligation": "P12 no open collections",
+    "source": "Reactivegas/Mirrors.lean",
+    "definition": "canCloseGroupB",
+    "theorem": "canCloseGroup_corr",
+    "old": "decide (s.collections = [])",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "instrumentSha256": "41bce75a6c08de079ee442f3ca68eaa7543f1a79a16e15a24898378ee3ea629e",
+    "proofLines": [
+      258,
+      262
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 259,
+        "column": 59,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A22.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A23",
+    "obligation": "P12 all cassa balances zero",
+    "source": "Reactivegas/Mirrors.lean",
+    "definition": "canCloseGroupB",
+    "theorem": "canCloseGroup_corr",
+    "old": "decide (bal s.casse r = 0)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "instrumentSha256": "6653a1e8fa204eef952785a7d04ae0d4ac18f98f1e749957b044095c5fb39cbb",
+    "proofLines": [
+      258,
+      262
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 259,
+        "column": 59,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A23.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A24",
+    "obligation": "K1 approval uniqueness",
+    "source": "KelGroups/Mirrors.lean",
+    "definition": "pendingWellFormedB",
+    "theorem": "KelGroups.pendingWellFormed_corr",
+    "old": "decide (pending.approvals.Nodup)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "1be677dc942ec8a65be77b80c9c8c2ba694934a9ba238fbc681da240c99aefaf",
+    "instrumentSha256": "5626b610bdebc99a92d4f9ded8cdcbd07029f2f1179c17dc69723a639f631dbf",
+    "proofLines": [
+      61,
+      64
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 62,
+        "column": 69,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A24.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A25",
+    "obligation": "K1 proposer assent",
+    "source": "KelGroups/Mirrors.lean",
+    "definition": "pendingWellFormedB",
+    "theorem": "KelGroups.pendingWellFormed_corr",
+    "old": "decide (pending.proposer ∈ pending.approvals)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "1be677dc942ec8a65be77b80c9c8c2ba694934a9ba238fbc681da240c99aefaf",
+    "instrumentSha256": "add4923d9412aeb5f67890eb399cf90b119d71c76688b235ace65a0a0a1d6fbc",
+    "proofLines": [
+      61,
+      64
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 62,
+        "column": 69,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A25.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A26",
+    "obligation": "K2 keyed canonical member",
+    "source": "KelGroups/Mirrors.lean",
+    "definition": "membersCoherentB",
+    "theorem": "KelGroups.membersCoherent_corr",
+    "old": "decide (e.2.key = e.1)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "1be677dc942ec8a65be77b80c9c8c2ba694934a9ba238fbc681da240c99aefaf",
+    "instrumentSha256": "43d0ea7d11cf858df4f2fc8d2caa87df98e613f48713e576986e830b0a208dec",
+    "proofLines": [
+      70,
+      79
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 76,
+        "column": 4,
+        "message": "Type mismatch"
+      },
+      {
+        "line": 78,
+        "column": 4,
+        "message": "Type mismatch"
+      }
+    ],
+    "receipt": "evidence/full-v2/A26.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A27",
+    "obligation": "K3 pending coherence",
+    "source": "KelGroups/Mirrors.lean",
+    "definition": "pendingCoherentB",
+    "theorem": "KelGroups.pendingCoherent_corr",
+    "old": "pendingWellFormedB e.2",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "1be677dc942ec8a65be77b80c9c8c2ba694934a9ba238fbc681da240c99aefaf",
+    "instrumentSha256": "536fa2180699a1301a66c5cbe3b40aea4dcdb15ee6ec10726cbe85d1707ac6d0",
+    "proofLines": [
+      85,
+      95
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 91,
+        "column": 4,
+        "message": "Type mismatch"
+      },
+      {
+        "line": 94,
+        "column": 41,
+        "message": "Application type mismatch: The argument"
+      }
+    ],
+    "receipt": "evidence/full-v2/A27.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A28",
+    "obligation": "K4 member key uniqueness",
+    "source": "KelGroups/Mirrors.lean",
+    "definition": "wellFormedB",
+    "theorem": "KelGroups.wellFormed_corr",
+    "old": "decide ((gs.members.map Prod.fst).Nodup)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "1be677dc942ec8a65be77b80c9c8c2ba694934a9ba238fbc681da240c99aefaf",
+    "instrumentSha256": "ebee9ce510d9fe58fee6a67d0d279ee1fc449bbf0519ee28b250a5bc564d1767",
+    "proofLines": [
+      103,
+      114
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 110,
+        "column": 11,
+        "message": "Application type mismatch: The argument"
+      },
+      {
+        "line": 113,
+        "column": 11,
+        "message": "Application type mismatch: The argument"
+      }
+    ],
+    "receipt": "evidence/full-v2/A28.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A29",
+    "obligation": "K4 proposal key uniqueness",
+    "source": "KelGroups/Mirrors.lean",
+    "definition": "wellFormedB",
+    "theorem": "KelGroups.wellFormed_corr",
+    "old": "decide ((gs.pendingProposals.map Prod.fst).Nodup)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "1be677dc942ec8a65be77b80c9c8c2ba694934a9ba238fbc681da240c99aefaf",
+    "instrumentSha256": "eba84d4a48a7d9fbaeb8644fd51fb2e6e484e158cc985bcecb17c69f889be1a4",
+    "proofLines": [
+      103,
+      114
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 110,
+        "column": 15,
+        "message": "Application type mismatch: The argument"
+      },
+      {
+        "line": 113,
+        "column": 15,
+        "message": "Application type mismatch: The argument"
+      }
+    ],
+    "receipt": "evidence/full-v2/A29.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A30",
+    "obligation": "K4 member coherence",
+    "source": "KelGroups/Mirrors.lean",
+    "definition": "wellFormedB",
+    "theorem": "KelGroups.wellFormed_corr",
+    "old": "membersCoherentB gs",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "1be677dc942ec8a65be77b80c9c8c2ba694934a9ba238fbc681da240c99aefaf",
+    "instrumentSha256": "28a55b1d6095a6508dfa935c69a2d7d04f0cbb7dee5788db8bb6c26bb69b588c",
+    "proofLines": [
+      103,
+      114
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 110,
+        "column": 19,
+        "message": "Application type mismatch: The argument"
+      },
+      {
+        "line": 113,
+        "column": 49,
+        "message": "Application type mismatch: The argument"
+      }
+    ],
+    "receipt": "evidence/full-v2/A30.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A31",
+    "obligation": "K4 proposal coherence",
+    "source": "KelGroups/Mirrors.lean",
+    "definition": "wellFormedB",
+    "theorem": "KelGroups.wellFormed_corr",
+    "old": "pendingCoherentB gs",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "1be677dc942ec8a65be77b80c9c8c2ba694934a9ba238fbc681da240c99aefaf",
+    "instrumentSha256": "13aba8f901723e304d587b5aae5de6b3ed5598e9a273f361962746cbc596a7db",
+    "proofLines": [
+      103,
+      114
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 110,
+        "column": 52,
+        "message": "Application type mismatch: The argument"
+      },
+      {
+        "line": 113,
+        "column": 83,
+        "message": "Application type mismatch: The argument"
+      }
+    ],
+    "receipt": "evidence/full-v2/A31.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A32",
+    "obligation": "K5 actual enactment presence",
+    "source": "KelGroups/Mirrors.lean",
+    "definition": "enactsB",
+    "theorem": "KelGroups.enacts_corr",
+    "old": "(tryEnactDetailed gs proposalId).enactment.isSome",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "1be677dc942ec8a65be77b80c9c8c2ba694934a9ba238fbc681da240c99aefaf",
+    "instrumentSha256": "9aa19482bc9e07dddf5317971c9d068219455ff15260f2894e5cb5b99e6d4b84",
+    "proofLines": [
+      124,
+      142
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 138,
+        "column": 14,
+        "message": "`simp` made no progress"
+      }
+    ],
+    "receipt": "evidence/full-v2/A32.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A33",
+    "obligation": "K5 exact resulting state",
+    "source": "KelGroups/Mirrors.lean",
+    "definition": "enactsB",
+    "theorem": "KelGroups.enacts_corr",
+    "old": "decide ((tryEnactDetailed gs proposalId).state = result)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "1be677dc942ec8a65be77b80c9c8c2ba694934a9ba238fbc681da240c99aefaf",
+    "instrumentSha256": "899db5b6c6cfa511546820ee2f33aee2174e1e1e627be2ded8c43e26d1502345",
+    "proofLines": [
+      124,
+      142
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 133,
+        "column": 10,
+        "message": "Tactic `rewrite` failed: Did not find an occurrence of the pattern"
+      },
+      {
+        "line": 136,
+        "column": 84,
+        "message": "Application type mismatch: The argument"
+      }
+    ],
+    "receipt": "evidence/full-v2/A33.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A34",
+    "obligation": "V1 assent uniqueness",
+    "source": "KelGroups/Mirrors.lean",
+    "definition": "questionCleanB",
+    "theorem": "KelGroups.Vote.questionClean_corr",
+    "old": "decide (q.assents.Nodup)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "1be677dc942ec8a65be77b80c9c8c2ba694934a9ba238fbc681da240c99aefaf",
+    "instrumentSha256": "1a05fc70de7b952fff6a6014c699eb1ca3916b4c1d2d73a2d7363e40cb4c7107",
+    "proofLines": [
+      149,
+      153
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 150,
+        "column": 49,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A34.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A35",
+    "obligation": "V1 dissent uniqueness",
+    "source": "KelGroups/Mirrors.lean",
+    "definition": "questionCleanB",
+    "theorem": "KelGroups.Vote.questionClean_corr",
+    "old": "decide (q.dissents.Nodup)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "1be677dc942ec8a65be77b80c9c8c2ba694934a9ba238fbc681da240c99aefaf",
+    "instrumentSha256": "a706f67ea05fa462af823dd15a3da44241b6821b4d622b4cb0563034bcfd6ac5",
+    "proofLines": [
+      149,
+      153
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 150,
+        "column": 49,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A35.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A36",
+    "obligation": "V1 tally disjointness",
+    "source": "KelGroups/Mirrors.lean",
+    "definition": "questionCleanB",
+    "theorem": "KelGroups.Vote.questionClean_corr",
+    "old": "decide (k ∉ q.dissents)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "1be677dc942ec8a65be77b80c9c8c2ba694934a9ba238fbc681da240c99aefaf",
+    "instrumentSha256": "a81e37157c4611c11e9b16b01e852d87288911590b38ee3057bde8d65fa13f71",
+    "proofLines": [
+      149,
+      153
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 150,
+        "column": 49,
+        "message": "unsolved goals"
+      }
+    ],
+    "receipt": "evidence/full-v2/A36.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A37",
+    "obligation": "V2 open question key uniqueness",
+    "source": "KelGroups/Mirrors.lean",
+    "definition": "sweepReadyB",
+    "theorem": "KelGroups.Vote.sweepReady_corr",
+    "old": "decide ((gs.openQuestions.map Prod.fst).Nodup)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "1be677dc942ec8a65be77b80c9c8c2ba694934a9ba238fbc681da240c99aefaf",
+    "instrumentSha256": "acda83674f82fdbf31201ad26a68db3904bdaa69f48bd5705240005f1527db8a",
+    "proofLines": [
+      194,
+      213
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 201,
+        "column": 12,
+        "message": "Application type mismatch: The argument"
+      },
+      {
+        "line": 208,
+        "column": 12,
+        "message": "Application type mismatch: The argument"
+      }
+    ],
+    "receipt": "evidence/full-v2/A37.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A38",
+    "obligation": "V2 closed question key uniqueness",
+    "source": "KelGroups/Mirrors.lean",
+    "definition": "sweepReadyB",
+    "theorem": "KelGroups.Vote.sweepReady_corr",
+    "old": "decide ((gs.closed.map (·.questionId)).Nodup)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "1be677dc942ec8a65be77b80c9c8c2ba694934a9ba238fbc681da240c99aefaf",
+    "instrumentSha256": "7aa0e3f02646c3ba2a6f0149b13883050ecad5f8105c5f91b27a826046029e47",
+    "proofLines": [
+      194,
+      213
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 201,
+        "column": 16,
+        "message": "Application type mismatch: The argument"
+      },
+      {
+        "line": 208,
+        "column": 16,
+        "message": "Application type mismatch: The argument"
+      }
+    ],
+    "receipt": "evidence/full-v2/A38.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A39",
+    "obligation": "V2 open closed disjointness",
+    "source": "KelGroups/Mirrors.lean",
+    "definition": "sweepReadyB",
+    "theorem": "KelGroups.Vote.sweepReady_corr",
+    "old": "decide (qid ∉ gs.closed.map (·.questionId))",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "1be677dc942ec8a65be77b80c9c8c2ba694934a9ba238fbc681da240c99aefaf",
+    "instrumentSha256": "2b7d068bdc55d986fd4b2c9de4047b85d1266e105885f0260bb7d63455c6f9f7",
+    "proofLines": [
+      194,
+      213
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 201,
+        "column": 20,
+        "message": "Application type mismatch: The argument"
+      },
+      {
+        "line": 208,
+        "column": 20,
+        "message": "Application type mismatch: The argument"
+      }
+    ],
+    "receipt": "evidence/full-v2/A39.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A40",
+    "obligation": "V2 lookup-selected open question cleanliness",
+    "source": "KelGroups/Mirrors.lean",
+    "definition": "sweepReadyB",
+    "theorem": "KelGroups.Vote.sweepReady_corr",
+    "old": "| some q => questionCleanB q",
+    "replacement": "| some q => true",
+    "occurrence": 0,
+    "sourceSha256": "1be677dc942ec8a65be77b80c9c8c2ba694934a9ba238fbc681da240c99aefaf",
+    "instrumentSha256": "ca11de2dd5c47c7bea3247f6849e3469b0938659d5d61afdf08aed23cecbf7cc",
+    "proofLines": [
+      194,
+      213
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 201,
+        "column": 24,
+        "message": "Application type mismatch: The argument"
+      },
+      {
+        "line": 208,
+        "column": 46,
+        "message": "Application type mismatch: The argument"
+      }
+    ],
+    "receipt": "evidence/full-v2/A40.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A41",
+    "obligation": "V2 closed question cleanliness",
+    "source": "KelGroups/Mirrors.lean",
+    "definition": "sweepReadyB",
+    "theorem": "KelGroups.Vote.sweepReady_corr",
+    "old": "gs.closed.all (fun c => questionCleanB c.question)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "1be677dc942ec8a65be77b80c9c8c2ba694934a9ba238fbc681da240c99aefaf",
+    "instrumentSha256": "67222be2060f64576bac28b0b2422f74564efb8f44ed148c082245b5dfed4ceb",
+    "proofLines": [
+      194,
+      213
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 202,
+        "column": 12,
+        "message": "Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce"
+      },
+      {
+        "line": 210,
+        "column": 49,
+        "message": "Function expected at"
+      }
+    ],
+    "receipt": "evidence/full-v2/A41.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A42",
+    "obligation": "V2 no open verdict in closed",
+    "source": "KelGroups/Mirrors.lean",
+    "definition": "sweepReadyB",
+    "theorem": "KelGroups.Vote.sweepReady_corr",
+    "old": "decide (c.verdict ≠ Verdict.open)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "1be677dc942ec8a65be77b80c9c8c2ba694934a9ba238fbc681da240c99aefaf",
+    "instrumentSha256": "8a596548e9b01d0fb68732e0095edb4e0c43cdadc0e0c22499ffd1581947f4cc",
+    "proofLines": [
+      194,
+      213
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 205,
+        "column": 6,
+        "message": "Type mismatch"
+      },
+      {
+        "line": 212,
+        "column": 6,
+        "message": "Type mismatch"
+      }
+    ],
+    "receipt": "evidence/full-v2/A42.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A43",
+    "obligation": "V3 sweep shape",
+    "source": "KelGroups/Mirrors.lean",
+    "definition": "voteWellFormedB",
+    "theorem": "KelGroups.Vote.voteWellFormed_corr",
+    "old": "sweepReadyB view gs",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "1be677dc942ec8a65be77b80c9c8c2ba694934a9ba238fbc681da240c99aefaf",
+    "instrumentSha256": "a4c2ef1a7b71a5ed66b206786360d190e59a70a872aefe11c6ed7a616a062276",
+    "proofLines": [
+      248,
+      262
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 254,
+        "column": 11,
+        "message": "Application type mismatch: The argument"
+      },
+      {
+        "line": 257,
+        "column": 41,
+        "message": "Application type mismatch: The argument"
+      }
+    ],
+    "receipt": "evidence/full-v2/A43.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  },
+  {
+    "id": "A44",
+    "obligation": "V3 callable threshold open verdict",
+    "source": "KelGroups/Mirrors.lean",
+    "definition": "voteWellFormedB",
+    "theorem": "KelGroups.Vote.voteWellFormed_corr",
+    "old": "decide (verdictOf θ view q = Verdict.open)",
+    "replacement": "true",
+    "occurrence": 0,
+    "sourceSha256": "1be677dc942ec8a65be77b80c9c8c2ba694934a9ba238fbc681da240c99aefaf",
+    "instrumentSha256": "f15e7896de20ee8a8a845ccd0ff302c796d05312a7a894dce195e1b6efeeab14",
+    "proofLines": [
+      248,
+      262
+    ],
+    "wellTyped": "Bool-preserving expression replacement; #check marker must appear; no definition-range error",
+    "editCount": 1,
+    "exit": 1,
+    "errors": [
+      {
+        "line": 255,
+        "column": 6,
+        "message": "Application type mismatch: The argument"
+      },
+      {
+        "line": 257,
+        "column": 74,
+        "message": "Application type mismatch: The argument"
+      }
+    ],
+    "receipt": "evidence/full-v2/A44.json",
+    "status": "CLOSED: exactly one well-typed body edit; original proof reached and failed; original statement/proof bytes preserved",
+    "negativeScope": "Definition sensitivity for this stated atom only; no completeness claim over all possible faults"
+  }
+]

@@ -1,0 +1,3402 @@
+[
+  {
+    "oldRow": 1,
+    "identity": "step_grant_inv",
+    "originalIdentity": "step_grant_inv",
+    "successorOps": [
+      "SS-OP-016"
+    ],
+    "allRefsExist": true,
+    "observationKind": "EXECUTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "197-209 (error at 209:4; header :197; Built/Replayed distinguished)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "S-SS0 binding: grant atom E02 (Step.lean:55 permitted:=true -> retain col). Span :197-209, error at :209:4 (exact hx.symm), not :197 header. Diagnostic shows symbolic record exprs with col/s/rest, not evaluated concrete states. Semantic failure bound to changed definition + satisfying antecedent (permitted=false collection, admin signer, authorized grant) with falsified consequent (permitted=true output); unchanged proof/script outcome and exact diagnostic recorded separately per NOTE-071. Built Step (1.3s) corroborates mutated definition compiled; Replayed KelGroups lines carry no fresh info. Expected counterexample shape (permitted=false + authorized grant) is prediction, not executed concrete witness; never relabelled OBSERVED. Cost narrow: OP2 19819ms slower than OP1 15980ms refutes universal cheaper-incremental, not stable comparative cost."
+  },
+  {
+    "oldRow": 2,
+    "identity": "conservation_preserved",
+    "originalIdentity": "conservation_preserved",
+    "successorOps": [
+      "SS-OP-001",
+      "SS-OP-002",
+      "SS-OP-003",
+      "SS-OP-004",
+      "SS-OP-005",
+      "SS-OP-006",
+      "SS-OP-007",
+      "SS-OP-008",
+      "SS-OP-009",
+      "SS-OP-010",
+      "SS-OP-011",
+      "SS-OP-012",
+      "SS-OP-013",
+      "SS-OP-014",
+      "SS-OP-015"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "see note",
+    "span": "430-442 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN"
+    ],
+    "correctionNote": "S-03 Row2: 10 fund-changing arms THEOREM-FAIL, 4 arms PROOF-FAIL/SURVIVE (openPurchase escrowOf=0, grant pure flag, donate OP22 guard-only, accept intra-escrow move). OP13 ambiguous split into E10-WHOLE vs E10-CREDIT-ONLY (different conservation outcomes). Donate OP22 preserves conservation + direct-unfold proof (guard unused), not PROOF-FAIL. Grant/accept consumers do not auto-fail after earlier same-module error (S-05). Per-arm ops SS-OP-COLL-*."
+  },
+  {
+    "oldRow": 3,
+    "identity": "step_authorized",
+    "originalIdentity": "step_authorized",
+    "successorOps": [
+      "SS-OP-001",
+      "SS-OP-002",
+      "SS-OP-003",
+      "SS-OP-004",
+      "SS-OP-005",
+      "SS-OP-006",
+      "SS-OP-007",
+      "SS-OP-008",
+      "SS-OP-009",
+      "SS-OP-010",
+      "SS-OP-011",
+      "SS-OP-012",
+      "SS-OP-013",
+      "SS-OP-014",
+      "SS-OP-015"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "see note",
+    "span": "561-573 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN",
+      "U-CHAIN"
+    ],
+    "correctionNote": "S-03 Row3: AUTH remains true. Actual proof calls 8 inversion lemmas (not 14); 6 arms unfold step directly (open/deposit/withdraw/transfer/donate/backdonate). No automatic cascade; dependency only, no downstream diagnostic location."
+  },
+  {
+    "oldRow": 4,
+    "identity": "pledge_escrow_debit",
+    "originalIdentity": "pledge_escrow_debit",
+    "successorOps": [
+      "SS-OP-017"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "659-671 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Consumes step_pledge_inv. Statement also becomes false with v=1 and omitted debit; dependency alone does not locate a downstream diagnostic."
+  },
+  {
+    "oldRow": 5,
+    "identity": "pledge_preserves_allUnique",
+    "originalIdentity": "pledge_preserves_allUnique",
+    "successorOps": [
+      "SS-OP-018"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "1269-1281 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Consumes step_pledge_inv. Conti debit omission preserves uniqueness and duplicate refusal; no semantic kill or automatic consumer diagnostic."
+  },
+  {
+    "oldRow": 6,
+    "identity": "pledge_rejected_when_member",
+    "originalIdentity": "pledge_rejected_when_member",
+    "successorOps": [
+      "SS-OP-019"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "1241-1253 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Consumes step_pledge_inv. Conti debit omission preserves uniqueness and duplicate refusal; no semantic kill or automatic consumer diagnostic."
+  },
+  {
+    "oldRow": 7,
+    "identity": "step_pledge_inv",
+    "originalIdentity": "step_pledge_inv",
+    "successorOps": [
+      "SS-OP-020"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "227-239 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Positive funded pledge with fresh user and collection contradicts debit equation when debit omitted."
+  },
+  {
+    "oldRow": 8,
+    "identity": "step_accept_inv",
+    "originalIdentity": "step_accept_inv",
+    "successorOps": [
+      "SS-OP-021"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "247-259 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Exact post-state differs if accepted transfer omitted; freeze whether pending removal remains. That distinction changes conservation row 2."
+  },
+  {
+    "oldRow": 9,
+    "identity": "step_refuse_inv",
+    "originalIdentity": "step_refuse_inv",
+    "successorOps": [
+      "SS-OP-022"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "265-277 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Pending pledge amount 1, correct admin/referee: omitting refund violates post-state equation."
+  },
+  {
+    "oldRow": 10,
+    "identity": "step_correct_inv",
+    "originalIdentity": "step_correct_inv",
+    "successorOps": [
+      "SS-OP-023"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "284-296 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Accepted amount 2 corrected to 1 with sufficient balance; omitted balance difference violates post-state equation."
+  },
+  {
+    "oldRow": 11,
+    "identity": "close_permission_to_close",
+    "originalIdentity": "close_permission_to_close",
+    "successorOps": [
+      "SS-OP-024"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "TRUE-PRESERVED (predicted)",
+    "span": "647-659 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "S-03 Row11: close_permission_to_close survives spending omission (consumes step_close_inv + close_guard_inv). MUT site128 is guard, unlike spending atom131. Reclassified from OBSERVED to PREDICTED-SURVIVE."
+  },
+  {
+    "oldRow": 12,
+    "identity": "close_spends_referente",
+    "originalIdentity": "close_spends_referente",
+    "successorOps": [
+      "SS-OP-025"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "679-691 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Consumes step_close_inv; statement itself false for nonzero accepted total when cassa spending omitted. No observed downstream diagnostic."
+  },
+  {
+    "oldRow": 13,
+    "identity": "step_close_inv",
+    "originalIdentity": "step_close_inv",
+    "successorOps": [
+      "SS-OP-026"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "305-317 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Permitted nonempty accepted collection, no pending: omitted cassa spend contradicts stated result."
+  },
+  {
+    "oldRow": 14,
+    "identity": "step_fail_inv",
+    "originalIdentity": "step_fail_inv",
+    "successorOps": [
+      "SS-OP-027"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "322-334 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Nonzero refundable accepted pledge on fail; retained collection removal without refund contradicts result equation."
+  },
+  {
+    "oldRow": 15,
+    "identity": "Reactivegas.step_open_inv",
+    "originalIdentity": "Reactivegas.step_open_inv",
+    "successorOps": [
+      "SS-OP-028"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "343-355 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Admin opens fresh id; omitting new collection contradicts cons output."
+  },
+  {
+    "oldRow": 16,
+    "identity": "deposit_double_entry",
+    "originalIdentity": "deposit_double_entry",
+    "successorOps": [
+      "SS-OP-029"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "697-709 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Admin distinct from member, deposit1: missing conti credit contradicts double-entry/result equation."
+  },
+  {
+    "oldRow": 17,
+    "identity": "Reactivegas.step_deposit_inv",
+    "originalIdentity": "Reactivegas.step_deposit_inv",
+    "successorOps": [
+      "SS-OP-030"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "356-368 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Admin distinct from member, deposit1: missing conti credit contradicts double-entry/result equation."
+  },
+  {
+    "oldRow": 18,
+    "identity": "Reactivegas.step_withdraw_inv",
+    "originalIdentity": "Reactivegas.step_withdraw_inv",
+    "successorOps": [
+      "SS-OP-031"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "369-381 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Admin distinct from member, funded withdrawal1, non-stalled state: missing conti debit contradicts result/double-entry."
+  },
+  {
+    "oldRow": 19,
+    "identity": "withdraw_double_entry",
+    "originalIdentity": "withdraw_double_entry",
+    "successorOps": [
+      "SS-OP-032"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "707-719 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Admin distinct from member, funded withdrawal1, non-stalled state: missing conti debit contradicts result/double-entry."
+  },
+  {
+    "oldRow": 20,
+    "identity": "Reactivegas.step_transferCassa_inv",
+    "originalIdentity": "Reactivegas.step_transferCassa_inv",
+    "successorOps": [
+      "SS-OP-033"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "384-396 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Two distinct admins transfer1: dropping outer signer credit changes cassa equation."
+  },
+  {
+    "oldRow": 21,
+    "identity": "Reactivegas.step_donate_inv",
+    "originalIdentity": "Reactivegas.step_donate_inv",
+    "successorOps": [
+      "SS-OP-034"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "397-409 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Admin donate0 admitted under constant-true positivity atom; original positive guard conjunct is false. Historical +1 mutant is different."
+  },
+  {
+    "oldRow": 22,
+    "identity": "Reactivegas.step_backdonate_inv",
+    "originalIdentity": "Reactivegas.step_backdonate_inv",
+    "successorOps": [
+      "SS-OP-035"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "410-422 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Omit member distribution while retaining comune debit; positive w and nonempty members contradict result. Precise retained debit must be frozen."
+  },
+  {
+    "oldRow": 23,
+    "identity": "step_deny_inv",
+    "originalIdentity": "step_deny_inv",
+    "successorOps": [
+      "SS-OP-036"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "211-223 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Deny collection carrying amount1: omission of refund while deleting escrow contradicts result equation."
+  },
+  {
+    "oldRow": 24,
+    "identity": "credit_pledges_of_reach",
+    "originalIdentity": "credit_pledges_of_reach",
+    "successorOps": [
+      "SS-OP-037"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "1148-1160 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Reach induction consumes credit_pledges_step; comune-only credit omission preserves non-comune statement, not automatic failure."
+  },
+  {
+    "oldRow": 25,
+    "identity": "credit_pledges_step",
+    "originalIdentity": "credit_pledges_step",
+    "successorOps": [
+      "SS-OP-038"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "TRUE-PRESERVED",
+    "span": "890-902 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Statement excludes comune; donate rw bal_bump_ne loses rewrite target. Proof-script sensitivity only, insufficient for semantic D2 obligation."
+  },
+  {
+    "oldRow": 26,
+    "identity": "not_insolvent_of_reach",
+    "originalIdentity": "not_insolvent_of_reach",
+    "successorOps": [
+      "SS-OP-039"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "1184-1196 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Solvency consumers call named helper/carrier; comune credit omitted does not falsify member solvency. Same-module recovery must not be treated as obligatory cascading RED."
+  },
+  {
+    "oldRow": 27,
+    "identity": "reach_solvent",
+    "originalIdentity": "reach_solvent",
+    "successorOps": [
+      "SS-OP-040"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "1177-1189 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Solvency consumers call named helper/carrier; comune credit omitted does not falsify member solvency. Same-module recovery must not be treated as obligatory cascading RED."
+  },
+  {
+    "oldRow": 28,
+    "identity": "solvent_preserved",
+    "originalIdentity": "solvent_preserved",
+    "successorOps": [
+      "SS-OP-041"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "1164-1176 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Solvency consumers call named helper/carrier; comune credit omitted does not falsify member solvency. Same-module recovery must not be treated as obligatory cascading RED."
+  },
+  {
+    "oldRow": 29,
+    "identity": "conservation_preserved",
+    "originalIdentity": "conservation_preserved",
+    "successorOps": [
+      "SS-OP-042"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "430-442 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "RefundAll->m falsifies conservation for escrow refund, but State.refundAll_sum fails in imported producer module first. Intended higher row needs separately bound observation path."
+  },
+  {
+    "oldRow": 30,
+    "identity": "comune_not_a_member_of_reach",
+    "originalIdentity": "comune_not_a_member_of_reach",
+    "successorOps": [
+      "SS-OP-043"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "1141-1153 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Fixed canonical view premise transport; actual boot/apply/admission producers exist. No production-absence conclusion."
+  },
+  {
+    "oldRow": 31,
+    "identity": "comune_not_a_member_step",
+    "originalIdentity": "comune_not_a_member_step",
+    "successorOps": [
+      "SS-OP-044"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "883-895 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Fixed canonical view premise transport; actual boot/apply/admission producers exist. No production-absence conclusion."
+  },
+  {
+    "oldRow": 32,
+    "identity": "KelGroups.Vote.ballots_nodup_disjoint",
+    "originalIdentity": "KelGroups.Vote.ballots_nodup_disjoint",
+    "successorOps": [
+      "SS-OP-045"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "802-814 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Carrier projection; opposite-side erase omission can falsify disjointness at a switching trace, but call does not establish this declaration emits RED."
+  },
+  {
+    "oldRow": 33,
+    "identity": "KelGroups.Vote.placeBallot_clean",
+    "originalIdentity": "KelGroups.Vote.placeBallot_clean",
+    "successorOps": [
+      "SS-OP-046"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "527-539 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Clean q with dissent[a], cast assent a: retaining dissent puts a in both tallies."
+  },
+  {
+    "oldRow": 34,
+    "identity": "KelGroups.Vote.placeBallot_tally",
+    "originalIdentity": "KelGroups.Vote.placeBallot_tally",
+    "successorOps": [
+      "SS-OP-047"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "TRUE-PRESERVED",
+    "span": "550-562 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Tally inclusion remains true; assent-arm List.erase_subset no longer matches non-erased hypothesis. Proof-script sensitivity."
+  },
+  {
+    "oldRow": 35,
+    "identity": "KelGroups.Vote.sweepClosures_tallyKeys",
+    "originalIdentity": "KelGroups.Vote.sweepClosures_tallyKeys",
+    "successorOps": [
+      "SS-OP-048"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "see note",
+    "span": "900-912 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "S-05 Row35: sweepClosures_tallyKeys + open/closed_mem/sweepStep_key do not depend on placeBallot; OP39 supplies no failing open_mem; attribution false. No exact causing mutant; explicitly incomplete with owner %503."
+  },
+  {
+    "oldRow": 36,
+    "identity": "KelGroups.Vote.tally_keys_franchised_from",
+    "originalIdentity": "KelGroups.Vote.tally_keys_franchised_from",
+    "successorOps": [
+      "SS-OP-049"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "1071-1083 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Uses effectedState_tally_growth/placeBallot_tally. Inclusion statement remains true under omitted erase; script/dependency distinction required."
+  },
+  {
+    "oldRow": 37,
+    "identity": "KelGroups.Vote.tallyKeysOfState_erased_le",
+    "originalIdentity": "KelGroups.Vote.tallyKeysOfState_erased_le",
+    "successorOps": [
+      "SS-OP-050"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "989-1001 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Association-list/tally membership decomposition; no changed placeBallot call. Baseline structural classification only."
+  },
+  {
+    "oldRow": 38,
+    "identity": "KelGroups.Vote.tallyKeysOfState_insert_cases",
+    "originalIdentity": "KelGroups.Vote.tallyKeysOfState_insert_cases",
+    "successorOps": [
+      "SS-OP-051"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "1004-1016 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Association-list/tally membership decomposition; no changed placeBallot call. Baseline structural classification only."
+  },
+  {
+    "oldRow": 39,
+    "identity": "KelGroups.Vote.open_questions_are_open",
+    "originalIdentity": "KelGroups.Vote.open_questions_are_open",
+    "successorOps": [
+      "SS-OP-052"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "810-822 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Carrier opensOpen projection; OP40 can leave a closable q open, but projection is not independent observed kill."
+  },
+  {
+    "oldRow": 40,
+    "identity": "KelGroups.Vote.sweepClosures_closed_mem",
+    "originalIdentity": "KelGroups.Vote.sweepClosures_closed_mem",
+    "successorOps": [
+      "SS-OP-053"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "TRUE-PRESERVED",
+    "span": "424-436 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "closed projection unchanged by openQuestions filter change; proof uses only append/filterMap. Survivor prediction well supported."
+  },
+  {
+    "oldRow": 41,
+    "identity": "KelGroups.Vote.sweepClosures_idempotent",
+    "originalIdentity": "KelGroups.Vote.sweepClosures_idempotent",
+    "successorOps": [
+      "SS-OP-054"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "1182-1194 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Closable singleton under threshold0 is retained open; second sweep duplicates closure, and open_mem iff fails."
+  },
+  {
+    "oldRow": 42,
+    "identity": "KelGroups.Vote.sweepClosures_open_mem",
+    "originalIdentity": "KelGroups.Vote.sweepClosures_open_mem",
+    "successorOps": [
+      "SS-OP-055"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "418-430 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Closable singleton under threshold0 is retained open; second sweep duplicates closure, and open_mem iff fails."
+  },
+  {
+    "oldRow": 43,
+    "identity": "KelGroups.Vote.sweepClosures_preserves_qid",
+    "originalIdentity": "KelGroups.Vote.sweepClosures_preserves_qid",
+    "successorOps": [
+      "SS-OP-056"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "696-708 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Qids remain a superset; proof consumes open_mem, whose same-module failure does not itself imply this proof fails."
+  },
+  {
+    "oldRow": 44,
+    "identity": "KelGroups.Vote.sweepClosures_sweepReady",
+    "originalIdentity": "KelGroups.Vote.sweepClosures_sweepReady",
+    "successorOps": [
+      "SS-OP-057"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "440-452 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "OP40 creates open/closed overlap and stale open; semantic carrier failure distinct from assumed same-module cascade."
+  },
+  {
+    "oldRow": 45,
+    "identity": "KelGroups.Vote.sweepClosures_wellFormed",
+    "originalIdentity": "KelGroups.Vote.sweepClosures_wellFormed",
+    "successorOps": [
+      "SS-OP-058"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "517-529 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "OP40 creates open/closed overlap and stale open; semantic carrier failure distinct from assumed same-module cascade."
+  },
+  {
+    "oldRow": 46,
+    "identity": "KelGroups.Vote.filter_open_idem",
+    "originalIdentity": "KelGroups.Vote.filter_open_idem",
+    "successorOps": [
+      "SS-OP-059"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "1165-1177 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Idempotence of the explicitly written filter is a pure list equation; mutant changes production sweep call-site, not this statement."
+  },
+  {
+    "oldRow": 47,
+    "identity": "KelGroups.Vote.questions_partition",
+    "originalIdentity": "KelGroups.Vote.questions_partition",
+    "successorOps": [
+      "SS-OP-060"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "818-830 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Recovered standalone partition instrument; actual old dropSweep/fold and receipt differ from current production definition. No current kill."
+  },
+  {
+    "oldRow": 48,
+    "identity": "KelGroups.Vote.sweep_filterMap_of_swept",
+    "originalIdentity": "KelGroups.Vote.sweep_filterMap_of_swept",
+    "successorOps": [
+      "SS-OP-061"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "see note",
+    "span": "1150-1162 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "S-05 Row48: no mutant specified; sweepStep_of_open dependency real but OP42 has no failing atom; cannot establish cascade. OPEN with owner %503, reason no exact causing mutant."
+  },
+  {
+    "oldRow": 49,
+    "identity": "KelGroups.Vote.ballots_nodup_disjoint",
+    "originalIdentity": "KelGroups.Vote.ballots_nodup_disjoint",
+    "successorOps": [
+      "SS-OP-062"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "802-814 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Recovered badPlace/badEffect/own-fold instrument establishes its historical check result only; not three production theorem kills."
+  },
+  {
+    "oldRow": 50,
+    "identity": "KelGroups.Vote.placeBallot_clean",
+    "originalIdentity": "KelGroups.Vote.placeBallot_clean",
+    "successorOps": [
+      "SS-OP-063"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "527-539 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Recovered badPlace/badEffect/own-fold instrument establishes its historical check result only; not three production theorem kills."
+  },
+  {
+    "oldRow": 51,
+    "identity": "KelGroups.Vote.placeBallot_tally",
+    "originalIdentity": "KelGroups.Vote.placeBallot_tally",
+    "successorOps": [
+      "SS-OP-064"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "550-562 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Recovered badPlace/badEffect/own-fold instrument establishes its historical check result only; not three production theorem kills."
+  },
+  {
+    "oldRow": 52,
+    "identity": "KelGroups.Vote.open_questions_are_open",
+    "originalIdentity": "KelGroups.Vote.open_questions_are_open",
+    "successorOps": [
+      "SS-OP-065"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "810-822 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Recovered nostale instrument uses retired member events and own fold; no present row kill."
+  },
+  {
+    "oldRow": 53,
+    "identity": "KelGroups.Vote.franchise_of_tallies",
+    "originalIdentity": "KelGroups.Vote.franchise_of_tallies",
+    "successorOps": [
+      "SS-OP-066"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "1115-1127 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Recovered unfranchised recast instrument uses retired setRoles/admitMember; actual current franchise theorem remains required."
+  },
+  {
+    "oldRow": 54,
+    "identity": "KelGroups.Vote.inadmissible_is_noop",
+    "originalIdentity": "KelGroups.Vote.inadmissible_is_noop",
+    "successorOps": [
+      "SS-OP-067"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "957-969 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Bypass instrument compares its separately defined bypassApply result, not current universal noop theorem."
+  },
+  {
+    "oldRow": 55,
+    "identity": "KelGroups.Vote.nonresponsabile_event_noop",
+    "originalIdentity": "KelGroups.Vote.nonresponsabile_event_noop",
+    "successorOps": [
+      "SS-OP-068"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "967-979 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Bypass instrument compares its separately defined bypassApply result, not current universal noop theorem."
+  },
+  {
+    "oldRow": 56,
+    "identity": "KelGroups.Vote.unfranchised_cast_noop",
+    "originalIdentity": "KelGroups.Vote.unfranchised_cast_noop",
+    "successorOps": [
+      "SS-OP-069"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "980-992 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Recovered franchise instrument is not an independently observed current cast-noop failure."
+  },
+  {
+    "oldRow": 57,
+    "identity": "KelGroups.Vote.sweepStep_of_open",
+    "originalIdentity": "KelGroups.Vote.sweepStep_of_open",
+    "successorOps": [
+      "SS-OP-070"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "1141-1153 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "An open arm returning a concrete closure falsifies none equality; close-branch lacks a complete record/precise diff."
+  },
+  {
+    "oldRow": 58,
+    "identity": "KelGroups.Vote.sweepStep_key",
+    "originalIdentity": "KelGroups.Vote.sweepStep_key",
+    "successorOps": [
+      "SS-OP-071"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "401-413 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "wrong is no bound replacement term. Define a total qid-changing value (including a differing witness) before well-typed semantic prediction."
+  },
+  {
+    "oldRow": 59,
+    "identity": "KelGroups.Vote.verdictOf_threshold_congr",
+    "originalIdentity": "KelGroups.Vote.verdictOf_threshold_congr",
+    "successorOps": [
+      "SS-OP-072"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "389-401 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Congruence assumes pointwise threshold agreement and unfolds verdictOf; no threshold-value-dependent property claimed."
+  },
+  {
+    "oldRow": 60,
+    "identity": "KelGroups.Vote.no_expiry",
+    "originalIdentity": "KelGroups.Vote.no_expiry",
+    "successorOps": [
+      "SS-OP-073"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "see note",
+    "span": "877-889 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "S-05 Row60: no_expiry arbitrary event/prefix/hopen + semantic preservation premise; uses both WF lemmas; no mutant specified, no observation; scope correction (arbitrary event) accepted, no coverage claimed."
+  },
+  {
+    "oldRow": 61,
+    "identity": "KelGroups.Vote.inadmissible_is_noop",
+    "originalIdentity": "KelGroups.Vote.inadmissible_is_noop",
+    "successorOps": [
+      "SS-OP-074"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "TRUE-PRESERVED",
+    "span": "957-969 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Rejected premise drives simp; affected openQuestion has no error witness under bypass, other rejected arms remain."
+  },
+  {
+    "oldRow": 62,
+    "identity": "KelGroups.Vote.nonresponsabile_event_noop",
+    "originalIdentity": "KelGroups.Vote.nonresponsabile_event_noop",
+    "successorOps": [
+      "SS-OP-075"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "967-979 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Nonadmin opens fresh question in positive franchise view; bypass admits/effects it, falsifying identity."
+  },
+  {
+    "oldRow": 63,
+    "identity": "KelGroups.Vote.unfranchised_cast_noop",
+    "originalIdentity": "KelGroups.Vote.unfranchised_cast_noop",
+    "successorOps": [
+      "SS-OP-076"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "TRUE-PRESERVED",
+    "span": "980-992 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Cast branch unchanged by openQuestion-only validation mutation."
+  },
+  {
+    "oldRow": 64,
+    "identity": "KelGroups.Vote.effectedState_preserves_qid",
+    "originalIdentity": "KelGroups.Vote.effectedState_preserves_qid",
+    "successorOps": [
+      "SS-OP-077"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "TRUE-PRESERVED",
+    "span": "722-734 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Cast->gs preserves qids/SweepReady/tally inclusion; existing cast proof insists on assocInsert/placeBallot shape. Script sensitivity only."
+  },
+  {
+    "oldRow": 65,
+    "identity": "KelGroups.Vote.effectedState_sweepReady",
+    "originalIdentity": "KelGroups.Vote.effectedState_sweepReady",
+    "successorOps": [
+      "SS-OP-078"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "TRUE-PRESERVED",
+    "span": "571-583 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Cast->gs preserves qids/SweepReady/tally inclusion; existing cast proof insists on assocInsert/placeBallot shape. Script sensitivity only."
+  },
+  {
+    "oldRow": 66,
+    "identity": "KelGroups.Vote.effectedState_tally_growth",
+    "originalIdentity": "KelGroups.Vote.effectedState_tally_growth",
+    "successorOps": [
+      "SS-OP-079"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "TRUE-PRESERVED",
+    "span": "1017-1029 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Cast->gs preserves qids/SweepReady/tally inclusion; existing cast proof insists on assocInsert/placeBallot shape. Script sensitivity only."
+  },
+  {
+    "oldRow": 67,
+    "identity": "KelGroups.Vote.applyVoteEvent_preserves_qid",
+    "originalIdentity": "KelGroups.Vote.applyVoteEvent_preserves_qid",
+    "successorOps": [
+      "SS-OP-080"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "TRUE-PRESERVED",
+    "span": "772-784 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Without sweep, effectedState still preserves qids; exact sweepClosures_preserves_qid term has changed target. Script sensitivity only."
+  },
+  {
+    "oldRow": 68,
+    "identity": "KelGroups.Vote.applyVoteEvent_preserves_wellFormed",
+    "originalIdentity": "KelGroups.Vote.applyVoteEvent_preserves_wellFormed",
+    "successorOps": [
+      "SS-OP-081"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS (predicted)",
+    "span": "665-677 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "S-03 Row68/OP-51: WITHOUT sweep, VoteWellFormed is semantically FALSE (not proof-script only). Witness: empty WF state, admin signer, threshold constantly 0, fresh collective openQuestion; admitted effect leaves open question with positive verdict; opensOpen false. Static mathematical counterinstance, not executed mutant. Reclassified from PROOF-FAIL to THEOREM-FAIL."
+  },
+  {
+    "oldRow": 69,
+    "identity": "KelGroups.Vote.foldFrom_preserves_qid",
+    "originalIdentity": "KelGroups.Vote.foldFrom_preserves_qid",
+    "successorOps": [
+      "SS-OP-082"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "TRUE-PRESERVED (predicted)",
+    "span": "786-798 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "S-03 Rows69-70/OP-52: fixed-initial fold preserves properties semantically, but cons proof invokes ih at UPDATED seed while tail mutant uses ORIGINAL seed; not definitionally equal. Literal accum->current is not exact source text (source names accumulator current). Assertion no-induction-mismatch is false. Survive prediction retained with corrected reasoning; exact typed replacement unfrozen (CONDITIONAL)."
+  },
+  {
+    "oldRow": 70,
+    "identity": "KelGroups.Vote.foldFrom_preserves_wellFormed",
+    "originalIdentity": "KelGroups.Vote.foldFrom_preserves_wellFormed",
+    "successorOps": [
+      "SS-OP-083"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "TRUE-PRESERVED (predicted)",
+    "span": "676-688 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "S-03 Row70: same as Row69."
+  },
+  {
+    "oldRow": 71,
+    "identity": "KelGroups.Vote.foldVote_append",
+    "originalIdentity": "KelGroups.Vote.foldVote_append",
+    "successorOps": [
+      "SS-OP-084"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "692-704 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Changing foldVote alone to fixed empty seed breaks append at two fresh opens with threshold high; exact substitution still unfrozen. Distinct from OP52 foldFrom mutation."
+  },
+  {
+    "oldRow": 72,
+    "identity": "KelGroups.Vote.emptyVoteState_sweepReady",
+    "originalIdentity": "KelGroups.Vote.emptyVoteState_sweepReady",
+    "successorOps": [
+      "SS-OP-085"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "374-386 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Nonempty is not sufficient for failure: a unique clean open permission question can satisfy both carriers. Need concrete violating list; no unconditional THEOREM-FAIL."
+  },
+  {
+    "oldRow": 73,
+    "identity": "KelGroups.Vote.emptyVoteState_wellFormed",
+    "originalIdentity": "KelGroups.Vote.emptyVoteState_wellFormed",
+    "successorOps": [
+      "SS-OP-086"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "382-394 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Nonempty is not sufficient for failure: a unique clean open permission question can satisfy both carriers. Need concrete violating list; no unconditional THEOREM-FAIL."
+  },
+  {
+    "oldRow": 74,
+    "identity": "KelGroups.direct_admission_requires_admin",
+    "originalIdentity": "KelGroups.direct_admission_requires_admin",
+    "successorOps": [
+      "SS-OP-087"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "799-811 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Admin projection consumes validateDirectAdmission_ok; nonadmin fresh-target witness falsifies statement under OP54 but does not prove consumer diagnostic."
+  },
+  {
+    "oldRow": 75,
+    "identity": "KelGroups.membership_growth_is_direct_admission",
+    "originalIdentity": "KelGroups.membership_growth_is_direct_admission",
+    "successorOps": [
+      "SS-OP-088"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "751-763 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "OP54 permits nonadmin fresh nonreserved target under accepting hook; admin conjunct/refusal fails."
+  },
+  {
+    "oldRow": 76,
+    "identity": "KelGroups.non_admin_admission_is_noop",
+    "originalIdentity": "KelGroups.non_admin_admission_is_noop",
+    "successorOps": [
+      "SS-OP-089"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "813-825 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "OP54 permits nonadmin fresh nonreserved target under accepting hook; admin conjunct/refusal fails."
+  },
+  {
+    "oldRow": 77,
+    "identity": "KelGroups.validateDirectAdmission_ok",
+    "originalIdentity": "KelGroups.validateDirectAdmission_ok",
+    "successorOps": [
+      "SS-OP-090"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "628-640 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "OP54 permits nonadmin fresh nonreserved target under accepting hook; admin conjunct/refusal fails."
+  },
+  {
+    "oldRow": 78,
+    "identity": "KelGroups.Vote.foldVote_wellFormed",
+    "originalIdentity": "KelGroups.Vote.foldVote_wellFormed",
+    "successorOps": [
+      "SS-OP-091"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "see note",
+    "span": "688-700 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "S-03 Row78/OP-54a: no mutated atom; cites foldFrom_preserves_wellFormed while OP52 claims survivor; original foldVote differs from mutated foldFrom, exact carrier term may mismatch, not inherited observed RED. Conditional dependency only."
+  },
+  {
+    "oldRow": 79,
+    "identity": "KelGroups.direct_admission_requires_admin",
+    "originalIdentity": "KelGroups.direct_admission_requires_admin",
+    "successorOps": [
+      "SS-OP-092"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "799-811 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Under OP55 reserved-target conjunct false, but direct_admission_requires_admin admin conjunct still true. Consumer dependency not semantic failure."
+  },
+  {
+    "oldRow": 80,
+    "identity": "KelGroups.membership_growth_is_direct_admission",
+    "originalIdentity": "KelGroups.membership_growth_is_direct_admission",
+    "successorOps": [
+      "SS-OP-093"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "751-763 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Reserved fresh target can be admitted in generic integration with accepting hook, falsifying key!=reserved. Production apply may separately reject it."
+  },
+  {
+    "oldRow": 81,
+    "identity": "KelGroups.validateDirectAdmission_ok",
+    "originalIdentity": "KelGroups.validateDirectAdmission_ok",
+    "successorOps": [
+      "SS-OP-094"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "628-640 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Reserved fresh target can be admitted in generic integration with accepting hook, falsifying key!=reserved. Production apply may separately reject it."
+  },
+  {
+    "oldRow": 82,
+    "identity": "KelGroups.commitBaseChange_ok",
+    "originalIdentity": "KelGroups.commitBaseChange_ok",
+    "successorOps": [
+      "SS-OP-095"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "647-659 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Hook returns changed payload, mutation retains pre.appFold: hook/output equation false."
+  },
+  {
+    "oldRow": 83,
+    "identity": "KelGroups.commitBaseChange_members",
+    "originalIdentity": "KelGroups.commitBaseChange_members",
+    "successorOps": [
+      "SS-OP-096"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "696-708 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Pre/post members differ, hook succeeds: returning pre members falsifies post-member projection."
+  },
+  {
+    "oldRow": 84,
+    "identity": "KelGroups.tryEnactBase_preserves_absence",
+    "originalIdentity": "KelGroups.tryEnactBase_preserves_absence",
+    "successorOps": [
+      "SS-OP-097"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "TRUE-PRESERVED",
+    "span": "721-733 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Threshold strengthening changes when hook runs, not absence or hook-on-reported-change; split proofs do not consume >= type."
+  },
+  {
+    "oldRow": 85,
+    "identity": "KelGroups.tryEnactBase_runs_hook",
+    "originalIdentity": "KelGroups.tryEnactBase_runs_hook",
+    "successorOps": [
+      "SS-OP-098"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "TRUE-PRESERVED",
+    "span": "664-676 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Threshold strengthening changes when hook runs, not absence or hook-on-reported-change; split proofs do not consume >= type."
+  },
+  {
+    "oldRow": 86,
+    "identity": "KelGroups.app_event_preserves_members",
+    "originalIdentity": "KelGroups.app_event_preserves_members",
+    "successorOps": [
+      "SS-OP-099"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "568-580 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Admitted app with nonempty members and successful fold; wiping members falsifies preservation."
+  },
+  {
+    "oldRow": 87,
+    "identity": "KelGroups.enactMutation_preserves_absence",
+    "originalIdentity": "KelGroups.enactMutation_preserves_absence",
+    "successorOps": [
+      "SS-OP-100"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "TRUE-PRESERVED",
+    "span": "711-723 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "No-op removal preserves absence; existing assocLookup_erase_of_none exact term mentions erased list. Script sensitivity."
+  },
+  {
+    "oldRow": 88,
+    "identity": "KelGroups.app_event_has_no_base_change",
+    "originalIdentity": "KelGroups.app_event_has_no_base_change",
+    "successorOps": [
+      "SS-OP-101"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "590-602 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Setting app change to concrete some value falsifies none equation; map some(admit) still needs exact payload. Measurement sidecar supplies a separate concrete sample."
+  },
+  {
+    "oldRow": 89,
+    "identity": "KelGroups.base_change_recomputes_votes",
+    "originalIdentity": "KelGroups.base_change_recomputes_votes",
+    "successorOps": [
+      "SS-OP-102"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": null,
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Exactly two phantom KelGroups namespace rows withdrawn; actual Reactivegas declarations retained at rows97/98."
+  },
+  {
+    "oldRow": 90,
+    "identity": "KelGroups.baseHook_votes",
+    "originalIdentity": "KelGroups.baseHook_votes",
+    "successorOps": [
+      "SS-OP-103"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": null,
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Exactly two phantom KelGroups namespace rows withdrawn; actual Reactivegas declarations retained at rows97/98."
+  },
+  {
+    "oldRow": 91,
+    "identity": "KelGroups.enact_preserves_wellFormed",
+    "originalIdentity": "KelGroups.enact_preserves_wellFormed",
+    "successorOps": [
+      "SS-OP-104"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "TRUE-PRESERVED",
+    "span": "183-195 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Removal identity preserves WF; current proof uses assocErase_keys_nodup/property at target fields. Script sensitivity."
+  },
+  {
+    "oldRow": 92,
+    "identity": "KelGroups.members_change_implies_enacted",
+    "originalIdentity": "KelGroups.members_change_implies_enacted",
+    "successorOps": [
+      "SS-OP-105"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "TRUE-PRESERVED (predicted)",
+    "span": "379-391 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "S-03 Row92/OP-60: members_change_implies_enacted never splits removeMember or unfolds enact; derives Enacts from propose/approve threshold metadata, retaining finishEnact symbolically. Removal-becoming-identity preserves statement + proof structure. Reclassified from KILL to PREDICTED-SURVIVE. Row102 upstream consequently lacking source."
+  },
+  {
+    "oldRow": 93,
+    "identity": "KelGroups.finishEnact_preserves_wellFormed",
+    "originalIdentity": "KelGroups.finishEnact_preserves_wellFormed",
+    "successorOps": [
+      "SS-OP-106"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "TRUE-PRESERVED",
+    "span": "215-227 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Retaining pending proposal preserves existing WF; proof builds pendingKeys via erase lemma, so term shape mismatches."
+  },
+  {
+    "oldRow": 94,
+    "identity": "KelGroups.enact_implies_threshold_met",
+    "originalIdentity": "KelGroups.enact_implies_threshold_met",
+    "successorOps": [
+      "SS-OP-107"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "342-354 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Consumes threshold lemma; > implies >=, so statement remains true, and call alone does not imply downstream RED."
+  },
+  {
+    "oldRow": 95,
+    "identity": "KelGroups.tryEnactDetailed_enactment_threshold_met",
+    "originalIdentity": "KelGroups.tryEnactDetailed_enactment_threshold_met",
+    "successorOps": [
+      "SS-OP-108"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "TRUE-PRESERVED",
+    "span": "327-339 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Threshold statement remains true under stricter >; exact threshold has wrong relation and WF proof splits old >=. Script sensitivity, no semantic kill."
+  },
+  {
+    "oldRow": 96,
+    "identity": "KelGroups.tryEnact_preserves_wellFormed",
+    "originalIdentity": "KelGroups.tryEnact_preserves_wellFormed",
+    "successorOps": [
+      "SS-OP-109"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "TRUE-PRESERVED",
+    "span": "228-240 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Threshold statement remains true under stricter >; exact threshold has wrong relation and WF proof splits old >=. Script sensitivity, no semantic kill."
+  },
+  {
+    "oldRow": 97,
+    "identity": "Reactivegas.base_change_recomputes_votes",
+    "originalIdentity": "Reactivegas.base_change_recomputes_votes",
+    "successorOps": [
+      "SS-OP-110"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "1616-1628 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Pre franchise3/post2 with one assent: pre sweep leaves open, post sweep closes; projected vote equality can be false."
+  },
+  {
+    "oldRow": 98,
+    "identity": "Reactivegas.baseHook_votes",
+    "originalIdentity": "Reactivegas.baseHook_votes",
+    "successorOps": [
+      "SS-OP-111"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "1600-1612 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Pre franchise3/post2 with one assent: pre sweep leaves open, post sweep closes; projected vote equality can be false."
+  },
+  {
+    "oldRow": 99,
+    "identity": "KelGroups.applyPropose_preserves_wellFormed",
+    "originalIdentity": "KelGroups.applyPropose_preserves_wellFormed",
+    "successorOps": [
+      "SS-OP-112"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "238-250 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Existing same pending id, enough admins that new proposal does not enact; cons creates duplicate pending keys."
+  },
+  {
+    "oldRow": 100,
+    "identity": "KelGroups.applyApprove_preserves_wellFormed",
+    "originalIdentity": "KelGroups.applyApprove_preserves_wellFormed",
+    "successorOps": [
+      "SS-OP-113"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "256-268 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Existing signer approval, high majority so pending retained; cons duplicates approval. Lower-level theorem does not require validator admission."
+  },
+  {
+    "oldRow": 101,
+    "identity": "KelGroups.approvePending_wellFormed",
+    "originalIdentity": "KelGroups.approvePending_wellFormed",
+    "successorOps": [
+      "SS-OP-114"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "156-168 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Existing signer approval, high majority so pending retained; cons duplicates approval. Lower-level theorem does not require validator admission."
+  },
+  {
+    "oldRow": 102,
+    "identity": "members_change_implies_enacted",
+    "originalIdentity": "members_change_implies_enacted",
+    "successorOps": [
+      "SS-OP-115"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "see note",
+    "span": "899-911 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "S-03 Row102/OP-64a: root wrapper real, but OP60 counterpart Row92 survives; no failing upstream supplied. Dependency only, explicitly incomplete."
+  },
+  {
+    "oldRow": 103,
+    "identity": "enact_implies_threshold_met",
+    "originalIdentity": "enact_implies_threshold_met",
+    "successorOps": [
+      "SS-OP-116"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "889-901 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Real root wrapper consumes KelGroups threshold theorem; retain distinct identity and conditional dependency, no observed kill."
+  },
+  {
+    "oldRow": 104,
+    "identity": "KelGroups.applyEvent_preserves_wellFormed",
+    "originalIdentity": "KelGroups.applyEvent_preserves_wellFormed",
+    "successorOps": [
+      "SS-OP-117"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "279-291 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Actual WF/fold carrier consumers; may semantically fail under duplicate mutations, but declaration-specific diagnostics are unobserved."
+  },
+  {
+    "oldRow": 105,
+    "identity": "KelGroups.foldEvents_preserves_wellFormed",
+    "originalIdentity": "KelGroups.foldEvents_preserves_wellFormed",
+    "successorOps": [
+      "SS-OP-118"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "295-307 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Actual WF/fold carrier consumers; may semantically fail under duplicate mutations, but declaration-specific diagnostics are unobserved."
+  },
+  {
+    "oldRow": 106,
+    "identity": "KelGroups.foldGroup_wellFormed",
+    "originalIdentity": "KelGroups.foldGroup_wellFormed",
+    "successorOps": [
+      "SS-OP-119"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "306-318 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Actual WF/fold carrier consumers; may semantically fail under duplicate mutations, but declaration-specific diagnostics are unobserved."
+  },
+  {
+    "oldRow": 107,
+    "identity": "approvals_nodup",
+    "originalIdentity": "approvals_nodup",
+    "successorOps": [
+      "SS-OP-120"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "877-889 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Distinct root wrappers of structural WF projections; no new production kill."
+  },
+  {
+    "oldRow": 108,
+    "identity": "member_key_coherent",
+    "originalIdentity": "member_key_coherent",
+    "successorOps": [
+      "SS-OP-121"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "909-921 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Distinct root wrappers of structural WF projections; no new production kill."
+  },
+  {
+    "oldRow": 109,
+    "identity": "proposer_mem_approvals",
+    "originalIdentity": "proposer_mem_approvals",
+    "successorOps": [
+      "SS-OP-122"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "883-895 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Distinct root wrappers of structural WF projections; no new production kill."
+  },
+  {
+    "oldRow": 110,
+    "identity": "KelGroups.majority_not_strict_on_even",
+    "originalIdentity": "KelGroups.majority_not_strict_on_even",
+    "successorOps": [
+      "SS-OP-123"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "459-471 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Two admins satisfy positive even antecedent; mutated majority=3 gives 2*3<=2 false."
+  },
+  {
+    "oldRow": 111,
+    "identity": "KelGroups.majority_table",
+    "originalIdentity": "KelGroups.majority_table",
+    "successorOps": [
+      "SS-OP-124"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "450-462 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "One-admin sample expects1, mutated majority yields2."
+  },
+  {
+    "oldRow": 112,
+    "identity": "majority_not_strict_on_even",
+    "originalIdentity": "majority_not_strict_on_even",
+    "successorOps": [
+      "SS-OP-125"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "see note",
+    "span": "923-935 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "S-06 Row112-113/OP-67a: real wrapper counterparts, but text says OP67a kill (self); actual producer is OP67. Source call does not guarantee independent RED. Dependency on OP67 only."
+  },
+  {
+    "oldRow": 113,
+    "identity": "majority_table",
+    "originalIdentity": "majority_table",
+    "successorOps": [
+      "SS-OP-126"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "see note",
+    "span": "914-926 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "S-06 Row113: same as Row112."
+  },
+  {
+    "oldRow": 114,
+    "identity": "KelGroups.emptyState_wellFormed",
+    "originalIdentity": "KelGroups.emptyState_wellFormed",
+    "successorOps": [
+      "SS-OP-127"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "162-174 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Any concrete duplicate key pair violates memberKeys Nodup; actual pair/type content must be frozen before execution."
+  },
+  {
+    "oldRow": 115,
+    "identity": "governance_enacts_windUpAdmin",
+    "originalIdentity": "governance_enacts_windUpAdmin",
+    "successorOps": [
+      "SS-OP-128"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "637-649 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Collection belonging to removed admin remains under keep-collections mutation; governanceEnacts false."
+  },
+  {
+    "oldRow": 116,
+    "identity": "auth_referente_guard_inv",
+    "originalIdentity": "auth_referente_guard_inv",
+    "successorOps": [
+      "SS-OP-129"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "172-184 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Explicit Bool conjunction projections; no production step invocation. Keep distinct required disposition, not mutation coverage."
+  },
+  {
+    "oldRow": 117,
+    "identity": "close_guard_inv",
+    "originalIdentity": "close_guard_inv",
+    "successorOps": [
+      "SS-OP-130"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "178-190 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Explicit Bool conjunction projections; no production step invocation. Keep distinct required disposition, not mutation coverage."
+  },
+  {
+    "oldRow": 118,
+    "identity": "fail_guard_inv",
+    "originalIdentity": "fail_guard_inv",
+    "successorOps": [
+      "SS-OP-131"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "188-200 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Explicit Bool conjunction projections; no production step invocation. Keep distinct required disposition, not mutation coverage."
+  },
+  {
+    "oldRow": 119,
+    "identity": "pledge_guard_inv",
+    "originalIdentity": "pledge_guard_inv",
+    "successorOps": [
+      "SS-OP-132"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "154-166 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Explicit Bool conjunction projections; no production step invocation. Keep distinct required disposition, not mutation coverage."
+  },
+  {
+    "oldRow": 120,
+    "identity": "Reactivegas.admissionPreservation_holds",
+    "originalIdentity": "Reactivegas.admissionPreservation_holds",
+    "successorOps": [
+      "SS-OP-133"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "2347-2359 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 121,
+    "identity": "Reactivegas.base_change_can_close_without_ballot",
+    "originalIdentity": "Reactivegas.base_change_can_close_without_ballot",
+    "successorOps": [
+      "SS-OP-134"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "1587-1599 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 122,
+    "identity": "Reactivegas.base_departure_applies_cleanup",
+    "originalIdentity": "Reactivegas.base_departure_applies_cleanup",
+    "successorOps": [
+      "SS-OP-135"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "1583-1595 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 123,
+    "identity": "Reactivegas.base_recompute_reachable_holds",
+    "originalIdentity": "Reactivegas.base_recompute_reachable_holds",
+    "successorOps": [
+      "SS-OP-136"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "1591-1603 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 124,
+    "identity": "Reactivegas.canonical_economy_holds",
+    "originalIdentity": "Reactivegas.canonical_economy_holds",
+    "successorOps": [
+      "SS-OP-137"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "2325-2337 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 125,
+    "identity": "Reactivegas.comune_cannot_authorize",
+    "originalIdentity": "Reactivegas.comune_cannot_authorize",
+    "successorOps": [
+      "SS-OP-138"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "470-482 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Actual declaration is Reactivegas.Step:470; decides boot/apply comune refusal and is value-sensitive under OP69L."
+  },
+  {
+    "oldRow": 126,
+    "identity": "Reactivegas.comuneThresholdSanity_holds",
+    "originalIdentity": "Reactivegas.comuneThresholdSanity_holds",
+    "successorOps": [
+      "SS-OP-139"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "2349-2361 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 127,
+    "identity": "Reactivegas.direct_admission_only_holds",
+    "originalIdentity": "Reactivegas.direct_admission_only_holds",
+    "successorOps": [
+      "SS-OP-140"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "1589-1601 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 128,
+    "identity": "Reactivegas.exhaustive_inventories_hold",
+    "originalIdentity": "Reactivegas.exhaustive_inventories_hold",
+    "successorOps": [
+      "SS-OP-141"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "2328-2340 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 129,
+    "identity": "Reactivegas.i57_auth_holds",
+    "originalIdentity": "Reactivegas.i57_auth_holds",
+    "successorOps": [
+      "SS-OP-142"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "2334-2346 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 130,
+    "identity": "Reactivegas.i57_boundary_holds",
+    "originalIdentity": "Reactivegas.i57_boundary_holds",
+    "successorOps": [
+      "SS-OP-143"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "2331-2343 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 131,
+    "identity": "Reactivegas.i57_disjoint_holds",
+    "originalIdentity": "Reactivegas.i57_disjoint_holds",
+    "successorOps": [
+      "SS-OP-144"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "2337-2349 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 132,
+    "identity": "Reactivegas.i57_disjoint_mutant_caught",
+    "originalIdentity": "Reactivegas.i57_disjoint_mutant_caught",
+    "successorOps": [
+      "SS-OP-145"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "2338-2350 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 133,
+    "identity": "Reactivegas.i57_exhaustive_holds",
+    "originalIdentity": "Reactivegas.i57_exhaustive_holds",
+    "successorOps": [
+      "SS-OP-146"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "2332-2344 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 134,
+    "identity": "Reactivegas.i57_franchise_holds",
+    "originalIdentity": "Reactivegas.i57_franchise_holds",
+    "successorOps": [
+      "SS-OP-147"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "2340-2352 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 135,
+    "identity": "Reactivegas.i57_franchise_mutant_caught",
+    "originalIdentity": "Reactivegas.i57_franchise_mutant_caught",
+    "successorOps": [
+      "SS-OP-148"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "2341-2353 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 136,
+    "identity": "Reactivegas.i57_noexpiry_holds",
+    "originalIdentity": "Reactivegas.i57_noexpiry_holds",
+    "successorOps": [
+      "SS-OP-149"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "2346-2358 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 137,
+    "identity": "Reactivegas.i57_noop_holds",
+    "originalIdentity": "Reactivegas.i57_noop_holds",
+    "successorOps": [
+      "SS-OP-150"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "2333-2345 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 138,
+    "identity": "Reactivegas.i57_nostale_holds",
+    "originalIdentity": "Reactivegas.i57_nostale_holds",
+    "successorOps": [
+      "SS-OP-151"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "2339-2351 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 139,
+    "identity": "Reactivegas.i57_partition_holds",
+    "originalIdentity": "Reactivegas.i57_partition_holds",
+    "successorOps": [
+      "SS-OP-152"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "2336-2348 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 140,
+    "identity": "Reactivegas.i57_policyfree_holds",
+    "originalIdentity": "Reactivegas.i57_policyfree_holds",
+    "successorOps": [
+      "SS-OP-153"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "2343-2355 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 141,
+    "identity": "Reactivegas.i57_policyfree_mutant_caught",
+    "originalIdentity": "Reactivegas.i57_policyfree_mutant_caught",
+    "successorOps": [
+      "SS-OP-154"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "2344-2356 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 142,
+    "identity": "Reactivegas.i57_r45_holds",
+    "originalIdentity": "Reactivegas.i57_r45_holds",
+    "successorOps": [
+      "SS-OP-155"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "2335-2347 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 143,
+    "identity": "Reactivegas.integrated_theorem_witness_holds",
+    "originalIdentity": "Reactivegas.integrated_theorem_witness_holds",
+    "successorOps": [
+      "SS-OP-156"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "2322-2334 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 144,
+    "identity": "Reactivegas.productionWellFormed_holds",
+    "originalIdentity": "Reactivegas.productionWellFormed_holds",
+    "successorOps": [
+      "SS-OP-157"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "2348-2360 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 145,
+    "identity": "Reactivegas.sweep_idempotent_mutant_caught",
+    "originalIdentity": "Reactivegas.sweep_idempotent_mutant_caught",
+    "successorOps": [
+      "SS-OP-158"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "1595-1607 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 146,
+    "identity": "Reactivegas.sweep_idempotent_witness",
+    "originalIdentity": "Reactivegas.sweep_idempotent_witness",
+    "successorOps": [
+      "SS-OP-159"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "1593-1605 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom counterexamples."
+  },
+  {
+    "oldRow": 147,
+    "identity": "solvent_init",
+    "originalIdentity": "solvent_init",
+    "successorOps": [
+      "SS-OP-160"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "see note",
+    "span": "877-889 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "S-06 Row147/solvent_init: structural is right; boot elimination is not (direct proof over State.empty, no boot premise). Corrected to structural (bare projection/direct proof), not boot elimination."
+  },
+  {
+    "oldRow": 148,
+    "identity": "Reactivegas.app_members_preservation_holds",
+    "originalIdentity": "Reactivegas.app_members_preservation_holds",
+    "successorOps": [
+      "SS-OP-161"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "445-457 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Members wipe after successful production app falsifies equality on preservationDonate. Exact root edit/branch placement still not frozen."
+  },
+  {
+    "oldRow": 149,
+    "identity": "Reactivegas.app_members_preservation_mutant_caught",
+    "originalIdentity": "Reactivegas.app_members_preservation_mutant_caught",
+    "successorOps": [
+      "SS-OP-162"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "see note",
+    "span": "448-460 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "S-03 Row149/OP-69: shipped memberWritingApply depends on preservationDonate/apply, not self-contained; OP69L rejects input and makes check false. Corrected to PREDICTED-KILL via OP69L atom, not ELAB-STATIC self-contained."
+  },
+  {
+    "oldRow": 150,
+    "identity": "TraceTests.app_members_preservation_holds",
+    "originalIdentity": "TraceTests.app_members_preservation_holds",
+    "successorOps": [
+      "SS-OP-163"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "1087-1099 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Distinct TraceTests proof-term mirror; same Bool can be false under OP69 but failed Step import prevents baseline wrapper loading. Not independent diagnostic."
+  },
+  {
+    "oldRow": 151,
+    "identity": "Reactivegas.comune_cannot_authorize",
+    "originalIdentity": "Reactivegas.comune_cannot_authorize",
+    "successorOps": [
+      "SS-OP-164"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "470-482 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Dropping productionWellFormed negation accepts comune boot and rejects mixed non-comune group: both decided claims become false."
+  },
+  {
+    "oldRow": 152,
+    "identity": "Reactivegas.productionWellFormed_holds",
+    "originalIdentity": "Reactivegas.productionWellFormed_holds",
+    "successorOps": [
+      "SS-OP-165"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "2348-2360 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Dropping productionWellFormed negation accepts comune boot and rejects mixed non-comune group: both decided claims become false."
+  },
+  {
+    "oldRow": 153,
+    "identity": "TraceTests.all_checks_pass",
+    "originalIdentity": "TraceTests.all_checks_pass",
+    "successorOps": [
+      "SS-OP-166"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "992-1004 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "all_checks_pass decides failing=[] from check table; no mutant allocated."
+  },
+  {
+    "oldRow": 154,
+    "identity": "TraceTests.app_members_preservation_mutant_caught",
+    "originalIdentity": "TraceTests.app_members_preservation_mutant_caught",
+    "successorOps": [
+      "SS-OP-167"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "1090-1102 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Real mutant-check mirror; OP69L false value path, Step import may fail."
+  },
+  {
+    "oldRow": 155,
+    "identity": "TraceTests.base_change_can_close_without_ballot",
+    "originalIdentity": "TraceTests.base_change_can_close_without_ballot",
+    "successorOps": [
+      "SS-OP-168"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "931-943 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Real RI proof-term mirror sites931/928/937/934; retain distinct identities and imported-module outcome."
+  },
+  {
+    "oldRow": 156,
+    "identity": "TraceTests.base_departure_applies_cleanup",
+    "originalIdentity": "TraceTests.base_departure_applies_cleanup",
+    "successorOps": [
+      "SS-OP-169"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "928-940 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Real RI proof-term mirror sites931/928/937/934; retain distinct identities and imported-module outcome."
+  },
+  {
+    "oldRow": 157,
+    "identity": "TraceTests.base_recompute_reachable_holds",
+    "originalIdentity": "TraceTests.base_recompute_reachable_holds",
+    "successorOps": [
+      "SS-OP-170"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "937-949 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Real RI proof-term mirror sites931/928/937/934; retain distinct identities and imported-module outcome."
+  },
+  {
+    "oldRow": 158,
+    "identity": "TraceTests.direct_admission_only_holds",
+    "originalIdentity": "TraceTests.direct_admission_only_holds",
+    "successorOps": [
+      "SS-OP-171"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "934-946 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Real RI proof-term mirror sites931/928/937/934; retain distinct identities and imported-module outcome."
+  },
+  {
+    "oldRow": 159,
+    "identity": "TraceTests.frozen_checks_faithful",
+    "originalIdentity": "TraceTests.frozen_checks_faithful",
+    "successorOps": [
+      "SS-OP-172"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "1005-1017 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Decide frozen check/inventory/corpus equalities; source baseline consistency, not production mutant evidence."
+  },
+  {
+    "oldRow": 160,
+    "identity": "TraceTests.frozen_corpus_faithful",
+    "originalIdentity": "TraceTests.frozen_corpus_faithful",
+    "successorOps": [
+      "SS-OP-173"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "1010-1022 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Decide frozen check/inventory/corpus equalities; source baseline consistency, not production mutant evidence."
+  },
+  {
+    "oldRow": 161,
+    "identity": "TraceTests.frozen_inventory_faithful",
+    "originalIdentity": "TraceTests.frozen_inventory_faithful",
+    "successorOps": [
+      "SS-OP-174"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "1006-1018 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Decide frozen check/inventory/corpus equalities; source baseline consistency, not production mutant evidence."
+  },
+  {
+    "oldRow": 162,
+    "identity": "TraceTests.sweep_idempotent_mutant_caught",
+    "originalIdentity": "TraceTests.sweep_idempotent_mutant_caught",
+    "successorOps": [
+      "SS-OP-175"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "943-955 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Actual sweep mirrors943/940; changes to fixture/production dependencies can falsify checks."
+  },
+  {
+    "oldRow": 163,
+    "identity": "TraceTests.sweep_idempotent_witness",
+    "originalIdentity": "TraceTests.sweep_idempotent_witness",
+    "successorOps": [
+      "SS-OP-176"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "940-952 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Actual sweep mirrors943/940; changes to fixture/production dependencies can falsify checks."
+  },
+  {
+    "oldRow": 164,
+    "identity": "stepDetailed_erases",
+    "originalIdentity": "stepDetailed_erases",
+    "successorOps": [
+      "SS-OP-177"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "109-121 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Trace stepDetailed/stepEvent erasure equation; generic wrapper shape, no current mutation receipt."
+  },
+  {
+    "oldRow": 165,
+    "identity": "Reactivegas.Composition.appDecided_verdict_exhaustive",
+    "originalIdentity": "Reactivegas.Composition.appDecided_verdict_exhaustive",
+    "successorOps": [
+      "SS-OP-178"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "139-151 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Composition appDecided exhaustive verdict disjunction from appVerdictAllows; structural cases."
+  },
+  {
+    "oldRow": 166,
+    "identity": "Reactivegas.Composition.baseEnacted_threshold_met",
+    "originalIdentity": "Reactivegas.Composition.baseEnacted_threshold_met",
+    "successorOps": [
+      "SS-OP-179"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "108-120 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Exact threshold consumer, not routing equation. Mutation changes upstream proof; no independent execution or auto-cascade."
+  },
+  {
+    "oldRow": 167,
+    "identity": "Reactivegas.Composition.voteDerived_iff_not_direct",
+    "originalIdentity": "Reactivegas.Composition.voteDerived_iff_not_direct",
+    "successorOps": [
+      "SS-OP-180"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "83-95 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Composition route cases characterize voteDerived/not-direct; source equation only."
+  },
+  {
+    "oldRow": 168,
+    "identity": "solvent_init",
+    "originalIdentity": "solvent_init",
+    "successorOps": [
+      "SS-OP-181"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "877-889 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "ACCEPT is proposed operation label, not accepted result. Plain full-tree/default lake build does not bind final full mandate targets."
+  },
+  {
+    "oldRow": 169,
+    "identity": "KelGroups.Vote.sweepDuplicating_duplicates",
+    "originalIdentity": "KelGroups.Vote.sweepDuplicating_duplicates",
+    "successorOps": [
+      "SS-OP-182"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "1200-1212 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "sweepDuplicating duplicates when filterMap nonempty; no claim about production sweep correctness follows."
+  },
+  {
+    "oldRow": 170,
+    "identity": "Reactivegas.admissionPreservation_holds",
+    "originalIdentity": "Reactivegas.admissionPreservation_holds",
+    "successorOps": [
+      "SS-OP-183",
+      "SS-OP-184"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS (predicted)",
+    "span": "2347-2359 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN",
+      "U-CHAIN"
+    ],
+    "correctionNote": "S-04 extent1 false: OP58B or OP69 wipes members on successful donate30; checkAppMembersPreservation=false, conjunction false. Converted from OPEN to PREDICTED-KILL."
+  },
+  {
+    "oldRow": 171,
+    "identity": "Reactivegas.app_members_preservation_mutant_caught",
+    "originalIdentity": "Reactivegas.app_members_preservation_mutant_caught",
+    "successorOps": [
+      "SS-OP-185",
+      "SS-OP-186"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS (predicted)",
+    "span": "448-460 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN",
+      "U-CHAIN"
+    ],
+    "correctionNote": "S-04 extent2 false: OP69L reverses input well-formedness; preservationDonate errors, memberWritingApply propagates, check=false. Converted OPEN->KILL."
+  },
+  {
+    "oldRow": 172,
+    "identity": "Reactivegas.base_change_can_close_without_ballot",
+    "originalIdentity": "Reactivegas.base_change_can_close_without_ballot",
+    "successorOps": [
+      "SS-OP-187",
+      "SS-OP-188"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "1587-1599 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION",
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "OP63 and OP40 each flip fixture independently; plus must mean alternatives, not combined mutation. Same-module first-proof block claim unsupported."
+  },
+  {
+    "oldRow": 173,
+    "identity": "Reactivegas.base_departure_applies_cleanup",
+    "originalIdentity": "Reactivegas.base_departure_applies_cleanup",
+    "successorOps": [
+      "SS-OP-189",
+      "SS-OP-190"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "1583-1595 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN",
+      "U-CHAIN"
+    ],
+    "correctionNote": "OP67G leaves admin collection; OP57 retains pre payload; OP57B retains old members. Distinct alternatives need unique operation receipts. Same-module block not proved."
+  },
+  {
+    "oldRow": 174,
+    "identity": "Reactivegas.base_recompute_reachable_holds",
+    "originalIdentity": "Reactivegas.base_recompute_reachable_holds",
+    "successorOps": [
+      "SS-OP-191"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "1591-1603 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "OP63 leaves pre-franchise sweep, differing from expected post-view sweep; source-site ordering cannot decide execution reachability."
+  },
+  {
+    "oldRow": 175,
+    "identity": "Reactivegas.canonical_economy_holds",
+    "originalIdentity": "Reactivegas.canonical_economy_holds",
+    "successorOps": [
+      "SS-OP-192"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "2325-2337 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "OP23 distribution omission leaves alice/bob balances0 instead of1. Same-module :410 failure does not preclude later check elaboration."
+  },
+  {
+    "oldRow": 176,
+    "identity": "Reactivegas.comuneThresholdSanity_holds",
+    "originalIdentity": "Reactivegas.comuneThresholdSanity_holds",
+    "successorOps": [
+      "SS-OP-193",
+      "SS-OP-194"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "see note",
+    "span": "2349-2361 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION",
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "S-04 extent7 bounded unresolved: sanity uses comuneId + s62bThreshold=Vote.legacyThreshold; no listed current-map atom changes these; pure/no-production overstates threshold dependency. Not proved insensitive or exempt; OPEN with owner %503."
+  },
+  {
+    "oldRow": 177,
+    "identity": "Reactivegas.direct_admission_only_holds",
+    "originalIdentity": "Reactivegas.direct_admission_only_holds",
+    "successorOps": [
+      "SS-OP-195",
+      "SS-OP-196"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "1589-1601 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION",
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Separate admin/reserved/duplicate mutations flip exact error checks. Under OP55 production post-WF rejects with different error, not necessarily admission."
+  },
+  {
+    "oldRow": 178,
+    "identity": "Reactivegas.exhaustive_inventories_hold",
+    "originalIdentity": "Reactivegas.exhaustive_inventories_hold",
+    "successorOps": [
+      "SS-OP-197"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "2328-2340 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHECK"
+    ],
+    "correctionNote": "Conjunction includes direct admission; its false value carries. No independently observed diagnostic."
+  },
+  {
+    "oldRow": 179,
+    "identity": "Reactivegas.i57_auth_holds",
+    "originalIdentity": "Reactivegas.i57_auth_holds",
+    "successorOps": [
+      "SS-OP-198"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "2334-2346 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "OP49 admits bob openQuestion; explicit refusal/identity checks false. Failed Vote.Invariants import can block importing RI, distinct from same-module errors."
+  },
+  {
+    "oldRow": 180,
+    "identity": "Reactivegas.i57_boundary_holds",
+    "originalIdentity": "Reactivegas.i57_boundary_holds",
+    "successorOps": [
+      "SS-OP-199"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "2331-2343 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "OP49 admits bob openQuestion; explicit refusal/identity checks false. Failed Vote.Invariants import can block importing RI, distinct from same-module errors."
+  },
+  {
+    "oldRow": 181,
+    "identity": "Reactivegas.i57_disjoint_mutant_caught",
+    "originalIdentity": "Reactivegas.i57_disjoint_mutant_caught",
+    "successorOps": [
+      "SS-OP-200",
+      "SS-OP-201"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS (predicted)",
+    "span": "2338-2350 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN",
+      "U-CHAIN"
+    ],
+    "correctionNote": "S-04 extent12 false: OP58B wipes membership on first openQuestion, subsequent votes rejected, expected dissent absent. OP39-only survival narrower than all-current-map claim. OPEN->KILL."
+  },
+  {
+    "oldRow": 182,
+    "identity": "Reactivegas.i57_exhaustive_holds",
+    "originalIdentity": "Reactivegas.i57_exhaustive_holds",
+    "successorOps": [
+      "SS-OP-202"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "2332-2344 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "OP58B member equality false on successful openQuestion; exact app output source inspected."
+  },
+  {
+    "oldRow": 183,
+    "identity": "Reactivegas.i57_franchise_mutant_caught",
+    "originalIdentity": "Reactivegas.i57_franchise_mutant_caught",
+    "successorOps": [
+      "SS-OP-203",
+      "SS-OP-204"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS (predicted)",
+    "span": "2341-2353 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN",
+      "U-CHAIN"
+    ],
+    "correctionNote": "S-04 extent14 false: OP50 cast->gs prevents alice + bypass bob ballot placement; contains/equality conjunct false. OPEN->KILL."
+  },
+  {
+    "oldRow": 184,
+    "identity": "Reactivegas.i57_noexpiry_holds",
+    "originalIdentity": "Reactivegas.i57_noexpiry_holds",
+    "successorOps": [
+      "SS-OP-205",
+      "SS-OP-206"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS (predicted)",
+    "span": "2346-2358 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN",
+      "U-CHAIN"
+    ],
+    "correctionNote": "S-04 extent15 false: OP69L rejects non-comune v3Group input; checkI57NoExpiry error branch false. OPEN->KILL."
+  },
+  {
+    "oldRow": 185,
+    "identity": "Reactivegas.i57_noop_holds",
+    "originalIdentity": "Reactivegas.i57_noop_holds",
+    "successorOps": [
+      "SS-OP-207",
+      "SS-OP-208"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "2333-2345 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN",
+      "U-CHAIN"
+    ],
+    "correctionNote": "OP49 boundary or OP54 nonadmin-refusal conjunct can fail; alternatives must remain single-atom operations."
+  },
+  {
+    "oldRow": 186,
+    "identity": "Reactivegas.i57_nostale_holds",
+    "originalIdentity": "Reactivegas.i57_nostale_holds",
+    "successorOps": [
+      "SS-OP-209",
+      "SS-OP-210"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "2339-2351 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN",
+      "U-CHAIN"
+    ],
+    "correctionNote": "NoStale is V3BaseReachable && BaseRecomputeReachable; their OP63/40 flips inherit."
+  },
+  {
+    "oldRow": 187,
+    "identity": "Reactivegas.i57_partition_holds",
+    "originalIdentity": "Reactivegas.i57_partition_holds",
+    "successorOps": [
+      "SS-OP-211",
+      "SS-OP-212"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "2336-2348 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN",
+      "U-CHAIN"
+    ],
+    "correctionNote": "OP63 leaves q open/not closed; OP40 retains q both open and closed. Either falsifies partition fixture independently."
+  },
+  {
+    "oldRow": 188,
+    "identity": "Reactivegas.i57_policyfree_holds",
+    "originalIdentity": "Reactivegas.i57_policyfree_holds",
+    "successorOps": [
+      "SS-OP-213"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "2343-2355 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "OP40 retains closed qp in open set at threshold1, falsifying isNone; policy mutant check includes same production assertion."
+  },
+  {
+    "oldRow": 189,
+    "identity": "Reactivegas.i57_policyfree_mutant_caught",
+    "originalIdentity": "Reactivegas.i57_policyfree_mutant_caught",
+    "successorOps": [
+      "SS-OP-214"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "2344-2356 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "OP40 retains closed qp in open set at threshold1, falsifying isNone; policy mutant check includes same production assertion."
+  },
+  {
+    "oldRow": 190,
+    "identity": "Reactivegas.i57_r45_holds",
+    "originalIdentity": "Reactivegas.i57_r45_holds",
+    "successorOps": [
+      "SS-OP-215",
+      "SS-OP-216"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "see note",
+    "span": "2335-2347 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION",
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "S-04 extent21 bounded unresolved: current map retains stranger membership rejection/cast responsibility; no listed atom shown to affect refusal/identity assertions. OPEN with owner %503, not universal insensitivity."
+  },
+  {
+    "oldRow": 191,
+    "identity": "Reactivegas.integrated_theorem_witness_holds",
+    "originalIdentity": "Reactivegas.integrated_theorem_witness_holds",
+    "successorOps": [
+      "SS-OP-217"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "2322-2334 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Conjunction includes base recomputation so OP63 false value carries; same-file order not sufficient for execution block."
+  },
+  {
+    "oldRow": 192,
+    "identity": "Reactivegas.sweep_idempotent_mutant_caught",
+    "originalIdentity": "Reactivegas.sweep_idempotent_mutant_caught",
+    "successorOps": [
+      "SS-OP-218",
+      "SS-OP-219"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS (predicted)",
+    "span": "1595-1607 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN",
+      "U-CHAIN"
+    ],
+    "correctionNote": "S-04 extent23 false: OP58 stricter base threshold prevents Eve removal at 2 approvals; v3PostView still 3 admins; q one assent stays open; sweepDuplicating once==input, check=false. OPEN->KILL."
+  },
+  {
+    "oldRow": 193,
+    "identity": "Reactivegas.sweep_idempotent_witness",
+    "originalIdentity": "Reactivegas.sweep_idempotent_witness",
+    "successorOps": [
+      "SS-OP-220"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "1593-1605 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "OP40 retains q after enacted sweep; second sweep adds another closure so idempotence equation false."
+  },
+  {
+    "oldRow": 194,
+    "identity": "TraceTests.app_members_preservation_mutant_caught",
+    "originalIdentity": "TraceTests.app_members_preservation_mutant_caught",
+    "successorOps": [
+      "SS-OP-221",
+      "SS-OP-222"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS (predicted)",
+    "span": "1090-1102 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN",
+      "U-CHAIN"
+    ],
+    "correctionNote": "S-04 extent25 mirror of extent2; same OP69L path; distinct identity/import boundary retained. Site 1090 (not 1084). OPEN->KILL."
+  },
+  {
+    "oldRow": 195,
+    "identity": "TraceTests.base_change_can_close_without_ballot",
+    "originalIdentity": "TraceTests.base_change_can_close_without_ballot",
+    "successorOps": [
+      "SS-OP-223"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS (predicted)",
+    "span": "931-943 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHECK"
+    ],
+    "correctionNote": "S-06 Row195: mirror refers line175 canonical economy, not base-close producer172. Correct semantic atoms OP63/40; site 931 (not 903). Corrected reference 175->172."
+  },
+  {
+    "oldRow": 196,
+    "identity": "TraceTests.base_departure_applies_cleanup",
+    "originalIdentity": "TraceTests.base_departure_applies_cleanup",
+    "successorOps": [
+      "SS-OP-224"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS (predicted)",
+    "span": "928-940 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHECK"
+    ],
+    "correctionNote": "S-06 Row196: mirror refers line172 base-close, not departure173. Correct alternatives OP67G/57/57B; site 928 (not 901). Corrected 172->173."
+  },
+  {
+    "oldRow": 197,
+    "identity": "TraceTests.base_recompute_reachable_holds",
+    "originalIdentity": "TraceTests.base_recompute_reachable_holds",
+    "successorOps": [
+      "SS-OP-225"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS (predicted)",
+    "span": "937-949 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHECK"
+    ],
+    "correctionNote": "S-06 Row197: mirror refers line173 departure, not recompute174. Correct OP63; site 937 (not 902). Corrected 173->174."
+  },
+  {
+    "oldRow": 198,
+    "identity": "TraceTests.direct_admission_only_holds",
+    "originalIdentity": "TraceTests.direct_admission_only_holds",
+    "successorOps": [
+      "SS-OP-226"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS (predicted)",
+    "span": "934-946 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHECK"
+    ],
+    "correctionNote": "S-06 Row198: mirror refers line174 recompute, not direct admission177. Correct OP54/55/56; site 934 (not 897). Corrected 174->177."
+  },
+  {
+    "oldRow": 199,
+    "identity": "TraceTests.sweep_idempotent_mutant_caught",
+    "originalIdentity": "TraceTests.sweep_idempotent_mutant_caught",
+    "successorOps": [
+      "SS-OP-227",
+      "SS-OP-228"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS (predicted)",
+    "span": "943-955 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN",
+      "U-CHAIN"
+    ],
+    "correctionNote": "S-04 extent30 mirror shares OP58 path; site 943 (not 905). OPEN->KILL."
+  },
+  {
+    "oldRow": 200,
+    "identity": "TraceTests.sweep_idempotent_witness",
+    "originalIdentity": "TraceTests.sweep_idempotent_witness",
+    "successorOps": [
+      "SS-OP-229"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS (predicted)",
+    "span": "940-952 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHECK"
+    ],
+    "correctionNote": "S-06 Row200: correct producer Row193 + OP40 flip; site 940 (not 904); downstream failed import unobserved."
+  },
+  {
+    "oldRow": 201,
+    "identity": "KelGroups.Vote.questions_partition",
+    "originalIdentity": "KelGroups.Vote.questions_partition",
+    "successorOps": [
+      "SS-OP-230"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "818-830 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "Silent closure-record deletion falsifies history-preservation at threshold1 trace open then assent; old standalone fixture receipt is not exact current atom evidence."
+  },
+  {
+    "oldRow": 202,
+    "identity": "KelGroups.approvals_nodup",
+    "originalIdentity": "KelGroups.approvals_nodup",
+    "successorOps": [
+      "SS-OP-231"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "312-324 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Actual KelGroups carrier projections; states premise-provided Nodup/coherence, not production guard behavior."
+  },
+  {
+    "oldRow": 203,
+    "identity": "KelGroups.proposer_mem_approvals",
+    "originalIdentity": "KelGroups.proposer_mem_approvals",
+    "successorOps": [
+      "SS-OP-232"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "317-329 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Actual KelGroups carrier projections; states premise-provided Nodup/coherence, not production guard behavior."
+  },
+  {
+    "oldRow": 204,
+    "identity": "KelGroups.member_key_coherent",
+    "originalIdentity": "KelGroups.member_key_coherent",
+    "successorOps": [
+      "SS-OP-233"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "374-386 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Actual KelGroups carrier projections; states premise-provided Nodup/coherence, not production guard behavior."
+  },
+  {
+    "oldRow": 205,
+    "identity": "KelGroups.tryEnact_eq_of_enacts",
+    "originalIdentity": "KelGroups.tryEnact_eq_of_enacts",
+    "successorOps": [
+      "SS-OP-234"
+    ],
+    "allRefsExist": true,
+    "observationKind": "STATIC",
+    "semanticOutcome": "see note",
+    "span": "368-380 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "tryEnact_eq_of_enacts follows definition of Enacts and rfl; no production mutation sensitivity."
+  },
+  {
+    "oldRow": 206,
+    "identity": "KelGroups.validateDirectAdmission_ok",
+    "originalIdentity": "KelGroups.validateDirectAdmission_ok",
+    "successorOps": [
+      "SS-OP-235"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "FALSE-AT-WITNESS",
+    "span": "628-640 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "NO-EXECUTION"
+    ],
+    "correctionNote": "Bypass duplicate admission: existing member admitted, member-absent conjunct false. Nonadmin refusal and growth-on-absent premises are distinct and may survive."
+  },
+  {
+    "oldRow": 207,
+    "identity": "KelGroups.base_change_runs_hook",
+    "originalIdentity": "KelGroups.base_change_runs_hook",
+    "successorOps": [
+      "SS-OP-236"
+    ],
+    "allRefsExist": true,
+    "observationKind": "PREDICTED",
+    "semanticOutcome": "see note",
+    "span": "831-843 (header-bound estimate; execution binds to theorem SPAN, never header line per SS0 lesson)",
+    "costKinds": [
+      "U-CHAIN"
+    ],
+    "correctionNote": "S-05 Row207: exactly one real base_change_runs_hook row. OP58 upstream tryEnactBase_runs_hook survives (Row85), so proposed failure cascade has no source. Source supports hook-on-reported-change preservation; survivor supplies no failure to cascade."
+  }
+]

@@ -1,0 +1,4 @@
+'Reactivegas.appFold' does not depend on any axioms
+'Reactivegas.apply' depends on axioms: [propext]
+'Reactivegas.app_members_preservation_holds' depends on axioms: [propext]
+'Reactivegas.comune_cannot_authorize' depends on axioms: [propext]

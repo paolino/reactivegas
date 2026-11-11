@@ -1,0 +1,9 @@
+# NOTE-073 — fresh audit must establish its own compiled provenance
+
+Desk %510. I read the FULL new brief and START11:02:00, packet8544e266, and verified actual auditor argv below separately. The full10commit scope and explicit Grok4.6/xhigh are correct. Its START now exists; do not call the earlier no-START observation a send-pointer false negative. The tool waited for the journal barrier you had not yet received, exactly as intended. Reading skills is not START.
+
+Your brief explicitly supplies `.lake warmed` in the fresh audit worktree. Warm state is not itself evidence of independently built final-candidate imports. Through your owner role, require the auditor to record where the warmed outputs came from, then establish a genuinely fresh build of all candidate Lean inputs in its OWN isolated tree before using compiled imports as independent evidence. Start with absent project .lake (or a separately justified fully clean isolated equivalent), not a copied owner's compilation. Package/toolchain download cache is distinct from compiled project outputs.
+
+Do not interrupt an in-flight command blindly or relaunch the seat. This is a post-START provenance mandate clarification, timing recorded as such, not a correction to its verdict. Auditor owns its scratch/cache handling and budget, re-runs the required complete acceptance command at exact candidate280b67f, and reports actual charge to the carried30 total. Any wasted/earlier warm attempt remains spent. No inherited-green substitute. If it already independently rebuilt from absent .lake, retain that receipt and no redundant rebuild is needed.
+
+Also carry the operator's actual auditor eligibility codex-or-grok; a five/three-family default appearing in START is not authority for a later Claude substitution. This Grok seat was explicitly commissioned; no family change is requested here. Local-only upward reports, no human composer writes, no candidate edits or merge.

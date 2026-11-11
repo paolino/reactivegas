@@ -1,0 +1,360 @@
+[
+  {
+    "id": "S1",
+    "bytes": 650911,
+    "lines": 15351,
+    "diagnostic_errors": [],
+    "backend_built_lines": [
+      "\u2714 [22/42] Built Reactivegas.Predicates:c.o (87ms)",
+      "\u2714 [23/42] Built KelGroups.Vote.Validate:c.o (319ms)",
+      "\u2714 [24/42] Built KelGroups.Vote.Event:c.o (343ms)",
+      "\u2714 [25/42] Built KelGroups.Vote.Fold:c.o (503ms)",
+      "\u2714 [26/42] Built KelGroups.Invariants:c.o (540ms)",
+      "\u2714 [27/42] Built KelGroups.Vote.Invariants:c.o (492ms)",
+      "\u2714 [28/42] Built KelGroups.Vote.Types:c.o (790ms)",
+      "\u2714 [29/42] Built KelGroups.Vote.State:c.o (828ms)",
+      "\u2714 [30/42] Built KelGroups.Event:c.o (910ms)",
+      "\u2714 [31/42] Built KelGroups.State:c.o (914ms)",
+      "\u2714 [32/42] Built KelGroups.Fold:c.o (870ms)",
+      "\u2714 [33/42] Built KelGroups.Types:c.o (1.1s)",
+      "\u2714 [34/42] Built Reactivegas.CorpusExport:c.o (1.3s)",
+      "\u2714 [35/42] Built Reactivegas.State:c.o (1.4s)",
+      "\u2714 [36/42] Built KelGroups.Validate:c.o (1.5s)",
+      "\u2714 [37/42] Built KelGroups.Integration:c.o (1.8s)",
+      "\u2714 [38/42] Built Reactivegas.Trace:c.o (3.1s)",
+      "\u2714 [39/42] Built Reactivegas.Types:c.o (3.6s)",
+      "\u2714 [40/42] Built Reactivegas.Step:c.o (3.9s)",
+      "\u2714 [41/42] Built Reactivegas.Invariants:c.o (15s)",
+      "\u2714 [42/42] Built corpusExport:exe (2.8s)"
+    ]
+  },
+  {
+    "id": "S2",
+    "bytes": 1356,
+    "lines": 11,
+    "diagnostic_errors": [
+      "ROW G74-VERIFY-FAILS-CLOSED PASS byte-drift detected, manifest clean-pass"
+    ],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P01-C1",
+    "bytes": 70,
+    "lines": 1,
+    "diagnostic_errors": [
+      "corpus-check FAIL economic: economic: view differs from live seedView"
+    ],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P02-C1-shape",
+    "bytes": 5,
+    "lines": 1,
+    "diagnostic_errors": [],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P03-C2",
+    "bytes": 82,
+    "lines": 1,
+    "diagnostic_errors": [
+      "corpus-check FAIL integrated: integrated: initial differs from live corpusInitial"
+    ],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P04-C3",
+    "bytes": 78,
+    "lines": 1,
+    "diagnostic_errors": [
+      "corpus-check FAIL economic: economic: auth differs from live econAuthIdentity"
+    ],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P05-C4",
+    "bytes": 81,
+    "lines": 1,
+    "diagnostic_errors": [
+      "corpus-check FAIL integrated: integrated: auth differs from live intAuthIdentity"
+    ],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P06-clean",
+    "bytes": 55,
+    "lines": 1,
+    "diagnostic_errors": [],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P07-arity",
+    "bytes": 109,
+    "lines": 1,
+    "diagnostic_errors": [],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P08-arity",
+    "bytes": 109,
+    "lines": 1,
+    "diagnostic_errors": [],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P09-arity",
+    "bytes": 109,
+    "lines": 1,
+    "diagnostic_errors": [],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P10-keys",
+    "bytes": 6,
+    "lines": 1,
+    "diagnostic_errors": [],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P11-keys",
+    "bytes": 6,
+    "lines": 1,
+    "diagnostic_errors": [],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P12-keys",
+    "bytes": 6,
+    "lines": 1,
+    "diagnostic_errors": [],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P13-keys",
+    "bytes": 6,
+    "lines": 1,
+    "diagnostic_errors": [],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P14-clean-econ-keys",
+    "bytes": 5,
+    "lines": 1,
+    "diagnostic_errors": [],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P15-clean-int-keys",
+    "bytes": 5,
+    "lines": 1,
+    "diagnostic_errors": [],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P16-empty-traces",
+    "bytes": 79,
+    "lines": 1,
+    "diagnostic_errors": [
+      "corpus-check FAIL economic: economic.traces: zero extent (no elements to bind)"
+    ],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P17-empty-steps",
+    "bytes": 82,
+    "lines": 1,
+    "diagnostic_errors": [
+      "corpus-check FAIL integrated: integrated.steps: zero extent (no elements to bind)"
+    ],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P18-trace-swap",
+    "bytes": 79,
+    "lines": 1,
+    "diagnostic_errors": [
+      "corpus-check FAIL economic: economic.traces: element 0 differs from live value"
+    ],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P19-step-swap",
+    "bytes": 82,
+    "lines": 1,
+    "diagnostic_errors": [
+      "corpus-check FAIL integrated: integrated.steps: element 0 differs from live value"
+    ],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P20-missing",
+    "bytes": 168,
+    "lines": 2,
+    "diagnostic_errors": [],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P21-missing",
+    "bytes": 168,
+    "lines": 2,
+    "diagnostic_errors": [],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P22-malformed",
+    "bytes": 68,
+    "lines": 1,
+    "diagnostic_errors": [
+      "corpus-check FAIL economic parse: offset 1: unexpected end of input"
+    ],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P23-malformed",
+    "bytes": 70,
+    "lines": 1,
+    "diagnostic_errors": [
+      "corpus-check FAIL integrated parse: offset 1: unexpected end of input"
+    ],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P24-second-write",
+    "bytes": 183,
+    "lines": 2,
+    "diagnostic_errors": [],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P25",
+    "bytes": 0,
+    "lines": 0,
+    "diagnostic_errors": [],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P26-ci-econ",
+    "bytes": 297,
+    "lines": 2,
+    "diagnostic_errors": [
+      "error: Recipe `lean-corpus-verify` could not be run because of an IO error while trying to create a temporary directory or write a file to that directory: Read-only file system (os error 30) at path \"/run/user/1000/just/just-EqY3Kt\""
+    ],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P27-ci-econ",
+    "bytes": 7816,
+    "lines": 131,
+    "diagnostic_errors": [
+      "cmp: EOF on \u2018/tmp/nix-shell.xqoxvE/tmp.Tt1WJzjzGv/economic.json\u2019 after byte 14494, line 1",
+      "error: Recipe `lean-corpus-verify` failed with exit code 1"
+    ],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P28-ci-int",
+    "bytes": 7817,
+    "lines": 131,
+    "diagnostic_errors": [
+      "cmp: EOF on \u2018/tmp/nix-shell.2LYw9I/tmp.mkZMpXsfHD/integrated.json\u2019 after byte 7673, line 1",
+      "error: Recipe `lean-corpus-verify` failed with exit code 1"
+    ],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P29-ci-manifest",
+    "bytes": 7832,
+    "lines": 133,
+    "diagnostic_errors": [
+      "corpus/economic.json: FAILED",
+      "error: Recipe `lean-corpus-verify` failed with exit code 1"
+    ],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P30-ci-clean",
+    "bytes": 7706,
+    "lines": 131,
+    "diagnostic_errors": [],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P31",
+    "bytes": 1655,
+    "lines": 11,
+    "diagnostic_errors": [],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P32-clean-env",
+    "bytes": 7779,
+    "lines": 133,
+    "diagnostic_errors": [],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P33-jq-omission",
+    "bytes": 8007,
+    "lines": 136,
+    "diagnostic_errors": [
+      "error: Recipe `lean-corpus-verify` failed with exit code 127"
+    ],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P34-wiring-removed",
+    "bytes": 71,
+    "lines": 1,
+    "diagnostic_errors": [
+      "DETECTOR FAIL: expected exactly one executable corpus step; observed 0"
+    ],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P35-wiring-bypass",
+    "bytes": 117,
+    "lines": 3,
+    "diagnostic_errors": [
+      "DETECTOR FAIL: corrupted fixture was accepted by step"
+    ],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P36-wiring-candidate",
+    "bytes": 7959,
+    "lines": 134,
+    "diagnostic_errors": [
+      "cmp: EOF on \u2018/tmp/nix-shell.WZU0CK/tmp.B5KFSWp8Br/economic.json\u2019 after byte 14494, line 1",
+      "error: Recipe `lean-corpus-verify` failed with exit code 1"
+    ],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P37",
+    "bytes": 1553,
+    "lines": 11,
+    "diagnostic_errors": [],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P38-arity-control",
+    "bytes": 0,
+    "lines": 0,
+    "diagnostic_errors": [],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P39-empty-traces-shape",
+    "bytes": 6,
+    "lines": 1,
+    "diagnostic_errors": [],
+    "backend_built_lines": []
+  },
+  {
+    "id": "P40-empty-steps-shape",
+    "bytes": 6,
+    "lines": 1,
+    "diagnostic_errors": [],
+    "backend_built_lines": []
+  }
+]

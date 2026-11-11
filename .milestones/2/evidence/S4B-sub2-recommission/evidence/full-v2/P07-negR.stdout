@@ -1,0 +1,9 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/P07-chain.lean:61:48: error: Application type mismatch: The argument
+  hdem
+has type
+  demand (isResponsabile view a && col.referente == a && true && col.pending.isEmpty && !decide (stalled s)) = some w✝
+but is expected to have type
+  demand (isResponsabile view a && col.referente == a && col.permitted && col.pending.isEmpty && ?m.86) = some ()
+in the application
+  demand_eq_true_of_some hdem
+P07-WITNESS selectedBinding=true authorized=true forbidden=true preservesOther=true amount=true

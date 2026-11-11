@@ -1,0 +1,8 @@
+R3-NC ignored-hook-output-detected=True
+R3 success exact output and views=True
+R3 success reopened=True
+R3 refusal exact hook arguments=True
+R3 refusal state restored=True
+R3 refusal count=True
+R3 refusal rows=True
+R3 refusal reopened=True

@@ -1,0 +1,16 @@
+const fs=require('fs'),cp=require('child_process'),crypto=require('crypto');const h=__dirname,hash=b=>crypto.createHash('sha256').update(b).digest('hex');
+const history=fs.readFileSync(h+'/evidence/execution-receipts.jsonl','utf8').trim().split('\n').map(JSON.parse);
+if(history.filter(r=>r.class==='targeted').length!==19 || history.filter(r=>r.class==='build').length!==11)throw Error('floor not complete');
+const original=cp.execFileSync('git',['show','HEAD:lib/KelGroups/Store.hs'],{encoding:'utf8'});
+const seed=fs.readFileSync(h+'/SkewStore.hs','utf8');const body=seed.slice(seed.indexOf('skewAppend\n')).replaceAll('skewAppend','appendIntegratedEvent');
+const mutant=original.slice(0,original.indexOf('appendIntegratedEvent\n    ::'))+body;
+fs.mkdirSync(h+'/store-shadow/KelGroups',{recursive:true});fs.writeFileSync(h+'/store-shadow/KelGroups/Store.hs',mutant);
+const diff=cp.spawnSync('diff',['-u',h+'/evidence/candidate/lib_KelGroups_Store.hs',h+'/store-shadow/KelGroups/Store.hs'],{encoding:'utf8'});if(diff.status!==1)throw Error('expected one-body diff');fs.writeFileSync(h+'/evidence/final-store-skew.diff',diff.stdout);
+const commands=JSON.parse(fs.readFileSync(h+'/probe-commands.json'));
+const compile=structuredClone(commands.find(c=>c.id==='P4'));compile.id='SC-compile';compile.argv=compile.argv.map(a=>a.replaceAll('row4-shadow:lib','store-shadow:lib').replaceAll('build/row4-mutant','build/store-mutant'));fs.mkdirSync(h+'/build/store-mutant',{recursive:true});
+const suffix=['--match','/S28-1 rejecting step before append/concurrent appends conserve every committed transition/'];
+const extra=[compile,{id:'SC-negative',argv:[h+'/build/store-mutant/probe',...suffix],expectedExit:1,charge:{builds:0,targeted:1}},{id:'SC-positive',argv:[h+'/build/row4/probe',...suffix],expectedExit:0,charge:{builds:0,targeted:1}}];
+fs.writeFileSync(h+'/probe-commands-extra.json',JSON.stringify(extra,null,2)+'\n');
+fs.writeFileSync(h+'/evidence/final-sensitivity-manifest.json',JSON.stringify({source:h+'/store-shadow/KelGroups/Store.hs',sourceSha256:hash(mutant),diffSha256:hash(diff.stdout),seedBodySame:true,commands:extra,commandSha256:hash(fs.readFileSync(h+'/probe-commands-extra.json'))},null,2)+'\n');
+cp.execFileSync('/code/llm-settings/shared/skills/worker-protocol/scripts/status-event',[h+'/../STATUS.md','NOTE','MANDATORY-FLOOR complete: 11/12B+19/24P all expected exits and named semantics verified. Remainder use allocated 3P: final shipped concurrent-conservation checker against freshly retained Store snapshot/decision-before-lock skew (same body as P2 seed), then unchanged candidate; prior owner S1 mutant bytes were reconstruction, so final checker sensitivity not inherited. Commands SC-compile/SC-negative/SC-positive frozen in probe-commands-extra.json; planned final=11/12B+22/24P. AUDIT-S28R2']);
+cp.execFileSync('/code/llm-settings/shared/skills/worker-protocol/scripts/status-event',[h+'/../STATUS.md','INSTRUMENT-FROZEN',`path=${h}/store-shadow/KelGroups/Store.hs sha256=${hash(mutant)} diff=${h}/evidence/final-store-skew.diff sha256=${hash(diff.stdout)} AUDIT-S28R2`]);

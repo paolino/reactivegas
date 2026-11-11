@@ -1,0 +1,8 @@
+{
+  "at": "2026-09-06T01:16:36.792Z",
+  "head": "e1f34a2d652e15362ab863b3cacfd2e7b260b67b",
+  "base": "368b596fef0b6d393c2ac7afc631d236c55d86d1",
+  "patchSha256": "3d3e08c0af8f5176338afe81718951463e4ed85bcbfb5083d0bde268626d98d8",
+  "gateSha256": "a7ca9dc4a0d1b7ee2aa9857c31c99178e1f3fbbe7955a15885b870378744b424",
+  "scope": "Unaccepted source preparation. Gate observation does not establish its binding, execution or acceptance."
+}

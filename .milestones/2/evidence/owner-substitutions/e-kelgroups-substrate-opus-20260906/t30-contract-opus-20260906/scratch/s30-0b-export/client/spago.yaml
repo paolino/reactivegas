@@ -1,0 +1,7 @@
+workspace:
+  packageSet:
+    registry: 72.1.0
+  extraPackages:
+    keri-purs:
+      git: https://github.com/paolino/keri-purs.git
+      ref: 25a4a9887d6414e0634c6c4ed61aead8d1f6d852

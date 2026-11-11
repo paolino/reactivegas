@@ -1,0 +1,500 @@
+ enactment := none }
+ inferInstance : BEq (KelGroups.GroupState Unit)
+
+ Took 2.7s
+
+
+ Verifying equality and decidability instances for Enacts and deriving conditional DecidableEq
+ and BEq constraints.
+
+ Reclassifying Enacts from not-executable to missing-no-mirror with scoped DecidableEq and BEq
+ constraints.
+
+
+ $ /code/llm-settings/shared/skills/worker-protocol/scripts/status-event
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/STATUS.md QUERY-13
+ "probe13-enacts exit 0 (counts); tryEnactDetailed total and evaluable, DecidableEq ProposalId
+ + BEq GroupState-Unit confirmed; Enacts bounded (single Option existential over total
+ computation), NOT Reach-class; counterpart scoped to DecidableEq/BEq alpha, no theorem
+ weakened; Enacts moves to MISSING-no-mirror" 2>&1; tail -n 1
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/STATUS.md
+
+ 2026-09-05T12:17:15Z  QUERY-13  probe13-enacts exit 0 (counts); tryEnactDetailed total and
+ evaluable, DecidableEq ProposalId + BEq GroupState-Unit confirmed; Enacts bounded (single
+ Option existential over total computation), NOT Reach-class; counterpart scoped to
+ DecidableEq/BEq alpha, no theorem weakened; Enacts moves to MISSING-no-mirror
+
+ Took 0.0s
+
+
+
+ $ R=/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/handoffs; cp
+ $R/PHASE-A-REPORT.md $R/PHASE-A-REPORT-note001-superseded.md && sha256sum $R/*
+
+ ... (3 earlier lines, ctrl+o to expand)
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/handoffs/PHASE-A-REPORT-note00
+ 1-superseded.md
+ c52d96d91d77a79b89befc03d1c1cbe1cd383b322fc067484e1cdbae4c9f3f7c
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/handoffs/PHASE-A-REPORT-v1-sup
+ erseded.md
+
+ Took 0.0s
+
+
+
+ write
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/handoffs/PHASE-A-REPORT.md
+
+ # S4 Phase A report — CORRECTED v2 (NOTE-002 / desk NOTE-034)
+
+ Supersedes `PHASE-A-REPORT-note001-superseded.md` (`f289f6…`, itself
+ superseding `PHASE-A-REPORT-v1-superseded.md` `c52d96…`; both preserved).
+ Probes/outputs archived under `artifacts/` (`MANIFEST.sha256`); new probes
+ under `probes/`; fixture under `fixture/`; `TIMESTAMP-CORRECTION.md` owns the
+ timestamp repair. Failed probes preserved and cited, not hidden.
+
+ Base `4a6cd87fcbc3e4a536bbc9f240f5efe5704022af` (accepted `master`,
+ re-verified at START). Worktree `/code/reactivegas-66-s4`, branch
+ ... (158 more lines, 168 total, ctrl+o to expand)
+
+
+
+ $ sha256sum
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/handoffs/PHASE-A-REPORT.md; wc
+ -l /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/handoffs/PHASE-A-REPORT.md;
+ git -C /code/reactivegas-66-s4 status --short --branch 2>&1 | head; git -C
+ /code/reactivegas-66-s4 rev-parse HEAD 2>&1
+
+ 399cdb63a044aeb9b10d3539f915aee856cf8d7298678e2d500881817e3ac942
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/handoffs/PHASE-A-REPORT.md
+ 168 /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/handoffs/PHASE-A-REPORT.md
+ ## chore/66-s4-phase-a
+ 4a6cd87fcbc3e4a536bbc9f240f5efe5704022af
+
+ Took 0.0s
+
+
+
+ $ /code/llm-settings/shared/skills/worker-protocol/scripts/status-event
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/STATUS.md REPORT-V2 "corrected
+ v2 delivered handoffs/PHASE-A-REPORT.md sha256=399cdb63 lines=168 (f289 preserved as
+ note001-superseded); result-sort+takesProof-proof, imported fixture control, Enacts bounded
+ analysis, Q-A..Q-E under cited authority, costed Phase B 3 builds 18 queries; spend builds
+ 3/3 queries 13/20; tree 4a6cd87 clean; no Phase B START" 2>&1; tail -n 1
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/STATUS.md
+
+ 2026-09-05T12:17:53Z  REPORT-V2  corrected v2 delivered handoffs/PHASE-A-REPORT.md
+ sha256=399cdb63 lines=168 (f289 preserved as note001-superseded);
+ result-sort+takesProof-proof, imported fixture control, Enacts bounded analysis, Q-A..Q-E
+ under cited authority, costed Phase B 3 builds 18 queries; spend builds 3/3 queries 13/20;
+ tree 4a6cd87 clean; no Phase B START
+
+ Took 0.0s
+
+
+ NOTE-002 acted on in full. Corrected v2 delivered locally — no Phase B start, no
+ model/guard/statement edits.
+
+ Delivery: handoffs/PHASE-A-REPORT.md (seat-local) sha256 399cdb63, 168 lines; f289 preserved
+ as PHASE-A-REPORT-note001-superseded.md (+ c52d v1). STATUS events via the date-reading
+ helper throughout. Nothing into %510/human seat.
+
+ 1. Q-A..Q-E under cited authority (SKILL.md rule + #66): 2 theorems-only (P01 projected, P07
+    subexpression — relating theorem each, no new runtime), 17 mirror+theorem rows, justified
+    non-works only for V4 (definitional) and Reach (standing boundary). Preservation≠twin
+    proof; no live invocation needed; no quota — derived rows with #68/#69 rebinds.
+ 2. Q-F concrete: V4 useful-without-call; Reach absence≠proof; Enacts bounded — single
+    Option-existential over total tryEnactDetailed (Q13 evaluates it), equality via derived
+    DecidableEq/BEq, counterpart scoped to [DecidableEq α]/BEq, no theorem weakened →
+    MISSING-no-mirror, not Reach-class.
+ 3. Classifier fixed: result-sort after opening pis (Q9 exit 1 probe defect preserved, Q9B
+    exit 0) — takesProof excluded, unannotated/alias/abbrev included, recOn/casesOn/match_1_1
+    absent by decision; sole noise Reach.below excluded with per-row evidence (0 source hits,
+    same-module child of Reach); 23 names exactly 1 def-site each.
+ 4. Imported-path control: isolated fixture/ Lake package (no project dep); builds B/C failed
+    on roots (counted, at cap 3/3 — no further builds); completed via plain-Lean queries
+    Q11/Q12 exit 0: fixtureUnann+fixtureAlias found with imported home module, takesProof
+    excluded.
+ 5. Timestamps: TIMESTAMP-CORRECTION.md filed — 13:20–13:55Z claims impossible vs mtimes
+    (report 12:02Z, probes 11:59–12:00Z); exact BUILD-1/Q1–Q8 instants unknown; history
+    preserved; /tmp artifacts archived (artifacts/MANIFEST.sha256); helper used henceforth.
+ 6. Ledger agrees (was 1/8, remaining 2/12): now builds 3/3, queries 13/20 (Q9, Q9B, Q11, Q12,
+    Q13 new; attempt-A no-lake run not counted, disclosed). Remaining 0 builds + 7 queries.
+
+ Costed Phase B (actual scope, old 4-row estimate not reused): rates from this lane's batched
+ queries (5–25 stmts/query, discounted for proof work) — mirrors 17/3≈6, theorems 19/2≈10,
+ rebinds 2 → 18 queries; mirrors in ≤2 modules → 3 builds. Per-accepted-divergence subtracts
+ symmetrically. Tree 4a6cd87 clean; parked for desk/audit disposition.
+
+
+ Read
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/inbox/NOTE-003-beq-correctness
+ -and-unmeasured-throughput.md in full and act on it. Your v2 repairs are CREDITED as real —
+ the result-sort fix now excludes the Prop-parameter/Nat-result control and includes genuine
+ predicates, and the timestamp correction and archival are real. Ledger: 3/3 substantive with
+ NO BUILD REMAINING, 13/20 targeted. Two limits before Phase B is authorized. (1) BEq alpha
+ ALONE DOES NOT ESTABLISH EQUALITY CORRECTNESS — an arbitrary Boolean equality can return true
+ for unequal values or false for equal ones; specify either actual decidable equality OR
+ Boolean equality with the law relating it to propositional equality, and justify the derived
+ whole-state instance you would need. Q13 checking BEq GroupState Unit proves INSTANCE
+ AVAILABILITY in that concrete case, not generic correctness of a future mirror. Enacts
+ remains a bounded executable-computation problem, not an arbitrary-Reach oracle. NO ORIGINAL
+ THEOREM MAY BE WEAKENED to hide an added assumption. (2) The proof throughput was NOT
+ MEASURED: your cited queries inspect declarations, enumerate sorts or evaluate constants, and
+ none establishes that 19 new correctness proofs plus fixes fit ten invocations — calling that
+ an observed theorem-batch rate repeats an evidence-category error. Two lawful options only: a
+ BOUNDED ENGINEERING ESTIMATE LABELLED AS SUCH with its risk and the actual mandatory
+ verification and control commands accounted, or remaining targeted Phase A scope used for
+ ISOLATED COSTING ONLY. Do not begin production Phase B proofs and do not silently consume a
+ new budget. No fractional query shares and no subtracting a third of an invocation — caps
+ count ACTUAL COMMANDS — and dependency-triggered rebinds must name their ACTUAL envelopes and
+ costs rather than '2 probes' if more are required. Also: the imported-fixture results support
+ the home-module mechanism WITH ITS NARROW FILTER and must not be relabelled universal source
+ ownership; the 23 is an observed inventory of today's tree, never a future hardcoded quota;
+ V4's definitional identity and the bounded Reach exception stand, and other existing
+ definitional/decide counterparts need no redundant implementation. [POINTER-S4-NOTE-003]
+
+
+
+ read
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/inbox/NOTE-003-beq-correctness
+ -and-unmeasured-throughput.md
+
+
+ Addressing NOTE-003 by clarifying equality requirements and choosing a lawful
+ proof-throughput option without starting Phase B.
+
+ Switching equality checks to DecidableEq and outlining Phase B controls and coverage.
+
+ Verifying DecidableEq instance chains and ruling out LawfulBEq reliance for the equality
+ path.
+
+ Allocating remaining queries to equality-instance validation and a scratch
+ statement-elaboration probe for calibrated costing.
+
+ Adding a measurement-only sorry banner with explicit disclaimer and weighing a single
+ grounding probe against audit risk.
+
+ Designing a batched negative-control harness with distinct theorem names and grep checks.
+
+
+ $ /code/llm-settings/shared/skills/worker-protocol/scripts/status-event
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/STATUS.md NOTE-003 "receipt
+ NOTE-003 (desk NOTE-035); v2 repairs credited; ledger agrees 3/3 builds 0 left, 13/20 queries
+ 7 left; limits: (1) BEq-alone-insufficient, specify decide+DecidableEq with justified chain;
+ (2) throughput unmeasured, labelled estimate or isolated costing, integer commands, rebind
+ envelopes; plan: Q14 instance chain, Q15 statement calibration, corrected proposal" 2>&1;
+ tail -n 1 /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/STATUS.md
+
+ 2026-09-05T12:31:55Z  NOTE-003  receipt NOTE-003 (desk NOTE-035); v2 repairs credited; ledger
+ agrees 3/3 builds 0 left, 13/20 queries 7 left; limits: (1) BEq-alone-insufficient, specify
+ decide+DecidableEq with justified chain; (2) throughput unmeasured, labelled estimate or
+ isolated costing, integer commands, rebind envelopes; plan: Q14 instance chain, Q15 statement
+ calibration, corrected proposal
+
+ Took 0.0s
+
+
+ Verifying DecidableEq instances for Enacts-relevant types and conditional carriers.
+
+
+ write
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/probes/probe14-deceq.lean
+
+ -- S4 Phase A QUERY-14 (NOTE-003 §1): decidable-equality instance chain.
+ -- Inspection only: every name below is backed by a deriving in source.
+ -- No BEq-law claim is made here; BEq availability (Q13) is demoted to non-evidence.
+
+ import KelGroups
+ import Reactivegas
+
+ #check (inferInstance : DecidableEq KelGroups.Member)
+ #check (inferInstance : DecidableEq KelGroups.PendingProposal)
+ #check (inferInstance : DecidableEq (KelGroups.GroupState Unit))
+ ... (9 more lines, 19 total, ctrl+o to expand)
+
+
+
+ $ cd /code/reactivegas-66-s4 && timeout 600 nix develop -c bash -c 'cd lean && lake env lean
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/probes/probe14-deceq.lean' >
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/probes/q14.out 2>&1; echo
+ "EXIT:$?"; cat /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/probes/q14.out
+ (timeout 620000s)
+
+ ... (5 earlier lines, ctrl+o to expand)
+ inferInstance : DecidableEq (KelGroups.StepResult Unit)
+ inferInstance : DecidableEq KelGroups.Vote.Question
+ inferInstance : DecidableEq KelGroups.Vote.VoteState
+ inferInstance : DecidableEq (KelGroups.GroupState α)
+ inferInstance : DecidableEq (KelGroups.Enactment α)
+
+ Took 2.4s
+
+
+
+ $ /code/llm-settings/shared/skills/worker-protocol/scripts/status-event
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/STATUS.md QUERY-14
+ "probe14-deceq exit 0 (counts); DecidableEq chain resolves incl generic-alpha conditional;
+ BEq demoted to non-evidence; decide+DecidableEq specified, no theorem weakened" 2>&1; tail -n
+ 1 /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/STATUS.md
+
+ 2026-09-05T12:32:07Z  QUERY-14  probe14-deceq exit 0 (counts); DecidableEq chain resolves
+ incl generic-alpha conditional; BEq demoted to non-evidence; decide+DecidableEq specified, no
+ theorem weakened
+
+ Took 0.0s
+
+
+
+ write
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/probes/probe15-statements.lean
+
+ -- MEASUREMENT ONLY, DISCARDED. Statement-shaping cost calibration for NOTE-003 §2.
+ -- Three exact correspondence statements over stub mirrors (opaque, scratch-only).
+ -- `sorry` appears here as the measurement instrument for ELABORATION cost;
+ -- proof cost is NOT measured by this probe and is estimated-as-estimate in text.
+ -- Nothing here enters the repo, weakens a theorem, or starts Phase B.
+
+ import KelGroups
+ import Reactivegas
+
+ opaque probePermMirror : Collection → Bool
+ ... (15 more lines, 25 total, ctrl+o to expand)
+
+
+
+ $ cd /code/reactivegas-66-s4 && timeout 600 nix develop -c bash -c 'cd lean && lake env lean
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/probes/probe15-statements.lean
+ ' > /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/probes/q15.out 2>&1; echo
+ "EXIT:$?"; cat /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/probes/q15.out
+ (timeout 620000s)
+
+ ... (2 earlier lines, ctrl+o to expand)
+ :12:0: warning: declaration uses 'sorry'
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/probes/probe15-statements.lean
+ :17:0: warning: declaration uses 'sorry'
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/probes/probe15-statements.lean
+ :23:0: warning: declaration uses 'sorry'
+
+ Took 2.4s
+
+
+
+ $ /code/llm-settings/shared/skills/worker-protocol/scripts/status-event
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/STATUS.md QUERY-15
+ "probe15-statements exit 0 (counts); 3 exact correspondence statements over stub mirrors
+ elaborated in 1 command (sorry warnings only, scratch, discarded); MEASURED statement rate
+ only, proof cost stays labelled-estimate with risk" 2>&1; tail -n 1
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/STATUS.md
+
+ 2026-09-05T12:32:18Z  QUERY-15  probe15-statements exit 0 (counts); 3 exact correspondence
+ statements over stub mirrors elaborated in 1 command (sorry warnings only, scratch,
+ discarded); MEASURED statement rate only, proof cost stays labelled-estimate with risk
+
+ Took 0.0s
+
+
+ Drafting a corrected assessment and Phase B proposal with BEq correction, throughput metrics,
+ ledger, and preserved prior version.
+
+ Adding finite-domain reductions and lookup support to the 19 correspondence statements and 17
+ scoped mirror rows.
+
+ Adding per-row reduction states and single-definition controls with mandatory build, walk,
+ capture, and rebind commands.
+
+ Calculating batched query ceilings and per-row envelopes with build and rebind counts.
+
+
+ $ R=/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/handoffs; cp
+ $R/PHASE-A-REPORT.md $R/PHASE-A-REPORT-v2-superseded.md && sha256sum $R/*
+
+ ... (6 earlier lines, ctrl+o to expand)
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/handoffs/PHASE-A-REPORT-v1-sup
+ erseded.md
+ 399cdb63a044aeb9b10d3539f915aee856cf8d7298678e2d500881817e3ac942
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/handoffs/PHASE-A-REPORT-v2-sup
+ erseded.md
+
+ Took 0.0s
+
+
+
+ write
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/handoffs/PHASE-A-REPORT.md
+
+ # S4 Phase A report — CORRECTED v3 (NOTE-003 / desk NOTE-035)
+
+ Supersedes `PHASE-A-REPORT-v2-superseded.md` (`399cdb…`; v1 `c52d96…` and
+ NOTE-001 `f289f6…` likewise preserved). Probes/outputs archived
+ (`artifacts/MANIFEST.sha256`); new probes under `probes/`; fixture under
+ `fixture/`; `TIMESTAMP-CORRECTION.md` owns the time repair. Failed probes
+ preserved and cited.
+
+ Base `4a6cd87` (accepted `master`, START-verified). Worktree
+ `/code/reactivegas-66-s4`, branch `chore/66-s4-phase-a`, HEAD unchanged. No
+ ... (139 more lines, 149 total, ctrl+o to expand)
+
+
+ Verifying ledger arithmetic and exit counts against the report totals.
+
+
+ edit
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/handoffs/PHASE-A-REPORT.md
+
+      ...
+  128 ## 6. Fence, deps, bounds, ledger
+  129
+  130 Fence: new modules only — `Reactivegas.Mirrors` (P02–P12 mirrors+theorems),
+  131 `KelGroups.Mirrors` (K1–K5 + V1–V4 theorems/mirrors as applicable; vote
+ -132 carriers may split into `KelGroups.Vote.Mirrors` if the implementer’s first
+ -133 shaping query shows the file exceeds review size — 1 extra warm build then
+ -134 moves from spare, still within 3). Existing files imported, never edited;
+ +132 carriers may split into `KelGroups.Vote.Mirrors` only via a cost-gap request for +1
+ build if shaping shows review size demands it). Existing files imported, never edited;
+  135 controls/scratch never in the repo; existing expressions (R0/P11/V4
+  136 `decide`/coerced Bools, P01 projection, P07 subexpression) counted, never
+  137 duplicated; no coordinator behaviour. Deps: #68 rebinds K1/K3/K4/K5 (+Enacts
+  138 threshold reading), #69 rebinds P05/P06/P07/P11/P03/P04; any accepted change
+      ...
+
+
+
+ $ sha256sum
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/handoffs/PHASE-A-REPORT.md; wc
+ -l /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/handoffs/PHASE-A-REPORT.md;
+ git -C /code/reactivegas-66-s4 status --short --branch 2>&1 | head; git -C
+ /code/reactivegas-66-s4 rev-parse HEAD 2>&1
+
+ 881a9fba51e7eaf2c0f297d82a70dac5752c947bd6faa7b29ee5c2c37400fe3d
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/handoffs/PHASE-A-REPORT.md
+ 147 /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/handoffs/PHASE-A-REPORT.md
+ ## chore/66-s4-phase-a
+ 4a6cd87fcbc3e4a536bbc9f240f5efe5704022af
+
+ Took 0.0s
+
+
+
+ $ /code/llm-settings/shared/skills/worker-protocol/scripts/status-event
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/STATUS.md REPORT-V3 "corrected
+ v3 delivered sha256=881a9fba lines=147 (399cdb preserved as v2-superseded);
+ decide+DecidableEq specified with Q14 chain, BEq demoted; Q15 measured 3 statements/1 cmd,
+ proofs labelled-estimate; Phase B ceilings 3 builds 19 queries + rebind envelopes 1+3 per
+ landing; spend builds 3/3 queries 15/20; tree 4a6cd87 clean; no Phase B START" 2>&1; tail -n
+ 1 /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/STATUS.md
+
+ 2026-09-05T12:33:19Z  REPORT-V3  corrected v3 delivered sha256=881a9fba lines=147 (399cdb
+ preserved as v2-superseded); decide+DecidableEq specified with Q14 chain, BEq demoted; Q15
+ measured 3 statements/1 cmd, proofs labelled-estimate; Phase B ceilings 3 builds 19 queries +
+ rebind envelopes 1+3 per landing; spend builds 3/3 queries 15/20; tree 4a6cd87 clean; no
+ Phase B START
+
+ Took 0.0s
+
+
+ NOTE-003 acted on — corrected v3 delivered locally. No Phase B start, no
+ model/guard/statement edits.
+
+ Delivery: handoffs/PHASE-A-REPORT.md sha256 881a9fba (147 lines); 399cdb preserved as
+ v2-superseded. Helper-stamped STATUS event. Tree 4a6cd87 clean. Nothing into %510/human seat.
+
+ 1. Equality correctness: v2's loose "DecidableEq/BEq α" replaced — mirrors specified as
+    decide + DecidableEq (correctness via core decide API already used in-tree, e.g.
+    decide_eq_true_eq in no_expiry); bare == requires an unestablished LawfulBEq law, so no
+    law is claimed and Q13's BEq check is demoted to non-evidence on record. Q14 (exit 0)
+    justifies the whole-state chain: DecidableEq for Member, PendingProposal,
+    GroupState/Enactment/StepResult-Unit, Vote.Question/VoteState, plus generic-α conditional;
+    function-field audit shows no Prop here touches RoleDef function fields. Assumptions stay
+    in scope — no theorem weakened.
+ 2. Throughput honest: Q15 (exit 0) measured 3 exact statements / 1 command over stub mirrors
+    (sorry-warnings only, scratch, discarded). Proof cost is not measured — Phase B numbers
+    are a labelled bounded engineering estimate with risk: mirrors ceil(17/4)=5, proofs
+    ceil(19/2)=10, mandatory verification/controls 1 build+4 (walk, statement batch, 2
+    per-module expected-fail negative controls, omission/empty controls) → 3 builds, 19
+    queries; rebinds as actual envelopes 1 build + 3 queries per #68/#69 landing (cold build,
+    walk, statement re-capture, re-eval batch). No fractions, no lumped "2 probes".
+ 3. Proposal retains all: 19 exact statements (P01 projection+rfl-lemma, P07 subexpression, 17
+    new-B names fenced to Reactivegas.Mirrors/KelGroups.Mirrors), finite reductions with
+    lookup support per ∀/∃ row, single-definition expected-fail controls,
+    CI/inventory+omission control, fence (existing files imported never edited; existing
+    R0/P11/V4/P01/P07 counterparts counted, never duplicated; no coordinator behaviour),
+    #68/#69 integration. 23 stays an observed inventory, never a quota; V4 + Reach stand.
+
+ Ledger: builds 3/3 (fixture B/C fails counted, cap reached — further builds need explicit
+ raise), queries 15/20 (Q14/Q15 exit 0; 5 remain). Agrees with NOTE-003 receipt (3/3, 13/20);
+ no disagreement. Fresh full acceptance still separately required.
+
+
+ OPERATOR PAUSE. Read /tmp/reactivegas/ms2/e-lean-compliance/PAUSE-ORDER.md in full and act on
+ it NOW. It supersedes every outstanding instruction to you. Pause at the nearest safe
+ boundary, start nothing new, preserve everything, do not retire your pane, and write a PAUSED
+ (or PAUSING) event in your STATUS.md with your exact current work, what remains, your live
+ PID and PGID, and your spend counters. Local files only.
+
+
+
+ read /tmp/reactivegas/ms2/e-lean-compliance/PAUSE-ORDER.md
+
+
+ Pausing at a safe boundary by confirming no background tasks and logging status to local
+ files only.
+
+
+ $ echo "PID=$$"; ps -o pid=,pgid=,args= -p $$ 2>&1; echo "---"; ps --ppid $$ -o
+ pid=,pgid=,args= 2>&1 | head; echo "---jobs---"; jobs 2>&1; echo "---no builds/queries
+ running check---"; pgrep -f "lake build|lake env lean" 2>&1 | head; echo "(empty above =
+ nothing in flight)"
+
+ ... (8 earlier lines, ctrl+o to expand)
+ ---jobs---
+ ---no builds/queries running check---
+ 1860046
+ 3870271
+ (empty above = nothing in flight)
+
+ Took 0.3s
+
+
+
+ $ ps -o pid=,ppid=,pgid=,etime=,args= -p 3870271 2>&1; echo "---"; ps -o
+ pid=,ppid=,pgid=,etime=,args= -p 1246512 2>&1
+
+ ... (1 earlier lines, ctrl+o to expand)
+ build CardanoKeri.RegistryGoals CardanoKeri.Cage
+ ---
+ 1246512 1246411 1246512    03:23:15
+ /nix/store/iwgllsbcsalpqms30i4xn56dcpg99zdl-pi-0.84.4/libexec/pi/pi --provider opencode-go
+ --model muse-spark-1.3-contributor --thinking xhigh --approve
+
+ Took 0.0s
+
+
+
+ $ /code/llm-settings/shared/skills/worker-protocol/scripts/status-event
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/STATUS.md PAUSED "NOTE-003 v3
+ delivered (REPORT sha256=881a9fba); no step in flight, jobs empty, 3870271 is another lane
+ CardanoKeri build not mine; REMAINS: desk/audit disposition only, no authorized work left;
+ live PID=1246512 PGID=1246512; spend builds 3/3 queries 15/20; pane kept, timers none to
+ disarm, nothing sent upward" 2>&1; tail -n 1
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4-phase-a/STATUS.md
+
+ 2026-09-05T15:03:21Z  PAUSED  NOTE-003 v3 delivered (REPORT sha256=881a9fba); no step in
+ flight, jobs empty, 3870271 is another lane CardanoKeri build not mine; REMAINS: desk/audit
+ disposition only, no authorized work left; live PID=1246512 PGID=1246512; spend builds 3/3
+ queries 15/20; pane kept, timers none to disarm, nothing sent upward
+
+ Took 0.0s
+
+
+ PAUSED. STATUS.md holds the PAUSED event (helper-stamped 2026-09-05T15:03:21Z): v3 delivered,
+ nothing in flight, remains = desk/audit disposition only, PID 1246512 / PGID 1246512, spend
+ 3/3 builds + 15/20 queries. No timers to disarm, pane kept, evidence preserved, nothing sent
+ upward.
+
+───────────────────────────────────────────────────────────────────────────────────────────────
+
+[1]+  Stopped                    muse --approve────────────────────────────────────────────────
+/code/reactivegas-66-s4 (chore/66-s4-phase-a)
+paolino in reactivegas-66-s4 on  chore/66-s4-phase-a via λ took 3h30m11s 3-contributor • xhigh
+✦ ❯

@@ -1,0 +1,8 @@
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+KelGroups/Types.lean:145:14: warning: unused variable `key`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+KelGroups/Types.lean:145:26: warning: unused variable `view`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+3dd567e1d13d6294589c36bed4a3f2e16674e2b5193b50b528dc2f7d8d7e5f11  /tmp/s2shadow-P01/KelGroups/Types.olean

@@ -1,0 +1,110 @@
+diff --git a/.github/workflows/ci.yaml b/.github/workflows/ci.yaml
+index ee1308c..e7bc649 100644
+--- a/.github/workflows/ci.yaml
++++ b/.github/workflows/ci.yaml
+@@ -80,3 +80,9 @@ jobs:
+ 
+       - name: Build lean specification
+         run: nix --quiet develop --command just lean
++
++      # S86: the committed CI path runs corpus verification additively.
++      # `just lean` above stays intact (dependency direction, inversion
++      # coverage ± negative control, trace agreement, `lake build`).
++      - name: Verify corpus emission
++        run: nix --quiet develop --command just lean-corpus-verify
+diff --git a/lean/Reactivegas/CorpusExport.lean b/lean/Reactivegas/CorpusExport.lean
+index 4273fca..9e36b7a 100644
+--- a/lean/Reactivegas/CorpusExport.lean
++++ b/lean/Reactivegas/CorpusExport.lean
+@@ -21,11 +21,17 @@ authorization identity, and nothing else. The integrated file's `initial`
+ (`corpusInitial`) is the same shape of need as `GroupView`, not a third
+ thing. A third field needs a filed question, not an implementation decision.
+ 
+-Live binding (finding 1 property class): `check` mode reads two wrapper
++Live binding (finding 1 property class + R86-C): `check` mode reads two wrapper
+ files back from bytes and compares their `traces`/`steps` element for
+ element against the live `seedCorpus`/`emitIntegratedCorpus` evaluated
+ through this call site, requiring a nonzero extent derived from the data.
+ Counts alone are not sufficient: a same-size swap must fail here.
++The wrapper context is bound the same way: economic `view` against live
++`seedView`, integrated `initial` against live `corpusInitial`, and each
++`auth` string against its identity def, with nonzero member extents.
++Bounded claim: this live-call/derived-ToJson method does not establish
++serializer-instance independence (an independent encoder could differ;
++none is required here).
+ -/
+ 
+ /-- JSON projection of `KelGroups.GroupView`. This is the only `ToJson`
+@@ -88,9 +94,41 @@ def checkLiveArray (name : String) (live file : Lean.Json) : Except String Nat :
+     if liveArr[i]! != fileArr[i]! then throw s!"{name}: element {i} differs from live value"
+   return fileArr.size
+ 
+-/-- Bind an economic wrapper file: `traces` equals live `seedCorpus`
++/-- Bind the economic wrapper context: `view` equals live `seedView`
++(value equality through the same call-site `ToJson`), with a nonzero member
++extent read from the bytes; `auth` equals the refusing-probe identity.
++Kills: `.view.members[0].key` → `"ZZZ"`, permissive-`auth` swaps. -/
++def checkEconContext (j : Lean.Json) : Except String Nat := do
++  let view ← (j.getObjVal? "view").mapError (fun e => s!"economic: no view key: {e}")
++  if view != Lean.toJson seedView then throw "economic: view differs from live seedView"
++  let members ← (view.getObjVal? "members").mapError (fun e => s!"economic: view without members: {e}")
++  let marr ← members.getArr?.mapError (fun e => s!"economic: view members not an array: {e}")
++  if marr.size == 0 then throw "economic: zero view members"
++  let auth ← (j.getObjVal? "auth").mapError (fun e => s!"economic: no auth key: {e}")
++  if auth != Lean.Json.str econAuthIdentity then
++    throw "economic: auth differs from live econAuthIdentity"
++  return marr.size
++
++/-- Bind the integrated wrapper context: `initial` equals live
++`corpusInitial`, with a nonzero member extent from the bytes; `auth`
++equals the refusing-probe identity. Kills: `.initial.members` → `[]`,
++permissive-`auth` swaps. -/
++def checkIntContext (j : Lean.Json) : Except String Nat := do
++  let initial ← (j.getObjVal? "initial").mapError (fun e => s!"integrated: no initial key: {e}")
++  if initial != Lean.toJson Reactivegas.corpusInitial then
++    throw "integrated: initial differs from live corpusInitial"
++  let members ← (initial.getObjVal? "members").mapError (fun e => s!"integrated: initial without members: {e}")
++  let marr ← members.getArr?.mapError (fun e => s!"integrated: initial members not an array: {e}")
++  if marr.size == 0 then throw "integrated: zero initial members"
++  let auth ← (j.getObjVal? "auth").mapError (fun e => s!"integrated: no auth key: {e}")
++  if auth != Lean.Json.str intAuthIdentity then
++    throw "integrated: auth differs from live intAuthIdentity"
++  return marr.size
++
++/-- Bind an economic wrapper file: context (`view`/`auth`) plus `traces`
+ element for element, with nonzero trace and event extents from the bytes. -/
+ def checkEconFile (j : Lean.Json) : Except String (Nat × Nat) := do
++  let _ ← checkEconContext j
+   let traces ← (j.getObjVal? "traces").mapError (fun e => s!"economic: no traces key: {e}")
+   let ntraces ← checkLiveArray "economic.traces" (Lean.toJson seedCorpus) traces
+   let arr ← traces.getArr?.mapError (fun e => s!"economic: traces not an array: {e}")
+@@ -105,6 +143,7 @@ def checkEconFile (j : Lean.Json) : Except String (Nat × Nat) := do
+ /-- Bind an integrated wrapper file: `steps` equals live
+ `emitIntegratedCorpus` element for element, with nonzero extent. -/
+ def checkIntFile (j : Lean.Json) : Except String Nat := do
++  let _ ← checkIntContext j
+   let steps ← (j.getObjVal? "steps").mapError (fun e => s!"integrated: no steps key: {e}")
+   checkLiveArray "integrated.steps" (Lean.toJson Reactivegas.emitIntegratedCorpus) steps
+ 
+@@ -136,6 +175,9 @@ def main (args : List String) : IO UInt32 := do
+       IO.eprintln s!"corpus-check FAIL integrated parse: {e}"
+       return 1
+   | [econPath, intPath] => do
++    if econPath == "check" then do
++      IO.eprintln "usage: corpusExport <economic.json> <integrated.json> | corpusExport check <economic.json> <integrated.json>"
++      return 1
+     IO.FS.writeFile econPath (econWrapperJson.compress ++ "\n")
+     IO.FS.writeFile intPath (intWrapperJson.compress ++ "\n")
+     return 0
+diff --git a/nix/project.nix b/nix/project.nix
+index bef7cb8..765dde2 100644
+--- a/nix/project.nix
++++ b/nix/project.nix
+@@ -13,6 +13,7 @@ in pkgs.haskell-nix.cabalProject' {
+   };
+   shell.buildInputs = with pkgs; [
+     just
++    jq
+     lean4
+     nixfmt-classic
+     shellcheck

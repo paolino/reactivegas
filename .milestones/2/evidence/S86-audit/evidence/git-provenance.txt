@@ -1,0 +1,118 @@
+commit 38c6d0629c14dfc2209c56450475a77c445fba1f
+Author:     Paolo Veronelli <paolo.veronelli@gmail.com>
+AuthorDate: Sat Sep 5 12:01:55 2026 +0100
+Commit:     Paolo Veronelli <paolo.veronelli@gmail.com>
+CommitDate: Sat Sep 5 12:01:55 2026 +0100
+
+    feat(lean): bind wrapper context live, fix check arity, wire CI verifier
+    
+    S86 repairs on 9c8756a-line base: check mode binds economic view to
+    seedView, integrated initial to corpusInitial, and both auth strings to
+    their refusing-probe identities (nonzero member extents; bounded
+    call-site claim in module comment); check-headed malformed arity now
+    refuses nonzero with zero writes; ci.yaml gains an additive
+    lean-corpus-verify step; jq declared in the dev shell. Emitter bytes
+    identical (re-emit cmp + manifest clean). E handoff content authored in
+    commit-owner handoffs/ for ticket-owner routing.
+    
+    Tasks: T8601, T8602, T8603, T8604, T8605
+
+commit 6ec3ce315158c4615fcaf0ac9986efc6d3c5f8b3
+Author:     Paolo Veronelli <paolo.veronelli@gmail.com>
+AuthorDate: Sat Sep 5 11:52:53 2026 +0100
+Commit:     Paolo Veronelli <paolo.veronelli@gmail.com>
+CommitDate: Sat Sep 5 11:52:53 2026 +0100
+
+    docs(spec): freeze 86 exporter-successor mandate
+    
+    Successor to #74: five repairs (CI path, declared jq, four context
+    bindings, check-one-path arity, current coverage handoff) plus four
+    re-established inherited rows, all open to falsification. Gate S86 v1
+    frozen with per-row RED on unrepaired 9c8756a.
+    
+    Tasks: T8600
+
+commit 9c8756a252c46bc5745badafcc9126abd3e5d9a7
+Author:     Paolo Veronelli <paolo.veronelli@gmail.com>
+AuthorDate: Sat Sep 5 09:42:48 2026 +0100
+Commit:     Paolo Veronelli <paolo.veronelli@gmail.com>
+CommitDate: Sat Sep 5 09:42:48 2026 +0100
+
+    feat(lean): bind corpus bytes to live defs and pin wrapper key sets
+    
+    Repair 1 (finding 1): corpusExport check mode binds emitted traces/steps
+    element-for-element to live seedCorpus/emitIntegratedCorpus with a
+    runtime-derived nonzero extent; wired into lean-corpus-verify. Repair 2
+    (finding 2): jq exact key sets top-level and one level in, same recipe.
+    Re-emission against S1 base 4a6cd87: single accounted change (refused
+    withdraw claim UNPROVED -> step_withdraw_inv, +9B); all else identical.
+    
+    base=507bc79 s1=4a6cd87 gate=v3 66ea7cb62676d3405b503b6bb1204cedff5f0d01f557e411159353f3b343816a
+    economic=73a077fc514038e40f84aca4a995fe68623e3af46ed11c0280d5b963137576aa
+    integrated=1f173aec9c3afd9cb95265e4be2966b9316e810a969d9fc40f672b17120f3675
+    
+    STATUS: commit-owner S74 submission=2
+    Tasks: T7401, T7402, T7403
+
+commit bc449980f77546d536e15738ac14832c25dc39cd
+Merge: fed19b3 4a6cd87
+Author:     Paolo Veronelli <paolo.veronelli@gmail.com>
+AuthorDate: Sat Sep 5 09:38:38 2026 +0100
+Commit:     Paolo Veronelli <paolo.veronelli@gmail.com>
+CommitDate: Sat Sep 5 09:38:38 2026 +0100
+
+    merge S1 base 4a6cd87 into feat/74-corpus-exporter
+
+commit fed19b338a1a6329ce56a2b1830702ad5579f5a1
+Author:     Paolo Veronelli <paolo.veronelli@gmail.com>
+AuthorDate: Sat Sep 5 06:47:23 2026 +0100
+Commit:     Paolo Veronelli <paolo.veronelli@gmail.com>
+CommitDate: Sat Sep 5 06:47:23 2026 +0100
+
+    feat(lean): add corpus exporter exe, frozen corpora, and verify gate
+    
+    New leaf module Reactivegas.CorpusExport calls seedCorpus (5 traces,
+    32 events) and emitIntegratedCorpus (7 steps from corpusInitial) and
+    writes both NOTE-001-bounded wrappers (view/auth/traces,
+    initial/auth/steps) via lean_exe corpusExport. just lean-corpus-export
+    emits both files plus SHA-256 manifest; just lean-corpus-verify
+    re-emits to temp and byte-compares plus sha256sum -c, failing closed.
+    ci runs verify. Coverage prose delivered as owner-root handoffs
+    evidence for routing to #71; docs/ untouched.
+    
+    base=507bc79 gate=v3 66ea7cb62676d3405b503b6bb1204cedff5f0d01f557e411159353f3b343816a
+    export=91526dc6bf821979fabf516c2e5831a1594de1e171936b235ec36a08154f5e86
+    integrated=1f173aec9c3afd9cb95265e4be2966b9316e810a969d9fc40f672b17120f3675
+    
+    STATUS: commit-owner S74 submission=1
+    Tasks: T7401, T7402, T7403
+
+commit 507bc793f39bdd6092a09cefc607e117d9761743
+Author:     Paolo Veronelli <paolo.veronelli@gmail.com>
+AuthorDate: Sat Sep 5 06:38:35 2026 +0100
+Commit:     Paolo Veronelli <paolo.veronelli@gmail.com>
+CommitDate: Sat Sep 5 06:38:35 2026 +0100
+
+    docs(spec): apply NOTE-001 wrapper bound and revoked record entry
+    
+    Wrapper carries GroupView plus the authorization identity and nothing else
+    without a filed question; corpusInitial is the same shape of need, not a
+    third thing. Deliverable 5 revoked: docs/ read-only (#71 owns the record);
+    coverage goes to handoffs/CORPUS-COVERAGE.md for routing to #71.
+    
+    STATUS: MANDATE-AMENDED gate=96ff2f937725b9aa846461638436b6aa0087bddcb9dfb86bb604fff04a015552 base=e6c5924
+
+commit ce44fcd793f6734e05d93c556f213c56157e96f8
+Author:     Paolo Veronelli <paolo.veronelli@gmail.com>
+AuthorDate: Sat Sep 5 06:36:01 2026 +0100
+Commit:     Paolo Veronelli <paolo.veronelli@gmail.com>
+CommitDate: Sat Sep 5 06:36:01 2026 +0100
+
+    docs(spec): freeze 74 corpus exporter mandate
+    
+    Compact mandate for the frozen trace-corpus oracle: exporter calls
+    seedCorpus/emitIntegratedCorpus, file-level wrapper closes the envelope gap,
+    verify target fails closed, design record names the vote hole and the
+    provisional freeze until #68 and #69.
+    
+    STATUS: MANDATE-FROZEN gate=d3a845961a93484b709f68509f14829534d10a59c7dab56f83c5130ab93815df base=e6c5924

@@ -1,0 +1,11 @@
+# NOTE-009 — design audit findings, exhausted campaign
+
+Desk read FULL report a6a0d9f548abf18108027bed0c4514b33b789cecd2d447969a621cfc11bfd243 at 67877b1 and independently inspected the cited economic prose and Step/Invariants. F-01/F-02/F-03 are blocking; the candidate is not accepted despite full gate GREEN and twelve representative kills. Submission 2/2 is exhausted. No third submission or implementation repair is implicitly authorized.
+
+Prepare a bounded successor campaign proposal under #71 with fresh Muse commit owner and fresh FULL Codex auditor, preserving original scope, both reports, invalid-seat record, immutable v4 and all spending. Existing remaining build allowances are not submission authority. Runtime-only preparation needs no builds. Return exact file fence, executable property classes, realistic finite owner/auditor budgets and current historical accounting, then desk can dispatch it without inventing a new product ruling.
+
+Content must describe actual cash-box debit, permitted zero deposits and stored-zero distinction; AUTH theorem proves author role, not every event guard, and collection lookup is an actual grant/deny prerequisite. Verify all economic/authorization rows against their statements, not only these examples. No Lean semantic or theorem change authorized to make prose true. Fix the malformed pending-row table while in the document.
+
+The missing-citation repair must reconcile declaration-like claims independently of remaining citation markers. A larger hardcoded anchor minimum cannot discharge F-03. Define the admitted claim syntax/domain and show missing, malformed, unknown, and added-uncited-claim controls can fail against the real checker. State where semantic claim-to-statement review remains human/auditor work; do not claim a parser verifies natural language truth. Do not remove a required claim or rephrase it out of detection to avoid citing it.
+
+Successor audit subject remains the FULL unaccepted design record against actual accepted model pins, including all original row duties. Old kills are evidence, never acceptance carried forward. Keep PR77 draft; no merge, no comments, no publication. Deliver proposal and ACK locally only.

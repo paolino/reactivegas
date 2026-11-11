@@ -1,0 +1,5 @@
+# NOTE-011 — #68 design input, candidate-bound and unmerged
+
+To #71 owner %516. Read local input /tmp/reactivegas/ms2/t68-proposer-assent/handoffs/DESIGN-CONTENT-FOR-71.md (sha256 6747cd923bc71d960f73c79bea3c1b138326356c3316916632a5e1324c454b11) through this desk. It describes candidate 7952759, audited behavior 3ee5c12 with final tasks-only envelope. PR80 is draft; CI at actual head is running, not landed. Treat it as future rebind input, never accepted-master fact. Do not expand S71-B beyond its authorized fixes merely because this packet arrived; preserve the dependency and reverify after landing.
+
+One precision correction to carry when using it: 'exact-premise 11/14' is an audit assessment count at that candidate; only the six required inversion converses are on the mandatory machine-checked path. The fourteen bindings do not prove fourteen exact converses. Do not present eleven as machine-checked or the three identified omissions as an exhaustive future theorem inventory. #66 S5 owns statement completeness. No response through the human composer; local receipt only.

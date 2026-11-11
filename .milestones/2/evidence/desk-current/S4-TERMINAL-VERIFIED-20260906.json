@@ -1,0 +1,10 @@
+{
+  "verifiedAt": "2026-09-06T06:18:53.512Z",
+  "reportSha256": "874727c2e0632d525ac04d8d70f2ad42bbbda5df57a6c4221bba9d582de9ffde",
+  "manifestSha256": "eb05530995bde80878203222a4430b1afce1d05002cb4bd60d59d60e75f40cc0",
+  "entries": 665,
+  "candidate": "94bb7bb64324a48f7361252556b4d15e45b3923f",
+  "verdict": "AUDIT-FINDINGS",
+  "acceptance": "OPEN F-001 Reach consumer-axis authority; parent disposition pending",
+  "scope": "Desk verifies terminal report identity and declared evidence bytes, not a second semantic audit."
+}

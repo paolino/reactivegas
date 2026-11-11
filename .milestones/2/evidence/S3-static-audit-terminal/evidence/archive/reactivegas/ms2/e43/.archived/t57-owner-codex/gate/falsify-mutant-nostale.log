@@ -1,0 +1,6 @@
+MUTATION-APPLIED:NOSTALE
+/tmp/reactivegas/ms2/e43/t57-owner-codex/gate/instruments/mutant-nostale.lean:31:0: error: Expression
+  match lookupQuestion "q" final with
+  | some q => verdictOf legacyThreshold final q == Verdict.open
+  | none => true
+did not evaluate to `true`

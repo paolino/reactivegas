@@ -1,0 +1,104 @@
+INVOCATION: /tmp/reactivegas/ms2/t-simulator-fable/handoffs/gate-v15-one-membership.sh /code/reactivegas-sim-fable
+ENV: RG_OMIT_NOOP=unset RG_CHROMIUM=unset
+REPO: /code/reactivegas-sim-fable
+GREEN: superficie ritirata — dispatch derivato dalla macchina, controllo positivo applicato, 4 costruttori ritirati rifiutati con operandi legacy, deroga ancorata al campo/valore
+ - derivation/f6-token-moved-into-dispatch: rosso come dovuto — ramo eseguibile per 'removeMember', assente dai 14 costruttori del Lean fissato
+ - derivation/pre-switch-silent-undefined: rosso come dovuto — ramo eseguibile per 'addUser', assente dai 14 costruttori del Lean fissato
+ - derivation/pre-switch-alien-applied: rosso come dovuto — ramo eseguibile per 'resurrectUser', assente dai 14 costruttori del Lean fissato
+ - validity/parser-blind-undefined: rosso come dovuto — sonda 'addUser' {"author":"anna","target":"bruno"} ha restituito undefined: ne' rifiuto es
+ - execution/parser-blind-applied: rosso come dovuto — costruttore ritirato 'removeMember' APPLICATO con {"author":"anna","target":"bruno"}
+ - execution/conditional-guard-reached-by-witness: rosso come dovuto — costruttore ritirato 'removeResponsabile' APPLICATO con {"author":"anna","target":"bruno"}
+ - setup/missing-export-is-red: rosso come dovuto — export mancante emptyState: la sonda non puo' essere eseguita, non e' un rifiuto
+ - setup/throwing-transport-is-red: rosso come dovuto — controllo positivo ha lanciato: sonda: trasporto rotto, i rifiuti non sono prova
+ - anchor/token-on-claim-naming-comment: rosso come dovuto — removeMember alla riga 37, fuori dal valore della citazione comp-base-threshold (575) e fu
+ - anchor/token-in-ordinary-code: rosso come dovuto — removeMember alla riga 43, fuori dal valore della citazione comp-base-threshold (575) e fu
+ - anchor/claim-value-reworded-loses-exemption: rosso come dovuto — il VALORE del campo c di comp-base-threshold non contiene piu' removeMember: la deroga (i)
+ - anchor/fixture-shape-lost-loses-exemption: rosso come dovuto — removeMember alla riga 925, fuori dal valore della citazione comp-base-threshold (574) e f
+GREEN: superficie ritirata — dispatch derivato dalla macchina, controllo positivo applicato, 4 costruttori ritirati rifiutati con operandi legacy, deroga ancorata al campo/valore — con controlli negativi
+GREEN: oracolo una-sola-membership v2 — sostanza PASS
+ - payload-regains-users: rosso per il motivo atteso — State.empty ha campi casse,collections,conti,users,votes; il Lean fissato ha casse,collections,
+ - comune-becomes-numeric-sentinel: rosso per il motivo atteso — COMUNE_KEY=-1; comuneId fissato e' la Key "comune"
+ - retired-route-reintroduced: rosso per il motivo atteso — EVENT_ROUTES = [acceptPledge,addUser,backdonate,closePurchase,correctPledge,denyPermission,depo
+ - authority-stops-reading-the-view: rosso per il motivo atteso — isResponsabile: bruno non e' admin e viene riconosciuto tale
+ - admission-creates-a-conto-row: rosso per il motivo atteso — T1: l'ammissione crea una voce in conti ([["bruno",0]])
+ - departure-stops-absorbing: rosso per il motivo atteso — T5: conto dell'uscente=40, atteso 0
+ - stall-guard-removed: rosso per il motivo atteso — stallo: un comune negativo non rifiuta l'uscita
+ - threshold-anticipated-to-strict-majority: rosso per il motivo atteso — majority con 0 admin = 1, il Lean fissato da' 0
+  8/8 controlli sono MUTAZIONI DELLA PRODUZIONE, ciascuna rossa per il proprio motivo
+GREEN: oracolo una-sola-membership v2 — sostanza PASS — con controlli di produzione
+GREEN: 13 fette del core identiche byte-per-byte fra economics-simulator-core.mjs e la pagina generata
+GREEN: 75 righe di manifesto, 56 citazioni verificate nel lake env; stati derivati (0 enunciate, 56 provate); file:line risolti; hash sorgenti confermati; copertura KelGroups esaustiva (16 sorgenti scoperte = pinnate); pin composizione 934de7a8df… verificato (albero esatto, righe al pin, instradamento derivato, copertura dei costruttori, stati elaborati freschi); ricevuta legata (sha 3b3e0cc0911c…); machine=14/14 pinned=14 retired=0
+machine-controls=removed-attempt-case,stale-event-pin,stale-composition-pin,manifest-removed,manifest-ambiguous,manifest-repointed
+derivazione fresca: 56 dichiarazioni provate, 0 enunciate (scarico #48/#65); controllo flip su KelGroups.Vote.QuestionKind
+controllo positivo «scratch non tracciata ignorata»: insieme autoritativo invariato (16 sorgenti tracciate)
+controllo negativo «collegamento citazione senza pin»: RED come atteso — sourcePins deve coprire esattamente CHECK_RECEIPT.sources
+controllo negativo «collegamento citazione senza file»: RED come atteso — auth: riferimenti mancanti
+controllo negativo «collegamento citazione senza riga»: RED come atteso — auth: riferimenti mancanti
+controllo negativo «citazione economica fasulla»: RED come atteso — il driver di audit generato fallisce nel lake env:     KelGroups.Vote.VoteState → KelGroups.Key → KelGroups.Vo
+controllo negativo «citazione del voto fasulla»: RED come atteso — il driver di audit generato fallisce nel lake env: /tmp/rg-claim-gate-7sPxSk/claim-gate-driver.lean:18:8: erro
+controllo negativo «sha della ricevuta mutato»: RED come atteso — CHECK_RECEIPT.sha non legato all'output fresco del driver — embedded=0b3e0cc0911c… fresh=3b3e0cc0911c…
+controllo negativo «dichiarazione con sorry flippata a provato»: RED come atteso — CHECK_RECEIPT.axioms ≠ derivazione fresca — KelGroups.Vote.QuestionKind: embedded=enunciato derivato=provato
+controllo negativo «rilevatore sorry: sensibilità on=enunciato off=provato»: RED come atteso — sensibilità del rilevatore confermata: KelGroups.Vote.QuestionKind enunciato col rilevatore attivo, provato co
+controllo negativo «sorgente Lean economica toccata»: RED come atteso — hash sorgente divergente: lean/Reactivegas/Step.lean
+controllo negativo «sorgente Lean del voto toccata»: RED come atteso — hash sorgente divergente: lean/KelGroups/Vote/Invariants.lean
+controllo negativo «commit composizione non risolvibile»: RED come atteso — commit composizione non risolvibile: ffffffffffffffffffffffffffffffffffffffff
+controllo negativo «pin composizione spostato su un commit risolvibile»: RED come atteso — pin composizione non raggiungibile da origin/master (commit orfano): ef773ec4d4b040866eef7dae6b98881cd140c2b1
+controllo negativo «pin orfano risolvibile ma non raggiungibile da origin/master»: RED come atteso — pin composizione non raggiungibile da origin/master (commit orfano): fcd4dc3037c3621f2a8d5c452fe21c7a53443037
+controllo negativo «stato del teorema al pin flippato»: RED come atteso — stato al pin divergente per Reactivegas.Composition.voteDerived_iff_not_direct: dichiarato=enunciato derivato=
+controllo negativo «instradamento di pagina divergente dal pin»: RED come atteso — instradamento divergente dal pin per donate: pagina=appDecided pin=direct
+controllo negativo «costruttore senza righe di copertura»: RED come atteso — costruttore senza righe di manifesto: backdonate
+controllo negativo «pin KelGroups omesso dalla ricevuta»: RED come atteso — sourcePins deve coprire esattamente CHECK_RECEIPT.sources
+selftest GREEN: 17 controlli negativi RED per il motivo atteso; produzione GREEN (75 righe, 56 citazioni, 0 enunciate, sha 3b3e0cc0911c…); machine-controls=removed-attempt-case,stale-event-pin,stale-composition-pin,manifest-removed,manifest-ambiguous,manifest-repointed
+GREEN: 2 envelope; rigenerazione Lean identica (sha 1bec2e6a76d3…); replay di produzione: 35 passi sul corpus incorporato + 35 sul corpus fresco (script eseguito, sha 9ab62ad87226…)
+controllo negativo «post-stato mutato nella fixture incorporata»: RED come atteso — trace A passo 4: primo scarto strutturale — fresco={"event":{"app":{"pledge":{"c":10,"user":"bruno","v":30}}},"input":{"
+controllo negativo «corpus incorporato svuotato»: RED come atteso — corpus incorporato vuoto o con envelope senza passi
+controllo negativo «sha dichiarato mutato»: RED come atteso — sha dichiarato ≠ output fresco del driver — dichiarato=0bec2e6a76d3… fresco=1bec2e6a76d3…
+selftest GREEN: 3 controlli negativi RED per il motivo atteso; GREEN: 2 envelope; rigenerazione Lean identica (sha 1bec2e6a76d3…); replay di produzione: 35 passi sul corpus incorporato + 35 sul corpus fresco (script eseguito, sha 9ab62ad87226…)
+GREEN: 1 envelope voto; rigenerazione Lean identica (sha b53eb59cb419…); replay di produzione: 15 passi sul corpus incorporato + 15 sul corpus fresco (script eseguito, sha 9ab62ad87226…)
+controllo negativo «post-stato del voto mutato nella fixture incorporata»: RED come atteso — trace V passo 3: primo scarto strutturale — fresco={"event":{"cast":{"ballot":"assent","questionId":"q:permesso-olio"}},
+controllo negativo «corpus voto incorporato svuotato»: RED come atteso — corpus voto incorporato vuoto o con envelope senza passi
+controllo negativo «sha dichiarato mutato»: RED come atteso — sha dichiarato ≠ output fresco del driver — dichiarato=053eb59cb419… fresco=b53eb59cb419…
+selftest GREEN: 3 controlli negativi RED per il motivo atteso; GREEN: 1 envelope voto; rigenerazione Lean identica (sha b53eb59cb419…); replay di produzione: 15 passi sul corpus incorporato + 15 sul corpus fresco (script eseguito, sha 9ab62ad87226…)
+GREEN: 3 scenari, 28 passi replayati sul core condiviso; asserzioni coperte: comune-backdonation, comune-donation, no-close-without-positive-permission, no-negative-conto, no-vote-derived-without-evidence; pagina generata identica al core e stessa interfaccia dimostrata
+  01-permesso-senza-delibera.json: 6 passi — governo: rifiutata come atteso — governo: grantPermission senza verdetto positivo chiuso · no-vote-derived-without-evidence: coperta dal cammino di governo qui sopra · no-negative-conto: 7 stati, tutti i conti ≥ 0 · comune-donation: donate +90 su cassa autore e conto comune riservato, conti membri invariati · comune-backdonation: backdonate +10 a ogni membro, comune −30, casse invariate
+  02-giro-governato-completo.json: 10 passi — governo: accettata come atteso · no-close-without-positive-permission: 1 chiusure, ognuna preceduta dal permesso con verdetto positivo · no-vote-derived-without-evidence: coperta dal cammino di governo qui sopra · no-negative-conto: 11 stati, tutti i conti ≥ 0 · comune-donation: donate +90 su cassa autore e conto comune riservato, conti membri invariati · comune-backdonation: backdonate +10 a ogni membro, comune −30, casse invariate
+  03-conti-mai-negativi.json: 12 passi — governo: accettata come atteso · no-negative-conto: 13 stati, tutti i conti ≥ 0 · comune-donation: donate +90 su cassa autore e conto comune riservato, conti membri invariati · comune-backdonation: backdonate +10 a ogni membro, comune −30, casse invariate
+controllo negativo «governo disattivato — reintroduzione esatta del comportamento pre-fix»: RED come atteso — 01-permesso-senza-delibera.json: atteso rifiuto del governo, ma la sequenza è stata accettata (governo disattivato: comp
+controllo negativo «post-stato mutato in uno scenario»: RED come atteso — 01-permesso-senza-delibera.json: integrato: passo 0: post-aggregato divergente — atteso={"members":[["bruno",{"key":"bru
+controllo negativo «suite vuota»: RED come atteso — suite vuota: nessuno scenario in /tmp/rg-scenario-gate-QpvsGU/sab-empty
+controllo negativo «asserzioni omesse»: RED come atteso — 01-permesso-senza-delibera.json: scenario senza asserzioni
+controllo negativo «envelope non-v1»: RED come atteso — 01-permesso-senza-delibera.json: integrato: schema sconosciuto
+controllo negativo «artefatto generato stantio/biforcato»: RED come atteso — deriva del core condiviso: RED: artefatto generato stantio o biforcato — 1 fette divergenti dal core: machine
+controllo negativo «legge di donazione violata (comune non accreditato)»: RED come atteso — donate: author cassa delta is not +90
+controllo negativo «backdonate senza evidenza accettato dal governo»: RED come atteso — backdonate senza evidenza accettato dal governo
+selftest GREEN: 8 controlli negativi RED per il motivo atteso; produzione GREEN (3 scenari, 28 passi)
+GREEN: 6/6 strisce con ciclo di vita provato sui controlli reali (nonce ed144ad4…); regressione cassa coperta; selftest pagina PASS a 1280px e 390px; zero errori, zero richieste esterne
+  benvenuto: appear=V firstUse=· reloadPersist=· (eccezione arrivo)
+    «Benvenuto! Questo è un gruppo d'acquisto da provare: clicca una persona, un saldo o un acquisto e fai qualche mossa. Il segno ⊢ accanto alle»
+  impegno: appear=V leave=· recreate=V dismiss=· recreateAfterDismiss=·
+    «Hai dei soldi da parte per un acquisto: sono già usciti dal conto e restano lì finché il referente decide. Se l’impegno viene rifiutato o l’»
+  guardie: appear=V leave=· recreate=V dismiss=· recreateAfterDismiss=·
+    «Quell’azione per ora non si può fare, e infatti non è successo niente: conti e acquisti sono come prima. Accanto all’azione c’è scritto cosa»
+  cassa: appear=V leave=· recreate=V identities=V dismiss=· recreateAfterDismiss=·
+    «La cassa di Bruno è sotto zero perché ha pagato il fornitore: non è un errore. Si riequilibra con i prossimi versamenti e giri di cassa. ⊢ ✕»
+  chiusa: appear=V leave=· recreate=V dismiss=· recreateAfterDismiss=·
+    «L’acquisto si è concluso e non è più tra quelli aperti. Se è andato in porto lo trovi tra i completati; se no, i soldi impegnati sono tornat»
+  voto: appear=V leave=· recreate=V dismiss=· recreateAfterDismiss=·
+    «C’è una domanda aperta nel gruppo: puoi rispondere sì oppure no, e cambiare risposta finché resta aperta. Si chiude da sola quando una delle»
+controllo negativo «report vuoto»: RED come atteso — report assente o vuoto
+controllo negativo «cinque righe»: RED come atteso — righe insufficienti: 5 < 6
+controllo negativo «riga saltata (fasi parziali)»: RED come atteso — cassa: fasi osservate 2 < 6 (riga saltata o parziale)
+controllo negativo «report scritto a mano (nonce estraneo)»: RED come atteso — voto.appear: nonce non del run (report non meccanico)
+controllo negativo «regressione cassa senza spiegazione»: RED come atteso — cassa.appear: attesa visibile=true, osservata=false
+controllo negativo «claims della striscia divergenti»: RED come atteso — cassa: claims della striscia divergenti dalla mappatura accettata — attesi=cassa-negativa,close-payo
+controllo negativo «identità cassa costante»: RED come atteso — identità cassa: la frase non nomina Anna (cassa negativa reale)
+controllo negativo «persistenza assente dal report»: RED come atteso — persistenza: fase post-reload mancante o non meccanica
+controllo negativo «striscia riapparsa dopo il reload»: RED come atteso — persistenza: striscia voto riapparsa dopo il reload nonostante la ✕
+controllo negativo «strisce soppresse nella pagina»: RED come atteso — benvenuto.appear: attesa visibile=true, osservata=false
+controllo negativo «ritiro-alla-causa reintrodotto (difetto NOTE-033)»: RED come atteso — cassa.appear: attesa visibile=true, osservata=false
+controllo negativo «registro programmatore nella frase di arrivo (finding 1)»: RED come atteso — benvenuto: registro sbagliato in superficie (/\bstato\b/i): «Clicca: ogni azione è un evento della macchina Le
+controllo negativo «identità cassa costante «Bruno» (finding 2)»: RED come atteso — identità cassa: la frase non nomina Anna (cassa negativa reale)
+controllo negativo «deriva dei claims della striscia cassa (finding 3)»: RED come atteso — cassa: claims della striscia divergenti dalla mappatura accettata — attesi=cassa-negativa,close-payout osserva
+controllo negativo «congedo persistito solo per benvenuto (finding 4)»: RED come atteso — persistenza: striscia impegno riapparsa dopo il reload nonostante la ✕
+selftest GREEN: 15 controlli negativi RED per il motivo atteso; produzione GREEN
+GREEN: v15 — v14 integrale; C-KEY/C-CHROME con omissione rossa per la propria ragione, scarto neutralizzato VERDE, derivazione e vocabolario in entrambe le direzioni

@@ -1,0 +1,20 @@
+{
+  "utc": "2026-09-06T06:18:29.153Z",
+  "activeSession": {
+    "timestamp": "2026-09-06T05:58:49.238Z",
+    "model": "gpt-6-astra",
+    "effort": "high",
+    "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-final-static"
+  },
+  "sourceHashCount": 28,
+  "sourceChanges": [],
+  "admittedCheck": "sha256sum -c:49/49 exit0",
+  "candidateCheck": "sha256sum -c:6/6 exit0",
+  "sourceHead": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+  "sourceGitStatus": "empty",
+  "sourceBranch": "detached",
+  "oleans": 0,
+  "notes": [
+    "Final verification first tried MANIFEST.sha256 from runtime: file absent. Correct admitted and submission3 directories immediately checked successfully. No candidate execution."
+  ]
+}

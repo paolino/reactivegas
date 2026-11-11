@@ -1,0 +1,144 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:49:87: error: failed to synthesize
+  Decidable (authorizedStep adminView State.empty (Event.openPurchase "a" 7) State.empty)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:50:83: error: failed to synthesize
+  Decidable ¬authorizedStep { members := [] } State.empty (Event.openPurchase "a" 7) State.empty
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+EXCEPTION-P11 openPurchase positive+negative
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:52:90: error: failed to synthesize
+  Decidable (authorizedStep adminView State.empty (Event.grantPermission "a" 7) State.empty)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:53:86: error: failed to synthesize
+  Decidable ¬authorizedStep { members := [] } State.empty (Event.grantPermission "a" 7) State.empty
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+EXCEPTION-P11 grantPermission positive+negative
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:55:89: error: failed to synthesize
+  Decidable (authorizedStep adminView State.empty (Event.denyPermission "a" 7) State.empty)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:56:85: error: failed to synthesize
+  Decidable ¬authorizedStep { members := [] } State.empty (Event.denyPermission "a" 7) State.empty
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+EXCEPTION-P11 denyPermission positive+negative
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:58:87: error: failed to synthesize
+  Decidable (authorizedStep adminView State.empty (Event.deposit "a" "u" 11) State.empty)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:59:83: error: failed to synthesize
+  Decidable ¬authorizedStep { members := [] } State.empty (Event.deposit "a" "u" 11) State.empty
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+EXCEPTION-P11 deposit positive+negative
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:61:88: error: failed to synthesize
+  Decidable (authorizedStep adminView State.empty (Event.withdraw "a" "u" 11) State.empty)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:62:84: error: failed to synthesize
+  Decidable ¬authorizedStep { members := [] } State.empty (Event.withdraw "a" "u" 11) State.empty
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+EXCEPTION-P11 withdraw positive+negative
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:64:93: error: failed to synthesize
+  Decidable (authorizedStep adminView State.empty (Event.transferCassa "a" "b" 11) State.empty)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:65:89: error: failed to synthesize
+  Decidable ¬authorizedStep { members := [] } State.empty (Event.transferCassa "a" "b" 11) State.empty
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+EXCEPTION-P11 transferCassa positive+negative
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:67:82: error: failed to synthesize
+  Decidable (authorizedStep adminView State.empty (Event.donate "a" 11) State.empty)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:68:78: error: failed to synthesize
+  Decidable ¬authorizedStep { members := [] } State.empty (Event.donate "a" 11) State.empty
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+EXCEPTION-P11 donate positive+negative
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:70:86: error: failed to synthesize
+  Decidable (authorizedStep adminView State.empty (Event.backdonate "a" 11) State.empty)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:71:82: error: failed to synthesize
+  Decidable ¬authorizedStep { members := [] } State.empty (Event.backdonate "a" 11) State.empty
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+EXCEPTION-P11 backdonate positive+negative
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:73:88: error: failed to synthesize
+  Decidable (authorizedStep adminView State.empty (Event.pledge "a" "u" 7 11) State.empty)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:74:84: error: failed to synthesize
+  Decidable ¬authorizedStep { members := [] } State.empty (Event.pledge "a" "u" 7 11) State.empty
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+EXCEPTION-P11 pledge positive+negative
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:76:91: error: failed to synthesize
+  Decidable (authorizedStep adminView State.empty (Event.acceptPledge "a" "u" 7) State.empty)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:77:87: error: failed to synthesize
+  Decidable ¬authorizedStep { members := [] } State.empty (Event.acceptPledge "a" "u" 7) State.empty
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+EXCEPTION-P11 acceptPledge positive+negative
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:79:91: error: failed to synthesize
+  Decidable (authorizedStep adminView State.empty (Event.refusePledge "a" "u" 7) State.empty)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:80:87: error: failed to synthesize
+  Decidable ¬authorizedStep { members := [] } State.empty (Event.refusePledge "a" "u" 7) State.empty
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+EXCEPTION-P11 refusePledge positive+negative
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:82:95: error: failed to synthesize
+  Decidable (authorizedStep adminView State.empty (Event.correctPledge "a" "u" 7 11) State.empty)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:83:91: error: failed to synthesize
+  Decidable ¬authorizedStep { members := [] } State.empty (Event.correctPledge "a" "u" 7 11) State.empty
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+EXCEPTION-P11 correctPledge positive+negative
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:85:88: error: failed to synthesize
+  Decidable (authorizedStep adminView State.empty (Event.closePurchase "a" 7) State.empty)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:86:84: error: failed to synthesize
+  Decidable ¬authorizedStep { members := [] } State.empty (Event.closePurchase "a" 7) State.empty
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+EXCEPTION-P11 closePurchase positive+negative
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:88:87: error: failed to synthesize
+  Decidable (authorizedStep adminView State.empty (Event.failPurchase "a" 7) State.empty)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/Exceptions.lean:89:83: error: failed to synthesize
+  Decidable ¬authorizedStep { members := [] } State.empty (Event.failPurchase "a" 7) State.empty
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+EXCEPTION-P11 failPurchase positive+negative
+EXCEPTION-R0 positive+negative-nonzero
+EXCEPTION-V4 real-question-change+preservation
+inductive Reach : KelGroups.GroupView → BackdonateAuth → State → Prop
+number of parameters: 2
+constructors:
+Reach.boot : ∀ {view : KelGroups.GroupView} {auth : BackdonateAuth},
+  comune_not_a_member view → Reach view auth State.empty
+Reach.trans : ∀ {view : KelGroups.GroupView} {auth : BackdonateAuth} {s : State} {e : Event} {s' : State},
+  Reach view auth s → stepEvent view s e auth = some s' → Reach view auth s'
+inductive Reach.below : {view : KelGroups.GroupView} →
+  {auth : BackdonateAuth} → {motive : (a : State) → Reach view auth a → Prop} → {a : State} → Reach view auth a → Prop
+number of parameters: 3
+constructors:
+Reach.below.boot : ∀ {view : KelGroups.GroupView} {auth : BackdonateAuth}
+  {motive : (a : State) → Reach view auth a → Prop} (h : comune_not_a_member view), Reach.below ⋯
+Reach.below.trans : ∀ {view : KelGroups.GroupView} {auth : BackdonateAuth}
+  {motive : (a : State) → Reach view auth a → Prop} {s : State} {e : Event} {s' : State} (a : Reach view auth s)
+  (a_1 : stepEvent view s e auth = some s'), Reach.below a → motive s a → Reach.below ⋯

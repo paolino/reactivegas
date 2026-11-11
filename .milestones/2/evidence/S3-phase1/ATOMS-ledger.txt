@@ -1,0 +1,154 @@
+# ATOM LEDGER — every literal atom with source reference (base 3590c001)
+
+Kinds: G = guard conjunct, E = effect equation, V = vote atom, B = substrate
+atom, R = role-guard conjunct, W = well-formedness conjunct, P = premise,
+Z = explicit non-atom (refusal arm). References are file:line at base.
+
+## Economic guards/effects (Step.lean:44-145)
+
+| id | atom | source |
+|---|---|---|
+| G01a | isResponsabile view signer (openPurchase) | Step.lean:47-48 |
+| G01b | ¬∃ collection with id c | Step.lean:49 |
+| E01 | +collection ⟨c,signer,false,[],[]⟩ | Step.lean:50 |
+| G02a | pullCollection c ok | Step.lean:53 |
+| G02b | isResponsabile view signer (grant) | Step.lean:54 |
+| E02 | permitted := true | Step.lean:55 |
+| G03a | pullCollection c ok (deny) | Step.lean:57 |
+| G03b | isResponsabile view signer (deny) | Step.lean:58 |
+| E03a | refundAll accepted++pending to conti | Step.lean:59-60 |
+| E03b | delete collection | Step.lean:60 |
+| G04a | isResponsabile (deposit) | Step.lean:63 |
+| G04b | isMember u view | Step.lean:63 |
+| G04c | signer ≠ u | Step.lean:64 |
+| G04d | 0 ≤ v | Step.lean:64 |
+| E04a | conti += (u,v) | Step.lean:65 |
+| E04b | casse += (signer,v) | Step.lean:65 |
+| G05a | isResponsabile (withdraw) | Step.lean:68 |
+| G05b | isMember u (withdraw) | Step.lean:68 |
+| G05c | signer ≠ u (withdraw) | Step.lean:69 |
+| G05d | bal s.conti u ≥ v | Step.lean:69 |
+| G05e | ¬stalled s (withdraw) | Step.lean:70 |
+| E05a | conti -= (u,v) | Step.lean:71 |
+| E05b | casse -= (signer,v) | Step.lean:71 |
+| G06a | isResponsabile signer (transfer) | Step.lean:75 |
+| G06b | isResponsabile f | Step.lean:75 |
+| G06c | signer ≠ f | Step.lean:76 |
+| G06d | v > 0 | Step.lean:76 |
+| E06a | casse f -= v | Step.lean:77 |
+| E06b | casse signer += v | Step.lean:77 |
+| G07a | isResponsabile (donate) | Step.lean:80 |
+| G07b | 0 < v | Step.lean:80 |
+| E07a | casse += (signer,v) | Step.lean:82 |
+| E07b | conti += (comuneId,v) | Step.lean:83 |
+| G08a | isResponsabile (backdonate) | Step.lean:88 |
+| G08b | 0 < w | Step.lean:88 |
+| G08c | comuneBal s ≥ n·w | Step.lean:89 |
+| G08d | auth s w | Step.lean:89 |
+| E08 | equal-share distribution from comune | Step.lean:90-92 |
+| G09a | pullCollection c ok (pledge) | Step.lean:95 |
+| G09b | isResponsabile (pledge) | Step.lean:96 |
+| G09c | isMember u (pledge) | Step.lean:96 |
+| G09d | ¬accepted-has-u | Step.lean:97 |
+| G09e | ¬pending-has-u | Step.lean:98 |
+| G09f | 0 < v (pledge) | Step.lean:99 |
+| G09g | bal s.conti u ≥ v | Step.lean:99 |
+| G09h | ¬stalled s (pledge) | Step.lean:100 |
+| E09a | conti -= (u,v) | Step.lean:102 |
+| E09b | pending += ⟨u,v⟩ | Step.lean:102 |
+| G10a | pullCollection ok (accept) | Step.lean:105 |
+| G10b | splitUser-ok on pending | Step.lean:106 |
+| G10c | isResponsabile (accept) | Step.lean:107 |
+| G10d | referente == signer (accept) | Step.lean:107 |
+| G10e | ¬stalled s (accept) | Step.lean:108 |
+| E10 | pending → accepted move | Step.lean:109-110 |
+| G11a | pullCollection ok (refuse) | Step.lean:112 |
+| G11b | splitUser-ok (refuse) | Step.lean:113 |
+| G11c | isResponsabile (refuse) | Step.lean:114 |
+| G11d | referente == signer (refuse) | Step.lean:114 |
+| E11 | conti refund + drop pending | Step.lean:115-117 |
+| G12a | pullCollection ok (correct) | Step.lean:119 |
+| G12b | splitUser-ok on accepted | Step.lean:120 |
+| G12c | isResponsabile (correct) | Step.lean:121 |
+| G12d | referente == signer (correct) | Step.lean:121 |
+| G12e | 0 ≤ v' | Step.lean:122 |
+| G12f | bal(u)+(v−v') ≥ 0 | Step.lean:122 |
+| E12a | conti += (v−v') | Step.lean:124 |
+| E12b | accepted := ⟨u,v'⟩ | Step.lean:125 |
+| G13a | pullCollection ok (close) | Step.lean:127 |
+| G13b | isResponsabile (close) | Step.lean:128 |
+| G13c | referente == signer (close) | Step.lean:128 |
+| G13d | permitted | Step.lean:129 |
+| G13e | pending.isEmpty (close) | Step.lean:129 |
+| G13f | ¬stalled s (close) | Step.lean:129 |
+| E13a | casse -= Σ accepted | Step.lean:131 |
+| E13b | delete collection (close) | Step.lean:132 |
+| G14a | pullCollection ok (fail) | Step.lean:134 |
+| G14b | isResponsabile (fail) | Step.lean:135 |
+| G14c | referente == signer (fail) | Step.lean:135 |
+| G14d | pending.isEmpty (fail) | Step.lean:136 |
+| E14a | refundAll accepted++pending | Step.lean:138 |
+| E14b | delete collection (fail) | Step.lean:138 |
+| Z-VOTE | vote passthrough arms refuse (`none`) | Step.lean:140-142 |
+
+## Vote atoms
+
+| id | atom | source |
+|---|---|---|
+| Vopen | isResponsabile signer over canonical view (openQuestion) | Vote/Validate.lean:57-58 |
+| Vcast-resp | isResponsabile (cast) | Vote/Validate.lean:60 |
+| Vcast-found | lookupQuestion-some (cast) | Vote/Validate.lean:62-65 |
+| Vren-resp | isResponsabile (renounce) | Vote/Validate.lean:66 |
+| Vren-found | lookupQuestion-some (renounce) | Vote/Validate.lean:68-71 |
+| Vfranchise | canonical franchise membership (GroupState.members via view) | Vote/Validate.lean header R62-11; Vote/State.lean:68-75 |
+| Vthresh-legacy | legacyThreshold policy | Vote/Types.lean:44 |
+| Vthresh-zero | zeroThreshold policy | Vote/Types.lean:48 |
+| Vsweep-step | sweepStep per-question closure | Vote/Fold.lean:62 |
+| Vsweep-closures | sweepClosures over state | Vote/Fold.lean:74 |
+| Vtally-place | placeBallot tally writes | Vote/Fold.lean:51 |
+| Vtally-assents | assents list membership | Vote/State.lean (Question) |
+| Vtally-dissents | dissents list membership | Vote/State.lean (Question) |
+| Vqid | question-id tracking (openQuestions/closed keys) | Vote/State.lean:98-115 |
+| Vfold | foldVote/foldFrom event folding | Vote/Fold.lean:126-140 |
+| Vhpres | PreservesQuestionSemantics premise (premise atom, not guard) | Vote/Invariants.lean:865 |
+
+## Substrate atoms
+
+| id | atom | source |
+|---|---|---|
+| Bprop-admin | requireAdmin in propose | Validate.lean:107-115 |
+| Bprop-boot | bootstrap-proposal path | Validate.lean:88-95 |
+| Bprop-normal | normal-proposal path | Validate.lean:96-106 |
+| Bappr-admin | requireAdmin in approve | Validate.lean:116-117 |
+| Bappr-pending | lookupPending-some | Validate.lean:118-120 |
+| Bappr-dup | ¬already-approved | Validate.lean:121-124 |
+| Badm-admin | isAdmin signer (admission) | Validate.lean:146 |
+| Badm-reserved | target = reserved refused FIRST | Validate.lean:147 |
+| Badm-dup | isMember target refused | Validate.lean:148 |
+| Bmutrm-admin | requireAdmin (removeMember) | Validate.lean:156-158 |
+| Bmutrm-member | requireMember key | Validate.lean:158 |
+| Bmutro-admin | requireAdmin (changeRoles) | Validate.lean:159-161 |
+| Bmutro-member | requireMember key (roles) | Validate.lean:161 |
+| RcanAdd | roleDef.canAdd gs.appFold | Validate.lean:43-51 |
+| RcanRemove | roleDef.canRemove gs.appFold | Validate.lean:52-60 |
+| Bba-admin | requireAdmin (base approval) | Validate.lean:163-165 |
+| Bba-pending | lookupPendingBase-some | Validate.lean:166-168 |
+| Bba-dup | ¬already-approved (base) | Validate.lean:169-171 |
+| Bbase-propose | validateBase propose routing | Validate.lean:173-177 |
+| Bbase-approve | validateBase approve routing | Validate.lean:177 |
+| Bevent-app | isMember signer (app events) | Validate.lean:180-184 |
+| Bhook-admitted | baseHook memberAdmitted effect | Integration.lean:139-145 |
+| Bhook-removed | baseHook memberRemoved effect | Integration.lean:139-145 |
+| Bhook-roles | baseHook rolesChanged effect | Integration.lean:139-145 |
+| Benact-threshold | enactment threshold/met branch | Fold.lean:34-43 |
+| Benact-met | threshold-met condition | Fold.lean:34-43 |
+| W-memkeys | members Nodup | KelGroups/Invariants.lean:29 |
+| W-pendkeys | pendingProposals Nodup | KelGroups/Invariants.lean:30 |
+| W-memcohere | MembersCoherent | KelGroups/Invariants.lean:21,31 |
+| W-pendcohere | PendingCoherent | KelGroups/Invariants.lean:24,32 |
+| PWF-nocomune | productionWellFormed (¬member comuneId) | Step.lean:357 |
+| E-govern | windUpAdmin/governanceEnacts | Step.lean:254; Predicates.lean:62 |
+| E-fund | balance/escrow movement (collective tag for fund equations) | Step.lean arms |
+
+*End of atom ledger. ~140 literal atoms + collective tags (E-fund, G-ALL14 used
+only for collective-observation rows with the observation rule stated).*

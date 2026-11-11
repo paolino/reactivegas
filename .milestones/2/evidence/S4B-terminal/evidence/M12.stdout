@@ -1,0 +1,40 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M12.lean:192:36: warning: unused variable `u`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M12.lean:202:9: error: unsolved goals
+case none
+col : Collection
+u : KelGroups.Key
+v : Int
+h : splitUser u col.pending = none
+⊢ (match splitUser "" col.pending with
+    | some (amt, snd) => decide (amt = v)
+    | none => false) =
+    false
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M12.lean:209:8: error: Type mismatch
+  heq
+has type
+  v' = v
+but is expected to have type
+  (match splitUser "" col.pending with
+    | some (amt, snd) => decide (amt = v)
+    | none => false) =
+    true
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M12.lean:211:18: error: Application type mismatch: The argument
+  heq
+has type
+  (match splitUser "" col.pending with
+    | some (amt, snd) => decide (amt = v)
+    | none => false) =
+    true
+but is expected to have type
+  v' = v
+in the application
+  And.intro heq
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M12.lean:206:51: warning: This simp argument is unused:
+  decide_eq_true_eq
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.some.injEq, Prod.mk.injEq,̵ ̵d̵e̵c̵i̵d̵e̵_̵e̵q̵_̵t̵r̵u̵e̵_̵e̵q̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

@@ -1,0 +1,23 @@
+{
+  "world": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S02",
+  "candidate": "94bb7bb64324a48f7361252556b4d15e45b3923f",
+  "cache": "M1-S clean copied",
+  "spec": {
+    "id": "S02",
+    "type": "counterpart-opaque",
+    "obligation": "C2 introduced owned predicate missing counterpart; opaque predicate classification, separately observed",
+    "cmd": "just lean",
+    "edits": [
+      {
+        "path": "lean/Reactivegas/AuditFuture.lean",
+        "create": "import Reactivegas.Types\ndef auditMissingCounterpart (n : Nat) : Prop := n = 73\nopaque auditOpaquePredicate : Prop := True\n",
+        "track": true
+      },
+      {
+        "path": "lean/Reactivegas.lean",
+        "old": "import Reactivegas.Types",
+        "replacement": "import Reactivegas.AuditFuture\nimport Reactivegas.Types"
+      }
+    ]
+  }
+}

@@ -1,0 +1,63 @@
+INVENTORY-PROP <driver> :: auditPositive :: Prop
+INVENTORY-PROP <driver> :: auditAlias :: Prop
+INVENTORY-PROP KelGroups.Vote.Invariants :: KelGroups.Vote.SweepReady :: KelGroups.GroupView →
+  KelGroups.Vote.VoteState → Prop
+INVENTORY-PROP Reactivegas.Predicates :: Reach.below :: {view : KelGroups.GroupView} →
+  {auth : BackdonateAuth} →
+    {motive : (a : _root_.State) → Reach view auth a → Prop} → {a : _root_.State} → Reach view auth a → Prop
+INVENTORY-PROP Reactivegas.Predicates :: conservation :: _root_.State → Prop
+INVENTORY-PROP Reactivegas.Predicates :: uniquePledges :: Collection → Prop
+INVENTORY-PROP Reactivegas.Predicates :: allUniquePledges :: _root_.State → Prop
+INVENTORY-PROP KelGroups.Invariants :: KelGroups.WellFormed :: {α : Type} → KelGroups.GroupState α → Prop
+INVENTORY-PROP Reactivegas.Predicates :: escrowHeld :: Collection → KelGroups.Key → Int → Prop
+INVENTORY-PROP KelGroups.Invariants :: KelGroups.Enacts :: {α : Type} →
+  KelGroups.GroupState α → KelGroups.ProposalId → KelGroups.GroupState α → Prop
+INVENTORY-PROP Reactivegas.Predicates :: auditOpaque :: _root_.State → Prop
+INVENTORY-PROP Reactivegas.Predicates :: comune_not_a_member :: KelGroups.GroupView → Prop
+INVENTORY-PROP KelGroups.Invariants :: KelGroups.MembersCoherent :: {α : Type} → KelGroups.GroupState α → Prop
+INVENTORY-PROP Reactivegas.Predicates :: governanceEnacts :: KelGroups.Key → _root_.State → Prop
+INVENTORY-PROP Reactivegas.State :: stalled :: _root_.State → Prop
+INVENTORY-PROP KelGroups.Invariants :: KelGroups.PendingWellFormed :: KelGroups.PendingProposal → Prop
+INVENTORY-PROP Reactivegas.Predicates :: insolvent :: KelGroups.GroupView → _root_.State → Prop
+INVENTORY-PROP KelGroups.Vote.Invariants :: KelGroups.Vote.VoteWellFormed :: KelGroups.Vote.Threshold →
+  KelGroups.GroupView → KelGroups.Vote.VoteState → Prop
+INVENTORY-PROP Reactivegas.Predicates :: canCloseGroup :: KelGroups.GroupView → _root_.State → Prop
+INVENTORY-PROP Reactivegas.Predicates :: permissionToClose :: Collection → Prop
+INVENTORY-PROP Reactivegas.Predicates :: Reach :: KelGroups.GroupView → BackdonateAuth → _root_.State → Prop
+INVENTORY-PROP KelGroups.Vote.Invariants :: KelGroups.Vote.QuestionClean :: KelGroups.Vote.Question → Prop
+INVENTORY-PROP KelGroups.Invariants :: KelGroups.PendingCoherent :: {α : Type} → KelGroups.GroupState α → Prop
+INVENTORY-PROP KelGroups.Vote.Invariants :: KelGroups.Vote.PreservesQuestionSemantics :: KelGroups.Vote.Threshold →
+  KelGroups.GroupView →
+    KelGroups.Vote.VoteState → KelGroups.Key → KelGroups.Vote.VoteEvent → KelGroups.Vote.QuestionId → Prop
+INVENTORY-PROP Reactivegas.Predicates :: doubleEntry :: _root_.State →
+  _root_.State → KelGroups.Key → KelGroups.Key → Int → Prop
+INVENTORY-PROP Reactivegas.Predicates :: authorizedStep :: KelGroups.GroupView →
+  _root_.State → Event → _root_.State → Prop
+INVENTORY-PROP Reactivegas.Predicates :: solvent :: KelGroups.GroupView → _root_.State → Prop
+INVENTORY-COUNT 25
+INVENTORY-NAME KelGroups.Enacts
+INVENTORY-NAME KelGroups.MembersCoherent
+INVENTORY-NAME KelGroups.PendingCoherent
+INVENTORY-NAME KelGroups.PendingWellFormed
+INVENTORY-NAME KelGroups.Vote.PreservesQuestionSemantics
+INVENTORY-NAME KelGroups.Vote.QuestionClean
+INVENTORY-NAME KelGroups.Vote.SweepReady
+INVENTORY-NAME KelGroups.Vote.VoteWellFormed
+INVENTORY-NAME KelGroups.WellFormed
+INVENTORY-NAME Reach
+INVENTORY-NAME Reach.below
+INVENTORY-NAME allUniquePledges
+INVENTORY-NAME auditOpaque
+INVENTORY-NAME authorizedStep
+INVENTORY-NAME canCloseGroup
+INVENTORY-NAME comune_not_a_member
+INVENTORY-NAME conservation
+INVENTORY-NAME doubleEntry
+INVENTORY-NAME escrowHeld
+INVENTORY-NAME governanceEnacts
+INVENTORY-NAME insolvent
+INVENTORY-NAME permissionToClose
+INVENTORY-NAME solvent
+INVENTORY-NAME stalled
+INVENTORY-NAME uniquePledges
+OPAQUE-COMPILED-TYPE _root_.State → Prop

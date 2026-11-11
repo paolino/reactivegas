@@ -1,0 +1,11 @@
+ROW G86-E-COVERAGE-CURRENT PASS hashes current, zero UNPROVED, dated history present
+ROW G86-A-CI-PATH PASS ci.yaml invokes lean-corpus-verify
+ROW G86-A-REMOVAL-DETECTED PASS removal changes detector 1->0
+ROW G86-A-EXECUTION PASS corrupt-rejected(1) clean-accepted(0)
+ROW G86-B-DECLARED PASS jq in nix/project.nix
+ROW G86-C-CONTEXT-BOUND PASS 4/4 mutants rejected=pass (bounded call-site claim)
+ROW G86-D-ARITY-REFUSES-NOWRITE PASS exit=1 dir-identical
+ROW G74-ENVELOPE-CLOSED PASS key sets exact, extra-top rejected
+ROW G74-CALLS-EXISTING PASS empty-traces rejected exit=1
+ROW G74-VERIFY-FAILS-CLOSED PASS byte-drift detected, manifest clean-pass
+ROW G74-ADDITIVE-ONLY PASS changed set within fence (.github/workflows/ci.yaml justfile lean/Reactivegas/CorpusExport.lean lean/corpus/corpus.sha256 lean/corpus/economic.json lean/corpus/integrated.json lean/lakefile.lean nix/project.nix specs/74-corpus-exporter/data-model.md specs/74-corpus-exporter/functions-model.md specs/74-corpus-exporter/modules-model.md specs/74-corpus-exporter/plan.md specs/74-corpus-exporter/spec.md specs/74-corpus-exporter/tasks.md specs/86-exporter-successor/data-model.md specs/86-exporter-successor/functions-model.md specs/86-exporter-successor/modules-model.md specs/86-exporter-successor/plan.md specs/86-exporter-successor/spec.md specs/86-exporter-successor/tasks.md )

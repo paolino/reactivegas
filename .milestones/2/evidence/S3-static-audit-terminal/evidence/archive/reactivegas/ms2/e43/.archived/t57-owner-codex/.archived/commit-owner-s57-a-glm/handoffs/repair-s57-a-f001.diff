@@ -1,0 +1,186 @@
+diff --git a/lean/KelGroups/Vote/Fold.lean b/lean/KelGroups/Vote/Fold.lean
+index 0022d99..7da0297 100644
+--- a/lean/KelGroups/Vote/Fold.lean
++++ b/lean/KelGroups/Vote/Fold.lean
+@@ -74,10 +74,11 @@ def sweepClosures (threshold : Threshold) (gs : VoteState) : VoteState :=
+     closed := gs.closed ++ gs.openQuestions.filterMap (sweepStep threshold gs) }
+ 
+ /-- The event's own effect on the state, before the recompute-and-close
+-sweep. A cast by a non-responsabile is a no-op effect besides its rejection in
+-validation (R-44, R-45): only a current responsabile can move a tally. An
+-`openQuestion` never overwrites or revives an existing id — decided questions
+-stay decided. -/
++sweep. Effects are authorization-free by architecture (F-001 property class):
++they assume an already-admitted event — all signer authorization happens only
++in the total exhaustive `validateVoteEvent` boundary — and contain no
++independent standing decision. An `openQuestion` never overwrites or revives
++an existing id — decided questions stay decided. -/
+ def effectedState (gs : VoteState) (signer : Key) (event : VoteEvent) : VoteState :=
+   match event with
+   | .openQuestion questionId kind =>
+@@ -87,13 +88,11 @@ def effectedState (gs : VoteState) (signer : Key) (event : VoteEvent) : VoteStat
+         { gs with openQuestions := assocInsert questionId fresh gs.openQuestions }
+       else gs
+   | .cast questionId ballot =>
+-      if isResponsabile signer gs then
+-        match lookupQuestion questionId gs with
+-        | some question =>
+-            let placed := placeBallot signer ballot question
+-            { gs with openQuestions := assocInsert questionId placed gs.openQuestions }
+-        | none => gs
+-      else gs
++      match lookupQuestion questionId gs with
++      | some question =>
++          let placed := placeBallot signer ballot question
++          { gs with openQuestions := assocInsert questionId placed gs.openQuestions }
++      | none => gs
+   | .renounce _ => gs
+   | .admitMember key email roles =>
+       { gs with members := assocInsert key (Member.mk key email roles) gs.members }
+diff --git a/lean/KelGroups/Vote/Invariants.lean b/lean/KelGroups/Vote/Invariants.lean
+index 7afaf09..bfdfce0 100644
+--- a/lean/KelGroups/Vote/Invariants.lean
++++ b/lean/KelGroups/Vote/Invariants.lean
+@@ -629,17 +629,16 @@ private theorem effectedState_sweepReady (gs : VoteState) (signer : Key) (event
+         rw [heff]
+         exact h
+   | cast questionId ballot =>
+-      by_cases hresp : isResponsabile signer gs = true
+-      · cases hlook : lookupQuestion questionId gs with
++      cases hlook : lookupQuestion questionId gs with
+         | none =>
+             have heff : effectedState gs signer (.cast questionId ballot) = gs := by
+-              simp [effectedState, hresp, hlook]
++              simp [effectedState, hlook]
+             rw [heff]
+             exact h
+         | some question =>
+             have heff : effectedState gs signer (.cast questionId ballot) =
+                 { gs with openQuestions := assocInsert questionId (placeBallot signer ballot question) gs.openQuestions } := by
+-              simp [effectedState, hresp, hlook]
++              simp [effectedState, hlook]
+             rw [heff]
+             have hqmem : (questionId, question) ∈ gs.openQuestions :=
+               assocLookup_some_mem' questionId question gs.openQuestions hlook
+@@ -671,10 +670,6 @@ private theorem effectedState_sweepReady (gs : VoteState) (signer : Key) (event
+               · exact h.openClean qid q
+                   (mem_assocLookup_some' qid q gs.openQuestions h.openNodup
+                     ((assocErase_sublist' questionId gs.openQuestions).mem herased))
+-      · have heff : effectedState gs signer (.cast questionId ballot) = gs := by
+-          simp [effectedState, hresp]
+-        rw [heff]
+-        exact h
+   | renounce questionId =>
+       have heff : effectedState gs signer (.renounce questionId) = gs := rfl
+       rw [heff]
+@@ -778,17 +773,16 @@ private theorem effectedState_preserves_qid (gs : VoteState) (signer : Key)
+         rw [heff]
+         exact h
+   | cast questionId ballot =>
+-      by_cases hresp : isResponsabile signer gs = true
+-      · cases hlook : lookupQuestion questionId gs with
++      cases hlook : lookupQuestion questionId gs with
+         | none =>
+             have heff : effectedState gs signer (.cast questionId ballot) = gs := by
+-              simp [effectedState, hresp, hlook]
++              simp [effectedState, hlook]
+             rw [heff]
+             exact h
+         | some question =>
+             have heff : effectedState gs signer (.cast questionId ballot) =
+                 { gs with openQuestions := assocInsert questionId (placeBallot signer ballot question) gs.openQuestions } := by
+-              simp [effectedState, hresp, hlook]
++              simp [effectedState, hlook]
+             rw [heff]
+             rcases h with hopen | hclosed
+             · refine Or.inl ?_
+@@ -798,10 +792,6 @@ private theorem effectedState_preserves_qid (gs : VoteState) (signer : Key)
+               · exact Or.inr
+                   ((mem_map_fst_erase_of_ne questionId qid gs.openQuestions heq).mpr hopen)
+             · exact Or.inr hclosed
+-      · have heff : effectedState gs signer (.cast questionId ballot) = gs := by
+-          simp [effectedState, hresp]
+-        rw [heff]
+-        exact h
+   | renounce questionId =>
+       have heff : effectedState gs signer (.renounce questionId) = gs := rfl
+       rw [heff]
+@@ -1064,8 +1054,9 @@ private theorem tallyKeysOfState_insert_cases (gs : VoteState) (qid : QuestionId
+   · exact Or.inl hp
+   · exact Or.inr hrest
+ 
+-private theorem effectedState_tally_growth (gs : VoteState) (signer : Key)
+-    (event : VoteEvent) (k : Key)
++private theorem effectedState_tally_growth (θ : Threshold) (gs : VoteState)
++    (signer : Key) (event : VoteEvent) (k : Key)
++    (admitted : validateVoteEvent θ gs signer event = Except.ok ())
+     (hk : k ∈ tallyKeysOfState (effectedState gs signer event)) :
+     k ∈ tallyKeysOfState gs ∨
+       (signer = k ∧ ∃ qid ballot, event = VoteEvent.cast qid ballot ∧
+@@ -1087,32 +1078,31 @@ private theorem effectedState_tally_growth (gs : VoteState) (signer : Key)
+         rw [heff] at hk
+         exact Or.inl hk
+   | cast questionId ballot =>
+-      by_cases hresp : isResponsabile signer gs = true
+-      · cases hlook : lookupQuestion questionId gs with
+-        | none =>
+-            have heff : effectedState gs signer (.cast questionId ballot) = gs := by
+-              simp [effectedState, hresp, hlook]
+-            rw [heff] at hk
+-            exact Or.inl hk
+-        | some question =>
+-            have heff : effectedState gs signer (.cast questionId ballot) =
+-                { gs with openQuestions := assocInsert questionId (placeBallot signer ballot question) gs.openQuestions } := by
+-              simp [effectedState, hresp, hlook]
+-            rw [heff] at hk
+-            rcases tallyKeysOfState_insert_cases gs questionId
+-              (placeBallot signer ballot question) k hk with hp | her
+-            · rcases placeBallot_tally signer ballot question k hp with heq | hinq
+-              · exact Or.inr ⟨heq.symm, questionId, ballot, rfl, heq.symm ▸ hresp⟩
+-              · refine Or.inl (List.mem_append.mpr (Or.inl ?_))
+-                have hqmem := assocLookup_some_mem' questionId question
+-                  gs.openQuestions hlook
+-                exact List.mem_flatten.mpr ⟨tallyKeysOfQuestion question,
+-                  List.mem_map.mpr ⟨(questionId, question), hqmem, rfl⟩, hinq⟩
+-            · exact Or.inl (tallyKeysOfState_erased_le gs questionId k her)
+-      · have heff : effectedState gs signer (.cast questionId ballot) = gs := by
+-          simp [effectedState, hresp]
+-        rw [heff] at hk
+-        exact Or.inl hk
++      cases hresp : isResponsabile signer gs with
++      | false => simp [validateVoteEvent, hresp] at admitted
++      | true =>
++          have hresp : isResponsabile signer gs = true := hresp
++          cases hlook : lookupQuestion questionId gs with
++          | none =>
++              have heff : effectedState gs signer (.cast questionId ballot) = gs := by
++                simp [effectedState, hlook]
++              rw [heff] at hk
++              exact Or.inl hk
++          | some question =>
++              have heff : effectedState gs signer (.cast questionId ballot) =
++                  { gs with openQuestions := assocInsert questionId (placeBallot signer ballot question) gs.openQuestions } := by
++                simp [effectedState, hlook]
++              rw [heff] at hk
++              rcases tallyKeysOfState_insert_cases gs questionId
++                (placeBallot signer ballot question) k hk with hp | her
++              · rcases placeBallot_tally signer ballot question k hp with heq | hinq
++                · exact Or.inr ⟨heq.symm, questionId, ballot, rfl, heq.symm ▸ hresp⟩
++                · refine Or.inl (List.mem_append.mpr (Or.inl ?_))
++                  have hqmem := assocLookup_some_mem' questionId question
++                    gs.openQuestions hlook
++                  exact List.mem_flatten.mpr ⟨tallyKeysOfQuestion question,
++                    List.mem_map.mpr ⟨(questionId, question), hqmem, rfl⟩, hinq⟩
++              · exact Or.inl (tallyKeysOfState_erased_le gs questionId k her)
+   | renounce questionId =>
+       have heff : effectedState gs signer (.renounce questionId) = gs := rfl
+       rw [heff] at hk
+@@ -1150,7 +1140,7 @@ private theorem tally_keys_franchised_from (θ : Threshold) :
+         | ok u =>
+             cases u
+             simp [hval] at hgate
+-            rcases effectedState_tally_growth initial signed.1 signed.2 k
++            rcases effectedState_tally_growth θ initial signed.1 signed.2 k hval
+               ((sweepClosures_tallyKeys θ _ k).mp hgate) with
+               hold | ⟨hsk, qid, ballot, hevc, hfr2⟩
+             · exact Or.inl hold

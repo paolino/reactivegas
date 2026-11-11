@@ -1,0 +1,54 @@
+VALIDATION-OUTPUT — SS-5 static output (data validation, not project execution)
+Validator: validate-packet.cjs (parses/hashes only; never launches project code; self-guard enforced)
+Packet dir: handoffs/ (this submission)
+Date (UTC): 2026-09-06T07:38:57Z
+
+=== GOOD PACKET ===
+VALIDATE-PACKET: PASS
+NOTE: This is DATA VALIDATION, not project execution; success establishes data consistency, not semantic correctness.
+Counts: identities 239 (81 helper/158 authored), atoms old 131 -> successor 151, rows 207, helpers 81, receipts 66, measurement ops 26
+
+=== FIXTURE missing-duplicate-identity (must FAIL for intended reason with checker message) ===
+VALIDATE-PACKET: FAIL (2 findings)
+NOTE: This is DATA VALIDATION, not project execution; success would establish data consistency, not semantic correctness.
+[MISSING-IDENTITY-MAPPING] missing original row identity 207 (every old row ID must carry a successor reference)
+[DUPLICATE-IDENTITY-MAPPING] duplicate original identity mappings: 1
+
+=== FIXTURE unresolved-reference (must FAIL for intended reason with checker message) ===
+VALIDATE-PACKET: FAIL (1 findings)
+NOTE: This is DATA VALIDATION, not project execution; success would establish data consistency, not semantic correctness.
+[UNRESOLVED-REFERENCE] row 1 successorOp SS-OP-9999 not in operations.json
+
+=== FIXTURE unsupported-observed (must FAIL for intended reason with checker message) ===
+VALIDATE-PACKET: FAIL (1 findings)
+NOTE: This is DATA VALIDATION, not project execution; success would establish data consistency, not semantic correctness.
+[UNSUPPORTED-OBSERVED] row 2 (conservation_preserved) claims OBSERVED with observationKind PREDICTED; predictions must not be OBSERVED (only Row1 EXECUTED-OBSERVED bound to SS0 is allowed)
+
+=== FIXTURE mismatched-cost (must FAIL for intended reason with checker message) ===
+VALIDATE-PACKET: FAIL (1 findings)
+NOTE: This is DATA VALIDATION, not project execution; success would establish data consistency, not semantic correctness.
+[MISMATCHED-COST] operation SS-OP-001 costKind U-BOGUS not in allowed set
+
+=== FIXTURE count-drift (must FAIL for intended reason with checker message) ===
+VALIDATE-PACKET: FAIL (1 findings)
+NOTE: This is DATA VALIDATION, not project execution; success would establish data consistency, not semantic correctness.
+[COUNT-DRIFT] identities count 238 != 239
+
+=== FIXTURE cost-omission (must FAIL for intended reason with checker message) ===
+VALIDATE-PACKET: FAIL (1 findings)
+NOTE: This is DATA VALIDATION, not project execution; success would establish data consistency, not semantic correctness.
+[COST-OMISSION] measurement M00-COLD missing budgetCharge
+
+=== FIXTURE duplicate-multi-atom (must FAIL for intended reason with checker message) ===
+VALIDATE-PACKET: FAIL (1 findings)
+NOTE: This is DATA VALIDATION, not project execution; success would establish data consistency, not semantic correctness.
+[DUPLICATE-MULTI-ATOM-CREDIT] operation SS-OP-001 has 2 atomIds (must be exactly 1; alternative atoms get separate IDs; one variant never earns independent credit for multiple atoms)
+
+=== FIXTURE missing-cost-kind (must FAIL for intended reason with checker message) ===
+VALIDATE-PACKET: FAIL (1 findings)
+NOTE: This is DATA VALIDATION, not project execution; success would establish data consistency, not semantic correctness.
+[MISSING-COST-KIND] measurement plan missing required cost kind U-COLD (cold/incremental/restore/check/replay-prod/replay-exec/separate/shared/comparator all required)
+
+Each fixture above trips exactly its intended rejection class with the checker's own message.
+A control exiting non-zero for another reason would prove nothing; each above shows intended reason.
+Validator success establishes DATA CONSISTENCY, NOT semantic correctness (stated in validator + packet).

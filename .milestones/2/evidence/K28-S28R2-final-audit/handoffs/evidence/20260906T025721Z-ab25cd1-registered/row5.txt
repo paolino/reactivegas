@@ -1,0 +1,3 @@
+prefix folds match steps over mixed traces
+founding folds match steps over mixed traces
+accepted traces apply cleanly end to end

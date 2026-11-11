@@ -1,0 +1,32 @@
+{
+  "at": "2026-09-06T07:03:34.050Z",
+  "manifestEntries": 7,
+  "manifestSha256": "467674ce5c39049df7233bf8de18317373fb015ab31dc2339b22d03bf6979235",
+  "reportSha256": "12ffdfdb4e3c162a2e1236da69caf48dd564a156a420d11b7fcade91952d46b7",
+  "rows": [
+    {
+      "op": 1,
+      "exit": 0,
+      "ms": 15980
+    },
+    {
+      "op": 2,
+      "exit": 1,
+      "ms": 19819
+    },
+    {
+      "op": 3,
+      "exit": 0,
+      "ms": 3125
+    },
+    {
+      "op": 4,
+      "exit": 0,
+      "ms": 2476
+    }
+  ],
+  "mutation": "Reactivegas.Step compiled; single source error at Reactivegas/Invariants.lean:209:4 within step_grant_inv; actual later same-module diagnostics to2353, no affirmative deny theorem marker",
+  "cumulativeSubstantive": 9,
+  "cumulativeTargeted": 4,
+  "scope": "Raw log and source-span inspection; no project execution by desk, no full S3 acceptance."
+}

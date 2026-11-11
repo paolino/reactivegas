@@ -1,0 +1,12 @@
+Preparing worktree (detached HEAD bb3ac41)
+FALSIFY-OK surface-bypass reason=authorization-boundary-missing-constructor
+FALSIFY-OK r45-baseline exit=1 reason=validateVoteEvent legacyThreshold before "stranger" removal sha256=319e8879c4b059328c1768cb4656ef5a4dc06281124c5ec0178d08a4d7f8d5c1
+FALSIFY-OK arbitrary-state-baseline exit=1 reason=applyVoteEvent legacyThreshold arbitraryPreState sha256=9b54bc4317f74d369e85f7189232e014ece75db26bef17fa56ab02d7d19889fd
+FALSIFY-OK no-expiry-member-baseline exit=1 reason=PreservesQuestionSemantics sha256=84551b10fe1dfb546da704a2e949856f448d9f97ea93e911cfb3da1db371405d
+FALSIFY-OK mutant-partition exit=1 reason=MUTATION-APPLIED:PARTITION sha256=fcbd02d28fbe5f48119714b1440aef82dd4ffaae4d1ab70e7053f86d85e8aae8
+FALSIFY-OK mutant-disjoint exit=1 reason=MUTATION-APPLIED:DISJOINT sha256=a031c50de7555e425369068cb0c51d48f9203819cedb7ab0699200dc872d433c
+FALSIFY-OK mutant-nostale exit=1 reason=MUTATION-APPLIED:NOSTALE sha256=db07341b2c96639957bf94140ecb796926adb3ad0b5bf1db78a321e966efd514
+FALSIFY-OK mutant-franchise exit=1 reason=MUTATION-APPLIED:FRANCHISE sha256=17765e37a6fd2a357f0f1b287f7e5e4c63cb25048c1a56daf0fdd912b9c9b1bf
+FALSIFY-OK mutant-policyfree exit=1 reason=MUTATION-APPLIED:POLICYFREE sha256=27c344eed98736d341dbf94d7333cab70fb3381e39964e6a7fc6dcd7c0f1c85f
+FALSIFY-OK mutant-bypass exit=1 reason=MUTATION-APPLIED:BYPASS sha256=af60de39e9198f3c17f2f6333c9189c4a71925f854c91fb5eb94d555878f651e
+FALSIFY-SUMMARY pass=10 fail=0 toolchain=Lean-4.25.0 base=bb3ac41a

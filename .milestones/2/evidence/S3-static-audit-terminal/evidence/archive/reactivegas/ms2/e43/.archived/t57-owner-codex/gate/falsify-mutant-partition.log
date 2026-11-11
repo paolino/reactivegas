@@ -1,0 +1,5 @@
+MUTATION-APPLIED:PARTITION
+/tmp/reactivegas/ms2/e43/t57-owner-codex/gate/instruments/mutant-partition.lean:24:0: error: Expression
+  (List.map Prod.fst final.openQuestions).contains "q" !=
+    (List.map (fun record => record.questionId) final.closed).contains "q"
+did not evaluate to `true`

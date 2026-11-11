@@ -1,0 +1,9 @@
+toolchain=Lean (version 4.25.0, commit v4.25.0, Release)
+path '/code/reactivegas-t54-audit-a2/lean' does not contain a 'flake.nix', searching up
+/tmp/reactivegas/ms2/e43/t54-vote-coverage/auditor-slice-a-s2/instruments/franchise-unfranchised-recast-mutant.lean:50:0: error: Expression
+  match lookupQuestion "q" final with
+  | some q => q.assents == ["a"] && q.dissents == []
+  | none => false
+did not evaluate to `true`
+lean_exit=1
+EXPECTED_RED=INV-54-FRANCHISE-unfranchised-recast

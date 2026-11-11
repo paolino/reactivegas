@@ -1,0 +1,1 @@
+{"directImports":[["Reactivegas.Invariants",false,false,false]],"module":"Reactivegas.CorpusGate","references":{"{\"c\":{\"m\":\"Reactivegas.Invariants\",\"n\":\"Reactivegas.checkIntegratedCorpus\"}}":{"definition":null,"usages":[[2,6,2,39,"_private.Reactivegas.CorpusGate.0._eval",2,0,2,5,2,0,2,5]]}},"version":4}

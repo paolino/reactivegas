@@ -1,0 +1,6 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/P07-relatum.lean:5:79: error: unsolved goals
+case false.nil
+id : CollId
+ref : KelGroups.Key
+acc : List Pledge
+⊢ False

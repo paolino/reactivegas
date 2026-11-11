@@ -1,0 +1,6 @@
+KelGroups/Types.lean:145:14: warning: unused variable `key`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+KelGroups/Types.lean:145:26: warning: unused variable `view`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`

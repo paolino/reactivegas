@@ -1,0 +1,81 @@
+{
+  "method": "Static source and retained-output reconciliation only; regex source inventory is not a fresh compiled census.",
+  "source": {
+    "files": 28,
+    "modules": 27,
+    "declarations": 239,
+    "distinctShort": 224,
+    "classes": {
+      "HELPER-FACT": 81,
+      "AUTHORED-STATEMENT": 158
+    },
+    "private": 76,
+    "sourceSitesMissing": [],
+    "badSourceLines": [],
+    "qualifiedDistinct": 239
+  },
+  "retained": {
+    "identities": 1213,
+    "distinct": 1213,
+    "emitted": 1213,
+    "emittedDistinct": 1213,
+    "rawMatchesIdentityFile": true,
+    "axiomRows": 1213,
+    "unexpectedAxioms": [],
+    "summary": [
+      "axiom-sources tracked=27 built=27",
+      "axiom-theorems walkOcc=1214 distinct=1213 fold=1213",
+      "axiom-duplicate-names=1 KelGroups.setInsert.eq_1",
+      "axiom-theorems count=1213",
+      "axiom-gate: ok"
+    ],
+    "mappingErrors": [],
+    "mappedDistinct": 239,
+    "deskMapDiscrepancies": [],
+    "remainder": 974
+  },
+  "supplementalClasses": {
+    "rows": 1213,
+    "distinct": 1213,
+    "counts": {
+      "GEN-INJ": 95,
+      "GEN-INJEQ": 95,
+      "GEN-SIZEOF": 133,
+      "SOURCE": 163,
+      "GEN-EQ": 130,
+      "GEN-EQDEF": 9,
+      "GEN-PROOF": 357,
+      "GEN-CTORIDX": 9,
+      "GEN-PROJECTION": 12,
+      "GEN-PRIVATE": 133,
+      "SOURCE-PRIVATE": 76,
+      "GEN-RECURSOR": 1
+    },
+    "missing": [],
+    "extra": [],
+    "sourceDisagreement": []
+  },
+  "helperRoster": {
+    "original": 84,
+    "afterR4Deletion": 81,
+    "counts": {
+      "H-none": 40,
+      "H-prop": 3,
+      "H-some": 23,
+      "H-mem-cons": 4,
+      "H-neq": 5,
+      "H-bool": 6
+    },
+    "missing": [],
+    "extra": []
+  },
+  "hashes": {
+    "OP10-stdout.txt": "e2770204fb00d37773b6bf225d6b2fd3dba9bcf404facb467b84b683ea80a6ad",
+    "OP10-stderr.txt": "28cff59b480bf04c5d599765aceb06b9dd9d732cacc1719b271da55bfb3af1bf",
+    "INDEX.md": "d14506a53d0d70ecce07d044f670a179491760b145b52231de9af2e7d7247e10",
+    "OP10-identity-classes.txt": "2abb21bb30157e4002da64aa043cba05df56c49c3dc1182a6ff23169bb48e51a",
+    "P1C-build2-incremental.log": "6dedd250255e6a4031f25b194be8f05a730c20c5048ba7ac26256400b93c07ea",
+    "P1C-build3-restore.log": "43fae2215b03e66c090c384e78165be671e5fdd5e6cad3375faafe226b450d0a",
+    "P1C-scratch-variant-donate.diff": "0bdf4e0ab8bd217f43019a569ce0b5d7d7506b295c2cf1d0bd1d75c5e778c2b9"
+  }
+}

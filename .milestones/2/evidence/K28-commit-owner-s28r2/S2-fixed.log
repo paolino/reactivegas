@@ -1,0 +1,22 @@
+Build profile: -w ghc-9.8.4 -O0
+In order, the following will be built (use -v for more details):
+ - kelgroups-0.1.0.0 (lib) (file lib/KelGroups/Store.hs changed)
+ - kelgroups-0.1.0.0 (test:invariants) (dependency rebuilt)
+Preprocessing library for kelgroups-0.1.0.0...
+Building library for kelgroups-0.1.0.0...
+[10 of 11] Compiling KelGroups.Store  ( lib/KelGroups/Store.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Store.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Store.dyn_o ) [Source file changed]
+Preprocessing test suite 'invariants' for kelgroups-0.1.0.0...
+Building test suite 'invariants' for kelgroups-0.1.0.0...
+[17 of 17] Linking dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/build/invariants/invariants [Library changed]
+Running 1 test suites...
+Test suite invariants: RUNNING...
+
+S28-1 rejecting step before append
+  concurrent appends conserve every committed transition [✔]
+
+Finished in 0.0296 seconds
+1 example, 0 failures
+Test suite invariants: PASS
+Test suite logged to:
+/code/kelgroups-issue-28/./dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/test/kelgroups-0.1.0.0-invariants.log
+1 of 1 test suites (1 of 1 test cases) passed.

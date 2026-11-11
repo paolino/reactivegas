@@ -1,0 +1,9 @@
+{
+  "verifiedAt": "2026-09-05T23:42:46.093Z",
+  "wikiCommit": "854b4b0ceb9da6599132b7e0e47cdcbdac74bf59",
+  "registerSha256": "7f90d566ac72b5b19d678f206dd60471cf57a9e677d36a35a8438fe044be3c9d",
+  "stories": 34,
+  "groups": 7,
+  "openMilestoneIssues": 16,
+  "verification": "renderer --check; normal push; fresh fetch; exact page and register byte comparison"
+}

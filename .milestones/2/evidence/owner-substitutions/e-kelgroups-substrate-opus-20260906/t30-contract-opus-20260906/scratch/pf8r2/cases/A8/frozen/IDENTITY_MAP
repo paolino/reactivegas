@@ -1,0 +1,14 @@
+lean/KelGroups/Event.lean rows: present
+lean/KelGroups/Integration.lean rows: present
+lean/KelGroups/State.lean rows: present
+lean/KelGroups/Types.lean rows: present
+lean/KelGroups/Validate.lean rows: present
+lean/KelGroups/Vote/Event.lean rows: present
+lean/KelGroups/Vote/Fold.lean rows: present
+lean/KelGroups/Vote/Invariants.lean rows: present
+lean/KelGroups/Vote/State.lean rows: present
+lean/KelGroups/Vote/Tests.lean rows: present
+lean/KelGroups/Vote/Types.lean rows: present
+lean/KelGroups/Vote/Validate.lean rows: present
+lean/KelGroups/Vote/Invariants.lean expected-empty (proof-only)
+lean/KelGroups/Vote/Tests.lean expected-empty (witness-only)

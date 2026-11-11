@@ -1,0 +1,13 @@
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+Reactivegas/Mirrors.lean:219:61: error: unsolved goals
+u : KelGroups.Key
+s' : State
+⊢ (∀ (c : Collection), c ∈ s'.collections → c.referente ≠ u) ↔
+    ∀ (x : Collection), x ∈ s'.collections → (!decide (x.referente ≠ u)) = true
+Reactivegas/Mirrors.lean:220:68: warning: This simp argument is unused:
+  decide_eq_true_eq
+
+Hint: Omit it from the simp argument list.
+  simp only [governanceEnacts, governanceEnactsB, List.all_eq_true,̵ ̵d̵e̵c̵i̵d̵e̵_̵e̵q̵_̵t̵r̵u̵e̵_̵e̵q̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

@@ -1,0 +1,127 @@
+[
+  {
+    "command": [
+      "tmux",
+      "list-panes",
+      "-a",
+      "-F",
+      "#{pane_id} #{session_name}:#{window_index} #{window_id} #{window_name} pid=#{pane_pid} cmd=#{pane_current_command}"
+    ],
+    "utc": "2026-09-05T23:53:43.700Z",
+    "duration_ms": 14,
+    "exit": 0,
+    "output_filter": "Only bound panes %534/%545/%566 retained",
+    "log": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/preflight-0.log",
+    "sha256": "3050c9a50fff288414167e583b310efeb91ff8e5f5d489756a08e825fd1104bc",
+    "charge": {
+      "builds": 0,
+      "targeted": 0
+    }
+  },
+  {
+    "command": [
+      "ps",
+      "-p",
+      "2682666,1113460,2583152",
+      "-o",
+      "pid,ppid,args"
+    ],
+    "utc": "2026-09-05T23:53:43.714Z",
+    "duration_ms": 8,
+    "exit": 0,
+    "output_filter": null,
+    "log": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/preflight-1.log",
+    "sha256": "3b840634065f9cea5437708b15ee070fd878511f8959f4241d92acd8dcc0a63e",
+    "charge": {
+      "builds": 0,
+      "targeted": 0
+    }
+  },
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD",
+      "HEAD^{tree}"
+    ],
+    "utc": "2026-09-05T23:53:43.722Z",
+    "duration_ms": 7,
+    "exit": 0,
+    "output_filter": null,
+    "log": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/preflight-2.log",
+    "sha256": "c38f63c72cfc6429ba9f0ce54a8ea60d7594a29e27bf1acc813eb6b3e83a4c55",
+    "charge": {
+      "builds": 0,
+      "targeted": 0
+    }
+  },
+  {
+    "command": [
+      "git",
+      "symbolic-ref",
+      "-q",
+      "HEAD"
+    ],
+    "utc": "2026-09-05T23:53:43.729Z",
+    "duration_ms": 4,
+    "exit": 1,
+    "output_filter": null,
+    "log": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/preflight-3.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "charge": {
+      "builds": 0,
+      "targeted": 0
+    }
+  },
+  {
+    "command": [
+      "git",
+      "status",
+      "--porcelain"
+    ],
+    "utc": "2026-09-05T23:53:43.733Z",
+    "duration_ms": 6,
+    "exit": 0,
+    "output_filter": null,
+    "log": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/preflight-4.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "charge": {
+      "builds": 0,
+      "targeted": 0
+    }
+  },
+  {
+    "command": [
+      "sha256sum",
+      "gate.sh",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/S28-R1-COMMAND-PLAN-v2.md"
+    ],
+    "utc": "2026-09-05T23:53:43.739Z",
+    "duration_ms": 4,
+    "exit": 0,
+    "output_filter": null,
+    "log": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/preflight-5.log",
+    "sha256": "2d79655a63ca74d317c860bbd917de90b4ebb810a0f5514e61faf702c820eb3b",
+    "charge": {
+      "builds": 0,
+      "targeted": 0
+    }
+  },
+  {
+    "command": [
+      "du",
+      "-sb",
+      "/code/kelgroups-audit-3af3d06"
+    ],
+    "utc": "2026-09-05T23:53:43.743Z",
+    "duration_ms": 6,
+    "exit": 0,
+    "output_filter": null,
+    "log": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/evidence/preflight-6.log",
+    "sha256": "6891ede413c8f4b259bd4a8ccca189795644e9efcbb7be63ea73a236810d7b38",
+    "charge": {
+      "builds": 0,
+      "targeted": 0
+    }
+  }
+]

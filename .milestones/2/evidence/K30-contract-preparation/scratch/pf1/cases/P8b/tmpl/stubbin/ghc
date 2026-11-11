@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# STUBBED ghc shim — plumbing only (serves fixture bytes; proves path/
+# selection/freshness/hash logic, NEVER compiler-output compatibility).
+if [ "${1:-}" = "--show-iface" ] && [ -r "${2:-}" ]; then cat "$2"; exit 0; fi
+echo "stub-ghc: refused ($*)" >&2; exit 99

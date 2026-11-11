@@ -1,0 +1,6 @@
+/tmp/reactivegas/ms2/artifacts/retained-issue-47/issue-47-three-draft-commits.bundle is okay
+The bundle contains this ref:
+8fc8284eb97b778e8e49a20e8652526fbf4a2ddd refs/heads/docs/47-kelgroups-mapping
+The bundle requires this ref:
+771b3c0b7ed083cf5b3c7778a02df274ab7eab83 
+The bundle uses this hash algorithm: sha1

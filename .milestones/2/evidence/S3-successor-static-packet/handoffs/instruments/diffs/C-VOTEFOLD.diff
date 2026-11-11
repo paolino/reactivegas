@@ -1,0 +1,10 @@
+diff --git a/lean/KelGroups/Vote/Fold.lean b/lean/KelGroups/Vote/Fold.lean
+index 0000000..1111111 100644
+--- a/lean/KelGroups/Vote/Fold.lean
++++ b/lean/KelGroups/Vote/Fold.lean
+@@ -74,7 +74,7 @@ def sweepClosures (threshold : Threshold) (view : GroupView) (gs : VoteState) :
+   { gs with
+     openQuestions :=
+-      gs.openQuestions.filter (fun entry => verdictOf threshold view entry.2 = .open),
++      gs.openQuestions.filter (fun _ => True),
+     closed := gs.closed ++ gs.openQuestions.filterMap (sweepStep threshold view) }

@@ -1,0 +1,7 @@
+/tmp/reactivegas/ms2/e43/t57-owner-codex/gate/instruments/no-expiry-member.lean:29:10: error: Function expected at
+  PreservesQuestionSemantics
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  legacyThreshold

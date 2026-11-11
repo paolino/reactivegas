@@ -1,0 +1,26 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M08.lean:155:51: error: unsolved goals
+view : KelGroups.GroupView
+s : State
+⊢ (∃ u, KelGroups.GroupView.isMember u view = true ∧ bal s.conti u < 0) ↔
+    ((List.map Prod.fst view.members).all fun u => decide (bal s.conti u < 0)) = true
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M08.lean:156:36: warning: This simp argument is unused:
+  List.any_eq_true
+
+Hint: Omit it from the simp argument list.
+  simp only [insolvent, insolventB, L̵i̵s̵t̵.̵a̵n̵y̵_̵e̵q̵_̵t̵r̵u̵e̵,̵ ̵decide_eq_true_eq, keys_mem_coe]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M08.lean:156:54: warning: This simp argument is unused:
+  decide_eq_true_eq
+
+Hint: Omit it from the simp argument list.
+  simp only [insolvent, insolventB, List.any_eq_true, d̵e̵c̵i̵d̵e̵_̵e̵q̵_̵t̵r̵u̵e̵_̵e̵q̵,̵ ̵keys_mem_coe]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M08.lean:156:73: warning: This simp argument is unused:
+  keys_mem_coe
+
+Hint: Omit it from the simp argument list.
+  simp only [insolvent, insolventB, List.any_eq_true, decide_eq_true_eq,̵ ̵k̵e̵y̵s̵_̵m̵e̵m̵_̵c̵o̵e̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

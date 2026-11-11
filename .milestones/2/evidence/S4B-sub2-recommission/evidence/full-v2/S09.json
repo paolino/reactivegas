@@ -1,0 +1,29 @@
+{
+  "id": "S09",
+  "argv": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=30s",
+    "1800s",
+    "nix",
+    "develop",
+    "--quiet",
+    "-c",
+    "bash",
+    "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/base-build.sh"
+  ],
+  "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S09",
+  "charge": "substantive",
+  "launched": true,
+  "start": "2026-09-06T05:48:10.144Z",
+  "spend": {
+    "substantive": 11,
+    "targeted": 67
+  },
+  "obligation": "cold accepted-base build for compiled expression preservation comparison",
+  "finish": "2026-09-06T05:48:48.097Z",
+  "exit": 0,
+  "signal": null,
+  "stdoutSha256": "c410523bf7a42aee9f16ea4ff0d7d840095f504e905afe6b132bc5cbf9bd46de",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

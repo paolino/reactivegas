@@ -1,0 +1,207 @@
+OP-11|step_grant_inv|KILL|MUT:Step.lean:55:{col-with-permitted-true}→{col}|PREDICTED-RED (post-state mismatch)|GROUND:(a) post-state equation mismatch
+OP-11..24-COLL|conservation_preserved|KILL|COLL-ALL14:effect-mutant per arm across OP-11..24 runs|PREDICTED-RED per run (14 arms, carriers in A-ASSESSMENT-51 L2), NOT observed; no Phase-2 execution has occurred|GROUND:(a) per-arm fund equations (OP-25B: deny/fail refund equations)
+OP-11..24-COLL|step_authorized|OBSERVED|COLL-ALL14: same|upstream the 14 step_*_inv inversion lemmas (statement authorizedStep ignores both states; effect mutants keep guards; RED only via consumed lemmas)|GROUND:cascade via 14 inversion lemmas, (a) WITHDRAWN (A-ASSESSMENT-51 L3)
+OP-12|pledge_escrow_debit|OBSERVED|MUT:Step.lean:102:drop conti-debit-line|upstream step_pledge_inv
+OP-12|pledge_preserves_allUnique|OBSERVED|MUT:Step.lean:102:drop conti-debit-line|upstream step_pledge_inv
+OP-12|pledge_rejected_when_member|OBSERVED|MUT:Step.lean:102:drop conti-debit-line|upstream step_pledge_inv
+OP-12|step_pledge_inv|KILL|MUT:Step.lean:102:drop conti-debit-line|PREDICTED-RED (post-state mismatch)|GROUND:(a) post-state equation mismatch
+OP-13|step_accept_inv|KILL|MUT:Step.lean:109-110:drop accepted-move|PREDICTED-RED|GROUND:(a) post-state equation mismatch
+OP-14|step_refuse_inv|KILL|MUT:Step.lean:115-117:drop conti-refund-line|PREDICTED-RED|GROUND:(a) post-state equation mismatch
+OP-15|step_correct_inv|KILL|MUT:Step.lean:124:drop conti-diff-line|PREDICTED-RED|GROUND:(a) post-state equation mismatch
+OP-16|close_permission_to_close|OBSERVED|MUT:Step.lean:128 (same run)|upstream step_close_inv (S4-B P07 corroborates upstream-only)
+OP-16|close_spends_referente|OBSERVED|MUT:Step.lean:131:drop casse-spend-line|upstream step_close_inv
+OP-16|step_close_inv|KILL|MUT:Step.lean:131:drop casse-spend-line|PREDICTED-RED|GROUND:(a) post-state equation mismatch
+OP-17|step_fail_inv|KILL|MUT:Step.lean:138:drop conti-refundAll-line|PREDICTED-RED|GROUND:(a) post-state equation mismatch
+OP-18|Reactivegas.step_open_inv|KILL|MUT:Step.lean:50:drop collection-cons|PREDICTED-RED|GROUND:(a) post-state equation mismatch
+OP-19|deposit_double_entry|KILL|MUT:Step.lean:65:drop conti-bump-line|PREDICTED-RED (bal_bump mismatch; own unfold)|GROUND:(a) bal equations over mutant output
+OP-19|Reactivegas.step_deposit_inv|KILL|MUT:Step.lean:65:drop conti-bump-line|PREDICTED-RED|GROUND:(a) post-state equation mismatch
+OP-20|Reactivegas.step_withdraw_inv|KILL|MUT:Step.lean:71:drop conti-bump-line|PREDICTED-RED|GROUND:(a) post-state equation mismatch
+OP-20|withdraw_double_entry|KILL|MUT:Step.lean:71:drop conti-bump-line|PREDICTED-RED (bal_bump mismatch; own unfold)|GROUND:(a) bal equations over mutant output
+OP-21|Reactivegas.step_transferCassa_inv|KILL|MUT:Step.lean:77:drop signer-credit-bump|PREDICTED-RED|GROUND:(a) post-state equation mismatch
+OP-22|Reactivegas.step_donate_inv|KILL|MUT:Step.lean:80:decide(0<v)→decide True|PREDICTED-RED (guard-conjunct falsified at v=0)|GROUND:(c) statement false at witness (responsabile signer, v=0: mutated guard admits, guard conjunct (… && decide (0 < 0)) = true fails); post-state equation unaffected
+OP-23|Reactivegas.step_backdonate_inv|KILL|MUT:Step.lean:90-92:drop members-fold-distr|PREDICTED-RED|GROUND:(a) post-state equation mismatch
+OP-24|step_deny_inv|KILL|MUT:Step.lean:59-60:drop conti-refundAll-line|PREDICTED-RED (post-state mismatch)|GROUND:(a) post-state equation mismatch
+OP-25|credit_pledges_of_reach|OBSERVED|MUT:Step.lean:82-83:drop conti-comune-credit|upstream credit_pledges_step
+OP-25|credit_pledges_step|KILL|MUT:Step.lean:82-83:drop conti-comune-credit|PREDICTED-RED (donate-arm rw-shape)|GROUND:(P) proof-shape sensitivity: statement excludes comuneId (Invariants.lean:890-895), donate proof rw bal_bump_ne breaks; statement stays true (Addendum-5 input, re-verified)
+OP-25|not_insolvent_of_reach|OBSERVED|MUT:Step.lean:82-83:drop conti-comune-credit|upstream reach_solvent
+OP-25|reach_solvent|OBSERVED|MUT:Step.lean:82-83:drop conti-comune-credit|upstream solvent_preserved
+OP-25|solvent_preserved|OBSERVED|MUT:Step.lean:82-83:drop conti-comune-credit|upstream credit_pledges_step
+OP-25B|conservation_preserved|KILL|MUT:State.lean:refundAll-body:drop-bump|PREDICTED-RED (deny/fail-branch equations; refundAll obligation consumer)|GROUND:(a) per-arm fund equations (OP-25B: deny/fail refund equations)
+OP-28|comune_not_a_member_of_reach|STATIC|PREMISE:no-mutant|none (S5 connection question)
+OP-30|comune_not_a_member_step|STATIC|VACUOUS:no-mutant|none (ignores hstep)
+OP-39|KelGroups.Vote.ballots_nodup_disjoint|OBSERVED|MUT:Vote/Fold.lean:55:dissents.erase→dissents|upstream foldVote_wellFormed
+OP-39|KelGroups.Vote.placeBallot_clean|KILL|MUT:Vote/Fold.lean:55:dissents.erase→dissents|PREDICTED-RED (definitional)|GROUND:(a) QuestionClean over mutant output (definitional)
+OP-39|KelGroups.Vote.placeBallot_tally|KILL|MUT:Vote/Fold.lean:55:dissents.erase→dissents|PREDICTED-RED (exact-term mismatch, statement true)|GROUND:(P) proof-shape sensitivity: statement stays true under mutant; List.erase_subset applied to non-erased membership fails (assent arm); OP-25 pattern
+OP-39|KelGroups.Vote.sweepClosures_tallyKeys|OBSERVED|MUT:Vote/Fold.lean:55:dissents.erase→dissents|upstream open_mem
+OP-39|KelGroups.Vote.tally_keys_franchised_from|OBSERVED|MUT:Vote/Fold.lean:55:dissents.erase→dissents|upstream effectedState_tally_growth
+OP-39|KelGroups.Vote.tallyKeysOfState_erased_le|ELAB-STATIC|ELAB:Vote/Invariants.lean|structural (checker-unfold+assoc)
+OP-39|KelGroups.Vote.tallyKeysOfState_insert_cases|ELAB-STATIC|ELAB:Vote/Invariants.lean|structural (checker-unfold+assoc)
+OP-40|KelGroups.Vote.open_questions_are_open|OBSERVED|MUT:Vote/Fold.lean:76:filter-pred→fun-true|upstream foldVote_wellFormed
+OP-40|KelGroups.Vote.sweepClosures_closed_mem|PREDICTED-SURVIVE|MUT:Vote/Fold.lean:76:filter-pred→fun-true|PREDICTED-GREEN (statement quantifies .closed only; proof mem_append/mem_filterMap untouched by open-retention filter mutant)|GROUND:survive-predicted, (a) WITHDRAWN (A-ASSESSMENT-51 L40)
+OP-40|KelGroups.Vote.sweepClosures_idempotent|KILL|MUT:Vote/Fold.lean:76:filter-pred→fun-true|PREDICTED-RED (own unfold)|GROUND:(a) sweep equation over mutant output
+OP-40|KelGroups.Vote.sweepClosures_open_mem|KILL|MUT:Vote/Fold.lean:76:filter-pred→fun-true|PREDICTED-RED (own unfold)|GROUND:(a) sweep-output membership
+OP-40|KelGroups.Vote.sweepClosures_preserves_qid|OBSERVED|MUT:Vote/Fold.lean:76:filter-pred→fun-true|upstream KelGroups.Vote.sweepClosures_open_mem (cascade: mpr needs verdict-test shape; statement itself stays true)|GROUND:cascade via open_mem, (a) WITHDRAWN (A-ASSESSMENT-51 L43)
+OP-40|KelGroups.Vote.sweepClosures_sweepReady|OBSERVED|MUT:Vote/Fold.lean:76:filter-pred→fun-true|upstream open/closed_mem
+OP-40|KelGroups.Vote.sweepClosures_wellFormed|OBSERVED|MUT:Vote/Fold.lean:76:filter-pred→fun-true|upstream sweepReady
+OP-42|KelGroups.Vote.filter_open_idem|ELAB-STATIC|ELAB:Vote/Invariants.lean|structural (pure list)
+OP-42|KelGroups.Vote.questions_partition|RECOVERED|mutant-partition.lean|sensitivity reproduced (no kill)
+OP-42|KelGroups.Vote.sweep_filterMap_of_swept|OBSERVED|—|upstream sweepStep_of_open
+OP-43|KelGroups.Vote.ballots_nodup_disjoint|RECOVERED|mutant-disjoint.lean|sensitivity reproduced (no kill)
+OP-43|KelGroups.Vote.placeBallot_clean|RECOVERED|mutant-disjoint.lean|observed
+OP-43|KelGroups.Vote.placeBallot_tally|RECOVERED|mutant-disjoint.lean|observed
+OP-44|KelGroups.Vote.open_questions_are_open|RECOVERED|mutant-nostale.lean|sensitivity reproduced (no kill)
+OP-45|KelGroups.Vote.franchise_of_tallies|RECOVERED|mutant-franchise.lean|sensitivity reproduced (no kill)
+OP-45|KelGroups.Vote.inadmissible_is_noop|RECOVERED|mutant-bypass.lean|sensitivity reproduced (no kill)
+OP-45|KelGroups.Vote.nonresponsabile_event_noop|RECOVERED|mutant-bypass.lean|observed
+OP-45|KelGroups.Vote.unfranchised_cast_noop|RECOVERED|mutant-franchise.lean|observed
+OP-46a|KelGroups.Vote.sweepStep_of_open|KILL|MUT:Vote/Fold.lean:63-64:.open-arm→close-branch|PREDICTED-RED (own unfold)|GROUND:(a) sweepStep output equation
+OP-46b|KelGroups.Vote.sweepStep_key|KILL|MUT:Vote/Fold.lean:65:entry.1→wrong|PREDICTED-RED (own unfold)|GROUND:(a) questionId equation
+OP-47|KelGroups.Vote.verdictOf_threshold_congr|ELAB-STATIC|ELAB:Vote/Invariants.lean|parametric (no threshold-value mutant touches it)
+OP-48|KelGroups.Vote.no_expiry|OBSERVED|—|OBSERVED (upstream applyVoteEvent_preserves_wellFormed + foldVote_wellFormed)
+OP-49|KelGroups.Vote.inadmissible_is_noop|PREDICTED-SURVIVE|MUT:Vote/Validate.lean:58:if-isResponsabile→.ok|PREDICTED-GREEN (hypothesis-driven simp never unfolds validate body; vacuous under mutant)|GROUND:survive-predicted, (a) WITHDRAWN (A-ASSESSMENT-51 L61)
+OP-49|KelGroups.Vote.nonresponsabile_event_noop|KILL|MUT:Vote/Validate.lean:58:if-isResponsabile→.ok|PREDICTED-RED (own unfold)|GROUND:(a) equality-to-gs fails at witness
+OP-49|KelGroups.Vote.unfranchised_cast_noop|PREDICTED-SURVIVE|MUT:Vote/Validate.lean:58:if-isResponsabile→.ok|PREDICTED-GREEN (cast path Validate.lean:60-64 untouched by :58 openQuestion-arm mutant)|GROUND:survive-predicted, (a) WITHDRAWN (A-ASSESSMENT-51 L63)
+OP-50|KelGroups.Vote.effectedState_preserves_qid|KILL|MUT:Vote/Fold.lean:96-100:cast-some-arm→gs|PREDICTED-RED|GROUND:(P) cast-case arm reasoning mismatch
+OP-50|KelGroups.Vote.effectedState_sweepReady|KILL|MUT:Vote/Fold.lean:96-100:cast-some-arm→gs|PREDICTED-RED (own arm reasoning)|GROUND:(P) cast-case arm reasoning mismatch
+OP-50|KelGroups.Vote.effectedState_tally_growth|KILL|MUT:Vote/Fold.lean:96-100:cast-some-arm→gs|PREDICTED-RED|GROUND:(P) cast-case arm reasoning mismatch
+OP-51|KelGroups.Vote.applyVoteEvent_preserves_qid|KILL|MUT:Vote/Fold.lean:121:ok-arm-sweep-call→effectedState-only|PREDICTED-RED (own routing)|GROUND:(P) ok-arm routing-unfold mismatch
+OP-51|KelGroups.Vote.applyVoteEvent_preserves_wellFormed|KILL|MUT:Vote/Fold.lean:121:ok-arm-sweep-call→effectedState-only|PREDICTED-RED (own routing)|GROUND:(P) ok-arm routing-unfold mismatch
+OP-52|KelGroups.Vote.foldFrom_preserves_qid|KILL|MUT:Vote/Fold.lean:137-138:accum→current|PREDICTED-RED (own induction)|GROUND:(P) induction-unification mismatch
+OP-52|KelGroups.Vote.foldFrom_preserves_wellFormed|KILL|MUT:Vote/Fold.lean:137-138:accum→current|PREDICTED-RED (own induction over foldFrom)|GROUND:(P) induction-unification mismatch
+OP-52B|KelGroups.Vote.foldVote_append|KILL|MUT:Vote/Fold.lean:129-130:accum→current|PREDICTED-RED (own unfold)|GROUND:(a) fold equation fails under accum mutant
+OP-53|KelGroups.Vote.emptyVoteState_sweepReady|KILL|MUT:Vote/State.lean:57-58:openQuestions:=[]→non-empty|PREDICTED-RED (own unfold)|GROUND:(a) Nodup/clean goals over non-empty mutant
+OP-53|KelGroups.Vote.emptyVoteState_wellFormed|KILL|MUT:Vote/State.lean:57-58:openQuestions:=[]→non-empty|PREDICTED-RED (own unfold)|GROUND:(a) Nodup/clean goals over non-empty mutant
+OP-54|KelGroups.direct_admission_requires_admin|OBSERVED|MUT:Validate.lean:145:if-isAdmin→if-True|OBSERVED (upstream validateDirectAdmission_ok)
+OP-54|KelGroups.membership_growth_is_direct_admission|KILL|MUT:Validate.lean:145:if-isAdmin→if-True|PREDICTED-RED (own routing)|GROUND:(a) growth outcome falsified at witness
+OP-54|KelGroups.non_admin_admission_is_noop|KILL|MUT:Validate.lean:145:if-isAdmin→if-True|PREDICTED-RED (own unfold)|GROUND:(a) refusal outcome falsified at witness
+OP-54|KelGroups.validateDirectAdmission_ok|KILL|MUT:Validate.lean:145:if-isAdmin→if-True|PREDICTED-RED (own unfold+split)|GROUND:(a) condition conjunctions false at witnesses
+OP-54a|KelGroups.Vote.foldVote_wellFormed|OBSERVED|—|upstream foldFrom_preserves_wellFormed
+OP-55|KelGroups.direct_admission_requires_admin|OBSERVED|MUT:Validate.lean:146:if-target-reserved→if-False|OBSERVED (upstream validateDirectAdmission_ok)
+OP-55|KelGroups.membership_growth_is_direct_admission|KILL|MUT:Validate.lean:146:if-target-reserved→if-False|growth PREDICTED-RED (key≠reserved breaks under reserved admission)|GROUND:(a) growth outcome falsified at witness
+OP-55|KelGroups.validateDirectAdmission_ok|KILL|MUT:Validate.lean:146:if-target-reserved→if-False|PREDICTED-RED (own unfold)|GROUND:(a) condition conjunctions false at witnesses
+OP-57|KelGroups.commitBaseChange_ok|KILL|MUT:Integration.lean:143:{post-with-appFold}→{post-with-pre.appFold}|PREDICTED-RED (second-conjunct projection)|GROUND:(a) second conjunct projects changed appFold field
+OP-57B|KelGroups.commitBaseChange_members|KILL|MUT:Integration.lean:143:{post-...}→{pre-with-appFold}|PREDICTED-RED (members projection)|GROUND:(a) members projection under pre/post swap
+OP-58|KelGroups.tryEnactBase_preserves_absence|KILL|MUT:Integration.lean:154:length-≥-majority→>|PREDICTED-RED (own unfold)|GROUND:(P) threshold-split shape mismatch
+OP-58|KelGroups.tryEnactBase_runs_hook|KILL|MUT:Integration.lean:154:length-≥-majority→>|PREDICTED-RED (own unfold)|GROUND:(P) threshold-split shape mismatch
+OP-58B|KelGroups.app_event_preserves_members|KILL|MUT:Integration.lean:210:app-branch:members→[]|PREDICTED-RED (own unfold)|GROUND:(a) members projection under wipe
+OP-58C|KelGroups.enactMutation_preserves_absence|KILL|MUT:Integration.lean:enactMutation-removeMember-arm:assocErase→identity|PREDICTED-RED (own arm equations)|GROUND:(P) removeMember-case exact-term mismatch
+OP-58D|KelGroups.app_event_has_no_base_change|KILL|MUT:Integration.lean:210:app-branch:change:=some(admit)|PREDICTED-RED (own unfold)|GROUND:(a) change projection under change-set
+OP-59|KelGroups.base_change_recomputes_votes|WITHDRAWN-DUPLICATE|MUT:Step.lean:baseHook:sweepClosures-θ-post→θ-pre|WITHDRAWN (phantom KelGroups.* namespace; sole declaration at Reactivegas/Invariants.lean:1616; real row L97)|GROUND:duplicate-spelling, no distinct declaration (A-ASSESSMENT-51)
+OP-59|KelGroups.baseHook_votes|WITHDRAWN-DUPLICATE|MUT:Step.lean:baseHook:sweepClosures-θ-post→θ-pre|WITHDRAWN (phantom KelGroups.* namespace; sole declaration at Reactivegas/Invariants.lean:1600; real row L98)|GROUND:duplicate-spelling, no distinct declaration (A-ASSESSMENT-51)
+OP-60|KelGroups.enact_preserves_wellFormed|KILL|MUT:Fold.lean:14:assocErase-key→gs.members|PREDICTED-RED (definitional cases)|GROUND:(P) assoc-lemma application mismatch
+OP-60|KelGroups.members_change_implies_enacted|KILL|MUT:Fold.lean:14:assocErase-key→gs.members|PREDICTED-RED (own arm-case analysis)|GROUND:(P) removeMember-case construction mismatch
+OP-61|KelGroups.finishEnact_preserves_wellFormed|KILL|MUT:Fold.lean:21:assocErase-proposalId→identity|PREDICTED-RED (own erase step)|GROUND:(P) assocErase application mismatch
+OP-62|KelGroups.enact_implies_threshold_met|OBSERVED|MUT:Fold.lean:37:length-≥-majority→>|OBSERVED (upstream KelGroups.tryEnactDetailed_enactment_threshold_met, consumed at KelGroups/Invariants.lean:357 and :366)
+OP-62|KelGroups.tryEnactDetailed_enactment_threshold_met|KILL|MUT:Fold.lean:37:length-≥-majority→>|PREDICTED-RED (own unfold)|GROUND:(P) threshold-equation mismatch
+OP-62|KelGroups.tryEnact_preserves_wellFormed|KILL|MUT:Fold.lean:37:length-≥-majority→>|PREDICTED-RED (own split)|GROUND:(P) split-shape mismatch
+OP-63|Reactivegas.base_change_recomputes_votes|KILL|MUT:Step.lean:baseHook:sweepClosures-θ-post→θ-pre|PREDICTED-RED (own unfold)|GROUND:(a) votes projection (sweep-post)
+OP-63|Reactivegas.baseHook_votes|KILL|MUT:Step.lean:baseHook:sweepClosures-θ-post→θ-pre|PREDICTED-RED (own unfold)|GROUND:(a) votes projection (sweep-post)
+OP-63B|KelGroups.applyPropose_preserves_wellFormed|KILL|MUT:Fold.lean:48-52:assocInsert-proposalId→plain-cons|PREDICTED-RED (own insert derivation)|GROUND:(a) dup proposalId falsifies pendingKeys at witness
+OP-64|KelGroups.applyApprove_preserves_wellFormed|KILL|MUT:Fold.lean:58-59:setInsert→cons-dup|PREDICTED-RED (own unfold)|GROUND:(a) dup approvals falsify PendingWellFormed at witness
+OP-64|KelGroups.approvePending_wellFormed|KILL|MUT:Fold.lean:58-59:setInsert→cons-dup|PREDICTED-RED (definitional)|GROUND:(a) dup approvals falsify at witness
+OP-64a|members_change_implies_enacted|OBSERVED|—|upstream KelGroups counterpart (OP-60 kill)
+OP-64c|enact_implies_threshold_met|OBSERVED|—|upstream KelGroups counterpart (threshold-lemma kill)
+OP-65|KelGroups.applyEvent_preserves_wellFormed|OBSERVED|—|OBSERVED (upstream approve/propose rows)
+OP-65|KelGroups.foldEvents_preserves_wellFormed|OBSERVED|—|OBSERVED (upstream applyEvent_preserves_wellFormed)
+OP-65|KelGroups.foldGroup_wellFormed|OBSERVED|—|OBSERVED (upstream foldEvents + emptyState)
+OP-66E|approvals_nodup|ELAB-STATIC|ELAB:KelGroups/Invariants.lean|structural (bare projection; counterpart ELAB)
+OP-66E|member_key_coherent|ELAB-STATIC|ELAB:KelGroups/Invariants.lean|structural (bare projection; counterpart ELAB)
+OP-66E|proposer_mem_approvals|ELAB-STATIC|ELAB:KelGroups/Invariants.lean|structural (bare projection; counterpart ELAB)
+OP-67|KelGroups.majority_not_strict_on_even|KILL|MUT:KelGroups/State.lean:50:(adminCount+1)/2→adminCount+1|PREDICTED-RED (verified: 6≤2 false at n=2)|GROUND:(c) statement false at n=2 (6≤2 false)
+OP-67|KelGroups.majority_table|KILL|MUT:KelGroups/State.lean:50:(adminCount+1)/2→adminCount+1|PREDICTED-RED (verified: 1→2)|GROUND:(c) decided values flip (1→2 at [a])
+OP-67a|majority_not_strict_on_even|OBSERVED|—|upstream KelGroups counterpart (OP-67a kill)
+OP-67a|majority_table|OBSERVED|—|upstream KelGroups counterpart (OP-67a kill)
+OP-67b|KelGroups.emptyState_wellFormed|KILL|MUT:KelGroups/State.lean:35:members:=[]→dup-pair|PREDICTED-RED (own unfold)|GROUND:(a) Nodup goals over dup-pair mutant
+OP-67G|governance_enacts_windUpAdmin|KILL|MUT:Step.lean:254-259:collections:=rest→s.collections|PREDICTED-RED (stripCollections_referente application breaks)|GROUND:(a) collections/rest projection
+OP-68|auth_referente_guard_inv|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|tautological Bool decomposition
+OP-68|close_guard_inv|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|tautological Bool decomposition
+OP-68|fail_guard_inv|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|tautological Bool decomposition
+OP-68|pledge_guard_inv|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|tautological Bool decomposition (no stepEvent)
+OP-68|Reactivegas.admissionPreservation_holds|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.base_change_can_close_without_ballot|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.base_departure_applies_cleanup|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.base_recompute_reachable_holds|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.canonical_economy_holds|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.comune_cannot_authorize|ELAB-STATIC|ELAB:Reactivegas/Step.lean:470|GREEN (witness/check)
+OP-68|Reactivegas.comuneThresholdSanity_holds|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.direct_admission_only_holds|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.exhaustive_inventories_hold|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.i57_auth_holds|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.i57_boundary_holds|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.i57_disjoint_holds|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.i57_disjoint_mutant_caught|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.i57_exhaustive_holds|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.i57_franchise_holds|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.i57_franchise_mutant_caught|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.i57_noexpiry_holds|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.i57_noop_holds|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.i57_nostale_holds|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.i57_partition_holds|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.i57_policyfree_holds|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.i57_policyfree_mutant_caught|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.i57_r45_holds|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.integrated_theorem_witness_holds|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.productionWellFormed_holds|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.sweep_idempotent_mutant_caught|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|Reactivegas.sweep_idempotent_witness|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|GREEN (witness/check)
+OP-68|solvent_init|ELAB-STATIC|ELAB:Reactivegas/Invariants.lean|structural (boot elimination; constructive proof Invariants.lean:877, not a decide witness/check)
+OP-69|Reactivegas.app_members_preservation_holds|KILL|MUT:Step.lean:apply:members-wipe|holds PREDICTED-RED (members-equality flips)|GROUND:(c) check flips at preservationDonate execution
+OP-69|Reactivegas.app_members_preservation_mutant_caught|ELAB-STATIC|ELAB:Step.lean|structural (self-contained shipped-mutant check)
+OP-69|TraceTests.app_members_preservation_holds|KILL|MUT:Step.lean:apply:members-wipe|mirror PREDICTED-RED (same Bool)|GROUND:(c) check flips at preservationDonate execution
+OP-69L|Reactivegas.comune_cannot_authorize|KILL|MUT:Step.lean:357:productionWellFormed-negation-drop|cannot_authorize PREDICTED-RED (refusal flips)|GROUND:(c) check flips (boot succeeds under mutant)
+OP-69L|Reactivegas.productionWellFormed_holds|KILL|MUT:Step.lean:357:productionWellFormed-negation-drop|productionWellFormed PREDICTED-RED|GROUND:(c) check flips over corpus
+OP-70|TraceTests.all_checks_pass|ELAB-STATIC|ELAB:TraceTests.lean|GREEN (mirror/witness/check)
+OP-70|TraceTests.app_members_preservation_mutant_caught|ELAB-STATIC|ELAB:TraceTests.lean|GREEN (mirror/witness/check)
+OP-70|TraceTests.base_change_can_close_without_ballot|ELAB-STATIC|ELAB:TraceTests.lean|GREEN (mirror/witness/check)
+OP-70|TraceTests.base_departure_applies_cleanup|ELAB-STATIC|ELAB:TraceTests.lean|GREEN (mirror/witness/check)
+OP-70|TraceTests.base_recompute_reachable_holds|ELAB-STATIC|ELAB:TraceTests.lean|GREEN (mirror/witness/check)
+OP-70|TraceTests.direct_admission_only_holds|ELAB-STATIC|ELAB:TraceTests.lean|GREEN (mirror/witness/check)
+OP-70|TraceTests.frozen_checks_faithful|ELAB-STATIC|ELAB:TraceTests.lean|GREEN (mirror/witness/check)
+OP-70|TraceTests.frozen_corpus_faithful|ELAB-STATIC|ELAB:TraceTests.lean|GREEN (mirror/witness/check)
+OP-70|TraceTests.frozen_inventory_faithful|ELAB-STATIC|ELAB:TraceTests.lean|GREEN (mirror/witness/check)
+OP-70|TraceTests.sweep_idempotent_mutant_caught|ELAB-STATIC|ELAB:TraceTests.lean|GREEN (mirror/witness/check)
+OP-70|TraceTests.sweep_idempotent_witness|ELAB-STATIC|ELAB:TraceTests.lean|GREEN (mirror/witness/check)
+OP-71|stepDetailed_erases|ELAB-STATIC|ELAB:Trace.lean|GREEN (wrapper equation)
+OP-72|Reactivegas.Composition.appDecided_verdict_exhaustive|ELAB-STATIC|ELAB:Composition.lean|GREEN (routing equation)
+OP-72|Reactivegas.Composition.baseEnacted_threshold_met|ELAB-STATIC|ELAB:Composition.lean|cascade-consumer of KelGroups.enact_implies_threshold_met (proof term <hfaithful, ...>); still ELAB-STATIC, not a routing equation
+OP-72|Reactivegas.Composition.voteDerived_iff_not_direct|ELAB-STATIC|ELAB:Composition.lean|GREEN (routing equation)
+OP-73|solvent_init|ACCEPT|ACCEPT:full-tree-build|acceptance GREEN
+OP-74|KelGroups.Vote.sweepDuplicating_duplicates|ELAB-STATIC|ELAB:Vote/Invariants.lean|structural (test-def unfold)
+OP-OPEN|Reactivegas.admissionPreservation_holds|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#1]
+OP-OPEN|Reactivegas.app_members_preservation_mutant_caught|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#2]
+OP-OPEN|Reactivegas.base_change_can_close_without_ballot|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#3]
+OP-OPEN|Reactivegas.base_departure_applies_cleanup|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#4]
+OP-OPEN|Reactivegas.base_recompute_reachable_holds|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#5]
+OP-OPEN|Reactivegas.canonical_economy_holds|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#6]
+OP-OPEN|Reactivegas.comuneThresholdSanity_holds|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#7]
+OP-OPEN|Reactivegas.direct_admission_only_holds|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#8]
+OP-OPEN|Reactivegas.exhaustive_inventories_hold|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#9]
+OP-OPEN|Reactivegas.i57_auth_holds|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#10]
+OP-OPEN|Reactivegas.i57_boundary_holds|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#11]
+OP-OPEN|Reactivegas.i57_disjoint_mutant_caught|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#12]
+OP-OPEN|Reactivegas.i57_exhaustive_holds|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#13]
+OP-OPEN|Reactivegas.i57_franchise_mutant_caught|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#14]
+OP-OPEN|Reactivegas.i57_noexpiry_holds|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#15]
+OP-OPEN|Reactivegas.i57_noop_holds|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#16]
+OP-OPEN|Reactivegas.i57_nostale_holds|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#17]
+OP-OPEN|Reactivegas.i57_partition_holds|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#18]
+OP-OPEN|Reactivegas.i57_policyfree_holds|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#19]
+OP-OPEN|Reactivegas.i57_policyfree_mutant_caught|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#20]
+OP-OPEN|Reactivegas.i57_r45_holds|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#21]
+OP-OPEN|Reactivegas.integrated_theorem_witness_holds|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#22]
+OP-OPEN|Reactivegas.sweep_idempotent_mutant_caught|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#23]
+OP-OPEN|Reactivegas.sweep_idempotent_witness|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#24]
+OP-OPEN|TraceTests.app_members_preservation_mutant_caught|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#25]
+OP-OPEN|TraceTests.base_change_can_close_without_ballot|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#26]
+OP-OPEN|TraceTests.base_departure_applies_cleanup|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#27]
+OP-OPEN|TraceTests.base_recompute_reachable_holds|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#28]
+OP-OPEN|TraceTests.direct_admission_only_holds|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#29]
+OP-OPEN|TraceTests.sweep_idempotent_mutant_caught|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#30]
+OP-OPEN|TraceTests.sweep_idempotent_witness|OPEN-KILL|bounded-search:check-def+production-calls|OPEN (falsifying mutant unidentified)|undefined [EXTENT:OPEN-EXTENTS-31#31]
+OP-42K|KelGroups.Vote.questions_partition|KILL|MUT:Vote/Fold.lean:77:closed-append-drop|questions_partition PREDICTED-RED (own unfold) [corroborated t54-PARTITION ea9882087e28/7846a04f5984; exact-atom identity unestablished, not RECEIPT-BOUND]|GROUND:(a) partition equation over mutant sweep
+OP-66|KelGroups.approvals_nodup|ELAB-STATIC|ELAB:KelGroups/Invariants.lean|structural (bare projection/rfl)
+OP-66|KelGroups.proposer_mem_approvals|ELAB-STATIC|ELAB:KelGroups/Invariants.lean|structural (bare projection/rfl)
+OP-66|KelGroups.member_key_coherent|ELAB-STATIC|ELAB:KelGroups/Invariants.lean|structural (bare projection/rfl)
+OP-66|KelGroups.tryEnact_eq_of_enacts|ELAB-STATIC|ELAB:KelGroups/Invariants.lean|structural (bare projection/rfl)
+OP-56|KelGroups.validateDirectAdmission_ok|KILL|MUT:Validate.lean:147:if-isMember→if-False|PREDICTED-RED (dup-split branch; non_admin/membership go GREEN here — branch-verified)|GROUND:(a) condition conjunctions false at witnesses
+OP-58|KelGroups.base_change_runs_hook|OBSERVED|MUT:Integration.lean:154 (same)|OBSERVED (upstream tryEnactBase_runs_hook)

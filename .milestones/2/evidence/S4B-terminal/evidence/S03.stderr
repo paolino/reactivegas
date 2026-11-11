@@ -1,0 +1,5 @@
+warning: Git tree '/code/reactivegas-66-s4b-audit3' is dirty
+check-reactivegas-inversion-coverage: sources tracked=29 walked=29
+check-reactivegas-inversion-coverage: sources tracked=29 walked=29
+check-lean-axioms: sources tracked=29 walked=29
+error: Recipe `lean` failed with exit code 1

@@ -1,0 +1,91 @@
+[
+  {
+    "file": "instruments/diffs/C-FOLD.diff",
+    "sha256": "a1d5a821b120aa5ab96cbc182d03c83b6ae591f5d6afdbd223da171026b6440c",
+    "hunkHeader": "@@ -34,7 +34,7 @@ def tryEnactDetailed (gs : GroupState α) (proposalId : ProposalId) : StepResult",
+    "declaredOld": 7,
+    "declaredNew": 7,
+    "actualOld": 6,
+    "actualNew": 6,
+    "unprefixedLines": []
+  },
+  {
+    "file": "instruments/diffs/C-INTEGRATION.diff",
+    "sha256": "8c8f7fe8192006ec083d7c4f5210404477f70cf3ae723a01be853d54848bed8a",
+    "hunkHeader": "@@ -207,7 +207,7 @@ def applyIntegratedEvent",
+    "declaredOld": 7,
+    "declaredNew": 7,
+    "actualOld": 5,
+    "actualNew": 5,
+    "unprefixedLines": []
+  },
+  {
+    "file": "instruments/diffs/C-KSTATE.diff",
+    "sha256": "0314824bbd3001caae4297b7e1919910b1f4c61974d07733e7cbc7d15a57caa7",
+    "hunkHeader": "@@ -47,7 +47,7 @@ def adminCount (gs : GroupState α) : Nat :=",
+    "declaredOld": 7,
+    "declaredNew": 7,
+    "actualOld": 3,
+    "actualNew": 3,
+    "unprefixedLines": [
+      {
+        "line": 7,
+        "text": ""
+      },
+      {
+        "line": 10,
+        "text": ""
+      }
+    ]
+  },
+  {
+    "file": "instruments/diffs/C-RSTATE.diff",
+    "sha256": "702d6935ebb4e3ec651044f04730169d58d5ebeeccadf6439dfd9d0d8fb4576a",
+    "hunkHeader": "@@ -92,7 +92,7 @@ def splitUser (u : KelGroups.Key) : List Pledge → Option (Int × List Pledge)",
+    "declaredOld": 7,
+    "declaredNew": 7,
+    "actualOld": 3,
+    "actualNew": 3,
+    "unprefixedLines": []
+  },
+  {
+    "file": "instruments/diffs/C-VALIDATE.diff",
+    "sha256": "37f26b8b70e3e7a431d1273cfb585e89677055f71883fed007af34edbdbb5ace",
+    "hunkHeader": "@@ -143,7 +143,7 @@ def validateDirectAdmission (reserved : Key) (gs : GroupState α)",
+    "declaredOld": 7,
+    "declaredNew": 7,
+    "actualOld": 6,
+    "actualNew": 6,
+    "unprefixedLines": []
+  },
+  {
+    "file": "instruments/diffs/C-VOTEFOLD.diff",
+    "sha256": "79a6757ddb780ee2ba347fbdffdf078bdfb063f95b1accaf49c0e0aff07d8f4c",
+    "hunkHeader": "@@ -74,7 +74,7 @@ def sweepClosures (threshold : Threshold) (view : GroupView) (gs : VoteState) :",
+    "declaredOld": 7,
+    "declaredNew": 7,
+    "actualOld": 4,
+    "actualNew": 4,
+    "unprefixedLines": []
+  },
+  {
+    "file": "instruments/diffs/C-VOTESTATE.diff",
+    "sha256": "118396924ab2c733e17ea3ae04d2d15d11df6728e70e76f60ca1de12483953d8",
+    "hunkHeader": "@@ -86,7 +86,7 @@ def verdictOf (threshold : Threshold) (view : GroupView) (question : Question) :",
+    "declaredOld": 7,
+    "declaredNew": 7,
+    "actualOld": 6,
+    "actualNew": 6,
+    "unprefixedLines": []
+  },
+  {
+    "file": "instruments/diffs/C-VOTEVAL.diff",
+    "sha256": "5b50db65100ec22b9668d04bf574fc7989f679002535d172605e809bd6fc00d5",
+    "hunkHeader": "@@ -55,7 +55,7 @@",
+    "declaredOld": 7,
+    "declaredNew": 7,
+    "actualOld": 5,
+    "actualNew": 5,
+    "unprefixedLines": []
+  }
+]

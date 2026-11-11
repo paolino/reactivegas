@@ -1,0 +1,3245 @@
+[
+  {
+    "id": "SS-OP-001",
+    "old": "OP-11..24-COLL",
+    "atoms": [
+      "E01"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "lean/Reactivegas/Step.lean",
+    "before": "some { s with collections := ⟨c, signer, false, [], []⟩ :: s.collections }",
+    "after": "some { s with collections := s.collections }",
+    "observation": "scratch lake build <target> with span binding + Built/Replayed loading evidence; restore via git checkout",
+    "rows": [
+      2,
+      3
+    ]
+  },
+  {
+    "id": "SS-OP-002",
+    "old": "OP-11..24-COLL",
+    "atoms": [
+      "E02"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "lean/Reactivegas/Step.lean",
+    "before": "pure { s with collections := { col with permitted := true } :: rest }",
+    "after": "pure { s with collections := col :: rest }",
+    "observation": "scratch lake build <target> with span binding + Built/Replayed loading evidence; restore via git checkout",
+    "rows": [
+      2,
+      3
+    ]
+  },
+  {
+    "id": "SS-OP-003",
+    "old": "OP-11..24-COLL",
+    "atoms": [
+      "E03a"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "lean/Reactivegas/Step.lean",
+    "before": "conti := refundAll s.conti (col.accepted ++ col.pending),\n      collections := rest",
+    "after": "conti := s.conti,\n      collections := rest",
+    "observation": "scratch lake build <target> with span binding + Built/Replayed loading evidence; restore via git checkout",
+    "rows": [
+      2,
+      3
+    ]
+  },
+  {
+    "id": "SS-OP-004",
+    "old": "OP-11..24-COLL",
+    "atoms": [
+      "E04a"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "lean/Reactivegas/Step.lean",
+    "before": "conti := bump s.conti u v, casse := bump s.casse signer v",
+    "after": "conti := s.conti, casse := bump s.casse signer v",
+    "observation": "scratch lake build <target> with span binding + Built/Replayed loading evidence; restore via git checkout",
+    "rows": [
+      2,
+      3
+    ]
+  },
+  {
+    "id": "SS-OP-005",
+    "old": "OP-11..24-COLL",
+    "atoms": [
+      "E05a"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "lean/Reactivegas/Step.lean",
+    "before": "conti := bump s.conti u (-v), casse := bump s.casse signer (-v)",
+    "after": "conti := s.conti, casse := bump s.casse signer (-v)",
+    "observation": "scratch lake build <target> with span binding + Built/Replayed loading evidence; restore via git checkout",
+    "rows": [
+      2,
+      3
+    ]
+  },
+  {
+    "id": "SS-OP-006",
+    "old": "OP-11..24-COLL",
+    "atoms": [
+      "E06b"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "lean/Reactivegas/Step.lean",
+    "before": "casse := bump (bump s.casse f (-v)) signer v",
+    "after": "casse := bump (bump s.casse f (-v)) signer 0",
+    "observation": "scratch lake build <target> with span binding + Built/Replayed loading evidence; restore via git checkout",
+    "rows": [
+      2,
+      3
+    ]
+  },
+  {
+    "id": "SS-OP-007",
+    "old": "OP-11..24-COLL",
+    "atoms": [
+      "G07b"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "lean/Reactivegas/Step.lean",
+    "before": "decide (0 < v)",
+    "after": "decide True",
+    "observation": "scratch lake build <target> with span binding + Built/Replayed loading evidence; restore via git checkout",
+    "rows": [
+      2,
+      3
+    ]
+  },
+  {
+    "id": "SS-OP-008",
+    "old": "OP-11..24-COLL",
+    "atoms": [
+      "E08-DIST"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "lean/Reactivegas/Step.lean",
+    "before": "conti := members.foldl (fun acc u => bump acc u w)\n          (bump s.conti comuneId (-(n * w)))",
+    "after": "conti := (bump s.conti comuneId (-(n * w)))",
+    "observation": "scratch lake build <target> with span binding + Built/Replayed loading evidence; restore via git checkout",
+    "rows": [
+      2,
+      3
+    ]
+  },
+  {
+    "id": "SS-OP-009",
+    "old": "OP-11..24-COLL",
+    "atoms": [
+      "E09a"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "lean/Reactivegas/Step.lean",
+    "before": "conti := bump s.conti u (-v)",
+    "after": "conti := s.conti",
+    "observation": "scratch lake build <target> with span binding + Built/Replayed loading evidence; restore via git checkout",
+    "rows": [
+      2,
+      3
+    ]
+  },
+  {
+    "id": "SS-OP-010",
+    "old": "OP-11..24-COLL",
+    "atoms": [
+      "E10-WHOLE"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "lean/Reactivegas/Step.lean",
+    "before": "{ col with pending := pend', accepted := ⟨u, v⟩ :: col.accepted }",
+    "after": "{ col with pending := col.pending, accepted := col.accepted }",
+    "observation": "scratch lake build <target> with span binding + Built/Replayed loading evidence; restore via git checkout",
+    "rows": [
+      2,
+      3
+    ]
+  },
+  {
+    "id": "SS-OP-011",
+    "old": "OP-11..24-COLL",
+    "atoms": [
+      "E10-CREDIT-ONLY"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "lean/Reactivegas/Step.lean",
+    "before": "{ col with pending := pend', accepted := ⟨u, v⟩ :: col.accepted }",
+    "after": "{ col with pending := pend', accepted := col.accepted }",
+    "observation": "scratch lake build <target> with span binding + Built/Replayed loading evidence; restore via git checkout",
+    "rows": [
+      2,
+      3
+    ]
+  },
+  {
+    "id": "SS-OP-012",
+    "old": "OP-11..24-COLL",
+    "atoms": [
+      "E11-REFUND"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "lean/Reactivegas/Step.lean",
+    "before": "conti := bump s.conti u v",
+    "after": "conti := s.conti",
+    "observation": "scratch lake build <target> with span binding + Built/Replayed loading evidence; restore via git checkout",
+    "rows": [
+      2,
+      3
+    ]
+  },
+  {
+    "id": "SS-OP-013",
+    "old": "OP-11..24-COLL",
+    "atoms": [
+      "E12a"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "lean/Reactivegas/Step.lean",
+    "before": "conti := bump s.conti u (v - v')",
+    "after": "conti := s.conti",
+    "observation": "scratch lake build <target> with span binding + Built/Replayed loading evidence; restore via git checkout",
+    "rows": [
+      2,
+      3
+    ]
+  },
+  {
+    "id": "SS-OP-014",
+    "old": "OP-11..24-COLL",
+    "atoms": [
+      "E13a"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "lean/Reactivegas/Step.lean",
+    "before": "casse := bump s.casse col.referente (-(sumPledges col.accepted))",
+    "after": "casse := s.casse",
+    "observation": "scratch lake build <target> with span binding + Built/Replayed loading evidence; restore via git checkout",
+    "rows": [
+      2,
+      3
+    ]
+  },
+  {
+    "id": "SS-OP-015",
+    "old": "OP-11..24-COLL",
+    "atoms": [
+      "E14a"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "lean/Reactivegas/Step.lean",
+    "before": "conti := refundAll s.conti (col.accepted ++ col.pending)",
+    "after": "conti := s.conti",
+    "observation": "scratch lake build <target> with span binding + Built/Replayed loading evidence; restore via git checkout",
+    "rows": [
+      2,
+      3
+    ]
+  },
+  {
+    "id": "SS-OP-016",
+    "old": "OP-11",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:55:{col-with-permitted-true}→{col}",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      1
+    ]
+  },
+  {
+    "id": "SS-OP-017",
+    "old": "OP-12",
+    "atoms": [
+      "MUT:Step.lean:102:drop conti-debit-line"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:102:drop conti-debit-line",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      4
+    ]
+  },
+  {
+    "id": "SS-OP-018",
+    "old": "OP-12",
+    "atoms": [
+      "MUT:Step.lean:102:drop conti-debit-line"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:102:drop conti-debit-line",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      5
+    ]
+  },
+  {
+    "id": "SS-OP-019",
+    "old": "OP-12",
+    "atoms": [
+      "MUT:Step.lean:102:drop conti-debit-line"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:102:drop conti-debit-line",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      6
+    ]
+  },
+  {
+    "id": "SS-OP-020",
+    "old": "OP-12",
+    "atoms": [
+      "MUT:Step.lean:102:drop conti-debit-line"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:102:drop conti-debit-line",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      7
+    ]
+  },
+  {
+    "id": "SS-OP-021",
+    "old": "OP-13",
+    "atoms": [
+      "MUT:Step.lean:109-110:drop accepted-move"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:109-110:drop accepted-move",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      8
+    ]
+  },
+  {
+    "id": "SS-OP-022",
+    "old": "OP-14",
+    "atoms": [
+      "MUT:Step.lean:115-117:drop conti-refund-line"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:115-117:drop conti-refund-line",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      9
+    ]
+  },
+  {
+    "id": "SS-OP-023",
+    "old": "OP-15",
+    "atoms": [
+      "MUT:Step.lean:124:drop conti-diff-line"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:124:drop conti-diff-line",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      10
+    ]
+  },
+  {
+    "id": "SS-OP-024",
+    "old": "OP-16",
+    "atoms": [
+      "MUT:Step.lean:128 (same run)"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:128 (same run)",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      11
+    ]
+  },
+  {
+    "id": "SS-OP-025",
+    "old": "OP-16",
+    "atoms": [
+      "MUT:Step.lean:131:drop casse-spend-line"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:131:drop casse-spend-line",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      12
+    ]
+  },
+  {
+    "id": "SS-OP-026",
+    "old": "OP-16",
+    "atoms": [
+      "MUT:Step.lean:131:drop casse-spend-line"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:131:drop casse-spend-line",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      13
+    ]
+  },
+  {
+    "id": "SS-OP-027",
+    "old": "OP-17",
+    "atoms": [
+      "MUT:Step.lean:138:drop conti-refundAll-line"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:138:drop conti-refundAll-line",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      14
+    ]
+  },
+  {
+    "id": "SS-OP-028",
+    "old": "OP-18",
+    "atoms": [
+      "MUT:Step.lean:50:drop collection-cons"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:50:drop collection-cons",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      15
+    ]
+  },
+  {
+    "id": "SS-OP-029",
+    "old": "OP-19",
+    "atoms": [
+      "MUT:Step.lean:65:drop conti-bump-line"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:65:drop conti-bump-line",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      16
+    ]
+  },
+  {
+    "id": "SS-OP-030",
+    "old": "OP-19",
+    "atoms": [
+      "MUT:Step.lean:65:drop conti-bump-line"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:65:drop conti-bump-line",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      17
+    ]
+  },
+  {
+    "id": "SS-OP-031",
+    "old": "OP-20",
+    "atoms": [
+      "MUT:Step.lean:71:drop conti-bump-line"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:71:drop conti-bump-line",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      18
+    ]
+  },
+  {
+    "id": "SS-OP-032",
+    "old": "OP-20",
+    "atoms": [
+      "MUT:Step.lean:71:drop conti-bump-line"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:71:drop conti-bump-line",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      19
+    ]
+  },
+  {
+    "id": "SS-OP-033",
+    "old": "OP-21",
+    "atoms": [
+      "MUT:Step.lean:77:drop signer-credit-bump"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:77:drop signer-credit-bump",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      20
+    ]
+  },
+  {
+    "id": "SS-OP-034",
+    "old": "OP-22",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:80:decide(0<v)→decide True",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      21
+    ]
+  },
+  {
+    "id": "SS-OP-035",
+    "old": "OP-23",
+    "atoms": [
+      "MUT:Step.lean:90-92:drop members-fold-distr"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:90-92:drop members-fold-distr",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      22
+    ]
+  },
+  {
+    "id": "SS-OP-036",
+    "old": "OP-24",
+    "atoms": [
+      "MUT:Step.lean:59-60:drop conti-refundAll-line"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:59-60:drop conti-refundAll-line",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      23
+    ]
+  },
+  {
+    "id": "SS-OP-037",
+    "old": "OP-25",
+    "atoms": [
+      "MUT:Step.lean:82-83:drop conti-comune-credit"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:82-83:drop conti-comune-credit",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      24
+    ]
+  },
+  {
+    "id": "SS-OP-038",
+    "old": "OP-25",
+    "atoms": [
+      "MUT:Step.lean:82-83:drop conti-comune-credit"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:82-83:drop conti-comune-credit",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      25
+    ]
+  },
+  {
+    "id": "SS-OP-039",
+    "old": "OP-25",
+    "atoms": [
+      "MUT:Step.lean:82-83:drop conti-comune-credit"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:82-83:drop conti-comune-credit",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      26
+    ]
+  },
+  {
+    "id": "SS-OP-040",
+    "old": "OP-25",
+    "atoms": [
+      "MUT:Step.lean:82-83:drop conti-comune-credit"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:82-83:drop conti-comune-credit",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      27
+    ]
+  },
+  {
+    "id": "SS-OP-041",
+    "old": "OP-25",
+    "atoms": [
+      "MUT:Step.lean:82-83:drop conti-comune-credit"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:82-83:drop conti-comune-credit",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      28
+    ]
+  },
+  {
+    "id": "SS-OP-042",
+    "old": "OP-25B",
+    "atoms": [
+      "MUT:State.lean:refundAll-body:drop-bump"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:State.lean:refundAll-body:drop-bump",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      29
+    ]
+  },
+  {
+    "id": "SS-OP-043",
+    "old": "OP-28",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for PREMISE:no-mutant",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      30
+    ]
+  },
+  {
+    "id": "SS-OP-044",
+    "old": "OP-30",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for VACUOUS:no-mutant",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      31
+    ]
+  },
+  {
+    "id": "SS-OP-045",
+    "old": "OP-39",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:55:dissents.erase→dissents",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      32
+    ]
+  },
+  {
+    "id": "SS-OP-046",
+    "old": "OP-39",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:55:dissents.erase→dissents",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      33
+    ]
+  },
+  {
+    "id": "SS-OP-047",
+    "old": "OP-39",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:55:dissents.erase→dissents",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      34
+    ]
+  },
+  {
+    "id": "SS-OP-048",
+    "old": "OP-39",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:55:dissents.erase→dissents",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      35
+    ]
+  },
+  {
+    "id": "SS-OP-049",
+    "old": "OP-39",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:55:dissents.erase→dissents",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      36
+    ]
+  },
+  {
+    "id": "SS-OP-050",
+    "old": "OP-39",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for ELAB:Vote/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      37
+    ]
+  },
+  {
+    "id": "SS-OP-051",
+    "old": "OP-39",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for ELAB:Vote/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      38
+    ]
+  },
+  {
+    "id": "SS-OP-052",
+    "old": "OP-40",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:76:filter-pred→fun-true",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      39
+    ]
+  },
+  {
+    "id": "SS-OP-053",
+    "old": "OP-40",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:76:filter-pred→fun-true",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      40
+    ]
+  },
+  {
+    "id": "SS-OP-054",
+    "old": "OP-40",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:76:filter-pred→fun-true",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      41
+    ]
+  },
+  {
+    "id": "SS-OP-055",
+    "old": "OP-40",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:76:filter-pred→fun-true",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      42
+    ]
+  },
+  {
+    "id": "SS-OP-056",
+    "old": "OP-40",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:76:filter-pred→fun-true",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      43
+    ]
+  },
+  {
+    "id": "SS-OP-057",
+    "old": "OP-40",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:76:filter-pred→fun-true",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      44
+    ]
+  },
+  {
+    "id": "SS-OP-058",
+    "old": "OP-40",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:76:filter-pred→fun-true",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      45
+    ]
+  },
+  {
+    "id": "SS-OP-059",
+    "old": "OP-42",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for ELAB:Vote/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      46
+    ]
+  },
+  {
+    "id": "SS-OP-060",
+    "old": "OP-42",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for mutant-partition.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      47
+    ]
+  },
+  {
+    "id": "SS-OP-061",
+    "old": "OP-42",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for —",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      48
+    ]
+  },
+  {
+    "id": "SS-OP-062",
+    "old": "OP-43",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for mutant-disjoint.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      49
+    ]
+  },
+  {
+    "id": "SS-OP-063",
+    "old": "OP-43",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for mutant-disjoint.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      50
+    ]
+  },
+  {
+    "id": "SS-OP-064",
+    "old": "OP-43",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for mutant-disjoint.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      51
+    ]
+  },
+  {
+    "id": "SS-OP-065",
+    "old": "OP-44",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for mutant-nostale.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      52
+    ]
+  },
+  {
+    "id": "SS-OP-066",
+    "old": "OP-45",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for mutant-franchise.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      53
+    ]
+  },
+  {
+    "id": "SS-OP-067",
+    "old": "OP-45",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for mutant-bypass.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      54
+    ]
+  },
+  {
+    "id": "SS-OP-068",
+    "old": "OP-45",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for mutant-bypass.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      55
+    ]
+  },
+  {
+    "id": "SS-OP-069",
+    "old": "OP-45",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for mutant-franchise.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      56
+    ]
+  },
+  {
+    "id": "SS-OP-070",
+    "old": "OP-46a",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:63-64:.open-arm→close-branch",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      57
+    ]
+  },
+  {
+    "id": "SS-OP-071",
+    "old": "OP-46b",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:65:entry.1→wrong",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      58
+    ]
+  },
+  {
+    "id": "SS-OP-072",
+    "old": "OP-47",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for ELAB:Vote/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      59
+    ]
+  },
+  {
+    "id": "SS-OP-073",
+    "old": "OP-48",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for —",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      60
+    ]
+  },
+  {
+    "id": "SS-OP-074",
+    "old": "OP-49",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Validate.lean:58:if-isResponsabile→.ok",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      61
+    ]
+  },
+  {
+    "id": "SS-OP-075",
+    "old": "OP-49",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Validate.lean:58:if-isResponsabile→.ok",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      62
+    ]
+  },
+  {
+    "id": "SS-OP-076",
+    "old": "OP-49",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Validate.lean:58:if-isResponsabile→.ok",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      63
+    ]
+  },
+  {
+    "id": "SS-OP-077",
+    "old": "OP-50",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:96-100:cast-some-arm→gs",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      64
+    ]
+  },
+  {
+    "id": "SS-OP-078",
+    "old": "OP-50",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:96-100:cast-some-arm→gs",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      65
+    ]
+  },
+  {
+    "id": "SS-OP-079",
+    "old": "OP-50",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:96-100:cast-some-arm→gs",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      66
+    ]
+  },
+  {
+    "id": "SS-OP-080",
+    "old": "OP-51",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:121:ok-arm-sweep-call→effectedState-only",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      67
+    ]
+  },
+  {
+    "id": "SS-OP-081",
+    "old": "OP-51",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:121:ok-arm-sweep-call→effectedState-only",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      68
+    ]
+  },
+  {
+    "id": "SS-OP-082",
+    "old": "OP-52",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:137-138:accum→current",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      69
+    ]
+  },
+  {
+    "id": "SS-OP-083",
+    "old": "OP-52",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:137-138:accum→current",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      70
+    ]
+  },
+  {
+    "id": "SS-OP-084",
+    "old": "OP-52B",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:129-130:accum→current",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      71
+    ]
+  },
+  {
+    "id": "SS-OP-085",
+    "old": "OP-53",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/State.lean:57-58:openQuestions:=[]→non-empty",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      72
+    ]
+  },
+  {
+    "id": "SS-OP-086",
+    "old": "OP-53",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/State.lean:57-58:openQuestions:=[]→non-empty",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      73
+    ]
+  },
+  {
+    "id": "SS-OP-087",
+    "old": "OP-54",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Validate.lean:145:if-isAdmin→if-True",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      74
+    ]
+  },
+  {
+    "id": "SS-OP-088",
+    "old": "OP-54",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Validate.lean:145:if-isAdmin→if-True",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      75
+    ]
+  },
+  {
+    "id": "SS-OP-089",
+    "old": "OP-54",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Validate.lean:145:if-isAdmin→if-True",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      76
+    ]
+  },
+  {
+    "id": "SS-OP-090",
+    "old": "OP-54",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Validate.lean:145:if-isAdmin→if-True",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      77
+    ]
+  },
+  {
+    "id": "SS-OP-091",
+    "old": "OP-54a",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for —",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      78
+    ]
+  },
+  {
+    "id": "SS-OP-092",
+    "old": "OP-55",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Validate.lean:146:if-target-reserved→if-False",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      79
+    ]
+  },
+  {
+    "id": "SS-OP-093",
+    "old": "OP-55",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Validate.lean:146:if-target-reserved→if-False",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      80
+    ]
+  },
+  {
+    "id": "SS-OP-094",
+    "old": "OP-55",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Validate.lean:146:if-target-reserved→if-False",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      81
+    ]
+  },
+  {
+    "id": "SS-OP-095",
+    "old": "OP-57",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Integration.lean:143:{post-with-appFold}→{post-with-pre.",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      82
+    ]
+  },
+  {
+    "id": "SS-OP-096",
+    "old": "OP-57B",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Integration.lean:143:{post-...}→{pre-with-appFold}",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      83
+    ]
+  },
+  {
+    "id": "SS-OP-097",
+    "old": "OP-58",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Integration.lean:154:length-≥-majority→>",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      84
+    ]
+  },
+  {
+    "id": "SS-OP-098",
+    "old": "OP-58",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Integration.lean:154:length-≥-majority→>",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      85
+    ]
+  },
+  {
+    "id": "SS-OP-099",
+    "old": "OP-58B",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Integration.lean:210:app-branch:members→[]",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      86
+    ]
+  },
+  {
+    "id": "SS-OP-100",
+    "old": "OP-58C",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Integration.lean:enactMutation-removeMember-arm:assocEra",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      87
+    ]
+  },
+  {
+    "id": "SS-OP-101",
+    "old": "OP-58D",
+    "atoms": [
+      "MUT:Integration.lean:210:app-branch:change:=some(admit)"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Integration.lean:210:app-branch:change:=some(admit)",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      88
+    ]
+  },
+  {
+    "id": "SS-OP-102",
+    "old": "OP-59",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "PHANTOM-WITHDRAWN",
+    "before": "see atoms.json for MUT:Step.lean:baseHook:sweepClosures-θ-post→θ-pre",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      89
+    ]
+  },
+  {
+    "id": "SS-OP-103",
+    "old": "OP-59",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "PHANTOM-WITHDRAWN",
+    "before": "see atoms.json for MUT:Step.lean:baseHook:sweepClosures-θ-post→θ-pre",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      90
+    ]
+  },
+  {
+    "id": "SS-OP-104",
+    "old": "OP-60",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Fold.lean:14:assocErase-key→gs.members",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      91
+    ]
+  },
+  {
+    "id": "SS-OP-105",
+    "old": "OP-60",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Fold.lean:14:assocErase-key→gs.members",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      92
+    ]
+  },
+  {
+    "id": "SS-OP-106",
+    "old": "OP-61",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Fold.lean:21:assocErase-proposalId→identity",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      93
+    ]
+  },
+  {
+    "id": "SS-OP-107",
+    "old": "OP-62",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Fold.lean:37:length-≥-majority→>",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      94
+    ]
+  },
+  {
+    "id": "SS-OP-108",
+    "old": "OP-62",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Fold.lean:37:length-≥-majority→>",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      95
+    ]
+  },
+  {
+    "id": "SS-OP-109",
+    "old": "OP-62",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Fold.lean:37:length-≥-majority→>",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      96
+    ]
+  },
+  {
+    "id": "SS-OP-110",
+    "old": "OP-63",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:baseHook:sweepClosures-θ-post→θ-pre",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      97
+    ]
+  },
+  {
+    "id": "SS-OP-111",
+    "old": "OP-63",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:baseHook:sweepClosures-θ-post→θ-pre",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      98
+    ]
+  },
+  {
+    "id": "SS-OP-112",
+    "old": "OP-63B",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Fold.lean:48-52:assocInsert-proposalId→plain-cons",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      99
+    ]
+  },
+  {
+    "id": "SS-OP-113",
+    "old": "OP-64",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Fold.lean:58-59:setInsert→cons-dup",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      100
+    ]
+  },
+  {
+    "id": "SS-OP-114",
+    "old": "OP-64",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Fold.lean:58-59:setInsert→cons-dup",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      101
+    ]
+  },
+  {
+    "id": "SS-OP-115",
+    "old": "OP-64a",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for —",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      102
+    ]
+  },
+  {
+    "id": "SS-OP-116",
+    "old": "OP-64c",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for —",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      103
+    ]
+  },
+  {
+    "id": "SS-OP-117",
+    "old": "OP-65",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for —",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      104
+    ]
+  },
+  {
+    "id": "SS-OP-118",
+    "old": "OP-65",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for —",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      105
+    ]
+  },
+  {
+    "id": "SS-OP-119",
+    "old": "OP-65",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for —",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      106
+    ]
+  },
+  {
+    "id": "SS-OP-120",
+    "old": "OP-66E",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for ELAB:KelGroups/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      107
+    ]
+  },
+  {
+    "id": "SS-OP-121",
+    "old": "OP-66E",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for ELAB:KelGroups/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      108
+    ]
+  },
+  {
+    "id": "SS-OP-122",
+    "old": "OP-66E",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for ELAB:KelGroups/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      109
+    ]
+  },
+  {
+    "id": "SS-OP-123",
+    "old": "OP-67",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:KelGroups/State.lean:50:(adminCount+1)/2→adminCount+1",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      110
+    ]
+  },
+  {
+    "id": "SS-OP-124",
+    "old": "OP-67",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:KelGroups/State.lean:50:(adminCount+1)/2→adminCount+1",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      111
+    ]
+  },
+  {
+    "id": "SS-OP-125",
+    "old": "OP-67a",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for —",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      112
+    ]
+  },
+  {
+    "id": "SS-OP-126",
+    "old": "OP-67a",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for —",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      113
+    ]
+  },
+  {
+    "id": "SS-OP-127",
+    "old": "OP-67b",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:KelGroups/State.lean:35:members:=[]→dup-pair",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      114
+    ]
+  },
+  {
+    "id": "SS-OP-128",
+    "old": "OP-67G",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:254-259:collections:=rest→s.collections",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      115
+    ]
+  },
+  {
+    "id": "SS-OP-129",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      116
+    ]
+  },
+  {
+    "id": "SS-OP-130",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      117
+    ]
+  },
+  {
+    "id": "SS-OP-131",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      118
+    ]
+  },
+  {
+    "id": "SS-OP-132",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      119
+    ]
+  },
+  {
+    "id": "SS-OP-133",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      120
+    ]
+  },
+  {
+    "id": "SS-OP-134",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      121
+    ]
+  },
+  {
+    "id": "SS-OP-135",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      122
+    ]
+  },
+  {
+    "id": "SS-OP-136",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      123
+    ]
+  },
+  {
+    "id": "SS-OP-137",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      124
+    ]
+  },
+  {
+    "id": "SS-OP-138",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Step.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Step.lean:470",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      125
+    ]
+  },
+  {
+    "id": "SS-OP-139",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      126
+    ]
+  },
+  {
+    "id": "SS-OP-140",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      127
+    ]
+  },
+  {
+    "id": "SS-OP-141",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      128
+    ]
+  },
+  {
+    "id": "SS-OP-142",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      129
+    ]
+  },
+  {
+    "id": "SS-OP-143",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      130
+    ]
+  },
+  {
+    "id": "SS-OP-144",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      131
+    ]
+  },
+  {
+    "id": "SS-OP-145",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      132
+    ]
+  },
+  {
+    "id": "SS-OP-146",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      133
+    ]
+  },
+  {
+    "id": "SS-OP-147",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      134
+    ]
+  },
+  {
+    "id": "SS-OP-148",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      135
+    ]
+  },
+  {
+    "id": "SS-OP-149",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      136
+    ]
+  },
+  {
+    "id": "SS-OP-150",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      137
+    ]
+  },
+  {
+    "id": "SS-OP-151",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      138
+    ]
+  },
+  {
+    "id": "SS-OP-152",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      139
+    ]
+  },
+  {
+    "id": "SS-OP-153",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      140
+    ]
+  },
+  {
+    "id": "SS-OP-154",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      141
+    ]
+  },
+  {
+    "id": "SS-OP-155",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      142
+    ]
+  },
+  {
+    "id": "SS-OP-156",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      143
+    ]
+  },
+  {
+    "id": "SS-OP-157",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      144
+    ]
+  },
+  {
+    "id": "SS-OP-158",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      145
+    ]
+  },
+  {
+    "id": "SS-OP-159",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      146
+    ]
+  },
+  {
+    "id": "SS-OP-160",
+    "old": "OP-68",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ELAB:Reactivegas/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      147
+    ]
+  },
+  {
+    "id": "SS-OP-161",
+    "old": "OP-69",
+    "atoms": [
+      "MUT:Step.lean:apply:members-wipe"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Step.lean",
+    "before": "see atoms.json for MUT:Step.lean:apply:members-wipe",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      148
+    ]
+  },
+  {
+    "id": "SS-OP-162",
+    "old": "OP-69",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Step.lean",
+    "before": "see atoms.json for ELAB:Step.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      149
+    ]
+  },
+  {
+    "id": "SS-OP-163",
+    "old": "OP-69",
+    "atoms": [
+      "MUT:Step.lean:apply:members-wipe"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/TraceTests.lean",
+    "before": "see atoms.json for MUT:Step.lean:apply:members-wipe",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      150
+    ]
+  },
+  {
+    "id": "SS-OP-164",
+    "old": "OP-69L",
+    "atoms": [
+      "MUT:Step.lean:357:productionWellFormed-negation-drop"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Step.lean",
+    "before": "see atoms.json for MUT:Step.lean:357:productionWellFormed-negation-drop",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      151
+    ]
+  },
+  {
+    "id": "SS-OP-165",
+    "old": "OP-69L",
+    "atoms": [
+      "MUT:Step.lean:357:productionWellFormed-negation-drop"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:357:productionWellFormed-negation-drop",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      152
+    ]
+  },
+  {
+    "id": "SS-OP-166",
+    "old": "OP-70",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/TraceTests.lean",
+    "before": "see atoms.json for ELAB:TraceTests.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      153
+    ]
+  },
+  {
+    "id": "SS-OP-167",
+    "old": "OP-70",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/TraceTests.lean",
+    "before": "see atoms.json for ELAB:TraceTests.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      154
+    ]
+  },
+  {
+    "id": "SS-OP-168",
+    "old": "OP-70",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/TraceTests.lean",
+    "before": "see atoms.json for ELAB:TraceTests.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      155
+    ]
+  },
+  {
+    "id": "SS-OP-169",
+    "old": "OP-70",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/TraceTests.lean",
+    "before": "see atoms.json for ELAB:TraceTests.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      156
+    ]
+  },
+  {
+    "id": "SS-OP-170",
+    "old": "OP-70",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/TraceTests.lean",
+    "before": "see atoms.json for ELAB:TraceTests.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      157
+    ]
+  },
+  {
+    "id": "SS-OP-171",
+    "old": "OP-70",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/TraceTests.lean",
+    "before": "see atoms.json for ELAB:TraceTests.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      158
+    ]
+  },
+  {
+    "id": "SS-OP-172",
+    "old": "OP-70",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/TraceTests.lean",
+    "before": "see atoms.json for ELAB:TraceTests.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      159
+    ]
+  },
+  {
+    "id": "SS-OP-173",
+    "old": "OP-70",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/TraceTests.lean",
+    "before": "see atoms.json for ELAB:TraceTests.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      160
+    ]
+  },
+  {
+    "id": "SS-OP-174",
+    "old": "OP-70",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/TraceTests.lean",
+    "before": "see atoms.json for ELAB:TraceTests.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      161
+    ]
+  },
+  {
+    "id": "SS-OP-175",
+    "old": "OP-70",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/TraceTests.lean",
+    "before": "see atoms.json for ELAB:TraceTests.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      162
+    ]
+  },
+  {
+    "id": "SS-OP-176",
+    "old": "OP-70",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/TraceTests.lean",
+    "before": "see atoms.json for ELAB:TraceTests.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      163
+    ]
+  },
+  {
+    "id": "SS-OP-177",
+    "old": "OP-71",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Trace.lean",
+    "before": "see atoms.json for ELAB:Trace.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      164
+    ]
+  },
+  {
+    "id": "SS-OP-178",
+    "old": "OP-72",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Composition.lean",
+    "before": "see atoms.json for ELAB:Composition.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      165
+    ]
+  },
+  {
+    "id": "SS-OP-179",
+    "old": "OP-72",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Composition.lean",
+    "before": "see atoms.json for ELAB:Composition.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      166
+    ]
+  },
+  {
+    "id": "SS-OP-180",
+    "old": "OP-72",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Composition.lean",
+    "before": "see atoms.json for ELAB:Composition.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      167
+    ]
+  },
+  {
+    "id": "SS-OP-181",
+    "old": "OP-73",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for ACCEPT:full-tree-build",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      168
+    ]
+  },
+  {
+    "id": "SS-OP-182",
+    "old": "OP-74",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for ELAB:Vote/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      169
+    ]
+  },
+  {
+    "id": "SS-OP-183",
+    "old": "OP-OPEN",
+    "atoms": [
+      "SS-A-148"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for bounded-search:check-def",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      170
+    ]
+  },
+  {
+    "id": "SS-OP-184",
+    "old": "OP-OPEN",
+    "atoms": [
+      "SS-A-148"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for production-calls",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      170
+    ]
+  },
+  {
+    "id": "SS-OP-185",
+    "old": "OP-OPEN",
+    "atoms": [
+      "SS-A-135"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for bounded-search:check-def",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      171
+    ]
+  },
+  {
+    "id": "SS-OP-186",
+    "old": "OP-OPEN",
+    "atoms": [
+      "SS-A-135"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for production-calls",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      171
+    ]
+  },
+  {
+    "id": "SS-OP-187",
+    "old": "OP-OPEN",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for MUT:Step.lean:298-303:baseHook-sweep-post→pre",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      172
+    ]
+  },
+  {
+    "id": "SS-OP-188",
+    "old": "OP-OPEN",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:76:filter-pred→fun-true",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      172
+    ]
+  },
+  {
+    "id": "SS-OP-189",
+    "old": "OP-OPEN",
+    "atoms": [
+      "MUT:Step.lean:254-259:windUpAdmin-collections-kept"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for MUT:Step.lean:254-259:windUpAdmin-collections-kept",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      173
+    ]
+  },
+  {
+    "id": "SS-OP-190",
+    "old": "OP-OPEN",
+    "atoms": [
+      "MUT:Integration.lean:143:appFold-swap (OP-57/57B)"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for MUT:Integration.lean:143:appFold-swap (OP-57/57B)",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      173
+    ]
+  },
+  {
+    "id": "SS-OP-191",
+    "old": "OP-OPEN",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:298-303:baseHook-sweep-post→pre",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      174
+    ]
+  },
+  {
+    "id": "SS-OP-192",
+    "old": "OP-OPEN",
+    "atoms": [
+      "MUT:Step.lean:90-92:drop-members-foldl-distr (OP-23 atom)"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:90-92:drop-members-foldl-distr (OP-23 atom)",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      175
+    ]
+  },
+  {
+    "id": "SS-OP-193",
+    "old": "OP-OPEN",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for bounded-search:check-def",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      176
+    ]
+  },
+  {
+    "id": "SS-OP-194",
+    "old": "OP-OPEN",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for production-calls",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      176
+    ]
+  },
+  {
+    "id": "SS-OP-195",
+    "old": "OP-OPEN",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for MUT:Validate.lean:145:admin→True (OP-54)",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      177
+    ]
+  },
+  {
+    "id": "SS-OP-196",
+    "old": "OP-OPEN",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for :146:reserved→False (OP-55)",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      177
+    ]
+  },
+  {
+    "id": "SS-OP-197",
+    "old": "OP-OPEN",
+    "atoms": [
+      "inherits OPEN-EXTENTS-31#8 atoms via checkDirectAdmissionOnly conjunct"
+    ],
+    "costKind": "U-CHECK",
+    "sourceFile": "mirror of Reactivegas counterpart",
+    "before": "see atoms.json for inherits OPEN-EXTENTS-31#8 atoms via checkDirectAdmissionOnl",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      178
+    ]
+  },
+  {
+    "id": "SS-OP-198",
+    "old": "OP-OPEN",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Validate.lean:58:openQuestion-gate→ok (OP-49)",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      179
+    ]
+  },
+  {
+    "id": "SS-OP-199",
+    "old": "OP-OPEN",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Validate.lean:58:openQuestion-gate→ok (OP-49)",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      180
+    ]
+  },
+  {
+    "id": "SS-OP-200",
+    "old": "OP-OPEN",
+    "atoms": [
+      "SS-A-148"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for bounded-search:check-def",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      181
+    ]
+  },
+  {
+    "id": "SS-OP-201",
+    "old": "OP-OPEN",
+    "atoms": [
+      "SS-A-148"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for production-calls",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      181
+    ]
+  },
+  {
+    "id": "SS-OP-202",
+    "old": "OP-OPEN",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Integration.lean:210:app-branch:members→[] (OP-58B)",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      182
+    ]
+  },
+  {
+    "id": "SS-OP-203",
+    "old": "OP-OPEN",
+    "atoms": [
+      "SS-A-149"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for bounded-search:check-def",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      183
+    ]
+  },
+  {
+    "id": "SS-OP-204",
+    "old": "OP-OPEN",
+    "atoms": [
+      "SS-A-149"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for production-calls",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      183
+    ]
+  },
+  {
+    "id": "SS-OP-205",
+    "old": "OP-OPEN",
+    "atoms": [
+      "SS-A-135"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for bounded-search:check-def",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      184
+    ]
+  },
+  {
+    "id": "SS-OP-206",
+    "old": "OP-OPEN",
+    "atoms": [
+      "SS-A-135"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for production-calls",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      184
+    ]
+  },
+  {
+    "id": "SS-OP-207",
+    "old": "OP-OPEN",
+    "atoms": [
+      "MUT:Vote/Validate.lean:58 (OP-49)"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for MUT:Vote/Validate.lean:58 (OP-49)",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      185
+    ]
+  },
+  {
+    "id": "SS-OP-208",
+    "old": "OP-OPEN",
+    "atoms": [
+      "MUT:Validate.lean:145 (OP-54)"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for MUT:Validate.lean:145 (OP-54)",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      185
+    ]
+  },
+  {
+    "id": "SS-OP-209",
+    "old": "OP-OPEN",
+    "atoms": [
+      "MUT:Step.lean:298-303 (OP-63)"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for MUT:Step.lean:298-303 (OP-63)",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      186
+    ]
+  },
+  {
+    "id": "SS-OP-210",
+    "old": "OP-OPEN",
+    "atoms": [
+      "MUT:Vote/Fold.lean:76 (OP-40)"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:76 (OP-40)",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      186
+    ]
+  },
+  {
+    "id": "SS-OP-211",
+    "old": "OP-OPEN",
+    "atoms": [
+      "MUT:Step.lean:298-303 (OP-63)"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for MUT:Step.lean:298-303 (OP-63)",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      187
+    ]
+  },
+  {
+    "id": "SS-OP-212",
+    "old": "OP-OPEN",
+    "atoms": [
+      "MUT:Vote/Fold.lean:76 (OP-40)"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:76 (OP-40)",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      187
+    ]
+  },
+  {
+    "id": "SS-OP-213",
+    "old": "OP-OPEN",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:76:filter-pred→fun-true (OP-40)",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      188
+    ]
+  },
+  {
+    "id": "SS-OP-214",
+    "old": "OP-OPEN",
+    "atoms": [
+      "MUT:Vote/Fold.lean:76 (OP-40) via checkI57PolicyFree conjunct"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:76 (OP-40) via checkI57PolicyFree conjunc",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      189
+    ]
+  },
+  {
+    "id": "SS-OP-215",
+    "old": "OP-OPEN",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for bounded-search:check-def",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      190
+    ]
+  },
+  {
+    "id": "SS-OP-216",
+    "old": "OP-OPEN",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for production-calls",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      190
+    ]
+  },
+  {
+    "id": "SS-OP-217",
+    "old": "OP-OPEN",
+    "atoms": [
+      "MUT:Step.lean:298-303 (OP-63) via checkBaseRecomputeReachable conjunct"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Step.lean:298-303 (OP-63) via checkBaseRecomputeReachabl",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      191
+    ]
+  },
+  {
+    "id": "SS-OP-218",
+    "old": "OP-OPEN",
+    "atoms": [
+      "SS-A-150"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for bounded-search:check-def",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      192
+    ]
+  },
+  {
+    "id": "SS-OP-219",
+    "old": "OP-OPEN",
+    "atoms": [
+      "SS-A-150"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for production-calls",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      192
+    ]
+  },
+  {
+    "id": "SS-OP-220",
+    "old": "OP-OPEN",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "Reactivegas/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:76:filter-pred→fun-true (OP-40)",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      193
+    ]
+  },
+  {
+    "id": "SS-OP-221",
+    "old": "OP-OPEN",
+    "atoms": [
+      "SS-A-135"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for bounded-search:check-def",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      194
+    ]
+  },
+  {
+    "id": "SS-OP-222",
+    "old": "OP-OPEN",
+    "atoms": [
+      "SS-A-135"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for production-calls",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      194
+    ]
+  },
+  {
+    "id": "SS-OP-223",
+    "old": "OP-OPEN",
+    "atoms": [
+      "SS-A-146"
+    ],
+    "costKind": "U-CHECK",
+    "sourceFile": "mirror of Reactivegas counterpart",
+    "before": "see atoms.json for inherits line-175 atom (mirror)",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      195
+    ]
+  },
+  {
+    "id": "SS-OP-224",
+    "old": "OP-OPEN",
+    "atoms": [
+      "SS-A-136"
+    ],
+    "costKind": "U-CHECK",
+    "sourceFile": "mirror of Reactivegas counterpart",
+    "before": "see atoms.json for inherits line-172 atoms (mirror)",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      196
+    ]
+  },
+  {
+    "id": "SS-OP-225",
+    "old": "OP-OPEN",
+    "atoms": [
+      "SS-A-146"
+    ],
+    "costKind": "U-CHECK",
+    "sourceFile": "mirror of Reactivegas counterpart",
+    "before": "see atoms.json for inherits line-173 atoms (mirror)",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      197
+    ]
+  },
+  {
+    "id": "SS-OP-226",
+    "old": "OP-OPEN",
+    "atoms": [
+      "SS-A-111"
+    ],
+    "costKind": "U-CHECK",
+    "sourceFile": "mirror of Reactivegas counterpart",
+    "before": "see atoms.json for inherits line-174 atom (mirror)",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      198
+    ]
+  },
+  {
+    "id": "SS-OP-227",
+    "old": "OP-OPEN",
+    "atoms": [
+      "SS-A-150"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for bounded-search:check-def",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      199
+    ]
+  },
+  {
+    "id": "SS-OP-228",
+    "old": "OP-OPEN",
+    "atoms": [
+      "SS-A-150"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "see atoms.json split",
+    "before": "see atoms.json for production-calls",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      199
+    ]
+  },
+  {
+    "id": "SS-OP-229",
+    "old": "OP-OPEN",
+    "atoms": [
+      "SS-A-151"
+    ],
+    "costKind": "U-CHECK",
+    "sourceFile": "mirror of Reactivegas counterpart",
+    "before": "see atoms.json for inherits line-193 atom (mirror)",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      200
+    ]
+  },
+  {
+    "id": "SS-OP-230",
+    "old": "OP-42K",
+    "atoms": [
+      "MUT:Vote/Fold.lean:77:closed-append-drop"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "KelGroups/Vote/Invariants.lean",
+    "before": "see atoms.json for MUT:Vote/Fold.lean:77:closed-append-drop",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      201
+    ]
+  },
+  {
+    "id": "SS-OP-231",
+    "old": "OP-66",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for ELAB:KelGroups/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      202
+    ]
+  },
+  {
+    "id": "SS-OP-232",
+    "old": "OP-66",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for ELAB:KelGroups/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      203
+    ]
+  },
+  {
+    "id": "SS-OP-233",
+    "old": "OP-66",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for ELAB:KelGroups/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      204
+    ]
+  },
+  {
+    "id": "SS-OP-234",
+    "old": "OP-66",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for ELAB:KelGroups/Invariants.lean",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      205
+    ]
+  },
+  {
+    "id": "SS-OP-235",
+    "old": "OP-56",
+    "atoms": [],
+    "costKind": "NO-EXECUTION",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Validate.lean:147:if-isMember→if-False",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      206
+    ]
+  },
+  {
+    "id": "SS-OP-236",
+    "old": "OP-58",
+    "atoms": [
+      "MUT:Integration.lean:154 (same)"
+    ],
+    "costKind": "U-CHAIN",
+    "sourceFile": "KelGroups/Invariants.lean",
+    "before": "see atoms.json for MUT:Integration.lean:154 (same)",
+    "after": "single-atom edit; exact literal in atoms.json; no wrong/some(admit)/ellipsis/placeholder",
+    "observation": "scratch lake build with theorem-SPAN binding (never header line) + Built vs Replayed distinction; see measurement-operations.json",
+    "rows": [
+      207
+    ]
+  }
+]

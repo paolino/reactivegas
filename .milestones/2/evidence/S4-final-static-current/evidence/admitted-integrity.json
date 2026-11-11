@@ -1,0 +1,108 @@
+{
+  "manifest": "MANIFEST.sha256",
+  "sha256": "faa5c2ce6500dd5e03a998edf0ff1880c162b9b8d8b550f265e7fe8c19cb8c8f",
+  "count": 20,
+  "selfEntry": false,
+  "entries": [
+    {
+      "path": "AMENDMENT-NOTE-001-reconciliation-v2.md",
+      "sha256": "72a47113a7214e5a956c3808638621dc1d66881d62b59f68cea838efcbfd2f67",
+      "bytes": 3294
+    },
+    {
+      "path": "AMENDMENT-NOTE-002.md",
+      "sha256": "2cd32f053d7c7b7f0d4ea2d1cb05b28277d6f09e5f7954b7ece241bd91a44ae9",
+      "bytes": 3922
+    },
+    {
+      "path": "AMENDMENT-NOTE-004-landed-base.md",
+      "sha256": "7b57b4e818ee40dda98b3fdff59b91bff9b8b026b40b4f1b69a8b12ab1e2989b",
+      "bytes": 2634
+    },
+    {
+      "path": "BUDGET-SUPPLEMENT-v2-CURRENT.md",
+      "sha256": "76421d592c56c2a4afd1b3d679040e8398213b1699a9c801056171521d69c55a",
+      "bytes": 2111
+    },
+    {
+      "path": "COMMENT-ONLY-DIFF-94bb7bb-to-04eb6c7d.patch",
+      "sha256": "e168b89eabc8dc784943345bb147112db4db14aa3ba22532ffaab79acb0fd14d",
+      "bytes": 2075
+    },
+    {
+      "path": "COMMISSIONING-SUPPLEMENT-AUTHORITATIVE.md",
+      "sha256": "ba4c073af152353ce58cc778c41e8fa1e688fa92eae6ccdfd7064bbde7478dfc",
+      "bytes": 3889
+    },
+    {
+      "path": "INSTRUMENT-v1-SUPERSEDED.md",
+      "sha256": "44c48239d9b62ef7ec896d7fe4964159c4b23f117865c8f9dd4bd3ebeae29501",
+      "bytes": 5618
+    },
+    {
+      "path": "INSTRUMENT-v2-OPERATIVE.md",
+      "sha256": "2214ff8a0d25f47afded7b7215e9873b5a237d97caea55eb72b1d8f884c5ca4f",
+      "bytes": 5517
+    },
+    {
+      "path": "ISSUE-66-BODY-READBACK.md",
+      "sha256": "ccefcd92395e087ae342a44d2774e3f7a42e6039b0bcabf04059d2bdf9bb2c8d",
+      "bytes": 3630
+    },
+    {
+      "path": "ONWARD-DISCOVERIES.md",
+      "sha256": "3feec59e4223c46a5d03442d48e435d944b998fe4c8ed852417203c74b9f4789",
+      "bytes": 1769
+    },
+    {
+      "path": "PRIOR-FULL-AUDIT-REPORT.md",
+      "sha256": "874727c2e0632d525ac04d8d70f2ad42bbbda5df57a6c4221bba9d582de9ffde",
+      "bytes": 17983
+    },
+    {
+      "path": "QUALITY-S4B-TWO-COMMAND-GAP-GRANTED-20260905.md",
+      "sha256": "94bd00f60a4a43400fcaf7aa867e478f2cbac37e31b32f7c918e3aaf07fcddbc",
+      "bytes": 2693
+    },
+    {
+      "path": "RULING-ONWARD-AND-CEILING-EXCEPTION.md",
+      "sha256": "b9e8c4673075b87de15e8ce06fd04e28579b05281fbb016051043c62f195ba30",
+      "bytes": 2728
+    },
+    {
+      "path": "RULING-RG-S4-REACH-20260906.md",
+      "sha256": "a2e5d8a361816b6b3764804f54068634f46981082889c61502f203835bed3c1f",
+      "bytes": 4500
+    },
+    {
+      "path": "S4B-ACCEPTANCE-INSTRUMENT-v3.1-AMENDMENT.md",
+      "sha256": "7a97afa9964b61b7535f1af2bf8a67feea81c73134b1755eb46843e8aa86cd30",
+      "bytes": 4969
+    },
+    {
+      "path": "S4B-ACCEPTANCE-INSTRUMENT-v3-AMENDMENT.md",
+      "sha256": "c869e7820be6d106e767e84fbd4b24404233cb9d91bb62285ec81c55977748a7",
+      "bytes": 5068
+    },
+    {
+      "path": "S4B-COMMAND-SHEET-AMENDMENT-2-frozen.md",
+      "sha256": "3fb32dbbbf4898d4850e38d7f04c4309d027602bf8ac018d6fb15f21295e7c79",
+      "bytes": 12779
+    },
+    {
+      "path": "S4-CLASSIFICATION.md",
+      "sha256": "e8760dabce1a6f0a429ff7a487ecf512dc7b15ddf38af18a2f2da07f7a1192f1",
+      "bytes": 11657
+    },
+    {
+      "path": "S4-CONTRACT-ORIGINAL-REQUIREMENTS.md",
+      "sha256": "f872255f8fffe24f5b7ab360dbac50dda692b3887ab846703637fe2c696e4d87",
+      "bytes": 8095
+    },
+    {
+      "path": "UNCOVERED-OBLIGATIONS.md",
+      "sha256": "bfb048bcdac8d3ff67d4382cf89d125d1bbf2b308550166033e33f587ff5bb67",
+      "bytes": 1090
+    }
+  ]
+}
