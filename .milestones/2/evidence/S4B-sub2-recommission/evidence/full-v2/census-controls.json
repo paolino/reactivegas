@@ -1,0 +1,24 @@
+{
+  "id": "census-controls",
+  "argv": [
+    "timeout",
+    "300s",
+    "node",
+    "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/data-checks.mjs",
+    "census-controls"
+  ],
+  "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2",
+  "charge": "targeted",
+  "launched": true,
+  "start": "2026-09-06T05:09:13.648Z",
+  "spend": {
+    "substantive": 2,
+    "targeted": 3
+  },
+  "obligation": "R7 own census completeness failure controls",
+  "finish": "2026-09-06T05:09:15.615Z",
+  "exit": 0,
+  "signal": null,
+  "stdoutSha256": "b56bac301732d234543d0edfc62f8ad22aade7d06c6f006fe90a4dd2f9fb086a",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

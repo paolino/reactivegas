@@ -1,0 +1,28 @@
+4d34269066f801a166f837b971971105a0cbadb3033901ecd26a30263a92f7a1  /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/S2-SH-P07neg.log
+c9442f4aa1940e976e32cc33cac9a2fba7d1c0f6ce1a86d87d40d0ac8a4ddf68  /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/S2-SH-P07neg-retry.log
+b6e9a62f6836fa2a61e6c0d5e237c62cb6d02e479b5b745b145140452c173f3f  /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/S2-O1retry2-ba623667-RED.log
+3c325a7bbd93cba05778648dddc0701b0f59522a4f3eba5c1bbce3228e384fca  /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/S2-O6.log
+3117 /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/S2-O6.log
+31-  let mut oldFound : Array String := #[]
+32-  let mut newFound : Array String := #[]
+33:  let mut sortUndecided : Array String := #[]
+34-  let mut belowExcluded : Array String := #[]
+35-  let mut kindCounts : Array (String × Nat) :=
+--
+92-            kindCounts := kindCounts.map (fun p => if p.1 == kindTag ++ "-nonpred" then (p.1, p.2 + 1) else p)
+93-        | none =>
+94:            sortUndecided := sortUndecided.push s!"{home} :: {toString n} :: {kindTag}"
+95-    | .thmInfo _ =>
+96-        kindCounts := kindCounts.map (fun p => if p.1 == "thm-excluded" then (p.1, p.2 + 1) else p)
+--
+107-  let get := fun (t : String) => (kindCounts.find? (fun p => p.1 == t)).map (·.2) |>.getD 0
+108-  for p in kindCounts do logInfo m!"S2-CENSUS {p.1}={p.2}"
+109:  for sk in sortUndecided do logInfo m!"S2-CENSUS-SORT-UNDECIDED {sk}"
+110-  for b in belowExcluded do logInfo m!"S2-CENSUS-BELOW-EXCLUDED {b}"
+111-  let oldSorted := oldFound.qsort (· < ·)
+--
+122-  if get "opaque-pred" != 0 then fail m!"S2-CENSUS-OPAQUE-PRED-NONZERO (clean-tree baseline for this exact tree)"
+123-  if get "thm-excluded" == 0 then fail m!"S2-CENSUS-THM-EXCLUDED-ZERO (sanity: theorems exist)"
+124:  if !sortUndecided.isEmpty then fail m!"S2-CENSUS-SORT-UNDECIDED-NONZERO (sort-elaboration failures are not a classification)"
+125-  let failed ← failedRef.get
+126-  if failed then fail m!"S2-CENSUS-FAILED"

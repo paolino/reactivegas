@@ -1,0 +1,3 @@
+Preparing worktree (detached HEAD bb3ac41)
+FALSIFY-OK surface-bypass reason=authorization-boundary-missing-constructor
+/tmp/reactivegas/ms2/e43/t57-owner-codex/gate/verify-negative-controls.sh: line 8: name: unbound variable

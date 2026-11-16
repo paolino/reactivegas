@@ -1,0 +1,22 @@
+[
+  {
+    "id": "P01",
+    "file": "KelGroups/Types.lean",
+    "rawMutant": "6032217c88ed1e09e73650e9ad12abd61e724bccb724cee63ceb9af11f0bf693",
+    "restoredSource": "971a2a2ee774c3af63270e8f0bb8f1d5346f1da5c97f5faea1856dbe460acd07",
+    "originalExpected": "971a2a2ee774c3af63270e8f0bb8f1d5346f1da5c97f5faea1856dbe460acd07",
+    "mutantOlean": "3dd567e1d13d6294589c36bed4a3f2e16674e2b5193b50b528dc2f7d8d7e5f11",
+    "restoredOlean": "3fd0e27ecdeb082c1394c77c6c6f975dba9f95be81ca0ef5411a3ff2963c4f3c",
+    "time": "2026-09-05T22:48:48.670Z"
+  },
+  {
+    "id": "P07",
+    "file": "Reactivegas/Step.lean",
+    "rawMutant": "c4a65fba86e15aae49e064594bfe1efb55d7db7f13aa7d1ffa6b8b699e84fc48",
+    "restoredSource": "f498490c0a3eca78692d51119d6298115c456f79ce3526bf9210892a658f46fb",
+    "originalExpected": "f498490c0a3eca78692d51119d6298115c456f79ce3526bf9210892a658f46fb",
+    "mutantOlean": "1cdee02762a50796d8c1a5c36d02aa413bef7679bbc188e8be30783594017ade",
+    "restoredOlean": "c3a0e0efe2978d24ba315b0f4ad5f0ea887f96067b77d331dc2ecdcb38407a58",
+    "time": "2026-09-05T22:48:48.675Z"
+  }
+]

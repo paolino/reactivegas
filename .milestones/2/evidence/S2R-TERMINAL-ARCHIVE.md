@@ -1,0 +1,3 @@
+# S2R terminal evidence archive
+
+recovery-candidates/s2r-audit-terminal-714cb2a.tar.gz contains264 explicitly selected manifest-bound files, the terminal journal and brief. SHA256293edbef1a6a1042e7e6b2276eef213f0a53dbc1010887ea95a8295a5ca92db0. Extract in a separate runtime directory and verify handoffs/FINAL.sha256, EVIDENCE.sha256, AUTHORITY.sha256 and INSTRUMENTS.sha256 from that root. Fixture Git metadata stays inside the archive; compiled caches are excluded. Preserved instrument links may require restoring the recorded worktree/toolchain paths; this archive is evidence recovery, not a standalone toolchain or whole-host backup.

@@ -1,0 +1,17 @@
+Loaded package environment from /code/kelgroups-audit-ab25cd1/dist-newstyle/tmp/environment.-3065154/.ghc.environment.x86_64-linux-9.8.4
+[1 of 2] Compiling S28DemoApp       ( test/S28DemoApp.hs, nothing )
+[2 of 2] Compiling TypeNegative     ( /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/TypeEvent.hs, nothing )
+
+/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/TypeEvent.hs:6:97: error: [GHC-83865]
+    • Couldn't match expected type ‘DemoEvent’
+                  with actual type ‘DemoState’
+    • In the first argument of ‘E.IEApp’, namely ‘(DemoState 0 [])’
+      In the fourth argument of ‘F.applyIntegratedEvent’, namely
+        ‘(E.IEApp (DemoState 0 []))’
+      In the expression:
+        F.applyIntegratedEvent
+          demoIntegration foundingDemo "admin-key-1"
+          (E.IEApp (DemoState 0 []))
+  |
+6 | eventOnlyMismatch = F.applyIntegratedEvent demoIntegration foundingDemo "admin-key-1" (E.IEApp (DemoState 0 []))
+  |                                                                                                 ^^^^^^^^^^^^^^

@@ -1,0 +1,54 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["fbccdd9afb5f25e6.olean"],
+  "i": "085aac4cfb149436.ilean",
+  "c": "9017f0f9f5c89840.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/code/reactivegas-66-s4/lean/.lake/build/lib/lean /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean /code/reactivegas-66-s4/lean/Reactivegas/Invariants.lean -o /code/reactivegas-66-s4/lean/.lake/build/lib/lean/Reactivegas/Invariants.olean -i /code/reactivegas-66-s4/lean/.lake/build/lib/lean/Reactivegas/Invariants.ilean -c /code/reactivegas-66-s4/lean/.lake/build/ir/Reactivegas/Invariants.c --setup /code/reactivegas-66-s4/lean/.lake/build/ir/Reactivegas/Invariants.setup.json --json",
+   "level": "trace"},
+  {"message":
+   "Reactivegas/Invariants.lean:1639:0: 'Reactivegas.base_change_recomputes_votes' depends on axioms: [propext]",
+   "level": "info"},
+  {"message":
+   "Reactivegas/Invariants.lean:1640:0: 'Reactivegas.base_departure_applies_cleanup' depends on axioms: [propext]",
+   "level": "info"},
+  {"message":
+   "Reactivegas/Invariants.lean:1641:0: 'Reactivegas.base_change_can_close_without_ballot' depends on axioms: [propext]",
+   "level": "info"},
+  {"message":
+   "Reactivegas/Invariants.lean:2343:0: 'Reactivegas.checkIntegratedTheoremWitness' depends on axioms: [propext]",
+   "level": "info"},
+  {"message":
+   "Reactivegas/Invariants.lean:2344:0: 'Reactivegas.checkCanonicalEconomy' depends on axioms: [propext]",
+   "level": "info"},
+  {"message":
+   "Reactivegas/Invariants.lean:2345:0: 'Reactivegas.checkI57Boundary' depends on axioms: [propext]",
+   "level": "info"}],
+ "inputs":
+ [["Reactivegas.Invariants:deps",
+   [["deps",
+     [["reactivegas/Reactivegas:extraDep",
+       [["@reactivegas:extraDep", "00000000000006bb"]]],
+      ["imports",
+       [["Reactivegas.Predicates transitive imports (legacy)",
+         "7836f6de0d05adaa"],
+        ["Reactivegas.Predicates:importAllArts", "95999be7fce14408"],
+        ["KelGroups.Invariants transitive imports (legacy)",
+         "44f9ea656e170397"],
+        ["KelGroups.Invariants:importAllArts", "3834d9d40328e0b3"],
+        ["KelGroups.Vote.Invariants transitive imports (legacy)",
+         "798db20eb6368797"],
+        ["KelGroups.Vote.Invariants:importAllArts", "aa2442d6d9a32301"]]]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.25.0, commit v4.25.0", "9c3a3ade3a41d5d0"],
+  ["/code/reactivegas-66-s4/lean/Reactivegas/Invariants.lean",
+   "a51fc5428a32f8d7"],
+  ["options", [["-DautoImplicit=false", "4a85acb881fd49d0"]]],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "0e5c22f227a1c896"}

@@ -1,0 +1,21 @@
+diff --git a/lib/KelGroups/Fold.hs b/lib/KelGroups/Fold.hs
+index d76219e..e819c36 100644
+--- a/lib/KelGroups/Fold.hs
++++ b/lib/KelGroups/Fold.hs
+@@ -59,7 +59,6 @@ import KelGroups.Types
+     , Member (..)
+     , ProposalId
+     , Role
+-    , isMemberInView
+     )
+ import KelGroups.Validate
+     ( ValidationError (..)
+@@ -440,7 +439,7 @@ applyIntegratedEvent integration gs signer event = case event of
+                                 proposalId
+     Evt.IEApp appEvent ->
+         let view = groupView gs
+-        in  if isMemberInView signer view
++        in  if True
+                 then case intAppFold integration signer view view (appFold gs) appEvent of
+                     Right appState ->
+                         Right

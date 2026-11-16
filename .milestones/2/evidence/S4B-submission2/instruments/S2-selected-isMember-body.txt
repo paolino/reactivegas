@@ -1,0 +1,5 @@
+
+/-- Is `key` a current member of the canonical relation? -/
+def isMember (key : Key) (view : GroupView) : Bool :=
+  (lookupMember key view).isSome
+

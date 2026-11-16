@@ -1,0 +1,6 @@
+
+S28-1 rejecting step before append
+  concurrent appends conserve every committed transition [✔]
+
+Finished in 0.0275 seconds
+1 example, 0 failures

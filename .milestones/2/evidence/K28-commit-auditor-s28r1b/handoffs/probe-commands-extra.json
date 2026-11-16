@@ -1,0 +1,39 @@
+[
+  {
+    "id": "TypeNegative",
+    "argv": [
+      "nix",
+      "develop",
+      ".#ci",
+      "--quiet",
+      "-c",
+      "cabal",
+      "exec",
+      "-O0",
+      "--",
+      "ghc",
+      "--make",
+      "-O0",
+      "-threaded",
+      "-XGHC2021",
+      "-XOverloadedStrings",
+      "-XDerivingStrategies",
+      "-XLambdaCase",
+      "-XStrictData",
+      "-package",
+      "kelgroups",
+      "-itest",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/TypeNegative.hs",
+      "-odir",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/type-negative",
+      "-hidir",
+      "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/build/type-negative",
+      "-fno-code"
+    ],
+    "charge": {
+      "builds": 0,
+      "targeted": 1
+    },
+    "expectedExit": 1
+  }
+]

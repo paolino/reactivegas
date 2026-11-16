@@ -1,0 +1,29 @@
+{
+  "id": "S01",
+  "argv": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=30s",
+    "1800s",
+    "nix",
+    "develop",
+    "--quiet",
+    "-c",
+    "just",
+    "lean"
+  ],
+  "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S01",
+  "charge": "substantive",
+  "launched": true,
+  "start": "2026-09-06T05:05:29.987Z",
+  "spend": {
+    "substantive": 2,
+    "targeted": 2
+  },
+  "obligation": "C1 clean mandatory just lean",
+  "finish": "2026-09-06T05:06:38.507Z",
+  "exit": 0,
+  "signal": null,
+  "stdoutSha256": "000b692bcf0b3a879d4c46f638cb3bbcf4fa7594fccc06567a91cbd1cd698bcc",
+  "stderrSha256": "83165b5edc2127ddecfaf8bcb9b90efa7d7b79b8390155d8afeb53782160c2c1"
+}

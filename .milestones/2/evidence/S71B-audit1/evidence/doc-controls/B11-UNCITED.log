@@ -1,0 +1,59 @@
+== leg 0: tracked hygiene + base + source-blob freshness ==
+== leg 1: prerequisites fail-closed ==
+prereqs present at pin 4a6cd87fcbc3e4a536bbc9f240f5efe5704022af
+== leg 2: State mapping ==
+state green
+== leg 3: Event count 14 ==
+discovered Event constructors: 14
+event green
+== leg 4: step signature with GroupView ==
+step green
+== leg 5: Route 11 direct + 0 baseEnacted + 3 appDecided ==
+route green
+== leg 6: L1 deleted transition + canCloseGroup classification ==
+canCloseGroup source usages (discovered extent): 1
+close green
+== leg 7: law-vs-finite-witness distinction (heading + dotted marker + caveat) ==
+witness green
+== leg 8: unimplemented composition + vote-lifecycle limits + theta sentence ==
+composition green
+== leg 9: Voci non-goal (21, pair, open question, stale-twenty RED) ==
+voci green
+== leg 10: dated operator authority + honesty + pending anchors ==
+authority green
+== leg 11: citation resolver over the discovered qualified extent ==
+-- resolver on shipped docs --
+discovered markers: 117; discovered declarations: 805
+citation resolution green
+-- control C1 malformed (must RED malformed) --
+C1 green (CITE-RED: malformed marker lean:!!bogus)
+-- control C2 unknown (must RED resolves nowhere) --
+C2 green (CITE-RED: marker lean:NoSuchDeclXYZ resolves nowhere in discovered extent)
+-- control C3 zero markers, SM alone (must RED zero) --
+C3 green (CITE-RED: zero lean: markers in docs (nonzero extent required))
+-- control C4 canCloseGroup marker DELETED, rest remain (must RED required anchor) --
+C4 green (CITE-RED: required anchor canCloseGroup (R71-12) cited nowhere in docs (removal fails))
+-- control C5 ambiguity fires on a real second declaration (must RED ambiguous) --
+C5 green (CITE-RED: marker lean:SameName is ambiguous (Q1.SameName Q2.SameName ) — file-qualify it)
+C5b green (qualified resolves; required-presence proven by C4, not waived)
+-- control C6 missing Lean (must RED fail-closed) --
+C6 green (CITE-RED: lean dir /nonexistent-lean-dir-71 absent (fail-closed))
+-- control C7 cross-section: claim-site citation moved away (must RED section) --
+C7 green (CITE-RED: required anchor canCloseGroup (R71-12) cited outside its claim section ## Group closure: classificat)
+-- control C8 wrong file location (must RED file/pin/symbol/line) --
+C8 green (wrong-file REDs, right-file GREENs)
+-- control C9 wrong line (must RED file/pin/symbol/line) --
+C9 green (wrong-line REDs; right-line proven by C8 positive)
+-- SYNTH: table-generated compliant docset must GREEN the resolver --
+SYNTH green (table satisfiable; SYNTH GREEN is not document correctness)
+-- control C4m removal on SYNTH (must RED required anchor) --
+C4m green (CITE-RED: required anchor canCloseGroup (R71-12) cited nowhere in docs (removal fails))
+-- control C7m cross-section on SYNTH (must RED section) --
+C7m green (CITE-RED: required anchor canCloseGroup (R71-12) cited outside its claim section ## Group closure: classificat)
+== leg 12: full local CI (budgeted) ==
+leg 12 skipped (SKIP_CI control-only run)
+== replays: auditor-exact mutants must RED the intended leg (SKIP_CI, DOC override) ==
+== leg 13: claim inventory + added-uncited + tables + fence signatures ==
+UNCITED file=/tmp/reactivegas/ms2/t71-design-record/audit-b1/evidence/doc-controls/B11-UNCITED.md lines=538-538 block=An additional `bal` claim without a citation. span=bal
+claims scanned: blocks=231 cited=38 uncited=1
+CLAIM-RED: added-uncited declaration-like claims (first above; cite in-block, never delete the claim)

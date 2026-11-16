@@ -1,0 +1,7 @@
+warning: Git tree '/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S06' is dirty
+check-reactivegas-inversion-coverage: sources tracked=29 walked=29
+check-reactivegas-inversion-coverage: sources tracked=29 walked=29
+check-lean-axioms: sources tracked=29 walked=29
+grep: lean/.lake/s4b-mirror-receipt: No such file or directory
+MIRROR-RECEIPT-ABSENT: checker did not operate
+error: Recipe `lean` failed with exit code 1

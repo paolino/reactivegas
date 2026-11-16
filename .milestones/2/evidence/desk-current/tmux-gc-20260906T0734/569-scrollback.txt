@@ -1,0 +1,490 @@
+Exact argv are in probe-commands.json; frozen sources/runner hashes are in
+evidence/probe-inputs.json. Invocation: node handoffs/run-audit.cjs <ID>,
+from /code/kelgroups-audit-ab25cd1. No invocation has executed yet.
+| Obligation | Exact IDs / cases | Charges |
+|---|---|---|
+| Frozen gate | gate executes unchanged ./gate.sh: leg3 just build; leg4 cabal test all -O0 --test-show-details=direct; M1 cabal build all --enable-tests -O0; M4 cabal build all -O0; M2/M3/M5/
+M6/M7/M8 cabal test all -O0 --test-show-details=direct; leg6 just ci. All via nix develop .#ci --quiet -c. | 11B |
+| R1 | R1-compile/R1-run: actual open/founding, direct admission, proposal/approval role change; exact views/payload/state from concrete member relations; exact nonmember refusal and byte
+conservation. Seed counter 17, hook increment 23 distinguish new fixture from retained predecessor source. | 2P |
+| R3 | R3-compile/R3-run: recording hook exact views/payload/error, success and refusal real reopen, exact state/count/row restoration. | 2P |
+| R5 | R5-compile/R5-run: integrated direct/mutation/approval validators; hand-computed states after admission/propose/duplicate-refusal/approve-enact/app-add; foldIntegratedFrom over founding
+at every prefix; exact persisted events and real reopen. | 2P |
+| MAJORITY | MAJ-compile/MAJ-run: admin franchise grows 3→5 mid-vote; two votes pending, three enact removal; exact final state. | 2P |
+| P2'' | P2-compile, P2-conservation, P2-codec, P2-lock. One narrow compile includes candidate API and explicit skew seed body. Eight specified value pairs, fixed 20 repetitions each on seed
+then candidate, same instrument/domain. Seed moves state/count/decision pre-lock; SQL and TVar effects unchanged. External start gate precedes both calls; codec only increments observation
+TVar and emits identical JSON, never waits or delays. Semantic seed mismatch required, timeout/exception NOT a kill. Faulting accepted/refused exact tuples; real SQL abort and subsequent
+append. | 4P |
+| F2 | P3/P4 compile candidate/shadow, P5 shadow absent-insertion witness RED, P6 candidate witness GREEN, P7 shipped nine-example direct-only group on shadow RED. One-expression mutation
+freshly generated from final Fold source. | 5P |
+| TYP' | TYP-Event and TYP-Historical: separate compiler-negative files, first keeps proposal type correct and varies only event; second rejects DemoEvent at historical DemoState boundary. |
+2P |
+| HIST-FOLD | leg4 historical suites + complete base→FINAL historical-body diff; beyond suites UNJUDGED. | included |
+| CESR | leg4 actual key suites; decoder-domain beyond suites UNJUDGED. | included |
+| APPFOLD-SHAPE | leg3/4 compile and alias/caller review; semantics beyond tests UNJUDGED. | included |
+| STORE-STM | P2'' + M6; finite schedules, no all-interleavings claim. | included |
+Total 11/12 builds + 19/24 targeted. Remaining 1B/5P usable only after
+mandatory floor, for relevant independent work; no outside-cap permission.
+Every attempt is charged, including setup failure. Unmet mandatory floor
+returns a named blocker; it is not silently waived. Concrete source exists
+for every row: fit confirmed as PLAN, never execution/coverage success.
+Prior TraceProbe/Row4Probe/runner are retained instrument source inputs,
+reviewed and revised under this fresh root; no predecessor binary, process,
+context, verdict or ledger reused. The new P2 instrument and its skew seed
+are authored here. Candidate tracked files stay unchanged except the exact
+gate-authorized leg5 transient edits and hash-verified restores. Gate fixed
+/tmp staging names must be absent and exclusively reserved before launch.
+EOF
+/code/llm-settings/shared/skills/worker-protocol/scripts/status-event /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/STATUS.md START 'commit-auditor-s28r2
+worker=commit-auditor-s28r2 mode=COMMIT-AUDITOR pane=%569 window=reactivegas:12 kelgroups @157 pid=3019780 cli=codex model=gpt-6-astra effort=high owner_cli=muse owner_pane=%545
+ticket_owner_pane=%534 alternate=true authorization=NOTE-033/043 explicit-Codex fresh-root-context-process submission=S28-R2 scope=FULL base=368b596fef0b6d393c2ac7afc631d236c55d86d1
+candidate=ab25cd11b554bcd5ba64ca56a050c2eb21432d3c tree=e52114c1f7a676073303ff76caa8f22821e0b2a3 detached-clean=true gate-full=c00b88a29989b11d09696d7afa164f7d9f93b59aee661a1b88a120c7a4934b75
+gate-normalized=12f392b6fe691230269a70bf9588fa4c25f71330639d0b6a464ceb8c532d67b0 mandate=f97e0c55bb0462cbf1698486341e142dfd5fe5e3b94bab7020b76032e9952e74 fit=CONFIRMED-PLAN handoffs/COMMAND-
+FIT.md exact-argv=handoffs/probe-commands.json envelope=11B floor=19P ledgers=0/12+0/24 previous-ledgers-preserved all-three-terminal-records-read owner-evidence-only AUDIT-S28R2'
+sha256sum /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/COMMAND-FIT.md /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/
+handoffs/evidence/probe-inputs.json
+node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/run-audit.cjs gate
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• The fresh suite passed: 135 kelgroups examples and 91 keri-hs examples, including all 31 registered S28 checks. M1 produced the expected coupled type error, and M2 failed a registered
+  refusal check. The suite also printed STM background-exception messages that appear in the retained accepted-base log; I’ll preserve that limit in the report.
+
+• Ran cat /home/paolino/.codex/skills/leanness/SKILL.md
+  │ sed -n '100,245p' /home/paolino/.codex/skills/invariants/SKILL.md
+  │ sed -n '110,190p' /home/paolino/.codex/skills/haskell/SKILL.md
+  │ … +1 lines
+  └ ---
+    name: leanness
+    … +323 lines (ctrl + t to view transcript)
+
+    424:Failures:
+
+• Ran node <<'EOF'
+  │ const fs=require('fs'),cp=require('child_process'),crypto=require('crypto');
+  │ const root='/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2',h=root+'/handoffs', e=h+'/evidence';
+  │ … +19 lines
+  └ Failures:
+
+    … +39 lines (ctrl + t to view transcript)
+    Tests failed for test:invariants from kelgroups-0.1.0.0.
+
+
+• Ran sed -n '/^Failures:/,$p' /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/*leg5-M3-test.log
+  │ cat /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/*leg5-M4-build.log
+  │ sed -n '/^Failures:/,$p' /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/*leg5-M5-test.log
+  │ … +1 lines
+  └ Failures:
+
+    … +77 lines (ctrl + t to view transcript)
+    Tests failed for test:invariants from kelgroups-0.1.0.0.
+
+
+• Ran /code/llm-settings/shared/skills/worker-protocol/scripts/status-event /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/STATUS.md NOTE 'Full base-to-FINAL diff
+  │ reviewed: 15 files +1845/-13, nine linear commits; S28-R2 repair delta stays Store.hs+S28AppApiSpec.hs; historical Fold/Validate bodies unchanged, E1 pendingBase completions and E2 JSON
+  │ changes explicit. CI actual command matches gate leg6. L4 freshly 135+91 examples zero failures, 31 registered S28 examples 3/8/3/9/3/5, no pending; historical STM background exceptions
+  │ … +3 lines
+  └ {"id":"leg3","class":"build","begin":1788663442765,"free_before":216716431360,"charge":
+    {"builds":1,"targeted":0},"cache":"cold","exit":0,"duration_observed_ms":16827,"free_after":216618586112}
+    … +14 lines (ctrl + t to view transcript)
+    {"id":"M7","class":"build","begin":1788663616272,"free_before":216545431552,"charge":
+    {"builds":1,"targeted":0},"cache":"warm","exit":1,"duration_observed_ms":29472,"free_after":216545431552}
+
+• Waited for background terminal · cat > /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/COMMAND-FIT.md <<'EOF'
+# Pre-spend executable fit — S28-R2
+Candidate ab25cd11b554bcd5ba64ca56a050c2eb21432d3c, accepted base
+368b596fef0b6d393c2ac7afc631d236c55d86d1; FULL scope, all R1–R6 and
+five reliances. Mandate f97e0c55bb0462cbf1698486341e142dfd5fe5e3b94bab7020b76032e9952e74.
+Gate v10.2 full c00b88a29989b11d09696d7afa164f7d9f93b59aee661a1b88a120c7a4934b75,
+normalized 12f392b6fe691230269a70bf9588fa4c25f71330639d0b6a464ceb8c532d67b0.
+Exact argv are in probe-commands.json; frozen sources/runner hashes are in
+evidence/probe-inputs.json. Invocation: node handoffs/run-audit.cjs <ID>,
+from /code/kelgroups-audit-ab25cd1. No invocation has executed yet.
+| Obligation | Exact IDs / cases | Charges |
+|---|---|---|
+| Frozen gate | gate executes unchanged ./gate.sh: leg3 just build; leg4 cabal test all -O0 --test-show-details=direct; M1 cabal build all --enable-tests -O0; M4 cabal build all -O0; M2/M3/M5/
+M6/M7/M8 cabal test all -O0 --test-show-details=direct; leg6 just ci. All via nix develop .#ci --quiet -c. | 11B |
+| R1 | R1-compile/R1-run: actual open/founding, direct admission, proposal/approval role change; exact views/payload/state from concrete member relations; exact nonmember refusal and byte
+conservation. Seed counter 17, hook increment 23 distinguish new fixture from retained predecessor source. | 2P |
+| R3 | R3-compile/R3-run: recording hook exact views/payload/error, success and refusal real reopen, exact state/count/row restoration. | 2P |
+| R5 | R5-compile/R5-run: integrated direct/mutation/approval validators; hand-computed states after admission/propose/duplicate-refusal/approve-enact/app-add; foldIntegratedFrom over founding
+at every prefix; exact persisted events and real reopen. | 2P |
+| MAJORITY | MAJ-compile/MAJ-run: admin franchise grows 3→5 mid-vote; two votes pending, three enact removal; exact final state. | 2P |
+| P2'' | P2-compile, P2-conservation, P2-codec, P2-lock. One narrow compile includes candidate API and explicit skew seed body. Eight specified value pairs, fixed 20 repetitions each on seed
+then candidate, same instrument/domain. Seed moves state/count/decision pre-lock; SQL and TVar effects unchanged. External start gate precedes both calls; codec only increments observation
+TVar and emits identical JSON, never waits or delays. Semantic seed mismatch required, timeout/exception NOT a kill. Faulting accepted/refused exact tuples; real SQL abort and subsequent
+append. | 4P |
+| F2 | P3/P4 compile candidate/shadow, P5 shadow absent-insertion witness RED, P6 candidate witness GREEN, P7 shipped nine-example direct-only group on shadow RED. One-expression mutation
+freshly generated from final Fold source. | 5P |
+| TYP' | TYP-Event and TYP-Historical: separate compiler-negative files, first keeps proposal type correct and varies only event; second rejects DemoEvent at historical DemoState boundary. |
+2P |
+| HIST-FOLD | leg4 historical suites + complete base→FINAL historical-body diff; beyond suites UNJUDGED. | included |
+| CESR | leg4 actual key suites; decoder-domain beyond suites UNJUDGED. | included |
+| APPFOLD-SHAPE | leg3/4 compile and alias/caller review; semantics beyond tests UNJUDGED. | included |
+| STORE-STM | P2'' + M6; finite schedules, no all-interleavings claim. | included |
+Total 11/12 builds + 19/24 targeted. Remaining 1B/5P usable only after
+mandatory floor, for relevant independent work; no outside-cap permission.
+Every attempt is charged, including setup failure. Unmet mandatory floor
+returns a named blocker; it is not silently waived. Concrete source exists
+for every row: fit confirmed as PLAN, never execution/coverage success.
+Prior TraceProbe/Row4Probe/runner are retained instrument source inputs,
+reviewed and revised under this fresh root; no predecessor binary, process,
+context, verdict or ledger reused. The new P2 instrument and its skew seed
+are authored here. Candidate tracked files stay unchanged except the exact
+gate-authorized leg5 transient edits and hash-verified restores. Gate fixed
+/tmp staging names must be absent and exclusively reserved before launch.
+EOF
+/code/llm-settings/shared/skills/worker-protocol/scripts/status-event /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/STATUS.md START 'commit-auditor-s28r2
+worker=commit-auditor-s28r2 mode=COMMIT-AUDITOR pane=%569 window=reactivegas:12 kelgroups @157 pid=3019780 cli=codex model=gpt-6-astra effort=high owner_cli=muse owner_pane=%545
+ticket_owner_pane=%534 alternate=true authorization=NOTE-033/043 explicit-Codex fresh-root-context-process submission=S28-R2 scope=FULL base=368b596fef0b6d393c2ac7afc631d236c55d86d1
+candidate=ab25cd11b554bcd5ba64ca56a050c2eb21432d3c tree=e52114c1f7a676073303ff76caa8f22821e0b2a3 detached-clean=true gate-full=c00b88a29989b11d09696d7afa164f7d9f93b59aee661a1b88a120c7a4934b75
+gate-normalized=12f392b6fe691230269a70bf9588fa4c25f71330639d0b6a464ceb8c532d67b0 mandate=f97e0c55bb0462cbf1698486341e142dfd5fe5e3b94bab7020b76032e9952e74 fit=CONFIRMED-PLAN handoffs/COMMAND-
+FIT.md exact-argv=handoffs/probe-commands.json envelope=11B floor=19P ledgers=0/12+0/24 previous-ledgers-preserved all-three-terminal-records-read owner-evidence-only AUDIT-S28R2'
+sha256sum /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/COMMAND-FIT.md /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/
+handoffs/evidence/probe-inputs.json
+node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/run-audit.cjs gate
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• M3 through M7 produced their intended failures. M4 failed at the production pattern match; M5 failed the empty-start replay check, so founding-lifecycle agreement still needs its independent
+  probe. M8 and the final CI leg are next, followed by the 19 targeted calls.
+
+• Ran sed -n '/^Failures:/,$p' /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/*leg5-M6-test.log
+  │ sed -n '/^Failures:/,$p' /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/*leg5-M7-test.log
+  │ sha256sum /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/M8.diff
+  └ Failures:
+
+    … +78 lines (ctrl + t to view transcript)
+
+    37be8bccc9f50e48275cca01be21d9aec686d404a205092b711acc279a8274c1  /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/M8.diff
+
+• Ran sha256sum /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28b/handoffs/AUDIT-REPORT.md /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/
+  │ handoffs/AUDIT-REPORT.md /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/handoffs/AUDIT-REPORT.md
+  │ sed -n '/^Failures:/,$p' /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/*leg5-M8-test.log
+  │ … +1 lines
+  └ b7b793a378b9395a598eb9a5c74cca03d9bb3f5ccb5f95a420b032a457075b2a  /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28b/handoffs/AUDIT-REPORT.md
+    22c79c048bfc5a63eff7013d80da5a8afd6f18f3a436b9d988a23e1cb9a3656f  /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1/handoffs/AUDIT-REPORT.md
+    … +53 lines (ctrl + t to view transcript)
+                     execute
+                         (storeConn store)
+
+• Ran tail -n 55 /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/*leg6-ci.log
+  │ rg --files /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/inbox
+  └ [567 of 614] Compiling Data.Interval.Duration
+    [568 of 614] Compiling Halogen.Data.Slot
+    … +51 lines (ctrl + t to view transcript)
+
+    cd client && spago test -p kelgroups-client
+
+• Waited for background terminal · cat > /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/COMMAND-FIT.md <<'EOF'
+# Pre-spend executable fit — S28-R2
+Candidate ab25cd11b554bcd5ba64ca56a050c2eb21432d3c, accepted base
+368b596fef0b6d393c2ac7afc631d236c55d86d1; FULL scope, all R1–R6 and
+five reliances. Mandate f97e0c55bb0462cbf1698486341e142dfd5fe5e3b94bab7020b76032e9952e74.
+Gate v10.2 full c00b88a29989b11d09696d7afa164f7d9f93b59aee661a1b88a120c7a4934b75,
+normalized 12f392b6fe691230269a70bf9588fa4c25f71330639d0b6a464ceb8c532d67b0.
+Exact argv are in probe-commands.json; frozen sources/runner hashes are in
+evidence/probe-inputs.json. Invocation: node handoffs/run-audit.cjs <ID>,
+from /code/kelgroups-audit-ab25cd1. No invocation has executed yet.
+| Obligation | Exact IDs / cases | Charges |
+|---|---|---|
+| Frozen gate | gate executes unchanged ./gate.sh: leg3 just build; leg4 cabal test all -O0 --test-show-details=direct; M1 cabal build all --enable-tests -O0; M4 cabal build all -O0; M2/M3/M5/
+M6/M7/M8 cabal test all -O0 --test-show-details=direct; leg6 just ci. All via nix develop .#ci --quiet -c. | 11B |
+| R1 | R1-compile/R1-run: actual open/founding, direct admission, proposal/approval role change; exact views/payload/state from concrete member relations; exact nonmember refusal and byte
+conservation. Seed counter 17, hook increment 23 distinguish new fixture from retained predecessor source. | 2P |
+| R3 | R3-compile/R3-run: recording hook exact views/payload/error, success and refusal real reopen, exact state/count/row restoration. | 2P |
+| R5 | R5-compile/R5-run: integrated direct/mutation/approval validators; hand-computed states after admission/propose/duplicate-refusal/approve-enact/app-add; foldIntegratedFrom over founding
+at every prefix; exact persisted events and real reopen. | 2P |
+| MAJORITY | MAJ-compile/MAJ-run: admin franchise grows 3→5 mid-vote; two votes pending, three enact removal; exact final state. | 2P |
+| P2'' | P2-compile, P2-conservation, P2-codec, P2-lock. One narrow compile includes candidate API and explicit skew seed body. Eight specified value pairs, fixed 20 repetitions each on seed
+then candidate, same instrument/domain. Seed moves state/count/decision pre-lock; SQL and TVar effects unchanged. External start gate precedes both calls; codec only increments observation
+TVar and emits identical JSON, never waits or delays. Semantic seed mismatch required, timeout/exception NOT a kill. Faulting accepted/refused exact tuples; real SQL abort and subsequent
+append. | 4P |
+| F2 | P3/P4 compile candidate/shadow, P5 shadow absent-insertion witness RED, P6 candidate witness GREEN, P7 shipped nine-example direct-only group on shadow RED. One-expression mutation
+freshly generated from final Fold source. | 5P |
+| TYP' | TYP-Event and TYP-Historical: separate compiler-negative files, first keeps proposal type correct and varies only event; second rejects DemoEvent at historical DemoState boundary. |
+2P |
+| HIST-FOLD | leg4 historical suites + complete base→FINAL historical-body diff; beyond suites UNJUDGED. | included |
+| CESR | leg4 actual key suites; decoder-domain beyond suites UNJUDGED. | included |
+| APPFOLD-SHAPE | leg3/4 compile and alias/caller review; semantics beyond tests UNJUDGED. | included |
+| STORE-STM | P2'' + M6; finite schedules, no all-interleavings claim. | included |
+Total 11/12 builds + 19/24 targeted. Remaining 1B/5P usable only after
+mandatory floor, for relevant independent work; no outside-cap permission.
+Every attempt is charged, including setup failure. Unmet mandatory floor
+returns a named blocker; it is not silently waived. Concrete source exists
+for every row: fit confirmed as PLAN, never execution/coverage success.
+Prior TraceProbe/Row4Probe/runner are retained instrument source inputs,
+reviewed and revised under this fresh root; no predecessor binary, process,
+context, verdict or ledger reused. The new P2 instrument and its skew seed
+are authored here. Candidate tracked files stay unchanged except the exact
+gate-authorized leg5 transient edits and hash-verified restores. Gate fixed
+/tmp staging names must be absent and exclusively reserved before launch.
+EOF
+/code/llm-settings/shared/skills/worker-protocol/scripts/status-event /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/STATUS.md START 'commit-auditor-s28r2
+worker=commit-auditor-s28r2 mode=COMMIT-AUDITOR pane=%569 window=reactivegas:12 kelgroups @157 pid=3019780 cli=codex model=gpt-6-astra effort=high owner_cli=muse owner_pane=%545
+ticket_owner_pane=%534 alternate=true authorization=NOTE-033/043 explicit-Codex fresh-root-context-process submission=S28-R2 scope=FULL base=368b596fef0b6d393c2ac7afc631d236c55d86d1
+candidate=ab25cd11b554bcd5ba64ca56a050c2eb21432d3c tree=e52114c1f7a676073303ff76caa8f22821e0b2a3 detached-clean=true gate-full=c00b88a29989b11d09696d7afa164f7d9f93b59aee661a1b88a120c7a4934b75
+gate-normalized=12f392b6fe691230269a70bf9588fa4c25f71330639d0b6a464ceb8c532d67b0 mandate=f97e0c55bb0462cbf1698486341e142dfd5fe5e3b94bab7020b76032e9952e74 fit=CONFIRMED-PLAN handoffs/COMMAND-
+FIT.md exact-argv=handoffs/probe-commands.json envelope=11B floor=19P ledgers=0/12+0/24 previous-ledgers-preserved all-three-terminal-records-read owner-evidence-only AUDIT-S28R2'
+sha256sum /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/COMMAND-FIT.md /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/
+handoffs/evidence/probe-inputs.json
+node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/run-audit.cjs gate
+
+• Ran cat > /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/COMMAND-FIT.md <<'EOF'
+  │ # Pre-spend executable fit — S28-R2
+  │
+  │ … +56 lines
+  └ LEG-PASS: 2b: nix exact pin
+    LEG-PASS: 2b: ghc exact pin
+    … +30 lines (ctrl + t to view transcript)
+    ===== GATE G28-1 v10.2 (S28R2-M8faithful) COMPLETE: OVERALL_FAIL=0 =====
+    {"code":0,"signal":null,"builds":11,"clean":"","gate":"c00b88a29989b11d09696d7afa164f7d9f93b59aee661a1b88a120c7a4934b75"}
+
+• Ran node <<'EOF'
+  │ const fs=require('fs'),crypto=require('crypto'),cp=require('child_process');const h='/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs';
+  │ let s=fs.readFileSync(h+'/StoreProbe.hs','utf8');
+  │ … +22 lines
+  └
+    counts store = do
+    … +60 lines (ctrl + t to view transcript)
+    instance ToJSON FaultingCodec where toJSON _ = error "AUDIT-SEED-SERIALIZATION-R2"
+    codec :: IO ()
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• The full gate passed with all eight controls killed and the candidate restored byte-for-byte. The M8 diff matches the bound 37be8bccc9… digest. Build spend is now 11/12. I’m starting the
+  independent probes, including close-and-reopen checks for each concurrent pair.
+
+• Ran tail -n 110 /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/*leg6-ci.log
+  └ [602 of 614] Compiling Data.Argonaut
+    [603 of 614] Compiling Data.Argonaut.JCursor.Gen
+    … +106 lines (ctrl + t to view transcript)
+    ✓ Test succeeded for package "kelgroups-client".
+
+
+• Ran node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/run-audit.cjs P2-compile
+  └ {"id":"P2-compile","class":"targeted","argv":
+    ["nix","develop",".#ci","--quiet","-c","cabal","exec","-O0","--","ghc","--make","-O0","-threaded","-XGHC2021","-XOverloadedStrings","-XDerivingStrategies","-XLambdaCase","-XStrictData","-p
+    … +4 lines (ctrl + t to view transcript)
+    e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/P2-compile.log","bytes":922,"free_before":216468230144,"free_after":216468230144,"cache":"warm","charge":
+    {"builds":0,"targeted":1}}
+
+• Explored
+  └ Read P2-compile.log
+
+• Ran node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/run-audit.cjs P2-conservation
+  └ {"id":"P2-conservation","class":"targeted","argv":["/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/store/
+    probe","conservation","+RTS","-N2","-RTS"],"begin":1788663855383,"duration_ms":1585,"exit":0,"signal":null,"sha256":"ab5c5b9ecb20711814647207ca87be7f7eef39a5614d447fb384eb20bdb83e69","log"
+    :"/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/
+    P2-conservation.log","bytes":54837,"free_before":216468230144,"free_after":216468230144,"cache":"warm","charge":{"builds":0,"targeted":1}}
+
+• Explored
+  └ Read P2-conservation.log
+
+• Ran node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/run-audit.cjs P2-codec
+  └ {"id":"P2-codec","class":"targeted","argv":["/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/store/
+    probe","codec","+RTS","-N2","-RTS"],"begin":1788663893265,"duration_ms":18,"exit":0,"signal":null,"sha256":"9a932299fa33228b17e945ecd0336b5728f5808679fdb4ddcdc59027244a324d","log":"/tmp/
+    reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/
+    P2-codec.log","bytes":226,"free_before":216468230144,"free_after":216468230144,"cache":"warm","charge":{"builds":0,"targeted":1}}
+
+• Ran node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/run-audit.cjs P2-lock
+  └ {"id":"P2-lock","class":"targeted","argv":["/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/store/
+    probe","lock","+RTS","-N2","-RTS"],"begin":1788663893411,"duration_ms":20,"exit":0,"signal":null,"sha256":"251b3aee74fec48309d29922d58cd32e007c8d0005f41d29456491b4986f2809","log":"/tmp/
+    reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/
+    P2-lock.log","bytes":249,"free_before":216468230144,"free_after":216468230144,"cache":"warm","charge":{"builds":0,"targeted":1}}
+
+• Explored
+  └ Read P2-codec.log, P2-lock.log
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• The new concurrency instrument detected real lost updates in its defective seed, then passed all 160 candidate schedules across the eight value pairs, including persisted reopening. The
+  faulting-codec checks preserved the exact nonmember refusal and zero state/count/row tuple. A real SQL abort also preserved state, and a subsequent append confirmed lock release.
+
+• Ran node <<'EOF'
+  │ const fs=require('fs');const h='/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs';
+  │ const log=fs.readFileSync(h+'/evidence/P2-conservation.log','utf8'), halves=log.split('LOST-UPDATE-SEED detected semantic nonconservation=True');
+  │ … +6 lines
+  └ [
+      {
+    … +20 lines (ctrl + t to view transcript)
+      }
+    ]
+
+• Ran for probe_id in R1-compile R1-run R3-compile R3-run R5-compile R5-run MAJ-compile MAJ-run; do
+  │   node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/run-audit.cjs "$probe_id" || exit $?
+  │ done
+  └ {"id":"R1-compile","class":"targeted","argv":
+    ["nix","develop",".#ci","--quiet","-c","cabal","exec","-O0","--","ghc","--make","-O0","-threaded","-XGHC2021","-XOverloadedStrings","-XDerivingStrategies","-XLambdaCase","-XStrictData","-p
+    … +44 lines (ctrl + t to view transcript)
+    e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/MAJ-run.log","bytes":292,"free_before":216468230144,"free_after":216468230144,"cache":"warm","charge":
+    {"builds":0,"targeted":1}}
+
+• Ran cat /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/R1-run.log /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/
+  │ handoffs/evidence/R3-run.log /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/R5-run.log /tmp/reactivegas/ms2/e-kelgroups-substrate/
+  │ t28-app-api/commit-auditor-s28r2/handoffs/evidence/MAJ-run.log
+  └ R1-NC wrong-empty-view-detected=True
+    R1 founding exact=True
+    … +54 lines (ctrl + t to view transcript)
+    MAJ pending consumed=True
+    MAJ exact committed result=True
+
+• Ran rg --files dist-newstyle/packagedb
+  │ cat dist-newstyle/packagedb/ghc-9.8.4/kelgroups-0.1.0.0-inplace.conf
+  │ rg -n 'No hints|Build completed|examples,|^fourmolu|^cabal-fmt|^hlint|^cabal build|^cabal test|^cd lean' /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/
+  │ … +1 lines
+  └ dist-newstyle/packagedb/ghc-9.8.4/kelgroups-0.1.0.0-inplace.conf
+    dist-newstyle/packagedb/ghc-9.8.4/keri-hs-0.1.0.0-inplace.conf
+    … +64 lines (ctrl + t to view transcript)
+    435:cd lean && lake build
+    452:Build completed successfully (17 jobs).
+
+• Ran for probe_id in P3 P4; do
+  │   node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/run-audit.cjs "$probe_id" || exit $?
+  │ done
+  └ {"id":"P3","class":"targeted","argv":
+    ["nix","develop",".#ci","--quiet","-c","cabal","exec","-O0","--","ghc","--make","-O0","-threaded","-XGHC2021","-XOverloadedStrings","-XDerivingStrategies","-XLambdaCase","-XStrictData","-p
+    … +12 lines (ctrl + t to view transcript)
+    reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/P4.log","bytes":2501,"free_before":216468230144,"free_after":216468230144,"cache":"warm","charge":
+    {"builds":0,"targeted":1}}
+
+• Ran cat /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/P3.log /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/
+  │ handoffs/evidence/P4.log
+  └ Loaded package environment from /code/kelgroups-audit-ab25cd1/dist-newstyle/tmp/environment.-3064252/.ghc.environment.x86_64-linux-9.8.4
+    [1 of 4] Compiling S28DemoApp       ( test/S28DemoApp.hs, /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/row4/S28DemoApp.o )
+    … +16 lines (ctrl + t to view transcript)
+    t28-app-api/commit-auditor-s28r2/handoffs/build/row4-mutant/Main.o )
+    [12 of 12] Linking /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/row4-mutant/probe
+
+• Ran node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/run-audit.cjs P5
+  └ {"id":"P5","class":"targeted","argv":["/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/row4-mutant/
+    probe","witness"],"begin":1788663997254,"duration_ms":18,"exit":1,"signal":null,"sha256":"296644b1288336d92c923b5ddc7c017e80b5662610a211e8764f20c00d70cdbd","log":"/tmp/reactivegas/ms2/
+    e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/P5.log","bytes":72,"free_before":216468230144,"free_after":216468230144,"cache":"warm","charge":
+    {"builds":0,"targeted":1}}
+
+• Ran node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/run-audit.cjs P6
+  └ {"id":"P6","class":"targeted","argv":["/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/row4/
+    probe","witness"],"begin":1788663997403,"duration_ms":23,"exit":0,"signal":null,"sha256":"4011917b4c980039eb1ee92cd6e3048aa1ca771d1fbb5181a1f7fd60ceacdf3d","log":"/tmp/reactivegas/ms2/
+    e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/P6.log","bytes":71,"free_before":216468230144,"free_after":216468230144,"cache":"warm","charge":
+    {"builds":0,"targeted":1}}
+
+• Ran node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/run-audit.cjs P7
+  └ {"id":"P7","class":"targeted","argv":["/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/row4-mutant/probe","--match","S28-1 direct-only
+    admission"],"begin":1788663997555,"duration_ms":20,"exit":1,"signal":null,"sha256":"792bbbd71333848e28e5c2bddadbf5b05ec3e04a28461515318eeea733ec673d","log":"/tmp/reactivegas/ms2/
+    e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/P7.log","bytes":1209,"free_before":216468230144,"free_after":216468230144,"cache":"warm","charge":
+    {"builds":0,"targeted":1}}
+
+• Ran node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/run-audit.cjs TYP-Event
+  └ {"id":"TYP-Event","class":"targeted","argv":
+    ["nix","develop",".#ci","--quiet","-c","cabal","exec","-O0","--","ghc","--make","-O0","-threaded","-XGHC2021","-XOverloadedStrings","-XDerivingStrategies","-XLambdaCase","-XStrictData","-p
+    … +3 lines (ctrl + t to view transcript)
+    e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/TYP-Event.log","bytes":1150,"free_before":216468230144,"free_after":216468230144,"cache":"warm","charge":
+    {"builds":0,"targeted":1}}
+
+• Ran node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/run-audit.cjs TYP-Historical
+  └ {"id":"TYP-Historical","class":"targeted","argv":
+    ["nix","develop",".#ci","--quiet","-c","cabal","exec","-O0","--","ghc","--make","-O0","-threaded","-XGHC2021","-XOverloadedStrings","-XDerivingStrategies","-XLambdaCase","-XStrictData","-p
+    … +3 lines (ctrl + t to view transcript)
+    e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/TYP-Historical.log","bytes":1023,"free_before":216468230144,"free_after":216468230144,"cache":"warm","charge":
+    {"builds":0,"targeted":1}}
+
+• Ran cat /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/P5.log /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/
+  │ handoffs/evidence/P6.log /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/P7.log /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/
+  │ commit-auditor-s28r2/handoffs/evidence/TYP-Event.log /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/TYP-Historical.log
+  │ … +2 lines
+  └ EFFECT-WITNESS absent-target-changeRoles pre=0 post=1 noInsertion=False
+    EFFECT-WITNESS absent-target-changeRoles pre=0 post=0 noInsertion=True
+    … +61 lines (ctrl + t to view transcript)
+    6 | historicalEventMismatch = F.applyEvent (\st _ -> st) foundingDemo ("admin-key-1", E.App (DemoAdd 1))
+      |                                                                                          ^^^^^^^^^
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• All 19 mandatory targeted calls returned their expected results, including the hand-computed views, hooks, lifecycle, franchise change, and isolated type rejections. One evidence gap remains
+  worth checking: the owner’s concurrency-test negative control has reconstructed mutant provenance. I’ll use three remaining targeted calls to test the final shipped checker against a freshly
+  retained skew and the unchanged candidate.
+
+• Ran cat > /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/final-sensitivity.cjs <<'EOF'
+  │ const fs=require('fs'),cp=require('child_process'),crypto=require('crypto');const h=__dirname,hash=b=>crypto.createHash('sha256').update(b).digest('hex');
+  │ const history=fs.readFileSync(h+'/evidence/execution-receipts.jsonl','utf8').trim().split('\n').map(JSON.parse);
+  │ … +25 lines
+  └ {"id":"SC-compile","class":"targeted","argv":
+    ["nix","develop",".#ci","--quiet","-c","cabal","exec","-O0","--","ghc","--make","-O0","-threaded","-XGHC2021","-XOverloadedStrings","-XDerivingStrategies","-XLambdaCase","-XStrictData","-p
+    … +4 lines (ctrl + t to view transcript)
+    reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/
+    SC-compile.log","bytes":2514,"free_before":216468230144,"free_after":216468230144,"cache":"warm","charge":{"builds":0,"targeted":1}}
+
+• Explored
+  └ Read final-store-skew.diff, SC-compile.log
+
+• Ran node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/run-audit.cjs SC-negative
+  └ {"id":"SC-negative","class":"targeted","argv":["/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build/store-mutant/probe","--match","/S28-1 rejecting
+    step before append/concurrent appends conserve every committed
+    transition/"],"begin":1788664129572,"duration_ms":40,"exit":1,"signal":null,"sha256":"52621197d83c563ece832cae182b56cfcb8f46b8e22c6aa57fbe7520898e2846","log":"/tmp/reactivegas/ms2/
+    e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/SC-negative.log","bytes":498,"free_before":216468230144,"free_after":216468230144,"cache":"warm","charge":
+    {"builds":0,"targeted":1}}
+
+• Ran cat /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/SC-negative.log
+  │ node /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/run-audit.cjs SC-positive
+  └
+    S28-1 rejecting step before append
+    … +18 lines (ctrl + t to view transcript)
+    e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/SC-positive.log","bytes":149,"free_before":216468230144,"free_after":216468230144,"cache":"warm","charge":
+    {"builds":0,"targeted":1}}
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• The final shipped concurrency checker failed on the retained skew for a real conservation mismatch—expected 958, observed 558—and passed on the unchanged candidate. Total spend is 11/12
+  builds and 22/24 targeted calls. I’m freezing the report, requirement ledger, and evidence inventory now, with coverage limits stated explicitly.
+
+• Ran cat /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/evidence/SC-positive.log
+  │ rg --files /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/inbox | rg NOTE-040
+  │ cat /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/inbox/NOTE-040*
+  │ … +2 lines
+  └
+    S28-1 rejecting step before append
+    … +81 lines (ctrl + t to view transcript)
+        67
+        68    ### rollout_summary_files
+
+• Ran cat > /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/REQUIREMENT-LEDGER.md <<'EOF'
+  │ # Requirement ledger — S28-R2 FINAL
+  │
+  │ … +254 lines
+  └ (no output)
+
+• Ran cat > /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/freeze-evidence.cjs <<'EOF'
+  │ const fs=require('fs'),path=require('path'),cp=require('child_process'),crypto=require('crypto');const h=__dirname,e=h+'/evidence',root=h+'/..';
+  │ const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
+  │ … +48 lines
+  └ {
+      "report_sha256": "d1d1906081a411e2dbb7ef1f436e5fed178c2e916bd1e162acb048166c616718",
+    … +12 lines (ctrl + t to view transcript)
+      "binaries": 8
+    }
+
+• Ran cat > /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/finalize.cjs <<'EOF'
+  │ const fs=require('fs'),path=require('path'),cp=require('child_process'),crypto=require('crypto');const h=__dirname,e=h+'/evidence',root=path.dirname(h),status=root+'/STATUS.md';
+  │ const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
+  │ … +46 lines
+  └ {
+      "hashes": [
+    … +33 lines (ctrl + t to view transcript)
+      "worktreeBytes": 246493184
+    }
+
+
+
+› 1. Retry with a faster model
+  2. Dismiss and keep waiting
+
+  No action is required. Codex will keep waiting, and this menu will close when the response is ready.
+
+
+
+─ Worked for 26m 15s ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+› Ask Codex to do anything
+
+  gpt-6-astra high · /code/kelgroups-audit-ab25cd1

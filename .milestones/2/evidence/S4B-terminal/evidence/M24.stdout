@@ -1,0 +1,12 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M24.lean:74:4: error: Type mismatch
+  h k m he
+has type
+  m.key = k
+but is expected to have type
+  (k, m).snd.key ≠ (k, m).fst
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M24.lean:76:4: error: Type mismatch
+  h (k, m) hm
+has type
+  (k, m).snd.key ≠ (k, m).fst
+but is expected to have type
+  m.key = k

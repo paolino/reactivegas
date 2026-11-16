@@ -1,0 +1,24 @@
+{
+  "id": "panic-controls",
+  "argv": [
+    "timeout",
+    "60s",
+    "node",
+    "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/panic-check.mjs",
+    "controls"
+  ],
+  "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2",
+  "charge": "targeted",
+  "launched": true,
+  "start": "2026-09-06T05:09:17.704Z",
+  "spend": {
+    "substantive": 2,
+    "targeted": 5
+  },
+  "obligation": "C25 both-stream PANIC at absence controls",
+  "finish": "2026-09-06T05:09:17.751Z",
+  "exit": 0,
+  "signal": null,
+  "stdoutSha256": "4c13fff798e4ed9a289e8e56d72c62666824752f48eabf9075bf26ef0806ee94",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

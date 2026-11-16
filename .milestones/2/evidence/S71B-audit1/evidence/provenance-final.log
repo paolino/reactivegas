@@ -1,0 +1,10 @@
+8e4cbb8b95ac5a2063ea39cf2d2ac6a4c1d15163
+d3e88048aabd6b834977ce333d9f4e6b47d19154
+d3e88048aabd6b834977ce333d9f4e6b47d19154
+:100644 100644 27317c8 075c857 M	docs/en/design/kelgroups-vote-machine.md
+:100644 100644 10902ee af7f734 M	docs/en/design/state-machine.md
+gpg: Signature made Sat Sep  5 13:16:16 2026 BST
+gpg:                using DSA key 20B19354D7919C8C5810F95A55DFD2E86F982261
+gpg: Good signature from "paolo <paolo.veronelli@gmail.com>" [ultimate]
+877d9b9c596c216f688bf32c5f31ba29ad1b56753bb9ae083cf52007cdaf9085  gate.sh
+877d9b9c596c216f688bf32c5f31ba29ad1b56753bb9ae083cf52007cdaf9085  /code/reactivegas-issue-71/gate.sh

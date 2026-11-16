@@ -1,0 +1,125 @@
+{
+  "checkedAt": "2026-09-05T20:55:18.297Z",
+  "openIssues": 16,
+  "unmapped": [],
+  "rows": [
+    {
+      "number": 84,
+      "stories": [
+        "S-24",
+        "S-25"
+      ]
+    },
+    {
+      "number": 83,
+      "stories": [
+        "S-26"
+      ]
+    },
+    {
+      "number": 82,
+      "stories": [
+        "S-24",
+        "S-25"
+      ]
+    },
+    {
+      "number": 81,
+      "stories": [
+        "S-10",
+        "S-11",
+        "S-12"
+      ]
+    },
+    {
+      "number": 76,
+      "stories": [
+        "S-08",
+        "S-09",
+        "S-10",
+        "S-12"
+      ]
+    },
+    {
+      "number": 75,
+      "stories": [
+        "S-13",
+        "S-15",
+        "S-16"
+      ]
+    },
+    {
+      "number": 73,
+      "stories": [
+        "S-02",
+        "S-03",
+        "S-04"
+      ]
+    },
+    {
+      "number": 72,
+      "stories": [
+        "S-01",
+        "S-29"
+      ]
+    },
+    {
+      "number": 71,
+      "stories": [
+        "S-28",
+        "S-29"
+      ]
+    },
+    {
+      "number": 70,
+      "stories": [
+        "S-22",
+        "S-23"
+      ]
+    },
+    {
+      "number": 69,
+      "stories": [
+        "S-06"
+      ]
+    },
+    {
+      "number": 68,
+      "stories": [
+        "S-05"
+      ]
+    },
+    {
+      "number": 67,
+      "stories": [
+        "S-01",
+        "S-27",
+        "S-07",
+        "S-13"
+      ]
+    },
+    {
+      "number": 66,
+      "stories": [
+        "S-07",
+        "S-17",
+        "S-18",
+        "S-19",
+        "S-20",
+        "S-21"
+      ]
+    },
+    {
+      "number": 51,
+      "stories": [
+        "S-27"
+      ]
+    },
+    {
+      "number": 43,
+      "stories": [
+        "S-01"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+diff --git a/lean/Reactivegas/State.lean b/lean/Reactivegas/State.lean
+index 0000000..8888888 100644
+--- a/lean/Reactivegas/State.lean
++++ b/lean/Reactivegas/State.lean
+@@ -92,7 +92,7 @@ def splitUser (u : KelGroups.Key) : List Pledge → Option (Int × List Pledge)
+ /-- Refund every pledge into an account list, one bump per pledge. -/
+ def refundAll (m : List (KelGroups.Key × Int)) (l : List Pledge) : List (KelGroups.Key × Int) :=
+-  l.foldl (fun acc p => bump acc p.user p.amount) m
++  m

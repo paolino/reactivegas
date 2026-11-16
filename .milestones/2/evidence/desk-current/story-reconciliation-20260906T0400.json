@@ -1,0 +1,89 @@
+{
+  "at": "2026-09-06T03:58:16.643Z",
+  "stories": 34,
+  "groups": 7,
+  "openIssues": [
+    {
+      "number": 84,
+      "title": "Browser client: Reactivegas UI over core.wasm in the existing kelgroups-client shell",
+      "url": "https://github.com/paolino/reactivegas/issues/84"
+    },
+    {
+      "number": 83,
+      "title": "CLI client against the coordinator API, linking the same core",
+      "url": "https://github.com/paolino/reactivegas/issues/83"
+    },
+    {
+      "number": 82,
+      "title": "wasm32-wasi build of the economic core, with a no-semantic-fork gate",
+      "url": "https://github.com/paolino/reactivegas/issues/82"
+    },
+    {
+      "number": 81,
+      "title": "V-5 vote lifecycle: proposer renounce and departure close negative",
+      "url": "https://github.com/paolino/reactivegas/issues/81"
+    },
+    {
+      "number": 76,
+      "title": "Runtime composition: vote closures must authorize grant, deny and backdonate",
+      "url": "https://github.com/paolino/reactivegas/issues/76"
+    },
+    {
+      "number": 75,
+      "title": "Integrated vote corpus through the production root",
+      "url": "https://github.com/paolino/reactivegas/issues/75"
+    },
+    {
+      "number": 73,
+      "title": "Build the kelgroups substrate contract the Lean specifies (upstream blocker)",
+      "url": "https://github.com/paolino/reactivegas/issues/73"
+    },
+    {
+      "number": 72,
+      "title": "Epic: milestone 2 — the Haskell implementation of the Lean model on kelgroups",
+      "url": "https://github.com/paolino/reactivegas/issues/72"
+    },
+    {
+      "number": 71,
+      "title": "Rewrite the design record to the merged model, with a citation checker that fails closed",
+      "url": "https://github.com/paolino/reactivegas/issues/71"
+    },
+    {
+      "number": 70,
+      "title": "Simulator: re-bind onto the merged model, then the scenario generator",
+      "url": "https://github.com/paolino/reactivegas/issues/70"
+    },
+    {
+      "number": 69,
+      "title": "Member sovereignty over their own pledge: create, correct, retract",
+      "url": "https://github.com/paolino/reactivegas/issues/69"
+    },
+    {
+      "number": 68,
+      "title": "The proposer does not count as an assent (V-2)",
+      "url": "https://github.com/paolino/reactivegas/issues/68"
+    },
+    {
+      "number": 67,
+      "title": "Implement the Lean economic model in Haskell on the kelgroups backend",
+      "url": "https://github.com/paolino/reactivegas/issues/67"
+    },
+    {
+      "number": 66,
+      "title": "Bring the Lean into compliance with the system-design quality standard",
+      "url": "https://github.com/paolino/reactivegas/issues/66"
+    },
+    {
+      "number": 51,
+      "title": "feat: publish the first provisional release, then enforce exact tag identity",
+      "url": "https://github.com/paolino/reactivegas/issues/51"
+    },
+    {
+      "number": 43,
+      "title": "Epic: rebuild reactivegas on the kelgroups substrate",
+      "url": "https://github.com/paolino/reactivegas/issues/43"
+    }
+  ],
+  "unmapped": [],
+  "registerSha256": "0516dca8ebbac5e23b970f70bcb625ff9eddb01400641d3e6e4cd6a218537130"
+}

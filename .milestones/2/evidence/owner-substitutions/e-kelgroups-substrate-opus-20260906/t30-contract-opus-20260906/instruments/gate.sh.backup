@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# Ticket gate for kelgroups #30. UNTRACKED and ignored (/gate.sh in
+# .gitignore). Backed up under the ticket runtime root. Contract:
+# handoffs/T30-GATE-CONTRACT.md.
+#
+# COST: one run of this gate is ONE substantive whole-project operation,
+# because G-2 invokes `just ci`. Run it deliberately, never iteratively.
+set -uo pipefail
+cd "$(git rev-parse --show-toplevel)"
+ROOT_T30=/tmp/reactivegas/ms2/e-kelgroups-substrate-opus-20260906/t30-contract-opus-20260906
+IDENT="$ROOT_T30/instruments/d4-identities.sh"
+EXPECT="$ROOT_T30/instruments/s30-1-identities.expected"
+FAILED=0
+say() { printf '%s\n' "$*"; }
+bad() { printf 'GATE-FAIL: %s\n' "$*"; FAILED=1; }
+
+say "===== G-1: hygiene ====="
+git diff --check || bad "G-1 whitespace/conflict markers"
+if [ -n "$(git status --porcelain)" ]; then
+  say "G-1 note: working tree not clean (expected while the owner is mid-slice):"
+  git status --porcelain
+fi
+
+say "===== G-2: full local CI (just ci) ====="
+MARKER="$(mktemp)"; touch "$MARKER"
+nix develop .#ci --quiet -c just ci; CI_RC=$?
+say "G-2 just-ci-exit=$CI_RC"
+[ "$CI_RC" -eq 0 ] || bad "G-2 just ci exited $CI_RC"
+
+say "===== G-3/G-4/G-5: Vote extent metadata (candidate-dependent) ====="
+if [ ! -d lib/KelGroups/Vote ]; then
+  say "G-3..G-5 NOT-YET-APPLICABLE: lib/KelGroups/Vote absent (pre-S30-1)."
+  say "  This is the temporal freeze, not a waiver: the rows are owed and run"
+  say "  as soon as the extent exists."
+else
+  while IFS= read -r hs; do
+    [ -z "$hs" ] && continue
+    base="$(basename "$hs" .hs)"; MOD="KelGroups.Vote.$base"; REL="KelGroups/Vote/$base"
+    say "-- $MOD --"
+    matches="$(find dist-newstyle -name "$base.hi" -path "*$REL*" 2>/dev/null)"
+    n="$(printf '%s' "$matches" | grep -c . || true)"
+    say "G-4 candidate-count($MOD)=$n"
+    printf '%s\n' "$matches" | sed 's/^/    /'
+    if [ "$n" -ne 1 ]; then bad "G-4 $MOD selector returned $n candidates (exactly-one-or-REFUSE; -O0 pinned per F-C)"; continue; fi
+    hi="$matches"
+    if [ "$hi" -nt "$MARKER" ]; then say "G-4 freshness($MOD)=NEWER-than-marker"
+    else bad "G-4 $MOD .hi not newer than the pre-CI marker (stale inheritance refused)"; continue; fi
+    dump="$(mktemp)"
+    if ! nix develop .#ci --quiet -c ghc --show-iface "$hi" > "$dump" 2>"$dump.err"; then
+      bad "G-4 $MOD --show-iface refused: $(head -1 "$dump.err")"; continue
+    fi
+    [ -s "$dump" ] || { bad "G-4 $MOD empty dump"; continue; }
+    say "G-4 dump-sha256($MOD)=$(sha256sum "$dump" | cut -d' ' -f1)"
+    ids="$(bash "$IDENT" "$dump")"
+    say "G-5 derived-identity-count($MOD)=$(printf '%s\n' "$ids" | grep -c . || true)"
+    while IFS="$(printf '\t')" read -r m kind ident; do
+      case "$m" in ''|'#'*) continue;; esac
+      [ "$m" = "$MOD" ] || continue
+      if printf '%s\n' "$ids" | grep -qxF -e "$ident"; then
+        [ "$kind" = "MUST" ] && say "G-5 PASS   MUST     [$ident]" || bad "G-5 $MOD exports [$ident] which is EXCLUDED (exhibit, never a default)"
+      else
+        [ "$kind" = "MUSTNOT" ] && say "G-5 PASS   MUSTNOT  [$ident] correctly absent" || bad "G-5 $MOD missing mandated identity [$ident]"
+      fi
+    done < "$EXPECT"
+  done <<EOF
+$(ls lib/KelGroups/Vote/*.hs 2>/dev/null)
+EOF
+fi
+
+say "===== GATE: $([ "$FAILED" -eq 0 ] && echo PASS || echo FAIL) ====="
+exit "$FAILED"

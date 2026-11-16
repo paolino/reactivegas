@@ -1,0 +1,32 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["3e539978b96cdbc6.olean"],
+  "i": "ce9dda9d893d5198.ilean",
+  "c": "f2d347bfc347f58e.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/code/reactivegas-66-s4b-audit3/lean/.lake/build/lib/lean /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean /code/reactivegas-66-s4b-audit3/lean/Reactivegas/Mirrors.lean -o /code/reactivegas-66-s4b-audit3/lean/.lake/build/lib/lean/Reactivegas/Mirrors.olean -i /code/reactivegas-66-s4b-audit3/lean/.lake/build/lib/lean/Reactivegas/Mirrors.ilean -c /code/reactivegas-66-s4b-audit3/lean/.lake/build/ir/Reactivegas/Mirrors.c --setup /code/reactivegas-66-s4b-audit3/lean/.lake/build/ir/Reactivegas/Mirrors.setup.json --json",
+   "level": "trace"}],
+ "inputs":
+ [["Reactivegas.Mirrors:deps",
+   [["deps",
+     [["reactivegas/Reactivegas:extraDep",
+       [["@reactivegas:extraDep", "00000000000006bb"]]],
+      ["imports",
+       [["Reactivegas.Predicates transitive imports (legacy)",
+         "7836f6de0d05adaa"],
+        ["Reactivegas.Predicates:importAllArts", "0e56b64caac5e804"],
+        ["Reactivegas.Step transitive imports (legacy)", "7627b9d4485f33da"],
+        ["Reactivegas.Step:importAllArts", "fb770a6e264ad7d7"]]]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.25.0, commit v4.25.0", "9c3a3ade3a41d5d0"],
+  ["/code/reactivegas-66-s4b-audit3/lean/Reactivegas/Mirrors.lean",
+   "7b6c6664c2e4571b"],
+  ["options", [["-DautoImplicit=false", "4a85acb881fd49d0"]]],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "65a48ef141cbe900"}

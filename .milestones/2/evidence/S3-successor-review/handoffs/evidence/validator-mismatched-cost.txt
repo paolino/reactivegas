@@ -1,0 +1,3 @@
+VALIDATE-PACKET: FAIL (1 findings)
+NOTE: This is DATA VALIDATION, not project execution; success would establish data consistency, not semantic correctness.
+[MISMATCHED-COST] operation SS-OP-001 costKind U-BOGUS not in allowed set

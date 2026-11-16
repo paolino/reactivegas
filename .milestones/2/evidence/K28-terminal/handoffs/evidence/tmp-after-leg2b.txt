@@ -1,0 +1,7 @@
+total 16
+4213062 drwxr-xr-x 4 paolino users 4096 Sep  5 22:33 .
+4205501 drwxr-xr-x 3 paolino users 4096 Sep  5 22:33 ..
+4213089 drwxr-xr-x 2 paolino users 4096 Sep  5 22:33 nix-develop-2423475-4161256055
+4213090 drwx------ 2 paolino users 4096 Sep  5 22:33 nix-shell.rsHUYj
+4213086 -rw------- 1 paolino users    0 Sep  5 22:33 tmp.7wBZZDfW3C
+4213087 -rw------- 1 paolino users    0 Sep  5 22:33 tmp.wOwRhMKYGI

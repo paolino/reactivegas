@@ -1,0 +1,24 @@
+diff --git a/lean/Reactivegas/Predicates.lean b/lean/Reactivegas/Predicates.lean
+index fc941f5..01882d3 100644
+--- a/lean/Reactivegas/Predicates.lean
++++ b/lean/Reactivegas/Predicates.lean
+@@ -99,3 +99,7 @@ inductive Reach (view : KelGroups.GroupView) (auth : BackdonateAuth) :
+   | trans {s : State} {e : Event} {s' : State} :
+     Reach view auth s → stepEvent view s e auth = some s' →
+       Reach view auth s'
++
++
++def auditMissingTheorem (n : Nat) : Prop := n = 73
++def auditCounterpart (n : Nat) : Bool := decide (n = 73)
+diff --git a/scripts/check-lean-mirrors b/scripts/check-lean-mirrors
+index ddf10f9..3b4b6d1 100755
+--- a/scripts/check-lean-mirrors
++++ b/scripts/check-lean-mirrors
+@@ -129,6 +129,7 @@ example : KelGroups.Vote.voteWellFormedB (fun _ => 0) { members := [] } KelGroup
+ /-- The 19 claimed correspondence rows: discovered Prop, optional existing or
+ new mirror const, correctness theorem const. -/
+ def s4bCorrTable : Array (String × Option String × String) := #[
++  ("auditMissingTheorem", some "auditCounterpart", "auditMissingTheorem_corr"),
+   ("comune_not_a_member", some "KelGroups.GroupView.isMember", "comune_not_a_member_corr"),
+   ("conservation", some "conservationB", "conservation_corr"),
+   ("solvent", some "solventB", "solvent_corr"),

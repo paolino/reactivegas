@@ -1,0 +1,43 @@
+SUITE-INVOCATION: node economics-simulator-ui-gate.mjs --omit K-2
+SUITE-ENV-PARENT-SHELL: RG_OMIT_NOOP=unset
+SUITE-ENV-NOTE: parent-shell scope only. A child wrapped in "env VAR=.." takes its effective value from the SUITE-INVOCATION line above, not from this.
+derived 14 controls from 22 dataset reads + input sinks in /code/reactivegas-sim-fable-audit-c1r-s1/economics-simulator.html
+K-14 scan-proven unreachable (no emission, no read)
+witness H-6a: benvenuto strip on arrival
+witness K-12: admitMember reale 01 -> chiave 01
+witness K-3: chip autore anna per ammissione 01
+witness K-12: admitMember reale Zoë -> chiave zoë
+witness K-3: chip autore anna per ammissione zoë
+witness K-12: admitMember reale 07 -> chiave 07
+witness K-3: chip autore anna per ammissione 07
+witness H-2: dialog prompt with Italian choice text
+witness K-3: chip bersaglio+autore per elezione 01
+witness K-3: chip bersaglio+autore per elezione 07
+witness K-6: data-obj member anna -> nav().u stringa
+witness K-3: chip utente 01 per accredito (ruolo user)
+witness K-9: preset.author dalla vista persona-cassiere
+witness H-4: toast after applied deposit
+witness K-3: apertura acquisto con autore dal contesto (chip coll numerico)
+witness K-8: data-goto-coll -> nav().c numerico
+witness H-3a: spent affordance -> claim pop + guardie strip
+witness K-6: data-obj member 01 -> nav().u "01" (zero iniziale)
+witness K-9: preset.user dalla vista persona-membro
+witness K-7: data-obj pile -> nav().c numerico
+omit: witness K-2 (data-act accept data-u 01 -> event user "01") scartato
+witness K-5: data-pledge row -> nav().pu "01" + nav().c numerico
+witness K-1: data-goto-person 01 -> nav().u "01", vista non potata
+witness K-10: data-bgapprove signer 01 stringa -> uscita deliberata
+witness K-4: chip firmatario 01 per apertura domanda
+witness K-11: data-kgcast firmatari 01+anna -> verdetto positivo
+witness H-6c: voto strip tracks open-question condition
+witness H-5b: done card row after close
+witness H-6d: chiusa strip after close
+witness H-5c: feed entries carry the journey
+witness K-13: data-cf conto:01 -> display id "01"
+witness K-15: data-crumb numeric index -> group
+witness H-1: govcard heading + proof sentence (provato state)
+witness H-vocab: full-text scan without .mono/#pop/.toast erasure
+RED-ROW: copertura incompleta: K-2 data-act data-u -> event user
+RED: ui-gate /code/reactivegas-sim-fable-audit-c1r-s1/economics-simulator.html — 1 righe
+ - copertura incompleta: K-2 data-act data-u -> event user
+SUITE-EXIT: 1

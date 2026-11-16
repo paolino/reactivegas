@@ -1,0 +1,8 @@
+{
+  "nestedCommentEqual": true,
+  "executableTokenDifferenceDetected": true,
+  "stringDifferenceDetected": true,
+  "unclosedRejected": true,
+  "outsideCommentAdditionDetected": true,
+  "scope": "synthetic lexical inputs only; no project mutants"
+}

@@ -1,0 +1,31 @@
+package:
+  name: kelgroups-trivial
+  dependencies:
+    - prelude
+    - effect
+    - aff
+    - console
+    - halogen
+    - argonaut
+    - argonaut-codecs
+    - arrays
+    - maybe
+    - either
+    - foldable-traversable
+    - tuples
+    - web-html
+    - web-dom
+    - strings
+    - integers
+    - foreign-object
+    - ordered-collections
+    - kelgroups-client
+    - nullable
+    - newtype
+    - control
+    - exceptions
+  bundle:
+    module: Main
+    outfile: dist/index.js
+    platform: browser
+    type: app

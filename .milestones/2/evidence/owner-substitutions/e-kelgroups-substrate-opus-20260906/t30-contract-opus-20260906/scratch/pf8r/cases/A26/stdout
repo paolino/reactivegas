@@ -1,0 +1,42 @@
+DRIFT-PASS: config: build receipt records exit=0 (touch-faked outputs refused)
+===== DRIFT-1: input binding =====
+DRIFT-PASS: 1-position-lean: HEAD == frozen full oid (reference check; content comes from the oid below, never from HEAD)
+DRIFT-PASS: 1-position-hs: HEAD == frozen full oid
+DRIFT-PASS: 1-fileset-lean: live file set == frozen extent (12 paths incl Event/Types)
+DRIFT-PASS: 1-fileset-hs: live hs file set == frozen module sources (new-file rule)
+DRIFT-PASS: 1-clean: tree == HEAD (point-in-time sample; residual race stated in header)
+DRIFT-FAIL: 1-clean-hs: uncommitted bytes in kelgroups tree (pins bind commits, never these)
+DRIFT-PASS: 1-hash lean/KelGroups/Event.lean
+DRIFT-PASS: 1-hash lean/KelGroups/Integration.lean
+DRIFT-PASS: 1-hash lean/KelGroups/State.lean
+DRIFT-PASS: 1-hash lean/KelGroups/Types.lean
+DRIFT-PASS: 1-hash lean/KelGroups/Validate.lean
+DRIFT-PASS: 1-hash lean/KelGroups/Vote/Event.lean
+DRIFT-PASS: 1-hash lean/KelGroups/Vote/Fold.lean
+DRIFT-PASS: 1-hash lean/KelGroups/Vote/Invariants.lean
+DRIFT-PASS: 1-hash lean/KelGroups/Vote/State.lean
+DRIFT-PASS: 1-hash lean/KelGroups/Vote/Tests.lean
+DRIFT-PASS: 1-hash lean/KelGroups/Vote/Types.lean
+DRIFT-PASS: 1-hash lean/KelGroups/Vote/Validate.lean
+DRIFT-PASS: 1-hash-hs lib/KelGroups/Vote/State.hs
+DRIFT-PASS: 1-hash-hs lib/KelGroups/Vote/Types.hs
+DRIFT-PASS: 1-hashes: all extent+source bytes == frozen (complete change detection, hash assumption stated in header)
+===== DRIFT-2: mapping self-check =====
+DRIFT-PASS: 2-map lean/KelGroups/Event.lean has rows
+DRIFT-PASS: 2-map lean/KelGroups/Integration.lean has rows
+DRIFT-PASS: 2-map lean/KelGroups/State.lean has rows
+DRIFT-PASS: 2-map lean/KelGroups/Types.lean has rows
+DRIFT-PASS: 2-map lean/KelGroups/Validate.lean has rows
+DRIFT-PASS: 2-map lean/KelGroups/Vote/Event.lean has rows
+DRIFT-PASS: 2-map lean/KelGroups/Vote/Fold.lean has rows
+DRIFT-PASS: 2-map lean/KelGroups/Vote/Invariants.lean has rows
+DRIFT-PASS: 2-map lean/KelGroups/Vote/State.lean has rows
+DRIFT-PASS: 2-map lean/KelGroups/Vote/Tests.lean has rows
+DRIFT-PASS: 2-map lean/KelGroups/Vote/Types.lean has rows
+DRIFT-PASS: 2-map lean/KelGroups/Vote/Validate.lean has rows
+DRIFT-PASS: 2-empty: expected-empty statuses present
+===== DRIFT-3: .hi inventory =====
+DRIFT-FAIL: 3-fresh: /tmp/reactivegas/ms2/e-kelgroups-substrate-opus-20260906/t30-contract-opus-20260906/scratch/pf8r/cases/A26/hs/dist-newstyle/b1/KelGroups/Vote/Types.hi OLDER than pre-build marker (stale inheritance refused)
+===== DRIFT-4: coverage join =====
+DRIFT-REFUSE: 4-missing: no live dump for KelGroups.Vote.Types (needed by Verdict; pipeline breakage, not subject state)
+DRIFT-NOTE: taxonomy-v2 precedence — refusal follows a rendered verdict; exiting RED (1), reason above

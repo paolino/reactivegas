@@ -1,0 +1,53 @@
+# OPEN-EXTENTS-31r3 — extent record retained for all 31; VERDICT now lives in OPMAP-v9 (21 rows converted to PREDICTED-KILL(c), 10 stay OPEN). Each row carries VALUE (check-value sensitivity) vs REACH (execution reachability).
+Base 3590c001, read-only. The shared descriptor
+bounded-search:check-def+production-calls is REPLACED by the per-row extents
+below. Extent depth: D0 = check body read; D1 = named callee defs sited and
+bodies read or parsed; D2 = production endpoint reached (Reactivegas.apply via
+s62bRun RI:1314-1317; foldIntegrated; stepEvent/voteApply/sweepClosures direct).
+Result vocabulary: NO-MUTANT (no single-atom production mutant identified that
+flips this check within the stated extent) — the OPEN verdict stands in all 31.
+Parser work/checkgraph.js is a review aid (bounded, ceilings, unparsed named),
+never a call-graph oracle; extents below rest on direct reads except where a
+row says "parsed-1-hop".
+
+## Reactivegas rows (24)
+1. admissionPreservation_holds | check RI:2303 = checkAdminAdmissionReachable (RI:1335, s62bRun apply-integrated admitCarol, asserts memberAdmitted+payload) && checkAppMembersPreservation (RS:415, preservationDonate->apply donate-30, asserts members+votes stay, economy moves) | D2 both arms | NO-MUTANT VERDICT:OPEN-stands (value-insensitive; see B-audit below).
+2. app_members_preservation_mutant_caught | check RS:437 over SHIPPED mutant memberWritingApply (members.tail drop) on preservationDonate->apply | D2 incl shipped-mutant def read | NO-MUTANT beyond shipped one VERDICT:OPEN-stands (value-insensitive; see B-audit below).
+3. base_change_can_close_without_ballot | check RI:1517 over v3Proposed RI:1502 (s62bRun removeEve) + v3Enacted RI:1507 (s62bRun approve) asserting closure record q/positive + votes==sweep | D2 via s62bRun | NO-MUTANT VERDICT:KILL(c)-in-OPMAP-v9 (value-flip named there).
+4. base_departure_applies_cleanup | check RI:1479 = memberDeparture RI:1409 (s62bRun removeBob, asserts memberRemoved+bob-cleanup+40-comune+sums) && adminDeparture RI:1437 && roleChange RI:1453 && hookAtomic RI:1471 (foldIntegrated) | D2 | NO-MUTANT VERDICT:KILL(c)-in-OPMAP-v9 (value-flip named there).
+5. base_recompute_reachable_holds | check RI:1541, direct sweepClosures call + v3Enacted/v3Group fixtures | D1-D2 | NO-MUTANT VERDICT:KILL(c)-in-OPMAP-v9 (value-flip named there).
+6. canonical_economy_holds | check RI:1959, DIRECT stepEvent backdonate-1 call asserting alice==1 bob==1 comune==98 + checkCanonicalEconomyMutant RI:1953 (economyMutantCaught RI:1662 ghost-divergence) | D1, bodies read | NO-MUTANT VERDICT:KILL(c)-in-OPMAP-v9 (value-flip named there).
+7. comuneThresholdSanity_holds | check RI:2319 = comuneIdentityAndThresholdSanity RI:1940 (comuneId=="comune" && threshold-eval, NO production call) | D1 | NO-MUTANT (nothing production to mutate; sanity probe) VERDICT:OPEN-stands (value-insensitive; see B-audit below).
+8. direct_admission_only_holds | check RI:1383: s62bAppEvents.all s62bRun-app (members+change==none) && 4 sub-checks RI:1335-1369 && any-ok | D2 via s62bRun | NO-MUTANT VERDICT:KILL(c)-in-OPMAP-v9 (value-flip named there).
+9. exhaustive_inventories_hold | check RI:1980, refs validateProposal + s62bView/mixedGroup + checkDirectAdmissionOnly + checkRoleChangeReachable | D1 parsed-1-hop + validateProposal site read | NO-MUTANT VERDICT:KILL(c)-in-OPMAP-v9 (value-flip named there).
+10. i57_auth_holds | check RI:2109, direct foldIntegrated + s62bRun/mixedGroup/probeAuth | D2 | NO-MUTANT VERDICT:KILL(c)-in-OPMAP-v9 (value-flip named there).
+11. i57_boundary_holds | check RI:2071, direct foldIntegrated + bypass/duplicate-caught sub-checks RI:2047/2059 (duplicate refs voteApply) | D2 | NO-MUTANT VERDICT:KILL(c)-in-OPMAP-v9 (value-flip named there).
+12. i57_disjoint_mutant_caught | check RI:2185 over checkI57Disjoint RI:2169 (foldIntegrated 3-event trace asserting ballot separation; body READ) | D2 | NO-MUTANT VERDICT:OPEN-stands (value-insensitive; see B-audit below).
+13. i57_exhaustive_holds | check RI:2092, s62bRun+MixedGroup routed | D2 via s62bRun | NO-MUTANT VERDICT:KILL(c)-in-OPMAP-v9 (value-flip named there).
+14. i57_franchise_mutant_caught | check RI:2233, direct foldIntegrated+voteApply + checkI57Franchise RI:2201 | D2 | NO-MUTANT VERDICT:OPEN-stands (value-insensitive; see B-audit below).
+15. i57_noexpiry_holds | check RI:2292, s62bRun+v3Group+v3Question | D2 via s62bRun | NO-MUTANT VERDICT:OPEN-stands (value-insensitive; see B-audit below).
+16. i57_noop_holds | check RI:2103 = boundary && hookAtomic && nonAdminRefused (all foldIntegrated-routed) | D2 | NO-MUTANT VERDICT:KILL(c)-in-OPMAP-v9 (value-flip named there).
+17. i57_nostale_holds | check RI:2195 over checkV3BaseReachable + checkBaseRecomputeReachable | D1 | NO-MUTANT VERDICT:KILL(c)-in-OPMAP-v9 (value-flip named there).
+18. i57_partition_holds | check RI:2134 over v3Enacted | D1-D2 | NO-MUTANT VERDICT:KILL(c)-in-OPMAP-v9 (value-flip named there).
+19. i57_policyfree_holds | check RI:2256, direct foldIntegrated | D2 | NO-MUTANT VERDICT:KILL(c)-in-OPMAP-v9 (value-flip named there).
+20. i57_policyfree_mutant_caught | check RI:2273, direct foldIntegrated+voteApply + checkI57PolicyFree | D2 | NO-MUTANT VERDICT:KILL(c)-in-OPMAP-v9 (value-flip named there).
+21. i57_r45_holds | check RI:2125, direct foldIntegrated + s62bRun/v3Group | D2 | NO-MUTANT VERDICT:OPEN-stands (value-insensitive; see B-audit below).
+22. integrated_theorem_witness_holds | check RI:1946 = departure && adminDeparture && roleChange && baseRecompute && hookAtomic | D1-D2 | NO-MUTANT VERDICT:KILL(c)-in-OPMAP-v9 (value-flip named there).
+23. sweep_idempotent_mutant_caught | check RI:1572 over SHIPPED sweepDuplicating mutant (named negative control: applies, moves payload, duplicates on re-apply) | D1, mutant def read (Vote/Invariants.lean:1188+) | NO-MUTANT beyond shipped one VERDICT:OPEN-stands (value-insensitive; see B-audit below).
+24. sweep_idempotent_witness | check RI:1564, DIRECT sweepClosures call (idempotent + moved-payload conjuncts) | D1 | NO-MUTANT VERDICT:KILL(c)-in-OPMAP-v9 (value-flip named there).
+
+## TraceTests mirror rows (7) — extent inherits Reactivegas row + mirror alias site
+25. app_members_preservation_mutant_caught | TT:1084 mirror of RS:437 | inherits row 2 | NO-MUTANT VERDICT:OPEN-stands (value-insensitive; see B-audit below).
+26. base_change_can_close_without_ballot | TT:903 mirror of RI:1517 | inherits row 3 | NO-MUTANT VERDICT:KILL(c)-in-OPMAP-v9 (value-flip named there).
+27. base_departure_applies_cleanup | TT:901 mirror of RI:1479 | inherits row 4 | NO-MUTANT VERDICT:KILL(c)-in-OPMAP-v9 (value-flip named there).
+28. base_recompute_reachable_holds | TT:902 mirror of RI:1541 | inherits row 5 | NO-MUTANT VERDICT:KILL(c)-in-OPMAP-v9 (value-flip named there).
+29. direct_admission_only_holds | TT:897 mirror of RI:1383 | inherits row 8 | NO-MUTANT VERDICT:KILL(c)-in-OPMAP-v9 (value-flip named there).
+30. sweep_idempotent_mutant_caught | TT:905 mirror of RI:1572 | inherits row 23 | NO-MUTANT VERDICT:OPEN-stands (value-insensitive; see B-audit below).
+31. sweep_idempotent_witness | TT:904 mirror of RI:1564 | inherits row 24 | NO-MUTANT VERDICT:KILL(c)-in-OPMAP-v9 (value-flip named there).
+# End: 31 rows, OPEN stands in all 31, each with its examined extent above.
+# No per-row scope or result is shared or copy-pasted; the v7 single descriptor is withdrawn.
+
+## B-AUDIT (submission 3) — reachability-under-failing-build vs definitional insensitivity, per row
+VALUE-FLIP rows (check Bool falsified by named current-map atom; OPMAP-v9 KILL): 3 (OP-63/OP-40), 4 (OP-67G/OP-57/57B), 5 (OP-63), 6 (OP-23), 8 (OP-54/55/56, one per sub-check), 9 (inherits 8), 10 (OP-49), 11 (OP-49), 13 (OP-58B via Reactivegas.apply app route), 16 (OP-49+OP-54), 17 (OP-63/OP-40), 18 (OP-63/OP-40), 19 (OP-40), 20 (OP-40 via conjunct), 22 (OP-63 via conjunct), 24 (OP-40), mirrors 26-29, 31.
+VALUE-STANDS rows (no current-map atom flips the Bool; OPEN retained): 1 (Validate atoms leave admin-admit path unchanged; appMembers unchanged), 2 (shipped-mutant-local; Step-file reachable; OP-58B leaves detection true), 7 (pure sanity, no production call), 12 (OP-39 touches assent arm only; trace needs dissent-arm erase which is intact — read checkI57Disjoint body), 14 (cast arm intact; erase no-op on empty dissents), 15, 21, 23 (sweepDuplicating-local), mirrors 25, 30.
+REACHABILITY (execution order, never a kill and never insensitivity): Step-file checks evaluate before any Invariants proof can break them; Invariants checks are PROOF-BLOCKED (same-file earlier proof, site named per row in OPMAP-v9) or IMPORT-BLOCKED (KelGroups-file proof breaks first); TraceTests mirrors are downstream of everything. A blocked check is an unobserved row, not a surviving one.

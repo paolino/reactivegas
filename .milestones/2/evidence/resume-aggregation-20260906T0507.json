@@ -1,0 +1,32 @@
+[
+  {
+    "source": "e-lean-compliance/RESUME.md",
+    "target": "resume/e66.md",
+    "sha256": "d3acae7893d28ebf17130a2b9986f5e827448438ea1a11ac44bca87529bc732c"
+  },
+  {
+    "source": "e-haskell-impl/handoffs/RESUME-FRAGMENT.md",
+    "target": "resume/e67.md",
+    "sha256": "46ee1a8781e6196cc41a5785ea05f37af841a94b14a5fb4523009d838f4433b5"
+  },
+  {
+    "source": "t-simulator-fable/RESUME.md",
+    "target": "resume/t70.md",
+    "sha256": "2856701035a723fa5606bbec0246174ce775eb9e0bfca654da9f37f4a41d8258"
+  },
+  {
+    "source": "t68-proposer-assent/RESUME.md",
+    "target": "resume/t68.md",
+    "sha256": "232f128f51883055b1adf187a8aacc126b08ff2c162e72b1e4304ffe0c2ad7bf"
+  },
+  {
+    "source": "t71-design-record/RESUME.md",
+    "target": "resume/t71.md",
+    "sha256": "764e5455dc5b076483298bcd78335795f90ec644b94d4237830400733144786c"
+  },
+  {
+    "source": "e-kelgroups-substrate/RESUME-FRAGMENT.md",
+    "target": "resume/e-kelgroups29.md",
+    "sha256": "27ea79533138bbccdf2b2d7d9c8fef3c965f3b6663aeebcdd8cc850b4cd32850"
+  }
+]

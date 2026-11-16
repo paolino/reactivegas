@@ -1,0 +1,1 @@
+corpus-check: ntraces=5 nevents=32 nsteps=7 live-bound

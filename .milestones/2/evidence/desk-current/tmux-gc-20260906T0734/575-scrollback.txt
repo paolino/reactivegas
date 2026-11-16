@@ -1,0 +1,552 @@
+⚠ Skill descriptions were shortened to fit the skills context budget. Codex can still see every skill, but some descriptions are shorter. Disable unused skills or plugins to leave more room
+  for the rest.
+
+• I’ll use the auditor and Lean audit skills to check the frozen packet, verify both model identities, and complete the static review within the zero-execution boundary. I’ll read the brief
+  and all admitted artifacts before posting START.
+
+• Ran pwd; rg -n 'Lean compliance|S3|FULL STATIC|TraceAdmissible' /home/paolino/.codex/memories/MEMORY.md
+  └ /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-final-static
+    3:scope: Fresh read-only audit outcomes for Lean compliance, simulator, proposer-assent, design-record, and corpus-exporter candidates; use to distinguish contract blocks, local audit
+    results, and ticket acceptance.
+    6:## Task 1: Lean compliance judgment audit and S62-SIM authority/semantic review
+    39:- TraceAdmissible, raw_reachable_violation, foldGroup_wellFormed, F-01, F-02, F11-WRONG-DECL, F11-SOLE-MARKER, ValidationError, reservedKey, design record
+
+• Ran cat /home/paolino/.codex/skills/auditor/SKILL.md /home/paolino/.codex/skills/lean-auditor/SKILL.md; cat brief.md; rg --files -g AGENTS.md -g '*' admitted
+  └ ---
+    name: auditor
+    … +491 lines (ctrl + t to view transcript)
+    admitted/original-audit/ORIGINAL-AUDITOR-STATUS.md
+    admitted/original-audit/START-identity.txt
+
+• Ran cat brief.md; sha256sum brief.md; sha256sum -c admitted/MANIFEST.sha256; wc -lc admitted/* admitted/*/*
+  └ (no output)
+
+• Ran cat /home/paolino/.codex/skills/worker-protocol/SKILL.md /home/paolino/.codex/skills/tmux-orchestrator/SKILL.md /home/paolino/.codex/skills/verification/SKILL.md /home/paolino/.codex/
+  │ skills/invariants/SKILL.md /home/paolino/.codex/skills/lean4/SKILL.md
+  └ on:** the child reads it at the next boundary and records
+      the same acknowledgement.
+    … +1117 lines (ctrl + t to view transcript)
+
+    State which of the two you are claiming when you report a proof.
+
+• Ran ps -o pid,ppid,args -p $$ -p $PPID; printenv TMUX_PANE CODEX_THREAD_ID; rg --files -g AGENTS.md -g '*status*' -g '*session*' . /home/paolino/.codex | head -60; sed -n '1,23p' /home/
+  │ paolino/.codex/memories/MEMORY.md
+  └     PID    PPID COMMAND
+          1       0 codex-linux-sandbox --sandbox-policy-cwd /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-final-static --command-cwd /tmp/reactivegas/ms2/e-lean-compliance/
+    … +132 lines (ctrl + t to view transcript)
+    rollout-2026-09-05T12-54-34-01a0716b-a2d3-7581-af10-4db0c9c95781.jsonl, updated_at=2026-09-05T12:19:14+00:00, thread_id=01a0716b-a2d3-7581-af10-4db0c9c95781, local AUDIT-PASS; remote CI
+    unverified)
+
+• Ran sha256sum -c MANIFEST.sha256; sha256sum MANIFEST.sha256 submission-3/MANIFEST.sha256
+  └ ./ATOMS-ledger.txt: OK
+    ./CORRECTIONS-019.md: OK
+    … +47 lines (ctrl + t to view transcript)
+    a88d8594a66de813b4740545919e857923ead5df9ef3dc62cb2a2e39a5315f64  MANIFEST.sha256
+    a0dbe2c24236f2f5ef21d4c7a260e60bc93f926bea0a67737b4c2e5f1e290a36  submission-3/MANIFEST.sha256
+
+• Ran tmux display-message -p -t %575 '#{session_name} #{window_name} #{pane_id} #{pane_pid}'; rg --files /home/paolino/.codex/sessions/2026/09/06 | rg '01a0752f-055a-7540-aeef-4787eb87f010';
+  │ rg --files -g AGENTS.md /tmp/reactivegas /code/reactivegas-66-s3-audit-final; ls -la
+  └ error connecting to /run/user/1000/tmux-1000/default (Operation not permitted)
+    /home/paolino/.codex/sessions/2026/09/06/rollout-2026-09-06T06-26-50-01a0752f-055a-7540-aeef-4787eb87f010.jsonl
+    … +11 lines (ctrl + t to view transcript)
+    drwxr-xr-x  2 paolino users 4096 Sep  6 06:25 inbox
+    drwxr-xr-x  2 paolino users 4096 Sep  6 06:25 questions
+
+✗ You canceled the request to run tmux display-message -p -t %575 '#{session_name} #{window_name} #{pane_id} #{...
+
+• Ran tmux display-message -p -t %575 '#{session_name} #{window_name} #{pane_id} #{pane_pid}'; ps -eo pid,ppid,args | rg 'codex.*gpt-6-astra|rg-s3-audit-final'
+  └ (no output)
+
+■ Conversation interrupted - tell the model what to do differently. Something went wrong? Hit `/feedback` to report the issue.
+
+
+› I declined that command for ONE narrow reason and the rest of it was right. The tmux display-message on your own pane is exactly what the brief asks for. What I will not approve is ps -eo
+  pid,ppid,args, which enumerates EVERY process on the host before the rg filter: a standing constraint on this campaign is no broader process access, and the sibling S4 auditor was held to
+  the same line and complied at no cost. Re-submit with the process listing RESTRICTED TO YOUR OWN pid and subtree - for example ps -o pid,ppid,lstart,args -p 3302516 together with ps -o
+  pid,ppid,args --ppid 3302516 - keeping the tmux display-message unchanged, and record the observation scope in your receipt. Two things to save you round trips. FIRST, host UTC as I send
+  this is 2026-09-06T05:46:44Z; if your sandbox has no clock, use that value and say the owner supplied it rather than guessing or rounding. SECOND, and this is the part that matters for your
+  brief: /proc and ps establish your LAUNCH IDENTITY only. They cannot detect a mid-session model switch - in the sibling S4 lane the argv read gpt-6-astra/high throughout while the session
+  was actually answering on a different model, because I mis-sent a keystroke into a delayed-response menu whose first option is Retry with a faster model. So verify your ACTIVE session model
+  from the session's OWN model control or status as well, and state both in your first journal line. Neither substitutes for the other.
+
+
+• Understood. I’ll restrict the process read to my pane’s PID and its immediate children, and record that scope. I’ll verify the active model separately from this session’s own status before
+  posting START.
+
+✔ You approved codex to run tmux display-message -p -t %575 '#{session_name} #{window_name} #{pane_id} #{... this time
+
+• Ran tmux display-message -p -t %575 '#{session_name} #{window_name} #{pane_id} #{pane_pid}'; ps -o pid,ppid,lstart,args -p 3302516; ps -o pid,ppid,args --ppid 3302516
+  └ reactivegas rg-s3-audit-final %575 3302414
+        PID    PPID                  STARTED COMMAND
+    … +6 lines (ctrl + t to view transcript)
+    3304729 3302516 /nix/store/nqhk0522q8ncygwwx054iq76ckcjll82-codex-0.153.2/libexec/codex-code-mode-host
+    3343957 3302516 ps -o pid,ppid,args --ppid 3302516
+
+• Ran jq -c 'select(.type == "turn_context") | {timestamp,model:.payload.model,effort:.payload.effort,reasoning_effort:.payload.reasoning_effort,cwd:.payload.cwd}' /home/paolino/.codex/
+  │ sessions/2026/09/06/rollout-2026-09-06T06-26-50-01a0752f-055a-7540-aeef-4787eb87f010.jsonl; date -u +%Y-%m-%dT%H:%M:%SZ; git -C /code/reactivegas-66-s3-audit-final rev-parse HEAD; git
+  │ -C /code/reactivegas-66-s3-audit-final status --porcelain; rg --files --hidden --no-ignore /code/reactivegas-66-s3-audit-final -g '*.olean' -g AGENTS.md; cat admitted/S3-MANDATE.md
+  └ {"timestamp":"2026-09-06T05:27:19.494Z","model":"gpt-6-astra","effort":"high","reasoning_effort":null,"cwd":"/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-final-static"}
+    {"timestamp":"2026-09-06T05:46:48.651Z","model":"gpt-6-astra","effort":"high","reasoning_effort":null,"cwd":"/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-final-static"}
+    … +309 lines (ctrl + t to view transcript)
+    **Phases 2..n remain unauthorized** and require the measured proposal plus
+    explicit numeric authorization.
+
+• Ran cat admitted/original-audit/ORIGINAL-AUDITOR-BRIEF.md admitted/original-audit/AUDIT-REPORT.md admitted/original-audit/REQUIREMENT-LEDGER.md admitted/original-audit/ONWARD-DISCOVERIES.md
+  └ # BRIEF — independent STATIC audit, S3 Phase 1 assessment
+
+    … +335 lines (ctrl + t to view transcript)
+    All eight in-scope assessment findings remain in AUDIT-REPORT.md; none is displaced into this onward file to weaken the verdict. These observations add no execution, code-edit, publication
+    or contact authority.
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• The scoped process read confirms launch as gpt-6-astra/high. This session’s current turn_context independently records gpt-6-astra/high, including after your latest message. The brief hash,
+  49 admitted checks, and submission-3 manifest hash match. I’m still reading the full packet before START.
+
+• Ran sed -n '78,118p' admitted/original-audit/AUDIT-REPORT.md; cat admitted/CORRECTIONS-019.md admitted/DESK-CHALLENGES.md admitted/DESK-RELEASE-AND-CORRECTIONS.md admitted/
+  │ S3-PHASE1-PARENT-DISPOSITION.md admitted/S3-PHASE1-DISPOSITION-ADDENDUM-1.md
+  └
+    Concrete source obligations absent from that finite account include the reached `checkRoleAddition`/`checkRoleRemoval` calls into `roleDef.canAdd`/`canRemove` (`KelGroups/Validate.lean:43–
+    … +331 lines (ctrl + t to view transcript)
+    73 distinct KILL grounds and the 29 OBSERVED upstream links — static, no execution —
+    which is the same method used above and needs no grant, only time.
+
+• Ran cat admitted/S3-PHASE1-DISPOSITION-ADDENDUM-{2,3-CORRECTION,4-FINAL,5-CORRECTION}.md admitted/S3-REPAIR-SUBMISSION-{1,3}-PARENT-VERIFICATION.md
+  └ # S3 disposition — addendum 2: the OBSERVED class closed, and the duplicate defect measured
+
+    … +651 lines (ctrl + t to view transcript)
+    mandate — not over my labels, and not over the repaired lines alone. All three
+    submission sets stand immutable and separately verifiable as evidence inputs.
+
+• Ran cat admitted/S3-FINAL-PACKET-FULL-PARENT-ASSESSMENT.md admitted/submission-3/COST-MODEL.md admitted/submission-3/MEASUREMENT-REQUEST.md admitted/submission-3/ELAB-GREEN-43.txt admitted/
+  │ submission-3/OPEN-EXTENTS-31.txt
+  └ # S3 final static packet — full parent assessment and successor recommendation
+
+    … +386 lines (ctrl + t to view transcript)
+    earlier proof, site named per row in OPMAP-v9) or IMPORT-BLOCKED (KelGroups-file proof breaks first); TraceTests mirrors are downstream of everything. A blocked check is an unobserved row,
+    not a surviving one.
+
+• Explored
+  └ Read A-ASSESSMENT-51.txt, OPMAP-v9-requirement-verdict-grounds.txt, ATOMS-ledger.txt, RELATION-v2-property-atom.txt
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• I’ve read all 207 final map rows and the correction chain. The review also needs to check the claimed extents: the atom relation uses undeclared tags, and several mirror rows cite map lines
+  that point elsewhere. I’ll verify those against the source and original artifacts before grading them.
+
+• Ran cat admitted/original-audit/{START-identity.txt,candidate-final-identity.txt,ORIGINAL-AUDITOR-STATUS.md,reconciliation.json,source-import-graph.json,receipt-file-roster.md}; sed -n
+  │ '1,25p' admitted/original-audit/AUDIT-MANIFEST.sha256; head -45 admitted/original-audit/source-compiled-map.json; head -50 admitted/original-audit/receipt-archive-index.json; head -50
+  │ admitted/original-audit/receipt-table-summary.json; rg --files /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-static /tmp/reactivegas/ms2/e-lean-compliance | rg
+  │ … +1 lines
+  └ 2026-09-06T00:21:07Z
+    brief_mtime=2026-09-06 01:20:16.633671650 +0100
+    … +475 lines (ctrl + t to view transcript)
+    /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex/admitted/PHASE1-BRIEF.md
+    /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s2r-sub2-codex/brief.md
+
+• Ran command -v node; cat /home/paolino/.codex/skills/verification/SKILL.md; sed -n '1,220p' /home/paolino/.codex/skills/tmux-orchestrator/SKILL.md
+  └ /run/current-system/sw/bin/node
+    ---
+    … +408 lines (ctrl + t to view transcript)
+    Production rules:
+
+
+• Ran diff -u admitted/submission-1/A-ASSESSMENT-51.txt admitted/submission-3/A-ASSESSMENT-51.txt; diff -u admitted/submission-1/COST-MODEL.md admitted/submission-3/COST-MODEL.md; diff -u
+  │ admitted/submission-1/MEASUREMENT-REQUEST.md admitted/submission-3/MEASUREMENT-REQUEST.md; diff -u admitted/submission-1/ELAB-GREEN-43.txt admitted/submission-3/ELAB-GREEN-43.txt; diff
+  │ -u admitted/submission-1/OPEN-EXTENTS-31.txt admitted/submission-3/OPEN-EXTENTS-31.txt
+  └ --- admitted/submission-1/A-ASSESSMENT-51.txt    2026-09-06 06:25:35.561014668 +0100
+    +++ admitted/submission-3/A-ASSESSMENT-51.txt    2026-09-06 06:25:35.562014730 +0100
+    … +209 lines (ctrl + t to view transcript)
+    earlier proof, site named per row in OPMAP-v9) or IMPORT-BLOCKED (KelGroups-file proof breaks first); TraceTests mirrors are downstream of everything. A blocked check is an unobserved row,
+    not a surviving one.
+
+• Ran mkdir -p handoffs/evidence; node <<'NODE'
+  │ const fs=require('fs'),crypto=require('crypto');
+  │ const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+  │ … +10 lines
+  └ (no output)
+
+• Ran node <<'NODE'
+  │ const fs=require('fs'); const read=p=>fs.readFileSync('admitted/'+p,'utf8').trimEnd().split('\n');
+  │ for(const p of ['OPMAP-v7-requirement-verdict-grounds.txt','submission-1/OPMAP-v8-requirement-verdict-grounds.txt','submission-2/OPMAP-v8-requirement-verdict-grounds.txt']){const
+  │ … +5 lines
+  └ OPMAP-v7-requirement-verdict-grounds.txt
+    1 col5=RED (post-state mismatch)
+    … +205 lines (ctrl + t to view transcript)
+    R-BUILD2/R-BUILD3/R-CORPUS/R-TRACE retained as the anchor pattern; this request extends, never rewrites, them. The 4-against-3 historical overrun stays on the record. F-07 isolation gap is
+    cured prospectively by the scratch checkout; retrospectively it stands.
+
+• Ran node <<'NODE'
+  │ const fs=require('fs');const a=JSON.parse(fs.readFileSync('admitted/original-audit/receipt-archive-index.json'));let out=[];a.forEach((f,i)=>{out.push(`FILE ${i+1} ${f.name} ${f.sha256}
+  │ `);for(const r of f.tableLines)out.push(r.line+' '+r.cells.join(' | '));});fs.writeFileSync('handoffs/evidence/archive-tables.txt',out.join('\n')+'\n');console.log('files='+a.length+'
+  │ … +8 lines
+  └ (no output)
+
+• Explored
+  └ Read archive-tables.txt
+
+• Ran sed -n '441,565p' handoffs/evidence/archive-tables.txt; cat admitted/*/MANIFEST.sha256
+  └ 51 EP-LAST-ADMIN | BLOCKING | PASS | OPEN | carried s1; VI-8 refutation uses this gap
+    52 EP-ROLE-PRED | BLOCKING | PASS | OPEN | carried s1
+    … +154 lines (ctrl + t to view transcript)
+    5770deb7ecf4167ddd8fc2434b950d40c38922e9c4615edb547fe383800d8d57  COST-MODEL.md
+    e4e8f50f82a4af3a14d6c166b1206264d8eb41b1b28a1aa742e4304c9dd8a497  MEASUREMENT-REQUEST.md
+
+• Ran node <<'NODE'
+  │ const fs=require('fs');let rows=JSON.parse(fs.readFileSync('admitted/original-audit/source-compiled-map.json'));for(let i=0;i<80;i++){let r=rows[i];console.log(JSON.stringify(r));}
+  │ NODE
+  └ {"classification":"HELPER-FACT","private":true,"name":"KelGroups.assocAdjust_keys","site":"KelGroups/
+    Invariants.lean:100","short":"assocAdjust_keys","module":"KelGroups.Invariants","matches":["_private.KelGroups.Invariants.0.KelGroups.assocAdjust_keys"],"sourceLine":"private theorem
+    … +108 lines (ctrl + t to view transcript)
+    ClosureRecord)","statement":"private theorem filterMap_keys_nodup (f : QuestionId × Question → Option ClosureRecord)\n    (hid : ∀ entry c, f entry = some c → c.questionId = entry.1)\n
+    (entries : List (QuestionId × Question))\n    (h : (entries.map Prod.fst).Nodup) :\n    ((entries.filterMap f).map (·.questionId)).Nodup "}
+
+• Ran node <<'NODE'
+  │ const fs=require('fs');const a=JSON.parse(fs.readFileSync('admitted/original-audit/source-compiled-map.json'));for(let i=0;i<100;i++){let r=a[i];console.log(`${i+1} ${r.classification}
+  │ ${r.name} ${r.site}\n${r.statement}`)}
+  │ … +1 lines
+  └ 1 HELPER-FACT KelGroups.assocAdjust_keys KelGroups/Invariants.lean:100
+    private theorem assocAdjust_keys (key : Key) (f : ν → ν) (entries : List (Key × ν)) :
+    … +529 lines (ctrl + t to view transcript)
+          qid ∈ (foldFrom θ view initial events).openQuestions.map Prod.fst ∨
+            qid ∈ (foldFrom θ view initial events).closed.map (·.questionId)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• The receipt inventory and per-row plan remain separate obligations. Reading all 43 archived campaign tables confirms that the recovered records contain useful evidence; it does not establish
+  the seven required provenance fields for each receipt. I’m checking whether the original repair artifacts supply those fields.
+
+• Ran node <<'NODE'
+  │ const fs=require('fs');const a=JSON.parse(fs.readFileSync('admitted/original-audit/source-compiled-map.json'));for(let i=100;i<180;i++){let r=a[i];console.log(`${i+1} ${r.classification}
+  │ ${r.name} ${r.site}\n${r.statement}`)}
+  │ … +1 lines
+  └ 101 AUTHORED-STATEMENT KelGroups.Vote.ballots_nodup_disjoint KelGroups/Vote/Invariants.lean:802
+    theorem ballots_nodup_disjoint (θ : Threshold) (events : List (Key × VoteEvent)) :
+    … +363 lines (ctrl + t to view transcript)
+    180 HELPER-FACT bool_and_right Reactivegas/Invariants.lean:55
+    private theorem bool_and_right {b₁ b₂ : Bool} (h : (b₁ && b₂) = true) : b₂ = true
+
+⚠ Heads up, you have less than 5% of your weekly limit left. Run /status for a breakdown.
+
+• Ran node <<'NODE'
+  │ const fs=require('fs');const a=JSON.parse(fs.readFileSync('admitted/original-audit/source-compiled-map.json'));for(let i=180;i<a.length;i++){let r=a[i];console.log(`${i+1}
+  │ ${r.classification} ${r.name} ${r.site}\n${r.statement}`)}
+  │ … +4 lines
+  └ 222 HELPER-FACT stripCollections_sum Reactivegas/State.lean:351
+    theorem stripCollections_sum (r : KelGroups.Key) (cols : List Collection) :
+    … +45 lines (ctrl + t to view transcript)
+    theorem all_checks_pass : failing = []
+    ALL METADATA FIELD RECONCILIATION differences=[]
+
+• Ran node <<'NODE'
+  │ const fs=require('fs'),crypto=require('crypto');const root='/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex';let m=fs.readFileSync('admitted/original-audit/
+  │ AUDIT-MANIFEST.sha256','utf8').trim().split('\n');const old=fs.readFileSync('admitted/original-audit/AUDIT-MANIFEST-CHECK.txt','utf8').trim().split('\n');let r=m.map((line,i)=>{let
+  │ … +5 lines
+  └ (no output)
+
+✔ You approved codex to run tr '\0' ' ' < /proc/3302516/cmdline; readlink /proc/3302516/cwd; ps -o pid,pp... this time
+
+• Ran tr '\0' ' ' < /proc/3302516/cmdline; readlink /proc/3302516/cwd; ps -o pid,ppid,pgid,lstart,args -p 3302516
+  └ /nix/store/nqhk0522q8ncygwwx054iq76ckcjll82-codex-0.153.2/libexec/codex -m gpt-6-astra -c model_reasoning_effort=high /tmp/reactivegas/ms2/e-lean-compliance/
+    candidate-auditor-s3-final-static
+        PID    PPID    PGID                  STARTED COMMAND
+    3302516 3302414 3302516 Sun Sep  6 06:26:21 2026 /nix/store/nqhk0522q8ncygwwx054iq76ckcjll82-codex-0.153.2/libexec/codex -m gpt-6-astra -c model_reasoning_effort=high
+
+• Ran node <<'NODE'
+  │ const fs=require('fs'),cp=require('child_process');const path='/home/paolino/.codex/sessions/2026/09/06/rollout-2026-09-06T06-26-50-01a0752f-055a-7540-aeef-4787eb87f010.jsonl';const
+  │ turns=fs.readFileSync(path,'utf8').split('\n').filter(Boolean).map(s=>JSON.parse(s)).filter(r=>r.type==='turn_context');const t=turns.at(-1);const utc=cp.execFileSync('date',['-u','+
+  │ … +13 lines
+  └ <ref *1> node:child_process:964
+        throw err;
+    … +26 lines (ctrl + t to view transcript)
+
+    Node.js v24.13.0
+
+• Ran node <<'NODE'
+  │ const fs=require('fs');const path='/home/paolino/.codex/sessions/2026/09/06/rollout-2026-09-06T06-26-50-01a0752f-055a-7540-aeef-4787eb87f010.jsonl';const
+  │ t=fs.readFileSync(path,'utf8').split('\n').filter(Boolean).map(s=>JSON.parse(s)).filter(r=>r.type==='turn_context').at(-1);const utc=new Date().toISOString();const line=`${utc}  START
+  │ … +14 lines
+  └ 2026-09-06T05:54:21.879Z  START  launch=/proc/3302516/cmdline codex-0.153.2 -m gpt-6-astra -c model_reasoning_effort=high PID=PGID=3302516 PPID=3302414; ACTIVE
+    session=01a0752f-055a-7540-aeef-4787eb87f010 model=gpt-6-astra effort=high session-own turn_context=2026-09-06T05:46:48.651Z; observation_scope=own pane %575 and own PID plus immediate
+    … +4 lines (ctrl + t to view transcript)
+    rehash; no contact/repair/acceptance
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• START is now at the journal’s real EOF with both model identities and the restricted process scope. I also rehashed all 323 entries in the original audit manifest successfully. Next I’ll
+  assess the source claims, including all 81 helpers and the original cost obligations carried outside the six-file wrapper.
+
+• Ran cat /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex/admitted/PHASE1-BRIEF.md; cat /tmp/reactivegas/ms2/e-lean-compliance/
+  │ candidate-auditor-s3-phase1-static-codex/evidence/supplemental/inbox-NOTE-*.md; rg --files /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs /tmp/reactivegas/ms2/
+  │ e-lean-compliance | rg 's3-repair|CORRECTIONS-01|HELPER|WITNESS'
+  └ # S3 Phase 1 brief — required-extent discovery, receipt inventory, measured costing
+
+    … +1066 lines (ctrl + t to view transcript)
+    /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-repair/admitted/S3-PHASE1-DISPOSITION-ADDENDUM-1.md
+    /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-repair/admitted/ATOMS-ledger.txt
+
+• Ran wc -l /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/CORRECTIONS-01*.md; cat /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/
+  │ CORRECTIONS-013.md
+  └    73 /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/CORRECTIONS-010.md
+      145 /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/CORRECTIONS-013.md
+    … +149 lines (ctrl + t to view transcript)
+    journal writes from the NOTE-013 ack onward use append-to-EOF shell command
+    with tail readback. No edit-tool write to STATUS.md remains in effect.*
+
+• Ran ls /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs; cat /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/CORRECTIONS-0{15,16,17,18}.md
+  └ ATOMS-ledger.txt
+    AUTHORITATIVE-v1-superseded-20260906.md
+    … +307 lines (ctrl + t to view transcript)
+    build — unfunded arithmetic, not a grant or budget.** All prior envelope
+    totals WITHDRAWN as fitted artifacts.
+
+• Explored
+  └ Read AUTHORITATIVE.md
+
+⚠ Skill descriptions were shortened to fit the skills context budget. Codex can still see every skill, but some descriptions are shorter. Disable unused skills or plugins to leave more room
+  for the rest.
+
+• Context compacted
+
+• Ran cat handoffs/evidence/identity.md; tail -n 4 STATUS.md; wc -l admitted/submission-3/*; rg --files admitted | head -n 20
+  └ # Identity receipt
+
+    … +48 lines (ctrl + t to view transcript)
+    admitted/ATOMS-ledger.txt
+    admitted/submission-1/A-ASSESSMENT-51.txt
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• The original receipt corrections still contain omissions that the newer packet does not address. I’m checking those against the archived rows, alongside the map’s source claims, so each
+  closure decision rests on the evidence.
+
+• Explored
+  └ Read brief.md, Fold.lean, Validate.lean, Integration.lean
+    Search foldFrom_preserves|applyVoteEvent_preserves_wellFormed|WellFormed|SweepReady|sweepClosures_tally|foldVote_append in Invariants.lean
+    Read Invariants.lean
+    Read Step.lean
+    Read ELAB-GREEN-43.txt
+    Read Invariants.lean, State.lean, Step.lean
+    List handoffs
+    Search R3|R[1-5]|AUTHORITATIVE
+    List original-audit
+    Read OPMAP-v9-requirement-verdict-grounds.txt
+    Read PHASE1-REPORT-R3.md
+
+• Ran node <<'NODE'
+  │ const fs=require('fs');const x=JSON.parse(fs.readFileSync('admitted/original-audit/
+  │ source-compiled-map.json'));console.log(JSON.stringify(x).slice(0,2000));console.log(fs.readFileSync('admitted/original-audit/receipt-table-summary.json','utf8').slice(0,1800));
+  │ … +2 lines
+  └ [{"classification":"HELPER-FACT","private":true,"name":"KelGroups.assocAdjust_keys","site":"KelGroups/
+    Invariants.lean:100","short":"assocAdjust_keys","module":"KelGroups.Invariants","matches":["_private.KelGroups.Invariants.0.KelGroups.assocAdjust_keys"],"sourceLine":"private theorem
+    … +160 lines (ctrl + t to view transcript)
+    20 HELPER-FACT KelGroups.assocErase_sublist KelGroups/Invariants.lean:34 private=true matches=_private.KelGroups.Invariants.0.KelGroups.assocErase_sublist
+    private theorem assocErase_sublist [BEq κ] (key : κ) (entries : List (κ × ν)) :
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• Two additional source errors are clear: removing the vote sweep can falsify well-formedness itself, although row 68 calls it only proof-script sensitivity; and row 35 attributes a sweep
+  lemma’s failure to a ballot mutation that does not affect that lemma. I’m recording these separately from unexecuted predictions.
+
+• Ran node <<'NODE'
+  │ const fs=require('fs');let a=JSON.parse(fs.readFileSync('admitted/original-audit/source-compiled-map.json'));for(const x of
+  │ a.filter(x=>x.classification==='HELPER-FACT'))console.log(x.name+' '+x.site+'\n'+x.statement);const p=fs.readFileSync('/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/
+  │ … +4 lines
+  └ KelGroups.assocAdjust_keys KelGroups/Invariants.lean:100
+    private theorem assocAdjust_keys (key : Key) (f : ν → ν) (entries : List (Key × ν)) :
+    … +313 lines (ctrl + t to view transcript)
+      'KelGroups.Vote.assocInsert_property'
+    ]
+
+• Explored
+  └ Search mutant-|3a7b355a|P1C-build2|notes/00|notes/01 in AUDIT-MANIFEST.sha256
+    Read AUDIT-REPORT.md
+    Read COST-MODEL.md
+    Read MEASUREMENT-REQUEST.md
+    Read PHASE1-REPORT-R4.md, PHASE1-REPORT-R5.md, AUTHORITATIVE.md, STATUS.md, brief.md, SUBMISSION-SETS-README.md, ATOMS-ledger.txt, RELATION-v2-property-atom.txt, OPEN-EXTENTS-31.txt,
+         Invariants.lean, A-ASSESSMENT-51.txt, Step.lean, Fold.lean, Validate.lean, Predicates.lean
+
+• Ran node <<'NODE'
+  │ const fs=require('fs'); console.log(fs.readFileSync('admitted/original-audit/source-import-graph.json','utf8').slice(0,2000));
+  │ const a=JSON.parse(fs.readFileSync('admitted/original-audit/source-compiled-map.json')); const r=fs.readFileSync('admitted/submission-3/
+  │ … +6 lines
+  └ (no output)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• The claimed ten value-insensitive OPEN rows do not hold up: eight have a static falsification path through an atom already in the map. For example, OP-69L makes ordinary production calls
+  reject, and OP-58 leaves the sweep mutant’s fixture below threshold. These are source deductions, not observed kills.
+
+• Ran mkdir -p handoffs/evidence/relationship
+  │ node <<'NODE'
+  │ const fs=require('fs'),crypto=require('crypto');const base='/code/reactivegas-66-s3-audit-final/lean/';const graph=JSON.parse(fs.readFileSync('admitted/original-audit/
+  │ … +22 lines
+  └ { sourceCount: 239, mismatch: [], extra: [], importMismatches: [] }
+
+• Explored
+  └ Read Invariants.lean, Step.lean, REQUIREMENT-LEDGER.md
+
+• Ran cat /code/reactivegas-66-s3-audit-final/lean/lakefile.lean; cat /code/reactivegas-66-s3-audit-final/lean/lean-toolchain; cat /tmp/reactivegas/ms2/e-lean-compliance/
+  │ candidate-auditor-s3-phase1-static-codex/admitted-supplement/P1C-build2-incremental.log | tail -n 30; sed -n '110,215p' handoffs/evidence/relationship/handoffs__AUTHORITATIVE.md; cat
+  │ admitted/original-audit/ONWARD-DISCOVERIES.md; rg -n '^\| D[1-6]|D1|D2|D3|D4|D5|D6' admitted/*MANDATE*
+  └ import Lake
+    open Lake DSL
+    … +102 lines (ctrl + t to view transcript)
+    296:| 2 | `REQUIRED-INPUT` as "D1a × D1b" | **not a Cartesian product.** Two sets plus the **actual semantic ownership relation**; every required atom and every in-scope theorem property
+    needs *relevant* coverage. One atom may close several rows if each property-specific failure is observed. No manufactured pairings |
+
+• Explored
+  └ Read handoffs__AUTHORITATIVE.md, handoffs__CORRECTIONS-015.md, handoffs__CORRECTIONS-016.md, handoffs__CORRECTIONS-017.md, handoffs__CORRECTIONS-018.md, S3-MANDATE.md
+
+• Ran cat /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex/evidence/archive/reactivegas/ms2/e43/.archived/t57-owner-codex/gate/instruments/mutant-*.lean; rg -n
+  │ 'VI-3|G62-C-TRACE|E-TOJSON|REGRESSION|M[1-5]|TRUST-CI' handoffs/evidence/archive-tables.txt
+  └ import KelGroups.Vote.Invariants
+
+    … +232 lines (ctrl + t to view transcript)
+    `).
+    560:15 INV-48-I-REGRESSION | BLOCKING | OPEN | Direct removal killed; comment-backed lexical count survived (`afdacbc8…`).
+
+• Ran rg --files /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex/admitted-supplement; node <<'NODE'
+  │ const fs=require('fs');let a=fs.readFileSync('admitted/submission-3/A-ASSESSMENT-51.txt','utf8').split('\n').filter(x=>/^L\d/.test(x)); console.log('A rows',a.length);
+  │ console.log(a.map(x=>x.split('|')[0].trim()).join(' '));let r=fs.readFileSync('admitted/RELATION-v2-property-atom.txt','utf8').trim().split('\n').map(l=>l.split('|'));let
+  │ … +3 lines
+  └ /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex/admitted-supplement/OP10-identity-classes.txt
+    /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex/admitted-supplement/P1C-corpusgate.out
+    … +22 lines (ctrl + t to view transcript)
+      'WITNESS'
+    ]
+
+• Ran cat > handoffs/evidence/make-ledgers.cjs <<'NODE'
+  │ const fs=require('fs');const map=fs.readFileSync('admitted/submission-3/OPMAP-v9-requirement-verdict-grounds.txt','utf8').trim().split('\n').map((l,i)=>({row:i+1,c:l.split('|')}));const
+  │ src=JSON.parse(fs.readFileSync('admitted/original-audit/source-compiled-map.json'));const notes={};function put(ids,status,note){for(const id of ids.split(',').flatMap(s=>{let
+  │ … +171 lines
+  └ (no output)
+
+• Ran node <<'NODE'
+  │ const fs=require('fs');const r=JSON.parse(fs.readFileSync('handoffs/evidence/row-review-207.json')); for(const x of r.filter(x=>(x.row>=120&&x.row<=127)||
+  │ (x.row>=163&&x.row<=170)))console.log(x.row,x.identity,x.note);const base='/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-phase1-static-codex/admitted-supplement/';const
+  │ … +3 lines
+  └ 120 Reactivegas.admissionPreservation_holds Source is checkX=true by decide. Baseline shape correct; no implication of value-insensitivity. See checked 31 extents and current-atom
+    counterexamples.
+    … +64 lines (ctrl + t to view transcript)
+    GEN-INJ|AppEvent.refusePledge.inj
+    GEN-I
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• The 207-row review is written, including conditional predictions, structural rows, and historical-only entries. The identity reconciliation is sound: I independently recovered all 239
+  declarations, including the seven root wrappers and eight distinct production/TraceTests pairs. The remaining problems concern the semantic account, receipt fidelity, and measurement plan.
+
+• Ran cat > handoffs/evidence/helper-review.cjs <<'NODE'
+  │ const fs=require('fs');const a=JSON.parse(fs.readFileSync('admitted/original-audit/source-compiled-map.json')).filter(x=>x.classification==='HELPER-FACT');function witness(x){const
+  │ n=x.short;if(n==='option_bind_inv')return 'α=Unit, β=Nat, o=some(), f=fun _=>some 5, b=5; bind is some5.';if(n==='stripCollections_sublist'||n==='stripCollections_sublist_lemma')return
+  │ … +41 lines
+  └ {
+      retainedNames: 1213,
+    … +18 lines (ctrl + t to view transcript)
+      sourceMatchMismatches: []
+    }
+
+• Explored
+  └ Read report.md, verify-negative-controls.sh, receipt-file-roster.md
+
+• Ran cat > handoffs/AUDIT-REPORT.md <<'EOF'
+  │ # Independent FULL STATIC audit — frozen submission 3
+  │
+  │ … +250 lines
+  └ (no output)
+
+• Ran cat > handoffs/SUCCESSOR-RECOMMENDATION.md <<'EOF'
+  │ # Executable successor recommendation — bounded new commission
+  │
+  │ … +127 lines
+  └ (no output)
+
+• Ran cat > handoffs/evidence/requirements.cjs <<'NODE'
+  │ const fs=require('fs');const original=fs.readFileSync('admitted/original-audit/REQUIREMENT-LEDGER.md','utf8').split('\n').filter(l=>/^\| (A-|P1|D[456] |B-|
+  │ OUT-)/.test(l)).map(l=>l.split('|').slice(1,-1).map(x=>x.trim()));const v={
+  │ … +47 lines
+  └ { CLOSED: 18, PARTLY: 15, OPEN: 3 }
+    sha256sum: MANIFEST.sha256: No such file or directory
+
+• Ran sha256sum -c MANIFEST.sha256
+  └ OPMAP-v9-requirement-verdict-grounds.txt: OK
+    A-ASSESSMENT-51.txt: OK
+    … +2 lines (ctrl + t to view transcript)
+    COST-MODEL.md: OK
+    MEASUREMENT-REQUEST.md: OK
+
+• Ran sha256sum -c MANIFEST.sha256
+  └ ./ATOMS-ledger.txt: OK
+    ./CORRECTIONS-019.md: OK
+    … +45 lines (ctrl + t to view transcript)
+    ./submission-3/OPEN-EXTENTS-31.txt: OK
+    ./submission-3/OPMAP-v9-requirement-verdict-grounds.txt: OK
+
+• Ran git rev-parse HEAD; git status --porcelain=v1; git symbolic-ref -q HEAD; rg --files -uuu lean -g '*.olean'; sed -n '1,8p' /home/paolino/.codex/memories/MEMORY.md
+  └ 3590c0015b84fd58004bf6fb44dd18b107304c48
+    # Task Group: Reactivegas September independent Lean and exporter audits
+    … +7 lines (ctrl + t to view transcript)
+
+    ### rollout_summary_files
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• My verdict is AUDIT-FINDINGS: three original findings are closed and five remain partly resolved and blocking. The report includes all 207 row judgments, 81 helper instances, and a bounded
+  successor commission. Final hashing still passes 49/49 and 6/6; the reference checkout remains clean with zero oleans.
+
+• Ran node <<'NODE'
+  │ const fs=require('fs'),crypto=require('crypto');const h=s=>crypto.createHash('sha256').update(s).digest('hex');const parse=JSON.parse(fs.readFileSync('handoffs/evidence/
+  │ independent-source-inventory.json'));const changes=parse.hashes.filter(x=>h(fs.readFileSync('/code/reactivegas-66-s3-audit-final/lean/'+x.file))!==x.sha256);if(changes.length)throw
+  │ … +16 lines
+  └ {
+      utc: '2026-09-06T06:18:29.153Z',
+    … +48 lines (ctrl + t to view transcript)
+    handoffs/evidence/retained-source-map.txt: OK
+    handoffs/evidence/row-review-207.json: OK
+
+• Ran node <<'NODE'
+  │ const fs=require('fs');const x=JSON.parse(fs.readFileSync('handoffs/evidence/independent-source-inventory.json'));const s=fs.readFileSync('/tmp/reactivegas/ms2/e-lean-compliance/
+  │ candidate-auditor-s3-phase1-static-codex/admitted-supplement/
+  │ … +3 lines
+  └ graph 28 [
+      'KelGroups',
+    … +56 lines (ctrl + t to view transcript)
+    ]
+    extra [ 'lakefile' ]
+
+• Ran node <<'NODE'
+  │ const fs=require('fs'),crypto=require('crypto');const h=b=>crypto.createHash('sha256').update(b).digest('hex');const p='handoffs/AUDIT-REPORT.md';let
+  │ s=fs.readFileSync(p,'utf8').replace('The **27-module** import graph also matches source.','The **27 project modules plus lakefile configuration** (28 source/config files) also match the
+  │ … +15 lines
+  └ 2026-09-06T06:19:25.966Z  TERMINAL AUDIT-FINDINGS  independent FULL STATIC submission3 complete as audit, Phase1 incomplete; original finding dispositions CLOSED=F04,F05,F08
+    PARTLY=F01,F02,F03,F06,F07; full207 map/81 helpers/36 requirements/43 receipt-file tables; own execution builds0 elaborations0 probes0 mutants0, no source edits/contact/delegation/
+    … +11 lines (ctrl + t to view transcript)
+    check_sha256=92e8a291a56048ff5cdba64f4b99c4a416d1f61fe0ba57f1d27eeabfea0dc598; local reports in handoffs/ incl executable bounded successor recommendation; control returned, no implied
+    execution grant
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• AUDIT-FINDINGS — Phase 1 remains incomplete.
+
+  - CLOSED: F-04, F-05, F-08.
+  - PARTLY, blocking: F-01, F-02, F-03, F-06, F-07.
+  - Reviewed all 207 map rows, 81 helpers, and the full original mandate.
+  - Remaining work covers receipt fidelity, semantic ownership/classification, failure attribution, and executable measured costing.
+
+  Full assessment (handoffs/AUDIT-REPORT.md) · 207-row review (handoffs/ROW-REVIEW-207.md) · Bounded successor recommendation (handoffs/SUCCESSOR-RECOMMENDATION.md)
+
+  Launch and active-session model independently verified as gpt-6-astra/high, using only own-process/session observations. Hash checks passed 49/49, 6/6, and 323/323. Zero project execution,
+  source repair, or author contact. Terminal verdict posted at journal EOF; no fourth author repair implied.
+
+─ Worked for 32m 56s ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+› Ask Codex to do anything
+
+  gpt-6-astra high · /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s3-final-static
+
+
+
+

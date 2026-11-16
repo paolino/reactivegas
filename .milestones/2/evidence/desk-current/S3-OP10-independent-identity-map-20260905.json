@@ -1,0 +1,1924 @@
+{
+  "verifiedAt": "2026-09-05T23:35:23.193Z",
+  "sourceRows": 239,
+  "compiledIdentities": 1213,
+  "exactPublic": 163,
+  "exactPrivate": 76,
+  "uniqueMapped": 239,
+  "bad": [],
+  "mapping": [
+    {
+      "name": "KelGroups.assocAdjust_keys",
+      "private": true,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "_private.KelGroups.Invariants.0.KelGroups.assocAdjust_keys"
+      ]
+    },
+    {
+      "name": "KelGroups.assocAdjust_property",
+      "private": true,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "_private.KelGroups.Invariants.0.KelGroups.assocAdjust_property"
+      ]
+    },
+    {
+      "name": "KelGroups.setInsert_nodup",
+      "private": true,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "_private.KelGroups.Invariants.0.KelGroups.setInsert_nodup"
+      ]
+    },
+    {
+      "name": "KelGroups.setInsert_mem",
+      "private": true,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "_private.KelGroups.Invariants.0.KelGroups.setInsert_mem"
+      ]
+    },
+    {
+      "name": "KelGroups.approvePending_wellFormed",
+      "private": true,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "_private.KelGroups.Invariants.0.KelGroups.approvePending_wellFormed"
+      ]
+    },
+    {
+      "name": "KelGroups.emptyState_wellFormed",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.emptyState_wellFormed"
+      ]
+    },
+    {
+      "name": "KelGroups.assocLookup_some_mem",
+      "private": true,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "_private.KelGroups.Invariants.0.KelGroups.assocLookup_some_mem"
+      ]
+    },
+    {
+      "name": "KelGroups.enact_preserves_wellFormed",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.enact_preserves_wellFormed"
+      ]
+    },
+    {
+      "name": "KelGroups.finishEnact_preserves_wellFormed",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.finishEnact_preserves_wellFormed"
+      ]
+    },
+    {
+      "name": "KelGroups.tryEnact_preserves_wellFormed",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.tryEnact_preserves_wellFormed"
+      ]
+    },
+    {
+      "name": "KelGroups.applyPropose_preserves_wellFormed",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.applyPropose_preserves_wellFormed"
+      ]
+    },
+    {
+      "name": "KelGroups.applyApprove_preserves_wellFormed",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.applyApprove_preserves_wellFormed"
+      ]
+    },
+    {
+      "name": "KelGroups.applyEvent_preserves_wellFormed",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.applyEvent_preserves_wellFormed"
+      ]
+    },
+    {
+      "name": "KelGroups.foldEvents_preserves_wellFormed",
+      "private": true,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "_private.KelGroups.Invariants.0.KelGroups.foldEvents_preserves_wellFormed"
+      ]
+    },
+    {
+      "name": "KelGroups.foldGroup_wellFormed",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.foldGroup_wellFormed"
+      ]
+    },
+    {
+      "name": "KelGroups.approvals_nodup",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.approvals_nodup"
+      ]
+    },
+    {
+      "name": "KelGroups.proposer_mem_approvals",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.proposer_mem_approvals"
+      ]
+    },
+    {
+      "name": "KelGroups.tryEnactDetailed_enactment_threshold_met",
+      "private": true,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "_private.KelGroups.Invariants.0.KelGroups.tryEnactDetailed_enactment_threshold_met"
+      ]
+    },
+    {
+      "name": "KelGroups.enact_implies_threshold_met",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.enact_implies_threshold_met"
+      ]
+    },
+    {
+      "name": "KelGroups.assocErase_sublist",
+      "private": true,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "_private.KelGroups.Invariants.0.KelGroups.assocErase_sublist"
+      ]
+    },
+    {
+      "name": "KelGroups.tryEnact_eq_of_enacts",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.tryEnact_eq_of_enacts"
+      ]
+    },
+    {
+      "name": "KelGroups.member_key_coherent",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.member_key_coherent"
+      ]
+    },
+    {
+      "name": "KelGroups.members_change_implies_enacted",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.members_change_implies_enacted"
+      ]
+    },
+    {
+      "name": "KelGroups.majority_table",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.majority_table"
+      ]
+    },
+    {
+      "name": "KelGroups.majority_not_strict_on_even",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.majority_not_strict_on_even"
+      ]
+    },
+    {
+      "name": "KelGroups.assocErase_keys_nodup",
+      "private": true,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "_private.KelGroups.Invariants.0.KelGroups.assocErase_keys_nodup"
+      ]
+    },
+    {
+      "name": "KelGroups.assocErase_key_absent",
+      "private": true,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "_private.KelGroups.Invariants.0.KelGroups.assocErase_key_absent"
+      ]
+    },
+    {
+      "name": "KelGroups.app_event_preserves_members",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.app_event_preserves_members"
+      ]
+    },
+    {
+      "name": "KelGroups.app_event_has_no_base_change",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.app_event_has_no_base_change"
+      ]
+    },
+    {
+      "name": "KelGroups.validateDirectAdmission_ok",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.validateDirectAdmission_ok"
+      ]
+    },
+    {
+      "name": "KelGroups.commitBaseChange_ok",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.commitBaseChange_ok"
+      ]
+    },
+    {
+      "name": "KelGroups.tryEnactBase_runs_hook",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.tryEnactBase_runs_hook"
+      ]
+    },
+    {
+      "name": "KelGroups.commitBaseChange_members",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.commitBaseChange_members"
+      ]
+    },
+    {
+      "name": "KelGroups.enactMutation_preserves_absence",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.enactMutation_preserves_absence"
+      ]
+    },
+    {
+      "name": "KelGroups.tryEnactBase_preserves_absence",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.tryEnactBase_preserves_absence"
+      ]
+    },
+    {
+      "name": "KelGroups.assocInsert_keys_nodup",
+      "private": true,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "_private.KelGroups.Invariants.0.KelGroups.assocInsert_keys_nodup"
+      ]
+    },
+    {
+      "name": "KelGroups.membership_growth_is_direct_admission",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.membership_growth_is_direct_admission"
+      ]
+    },
+    {
+      "name": "KelGroups.direct_admission_requires_admin",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.direct_admission_requires_admin"
+      ]
+    },
+    {
+      "name": "KelGroups.assocErase_property",
+      "private": true,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "_private.KelGroups.Invariants.0.KelGroups.assocErase_property"
+      ]
+    },
+    {
+      "name": "KelGroups.non_admin_admission_is_noop",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.non_admin_admission_is_noop"
+      ]
+    },
+    {
+      "name": "KelGroups.base_change_runs_hook",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "KelGroups.base_change_runs_hook"
+      ]
+    },
+    {
+      "name": "approvals_nodup",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "approvals_nodup"
+      ]
+    },
+    {
+      "name": "KelGroups.assocInsert_property",
+      "private": true,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "_private.KelGroups.Invariants.0.KelGroups.assocInsert_property"
+      ]
+    },
+    {
+      "name": "proposer_mem_approvals",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "proposer_mem_approvals"
+      ]
+    },
+    {
+      "name": "enact_implies_threshold_met",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "enact_implies_threshold_met"
+      ]
+    },
+    {
+      "name": "members_change_implies_enacted",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "members_change_implies_enacted"
+      ]
+    },
+    {
+      "name": "member_key_coherent",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "member_key_coherent"
+      ]
+    },
+    {
+      "name": "majority_table",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "majority_table"
+      ]
+    },
+    {
+      "name": "majority_not_strict_on_even",
+      "private": false,
+      "module": "KelGroups.Invariants",
+      "matches": [
+        "majority_not_strict_on_even"
+      ]
+    },
+    {
+      "name": "KelGroups.assocLookup_insert_of_none",
+      "private": false,
+      "module": "KelGroups.Types",
+      "matches": [
+        "KelGroups.assocLookup_insert_of_none"
+      ]
+    },
+    {
+      "name": "KelGroups.assocLookup_insert_self",
+      "private": false,
+      "module": "KelGroups.Types",
+      "matches": [
+        "KelGroups.assocLookup_insert_self"
+      ]
+    },
+    {
+      "name": "KelGroups.assocLookup_erase_of_none",
+      "private": false,
+      "module": "KelGroups.Types",
+      "matches": [
+        "KelGroups.assocLookup_erase_of_none"
+      ]
+    },
+    {
+      "name": "KelGroups.assocLookup_adjust_of_none",
+      "private": false,
+      "module": "KelGroups.Types",
+      "matches": [
+        "KelGroups.assocLookup_adjust_of_none"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.tallyKeysOfState_insert_cases",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.tallyKeysOfState_insert_cases"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.effectedState_tally_growth",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState_tally_growth"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.tally_keys_franchised_from",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.tally_keys_franchised_from"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.franchise_of_tallies",
+      "private": false,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "KelGroups.Vote.franchise_of_tallies"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.sweepStep_of_open",
+      "private": false,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "KelGroups.Vote.sweepStep_of_open"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.assocInsert_keys_nodup'",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_keys_nodup'"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.sweep_filterMap_of_swept",
+      "private": false,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "KelGroups.Vote.sweep_filterMap_of_swept"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.filter_open_idem",
+      "private": false,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "KelGroups.Vote.filter_open_idem"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.sweepClosures_idempotent",
+      "private": false,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "KelGroups.Vote.sweepClosures_idempotent"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.sweepDuplicating_duplicates",
+      "private": false,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "KelGroups.Vote.sweepDuplicating_duplicates"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.assocAdjust_keys'",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocAdjust_keys'"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.assocAdjust_keys_nodup'",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocAdjust_keys_nodup'"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.assocLookup_some_mem'",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocLookup_some_mem'"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.mem_assocLookup_some'",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_assocLookup_some'"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.assocErase_other_lookup",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_other_lookup"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.assocInsert_other_lookup",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_other_lookup"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.assocInsert_mem_cases",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_mem_cases"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.mem_map_fst_erase_of_ne",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_map_fst_erase_of_ne"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.mem_map_fst_insert",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_map_fst_insert"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.setInsert_mem_cases",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.setInsert_mem_cases"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.nodup_append_mem",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.nodup_append_mem"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.setInsert_nodup'",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.setInsert_nodup'"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.mem_erase_inv",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_erase_inv"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.nodup_erase",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.nodup_erase"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.closed_guard_absent",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.closed_guard_absent"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.assoc_entries_key_unique",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assoc_entries_key_unique"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.filterMap_keys_nodup",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.filterMap_keys_nodup"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.emptyVoteState_sweepReady",
+      "private": false,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "KelGroups.Vote.emptyVoteState_sweepReady"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.emptyVoteState_wellFormed",
+      "private": false,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "KelGroups.Vote.emptyVoteState_wellFormed"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.verdictOf_threshold_congr",
+      "private": false,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "KelGroups.Vote.verdictOf_threshold_congr"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.sweepStep_key",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepStep_key"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.sweepClosures_open_mem",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_open_mem"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.sweepClosures_closed_mem",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_closed_mem"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.sweepClosures_sweepReady",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_sweepReady"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.sweepClosures_wellFormed",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_wellFormed"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.placeBallot_clean",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot_clean"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.placeBallot_tally",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.placeBallot_tally"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.effectedState_sweepReady",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState_sweepReady"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.applyVoteEvent_preserves_wellFormed",
+      "private": false,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "KelGroups.Vote.applyVoteEvent_preserves_wellFormed"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.foldFrom_preserves_wellFormed",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.foldFrom_preserves_wellFormed"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.foldVote_wellFormed",
+      "private": false,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "KelGroups.Vote.foldVote_wellFormed"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.foldVote_append",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.foldVote_append"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.sweepClosures_preserves_qid",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_preserves_qid"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.effectedState_preserves_qid",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.effectedState_preserves_qid"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.applyVoteEvent_preserves_qid",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.applyVoteEvent_preserves_qid"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.assocErase_sublist'",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_sublist'"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.foldFrom_preserves_qid",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.foldFrom_preserves_qid"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.ballots_nodup_disjoint",
+      "private": false,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "KelGroups.Vote.ballots_nodup_disjoint"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.open_questions_are_open",
+      "private": false,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "KelGroups.Vote.open_questions_are_open"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.questions_partition",
+      "private": false,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "KelGroups.Vote.questions_partition"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.no_expiry",
+      "private": false,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "KelGroups.Vote.no_expiry"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.assocErase_keys_nodup'",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_keys_nodup'"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.sweepClosures_tallyKeys",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.sweepClosures_tallyKeys"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.assocErase_key_absent'",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_key_absent'"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.inadmissible_is_noop",
+      "private": false,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "KelGroups.Vote.inadmissible_is_noop"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.nonresponsabile_event_noop",
+      "private": false,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "KelGroups.Vote.nonresponsabile_event_noop"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.unfranchised_cast_noop",
+      "private": false,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "KelGroups.Vote.unfranchised_cast_noop"
+      ]
+    },
+    {
+      "name": "KelGroups.Vote.tallyKeysOfState_erased_le",
+      "private": true,
+      "module": "KelGroups.Vote.Invariants",
+      "matches": [
+        "_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.tallyKeysOfState_erased_le"
+      ]
+    },
+    {
+      "name": "Reactivegas.Composition.baseEnacted_threshold_met",
+      "private": false,
+      "module": "Reactivegas.Composition",
+      "matches": [
+        "Reactivegas.Composition.baseEnacted_threshold_met"
+      ]
+    },
+    {
+      "name": "Reactivegas.Composition.appDecided_verdict_exhaustive",
+      "private": false,
+      "module": "Reactivegas.Composition",
+      "matches": [
+        "Reactivegas.Composition.appDecided_verdict_exhaustive"
+      ]
+    },
+    {
+      "name": "Reactivegas.Composition.voteDerived_iff_not_direct",
+      "private": false,
+      "module": "Reactivegas.Composition",
+      "matches": [
+        "Reactivegas.Composition.voteDerived_iff_not_direct"
+      ]
+    },
+    {
+      "name": "pullCollection_mem",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "pullCollection_mem"
+      ]
+    },
+    {
+      "name": "comune_not_a_member_of_reach",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "comune_not_a_member_of_reach"
+      ]
+    },
+    {
+      "name": "credit_pledges_of_reach",
+      "private": true,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "_private.Reactivegas.Invariants.0.credit_pledges_of_reach"
+      ]
+    },
+    {
+      "name": "solvent_preserved",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "solvent_preserved"
+      ]
+    },
+    {
+      "name": "pullCollection_det",
+      "private": true,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "_private.Reactivegas.Invariants.0.pullCollection_det"
+      ]
+    },
+    {
+      "name": "reach_solvent",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "reach_solvent"
+      ]
+    },
+    {
+      "name": "not_insolvent_of_reach",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "not_insolvent_of_reach"
+      ]
+    },
+    {
+      "name": "unique_mem_cons_inv",
+      "private": true,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "_private.Reactivegas.Invariants.0.unique_mem_cons_inv"
+      ]
+    },
+    {
+      "name": "uniquePledges_pend_cons",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "uniquePledges_pend_cons"
+      ]
+    },
+    {
+      "name": "pledge_rejected_when_member",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "pledge_rejected_when_member"
+      ]
+    },
+    {
+      "name": "user_absent_of_any_false",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "user_absent_of_any_false"
+      ]
+    },
+    {
+      "name": "pledge_preserves_allUnique",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "pledge_preserves_allUnique"
+      ]
+    },
+    {
+      "name": "sumBal_foldl_bump",
+      "private": true,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "_private.Reactivegas.Invariants.0.sumBal_foldl_bump"
+      ]
+    },
+    {
+      "name": "pledge_guard_inv",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "pledge_guard_inv"
+      ]
+    },
+    {
+      "name": "Reactivegas.base_departure_applies_cleanup",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.base_departure_applies_cleanup"
+      ]
+    },
+    {
+      "name": "Reactivegas.base_change_can_close_without_ballot",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.base_change_can_close_without_ballot"
+      ]
+    },
+    {
+      "name": "Reactivegas.direct_admission_only_holds",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.direct_admission_only_holds"
+      ]
+    },
+    {
+      "name": "Reactivegas.base_recompute_reachable_holds",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.base_recompute_reachable_holds"
+      ]
+    },
+    {
+      "name": "Reactivegas.sweep_idempotent_witness",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.sweep_idempotent_witness"
+      ]
+    },
+    {
+      "name": "Reactivegas.sweep_idempotent_mutant_caught",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.sweep_idempotent_mutant_caught"
+      ]
+    },
+    {
+      "name": "Reactivegas.baseHook_votes",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.baseHook_votes"
+      ]
+    },
+    {
+      "name": "Reactivegas.base_change_recomputes_votes",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.base_change_recomputes_votes"
+      ]
+    },
+    {
+      "name": "auth_referente_guard_inv",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "auth_referente_guard_inv"
+      ]
+    },
+    {
+      "name": "close_guard_inv",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "close_guard_inv"
+      ]
+    },
+    {
+      "name": "fail_guard_inv",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "fail_guard_inv"
+      ]
+    },
+    {
+      "name": "step_grant_inv",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "step_grant_inv"
+      ]
+    },
+    {
+      "name": "step_deny_inv",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "step_deny_inv"
+      ]
+    },
+    {
+      "name": "step_pledge_inv",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "step_pledge_inv"
+      ]
+    },
+    {
+      "name": "option_bind_inv",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "option_bind_inv"
+      ]
+    },
+    {
+      "name": "Reactivegas.integrated_theorem_witness_holds",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.integrated_theorem_witness_holds"
+      ]
+    },
+    {
+      "name": "Reactivegas.canonical_economy_holds",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.canonical_economy_holds"
+      ]
+    },
+    {
+      "name": "Reactivegas.exhaustive_inventories_hold",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.exhaustive_inventories_hold"
+      ]
+    },
+    {
+      "name": "Reactivegas.i57_boundary_holds",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.i57_boundary_holds"
+      ]
+    },
+    {
+      "name": "Reactivegas.i57_exhaustive_holds",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.i57_exhaustive_holds"
+      ]
+    },
+    {
+      "name": "Reactivegas.i57_noop_holds",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.i57_noop_holds"
+      ]
+    },
+    {
+      "name": "Reactivegas.i57_auth_holds",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.i57_auth_holds"
+      ]
+    },
+    {
+      "name": "Reactivegas.i57_r45_holds",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.i57_r45_holds"
+      ]
+    },
+    {
+      "name": "Reactivegas.i57_partition_holds",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.i57_partition_holds"
+      ]
+    },
+    {
+      "name": "Reactivegas.i57_disjoint_holds",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.i57_disjoint_holds"
+      ]
+    },
+    {
+      "name": "Reactivegas.i57_disjoint_mutant_caught",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.i57_disjoint_mutant_caught"
+      ]
+    },
+    {
+      "name": "Reactivegas.i57_nostale_holds",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.i57_nostale_holds"
+      ]
+    },
+    {
+      "name": "Reactivegas.i57_franchise_holds",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.i57_franchise_holds"
+      ]
+    },
+    {
+      "name": "Reactivegas.i57_franchise_mutant_caught",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.i57_franchise_mutant_caught"
+      ]
+    },
+    {
+      "name": "Reactivegas.i57_policyfree_holds",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.i57_policyfree_holds"
+      ]
+    },
+    {
+      "name": "Reactivegas.i57_policyfree_mutant_caught",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.i57_policyfree_mutant_caught"
+      ]
+    },
+    {
+      "name": "Reactivegas.i57_noexpiry_holds",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.i57_noexpiry_holds"
+      ]
+    },
+    {
+      "name": "Reactivegas.admissionPreservation_holds",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.admissionPreservation_holds"
+      ]
+    },
+    {
+      "name": "Reactivegas.productionWellFormed_holds",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.productionWellFormed_holds"
+      ]
+    },
+    {
+      "name": "Reactivegas.comuneThresholdSanity_holds",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.comuneThresholdSanity_holds"
+      ]
+    },
+    {
+      "name": "step_accept_inv",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "step_accept_inv"
+      ]
+    },
+    {
+      "name": "step_refuse_inv",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "step_refuse_inv"
+      ]
+    },
+    {
+      "name": "step_correct_inv",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "step_correct_inv"
+      ]
+    },
+    {
+      "name": "demand_eq_true_of_some",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "demand_eq_true_of_some"
+      ]
+    },
+    {
+      "name": "step_close_inv",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "step_close_inv"
+      ]
+    },
+    {
+      "name": "step_fail_inv",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "step_fail_inv"
+      ]
+    },
+    {
+      "name": "Reactivegas.step_open_inv",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.step_open_inv"
+      ]
+    },
+    {
+      "name": "Reactivegas.step_deposit_inv",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.step_deposit_inv"
+      ]
+    },
+    {
+      "name": "Reactivegas.step_withdraw_inv",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.step_withdraw_inv"
+      ]
+    },
+    {
+      "name": "demand_none_of_ne_true",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "demand_none_of_ne_true"
+      ]
+    },
+    {
+      "name": "Reactivegas.step_transferCassa_inv",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.step_transferCassa_inv"
+      ]
+    },
+    {
+      "name": "Reactivegas.step_donate_inv",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.step_donate_inv"
+      ]
+    },
+    {
+      "name": "Reactivegas.step_backdonate_inv",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "Reactivegas.step_backdonate_inv"
+      ]
+    },
+    {
+      "name": "conservation_preserved",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "conservation_preserved"
+      ]
+    },
+    {
+      "name": "bool_not_true",
+      "private": true,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "_private.Reactivegas.Invariants.0.bool_not_true"
+      ]
+    },
+    {
+      "name": "bool_and_left",
+      "private": true,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "_private.Reactivegas.Invariants.0.bool_and_left"
+      ]
+    },
+    {
+      "name": "bool_and_right",
+      "private": true,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "_private.Reactivegas.Invariants.0.bool_and_right"
+      ]
+    },
+    {
+      "name": "step_authorized",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "step_authorized"
+      ]
+    },
+    {
+      "name": "eq_nil_of_isEmpty",
+      "private": true,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "_private.Reactivegas.Invariants.0.eq_nil_of_isEmpty"
+      ]
+    },
+    {
+      "name": "governance_enacts_windUpAdmin",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "governance_enacts_windUpAdmin"
+      ]
+    },
+    {
+      "name": "close_permission_to_close",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "close_permission_to_close"
+      ]
+    },
+    {
+      "name": "pledge_escrow_debit",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "pledge_escrow_debit"
+      ]
+    },
+    {
+      "name": "close_spends_referente",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "close_spends_referente"
+      ]
+    },
+    {
+      "name": "stripCollections_referente_ne",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "stripCollections_referente_ne"
+      ]
+    },
+    {
+      "name": "deposit_double_entry",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "deposit_double_entry"
+      ]
+    },
+    {
+      "name": "withdraw_double_entry",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "withdraw_double_entry"
+      ]
+    },
+    {
+      "name": "bal_bump_ne_lemma",
+      "private": true,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "_private.Reactivegas.Invariants.0.bal_bump_ne_lemma"
+      ]
+    },
+    {
+      "name": "bal_bump_ne",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "bal_bump_ne"
+      ]
+    },
+    {
+      "name": "bal_foldl_bump_ge",
+      "private": true,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "_private.Reactivegas.Invariants.0.bal_foldl_bump_ge"
+      ]
+    },
+    {
+      "name": "splitUser_amount_lemma",
+      "private": true,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "_private.Reactivegas.Invariants.0.splitUser_amount_lemma"
+      ]
+    },
+    {
+      "name": "splitUser_amount",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "splitUser_amount"
+      ]
+    },
+    {
+      "name": "refundAll_bal_ge_lemma",
+      "private": true,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "_private.Reactivegas.Invariants.0.refundAll_bal_ge_lemma"
+      ]
+    },
+    {
+      "name": "refundAll_bal_ge",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "refundAll_bal_ge"
+      ]
+    },
+    {
+      "name": "stripCollections_sublist_lemma",
+      "private": true,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "_private.Reactivegas.Invariants.0.stripCollections_sublist_lemma"
+      ]
+    },
+    {
+      "name": "pullCollection_mem_lemma",
+      "private": true,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "_private.Reactivegas.Invariants.0.pullCollection_mem_lemma"
+      ]
+    },
+    {
+      "name": "stripCollections_sublist",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "stripCollections_sublist"
+      ]
+    },
+    {
+      "name": "stripCollections_amount_lemma",
+      "private": true,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "_private.Reactivegas.Invariants.0.stripCollections_amount_lemma"
+      ]
+    },
+    {
+      "name": "solvent_init",
+      "private": false,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "solvent_init"
+      ]
+    },
+    {
+      "name": "comune_not_a_member_step",
+      "private": true,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "_private.Reactivegas.Invariants.0.comune_not_a_member_step"
+      ]
+    },
+    {
+      "name": "credit_pledges_step",
+      "private": true,
+      "module": "Reactivegas.Invariants",
+      "matches": [
+        "_private.Reactivegas.Invariants.0.credit_pledges_step"
+      ]
+    },
+    {
+      "name": "sumBal_cons",
+      "private": false,
+      "module": "Reactivegas.State",
+      "matches": [
+        "sumBal_cons"
+      ]
+    },
+    {
+      "name": "bal_cons",
+      "private": false,
+      "module": "Reactivegas.State",
+      "matches": [
+        "bal_cons"
+      ]
+    },
+    {
+      "name": "bump_sum",
+      "private": false,
+      "module": "Reactivegas.State",
+      "matches": [
+        "bump_sum"
+      ]
+    },
+    {
+      "name": "bal_bump",
+      "private": false,
+      "module": "Reactivegas.State",
+      "matches": [
+        "bal_bump"
+      ]
+    },
+    {
+      "name": "sumPledges_append",
+      "private": false,
+      "module": "Reactivegas.State",
+      "matches": [
+        "sumPledges_append"
+      ]
+    },
+    {
+      "name": "refundAll_sum",
+      "private": false,
+      "module": "Reactivegas.State",
+      "matches": [
+        "refundAll_sum"
+      ]
+    },
+    {
+      "name": "not_mem_users_of_splitUser_none",
+      "private": false,
+      "module": "Reactivegas.State",
+      "matches": [
+        "not_mem_users_of_splitUser_none"
+      ]
+    },
+    {
+      "name": "splitUser_sum_lemma",
+      "private": true,
+      "module": "Reactivegas.State",
+      "matches": [
+        "_private.Reactivegas.State.0.splitUser_sum_lemma"
+      ]
+    },
+    {
+      "name": "splitUser_sum",
+      "private": false,
+      "module": "Reactivegas.State",
+      "matches": [
+        "splitUser_sum"
+      ]
+    },
+    {
+      "name": "splitUser_sublist_lemma",
+      "private": true,
+      "module": "Reactivegas.State",
+      "matches": [
+        "_private.Reactivegas.State.0.splitUser_sublist_lemma"
+      ]
+    },
+    {
+      "name": "splitUser_sublist",
+      "private": false,
+      "module": "Reactivegas.State",
+      "matches": [
+        "splitUser_sublist"
+      ]
+    },
+    {
+      "name": "escrowSum_cons",
+      "private": false,
+      "module": "Reactivegas.State",
+      "matches": [
+        "escrowSum_cons"
+      ]
+    },
+    {
+      "name": "pullCollection_id_lemma",
+      "private": true,
+      "module": "Reactivegas.State",
+      "matches": [
+        "_private.Reactivegas.State.0.pullCollection_id_lemma"
+      ]
+    },
+    {
+      "name": "pullCollection_id",
+      "private": false,
+      "module": "Reactivegas.State",
+      "matches": [
+        "pullCollection_id"
+      ]
+    },
+    {
+      "name": "pullCollection_sum_lemma",
+      "private": true,
+      "module": "Reactivegas.State",
+      "matches": [
+        "_private.Reactivegas.State.0.pullCollection_sum_lemma"
+      ]
+    },
+    {
+      "name": "pullCollection_sum",
+      "private": false,
+      "module": "Reactivegas.State",
+      "matches": [
+        "pullCollection_sum"
+      ]
+    },
+    {
+      "name": "pullCollection_sublist_lemma",
+      "private": true,
+      "module": "Reactivegas.State",
+      "matches": [
+        "_private.Reactivegas.State.0.pullCollection_sublist_lemma"
+      ]
+    },
+    {
+      "name": "pullCollection_sublist",
+      "private": false,
+      "module": "Reactivegas.State",
+      "matches": [
+        "pullCollection_sublist"
+      ]
+    },
+    {
+      "name": "stripCollections_sum",
+      "private": false,
+      "module": "Reactivegas.State",
+      "matches": [
+        "stripCollections_sum"
+      ]
+    },
+    {
+      "name": "stripCollections_referente",
+      "private": false,
+      "module": "Reactivegas.State",
+      "matches": [
+        "stripCollections_referente"
+      ]
+    },
+    {
+      "name": "Reactivegas.app_members_preservation_holds",
+      "private": false,
+      "module": "Reactivegas.Step",
+      "matches": [
+        "Reactivegas.app_members_preservation_holds"
+      ]
+    },
+    {
+      "name": "Reactivegas.app_members_preservation_mutant_caught",
+      "private": false,
+      "module": "Reactivegas.Step",
+      "matches": [
+        "Reactivegas.app_members_preservation_mutant_caught"
+      ]
+    },
+    {
+      "name": "Reactivegas.comune_cannot_authorize",
+      "private": false,
+      "module": "Reactivegas.Step",
+      "matches": [
+        "Reactivegas.comune_cannot_authorize"
+      ]
+    },
+    {
+      "name": "stepDetailed_erases",
+      "private": false,
+      "module": "Reactivegas.Trace",
+      "matches": [
+        "stepDetailed_erases"
+      ]
+    },
+    {
+      "name": "TraceTests.frozen_checks_faithful",
+      "private": false,
+      "module": "Reactivegas.TraceTests",
+      "matches": [
+        "TraceTests.frozen_checks_faithful"
+      ]
+    },
+    {
+      "name": "TraceTests.frozen_inventory_faithful",
+      "private": false,
+      "module": "Reactivegas.TraceTests",
+      "matches": [
+        "TraceTests.frozen_inventory_faithful"
+      ]
+    },
+    {
+      "name": "TraceTests.frozen_corpus_faithful",
+      "private": false,
+      "module": "Reactivegas.TraceTests",
+      "matches": [
+        "TraceTests.frozen_corpus_faithful"
+      ]
+    },
+    {
+      "name": "TraceTests.app_members_preservation_holds",
+      "private": false,
+      "module": "Reactivegas.TraceTests",
+      "matches": [
+        "TraceTests.app_members_preservation_holds"
+      ]
+    },
+    {
+      "name": "TraceTests.app_members_preservation_mutant_caught",
+      "private": false,
+      "module": "Reactivegas.TraceTests",
+      "matches": [
+        "TraceTests.app_members_preservation_mutant_caught"
+      ]
+    },
+    {
+      "name": "TraceTests.base_departure_applies_cleanup",
+      "private": false,
+      "module": "Reactivegas.TraceTests",
+      "matches": [
+        "TraceTests.base_departure_applies_cleanup"
+      ]
+    },
+    {
+      "name": "TraceTests.base_change_can_close_without_ballot",
+      "private": false,
+      "module": "Reactivegas.TraceTests",
+      "matches": [
+        "TraceTests.base_change_can_close_without_ballot"
+      ]
+    },
+    {
+      "name": "TraceTests.direct_admission_only_holds",
+      "private": false,
+      "module": "Reactivegas.TraceTests",
+      "matches": [
+        "TraceTests.direct_admission_only_holds"
+      ]
+    },
+    {
+      "name": "TraceTests.base_recompute_reachable_holds",
+      "private": false,
+      "module": "Reactivegas.TraceTests",
+      "matches": [
+        "TraceTests.base_recompute_reachable_holds"
+      ]
+    },
+    {
+      "name": "TraceTests.sweep_idempotent_witness",
+      "private": false,
+      "module": "Reactivegas.TraceTests",
+      "matches": [
+        "TraceTests.sweep_idempotent_witness"
+      ]
+    },
+    {
+      "name": "TraceTests.sweep_idempotent_mutant_caught",
+      "private": false,
+      "module": "Reactivegas.TraceTests",
+      "matches": [
+        "TraceTests.sweep_idempotent_mutant_caught"
+      ]
+    },
+    {
+      "name": "TraceTests.all_checks_pass",
+      "private": false,
+      "module": "Reactivegas.TraceTests",
+      "matches": [
+        "TraceTests.all_checks_pass"
+      ]
+    }
+  ],
+  "stdoutSha": "e2770204fb00d37773b6bf225d6b2fd3dba9bcf404facb467b84b683ea80a6ad"
+}

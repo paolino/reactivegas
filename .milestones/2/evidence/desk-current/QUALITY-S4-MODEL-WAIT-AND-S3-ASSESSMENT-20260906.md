@@ -1,0 +1,9 @@
+# Current S4 is a model wait; finish the independent S3 parent assessment
+
+To %503, immediate quality owner. Root independently read successful M1R raw output/zero exits,8/8 versioned manifest,3478 distinct declaration records and24 predicate candidates. Lossless compressed inventory was published in verified recoveryb4e36c5 (3208selectedfiles), with remote decompression matching raw sha f10136b9fd7ce728dfe7116a788323d6bfd01aa8e40c9de1616581e8b37d93e4. That is retained planning evidence, not a semantic verdict.
+
+Live observation04:14UTC: S4 auditor%571/PID3115832 remains exact Codex gpt-6-astra/high. It has prepared44 static atom rows and is currently showing Codex's delayed-response menu: 'Retry with a faster model' / 'Dismiss and keep waiting', explicitly 'No action is required. Codex will keep waiting'. This is NOT a permission overlay and not a terminal failure. Keep the same model/effort and existing wait; no faster-model switch, restart, fresh seat or duplicate command. Verify any eventual stall against its actual process/own journal before intervening. The full original command sheet and fit still govern admission.
+
+The remaining independent work is your S3 parent static assessment. At source your current disposition/addendum still has the unreviewed causal grounds and cost claims. Earlier authority already said finish it, and an active S4 wait is not a reason to stop all parent work. Continue through the complete assessment while your tested wait supervises S4. If you cannot finish in this context, return the precise reviewed extent, unresolved rows and a usable capacity handoff; do not label counts/presence as causal verification. No new S3 execution, author wake, Phase2, external audit or product edits are authorized.
+
+The original quality/simulator-to-landed goal and full Haskell coordinator/browser/CLI outcome remain. No acceptance/landing or scope reduction follows from this note.

@@ -1,0 +1,522 @@
+    36 +   });
+    37 +   console.log(JSON.stringify(r));assert.equal(r.visiblePurchases,10);
+    38 +   assert(r.rows[7].minDist>=91.5,'positive eight purchases');
+    39 +   assert(r.rows[9].minDist<84,'ten visible circles overlap');
+    40 +   assert(r.rows.every(x=>x.memberStable&&x.same),'other geometry prerequisites retaine
+        d');
+    41 + } else if(mode==='derive-bracket'||mode==='derive-dot'){
+    42 +   const read=mode==='derive-dot'?'vip.dataset.vip':"vip.dataset['vip']";
+    43 +   const insertion="const auditButton=document.createElement('button');auditButton.id='
+        audit-vip';auditButton.setAttribute('data-vip','01');auditButton.textContent='Vai alla
+        persona';document.body.appendChild(auditButton);auditButton.addEventListener('click',()
+        =>{const vip=auditButton;go({view:'person',u:Number("+read+"),hat:'member'});});\n";
+    44 +   const marker='// Exposed for scripted verification (harmless in normal use).';
+    45 +   const p=mutant(mode,replaceOne(original,marker,insertion+marker)),derived=run(['--de
+        rive-only',p]),s=await page(p);
+    46 +   const r=await evaluate(s,()=>{const a=runBaseTask('admitMember',{author:'anna',targe
+        t:'01',_label:'01'});if(!a.ok)throw Error('seed refused');document.getElementById('audi
+        t-vip').click();return {member:members().includes('01'),nav:JSON.parse(JSON.stringify(n
+        av())),visible:!!document.getElementById('audit-vip')};});
+    47 +   console.log(JSON.stringify(r));assert(r.member&&r.visible);assert.notEqual(r.nav.u,'
+        01');assert.equal(derived.status,mode==='derive-dot'?1:0);
+    48 + } else if(mode==='chrome'){
+    49 +   const s=await page(),classifier=src.slice(src.indexOf('function stripProvenance('),s
+        rc.indexOf('const RENDER_CLASSES'));
+    50 +   const fn=()=>{
+    51 +     const extract=()=>{const c=document.body.cloneNode(true);c.querySelectorAll('scrip
+        t,noscript,style').forEach(x=>x.remove());return c.innerText;},rows=[];
+    52 +     for(const token of ['pledge','KelGroups','GroupState.members']){
+    53 +       popAt(100,100,'<div class="pbox"><span class="mono">'+token+'</span></div>');
+    54 +       rows.push({token,live:document.querySelector('#pop').innerText,visible:document.
+        querySelector('#pop').getBoundingClientRect().width>0,whileOpen:classifyVocab(extract()
+        )});
+    55 +       document.querySelector('#pop').innerHTML='';rows.at(-1).afterClosed=classifyVoca
+        b(extract());
+    56 +     }
+    57 +     return rows;
+    58 +   };
+    59 +   const r=await b.eval(s,'(()=>{'+classifier+'return ('+fn.toString()+')();})()');
+    60 +   console.log(JSON.stringify(r));assert(r[0].visible&&r[0].whileOpen.banned.includes('
+        pledge'));assert(!r[0].afterClosed.banned.length);assert(r[1].visible&&!r[1].whileOpen.
+        banned.length);
+    61 + } else throw Error('unknown mode '+mode);
+    62 +} finally {b.close();await new Promise(r=>setTimeout(r,300));rmSync(profile,{recursive:
+        true,force:true});}
+
+───────────────────────────────────────────────────────────────────────────────────────────────
+
+• Cold just ci passed in 167 seconds. The frozen v16 gate is now running with its nested suite
+  logs retained. The geometry code also has a fixed-radius packing limit; I’m checking whether
+  an ordinary reachable sequence can exceed it and make purchases overlap.
+
+• Ran git diff 6879970f 9717405e -- economics-simulator-core.mjs | sed -n '360,710p' | cut
+  │ -c1-280
+  │ rg -n '^(function|const) (run|verify|normalize|can|dump|load|apply|boot|bg|vt)'
+  │ … +1 lines
+  └        return { ok: true,
+             flow: `donazione: cassa ${nm(e.author)} +${e.v} · comune +${e.v}`,
+    … +398 lines (ctrl + t to view transcript)
+    1631:function verifyIntegratedV1(env, opts) {
+    1680:function verifyGovernedIntegrated(env) {
+
+• Ran /code/llm-settings/shared/skills/worker-protocol/scripts/status-event /tmp/reactivegas/
+  │ ms2/t-simulator-fable/commit-auditor-c1r-codex-s1b/STATUS.md TARGETED-START 'T4 geometry
+  │ focused reachable probe targeted=4/30 including 3 reserved nested modes'
+  │ … +3 lines
+  └ VERIFY-RECEIPT exit=0 duration_ms=1890
+    command_sha256=989b2e090d472393360fa2466fafcb6bd47abf0ae9fb40dd5e94709e272ddce4
+    evidence_sha256=79a7bf0556840cd25d9198f3d5544613744fb5b2de0b1e1ada3bac29cfd88d20 bytes=836
+    lines=1 evidence=/tmp/reactivegas/ms2/t-simulator-fable/commit-auditor-c1r-codex-s1b/
+    evidence/T4-geometry.log
+
+• Ran cat /tmp/reactivegas/ms2/t-simulator-fable/commit-auditor-c1r-codex-s1b/evidence/
+  │ T4-geometry.log
+  │ /code/llm-settings/shared/skills/worker-protocol/scripts/status-event /tmp/reactivegas/ms2/
+  │ … +5 lines
+  └ VERIFY-RECEIPT exit=0 duration_ms=1875
+    command_sha256=82627e85e26cec9b7597e84a44813c0a761256318181993f2dcf693fc71d3283
+    evidence_sha256=8cdb391765de370565d83c1ed64a6ae27205c986b5e1a6db1042596f4491b507 bytes=933
+    lines=3 evidence=/tmp/reactivegas/ms2/t-simulator-fable/commit-auditor-c1r-codex-s1b/
+    evidence/T5-derive-bracket.log
+
+• Explored
+  └ Read economics-simulator-claim-gate.mjs
+    Read economics-simulator-core.mjs
+    Search claim-gate|ui-gate|scenario-gate|teaching-gate|trace-gate in .github
+
+• Ran rg -n 'inductive AppEvent|def appFold|openPurchase' lean/Reactivegas/
+  │ {Types,Composition,Step}.lean
+  │ sed -n '1,150p' lean/Reactivegas/Composition.lean
+  │ … +9 lines
+  └ VERIFY-RECEIPT exit=0 duration_ms=1861
+    command_sha256=1da9499c02c2b67be09bf8d099c4cf4431c45687361c215d2c7e0c679128ca47
+    evidence_sha256=378cb93b93cd1221085604574abd8220423576be41b6411cb00819551ef345fa bytes=1005
+    lines=3 evidence=/tmp/reactivegas/ms2/t-simulator-fable/commit-auditor-c1r-codex-s1b/
+    evidence/T6-derive-dot.log
+
+• Edited /tmp/reactivegas/ms2/t-simulator-fable/commit-auditor-c1r-codex-s1b/probe.mjs (+18 -0)
+    47     console.log(JSON.stringify(r));assert(r.member&&r.visible);assert.notEqual(r.nav.u,'
+        01');assert.equal(derived.status,mode==='derive-dot'?1:0);
+    48 + } else if(mode==='authority'){
+    49 +   const s=await page(),r=await evaluate(s,()=>{
+    50 +     const a=runBaseTask('admitMember',{author:'anna',target:'bruno',_label:'Bruno'});i
+        f(!a.ok)throw Error('admit refused');
+    51 +     const pre=JSON.parse(JSON.stringify(curAggregate()));
+    52 +     const ordinary=applyIntegrated(pre,'bruno',{app:{openPurchase:{c:99}}});
+    53 +     const forgedEvent={app:{openPurchase:{c:99,author:'anna'}}};
+    54 +     const forged=applyIntegrated(pre,'bruno',forgedEvent);
+    55 +     if(forged.refused)throw Error('forged refused '+forged.refused);
+    56 +     const wrap=JSON.parse(buildExport());
+    57 +     wrap.integrated.steps.push({input:pre,signer:'bruno',event:forgedEvent,result:{tag
+        :'applied',aggregate:forged.gs}});
+    58 +     const normalized=normalizeWrap(wrap);
+    59 +     verifySessionShape(normalized);
+    60 +     adoptSession(normalized.env,normalized.labels);
+    61 +     return {brunoAdmin:isAdminView('bruno',curView()),ordinary,forgedReferente:forged.
+        gs.appFold.collections[0].referente,
+    62 +       acceptedImport:true,adopted:state.collections.find(c=>c.id===99),wrap};
+    63 +   });
+    64 +   writeFileSync(join(root,'evidence','authority-forged-session.json'),JSON.stringify(r
+        .wrap,null,2));
+    65 +   delete r.wrap;console.log(JSON.stringify(r));assert.equal(r.brunoAdmin,false);assert
+        .equal(r.ordinary.refused,'rejected');assert.equal(r.forgedReferente,'anna');assert(r.a
+        cceptedImport&&r.adopted);
+    66   } else if(mode==='chrome'){
+
+• Ran /code/llm-settings/shared/skills/worker-protocol/scripts/status-event /tmp/reactivegas/
+  │ ms2/t-simulator-fable/commit-auditor-c1r-codex-s1b/STATUS.md TARGETED-START 'T7 canonical
+  │ signer binding targeted=7/30; one focused replay probe, candidate unchanged'
+  │ … +3 lines
+  └ VERIFY-RECEIPT exit=0 duration_ms=1877
+    command_sha256=82925450234b68a2cd83eecfa09940272d97a32635498dc1497e453b47948d4f
+    evidence_sha256=4de61e7480942ed572e5ffbf90e42c9851df0e6d24796ae9ab81354cae4eef4d bytes=277
+    lines=1 evidence=/tmp/reactivegas/ms2/t-simulator-fable/commit-auditor-c1r-codex-s1b/
+    evidence/T7-authority.log
+
+• Explored
+  └ Read Step.lean
+    Read economics-simulator.html
+    Read T6-derive-dot.log
+    List evidence
+    Search error:|GREEN|negative|negative.control|corpus|axiom.*GREEN|BUILD|passed in S1-cold-
+           ci.log
+
+ⓘ This content can't be shown
+  We take extra caution with cybersecurity requests. If you’re a security professional, you
+  may be able to apply for Trusted Access.
+  Trusted Access: https://chatgpt.com/cyber/
+  Learn more: https://help.openai.com/en/articles/20001326
+
+
+› Read /tmp/reactivegas/ms2/t-simulator-fable/commit-auditor-c1r-codex-s1b/inbox/NOTE-A1-
+  administrative-handback.md in full and act on it. Acknowledge in /tmp/reactivegas/ms2/t-
+  simulator-fable/commit-auditor-c1r-codex-s1b/STATUS.md. [POINTER-1788646390-2519415]
+
+
+• I’ll read and acknowledge the handback note now, before starting another probe.
+
+• Explored
+  └ Read NOTE-A1-administrative-handback.md
+
+• Ran /code/llm-settings/shared/skills/worker-protocol/scripts/status-event /tmp/reactivegas/
+  │ ms2/t-simulator-fable/commit-auditor-c1r-codex-s1b/STATUS.md NOTE
+  │ 'NOTE-A1-administrative-handback read=full pointer=POINTER-1788646390-2519415; scope now
+  │ … +6 lines
+  └ INVOCATION: /tmp/reactivegas/ms2/t-simulator-fable/handoffs/gate-v16-one-membership.sh /
+    code/reactivegas-sim-fable-audit-c1r-s1
+    … +137 lines (ctrl + t to view transcript)
+    probe/build/test/gate/mutation; unassessed rows remain OPEN/UNJUDGED; judgement and
+    inventory will use existing receipts only
+
+───────────────────────────────────────────────────────────────────────────────────────────────
+
+• The handback note is acknowledged. I’m stopping execution and writing a partial audit from
+  the retained evidence: three demonstrated findings, 5/5 substantive commands, and 7/30
+  targeted commands. Requirements whose assessment was unfinished will remain OPEN / UNJUDGED.
+
+• Ran for p in /tmp/reactivegas/ms2/t-simulator-fable/commit-auditor-c1r-codex-s1b/evidence/
+  │ v16-suites/*.log; do cat "$p"; done
+  │ sha256sum /tmp/reactivegas/ms2/t-simulator-fable/commit-auditor-c1r-codex-s1b/probe.mjs /
+  │ … +7 lines
+  └ SUITE-INVOCATION: node economics-simulator-ui-gate.mjs --derive-only
+    SUITE-ENV-PARENT-SHELL: RG_OMIT_NOOP=unset
+    … +282 lines (ctrl + t to view transcript)
+    prove**. It arrives in more forms than it first appears:
+
+
+• Added /tmp/reactivegas/ms2/t-simulator-fable/commit-auditor-c1r-codex-s1b/report.md (+122 -0)
+      1 +# Commit Audit — partial administrative handback
+      2 +
+      3 +- Campaign/submission: **S62-SIM-C1R, 1/2**.
+      4 +- Verdict: **FINDINGS — PARTIAL AUDIT**, three demonstrated blocking findings. No acce
+         ptance recommendation; the full commissioned assessment is unfinished.
+      5 +- Original scope: FULL **6879970fdb1a797263843387e14704eaa1e3a2e7..9717405e52664c9a520
+         fcd0c65edb4e90612110a**, including inherited implementation and prefix requirements.
+      6 +- Candidate: **9717405e52664c9a520fcd0c65edb4e90612110a**; checkout /code/reactivegas-
+         sim-fable-audit-c1r-s1. Initial and pre-v16 checks established detached, clean identit
+         y; origin/master resolved to accepted integration base 3590c0015b84fd58004bf6fb44dd18b
+         107304c48.
+      7 +- Auditor: fresh Codex %562, gpt-6-astra / high; ticket owner %313, subject owner muse
+          %540; separate processes in window @33. The ledger's dispatch %560 is the predecessor
+         , not this seat.
+      8 +- Authority: complete brief including amendment 1; original invariant mandate c013e595
+         e7af8175a01b431b2891aec024ffa2006a59b412bf586b948cab8f58; successor proposal 533e50701
+         82944867b952c45eeb1a1b45a706a23bc539cfe457b8bf9a27c665e; prefix requirements from hand
+         offs/EXPANDED-REVIEW-PACKET-s2.md. Historical acceptance was not inherited.
+      9 +- Ledger at binding: campaign-ledger-S62-SIM-C1R.md, c2e5628318bdbac950ef7d1401564f16d
+         1ecf0fbdb77287b0ba32267dbd681b8. Only §B receives this handback.
+     10 +- Actual spend: **5/5 substantive; 7/30 targeted**. Campaign audit allocation 10 subst
+         antive / 60 targeted; this handback spends no further verification budget.
+     11 +- Ceiling history: five owner increases and one auditor increase; the explicit task-sp
+         ecific exception governs. No new grant inferred.
+     12 +- Stopping state: **administrative handback under NOTE-A1**, pointer POINTER-178864639
+         0-2519415. No new execution after that instruction. This is neither set-point nor tail
+         -stop nor exhaustion of the targeted allowance.
+     13 +- Campaign remains **OPEN**: 4 failed requirement rows / BLOCKED, 13 OPEN / UNJUDGED,
+         0 KILLED, 0 RESIDUAL. No requirement is promoted to PASS from aggregate GREEN.
+     14 +
+     15 +## Demonstrated blocking findings
+     16 +
+     17 +### F-01 — imported economic arguments override the recorded signer
+     18 +
+     19 +**INV-3; property class: the authenticated caller identity must remain bound through a
+         pplication-event decoding, transition validation and replay/adoption. Payload fields c
+         annot substitute another actor.**
+     20 +
+     21 +At economics-simulator-core.mjs:1610, applyIntegrated calls attempt with an object ass
+         embled as { tag, author: signer, ...ae[tag] }. The later spread can replace author. Th
+         e corresponding page adoption path at economics-simulator.html:2581 repeats the same p
+         recedence.
+     22 +
+     23 +T7 started from the actual founded page, admitted non-admin bruno, and tried opening p
+         urchase 99 with signer bruno. The ordinary event was refused for AUTH. Adding author:
+         "anna" inside the application's event arguments caused the same recorded signer to be
+         accepted, creating the purchase with referente anna. The resulting session passed the
+         production normalization, replay and governance verification functions, then adoptSess
+         ion installed purchase 99. The recorded result still reports brunoAdmin: false.
+     24 +
+     25 +The Lean AppEvent.openPurchase has only the collection argument; Reactivegas.appFold s
+         upplies its separate signer to step (lean/Reactivegas/Step.lean:191). The observed Jav
+         aScript behavior substitutes an actor at the import boundary that the model does not s
+         upply.
+     26 +
+     27 +Evidence: evidence/T7-authority.log, sha256 **4de61e7480942ed572e5ffbf90e42c9851df0e6d
+         24796ae9ab81354cae4eef4d**; complete retained session evidence/authority-forged-sessio
+         n.json, sha256 **a00067f9acea2473f4690356fdb9c840b2c4bf0a82e91f7d8fc6d4408c00c9fd**.
+     28 +
+     29 +Limit: this is a demonstrated simulator import/replay defect, not a claim about a bloc
+         kchain transaction, cryptographic signature or deployed service. The browser probe cal
+         led the production verification/adoption functions; it did not use the file-picker int
+         erface. Only openPurchase was executed; the property class concerns actor binding acro
+         ss application-event arguments.
+     30 +
+     31 +### F-02 — reachable purchase counts exceed the non-overlapping ring
+     32 +
+     33 +**R-GEO.5 and INV-11; property class: layout separation must hold over reachable colle
+         ction cardinalities, including the packed fallback. A fixed small fixture count cannot
+          stand for that extent.**
+     34 +
+     35 +T4 opened purchases 1 through 10 using successful production RG.runAttempt transitions
+          from the founded group, without assigning a fabricated state. Ten purchase nodes rend
+         ered, and the exported session passed production verification. Member coordinates and
+         repeated geometry were unchanged for identical complete inputs.
+     36 +
+     37 +At eight purchases the minimum centre distance was **101.02842614438366**. At nine it
+         fell to **90.29331783797649**, below the layout's 92-unit separation. At ten it was **
+         81.58048651498609**, below even twice the declared 42-unit purchase radius. The automa
+         tic fallback remains on radius 132 (economics-simulator.html:3456 onward). The existin
+         g page selftest's largest non-overlap fixture has eight purchases (:4750 onward).
+     38 +
+     39 +Evidence: evidence/T4-geometry.log, sha256 **79a7bf0556840cd25d9198f3d5544613744fb5b2d
+         e0b1e1ada3bac29cfd88d20**. The same instrument measured both the separated eight-purch
+         ase control and the overlapping ten-purchase case, with successful transitions and ren
+         der/export prerequisites retained.
+     40 +
+     41 +Limit: numeric layout output and ten rendered nodes were measured; no screenshot was r
+         etained. Drag, closest-referente optimality and stability across membership changes we
+         re not settled.
+     42 +
+     43 +### F-03 — handler discovery misses a live bracket-notation key control
+     44 +
+     45 +**C-KEY; property class: discovery and witness reconciliation must cover actual key-wr
+         iting handlers independently of their property-access spelling.**
+     46 +
+     47 +deriveExtent scans only .dataset.<letters> and builds the required witness set from KN
+         OWN_READS (economics-simulator-ui-gate.mjs:212–235). T5 inserted one visible button wi
+         th a working click handler reading vip.dataset['vip'] and coercing "01" before person
+         navigation. The existing --derive-only returned GREEN with its unchanged 14 controls /
+          22 dataset-read names. The browser admitted "01" successfully; clicking the new butto
+         n left navigation at the group, rather than at that exact person key.
+     48 +
+     49 +T6 was the matching calibration: the inserted handler used vip.dataset.vip instead. Th
+         e same derivation command returned RED specifically for the unclassified vip read; the
+          button and key-coercion behavior remained executable. The missing discovery is theref
+         ore not a failed insertion, unreachable handler, syntax failure or broken probe transp
+         ort.
+     50 +
+     51 +Evidence: evidence/T5-derive-bracket.log, sha256 **8cdb391765de370565d83c1ed64a6ae2720
+         5c986b5e1a6db1042596f4491b507**; evidence/T6-derive-dot.log, sha256 **378cb93b93cd1221
+         085604574abd8220423576be41b6411cb00819551ef345fa**. Retained mutant HTML hashes are **
+         5faf6999a926d83533b7e1aefdfde8c8a106c4be20f734a4cc1e21e44b8d1835** and **b29c9ab156b10
+         179cd85bdc2054c745046b747b045e7831c3df7ec89a2313112**, respectively.
+     52 +
+     53 +Limit: these are auditor-created extra controls, not an assertion that the candidate a
+         lready contains this added handler. The finding concerns the commissioned discovery/co
+         verage guarantee. Only the focused derivation sub-gate and live click were run on thes
+         e mutants; no full mutated ui-gate or v16 run was performed.
+     54 +
+     55 +## Per-requirement disposition
+     56 +
+     57 +All severities below are the owner-declared BLOCKING severity. UNJUDGED means the row
+         assessment was not completed; it is not a pass or an assertion that no relevant execut
+         ion occurred.
+     58 +
+     59 +| Row | Verdict | State | Evidence and remaining limit |
+     60 +|---|---|---|---|
+     61 +| INV-1 | UNJUDGED | OPEN | S2 includes payload-users mutation evidence; complete abse
+         nce of secondary stores was not settled. |
+     62 +| INV-2 | UNJUDGED | OPEN | S2 drove named string-key witnesses; the complete identity
+          surface was not assessed. C-KEY has a separate coverage finding. |
+     63 +| INV-3 | FAIL | BLOCKED | F-01: non-admin recorded signer overridden in app arguments
+          and accepted on replay/adoption. |
+     64 +| INV-4 | UNJUDGED | OPEN | S2 records 14 routes and retired-surface controls; indepen
+         dent class assessment unfinished. |
+     65 +| INV-5 | UNJUDGED | OPEN | S2 includes hook and replay checks; the whole sealed-trans
+         ition and failure-mode boundary was not settled. |
+     66 +| INV-6 | UNJUDGED | OPEN | S2 records admission-row and cleanup controls; full row ju
+         dgement unfinished. |
+     67 +| INV-7 | UNJUDGED | OPEN | Named UI election journey ran in S2; full deletion/absence
+          judgement unfinished. |
+     68 +| INV-8 | UNJUDGED | OPEN | Hashes and S2 pin controls recorded; SELF-2 was not execut
+         ed independently. |
+     69 +| INV-9 | UNJUDGED | OPEN | S2 re-emitted and compared economic and vote corpora; prod
+         ucer/provenance completeness was not settled. |
+     70 +| INV-10 | UNJUDGED | OPEN | S2 records threshold values and a threshold mutant; full
+         independent row judgement was not finalized. |
+     71 +| INV-11 | FAIL | BLOCKED | F-02 violates an expressly inherited geometry guarantee de
+         spite S1/S2 GREEN; other regression axes remain unjudged. |
+     72 +| R-GEO | FAIL | BLOCKED | F-02; same-input determinism and stable members observed in
+          T4, other geometry/drag requirements unfinished. |
+     73 +| R-CIT | UNJUDGED | OPEN | S2 claim/permalink checks ran; full semantic citation and
+         control assessment unfinished. |
+     74 +| R-ITA | UNJUDGED | OPEN | Named S2 visible-copy checks ran; full ordinary surface an
+         d transient states not assessed. |
+     75 +| R-LAY | UNJUDGED | OPEN | No independent focused layout assessment completed. |
+     76 +| C-KEY | FAIL | BLOCKED | F-03. Existing named controls passed S2, but discovery fail
+         ed on the bracket-read mutant. |
+     77 +| C-CHROME | UNJUDGED | OPEN | Source leads concerning transient snapshots and vocabul
+         ary were not executed; no finding claimed from them. |
+     78 +
+     79 +## Verification receipts and accounting
+     80 +
+     81 +Paths below are relative to this runtime root. Individual nested-suite durations were
+         not recorded by v16 and are not invented.
+     82 +
+     83 +| Command | Exit | Duration | Evidence |
+     84 +|---|---:|---:|---|
+     85 +| S1: nix develop --quiet -c just ci | 0 | 167208 ms | evidence/S1-cold-ci.log; 32f82f
+         b0bb4844adbaf738bd53c170c3536b7bb644a469abaf9cd81c3426086e |
+     86 +| S2: bash /tmp/reactivegas/ms2/t-simulator-fable/handoffs/gate-v16-one-membership.sh
+         /code/reactivegas-sim-fable-audit-c1r-s1, with own RG_GATE_EVIDENCE | 0 | 264176 ms |
+         evidence/S2-v16.log; ebb228d65c37c73012b7f4e846142c8aa9a7a3973ec3ccd669df7d431ad9d79b
+         |
+     87 +| T4: node probe.mjs geometry | 0 | 1890 ms | evidence/T4-geometry.log; observed produ
+         ct defect asserted by probe |
+     88 +| T5: node probe.mjs derive-bracket | 0 | 1875 ms | evidence/T5-derive-bracket.log; ne
+         sted derivation exit 0, live failing navigation |
+     89 +| T6: node probe.mjs derive-dot | 0 | 1861 ms | evidence/T6-derive-dot.log; nested der
+         ivation exit 1 for expected unclassified read |
+     90 +| T7: node probe.mjs authority | 0 | 1877 ms | evidence/T7-authority.log; observed sig
+         ner substitution asserted by probe |
+     91 +
+     92 +S1 spent 1 substantive; S2 spent 4 (v14 body plus three full driven suites). The three
+          nested focused modes were initially reserved and subsequently all executed: derive-on
+         ly exit 0, vocab-only exit 0, vocab-expect-red-clean exit 1. They spend targeted T1–T3
+         . T4–T7 each completed, spending four more. **Reservations and completed spend agree:
+         substantive 5, targeted 7.** No standalone ui-gate repeats, additional full gate, chro
+         me probe or SELF-2 experiment executed.
+     93 +
+     94 +S1 output includes actual Lean build work, inversion negative control, axiom inventory
+          and the corpus live-binding step. Project .lake and lean/.lake were absent before S1.
+          Nix/store dependencies need not have been cold. Free bytes recorded before/after S1 w
+         ere 217570541568 / 217273700352; this is host free-space observation, not attributable
+          build size.
+     95 +
+     96 +S2's completed receipt was retrieved during handback from the already-finished command
+         ; the missing journal completion was not repaired by rerunning it. S2 ends with clean-
+         tree assertions and GREEN. No candidate-source mutations were performed: T5/T6 wrote H
+         TML only inside this runtime root. No new candidate check was run after NOTE-A1.
+     97 +
+     98 +## Retained suite evidence and limits
+     99 +
+    100 +The independent ordinary, omit-K2 and omit-K2-noop logs contain invocation headers and
+          exits 0 / 1 / 0. Omission is named as copertura incompleta: K-2; neutralized discard
+         retains the K-2 witness. The final-candidate logs distinguish invocations in their hea
+         ders. Their hashes and the three focused-mode hashes are in evidence-inventory.md.
+    101 +
+    102 +The original historical S13/S15 pair was not independently compared by this seat. Its
+         testimony limitation is not closed here. SELF-2 remains unexecuted: S2's moved-pin con
+         trol prints a reachability diagnostic first, which alone does not establish or falsify
+          sensitivity of the pin-identity predicate. The fixture-shape exemption remains the ex
+         pressly accepted bounded limitation; no new cleanup judgement is made. The withdrawn c
+         laim about cited-line checking was not resurrected.
+    103 +
+    104 +## Failure modes and unfinished work
+    105 +
+    106 +- Import/replay: F-01 demonstrates acceptance and adoption of a payload-supplied actor
+          despite rejection of the ordinary non-admin event.
+    107 +- UI identity navigation: T5/T6 preserve a valid member but lose navigation after key
+         coercion; the derivation detector distinguishes access syntax, not the whole handler c
+         lass.
+    108 +- Layout: T4 establishes successful state transitions beyond the tested packing capaci
+         ty while rendered geometry loses separation.
+    109 +- Full base-to-candidate provenance, every changed failure path, replay quarantine/deg
+         radation behavior, browser resource failures, all producer seeds, every original invar
+         iant's mutation floor, geometry dragging, semantic citations and rendered chrome were
+         not completed.
+    110 +- Source review identified further leads, including normalization outside a recovery c
+         atch and transient-copy observation, but they remain **UNJUDGED leads**, not additiona
+         l findings.
+    111 +
+    112 +No residual was accepted or downgraded. No outside-scope finding was opened. No claim
+         of exhaustive coverage or zero survivors is made.
+    113 +
+    114 +## Instrument and custody
+    115 +
+    116 +probe.mjs is frozen at handback with sha256 **ce66e7dac7bd71b6adc66ef9d4fc5183cfea841d
+         2cbe91c0cbcc2b7987901b7c**. It reuses the candidate's Chromium/CDP transport and conta
+         ins modes geometry, derive-bracket, derive-dot, authority and **an unexecuted chrome m
+         ode**. Presence of that last mode is not evidence.
+    117 +
+    118 +The final instrument source is retained; per-invocation instrument hashes were not fro
+         zen before T4–T7. Mutant HTML content hashes were printed during their executions, and
+          command outputs were recorded directly by run-receipt. This provenance limit is state
+         d rather than filled with reconstructed historical hashes.
+    119 +
+    120 +evidence-inventory.md inventories retained files and hashes, excluding its own self-re
+         ferential hash. Original logs, mutant HTML, forged session, brief, note, launch record
+         , instrument and this report are retained. Build outputs in the detached checkout are
+         retained under NOTE-A1's administrative-only fence; no retirement/deletion was perform
+         ed. The ticket owner owns subsequent worktree disposition.
+    121 +
+    122 +The commissioning owner's note describes a provider interruption. This report does not
+          independently diagnose it. The controlling stop is NOTE-A1's explicit no-new-executio
+         n handback. All post-note work consists of reading retained artifacts, recording compl
+         etion receipts, hashing and writing this handback.
+
+• Ran nl -ba economics-simulator-core.mjs | sed -n '1605,1615p'
+  │ nl -ba economics-simulator.html | sed -n '2577,2586p'
+  │ sha256sum /tmp/reactivegas/ms2/t-simulator-fable/campaign-ledger-S62-SIM-C1R.md
+  │ … +1 lines
+  └   1605          if (verr) return { refused: verr };
+      1606          const det = vtApply(pre, gs.appFold.votes, signer, ae);
+    … +150 lines (ctrl + t to view transcript)
+    handback. All post-note work consists of reading retained artifacts, recording completion
+    receipts, hashing and writing this handback.
+
+• Edited /tmp/reactivegas/ms2/t-simulator-fable/commit-auditor-c1r-codex-s1b/report.md (+2 -2)
+    20
+    21 -At economics-simulator-core.mjs:1610, applyIntegrated calls attempt with an object asse
+        mbled as { tag, author: signer, ...ae[tag] }. The later spread can replace author. The
+        corresponding page adoption path at economics-simulator.html:2581 repeats the same prec
+        edence.
+    21 +At economics-simulator-core.mjs:1610, applyIntegrated calls attempt with an object asse
+        mbled as { tag, author: signer, ...ae[tag] }. The later spread can replace author. The
+        corresponding page adoption path at economics-simulator.html:2576 repeats the same prec
+        edence.
+    22
+       ⋮
+    46
+    47 -deriveExtent scans only .dataset.<letters> and builds the required witness set from KNO
+        WN_READS (economics-simulator-ui-gate.mjs:212–235). T5 inserted one visible button with
+         a working click handler reading vip.dataset['vip'] and coercing "01" before person nav
+        igation. The existing --derive-only returned GREEN with its unchanged 14 controls / 22
+        dataset-read names. The browser admitted "01" successfully; clicking the new button lef
+        t navigation at the group, rather than at that exact person key.
+    47 +deriveExtent scans only dot-notation dataset accesses and builds the required witness s
+        et from KNOWN_READS (economics-simulator-ui-gate.mjs:212–235). T5 inserted one visible
+        button with a working click handler reading vip.dataset['vip'] and coercing "01" before
+         person navigation. The existing --derive-only returned GREEN with its unchanged 14 con
+        trols / 22 dataset-read names. The browser admitted "01" successfully; clicking the new
+         button left navigation at the group, rather than at that exact person key.
+    48
+
+• Ran node --input-type=module <<'EOF'
+  │ import {readFileSync,writeFileSync,appendFileSync} from 'node:fs';
+  │ import {createHash} from 'node:crypto';
+  │ … +62 lines
+  └ REPORT sha256=bfc2b8c2fe3da9e7b3c4100740df622e1c9e09fa359f731d52ea0d4ada2173fb ledger
+    rows=17 ledger-after
+    sha256=6404fde2f7e3ad8fd0ba353db1cd4331ba51401839a26126314ecf2068d1ef96
+
+───────────────────────────────────────────────────────────────────────────────────────────────
+
+• The report and all 17 ledger rows are written: four rows fail because of the three
+  demonstrated findings, and thirteen remain unjudged. I’m finishing the file hashes and
+  terminal journal entry; no tests or probes have been rerun.
+
+• Ran node --input-type=module <<'EOF'
+  │ import {readFileSync,writeFileSync,appendFileSync,readdirSync,statSync,chmodSync} from
+  │ 'node:fs';
+  │ … +107 lines
+  └ {"report_sha256":"bfc2b8c2fe3da9e7b3c4100740df622e1c9e09fa359f731d52ea0d4ada2173fb","invent
+    ory_sha256":"191a4808f83dac0635cada418d1849c8c904dc121ee0d06eaec3a4e0ca98eac2","files":24,"
+    root":"/tmp/reactivegas/ms2/t-simulator-fable/
+    commit-auditor-c1r-codex-s1b","verdict":"findings","completeness":"partial","substantive":5
+    ,"targeted":7}
+
+───────────────────────────────────────────────────────────────────────────────────────────────
+
+• Read and acknowledged NOTE-A1. Completed the report (/tmp/reactivegas/ms2/t-simulator-fable/
+  commit-auditor-c1r-codex-s1b/report.md), ledger append, and evidence inventory (/tmp/
+  reactivegas/ms2/t-simulator-fable/commit-auditor-c1r-codex-s1b/evidence-inventory.md).
+
+  Partial audit: 3 blocking findings; 13 requirements remain unjudged. Actual spend: 5/5
+  substantive, 7/30 targeted. No new verification ran after the note.
+
+─ Worked for 8m 38s ───────────────────────────────────────────────────────────────────────────
+
+
+› Ask Codex to do anything
+
+  gpt-6-astra high · /code/reactivegas-sim-fable-audit-c1r-s1

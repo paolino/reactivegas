@@ -1,0 +1,54 @@
+2026-09-05T21:11:25Z
+cbcb191ec8dcc33ed05b885cee3a08c2af1268df71025288ea32900f750c3bec  /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28b/brief.md
+7a7a99e351df0a34a8147804f68bc85a3f182556cbfafccaf62e46105743c30a  /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28b/exec-84a2dae/gate.sh
+f5796d1e5524f57c98b7d92168ad4fc10b22b6d318c57e0c989a1bf02f1b3650  -
+reactivegas:8 %557 2367790
+    PID    PPID COMMAND
+2367790   10964 /nix/store/nqhk0522q8ncygwwx054iq76ckcjll82-codex-0.153.2/libexec/codex --dangerously-bypass-approvals-and-sandbox -m gpt-6-astra -c model_reasoning_effort=high -C /code/kelgroups-audit-84a2dae-b Read /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28b/brief.md in full and act on it. Acknowledge in /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28b/STATUS.md. [POINTER-1788642400-relaunch]
+1113460   10964 /nix/store/iwgllsbcsalpqms30i4xn56dcpg99zdl-pi-0.84.4/libexec/pi/pi --provider opencode-go --model muse-spark-1.3-contributor --thinking xhigh --approve
+1351267   10964 /nix/store/iwgllsbcsalpqms30i4xn56dcpg99zdl-pi-0.84.4/libexec/pi/pi --provider opencode-go --model muse-spark-1.3-contributor --thinking xhigh --approve
+eligible alternate with seat-specific codex selection: codex
+brief fence lines:
+   110	
+   111	Quoted `pwd` (must be the exec root), `ls` of the exec root (must show YOUR
+   112	gate.sh copy), `echo $G28_EVIDENCE_DIR` (must be YOUR evidence dir),
+   113	`git -C <author> rev-parse HEAD` + `git -C <author> status --porcelain`
+   114	(record both — author tree must stay `84a2dae`/clean throughout; re-check
+   115	after the envelope too). Preconditions + splice cardinalities per the gate
+   116	(fail closed, never skip).
+   117	
+   118	## Permitted writes (CLOSED list — nothing else)
+   119	
+   120	Inside the execution worktree ONLY: gate-generated temporary M1–M6 mutant
+   121	file states + their `checkout --` restorations (hash-verified by the gate),
+   122	and necessary ignored build outputs (`dist-newstyle/` and equivalents).
+   123	A write outside this list is a SCOPE-FAIL: stop, journal it, BLOCK.
+   124	
+   125	## Verification commands (exact set; journal every invocation with exit/cause)
+   126	
+   127	Inside `nix develop .#ci --quiet -c` from your EXECUTION root, the gate v8
+   128	legs in order + your own read-through of the complete diff + your own
+   129	targeted probes (narrowed `--match`/single-module only, stated scope).
+   130	Evidence: complete logs under your `handoffs/` + one-line exit/duration/
+   131	hash/size receipt per command. Open raw logs on failure, contradiction, or
+   132	targeted sampling — but drill into at least one passing row's raw evidence
+   133	to prove you looked past the summary.
+   134	
+   135	## Budgets (binding, reconciled pre-dispatch)
+   136	
+   137	12 substantive invocations / 24 targeted executions TOTAL: cold leg-3 (1B)
+   138	+ leg-4 full test (1B) + leg-5 M1–M6 (6B) + leg-6 full `just ci` (1B) = 9B
+   139	envelope + ≤3 discretionary (spot re-proofs/instrumentation, whole-project
+gate temporary-write lines:
+76:e1="$(mktemp)"; v_nix="$(nix --version 2>"$e1")"; x_nix=$?; echo "nix: [$v_nix] exit=$x_nix"
+77:e2="$(mktemp)"; v_all="$($NIX bash -c '{ ghc --version | head -n1; echo "---"; cabal --version | head -n1; echo "---"; lake --version; echo "---"; node --version 2>/dev/null; echo "---"; spago --version 2>/dev/null | head -n1; echo "---"; just --version; }' 2>"$e2")"; x_all=$?
+225:    awk '/^commitBaseChange ::/ { print; next } /^commitBaseChange / && !done_m3 { print "-- MUTANT-M3: hook ignored, post-base kept"; print "commitBaseChange _ _ post change = Right (IntegratedResult post (Just change))"; done_m3=1; skip_m3=1; next } skip_m3==1 && /^$/ { print; next } skip_m3==1 && /^[^ \t]/ { skip_m3=0; print; next } skip_m3==1 { next } { print }' lib/KelGroups/Fold.hs > /tmp/g28m3.hs && mv /tmp/g28m3.hs lib/KelGroups/Fold.hs
+235:    awk '/^data BaseMutation/{inb=1} inb && /[|] ChangeRolesVoted Text [(]Set Role[)]/ && !done{print; match($0,/^[ \t]*/); ind=substr($0,RSTART,RLENGTH); print ind "-- MUTANT-M4: voted admission re-added (must not compile)"; print ind "| AdmitMemberVoted Text Text (Set Role)"; done=1; next} /^data / && !/^data BaseMutation/{inb=0} {print}' lib/KelGroups/Event.hs > /tmp/g28m4.hs && mv /tmp/g28m4.hs lib/KelGroups/Event.hs
+249:      awk '/^foldIntegrated/ { in_f=1 } in_f && /^[A-Za-z_]/ && $0 !~ /^foldIntegrated/ { in_f=0 } in_f && /Left _ -> gs/ && !done5 { sub(/Left _ -> gs/, "Left _ -> error \"MUTANT-M5\""); done5=1 } { print }' lib/KelGroups/Fold.hs > /tmp/g28m5.hs && mv /tmp/g28m5.hs lib/KelGroups/Fold.hs
+251:      awk '/^foldIntegrated/ { in_f=1 } in_f && /^[A-Za-z_]/ && $0 !~ /^foldIntegrated/ { in_f=0 } in_f && /either [(]const gs[)]/ && !done5 { sub(/either [(]const gs[)]/, "either (const (error \"MUTANT-M5\")) "); done5=1 } { print }' lib/KelGroups/Fold.hs > /tmp/g28m5.hs && mv /tmp/g28m5.hs lib/KelGroups/Fold.hs
+execution identity:
+84a2daea1db81b1baf73c73a7874dcd68ce9f4b2
+detached HEAD
+author identity (brief-required read-only git checks):
+84a2daea1db81b1baf73c73a7874dcd68ce9f4b2
+inbox files:

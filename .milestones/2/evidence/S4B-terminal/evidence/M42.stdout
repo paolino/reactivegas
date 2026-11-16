@@ -1,0 +1,16 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M42.lean:252:11: error: Application type mismatch: The argument
+  (sweepReady_corr view gs).mp h.toSweepReady
+has type
+  sweepReadyB view gs = true
+but is expected to have type
+  (!sweepReadyB view gs) = true
+in the application
+  And.intro ((sweepReady_corr view gs).mp h.toSweepReady)
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M42.lean:255:41: error: Application type mismatch: The argument
+  hs
+has type
+  (!sweepReadyB view gs) = true
+but is expected to have type
+  sweepReadyB view gs = true
+in the application
+  (sweepReady_corr view gs).mpr hs

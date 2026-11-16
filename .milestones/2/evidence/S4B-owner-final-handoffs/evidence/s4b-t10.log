@@ -1,0 +1,27 @@
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+MIRROR-BELOW-EXCLUDED Reach.below (machinery of discovered induct Reach)
+/tmp/s4b-driver-dev.lean:115:0: error: MIRROR-SHAPE-MISMATCH comune_not_a_member (theorem comune_not_a_member_corr is not an Iff off comune_not_a_member mentioning its mirror)
+/tmp/s4b-driver-dev.lean:115:0: error: MIRROR-SHAPE-MISMATCH conservation (theorem conservation_corr is not an Iff off conservation mentioning its mirror)
+/tmp/s4b-driver-dev.lean:115:0: error: MIRROR-SHAPE-MISMATCH solvent (theorem solvent_corr is not an Iff off solvent mentioning its mirror)
+/tmp/s4b-driver-dev.lean:115:0: error: MIRROR-SHAPE-MISMATCH insolvent (theorem insolvent_corr is not an Iff off insolvent mentioning its mirror)
+/tmp/s4b-driver-dev.lean:115:0: error: MIRROR-SHAPE-MISMATCH uniquePledges (theorem uniquePledges_corr is not an Iff off uniquePledges mentioning its mirror)
+/tmp/s4b-driver-dev.lean:115:0: error: MIRROR-SHAPE-MISMATCH allUniquePledges (theorem allUniquePledges_corr is not an Iff off allUniquePledges mentioning its mirror)
+/tmp/s4b-driver-dev.lean:115:0: error: MIRROR-SHAPE-MISMATCH permissionToClose (theorem permissionToClose_corr is not an Iff off permissionToClose mentioning its mirror)
+/tmp/s4b-driver-dev.lean:115:0: error: MIRROR-SHAPE-MISMATCH escrowHeld (theorem escrowHeld_corr is not an Iff off escrowHeld mentioning its mirror)
+/tmp/s4b-driver-dev.lean:115:0: error: MIRROR-SHAPE-MISMATCH governanceEnacts (theorem governanceEnacts_corr is not an Iff off governanceEnacts mentioning its mirror)
+/tmp/s4b-driver-dev.lean:115:0: error: MIRROR-SHAPE-MISMATCH doubleEntry (theorem doubleEntry_corr is not an Iff off doubleEntry mentioning its mirror)
+/tmp/s4b-driver-dev.lean:115:0: error: MIRROR-SHAPE-MISMATCH canCloseGroup (theorem canCloseGroup_corr is not an Iff off canCloseGroup mentioning its mirror)
+/tmp/s4b-driver-dev.lean:115:0: error: MIRROR-SHAPE-MISMATCH KelGroups.PendingWellFormed (theorem KelGroups.pendingWellFormed_corr is not an Iff off KelGroups.PendingWellFormed mentioning its mirror)
+/tmp/s4b-driver-dev.lean:115:0: error: MIRROR-SHAPE-MISMATCH KelGroups.MembersCoherent (theorem KelGroups.membersCoherent_corr is not an Iff off KelGroups.MembersCoherent mentioning its mirror)
+/tmp/s4b-driver-dev.lean:115:0: error: MIRROR-SHAPE-MISMATCH KelGroups.PendingCoherent (theorem KelGroups.pendingCoherent_corr is not an Iff off KelGroups.PendingCoherent mentioning its mirror)
+MIRROR-ROW KelGroups.WellFormed KelGroups.wellFormedB KelGroups.wellFormed_corr OK
+/tmp/s4b-driver-dev.lean:115:0: error: MIRROR-SHAPE-MISMATCH KelGroups.Enacts (theorem KelGroups.enacts_corr is not an Iff off KelGroups.Enacts mentioning its mirror)
+/tmp/s4b-driver-dev.lean:115:0: error: MIRROR-SHAPE-MISMATCH KelGroups.Vote.QuestionClean (theorem KelGroups.Vote.questionClean_corr is not an Iff off KelGroups.Vote.QuestionClean mentioning its mirror)
+MIRROR-ROW KelGroups.Vote.SweepReady KelGroups.Vote.sweepReadyB KelGroups.Vote.sweepReady_corr OK
+MIRROR-ROW KelGroups.Vote.VoteWellFormed KelGroups.Vote.voteWellFormedB KelGroups.Vote.voteWellFormed_corr OK
+MIRROR-EXCEPTION KelGroups.Vote.PreservesQuestionSemantics OK
+MIRROR-EXCEPTION authorizedStep OK
+MIRROR-EXCEPTION stalled OK
+MIRROR-EXCEPTION Reach OK
+MIRROR-SUMMARY rows=3 exceptions=4 below=1 orphans-checked=17 discovered=24
+/tmp/s4b-driver-dev.lean:115:0: error: MIRROR-CHECK-FAILED

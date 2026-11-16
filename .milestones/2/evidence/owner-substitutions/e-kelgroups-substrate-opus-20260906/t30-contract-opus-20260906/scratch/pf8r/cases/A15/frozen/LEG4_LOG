@@ -1,0 +1,4 @@
+PASS: REQ-A OK
+FAILED: REQ-B at step 2
+SKIPPED: REQ-C holiday
+note REQ-C seen in plan

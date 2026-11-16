@@ -1,0 +1,10 @@
+diff --git a/lean/Reactivegas/Predicates.lean b/lean/Reactivegas/Predicates.lean
+index fc941f5..406fbc4 100644
+--- a/lean/Reactivegas/Predicates.lean
++++ b/lean/Reactivegas/Predicates.lean
+@@ -99,3 +99,5 @@ inductive Reach (view : KelGroups.GroupView) (auth : BackdonateAuth) :
+   | trans {s : State} {e : Event} {s' : State} :
+     Reach view auth s → stepEvent view s e auth = some s' →
+       Reach view auth s'
++
++opaque auditOpaque (s : State) : Prop := s.conti = []

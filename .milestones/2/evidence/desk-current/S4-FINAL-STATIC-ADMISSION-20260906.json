@@ -1,0 +1,12 @@
+{
+  "at": "2026-09-06T06:47:09.934Z",
+  "candidate": "04eb6c7d9aeb2a3602fca5ece14cbc033221cb43",
+  "pane": "%576",
+  "pid": 3437463,
+  "argv": "/nix/store/nqhk0522q8ncygwwx054iq76ckcjll82-codex-0.153.2/libexec/codex -m gpt-6-astra -c model_reasoning_effort=high",
+  "brief": "4ae525975afce63253809d2fafc341e38644d64e20700ca421b7f16c06b59db5",
+  "amendment": "d6a20dc6cfa5e55fabda53e66d06535c3fd5927131af0372a269851ace9f9297",
+  "manifest": "faa5c2ce6500dd5e03a998edf0ff1880c162b9b8d8b550f265e7fe8c19cb8c8f",
+  "start": "2026-09-06T06:42:21Z  START  launch=/proc/3437463/cmdline:codex-0.153.2,gpt-6-astra,model_reasoning_effort=high; active_session=01a0756f-c8cd-7581-b8cd-48b798c0b8c6,gpt-6-astra/high,own-turn_context-and-collaboration-control@2026-09-06T06:39:46.969Z,evidence/session-model.jsonl; pane=%576 window=reactivegas:rg-s4b-final-audit.1 parent-shell=3435517; observation_scope=own-PID-3437463-and-immediate-children-only; context=FRESH FULL-STATIC; brief=4ae525975afce63253809d2fafc341e38644d64e20700ca421b7f16c06b59db5 amendment1=d6a20dc6cfa5e55fabda53e66d06535c3fd5927131af0372a269851ace9f9297 read-in-full; admitted=20/20,no-self-entry,all-read-in-full,manifest=faa5c2ce6500dd5e03a998edf0ff1880c162b9b8d8b550f265e7fe8c19cb8c8f; worktree=/code/reactivegas-66-s4b-final-audit detached=04eb6c7d9aeb2a3602fca5ece14cbc033221cb43 tree=caaa0488f39a6afb2553680a11fd6bfd86d1c90b clean=true oleans=0; project_execution=0/0; one-verdict,no-repair,local-only; current-classification-independent,historical-F001-immutable,S5-75-71-and-H01-H02-H03-open; clock=local-date-UTC",
+  "scope": "FULL STATIC current candidate; zero project execution; historical execution remains bound to94bb7bb; no acceptance."
+}

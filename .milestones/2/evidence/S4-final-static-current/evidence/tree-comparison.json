@@ -1,0 +1,25 @@
+{
+  "base": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+  "old": "94bb7bb64324a48f7361252556b4d15e45b3923f",
+  "head": "04eb6c7d9aeb2a3602fca5ece14cbc033221cb43",
+  "baseFiles": 266,
+  "oldFiles": 269,
+  "headFiles": 269,
+  "changed": [
+    {
+      "mode": "100644",
+      "type": "blob",
+      "id": "98863cf2057e2c74a7b90c34dfea7b28e38c6f2b",
+      "path": "lean/Reactivegas/Mirrors.lean"
+    },
+    {
+      "mode": "100755",
+      "type": "blob",
+      "id": "afa57054ada1084d8c5728e1d8856e69ffded313",
+      "path": "scripts/check-lean-mirrors"
+    }
+  ],
+  "unchangedFiles": 267,
+  "fullRange": "10\t0\tjustfile\n259\t0\tlean/KelGroups/Mirrors.lean\n260\t0\tlean/Reactivegas/Mirrors.lean\n419\t0\tscripts/check-lean-mirrors\n",
+  "commits": "04eb6c7d9aeb2a3602fca5ece14cbc033221cb43 94bb7bb64324a48f7361252556b4d15e45b3923f 2026-09-06T07:34:03+01:00 2026-09-06T07:34:03+01:00 docs(lean): cite RG-S4-REACH-20260906 as warrant for P13 exemption (S4-B NOTE-035, comments only)\n94bb7bb64324a48f7361252556b4d15e45b3923f ba62366766aeb72c988c1f5418a54907c425ac14 2026-09-06T03:26:06+01:00 2026-09-06T03:26:06+01:00 fix(lean): checker driver imports CorpusGate and TraceTests closing import-reach gap (S4-B O1retry finding)\nba62366766aeb72c988c1f5418a54907c425ac14 b667648752b8fa8a7b890f115413a99ba04518dc 2026-09-06T03:16:33+01:00 2026-09-06T03:16:33+01:00 fix(lean): tracked-list substitution pattern must not anchor with #-prefix (S4-B O1retry finding)\nb667648752b8fa8a7b890f115413a99ba04518dc 4d0a324068d4ee367595adf1c68d45133cab6b12 2026-09-06T02:18:26+01:00 2026-09-06T02:18:26+01:00 fix(lean): checker driver block structure — top-level defs precede run_cmd; comma+bracket tracked array literal (S4-B O1 findings)\n4d0a324068d4ee367595adf1c68d45133cab6b12 0f3ad01a447f40a23eb282ff5b4a8adc2b303ca1 2026-09-06T01:54:29+01:00 2026-09-06T01:54:29+01:00 feat(lean): submission-2 Boundary-1 design — exe build in-run, CorpusExport import, tracked-set ownership, import-reach completeness (S4-B NOTE-015)\n0f3ad01a447f40a23eb282ff5b4a8adc2b303ca1 59309d668966206df6b01a7e9027614f79e52e5f 2026-09-06T00:50:41+01:00 2026-09-06T00:50:41+01:00 fix(lean): promotion mention-check harvests hypotheses as well as conclusion (S4-B NOTE-013 defect 1)\n59309d668966206df6b01a7e9027614f79e52e5f 189e1ed306f8f8e8bcdd11eeab4fc5657a518fc8 2026-09-06T00:34:41+01:00 2026-09-06T00:34:41+01:00 feat(lean): submission-2 repair — total discovery classification with fail-closed kinds, P01 promotion table (S4-B F01/v3.1)\n189e1ed306f8f8e8bcdd11eeab4fc5657a518fc8 3590c0015b84fd58004bf6fb44dd18b107304c48 2026-09-05T22:22:21+01:00 2026-09-05T22:25:10+01:00 feat(lean): S4-B Prop/Bool mirrors, correspondence proofs and mandatory checker (#66 S4-B)\n"
+}

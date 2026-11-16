@@ -1,0 +1,15 @@
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+/tmp/s4b-ctrl-c11r.lean:17:79: error: unsolved goals
+case false.nil
+id : CollId
+ref : KelGroups.Key
+acc : List Pledge
+⊢ False
+
+case true.cons
+id : CollId
+ref : KelGroups.Key
+acc : List Pledge
+head✝ : Pledge
+tail✝ : List Pledge
+⊢ False

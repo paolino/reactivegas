@@ -1,0 +1,5 @@
+KelGroups.Vote.questionCleanB (q : Question) : Bool
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A34.lean:150:49: error: unsolved goals
+q : Question
+⊢ (q.assents.Nodup ∧ q.dissents.Nodup ∧ ∀ (k : Key), k ∈ q.assents → k ∈ q.dissents → False) ↔
+    True ∧ q.dissents.Nodup ∧ ∀ (x : Key), x ∈ q.assents → ¬x ∈ q.dissents

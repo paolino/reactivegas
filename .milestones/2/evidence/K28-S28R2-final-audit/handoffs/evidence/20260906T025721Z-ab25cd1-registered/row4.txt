@@ -1,0 +1,9 @@
+direct admit by admin inserts the member
+reserved key refused apart from members
+voted mutations never insert members
+voted change-roles never inserts absent members
+voted change-roles keeps present member keys
+voted remove never inserts absent members
+nonempty pendingBase roundtrips through JSON
+old rows decode with empty pendingBase
+malformed pendingBase fails decode

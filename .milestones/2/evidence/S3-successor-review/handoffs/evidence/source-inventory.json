@@ -1,0 +1,1559 @@
+{
+  "method": "Independent nested-comment/string masking, namespace/section stack, line-start theorem/lemma declarations. No compiled inventory; helper classification reconciled separately to supplied helper identity list.",
+  "lexicalControls": {
+    "comments": true,
+    "newlines": true
+  },
+  "sourceHashes": [
+    {
+      "file": "lean/KelGroups/Event.lean",
+      "sha256": "c89e135ba8ed919865eacdf7ed6c1c33953450997cbcbddbf3daf4510c61a449"
+    },
+    {
+      "file": "lean/KelGroups/Fold.lean",
+      "sha256": "c6cbb818705db481b5f6fd8469e7a7b279fe2e6f9a9675f4cb262df570d679cf"
+    },
+    {
+      "file": "lean/KelGroups/Integration.lean",
+      "sha256": "a23b27e8265024368e7b39399d4111548f9ce56ce18782550799d76199c706e2"
+    },
+    {
+      "file": "lean/KelGroups/Invariants.lean",
+      "sha256": "86f200cb8dccd63d5d14a362e46286b7781040e2df1b214baedfb23e065a88e2"
+    },
+    {
+      "file": "lean/KelGroups/State.lean",
+      "sha256": "25c2109e304fa9cdb084daabb267deb4a4a8a15749c9f66bae878d190fea49a6"
+    },
+    {
+      "file": "lean/KelGroups/Tests.lean",
+      "sha256": "b9d8aa9f3d25292114f8ba5019bd55c99969ef9aecbaa2c646d1732a886f04c9"
+    },
+    {
+      "file": "lean/KelGroups/Types.lean",
+      "sha256": "971a2a2ee774c3af63270e8f0bb8f1d5346f1da5c97f5faea1856dbe460acd07"
+    },
+    {
+      "file": "lean/KelGroups/Validate.lean",
+      "sha256": "109a0c5ac27cfbed634fde0abc82667b6246b5276a74a8c0091cafcce79ea36f"
+    },
+    {
+      "file": "lean/KelGroups/Vote/Event.lean",
+      "sha256": "84a186d5977f61c047d728f279ada07ad5908f77b0090942876132021e72b596"
+    },
+    {
+      "file": "lean/KelGroups/Vote/Fold.lean",
+      "sha256": "690d64668aac52013f03f9debde79f5f23c62825d7faae4615fb8b3a2df31e63"
+    },
+    {
+      "file": "lean/KelGroups/Vote/Invariants.lean",
+      "sha256": "a1c5dc24aaac89bbeb55d8459fde4f8b8d22d7224045d960edbb3826b9192da9"
+    },
+    {
+      "file": "lean/KelGroups/Vote/State.lean",
+      "sha256": "1a179920a0d5de725642b6254e223cfb3f61a1a06aed617cee59ee93b553214b"
+    },
+    {
+      "file": "lean/KelGroups/Vote/Tests.lean",
+      "sha256": "d074d3943bcd2d3528c000458b7c80f0198991b73e603d98095fb757553dcec7"
+    },
+    {
+      "file": "lean/KelGroups/Vote/Types.lean",
+      "sha256": "dc6227f8c785b566aa08c3baab35deae5bc58d6ae420d1cf4e8df923b97fedc8"
+    },
+    {
+      "file": "lean/KelGroups/Vote/Validate.lean",
+      "sha256": "8d2ee979ca838b3fd4d25daca182ae77f10a00245dd6c7cc71edaddf18ae8846"
+    },
+    {
+      "file": "lean/KelGroups.lean",
+      "sha256": "fa7ca68cd42e9630deaa8ed0ce8943c6d0146f0ea716ea719514583f4c0a8ffc"
+    },
+    {
+      "file": "lean/Reactivegas/Composition.lean",
+      "sha256": "43b52f8b30bd4d96383bfd676660e78780a4d43436be76e74bd2ee5d6eee0743"
+    },
+    {
+      "file": "lean/Reactivegas/CorpusExport.lean",
+      "sha256": "e53935aadddeda93d607d15626d26584ad587015598a2f190b134b9667c2440e"
+    },
+    {
+      "file": "lean/Reactivegas/CorpusGate.lean",
+      "sha256": "62bd769fe5ba2e02b3826d78ca73f15090a111c96805d7783dae8a6812bc8c4f"
+    },
+    {
+      "file": "lean/Reactivegas/Invariants.lean",
+      "sha256": "0ffbbfc7cfb61265ab7ae767ba3e7f2004ccad69653b86ec178cf017264667d1"
+    },
+    {
+      "file": "lean/Reactivegas/Predicates.lean",
+      "sha256": "6ae3a61dea55f9c81b45de2e2898d416b17f441605561a4b96e93ed5324e9729"
+    },
+    {
+      "file": "lean/Reactivegas/State.lean",
+      "sha256": "de2651bf189c3a30258250e4dd06eb27441fa60390e61256395249ffef8c01ef"
+    },
+    {
+      "file": "lean/Reactivegas/Step.lean",
+      "sha256": "f498490c0a3eca78692d51119d6298115c456f79ce3526bf9210892a658f46fb"
+    },
+    {
+      "file": "lean/Reactivegas/Trace.lean",
+      "sha256": "254b126ee7a9e072d5f397c4f982841b7f1f87e43992d501c6a23443e49c0979"
+    },
+    {
+      "file": "lean/Reactivegas/TraceTests.lean",
+      "sha256": "b8b3c139e97f36518e7036704b1f4fe5866c2ec02721a685cbae9898577bb122"
+    },
+    {
+      "file": "lean/Reactivegas/Types.lean",
+      "sha256": "fb01d7d74bda2aa598fa83ea056bc4a53aaf10de21a240b6469bb38b88edaa1f"
+    },
+    {
+      "file": "lean/Reactivegas.lean",
+      "sha256": "e00e78665774ec15ead7f62021b79c08135f0fa7dcf53d831b6db340405ff4ba"
+    },
+    {
+      "file": "lean/lakefile.lean",
+      "sha256": "4373a87fde74c6ba406b7f363abab5c1630b515179574019289f9a67d59cd19f"
+    }
+  ],
+  "declarations": [
+    {
+      "name": "KelGroups.assocErase_sublist",
+      "short": "assocErase_sublist",
+      "site": "KelGroups/Invariants.lean:34",
+      "private": true
+    },
+    {
+      "name": "KelGroups.assocErase_keys_nodup",
+      "short": "assocErase_keys_nodup",
+      "site": "KelGroups/Invariants.lean:45",
+      "private": true
+    },
+    {
+      "name": "KelGroups.assocErase_key_absent",
+      "short": "assocErase_key_absent",
+      "site": "KelGroups/Invariants.lean:50",
+      "private": true
+    },
+    {
+      "name": "KelGroups.assocInsert_keys_nodup",
+      "short": "assocInsert_keys_nodup",
+      "site": "KelGroups/Invariants.lean:72",
+      "private": true
+    },
+    {
+      "name": "KelGroups.assocErase_property",
+      "short": "assocErase_property",
+      "site": "KelGroups/Invariants.lean:79",
+      "private": true
+    },
+    {
+      "name": "KelGroups.assocInsert_property",
+      "short": "assocInsert_property",
+      "site": "KelGroups/Invariants.lean:87",
+      "private": true
+    },
+    {
+      "name": "KelGroups.assocAdjust_keys",
+      "short": "assocAdjust_keys",
+      "site": "KelGroups/Invariants.lean:100",
+      "private": true
+    },
+    {
+      "name": "KelGroups.assocAdjust_property",
+      "short": "assocAdjust_property",
+      "site": "KelGroups/Invariants.lean:109",
+      "private": true
+    },
+    {
+      "name": "KelGroups.setInsert_nodup",
+      "short": "setInsert_nodup",
+      "site": "KelGroups/Invariants.lean:141",
+      "private": true
+    },
+    {
+      "name": "KelGroups.setInsert_mem",
+      "short": "setInsert_mem",
+      "site": "KelGroups/Invariants.lean:149",
+      "private": true
+    },
+    {
+      "name": "KelGroups.approvePending_wellFormed",
+      "short": "approvePending_wellFormed",
+      "site": "KelGroups/Invariants.lean:156",
+      "private": true
+    },
+    {
+      "name": "KelGroups.emptyState_wellFormed",
+      "short": "emptyState_wellFormed",
+      "site": "KelGroups/Invariants.lean:162",
+      "private": false
+    },
+    {
+      "name": "KelGroups.assocLookup_some_mem",
+      "short": "assocLookup_some_mem",
+      "site": "KelGroups/Invariants.lean:166",
+      "private": true
+    },
+    {
+      "name": "KelGroups.enact_preserves_wellFormed",
+      "short": "enact_preserves_wellFormed",
+      "site": "KelGroups/Invariants.lean:183",
+      "private": false
+    },
+    {
+      "name": "KelGroups.finishEnact_preserves_wellFormed",
+      "short": "finishEnact_preserves_wellFormed",
+      "site": "KelGroups/Invariants.lean:215",
+      "private": false
+    },
+    {
+      "name": "KelGroups.tryEnact_preserves_wellFormed",
+      "short": "tryEnact_preserves_wellFormed",
+      "site": "KelGroups/Invariants.lean:228",
+      "private": false
+    },
+    {
+      "name": "KelGroups.applyPropose_preserves_wellFormed",
+      "short": "applyPropose_preserves_wellFormed",
+      "site": "KelGroups/Invariants.lean:238",
+      "private": false
+    },
+    {
+      "name": "KelGroups.applyApprove_preserves_wellFormed",
+      "short": "applyApprove_preserves_wellFormed",
+      "site": "KelGroups/Invariants.lean:256",
+      "private": false
+    },
+    {
+      "name": "KelGroups.applyEvent_preserves_wellFormed",
+      "short": "applyEvent_preserves_wellFormed",
+      "site": "KelGroups/Invariants.lean:279",
+      "private": false
+    },
+    {
+      "name": "KelGroups.foldEvents_preserves_wellFormed",
+      "short": "foldEvents_preserves_wellFormed",
+      "site": "KelGroups/Invariants.lean:295",
+      "private": true
+    },
+    {
+      "name": "KelGroups.foldGroup_wellFormed",
+      "short": "foldGroup_wellFormed",
+      "site": "KelGroups/Invariants.lean:306",
+      "private": false
+    },
+    {
+      "name": "KelGroups.approvals_nodup",
+      "short": "approvals_nodup",
+      "site": "KelGroups/Invariants.lean:312",
+      "private": false
+    },
+    {
+      "name": "KelGroups.proposer_mem_approvals",
+      "short": "proposer_mem_approvals",
+      "site": "KelGroups/Invariants.lean:317",
+      "private": false
+    },
+    {
+      "name": "KelGroups.tryEnactDetailed_enactment_threshold_met",
+      "short": "tryEnactDetailed_enactment_threshold_met",
+      "site": "KelGroups/Invariants.lean:327",
+      "private": true
+    },
+    {
+      "name": "KelGroups.enact_implies_threshold_met",
+      "short": "enact_implies_threshold_met",
+      "site": "KelGroups/Invariants.lean:342",
+      "private": false
+    },
+    {
+      "name": "KelGroups.tryEnact_eq_of_enacts",
+      "short": "tryEnact_eq_of_enacts",
+      "site": "KelGroups/Invariants.lean:368",
+      "private": false
+    },
+    {
+      "name": "KelGroups.member_key_coherent",
+      "short": "member_key_coherent",
+      "site": "KelGroups/Invariants.lean:374",
+      "private": false
+    },
+    {
+      "name": "KelGroups.members_change_implies_enacted",
+      "short": "members_change_implies_enacted",
+      "site": "KelGroups/Invariants.lean:379",
+      "private": false
+    },
+    {
+      "name": "KelGroups.majority_table",
+      "short": "majority_table",
+      "site": "KelGroups/Invariants.lean:450",
+      "private": false
+    },
+    {
+      "name": "KelGroups.majority_not_strict_on_even",
+      "short": "majority_not_strict_on_even",
+      "site": "KelGroups/Invariants.lean:459",
+      "private": false
+    },
+    {
+      "name": "KelGroups.app_event_preserves_members",
+      "short": "app_event_preserves_members",
+      "site": "KelGroups/Invariants.lean:568",
+      "private": false
+    },
+    {
+      "name": "KelGroups.app_event_has_no_base_change",
+      "short": "app_event_has_no_base_change",
+      "site": "KelGroups/Invariants.lean:590",
+      "private": false
+    },
+    {
+      "name": "KelGroups.validateDirectAdmission_ok",
+      "short": "validateDirectAdmission_ok",
+      "site": "KelGroups/Invariants.lean:628",
+      "private": false
+    },
+    {
+      "name": "KelGroups.commitBaseChange_ok",
+      "short": "commitBaseChange_ok",
+      "site": "KelGroups/Invariants.lean:647",
+      "private": false
+    },
+    {
+      "name": "KelGroups.tryEnactBase_runs_hook",
+      "short": "tryEnactBase_runs_hook",
+      "site": "KelGroups/Invariants.lean:664",
+      "private": false
+    },
+    {
+      "name": "KelGroups.commitBaseChange_members",
+      "short": "commitBaseChange_members",
+      "site": "KelGroups/Invariants.lean:696",
+      "private": false
+    },
+    {
+      "name": "KelGroups.enactMutation_preserves_absence",
+      "short": "enactMutation_preserves_absence",
+      "site": "KelGroups/Invariants.lean:711",
+      "private": false
+    },
+    {
+      "name": "KelGroups.tryEnactBase_preserves_absence",
+      "short": "tryEnactBase_preserves_absence",
+      "site": "KelGroups/Invariants.lean:721",
+      "private": false
+    },
+    {
+      "name": "KelGroups.membership_growth_is_direct_admission",
+      "short": "membership_growth_is_direct_admission",
+      "site": "KelGroups/Invariants.lean:751",
+      "private": false
+    },
+    {
+      "name": "KelGroups.direct_admission_requires_admin",
+      "short": "direct_admission_requires_admin",
+      "site": "KelGroups/Invariants.lean:799",
+      "private": false
+    },
+    {
+      "name": "KelGroups.non_admin_admission_is_noop",
+      "short": "non_admin_admission_is_noop",
+      "site": "KelGroups/Invariants.lean:813",
+      "private": false
+    },
+    {
+      "name": "KelGroups.base_change_runs_hook",
+      "short": "base_change_runs_hook",
+      "site": "KelGroups/Invariants.lean:831",
+      "private": false
+    },
+    {
+      "name": "approvals_nodup",
+      "short": "approvals_nodup",
+      "site": "KelGroups/Invariants.lean:877",
+      "private": false
+    },
+    {
+      "name": "proposer_mem_approvals",
+      "short": "proposer_mem_approvals",
+      "site": "KelGroups/Invariants.lean:883",
+      "private": false
+    },
+    {
+      "name": "enact_implies_threshold_met",
+      "short": "enact_implies_threshold_met",
+      "site": "KelGroups/Invariants.lean:889",
+      "private": false
+    },
+    {
+      "name": "members_change_implies_enacted",
+      "short": "members_change_implies_enacted",
+      "site": "KelGroups/Invariants.lean:899",
+      "private": false
+    },
+    {
+      "name": "member_key_coherent",
+      "short": "member_key_coherent",
+      "site": "KelGroups/Invariants.lean:909",
+      "private": false
+    },
+    {
+      "name": "majority_table",
+      "short": "majority_table",
+      "site": "KelGroups/Invariants.lean:914",
+      "private": false
+    },
+    {
+      "name": "majority_not_strict_on_even",
+      "short": "majority_not_strict_on_even",
+      "site": "KelGroups/Invariants.lean:923",
+      "private": false
+    },
+    {
+      "name": "KelGroups.assocLookup_erase_of_none",
+      "short": "assocLookup_erase_of_none",
+      "site": "KelGroups/Types.lean:71",
+      "private": false
+    },
+    {
+      "name": "KelGroups.assocLookup_adjust_of_none",
+      "short": "assocLookup_adjust_of_none",
+      "site": "KelGroups/Types.lean:91",
+      "private": false
+    },
+    {
+      "name": "KelGroups.assocLookup_insert_of_none",
+      "short": "assocLookup_insert_of_none",
+      "site": "KelGroups/Types.lean:112",
+      "private": false
+    },
+    {
+      "name": "KelGroups.assocLookup_insert_self",
+      "short": "assocLookup_insert_self",
+      "site": "KelGroups/Types.lean:121",
+      "private": false
+    },
+    {
+      "name": "KelGroups.Vote.assocErase_sublist'",
+      "short": "assocErase_sublist'",
+      "site": "KelGroups/Vote/Invariants.lean:77",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.assocErase_keys_nodup'",
+      "short": "assocErase_keys_nodup'",
+      "site": "KelGroups/Vote/Invariants.lean:88",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.assocErase_key_absent'",
+      "short": "assocErase_key_absent'",
+      "site": "KelGroups/Vote/Invariants.lean:93",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.assocInsert_keys_nodup'",
+      "short": "assocInsert_keys_nodup'",
+      "site": "KelGroups/Vote/Invariants.lean:114",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.assocAdjust_keys'",
+      "short": "assocAdjust_keys'",
+      "site": "KelGroups/Vote/Invariants.lean:120",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.assocAdjust_keys_nodup'",
+      "short": "assocAdjust_keys_nodup'",
+      "site": "KelGroups/Vote/Invariants.lean:129",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.assocLookup_some_mem'",
+      "short": "assocLookup_some_mem'",
+      "site": "KelGroups/Vote/Invariants.lean:135",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.mem_assocLookup_some'",
+      "short": "mem_assocLookup_some'",
+      "site": "KelGroups/Vote/Invariants.lean:151",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.assocErase_other_lookup",
+      "short": "assocErase_other_lookup",
+      "site": "KelGroups/Vote/Invariants.lean:175",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.assocInsert_other_lookup",
+      "short": "assocInsert_other_lookup",
+      "site": "KelGroups/Vote/Invariants.lean:192",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.assocInsert_mem_cases",
+      "short": "assocInsert_mem_cases",
+      "site": "KelGroups/Vote/Invariants.lean:203",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.mem_map_fst_erase_of_ne",
+      "short": "mem_map_fst_erase_of_ne",
+      "site": "KelGroups/Vote/Invariants.lean:213",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.mem_map_fst_insert",
+      "short": "mem_map_fst_insert",
+      "site": "KelGroups/Vote/Invariants.lean:235",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.setInsert_mem_cases",
+      "short": "setInsert_mem_cases",
+      "site": "KelGroups/Vote/Invariants.lean:246",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.nodup_append_mem",
+      "short": "nodup_append_mem",
+      "site": "KelGroups/Vote/Invariants.lean:255",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.setInsert_nodup'",
+      "short": "setInsert_nodup'",
+      "site": "KelGroups/Vote/Invariants.lean:268",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.mem_erase_inv",
+      "short": "mem_erase_inv",
+      "site": "KelGroups/Vote/Invariants.lean:276",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.nodup_erase",
+      "short": "nodup_erase",
+      "site": "KelGroups/Vote/Invariants.lean:303",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.closed_guard_absent",
+      "short": "closed_guard_absent",
+      "site": "KelGroups/Vote/Invariants.lean:317",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.assoc_entries_key_unique",
+      "short": "assoc_entries_key_unique",
+      "site": "KelGroups/Vote/Invariants.lean:326",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.filterMap_keys_nodup",
+      "short": "filterMap_keys_nodup",
+      "site": "KelGroups/Vote/Invariants.lean:346",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.emptyVoteState_sweepReady",
+      "short": "emptyVoteState_sweepReady",
+      "site": "KelGroups/Vote/Invariants.lean:374",
+      "private": false
+    },
+    {
+      "name": "KelGroups.Vote.emptyVoteState_wellFormed",
+      "short": "emptyVoteState_wellFormed",
+      "site": "KelGroups/Vote/Invariants.lean:382",
+      "private": false
+    },
+    {
+      "name": "KelGroups.Vote.verdictOf_threshold_congr",
+      "short": "verdictOf_threshold_congr",
+      "site": "KelGroups/Vote/Invariants.lean:389",
+      "private": false
+    },
+    {
+      "name": "KelGroups.Vote.sweepStep_key",
+      "short": "sweepStep_key",
+      "site": "KelGroups/Vote/Invariants.lean:401",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.sweepClosures_open_mem",
+      "short": "sweepClosures_open_mem",
+      "site": "KelGroups/Vote/Invariants.lean:418",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.sweepClosures_closed_mem",
+      "short": "sweepClosures_closed_mem",
+      "site": "KelGroups/Vote/Invariants.lean:424",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.sweepClosures_sweepReady",
+      "short": "sweepClosures_sweepReady",
+      "site": "KelGroups/Vote/Invariants.lean:440",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.sweepClosures_wellFormed",
+      "short": "sweepClosures_wellFormed",
+      "site": "KelGroups/Vote/Invariants.lean:517",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.placeBallot_clean",
+      "short": "placeBallot_clean",
+      "site": "KelGroups/Vote/Invariants.lean:527",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.placeBallot_tally",
+      "short": "placeBallot_tally",
+      "site": "KelGroups/Vote/Invariants.lean:550",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.effectedState_sweepReady",
+      "short": "effectedState_sweepReady",
+      "site": "KelGroups/Vote/Invariants.lean:571",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.applyVoteEvent_preserves_wellFormed",
+      "short": "applyVoteEvent_preserves_wellFormed",
+      "site": "KelGroups/Vote/Invariants.lean:665",
+      "private": false
+    },
+    {
+      "name": "KelGroups.Vote.foldFrom_preserves_wellFormed",
+      "short": "foldFrom_preserves_wellFormed",
+      "site": "KelGroups/Vote/Invariants.lean:676",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.foldVote_wellFormed",
+      "short": "foldVote_wellFormed",
+      "site": "KelGroups/Vote/Invariants.lean:688",
+      "private": false
+    },
+    {
+      "name": "KelGroups.Vote.foldVote_append",
+      "short": "foldVote_append",
+      "site": "KelGroups/Vote/Invariants.lean:692",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.sweepClosures_preserves_qid",
+      "short": "sweepClosures_preserves_qid",
+      "site": "KelGroups/Vote/Invariants.lean:696",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.effectedState_preserves_qid",
+      "short": "effectedState_preserves_qid",
+      "site": "KelGroups/Vote/Invariants.lean:722",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.applyVoteEvent_preserves_qid",
+      "short": "applyVoteEvent_preserves_qid",
+      "site": "KelGroups/Vote/Invariants.lean:772",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.foldFrom_preserves_qid",
+      "short": "foldFrom_preserves_qid",
+      "site": "KelGroups/Vote/Invariants.lean:786",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.ballots_nodup_disjoint",
+      "short": "ballots_nodup_disjoint",
+      "site": "KelGroups/Vote/Invariants.lean:802",
+      "private": false
+    },
+    {
+      "name": "KelGroups.Vote.open_questions_are_open",
+      "short": "open_questions_are_open",
+      "site": "KelGroups/Vote/Invariants.lean:810",
+      "private": false
+    },
+    {
+      "name": "KelGroups.Vote.questions_partition",
+      "short": "questions_partition",
+      "site": "KelGroups/Vote/Invariants.lean:818",
+      "private": false
+    },
+    {
+      "name": "KelGroups.Vote.no_expiry",
+      "short": "no_expiry",
+      "site": "KelGroups/Vote/Invariants.lean:877",
+      "private": false
+    },
+    {
+      "name": "KelGroups.Vote.sweepClosures_tallyKeys",
+      "short": "sweepClosures_tallyKeys",
+      "site": "KelGroups/Vote/Invariants.lean:900",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.inadmissible_is_noop",
+      "short": "inadmissible_is_noop",
+      "site": "KelGroups/Vote/Invariants.lean:957",
+      "private": false
+    },
+    {
+      "name": "KelGroups.Vote.nonresponsabile_event_noop",
+      "short": "nonresponsabile_event_noop",
+      "site": "KelGroups/Vote/Invariants.lean:967",
+      "private": false
+    },
+    {
+      "name": "KelGroups.Vote.unfranchised_cast_noop",
+      "short": "unfranchised_cast_noop",
+      "site": "KelGroups/Vote/Invariants.lean:980",
+      "private": false
+    },
+    {
+      "name": "KelGroups.Vote.tallyKeysOfState_erased_le",
+      "short": "tallyKeysOfState_erased_le",
+      "site": "KelGroups/Vote/Invariants.lean:989",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.tallyKeysOfState_insert_cases",
+      "short": "tallyKeysOfState_insert_cases",
+      "site": "KelGroups/Vote/Invariants.lean:1004",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.effectedState_tally_growth",
+      "short": "effectedState_tally_growth",
+      "site": "KelGroups/Vote/Invariants.lean:1017",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.tally_keys_franchised_from",
+      "short": "tally_keys_franchised_from",
+      "site": "KelGroups/Vote/Invariants.lean:1071",
+      "private": true
+    },
+    {
+      "name": "KelGroups.Vote.franchise_of_tallies",
+      "short": "franchise_of_tallies",
+      "site": "KelGroups/Vote/Invariants.lean:1115",
+      "private": false
+    },
+    {
+      "name": "KelGroups.Vote.sweepStep_of_open",
+      "short": "sweepStep_of_open",
+      "site": "KelGroups/Vote/Invariants.lean:1141",
+      "private": false
+    },
+    {
+      "name": "KelGroups.Vote.sweep_filterMap_of_swept",
+      "short": "sweep_filterMap_of_swept",
+      "site": "KelGroups/Vote/Invariants.lean:1150",
+      "private": false
+    },
+    {
+      "name": "KelGroups.Vote.filter_open_idem",
+      "short": "filter_open_idem",
+      "site": "KelGroups/Vote/Invariants.lean:1165",
+      "private": false
+    },
+    {
+      "name": "KelGroups.Vote.sweepClosures_idempotent",
+      "short": "sweepClosures_idempotent",
+      "site": "KelGroups/Vote/Invariants.lean:1182",
+      "private": false
+    },
+    {
+      "name": "KelGroups.Vote.sweepDuplicating_duplicates",
+      "short": "sweepDuplicating_duplicates",
+      "site": "KelGroups/Vote/Invariants.lean:1200",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.Composition.voteDerived_iff_not_direct",
+      "short": "voteDerived_iff_not_direct",
+      "site": "Reactivegas/Composition.lean:83",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.Composition.baseEnacted_threshold_met",
+      "short": "baseEnacted_threshold_met",
+      "site": "Reactivegas/Composition.lean:108",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.Composition.appDecided_verdict_exhaustive",
+      "short": "appDecided_verdict_exhaustive",
+      "site": "Reactivegas/Composition.lean:139",
+      "private": false
+    },
+    {
+      "name": "option_bind_inv",
+      "short": "option_bind_inv",
+      "site": "Reactivegas/Invariants.lean:22",
+      "private": false
+    },
+    {
+      "name": "demand_eq_true_of_some",
+      "short": "demand_eq_true_of_some",
+      "site": "Reactivegas/Invariants.lean:29",
+      "private": false
+    },
+    {
+      "name": "demand_none_of_ne_true",
+      "short": "demand_none_of_ne_true",
+      "site": "Reactivegas/Invariants.lean:36",
+      "private": false
+    },
+    {
+      "name": "bool_not_true",
+      "short": "bool_not_true",
+      "site": "Reactivegas/Invariants.lean:43",
+      "private": true
+    },
+    {
+      "name": "bool_and_left",
+      "short": "bool_and_left",
+      "site": "Reactivegas/Invariants.lean:49",
+      "private": true
+    },
+    {
+      "name": "bool_and_right",
+      "short": "bool_and_right",
+      "site": "Reactivegas/Invariants.lean:55",
+      "private": true
+    },
+    {
+      "name": "eq_nil_of_isEmpty",
+      "short": "eq_nil_of_isEmpty",
+      "site": "Reactivegas/Invariants.lean:61",
+      "private": true
+    },
+    {
+      "name": "stripCollections_referente_ne",
+      "short": "stripCollections_referente_ne",
+      "site": "Reactivegas/Invariants.lean:68",
+      "private": false
+    },
+    {
+      "name": "pullCollection_mem_lemma",
+      "short": "pullCollection_mem_lemma",
+      "site": "Reactivegas/Invariants.lean:83",
+      "private": true
+    },
+    {
+      "name": "pullCollection_mem",
+      "short": "pullCollection_mem",
+      "site": "Reactivegas/Invariants.lean:110",
+      "private": false
+    },
+    {
+      "name": "pullCollection_det",
+      "short": "pullCollection_det",
+      "site": "Reactivegas/Invariants.lean:116",
+      "private": true
+    },
+    {
+      "name": "user_absent_of_any_false",
+      "short": "user_absent_of_any_false",
+      "site": "Reactivegas/Invariants.lean:124",
+      "private": false
+    },
+    {
+      "name": "sumBal_foldl_bump",
+      "short": "sumBal_foldl_bump",
+      "site": "Reactivegas/Invariants.lean:135",
+      "private": true
+    },
+    {
+      "name": "pledge_guard_inv",
+      "short": "pledge_guard_inv",
+      "site": "Reactivegas/Invariants.lean:154",
+      "private": false
+    },
+    {
+      "name": "auth_referente_guard_inv",
+      "short": "auth_referente_guard_inv",
+      "site": "Reactivegas/Invariants.lean:172",
+      "private": false
+    },
+    {
+      "name": "close_guard_inv",
+      "short": "close_guard_inv",
+      "site": "Reactivegas/Invariants.lean:178",
+      "private": false
+    },
+    {
+      "name": "fail_guard_inv",
+      "short": "fail_guard_inv",
+      "site": "Reactivegas/Invariants.lean:188",
+      "private": false
+    },
+    {
+      "name": "step_grant_inv",
+      "short": "step_grant_inv",
+      "site": "Reactivegas/Invariants.lean:197",
+      "private": false
+    },
+    {
+      "name": "step_deny_inv",
+      "short": "step_deny_inv",
+      "site": "Reactivegas/Invariants.lean:211",
+      "private": false
+    },
+    {
+      "name": "step_pledge_inv",
+      "short": "step_pledge_inv",
+      "site": "Reactivegas/Invariants.lean:227",
+      "private": false
+    },
+    {
+      "name": "step_accept_inv",
+      "short": "step_accept_inv",
+      "site": "Reactivegas/Invariants.lean:247",
+      "private": false
+    },
+    {
+      "name": "step_refuse_inv",
+      "short": "step_refuse_inv",
+      "site": "Reactivegas/Invariants.lean:265",
+      "private": false
+    },
+    {
+      "name": "step_correct_inv",
+      "short": "step_correct_inv",
+      "site": "Reactivegas/Invariants.lean:284",
+      "private": false
+    },
+    {
+      "name": "step_close_inv",
+      "short": "step_close_inv",
+      "site": "Reactivegas/Invariants.lean:305",
+      "private": false
+    },
+    {
+      "name": "step_fail_inv",
+      "short": "step_fail_inv",
+      "site": "Reactivegas/Invariants.lean:322",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.step_open_inv",
+      "short": "step_open_inv",
+      "site": "Reactivegas/Invariants.lean:343",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.step_deposit_inv",
+      "short": "step_deposit_inv",
+      "site": "Reactivegas/Invariants.lean:356",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.step_withdraw_inv",
+      "short": "step_withdraw_inv",
+      "site": "Reactivegas/Invariants.lean:369",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.step_transferCassa_inv",
+      "short": "step_transferCassa_inv",
+      "site": "Reactivegas/Invariants.lean:384",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.step_donate_inv",
+      "short": "step_donate_inv",
+      "site": "Reactivegas/Invariants.lean:397",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.step_backdonate_inv",
+      "short": "step_backdonate_inv",
+      "site": "Reactivegas/Invariants.lean:410",
+      "private": false
+    },
+    {
+      "name": "conservation_preserved",
+      "short": "conservation_preserved",
+      "site": "Reactivegas/Invariants.lean:430",
+      "private": false
+    },
+    {
+      "name": "step_authorized",
+      "short": "step_authorized",
+      "site": "Reactivegas/Invariants.lean:561",
+      "private": false
+    },
+    {
+      "name": "governance_enacts_windUpAdmin",
+      "short": "governance_enacts_windUpAdmin",
+      "site": "Reactivegas/Invariants.lean:637",
+      "private": false
+    },
+    {
+      "name": "close_permission_to_close",
+      "short": "close_permission_to_close",
+      "site": "Reactivegas/Invariants.lean:647",
+      "private": false
+    },
+    {
+      "name": "pledge_escrow_debit",
+      "short": "pledge_escrow_debit",
+      "site": "Reactivegas/Invariants.lean:659",
+      "private": false
+    },
+    {
+      "name": "close_spends_referente",
+      "short": "close_spends_referente",
+      "site": "Reactivegas/Invariants.lean:679",
+      "private": false
+    },
+    {
+      "name": "deposit_double_entry",
+      "short": "deposit_double_entry",
+      "site": "Reactivegas/Invariants.lean:697",
+      "private": false
+    },
+    {
+      "name": "withdraw_double_entry",
+      "short": "withdraw_double_entry",
+      "site": "Reactivegas/Invariants.lean:707",
+      "private": false
+    },
+    {
+      "name": "bal_bump_ne_lemma",
+      "short": "bal_bump_ne_lemma",
+      "site": "Reactivegas/Invariants.lean:719",
+      "private": true
+    },
+    {
+      "name": "bal_bump_ne",
+      "short": "bal_bump_ne",
+      "site": "Reactivegas/Invariants.lean:745",
+      "private": false
+    },
+    {
+      "name": "bal_foldl_bump_ge",
+      "short": "bal_foldl_bump_ge",
+      "site": "Reactivegas/Invariants.lean:750",
+      "private": true
+    },
+    {
+      "name": "splitUser_amount_lemma",
+      "short": "splitUser_amount_lemma",
+      "site": "Reactivegas/Invariants.lean:771",
+      "private": true
+    },
+    {
+      "name": "splitUser_amount",
+      "short": "splitUser_amount",
+      "site": "Reactivegas/Invariants.lean:796",
+      "private": false
+    },
+    {
+      "name": "refundAll_bal_ge_lemma",
+      "short": "refundAll_bal_ge_lemma",
+      "site": "Reactivegas/Invariants.lean:801",
+      "private": true
+    },
+    {
+      "name": "refundAll_bal_ge",
+      "short": "refundAll_bal_ge",
+      "site": "Reactivegas/Invariants.lean:823",
+      "private": false
+    },
+    {
+      "name": "stripCollections_sublist_lemma",
+      "short": "stripCollections_sublist_lemma",
+      "site": "Reactivegas/Invariants.lean:828",
+      "private": true
+    },
+    {
+      "name": "stripCollections_sublist",
+      "short": "stripCollections_sublist",
+      "site": "Reactivegas/Invariants.lean:847",
+      "private": false
+    },
+    {
+      "name": "stripCollections_amount_lemma",
+      "short": "stripCollections_amount_lemma",
+      "site": "Reactivegas/Invariants.lean:852",
+      "private": true
+    },
+    {
+      "name": "solvent_init",
+      "short": "solvent_init",
+      "site": "Reactivegas/Invariants.lean:877",
+      "private": false
+    },
+    {
+      "name": "comune_not_a_member_step",
+      "short": "comune_not_a_member_step",
+      "site": "Reactivegas/Invariants.lean:883",
+      "private": true
+    },
+    {
+      "name": "credit_pledges_step",
+      "short": "credit_pledges_step",
+      "site": "Reactivegas/Invariants.lean:890",
+      "private": true
+    },
+    {
+      "name": "comune_not_a_member_of_reach",
+      "short": "comune_not_a_member_of_reach",
+      "site": "Reactivegas/Invariants.lean:1141",
+      "private": false
+    },
+    {
+      "name": "credit_pledges_of_reach",
+      "short": "credit_pledges_of_reach",
+      "site": "Reactivegas/Invariants.lean:1148",
+      "private": true
+    },
+    {
+      "name": "solvent_preserved",
+      "short": "solvent_preserved",
+      "site": "Reactivegas/Invariants.lean:1164",
+      "private": false
+    },
+    {
+      "name": "reach_solvent",
+      "short": "reach_solvent",
+      "site": "Reactivegas/Invariants.lean:1177",
+      "private": false
+    },
+    {
+      "name": "not_insolvent_of_reach",
+      "short": "not_insolvent_of_reach",
+      "site": "Reactivegas/Invariants.lean:1184",
+      "private": false
+    },
+    {
+      "name": "unique_mem_cons_inv",
+      "short": "unique_mem_cons_inv",
+      "site": "Reactivegas/Invariants.lean:1194",
+      "private": true
+    },
+    {
+      "name": "uniquePledges_pend_cons",
+      "short": "uniquePledges_pend_cons",
+      "site": "Reactivegas/Invariants.lean:1228",
+      "private": false
+    },
+    {
+      "name": "pledge_rejected_when_member",
+      "short": "pledge_rejected_when_member",
+      "site": "Reactivegas/Invariants.lean:1241",
+      "private": false
+    },
+    {
+      "name": "pledge_preserves_allUnique",
+      "short": "pledge_preserves_allUnique",
+      "site": "Reactivegas/Invariants.lean:1269",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.base_departure_applies_cleanup",
+      "short": "base_departure_applies_cleanup",
+      "site": "Reactivegas/Invariants.lean:1583",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.base_change_can_close_without_ballot",
+      "short": "base_change_can_close_without_ballot",
+      "site": "Reactivegas/Invariants.lean:1587",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.direct_admission_only_holds",
+      "short": "direct_admission_only_holds",
+      "site": "Reactivegas/Invariants.lean:1589",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.base_recompute_reachable_holds",
+      "short": "base_recompute_reachable_holds",
+      "site": "Reactivegas/Invariants.lean:1591",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.sweep_idempotent_witness",
+      "short": "sweep_idempotent_witness",
+      "site": "Reactivegas/Invariants.lean:1593",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.sweep_idempotent_mutant_caught",
+      "short": "sweep_idempotent_mutant_caught",
+      "site": "Reactivegas/Invariants.lean:1595",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.baseHook_votes",
+      "short": "baseHook_votes",
+      "site": "Reactivegas/Invariants.lean:1600",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.base_change_recomputes_votes",
+      "short": "base_change_recomputes_votes",
+      "site": "Reactivegas/Invariants.lean:1616",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.integrated_theorem_witness_holds",
+      "short": "integrated_theorem_witness_holds",
+      "site": "Reactivegas/Invariants.lean:2322",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.canonical_economy_holds",
+      "short": "canonical_economy_holds",
+      "site": "Reactivegas/Invariants.lean:2325",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.exhaustive_inventories_hold",
+      "short": "exhaustive_inventories_hold",
+      "site": "Reactivegas/Invariants.lean:2328",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.i57_boundary_holds",
+      "short": "i57_boundary_holds",
+      "site": "Reactivegas/Invariants.lean:2331",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.i57_exhaustive_holds",
+      "short": "i57_exhaustive_holds",
+      "site": "Reactivegas/Invariants.lean:2332",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.i57_noop_holds",
+      "short": "i57_noop_holds",
+      "site": "Reactivegas/Invariants.lean:2333",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.i57_auth_holds",
+      "short": "i57_auth_holds",
+      "site": "Reactivegas/Invariants.lean:2334",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.i57_r45_holds",
+      "short": "i57_r45_holds",
+      "site": "Reactivegas/Invariants.lean:2335",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.i57_partition_holds",
+      "short": "i57_partition_holds",
+      "site": "Reactivegas/Invariants.lean:2336",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.i57_disjoint_holds",
+      "short": "i57_disjoint_holds",
+      "site": "Reactivegas/Invariants.lean:2337",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.i57_disjoint_mutant_caught",
+      "short": "i57_disjoint_mutant_caught",
+      "site": "Reactivegas/Invariants.lean:2338",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.i57_nostale_holds",
+      "short": "i57_nostale_holds",
+      "site": "Reactivegas/Invariants.lean:2339",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.i57_franchise_holds",
+      "short": "i57_franchise_holds",
+      "site": "Reactivegas/Invariants.lean:2340",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.i57_franchise_mutant_caught",
+      "short": "i57_franchise_mutant_caught",
+      "site": "Reactivegas/Invariants.lean:2341",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.i57_policyfree_holds",
+      "short": "i57_policyfree_holds",
+      "site": "Reactivegas/Invariants.lean:2343",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.i57_policyfree_mutant_caught",
+      "short": "i57_policyfree_mutant_caught",
+      "site": "Reactivegas/Invariants.lean:2344",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.i57_noexpiry_holds",
+      "short": "i57_noexpiry_holds",
+      "site": "Reactivegas/Invariants.lean:2346",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.admissionPreservation_holds",
+      "short": "admissionPreservation_holds",
+      "site": "Reactivegas/Invariants.lean:2347",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.productionWellFormed_holds",
+      "short": "productionWellFormed_holds",
+      "site": "Reactivegas/Invariants.lean:2348",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.comuneThresholdSanity_holds",
+      "short": "comuneThresholdSanity_holds",
+      "site": "Reactivegas/Invariants.lean:2349",
+      "private": false
+    },
+    {
+      "name": "sumBal_cons",
+      "short": "sumBal_cons",
+      "site": "Reactivegas/State.lean:125",
+      "private": false
+    },
+    {
+      "name": "bal_cons",
+      "short": "bal_cons",
+      "site": "Reactivegas/State.lean:128",
+      "private": false
+    },
+    {
+      "name": "bump_sum",
+      "short": "bump_sum",
+      "site": "Reactivegas/State.lean:131",
+      "private": false
+    },
+    {
+      "name": "bal_bump",
+      "short": "bal_bump",
+      "site": "Reactivegas/State.lean:142",
+      "private": false
+    },
+    {
+      "name": "sumPledges_append",
+      "short": "sumPledges_append",
+      "site": "Reactivegas/State.lean:153",
+      "private": false
+    },
+    {
+      "name": "refundAll_sum",
+      "short": "refundAll_sum",
+      "site": "Reactivegas/State.lean:159",
+      "private": false
+    },
+    {
+      "name": "not_mem_users_of_splitUser_none",
+      "short": "not_mem_users_of_splitUser_none",
+      "site": "Reactivegas/State.lean:172",
+      "private": false
+    },
+    {
+      "name": "splitUser_sum_lemma",
+      "short": "splitUser_sum_lemma",
+      "site": "Reactivegas/State.lean:194",
+      "private": true
+    },
+    {
+      "name": "splitUser_sum",
+      "short": "splitUser_sum",
+      "site": "Reactivegas/State.lean:221",
+      "private": false
+    },
+    {
+      "name": "splitUser_sublist_lemma",
+      "short": "splitUser_sublist_lemma",
+      "site": "Reactivegas/State.lean:225",
+      "private": true
+    },
+    {
+      "name": "splitUser_sublist",
+      "short": "splitUser_sublist",
+      "site": "Reactivegas/State.lean:253",
+      "private": false
+    },
+    {
+      "name": "escrowSum_cons",
+      "short": "escrowSum_cons",
+      "site": "Reactivegas/State.lean:257",
+      "private": false
+    },
+    {
+      "name": "pullCollection_id_lemma",
+      "short": "pullCollection_id_lemma",
+      "site": "Reactivegas/State.lean:260",
+      "private": true
+    },
+    {
+      "name": "pullCollection_id",
+      "short": "pullCollection_id",
+      "site": "Reactivegas/State.lean:283",
+      "private": false
+    },
+    {
+      "name": "pullCollection_sum_lemma",
+      "short": "pullCollection_sum_lemma",
+      "site": "Reactivegas/State.lean:287",
+      "private": true
+    },
+    {
+      "name": "pullCollection_sum",
+      "short": "pullCollection_sum",
+      "site": "Reactivegas/State.lean:313",
+      "private": false
+    },
+    {
+      "name": "pullCollection_sublist_lemma",
+      "short": "pullCollection_sublist_lemma",
+      "site": "Reactivegas/State.lean:318",
+      "private": true
+    },
+    {
+      "name": "pullCollection_sublist",
+      "short": "pullCollection_sublist",
+      "site": "Reactivegas/State.lean:346",
+      "private": false
+    },
+    {
+      "name": "stripCollections_sum",
+      "short": "stripCollections_sum",
+      "site": "Reactivegas/State.lean:351",
+      "private": false
+    },
+    {
+      "name": "stripCollections_referente",
+      "short": "stripCollections_referente",
+      "site": "Reactivegas/State.lean:374",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.app_members_preservation_holds",
+      "short": "app_members_preservation_holds",
+      "site": "Reactivegas/Step.lean:445",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.app_members_preservation_mutant_caught",
+      "short": "app_members_preservation_mutant_caught",
+      "site": "Reactivegas/Step.lean:448",
+      "private": false
+    },
+    {
+      "name": "Reactivegas.comune_cannot_authorize",
+      "short": "comune_cannot_authorize",
+      "site": "Reactivegas/Step.lean:470",
+      "private": false
+    },
+    {
+      "name": "stepDetailed_erases",
+      "short": "stepDetailed_erases",
+      "site": "Reactivegas/Trace.lean:109",
+      "private": false
+    },
+    {
+      "name": "TraceTests.base_departure_applies_cleanup",
+      "short": "base_departure_applies_cleanup",
+      "site": "Reactivegas/TraceTests.lean:928",
+      "private": false
+    },
+    {
+      "name": "TraceTests.base_change_can_close_without_ballot",
+      "short": "base_change_can_close_without_ballot",
+      "site": "Reactivegas/TraceTests.lean:931",
+      "private": false
+    },
+    {
+      "name": "TraceTests.direct_admission_only_holds",
+      "short": "direct_admission_only_holds",
+      "site": "Reactivegas/TraceTests.lean:934",
+      "private": false
+    },
+    {
+      "name": "TraceTests.base_recompute_reachable_holds",
+      "short": "base_recompute_reachable_holds",
+      "site": "Reactivegas/TraceTests.lean:937",
+      "private": false
+    },
+    {
+      "name": "TraceTests.sweep_idempotent_witness",
+      "short": "sweep_idempotent_witness",
+      "site": "Reactivegas/TraceTests.lean:940",
+      "private": false
+    },
+    {
+      "name": "TraceTests.sweep_idempotent_mutant_caught",
+      "short": "sweep_idempotent_mutant_caught",
+      "site": "Reactivegas/TraceTests.lean:943",
+      "private": false
+    },
+    {
+      "name": "TraceTests.all_checks_pass",
+      "short": "all_checks_pass",
+      "site": "Reactivegas/TraceTests.lean:992",
+      "private": false
+    },
+    {
+      "name": "TraceTests.frozen_checks_faithful",
+      "short": "frozen_checks_faithful",
+      "site": "Reactivegas/TraceTests.lean:1005",
+      "private": false
+    },
+    {
+      "name": "TraceTests.frozen_inventory_faithful",
+      "short": "frozen_inventory_faithful",
+      "site": "Reactivegas/TraceTests.lean:1006",
+      "private": false
+    },
+    {
+      "name": "TraceTests.frozen_corpus_faithful",
+      "short": "frozen_corpus_faithful",
+      "site": "Reactivegas/TraceTests.lean:1010",
+      "private": false
+    },
+    {
+      "name": "TraceTests.app_members_preservation_holds",
+      "short": "app_members_preservation_holds",
+      "site": "Reactivegas/TraceTests.lean:1087",
+      "private": false
+    },
+    {
+      "name": "TraceTests.app_members_preservation_mutant_caught",
+      "short": "app_members_preservation_mutant_caught",
+      "site": "Reactivegas/TraceTests.lean:1090",
+      "private": false
+    }
+  ],
+  "missingFromPacket": [],
+  "notFoundInSource": []
+}

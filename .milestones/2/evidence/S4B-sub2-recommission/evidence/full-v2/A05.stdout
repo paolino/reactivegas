@@ -1,0 +1,8 @@
+solventB (view : KelGroups.GroupView) (s : State) : Bool
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A05.lean:149:47: error: unsolved goals
+view : KelGroups.GroupView
+s : State
+⊢ ((∀ (u : KelGroups.Key), KelGroups.GroupView.isMember u view = true → bal s.conti u ≥ 0) ∧
+      ∀ (col : Collection), col ∈ s.collections → ∀ (p : Pledge), p ∈ col.accepted ++ col.pending → 0 ≤ p.amount) ↔
+    (∀ (u : KelGroups.Key), KelGroups.GroupView.isMember u view = true → bal s.conti u ≥ 0) ∧
+      ∀ (x : Collection), x ∈ s.collections → ∀ (x_1 : Pledge), x_1 ∈ x.pending → 0 ≤ x_1.amount

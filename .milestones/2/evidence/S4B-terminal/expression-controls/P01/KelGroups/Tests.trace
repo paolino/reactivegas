@@ -1,0 +1,53 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["008369c589504a59.olean"],
+  "i": "1e29c47aa555f5c1.ilean",
+  "c": "1a07943b8ff76345.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/code/reactivegas-66-s4b-audit3/lean/.lake/build/lib/lean /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean /code/reactivegas-66-s4b-audit3/lean/KelGroups/Tests.lean -o /code/reactivegas-66-s4b-audit3/lean/.lake/build/lib/lean/KelGroups/Tests.olean -i /code/reactivegas-66-s4b-audit3/lean/.lake/build/lib/lean/KelGroups/Tests.ilean -c /code/reactivegas-66-s4b-audit3/lean/.lake/build/ir/KelGroups/Tests.c --setup /code/reactivegas-66-s4b-audit3/lean/.lake/build/ir/KelGroups/Tests.setup.json --json",
+   "level": "trace"},
+  {"message":
+   "KelGroups/Tests.lean:336:0: @approvals_nodup : ∀ {α : Type} {gs : GroupState α},\n  WellFormed gs → ∀ (entry : ProposalId × PendingProposal), entry ∈ gs.pendingProposals → entry.snd.approvals.Nodup",
+   "level": "info"},
+  {"message":
+   "KelGroups/Tests.lean:337:0: @proposer_mem_approvals : ∀ {α : Type} {gs : GroupState α},\n  WellFormed gs →\n    ∀ (entry : ProposalId × PendingProposal), entry ∈ gs.pendingProposals → entry.snd.proposer ∈ entry.snd.approvals",
+   "level": "info"},
+  {"message":
+   "KelGroups/Tests.lean:338:0: @enact_implies_threshold_met : ∀ {α : Type} (digest : Proposal → ProposalId) (appFoldFn : AppFold α) (gs : GroupState α)\n  (signer : Key) (event : GroupEvent α) (enacted : Enactment α),\n  (applyEventDetailed digest appFoldFn gs signer event).enactment = some enacted →\n    enacted.pending.approvals.length ≥ majority enacted.preState",
+   "level": "info"},
+  {"message":
+   "KelGroups/Tests.lean:339:0: @members_change_implies_enacted : ∀ {α : Type} (digest : Proposal → ProposalId) (appFoldFn : AppFold α)\n  (gs : GroupState α) (signer : Key) (event : GroupEvent α),\n  (applyEvent digest appFoldFn gs signer event).members ≠ gs.members →\n    ∃ before proposalId, Enacts before proposalId (applyEvent digest appFoldFn gs signer event)",
+   "level": "info"},
+  {"message":
+   "KelGroups/Tests.lean:340:0: @member_key_coherent : ∀ {α : Type} {gs : GroupState α},\n  WellFormed gs → ∀ (key : Key) (member : Member), (key, member) ∈ gs.members → member.key = key",
+   "level": "info"},
+  {"message":
+   "KelGroups/Tests.lean:341:0: KelGroups.majority_table :\n  majority (majorityAdminState []) = 0 ∧\n    majority (majorityAdminState [\"a\"]) = 1 ∧\n      majority (majorityAdminState [\"a\", \"b\"]) = 1 ∧\n        majority (majorityAdminState [\"a\", \"b\", \"c\"]) = 2 ∧\n          majority (majorityAdminState [\"a\", \"b\", \"c\", \"d\"]) = 2 ∧\n            majority (majorityAdminState [\"a\", \"b\", \"c\", \"d\", \"e\"]) = 3",
+   "level": "info"},
+  {"message":
+   "KelGroups/Tests.lean:342:0: @majority_not_strict_on_even : ∀ {α : Type} (gs : GroupState α),\n  0 < adminCount gs → adminCount gs % 2 = 0 → 2 * majority gs ≤ adminCount gs",
+   "level": "info"}],
+ "inputs":
+ [["KelGroups.Tests:deps",
+   [["deps",
+     [["reactivegas/KelGroups:extraDep",
+       [["@reactivegas:extraDep", "00000000000006bb"]]],
+      ["imports",
+       [["KelGroups.Invariants transitive imports (legacy)",
+         "44f9ea656e170397"],
+        ["KelGroups.Invariants:importAllArts", "3834d9d40328e0b3"],
+        ["KelGroups.Validate transitive imports (legacy)", "e3ce4634d04bdc8e"],
+        ["KelGroups.Validate:importAllArts", "a437e67109c03932"]]]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.25.0, commit v4.25.0", "9c3a3ade3a41d5d0"],
+  ["/code/reactivegas-66-s4b-audit3/lean/KelGroups/Tests.lean",
+   "8481828d937f3e10"],
+  ["options", [["-DautoImplicit=false", "4a85acb881fd49d0"]]],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "ec9f9a410fbe4d20"}

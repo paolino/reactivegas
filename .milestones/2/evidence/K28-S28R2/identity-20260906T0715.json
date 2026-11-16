@@ -1,0 +1,8 @@
+{
+  "at": "2026-09-06T07:04:49.388Z",
+  "head": "ab25cd11b554bcd5ba64ca56a050c2eb21432d3c",
+  "base": "368b596fef0b6d393c2ac7afc631d236c55d86d1",
+  "patchSha256": "3b30e81070e03ba5b274e46e615895d6df918fe82b6b17df01595afcafefd42f",
+  "gateSha256": "c00b88a29989b11d09696d7afa164f7d9f93b59aee661a1b88a120c7a4934b75",
+  "scope": "Accepted candidateab25cd1 landed through PR32 as933e385 with an identical tree. This source/gate copy preserves inputs; the sealed audit and actual landing receipt establish acceptance."
+}

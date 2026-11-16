@@ -1,0 +1,199 @@
+warning: Git tree '/code/reactivegas-issue-57' is dirty
+⚠ [6/9] Replayed KelGroups.Vote.Validate
+warning: KelGroups/Vote/Validate.lean:37:23: unused variable `threshold`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✖ [8/9] Building KelGroups.Vote.Tests (655ms)
+trace: .> LEAN_PATH=/code/reactivegas-issue-57/lean/.lake/build/lib/lean /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean /code/reactivegas-issue-57/lean/KelGroups/Vote/Tests.lean -o /code/reactivegas-issue-57/lean/.lake/build/lib/lean/KelGroups/Vote/Tests.olean -i /code/reactivegas-issue-57/lean/.lake/build/lib/lean/KelGroups/Vote/Tests.ilean -c /code/reactivegas-issue-57/lean/.lake/build/ir/KelGroups/Vote/Tests.c --setup /code/reactivegas-issue-57/lean/.lake/build/ir/KelGroups/Vote/Tests.setup.json --json
+error: KelGroups/Vote/Tests.lean:280:0: Expression
+  strangerRejectedEvents.all fun event =>
+    validateVoteEvent legacyThreshold votePointState "stranger" event == Except.error VoteError.notResponsabile &&
+      applyVoteEvent legacyThreshold votePointState "stranger" event == votePointState
+did not evaluate to `true`
+error: KelGroups/Vote/Tests.lean:289:0: Expression
+  applyVoteEvent legacyThreshold votePointState "stranger"
+      (VoteEvent.admitMember "x" "x@vote.test" [Role.adminRole Admin.publicAdmin]) ==
+    votePointState
+did not evaluate to `true`
+error: KelGroups/Vote/Tests.lean:292:0: Expression
+  applyVoteEvent legacyThreshold votePointState "stranger" (VoteEvent.removeMember "a") == votePointState
+did not evaluate to `true`
+error: KelGroups/Vote/Tests.lean:295:0: Expression
+  applyVoteEvent legacyThreshold votePointState "stranger" (VoteEvent.setRoles "a" []) == votePointState
+did not evaluate to `true`
+error: KelGroups/Vote/Tests.lean:314:0: Expression
+  franchiseSize r45Before == 3 && isResponsabile "stranger" r45Before == false &&
+      validateVoteEvent legacyThreshold r45Before "stranger" (VoteEvent.removeMember "b") ==
+        Except.error VoteError.notResponsabile &&
+    r45After == r45Before
+did not evaluate to `true`
+error: KelGroups/Vote/Tests.lean:336:10: Unknown identifier `PreservesQuestionSemantics`
+error: KelGroups/Vote/Tests.lean:340:0: unexpected identifier; expected command
+error: KelGroups/Vote/Tests.lean:341:12: Unknown identifier `PreservesQuestionSemantics`
+error: KelGroups/Vote/Tests.lean:344:12: Unknown identifier `PreservesQuestionSemantics`
+error: KelGroups/Vote/Tests.lean:347:12: Unknown identifier `PreservesQuestionSemantics`
+error: Lean exited with code 1
+✖ [9/9] Building KelGroups.Vote.Invariants (1.6s)
+trace: .> LEAN_PATH=/code/reactivegas-issue-57/lean/.lake/build/lib/lean /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean /code/reactivegas-issue-57/lean/KelGroups/Vote/Invariants.lean -o /code/reactivegas-issue-57/lean/.lake/build/lib/lean/KelGroups/Vote/Invariants.olean -i /code/reactivegas-issue-57/lean/.lake/build/lib/lean/KelGroups/Vote/Invariants.ilean -c /code/reactivegas-issue-57/lean/.lake/build/ir/KelGroups/Vote/Invariants.c --setup /code/reactivegas-issue-57/lean/.lake/build/ir/KelGroups/Vote/Invariants.setup.json --json
+warning: KelGroups/Vote/Invariants.lean:60:80: The syntax is now `structure S : Type extends P` rather than `structure S extends P : Type`
+
+Note: The purpose of this change is to accommodate `structure S extends toP : P` syntax for naming parent projections.
+warning: KelGroups/Vote/Invariants.lean:74:8: automatically included section variable(s) unused in theorem `_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocErase_sublist'`:
+  [LawfulBEq κ]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [LawfulBEq κ] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: KelGroups/Vote/Invariants.lean:172:51: unused variable `v`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: KelGroups/Vote/Invariants.lean:184:16: This simp argument is unused:
+  assocErase
+
+Hint: Omit it from the simp argument list.
+  simp [assocE̵r̵a̵s̵e̵,̵ ̵a̵s̵s̵o̵c̵Lookup, hc, hck, ih]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: KelGroups/Vote/Invariants.lean:184:28: This simp argument is unused:
+  assocLookup
+
+Hint: Omit it from the simp argument list.
+  simp [assocErase, a̵s̵s̵o̵c̵L̵o̵o̵k̵u̵p̵,̵ ̵hc, hck, ih]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: KelGroups/Vote/Invariants.lean:184:50: This simp argument is unused:
+  ih
+
+Hint: Omit it from the simp argument list.
+  simp [assocErase, assocLookup, hc, hck,̵ ̵i̵h̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: KelGroups/Vote/Invariants.lean:186:16: This simp argument is unused:
+  assocErase
+
+Hint: Omit it from the simp argument list.
+  simp [assocE̵r̵a̵s̵e̵,̵ ̵a̵s̵s̵o̵c̵Lookup, hc, hck]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: KelGroups/Vote/Invariants.lean:187:16: This simp argument is unused:
+  assocErase
+
+Hint: Omit it from the simp argument list.
+  simp [assocE̵r̵a̵s̵e̵,̵ ̵a̵s̵s̵o̵c̵Lookup, hc, hck, ih]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: KelGroups/Vote/Invariants.lean:200:8: automatically included section variable(s) unused in theorem `_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.assocInsert_mem_cases`:
+  [LawfulBEq κ]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [LawfulBEq κ] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: KelGroups/Vote/Invariants.lean:232:8: automatically included section variable(s) unused in theorem `_private.KelGroups.Vote.Invariants.0.KelGroups.Vote.mem_map_fst_insert`:
+  [LawfulBEq κ]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [LawfulBEq κ] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: KelGroups/Vote/Invariants.lean:475:6: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+error: KelGroups/Vote/Invariants.lean:950:9: Tactic `cases` failed with a nested error:
+Dependent elimination failed: Failed to solve equation
+  (match assocLookup q.proposer (foldVote θ pre).members with
+    | some member => hasAdmin member.roles
+    | none => false) =
+    match assocLookup q.proposer (applyVoteEvent θ (foldVote θ pre) signer event).members with
+    | some member => hasAdmin member.roles
+    | none => false
+at case `Eq.refl`
+error: KelGroups/Vote/Invariants.lean:1017:45: unsolved goals
+θ : Threshold
+gs : VoteState
+signer : Key
+event : VoteEvent
+error : VoteError
+rejected : validateVoteEvent θ gs signer event = Except.error error
+⊢ sweepClosures θ gs = gs
+error: KelGroups/Vote/Invariants.lean:1033:42: unsolved goals
+case renounce
+θ : Threshold
+gs : VoteState
+signer : Key
+bootstrapped : franchiseSize gs > 0
+unauthorized : isResponsabile signer gs = false
+hs0 : (franchiseSize gs == 0) = false
+questionId✝ : QuestionId
+⊢ (match lookupQuestion questionId✝ gs with
+    | some val => Except.ok ()
+    | none => Except.error VoteError.questionNotFound) =
+    Except.error VoteError.notResponsabile
+
+case admitMember
+θ : Threshold
+gs : VoteState
+signer : Key
+bootstrapped : franchiseSize gs > 0
+unauthorized : isResponsabile signer gs = false
+hs0 : (franchiseSize gs == 0) = false
+key✝ : Key
+email✝ : Email
+roles✝ : List Role
+⊢ False
+
+case removeMember
+θ : Threshold
+gs : VoteState
+signer : Key
+bootstrapped : franchiseSize gs > 0
+unauthorized : isResponsabile signer gs = false
+hs0 : (franchiseSize gs == 0) = false
+key✝ : Key
+⊢ False
+
+case setRoles
+θ : Threshold
+gs : VoteState
+signer : Key
+bootstrapped : franchiseSize gs > 0
+unauthorized : isResponsabile signer gs = false
+hs0 : (franchiseSize gs == 0) = false
+key✝ : Key
+roles✝ : List Role
+⊢ False
+warning: KelGroups/Vote/Invariants.lean:1031:22: This simp argument is unused:
+  hsz
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵h̵s̵z̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: KelGroups/Vote/Invariants.lean:1034:59: This simp argument is unused:
+  hs0
+
+Hint: Omit it from the simp argument list.
+  simp [validateVoteEvent, unauthorized,̵ ̵h̵s̵0̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: KelGroups/Vote/Invariants.lean:1040:65: unsolved goals
+θ : Threshold
+gs : VoteState
+signer : Key
+questionId : QuestionId
+ballot : Ballot
+h : isResponsabile signer gs = false
+hval : validateVoteEvent θ gs signer (VoteEvent.cast questionId ballot) = Except.error VoteError.notResponsabile
+⊢ sweepClosures θ gs = gs
+info: KelGroups/Vote/Invariants.lean:1196:0: 'KelGroups.Vote.foldVote_wellFormed' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: KelGroups/Vote/Invariants.lean:1197:0: 'KelGroups.Vote.ballots_nodup_disjoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: KelGroups/Vote/Invariants.lean:1198:0: 'KelGroups.Vote.open_questions_are_open' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: KelGroups/Vote/Invariants.lean:1199:0: 'KelGroups.Vote.questions_partition' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: KelGroups/Vote/Invariants.lean:1200:0: 'KelGroups.Vote.no_expiry' depends on axioms: [sorryAx]
+info: KelGroups/Vote/Invariants.lean:1201:0: 'KelGroups.Vote.franchise_of_tallies' depends on axioms: [propext, Quot.sound]
+info: KelGroups/Vote/Invariants.lean:1202:0: 'KelGroups.Vote.verdictOf_threshold_congr' depends on axioms: [propext]
+info: KelGroups/Vote/Invariants.lean:1203:0: 'KelGroups.Vote.inadmissible_is_noop' depends on axioms: [sorryAx]
+info: KelGroups/Vote/Invariants.lean:1204:0: 'KelGroups.Vote.nonresponsabile_event_noop' depends on axioms: [propext, sorryAx, Quot.sound]
+error: Lean exited with code 1
+Some required targets logged failures:
+- KelGroups.Vote.Tests
+- KelGroups.Vote.Invariants
+error: build failed

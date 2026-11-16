@@ -1,0 +1,12 @@
+2026-09-06T00:21:07Z
+brief_mtime=2026-09-06 01:20:16.633671650 +0100
+cwd=/code/reactivegas-66-s3-audit
+3590c0015b84fd58004bf6fb44dd18b107304c48
+TMUX_PANE=%568
+    PID    PPID    PGID COMMAND
+2738580 2738388 2738580 /nix/store/nqhk0522q8ncygwwx054iq76ckcjll82-codex-0.153.2/libexec/codex -m gpt-6-astra -c model_reasoning_effort=high --dangerously-bypass-approvals-and-sandbox
+proc_argv=/nix/store/nqhk0522q8ncygwwx054iq76ckcjll82-codex-0.153.2/libexec/codex -m gpt-6-astra -c model_reasoning_effort=high --dangerously-bypass-approvals-and-sandbox 
+/code/reactivegas-66-s3-audit
+%568 reactivegas rg-s3-static-audit 2738388 codex
+%503 reactivegas lean-quality 365560 claude
+%558 reactivegas rg-s3-phase1 2394360 pi

@@ -1,0 +1,64 @@
+{
+  "source": "Transcribed from completed run-receipt tool returns; no command rerun during handback.",
+  "S2_environment": {
+    "RG_GATE_EVIDENCE": "/tmp/reactivegas/ms2/t-simulator-fable/commit-auditor-c1r-codex-s1b/evidence/v16-suites"
+  },
+  "substantive": 5,
+  "targeted": 7,
+  "receipts": [
+    {
+      "id": "S1",
+      "command": "nix develop --quiet -c just ci",
+      "exit": 0,
+      "duration_ms": 167208,
+      "command_sha256": "1f96c71604d37c665a69211b9ccd9656b76fd324d6278ff3fa17c289c371a5b2",
+      "evidence": "evidence/S1-cold-ci.log",
+      "evidence_sha256": "32f82fb0bb4844adbaf738bd53c170c3536b7bb644a469abaf9cd81c3426086e"
+    },
+    {
+      "id": "S2",
+      "command": "bash /tmp/reactivegas/ms2/t-simulator-fable/handoffs/gate-v16-one-membership.sh /code/reactivegas-sim-fable-audit-c1r-s1",
+      "exit": 0,
+      "duration_ms": 264176,
+      "command_sha256": "3294210773673a7a082bb349623348321c085ad07c300f565f3471daa948589e",
+      "evidence": "evidence/S2-v16.log",
+      "evidence_sha256": "ebb228d65c37c73012b7f4e846142c8aa9a7a3973ec3ccd669df7d431ad9d79b"
+    },
+    {
+      "id": "T4",
+      "command": "node /tmp/reactivegas/ms2/t-simulator-fable/commit-auditor-c1r-codex-s1b/probe.mjs geometry",
+      "exit": 0,
+      "duration_ms": 1890,
+      "command_sha256": "989b2e090d472393360fa2466fafcb6bd47abf0ae9fb40dd5e94709e272ddce4",
+      "evidence": "evidence/T4-geometry.log",
+      "evidence_sha256": "79a7bf0556840cd25d9198f3d5544613744fb5b2de0b1e1ada3bac29cfd88d20"
+    },
+    {
+      "id": "T5",
+      "command": "node /tmp/reactivegas/ms2/t-simulator-fable/commit-auditor-c1r-codex-s1b/probe.mjs derive-bracket",
+      "exit": 0,
+      "duration_ms": 1875,
+      "command_sha256": "82627e85e26cec9b7597e84a44813c0a761256318181993f2dcf693fc71d3283",
+      "evidence": "evidence/T5-derive-bracket.log",
+      "evidence_sha256": "8cdb391765de370565d83c1ed64a6ae27205c986b5e1a6db1042596f4491b507"
+    },
+    {
+      "id": "T6",
+      "command": "node /tmp/reactivegas/ms2/t-simulator-fable/commit-auditor-c1r-codex-s1b/probe.mjs derive-dot",
+      "exit": 0,
+      "duration_ms": 1861,
+      "command_sha256": "1da9499c02c2b67be09bf8d099c4cf4431c45687361c215d2c7e0c679128ca47",
+      "evidence": "evidence/T6-derive-dot.log",
+      "evidence_sha256": "378cb93b93cd1221085604574abd8220423576be41b6411cb00819551ef345fa"
+    },
+    {
+      "id": "T7",
+      "command": "node /tmp/reactivegas/ms2/t-simulator-fable/commit-auditor-c1r-codex-s1b/probe.mjs authority",
+      "exit": 0,
+      "duration_ms": 1877,
+      "command_sha256": "82925450234b68a2cd83eecfa09940272d97a32635498dc1497e453b47948d4f",
+      "evidence": "evidence/T7-authority.log",
+      "evidence_sha256": "4de61e7480942ed572e5ffbf90e42c9851df0e6d24796ae9ab81354cae4eef4d"
+    }
+  ]
+}

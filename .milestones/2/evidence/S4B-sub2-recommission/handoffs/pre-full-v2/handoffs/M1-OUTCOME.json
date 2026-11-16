@@ -1,0 +1,56 @@
+{
+  "authorization": {
+    "path": "answers/A-001-M1-authorized.md",
+    "sha256": "49936c89044774e42159da8cf083388f74feb78eae0087060981c95ee671328e"
+  },
+  "candidate": "94bb7bb64324a48f7361252556b4d15e45b3923f",
+  "tree": "3ee3dc26deff4fde7b7ed9d3f253dd0fbd5efced",
+  "measurementManifest": {
+    "path": "instruments/MEASUREMENT.sha256",
+    "sha256": "29c21062d6f2669d4ba6d2108cb9745df4ffbf7cb810bfdd459902d0e20145d2"
+  },
+  "started": "2026-09-06T03:55:29Z",
+  "finished": "2026-09-06T03:56:00Z",
+  "runnerExit": 1,
+  "operations": [
+    {
+      "id": "M1-S",
+      "class": "substantive",
+      "charge": 1,
+      "exit": 0,
+      "status": "build passed; not a mandatory-path gate"
+    },
+    {
+      "id": "M1-T",
+      "class": "targeted",
+      "charge": 1,
+      "exit": 1,
+      "status": "auditor instrument parse/setup failure; no inventory"
+    }
+  ],
+  "inventoryExists": false,
+  "oleanManifestEntries": 30,
+  "candidateStatusBytes": 0,
+  "spend": {
+    "substantive": 1,
+    "targeted": 1
+  },
+  "remaining": {
+    "substantive": 11,
+    "targeted": 79
+  },
+  "campaignActual": {
+    "substantive": 7,
+    "targeted": 60
+  },
+  "campaignCeilings": {
+    "substantive": 18,
+    "targeted": 139
+  },
+  "rawReceiptManifest": {
+    "path": "evidence/M1.sha256",
+    "sha256": "1e94df240de3ecf4886ccece16c3b3f11abf042ec50d42d761bcb9ed72a3422d"
+  },
+  "retry": false,
+  "auditStart": false
+}

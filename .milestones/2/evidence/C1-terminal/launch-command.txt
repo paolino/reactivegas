@@ -1,0 +1,1 @@
+codex --dangerously-bypass-approvals-and-sandbox -C /code/reactivegas-sim-fable-audit-c1r-s1 -m gpt-6-astra -c model_reasoning_effort=high

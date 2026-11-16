@@ -1,0 +1,18 @@
+diff --git a/lean/Reactivegas.lean b/lean/Reactivegas.lean
+index b56d88c..7477217 100644
+--- a/lean/Reactivegas.lean
++++ b/lean/Reactivegas.lean
+@@ -1,3 +1,4 @@
++import Reactivegas.AuditFuture
+ import Reactivegas.Types
+ import Reactivegas.State
+ import Reactivegas.Step
+diff --git a/lean/Reactivegas/AuditFuture.lean b/lean/Reactivegas/AuditFuture.lean
+new file mode 100644
+index 0000000..311d708
+--- /dev/null
++++ b/lean/Reactivegas/AuditFuture.lean
+@@ -0,0 +1,3 @@
++import Reactivegas.Types
++def auditMissingCounterpart (n : Nat) : Prop := n = 73
++opaque auditOpaquePredicate : Prop := True

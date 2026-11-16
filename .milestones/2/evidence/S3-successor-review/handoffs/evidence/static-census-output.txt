@@ -1,0 +1,1 @@
+Static census written; declarations=239 rows=207 atoms=151 operations=236 measurement rows=26

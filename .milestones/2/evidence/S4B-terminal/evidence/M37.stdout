@@ -1,0 +1,16 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M37.lean:199:20: error: Application type mismatch: The argument
+  dj
+has type
+  ∀ (qid : QuestionId), qid ∈ List.map Prod.fst gs.openQuestions → ¬qid ∈ List.map (fun x => x.questionId) gs.closed
+but is expected to have type
+  ∀ (x : QuestionId), x ∈ List.map Prod.fst gs.openQuestions → x ∈ List.map (fun x => x.questionId) gs.closed
+in the application
+  And.intro dj
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M37.lean:206:20: error: Application type mismatch: The argument
+  dj
+has type
+  ∀ (x : QuestionId), x ∈ List.map Prod.fst gs.openQuestions → x ∈ List.map (fun x => x.questionId) gs.closed
+but is expected to have type
+  ∀ (qid : QuestionId), qid ∈ List.map Prod.fst gs.openQuestions → ¬qid ∈ List.map (fun x => x.questionId) gs.closed
+in the application
+  SweepReady.mk oN cN dj

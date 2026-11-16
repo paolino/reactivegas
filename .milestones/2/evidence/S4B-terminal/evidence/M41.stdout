@@ -1,0 +1,39 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M41.lean:184:44: warning: unused variable `qid`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M41.lean:199:24: error: Application type mismatch: The argument
+  (openCleanIff gs).mp oC
+has type
+  ∀ (qid : QuestionId),
+    qid ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup qid gs.openQuestions with
+        | some q => questionCleanB q
+        | none => true) =
+        true
+but is expected to have type
+  ∀ (x : QuestionId),
+    x ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup "" gs.openQuestions with
+        | some q => questionCleanB q
+        | none => true) =
+        true
+in the application
+  And.intro ((openCleanIff gs).mp oC)
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M41.lean:206:46: error: Application type mismatch: The argument
+  oC
+has type
+  ∀ (x : QuestionId),
+    x ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup "" gs.openQuestions with
+        | some q => questionCleanB q
+        | none => true) =
+        true
+but is expected to have type
+  ∀ (qid : QuestionId),
+    qid ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup qid gs.openQuestions with
+        | some q => questionCleanB q
+        | none => true) =
+        true
+in the application
+  (openCleanIff gs).mpr oC

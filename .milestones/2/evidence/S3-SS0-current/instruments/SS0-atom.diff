@@ -1,0 +1,13 @@
+diff --git a/lean/Reactivegas/Step.lean b/lean/Reactivegas/Step.lean
+index 06b2d12..96dca26 100644
+--- a/lean/Reactivegas/Step.lean
++++ b/lean/Reactivegas/Step.lean
+@@ -52,7 +52,7 @@ def step (view : KelGroups.GroupView) (s : State) (signer : KelGroups.Key)
+   | .grantPermission c => do
+     let (col, rest) ← pullCollection c s.collections
+     demand (isResponsabile view signer)
+-    pure { s with collections := { col with permitted := true } :: rest }
++    pure { s with collections := col :: rest }
+   | .denyPermission c => do
+     let (col, rest) ← pullCollection c s.collections
+     demand (isResponsabile view signer)

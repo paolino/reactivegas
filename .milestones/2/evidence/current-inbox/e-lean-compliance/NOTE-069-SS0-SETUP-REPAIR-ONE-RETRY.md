@@ -1,0 +1,13 @@
+# NOTE-069 — SS-0 actual cwd repair, one bounded retry
+
+Desk read SS0-RETURN.md, runner and all four called scripts in full. OP1 failed before Lean at Nix flake resolution; this is a setup failure and the worker correctly stopped. The runner prints cwd=$W without actually changing its invoking cwd; cold.sh changes directory too late. Do not describe the failed attempt as a theorem result or as merely an unaddressable Lake target.
+
+Authorize one versioned runner repair and one retry of the original four-operation experiment through the existing measurement owner. Keep original root, frozen instruments and all failed-run bytes unchanged; use versioned instruments/output paths and a new manifest. This is not another S3 static author submission. Existing scratch can be reused only after verifying accepted 3590c001, clean, and .lake still absent. Do not erase any discovered build products to manufacture that claim.
+
+Budget is explicitly raised by ONE substantive operation to cover the charged setup failure. Historical S3 5 substantive/3 targeted + failed SS0 1/0 = currently 6/3. Exactly three substantive operations plus one targeted remain authorized for this retry: a full execution yields cumulative 9/4. SS0 allocation itself is now 4 substantive/1 targeted INCLUDING the failed attempt. Zero further retries or explorations. Original 15-minute retry wall bound and scope remain, including timeout/termination overhead rather than just summing nominal command timeouts.
+
+Before dispatch, verify the ACTUAL invocation resolves the intended scratch flake, and freeze all executable inputs including the top-level runner, called scripts, atom and Check.lean. Record actual cwd at the command boundary, not an echoed expected path. You own implementation of this small transport/setup fix, not the desk. Do not broaden target, atom or claim to obtain GREEN.
+
+Review the runner's already-required outcome classification at the same time: a nonzero OP2 alone is not a named semantic RED; unrelated setup/loading failures must not be admitted as the intended result. Either establish the intended obligation/compiled-definition evidence or return its exact limit. The final return must report OP4's actual outcome rather than treating the last successful logging command as experimental success. Preserve expected-RED followed by restore and check; no project runs may be hidden as preflight.
+
+No further desk checkpoint after your static preflight and versioned freeze. Execute once, consume its terminal result promptly, assess the raw packet, and return the result locally. All S3 outstanding requirements remain; this prototype does not close S3. S4 independent audit is untouched. Record own ACK and retain the failure and cumulative spend.

@@ -1,0 +1,1820 @@
+[
+  {
+    "marker": "lean:AppEvent",
+    "compiled": "AppEvent",
+    "index": {
+      "module": "Reactivegas.Types",
+      "definition": [
+        74,
+        10,
+        74,
+        18,
+        "AppEvent",
+        71,
+        0,
+        94,
+        31,
+        74,
+        10,
+        74,
+        18
+      ],
+      "index_sha256": "4127b9a002684850eb0307c75ba3219fc44fdafd617d4cc0549f6f06263d2c7a"
+    }
+  },
+  {
+    "marker": "lean:BackdonateAuth",
+    "compiled": "BackdonateAuth",
+    "index": {
+      "module": "Reactivegas.Step",
+      "definition": [
+        40,
+        7,
+        40,
+        21
+      ],
+      "index_sha256": "7199b3cbcb431a3f352fbfed519cb69f8b9506a7f89aa45a4056d81ba5d4be65"
+    }
+  },
+  {
+    "marker": "lean:BaseChange",
+    "compiled": "KelGroups.BaseChange",
+    "index": {
+      "module": "KelGroups.Event",
+      "definition": [
+        45,
+        10,
+        45,
+        20,
+        "KelGroups.BaseChange",
+        41,
+        0,
+        49,
+        31,
+        45,
+        10,
+        45,
+        20
+      ],
+      "index_sha256": "af3a8ed508e41420bf7dbda7c3ecd68eb74e7b71e8e114998e496c9fa7e838a5"
+    }
+  },
+  {
+    "marker": "lean:ClosureCause",
+    "compiled": "KelGroups.Vote.ClosureCause",
+    "index": {
+      "module": "KelGroups.Vote.Types",
+      "definition": [
+        72,
+        10,
+        72,
+        22,
+        "KelGroups.Vote.ClosureCause",
+        69,
+        0,
+        77,
+        31,
+        72,
+        10,
+        72,
+        22
+      ],
+      "index_sha256": "9c5f729727ed0dd11d51d2528c79c71e0b0a474144c446ece8bf9b7d6ba4f130"
+    }
+  },
+  {
+    "marker": "lean:ClosureRecord",
+    "compiled": "KelGroups.Vote.ClosureRecord",
+    "index": {
+      "module": "KelGroups.Vote.State",
+      "definition": [
+        40,
+        10,
+        40,
+        23,
+        "KelGroups.Vote.ClosureRecord",
+        37,
+        0,
+        45,
+        31,
+        40,
+        10,
+        40,
+        23
+      ],
+      "index_sha256": "72ce63de4acd5c05e53a4f7c71831b19953f2e43af0b5ffb1e8fb2bd0556f3a9"
+    }
+  },
+  {
+    "marker": "lean:Collection",
+    "compiled": "Collection",
+    "index": {
+      "module": "Reactivegas.State",
+      "definition": [
+        12,
+        10,
+        12,
+        20,
+        "Collection",
+        11,
+        0,
+        18,
+        31,
+        12,
+        10,
+        12,
+        20
+      ],
+      "index_sha256": "018267d8fef8945b46abfe39f0a142cb6ac654c418856c54db219844743a893e"
+    }
+  },
+  {
+    "marker": "lean:Event",
+    "compiled": "Event",
+    "index": {
+      "module": "Reactivegas.Types",
+      "definition": [
+        40,
+        10,
+        40,
+        15,
+        "Event",
+        40,
+        0,
+        69,
+        26,
+        40,
+        10,
+        40,
+        15
+      ],
+      "index_sha256": "4127b9a002684850eb0307c75ba3219fc44fdafd617d4cc0549f6f06263d2c7a"
+    }
+  },
+  {
+    "marker": "lean:GroupView",
+    "compiled": "KelGroups.GroupView",
+    "index": {
+      "module": "KelGroups.Types",
+      "definition": [
+        133,
+        10,
+        133,
+        19,
+        "KelGroups.GroupView",
+        127,
+        0,
+        135,
+        31,
+        133,
+        10,
+        133,
+        19
+      ],
+      "index_sha256": "eeec98d09e35bb16b19c1e14605b4459156222d082b7db5ae5770af1339299db"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.AppFold",
+    "compiled": "KelGroups.AppFold",
+    "index": {
+      "module": "KelGroups.Fold",
+      "definition": [
+        4,
+        7,
+        4,
+        14
+      ],
+      "index_sha256": "bbf98d872d941794237017c8eb02792644c8dbc5e09f583e2325d76e472fd842"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.BaseEvent",
+    "compiled": "KelGroups.BaseEvent",
+    "index": {
+      "module": "KelGroups.Event",
+      "definition": [
+        10,
+        10,
+        10,
+        19,
+        "KelGroups.BaseEvent",
+        10,
+        0,
+        13,
+        31,
+        10,
+        10,
+        10,
+        19
+      ],
+      "index_sha256": "af3a8ed508e41420bf7dbda7c3ecd68eb74e7b71e8e114998e496c9fa7e838a5"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.Enacts",
+    "compiled": "KelGroups.Enacts",
+    "index": {
+      "module": "KelGroups.Invariants",
+      "definition": [
+        321,
+        4,
+        321,
+        10
+      ],
+      "index_sha256": "3bd365fd9ef2f275fd161d0dded77ddde4d162fbb8c8ff9eb58ce9e10436324c"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.GroupState",
+    "compiled": "KelGroups.GroupState",
+    "index": {
+      "module": "KelGroups.State",
+      "definition": [
+        24,
+        10,
+        24,
+        20,
+        "KelGroups.GroupState",
+        24,
+        0,
+        29,
+        31,
+        24,
+        10,
+        24,
+        20
+      ],
+      "index_sha256": "f54692b863a9f11557d009ea5bfb183e4bf27cf61b2c3c381b4659ec4fd17d0b"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.GroupView",
+    "compiled": "KelGroups.GroupView",
+    "index": {
+      "module": "KelGroups.Types",
+      "definition": [
+        133,
+        10,
+        133,
+        19,
+        "KelGroups.GroupView",
+        127,
+        0,
+        135,
+        31,
+        133,
+        10,
+        133,
+        19
+      ],
+      "index_sha256": "eeec98d09e35bb16b19c1e14605b4459156222d082b7db5ae5770af1339299db"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.RoleDef",
+    "compiled": "KelGroups.RoleDef",
+    "index": {
+      "module": "KelGroups.Types",
+      "definition": [
+        36,
+        10,
+        36,
+        17,
+        "KelGroups.RoleDef",
+        36,
+        0,
+        38,
+        22,
+        36,
+        10,
+        36,
+        17
+      ],
+      "index_sha256": "eeec98d09e35bb16b19c1e14605b4459156222d082b7db5ae5770af1339299db"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.Tests.proposerAutoApproval",
+    "compiled": "KelGroups.Tests.proposerAutoApproval",
+    "index": {
+      "module": "KelGroups.Tests",
+      "definition": [
+        45,
+        4,
+        45,
+        24
+      ],
+      "index_sha256": "c91c65546116a69d21ed6df1bf29be29c446ad8ec51d1efeac641379513602d8"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.ValidationError",
+    "compiled": "KelGroups.ValidationError",
+    "index": {
+      "module": "KelGroups.Validate",
+      "definition": [
+        6,
+        10,
+        6,
+        25,
+        "KelGroups.ValidationError",
+        6,
+        0,
+        18,
+        31,
+        6,
+        10,
+        6,
+        25
+      ],
+      "index_sha256": "761499bde23fe97951226e1a8e3d134b0b3f844e18980eb9a93cfb1f4725ba51"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.Vote.VoteState",
+    "compiled": "KelGroups.Vote.VoteState",
+    "index": {
+      "module": "KelGroups.Vote.State",
+      "definition": [
+        50,
+        10,
+        50,
+        19,
+        "KelGroups.Vote.VoteState",
+        47,
+        0,
+        53,
+        31,
+        50,
+        10,
+        50,
+        19
+      ],
+      "index_sha256": "72ce63de4acd5c05e53a4f7c71831b19953f2e43af0b5ffb1e8fb2bd0556f3a9"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.applyApprove",
+    "compiled": "KelGroups.applyApprove",
+    "index": {
+      "module": "KelGroups.Fold",
+      "definition": [
+        70,
+        4,
+        70,
+        16
+      ],
+      "index_sha256": "bbf98d872d941794237017c8eb02792644c8dbc5e09f583e2325d76e472fd842"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.applyEvent",
+    "compiled": "KelGroups.applyEvent",
+    "index": {
+      "module": "KelGroups.Fold",
+      "definition": [
+        83,
+        4,
+        83,
+        14
+      ],
+      "index_sha256": "bbf98d872d941794237017c8eb02792644c8dbc5e09f583e2325d76e472fd842"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.applyPropose",
+    "compiled": "KelGroups.applyPropose",
+    "index": {
+      "module": "KelGroups.Fold",
+      "definition": [
+        53,
+        4,
+        53,
+        16
+      ],
+      "index_sha256": "bbf98d872d941794237017c8eb02792644c8dbc5e09f583e2325d76e472fd842"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.approvals_nodup",
+    "compiled": "KelGroups.approvals_nodup",
+    "index": {
+      "module": "KelGroups.Invariants",
+      "definition": [
+        289,
+        9,
+        289,
+        18
+      ],
+      "index_sha256": "3bd365fd9ef2f275fd161d0dded77ddde4d162fbb8c8ff9eb58ce9e10436324c"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.authMode",
+    "compiled": "KelGroups.authMode",
+    "index": {
+      "module": "KelGroups.State",
+      "definition": [
+        64,
+        4,
+        64,
+        12
+      ],
+      "index_sha256": "f54692b863a9f11557d009ea5bfb183e4bf27cf61b2c3c381b4659ec4fd17d0b"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.bootstrapNonMemberWitness",
+    "compiled": "KelGroups.bootstrapNonMemberWitness",
+    "index": {
+      "module": "KelGroups.Invariants",
+      "definition": [
+        520,
+        4,
+        520,
+        29
+      ],
+      "index_sha256": "3bd365fd9ef2f275fd161d0dded77ddde4d162fbb8c8ff9eb58ce9e10436324c"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.bootstrapPendingWitness",
+    "compiled": "KelGroups.bootstrapPendingWitness",
+    "index": {
+      "module": "KelGroups.Invariants",
+      "definition": [
+        549,
+        4,
+        549,
+        27
+      ],
+      "index_sha256": "3bd365fd9ef2f275fd161d0dded77ddde4d162fbb8c8ff9eb58ce9e10436324c"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.enact",
+    "compiled": "KelGroups.enact",
+    "index": {
+      "module": "KelGroups.Fold",
+      "definition": [
+        8,
+        4,
+        8,
+        9
+      ],
+      "index_sha256": "bbf98d872d941794237017c8eb02792644c8dbc5e09f583e2325d76e472fd842"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.enact_implies_threshold_met",
+    "compiled": "KelGroups.enact_implies_threshold_met",
+    "index": {
+      "module": "KelGroups.Invariants",
+      "definition": [
+        341,
+        8,
+        341,
+        35
+      ],
+      "index_sha256": "3bd365fd9ef2f275fd161d0dded77ddde4d162fbb8c8ff9eb58ce9e10436324c"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.finishEnact",
+    "compiled": "KelGroups.finishEnact",
+    "index": {
+      "module": "KelGroups.Fold",
+      "definition": [
+        17,
+        4,
+        17,
+        15
+      ],
+      "index_sha256": "bbf98d872d941794237017c8eb02792644c8dbc5e09f583e2325d76e472fd842"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.foldGroup",
+    "compiled": "KelGroups.foldGroup",
+    "index": {
+      "module": "KelGroups.Fold",
+      "definition": [
+        87,
+        4,
+        87,
+        13
+      ],
+      "index_sha256": "bbf98d872d941794237017c8eb02792644c8dbc5e09f583e2325d76e472fd842"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.majority",
+    "compiled": "KelGroups.majority",
+    "index": {
+      "module": "KelGroups.State",
+      "definition": [
+        49,
+        4,
+        49,
+        12
+      ],
+      "index_sha256": "f54692b863a9f11557d009ea5bfb183e4bf27cf61b2c3c381b4659ec4fd17d0b"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.majority_not_strict_on_even",
+    "compiled": "KelGroups.majority_not_strict_on_even",
+    "index": {
+      "module": "KelGroups.Invariants",
+      "definition": [
+        458,
+        8,
+        458,
+        35
+      ],
+      "index_sha256": "3bd365fd9ef2f275fd161d0dded77ddde4d162fbb8c8ff9eb58ce9e10436324c"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.majority_table",
+    "compiled": "KelGroups.majority_table",
+    "index": {
+      "module": "KelGroups.Invariants",
+      "definition": [
+        449,
+        8,
+        449,
+        22
+      ],
+      "index_sha256": "3bd365fd9ef2f275fd161d0dded77ddde4d162fbb8c8ff9eb58ce9e10436324c"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.member_key_coherent",
+    "compiled": "KelGroups.member_key_coherent",
+    "index": {
+      "module": "KelGroups.Invariants",
+      "definition": [
+        373,
+        8,
+        373,
+        27
+      ],
+      "index_sha256": "3bd365fd9ef2f275fd161d0dded77ddde4d162fbb8c8ff9eb58ce9e10436324c"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.members_change_implies_enacted",
+    "compiled": "KelGroups.members_change_implies_enacted",
+    "index": {
+      "module": "KelGroups.Invariants",
+      "definition": [
+        378,
+        8,
+        378,
+        38
+      ],
+      "index_sha256": "3bd365fd9ef2f275fd161d0dded77ddde4d162fbb8c8ff9eb58ce9e10436324c"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.proposer_mem_approvals",
+    "compiled": "KelGroups.proposer_mem_approvals",
+    "index": {
+      "module": "KelGroups.Invariants",
+      "definition": [
+        316,
+        8,
+        316,
+        30
+      ],
+      "index_sha256": "3bd365fd9ef2f275fd161d0dded77ddde4d162fbb8c8ff9eb58ce9e10436324c"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.setInsert",
+    "compiled": "KelGroups.setInsert",
+    "index": {
+      "module": "KelGroups.Types",
+      "definition": [
+        45,
+        4,
+        45,
+        13
+      ],
+      "index_sha256": "eeec98d09e35bb16b19c1e14605b4459156222d082b7db5ae5770af1339299db"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.stalePendingWitness",
+    "compiled": "KelGroups.stalePendingWitness",
+    "index": {
+      "module": "KelGroups.Invariants",
+      "definition": [
+        503,
+        4,
+        503,
+        23
+      ],
+      "index_sha256": "3bd365fd9ef2f275fd161d0dded77ddde4d162fbb8c8ff9eb58ce9e10436324c"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.tryEnact",
+    "compiled": "KelGroups.tryEnact",
+    "index": {
+      "module": "KelGroups.Fold",
+      "definition": [
+        42,
+        4,
+        42,
+        12
+      ],
+      "index_sha256": "bbf98d872d941794237017c8eb02792644c8dbc5e09f583e2325d76e472fd842"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.validateApproval",
+    "compiled": "KelGroups.validateApproval",
+    "index": {
+      "module": "KelGroups.Validate",
+      "definition": [
+        115,
+        4,
+        115,
+        20
+      ],
+      "index_sha256": "761499bde23fe97951226e1a8e3d134b0b3f844e18980eb9a93cfb1f4725ba51"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.validateEvent",
+    "compiled": "KelGroups.validateEvent",
+    "index": {
+      "module": "KelGroups.Validate",
+      "definition": [
+        179,
+        4,
+        179,
+        17
+      ],
+      "index_sha256": "761499bde23fe97951226e1a8e3d134b0b3f844e18980eb9a93cfb1f4725ba51"
+    }
+  },
+  {
+    "marker": "lean:KelGroups.validateProposal",
+    "compiled": "KelGroups.validateProposal",
+    "index": {
+      "module": "KelGroups.Validate",
+      "definition": [
+        106,
+        4,
+        106,
+        20
+      ],
+      "index_sha256": "761499bde23fe97951226e1a8e3d134b0b3f844e18980eb9a93cfb1f4725ba51"
+    }
+  },
+  {
+    "marker": "lean:Pledge",
+    "compiled": "Pledge",
+    "index": {
+      "module": "Reactivegas.Types",
+      "definition": [
+        25,
+        10,
+        25,
+        16,
+        "Pledge",
+        23,
+        0,
+        28,
+        31,
+        25,
+        10,
+        25,
+        16
+      ],
+      "index_sha256": "4127b9a002684850eb0307c75ba3219fc44fdafd617d4cc0549f6f06263d2c7a"
+    }
+  },
+  {
+    "marker": "lean:Reach",
+    "compiled": "Reach",
+    "index": {
+      "module": "Reactivegas.Predicates",
+      "definition": [
+        95,
+        10,
+        95,
+        15,
+        "Reach",
+        89,
+        0,
+        100,
+        24,
+        95,
+        10,
+        95,
+        15
+      ],
+      "index_sha256": "7d6a0dce8909c252b51e0856557e89a4aeb39deef6d08e99eb0b0e0423c01209"
+    }
+  },
+  {
+    "marker": "lean:Reactivegas/Invariants.lean:checkAdminDepartureCleanup",
+    "compiled": "Reactivegas.checkAdminDepartureCleanup",
+    "index": {
+      "module": "Reactivegas.Invariants",
+      "definition": [
+        1436,
+        4,
+        1436,
+        30
+      ],
+      "index_sha256": "eaae58742c2bb8d8ab175c4dbd95df53c67d1fc77df69aae9207b5744cffae90"
+    }
+  },
+  {
+    "marker": "lean:Reactivegas/Step.lean:isResponsabile",
+    "compiled": "isResponsabile",
+    "index": {
+      "module": "Reactivegas.Step",
+      "definition": [
+        30,
+        4,
+        30,
+        18
+      ],
+      "index_sha256": "7199b3cbcb431a3f352fbfed519cb69f8b9506a7f89aa45a4056d81ba5d4be65"
+    }
+  },
+  {
+    "marker": "lean:Reactivegas/Types.lean:Proposal",
+    "compiled": "Proposal",
+    "index": {
+      "module": "Reactivegas.Types",
+      "definition": [
+        118,
+        10,
+        118,
+        18,
+        "Proposal",
+        103,
+        0,
+        121,
+        31,
+        118,
+        10,
+        118,
+        18
+      ],
+      "index_sha256": "4127b9a002684850eb0307c75ba3219fc44fdafd617d4cc0549f6f06263d2c7a"
+    }
+  },
+  {
+    "marker": "lean:Route",
+    "compiled": "Reactivegas.Composition.Route",
+    "index": {
+      "module": "Reactivegas.Composition",
+      "definition": [
+        37,
+        10,
+        37,
+        15,
+        "Reactivegas.Composition.Route",
+        36,
+        0,
+        41,
+        26,
+        37,
+        10,
+        37,
+        15
+      ],
+      "index_sha256": "ed4a534cee745be4d4f8bee51e960b1a53a75b2c1d47833fbbe5d3c7c05f1ff6"
+    }
+  },
+  {
+    "marker": "lean:State",
+    "compiled": "State",
+    "index": {
+      "module": "Reactivegas.State",
+      "definition": [
+        22,
+        10,
+        22,
+        15,
+        "State",
+        20,
+        0,
+        30,
+        31,
+        22,
+        10,
+        22,
+        15
+      ],
+      "index_sha256": "018267d8fef8945b46abfe39f0a142cb6ac654c418856c54db219844743a893e"
+    }
+  },
+  {
+    "marker": "lean:VoteError",
+    "compiled": "KelGroups.Vote.VoteError",
+    "index": {
+      "module": "KelGroups.Vote.Validate",
+      "definition": [
+        37,
+        10,
+        37,
+        19,
+        "KelGroups.Vote.VoteError",
+        35,
+        0,
+        42,
+        31,
+        37,
+        10,
+        37,
+        19
+      ],
+      "index_sha256": "4fd14bf6587e963ff82605123640932e123e1849cf07b97496eacd7a1d5c2b84"
+    }
+  },
+  {
+    "marker": "lean:absorbConto",
+    "compiled": "Reactivegas.absorbConto",
+    "index": {
+      "module": "Reactivegas.Step",
+      "definition": [
+        244,
+        4,
+        244,
+        15
+      ],
+      "index_sha256": "7199b3cbcb431a3f352fbfed519cb69f8b9506a7f89aa45a4056d81ba5d4be65"
+    }
+  },
+  {
+    "marker": "lean:allUniquePledges",
+    "compiled": "allUniquePledges",
+    "index": {
+      "module": "Reactivegas.Predicates",
+      "definition": [
+        44,
+        4,
+        44,
+        20
+      ],
+      "index_sha256": "7d6a0dce8909c252b51e0856557e89a4aeb39deef6d08e99eb0b0e0423c01209"
+    }
+  },
+  {
+    "marker": "lean:appDecided_verdict_exhaustive",
+    "compiled": "Reactivegas.Composition.appDecided_verdict_exhaustive",
+    "index": {
+      "module": "Reactivegas.Composition",
+      "definition": [
+        138,
+        8,
+        138,
+        37
+      ],
+      "index_sha256": "ed4a534cee745be4d4f8bee51e960b1a53a75b2c1d47833fbbe5d3c7c05f1ff6"
+    }
+  },
+  {
+    "marker": "lean:appFold",
+    "compiled": "Reactivegas.appFold",
+    "index": {
+      "module": "Reactivegas.Step",
+      "definition": [
+        180,
+        4,
+        180,
+        11
+      ],
+      "index_sha256": "7199b3cbcb431a3f352fbfed519cb69f8b9506a7f89aa45a4056d81ba5d4be65"
+    }
+  },
+  {
+    "marker": "lean:appVerdictAllows",
+    "compiled": "Reactivegas.Composition.appVerdictAllows",
+    "index": {
+      "module": "Reactivegas.Composition",
+      "definition": [
+        109,
+        5,
+        109,
+        11,
+        "Reactivegas.Composition.baseEnacted_threshold_met",
+        100,
+        0,
+        120,
+        85,
+        107,
+        8,
+        107,
+        33
+      ],
+      "index_sha256": "ed4a534cee745be4d4f8bee51e960b1a53a75b2c1d47833fbbe5d3c7c05f1ff6"
+    }
+  },
+  {
+    "marker": "lean:applyEvent",
+    "compiled": "KelGroups.applyEvent",
+    "index": {
+      "module": "KelGroups.Fold",
+      "definition": [
+        83,
+        4,
+        83,
+        14
+      ],
+      "index_sha256": "bbf98d872d941794237017c8eb02792644c8dbc5e09f583e2325d76e472fd842"
+    }
+  },
+  {
+    "marker": "lean:applyVoteEventChecked",
+    "compiled": "KelGroups.Vote.applyVoteEventChecked",
+    "index": {
+      "module": "KelGroups.Vote.Fold",
+      "definition": [
+        106,
+        4,
+        106,
+        25
+      ],
+      "index_sha256": "f12a40aa573b128f2ff88438656cb6f86c19f8679c9ef5be5801154026e6806e"
+    }
+  },
+  {
+    "marker": "lean:authorizedStep",
+    "compiled": "authorizedStep",
+    "index": {
+      "module": "Reactivegas.Predicates",
+      "definition": [
+        73,
+        4,
+        73,
+        18
+      ],
+      "index_sha256": "7d6a0dce8909c252b51e0856557e89a4aeb39deef6d08e99eb0b0e0423c01209"
+    }
+  },
+  {
+    "marker": "lean:bal",
+    "compiled": "bal",
+    "index": {
+      "module": "Reactivegas.State",
+      "definition": [
+        38,
+        4,
+        38,
+        7
+      ],
+      "index_sha256": "018267d8fef8945b46abfe39f0a142cb6ac654c418856c54db219844743a893e"
+    }
+  },
+  {
+    "marker": "lean:baseHook",
+    "compiled": "Reactivegas.baseHook",
+    "index": {
+      "module": "Reactivegas.Step",
+      "definition": [
+        297,
+        4,
+        297,
+        12
+      ],
+      "index_sha256": "7199b3cbcb431a3f352fbfed519cb69f8b9506a7f89aa45a4056d81ba5d4be65"
+    }
+  },
+  {
+    "marker": "lean:baseProposalFaithful",
+    "compiled": "Reactivegas.Composition.baseProposalFaithful",
+    "index": {
+      "module": "Reactivegas.Composition",
+      "definition": [
+        95,
+        4,
+        95,
+        24
+      ],
+      "index_sha256": "ed4a534cee745be4d4f8bee51e960b1a53a75b2c1d47833fbbe5d3c7c05f1ff6"
+    }
+  },
+  {
+    "marker": "lean:bump",
+    "compiled": "bump",
+    "index": {
+      "module": "Reactivegas.State",
+      "definition": [
+        61,
+        4,
+        61,
+        8
+      ],
+      "index_sha256": "018267d8fef8945b46abfe39f0a142cb6ac654c418856c54db219844743a893e"
+    }
+  },
+  {
+    "marker": "lean:canCloseGroup",
+    "compiled": "canCloseGroup",
+    "index": {
+      "module": "Reactivegas.Predicates",
+      "definition": [
+        84,
+        4,
+        84,
+        17
+      ],
+      "index_sha256": "7d6a0dce8909c252b51e0856557e89a4aeb39deef6d08e99eb0b0e0423c01209"
+    }
+  },
+  {
+    "marker": "lean:close_permission_to_close",
+    "compiled": "close_permission_to_close",
+    "index": {
+      "module": "Reactivegas.Invariants",
+      "definition": [
+        646,
+        8,
+        646,
+        33
+      ],
+      "index_sha256": "eaae58742c2bb8d8ab175c4dbd95df53c67d1fc77df69aae9207b5744cffae90"
+    }
+  },
+  {
+    "marker": "lean:close_spends_referente",
+    "compiled": "close_spends_referente",
+    "index": {
+      "module": "Reactivegas.Invariants",
+      "definition": [
+        678,
+        8,
+        678,
+        30
+      ],
+      "index_sha256": "eaae58742c2bb8d8ab175c4dbd95df53c67d1fc77df69aae9207b5744cffae90"
+    }
+  },
+  {
+    "marker": "lean:closureCause",
+    "compiled": "KelGroups.Vote.closureCause",
+    "index": {
+      "module": "KelGroups.Vote.State",
+      "definition": [
+        108,
+        4,
+        108,
+        16
+      ],
+      "index_sha256": "72ce63de4acd5c05e53a4f7c71831b19953f2e43af0b5ffb1e8fb2bd0556f3a9"
+    }
+  },
+  {
+    "marker": "lean:comuneBal",
+    "compiled": "comuneBal",
+    "index": {
+      "module": "Reactivegas.State",
+      "definition": [
+        46,
+        4,
+        46,
+        13
+      ],
+      "index_sha256": "018267d8fef8945b46abfe39f0a142cb6ac654c418856c54db219844743a893e"
+    }
+  },
+  {
+    "marker": "lean:comuneId",
+    "compiled": "comuneId",
+    "index": {
+      "module": "Reactivegas.Types",
+      "definition": [
+        21,
+        7,
+        21,
+        15
+      ],
+      "index_sha256": "4127b9a002684850eb0307c75ba3219fc44fdafd617d4cc0549f6f06263d2c7a"
+    }
+  },
+  {
+    "marker": "lean:conservation",
+    "compiled": "conservation",
+    "index": {
+      "module": "Reactivegas.Predicates",
+      "definition": [
+        21,
+        4,
+        21,
+        16
+      ],
+      "index_sha256": "7d6a0dce8909c252b51e0856557e89a4aeb39deef6d08e99eb0b0e0423c01209"
+    }
+  },
+  {
+    "marker": "lean:conservation_preserved",
+    "compiled": "conservation_preserved",
+    "index": {
+      "module": "Reactivegas.Invariants",
+      "definition": [
+        429,
+        8,
+        429,
+        30
+      ],
+      "index_sha256": "eaae58742c2bb8d8ab175c4dbd95df53c67d1fc77df69aae9207b5744cffae90"
+    }
+  },
+  {
+    "marker": "lean:deposit_double_entry",
+    "compiled": "deposit_double_entry",
+    "index": {
+      "module": "Reactivegas.Invariants",
+      "definition": [
+        696,
+        8,
+        696,
+        28
+      ],
+      "index_sha256": "eaae58742c2bb8d8ab175c4dbd95df53c67d1fc77df69aae9207b5744cffae90"
+    }
+  },
+  {
+    "marker": "lean:doubleEntry",
+    "compiled": "doubleEntry",
+    "index": {
+      "module": "Reactivegas.Predicates",
+      "definition": [
+        66,
+        4,
+        66,
+        15
+      ],
+      "index_sha256": "7d6a0dce8909c252b51e0856557e89a4aeb39deef6d08e99eb0b0e0423c01209"
+    }
+  },
+  {
+    "marker": "lean:economicCleanup",
+    "compiled": "Reactivegas.economicCleanup",
+    "index": {
+      "module": "Reactivegas.Step",
+      "definition": [
+        273,
+        4,
+        273,
+        19
+      ],
+      "index_sha256": "7199b3cbcb431a3f352fbfed519cb69f8b9506a7f89aa45a4056d81ba5d4be65"
+    }
+  },
+  {
+    "marker": "lean:effectedState",
+    "compiled": "KelGroups.Vote.effectedState",
+    "index": {
+      "module": "KelGroups.Vote.Fold",
+      "definition": [
+        86,
+        4,
+        86,
+        17
+      ],
+      "index_sha256": "f12a40aa573b128f2ff88438656cb6f86c19f8679c9ef5be5801154026e6806e"
+    }
+  },
+  {
+    "marker": "lean:escrowHeld",
+    "compiled": "escrowHeld",
+    "index": {
+      "module": "Reactivegas.Predicates",
+      "definition": [
+        54,
+        4,
+        54,
+        14
+      ],
+      "index_sha256": "7d6a0dce8909c252b51e0856557e89a4aeb39deef6d08e99eb0b0e0423c01209"
+    }
+  },
+  {
+    "marker": "lean:escrowOf",
+    "compiled": "escrowOf",
+    "index": {
+      "module": "Reactivegas.State",
+      "definition": [
+        75,
+        4,
+        75,
+        12
+      ],
+      "index_sha256": "018267d8fef8945b46abfe39f0a142cb6ac654c418856c54db219844743a893e"
+    }
+  },
+  {
+    "marker": "lean:escrowSum",
+    "compiled": "escrowSum",
+    "index": {
+      "module": "Reactivegas.State",
+      "definition": [
+        78,
+        4,
+        78,
+        13
+      ],
+      "index_sha256": "018267d8fef8945b46abfe39f0a142cb6ac654c418856c54db219844743a893e"
+    }
+  },
+  {
+    "marker": "lean:governanceEnacts",
+    "compiled": "governanceEnacts",
+    "index": {
+      "module": "Reactivegas.Predicates",
+      "definition": [
+        61,
+        4,
+        61,
+        20
+      ],
+      "index_sha256": "7d6a0dce8909c252b51e0856557e89a4aeb39deef6d08e99eb0b0e0423c01209"
+    }
+  },
+  {
+    "marker": "lean:governance_enacts_windUpAdmin",
+    "compiled": "governance_enacts_windUpAdmin",
+    "index": {
+      "module": "Reactivegas.Invariants",
+      "definition": [
+        636,
+        8,
+        636,
+        37
+      ],
+      "index_sha256": "eaae58742c2bb8d8ab175c4dbd95df53c67d1fc77df69aae9207b5744cffae90"
+    }
+  },
+  {
+    "marker": "lean:insolvent",
+    "compiled": "insolvent",
+    "index": {
+      "module": "Reactivegas.Predicates",
+      "definition": [
+        34,
+        4,
+        34,
+        13
+      ],
+      "index_sha256": "7d6a0dce8909c252b51e0856557e89a4aeb39deef6d08e99eb0b0e0423c01209"
+    }
+  },
+  {
+    "marker": "lean:legacyThreshold",
+    "compiled": "KelGroups.Vote.legacyThreshold",
+    "index": {
+      "module": "KelGroups.Vote.Types",
+      "definition": [
+        43,
+        4,
+        43,
+        19
+      ],
+      "index_sha256": "9c5f729727ed0dd11d51d2528c79c71e0b0a474144c446ece8bf9b7d6ba4f130"
+    }
+  },
+  {
+    "marker": "lean:majority",
+    "compiled": "KelGroups.majority",
+    "index": {
+      "module": "KelGroups.State",
+      "definition": [
+        49,
+        4,
+        49,
+        12
+      ],
+      "index_sha256": "f54692b863a9f11557d009ea5bfb183e4bf27cf61b2c3c381b4659ec4fd17d0b"
+    }
+  },
+  {
+    "marker": "lean:memberKeys",
+    "compiled": "memberKeys",
+    "index": {
+      "module": "Reactivegas.Step",
+      "definition": [
+        34,
+        4,
+        34,
+        14
+      ],
+      "index_sha256": "7199b3cbcb431a3f352fbfed519cb69f8b9506a7f89aa45a4056d81ba5d4be65"
+    }
+  },
+  {
+    "marker": "lean:not_insolvent_of_reach",
+    "compiled": "not_insolvent_of_reach",
+    "index": {
+      "module": "Reactivegas.Invariants",
+      "definition": [
+        1183,
+        8,
+        1183,
+        30
+      ],
+      "index_sha256": "eaae58742c2bb8d8ab175c4dbd95df53c67d1fc77df69aae9207b5744cffae90"
+    }
+  },
+  {
+    "marker": "lean:open_questions_are_open",
+    "compiled": "KelGroups.Vote.open_questions_are_open",
+    "index": {
+      "module": "KelGroups.Vote.Invariants",
+      "definition": [
+        809,
+        8,
+        809,
+        31
+      ],
+      "index_sha256": "22a7ea152c02d694b06d5e54d4bfb44781b22abec5400356f9638274fdff3e97"
+    }
+  },
+  {
+    "marker": "lean:permissionToClose",
+    "compiled": "permissionToClose",
+    "index": {
+      "module": "Reactivegas.Predicates",
+      "definition": [
+        49,
+        4,
+        49,
+        21
+      ],
+      "index_sha256": "7d6a0dce8909c252b51e0856557e89a4aeb39deef6d08e99eb0b0e0423c01209"
+    }
+  },
+  {
+    "marker": "lean:pledge_escrow_debit",
+    "compiled": "pledge_escrow_debit",
+    "index": {
+      "module": "Reactivegas.Invariants",
+      "definition": [
+        658,
+        8,
+        658,
+        27
+      ],
+      "index_sha256": "eaae58742c2bb8d8ab175c4dbd95df53c67d1fc77df69aae9207b5744cffae90"
+    }
+  },
+  {
+    "marker": "lean:pledge_guard_inv",
+    "compiled": "pledge_guard_inv",
+    "index": {
+      "module": "Reactivegas.Invariants",
+      "definition": [
+        153,
+        8,
+        153,
+        24
+      ],
+      "index_sha256": "eaae58742c2bb8d8ab175c4dbd95df53c67d1fc77df69aae9207b5744cffae90"
+    }
+  },
+  {
+    "marker": "lean:pledge_preserves_allUnique",
+    "compiled": "pledge_preserves_allUnique",
+    "index": {
+      "module": "Reactivegas.Invariants",
+      "definition": [
+        1268,
+        8,
+        1268,
+        34
+      ],
+      "index_sha256": "eaae58742c2bb8d8ab175c4dbd95df53c67d1fc77df69aae9207b5744cffae90"
+    }
+  },
+  {
+    "marker": "lean:pledge_rejected_when_member",
+    "compiled": "pledge_rejected_when_member",
+    "index": {
+      "module": "Reactivegas.Invariants",
+      "definition": [
+        1240,
+        8,
+        1240,
+        35
+      ],
+      "index_sha256": "eaae58742c2bb8d8ab175c4dbd95df53c67d1fc77df69aae9207b5744cffae90"
+    }
+  },
+  {
+    "marker": "lean:proposalDigest",
+    "compiled": "Reactivegas.proposalDigest",
+    "index": {
+      "module": "Reactivegas.Step",
+      "definition": [
+        308,
+        4,
+        308,
+        18
+      ],
+      "index_sha256": "7199b3cbcb431a3f352fbfed519cb69f8b9506a7f89aa45a4056d81ba5d4be65"
+    }
+  },
+  {
+    "marker": "lean:pullCollection",
+    "compiled": "pullCollection",
+    "index": {
+      "module": "Reactivegas.State",
+      "definition": [
+        102,
+        4,
+        102,
+        18
+      ],
+      "index_sha256": "018267d8fef8945b46abfe39f0a142cb6ac654c418856c54db219844743a893e"
+    }
+  },
+  {
+    "marker": "lean:reach_solvent",
+    "compiled": "reach_solvent",
+    "index": {
+      "module": "Reactivegas.Invariants",
+      "definition": [
+        1176,
+        8,
+        1176,
+        21
+      ],
+      "index_sha256": "eaae58742c2bb8d8ab175c4dbd95df53c67d1fc77df69aae9207b5744cffae90"
+    }
+  },
+  {
+    "marker": "lean:refundAll",
+    "compiled": "refundAll",
+    "index": {
+      "module": "Reactivegas.State",
+      "definition": [
+        93,
+        4,
+        93,
+        13
+      ],
+      "index_sha256": "018267d8fef8945b46abfe39f0a142cb6ac654c418856c54db219844743a893e"
+    }
+  },
+  {
+    "marker": "lean:route",
+    "compiled": "Reactivegas.Composition.route",
+    "index": {
+      "module": "Reactivegas.Composition",
+      "definition": [
+        46,
+        4,
+        46,
+        9
+      ],
+      "index_sha256": "ed4a534cee745be4d4f8bee51e960b1a53a75b2c1d47833fbbe5d3c7c05f1ff6"
+    }
+  },
+  {
+    "marker": "lean:s62bThreshold",
+    "compiled": "Reactivegas.s62bThreshold",
+    "index": {
+      "module": "Reactivegas.Invariants",
+      "definition": [
+        1301,
+        4,
+        1301,
+        17
+      ],
+      "index_sha256": "eaae58742c2bb8d8ab175c4dbd95df53c67d1fc77df69aae9207b5744cffae90"
+    }
+  },
+  {
+    "marker": "lean:solvent",
+    "compiled": "solvent",
+    "index": {
+      "module": "Reactivegas.Predicates",
+      "definition": [
+        29,
+        4,
+        29,
+        11
+      ],
+      "index_sha256": "7d6a0dce8909c252b51e0856557e89a4aeb39deef6d08e99eb0b0e0423c01209"
+    }
+  },
+  {
+    "marker": "lean:solvent_init",
+    "compiled": "solvent_init",
+    "index": {
+      "module": "Reactivegas.Invariants",
+      "definition": [
+        876,
+        8,
+        876,
+        20
+      ],
+      "index_sha256": "eaae58742c2bb8d8ab175c4dbd95df53c67d1fc77df69aae9207b5744cffae90"
+    }
+  },
+  {
+    "marker": "lean:solvent_preserved",
+    "compiled": "solvent_preserved",
+    "index": {
+      "module": "Reactivegas.Invariants",
+      "definition": [
+        872,
+        14,
+        872,
+        16
+      ],
+      "index_sha256": "eaae58742c2bb8d8ab175c4dbd95df53c67d1fc77df69aae9207b5744cffae90"
+    }
+  },
+  {
+    "marker": "lean:splitUser",
+    "compiled": "splitUser",
+    "index": {
+      "module": "Reactivegas.State",
+      "definition": [
+        84,
+        4,
+        84,
+        13
+      ],
+      "index_sha256": "018267d8fef8945b46abfe39f0a142cb6ac654c418856c54db219844743a893e"
+    }
+  },
+  {
+    "marker": "lean:stalled",
+    "compiled": "stalled",
+    "index": {
+      "module": "Reactivegas.State",
+      "definition": [
+        54,
+        4,
+        54,
+        11
+      ],
+      "index_sha256": "018267d8fef8945b46abfe39f0a142cb6ac654c418856c54db219844743a893e"
+    }
+  },
+  {
+    "marker": "lean:step",
+    "compiled": "step",
+    "index": {
+      "module": "Reactivegas.Step",
+      "definition": [
+        43,
+        4,
+        43,
+        8
+      ],
+      "index_sha256": "7199b3cbcb431a3f352fbfed519cb69f8b9506a7f89aa45a4056d81ba5d4be65"
+    }
+  },
+  {
+    "marker": "lean:stepEvent",
+    "compiled": "stepEvent",
+    "index": {
+      "module": "Reactivegas.Step",
+      "definition": [
+        146,
+        4,
+        146,
+        13
+      ],
+      "index_sha256": "7199b3cbcb431a3f352fbfed519cb69f8b9506a7f89aa45a4056d81ba5d4be65"
+    }
+  },
+  {
+    "marker": "lean:step_authorized",
+    "compiled": "step_authorized",
+    "index": {
+      "module": "Reactivegas.Invariants",
+      "definition": [
+        560,
+        8,
+        560,
+        23
+      ],
+      "index_sha256": "eaae58742c2bb8d8ab175c4dbd95df53c67d1fc77df69aae9207b5744cffae90"
+    }
+  },
+  {
+    "marker": "lean:step_correct_inv",
+    "compiled": "step_correct_inv",
+    "index": {
+      "module": "Reactivegas.Invariants",
+      "definition": [
+        283,
+        8,
+        283,
+        24
+      ],
+      "index_sha256": "eaae58742c2bb8d8ab175c4dbd95df53c67d1fc77df69aae9207b5744cffae90"
+    }
+  },
+  {
+    "marker": "lean:stripCollections",
+    "compiled": "stripCollections",
+    "index": {
+      "module": "Reactivegas.State",
+      "definition": [
+        115,
+        4,
+        115,
+        20
+      ],
+      "index_sha256": "018267d8fef8945b46abfe39f0a142cb6ac654c418856c54db219844743a893e"
+    }
+  },
+  {
+    "marker": "lean:sweepClosures",
+    "compiled": "KelGroups.Vote.sweepClosures",
+    "index": {
+      "module": "KelGroups.Vote.Fold",
+      "definition": [
+        73,
+        4,
+        73,
+        17
+      ],
+      "index_sha256": "f12a40aa573b128f2ff88438656cb6f86c19f8679c9ef5be5801154026e6806e"
+    }
+  },
+  {
+    "marker": "lean:tryEnact",
+    "compiled": "KelGroups.tryEnact",
+    "index": {
+      "module": "KelGroups.Fold",
+      "definition": [
+        42,
+        4,
+        42,
+        12
+      ],
+      "index_sha256": "bbf98d872d941794237017c8eb02792644c8dbc5e09f583e2325d76e472fd842"
+    }
+  },
+  {
+    "marker": "lean:uniquePledges",
+    "compiled": "uniquePledges",
+    "index": {
+      "module": "Reactivegas.Predicates",
+      "definition": [
+        39,
+        4,
+        39,
+        17
+      ],
+      "index_sha256": "7d6a0dce8909c252b51e0856557e89a4aeb39deef6d08e99eb0b0e0423c01209"
+    }
+  },
+  {
+    "marker": "lean:uniquePledges_pend_cons",
+    "compiled": "uniquePledges_pend_cons",
+    "index": {
+      "module": "Reactivegas.Invariants",
+      "definition": [
+        1227,
+        8,
+        1227,
+        31
+      ],
+      "index_sha256": "eaae58742c2bb8d8ab175c4dbd95df53c67d1fc77df69aae9207b5744cffae90"
+    }
+  },
+  {
+    "marker": "lean:validateBootstrapProposal",
+    "compiled": "_private.KelGroups.Validate.0.KelGroups.validateBootstrapProposal",
+    "index": {
+      "module": "KelGroups.Validate",
+      "definition": [
+        87,
+        12,
+        87,
+        37
+      ],
+      "index_sha256": "761499bde23fe97951226e1a8e3d134b0b3f844e18980eb9a93cfb1f4725ba51"
+    }
+  },
+  {
+    "marker": "lean:validateNormalProposal",
+    "compiled": "_private.KelGroups.Validate.0.KelGroups.validateNormalProposal",
+    "index": {
+      "module": "KelGroups.Validate",
+      "definition": [
+        95,
+        12,
+        95,
+        34
+      ],
+      "index_sha256": "761499bde23fe97951226e1a8e3d134b0b3f844e18980eb9a93cfb1f4725ba51"
+    }
+  },
+  {
+    "marker": "lean:validateRoleChanges",
+    "compiled": "_private.KelGroups.Validate.0.KelGroups.validateRoleChanges",
+    "index": {
+      "module": "KelGroups.Validate",
+      "definition": [
+        78,
+        12,
+        78,
+        31
+      ],
+      "index_sha256": "761499bde23fe97951226e1a8e3d134b0b3f844e18980eb9a93cfb1f4725ba51"
+    }
+  },
+  {
+    "marker": "lean:validateVoteEvent",
+    "compiled": "KelGroups.Vote.validateVoteEvent",
+    "index": {
+      "module": "KelGroups.Vote.Validate",
+      "definition": [
+        53,
+        4,
+        53,
+        21
+      ],
+      "index_sha256": "4fd14bf6587e963ff82605123640932e123e1849cf07b97496eacd7a1d5c2b84"
+    }
+  },
+  {
+    "marker": "lean:voteApply",
+    "compiled": "Reactivegas.voteApply",
+    "index": {
+      "module": "Reactivegas.Step",
+      "definition": [
+        171,
+        4,
+        171,
+        13
+      ],
+      "index_sha256": "7199b3cbcb431a3f352fbfed519cb69f8b9506a7f89aa45a4056d81ba5d4be65"
+    }
+  },
+  {
+    "marker": "lean:voteDerived",
+    "compiled": "Reactivegas.Composition.voteDerived",
+    "index": {
+      "module": "Reactivegas.Composition",
+      "definition": [
+        65,
+        4,
+        65,
+        15
+      ],
+      "index_sha256": "ed4a534cee745be4d4f8bee51e960b1a53a75b2c1d47833fbbe5d3c7c05f1ff6"
+    }
+  },
+  {
+    "marker": "lean:windUpAdmin",
+    "compiled": "Reactivegas.windUpAdmin",
+    "index": {
+      "module": "Reactivegas.Step",
+      "definition": [
+        253,
+        4,
+        253,
+        15
+      ],
+      "index_sha256": "7199b3cbcb431a3f352fbfed519cb69f8b9506a7f89aa45a4056d81ba5d4be65"
+    }
+  },
+  {
+    "marker": "lean:withdraw_double_entry",
+    "compiled": "withdraw_double_entry",
+    "index": {
+      "module": "Reactivegas.Invariants",
+      "definition": [
+        706,
+        8,
+        706,
+        29
+      ],
+      "index_sha256": "eaae58742c2bb8d8ab175c4dbd95df53c67d1fc77df69aae9207b5744cffae90"
+    }
+  },
+  {
+    "marker": "lean:zeroThreshold",
+    "compiled": "KelGroups.Vote.zeroThreshold",
+    "index": {
+      "module": "KelGroups.Vote.Types",
+      "definition": [
+        47,
+        4,
+        47,
+        17
+      ],
+      "index_sha256": "9c5f729727ed0dd11d51d2528c79c71e0b0a474144c446ece8bf9b7d6ba4f130"
+    }
+  }
+]

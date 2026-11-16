@@ -1,0 +1,488 @@
+ edit /code/reactivegas-66-s2r/scripts/check-lean-axioms
+
+ Could not find the exact text in
+ /code/reactivegas-66-s2r/scripts/check-lean-axioms. The old text must match
+ exactly including all whitespace and newlines.
+
+
+
+ edit /code/reactivegas-66-s2r/scripts/check-lean-axioms
+
+      ...
+   36 # `requiredInversions` in `scripts/check-reactivegas-inversion-coverage`.
+   37 # This gate extends the policy the repo already enforces from six
+ theorems to
+   38 # the whole discovered extent; it chooses no new policy.
+   39 #
+ - 40 # Fail-closed: missing/unresolvable `REACTIVEGAS_ROOT`; empty or unset
+ - 41 # `LEAN_PATH` (retained guard, element 5); modules with no loadable
+ olean;
+ - 42 # zero S/B/T; `S \ B` or `B \ S` non-empty; T-derivation disagreement;
+ any
+ - 43 # theorem depending on an axiom outside the permitted set (including
+ `sorryAx`);
+ - 44 # any `PANIC at` on either stream; missing `axiom-gate: ok` marker.
+ + 40 # Fail-closed: unresolvable `REACTIVEGAS_ROOT` (`canonRoot` returns
+ `.error` —
+ + 41 # established by driver inspection, not by an executed control; see
+ below);
+ + 42 # empty or unset `LEAN_PATH` (retained guard, element 5, executed);
+ modules
+ + 43 # with no loadable olean; zero S/B/T; `S \ B` or `B \ S` non-empty;
+ + 44 # T-derivation disagreement; any theorem depending on an axiom outside
+ the
+ + 45 # permitted set (including `sorryAx`); any `PANIC at` on either stream;
+ + 46 # missing `axiom-gate: ok` marker.
+   45 #
+ + 48 # Actual `REACTIVEGAS_ROOT` behaviour, stated exactly: a missing variable
+ does
+ + 49 # NOT fail closed — the driver defaults it to `"."` — while an
+ unresolvable
+ + 50 # one fails via `canonRoot`. The mandatory wrapper always exports
+ + 51 # `REACTIVEGAS_ROOT`, so the mandatory path never exercises the default;
+ the
+ + 52 # unresolvable branch is code-inspected, not control-executed, and
+ nothing here
+ + 53 # claims otherwise.
+ + 54 #
+   46 # Honest limit (`CI-T-SHARED-FILTER`): both T derivations share `thmInfo`
+ and B
+   47 # membership — two views of one inventory, not two independent theorem
+ sources.
+   48 # One-sided truncation is detected; a theorem dropped from both views, or
+ a
+   49 # B-shrink applied to both, agrees while omitting. Not claimed otherwise.
+      ...
+
+
+
+ $ cd /code/reactivegas-66-s2r
+ bash -n scripts/check-lean-axioms && echo "bash-syntax OK"
+
+ $ cd /code/reactivegas-66-s2r
+ bash -n scripts/check-lean-axioms && echo "bash-syntax OK"
+ echo "--- name-only vs 714cb2a (must be exactly one file) ---"
+ git diff 714cb2a8536b24bf735295137e8f907782228380 --name-only 2>&1
+ echo "--- non-comment changed lines (must be EMPTY) ---"
+ git diff 714cb2a8536b24bf735295137e8f907782228380 -- scripts/check-lean-axioms
+ 2>&1 | grep -E '^[+-]' | grep -vE '^[+-]{3}' | grep -vE '^[+-]#' || echo
+ "COMMENT-ONLY-PROVEN: every changed line is a # comment"
+ echo "--- getD + export lines intact ---"
+ grep -n 'getD "."' scripts/check-lean-axioms 2>&1
+ grep -n 'export REACTIVEGAS_ROOT' scripts/check-lean-axioms 2>&1
+ echo "--- status ---"
+ git status --short 2>&1
+
+ ... (5 earlier lines, ctrl+o to expand)
+ --- getD + export lines intact ---
+ 286:  let root := (← IO.getEnv "REACTIVEGAS_ROOT").getD "."
+ 302:export REACTIVEGAS_ROOT="$root"
+ --- status ---
+  M scripts/check-lean-axioms
+
+ Took 0.0s
+
+
+ Verifying file changes and line numbers while reconciling discrepancies with
+ the audit.
+
+
+ $ cd /code/reactivegas-66-s2r
+ git add scripts/check-lean-axioms 2>&1
+ git commit -m "docs(lean): correct REACTIVEGAS_ROOT fail-closed comment to
+ actual default behaviour (#66 S2R submission 2)
+
+ Comment-only: missing-variable defaults to \".\" (getD), unresolvable
+ fails via canonRoot (code-inspected, not control-executed); mandatory
+ wrapper always exports the variable. No behaviour change." 2>&1 | head -n 5
+ git rev-parse HEAD 2>&1
+ git log --oneline -3 2>&1
+ git status --short 2>&1; echo "(clean above)"
+
+ ... (5 earlier lines, ctrl+o to expand)
+ default behaviour (#66 S2R submission 2)
+ 714cb2a fix(lean): total axiom gate over discovered extent with resolved-olean
+ ownership (#66 S2R)
+ d670323 feat(lean): export verified Lean trace corpora (#87)
+ (clean above)
+
+ Took 0.2s
+
+
+ Recording a commit and preparing a CI run with timestamped journaling while
+ resolving ordering.
+
+
+ edit /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s2r-muse/STATUS.md
+
+     ...
+  83 P26/P27 CONTAMINATION (named per NOTE-007, binding): logs carry intended
+ S/B findings PLUS stale-R6-olean axiom finding each. Branches executed ✓;
+ aggregate exits NOT unmasked necessity tests (extra would persist with S/B
+ checks disabled); R7 does NOT launder them; auditor must re-execute both on
+ clean artifacts with intended identities only. Packet carries the note at
+ Element 4 + spend ledger + §9 dispatch gate. No single-failure provenance
+ claimed anywhere.
+  84 DELIVERY (this IS delivery per brief): handoffs/SUBMISSION.md (231 lines,
+ sha256 601e52abaff025160c2027786d6bae6da81170929213aef8f7c9cef364b8f96d) — ONE
+ S2R submission with bound packet, exact 17+35 enumeration, ready (unexecuted)
+ push/PR leg. Next state: SUBMITTED → owner packet verification → fresh FULL
+ Codex audit → exact remote CI → explicit desk merge grant. No counted spend
+ remains; parked on the audit.
+  85 NOTE-008-ACK (report-only corrections applied; candidate UNAMENDED at
+ 714cb2a, tree clean, no runs, nothing outward): desk read 231-line
+ SUBMISSION.md and independently rehashed logs + candidate (all match). STATUS:
+ admitted for fresh FULL audit (not acceptance). Correction 1 — §9 no longer
+ claims unqualified NONE: now states no KNOWN production blocker; clean
+ unmasked omission evidence REMAINS TO BE ESTABLISHED by the auditor; P26/P27
+ carry exactly Element-4 limitations (never promoted to full necessity
+ controls); auditor failure/budget-gap there is a FINDING, never
+ inheritance-closed. Element 4 contamination paragraph unchanged. Correction 2
+ — defective §8 verbatim commands REMOVED (missing --draft, closing-keyword
+ body, local-path body): replaced with parent-owned/parent-executed factual
+ note (--draft, file body with real newlines, reviewer-facing text, assignee
+ paolino, label chore, milestone 2, closingIssuesReferences empty by readback;
+ PR URL + head SHA PENDING parent return). New SUBMISSION.md sha256
+ 041b5a523e78a82056b33898039a1e0afb234c747bfe57f5fe6bb74eaac20eb9 SUPERSEDES
+ 601e52abaff025160c2027786d6bae6da81170929213aef8f7c9cef364b8f96d (both
+ citable; delta is exactly these two sections).
+  86 NOTE-009-ACK (remote leg executed by parent; report-only, no runs, nothing
+ outward): §8 now records PR https://github.com/paolino/reactivegas/pull/88
+ (DRAFT OPEN base master, head exactly 714cb2a, no prior upstream),
+ closingIssuesReferences [] by readback, assignee paolino / label chore /
+ milestone 2, PR #85 untouched OPEN draft (superseded branch), #66 OPEN,
+ parent-authored body (six-file result, authority+evidence, renames table,
+ re-exports, doc path, ci exit 0, residuals incl. P26/P27 contamination +
+ advisories + unreachable branches, S3/S4/S5 unfinished), remote CI at readback
+ recorded RUNNING (artifacts SUCCESS, cabal-sync skipped, main in_progress —
+ not green), fresh FULL Codex audit underway in parallel (not mine to contact).
+ New SUBMISSION.md sha256
+ 32299d25cae31c9dcd8a6d6737e61bb6fe35b48bd4a8e6f041949cff13319bff SUPERSEDES
+ 041b5a52… (chain complete; candidate unamended at 714cb2a, tree clean). PAUSED
+ 2026-09-05 (operator pause order, supersedes all outstanding instructions
+ incl. any closeout/merge preparation — none proceeds): parked at rest, nothing
+ in flight (no build/probe/edit running; last completed step was the NOTE-009
+ journal ack, already landed). Exact current work: S2R owner campaign fully
+ evidenced and submitted (packet handoffs/SUBMISSION.md sha 32299d25…,
+ candidate 714cb2a committed-clean, branch never pushed). What remains (HELD,
+ not started): nothing of mine — next state belongs to auditor verdict + exact
+ final remote CI + explicit desk merge grant, all outside this seat. Live PID
+ 1312702, PGID 1312702 (verified this entry; agent argv pi --provider
+ opencode-go --model muse-spark-1.3-contributor --thinking xhigh --approve,
+ started Sat Sep 5 12:55:51 2026). Spend counters frozen: SUBSTANTIVE 17/17,
+ probes 35/35 (all assigned, zero overrun). Queued prompts/timers/wake loops:
+ NONE exist for this seat (no timers, no watchers, no auto-continuation) —
+ nothing to disarm. Preservation: worktree /code/reactivegas-66-s2r clean at
+ 714cb2a, runtime root + evidence + STATUS intact, pane NOT retired. Local
+ files only; nothing sent upward.
+ +87 NOTE-010-ACK (explicit user instruction wakes this sealed task only; pause
+ otherwise holds — no other work started): thawed seat verified same
+ PID/PGID/argv/START, no restart, no refund. Task: submission-2 comment-only
+ correction (audit advisory: header claimed missing-var fail-closed, actual
+ getD-defaults-to-"."). Applied + proven comment-only (name-only exactly
+ scripts/check-lean-axioms; every changed line a `#` comment, mechanical grep
+ proof; getD line 286 + export line 302 intact; bash -n OK; no
+ behaviour/policy/test/Lean/output change; getD untouched). Committed (free):
+ ab617d88af9d080de71218f3cc553d60ef0b6de0 parent 714cb2a, 1 file +14/-5. Prior
+ audit bound as input: report
+ d634df52c51d4351699d36927b5b0c662357a4ac08a7d689a6708db2d34def90, FINAL.sha256
+ 64dbd5ad2300dec49c4ecc71b703ce86031b673782e363fc9f2f115df536892e; old
+ manifest+report retained intact (nothing rewritten). Cumulative ceilings 18
+ substantive / 37 targeted (17/35 retained). S18 START (last slot): final local
+ `nix develop --quiet -c just ci` on ab617d8 → log S18-final-ci.log; expects
+ EXIT 0.
+
+
+ Reverting an append-only journal edit that removed PAUSED event details and
+ restoring audit integrity.
+
+
+ edit /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s2r-muse/STATUS.md
+
+     ...
+  83 P26/P27 CONTAMINATION (named per NOTE-007, binding): logs carry intended
+ S/B findings PLUS stale-R6-olean axiom finding each. Branches executed ✓;
+ aggregate exits NOT unmasked necessity tests (extra would persist with S/B
+ checks disabled); R7 does NOT launder them; auditor must re-execute both on
+ clean artifacts with intended identities only. Packet carries the note at
+ Element 4 + spend ledger + §9 dispatch gate. No single-failure provenance
+ claimed anywhere.
+  84 DELIVERY (this IS delivery per brief): handoffs/SUBMISSION.md (231 lines,
+ sha256 601e52abaff025160c2027786d6bae6da81170929213aef8f7c9cef364b8f96d) — ONE
+ S2R submission with bound packet, exact 17+35 enumeration, ready (unexecuted)
+ push/PR leg. Next state: SUBMITTED → owner packet verification → fresh FULL
+ Codex audit → exact remote CI → explicit desk merge grant. No counted spend
+ remains; parked on the audit.
+  85 NOTE-008-ACK (report-only corrections applied; candidate UNAMENDED at
+ 714cb2a, tree clean, no runs, nothing outward): desk read 231-line
+ SUBMISSION.md and independently rehashed logs + candidate (all match). STATUS:
+ admitted for fresh FULL audit (not acceptance). Correction 1 — §9 no longer
+ claims unqualified NONE: now states no KNOWN production blocker; clean
+ unmasked omission evidence REMAINS TO BE ESTABLISHED by the auditor; P26/P27
+ carry exactly Element-4 limitations (never promoted to full necessity
+ controls); auditor failure/budget-gap there is a FINDING, never
+ inheritance-closed. Element 4 contamination paragraph unchanged. Correction 2
+ — defective §8 verbatim commands REMOVED (missing --draft, closing-keyword
+ body, local-path body): replaced with parent-owned/parent-executed factual
+ note (--draft, file body with real newlines, reviewer-facing text, assignee
+ paolino, label chore, milestone 2, closingIssuesReferences empty by readback;
+ PR URL + head SHA PENDING parent return). New SUBMISSION.md sha256
+ 041b5a523e78a82056b33898039a1e0afb234c747bfe57f5fe6bb74eaac20eb9 SUPERSEDES
+ 601e52abaff025160c2027786d6bae6da81170929213aef8f7c9cef364b8f96d (both
+ citable; delta is exactly these two sections).
+  86 NOTE-009-ACK (remote leg executed by parent; report-only, no runs, nothing
+ outward): §8 now records PR https://github.com/paolino/reactivegas/pull/88
+ (DRAFT OPEN base master, head exactly 714cb2a, no prior upstream),
+ closingIssuesReferences [] by readback, assignee paolino / label chore /
+ milestone 2, PR #85 untouched OPEN draft (superseded branch), #66 OPEN,
+ parent-authored body (six-file result, authority+evidence, renames table,
+ re-exports, doc path, ci exit 0, residuals incl. P26/P27 contamination +
+ advisories + unreachable branches, S3/S4/S5 unfinished), remote CI at readback
+ recorded RUNNING (artifacts SUCCESS, cabal-sync skipped, main in_progress —
+ not green), fresh FULL Codex audit underway in parallel (not mine to contact).
+ New SUBMISSION.md sha256
+ 32299d25cae31c9dcd8a6d6737e61bb6fe35b48bd4a8e6f041949cff13319bff SUPERSEDES
+ 041b5a52… (chain complete; candidate unamended at 714cb2a, tree clean). PAUSED
+ 2026-09-05 (operator pause order, supersedes all outstanding instructions
+ incl. any closeout/merge preparation — none proceeds): parked at rest, nothing
+ in flight (no build/probe/edit running; last completed step was the NOTE-009
+ journal ack, already landed). Exact current work: S2R owner campaign fully
+ evidenced and submitted (packet handoffs/SUBMISSION.md sha 32299d25…,
+ candidate 714cb2a committed-clean, branch never pushed). What remains (HELD,
+ not started): nothing of mine — next state belongs to auditor verdict + exact
+ final remote CI + explicit desk merge grant, all outside this seat. Live PID
+ 1312702, PGID 1312702 (verified this entry; agent argv pi --provider
+ opencode-go --model muse-spark-1.3-contributor --thinking xhigh --approve,
+ started Sat Sep 5 12:55:51 2026). Spend counters frozen: SUBSTANTIVE 17/17,
+ probes 35/35 (all assigned, zero overrun). Queued prompts/timers/wake loops:
+ NONE exist for this seat (no timers, no watchers, no auto-continuation) —
+ nothing to disarm. Preservation: worktree /code/reactivegas-66-s2r clean at
+ 714cb2a, runtime root + evidence + STATUS intact, pane NOT retired. Local
+ files only; nothing sent upward.
+ +87 PAUSED 2026-09-05 (operator pause order, supersedes all outstanding
+ instructions incl. any closeout/merge preparation — none proceeds): parked at
+ rest, nothing in flight (no build/probe/edit running; last completed step was
+ the NOTE-009 journal ack, already landed). Exact current work: S2R owner
+ campaign fully evidenced and submitted (packet handoffs/SUBMISSION.md sha
+ 32299d25…, candidate 714cb2a committed-clean, branch never pushed). What
+ remains (HELD, not started): nothing of mine — next state belongs to auditor
+ verdict + exact final remote CI + explicit desk merge grant, all outside this
+ seat. Live PID 1312702, PGID 1312702 (verified this entry; agent argv pi
+ --provider opencode-go --model muse-spark-1.3-contributor --thinking xhigh
+ --approve, started Sat Sep 5 12:55:51 2026). Spend counters frozen:
+ SUBSTANTIVE 17/17, probes 35/35 (all assigned, zero overrun). Queued
+ prompts/timers/wake loops: NONE exist for this seat (no timers, no watchers,
+ no auto-continuation) — nothing to disarm. Preservation: worktree
+ /code/reactivegas-66-s2r clean at 714cb2a, runtime root + evidence + STATUS
+ intact, pane NOT retired. Local files only; nothing sent upward.
+  87 NOTE-010-ACK (explicit user instruction wakes this sealed task only; pause
+ otherwise holds — no other work started): thawed seat verified same
+ PID/PGID/argv/START, no restart, no refund. Task: submission-2 comment-only
+ correction (audit advisory: header claimed missing-var fail-closed, actual
+ getD-defaults-to-"."). Applied + proven comment-only (name-only exactly
+ scripts/check-lean-axioms; every changed line a `#` comment, mechanical grep
+ proof; getD line 286 + export line 302 intact; bash -n OK; no
+ behaviour/policy/test/Lean/output change; getD untouched). Committed (free):
+ ab617d88af9d080de71218f3cc553d60ef0b6de0 parent 714cb2a, 1 file +14/-5. Prior
+ audit bound as input: report
+ d634df52c51d4351699d36927b5b0c662357a4ac08a7d689a6708db2d34def90, FINAL.sha256
+ 64dbd5ad2300dec49c4ecc71b703ce86031b673782e363fc9f2f115df536892e; old
+ manifest+report retained intact (nothing rewritten). Cumulative ceilings 18
+ substantive / 37 targeted (17/35 retained). S18 START (last slot): final local
+ `nix develop --quiet -c just ci` on ab617d8 → log S18-final-ci.log; expects
+ EXIT 0.
+
+
+
+ $ cd /code/reactivegas-66-s2r
+ git rev-parse HEAD 2>&1; git status --short 2>&1; echo "(clean above)"
+ LOG=/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s2r-muse/handoffs/evid
+ ence/S18-final-ci.log
+ (nix develop --quiet -c just ci >"$LOG" 2>&1); code=$?
+ echo "EXIT=$code"
+ grep -E "axiom-gate: ok$|inversion-audit: ok$|trace-coverage-agreement:
+ ok|dependency direction: OK|declared and running toolchains
+ agree|corpus.*OK|Build completed" "$LOG" 2>&1 | head -n 12
+ tail -n 3 "$LOG" 2>&1 (timeout 3600s)
+
+ ... (11 earlier lines, ctrl+o to expand)
+ corpus/economic.json: OK
+ corpus/integrated.json: OK
+ corpus/economic.json: OK
+ corpus/integrated.json: OK
+ corpus-check: ntraces=5 nevents=32 nsteps=7 live-bound
+
+ Took 87.2s
+
+
+
+ $ sha256sum
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s2r-muse/handoffs/evidence
+ /S18-final-ci.log 2>&1
+ git -C /code/reactivegas-66-s2r diff ab617d88af9d080de71218f3cc553d60ef0b6de0^
+ ab617d88af9d080de71218f3cc553d60ef0b6de0 --name-only 2>&1
+ git -C /code/reactivegas-66-s2r diff 714cb2a8536b24bf735295137e8f907782228380
+ ab617d88af9d080de71218f3cc553d60ef0b6de0 --stat 2>&1 | tail -n 3
+ ls
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s2r-muse/handoffs/SUBMISSI
+ ON.md
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s2r-muse/handoffs/evidence
+ /17-final-ci.log 2>&1
+
+ ... (5 earlier lines, ctrl+o to expand)
+  1 file changed, 14 insertions(+), 5 deletions(-)
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s2r-muse/handoffs/evidence
+ /17-final-ci.log
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s2r-muse/handoffs/SUBMISSI
+ ON.md
+
+ Took 0.0s
+
+
+
+ write
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s2r-muse/handoffs/SUBMISSI
+ ON-2.md
+
+ # S2R Submission 2 — comment-only advisory correction (ONE additional
+ submission)
+
+ **Candidate (frozen):** `ab617d88af9d080de71218f3cc553d60ef0b6de0`
+ (`chore/66-s2r-ownership`, parent `714cb2a`, committed-clean, never pushed.)
+ **Scope, exclusively:** one comment correction in `scripts/check-lean-axioms`
+ for the audit's documentation advisory. No driver, shell-behaviour, policy,
+ test, fixture, Lean-code, output, dependency, or `docs/en/design/` change.
+ `getD "."` NOT "fixed" — the behaviour stands, the comment now describes it.
+
+ ## 1. Exact new comment-only diff against `714cb2a`
+ ... (51 more lines, 61 total, ctrl+o to expand)
+
+
+
+ $ sha256sum
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s2r-muse/handoffs/SUBMISSI
+ ON-2.md 2>&1
+
+ ce4d84eddd73cdf9f3289bf71c58a71a3c7bed8d227e581b9a6793f580a116c5
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s2r-muse/handoffs/SUBMISSI
+ ON-2.md
+
+ Took 0.0s
+
+
+
+ edit /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s2r-muse/STATUS.md
+
+     ...
+  85 NOTE-008-ACK (report-only corrections applied; candidate UNAMENDED at
+ 714cb2a, tree clean, no runs, nothing outward): desk read 231-line
+ SUBMISSION.md and independently rehashed logs + candidate (all match). STATUS:
+ admitted for fresh FULL audit (not acceptance). Correction 1 — §9 no longer
+ claims unqualified NONE: now states no KNOWN production blocker; clean
+ unmasked omission evidence REMAINS TO BE ESTABLISHED by the auditor; P26/P27
+ carry exactly Element-4 limitations (never promoted to full necessity
+ controls); auditor failure/budget-gap there is a FINDING, never
+ inheritance-closed. Element 4 contamination paragraph unchanged. Correction 2
+ — defective §8 verbatim commands REMOVED (missing --draft, closing-keyword
+ body, local-path body): replaced with parent-owned/parent-executed factual
+ note (--draft, file body with real newlines, reviewer-facing text, assignee
+ paolino, label chore, milestone 2, closingIssuesReferences empty by readback;
+ PR URL + head SHA PENDING parent return). New SUBMISSION.md sha256
+ 041b5a523e78a82056b33898039a1e0afb234c747bfe57f5fe6bb74eaac20eb9 SUPERSEDES
+ 601e52abaff025160c2027786d6bae6da81170929213aef8f7c9cef364b8f96d (both
+ citable; delta is exactly these two sections).
+  86 NOTE-009-ACK (remote leg executed by parent; report-only, no runs, nothing
+ outward): §8 now records PR https://github.com/paolino/reactivegas/pull/88
+ (DRAFT OPEN base master, head exactly 714cb2a, no prior upstream),
+ closingIssuesReferences [] by readback, assignee paolino / label chore /
+ milestone 2, PR #85 untouched OPEN draft (superseded branch), #66 OPEN,
+ parent-authored body (six-file result, authority+evidence, renames table,
+ re-exports, doc path, ci exit 0, residuals incl. P26/P27 contamination +
+ advisories + unreachable branches, S3/S4/S5 unfinished), remote CI at readback
+ recorded RUNNING (artifacts SUCCESS, cabal-sync skipped, main in_progress —
+ not green), fresh FULL Codex audit underway in parallel (not mine to contact).
+ New SUBMISSION.md sha256
+ 32299d25cae31c9dcd8a6d6737e61bb6fe35b48bd4a8e6f041949cff13319bff SUPERSEDES
+ 041b5a52… (chain complete; candidate unamended at 714cb2a, tree clean). PAUSED
+ 2026-09-05 (operator pause order, supersedes all outstanding instructions
+ incl. any closeout/merge preparation — none proceeds): parked at rest, nothing
+ in flight (no build/probe/edit running; last completed step was the NOTE-009
+ journal ack, already landed). Exact current work: S2R owner campaign fully
+ evidenced and submitted (packet handoffs/SUBMISSION.md sha 32299d25…,
+ candidate 714cb2a committed-clean, branch never pushed). What remains (HELD,
+ not started): nothing of mine — next state belongs to auditor verdict + exact
+ final remote CI + explicit desk merge grant, all outside this seat. Live PID
+ 1312702, PGID 1312702 (verified this entry; agent argv pi --provider
+ opencode-go --model muse-spark-1.3-contributor --thinking xhigh --approve,
+ started Sat Sep 5 12:55:51 2026). Spend counters frozen: SUBSTANTIVE 17/17,
+ probes 35/35 (all assigned, zero overrun). Queued prompts/timers/wake loops:
+ NONE exist for this seat (no timers, no watchers, no auto-continuation) —
+ nothing to disarm. Preservation: worktree /code/reactivegas-66-s2r clean at
+ 714cb2a, runtime root + evidence + STATUS intact, pane NOT retired. Local
+ files only; nothing sent upward.
+  87 PAUSED 2026-09-05 (operator pause order, supersedes all outstanding
+ instructions incl. any closeout/merge preparation — none proceeds): parked at
+ rest, nothing in flight (no build/probe/edit running; last completed step was
+ the NOTE-009 journal ack, already landed). Exact current work: S2R owner
+ campaign fully evidenced and submitted (packet handoffs/SUBMISSION.md sha
+ 32299d25…, candidate 714cb2a committed-clean, branch never pushed). What
+ remains (HELD, not started): nothing of mine — next state belongs to auditor
+ verdict + exact final remote CI + explicit desk merge grant, all outside this
+ seat. Live PID 1312702, PGID 1312702 (verified this entry; agent argv pi
+ --provider opencode-go --model muse-spark-1.3-contributor --thinking xhigh
+ --approve, started Sat Sep 5 12:55:51 2026). Spend counters frozen:
+ SUBSTANTIVE 17/17, probes 35/35 (all assigned, zero overrun). Queued
+ prompts/timers/wake loops: NONE exist for this seat (no timers, no watchers,
+ no auto-continuation) — nothing to disarm. Preservation: worktree
+ /code/reactivegas-66-s2r clean at 714cb2a, runtime root + evidence + STATUS
+ intact, pane NOT retired. Local files only; nothing sent upward.
+  88 NOTE-010-ACK (explicit user instruction wakes this sealed task only; pause
+ otherwise holds — no other work started): thawed seat verified same
+ PID/PGID/argv/START, no restart, no refund. Task: submission-2 comment-only
+ correction (audit advisory: header claimed missing-var fail-closed, actual
+ getD-defaults-to-"."). Applied + proven comment-only (name-only exactly
+ scripts/check-lean-axioms; every changed line a `#` comment, mechanical grep
+ proof; getD line 286 + export line 302 intact; bash -n OK; no
+ behaviour/policy/test/Lean/output change; getD untouched). Committed (free):
+ ab617d88af9d080de71218f3cc553d60ef0b6de0 parent 714cb2a, 1 file +14/-5. Prior
+ audit bound as input: report
+ d634df52c51d4351699d36927b5b0c662357a4ac08a7d689a6708db2d34def90, FINAL.sha256
+ 64dbd5ad2300dec49c4ecc71b703ce86031b673782e363fc9f2f115df536892e; old
+ manifest+report retained intact (nothing rewritten). Cumulative ceilings 18
+ substantive / 37 targeted (17/35 retained). S18 START (last slot): final local
+ `nix develop --quiet -c just ci` on ab617d8 → log S18-final-ci.log; expects
+ EXIT 0.
+ +89 S18 RECEIPT (counted, GREEN, substantive 18/18 ALL SPENT,
+ handoffs/evidence/S18-final-ci.log EXIT=0 sha 5efd36bb): toolchain agree,
+ dep-dir 17, inversion ok ×2, axiom ok, agreement 14/14/0, exe + JSONs OK +
+ checks, builds 27+42 jobs. Probes spent this submission: ZERO (the one ci
+ sufficed). Ledger FINAL: SUBSTANTIVE 18/18, probes 35/37.
+ +90 SUBMISSION-2 DELIVERED (this IS delivery): handoffs/SUBMISSION-2.md (sha
+ ce4d84ed) — candidate ab617d8, comment-only diff (+14/−5, all `#`),
+ all-else-unchanged blob proof, prior audit bound (report d634df52…, FINAL
+ 64dbd5ad…), old manifest+report retained, ci EXIT 0. Next state: SUBMITTED-2 →
+ fresh Codex audit of ab617d8 → exact remote CI → explicit merge grant. Pause
+ otherwise holds; nothing outward.
+
+
+ Submission 2 delivered: handoffs/SUBMISSION-2.md (sha ce4d84ed…).
+
+ - Candidate ab617d8 (parent 714cb2a): one comment-only file, +14/−5, every
+   changed line a # comment proven mechanically; all other blobs identical;
+   getD behavior untouched, described exactly (missing-defaults vs
+   unresolvable-inspected, wrapper authority, no executed claim beyond
+   evidence).
+ - Prior audit bound as input: report d634df52…, FINAL 64dbd5ad…; old manifest
+   and report retained intact.
+ - Final just ci exit 0 on the frozen candidate (log sha 5efd36bb…), all gates
+   green.
+ - Spend final: 18/18 substantive, 35/37 probes (zero probes this submission).
+   No push, PR, or outward action; pause otherwise holds.
+
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+/code/reactivegas-66-s2r (chore/66-s2r-ownership)
+↑1.9M ↓312k R83M CH99.9% $0.415 45.2%/1.0M (auto)  muse-spark-1.3-contributor •
+
+

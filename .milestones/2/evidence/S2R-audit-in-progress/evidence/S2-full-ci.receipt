@@ -1,0 +1,1 @@
+VERIFY-RECEIPT exit=0 duration_ms=138877 command_sha256=1f96c71604d37c665a69211b9ccd9656b76fd324d6278ff3fa17c289c371a5b2 evidence_sha256=e15cef111aa980a2919ee9f233e4ffa87294258b1d1c2d0e22f1cd73e3bd1463 bytes=789976 lines=17814 evidence=/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s2r-final-codex/evidence/S2-full-ci.log

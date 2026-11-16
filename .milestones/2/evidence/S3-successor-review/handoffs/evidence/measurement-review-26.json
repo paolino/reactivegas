@@ -1,0 +1,1143 @@
+[
+  {
+    "mopId": "M00-COLD",
+    "layer": "U-COLD",
+    "opRef": "cold baseline (all chains)",
+    "scratchPath": "/tmp/reactivegas-ms2-measure-scratch",
+    "sourcePath": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m00-cold.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Executable identity pinned by preflight in each script: lake --version (4.25.0), lean --version, which lake/lean + sha256sum readlink -f, lean-toolchain file, LEAN_PATH recording. Historical R-BUILD2 lean path /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean retained as anchor class, not as current pin.",
+    "inputHashes": {},
+    "mutationHash": "NONE (clean tree; porcelain 0, .lake absent, zero oleans before; verified, not manufactured)",
+    "argv": [
+      "lake",
+      "build"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "env": {
+      "LEAN_PATH": "<recorded at runtime; must not name candidate worktree /code/reactivegas-66-s3-repair>"
+    },
+    "initialCacheState": ".lake absent, zero oleans, porcelain 0 (verified before OP1 per SS0 coldness pattern)",
+    "targets": [
+      "lake build (default libs Reactivegas+KelGroups; per-module times retained)"
+    ],
+    "closure": "Full default-target closure (Reactivegas.* + KelGroups.*); TraceTests/CorpusGate/CorpusExport NOT reached by defaults (see separate replay targets)",
+    "timerCapture": "date +%s%N before/after in cold.sh -> m00-cold.ms; exit -> m00-cold.exit; oleans list -> m00-cold-oleans.txt; Build completed successfully line counted",
+    "timeout": "600s + 15s kill-after (timeout --signal=TERM --kill-after=15s 600s)",
+    "expectedEvidence": "GREEN with Build completed successfully + per-module times + olean count; cures missing cold log (F-07).",
+    "wrongReasonRejection": "A GREEN without per-module times/olean list is not a cold baseline; version print alone does not pin executable identity.",
+    "loadingEvidence": "Per-module Built/Replayed lines in retained log; coldness verified, not manufactured.",
+    "restorationCheck": "N/A (baseline; porcelain empty before/after; HEAD 3590c001)",
+    "budgetCharge": "1 U-COLD (including failure; unexpected exit charged+retained, never retried)",
+    "frozenScripts": [
+      {
+        "path": "instruments/cold.sh",
+        "sha256": "3da3aeec767b313171e452bd66568e9d224bf0282f104ae9d59cfc80b7d049bf"
+      }
+    ]
+  },
+  {
+    "mopId": "M01-C-VOTEFOLD",
+    "layer": "U-CHAIN",
+    "opRef": "C-VOTEFOLD single-atom mutant build",
+    "scratchPath": "/tmp/reactivegas-ms2-measure-scratch",
+    "sourcePath": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m-C-VOTEFOLD.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Executable identity pinned by preflight in each script: lake --version (4.25.0), lean --version, which lake/lean + sha256sum readlink -f, lean-toolchain file, LEAN_PATH recording. Historical R-BUILD2 lean path /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean retained as anchor class, not as current pin.",
+    "inputHashes": {},
+    "mutationHash": "79a6757ddb780ee2ba347fbdffdf078bdfb063f95b1accaf49c0e0aff07d8f4c (diffs/C-VOTEFOLD.diff)",
+    "argv": [
+      "lake",
+      "build",
+      "KelGroups.Vote.Invariants"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "env": {
+      "LEAN_PATH": "<recorded; must be scratch, not candidate>"
+    },
+    "initialCacheState": "Warm (post-M00 cold .lake present); incremental classification established only because cold precedes cycle1 (S-07 defect1 cured; cold after cycles would not establish incremental).",
+    "targets": [
+      "lake build KelGroups.Vote.Invariants"
+    ],
+    "closure": "KelGroups.Vote.Fold -> KelGroups.Vote.Invariants (exact, no ...)",
+    "timerCapture": "date +%s%N apply (m-C-VOTEFOLD-apply.ms) + build (m-C-VOTEFOLD.ms); exits captured; dirty-status (must be 1 path); applied.diff retained",
+    "timeout": "300s + 15s kill-after per build; 600s cold separate",
+    "expectedEvidence": "Span-bound RED at first failing obligation in KelGroups.Vote.Invariants (see mutant-*.sh EXPECTED-OBSERVABLE); continuation past error does not prove every later check executed (S-05).",
+    "wrongReasonRejection": "KelGroups/Invariants.lean:870 replayed warning (different file) must not count; literal :197 header grep misses :209:4 (SS0 L1).",
+    "loadingEvidence": "Built vs Replayed lines in log distinguish fresh vs cached diagnostics; source byte identity alone insufficient (SS0 L6). Changed-definition loading via Built <mutated module> line (e.g., Built Reactivegas.Step).",
+    "restorationCheck": "Via restore.sh KelGroups.Vote.Invariants (U-RESTORE, next op); porcelain empty; HEAD 3590c001; restore cleanliness does not prove historical separation (F-07 stands retrospectively, cured prospectively).",
+    "budgetCharge": "1 U-CHAIN (including failure; timeouts/failures charged+retained, never silently retried)",
+    "frozenScripts": [
+      {
+        "path": "instruments/mutant-C-VOTEFOLD.sh",
+        "sha256": "e3e96af4d2a57e907506b8d40582b757ad67ebf9d26a7f4e644e006064a1b205"
+      },
+      {
+        "path": "instruments/diffs/C-VOTEFOLD.diff",
+        "sha256": "79a6757ddb780ee2ba347fbdffdf078bdfb063f95b1accaf49c0e0aff07d8f4c"
+      }
+    ]
+  },
+  {
+    "mopId": "M01-C-VOTEFOLDR",
+    "layer": "U-RESTORE",
+    "opRef": "C-VOTEFOLD restore + matching rebuild",
+    "scratchPath": "/tmp/reactivegas-ms2-measure-scratch",
+    "sourcePath": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m-C-VOTEFOLD-restore.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Executable identity pinned by preflight in each script: lake --version (4.25.0), lean --version, which lake/lean + sha256sum readlink -f, lean-toolchain file, LEAN_PATH recording. Historical R-BUILD2 lean path /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean retained as anchor class, not as current pin.",
+    "inputHashes": {},
+    "mutationHash": "NONE (restore: git checkout -- .)",
+    "argv": [
+      "git",
+      "checkout",
+      "--",
+      ".",
+      "&&",
+      "lake",
+      "build",
+      "KelGroups.Vote.Invariants"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "env": {
+      "LEAN_PATH": "<recorded>"
+    },
+    "initialCacheState": "Dirty (1 path) before checkout; clean + warm after",
+    "targets": [
+      "lake build KelGroups.Vote.Invariants to GREEN (R-BUILD3 pattern)"
+    ],
+    "closure": "KelGroups.Vote.Fold -> KelGroups.Vote.Invariants",
+    "timerCapture": "checkout ms + build ms separately (m-C-VOTEFOLD-restore-checkout.ms + m-C-VOTEFOLD-restore.ms); porcelain retained",
+    "timeout": "300s + 15s kill-after",
+    "expectedEvidence": "GREEN Build completed successfully; porcelain empty; R-BUILD3 pattern (no timings in history, timed here).",
+    "wrongReasonRejection": "Restore cleanliness does not cure historical candidate-source fence event or recover lost cold log (S-07 defect7 stands retrospectively).",
+    "loadingEvidence": "N/A (GREEN rebuild)",
+    "restorationCheck": "Porcelain empty; HEAD 3590c001; single-cause attribution distinct from filesystem isolation.",
+    "budgetCharge": "1 U-RESTORE (including failure)",
+    "frozenScripts": [
+      {
+        "path": "instruments/restore.sh",
+        "sha256": "9d58c3d984e6866318b06be2abbb1dd800b73a6391e151a44b8747f1a1714785"
+      }
+    ]
+  },
+  {
+    "mopId": "M02-C-VOTEVAL",
+    "layer": "U-CHAIN",
+    "opRef": "C-VOTEVAL single-atom mutant build",
+    "scratchPath": "/tmp/reactivegas-ms2-measure-scratch",
+    "sourcePath": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m-C-VOTEVAL.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Executable identity pinned by preflight in each script: lake --version (4.25.0), lean --version, which lake/lean + sha256sum readlink -f, lean-toolchain file, LEAN_PATH recording. Historical R-BUILD2 lean path /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean retained as anchor class, not as current pin.",
+    "inputHashes": {},
+    "mutationHash": "5b50db65100ec22b9668d04bf574fc7989f679002535d172605e809bd6fc00d5 (diffs/C-VOTEVAL.diff)",
+    "argv": [
+      "lake",
+      "build",
+      "KelGroups.Vote.Invariants"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "env": {
+      "LEAN_PATH": "<recorded; must be scratch, not candidate>"
+    },
+    "initialCacheState": "Warm (post-M00 cold .lake present); incremental classification established only because cold precedes cycle1 (S-07 defect1 cured; cold after cycles would not establish incremental).",
+    "targets": [
+      "lake build KelGroups.Vote.Invariants"
+    ],
+    "closure": "KelGroups.Vote.Validate -> KelGroups.Vote.Fold -> KelGroups.Vote.Invariants (exact, no ...)",
+    "timerCapture": "date +%s%N apply (m-C-VOTEVAL-apply.ms) + build (m-C-VOTEVAL.ms); exits captured; dirty-status (must be 1 path); applied.diff retained",
+    "timeout": "300s + 15s kill-after per build; 600s cold separate",
+    "expectedEvidence": "Span-bound RED at first failing obligation in KelGroups.Vote.Invariants (see mutant-*.sh EXPECTED-OBSERVABLE); continuation past error does not prove every later check executed (S-05).",
+    "wrongReasonRejection": "Nonzero exit alone is not named RED; broad file-wide search matching unrelated lines is unsound (SS0 L1-2).",
+    "loadingEvidence": "Built vs Replayed lines in log distinguish fresh vs cached diagnostics; source byte identity alone insufficient (SS0 L6). Changed-definition loading via Built <mutated module> line (e.g., Built Reactivegas.Step).",
+    "restorationCheck": "Via restore.sh KelGroups.Vote.Invariants (U-RESTORE, next op); porcelain empty; HEAD 3590c001; restore cleanliness does not prove historical separation (F-07 stands retrospectively, cured prospectively).",
+    "budgetCharge": "1 U-CHAIN (including failure; timeouts/failures charged+retained, never silently retried)",
+    "frozenScripts": [
+      {
+        "path": "instruments/mutant-C-VOTEVAL.sh",
+        "sha256": "d158eb7e4b37707ce323ce7384f3650c01b6b6e83d75ab93151f2a32659ea5a6"
+      },
+      {
+        "path": "instruments/diffs/C-VOTEVAL.diff",
+        "sha256": "5b50db65100ec22b9668d04bf574fc7989f679002535d172605e809bd6fc00d5"
+      }
+    ]
+  },
+  {
+    "mopId": "M02-C-VOTEVALR",
+    "layer": "U-RESTORE",
+    "opRef": "C-VOTEVAL restore + matching rebuild",
+    "scratchPath": "/tmp/reactivegas-ms2-measure-scratch",
+    "sourcePath": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m-C-VOTEVAL-restore.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Executable identity pinned by preflight in each script: lake --version (4.25.0), lean --version, which lake/lean + sha256sum readlink -f, lean-toolchain file, LEAN_PATH recording. Historical R-BUILD2 lean path /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean retained as anchor class, not as current pin.",
+    "inputHashes": {},
+    "mutationHash": "NONE (restore: git checkout -- .)",
+    "argv": [
+      "git",
+      "checkout",
+      "--",
+      ".",
+      "&&",
+      "lake",
+      "build",
+      "KelGroups.Vote.Invariants"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "env": {
+      "LEAN_PATH": "<recorded>"
+    },
+    "initialCacheState": "Dirty (1 path) before checkout; clean + warm after",
+    "targets": [
+      "lake build KelGroups.Vote.Invariants to GREEN (R-BUILD3 pattern)"
+    ],
+    "closure": "KelGroups.Vote.Validate -> KelGroups.Vote.Fold -> KelGroups.Vote.Invariants",
+    "timerCapture": "checkout ms + build ms separately (m-C-VOTEVAL-restore-checkout.ms + m-C-VOTEVAL-restore.ms); porcelain retained",
+    "timeout": "300s + 15s kill-after",
+    "expectedEvidence": "GREEN Build completed successfully; porcelain empty; R-BUILD3 pattern (no timings in history, timed here).",
+    "wrongReasonRejection": "Restore cleanliness does not cure historical candidate-source fence event or recover lost cold log (S-07 defect7 stands retrospectively).",
+    "loadingEvidence": "N/A (GREEN rebuild)",
+    "restorationCheck": "Porcelain empty; HEAD 3590c001; single-cause attribution distinct from filesystem isolation.",
+    "budgetCharge": "1 U-RESTORE (including failure)",
+    "frozenScripts": [
+      {
+        "path": "instruments/restore.sh",
+        "sha256": "9d58c3d984e6866318b06be2abbb1dd800b73a6391e151a44b8747f1a1714785"
+      }
+    ]
+  },
+  {
+    "mopId": "M03-C-VOTESTATE",
+    "layer": "U-CHAIN",
+    "opRef": "C-VOTESTATE single-atom mutant build",
+    "scratchPath": "/tmp/reactivegas-ms2-measure-scratch",
+    "sourcePath": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m-C-VOTESTATE.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Executable identity pinned by preflight in each script: lake --version (4.25.0), lean --version, which lake/lean + sha256sum readlink -f, lean-toolchain file, LEAN_PATH recording. Historical R-BUILD2 lean path /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean retained as anchor class, not as current pin.",
+    "inputHashes": {},
+    "mutationHash": "118396924ab2c733e17ea3ae04d2d15d11df6728e70e76f60ca1de12483953d8 (diffs/C-VOTESTATE.diff)",
+    "argv": [
+      "lake",
+      "build",
+      "KelGroups.Vote.Invariants"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "env": {
+      "LEAN_PATH": "<recorded; must be scratch, not candidate>"
+    },
+    "initialCacheState": "Warm (post-M00 cold .lake present); incremental classification established only because cold precedes cycle1 (S-07 defect1 cured; cold after cycles would not establish incremental).",
+    "targets": [
+      "lake build KelGroups.Vote.Invariants"
+    ],
+    "closure": "KelGroups.Vote.State -> KelGroups.Vote.Validate/Fold -> KelGroups.Vote.Invariants (exact, no ...)",
+    "timerCapture": "date +%s%N apply (m-C-VOTESTATE-apply.ms) + build (m-C-VOTESTATE.ms); exits captured; dirty-status (must be 1 path); applied.diff retained",
+    "timeout": "300s + 15s kill-after per build; 600s cold separate",
+    "expectedEvidence": "Boundary witness (assents==required flips positive->open; sweepStep some->none; open_mem iff :418 fails); congruence lemma alone insufficient.",
+    "wrongReasonRejection": "Nonzero exit alone is not named RED; broad file-wide search matching unrelated lines is unsound (SS0 L1-2).",
+    "loadingEvidence": "Built vs Replayed lines in log distinguish fresh vs cached diagnostics; source byte identity alone insufficient (SS0 L6). Changed-definition loading via Built <mutated module> line (e.g., Built Reactivegas.Step).",
+    "restorationCheck": "Via restore.sh KelGroups.Vote.Invariants (U-RESTORE, next op); porcelain empty; HEAD 3590c001; restore cleanliness does not prove historical separation (F-07 stands retrospectively, cured prospectively).",
+    "budgetCharge": "1 U-CHAIN (including failure; timeouts/failures charged+retained, never silently retried)",
+    "frozenScripts": [
+      {
+        "path": "instruments/mutant-C-VOTESTATE.sh",
+        "sha256": "218eabed4e44f3a10f392f0e8fa13797917026520eee082a714bc33baf3b8bf2"
+      },
+      {
+        "path": "instruments/diffs/C-VOTESTATE.diff",
+        "sha256": "118396924ab2c733e17ea3ae04d2d15d11df6728e70e76f60ca1de12483953d8"
+      }
+    ]
+  },
+  {
+    "mopId": "M03-C-VOTESTATER",
+    "layer": "U-RESTORE",
+    "opRef": "C-VOTESTATE restore + matching rebuild",
+    "scratchPath": "/tmp/reactivegas-ms2-measure-scratch",
+    "sourcePath": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m-C-VOTESTATE-restore.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Executable identity pinned by preflight in each script: lake --version (4.25.0), lean --version, which lake/lean + sha256sum readlink -f, lean-toolchain file, LEAN_PATH recording. Historical R-BUILD2 lean path /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean retained as anchor class, not as current pin.",
+    "inputHashes": {},
+    "mutationHash": "NONE (restore: git checkout -- .)",
+    "argv": [
+      "git",
+      "checkout",
+      "--",
+      ".",
+      "&&",
+      "lake",
+      "build",
+      "KelGroups.Vote.Invariants"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "env": {
+      "LEAN_PATH": "<recorded>"
+    },
+    "initialCacheState": "Dirty (1 path) before checkout; clean + warm after",
+    "targets": [
+      "lake build KelGroups.Vote.Invariants to GREEN (R-BUILD3 pattern)"
+    ],
+    "closure": "KelGroups.Vote.State -> KelGroups.Vote.Validate/Fold -> KelGroups.Vote.Invariants",
+    "timerCapture": "checkout ms + build ms separately (m-C-VOTESTATE-restore-checkout.ms + m-C-VOTESTATE-restore.ms); porcelain retained",
+    "timeout": "300s + 15s kill-after",
+    "expectedEvidence": "GREEN Build completed successfully; porcelain empty; R-BUILD3 pattern (no timings in history, timed here).",
+    "wrongReasonRejection": "Restore cleanliness does not cure historical candidate-source fence event or recover lost cold log (S-07 defect7 stands retrospectively).",
+    "loadingEvidence": "N/A (GREEN rebuild)",
+    "restorationCheck": "Porcelain empty; HEAD 3590c001; single-cause attribution distinct from filesystem isolation.",
+    "budgetCharge": "1 U-RESTORE (including failure)",
+    "frozenScripts": [
+      {
+        "path": "instruments/restore.sh",
+        "sha256": "9d58c3d984e6866318b06be2abbb1dd800b73a6391e151a44b8747f1a1714785"
+      }
+    ]
+  },
+  {
+    "mopId": "M04-C-VALIDATE",
+    "layer": "U-CHAIN",
+    "opRef": "C-VALIDATE single-atom mutant build",
+    "scratchPath": "/tmp/reactivegas-ms2-measure-scratch",
+    "sourcePath": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m-C-VALIDATE.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Executable identity pinned by preflight in each script: lake --version (4.25.0), lean --version, which lake/lean + sha256sum readlink -f, lean-toolchain file, LEAN_PATH recording. Historical R-BUILD2 lean path /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean retained as anchor class, not as current pin.",
+    "inputHashes": {},
+    "mutationHash": "37f26b8b70e3e7a431d1273cfb585e89677055f71883fed007af34edbdbb5ace (diffs/C-VALIDATE.diff)",
+    "argv": [
+      "lake",
+      "build",
+      "KelGroups.Invariants"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "env": {
+      "LEAN_PATH": "<recorded; must be scratch, not candidate>"
+    },
+    "initialCacheState": "Warm (post-M00 cold .lake present); incremental classification established only because cold precedes cycle1 (S-07 defect1 cured; cold after cycles would not establish incremental).",
+    "targets": [
+      "lake build KelGroups.Invariants"
+    ],
+    "closure": "KelGroups.Validate -> KelGroups.Integration -> KelGroups.Invariants (exact, no ...)",
+    "timerCapture": "date +%s%N apply (m-C-VALIDATE-apply.ms) + build (m-C-VALIDATE.ms); exits captured; dirty-status (must be 1 path); applied.diff retained",
+    "timeout": "300s + 15s kill-after per build; 600s cold separate",
+    "expectedEvidence": "Span-bound RED at first failing obligation in KelGroups.Invariants (see mutant-*.sh EXPECTED-OBSERVABLE); continuation past error does not prove every later check executed (S-05).",
+    "wrongReasonRejection": "Nonzero exit alone is not named RED; broad file-wide search matching unrelated lines is unsound (SS0 L1-2).",
+    "loadingEvidence": "Built vs Replayed lines in log distinguish fresh vs cached diagnostics; source byte identity alone insufficient (SS0 L6). Changed-definition loading via Built <mutated module> line (e.g., Built Reactivegas.Step).",
+    "restorationCheck": "Via restore.sh KelGroups.Invariants (U-RESTORE, next op); porcelain empty; HEAD 3590c001; restore cleanliness does not prove historical separation (F-07 stands retrospectively, cured prospectively).",
+    "budgetCharge": "1 U-CHAIN (including failure; timeouts/failures charged+retained, never silently retried)",
+    "frozenScripts": [
+      {
+        "path": "instruments/mutant-C-VALIDATE.sh",
+        "sha256": "e3a6323601fe0302a8d4582e3045626c2dc216417c4b94856e65eb93d544eaa0"
+      },
+      {
+        "path": "instruments/diffs/C-VALIDATE.diff",
+        "sha256": "37f26b8b70e3e7a431d1273cfb585e89677055f71883fed007af34edbdbb5ace"
+      }
+    ]
+  },
+  {
+    "mopId": "M04-C-VALIDATER",
+    "layer": "U-RESTORE",
+    "opRef": "C-VALIDATE restore + matching rebuild",
+    "scratchPath": "/tmp/reactivegas-ms2-measure-scratch",
+    "sourcePath": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m-C-VALIDATE-restore.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Executable identity pinned by preflight in each script: lake --version (4.25.0), lean --version, which lake/lean + sha256sum readlink -f, lean-toolchain file, LEAN_PATH recording. Historical R-BUILD2 lean path /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean retained as anchor class, not as current pin.",
+    "inputHashes": {},
+    "mutationHash": "NONE (restore: git checkout -- .)",
+    "argv": [
+      "git",
+      "checkout",
+      "--",
+      ".",
+      "&&",
+      "lake",
+      "build",
+      "KelGroups.Invariants"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "env": {
+      "LEAN_PATH": "<recorded>"
+    },
+    "initialCacheState": "Dirty (1 path) before checkout; clean + warm after",
+    "targets": [
+      "lake build KelGroups.Invariants to GREEN (R-BUILD3 pattern)"
+    ],
+    "closure": "KelGroups.Validate -> KelGroups.Integration -> KelGroups.Invariants",
+    "timerCapture": "checkout ms + build ms separately (m-C-VALIDATE-restore-checkout.ms + m-C-VALIDATE-restore.ms); porcelain retained",
+    "timeout": "300s + 15s kill-after",
+    "expectedEvidence": "GREEN Build completed successfully; porcelain empty; R-BUILD3 pattern (no timings in history, timed here).",
+    "wrongReasonRejection": "Restore cleanliness does not cure historical candidate-source fence event or recover lost cold log (S-07 defect7 stands retrospectively).",
+    "loadingEvidence": "N/A (GREEN rebuild)",
+    "restorationCheck": "Porcelain empty; HEAD 3590c001; single-cause attribution distinct from filesystem isolation.",
+    "budgetCharge": "1 U-RESTORE (including failure)",
+    "frozenScripts": [
+      {
+        "path": "instruments/restore.sh",
+        "sha256": "9d58c3d984e6866318b06be2abbb1dd800b73a6391e151a44b8747f1a1714785"
+      }
+    ]
+  },
+  {
+    "mopId": "M05-C-INTEGRATION",
+    "layer": "U-CHAIN",
+    "opRef": "C-INTEGRATION single-atom mutant build",
+    "scratchPath": "/tmp/reactivegas-ms2-measure-scratch",
+    "sourcePath": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m-C-INTEGRATION.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Executable identity pinned by preflight in each script: lake --version (4.25.0), lean --version, which lake/lean + sha256sum readlink -f, lean-toolchain file, LEAN_PATH recording. Historical R-BUILD2 lean path /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean retained as anchor class, not as current pin.",
+    "inputHashes": {},
+    "mutationHash": "8c8f7fe8192006ec083d7c4f5210404477f70cf3ae723a01be853d54848bed8a (diffs/C-INTEGRATION.diff)",
+    "argv": [
+      "lake",
+      "build",
+      "KelGroups.Invariants"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "env": {
+      "LEAN_PATH": "<recorded; must be scratch, not candidate>"
+    },
+    "initialCacheState": "Warm (post-M00 cold .lake present); incremental classification established only because cold precedes cycle1 (S-07 defect1 cured; cold after cycles would not establish incremental).",
+    "targets": [
+      "lake build KelGroups.Invariants"
+    ],
+    "closure": "KelGroups.Integration -> KelGroups.Invariants (exact, no ...)",
+    "timerCapture": "date +%s%N apply (m-C-INTEGRATION-apply.ms) + build (m-C-INTEGRATION.ms); exits captured; dirty-status (must be 1 path); applied.diff retained",
+    "timeout": "300s + 15s kill-after per build; 600s cold separate",
+    "expectedEvidence": "Span-bound RED at first failing obligation in KelGroups.Invariants (see mutant-*.sh EXPECTED-OBSERVABLE); continuation past error does not prove every later check executed (S-05).",
+    "wrongReasonRejection": "Nonzero exit alone is not named RED; broad file-wide search matching unrelated lines is unsound (SS0 L1-2).",
+    "loadingEvidence": "Built vs Replayed lines in log distinguish fresh vs cached diagnostics; source byte identity alone insufficient (SS0 L6). Changed-definition loading via Built <mutated module> line (e.g., Built Reactivegas.Step).",
+    "restorationCheck": "Via restore.sh KelGroups.Invariants (U-RESTORE, next op); porcelain empty; HEAD 3590c001; restore cleanliness does not prove historical separation (F-07 stands retrospectively, cured prospectively).",
+    "budgetCharge": "1 U-CHAIN (including failure; timeouts/failures charged+retained, never silently retried)",
+    "frozenScripts": [
+      {
+        "path": "instruments/mutant-C-INTEGRATION.sh",
+        "sha256": "c88aacabda031465e793758a0c7fb7e107f3115b39d635195b58ecffb4de7aba"
+      },
+      {
+        "path": "instruments/diffs/C-INTEGRATION.diff",
+        "sha256": "8c8f7fe8192006ec083d7c4f5210404477f70cf3ae723a01be853d54848bed8a"
+      }
+    ]
+  },
+  {
+    "mopId": "M05-C-INTEGRATIONR",
+    "layer": "U-RESTORE",
+    "opRef": "C-INTEGRATION restore + matching rebuild",
+    "scratchPath": "/tmp/reactivegas-ms2-measure-scratch",
+    "sourcePath": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m-C-INTEGRATION-restore.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Executable identity pinned by preflight in each script: lake --version (4.25.0), lean --version, which lake/lean + sha256sum readlink -f, lean-toolchain file, LEAN_PATH recording. Historical R-BUILD2 lean path /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean retained as anchor class, not as current pin.",
+    "inputHashes": {},
+    "mutationHash": "NONE (restore: git checkout -- .)",
+    "argv": [
+      "git",
+      "checkout",
+      "--",
+      ".",
+      "&&",
+      "lake",
+      "build",
+      "KelGroups.Invariants"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "env": {
+      "LEAN_PATH": "<recorded>"
+    },
+    "initialCacheState": "Dirty (1 path) before checkout; clean + warm after",
+    "targets": [
+      "lake build KelGroups.Invariants to GREEN (R-BUILD3 pattern)"
+    ],
+    "closure": "KelGroups.Integration -> KelGroups.Invariants",
+    "timerCapture": "checkout ms + build ms separately (m-C-INTEGRATION-restore-checkout.ms + m-C-INTEGRATION-restore.ms); porcelain retained",
+    "timeout": "300s + 15s kill-after",
+    "expectedEvidence": "GREEN Build completed successfully; porcelain empty; R-BUILD3 pattern (no timings in history, timed here).",
+    "wrongReasonRejection": "Restore cleanliness does not cure historical candidate-source fence event or recover lost cold log (S-07 defect7 stands retrospectively).",
+    "loadingEvidence": "N/A (GREEN rebuild)",
+    "restorationCheck": "Porcelain empty; HEAD 3590c001; single-cause attribution distinct from filesystem isolation.",
+    "budgetCharge": "1 U-RESTORE (including failure)",
+    "frozenScripts": [
+      {
+        "path": "instruments/restore.sh",
+        "sha256": "9d58c3d984e6866318b06be2abbb1dd800b73a6391e151a44b8747f1a1714785"
+      }
+    ]
+  },
+  {
+    "mopId": "M06-C-FOLD",
+    "layer": "U-CHAIN",
+    "opRef": "C-FOLD single-atom mutant build",
+    "scratchPath": "/tmp/reactivegas-ms2-measure-scratch",
+    "sourcePath": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m-C-FOLD.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Executable identity pinned by preflight in each script: lake --version (4.25.0), lean --version, which lake/lean + sha256sum readlink -f, lean-toolchain file, LEAN_PATH recording. Historical R-BUILD2 lean path /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean retained as anchor class, not as current pin.",
+    "inputHashes": {},
+    "mutationHash": "a1d5a821b120aa5ab96cbc182d03c83b6ae591f5d6afdbd223da171026b6440c (diffs/C-FOLD.diff)",
+    "argv": [
+      "lake",
+      "build",
+      "KelGroups.Invariants"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "env": {
+      "LEAN_PATH": "<recorded; must be scratch, not candidate>"
+    },
+    "initialCacheState": "Warm (post-M00 cold .lake present); incremental classification established only because cold precedes cycle1 (S-07 defect1 cured; cold after cycles would not establish incremental).",
+    "targets": [
+      "lake build KelGroups.Invariants"
+    ],
+    "closure": "KelGroups.Fold -> KelGroups.Invariants (exact, no ...)",
+    "timerCapture": "date +%s%N apply (m-C-FOLD-apply.ms) + build (m-C-FOLD.ms); exits captured; dirty-status (must be 1 path); applied.diff retained",
+    "timeout": "300s + 15s kill-after per build; 600s cold separate",
+    "expectedEvidence": "Span-bound RED at first failing obligation in KelGroups.Invariants (see mutant-*.sh EXPECTED-OBSERVABLE); continuation past error does not prove every later check executed (S-05).",
+    "wrongReasonRejection": "Nonzero exit alone is not named RED; broad file-wide search matching unrelated lines is unsound (SS0 L1-2).",
+    "loadingEvidence": "Built vs Replayed lines in log distinguish fresh vs cached diagnostics; source byte identity alone insufficient (SS0 L6). Changed-definition loading via Built <mutated module> line (e.g., Built Reactivegas.Step).",
+    "restorationCheck": "Via restore.sh KelGroups.Invariants (U-RESTORE, next op); porcelain empty; HEAD 3590c001; restore cleanliness does not prove historical separation (F-07 stands retrospectively, cured prospectively).",
+    "budgetCharge": "1 U-CHAIN (including failure; timeouts/failures charged+retained, never silently retried)",
+    "frozenScripts": [
+      {
+        "path": "instruments/mutant-C-FOLD.sh",
+        "sha256": "7d96d7f0ee7aee66c26253ee653ab6593baff25017e517c3986aac76e092c015"
+      },
+      {
+        "path": "instruments/diffs/C-FOLD.diff",
+        "sha256": "a1d5a821b120aa5ab96cbc182d03c83b6ae591f5d6afdbd223da171026b6440c"
+      }
+    ]
+  },
+  {
+    "mopId": "M06-C-FOLDR",
+    "layer": "U-RESTORE",
+    "opRef": "C-FOLD restore + matching rebuild",
+    "scratchPath": "/tmp/reactivegas-ms2-measure-scratch",
+    "sourcePath": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m-C-FOLD-restore.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Executable identity pinned by preflight in each script: lake --version (4.25.0), lean --version, which lake/lean + sha256sum readlink -f, lean-toolchain file, LEAN_PATH recording. Historical R-BUILD2 lean path /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean retained as anchor class, not as current pin.",
+    "inputHashes": {},
+    "mutationHash": "NONE (restore: git checkout -- .)",
+    "argv": [
+      "git",
+      "checkout",
+      "--",
+      ".",
+      "&&",
+      "lake",
+      "build",
+      "KelGroups.Invariants"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "env": {
+      "LEAN_PATH": "<recorded>"
+    },
+    "initialCacheState": "Dirty (1 path) before checkout; clean + warm after",
+    "targets": [
+      "lake build KelGroups.Invariants to GREEN (R-BUILD3 pattern)"
+    ],
+    "closure": "KelGroups.Fold -> KelGroups.Invariants",
+    "timerCapture": "checkout ms + build ms separately (m-C-FOLD-restore-checkout.ms + m-C-FOLD-restore.ms); porcelain retained",
+    "timeout": "300s + 15s kill-after",
+    "expectedEvidence": "GREEN Build completed successfully; porcelain empty; R-BUILD3 pattern (no timings in history, timed here).",
+    "wrongReasonRejection": "Restore cleanliness does not cure historical candidate-source fence event or recover lost cold log (S-07 defect7 stands retrospectively).",
+    "loadingEvidence": "N/A (GREEN rebuild)",
+    "restorationCheck": "Porcelain empty; HEAD 3590c001; single-cause attribution distinct from filesystem isolation.",
+    "budgetCharge": "1 U-RESTORE (including failure)",
+    "frozenScripts": [
+      {
+        "path": "instruments/restore.sh",
+        "sha256": "9d58c3d984e6866318b06be2abbb1dd800b73a6391e151a44b8747f1a1714785"
+      }
+    ]
+  },
+  {
+    "mopId": "M07-C-KSTATE",
+    "layer": "U-CHAIN",
+    "opRef": "C-KSTATE single-atom mutant build",
+    "scratchPath": "/tmp/reactivegas-ms2-measure-scratch",
+    "sourcePath": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m-C-KSTATE.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Executable identity pinned by preflight in each script: lake --version (4.25.0), lean --version, which lake/lean + sha256sum readlink -f, lean-toolchain file, LEAN_PATH recording. Historical R-BUILD2 lean path /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean retained as anchor class, not as current pin.",
+    "inputHashes": {},
+    "mutationHash": "0314824bbd3001caae4297b7e1919910b1f4c61974d07733e7cbc7d15a57caa7 (diffs/C-KSTATE.diff)",
+    "argv": [
+      "lake",
+      "build",
+      "KelGroups.Invariants"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "env": {
+      "LEAN_PATH": "<recorded; must be scratch, not candidate>"
+    },
+    "initialCacheState": "Warm (post-M00 cold .lake present); incremental classification established only because cold precedes cycle1 (S-07 defect1 cured; cold after cycles would not establish incremental).",
+    "targets": [
+      "lake build KelGroups.Invariants"
+    ],
+    "closure": "KelGroups.State -> KelGroups.Fold/Validate/Integration -> KelGroups.Invariants (exact, no ...)",
+    "timerCapture": "date +%s%N apply (m-C-KSTATE-apply.ms) + build (m-C-KSTATE.ms); exits captured; dirty-status (must be 1 path); applied.diff retained",
+    "timeout": "300s + 15s kill-after per build; 600s cold separate",
+    "expectedEvidence": "Span-bound RED at first failing obligation in KelGroups.Invariants (see mutant-*.sh EXPECTED-OBSERVABLE); continuation past error does not prove every later check executed (S-05).",
+    "wrongReasonRejection": "Nonzero exit alone is not named RED; broad file-wide search matching unrelated lines is unsound (SS0 L1-2).",
+    "loadingEvidence": "Built vs Replayed lines in log distinguish fresh vs cached diagnostics; source byte identity alone insufficient (SS0 L6). Changed-definition loading via Built <mutated module> line (e.g., Built Reactivegas.Step).",
+    "restorationCheck": "Via restore.sh KelGroups.Invariants (U-RESTORE, next op); porcelain empty; HEAD 3590c001; restore cleanliness does not prove historical separation (F-07 stands retrospectively, cured prospectively).",
+    "budgetCharge": "1 U-CHAIN (including failure; timeouts/failures charged+retained, never silently retried)",
+    "frozenScripts": [
+      {
+        "path": "instruments/mutant-C-KSTATE.sh",
+        "sha256": "76767a5019b44145505a64e1ca04d769acc7095e469815ff4788de1442b2c1fe"
+      },
+      {
+        "path": "instruments/diffs/C-KSTATE.diff",
+        "sha256": "0314824bbd3001caae4297b7e1919910b1f4c61974d07733e7cbc7d15a57caa7"
+      }
+    ]
+  },
+  {
+    "mopId": "M07-C-KSTATER",
+    "layer": "U-RESTORE",
+    "opRef": "C-KSTATE restore + matching rebuild",
+    "scratchPath": "/tmp/reactivegas-ms2-measure-scratch",
+    "sourcePath": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m-C-KSTATE-restore.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Executable identity pinned by preflight in each script: lake --version (4.25.0), lean --version, which lake/lean + sha256sum readlink -f, lean-toolchain file, LEAN_PATH recording. Historical R-BUILD2 lean path /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean retained as anchor class, not as current pin.",
+    "inputHashes": {},
+    "mutationHash": "NONE (restore: git checkout -- .)",
+    "argv": [
+      "git",
+      "checkout",
+      "--",
+      ".",
+      "&&",
+      "lake",
+      "build",
+      "KelGroups.Invariants"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "env": {
+      "LEAN_PATH": "<recorded>"
+    },
+    "initialCacheState": "Dirty (1 path) before checkout; clean + warm after",
+    "targets": [
+      "lake build KelGroups.Invariants to GREEN (R-BUILD3 pattern)"
+    ],
+    "closure": "KelGroups.State -> KelGroups.Fold/Validate/Integration -> KelGroups.Invariants",
+    "timerCapture": "checkout ms + build ms separately (m-C-KSTATE-restore-checkout.ms + m-C-KSTATE-restore.ms); porcelain retained",
+    "timeout": "300s + 15s kill-after",
+    "expectedEvidence": "GREEN Build completed successfully; porcelain empty; R-BUILD3 pattern (no timings in history, timed here).",
+    "wrongReasonRejection": "Restore cleanliness does not cure historical candidate-source fence event or recover lost cold log (S-07 defect7 stands retrospectively).",
+    "loadingEvidence": "N/A (GREEN rebuild)",
+    "restorationCheck": "Porcelain empty; HEAD 3590c001; single-cause attribution distinct from filesystem isolation.",
+    "budgetCharge": "1 U-RESTORE (including failure)",
+    "frozenScripts": [
+      {
+        "path": "instruments/restore.sh",
+        "sha256": "9d58c3d984e6866318b06be2abbb1dd800b73a6391e151a44b8747f1a1714785"
+      }
+    ]
+  },
+  {
+    "mopId": "M08-C-RSTATE",
+    "layer": "U-CHAIN",
+    "opRef": "C-RSTATE single-atom mutant build",
+    "scratchPath": "/tmp/reactivegas-ms2-measure-scratch",
+    "sourcePath": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m-C-RSTATE.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Executable identity pinned by preflight in each script: lake --version (4.25.0), lean --version, which lake/lean + sha256sum readlink -f, lean-toolchain file, LEAN_PATH recording. Historical R-BUILD2 lean path /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean retained as anchor class, not as current pin.",
+    "inputHashes": {},
+    "mutationHash": "702d6935ebb4e3ec651044f04730169d58d5ebeeccadf6439dfd9d0d8fb4576a (diffs/C-RSTATE.diff)",
+    "argv": [
+      "lake",
+      "build",
+      "Reactivegas.State"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "env": {
+      "LEAN_PATH": "<recorded; must be scratch, not candidate>"
+    },
+    "initialCacheState": "Warm (post-M00 cold .lake present); incremental classification established only because cold precedes cycle1 (S-07 defect1 cured; cold after cycles would not establish incremental).",
+    "targets": [
+      "lake build Reactivegas.State"
+    ],
+    "closure": "Reactivegas.State (primary); conditional higher Reactivegas.Invariants via isolation (separately authorized) (exact, no ...)",
+    "timerCapture": "date +%s%N apply (m-C-RSTATE-apply.ms) + build (m-C-RSTATE.ms); exits captured; dirty-status (must be 1 path); applied.diff retained",
+    "timeout": "300s + 15s kill-after per build; 600s cold separate",
+    "expectedEvidence": "PRIMARY State.refundAll_sum (Reactivegas/State.lean:159) fails FIRST in imported producer; higher deny/fail fund-equation CONDITIONAL separately bound (not conflated); halts at first failing obligation per Addendum r3.",
+    "wrongReasonRejection": "Nonzero exit alone is not named RED; broad file-wide search matching unrelated lines is unsound (SS0 L1-2).",
+    "loadingEvidence": "Built vs Replayed lines in log distinguish fresh vs cached diagnostics; source byte identity alone insufficient (SS0 L6). Changed-definition loading via Built <mutated module> line (e.g., Built Reactivegas.Step).",
+    "restorationCheck": "Via restore.sh Reactivegas.State (U-RESTORE, next op); porcelain empty; HEAD 3590c001; restore cleanliness does not prove historical separation (F-07 stands retrospectively, cured prospectively).",
+    "budgetCharge": "1 U-CHAIN (including failure; timeouts/failures charged+retained, never silently retried)",
+    "frozenScripts": [
+      {
+        "path": "instruments/mutant-C-RSTATE.sh",
+        "sha256": "c6e3327f6dbd651783fabfec1f6fb583bf5e57db0e73402a1bae73456090360e"
+      },
+      {
+        "path": "instruments/diffs/C-RSTATE.diff",
+        "sha256": "702d6935ebb4e3ec651044f04730169d58d5ebeeccadf6439dfd9d0d8fb4576a"
+      }
+    ]
+  },
+  {
+    "mopId": "M08-C-RSTATER",
+    "layer": "U-RESTORE",
+    "opRef": "C-RSTATE restore + matching rebuild",
+    "scratchPath": "/tmp/reactivegas-ms2-measure-scratch",
+    "sourcePath": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m-C-RSTATE-restore.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Executable identity pinned by preflight in each script: lake --version (4.25.0), lean --version, which lake/lean + sha256sum readlink -f, lean-toolchain file, LEAN_PATH recording. Historical R-BUILD2 lean path /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean retained as anchor class, not as current pin.",
+    "inputHashes": {},
+    "mutationHash": "NONE (restore: git checkout -- .)",
+    "argv": [
+      "git",
+      "checkout",
+      "--",
+      ".",
+      "&&",
+      "lake",
+      "build",
+      "Reactivegas.State"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "env": {
+      "LEAN_PATH": "<recorded>"
+    },
+    "initialCacheState": "Dirty (1 path) before checkout; clean + warm after",
+    "targets": [
+      "lake build Reactivegas.State to GREEN (R-BUILD3 pattern)"
+    ],
+    "closure": "Reactivegas.State (primary); conditional higher Reactivegas.Invariants via isolation (separately authorized)",
+    "timerCapture": "checkout ms + build ms separately (m-C-RSTATE-restore-checkout.ms + m-C-RSTATE-restore.ms); porcelain retained",
+    "timeout": "300s + 15s kill-after",
+    "expectedEvidence": "GREEN Build completed successfully; porcelain empty; R-BUILD3 pattern (no timings in history, timed here).",
+    "wrongReasonRejection": "Restore cleanliness does not cure historical candidate-source fence event or recover lost cold log (S-07 defect7 stands retrospectively).",
+    "loadingEvidence": "N/A (GREEN rebuild)",
+    "restorationCheck": "Porcelain empty; HEAD 3590c001; single-cause attribution distinct from filesystem isolation.",
+    "budgetCharge": "1 U-RESTORE (including failure)",
+    "frozenScripts": [
+      {
+        "path": "instruments/restore.sh",
+        "sha256": "9d58c3d984e6866318b06be2abbb1dd800b73a6391e151a44b8747f1a1714785"
+      }
+    ]
+  },
+  {
+    "mopId": "M09-CHECK",
+    "layer": "U-CHECK",
+    "opRef": "isolated proof/check elaboration",
+    "scratchPath": "/tmp/reactivegas-ms2-measure-scratch",
+    "sourcePath": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m09-check.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Executable identity pinned by preflight in each script: lake --version (4.25.0), lean --version, which lake/lean + sha256sum readlink -f, lean-toolchain file, LEAN_PATH recording. Historical R-BUILD2 lean path /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean retained as anchor class, not as current pin.",
+    "inputHashes": {
+      "checkLean": "f9d3d3ac8c66ce46ce7fe4846c91b5992d281e81cc0e5c9c6331d042616bcdd1"
+    },
+    "mutationHash": "NONE (no mutant; clean tree)",
+    "argv": [
+      "lake",
+      "env",
+      "lean",
+      "/tmp/reactivegas/ms2/e-lean-compliance/s3-successor-spec-1/handoffs/instruments/Check.lean"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "env": {
+      "LEAN_PATH": "<recorded>"
+    },
+    "initialCacheState": "Warm (post-cold); isolated elaboration, not incremental rebuild",
+    "targets": [
+      "elaborate theorem ss_check_elaboration : Reactivegas.checkSweepIdempotent = true := by decide (fully-qualified, by decide, no #eval)"
+    ],
+    "closure": "Reactivegas.Invariants (imported) + Check.lean (isolated file)",
+    "timerCapture": "date +%s%N -> m09-check.ms; exit -> m09-check.exit; stdout/stderr byte counts (clean elaboration silent beyond ACTUAL-CWD lines)",
+    "timeout": "120s + 15s kill-after",
+    "expectedEvidence": "GREEN silent elaboration (exit 0, empty stdout/stderr beyond ACTUAL lines); distinct cheap unit (SS0 OP4 2476ms pattern); not #eval, not runtime replay.",
+    "wrongReasonRejection": "Unqualified checkSweepIdempotent (actually Reactivegas.checkSweepIdempotent) with #eval is mixed elaboration/evaluation, not isolated by-decide elaboration (S-07 defect2). Even qualified, kind remains mixed module elaboration/evaluation if #eval present.",
+    "loadingEvidence": "N/A (elaboration, not Built/Replayed build)",
+    "restorationCheck": "N/A (no mutant; no restore needed)",
+    "budgetCharge": "1 U-CHECK (targeted; including failure)",
+    "frozenScripts": [
+      {
+        "path": "instruments/Check.lean",
+        "sha256": "f9d3d3ac8c66ce46ce7fe4846c91b5992d281e81cc0e5c9c6331d042616bcdd1"
+      },
+      {
+        "path": "instruments/check.sh",
+        "sha256": "4bcefdb45d12fa719209daf10b863da86fe26b90c54452ba1ecf0b272cc3ae26"
+      }
+    ]
+  },
+  {
+    "mopId": "M10-REPLAY-PROD",
+    "layer": "U-REPLAY-PROD",
+    "opRef": "runtime artifact production (separate from execution)",
+    "scratchPath": "/tmp/reactivegas-ms2-measure-scratch",
+    "sourcePath": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m10-replay-prod.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Executable identity pinned by preflight in each script: lake --version (4.25.0), lean --version, which lake/lean + sha256sum readlink -f, lean-toolchain file, LEAN_PATH recording. Historical R-BUILD2 lean path /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean retained as anchor class, not as current pin.",
+    "inputHashes": {},
+    "mutationHash": "NONE (clean)",
+    "argv": [
+      "lake",
+      "build",
+      "corpusExport"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "env": {
+      "LEAN_PATH": "<recorded>"
+    },
+    "initialCacheState": "Warm; executable production counted separately from execution (S-07: none hidden as preparation)",
+    "targets": [
+      "lake build corpusExport (lean_exe root Reactivegas.CorpusExport; closure CorpusExport->Trace->Invariants)"
+    ],
+    "closure": "Reactivegas.CorpusExport (exe) + Reactivegas.Trace + Reactivegas.Invariants",
+    "timerCapture": "date +%s%N -> m10-replay-prod.ms; exit -> m10-replay-prod.exit; exe sha retained (.lake/build/bin/corpusExport)",
+    "timeout": "300s + 15s kill-after",
+    "expectedEvidence": "GREEN + exe sha + per-module Built lines; cures U-REPLAY absent (S-07 defect3) at production half.",
+    "wrongReasonRejection": "Plain lake build default roots do not reach CorpusExport/TraceTests/CorpusGate; exact target corpusExport required (no ...).",
+    "loadingEvidence": "Built Reactivegas.CorpusExport line; exe sha pins executable identity (version print alone insufficient per S-07 defect5).",
+    "restorationCheck": "N/A (no mutant)",
+    "budgetCharge": "1 U-REPLAY-PROD (including failure)",
+    "frozenScripts": [
+      {
+        "path": "instruments/replay-build.sh",
+        "sha256": "e00121b4d00f90d22ddb6e2e109677358b6389dd54df64b41e315cb83f8efe77"
+      }
+    ]
+  },
+  {
+    "mopId": "M11A-REPLAY-EXEC-WRITE",
+    "layer": "U-REPLAY-EXEC",
+    "opRef": "runtime replay write (prebuilt exe, fixed corpus)",
+    "scratchPath": "/tmp/reactivegas-ms2-measure-scratch",
+    "sourcePath": "/tmp/reactivegas-ms2-measure-scratch/lean/.lake/build/bin/corpusExport",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/replay-econ.json",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Exe sha from M10 (pinned; recorded before run)",
+    "inputHashes": {
+      "exe": "<from M10 exe sha>"
+    },
+    "mutationHash": "NONE (fixed corpus seedCorpus/emitIntegratedCorpus via exe; nonzero extents)",
+    "argv": [
+      "/tmp/reactivegas-ms2-measure-scratch/lean/.lake/build/bin/corpusExport",
+      "/tmp/reactivegas-ms2-measure-output/replay-econ.json",
+      "/tmp/reactivegas-ms2-measure-output/replay-int.json"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "env": {
+      "LEAN_PATH": "<recorded; exe run, not lean elaboration>"
+    },
+    "initialCacheState": "Exe prebuilt (M10); cache irrelevant for runtime; fixed corpus, no #eval",
+    "targets": [
+      "write econ/int wrappers (exact bytes compared later)"
+    ],
+    "closure": "Runtime only (no rebuild)",
+    "timerCapture": "date +%s%N -> m11-replay-exec-green-write.ms; exit -> .exit; econ/int sha + byte counts retained",
+    "timeout": "120s + 15s kill-after",
+    "expectedEvidence": "GREEN exit 0 + econ/int shas; nonzero trace/event extents (check phase verifies).",
+    "wrongReasonRejection": "#eval during elaboration is not this runtime unit and must never be relabelled as one.",
+    "loadingEvidence": "N/A (runtime, not Built/Replayed)",
+    "restorationCheck": "N/A (writes to OUT, not scratch; no restore needed)",
+    "budgetCharge": "1 U-REPLAY-EXEC (including failure)",
+    "frozenScripts": [
+      {
+        "path": "instruments/replay-run-green.sh",
+        "sha256": "8f30ebeef1134e641832f97a4e3f52b0b55fdd4a9ab0b58c90d2811ca552e76b"
+      }
+    ]
+  },
+  {
+    "mopId": "M11B-REPLAY-EXEC-CHECK",
+    "layer": "U-REPLAY-EXEC",
+    "opRef": "runtime replay check-green (live-bound verification)",
+    "scratchPath": "/tmp/reactivegas-ms2-measure-scratch",
+    "sourcePath": "/tmp/reactivegas-ms2-measure-scratch/lean/.lake/build/bin/corpusExport",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m11-replay-exec-green-check.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Exe sha from M10",
+    "inputHashes": {
+      "econ": "<from M11A econ sha>",
+      "int": "<from M11A int sha>"
+    },
+    "mutationHash": "NONE (fixed corpus)",
+    "argv": [
+      "/tmp/reactivegas-ms2-measure-scratch/lean/.lake/build/bin/corpusExport",
+      "check",
+      "/tmp/reactivegas-ms2-measure-output/replay-econ.json",
+      "/tmp/reactivegas-ms2-measure-output/replay-int.json"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "env": {
+      "LEAN_PATH": "<recorded>"
+    },
+    "initialCacheState": "Wrappers from M11A; fixed corpus",
+    "targets": [
+      "check wrappers element-for-element vs live seedCorpus/emitIntegratedCorpus + view/auth binding + nonzero extents"
+    ],
+    "closure": "Runtime only",
+    "timerCapture": "date +%s%N -> m11-replay-exec-green-check.ms; exit -> .exit; stdout must contain corpus-check: ntraces=... live-bound",
+    "timeout": "120s + 15s kill-after",
+    "expectedEvidence": "GREEN exit 0 + corpus-check: ntraces/nevents/nsteps live-bound line; nonzero extents from bytes (not counts alone; same-size swap must fail — see RED control).",
+    "wrongReasonRejection": "Counts alone insufficient; live-call/derived-ToJson method does not establish serializer independence (none required).",
+    "loadingEvidence": "N/A",
+    "restorationCheck": "N/A",
+    "budgetCharge": "1 U-REPLAY-EXEC (including failure)",
+    "frozenScripts": [
+      {
+        "path": "instruments/replay-run-green.sh",
+        "sha256": "8f30ebeef1134e641832f97a4e3f52b0b55fdd4a9ab0b58c90d2811ca552e76b"
+      }
+    ]
+  },
+  {
+    "mopId": "M12-REPLAY-EXEC-RED",
+    "layer": "U-REPLAY-EXEC",
+    "opRef": "runtime replay red negative control (ZZZ view)",
+    "scratchPath": "/tmp/reactivegas-ms2-measure-scratch",
+    "sourcePath": "/tmp/reactivegas-ms2-measure-scratch/lean/.lake/build/bin/corpusExport",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m12-replay-exec-red.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Exe sha from M10",
+    "inputHashes": {
+      "econGreen": "<from M11A>",
+      "intGreen": "<from M11A>"
+    },
+    "mutationHash": "sed s/\"key\":\"[^\"]*\"/\"key\":\"ZZZ\"/ on econ copy (deterministic; diff nonzero verified)",
+    "argv": [
+      "/tmp/reactivegas-ms2-measure-scratch/lean/.lake/build/bin/corpusExport",
+      "check",
+      "/tmp/reactivegas-ms2-measure-output/replay-econ-red.json",
+      "/tmp/reactivegas-ms2-measure-output/replay-int.json"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-measure-scratch/lean",
+    "env": {
+      "LEAN_PATH": "<recorded>"
+    },
+    "initialCacheState": "Mutated wrapper (ZZZ) + fixed int wrapper",
+    "targets": [
+      "check must FAIL economic: view differs from live seedView"
+    ],
+    "closure": "Runtime only",
+    "timerCapture": "date +%s%N -> m12 ms; exit nonzero required; stdout/stderr retained",
+    "timeout": "120s + 15s kill-after",
+    "expectedEvidence": "RED exit 1 + FAIL economic line (view differs); proves replay can fail (non-vacuous).",
+    "wrongReasonRejection": "A RED for another reason (parse error, missing file) proves nothing; must be FAIL economic.",
+    "loadingEvidence": "N/A",
+    "restorationCheck": "N/A (OUT files; scratch untouched)",
+    "budgetCharge": "1 U-REPLAY-EXEC (including failure; GREEN here is failure of control, charged)",
+    "frozenScripts": [
+      {
+        "path": "instruments/replay-run-red.sh",
+        "sha256": "bf8d9ced166d34cef6a4f4223fc89a67d82e1728b6c1b6432245463407ac7672"
+      }
+    ]
+  },
+  {
+    "mopId": "M13-BATCH-SEPARATE-A",
+    "layer": "U-SHARED-SEPARATE",
+    "opRef": "shared/batch separate infra variant A (C-VALIDATE)",
+    "scratchPath": "/tmp/reactivegas-ms2-batch-separate-A",
+    "sourcePath": "/tmp/reactivegas-ms2-batch-separate-A/lean",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m-batch-separate-A.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Executable identity pinned by preflight in each script: lake --version (4.25.0), lean --version, which lake/lean + sha256sum readlink -f, lean-toolchain file, LEAN_PATH recording. Historical R-BUILD2 lean path /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean retained as anchor class, not as current pin.",
+    "inputHashes": {},
+    "mutationHash": "37f26b8b70e3e7a431d1273cfb585e89677055f71883fed007af34edbdbb5ace",
+    "argv": [
+      "lake",
+      "build",
+      "KelGroups.Invariants"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-batch-separate-A/lean",
+    "env": {
+      "LEAN_PATH": "<recorded; separate-A>"
+    },
+    "initialCacheState": "Cold in A (separate .lake); independent source/output roots preserved",
+    "targets": [
+      "lake build KelGroups.Invariants in A"
+    ],
+    "closure": "C-VALIDATE closure in A",
+    "timerCapture": "Cold + build + restore ms separately (m-batch-separate-A-*.ms); exits retained",
+    "timeout": "600s cold + 300s build + 15s kill-after",
+    "expectedEvidence": "Span-bound RED per C-VALIDATE (see mutant script); setup/restore included; equal observation targets.",
+    "wrongReasonRejection": "Sampling within class does not establish every row cost/batching/upper bound (S-07 defect4).",
+    "loadingEvidence": "Built/Replayed in A log",
+    "restorationCheck": "restore.sh in A (U-RESTORE); porcelain empty",
+    "budgetCharge": "1 U-SHARED-SEPARATE cold+build+restore (including failure)",
+    "frozenScripts": [
+      {
+        "path": "instruments/batch-plan.sh",
+        "sha256": "0e95e35df63409b39976c5b374f0b7fbd2f929f561b67a2ae55949b5680a09f1"
+      },
+      {
+        "path": "instruments/diffs/C-VALIDATE.diff",
+        "sha256": "37f26b8b70e3e7a431d1273cfb585e89677055f71883fed007af34edbdbb5ace"
+      }
+    ]
+  },
+  {
+    "mopId": "M14-BATCH-SEPARATE-B",
+    "layer": "U-SHARED-SEPARATE",
+    "opRef": "shared/batch separate infra variant B (C-VOTEFOLD)",
+    "scratchPath": "/tmp/reactivegas-ms2-batch-separate-B",
+    "sourcePath": "/tmp/reactivegas-ms2-batch-separate-B/lean",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m-batch-separate-B.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Executable identity pinned by preflight in each script: lake --version (4.25.0), lean --version, which lake/lean + sha256sum readlink -f, lean-toolchain file, LEAN_PATH recording. Historical R-BUILD2 lean path /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean retained as anchor class, not as current pin.",
+    "inputHashes": {},
+    "mutationHash": "79a6757ddb780ee2ba347fbdffdf078bdfb063f95b1accaf49c0e0aff07d8f4c",
+    "argv": [
+      "lake",
+      "build",
+      "KelGroups.Vote.Invariants"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-batch-separate-B/lean",
+    "env": {
+      "LEAN_PATH": "<recorded; separate-B>"
+    },
+    "initialCacheState": "Cold in B (separate .lake)",
+    "targets": [
+      "lake build KelGroups.Vote.Invariants in B"
+    ],
+    "closure": "C-VOTEFOLD closure in B",
+    "timerCapture": "Cold+build+restore ms separately",
+    "timeout": "600s + 300s + 15s",
+    "expectedEvidence": "Span-bound RED per C-VOTEFOLD; setup/restore included.",
+    "wrongReasonRejection": "One mutation per import root is sampling, not batching proof.",
+    "loadingEvidence": "Built/Replayed in B log",
+    "restorationCheck": "restore.sh in B",
+    "budgetCharge": "1 U-SHARED-SEPARATE (including failure)",
+    "frozenScripts": [
+      {
+        "path": "instruments/batch-plan.sh",
+        "sha256": "0e95e35df63409b39976c5b374f0b7fbd2f929f561b67a2ae55949b5680a09f1"
+      },
+      {
+        "path": "instruments/diffs/C-VOTEFOLD.diff",
+        "sha256": "79a6757ddb780ee2ba347fbdffdf078bdfb063f95b1accaf49c0e0aff07d8f4c"
+      }
+    ]
+  },
+  {
+    "mopId": "M15-BATCH-SHARED",
+    "layer": "U-SHARED-BATCH",
+    "opRef": "shared/batch shared infra (A+B sequential in one scratch)",
+    "scratchPath": "/tmp/reactivegas-ms2-batch-shared",
+    "sourcePath": "/tmp/reactivegas-ms2-batch-shared/lean",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m-batch-shared.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "leanprover/lean4:v4.25.0",
+    "executableHashes": "Executable identity pinned by preflight in each script: lake --version (4.25.0), lean --version, which lake/lean + sha256sum readlink -f, lean-toolchain file, LEAN_PATH recording. Historical R-BUILD2 lean path /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean retained as anchor class, not as current pin.",
+    "inputHashes": {},
+    "mutationHash": "37f26b8b70e3e7a431d1273cfb585e89677055f71883fed007af34edbdbb5ace+79a6757ddb780ee2ba347fbdffdf078bdfb063f95b1accaf49c0e0aff07d8f4c (sequential, never combined in one variant)",
+    "argv": [
+      "lake",
+      "build",
+      "KelGroups.Invariants",
+      "&&",
+      "lake",
+      "build",
+      "KelGroups.Vote.Invariants"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-batch-shared/lean",
+    "env": {
+      "LEAN_PATH": "<recorded; shared>"
+    },
+    "initialCacheState": "One cold in shared, then sequential apply/build/restore/apply/build/restore sharing .lake cache; variants never combined (one atom per variant; combined mutant would be ambiguous cause per S3 D5).",
+    "targets": [
+      "sequential builds in shared scratch"
+    ],
+    "closure": "C-VALIDATE + C-VOTEFOLD closures sharing cache",
+    "timerCapture": "Shared cold ms + per-variant build/restore ms (m-batch-shared-*.ms); comparator parses statically",
+    "timeout": "600s + 300s per build + 15s",
+    "expectedEvidence": "Both span-bound REDs observed sequentially; shared-cache timing vs separate sum (with setup/restore) compared by comparator.",
+    "wrongReasonRejection": "Mutating several atoms in one subject is one mutant with ambiguous cause, not independent kills (S3 D5). Shared scheduling fine, combined mutation not.",
+    "loadingEvidence": "Built/Replayed in shared log (per-variant)",
+    "restorationCheck": "restore.sh after each variant in shared; porcelain empty between variants",
+    "budgetCharge": "1 U-SHARED-BATCH cold + 2 builds + 2 restores (including failure)",
+    "frozenScripts": [
+      {
+        "path": "instruments/batch-plan.sh",
+        "sha256": "0e95e35df63409b39976c5b374f0b7fbd2f929f561b67a2ae55949b5680a09f1"
+      }
+    ]
+  },
+  {
+    "mopId": "M16-BATCH-COMPARATOR",
+    "layer": "U-COMPARATOR-STATIC",
+    "opRef": "batch comparator (static, no project execution)",
+    "scratchPath": "N/A (static)",
+    "sourcePath": "N/A",
+    "outputPath": "/tmp/reactivegas-ms2-measure-output/m-batch-compare.stdout",
+    "baseSHA": "3590c0015b84fd58004bf6fb44dd18b107304c48",
+    "toolchain": "N/A (static)",
+    "executableHashes": "N/A (parses/hashes files only; never launches project code)",
+    "inputHashes": {
+      "separateA": "<from M13 ms/exit>",
+      "separateB": "<from M14>",
+      "shared": "<from M15>"
+    },
+    "mutationHash": "NONE",
+    "argv": [
+      "bash",
+      "/tmp/reactivegas/ms2/e-lean-compliance/s3-successor-spec-1/handoffs/instruments/compare-batch.sh"
+    ],
+    "cwd": "/tmp/reactivegas-ms2-measure-output",
+    "env": {},
+    "initialCacheState": "N/A",
+    "targets": [
+      "parse m-batch-*.ms/.exit/.stdout; report separate sum vs shared sum with setup/restore included"
+    ],
+    "closure": "Static only",
+    "timerCapture": "N/A (static; own wall not charged as project execution)",
+    "timeout": "60s",
+    "expectedEvidence": "Separate-vs-shared wall sums with setup/restore; samples/extrapolations labelled; no unsupported all-row upper bound.",
+    "wrongReasonRejection": "Measuring one mutation per import root is sampling; it does not establish every row cost/batching/upper bound.",
+    "loadingEvidence": "N/A",
+    "restorationCheck": "N/A",
+    "budgetCharge": "0 project execution (static analysis; not charged as build/elaboration/replay)",
+    "frozenScripts": [
+      {
+        "path": "instruments/compare-batch.sh",
+        "sha256": "4cd26f4654ee07a27e78866b0d323c703d0905d6bdfff633891ed95e13d00eac"
+      }
+    ]
+  }
+]

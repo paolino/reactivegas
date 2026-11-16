@@ -1,0 +1,29 @@
+{
+  "id": "S10",
+  "argv": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=30s",
+    "1800s",
+    "nix",
+    "develop",
+    "--quiet",
+    "-c",
+    "just",
+    "ci"
+  ],
+  "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S10",
+  "charge": "substantive",
+  "launched": true,
+  "start": "2026-09-06T05:50:26.431Z",
+  "spend": {
+    "substantive": 12,
+    "targeted": 69
+  },
+  "obligation": "C26 restored final candidate cold full CI; prerequisite to final inventory/axiom trust",
+  "finish": "2026-09-06T05:53:21.856Z",
+  "exit": 0,
+  "signal": null,
+  "stdoutSha256": "c0d10f287764f222b46f804aba22ffd62ab6e08bb478cbb40b687a6e02ee54fa",
+  "stderrSha256": "b52f164044a7f30051a39b242933fca8827238913d17d2123a2d3054b4df00f0"
+}

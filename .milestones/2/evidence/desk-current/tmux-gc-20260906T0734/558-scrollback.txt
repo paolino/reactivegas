@@ -1,0 +1,544 @@
+ tag "commitBaseChange_ok" "(a) second conjunct projects changed appFold field"
+ tag "commitBaseChange_members" "(a) members projection under pre/post swap"
+ tag "tryEnactBase_runs_hook" "(P) threshold-split shape mismatch"
+ tag "tryEnactBase_preserves_absence" "(P) threshold-split shape mismatch"
+ tag "app_event_preserves_members" "(a) members projection under wipe"
+ tag "app_event_has_no_base_change" "(a) change projection under change-set"
+ tag "enactMutation_preserves_absence" "(P) removeMember-case exact-term mismatch"
+ tag "baseHook_votes" "(a) votes projection (sweep-post)"
+ tag "base_change_recomputes_votes" "(a) votes projection (sweep-post)"
+ tag "enact_preserves_wellFormed" "(P) assoc-lemma application mismatch"
+ tag "members_change_implies_enacted" "(P) removeMember-case construction mismatch"
+ tag "finishEnact_preserves_wellFormed" "(P) assocErase application mismatch"
+ tag "tryEnact_preserves_wellFormed" "(P) split-shape mismatch"
+ tag "tryEnactDetailed_enactment_threshold_met" "(P) threshold-equation mismatch"
+ tag "applyPropose_preserves_wellFormed" "(a) dup proposalId falsifies pendingKeys at witness"
+ tag "applyApprove_preserves_wellFormed" "(a) dup approvals falsify PendingWellFormed at witness"
+ tag "approvePending_wellFormed" "(a) dup approvals falsify at witness"
+ tag "majority_table" "(c) decided values flip (1→2 at [a])"
+ tag "majority_not_strict_on_even" "(c) statement false at n=2 (6≤2 false)"
+ tag "emptyState_wellFormed" "(a) Nodup goals over dup-pair mutant"
+ tag "app_members_preservation_holds" "(c) check flips at preservationDonate execution"
+ tag "comune_cannot_authorize" "(c) check flips (boot succeeds under mutant)"
+ tag "productionWellFormed_holds" "(c) check flips over corpus"
+ tag "questions_partition" "(a) partition equation over mutant sweep"
+ echo "=== KILL rows lacking grounds:"; awk -F'|' '$3=="KILL" && NF<6' OPMAP-v6.txt | cut -d'|' -f1,2; echo "(end)"
+
+ === KILL rows lacking grounds:
+ (end)
+
+ Took 0.5s
+
+
+
+ $ cd /tmp/p1-work
+ > covF.txt
+ while IFS='|' read -r op nm v3 req extra rest; do
+   if grep -qx -F "$nm" <(cut -d'|' -f1 /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/P1A-qualified-inventory.txt); then echo "$nm" >> covF.txt
+   else grep -a "^[^|]*|[^|]*|[^|]*|$nm\$" /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/P1A-qualified-inventory.txt | cut -d'|' -f1 >> covF.txt || echo
+ "UNRESOLVED:$nm"; fi
+ done < <(cut -d'|' -f1,2 OPMAP-v6.txt)
+ comm -23 authored-q.txt <(sort -u covF.txt); echo "(end uncovered)"
+ n=0; while IFS= read -r h; do grep -q -E "\\|$h\\|" OPMAP-v6.txt && { echo "HELPER:$h"; n=1; }; done < helpers-short.txt; [ $n -eq 0 ] && echo "helpers absent OK"
+ cut -d'|' -f4 OPMAP-v6.txt | grep -E "^(G-|E-|V-|B-|W-|R-)[A-Za-z]+$|G-ALL14|^E-fund$" | sort -u; echo "(end family)"
+ cut -d'|' -f3 OPMAP-v6.txt | sort | uniq -c; wc -l < OPMAP-v6.txt
+ H=/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs
+ cp OPMAP-v6.txt $H/OPMAP-v7-requirement-verdict-grounds.txt
+ sha256sum $H/OPMAP-v7-requirement-verdict-grounds.txt
+
+ ... (7 earlier lines, ctrl+o to expand)
+      31 OPEN-KILL
+       9 RECOVERED
+       2 STATIC
+ 207
+ 89337291fd880b9f213e46cd5a61fe178ce1597ab2f39e8184a6b76924436336  /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/OPMAP-v7-requirement-verdict-grounds.txt
+
+ Took 1.1s
+
+
+ Summarizing v7 results and drafting CORRECTIONS-019 with method fix, row resolutions, envelope recompute, and disposition table.
+
+
+ $ cd /tmp/p1-work
+ H=/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs
+ diff <(cut -d'|' -f1-5 $H/OPMAP-v6-requirement-verdict-taxonomy.txt | sort) <(cut -d'|' -f1-5 OPMAP-v7.txt 2>/dev/null || cut -d'|' -f1-5 /tmp/p1-work/OPMAP-v6.txt | sort) | head -n 40
+
+ ... (35 earlier lines, ctrl+o to expand)
+ > OP-63B|KelGroups.applyPropose_preserves_wellFormed|KILL|MUT:Fold.lean:48-52:assocInsert-proposalId→plain-cons|RED (own insert derivation)
+ 106a102,103
+ > OP-64a|members_change_implies_enacted|OBSERVED|—|upstream KelGroups counterpart (OP-60 kill)
+ > OP-64c|enact_implies_threshold_met|OBSERVED|—|upstream KelGroups counterpart (threshold-lemma kill)
+ 113,116c110,111
+
+ Took 0.1s
+
+
+
+ $ cd /tmp/p1-work
+ H=/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/OPMAP-v6-requirement-verdict-taxonomy.txt
+ diff <(cut -d'|' -f1-5 $H | sort) <(cut -d'|' -f1-5 OPMAP-v7.txt | sort) | head -n 30
+ echo "=== verdict census v7:"; cut -d'|' -f3 OPMAP-v7.txt | sort | uniq -c
+
+ ... (3 earlier lines, ctrl+o to expand)
+      75 KILL
+      29 OBSERVED
+      31 OPEN-KILL
+       9 RECOVERED
+       2 STATIC
+
+ Took 0.0s
+
+
+
+ $ cd /tmp/p1-work
+ grep -E "^(OP-56|OP-16)\|" OPMAP-v7.txt | cut -d'|' -f1,2,3,6 | cut -c1-130
+ grep -c "GROUND:" OPMAP-v7.txt
+
+ ... (3 earlier lines, ctrl+o to expand)
+ OP-56|KelGroups.validateDirectAdmission_ok|KILL
+ 0
+
+
+ Command exited with code 1
+
+ Took 0.0s
+
+
+ Debugging a grep/awk mismatch from using short names instead of qualified names and confirming KILL rows now have grounds.
+
+
+ $ cd /tmp/p1-work
+ awk -F'|' 'NF>=6{c++} END{print "lines with 6+ fields:", c+0}' OPMAP-v7.txt
+ grep -c "GROUND" OPMAP-v7.txt || echo "no GROUND string"
+ tail -n 3 OPMAP-v7.txt | cut -c1-150
+
+ ... (1 earlier lines, ctrl+o to expand)
+ 0
+ no GROUND string
+ OP-66|KelGroups.tryEnact_eq_of_enacts|ELAB-STATIC|ELAB:KelGroups/Invariants.lean|structural (bare projection/rfl)
+ OP-56|KelGroups.validateDirectAdmission_ok|KILL|MUT:Validate.lean:148:if-isMember→if-False|RED (dup-split branch; non_admin/membership go GREEN here
+ OP-58|KelGroups.base_change_runs_hook|OBSERVED|MUT:Integration.lean:154 (same)|OBSERVED (upstream tryEnactBase_runs_hook)
+
+ Took 0.0s
+
+
+ Diagnosing a file overwrite bug where tag() reads and writes OPMAP-v6 instead of OPMAP-v7.
+
+ Identifying that the tag function only inspected OPMAP-v6 and never wrote updates.
+
+
+ $ H=/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs
+ ls -la $H/ | grep -iE "opmap|relation"
+ echo "---work:"
+ ls -la /tmp/p1-work/OPMAP* /tmp/p1-work/RELATION* 2>&1
+ echo "---v7 content check:"
+ grep -c "GROUND" /tmp/p1-work/OPMAP-v7.txt 2>/dev/null || echo "no v7 or no grounds"
+
+ ... (21 earlier lines, ctrl+o to expand)
+ -rw-r--r-- 1 paolino users 25652 Sep  6 02:28 /tmp/p1-work/RELATION-v1.txt
+ -rw-r--r-- 1 paolino users 25733 Sep  6 02:28 /tmp/p1-work/RELATION-v2.txt
+ ---v7 content check:
+ 0
+ no v7 or no grounds
+
+ Took 0.1s
+
+
+
+ DELIVERY REPAIR — canonical pointer, single message, nothing further to await. Read the file at the EXACT path
+ /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/inbox-NOTE-019-rule-and-method-contradict.md — it is at the seat ROOT under an inbox-NOTE-* filename, NOT inside inbox/, which
+ is why your search failed. Its sha256 is e063a663dd9975022778045933d372bba22dde9ba6020ee4c66da08a827c62b5. Verify that digest against the actual file, then ACK and RESUMED in your STATUS.md
+ naming the file you actually read. Substance: your corrected rule at CORRECTIONS-018 lines 10-14 and your generation method at lines 44-46 contradict each other — the method applied to all
+ 158 rows still says unfolding/matching the mutated definition equals KILL, the old unsound rule verbatim with five hand-fixed exceptions. Self-test it: governance_enacts_windUpAdmin does
+ simp only windUpAdmin, so line 44 returns KILL for the very row you conceded two pages earlier; any rule that re-derives a conceded row is disqualified. Give ACTUAL PER-ROW GROUNDS instead.
+ Also 018 and v6 are a DRAFT — your own latest terminal still names 017 — so they are not accepted as final. Static only under existing authority: zero new probes, builds, Phase 2 or audit.
+ Then return your coherent full-assessment terminal.
+
+
+ Verifying the file path and checksum match for the previously read note.
+
+ Reconciling size mismatch between work and handoff versions before finalizing grounds tagging.
+
+
+ $ sha256sum /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/inbox-NOTE-019-rule-and-method-contradict.md
+ diff -q /tmp/p1-work/OPMAP-v7.txt /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/OPMAP-v7-requirement-verdict-grounds.txt && echo SAME || echo DIFFER
+ wc -l /tmp/p1-work/OPMAP-v7.txt /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/OPMAP-v7-requirement-verdict-grounds.txt
+ grep -c "GROUND" /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/OPMAP-v7-requirement-verdict-grounds.txt || echo "no grounds in retained v7"
+
+ ... (2 earlier lines, ctrl+o to expand)
+ DIFFER
+   207 /tmp/p1-work/OPMAP-v7.txt
+   207 /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/OPMAP-v7-requirement-verdict-grounds.txt
+   414 total
+ 75
+
+ Took 0.0s
+
+
+
+ $ diff /tmp/p1-work/OPMAP-v7.txt /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/OPMAP-v7-requirement-verdict-grounds.txt | head -n 30; echo "=== diff line count:";
+ diff /tmp/p1-work/OPMAP-v7.txt /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/OPMAP-v7-requirement-verdict-grounds.txt | wc -l
+
+ ... (28 earlier lines, ctrl+o to expand)
+ < OP-22|Reactivegas.step_donate_inv|KILL|MUT:Step.lean:80:decide(0<v)→decide True|RED (demonstrated guard form)
+ < OP-23|Reactivegas.step_backdonate_inv|KILL|MUT:Step.lean:90-92:drop members-fold-distr|RED
+ < OP-24|step_deny_inv|KILL|MUT:Step.lean:59-60:drop conti-refundAll-line|RED (post-state mismatch)
+ === diff line count:
+ 186
+
+ Took 0.1s
+
+
+
+ $ H=/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/OPMAP-v7-requirement-verdict-grounds.txt
+ echo "=== KILL rows lacking grounds:"; awk -F'|' '$3=="KILL" && NF<6' $H | cut -d'|' -f1,2; echo "(end)"
+ echo "=== governance + solvent + foldFrom + effectedState grounds:"; grep -E
+ "governance|solvent_preserved|credit_pledges_step|foldFrom_preserves|effectedState_sweepReady|no_expiry|foldVote_append|emptyVoteState_sweepReady|verdictOf|approvePending|majority_table|empt
+ yState_well|placeBallot_clean|sweepClosures_open_mem|sweepStep_of|inadmissible|applyVoteEvent_preserves_well|validateDirectAdmission_ok|non_admin|membership_growth|commitBaseChange_ok|commit
+ BaseChange_members|tryEnactBase_runs|enactMutation|app_event|baseHook_votes|enact_preserves|finishEnact|tryEnact_preserves|threshold_met|applyPropose|applyApprove|member_key|app_members_pres
+ ervation_holds|comune_cannot" $H | grep "|KILL|" | cut -d'|' -f2,6 | head -n 60
+
+ ... (36 earlier lines, ctrl+o to expand)
+ governance_enacts_windUpAdmin|GROUND:(a) collections/rest projection
+ Reactivegas.app_members_preservation_holds|GROUND:(c) check flips at preservationDonate execution
+ TraceTests.app_members_preservation_holds|GROUND:(c) check flips at preservationDonate execution
+ Reactivegas.comune_cannot_authorize|GROUND:(c) check flips (boot succeeds under mutant)
+ KelGroups.validateDirectAdmission_ok|GROUND:(a) condition conjunctions false at witnesses
+
+ Took 0.1s
+
+
+ Verifying v7 governance grounds and KILL/ELAB classifications while reconciling NOTE-019 test results with projection-based reasoning.
+
+ Drafting CORRECTIONS-019 with the reach-based method, eight-finding disposition, envelope, and OPEN set while preserving CORRECTIONS-018 as history.
+
+
+ $ H=/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs
+ F=$H/OPMAP-v7-requirement-verdict-grounds.txt
+ echo "=== KILL rows lacking grounds:"; awk -F'|' '$3=="KILL" && NF<6' $F | wc -l
+ echo "=== coverage:"; > /tmp/p1-work/covV.txt
+ while IFS='|' read -r op nm v3 req extra rest; do
+   if grep -qx -F "$nm" <(cut -d'|' -f1 $H/P1A-qualified-inventory.txt); then echo "$nm" >> /tmp/p1-work/covV.txt
+   else grep -a "^[^|]*|[^|]*|[^|]*|$nm\$" $H/P1A-qualified-inventory.txt | cut -d'|' -f1 >> /tmp/p1-work/covV.txt || echo "UNRESOLVED:$nm"; fi
+ done < <(cut -d'|' -f1,2 $F)
+ comm -23 /tmp/p1-work/authored-q.txt <(sort -u /tmp/p1-work/covV.txt); echo "(end uncovered)"
+ echo "--- helpers:"; n=0; while IFS= read -r h; do grep -q -E "\\|$h\\|" $F && { echo "HELPER:$h"; n=1; }; done < /tmp/p1-work/helpers-short.txt; [ $n -eq 0 ] && echo "absent OK"
+ echo "--- verdicts:"; cut -d'|' -f3 $F | sort | uniq -c; wc -l < $F
+ echo "--- OP-67a n=2 + close_permission OBSERVED + majority roots:"; grep -E "OP-67a|close_permission_to_close.*OBSERVED" $F | cut -d'|' -f1,2,3,5 | cut -c1-125 | head -n 8
+ sha256sum $F $H/CORRECTIONS-018.md
+
+ ... (16 earlier lines, ctrl+o to expand)
+ OP-16|close_permission_to_close|OBSERVED|upstream step_close_inv (S4-B P07 corroborates upstream-only)
+ OP-67a|majority_not_strict_on_even|OBSERVED|upstream KelGroups counterpart (OP-67a kill)
+ OP-67a|majority_table|OBSERVED|upstream KelGroups counterpart (OP-67a kill)
+ 89337291fd880b9f213e46cd5a61fe178ce1597ab2f39e8184a6b76924436336  /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/OPMAP-v7-requirement-verdict-grounds.txt
+ 9702849e14cd71764c24a3dfb0ad6b8c578998e8531b50b8f5d94385a4a81de0  /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/CORRECTIONS-018.md
+
+ Took 1.2s
+
+
+ Verifying data consistency and detecting a hash mismatch between CORRECTIONS-018 and NOTE-019.
+
+
+ $ grep "majority" /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/OPMAP-v7-requirement-verdict-taxonomy.txt 2>/dev/null | cut -d'|' -f1,2,3,4,5 | cut -c1-140; echo
+ "==="; grep -F "KelGroups.majority" /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/OPMAP-v7-requirement-verdict-grounds.txt | cut -d'|' -f1,2,3,4,5,6 | cut -c1-160
+
+ ===
+ OP-67|KelGroups.majority_not_strict_on_even|KILL|MUT:KelGroups/State.lean:50:(adminCount+1)/2→adminCount+1|RED (verified: 6≤2 false at n=2)|GROUND:(c) state
+ OP-67|KelGroups.majority_table|KILL|MUT:KelGroups/State.lean:50:(adminCount+1)/2→adminCount+1|RED (verified: 1→2)|GROUND:(c) decided values flip (1→2 at [
+
+ Took 0.0s
+
+
+ Tracking NOTE-019 updates: appending authenticated STATUS ack and drafting CORRECTIONS-019 with method correction, grounds summary, and disposition table.
+
+ Extending disposition tracking to findings F-01 to F-03 with owner and acceptance status.
+
+
+ $ F=/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/OPMAP-v7-requirement-verdict-grounds.txt
+ grep "|KILL|" $F | cut -d'|' -f1 | sort -u | tr '\n' ' '; echo
+ echo "=== mutant modules per kill op:"
+ for op in $(grep "|KILL|" $F | cut -d'|' -f1 | sort -u); do
+   mut=$(grep "^$op|" $F | grep "|KILL|" | head -n 1 | cut -d'|' -f4)
+   echo "$op :: $mut" | cut -c1-100
+ done
+
+ ... (47 earlier lines, ctrl+o to expand)
+ OP-67 :: MUT:KelGroups/State.lean:50:(adminCount+1)/2→adminCount+1
+ OP-67b :: MUT:KelGroups/State.lean:34:members:=[]→dup-pair
+ OP-67G :: MUT:Step.lean:254-259:collections:=rest→s.collections
+ OP-69 :: MUT:Step.lean:apply:members-wipe
+ OP-69L :: MUT:Step.lean:357:productionWellFormed-negation-drop
+
+ Took 0.4s
+
+
+ Analyzing kill-ops inventory by separating step-closure and fold-closure counts and mapping dependencies across modules.
+
+ Resolving closure counts by confirming intermediate module rebuilds in the dependency chain.
+
+
+ write /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/CORRECTIONS-019.md
+
+ # CORRECTIONS-019 — reach-based generation; per-row grounds; eight dispositions (no execution)
+
+ Static only: proof-body reads at base `3590c001`, writing. No builds, queries,
+ probes, mutations, Phase-2, hidden workers, or audit. Prior artifacts preserved
+ as history (CORRECTIONS-018 and OPMAP-v6 stay cited where read); this file +
+ `OPMAP-v7-requirement-verdict-grounds.txt` govern the generation method and map
+ where they conflict with earlier operative text.
+
+ ## 1. Method corrected: reach, not unfold
+
+ ... (62 more lines, 72 total, ctrl+o to expand)
+
+
+
+ $ H=/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs
+ grep -E "^OP-56\|" $H/OPMAP-v7-requirement-verdict-grounds.txt | cut -d'|' -f2,3
+ echo "=== ELAB ops present:"; grep -cE "^(OP-66E|OP-68|OP-69|OP-70|OP-71|OP-72|OP-74)\|" $H/OPMAP-v7-requirement-verdict-grounds.txt
+ echo "=== OPEN lines in RELATION:"; grep -c "|OPEN|" $H/RELATION-v2-property-atom.txt || true
+ grep "|OPEN|" $H/RELATION-v2-property-atom.txt | cut -d'|' -f1 | head
+
+ ... (5 earlier lines, ctrl+o to expand)
+ solvent_preserved
+ reach_solvent
+ not_insolvent_of_reach
+ credit_pledges_of_reach
+ credit_pledges_step
+
+ Took 0.1s
+
+
+
+ edit /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/CORRECTIONS-019.md
+
+ Could not find the exact text in /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/CORRECTIONS-019.md. The old text must match exactly including all whitespace and
+ newlines.
+
+
+
+ $ grep -n "OPEN set retained" /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/CORRECTIONS-019.md
+
+ 67:fitted artifacts. OPEN set retained non-empty (31 witness/param rows + 7
+
+ Took 0.0s
+
+
+
+ read /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/CORRECTIONS-019.md:64-69
+
+
+
+ edit /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/CORRECTIONS-019.md
+
+ Could not find the exact text in /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/CORRECTIONS-019.md. The old text must match exactly including all whitespace and
+ newlines.
+
+
+
+ $ cd /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs
+ perl -pi -e 's/31 witness\/param rows \+ 7\nsolvent-conjunct\/alias role notes/31 witness\/param rows + 5 solvent conjunct-level notes/' CORRECTIONS-019.md
+ grep -n "OPEN set retained" CORRECTIONS-019.md
+ sed -n '64,70p' CORRECTIONS-019.md | cat -A | grep -n "7$" | head -n 3; echo "---"; tail -n 8 CORRECTIONS-019.md
+
+ ... (5 earlier lines, ctrl+o to expand)
+ fitted artifacts. OPEN set retained non-empty (31 witness/param rows + 7
+ solvent-conjunct/alias role notes in RELATION).
+
+ *End of CORRECTIONS-019. The target is a correct assessment, not a zero-OPEN
+ table.*
+
+ Took 0.1s
+
+
+
+ $ cd /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs
+ sed -i 's/(31 witness\/param rows + 7$/(31 witness\/param rows + 5 solvent conjunct-level notes in RELATION). Old alias-role notes retired with the alias OBSERVED mapping;/'
+ CORRECTIONS-019.md
+ sed -n '64,70p' CORRECTIONS-019.md
+
+ ... (2 earlier lines, ctrl+o to expand)
+ arithmetic, not a grant or budget.** All prior envelope totals WITHDRAWN as
+ fitted artifacts. OPEN set retained non-empty (31 witness/param rows + 5 solvent conjunct-level notes in RELATION). Old alias-role notes retired with the alias OBSERVED mapping;
+ solvent-conjunct/alias role notes in RELATION).
+
+ *End of CORRECTIONS-019. The target is a correct assessment, not a zero-OPEN
+
+ Took 0.0s
+
+
+
+ $ cd /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs
+ grep -v "^solvent-conjunct/alias role notes in RELATION).$" CORRECTIONS-019.md > t.md && mv t.md CORRECTIONS-019.md
+ tail -n 8 CORRECTIONS-019.md
+ sha256sum CORRECTIONS-019.md
+ cd /code/reactivegas-66-s3-phase1; git status --porcelain=v1 | head; echo "(empty=clean)"
+
+ ... (5 earlier lines, ctrl+o to expand)
+
+ *End of CORRECTIONS-019. The target is a correct assessment, not a zero-OPEN
+ table.*
+ b1d5feac89f5e41eee35c4fca4f8205ae218cb2531595bde948f0485035ec444  CORRECTIONS-019.md
+ (empty=clean)
+
+ Took 0.0s
+
+
+
+ $ cd /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs
+ perl -pi -e 's/notes in RELATION\)\. Old alias-role notes retired with the alias OBSERVED mapping;/notes in RELATION; alias roles now live as OBSERVED lines in the map itself)./'
+ CORRECTIONS-019.md
+ tail -n 6 CORRECTIONS-019.md
+ sha256sum CORRECTIONS-019.md
+
+ ... (2 earlier lines, ctrl+o to expand)
+ fitted artifacts. OPEN set retained non-empty (31 witness/param rows + 5 solvent conjunct-level notes in RELATION; alias roles now live as OBSERVED lines in the map itself).
+
+ *End of CORRECTIONS-019. The target is a correct assessment, not a zero-OPEN
+ table.*
+ f6ea115ec7a23921af5b84507dae6a52a54138b4df1e13d6ce61ca662c3ccb9f  CORRECTIONS-019.md
+
+ Took 0.0s
+
+
+
+ $ sha256sum /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/OPMAP-v7-requirement-verdict-grounds.txt
+ cat >> /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/STATUS.md << 'EOF'
+
+ ## 2026-09-06 NOTE-019 acknowledgement — authenticated (e063a663…c62b5), method corrected (append-only append-to-EOF)
+
+ - Authenticated: `inbox-NOTE-019-rule-and-method-contradict.md` sha256
+   `e063a663dd9975022778045933d372bba22dde9ba6020ee4c66da08a827c62b5`
+   VERIFIED against the file at the seat-root dash-path (the earlier
+   "f-see-below"/"f0-correction" lines carried no verifiable digest and are
+   superseded by this verification; the unauthenticated NOTE-018 text was used
+   only where independently verified at source). File read in full.
+ - Conceded as stated: CORRECTIONS-018:44-46 restated the old unfold rule
+   while :10-14 stated the reach rule. Generation corrected — a KILL now
+   requires (a)/(b)/(c) or (P) with the concrete carrier bound per row;
+   unfolding is evidence of reach, never the ground. Self-test passes: the
+   conceded governance row is KILL-grounded (a) on its collections/rest
+   projection (refundAll mutant correctly excluded); the four guards carry no
+   KILL. OP-67a witness corrected to n=2 (6≤2 false). OP-25B refundAll mutant
+   retained for conservation deny/fail branches (its real consumer).
+ - Delivered: `handoffs/CORRECTIONS-019.md` (`f6ea115e…`) with retained
+   `handoffs/OPMAP-v7-requirement-verdict-grounds.txt` (`89337291…`, 207
+   lines, every KILL row carrying its (a)/(b)/(c)/(P) ground): eight-finding
+   disposition table with owners (acceptance: desk in all rows), envelope
+   recomputed 143+1 unfunded and separate from authority, OPEN set retained
+   non-empty (31 + 5). No TERMINAL label claimed — terminal stays with the
+   desk pending its full parent disposition, as NOTE-019 states.
+ - This entry supersedes all earlier terminal/Next lines for currency (old
+   text stands above unrewritten as history). Counters: 5 substantive / 3
+   targeted spent, 0 remaining in any grant. Coverage: not claimed. No
+   Phase-2/build/probe/elaboration/audit commissioned by any label here.
+ - Worktree at handback: HEAD `3590c0015b84fd58004bf6fb44dd18b107304c48`,
+   `git status --porcelain=v1` clean. Handed back; no further action available
+   or taken.
+ EOF
+ echo "=== TAIL READBACK (settles placement) ==="
+ tail -n 4 /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/STATUS.md | cut -c1-110
+ wc -l < /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/STATUS.md
+
+ ... (2 earlier lines, ctrl+o to expand)
+   Phase-2/build/probe/elaboration/audit commissioned by any label here.
+ - Worktree at handback: HEAD `3590c0015b84fd58004bf6fb44dd18b107304c48`,
+   `git status --porcelain=v1` clean. Handed back; no further action available
+   or taken.
+ 764
+
+ Took 0.1s
+
+
+ NOTE-019 authenticated (e063a663…c62b5 verified against the seat-root dash-path file, read in full) and acted on — acknowledgment and terminal entry recorded in STATUS.md by append-to-EOF
+ with tail readback (764 lines).
+
+ What I did (source reads and writing only — no builds, queries, probes, mutations, or code change):
+
+ - Withdrew the contradicted method. CORRECTIONS-018:44-46 restated unfold-equals-KILL while :10-14 stated the reach rule. The reach rule now governs generation: every KILL row carries its
+   concrete ground — (a) goal projects the changed field, (b) consumed hypothesis mentions it, (c) statement false at a satisfying witness, or (P) proof sensitivity with the actual failing
+   obligation bound. Unfolding is evidence of reach, never the ground.
+ - Self-test passes on all five conceded rows. Governance is KILL-grounded (a) on its collections/rest projection with the refundAll mutant correctly excluded; the four guard inversions carry
+   no KILL; OP-67a's witness is corrected to n=2; OP-25B keeps the refundAll mutant for conservation's deny/fail branches — its real consumer, never dropped.
+ - Delivered CORRECTIONS-019.md (f6ea115e…) with the retained OPMAP-v7 (89337291…, 207 lines, every KILL grounded), the eight-finding disposition table (owners named, acceptance desk-side in
+   all rows), the recomputed 143+1 envelope held separate from authority, and the OPEN set retained non-empty. No terminal label claimed — that stays with the desk per the note.
+
+ Worktree HEAD 3590c00, git status clean; counters 5/3 spent, zero remaining; coverage not claimed. Handed back with no further action available or taken.
+
+
+ Handback RECEIVED and consumed. Your ownership question is answered: a worker COMPLETE means your work stopped and control returned to me — it is not my acceptance, and terminal disposition
+ was never yours to hold. My parent disposition of all eight findings is written at /tmp/reactivegas/ms2/e-lean-compliance/handoffs/S3-PHASE1-PARENT-DISPOSITION.md (sha256
+ 57506531ce81b32921815af5bba047db9d003dbac7b7a7d741f445d5ea9c1777): five CLOSED (F-01, F-02, F-04, F-05, F-08 verified by journal readback at real EOF), three PARTLY (F-03 with R-canAdd still
+ OPEN, F-06 finite but unfunded and not authority, F-07 with the separation leg still OPEN), zero reopened, and nothing closed on your assertion. I re-checked all six rows I had raised:
+ close_permission_to_close is correctly OBSERVED upstream-only, the majority witness is correctly n=2, the four guard inversions are correctly ELAB-STATIC, and for
+ governance_enacts_windUpAdmin and commitBaseChange_members you correctly changed the MUTANT rather than the verdict — the new ones reach the goal projection while the old ones stay excluded
+ by projection-erasure, which is the right response to that finding and not verdict-shopping. conservation_preserved moving from guard mutants to per-arm effect mutants honours the
+ unused-guard-witness objection properly. I checked the envelope arithmetic you said was unvalidated: 130 kill plus 4 re-runs plus 7 ELAB plus 2 elaborations equals 143 targeted with 1 build
+ separate, and every class op-count matches its listed members — internally consistent, but the closure multipliers are unverified and it remains unfunded arithmetic, not authority. I
+ verified six rows of 207 and claim no more. Record your own final event closing the ownership point; then STOP — no new work, no Phase 2, no execution, nothing further is asked of you.
+
+
+ Recording final handoff disposition with verification results and envelope arithmetic check.
+
+
+ $ sha256sum /tmp/reactivegas/ms2/e-lean-compliance/handoffs/S3-PHASE1-PARENT-DISPOSITION.md
+
+ 57506531ce81b32921815af5bba047db9d003dbac7b7a7d741f445d5ea9c1777  /tmp/reactivegas/ms2/e-lean-compliance/handoffs/S3-PHASE1-PARENT-DISPOSITION.md
+
+ Took 0.1s
+
+
+
+ read /tmp/reactivegas/ms2/e-lean-compliance/handoffs/S3-PHASE1-PARENT-DISPOSITION.md
+
+
+
+ $ cat >> /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/STATUS.md << 'EOF'
+
+ ## FINAL EVENT — parent disposition received; ownership point closed (append-only append-to-EOF)
+
+ - Parent disposition read in full and hash-verified:
+   `/tmp/reactivegas/ms2/e-lean-compliance/handoffs/S3-PHASE1-PARENT-DISPOSITION.md`
+   sha256 `57506531ce81b32921815af5bba047db9d003dbac7b7a7d741f445d5ea9c1777`.
+ - Ownership understood and accepted: worker COMPLETE = work stopped, control
+   returned. Not acceptance. Terminal disposition was never mine to hold and is
+   not claimed. Disposition stands as written: five CLOSED (F-01, F-02, F-04,
+   F-05, F-08), three PARTLY (F-03 R-canAdd OPEN; F-06 finite but unfunded, not
+   authority; F-07 separation leg OPEN), zero reopened, nothing closed on my
+   assertion. Six rows spot-checked by the owner; remainder unaudited and
+   unaccepted, as stated there.
+ - No correction, no rebuttal, no new work. Counters final: 5 substantive / 3
+   targeted spent, 0 remaining in any grant. Worktree HEAD
+   `3590c0015b84fd58004bf6fb44dd18b107304c48`, `git status --porcelain=v1`
+   clean, verified before this write.
+ - Seat `2401092` STOPPING. Nothing further is asked and nothing further will
+   be done.
+ EOF
+ tail -n 4 /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/STATUS.md | cut -c1-110
+ wc -l < /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/STATUS.md
+
+ `3590c0015b84fd58004bf6fb44dd18b107304c48`, `git status --porcelain=v1`
+   clean, verified before this write.
+ - Seat `2401092` STOPPING. Nothing further is asked and nothing further will
+   be done.
+ 783
+
+ Took 0.0s
+
+
+ Parent disposition received, verified (57506531… matches), read in full, and recorded.
+
+ Final event appended at real EOF (783 lines): ownership point closed on the owner's terms — my COMPLETE was work stopped and control returned, never acceptance; the five CLOSED / three
+ PARTLY / zero reopened disposition stands as written, with nothing closed on my assertion. No correction, no rebuttal, no new work. Counters final at 5 substantive / 3 targeted spent with
+ zero remaining; worktree HEAD 3590c0015b84fd58004bf6fb44dd18b107304c48, git status clean.
+
+ Stopping now, as instructed.
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+/code/reactivegas-66-s3-phase1 (detached)
+↑5.4M ↓666k R388M CH99.9% $1.448 97.4%/1.0M (auto)                                                                                              (opencode-go) muse-spark-1.3-contributor • xhigh
+
+

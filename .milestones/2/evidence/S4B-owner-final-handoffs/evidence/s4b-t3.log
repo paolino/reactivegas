@@ -1,0 +1,53 @@
+KelGroups/Mirrors.lean:62:38: error(lean.unknownIdentifier): Unknown identifier `α`
+KelGroups/Mirrors.lean:66:46: error(lean.unknownIdentifier): Unknown identifier `α`
+KelGroups/Mirrors.lean:68:30: warning: declaration uses 'sorry'
+KelGroups/Mirrors.lean:77:38: error(lean.unknownIdentifier): Unknown identifier `α`
+KelGroups/Mirrors.lean:81:46: error(lean.unknownIdentifier): Unknown identifier `α`
+KelGroups/Mirrors.lean:83:30: warning: declaration uses 'sorry'
+KelGroups/Mirrors.lean:93:33: error(lean.unknownIdentifier): Unknown identifier `α`
+KelGroups/Mirrors.lean:99:41: error(lean.unknownIdentifier): Unknown identifier `α`
+KelGroups/Mirrors.lean:135:28: error: Application type mismatch: The argument
+  he
+has type
+  (tryEnactDetailed gs proposalId).enactment = some en
+but is expected to have type
+  some en = some en
+in the application
+  And.intro he
+KelGroups/Mirrors.lean:149:2: error: No goals to be solved
+KelGroups/Mirrors.lean:176:15: warning: This simp argument is unused:
+  Option.some.injEq
+
+Hint: Omit it from the simp argument list.
+  simp only [̵O̵p̵t̵i̵o̵n̵.̵s̵o̵m̵e̵.̵i̵n̵j̵E̵q̵]̵ ̵at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+KelGroups/Mirrors.lean:181:17: warning: unused variable `view`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+KelGroups/Mirrors.lean:237:15: warning: This simp argument is unused:
+  Option.some.injEq
+
+Hint: Omit it from the simp argument list.
+  simp only [̵O̵p̵t̵i̵o̵n̵.̵s̵o̵m̵e̵.̵i̵n̵j̵E̵q̵]̵ ̵at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+KelGroups/Mirrors.lean:258:61: error: unexpected identifier; expected '}'
+KelGroups/Mirrors.lean:256:6: error: Application type mismatch: The argument
+  (opensOpenIff θ view gs).mp h.opensOpen
+has type
+  ∀ (qid : QuestionId),
+    qid ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup qid gs.openQuestions with
+        | some q => decide (verdictOf θ view q = Verdict.open)
+        | none => true) =
+        true
+but is expected to have type
+  ((List.map Prod.fst gs.openQuestions).all fun qid =>
+      match assocLookup qid gs.openQuestions with
+      | some q => decide (verdictOf θ view q = Verdict.open)
+      | none => true) =
+    true
+in the application
+  ⟨(sweepReady_corr view gs).mp h.toSweepReady, (opensOpenIff θ view gs).mp h.opensOpen⟩
+KelGroups/Mirrors.lean:258:10: error: Fields missing: `opensOpen`

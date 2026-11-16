@@ -1,0 +1,555 @@
+Magic: Wanted 33214052,
+       got    33214052
+Version: Wanted 9084,
+         got    9084
+Way: Wanted ,
+     got    
+interface KelGroups.Server.JSON [orphan module] 9084
+  interface hash: bea9b9e4215c57c2822279d352d35c90
+  ABI hash: c68cc226a0a4969aec6ea3f8de5011a7
+  export-list hash: 5a800cad67d5916df7d779aa3f0d1c74
+  orphan hash: 959ff8a8c7f74f184a4d5b23a0edf787
+  flag hash: 02cc6b225a4b501881ce9bf3a82e8a2b
+  opt_hash: a03ee3c0445ea447025b482e15ed9c52
+  hpc_hash: 93b885adfe0da089cdf634904fd59f71
+  plugin_hash: ad164012d6b1e14942349d58b1132007
+  src_hash: b34eb09b0509abfcb946f1b3a5c6bcee
+  sig of: Nothing
+  used TH splices: False
+  where
+exports:
+  AppendResult{AppendResult sequenceNumber}
+  ServerError{BadRequest PassphraseRequired SignatureError StaleTip ValidationErr WrongPassphrase}
+  Submission{Submission subEvent subPassphrase subPriorDigest subSignature subSigner}
+direct module dependencies: kelgroups-0.1.0.0-inplace:KelGroups.Bootstrap
+                            kelgroups-0.1.0.0-inplace:KelGroups.Event
+                            kelgroups-0.1.0.0-inplace:KelGroups.State
+                            kelgroups-0.1.0.0-inplace:KelGroups.Types
+                            kelgroups-0.1.0.0-inplace:KelGroups.Validate
+boot module dependencies:
+direct package dependencies: aeson-2.2.3.0 base-4.19.2.0
+                             containers-0.6.8 text-2.1.1
+plugin package dependencies:
+orphans: GHC.Base GHC.Float Data.Orphans Data.Binary.Generic
+         Data.ByteString.Builder GHC.Prim.Ext
+         Data.Hashable.Generic.Instances Data.Functor.WithIndex.Instances
+         System.Random.Seed Control.Monad.STM Data.Text Data.Text.Lazy
+         Data.Text.Show Data.Time.Calendar.Gregorian Data.Time.Clock.TAI
+         Data.Time.Format.Format.Instances Data.Time.Format.Parse
+         Data.Time.Format.Parse.Instances
+         Data.Time.LocalTime.Internal.LocalTime
+         Data.Time.LocalTime.Internal.ZonedTime Data.Time.Orphans
+         Data.Vector.Fusion.Bundle Data.Vector.Unboxed
+family instance modules: Data.Aeson.KeyMap
+                         Data.Aeson.Types.Internal Control.Applicative Control.Arrow
+                         Data.Array.Byte Data.Complex Data.Functor.Compose
+                         Data.Functor.Const Data.Functor.Identity Data.Functor.Product
+                         Data.Functor.Sum Data.Monoid Data.Semigroup Data.Semigroup.Internal
+                         Data.Type.Ord Data.Version GHC.Generics GHC.IO.Exception GHC.IsList
+                         GHC.RTS.Flags GHC.Stats Data.ByteString.Internal.Type
+                         Data.ByteString.Lazy.Internal Data.ByteString.Short.Internal
+                         Data.IntMap.Internal Data.IntSet.Internal Data.Map.Internal
+                         Data.Sequence.Internal Data.Set.Internal Data.Tree Data.Fix
+                         Control.DeepSeq Data.DList.DNonEmpty.Internal Data.DList.Internal
+                         System.OsString.Internal.Types.Hidden GHC.ForeignSrcLang.Type
+                         GHC.LanguageExtensions.Type Data.Hashable.Class Network.URI
+                         System.OsString.Internal.Types Text.PrettyPrint.Annotated.HughesPJ
+                         Text.PrettyPrint.HughesPJ Control.Monad.Primitive
+                         Data.Primitive.Array Data.Primitive.PrimArray
+                         Data.Primitive.SmallArray System.Random.Internal System.Random.Seed
+                         System.Random.Stateful Data.Strict.Either Data.Strict.Maybe
+                         Data.Strict.These Data.Strict.Tuple Data.Tagged
+                         Language.Haskell.TH.Syntax Data.Text Data.Text.Lazy
+                         Data.Text.Short.Internal Data.Functor.These Data.These
+                         Data.Time.Orphans Control.Applicative.Backwards
+                         Control.Monad.Trans.Accum Control.Monad.Trans.Cont
+                         Control.Monad.Trans.Except Control.Monad.Trans.Identity
+                         Control.Monad.Trans.Maybe Control.Monad.Trans.RWS.CPS
+                         Control.Monad.Trans.RWS.Lazy Control.Monad.Trans.RWS.Strict
+                         Control.Monad.Trans.Reader Control.Monad.Trans.Select
+                         Control.Monad.Trans.State.Lazy Control.Monad.Trans.State.Strict
+                         Control.Monad.Trans.Writer.CPS Control.Monad.Trans.Writer.Lazy
+                         Control.Monad.Trans.Writer.Strict Data.Functor.Constant
+                         Data.Functor.Reverse Data.HashMap.Internal Data.HashSet.Internal
+                         Data.UUID.Types.Internal Data.UUID.Types.Internal.Builder
+                         Data.Vector Data.Vector.Generic.Base Data.Vector.Primitive
+                         Data.Vector.Storable Data.Vector.Strict Data.Vector.Unboxed
+                         Data.Vector.Unboxed.Base
+import  -/  Data.Aeson 8cc42abdf5c6d1d5ed8ae6277b4edc0d
+import  -/  Data.Aeson.Types.FromJSON 1fd2e5776fdf2872ec0a5352e746b3b4
+import  -/  Data.Aeson.Types.Internal d1ba1dadc8aec3d128ae75e0173396a4
+import  -/  Data.Aeson.Types.ToJSON 8935834380797dad32921ecae2186153
+import  -/  Control.Monad.Fail 1b1b56e075165bdf4cf7a3a676fdaa4a
+import  -/  Data.Functor 6757f9a70c8aea6d296fc5658b48ebf6
+import  -/  GHC.Base 7005ab33aeb89db631d4bff83b554cb0
+import  -/  GHC.Show 5a2b2726b9bd0a310d2549ac2f2cac99
+import  -/  Prelude cdb3bcad7e4db43703bf928ea9dd689b
+import  -/  Data.Map.Internal 3b252067d1f29fe7d6f722c4ec8dabaf
+import  -/  Data.Map.Strict 8e364d5767430627ad6825e34923fa66
+import  -/  Data.Map.Strict.Internal 693014c8295e589dd01302a352729af5
+import  -/  Data.Set 769fa055ac7ef7f1f73cbbe6c9c6414f
+import  -/  Data.Set.Internal 55a3a2f19c011e7df252559111fe7755
+import  -/  GHC.Classes edf48f98cea918f56491bf2c2a437e60
+import  -/  kelgroups-0.1.0.0-inplace:KelGroups.Bootstrap 4d2760f5da9aef8cb317025a4ea1db1c
+  exports: 2af8b7fe6f897885b781181c787b7f82
+  AuthMode 00092ad8fce82d1c1e8f9e8a8ad3b352
+  Bootstrap 93d539ec31daeeb584041af57cd7ea0d
+  Normal f93b9bf98c11134e9d41d420645f4700
+import  -/  kelgroups-0.1.0.0-inplace:KelGroups.Event a3294c080ea280ab7428add6cb370582
+  exports: a6f750ff52fae96972d13813955da23c
+  AdmitMember 9ddbd3d3cf38715e0b68943a263aa9ad
+  App b637b17663f18467bb5ae31559ac12a9
+  Approve 89ec05f10d4021bb1127a319f79edf55
+  Base fa8caf0d83522fc9f99e1e692e369fcc
+  BaseChange b29ef21ca5725d95204470d1d7f21529
+  BaseEvent b5c58aec1be5a3e472e85d678d1fef83
+  BaseMutation be3168e76ee9a5da62ada24ee8412eca
+  ChangeRoles 1f1f7ebe624614069fd540901c3fc2fe
+  ChangeRolesVoted 0a0b6af30d93795220dc30ccf77757f9
+  DirectCommand 380ce1d36bc21bc028f7535b3593c083
+  GroupEvent 5d32fb4a30c0018379001fe54fd4f9dd
+  IEApp 864a56018716217c06d06cb93b0a9bd8
+  IEApprove c7835a1fa723dd3ebf2f419cfbda2902
+  IEDirect 4b88bcad387e4d8db53758513eaf75df
+  IEPropose d7645d093e3e995e60bfcee08c10afd5
+  IntegratedEvent ecb1ceb585acc33e84f003d1746b4127
+  IntroduceMember c85b7f23445bccd283e11f9c03d43dea
+  MemberAdmitted 037f43fe359222f10d02e7dd28bc599f
+  MemberRemoved f57898be4b97f5522555d346aae80640
+  Proposal dcb33a617b229e92f73a19599ab6f3b7
+  Propose 33785e9e7fe462b3d674c7b7583dfd36
+  RemoveMember ce25748ec4f599364291e3ca5ff9a054
+  RemoveMemberVoted 89c71d60045f39cf981bd78c1f045aec
+  RolesChanged bcc978513b47758aad5bab97eedc3f55
+import  -/  kelgroups-0.1.0.0-inplace:KelGroups.State 88bc13629a5611a93bd87443dbf3c458
+  exports: 0be4f207b3d018f25d37b71ddc9f6f8d
+  GroupState 3ffd01400d5bb0ef34771a8f8baa5543
+  GroupState 499a8f448fa689f0882e14f5be03e421
+  PendingBase c15751d4c58e3d9d7dd5f30600424ddd
+  PendingBase 24a16235dca21e75405245c328d218b3
+  PendingProposal b678da1f6b5e5e501db31a23627ee521
+  PendingProposal 1615ce0c082999a6de1ba6420d860f7a
+  appFold 7570c508e8314c2f2592202309009bea
+  approvals 0bedada4c2ee3ff077f674e23c585452
+  members 6b51404c2812d0b75b98669a88a543c5
+  pbApprovals 9db34511ea5a1227da937ab09c362822
+  pbMutation 355691c98ab371a6d32b1a9223773521
+  pbProposer 018907e75abed3f177c34b5d0db02bed
+  pendingBase a6195d05dafe2d8c11604e7b9f768ae7
+  pendingProposals 8e4214ffd065f1b4fe7f81d5c1e0cd05
+  proposal 3084e5262ccf0b2c98f643db059ca011
+  proposer ea30e547f4d18be48fbd132338a9f79b
+import  -/  kelgroups-0.1.0.0-inplace:KelGroups.Types 09d20917e7e6918a7f78329cc734d1b2
+  exports: e422ff1a3dc8a9a2ea7a222228ec7d0f
+  Admin c0f197e0470f3936b48019ae92e14e1e
+  AdminRole 199b57e364ce9395e920ef40b1170133
+  AppRole 494014b10b85af84d4088c73f536b1e4
+  Member a4815954aeeb19b54c131a9ef05de4d1
+  Member 0d0638938b81f542b964714540b6b6e9
+  PrivateAdmin bd05f183083b64f0d151ee2f68acb64c
+  PublicAdmin a34c587f6dbf1ab0f738d3a0fbc1283a
+  Role 71757c692785611edd670343c53829e5
+  memberEmail 2ef82a35b48431716a9c5a0a242b1a46
+  memberKey d9cc12b89bb75904d9658ecb18467609
+  memberRoles 8d664093dec768b1f99592271f4cb1fa
+import  -/  kelgroups-0.1.0.0-inplace:KelGroups.Validate ae0270abff279b36c7aa534827af9f8e
+  exports: 5c11726236df15e8d7b96369b42917cd
+  AlreadyApproved b325ef22ea2b03949bec00bc6607b8bb
+  BootstrapRequiresAdmin a93a59884d72761824aa5b7113db5a7c
+  InvalidKey 8401014d3bc227c3e6651f0aee9b0191
+  MemberAlreadyExists b6103dac924f6663d9b7f823eb82cf5b
+  MemberNotFound 8276d6d91a83380d85177dc614831681
+  NotAMember 92eabbfe652898d90856e58c26d29046
+  NotAnAdmin 3ba952b073ffa7b7adeb437641924f19
+  ProposalNotFound 63444c0875c9541cd734a11869c60286
+  ReservedKey e24b0fed084921009b0207954501c138
+  RoleAddPrecondition a4a35be346a804a0d256987ea6e0bb06
+  RoleRemovePrecondition 59d2d08a464b748d1dc2f9462c5a1e02
+  ValidationError f2467829170e91728b3f25e89cd59c54
+import  -/  Data.Text ee87c38c9e2f1858cc015e4d53efdf7f
+import  -/  Data.Text.Internal fd901c27c2d420934e5cc451eb1bbad9
+bd033c11bade4c4ff5d369cdd3c70e8d
+  $fEqAppendResult :: GHC.Classes.Eq AppendResult
+  DFunId
+  []
+7fe1cee1cf1946ca3de18aaff25eabdf
+  $fEqServerError :: GHC.Classes.Eq ServerError
+  DFunId
+  []
+b2a6b4df9702c4acccfed97e4eead519
+  $fEqSubmission :: GHC.Classes.Eq a => GHC.Classes.Eq (Submission a)
+  DFunId
+  []
+8adc68f1577b0ccfaacefd1adc34454a
+  $fFromJSONAdmin ::
+    Data.Aeson.Types.FromJSON.FromJSON KelGroups.Types.Admin
+  DFunId
+  []
+fed5942a822ffe4bda668c49a5ebba0a
+  $fFromJSONAppendResult ::
+    Data.Aeson.Types.FromJSON.FromJSON AppendResult
+  DFunId
+  []
+4fba3269e98519bcaf88339f068dcab2
+  $fFromJSONAuthMode ::
+    Data.Aeson.Types.FromJSON.FromJSON KelGroups.Bootstrap.AuthMode
+  DFunId
+  []
+8ce0275f1ef0466bb0f346735d4656a1
+  $fFromJSONBaseChange ::
+    Data.Aeson.Types.FromJSON.FromJSON KelGroups.Event.BaseChange
+  DFunId
+  []
+b376b81759674c511ce6403610a03386
+  $fFromJSONBaseEvent ::
+    Data.Aeson.Types.FromJSON.FromJSON KelGroups.Event.BaseEvent
+  DFunId
+  []
+e6be9fa76f1d2f3f9790049af83ffc91
+  $fFromJSONBaseMutation ::
+    Data.Aeson.Types.FromJSON.FromJSON KelGroups.Event.BaseMutation
+  DFunId
+  []
+62f4d115bb6f8a06054da7cdb199c3ca
+  $fFromJSONDirectCommand ::
+    Data.Aeson.Types.FromJSON.FromJSON KelGroups.Event.DirectCommand
+  DFunId
+  []
+d037a010c0f5edb33f5c46da9b9de561
+  $fFromJSONGroupEvent ::
+    Data.Aeson.Types.FromJSON.FromJSON a =>
+    Data.Aeson.Types.FromJSON.FromJSON (KelGroups.Event.GroupEvent a)
+  DFunId
+  []
+a0326ca87ac4f5e9e0c0f72660a6d57d
+  $fFromJSONGroupState ::
+    Data.Aeson.Types.FromJSON.FromJSON a =>
+    Data.Aeson.Types.FromJSON.FromJSON (KelGroups.State.GroupState a)
+  DFunId
+  []
+9cb1d6bf4a2eee61a619121479978038
+  $fFromJSONIntegratedEvent ::
+    (Data.Aeson.Types.FromJSON.FromJSON bp,
+     Data.Aeson.Types.FromJSON.FromJSON e) =>
+    Data.Aeson.Types.FromJSON.FromJSON
+      (KelGroups.Event.IntegratedEvent bp e)
+  DFunId
+  []
+acc8b942ed0ece69619245066ef838a4
+  $fFromJSONMember ::
+    Data.Aeson.Types.FromJSON.FromJSON KelGroups.Types.Member
+  DFunId
+  []
+c2ea095106cc9e160c9b197fbfa6533d
+  $fFromJSONPendingBase ::
+    Data.Aeson.Types.FromJSON.FromJSON KelGroups.State.PendingBase
+  DFunId
+  []
+5b98b6547b9bdee87aae596bcca75b14
+  $fFromJSONPendingProposal ::
+    Data.Aeson.Types.FromJSON.FromJSON KelGroups.State.PendingProposal
+  DFunId
+  []
+e7aee8576425a35dc5e3c2196c356703
+  $fFromJSONProposal ::
+    Data.Aeson.Types.FromJSON.FromJSON KelGroups.Event.Proposal
+  DFunId
+  []
+99389ac88cb7306c9f931fabf105ca17
+  $fFromJSONRole ::
+    Data.Aeson.Types.FromJSON.FromJSON KelGroups.Types.Role
+  DFunId
+  []
+a71adf1103dc49396b2fce4e5f9bfb49
+  $fFromJSONServerError ::
+    Data.Aeson.Types.FromJSON.FromJSON ServerError
+  DFunId
+  []
+f5d16b2869ac2ed2bf527abc0e999511
+  $fFromJSONSubmission ::
+    Data.Aeson.Types.FromJSON.FromJSON a =>
+    Data.Aeson.Types.FromJSON.FromJSON (Submission a)
+  DFunId
+  []
+a72ea92ecc090f2b9c4816bcdad9e640
+  $fFromJSONValidationError ::
+    Data.Aeson.Types.FromJSON.FromJSON
+      KelGroups.Validate.ValidationError
+  DFunId
+  []
+05f7b03cd647492c62cb35eeeb046d85
+  $fShowAppendResult :: GHC.Show.Show AppendResult
+  DFunId
+  []
+1c20f960b0da461fd222611a7f066cb5
+  $fShowServerError :: GHC.Show.Show ServerError
+  DFunId
+  []
+4310b3af636c1202a30f7bfceff87191
+  $fShowSubmission :: GHC.Show.Show a => GHC.Show.Show (Submission a)
+  DFunId
+  []
+7bf5bc76cbca155ca4a20415f76a8ad2
+  $fToJSONAdmin ::
+    Data.Aeson.Types.ToJSON.ToJSON KelGroups.Types.Admin
+  DFunId
+  []
+31b19d0ef8ee8bb466a47e51e2677428
+  $fToJSONAppendResult :: Data.Aeson.Types.ToJSON.ToJSON AppendResult
+  DFunId
+  []
+a5ea0647241eb947ba1bf9ea82259f4f
+  $fToJSONAuthMode ::
+    Data.Aeson.Types.ToJSON.ToJSON KelGroups.Bootstrap.AuthMode
+  DFunId
+  []
+037bb8ce75b7f059c648a8b473b3c71a
+  $fToJSONBaseChange ::
+    Data.Aeson.Types.ToJSON.ToJSON KelGroups.Event.BaseChange
+  DFunId
+  []
+a307903eee87ad449f6a7076633ff18e
+  $fToJSONBaseEvent ::
+    Data.Aeson.Types.ToJSON.ToJSON KelGroups.Event.BaseEvent
+  DFunId
+  []
+adfeca8771dbf955569a0b4ce024a66c
+  $fToJSONBaseMutation ::
+    Data.Aeson.Types.ToJSON.ToJSON KelGroups.Event.BaseMutation
+  DFunId
+  []
+59e12c8a066de2974b62d4edd15eecca
+  $fToJSONDirectCommand ::
+    Data.Aeson.Types.ToJSON.ToJSON KelGroups.Event.DirectCommand
+  DFunId
+  []
+d08d9f58f42f24d77551357dd3ccaf22
+  $fToJSONGroupEvent ::
+    Data.Aeson.Types.ToJSON.ToJSON a =>
+    Data.Aeson.Types.ToJSON.ToJSON (KelGroups.Event.GroupEvent a)
+  DFunId
+  []
+337ee378872257c0164a47acaa6658c5
+  $fToJSONGroupState ::
+    Data.Aeson.Types.ToJSON.ToJSON a =>
+    Data.Aeson.Types.ToJSON.ToJSON (KelGroups.State.GroupState a)
+  DFunId
+  []
+60e3bc76b2e78d43a46417d979cf9fcb
+  $fToJSONIntegratedEvent ::
+    (Data.Aeson.Types.ToJSON.ToJSON bp,
+     Data.Aeson.Types.ToJSON.ToJSON e) =>
+    Data.Aeson.Types.ToJSON.ToJSON
+      (KelGroups.Event.IntegratedEvent bp e)
+  DFunId
+  []
+6811d308f7c535a9d0e9dc0172a99231
+  $fToJSONMember ::
+    Data.Aeson.Types.ToJSON.ToJSON KelGroups.Types.Member
+  DFunId
+  []
+ffac3395b5cd9db372b0e7058dce99c4
+  $fToJSONPendingBase ::
+    Data.Aeson.Types.ToJSON.ToJSON KelGroups.State.PendingBase
+  DFunId
+  []
+bab826ad5b94b2b20b6bdb67a295f822
+  $fToJSONPendingProposal ::
+    Data.Aeson.Types.ToJSON.ToJSON KelGroups.State.PendingProposal
+  DFunId
+  []
+4bd615ebde8b32c4d7699b7ecd0874c8
+  $fToJSONProposal ::
+    Data.Aeson.Types.ToJSON.ToJSON KelGroups.Event.Proposal
+  DFunId
+  []
+557796682be6f8fd83897a586cb70775
+  $fToJSONRole :: Data.Aeson.Types.ToJSON.ToJSON KelGroups.Types.Role
+  DFunId
+  []
+db78162ab5c31ac588269a99c62e93fd
+  $fToJSONServerError :: Data.Aeson.Types.ToJSON.ToJSON ServerError
+  DFunId
+  []
+501e31418a1af3bcac110c04d96ef256
+  $fToJSONSubmission ::
+    Data.Aeson.Types.ToJSON.ToJSON a =>
+    Data.Aeson.Types.ToJSON.ToJSON (Submission a)
+  DFunId
+  []
+d720f7c11e57b9badbaa702fe0708043
+  $fToJSONValidationError ::
+    Data.Aeson.Types.ToJSON.ToJSON KelGroups.Validate.ValidationError
+  DFunId
+  []
+bccbc5e20b4c71c24214dafa3df2f3e9
+  $tc'AppendResult :: GHC.Types.TyCon
+  []
+7a438e0cc31fce5873ebad893d21d6ea
+  $tc'BadRequest :: GHC.Types.TyCon
+  []
+f8db8f0e5a0ec9c20c0e0ea0a0aca358
+  $tc'PassphraseRequired :: GHC.Types.TyCon
+  []
+85871f348bd1b43de40923ac1d8b6877
+  $tc'SignatureError :: GHC.Types.TyCon
+  []
+e1cd39e9906a9646a260dff1c1eaa432
+  $tc'StaleTip :: GHC.Types.TyCon
+  []
+317b4d92ac8f196dca4b1ca1213c1d38
+  $tc'Submission :: GHC.Types.TyCon
+  []
+f57c01d88d95c36cc9aca1bc32614782
+  $tc'ValidationErr :: GHC.Types.TyCon
+  []
+f30930170888dccf76e18b0f05116147
+  $tc'WrongPassphrase :: GHC.Types.TyCon
+  []
+4f2602e94d53865f7b1a55a46c18cd0b
+  $tcAppendResult :: GHC.Types.TyCon
+  []
+decc7eb26a443682983fc51c48335e5c
+  $tcServerError :: GHC.Types.TyCon
+  []
+b879906fdb179f041be148a52393dea7
+  $tcSubmission :: GHC.Types.TyCon
+  []
+96a4bdbff586b6bee02335db8bb8b22a
+  $trModule :: GHC.Types.Module
+  []
+e215ebc47717153b1817ba8f9d8a7bdb
+  type AppendResult :: *
+  newtype AppendResult
+    = AppendResult {sequenceNumber :: GHC.Types.Int}
+d0d23bdd91337e511e7ab70bda921e01
+  type ServerError :: *
+  data ServerError
+    = ValidationErr !KelGroups.Validate.ValidationError
+    | PassphraseRequired
+    | WrongPassphrase
+    | SignatureError !Data.Text.Internal.Text
+    | StaleTip !Data.Text.Internal.Text !Data.Text.Internal.Text
+    | BadRequest !Data.Text.Internal.Text
+ddffa41c900082985a60412a89cad35a
+  type Submission :: * -> *
+  data Submission a
+    = Submission {subPassphrase :: !(GHC.Maybe.Maybe
+                                       Data.Text.Internal.Text),
+                  subSigner :: !Data.Text.Internal.Text,
+                  subSignature :: !Data.Text.Internal.Text,
+                  subPriorDigest :: !(GHC.Maybe.Maybe Data.Text.Internal.Text),
+                  subEvent :: !(KelGroups.Event.GroupEvent a)}
+4068c38a51fc46e729055e53a524a4b0
+  sequenceNumber :: AppendResult -> GHC.Types.Int
+  RecSel Left AppendResult
+  []
+45dc1a2a9c92df21e174aa01204f731f
+  subEvent :: Submission a -> KelGroups.Event.GroupEvent a
+  RecSel Left Submission
+  []
+7c55adb209e581573cded0e40c2fb1f3
+  subPassphrase ::
+    Submission a -> GHC.Maybe.Maybe Data.Text.Internal.Text
+  RecSel Left Submission
+  []
+f736db0a5212c653597c08a1827b1281
+  subPriorDigest ::
+    Submission a -> GHC.Maybe.Maybe Data.Text.Internal.Text
+  RecSel Left Submission
+  []
+79b545ba4b6261bd2e66326fa449817a
+  subSignature :: Submission a -> Data.Text.Internal.Text
+  RecSel Left Submission
+  []
+328e3af3f2aae47accb313f01b72341e
+  subSigner :: Submission a -> Data.Text.Internal.Text
+  RecSel Left Submission
+  []
+instance GHC.Classes.Eq [AppendResult] = $fEqAppendResult
+instance GHC.Classes.Eq [ServerError] = $fEqServerError
+instance GHC.Classes.Eq [Submission] = $fEqSubmission
+instance [orphan] Data.Aeson.Types.FromJSON.FromJSON [KelGroups.Types.Admin]
+  = $fFromJSONAdmin
+instance Data.Aeson.Types.FromJSON.FromJSON [AppendResult]
+  = $fFromJSONAppendResult
+instance [orphan] Data.Aeson.Types.FromJSON.FromJSON [KelGroups.Bootstrap.AuthMode]
+  = $fFromJSONAuthMode
+instance [orphan] Data.Aeson.Types.FromJSON.FromJSON [KelGroups.Event.BaseChange]
+  = $fFromJSONBaseChange
+instance [orphan] Data.Aeson.Types.FromJSON.FromJSON [KelGroups.Event.BaseEvent]
+  = $fFromJSONBaseEvent
+instance [orphan] Data.Aeson.Types.FromJSON.FromJSON [KelGroups.Event.BaseMutation]
+  = $fFromJSONBaseMutation
+instance [orphan] Data.Aeson.Types.FromJSON.FromJSON [KelGroups.Event.DirectCommand]
+  = $fFromJSONDirectCommand
+instance [orphan] Data.Aeson.Types.FromJSON.FromJSON [KelGroups.Event.GroupEvent]
+  = $fFromJSONGroupEvent
+instance [orphan] Data.Aeson.Types.FromJSON.FromJSON [KelGroups.State.GroupState]
+  = $fFromJSONGroupState
+instance [orphan] Data.Aeson.Types.FromJSON.FromJSON [KelGroups.Event.IntegratedEvent]
+  = $fFromJSONIntegratedEvent
+instance [orphan] Data.Aeson.Types.FromJSON.FromJSON [KelGroups.Types.Member]
+  = $fFromJSONMember
+instance [orphan] Data.Aeson.Types.FromJSON.FromJSON [KelGroups.State.PendingBase]
+  = $fFromJSONPendingBase
+instance [orphan] Data.Aeson.Types.FromJSON.FromJSON [KelGroups.State.PendingProposal]
+  = $fFromJSONPendingProposal
+instance [orphan] Data.Aeson.Types.FromJSON.FromJSON [KelGroups.Event.Proposal]
+  = $fFromJSONProposal
+instance [orphan] Data.Aeson.Types.FromJSON.FromJSON [KelGroups.Types.Role]
+  = $fFromJSONRole
+instance Data.Aeson.Types.FromJSON.FromJSON [ServerError]
+  = $fFromJSONServerError
+instance Data.Aeson.Types.FromJSON.FromJSON [Submission]
+  = $fFromJSONSubmission
+instance [orphan] Data.Aeson.Types.FromJSON.FromJSON [KelGroups.Validate.ValidationError]
+  = $fFromJSONValidationError
+instance GHC.Show.Show [AppendResult] = $fShowAppendResult
+instance GHC.Show.Show [ServerError] = $fShowServerError
+instance GHC.Show.Show [Submission] = $fShowSubmission
+instance [orphan] Data.Aeson.Types.ToJSON.ToJSON [KelGroups.Types.Admin]
+  = $fToJSONAdmin
+instance Data.Aeson.Types.ToJSON.ToJSON [AppendResult]
+  = $fToJSONAppendResult
+instance [orphan] Data.Aeson.Types.ToJSON.ToJSON [KelGroups.Bootstrap.AuthMode]
+  = $fToJSONAuthMode
+instance [orphan] Data.Aeson.Types.ToJSON.ToJSON [KelGroups.Event.BaseChange]
+  = $fToJSONBaseChange
+instance [orphan] Data.Aeson.Types.ToJSON.ToJSON [KelGroups.Event.BaseEvent]
+  = $fToJSONBaseEvent
+instance [orphan] Data.Aeson.Types.ToJSON.ToJSON [KelGroups.Event.BaseMutation]
+  = $fToJSONBaseMutation
+instance [orphan] Data.Aeson.Types.ToJSON.ToJSON [KelGroups.Event.DirectCommand]
+  = $fToJSONDirectCommand
+instance [orphan] Data.Aeson.Types.ToJSON.ToJSON [KelGroups.Event.GroupEvent]
+  = $fToJSONGroupEvent
+instance [orphan] Data.Aeson.Types.ToJSON.ToJSON [KelGroups.State.GroupState]
+  = $fToJSONGroupState
+instance [orphan] Data.Aeson.Types.ToJSON.ToJSON [KelGroups.Event.IntegratedEvent]
+  = $fToJSONIntegratedEvent
+instance [orphan] Data.Aeson.Types.ToJSON.ToJSON [KelGroups.Types.Member]
+  = $fToJSONMember
+instance [orphan] Data.Aeson.Types.ToJSON.ToJSON [KelGroups.State.PendingBase]
+  = $fToJSONPendingBase
+instance [orphan] Data.Aeson.Types.ToJSON.ToJSON [KelGroups.State.PendingProposal]
+  = $fToJSONPendingProposal
+instance [orphan] Data.Aeson.Types.ToJSON.ToJSON [KelGroups.Event.Proposal]
+  = $fToJSONProposal
+instance [orphan] Data.Aeson.Types.ToJSON.ToJSON [KelGroups.Types.Role]
+  = $fToJSONRole
+instance Data.Aeson.Types.ToJSON.ToJSON [ServerError]
+  = $fToJSONServerError
+instance Data.Aeson.Types.ToJSON.ToJSON [Submission]
+  = $fToJSONSubmission
+instance [orphan] Data.Aeson.Types.ToJSON.ToJSON [KelGroups.Validate.ValidationError]
+  = $fToJSONValidationError
+Warnings:
+  Deprecated names:
+  Deprecated exports:
+trusted: none
+require own pkg trusted: False
+docs:
+  Nothing
+extensible fields:
+

@@ -1,0 +1,213 @@
+compiler-index marker associations found=117/117
+compiled ValidationError constructor definitions=11
+{
+  "KelGroups.ValidationError.alreadyApproved": {
+    "module": "KelGroups.Validate",
+    "definition": [
+      13,
+      4,
+      13,
+      19,
+      "KelGroups.ValidationError",
+      6,
+      0,
+      18,
+      31,
+      6,
+      10,
+      6,
+      25
+    ],
+    "index_sha256": "761499bde23fe97951226e1a8e3d134b0b3f844e18980eb9a93cfb1f4725ba51"
+  },
+  "KelGroups.ValidationError.bootstrapRequiresAdmin": {
+    "module": "KelGroups.Validate",
+    "definition": [
+      9,
+      4,
+      9,
+      26,
+      "KelGroups.ValidationError",
+      6,
+      0,
+      18,
+      31,
+      6,
+      10,
+      6,
+      25
+    ],
+    "index_sha256": "761499bde23fe97951226e1a8e3d134b0b3f844e18980eb9a93cfb1f4725ba51"
+  },
+  "KelGroups.ValidationError.invalidKey": {
+    "module": "KelGroups.Validate",
+    "definition": [
+      16,
+      4,
+      16,
+      14,
+      "KelGroups.ValidationError",
+      6,
+      0,
+      18,
+      31,
+      6,
+      10,
+      6,
+      25
+    ],
+    "index_sha256": "761499bde23fe97951226e1a8e3d134b0b3f844e18980eb9a93cfb1f4725ba51"
+  },
+  "KelGroups.ValidationError.memberAlreadyExists": {
+    "module": "KelGroups.Validate",
+    "definition": [
+      10,
+      4,
+      10,
+      23,
+      "KelGroups.ValidationError",
+      6,
+      0,
+      18,
+      31,
+      6,
+      10,
+      6,
+      25
+    ],
+    "index_sha256": "761499bde23fe97951226e1a8e3d134b0b3f844e18980eb9a93cfb1f4725ba51"
+  },
+  "KelGroups.ValidationError.memberNotFound": {
+    "module": "KelGroups.Validate",
+    "definition": [
+      11,
+      4,
+      11,
+      18,
+      "KelGroups.ValidationError",
+      6,
+      0,
+      18,
+      31,
+      6,
+      10,
+      6,
+      25
+    ],
+    "index_sha256": "761499bde23fe97951226e1a8e3d134b0b3f844e18980eb9a93cfb1f4725ba51"
+  },
+  "KelGroups.ValidationError.notAMember": {
+    "module": "KelGroups.Validate",
+    "definition": [
+      7,
+      4,
+      7,
+      14,
+      "KelGroups.ValidationError",
+      6,
+      0,
+      18,
+      31,
+      6,
+      10,
+      6,
+      25
+    ],
+    "index_sha256": "761499bde23fe97951226e1a8e3d134b0b3f844e18980eb9a93cfb1f4725ba51"
+  },
+  "KelGroups.ValidationError.notAnAdmin": {
+    "module": "KelGroups.Validate",
+    "definition": [
+      8,
+      4,
+      8,
+      14,
+      "KelGroups.ValidationError",
+      6,
+      0,
+      18,
+      31,
+      6,
+      10,
+      6,
+      25
+    ],
+    "index_sha256": "761499bde23fe97951226e1a8e3d134b0b3f844e18980eb9a93cfb1f4725ba51"
+  },
+  "KelGroups.ValidationError.proposalNotFound": {
+    "module": "KelGroups.Validate",
+    "definition": [
+      12,
+      4,
+      12,
+      20,
+      "KelGroups.ValidationError",
+      6,
+      0,
+      18,
+      31,
+      6,
+      10,
+      6,
+      25
+    ],
+    "index_sha256": "761499bde23fe97951226e1a8e3d134b0b3f844e18980eb9a93cfb1f4725ba51"
+  },
+  "KelGroups.ValidationError.reservedKey": {
+    "module": "KelGroups.Validate",
+    "definition": [
+      17,
+      4,
+      17,
+      15,
+      "KelGroups.ValidationError",
+      6,
+      0,
+      18,
+      31,
+      6,
+      10,
+      6,
+      25
+    ],
+    "index_sha256": "761499bde23fe97951226e1a8e3d134b0b3f844e18980eb9a93cfb1f4725ba51"
+  },
+  "KelGroups.ValidationError.roleAddPrecondition": {
+    "module": "KelGroups.Validate",
+    "definition": [
+      14,
+      4,
+      14,
+      23,
+      "KelGroups.ValidationError",
+      6,
+      0,
+      18,
+      31,
+      6,
+      10,
+      6,
+      25
+    ],
+    "index_sha256": "761499bde23fe97951226e1a8e3d134b0b3f844e18980eb9a93cfb1f4725ba51"
+  },
+  "KelGroups.ValidationError.roleRemovePrecondition": {
+    "module": "KelGroups.Validate",
+    "definition": [
+      15,
+      4,
+      15,
+      26,
+      "KelGroups.ValidationError",
+      6,
+      0,
+      18,
+      31,
+      6,
+      10,
+      6,
+      25
+    ],
+    "index_sha256": "761499bde23fe97951226e1a8e3d134b0b3f844e18980eb9a93cfb1f4725ba51"
+  }
+}

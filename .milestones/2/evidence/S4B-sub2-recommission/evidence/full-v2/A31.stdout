@@ -1,0 +1,17 @@
+KelGroups.wellFormedB {α : Type} (gs : GroupState α) : Bool
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A31.lean:110:52: error: Application type mismatch: The argument
+  (pendingCoherent_corr gs).mp pC
+has type
+  pendingCoherentB gs = true
+but is expected to have type
+  True
+in the application
+  ⟨(membersCoherent_corr gs).mp mC, (pendingCoherent_corr gs).mp pC⟩
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A31.lean:113:83: error: Application type mismatch: The argument
+  pC
+has type
+  True
+but is expected to have type
+  pendingCoherentB gs = true
+in the application
+  (pendingCoherent_corr gs).mpr pC

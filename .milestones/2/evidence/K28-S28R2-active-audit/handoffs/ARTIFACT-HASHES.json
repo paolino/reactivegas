@@ -1,0 +1,22 @@
+[
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/AUDIT-REPORT.md",
+    "sha256": "d1d1906081a411e2dbb7ef1f436e5fed178c2e916bd1e162acb048166c616718"
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/REQUIREMENT-LEDGER.md",
+    "sha256": "8d09b947c7c65e76209bfc2ce84e22ee2175544636a2433baa92fd7ca5f9bd27"
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/VERIFICATION-RECEIPTS.md",
+    "sha256": "878a20f20ec6ad516d043b8e119a98698832a144707af8efc7256d0c7457b89e"
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/EVIDENCE-INVENTORY.json",
+    "sha256": "3f352562580c113ff72b5b007a867c983e45335547e5fdf7c3993ff9dfaae027"
+  },
+  {
+    "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/EVIDENCE-INVENTORY.md",
+    "sha256": "2a1fb299865bc48cba146785ecc0b87dce2f991edd880958de574216212a452c"
+  }
+]

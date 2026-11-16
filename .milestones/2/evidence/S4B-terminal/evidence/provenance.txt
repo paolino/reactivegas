@@ -1,0 +1,137 @@
+189e1ed306f8f8e8bcdd11eeab4fc5657a518fc8
+7ee7b11f8146be2f6993963e6e5a22be14a7f1f0
+189e1ed306f8f8e8bcdd11eeab4fc5657a518fc8 3590c0015b84fd58004bf6fb44dd18b107304c48
+:100644 100644 23171a9 3695a95 M	justfile
+:000000 100644 0000000 7e8f4b0 A	lean/KelGroups/Mirrors.lean
+:000000 100644 0000000 4ac7ac8 A	lean/Reactivegas/Mirrors.lean
+:000000 100755 0000000 a5d21a9 A	scripts/check-lean-mirrors
+diff --git a/justfile b/justfile
+index 23171a9..3695a95 100644
+--- a/justfile
++++ b/justfile
+@@ -63,6 +63,10 @@ lean:
+     scripts/check-lean-axioms
+     scripts/check-trace-coverage-agreement
+     cd lean && lake build
++    cd "{{ justfile_directory() }}"
++    date +%s%N > lean/.lake/s4b-mirror-nonce
++    scripts/check-lean-mirrors
++    grep -q "nonce=$(cat lean/.lake/s4b-mirror-nonce)" lean/.lake/s4b-mirror-receipt && grep -q '^MIRROR-CHECK-OK' lean/.lake/s4b-mirror-receipt || (echo 'MIRROR-RECEIPT-ABSENT: checker did not operate' >&2; exit 1)
+ 
+ # Execute the shipped integrated-corpus evaluator and require exact `true`
+ lean-corpus-gate:
+@@ -165,3 +169,9 @@ serve-docs:
+ build-docs:
+     #!/usr/bin/env bash
+     mkdocs build
++
++# Verify S4-B Prop/Bool mirror correspondence (mandatory; S4-B lane owns these lines)
++lean-mirrors:
++    #!/usr/bin/env bash
++    set -euo pipefail
++    scripts/check-lean-mirrors
+diff --git a/lean/Reactivegas/Invariants.lean b/lean/Reactivegas/Invariants.lean
+index d6d05c2..c92abaa 100644
+--- a/lean/Reactivegas/Invariants.lean
++++ b/lean/Reactivegas/Invariants.lean
+@@ -1930,14 +1930,14 @@ def corpusCorruptCleanup (steps : List IntegratedTraceStep) :
+                   conti := [("bob", 999), (comuneId, 0)] } } } :: rest
+   | other => other
+ 
+-def i57TrustNoSorry : Bool :=
++def admissionPreservationReachable : Bool :=
+   checkAdminAdmissionReachable && checkAppMembersPreservation
+ 
+-def kelGroupsHasNoReactivegasImport : Bool :=
++def productionWellFormedAndComuneExcluded : Bool :=
+   productionWellFormed mixedGroup
+     && !KelGroups.GroupView.isMember comuneId (s62bView mixedGroup)
+ 
+-def leanToolchainMatchesPin : Bool :=
++def comuneIdentityAndThresholdSanity : Bool :=
+   comuneId == "comune" && s62bThreshold 3 == 2
+ 
+ /-- Joined concrete base-to-hook witness: member removal, admin-loss role
+@@ -2296,20 +2296,28 @@ def checkI57NoExpiry : Bool :=
+         == some v3Question
+   | .error _ => false
+ 
+-/-- I57-08 TRUST: contractual statements print allowed axioms only. Bound
+-to the missing zero-sorry receipt, not to an unrelated admission Bool. -/
+-def checkI57Trust : Bool :=
+-  i57TrustNoSorry
+-
+-/-- I57-09 DIRECTION: KelGroups has no Reactivegas import. Bound to the
+-missing source-receipt control (the shell scanner is the mutant target). -/
+-def checkI57Direction : Bool :=
+-  kelGroupsHasNoReactivegasImport
+-
+-/-- I57-10 TOOLCHAIN: executing Lean and pinned source revision match the
+-expected identity. -/
+-def checkI57Toolchain : Bool :=
+-  leanToolchainMatchesPin
++/-- Admission-preservation reachability probe: admin admission is reachable and
++app-member preservation holds. This Bool computes exactly that conjunction.
++Trust / zero-`sorry` / allowed-axioms is enforced by `scripts/check-lean-axioms`
++over the discovered extent in `just lean`, not by this Bool. -/
++def checkAdmissionPreservation : Bool :=
++  admissionPreservationReachable
++
++/-- Production well-formedness plus comune exclusion probe: the mixed group is
++well formed and `comuneId` is not a member of its view. This Bool computes
++exactly that conjunction. Import direction is enforced by
++`nix/lean-dependency-direction.sh` in `just lean`, not by this Bool; no claim is
++made that import-direction checks are impossible in Lean. -/
++def checkProductionWellFormed : Bool :=
++  productionWellFormedAndComuneExcluded
++
++/-- Comune-identity plus threshold sanity probe: `comuneId` spells `"comune"`
++and the sample threshold evaluates as expected. This Bool computes exactly that
++conjunction. The toolchain pin is enforced by `scripts/check-lean-toolchain`
++via `just lean-toolchain-contract`, not by this Bool; no claim is made that
++toolchain checks are impossible in Lean. -/
++def checkComuneThresholdSanity : Bool :=
++  comuneIdentityAndThresholdSanity
+ 
+ theorem integrated_theorem_witness_holds :
+     checkIntegratedTheoremWitness = true := by decide
+@@ -2336,9 +2344,9 @@ theorem i57_policyfree_holds : checkI57PolicyFree = true := by decide
+ theorem i57_policyfree_mutant_caught :
+     checkI57PolicyFreeMutant = true := by decide
+ theorem i57_noexpiry_holds : checkI57NoExpiry = true := by decide
+-theorem i57_trust_holds : checkI57Trust = true := by decide
+-theorem i57_direction_holds : checkI57Direction = true := by decide
+-theorem i57_toolchain_holds : checkI57Toolchain = true := by decide
++theorem admissionPreservation_holds : checkAdmissionPreservation = true := by decide
++theorem productionWellFormed_holds : checkProductionWellFormed = true := by decide
++theorem comuneThresholdSanity_holds : checkComuneThresholdSanity = true := by decide
+ 
+ #print axioms checkIntegratedTheoremWitness
+ #print axioms checkCanonicalEconomy
+diff --git a/lean/Reactivegas/Predicates.lean b/lean/Reactivegas/Predicates.lean
+index 2b2cf73..fc941f5 100644
+--- a/lean/Reactivegas/Predicates.lean
++++ b/lean/Reactivegas/Predicates.lean
+@@ -4,7 +4,7 @@ import Reactivegas.Step
+ # The law predicates
+ 
+ One predicate per documented law (issue #45); the prose record in
+-`docs/design/state-machine.md` references these names. The issue #48
++`docs/en/design/state-machine.md` references these names. The issue #48
+ economic amendment adds the comune-membership law, the stall, and the
+ group-closure guard facts.
+ 
+diff --git a/lean/Reactivegas/TraceTests.lean b/lean/Reactivegas/TraceTests.lean
+index 509d032..8914512 100644
+--- a/lean/Reactivegas/TraceTests.lean
++++ b/lean/Reactivegas/TraceTests.lean
+@@ -924,9 +924,6 @@ def checkI57NoStale : Bool := Reactivegas.checkI57NoStale
+ def checkI57Franchise : Bool := Reactivegas.checkI57Franchise
+ def checkI57PolicyFree : Bool := Reactivegas.checkI57PolicyFree
+ def checkI57NoExpiry : Bool := Reactivegas.checkI57NoExpiry
+-def checkI57Trust : Bool := Reactivegas.checkI57Trust
+-def checkI57Direction : Bool := Reactivegas.checkI57Direction
+-def checkI57Toolchain : Bool := Reactivegas.checkI57Toolchain
+ 
+ theorem base_departure_applies_cleanup : checkBaseCleanupReachable = true :=
+   Reactivegas.base_departure_applies_cleanup

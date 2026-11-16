@@ -1,0 +1,1 @@
+source-compiled-map.json statement fields and source-statements.txt contain textual prefixes up to the first :=; record-update syntax may truncate a prefix. They are navigational aids, never complete parsed theorem types. Exact source bytes are retained under candidate-source/lean/. No compiler or model code was executed.

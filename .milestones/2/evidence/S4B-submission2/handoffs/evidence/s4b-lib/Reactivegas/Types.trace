@@ -1,0 +1,31 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["802795f0dfe6c4b3.olean"],
+  "i": "c16626073732ff7a.ilean",
+  "c": "8e8b0df3d8294da9.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/code/reactivegas-66-s4/lean/.lake/build/lib/lean /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean /code/reactivegas-66-s4/lean/Reactivegas/Types.lean -o /code/reactivegas-66-s4/lean/.lake/build/lib/lean/Reactivegas/Types.olean -i /code/reactivegas-66-s4/lean/.lake/build/lib/lean/Reactivegas/Types.ilean -c /code/reactivegas-66-s4/lean/.lake/build/ir/Reactivegas/Types.c --setup /code/reactivegas-66-s4/lean/.lake/build/ir/Reactivegas/Types.setup.json --json",
+   "level": "trace"}],
+ "inputs":
+ [["Reactivegas.Types:deps",
+   [["deps",
+     [["reactivegas/Reactivegas:extraDep",
+       [["@reactivegas:extraDep", "00000000000006bb"]]],
+      ["imports",
+       [["KelGroups.Types transitive imports (legacy)", "00000000000006bb"],
+        ["KelGroups.Types:importAllArts", "ed9bff95b47168d7"],
+        ["KelGroups.Vote.Types transitive imports (legacy)",
+         "c8e8ca171eb31d66"],
+        ["KelGroups.Vote.Types:importAllArts", "7b0c6abe2ab71b09"]]]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.25.0, commit v4.25.0", "9c3a3ade3a41d5d0"],
+  ["/code/reactivegas-66-s4/lean/Reactivegas/Types.lean", "9c214fd540ff1342"],
+  ["options", [["-DautoImplicit=false", "4a85acb881fd49d0"]]],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "f7a5f1129ffcb50d"}

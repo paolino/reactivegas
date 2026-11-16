@@ -1,0 +1,30 @@
+warning: Git tree '/code/kelgroups-audit-3af3d06' is dirty
+Build profile: -w ghc-9.8.4 -O0
+In order, the following will be built (use -v for more details):
+ - kelgroups-0.1.0.0 (lib) (file lib/KelGroups/Fold.hs changed)
+ - keri-hs-0.1.0.0 (exe:keri-cli) (configuration changed)
+ - keri-hs-0.1.0.0 (exe:keri-demo) (configuration changed)
+ - kelgroups-0.1.0.0 (exe:kelgroups-server) (configuration changed)
+Configuring executable 'keri-cli' for keri-hs-0.1.0.0...
+Configuring executable 'keri-demo' for keri-hs-0.1.0.0...
+Preprocessing library for kelgroups-0.1.0.0...
+Building library for kelgroups-0.1.0.0...
+[ 3 of 11] Compiling KelGroups.Event  ( lib/KelGroups/Event.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Event.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Event.dyn_o ) [Source file changed]
+[ 4 of 11] Compiling KelGroups.State  ( lib/KelGroups/State.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/State.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/State.dyn_o ) [KelGroups.Event changed]
+[ 5 of 11] Compiling KelGroups.Bootstrap ( lib/KelGroups/Bootstrap.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Bootstrap.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Bootstrap.dyn_o ) [KelGroups.State changed]
+[ 6 of 11] Compiling KelGroups.Validate ( lib/KelGroups/Validate.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Validate.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Validate.dyn_o ) [KelGroups.Bootstrap changed]
+
+lib/KelGroups/Validate.hs:282:34: error: [GHC-62161] [-Wincomplete-patterns, Werror=incomplete-patterns]
+    Pattern match(es) are non-exhaustive
+    In a \case alternative:
+        Patterns of type ‘BaseMutation’ not matched: AdmitMemberVoted _ _ _
+    |
+282 | validateBaseMutation gs signer = \case
+    |                                  ^^^^^...
+Preprocessing executable 'keri-cli' for keri-hs-0.1.0.0...
+Building executable 'keri-cli' for keri-hs-0.1.0.0...
+Preprocessing executable 'keri-demo' for keri-hs-0.1.0.0...
+Building executable 'keri-demo' for keri-hs-0.1.0.0...
+Error: [Cabal-7125]
+Failed to build kelgroups-0.1.0.0 (which is required by exe:kelgroups-server from kelgroups-0.1.0.0).
+

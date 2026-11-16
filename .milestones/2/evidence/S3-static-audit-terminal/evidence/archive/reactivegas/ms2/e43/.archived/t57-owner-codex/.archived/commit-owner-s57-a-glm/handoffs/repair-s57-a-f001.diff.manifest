@@ -1,0 +1,7 @@
+diff-sha256 ee4e96f403e1b80b3a55f672023113f53e5fc40b1cec0e52e9ff728c9aa89477
+manifest-version 2
+base-commit 400f5b2829eeae27faeb0994ba8cfcc03c37dd3d
+7da0297c9f3458aadfd1cf8fdfb9ceb5094ae1a3 lean/KelGroups/Vote/Fold.lean
+file-mode 100644 lean/KelGroups/Vote/Fold.lean
+bfdfce03f6a072304ef3bca57920f9d8f17a3eec lean/KelGroups/Vote/Invariants.lean
+file-mode 100644 lean/KelGroups/Vote/Invariants.lean

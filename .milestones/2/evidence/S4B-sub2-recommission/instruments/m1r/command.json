@@ -1,0 +1,31 @@
+{
+  "id": "M1R-T",
+  "cwd": "/code/reactivegas-66-s4b-audit5",
+  "argv": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=30s",
+    "300s",
+    "nix",
+    "develop",
+    "--quiet",
+    "--no-write-lock-file",
+    "-c",
+    "bash",
+    "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/m1r/census-command.sh"
+  ],
+  "innerArgv": [
+    "lake",
+    "env",
+    "lean",
+    "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/m1r/Inventory.lean"
+  ],
+  "class": "targeted",
+  "charge": 1,
+  "prerequisites": [
+    "instruments/candidate-inputs.sha256",
+    "evidence/M1/oleans.sha256"
+  ],
+  "output": "evidence/M1R",
+  "wholeBuild": false
+}

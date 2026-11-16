@@ -1,0 +1,313 @@
+AppEvent : Type
+BackdonateAuth : Type
+KelGroups.BaseChange : Type
+KelGroups.Vote.ClosureCause : Type
+KelGroups.Vote.ClosureRecord : Type
+Collection : Type
+Event : Type
+KelGroups.GroupView : Type
+KelGroups.AppFold (α : Type) : Type
+KelGroups.BaseEvent : Type
+KelGroups.Enacts {α : Type} (gs : KelGroups.GroupState α) (proposalId : KelGroups.ProposalId)
+  (result : KelGroups.GroupState α) : Prop
+KelGroups.GroupState (α : Type) : Type
+KelGroups.GroupView : Type
+KelGroups.RoleDef (α : Type) : Type
+KelGroups.Tests.proposerAutoApproval : Bool
+KelGroups.ValidationError : Type
+KelGroups.Vote.VoteState : Type
+KelGroups.applyApprove {α : Type} (gs : KelGroups.GroupState α) (signer : KelGroups.Key)
+  (proposalId : KelGroups.ProposalId) : KelGroups.GroupState α
+KelGroups.applyEvent {α : Type} (digest : KelGroups.Proposal → KelGroups.ProposalId) (appFoldFn : KelGroups.AppFold α)
+  (gs : KelGroups.GroupState α) (signer : KelGroups.Key) (event : KelGroups.GroupEvent α) : KelGroups.GroupState α
+KelGroups.applyPropose {α : Type} (digest : KelGroups.Proposal → KelGroups.ProposalId) (gs : KelGroups.GroupState α)
+  (signer : KelGroups.Key) (proposal : KelGroups.Proposal) : KelGroups.GroupState α
+KelGroups.approvals_nodup {α : Type} {gs : KelGroups.GroupState α} (h : KelGroups.WellFormed gs)
+  (entry : KelGroups.ProposalId × KelGroups.PendingProposal) (hentry : entry ∈ gs.pendingProposals) :
+  entry.snd.approvals.Nodup
+'KelGroups.approvals_nodup' does not depend on any axioms
+KelGroups.authMode {α : Type} (gs : KelGroups.GroupState α) : KelGroups.AuthMode
+KelGroups.bootstrapNonMemberWitness : KelGroups.GroupState Unit
+KelGroups.bootstrapPendingWitness : KelGroups.GroupState Unit
+KelGroups.enact {α : Type} (gs : KelGroups.GroupState α) (proposal : KelGroups.Proposal) : KelGroups.GroupState α
+KelGroups.enact_implies_threshold_met {α : Type} (digest : KelGroups.Proposal → KelGroups.ProposalId)
+  (appFoldFn : KelGroups.AppFold α) (gs : KelGroups.GroupState α) (signer : KelGroups.Key)
+  (event : KelGroups.GroupEvent α) (enacted : KelGroups.Enactment α)
+  (h : (KelGroups.applyEventDetailed digest appFoldFn gs signer event).enactment = some enacted) :
+  enacted.pending.approvals.length ≥ KelGroups.majority enacted.preState
+'KelGroups.enact_implies_threshold_met' depends on axioms: [propext]
+KelGroups.finishEnact {α : Type} (gs : KelGroups.GroupState α) (proposalId : KelGroups.ProposalId)
+  (pending : KelGroups.PendingProposal) : KelGroups.GroupState α
+KelGroups.foldGroup {α : Type} (digest : KelGroups.Proposal → KelGroups.ProposalId) (appFoldFn : KelGroups.AppFold α)
+  (initial : α) (events : List (KelGroups.Key × KelGroups.GroupEvent α)) : KelGroups.GroupState α
+KelGroups.majority {α : Type} (gs : KelGroups.GroupState α) : Nat
+KelGroups.majority_not_strict_on_even {α : Type} (gs : KelGroups.GroupState α) (positive : 0 < KelGroups.adminCount gs)
+  (even : KelGroups.adminCount gs % 2 = 0) : 2 * KelGroups.majority gs ≤ KelGroups.adminCount gs
+'KelGroups.majority_not_strict_on_even' depends on axioms: [propext, Quot.sound]
+KelGroups.majority_table :
+  KelGroups.majority (KelGroups.majorityAdminState []) = 0 ∧
+    KelGroups.majority (KelGroups.majorityAdminState ["a"]) = 1 ∧
+      KelGroups.majority (KelGroups.majorityAdminState ["a", "b"]) = 1 ∧
+        KelGroups.majority (KelGroups.majorityAdminState ["a", "b", "c"]) = 2 ∧
+          KelGroups.majority (KelGroups.majorityAdminState ["a", "b", "c", "d"]) = 2 ∧
+            KelGroups.majority (KelGroups.majorityAdminState ["a", "b", "c", "d", "e"]) = 3
+'KelGroups.majority_table' depends on axioms: [propext]
+KelGroups.member_key_coherent {α : Type} {gs : KelGroups.GroupState α} (h : KelGroups.WellFormed gs)
+  (key : KelGroups.Key) (member : KelGroups.Member) (hmember : (key, member) ∈ gs.members) : member.key = key
+'KelGroups.member_key_coherent' does not depend on any axioms
+KelGroups.members_change_implies_enacted {α : Type} (digest : KelGroups.Proposal → KelGroups.ProposalId)
+  (appFoldFn : KelGroups.AppFold α) (gs : KelGroups.GroupState α) (signer : KelGroups.Key)
+  (event : KelGroups.GroupEvent α)
+  (hchange : (KelGroups.applyEvent digest appFoldFn gs signer event).members ≠ gs.members) :
+  ∃ before proposalId, KelGroups.Enacts before proposalId (KelGroups.applyEvent digest appFoldFn gs signer event)
+'KelGroups.members_change_implies_enacted' depends on axioms: [propext]
+KelGroups.proposer_mem_approvals {α : Type} {gs : KelGroups.GroupState α} (h : KelGroups.WellFormed gs)
+  (entry : KelGroups.ProposalId × KelGroups.PendingProposal) (hentry : entry ∈ gs.pendingProposals) :
+  entry.snd.proposer ∈ entry.snd.approvals
+'KelGroups.proposer_mem_approvals' does not depend on any axioms
+KelGroups.setInsert {α : Type} [BEq α] (value : α) (values : List α) : List α
+KelGroups.stalePendingWitness : KelGroups.GroupState Unit
+KelGroups.tryEnact {α : Type} (gs : KelGroups.GroupState α) (proposalId : KelGroups.ProposalId) : KelGroups.GroupState α
+KelGroups.validateApproval {α : Type} (gs : KelGroups.GroupState α) (signer : KelGroups.Key)
+  (proposalId : KelGroups.ProposalId) : Except KelGroups.ValidationError Unit
+KelGroups.validateEvent {α : Type} (validKey : KelGroups.Key → Bool) (config : KelGroups.GroupConfig α)
+  (gs : KelGroups.GroupState α) (signer : KelGroups.Key) (event : KelGroups.GroupEvent α) :
+  Except KelGroups.ValidationError Unit
+KelGroups.validateProposal {α : Type} (validKey : KelGroups.Key → Bool) (config : KelGroups.GroupConfig α)
+  (gs : KelGroups.GroupState α) (signer : KelGroups.Key) (proposal : KelGroups.Proposal) :
+  Except KelGroups.ValidationError Unit
+Pledge : Type
+Reach (view : KelGroups.GroupView) (auth : BackdonateAuth) : State → Prop
+Reactivegas.checkAdminDepartureCleanup : Bool
+isResponsabile (view : KelGroups.GroupView) (u : KelGroups.Key) : Bool
+Proposal : Type
+Reactivegas.Composition.Route : Type
+State : Type
+KelGroups.Vote.VoteError : Type
+Reactivegas.absorbConto (s : State) (key : KelGroups.Key) : State
+allUniquePledges (s : State) : Prop
+Reactivegas.Composition.appDecided_verdict_exhaustive (e : Event) (record : KelGroups.Vote.ClosureRecord)
+  (hroute : Reactivegas.Composition.route e = Reactivegas.Composition.Route.appDecided) :
+  Reactivegas.Composition.appVerdictAllows record = true ↔
+    record.verdict = KelGroups.Vote.Verdict.positive ∨ record.verdict = KelGroups.Vote.Verdict.negative
+'Reactivegas.Composition.appDecided_verdict_exhaustive' depends on axioms: [propext]
+Reactivegas.appFold (θ : KelGroups.Vote.Threshold) (auth : BackdonateAuth) :
+  KelGroups.IntegratedAppFold State AppEvent StepError
+Reactivegas.Composition.appVerdictAllows (record : KelGroups.Vote.ClosureRecord) : Bool
+KelGroups.applyEvent {α : Type} (digest : KelGroups.Proposal → KelGroups.ProposalId) (appFoldFn : KelGroups.AppFold α)
+  (gs : KelGroups.GroupState α) (signer : KelGroups.Key) (event : KelGroups.GroupEvent α) : KelGroups.GroupState α
+KelGroups.Vote.applyVoteEventChecked (threshold : KelGroups.Vote.Threshold) (view : KelGroups.GroupView)
+  (gs : KelGroups.Vote.VoteState) (signer : KelGroups.Key) (event : KelGroups.Vote.VoteEvent) :
+  Except KelGroups.Vote.VoteError KelGroups.Vote.VoteState
+authorizedStep (view : KelGroups.GroupView) (_s : State) (e : Event) (_s' : State) : Prop
+bal (m : List (KelGroups.Key × Int)) (u : KelGroups.Key) : Int
+Reactivegas.baseHook (θ : KelGroups.Vote.Threshold) : KelGroups.BaseHook State StepError
+Reactivegas.Composition.baseProposalFaithful : KelGroups.Proposal → Bool
+bump (m : List (KelGroups.Key × Int)) (u : KelGroups.Key) (d : Int) : List (KelGroups.Key × Int)
+canCloseGroup (view : KelGroups.GroupView) (s : State) : Prop
+close_permission_to_close {view : KelGroups.GroupView} {auth : BackdonateAuth} {s s' : State} {a : KelGroups.Key}
+  {c : CollId} (h : stepEvent view s (Event.closePurchase a c) auth = some s') :
+  ∃ col rest, pullCollection c s.collections = some (col, rest) ∧ permissionToClose col
+'close_permission_to_close' depends on axioms: [propext]
+close_spends_referente {view : KelGroups.GroupView} {auth : BackdonateAuth} {s s' : State} {a : KelGroups.Key}
+  {c : CollId} (h : stepEvent view s (Event.closePurchase a c) auth = some s') :
+  ∃ col rest,
+    pullCollection c s.collections = some (col, rest) ∧
+      bal s'.casse col.referente = bal s.casse col.referente - sumPledges col.accepted
+'close_spends_referente' depends on axioms: [propext, Quot.sound]
+KelGroups.Vote.closureCause (view : KelGroups.GroupView) (question : KelGroups.Vote.Question)
+  (verdict : KelGroups.Vote.Verdict) : KelGroups.Vote.ClosureCause
+comuneBal (s : State) : Int
+comuneId : KelGroups.Key
+conservation (s : State) : Prop
+conservation_preserved {view : KelGroups.GroupView} {auth : BackdonateAuth} {s s' : State} {e : Event}
+  (hcon : conservation s) (hstep : stepEvent view s e auth = some s') : conservation s'
+'conservation_preserved' depends on axioms: [propext, Quot.sound]
+deposit_double_entry {view : KelGroups.GroupView} {auth : BackdonateAuth} {s s' : State} {a u : KelGroups.Key} {v : Int}
+  (h : stepEvent view s (Event.deposit a u v) auth = some s') : doubleEntry s s' a u v
+'deposit_double_entry' depends on axioms: [propext]
+doubleEntry (s s' : State) (a u : KelGroups.Key) (v : Int) : Prop
+Reactivegas.economicCleanup (change : KelGroups.BaseChange) (pre post : KelGroups.GroupView) (s : State) : Option State
+KelGroups.Vote.effectedState (gs : KelGroups.Vote.VoteState) (signer : KelGroups.Key)
+  (event : KelGroups.Vote.VoteEvent) : KelGroups.Vote.VoteState
+escrowHeld (col : Collection) (u : KelGroups.Key) (v : Int) : Prop
+escrowOf (c : Collection) : Int
+escrowSum (cols : List Collection) : Int
+governanceEnacts (u : KelGroups.Key) (s' : State) : Prop
+governance_enacts_windUpAdmin (s : State) (u : KelGroups.Key) : governanceEnacts u (Reactivegas.windUpAdmin s u)
+'governance_enacts_windUpAdmin' depends on axioms: [propext]
+insolvent (view : KelGroups.GroupView) (s : State) : Prop
+KelGroups.Vote.legacyThreshold (responsabili : Nat) : Nat
+KelGroups.majority {α : Type} (gs : KelGroups.GroupState α) : Nat
+memberKeys (view : KelGroups.GroupView) : List KelGroups.Key
+not_insolvent_of_reach {view : KelGroups.GroupView} {auth : BackdonateAuth} {s : State} (hr : Reach view auth s) :
+  ¬insolvent view s
+'not_insolvent_of_reach' depends on axioms: [propext, Quot.sound]
+KelGroups.Vote.open_questions_are_open (view : KelGroups.GroupView) (θ : KelGroups.Vote.Threshold)
+  (events : List (KelGroups.Key × KelGroups.Vote.VoteEvent)) (questionId : KelGroups.Vote.QuestionId)
+  (q : KelGroups.Vote.Question)
+  (h : KelGroups.assocLookup questionId (KelGroups.Vote.foldVote θ view events).openQuestions = some q) :
+  KelGroups.Vote.verdictOf θ view q = KelGroups.Vote.Verdict.open
+'KelGroups.Vote.open_questions_are_open' depends on axioms: [propext, Classical.choice, Quot.sound]
+permissionToClose (col : Collection) : Prop
+pledge_escrow_debit {view : KelGroups.GroupView} {auth : BackdonateAuth} {s s' : State} {a u : KelGroups.Key}
+  {c : CollId} {v : Int} (h : stepEvent view s (Event.pledge a u c v) auth = some s') :
+  bal s'.conti u = bal s.conti u - v ∧ ∃ col, col ∈ s'.collections ∧ col.id = c ∧ escrowHeld col u v
+'pledge_escrow_debit' depends on axioms: [propext, Quot.sound]
+pledge_guard_inv {view : KelGroups.GroupView} {s : State} {a u : KelGroups.Key} {col : Collection} {v : Int}
+  (h :
+    (((isResponsabile view a && KelGroups.GroupView.isMember u view && !col.accepted.any fun p => p.user == u) &&
+            !col.pending.any fun p => p.user == u) &&
+          decide (0 < v) &&
+        decide (bal s.conti u ≥ v)) =
+      true) :
+  isResponsabile view a = true ∧
+    KelGroups.GroupView.isMember u view = true ∧
+      (col.accepted.any fun p => p.user == u) = false ∧
+        (col.pending.any fun p => p.user == u) = false ∧ 0 < v ∧ bal s.conti u ≥ v
+'pledge_guard_inv' depends on axioms: [propext]
+pledge_preserves_allUnique {view : KelGroups.GroupView} {auth : BackdonateAuth} {s s' : State} {a u : KelGroups.Key}
+  {c : CollId} {v : Int} (hun : allUniquePledges s) (h : stepEvent view s (Event.pledge a u c v) auth = some s') :
+  allUniquePledges s'
+'pledge_preserves_allUnique' depends on axioms: [propext, Classical.choice, Quot.sound]
+pledge_rejected_when_member {view : KelGroups.GroupView} {auth : BackdonateAuth} {s : State} {a u : KelGroups.Key}
+  {c : CollId} {v : Int} {col : Collection} {rest : List Collection}
+  (hpull : pullCollection c s.collections = some (col, rest))
+  (hdup : ∃ q, q ∈ col.accepted ++ col.pending ∧ q.user = u) : stepEvent view s (Event.pledge a u c v) auth = none
+'pledge_rejected_when_member' depends on axioms: [propext, Classical.choice, Quot.sound]
+Reactivegas.proposalDigest : Proposal → KelGroups.ProposalId
+pullCollection (c : CollId) : List Collection → Option (Collection × List Collection)
+reach_solvent {view : KelGroups.GroupView} {auth : BackdonateAuth} {s : State} (hr : Reach view auth s) : solvent view s
+'reach_solvent' depends on axioms: [propext, Quot.sound]
+refundAll (m : List (KelGroups.Key × Int)) (l : List Pledge) : List (KelGroups.Key × Int)
+Reactivegas.Composition.route : Event → Reactivegas.Composition.Route
+Reactivegas.s62bThreshold : KelGroups.Vote.Threshold
+solvent (view : KelGroups.GroupView) (s : State) : Prop
+solvent_init {view : KelGroups.GroupView} : solvent view State.empty
+'solvent_init' depends on axioms: [propext]
+solvent_preserved {view : KelGroups.GroupView} {auth : BackdonateAuth} {s s' : State} {e : Event}
+  (hr : Reach view auth s) (hsolv : solvent view s) (hstep : stepEvent view s e auth = some s') : solvent view s'
+'solvent_preserved' depends on axioms: [propext, Quot.sound]
+splitUser (u : KelGroups.Key) : List Pledge → Option (Int × List Pledge)
+stalled (s : State) : Prop
+step (view : KelGroups.GroupView) (s : State) (signer : KelGroups.Key) (e : AppEvent) (auth : BackdonateAuth) :
+  Option State
+stepEvent (view : KelGroups.GroupView) (s : State) (e : Event) (auth : BackdonateAuth) : Option State
+step_authorized {view : KelGroups.GroupView} {auth : BackdonateAuth} {s s' : State} {e : Event}
+  (h : stepEvent view s e auth = some s') : authorizedStep view s e s'
+'step_authorized' depends on axioms: [propext]
+step_correct_inv {view : KelGroups.GroupView} {auth : BackdonateAuth} {s s' : State} {a u : KelGroups.Key} {c : CollId}
+  {v' : Int} (hstep : stepEvent view s (Event.correctPledge a u c v') auth = some s') :
+  ∃ col rest v acc',
+    pullCollection c s.collections = some (col, rest) ∧
+      splitUser u col.accepted = some (v, acc') ∧
+        (isResponsabile view a && col.referente == a && decide (0 ≤ v') && decide (bal s.conti u + (v - v') ≥ 0)) =
+            true ∧
+          s' =
+            { conti := bump s.conti u (v - v'), casse := s.casse,
+              collections :=
+                { id := col.id, referente := col.referente, permitted := col.permitted,
+                    accepted := { user := u, amount := v' } :: acc', pending := col.pending } ::
+                  rest,
+              votes := s.votes }
+'step_correct_inv' depends on axioms: [propext]
+stripCollections (r : KelGroups.Key) : List Collection → List Collection × List Pledge
+KelGroups.Vote.sweepClosures (threshold : KelGroups.Vote.Threshold) (view : KelGroups.GroupView)
+  (gs : KelGroups.Vote.VoteState) : KelGroups.Vote.VoteState
+KelGroups.tryEnact {α : Type} (gs : KelGroups.GroupState α) (proposalId : KelGroups.ProposalId) : KelGroups.GroupState α
+uniquePledges (col : Collection) : Prop
+uniquePledges_pend_cons {col : Collection} {u : KelGroups.Key} {v : Int}
+  (hu : ∀ (p : Pledge), p ∈ col.accepted ++ col.pending → p.user ≠ u) (hun : uniquePledges col) :
+  uniquePledges
+    { id := col.id, referente := col.referente, permitted := col.permitted, accepted := col.accepted,
+      pending := { user := u, amount := v } :: col.pending }
+'uniquePledges_pend_cons' depends on axioms: [propext]
+/tmp/reactivegas/ms2/t71-design-record/audit-b1/evidence/CitationWitness.lean:246:7: error(lean.unknownIdentifier): Unknown identifier `_root_._private.KelGroups.Validate`
+/tmp/reactivegas/ms2/t71-design-record/audit-b1/evidence/CitationWitness.lean:246:41: error: Invalid field notation: Identifier or numeral expected
+/tmp/reactivegas/ms2/t71-design-record/audit-b1/evidence/CitationWitness.lean:246:42: error: unexpected identifier after decimal point; consider parenthesizing the number
+/tmp/reactivegas/ms2/t71-design-record/audit-b1/evidence/CitationWitness.lean:248:7: error(lean.unknownIdentifier): Unknown identifier `_root_._private.KelGroups.Validate`
+/tmp/reactivegas/ms2/t71-design-record/audit-b1/evidence/CitationWitness.lean:248:41: error: Invalid field notation: Identifier or numeral expected
+/tmp/reactivegas/ms2/t71-design-record/audit-b1/evidence/CitationWitness.lean:248:42: error: unexpected identifier after decimal point; consider parenthesizing the number
+/tmp/reactivegas/ms2/t71-design-record/audit-b1/evidence/CitationWitness.lean:250:7: error(lean.unknownIdentifier): Unknown identifier `_root_._private.KelGroups.Validate`
+/tmp/reactivegas/ms2/t71-design-record/audit-b1/evidence/CitationWitness.lean:250:41: error: Invalid field notation: Identifier or numeral expected
+/tmp/reactivegas/ms2/t71-design-record/audit-b1/evidence/CitationWitness.lean:250:42: error: unexpected identifier after decimal point; consider parenthesizing the number
+KelGroups.Vote.validateVoteEvent (threshold : KelGroups.Vote.Threshold) (view : KelGroups.GroupView)
+  (gs : KelGroups.Vote.VoteState) (signer : KelGroups.Key) (event : KelGroups.Vote.VoteEvent) :
+  Except KelGroups.Vote.VoteError Unit
+Reactivegas.voteApply (θ : KelGroups.Vote.Threshold) (view : KelGroups.GroupView) (s : State) (signer : KelGroups.Key)
+  (ev : KelGroups.Vote.VoteEvent) : Except StepError State
+Reactivegas.Composition.voteDerived : Event → Bool
+Reactivegas.windUpAdmin (s : State) (key : KelGroups.Key) : State
+withdraw_double_entry {view : KelGroups.GroupView} {auth : BackdonateAuth} {s s' : State} {a u : KelGroups.Key}
+  {v : Int} (h : stepEvent view s (Event.withdraw a u v) auth = some s') : doubleEntry s s' a u (-v)
+'withdraw_double_entry' depends on axioms: [propext]
+KelGroups.Vote.zeroThreshold : Nat → Nat
+some (true, true, 30, 0, 0, 0, 30)
+false
+true
+[(-1, false), (0, true), (1, true)]
+false
+some ([("u", 0)], [("a", 0)])
+[(0, false), (7, false)]
+some [true]
+[("withdraw", some "step_withdraw_inv"), ("closePurchase", some "step_close_inv")]
+theorem close_spends_referente : ∀ {view : KelGroups.GroupView} {auth : BackdonateAuth} {s s' : State}
+  {a : KelGroups.Key} {c : CollId},
+  stepEvent view s (Event.closePurchase a c) auth = some s' →
+    ∃ col rest,
+      pullCollection c s.collections = some (col, rest) ∧
+        bal s'.casse col.referente = bal s.casse col.referente - sumPledges col.accepted :=
+fun {view} {auth} {s s'} {a} {c} h =>
+  Exists.casesOn (step_close_inv h) fun col h_1 =>
+    Exists.casesOn h_1 fun rest h_2 =>
+      And.casesOn h_2 fun hpull right =>
+        And.casesOn right fun left hs' =>
+          Eq.ndrec (motive := fun {s'} =>
+            stepEvent view s (Event.closePurchase a c) auth = some s' →
+              ∃ col rest,
+                pullCollection c s.collections = some (col, rest) ∧
+                  bal s'.casse col.referente = bal s.casse col.referente - sumPledges col.accepted)
+            (fun h =>
+              Exists.intro col
+                (Exists.intro rest
+                  ⟨hpull,
+                    id
+                      (have hb := bal_bump s.casse col.referente (-sumPledges col.accepted);
+                      Decidable.byContradiction fun a => close_spends_referente._proof_1_1 col hb a)⟩))
+            (Eq.symm hs') h
+'close_spends_referente' depends on axioms: [propext, Quot.sound]
+def authorizedStep : KelGroups.GroupView → State → Event → State → Prop :=
+fun view _s e _s' =>
+  match e with
+  | Event.openPurchase a c => isResponsabile view a = true
+  | Event.grantPermission a c => isResponsabile view a = true
+  | Event.denyPermission a c => isResponsabile view a = true
+  | Event.donate a v => isResponsabile view a = true
+  | Event.backdonate a w => isResponsabile view a = true
+  | Event.deposit a user v => isResponsabile view a = true
+  | Event.withdraw a user v => isResponsabile view a = true
+  | Event.transferCassa a from_ v => isResponsabile view a = true
+  | Event.pledge a user c v => isResponsabile view a = true
+  | Event.acceptPledge a user c => isResponsabile view a = true
+  | Event.refusePledge a user c => isResponsabile view a = true
+  | Event.correctPledge a user c v => isResponsabile view a = true
+  | Event.closePurchase a c => isResponsabile view a = true
+  | Event.failPurchase a c => isResponsabile view a = true
+true
+false
+inductive Proposal : Type
+number of parameters: 0
+constructors:
+Proposal.departure : KelGroups.Key → Proposal
+Proposal.changeRoles : KelGroups.Key → List KelGroups.Role → Proposal
+inductive KelGroups.Proposal : Type
+number of parameters: 0
+constructors:
+KelGroups.Proposal.introduceMember : KelGroups.Key → KelGroups.Email → List KelGroups.Role → KelGroups.Proposal
+KelGroups.Proposal.removeMember : KelGroups.Key → KelGroups.Proposal
+KelGroups.Proposal.changeRoles : KelGroups.Key → List KelGroups.Role → KelGroups.Proposal
+pledge_escrow_debit {view : KelGroups.GroupView} {auth : BackdonateAuth} {s s' : State} {a u : KelGroups.Key}
+  {c : CollId} {v : Int} (h : stepEvent view s (Event.pledge a u c v) auth = some s') :
+  bal s'.conti u = bal s.conti u - v ∧ ∃ col, col ∈ s'.collections ∧ col.id = c ∧ escrowHeld col u v
+conservation_preserved {view : KelGroups.GroupView} {auth : BackdonateAuth} {s s' : State} {e : Event}
+  (hcon : conservation s) (hstep : stepEvent view s e auth = some s') : conservation s'

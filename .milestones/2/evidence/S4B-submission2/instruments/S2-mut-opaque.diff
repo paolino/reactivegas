@@ -1,0 +1,30 @@
+diff --git a/lean/Reactivegas/CorpusExport.lean b/lean/Reactivegas/CorpusExport.lean
+index 9e36b7a..3368ea4 100644
+--- a/lean/Reactivegas/CorpusExport.lean
++++ b/lean/Reactivegas/CorpusExport.lean
+@@ -184,3 +184,5 @@ def main (args : List String) : IO UInt32 := do
+   | _ => do
+     IO.eprintln "usage: corpusExport <economic.json> <integrated.json> | corpusExport check <economic.json> <integrated.json>"
+     return 1
++
++opaque s4b_opaque_export : Prop := True
+diff --git a/lean/Reactivegas/Mirrors.lean b/lean/Reactivegas/Mirrors.lean
+index 94a3999..119c436 100644
+--- a/lean/Reactivegas/Mirrors.lean
++++ b/lean/Reactivegas/Mirrors.lean
+@@ -257,3 +257,5 @@ theorem canCloseGroup_corr (view : KelGroups.GroupView) (s : State) :
+     canCloseGroup view s ↔ canCloseGroupB view s = true := by
+   simp only [canCloseGroup, canCloseGroupB, Bool.and_eq_true, List.all_eq_true,
+     decide_eq_true_eq, keys_mem_coe, canClose_third]
++
++def s4b_orphanB : Bool := true
+diff --git a/lean/Reactivegas/Predicates.lean b/lean/Reactivegas/Predicates.lean
+index fc941f5..ee02d63 100644
+--- a/lean/Reactivegas/Predicates.lean
++++ b/lean/Reactivegas/Predicates.lean
+@@ -99,3 +99,5 @@ inductive Reach (view : KelGroups.GroupView) (auth : BackdonateAuth) :
+   | trans {s : State} {e : Event} {s' : State} :
+     Reach view auth s → stepEvent view s e auth = some s' →
+       Reach view auth s'
++
++opaque s4b_opaque_probe (s : State) : Prop := s.conti = []

@@ -1,0 +1,21 @@
+{
+  "classification": "READ-ONLY FILE/HASH INSPECTION; no additional targeted execution",
+  "protected_base_files": 245,
+  "changed_protected_files": [],
+  "existing_lines_preserved_in_each_modified_base_file": {
+    ".github/workflows/ci.yaml": true,
+    "justfile": true,
+    "nix/project.nix": true,
+    "lean/lakefile.lean": true
+  },
+  "live_context_equals_stored_fields": true,
+  "auth_probe_samples": [
+    false,
+    false
+  ],
+  "historical_economic_sha256": "91526dc6bf821979fabf516c2e5831a1594de1e171936b235ec36a08154f5e86",
+  "historical_UNPROVED": 1,
+  "current_UNPROVED": 0,
+  "bounded_claim_present": true,
+  "read_only_record_duration_ms": 1428
+}

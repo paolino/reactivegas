@@ -1,0 +1,13 @@
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+KelGroups/Mirrors.lean:203:6: error: Type mismatch
+  cO c hc
+has type
+  c.verdict ≠ Verdict.open
+but is expected to have type
+  (!decide (c.verdict ≠ Verdict.open)) = true
+KelGroups/Mirrors.lean:210:6: error: Type mismatch
+  cO c hc
+has type
+  (!decide (c.verdict ≠ Verdict.open)) = true
+but is expected to have type
+  c.verdict ≠ Verdict.open

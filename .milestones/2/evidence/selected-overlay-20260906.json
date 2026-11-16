@@ -1,0 +1,1021 @@
+{
+  "at": "2026-09-05T23:54:32.367Z",
+  "copied": [
+    {
+      "source": "/tmp/reactivegas/ms2/artifacts/DEBRIEF-WIKI-RECEIPT-20260906.json",
+      "destination": "evidence/desk-current/DEBRIEF-WIKI-RECEIPT-20260906.json",
+      "bytes": 361
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/artifacts/KELGROUPS-S28R1-CONSUME-COMPLETED-GREEN-20260905.md",
+      "destination": "evidence/desk-current/KELGROUPS-S28R1-CONSUME-COMPLETED-GREEN-20260905.md",
+      "bytes": 2006
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/artifacts/KELGROUPS-S28R1-FROZEN-HANDBACK-CONSUMPTION-20260906.md",
+      "destination": "evidence/desk-current/KELGROUPS-S28R1-FROZEN-HANDBACK-CONSUMPTION-20260906.md",
+      "bytes": 2561
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/artifacts/PLAN-TO-MILESTONE-2-before-20260906T2348.md",
+      "destination": "evidence/desk-current/PLAN-TO-MILESTONE-2-before-20260906T2348.md",
+      "bytes": 13761
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/artifacts/PLAN-TO-MILESTONE-2.md",
+      "destination": "evidence/desk-current/PLAN-TO-MILESTONE-2.md",
+      "bytes": 13890
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/artifacts/QUALITY-S3-CORRECTIONS008-PRODUCTION-BOUNDARY-20260905.md",
+      "destination": "evidence/desk-current/QUALITY-S3-CORRECTIONS008-PRODUCTION-BOUNDARY-20260905.md",
+      "bytes": 2539
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/artifacts/QUALITY-S3-FINAL-RECEIPT-DEPENDENCY-COST-20260906.md",
+      "destination": "evidence/desk-current/QUALITY-S3-FINAL-RECEIPT-DEPENDENCY-COST-20260906.md",
+      "bytes": 3231
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/artifacts/QUALITY-S3R5-ENUMERATION-GRANT-AND-S4-FREEZE-20260905.md",
+      "destination": "evidence/desk-current/QUALITY-S3R5-ENUMERATION-GRANT-AND-S4-FREEZE-20260905.md",
+      "bytes": 6639
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/artifacts/QUALITY-S4B-PREPARED-INSTRUMENT-REVIEW-20260906.md",
+      "destination": "evidence/desk-current/QUALITY-S4B-PREPARED-INSTRUMENT-REVIEW-20260906.md",
+      "bytes": 4430
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/artifacts/RESUME-before-20260906T2348.md",
+      "destination": "evidence/desk-current/RESUME-before-20260906T2348.md",
+      "bytes": 14186
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/artifacts/S3-OP10-independent-identity-map-20260905.json",
+      "destination": "evidence/desk-current/S3-OP10-independent-identity-map-20260905.json",
+      "bytes": 49458
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/artifacts/SIMULATOR-C2-PREPARATION-REFRESH-20260905.md",
+      "destination": "evidence/desk-current/SIMULATOR-C2-PREPARATION-REFRESH-20260905.md",
+      "bytes": 3529
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/artifacts/SIMULATOR-C2-READINESS-DESK-REVIEW-20260906.md",
+      "destination": "evidence/desk-current/SIMULATOR-C2-READINESS-DESK-REVIEW-20260906.md",
+      "bytes": 1380
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/artifacts/SIMULATOR-C2-WIRING-AND-FENCE-DISPOSITION-20260905.md",
+      "destination": "evidence/desk-current/SIMULATOR-C2-WIRING-AND-FENCE-DISPOSITION-20260905.md",
+      "bytes": 4221
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/artifacts/snapshot-20260906T2350-identity.json",
+      "destination": "evidence/desk-current/snapshot-20260906T2350-identity.json",
+      "bytes": 400
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/artifacts/snapshot-2321-identity.json",
+      "destination": "evidence/desk-current/snapshot-2321-identity.json",
+      "bytes": 252
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/artifacts/sweep-selected-recovery-20260906-second.mjs",
+      "destination": "evidence/desk-current/sweep-selected-recovery-20260906-second.mjs",
+      "bytes": 7175
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/artifacts/sweep-selected-recovery-20260906.mjs",
+      "destination": "evidence/desk-current/sweep-selected-recovery-20260906.mjs",
+      "bytes": 7175
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/CORRECTIONS-008.md",
+      "destination": "evidence/S3-phase1/CORRECTIONS-008.md",
+      "bytes": 4418
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/CORRECTIONS-009.md",
+      "destination": "evidence/S3-phase1/CORRECTIONS-009.md",
+      "bytes": 4671
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/FINAL-RECEIPT.md",
+      "destination": "evidence/S3-phase1/FINAL-RECEIPT.md",
+      "bytes": 2212
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/OP10-RESULT.md",
+      "destination": "evidence/S3-phase1/OP10-RESULT.md",
+      "bytes": 3782
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/OP10-identities.txt",
+      "destination": "evidence/S3-phase1/OP10-identities.txt",
+      "bytes": 51041
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/OP10-stderr.txt",
+      "destination": "evidence/S3-phase1/OP10-stderr.txt",
+      "bytes": 48
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/OP10-stdout.txt",
+      "destination": "evidence/S3-phase1/OP10-stdout.txt",
+      "bytes": 138765
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/P1A-S-modules.txt",
+      "destination": "evidence/S3-phase1/P1A-S-modules.txt",
+      "bytes": 529
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/P1A-classification-working.txt",
+      "destination": "evidence/S3-phase1/P1A-classification-working.txt",
+      "bytes": 45935
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/P1A-qualified-classified.txt",
+      "destination": "evidence/S3-phase1/P1A-qualified-classified.txt",
+      "bytes": 25283
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/P1A-qualified-inventory.txt",
+      "destination": "evidence/S3-phase1/P1A-qualified-inventory.txt",
+      "bytes": 21309
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/P1A-theorems-grep.txt",
+      "destination": "evidence/S3-phase1/P1A-theorems-grep.txt",
+      "bytes": 25411
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/P1C-build2-incremental.log",
+      "destination": "evidence/S3-phase1/P1C-build2-incremental.log",
+      "bytes": 11340
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/P1C-build3-restore.log",
+      "destination": "evidence/S3-phase1/P1C-build3-restore.log",
+      "bytes": 10430
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/P1C-corpusgate.out",
+      "destination": "evidence/S3-phase1/P1C-corpusgate.out",
+      "bytes": 5
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/P1C-scratch-variant-donate.diff",
+      "destination": "evidence/S3-phase1/P1C-scratch-variant-donate.diff",
+      "bytes": 585
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/P1C-tracetests-summary.txt",
+      "destination": "evidence/S3-phase1/P1C-tracetests-summary.txt",
+      "bytes": 386
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/PHASE1-REPORT-R2.md",
+      "destination": "evidence/S3-phase1/PHASE1-REPORT-R2.md",
+      "bytes": 26431
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/PHASE1-REPORT-R3.md",
+      "destination": "evidence/S3-phase1/PHASE1-REPORT-R3.md",
+      "bytes": 42586
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/PHASE1-REPORT-R4.md",
+      "destination": "evidence/S3-phase1/PHASE1-REPORT-R4.md",
+      "bytes": 12926
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/PHASE1-REPORT-R5.md",
+      "destination": "evidence/S3-phase1/PHASE1-REPORT-R5.md",
+      "bytes": 13173
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-phase1/handoffs/PHASE1-REPORT.md",
+      "destination": "evidence/S3-phase1/PHASE1-REPORT.md",
+      "bytes": 33588
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/EVIDENCE.sha256",
+      "destination": "evidence/S4B-submission2/handoffs/EVIDENCE.sha256",
+      "bytes": 17934
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/SUBMISSION-2-BINDING-HANDOFF.md",
+      "destination": "evidence/S4B-submission2/handoffs/SUBMISSION-2-BINDING-HANDOFF.md",
+      "bytes": 6487
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/SUBMISSION-2-BINDING-SUPPLEMENT-NOTE-013.md",
+      "destination": "evidence/S4B-submission2/handoffs/SUBMISSION-2-BINDING-SUPPLEMENT-NOTE-013.md",
+      "bytes": 6009
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/SUBMISSION.md",
+      "destination": "evidence/S4B-submission2/handoffs/SUBMISSION.md",
+      "bytes": 11172
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-axioms.lean",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-axioms.lean",
+      "bytes": 959
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-c1.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-c1.log",
+      "bytes": 282
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-c1g.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-c1g.log",
+      "bytes": 159959
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-c1r.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-c1r.log",
+      "bytes": 158253
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-c2-probe.txt",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-c2-probe.txt",
+      "bytes": 44
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-c2.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-c2.log",
+      "bytes": 160145
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-c26.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-c26.log",
+      "bytes": 799164
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-c3-probe-mirror.txt",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-c3-probe-mirror.txt",
+      "bytes": 41
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-c3-probe-pred.txt",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-c3-probe-pred.txt",
+      "bytes": 40
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-c3.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-c3.log",
+      "bytes": 160280
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-c4.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-c4.log",
+      "bytes": 158315
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-checker-copy.sh",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-checker-copy.sh",
+      "bytes": 16615
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-ctrl-c05.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-ctrl-c05.log",
+      "bytes": 205
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-ctrl-c05r.lean",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-ctrl-c05r.lean",
+      "bytes": 1171
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-ctrl-c05r.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-ctrl-c05r.log",
+      "bytes": 203
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-ctrl-c06.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-ctrl-c06.log",
+      "bytes": 225
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-ctrl-c07.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-ctrl-c07.log",
+      "bytes": 594
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-ctrl-c08.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-ctrl-c08.log",
+      "bytes": 1322
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-ctrl-c09.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-ctrl-c09.log",
+      "bytes": 803
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-ctrl-c10.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-ctrl-c10.log",
+      "bytes": 282
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-ctrl-c11.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-ctrl-c11.log",
+      "bytes": 298
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-ctrl-c11r.lean",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-ctrl-c11r.lean",
+      "bytes": 1068
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-ctrl-c11r.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-ctrl-c11r.log",
+      "bytes": 297
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-ctrl-c12.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-ctrl-c12.log",
+      "bytes": 354
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-ctrl-c13.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-ctrl-c13.log",
+      "bytes": 643
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-ctrl-c14.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-ctrl-c14.log",
+      "bytes": 316
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-ctrl-c15.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-ctrl-c15.log",
+      "bytes": 587
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-ctrl-c16.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-ctrl-c16.log",
+      "bytes": 981
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-ctrl-c17.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-ctrl-c17.log",
+      "bytes": 714
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-ctrl-c18.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-ctrl-c18.log",
+      "bytes": 510
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-ctrl-c19.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-ctrl-c19.log",
+      "bytes": 593
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-ctrl-c20.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-ctrl-c20.log",
+      "bytes": 808
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-ctrl-c21.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-ctrl-c21.log",
+      "bytes": 699
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-ctrl-c22.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-ctrl-c22.log",
+      "bytes": 406
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-ctrl-c23.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-ctrl-c23.log",
+      "bytes": 590
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-donor-leans.sha",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-donor-leans.sha",
+      "bytes": 2565
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-driver-dev.lean",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-driver-dev.lean",
+      "bytes": 14338
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Event.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Event.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Event.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Event.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Event.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Event.trace",
+      "bytes": 1493
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Fold.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Fold.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Fold.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Fold.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Fold.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Fold.trace",
+      "bytes": 1486
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Integration.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Integration.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Integration.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Integration.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Integration.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Integration.trace",
+      "bytes": 1544
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Invariants.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Invariants.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Invariants.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Invariants.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Invariants.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Invariants.trace",
+      "bytes": 1973
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/State.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/State.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/State.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/State.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/State.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/State.trace",
+      "bytes": 1493
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Tests.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Tests.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Tests.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Tests.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Tests.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Tests.trace",
+      "bytes": 3968
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Types.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Types.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Types.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Types.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Types.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Types.trace",
+      "bytes": 1372
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Validate.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Validate.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Validate.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Validate.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Validate.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Validate.trace",
+      "bytes": 1514
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Vote/Event.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Vote/Event.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Vote/Event.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Vote/Event.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Vote/Event.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Vote/Event.trace",
+      "bytes": 1550
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Vote/Fold.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Vote/Fold.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Vote/Fold.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Vote/Fold.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Vote/Fold.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Vote/Fold.trace",
+      "bytes": 1864
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Vote/Invariants.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Vote/Invariants.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Vote/Invariants.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Vote/Invariants.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Vote/Invariants.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Vote/Invariants.trace",
+      "bytes": 8628
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Vote/State.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Vote/State.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Vote/State.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Vote/State.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Vote/State.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Vote/State.trace",
+      "bytes": 1550
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Vote/Tests.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Vote/Tests.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Vote/Tests.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Vote/Tests.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Vote/Tests.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Vote/Tests.trace",
+      "bytes": 1873
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Vote/Types.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Vote/Types.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Vote/Types.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Vote/Types.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Vote/Types.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Vote/Types.trace",
+      "bytes": 1531
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Vote/Validate.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Vote/Validate.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Vote/Validate.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Vote/Validate.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups/Vote/Validate.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups/Vote/Validate.trace",
+      "bytes": 1922
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/KelGroups.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/KelGroups.trace",
+      "bytes": 3593
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas/Composition.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas/Composition.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas/Composition.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas/Composition.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas/Composition.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas/Composition.trace",
+      "bytes": 2860
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas/Invariants.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas/Invariants.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas/Invariants.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas/Invariants.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas/Invariants.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas/Invariants.trace",
+      "bytes": 2784
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas/Predicates.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas/Predicates.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas/Predicates.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas/Predicates.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas/Predicates.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas/Predicates.trace",
+      "bytes": 1549
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas/State.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas/State.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas/State.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas/State.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas/State.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas/State.trace",
+      "bytes": 1672
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas/Step.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas/Step.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas/Step.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas/Step.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas/Step.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas/Step.trace",
+      "bytes": 2496
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas/Trace.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas/Trace.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas/Trace.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas/Trace.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas/Trace.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas/Trace.trace",
+      "bytes": 1532
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas/Types.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas/Types.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas/Types.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas/Types.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas/Types.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas/Types.trace",
+      "bytes": 1668
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas.ilean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas.ilean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas.olean.hash",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas.olean.hash",
+      "bytes": 16
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-lib/Reactivegas.trace",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-lib/Reactivegas.trace",
+      "bytes": 2392
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-mirror-copy.lean",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-mirror-copy.lean",
+      "bytes": 11819
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-mirrors-baseline.sha",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-mirrors-baseline.sha",
+      "bytes": 240
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-mutate.pl",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-mutate.pl",
+      "bytes": 496
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-own-leans.sha",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-own-leans.sha",
+      "bytes": 2565
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-s1.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-s1.log",
+      "bytes": 1355
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-stmts.lean",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-stmts.lean",
+      "bytes": 745
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-t10.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-t10.log",
+      "bytes": 3400
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-t11.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-t11.log",
+      "bytes": 1860
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-t2.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-t2.log",
+      "bytes": 0
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-t3.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-t3.log",
+      "bytes": 2500
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-t32.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-t32.log",
+      "bytes": 2719
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-t33.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-t33.log",
+      "bytes": 1391
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-t36.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-t36.log",
+      "bytes": 64
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-t37.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-t37.log",
+      "bytes": 1920
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-t38.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-t38.log",
+      "bytes": 54
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-t39.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-t39.log",
+      "bytes": 54
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-t4.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-t4.log",
+      "bytes": 365
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-t40.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-t40.log",
+      "bytes": 1893
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-t41.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-t41.log",
+      "bytes": 1893
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-t42.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-t42.log",
+      "bytes": 1337
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-t5.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-t5.log",
+      "bytes": 0
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-t6.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-t6.log",
+      "bytes": 54
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-t7.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-t7.log",
+      "bytes": 54
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-t8.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-t8.log",
+      "bytes": 171
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/s4b-t9.log",
+      "destination": "evidence/S4B-submission2/handoffs/evidence/s4b-t9.log",
+      "bytes": 266
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/instruments/S2-census.lean",
+      "destination": "evidence/S4B-submission2/instruments/S2-census.lean",
+      "bytes": 6399
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/instruments/S2-chain-P01-clean.lean",
+      "destination": "evidence/S4B-submission2/instruments/S2-chain-P01-clean.lean",
+      "bytes": 5479
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/instruments/S2-chain-P01.lean",
+      "destination": "evidence/S4B-submission2/instruments/S2-chain-P01.lean",
+      "bytes": 5294
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/instruments/S2-chain-P07-clean.lean",
+      "destination": "evidence/S4B-submission2/instruments/S2-chain-P07-clean.lean",
+      "bytes": 8655
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/instruments/S2-chain-P07.lean",
+      "destination": "evidence/S4B-submission2/instruments/S2-chain-P07.lean",
+      "bytes": 8451
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/instruments/S2-mut-classifier-omit.diff",
+      "destination": "evidence/S4B-submission2/instruments/S2-mut-classifier-omit.diff",
+      "bytes": 349
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/instruments/S2-mut-close-perm.diff",
+      "destination": "evidence/S4B-submission2/instruments/S2-mut-close-perm.diff",
+      "bytes": 1014
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/instruments/S2-mut-isMember-false.diff",
+      "destination": "evidence/S4B-submission2/instruments/S2-mut-isMember-false.diff",
+      "bytes": 571
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/instruments/S2-mut-opaque.diff",
+      "destination": "evidence/S4B-submission2/instruments/S2-mut-opaque.diff",
+      "bytes": 982
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/instruments/S2-selected-P01-helpers.txt",
+      "destination": "evidence/S4B-submission2/instruments/S2-selected-P01-helpers.txt",
+      "bytes": 945
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/instruments/S2-selected-P01P07-orig.txt",
+      "destination": "evidence/S4B-submission2/instruments/S2-selected-P01P07-orig.txt",
+      "bytes": 633
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/instruments/S2-selected-P07-chain.txt",
+      "destination": "evidence/S4B-submission2/instruments/S2-selected-P07-chain.txt",
+      "bytes": 1805
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/instruments/S2-selected-closePurchase-arm.txt",
+      "destination": "evidence/S4B-submission2/instruments/S2-selected-closePurchase-arm.txt",
+      "bytes": 338
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/instruments/S2-selected-isMember-body.txt",
+      "destination": "evidence/S4B-submission2/instruments/S2-selected-isMember-body.txt",
+      "bytes": 149
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/instruments/S2-witness-close.lean",
+      "destination": "evidence/S4B-submission2/instruments/S2-witness-close.lean",
+      "bytes": 2013
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/handoffs/S4B-SUBMISSION-2-FROZEN-COMMAND-SHEET.md",
+      "destination": "evidence/quality-parent-current/S4B-SUBMISSION-2-FROZEN-COMMAND-SHEET.md",
+      "bytes": 10002
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/t-simulator-fable/handoffs/C2-GENERATOR-MANDATE.md",
+      "destination": "evidence/simulator-preparation/C2-GENERATOR-MANDATE.md",
+      "bytes": 13110
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/t-simulator-fable/handoffs/C2-READINESS-PACKET-v1-SUPERSEDED.md",
+      "destination": "evidence/simulator-preparation/C2-READINESS-PACKET-v1-SUPERSEDED.md",
+      "bytes": 9216
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/t-simulator-fable/handoffs/C2-READINESS-PACKET-v2.md",
+      "destination": "evidence/simulator-preparation/C2-READINESS-PACKET-v2.md",
+      "bytes": 7149
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/t-simulator-fable/handoffs/C2-READINESS-PACKET.md",
+      "destination": "evidence/simulator-preparation/C2-READINESS-PACKET.md",
+      "bytes": 9216
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/inbox/NOTE-012-sheet-correction-prepare-then-bind.md",
+      "destination": "evidence/current-inbox/e-lean-compliance/commit-owner-s4b-muse/NOTE-012-sheet-correction-prepare-then-bind.md",
+      "bytes": 2932
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/inbox/NOTE-013-binding-review-not-bound.md",
+      "destination": "evidence/current-inbox/e-lean-compliance/commit-owner-s4b-muse/NOTE-013-binding-review-not-bound.md",
+      "bytes": 5151
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/inbox/NOTE-027-consume-green.md",
+      "destination": "evidence/current-inbox/e-kelgroups-substrate/t28-app-api/NOTE-027-consume-green.md",
+      "bytes": 2023
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/inbox/NOTE-028-frozen-handback.md",
+      "destination": "evidence/current-inbox/e-kelgroups-substrate/t28-app-api/NOTE-028-frozen-handback.md",
+      "bytes": 2340
+    },
+    {
+      "source": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-owner-s28r1/inbox/NOTE-002-unprompted-slim.md",
+      "destination": "evidence/current-inbox/e-kelgroups-substrate/t28-app-api/commit-owner-s28r1/NOTE-002-unprompted-slim.md",
+      "bytes": 1012
+    }
+  ],
+  "scope": "Selected runtime evidence overlay, source patch, status and wiki. Existing snapshot content preserved. Compiled outputs, databases, hidden paths and build directories excluded. Not a full-host backup."
+}

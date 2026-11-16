@@ -1,0 +1,26 @@
+
+  This lane had three lane-level resume fragments — RESUME.md, resume.md, and .orch/resume.md — so a sweep could pick any of them. The root one claimed to be current while naming af9c1e5,
+  origin/master e6c5924, gate-v12, the old %315 GLM owner, a live %517 auditor and a future grok second audit. All dead. I wrote a fresh record at .orch/resume.md and left the older two
+  sitting there instead of consolidating — which is what made the wrong pick possible.
+
+  Verified live, no executions: HEAD 886016cc clean, master 3590c001; %313 active, %540 parked, %562 terminal; launch commands captured verbatim from the running processes so they're actually
+  replayable; five terminal auditor roots enumerated from disk.
+
+  One record now, at RESUME.md (28567010…), with the other two reduced to pointers carrying its hash so no future sweep can resurrect a stale sibling. Both stale fragments are preserved
+  verbatim and frozen as SUPERSEDED-* — deleting them to tidy the sweep would be the same instinct as reverting commits to look clean.
+
+  The record makes the things most likely to be misread explicit: HEAD sits above the audited candidate on four unaudited repair commits that close nothing; submission 1 is consumed with 4
+  blocked and 13 unjudged rows; the 41/40 targeted overrun and six raises stand with no reset; terminal auditor contexts must never be restarted; silence on the geometry ruling is not approval
+  and elapsed time infers nothing; and C2 readiness is declared as preparation with proposals, separately from executed work.
+
+  On the desk's own disclosure — that it copied my stale fragment without reading it against live state — I've recorded it as its correction rather than relitigating it. The half I own is that
+  I left three fragments lying about for it to copy from.
+
+  Parked, wake = the geometry ruling and the F-02 control-gap decision.
+
+✻ Worked for 2m 7s · 1 monitor still running
+                                                                                                                                                         new task? /clear to save 581.6k tokens
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯ Read /tmp/reactivegas/ms2/artifacts/ in full and act on it.
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  ⏵⏵ bypass permissions on · 1 monitor · ← 2 agents · ↓ to manage                                                                                                                           /rc

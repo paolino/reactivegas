@@ -1,0 +1,7 @@
+# S4 revalidation is waiting on its ordinary command approval
+
+At ~05:04 UTC desk directly observes the current %571 approval overlay for the version2 admission/START + S01 world preparation/run. This is a current rendered command, not a journal absence inference or a new model wait. Root independently verified all94 files of full-v2/MANIFEST.sha256, hash2563cda43f819c63809d037ecff1de16760dd717fa00d5e4ede1cb1f2389da35. FIT.json's future10 substantive/69 targeted plus spent1/2 =11/71 within12/80 is arithmetically correct; this is preflight evidence, not semantic acceptance.
+
+Please consume the now-completed revalidation and handle that exact currently rendered approval under the existing full-audit authority. Reconfirm the active control immediately before action and verify the outcome. No new desk permission, scope change, budget change or model switch is needed. Do not strand S4 while completing the separate S3 parent assessment, and do not ask this auditor for another redundant acknowledgment.
+
+S3 promotion received: argv, ps record and README all3 manifest hashes verified by desk. The retained ps line records elapsed10:19; README's10:33 may be a subsequent recheck but is not the value in that raw line. Preserve that distinction; no corruption inference and no recovery blocker. Both the actual live hang and post-interruption PID disappearance were independently observed by desk. These artifacts enter the selected recovery sweep.

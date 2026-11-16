@@ -1,0 +1,167 @@
+[
+  {
+    "id": "B01-USERS",
+    "row": "R71-01",
+    "exit": 1,
+    "expected": 1,
+    "reason": "still list users",
+    "duration_ms": 40,
+    "sha256": "22fc5d4f611a3770e93e8c1ceea8d2a476bee417acd588271eedf3446654c2d8",
+    "document_sha256": "a6e9c3956d652763510e148d27ce9eaf60c81139ca87b5bd1aef36d6c92a754f",
+    "cache": "warm"
+  },
+  {
+    "id": "B02-EVENTS",
+    "row": "R71-02",
+    "exit": 1,
+    "expected": 1,
+    "reason": "still claim 15 events",
+    "duration_ms": 51,
+    "sha256": "6b0935869556cfb35c1b3f7e10d70d43a7b6401f896038ed58d4cd605259b2cd",
+    "document_sha256": "062b82bcbe5c01d2711b32aced7f73c10ea523c7f39909f8ae2139f2f281ad0e",
+    "cache": "warm"
+  },
+  {
+    "id": "B03-STEP",
+    "row": "R71-03",
+    "exit": 1,
+    "expected": 1,
+    "reason": "stale 2-arg",
+    "duration_ms": 80,
+    "sha256": "8f2ba48d58f3b3f7e54c4871d1208d1ab6c064896cc9c82cb8b76387f65497b2",
+    "document_sha256": "f8f434c4cd226064cf4bbb81be183651145b607f3ba526801a3c740250f5e0ed",
+    "cache": "warm"
+  },
+  {
+    "id": "B04-TENSION",
+    "row": "R71-04",
+    "exit": 1,
+    "expected": 1,
+    "reason": "honesty-tension",
+    "duration_ms": 192,
+    "sha256": "37b60b8b906f216508e39aa501a977706fe88ff36bb29bb1b52221631d4d216c",
+    "document_sha256": "3bdf1614820fd24fde94e349190945506ea4a9a5c08cdf6e780121bf435aea1a",
+    "cache": "warm"
+  },
+  {
+    "id": "B05-WITNESS",
+    "row": "R71-05",
+    "exit": 1,
+    "expected": 1,
+    "reason": "no law/witness heading",
+    "duration_ms": 115,
+    "sha256": "423d046f7e45655970f60e9a9985766daf6adb2c4e39d9946ef1ee767725e12c",
+    "document_sha256": "8b73f055ac3013d84141416d98080fc8921f7113bf1374d6e2f9662fc0f1e9ed",
+    "cache": "warm"
+  },
+  {
+    "id": "B06-LINK",
+    "row": "R71-06",
+    "exit": 1,
+    "expected": 1,
+    "reason": "unbound reachability",
+    "duration_ms": 126,
+    "sha256": "bfd8ec4a76d6fdd3f1a3618dcb70cc5d109011c442f23d38584fef6da815ffe4",
+    "document_sha256": "c1eae8c3916a144d2c4cc93cdd55f178b2f01f72fac63c972104e24bd01e5518",
+    "cache": "warm"
+  },
+  {
+    "id": "B07-THETA",
+    "row": "R71-07",
+    "exit": 1,
+    "expected": 1,
+    "reason": "theta-open sentence missing",
+    "duration_ms": 142,
+    "sha256": "3f9d2f539333d07916f7795bf9db8a8eea3e9ecd02343f20dd124ea69b26be19",
+    "document_sha256": "82dbe96a63b270ae44a8f199f6bdc0575435c909df5cf7d4b538f9e7135f1af7",
+    "cache": "warm"
+  },
+  {
+    "id": "B08-VOCI",
+    "row": "R71-08",
+    "exit": 1,
+    "expected": 1,
+    "reason": "stale twenty-modules count",
+    "duration_ms": 160,
+    "sha256": "93adf9dbe4af06fc947db623c6910fadffe8c8be97441909058fcf0b338b732b",
+    "document_sha256": "02f6852028193d8c4745403cd6cc64c0705c4573bd135e58b7b6886f6386817a",
+    "cache": "warm"
+  },
+  {
+    "id": "B09-DATES",
+    "row": "R71-09",
+    "exit": 1,
+    "expected": 1,
+    "reason": "lack dated operator rulings",
+    "duration_ms": 194,
+    "sha256": "4defc44415a0632d8eb4f1683f10af0b994c145339ce984a8a1b66a5790adc5f",
+    "document_sha256": "5986982a93beed9e221271acdc95651648877d4a7717be83269e82a28744cc2f",
+    "cache": "warm"
+  },
+  {
+    "id": "B10-PENDING",
+    "row": "R71-10",
+    "exit": 1,
+    "expected": 1,
+    "reason": "pending anchor #81",
+    "duration_ms": 192,
+    "sha256": "75a8396f72055bdb3459b2753b3733781b5396c12f2dda4a7dd1e61fff53dccb",
+    "document_sha256": "e77d1396dbdaa1d363ea23cb7b454356a49967d1bb3624e79f995672023c710f",
+    "cache": "warm"
+  },
+  {
+    "id": "B11-UNCITED",
+    "row": "R71-11",
+    "exit": 1,
+    "expected": 1,
+    "reason": "CLAIM-RED",
+    "duration_ms": 12341,
+    "sha256": "ec34bea114cea13f2f03a06d851864dcffa1930d5a4a5f7632437bc717d46696",
+    "document_sha256": "630535294da4964b8f6e0f968c4c9a627dd1b6d327a4a62f960e8f2c2415b730",
+    "cache": "warm"
+  },
+  {
+    "id": "B12-CLOSURE",
+    "row": "R71-12",
+    "exit": 1,
+    "expected": 1,
+    "reason": "invent a group-closure theorem",
+    "duration_ms": 106,
+    "sha256": "d136b3dff036c4958d64f8f75a07145d83226b96cdaee04f9bd50bb74c29c35c",
+    "document_sha256": "5bce50eef6f4b4f64c767e51e3219799aa590a96b65bc3ad9cf4beb4f3a9fff8",
+    "cache": "warm"
+  },
+  {
+    "id": "F11-WRONG-DECL",
+    "row": "R71-11",
+    "exit": 0,
+    "expected": 0,
+    "reason": "GATE-v6-GREEN",
+    "duration_ms": 12559,
+    "sha256": "403d9c73e098955b78862702cfb6a41d9fcbfeeae0d22c7453e7dde58940daee",
+    "document_sha256": "94a67292defde7e9c08fbce96ef8698a21a6cfff88b9b25d1ebbe4ca5dc59e4c",
+    "cache": "warm"
+  },
+  {
+    "id": "F11-SOLE-MARKER",
+    "row": "R71-11",
+    "exit": 0,
+    "expected": 0,
+    "reason": "GATE-v6-GREEN",
+    "duration_ms": 12607,
+    "sha256": "d3e5f743715bddb2948bd2f8bec0ae65cbdfac8f13c463883fa189966158eed1",
+    "document_sha256": "99ca049eddd1a341b376e55cf9e4629b34b7982e080745158484d1b7edca57d4",
+    "cache": "warm"
+  },
+  {
+    "id": "CTRL-ORIGINAL",
+    "row": "CONTROL",
+    "exit": 0,
+    "expected": 0,
+    "reason": "GATE-v6-GREEN",
+    "duration_ms": 12622,
+    "sha256": "d3e5f743715bddb2948bd2f8bec0ae65cbdfac8f13c463883fa189966158eed1",
+    "document_sha256": "2a3068f17c3093747969f1c4980071b43f0d95129275164a532c9683d0d32564",
+    "cache": "warm"
+  }
+]

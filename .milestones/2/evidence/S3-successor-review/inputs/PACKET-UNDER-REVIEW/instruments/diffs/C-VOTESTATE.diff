@@ -1,0 +1,12 @@
+diff --git a/lean/KelGroups/Vote/State.lean b/lean/KelGroups/Vote/State.lean
+index 0000000..3333333 100644
+--- a/lean/KelGroups/Vote/State.lean
++++ b/lean/KelGroups/Vote/State.lean
+@@ -86,7 +86,7 @@ def verdictOf (threshold : Threshold) (view : GroupView) (question : Question) :
+   match question.kind with
+   | .collective =>
+       let required := threshold (franchiseSize view)
+-      if question.assents.length ≥ required then .positive
++      if question.assents.length > required then .positive
+       else if question.dissents.length ≥ required then .negative
+       else .open

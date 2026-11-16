@@ -1,0 +1,8 @@
+escrowHeldB (col : Collection) (u : KelGroups.Key) (v : Int) : Bool
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A17.lean:206:9: error: unsolved goals
+case none
+col : Collection
+u : KelGroups.Key
+v : Int
+h : splitUser u col.pending = none
+⊢ False

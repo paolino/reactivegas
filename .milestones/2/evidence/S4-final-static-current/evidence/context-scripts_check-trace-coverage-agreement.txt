@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+set -euo pipefail
+#
+# Agreement between the two independent answers to
+# "which constructors have an accepted inversion":
+#
+#   A: scripts/check-reactivegas-inversion-coverage
+#      reports `inversion-coverage constructors=C covered=V missing=M ...`
+#   B: Reactivegas.TraceTests, run with `lake env lean`,
+#      reports `TRACE-INVENTORY ctors=C covered=V missing=M`
+#
+# Both signals are read from the *executed* instruments' stdout: each side
+# runs here and its behaviour decides. Nothing is read from Lean source
+# text. A missing report line is a finding, not an agreement: a row that
+# stops being reported must fail loudly rather than compare equal.
+#
+# Fails when the two answers disagree, so the tree cannot hold two
+# different coverage answers with every gate green. Wired into `just lean`
+# (the `lean` recipe); standalone it builds through instrument A, so run
+# it from a tree whose sources are committed.
+
+TOOL=check-trace-coverage-agreement
+
+usage() {
+    printf 'usage: %s [REPO_ROOT]\n' "$TOOL" >&2
+    exit 64
+}
+
+while [ $# -gt 0 ]; do
+    case $1 in
+        -h|--help) usage ;;
+        --) shift; break ;;
+        -*) usage ;;
+        *) break ;;
+    esac
+    shift
+done
+[ $# -le 1 ] || usage
+
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+root=$(cd -- "${1:-$script_dir/..}" && pwd)
+lean_dir="$root/lean"
+
+[ -d "$lean_dir" ] || {
+    printf '%s: missing Lean sources: %s\n' "$TOOL" "$lean_dir" >&2
+    exit 1
+}
+
+tmp=$(mktemp -d)
+trap 'rm -rf -- "$tmp"' EXIT
+
+# Instrument A. This also rebuilds the library tree, so instrument B below
+# elaborates against the current sources, not whatever was compiled last.
+if ! "$root/scripts/check-reactivegas-inversion-coverage" "$root" \
+        >"$tmp/audit.out" 2>"$tmp/audit.err"; then
+    printf '%s: instrument A failed on its own; agreement is meaningless\n' \
+        "$TOOL" >&2
+    tail -n 5 "$tmp/audit.err" "$tmp/audit.out" >&2 || true
+    exit 1
+fi
+
+# Instrument B. Its own kernel checks stay green on a wrong split by
+# design (both sides of each reconciliation read the same manifest), so a
+# zero exit here settles nothing about agreement.
+if ! (cd "$lean_dir" && lake env lean Reactivegas/TraceTests.lean) \
+        >"$tmp/trace.out" 2>"$tmp/trace.err"; then
+    printf '%s: instrument B failed on its own; agreement is meaningless\n' \
+        "$TOOL" >&2
+    tail -n 5 "$tmp/trace.err" "$tmp/trace.out" >&2 || true
+    exit 1
+fi
+
+audit_line=$(grep -E '^inversion-coverage ' "$tmp/audit.out" | tail -n 1 || true)
+trace_line=$(grep -E '^TRACE-INVENTORY ' "$tmp/trace.out" | tail -n 1 || true)
+
+[ -n "$audit_line" ] || {
+    printf '%s: instrument A reported no inversion-coverage line\n' \
+        "$TOOL" >&2
+    exit 1
+}
+[ -n "$trace_line" ] || {
+    printf '%s: instrument B reported no TRACE-INVENTORY line\n' \
+        "$TOOL" >&2
+    exit 1
+}
+
+take() {
+    # take KEY LINE: digits after KEY= in LINE, empty when absent.
+    printf '%s\n' "$2" | grep -E -o "$1=[0-9]+" | tail -n 1 | cut -d= -f2 || true
+}
+
+a_ctors=$(take constructors "$audit_line")
+a_covered=$(take covered "$audit_line")
+a_missing=$(take missing "$audit_line")
+t_ctors=$(take ctors "$trace_line")
+t_covered=$(take covered "$trace_line")
+t_missing=$(take missing "$trace_line")
+
+for v in "$a_ctors" "$a_covered" "$a_missing" \
+         "$t_ctors" "$t_covered" "$t_missing"; do
+    [[ "$v" =~ ^[0-9]+$ ]] || {
+        printf '%s: unparseable report line\n  A: %s\n  B: %s\n' \
+            "$TOOL" "$audit_line" "$trace_line" >&2
+        exit 1
+    }
+done
+
+if [ "$a_ctors" != "$t_ctors" ] \
+    || [ "$a_covered" != "$t_covered" ] \
+    || [ "$a_missing" != "$t_missing" ]; then
+    printf '%s: coverage answers disagree\n' "$TOOL" >&2
+    printf '  A (inversion audit): constructors=%s covered=%s missing=%s\n' \
+        "$a_ctors" "$a_covered" "$a_missing" >&2
+    printf '  B (trace manifest):  ctors=%s covered=%s missing=%s\n' \
+        "$t_ctors" "$t_covered" "$t_missing" >&2
+    exit 1
+fi
+
+printf 'trace-coverage-agreement: ok (constructors=%s covered=%s missing=%s)\n' \
+    "$a_ctors" "$a_covered" "$a_missing"

@@ -1,0 +1,4 @@
+./nix/lean-dependency-direction.sh: line 14: /dev/null: Permission denied
+./nix/lean-dependency-direction.sh: line 14: /dev/null: Permission denied
+dependency scanner could not find a known Reactivegas import
+error: Recipe `lean` failed with exit code 1

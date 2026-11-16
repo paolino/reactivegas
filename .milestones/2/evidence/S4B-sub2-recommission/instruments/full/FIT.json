@@ -1,0 +1,31 @@
+{
+  "alreadySpent": {
+    "substantive": 1,
+    "targeted": 2
+  },
+  "future": {
+    "substantive": 10,
+    "targeted": 69
+  },
+  "totalPlanned": {
+    "substantive": 11,
+    "targeted": 71
+  },
+  "ceiling": {
+    "substantive": 12,
+    "targeted": 80
+  },
+  "unallocated": {
+    "substantive": 1,
+    "targeted": 9
+  },
+  "historical": {
+    "substantive": 6,
+    "targeted": 59
+  },
+  "campaignPlanned": {
+    "substantive": 17,
+    "targeted": 130
+  },
+  "fits": true
+}

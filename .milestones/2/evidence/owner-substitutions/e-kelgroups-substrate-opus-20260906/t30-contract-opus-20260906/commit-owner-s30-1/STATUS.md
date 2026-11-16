@@ -1,0 +1,2 @@
+2026-09-06T07:53:08Z  START  mode=COMMIT-OWNER pane=%582 cli=muse harness=pi provider=opencode-go model=muse-spark-1.3-contributor effort=xhigh parent_cli=claude alternate=true base=7c67c81 gate=5316e9c846a9fcdd3fabc4d54eaa552a197b580ffb16713316c66fd8a3d2976a draft=NONE
+2026-09-06T07:53:08Z  NOTE  dispatch valid: TMUX_PANE=%582 != owner %572, same window reactivegas:8, claude/muse families distinct; brief read in full

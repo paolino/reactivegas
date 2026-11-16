@@ -1,0 +1,8 @@
+MAJ pending with one of three=True
+MAJ two-of-five stays pending=True
+MAJ target remains before current quorum=True
+MAJ-NC stale-three-admin threshold detected=True
+MAJ three-of-five enacts=True
+MAJ enacted effect removes target=True
+MAJ pending consumed=True
+MAJ exact committed result=True

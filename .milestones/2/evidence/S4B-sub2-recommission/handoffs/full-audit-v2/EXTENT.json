@@ -1,0 +1,24 @@
+{
+  "base": {
+    "declarations": 3382,
+    "ownedModules": 27,
+    "predicateCandidates": 24,
+    "record": "summary",
+    "scope": "planning measurement only; no acceptance classification",
+    "sortUndecided": 0
+  },
+  "final": {
+    "declarations": 3478,
+    "ownedModules": 29,
+    "predicateCandidates": 24,
+    "record": "summary",
+    "scope": "planning measurement only; no acceptance classification",
+    "sortUndecided": 0
+  },
+  "newDeclarations": 96,
+  "bounds": {
+    "declarations": 20000,
+    "bytes": 268435456
+  },
+  "rule": "Measured complete output, never a fixed acceptance denominator; unknown sorts or changed identities stop closure."
+}

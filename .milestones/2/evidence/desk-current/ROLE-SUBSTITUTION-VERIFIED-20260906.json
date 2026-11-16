@@ -1,0 +1,39 @@
+{
+  "at": "2026-09-06T06:10:54.333Z",
+  "roles": [
+    {
+      "root": "t68-proposer-assent-opus-20260906",
+      "pane": "%512",
+      "pid": 3358057,
+      "argv": "claude --dangerously-skip-permissions --model claude-opus-5[1m] --effort high",
+      "start": "2026-09-06T05:56:35Z  START  mode=TICKET-OWNER(successor) pane=%512 window=reactivegas:10(assent-wait-C1) cli=claude model=claude-opus-5[1m] effort=high pid=3358057 argv-verified-live; brief=a9bfb94f69279f04dff58d83870d18fb3de0a567d20bacaa0c6782e82aa74f2c scope-root=/tmp/reactivegas/ms2/t68-proposer-assent-opus-20260906 preserved-root=/tmp/reactivegas/ms2/t68-proposer-assent; predecessor=muse-%512 TERMINAL (HANDOFF-READY 5a9970a5); authority admitted for paolino/reactivegas#68 only",
+      "briefSha256": "a9bfb94f69279f04dff58d83870d18fb3de0a567d20bacaa0c6782e82aa74f2c"
+    },
+    {
+      "root": "t71-design-record-opus-20260906",
+      "pane": "%516",
+      "pid": 3358067,
+      "argv": "claude --dangerously-skip-permissions --model claude-opus-5[1m] --effort high",
+      "start": "2026-09-06T05:55:54Z  START  mode=TICKET-OWNER role=ticket-orchestrator issue=paolino/reactivegas#71 pane=%516 win=reactivegas:11 cli=claude family=claude model='claude-opus-5[1m]' effort=high pid=3358067 argv-verified=yes session-model-verified=claude-opus-5[1m] brief=/tmp/reactivegas/ms2/t71-design-record-opus-20260906/brief.md brief_sha256=d89a92d4124f9df4ba3f426d034b9269064ca69169b5ccafe5f4c192867fa43d source=ROLE-SUBSTITUTION-OPUS-20260906 POINTER-1788674093-3359899",
+      "briefSha256": "d89a92d4124f9df4ba3f426d034b9269064ca69169b5ccafe5f4c192867fa43d"
+    },
+    {
+      "root": "e-kelgroups-substrate-opus-20260906",
+      "pane": "%532",
+      "pid": 3358093,
+      "argv": "claude --dangerously-skip-permissions --model claude-opus-5[1m] --effort high",
+      "start": "2026-09-06T05:57:35Z  START  epic-owner kelgroups#29/Rg#73 successor ADMITTED; pane=%532 (reactivegas:12.1) launch='claude --dangerously-skip-permissions --model claude-opus-5[1m] --effort high' pid=3358093 verified-from-argv; model=claude-opus-5[1m] effort=high; brief=8f004ba81a0bd7a9 admission.sha256 ALL-OK (brief + ASK 399d9268 + old-handoff 74d0d22a); old-scope=/tmp/reactivegas/ms2/e-kelgroups-substrate PRESERVED; base kelgroups main=933e385df2f2a251bb54a08bb7663f0d41fafb64 REVALIDATED clean; lean input=3590c0015b84fd58004bf6fb44dd18b107304c48 REVALIDATED; carried counters: S28-1 owner34/34 audit9/12+7/24, S28-R1 owner13/16 audit10/12+16/24, S28-R2 owner26/26+4/24+2/4 auditor11/12+22/24, T30 product-builds=0, synthetic campaign 1/2 spent (pf8 inv1) + historical pf1 2 spent = aggregate 3/4; child %572 safe-boundary HANDOFF-READY 05:52:30Z idle no children no running processes",
+      "briefSha256": "8f004ba81a0bd7a917ebca3bb2468fcf4c97cca5577dea14ee7ac0030dec8933"
+    },
+    {
+      "root": "e-kelgroups-substrate-opus-20260906/t30-contract-opus-20260906",
+      "pane": "%572",
+      "pid": 3372041,
+      "argv": "claude --dangerously-skip-permissions --model claude-opus-5[1m] --effort high",
+      "start": "2026-09-06T06:09:40Z  START  t30-contract-opus-20260906 admitted; pane=%572 launch=[claude --dangerously-skip-permissions --model claude-opus-5[1m] --effort high] model=claude-opus-5[1m] effort=high brief=06e93291b31f6c93a0347e87ff30599ed6c3ead5cca421b9618746f4a24e0d41 predecessor-handoff=ef932821e3b4416baf894cadea18c73d7cd0aaead059dca6e10593ebf61882ea bases=kelgroups-933e385df2f2a251bb54a08bb7663f0d41fafb64+reactivegas-3590c0015b84fd58004bf6fb44dd18b107304c48 counters=synthetic-campaign-1-of-2-spent(pf8-inv1)-1-repair-rerun-remaining historical-pf1=2-spent-never-refunded aggregate=3-of-4-consumed product-builds=0-and-stays-0 fence=preparation-only-no-build-no-dispatch-no-edits-outside-own-root launch-authority=epic-owner-preflight-binding-not-mine; NOTE-001 read (sha=2c3fda9d118c51830edc7834e868aa5d5ea89f692ace9826ddae39641c69c14e) — START journaled before next analysis step; skills loaded: orchestrator-contract ticket-orchestrator resolve-ticket(planning-only) context-compiler worker-protocol tmux-orchestrator verification invariants gate-script haskell nix lean4(read-only); intake complete: this brief + OWNER-SUBSTITUTION-HANDOFF + predecessor STATUS tail + predecessor brief(f6d85763) + inbox NOTE-001..009 + PREFLIGHT-INVOCATION-1-BINDING + SUBSTITUTION-ORDER + T30-CONTRACT-r8(ea6c2019) + T30-COMMAND-MAP-r8(ca033b1e) + T30-DRIFT-LEG-r8.sh(f0afa32b) + pf8/run.sh(62025c17) + pf8 inv1 raw evidence",
+      "briefSha256": "06e93291b31f6c93a0347e87ff30599ed6c3ead5cca421b9618746f4a24e0d41"
+    }
+  ],
+  "wiki": "3d1529d226732ee4a12b0db2520f7beba303b347",
+  "scope": "Four operator-ordered owner substitutions, not product acceptance or budget reset. Old implementation/audit workers retained."
+}

@@ -1,0 +1,64 @@
+cabal build all -O0
+Resolving dependencies...
+Build profile: -w ghc-9.8.4 -O0
+In order, the following will be built (use -v for more details):
+ - keri-hs-0.1.0.0 (lib) (first run)
+ - keri-hs-0.1.0.0 (exe:keri-demo) (first run)
+ - keri-hs-0.1.0.0 (exe:keri-cli) (first run)
+ - kelgroups-0.1.0.0 (lib) (first run)
+ - kelgroups-0.1.0.0 (exe:kelgroups-server) (first run)
+Configuring library for keri-hs-0.1.0.0...
+Preprocessing library for keri-hs-0.1.0.0...
+Building library for keri-hs-0.1.0.0...
+[ 1 of 23] Compiling Keri.Cesr.DerivationCode ( lib/Keri/Cesr/DerivationCode.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Cesr/DerivationCode.o, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Cesr/DerivationCode.dyn_o )
+[ 2 of 23] Compiling Keri.Cesr.Primitive ( lib/Keri/Cesr/Primitive.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Cesr/Primitive.o, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Cesr/Primitive.dyn_o )
+[ 3 of 23] Compiling Keri.Cesr.Encode ( lib/Keri/Cesr/Encode.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Cesr/Encode.o, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Cesr/Encode.dyn_o )
+[ 4 of 23] Compiling Keri.Cesr.Decode ( lib/Keri/Cesr/Decode.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Cesr/Decode.o, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Cesr/Decode.dyn_o )
+[ 5 of 23] Compiling Keri.Cesr        ( lib/Keri/Cesr.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Cesr.o, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Cesr.dyn_o )
+[ 6 of 23] Compiling Keri.Crypto.Blake3 ( lib/Keri/Crypto/Blake3.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Crypto/Blake3.o, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Crypto/Blake3.dyn_o )
+[ 7 of 23] Compiling Keri.Crypto.Digest ( lib/Keri/Crypto/Digest.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Crypto/Digest.o, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Crypto/Digest.dyn_o )
+[ 8 of 23] Compiling Keri.Crypto.Ed25519 ( lib/Keri/Crypto/Ed25519.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Crypto/Ed25519.o, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Crypto/Ed25519.dyn_o )
+[ 9 of 23] Compiling Keri.Crypto      ( lib/Keri/Crypto.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Crypto.o, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Crypto.dyn_o )
+[10 of 23] Compiling Keri.Event       ( lib/Keri/Event.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event.o, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event.dyn_o )
+[11 of 23] Compiling Keri.Event.Serialize ( lib/Keri/Event/Serialize.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Serialize.o, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Serialize.dyn_o )
+[12 of 23] Compiling Keri.Event.Version ( lib/Keri/Event/Version.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Version.o, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Version.dyn_o )
+[13 of 23] Compiling Keri.Event.Rotation ( lib/Keri/Event/Rotation.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Rotation.o, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Rotation.dyn_o )
+[14 of 23] Compiling Keri.Event.Receipt ( lib/Keri/Event/Receipt.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Receipt.o, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Receipt.dyn_o )
+[15 of 23] Compiling Keri.Event.Interaction ( lib/Keri/Event/Interaction.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Interaction.o, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Interaction.dyn_o )
+[16 of 23] Compiling Keri.Event.Inception ( lib/Keri/Event/Inception.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Inception.o, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Event/Inception.dyn_o )
+[17 of 23] Compiling Keri.Kel         ( lib/Keri/Kel.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Kel.o, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Kel.dyn_o )
+[18 of 23] Compiling Keri.KeyState.PreRotation ( lib/Keri/KeyState/PreRotation.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/KeyState/PreRotation.o, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/KeyState/PreRotation.dyn_o )
+[19 of 23] Compiling Keri.KeyState    ( lib/Keri/KeyState.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/KeyState.o, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/KeyState.dyn_o )
+[20 of 23] Compiling Keri.Kel.Replay  ( lib/Keri/Kel/Replay.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Kel/Replay.o, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Kel/Replay.dyn_o )
+[21 of 23] Compiling Keri.KeyState.Verify ( lib/Keri/KeyState/Verify.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/KeyState/Verify.o, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/KeyState/Verify.dyn_o )
+[22 of 23] Compiling Keri.Kel.Append  ( lib/Keri/Kel/Append.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Kel/Append.o, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Kel/Append.dyn_o )
+[23 of 23] Compiling Keri.Prelude     ( lib/Keri/Prelude.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Prelude.o, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/noopt/build/Keri/Prelude.dyn_o )
+Configuring executable 'keri-demo' for keri-hs-0.1.0.0...
+Configuring executable 'keri-cli' for keri-hs-0.1.0.0...
+Configuring library for kelgroups-0.1.0.0...
+Preprocessing library for kelgroups-0.1.0.0...
+Building library for kelgroups-0.1.0.0...
+Preprocessing executable 'keri-demo' for keri-hs-0.1.0.0...
+Building executable 'keri-demo' for keri-hs-0.1.0.0...
+Preprocessing executable 'keri-cli' for keri-hs-0.1.0.0...
+Building executable 'keri-cli' for keri-hs-0.1.0.0...
+[ 1 of 11] Compiling KelGroups.Jwk    ( lib/KelGroups/Jwk.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Jwk.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Jwk.dyn_o )
+[1 of 1] Compiling Main             ( app/demo/Main.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/x/keri-demo/noopt/build/keri-demo/keri-demo-tmp/Main.o )
+[1 of 1] Compiling Main             ( app/cli/Main.hs, /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/x/keri-cli/noopt/build/keri-cli/keri-cli-tmp/Main.o )
+[ 2 of 11] Compiling KelGroups.Types  ( lib/KelGroups/Types.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Types.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Types.dyn_o )
+[2 of 2] Linking /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/x/keri-demo/noopt/build/keri-demo/keri-demo
+[2 of 2] Linking /code/kelgroups-audit-ab25cd1/dist-newstyle/build/x86_64-linux/ghc-9.8.4/keri-hs-0.1.0.0/x/keri-cli/noopt/build/keri-cli/keri-cli
+[ 3 of 11] Compiling KelGroups.Event  ( lib/KelGroups/Event.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Event.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Event.dyn_o )
+[ 4 of 11] Compiling KelGroups.State  ( lib/KelGroups/State.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/State.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/State.dyn_o )
+[ 5 of 11] Compiling KelGroups.Bootstrap ( lib/KelGroups/Bootstrap.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Bootstrap.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Bootstrap.dyn_o )
+[ 6 of 11] Compiling KelGroups.Validate ( lib/KelGroups/Validate.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Validate.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Validate.dyn_o )
+[ 7 of 11] Compiling KelGroups.Server.JSON ( lib/KelGroups/Server/JSON.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Server/JSON.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Server/JSON.dyn_o )
+[ 8 of 11] Compiling KelGroups.Fold   ( lib/KelGroups/Fold.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Fold.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Fold.dyn_o )
+[ 9 of 11] Compiling KelGroups.Trivial ( lib/KelGroups/Trivial.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Trivial.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Trivial.dyn_o )
+[10 of 11] Compiling KelGroups.Store  ( lib/KelGroups/Store.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Store.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Store.dyn_o )
+[11 of 11] Compiling KelGroups.Server ( lib/KelGroups/Server.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Server.o, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/noopt/build/KelGroups/Server.dyn_o )
+Configuring executable 'kelgroups-server' for kelgroups-0.1.0.0...
+Preprocessing executable 'kelgroups-server' for kelgroups-0.1.0.0...
+Building executable 'kelgroups-server' for kelgroups-0.1.0.0...
+[1 of 1] Compiling Main             ( app/Main.hs, dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/x/kelgroups-server/noopt/build/kelgroups-server/kelgroups-server-tmp/Main.o )
+[2 of 2] Linking dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/x/kelgroups-server/noopt/build/kelgroups-server/kelgroups-server

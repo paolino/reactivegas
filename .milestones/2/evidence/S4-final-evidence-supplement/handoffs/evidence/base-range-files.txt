@@ -1,0 +1,4 @@
+M	justfile
+A	lean/KelGroups/Mirrors.lean
+A	lean/Reactivegas/Mirrors.lean
+A	scripts/check-lean-mirrors

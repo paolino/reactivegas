@@ -1,0 +1,10 @@
+{
+  "path": "/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r2/handoffs/build",
+  "allocatedBytesRemoved": 242032640,
+  "logicalBytesRemoved": 241825697,
+  "hostFreeBefore": 30405668864,
+  "hostFreeAfter": 30647701504,
+  "timestamp": "2026-09-06T03:15:02.471Z",
+  "reportHash": "d1d1906081a411e2dbb7ef1f436e5fed178c2e916bd1e162acb048166c616718",
+  "note": "Only owned reproducible build tree removed. Source/logs/receipts/databases kept; host-free delta not attributed to this process."
+}

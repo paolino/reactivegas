@@ -1,0 +1,16 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M29.lean:108:52: error: Application type mismatch: The argument
+  (pendingCoherent_corr gs).mp pC
+has type
+  pendingCoherentB gs = true
+but is expected to have type
+  (!pendingCoherentB gs) = true
+in the application
+  ⟨(membersCoherent_corr gs).mp mC, (pendingCoherent_corr gs).mp pC⟩
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M29.lean:111:83: error: Application type mismatch: The argument
+  pC
+has type
+  (!pendingCoherentB gs) = true
+but is expected to have type
+  pendingCoherentB gs = true
+in the application
+  (pendingCoherent_corr gs).mpr pC

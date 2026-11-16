@@ -1,0 +1,8 @@
+path '/code/reactivegas-66-s2r/lean' does not contain a 'flake.nix', searching up
+axiom-sources tracked=27 built=0
+axiom-theorems walkOcc=0 distinct=0 fold=0
+axiom-theorems count=0
+axiom-gate: derived zero built project modules
+axiom-gate: tracked source modules never reaching the environment: KelGroups.Event, KelGroups.Fold, KelGroups.Integration, KelGroups.Invariants, KelGroups, KelGroups.State, KelGroups.Tests, KelGroups.Types, KelGroups.Validate, KelGroups.Vote.Event, KelGroups.Vote.Fold, KelGroups.Vote.Invariants, KelGroups.Vote.State, KelGroups.Vote.Tests, KelGroups.Vote.Types, KelGroups.Vote.Validate, Reactivegas.Composition, Reactivegas.CorpusExport, Reactivegas.CorpusGate, Reactivegas.Invariants, Reactivegas, Reactivegas.Predicates, Reactivegas.State, Reactivegas.Step, Reactivegas.Trace, Reactivegas.TraceTests, Reactivegas.Types
+axiom-gate: derived zero theorems
+/tmp/probe27-bzero-driver.lean:161:0: error: axiom-gate failed with 3 finding(s)

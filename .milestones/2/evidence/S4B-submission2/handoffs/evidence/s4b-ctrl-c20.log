@@ -1,0 +1,24 @@
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+KelGroups/Mirrors.lean:130:4: error: unsolved goals
+case mp.refine_1
+α : Type
+inst✝ : DecidableEq α
+gs : GroupState α
+proposalId : ProposalId
+result : GroupState α
+en : Enactment α
+h1 : (tryEnactDetailed gs proposalId).enactment = some en
+h2 : result = (tryEnactDetailed gs proposalId).state
+⊢ False
+KelGroups/Mirrors.lean:136:11: error: unsolved goals
+case mpr.none
+α : Type
+inst✝ : DecidableEq α
+gs : GroupState α
+proposalId : ProposalId
+result : GroupState α
+hd : decide ((tryEnactDetailed gs proposalId).state = result) = true
+hst : (tryEnactDetailed gs proposalId).state = result
+he : (tryEnactDetailed gs proposalId).enactment = none
+hs : True
+⊢ ∃ enacted, none = some enacted ∧ result = (tryEnactDetailed gs proposalId).state

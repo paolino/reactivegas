@@ -1,0 +1,126 @@
+{
+  "KelGroups": [
+    "KelGroups.Types",
+    "KelGroups.Event",
+    "KelGroups.State",
+    "KelGroups.Fold",
+    "KelGroups.Validate",
+    "KelGroups.Integration",
+    "KelGroups.Invariants",
+    "KelGroups.Tests",
+    "KelGroups.Vote.Types",
+    "KelGroups.Vote.State",
+    "KelGroups.Vote.Event",
+    "KelGroups.Vote.Validate",
+    "KelGroups.Vote.Fold",
+    "KelGroups.Vote.Invariants",
+    "KelGroups.Vote.Tests"
+  ],
+  "KelGroups.Event": [
+    "KelGroups.Types"
+  ],
+  "KelGroups.Fold": [
+    "KelGroups.State"
+  ],
+  "KelGroups.Integration": [
+    "KelGroups.Validate"
+  ],
+  "KelGroups.Invariants": [
+    "KelGroups.Fold",
+    "KelGroups.Validate",
+    "KelGroups.Integration"
+  ],
+  "KelGroups.State": [
+    "KelGroups.Event"
+  ],
+  "KelGroups.Tests": [
+    "KelGroups.Invariants",
+    "KelGroups.Validate"
+  ],
+  "KelGroups.Types": [],
+  "KelGroups.Validate": [
+    "KelGroups.State"
+  ],
+  "KelGroups.Vote.Event": [
+    "KelGroups.Vote.Types"
+  ],
+  "KelGroups.Vote.Fold": [
+    "KelGroups.Vote.State",
+    "KelGroups.Vote.Event",
+    "KelGroups.Vote.Validate"
+  ],
+  "KelGroups.Vote.Invariants": [
+    "KelGroups.Vote.Fold"
+  ],
+  "KelGroups.Vote.State": [
+    "KelGroups.Vote.Types"
+  ],
+  "KelGroups.Vote.Tests": [
+    "KelGroups.Vote.Fold",
+    "KelGroups.Vote.Validate",
+    "KelGroups.Vote.Invariants"
+  ],
+  "KelGroups.Vote.Types": [
+    "KelGroups.Types"
+  ],
+  "KelGroups.Vote.Validate": [
+    "KelGroups.Vote.State",
+    "KelGroups.Vote.Event"
+  ],
+  "Reactivegas": [
+    "Reactivegas.Types",
+    "Reactivegas.State",
+    "Reactivegas.Step",
+    "Reactivegas.Predicates",
+    "Reactivegas.Invariants",
+    "Reactivegas.Trace",
+    "Reactivegas.Composition"
+  ],
+  "Reactivegas.Composition": [
+    "Reactivegas.Types",
+    "KelGroups.Fold",
+    "KelGroups.Invariants",
+    "KelGroups.Vote.Fold"
+  ],
+  "Reactivegas.CorpusExport": [
+    "Reactivegas.Trace"
+  ],
+  "Reactivegas.CorpusGate": [
+    "Reactivegas.Invariants"
+  ],
+  "Reactivegas.Invariants": [
+    "Lean",
+    "Reactivegas.Predicates",
+    "KelGroups.Invariants",
+    "KelGroups.Vote.Invariants"
+  ],
+  "Reactivegas.Predicates": [
+    "Reactivegas.Step"
+  ],
+  "Reactivegas.State": [
+    "Reactivegas.Types",
+    "KelGroups.Vote.State"
+  ],
+  "Reactivegas.Step": [
+    "Reactivegas.State",
+    "KelGroups.Integration",
+    "KelGroups.Vote.Types",
+    "KelGroups.Vote.Fold"
+  ],
+  "Reactivegas.Trace": [
+    "Lean",
+    "Reactivegas.Invariants"
+  ],
+  "Reactivegas.TraceTests": [
+    "Lean",
+    "Reactivegas.Trace",
+    "Reactivegas"
+  ],
+  "Reactivegas.Types": [
+    "KelGroups.Types",
+    "KelGroups.Vote.Types"
+  ],
+  "lakefile": [
+    "Lake"
+  ]
+}

@@ -1,0 +1,19 @@
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+KelGroups/Mirrors.lean:60:69: error: unsolved goals
+pending : PendingProposal
+⊢ pending.approvals.Nodup ∧ pending.proposer ∈ pending.approvals ↔
+    (decide pending.approvals.Nodup || decide (pending.proposer ∈ pending.approvals)) = true
+KelGroups/Mirrors.lean:61:52: warning: This simp argument is unused:
+  Bool.and_eq_true
+
+Hint: Omit it from the simp argument list.
+  simp only [PendingWellFormed, pendingWellFormedB, B̵o̵o̵l̵.̵a̵n̵d̵_̵e̵q̵_̵t̵r̵u̵e̵,̵ ̵decide_eq_true_eq]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+KelGroups/Mirrors.lean:61:70: warning: This simp argument is unused:
+  decide_eq_true_eq
+
+Hint: Omit it from the simp argument list.
+  simp only [PendingWellFormed, pendingWellFormedB, Bool.and_eq_true,̵ ̵d̵e̵c̵i̵d̵e̵_̵e̵q̵_̵t̵r̵u̵e̵_̵e̵q̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

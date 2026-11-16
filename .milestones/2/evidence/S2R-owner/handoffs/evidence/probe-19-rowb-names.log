@@ -1,0 +1,24 @@
+path '/code/reactivegas-66-s2r/lean' does not contain a 'flake.nix', searching up
+warning: Git tree '/code/reactivegas-66-s2r' is dirty
+absent-ok Reactivegas.i57TrustNoSorry
+absent-ok Reactivegas.kelGroupsHasNoReactivegasImport
+absent-ok Reactivegas.leanToolchainMatchesPin
+absent-ok Reactivegas.checkI57Trust
+absent-ok Reactivegas.checkI57Direction
+absent-ok Reactivegas.checkI57Toolchain
+absent-ok Reactivegas.i57_trust_holds
+absent-ok Reactivegas.i57_direction_holds
+absent-ok Reactivegas.i57_toolchain_holds
+absent-ok TraceTests.checkI57Trust
+absent-ok TraceTests.checkI57Direction
+absent-ok TraceTests.checkI57Toolchain
+present-ok Reactivegas.admissionPreservationReachable
+present-ok Reactivegas.productionWellFormedAndComuneExcluded
+present-ok Reactivegas.comuneIdentityAndThresholdSanity
+present-ok Reactivegas.checkAdmissionPreservation
+present-ok Reactivegas.checkProductionWellFormed
+present-ok Reactivegas.checkComuneThresholdSanity
+present-ok Reactivegas.admissionPreservation_holds
+present-ok Reactivegas.productionWellFormed_holds
+present-ok Reactivegas.comuneThresholdSanity_holds
+row-b-names: ok

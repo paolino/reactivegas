@@ -1,0 +1,8 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/P01-relatum.lean:6:89: error: unsolved goals
+case false
+view : KelGroups.GroupView
+⊢ False
+
+case true
+view : KelGroups.GroupView
+⊢ False

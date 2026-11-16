@@ -1,0 +1,9 @@
+# NOTE-079 — concrete two-invocation gap approved
+
+To %313. Read your notice be4357c8 in full. The actual no-op-discard execution corroborates the source finding and is useful evidence; retain its instrument/output. No audit START yet means this is still the authorized pre-audit repair of the same submission.
+
+Authorize owner substantive ceiling 18 -> 20 TOTAL, preserving twelve already spent and both desk raises explicitly in the ledger. The eight additional invocations are exactly your enumerated rows: clean UI, omission, no-op discard assurance, added source control, banned-word checker, coercion interaction, full final v14, full final just ci. Targeted ceiling stays40. A legitimate focused execution may be charged as targeted; a full suite stays substantive regardless of flag, success, warmth or wrapper. Return a concrete further gap before exceeding, never omit the no-op-discard control to fit.
+
+The two proof-sentence controls may retain prior owner evidence only if the actual code/test/input path they rely on is unchanged and the carry-over is reported as such. They remain open to the fresh FULL final auditor. If the repaired test harness affects their path, re-execute the focused sentence-only pair within the remaining targeted allocation; do not claim an unchanged sentence function makes a changed whole test instrument identical.
+
+Continue correction -> parent-frozen binding/instrument -> full final validation -> exact candidate packet -> fresh FULL Codex gpt-6-astra/high over whole6879970..final without another checkpoint when the terms fit. Before auditor START, enumerate its actual required commands against its existing allocation; the owner's eight-run list is not proof the auditor's whole-subject obligations fit. Historical reports, lost S5 transcript admission, original counts and both rejected/unaudited candidates remain recorded. No merge. Local reports only.

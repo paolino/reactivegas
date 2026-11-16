@@ -1,0 +1,701 @@
+
+## M01 conservation_corr cassa
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M01.lean:120:83: error: unsolved goals
+s : State
+⊢ sumBal s.casse - sumBal s.conti - escrowSum s.collections = 0 ↔
+    sumBal s.casse + 1 - sumBal s.conti - escrowSum s.collections = 0
+
+## M02 conservation_corr conti
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M02.lean:120:83: error: unsolved goals
+s : State
+⊢ sumBal s.casse - sumBal s.conti - escrowSum s.collections = 0 ↔
+    sumBal s.casse - (sumBal s.conti + 1) - escrowSum s.collections = 0
+
+## M03 conservation_corr escrow
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M03.lean:120:83: error: unsolved goals
+s : State
+⊢ sumBal s.casse - sumBal s.conti - escrowSum s.collections = 0 ↔
+    sumBal s.casse - sumBal s.conti - (escrowSum s.collections + 1) = 0
+
+## M04 solvent_corr member-domain
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M04.lean:138:14: warning: unused variable `view`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M04.lean:145:47: error: unsolved goals
+view : KelGroups.GroupView
+s : State
+⊢ ((∀ (u : KelGroups.Key), KelGroups.GroupView.isMember u view = true → bal s.conti u ≥ 0) ∧
+      ∀ (col : Collection), col ∈ s.collections → ∀ (p : Pledge), p ∈ col.accepted ++ col.pending → 0 ≤ p.amount) ↔
+    (∀ (x : KelGroups.Key), x ∈ [] → bal s.conti x ≥ 0) ∧
+      ∀ (col : Collection), col ∈ s.collections → ∀ (p : Pledge), p ∈ col.accepted ++ col.pending → 0 ≤ p.amount
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M04.lean:147:4: warning: This simp argument is unused:
+  keys_mem_coe
+
+Hint: Omit it from the simp argument list.
+  simp only [solvent, solventB, Bool.and_eq_true, List.all_eq_true, decide_eq_true_eq,̵
+  ̵ ̵ ̵ ̵ ̵k̵e̵y̵s̵_̵m̵e̵m̵_̵c̵o̵e̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+
+## M05 solvent_corr balance
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M05.lean:145:47: error: unsolved goals
+view : KelGroups.GroupView
+s : State
+⊢ ((∀ (u : KelGroups.Key), KelGroups.GroupView.isMember u view = true → bal s.conti u ≥ 0) ∧
+      ∀ (col : Collection), col ∈ s.collections → ∀ (p : Pledge), p ∈ col.accepted ++ col.pending → 0 ≤ p.amount) ↔
+    (∀ (x : KelGroups.Key), KelGroups.GroupView.isMember x view = true → bal s.conti x > 0) ∧
+      ∀ (col : Collection), col ∈ s.collections → ∀ (p : Pledge), p ∈ col.accepted ++ col.pending → 0 ≤ p.amount
+
+## M06 solvent_corr pledge-domain
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M06.lean:145:47: error: unsolved goals
+view : KelGroups.GroupView
+s : State
+⊢ ((∀ (u : KelGroups.Key), KelGroups.GroupView.isMember u view = true → bal s.conti u ≥ 0) ∧
+      ∀ (col : Collection), col ∈ s.collections → ∀ (p : Pledge), p ∈ col.accepted ++ col.pending → 0 ≤ p.amount) ↔
+    (∀ (u : KelGroups.Key), KelGroups.GroupView.isMember u view = true → bal s.conti u ≥ 0) ∧
+      ∀ (x : Collection), x ∈ s.collections → ∀ (x_1 : Pledge), x_1 ∈ x.accepted → 0 ≤ x_1.amount
+
+## M07 solvent_corr pledge-amount
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M07.lean:145:47: error: unsolved goals
+view : KelGroups.GroupView
+s : State
+⊢ ((∀ (u : KelGroups.Key), KelGroups.GroupView.isMember u view = true → bal s.conti u ≥ 0) ∧
+      ∀ (col : Collection), col ∈ s.collections → ∀ (p : Pledge), p ∈ col.accepted ++ col.pending → 0 ≤ p.amount) ↔
+    (∀ (u : KelGroups.Key), KelGroups.GroupView.isMember u view = true → bal s.conti u ≥ 0) ∧
+      ∀ (x : Collection), x ∈ s.collections → ∀ (x_1 : Pledge), x_1 ∈ x.accepted ++ x.pending → 0 < x_1.amount
+
+## M08 insolvent_corr existential
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M08.lean:155:51: error: unsolved goals
+view : KelGroups.GroupView
+s : State
+⊢ (∃ u, KelGroups.GroupView.isMember u view = true ∧ bal s.conti u < 0) ↔
+    ((List.map Prod.fst view.members).all fun u => decide (bal s.conti u < 0)) = true
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M08.lean:156:36: warning: This simp argument is unused:
+  List.any_eq_true
+
+Hint: Omit it from the simp argument list.
+  simp only [insolvent, insolventB, L̵i̵s̵t̵.̵a̵n̵y̵_̵e̵q̵_̵t̵r̵u̵e̵,̵ ̵decide_eq_true_eq, keys_mem_coe]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M08.lean:156:54: warning: This simp argument is unused:
+  decide_eq_true_eq
+
+Hint: Omit it from the simp argument list.
+  simp only [insolvent, insolventB, List.any_eq_true, d̵e̵c̵i̵d̵e̵_̵e̵q̵_̵t̵r̵u̵e̵_̵e̵q̵,̵ ̵keys_mem_coe]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M08.lean:156:73: warning: This simp argument is unused:
+  keys_mem_coe
+
+Hint: Omit it from the simp argument list.
+  simp only [insolvent, insolventB, List.any_eq_true, decide_eq_true_eq,̵ ̵k̵e̵y̵s̵_̵m̵e̵m̵_̵c̵o̵e̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+
+## M09 uniquePledges_corr user-binding
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M09.lean:172:53: error: unsolved goals
+col : Collection
+⊢ (∀ (p : Pledge),
+      p ∈ col.accepted ++ col.pending → ∀ (q : Pledge), q ∈ col.accepted ++ col.pending → p.user = q.user → p = q) ↔
+    ∀ (x : Pledge),
+      x ∈ col.accepted ++ col.pending →
+        ∀ (x_1 : Pledge), x_1 ∈ col.accepted ++ col.pending → (!decide (x.user ≠ x_1.user) || decide (x = x_1)) = true
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M09.lean:173:62: warning: This simp argument is unused:
+  uniquePledges_pt
+
+Hint: Omit it from the simp argument list.
+  simp only [uniquePledges, uniquePledgesB, List.all_eq_true,̵ ̵u̵n̵i̵q̵u̵e̵P̵l̵e̵d̵g̵e̵s̵_̵p̵t̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+
+## M10 uniquePledges_corr pledge-equality
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M10.lean:172:53: error: unsolved goals
+col : Collection
+⊢ (∀ (p : Pledge),
+      p ∈ col.accepted ++ col.pending → ∀ (q : Pledge), q ∈ col.accepted ++ col.pending → p.user = q.user → p = q) ↔
+    ∀ (x : Pledge),
+      x ∈ col.accepted ++ col.pending →
+        ∀ (x_1 : Pledge), x_1 ∈ col.accepted ++ col.pending → (!decide (x.user = x_1.user) || decide (x ≠ x_1)) = true
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M10.lean:173:62: warning: This simp argument is unused:
+  uniquePledges_pt
+
+Hint: Omit it from the simp argument list.
+  simp only [uniquePledges, uniquePledgesB, List.all_eq_true,̵ ̵u̵n̵i̵q̵u̵e̵P̵l̵e̵d̵g̵e̵s̵_̵p̵t̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+
+## M11 allUniquePledges_corr composition
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M11.lean:181:55: error: unsolved goals
+s : State
+⊢ (∀ (col : Collection), col ∈ s.collections → uniquePledgesB col = true) ↔
+    ∀ (x : Collection), x ∈ s.collections → (!uniquePledgesB x) = true
+
+## M12 escrowHeld_corr actor
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M12.lean:192:36: warning: unused variable `u`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M12.lean:202:9: error: unsolved goals
+case none
+col : Collection
+u : KelGroups.Key
+v : Int
+h : splitUser u col.pending = none
+⊢ (match splitUser "" col.pending with
+    | some (amt, snd) => decide (amt = v)
+    | none => false) =
+    false
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M12.lean:209:8: error: Type mismatch
+  heq
+has type
+  v' = v
+but is expected to have type
+  (match splitUser "" col.pending with
+    | some (amt, snd) => decide (amt = v)
+    | none => false) =
+    true
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M12.lean:211:18: error: Application type mismatch: The argument
+  heq
+has type
+  (match splitUser "" col.pending with
+    | some (amt, snd) => decide (amt = v)
+    | none => false) =
+    true
+but is expected to have type
+  v' = v
+in the application
+  And.intro heq
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M12.lean:206:51: warning: This simp argument is unused:
+  decide_eq_true_eq
+
+Hint: Omit it from the simp argument list.
+  simp only [Option.some.injEq, Prod.mk.injEq,̵ ̵d̵e̵c̵i̵d̵e̵_̵e̵q̵_̵t̵r̵u̵e̵_̵e̵q̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+
+## M13 escrowHeld_corr amount
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M13.lean:209:8: error: Type mismatch
+  heq
+has type
+  v' = v
+but is expected to have type
+  v' = v + 1
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M13.lean:211:18: error: Application type mismatch: The argument
+  heq
+has type
+  v' = v + 1
+but is expected to have type
+  v' = v
+in the application
+  And.intro heq
+
+## M14 escrowHeld_corr absence
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M14.lean:202:9: error: unsolved goals
+case none
+col : Collection
+u : KelGroups.Key
+v : Int
+h : splitUser u col.pending = none
+⊢ False
+
+## M15 governanceEnacts_corr actor
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M15.lean:219:61: error: unsolved goals
+u : KelGroups.Key
+s' : State
+⊢ (∀ (c : Collection), c ∈ s'.collections → c.referente ≠ u) ↔ ∀ (x : Collection), x ∈ s'.collections → x.referente = u
+
+## M16 governanceEnacts_corr all
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M16.lean:219:61: error: unsolved goals
+u : KelGroups.Key
+s' : State
+⊢ (∀ (c : Collection), c ∈ s'.collections → c.referente ≠ u) ↔
+    (s'.collections.any fun c => decide (c.referente ≠ u)) = true
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M16.lean:220:50: warning: This simp argument is unused:
+  List.all_eq_true
+
+Hint: Omit it from the simp argument list.
+  simp only [governanceEnacts, governanceEnactsB, L̵i̵s̵t̵.̵a̵l̵l̵_̵e̵q̵_̵t̵r̵u̵e̵,̵ ̵decide_eq_true_eq]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M16.lean:220:68: warning: This simp argument is unused:
+  decide_eq_true_eq
+
+Hint: Omit it from the simp argument list.
+  simp only [governanceEnacts, governanceEnactsB, List.all_eq_true,̵ ̵d̵e̵c̵i̵d̵e̵_̵e̵q̵_̵t̵r̵u̵e̵_̵e̵q̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+
+## M17 doubleEntry_corr conto
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M17.lean:229:63: error: unsolved goals
+s s' : State
+a u : KelGroups.Key
+v : Int
+⊢ bal s'.conti u = bal s.conti u + v ∧ bal s'.casse a = bal s.casse a + v ↔
+    bal s'.conti u = bal s.conti u + v + 1 ∧ bal s'.casse a = bal s.casse a + v
+
+## M18 doubleEntry_corr cassa
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M18.lean:229:63: error: unsolved goals
+s s' : State
+a u : KelGroups.Key
+v : Int
+⊢ bal s'.conti u = bal s.conti u + v ∧ bal s'.casse a = bal s.casse a + v ↔
+    bal s'.conti u = bal s.conti u + v ∧ bal s'.casse a = bal s.casse a + v + 1
+
+## M19 canCloseGroup_corr member-balance
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M19.lean:255:59: error: unsolved goals
+view : KelGroups.GroupView
+s : State
+⊢ ((∀ (u : KelGroups.Key), KelGroups.GroupView.isMember u view = true → bal s.conti u = 0) ∧
+      s.collections = [] ∧ ∀ (r : KelGroups.Key), r ∈ List.map Prod.fst s.casse → bal s.casse r = 0) ↔
+    (∀ (x : KelGroups.Key), KelGroups.GroupView.isMember x view = true → bal s.conti x ≠ 0) ∧
+      s.collections = [] ∧ ∀ (r : KelGroups.Key), r ∈ List.map Prod.fst s.casse → bal s.casse r = 0
+
+## M20 canCloseGroup_corr collections
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M20.lean:255:59: error: unsolved goals
+view : KelGroups.GroupView
+s : State
+⊢ ((∀ (u : KelGroups.Key), KelGroups.GroupView.isMember u view = true → bal s.conti u = 0) ∧
+      s.collections = [] ∧ ∀ (r : KelGroups.Key), r ∈ List.map Prod.fst s.casse → bal s.casse r = 0) ↔
+    (∀ (u : KelGroups.Key), KelGroups.GroupView.isMember u view = true → bal s.conti u = 0) ∧
+      s.collections ≠ [] ∧ ∀ (r : KelGroups.Key), r ∈ List.map Prod.fst s.casse → bal s.casse r = 0
+
+## M21 canCloseGroup_corr cassa-balance
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M21.lean:255:59: error: unsolved goals
+view : KelGroups.GroupView
+s : State
+⊢ ((∀ (u : KelGroups.Key), KelGroups.GroupView.isMember u view = true → bal s.conti u = 0) ∧
+      s.collections = [] ∧ ∀ (r : KelGroups.Key), r ∈ List.map Prod.fst s.casse → bal s.casse r = 0) ↔
+    (∀ (u : KelGroups.Key), KelGroups.GroupView.isMember u view = true → bal s.conti u = 0) ∧
+      s.collections = [] ∧ ∀ (x : KelGroups.Key), x ∈ List.map Prod.fst s.casse → bal s.casse x ≠ 0
+
+## M22 pendingWellFormed_corr nodup
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M22.lean:60:69: error: unsolved goals
+pending : PendingProposal
+⊢ pending.approvals.Nodup ∧ pending.proposer ∈ pending.approvals ↔
+    (!decide pending.approvals.Nodup) = true ∧ pending.proposer ∈ pending.approvals
+
+## M23 pendingWellFormed_corr proposer
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M23.lean:60:69: error: unsolved goals
+pending : PendingProposal
+⊢ pending.approvals.Nodup ∧ pending.proposer ∈ pending.approvals ↔
+    pending.approvals.Nodup ∧ ¬pending.proposer ∈ pending.approvals
+
+## M24 membersCoherent_corr key
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M24.lean:74:4: error: Type mismatch
+  h k m he
+has type
+  m.key = k
+but is expected to have type
+  (k, m).snd.key ≠ (k, m).fst
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M24.lean:76:4: error: Type mismatch
+  h (k, m) hm
+has type
+  (k, m).snd.key ≠ (k, m).fst
+but is expected to have type
+  m.key = k
+
+## M25 pendingCoherent_corr composition
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M25.lean:89:4: error: Type mismatch
+  (pendingWellFormed_corr p).mp (h pid p he)
+has type
+  pendingWellFormedB p = true
+but is expected to have type
+  (!pendingWellFormedB (pid, p).snd) = true
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M25.lean:92:41: error: Application type mismatch: The argument
+  he
+has type
+  (!pendingWellFormedB (pid, p).snd) = true
+but is expected to have type
+  pendingWellFormedB p = true
+in the application
+  (pendingWellFormed_corr p).mpr he
+
+## M26 wellFormed_corr members-nodup
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M26.lean:108:11: error: Application type mismatch: The argument
+  mK
+has type
+  (List.map Prod.fst gs.members).Nodup
+but is expected to have type
+  (!decide (List.map Prod.fst gs.members).Nodup) = true
+in the application
+  And.intro mK
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M26.lean:111:11: error: Application type mismatch: The argument
+  mK
+has type
+  (!decide (List.map Prod.fst gs.members).Nodup) = true
+but is expected to have type
+  (List.map Prod.fst gs.members).Nodup
+in the application
+  WellFormed.mk mK
+
+## M27 wellFormed_corr pending-nodup
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M27.lean:108:15: error: Application type mismatch: The argument
+  pK
+has type
+  (List.map Prod.fst gs.pendingProposals).Nodup
+but is expected to have type
+  (!decide (List.map Prod.fst gs.pendingProposals).Nodup) = true
+in the application
+  And.intro pK
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M27.lean:111:15: error: Application type mismatch: The argument
+  pK
+has type
+  (!decide (List.map Prod.fst gs.pendingProposals).Nodup) = true
+but is expected to have type
+  (List.map Prod.fst gs.pendingProposals).Nodup
+in the application
+  WellFormed.mk mK pK
+
+## M28 wellFormed_corr member-coherence
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M28.lean:108:19: error: Application type mismatch: The argument
+  (membersCoherent_corr gs).mp mC
+has type
+  membersCoherentB gs = true
+but is expected to have type
+  (!membersCoherentB gs) = true
+in the application
+  And.intro ((membersCoherent_corr gs).mp mC)
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M28.lean:111:49: error: Application type mismatch: The argument
+  mC
+has type
+  (!membersCoherentB gs) = true
+but is expected to have type
+  membersCoherentB gs = true
+in the application
+  (membersCoherent_corr gs).mpr mC
+
+## M29 wellFormed_corr pending-coherence
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M29.lean:108:52: error: Application type mismatch: The argument
+  (pendingCoherent_corr gs).mp pC
+has type
+  pendingCoherentB gs = true
+but is expected to have type
+  (!pendingCoherentB gs) = true
+in the application
+  ⟨(membersCoherent_corr gs).mp mC, (pendingCoherent_corr gs).mp pC⟩
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M29.lean:111:83: error: Application type mismatch: The argument
+  pC
+has type
+  (!pendingCoherentB gs) = true
+but is expected to have type
+  pendingCoherentB gs = true
+in the application
+  (pendingCoherent_corr gs).mpr pC
+
+## M30 enacts_corr enactment
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M30.lean:130:4: error: unsolved goals
+case mp.refine_1
+α : Type
+inst✝ : DecidableEq α
+gs : GroupState α
+proposalId : ProposalId
+result : GroupState α
+en : Enactment α
+h1 : (tryEnactDetailed gs proposalId).enactment = some en
+h2 : result = (tryEnactDetailed gs proposalId).state
+⊢ False
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M30.lean:136:11: error: unsolved goals
+case mpr.none
+α : Type
+inst✝ : DecidableEq α
+gs : GroupState α
+proposalId : ProposalId
+result : GroupState α
+hd : decide ((tryEnactDetailed gs proposalId).state = result) = true
+hst : (tryEnactDetailed gs proposalId).state = result
+he : (tryEnactDetailed gs proposalId).enactment = none
+hs : True
+⊢ ∃ enacted, none = some enacted ∧ result = (tryEnactDetailed gs proposalId).state
+
+## M31 enacts_corr state
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M31.lean:132:6: error: Type mismatch
+  Eq.symm h2
+has type
+  (tryEnactDetailed gs proposalId).state = result
+but is expected to have type
+  (tryEnactDetailed gs proposalId).state ≠ result
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M31.lean:134:84: error: Application type mismatch: The argument
+  hd
+has type
+  decide ((tryEnactDetailed gs proposalId).state ≠ result) = true
+but is expected to have type
+  decide ((tryEnactDetailed gs proposalId).state = result) = true
+in the application
+  of_decide_eq_true hd
+
+## M32 questionClean_corr assents
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M32.lean:148:49: error: unsolved goals
+q : Question
+⊢ (q.assents.Nodup ∧ q.dissents.Nodup ∧ ∀ (k : Key), k ∈ q.assents → k ∈ q.dissents → False) ↔
+    (!decide q.assents.Nodup) = true ∧ q.dissents.Nodup ∧ ∀ (x : Key), x ∈ q.assents → ¬x ∈ q.dissents
+
+## M33 questionClean_corr dissents
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M33.lean:148:49: error: unsolved goals
+q : Question
+⊢ (q.assents.Nodup ∧ q.dissents.Nodup ∧ ∀ (k : Key), k ∈ q.assents → k ∈ q.dissents → False) ↔
+    q.assents.Nodup ∧ (!decide q.dissents.Nodup) = true ∧ ∀ (x : Key), x ∈ q.assents → ¬x ∈ q.dissents
+
+## M34 questionClean_corr disjoint
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M34.lean:148:49: error: unsolved goals
+q : Question
+⊢ (q.assents.Nodup ∧ q.dissents.Nodup ∧ ∀ (k : Key), k ∈ q.assents → k ∈ q.dissents → False) ↔
+    q.assents.Nodup ∧ q.dissents.Nodup ∧ ∀ (x : Key), x ∈ q.assents → x ∈ q.dissents
+
+## M35 sweepReady_corr open-nodup
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M35.lean:199:12: error: Application type mismatch: The argument
+  oN
+has type
+  (List.map Prod.fst gs.openQuestions).Nodup
+but is expected to have type
+  (!decide (List.map Prod.fst gs.openQuestions).Nodup) = true
+in the application
+  And.intro oN
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M35.lean:206:12: error: Application type mismatch: The argument
+  oN
+has type
+  (!decide (List.map Prod.fst gs.openQuestions).Nodup) = true
+but is expected to have type
+  (List.map Prod.fst gs.openQuestions).Nodup
+in the application
+  SweepReady.mk oN
+
+## M36 sweepReady_corr closed-nodup
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M36.lean:199:16: error: Application type mismatch: The argument
+  cN
+has type
+  (List.map (fun x => x.questionId) gs.closed).Nodup
+but is expected to have type
+  (!decide (List.map (fun x => x.questionId) gs.closed).Nodup) = true
+in the application
+  And.intro cN
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M36.lean:206:16: error: Application type mismatch: The argument
+  cN
+has type
+  (!decide (List.map (fun x => x.questionId) gs.closed).Nodup) = true
+but is expected to have type
+  (List.map (fun x => x.questionId) gs.closed).Nodup
+in the application
+  SweepReady.mk oN cN
+
+## M37 sweepReady_corr disjoint
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M37.lean:199:20: error: Application type mismatch: The argument
+  dj
+has type
+  ∀ (qid : QuestionId), qid ∈ List.map Prod.fst gs.openQuestions → ¬qid ∈ List.map (fun x => x.questionId) gs.closed
+but is expected to have type
+  ∀ (x : QuestionId), x ∈ List.map Prod.fst gs.openQuestions → x ∈ List.map (fun x => x.questionId) gs.closed
+in the application
+  And.intro dj
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M37.lean:206:20: error: Application type mismatch: The argument
+  dj
+has type
+  ∀ (x : QuestionId), x ∈ List.map Prod.fst gs.openQuestions → x ∈ List.map (fun x => x.questionId) gs.closed
+but is expected to have type
+  ∀ (qid : QuestionId), qid ∈ List.map Prod.fst gs.openQuestions → ¬qid ∈ List.map (fun x => x.questionId) gs.closed
+in the application
+  SweepReady.mk oN cN dj
+
+## M38 sweepReady_corr open-clean
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M38.lean:199:24: error: Application type mismatch: The argument
+  (openCleanIff gs).mp oC
+has type
+  ∀ (qid : QuestionId),
+    qid ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup qid gs.openQuestions with
+        | some q => questionCleanB q
+        | none => true) =
+        true
+but is expected to have type
+  ∀ (x : QuestionId),
+    x ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup x gs.openQuestions with
+        | some q => !questionCleanB q
+        | none => true) =
+        true
+in the application
+  And.intro ((openCleanIff gs).mp oC)
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M38.lean:206:46: error: Application type mismatch: The argument
+  oC
+has type
+  ∀ (x : QuestionId),
+    x ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup x gs.openQuestions with
+        | some q => !questionCleanB q
+        | none => true) =
+        true
+but is expected to have type
+  ∀ (qid : QuestionId),
+    qid ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup qid gs.openQuestions with
+        | some q => questionCleanB q
+        | none => true) =
+        true
+in the application
+  (openCleanIff gs).mpr oC
+
+## M39 sweepReady_corr closed-clean
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M39.lean:201:6: error: Type mismatch
+  (questionClean_corr c.question).mp (cC c hc)
+has type
+  questionCleanB c.question = true
+but is expected to have type
+  (!questionCleanB c.question) = true
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M39.lean:208:48: error: Application type mismatch: The argument
+  cC c hc
+has type
+  (!questionCleanB c.question) = true
+but is expected to have type
+  questionCleanB c.question = true
+in the application
+  (questionClean_corr c.question).mpr (cC c hc)
+
+## M40 sweepReady_corr closed-verdict
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M40.lean:203:6: error: Type mismatch
+  cO c hc
+has type
+  c.verdict ≠ Verdict.open
+but is expected to have type
+  c.verdict = Verdict.open
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M40.lean:210:6: error: Type mismatch
+  cO c hc
+has type
+  c.verdict = Verdict.open
+but is expected to have type
+  c.verdict ≠ Verdict.open
+
+## M41 sweepReady_corr lookup
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M41.lean:184:44: warning: unused variable `qid`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M41.lean:199:24: error: Application type mismatch: The argument
+  (openCleanIff gs).mp oC
+has type
+  ∀ (qid : QuestionId),
+    qid ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup qid gs.openQuestions with
+        | some q => questionCleanB q
+        | none => true) =
+        true
+but is expected to have type
+  ∀ (x : QuestionId),
+    x ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup "" gs.openQuestions with
+        | some q => questionCleanB q
+        | none => true) =
+        true
+in the application
+  And.intro ((openCleanIff gs).mp oC)
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M41.lean:206:46: error: Application type mismatch: The argument
+  oC
+has type
+  ∀ (x : QuestionId),
+    x ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup "" gs.openQuestions with
+        | some q => questionCleanB q
+        | none => true) =
+        true
+but is expected to have type
+  ∀ (qid : QuestionId),
+    qid ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup qid gs.openQuestions with
+        | some q => questionCleanB q
+        | none => true) =
+        true
+in the application
+  (openCleanIff gs).mpr oC
+
+## M42 voteWellFormed_corr sweep
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M42.lean:252:11: error: Application type mismatch: The argument
+  (sweepReady_corr view gs).mp h.toSweepReady
+has type
+  sweepReadyB view gs = true
+but is expected to have type
+  (!sweepReadyB view gs) = true
+in the application
+  And.intro ((sweepReady_corr view gs).mp h.toSweepReady)
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M42.lean:255:41: error: Application type mismatch: The argument
+  hs
+has type
+  (!sweepReadyB view gs) = true
+but is expected to have type
+  sweepReadyB view gs = true
+in the application
+  (sweepReady_corr view gs).mpr hs
+
+## M43 voteWellFormed_corr open-verdict
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M43.lean:253:6: error: Application type mismatch: The argument
+  (opensOpenIff θ view gs).mp h.opensOpen
+has type
+  ∀ (qid : QuestionId),
+    qid ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup qid gs.openQuestions with
+        | some q => decide (verdictOf θ view q = Verdict.open)
+        | none => true) =
+        true
+but is expected to have type
+  ∀ (x : QuestionId),
+    x ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup x gs.openQuestions with
+        | some q => decide (verdictOf θ view q ≠ Verdict.open)
+        | none => true) =
+        true
+in the application
+  ⟨(sweepReady_corr view gs).mp h.toSweepReady, (opensOpenIff θ view gs).mp h.opensOpen⟩
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M43.lean:255:74: error: Application type mismatch: The argument
+  ho
+has type
+  ∀ (x : QuestionId),
+    x ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup x gs.openQuestions with
+        | some q => decide (verdictOf θ view q ≠ Verdict.open)
+        | none => true) =
+        true
+but is expected to have type
+  ∀ (qid : QuestionId),
+    qid ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup qid gs.openQuestions with
+        | some q => decide (verdictOf θ view q = Verdict.open)
+        | none => true) =
+        true
+in the application
+  (opensOpenIff θ view gs).mpr ho
+
+## M44 voteWellFormed_corr threshold
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M44.lean:238:21: warning: unused variable `θ`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M44.lean:253:6: error: Application type mismatch: The argument
+  (opensOpenIff θ view gs).mp h.opensOpen
+has type
+  ∀ (qid : QuestionId),
+    qid ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup qid gs.openQuestions with
+        | some q => decide (verdictOf θ view q = Verdict.open)
+        | none => true) =
+        true
+but is expected to have type
+  ∀ (x : QuestionId),
+    x ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup x gs.openQuestions with
+        | some q => decide (verdictOf (fun x => 0) view q = Verdict.open)
+        | none => true) =
+        true
+in the application
+  ⟨(sweepReady_corr view gs).mp h.toSweepReady, (opensOpenIff θ view gs).mp h.opensOpen⟩
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M44.lean:255:74: error: Application type mismatch: The argument
+  ho
+has type
+  ∀ (x : QuestionId),
+    x ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup x gs.openQuestions with
+        | some q => decide (verdictOf (fun x => 0) view q = Verdict.open)
+        | none => true) =
+        true
+but is expected to have type
+  ∀ (qid : QuestionId),
+    qid ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup qid gs.openQuestions with
+        | some q => decide (verdictOf θ view q = Verdict.open)
+        | none => true) =
+        true
+in the application
+  (opensOpenIff θ view gs).mpr ho

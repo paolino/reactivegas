@@ -1,0 +1,32 @@
+EXCEPTION-P11 openPurchase positive+negative
+EXCEPTION-P11 grantPermission positive+negative
+EXCEPTION-P11 denyPermission positive+negative
+EXCEPTION-P11 deposit positive+negative
+EXCEPTION-P11 withdraw positive+negative
+EXCEPTION-P11 transferCassa positive+negative
+EXCEPTION-P11 donate positive+negative
+EXCEPTION-P11 backdonate positive+negative
+EXCEPTION-P11 pledge positive+negative
+EXCEPTION-P11 acceptPledge positive+negative
+EXCEPTION-P11 refusePledge positive+negative
+EXCEPTION-P11 correctPledge positive+negative
+EXCEPTION-P11 closePurchase positive+negative
+EXCEPTION-P11 failPurchase positive+negative
+EXCEPTION-R0 positive+negative-nonzero
+EXCEPTION-V4 real-question-change+preservation
+inductive Reach : KelGroups.GroupView → BackdonateAuth → State → Prop
+number of parameters: 2
+constructors:
+Reach.boot : ∀ {view : KelGroups.GroupView} {auth : BackdonateAuth},
+  comune_not_a_member view → Reach view auth State.empty
+Reach.trans : ∀ {view : KelGroups.GroupView} {auth : BackdonateAuth} {s : State} {e : Event} {s' : State},
+  Reach view auth s → stepEvent view s e auth = some s' → Reach view auth s'
+inductive Reach.below : {view : KelGroups.GroupView} →
+  {auth : BackdonateAuth} → {motive : (a : State) → Reach view auth a → Prop} → {a : State} → Reach view auth a → Prop
+number of parameters: 3
+constructors:
+Reach.below.boot : ∀ {view : KelGroups.GroupView} {auth : BackdonateAuth}
+  {motive : (a : State) → Reach view auth a → Prop} (h : comune_not_a_member view), Reach.below ⋯
+Reach.below.trans : ∀ {view : KelGroups.GroupView} {auth : BackdonateAuth}
+  {motive : (a : State) → Reach view auth a → Prop} {s : State} {e : Event} {s' : State} (a : Reach view auth s)
+  (a_1 : stepEvent view s e auth = some s'), Reach.below a → motive s a → Reach.below ⋯

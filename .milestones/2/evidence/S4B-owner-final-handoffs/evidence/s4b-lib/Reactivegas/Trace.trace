@@ -1,0 +1,29 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["0c711c36f222eed7.olean"],
+  "i": "3b182046a8dc18c4.ilean",
+  "c": "5eca5cbd24fe907e.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/code/reactivegas-66-s4/lean/.lake/build/lib/lean /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean /code/reactivegas-66-s4/lean/Reactivegas/Trace.lean -o /code/reactivegas-66-s4/lean/.lake/build/lib/lean/Reactivegas/Trace.olean -i /code/reactivegas-66-s4/lean/.lake/build/lib/lean/Reactivegas/Trace.ilean -c /code/reactivegas-66-s4/lean/.lake/build/ir/Reactivegas/Trace.c --setup /code/reactivegas-66-s4/lean/.lake/build/ir/Reactivegas/Trace.setup.json --json",
+   "level": "trace"}],
+ "inputs":
+ [["Reactivegas.Trace:deps",
+   [["deps",
+     [["reactivegas/Reactivegas:extraDep",
+       [["@reactivegas:extraDep", "00000000000006bb"]]],
+      ["imports",
+       [["Reactivegas.Invariants transitive imports (legacy)",
+         "3b1b6c56c3cdfe99"],
+        ["Reactivegas.Invariants:importAllArts", "e5aa23d48cce9ded"]]]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.25.0, commit v4.25.0", "9c3a3ade3a41d5d0"],
+  ["/code/reactivegas-66-s4/lean/Reactivegas/Trace.lean", "abc9da8afe8a70cc"],
+  ["options", [["-DautoImplicit=false", "4a85acb881fd49d0"]]],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "96bac8f0aee7d1af"}

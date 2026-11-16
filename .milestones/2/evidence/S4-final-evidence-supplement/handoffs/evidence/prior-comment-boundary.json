@@ -1,0 +1,46 @@
+[
+  {
+    "path": "lean/Reactivegas/Mirrors.lean",
+    "beforeSha256": "5ae34775390a37fa8525d88051f7fa3bb0c9127f14b10a7c865ecdd066c4fb6d",
+    "afterSha256": "7fefa8cd8e034c1e2f5a353d28270d7a68e940c7be5d0f52eabaca0d6193e1fb",
+    "noncommentBytesEqual": true,
+    "commentErasedSha256": "456fbd4845821814e548e600c94ce1fa6e3a3b17c0486554fa350a36fba25778",
+    "deltas": [
+      {
+        "kind": "module-doc",
+        "oldLine": 4,
+        "newLine": 4,
+        "before": "/-!\n# Executable Bool mirrors for the law predicates (S4-B, #66)\n\nFor each finite law/state `Prop` in `Reactivegas.Predicates` (except the named\nexceptions below) this module ships an independently implemented `Bool` mirror\nand proves the exact correspondence `P … ↔ B … = true`.\n\nRules honoured throughout:\n* existing expressions are RELATED, never duplicated: `P01` relates\n  `comune_not_a_member` to the existing `KelGroups.GroupView.isMember`, and\n  `P07` relates `permissionToClose` to its existing\n  `permitted && pending.isEmpty` expression. No new runtime is introduced for\n  either (R4);\n* equality is decided with `decide` over `DecidableEq` instances, never with\n  bare `BEq` (NOTE-003);\n* finite list reductions preserve lookup semantics on ARBITRARY states: no\n  well-formedness (`Nodup`) premise appears in any statement. Duplicate keys\n  are handled by first-match-consistent reductions (`view_mem_of_isMember`,\n  `isMember_of_view_mem`), absent keys by the default-balance lemma\n  (`bal_absent`) (R14, R15);\n* no original definition or theorem is touched (R1, R5).\n\nNamed exceptions (covered by `scripts/check-lean-mirrors`, not here):\n* `authorizedStep` (P11) — definitional projection onto the existing\n  `isResponsabile`; per-constructor relating evidence lives in the checker;\n* `stalled` (R0) — already executable (`stalledDecidable`, and it evaluates);\n* `Reach` (P13) — NOT-EXECUTABLE, bounded: no arbitrary-`Reach` oracle is\n  required under the standing boundary, and that lack is not an\n  undecidability proof.\n-/",
+        "after": "/-!\n# Executable Bool mirrors for the law predicates (S4-B, #66)\n\nFor each finite law/state `Prop` in `Reactivegas.Predicates` (except the named\nexceptions below) this module ships an independently implemented `Bool` mirror\nand proves the exact correspondence `P … ↔ B … = true`.\n\nRules honoured throughout:\n* existing expressions are RELATED, never duplicated: `P01` relates\n  `comune_not_a_member` to the existing `KelGroups.GroupView.isMember`, and\n  `P07` relates `permissionToClose` to its existing\n  `permitted && pending.isEmpty` expression. No new runtime is introduced for\n  either (R4);\n* equality is decided with `decide` over `DecidableEq` instances, never with\n  bare `BEq` (NOTE-003);\n* finite list reductions preserve lookup semantics on ARBITRARY states: no\n  well-formedness (`Nodup`) premise appears in any statement. Duplicate keys\n  are handled by first-match-consistent reductions (`view_mem_of_isMember`,\n  `isMember_of_view_mem`), absent keys by the default-balance lemma\n  (`bal_absent`) (R14, R15);\n* no original definition or theorem is touched (R1, R5).\n\nNamed exceptions (covered by `scripts/check-lean-mirrors`, not here):\n* `authorizedStep` (P11) — definitional projection onto the existing\n  `isResponsabile`; per-constructor relating evidence lives in the checker;\n* `stalled` (R0) — already executable (`stalledDecidable`, and it evaluates);\n* `Reach` (P13) — NOT-EXECUTABLE, bounded: per ruling RG-S4-REACH-20260906 an\n  arbitrary-state decision procedure is NOT-REQUIRED for this milestone (the\n  required observable is finite-history validation, owned as S5); not an\n  undecidability claim and not inferred from absent callers.\n-/"
+      }
+    ],
+    "heredoc": null
+  },
+  {
+    "path": "scripts/check-lean-mirrors",
+    "beforeSha256": "6b45bcd4a6593282298f59595ee5e70ac903074508a7412c7367a56d78dee8de",
+    "afterSha256": "f17ecfb0c4d89436261ad202a3b83956fa89392e92d085d309880ae2d31745e6",
+    "noncommentBytesEqual": true,
+    "commentErasedSha256": "607e85dbf44d554b6366ea117b9151b55f99df00888994ebbc2230b4f0b569cc",
+    "deltas": [
+      {
+        "kind": "declaration-doc",
+        "oldLine": 100,
+        "newLine": 100,
+        "before": "/-- Separately named legitimate exceptions (V4, P11, R0 definitional or\nexecutable evidence above; P13 bounded, no oracle required). -/",
+        "after": "/-- Separately named legitimate exceptions (V4, P11, R0 definitional or\nexecutable evidence above; P13 bounded per ruling RG-S4-REACH-20260906, which\nholds arbitrary-state decision NOT-REQUIRED — not undecidability). -/"
+      }
+    ],
+    "heredoc": {
+      "quotedDelimiter": true,
+      "outerShellBytesIdentical": true,
+      "trackedModules": 29,
+      "placeholderCount": 1,
+      "rawGeneratedTextEqual": false,
+      "beforeSha256": "2c9e36260e56d959de7d7acaec0dae5d23e4cf711a2ba81f4dda20192defbd8d",
+      "afterSha256": "083485a67ca7f71cbd69180638ad4c3e7033e50674f6f003a6839ae2b77dd16b",
+      "commentErasedSha256": "e6d529bb4606bec57c095fbef6df18368336a024e7bab8fd861249d785b62fef",
+      "generation": "static extraction and literal substitution; wrapper NOT invoked"
+    }
+  }
+]

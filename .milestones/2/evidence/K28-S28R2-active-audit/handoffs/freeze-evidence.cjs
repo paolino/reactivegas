@@ -1,0 +1,29 @@
+const fs=require('fs'),path=require('path'),cp=require('child_process'),crypto=require('crypto');const h=__dirname,e=h+'/evidence',root=h+'/..';
+const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
+let report=fs.readFileSync(h+'/AUDIT-REPORT.md','utf8').replace('the same 160 schedules on the final candidate','the same 160 input cases on the final candidate').replace('No terminal pane, context, process, binary or ledger was reused.','No predecessor pane, context, process, binary or ledger was reused.');
+report=report.replace('Every gate mutant has retained exact diff/source bytes', 'The owner COMPLETE full-hash prefix a7ca9dc4… belongs to the older v10\nfreeze, as its preserved correction records; it is not v10.2 identity.\nActual v10.2 full and normalized hashes are bound separately above.\n\nEvery gate mutant has retained exact diff/source bytes');
+fs.writeFileSync(h+'/AUDIT-REPORT.md',report);
+const history=fs.readFileSync(e+'/execution-receipts.jsonl','utf8').trim().split('\n').map(JSON.parse);
+const commandList=[...JSON.parse(fs.readFileSync(h+'/probe-commands.json')),...JSON.parse(fs.readFileSync(h+'/probe-commands-extra.json'))];
+const gateFiles=fs.readdirSync(e);const logFor=id=>gateFiles.find(f=>f.endsWith(id==='leg3'?'leg3-build.log':id==='leg4'?'leg4-test.log':id==='leg6'?'leg6-ci.log':`leg5-${id}-${['M1','M4'].includes(id)?'build':'test'}.log`));
+const cmds={leg3:['just','build'],leg4:['cabal','test','all','-O0','--test-show-details=direct'],leg6:['just','ci'],M1:['cabal','build','all','--enable-tests','-O0'],M4:['cabal','build','all','-O0']};
+const full=history.map(r=>{
+ if(r.class==='targeted'){const p=commandList.find(c=>c.id===r.id);if(!p||JSON.stringify(p.argv)!==JSON.stringify(r.argv)||p.expectedExit!==r.exit)throw Error('probe mismatch '+r.id);if(hash(fs.readFileSync(r.log))!==r.sha256)throw Error('changed log');return r;}
+ const log=e+'/'+logFor(r.id);if(!fs.existsSync(log))throw Error('log missing');return {...r,argv:['nix','develop','.#ci','--quiet','-c',...(cmds[r.id]||cmds.leg4)],log,sha256:hash(fs.readFileSync(log)),bytes:fs.statSync(log).size,duration_note:'observer phase interval, includes gate processing'};
+});
+if(full.filter(r=>r.class==='build').length!==11||full.filter(r=>r.class==='targeted').length!==22||new Set(full.map(r=>r.id)).size!==33)throw Error('spend/identity counts');
+fs.writeFileSync(e+'/verification-receipts.json',JSON.stringify(full,null,2)+'\n');
+let md='# Verification receipts — S28-R2 FINAL\n\nCandidate ab25cd11b554bcd5ba64ca56a050c2eb21432d3c. All executions fresh.\n11/12 build-class, 22/24 targeted. The exact argv, start time, real exit,\ncache state, before/after free-space observations and full hashes are in\nevidence/verification-receipts.json. Build duration is the observed gate\nphase interval; targeted duration brackets the invoked process. Expected\ncompiler/test RED exits below are successful controls, not candidate failure.\n\n| ID | Class | Exit | Seconds | Log SHA256 |\n|---|---|---:|---:|---|\n';
+for(const r of full)md+=`| [${r.id}](${path.relative(h,r.log)}) | ${r.class} | ${r.exit} | ${((r.duration_ms??r.duration_observed_ms)/1000).toFixed(3)} | ${r.sha256} |\n`;
+md+='\nGate build commands use `nix develop .#ci --quiet -c`: L3 `just build`; L4 `cabal test all -O0 --test-show-details=direct`; M1 `cabal build all --enable-tests -O0`; M4 `cabal build all -O0`; M2/M3/M5/M6/M7/M8 the L4 command; L6 `just ci`. The entry command is unchanged `./gate.sh`, with own evidence/TMPDIR and exclusively reserved gate staging names.\n\nTargeted compile commands use `cabal exec -O0 -- ghc --make -O0` and the frozen argv flags/output directories. TYP commands additionally use `-fno-code`. P2 runs with `+RTS -N2 -RTS`; SC runs the exact named final Hspec example with default RTS settings. Shadow load paths are named by the compilation logs. There are no unjournaled compile/test attempts.\n';
+fs.writeFileSync(h+'/VERIFICATION-RECEIPTS.md',md);
+fs.copyFileSync('dist-newstyle/packagedb/ghc-9.8.4/kelgroups-0.1.0.0-inplace.conf',e+'/kelgroups-package.conf');
+fs.copyFileSync(root+'/../inbox/NOTE-040-m8-scope-repair.md',e+'/authority/NOTE-040-m8-scope-repair.md');
+const diff=cp.spawnSync('diff',['-u',e+'/candidate/lib_KelGroups_Fold.hs',h+'/row4-shadow/KelGroups/Fold.hs'],{encoding:'utf8'});if(diff.status!==1)throw Error('row4 shadow diff');fs.writeFileSync(e+'/row4-shadow.diff',diff.stdout);
+const git=(...args)=>cp.execFileSync('git',args,{encoding:'utf8'}).trim();
+const final={head:git('rev-parse','HEAD'),tree:git('rev-parse','HEAD^{tree}'),symbolic:cp.spawnSync('git',['symbolic-ref','-q','HEAD'],{encoding:'utf8'}).status,porcelain:git('status','--porcelain'),gateFull:hash(fs.readFileSync('gate.sh')),repairDelta:git('diff','--stat','3af3d065b7d0c54f03d89b8c05d8b8acd4a53db4','HEAD'),timestamp:new Date().toISOString()};
+if(final.head!=='ab25cd11b554bcd5ba64ca56a050c2eb21432d3c'||final.tree!=='e52114c1f7a676073303ff76caa8f22821e0b2a3'||final.symbolic!==1||final.porcelain!==''||final.gateFull!=='c00b88a29989b11d09696d7afa164f7d9f93b59aee661a1b88a120c7a4934b75')throw Error('final identity');
+fs.writeFileSync(e+'/final-identity.json',JSON.stringify(final,null,2)+'\n');
+const binaries=[];function walk(d){for(const f of fs.readdirSync(d)){const p=d+'/'+f,st=fs.lstatSync(p);if(st.isDirectory())walk(p);else if(st.isFile()&&f==='probe')binaries.push({path:p,bytes:st.size,sha256:hash(fs.readFileSync(p))});}}walk(h+'/build');fs.writeFileSync(e+'/executed-binary-manifest.json',JSON.stringify(binaries,null,2)+'\n');
+const rh=hash(fs.readFileSync(h+'/AUDIT-REPORT.md'));fs.writeFileSync(e+'/report-freeze.json',JSON.stringify({report:h+'/AUDIT-REPORT.md',sha256:rh,frozen:new Date().toISOString(),builds:11,targeted:22},null,2)+'\n');
+console.log(JSON.stringify({report_sha256:rh,builds:11,targeted:22,final,binaries:binaries.length},null,2));

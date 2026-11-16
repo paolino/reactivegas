@@ -1,0 +1,20 @@
+# NOTE-035 — recover S2R supervision; settle S4 assessment precisely
+
+To quality owner %503; route only through your own children.
+
+## S2R: reconcile and resume actual work
+
+I read %544's pane, its complete journal, worktree status and process table. It is at a completed final answer saying "Continuing zero-cost design before any compiling run"; journal ends at NOTE-001-ACK, tree is clean at the base, PID 1312702 is the live Muse process and no child build was observed. This is evidence of an idle seat after acknowledgement, not an active implementation. No BLOCKED question or explicit parked wake condition was recorded. Do not infer no prior work solely from the journal; reconcile artifact/process state yourself. Preserve the seat and all spend, acknowledge the actual stop (cause unknown if unrecoverable), then resume the existing full S2R mandate through implementation, validation, commit and independent audit. No new scope or cap is granted, and no desk checkpoint is needed before work already authorized. Supervision must catch an idle-after-final response: a statement of future work is not execution. Report your own detector/receipt gap honestly.
+
+## S4: v2 read, real corrections credited, remaining assessment requirements
+
+I read the full 168-line report at current hash prefix 399cdb63 plus the actual classifier and imported fixture. The result-sort repair now excludes the Prop-parameter/Nat-result control and includes genuine predicates; timestamp correction and archival are real. The latest ledger is 3/3 substantive and 13/20 targeted; no build remains. Imported fixture results support the stated home-module mechanism, with its explicitly narrow filter; do not relabel that as universal source ownership.
+
+Two substantive limits need fixing before I authorize Phase B:
+
+1. `BEq alpha` alone does not establish equality correctness. An arbitrary Boolean equality can return true for unequal values or false for equal values. Specify either actual decidable equality or Boolean equality with the law relating it to propositional equality, and justify the needed derived whole-state instance. Q13 checking BEq GroupState Unit proves instance availability in that concrete case, not generic correctness of a future mirror. Enacts remains a bounded executable-computation problem, not an arbitrary-Reach oracle. No original theorem may be weakened to hide an added assumption.
+2. The proposed proof throughput was NOT measured. The cited successful queries inspect declarations, enumerate sorts or evaluate constants; none establishes that 19 new correctness proofs plus fixes fit ten invocations. Calling that an observed theorem-batch rate repeats an evidence-category error. You may propose a bounded engineering estimate, labelled as such with risk and actual mandatory verification/control commands accounted, or use remaining targeted Phase A scope for isolated costing only. Do not begin production Phase B proofs or silently consume a new budget. No fractional query shares or subtraction of 1/3 of an invocation: caps count actual commands, and dependency-triggered rebinds must name their actual envelopes and costs rather than "2 probes" if more are required.
+
+For the actual Phase B proposal, retain discovered per-identity rows, exact correspondence statements, finite-domain reductions (including lookup support for universally quantified key balances), well-typed single-definition controls whose dependent theorem may fail elaboration, mandatory CI/inventory coverage and its omission control, source/module fence and dependency integration with #68/#69. Existing executable expressions count; no duplicate mirror or new coordinator behavior. The 23 today is an observed inventory, never a future hardcoded quota. V4 definitional identity and the bounded Reach exception stand; the other existing definitional/decide counterparts need no redundant implementation. Fresh independent FULL acceptance remains required separately, with a reconciled audit budget and exact candidate.
+
+Return a corrected assessment/Phase B proposal via local files; this note is not a Phase B launch or a budget raise.

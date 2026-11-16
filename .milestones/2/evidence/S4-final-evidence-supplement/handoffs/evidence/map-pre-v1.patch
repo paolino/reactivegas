@@ -1,0 +1,68 @@
+--- inputs/CLOSURE-MAP.pre-fs02-preserved.md	2026-09-06 08:16:36.623308624 +0100
++++ inputs/CLOSURE-MAP.after-fs02.md	2026-09-06 08:16:36.623308624 +0100
+@@ -124,6 +124,52 @@
+ | "the only finding whose cost rises with delay" | unsupported; evidence loss also raises cost |
+ | `expectedDeclarations` "not yours to touch" | too broad. The prohibition is against another **quota**, not against **real discovery**. S2 removes it |
+ 
++## Ruling `RG-S4-REACH-20260906` — `Reach` consumer boundary (added 2026-09-06, FS-02 repair)
++
++**Why this section exists.** The ruling required recording in the **#66 issue body
++and this closure map**. Only the issue body was written. My own
++`handoffs/S4-D1-FIT-VERIFICATION-AND-MY-WITHDRAWAL.md` then stated *"The ruling is
++recorded in the #66 issue body and the closure map"* — that sentence was **false
++when written**: it stated the requirement as if discharged. The independent final
++static audit `43db9049…` caught it as **FS-02**. The claim is corrected here; the
++map's prior omission is preserved by leaving every earlier line untouched.
++
++**The ruling, as issued 2026-09-06** (its scope, not a paraphrase of its force):
++
++An arbitrary-state decision procedure for `Reach view auth s` is **NOT-REQUIRED**
++for this milestone. The required executable observable is **validation of a
++supplied finite history**, with its initial-state and fixed view/auth premises
++established. Logical `Reach` premises remain legitimate proof inputs. This is
++**not** an undecidability claim, and **not** an inference from absent callers or
++instances. It is standing warrant issued on that date, not pre-existing authority.
++
++**The distinctions the ruling turns on — finite replay and `Reach` are not
++unconditionally the same object:**
++
++| | finite replay (`Trace` / `TraceResult`) | `Reach` (`Predicates.lean:96-101`) |
++|---|---|---|
++| genesis | `Trace.initial` may be **arbitrary** | `Reach.boot` requires `State.empty` **plus** `comune_not_a_member view` |
++| view / auth | integrated `apply` histories can **change the view** | fixed `view` and `auth` throughout `Reach.trans` |
++| refusals | `TraceResult.refused` **retains** the state and continues | `Reach.trans` covers **only** successful `stepEvent view s e auth = some s'` |
++
++Integrated `apply` histories therefore fall outside the predicate. Validation of
++one supplied history must never masquerade as deciding existential reachability.
++
++**Owed, and OPEN.** The **finite-history correspondence remains OPEN** as an owned
++**S5** statement-completeness obligation, retaining the **#75** replay and **#71**
++reporting dependencies. It is **not waived** to let S4 land: #66 and the milestone
++remain incomplete until it is discharged. Any bridge must establish its genesis,
++view/auth premises and refusal preservation.
++
++**What this ruling does not touch.** S5's existing obligations stand unchanged
++alongside it — retention statement-completeness bounded outside V-5, and
++`ONWARD-68-INV-01` inversion **exactness** (see the `ONWARD-68-INV-01` section
++above; inversion binding is not inversion exactness). The three S4 execution-side
++holdings likewise remain **OPEN on their original terms**: **H-01** P07 isolation,
++**H-02** census `sortUndecided`, **H-03** `ba623667` provenance. **F-001** stays
++**OPEN** as the immutable historical finding at `94bb7bb`; the ruling classifies
++the *current* consumer boundary at `04eb6c7d` and does not retroactively close it.
++
+ ## Current owed list
+ 
+ - **S2** — submission 3 in flight for **F-003's discriminator only**; F-001 and
+@@ -139,7 +185,11 @@
+ - **S5** — two owned obligations now:
+   - retention statement-completeness, bounded outside V-5;
+   - **`ONWARD-68-INV-01`** — inversion **exactness**, inherited from the terminal
+-    #68 audit (NOTE-023). See the row below.
++    #68 audit (NOTE-023). See the row below;
++  - **finite-history correspondence**, **OPEN** under ruling
++    `RG-S4-REACH-20260906` (the section immediately above this list),
++    retaining the **#75** replay and **#71** reporting
++    dependencies. Not waived by S4 landing.
+ - **#71** — §5a, §5c, §8b content, C7.
+ - **Desk** — semantic ticket from §10; #81 owns V-5.
+ 

@@ -1,0 +1,173 @@
+{
+  "checkedAt": "2026-09-05T22:03:37.474Z",
+  "openIssues": 16,
+  "stories": 33,
+  "rows": [
+    {
+      "number": 84,
+      "state": "OPEN",
+      "title": "Browser client: Reactivegas UI over core.wasm in the existing kelgroups-client shell",
+      "url": "https://github.com/paolino/reactivegas/issues/84",
+      "stories": [
+        "S-24",
+        "S-25"
+      ]
+    },
+    {
+      "number": 83,
+      "state": "OPEN",
+      "title": "CLI client against the coordinator API, linking the same core",
+      "url": "https://github.com/paolino/reactivegas/issues/83",
+      "stories": [
+        "S-26"
+      ]
+    },
+    {
+      "number": 82,
+      "state": "OPEN",
+      "title": "wasm32-wasi build of the economic core, with a no-semantic-fork gate",
+      "url": "https://github.com/paolino/reactivegas/issues/82",
+      "stories": [
+        "S-24",
+        "S-25"
+      ]
+    },
+    {
+      "number": 81,
+      "state": "OPEN",
+      "title": "V-5 vote lifecycle: proposer renounce and departure close negative",
+      "url": "https://github.com/paolino/reactivegas/issues/81",
+      "stories": [
+        "S-10",
+        "S-11",
+        "S-12"
+      ]
+    },
+    {
+      "number": 76,
+      "state": "OPEN",
+      "title": "Runtime composition: vote closures must authorize grant, deny and backdonate",
+      "url": "https://github.com/paolino/reactivegas/issues/76",
+      "stories": [
+        "S-08",
+        "S-09",
+        "S-10",
+        "S-12"
+      ]
+    },
+    {
+      "number": 75,
+      "state": "OPEN",
+      "title": "Integrated vote corpus through the production root",
+      "url": "https://github.com/paolino/reactivegas/issues/75",
+      "stories": [
+        "S-13",
+        "S-15",
+        "S-16"
+      ]
+    },
+    {
+      "number": 73,
+      "state": "OPEN",
+      "title": "Build the kelgroups substrate contract the Lean specifies (upstream blocker)",
+      "url": "https://github.com/paolino/reactivegas/issues/73",
+      "stories": [
+        "S-02",
+        "S-03",
+        "S-04"
+      ]
+    },
+    {
+      "number": 72,
+      "state": "OPEN",
+      "title": "Epic: milestone 2 — the Haskell implementation of the Lean model on kelgroups",
+      "url": "https://github.com/paolino/reactivegas/issues/72",
+      "stories": [
+        "S-01",
+        "S-29"
+      ]
+    },
+    {
+      "number": 71,
+      "state": "OPEN",
+      "title": "Rewrite the design record to the merged model, with a citation checker that fails closed",
+      "url": "https://github.com/paolino/reactivegas/issues/71",
+      "stories": [
+        "S-28",
+        "S-29"
+      ]
+    },
+    {
+      "number": 70,
+      "state": "OPEN",
+      "title": "Simulator: re-bind onto the merged model, then the scenario generator",
+      "url": "https://github.com/paolino/reactivegas/issues/70",
+      "stories": [
+        "S-22",
+        "S-23"
+      ]
+    },
+    {
+      "number": 69,
+      "state": "OPEN",
+      "title": "Member sovereignty over their own pledge: create, correct, retract",
+      "url": "https://github.com/paolino/reactivegas/issues/69",
+      "stories": [
+        "S-06"
+      ]
+    },
+    {
+      "number": 68,
+      "state": "OPEN",
+      "title": "The proposer does not count as an assent (V-2)",
+      "url": "https://github.com/paolino/reactivegas/issues/68",
+      "stories": [
+        "S-05"
+      ]
+    },
+    {
+      "number": 67,
+      "state": "OPEN",
+      "title": "Implement the Lean economic model in Haskell on the kelgroups backend",
+      "url": "https://github.com/paolino/reactivegas/issues/67",
+      "stories": [
+        "S-01",
+        "S-27",
+        "S-07",
+        "S-13"
+      ]
+    },
+    {
+      "number": 66,
+      "state": "OPEN",
+      "title": "Bring the Lean into compliance with the system-design quality standard",
+      "url": "https://github.com/paolino/reactivegas/issues/66",
+      "stories": [
+        "S-07",
+        "S-17",
+        "S-18",
+        "S-19",
+        "S-20",
+        "S-21"
+      ]
+    },
+    {
+      "number": 51,
+      "state": "OPEN",
+      "title": "feat: publish the first provisional release, then enforce exact tag identity",
+      "url": "https://github.com/paolino/reactivegas/issues/51",
+      "stories": [
+        "S-27"
+      ]
+    },
+    {
+      "number": 43,
+      "state": "OPEN",
+      "title": "Epic: rebuild reactivegas on the kelgroups substrate",
+      "url": "https://github.com/paolino/reactivegas/issues/43",
+      "stories": [
+        "S-01"
+      ]
+    }
+  ]
+}

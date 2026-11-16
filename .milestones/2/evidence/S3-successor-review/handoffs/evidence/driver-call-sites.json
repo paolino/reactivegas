@@ -1,0 +1,601 @@
+[
+  {
+    "file": "batch-plan.sh",
+    "lines": 23,
+    "sha256": "0e95e35df63409b39976c5b374f0b7fbd2f929f561b67a2ae55949b5680a09f1",
+    "callSites": [
+      {
+        "line": 22,
+        "text": "echo \"  All setup/restore counted; equal observation targets (span-bound REDs per mutant scripts); timeout 300s per build, 600s cold; failures charged+retained, never retried.\""
+      }
+    ]
+  },
+  {
+    "file": "check.sh",
+    "lines": 28,
+    "sha256": "4bcefdb45d12fa719209daf10b863da86fe26b90c54452ba1ecf0b272cc3ae26",
+    "callSites": [
+      {
+        "line": 18,
+        "text": "S=$(date +%s%N)"
+      },
+      {
+        "line": 19,
+        "text": "timeout --signal=TERM --kill-after=15s 120s lake env lean \"$CHECK_SRC\" > \"$OUT/m09-check.stdout\" 2> \"$OUT/m09-check.stderr\"; C=$?"
+      },
+      {
+        "line": 20,
+        "text": "E=$(date +%s%N)"
+      }
+    ]
+  },
+  {
+    "file": "cold.sh",
+    "lines": 35,
+    "sha256": "3da3aeec767b313171e452bd66568e9d224bf0282f104ae9d59cfc80b7d049bf",
+    "callSites": [
+      {
+        "line": 10,
+        "text": "echo \"SCRATCH-HEAD-BEFORE: $(git -C \"$SCRATCH\" rev-parse HEAD)\""
+      },
+      {
+        "line": 11,
+        "text": "echo \"SCRATCH-PORCELAIN-BEFORE: $(git -C \"$SCRATCH\" status --porcelain=v1 | wc -l)\""
+      },
+      {
+        "line": 15,
+        "text": "echo \"LAKE-VERSION: $(lake --version)\""
+      },
+      {
+        "line": 16,
+        "text": "echo \"LEAN-VERSION: $(lean --version)\""
+      },
+      {
+        "line": 24,
+        "text": "S=$(date +%s%N)"
+      },
+      {
+        "line": 25,
+        "text": "timeout --signal=TERM --kill-after=15s 600s lake build > \"$OUT/m00-cold.stdout\" 2> \"$OUT/m00-cold.stderr\"; C=$?"
+      },
+      {
+        "line": 26,
+        "text": "E=$(date +%s%N)"
+      }
+    ]
+  },
+  {
+    "file": "compare-batch.sh",
+    "lines": 14,
+    "sha256": "4cd26f4654ee07a27e78866b0d323c703d0905d6bdfff633891ed95e13d00eac",
+    "callSites": []
+  },
+  {
+    "file": "mutant-C-FOLD.sh",
+    "lines": 46,
+    "sha256": "7d96d7f0ee7aee66c26253ee653ab6593baff25017e517c3986aac76e092c015",
+    "callSites": [
+      {
+        "line": 14,
+        "text": "echo \"SCRATCH-HEAD-BEFORE: $(git -C \"$SCRATCH\" rev-parse HEAD)\""
+      },
+      {
+        "line": 15,
+        "text": "echo \"SCRATCH-PORCELAIN-BEFORE: $(git -C \"$SCRATCH\" status --porcelain=v1 | wc -l)\""
+      },
+      {
+        "line": 20,
+        "text": "echo \"LAKE-VERSION: $(lake --version)\""
+      },
+      {
+        "line": 22,
+        "text": "S0=$(date +%s%N)"
+      },
+      {
+        "line": 23,
+        "text": "git -C \"$SCRATCH\" apply \"$DIFF\"; C0=$?"
+      },
+      {
+        "line": 24,
+        "text": "E0=$(date +%s%N)"
+      },
+      {
+        "line": 29,
+        "text": "git -C \"$SCRATCH\" diff > \"$OUT/${OUTPREFIX}-applied.diff\""
+      },
+      {
+        "line": 30,
+        "text": "git -C \"$SCRATCH\" status --porcelain=v1 > \"$OUT/${OUTPREFIX}-dirty-status\""
+      },
+      {
+        "line": 34,
+        "text": "S=$(date +%s%N)"
+      },
+      {
+        "line": 35,
+        "text": "timeout --signal=TERM --kill-after=15s 300s lake build \"$TARGET\" > \"$OUT/${OUTPREFIX}.stdout\" 2> \"$OUT/${OUTPREFIX}.stderr\"; C=$?"
+      },
+      {
+        "line": 36,
+        "text": "E=$(date +%s%N)"
+      }
+    ]
+  },
+  {
+    "file": "mutant-C-INTEGRATION.sh",
+    "lines": 46,
+    "sha256": "c88aacabda031465e793758a0c7fb7e107f3115b39d635195b58ecffb4de7aba",
+    "callSites": [
+      {
+        "line": 14,
+        "text": "echo \"SCRATCH-HEAD-BEFORE: $(git -C \"$SCRATCH\" rev-parse HEAD)\""
+      },
+      {
+        "line": 15,
+        "text": "echo \"SCRATCH-PORCELAIN-BEFORE: $(git -C \"$SCRATCH\" status --porcelain=v1 | wc -l)\""
+      },
+      {
+        "line": 20,
+        "text": "echo \"LAKE-VERSION: $(lake --version)\""
+      },
+      {
+        "line": 22,
+        "text": "S0=$(date +%s%N)"
+      },
+      {
+        "line": 23,
+        "text": "git -C \"$SCRATCH\" apply \"$DIFF\"; C0=$?"
+      },
+      {
+        "line": 24,
+        "text": "E0=$(date +%s%N)"
+      },
+      {
+        "line": 29,
+        "text": "git -C \"$SCRATCH\" diff > \"$OUT/${OUTPREFIX}-applied.diff\""
+      },
+      {
+        "line": 30,
+        "text": "git -C \"$SCRATCH\" status --porcelain=v1 > \"$OUT/${OUTPREFIX}-dirty-status\""
+      },
+      {
+        "line": 34,
+        "text": "S=$(date +%s%N)"
+      },
+      {
+        "line": 35,
+        "text": "timeout --signal=TERM --kill-after=15s 300s lake build \"$TARGET\" > \"$OUT/${OUTPREFIX}.stdout\" 2> \"$OUT/${OUTPREFIX}.stderr\"; C=$?"
+      },
+      {
+        "line": 36,
+        "text": "E=$(date +%s%N)"
+      }
+    ]
+  },
+  {
+    "file": "mutant-C-KSTATE.sh",
+    "lines": 46,
+    "sha256": "76767a5019b44145505a64e1ca04d769acc7095e469815ff4788de1442b2c1fe",
+    "callSites": [
+      {
+        "line": 14,
+        "text": "echo \"SCRATCH-HEAD-BEFORE: $(git -C \"$SCRATCH\" rev-parse HEAD)\""
+      },
+      {
+        "line": 15,
+        "text": "echo \"SCRATCH-PORCELAIN-BEFORE: $(git -C \"$SCRATCH\" status --porcelain=v1 | wc -l)\""
+      },
+      {
+        "line": 20,
+        "text": "echo \"LAKE-VERSION: $(lake --version)\""
+      },
+      {
+        "line": 22,
+        "text": "S0=$(date +%s%N)"
+      },
+      {
+        "line": 23,
+        "text": "git -C \"$SCRATCH\" apply \"$DIFF\"; C0=$?"
+      },
+      {
+        "line": 24,
+        "text": "E0=$(date +%s%N)"
+      },
+      {
+        "line": 29,
+        "text": "git -C \"$SCRATCH\" diff > \"$OUT/${OUTPREFIX}-applied.diff\""
+      },
+      {
+        "line": 30,
+        "text": "git -C \"$SCRATCH\" status --porcelain=v1 > \"$OUT/${OUTPREFIX}-dirty-status\""
+      },
+      {
+        "line": 34,
+        "text": "S=$(date +%s%N)"
+      },
+      {
+        "line": 35,
+        "text": "timeout --signal=TERM --kill-after=15s 300s lake build \"$TARGET\" > \"$OUT/${OUTPREFIX}.stdout\" 2> \"$OUT/${OUTPREFIX}.stderr\"; C=$?"
+      },
+      {
+        "line": 36,
+        "text": "E=$(date +%s%N)"
+      }
+    ]
+  },
+  {
+    "file": "mutant-C-RSTATE.sh",
+    "lines": 46,
+    "sha256": "c6e3327f6dbd651783fabfec1f6fb583bf5e57db0e73402a1bae73456090360e",
+    "callSites": [
+      {
+        "line": 14,
+        "text": "echo \"SCRATCH-HEAD-BEFORE: $(git -C \"$SCRATCH\" rev-parse HEAD)\""
+      },
+      {
+        "line": 15,
+        "text": "echo \"SCRATCH-PORCELAIN-BEFORE: $(git -C \"$SCRATCH\" status --porcelain=v1 | wc -l)\""
+      },
+      {
+        "line": 20,
+        "text": "echo \"LAKE-VERSION: $(lake --version)\""
+      },
+      {
+        "line": 22,
+        "text": "S0=$(date +%s%N)"
+      },
+      {
+        "line": 23,
+        "text": "git -C \"$SCRATCH\" apply \"$DIFF\"; C0=$?"
+      },
+      {
+        "line": 24,
+        "text": "E0=$(date +%s%N)"
+      },
+      {
+        "line": 29,
+        "text": "git -C \"$SCRATCH\" diff > \"$OUT/${OUTPREFIX}-applied.diff\""
+      },
+      {
+        "line": 30,
+        "text": "git -C \"$SCRATCH\" status --porcelain=v1 > \"$OUT/${OUTPREFIX}-dirty-status\""
+      },
+      {
+        "line": 34,
+        "text": "S=$(date +%s%N)"
+      },
+      {
+        "line": 35,
+        "text": "timeout --signal=TERM --kill-after=15s 300s lake build \"$TARGET\" > \"$OUT/${OUTPREFIX}.stdout\" 2> \"$OUT/${OUTPREFIX}.stderr\"; C=$?"
+      },
+      {
+        "line": 36,
+        "text": "E=$(date +%s%N)"
+      }
+    ]
+  },
+  {
+    "file": "mutant-C-VALIDATE.sh",
+    "lines": 46,
+    "sha256": "e3a6323601fe0302a8d4582e3045626c2dc216417c4b94856e65eb93d544eaa0",
+    "callSites": [
+      {
+        "line": 14,
+        "text": "echo \"SCRATCH-HEAD-BEFORE: $(git -C \"$SCRATCH\" rev-parse HEAD)\""
+      },
+      {
+        "line": 15,
+        "text": "echo \"SCRATCH-PORCELAIN-BEFORE: $(git -C \"$SCRATCH\" status --porcelain=v1 | wc -l)\""
+      },
+      {
+        "line": 20,
+        "text": "echo \"LAKE-VERSION: $(lake --version)\""
+      },
+      {
+        "line": 22,
+        "text": "S0=$(date +%s%N)"
+      },
+      {
+        "line": 23,
+        "text": "git -C \"$SCRATCH\" apply \"$DIFF\"; C0=$?"
+      },
+      {
+        "line": 24,
+        "text": "E0=$(date +%s%N)"
+      },
+      {
+        "line": 29,
+        "text": "git -C \"$SCRATCH\" diff > \"$OUT/${OUTPREFIX}-applied.diff\""
+      },
+      {
+        "line": 30,
+        "text": "git -C \"$SCRATCH\" status --porcelain=v1 > \"$OUT/${OUTPREFIX}-dirty-status\""
+      },
+      {
+        "line": 34,
+        "text": "S=$(date +%s%N)"
+      },
+      {
+        "line": 35,
+        "text": "timeout --signal=TERM --kill-after=15s 300s lake build \"$TARGET\" > \"$OUT/${OUTPREFIX}.stdout\" 2> \"$OUT/${OUTPREFIX}.stderr\"; C=$?"
+      },
+      {
+        "line": 36,
+        "text": "E=$(date +%s%N)"
+      }
+    ]
+  },
+  {
+    "file": "mutant-C-VOTEFOLD.sh",
+    "lines": 46,
+    "sha256": "e3e96af4d2a57e907506b8d40582b757ad67ebf9d26a7f4e644e006064a1b205",
+    "callSites": [
+      {
+        "line": 14,
+        "text": "echo \"SCRATCH-HEAD-BEFORE: $(git -C \"$SCRATCH\" rev-parse HEAD)\""
+      },
+      {
+        "line": 15,
+        "text": "echo \"SCRATCH-PORCELAIN-BEFORE: $(git -C \"$SCRATCH\" status --porcelain=v1 | wc -l)\""
+      },
+      {
+        "line": 20,
+        "text": "echo \"LAKE-VERSION: $(lake --version)\""
+      },
+      {
+        "line": 22,
+        "text": "S0=$(date +%s%N)"
+      },
+      {
+        "line": 23,
+        "text": "git -C \"$SCRATCH\" apply \"$DIFF\"; C0=$?"
+      },
+      {
+        "line": 24,
+        "text": "E0=$(date +%s%N)"
+      },
+      {
+        "line": 29,
+        "text": "git -C \"$SCRATCH\" diff > \"$OUT/${OUTPREFIX}-applied.diff\""
+      },
+      {
+        "line": 30,
+        "text": "git -C \"$SCRATCH\" status --porcelain=v1 > \"$OUT/${OUTPREFIX}-dirty-status\""
+      },
+      {
+        "line": 34,
+        "text": "S=$(date +%s%N)"
+      },
+      {
+        "line": 35,
+        "text": "timeout --signal=TERM --kill-after=15s 300s lake build \"$TARGET\" > \"$OUT/${OUTPREFIX}.stdout\" 2> \"$OUT/${OUTPREFIX}.stderr\"; C=$?"
+      },
+      {
+        "line": 36,
+        "text": "E=$(date +%s%N)"
+      }
+    ]
+  },
+  {
+    "file": "mutant-C-VOTESTATE.sh",
+    "lines": 46,
+    "sha256": "218eabed4e44f3a10f392f0e8fa13797917026520eee082a714bc33baf3b8bf2",
+    "callSites": [
+      {
+        "line": 14,
+        "text": "echo \"SCRATCH-HEAD-BEFORE: $(git -C \"$SCRATCH\" rev-parse HEAD)\""
+      },
+      {
+        "line": 15,
+        "text": "echo \"SCRATCH-PORCELAIN-BEFORE: $(git -C \"$SCRATCH\" status --porcelain=v1 | wc -l)\""
+      },
+      {
+        "line": 20,
+        "text": "echo \"LAKE-VERSION: $(lake --version)\""
+      },
+      {
+        "line": 22,
+        "text": "S0=$(date +%s%N)"
+      },
+      {
+        "line": 23,
+        "text": "git -C \"$SCRATCH\" apply \"$DIFF\"; C0=$?"
+      },
+      {
+        "line": 24,
+        "text": "E0=$(date +%s%N)"
+      },
+      {
+        "line": 29,
+        "text": "git -C \"$SCRATCH\" diff > \"$OUT/${OUTPREFIX}-applied.diff\""
+      },
+      {
+        "line": 30,
+        "text": "git -C \"$SCRATCH\" status --porcelain=v1 > \"$OUT/${OUTPREFIX}-dirty-status\""
+      },
+      {
+        "line": 34,
+        "text": "S=$(date +%s%N)"
+      },
+      {
+        "line": 35,
+        "text": "timeout --signal=TERM --kill-after=15s 300s lake build \"$TARGET\" > \"$OUT/${OUTPREFIX}.stdout\" 2> \"$OUT/${OUTPREFIX}.stderr\"; C=$?"
+      },
+      {
+        "line": 36,
+        "text": "E=$(date +%s%N)"
+      }
+    ]
+  },
+  {
+    "file": "mutant-C-VOTEVAL.sh",
+    "lines": 46,
+    "sha256": "d158eb7e4b37707ce323ce7384f3650c01b6b6e83d75ab93151f2a32659ea5a6",
+    "callSites": [
+      {
+        "line": 14,
+        "text": "echo \"SCRATCH-HEAD-BEFORE: $(git -C \"$SCRATCH\" rev-parse HEAD)\""
+      },
+      {
+        "line": 15,
+        "text": "echo \"SCRATCH-PORCELAIN-BEFORE: $(git -C \"$SCRATCH\" status --porcelain=v1 | wc -l)\""
+      },
+      {
+        "line": 20,
+        "text": "echo \"LAKE-VERSION: $(lake --version)\""
+      },
+      {
+        "line": 22,
+        "text": "S0=$(date +%s%N)"
+      },
+      {
+        "line": 23,
+        "text": "git -C \"$SCRATCH\" apply \"$DIFF\"; C0=$?"
+      },
+      {
+        "line": 24,
+        "text": "E0=$(date +%s%N)"
+      },
+      {
+        "line": 29,
+        "text": "git -C \"$SCRATCH\" diff > \"$OUT/${OUTPREFIX}-applied.diff\""
+      },
+      {
+        "line": 30,
+        "text": "git -C \"$SCRATCH\" status --porcelain=v1 > \"$OUT/${OUTPREFIX}-dirty-status\""
+      },
+      {
+        "line": 34,
+        "text": "S=$(date +%s%N)"
+      },
+      {
+        "line": 35,
+        "text": "timeout --signal=TERM --kill-after=15s 300s lake build \"$TARGET\" > \"$OUT/${OUTPREFIX}.stdout\" 2> \"$OUT/${OUTPREFIX}.stderr\"; C=$?"
+      },
+      {
+        "line": 36,
+        "text": "E=$(date +%s%N)"
+      }
+    ]
+  },
+  {
+    "file": "replay-build.sh",
+    "lines": 25,
+    "sha256": "e00121b4d00f90d22ddb6e2e109677358b6389dd54df64b41e315cb83f8efe77",
+    "callSites": [
+      {
+        "line": 10,
+        "text": "echo \"SCRATCH-HEAD: $(git -C \"$SCRATCH\" rev-parse HEAD)\""
+      },
+      {
+        "line": 11,
+        "text": "echo \"SCRATCH-PORCELAIN: $(git -C \"$SCRATCH\" status --porcelain=v1 | wc -l)\""
+      },
+      {
+        "line": 13,
+        "text": "echo \"LAKE-VERSION: $(lake --version)\""
+      },
+      {
+        "line": 17,
+        "text": "S=$(date +%s%N)"
+      },
+      {
+        "line": 18,
+        "text": "timeout --signal=TERM --kill-after=15s 300s lake build corpusExport > \"$OUT/m10-replay-prod.stdout\" 2> \"$OUT/m10-replay-prod.stderr\"; C=$?"
+      },
+      {
+        "line": 19,
+        "text": "E=$(date +%s%N)"
+      }
+    ]
+  },
+  {
+    "file": "replay-run-green.sh",
+    "lines": 35,
+    "sha256": "8f30ebeef1134e641832f97a4e3f52b0b55fdd4a9ab0b58c90d2811ca552e76b",
+    "callSites": [
+      {
+        "line": 16,
+        "text": "S=$(date +%s%N)"
+      },
+      {
+        "line": 17,
+        "text": "timeout --signal=TERM --kill-after=15s 120s \"$EXE\" \"$ECON\" \"$INT\" > \"$OUT/m11-replay-exec-green-write.stdout\" 2> \"$OUT/m11-replay-exec-green-write.stderr\"; C1=$?"
+      },
+      {
+        "line": 18,
+        "text": "E=$(date +%s%N)"
+      },
+      {
+        "line": 27,
+        "text": "S2=$(date +%s%N)"
+      },
+      {
+        "line": 28,
+        "text": "timeout --signal=TERM --kill-after=15s 120s \"$EXE\" check \"$ECON\" \"$INT\" > \"$OUT/m11-replay-exec-green-check.stdout\" 2> \"$OUT/m11-replay-exec-green-check.stderr\"; C2=$?"
+      },
+      {
+        "line": 29,
+        "text": "E2=$(date +%s%N)"
+      }
+    ]
+  },
+  {
+    "file": "replay-run-red.sh",
+    "lines": 32,
+    "sha256": "bf8d9ced166d34cef6a4f4223fc89a67d82e1728b6c1b6432245463407ac7672",
+    "callSites": [
+      {
+        "line": 22,
+        "text": "S=$(date +%s%N)"
+      },
+      {
+        "line": 23,
+        "text": "timeout --signal=TERM --kill-after=15s 120s \"$EXE\" check \"$ECON_RED\" \"$INT_GREEN\" > \"$OUT/m12-replay-exec-red.stdout\" 2> \"$OUT/m12-replay-exec-red.stderr\"; C=$?"
+      },
+      {
+        "line": 24,
+        "text": "E=$(date +%s%N)"
+      }
+    ]
+  },
+  {
+    "file": "restore.sh",
+    "lines": 33,
+    "sha256": "9d58c3d984e6866318b06be2abbb1dd800b73a6391e151a44b8747f1a1714785",
+    "callSites": [
+      {
+        "line": 13,
+        "text": "S0=$(date +%s%N)"
+      },
+      {
+        "line": 14,
+        "text": "git -C \"$SCRATCH\" checkout -- .; C0=$?"
+      },
+      {
+        "line": 15,
+        "text": "E0=$(date +%s%N)"
+      },
+      {
+        "line": 19,
+        "text": "echo \"PORCELAIN-AFTER-CHECKOUT: $(git -C \"$SCRATCH\" status --porcelain=v1 | wc -l)\""
+      },
+      {
+        "line": 22,
+        "text": "git -C \"$SCRATCH\" status --porcelain=v1 > \"$OUT/${OUTPREFIX}-restore-porcelain.txt\""
+      },
+      {
+        "line": 26,
+        "text": "S=$(date +%s%N)"
+      },
+      {
+        "line": 27,
+        "text": "timeout --signal=TERM --kill-after=15s 300s lake build \"$TARGET\" > \"$OUT/${OUTPREFIX}-restore.stdout\" 2> \"$OUT/${OUTPREFIX}-restore.stderr\"; C=$?"
+      },
+      {
+        "line": 28,
+        "text": "E=$(date +%s%N)"
+      }
+    ]
+  }
+]

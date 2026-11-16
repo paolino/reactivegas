@@ -1,0 +1,243 @@
+{
+  "format": "reactivegas-sim-session",
+  "v": 3,
+  "labels": {},
+  "names": {
+    "bruno": "Bruno"
+  },
+  "piles": {},
+  "integrated": {
+    "schema": "reactivegas-integrated.trace",
+    "version": 1,
+    "initial": {
+      "members": [
+        [
+          "anna",
+          {
+            "key": "anna",
+            "email": "anna@toy.example",
+            "roles": [
+              {
+                "adminRole": {
+                  "admin": "publicAdmin"
+                }
+              }
+            ]
+          }
+        ]
+      ],
+      "pendingBase": [],
+      "appFold": {
+        "conti": [],
+        "casse": [],
+        "collections": [],
+        "votes": {
+          "openQuestions": [],
+          "closed": []
+        }
+      }
+    },
+    "steps": [
+      {
+        "input": {
+          "members": [
+            [
+              "anna",
+              {
+                "key": "anna",
+                "email": "anna@toy.example",
+                "roles": [
+                  {
+                    "adminRole": {
+                      "admin": "publicAdmin"
+                    }
+                  }
+                ]
+              }
+            ]
+          ],
+          "pendingBase": [],
+          "appFold": {
+            "conti": [],
+            "casse": [],
+            "collections": [],
+            "votes": {
+              "openQuestions": [],
+              "closed": []
+            }
+          }
+        },
+        "signer": "anna",
+        "event": {
+          "direct": {
+            "admitMember": {
+              "key": "bruno",
+              "email": "bruno@toy.example",
+              "roles": [
+                {
+                  "appRole": {
+                    "name": "socio"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "result": {
+          "tag": "applied",
+          "aggregate": {
+            "members": [
+              [
+                "bruno",
+                {
+                  "key": "bruno",
+                  "email": "bruno@toy.example",
+                  "roles": [
+                    {
+                      "appRole": {
+                        "name": "socio"
+                      }
+                    }
+                  ]
+                }
+              ],
+              [
+                "anna",
+                {
+                  "key": "anna",
+                  "email": "anna@toy.example",
+                  "roles": [
+                    {
+                      "adminRole": {
+                        "admin": "publicAdmin"
+                      }
+                    }
+                  ]
+                }
+              ]
+            ],
+            "pendingBase": [],
+            "appFold": {
+              "conti": [],
+              "casse": [],
+              "collections": [],
+              "votes": {
+                "openQuestions": [],
+                "closed": []
+              }
+            }
+          },
+          "change": {
+            "memberAdmitted": "bruno"
+          }
+        }
+      },
+      {
+        "input": {
+          "members": [
+            [
+              "bruno",
+              {
+                "key": "bruno",
+                "email": "bruno@toy.example",
+                "roles": [
+                  {
+                    "appRole": {
+                      "name": "socio"
+                    }
+                  }
+                ]
+              }
+            ],
+            [
+              "anna",
+              {
+                "key": "anna",
+                "email": "anna@toy.example",
+                "roles": [
+                  {
+                    "adminRole": {
+                      "admin": "publicAdmin"
+                    }
+                  }
+                ]
+              }
+            ]
+          ],
+          "pendingBase": [],
+          "appFold": {
+            "conti": [],
+            "casse": [],
+            "collections": [],
+            "votes": {
+              "openQuestions": [],
+              "closed": []
+            }
+          }
+        },
+        "signer": "bruno",
+        "event": {
+          "app": {
+            "openPurchase": {
+              "c": 99,
+              "author": "anna"
+            }
+          }
+        },
+        "result": {
+          "tag": "applied",
+          "aggregate": {
+            "members": [
+              [
+                "bruno",
+                {
+                  "key": "bruno",
+                  "email": "bruno@toy.example",
+                  "roles": [
+                    {
+                      "appRole": {
+                        "name": "socio"
+                      }
+                    }
+                  ]
+                }
+              ],
+              [
+                "anna",
+                {
+                  "key": "anna",
+                  "email": "anna@toy.example",
+                  "roles": [
+                    {
+                      "adminRole": {
+                        "admin": "publicAdmin"
+                      }
+                    }
+                  ]
+                }
+              ]
+            ],
+            "pendingBase": [],
+            "appFold": {
+              "conti": [],
+              "casse": [],
+              "collections": [
+                {
+                  "id": 99,
+                  "referente": "anna",
+                  "permitted": false,
+                  "accepted": [],
+                  "pending": []
+                }
+              ],
+              "votes": {
+                "openQuestions": [],
+                "closed": []
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

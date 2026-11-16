@@ -1,0 +1,279 @@
+{
+  "at": "2026-09-06T07:52:14.155Z",
+  "panes": [
+    {
+      "pane": "%510",
+      "window": "@26",
+      "name": "ms2-desk",
+      "pid": "558384",
+      "cmd": "codex",
+      "cwd": "/code/reactivegas-issue-47",
+      "args": [
+        "/nix/store/nqhk0522q8ncygwwx054iq76ckcjll82-codex-0.153.2/libexec/codex",
+        "--dangerously-bypass-approvals-and-sandbox",
+        "-m",
+        "gpt-6-astra",
+        "-c",
+        "model_reasoning_effort=high"
+      ]
+    },
+    {
+      "pane": "%574",
+      "window": "@26",
+      "name": "ms2-desk",
+      "pid": "3285172",
+      "cmd": "claude",
+      "cwd": "/code/reactivegas-issue-47",
+      "args": [
+        "-bash"
+      ]
+    },
+    {
+      "pane": "%12",
+      "window": "@9",
+      "name": "orch",
+      "pid": "79854",
+      "cmd": "bash",
+      "cwd": "/code/reactivegas-issue-47",
+      "args": [
+        "-bash"
+      ]
+    },
+    {
+      "pane": "%313",
+      "window": "@33",
+      "name": "reactivegas-ms2-t-simulator-c1r-audit",
+      "pid": "3347105",
+      "cmd": "claude",
+      "cwd": "/code/reactivegas-sim-fable",
+      "args": [
+        "claude",
+        "--dangerously-skip-permissions",
+        "--model",
+        "claude-opus-5[1m]",
+        "--effort",
+        "high"
+      ]
+    },
+    {
+      "pane": "%540",
+      "window": "@33",
+      "name": "reactivegas-ms2-t-simulator-c1r-audit",
+      "pid": "1228352",
+      "cmd": "pi",
+      "cwd": "/code/reactivegas-sim-fable",
+      "args": [
+        "/nix/store/iwgllsbcsalpqms30i4xn56dcpg99zdl-pi-0.84.4/libexec/pi/pi",
+        "--provider",
+        "opencode-go",
+        "--model",
+        "muse-spark-1.3-contributor",
+        "--thinking",
+        "xhigh",
+        "--approve"
+      ]
+    },
+    {
+      "pane": "%503",
+      "window": "@151",
+      "name": "lean-quality",
+      "pid": "365560",
+      "cmd": "claude",
+      "cwd": "/code/reactivegas-lean-compliance",
+      "args": [
+        "claude",
+        "--dangerously-skip-permissions",
+        "--model",
+        "claude-opus-5[1m]",
+        "--effort",
+        "high"
+      ]
+    },
+    {
+      "pane": "%547",
+      "window": "@151",
+      "name": "lean-quality",
+      "pid": "1493607",
+      "cmd": "pi",
+      "cwd": "/code/reactivegas-66-s4b",
+      "args": [
+        "-bash"
+      ]
+    },
+    {
+      "pane": "%504",
+      "window": "@152",
+      "name": "haskell-wait-substrate",
+      "pid": "395454",
+      "cmd": "claude",
+      "cwd": "/code/reactivegas-haskell-impl",
+      "args": [
+        "claude",
+        "--dangerously-skip-permissions",
+        "--model",
+        "claude-opus-5[1m]",
+        "--effort",
+        "high"
+      ]
+    },
+    {
+      "pane": "%512",
+      "window": "@155",
+      "name": "assent-wait-C1",
+      "pid": "3358057",
+      "cmd": "claude",
+      "cwd": "/code/reactivegas-issue-68",
+      "args": [
+        "claude",
+        "--dangerously-skip-permissions",
+        "--model",
+        "claude-opus-5[1m]",
+        "--effort",
+        "high"
+      ]
+    },
+    {
+      "pane": "%519",
+      "window": "@155",
+      "name": "assent-wait-C1",
+      "pid": "635191",
+      "cmd": "pi",
+      "cwd": "/code/reactivegas-issue-68",
+      "args": [
+        "/nix/store/iwgllsbcsalpqms30i4xn56dcpg99zdl-pi-0.84.4/libexec/pi/pi",
+        "--provider",
+        "opencode-go",
+        "--model",
+        "muse-spark-1.3-contributor",
+        "--thinking",
+        "xhigh",
+        "--approve"
+      ]
+    },
+    {
+      "pane": "%516",
+      "window": "@156",
+      "name": "design-wait-model",
+      "pid": "3358067",
+      "cmd": "claude",
+      "cwd": "/code/reactivegas-issue-71",
+      "args": [
+        "claude",
+        "--dangerously-skip-permissions",
+        "--model",
+        "claude-opus-5[1m]",
+        "--effort",
+        "high"
+      ]
+    },
+    {
+      "pane": "%542",
+      "window": "@156",
+      "name": "design-wait-model",
+      "pid": "1296754",
+      "cmd": "pi",
+      "cwd": "/code/reactivegas-issue-71",
+      "args": [
+        "/nix/store/iwgllsbcsalpqms30i4xn56dcpg99zdl-pi-0.84.4/libexec/pi/pi",
+        "--provider",
+        "opencode-go",
+        "--model",
+        "muse-spark-1.3-contributor",
+        "--thinking",
+        "xhigh",
+        "--approve"
+      ]
+    },
+    {
+      "pane": "%532",
+      "window": "@157",
+      "name": "kelgroups",
+      "pid": "3358093",
+      "cmd": "claude",
+      "cwd": "/code/kelgroups",
+      "args": [
+        "claude",
+        "--dangerously-skip-permissions",
+        "--model",
+        "claude-opus-5[1m]",
+        "--effort",
+        "high"
+      ]
+    },
+    {
+      "pane": "%572",
+      "window": "@157",
+      "name": "kelgroups",
+      "pid": "3372041",
+      "cmd": "claude",
+      "cwd": "/code/kelgroups",
+      "args": [
+        "claude",
+        "--dangerously-skip-permissions",
+        "--model",
+        "claude-opus-5[1m]",
+        "--effort",
+        "high"
+      ]
+    },
+    {
+      "pane": "%582",
+      "window": "@157",
+      "name": "kelgroups",
+      "pid": "3768818",
+      "cmd": "pi",
+      "cwd": "/code/kelgroups-issue-30",
+      "args": [
+        "/nix/store/iwgllsbcsalpqms30i4xn56dcpg99zdl-pi-0.84.4/libexec/pi/pi",
+        "--provider",
+        "opencode-go",
+        "--model",
+        "muse-spark-1.3-contributor",
+        "--thinking",
+        "xhigh",
+        "--approve"
+      ]
+    },
+    {
+      "pane": "%578",
+      "window": "@176",
+      "name": "rg-s4b-supplement",
+      "pid": "3670461",
+      "cmd": "codex",
+      "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/supplement-auditor-s4b",
+      "args": [
+        "/nix/store/nqhk0522q8ncygwwx054iq76ckcjll82-codex-0.153.2/libexec/codex",
+        "-m",
+        "gpt-6-astra",
+        "-c",
+        "model_reasoning_effort=high"
+      ]
+    },
+    {
+      "pane": "%580",
+      "window": "@178",
+      "name": "rg-s3-successor",
+      "pid": "3692728",
+      "cmd": "pi",
+      "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/s3-successor-spec-1",
+      "args": [
+        "-bash"
+      ]
+    },
+    {
+      "pane": "%581",
+      "window": "@179",
+      "name": "rg-s3-instrument-review",
+      "pid": "3753558",
+      "cmd": "codex",
+      "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/reviewer-s3-successor-instruments",
+      "args": [
+        "/nix/store/nqhk0522q8ncygwwx054iq76ckcjll82-codex-0.153.2/libexec/codex",
+        "-m",
+        "gpt-6-astra",
+        "-c",
+        "model_reasoning_effort=high"
+      ]
+    }
+  ]
+}

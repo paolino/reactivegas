@@ -1,0 +1,5 @@
+STDOUT
+Filesystem               1B-blocks         Used    Available Use% Mounted on
+/dev/mapper/fast-code 844362571776 584429596672 216966524928  73% /code
+
+STDERR

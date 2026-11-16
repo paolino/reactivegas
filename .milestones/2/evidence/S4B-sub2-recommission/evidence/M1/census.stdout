@@ -1,0 +1,6 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/Inventory.lean:37:5: error: unexpected token 'prefix'; expected '(', ':=', 'rec', '|', identifier or term
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/Inventory.lean:33:0: error: don't know how to synthesize placeholder
+context:
+case m
+⊢ Type
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/Inventory.lean:37:12: error: unexpected token ':='; expected ':'

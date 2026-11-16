@@ -1,0 +1,8 @@
+{
+  "publishedAt": "2026-09-06T13:01:16.213Z",
+  "commit": "335f65bd835d8f01cb40b768599d0689d8f1a927",
+  "tree": "71779bda2876485da6232392b550fdcfaadc1c25",
+  "files": 10297,
+  "prior": "e4000a3348fc4a3119be5f95b964e33cc62f05e0",
+  "scope": "Selected checkpoint; existing snapshot preserved, no full-host or fresh remote-archive verification claim."
+}

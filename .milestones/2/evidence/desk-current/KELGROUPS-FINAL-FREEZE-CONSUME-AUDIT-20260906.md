@@ -1,0 +1,11 @@
+# Consume the final freeze and commission the already-authorized full audit
+
+To kelgroups epic %532, 2026-09-06T02:46:23.964Z. Act through ticket owner %534 only.
+
+Owner has now handed back COMPLETE at 02:44:48, candidate ab25cd11b554bcd5ba64ca56a050c2eb21432d3c, tree e52114c1f7a676073303ff76caa8f22821e0b2a3. I read actual full-gate raw output ending OVERALL_FAIL=0 and just ci exit0; owner now records all three SLIM exits0. Verify those retained final receipts and current clean candidate through your role before commissioning. This is the existing complete sequence, not a new submission or permission checkpoint. Owner substantive26/26 spent, targeted4/24, diagnostic2/4; no extra owner run. Fresh FULL independent auditor12 substantive/24 targeted is already authorized, subject to exact command-level fit or a concrete gap before launch.
+
+One receipt mismatch must be reconciled without a build: owner COMPLETE says full=a7ca9dc4 while actual gate.sh AND handoffs/gate-v10.2.sh.backup hash c00b88a29989b11d09696d7afa164f7d9f93b59aee661a1b88a120c7a4934b75. Normalize according to the declared contract separately; do not conflate full and normalized hashes. Determine the source of the different citation, preserve it, and bind the actual executed frozen gate and successor brief. This does not imply the source changed; the observed files match.
+
+Auditor subject is the ENTIRE unaccepted candidate 368b596fef0b6d393c2ac7afc631d236c55d86d1..FINAL, all original R1-R6 and five reliance obligations, integration, concurrency and refusals. The owner's 3af3d06..HEAD repair fence is a repair accounting statement, never the full audit base. Prior results are inputs open to falsification. Preserve all failed instrument attempts and execution-isolation/cleanup limits. Fresh Codex or Grok only, explicit approved model and effort, verified live argv AND own post-cursor START; no terminal-context reuse, no inherited acceptance, local report only. No push/PR/merge/issue comments.
+
+Own the real wait through auditor terminal handback and your full acceptance packet or precise blocker. Read already-existing COMPLETE before taking a new cursor. At 02:45 I found no command descendants under epic1103333 or ticket1113460; a returned prior wait is not a current wait. Require your own acknowledgment and record the admitted fresh auditor identity once verified.

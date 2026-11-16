@@ -1,0 +1,29 @@
+{
+  "id": "S11",
+  "argv": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=30s",
+    "1800s",
+    "nix",
+    "develop",
+    "--quiet",
+    "-c",
+    "just",
+    "lean"
+  ],
+  "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S11",
+  "charge": "substantive",
+  "launched": true,
+  "start": "2026-09-06T05:18:27.302Z",
+  "spend": {
+    "substantive": 10,
+    "targeted": 5
+  },
+  "obligation": "C2 missing counterpart for introduced owned definition and opaque predicate; recover actual observation after S02 import-graph setup failure",
+  "finish": "2026-09-06T05:20:06.613Z",
+  "exit": 1,
+  "signal": null,
+  "stdoutSha256": "03e0a224394e36caa91497f1b56adfe1814223756d9686b46eac50543a842074",
+  "stderrSha256": "372bda8c5a9d92dd14db0d43fc553aef55305cbbbac3168a04ade84a706ccb56"
+}

@@ -1,0 +1,15 @@
+{
+  "time": "2026-09-06T00:39:11.652Z",
+  "candidate": "3af3d065b7d0c54f03d89b8c05d8b8acd4a53db4",
+  "tree": "b4eb37f2187c39db4950072e309c0d125d5c27af",
+  "git_status": "",
+  "gate_sha256": "dcbc8c2b8eefa111b5b71873be8d87fa95de2369642e6224417f9544e5a8e815",
+  "all_probe_sources_verified": true,
+  "all_preflight_logs_verified": true,
+  "all_snapshot_inputs_verified": true,
+  "all_execution_logs_verified": true,
+  "charge": {
+    "builds": 0,
+    "targeted": 0
+  }
+}

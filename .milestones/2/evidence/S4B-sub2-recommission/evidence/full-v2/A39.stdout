@@ -1,0 +1,20 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A39.lean:183:9: warning: unused variable `qid`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+KelGroups.Vote.sweepReadyB (_view : GroupView) (gs : VoteState) : Bool
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A39.lean:201:20: error: Application type mismatch: The argument
+  dj
+has type
+  ∀ (qid : QuestionId), qid ∈ List.map Prod.fst gs.openQuestions → ¬qid ∈ List.map (fun x => x.questionId) gs.closed
+but is expected to have type
+  ∀ (x : QuestionId), x ∈ List.map Prod.fst gs.openQuestions → True
+in the application
+  And.intro dj
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A39.lean:208:20: error: Application type mismatch: The argument
+  dj
+has type
+  ∀ (x : QuestionId), x ∈ List.map Prod.fst gs.openQuestions → True
+but is expected to have type
+  ∀ (qid : QuestionId), qid ∈ List.map Prod.fst gs.openQuestions → ¬qid ∈ List.map (fun x => x.questionId) gs.closed
+in the application
+  SweepReady.mk oN cN dj

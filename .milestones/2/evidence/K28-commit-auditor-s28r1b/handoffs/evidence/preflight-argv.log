@@ -1,0 +1,7 @@
+STDOUT
+    PID    PPID                  STARTED COMMAND
+1113460   10964 Sat Sep  5 11:59:12 2026 /nix/store/iwgllsbcsalpqms30i4xn56dcpg99zdl-pi-0.84.4/libexec/pi/pi --provider opencode-go --model muse-spark-1.3-contributor --thinking xhigh --approve
+2583152   10964 Sat Sep  5 23:47:13 2026 /nix/store/iwgllsbcsalpqms30i4xn56dcpg99zdl-pi-0.84.4/libexec/pi/pi --provider opencode-go --model muse-spark-1.3-contributor --thinking xhigh --approve
+2708047   10964 Sun Sep  6 01:02:35 2026 /nix/store/nqhk0522q8ncygwwx054iq76ckcjll82-codex-0.153.2/libexec/codex --dangerously-bypass-approvals-and-sandbox -m gpt-6-astra -c model_reasoning_effort=high -C /code/kelgroups-audit-3af3d06 Read /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/brief.md in full and act on it. Acknowledge in /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-auditor-s28r1b/STATUS.md. [POINTER-1788653600-s28r1b]
+
+STDERR

@@ -1,0 +1,531 @@
+{
+  "trackedModules": 29,
+  "trackedMirrorsImporters": [],
+  "S2-CI-final-clean.log": {
+    "sha256": "fbc50e0d75d365f3d0a60d5641d24c58d65f3270dd70f81b7051072164818564",
+    "bytes": 175711,
+    "lines": 3096,
+    "dirty": [],
+    "progress": [
+      {
+        "line": 2644,
+        "text": "⚠ [12/27] Replayed KelGroups.Vote.Validate"
+      },
+      {
+        "line": 2648,
+        "text": "ℹ [14/27] Replayed Reactivegas.Step"
+      },
+      {
+        "line": 2653,
+        "text": "ℹ [17/27] Replayed KelGroups.Invariants"
+      },
+      {
+        "line": 2655,
+        "text": "⚠ [18/27] Replayed KelGroups.Vote.Invariants"
+      },
+      {
+        "line": 2764,
+        "text": "ℹ [19/27] Replayed Reactivegas.Invariants"
+      },
+      {
+        "line": 2771,
+        "text": "⚠ [21/27] Replayed Reactivegas.Composition"
+      },
+      {
+        "line": 2781,
+        "text": "ℹ [24/27] Replayed KelGroups.Tests"
+      },
+      {
+        "line": 2807,
+        "text": "⚠ [12/42] Replayed KelGroups.Vote.Validate"
+      },
+      {
+        "line": 2811,
+        "text": "ℹ [14/42] Replayed Reactivegas.Step"
+      },
+      {
+        "line": 2816,
+        "text": "ℹ [17/42] Replayed KelGroups.Invariants"
+      },
+      {
+        "line": 2818,
+        "text": "⚠ [18/42] Replayed KelGroups.Vote.Invariants"
+      },
+      {
+        "line": 2927,
+        "text": "ℹ [19/42] Replayed Reactivegas.Invariants"
+      },
+      {
+        "line": 2966,
+        "text": "⚠ [12/42] Replayed KelGroups.Vote.Validate"
+      },
+      {
+        "line": 2970,
+        "text": "ℹ [14/42] Replayed Reactivegas.Step"
+      },
+      {
+        "line": 2975,
+        "text": "ℹ [17/42] Replayed KelGroups.Invariants"
+      },
+      {
+        "line": 2977,
+        "text": "⚠ [18/42] Replayed KelGroups.Vote.Invariants"
+      },
+      {
+        "line": 3086,
+        "text": "ℹ [19/42] Replayed Reactivegas.Invariants"
+      }
+    ],
+    "mirror": [
+      {
+        "line": 2935,
+        "text": "MIRROR-KIND-CENSUS pred(defn/induct/opaque)=19/5/0 nonpred(defn/induct/opaque)=1926/49/0 nonowned=149440 excluded(thm/axiom/ctor-rec)=1285/0/194 sort-undecided=0"
+      },
+      {
+        "line": 2936,
+        "text": "MIRROR-BELOW-EXCLUDED Reach.below (machinery of discovered induct Reach)"
+      },
+      {
+        "line": 2937,
+        "text": "MIRROR-ROW comune_not_a_member KelGroups.GroupView.isMember comune_not_a_member_corr OK"
+      },
+      {
+        "line": 2938,
+        "text": "MIRROR-ROW conservation conservationB conservation_corr OK"
+      },
+      {
+        "line": 2939,
+        "text": "MIRROR-ROW solvent solventB solvent_corr OK"
+      },
+      {
+        "line": 2940,
+        "text": "MIRROR-ROW insolvent insolventB insolvent_corr OK"
+      },
+      {
+        "line": 2941,
+        "text": "MIRROR-ROW uniquePledges uniquePledgesB uniquePledges_corr OK"
+      },
+      {
+        "line": 2942,
+        "text": "MIRROR-ROW allUniquePledges allUniquePledgesB allUniquePledges_corr OK"
+      },
+      {
+        "line": 2943,
+        "text": "MIRROR-ROW permissionToClose (inline-expr) permissionToClose_corr OK"
+      },
+      {
+        "line": 2944,
+        "text": "MIRROR-ROW escrowHeld escrowHeldB escrowHeld_corr OK"
+      },
+      {
+        "line": 2945,
+        "text": "MIRROR-ROW governanceEnacts governanceEnactsB governanceEnacts_corr OK"
+      },
+      {
+        "line": 2946,
+        "text": "MIRROR-ROW doubleEntry doubleEntryB doubleEntry_corr OK"
+      },
+      {
+        "line": 2947,
+        "text": "MIRROR-ROW canCloseGroup canCloseGroupB canCloseGroup_corr OK"
+      },
+      {
+        "line": 2948,
+        "text": "MIRROR-ROW KelGroups.PendingWellFormed KelGroups.pendingWellFormedB KelGroups.pendingWellFormed_corr OK"
+      },
+      {
+        "line": 2949,
+        "text": "MIRROR-ROW KelGroups.MembersCoherent KelGroups.membersCoherentB KelGroups.membersCoherent_corr OK"
+      },
+      {
+        "line": 2950,
+        "text": "MIRROR-ROW KelGroups.PendingCoherent KelGroups.pendingCoherentB KelGroups.pendingCoherent_corr OK"
+      },
+      {
+        "line": 2951,
+        "text": "MIRROR-ROW KelGroups.WellFormed KelGroups.wellFormedB KelGroups.wellFormed_corr OK"
+      },
+      {
+        "line": 2952,
+        "text": "MIRROR-ROW KelGroups.Enacts KelGroups.enactsB KelGroups.enacts_corr OK"
+      },
+      {
+        "line": 2953,
+        "text": "MIRROR-ROW KelGroups.Vote.QuestionClean KelGroups.Vote.questionCleanB KelGroups.Vote.questionClean_corr OK"
+      },
+      {
+        "line": 2954,
+        "text": "MIRROR-ROW KelGroups.Vote.SweepReady KelGroups.Vote.sweepReadyB KelGroups.Vote.sweepReady_corr OK"
+      },
+      {
+        "line": 2955,
+        "text": "MIRROR-ROW KelGroups.Vote.VoteWellFormed KelGroups.Vote.voteWellFormedB KelGroups.Vote.voteWellFormed_corr OK"
+      },
+      {
+        "line": 2956,
+        "text": "MIRROR-PROMOTED view_mem_of_isMember OK"
+      },
+      {
+        "line": 2957,
+        "text": "MIRROR-PROMOTED isMember_of_view_mem OK"
+      },
+      {
+        "line": 2958,
+        "text": "MIRROR-EXCEPTION KelGroups.Vote.PreservesQuestionSemantics OK"
+      },
+      {
+        "line": 2959,
+        "text": "MIRROR-EXCEPTION authorizedStep OK"
+      },
+      {
+        "line": 2960,
+        "text": "MIRROR-EXCEPTION stalled OK"
+      },
+      {
+        "line": 2961,
+        "text": "MIRROR-EXCEPTION Reach OK"
+      },
+      {
+        "line": 2962,
+        "text": "MIRROR-SUMMARY rows=19 exceptions=4 below=1 orphans-checked=17 discovered=24 promoted=2"
+      },
+      {
+        "line": 2963,
+        "text": "MIRROR-KIND-CENSUS-OK pred=24 excluded-thm=1285 unclassified=0"
+      },
+      {
+        "line": 2964,
+        "text": "MIRROR-CHECK-OK rows=19 exceptions=4 discovered=24 promoted=2 tracked=29"
+      },
+      {
+        "line": 2965,
+        "text": "MIRROR-RECEIPT-WROTE nonce=1788678416820927632"
+      }
+    ],
+    "categories": {
+      "other": 362,
+      "axioms": 1291,
+      "axiom-module": 29,
+      "axiom-theorem": 1285,
+      "warning": 59,
+      "info": 70
+    },
+    "axiomSummary": [
+      {
+        "line": 39,
+        "text": "axiom-sources tracked=29 built=29"
+      },
+      {
+        "line": 56,
+        "text": "axiom-module KelGroups.Mirrors"
+      },
+      {
+        "line": 67,
+        "text": "axiom-module Reactivegas.Mirrors"
+      },
+      {
+        "line": 69,
+        "text": "axiom-theorems walkOcc=1287 distinct=1285 fold=1285"
+      },
+      {
+        "line": 2641,
+        "text": "axiom-theorems count=1285"
+      },
+      {
+        "line": 2642,
+        "text": "axiom-gate: ok"
+      }
+    ],
+    "end": [
+      {
+        "line": 3092,
+        "text": "info: Reactivegas/Invariants.lean:2353:0: 'Reactivegas.checkI57Boundary' depends on axioms: [propext]"
+      },
+      {
+        "line": 3093,
+        "text": "Build completed successfully (42 jobs)."
+      },
+      {
+        "line": 3094,
+        "text": "corpus/economic.json: OK"
+      },
+      {
+        "line": 3095,
+        "text": "corpus/integrated.json: OK"
+      },
+      {
+        "line": 3096,
+        "text": "corpus-check: ntraces=5 nevents=32 nsteps=7 live-bound"
+      }
+    ]
+  },
+  "SUPERSEDED-S2-CI-comment-only.log": {
+    "sha256": "b6a16cfe60e6e07204b4191fd0c93dbdb2c8def107715144cc16ebfef946e34d",
+    "bytes": 175819,
+    "lines": 3098,
+    "dirty": [
+      {
+        "line": 1,
+        "text": "warning: Git tree '/code/reactivegas-66-s4b' is dirty"
+      },
+      {
+        "line": 2,
+        "text": "warning: Git tree '/code/reactivegas-66-s4b' is dirty"
+      }
+    ],
+    "progress": [
+      {
+        "line": 2646,
+        "text": "⚠ [12/27] Replayed KelGroups.Vote.Validate"
+      },
+      {
+        "line": 2650,
+        "text": "ℹ [14/27] Replayed Reactivegas.Step"
+      },
+      {
+        "line": 2655,
+        "text": "ℹ [17/27] Replayed KelGroups.Invariants"
+      },
+      {
+        "line": 2657,
+        "text": "⚠ [18/27] Replayed KelGroups.Vote.Invariants"
+      },
+      {
+        "line": 2766,
+        "text": "ℹ [19/27] Replayed Reactivegas.Invariants"
+      },
+      {
+        "line": 2773,
+        "text": "⚠ [21/27] Replayed Reactivegas.Composition"
+      },
+      {
+        "line": 2783,
+        "text": "ℹ [24/27] Replayed KelGroups.Tests"
+      },
+      {
+        "line": 2809,
+        "text": "⚠ [12/42] Replayed KelGroups.Vote.Validate"
+      },
+      {
+        "line": 2813,
+        "text": "ℹ [14/42] Replayed Reactivegas.Step"
+      },
+      {
+        "line": 2818,
+        "text": "ℹ [17/42] Replayed KelGroups.Invariants"
+      },
+      {
+        "line": 2820,
+        "text": "⚠ [18/42] Replayed KelGroups.Vote.Invariants"
+      },
+      {
+        "line": 2929,
+        "text": "ℹ [19/42] Replayed Reactivegas.Invariants"
+      },
+      {
+        "line": 2968,
+        "text": "⚠ [12/42] Replayed KelGroups.Vote.Validate"
+      },
+      {
+        "line": 2972,
+        "text": "ℹ [14/42] Replayed Reactivegas.Step"
+      },
+      {
+        "line": 2977,
+        "text": "ℹ [17/42] Replayed KelGroups.Invariants"
+      },
+      {
+        "line": 2979,
+        "text": "⚠ [18/42] Replayed KelGroups.Vote.Invariants"
+      },
+      {
+        "line": 3088,
+        "text": "ℹ [19/42] Replayed Reactivegas.Invariants"
+      }
+    ],
+    "mirror": [
+      {
+        "line": 2937,
+        "text": "MIRROR-KIND-CENSUS pred(defn/induct/opaque)=19/5/0 nonpred(defn/induct/opaque)=1926/49/0 nonowned=149440 excluded(thm/axiom/ctor-rec)=1285/0/194 sort-undecided=0"
+      },
+      {
+        "line": 2938,
+        "text": "MIRROR-BELOW-EXCLUDED Reach.below (machinery of discovered induct Reach)"
+      },
+      {
+        "line": 2939,
+        "text": "MIRROR-ROW comune_not_a_member KelGroups.GroupView.isMember comune_not_a_member_corr OK"
+      },
+      {
+        "line": 2940,
+        "text": "MIRROR-ROW conservation conservationB conservation_corr OK"
+      },
+      {
+        "line": 2941,
+        "text": "MIRROR-ROW solvent solventB solvent_corr OK"
+      },
+      {
+        "line": 2942,
+        "text": "MIRROR-ROW insolvent insolventB insolvent_corr OK"
+      },
+      {
+        "line": 2943,
+        "text": "MIRROR-ROW uniquePledges uniquePledgesB uniquePledges_corr OK"
+      },
+      {
+        "line": 2944,
+        "text": "MIRROR-ROW allUniquePledges allUniquePledgesB allUniquePledges_corr OK"
+      },
+      {
+        "line": 2945,
+        "text": "MIRROR-ROW permissionToClose (inline-expr) permissionToClose_corr OK"
+      },
+      {
+        "line": 2946,
+        "text": "MIRROR-ROW escrowHeld escrowHeldB escrowHeld_corr OK"
+      },
+      {
+        "line": 2947,
+        "text": "MIRROR-ROW governanceEnacts governanceEnactsB governanceEnacts_corr OK"
+      },
+      {
+        "line": 2948,
+        "text": "MIRROR-ROW doubleEntry doubleEntryB doubleEntry_corr OK"
+      },
+      {
+        "line": 2949,
+        "text": "MIRROR-ROW canCloseGroup canCloseGroupB canCloseGroup_corr OK"
+      },
+      {
+        "line": 2950,
+        "text": "MIRROR-ROW KelGroups.PendingWellFormed KelGroups.pendingWellFormedB KelGroups.pendingWellFormed_corr OK"
+      },
+      {
+        "line": 2951,
+        "text": "MIRROR-ROW KelGroups.MembersCoherent KelGroups.membersCoherentB KelGroups.membersCoherent_corr OK"
+      },
+      {
+        "line": 2952,
+        "text": "MIRROR-ROW KelGroups.PendingCoherent KelGroups.pendingCoherentB KelGroups.pendingCoherent_corr OK"
+      },
+      {
+        "line": 2953,
+        "text": "MIRROR-ROW KelGroups.WellFormed KelGroups.wellFormedB KelGroups.wellFormed_corr OK"
+      },
+      {
+        "line": 2954,
+        "text": "MIRROR-ROW KelGroups.Enacts KelGroups.enactsB KelGroups.enacts_corr OK"
+      },
+      {
+        "line": 2955,
+        "text": "MIRROR-ROW KelGroups.Vote.QuestionClean KelGroups.Vote.questionCleanB KelGroups.Vote.questionClean_corr OK"
+      },
+      {
+        "line": 2956,
+        "text": "MIRROR-ROW KelGroups.Vote.SweepReady KelGroups.Vote.sweepReadyB KelGroups.Vote.sweepReady_corr OK"
+      },
+      {
+        "line": 2957,
+        "text": "MIRROR-ROW KelGroups.Vote.VoteWellFormed KelGroups.Vote.voteWellFormedB KelGroups.Vote.voteWellFormed_corr OK"
+      },
+      {
+        "line": 2958,
+        "text": "MIRROR-PROMOTED view_mem_of_isMember OK"
+      },
+      {
+        "line": 2959,
+        "text": "MIRROR-PROMOTED isMember_of_view_mem OK"
+      },
+      {
+        "line": 2960,
+        "text": "MIRROR-EXCEPTION KelGroups.Vote.PreservesQuestionSemantics OK"
+      },
+      {
+        "line": 2961,
+        "text": "MIRROR-EXCEPTION authorizedStep OK"
+      },
+      {
+        "line": 2962,
+        "text": "MIRROR-EXCEPTION stalled OK"
+      },
+      {
+        "line": 2963,
+        "text": "MIRROR-EXCEPTION Reach OK"
+      },
+      {
+        "line": 2964,
+        "text": "MIRROR-SUMMARY rows=19 exceptions=4 below=1 orphans-checked=17 discovered=24 promoted=2"
+      },
+      {
+        "line": 2965,
+        "text": "MIRROR-KIND-CENSUS-OK pred=24 excluded-thm=1285 unclassified=0"
+      },
+      {
+        "line": 2966,
+        "text": "MIRROR-CHECK-OK rows=19 exceptions=4 discovered=24 promoted=2 tracked=29"
+      },
+      {
+        "line": 2967,
+        "text": "MIRROR-RECEIPT-WROTE nonce=1788676427576021718"
+      }
+    ],
+    "categories": {
+      "warning": 61,
+      "other": 362,
+      "axioms": 1291,
+      "axiom-module": 29,
+      "axiom-theorem": 1285,
+      "info": 70
+    },
+    "axiomSummary": [
+      {
+        "line": 41,
+        "text": "axiom-sources tracked=29 built=29"
+      },
+      {
+        "line": 58,
+        "text": "axiom-module KelGroups.Mirrors"
+      },
+      {
+        "line": 69,
+        "text": "axiom-module Reactivegas.Mirrors"
+      },
+      {
+        "line": 71,
+        "text": "axiom-theorems walkOcc=1287 distinct=1285 fold=1285"
+      },
+      {
+        "line": 2643,
+        "text": "axiom-theorems count=1285"
+      },
+      {
+        "line": 2644,
+        "text": "axiom-gate: ok"
+      }
+    ],
+    "end": [
+      {
+        "line": 3094,
+        "text": "info: Reactivegas/Invariants.lean:2353:0: 'Reactivegas.checkI57Boundary' depends on axioms: [propext]"
+      },
+      {
+        "line": 3095,
+        "text": "Build completed successfully (42 jobs)."
+      },
+      {
+        "line": 3096,
+        "text": "corpus/economic.json: OK"
+      },
+      {
+        "line": 3097,
+        "text": "corpus/integrated.json: OK"
+      },
+      {
+        "line": 3098,
+        "text": "corpus-check: ntraces=5 nevents=32 nsteps=7 live-bound"
+      }
+    ]
+  },
+  "sameMirrorEnumeration": true,
+  "nonceUtc": "2026-09-06T07:06:56.820Z"
+}

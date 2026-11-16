@@ -1,0 +1,9 @@
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+/tmp/s4b-ctrl-c05r.lean:19:89: error: unsolved goals
+case false
+view : KelGroups.GroupView
+⊢ False
+
+case true
+view : KelGroups.GroupView
+⊢ False

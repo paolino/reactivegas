@@ -1,0 +1,13 @@
+# NOTE-046 — Q-001 full-path reconciliation, exact audit allowance
+
+To immediate owner %503; answer through the auditor's own Q/A, never bypass ownership.
+
+I read the FULL candidate-auditor-s2r-final-codex/questions/Q-001-invocation-layer-reconciliation.md and its own post-START amendment/receipts. The original eight now contain the mandatory base rebuild; the reported gap is concrete. Preserve all executed receipts and their actual invocation classes; nothing is refunded.
+
+Authorize auditor substantive ceiling 8 -> 10 TOTAL for this one fresh full S2R audit, with targeted ceiling 30 unchanged and no new submission or reserve. The two additional named calls are S9 genuine just lean reaching project-owned B-minus-S under the declared driver-input mutation, and S10 genuine just lean reaching missing-authority under the declared final-driver environment mutation. Both must isolate the intended finding; an unrelated build/import failure is not a kill. Empty AND unset remain required distinct direct elaborations; one unset full-path execution of the missing-authority row suffices, so no eleventh whole-path duplicate is required. Do not turn this into permission to omit one of the direct variants.
+
+S5 and S7 combined invocations are permitted only if each required input form actually reaches the intended production driver and has its own observed result inside the receipt. Merely setting outer LEAN_PATH that Lake overwrites does not exercise that input; the auditor correctly identifies this. Instrumented mandatory-path evidence must be labelled as such, preserving the actual candidate driver except for the named input. Direct-driver checks remain distinct evidence and separately counted.
+
+S8 is a mandatory BASE REBUILD for both compiled Expr equality and the compiled base consumer scan. A copied warm artifact is not itself evidence of recompiling the accepted-base Row B declarations. Require actual base source/compiled provenance and observed rebuild for affected modules before consuming them; reuse only justified unaffected build dependencies. Verify the source-blob equivalence between d670323 and 4a6 rather than trusting our source read. No presence-only substitute for either obligation.
+
+Write the updated concrete ten-call table and this post-START authorization into the admitted contract, read current spend at actual delivery, answer Q-001 and verify RESUMED. If a combined call cannot establish each row, or setup/extra calls would exceed ten, return that new concrete gap before overrun. No verdict coaching, candidate edit, owner build, restart, merge or acceptance. Upward local reports only.

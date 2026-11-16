@@ -1,0 +1,17 @@
+  detached worktree /code/reactivegas-sim-fable-audit-s62sim-s2 (worktree of /co… 264K / 500K
+    2. F4 remainder / INV-2 — chip path and /\s+/g are fixed ("01" elects as a
+    string). data-goto-person and digit-shaped data-act u still Number("01")→1;
+    pruneNav then drops the view.
+
+    F1–F3, F5, live F6, and F7 are closed. A-001 weakened the probe text layer (a
+    fake const NAME = {"removeMember"} greens it); executable layers still kill a
+    live removeMember branch.
+
+    Submission 2 of 2. Next submission forbidden. Blocking rows force re-cut.
+
+    Worked for 15m33s                                                       stop  [hooks: 1]
+                                                                                              █
+ ╭───────────────────────────────────────────────────────────────────────────────────────────╮
+ │ ❯                                                                                         │
+ ╰─────────────────────────────────────────────────────── Grok 4.6 (xhigh) · always-approve ─╯
+ Shift+Tab:mode  │  Ctrl+x:shortcuts

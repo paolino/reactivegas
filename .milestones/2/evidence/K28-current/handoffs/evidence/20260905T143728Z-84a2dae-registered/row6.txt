@@ -1,0 +1,5 @@
+verdicts flow only through the boundary
+replayed log reproduces live state exactly
+unknown approval refused over pendingBase
+voted validation covers both arms exactly
+pending entries survive close and reopen

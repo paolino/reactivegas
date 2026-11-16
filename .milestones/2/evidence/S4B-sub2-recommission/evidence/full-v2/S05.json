@@ -1,0 +1,29 @@
+{
+  "id": "S05",
+  "argv": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=30s",
+    "1800s",
+    "nix",
+    "develop",
+    "--quiet",
+    "-c",
+    "just",
+    "lean"
+  ],
+  "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S05",
+  "charge": "substantive",
+  "launched": true,
+  "start": "2026-09-06T05:14:19.110Z",
+  "spend": {
+    "substantive": 6,
+    "targeted": 5
+  },
+  "obligation": "explicit theorem-kind arm omitted: permanent classifier must name actual unclassified declarations",
+  "finish": "2026-09-06T05:15:34.916Z",
+  "exit": 1,
+  "signal": null,
+  "stdoutSha256": "4a15cd9ff05c75aaa1a5abba584f995f1a8f8f2c6f7959c39c492061c6314284",
+  "stderrSha256": "1be963c8906455aa7317f4c0d17bb81eb41971ae3c0dc06b8fd3c26404d70174"
+}

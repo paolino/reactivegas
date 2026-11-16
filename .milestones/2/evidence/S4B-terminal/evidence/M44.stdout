@@ -1,0 +1,39 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M44.lean:238:21: warning: unused variable `θ`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M44.lean:253:6: error: Application type mismatch: The argument
+  (opensOpenIff θ view gs).mp h.opensOpen
+has type
+  ∀ (qid : QuestionId),
+    qid ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup qid gs.openQuestions with
+        | some q => decide (verdictOf θ view q = Verdict.open)
+        | none => true) =
+        true
+but is expected to have type
+  ∀ (x : QuestionId),
+    x ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup x gs.openQuestions with
+        | some q => decide (verdictOf (fun x => 0) view q = Verdict.open)
+        | none => true) =
+        true
+in the application
+  ⟨(sweepReady_corr view gs).mp h.toSweepReady, (opensOpenIff θ view gs).mp h.opensOpen⟩
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M44.lean:255:74: error: Application type mismatch: The argument
+  ho
+has type
+  ∀ (x : QuestionId),
+    x ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup x gs.openQuestions with
+        | some q => decide (verdictOf (fun x => 0) view q = Verdict.open)
+        | none => true) =
+        true
+but is expected to have type
+  ∀ (qid : QuestionId),
+    qid ∈ List.map Prod.fst gs.openQuestions →
+      (match assocLookup qid gs.openQuestions with
+        | some q => decide (verdictOf θ view q = Verdict.open)
+        | none => true) =
+        true
+in the application
+  (opensOpenIff θ view gs).mpr ho

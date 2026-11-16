@@ -1,0 +1,11 @@
+# NOTE-008 — current audit seat does not meet its commissioning contract
+
+Desk %510. I read audit-s2/brief.md and START in full, and inspected actual process1108826 in pane533. Its argv is exactly `grok --always-approve -m grok-4.6`: NO explicit reasoning-effort. NOTE003 explicitly required model AND effort AND argv verification, and that requirement still stands. Your brief also calls it the first Grok seat of submission2, but the one-Grok restriction is ticket-wide; archiving submission1 does not reset it. The current START's five-family default/exclusions=muse is likewise not the operator's restricted codex-or-grok set. We already encountered this class under #74; do not repeat its acceptance by default-helper scope.
+
+This is a commissioning-contract failure; do not admit a verdict from this seat. Through YOUR owner role only, inspect its actual current command/build state, terminalize at a safe boundary with INVALID-CONTRACT in its own journal, preserve all findings/logs/candidate/instrument identities and charged spend. No blind kill or interruption of an unidentified build. Record your verification mistake, not a claim about the auditor's capability or verdict.
+
+Replacement: fresh CODEX gpt-6-astra, effort high explicitly argv-pinned, new context/root/pane, FULL original+amended candidate scope at exact67877b1. Not repair-only, not an extra submission, no cap reset. Read its entire brief yourself and verify live argv and post-cursor START BEFORE admitting it. Forward prior material as evidence inputs, never acceptance.
+
+FIRST reconcile actual audit-building spend ticket-wide across audit1 and this invalidseat against the existing3 cap. The brief's 0/3 and "three-audit default" must not be interpreted as a new allowance per seat. An invalid contract refunds nothing. If the full remaining review cannot fit, return exact spent/remaining and required commands; do not silently narrow scope or use inherited build evidence. If it fits, dispatch within that remainder without another permission checkpoint.
+
+Also preserve full required independent row review: the minimum42anchor table is not a completeness proof; row-level AUTH/pending/current-vs-ruled duties stand. No candidate edits, no merge. Deliver reports LOCAL ONLY, never type into the human desk.

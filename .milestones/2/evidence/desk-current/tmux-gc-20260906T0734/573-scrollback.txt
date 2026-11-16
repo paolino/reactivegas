@@ -1,0 +1,527 @@
+ defects PLUS full remaining assessment with genuine unresolved rows kept OPEN and audit-side spend stated separately;
+ zero execution/edits/budget-reset/Phase-2/measurement-grant"
+
+ ... (1 earlier lines, ctrl+o to expand)
+ sub2 6/6 OK
+ 710837df8fde02f94a22dac3af7922319b7ac62f5dacc113e64482ed88dbacc8
+ handoffs/submission-1/OPMAP-v8-requirement-verdict-grounds.txt
+ 0cd75c634b90972d9b46639d6c88dbbc6b1a307c618df732e096859952b95248
+ handoffs/submission-2/OPMAP-v8-requirement-verdict-grounds.txt
+
+ Took 0.0s
+
+
+
+ $ cd /code/reactivegas-66-s3-repair/lean && cat -n KelGroups/Vote/State.lean | sed -n '1,45p;76,120p'
+
+ ... (80 earlier lines, ctrl+o to expand)
+    111     | .positive => if question.assents.all (isResponsabile · view) then .tally else .franchiseChange
+    112     | .negative => if question.dissents.all (isResponsabile · view) then .tally else .franchiseChange
+    113     | .open => .tally
+    114
+    115   end KelGroups.Vote
+
+ Took 0.0s
+
+
+ Analyzing Vote/State.
+
+ Pinpointing the proof-shape mismatch from the ≥ to > mutant in the threshold branch.
+
+ Reclassifying the two (P) rows as predicted-survive after confirming induction unifies with the mutant definition.
+
+ Reclassifying two OP-52 rows to predicted-survive after confirming the mutant fold unifies with the proof term.
+
+ Extending survival reclassification to tryEnactBase and its hook after confirming the threshold condition is unused in
+ the proofs.
+
+
+ $ cd /code/reactivegas-66-s3-repair/lean && sed -n '664,696p' KelGroups/Invariants.lean; echo ===ENACT===; sed -n
+ '183,215p' KelGroups/Invariants.lean
+
+ ... (62 earlier lines, ctrl+o to expand)
+       · exact assocAdjust_property key (fun member : Member => { member with roles })
+           gs.members (fun candidate member => member.key = candidate)
+           (by intro member coherent; exact coherent) h.membersCoherent
+
+ theorem finishEnact_preserves_wellFormed (gs : GroupState α) (proposalId : ProposalId)
+
+ Took 0.0s
+
+
+
+ $ cd /code/reactivegas-66-s3-repair/lean && sed -n '379,400p' KelGroups/Invariants.lean; echo ===TALLY===; sed -n
+ '1017,1040p' KelGroups/Vote/Invariants.lean
+
+ ... (42 earlier lines, ctrl+o to expand)
+       · have heff : effectedState gs signer (.openQuestion questionId kind) = gs := by
+           simp [effectedState, hguard]
+         rw [heff] at hk
+         exact Or.inl hk
+   | cast questionId ballot =>
+
+ Took 0.0s
+
+
+ Analyzing a proof failure where a mutant changes erase behavior and breaks construction of Enacts in the removeMember
+ case.
+
+ Identifying why the erase-identity mutant breaks Enacts construction and tally lemma simplification.
+
+
+ $ cd /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-repair && sed -n '64,70p;84,87p;91,96p'
+ admitted/OPMAP-v7-requirement-verdict-grounds.txt | cut -c1-90
+
+ ... (12 earlier lines, ctrl+o to expand)
+ OP-60|KelGroups.members_change_implies_enacted|KILL|MUT:Fold.lean:14:assocErase-key→gs.m
+ OP-61|KelGroups.finishEnact_preserves_wellFormed|KILL|MUT:Fold.lean:21:assocErase-proposal
+ OP-62|KelGroups.enact_implies_threshold_met|OBSERVED|MUT:Fold.lean:37:length-≥-majority�
+ OP-62|KelGroups.tryEnactDetailed_enactment_threshold_met|KILL|MUT:Fold.lean:37:length-≥-
+ OP-62|KelGroups.tryEnact_preserves_wellFormed|KILL|MUT:Fold.lean:37:length-≥-majority→
+
+ Took 0.0s
+
+
+ Generating OPMAP-v9 by updating mkopmap9 with new verdicts and evidence columns for specified line mappings.
+
+ Verifying submission-3 contents and audit-side spend while updating evidence columns and per-row atoms.
+
+
+ write /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-repair/work/mkopmap9.js
+
+ const fs = require("fs");
+ const IN = "admitted/OPMAP-v7-requirement-verdict-grounds.txt";
+ const OUT = "handoffs/submission-3/OPMAP-v9-requirement-verdict-grounds.txt";
+ const lines = fs.readFileSync(IN, "utf8").split("\n");
+ if (lines.length !== 207 && !(lines.length === 208 && lines[207] === "")) {
+   console.error("ABORT: expected 207 lines, got " + lines.length); process.exit(1);
+ }
+ const N = 207, out = [], errors = [];
+ const openExt = {}; for (let k = 0; k < 31; k++) openExt[170 + k] = k + 1;
+ const PROOFFAIL = {25:1, 34:1, 64:1, 65:1, 66:1, 67:1, 68:1, 87:1, 91:1, 92:1, 93:1, 95:1, 96:1};
+ ... (144 more lines, 154 total, ctrl+o to expand)
+
+
+
+ $ cd /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-repair && mkdir -p handoffs/submission-3 && timeout 60 node
+ work/mkopmap9.js && awk -F'|' '{print $3}' handoffs/submission-3/OPMAP-v9-requirement-verdict-grounds.txt | sort | uniq
+ -c; echo ===EVID===; awk -F'|' '{print $NF}' handoffs/submission-3/OPMAP-v9-requirement-verdict-grounds.txt | sort | uniq
+ -c; echo ===BARE-RED-CHECK===; grep -cE '(?<!PREDICTED-)\bRED\b'
+ handoffs/submission-3/OPMAP-v9-requirement-verdict-grounds.txt; echo "(expect only lines containing PREDICTED-RED etc;
+ verifying no KILL bare:)"; awk -F'|' '$3=="KILL" && $0 ~ /(?<!PREDICTED-)\bRED\b/ && $0 !~
+ /PREDICTED-RED|PREDICTED-GREEN/ {print NR}' handoffs/submission-3/OPMAP-v9-requirement-verdict-grounds.txt; echo
+ "(empty=clean)" (timeout 90s)
+
+ ... (17 earlier lines, ctrl+o to expand)
+ ===BARE-RED-CHECK===
+ 0
+ (expect only lines containing PREDICTED-RED etc; verifying no KILL bare:)
+ (empty=clean)
+ grep: warning: ? at start of expression
+
+ Took 0.1s
+
+
+
+ $ cd /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-repair && echo "KILL rows with PREDICTED-RED:"; awk -F'|'
+ '$3=="KILL"' handoffs/submission-3/OPMAP-v9-requirement-verdict-grounds.txt | grep -c 'PREDICTED-RED'; echo "KILL rows
+ with bare RED but no PREDICTED prefix (fixed-string scan):"; awk -F'|' '$3=="KILL"{print}'
+ handoffs/submission-3/OPMAP-v9-requirement-verdict-grounds.txt | grep 'RED' | grep -vc 'PREDICTED-RED\|PREDICTED-GREEN';
+ awk -F'|' 'NF!=7 && NF!=6 {print NR": "NF}' handoffs/submission-3/OPMAP-v9-requirement-verdict-grounds.txt; echo
+ col-check-done
+
+ KILL rows with PREDICTED-RED:
+ 85
+ KILL rows with bare RED but no PREDICTED prefix (fixed-string scan):
+ 0
+ col-check-done
+
+ Took 0.0s
+
+
+
+ $ cd /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-repair && cp handoffs/submission-2/A-ASSESSMENT-51.txt
+ handoffs/submission-3/A-ASSESSMENT-51.txt && cp handoffs/submission-2/ELAB-GREEN-43.txt
+ handoffs/submission-3/ELAB-GREEN-43.txt && cp handoffs/submission-2/OPEN-EXTENTS-31.txt
+ handoffs/submission-3/OPEN-EXTENTS-31.txt && cp handoffs/submission-2/COST-MODEL.md handoffs/submission-3/COST-MODEL.md
+ && ls handoffs/submission-3/
+
+ A-ASSESSMENT-51.txt
+ COST-MODEL.md
+ ELAB-GREEN-43.txt
+ OPEN-EXTENTS-31.txt
+ OPMAP-v9-requirement-verdict-grounds.txt
+
+ Took 0.0s
+
+
+
+ edit /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-repair/handoffs/submission-3/A-ASSESSMENT-51.txt
+
+     ...
+   9 drops comune credit only, donate proof :1107-1109 rw bal_bump_ne removes bump).
+  10
+  11 Format: MAPLINE | OP | requirement | ASSESS | carrier-or-reason | sites
+  12
+ -13 L2 | OP-11..24-COLL | conservation_preserved | PREDICTED-KILL(a) per-arm, NOT observed | all 14 arms carry own fund
+ equations: openPurchase escrowSum_cons; grantPermission pullCollection_sum; denyPermission
+ refundAll_sum+sumPledges_append+pullCollection_sum; deposit bump_sum x2; withdraw bump_sum x2; transferCassa bump_sum x2;
+ pledge bump_sum+escrowSum_cons; acceptPledge escrowSum_cons; refusePledge bump_sum+escrowSum_cons; correctPledge
+ bump_sum+escrowSum_cons; closePurchase bump_sum; failPurchase refundAll_sum+sumPledges_append; donate bump_sum x2;
+ backdonate sumBal_foldl_bump+bump_sum (Invariants.lean:430-561); conservation Predicates.lean:22 constrains all three
+ sums | Step.lean:44-145
+ +13 L2r3 | OP-11..24-COLL | conservation_preserved | MIXED per-arm (CORRECTED submission 3; v1/v2 claimed all-14 (a)) |
+ THEOREM-FAIL arms (mutant moves money, conservation proposition false at witness — 10): denyPermission
+ refundAll_sum+sumPledges_append+pullCollection_sum; deposit bump_sum x2; withdraw bump_sum x2; transferCassa bump_sum x2;
+ backdonate sumBal_foldl_bump+bump_sum; pledge bump_sum+escrowSum_cons (conti debit dropped, escrow kept); refusePledge
+ bump_sum+escrowSum_cons (refund dropped, escrow dropped); correctPledge bump_sum+escrowSum_cons (diff dropped, accepted
+ amount moved); closePurchase bump_sum (casse spend dropped, escrow deleted); failPurchase
+ refundAll_sum+sumPledges_append. PROOF-FAIL arms (mutant moves no money; conservation stays true; RED only via broken
+ inversion/state equation — 4): openPurchase (new collection escrowOf=0: accepted=[],pending=[]; State.lean:76-79);
+ grantPermission (Step.lean:55 pure collections permitted-flag update, the OP-11 case); donate under named OP-22 guard
+ mutant (success-path money unchanged); acceptPledge (pending→accepted move inside one escrowOf sum). Arm classification
+ is relative to NAMED mutants; gap: no donate-EFFECT mutant exists in the map. conservation Predicates.lean:22
+ (casse-conti-escrow=0). openPurchase escrowSum_cons; grantPermission pullCollection_sum; denyPermission
+ refundAll_sum+sumPledges_append+pullCollection_sum; deposit bump_sum x2; withdraw bump_sum x2; transferCassa bump_sum x2;
+ pledge bump_sum+escrowSum_cons; acceptPledge escrowSum_cons; refusePledge bump_sum+escrowSum_cons; correctPledge
+ bump_sum+escrowSum_cons; closePurchase bump_sum; failPurchase refundAll_sum+sumPledges_append; donate bump_sum x2;
+ backdonate sumBal_foldl_bump+bump_sum (Invariants.lean:430-561); conservation Predicates.lean:22 constrains all three
+ sums | Step.lean:44-145
+  14 L3 | OP-11..24-COLL | step_authorized | CASCADE not (a); statement state-independent | authorizedStep
+ Predicates.lean:72 ignores both states, extracts only guard conjuncts; effect mutants leave guards intact so statement
+ stays TRUE; predicted RED only via consumed step_*_inv lemmas which fail under their own arm mutants (14 named upstreams:
+ step_grant/deny/pledge/accept/refuse/correct/close/fail/open/deposit/withdraw/transferCassa/donate/backdonate_inv);
+ reclass OBSERVED-mechanism | Predicates.lean:67-80; Invariants.lean:561-637
+  15 L7 | OP-12 | step_pledge_inv | CONFIRM(a) | goal s' equation projects conti := bump s.conti u (-v), the dropped line
+ | Step.lean:102; Invariants.lean:227
+  16 L8 | OP-13 | step_accept_inv | CONFIRM(a) | goal projects accepted-move lines | Step.lean:109-110;
+ Invariants.lean:247
+  17 L9 | OP-14 | step_refuse_inv | CONFIRM(a) | goal projects conti refund line | Step.lean:115-117; Invariants.lean:265
+     ...
+  60 L114 | OP-67b | KelGroups.emptyState_wellFormed | CONFIRM(a) | goal WellFormed(emptyState initial); mutant
+ members:=[]->dup-pair (any duplicate pair suffices, exact content frozen at authorization); Nodup false outright, simp
+ goals fail | State.lean:35 (map :34 off-by-one, repaired); Invariants.lean:162
+  61 L115 | OP-67G | governance_enacts_windUpAdmin | CONFIRM(a) | goal no collection names u; new mutant
+ collections:=rest->s.collections keeps u-collection, false at witness | Step.lean:254-259 (mutated line :259);
+ Invariants.lean:637
+  62 L201 | OP-42K | KelGroups.Vote.questions_partition | CONFIRM(a) + CORROBORATED | goal
+ closed-Nodup/disjointness/qid-preservation over foldVote; mutant :77 closed-append-drop loses closed qids (last conjunct
+ false at close-event witness); CORROBORATED by t54 PARTITION historical receipt (silent-deletion mutant ea988.., RED
+ 7846a04f) but exact-atom identity NOT established -> not RECEIPT-BOUND | Vote/Fold.lean:77; Vote/Invariants.lean:818
+  63 L206 | OP-56 | KelGroups.validateDirectAdmission_ok | CONFIRM(a) + branch-verified | mutant isMember-check->False
+ admits existing member, isMember=false conjunct false at witness; siblings GREEN verified: non_admin proof uses
+ isAdmin=false path only, membership proof hypotheses unsatisfiable-or-preserved under dup admission | Validate.lean:147
+ (map :148 off-by-one, repaired); Invariants.lean:628
+ +64 APPENDIX R3 (submission 3) — (P)-row survive findings by owned source reads; parent's 2-sampled (P)-specificity claim
+ corrected where stated.
+ +65 R3-1 OP-52 foldFrom_preserves_qid + foldFrom_preserves_wellFormed (v7 L69-70): PREDICTED-SURVIVE, (P) WITHDRAWN.
+ Mutant Vote/Fold.lean:137-138 accumulator→fixed-state makes every fold step a single applyVoteEvent from initial:
+ statements stay true (single steps preserve qids/WellFormed), and the induction proofs unify against the mutant
+ definition (cons-case exact passes applyVoteEvent θ view initial …, exactly the mutant unfolding). No
+ induction-unification mismatch exists. Only OP-52B foldVote_append (equation) is killed by this mutant.
+ +66 R3-2 OP-58 tryEnactBase_preserves_absence + tryEnactBase_runs_hook (v7 L84-85): PREDICTED-SURVIVE, (P) WITHDRAWN.
+ Both proofs (unfold+split on lookupPendingBase, threshold split, commitBaseChange_ok consumption, noConfusion) never name
+ the >= shape; replacing it with > changes no consumed term. Absence unaffected; hook still runs whenever change is
+ reported.
+ +67 R3-3 KEPT as PROOF-FAIL (statement true, proof script breaks at named obligation): OP-50 trio (heff simp
+ [effectedState,hlook] fails under cast→gs), OP-51 pair (sweepClosures_wellFormed exact-type mismatch under
+ ok-arm→effectedState-only), OP-58C (assocLookup_erase_of_none exact-type mismatch), OP-60 pair (assocErase_property
+ mismatch; mutant text shape-conditioned, freeze exact at authorization), OP-61 (same class), OP-62 pair (threshold exact
+ `>` vs `>=` non-defeq; split-shape per parent source read), OP-25 + OP-39-tally (owned reads).
+ +68 R3-4 FULL-reassessment principle applied to every CONFIRM(a): classification is PER ROW, never per mutant — the same
+ mutant is THEOREM-FAIL for the inversion row whose equation it falsifies and PROOF-FAIL for the conservation arm whose
+ proposition it preserves (OP-11/grant, OP-22/donate, OP-13/accept analogues). All 38 CONFIRM(a) rows re-checked against
+ this principle; equations genuinely false at witness in each.
+  64 # End: 51 rows. CONFIRM(a) 38 (4 conditional: L22 L71 L72 L73), RECLASS 3 (L21->c, L34->P, OP-25->P input),
+ PREDICTED-SURVIVE 3 (L40 L61 L63), CASCADE 2 (L3 L43), WITHDRAWN-DUPLICATE 2 (L89 L90), CORROBORATED 1 (L201).
+
+
+
+ $ cd /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-repair && grep -n '^L2'
+ handoffs/submission-3/A-ASSESSMENT-51.txt | cut -c1-400
+
+ ... (21 earlier lines, ctrl+o to expand)
+ 7846a04f) but exact-atom identity NOT established -> not RECEIPT-BOUND |
+ 63:L206 | OP-56 | KelGroups.validateDirectAdmission_ok | CONFIRM(a) + branch-verified | mutant isMember-check->False
+ admits existing member, isMember=false conjunct false at witness; siblings GREEN verified: non_admin proof uses
+ isAdmin=false path only, membership proof hypotheses unsatisfiable-or-preserved under dup admission | Validate.lean:147
+ (map :148 off-by-one, repaired); Invariants.lean:62
+
+ Took 0.0s
+
+
+
+ $ cd /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-repair && sed -n '13,15p'
+ handoffs/submission-3/A-ASSESSMENT-51.txt | cut -c1-600; echo; sed -n '13,15p' handoffs/submission-3/A-ASSESSMENT-51.txt
+ | wc -c
+
+ ... (10 earlier lines, ctrl+o to expand)
+ reclass OBSERVED-mechanism | Predicates.lean:67-80; Invariants.lean:561-637
+ L7 | OP-12 | step_pledge_inv | CONFIRM(a) | goal s' equation projects conti := bump s.conti u (-v), the dropped line |
+ Step.lean:102; Invariants.lean:227
+
+ 2542
+
+ Took 0.0s
+
+
+
+ $ cd /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-repair && awk 'NR>=13 && NR<=16'
+ handoffs/submission-3/A-ASSESSMENT-51.txt | cut -c200-700
+
+ ... (4 earlier lines, ctrl+o to expand)
+ deleted); failPurchase refundAll_sum+sumPledges_app
+ s intact so statement stays TRUE; predicted RED only via consumed step_*_inv lemmas which fail under their own arm
+ mutants (14 named upstreams:
+ step_grant/deny/pledge/accept/refuse/correct/close/fail/open/deposit/withdraw/transferCassa/donate/backdonate_inv);
+ reclass OBSERVED-mechanism | Predicates.lean:67-80; Invariants.lean:561-637
+
+ Took 0.0s
+
+
+
+ $ cd /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-repair && grep -n 'escrowSum_cons\]$'
+ handoffs/submission-3/A-ASSESSMENT-51.txt | head -3; grep -n 'backdonate sumBal'
+ handoffs/submission-3/A-ASSESSMENT-51.txt | head; awk 'NR==13' handoffs/submission-3/A-ASSESSMENT-51.txt | tail -c 800
+
+ ... (19 earlier lines, ctrl+o to expand)
+ escrowSum_cons; grantPermission pullCollection_sum; denyPermission refundAll_sum+sumPledges_append+pullCollection_sum;
+ deposit bump_sum x2; withdraw bump_sum x2; transferCassa bump_sum x2; pledge bump_sum+escrowSum_cons; acceptPledge
+ escrowSum_cons; refusePledge bump_sum+escrowSum_cons; correctPledge bump_sum+escrowSum_cons; closePurchase bump_sum;
+ failPurchase refundAll_sum+sumPledges_append; donate bump_sum x2; backdonate sumBal_foldl_bump+bump_sum
+ (Invariants.lean:430-561); conservation Predicates.lean:22 constrains all three sums | Step.lean:44-145
+
+ Took 0.0s
+
+
+
+ edit /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-repair/handoffs/submission-3/A-ASSESSMENT-51.txt
+
+     ...
+   9 drops comune credit only, donate proof :1107-1109 rw bal_bump_ne removes bump).
+  10
+  11 Format: MAPLINE | OP | requirement | ASSESS | carrier-or-reason | sites
+  12
+ -13 L2r3 | OP-11..24-COLL | conservation_preserved | MIXED per-arm (CORRECTED submission 3; v1/v2 claimed all-14 (a)) |
+ THEOREM-FAIL arms (mutant moves money, conservation proposition false at witness — 10): denyPermission
+ refundAll_sum+sumPledges_append+pullCollection_sum; deposit bump_sum x2; withdraw bump_sum x2; transferCassa bump_sum x2;
+ backdonate sumBal_foldl_bump+bump_sum; pledge bump_sum+escrowSum_cons (conti debit dropped, escrow kept); refusePledge
+ bump_sum+escrowSum_cons (refund dropped, escrow dropped); correctPledge bump_sum+escrowSum_cons (diff dropped, accepted
+ amount moved); closePurchase bump_sum (casse spend dropped, escrow deleted); failPurchase
+ refundAll_sum+sumPledges_append. PROOF-FAIL arms (mutant moves no money; conservation stays true; RED only via broken
+ inversion/state equation — 4): openPurchase (new collection escrowOf=0: accepted=[],pending=[]; State.lean:76-79);
+ grantPermission (Step.lean:55 pure collections permitted-flag update, the OP-11 case); donate under named OP-22 guard
+ mutant (success-path money unchanged); acceptPledge (pending→accepted move inside one escrowOf sum). Arm classification
+ is relative to NAMED mutants; gap: no donate-EFFECT mutant exists in the map. conservation Predicates.lean:22
+ (casse-conti-escrow=0). openPurchase escrowSum_cons; grantPermission pullCollection_sum; denyPermission
+ refundAll_sum+sumPledges_append+pullCollection_sum; deposit bump_sum x2; withdraw bump_sum x2; transferCassa bump_sum x2;
+ pledge bump_sum+escrowSum_cons; acceptPledge escrowSum_cons; refusePledge bump_sum+escrowSum_cons; correctPledge
+ bump_sum+escrowSum_cons; closePurchase bump_sum; failPurchase refundAll_sum+sumPledges_append; donate bump_sum x2;
+ backdonate sumBal_foldl_bump+bump_sum (Invariants.lean:430-561); conservation Predicates.lean:22 constrains all three
+ sums | Step.lean:44-145
+ +13 L2r3 | OP-11..24-COLL | conservation_preserved | MIXED per-arm (CORRECTED submission 3; v1/v2 claimed all-14 (a)) |
+ THEOREM-FAIL arms (mutant moves money, conservation proposition false at witness — 10): denyPermission
+ refundAll_sum+sumPledges_append+pullCollection_sum; deposit bump_sum x2; withdraw bump_sum x2; transferCassa bump_sum x2;
+ backdonate sumBal_foldl_bump+bump_sum; pledge bump_sum+escrowSum_cons (conti debit dropped, escrow kept); refusePledge
+ bump_sum+escrowSum_cons (refund dropped, escrow dropped); correctPledge bump_sum+escrowSum_cons (diff dropped, accepted
+ amount moved); closePurchase bump_sum (casse spend dropped, escrow deleted); failPurchase
+ refundAll_sum+sumPledges_append. PROOF-FAIL arms (mutant moves no money; conservation stays true; RED only via broken
+ inversion/state equation — 4): openPurchase (new collection escrowOf=0: accepted=[],pending=[]; State.lean:76-79);
+ grantPermission (Step.lean:55 pure collections permitted-flag update, the OP-11 case); donate under named OP-22 guard
+ mutant (success-path money unchanged); acceptPledge (pending→accepted move inside one escrowOf sum). Arm classification
+ is relative to NAMED mutants; gap: no donate-EFFECT mutant exists in the map. conservation Predicates.lean:22
+ (casse-conti-escrow=0). [v1/v2 undifferentiated carrier list superseded by the split above; full text preserved in
+ submission-2 bytes] | Step.lean:44-145; Invariants.lean:430-561
+  14 L3 | OP-11..24-COLL | step_authorized | CASCADE not (a); statement state-independent | authorizedStep
+ Predicates.lean:72 ignores both states, extracts only guard conjuncts; effect mutants leave guards intact so statement
+ stays TRUE; predicted RED only via consumed step_*_inv lemmas which fail under their own arm mutants (14 named upstreams:
+ step_grant/deny/pledge/accept/refuse/correct/close/fail/open/deposit/withdraw/transferCassa/donate/backdonate_inv);
+ reclass OBSERVED-mechanism | Predicates.lean:67-80; Invariants.lean:561-637
+  15 L7 | OP-12 | step_pledge_inv | CONFIRM(a) | goal s' equation projects conti := bump s.conti u (-v), the dropped line
+ | Step.lean:102; Invariants.lean:227
+  16 L8 | OP-13 | step_accept_inv | CONFIRM(a) | goal projects accepted-move lines | Step.lean:109-110;
+ Invariants.lean:247
+  17 L9 | OP-14 | step_refuse_inv | CONFIRM(a) | goal projects conti refund line | Step.lean:115-117; Invariants.lean:265
+     ...
+
+
+
+ edit /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-repair/handoffs/submission-3/ELAB-GREEN-43.txt
+
+     ...
+   8 admissionPreservation_holds :2347 (check := admissionPreservationReachable :2303 = checkAdminAdmissionReachable &&
+ checkAppMembersPreservation) |
+   9 base_change_can_close_without_ballot :1587 (checkV3BaseReachable :1517) |
+  10 base_departure_applies_cleanup :1583 (checkBaseCleanupReachable :1479) |
+  11 base_recompute_reachable_holds :1591 (checkBaseRecomputeReachable :1541) |
+ -12 canonical_economy_holds :2325 (checkCanonicalEconomy :1959, calls stepEvent backdonate directly +
+ checkCanonicalEconomyMutant) |
+ +12 canonical_economy_holds :2325 (checkCanonicalEconomy :1959, calls stepEvent backdonate directly +
+ checkCanonicalEconomyMutant) — REQUIREMENT CLAIM CORRECTED submission 3: this check IS value-sensitive to the OP-23 atom
+ (foldl-drop leaves alice==0/bob==0, decide fails); its OPEN row is converted to PREDICTED-KILL(c) in OPMAP-v9
+ (PROOF-BLOCKED at :410 in execution). The ELAB-STATIC classification under OP-68 stands (shape claim only). |
+  13 comuneThresholdSanity_holds :2349 (check := comuneIdentityAndThresholdSanity :2319, pure sanity conjunct, no
+ production call) |
+  14 direct_admission_only_holds :1589 (checkDirectAdmissionOnly :1383) |
+  15 exhaustive_inventories_hold :2328 (checkExhaustiveInventories :1980, refs validateProposal) |
+  16 i57_auth_holds :2334 | i57_boundary_holds :2331 | i57_disjoint_holds :2337 |
+     ...
+
+
+
+ $ cd /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-repair && node -e '
+ const fs=require("fs");
+ const p="handoffs/submission-3/OPEN-EXTENTS-31.txt";
+ let t=fs.readFileSync(p,"utf8");
+ // verdict cross-references: extents converting to KILL vs standing OPEN
+ const conv={3:1,4:1,5:1,6:1,8:1,9:1,10:1,11:1,13:1,16:1,17:1,18:1,19:1,20:1,22:1,24:1,26:1,27:1,28:1,29:1,31:1};
+ t=t.replace(/^# OPEN-EXTENTS-31.*/m,"# OPEN-EXTENTS-31r3 — extent record retained for all 31; VERDICT now lives in
+ OPMAP-v9 (21 rows converted to PREDICTED-KILL(c), 10 stay OPEN). Each row carries VALUE (check-value sensitivity) vs
+ REACH (execution reachability).");
+ fs.writeFileSync(p,t);
+ const lines=t.split("\n");
+ let n=0;
+ for(let i=0;i<lines.length;i++){
+   const m=lines[i].match(/^(\d+)\. (\S+) \|/);
+   if(m){ n++; const k=+m[1];
+     if(conv[k] && lines[i].indexOf("VERDICT:")<0) lines[i]+=" VERDICT:KILL(c)-in-OPMAP-v9 (value-flip named there).";
+     else if(!conv[k] && lines[i].indexOf("VERDICT:")<0) lines[i]+=" VERDICT:OPEN-stands (value-insensitive; see B-audit
+ below).";
+   }
+ }
+ let out=lines.join("\n");
+ out+="\n## B-AUDIT (submission 3) — reachability-under-failing-build vs definitional insensitivity, per row\n";
+ out+="VALUE-FLIP rows (check Bool falsified by named current-map atom; OPMAP-v9 KILL): 3 (OP-63/OP-40), 4
+ (OP-67G/OP-57/57B), 5 (OP-63), 6 (OP-23), 8 (OP-54/55/56, one per sub-check), 9 (inherits 8), 10 (OP-49), 11 (OP-49), 13
+ (OP-58B via Reactivegas.apply app route), 16 (OP-49+OP-54), 17 (OP-63/OP-40), 18 (OP-63/OP-40), 19 (OP-40), 20 (OP-40 via
+ conjunct), 22 (OP-63 via conjunct), 24 (OP-40), mirrors 26-29, 31.\n";
+ out+="VALUE-STANDS rows (no current-map atom flips the Bool; OPEN retained): 1 (Validate atoms leave admin-admit path
+ unchanged; appMembers unchanged), 2 (shipped-mutant-local; Step-file reachable; OP-58B leaves detection true), 7 (pure
+ sanity, no production call), 12 (OP-39 touches assent arm only; trace needs dissent-arm erase which is intact — read
+ checkI57Disjoint body), 14 (cast arm intact; erase no-op on empty dissents), 15, 21, 23 (sweepDuplicating-local), mirrors
+ 25, 30.\n";
+ out+="REACHABILITY (execution order, never a kill and never insensitivity): Step-file checks evaluate before any
+ Invariants proof can break them; Invariants checks are PROOF-BLOCKED (same-file earlier proof, site named per row in
+ OPMAP-v9) or IMPORT-BLOCKED (KelGroups-file proof breaks first); TraceTests mirrors are downstream of everything. A
+ blocked check is an unobserved row, not a surviving one.\n";
+ fs.writeFileSync(p,out);
+ console.log("rows tagged: "+n);
+ ' && grep -c 'VERDICT:' handoffs/submission-3/OPEN-EXTENTS-31.txt (timeout 60s)
+
+ rows tagged: 31
+ 31
+
+ Took 0.1s
+
+
+
+ $ cd /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-repair && cat >> handoffs/submission-3/COST-MODEL.md <<'EOF'
+
+ ## 6. Addendum r3 (submission 3) — chain count, first-failure isolation, C-VOTESTATE anchor
+ - Chain count corrected: EIGHT unmeasured chains (C-VOTEFOLD, C-VOTEVAL, C-VOTESTATE, C-VALIDATE,
+   C-INTEGRATION, C-FOLD, C-KSTATE, C-RSTATE) + C-STEP measured. The "7" in the frozen measurement
+   request v1 was wrong.
+ - C-VOTESTATE representative atom now exact: KelGroups/Vote/State.lean:89
+   `if question.assents.length ≥ required then .positive` → `>` (single comparison-operator atom,
+   well-typed; closure: Vote.State → Validate/Fold → Invariants → Step → …).
+ - First-failure isolation point (from the Defect B/C reachability analysis): a single-mutant full
+   build halts at the FIRST failing obligation in elaboration order, so downstream predicted kills
+   (e.g. check-value flips situated after an earlier breaking proof) are NOT observable in that
+   build. Measuring chains establishes rebuild costs; observing downstream flips needs a separately
+   authorized isolation design (not smuggled into this costing). No total is offered here either.
+ EOF
+ echo done
+
+ done
+
+ Took 0.0s
+
+
+
+ write /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-repair/handoffs/submission-3/MEASUREMENT-REQUEST.md
+
+ # FROZEN MEASUREMENT REQUEST r3 (submission 3) — reviewable form, no execution under this mandate
+ To commissioner %503. Supersedes the v1 request (7-vs-8 chains, 18-vs-12 arithmetic, deferred
+ diffs/argv/target all repaired here). Dependent costing stays STOPPED. No Lean/build/probe is run
+ by the repair owner under current authority. No allowance is granted by this file.
+
+ ## 1. Counts that contain their own instructions
+ - Unmeasured chains: 8 (C-VOTEFOLD, C-VOTEVAL, C-VOTESTATE, C-VALIDATE, C-INTEGRATION, C-FOLD,
+   C-KSTATE, C-RSTATE). C-STEP already anchored by R-BUILD2.
+ - Timed invocations: 8 mutant builds + 8 restore reruns + 1 cold build + 1 isolated check
+   elaboration = 18. Proposed ceiling: 18 timed invocations. This EXCEEDS Phase-1's 3-build ceiling
+ ... (43 more lines, 53 total, ctrl+o to expand)
+
+
+
+ $ cd /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-repair/handoffs/submission-3 && sha256sum
+ OPMAP-v9-requirement-verdict-grounds.txt A-ASSESSMENT-51.txt ELAB-GREEN-43.txt OPEN-EXTENTS-31.txt COST-MODEL.md
+ MEASUREMENT-REQUEST.md > MANIFEST.sha256 && sha256sum -c MANIFEST.sha256 && grep -ic manifest MANIFEST.sha256 || echo "no
+ self-entry confirmed"; wc -l OPMAP-v9-requirement-verdict-grounds.txt; cd .. && (cd submission-1 && sha256sum -c
+ MANIFEST.sha256 >/dev/null 2>&1 && echo sub1-still-6/6); (cd submission-2 && sha256sum -c MANIFEST.sha256 >/dev/null 2>&1
+ && echo sub2-still-6/6)
+
+ ... (6 earlier lines, ctrl+o to expand)
+ 0
+ no self-entry confirmed
+ 207 OPMAP-v9-requirement-verdict-grounds.txt
+ sub1-still-6/6
+ sub2-still-6/6
+
+ Took 0.0s
+
+
+
+ $ cd /tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-repair &&
+ /code/llm-settings/shared/skills/worker-protocol/scripts/status-event STATUS.md SUBMISSION-3 "FINAL third submission
+ under handoffs/submission-3/ only, bare paths never written: OPMAP-v9 207 lines KILL85 OBSERVED31 OPEN10 ELAB60
+ RECOVERED9 SURVIVE7 WITHDRAWN2 STATIC2 ACCEPT1 with EVID seventh column (THEOREM-FAIL71 PROOF-FAIL13 MIXED1 CASCADE31
+ NONE10, RECEIPT value defined but unoccupied, zero bare RED in KILL rows); 21 OPEN rows converted to check-value
+ PREDICTED-KILL(c) with named atoms and reachability caveats, 10 stay OPEN; conservation 10/4 arm split with OP-11
+ pure-collections correction; OP-52x2+OP-58x2 reclassified SURVIVE by owned reads; measurement request rewritten (8
+ chains, 18 invocations, ceiling 18, exact argv cwd diffs observables, C-VOTESTATE Vote/State.lean:89 exact); manifest 6/6
+ no self-entry; sub1/sub2 re-verified 6/6 untouched; audit-side spend separate: 0 builds 0 elaborations 0 probes,
+ read-only inspections plus bounded mechanical parsing only, ticket spend unchanged 5/3; accepts no row, local delivery
+ only" && git -C /code/reactivegas-66-s3-repair status --porcelain; echo worktree-clean-final; git -C
+ /code/reactivegas-66-s3-repair rev-parse HEAD
+
+ worktree-clean-final
+ 3590c0015b84fd58004bf6fb44dd18b107304c48
+
+ Took 0.0s
+
+
+ SUBMISSION-3 — final, under handoffs/submission-3/ only. Manifest 6/6 OK, no self-entry; 207 lines; bare paths never
+ written; submissions 1 and 2 re-verified 6/6 in place and untouched. Worktree clean at 3590c001; zero executions, zero
+ product edits.
+
+ Distribution: KILL 85, OBSERVED 31, OPEN-KILL 10, ELAB-STATIC 60, RECOVERED 9, PREDICTED-SURVIVE 7, WITHDRAWN-DUPLICATE
+ 2, STATIC 2, ACCEPT 1. Every row carries a seventh EVID column with the four-way split — THEOREM-FAIL 71, PROOF-FAIL 13,
+ MIXED 1, CASCADE 31, NONE 10 — and the RECEIPT value is defined but honestly unoccupied (no Phase-2 execution exists;
+ t54-PARTITION and S4-B-O5 stay as corroboration text at actual identity only). Zero bare RED in KILL rows, re-verified
+ with fixed-string scans.
+
+ The four defects, plus the full assessment they generalize to:
+ - 21 OPEN rows converted to check-value PREDICTED-KILL(c) with named atoms (canonical/OP-23, direct-only OP-54/55/56 one
+   per sub-check, V3/hook OP-63, filter OP-40, guard OP-49, members-wipe OP-58B, windUpAdmin OP-67G, appFold-swap
+   OP-57/57B), each with its execution-reachability caveat (REACHABLE / PROOF-BLOCKED@line / IMPORT-BLOCKED@file); 10 stay
+   OPEN, including checkI57Disjoint, where reading the body showed the OP-39 assent-arm mutant cannot flip a trace decided
+   by the intact dissent-arm erase.
+ - Conservation split 10 theorem-fail / 4 proof-fail arms, with the OP-11 pure-collections correction and the named gap
+   that no donate-effect mutant exists.
+ - Four more survive findings from owned reads (OP-52 pair: induction unifies against the mutant definition; OP-58 pair:
+   proofs never consume the ≥ shape), plus the standing principle that classification is per row, never per mutant.
+ - Measurement request rewritten to be reviewable: 8 chains, 18 timed invocations, ceiling 18 stating its excess, exact
+   argv/cwd/diffs/observables (C-VOTESTATE pinned to Vote/State.lean:89), named U-CHECK target, no sampling.
+
+ Audit-side spend, stated separately: 0 builds, 0 elaborations, 0 probes; read-only source inspection plus bounded
+ mechanical parsing only. Ticket spend unchanged (5 substantive / 3 targeted). This submission accepts no row; all sets
+ stand as evidence inputs to the eventual full static auditor.
+
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s3-repair
+↑322k ↓117k R28M CH99.8% $0.111 29.6%/1.0M (auto)                          (opencode-go) muse-spark-1.3-contributor • xhigh
+
+

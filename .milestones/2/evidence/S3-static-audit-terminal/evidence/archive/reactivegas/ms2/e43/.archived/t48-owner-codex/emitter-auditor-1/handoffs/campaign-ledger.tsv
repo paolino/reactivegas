@@ -1,0 +1,19 @@
+# slice=emitter-1 submission=1 builds_spent=1 builds_budget=2 ceiling_raises=0 source_sha256=43b078435842cf31545c673ae9488de80efd66b794caaaa87996ef5006a4a62b
+row_id	severity	state	submission	evidence	residual_owner	followup	honest_limit
+E-SCHEMA	BLOCKING	OPEN	1	evidence/survivor-campaign-v3.log#survivor-json-applied-state	NONE	NONE	Shape checks do not establish that serialized payload values equal the typed trace.
+E-TOJSON	BLOCKING	KILLED	1	evidence/survivor-campaign-v3.log#killed-tojson-instance	NONE	NONE	NONE
+E-DIAG	BLOCKING	KILLED	1	Reactivegas/TraceTests.lean:404-409+evidence/focused-warm.log	NONE	NONE	NONE
+E-MANIFEST	BLOCKING	KILLED	1	evidence/survivor-campaign-v3.log#killed-manifest-all-unproved	NONE	NONE	NONE
+E-INVENTORY	BLOCKING	KILLED	1	evidence/survivor-campaign-v3.log#killed-inventory-missing-covered	NONE	NONE	NONE
+E-SEEDS	BLOCKING	OPEN	1	evidence/survivor-campaign-v3.log#survivor-remove-no-pending,survivor-deny-no-pending	NONE	NONE	Final refunds do not establish live accepted and pending lists at the headline event.
+E-NEGATIVE	BLOCKING	KILLED	1	Reactivegas/TraceTests.lean:399-453+evidence/focused-warm.log	NONE	NONE	NONE
+E-ADDITIVE	BLOCKING	KILLED	1	evidence/full-gate.log	NONE	NONE	NONE
+E-FENCE	BLOCKING	OPEN	1	evidence/umbrella-import-survivor.log	NONE	NONE	The gate does not reject production importing TraceTests through the allowed umbrella path.
+INV-48-STEP-TOTAL	BLOCKING	KILLED	1	Reactivegas/Trace.lean:114-119+Reactivegas/TraceTests.lean:404-409	NONE	NONE	NONE
+INV-48-EVENT-CTORS-COMPLETE	BLOCKING	KILLED	1	Reactivegas/TraceTests.lean:498-522+owner-canfail-M1	NONE	NONE	NONE
+INV-48-INVERSION-NAMING	BLOCKING	KILLED	1	evidence/survivor-campaign-v3.log#killed-manifest-all-unproved+evidence/full-gate.log#52-type-pins	NONE	NONE	NONE
+INV-48-SORRY-BOUNDARY	BLOCKING	KILLED	1	Reactivegas/TraceTests.lean:578-587+evidence/full-gate.log	NONE	NONE	NONE
+INV-48-TOJSON-DERIVABLE	BLOCKING	KILLED	1	evidence/survivor-campaign-v3.log#killed-tojson-instance	NONE	NONE	NONE
+INV-48-STATE-DECEQ	BLOCKING	KILLED	1	evidence/survivor-campaign-v3.log#killed-applied-poststate	NONE	NONE	NONE
+INV-48-ONE-GUARD-PER-CONSTRUCTOR	ADVISORY	RESIDUAL	1	RELIANCE.md	#48-docs	R48-GUARD-GRANULARITY	A green event-level refusal identity does not establish clause-level cause.
+INV-48-NO-BACK-EDGE	ADVISORY	RESIDUAL	1	RELIANCE.md	#48-architecture	R48-TRACE-DEPENDENCY-DIRECTION	Current slice fencing does not prevent a future machine-to-Trace import.

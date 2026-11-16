@@ -1,0 +1,1157 @@
+{
+  "schema": "milestone-stories/v1",
+  "title": "Milestone 2 — Reactivegas on kelgroups",
+  "milestoneUrl": "https://github.com/paolino/reactivegas/milestone/2",
+  "wikiUrl": "https://github.com/paolino/reactivegas/wiki/Milestone-2",
+  "updatedAt": "2026-09-06T09:04:30.380Z",
+  "operationalState": "running",
+  "summary": "S4 correspondence work is landed. The first production Haskell core slice is now commissioned: deposits, withdrawals, cashier transfers and donations can proceed without the unaccepted vote substrate. Kelgroups voting repairs, simulator final validation and S3 instrument recovery continue. No production coordinator, browser or CLI release is accepted yet.",
+  "groups": [
+    {
+      "id": "outcome",
+      "title": "A. Usable product and release"
+    },
+    {
+      "id": "substrate",
+      "title": "B. Identity and reliable group state"
+    },
+    {
+      "id": "economy",
+      "title": "C. Member sovereignty, money and collective decisions"
+    },
+    {
+      "id": "assurance",
+      "title": "D. Executable evidence and proof assurance"
+    },
+    {
+      "id": "clients",
+      "title": "E. Simulation, browser and CLI"
+    },
+    {
+      "id": "design",
+      "title": "F. Design truth and product scope"
+    },
+    {
+      "id": "operations",
+      "title": "G. Supervision and recoverable delivery"
+    }
+  ],
+  "stories": [
+    {
+      "id": "S-01",
+      "group": "outcome",
+      "title": "Run a buying group without source",
+      "persona": "a new group organiser",
+      "want": "to download and run the complete service",
+      "benefit": "my group can elect, collect, pledge, assent, purchase and refund",
+      "kind": "outcome",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #72",
+            "url": "https://github.com/paolino/reactivegas/issues/72"
+          },
+          {
+            "label": "Reactivegas #43",
+            "url": "https://github.com/paolino/reactivegas/issues/43"
+          },
+          {
+            "label": "Reactivegas #67",
+            "url": "https://github.com/paolino/reactivegas/issues/67"
+          }
+        ],
+        "note": "Milestone outcome across several epics and tickets. Historical epic #43 remains open for traceability and is not being respawned; #72 is the current delivery map."
+      },
+      "owner": "Milestone owner",
+      "state": "blocked",
+      "summary": "The required stranger journey has not been demonstrated on the new Haskell coordinator. Released browser and CLI clients are also required. Legacy releases, proofs and simulator runs do not establish this outcome.",
+      "acceptance": "An independent person downloads the released coordinator, browser and CLI and exercises all six actions with meaningful state effects and required refusals, without a source build.",
+      "next": "Follow the accepted dependency sequence; close the milestone only on the released user journey.",
+      "dependencies": [
+        "S-27",
+        "S-24",
+        "S-26",
+        "S-28",
+        "S-29"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S-27",
+      "group": "outcome",
+      "title": "Install the new coordinator release",
+      "persona": "an installing operator",
+      "want": "the familiar archive entrypoint to run the new coordinator",
+      "benefit": "installation is reproducible and the downloaded identity is verifiable",
+      "kind": "product",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #67",
+            "url": "https://github.com/paolino/reactivegas/issues/67"
+          },
+          {
+            "label": "Reactivegas #51",
+            "url": "https://github.com/paolino/reactivegas/issues/51"
+          }
+        ],
+        "note": "#67 covers implementation and coordinator delivery; #51 retains separate release-identity obligations. A green release workflow alone is not product acceptance."
+      },
+      "owner": "Haskell delivery owner",
+      "state": "blocked",
+      "summary": "The settled package is a Reactivegas-owned Cabal executable linking the kelgroups library and Reactivegas app at build time. Archive naming and bin/server stay, but their new bytes require new evidence. D2-D5 remain unfinished; legacy provisional release #49 is historical.",
+      "acceptance": "Bind the new archive to accepted source; independently fetch and run it, including the six-step coordinator journey and exact release identity.",
+      "next": "Complete substrate integration, economic implementation and API, then repeat release verification on the actual new artifact.",
+      "dependencies": [
+        "S-03",
+        "S-04",
+        "S-06",
+        "S-08",
+        "S-10",
+        "S-16"
+      ],
+      "evidence": [
+        {
+          "label": "Reactivegas #49",
+          "url": "https://github.com/paolino/reactivegas/issues/49"
+        }
+      ]
+    },
+    {
+      "id": "S-02",
+      "group": "substrate",
+      "title": "Share membership and roles",
+      "persona": "a group member",
+      "want": "one identity and membership state across the system",
+      "benefit": "permissions do not disagree between the group engine and economics",
+      "kind": "product",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #62",
+            "url": "https://github.com/paolino/reactivegas/issues/62"
+          },
+          {
+            "label": "Reactivegas #73",
+            "url": "https://github.com/paolino/reactivegas/issues/73"
+          },
+          {
+            "label": "kelgroups #29",
+            "url": "https://github.com/paolino/kelgroups/issues/29"
+          },
+          {
+            "label": "kelgroups #30",
+            "url": "https://github.com/paolino/kelgroups/issues/30"
+          },
+          {
+            "label": "kelgroups #33",
+            "url": "https://github.com/paolino/kelgroups/issues/33"
+          },
+          {
+            "label": "kelgroups #34",
+            "url": "https://github.com/paolino/kelgroups/issues/34"
+          }
+        ],
+        "note": "The model ticket is closed and #28 landed. The cross-repository story remains unfinished under #73 and kelgroups #29, including vote interface #30, runnable demonstration #33 and release/downstream notes #34. These are delivery containers, not extra completion claims."
+      },
+      "owner": "Kelgroups epic owner",
+      "state": "in-progress",
+      "summary": "Kelgroups #28 is landed. The #30 voting candidate has one adjudicated repair batch from three blind inspections. A stalled unsent repair prompt was recovered through its supervisor; original audit spend and findings remain.",
+      "acceptance": "The accepted group engine and economic application consume the same membership/role view, with integrated permission and refusal witnesses.",
+      "next": "Complete the one repair batch and delta inspection before substrate acceptance.",
+      "dependencies": [],
+      "evidence": [
+        {
+          "label": "Reactivegas #62",
+          "url": "https://github.com/paolino/reactivegas/issues/62"
+        },
+        {
+          "label": "Landed kelgroups integrated API — PR32",
+          "url": "https://github.com/paolino/kelgroups/pull/32"
+        }
+      ]
+    },
+    {
+      "id": "S-03",
+      "group": "substrate",
+      "title": "Reject atomically across group and app",
+      "persona": "an application developer",
+      "want": "invalid integrated events to be refused atomically",
+      "benefit": "a refusal cannot leave a partially updated group",
+      "kind": "enabler",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "kelgroups #28",
+            "url": "https://github.com/paolino/kelgroups/issues/28"
+          },
+          {
+            "label": "kelgroups #29",
+            "url": "https://github.com/paolino/kelgroups/issues/29"
+          },
+          {
+            "label": "Reactivegas #73",
+            "url": "https://github.com/paolino/reactivegas/issues/73"
+          }
+        ],
+        "note": "Implementation slice of kelgroups #28. The broader substrate epic also includes #30; this candidate is not acceptance of the whole epic."
+      },
+      "owner": "Kelgroups ticket owner",
+      "state": "landed",
+      "summary": "PR32 merged as933e385 on accepted368b596. The landed tree is byte-identical to the full independently audited ab25cd1 candidate; GitHub signature verification succeeds. Candidate remote CI passed; post-merge CI passed. All six required rows and five reliances were assessed within the stated finite scope, and the desk verified the135-file audit inventory. Broader #29/#73 completion remains separate.",
+      "acceptance": "Exercise each integrated path and rejection; independently demonstrate that disabling the membership check, hook refusal or other guarded effect breaks its stated acceptance row.",
+      "next": "Kelgroups #28 is closed after scope acceptance. Preserve its landed guarantees while preparing #30 and the remaining #73 contract before downstream Haskell integration.",
+      "dependencies": [],
+      "evidence": [
+        {
+          "label": "Landed kelgroups integrated API — PR32",
+          "url": "https://github.com/paolino/kelgroups/pull/32"
+        }
+      ]
+    },
+    {
+      "id": "S-04",
+      "group": "substrate",
+      "title": "Recover the same state after restart",
+      "persona": "a group organiser",
+      "want": "event replay to recover the accepted live state",
+      "benefit": "restarting cannot change the interpretation of group history",
+      "kind": "product",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "kelgroups #28",
+            "url": "https://github.com/paolino/kelgroups/issues/28"
+          },
+          {
+            "label": "Reactivegas #73",
+            "url": "https://github.com/paolino/reactivegas/issues/73"
+          }
+        ],
+        "note": "This story is a slice of the linked delivery work; the issue may cover other stories too."
+      },
+      "owner": "Kelgroups ticket owner",
+      "state": "landed",
+      "summary": "Fresh independent evidence on the final candidate demonstrates conservation and actual database close/reopen across 160 tested concurrent schedules; the deliberately broken version loses updates in the paired experiment. The shipped concurrency checker independently fails on that defect and passes on the candidate. This is finite local assurance; crash/interruption between SQL and memory commits and separate-handle concurrency remain outside the established result. This bounded result landed in PR32 with an identical audited tree. Post-merge CI passed; no broader crash-safety claim follows.",
+      "acceptance": "Reopen a persisted log and recover exactly the live state; reject changed founding inputs and detect a mutant that leaves live state stale.",
+      "next": "Preserve the landed replay/refusal guarantees and exercise them again at the later Haskell integration boundary.",
+      "dependencies": [],
+      "evidence": [
+        {
+          "label": "Landed kelgroups integrated API — PR32",
+          "url": "https://github.com/paolino/kelgroups/pull/32"
+        }
+      ]
+    },
+    {
+      "id": "S-05",
+      "group": "economy",
+      "title": "Separate proposing from assent",
+      "persona": "a group administrator",
+      "want": "opening and approving a proposal to be distinct",
+      "benefit": "opening a question does not silently contribute assent",
+      "kind": "product",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #68",
+            "url": "https://github.com/paolino/reactivegas/issues/68"
+          }
+        ],
+        "note": "This story is a slice of the linked delivery work; the issue may cover other stories too."
+      },
+      "owner": "Proposer-assent ticket owner",
+      "state": "ready",
+      "summary": "An audited candidate is ready in PR80 with green remote CI, but remains unmerged. Opening contributes zero assent; the ruled sole-admin case requires a separate explicit approval. The majority formula is unchanged.",
+      "acceptance": "Land the exact accepted candidate and demonstrate the ruled multi-admin and sole-admin behaviours in integrated reachable examples.",
+      "next": "Hold for the reserved simulator C1 landing, then recheck the exact candidate before any merge.",
+      "dependencies": [
+        "S-22"
+      ],
+      "evidence": [
+        {
+          "label": "PR 80",
+          "url": "https://github.com/paolino/reactivegas/pull/80"
+        }
+      ]
+    },
+    {
+      "id": "S-06",
+      "group": "economy",
+      "title": "Control a pending pledge",
+      "persona": "a contributing member",
+      "want": "to create, correct or retract my own pending pledge",
+      "benefit": "my money remains under the ruled authority while it is pending",
+      "kind": "product",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #69",
+            "url": "https://github.com/paolino/reactivegas/issues/69"
+          }
+        ],
+        "note": "#69 is the current delivery ticket. Historical #48 work is superseded; its closure does not fulfil this remaining story."
+      },
+      "owner": "Milestone owner until commissioning",
+      "state": "planned",
+      "summary": "Intake is prepared; implementation has not been commissioned. Zero must refund escrow and remove the pending entry. Accepted pledges have a different referente authority boundary. Closed historical #48 is not authority to revive its retired departure design.",
+      "acceptance": "Prove and exercise own-pledge changes, zero/refund/removal, and the post-acceptance boundary with current traces and independent audit.",
+      "next": "Commission on the accepted proposer-assent base.",
+      "dependencies": [
+        "S-05"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S-07",
+      "group": "economy",
+      "title": "Keep every pledged amount solvent",
+      "persona": "a contributor",
+      "want": "escrow and spending to be accounted for consistently",
+      "benefit": "funds cannot be spent twice or beyond available balances",
+      "kind": "product",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #67",
+            "url": "https://github.com/paolino/reactivegas/issues/67"
+          },
+          {
+            "label": "Reactivegas #66",
+            "url": "https://github.com/paolino/reactivegas/issues/66"
+          }
+        ],
+        "note": "This story is a slice of the linked delivery work; the issue may cover other stories too."
+      },
+      "owner": "Haskell delivery owner",
+      "state": "blocked",
+      "summary": "The milestone rules escrow at pledge, per-responsabile casse and enforced solvency. Lean laws and traces cover portions; they are not proof that the new released Haskell coordinator enforces the complete economic contract.",
+      "acceptance": "Exercise valid spending, rejected overspending and repeated spending against the real implementation, with balances and escrow checked after each outcome.",
+      "next": "Implement the economic replay consumer and required refusal paths after the substrate is accepted.",
+      "dependencies": [
+        "S-03",
+        "S-06",
+        "S-08",
+        "S-16"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S-08",
+      "group": "economy",
+      "title": "Make assenso an actual group decision",
+      "persona": "a group member",
+      "want": "economic permission to come from a completed vote",
+      "benefit": "one responsabile cannot impersonate collective assent",
+      "kind": "product",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #76",
+            "url": "https://github.com/paolino/reactivegas/issues/76"
+          }
+        ],
+        "note": "#76 explicitly carries unfinished runtime work beyond closed #54; it is not a duplicate or an open product ruling about unilateral grants."
+      },
+      "owner": "Milestone owner until commissioning",
+      "state": "planned",
+      "summary": "Vote-derived grants and denials are already ruled. The runtime connection from closure evidence to economic authorisation is missing. Current examples can appear successful while a responsabile acts alone. Historical composition theorem #54 does not supply this executable connection.",
+      "acceptance": "Reachable unbacked and fabricated grants are refused; legitimate vote-derived grant/deny and the second economic consumer work through the production transition.",
+      "next": "Commission the executable composition without reopening the settled requirement.",
+      "dependencies": [],
+      "evidence": [
+        {
+          "label": "Reactivegas #54",
+          "url": "https://github.com/paolino/reactivegas/issues/54"
+        }
+      ]
+    },
+    {
+      "id": "S-09",
+      "group": "economy",
+      "title": "Bind assent to its exact economic effect",
+      "persona": "an approving member",
+      "want": "a decision to authorise only the target and amount approved",
+      "benefit": "another target, polarity or repeated use cannot borrow my assent",
+      "kind": "product",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #76",
+            "url": "https://github.com/paolino/reactivegas/issues/76"
+          }
+        ],
+        "note": "This story is a slice of the linked delivery work; the issue may cover other stories too."
+      },
+      "owner": "Future composition ticket owner",
+      "state": "planned",
+      "summary": "The acceptance contract binds provenance, target, payload, polarity and one-use consumption for both economic consumers. A matching question label with caller-supplied amount is insufficient; backdonation must bind the ruled per-member share.",
+      "acceptance": "Demonstrate wrong-target, wrong-amount, wrong-polarity, fabricated and reused closure refusals; deliberately bypassing each binding must break its witness.",
+      "next": "Implement these rows as part of the composition candidate and expose them to replay.",
+      "dependencies": [],
+      "evidence": []
+    },
+    {
+      "id": "S-10",
+      "group": "economy",
+      "title": "Close cancellation and return held funds",
+      "persona": "a member with an open question",
+      "want": "renunciation or proposer departure to close it correctly",
+      "benefit": "the question and any escrow are not silently stranded",
+      "kind": "product",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #81",
+            "url": "https://github.com/paolino/reactivegas/issues/81"
+          },
+          {
+            "label": "Reactivegas #76",
+            "url": "https://github.com/paolino/reactivegas/issues/76"
+          }
+        ],
+        "note": "This story is a slice of the linked delivery work; the issue may cover other stories too."
+      },
+      "owner": "Milestone owner until commissioning",
+      "state": "planned",
+      "summary": "The ruled work closes negatively, retains the closure and records the correct cause. Continuation and refund depend on runtime composition. Deleting the question is insufficient.",
+      "acceptance": "Renounce and departure produce retained negative closures; the linked economic continuation refunds correctly and atomically.",
+      "next": "Implement the independently testable lifecycle rows, then finish continuation/refund with accepted composition.",
+      "dependencies": [
+        "S-08"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S-11",
+      "group": "economy",
+      "title": "Recompute other questions on departure",
+      "persona": "a remaining member",
+      "want": "franchise changes to recompute other open questions",
+      "benefit": "one proposer leaving does not disable legitimate decisions elsewhere",
+      "kind": "product",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #81",
+            "url": "https://github.com/paolino/reactivegas/issues/81"
+          }
+        ],
+        "note": "This story is a slice of the linked delivery work; the issue may cover other stories too."
+      },
+      "owner": "Future lifecycle ticket owner",
+      "state": "planned",
+      "summary": "The corrected acceptance requires coexistence: the departing proposer’s question closes negatively, while an unrelated threshold-crossing question may close through franchise change. The causes remain distinct.",
+      "acceptance": "A single departure demonstrates both closures where applicable; suppressing either closure or collapsing their causes must fail the witness.",
+      "next": "Keep this coexistence row in the lifecycle implementation and integrated corpus.",
+      "dependencies": [
+        "S-10"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S-12",
+      "group": "economy",
+      "title": "Use explicitly ruled refusal semantics",
+      "persona": "a voter",
+      "want": "acceptance and refusal rules to be explicit",
+      "benefit": "suggestive error names cannot silently decide product policy",
+      "kind": "product",
+      "tracking": {
+        "kind": "decision",
+        "tickets": [
+          {
+            "label": "Reactivegas #81",
+            "url": "https://github.com/paolino/reactivegas/issues/81"
+          },
+          {
+            "label": "Reactivegas #76",
+            "url": "https://github.com/paolino/reactivegas/issues/76"
+          }
+        ],
+        "note": "Decision record, not a commissioned ticket. Links provide neighbouring scope only; they do not decide these questions."
+      },
+      "owner": "Operator",
+      "state": "decision",
+      "summary": "Non-proposer renounce refusal and non-designee ballot refusal remain unruled. Dormant constructors do not create authority. Existing accepted-but-non-deciding behaviour also does not authorise widening. These choices do not block the already-ruled lifecycle work.",
+      "acceptance": "Any change to these boundaries cites an explicit ruling and gains a corresponding implementation and acceptance contract.",
+      "next": "Keep current boundaries until a ruling is needed; resolve separately from the required lifecycle work.",
+      "dependencies": [],
+      "evidence": []
+    },
+    {
+      "id": "S-13",
+      "group": "economy",
+      "title": "Know the deployed vote threshold",
+      "persona": "a group organiser",
+      "want": "the voting policy to be explicit",
+      "benefit": "identical ballots have a predictable supported verdict",
+      "kind": "product",
+      "tracking": {
+        "kind": "decision",
+        "tickets": [
+          {
+            "label": "Reactivegas #75",
+            "url": "https://github.com/paolino/reactivegas/issues/75"
+          },
+          {
+            "label": "Reactivegas #67",
+            "url": "https://github.com/paolino/reactivegas/issues/67"
+          }
+        ],
+        "note": "Operator decision with downstream tickets, not a standalone implementation ticket or an implicit #68 ruling."
+      },
+      "owner": "Operator",
+      "state": "decision",
+      "summary": "No shipped threshold default is selected. Simulator legacyThreshold and zeroThreshold test exhibits are not deployment rulings. Permission questions do not consult the collective threshold.",
+      "acceptance": "A ruled default or explicit supported configuration is bound into the accepted coordinator and final collective-vote corpus.",
+      "next": "Recommend settling the supported policy before the final vote corpus and coordinator release, without treating an exhibit as a default.",
+      "dependencies": [],
+      "evidence": []
+    },
+    {
+      "id": "S-14",
+      "group": "assurance",
+      "title": "Export portable model examples",
+      "persona": "a Haskell implementer",
+      "want": "frozen model examples and manifests",
+      "benefit": "I can compare implementation behaviour with the Lean specification",
+      "kind": "enabler",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #86",
+            "url": "https://github.com/paolino/reactivegas/issues/86"
+          },
+          {
+            "label": "Reactivegas #74",
+            "url": "https://github.com/paolino/reactivegas/issues/74"
+          }
+        ],
+        "note": "#86 is completed; #74 is closed as superseded, not completed. The landed exporter does not fulfil integrated vote replay or final economic conformance."
+      },
+      "owner": "Haskell delivery owner",
+      "state": "landed",
+      "summary": "PR87 landed the exporter successor. Automated invocation, declared jq tooling, whole-wrapper value checks and malformed-arity refusal were repaired. Economic and integrated corpora remain provisional on later semantics and replay context. Old #74 was superseded without accepting its candidates.",
+      "acceptance": "The accepted exporter reproduces the bounded schema and refuses the measured integrity defects through the committed validation path; later semantic changes require recorded re-emission.",
+      "next": "Re-emit only when an accepted dependency changes the corpus and its owner releases that specific work.",
+      "dependencies": [],
+      "evidence": [
+        {
+          "label": "PR 87",
+          "url": "https://github.com/paolino/reactivegas/pull/87"
+        }
+      ]
+    },
+    {
+      "id": "S-15",
+      "group": "assurance",
+      "title": "Exercise signed votes through production",
+      "persona": "a conformance reviewer",
+      "want": "the reference corpus to traverse the production vote route",
+      "benefit": "vote coverage describes the machine that will be implemented",
+      "kind": "enabler",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #75",
+            "url": "https://github.com/paolino/reactivegas/issues/75"
+          }
+        ],
+        "note": "This story is a slice of the linked delivery work; the issue may cover other stories too."
+      },
+      "owner": "Milestone owner until commissioning",
+      "state": "planned",
+      "summary": "The two landed corpora have no signed vote events. Integrated franchise-change closure is covered. Separate simulator signed-vote examples are real coverage, but not a substitute for the production Reactivegas.apply route and final manifest.",
+      "acceptance": "An additive corpus drives signed votes through production, covers discovered observable constructors/refusals and incorporates accepted composition/lifecycle behaviour.",
+      "next": "Reuse existing vote journeys where applicable, then freeze only against accepted semantics and an explicit policy.",
+      "dependencies": [
+        "S-05",
+        "S-06",
+        "S-08",
+        "S-10",
+        "S-13",
+        "S-14"
+      ],
+      "evidence": [
+        {
+          "label": "Reactivegas #57",
+          "url": "https://github.com/paolino/reactivegas/issues/57"
+        }
+      ]
+    },
+    {
+      "id": "S-16",
+      "group": "assurance",
+      "title": "Replay without resolving Lean symbols",
+      "persona": "a replayer author",
+      "want": "all operative policy inputs as portable data",
+      "benefit": "replay does not depend on a Lean source tree or a guessed policy",
+      "kind": "enabler",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #75",
+            "url": "https://github.com/paolino/reactivegas/issues/75"
+          }
+        ],
+        "note": "This story is a slice of the linked delivery work; the issue may cover other stories too."
+      },
+      "owner": "Future vote-corpus ticket owner",
+      "state": "planned",
+      "summary": "The prepared contract carries a finite per-corpus threshold table and explicit authentication context. It distinguishes pre-replay refusal, runtime out-of-domain abort and behavioural mismatch. Source metadata is provenance, not authority.",
+      "acceptance": "Lean independently evaluates the live policy against emitted bytes; malformed context and missing queried entries refuse/abort correctly; a witnessed wrong collective policy mismatches.",
+      "next": "Implement the frozen contract, including actual generator-input discovery and a precise source-input digest encoding.",
+      "dependencies": [
+        "S-15"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S-17",
+      "group": "assurance",
+      "title": "Make trace proof labels truthful",
+      "persona": "a proof reviewer",
+      "want": "a trace label to resolve to its actual theorem",
+      "benefit": "proved behaviour is neither falsely unproved nor falsely certified",
+      "kind": "enabler",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #66",
+            "url": "https://github.com/paolino/reactivegas/issues/66"
+          }
+        ],
+        "note": "S1 slice of open #66 only; landing this story does not close the broader quality issue."
+      },
+      "owner": "Lean quality owner",
+      "state": "landed",
+      "summary": "PR79 landed the S1 trace resolver and totality repair. Re-emission replaced the incorrect withdrawal UNPROVED label. Panic-string absence was tested because the tool could emit panics while exiting zero.",
+      "acceptance": "The accepted resolver binds actual declarations and avoids the introduced elaborator panic; this does not establish completeness of every theorem statement.",
+      "next": "Preserve this accepted result while the remaining quality slices are completed.",
+      "dependencies": [],
+      "evidence": [
+        {
+          "label": "PR 79",
+          "url": "https://github.com/paolino/reactivegas/pull/79"
+        }
+      ]
+    },
+    {
+      "id": "S-18",
+      "group": "assurance",
+      "title": "Check every owned compiled module",
+      "persona": "a maintainer",
+      "want": "the mandatory build to reject forbidden assumptions across owned modules",
+      "benefit": "namespace or discovery shortcuts cannot leave proof holes",
+      "kind": "enabler",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #66",
+            "url": "https://github.com/paolino/reactivegas/issues/66"
+          }
+        ],
+        "note": "S2R slice of #66, replacing rejected earlier campaigns; their receipts are evidence inputs, never inherited acceptance."
+      },
+      "owner": "Lean quality owner",
+      "state": "landed",
+      "summary": "PR88 merged21:12:18Z as3590c0015b84fd58004bf6fb44dd18b107304c48, singleparentd670323 and tree44a1f0bce4796c63203070e23b96172a7774956e equal to auditedab617d8, signature verified. Desk independently verified the actual merge_guard invocation and allsix passed guards. Candidate remoteCI and independent32-row audit passed; all53 final manifest entries verified. The new execution supplement is distinguished from retained38-call evidence. Physical-layout/shared-filter/auxiliary-branch limits remain, and #66 stays OPEN for S3–S5. Post-merge CI has now completed successfully.",
+      "acceptance": "Fresh full audit assesses all mandatory rows, omission controls and declared limits on the exact final candidate; only accepted bytes may land.",
+      "next": "Preserve the accepted S2R base in C1 and quality work; post-merge CI is already successful. Re-establish affected evidence at future accepted integrations.",
+      "dependencies": [
+        "S-14",
+        "S-17"
+      ],
+      "evidence": [
+        {
+          "label": "Landed PR88",
+          "url": "https://github.com/paolino/reactivegas/pull/88"
+        },
+        {
+          "label": "Accepted source3590c001",
+          "url": "https://github.com/paolino/reactivegas/commit/3590c0015b84fd58004bf6fb44dd18b107304c48"
+        }
+      ]
+    },
+    {
+      "id": "S-19",
+      "group": "assurance",
+      "title": "Distinguish binding from completeness",
+      "persona": "a person relying on proofs",
+      "want": "coverage claims to name exactly what was established",
+      "benefit": "a registered theorem is not mistaken for complete product assurance",
+      "kind": "enabler",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #66",
+            "url": "https://github.com/paolino/reactivegas/issues/66"
+          }
+        ],
+        "note": "This story is a slice of the linked delivery work; the issue may cover other stories too."
+      },
+      "owner": "Lean quality owner",
+      "state": "planned",
+      "summary": "The record separates fourteen bindings, six machine-checked converses and assessed exactness. Three measured omissions in inversions are carried into statement-completeness work. Forward implications may remain true while their characterisation is incomplete.",
+      "acceptance": "Assess exact premises versus necessary conditions per consumer, retention and other statement gaps, without claiming missing reachability evidence as a reachable violation.",
+      "next": "Complete the S5 assessment against the accepted model and retain owned gaps explicitly.",
+      "dependencies": [
+        "S-05",
+        "S-18"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S-20",
+      "group": "assurance",
+      "title": "Align executable checks and propositions",
+      "persona": "a developer",
+      "want": "relevant Boolean checks to agree with their propositions",
+      "benefit": "execution and proofs test the same condition",
+      "kind": "enabler",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #66",
+            "url": "https://github.com/paolino/reactivegas/issues/66"
+          }
+        ],
+        "note": "This story is a slice of the linked delivery work; the issue may cover other stories too."
+      },
+      "owner": "Lean quality owner",
+      "state": "landed",
+      "summary": "The bounded S4 correspondence slice landed in PR89 at efef604d; master tree equals the accepted candidate. This does not settle S3 mutation adequacy or S5 statement completeness.",
+      "acceptance": "Discover and justify the required finite correspondence relations; validate them through the mandatory path and independently test meaningful definition changes.",
+      "next": "Use the accepted base in S3 and simulator validation; retain named S4 limitations.",
+      "dependencies": [
+        "S-18"
+      ],
+      "evidence": [
+        {
+          "label": "S4 draft PR89",
+          "url": "https://github.com/paolino/reactivegas/pull/89"
+        },
+        {
+          "label": "S4 landed PR89; accepted tree preserved",
+          "url": "https://github.com/paolino/reactivegas/pull/89"
+        }
+      ]
+    },
+    {
+      "id": "S-21",
+      "group": "assurance",
+      "title": "Make checks fail for their own reason",
+      "persona": "an auditor",
+      "want": "each deliberate defect to exercise the actual guarded path",
+      "benefit": "green controls provide meaningful assurance",
+      "kind": "enabler",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #66",
+            "url": "https://github.com/paolino/reactivegas/issues/66"
+          }
+        ],
+        "note": "This story is a slice of the linked delivery work; the issue may cover other stories too."
+      },
+      "owner": "Lean quality owner",
+      "state": "in-progress",
+      "summary": "S3 instrument recovery has executed its first real compiler run at the accepted S4 base, exit 0. Repaired patches apply 8/8 where the originals fail 8/8. Remaining instruments and semantic measurements still require completion and independent inspection.",
+      "acceptance": "Every claimed mutant kill identifies the changed production definition, affected obligation, actual command and intended failure. A nonempty blocked set is allowed and named.",
+      "next": "Run the real compiler pilot, then blind inspection; original semantic measurements remain required.",
+      "dependencies": [
+        "S-18"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S-22",
+      "group": "clients",
+      "title": "Simulate the accepted group model",
+      "persona": "a prospective user",
+      "want": "the simulator to demonstrate the model I will receive",
+      "benefit": "the demonstration does not teach obsolete behaviour",
+      "kind": "product",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #70",
+            "url": "https://github.com/paolino/reactivegas/issues/70"
+          }
+        ],
+        "note": "Current C1 rebind slice of #70. C2 reachable random scenarios, C3 later semantic updates and C4 interface distinction remain separately required within the same ticket; its closure cannot be inferred from this slice."
+      },
+      "owner": "Simulator ticket owner",
+      "state": "in-progress",
+      "summary": "The partial independent audit returned three blocking findings despite cold CI and the full frozen gate passing: imported arguments can override the recorded actor during simulator replay/adoption; reachable purchase counts exceed the tested layout capacity; and handler discovery misses bracket-notation reads. Four rows are blocked and thirteen remain unjudged. The actor finding does not establish a cryptographic or deployed-service failure; the handler finding is a demonstrated instrument weakness. No acceptance or landing. C2/C3/C4 remain required.",
+      "acceptance": "Validate the complete unaccepted C1 candidate against the accepted model, retain per-suite evidence, then independently audit and land it. This is the prerequisite for the reserved proposer-assent landing; later #70 work does not block that sequence.",
+      "next": "Complete geometry-control setup repair and gate preparation, retaining all 17 original audit rows. Perform final validation and independent full-candidate audit on the actual accepted integration base. C2/C3/C4 remain required and uncommissioned work stays uncommissioned.",
+      "dependencies": [
+        "S-18",
+        "S-34"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S-23",
+      "group": "clients",
+      "title": "See pending versus accepted before acting",
+      "persona": "a member using the interface",
+      "want": "the current authority boundary visible before a click",
+      "benefit": "I understand which actions are valid now",
+      "kind": "product",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #70",
+            "url": "https://github.com/paolino/reactivegas/issues/70"
+          }
+        ],
+        "note": "This story is a slice of the linked delivery work; the issue may cover other stories too."
+      },
+      "owner": "Simulator ticket owner",
+      "state": "planned",
+      "summary": "Pending and accepted are distinct states with different authority. The interface story remains part of the simulator programme and must carry through to the product clients; internal data alone is not rendered-state evidence.",
+      "acceptance": "Inspect the rendered state before action and exercise the permitted and refused paths under each status.",
+      "next": "Implement and verify the presentation against landed pledge and assent semantics.",
+      "dependencies": [
+        "S-05",
+        "S-06",
+        "S-22"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S-24",
+      "group": "clients",
+      "title": "Use the shared economic core in a browser",
+      "persona": "a browser user",
+      "want": "the same economic rules as the coordinator",
+      "benefit": "my client cannot silently fork the economy",
+      "kind": "product",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #82",
+            "url": "https://github.com/paolino/reactivegas/issues/82"
+          },
+          {
+            "label": "Reactivegas #84",
+            "url": "https://github.com/paolino/reactivegas/issues/84"
+          }
+        ],
+        "note": "This story is a slice of the linked delivery work; the issue may cover other stories too."
+      },
+      "owner": "Milestone owner until commissioning",
+      "state": "planned",
+      "summary": "The existing kelgroups monorepo includes a PureScript client shell, keys, transport and packaging. Reactivegas views and wasm integration are missing. Native/wasm module equality must be demonstrated, not assumed. No third repository is entailed.",
+      "acceptance": "Build the same pure Haskell economic core natively and as wasm32-wasi; a module-set divergence fails; the released browser completes the real coordinator journey.",
+      "next": "Constrain core dependencies for wasm from the start, then implement the browser integration under its own scope grant.",
+      "dependencies": [
+        "S-25",
+        "S-27"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S-25",
+      "group": "clients",
+      "title": "Define client transition authority",
+      "persona": "a client maintainer",
+      "want": "one explicit authority for each transition",
+      "benefit": "retained client computations cannot contradict the core",
+      "kind": "enabler",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #84",
+            "url": "https://github.com/paolino/reactivegas/issues/84"
+          },
+          {
+            "label": "Reactivegas #82",
+            "url": "https://github.com/paolino/reactivegas/issues/82"
+          }
+        ],
+        "note": "This story is a slice of the linked delivery work; the issue may cover other stories too."
+      },
+      "owner": "Future browser ticket owner",
+      "state": "planned",
+      "summary": "The existing PureScript base fold is not by itself proof of duplicated economic semantics or authority to delete it. Its retained base behaviour must be reconciled with core-owned transitions, including proposer-assent changes.",
+      "acceptance": "Publish a core-decided/client-decided/render-only boundary and prove parity for retained base behaviour. Economic module-set equality alone does not establish that parity.",
+      "next": "Reconcile existing client calls and folds before changing their authority.",
+      "dependencies": [
+        "S-03",
+        "S-05"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S-26",
+      "group": "clients",
+      "title": "Operate through a released CLI",
+      "persona": "a command-line user",
+      "want": "the supported journey over a stable coordinator API",
+      "benefit": "I can operate the group without the browser or source",
+      "kind": "product",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #83",
+            "url": "https://github.com/paolino/reactivegas/issues/83"
+          }
+        ],
+        "note": "This story is a slice of the linked delivery work; the issue may cover other stories too."
+      },
+      "owner": "Milestone owner until commissioning",
+      "state": "planned",
+      "summary": "The CLI is a required milestone deliverable, not an optional follow-up. It has not been dispatched. Its API must be defined and reconciled with the existing browser transport contract.",
+      "acceptance": "A released native CLI uses the coordinator API and shared core as specified, completing meaningful successful and refused actions against the released server.",
+      "next": "Define the API in coordinator delivery, then implement and independently exercise the CLI.",
+      "dependencies": [
+        "S-27"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "S-28",
+      "group": "design",
+      "title": "Read the current model truthfully",
+      "persona": "a design reader",
+      "want": "implemented, ruled-undelivered and unresolved behaviour separated",
+      "benefit": "documentation does not promise capabilities that are absent",
+      "kind": "enabler",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #71",
+            "url": "https://github.com/paolino/reactivegas/issues/71"
+          }
+        ],
+        "note": "#71 owns the current design record. Closed historical #47 is superseded; no old draft is accepted by this story."
+      },
+      "owner": "Design-record ticket owner",
+      "state": "review",
+      "summary": "PR77 remains draft at 77f8be6. Static repairs are committed and pushed; final validation and independent audit wait for the final accepted model/quality base. One extra full build was caused by a contradictory owner instruction and is recorded, not erased.",
+      "acceptance": "The design matches accepted source, with fail-closed discovered citation checking and laws, witnesses, authority and unfinished requirements distinguished.",
+      "next": "Refresh final pins and perform final full validation and audit only after the relevant accepted model and quality base.",
+      "dependencies": [
+        "S-05",
+        "S-06",
+        "S-08",
+        "S-10",
+        "S-18",
+        "S-19",
+        "S-20",
+        "S-21"
+      ],
+      "evidence": [
+        {
+          "label": "PR 77",
+          "url": "https://github.com/paolino/reactivegas/pull/77"
+        }
+      ]
+    },
+    {
+      "id": "S-29",
+      "group": "design",
+      "title": "Decide legacy feature inclusion explicitly",
+      "persona": "a user relying on legacy capabilities",
+      "want": "omissions from the new product to be explicit decisions",
+      "benefit": "an implementation non-goal cannot silently remove a requirement",
+      "kind": "operation",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "M3 follow-up #91",
+            "url": "https://github.com/paolino/reactivegas/issues/91"
+          },
+          {
+            "label": "M2 design record #71",
+            "url": "https://github.com/paolino/reactivegas/issues/71"
+          }
+        ],
+        "note": "The M2 scope decision is settled. Feature delivery is tracked in M3 and is explicitly excluded from M2 completion."
+      },
+      "owner": "Milestone owner / design-record owner",
+      "state": "delivered",
+      "summary": "Operator ruling on 2026-09-06: Voci catalogue stays outside M2 and is retained for M3 as issue #91. This resolves the inclusion decision; it does not claim the Voci feature is implemented or remove any other M2 requirement.",
+      "acceptance": "Record an explicit Voci inclusion/exclusion boundary and update the outcome, design and delivery mapping consistently without inventing implementation.",
+      "next": "Carry the dated M2 non-goal and M3 issue link into the final design record; implement Voci only under its later M3 mandate.",
+      "dependencies": [],
+      "evidence": [
+        {
+          "label": "Voci filed in M3 as #91",
+          "url": "https://github.com/paolino/reactivegas/issues/91"
+        }
+      ]
+    },
+    {
+      "id": "S-30",
+      "group": "operations",
+      "title": "Receive reports without pressing Enter",
+      "persona": "the supervising operator",
+      "want": "worker reports to reach the desk through durable records",
+      "benefit": "I do not become the message transport or accidentally approve machine text",
+      "kind": "operation",
+      "tracking": {
+        "kind": "standing",
+        "tickets": [],
+        "note": "Standing supervision obligation. Acknowledgement and terminal-restoration defects are retained as owned tooling gaps; no separate implementation ticket has been filed."
+      },
+      "owner": "Milestone owner",
+      "state": "standing",
+      "summary": "Durable local reporting remains the protocol, but supervision is not generally repaired. The quality owner reported two approval-keystroke incidents that changed an auditor’s active model; restoration and the audit’s interpretation of that interval must remain explicit. New owners were verified through both launch identity and the active session. Transport timeouts were reconciled against real acknowledgements rather than treated as missing workers. A replacement epic owner also missed a child handback while idle with unsent text; the desk preserved that text and delivered the actual artifact pointer, acknowledged at 06:26:48Z. Staffing changes do not substitute for an armed supervision loop.",
+      "acceptance": "Reports arrive without user keystrokes; pause/recovery detection is exercised against actual delivery, and existing acknowledgements are read before waiting for new ones.",
+      "next": "Verify the current prompt and resulting session state; consume completed handbacks before waiting, and distinguish a live command from useful progress. Never inject worker reports into the operator composer.",
+      "dependencies": [],
+      "evidence": []
+    },
+    {
+      "id": "S-31",
+      "group": "operations",
+      "title": "Account honestly for delivery effort",
+      "persona": "the operator funding the work",
+      "want": "effort and outcomes reported separately",
+      "benefit": "verification rework is not sold as delivered product value",
+      "kind": "operation",
+      "tracking": {
+        "kind": "standing",
+        "tickets": [],
+        "note": "Standing reporting obligation, not a product delivery ticket."
+      },
+      "owner": "Milestone owner",
+      "state": "standing",
+      "summary": "Factory skills now require earlier authorized checks, consolidated parent corrections, failure attribution and cumulative spend across re-cuts. They prefer Claude/Codex for new ticket ownership and retain economical implementation seats. The operator separately ordered the current Muse ticket/epic owners replaced by Opus; existing worker evidence and budgets are preserved. Skill validation and a selector regression passed, but no throughput or model-cost improvement has yet been established.",
+      "acceptance": "Keep cumulative spend and failed evidence; distinguish implementation, owner green, independent acceptance, landing and release in each report.",
+      "next": "Measure accepted outcomes and total reported author/owner/auditor cost, including rejected attempts, repair cycles and supervision interventions. Keep unknown telemetry unknown and unchanged parked tickets parked.",
+      "dependencies": [],
+      "evidence": []
+    },
+    {
+      "id": "S-32",
+      "group": "operations",
+      "title": "Resume from durable evidence",
+      "persona": "a successor maintainer",
+      "want": "a current map and recoverable evidence",
+      "benefit": "I can resume without rebuilding a narrative from terminal text",
+      "kind": "operation",
+      "tracking": {
+        "kind": "standing",
+        "tickets": [],
+        "note": "Standing recovery obligation. The wiki is a product projection; the separate recovery branch carries selected control evidence and is public because the repository is public."
+      },
+      "owner": "Milestone owner",
+      "state": "standing",
+      "summary": "The 05:12 UTC selected recovery checkpoint verified 4238 files through a fresh remote archive, including the separate final static submission and current audit receipts. Later writes remain time-scoped until captured. This is not a full-host backup.",
+      "acceptance": "The successor can locate exact candidates, authority, paused process state and remaining work; remote recovery coverage is stated at its actual scope.",
+      "next": "Capture those newer events and this updated wiki in the next verified selected checkpoint. Preserve failed evidence and superseded versions.",
+      "dependencies": [],
+      "evidence": []
+    },
+    {
+      "id": "S-33",
+      "group": "operations",
+      "title": "Keep delivery order and the wiki current",
+      "persona": "the milestone owner",
+      "want": "one maintained story map with dependencies",
+      "benefit": "changes do not disappear between the desk, tickets and diagram",
+      "kind": "operation",
+      "tracking": {
+        "kind": "standing",
+        "tickets": [],
+        "note": "Standing workflow obligation. This row is not a ticket, a new delivery grant or a substitute for the milestone outcome audit."
+      },
+      "owner": "Milestone owner",
+      "state": "standing",
+      "summary": "The full outcome and dependency map are retained. Scheduling now allows an accepted S4 correspondence slice before C1 under the existing reservation; C1 geometry repair has resumed with no active audit; C1 still precedes proposer and pledge changes. Conditional PR preparation is distinct from merge authorization. Every current open milestone issue remains mapped.",
+      "acceptance": "Reconcile the story register and wiki Gantt on each material transition; publish and read back the update, or explicitly record wiki-sync blocked. Preserve all unticketed work and open decisions.",
+      "next": "Publish and read back the reconciled story register and dependency-stage Gantt, then capture the selected recovery evidence. Retain all unimplemented product requirements.",
+      "dependencies": [],
+      "evidence": []
+    },
+    {
+      "id": "S-34",
+      "group": "clients",
+      "title": "Keep crowded purchase views usable",
+      "persona": "a member of a large buying group",
+      "want": "purchase controls to remain readable and reachable as their number grows",
+      "benefit": "a crowded scene does not hide money or make actions unusable",
+      "kind": "product",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #70",
+            "url": "https://github.com/paolino/reactivegas/issues/70"
+          }
+        ],
+        "note": "The operator chose expanding rings on 2026-09-06 within existing simulator ticket #70. Implementation and verification remain required; no semantic purchase cap is authorized."
+      },
+      "owner": "Simulator ticket owner",
+      "state": "in-progress",
+      "summary": "Full simulator gate-v17 passed on candidate48f76d9. Final CI failed at the newly landed mirror reconciliation step. A same-command base CI control is running to identify the responsible integration boundary; no candidate acceptance.",
+      "acceptance": "Record the explicit layout ruling, then verify geometry and rendered interaction under that contract without adding a semantic purchase cap.",
+      "next": "Resolve the measured CI failure, then perform the authorized full independent candidate audit. No attribution from invalid setup controls.",
+      "dependencies": [],
+      "evidence": []
+    },
+    {
+      "id": "S-35",
+      "group": "economy",
+      "title": "Record and return money through one economic core",
+      "persona": "a member or cashier",
+      "want": "deposits, withdrawals, cashier transfers and donations to update the right balances together",
+      "benefit": "cash custody and account balances stay consistent and invalid actions are refused",
+      "kind": "product",
+      "tracking": {
+        "kind": "ticketed",
+        "tickets": [
+          {
+            "label": "Reactivegas #90",
+            "url": "https://github.com/paolino/reactivegas/issues/90"
+          },
+          {
+            "label": "Reactivegas #67",
+            "url": "https://github.com/paolino/reactivegas/issues/67"
+          }
+        ],
+        "note": "First D2 implementation slice, ticket #90 under #67. It does not close integrated D2/D3 or the wider escrow story."
+      },
+      "owner": "Haskell delivery owner",
+      "state": "in-progress",
+      "summary": "Issue #90 is commissioned. Ticket owner592 started at08:54:29Z under Haskell epic504, with the four-arm mandate, real build/CI wiring, partial replay and direct refusal/effect tests, one shared execution budget and independent inspectors. No accepted implementation candidate yet.",
+      "acceptance": "One production pure core implements all four arms; step-addressed partial corpus replay and direct applied/refused/frame-condition tests pass under actual CI, with distinguishing negative controls and independent inspection. Shared native/wasm architecture retained; actual wasm acceptance remains #82.",
+      "next": "Owner dispatches the issue-backed implementation and two blind inspectors under one shared ten-execution budget; at most one repair batch.",
+      "dependencies": [],
+      "evidence": []
+    }
+  ]
+}

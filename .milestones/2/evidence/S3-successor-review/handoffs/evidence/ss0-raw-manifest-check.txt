@@ -1,0 +1,26 @@
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/final-status: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/identity.txt: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/op1.exit: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/op1.ms: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/op1-oleans.txt: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/op1.stderr: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/op1.stdout: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/op2-applied.diff: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/op2-classification.txt: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/op2-dirty-status: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/op2.exit: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/op2.ms: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/op2.stderr: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/op2.stdout: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/op3.exit: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/op3.ms: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/op3-restored-status: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/op3.stderr: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/op3.stdout: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/op4.exit: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/op4.ms: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/op4.stderr: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/op4.stdout: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/runner.stderr: OK
+/tmp/reactivegas/ms2/e-lean-compliance/measure-owner-s3-ss0/evidence/run-v2/runner.stdout: FAILED
+sha256sum: WARNING: 1 computed checksum did NOT match

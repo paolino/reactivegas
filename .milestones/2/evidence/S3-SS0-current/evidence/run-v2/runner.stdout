@@ -1,0 +1,13 @@
+2026-09-06T06:59:42.453014964Z  [+0s]  SS-0 v2 START
+2026-09-06T06:59:42.509198470Z  [+0s]  OP1 cold baseline (substantive) lake build Reactivegas.Invariants t=360s
+2026-09-06T06:59:58.512296249Z  [+16s]  OP1 exit=0 ms=15980 cwd-line=ACTUAL-CWD-BEFORE-LAKE: /code/reactivegas-66-s3-ss0-scratch/lean
+2026-09-06T06:59:58.529412931Z  [+16s]  OP1 produced 19 oleans
+2026-09-06T06:59:58.538349801Z  [+16s]  OP2 applying frozen atom
+2026-09-06T06:59:58.570055478Z  [+16s]  OP2 source DELIBERATELY DIRTY (recorded, not called clean): 1 path(s)
+2026-09-06T07:00:18.405149428Z  [+36s]  OP2 exit=1 ms=19819
+2026-09-06T07:00:18.425327283Z  [+36s]  OP2 classification written; a nonzero exit alone is NOT a named semantic RED — see op2-classification.txt
+2026-09-06T07:00:18.431416013Z  [+36s]  OP3 restore + matching build (substantive) t=140s
+2026-09-06T07:00:21.587011319Z  [+39s]  OP3 exit=0 ms=3125
+2026-09-06T07:00:21.596680418Z  [+39s]  OP4 U-CHECK isolated elaboration (targeted) t=55s
+2026-09-06T07:00:24.089412209Z  [+42s]  OP4 ACTUAL exit=0 ms=2476
+2026-09-06T07:00:24.115356119Z  [+42s]  SS-0 v2 TERMINAL — op1=0 op2=1 op3=0 OP4-ACTUAL=0 ; wall=42s

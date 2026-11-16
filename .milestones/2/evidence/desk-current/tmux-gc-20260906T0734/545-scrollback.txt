@@ -1,0 +1,475 @@
+ +275   Targeted 4/24, probes 1/4. HEAD still `ab25cd1`, tracked-clean.
+
+
+ GREEN executed — OVERALL_FAIL=1 on the sole M8 row; everything else green. No other builds ran.
+
+ Passing: legs 1/2/2b (hygiene, dd1d62d6…, ancestry, 7 pins) · leg 3 (exit 0) · leg 4 (31 registered == file, all executed, exit 0 — candidate fully green including concurrent +
+ faulting-codec controls) · M1–M7 all killed with witness quotes (M6 authority replay-equality verbatim-applicable, no variant; M7 double-kill with prop falsified after 2 tests) · leg 6 (just
+ ci exit 0: 135+91 examples, Lean, client) · leg 7 · 1-after tracked-clean with all mutants hash-restored.
+
+ LEG-FAIL 5-M8 — gate-side splice defect, not a candidate defect: the frozen v10.1 splice replaces the post-decision force (matched) and inserts _ <- evaluate payloadText pre-decision where
+ payloadText is unbound — the let block lives post-decision inside the Right branch per the mandated decision-first shape. Result: GHC-88464 compile error → empty Failures section →
+ INCONCLUSIVE (never a kill). A faithful F3-reorder mutant must hoist the let bindings with the force. M8 preconditions all held; refusal-ordering is exactly as mandated.
+
+ Evidence: handoffs/evidence/20260906T020313Z-ab25cd1-* (full log + per-leg logs + meta + registered rows). Disposition up: corrected v10.x splice + re-freeze + re-falsification + re-run
+ belongs to the ticket owner per mandate §4 — no owner repair indicated, no candidate change made. Spend: builds 11/14 (SLIM 3B unspent), targeted 4/24, probes 1/4. HEAD ab25cd1,
+ tracked-clean.
+
+
+ Two ordered steps (NOTE-040 via ticket owner). STEP 1 — narrow scope pre-check (1 probe from dev ≤4): run your proven P-narrow GHC mechanism against handoffs/m8v102-mutated-Store.hs (v10.2
+ M8-mutated copy); report the EXACT command + exit (must be 0 diagnostics). If infeasible or diagnostics fire: STOP + report (gap), do NOT proceed. STEP 2 — isolated M8 (1B) only after clean
+ narrow: run handoffs/isolated-m8-runner.sh (frozen, audited); report exit + ISO-LOG path + post-HEAD/tree + spend. Its result does NOT replace M8 in the full gate. No other builds.
+
+
+
+ $ ls -la /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/m8v102-mutated-Store.hs /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/isolated-m8-runner.sh 2>&1;
+ grep -n "MUTANT-M8" /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/m8v102-mutated-Store.hs | head
+
+ -rwxr-xr-x 1 paolino users  6264 Sep  6 03:24 /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/isolated-m8-runner.sh
+ -rw-r--r-- 1 paolino users 20183 Sep  6 03:24 /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/m8v102-mutated-Store.hs
+ 629:        _ <- evaluate payloadText -- MUTANT-M8-PREFORCE: encode forced pre-decision
+ 633:                -- MUTANT-M8-NOFORCE: encode+forcing hoisted pre-decision
+
+ Took 0.0s
+
+
+
+ $ cd /code/kelgroups-issue-28 && D=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-owner-s28r2 && nix develop .#ci --quiet -c ghc -fno-code -v0 -Wall -Werror -XGHC2021
+ -XDerivingStrategies -XLambdaCase -XOverloadedStrings -XStrictData -ilib -itest -package-db dist-newstyle/packagedb/ghc-9.8.4 -hide-package kelgroups -package keri-hs
+ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/m8v102-mutated-Store.hs 2>&1 | tee "$D/P-narrow-m8v102.log"; echo "P-NARROW-M8-EXIT=${PIPESTATUS[0]}" (timeout 900s)
+
+ P-NARROW-M8-EXIT=0
+
+ Took 1.1s
+
+
+
+ edit /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-owner-s28r2/STATUS.md
+
+      ...
+  242   re-verified (M6 x1/x1/x1, M7 x1, decision x1, force x1), recount 31.
+  243 - Spend FINAL: builds 0/14, targeted 4/24, probes 1/4 (trigger 3
+  244   untouched), formatters charge-0. No GREEN runs. BINDING-ready.
+  245
+ +246 ## NOTE-040 STEP 1 record (narrow pre-check, 1 probe)
+ +247
+ +248 - EXACT command: P-narrow mechanism with target swapped to the v10.2
+ +249   M8-mutated copy:
+ +250   `nix develop .#ci --quiet -c ghc -fno-code -v0 -Wall -Werror
+ +251   -XGHC2021 -XDerivingStrategies -XLambdaCase -XOverloadedStrings
+ +252   -XStrictData -ilib -itest -package-db
+ +253   dist-newstyle/packagedb/ghc-9.8.4 -hide-package kelgroups -package
+ +254   keri-hs /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/m8v102-mutated-Store.hs`
+ +255 - Exit 0, zero diagnostics (`P-narrow-m8v102.log` retained, silent).
+ +256   Feasible; no STOP. Probes 1/4 → 2/4. Proceeding to STEP 2.
+ +257
+  246 ## GREEN record (v10.1, HEAD ab25cd1, OVERALL_FAIL=1 — M8 splice defect)
+  247
+  248 - Evidence: `handoffs/evidence/20260906T020313Z-ab25cd1-` (`gate-full.log`
+  249   + `leg3-build` + `leg4-test` + `leg5-M1-build/M2..M8-test` + `leg6-ci`
+      ...
+
+
+
+ $ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/isolated-m8-runner.sh; echo "ISO-EXIT=$?" (timeout 1500s)
+
+ ABORT: HEAD mismatch
+ ISO-EXIT=3
+
+ Took 0.0s
+
+
+
+ read /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/isolated-m8-runner.sh
+
+
+ Diagnosing a CI abort caused by a git hash mismatch and indent-sensitive precondition grep between S28-R1 and S28-R2.
+
+ Recording a pre-evidence HEAD mismatch abort with no ISO log or spend and an unchanged tree.
+
+
+ $ cd /code/kelgroups-issue-28 && git rev-parse --short HEAD && git status --porcelain | grep -v '^??' || echo tracked-clean; git stash list | head -n 3; echo ---; git diff --stat HEAD | tail
+ -n 3
+
+ ab25cd1
+ tracked-clean
+ ---
+
+ Took 0.0s
+
+
+
+ edit /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-owner-s28r2/STATUS.md
+
+      ...
+  254   keri-hs /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/m8v102-mutated-Store.hs`
+  255 - Exit 0, zero diagnostics (`P-narrow-m8v102.log` retained, silent).
+  256   Feasible; no STOP. Probes 1/4 → 2/4. Proceeding to STEP 2.
+  257
+ +258 ## NOTE-040 STEP 2 record (STOP — frozen-runner HEAD gate, no spend)
+ +259
+ +260 - Ran `handoffs/isolated-m8-runner.sh` EXACTLY as instructed → exit 3
+ +261   `ABORT: HEAD mismatch`, pre-evidence-setup (no ISO-LOG created), pre-any
+ +262   nix invocation (0 builds, 1B M8 allocation UNSPENT). No other builds.
+ +263 - Cause (read from the frozen script, recon only): `CAND_EXPECT=` pins
+ +264   `3af3d06…` (S28-R2 start bytes), but the worktree mandate + BINDING are
+ +265   `ab25cd1` (repaired candidate). Further: at `3af3d06` the runner's own
+ +266   v10.2 preconditions cannot hold (no decision-first shape — lets sit at
+ +267   col 4 pre-lock — and no row-2 faulting-codec controls for kill_check),
+ +268   so checking out start bytes to satisfy the gate would fail closed
+ +269   pointlessly. No checkout attempted, no script touched (frozen), no
+ +270   workaround improvised — restriction-blocks-work: recorded, work stopped.
+ +271 - Post-state verified: HEAD still `ab25cd1`, tracked-clean, no stash,
+ +272   no diff. Tree untouched by the abort.
+ +273 - Finding UP: runner needs owner correction (CAND_EXPECT vs candidate
+ +274   under test) + re-instruction. Its result does not exist; nothing here
+ +275   replaces M8 in the full gate.
+ +276 - Spend: builds 11/14 (GREEN 11B; SLIM 3B + ISO-M8 1B unspent),
+ +277   targeted 4/24, probes 2/4. Awaiting direction.
+ +278
+  258 ## GREEN record (v10.1, HEAD ab25cd1, OVERALL_FAIL=1 — M8 splice defect)
+  259
+  260 - Evidence: `handoffs/evidence/20260906T020313Z-ab25cd1-` (`gate-full.log`
+  261   + `leg3-build` + `leg4-test` + `leg5-M1-build/M2..M8-test` + `leg6-ci`
+      ...
+
+
+ Both steps executed; STEP 2 stopped per restriction-blocks-work. No other builds.
+
+ STEP 1 (1 probe, clean): P-narrow mechanism against handoffs/m8v102-mutated-Store.hs → exit 0, zero diagnostics (P-narrow-m8v102.log retained). Probes 2/4.
+
+ STEP 2 (STOP, exit 3, zero spend): ran handoffs/isolated-m8-runner.sh exactly → ABORT: HEAD mismatch, pre-evidence-setup (no ISO-LOG created) and pre-any-nix-invocation (0 builds; the 1B
+ allocation unspent). Cause, read from the frozen script: CAND_EXPECT pins 3af3d06… (start bytes) while mandate+BINDING are ab25cd1. At 3af3d06 the runner's own v10.2 preconditions couldn't
+ hold anyway (no decision-first lets at col 16, no row-2 faulting controls for kill_check) — so no checkout was attempted, nothing edited, nothing improvised. Post-state verified: HEAD
+ ab25cd1, tracked-clean, no stash, no diff.
+
+ Finding up: the runner needs owner correction (expected-HEAD vs candidate under test) plus re-instruction; no result exists from STEP 2 and nothing here replaces M8 in the full gate. Spend:
+ builds 11/14, targeted 4/24, probes 2/4. Awaiting direction.
+
+
+ Handback + rerun required (NOTE-041 via ticket owner): read inbox/NOTE-006-handback-plus-rerun.md (binding) — append timestamped handback (STEP1 narrow + STEP2 exit-3 refusal, STEP2-COMPLETE
+ absence recorded; BLOCKED or COMPLETE with marker), update books to 11/26+4/24+2/4 (old preserved, stop printing 14), then run handoffs/isolated-m8-runner-v2.sh (1B) and report. No other
+ builds.
+
+
+
+ read /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-owner-s28r2/inbox/NOTE-006-handback-plus-rerun.md
+
+
+ Appending one handback event covering both steps, choosing BLOCKED or COMPLETE with marker discipline per precedent.
+
+ Choosing a single BLOCKED handback event to record STEP1 completion and STEP2 absence without forging a COMPLETE.
+
+
+ $ ls -la /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/isolated-m8-runner-v2.sh && head -n 12
+ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/isolated-m8-runner-v2.sh
+
+ ... (8 earlier lines, ctrl+o to expand)
+ EVIDENCE_DIR="${G28_EVIDENCE_DIR:-/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/evidence}"
+ mkdir -p "$EVIDENCE_DIR" 2>/dev/null
+ STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
+ SHORT="$(git rev-parse --short HEAD 2>/dev/null || echo unknown)"
+ abort3() { echo "ABORT(exit 3): $1"; echo "RECOVERY: inspect 'git status'/'git diff', restore by hand, re-run gate"; sleep 1; exit 3; }
+
+ Took 0.0s
+
+
+
+ $ /code/llm-settings/shared/skills/worker-protocol/scripts/status-event /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-owner-s28r2/STATUS.md BLOCKED "HANDBACK NOTE-040: STEP1
+ narrow exit-0 (ghc -fno-code -v0 -Wall -Werror +deps, target m8v102-mutated-Store.hs, P-narrow-m8v102.log); STEP2 v1-runner exit-3 preflight HEAD-refusal, zero builds, no ISO-LOG; no
+ STEP2-COMPLETE exists (absence recorded, not forged); tree ab25cd1 clean; books 11/26+4/24+2/4"
+
+ (no output)
+
+ Took 0.0s
+
+
+
+ $ tail -n 2 /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-owner-s28r2/STATUS.md
+
+ Targeted 4/24, probes 1/4. HEAD still `ab25cd1`, tracked-clean.
+ 2026-09-06T02:32:08Z  BLOCKED  HANDBACK NOTE-040: STEP1 narrow exit-0 (ghc -fno-code -v0 -Wall -Werror +deps, target m8v102-mutated-Store.hs, P-narrow-m8v102.log); STEP2 v1-runner exit-3
+ preflight HEAD-refusal, zero builds, no ISO-LOG; no STEP2-COMPLETE exists (absence recorded, not forged); tree ab25cd1 clean; books 11/26+4/24+2/4
+
+ Took 0.0s
+
+
+
+ $ cd /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-owner-s28r2 && cat >> STATUS.md << 'EOF'
+
+ ## Books (NOTE-041 — superseded 14 ceiling no longer printed)
+ - Builds 11/26 spent (GREEN 11B; SLIM 3B + isolated 1B + gate 11B newly
+   available = 15: EXACT fit, zero margin). Failed v1 attempt cost ZERO
+   builds (refused pre-mutation) — books 11, not 12. Targeted 4/24.
+   Diagnostic 2/4 (P-narrow + P-narrow-m8v102 spent).
+ EOF
+ echo books-appended
+
+ books-appended
+
+ Took 0.0s
+
+
+
+ $ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/isolated-m8-runner-v2.sh; echo "ISO-V2-EXIT=$?" (timeout 1500s)
+
+ ... (480 earlier lines, ctrl+o to expand)
+ LEG-PASS: 5-M8: test RED quoting faulting-codec refused control
+ restored byte-exact: lib/KelGroups/Store.hs (M8)
+ ISOLATED-M8-RESULT LEG5_OK=1 OVERALL_FAIL=0
+ post-HEAD=ab25cd1 post-clean=0
+ ISO-V2-EXIT=0
+
+ Took 35.2s
+
+
+
+ $ ls -la /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/evidence/20260906T023215Z-ab25cd1-* 2>&1; cd /code/kelgroups-issue-28 && git rev-parse --short HEAD && git status
+ --porcelain | grep -v '^??' || echo tracked-clean
+
+ ... (7 earlier lines, ctrl+o to expand)
+ drwxr-xr-x 2 paolino users 4096 Sep  6 03:32 .
+ drwxr-xr-x 9 paolino users 4096 Sep  6 03:32 ..
+ -rw-r--r-- 1 paolino users  384 Sep  6 03:32 row2.txt
+ ab25cd1
+ tracked-clean
+
+ Took 0.0s
+
+
+
+ $ cd /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-owner-s28r2 && cat >> STATUS.md << 'EOF'
+
+ ## NOTE-041 rerun record (isolated M8 v2 — LEG-PASS)
+ - Runner v2 (CAND ab25cd1, strengthened preflight): PREFLIGHT-OK logged.
+ - Mutant: lets+force hoisted pre-decision (persisted
+   `20260906T023215Z-ab25cd1-m8-mutant.diff`, staged-compare IDENTICAL).
+ - M8 test exit 1, GHC-errors 0, Failures quotes BOTH row-2 faulting
+   refused controls (`nonmember keeps exact refusal` + `zero state, counts
+   and rows`) via the seeded codec error — exception-replaces-required-Left
+   as attested. KILL-QUOTE M8 PASS. Restored byte-exact (Store.hs).
+ - ISOLATED-M8-RESULT LEG5_OK=1 OVERALL_FAIL=0. ISO-LOG
+   `20260906T023215Z-ab25cd1-isolated-M8.log`, M8-test log
+   `20260906T023215Z-ab25cd1-leg5-M8-test.log`, PRELOG
+   `20260906T023215Z-ab25cd1-preflight.log`, row2 registered file — all
+   under handoffs/evidence/. Post-HEAD ab25cd1, tracked-clean.
+ - Result does NOT replace M8 in the full gate (per terms).
+ - Spend: builds 12/26 (GREEN 11B + isolated 1B; SLIM 3B + gate 11B = 14
+   available, zero margin past them), targeted 4/24, diagnostic 2/4.
+ EOF
+ echo recorded
+
+ recorded
+
+ Took 0.0s
+
+
+ All three NOTE-006 items complete. No other builds.
+
+ 1. Handback (BLOCKED event, timestamped, prose preserved): STEP1 narrow exit-0 with exact command + log; STEP2 v1 exit-3 preflight refusal with zero builds and no ISO-LOG — no STEP2-COMPLETE
+ exists, absence recorded not forged; tree ab25cd1 clean.
+
+ 2. Books (old lines preserved, 14 ceiling retired): builds 11/26 (GREEN 11B; SLIM 3B + isolated 1B + gate 11B newly available = 15, exact fit, zero margin — failed v1 cost zero, books 11 not
+ 12); targeted 4/24; diagnostic 2/4.
+
+ 3. Rerun (1B) — ISOLATED M8 v2 LEG-PASS: preflight OK with logging; mutant (lets+force hoisted pre-decision) persisted with staged-compare IDENTICAL; M8 test exit 1, GHC-errors 0, Failures
+ quotes both row-2 faulting refused controls via the seeded codec error — the attested exception-replaces-required-Left shape; Store.hs restored byte-exact. Result: LEG5_OK=1 OVERALL_FAIL=0,
+ post-HEAD ab25cd1, tracked-clean. Does not replace M8 in the full gate.
+ - ISO-LOG: handoffs/evidence/20260906T023215Z-ab25cd1-isolated-M8.log
+ - M8-test: ...-leg5-M8-test.log · PRELOG: ...-preflight.log · mutant diff + row2 registered alongside.
+
+ Spend: builds 12/26, targeted 4/24, diagnostic 2/4.
+
+
+ Full remaining sequence on granted authority (NOTE-042, ONE instruction): (1) run ./gate.sh v10.2 full NOW (legs 3,4 + M1-M8 + 6 = 11B); (2) on GREEN pass run SLIM 3B (leg-3/4/6 exact
+ commands, echoed + EXIT-trailed logs); (3) final freeze (HEAD/tree verify + record); (4) terminal handback (COMPLETE with receipt identity + spend, or BLOCKED/capacity with reason + spend).
+ CONDITIONS: full-gate M8 diff digest MUST match retained 37be8bccc9f50e48 (persisted mutant diff) — else retain differing bytes + judge explicitly; no production edits beyond fence; no spend
+ beyond ceilings (11+3 of remaining 14; fit-break EXACT gap pre-overspend, never reduce scope). Report each stage + spend in your STATUS.
+
+
+
+ $ cd /code/kelgroups-issue-28 && grep -E "^GATE_VERSION=|^GATE_SHA256=|^FROZEN_BASE=" gate.sh && git rev-parse --short HEAD && git status --porcelain | grep -v '^??' || echo tracked-clean
+
+ GATE_SHA256="12f392b6fe691230269a70bf9588fa4c25f71330639d0b6a464ceb8c532d67b0"
+ GATE_VERSION="G28-1 v10.2 (S28R2-M8faithful)"
+ FROZEN_BASE="3af3d065b7d0c54f03d89b8c05d8b8acd4a53db4"
+ ab25cd1
+ tracked-clean
+
+ Took 0.0s
+
+
+
+ $ cd /code/kelgroups-issue-28 && ./gate.sh; echo "GATE-EXIT=$?" (timeout 2400s)
+
+ ... (1368 earlier lines, ctrl+o to expand)
+ LEG-PASS: 1-after: no tracked drift
+ evidence: /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/evidence/20260906T023750Z-ab25cd1-*.log (full log:
+ /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/evidence/20260906T023750Z-ab25cd1-gate-full.log)
+ ===== GATE G28-1 v10.2 (S28R2-M8faithful) COMPLETE: OVERALL_FAIL=0 =====
+ GATE-EXIT=0
+
+ [Full output: /tmp/pi-bash-8cc85a07a882b07b.log. Truncated: 1362 lines shown (50.0KB limit)]
+
+ Took 328.8s
+
+
+
+ $ LOG=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/handoffs/evidence/20260906T023750Z-ab25cd1-gate-full.log; grep -E "^(LEG-PASS|LEG-FAIL|===== LEG|=====
+ GATE|HEAD=|GATE_SHA256|.*(build|test|ci) exit=|M8 diff|M8 GHC)" "$LOG"
+
+ ... (50 earlier lines, ctrl+o to expand)
+ LEG-PASS: 7a: Trivial exports present
+ LEG-PASS: 7b: Trivial.hs contains no S28-1 (not counted)
+ ===== LEG 1: tracked hygiene (after) =====
+ LEG-PASS: 1-after: no tracked drift
+ ===== GATE G28-1 v10.2 (S28R2-M8faithful) COMPLETE: OVERALL_FAIL=0 =====
+
+ Took 0.0s
+
+
+
+ $ cd /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-owner-s28r2 && cat >> STATUS.md << 'EOF'
+
+ ## NOTE-042 STAGE 1 record (full gate v10.2 GREEN pass, 11B)
+ - Evidence: handoffs/evidence/20260906T023750Z-ab25cd1- (gate-full + leg3
+   + leg4 + leg5-M1..M8 + leg6-ci + meta + registered). GATE-EXIT=0,
+   OVERALL_FAIL=0. One invocation; fence Store.hs+spec held throughout.
+ - Legs 1/2/2b PASS (hygiene; header==normalized 12f392b6…; ancestry; 7 pins).
+ - Leg 3 PASS exit 0. Leg 4 PASS (31 registered == file, all executed none
+   pending, exit 0 — candidate green incl. concurrent + faulting controls).
+ - Leg 5: M1 unification / M2 rejecting-step / M3 atomic-hook / M4
+   exhaustiveness / M5 agreement / M6 authority / M7 direct-only (prop
+   falsified after 6 tests) / M8 faulting-refused (GHC-errors 0, BOTH
+   refused controls quoted) — ALL PASS, tree hash-restored.
+ - CONDITION verified: full-gate M8 diff digest
+   37be8bccc9f50e48275cca01be21d9aec686d404a205092b711acc279a8274c1
+   MATCHES retained 37be8bccc9f50e48 — no retain-and-judge path needed.
+ - Leg 6 PASS (just ci exit 0: 135+91 examples, Lean 17 jobs, client).
+   Leg 7 PASS. Leg 1-after PASS (tracked-clean).
+ - Spend: builds 12+11=23/26. Proceeding to STAGE 2 (SLIM 3B of remaining 3).
+ EOF
+ echo staged1-recorded
+
+ staged1-recorded
+
+ Took 0.0s
+
+
+
+ $ cd /code/kelgroups-issue-28 && D=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-owner-s28r2 && echo "=== SLIM leg3: nix develop .#ci --quiet -c just build" && nix develop
+ .#ci --quiet -c just build 2>&1 | tee "$D/slim2-build.log"; echo "SLIM2-BUILD-EXIT=${PIPESTATUS[0]}" | tee -a "$D/slim2-build.log"; echo "=== SLIM leg4: nix develop .#ci --quiet -c cabal
+ test all -O0 --test-show-details=direct" && nix develop .#ci --quiet -c cabal test all -O0 --test-show-details=direct 2>&1 | tee "$D/slim2-test.log"; echo "SLIM2-TEST-EXIT=${PIPESTATUS[0]}"
+ | tee -a "$D/slim2-test.log" (timeout 1500s)
+
+ ... (416 earlier lines, ctrl+o to expand)
+ Test suite invariants: PASS
+ Test suite logged to:
+ /code/kelgroups-issue-28/./dist-newstyle/build/x86_64-linux/ghc-9.8.4/kelgroups-0.1.0.0/t/invariants/noopt/test/kelgroups-0.1.0.0-invariants.log
+ 1 of 1 test suites (1 of 1 test cases) passed.
+ SLIM2-TEST-EXIT=0
+
+ Took 27.2s
+
+
+
+ $ cd /code/kelgroups-issue-28 && D=/tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-owner-s28r2 && echo "=== SLIM leg6: nix develop .#ci --quiet -c just ci" && nix develop .#ci
+ --quiet -c just ci 2>&1 | tee "$D/slim2-ci.log"; echo "SLIM2-CI-EXIT=${PIPESTATUS[0]}" | tee -a "$D/slim2-ci.log"; echo "HEAD=$(git rev-parse --short HEAD)"; git status --porcelain | grep -v
+ '^??' || echo tracked-clean (timeout 1500s)
+
+ ... (536 earlier lines, ctrl+o to expand)
+ ✓ Test succeeded for package "kelgroups-client".
+
+ SLIM2-CI-EXIT=0
+ HEAD=ab25cd1
+ tracked-clean
+
+ Took 38.1s
+
+
+
+ $ cd /code/kelgroups-issue-28 && git rev-parse HEAD && git rev-parse 'HEAD^{tree}' && git status --porcelain | grep -v '^??' || echo tracked-clean; git diff --stat 3af3d06..HEAD -- lib test
+ | tail -n 5
+
+ ... (1 earlier lines, ctrl+o to expand)
+ e52114c1f7a676073303ff76caa8f22821e0b2a3
+ tracked-clean
+  lib/KelGroups/Store.hs |  28 +++---
+  test/S28AppApiSpec.hs  | 256 ++++++++++++++++++++++++++++++++++++++++++++++++-
+  2 files changed, 270 insertions(+), 14 deletions(-)
+
+ Took 0.0s
+
+
+
+ $ cd /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-owner-s28r2 && cat >> STATUS.md << 'EOF'
+
+ ## NOTE-042 STAGE 2 record (SLIM 3B, all exit 0)
+ - `nix develop .#ci --quiet -c just build` → SLIM2-BUILD-EXIT=0 (Up to date).
+ - `nix develop .#ci --quiet -c cabal test all -O0 --test-show-details=direct`
+   → SLIM2-TEST-EXIT=0 (135 examples 0 failures + 91 keri-hs).
+ - `nix develop .#ci --quiet -c just ci` → SLIM2-CI-EXIT=0 (formatters clean,
+   hlint No hints, Lean 17 jobs, client build+test green).
+ - Logs (echoed + EXIT-trailed): slim2-build.log, slim2-test.log, slim2-ci.log.
+ - Spend: builds 23+3=26/26 (EXACT fit, zero margin).
+
+ ## NOTE-042 STAGE 3 record (final freeze)
+ - HEAD ab25cd11b554bcd5ba64ca56a050c2eb21432d3c, tree
+   e52114c1f7a676073303ff76caa8f22821e0b2a3 (matches submission-cited
+   tree), tracked-clean. Fence across full range 3af3d06..HEAD: exactly
+   lib/KelGroups/Store.hs + test/S28AppApiSpec.hs (+270/−14). No production
+   edits beyond fence. No spend beyond ceilings.
+ EOF
+ /code/llm-settings/shared/skills/worker-protocol/scripts/status-event /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-owner-s28r2/STATUS.md COMPLETE "GREEN-SLIM-FREEZE
+ candidate=ab25cd1 tree=e52114c1 gate=G28-1-v10.2 norm=12f392b6 full=a7ca9dc4 M8diff=37be8bccc9f50e48 legs=11B-pass SLIM=3B-pass spend=26of26B-targets probes=2of4dev" && tail -n 2 STATUS.md
+
+ edits beyond fence. No spend beyond ceilings.
+ 2026-09-06T02:44:48Z  COMPLETE  GREEN-SLIM-FREEZE candidate=ab25cd1 tree=e52114c1 gate=G28-1-v10.2 norm=12f392b6 full=a7ca9dc4 M8diff=37be8bccc9f50e48 legs=11B-pass SLIM=3B-pass
+ spend=26of26B-targets probes=2of4dev
+
+ Took 0.0s
+
+
+ Identifying a hash version mismatch and noting the full hash must differ for v10.
+
+
+ $ cd /tmp/reactivegas/ms2/e-kelgroups-substrate/t28-app-api/commit-owner-s28r2 && cat >> STATUS.md << 'EOF'
+
+ ## Correction to the terminal event above (self-caught, same round)
+ - The event's `full=a7ca9dc4` cites the v10 full-hash prefix from mandate
+   §4, NOT a measured v10.2 full hash — v10.2 re-freeze changed gate bytes,
+   so that prefix must NOT be read as v10.2's full identity. Binding gate
+   identity is the normalized self-hash `12f392b6…` (header == executable
+   bytes, leg-2 verified). Corrected here, original event stands.
+ EOF
+ echo corrected; grep -c "12f392b6" STATUS.md
+
+ corrected
+ 3
+
+ Took 0.0s
+
+
+ All four NOTE-042 stages complete. No production edits beyond fence, no spend beyond ceilings.
+
+ (1) Full gate v10.2 GREEN pass (11B): GATE-EXIT=0, OVERALL_FAIL=0. Legs 1/2/2b (hygiene, norm 12f392b6…, ancestry, 7 pins) · leg 3 exit 0 · leg 4 (31 registered, all executed, exit 0) · leg
+ 5 all eight kills quoted (M1 unification, M2 rejecting-step, M3 atomic-hook, M4 exhaustiveness, M5 agreement, M6 authority verbatim, M7 direct-only prop-falsified, M8 faulting-refused with
+ GHC-errors 0) · leg 6 ci exit 0 (135+91, Lean, client) · leg 7 · 1-after clean. Evidence: handoffs/evidence/20260906T023750Z-ab25cd1-*.
+ - CONDITION satisfied: full-gate M8 diff 37be8bccc9f50e48… matches retained — no judge path needed.
+
+ (2) SLIM 3B, all exit 0 (echoed + EXIT-trailed logs slim2-{build,test,ci}.log): build Up-to-date · 135+91 examples 0 failures · full ci green.
+
+ (3) Final freeze: HEAD ab25cd1, tree e52114c1 (matches submission), tracked-clean; fence across 3af3d06..HEAD exactly Store.hs + spec.
+
+ (4) Terminal handback COMPLETE (GREEN-SLIM-FREEZE, timestamped) with receipt identity + spend — plus one self-caught correction appended same round: the event's full=a7ca9dc4 is v10's prefix
+ from the mandate, not v10.2's measured full hash; binding identity is normalized 12f392b6… (leg-2 verified). Original event stands.
+
+ Spend final: builds 26/26 (exact fit, zero margin), targeted 4/24, diagnostic 2/4.
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+/code/kelgroups-issue-28 (fix/28-r1-conservation-effect)
+↑532k ↓185k R43M CH99.8% $0.177 35.5%/1.0M (auto)                                                                                               (opencode-go) muse-spark-1.3-contributor • xhigh
+
+

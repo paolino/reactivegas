@@ -1,0 +1,73 @@
+
+
+
+ $ grep -c -i 'mispredict' /tmp/reactivegas/ms2/e-kelgroups-substrate/t30-contract/scratch/pf8/ev/SUITE.log 2>&1; tail -n 3
+ /tmp/reactivegas/ms2/e-kelgroups-substrate/t30-contract/scratch/pf8/ev/SUITE.log 2>&1 | cut -c1-140 (timeout 30s)
+
+ 1
+ ===== SUITE: FAIL (setup-failures=0 mispredicts=17) =====
+
+ Took 0.4s
+
+
+
+ write /tmp/reactivegas/ms2/e-kelgroups-substrate/handoffs/OWNER-SUBSTITUTION-HANDOFF.md
+
+ # OWNER-SUBSTITUTION-HANDOFF — e-kelgroups-substrate (outgoing Muse → incoming Opus)
+
+ Author: outgoing epic owner `%532` (Muse Spark, Pi/opencode-go/xhigh),
+ 2026-09-06. Authority: operator role-substitution order (desk artifact
+ ROLE-SUBSTITUTION-OPUS-20260906). Terminal authority transfer, not a
+
+❯ Read /tmp/reactivegas/ms2/e-kelgroups-substrate-opus-20260906/inbox/NOTE-005-ONE-COPIED-FIXTURE-RECOVERY.md in full and act on it. Acknowledge in
+  /tmp/reactivegas/ms2/e-kelgroups-substrate-opus-20260906/STATUS.md. [POINTER-1788676943-3446828]
+
+  Read 1 file, ran 4 shell commands
+
+● Pointer landed. Waiting from the retained cursor 14 — advancing it only by records I actually consume.
+
+  Ran 3 shell commands
+
+● Step 1 filed. Performing the freeze review myself.
+
+  Ran 8 shell commands
+
+● Verifying the green independently before accepting it.
+
+  Read 1 file, ran 6 shell commands
+
+● Recovery executed and green. Grant consumed exactly as authorized: one invocation, aggregate 5 of 5, no retry reserve, zero product builds.
+
+  Result: SUITE: PASS (baseline=GREEN setup-failures=0 mispredicts=0), runner-exit 0, 32 as-predicted / 0 mispredict / 0 setup-failure.
+
+  The check that makes it mean something, done by me rather than relayed: the gate leg is cmp-verified byte-identical (69c529ca…) to the one that failed in both prior invocations, before the
+  freeze and again after the run. Only the runner's two authorized deltas changed — run_case id+want-exit diffs empty across all 31, and every SETUP_FN / CMODE / assert_absent line identical.
+  So the green says the fixture was repaired, not that the checks were relaxed.
+
+  Negative controls all still fire — the specific risk when repairing a fixture is silencing them: A23a BUILD_MARKER absent (FIX-7's guard did not swallow the missing-marker control), A10
+  stale, A27 4-provenance with the forbidden 4-type Verdict exact at count 0, A26 dirty tree, A28 overlay base, and A24 in both directions — 4-type Foo exact PASS alongside expected exact line
+  [Fo] ABSENT FAIL.
+
+  Newly established: count integrity, row uniqueness, exact-line vs substring, per-REQ exact-success, stale-product with an intact control, no-inheritance, baseline GREEN itself. The drift
+  leg's synthetic layer is now demonstrated rather than argued.
+
+  One structural finding worth carrying into the #30 gate: M22b — independence of the source/byte-hash tripwire from the .hi tripwire — is unreachable in any synthetic harness of this design.
+  Live mode reads the hash tripwires through the frozen oid, so a source edit cannot fire them (A17 and A26 both show working-tree edits leaving them green); they are falsifiable only in
+  overlay mode, which skips D-3 entirely. The two channels are never both live in one mode. That upgrades P2 (B22a + B22b) from the cheapest way to the only way, and it is a design property,
+  not a fixture defect.
+
+  Prerequisites, on the distinct layer you corrected me about: P1 = B3 (one owner build), P2 = B22a + B22b (two owner builds) — 3 product builds inside the ungranted owner budget. The harness
+  layer is now paid; the compiler layer is entirely unpaid, and neither substitutes for the other.
+
+  Preservation controlled against hashes I recorded before any of this work: all four predecessor artifacts unchanged, and the invocation-2 failure record still reads FAIL (baseline=BROKEN …
+  mispredicts=11) — the success did not overwrite it. Contract stays frozen at r8, TAXONOMY-v2 bound to the synthetic experiment only, ceilings still proposals, #30 ungranted.
+
+  Filed: DISPOSITION-e-kelgroups-substrate-T30-RECOVERY-EXECUTED-20260906.md in ms2/inbox; epic map and resume record updated, including the invariant-ledger shape moving from enforced: NONE
+  to enforced: pf8r2 runner FIX-7. Child %572 is COMPLETE and idle. Awaiting only the #30 commissioning decision.
+
+✻ Sautéed for 13m 15s · done 7:55
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯ commission #30 under the proposed ceilings
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  ⏵⏵ bypass permissions on (shift+tab to cycle) · ← 2 agents                                                                                                                               /rc

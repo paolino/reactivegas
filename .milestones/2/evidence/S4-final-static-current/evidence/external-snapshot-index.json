@@ -1,0 +1,37 @@
+[
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/SUBMISSION-3.md",
+    "snapshot": "evidence/owner-submission-3.md",
+    "sha256": "73432748d03329082d26cb93bae6ebc88d51ebf2116e2d1068ace68b08c7cf4c",
+    "bytes": 2947,
+    "observedAt": "2026-09-06T06:57:19.919Z"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/handoffs/evidence/S2-CI-comment-only.log",
+    "snapshot": "evidence/owner-final-ci.log",
+    "sha256": "b6a16cfe60e6e07204b4191fd0c93dbdb2c8def107715144cc16ebfef946e34d",
+    "bytes": 175819,
+    "observedAt": "2026-09-06T06:57:19.919Z"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/commit-owner-s4b-muse/STATUS.md",
+    "snapshot": "evidence/owner-STATUS.txt",
+    "sha256": "ffd12bba30a7cac5691457f33a6b50662fc6d9aedaceb938ee887fa28e537ce7",
+    "bytes": 75172,
+    "observedAt": "2026-09-06T06:57:19.920Z"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/handoffs/CLOSURE-MAP.md",
+    "snapshot": "evidence/closure-map.md",
+    "sha256": "b5f304bca000d24354d8ebd642f14a078b31c17a25c9a0207b478f762c8e0427",
+    "bytes": 31534,
+    "observedAt": "2026-09-06T06:57:19.920Z"
+  },
+  {
+    "source": "/tmp/reactivegas/ms2/e-lean-compliance/handoffs/S4-D1-FIT-VERIFICATION-AND-MY-WITHDRAWAL.md",
+    "snapshot": "evidence/owner-d1-fit.md",
+    "sha256": "6824f937075395948a4ba801573d3498d4999ff4f4617d872c55f512c4507086",
+    "bytes": 4711,
+    "observedAt": "2026-09-06T06:57:19.920Z"
+  }
+]

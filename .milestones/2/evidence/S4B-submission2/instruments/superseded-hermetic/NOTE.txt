@@ -1,0 +1,6 @@
+Superseded hermetic miniatures (unexecuted, unbound): self-contained drivers
+with locally redefined environments. Superseded by the shadow design (same
+frozen paths re-pointed at real production bindings): hermetic content could
+not bind relevant production dependencies (NOTE-014 defect 2) and is retained
+here for transparency, never executed, never evidence.
+Superseded: clean-body hermetic twins (shadow same-file-twice design needs no twin files).

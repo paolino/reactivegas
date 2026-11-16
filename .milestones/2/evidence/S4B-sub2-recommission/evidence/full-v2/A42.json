@@ -1,0 +1,28 @@
+{
+  "id": "A42",
+  "argv": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=10s",
+    "300s",
+    "env",
+    "LEAN_PATH=/code/reactivegas-66-s4b-audit5/lean/.lake/build/lib/lean",
+    "/nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean",
+    "-DautoImplicit=false",
+    "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/atoms/A42.lean"
+  ],
+  "cwd": "/code/reactivegas-66-s4b-audit5/lean",
+  "charge": "targeted",
+  "launched": true,
+  "start": "2026-09-06T05:28:08.528Z",
+  "spend": {
+    "substantive": 10,
+    "targeted": 50
+  },
+  "obligation": "R11/R12 C5-C23 V2 no open verdict in closed; sweepReadyB -> KelGroups.Vote.sweepReady_corr",
+  "finish": "2026-09-06T05:28:08.977Z",
+  "exit": 1,
+  "signal": null,
+  "stdoutSha256": "6375b8f7ba6dd7b9c545a18477d92513befbecdd0737f2d0c19c0c6052f6f116",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

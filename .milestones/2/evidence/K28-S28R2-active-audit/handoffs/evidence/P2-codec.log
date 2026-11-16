@@ -1,0 +1,6 @@
+CODEC accepted seeded exception=True
+CODEC accepted exact zero tuple=True
+CODEC pure exact nonmember refusal=True
+CODEC durable exact nonmember refusal=True
+CODEC refused exact zero tuple=True
+CODEC whole state unchanged=True

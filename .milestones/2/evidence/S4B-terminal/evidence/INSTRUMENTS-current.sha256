@@ -1,0 +1,15 @@
+b8b54d849e60a65de587138939a032df477653c1681d1876c6ae3ce05835bd41  /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/instruments/Axioms.lean
+f210263d57176117558d6b4c5641c7536c088109ccb89da8f630666e9b524ad1  /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/instruments/Inventory.lean
+7936bf4ef1bb7d492574cc42436da3ee634fedaee008e0f9abf0a125ee2175f8  /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/instruments/Witnesses-v1.lean
+90ad6ff4ca0f4fd1e37793836e4b48303b5374bfd6882708903f8d3fd189e98b  /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/instruments/Witnesses.lean
+c03b7f06da190273fdee29a1637d6078612be9f60fd4b6a6278a220144a1e44f  /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/instruments/classification.mjs
+66139ff25497fd8d34c467149e0b74ab502cc65ae6a7c2288b46bcd0f8f665e4  /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/instruments/control.mjs
+cfd5f4f39f5261a1f19d02c298fbc4b02192875e4fb38cd8c2f07e6abd0a7483  /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/instruments/expr-controls.mjs
+3ea7209be641b751f5cfce02e7d234e0d3ff283268f5af19897b827c7470ef71  /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/instruments/init-ledger.mjs
+96563a3086c3dcc1adf3e87e9bc6c4e4ea3130afb69fb956554ff82dc09aa321  /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/instruments/make-axioms.mjs
+8485806be8e4a4d3e11bed00d18d3fc4573eb72c64d3ed43e1abba84a93f8f19  /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/instruments/make-inventory.mjs
+d3d070fdab29197dcf9dce316281823f874b5a1c3f655ed159b9fdba5ef50a56  /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/instruments/make-relatum.mjs
+22c930064ed14cb33f138bbd3e3d2bee776de7612db6ac3f3a182211a7bf1533  /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/instruments/materialize-mutants.mjs
+8fd5396f59bcf040a3dac07354063a8452a726317c87603f8745f7ffcef01dc8  /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/instruments/mutations.json
+7b6ed8f96c041f2d1b6ed5063307ead43485e4d68dc744b74ae94877f71f4f2a  /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/instruments/prepare.mjs
+7e4ed5a2e88a90c552f93ecbc687618c96490a53e5183d8c5396baa41c6040f3  /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/instruments/run.mjs

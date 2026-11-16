@@ -1,0 +1,3 @@
+path '/code/reactivegas-66-s2r/lean' does not contain a 'flake.nix', searching up
+warning: Git tree '/code/reactivegas-66-s2r' is dirty
+true

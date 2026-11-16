@@ -1,0 +1,15 @@
+warning: Git tree '/code/reactivegas-66-s4b' is dirty
+KelGroups/Mirrors.lean:89:4: error: Type mismatch
+  (pendingWellFormed_corr p).mp (h pid p he)
+has type
+  pendingWellFormedB p = true
+but is expected to have type
+  (!pendingWellFormedB (pid, p).snd) = true
+KelGroups/Mirrors.lean:92:41: error: Application type mismatch: The argument
+  he
+has type
+  (!pendingWellFormedB (pid, p).snd) = true
+but is expected to have type
+  pendingWellFormedB p = true
+in the application
+  (pendingWellFormed_corr p).mpr he

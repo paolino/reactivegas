@@ -1,0 +1,29 @@
+{
+  "id": "S02",
+  "argv": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=30s",
+    "1800s",
+    "nix",
+    "develop",
+    "--quiet",
+    "-c",
+    "just",
+    "lean"
+  ],
+  "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/worlds/S02",
+  "charge": "substantive",
+  "launched": true,
+  "start": "2026-09-06T05:11:02.488Z",
+  "spend": {
+    "substantive": 3,
+    "targeted": 5
+  },
+  "obligation": "C2 introduced owned predicate missing counterpart; opaque predicate classification, separately observed",
+  "finish": "2026-09-06T05:11:23.742Z",
+  "exit": 1,
+  "signal": null,
+  "stdoutSha256": "0f0ba40d1ef71f98de6e0f23a41eb2f2ae31d932bbaf85cc6146be85f5dfbab4",
+  "stderrSha256": "fa13c407d3462fc779501a53e31a9b421f684e718e87fc10a428747f1bf763dc"
+}

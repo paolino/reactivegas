@@ -1,0 +1,3 @@
+KelGroups/Vote/State.lean:81:15: warning: unused variable `threshold`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`

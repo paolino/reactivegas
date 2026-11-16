@@ -1,0 +1,359 @@
+{
+  "Event": [
+    "Event.acceptPledge",
+    "Event.backdonate",
+    "Event.closePurchase",
+    "Event.correctPledge",
+    "Event.denyPermission",
+    "Event.deposit",
+    "Event.donate",
+    "Event.failPurchase",
+    "Event.grantPermission",
+    "Event.openPurchase",
+    "Event.pledge",
+    "Event.refusePledge",
+    "Event.transferCassa",
+    "Event.withdraw"
+  ],
+  "AppEvent": [
+    "AppEvent.acceptPledge",
+    "AppEvent.backdonate",
+    "AppEvent.cast",
+    "AppEvent.closePurchase",
+    "AppEvent.correctPledge",
+    "AppEvent.denyPermission",
+    "AppEvent.deposit",
+    "AppEvent.donate",
+    "AppEvent.failPurchase",
+    "AppEvent.grantPermission",
+    "AppEvent.openPurchase",
+    "AppEvent.openQuestion",
+    "AppEvent.pledge",
+    "AppEvent.refusePledge",
+    "AppEvent.renounce",
+    "AppEvent.transferCassa",
+    "AppEvent.withdraw"
+  ],
+  "KelGroups.BaseChange": [
+    "KelGroups.BaseChange.memberAdmitted",
+    "KelGroups.BaseChange.memberRemoved",
+    "KelGroups.BaseChange.rolesChanged"
+  ],
+  "Step_import_closure": [
+    "KelGroups.Event",
+    "KelGroups.Integration",
+    "KelGroups.State",
+    "KelGroups.Types",
+    "KelGroups.Validate",
+    "KelGroups.Vote.Event",
+    "KelGroups.Vote.Fold",
+    "KelGroups.Vote.State",
+    "KelGroups.Vote.Types",
+    "KelGroups.Vote.Validate",
+    "Reactivegas.State",
+    "Reactivegas.Step",
+    "Reactivegas.Types"
+  ],
+  "Composition_importers": [
+    "Reactivegas"
+  ],
+  "simulator_vote_keys": [
+    "V"
+  ],
+  "simulator_vote_steps": 15,
+  "corpus_economic_keys": [
+    "auth",
+    "traces",
+    "view"
+  ],
+  "economic_trace_count": 5,
+  "economic_event_count": 32,
+  "corpus_integrated_keys": [
+    "auth",
+    "initial",
+    "steps"
+  ],
+  "integrated_step_count": 7,
+  "VOTE_TRACES_scope": "Read frozen fixture only; no simulator execution or acceptance inferred.",
+  "simulator_signed_vote_events": 15,
+  "economic_event_shapes": [
+    {
+      "deposit": {
+        "author": "2",
+        "user": "1",
+        "v": 40
+      }
+    },
+    {
+      "deposit": {
+        "author": "1",
+        "user": "3",
+        "v": 100
+      }
+    },
+    {
+      "openPurchase": {
+        "author": "2",
+        "c": 7
+      }
+    },
+    {
+      "pledge": {
+        "author": "2",
+        "c": 7,
+        "user": "3",
+        "v": 50
+      }
+    },
+    {
+      "acceptPledge": {
+        "author": "2",
+        "c": 7,
+        "user": "3"
+      }
+    },
+    {
+      "pledge": {
+        "author": "2",
+        "c": 7,
+        "user": "1",
+        "v": 20
+      }
+    },
+    {
+      "donate": {
+        "author": "1",
+        "v": 10
+      }
+    },
+    {
+      "deposit": {
+        "author": "1",
+        "user": "2",
+        "v": 100
+      }
+    },
+    {
+      "openPurchase": {
+        "author": "1",
+        "c": 5
+      }
+    },
+    {
+      "pledge": {
+        "author": "1",
+        "c": 5,
+        "user": "2",
+        "v": 60
+      }
+    },
+    {
+      "acceptPledge": {
+        "author": "1",
+        "c": 5,
+        "user": "2"
+      }
+    },
+    {
+      "correctPledge": {
+        "author": "1",
+        "c": 5,
+        "user": "2",
+        "v": 40
+      }
+    },
+    {
+      "deposit": {
+        "author": "1",
+        "user": "2",
+        "v": 100
+      }
+    },
+    {
+      "openPurchase": {
+        "author": "1",
+        "c": 5
+      }
+    },
+    {
+      "pledge": {
+        "author": "1",
+        "c": 5,
+        "user": "2",
+        "v": 60
+      }
+    },
+    {
+      "acceptPledge": {
+        "author": "1",
+        "c": 5,
+        "user": "2"
+      }
+    },
+    {
+      "correctPledge": {
+        "author": "1",
+        "c": 5,
+        "user": "2",
+        "v": 90
+      }
+    },
+    {
+      "deposit": {
+        "author": "1",
+        "user": "3",
+        "v": 200
+      }
+    },
+    {
+      "openPurchase": {
+        "author": "2",
+        "c": 9
+      }
+    },
+    {
+      "pledge": {
+        "author": "2",
+        "c": 9,
+        "user": "3",
+        "v": 150
+      }
+    },
+    {
+      "acceptPledge": {
+        "author": "2",
+        "c": 9,
+        "user": "3"
+      }
+    },
+    {
+      "closePurchase": {
+        "author": "2",
+        "c": 9
+      }
+    },
+    {
+      "grantPermission": {
+        "author": "2",
+        "c": 9
+      }
+    },
+    {
+      "closePurchase": {
+        "author": "2",
+        "c": 9
+      }
+    },
+    {
+      "deposit": {
+        "author": "1",
+        "user": "2",
+        "v": 100
+      }
+    },
+    {
+      "deposit": {
+        "author": "1",
+        "user": "3",
+        "v": 80
+      }
+    },
+    {
+      "openPurchase": {
+        "author": "1",
+        "c": 4
+      }
+    },
+    {
+      "pledge": {
+        "author": "1",
+        "c": 4,
+        "user": "2",
+        "v": 60
+      }
+    },
+    {
+      "acceptPledge": {
+        "author": "1",
+        "c": 4,
+        "user": "2"
+      }
+    },
+    {
+      "pledge": {
+        "author": "1",
+        "c": 4,
+        "user": "3",
+        "v": 30
+      }
+    },
+    {
+      "withdraw": {
+        "author": "1",
+        "user": "2",
+        "v": 999
+      }
+    },
+    {
+      "denyPermission": {
+        "author": "1",
+        "c": 4
+      }
+    }
+  ],
+  "integrated_event_shapes": [
+    {
+      "command": {
+        "admitMember": {
+          "email": "carol@s62b",
+          "key": "carol",
+          "roles": []
+        }
+      },
+      "tag": "direct"
+    },
+    {
+      "command": {
+        "admitMember": {
+          "email": "zed@s62b",
+          "key": "zed",
+          "roles": []
+        }
+      },
+      "tag": "direct"
+    },
+    {
+      "proposal": {
+        "departure": {
+          "key": "bob"
+        }
+      },
+      "tag": "propose"
+    },
+    {
+      "proposalId": "depart:bob",
+      "tag": "approve"
+    },
+    {
+      "proposal": {
+        "changeRoles": {
+          "key": "eve",
+          "roles": []
+        }
+      },
+      "tag": "propose"
+    },
+    {
+      "proposalId": "roles:eve",
+      "tag": "approve"
+    },
+    {
+      "proposal": {
+        "departure": {
+          "key": "dora"
+        }
+      },
+      "tag": "propose"
+    }
+  ]
+}

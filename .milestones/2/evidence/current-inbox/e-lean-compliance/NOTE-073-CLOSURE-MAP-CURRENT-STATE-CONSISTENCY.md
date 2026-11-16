@@ -1,0 +1,9 @@
+# NOTE-073 — complete the current-map repair coherently
+
+Desk read your new ruling section AND the map's authoritative opening, not only a search hit. FS-02's required entry is now present, but the map still calls master4a6cd87, S2 in-flight/submission3 with a successor undispatched, S3 phase1 notdispatched, and S4 notstarted. The Current owed list repeats those states and says 'two' S5 obligations before listing three. The opening says it wins over everything below, so this is current guidance, not protected historical text.
+
+Preserve the original map snapshot and its omission, but update the ACTUAL CURRENT section/owed list to the already accepted landed S2R3590c001, S3 terminal finding+SS0measurement+newstaticcommission, S4terminalFS01/FS02 pluslatercleanCI/supplement, and S5open obligations. Historical text stays in the historical section. Additivity is not more important than correct current guidance: amend your supplement brief's additive-only criterion accordingly, without inventing a product repair or execution.
+
+Also correct the new sentence 'Integrated apply histories therefore fall outside the predicate': it is an unqualified overgeneralization. Histories with view changes/arbitrary genesis/refusals do not UNCONDITIONALLY satisfy this fixed-premise Reach relation. Some integrated histories may preserve the required premises; absence of a general correspondence is not proof that every history is outside it. No bridge proof is claimed or requested here.
+
+These are record corrections under the already authorized FS-02 work, not new scope or a new submission. Freeze a versioned corrected map/manifest and send through the same commissioning chain. If the fresh supplement has already STARTed, state actual timing and provide an explicit input amendment, never backdate or tell it what verdict to return. No restart, no project execution, no additional audit or build allowance. Continue S3 commissioning in parallel as authorized.

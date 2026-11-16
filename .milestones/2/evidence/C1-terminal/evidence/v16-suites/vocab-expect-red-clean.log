@@ -1,0 +1,5 @@
+SUITE-INVOCATION: node economics-simulator-ui-gate.mjs --vocab-only --expect-red pledge
+SUITE-ENV-PARENT-SHELL: RG_OMIT_NOOP=unset
+SUITE-ENV-NOTE: parent-shell scope only. A child wrapped in "env VAR=.." takes its effective value from the SUITE-INVOCATION line above, not from this.
+RED-ROW: checking path does NOT flag «pledge» (banned=[])
+SUITE-EXIT: 1

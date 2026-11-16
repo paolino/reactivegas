@@ -1,0 +1,4 @@
+/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/mutants/M23.lean:60:69: error: unsolved goals
+pending : PendingProposal
+⊢ pending.approvals.Nodup ∧ pending.proposer ∈ pending.approvals ↔
+    pending.approvals.Nodup ∧ ¬pending.proposer ∈ pending.approvals

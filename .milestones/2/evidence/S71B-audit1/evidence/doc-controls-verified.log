@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/tmp/reactivegas/ms2/t71-design-record/audit-b1/evidence/doc-controls.py", line 33, in <module>
+    ('B02-EVENTS', 'R71-02', replace('14 event constructors', '15 events'), 1, 'still claim 15 events'),
+                             ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/reactivegas/ms2/t71-design-record/audit-b1/evidence/doc-controls.py", line 18, in replace
+    assert source.count(old) == 1, (old, source.count(old))
+           ^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('14 event constructors', 2)

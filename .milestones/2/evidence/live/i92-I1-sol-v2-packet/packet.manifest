@@ -1,0 +1,53 @@
+AUDIT_PACKET_MANIFEST_V2
+COUNTER	RESOURCE_UNIT	substantive-execution
+COUNTER	RESOURCE_SPENT	11
+COUNTER	RESOURCE_CEILING	26
+COUNTER	RESOURCE_RESERVED	2
+COUNTER	SEAT_ALLOCATION	1
+COUNTER	SUBMISSION_ATTEMPTS_SPENT	0
+COUNTER	SUBMISSION_ATTEMPT_CEILING	3
+COUNTER	DISPATCH_ATTEMPT	1
+COUNTER	CAMPAIGN_LAUNCHES_SPENT	0
+COUNTER	DISPATCH_LAUNCH	1
+ROLE	current-campaign-ledger	campaign-ledger
+ROLE	current-row-ledger	row-ledger
+ROLE	dispatch-preflight-receipt	dispatch-receipt
+TOOL	awk	awk
+TOOL	bash	bash
+TOOL	diff	diff
+TOOL	git	git
+TOOL	grep	grep
+TOOL	jq	jq
+TOOL	nix	nix
+TOOL	node	node
+TOOL	sed	sed
+TOOL	sha256sum	sha256sum
+TOOL	sort	sort
+FILE	@role-profile	10cc07ab943c3b25dfde3d03b17a7f937667c2759875bf835d6c382439f301c4	128	644	65032:4484503	2026-09-06 17:00:13.563240097 +0100	2026-09-06 17:00:13.563240097 +0100	/tmp/reactivegas/ms2/factory-cb154732-sol/shared/skills/auditor/scripts/../requirements/commissioned-audit-v1.tsv
+FILE	@spec	28edc07bf4dc26956a03fe4c8634c38f378319d634d220d2ecf5e7c6d34905f8	3296	644	65032:4615365	2026-09-06 17:06:31.287703227 +0100	2026-09-06 17:06:31.287703227 +0100	/tmp/reactivegas/ms2/e-lean-compliance-sol-20260906/audit-packets/i92s-sub1-I1-sol-v2/packet.spec
+FILE	@counters	3f0b3ae1a8cfbc7a53c7933724ebb08c0cb0e8b5660cf29d442d3d54f6eb6438	257	644	65032:4615364	2026-09-06 17:06:31.287703227 +0100	2026-09-06 17:06:31.287703227 +0100	/tmp/reactivegas/ms2/e-lean-compliance-sol-20260906/audit-packets/i92s-sub1-I1-sol-v2/counters
+FILE	audit-scope	22099c6ddbd374d5da41c2253ee54d54519df11827fd7b738e5ceac92fe4e7ef	2012	644	65032:4239534	2026-09-06 17:06:31.286703165 +0100	2026-09-06 17:06:31.286703165 +0100	/tmp/reactivegas/ms2/e-lean-compliance-sol-20260906/handoffs/I1-AUDIT-SCOPE-V1.md
+FILE	campaign-ledger	75448825e0a78983e950a5da25aabada3fb252130213fde379c6f8f925d815bf	2081	644	65032:4615354	2026-09-06 17:02:34.911027584 +0100	2026-09-06 17:02:34.911027584 +0100	/tmp/reactivegas/ms2/e-lean-compliance-sol-20260906/ledgers/current-campaign-ledger.md
+FILE	candidate-check-lean-mirrors	f77c564d709e008c39752c395c6f9945bbfbbfd453687635f33f890f70e9f6af	29310	644	65032:5145893	2026-09-06 16:35:58.824282896 +0100	2026-09-06 16:35:58.824282896 +0100	/tmp/reactivegas/ms2/e-lean-compliance/i92-grok-owner/handoffs/SUBMISSION-1/check-lean-mirrors
+FILE	candidate-lake-roots-gitignore	fde850d24186b6e99c8c0debd641fb3ab85198b109eb66f71a1fea02bd6ea1b3	7	644	65032:5145896	2026-09-06 16:35:58.837283700 +0100	2026-09-06 16:35:58.837283700 +0100	/tmp/reactivegas/ms2/e-lean-compliance/i92-grok-owner/handoffs/SUBMISSION-1/lake-roots.gitignore
+FILE	candidate-lake-roots-lakefile	7d94d9594b89986628be51350428aac8cd48eb7b16737bee97d3b18785d97b94	138	644	65032:5145895	2026-09-06 16:35:58.833283452 +0100	2026-09-06 16:35:58.833283452 +0100	/tmp/reactivegas/ms2/e-lean-compliance/i92-grok-owner/handoffs/SUBMISSION-1/lake-roots-lakefile.lean
+FILE	candidate-lake-roots-main	e1b99bc0e44754ca363ffec1b0414fabf67d47d8fa190c79b20087c2fc3827aa	1293	644	65032:5145894	2026-09-06 16:35:58.830283267 +0100	2026-09-06 16:35:58.830283267 +0100	/tmp/reactivegas/ms2/e-lean-compliance/i92-grok-owner/handoffs/SUBMISSION-1/lake-roots-Main.lean
+FILE	combined-construction	3b8be07f56bb564ae2b3b00a748c9b377df053b9a368d0b61027113f98b59d65	211	644	65032:5145861	2026-09-06 16:31:13.425637520 +0100	2026-09-06 16:35:58.493262424 +0100	/tmp/reactivegas/ms2/e-lean-compliance/i92-grok-owner/handoffs/SUBMISSION-1/construction.txt
+FILE	commissioner-substitution	01aa897fd740350a604409faa24afdeb0cacef842bea83a1addeef8eac80cd7e	3208	644	65032:4239532	2026-09-06 17:02:34.911027584 +0100	2026-09-06 17:02:34.911027584 +0100	/tmp/reactivegas/ms2/e-lean-compliance-sol-20260906/handoffs/I92-COMMISSIONER-SUBSTITUTION-V1.md
+FILE	commit-diff-c1	f22cf577b321886609c320e2778f559eaf8311a657a2281ace206393049d5d13	804707	644	65032:5145860	2026-09-06 16:31:13.355633193 +0100	2026-09-06 16:35:58.491262300 +0100	/tmp/reactivegas/ms2/e-lean-compliance/i92-grok-owner/handoffs/SUBMISSION-1/c1.diff
+FILE	commit-diff-quality	329f4cb14d5e5e7012563aafd1a3fdf8d50cb758f0b94962a0546218508c17e0	10922	644	65032:5145859	2026-09-06 16:31:13.342632389 +0100	2026-09-06 16:35:58.488262115 +0100	/tmp/reactivegas/ms2/e-lean-compliance/i92-grok-owner/handoffs/SUBMISSION-1/quality.diff
+FILE	commit-paths-combined	9bea78322214d087349ee0f70508eea5d03b4d7156fc9dc4b15b320d2f515001	672	644	65032:5145862	2026-09-06 16:31:13.466640054 +0100	2026-09-06 16:35:58.496262610 +0100	/tmp/reactivegas/ms2/e-lean-compliance/i92-grok-owner/handoffs/SUBMISSION-1/combined-paths.txt
+FILE	commit-paths-quality	14d0980a7698d81c6ee9e339a18c7875226903f545b2bf65d654fc23c5c08176	119	644	65032:5145863	2026-09-06 16:35:58.499262795 +0100	2026-09-06 16:35:58.499262795 +0100	/tmp/reactivegas/ms2/e-lean-compliance/i92-grok-owner/handoffs/SUBMISSION-1/quality-paths.txt
+FILE	commit-provenance-identities	45aa8c3e1b3f07b10581c2ce3423eb32388aed9e328891b10934f90cb8d4614a	534	644	65032:5145858	2026-09-06 16:35:58.483261806 +0100	2026-09-06 16:35:58.483261806 +0100	/tmp/reactivegas/ms2/e-lean-compliance/i92-grok-owner/handoffs/SUBMISSION-1/identities.txt
+FILE	dispatch-receipt	e9337726721f7c20a16323479a3648228f34d25d1f906fc6d1e2d75fdb9547da	6250	644	65032:4615356	2026-09-06 17:02:34.912027646 +0100	2026-09-06 17:02:34.912027646 +0100	/tmp/reactivegas/ms2/e-lean-compliance-sol-20260906/ledgers/dispatch-preflight-receipt-I1-sol-v1.md
+FILE	issue-92	bf46a1097d1ad33f78334728ca399573460fa8df804760e8be2078ae856d4a7e	4353	644	65032:5020601	2026-09-06 15:47:02.792980516 +0100	2026-09-06 15:47:02.792980516 +0100	/tmp/reactivegas/ms2/e-lean-compliance/i92-grok-owner/inputs/ISSUE-92.md
+FILE	mandate	4dc4ab70497dcd0e6f2157f1dda210938b3b5e71026b2505de0d10e626a556a7	7519	644	65032:4108833	2026-09-06 15:46:53.707418302 +0100	2026-09-06 15:46:53.707418302 +0100	/tmp/reactivegas/ms2/e-lean-compliance/handoffs/I92-SUCCESSOR-MANDATE-V2.md
+FILE	n1-runner	924eb40f56fa132e6df6e8395f56a894a00e5d33942b6a5954175ff15458e7cf	1569	755	65032:5145870	2026-09-06 15:56:13.758076854 +0100	2026-09-06 16:35:58.517263908 +0100	/tmp/reactivegas/ms2/e-lean-compliance/i92-grok-owner/handoffs/SUBMISSION-1/n1-run.sh
+FILE	n1-target-manifest	8da6b929fc5f1ff9b0507e7cb8e643b4c7af8afe3039922b4498b0aa566f75d7	420	644	65032:5145869	2026-09-06 15:56:13.755076668 +0100	2026-09-06 16:35:58.514263723 +0100	/tmp/reactivegas/ms2/e-lean-compliance/i92-grok-owner/handoffs/SUBMISSION-1/n1-target.manifest
+FILE	operator-role-substitution	33b7bf68fc798783c8da0bacd05f7f2fbed24d04524b86ec164bfd47ff7e7e49	1374	644	65032:4108843	2026-09-06 16:52:53.487026395 +0100	2026-09-06 16:52:53.487026395 +0100	/tmp/reactivegas/ms2/artifacts/ROLE-SUBSTITUTION-CODEX-SOL-20260906.md
+FILE	prior-adjudication	3cb950676db2ef204882533f99957683d7488bed3822e6c07f428349ddf57a09	5346	644	65032:4107929	2026-09-06 15:19:05.391161550 +0100	2026-09-06 15:19:05.391161550 +0100	/tmp/reactivegas/ms2/e-lean-compliance/handoffs/I92-SUB1-ADJUDICATION-AND-TERMINAL-TOPOLOGY.md
+FILE	row-ledger	5f889e82c64ae48af5c1d95d0c3fc0369ddc1dc5554a02fc6c0c58a36889043e	2364	644	65032:4615355	2026-09-06 17:02:34.912027646 +0100	2026-09-06 17:02:34.912027646 +0100	/tmp/reactivegas/ms2/e-lean-compliance-sol-20260906/ledgers/current-row-ledger.md
+FILE	submission-manifest	bb63f8f65c032f4d270f417a11c4b221ad680eb419f888bf97f0b78aa7435194	3730	644	65032:5145899	2026-09-06 16:35:59.686336209 +0100	2026-09-06 16:35:59.686336209 +0100	/tmp/reactivegas/ms2/e-lean-compliance/i92-grok-owner/handoffs/SUBMISSION-1/MANIFEST.sha256
+FILE	submission-readme	258af403694512c96b6a8d95eac01ac0adf82f9b53ee901a1e6bfc9ea358f603	927	644	65032:5145897	2026-09-06 16:35:58.840283885 +0100	2026-09-06 16:35:58.840283885 +0100	/tmp/reactivegas/ms2/e-lean-compliance/i92-grok-owner/handoffs/SUBMISSION-1/README.md
+FILE	submission-receipt	908e53cc7ee0d3468da926ace61863bdd095bafc57475417a68a5f2e8c2ed0f8	2009	644	65032:5145898	2026-09-06 16:35:58.842284009 +0100	2026-09-06 16:35:58.842284009 +0100	/tmp/reactivegas/ms2/e-lean-compliance/i92-grok-owner/handoffs/SUBMISSION-1/receipt.md
+FILE	submission-reliance	5e6a3f16c997168e8760157a055ae8908fdc5b98493c09fb06477fa8a0f847f5	1226	644	65032:5145892	2026-09-06 15:56:13.763077163 +0100	2026-09-06 16:35:58.820282649 +0100	/tmp/reactivegas/ms2/e-lean-compliance/i92-grok-owner/handoffs/SUBMISSION-1/RELIANCE.md

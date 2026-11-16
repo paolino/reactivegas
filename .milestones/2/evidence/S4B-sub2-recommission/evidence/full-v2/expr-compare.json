@@ -1,0 +1,24 @@
+{
+  "id": "expr-compare",
+  "argv": [
+    "timeout",
+    "300s",
+    "node",
+    "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v2/data-checks.mjs",
+    "expr-compare"
+  ],
+  "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2",
+  "charge": "targeted",
+  "launched": true,
+  "start": "2026-09-06T05:49:04.036Z",
+  "spend": {
+    "substantive": 11,
+    "targeted": 69
+  },
+  "obligation": "R1/R5/R15 every original compiled declaration statement/proof/definition preservation",
+  "finish": "2026-09-06T05:49:07.755Z",
+  "exit": 0,
+  "signal": null,
+  "stdoutSha256": "b62f466d83f38c1088ed19a249885140d15536c630e4b94e59fd1ac2ff8a4f23",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

@@ -1,0 +1,19 @@
+# slice=emitter-1 submission=2 builds_spent=2 builds_budget=2 ceiling_raises=0 prior_sha256=fa1bfc7942e961c4ea7319608fae7661a6f1fb549b7e642bdb53440fd830878d
+row_id	severity	state	submission	evidence	residual_owner	followup	honest_limit
+E-SCHEMA	BLOCKING	KILLED	2	evidence/mutations/schema_{initial,input,event,applied_state,refused_claim}.log	NONE	NONE	NONE
+E-TOJSON	BLOCKING	KILLED	1	evidence/survivor-campaign-v3.log#killed-tojson-instance	NONE	NONE	NONE
+E-DIAG	BLOCKING	KILLED	1	Reactivegas/TraceTests.lean:404-409+evidence/focused-warm.log	NONE	NONE	NONE
+E-MANIFEST	BLOCKING	KILLED	1	evidence/survivor-campaign-v3.log#killed-manifest-all-unproved	NONE	NONE	NONE
+E-INVENTORY	BLOCKING	KILLED	1	evidence/survivor-campaign-v3.log#killed-inventory-missing-covered	NONE	NONE	NONE
+E-SEEDS	BLOCKING	KILLED	2	evidence/mutations/seed_remove_accepted_only.log,evidence/mutations/seed_deny_accepted_only.log	NONE	NONE	NONE
+E-NEGATIVE	BLOCKING	KILLED	1	Reactivegas/TraceTests.lean:399-453+evidence/focused-warm.log	NONE	NONE	NONE
+E-ADDITIVE	BLOCKING	KILLED	1	evidence/full-gate.log	NONE	NONE	NONE
+E-FENCE	BLOCKING	KILLED	2	evidence/mutations/fence_module_edge.log,evidence/mutations/fence_actual_umbrella.log	NONE	NONE	NONE
+INV-48-STEP-TOTAL	BLOCKING	KILLED	1	Reactivegas/Trace.lean:114-119+Reactivegas/TraceTests.lean:404-409	NONE	NONE	NONE
+INV-48-EVENT-CTORS-COMPLETE	BLOCKING	KILLED	1	Reactivegas/TraceTests.lean:498-522+owner-canfail-M1	NONE	NONE	NONE
+INV-48-INVERSION-NAMING	BLOCKING	KILLED	1	evidence/survivor-campaign-v3.log#killed-manifest-all-unproved+evidence/full-gate.log#52-type-pins	NONE	NONE	NONE
+INV-48-SORRY-BOUNDARY	BLOCKING	KILLED	1	Reactivegas/TraceTests.lean:578-587+evidence/full-gate.log	NONE	NONE	NONE
+INV-48-TOJSON-DERIVABLE	BLOCKING	KILLED	1	evidence/survivor-campaign-v3.log#killed-tojson-instance	NONE	NONE	NONE
+INV-48-STATE-DECEQ	BLOCKING	KILLED	1	evidence/survivor-campaign-v3.log#killed-applied-poststate	NONE	NONE	NONE
+INV-48-ONE-GUARD-PER-CONSTRUCTOR	ADVISORY	RESIDUAL	1	RELIANCE.md	#48-docs	R48-GUARD-GRANULARITY	A green event-level refusal identity does not establish clause-level cause.
+INV-48-NO-BACK-EDGE	ADVISORY	RESIDUAL	1	RELIANCE.md	#48-architecture	R48-TRACE-DEPENDENCY-DIRECTION	Current checks do not prevent a future machine module from importing Reactivegas.Trace.

@@ -1,0 +1,11 @@
+{
+  "at": "2026-09-06T04:06:41.769Z",
+  "source": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/evidence/M1R/inventory.jsonl",
+  "rawBytes": 234905343,
+  "rawSha256": "f10136b9fd7ce728dfe7116a788323d6bfd01aa8e40c9de1616581e8b37d93e4",
+  "archive": "/tmp/reactivegas/ms2/artifacts/S4-M1R-inventory-20260906T0405.jsonl.gz",
+  "compressedBytes": 6129776,
+  "compressedSha256": "ed3ee66e0b82a736195d0bc8af906ab23a8faf2ec9eb02f596da166168606163",
+  "verifiedRoundtrip": true,
+  "scope": "Planning metadata from one successful targeted elaboration; no validated classifier or final semantic extent claim. Original preserved in auditor root."
+}

@@ -1,0 +1,7 @@
+import fs from 'node:fs';import crypto from 'node:crypto';
+const root='/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3';
+const rows=JSON.parse(fs.readFileSync(`${root}/instruments/mutations.json`));
+fs.mkdirSync(`${root}/mutants`,{recursive:true});
+const hash=s=>crypto.createHash('sha256').update(s).digest('hex');
+for(const row of rows){const src=fs.readFileSync(row.file,'utf8');const start=src.indexOf(`\ndef ${row.def} `)+1;const end=src.indexOf('\n/--',start);const block=src.slice(start,end);if(block.split(row.from).length!==2)throw Error(row.id);const raw=src.slice(0,start)+block.replace(row.from,row.to)+src.slice(end);fs.writeFileSync(`${root}/mutants/${row.id}.lean`,raw);const target=raw.indexOf(`\ntheorem ${row.thm} `)+1;if(target===0)throw Error(row.thm);const targetEnd=raw.indexOf('\n/--',target);row.theoremLine=raw.slice(0,target).split('\n').length;row.theoremEndLine=targetEnd<0?raw.split('\n').length:raw.slice(0,targetEnd).split('\n').length;row.originalSha=hash(src);row.mutantSha=hash(raw);row.preservedSuffixSha=hash(src.slice(end));row.statementAndProofPreserved=src.slice(end)===raw.slice(start+block.replace(row.from,row.to).length);}
+fs.writeFileSync(`${root}/evidence/mutant-identities.json`,JSON.stringify(rows,null,2)+'\n');console.log(rows.length+' raw mutants retained; each one definition edit, all subsequent statements/proofs byte-identical.');

@@ -1,0 +1,4 @@
+MUTATION-APPLIED:POLICYFREE
+/tmp/reactivegas/ms2/e43/t57-owner-codex/gate/instruments/mutant-policyfree.lean:16:0: error: Expression
+  badVerdictOf zeroThreshold gs q == verdictOf zeroThreshold gs q
+did not evaluate to `true`

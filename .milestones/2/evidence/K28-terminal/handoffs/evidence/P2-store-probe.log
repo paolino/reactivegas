@@ -1,0 +1,8 @@
+NEGATIVE-CONTROL detects seeded lost update=True
+POSITIVE-CONTROL sequential counts=(3,2,2,3,2)
+SQL-ERROR callerObserved=True unchanged=(3,2,2,3,2)
+CONCURRENT values=(1,2) accepted=True hot=2 sqlRows=2 hotLength=1 replay=3 decoded=2 invariant=False
+CONCURRENT values=(3,7) accepted=True hot=3 sqlRows=2 hotLength=1 replay=10 decoded=2 invariant=False
+CONCURRENT values=(11,19) accepted=True hot=11 sqlRows=2 hotLength=1 replay=30 decoded=2 invariant=False
+CONCURRENT values=(101,307) accepted=True hot=307 sqlRows=2 hotLength=1 replay=408 decoded=2 invariant=False
+CONSERVATION passing=0/4

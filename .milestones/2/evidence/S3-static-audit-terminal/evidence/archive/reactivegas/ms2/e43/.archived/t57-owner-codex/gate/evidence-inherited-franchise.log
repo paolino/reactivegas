@@ -1,0 +1,6 @@
+MUTATION-APPLIED:FRANCHISE
+/tmp/reactivegas/ms2/e43/t57-owner-codex/gate/instruments/mutant-franchise.lean:33:0: error: Expression
+  match lookupQuestion "q" final with
+  | some q => q.assents == ["a"] && q.dissents == []
+  | none => false
+did not evaluate to `true`

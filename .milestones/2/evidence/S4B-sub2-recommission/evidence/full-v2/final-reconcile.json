@@ -1,0 +1,24 @@
+{
+  "id": "final-reconcile",
+  "argv": [
+    "timeout",
+    "300s",
+    "node",
+    "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2/instruments/full-v3/data-checks.mjs",
+    "final-reconcile"
+  ],
+  "cwd": "/tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-sub2-final-r2",
+  "charge": "targeted",
+  "launched": true,
+  "start": "2026-09-06T05:53:55.703Z",
+  "spend": {
+    "substantive": 12,
+    "targeted": 72
+  },
+  "obligation": "R7 final mandatory receipt versus independent discovery, restoration",
+  "finish": "2026-09-06T05:53:59.462Z",
+  "exit": 0,
+  "signal": null,
+  "stdoutSha256": "0e14267729f4032064c7f357d21e51d1423090db023fb49fe9fe49464d33044f",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

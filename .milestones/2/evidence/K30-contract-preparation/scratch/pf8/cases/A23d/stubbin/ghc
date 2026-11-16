@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# STUBBED ghc shim — plumbing only (serves fixture bytes for --show-iface;
+# proves selection/freshness/hash path logic, NEVER compiler-output
+# compatibility). Real ghc behavior = prerequisite P1 at freeze.
+if [ "${1:-}" = "--show-iface" ] && [ -r "${2:-}" ]; then cat "$2"; exit 0; fi
+printf '%s\n' "stub-ghc: refused ($*)" >&2; exit 99

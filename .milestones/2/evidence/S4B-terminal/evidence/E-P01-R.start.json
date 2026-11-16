@@ -1,0 +1,22 @@
+{
+  "start": "2026-09-05T22:39:43.663Z",
+  "kind": "targeted",
+  "argv": [
+    "nix",
+    "develop",
+    "--quiet",
+    "-c",
+    "bash",
+    "-c",
+    "cd /tmp/reactivegas/ms2/e-lean-compliance/candidate-auditor-s4b-codex-r3/expression-controls/P01 && LEAN_PATH=. lean Probe.lean"
+  ],
+  "counts": {
+    "substantive": 4,
+    "targeted": 55
+  },
+  "before": {
+    "git": "",
+    "head": "189e1ed306f8f8e8bcdd11eeab4fc5657a518fc8",
+    "df": "Filesystem               1B-blocks         Used    Available Use% Mounted on\n/dev/mapper/fast-code 844362571776 584155549696 217240571904  73% /code\n"
+  }
+}

@@ -1,0 +1,643 @@
+PAIR (1,2) accepted=True tuple=(1,2,1,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (3,7) accepted=True tuple=(3,2,1,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (11,19) accepted=True tuple=(11,2,1,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (101,307) accepted=True tuple=(307,2,1,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (5,11) accepted=True tuple=(11,2,1,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (42,43) accepted=True tuple=(42,2,1,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1000,7) accepted=True tuple=(7,2,1,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (0,999) accepted=True tuple=(0,2,1,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1,2) accepted=True tuple=(2,2,1,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (3,7) accepted=True tuple=(7,2,1,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (11,19) accepted=True tuple=(11,2,1,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (101,307) accepted=True tuple=(307,2,1,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (5,11) accepted=True tuple=(11,2,1,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (42,43) accepted=True tuple=(43,2,1,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1000,7) accepted=True tuple=(7,2,1,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (0,999) accepted=True tuple=(999,2,1,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1,2) accepted=True tuple=(2,2,1,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (3,7) accepted=True tuple=(7,2,1,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (11,19) accepted=True tuple=(11,2,1,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (101,307) accepted=True tuple=(101,2,1,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (5,11) accepted=True tuple=(5,2,1,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (42,43) accepted=True tuple=(43,2,1,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1000,7) accepted=True tuple=(7,2,1,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (0,999) accepted=True tuple=(0,2,1,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1,2) accepted=True tuple=(1,2,1,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (3,7) accepted=True tuple=(3,2,1,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (11,19) accepted=True tuple=(11,2,1,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (101,307) accepted=True tuple=(101,2,1,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (5,11) accepted=True tuple=(5,2,1,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (42,43) accepted=True tuple=(42,2,1,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1000,7) accepted=True tuple=(1000,2,1,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (0,999) accepted=True tuple=(0,2,1,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1,2) accepted=True tuple=(1,2,1,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (3,7) accepted=True tuple=(3,2,1,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (11,19) accepted=True tuple=(11,2,1,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (101,307) accepted=True tuple=(101,2,1,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (5,11) accepted=True tuple=(5,2,1,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (42,43) accepted=True tuple=(43,2,1,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1000,7) accepted=True tuple=(1000,2,1,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (0,999) accepted=True tuple=(999,2,1,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1,2) accepted=True tuple=(1,2,1,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (3,7) accepted=True tuple=(3,2,1,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (11,19) accepted=True tuple=(11,2,1,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (101,307) accepted=True tuple=(101,2,1,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (5,11) accepted=True tuple=(5,2,1,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (42,43) accepted=True tuple=(43,2,1,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1000,7) accepted=True tuple=(7,2,1,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (0,999) accepted=True tuple=(999,2,1,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1,2) accepted=True tuple=(2,2,1,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (3,7) accepted=True tuple=(3,2,1,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (11,19) accepted=True tuple=(19,2,1,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (101,307) accepted=True tuple=(101,2,1,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (5,11) accepted=True tuple=(5,2,1,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (42,43) accepted=True tuple=(42,2,1,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1000,7) accepted=True tuple=(1000,2,1,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (0,999) accepted=True tuple=(999,2,1,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1,2) accepted=True tuple=(2,2,1,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (3,7) accepted=True tuple=(7,2,1,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (11,19) accepted=True tuple=(11,2,1,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (101,307) accepted=True tuple=(101,2,1,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (5,11) accepted=True tuple=(5,2,1,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (42,43) accepted=True tuple=(42,2,1,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1000,7) accepted=True tuple=(1000,2,1,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (0,999) accepted=True tuple=(0,2,1,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1,2) accepted=True tuple=(1,2,1,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (3,7) accepted=True tuple=(3,2,1,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (11,19) accepted=True tuple=(11,2,1,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (101,307) accepted=True tuple=(101,2,1,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (5,11) accepted=True tuple=(5,2,1,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (42,43) accepted=True tuple=(42,2,1,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1000,7) accepted=True tuple=(1000,2,1,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (0,999) accepted=True tuple=(0,2,1,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1,2) accepted=True tuple=(1,2,1,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (3,7) accepted=True tuple=(3,2,1,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (11,19) accepted=True tuple=(11,2,1,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (101,307) accepted=True tuple=(307,2,1,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (5,11) accepted=True tuple=(11,2,1,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (42,43) accepted=True tuple=(43,2,1,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1000,7) accepted=True tuple=(7,2,1,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (0,999) accepted=True tuple=(999,2,1,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1,2) accepted=True tuple=(1,2,1,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (3,7) accepted=True tuple=(3,2,1,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (11,19) accepted=True tuple=(11,2,1,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (101,307) accepted=True tuple=(307,2,1,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (5,11) accepted=True tuple=(5,2,1,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (42,43) accepted=True tuple=(42,2,1,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1000,7) accepted=True tuple=(7,2,1,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (0,999) accepted=True tuple=(0,2,1,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1,2) accepted=True tuple=(2,2,1,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (3,7) accepted=True tuple=(7,2,1,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (11,19) accepted=True tuple=(19,2,1,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (101,307) accepted=True tuple=(307,2,1,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (5,11) accepted=True tuple=(5,2,1,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (42,43) accepted=True tuple=(42,2,1,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1000,7) accepted=True tuple=(1000,2,1,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (0,999) accepted=True tuple=(0,2,1,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1,2) accepted=True tuple=(1,2,1,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (3,7) accepted=True tuple=(3,2,1,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (11,19) accepted=True tuple=(11,2,1,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (101,307) accepted=True tuple=(101,2,1,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (5,11) accepted=True tuple=(5,2,1,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (42,43) accepted=True tuple=(43,2,1,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1000,7) accepted=True tuple=(7,2,1,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (0,999) accepted=True tuple=(999,2,1,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1,2) accepted=True tuple=(1,2,1,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (3,7) accepted=True tuple=(3,2,1,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (11,19) accepted=True tuple=(11,2,1,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (101,307) accepted=True tuple=(101,2,1,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (5,11) accepted=True tuple=(5,2,1,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (42,43) accepted=True tuple=(43,2,1,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1000,7) accepted=True tuple=(1000,2,1,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (0,999) accepted=True tuple=(0,2,1,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1,2) accepted=True tuple=(2,2,1,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (3,7) accepted=True tuple=(7,2,1,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (11,19) accepted=True tuple=(19,2,1,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (101,307) accepted=True tuple=(307,2,1,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (5,11) accepted=True tuple=(5,2,1,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (42,43) accepted=True tuple=(42,2,1,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1000,7) accepted=True tuple=(1000,2,1,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (0,999) accepted=True tuple=(999,2,1,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1,2) accepted=True tuple=(2,2,1,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (3,7) accepted=True tuple=(3,2,1,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (11,19) accepted=True tuple=(11,2,1,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (101,307) accepted=True tuple=(101,2,1,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (5,11) accepted=True tuple=(5,2,1,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (42,43) accepted=True tuple=(43,2,1,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1000,7) accepted=True tuple=(1000,2,1,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (0,999) accepted=True tuple=(0,2,1,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1,2) accepted=True tuple=(1,2,1,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (3,7) accepted=True tuple=(7,2,1,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (11,19) accepted=True tuple=(19,2,1,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (101,307) accepted=True tuple=(101,2,1,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (5,11) accepted=True tuple=(5,2,1,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (42,43) accepted=True tuple=(42,2,1,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1000,7) accepted=True tuple=(1000,2,1,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (0,999) accepted=True tuple=(0,2,1,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1,2) accepted=True tuple=(2,2,1,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (3,7) accepted=True tuple=(3,2,1,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (11,19) accepted=True tuple=(19,2,1,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (101,307) accepted=True tuple=(307,2,1,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (5,11) accepted=True tuple=(11,2,1,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (42,43) accepted=True tuple=(42,2,1,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1000,7) accepted=True tuple=(1000,2,1,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (0,999) accepted=True tuple=(0,2,1,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1,2) accepted=True tuple=(1,2,1,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (3,7) accepted=True tuple=(3,2,1,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (11,19) accepted=True tuple=(11,2,1,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (101,307) accepted=True tuple=(101,2,1,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (5,11) accepted=True tuple=(11,2,1,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (42,43) accepted=True tuple=(43,2,1,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1000,7) accepted=True tuple=(7,2,1,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (0,999) accepted=True tuple=(999,2,1,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1,2) accepted=True tuple=(1,2,1,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (3,7) accepted=True tuple=(7,2,1,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (11,19) accepted=True tuple=(19,2,1,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (101,307) accepted=True tuple=(307,2,1,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (5,11) accepted=True tuple=(5,2,1,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (42,43) accepted=True tuple=(42,2,1,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (1000,7) accepted=True tuple=(1000,2,1,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+PAIR (0,999) accepted=True tuple=(0,2,1,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 1}] observations=2 exactReplay=False conserve=False
+PERSISTED-REOPEN agrees=False
+LOST-UPDATE-SEED detected semantic nonconservation=True
+PAIR (1,2) accepted=True tuple=(3,2,2,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (3,7) accepted=True tuple=(10,2,2,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (11,19) accepted=True tuple=(30,2,2,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (101,307) accepted=True tuple=(408,2,2,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (5,11) accepted=True tuple=(16,2,2,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (42,43) accepted=True tuple=(85,2,2,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1000,7) accepted=True tuple=(1007,2,2,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (0,999) accepted=True tuple=(999,2,2,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1,2) accepted=True tuple=(3,2,2,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (3,7) accepted=True tuple=(10,2,2,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (11,19) accepted=True tuple=(30,2,2,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (101,307) accepted=True tuple=(408,2,2,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (5,11) accepted=True tuple=(16,2,2,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (42,43) accepted=True tuple=(85,2,2,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1000,7) accepted=True tuple=(1007,2,2,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (0,999) accepted=True tuple=(999,2,2,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1,2) accepted=True tuple=(3,2,2,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (3,7) accepted=True tuple=(10,2,2,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (11,19) accepted=True tuple=(30,2,2,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (101,307) accepted=True tuple=(408,2,2,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (5,11) accepted=True tuple=(16,2,2,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (42,43) accepted=True tuple=(85,2,2,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1000,7) accepted=True tuple=(1007,2,2,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (0,999) accepted=True tuple=(999,2,2,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1,2) accepted=True tuple=(3,2,2,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (3,7) accepted=True tuple=(10,2,2,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (11,19) accepted=True tuple=(30,2,2,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (101,307) accepted=True tuple=(408,2,2,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (5,11) accepted=True tuple=(16,2,2,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (42,43) accepted=True tuple=(85,2,2,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1000,7) accepted=True tuple=(1007,2,2,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (0,999) accepted=True tuple=(999,2,2,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1,2) accepted=True tuple=(3,2,2,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (3,7) accepted=True tuple=(10,2,2,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (11,19) accepted=True tuple=(30,2,2,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (101,307) accepted=True tuple=(408,2,2,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (5,11) accepted=True tuple=(16,2,2,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (42,43) accepted=True tuple=(85,2,2,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1000,7) accepted=True tuple=(1007,2,2,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (0,999) accepted=True tuple=(999,2,2,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1,2) accepted=True tuple=(3,2,2,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (3,7) accepted=True tuple=(10,2,2,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (11,19) accepted=True tuple=(30,2,2,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (101,307) accepted=True tuple=(408,2,2,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (5,11) accepted=True tuple=(16,2,2,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (42,43) accepted=True tuple=(85,2,2,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1000,7) accepted=True tuple=(1007,2,2,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (0,999) accepted=True tuple=(999,2,2,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1,2) accepted=True tuple=(3,2,2,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (3,7) accepted=True tuple=(10,2,2,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (11,19) accepted=True tuple=(30,2,2,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (101,307) accepted=True tuple=(408,2,2,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (5,11) accepted=True tuple=(16,2,2,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (42,43) accepted=True tuple=(85,2,2,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1000,7) accepted=True tuple=(1007,2,2,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (0,999) accepted=True tuple=(999,2,2,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1,2) accepted=True tuple=(3,2,2,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (3,7) accepted=True tuple=(10,2,2,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (11,19) accepted=True tuple=(30,2,2,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (101,307) accepted=True tuple=(408,2,2,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (5,11) accepted=True tuple=(16,2,2,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (42,43) accepted=True tuple=(85,2,2,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1000,7) accepted=True tuple=(1007,2,2,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (0,999) accepted=True tuple=(999,2,2,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1,2) accepted=True tuple=(3,2,2,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (3,7) accepted=True tuple=(10,2,2,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (11,19) accepted=True tuple=(30,2,2,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (101,307) accepted=True tuple=(408,2,2,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (5,11) accepted=True tuple=(16,2,2,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (42,43) accepted=True tuple=(85,2,2,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1000,7) accepted=True tuple=(1007,2,2,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (0,999) accepted=True tuple=(999,2,2,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1,2) accepted=True tuple=(3,2,2,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (3,7) accepted=True tuple=(10,2,2,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (11,19) accepted=True tuple=(30,2,2,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (101,307) accepted=True tuple=(408,2,2,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (5,11) accepted=True tuple=(16,2,2,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (42,43) accepted=True tuple=(85,2,2,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1000,7) accepted=True tuple=(1007,2,2,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (0,999) accepted=True tuple=(999,2,2,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1,2) accepted=True tuple=(3,2,2,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (3,7) accepted=True tuple=(10,2,2,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (11,19) accepted=True tuple=(30,2,2,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (101,307) accepted=True tuple=(408,2,2,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (5,11) accepted=True tuple=(16,2,2,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (42,43) accepted=True tuple=(85,2,2,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1000,7) accepted=True tuple=(1007,2,2,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (0,999) accepted=True tuple=(999,2,2,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1,2) accepted=True tuple=(3,2,2,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (3,7) accepted=True tuple=(10,2,2,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (11,19) accepted=True tuple=(30,2,2,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (101,307) accepted=True tuple=(408,2,2,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (5,11) accepted=True tuple=(16,2,2,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (42,43) accepted=True tuple=(85,2,2,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1000,7) accepted=True tuple=(1007,2,2,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (0,999) accepted=True tuple=(999,2,2,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1,2) accepted=True tuple=(3,2,2,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (3,7) accepted=True tuple=(10,2,2,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (11,19) accepted=True tuple=(30,2,2,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (101,307) accepted=True tuple=(408,2,2,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (5,11) accepted=True tuple=(16,2,2,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (42,43) accepted=True tuple=(85,2,2,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1000,7) accepted=True tuple=(1007,2,2,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (0,999) accepted=True tuple=(999,2,2,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1,2) accepted=True tuple=(3,2,2,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (3,7) accepted=True tuple=(10,2,2,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (11,19) accepted=True tuple=(30,2,2,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (101,307) accepted=True tuple=(408,2,2,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (5,11) accepted=True tuple=(16,2,2,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (42,43) accepted=True tuple=(85,2,2,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1000,7) accepted=True tuple=(1007,2,2,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (0,999) accepted=True tuple=(999,2,2,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1,2) accepted=True tuple=(3,2,2,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (3,7) accepted=True tuple=(10,2,2,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (11,19) accepted=True tuple=(30,2,2,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (101,307) accepted=True tuple=(408,2,2,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (5,11) accepted=True tuple=(16,2,2,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (42,43) accepted=True tuple=(85,2,2,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1000,7) accepted=True tuple=(1007,2,2,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (0,999) accepted=True tuple=(999,2,2,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1,2) accepted=True tuple=(3,2,2,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (3,7) accepted=True tuple=(10,2,2,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (11,19) accepted=True tuple=(30,2,2,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (101,307) accepted=True tuple=(408,2,2,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (5,11) accepted=True tuple=(16,2,2,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (42,43) accepted=True tuple=(85,2,2,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1000,7) accepted=True tuple=(1007,2,2,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (0,999) accepted=True tuple=(999,2,2,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1,2) accepted=True tuple=(3,2,2,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (3,7) accepted=True tuple=(10,2,2,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (11,19) accepted=True tuple=(30,2,2,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (101,307) accepted=True tuple=(408,2,2,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (5,11) accepted=True tuple=(16,2,2,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (42,43) accepted=True tuple=(85,2,2,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1000,7) accepted=True tuple=(1007,2,2,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (0,999) accepted=True tuple=(999,2,2,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1,2) accepted=True tuple=(3,2,2,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (3,7) accepted=True tuple=(10,2,2,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (11,19) accepted=True tuple=(30,2,2,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (101,307) accepted=True tuple=(408,2,2,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (5,11) accepted=True tuple=(16,2,2,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (42,43) accepted=True tuple=(85,2,2,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1000,7) accepted=True tuple=(1007,2,2,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (0,999) accepted=True tuple=(999,2,2,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1,2) accepted=True tuple=(3,2,2,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (3,7) accepted=True tuple=(10,2,2,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (11,19) accepted=True tuple=(30,2,2,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (101,307) accepted=True tuple=(408,2,2,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (5,11) accepted=True tuple=(16,2,2,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (42,43) accepted=True tuple=(85,2,2,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1000,7) accepted=True tuple=(1007,2,2,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (0,999) accepted=True tuple=(999,2,2,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1,2) accepted=True tuple=(3,2,2,3,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (3,7) accepted=True tuple=(10,2,2,10,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (11,19) accepted=True tuple=(30,2,2,30,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (101,307) accepted=True tuple=(408,2,2,408,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (5,11) accepted=True tuple=(16,2,2,16,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (42,43) accepted=True tuple=(85,2,2,85,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (1000,7) accepted=True tuple=(1007,2,2,1007,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+PAIR (0,999) accepted=True tuple=(999,2,2,999,2) seqs=[Only {fromOnly = 1},Only {fromOnly = 2}] observations=2 exactReplay=True conserve=True
+PERSISTED-REOPEN agrees=True
+FINAL conservation all 160 schedules=True
+LIMIT: observed finite schedules only; neither overlap completeness nor all interleavings established

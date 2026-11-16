@@ -1,0 +1,49 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["c00cf5adc79c094c.olean"],
+  "i": "22d46838a17077e2.ilean",
+  "c": "87d42b1f2c39af28.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/code/reactivegas-66-s4b-audit3/lean/.lake/build/lib/lean /nix/store/4gr3n4nrp0xxgykyyzdxi3xjj2ikn5x1-lean4-4.25.0/bin/lean /code/reactivegas-66-s4b-audit3/lean/Reactivegas/Step.lean -o /code/reactivegas-66-s4b-audit3/lean/.lake/build/lib/lean/Reactivegas/Step.olean -i /code/reactivegas-66-s4b-audit3/lean/.lake/build/lib/lean/Reactivegas/Step.ilean -c /code/reactivegas-66-s4b-audit3/lean/.lake/build/ir/Reactivegas/Step.c --setup /code/reactivegas-66-s4b-audit3/lean/.lake/build/ir/Reactivegas/Step.setup.json --json",
+   "level": "trace"},
+  {"message":
+   "Reactivegas/Step.lean:473:0: 'Reactivegas.appFold' does not depend on any axioms",
+   "level": "info"},
+  {"message":
+   "Reactivegas/Step.lean:474:0: 'Reactivegas.apply' depends on axioms: [propext]",
+   "level": "info"},
+  {"message":
+   "Reactivegas/Step.lean:475:0: 'Reactivegas.app_members_preservation_holds' depends on axioms: [propext]",
+   "level": "info"},
+  {"message":
+   "Reactivegas/Step.lean:476:0: 'Reactivegas.comune_cannot_authorize' depends on axioms: [propext]",
+   "level": "info"}],
+ "inputs":
+ [["Reactivegas.Step:deps",
+   [["deps",
+     [["reactivegas/Reactivegas:extraDep",
+       [["@reactivegas:extraDep", "00000000000006bb"]]],
+      ["imports",
+       [["Reactivegas.State transitive imports (legacy)", "0c2050dabd39fcb2"],
+        ["Reactivegas.State:importAllArts", "96711d2078efa094"],
+        ["KelGroups.Integration transitive imports (legacy)",
+         "af32b9029c73c41e"],
+        ["KelGroups.Integration:importAllArts", "482bfb067cc04eb8"],
+        ["KelGroups.Vote.Types transitive imports (legacy)",
+         "c8e8ca171eb31d66"],
+        ["KelGroups.Vote.Types:importAllArts", "7b0c6abe2ab71b09"],
+        ["KelGroups.Vote.Fold transitive imports (legacy)", "65f6f97a7d3de474"],
+        ["KelGroups.Vote.Fold:importAllArts", "6fb8b1f3e6894c51"]]]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.25.0, commit v4.25.0", "9c3a3ade3a41d5d0"],
+  ["/code/reactivegas-66-s4b-audit3/lean/Reactivegas/Step.lean",
+   "a37af4ccccc6a7f4"],
+  ["options", [["-DautoImplicit=false", "4a85acb881fd49d0"]]],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "e6358d726806e8ef"}

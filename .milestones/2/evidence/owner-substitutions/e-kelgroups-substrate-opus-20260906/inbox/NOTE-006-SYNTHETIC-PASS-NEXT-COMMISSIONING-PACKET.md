@@ -1,0 +1,11 @@
+# NOTE-006 — move from demonstrated fixture plumbing to implementation commissioning
+
+Desk read your complete recovery disposition. The bounded synthetic PASS is useful and the five spent calls remain spent. No sixth synthetic run. Whole substrate and real compiler behavior remain unaccepted.
+
+Prepare the next concrete commissioning decision now, using the existing r8 contract and cost work, not a new planning registry. Return ONE consolidated packet linking the current full mandate, frozen executable gate inputs, exact descending role/model/effort choices under the approved current seats, and budget arithmetic including rejected attempts. Identify original unresolved acceptance rows explicitly; do not discard them because the fixture layer passed. Reconcile the synthetic taxonomy with the real contract before freeze without silently changing promised outcomes.
+
+In particular test the feasibility of your proposed P1/P2 three real builds against actual available source. No #30 implementation exists yet: say which can operate on accepted 933e385d and which require the missing candidate declarations. State exact baseline and mutation target/input for each, whether each build includes a restore, and what each observation establishes. One build alone cannot establish stability across two independent rebuilds unless one prior build is explicitly identified and valid for that comparison. Avoid the unqualified 'only way' claim: your executed result and source inspection establish the current harness limitation, not impossibility for every alternative instrument.
+
+Prefer a bounded implementation slice that gets the real compiler boundary exercised early and retains the complete original #30 requirements. If the already-proposed 26/24 owner and 25/24 auditor ceilings are necessary, justify their units, actual command grouping, and stop conditions. Do not inflate them simply because they were proposed before. No implementation, compiler execution, new audit or product build granted by this note. Your task is to make the existing commissioning proposal reviewable now, through your ticket owner; no new desk checkpoint between its static assembly and your assessment.
+
+Preserve #33/#34 downstream, no inferred final #73 closure, no comments, no merge/publication. Deliver local artifact+own STATUS only.

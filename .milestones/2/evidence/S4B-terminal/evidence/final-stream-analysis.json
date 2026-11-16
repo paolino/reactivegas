@@ -1,0 +1,94 @@
+[
+  {
+    "id": "S01",
+    "stdoutLines": 2823,
+    "stderrLines": 3,
+    "panicsStdout": 0,
+    "panicsStderr": 0,
+    "markers": [
+      "axiom-sources tracked=29 built=29",
+      "axiom-theorems count=1285",
+      "axiom-gate: ok",
+      "MIRROR-SUMMARY rows=19 exceptions=4 below=1 orphans-checked=17 discovered=24",
+      "MIRROR-CHECK-OK rows=19 exceptions=4 discovered=24"
+    ]
+  },
+  {
+    "id": "S02",
+    "stdoutLines": 2824,
+    "stderrLines": 5,
+    "panicsStdout": 0,
+    "panicsStderr": 0,
+    "markers": [
+      "axiom-sources tracked=29 built=29",
+      "axiom-theorems count=1285",
+      "axiom-gate: ok",
+      "MIRROR-SUMMARY rows=19 exceptions=4 below=1 orphans-checked=17 discovered=26"
+    ]
+  },
+  {
+    "id": "S03",
+    "stdoutLines": 2824,
+    "stderrLines": 5,
+    "panicsStdout": 0,
+    "panicsStderr": 0,
+    "markers": [
+      "axiom-sources tracked=29 built=29",
+      "axiom-theorems count=1285",
+      "axiom-gate: ok",
+      "MIRROR-SUMMARY rows=19 exceptions=4 below=1 orphans-checked=17 discovered=25"
+    ]
+  },
+  {
+    "id": "S04",
+    "stdoutLines": 2796,
+    "stderrLines": 7,
+    "panicsStdout": 0,
+    "panicsStderr": 0,
+    "markers": [
+      "axiom-sources tracked=29 built=29",
+      "axiom-theorems count=1285",
+      "axiom-gate: ok"
+    ]
+  },
+  {
+    "id": "S05",
+    "stdoutLines": 3128,
+    "stderrLines": 14859,
+    "panicsStdout": 0,
+    "panicsStderr": 0,
+    "markers": [
+      "No hints",
+      "axiom-sources tracked=29 built=29",
+      "axiom-theorems count=1285",
+      "axiom-gate: ok",
+      "MIRROR-SUMMARY rows=19 exceptions=4 below=1 orphans-checked=17 discovered=24",
+      "MIRROR-CHECK-OK rows=19 exceptions=4 discovered=24",
+      "corpus-check: ntraces=5 nevents=32 nsteps=7 live-bound"
+    ]
+  },
+  {
+    "id": "S06",
+    "stdoutLines": 2823,
+    "stderrLines": 4,
+    "panicsStdout": 0,
+    "panicsStderr": 0,
+    "markers": [
+      "axiom-sources tracked=29 built=29",
+      "axiom-theorems count=1285",
+      "axiom-gate: ok",
+      "MIRROR-SUMMARY rows=19 exceptions=4 below=1 orphans-checked=17 discovered=24",
+      "MIRROR-CHECK-OK rows=19 exceptions=4 discovered=24"
+    ]
+  },
+  {
+    "id": "AXIOMS",
+    "stdoutLines": 54,
+    "stderrLines": 0,
+    "panicsStdout": 0,
+    "panicsStderr": 0,
+    "markers": [
+      "\"RESTORATION-P01-TRUE-P07-FALSE\""
+    ]
+  }
+]
